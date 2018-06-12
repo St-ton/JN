@@ -1166,7 +1166,7 @@ class Artikel
         // Ticket #1247
         $preis = $nettopreise
             ? round($preis, 4)
-            : berechneBrutto($preis, gibUst($this->kSteuerklasse), 4) / ((100 + gibUst($this->kSteuerklasse)) / 100);
+            : TaxHelper::getGross($preis, TaxHelper::getSalesTax($this->kSteuerklasse), 4) / ((100 + TaxHelper::getSalesTax($this->kSteuerklasse)) / 100);
         // Falls es sich um eine Variationskombination handelt, spielen Variationsaufpreise keine Rolle,
         // da Vakombis Ihre Aufpreise direkt im Artikelpreis definieren.
         if ($this->nIstVater === 1 || $this->kVaterArtikel > 0) {
@@ -1201,7 +1201,7 @@ class Artikel
             // Ticket #1247
             $aufpreis = $nettopreise
                 ? round($aufpreis, 4)
-                : berechneBrutto($aufpreis, gibUst($this->kSteuerklasse), 4) / ((100 + gibUst($this->kSteuerklasse)) / 100);
+                : TaxHelper::getGross($aufpreis, TaxHelper::getSalesTax($this->kSteuerklasse), 4) / ((100 + TaxHelper::getSalesTax($this->kSteuerklasse)) / 100);
 
             $preis += $aufpreis;
         }
@@ -1429,7 +1429,7 @@ class Artikel
         $this->AttributeAssoc = [];
         $kSprache             = !$kSprache ? Shop::getLanguageID() : $kSprache;
         $eigenschaften_arr    = Shop::Container()->getDB()->selectAll('tattribut', 'kArtikel', (int)$this->kArtikel, '*', 'nSort');
-        $isDefaultLanguage    = standardspracheAktiv();
+        $isDefaultLanguage    = Sprache::isDefaultLanguageActive();
         foreach ($eigenschaften_arr as $att) {
             $Attribut            = new stdClass();
             $Attribut->nSort     = (int)$att->nSort;
@@ -1593,27 +1593,27 @@ class Artikel
                 ($this->oProduktBundleMain->Preise->fVKNetto ?? 0);
             $this->oProduktBundlePrice->fVKNetto           = $this->oProduktBundleMain->Preise->fVKNetto ?? 0;
             $this->oProduktBundlePrice->cPriceLocalized    = [];
-            $this->oProduktBundlePrice->cPriceLocalized[0] = gibPreisStringLocalized(
-                berechneBrutto(
+            $this->oProduktBundlePrice->cPriceLocalized[0] = Preise::getLocalizedPriceString(
+                TaxHelper::getGross(
                     $this->oProduktBundlePrice->fVKNetto,
                     $_SESSION['Steuersatz'][$this->oProduktBundleMain->kSteuerklasse] ?? null
                 ),
                 $currency
             );
 
-            $this->oProduktBundlePrice->cPriceLocalized[1]     = gibPreisStringLocalized(
+            $this->oProduktBundlePrice->cPriceLocalized[1]     = Preise::getLocalizedPriceString(
                 $this->oProduktBundlePrice->fVKNetto,
                 $currency
             );
             $this->oProduktBundlePrice->cPriceDiffLocalized    = [];
-            $this->oProduktBundlePrice->cPriceDiffLocalized[0] = gibPreisStringLocalized(
-                berechneBrutto(
+            $this->oProduktBundlePrice->cPriceDiffLocalized[0] = Preise::getLocalizedPriceString(
+                TaxHelper::getGross(
                     $this->oProduktBundlePrice->fPriceDiff,
                     $_SESSION['Steuersatz'][$this->oProduktBundleMain->kSteuerklasse] ?? null
                 ),
                 $currency
             );
-            $this->oProduktBundlePrice->cPriceDiffLocalized[1] = gibPreisStringLocalized(
+            $this->oProduktBundlePrice->cPriceDiffLocalized[1] = Preise::getLocalizedPriceString(
                 $this->oProduktBundlePrice->fPriceDiff,
                 $currency
             );
@@ -1631,7 +1631,7 @@ class Artikel
         if (!$kSprache) {
             $kSprache = Shop::getLanguageID();
         }
-        $kDefaultLanguage       = gibStandardsprache()->kSprache;
+        $kDefaultLanguage       = Sprache::getDefaultLanguage()->kSprache;
         $this->oMedienDatei_arr = [];
         // Funktionsattribut gesetzt? Tab oder Beschreibung
         if (isset($this->FunktionsAttribute[FKT_ATTRIBUT_MEDIENDATEIEN])) {
@@ -1929,7 +1929,7 @@ class Artikel
      */
     protected function execVariationSQL(int $kSprache, int $kKundengruppe)
     {
-        $isDefaultLang = standardspracheAktiv();
+        $isDefaultLang = Sprache::isDefaultLanguageActive();
         // Nicht Standardsprache?
         $oSQLEigenschaft              = new stdClass();
         $oSQLEigenschaftWert          = new stdClass();
@@ -2185,7 +2185,7 @@ class Artikel
         $currency       = Session::Currency();
         $currencyFactor = $currency->getConversionFactor();
         $imageBaseURL   = Shop::getImageBaseURL();
-        $isDefaultLang  = standardspracheAktiv();
+        $isDefaultLang  = Sprache::isDefaultLanguageActive();
         $mayViewPrices  = Session::CustomerGroup()->mayViewPrices();
 
         $variations = $this->execVariationSQL($kSprache, $kKundengruppe);
@@ -2318,14 +2318,14 @@ class Artikel
                 unset($value->fAufpreisNetto, $value->cAufpreisLocalized, $value->cPreisInklAufpreis);
             } elseif (isset($value->fVPEWert) && $value->fVPEWert > 0) {
                 $base                            = $value->fAufpreisNetto / $value->fVPEWert;
-                $value->cPreisVPEWertAufpreis[0] = gibPreisStringLocalized(
-                    berechneBrutto($base, $taxRate),
+                $value->cPreisVPEWertAufpreis[0] = Preise::getLocalizedPriceString(
+                    TaxHelper::getGross($base, $taxRate),
                     $currency,
                     1,
                     $nGenauigkeit
                 ) . $per;
 
-                $value->cPreisVPEWertAufpreis[1] = gibPreisStringLocalized(
+                $value->cPreisVPEWertAufpreis[1] = Preise::getLocalizedPriceString(
                     $base,
                     $currency,
                     1,
@@ -2334,13 +2334,13 @@ class Artikel
 
                 $base = ($value->fAufpreisNetto + $this->Preise->fVKNetto) / $value->fVPEWert;
 
-                $value->cPreisVPEWertInklAufpreis[0] = gibPreisStringLocalized(
-                    berechneBrutto($base, $taxRate),
+                $value->cPreisVPEWertInklAufpreis[0] = Preise::getLocalizedPriceString(
+                    TaxHelper::getGross($base, $taxRate),
                     $currency,
                     1,
                     $nGenauigkeit
                 ) . $per;
-                $value->cPreisVPEWertInklAufpreis[1] = gibPreisStringLocalized(
+                $value->cPreisVPEWertInklAufpreis[1] = Preise::getLocalizedPriceString(
                     $base,
                     $currency,
                     1,
@@ -2350,21 +2350,21 @@ class Artikel
 
             if (isset($value->fAufpreisNetto) && $value->fAufpreisNetto != 0) {
                 $surcharge                    = $value->fAufpreisNetto;
-                $value->cAufpreisLocalized[0] = gibPreisStringLocalized(berechneBrutto($surcharge, $taxRate, 4), $currency);
-                $value->cAufpreisLocalized[1] = gibPreisStringLocalized($surcharge, $currency);
+                $value->cAufpreisLocalized[0] = Preise::getLocalizedPriceString(TaxHelper::getGross($surcharge, $taxRate, 4), $currency);
+                $value->cAufpreisLocalized[1] = Preise::getLocalizedPriceString($surcharge, $currency);
                 // Wenn der Artikel ein VarikombiKind ist, rechne nicht nochmal die Variationsaufpreise drauf
                 if ($this->kVaterArtikel > 0) {
-                    $value->cPreisInklAufpreis[0] = gibPreisStringLocalized(
-                        berechneBrutto($this->Preise->fVKNetto, $taxRate),
+                    $value->cPreisInklAufpreis[0] = Preise::getLocalizedPriceString(
+                        TaxHelper::getGross($this->Preise->fVKNetto, $taxRate),
                         $currency
                     );
-                    $value->cPreisInklAufpreis[1] = gibPreisStringLocalized($this->Preise->fVKNetto, $currency);
+                    $value->cPreisInklAufpreis[1] = Preise::getLocalizedPriceString($this->Preise->fVKNetto, $currency);
                 } else {
-                    $value->cPreisInklAufpreis[0] = gibPreisStringLocalized(
-                        berechneBrutto($surcharge + $this->Preise->fVKNetto, $taxRate),
+                    $value->cPreisInklAufpreis[0] = Preise::getLocalizedPriceString(
+                        TaxHelper::getGross($surcharge + $this->Preise->fVKNetto, $taxRate),
                         $currency
                     );
-                    $value->cPreisInklAufpreis[1] = gibPreisStringLocalized(
+                    $value->cPreisInklAufpreis[1] = Preise::getLocalizedPriceString(
                         $surcharge + $this->Preise->fVKNetto,
                         $currency
                     );
@@ -2379,7 +2379,7 @@ class Artikel
                 }
                 $surcharge = $value->fAufpreisNetto;
 
-                $value->fAufpreis[0] = berechneBrutto($surcharge * $currencyFactor, $taxRate);
+                $value->fAufpreis[0] = TaxHelper::getGross($surcharge * $currencyFactor, $taxRate);
                 $value->fAufpreis[1] = $surcharge * $currencyFactor;
 
                 if ($surcharge > 0) {
@@ -2884,8 +2884,8 @@ class Artikel
                         ? (int)$varCombChildren[$i]->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]
                         : 2;
 
-                    $varCombChildren[$i]->Preise->cPreisVPEWertInklAufpreis[0] = gibPreisStringLocalized(
-                        berechneBrutto(
+                    $varCombChildren[$i]->Preise->cPreisVPEWertInklAufpreis[0] = Preise::getLocalizedPriceString(
+                        TaxHelper::getGross(
                             $varCombChildren[$i]->Preise->fVKNetto / $varCombChildren[$i]->fVPEWert,
                             $taxRate
                         ),
@@ -2893,7 +2893,7 @@ class Artikel
                         1,
                         $nGenauigkeit
                     ) . $per . $varCombChildren[$i]->cVPEEinheit;
-                    $varCombChildren[$i]->Preise->cPreisVPEWertInklAufpreis[1] = gibPreisStringLocalized(
+                    $varCombChildren[$i]->Preise->cPreisVPEWertInklAufpreis[1] = Preise::getLocalizedPriceString(
                         $varCombChildren[$i]->Preise->fVKNetto / $varCombChildren[$i]->fVPEWert,
                         $currency,
                         1,
@@ -3063,7 +3063,7 @@ class Artikel
 
         if ($this->conf['artikeldetails']['artikeldetails_varikombi_vorschautext'] === 'S') {
             $oEigenschaft = null;
-            if ($kSprache > 0 && !standardspracheAktiv()) {
+            if ($kSprache > 0 && !Sprache::isDefaultLanguageActive()) {
                 $oEigenschaft = Shop::Container()->getDB()->query(
                     "SELECT teigenschaftsprache.cName
                         FROM teigenschaftsprache
@@ -3201,14 +3201,14 @@ class Artikel
             // Grundpreis?
             if ($this->cVPE === 'Y' && $this->fVPEWert > 0) {
                 $this->oVariationDetailPreisKind_arr[$vk->kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[0] =
-                    gibPreisStringLocalized(
-                        berechneBrutto($this->Preise->fVKNetto / $this->fVPEWert, $taxRate),
+                    Preise::getLocalizedPriceString(
+                        TaxHelper::getGross($this->Preise->fVKNetto / $this->fVPEWert, $taxRate),
                         $currency,
                         1,
                         $nGenauigkeit
                     ) . $per;
                 $this->oVariationDetailPreisKind_arr[$vk->kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[1] =
-                    gibPreisStringLocalized(
+                    Preise::getLocalizedPriceString(
                         $this->Preise->fVKNetto / $this->fVPEWert,
                         $currency,
                         1,
@@ -3296,7 +3296,7 @@ class Artikel
             ) {
                 $this->oVariationDetailPreis_arr[$idx]->Preise->cAufpreisLocalized[0] =
                     $cAufpreisVorzeichen .
-                    gibPreisStringLocalized(
+                    Preise::getLocalizedPriceString(
                         abs($oArtikelTMP->Preise->fVK[0] - $this->Preise->fVK[0]) * ((100 - $discount) / 100),
                         $currency,
                         1,
@@ -3304,7 +3304,7 @@ class Artikel
                     );
                 $this->oVariationDetailPreis_arr[$idx]->Preise->cAufpreisLocalized[1] =
                     $cAufpreisVorzeichen .
-                    gibPreisStringLocalized(
+                    Preise::getLocalizedPriceString(
                         abs($oArtikelTMP->Preise->fVK[1] - $this->Preise->fVK[1]) * ((100 - $discount) / 100),
                         $currency,
                         1,
@@ -3316,8 +3316,8 @@ class Artikel
                 && $oArtikelTMP->cVPE === 'Y'
                 && $oArtikelTMP->fVPEWert > 0
             ) {
-                $this->oVariationDetailPreis_arr[$idx]->Preise->PreisecPreisVPEWertInklAufpreis[0] = gibPreisStringLocalized(
-                    berechneBrutto(
+                $this->oVariationDetailPreis_arr[$idx]->Preise->PreisecPreisVPEWertInklAufpreis[0] = Preise::getLocalizedPriceString(
+                    TaxHelper::getGross(
                         $oArtikelTMP->Preise->fVKNetto / $oArtikelTMP->fVPEWert,
                         $taxRate
                     ),
@@ -3325,7 +3325,7 @@ class Artikel
                     1,
                     $nGenauigkeit
                 ) . $per . $oArtikelTMP->cVPEEinheit;
-                $this->oVariationDetailPreis_arr[$idx]->Preise->PreisecPreisVPEWertInklAufpreis[1] = gibPreisStringLocalized(
+                $this->oVariationDetailPreis_arr[$idx]->Preise->PreisecPreisVPEWertInklAufpreis[1] = Preise::getLocalizedPriceString(
                     $oArtikelTMP->Preise->fVKNetto / $oArtikelTMP->fVPEWert,
                     $currency,
                     1,
@@ -3348,7 +3348,7 @@ class Artikel
         $oSQLArtikelSprache->cSELECT = '';
         $oSQLArtikelSprache->cJOIN   = '';
 
-        if ($kSprache > 0 && !standardspracheAktiv()) {
+        if ($kSprache > 0 && !Sprache::isDefaultLanguageActive()) {
             $oSQLArtikelSprache->cSELECT = "tartikelsprache.cName AS cName_spr, tartikelsprache.cBeschreibung AS cBeschreibung_spr,
                                                 tartikelsprache.cKurzBeschreibung AS cKurzBeschreibung_spr, ";
             $oSQLArtikelSprache->cJOIN   = " LEFT JOIN tartikelsprache
@@ -3552,7 +3552,7 @@ class Artikel
             $kSprache = Shop::getLanguageID();
         }
         if (!$kSprache) {
-            $oSprache = gibStandardsprache();
+            $oSprache = Sprache::getDefaultLanguage();
             $kSprache = $oSprache->kSprache;
         }
         $this->kSprache = $kSprache;
@@ -3635,7 +3635,7 @@ class Artikel
         $oSQLArtikelSprache          = new stdClass();
         $oSQLArtikelSprache->cSELECT = '';
         $oSQLArtikelSprache->cJOIN   = '';
-        if ($kSprache > 0 && !standardspracheAktiv()) {
+        if ($kSprache > 0 && !Sprache::isDefaultLanguageActive()) {
             $oSQLArtikelSprache = $this->baueArtikelSprache($kArtikel, $kSprache);
         }
         // Seo
@@ -3930,7 +3930,7 @@ class Artikel
                 PFAD_HERSTELLERBILDER_KLEIN . $oArtikelTMP->cBildpfad_thersteller;
         }
         // Lokalisieren
-        if ($kSprache > 0 && !standardspracheAktiv()) {
+        if ($kSprache > 0 && !Sprache::isDefaultLanguageActive()) {
             //VPE-Einheit
             $oVPEEinheitRes = Shop::Container()->getDB()->query(
                 "SELECT cName
@@ -4119,7 +4119,7 @@ class Artikel
         if (!empty($this->FunktionsAttribute[FKT_ATTRIBUT_UNVERKAEUFLICH])) {
             $this->inWarenkorbLegbar = INWKNICHTLEGBAR_UNVERKAEUFLICH;
         }
-        $this->cUVPLocalized = gibPreisStringLocalized($this->fUVP);
+        $this->cUVPLocalized = Preise::getLocalizedPriceString($this->fUVP);
         // Lieferzeit abhaengig vom Session-Lieferland aktualisieren
         if ($this->inWarenkorbLegbar >= 1 && $this->nIstVater !== 1) {
             $this->cEstimatedDelivery = $this->getDeliveryTime($_SESSION['cLieferlandISO']);
@@ -4565,42 +4565,42 @@ class Artikel
         $fPreis        = ($fPreisStaffel > 0) ? $fPreisStaffel : $this->Preise->fVKNetto;
         $currency      = Session::Currency();
         $per           = ' ' . Shop::Lang()->get('vpePer') . ' ' . $basepriceUnit;
-        $ust           = gibUst($this->kSteuerklasse);
+        $ust           = TaxHelper::getSalesTax($this->kSteuerklasse);
 
         if (Shop::getPageType() === PAGE_ARTIKELLISTE && $this->Preise->oPriceRange !== null && $this->Preise->oPriceRange->isRange()) {
             if ($this->Preise->oPriceRange->rangeWidth() <= $this->conf['artikeluebersicht']['articleoverview_pricerange_width']) {
-                $this->cLocalizedVPE[0] = gibPreisStringLocalized(
-                    berechneBrutto($this->Preise->oPriceRange->minNettoPrice / $this->fVPEWert, $ust, $nGenauigkeit),
+                $this->cLocalizedVPE[0] = Preise::getLocalizedPriceString(
+                    TaxHelper::getGross($this->Preise->oPriceRange->minNettoPrice / $this->fVPEWert, $ust, $nGenauigkeit),
                     $currency,
                     1,
                     $nGenauigkeit
                 ) . ' - '
-                . gibPreisStringLocalized(
-                    berechneBrutto($this->Preise->oPriceRange->maxNettoPrice / $this->fVPEWert, $ust, $nGenauigkeit),
+                . Preise::getLocalizedPriceString(
+                    TaxHelper::getGross($this->Preise->oPriceRange->maxNettoPrice / $this->fVPEWert, $ust, $nGenauigkeit),
                     $currency,
                     1,
                     $nGenauigkeit
                 ) . $per;
-                $this->cLocalizedVPE[1] = gibPreisStringLocalized(
+                $this->cLocalizedVPE[1] = Preise::getLocalizedPriceString(
                     $this->Preise->oPriceRange->minNettoPrice / $this->fVPEWert,
                     $currency,
                     1,
                     $nGenauigkeit
                 ) . ' - '
-                . gibPreisStringLocalized(
+                . Preise::getLocalizedPriceString(
                     $this->Preise->oPriceRange->maxNettoPrice / $this->fVPEWert,
                     $currency,
                     1,
                     $nGenauigkeit
                 ) . $per;
             } else {
-                $this->cLocalizedVPE[0] = Shop::Lang()->get('priceStarting') . ' ' . gibPreisStringLocalized(
-                    berechneBrutto($this->Preise->oPriceRange->minNettoPrice / $this->fVPEWert, $ust, $nGenauigkeit),
+                $this->cLocalizedVPE[0] = Shop::Lang()->get('priceStarting') . ' ' . Preise::getLocalizedPriceString(
+                    TaxHelper::getGross($this->Preise->oPriceRange->minNettoPrice / $this->fVPEWert, $ust, $nGenauigkeit),
                     $currency,
                     1,
                     $nGenauigkeit
                 ) . $per;
-                $this->cLocalizedVPE[1] = Shop::Lang()->get('priceStarting') . ' ' . gibPreisStringLocalized(
+                $this->cLocalizedVPE[1] = Shop::Lang()->get('priceStarting') . ' ' . Preise::getLocalizedPriceString(
                     $this->Preise->oPriceRange->minNettoPrice / $this->fVPEWert,
                     $currency,
                     1,
@@ -4608,13 +4608,13 @@ class Artikel
                 ) . $per;
             }
         } else {
-            $this->cLocalizedVPE[0] = gibPreisStringLocalized(
-                berechneBrutto($fPreis / $this->fVPEWert, $ust, $nGenauigkeit),
+            $this->cLocalizedVPE[0] = Preise::getLocalizedPriceString(
+                TaxHelper::getGross($fPreis / $this->fVPEWert, $ust, $nGenauigkeit),
                 $currency,
                 1,
                 $nGenauigkeit
             ) . $per;
-            $this->cLocalizedVPE[1] = gibPreisStringLocalized(
+            $this->cLocalizedVPE[1] = Preise::getLocalizedPriceString(
                 $fPreis / $this->fVPEWert,
                 $currency,
                 1,
@@ -4655,125 +4655,125 @@ class Artikel
         $per           = ' ' . Shop::Lang()->get('vpePer') . ' ';
         $basePriceUnit = ArtikelHelper::getBasePriceUnit($this, $this->Preise->fPreis1, $this->Preise->nAnzahl1);
 
-        $this->cStaffelpreisLocalizedVPE1[0] = gibPreisStringLocalized(
-            berechneBrutto(
+        $this->cStaffelpreisLocalizedVPE1[0] = Preise::getLocalizedPriceString(
+            TaxHelper::getGross(
                 $basePriceUnit->fBasePreis,
-                gibUst($this->kSteuerklasse),
+                TaxHelper::getSalesTax($this->kSteuerklasse),
                 $nGenauigkeit
             ),
             $currency,
             1,
             $nGenauigkeit
         )  . $per . $basePriceUnit->cVPEEinheit;
-        $this->cStaffelpreisLocalizedVPE1[1] = gibPreisStringLocalized(
+        $this->cStaffelpreisLocalizedVPE1[1] = Preise::getLocalizedPriceString(
             $basePriceUnit->fBasePreis,
             $currency,
             1,
             $nGenauigkeit
         )  . $per . $basePriceUnit->cVPEEinheit;
-        $this->fStaffelpreisVPE1[0]          = berechneBrutto(
+        $this->fStaffelpreisVPE1[0]          = TaxHelper::getGross(
             $basePriceUnit->fBasePreis,
-            gibUst($this->kSteuerklasse),
+            TaxHelper::getSalesTax($this->kSteuerklasse),
             $nGenauigkeit
         );
         $this->fStaffelpreisVPE1[1]          = $basePriceUnit->fBasePreis;
 
         $basePriceUnit = ArtikelHelper::getBasePriceUnit($this, $this->Preise->fPreis2, $this->Preise->nAnzahl2);
 
-        $this->cStaffelpreisLocalizedVPE2[0] = gibPreisStringLocalized(
-            berechneBrutto(
+        $this->cStaffelpreisLocalizedVPE2[0] = Preise::getLocalizedPriceString(
+            TaxHelper::getGross(
                 $basePriceUnit->fBasePreis,
-                gibUst($this->kSteuerklasse),
+                TaxHelper::getSalesTax($this->kSteuerklasse),
                 $nGenauigkeit
             ),
             $currency,
             1,
             $nGenauigkeit
         )  . $per . $basePriceUnit->cVPEEinheit;
-        $this->cStaffelpreisLocalizedVPE2[1] = gibPreisStringLocalized(
+        $this->cStaffelpreisLocalizedVPE2[1] = Preise::getLocalizedPriceString(
             $basePriceUnit->fBasePreis,
             $currency,
             1,
             $nGenauigkeit
         )  . $per . $basePriceUnit->cVPEEinheit;
-        $this->fStaffelpreisVPE2[0]          = berechneBrutto(
+        $this->fStaffelpreisVPE2[0]          = TaxHelper::getGross(
             $basePriceUnit->fBasePreis,
-            gibUst($this->kSteuerklasse),
+            TaxHelper::getSalesTax($this->kSteuerklasse),
             $nGenauigkeit
         );
         $this->fStaffelpreisVPE2[1]          = $basePriceUnit->fBasePreis;
 
         $basePriceUnit = ArtikelHelper::getBasePriceUnit($this, $this->Preise->fPreis3, $this->Preise->nAnzahl3);
 
-        $this->cStaffelpreisLocalizedVPE3[0] = gibPreisStringLocalized(
-            berechneBrutto(
+        $this->cStaffelpreisLocalizedVPE3[0] = Preise::getLocalizedPriceString(
+            TaxHelper::getGross(
                 $basePriceUnit->fBasePreis,
-                gibUst($this->kSteuerklasse),
+                TaxHelper::getSalesTax($this->kSteuerklasse),
                 $nGenauigkeit
             ),
             $currency,
             1,
             $nGenauigkeit
         )  . $per . $basePriceUnit->cVPEEinheit;
-        $this->cStaffelpreisLocalizedVPE3[1] = gibPreisStringLocalized(
+        $this->cStaffelpreisLocalizedVPE3[1] = Preise::getLocalizedPriceString(
             $basePriceUnit->fBasePreis,
             $currency,
             1,
             $nGenauigkeit
         )  . $per . $basePriceUnit->cVPEEinheit;
-        $this->fStaffelpreisVPE3[0]          = berechneBrutto(
+        $this->fStaffelpreisVPE3[0]          = TaxHelper::getGross(
             $basePriceUnit->fBasePreis,
-            gibUst($this->kSteuerklasse),
+            TaxHelper::getSalesTax($this->kSteuerklasse),
             $nGenauigkeit
         );
         $this->fStaffelpreisVPE3[1]          = $basePriceUnit->fBasePreis;
 
         $basePriceUnit = ArtikelHelper::getBasePriceUnit($this, $this->Preise->fPreis4, $this->Preise->nAnzahl4);
 
-        $this->cStaffelpreisLocalizedVPE4[0] = gibPreisStringLocalized(
-            berechneBrutto(
+        $this->cStaffelpreisLocalizedVPE4[0] = Preise::getLocalizedPriceString(
+            TaxHelper::getGross(
                 $basePriceUnit->fBasePreis,
-                gibUst($this->kSteuerklasse),
+                TaxHelper::getSalesTax($this->kSteuerklasse),
                 $nGenauigkeit
             ),
             $currency,
             1,
             $nGenauigkeit
         )  . $per . $basePriceUnit->cVPEEinheit;
-        $this->cStaffelpreisLocalizedVPE4[1] = gibPreisStringLocalized(
+        $this->cStaffelpreisLocalizedVPE4[1] = Preise::getLocalizedPriceString(
             $basePriceUnit->fBasePreis,
             $currency,
             1,
             $nGenauigkeit
         )  . $per . $basePriceUnit->cVPEEinheit;
-        $this->fStaffelpreisVPE4[0]          = berechneBrutto(
+        $this->fStaffelpreisVPE4[0]          = TaxHelper::getGross(
             $basePriceUnit->fBasePreis,
-            gibUst($this->kSteuerklasse),
+            TaxHelper::getSalesTax($this->kSteuerklasse),
             $nGenauigkeit
         );
         $this->fStaffelpreisVPE4[1]          = $basePriceUnit->fBasePreis;
 
         $basePriceUnit = ArtikelHelper::getBasePriceUnit($this, $this->Preise->fPreis5, $this->Preise->nAnzahl5);
 
-        $this->cStaffelpreisLocalizedVPE5[0] = gibPreisStringLocalized(
-            berechneBrutto(
+        $this->cStaffelpreisLocalizedVPE5[0] = Preise::getLocalizedPriceString(
+            TaxHelper::getGross(
                 $basePriceUnit->fBasePreis,
-                gibUst($this->kSteuerklasse),
+                TaxHelper::getSalesTax($this->kSteuerklasse),
                 $nGenauigkeit
             ),
             $currency,
             1,
             $nGenauigkeit
         )  . $per . $basePriceUnit->cVPEEinheit;
-        $this->cStaffelpreisLocalizedVPE5[1] = gibPreisStringLocalized(
+        $this->cStaffelpreisLocalizedVPE5[1] = Preise::getLocalizedPriceString(
             $basePriceUnit->fBasePreis,
             $currency,
             1,
             $nGenauigkeit
         )  . $per . $basePriceUnit->cVPEEinheit;
-        $this->fStaffelpreisVPE5[0]          = berechneBrutto(
+        $this->fStaffelpreisVPE5[0]          = TaxHelper::getGross(
             $basePriceUnit->fBasePreis,
-            gibUst($this->kSteuerklasse),
+            TaxHelper::getSalesTax($this->kSteuerklasse),
             $nGenauigkeit
         );
         $this->fStaffelpreisVPE5[1]          = $basePriceUnit->fBasePreis;
@@ -4782,17 +4782,17 @@ class Artikel
             $basePriceUnit = ArtikelHelper::getBasePriceUnit($this, $fPreis, $this->Preise->nAnzahl_arr[$key]);
 
             $this->cStaffelpreisLocalizedVPE_arr[] = [
-                gibPreisStringLocalized(
-                    berechneBrutto(
+                Preise::getLocalizedPriceString(
+                    TaxHelper::getGross(
                         $basePriceUnit->fBasePreis,
-                        gibUst($this->kSteuerklasse),
+                        TaxHelper::getSalesTax($this->kSteuerklasse),
                         $nGenauigkeit
                     ),
                     $currency,
                     1,
                     $nGenauigkeit
                 )  . $per . $basePriceUnit->cVPEEinheit,
-                gibPreisStringLocalized(
+                Preise::getLocalizedPriceString(
                     $basePriceUnit->fBasePreis,
                     $currency,
                     1,
@@ -4801,9 +4801,9 @@ class Artikel
             ];
 
             $this->fStaffelpreisVPE_arr[] = [
-                berechneBrutto(
+                TaxHelper::getGross(
                     $basePriceUnit->fBasePreis,
-                    gibUst($this->kSteuerklasse),
+                    TaxHelper::getSalesTax($this->kSteuerklasse),
                     $nGenauigkeit
                 ),
                 $basePriceUnit->fBasePreis,
@@ -4822,7 +4822,7 @@ class Artikel
      */
     public function setzeSprache(int $kSprache)
     {
-        $oSprache = gibStandardsprache(false);
+        $oSprache = Sprache::getDefaultLanguage(false);
         if ($this->kArtikel > 0 && $kSprache !== $oSprache->kSprache) {
             //auf aktuelle Sprache setzen
             $objSprache = Shop::Container()->getDB()->query(
@@ -4889,14 +4889,14 @@ class Artikel
      */
     public function gibAttributWertNachName($name, $kSprache = 0)
     {
-        if ($this->kArtikel === null || $this->kArtikel <= 0 || standardspracheAktiv()) {
+        if ($this->kArtikel === null || $this->kArtikel <= 0 || Sprache::isDefaultLanguageActive()) {
             return false;
         }
         if (!$kSprache) {
             if (isset($_SESSION['kSprache'])) {
                 $kSprache = $_SESSION['kSprache'];
             } else {
-                $oSprache = gibStandardsprache();
+                $oSprache = Sprache::getDefaultLanguage();
                 $kSprache = $oSprache->kSprache;
             }
         }
@@ -5086,26 +5086,26 @@ class Artikel
             return $this;
         }
         if (Session::CustomerGroup()->isMerchant()) {
-            $this->fUVP                            /= (1 + gibUst($this->kSteuerklasse) / 100);
+            $this->fUVP                            /= (1 + TaxHelper::getSalesTax($this->kSteuerklasse) / 100);
             $this->SieSparenX->anzeigen             = $anzeigen;
             $this->SieSparenX->nProzent             = round(
                 (($this->fUVP - $this->Preise->fVKNetto) * 100) / $this->fUVP,
                 2
             );
             $this->SieSparenX->fSparbetrag          = $this->fUVP - $this->Preise->fVKNetto;
-            $this->SieSparenX->cLocalizedSparbetrag = gibPreisStringLocalized($this->SieSparenX->fSparbetrag);
+            $this->SieSparenX->cLocalizedSparbetrag = Preise::getLocalizedPriceString($this->SieSparenX->fSparbetrag);
         } else {
             $this->SieSparenX->anzeigen             = $anzeigen;
             $this->SieSparenX->nProzent             = round(
-                (($this->fUVP - berechneBrutto($this->Preise->fVKNetto, gibUst($this->kSteuerklasse))) * 100)
+                (($this->fUVP - TaxHelper::getGross($this->Preise->fVKNetto, TaxHelper::getSalesTax($this->kSteuerklasse))) * 100)
                 / $this->fUVP,
                 2
             );
-            $this->SieSparenX->fSparbetrag          = $this->fUVP - berechneBrutto(
+            $this->SieSparenX->fSparbetrag          = $this->fUVP - TaxHelper::getGross(
                 $this->Preise->fVKNetto,
-                gibUst($this->kSteuerklasse)
+                TaxHelper::getSalesTax($this->kSteuerklasse)
             );
-            $this->SieSparenX->cLocalizedSparbetrag = gibPreisStringLocalized($this->SieSparenX->fSparbetrag);
+            $this->SieSparenX->cLocalizedSparbetrag = Preise::getLocalizedPriceString($this->SieSparenX->fSparbetrag);
         }
 
         return $this;
@@ -5198,7 +5198,7 @@ class Artikel
         //Language-Fallback fuer Exportformate - #6663.
         //@todo: Abfrage der aktuellen Sprache in Session-Class oder System-Class auslagern
         if ($languageISO === null && !isset($_SESSION['cISOSprache'])) {
-            $oSprache                = gibStandardsprache(true);
+            $oSprache                = Sprache::getDefaultLanguage(true);
             $_SESSION['cISOSprache'] = $oSprache->cISO;
         }
         if ($purchaseQuantity !== null) {
@@ -5807,7 +5807,7 @@ class Artikel
         }
         $NettoPreise = (bool)$NettoPreise;
         $inklexkl    = Shop::Lang()->get($NettoPreise === true ? 'excl' : 'incl', 'productDetails');
-        $mwst        = $this->mwstFormat(gibUst($this->kSteuerklasse));
+        $mwst        = $this->mwstFormat(TaxHelper::getSalesTax($this->kSteuerklasse));
         $ust         = '';
         $versand     = '';
         if ($this->conf['global']['global_versandhinweis'] === 'zzgl') {
@@ -6051,7 +6051,7 @@ class Artikel
             $exclude      = Shop::Container()->getDB()->select(
                 'texcludekeywords',
                 'cISOSprache',
-                $_SESSION['cISOSprache'] ?? gibStandardsprache()->cISO
+                $_SESSION['cISOSprache'] ?? Sprache::getDefaultLanguage()->cISO
             );
             $excludeWords = isset($exclude->cKeywords)
                 ? explode(' ', $exclude->cKeywords)
@@ -6220,7 +6220,7 @@ class Artikel
                 $kSprache = $_SESSION['kSprache'];
             }
             if (!$kSprache) {
-                $oSprache = gibStandardsprache();
+                $oSprache = Sprache::getDefaultLanguage();
                 $kSprache = $oSprache->kSprache;
             }
         }
@@ -6306,7 +6306,7 @@ class Artikel
         return [
             'net'                   => $net,
             'text'                  => $taxText,
-            'tax'                   => $this->mwstFormat(gibUst($this->kSteuerklasse)),
+            'tax'                   => $this->mwstFormat(TaxHelper::getSalesTax($this->kSteuerklasse)),
             'shippingFreeCountries' => $this->gibMwStVersandLaenderString(),
             'countries'             => $this->gibMwStVersandLaenderString(false),
             'shippingClass'         => $this->cVersandklasse
@@ -6318,7 +6318,7 @@ class Artikel
      */
     public function showMatrix(): bool
     {
-        if (verifyGPCDataInteger('quickView') === 0
+        if (RequestHelper::verifyGPCDataInt('quickView') === 0
             && !$this->kArtikelVariKombi
             && !$this->kVariKindArtikel
             && !$this->nErscheinendesProdukt

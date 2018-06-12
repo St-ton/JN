@@ -336,7 +336,7 @@ class Wunschliste
                         100);
             }
 
-            $wlPosition->cPreis = gibPreisStringLocalized($fPreis, Session::Currency());
+            $wlPosition->cPreis = Preise::getLocalizedPriceString($fPreis, Session::Currency());
             $searchResults[$i]  = $wlPosition;
         }
 
@@ -640,11 +640,11 @@ class Wunschliste
      */
     public static function checkeParameters(): int
     {
-        $cURLID = StringHandler::filterXSS(Shop::Container()->getDB()->escape(verifyGPDataString('wlid')));
+        $cURLID = StringHandler::filterXSS(RequestHelper::verifyGPDataString('wlid'));
 
         if (strlen($cURLID) > 0) {
             $campaing = new Kampagne(KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
-            $id       = ($campaing->kKampagne > 0)
+            $id       = $campaing->kKampagne > 0
                 ? ($cURLID . '&' . $campaing->cParameter . '=' . $campaing->cWert)
                 : $cURLID;
             $keys     = ['nOeffentlich', 'cURLID'];

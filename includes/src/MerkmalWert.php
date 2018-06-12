@@ -135,7 +135,7 @@ class MerkmalWert
 
             return $this;
         }
-        $kStandardSprache = gibStandardsprache()->kSprache;
+        $kStandardSprache = Sprache::getDefaultLanguage()->kSprache;
         if ($kSprache !== $kStandardSprache) {
             $cSelect = "COALESCE(fremdSprache.kSprache, standardSprache.kSprache) AS kSprache, 
                         COALESCE(fremdSprache.cWert, standardSprache.cWert) AS cWert,
@@ -211,12 +211,12 @@ class MerkmalWert
         }
         $kSprache = Shop::getLanguage();
         if (!$kSprache) {
-            $oSprache = gibStandardsprache();
+            $oSprache = Sprache::getDefaultLanguage();
             if (isset($oSprache->kSprache) && $oSprache->kSprache > 0) {
                 $kSprache = (int)$oSprache->kSprache;
             }
         }
-        $kStandardSprache = (int)gibStandardsprache()->kSprache;
+        $kStandardSprache = (int)Sprache::getDefaultLanguage()->kSprache;
         if ($kSprache !== $kStandardSprache) {
             $cSelect = "COALESCE(fremdSprache.kSprache, standardSprache.kSprache) AS kSprache, 
                         COALESCE(fremdSprache.cWert, standardSprache.cWert) AS cWert,

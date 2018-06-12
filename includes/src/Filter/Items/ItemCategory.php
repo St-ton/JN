@@ -164,7 +164,7 @@ class ItemCategory extends BaseCategory
         $cSQLKategorieSprache        = new \stdClass();
         $cSQLKategorieSprache->cJOIN = '';
         $select                      = ['tkategorie.kKategorie', 'tkategorie.nSort'];
-        if (!standardspracheAktiv()) {
+        if (!\Sprache::isDefaultLanguageActive()) {
             $select[]       = "IF(tkategoriesprache.cName = '', tkategorie.cName, tkategoriesprache.cName) AS cName";
             $state->addJoin((new FilterJoin())
                 ->setComment('join5 from ' . __METHOD__)

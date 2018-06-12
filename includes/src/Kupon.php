@@ -762,4 +762,43 @@ class Kupon
 
         return $cCode;
     }
+
+    /**
+     * @former altenKuponNeuBerechnen()
+     */
+    public static function reCheck()
+    {
+        // Wenn Kupon vorhanden und prozentual auf ganzen Warenkorb, dann verwerfen und neu anlegen
+        if (isset($_SESSION['Kupon']) && $_SESSION['Kupon']->cWertTyp === 'prozent') {
+            $oKupon = $_SESSION['Kupon'];
+            unset($_SESSION['Kupon']);
+            Session::Cart()->setzePositionsPreise();
+            require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
+            kuponAnnehmen($oKupon);
+        }
+    }
+
+    /**
+     * @former resetNeuKundenKupon()
+     */
+    public static function resetNewCustomerCoupon()
+    {
+        if (Session::Customer()->isLoggedIn()) {
+            $hash = Kuponneukunde::Hash(
+                null,
+                trim($_SESSION['Kunde']->cNachname),
+                trim($_SESSION['Kunde']->cStrasse),
+                null,
+                trim($_SESSION['Kunde']->cPLZ),
+                trim($_SESSION['Kunde']->cOrt),
+                trim($_SESSION['Kunde']->cLand)
+            );
+            Shop::Container()->getDB()->delete('tkuponneukunde', ['cDatenHash','cVerwendet'], [$hash,'N']);
+        }
+
+        unset($_SESSION['NeukundenKupon'], $_SESSION['NeukundenKuponAngenommen']);
+        Session::Cart()
+               ->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
+               ->setzePositionsPreise();
+    }
 }

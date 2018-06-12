@@ -78,7 +78,7 @@ class BaseAttribute extends AbstractFilter
         $oSQL->cMMSelect = 'tmerkmal.cName';
         $oSQL->cMMJOIN   = '';
         $oSQL->cMMWhere  = '';
-        if (\Shop::getLanguage() > 0 && !standardspracheAktiv()) {
+        if (\Shop::getLanguage() > 0 && !\Sprache::isDefaultLanguageActive()) {
             $oSQL->cMMSelect = 'tmerkmalsprache.cName, tmerkmal.cName AS cMMName';
             $oSQL->cMMJOIN   = ' JOIN tmerkmalsprache 
                                      ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal

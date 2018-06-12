@@ -37,7 +37,7 @@ function gibMaxPrioSpalte($exclude)
     $cTabellenPrefix = 'tartikel.';
     $conf            = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
 
-    if (!standardspracheAktiv()) {
+    if (!Sprache::isDefaultLanguageActive()) {
         $cTabellenPrefix = 'tartikelsprache.';
     }
     if (!in_array($cTabellenPrefix . 'cName', $exclude, true) && $conf['artikeluebersicht']['suche_prio_name'] > $max) {
@@ -131,7 +131,7 @@ function suchanfragenSpeichern($cSuche, $nAnzahlTreffer, $bEchteSuche = false, $
 function mappingBeachten($Suchausdruck, $kSpracheExt = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $kSprache = ((int)$kSpracheExt > 0) ? (int)$kSpracheExt : getDefaultLanguageID();
+    $kSprache = ((int)$kSpracheExt > 0) ? (int)$kSpracheExt : Sprache::getDefaultLanguage(true)->kSprache;
     if (strlen($Suchausdruck) > 0) {
         $SuchausdruckmappingTMP = Shop::Container()->getDB()->select(
             'tsuchanfragemapping',

@@ -332,7 +332,7 @@ class Plugin
      */
     public function loadFromDB(int $kPlugin, bool $invalidateCache = false)
     {
-        $cacheID = CACHING_GROUP_PLUGIN . '_' . $kPlugin . '_' . pruefeSSL() . '_' . Shop::getLanguage();
+        $cacheID = CACHING_GROUP_PLUGIN . '_' . $kPlugin . '_' . RequestHelper::checkSSL() . '_' . Shop::getLanguage();
         if ($invalidateCache === true) {
             //plugin options were save in admin backend, so invalidate the cache
             Shop::Cache()->flush('hook_list');
@@ -485,7 +485,7 @@ class Plugin
         if (isset($_SESSION['cISOSprache']) && strlen($_SESSION['cISOSprache']) > 0) {
             $cISOSprache = $_SESSION['cISOSprache'];
         } else {
-            $oSprache = gibStandardsprache();
+            $oSprache = Sprache::getDefaultLanguage();
             if (isset($oSprache->cISO) && strlen($oSprache->cISO) > 0) {
                 $cISOSprache = $oSprache->cISO;
             }

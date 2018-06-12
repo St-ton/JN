@@ -380,23 +380,23 @@ function gibPreisStringLocalizedSmarty($params, $smarty)
             : 2;
 
         if ((int)$params['nNettoPreise'] === 1) {
-            $oAufpreis->cAufpreisLocalized = gibPreisStringLocalized($fAufpreisNetto);
-            $oAufpreis->cPreisInklAufpreis = gibPreisStringLocalized($fAufpreisNetto + $fVKNetto);
+            $oAufpreis->cAufpreisLocalized = Preise::getLocalizedPriceString($fAufpreisNetto);
+            $oAufpreis->cPreisInklAufpreis = Preise::getLocalizedPriceString($fAufpreisNetto + $fVKNetto);
             $oAufpreis->cAufpreisLocalized = ($fAufpreisNetto > 0)
                 ? ('+ ' . $oAufpreis->cAufpreisLocalized)
                 : str_replace('-', '- ', $oAufpreis->cAufpreisLocalized);
 
             if ($fVPEWert > 0) {
-                $oAufpreis->cPreisVPEWertAufpreis     = gibPreisStringLocalized(
+                $oAufpreis->cPreisVPEWertAufpreis     = Preise::getLocalizedPriceString(
                         $fAufpreisNetto / $fVPEWert,
                         Session::Currency()->getCode(),
-                        1,
+                        true,
                         $nGenauigkeit
                     ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
-                $oAufpreis->cPreisVPEWertInklAufpreis = gibPreisStringLocalized(
+                $oAufpreis->cPreisVPEWertInklAufpreis = Preise::getLocalizedPriceString(
                         ($fAufpreisNetto + $fVKNetto) / $fVPEWert,
                         Session::Currency()->getCode(),
-                        1,
+                        true,
                         $nGenauigkeit
                     ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
 
@@ -406,29 +406,30 @@ function gibPreisStringLocalizedSmarty($params, $smarty)
                     $oAufpreis->cPreisVPEWertInklAufpreis;
             }
         } else {
-            $oAufpreis->cAufpreisLocalized = gibPreisStringLocalized(
-                berechneBrutto($fAufpreisNetto, $_SESSION['Steuersatz'][$kSteuerklasse], 4)
+            $oAufpreis->cAufpreisLocalized = Preise::getLocalizedPriceString(
+                TaxHelper::getGross($fAufpreisNetto, $_SESSION['Steuersatz'][$kSteuerklasse], 4)
             );
-            $oAufpreis->cPreisInklAufpreis = gibPreisStringLocalized(
-                berechneBrutto($fAufpreisNetto + $fVKNetto, $_SESSION['Steuersatz'][$kSteuerklasse], 4)
+            $oAufpreis->cPreisInklAufpreis = Preise::getLocalizedPriceString(
+                TaxHelper::getGross($fAufpreisNetto + $fVKNetto, $_SESSION['Steuersatz'][$kSteuerklasse], 4)
             );
             $oAufpreis->cAufpreisLocalized = ($fAufpreisNetto > 0)
                 ? ('+ ' . $oAufpreis->cAufpreisLocalized)
                 : str_replace('-', '- ', $oAufpreis->cAufpreisLocalized);
 
             if ($fVPEWert > 0) {
-                $oAufpreis->cPreisVPEWertAufpreis     = gibPreisStringLocalized(
-                        berechneBrutto($fAufpreisNetto / $fVPEWert, $_SESSION['Steuersatz'][$kSteuerklasse]),
+                $oAufpreis->cPreisVPEWertAufpreis     = Preise::getLocalizedPriceString(
+                        TaxHelper::getGross($fAufpreisNetto / $fVPEWert, $_SESSION['Steuersatz'][$kSteuerklasse]),
                         Session::Currency()->getCode(),
-                        1, $nGenauigkeit
+                        true,
+                        $nGenauigkeit
                     ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
-                $oAufpreis->cPreisVPEWertInklAufpreis = gibPreisStringLocalized(
-                        berechneBrutto(
+                $oAufpreis->cPreisVPEWertInklAufpreis = Preise::getLocalizedPriceString(
+                        TaxHelper::getGross(
                             ($fAufpreisNetto + $fVKNetto) / $fVPEWert,
                             $_SESSION['Steuersatz'][$kSteuerklasse]
                         ),
                         Session::Currency()->getCode(),
-                        1,
+                        true,
                         $nGenauigkeit
                     ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
 

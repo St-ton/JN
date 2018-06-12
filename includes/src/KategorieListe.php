@@ -268,7 +268,7 @@ class KategorieListe
                 self::$wasModified = true;
             }
             //ist nicht im cache, muss holen
-            $cSortSQLName = (!standardspracheAktiv())
+            $cSortSQLName = (!Sprache::isDefaultLanguageActive())
                 ? 'tkategoriesprache.cName, '
                 : '';
             if (!$kKategorie) {
@@ -299,7 +299,7 @@ class KategorieListe
 
             $categoryList['kKategorieVonUnterkategorien_arr'][$kKategorie] = [];
             $imageBaseURL                                                  = Shop::getImageBaseURL();
-            $oSpracheTmp                                                   = gibStandardsprache();
+            $oSpracheTmp                                                   = Sprache::getDefaultLanguage();
             foreach ($oKategorie_arr as $i => $oKategorie) {
                 // Leere Kategorien ausblenden?
                 if (!$this->nichtLeer($oKategorie->kKategorie, $kKundengruppe)) {
@@ -345,7 +345,7 @@ class KategorieListe
                     $oKategorie->cURLFull = baueURL($oKategorie, URLART_KATEGORIE, 0, true, true);
                 }
                 // lokalisieren
-                if ($kSprache > 0 && !standardspracheAktiv() && strlen($oKategorie->cName_spr) > 0) {
+                if ($kSprache > 0 && !Sprache::isDefaultLanguageActive() && strlen($oKategorie->cName_spr) > 0) {
                     $oKategorie->cName         = $oKategorie->cName_spr;
                     $oKategorie->cBeschreibung = $oKategorie->cBeschreibung_spr;
                 }
@@ -420,7 +420,7 @@ class KategorieListe
         if ((int)$conf['global']['kategorien_anzeigefilter'] === EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_ALLE) {
             return true;
         }
-        $oSpracheTmp = gibStandardsprache();
+        $oSpracheTmp = Sprache::getDefaultLanguage();
         $kSprache    = (int)$oSpracheTmp->kSprache;
         if ((int)$conf['global']['kategorien_anzeigefilter'] === EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE) {
             $categoryList = self::getCategoryList($kKundengruppe, $kSprache);

@@ -473,7 +473,7 @@ class Bestellung
                 $nNettoPreis = 1;
             }
         }
-        $this->cBestellwertLocalized = gibPreisStringLocalized($warenwert->wert ?? 0, $htmlWaehrung);
+        $this->cBestellwertLocalized = Preise::getLocalizedPriceString($warenwert->wert ?? 0, $htmlWaehrung);
         $this->Status                = lang_bestellstatus($this->cStatus);
         if ($this->kWaehrung > 0) {
             $this->Waehrung = Shop::Container()->getDB()->select('twaehrung', 'kWaehrung', (int)$this->kWaehrung);
@@ -483,7 +483,7 @@ class Bestellung
             if ($disableFactor === true) {
                 $this->Waehrung->fFaktor = 1;
             }
-            $this->Steuerpositionen = gibAlteSteuerpositionen($this->Positionen, $nNettoPreis, $htmlWaehrung, $this->Waehrung);
+            $this->Steuerpositionen = TaxHelper::getOldTaxPositions($this->Positionen, $nNettoPreis, $htmlWaehrung, $this->Waehrung);
             if ($this->kZahlungsart > 0) {
                 require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
                 $this->Zahlungsart = Shop::Container()->getDB()->select('tzahlungsart', 'kZahlungsart', (int)$this->kZahlungsart);
@@ -502,7 +502,7 @@ class Bestellung
         if ((float)$this->fGuthaben) {
             $this->GuthabenNutzen = 1;
         }
-        $this->GutscheinLocalized = gibPreisStringLocalized($this->fGuthaben, $htmlWaehrung);
+        $this->GutscheinLocalized = Preise::getLocalizedPriceString($this->fGuthaben, $htmlWaehrung);
         $summe                    = 0;
         $this->fWarensumme        = 0;
         $this->fVersand           = 0;
@@ -511,7 +511,7 @@ class Bestellung
         $defaultOptions           = Artikel::getDefaultOptions();
         $kSprache                 = Shop::getLanguage();
         if (!$kSprache) {
-            $oSprache             = gibStandardsprache();
+            $oSprache             = Sprache::getDefaultLanguage();
             $kSprache             = (int)$oSprache->kSprache;
             $_SESSION['kSprache'] = $kSprache;
         }
@@ -553,15 +553,15 @@ class Bestellung
                     );
                     foreach ($position->WarenkorbPosEigenschaftArr as $o => $attribute) {
                         if ($attribute->fAufpreis) {
-                            $attribute->cAufpreisLocalized[0] = gibPreisStringLocalized(
-                                berechneBrutto(
+                            $attribute->cAufpreisLocalized[0] = Preise::getLocalizedPriceString(
+                                TaxHelper::getGross(
                                     $attribute->fAufpreis,
                                     $position->fMwSt
                                 ),
                                 $this->Waehrung,
                                 $htmlWaehrung
                             );
-                            $attribute->cAufpreisLocalized[1] = gibPreisStringLocalized(
+                            $attribute->cAufpreisLocalized[1] = Preise::getLocalizedPriceString(
                                 $attribute->fAufpreis,
                                 $this->Waehrung,
                                 $htmlWaehrung
@@ -584,22 +584,22 @@ class Bestellung
             }
             $summe += $position->fPreis * $position->nAnzahl;
             if ($this->kWarenkorb > 0) {
-                $position->cGesamtpreisLocalized[0] = gibPreisStringLocalized(
-                    berechneBrutto(
+                $position->cGesamtpreisLocalized[0] = Preise::getLocalizedPriceString(
+                    TaxHelper::getGross(
                         $position->fPreis * $position->nAnzahl,
                         $position->fMwSt
                     ),
                     $this->Waehrung, $htmlWaehrung
                 );
-                $position->cGesamtpreisLocalized[1] = gibPreisStringLocalized(
+                $position->cGesamtpreisLocalized[1] = Preise::getLocalizedPriceString(
                     $position->fPreis * $position->nAnzahl,
                     $this->Waehrung, $htmlWaehrung
                 );
-                $position->cEinzelpreisLocalized[0] = gibPreisStringLocalized(
-                    berechneBrutto($position->fPreis, $position->fMwSt),
+                $position->cEinzelpreisLocalized[0] = Preise::getLocalizedPriceString(
+                    TaxHelper::getGross($position->fPreis, $position->fMwSt),
                     $this->Waehrung, $htmlWaehrung
                 );
-                $position->cEinzelpreisLocalized[1] = gibPreisStringLocalized(
+                $position->cEinzelpreisLocalized[1] = Preise::getLocalizedPriceString(
                     $position->fPreis,
                     $this->Waehrung,
                     $htmlWaehrung
@@ -617,8 +617,8 @@ class Bestellung
                     foreach ($this->Positionen as $nPos => $_pos) {
                         if ($position->cUnique === $_pos->cUnique) {
                             $fPreisNetto  += $_pos->fPreis * $_pos->nAnzahl;
-                            $ust          = gibUst($_pos->kSteuerklasse ?? null);
-                            $fPreisBrutto += berechneBrutto($_pos->fPreis * $_pos->nAnzahl, $ust);
+                            $ust          = TaxHelper::getSalesTax($_pos->kSteuerklasse ?? null);
+                            $fPreisBrutto += TaxHelper::getGross($_pos->fPreis * $_pos->nAnzahl, $ust);
                             if ((int)$_pos->kKonfigitem === 0 &&
                                 is_string($_pos->cUnique) &&
                                 !empty($_pos->cUnique)
@@ -631,19 +631,19 @@ class Bestellung
                         $oVaterPos = $this->Positionen[$nVaterPos];
                         if (is_object($oVaterPos)) {
                             $position->nAnzahlEinzel       = $position->nAnzahl / $oVaterPos->nAnzahl;
-                            $oVaterPos->cKonfigpreisLocalized[0]       = gibPreisStringLocalized(
+                            $oVaterPos->cKonfigpreisLocalized[0]       = Preise::getLocalizedPriceString(
                                 $fPreisBrutto,
                                 $this->Waehrung
                             );
-                            $oVaterPos->cKonfigpreisLocalized[1]       = gibPreisStringLocalized(
+                            $oVaterPos->cKonfigpreisLocalized[1]       = Preise::getLocalizedPriceString(
                                 $fPreisNetto,
                                 $this->Waehrung
                             );
-                            $oVaterPos->cKonfigeinzelpreisLocalized[0] = gibPreisStringLocalized(
+                            $oVaterPos->cKonfigeinzelpreisLocalized[0] = Preise::getLocalizedPriceString(
                                 $fPreisBrutto / $oVaterPos->nAnzahl,
                                 $this->Waehrung
                             );
-                            $oVaterPos->cKonfigeinzelpreisLocalized[1] = gibPreisStringLocalized(
+                            $oVaterPos->cKonfigeinzelpreisLocalized[1] = Preise::getLocalizedPriceString(
                                 $fPreisNetto / $oVaterPos->nAnzahl,
                                 $this->Waehrung
                             );
@@ -658,8 +658,8 @@ class Bestellung
             $position->nOffenGesamt        = $position->nAnzahl;
         }
 
-        $this->WarensummeLocalized[0]     = gibPreisStringLocalized($this->fGesamtsumme, $this->Waehrung, $htmlWaehrung);
-        $this->WarensummeLocalized[1]     = gibPreisStringLocalized($summe + $this->fGuthaben, $this->Waehrung, $htmlWaehrung);
+        $this->WarensummeLocalized[0]     = Preise::getLocalizedPriceString($this->fGesamtsumme, $this->Waehrung, $htmlWaehrung);
+        $this->WarensummeLocalized[1]     = Preise::getLocalizedPriceString($summe + $this->fGuthaben, $this->Waehrung, $htmlWaehrung);
         $this->fGesamtsummeNetto          = $summe + $this->fGuthaben;
         $this->fWarensummeKundenwaehrung  = ($this->fWarensumme + $this->fGuthaben) * $this->fWaehrungsFaktor;
         $this->fVersandKundenwaehrung     = $this->fVersand * $this->fWaehrungsFaktor;

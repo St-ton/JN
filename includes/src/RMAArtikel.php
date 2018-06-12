@@ -74,7 +74,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
             }
             // Load only product name
             if ($bProductName) {
-                $oSprache = gibStandardsprache();
+                $oSprache = Sprache::getDefaultLanguage();
                 if (($kSprache > 0 && $kSprache == $oSprache->kSprache) || !$kSprache) {
                     $oObj = Shop::Container()->getDB()->query(
                         "SELECT cName 

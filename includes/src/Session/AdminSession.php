@@ -101,7 +101,7 @@ class AdminSession
             setcookie(session_name(), session_id(), $exp, $path, $domain, $secure, $httpOnly);
         }
         if (!isset($_SESSION['jtl_token'])) {
-            $_SESSION['jtl_token'] = generateCSRFToken();
+            $_SESSION['jtl_token'] = \Shop::Container()->getCryptoService()->randomString(32)();
         }
         if (!isset($_SESSION['kSprache'])) {
             $lang                    = \Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');

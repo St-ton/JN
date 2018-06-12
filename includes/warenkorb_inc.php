@@ -263,16 +263,15 @@ function uebernehmeWarenkorbAenderungen()
         if (isset($_SESSION['Kupon'])
             && $_SESSION['Kupon']->cWertTyp === 'prozent'
             && $_SESSION['Kupon']->nGanzenWKRabattieren == 0
+            && $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true) >= $_SESSION['Kupon']->fMindestbestellwert
         ) {
-            if ($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true) >= $_SESSION['Kupon']->fMindestbestellwert) {
-                $oKuponTmp = $_SESSION['Kupon'];
-            }
+            $oKuponTmp = $_SESSION['Kupon'];
         }
         loescheAlleSpezialPos();
         if (isset($oKuponTmp->kKupon) && $oKuponTmp->kKupon > 0) {
             $_SESSION['Kupon'] = $oKuponTmp;
             foreach ($cart->PositionenArr as $i => $oWKPosition) {
-                $cart->PositionenArr[$i] = checkeKuponWKPos($oWKPosition, $_SESSION['Kupon']);
+                $cart->PositionenArr[$i] = WarenkorbHelper::checkCouponCartPositions($oWKPosition, $_SESSION['Kupon']);
             }
         }
         plausiNeukundenKupon();
@@ -364,8 +363,8 @@ function loescheAlleSpezialPos()
         $_SESSION['TrustedShops'],
         $_SESSION['Zahlungsart']
     );
-    resetNeuKundenKupon();
-    altenKuponNeuBerechnen();
+    Kupon::resetNewCustomerCoupon();
+    Kupon::reCheck();
 
     executeHook(HOOK_WARENKORB_LOESCHE_ALLE_SPEZIAL_POS);
 
@@ -462,7 +461,7 @@ function gibGratisGeschenke(array $Einstellungen)
                     || !is_array($oArtikel->Variationen)
                     || count($oArtikel->Variationen) === 0)
             ) {
-                $oArtikel->cBestellwert = gibPreisStringLocalized((float)$oArtikelGeschenkeTMP->cWert);
+                $oArtikel->cBestellwert = Preise::getLocalizedPriceString((float)$oArtikelGeschenkeTMP->cWert);
                 $oArtikelGeschenke_arr[] = $oArtikel;
             }
         }

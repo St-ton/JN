@@ -842,7 +842,7 @@ class ProductFilter
                     EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
             ]);
         }
-        $this->nSeite = max(1, verifyGPCDataInteger('seite'));
+        $this->nSeite = max(1, \RequestHelper::verifyGPCDataInt('seite'));
         foreach ($this->getCustomFilters() as $filter) {
             $filterParam = $filter->getUrlParam();
             $filterClass = $filter->getClassName();
@@ -854,7 +854,7 @@ class ProductFilter
                 // escape all input values
                 if (($filter->getType()->equals(Type::OR()) && is_array($_GET[$filterParam]))
                     || ($filter->getType()->equals(Type::AND())
-                        && (verifyGPCDataInteger($filterParam) > 0 || verifyGPDataString($filterParam) !== ''))
+                        && (\RequestHelper::verifyGPCDataInt($filterParam) > 0 || \RequestHelper::verifyGPDataString($filterParam) !== ''))
                 ) {
                     $filterValue = is_array($_GET[$filterParam])
                         ? array_map([\Shop::Container()->getDB(), 'realEscape'], $_GET[$filterParam])

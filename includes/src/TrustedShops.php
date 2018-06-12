@@ -407,17 +407,17 @@ class TrustedShops
             $_SESSION['Warenkorb'] = new Warenkorb();
             foreach ($this->oKaeuferschutzProdukte->item as $i => $oItem) {
                 $this->oKaeuferschutzProdukte->item[$i]->protectedAmountDecimalLocalized =
-                    gibPreisStringLocalized($oItem->protectedAmountDecimal);
+                    Preise::getLocalizedPriceString($oItem->protectedAmountDecimal);
 
                 if (isset($_SESSION['Warenkorb'], $_SESSION['Steuersatz'])
                     && (!Session::CustomerGroup()->isMerchant())
                 ) {
-                    $this->oKaeuferschutzProdukte->item[$i]->grossFeeLocalized = gibPreisStringLocalized($oItem->netFee *
+                    $this->oKaeuferschutzProdukte->item[$i]->grossFeeLocalized = Preise::getLocalizedPriceString($oItem->netFee *
                         ((100 + (float)$_SESSION['Steuersatz'][Session::Cart()->gibVersandkostenSteuerklasse($cLandISO)]) / 100));
                     $this->oKaeuferschutzProdukte->item[$i]->cFeeTxt           = Shop::Lang()->get('incl', 'productDetails') .
                         ' ' . Shop::Lang()->get('vat', 'productDetails');
                 } else {
-                    $this->oKaeuferschutzProdukte->item[$i]->grossFeeLocalized = gibPreisStringLocalized($oItem->netFee);
+                    $this->oKaeuferschutzProdukte->item[$i]->grossFeeLocalized = Preise::getLocalizedPriceString($oItem->netFee);
                     $this->oKaeuferschutzProdukte->item[$i]->cFeeTxt           = Shop::Lang()->get('excl', 'productDetails') .
                         ' ' . Shop::Lang()->get('vat', 'productDetails');
                 }
@@ -503,7 +503,7 @@ class TrustedShops
                     if (!isset($this->oKaeuferschutzProdukte->item[$i])) {
                         $this->oKaeuferschutzProdukte->item[$i] = new stdClass();
                     }
-                    $this->oKaeuferschutzProdukte->item[$i]->protectedAmountDecimalLocalized = gibPreisStringLocalized($nWert);
+                    $this->oKaeuferschutzProdukte->item[$i]->protectedAmountDecimalLocalized = Preise::getLocalizedPriceString($nWert);
                     $this->oKaeuferschutzProdukte->item[$i]->id                              = $oItem->nID;
                     $this->oKaeuferschutzProdukte->item[$i]->currency                        = $oItem->cWaehrung;
                     $this->oKaeuferschutzProdukte->item[$i]->grossFee                        = $oItem->fBrutto;
@@ -512,7 +512,7 @@ class TrustedShops
                     $this->oKaeuferschutzProdukte->item[$i]->tsProductID                     = $oItem->cProduktID;
 
                     if (!Session::CustomerGroup()->isMerchant() && isset($_SESSION['Warenkorb'], $_SESSION['Steuersatz'])) {
-                        $this->oKaeuferschutzProdukte->item[$i]->grossFeeLocalized = gibPreisStringLocalized(
+                        $this->oKaeuferschutzProdukte->item[$i]->grossFeeLocalized = Preise::getLocalizedPriceString(
                             $fPreis *
                             ((100 + (float)$_SESSION['Steuersatz'][Session::Cart()->gibVersandkostenSteuerklasse($cLandISO)]) / 100)
                         );
@@ -520,14 +520,14 @@ class TrustedShops
                             ' ' .
                             Shop::Lang()->get('vat', 'productDetails');
                     } else {
-                        $this->oKaeuferschutzProdukte->item[$i]->grossFeeLocalized = gibPreisStringLocalized($fPreis);
+                        $this->oKaeuferschutzProdukte->item[$i]->grossFeeLocalized = Preise::getLocalizedPriceString($fPreis);
                         $this->oKaeuferschutzProdukte->item[$i]->cFeeTxt           = Shop::Lang()->get('excl', 'productDetails') .
                             ' ' .
                             Shop::Lang()->get('vat', 'productDetails');
                     }
                 }
                 $this->oKaeuferschutzProdukteDB->item[$i]->protectedAmountDecimalLocalized =
-                    gibPreisStringLocalized($oItem->protectedAmountDecimal ?? 0);
+                    Preise::getLocalizedPriceString($oItem->protectedAmountDecimal ?? 0);
             }
         }
 

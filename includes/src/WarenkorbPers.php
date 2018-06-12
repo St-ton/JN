@@ -271,7 +271,7 @@ class WarenkorbPers
                 $fWarenwert     = 0.0;
                 $defaultOptions = Artikel::getDefaultOptions();
                 if (!isset($_SESSION['Steuersatz'])) {
-                    setzeSteuersaetze();
+                    TaxHelper::setTaxRates();
                 }
                 // Hole alle Eigenschaften für eine Position
                 foreach ($oWarenkorbPersPos_arr as $oWarenkorbPersPosTMP) {
@@ -316,7 +316,7 @@ class WarenkorbPers
                     $oWarenkorbPersPos->fAnzahl = (float)$oWarenkorbPersPos->fAnzahl;
                     $this->oWarenkorbPersPos_arr[] = $oWarenkorbPersPos;
                 }
-                $this->cWarenwertLocalized = gibPreisStringLocalized($fWarenwert);
+                $this->cWarenwertLocalized = Preise::getLocalizedPriceString($fWarenwert);
             }
         }
 
@@ -446,5 +446,86 @@ class WarenkorbPers
         }
 
         return $this;
+    }
+
+    /**
+     * @param int    $kArtikel
+     * @param float  $fAnzahl
+     * @param array  $oEigenschaftwerte_arr
+     * @param bool   $cUnique
+     * @param int    $kKonfigitem
+     * @param int    $nPosTyp
+     * @param string $cResponsibility
+     */
+    public static function addToCheck(
+        int $kArtikel,
+        $fAnzahl,
+        $oEigenschaftwerte_arr,
+        $cUnique = false,
+        int $kKonfigitem = 0,
+        int $nPosTyp = C_WARENKORBPOS_TYP_ARTIKEL,
+        $cResponsibility = 'core'
+    ) {
+        if (!Session::Customer()->isLoggedIn()) {
+            return;
+        }
+        $conf = Shop::getSettings([CONF_GLOBAL]);
+        if ($conf['global']['warenkorbpers_nutzen'] !== 'Y') {
+            return;
+        }
+        // Persistenter Warenkorb
+        if ($kArtikel > 0) {
+            // Pruefe auf kArtikel
+            $oArtikelVorhanden = Shop::Container()->getDB()->select(
+                'tartikel',
+                'kArtikel', $kArtikel,
+                null, null,
+                null, null,
+                false,
+                'kArtikel, cName'
+            );
+            // Falls Artikel vorhanden
+            if ($oArtikelVorhanden !== null) {
+                // Sichtbarkeit pruefen
+                $oSichtbarkeit = Shop::Container()->getDB()->select(
+                    'tartikelsichtbarkeit',
+                    'kArtikel', $kArtikel,
+                    'kKundengruppe', Session::CustomerGroup()->getID(),
+                    null, null,
+                    false,
+                    'kArtikel'
+                );
+                if (empty($oSichtbarkeit) || !isset($oSichtbarkeit->kArtikel) || !$oSichtbarkeit->kArtikel) {
+                    $oWarenkorbPers = new WarenkorbPers(Session::Customer()->getID());
+                    if ($nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
+                        $oWarenkorbPers->loescheGratisGeschenkAusWarenkorbPers();
+                    }
+                    $oWarenkorbPers->fuegeEin(
+                        $kArtikel,
+                        $oArtikelVorhanden->cName,
+                        $oEigenschaftwerte_arr,
+                        $fAnzahl,
+                        $cUnique,
+                        $kKonfigitem,
+                        $nPosTyp,
+                        $cResponsibility
+                    );
+                }
+            }
+        } elseif ($kArtikel === 0 && !empty($kKonfigitem)) {
+            // Konfigitems ohne Artikelbezug
+            $konfItem       = new Konfigitemsprache($kKonfigitem, Shop::getLanguageID());
+            $oWarenkorbPers = new WarenkorbPers(Session::Customer()->getID());
+            $oWarenkorbPers->fuegeEin(
+                $kArtikel,
+                $konfItem->getName(),
+                $oEigenschaftwerte_arr,
+                $fAnzahl,
+                $cUnique,
+                $kKonfigitem,
+                $nPosTyp,
+                $cResponsibility
+            );
+        }
     }
 }

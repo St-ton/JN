@@ -76,7 +76,7 @@ final class BoxWishlist extends AbstractBox
                             (100 + $_SESSION['Steuersatz'][$wishlistItem->Artikel->kSteuerklasse]) / 100)
                         : 0;
                 }
-                $wishlistItem->cPreis = gibPreisStringLocalized($fPreis, \Session::Currency());
+                $wishlistItem->cPreis = \Preise::getLocalizedPriceString($fPreis, \Session::Currency());
             }
             $this->setShow(true);
             $this->setItemCount((int)$this->config['boxen']['boxen_wunschzettel_anzahl']);

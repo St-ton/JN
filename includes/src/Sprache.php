@@ -308,7 +308,7 @@ class Sprache
         if (isset($_SESSION['cISOSprache']) && strlen($_SESSION['cISOSprache']) > 0) {
             $this->cISOSprache = $_SESSION['cISOSprache'];
         } else {
-            $oSprache = gibStandardsprache();
+            $oSprache = self::getDefaultLanguage();
             if (isset($oSprache->cISO) && strlen($oSprache->cISO) > 0) {
                 $this->cISOSprache = $oSprache->cISO;
             }
@@ -883,7 +883,7 @@ class Sprache
     {
         if ($kSprache > 0) {
             if (!is_array($oShopSpracheAssoc_arr) || count($oShopSpracheAssoc_arr) === 0) {
-                $oShopSpracheAssoc_arr = gibAlleSprachen(1);
+                $oShopSpracheAssoc_arr = self::getAllLanguages(1);
             }
 
             return isset($oShopSpracheAssoc_arr[$kSprache]);
@@ -915,5 +915,116 @@ class Sprache
         }
 
         return false;
+    }
+
+    /**
+     * gibt alle Sprachen zurück
+     *
+     * @param int $nOption
+     * 0 = Normales Array
+     * 1 = Gib ein Assoc mit Key = kSprache
+     * 2 = Gib ein Assoc mit Key = cISO
+     * @return array
+     * @former gibAlleSprachen()
+     * @since 5.0.0
+     */
+    public static function getAllLanguages(int $nOption = 0)
+    {
+        $languages = Session::Languages();
+        if (count($languages) > 0) {
+            switch ($nOption) {
+                case 2:
+                    return baueAssocArray($languages, 'cISO');
+
+                case 1:
+                    return baueAssocArray($languages, 'kSprache');
+
+                case 0:
+                default:
+                    return $languages;
+            }
+        }
+        $oSprach_arr = array_map(
+            function ($s) {
+                $s->kSprache = (int)$s->kSprache;
+
+                return $s;
+            },
+            Shop::Container()->getDB()->query(
+                "SELECT *
+                    FROM tsprache
+                    ORDER BY cShopStandard DESC, cNameDeutsch",
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
+            )
+        );
+        switch ($nOption) {
+            case 2:
+                return baueAssocArray($oSprach_arr, 'cISO');
+
+            case 1:
+                return baueAssocArray($oSprach_arr, 'kSprache');
+
+            case 0:
+            default:
+                return $oSprach_arr;
+        }
+    }
+
+    /**
+     * @param bool     $bShop
+     * @param int|null $kSprache - optional lang id to check against instead of session value
+     * @return bool
+     * @former standardspracheAktiv()
+     * @since 5.0.0
+     */
+    public static function isDefaultLanguageActive(bool $bShop = false, int $kSprache = null): bool
+    {
+        if ($kSprache === null && !isset($_SESSION['kSprache'])) {
+            return true;
+        }
+        $langToCheckAgainst = $kSprache !== null ? (int)$kSprache : Shop::getLanguageID();
+        if ($langToCheckAgainst > 0) {
+            foreach (Session::Languages() as $Sprache) {
+                if ($Sprache->cStandard === 'Y' && (int)$Sprache->kSprache === $langToCheckAgainst && !$bShop) {
+                    return true;
+                }
+                if ($Sprache->cShopStandard === 'Y' && (int)$Sprache->kSprache === $langToCheckAgainst && $bShop) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param bool $bShop
+     * @return stdClass|Sprache
+     * @former gibStandardsprache()
+     * @since 5.0.0
+     */
+    public static function getDefaultLanguage($bShop = true)
+    {
+        foreach (Session::Languages() as $Sprache) {
+            if ($Sprache->cStandard === 'Y' && !$bShop) {
+                return $Sprache;
+            }
+            if ($Sprache->cShopStandard === 'Y' && $bShop) {
+                return $Sprache;
+            }
+        }
+
+        $cacheID = 'shop_lang_' . (($bShop === true) ? 'b' : '');
+        if (($lang = Shop::Cache()->get($cacheID)) !== false && $lang !== null) {
+            return $lang;
+        }
+        $row  = $bShop ? 'cShopStandard' : 'cStandard';
+        $lang = Shop::Container()->getDB()->select('tsprache', $row, 'Y');
+        $lang->kSprache = (int)$lang->kSprache;
+        Shop::Cache()->set($cacheID, $lang, [CACHING_GROUP_LANGUAGE]);
+
+        return $lang;
     }
 }

@@ -8,7 +8,7 @@ require_once __DIR__ . '/includes/globalinclude.php';
 $linkHelper = Shop::Container()->getLinkService();
 if (isset($_SESSION['Kunde']->kKunde)
     && $_SESSION['Kunde']->kKunde > 0
-    && verifyGPCDataInteger('editRechnungsadresse') === 0
+    && RequestHelper::verifyGPCDataInt('editRechnungsadresse') === 0
 ) {
     header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 301);
 }
@@ -47,7 +47,7 @@ if (isset($_GET['editRechnungsadresse']) && (int)$_GET['editRechnungsadresse'] =
     gibKunde();
 }
 if ($step === 'formular') {
-    gibFormularDaten(verifyGPCDataInteger('checkout'));
+    gibFormularDaten(RequestHelper::verifyGPCDataInt('checkout'));
 }
 if (isset($_FILES['vcard'])
     && $Einstellungen['kunden']['kundenregistrierung_vcardupload'] === 'Y'
@@ -56,7 +56,7 @@ if (isset($_FILES['vcard'])
     gibKundeFromVCard($_FILES['vcard']['tmp_name']);
 }
 // hole aktuelle Kategorie, falls eine gesetzt
-$AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
+$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;

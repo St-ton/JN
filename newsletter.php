@@ -44,7 +44,7 @@ $cCanonicalURL = '';
 $Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_NEWSLETTER]);
 
 //hole alle OberKategorien
-$AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
+$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
@@ -76,7 +76,7 @@ if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
         // Protokollieren (freigeschaltet)
         $upd           = new stdClass();
         $upd->dOptCode = 'now()';
-        $upd->cOptIp   = gibIP();
+        $upd->cOptIp   = RequestHelper::getIP();
         Shop::Container()->getDB()->update(
             'tnewsletterempfaengerhistory',
             ['cOptCode', 'cAktion'],
@@ -114,7 +114,7 @@ if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
         $hist->dEingetragen = $recicpient->dEingetragen;
         $hist->dAusgetragen = 'now()';
         $hist->dOptCode     = '0000-00-00';
-        $hist->cRegIp       = gibIP(); // IP of the current event-issuer
+        $hist->cRegIp       = RequestHelper::getIP(); // IP of the current event-issuer
 
         Shop::Container()->getDB()->insert('tnewsletterempfaengerhistory', $hist);
 
@@ -149,13 +149,13 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
     $oKunde->cEmail    = isset($_POST['cEmail'])
         ? StringHandler::filterXSS(Shop::Container()->getDB()->escape(strip_tags($_POST['cEmail'])))
         : null;
-    $oKunde->cRegIp    = gibIP(); // IP of the current event-issuer
+    $oKunde->cRegIp    = RequestHelper::getIP(); // IP of the current event-issuer
 
     if (!pruefeEmailblacklist($oKunde->cEmail)) {
         Shop::Smarty()->assign('oPlausi', fuegeNewsletterEmpfaengerEin($oKunde, true));
         Shop::Container()->getDB()->delete('tnewsletterempfaengerblacklist', 'cMail', $oKunde->cEmail);
     } else {
-        $cFehler .= valid_email($_POST['cEmail'])
+        $cFehler .= StringHandler::filterEmailAddress($_POST['cEmail']) !== false
             ? (Shop::Lang()->get('kwkEmailblocked', 'errorMessages') . '<br />')
             : (Shop::Lang()->get('invalidEmail') . '<br />');
     }
@@ -169,7 +169,7 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
         : null;
     Shop::Smarty()->assign('oPlausi', $oPlausi);
 } elseif (isset($_POST['abmelden']) && (int)$_POST['abmelden'] === 1) { // Abmelden
-    if (valid_email($_POST['cEmail'])) {
+    if (StringHandler::filterEmailAddress($_POST['cEmail']) !== false) {
         // Pruefen, ob Email bereits vorhanden
         $recicpient = Shop::Container()->getDB()->select(
             'tnewsletterempfaenger',
@@ -201,7 +201,7 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
             $hist->dEingetragen = $recicpient->dEingetragen;
             $hist->dAusgetragen = 'now()';
             $hist->dOptCode     = '0000-00-00';
-            $hist->cRegIp       = gibIP(); // IP of the current event-issuer
+            $hist->cRegIp       = RequestHelper::getIP(); // IP of the current event-issuer
 
             Shop::Container()->getDB()->insert('tnewsletterempfaengerhistory', $hist);
 

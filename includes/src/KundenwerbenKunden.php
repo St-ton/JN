@@ -97,7 +97,7 @@ class KundenwerbenKunden
                     $this->$cMember = $oKwK->$cMember;
                 }
                 $oKundeTMP                = new Kunde();
-                $this->fGuthabenLocalized = gibPreisStringLocalized($this->fGuthaben);
+                $this->fGuthabenLocalized = Preise::getLocalizedPriceString($this->fGuthaben);
                 $this->oNeukunde          = $oKundeTMP->holRegKundeViaEmail($this->cEmail);
                 $this->oBestandskunde     = new Kunde($this->kKunde);
             }
@@ -193,7 +193,7 @@ class KundenwerbenKunden
                         $_upd
                     );
 
-                    $oKundenWerbenKundenBoni->fGuthaben = gibPreisStringLocalized(
+                    $oKundenWerbenKundenBoni->fGuthaben = Preise::getLocalizedPriceString(
                         (float)$Einstellungen['kundenwerbenkunden']['kwk_bestandskundenguthaben']);
                     $oMail->BestandskundenBoni          = $oKundenWerbenKundenBoni;
                     // verschicke Email an Bestandskunden
@@ -214,7 +214,7 @@ class KundenwerbenKunden
         $oMail                       = new stdClass();
         $oMail->oBestandskunde       = new Kunde($this->kKunde);
         $oMail->oNeukunde            = $this;
-        $this->fGuthabenLocalized    = gibPreisStringLocalized($this->fGuthaben);
+        $this->fGuthabenLocalized    = Preise::getLocalizedPriceString($this->fGuthaben);
         $oMail->oNeukunde->fGuthaben = $this->fGuthabenLocalized;
         $oMail->tkunde               = $oMail->oNeukunde;
         $oMail->tkunde->cMail        = $this->cEmail;

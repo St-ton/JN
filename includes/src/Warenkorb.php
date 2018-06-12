@@ -524,18 +524,18 @@ class Warenkorb
         //fixes #4967
         if (is_object($_SESSION['Kundengruppe']) && Session::CustomerGroup()->isMerchant()) {
             if ($brutto) {
-                $NeuePosition->fPreis = $preis / (100 + gibUst($kSteuerklasse)) * 100.0;
+                $NeuePosition->fPreis = $preis / (100 + TaxHelper::getSalesTax($kSteuerklasse)) * 100.0;
             }
             //round net price
             $NeuePosition->fPreis = round($NeuePosition->fPreis, 2);
         } else {
             if ($brutto) {
                 //calculate net price based on rounded gross price
-                $NeuePosition->fPreis = round($preis, 2) / (100 + gibUst($kSteuerklasse)) * 100.0;
+                $NeuePosition->fPreis = round($preis, 2) / (100 + TaxHelper::getSalesTax($kSteuerklasse)) * 100.0;
             } else {
                 //calculate rounded gross price then calculate net price again.
-                $NeuePosition->fPreis = round($preis * (100 + gibUst($kSteuerklasse)) / 100, 2) /
-                    (100 + gibUst($kSteuerklasse)) * 100.0;
+                $NeuePosition->fPreis = round($preis * (100 + TaxHelper::getSalesTax($kSteuerklasse)) / 100, 2) /
+                    (100 + TaxHelper::getSalesTax($kSteuerklasse)) * 100.0;
             }
         }
 
@@ -560,19 +560,19 @@ class Warenkorb
         foreach (Session::Currencies() as $currency) {
             $currencyName = $currency->getName();
             // Standardartikel
-            $NeuePosition->cGesamtpreisLocalized[0][$currencyName] = gibPreisStringLocalized(
-                berechneBrutto($NeuePosition->fPreis * $NeuePosition->nAnzahl, gibUst($NeuePosition->kSteuerklasse)),
+            $NeuePosition->cGesamtpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(
+                TaxHelper::getGross($NeuePosition->fPreis * $NeuePosition->nAnzahl, TaxHelper::getSalesTax($NeuePosition->kSteuerklasse)),
                 $currency
             );
-            $NeuePosition->cGesamtpreisLocalized[1][$currencyName] = gibPreisStringLocalized(
+            $NeuePosition->cGesamtpreisLocalized[1][$currencyName] = Preise::getLocalizedPriceString(
                 $NeuePosition->fPreis * $NeuePosition->nAnzahl,
                 $currency
             );
-            $NeuePosition->cEinzelpreisLocalized[0][$currencyName] = gibPreisStringLocalized(
-                berechneBrutto($NeuePosition->fPreis, gibUst($NeuePosition->kSteuerklasse)),
+            $NeuePosition->cEinzelpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(
+                TaxHelper::getGross($NeuePosition->fPreis, TaxHelper::getSalesTax($NeuePosition->kSteuerklasse)),
                 $currency
             );
-            $NeuePosition->cEinzelpreisLocalized[1][$currencyName] = gibPreisStringLocalized(
+            $NeuePosition->cEinzelpreisLocalized[1][$currencyName] = Preise::getLocalizedPriceString(
                 $NeuePosition->fPreis,
                 $currency
             );
@@ -589,9 +589,9 @@ class Warenkorb
                 foreach ($this->PositionenArr as $nPos => $oPosition) {
                     if ($NeuePosition->cUnique === $oPosition->cUnique) {
                         $fPreisNetto += $oPosition->fPreis * $oPosition->nAnzahl;
-                        $fPreisBrutto += berechneBrutto(
+                        $fPreisBrutto += TaxHelper::getGross(
                             $oPosition->fPreis * $oPosition->nAnzahl,
-                            gibUst($oPosition->kSteuerklasse)
+                            TaxHelper::getSalesTax($oPosition->kSteuerklasse)
                         );
 
                         if ((int)$oPosition->kKonfigitem === 0
@@ -607,8 +607,8 @@ class Warenkorb
                     $oVaterPos = $this->PositionenArr[$nVaterPos];
                     if (is_object($oVaterPos)) {
                         $NeuePosition->nAnzahlEinzel                        = $NeuePosition->nAnzahl / $oVaterPos->nAnzahl;
-                        $oVaterPos->cKonfigpreisLocalized[0][$currencyName] = gibPreisStringLocalized($fPreisBrutto, $currency);
-                        $oVaterPos->cKonfigpreisLocalized[1][$currencyName] = gibPreisStringLocalized($fPreisNetto, $currency);
+                        $oVaterPos->cKonfigpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString($fPreisBrutto, $currency);
+                        $oVaterPos->cKonfigpreisLocalized[1][$currencyName] = Preise::getLocalizedPriceString($fPreisNetto, $currency);
                     }
                 }
             }
@@ -639,7 +639,7 @@ class Warenkorb
         if ((!isset($_SESSION['bAnti_spam_already_checked']) || $_SESSION['bAnti_spam_already_checked'] !== true)
             && $this->config['kaufabwicklung']['bestellabschluss_spamschutz_nutzen'] === 'Y'
             && $this->config['kaufabwicklung']['bestellabschluss_ip_speichern'] === 'Y'
-            && ($ip = gibIP(true))
+            && ($ip = RequestHelper::getIP(true))
         ) {
             $cnt = Shop::Container()->getDB()->executeQueryPrepared(
                 "SELECT count(*) AS anz 
@@ -781,7 +781,7 @@ class Warenkorb
                     && $_SESSION['Kupon']->kKupon > 0
                     && (int)$_SESSION['Kupon']->nGanzenWKRabattieren === 0
                 ) {
-                    checkeKuponWKPos($this->PositionenArr[$i], $_SESSION['Kupon']);
+                    WarenkorbHelper::checkCouponCartPositions($this->PositionenArr[$i], $_SESSION['Kupon']);
                 }
                 $this->PositionenArr[$i]->setzeGesamtpreisLocalized();
                 unset($this->PositionenArr[$i]->cHinweis);
@@ -852,7 +852,7 @@ class Warenkorb
                     && $_SESSION['Kupon']->kKupon > 0
                     && (int)$_SESSION['Kupon']->nGanzenWKRabattieren === 0
                 ) {
-                    $Position = checkeKuponWKPos($Position, $_SESSION['Kupon']);
+                    $Position = WarenkorbHelper::checkCouponCartPositions($Position, $_SESSION['Kupon']);
                     $Position->setzeGesamtpreisLocalized();
                 }
             }
@@ -955,9 +955,9 @@ class Warenkorb
             foreach ($this->PositionenArr as $i => $Position) {
                 if ($Position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
                     && $Position->kSteuerklasse > 0
-                    && gibUst($Position->kSteuerklasse) > $steuersatz
+                    && TaxHelper::getSalesTax($Position->kSteuerklasse) > $steuersatz
                 ) {
-                    $steuersatz    = gibUst($Position->kSteuerklasse);
+                    $steuersatz    = TaxHelper::getSalesTax($Position->kSteuerklasse);
                     $kSteuerklasse = $Position->kSteuerklasse;
                 }
             }
@@ -994,7 +994,7 @@ class Warenkorb
             // Lokalisierte Preise addieren
             if ($Brutto) {
                 $gesamtsumme += $Position->fPreis * $conversionFactor * $Position->nAnzahl *
-                    ((100 + gibUst($Position->kSteuerklasse)) / 100);
+                    ((100 + TaxHelper::getSalesTax($Position->kSteuerklasse)) / 100);
             } else {
                 $gesamtsumme += $Position->fPreis * $conversionFactor * $Position->nAnzahl;
             }
@@ -1032,7 +1032,7 @@ class Warenkorb
             if (in_array($Position->nPosTyp, $postyp_arr, true)) {
                 if ($Brutto) {
                     $gesamtsumme += $Position->fPreis * $Position->nAnzahl *
-                        ((100 + gibUst($Position->kSteuerklasse)) / 100);
+                        ((100 + TaxHelper::getSalesTax($Position->kSteuerklasse)) / 100);
                 } else {
                     $gesamtsumme += $Position->fPreis * $Position->nAnzahl;
                 }
@@ -1065,7 +1065,7 @@ class Warenkorb
             if (!in_array($Position->nPosTyp, $postyp_arr)) {
                 if ($Brutto) {
                     $gesamtsumme += $Position->fPreis * $factor * $Position->nAnzahl *
-                        ((100 + gibUst($Position->kSteuerklasse)) / 100);
+                        ((100 + TaxHelper::getSalesTax($Position->kSteuerklasse)) / 100);
                 } else {
                     $gesamtsumme += $Position->fPreis * $factor* $Position->nAnzahl;
                 }
@@ -1108,8 +1108,8 @@ class Warenkorb
     public function gibGesamtsummeWarenLocalized()
     {
         $WarensummeLocalized    = [];
-        $WarensummeLocalized[0] = gibPreisStringLocalized($this->gibGesamtsummeWaren(true));
-        $WarensummeLocalized[1] = gibPreisStringLocalized($this->gibGesamtsummeWaren());
+        $WarensummeLocalized[0] = Preise::getLocalizedPriceString($this->gibGesamtsummeWaren(true));
+        $WarensummeLocalized[1] = Preise::getLocalizedPriceString($this->gibGesamtsummeWaren());
 
         return $WarensummeLocalized;
     }
@@ -1156,7 +1156,7 @@ class Warenkorb
         $steuerpos  = [];
         foreach ($this->PositionenArr as $position) {
             if ($position->kSteuerklasse > 0) {
-                $ust = gibUst($position->kSteuerklasse);
+                $ust = TaxHelper::getSalesTax($position->kSteuerklasse);
                 if (!in_array($ust, $steuersatz)) {
                     $steuersatz[] = $ust;
                 }
@@ -1167,7 +1167,7 @@ class Warenkorb
             if ($position->kSteuerklasse <= 0) {
                 continue;
             }
-            $ust = gibUst($position->kSteuerklasse);
+            $ust = TaxHelper::getSalesTax($position->kSteuerklasse);
             if ($ust > 0) {
                 $idx = array_search($ust, $steuersatz);
                 if (!isset($steuerpos[$idx]->fBetrag)) {
@@ -1175,10 +1175,10 @@ class Warenkorb
                     $steuerpos[$idx]->cName           = lang_steuerposition($ust, Session::CustomerGroup()->isMerchant());
                     $steuerpos[$idx]->fUst            = $ust;
                     $steuerpos[$idx]->fBetrag         = ($position->fPreis * $position->nAnzahl * $ust) / 100.0;
-                    $steuerpos[$idx]->cPreisLocalized = gibPreisStringLocalized($steuerpos[$idx]->fBetrag);
+                    $steuerpos[$idx]->cPreisLocalized = Preise::getLocalizedPriceString($steuerpos[$idx]->fBetrag);
                 } else {
                     $steuerpos[$idx]->fBetrag        += ($position->fPreis * $position->nAnzahl * $ust) / 100.0;
-                    $steuerpos[$idx]->cPreisLocalized = gibPreisStringLocalized($steuerpos[$idx]->fBetrag);
+                    $steuerpos[$idx]->cPreisLocalized = Preise::getLocalizedPriceString($steuerpos[$idx]->fBetrag);
                 }
             }
         }
@@ -1543,25 +1543,25 @@ class Warenkorb
         foreach (Session::Currencies() as $currency) {
             $currencyName = $currency->getName();
             foreach ($this->PositionenArr as $i => $position) {
-                $grossAmount        = berechneBrutto(
+                $grossAmount        = TaxHelper::getGross(
                     $position->fPreis * $position->nAnzahl,
-                    gibUst($position->kSteuerklasse),
+                    TaxHelper::getSalesTax($position->kSteuerklasse),
                     12
                 );
                 $netAmount          = $position->fPreis * $position->nAnzahl;
-                $roundedGrossAmount = berechneBrutto(
+                $roundedGrossAmount = TaxHelper::getGross(
                     $position->fPreis * $position->nAnzahl + $cumulatedDelta,
-                    gibUst($position->kSteuerklasse),
+                    TaxHelper::getSalesTax($position->kSteuerklasse),
                     $precision
                 );
                 $roundedNetAmount   = round($position->fPreis * $position->nAnzahl + $cumulatedDeltaNet, $precision);
 
                 if ($i !== 0 && $position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
                     if ($grossAmount != 0) {
-                        $position->cGesamtpreisLocalized[0][$currencyName] = gibPreisStringLocalized($roundedGrossAmount, $currency);
+                        $position->cGesamtpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString($roundedGrossAmount, $currency);
                     }
                     if ($netAmount != 0) {
-                        $position->cGesamtpreisLocalized[1][$currencyName] = gibPreisStringLocalized($roundedNetAmount, $currency);
+                        $position->cGesamtpreisLocalized[1][$currencyName] = Preise::getLocalizedPriceString($roundedNetAmount, $currency);
                     }
                 }
                 $cumulatedDelta    += ($grossAmount - $roundedGrossAmount);
@@ -1684,21 +1684,21 @@ class Warenkorb
             $oFavourableShipping->cCountryCode = $countryCode;
 
             if ($oFavourableShipping->eSteuer === 'brutto') {
-                $oFavourableShipping->cPriceLocalized[0] = gibPreisStringLocalized($oFavourableShipping->fPreis);
-                $oFavourableShipping->cPriceLocalized[1] = gibPreisStringLocalized(
-                    berechneNetto(
+                $oFavourableShipping->cPriceLocalized[0] = Preise::getLocalizedPriceString($oFavourableShipping->fPreis);
+                $oFavourableShipping->cPriceLocalized[1] = Preise::getLocalizedPriceString(
+                    TaxHelper::getNet(
                         $oFavourableShipping->fPreis,
                         $_SESSION['Steuersatz'][(int)Session::Cart()->gibVersandkostenSteuerklasse()]
                     )
                 );
             } else {
-                $oFavourableShipping->cPriceLocalized[0] = gibPreisStringLocalized(
-                    berechneBrutto(
+                $oFavourableShipping->cPriceLocalized[0] = Preise::getLocalizedPriceString(
+                    TaxHelper::getGross(
                         $oFavourableShipping->fPreis,
                         $_SESSION['Steuersatz'][(int)Session::Cart()->gibVersandkostenSteuerklasse()]
                     )
                 );
-                $oFavourableShipping->cPriceLocalized[1] = gibPreisStringLocalized($oFavourableShipping->fPreis);
+                $oFavourableShipping->cPriceLocalized[1] = Preise::getLocalizedPriceString($oFavourableShipping->fPreis);
             }
             $this->oFavourableShipping = $oFavourableShipping;
         }

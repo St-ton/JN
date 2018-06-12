@@ -41,7 +41,7 @@ class HerstellerHelper
             if (Shop::getLanguage() > 0) {
                 self::$langID = Shop::getLanguage();
             } else {
-                $_lang        = gibStandardsprache();
+                $_lang        = Sprache::getDefaultLanguage();
                 self::$langID = (int)$_lang->kSprache;
             }
         }

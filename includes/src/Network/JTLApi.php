@@ -129,7 +129,7 @@ final class JTLApi
     private function call($uri, $data = null)
     {
         $uri     = self::URI . '/' . ltrim($uri, '/');
-        $content = http_get_contents($uri, 10, $data);
+        $content = \RequestHelper::http_get_contents($uri, 10, $data);
 
         return empty($content) ? null : json_decode($content);
     }

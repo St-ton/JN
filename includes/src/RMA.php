@@ -823,7 +823,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                     if (isset($_SESSION['kSprache'])) {
                         $kSprache = $_SESSION['kSprache'];
                     } else {
-                        $oSprache = gibStandardsprache(true);
+                        $oSprache = Sprache::getDefaultLanguage(true);
                         $kSprache = $oSprache->kSprache;
                     }
                 }

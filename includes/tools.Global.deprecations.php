@@ -176,7 +176,7 @@ function writeLog($logfile, $entry, $level)
         if (!$logfile) {
             return false;
         }
-        fwrite($logfile, "\n[" . date('m.d.y H:i:s') . "] [" . gibIP() . "]\n" . $entry);
+        fwrite($logfile, "\n[" . date('m.d.y H:i:s') . "] [" . RequestHelper::getIP() . "]\n" . $entry);
         fclose($logfile);
     }
 
@@ -612,7 +612,7 @@ function gibLagerfilter()
  * @return bool
  * @deprecated since 5.0.0
  */
-function pruefeVariBoxAnzahl($variBoxAnzahl_arr)
+function pruefeVariBoxAnzahl($variBoxAnzahl_arr = [])
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
 
@@ -1017,7 +1017,644 @@ function gibPreisString($price)
  */
 function gibSprachKeyISO($cISO = '', int $kSprache = 0)
 {
-    trigger_error(__FUNCTION__ . ' is deprecated. Use Sprache::getLanguageDataByType instead.', E_USER_DEPRECATED);
+    trigger_error(__FUNCTION__ . ' is deprecated. Use Sprache::getLanguageDataByType() instead.', E_USER_DEPRECATED);
 
     return Sprache::getLanguageDataByType($cISO, $kSprache);
+}
+
+/**
+ * @deprecated since 5.0.0
+ */
+function altenKuponNeuBerechnen()
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use Kupon::reCheck() instead.', E_USER_DEPRECATED);
+    Kupon::reCheck();
+}
+
+/**
+ * @param object $oWKPosition
+ * @param object $Kupon
+ * @return mixed
+ * @deprecated since 5.0.0
+ */
+function checkeKuponWKPos($oWKPosition, $Kupon)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use WarenkorbHelper::checkCouponCartPositions() instead.', E_USER_DEPRECATED);
+
+    return WarenkorbHelper::checkCouponCartPositions($oWKPosition, $Kupon);
+}
+
+/**
+ * @param object $oWKPosition
+ * @param object $Kupon
+ * @return mixed
+ * @deprecated since 5.0.0
+ */
+function checkSetPercentCouponWKPos($oWKPosition, $Kupon)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use WarenkorbHelper::checkSetPercentCouponWKPos() instead.', E_USER_DEPRECATED);
+
+    return WarenkorbHelper::checkSetPercentCouponWKPos($oWKPosition, $Kupon);
+}
+
+/**
+ * @param int $kSteuerklasse
+ * @return mixed
+ * @deprecated since 5.0.0
+ */
+function gibUst(int $kSteuerklasse)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use TaxHelper::getSalesTax() instead.', E_USER_DEPRECATED);
+
+    return TaxHelper::getSalesTax($kSteuerklasse);
+}
+
+/**
+ * @param string $steuerland
+ * @deprecated since 5.0.0
+ */
+function setzeSteuersaetze($steuerland = null)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use TaxHelper::setTaxRates() instead.', E_USER_DEPRECATED);
+    TaxHelper::setTaxRates($steuerland);
+}
+
+/**
+ * @param array  $Positionen
+ * @param int    $Nettopreise
+ * @param int    $htmlWaehrung
+ * @param mixed int|object $oWaehrung
+ * @return array
+ * @deprecated since 5.0.0
+ */
+function gibAlteSteuerpositionen($Positionen, $Nettopreise = -1, $htmlWaehrung = 1, $oWaehrung = 0)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use TaxHelper::getOldTaxPositions() instead.', E_USER_DEPRECATED);
+
+    return TaxHelper::getOldTaxPositions($Positionen, $Nettopreise, $htmlWaehrung, $oWaehrung);
+}
+
+/**
+ * @param Versandart|object $oVersandart
+ * @param float             $fWarenkorbSumme
+ * @return string
+ * @deprecated since 5.0.0
+ */
+function baueVersandkostenfreiString($oVersandart, $fWarenkorbSumme)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use VersandartHelper::getShippingFreeString() instead.', E_USER_DEPRECATED);
+
+    return VersandartHelper::getShippingFreeString($oVersandart, $fWarenkorbSumme);
+}
+
+/**
+ * @param Versandart $oVersandart
+ * @return string
+ * @deprecated since 5.0.0
+ */
+function baueVersandkostenfreiLaenderString($oVersandart)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use VersandartHelper::getShippingFreeCountriesString() instead.', E_USER_DEPRECATED);
+
+    return VersandartHelper::getShippingFreeCountriesString($oVersandart);
+}
+
+/**
+ * gibt alle Sprachen zurück
+ *
+ * @param int $nOption
+ * 0 = Normales Array
+ * 1 = Gib ein Assoc mit Key = kSprache
+ * 2 = Gib ein Assoc mit Key = cISO
+ * @return array
+ * @deprecated since 5.0.0
+ */
+function gibAlleSprachen(int $nOption = 0)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use Sprache::getAllLanguages() instead.', E_USER_DEPRECATED);
+
+    return Sprache::getAllLanguages($nOption);
+}
+
+/**
+ * @param bool     $bShop
+ * @param int|null $kSprache - optional lang id to check against instead of session value
+ * @return bool
+ * @deprecated since 5.0.0
+ */
+function standardspracheAktiv($bShop = false, $kSprache = null)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use Sprache::isDefaultLanguageActive() instead.', E_USER_DEPRECATED);
+
+    return Sprache::isDefaultLanguageActive($bShop, $kSprache);
+}
+
+/**
+ * @param bool $bISO
+ * @return string|int
+ * @deprecated since 5.0.0
+ */
+function gibStandardWaehrung($bISO = false)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use Session directly instead.', E_USER_DEPRECATED);
+
+    return $bISO === true ? Session::Currency()->getCode() : Session::Currency()->getID();
+}
+
+/**
+ * @param bool $bShop
+ * @return mixed
+ * @deprecated since 5.0.0
+ */
+function gibStandardsprache($bShop = true)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use Sprache::getDefaultLanguage() instead.', E_USER_DEPRECATED);
+
+    return Sprache::getDefaultLanguage($bShop);
+}
+
+/**
+ * @deprecated since 5.0.0
+ */
+function resetNeuKundenKupon()
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use Kupon::resetNewCustomerCoupon() instead.', E_USER_DEPRECATED);
+    Kupon::resetNewCustomerCoupon();
+}
+
+/**
+ * Prüft ob reCaptcha mit private und public key konfiguriert ist
+ * @return bool
+ * @deprecated since 5.0.0
+ */
+function reCaptchaConfigured()
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use CaptchaService::isConfigured() instead.', E_USER_DEPRECATED);
+
+    return false;
+}
+
+/**
+ * @param string $response
+ * @return bool
+ * @deprecated since 5.0.0
+ */
+function validateReCaptcha($response)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use CaptchaService::validate() instead.', E_USER_DEPRECATED);
+
+    return false;
+}
+
+/**
+ * @param int $sec
+ * @return string
+ * @deprecated since 5.0.0
+ */
+function gibCaptchaCode($sec)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use CaptchaService instead.', E_USER_DEPRECATED);
+
+    return '';
+}
+
+/**
+ * @param int|string $sec
+ * @return bool
+ * @deprecated since 5.0.0 - use CaptchaService instead
+ */
+function generiereCaptchaCode($sec)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use CaptchaService instead.', E_USER_DEPRECATED);
+
+    return false;
+}
+
+/**
+ * @param string $klartext
+ * @return string
+ * @deprecated since 5.0.0
+ */
+function encodeCode($klartext)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use SimpleCaptchaService::encodeCode() instead.', E_USER_DEPRECATED);
+
+    return \Services\JTL\SimpleCaptchaService::encodeCode($klartext);
+}
+
+/**
+ * @param int    $kKundengruppe
+ * @param string $cLand
+ * @return int|mixed
+ * @deprecated since 5.0.0
+ */
+function gibVersandkostenfreiAb(int $kKundengruppe, $cLand = '')
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use VersandartHelper::getFreeShippingMinimum() instead.', E_USER_DEPRECATED);
+
+    return VersandartHelper::getFreeShippingMinimum($kKundengruppe, $cLand);
+}
+
+/**
+ * @param float        $preis
+ * @param int|Currency $waehrung
+ * @param bool         $html
+ * @return string
+ * @deprecated since 5.0.0
+ */
+function gibPreisLocalizedOhneFaktor($preis, $waehrung = 0, $html = true)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use Preise::getLocalizedPriceWithoutFactor() instead.', E_USER_DEPRECATED);
+
+    return Preise::getLocalizedPriceWithoutFactor($preis, $waehrung, $html);
+}
+
+/**
+ * @param float      $price
+ * @param object|int $currency
+ * @param int        $html
+ * @param int        $decimals
+ * @return string
+ * @deprecated since 5.0.0
+ */
+function gibPreisStringLocalized($price, $currency = 0, $html = 1, $decimals = 2)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use Preise::getLocalizedPriceString() instead.', E_USER_DEPRECATED);
+
+    return Preise::getLocalizedPriceString($price, $currency, $html, $decimals);
+}
+
+/**
+ * @param string $email
+ * @return bool
+ * @deprecated since 5.0.0
+ */
+function valid_email($email)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use StringHandler::filterEmailAddress() instead.', E_USER_DEPRECATED);
+
+    return StringHandler::filterEmailAddress($email) !== false;
+}
+
+/**
+ * creates an csrf token
+ *
+ * @return string
+ * @throws Exception
+ * @deprecated since 5.0.0
+ */
+function generateCSRFToken()
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use CryptoService instead.', E_USER_DEPRECATED);
+
+    return Shop::Container()->getCryptoService()->randomString(32);
+}
+
+/**
+ * @param array $variBoxAnzahl_arr
+ * @param int   $kArtikel
+ * @param bool  $bIstVater
+ * @param bool  $bExtern
+ * @deprecated since 5.0.0
+ */
+function fuegeVariBoxInWK($variBoxAnzahl_arr, $kArtikel, $bIstVater, $bExtern = false)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use WarenkorbHelper::fuegeVariBoxInWK() instead.', E_USER_DEPRECATED);
+
+    WarenkorbHelper::addVariboxToCart($variBoxAnzahl_arr, (int)$kArtikel, (bool)$bIstVater, (bool)$bExtern);
+}
+
+/**
+ * @param int    $kArtikel
+ * @param float  $fAnzahl
+ * @param array  $oEigenschaftwerte_arr
+ * @param bool   $cUnique
+ * @param int    $kKonfigitem
+ * @param int    $nPosTyp
+ * @param string $cResponsibility
+ * @deprecated since 5.0.0
+ */
+function fuegeEinInWarenkorbPers(
+    $kArtikel,
+    $fAnzahl,
+    $oEigenschaftwerte_arr,
+    $cUnique = false,
+    $kKonfigitem = 0,
+    $nPosTyp = C_WARENKORBPOS_TYP_ARTIKEL,
+    $cResponsibility = 'core'
+) {
+    trigger_error(__FUNCTION__ . ' is deprecated. Use WarenkorbPers::addToCheck() instead.', E_USER_DEPRECATED);
+
+    WarenkorbPers::addToCheck($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, $cUnique, $kKonfigitem, $nPosTyp, $cResponsibility);
+}
+
+/**
+ * Gibt den kArtikel von einem Varikombi Kind zurück und braucht dafür Eigenschaften und EigenschaftsWerte
+ * Klappt nur bei max. 2 Dimensionen
+ *
+ * @param int $kArtikel
+ * @param int $es0
+ * @param int $esWert0
+ * @param int $es1
+ * @param int $esWert1
+ * @return int
+ * @deprecated since 5.0.0
+ */
+function findeKindArtikelZuEigenschaft($kArtikel, $es0, $esWert0, $es1 = 0, $esWert1 = 0)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use ArtikelHelper::getChildProdctIDByAttribute() instead.', E_USER_DEPRECATED);
+
+    return ArtikelHelper::getChildProdctIDByAttribute($kArtikel, $es0, $esWert0, $es1, $esWert1);
+}
+
+/**
+ * @param int  $kArtikel
+ * @param bool $bSichtbarkeitBeachten
+ * @return array
+ * @deprecated since 5.0.0
+ */
+function gibVarKombiEigenschaftsWerte($kArtikel, $bSichtbarkeitBeachten = true)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use ArtikelHelper::getVarCombiAttributeValues() instead.', E_USER_DEPRECATED);
+
+    return ArtikelHelper::getVarCombiAttributeValues((int)$kArtikel, (bool)$bSichtbarkeitBeachten);
+}
+
+/**
+ * @param float $price
+ * @param float $taxRate
+ * @param int   $precision
+ * @return float
+ * @deprecated since 5.0.0
+ */
+function berechneBrutto($price, $taxRate, $precision = 2)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use TaxHelper::getGross() instead.', E_USER_DEPRECATED);
+
+    return TaxHelper::getGross($price, $taxRate, $precision);
+}
+
+/**
+ * @param float $price
+ * @param float $taxRate
+ * @param int   $precision
+ * @return float
+ * @deprecated since 5.0.0
+ */
+function berechneNetto($price, $taxRate, $precision = 2)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use TaxHelper::getNet() instead.', E_USER_DEPRECATED);
+
+    return TaxHelper::getNet($price, $taxRate, $precision);
+}
+
+/**
+ * @param int           $kArtikel
+ * @param int           $anzahl
+ * @param array         $oEigenschaftwerte_arr
+ * @param int           $nWeiterleitung
+ * @param bool          $cUnique
+ * @param int           $kKonfigitem
+ * @param stdClass|null $oArtikelOptionen
+ * @param bool          $setzePositionsPreise
+ * @param string        $cResponsibility
+ * @return bool
+ * @deprecated since 5.0.0
+ */
+function fuegeEinInWarenkorb(
+    $kArtikel,
+    $anzahl,
+    $oEigenschaftwerte_arr = [],
+    $nWeiterleitung = 0,
+    $cUnique = false,
+    $kKonfigitem = 0,
+    $oArtikelOptionen = null,
+    $setzePositionsPreise = true,
+    $cResponsibility = 'core'
+) {
+    trigger_error(__FUNCTION__ . ' is deprecated. Use WarenkorbHelper::addProductIDToCart() instead.', E_USER_DEPRECATED);
+
+    return WarenkorbHelper::addProductIDToCart(
+        $kArtikel,
+        $anzahl,
+        $oEigenschaftwerte_arr,
+        $nWeiterleitung,
+        $cUnique,
+        $kKonfigitem,
+        $oArtikelOptionen,
+        $setzePositionsPreise,
+        $cResponsibility
+    );
+}
+
+/**
+ * @param array $oVariation_arr
+ * @param int   $kEigenschaft
+ * @param int   $kEigenschaftWert
+ * @return bool|object
+ * @deprecated since 5.0.0
+ */
+function findeVariation($oVariation_arr, $kEigenschaft, $kEigenschaftWert)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use ArtikelHelper::findVariation() instead.', E_USER_DEPRECATED);
+
+    return ArtikelHelper::findVariation($oVariation_arr, (int)$kEigenschaft, (int)$kEigenschaftWert);
+}
+
+/**
+ * @return int
+ * @deprecated since 5.0.0
+ */
+function getDefaultLanguageID()
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use Sprache::getDefaultLanguage() instead.', E_USER_DEPRECATED);
+
+    return Sprache::getDefaultLanguage(true)->kSprache;
+}
+
+/**
+ * @param string $var
+ * @return bool
+ * @deprecated since 5.0.0
+ */
+function hasGPCDataInteger($var)
+{
+    return RequestHelper::hasGPCData($var);
+}
+
+/**
+ * @param string $var
+ * @return array
+ * @deprecated since 5.0.0
+ */
+function verifyGPDataIntegerArray($var)
+{
+    return RequestHelper::verifyGPDataIntegerArray($var);
+}
+
+/**
+ * @param string $var
+ * @return int
+ * @deprecated since 5.0.0
+ */
+function verifyGPCDataInteger($var)
+{
+    return RequestHelper::verifyGPCDataInt($var);
+}
+
+/**
+ * @param string $var
+ * @return string
+ * @deprecated since 5.0.0
+ */
+function verifyGPDataString($var)
+{
+    return RequestHelper::verifyGPDataString($var);
+}
+
+/**
+ * @return string
+ * @deprecated since 5.0.0
+ */
+function getRealIp()
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use RequestHelper::getRealIP() instead.', E_USER_DEPRECATED);
+
+    return RequestHelper::getRealIP();
+}
+
+/**
+ * @param bool $bBestellung
+ * @return string
+ * @deprecated since 5.0.0
+ */
+function gibIP($bBestellung = false)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use RequestHelper::getIP() instead.', E_USER_DEPRECATED);
+
+    return RequestHelper::getIP($bBestellung);
+}
+
+/**
+ * Gibt einen String für einen Header mit dem angegebenen Status-Code aus
+ *
+ * @param int $nStatusCode
+ * @return string
+ * @deprecated since 5.0.0
+ */
+function makeHTTPHeader($nStatusCode)
+{
+    return RequestHelper::makeHTTPHeader((int)$nStatusCode);
+}
+
+/**
+ * Prueft ob SSL aktiviert ist und auch durch Einstellung genutzt werden soll
+ * -1 = SSL nicht aktiv und nicht erlaubt
+ * 1 = SSL aktiv durch Einstellung nicht erwünscht
+ * 2 = SSL aktiv und erlaubt
+ * 4 = SSL nicht aktiv aber erzwungen
+ *
+ * @return int
+ * @deprecated since 5.0.0
+ */
+function pruefeSSL()
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use RequestHelper::checkSSL() instead.', E_USER_DEPRECATED);
+
+    return RequestHelper::checkSSL();
+}
+
+/**
+ * @param Resource $ch
+ * @param int $maxredirect
+ * @return mixed
+ * @deprecated since 5.0.0
+ */
+function curl_exec_follow($ch, int $maxredirect = 5)
+{
+    return RequestHelper::curl_exec_follow($ch, $maxredirect);
+}
+
+/**
+ * @param string $cURL
+ * @param int    $nTimeout
+ * @param null   $cPost
+ * @return mixed|string
+ * @deprecated since 5.0.0
+ */
+function http_get_contents($cURL, $nTimeout = 15, $cPost = null)
+{
+    return RequestHelper::make_http_request($cURL, $nTimeout, $cPost, false);
+}
+
+/**
+ * @param string $cURL
+ * @param int    $nTimeout
+ * @param null   $cPost
+ * @return int
+ * @deprecated since 5.0.0
+ */
+function http_get_status($cURL, $nTimeout = 15, $cPost = null)
+{
+    return RequestHelper::make_http_request($cURL, $nTimeout, $cPost, true);
+}
+
+/**
+ * @param string $cURL
+ * @param int    $nTimeout
+ * @param null   $cPost
+ * @param bool   $bReturnStatus - false = return content on success / true = return status code instead of content
+ * @return mixed|string
+ * @deprecated since 5.0.0
+ */
+function make_http_request($cURL, $nTimeout = 15, $cPost = null, $bReturnStatus = false)
+{
+    return RequestHelper::make_http_request($cURL, $nTimeout, $cPost, $bReturnStatus);
+}
+
+/**
+ * @return bool
+ * @deprecated since 5.0.0
+ */
+function isAjaxRequest()
+{
+    return RequestHelper::isAjaxRequest();
+}
+
+/**
+ * @param int  $kKundengruppe
+ * @param bool $bIgnoreSetting
+ * @param bool $bForceAll
+ * @return array
+ * @deprecated since 5.0.0
+ */
+function gibBelieferbareLaender(int $kKundengruppe = 0, bool $bIgnoreSetting = false, bool $bForceAll = false)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use VersandartHelper::getPossibleShippingCountries() instead.', E_USER_DEPRECATED);
+
+    return VersandartHelper::getPossibleShippingCountries($kKundengruppe, $bIgnoreSetting, $bForceAll);
+}
+
+/**
+ * @param int $kKundengruppe
+ * @return array
+ */
+function gibMoeglicheVerpackungen($kKundengruppe)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use VersandartHelper::getPossiblePackagings() instead.', E_USER_DEPRECATED);
+
+    return VersandartHelper::getPossiblePackagings($kKundengruppe);
+}
+
+/**
+ * @param int $size
+ * @param string $format
+ * @return string
+ * @deprecated since 5.0.0
+ */
+function formatSize($size, $format = '%.2f')
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use StringHandler::formatSize() instead.', E_USER_DEPRECATED);
+
+    return StringHandler::formatSize($size, $format);
 }

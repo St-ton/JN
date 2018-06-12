@@ -14,7 +14,7 @@ $Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_KONTAKTFORMULAR]
 $linkHelper    = Shop::Container()->getLinkService();
 $kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_KONTAKT);
 //hole alle OberKategorien
-$AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
+$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;

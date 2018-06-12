@@ -121,7 +121,7 @@ class Trennzeichen
     public static function getUnit(int $nEinheit, int $kSprache, $fAmount = -1)
     {
         if (!$kSprache) {
-            $oSprache = gibStandardsprache(true);
+            $oSprache = Sprache::getDefaultLanguage(true);
             $kSprache = (int)$oSprache->kSprache;
         }
 
@@ -151,7 +151,7 @@ class Trennzeichen
     {
         // Standardwert [kSprache][nEinheit]
         $xRowAssoc_arr = [];
-        foreach (gibAlleSprachen() as $language) {
+        foreach (Sprache::getAllLanguages() as $language) {
             $xRowAssoc_arr[$language->kSprache][JTL_SEPARATOR_WEIGHT] = [
                 'nDezimalstellen'   => 2,
                 'cDezimalZeichen'   => ',',
@@ -390,7 +390,7 @@ class Trennzeichen
     public static function migrateUpdate()
     {
         $conf      = Shop::getSettings([CONF_ARTIKELDETAILS, CONF_ARTIKELUEBERSICHT]);
-        $languages = gibAlleSprachen();
+        $languages = Sprache::getAllLanguages();
         if (is_array($languages) && count($languages) > 0) {
             Shop::Container()->getDB()->query('TRUNCATE ttrennzeichen', \DB\ReturnType::AFFECTED_ROWS);
             $units = [JTL_SEPARATOR_WEIGHT, JTL_SEPARATOR_AMOUNT, JTL_SEPARATOR_LENGTH];

@@ -160,13 +160,16 @@ class Kategorie
         if (!$kSprache) {
             $kSprache = Shop::getLanguageID();
             if (!$kSprache) {
-                $oSpracheTmp = gibStandardsprache();
+                $oSpracheTmp = Sprache::getDefaultLanguage();
                 $kSprache    = $oSpracheTmp->kSprache;
             }
         }
         $this->kSprache = $kSprache;
         //exculpate session
-        $cacheID = CACHING_GROUP_CATEGORY . '_' . $kKategorie . '_' . $kSprache . '_cg_' . $kKundengruppe . '_ssl_' . pruefeSSL();
+        $cacheID = CACHING_GROUP_CATEGORY . '_' . $kKategorie .
+            '_' . $kSprache .
+            '_cg_' . $kKundengruppe .
+            '_ssl_' . RequestHelper::checkSSL();
         if (!$noCache && ($category = Shop::Cache()->get($cacheID)) !== false) {
             foreach (get_object_vars($category) as $k => $v) {
                 $this->$k = $v;
@@ -184,7 +187,7 @@ class Kategorie
         $oSQLKategorie->cSELECT = '';
         $oSQLKategorie->cJOIN   = '';
         $oSQLKategorie->cWHERE  = '';
-        if (!$recall && $kSprache > 0 && !standardspracheAktiv(false, $kSprache)) {
+        if (!$recall && $kSprache > 0 && !Sprache::isDefaultLanguageActive(false, $kSprache)) {
             $oSQLKategorie->cSELECT = 'tkategoriesprache.cName AS cName_spr, 
                 tkategoriesprache.cBeschreibung AS cBeschreibung_spr, 
                 tkategoriesprache.cMetaDescription AS cMetaDescription_spr,
@@ -211,10 +214,10 @@ class Kategorie
             \DB\ReturnType::SINGLE_OBJECT
         );
         if ($oKategorie === null || $oKategorie === false) {
-            if (!$recall && !standardspracheAktiv(false, $kSprache)) {
+            if (!$recall && !Sprache::isDefaultLanguageActive(false, $kSprache)) {
                 if (defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true) {
                     if ($oSpracheTmp === null) {
-                        $oSpracheTmp = gibStandardsprache();
+                        $oSpracheTmp = Sprache::getDefaultLanguage();
                     }
                     $kDefaultLang = (int)$oSpracheTmp->kSprache;
                     if ($kDefaultLang !== $kSprache) {
@@ -232,7 +235,7 @@ class Kategorie
         if ((!isset($oKategorie->cSeo) || $oKategorie->cSeo === null || $oKategorie->cSeo === '') &&
             defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true
         ) {
-            $kDefaultLang = $oSpracheTmp !== null ? $oSpracheTmp->kSprache : gibStandardsprache()->kSprache;
+            $kDefaultLang = $oSpracheTmp !== null ? $oSpracheTmp->kSprache : Sprache::getDefaultLanguage()->kSprache;
             $kDefaultLang = (int)$kDefaultLang;
             if ($kSprache !== $kDefaultLang) {
                 $oSeo = Shop::Container()->getDB()->select(
@@ -305,7 +308,7 @@ class Kategorie
         /** @deprecated since version 4.05 - usage of KategorieAttribute is deprecated, use categoryFunctionAttributes instead */
         $this->KategorieAttribute = &$this->categoryFunctionAttributes;
         // lokalisieren
-        if ($kSprache > 0 && !standardspracheAktiv()) {
+        if ($kSprache > 0 && !Sprache::isDefaultLanguageActive()) {
             if (isset($oKategorie->cName_spr) && strlen($oKategorie->cName_spr) > 0) {
                 $this->cName = $oKategorie->cName_spr;
                 unset($oKategorie->cName_spr);

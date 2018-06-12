@@ -121,7 +121,7 @@ class KategorieHelper
             $descriptionSelect   = ", '' AS cBeschreibung";
             $shopURL             = Shop::getURL(true);
             $imageBaseURL        = Shop::getImageBaseURL();
-            $isDefaultLang       = standardspracheAktiv();
+            $isDefaultLang       = Sprache::isDefaultLanguageActive();
             $visibilityWhere     = " AND tartikelsichtbarkeit.kArtikel IS NULL";
             $depthWhere          = self::$limitReached === true
                 ? " AND node.nLevel <= " . CATEGORY_FULL_LOAD_MAX_LEVEL
@@ -339,7 +339,7 @@ class KategorieHelper
         $descriptionSelect   = ", '' AS cBeschreibung";
         $shopURL             = Shop::getURL(true);
         $imageBaseURL        = Shop::getImageBaseURL();
-        $isDefaultLang       = standardspracheAktiv();
+        $isDefaultLang       = Sprache::isDefaultLanguageActive();
         $visibilityWhere     = ' AND tartikelsichtbarkeit.kArtikel IS NULL';
         $getDescription      = (!(isset(self::$config['template']['megamenu']['show_maincategory_info'])
             && isset(self::$config['template']['megamenu']['show_categories'])

@@ -415,7 +415,7 @@ class News extends MainModel
         if ($kKey > 0) {
             $kSprache = Shop::getLanguage();
             if ($kSprache <= 0) {
-                $oSprache = gibStandardsprache();
+                $oSprache = Sprache::getDefaultLanguage();
                 $kSprache = (int)$oSprache->kSprache;
             }
 
@@ -480,7 +480,7 @@ class News extends MainModel
         }
         $kSprache = Shop::getLanguage();
         if ($kSprache <= 0) {
-            $oSprache = gibStandardsprache();
+            $oSprache = Sprache::getDefaultLanguage();
             $kSprache = (int)$oSprache->kSprache;
         }
         $oObj_arr = Shop::Container()->getDB()->query(

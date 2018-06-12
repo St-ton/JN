@@ -207,7 +207,7 @@ class Preise
                     );
                 $kSteuerklasse = (int)$tax->kSteuerklasse;
             }
-            $this->fUst          = gibUst($kSteuerklasse);
+            $this->fUst          = TaxHelper::getSalesTax($kSteuerklasse);
             $this->kArtikel      = $kArtikel;
             $this->kKundengruppe = $kKundengruppe;
             $this->kKunde        = $kKunde;
@@ -336,7 +336,7 @@ class Preise
                     WHERE kArtikel = " . $kArtikel,
                 \DB\ReturnType::SINGLE_OBJECT
             );
-            $this->fUst = gibUst($ust_obj->kSteuerklasse);
+            $this->fUst = TaxHelper::getSalesTax($ust_obj->kSteuerklasse);
             //hat dieser Artikel fuer diese Kundengruppe einen Sonderpreis?
             $sonderpreis = Shop::Container()->getDB()->query(
                 "SELECT tsonderpreise.fNettoPreis
@@ -421,20 +421,20 @@ class Preise
         $this->cPreisLocalized_arr = [];
         foreach ($this->fPreis_arr as $fPreis) {
             $this->cPreisLocalized_arr[] = [
-                gibPreisStringLocalized(berechneBrutto($fPreis, $this->fUst, 4), $currency),
-                gibPreisStringLocalized($fPreis, $currency)
+                self::getLocalizedPriceString(TaxHelper::getGross($fPreis, $this->fUst, 4), $currency),
+                self::getLocalizedPriceString($fPreis, $currency)
             ];
         }
 
-        $this->cVKLocalized[0] = gibPreisStringLocalized(berechneBrutto($this->fVKNetto, $this->fUst, 4), $currency);
-        $this->cVKLocalized[1] = gibPreisStringLocalized($this->fVKNetto, $currency);
+        $this->cVKLocalized[0] = self::getLocalizedPriceString(TaxHelper::getGross($this->fVKNetto, $this->fUst, 4), $currency);
+        $this->cVKLocalized[1] = self::getLocalizedPriceString($this->fVKNetto, $currency);
 
-        $this->fVKBrutto = berechneBrutto($this->fVKNetto, $this->fUst);
+        $this->fVKBrutto = TaxHelper::getGross($this->fVKNetto, $this->fUst);
 
         if ($this->alterVKNetto) {
-            $this->alterVKLocalized[0] = gibPreisStringLocalized(berechneBrutto($this->alterVKNetto, $this->fUst, 4),
+            $this->alterVKLocalized[0] = self::getLocalizedPriceString(TaxHelper::getGross($this->alterVKNetto, $this->fUst, 4),
                 $currency);
-            $this->alterVKLocalized[1] = gibPreisStringLocalized($this->alterVKNetto, $currency);
+            $this->alterVKLocalized[1] = self::getLocalizedPriceString($this->alterVKNetto, $currency);
         }
 
         return $this;
@@ -447,18 +447,18 @@ class Preise
     {
         $factor = Session::Currency()->getConversionFactor();
 
-        $this->fVKBrutto = berechneBrutto($this->fVKNetto, $this->fUst);
+        $this->fVKBrutto = TaxHelper::getGross($this->fVKNetto, $this->fUst);
 
-        $this->fVK[0] = berechneBrutto($this->fVKNetto * $factor, $this->fUst);
+        $this->fVK[0] = TaxHelper::getGross($this->fVKNetto * $factor, $this->fUst);
         $this->fVK[1] = $this->fVKNetto * $factor;
 
-        $this->alterVK[0] = berechneBrutto($this->alterVKNetto * $factor, $this->fUst);
+        $this->alterVK[0] = TaxHelper::getGross($this->alterVKNetto * $factor, $this->fUst);
         $this->alterVK[1] = $this->alterVKNetto * $factor;
 
         $this->fStaffelpreis_arr = [];
         foreach ($this->fPreis_arr as $fPreis) {
             $this->fStaffelpreis_arr[] = [
-                berechneBrutto($fPreis * $factor, $this->fUst),
+                TaxHelper::getGross($fPreis * $factor, $this->fUst),
                 $fPreis * $factor
             ];
         }
@@ -547,5 +547,54 @@ class Preise
                 $this->fStaffelpreis_arr[$fStaffelpreisKey][$fPreisKey] = 0;
             }
         }
+    }
+
+    /**
+     * @param float    $preis
+     * @param Currency $waehrung
+     * @param bool     $html
+     * @return string
+     * @former gibPreisLocalizedOhneFaktor()
+     */
+    public static function getLocalizedPriceWithoutFactor($preis, $waehrung = null, bool $html = true): string
+    {
+        $currency = !$waehrung ? Session::Currency() : $waehrung;
+        if (get_class($currency) === 'stdClass') {
+            $currency = new Currency($currency->kWaehrung);
+        }
+        $localized    = number_format($preis, 2, $currency->getDecimalSeparator(), $currency->getThousandsSeparator());
+        $waherungname = $html ? $currency->getHtmlEntity() : $currency->getName();
+
+        return $currency->getForcePlacementBeforeNumber()
+            ? $waherungname . ' ' . $localized
+            : $localized . ' ' . $waherungname;
+    }
+
+    /**
+     * @param float      $price
+     * @param object|int $currency
+     * @param bool       $html
+     * @param int        $decimals
+     * @return string
+     * @former self::getLocalizedPriceString()
+     */
+    public static function getLocalizedPriceString($price, $currency = 0, bool $html = true, int $decimals = 2): string
+    {
+        if ($currency === 0 || is_numeric($currency)) {
+            $currency = Session::Currency();
+        } elseif (get_class($currency) === 'stdClass') {
+            $currency = new Currency($currency->kWaehrung);
+        }
+        $localized    = number_format(
+            $price * $currency->getConversionFactor(),
+            $decimals,
+            $currency->getDecimalSeparator(),
+            $currency->getThousandsSeparator()
+        );
+        $currencyName = $html ? $currency->getHtmlEntity() : $currency->getName();
+
+        return $currency->getForcePlacementBeforeNumber()
+            ? ($currencyName . ' ' . $localized)
+            : ($localized . ' ' . $currencyName);
     }
 }

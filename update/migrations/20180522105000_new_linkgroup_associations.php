@@ -40,7 +40,7 @@ class Migration_20180522105000 extends Migration implements IMigration
         $missingLanguageEntries = \Functional\group($missingLanguageEntries, function ($e) {
             return $e->kLink;
         });
-        $sprachen               = gibAlleSprachen();
+        $sprachen               = Sprache::getAllLanguages();
         foreach ($missingLanguageEntries as $linkID => $links) {
             $linkData           = \Functional\first($links);
             $linkSprache        = new stdClass();

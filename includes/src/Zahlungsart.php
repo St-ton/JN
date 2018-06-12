@@ -510,7 +510,7 @@ class Zahlungsart extends MainModel
                 if (isset($_SESSION['cISOSprache'])) {
                     $iso = $_SESSION['cISOSprache'];
                 } else {
-                    $language = gibStandardsprache(true);
+                    $language = Sprache::getDefaultLanguage(true);
                     $iso      = $language->cISO;
                 }
             }
@@ -550,7 +550,7 @@ class Zahlungsart extends MainModel
             if (isset($_SESSION['cISOSprache'])) {
                 $iso = $_SESSION['cISOSprache'];
             } else {
-                $language = gibStandardsprache(true);
+                $language = Sprache::getDefaultLanguage(true);
                 $iso      = $language->cISO;
             }
         }

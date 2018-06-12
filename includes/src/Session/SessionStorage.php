@@ -73,7 +73,7 @@ class SessionStorage
             $domain = $conf['global_cookie_domain'];
             //EXPERIMENTAL_MULTILANG_SHOP
             if (defined('EXPERIMENTAL_MULTILANG_SHOP')) {
-                $languages = gibAlleSprachen();
+                $languages = \Sprache::getAllLanguages();
                 foreach ($languages as $Sprache) {
                     if (defined('URL_SHOP_' . strtoupper($Sprache->cISO))) {
                         $shopLangURL = constant('URL_SHOP_' . strtoupper($Sprache->cISO));

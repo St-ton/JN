@@ -171,8 +171,8 @@ class ItemPriceRange extends AbstractFilter
         $this->offsetEnd   = (float)$end;
         $this->setValue($id === '0_0' ? 0 : ($this->offsetStart . '_' . $this->offsetEnd));
         // localize prices
-        $this->offsetStartLocalized = gibPreisLocalizedOhneFaktor($this->offsetStart);
-        $this->offsetEndLocalized   = gibPreisLocalizedOhneFaktor($this->offsetEnd);
+        $this->offsetStartLocalized = \Preise::getLocalizedPriceWithoutFactor($this->offsetStart);
+        $this->offsetEndLocalized   = \Preise::getLocalizedPriceWithoutFactor($this->offsetEnd);
         $this->setName($this->offsetStartLocalized . ' - ' . $this->offsetEndLocalized);
         $this->isInitialized = true;
         $conversionFactor    = \Session::Currency()->getConversionFactor();
@@ -508,14 +508,8 @@ class ItemPriceRange extends AbstractFilter
                         }
                         $nBis = $nPreisMax;
                     }
-                    $cVonLocalized     = gibPreisLocalizedOhneFaktor(
-                        $nVon,
-                        $currency
-                    );
-                    $cBisLocalized     = gibPreisLocalizedOhneFaktor(
-                        $nBis,
-                        $currency
-                    );
+                    $cVonLocalized     = \Preise::getLocalizedPriceWithoutFactor($nVon, $currency);
+                    $cBisLocalized     = \Preise::getLocalizedPriceWithoutFactor($nBis, $currency);
                     $fo->nVon          = $nVon;
                     $fo->nBis          = $nBis;
                     $fo->cVonLocalized = $cVonLocalized;
@@ -583,14 +577,8 @@ class ItemPriceRange extends AbstractFilter
                     $fo                = new FilterOption();
                     $fo->nVon          = $range->nVon;
                     $fo->nBis          = $range->nBis;
-                    $fo->cVonLocalized = gibPreisLocalizedOhneFaktor(
-                        $fo->nVon,
-                        $currency
-                    );
-                    $fo->cBisLocalized = gibPreisLocalizedOhneFaktor(
-                        $fo->nBis,
-                        $currency
-                    );
+                    $fo->cVonLocalized = \Preise::getLocalizedPriceWithoutFactor($fo->nVon, $currency);
+                    $fo->cBisLocalized = \Preise::getLocalizedPriceWithoutFactor($fo->nBis, $currency);
                     $options[] = $fo->setParam($this->getUrlParam())
                                     ->setURL($this->productFilter->getFilterURL()->getURL(
                                         $additionalFilter->init($fo->nVon . '_' . $fo->nBis)

@@ -420,19 +420,19 @@ class Boxen
                             $oArtikel->fuelleArtikel($oPreisradar->kArtikel, $defaultOptions);
                             $oArtikel->oPreisradar                     = new stdClass();
                             $oArtikel->oPreisradar->fDiff              = $oPreisradar->fDiff * -1;
-                            $oArtikel->oPreisradar->fDiffLocalized[0]  = gibPreisStringLocalized(
-                                berechneBrutto($oArtikel->oPreisradar->fDiff, $oArtikel->Preise->fUst)
+                            $oArtikel->oPreisradar->fDiffLocalized[0]  = Preise::getLocalizedPriceString(
+                                TaxHelper::getGross($oArtikel->oPreisradar->fDiff, $oArtikel->Preise->fUst)
                             );
-                            $oArtikel->oPreisradar->fDiffLocalized[1]  = gibPreisStringLocalized(
+                            $oArtikel->oPreisradar->fDiffLocalized[1]  = Preise::getLocalizedPriceString(
                                 $oArtikel->oPreisradar->fDiff
                             );
-                            $oArtikel->oPreisradar->fOldVKLocalized[0] = gibPreisStringLocalized(
-                                berechneBrutto(
+                            $oArtikel->oPreisradar->fOldVKLocalized[0] = Preise::getLocalizedPriceString(
+                                TaxHelper::getGross(
                                     $oArtikel->Preise->fVKNetto + $oArtikel->oPreisradar->fDiff,
                                     $oArtikel->Preise->fUst
                                 )
                             );
-                            $oArtikel->oPreisradar->fOldVKLocalized[1] = gibPreisStringLocalized(
+                            $oArtikel->oPreisradar->fOldVKLocalized[1] = Preise::getLocalizedPriceString(
                                 $oArtikel->Preise->fVKNetto + $oArtikel->oPreisradar->fDiff
                             );
                             $oArtikel->oPreisradar->fProzentDiff       = $oPreisradar->fProzentDiff;
@@ -727,7 +727,7 @@ class Boxen
                                 (100 + $_SESSION['Steuersatz'][$CWunschlistePos->Artikel->kSteuerklasse]) / 100)
                             : 0;
                     }
-                    $CWunschlistePos->cPreis = gibPreisStringLocalized($fPreis, Session::Currency());
+                    $CWunschlistePos->cPreis = Preise::getLocalizedPriceString($fPreis, Session::Currency());
                 }
                 $oBox->anzeigen            = 'Y';
                 $oBox->nAnzeigen           = (int)$this->boxConfig['boxen']['boxen_wunschzettel_anzahl'];

@@ -410,7 +410,7 @@ class Kunde
      */
     public function gibGuthabenLocalized(): string
     {
-        return gibPreisStringLocalized($this->fGuthaben);
+        return Preise::getLocalizedPriceString($this->fGuthaben);
     }
 
     /**

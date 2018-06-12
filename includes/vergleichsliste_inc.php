@@ -131,17 +131,18 @@ function setzeVergleich($oVergleichsliste)
         && is_array($oVergleichsliste->oArtikel_arr)
         && count($oVergleichsliste->oArtikel_arr) > 0
     ) {
-        $nVergleiche = Shop::Container()->getDB()->query(
-            "SELECT count(kVergleichsliste) AS nVergleiche
+        $nVergleiche = Shop::Container()->getDB()->queryPrepared(
+            'SELECT count(kVergleichsliste) AS nVergleiche
                 FROM tvergleichsliste
-                WHERE cIP = '" . gibIP() . "'
-                    AND dDate > DATE_SUB(now(),INTERVAL 1 DAY)",
+                WHERE cIP = :ip
+                    AND dDate > DATE_SUB(now(),INTERVAL 1 DAY)',
+            ['ip' => RequestHelper::getIP()],
             \DB\ReturnType::SINGLE_OBJECT
         );
 
         if ($nVergleiche->nVergleiche < 3) {
             $oVergleichslisteTable        = new stdClass();
-            $oVergleichslisteTable->cIP   = gibIP();
+            $oVergleichslisteTable->cIP   = RequestHelper::getIP();
             $oVergleichslisteTable->dDate = date('Y-m-d H:i:s');
             $kVergleichsliste = Shop::Container()->getDB()->insert('tvergleichsliste', $oVergleichslisteTable);
             foreach ($oVergleichsliste->oArtikel_arr as $oArtikel) {

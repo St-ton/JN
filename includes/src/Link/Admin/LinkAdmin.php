@@ -87,7 +87,7 @@ final class LinkAdmin
             $kLinkgruppe = (int)$post['kLinkgruppe'];
             $this->db->update('tlinkgruppe', 'kLinkgruppe', $kLinkgruppe, $linkGroup);
         }
-        $sprachen                       = gibAlleSprachen();
+        $sprachen                       = \Sprache::getAllLanguages();
         $linkgruppeSprache              = new \stdClass();
         $linkgruppeSprache->kLinkgruppe = $kLinkgruppe;
         foreach ($sprachen as $sprache) {
@@ -471,7 +471,7 @@ final class LinkAdmin
             $this->db->update('tlink', 'kLink', $kLink, $link);
 
         }
-        $sprachen    = gibAlleSprachen();
+        $sprachen           = \Sprache::getAllLanguages();
         $linkSprache        = new \stdClass();
         $linkSprache->kLink = $kLink;
         foreach ($sprachen as $sprache) {

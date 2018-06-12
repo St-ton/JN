@@ -75,7 +75,7 @@ class Preisverlauf
                     $_pv->date   = $dt->format('d.m.');
                     $_pv->fPreis = Session::CustomerGroup()->isMerchant()
                         ? round($_pv->fVKNetto * $_currency->getConversionFactor(), 2)
-                        : berechneBrutto($_pv->fVKNetto * $_currency->getConversionFactor(), $_pv->fMwst);
+                        : TaxHelper::getGross($_pv->fVKNetto * $_currency->getConversionFactor(), $_pv->fMwst);
                     $_pv->currency = $_currency->getCode();
                 }
             }

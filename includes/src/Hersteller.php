@@ -129,7 +129,7 @@ class Hersteller
         //noCache param to avoid problem with de-serialization of class properties with jtl search
         $kSprache = $kSprache > 0 ? $kSprache : Shop::getLanguageID();
         if ($kSprache === 0) {
-            $oSprache = gibStandardsprache();
+            $oSprache = Sprache::getDefaultLanguage();
             $kSprache = (int)$oSprache->kSprache;
         }
         $cacheID     = 'manuf_' . $kHersteller . '_' . $kSprache . Shop::Cache()->getBaseID();

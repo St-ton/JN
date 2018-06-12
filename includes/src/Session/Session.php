@@ -268,7 +268,7 @@ class Session
             $_SESSION['Waehrungen'][] = new \Currency($currency->kWaehrung);
         }
         if (!isset($_SESSION['jtl_token'])) {
-            $_SESSION['jtl_token'] = generateCSRFToken();
+            $_SESSION['jtl_token'] = \Shop::Container()->getCryptoService()->randomString(32);
         }
         array_map(function ($lang) {
             $lang->kSprache = (int)$lang->kSprache;
@@ -350,7 +350,7 @@ class Session
             $_SESSION['Hersteller']  = \HerstellerHelper::getInstance()->getManufacturers();
         }
         $_SESSION['Warenkorb']->loescheDeaktiviertePositionen();
-        setzeSteuersaetze();
+        \TaxHelper::setTaxRates();
         // sprache neu laden
         \Shop::Lang()->reset();
     }
@@ -360,7 +360,7 @@ class Session
      */
     private function checkWishlistDeletes(): self
     {
-        $kWunschlistePos = verifyGPCDataInteger('wlplo');
+        $kWunschlistePos = \RequestHelper::verifyGPCDataInt('wlplo');
         if ($kWunschlistePos !== 0) {
             $CWunschliste = new \Wunschliste();
             $CWunschliste->entfernePos($kWunschlistePos);
@@ -374,7 +374,7 @@ class Session
      */
     private function checkComparelistDeletes(): self
     {
-        $kVergleichlistePos = verifyGPCDataInteger('vlplo');
+        $kVergleichlistePos = \RequestHelper::verifyGPCDataInt('vlplo');
         if ($kVergleichlistePos !== 0
             && isset($_SESSION['Vergleichsliste']->oArtikel_arr)
             && is_array($_SESSION['Vergleichsliste']->oArtikel_arr)
@@ -493,7 +493,7 @@ class Session
                                  ->setMayViewPrices(1)
                                  ->initAttributes();
         self::Cart()->setzePositionsPreise();
-        setzeSteuersaetze();
+        \TaxHelper::setTaxRates();
         setzeLinks();
 
         return $this;

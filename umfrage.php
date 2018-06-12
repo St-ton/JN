@@ -22,7 +22,7 @@ $kLink                  = $linkHelper->getSpecialPageLinkKey(LINKTYP_UMFRAGE);
 $AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
-$AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
+$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 
 // Umfrage durchführen

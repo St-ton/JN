@@ -749,68 +749,68 @@ final class Shop
      */
     public static function run(): ProductFilter
     {
-        self::$kKonfigPos             = verifyGPCDataInteger('ek');
-        self::$kKategorie             = verifyGPCDataInteger('k');
-        self::$kArtikel               = verifyGPCDataInteger('a');
-        self::$kVariKindArtikel       = verifyGPCDataInteger('a2');
-        self::$kSeite                 = verifyGPCDataInteger('s');
-        self::$kLink                  = verifyGPCDataInteger('s');
-        self::$kHersteller            = verifyGPCDataInteger('h');
-        self::$kSuchanfrage           = verifyGPCDataInteger('l');
-        self::$kMerkmalWert           = verifyGPCDataInteger('m');
-        self::$kTag                   = verifyGPCDataInteger('t');
-        self::$kSuchspecial           = verifyGPCDataInteger('q');
-        self::$kNews                  = verifyGPCDataInteger('n');
-        self::$kNewsMonatsUebersicht  = verifyGPCDataInteger('nm');
-        self::$kNewsKategorie         = verifyGPCDataInteger('nk');
-        self::$kUmfrage               = verifyGPCDataInteger('u');
-        self::$nBewertungSterneFilter = verifyGPCDataInteger('bf');
-        self::$cPreisspannenFilter    = verifyGPDataString('pf');
-        self::$kHerstellerFilter      = verifyGPCDataInteger('hf');
-        self::$kKategorieFilter       = verifyGPCDataInteger('kf');
-        self::$searchSpecialFilterIDs = verifyGPDataIntegerArray('qf');
-        self::$kSuchFilter            = verifyGPCDataInteger('sf');
+        self::$kKonfigPos             = RequestHelper::verifyGPCDataInt('ek');
+        self::$kKategorie             = RequestHelper::verifyGPCDataInt('k');
+        self::$kArtikel               = RequestHelper::verifyGPCDataInt('a');
+        self::$kVariKindArtikel       = RequestHelper::verifyGPCDataInt('a2');
+        self::$kSeite                 = RequestHelper::verifyGPCDataInt('s');
+        self::$kLink                  = RequestHelper::verifyGPCDataInt('s');
+        self::$kHersteller            = RequestHelper::verifyGPCDataInt('h');
+        self::$kSuchanfrage           = RequestHelper::verifyGPCDataInt('l');
+        self::$kMerkmalWert           = RequestHelper::verifyGPCDataInt('m');
+        self::$kTag                   = RequestHelper::verifyGPCDataInt('t');
+        self::$kSuchspecial           = RequestHelper::verifyGPCDataInt('q');
+        self::$kNews                  = RequestHelper::verifyGPCDataInt('n');
+        self::$kNewsMonatsUebersicht  = RequestHelper::verifyGPCDataInt('nm');
+        self::$kNewsKategorie         = RequestHelper::verifyGPCDataInt('nk');
+        self::$kUmfrage               = RequestHelper::verifyGPCDataInt('u');
+        self::$nBewertungSterneFilter = RequestHelper::verifyGPCDataInt('bf');
+        self::$cPreisspannenFilter    = RequestHelper::verifyGPDataString('pf');
+        self::$kHerstellerFilter      = RequestHelper::verifyGPCDataInt('hf');
+        self::$kKategorieFilter       = RequestHelper::verifyGPCDataInt('kf');
+        self::$searchSpecialFilterIDs = RequestHelper::verifyGPDataIntegerArray('qf');
+        self::$kSuchFilter            = RequestHelper::verifyGPCDataInt('sf');
         self::$kSuchspecialFilter     = count(self::$searchSpecialFilterIDs) > 0
             ? self::$searchSpecialFilterIDs[0]
             : 0;
 
-        self::$nDarstellung = verifyGPCDataInteger('ed');
-        self::$nSortierung  = verifyGPCDataInteger('sortierreihenfolge');
-        self::$nSort        = verifyGPCDataInteger('Sortierung');
+        self::$nDarstellung = RequestHelper::verifyGPCDataInt('ed');
+        self::$nSortierung  = RequestHelper::verifyGPCDataInt('sortierreihenfolge');
+        self::$nSort        = RequestHelper::verifyGPCDataInt('Sortierung');
 
-        self::$show            = verifyGPCDataInteger('show');
-        self::$vergleichsliste = verifyGPCDataInteger('vla');
+        self::$show            = RequestHelper::verifyGPCDataInt('show');
+        self::$vergleichsliste = RequestHelper::verifyGPCDataInt('vla');
         self::$bFileNotFound   = false;
         self::$cCanonicalURL   = '';
         self::$is404           = false;
 
-        self::$nSterne = verifyGPCDataInteger('nSterne');
+        self::$nSterne = RequestHelper::verifyGPCDataInt('nSterne');
 
         self::$kWunschliste = Wunschliste::checkeParameters();
 
-        self::$nNewsKat = verifyGPCDataInteger('nNewsKat');
-        self::$cDatum   = verifyGPDataString('cDatum');
-        self::$nAnzahl  = verifyGPCDataInteger('nAnzahl');
+        self::$nNewsKat = RequestHelper::verifyGPCDataInt('nNewsKat');
+        self::$cDatum   = RequestHelper::verifyGPDataString('cDatum');
+        self::$nAnzahl  = RequestHelper::verifyGPCDataInt('nAnzahl');
 
-        if (strlen(verifyGPDataString('qs')) > 0) {
-            self::$cSuche = StringHandler::xssClean(verifyGPDataString('qs'));
-        } elseif (strlen(verifyGPDataString('suchausdruck')) > 0) {
-            self::$cSuche = StringHandler::xssClean(verifyGPDataString('suchausdruck'));
+        if (strlen(RequestHelper::verifyGPDataString('qs')) > 0) {
+            self::$cSuche = StringHandler::xssClean(RequestHelper::verifyGPDataString('qs'));
+        } elseif (strlen(RequestHelper::verifyGPDataString('suchausdruck')) > 0) {
+            self::$cSuche = StringHandler::xssClean(RequestHelper::verifyGPDataString('suchausdruck'));
         } else {
-            self::$cSuche = StringHandler::xssClean(verifyGPDataString('suche'));
+            self::$cSuche = StringHandler::xssClean(RequestHelper::verifyGPDataString('suche'));
         }
         // avoid redirect loops for surveys that require logged in customers
-        if (self::$kUmfrage > 0 && empty($_SESSION['Kunde']->kKunde) && verifyGPCDataInteger('r') !== 0) {
+        if (self::$kUmfrage > 0 && empty($_SESSION['Kunde']->kKunde) && RequestHelper::verifyGPCDataInt('r') !== 0) {
             self::$kUmfrage = 0;
         }
 
-        self::$nArtikelProSeite = verifyGPCDataInteger('af');
+        self::$nArtikelProSeite = RequestHelper::verifyGPCDataInt('af');
         if (self::$nArtikelProSeite !== 0) {
             $_SESSION['ArtikelProSeite'] = self::$nArtikelProSeite;
         }
 
         self::$isInitialized = true;
-        $redirect            = verifyGPDataString('r');
+        $redirect            = RequestHelper::verifyGPDataString('r');
         if (self::$kArtikel > 0) {
             if (!empty($redirect)
                 && (self::$kNews > 0 // get param "n" was used a article amount
@@ -833,12 +833,12 @@ final class Shop
         $_SESSION['cTemplate'] = Template::$cTemplate;
 
         if (self::$kWunschliste === 0
-            && verifyGPDataString('error') === ''
-            && strlen(verifyGPDataString('wlid')) > 0
+            && RequestHelper::verifyGPDataString('error') === ''
+            && strlen(RequestHelper::verifyGPDataString('wlid')) > 0
         ) {
             header(
                 'Location: ' . LinkHelper::getInstance()->getStaticRoute('wunschliste.php') .
-                '?wlid=' . StringHandler::filterXSS(verifyGPDataString('wlid')) . '&error=1',
+                '?wlid=' . StringHandler::filterXSS(RequestHelper::verifyGPDataString('wlid')) . '&error=1',
                 true,
                 303
             );
@@ -1267,7 +1267,7 @@ final class Shop
         $cLang = $spr->cISO ?? null;
         if ($cLang !== $_SESSION['cISOSprache']) {
             checkeSpracheWaehrung($cLang);
-            setzeSteuersaetze();
+            TaxHelper::setTaxRates();
         }
     }
 
@@ -1644,7 +1644,7 @@ final class Shop
             && defined('URL_SHOP_' . strtoupper($_SESSION['cISOSprache'])))
             ? constant('URL_SHOP_' . strtoupper($_SESSION['cISOSprache']))
             : URL_SHOP;
-        $sslStatus = pruefeSSL();
+        $sslStatus = RequestHelper::checkSSL();
         if ($sslStatus === 2) {
             $cShopURL = str_replace('http://', 'https://', $cShopURL);
         } elseif ($sslStatus === 4 || ($sslStatus === 3 && $bForceSSL)) {

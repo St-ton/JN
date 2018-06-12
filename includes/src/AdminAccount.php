@@ -128,7 +128,7 @@ class AdminAccount
     {
         $log = new \Model\AuthLogEntry();
 
-        $log->setIP(getRealIp());
+        $log->setIP(RequestHelper::getRealIP());
         $log->setCode($code);
         $log->setUser($user);
 

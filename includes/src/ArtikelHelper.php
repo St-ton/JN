@@ -250,7 +250,7 @@ class ArtikelHelper
             $attributes[]      = $i;
             $attributeValues[] = $propertyValues[$i];
         }
-        if ($kSprache > 0 && !standardspracheAktiv()) {
+        if ($kSprache > 0 && !Sprache::isDefaultLanguageActive()) {
             $attr->cSELECT = "teigenschaftsprache.cName AS cName_teigenschaftsprache, ";
             $attr->cJOIN   = "LEFT JOIN teigenschaftsprache 
                                         ON teigenschaftsprache.kEigenschaft = teigenschaft.kEigenschaft
@@ -324,7 +324,7 @@ class ArtikelHelper
                             $oEigenschaftwerte->kEigenschaft     = $oEigenschaft->kEigenschaft;
                             $oEigenschaftwerte->cTyp             = $oEigenschaft->cTyp;
 
-                            if ($kSprache > 0 && !standardspracheAktiv()) {
+                            if ($kSprache > 0 && !Sprache::isDefaultLanguageActive()) {
                                 $oEigenschaftwerte->cEigenschaftName     = $oEigenschaft->cName_teigenschaftsprache;
                                 $oEigenschaftwerte->cEigenschaftWertName = $oEigenschaft->cName_teigenschaftwertsprache;
                             } else {
@@ -689,9 +689,9 @@ class ArtikelHelper
      * @param string        $value
      * @param callable|null $callback
      * @return mixed
-     * @since 5.0
+     * @since 5.0.0
      */
-    public static function getArticleByAttribute($attribute, $value, callable $callback = null)
+    public static function getProductByAttribute($attribute, $value, callable $callback = null)
     {
         $art = ($res = self::getDataByAttribute($attribute, $value)) !== null
             ? (new Artikel())->fuelleArtikel($res->kArtikel, Artikel::getDefaultOptions())
@@ -700,5 +700,124 @@ class ArtikelHelper
         return is_callable($callback)
             ? $callback($art)
             : $art;
+    }
+
+
+
+    /**
+     * Gibt den kArtikel von einem Varikombi Kind zurück und braucht dafür Eigenschaften und EigenschaftsWerte
+     * Klappt nur bei max. 2 Dimensionen
+     *
+     * @param int $kArtikel
+     * @param int $es0
+     * @param int $esWert0
+     * @param int $es1
+     * @param int $esWert1
+     * @return int
+     * @since 5.0.0
+     * @former findeKindArtikelZuEigenschaft()
+     */
+    public static function getChildProdctIDByAttribute(int $kArtikel, int $es0, int $esWert0, int $es1 = 0, int $esWert1 = 0): int
+    {
+        if ($es0 > 0 && $esWert0 > 0) {
+            $cSQLJoin   = " JOIN teigenschaftkombiwert
+                          ON teigenschaftkombiwert.kEigenschaftKombi = tartikel.kEigenschaftKombi
+                          AND teigenschaftkombiwert.kEigenschaft = " . $es0 . "
+                          AND teigenschaftkombiwert.kEigenschaftWert = " . $esWert0;
+            $cSQLHaving = '';
+            if ($es1 > 0 && $esWert1 > 0) {
+                $cSQLJoin = " JOIN teigenschaftkombiwert
+                              ON teigenschaftkombiwert.kEigenschaftKombi = tartikel.kEigenschaftKombi
+                              AND teigenschaftkombiwert.kEigenschaft IN(" . $es0 . ", " . $es1 . ")
+                              AND teigenschaftkombiwert.kEigenschaftWert IN(" . $esWert0 . ", " . $esWert1 . ")";
+
+                $cSQLHaving = " HAVING COUNT(*) = 2";
+            }
+            $oArtikel = Shop::Container()->getDB()->query(
+                "SELECT kArtikel
+                    FROM tartikel
+                    " . $cSQLJoin . "
+                    WHERE tartikel.kVaterArtikel = " . $kArtikel . "
+                    GROUP BY teigenschaftkombiwert.kEigenschaftKombi" . $cSQLHaving,
+                \DB\ReturnType::SINGLE_OBJECT
+            );
+            if (isset($oArtikel->kArtikel) && count($oArtikel->kArtikel) > 0) {
+                return (int)$oArtikel->kArtikel;
+            }
+        }
+
+        return 0;
+    }
+
+    /**
+     * @param int  $kArtikel
+     * @param bool $bSichtbarkeitBeachten
+     * @return array
+     * @since 5.0.0
+     * @former gibVarKombiEigenschaftsWerte()
+     */
+    public static function getVarCombiAttributeValues(int $kArtikel, bool $bSichtbarkeitBeachten = true): array
+    {
+        $oEigenschaftwerte_arr = [];
+        if ($kArtikel > 0 && self::isVariChild($kArtikel)) {
+            $oArtikel                            = new Artikel();
+            $oArtikelOptionen                    = new stdClass();
+            $oArtikelOptionen->nMerkmale         = 0;
+            $oArtikelOptionen->nAttribute        = 0;
+            $oArtikelOptionen->nArtikelAttribute = 0;
+            $oArtikelOptionen->nVariationKombi   = 1;
+
+            if (!$bSichtbarkeitBeachten) {
+                $oArtikelOptionen->nKeineSichtbarkeitBeachten = 1;
+            }
+
+            $oArtikel->fuelleArtikel($kArtikel, $oArtikelOptionen);
+
+            if ($oArtikel->oVariationenNurKind_arr !== null
+                && is_array($oArtikel->oVariationenNurKind_arr)
+                && count($oArtikel->oVariationenNurKind_arr) > 0
+            ) {
+                foreach ($oArtikel->oVariationenNurKind_arr as $oVariationenNurKind) {
+                    $oEigenschaftwerte                       = new stdClass();
+                    $oEigenschaftwerte->kEigenschaftWert     = $oVariationenNurKind->Werte[0]->kEigenschaftWert;
+                    $oEigenschaftwerte->kEigenschaft         = $oVariationenNurKind->kEigenschaft;
+                    $oEigenschaftwerte->cEigenschaftName     = $oVariationenNurKind->cName;
+                    $oEigenschaftwerte->cEigenschaftWertName = $oVariationenNurKind->Werte[0]->cName;
+
+                    $oEigenschaftwerte_arr[] = $oEigenschaftwerte;
+                }
+            }
+        }
+
+        return $oEigenschaftwerte_arr;
+    }
+
+    /**
+     * @param array $oVariation_arr
+     * @param int   $kEigenschaft
+     * @param int   $kEigenschaftWert
+     * @return bool|object
+     * @former findeVariation()
+     * @since 5.0.0
+     */
+    public static function findVariation(array $oVariation_arr, int $kEigenschaft, int $kEigenschaftWert): bool
+    {
+        foreach ($oVariation_arr as $oVariation) {
+            $oVariation->kEigenschaft = (int)$oVariation->kEigenschaft;
+            if ($oVariation->kEigenschaft === $kEigenschaft
+                && isset($oVariation->Werte)
+                && is_array($oVariation->Werte)
+                && count($oVariation->Werte) > 0
+            ) {
+                foreach ($oVariation->Werte as $oWert) {
+                    $oWert->kEigenschaftWert = (int)$oWert->kEigenschaftWert;
+                    if ($oWert->kEigenschaftWert === $kEigenschaftWert) {
+                        return $oWert;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 }

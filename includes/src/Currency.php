@@ -349,9 +349,9 @@ class Currency
             $taxClassID    = $oSteuerklasse !== null ? (int)$oSteuerklasse->kSteuerklasse : 1;
             if ((float)$priceNet > 0) {
                 $priceNet   = (float)$priceNet;
-                $priceGross = berechneBrutto((float)$priceNet, gibUst($taxClassID));
+                $priceGross = TaxHelper::getGross((float)$priceNet, TaxHelper::getSalesTax($taxClassID));
             } elseif ((float)$priceGross > 0) {
-                $priceNet   = berechneNetto((float)$priceGross, gibUst($taxClassID));
+                $priceNet   = TaxHelper::getNet((float)$priceGross, TaxHelper::getSalesTax($taxClassID));
                 $priceGross = (float)$priceGross;
             }
             $res = '<span class="preisstring ' . $class . '">';

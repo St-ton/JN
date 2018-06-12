@@ -125,7 +125,7 @@ class Merkmal
 
             return $this;
         }
-        $kStandardSprache = gibStandardsprache()->kSprache;
+        $kStandardSprache = Sprache::getDefaultLanguage()->kSprache;
         if ($kSprache !== $kStandardSprache) {
             $cSelect = "COALESCE(fremdSprache.cName, standardSprache.cName) AS cName";
             $cJoin   = "INNER JOIN tmerkmalsprache AS standardSprache 
@@ -226,13 +226,13 @@ class Merkmal
         if (is_array($kMerkmal_arr) && count($kMerkmal_arr) > 0) {
             $kSprache = Shop::getLanguage();
             if (!$kSprache) {
-                $oSprache = gibStandardsprache();
+                $oSprache = Sprache::getDefaultLanguage();
                 if ($oSprache->kSprache > 0) {
                     $kSprache = $oSprache->kSprache;
                 }
             }
             $kSprache         = (int)$kSprache;
-            $kStandardSprache = (int)gibStandardsprache()->kSprache;
+            $kStandardSprache = (int)Sprache::getDefaultLanguage()->kSprache;
             if ($kSprache !== $kStandardSprache) {
                 $cSelect = "COALESCE(fremdSprache.cName, standardSprache.cName) AS cName";
                 $cJoin   = "INNER JOIN tmerkmalsprache AS standardSprache 

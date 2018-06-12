@@ -196,12 +196,12 @@ class Kampagne
         $bKampagnenHit = false;
         foreach ($campaigns as $oKampagne) {
             // Wurde für die aktuelle Kampagne der Parameter via GET oder POST uebergeben?
-            if (strlen(verifyGPDataString($oKampagne->cParameter)) > 0
+            if (strlen(RequestHelper::verifyGPDataString($oKampagne->cParameter)) > 0
                 && isset($oKampagne->nDynamisch)
                 && ((int)$oKampagne->nDynamisch === 1
                     || ((int)$oKampagne->nDynamisch === 0
                         && isset($oKampagne->cWert)
-                        && strtolower($oKampagne->cWert) === strtolower(verifyGPDataString($oKampagne->cParameter)))
+                        && strtolower($oKampagne->cWert) === strtolower(RequestHelper::verifyGPDataString($oKampagne->cParameter)))
                 )
             ) {
                 $referrer = gibReferer();
@@ -223,7 +223,7 @@ class Kampagne
                     $oKampagnenVorgang->kKampagneDef = KAMPAGNE_DEF_HIT;
                     $oKampagnenVorgang->kKey         = $_SESSION['oBesucher']->kBesucher;
                     $oKampagnenVorgang->fWert        = 1.0;
-                    $oKampagnenVorgang->cParamWert   = verifyGPDataString($oKampagne->cParameter);
+                    $oKampagnenVorgang->cParamWert   = RequestHelper::verifyGPDataString($oKampagne->cParameter);
                     $oKampagnenVorgang->cCustomData  = StringHandler::filterXSS($_SERVER['REQUEST_URI']) . ';' . $referrer;
                     if ((int)$oKampagne->nDynamisch === 0) {
                         $oKampagnenVorgang->cParamWert = $oKampagne->cWert;
@@ -261,7 +261,7 @@ class Kampagne
                     $oKampagnenVorgang->dErstellt    = 'now()';
 
                     if ((int)$oKampagne->nDynamisch === 1) {
-                        $oKampagnenVorgang->cParamWert = verifyGPDataString($oKampagne->cParameter);
+                        $oKampagnenVorgang->cParamWert = RequestHelper::verifyGPDataString($oKampagne->cParameter);
                     }
 
                     Shop::Container()->getDB()->insert('tkampagnevorgang', $oKampagnenVorgang);

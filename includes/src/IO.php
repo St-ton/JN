@@ -100,7 +100,7 @@ class IO
         // respond with an error?
         if (is_object($data)) {
             if ($data instanceof IOError) {
-                header(makeHTTPHeader($data->code), true, $data->code);
+                header(RequestHelper::makeHTTPHeader($data->code), true, $data->code);
             } elseif ($data instanceof IOFile) {
                 $this->pushFile($data->filename, $data->mimetype);
             }

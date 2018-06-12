@@ -8,10 +8,10 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 
 Shop::run();
 $cParameter_arr   = Shop::getParameters();
-$cURLID           = StringHandler::filterXSS(verifyGPDataString('wlid'));
+$cURLID           = StringHandler::filterXSS(RequestHelper::verifyGPDataString('wlid'));
 $Einstellungen    = Shop::getSettings([CONF_GLOBAL, CONF_RSS]);
-$kWunschliste     = (verifyGPCDataInteger('wl') > 0 && verifyGPCDataInteger('wlvm') === 0)
-    ? verifyGPCDataInteger('wl') //one of multiple customer wishlists
+$kWunschliste     = (RequestHelper::verifyGPCDataInt('wl') > 0 && RequestHelper::verifyGPCDataInt('wlvm') === 0)
+    ? RequestHelper::verifyGPCDataInt('wl') //one of multiple customer wishlists
     : ($cParameter_arr['kWunschliste'] //default wishlist from Shop class
         ?? $cURLID); //public link
 $AktuelleSeite    = 'WUNSCHLISTE';
@@ -53,7 +53,7 @@ if ($action !== null && isset($_POST['kWunschliste'], $_SESSION['Kunde']->kKunde
             $oWunschlistePos = giboWunschlistePos($kWunschlistePos);
             if (isset($oWunschlistePos->kArtikel) && $oWunschlistePos->kArtikel > 0) {
                 $oEigenschaftwerte_arr = ArtikelHelper::isVariChild($oWunschlistePos->kArtikel)
-                    ? gibVarKombiEigenschaftsWerte($oWunschlistePos->kArtikel)
+                    ? ArtikelHelper::getVarCombiAttributeValues($oWunschlistePos->kArtikel)
                     : gibEigenschaftenZuWunschliste($kWunschliste, $oWunschlistePos->kWunschlistePos);
                 if (!$oWunschlistePos->bKonfig) {
                     fuegeEinInWarenkorb($oWunschlistePos->kArtikel, $oWunschlistePos->fAnzahl, $oEigenschaftwerte_arr);
@@ -94,7 +94,7 @@ if ($action !== null && isset($_POST['kWunschliste'], $_SESSION['Kunde']->kKunde
             if (count($oWunschliste->CWunschlistePos_arr) > 0) {
                 foreach ($oWunschliste->CWunschlistePos_arr as $oWunschlistePos) {
                     $oEigenschaftwerte_arr = ArtikelHelper::isVariChild($oWunschlistePos->kArtikel)
-                        ? gibVarKombiEigenschaftsWerte($oWunschlistePos->kArtikel)
+                        ? ArtikelHelper::getVarCombiAttributeValues($oWunschlistePos->kArtikel)
                         : gibEigenschaftenZuWunschliste($kWunschliste, $oWunschlistePos->kWunschlistePos);
                     if (!$oWunschlistePos->Artikel->bHasKonfig && empty($oWunschlistePos->bKonfig) &&
                         isset($oWunschlistePos->Artikel->inWarenkorbLegbar) &&
@@ -212,7 +212,7 @@ if ($action !== null && isset($_POST['kWunschliste'], $_SESSION['Kunde']->kKunde
             break;
 
         case 'search':
-            $cSuche = StringHandler::filterXSS(verifyGPDataString('cSuche'));
+            $cSuche = StringHandler::filterXSS(RequestHelper::verifyGPDataString('cSuche'));
             if ($userOK === true && strlen($cSuche) > 0) {
                 $oWunschliste                      = new Wunschliste($kWunschliste);
                 $oWunschlistePosSuche_arr          = $oWunschliste->sucheInWunschliste($cSuche);
@@ -226,7 +226,7 @@ if ($action !== null && isset($_POST['kWunschliste'], $_SESSION['Kunde']->kKunde
     }
 } elseif ($action === 'search' && $kWunschliste > 0 && validateToken()) {
     // Suche in einer öffentlichen Wunschliste
-    $cSuche = StringHandler::filterXSS(verifyGPDataString('cSuche'));
+    $cSuche = StringHandler::filterXSS(RequestHelper::verifyGPDataString('cSuche'));
     if (strlen($cSuche) > 0) {
         $oWunschliste                      = new Wunschliste($kWunschliste);
         $oWunschlistePosSuche_arr          = $oWunschliste->sucheInWunschliste($cSuche);
@@ -235,11 +235,11 @@ if ($action !== null && isset($_POST['kWunschliste'], $_SESSION['Kunde']->kKunde
     }
 }
 
-if (verifyGPCDataInteger('wlidmsg') > 0) {
-    $cHinweis .= mappeWunschlisteMSG(verifyGPCDataInteger('wlidmsg'));
+if (RequestHelper::verifyGPCDataInt('wlidmsg') > 0) {
+    $cHinweis .= mappeWunschlisteMSG(RequestHelper::verifyGPCDataInt('wlidmsg'));
 }
 // Falls Wunschliste vielleicht vorhanden aber nicht öffentlich
-if (verifyGPCDataInteger('error') === 1) {
+if (RequestHelper::verifyGPCDataInt('error') === 1) {
     if (strlen($cURLID) > 0) {
         $oWunschliste = Shop::Container()->getDB()->select('twunschliste', 'cURLID', $cURLID);
         if (!isset($oWunschliste->kWunschliste, $oWunschliste->nOeffentlich) ||
@@ -313,7 +313,7 @@ if (isset($CWunschliste->kWunschliste) && $CWunschliste->kWunschliste > 0) {
     $oKampagne = new Kampagne(KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
 
     if (isset($oKampagne->kKampagne, $oKampagne->cWert)
-        && strtolower($oKampagne->cWert) === strtolower(verifyGPDataString($oKampagne->cParameter))
+        && strtolower($oKampagne->cWert) === strtolower(RequestHelper::verifyGPDataString($oKampagne->cParameter))
     ) {
         $oKampagnenVorgang               = new stdClass();
         $oKampagnenVorgang->kKampagne    = $oKampagne->kKampagne;

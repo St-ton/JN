@@ -277,7 +277,7 @@ class ItemAttribute extends BaseAttribute
             ->setOrigin(__CLASS__));
 
         $kSprache         = $this->getLanguageID();
-        $kStandardSprache = (int)gibStandardsprache()->kSprache;
+        $kStandardSprache = \Sprache::getDefaultLanguage()->kSprache;
         if ($kSprache !== $kStandardSprache) {
             $state->setSelect('COALESCE(tmerkmalsprache.cName, tmerkmal.cName) AS cName, ' .
                 'COALESCE(fremdSprache.cSeo, standardSprache.cSeo) AS cSeo, ' .

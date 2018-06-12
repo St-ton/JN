@@ -182,7 +182,7 @@ class Redirect
         if (file_exists($cFile)) {
             $handle = fopen($cFile, 'r');
             if ($handle) {
-                $oSprache     = gibStandardsprache(true);
+                $oSprache     = Sprache::getDefaultLanguage(true);
                 $cMapping_arr = [];
                 $i            = 0;
                 while (($csv = fgetcsv($handle, 30000, ';')) !== false) {
@@ -401,15 +401,16 @@ class Redirect
             if (strlen($cReferer) > 0) {
                 $cReferer = $this->normalize($cReferer);
             }
-            $cIP = getRealIp();
+            $cIP = RequestHelper::getRealIP();
             // Eintrag für diese IP bereits vorhanden?
-            $oEntry = Shop::Container()->getDB()->query(
-                "SELECT *
+            $oEntry = Shop::Container()->getDB()->queryPrepared(
+                'SELECT *
                     FROM tredirectreferer tr
                     LEFT JOIN tredirect t 
                         ON t.kRedirect = tr.kRedirect
-                    WHERE tr.cIP = '{$cIP}'
-                    AND t.cFromUrl = '{$cUrl}' LIMIT 1",
+                    WHERE tr.cIP = :ip
+                    AND t.cFromUrl = :frm LIMIT 1',
+                ['ip' => $cIP, 'frm' => $cUrl],
                 \DB\ReturnType::SINGLE_OBJECT
             );
             if ($oEntry === false || $oEntry === null || (is_object($oEntry) && (int)$oEntry->nCount === 0)) {

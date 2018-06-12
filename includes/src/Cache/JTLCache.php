@@ -788,8 +788,8 @@ final class JTLCache implements JTLCacheInterface
             $baseID .= '_curid' . (int)$currencyID;
         }
         // add current SSL status
-        if ($sslStatus === true && \function_exists('pruefeSSL')) {
-            $baseID .= '_ssl' . pruefeSSL();
+        if ($sslStatus === true) {
+            $baseID .= '_ssl' . \RequestHelper::checkSSL();
         }
 
         if ($this->options['debug'] === true && $this->options['debug_method'] === 'echo') {

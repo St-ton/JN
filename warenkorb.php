@@ -106,12 +106,12 @@ if (isset($_POST['gratis_geschenk'], $_POST['gratishinzufuegen']) && (int)$_POST
             executeHook(HOOK_WARENKORB_PAGE_GRATISGESCHENKEINFUEGEN);
             $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_GRATISGESCHENK)
                  ->fuegeEin($kArtikelGeschenk, 1, [], C_WARENKORBPOS_TYP_GRATISGESCHENK);
-            fuegeEinInWarenkorbPers($kArtikelGeschenk, 1, [], '', 0, C_WARENKORBPOS_TYP_GRATISGESCHENK);
+            WarenkorbPers::addToCheck($kArtikelGeschenk, 1, [], '', 0, C_WARENKORBPOS_TYP_GRATISGESCHENK);
         }
     }
 }
 // hole aktuelle Kategorie, falls eine gesetzt
-$AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
+$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
@@ -164,7 +164,7 @@ WarenkorbHelper::addVariationPictures($cart);
 $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('MsgWarning', $MsgWarning)
        ->assign('Schnellkaufhinweis', $Schnellkaufhinweis)
-       ->assign('laender', gibBelieferbareLaender($kKundengruppe))
+       ->assign('laender', VersandartHelper::getPossibleShippingCountries($kKundengruppe))
        ->assign('KuponMoeglich', kuponMoeglich())
        ->assign('currentCoupon', Shop::Lang()->get('currentCoupon', 'checkout'))
        ->assign('currentCouponName', (!empty($_SESSION['Kupon']->translationList)

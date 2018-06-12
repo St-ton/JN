@@ -11,7 +11,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
 $smarty                 = Shop::Smarty();
 $AktuelleSeite          = 'SEITE';
 $Einstellungen          = Shopsetting::getInstance()->getAll();
-$AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
+$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
@@ -62,7 +62,7 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
     if (!isset($kKundengruppe)) {
         $kKundengruppe = Kundengruppe::getDefaultGroupID();
     }
-    $smarty->assign('laender', gibBelieferbareLaender($kKundengruppe));
+    $smarty->assign('laender', VersandartHelper::getPossibleShippingCountries($kKundengruppe));
 } elseif ($link->getLinkType() === LINKTYP_LIVESUCHE) {
     $smarty->assign('LivesucheTop', gibLivesucheTop($Einstellungen))
            ->assign('LivesucheLast', gibLivesucheLast($Einstellungen));

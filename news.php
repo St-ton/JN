@@ -32,7 +32,7 @@ $nAktuelleSeite         = (Shop::$kSeite !== null && Shop::$kSeite > 0) ? Shop::
 $oNewsUebersicht_arr    = [];
 $linkHelper             = Shop::Container()->getLinkService();
 $kLink                  = $linkHelper->getSpecialPageLinkKey(LINKTYP_NEWS);
-$AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
+$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
@@ -44,9 +44,9 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
     if (!isset($_SESSION['NewsNaviFilter'])) {
         $_SESSION['NewsNaviFilter'] = new stdClass();
     }
-    if (verifyGPCDataInteger('nSort') > 0) {
-        $_SESSION['NewsNaviFilter']->nSort = verifyGPCDataInteger('nSort');
-    } elseif (verifyGPCDataInteger('nSort') === -1) {
+    if (RequestHelper::verifyGPCDataInt('nSort') > 0) {
+        $_SESSION['NewsNaviFilter']->nSort = RequestHelper::verifyGPCDataInt('nSort');
+    } elseif (RequestHelper::verifyGPCDataInt('nSort') === -1) {
         $_SESSION['NewsNaviFilter']->nSort = -1;
     }
     if (strlen($cParameter_arr['cDatum']) > 0) {

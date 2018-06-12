@@ -1299,7 +1299,7 @@ class Metadata implements MetadataInterface
      */
     public function setUserSort($currentCategory = null): MetadataInterface
     {
-        $gpcSort = verifyGPCDataInteger('Sortierung');
+        $gpcSort = \RequestHelper::verifyGPCDataInt('Sortierung');
         // Der User möchte die Standardsortierung wiederherstellen
         if ($gpcSort === 100) {
             unset($_SESSION['Usersortierung'], $_SESSION['nUsersortierungWahl'], $_SESSION['UsersortierungVorSuche']);

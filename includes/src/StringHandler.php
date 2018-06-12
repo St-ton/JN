@@ -589,7 +589,7 @@ class StringHandler
             return $cText;
         }
         if (!isset($_SESSION['kSprache'])) {
-            $_lang    = gibStandardsprache();
+            $_lang    = Sprache::getDefaultLanguage();
             $kSprache = (int)$_lang->kSprache;
         } else {
             $kSprache = Shop::getLanguageID();
@@ -627,7 +627,7 @@ class StringHandler
                     $oObjekt->cKey     = 'kArtikel';
                     $cTabellenname     = 'tartikel';
                     $cSpracheSQL       = '';
-                    if (Shop::getLanguageID() > 0 && !standardspracheAktiv()) {
+                    if (Shop::getLanguageID() > 0 && !Sprache::isDefaultLanguageActive()) {
                         $cTabellenname = 'tartikelsprache';
                         $cSpracheSQL   = " AND tartikelsprache.kSprache = " . Shop::getLanguageID();
                     }
@@ -654,7 +654,7 @@ class StringHandler
                     $oObjekt->cKey       = 'kKategorie';
                     $cTabellenname       = 'tkategorie';
                     $cSpracheSQL         = '';
-                    if ($kSprache > 0 && !standardspracheAktiv()) {
+                    if ($kSprache > 0 && !Sprache::isDefaultLanguageActive()) {
                         $cTabellenname = "tkategoriesprache";
                         $cSpracheSQL   = " AND tkategoriesprache.kSprache = " . $kSprache;
                     }
@@ -827,5 +827,24 @@ class StringHandler
         }
 
         return $cText;
+    }
+
+    /**
+     * @param int $size
+     * @param string $format
+     * @return string
+     */
+    public static function formatSize($size, $format = '%.2f'): string
+    {
+        $units = ['b', 'Kb', 'Mb', 'Gb', 'Tb', 'Pb', 'Eb', 'Zb', 'Yb'];
+        $res   = '';
+        foreach ($units as $n => $unit) {
+            $div = 1024 ** $n;
+            if ($size > $div) {
+                $res = sprintf("$format %s", $size / $div, $unit);
+            }
+        }
+
+        return $res;
     }
 }

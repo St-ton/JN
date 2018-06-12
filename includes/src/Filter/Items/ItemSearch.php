@@ -229,7 +229,7 @@ class ItemSearch extends AbstractFilter
                 FROM tsuchanfragencache
                 WHERE kSprache = :lang
                 AND cIP = :ip',
-            ['lang' => $languageID, 'ip' => gibIP()],
+            ['lang' => $languageID, 'ip' => \RequestHelper::getIP()],
             ReturnType::SINGLE_OBJECT
         );
         $ipUsed       = \Shop::Container()->getDB()->select(
@@ -239,7 +239,7 @@ class ItemSearch extends AbstractFilter
             'cSuche',
             $Suchausdruck,
             'cIP',
-            gibIP(),
+            \RequestHelper::getIP(),
             false,
             'kSuchanfrageCache'
         );
@@ -250,7 +250,7 @@ class ItemSearch extends AbstractFilter
             // Fülle Suchanfragencache
             $searchQueryCache           = new \stdClass();
             $searchQueryCache->kSprache = $languageID;
-            $searchQueryCache->cIP      = gibIP();
+            $searchQueryCache->cIP      = \RequestHelper::getIP();
             $searchQueryCache->cSuche   = $Suchausdruck;
             $searchQueryCache->dZeit    = 'now()';
             \Shop::Container()->getDB()->insert('tsuchanfragencache', $searchQueryCache);

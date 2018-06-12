@@ -30,7 +30,7 @@ final class Communication
             curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 60);
             curl_setopt($ch, CURLOPT_TIMEOUT, 60);
 
-            $cContent = curl_exec_follow($ch);
+            $cContent = RequestHelper::curl_exec_follow($ch);
 
             curl_close($ch);
         } else {

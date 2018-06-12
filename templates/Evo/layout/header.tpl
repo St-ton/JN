@@ -71,7 +71,7 @@
         {* Languages *}
         {if !empty($smarty.session.Sprachen) && count($smarty.session.Sprachen) > 1}
             {foreach item=oSprache from=$smarty.session.Sprachen}
-                    <link rel="alternate" hreflang="{$oSprache->cISO639}" href="{$oSprache->cURLFull}">
+                <link rel="alternate" hreflang="{$oSprache->cISO639}" href="{$oSprache->cURLFull}">
             {/foreach}
         {/if}
     {/block}
@@ -95,6 +95,7 @@
         <script src="{$ShopURL}/{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/jquery-1.12.4.min.js"></script>
     {/block}
     {include file='layout/header_inline_js.tpl'}
+    {$dbgBarHead}
 </head>
 {/block}
 

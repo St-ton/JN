@@ -4,6 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+$debugbar["messages"]->addMessage("hello world!");
 $smarty        = Shop::Smarty();
 $oBrowser      = getBrowser();
 $oTemplate     = Template::getInstance();
@@ -146,8 +147,11 @@ if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0) {
 $visitorCount = $Einstellungen['global']['global_zaehler_anzeigen'] === 'Y'
     ? (int)Shop::Container()->getDB()->query('SELECT nZaehler FROM tbesucherzaehler', \DB\ReturnType::SINGLE_OBJECT)->nZaehler
     : 0;
+$debugbar['time']->stopMeasure('init');
 $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))
        ->assign('nIsSSL', pruefeSSL())
        ->assign('boxes', $boxesToShow)
        ->assign('nZeitGebraucht', isset($nStartzeit) ? (microtime(true) - $nStartzeit) : 0)
-       ->assign('Besucherzaehler', $visitorCount);
+       ->assign('Besucherzaehler', $visitorCount)
+    ->assign('dbgBarHead', $debugbarRenderer->renderHead())
+    ->assign('dbgBarBody', $debugbarRenderer->render());

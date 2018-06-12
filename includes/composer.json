@@ -23,7 +23,8 @@
         "tightenco/collect": "~5.5.0",
         "eloquent/pathogen": "~0.6",
         "mrclay/minify": "~3.0.0",
-        "myclabs/php-enum": "^1.5"
+        "myclabs/php-enum": "^1.5",
+        "maximebf/debugbar": "^1.15"
     },
     "require-dev": {
         "phpunit/php-token-stream": "~1.2",

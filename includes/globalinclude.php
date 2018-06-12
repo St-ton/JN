@@ -16,6 +16,8 @@ if (defined('PFAD_ROOT')) {
         'Bei einer Neuinstallation bitte <a href="install/index.php">hier</a> klicken.');
 }
 
+use DebugBar\StandardDebugBar;
+
 require_once PFAD_ROOT . PFAD_INCLUDES . 'error_handler.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 // existiert Konfiguration?
@@ -37,16 +39,12 @@ if (!function_exists('Shop')) {
         return Shop::getInstance();
     }
 }
-// PHP memory_limit work around
-if (!Shop()->PHPSettingsHelper()->hasMinLimit(64 * 1024 * 1024)) {
-    ini_set('memory_limit', '64M');
-}
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 require_once PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
 
 try {
-    Shop::Container()->getDB();
+    $db = Shop::Container()->getDB();
 } catch (Exception $exc) {
     die($exc->getMessage());
 }
@@ -75,11 +73,21 @@ if (PHP_SAPI !== 'cli'
 }
 
 if (!JTL_INCLUDE_ONLY_DB) {
+    $debugbar         = new StandardDebugBar();
+    $debugbarRenderer = $debugbar->getJavascriptRenderer();
+    $debugbarRenderer->setBaseUrl(URL_SHOP . '/' . rtrim(PFAD_INCLUDES, '/') . $debugbarRenderer->getBaseUrl());
+
+    $pdo = new DebugBar\DataCollector\PDO\TraceablePDO($db->getPDO());
+    $debugbar->addCollector(new DebugBar\DataCollector\PDO\PDOCollector($pdo));
+    $debugbar['time']->startMeasure('init', 'Shop start to end');
+    $debugbar->addCollector(new DebugBar\DataCollector\ConfigCollector(Shopsetting::getInstance()->getAll()));
+
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'parameterhandler.php';
     require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'auswahlassistent_ext_inc.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikelsuchspecial_inc.php';
+
     $oPluginHookListe_arr         = Plugin::getHookList();
     $nSystemlogFlag               = Jtllog::getSytemlogFlag();
     $template                     = Template::getInstance();
@@ -100,5 +108,6 @@ if (!JTL_INCLUDE_ONLY_DB) {
     }
     Sprache::getInstance();
     require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
+    $debugbar->addCollector(new SmartyCollector(Shop::Smarty()));
     Shop::bootstrap();
 }

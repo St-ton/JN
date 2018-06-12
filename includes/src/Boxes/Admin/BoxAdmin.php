@@ -522,20 +522,6 @@ final class BoxAdmin
     /**
      * @return array
      */
-    public function getBoxesWithMissingParent(): array
-    {
-        return $this->db->query(
-            'SELECT * 
-                FROM tboxen 
-                WHERE kContainer > 0 
-                AND kContainer NOT IN (SELECT kBox FROM tboxen)',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-    }
-
-    /**
-     * @return array
-     */
     public function getInvisibleBoxes(): array
     {
         $unavailabe = \Functional\filter(\Template::getInstance()->getBoxLayoutXML(), function ($e) {
@@ -550,7 +536,8 @@ final class BoxAdmin
                 FROM tboxen 
                     LEFT JOIN tboxvorlage
                     ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
-                WHERE ePosition IN (' . implode(',', $mapped) . ')',
+                WHERE ePosition IN (' . implode(',', $mapped) . ') 
+                    OR (kContainer > 0  AND kContainer NOT IN (SELECT kBox FROM tboxen))',
             ReturnType::ARRAY_OF_OBJECTS
         );
     }

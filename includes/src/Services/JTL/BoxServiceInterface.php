@@ -46,19 +46,19 @@ interface BoxServiceInterface
     public function addRecentlyViewed(int $kArtikel, $nMaxAnzahl = null);
 
     /**
-     * @param int  $nSeite
-     * @param bool $bGlobal
+     * @param int  $pageType
+     * @param bool $global
      * @return array|bool
      */
-    public function holeBoxAnzeige(int $nSeite, bool $bGlobal = true);
+    public function getVisibility(int $pageType, bool $global = true);
 
     /**
-     * @param int          $kBox
-     * @param int          $kSeite
+     * @param int          $boxID
+     * @param int          $pageType
      * @param string|array $cFilter
      * @return int
      */
-    public function filterBoxVisibility(int $kBox, int $kSeite, $cFilter = ''): int;
+    public function filterBoxVisibility(int $boxID, int $pageType, $cFilter = ''): int;
 
     /**
      * @param ProductFilter              $pf
@@ -96,10 +96,10 @@ interface BoxServiceInterface
     public function render(array $positionedBoxes): array;
 
     /**
-     * @param int  $nSeite
-     * @param bool $bAktiv
-     * @param bool $bVisible
+     * @param int  $pageType
+     * @param bool $active
+     * @param bool $visible
      * @return array
      */
-    public function buildList(int $nSeite = 0, bool $bAktiv = true, bool $bVisible = false): array;
+    public function buildList(int $pageType = 0, bool $active = true, bool $visible = false): array;
 }

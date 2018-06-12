@@ -405,7 +405,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
     $nShopVersion           = 0; // Aktuelle Shop-Version
     $baseNode               = $XML_arr['jtlshop3plugin'][0];
     // Shopversion holen
-    $oVersion = Shop::Container()->getDB()->query("SELECT nVersion FROM tversion LIMIT 1", 1);
+    $oVersion = Shop::Container()->getDB()->query("SELECT nVersion FROM tversion LIMIT 1", \DB\ReturnType::SINGLE_OBJECT);
 
     if ($oVersion->nVersion > 0) {
         $nShopVersion = (int)$oVersion->nVersion;
@@ -578,9 +578,9 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                 }
             } elseif (strlen($cTreffer2_arr[0]) === strlen($i)) {
                 // Prüfe SQL und CreateDate
-                if (isset($Version['SQL']) &&
-                    strlen($Version['SQL']) > 0 &&
-                    !file_exists($cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
+                if (isset($Version['SQL'])
+                    && strlen($Version['SQL']) > 0
+                    && !file_exists($cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
                         PFAD_PLUGIN_SQL . $Version['SQL'])
                  ) {
                     return PLUGIN_CODE_MISSING_SQL_FILE;
@@ -2311,10 +2311,9 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
         if (strlen($cTreffer2_arr[0]) !== strlen($u)) {
             continue;
         }
-        $kLinkOld                  = (!empty($oPluginOld->kPlugin))
-            ? Shop::Container()->getDB()->select('tlink', 'kPlugin', $oPluginOld->kPlugin, 'cName', $Link_arr['Name'])
-            : null;
-        $oLink->kLinkgruppe        = $kLinkgruppe;
+        $kLinkOld                  = empty($oPluginOld->kPlugin)
+            ? null
+            : Shop::Container()->getDB()->select('tlink', 'kPlugin', $oPluginOld->kPlugin, 'cName', $Link_arr['Name']);
         $oLink->kPlugin            = $kPlugin;
         $oLink->cName              = $Link_arr['Name'];
         $oLink->nLinkart           = LINKTYP_PLUGIN;
@@ -2325,10 +2324,14 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
         $oLink->bSSL               = isset($Link_arr['SSL'])
             ? (int)$Link_arr['SSL']
             : 0;
-        // tlink füllen
         $kLink = Shop::Container()->getDB()->insert('tlink', $oLink);
 
         if ($kLink > 0) {
+            $linkGroupAssociation              = new stdClass();
+            $linkGroupAssociation->linkGroupID = $kLinkgruppe;
+            $linkGroupAssociation->linkID      = $kLink;
+            Shop::Container()->getDB()->insert('tlinkgroupassociations', $linkGroupAssociation);
+
             $oLinkSprache        = new stdClass();
             $oLinkSprache->kLink = $kLink;
             // Hole alle Sprachen des Shops
@@ -2368,7 +2371,8 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
                             "DELETE FROM tseo
                                     WHERE cKey = 'kLink'
                                         AND (kKey = " . (int)$kLink . $or . ")
-                                        AND kSprache = " . (int)$oSprachAssoc_arr[$oLinkSprache->cISOSprache]->kSprache, 4
+                                        AND kSprache = " . (int)$oSprachAssoc_arr[$oLinkSprache->cISOSprache]->kSprache,
+                            \DB\ReturnType::DEFAULT
                         );
                         // tseo füllen
                         $oSeo           = new stdClass();
@@ -3156,7 +3160,8 @@ function syncPluginUpdate($kPlugin, $oPluginOld, $nXMLVersion)
             "SELECT *
                 FROM tplugineinstellungen
                 WHERE kPlugin IN (" . $kPluginOld . ", " . $kPlugin . ")
-                ORDER BY kPlugin", 2
+                ORDER BY kPlugin",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (is_array($oPluginEinstellung_arr) && count($oPluginEinstellung_arr) > 0) {
             $oEinstellung_arr = [];
@@ -3178,9 +3183,10 @@ function syncPluginUpdate($kPlugin, $oPluginOld, $nXMLVersion)
                     $oEinstellung_arr[$cName]->cWert   = $oPluginEinstellung->cWert;
                 }
             }
-            Shop::Container()->getDB()->query("
-                DELETE FROM tplugineinstellungen
-                    WHERE kPlugin IN (" . $kPluginOld . ", " . $kPlugin . ")", 3
+            Shop::Container()->getDB()->query(
+                "DELETE FROM tplugineinstellungen
+                    WHERE kPlugin IN (" . $kPluginOld . ", " . $kPlugin . ")",
+                \DB\ReturnType::AFFECTED_ROWS
             );
 
             foreach ($oEinstellung_arr as $oEinstellung) {
@@ -3191,14 +3197,16 @@ function syncPluginUpdate($kPlugin, $oPluginOld, $nXMLVersion)
             "UPDATE tplugineinstellungen
                 SET kPlugin = " . $kPluginOld . ",
                     cName = REPLACE(cName, 'kPlugin_" . $kPlugin . "_', 'kPlugin_" . $kPluginOld . "_')
-                WHERE kPlugin = " . $kPlugin, 3
+                WHERE kPlugin = " . $kPlugin,
+            \DB\ReturnType::AFFECTED_ROWS
         );
         // tplugineinstellungenconf
         Shop::Container()->getDB()->query(
             "UPDATE tplugineinstellungenconf
                 SET kPlugin = " . $kPluginOld . ",
                     cWertName = REPLACE(cWertName, 'kPlugin_" . $kPlugin . "_', 'kPlugin_" . $kPluginOld . "_')
-                WHERE kPlugin = " . $kPlugin, 3
+                WHERE kPlugin = " . $kPlugin,
+            \DB\ReturnType::AFFECTED_ROWS
         );
         // tboxvorlage
         $upd = new stdClass();
@@ -3209,7 +3217,8 @@ function syncPluginUpdate($kPlugin, $oPluginOld, $nXMLVersion)
             "UPDATE tpluginzahlungsartklasse
                 SET kPlugin = " . $kPluginOld . ",
                     cModulId = REPLACE(cModulId, 'kPlugin_" . $kPlugin . "_', 'kPlugin_" . $kPluginOld . "_')
-                WHERE kPlugin = " . $kPlugin, 3
+                WHERE kPlugin = " . $kPlugin,
+            \DB\ReturnType::AFFECTED_ROWS
         );
         // tpluginemailvorlageeinstellungen
         //@todo: this part was really messed up - check.
@@ -3282,14 +3291,16 @@ function syncPluginUpdate($kPlugin, $oPluginOld, $nXMLVersion)
         $oZahlungsartOld_arr = Shop::Container()->getDB()->query("
             SELECT kZahlungsart, cModulId
                 FROM tzahlungsart
-                WHERE cModulId LIKE 'kPlugin_{$kPluginOld}_%'", 2
+                WHERE cModulId LIKE 'kPlugin_{$kPluginOld}_%'",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oZahlungsartOld_arr as $oZahlungsartOld) {
             $cModulIdNew     = str_replace("kPlugin_{$kPluginOld}_", "kPlugin_{$kPlugin}_", $oZahlungsartOld->cModulId);
-            $oZahlungsartNew = Shop::Container()->getDB()->query("
-                  SELECT kZahlungsart
+            $oZahlungsartNew = Shop::Container()->getDB()->query(
+                  "SELECT kZahlungsart
                       FROM tzahlungsart
-                      WHERE cModulId LIKE '{$cModulIdNew}'", 1
+                      WHERE cModulId LIKE '{$cModulIdNew}'",
+                \DB\ReturnType::SINGLE_OBJECT
             );
             $cNewSetSQL      = '';
             if (isset($oZahlungsartOld->kZahlungsart, $oZahlungsartNew->kZahlungsart)) {
@@ -3298,7 +3309,8 @@ function syncPluginUpdate($kPlugin, $oPluginOld, $nXMLVersion)
                         FROM tzahlungsart
                         JOIN tzahlungsartsprache
                             ON tzahlungsartsprache.kZahlungsart = tzahlungsart.kZahlungsart
-                        WHERE tzahlungsart.kZahlungsart = " . $oZahlungsartOld->kZahlungsart, 3
+                        WHERE tzahlungsart.kZahlungsart = " . $oZahlungsartOld->kZahlungsart,
+                    \DB\ReturnType::AFFECTED_ROWS
                 );
 
                 $cNewSetSQL = " , kZahlungsart = " . $oZahlungsartOld->kZahlungsart;
@@ -3311,7 +3323,8 @@ function syncPluginUpdate($kPlugin, $oPluginOld, $nXMLVersion)
                 "UPDATE tzahlungsart
                     SET cModulId = '{$oZahlungsartOld->cModulId}'
                     " . $cNewSetSQL . "
-                    WHERE cModulId LIKE '{$cModulIdNew}'", 3
+                    WHERE cModulId LIKE '{$cModulIdNew}'",
+                \DB\ReturnType::AFFECTED_ROWS
             );
         }
 
@@ -3346,8 +3359,8 @@ function deinstallierePlugin($kPlugin, $nXMLVersion, $bUpdate = false, $kPluginN
     }
     if (!$bUpdate) {
         // Plugin wird vollständig deinstalliert
-        if (isset($oPlugin->oPluginUninstall->kPluginUninstall) &&
-            (int)$oPlugin->oPluginUninstall->kPluginUninstall > 0
+        if (isset($oPlugin->oPluginUninstall->kPluginUninstall)
+            && (int)$oPlugin->oPluginUninstall->kPluginUninstall > 0
         ) {
             try {
                 include $oPlugin->cPluginUninstallPfad;
@@ -3357,7 +3370,7 @@ function deinstallierePlugin($kPlugin, $nXMLVersion, $bUpdate = false, $kPluginN
         // Custom Tables löschen
         $oCustomTabelle_arr = Shop::Container()->getDB()->selectAll('tplugincustomtabelle', 'kPlugin', $kPlugin);
         foreach ($oCustomTabelle_arr as $oCustomTabelle) {
-            Shop::Container()->getDB()->query("DROP TABLE IF EXISTS " . $oCustomTabelle->cTabelle, 4);
+            Shop::Container()->getDB()->query("DROP TABLE IF EXISTS " . $oCustomTabelle->cTabelle, \DB\ReturnType::DEFAULT);
         }
         doSQLDelete($kPlugin, $bUpdate, $kPluginNew);
     } else {
@@ -3395,7 +3408,8 @@ function doSQLDelete($kPlugin, $bUpdate, $kPluginNew = null)
                 LEFT JOIN tpluginsprachvariablecustomsprache
                     ON tpluginsprachvariablecustomsprache.cSprachvariable = tpluginsprachvariable.cName
                     AND tpluginsprachvariablecustomsprache.kPlugin = tpluginsprachvariable.kPlugin
-                WHERE tpluginsprachvariable.kPlugin = " . $kPlugin, 3
+                WHERE tpluginsprachvariable.kPlugin = " . $kPlugin,
+            \DB\ReturnType::AFFECTED_ROWS
         );
 
         Shop::Container()->getDB()->delete('tplugineinstellungen', 'kPlugin', $kPlugin);
@@ -3406,15 +3420,18 @@ function doSQLDelete($kPlugin, $bUpdate, $kPluginNew = null)
                 FROM tzahlungsart
                 LEFT JOIN tzahlungsartsprache
                     ON tzahlungsartsprache.kZahlungsart = tzahlungsart.kZahlungsart
-                WHERE tzahlungsart.cModulId LIKE 'kPlugin_" . $kPlugin . "_%'", 3
+                WHERE tzahlungsart.cModulId LIKE 'kPlugin_" . $kPlugin . "_%'",
+            \DB\ReturnType::AFFECTED_ROWS
         );
 
         Shop::Container()->getDB()->query(
             "DELETE tboxen, tboxvorlage
                 FROM tboxvorlage
-                LEFT JOIN tboxen ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
+                LEFT JOIN tboxen 
+                    ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
                 WHERE tboxvorlage.kCustomID = " . $kPlugin . "
-                    AND tboxvorlage.eTyp = 'plugin'", 3
+                    AND tboxvorlage.eTyp = 'plugin'",
+            \DB\ReturnType::AFFECTED_ROWS
         );
 
         Shop::Container()->getDB()->query(
@@ -3427,7 +3444,8 @@ function doSQLDelete($kPlugin, $bUpdate, $kPluginNew = null)
                     ON tpluginemailvorlageeinstellungen.kEmailvorlage = tpluginemailvorlage.kEmailvorlage
                 LEFT JOIN tpluginemailvorlagesprache
                     ON tpluginemailvorlagesprache.kEmailvorlage = tpluginemailvorlage.kEmailvorlage
-                WHERE tpluginemailvorlage.kPlugin = " . $kPlugin, 3
+                WHERE tpluginemailvorlage.kPlugin = " . $kPlugin,
+            \DB\ReturnType::AFFECTED_ROWS
         );
     } else { // Update => nur teilweise deinstallieren
         Shop::Container()->getDB()->query(
@@ -3435,7 +3453,8 @@ function doSQLDelete($kPlugin, $bUpdate, $kPluginNew = null)
                 FROM tpluginsprachvariable
                 LEFT JOIN tpluginsprachvariablesprache
                     ON tpluginsprachvariablesprache.kPluginSprachvariable = tpluginsprachvariable.kPluginSprachvariable
-                WHERE tpluginsprachvariable.kPlugin = " . $kPlugin, 3
+                WHERE tpluginsprachvariable.kPlugin = " . $kPlugin,
+            \DB\ReturnType::AFFECTED_ROWS
         );
 
         Shop::Container()->getDB()->delete('tboxvorlage', ['kCustomID', 'eTyp'], [$kPlugin, 'plugin']);
@@ -3445,7 +3464,8 @@ function doSQLDelete($kPlugin, $bUpdate, $kPluginNew = null)
                 FROM tpluginemailvorlage
                 LEFT JOIN tpluginemailvorlagespracheoriginal
                     ON tpluginemailvorlagespracheoriginal.kEmailvorlage = tpluginemailvorlage.kEmailvorlage
-                WHERE tpluginemailvorlage.kPlugin = " . $kPlugin, 3
+                WHERE tpluginemailvorlage.kPlugin = " . $kPlugin,
+            \DB\ReturnType::AFFECTED_ROWS
         );
     }
     Shop::Container()->getDB()->query(
@@ -3453,7 +3473,8 @@ function doSQLDelete($kPlugin, $bUpdate, $kPluginNew = null)
             FROM tpluginhook
             LEFT JOIN tpluginsqlfehler
                 ON tpluginsqlfehler.kPluginHook = tpluginhook.kPluginHook
-            WHERE tpluginhook.kPlugin = " . $kPlugin, 3
+            WHERE tpluginhook.kPlugin = " . $kPlugin,
+        \DB\ReturnType::AFFECTED_ROWS
     );
     Shop::Container()->getDB()->delete('tpluginadminmenu', 'kPlugin', $kPlugin);
     Shop::Container()->getDB()->query(
@@ -3461,7 +3482,8 @@ function doSQLDelete($kPlugin, $bUpdate, $kPluginNew = null)
             FROM tplugineinstellungenconf
             LEFT JOIN tplugineinstellungenconfwerte
                 ON tplugineinstellungenconfwerte.kPluginEinstellungenConf = tplugineinstellungenconf.kPluginEinstellungenConf
-            WHERE tplugineinstellungenconf.kPlugin = " . $kPlugin, 3
+            WHERE tplugineinstellungenconf.kPlugin = " . $kPlugin,
+        \DB\ReturnType::AFFECTED_ROWS
     );
 
     Shop::Container()->getDB()->delete('tpluginuninstall', 'kPlugin', $kPlugin);
@@ -3475,7 +3497,8 @@ function doSQLDelete($kPlugin, $bUpdate, $kPluginNew = null)
             "SELECT kLink
                 FROM tlink
                 WHERE kPlugin IN ({$kPlugin}, {$kPluginNew})
-                    ORDER BY kLink", 2
+                    ORDER BY kLink",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
     if (is_array($oObj_arr) && count($oObj_arr) === 2) {
@@ -3517,7 +3540,8 @@ function doSQLDelete($kPlugin, $bUpdate, $kPluginNew = null)
             LEFT JOIN tseo
                 ON tseo.cKey = 'kLink'
                 AND tseo.kKey = tlink.kLink
-            WHERE tlink.kPlugin = " . $kPlugin, 3
+            WHERE tlink.kPlugin = " . $kPlugin,
+        \DB\ReturnType::AFFECTED_ROWS
     );
     Shop::Container()->getDB()->delete('tpluginzahlungsartklasse', 'kPlugin', $kPlugin);
     Shop::Container()->getDB()->delete('tplugintemplate', 'kPlugin', $kPlugin);
@@ -3530,7 +3554,8 @@ function doSQLDelete($kPlugin, $bUpdate, $kPluginNew = null)
                 ON texportformateinstellungen.kExportformat = texportformat.kExportformat
             LEFT JOIN texportformatqueuebearbeitet
                 ON texportformatqueuebearbeitet.kExportformat = texportformat.kExportformat
-            WHERE texportformat.kPlugin = " . $kPlugin, 3
+            WHERE texportformat.kPlugin = " . $kPlugin,
+        \DB\ReturnType::AFFECTED_ROWS
     );
     Shop::Container()->getDB()->delete('tplugin', 'kPlugin', $kPlugin);
 }
@@ -3700,7 +3725,7 @@ function logikSQLDatei($cSQLDatei, $nVersion, $oPlugin)
             }
         }
 
-        Shop::Container()->getDB()->query($cSQL, 4);
+        Shop::Container()->getDB()->query($cSQL, \DB\ReturnType::DEFAULT);
         $nErrno = Shop::Container()->getDB()->getErrorCode();
         // Es gab einen SQL Fehler => fülle tpluginsqlfehler
         if ($nErrno) {
@@ -3854,7 +3879,8 @@ function gibSprachVariablen($kPlugin)
                     ON tpluginsprachvariablesprache.kPluginSprachvariable = tpluginsprachvariable.kPluginSprachvariable
                     AND tpluginsprachvariablesprache.cISO = COALESCE(tpluginsprachvariablecustomsprache.cISO, tpluginsprachvariablesprache.cISO)
             WHERE tpluginsprachvariable.kPlugin = " . $kPlugin . "
-            ORDER BY tpluginsprachvariable.kPluginSprachvariable", 9
+            ORDER BY tpluginsprachvariable.kPluginSprachvariable",
+        \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
     );
     if (is_array($oPluginSprachvariablen) && count($oPluginSprachvariablen) > 0) {
         $new = [];

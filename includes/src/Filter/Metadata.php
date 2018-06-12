@@ -858,7 +858,7 @@ class Metadata implements MetadataInterface
         if ($this->productFilter->hasSearchSpecial()) {
             $this->breadCrumb = $this->productFilter->getSearchSpecial()->getName();
 
-            return $this->breadCrumb;
+            return $this->breadCrumb ?? '';
         }
         if ($this->productFilter->hasSearch()) {
             $this->breadCrumb = $this->productFilter->getSearch()->getName();

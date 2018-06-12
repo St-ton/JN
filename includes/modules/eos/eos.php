@@ -6,7 +6,7 @@
 
 /**
  * @param object $Bestellung
- * @return boolean True, wenn eine URL zum Zahlungsanbieter generiert wurde
+ * @return bool - True, wenn eine URL zum Zahlungsanbieter generiert wurde
  */
 function eosNeueZahlung($Bestellung)
 {
@@ -180,7 +180,7 @@ function eosZahlungsHash($Bestellung)
 
 /**
  * @param object $Bestellung
- * @return boolean True, wenn die Zahlung erfolgreich verbucht werden konnte
+ * @return bool - True, wenn die Zahlung erfolgreich verbucht werden konnte
  */
 function eosZahlungsNachricht($Bestellung)
 {

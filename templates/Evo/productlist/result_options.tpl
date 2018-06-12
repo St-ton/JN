@@ -61,7 +61,7 @@
     </div>{* /row *}
     {if $show_filters}
         {if count($contentFilters) > 0}
-            <div id="filter-collapsible" class="collapse in top10" aria-expanded="true">
+            <div id="filter-collapsible" class="collapse top10{if $Einstellungen.template.productlist.initial_display_filter === 'Y'} in" aria-expanded="true{/if}">
                 <nav class="panel panel-default">
                     <div id="navbar-filter" class="panel-body">
                         <div class="fs-0">

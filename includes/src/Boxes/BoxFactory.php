@@ -29,10 +29,9 @@ class BoxFactory implements BoxFactoryInterface
     }
 
     /**
-     * @param int $baseType
-     * @return boxInterface
+     * @inheritdoc
      */
-    public function getBoxByBaseType(int $baseType): BoxInterface
+    public function getBoxByBaseType(int $baseType, bool $isPlugin): BoxInterface
     {
         switch ($baseType) {
             case BOX_BESTSELLER:
@@ -101,7 +100,7 @@ class BoxFactory implements BoxFactoryInterface
             case BOX_TRUSTEDSHOPS_KUNDENBEWERTUNGEN:
                 return new BoxTrustedShopsReviews($this->config);
             default:
-                return new BoxDefault($this->config);
+                return $isPlugin ? new BoxPlugin($this->config) : new BoxDefault($this->config);
         }
     }
 }

@@ -184,7 +184,7 @@ function benutzerverwaltungSaveAttributes(stdClass $oAccount, array $extAttribs,
 
 /**
  * @param stdClass $oAccount
- * @return boolean
+ * @return bool
  */
 function benutzerverwaltungDeleteAttributes(stdClass $oAccount)
 {

@@ -342,7 +342,7 @@ class Billpay extends PaymentMethod
      */
     public function validateAdditional()
     {
-        return isset($_SESSION['za_billpay_jtl']['validated']) && (boolean)$_SESSION['za_billpay_jtl']['validated'];
+        return isset($_SESSION['za_billpay_jtl']['validated']) && (bool)$_SESSION['za_billpay_jtl']['validated'];
     }
 
     /**

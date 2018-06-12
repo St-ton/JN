@@ -22,8 +22,9 @@ interface BoxFactoryInterface
     public function __construct(array $config);
 
     /**
-     * @param int $baseType
+     * @param int  $baseType
+     * @param bool $isPlugin
      * @return boxInterface
      */
-    public function getBoxByBaseType(int $baseType): BoxInterface;
+    public function getBoxByBaseType(int $baseType, bool $isPlugin): BoxInterface;
 }

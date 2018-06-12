@@ -43,7 +43,7 @@ class Migration_20180523092732 extends Migration implements IMigration
             $nReturnValue = installierePluginVorbereitung('jtl_google_recaptcha');
 
             if ($nReturnValue !== PLUGIN_CODE_OK) {
-                throw new Exception('Das Plugin "JTL Google reCaptcha" konnte nicht installiert werden!');
+                throw new Exception('Das Plugin "JTL Google reCaptcha" konnte nicht installiert werden! Fehlercode: '. $nReturnValue);
             }
 
             $oPlugin = $this->fetchOne(

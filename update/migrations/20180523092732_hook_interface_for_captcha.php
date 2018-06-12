@@ -39,39 +39,6 @@ class Migration_20180523092732 extends Migration implements IMigration
     public function up()
     {
         $spamMethod = (int)Shop::getConfigValue(CONF_GLOBAL, 'anti_spam_method');
-        if ($spamMethod === 7) { // activate Google reCaptcha plugin
-            $nReturnValue = installierePluginVorbereitung('jtl_google_recaptcha');
-
-            if ($nReturnValue !== PLUGIN_CODE_OK) {
-                throw new Exception('Das Plugin "JTL Google reCaptcha" konnte nicht installiert werden! Fehlercode: '. $nReturnValue);
-            }
-
-            $oPlugin = $this->fetchOne(
-                "SELECT kPlugin, nXMLVersion
-                    FROM tplugin
-                    WHERE cVerzeichnis = 'jtl_google_recaptcha'"
-            );
-            if ($oPlugin->kPlugin) {
-                $oSettings = $this->fetchAll(
-                    "SELECT cName, cWert
-                        FROM teinstellungen
-                        WHERE cName IN ('" . implode("', '", array_keys($this->settingsMap)) . "')"
-                );
-                foreach ($oSettings as $setting) {
-                    $this->execute(
-                        "UPDATE tplugineinstellungen
-                            SET cWert = '" . $setting->cWert . "'
-                            WHERE kPlugin = " . (int)$oPlugin->kPlugin . "
-                                AND cName = '" . $this->settingsMap[$setting->cName] . "'"
-                    );
-                }
-            }
-            Shop::Container()->getCache()->flushTags([
-                CACHING_GROUP_CORE,
-                CACHING_GROUP_LANGUAGE,
-                CACHING_GROUP_PLUGIN
-            ]);
-        }
 
         $this->setConfig('anti_spam_method', $spamMethod > 0 ? 'Y' : 'N', CONF_GLOBAL, 'Spamschutz-Methode', 'selectbox', 520, (object)[
             'cBeschreibung' => 'Soll der Spamschutz global aktiviert / deaktiviert werden?',
@@ -80,14 +47,16 @@ class Migration_20180523092732 extends Migration implements IMigration
                 'N' => 'deaktiviert',
             ]
         ], true);
-        foreach (array_keys($this->settingsMap) as $setting) {
-            $this->removeConfig($setting);
-        }
+
+        $this->removeConfig('global_google_recaptcha_public');
+        $this->removeConfig('global_google_recaptcha_private');
 
         $this->setLocalization('ger', 'global', 'captcha_enter_code', 'Sicherheitscode eingeben');
         $this->setLocalization('ger', 'global', 'captcha_reload', 'Captcha neu laden');
         $this->setLocalization('eng', 'global', 'captcha_enter_code', 'Enter security code');
         $this->setLocalization('eng', 'global', 'captcha_reload', 'Reload captcha');
+
+        Shop::Cache()->flushTags(CACHING_GROUP_OPTION);
     }
 
     /**
@@ -96,15 +65,9 @@ class Migration_20180523092732 extends Migration implements IMigration
      */
     public function down()
     {
-        $reverseSettingsMap = array_flip($this->settingsMap);
-        $oPlugin            = $this->fetchOne(
-            "SELECT kPlugin, nXMLVersion, nStatus
-                FROM tplugin
-                WHERE cVerzeichnis = 'jtl_google_recaptcha'"
-        );
-        $spamMethod         = isset($oPlugin->kPlugin) && (int)$oPlugin->nStatus === 2 ? '7' : Shop::getConfigValue(CONF_GLOBAL, 'anti_spam_method');
+        $spamMethod = Shop::getConfigValue(CONF_GLOBAL, 'anti_spam_method');
 
-        $this->setConfig('anti_spam_method', $spamMethod === 'Y' ? '3' : $spamMethod, CONF_GLOBAL, 'Spamschutz-Methode', 'selectbox', 520, (object)[
+        $this->setConfig('anti_spam_method', $spamMethod === 'Y' ? '7' : 'N', CONF_GLOBAL, 'Spamschutz-Methode', 'selectbox', 520, (object)[
             'cBeschreibung' => 'Die Art des Spamschutzes',
             'inputOptions'  => [
                 'N' => 'keine',
@@ -123,26 +86,9 @@ class Migration_20180523092732 extends Migration implements IMigration
             'cBeschreibung' => 'Sie müssen Ihre Domain auf https://www.google.com/recaptcha registrieren. Anschließend erhalten Sie von Google Ihren Website- und Geheimen Schlüssel.',
         ]);
 
-        $oSettings = $this->fetchAll(
-            "SELECT cName, cWert
-                FROM tplugineinstellungen
-                WHERE cName IN ('" . implode("', '", $this->settingsMap) . "')"
-        );
-        foreach ($oSettings as $setting) {
-            $this->execute(
-                "UPDATE teinstellungen
-                    SET cWert = '" . $setting->cWert . "'
-                    WHERE cName = '" . $reverseSettingsMap[$setting->cName] . "'"
-            );
-        }
-        if (isset($oPlugin->kPlugin) && $oPlugin->kPlugin > 0) {
-            $nReturnValue = deinstallierePlugin($oPlugin->kPlugin, $oPlugin->nXMLVersion);
-            if ($nReturnValue !== PLUGIN_CODE_OK) {
-                throw new Exception('Das Plugin "JTL Google reCaptcha" konnte nicht deinstalliert werden!');
-            }
-        }
-
         $this->removeLocalization('captcha_enter_code');
         $this->removeLocalization('captcha_reload');
+
+        Shop::Cache()->flushTags(CACHING_GROUP_OPTION);
     }
 }

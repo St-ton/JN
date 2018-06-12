@@ -38,23 +38,12 @@ class Migration_20180523092732 extends Migration implements IMigration
      */
     public function up()
     {
-        $spamMethod = (int)Shop::getConfigValue(CONF_GLOBAL, 'anti_spam_method');
-
-        $this->setConfig('anti_spam_method', $spamMethod > 0 ? 'Y' : 'N', CONF_GLOBAL, 'Spamschutz-Methode', 'selectbox', 520, (object)[
-            'cBeschreibung' => 'Soll der Spamschutz global aktiviert / deaktiviert werden?',
-            'inputOptions'  => [
-                'Y' => 'aktiviert',
-                'N' => 'deaktiviert',
-            ]
-        ], true);
-
+        $this->removeConfig('anti_spam_method');
         $this->removeConfig('global_google_recaptcha_public');
         $this->removeConfig('global_google_recaptcha_private');
 
-        $this->setLocalization('ger', 'global', 'captcha_enter_code', 'Sicherheitscode eingeben');
-        $this->setLocalization('ger', 'global', 'captcha_reload', 'Captcha neu laden');
-        $this->setLocalization('eng', 'global', 'captcha_enter_code', 'Enter security code');
-        $this->setLocalization('eng', 'global', 'captcha_reload', 'Reload captcha');
+        $this->setLocalization('ger', 'global', 'captcha_code_active', 'Spamschutz aktiv');
+        $this->setLocalization('eng', 'global', 'captcha_code_active', 'Spam protection active');
 
         Shop::Cache()->flushTags(CACHING_GROUP_OPTION);
     }
@@ -65,9 +54,7 @@ class Migration_20180523092732 extends Migration implements IMigration
      */
     public function down()
     {
-        $spamMethod = Shop::getConfigValue(CONF_GLOBAL, 'anti_spam_method');
-
-        $this->setConfig('anti_spam_method', $spamMethod === 'Y' ? '7' : 'N', CONF_GLOBAL, 'Spamschutz-Methode', 'selectbox', 520, (object)[
+        $this->setConfig('anti_spam_method', 'N', CONF_GLOBAL, 'Spamschutz-Methode', 'selectbox', 520, (object)[
             'cBeschreibung' => 'Die Art des Spamschutzes',
             'inputOptions'  => [
                 'N' => 'keine',
@@ -86,8 +73,7 @@ class Migration_20180523092732 extends Migration implements IMigration
             'cBeschreibung' => 'Sie müssen Ihre Domain auf https://www.google.com/recaptcha registrieren. Anschließend erhalten Sie von Google Ihren Website- und Geheimen Schlüssel.',
         ]);
 
-        $this->removeLocalization('captcha_enter_code');
-        $this->removeLocalization('captcha_reload');
+        $this->removeLocalization('captcha_code_active');
 
         Shop::Cache()->flushTags(CACHING_GROUP_OPTION);
     }

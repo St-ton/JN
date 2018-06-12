@@ -83,7 +83,6 @@
                                     {assign var=plausiArr value=array()}
                                 {/if}
                                 {if (!isset($smarty.session.bAnti_spam_already_checked) || $smarty.session.bAnti_spam_already_checked !== true) &&
-                                    isset($Einstellungen.global.anti_spam_method) && $Einstellungen.global.anti_spam_method !== 'N' &&
                                     isset($Einstellungen.newsletter.newsletter_sicherheitscode) && $Einstellungen.newsletter.newsletter_sicherheitscode !== 'N' && empty($smarty.session.Kunde->kKunde)}
                                     <hr>
                                     <div class="form-group float-label-control{if !empty($plausiArr.captcha) && $plausiArr.captcha === true}} has-error{/if} required">

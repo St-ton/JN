@@ -3,35 +3,49 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=#shopReset# cBeschreibung=#shopResetDesc# cDokuURL=#shopResetURL#}
 {literal}
     <script>
-        $(document).ready(function () {
-            // danger on check checkbox
-            $('input[type="checkbox"]').not('input[value="artikel"]').change(function () {
-                if (this.checked) {
-                    $(this).next().after('<i data-placement="right" data-toggle="tooltip" title="Kann nicht wiederhergestellt werden." class="fa fa-exclamation-circle text-danger fa-fw" aria-hidden="true"></i>');
+        $(document).ready(function(){
+            $('input[type="checkbox"]').change(function(){
+                var itemsChecked = '';
+                $('input[type="checkbox"]:checked').next().each(function(i){
+                    itemsChecked += $(this).prev().val();
+                });
+                if (itemsChecked === 'artikel' || itemsChecked === '') {
+                    $('#warningZuruecksetzen, #messageDataGetsLost').addClass('hide');
+                    $('button[data-target=".zuruecksetzen-modal"]').prop('disabled', itemsChecked === '');
+                    $('#backupDone').closest('div.checkbox').addClass('hide');
                 } else {
-                    $(this).next().next().remove();
+                    $('#warningZuruecksetzen, #messageDataGetsLost').removeClass('hide');
+                    $('#backupDone').closest('div.checkbox').removeClass('hide');
+                    $('button[data-target=".zuruecksetzen-modal"]').prop('disabled', !$("#backupDone").is(':checked'));
                 }
             });
-        });
-
-        function confirmZuruecksetzen() {
-            var itemsToDelete='',
-                itemValues=''; //used to see if only artikel is selected because artikel can be deleted without confirmation
-            $('input[type="checkbox"]:checked').next().each(function(i){
-                itemsToDelete+= $(this).text() + '\n';
-                itemValues+=$(this).prev().val();
+            $('#backupDone').change(function(){
+                if (this.checked) {
+                    $('button[data-target=".zuruecksetzen-modal"]').prop('disabled', false);
+                } else {
+                    $('button[data-target=".zuruecksetzen-modal"]').prop('disabled', true);
+                }
             });
-            if(itemValues === 'artikel') {
-                return true;
-            } else {
-                //maybe use bootstrap modal
-                return confirm('Es werden folgende Bereiche von JTL-Shop zurückgesetzt, das heißt, dass alle bisher gespeicherten Daten verloren gehen:\n \n ' + itemsToDelete);
-            }
-        }
+            $('#submitZuruecksetzen').click(function(){
+                $('#formZuruecksetzen').submit();
+            });
+            $('button[data-target=".zuruecksetzen-modal"]').click(function(){
+                var itemsToDelete = '';
+                $('input[type="checkbox"]:checked').next().each(function(i){
+                    itemsToDelete += '<li class="list-group-item list-group-item-warning">' + $(this).text() + '</li>';
+                });
+                $('.zuruecksetzen-modal .modal-body').html('<ul class="list-group">' + itemsToDelete + '</ul>');
+            });
+        });
     </script>
 {/literal}
+<div id="warningZuruecksetzen" class="alert alert-warning hide" >
+    <h3>!!! ACHTUNG !!!</h3>
+    <p>Es wurden Daten zur L&ouml;schung ausgew&auml;hlt die NICHT durch einen Abgleich mit der JTL-Wawi wiederhergestellt werden k&ouml;nnen.
+        Es wird daher dringend empfohlen ein Backup der Shop-Datenbank zu erstellen!</p>
+</div>
 <div id="content" class="container-fluid settings">
-    <form name="login" method="post" action="shopzuruecksetzen.php">
+    <form id="formZuruecksetzen" name="login" method="post" action="shopzuruecksetzen.php">
         {$jtl_token}
         <input type="hidden" name="zuruecksetzen" value="1" />
 
@@ -97,7 +111,7 @@
         
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">Shopkunden, Bestellungen und Kupons</h3>
+                <h3 class="panel-title">Shopkunden, Bestellungen und Coupons</h3>
             </div>
             <div class="panel-body">
                 <div class="item">
@@ -114,13 +128,31 @@
                 </div>
                 <div class="item">
                     <input type="checkbox" name="cOption_arr[]" value="kupons" tabindex="15" id="Kupons" />
-                    <label for="Kupons">Kupons l&ouml;schen</label>
+                    <label for="Kupons">Coupons l&ouml;schen</label>
                 </div>
             </div>
         </div>
         <div class="save_wrapper">
-            <button type="submit" onclick="return confirmZuruecksetzen();" value="{#shopReset#}" class="btn btn-danger"><i class="fa fa-exclamation-triangle"></i> {#shopReset#}</button>
+            <div class="checkbox hide">
+                <label><input id="backupDone" type="checkbox" value="" />Ja, ich habe ein Backup meiner Shop-Datenbank erstellt.</label>
+            </div>
+            <button disabled="true" type="button" value="{#shopReset#}" data-toggle="modal" data-target=".zuruecksetzen-modal" class="btn btn-danger"><i class="fa fa-exclamation-triangle"></i> {#shopReset#}</button>
         </div>
     </form>
+</div>
+<div class="modal zuruecksetzen-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Es werden folgende Bereiche von JTL-Shop zur&uuml;ckgesetzt<span id="messageDataGetsLost" class="hide">, das heißt, dass alle bisher gespeicherten Daten verloren gehen:</span></h4>
+            </div>
+            <div class="modal-body"></div>
+            <div class="modal-footer">
+                <p>M&ouml;chten Sie fortfahren?</p>
+                <button type="button" id="submitZuruecksetzen" class="btn btn-danger">Shopdaten zur&uuml;cksetzen</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Abbrechen</button>
+            </div>
+        </div>
+    </div>
 </div>
 {include file='tpl_inc/footer.tpl'}

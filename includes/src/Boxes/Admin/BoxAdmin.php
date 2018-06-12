@@ -10,13 +10,15 @@ namespace Boxes\Admin;
 use Boxes\BoxType;
 use DB\DbInterface;
 use DB\ReturnType;
+use function Functional\group;
+use function Functional\map;
 use Services\JTL\BoxServiceInterface;
 
 /**
  * Class BoxAdmin
  * @package Boxes\Admin
  */
-class BoxAdmin
+final class BoxAdmin
 {
     /**
      * @var DbInterface
@@ -99,11 +101,32 @@ class BoxAdmin
      */
     public function delete(int $id): bool
     {
-        $ok = $this->db->delete('tboxen', 'kBox', $id) > 0;
+        if ($id < 1) {
+            return false;
+        }
+        $affectedBoxes = map($this->db->queryPrepared(
+            'SELECT kBox 
+                FROM tboxen 
+                WHERE kBox = :bid OR kContainer = :bid',
+            ['bid' => $id],
+            ReturnType::ARRAY_OF_OBJECTS
+        ), function ($e) {
+            return (int)$e->kBox;
+        });
 
-        return $ok
-            ? ($this->db->delete('tboxensichtbar', 'kBox', $id) > 0)
-            : false;
+        return count($affectedBoxes) > 0
+            && $this->db->query(
+                'DELETE 
+                    FROM tboxen
+                    WHERE kBox IN (' . implode(',', $affectedBoxes) . ')',
+                ReturnType::AFFECTED_ROWS
+            ) > 0
+            && $this->db->query(
+                'DELETE 
+                    FROM tboxensichtbar
+                    WHERE kBox IN (' . implode(',', $affectedBoxes) . ')',
+                ReturnType::AFFECTED_ROWS
+            ) > 0;
     }
 
     /**
@@ -493,6 +516,20 @@ class BoxAdmin
             [BOX_CONTAINER, $position],
             'kBox',
             'kBox ASC'
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function getBoxesWithMissingParent(): array
+    {
+        return $this->db->query(
+            'SELECT * 
+                FROM tboxen 
+                WHERE kContainer > 0 
+                AND kContainer NOT IN (SELECT kBox FROM tboxen)',
+            ReturnType::ARRAY_OF_OBJECTS
         );
     }
 

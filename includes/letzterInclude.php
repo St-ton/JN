@@ -35,11 +35,11 @@ $kKundengruppe = (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']
 $cKundenherkunft = (isset($_SESSION['Kunde']->cLand) && strlen($_SESSION['Kunde']->cLand) > 0)
     ? $_SESSION['Kunde']->cLand
     : '';
-$warensumme[0]         = gibPreisStringLocalized($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true));
-$warensumme[1]         = gibPreisStringLocalized($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], false));
-$gesamtsumme[0]        = gibPreisStringLocalized($cart->gibGesamtsummeWaren(true, true));
-$gesamtsumme[1]        = gibPreisStringLocalized($cart->gibGesamtsummeWaren(false, true));
-$oVersandartKostenfrei = gibVersandkostenfreiAb($kKundengruppe, $cKundenherkunft);
+$warensumme[0]         = Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true));
+$warensumme[1]         = Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], false));
+$gesamtsumme[0]        = Preise::getLocalizedPriceString($cart->gibGesamtsummeWaren(true, true));
+$gesamtsumme[1]        = Preise::getLocalizedPriceString($cart->gibGesamtsummeWaren(false, true));
+$oVersandartKostenfrei = VersandartHelper::getFreeShippingMinimum($kKundengruppe, $cKundenherkunft);
 $oGlobaleMetaAngaben   = $oGlobaleMetaAngabenAssoc_arr[Shop::getLanguageID()] ?? null;
 $pagetType             = Shop::getPageType();
 
@@ -94,7 +94,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('WarenkorbGesamtgewicht', $cart->getWeight())
        ->assign('Warenkorbtext', lang_warenkorb_warenkorbEnthaeltXArtikel($cart))
        ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
-       ->assign('WarenkorbVersandkostenfreiHinweis', baueVersandkostenfreiString($oVersandartKostenfrei,
+       ->assign('WarenkorbVersandkostenfreiHinweis', VersandartHelper::getShippingFreeString($oVersandartKostenfrei,
            $cart->gibGesamtsummeWarenExt(
                [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON],
                true
@@ -107,7 +107,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('meta_language', StringHandler::convertISO2ISO639($_SESSION['cISOSprache']))
        ->assign('oSpezialseiten_arr', $linkHelper->getSpecialPages())
        ->assign('bNoIndex', $linkHelper->checkNoIndex())
-       ->assign('bAjaxRequest', isAjaxRequest())
+       ->assign('bAjaxRequest', RequestHelper::isAjaxRequest())
        ->assign('oBrowser', $oBrowser)
        ->assign('jtl_token', getTokenInput())
        ->assign('ShopLogoURL', $shopLogo)
@@ -146,7 +146,7 @@ $visitorCount = $Einstellungen['global']['global_zaehler_anzeigen'] === 'Y'
     ? (int)Shop::Container()->getDB()->query('SELECT nZaehler FROM tbesucherzaehler', \DB\ReturnType::SINGLE_OBJECT)->nZaehler
     : 0;
 $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))
-       ->assign('nIsSSL', pruefeSSL())
+       ->assign('nIsSSL', RequestHelper::checkSSL())
        ->assign('boxes', $boxesToShow)
        ->assign('nZeitGebraucht', isset($nStartzeit) ? (microtime(true) - $nStartzeit) : 0)
        ->assign('Besucherzaehler', $visitorCount);

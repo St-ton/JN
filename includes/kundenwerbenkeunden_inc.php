@@ -14,7 +14,7 @@ function pruefeEingabe(array $cPost_arr)
     $cNachname = StringHandler::filterXSS($cPost_arr['cNachname']);
     $cEmail    = StringHandler::filterXSS($cPost_arr['cEmail']);
 
-    return (strlen($cVorname) > 0 && strlen($cNachname) > 0 && valid_email($cEmail));
+    return strlen($cVorname) > 0 && strlen($cNachname) > 0 && StringHandler::filterEmailAddress($cEmail) !== false;
 }
 
 /**

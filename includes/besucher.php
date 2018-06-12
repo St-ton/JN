@@ -18,7 +18,7 @@ if ($kBesucherBot > 0) {
 archiviereBesucher();
 
 $oVisitor = null;
-$oVisitor = dbLookupVisitor($userAgent, gibIP());
+$oVisitor = dbLookupVisitor($userAgent, RequestHelper::getIP());
 if (null === $oVisitor) {
     if (isset($_SESSION['oBesucher'])) {
         // update the session-object with a new kBesucher-ID(!) (re-write it in the session at the end of the script)
@@ -75,9 +75,9 @@ function dbLookupVisitor($szUserAgent, $szIp) {
 function updateVisitorObject($oVisitor, $oVisitorId,  $szUserAgent, $kBesucherBot)
 {
     $oVisitor->kBesucher         = (int)$oVisitorId;
-    $oVisitor->cIP               = gibIP();
+    $oVisitor->cIP               = RequestHelper::getIP();
     $oVisitor->cSessID           = session_id();
-    $oVisitor->cID               = md5($szUserAgent . gibIP());
+    $oVisitor->cID               = md5($szUserAgent . RequestHelper::getIP());
     $oVisitor->kKunde            = (isset($_SESSION['Kunde']) ? $_SESSION['Kunde']->kKunde : 0);
     $oVisitor->kBestellung       = (isset($_SESSION['Kunde']) ? (refreshCustomerOrderId((int)$oVisitor->kKunde)) : 0);
     $oVisitor->cReferer          = gibReferer();
@@ -99,9 +99,9 @@ function createVisitorObject($szUserAgent, $kBesucherBot)
 {
     $oVisitor                    = new stdClass();
     $oVisitor->kBesucher         = 0;
-    $oVisitor->cIP               = gibIP();
+    $oVisitor->cIP               = RequestHelper::getIP();
     $oVisitor->cSessID           = session_id();
-    $oVisitor->cID               = md5($szUserAgent . gibIP());
+    $oVisitor->cID               = md5($szUserAgent . RequestHelper::getIP());
     $oVisitor->kKunde            = (isset($_SESSION['Kunde']) ? $_SESSION['Kunde']->kKunde : 0);
     $oVisitor->kBestellung       = (isset($_SESSION['Kunde']) ? (refreshCustomerOrderId((int)$oVisitor->kKunde)) : 0);
     $oVisitor->cEinstiegsseite   = $_SERVER['REQUEST_URI'];

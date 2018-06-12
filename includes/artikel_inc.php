@@ -212,7 +212,7 @@ function gibFehlendeEingabenProduktanfrageformular()
     if (pruefeEmailblacklist($_POST['email'])) {
         $ret['email'] = 3;
     }
-    if (!valid_email($_POST['email'])) {
+    if (StringHandler::filterEmailAddress($_POST['email']) === false) {
         $ret['email'] = 2;
     }
     if (!$_POST['email']) {
@@ -333,14 +333,14 @@ function sendeProduktanfrage()
     $history->cFax       = $Objekt->tnachricht->cFax;
     $history->cMail      = $Objekt->tnachricht->cMail;
     $history->cNachricht = $Objekt->tnachricht->cNachricht;
-    $history->cIP        = gibIP();
+    $history->cIP        = RequestHelper::getIP();
     $history->dErstellt  = 'now()';
 
     $kProduktanfrageHistory        = Shop::Container()->getDB()->insert('tproduktanfragehistory', $history);
     $GLOBALS['PositiveFeedback'][] = Shop::Lang()->get('thankYouForQuestion', 'messages');
     // campaign
     if (isset($_SESSION['Kampagnenbesucher'])) {
-        setzeKampagnenVorgang(KAMPAGNE_DEF_FRAGEZUMPRODUKT, $kProduktanfrageHistory, 1.0);
+        Kampagne::setCampaignAction(KAMPAGNE_DEF_FRAGEZUMPRODUKT, $kProduktanfrageHistory, 1.0);
     }
 }
 
@@ -367,7 +367,7 @@ function floodSchutzProduktanfrage($min = 0)
             FROM tproduktanfragehistory
             WHERE cIP = :ip
                 AND date_sub(now(), INTERVAL :min MINUTE) < dErstellt",
-        ['ip'  => gibIP(), 'min' => $min],
+        ['ip'  => RequestHelper::getIP(), 'min' => $min],
         \DB\ReturnType::SINGLE_OBJECT
     );
 
@@ -405,7 +405,7 @@ function bearbeiteBenachrichtigung()
                 $Benachrichtigung            = baueFormularVorgabenBenachrichtigung();
                 $Benachrichtigung->kSprache  = Shop::getLanguage();
                 $Benachrichtigung->kArtikel  = (int)$_POST['a'];
-                $Benachrichtigung->cIP       = gibIP();
+                $Benachrichtigung->cIP       = RequestHelper::getIP();
                 $Benachrichtigung->dErstellt = 'now()';
                 $Benachrichtigung->nStatus   = 0;
                 $oCheckBox                   = new CheckBox();
@@ -441,7 +441,7 @@ function bearbeiteBenachrichtigung()
                 // Kampagne
                 if (isset($_SESSION['Kampagnenbesucher'])) {
                     // Verfügbarkeitsbenachrichtigung
-                    setzeKampagnenVorgang(KAMPAGNE_DEF_VERFUEGBARKEITSANFRAGE, $kVerfuegbarkeitsbenachrichtigung, 1.0);
+                    Kampagne::setCampaignAction(KAMPAGNE_DEF_VERFUEGBARKEITSANFRAGE, $kVerfuegbarkeitsbenachrichtigung, 1.0);
                 }
                 $GLOBALS['PositiveFeedback'][] = Shop::Lang()->get('thankYouForNotificationSubscription', 'messages');
             } else {
@@ -467,7 +467,7 @@ function gibFehlendeEingabenBenachrichtigungsformular()
     $conf = Shop::getSettings([CONF_ARTIKELDETAILS, CONF_GLOBAL]);
     if (!$_POST['email']) {
         $ret['email'] = 1;
-    } elseif (!valid_email($_POST['email'])) {
+    } elseif (StringHandler::filterEmailAddress($_POST['email']) === false) {
         $ret['email'] = 2;
     }
     if (pruefeEmailblacklist($_POST['email'])) {
@@ -528,7 +528,7 @@ function floodSchutzBenachrichtigung($min)
             FROM tverfuegbarkeitsbenachrichtigung
             WHERE cIP = :ip
             AND date_sub(now(), INTERVAL :min MINUTE) < dErstellt',
-        ['ip' => gibIP(), 'min' => $min],
+        ['ip' => RequestHelper::getIP(), 'min' => $min],
         \DB\ReturnType::SINGLE_OBJECT
     );
 
@@ -752,9 +752,9 @@ function baueArtikelhinweise($cRedirectParam = null, $bRenew = false, $oArtikel 
 function bearbeiteProdukttags($AktuellerArtikel)
 {
     // Wurde etwas von der Tag Form gepostet?
-    if (verifyGPCDataInteger('produktTag') === 1) {
-        $tag             = StringHandler::filterXSS(verifyGPDataString('tag'));
-        $variKindArtikel = verifyGPDataString('variKindArtikel');
+    if (RequestHelper::verifyGPCDataInt('produktTag') === 1) {
+        $tag             = StringHandler::filterXSS(RequestHelper::verifyGPDataString('tag'));
+        $variKindArtikel = RequestHelper::verifyGPDataString('variKindArtikel');
         // Wurde ein Tag gepostet?
         if (strlen($tag) > 0) {
             $conf = Shop::getSettings([CONF_ARTIKELDETAILS]);
@@ -779,7 +779,7 @@ function bearbeiteProdukttags($AktuellerArtikel)
                     && $_SESSION['Kunde']->kKunde > 0)
                 || $conf['artikeldetails']['tagging_freischaltung'] === 'O'
             ) {
-                $ip = gibIP();
+                $ip = RequestHelper::getIP();
                 // Ist eine Kunde eingeloggt?
                 if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                     $count_tag_postings = Shop::Container()->getDB()->executeQueryPrepared(
@@ -1329,9 +1329,9 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
     }
 
     $oKonfig->fGesamtpreis = [
-        berechneBrutto(
+        TaxHelper::getGross(
             $oArtikel->gibPreis($fAnzahl, $oEigenschaftwerte_arr),
-            gibUst($oArtikel->kSteuerklasse)
+            TaxHelper::getSalesTax($oArtikel->kSteuerklasse)
         ) * $fAnzahl,
         $oArtikel->gibPreis($fAnzahl, $oEigenschaftwerte_arr) * $fAnzahl
     ];
@@ -1387,8 +1387,8 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
     unset($oKonfiggruppe);
     if (Session::CustomerGroup()->mayViewPrices()) {
         $oKonfig->cPreisLocalized = [
-            gibPreisStringLocalized($oKonfig->fGesamtpreis[0]),
-            gibPreisStringLocalized($oKonfig->fGesamtpreis[1])
+            Preise::getLocalizedPriceString($oKonfig->fGesamtpreis[0]),
+            Preise::getLocalizedPriceString($oKonfig->fGesamtpreis[1])
         ];
     } else {
         $oKonfig->cPreisLocalized = [Shop::Lang()->get('priceHidden')];

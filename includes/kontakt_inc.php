@@ -21,7 +21,7 @@ function gibFehlendeEingabenKontaktformular()
     if (!$_POST['subject']) {
         $ret['subject'] = 1;
     }
-    if (!valid_email($_POST['email'])) {
+    if (StringHandler::filterEmailAddress($_POST['email']) === false) {
         $ret['email'] = 2;
     }
     if (pruefeEmailblacklist($_POST['email'])) {
@@ -254,7 +254,7 @@ function bearbeiteNachricht()
     $KontaktHistory->cFax            = $Objekt->tnachricht->cFax ?? null;
     $KontaktHistory->cMail           = $Objekt->tnachricht->cMail ?? null;
     $KontaktHistory->cNachricht      = $Objekt->tnachricht->cNachricht ?? null;
-    $KontaktHistory->cIP             = gibIP();
+    $KontaktHistory->cIP             = RequestHelper::getIP();
     $KontaktHistory->dErstellt       = 'now()';
 
     return Shop::Container()->getDB()->insert('tkontakthistory', $KontaktHistory);
@@ -275,7 +275,7 @@ function floodSchutz($min)
             FROM tkontakthistory 
             WHERE cIP = :ip 
                 AND date_sub(now(), INTERVAL :min MINUTE) < dErstellt",
-        ['ip' => Shop::Container()->getDB()->escape(gibIP()), 'min' => $min],
+        ['ip' => Shop::Container()->getDB()->escape(RequestHelper::getIP()), 'min' => $min],
         \DB\ReturnType::SINGLE_OBJECT
     );
 

@@ -520,7 +520,7 @@ function bearbeiteUmfrageAuswertung($oUmfrage)
         } elseif ($oUmfrage->fGuthaben > 0) { // Guthaben?
             $cHinweis = sprintf(
                 Shop::Lang()->get('pollCredit', 'messages'),
-                gibPreisStringLocalized($oUmfrage->fGuthaben)
+                Preise::getLocalizedPriceString($oUmfrage->fGuthaben)
             );
             // Kunde Guthaben gutschreiben
             if(!gibKundeGuthaben($oUmfrage->fGuthaben, $_SESSION['Kunde']->kKunde)){
@@ -566,7 +566,7 @@ function bearbeiteUmfrageDurchfuehrung($kUmfrage, $oUmfrage, &$oUmfrageFrageTMP_
     $cSQL           = '';
     $nAktuelleSeite = 1;
 
-    if (verifyGPCDataInteger('s') === 0) {
+    if (RequestHelper::verifyGPCDataInt('s') === 0) {
         unset($_SESSION['Umfrage']);
         $_SESSION['Umfrage']                    = new stdClass();
         $_SESSION['Umfrage']->kUmfrage          = $oUmfrage->kUmfrage;
@@ -582,7 +582,7 @@ function bearbeiteUmfrageDurchfuehrung($kUmfrage, $oUmfrage, &$oUmfrageFrageTMP_
 
         $cSQL .= $oNavi_arr[0]->nVon . ', ' . $oNavi_arr[0]->nAnzahl;
     } else {
-        $nAktuelleSeite = verifyGPCDataInteger('s');
+        $nAktuelleSeite = RequestHelper::verifyGPCDataInt('s');
 
         if (isset($_POST['next'])) {
             speicherFragenInSession($_POST);

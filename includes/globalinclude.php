@@ -64,7 +64,7 @@ if (PHP_SAPI !== 'cli'
     );
     if (!$https) {
         $lang = '';
-        if (!standardspracheAktiv(true)) {
+        if (!Sprache::isDefaultLanguageActive(true)) {
             $lang = strpos($_SERVER['REQUEST_URI'], '?')
                 ? '&lang=' . $_SESSION['cISOSprache']
                 : '?lang=' . $_SESSION['cISOSprache'];

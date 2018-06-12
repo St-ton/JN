@@ -114,7 +114,7 @@ function pruefeKundenKommentar($cKommentar, $cName = '', $cEmail = '', $kNews, $
             $nPlausiValue_arr['cName'] = 1;
         }
         // Email prüfen
-        if (!valid_email($cEmail)) {
+        if (StringHandler::filterEmailAddress($cEmail) === false) {
             $nPlausiValue_arr['cEmail'] = 1;
         }
         if (isset($conf['news']['news_sicherheitscode'])

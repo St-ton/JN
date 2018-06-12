@@ -246,7 +246,7 @@ class PaymentMethod
             if (!isset($_SESSION['IP'])) {
                 $_SESSION['IP'] = new stdClass();
             }
-            $_SESSION['IP']->cIP = gibIP(true);
+            $_SESSION['IP']->cIP = RequestHelper::getIP(true);
         }
 
         if ($order->kBestellung !== null) {

@@ -51,7 +51,7 @@ function lang_warenkorb_warenkorbLabel($warenkorb)
 {
     $cLabel = Shop::Lang()->get('basket', 'checkout');
     if ($warenkorb !== null) {
-        $cLabel .= ' (' . gibPreisStringLocalized(
+        $cLabel .= ' (' . Preise::getLocalizedPriceString(
             $warenkorb->gibGesamtsummeWarenExt(
                 [C_WARENKORBPOS_TYP_ARTIKEL],
                 !Session::CustomerGroup()->isMerchant()

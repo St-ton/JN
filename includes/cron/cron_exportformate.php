@@ -267,7 +267,7 @@ function gibYategoExport($exportformat, $oJobQueue, $ExportEinstellungen)
     $oGlobal_arr          = [];
     $oGlobal_arr['lager'] = [];
 
-    setzeSteuersaetze();
+    TaxHelper::setTaxRates();
     $_SESSION['Kundengruppe']->darfPreiseSehen            = 1;
     $_SESSION['Kundengruppe']->darfArtikelKategorienSehen = 1;
     $_SESSION['kSprache']                                 = (int)$exportformat->kSprache;

@@ -164,17 +164,17 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
     );
     // Wenn Kupon vorhanden und prozentual auf ganzen Warenkorb,
     // dann verwerfen und neu anlegen
-    altenKuponNeuBerechnen();
+    Kupon::reCheck();
     setzeLinks();
     // Persistenter Warenkorb
     if (!isset($_POST['login'])) {
-        fuegeEinInWarenkorbPers($kArtikel, $anzahl, $oEigenschaftwerte_arr);
+        WarenkorbPers::addToCheck($kArtikel, $anzahl, $oEigenschaftwerte_arr);
     }
     $boxes         = Boxen::getInstance();
     $pageType      = Shop::getPageType();
     $boxesToShow   = $boxes->build($pageType, true)->render();
-    $warensumme[0] = gibPreisStringLocalized($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true));
-    $warensumme[1] = gibPreisStringLocalized($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], false));
+    $warensumme[0] = Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true));
+    $warensumme[1] = Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], false));
     $smarty->assign('Boxen', $boxesToShow)
            ->assign('WarenkorbWarensumme', $warensumme);
 
@@ -183,8 +183,8 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
         : Session::CustomerGroup()->getID();
     $oXSelling     = gibArtikelXSelling($kArtikel, $Artikel->nIstVater > 0);
 
-    $smarty->assign('WarenkorbVersandkostenfreiHinweis', baueVersandkostenfreiString(
-        gibVersandkostenfreiAb($kKundengruppe),
+    $smarty->assign('WarenkorbVersandkostenfreiHinweis', VersandartHelper::getShippingFreeString(
+        VersandartHelper::getFreeShippingMinimum($kKundengruppe),
         $cart->gibGesamtsummeWarenExt(
             [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON],
             true
@@ -209,7 +209,7 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
     $objResponse->script('this.response = ' . json_encode($oResponse) . ';');
     // Kampagne
     if (isset($_SESSION['Kampagnenbesucher'])) {
-        setzeKampagnenVorgang(KAMPAGNE_DEF_WARENKORB, $kArtikel, $anzahl); // Warenkorb
+        Kampagne::setCampaignAction(KAMPAGNE_DEF_WARENKORB, $kArtikel, $anzahl); // Warenkorb
     }
 
     if ($config['global']['global_warenkorb_weiterleitung'] === 'Y') {
@@ -539,7 +539,7 @@ function getBasketItems($nTyp)
                 $cPLZ          = $_SESSION['Kunde']->cPLZ;
             }
 
-            $versandkostenfreiAb = gibVersandkostenfreiAb($kKundengruppe, $cLand);
+            $versandkostenfreiAb = VersandartHelper::getFreeShippingMinimum($kKundengruppe, $cLand);
             $smarty->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
                    ->assign('Warensumme', $cart->gibGesamtsummeWaren())
                    ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
@@ -551,7 +551,8 @@ function getBasketItems($nTyp)
                    ->assign('Warenkorbtext', lang_warenkorb_warenkorbEnthaeltXArtikel($cart))
                    ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant())
                    ->assign('FavourableShipping', $cart->getFavourableShipping())
-                   ->assign('WarenkorbVersandkostenfreiHinweis', baueVersandkostenfreiString($versandkostenfreiAb,
+                   ->assign('WarenkorbVersandkostenfreiHinweis', VersandartHelper::getShippingFreeString(
+                       $versandkostenfreiAb,
                        $cart->gibGesamtsummeWarenExt(
                            [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON],
                            true)
@@ -588,8 +589,8 @@ function buildConfiguration($aValues)
     $oKonfig         = buildConfig($articleId, $aValues['anzahl'], $variationValues, $items, $quantities, []);
     $net             = Session::CustomerGroup()->getIsMerchant();
     $Artikel->fuelleArtikel($articleId, null);
-    $Artikel->Preise->cVKLocalized[$net]
-        = gibPreisStringLocalized($Artikel->Preise->fVK[$net] * $aValues['anzahl'], 0, true);
+    $Artikel->Preise->cVKLocalized[$net] =
+        Preise::getLocalizedPriceString($Artikel->Preise->fVK[$net] * $aValues['anzahl'], 0, true);
 
     $smarty->assign('oKonfig', $oKonfig)
            ->assign('NettoPreise', $net)
@@ -698,12 +699,12 @@ function checkDependencies($aValues)
     $nNettoPreise = Session::CustomerGroup()->getIsMerchant();
     $fVKNetto     = $oArtikel->gibPreis($fAnzahl, $valueID_arr, Session::CustomerGroup()->getID());
     $fVK          = [
-        berechneBrutto($fVKNetto, $_SESSION['Steuersatz'][$oArtikel->kSteuerklasse]),
+        TaxHelper::getGross($fVKNetto, $_SESSION['Steuersatz'][$oArtikel->kSteuerklasse]),
         $fVKNetto
     ];
     $cVKLocalized = [
-        0 => gibPreisStringLocalized($fVK[0]),
-        1 => gibPreisStringLocalized($fVK[1])
+        0 => Preise::getLocalizedPriceString($fVK[0]),
+        1 => Preise::getLocalizedPriceString($fVK[1])
     ];
     $cPriceLabel  = '';
     if (isset($oArtikel->nVariationAnzahl) && $oArtikel->nVariationAnzahl > 0) {
@@ -730,13 +731,13 @@ function checkDependencies($aValues)
         foreach ($oArtikel->staffelPreis_arr as $staffelPreis) {
             $nAnzahl                 = &$staffelPreis['nAnzahl'];
             $fStaffelVKNetto         = $oArtikel->gibPreis($nAnzahl, $valueID_arr, Session::CustomerGroup()->getID());
-            $fStaffelVK[0][$nAnzahl] = berechneBrutto(
+            $fStaffelVK[0][$nAnzahl] = TaxHelper::getGross(
                 $fStaffelVKNetto,
                 $_SESSION['Steuersatz'][$oArtikel->kSteuerklasse]
             );
             $fStaffelVK[1][$nAnzahl] = $fStaffelVKNetto;
-            $cStaffelVK[0][$nAnzahl] = gibPreisStringLocalized($fStaffelVK[0][$nAnzahl]);
-            $cStaffelVK[1][$nAnzahl] = gibPreisStringLocalized($fStaffelVK[1][$nAnzahl]);
+            $cStaffelVK[0][$nAnzahl] = Preise::getLocalizedPriceString($fStaffelVK[0][$nAnzahl]);
+            $cStaffelVK[1][$nAnzahl] = Preise::getLocalizedPriceString($fStaffelVK[1][$nAnzahl]);
         }
 
         $objResponse->jsfunc(

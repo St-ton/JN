@@ -49,7 +49,7 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
     $oPlausi->nPlausi_arr       = [];
     $oNewsletterEmpfaengerKunde = null;
 
-    if (!$bPruefeDaten || valid_email($oKunde->cEmail)) {
+    if (!$bPruefeDaten || StringHandler::filterEmailAddress($oKunde->cEmail) !== false) {
         $oPlausi->nPlausi_arr = newsletterAnmeldungPlausi($oKunde);
         $kKundengruppe        = Session::CustomerGroup()->getID();
         // CheckBox Plausi

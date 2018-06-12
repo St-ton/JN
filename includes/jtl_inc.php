@@ -21,11 +21,11 @@ function gibRedirect($cRedirect)
             $oRedirect->oParameter_arr   = [];
             $oTMP                        = new stdClass();
             $oTMP->Name                  = 'a';
-            $oTMP->Wert                  = verifyGPCDataInteger('a');
+            $oTMP->Wert                  = RequestHelper::verifyGPCDataInt('a');
             $oRedirect->oParameter_arr[] = $oTMP;
             $oTMP                        = new stdClass();
             $oTMP->Name                  = 'n';
-            $oTMP->Wert                  = verifyGPCDataInteger('n');
+            $oTMP->Wert                  = RequestHelper::verifyGPCDataInt('n');
             $oRedirect->oParameter_arr[] = $oTMP;
             $oTMP                        = new stdClass();
             $oTMP->Name                  = 'Wunschliste';
@@ -39,58 +39,58 @@ function gibRedirect($cRedirect)
             $oRedirect->oParameter_arr   = [];
             $oTMP                        = new stdClass();
             $oTMP->Name                  = 'a';
-            $oTMP->Wert                  = verifyGPCDataInteger('a');
+            $oTMP->Wert                  = RequestHelper::verifyGPCDataInt('a');
             $oRedirect->oParameter_arr[] = $oTMP;
             $oTMP                        = new stdClass();
             $oTMP->Name                  = 'bfa';
             $oTMP->Wert                  = 1;
             $oRedirect->oParameter_arr[] = $oTMP;
             $oRedirect->nRedirect        = R_LOGIN_BEWERTUNG;
-            $oRedirect->cURL             = 'bewertung.php?a=' . verifyGPCDataInteger('a') . '&bfa=1';
+            $oRedirect->cURL             = 'bewertung.php?a=' . RequestHelper::verifyGPCDataInt('a') . '&bfa=1';
             $oRedirect->cName            = Shop::Lang()->get('review', 'redirect');
             break;
         case R_LOGIN_TAG:
             $oRedirect->oParameter_arr   = [];
             $oTMP                        = new stdClass();
             $oTMP->Name                  = 'a';
-            $oTMP->Wert                  = verifyGPCDataInteger('a');
+            $oTMP->Wert                  = RequestHelper::verifyGPCDataInt('a');
             $oRedirect->oParameter_arr[] = $oTMP;
             $oRedirect->nRedirect        = R_LOGIN_TAG;
-            $oRedirect->cURL             = '?a=' . verifyGPCDataInteger('a');
+            $oRedirect->cURL             = '?a=' . RequestHelper::verifyGPCDataInt('a');
             $oRedirect->cName            = Shop::Lang()->get('tag', 'redirect');
             break;
         case R_LOGIN_NEWSCOMMENT:
             $oRedirect->oParameter_arr   = [];
             $oTMP                        = new stdClass();
             $oTMP->Name                  = 's';
-            $oTMP->Wert                  = verifyGPCDataInteger('s');
+            $oTMP->Wert                  = RequestHelper::verifyGPCDataInt('s');
             $oRedirect->oParameter_arr[] = $oTMP;
             $oTMP                        = new stdClass();
             $oTMP->Name                  = 'n';
-            $oTMP->Wert                  = verifyGPCDataInteger('n');
+            $oTMP->Wert                  = RequestHelper::verifyGPCDataInt('n');
             $oRedirect->oParameter_arr[] = $oTMP;
             $oRedirect->nRedirect        = R_LOGIN_NEWSCOMMENT;
-            $oRedirect->cURL             = '?s=' . verifyGPCDataInteger('s') . '&n=' . verifyGPCDataInteger('n');
+            $oRedirect->cURL             = '?s=' . RequestHelper::verifyGPCDataInt('s') . '&n=' . RequestHelper::verifyGPCDataInt('n');
             $oRedirect->cName            = Shop::Lang()->get('news', 'redirect');
             break;
         case R_LOGIN_UMFRAGE:
             $oRedirect->oParameter_arr   = [];
             $oTMP                        = new stdClass();
             $oTMP->Name                  = 'u';
-            $oTMP->Wert                  = verifyGPCDataInteger('u');
+            $oTMP->Wert                  = RequestHelper::verifyGPCDataInt('u');
             $oRedirect->oParameter_arr[] = $oTMP;
             $oRedirect->nRedirect        = R_LOGIN_UMFRAGE;
-            $oRedirect->cURL             = '?u=' . verifyGPCDataInteger('u');
+            $oRedirect->cURL             = '?u=' . RequestHelper::verifyGPCDataInt('u');
             $oRedirect->cName            = Shop::Lang()->get('poll', 'redirect');
             break;
         case R_LOGIN_RMA:
             $oRedirect->oParameter_arr   = [];
             $oTMP                        = new stdClass();
             $oTMP->Name                  = 's';
-            $oTMP->Wert                  = verifyGPCDataInteger('s');
+            $oTMP->Wert                  = RequestHelper::verifyGPCDataInt('s');
             $oRedirect->oParameter_arr[] = $oTMP;
             $oRedirect->nRedirect        = R_LOGIN_RMA;
-            $oRedirect->cURL             = '?s=' . verifyGPCDataInteger('s');
+            $oRedirect->cURL             = '?s=' . RequestHelper::verifyGPCDataInt('s');
             $oRedirect->cName            = Shop::Lang()->get('rma', 'redirect');
             break;
         default:
@@ -193,7 +193,7 @@ function setzeWarenkorbPersInWarenkorb($kKunde)
                 \DB\ReturnType::SINGLE_OBJECT
             );
             if (isset($oArtikelGeschenk->kArtikel) && $oArtikelGeschenk->kArtikel > 0) {
-                fuegeEinInWarenkorbPers(
+                WarenkorbPers::addToCheck(
                     $kArtikelGeschenk,
                     1,
                     [],
@@ -203,7 +203,7 @@ function setzeWarenkorbPersInWarenkorb($kKunde)
                 );
             }
         } else {
-            fuegeEinInWarenkorbPers(
+            WarenkorbPers::addToCheck(
                 $oWarenkorbPos->kArtikel,
                 $oWarenkorbPos->nAnzahl,
                 $oWarenkorbPos->WarenkorbPosEigenschaftArr,
@@ -366,14 +366,14 @@ function fuehreLoginAus($userLogin, $passLogin)
                 );
                 // Kampagne
                 if (isset($_SESSION['Kampagnenbesucher'])) {
-                    setzeKampagnenVorgang(KAMPAGNE_DEF_LOGIN, $Kunde->kKunde, 1.0); // Login
+                    Kampagne::setCampaignAction(KAMPAGNE_DEF_LOGIN, $Kunde->kKunde, 1.0); // Login
                 }
                 $session = \Session\Session::getInstance();
                 $session->setCustomer($Kunde);
                 // Setzt aktuelle Wunschliste (falls vorhanden) vom Kunden in die Session
                 setzeWunschlisteInSession();
                 // Redirect URL
-                $cURL = StringHandler::filterXSS(verifyGPDataString('cURL'));
+                $cURL = StringHandler::filterXSS(RequestHelper::verifyGPDataString('cURL'));
                 // Lade WarenkorbPers
                 $bPersWarenkorbGeladen = false;
                 if ($Einstellungen['global']['warenkorbpers_nutzen'] === 'Y'
@@ -501,7 +501,7 @@ function fuehreLoginAus($userLogin, $passLogin)
                 if ((int)$_SESSION['kSprache'] !== (int)$Kunde->kSprache && !empty($oISOSprache->cISO)) {
                     $_SESSION['kSprache']        = (int)$Kunde->kSprache;
                     $_SESSION['cISOSprache']     = $oISOSprache->cISO;
-                    $_SESSION['currentLanguage'] = gibAlleSprachen(1)[$Kunde->kSprache];
+                    $_SESSION['currentLanguage'] = Sprache::getAllLanguages(1)[$Kunde->kSprache];
                     Shop::setLanguage($Kunde->kSprache, $oISOSprache->cISO);
                     Shop::Lang()->setzeSprache($oISOSprache->cISO);
                 }

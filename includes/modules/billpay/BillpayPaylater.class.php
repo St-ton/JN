@@ -75,7 +75,7 @@ class BillpayPaylater extends Billpay
         Shop::Smarty()->assign('oOrder', $oOrder)
             ->assign('oPaymentEx', $oPaymentEx)
             ->assign('nPaymentType', IPL_CORE_PAYMENT_TYPE_PAY_LATER)
-            ->assign('nSSL', pruefeSSL())
+            ->assign('nSSL', RequestHelper::checkSSL())
             ->assign('nState', $nState);
     }
 

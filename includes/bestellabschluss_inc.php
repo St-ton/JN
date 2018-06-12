@@ -21,7 +21,7 @@ function bestellungKomplett()
         && $_SESSION['Zahlungsart']
         && (int)$_SESSION['Versandart']->kVersandart > 0
         && (int)$_SESSION['Zahlungsart']->kZahlungsart > 0
-        && verifyGPCDataInteger('abschluss') === 1
+        && RequestHelper::verifyGPCDataInt('abschluss') === 1
         && count($_SESSION['cPlausi_arr']) === 0
     ) ? 1 : 0;
 }
@@ -158,7 +158,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
                 ? StringHandler::unhtmlentities($Position->cLieferstatus[$_SESSION['cISOSprache']])
                 : '';
             $Position->kWarenkorb    = $_SESSION['Warenkorb']->kWarenkorb;
-            $Position->fMwSt         = gibUst($Position->kSteuerklasse);
+            $Position->fMwSt         = TaxHelper::getSalesTax($Position->kSteuerklasse);
             $Position->kWarenkorbPos = $Position->insertInDB();
             if (is_array($Position->WarenkorbPosEigenschaftArr) && count($Position->WarenkorbPosEigenschaftArr) > 0) {
                 // Bei einem Varkombikind dürfen nur FREIFELD oder PFLICHT-FREIFELD gespeichert werden,
@@ -289,7 +289,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
         $Bestellung->dBezahltDatum    = 'now()';
         $Bestellung->cZahlungsartName = Shop::Lang()->get('paymentNotNecessary', 'checkout');
     }
-    $Bestellung->cIP = $_SESSION['IP']->cIP ?? gibIP(true);
+    $Bestellung->cIP = $_SESSION['IP']->cIP ?? RequestHelper::getIP(true);
     //#8544
     $Bestellung->fWaehrungsFaktor = Session::Currency()->getConversionFactor();
 
@@ -352,9 +352,9 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     // Kampagne
     if (isset($_SESSION['Kampagnenbesucher'])) {
         // Verkauf
-        setzeKampagnenVorgang(KAMPAGNE_DEF_VERKAUF, $Bestellung->kBestellung, 1.0);
+        Kampagne::setCampaignAction(KAMPAGNE_DEF_VERKAUF, $Bestellung->kBestellung, 1.0);
         // Verkaufssumme
-        setzeKampagnenVorgang(KAMPAGNE_DEF_VERKAUFSSUMME, $Bestellung->kBestellung, $Bestellung->fGesamtsumme);
+        Kampagne::setCampaignAction(KAMPAGNE_DEF_VERKAUFSSUMME, $Bestellung->kBestellung, $Bestellung->fGesamtsumme);
     }
 
     executeHook(HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB_ENDE, [
@@ -858,7 +858,10 @@ function KuponVerwendungen($oBestellung)
     if (is_array($_SESSION['Warenkorb']->PositionenArr) && count($_SESSION['Warenkorb']->PositionenArr) > 0) {
         foreach ($_SESSION['Warenkorb']->PositionenArr as $i => $Position) {
             if (!isset($_SESSION['VersandKupon']) && ($Position->nPosTyp == 3 || $Position->nPosTyp == 7)) {
-                $fKuponwertBrutto = berechneBrutto($Position->fPreisEinzelNetto, gibUst($Position->kSteuerklasse)) * (-1);
+                $fKuponwertBrutto = berechneBrutto(
+                    $Position->fPreisEinzelNetto,
+                    TaxHelper::getSalesTax($Position->kSteuerklasse)
+                ) * (-1);
             }
         }
     }
@@ -1177,7 +1180,7 @@ function fakeBestellung()
             }
 
             $bestellung->Positionen[$i]->cName = $bestellung->Positionen[$i]->cName[$_SESSION['cISOSprache']];
-            $bestellung->Positionen[$i]->fMwSt = gibUst($oPositionen->kSteuerklasse);
+            $bestellung->Positionen[$i]->fMwSt = TaxHelper::getSalesTax($oPositionen->kSteuerklasse);
             $bestellung->Positionen[$i]->setzeGesamtpreisLocalized();
         }
     }
@@ -1186,7 +1189,7 @@ function fakeBestellung()
     }
     $conf = Shop::getSettings([CONF_KAUFABWICKLUNG]);
     if ($conf['kaufabwicklung']['bestellabschluss_ip_speichern'] === 'Y') {
-        $bestellung->cIP = gibIP();
+        $bestellung->cIP = RequestHelper::getIP();
     }
 
     return $bestellung->fuelleBestellung(0, true);

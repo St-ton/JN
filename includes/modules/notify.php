@@ -21,24 +21,24 @@ $Einstellungen       = Shop::getSettings([
 ]);
 $cEditZahlungHinweis = '';
 //Session Hash
-$cPh = verifyGPDataString('ph');
-$cSh = verifyGPDataString('sh');
+$cPh = RequestHelper::verifyGPDataString('ph');
+$cSh = RequestHelper::verifyGPDataString('sh');
 
 executeHook(HOOK_NOTIFY_HASHPARAMETER_DEFINITION);
 
-if (strlen(verifyGPDataString('ph')) === 0 && strlen(verifyGPDataString('externalBDRID')) > 0) {
-    $cPh = verifyGPDataString('externalBDRID');
+if (strlen(RequestHelper::verifyGPDataString('ph')) === 0 && strlen(RequestHelper::verifyGPDataString('externalBDRID')) > 0) {
+    $cPh = RequestHelper::verifyGPDataString('externalBDRID');
     if ($cPh[0] === '_') {
         $cPh = '';
-        $cSh = verifyGPDataString('externalBDRID');
+        $cSh = RequestHelper::verifyGPDataString('externalBDRID');
     }
 }
 // Work around Sofortüberweisung
-if (strlen(verifyGPDataString('key')) > 0 && strlen(verifyGPDataString('sid')) > 0) {
-    $cPh = verifyGPDataString('sid');
-    if (verifyGPDataString('key') === 'sh') {
+if (strlen(RequestHelper::verifyGPDataString('key')) > 0 && strlen(RequestHelper::verifyGPDataString('sid')) > 0) {
+    $cPh = RequestHelper::verifyGPDataString('sid');
+    if (RequestHelper::verifyGPDataString('key') === 'sh') {
         $cPh = '';
-        $cSh = verifyGPDataString('sid');
+        $cSh = RequestHelper::verifyGPDataString('sid');
     }
 }
 

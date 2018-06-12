@@ -133,7 +133,7 @@ function kundeSpeichern($cPost_arr)
             $knd->kKunde = $knd->insertInDB();
             // Kampagne
             if (isset($_SESSION['Kampagnenbesucher'])) {
-                setzeKampagnenVorgang(KAMPAGNE_DEF_ANMELDUNG, $knd->kKunde, 1.0); // Anmeldung
+                Kampagne::setCampaignAction(KAMPAGNE_DEF_ANMELDUNG, $knd->kKunde, 1.0); // Anmeldung
             }
             // Insert Kundenattribute
             if (is_array($cKundenattribut_arr) && count($cKundenattribut_arr) > 0) {
@@ -168,7 +168,7 @@ function kundeSpeichern($cPost_arr)
             }
         }
         if (isset($cart->kWarenkorb) && $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0) {
-            setzeSteuersaetze();
+            TaxHelper::setTaxRates();
             $cart->gibGesamtsummeWarenLocalized();
         }
         if (isset($cPost_arr['shipping_address'])) {
@@ -245,7 +245,7 @@ function gibFormularDaten($nCheckout = 0)
     Shop::Smarty()->assign('herkunfte', $herkunfte)
         ->assign('Kunde', $Kunde)
         ->assign('cKundenattribut_arr', $cKundenattribut_arr)
-        ->assign('laender', gibBelieferbareLaender(Session::CustomerGroup()->getID()))
+        ->assign('laender', VersandartHelper::getPossibleShippingCountries(Session::CustomerGroup()->getID()))
         ->assign('warning_passwortlaenge',
             lang_passwortlaenge(Shop::getSettingValue(CONF_KUNDEN, 'kundenregistrierung_passwortlaenge')))
         ->assign('oKundenfeld_arr', gibSelbstdefKundenfelder());

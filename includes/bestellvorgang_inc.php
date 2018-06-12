@@ -93,7 +93,7 @@ function pruefeUnregistriertBestellen($cPost_arr)
             if (isset($_SESSION['Lieferadresse']) && $_SESSION['Bestellung']->kLieferadresse == 0) {
                 setzeLieferadresseAusRechnungsadresse();
             }
-            setzeSteuersaetze();
+            TaxHelper::setTaxRates();
             $cart->gibGesamtsummeWarenLocalized();
         }
         if (isset($cPost_arr['shipping_address'])) {
@@ -185,7 +185,7 @@ function pruefeLieferdaten($cPost_arr, &$fehlendeAngaben = null)
 
         executeHook(HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE_RECHNUNGLIEFERADRESSE);
     }
-    setzeSteuersaetze();
+    TaxHelper::setTaxRates();
     //lieferland hat sich geändert und versandart schon gewählt?
     if (isset($_SESSION['Lieferadresse'], $_SESSION['Versandart']) &&
         $_SESSION['Lieferadresse'] &&
@@ -308,7 +308,7 @@ function pruefeRechnungsadresseStep($cGet_arr)
     global $step, $Kunde;
     //sondersteps Rechnungsadresse ändern
     if (isset($cGet_arr['editRechnungsadresse']) && $cGet_arr['editRechnungsadresse'] == 1 && $_SESSION['Kunde']) {
-        resetNeuKundenKupon();
+        Kupon::resetNewCustomerCoupon();
         if (!isset($cGet_arr['editLieferadresse'])) {
             // Shipping address and customer address are now on same site - check shipping address also
             pruefeLieferadresseStep(['editLieferadresse' => $cGet_arr['editRechnungsadresse']]);
@@ -348,7 +348,7 @@ function pruefeLieferadresseStep($cGet_arr)
     global $step, $Lieferadresse;
     //sondersteps Lieferadresse ändern
     if (isset($cGet_arr['editLieferadresse']) && $cGet_arr['editLieferadresse'] == 1 && $_SESSION['Lieferadresse']) {
-        resetNeuKundenKupon();
+        Kupon::resetNewCustomerCoupon();
         unset($_SESSION['Zahlungsart'], $_SESSION['TrustedShops'], $_SESSION['Versandart']);
         $Lieferadresse = $_SESSION['Lieferadresse'];
         $step          = 'Lieferadresse';
@@ -394,7 +394,7 @@ function pruefeVersandartStep($cGet_arr)
     global $step;
     //sondersteps Versandart ändern
     if (isset($cGet_arr['editVersandart'], $_SESSION['Versandart']) && $cGet_arr['editVersandart'] == 1) {
-        resetNeuKundenKupon();
+        Kupon::resetNewCustomerCoupon();
         Session::Cart()->loescheSpezialPos(C_WARENKORBPOS_TYP_VERPACKUNG)
                ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
                ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
@@ -417,7 +417,7 @@ function pruefeZahlungsartStep($cGet_arr)
     global $step, $hinweis;
     //sondersteps Zahlungsart ändern
     if (isset($_SESSION['Zahlungsart'], $cGet_arr['editZahlungsart']) && $cGet_arr['editZahlungsart'] == 1) {
-        resetNeuKundenKupon();
+        Kupon::resetNewCustomerCoupon();
         Session::Cart()->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
                ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
                ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
@@ -504,7 +504,7 @@ function pruefeGuthabenNutzen()
             $_SESSION['Kunde']->fGuthaben,
             Session::Cart()->gibGesamtsummeWaren(true, false)
         );
-        $_SESSION['Bestellung']->GutscheinLocalized = gibPreisStringLocalized($_SESSION['Bestellung']->fGuthabenGenutzt);
+        $_SESSION['Bestellung']->GutscheinLocalized = Preise::getLocalizedPriceString($_SESSION['Bestellung']->fGuthabenGenutzt);
     }
 
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPBESTAETIGUNG_GUTHABEN_PLAUSI);
@@ -556,7 +556,7 @@ function gibStepUnregistriertBestellen()
     Shop::Smarty()->assign('untertitel', Shop::Lang()->get('fillUnregForm', 'checkout'))
         ->assign('herkunfte', $herkunfte)
         ->assign('Kunde', $Kunde ?? null)
-        ->assign('laender', gibBelieferbareLaender(Session::CustomerGroup()->getID()))
+        ->assign('laender', VersandartHelper::getPossibleShippingCountries(Session::CustomerGroup()->getID()))
         ->assign('oKundenfeld_arr', gibSelbstdefKundenfelder())
         ->assign('nAnzeigeOrt', CHECKBOX_ORT_REGISTRIERUNG)
         ->assign('code_registrieren', false);
@@ -608,7 +608,7 @@ function gibStepLieferadresse()
         Shop::Smarty()->assign('Lieferadressen', $Lieferadressen);
         $kKundengruppe = $_SESSION['Kunde']->kKundengruppe;
     }
-    Shop::Smarty()->assign('laender', gibBelieferbareLaender($kKundengruppe))
+    Shop::Smarty()->assign('laender', VersandartHelper::getPossibleShippingCountries($kKundengruppe))
         ->assign('Kunde', $_SESSION['Kunde'])
         ->assign('kLieferadresse', $_SESSION['Bestellung']->kLieferadresse ?? null);
     if (isset($_SESSION['Bestellung']->kLieferadresse) && $_SESSION['Bestellung']->kLieferadresse == -1) {
@@ -667,7 +667,7 @@ function gibStepZahlung()
         VersandartHelper::getShippingClasses(Session::Cart()),
         $kKundengruppe
     );
-    $oVerpackung_arr = gibMoeglicheVerpackungen(Session::CustomerGroup()->getID());
+    $oVerpackung_arr = VersandartHelper::getPossiblePackagings(Session::CustomerGroup()->getID());
 
     if (!empty($oVerpackung_arr) && $cart->enthaltenSpezialPos(C_WARENKORBPOS_TYP_VERPACKUNG)) {
         foreach ($cart->PositionenArr as $oPos) {
@@ -870,7 +870,7 @@ function gibStepVersand()
             $oZahlungsart_arr[$oTmp->kZahlungsart] = $oTmp;
         }
     }
-    $oVerpackung_arr = gibMoeglicheVerpackungen(Session::CustomerGroup()->getID());
+    $oVerpackung_arr = VersandartHelper::getPossiblePackagings(Session::CustomerGroup()->getID());
     if ($cart->enthaltenSpezialPos(C_WARENKORBPOS_TYP_VERPACKUNG) && !empty($oVerpackung_arr)) {
         foreach ($cart->PositionenArr as $oPos) {
             if ($oPos->nPosTyp === C_WARENKORBPOS_TYP_VERPACKUNG) {
@@ -1345,7 +1345,7 @@ function getPaymentSurchageDiscount($Zahlungsart)
             ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
             ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR);
         //lokalisieren
-        $Zahlungsart->cPreisLocalized = gibPreisStringLocalized($Zahlungsart->fAufpreis);
+        $Zahlungsart->cPreisLocalized = Preise::getLocalizedPriceString($Zahlungsart->fAufpreis);
         $Aufpreis = $Zahlungsart->fAufpreis;
         if ($Zahlungsart->cAufpreisTyp === 'prozent') {
             $fGuthaben = $_SESSION['Bestellung']->fGuthabenGenutzt ?? 0;
@@ -1364,7 +1364,7 @@ function getPaymentSurchageDiscount($Zahlungsart)
                             true
                         ) - $fGuthaben) * $Zahlungsart->fAufpreis) / 100.0;
 
-            $Zahlungsart->cPreisLocalized = gibPreisStringLocalized($Aufpreis);
+            $Zahlungsart->cPreisLocalized = Preise::getLocalizedPriceString($Aufpreis);
         }
         //posname lokalisiert ablegen
         $Spezialpos               = new stdClass();
@@ -1588,7 +1588,7 @@ function gibZahlungsarten($kVersandart, $kKundengruppe)
         if ($Zahlungsarten[$i]->cAufpreisTyp === 'festpreis') {
             $Zahlungsarten[$i]->fAufpreis *= ((100 + $fSteuersatz) / 100);
         }
-        $Zahlungsarten[$i]->cPreisLocalized = gibPreisStringLocalized($Zahlungsarten[$i]->fAufpreis);
+        $Zahlungsarten[$i]->cPreisLocalized = Preise::getLocalizedPriceString($Zahlungsarten[$i]->fAufpreis);
         if ($Zahlungsarten[$i]->cAufpreisTyp === 'prozent') {
             $Zahlungsarten[$i]->cPreisLocalized  = ($Zahlungsarten[$i]->fAufpreis < 0) ? ' ' : '+ ';
             $Zahlungsarten[$i]->cPreisLocalized .= $Zahlungsarten[$i]->fAufpreis . '%';
@@ -2048,7 +2048,7 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
 
     if (isset($ret['email']) && $ret['email'] === 1) {
         // email is empty
-    } elseif (!valid_email($data['email'])) {
+    } elseif (StringHandler::filterEmailAddress($data['email']) === false) {
         $ret['email'] = 2;
     } elseif (pruefeEmailblacklist($data['email'])) {
         $ret['email'] = 3;
@@ -2364,7 +2364,7 @@ function checkLieferFormularArray($data)
             if ($conf['kunden']['lieferadresse_abfragen_email'] === 'Y') {
                 $ret['email'] = 1;
             }
-        } elseif (!valid_email($data['email'])) {
+        } elseif (StringHandler::filterEmailAddress($data['email']) === false) {
             $ret['email'] = 2;
         }
     }
@@ -2538,9 +2538,9 @@ function kuponAnnehmen($Kupon)
             if (is_array($cart->PositionenArr) && count($cart->PositionenArr) > 0) {
                 $articlePrice = 0;
                 foreach ($cart->PositionenArr as $oWKPosition) {
-                    $articlePrice += checkSetPercentCouponWKPos($oWKPosition, $Kupon)->fPreis;
-                    if (!empty(checkSetPercentCouponWKPos($oWKPosition, $Kupon)->cName)) {
-                        $articleName_arr[] = checkSetPercentCouponWKPos($oWKPosition, $Kupon)->cName;
+                    $articlePrice += WarenkorbHelper::checkSetPercentCouponWKPos($oWKPosition, $Kupon)->fPreis;
+                    if (!empty(WarenkorbHelper::checkSetPercentCouponWKPos($oWKPosition, $Kupon)->cName)) {
+                        $articleName_arr[] = WarenkorbHelper::checkSetPercentCouponWKPos($oWKPosition, $Kupon)->cName;
                     }
                 }
                 $couponPrice = ($articlePrice / 100) * (float)$Kupon->fWert;
@@ -2653,7 +2653,9 @@ function gibGesamtsummeKuponartikelImWarenkorb($Kupon, $PositionenArr)
             if ((empty($Kupon->cArtikel) || warenkorbKuponFaehigArtikel($Kupon, [$Position])) ||
                 (empty($Kupon->cHersteller) || warenkorbKuponFaehigHersteller($Kupon, [$Position])) ||
                 warenkorbKuponFaehigKategorien($Kupon, [$Position])) {
-                $gesamtsumme += $Position->fPreis * $Position->nAnzahl * ((100 + gibUst($Position->kSteuerklasse)) / 100);
+                $gesamtsumme += $Position->fPreis *
+                    $Position->nAnzahl *
+                    ((100 + TaxHelper::getSalesTax($Position->kSteuerklasse)) / 100);
             }
         }
     }
@@ -3333,7 +3335,7 @@ function pruefeAjaxEinKlick()
                 Shop::Smarty()->assign('Lieferadresse', setzeLieferadresseAusRechnungsadresse());
             }
             pruefeVersandkostenfreiKuponVorgemerkt();
-            setzeSteuersaetze();
+            TaxHelper::setTaxRates();
 
             // Prüfe Versandart, falls korrekt --> laden
             if ($oLetzteBestellung->kVersandart > 0) {
@@ -3493,7 +3495,7 @@ function setzeSessionRechnungsadresse($cPost_arr, $cFehlendeEingaben_arr)
             if ($_SESSION['Bestellung']->kLieferadresse == 0 && $_SESSION['Lieferadresse']) {
                 setzeLieferadresseAusRechnungsadresse();
             }
-            setzeSteuersaetze();
+            TaxHelper::setTaxRates();
             Session::Cart()->gibGesamtsummeWarenLocalized();
         }
 
@@ -3528,7 +3530,7 @@ function setzeSmartyRechnungsadresse($nUnreg, $nCheckout = 0)
     Shop::Smarty()->assign('untertitel', Shop::Lang()->get('fillUnregForm', 'checkout'))
         ->assign('herkunfte', $herkunfte)
         ->assign('Kunde', $_SESSION['Kunde'])
-        ->assign('laender', gibBelieferbareLaender(Session::CustomerGroup()->getID()))
+        ->assign('laender', VersandartHelper::getPossibleShippingCountries(Session::CustomerGroup()->getID()))
         ->assign('oKundenfeld_arr', gibSelbstdefKundenfelder());
     if (is_array($_SESSION['Kunde']->cKundenattribut_arr)) {
         Shop::Smarty()->assign('cKundenattribut_arr', $_SESSION['Kunde']->cKundenattribut_arr);
@@ -3569,7 +3571,7 @@ function setzeFehlerSmartyRechnungsadresse($cFehlendeEingaben_arr, $nUnreg = 0, 
     Shop::Smarty()->assign('untertitel', Shop::Lang()->get('fillUnregForm', 'checkout'))
         ->assign('herkunfte', $herkunfte)
         ->assign('Kunde', $oKunde_tmp)
-        ->assign('laender', gibBelieferbareLaender(Session::CustomerGroup()->getID()))
+        ->assign('laender', VersandartHelper::getPossibleShippingCountries(Session::CustomerGroup()->getID()))
         ->assign('oKundenfeld_arr', gibSelbstdefKundenfelder())
         ->assign('warning_passwortlaenge', lang_passwortlaenge($conf['kunden']['kundenregistrierung_passwortlaenge']));
     if (is_array($_SESSION['Kunde']->cKundenattribut_arr)) {
@@ -3616,7 +3618,7 @@ function plausiLieferadresse($cPost_arr)
         //lieferadresse gleich rechnungsadresse
         setzeLieferadresseAusRechnungsadresse();
     }
-    setzeSteuersaetze();
+    TaxHelper::setTaxRates();
     //lieferland hat sich geändert und versandart schon gewählt?
     if ($_SESSION['Lieferadresse'] && $_SESSION['Versandart']) {
         $delVersand = (stripos($_SESSION['Versandart']->cLaender, $_SESSION['Lieferadresse']->cLand) === false);
@@ -3681,7 +3683,7 @@ function setzeSessionLieferadresse($cPost_arr)
     } elseif ($kLieferadresse === 0) { //lieferadresse gleich rechnungsadresse
         setzeLieferadresseAusRechnungsadresse();
     }
-    setzeSteuersaetze();
+    TaxHelper::setTaxRates();
     //guthaben
     if ((int)$cPost_arr['guthabenVerrechnen'] === 1) {
         $_SESSION['Bestellung']->GuthabenNutzen   = 1;
@@ -3717,7 +3719,7 @@ function setzeSmartyLieferadresse()
         Shop::Smarty()->assign('Lieferadressen', $Lieferadressen)
             ->assign('GuthabenLocalized', Session::Customer()->gibGuthabenLocalized());
     }
-    Shop::Smarty()->assign('laender', gibBelieferbareLaender($kKundengruppe))
+    Shop::Smarty()->assign('laender', VersandartHelper::getPossibleShippingCountries($kKundengruppe))
         ->assign('Kunde', $_SESSION['Kunde'])
         ->assign('KuponMoeglich', kuponMoeglich())
         ->assign('kLieferadresse', $_SESSION['Bestellung']->kLieferadresse);
@@ -3752,7 +3754,7 @@ function setzeFehlerSmartyLieferadresse($cFehlendeEingaben_arr, $cPost_arr)
             ->assign('GuthabenLocalized', Session::Customer()->gibGuthabenLocalized());
     }
     setzeFehlendeAngaben($cFehlendeEingaben_arr, 'shipping_address');
-    Shop::Smarty()->assign('laender', gibBelieferbareLaender($kKundengruppe))
+    Shop::Smarty()->assign('laender', VersandartHelper::getPossibleShippingCountries($kKundengruppe))
         ->assign('Kunde', $_SESSION['Kunde'])
         ->assign('KuponMoeglich', kuponMoeglich())
         ->assign('kLieferadresse', $_SESSION['Bestellung']->kLieferadresse)

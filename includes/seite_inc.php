@@ -82,7 +82,7 @@ function gibAuswahlAssistentFragen($Einstellungen)
         require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'auswahlassistent_inc.php';
 
         if (function_exists('gibAAFrage')) {
-            $oSpracheStd = gibStandardsprache(true);
+            $oSpracheStd = Sprache::getDefaultLanguage(true);
 
             return gibAAFrage($_SESSION['AuswahlAssistent']['nFrage'], Shop::getLanguage(), (int)$oSpracheStd->kSprache);
         }
@@ -423,7 +423,7 @@ function gibSitemapKategorien()
  */
 function gibSitemapGlobaleMerkmale()
 {
-    $isDefaultLanguage = standardspracheAktiv();
+    $isDefaultLanguage = Sprache::isDefaultLanguageActive();
     $cacheID           = 'gsgm_' . (($isDefaultLanguage === true) ? 'd_' : '') . Shop::getLanguage();
     if (($oMerkmal_arr = Shop::Cache()->get($cacheID)) === false) {
         $oMerkmal_arr    = [];
@@ -789,7 +789,7 @@ function gibGratisGeschenkArtikel($conf)
     foreach ($oArtikelGeschenkTMP_arr as $oArtikelGeschenkTMP) {
         $oArtikel = new Artikel();
         $oArtikel->fuelleArtikel($oArtikelGeschenkTMP->kArtikel, $defaultOptions);
-        $oArtikel->cBestellwert = gibPreisStringLocalized((float)$oArtikelGeschenkTMP->cWert);
+        $oArtikel->cBestellwert = Preise::getLocalizedPriceString((float)$oArtikelGeschenkTMP->cWert);
 
         if ($oArtikel->kEigenschaftKombi > 0
             || !is_array($oArtikel->Variationen)

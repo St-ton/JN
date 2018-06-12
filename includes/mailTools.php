@@ -156,7 +156,7 @@ function sendeMail($ModulId, $Object, $mail = null)
                ->assign('WRB', $WRB)
                ->assign('DSE', $DSE)
                ->assign('WRBForm', $WRBForm)
-               ->assign('IP', StringHandler::htmlentities(StringHandler::filterXSS(gibIP())));
+               ->assign('IP', StringHandler::htmlentities(StringHandler::filterXSS(RequestHelper::getIP())));
 
     $Object = lokalisiereInhalt($Object);
     // ModulId von einer Plugin Emailvorlage vorhanden?
@@ -478,10 +478,10 @@ function sendeMail($ModulId, $Object, $mail = null)
         case MAILTEMPLATE_BEWERTUNG_GUTHABEN:
             $waehrung = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
 
-            $Object->oBewertungGuthabenBonus->fGuthabenBonusLocalized = gibPreisStringLocalized(
+            $Object->oBewertungGuthabenBonus->fGuthabenBonusLocalized = Preise::getLocalizedPriceString(
                 $Object->oBewertungGuthabenBonus->fGuthabenBonus,
                 $waehrung,
-                0
+                false
             );
             $mailSmarty->assign('oKunde', $Object->tkunde)
                        ->assign('oBewertungGuthabenBonus', $Object->oBewertungGuthabenBonus);
@@ -844,7 +844,7 @@ function injectSubject($Object, $Betreff)
 function lokalisiereInhalt($Object)
 {
     if (isset($Object->tgutschein->fWert) && $Object->tgutschein->fWert != 0) {
-        $Object->tgutschein->cLocalizedWert = gibPreisStringLocalized($Object->tgutschein->fWert, 0, 0);
+        $Object->tgutschein->cLocalizedWert = Preise::getLocalizedPriceString($Object->tgutschein->fWert, 0, false);
     }
 
     return $Object;

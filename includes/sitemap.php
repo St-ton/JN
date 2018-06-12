@@ -16,14 +16,15 @@ if ($cDatei === null) {
     header('Retry-After: 86400');
     exit;
 }
-
-$cIP              = Shop::Container()->getDB()->escape(getRealIp());
-$nFloodProtection = (int)Shop::Container()->getDB()->query("
-    SELECT * 
+$cIP              = RequestHelper::getRealIP();
+$nFloodProtection = Shop::Container()->getDB()->queryPrepared(
+    "SELECT * 
         FROM `tsitemaptracker` 
-        WHERE `cIP` = '{$cIP}' 
+        WHERE `cIP` = :ip 
             AND DATE_ADD(`dErstellt`, INTERVAL 2 MINUTE) >= NOW() 
-        ORDER BY `dErstellt` DESC", 3
+        ORDER BY `dErstellt` DESC",
+    ['ip' => $cIP],
+    \DB\ReturnType::AFFECTED_ROWS
 );
 if ($nFloodProtection === 0) {
     // Track request

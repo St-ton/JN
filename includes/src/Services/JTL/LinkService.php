@@ -22,6 +22,7 @@ use Tightenco\Collect\Support\Collection;
 /**
  * Class LinkService
  * @package Link
+ * @since 5.0.0
  */
 final class LinkService implements LinkServiceInterface
 {
@@ -510,5 +511,54 @@ final class LinkService implements LinkServiceInterface
         }
 
         return $this->linkGroups;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAGBWRB(int $langID, int $customerGroupID)
+    {
+        if ($langID <= 0 || $customerGroupID <= 0) {
+            return false;
+        }
+        $oLinkAGB   = null;
+        $oLinkWRB   = null;
+        // kLink für AGB und WRB suchen
+        foreach ($this->getSpecialPages() as $sp) {
+            /** @var \Link\LinkInterface $sp */
+            if ($sp->getLinkType() === LINKTYP_AGB) {
+                $oLinkAGB = $sp;
+            } elseif ($sp->getLinkType() === LINKTYP_WRB) {
+                $oLinkWRB = $sp;
+            }
+        }
+        $oAGBWRB = $this->db->select(
+            'ttext',
+            'kKundengruppe', $customerGroupID,
+            'kSprache', $langID
+        );
+        if (!empty($oAGBWRB->kText)) {
+            $oAGBWRB->cURLAGB  = $oLinkAGB->getURL() ?? '';
+            $oAGBWRB->cURLWRB  = $oLinkWRB->getURL() ?? '';
+            $oAGBWRB->kLinkAGB = $oLinkAGB !== null
+                ? $oLinkAGB->getID()
+                : 0;
+            $oAGBWRB->kLinkWRB = $oLinkWRB !== null
+                ? $oLinkWRB->getID()
+                : 0;
+
+            return $oAGBWRB;
+        }
+        $oAGBWRB = $this->db->select('ttext', 'nStandard', 1);
+        if (!empty($oAGBWRB->kText)) {
+            $oAGBWRB->cURLAGB  = $oLinkAGB !== null ? $oLinkAGB->getURL() : '';
+            $oAGBWRB->cURLWRB  = $oAGBWRB !== null ? $oLinkAGB->getURL() : '';
+            $oAGBWRB->kLinkAGB = $oLinkAGB !== null ? $oLinkAGB->getID() : 0;
+            $oAGBWRB->kLinkWRB = $oAGBWRB !== null ? $oAGBWRB->getID() : 0;
+
+            return $oAGBWRB;
+        }
+
+        return false;
     }
 }

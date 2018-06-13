@@ -457,10 +457,12 @@ class Kunde
      */
     private function verschluesselKundendaten()
     {
-        $this->cNachname = verschluesselXTEA(trim($this->cNachname));
-        $this->cFirma    = verschluesselXTEA(trim($this->cFirma));
-        $this->cZusatz   = verschluesselXTEA(trim($this->cZusatz));
-        $this->cStrasse  = verschluesselXTEA(trim($this->cStrasse));
+        $cryptoService = Shop::Container()->getCryptoService();
+        
+        $this->cNachname = $cryptoService->encryptXTEA(trim($this->cNachname));
+        $this->cFirma    = $cryptoService->encryptXTEA(trim($this->cFirma));
+        $this->cZusatz   = $cryptoService->encryptXTEA(trim($this->cZusatz));
+        $this->cStrasse  = $cryptoService->encryptXTEA(trim($this->cStrasse));
 
         return $this;
     }
@@ -472,10 +474,12 @@ class Kunde
      */
     private function entschluesselKundendaten()
     {
-        $this->cNachname = trim(entschluesselXTEA($this->cNachname));
-        $this->cFirma    = trim(entschluesselXTEA($this->cFirma));
-        $this->cZusatz   = trim(entschluesselXTEA($this->cZusatz));
-        $this->cStrasse  = trim(entschluesselXTEA($this->cStrasse));
+        $cryptoService = Shop::Container()->getCryptoService();
+        
+        $this->cNachname = trim($cryptoService->decryptXTEA($this->cNachname));
+        $this->cFirma    = trim($cryptoService->decryptXTEA($this->cFirma));
+        $this->cZusatz   = trim($cryptoService->decryptXTEA($this->cZusatz));
+        $this->cStrasse  = trim($cryptoService->decryptXTEA($this->cStrasse));
 
         return $this;
     }

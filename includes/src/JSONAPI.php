@@ -150,10 +150,10 @@ class JSONAPI
             'tkunde', ['kKunde', 'cVorname', 'cNachname', 'cStrasse', 'cHausnummer', 'cPLZ', 'cOrt', 'cMail'],
             null, $searchIn, $search, $limit
         );
-
+        $cryptoService = Shop::Container()->getCryptoService();
         foreach ($items as $item) {
-            $item->cNachname = trim(entschluesselXTEA($item->cNachname));
-            $item->cStrasse  = trim(entschluesselXTEA($item->cStrasse));
+            $item->cNachname = trim($cryptoService->decryptXTEA($item->cNachname));
+            $item->cStrasse  = trim($cryptoService->decryptXTEA($item->cStrasse));
         }
 
         return $this->itemsToJson($items);
@@ -242,7 +242,7 @@ class JSONAPI
                     FROM " . $table . "
                     WHERE " . implode(' OR ', $conditions) . "
                     " . ($limit > 0 ? "LIMIT " . $limit : ""),
-                2
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         } elseif (is_string($searchIn) && is_array($searchFor)) {
             // key array select
@@ -257,7 +257,7 @@ class JSONAPI
                     FROM " . $table . "
                     WHERE " . $searchIn . " IN (" . implode(',', $searchFor) . ")
                     " . ($limit > 0 ? "LIMIT " . $limit : ""),
-                2
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         } elseif ($searchIn === null && $searchFor === null) {
             // select all
@@ -265,7 +265,7 @@ class JSONAPI
                 "SELECT " . implode(',', $columns) . "
                     FROM " . $table . "
                     " . ($limit > 0 ? "LIMIT " . $limit : ""),
-                2
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         } else {
             // invalid arguments

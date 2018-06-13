@@ -43,4 +43,26 @@ class CryptoService implements CryptoServiceInterface
     {
         return hash_equals($string1, $string2);
     }
+
+    /**
+     * @param string $cText
+     * @return string
+     */
+    public function encryptXTEA(string $cText): string
+    {
+        return strlen($cText) > 0
+            ? (new \XTEA(BLOWFISH_KEY))->encrypt($cText)
+            : $cText;
+    }
+
+    /**
+     * @param string $cText
+     * @return string
+     */
+    public function decryptXTEA(string $cText): string
+    {
+        return strlen($cText) > 0
+            ? (new \XTEA(BLOWFISH_KEY))->decrypt($cText)
+            : $cText;
+    }
 }

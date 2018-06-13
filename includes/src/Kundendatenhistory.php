@@ -256,16 +256,17 @@ class Kundendatenhistory extends MainModel
             $oKundeNew->cPasswort = $oKundeOld->cPasswort;
 
             if (!Kunde::isEqual($oKundeOld, $oKundeNew)) {
+                $cryptoService = Shop::Container()->getCryptoService(); 
                 $oKundeOld = deepCopy($oKundeOld);
                 $oKundeNew = deepCopy($oKundeNew);
                 // Encrypt Old
-                $oKundeOld->cNachname = verschluesselXTEA(trim($oKundeOld->cNachname));
-                $oKundeOld->cFirma    = verschluesselXTEA(trim($oKundeOld->cFirma));
-                $oKundeOld->cStrasse  = verschluesselXTEA(trim($oKundeOld->cStrasse));
+                $oKundeOld->cNachname = $cryptoService->encryptXTEA(trim($oKundeOld->cNachname));
+                $oKundeOld->cFirma    = $cryptoService->encryptXTEA(trim($oKundeOld->cFirma));
+                $oKundeOld->cStrasse  = $cryptoService->encryptXTEA(trim($oKundeOld->cStrasse));
                 // Encrypt New
-                $oKundeNew->cNachname = verschluesselXTEA(trim($oKundeNew->cNachname));
-                $oKundeNew->cFirma    = verschluesselXTEA(trim($oKundeNew->cFirma));
-                $oKundeNew->cStrasse  = verschluesselXTEA(trim($oKundeNew->cStrasse));
+                $oKundeNew->cNachname = $cryptoService->encryptXTEA(trim($oKundeNew->cNachname));
+                $oKundeNew->cFirma    = $cryptoService->encryptXTEA(trim($oKundeNew->cFirma));
+                $oKundeNew->cStrasse  = $cryptoService->encryptXTEA(trim($oKundeNew->cStrasse));
 
                 $oKundendatenhistory = new self();
                 $oKundendatenhistory->setKunde($oKundeOld->kKunde)

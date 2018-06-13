@@ -45,13 +45,13 @@ function get_product_list($params, $smarty)
         ? $params['cAssign']
         : 'oCustomArtikel_arr';
     $cMerkmalFilter_arr = isset($params['cMerkmalFilter'])
-        ? setzeMerkmalFilter(explode(';', $params['cMerkmalFilter']))
+        ? \Filter\ProductFilter::initAttributeFilter(explode(';', $params['cMerkmalFilter']))
         : null;
     $cSuchFilter_arr    = isset($params['cSuchFilter'])
-        ? setzeSuchFilter(explode(';', $params['cSuchFilter']))
+        ? \Filter\ProductFilter::initSearchFilter(explode(';', $params['cSuchFilter']))
         : null;
     $cTagFilter_arr     = isset($params['cTagFilter'])
-        ? setzeTagFilter(explode(';', $params['cTagFilter']))
+        ? \Filter\ProductFilter::initTagFilter(explode(';', $params['cTagFilter']))
         : null;
     $cParameter_arr     = [
         'kKategorie'             => $params['kKategorie'] ?? null,

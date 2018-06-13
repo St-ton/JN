@@ -1080,8 +1080,8 @@ class TrustedShops
         if (!is_object($oZertifikat)) {
             $oZertifikat = new stdClass();
         }
-        $oZertifikat->cWSUser     = trim(verschluesselXTEA($oZertifikat->cWSUser));
-        $oZertifikat->cWSPasswort = trim(verschluesselXTEA($oZertifikat->cWSPasswort));
+        $oZertifikat->cWSUser     = trim(Shop::Container()->getCryptoService()->encryptXTEA($oZertifikat->cWSUser));
+        $oZertifikat->cWSPasswort = trim(Shop::Container()->getCryptoService()->encryptXTEA($oZertifikat->cWSPasswort));
 
         return $oZertifikat;
     }
@@ -1097,8 +1097,8 @@ class TrustedShops
             $oZertifikat->cWSUser     = null;
             $oZertifikat->cWSPasswort = null;
         }
-        $oZertifikat->cWSUser     = trim(entschluesselXTEA($oZertifikat->cWSUser));
-        $oZertifikat->cWSPasswort = trim(entschluesselXTEA($oZertifikat->cWSPasswort));
+        $oZertifikat->cWSUser     = trim(Shop::Container()->getCryptoService()->decryptXTEA($oZertifikat->cWSUser));
+        $oZertifikat->cWSPasswort = trim(Shop::Container()->getCryptoService()->decryptXTEA($oZertifikat->cWSPasswort));
 
         return $oZertifikat;
     }

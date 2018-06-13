@@ -219,4 +219,11 @@ interface LinkServiceInterface
      * @return LinkGroupCollection
      */
     public function activate(int $pageType): LinkGroupCollection;
+
+    /**
+     * @param int $langID
+     * @param int $customerGroupID
+     * @return object|bool
+     */
+    public function getAGBWRB(int $langID, int $customerGroupID);
 }

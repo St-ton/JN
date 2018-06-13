@@ -6,23 +6,6 @@
 require_once __DIR__ . '/tools.Global.deprecations.php';
 
 /**
- * @param object $originalObj
- * @return stdClass
- */
-function kopiereMembers($originalObj)
-{
-    if (!is_object($originalObj)) {
-        return $originalObj;
-    }
-    $obj = new stdClass();
-    foreach (array_keys(get_object_vars($originalObj)) as $member) {
-        $obj->$member = $originalObj->$member;
-    }
-
-    return $obj;
-}
-
-/**
  * @param array  $data
  * @param string $key
  * @param bool   $bStringToLower
@@ -506,6 +489,23 @@ function checkeSpracheWaehrung($lang = '')
 }
 
 /**
+ * @param object $originalObj
+ * @return stdClass
+ */
+function kopiereMembers($originalObj)
+{
+    if (!is_object($originalObj)) {
+        return $originalObj;
+    }
+    $obj = new stdClass();
+    foreach (array_keys(get_object_vars($originalObj)) as $member) {
+        $obj->$member = $originalObj->$member;
+    }
+
+    return $obj;
+}
+
+/**
  * @param stdClass|object $src
  * @param stdClass|object $dest
  */
@@ -565,142 +565,6 @@ function gibVerfuegbarkeitsformularAnzeigen($Artikel, $einstellung)
 }
 
 /**
- * @param array $nFilter_arr
- * @return array
- */
-function setzeMerkmalFilter($nFilter_arr = [])
-{
-    $filter = [];
-    if (is_array($nFilter_arr) && count($nFilter_arr) > 1) {
-        foreach ($nFilter_arr as $nFilter) {
-            if ((int)$nFilter > 0) {
-                $filter[] = (int)$nFilter;
-            }
-        }
-    } else {
-        if (isset($_GET['mf'])) {
-            if (is_string($_GET['mf'])) {
-                $filter[] = $_GET['mf'];
-            } else {
-                foreach ($_GET['mf'] as $mf => $value) {
-                    $filter[] = $value;
-                }
-            }
-        } elseif (isset($_POST['mf'])) {
-            if (is_string($_POST['mf'])) {
-                $filter[] = $_POST['mf'];
-            } else {
-                foreach ($_POST['mf'] as $mf => $value) {
-                    $filter[] = $value;
-                }
-            }
-        } elseif (count($_GET) > 0) {
-            foreach ($_GET as $key => $value) {
-                if (preg_match('/mf\d+/i', $key)) {
-                    $filter[] = (int)$value;
-                }
-            }
-        } elseif (count($_POST) > 0) {
-            foreach ($_POST as $key => $value) {
-                if (preg_match('/mf\d+/i', $key)) {
-                    $filter[] = (int)$value;
-                }
-            }
-        }
-    }
-
-    return $filter;
-}
-
-/**
- * @param array $nFilter_arr
- * @return array
- */
-function setzeSuchFilter($nFilter_arr = [])
-{
-    $filter = [];
-    if (is_array($nFilter_arr) && count($nFilter_arr) > 1) {
-        foreach ($nFilter_arr as $nFilter) {
-            if ((int)$nFilter > 0) {
-                $filter[] = (int)$nFilter;
-            }
-        }
-    } else {
-        if (isset($_GET['sf'])) {
-            if (is_string($_GET['sf'])) {
-                $filter[] = $_GET['sf'];
-            } else {
-                foreach ($_GET['sf'] as $mf => $value) {
-                    $filter[] = $value;
-                }
-            }
-        } elseif (isset($_POST['sf'])) {
-            if (is_string($_POST['sf'])) {
-                $filter[] = $_POST['sf'];
-            } else {
-                foreach ($_POST['sf'] as $mf => $value) {
-                    $filter[] = $value;
-                }
-            }
-        } else {
-            $i = 1;
-            while ($i < 20) {
-                if (RequestHelper::verifyGPCDataInt('sf' . $i) > 0) {
-                    $filter[] = RequestHelper::verifyGPCDataInt('sf' . $i);
-                }
-                ++$i;
-            }
-        }
-    }
-
-    return $filter;
-}
-
-/**
- * @param array $nFilter_arr
- * @return array
- */
-function setzeTagFilter($nFilter_arr = [])
-{
-    $filter = [];
-    if (is_array($nFilter_arr) && count($nFilter_arr) > 1) {
-        foreach ($nFilter_arr as $nFilter) {
-            if ((int)$nFilter > 0) {
-                $filter[] = (int)$nFilter;
-            }
-        }
-    } else {
-        if (isset($_GET['tf'])) {
-            if (is_string($_GET['tf'])) {
-                $filter[] = $_GET['tf'];
-            } else {
-                foreach ($_GET['tf'] as $mf => $value) {
-                    $filter[] = $value;
-                }
-            }
-        } elseif (isset($_POST['tf'])) {
-            if (is_string($_POST['tf'])) {
-                $filter[] = $_POST['tf'];
-            } else {
-                foreach ($_POST['tf'] as $mf => $value) {
-                    $filter[] = $value;
-                }
-            }
-        } else {
-            $i = 1;
-            while ($i < 20) {
-                if (RequestHelper::verifyGPCDataInt('tf' . $i) > 0) {
-                    $filter[] = RequestHelper::verifyGPCDataInt('tf' . $i);
-                }
-                ++$i;
-            }
-        }
-    }
-
-    return $filter;
-}
-
-/**
  * @param array $articles
  * @param int   $weightAcc
  * @param int   $shippingWeightAcc
@@ -719,57 +583,6 @@ function baueGewicht(array $articles, $weightAcc = 2, $shippingWeightAcc = 2)
             $article->Artikelgewicht_en = round($article->fArtikelgewicht, $weightAcc);
         }
     }
-}
-
-/**
- * @param int $kSprache
- * @param int $kKundengruppe
- * @return object|bool
- */
-function gibAGBWRB($kSprache, $kKundengruppe)
-{
-    if ($kSprache <= 0 || $kKundengruppe <= 0) {
-        return false;
-    }
-    $oLinkAGB   = null;
-    $oLinkWRB   = null;
-    // kLink für AGB und WRB suchen
-    foreach (Shop::Container()->getLinkService()->getSpecialPages() as $sp) {
-        /** @var \Link\LinkInterface $sp */
-        if ($sp->getLinkType() === LINKTYP_AGB) {
-            $oLinkAGB = $sp;
-        } elseif ($sp->getLinkType() === LINKTYP_WRB) {
-            $oLinkWRB = $sp;
-        }
-    }
-    $oAGBWRB = Shop::Container()->getDB()->select(
-        'ttext',
-        'kKundengruppe', (int)$kKundengruppe,
-        'kSprache', (int)$kSprache
-    );
-    if (!empty($oAGBWRB->kText)) {
-        $oAGBWRB->cURLAGB  = $oLinkAGB->getURL() ?? '';
-        $oAGBWRB->cURLWRB  = $oLinkWRB->getURL() ?? '';
-        $oAGBWRB->kLinkAGB = $oLinkAGB !== null
-            ? $oLinkAGB->getID()
-            : 0;
-        $oAGBWRB->kLinkWRB = $oLinkWRB !== null
-            ? $oLinkWRB->getID()
-            : 0;
-
-        return $oAGBWRB;
-    }
-    $oAGBWRB = Shop::Container()->getDB()->select('ttext', 'nStandard', 1);
-    if (!empty($oAGBWRB->kText)) {
-        $oAGBWRB->cURLAGB  = $oLinkAGB !== null ? $oLinkAGB->getURL() : '';
-        $oAGBWRB->cURLWRB  = $oAGBWRB !== null ? $oLinkAGB->getURL() : '';
-        $oAGBWRB->kLinkAGB = $oLinkAGB !== null ? $oLinkAGB->getID() : 0;
-        $oAGBWRB->kLinkWRB = $oAGBWRB !== null ? $oAGBWRB->getID() : 0;
-
-        return $oAGBWRB;
-    }
-
-    return false;
 }
 
 /**
@@ -1011,28 +824,6 @@ function setzeSpracheUndWaehrungLink()
         'kLink'             => &$kLink,
         'AktuelleSeite'     => &$AktuelleSeite
     ]);
-}
-
-/**
- * @param string $cText
- * @return string
- */
-function verschluesselXTEA($cText)
-{
-    return strlen($cText) > 0
-        ? (new XTEA(BLOWFISH_KEY))->encrypt($cText)
-        : $cText;
-}
-
-/**
- * @param string $cText
- * @return string
- */
-function entschluesselXTEA($cText)
-{
-    return strlen($cText) > 0
-        ? (new XTEA(BLOWFISH_KEY))->decrypt($cText)
-        : $cText;
 }
 
 /**

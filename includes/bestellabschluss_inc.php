@@ -434,14 +434,15 @@ function saveZahlungsInfo($kKunde, $kBestellung, $bZahlungAgain = false)
  */
 function speicherKundenKontodaten($oZahlungsinfo)
 {
+    $cryptoService = Shop::Container()->getCryptoService();
     $oKundenKontodaten            = new stdClass();
     $oKundenKontodaten->kKunde    = $_SESSION['Warenkorb']->kKunde;
-    $oKundenKontodaten->cBLZ      = verschluesselXTEA($oZahlungsinfo->cBLZ);
-    $oKundenKontodaten->nKonto    = verschluesselXTEA($oZahlungsinfo->cKontoNr);
-    $oKundenKontodaten->cInhaber  = verschluesselXTEA($oZahlungsinfo->cInhaber);
-    $oKundenKontodaten->cBankName = verschluesselXTEA($oZahlungsinfo->cBankName);
-    $oKundenKontodaten->cIBAN     = verschluesselXTEA($oZahlungsinfo->cIBAN);
-    $oKundenKontodaten->cBIC      = verschluesselXTEA($oZahlungsinfo->cBIC);
+    $oKundenKontodaten->cBLZ      = $cryptoService->encryptXTEA($oZahlungsinfo->cBLZ);
+    $oKundenKontodaten->nKonto    = $cryptoService->encryptXTEA($oZahlungsinfo->cKontoNr);
+    $oKundenKontodaten->cInhaber  = $cryptoService->encryptXTEA($oZahlungsinfo->cInhaber);
+    $oKundenKontodaten->cBankName = $cryptoService->encryptXTEA($oZahlungsinfo->cBankName);
+    $oKundenKontodaten->cIBAN     = $cryptoService->encryptXTEA($oZahlungsinfo->cIBAN);
+    $oKundenKontodaten->cBIC      = $cryptoService->encryptXTEA($oZahlungsinfo->cBIC);
 
     Shop::Container()->getDB()->insert('tkundenkontodaten', $oKundenKontodaten);
 }

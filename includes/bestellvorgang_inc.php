@@ -1485,23 +1485,24 @@ function gibKundenKontodaten($kKunde)
         $oKundenKontodaten = Shop::Container()->getDB()->select('tkundenkontodaten', 'kKunde', (int)$kKunde);
 
         if (isset($oKundenKontodaten->kKunde) && $oKundenKontodaten->kKunde > 0) {
+            $cryptoService = Shop::Container()->getCryptoService();
             if (strlen($oKundenKontodaten->cBLZ) > 0) {
-                $oKundenKontodaten->cBLZ = (int)entschluesselXTEA($oKundenKontodaten->cBLZ);
+                $oKundenKontodaten->cBLZ = (int)$cryptoService->decryptXTEA($oKundenKontodaten->cBLZ);
             }
             if (strlen($oKundenKontodaten->cInhaber) > 0) {
-                $oKundenKontodaten->cInhaber = trim(entschluesselXTEA($oKundenKontodaten->cInhaber));
+                $oKundenKontodaten->cInhaber = trim($cryptoService->decryptXTEA($oKundenKontodaten->cInhaber));
             }
             if (strlen($oKundenKontodaten->cBankName) > 0) {
-                $oKundenKontodaten->cBankName = trim(entschluesselXTEA($oKundenKontodaten->cBankName));
+                $oKundenKontodaten->cBankName = trim($cryptoService->decryptXTEA($oKundenKontodaten->cBankName));
             }
             if (strlen($oKundenKontodaten->nKonto) > 0) {
-                $oKundenKontodaten->nKonto = trim(entschluesselXTEA($oKundenKontodaten->nKonto));
+                $oKundenKontodaten->nKonto = trim($cryptoService->decryptXTEA($oKundenKontodaten->nKonto));
             }
             if (strlen($oKundenKontodaten->cIBAN) > 0) {
-                $oKundenKontodaten->cIBAN = trim(entschluesselXTEA($oKundenKontodaten->cIBAN));
+                $oKundenKontodaten->cIBAN = trim($cryptoService->decryptXTEA($oKundenKontodaten->cIBAN));
             }
             if (strlen($oKundenKontodaten->cBIC) > 0) {
-                $oKundenKontodaten->cBIC = trim(entschluesselXTEA($oKundenKontodaten->cBIC));
+                $oKundenKontodaten->cBIC = trim($cryptoService->decryptXTEA($oKundenKontodaten->cBIC));
             }
 
             return $oKundenKontodaten;
@@ -3396,7 +3397,10 @@ function ladeAjaxEinKlick()
     gibStepBestaetigung($aFormValues);
 
     Shop::Smarty()->assign('L_CHECKOUT_ACCEPT_AGB', Shop::Lang()->get('acceptAgb', 'checkout'))
-        ->assign('AGB', gibAGBWRB(Shop::getLanguage(), Session::CustomerGroup()->getID()))
+        ->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
+            Shop::getLanguage(),
+            Session::CustomerGroup()->getID()
+        ))
         ->assign('WarensummeLocalized', Session::Cart()->gibGesamtsummeWarenLocalized())
         ->assign('Warensumme', Session::Cart()->gibGesamtsummeWaren());
 }
@@ -3888,7 +3892,10 @@ function setzeSmartyBestaetigung()
     Shop::Smarty()->assign('Kunde', $_SESSION['Kunde'])
         ->assign('Lieferadresse', $_SESSION['Lieferadresse'])
         ->assign('L_CHECKOUT_ACCEPT_AGB', Shop::Lang()->get('acceptAgb', 'checkout'))
-        ->assign('AGB', gibAGBWRB(Shop::getLanguage(), Session::CustomerGroup()->getID()))
+        ->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
+            Shop::getLanguage(),
+            Session::CustomerGroup()->getID()
+        ))
         ->assign('WarensummeLocalized', Session::Cart()->gibGesamtsummeWarenLocalized())
         ->assign('Warensumme', Session::Cart()->gibGesamtsummeWaren());
     // SafetyPay Work Around
@@ -3924,7 +3931,10 @@ function setzeFehlendeAngaben($fehlendeAngabe, $context = null)
 function globaleAssigns()
 {
     global $step, $hinweis, $Einstellungen;
-    Shop::Smarty()->assign('AGB', gibAGBWRB(Shop::getLanguage(), Session::CustomerGroup()->getID()))
+    Shop::Smarty()->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
+            Shop::getLanguage(),
+            Session::CustomerGroup()->getID()
+        ))
         ->assign('Ueberschrift', Shop::Lang()->get('orderStep0Title', 'checkout'))
         ->assign('UeberschriftKlein', Shop::Lang()->get('orderStep0Title2', 'checkout'))
         ->assign('Einstellungen', $Einstellungen)

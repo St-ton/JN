@@ -315,9 +315,9 @@ if ($step === 'einstellen') {
     $oPagination         = (new Pagination('payments' . $kZahlungsart))
         ->setItemArray($oZahlunseingang_arr)
         ->assemble();
-
+    $cryptoService = Shop::Container()->getCryptoService();
     foreach ($oZahlunseingang_arr as &$oZahlunseingang) {
-        $oZahlunseingang->cNachname = entschluesselXTEA($oZahlunseingang->cNachname);
+        $oZahlunseingang->cNachname = $cryptoService->decryptXTEA($oZahlunseingang->cNachname);
         $oZahlunseingang->dZeit     = date_create($oZahlunseingang->dZeit)->format('d.m.Y\<\b\r\>H:i');
     }
     unset($oZahlunseingang);

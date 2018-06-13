@@ -1791,3 +1791,76 @@ function gibKeyArrayFuerKeyString($cKeys, $cSeperator)
 
     return $kKey_arr;
 }
+
+/**
+ * @param array $nFilter_arr
+ * @return array
+ * @deprecated since 5.0.0
+ */
+function setzeMerkmalFilter($nFilter_arr = [])
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use ProductFilter::initAttributeFilter() instead.', E_USER_DEPRECATED);
+
+    return \Filter\ProductFilter::initAttributeFilter($nFilter_arr);
+}
+
+/**
+ * @param array $nFilter_arr
+ * @return array
+ * @deprecated since 5.0.0
+ */
+function setzeSuchFilter($nFilter_arr = [])
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use ProductFilter::initSearchFilter() instead.', E_USER_DEPRECATED);
+
+    return \Filter\ProductFilter::initSearchFilter($nFilter_arr);
+}
+
+/**
+ * @param array $nFilter_arr
+ * @return array
+ * @deprecated since 5.0.0
+ */
+function setzeTagFilter($nFilter_arr = [])
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use ProductFilter::initTagFilter() instead.', E_USER_DEPRECATED);
+
+    return \Filter\ProductFilter::initTagFilter($nFilter_arr);
+}
+
+/**
+ * @param int $kSprache
+ * @param int $kKundengruppe
+ * @return object|bool
+ * @deprecated since 5.0.0
+ */
+function gibAGBWRB(int $kSprache, int $kKundengruppe)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use LinkService::getAGBWRB() instead.', E_USER_DEPRECATED);
+
+    return Shop::Container()->getLinkService()->getAGBWRB($kSprache, $kKundengruppe);
+}
+
+/**
+ * @param string $cText
+ * @return string
+ * @deprecated since 5.0.0
+ */
+function verschluesselXTEA($cText)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use CryptoService::encryptXTEA() instead.', E_USER_DEPRECATED);
+
+    return Shop::Container()->getCryptoService()->encryptXTEA($cText);
+}
+
+/**
+ * @param string $cText
+ * @return string
+ * @deprecated since 5.0.0
+ */
+function entschluesselXTEA($cText)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use CryptoService::decryptXTEA() instead.', E_USER_DEPRECATED);
+
+    return Shop::Container()->getCryptoService()->decryptXTEA($cText);
+}

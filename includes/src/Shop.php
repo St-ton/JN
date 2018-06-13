@@ -1248,9 +1248,9 @@ final class Shop
                 self::updateLanguage((int)$oSeo->kSprache);
             }
         }
-        self::$MerkmalFilter = setzeMerkmalFilter();
-        self::$SuchFilter    = setzeSuchFilter();
-        self::$TagFilter     = setzeTagFilter();
+        self::$MerkmalFilter = ProductFilter::initAttributeFilter();
+        self::$SuchFilter    = ProductFilter::initSearchFilter();
+        self::$TagFilter     = ProductFilter::initTagFilter();
 
         executeHook(HOOK_SEOCHECK_ENDE);
     }

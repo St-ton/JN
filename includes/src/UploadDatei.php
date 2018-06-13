@@ -102,20 +102,17 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
                 ['kCustomID', 'nTyp'],
                 [(int)$kCustomID, (int)$nTyp]
             );
-
-            if (is_array($oUploadDatei_arr)) {
-                foreach ($oUploadDatei_arr as &$oUpload) {
-                    $oUpload->cGroesse   = Upload::formatGroesse($oUpload->nBytes);
-                    $oUpload->bVorhanden = is_file(PFAD_UPLOADS . $oUpload->cPfad);
-                    $oUpload->bVorschau  = Upload::vorschauTyp($oUpload->cName);
-                    $oUpload->cBildpfad  = sprintf(
-                        '%s/%s?action=preview&secret=%s&sid=%s',
-                        Shop::getURL(),
-                        PFAD_UPLOAD_CALLBACK,
-                        rawurlencode(verschluesselXTEA($oUpload->kUpload)),
-                        session_id()
-                    );
-                }
+            foreach ($oUploadDatei_arr as &$oUpload) {
+                $oUpload->cGroesse   = Upload::formatGroesse($oUpload->nBytes);
+                $oUpload->bVorhanden = is_file(PFAD_UPLOADS . $oUpload->cPfad);
+                $oUpload->bVorschau  = Upload::vorschauTyp($oUpload->cName);
+                $oUpload->cBildpfad  = sprintf(
+                    '%s/%s?action=preview&secret=%s&sid=%s',
+                    Shop::getURL(),
+                    PFAD_UPLOAD_CALLBACK,
+                    rawurlencode(Shop::Container()->getCryptoService()->encryptXTEA($oUpload->kUpload)),
+                    session_id()
+                );
             }
 
             return $oUploadDatei_arr;

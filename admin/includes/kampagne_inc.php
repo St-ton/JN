@@ -341,7 +341,8 @@ function holeKampagneDetailStats($kKampagne, $oKampagneDef_arr)
  */
 function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStampText, &$cMember_arr, $cBlaetterSQL1)
 {
-    $oDaten_arr = [];
+    $cryptoService = Shop::Container()->getCryptoService();
+    $oDaten_arr    = [];
     if ((int)$kKampagne > 0 && (int)$oKampagneDef->kKampagneDef > 0 && strlen($cStamp) > 0) {
         $cSQLSELECT = '';
         $cSQLWHERE  = '';
@@ -448,10 +449,10 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                     $dCount = count($oDaten_arr);
                     for ($i = 0; $i < $dCount; $i++) {
                         if ($oDaten_arr[$i]->cNachname !== 'n.v.') {
-                            $oDaten_arr[$i]->cNachname = trim(entschluesselXTEA($oDaten_arr[$i]->cNachname));
+                            $oDaten_arr[$i]->cNachname = trim($cryptoService->decryptXTEA($oDaten_arr[$i]->cNachname));
                         }
                         if ($oDaten_arr[$i]->cFirma !== 'n.v.') {
-                            $oDaten_arr[$i]->cFirma = trim(entschluesselXTEA($oDaten_arr[$i]->cFirma));
+                            $oDaten_arr[$i]->cFirma = trim($cryptoService->decryptXTEA($oDaten_arr[$i]->cFirma));
                         }
                         if ($oDaten_arr[$i]->nRegistriert !== 'n.v.') {
                             $oDaten_arr[$i]->nRegistriert = (int)$oDaten_arr[$i]->nRegistriert === 1
@@ -503,10 +504,10 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                     $count = count($oDaten_arr);
                     for ($i = 0; $i < $count; $i++) {
                         if ($oDaten_arr[$i]->cNachname !== 'n.v.') {
-                            $oDaten_arr[$i]->cNachname = trim(entschluesselXTEA($oDaten_arr[$i]->cNachname));
+                            $oDaten_arr[$i]->cNachname = trim($cryptoService->decryptXTEA($oDaten_arr[$i]->cNachname));
                         }
                         if ($oDaten_arr[$i]->cFirma !== 'n.v.') {
-                            $oDaten_arr[$i]->cFirma = trim(entschluesselXTEA($oDaten_arr[$i]->cFirma));
+                            $oDaten_arr[$i]->cFirma = trim($cryptoService->decryptXTEA($oDaten_arr[$i]->cFirma));
                         }
                         if ($oDaten_arr[$i]->nRegistriert !== 'n.v.') {
                             $oDaten_arr[$i]->nRegistriert = ((int)$oDaten_arr[$i]->nRegistriert === 1)
@@ -554,10 +555,10 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                 if (is_array($oDaten_arr) && $dCount > 0) {
                     for ($i = 0; $i < $dCount; $i++) {
                         if ($oDaten_arr[$i]->cNachname !== 'n.v.') {
-                            $oDaten_arr[$i]->cNachname = trim(entschluesselXTEA($oDaten_arr[$i]->cNachname));
+                            $oDaten_arr[$i]->cNachname = trim($cryptoService->decryptXTEA($oDaten_arr[$i]->cNachname));
                         }
                         if ($oDaten_arr[$i]->cFirma !== 'n.v.') {
-                            $oDaten_arr[$i]->cFirma = trim(entschluesselXTEA($oDaten_arr[$i]->cFirma));
+                            $oDaten_arr[$i]->cFirma = trim($cryptoService->decryptXTEA($oDaten_arr[$i]->cFirma));
                         }
                         if ($oDaten_arr[$i]->nRegistriert !== 'n.v.') {
                             $oDaten_arr[$i]->nRegistriert = ((int)$oDaten_arr[$i]->nRegistriert === 1)
@@ -685,10 +686,10 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                 if (is_array($oDaten_arr) && $dCount > 0) {
                     for ($i = 0; $i < $dCount; $i++) {
                         if ($oDaten_arr[$i]->cNachname !== 'n.v.') {
-                            $oDaten_arr[$i]->cNachname = trim(entschluesselXTEA($oDaten_arr[$i]->cNachname));
+                            $oDaten_arr[$i]->cNachname = trim($cryptoService->decryptXTEA($oDaten_arr[$i]->cNachname));
                         }
                         if ($oDaten_arr[$i]->cFirma !== 'n.v.') {
-                            $oDaten_arr[$i]->cFirma = trim(entschluesselXTEA($oDaten_arr[$i]->cFirma));
+                            $oDaten_arr[$i]->cFirma = trim($cryptoService->decryptXTEA($oDaten_arr[$i]->cFirma));
                         }
 
                         if ($oDaten_arr[$i]->nRegistriert !== 'n.v.') {
@@ -736,10 +737,10 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                 if (is_array($oDaten_arr) && $dCount > 0) {
                     for ($i = 0; $i < $dCount; $i++) {
                         if ($oDaten_arr[$i]->cNachname !== 'n.v.') {
-                            $oDaten_arr[$i]->cNachname = trim(entschluesselXTEA($oDaten_arr[$i]->cNachname));
+                            $oDaten_arr[$i]->cNachname = trim($cryptoService->decryptXTEA($oDaten_arr[$i]->cNachname));
                         }
                         if ($oDaten_arr[$i]->cFirma !== 'n.v.') {
-                            $oDaten_arr[$i]->cFirma = trim(entschluesselXTEA($oDaten_arr[$i]->cFirma));
+                            $oDaten_arr[$i]->cFirma = trim($cryptoService->decryptXTEA($oDaten_arr[$i]->cFirma));
                         }
 
                         if ($oDaten_arr[$i]->nRegistriert !== 'n.v.') {

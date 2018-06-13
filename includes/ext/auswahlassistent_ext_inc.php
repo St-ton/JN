@@ -136,7 +136,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             $oSuchergebnisse = new \Filter\ProductFilterSearchResults();
             $oSuchergebnisse->setProductCount(0);
         }
-        $cParameter_arr['MerkmalFilter_arr'] = setzeMerkmalFilter();
+        $cParameter_arr['MerkmalFilter_arr'] = \Filter\ProductFilter::initAttributeFilter();
         $NaviFilter                          = Shop::buildProductFilter($cParameter_arr);
         $AktuelleKategorie                   = new Kategorie($kKategorie);
 
@@ -283,7 +283,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             if (!$kKategorie) {
                 unset($_POST['mf1']);
             }
-            $cParameter_arr['MerkmalFilter_arr'] = setzeMerkmalFilter();
+            $cParameter_arr['MerkmalFilter_arr'] = \Filter\ProductFilter::initAttributeFilter();
             $NaviFilter                          = Shop::buildProductFilter($cParameter_arr);
             header('Location: ' . StringHandler::htmlentitydecode($NaviFilter->getFilterURL()->getURL()));
             exit();

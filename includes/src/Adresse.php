@@ -115,8 +115,9 @@ class Adresse
      */
     public function encrypt(): self
     {
+        $cyptoService = Shop::Container()->getCryptoService();
         foreach (self::$encodedProperties as $property) {
-            $this->{$property} = verschluesselXTEA(trim($this->{$property}));
+            $this->{$property} = $cyptoService->encryptXTEA(trim($this->{$property}));
         }
 
         return $this;
@@ -129,8 +130,9 @@ class Adresse
      */
     public function decrypt(): self
     {
+        $cryptoService = Shop::Container()->getCryptoService();
         foreach (self::$encodedProperties as $property) {
-            $this->{$property} = trim(entschluesselXTEA($this->{$property}));
+            $this->{$property} = trim($cryptoService->decryptXTEA($this->{$property}));
         }
 
         return $this;

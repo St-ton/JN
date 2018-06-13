@@ -1926,6 +1926,142 @@ class ProductFilter
     }
 
     /**
+     * @param array $nFilter_arr
+     * @return array
+     */
+    public static function initAttributeFilter(array $nFilter_arr = []): array
+    {
+        $filter = [];
+        if (is_array($nFilter_arr) && count($nFilter_arr) > 1) {
+            foreach ($nFilter_arr as $nFilter) {
+                if ((int)$nFilter > 0) {
+                    $filter[] = (int)$nFilter;
+                }
+            }
+        } else {
+            if (isset($_GET['mf'])) {
+                if (is_string($_GET['mf'])) {
+                    $filter[] = $_GET['mf'];
+                } else {
+                    foreach ($_GET['mf'] as $mf => $value) {
+                        $filter[] = $value;
+                    }
+                }
+            } elseif (isset($_POST['mf'])) {
+                if (is_string($_POST['mf'])) {
+                    $filter[] = $_POST['mf'];
+                } else {
+                    foreach ($_POST['mf'] as $mf => $value) {
+                        $filter[] = $value;
+                    }
+                }
+            } elseif (count($_GET) > 0) {
+                foreach ($_GET as $key => $value) {
+                    if (preg_match('/mf\d+/i', $key)) {
+                        $filter[] = (int)$value;
+                    }
+                }
+            } elseif (count($_POST) > 0) {
+                foreach ($_POST as $key => $value) {
+                    if (preg_match('/mf\d+/i', $key)) {
+                        $filter[] = (int)$value;
+                    }
+                }
+            }
+        }
+
+        return $filter;
+    }
+
+    /**
+     * @param array $nFilter_arr
+     * @return array
+     */
+    public static function initSearchFilter(array $nFilter_arr = []): array
+    {
+        $filter = [];
+        if (is_array($nFilter_arr) && count($nFilter_arr) > 1) {
+            foreach ($nFilter_arr as $nFilter) {
+                if ((int)$nFilter > 0) {
+                    $filter[] = (int)$nFilter;
+                }
+            }
+        } else {
+            if (isset($_GET['sf'])) {
+                if (is_string($_GET['sf'])) {
+                    $filter[] = $_GET['sf'];
+                } else {
+                    foreach ($_GET['sf'] as $mf => $value) {
+                        $filter[] = $value;
+                    }
+                }
+            } elseif (isset($_POST['sf'])) {
+                if (is_string($_POST['sf'])) {
+                    $filter[] = $_POST['sf'];
+                } else {
+                    foreach ($_POST['sf'] as $mf => $value) {
+                        $filter[] = $value;
+                    }
+                }
+            } else {
+                $i = 1;
+                while ($i < 20) {
+                    if (\RequestHelper::verifyGPCDataInt('sf' . $i) > 0) {
+                        $filter[] = \RequestHelper::verifyGPCDataInt('sf' . $i);
+                    }
+                    ++$i;
+                }
+            }
+        }
+
+        return $filter;
+    }
+
+    /**
+     * @param array $nFilter_arr
+     * @return array
+     */
+    public static function initTagFilter(array $nFilter_arr = []): array
+    {
+        $filter = [];
+        if (is_array($nFilter_arr) && count($nFilter_arr) > 1) {
+            foreach ($nFilter_arr as $nFilter) {
+                if ((int)$nFilter > 0) {
+                    $filter[] = (int)$nFilter;
+                }
+            }
+        } else {
+            if (isset($_GET['tf'])) {
+                if (is_string($_GET['tf'])) {
+                    $filter[] = $_GET['tf'];
+                } else {
+                    foreach ($_GET['tf'] as $mf => $value) {
+                        $filter[] = $value;
+                    }
+                }
+            } elseif (isset($_POST['tf'])) {
+                if (is_string($_POST['tf'])) {
+                    $filter[] = $_POST['tf'];
+                } else {
+                    foreach ($_POST['tf'] as $mf => $value) {
+                        $filter[] = $value;
+                    }
+                }
+            } else {
+                $i = 1;
+                while ($i < 20) {
+                    if (\RequestHelper::verifyGPCDataInt('tf' . $i) > 0) {
+                        $filter[] = \RequestHelper::verifyGPCDataInt('tf' . $i);
+                    }
+                    ++$i;
+                }
+            }
+        }
+
+        return $filter;
+    }
+
+    /**
      * @param string $name
      * @return bool
      */

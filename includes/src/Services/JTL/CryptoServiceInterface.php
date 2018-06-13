@@ -41,4 +41,16 @@ interface CryptoServiceInterface
      * @return bool
      */
     public function stableStringEquals(string $string1, string $string2): bool;
+
+    /**
+     * @param string $cText
+     * @return string
+     */
+    public function encryptXTEA(string $cText): string;
+
+    /**
+     * @param string $cText
+     * @return string
+     */
+    public function decryptXTEA(string $cText): string;
 }

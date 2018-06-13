@@ -127,6 +127,28 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('showLoginCaptcha', isset($_SESSION['showLoginCaptcha']) && $_SESSION['showLoginCaptcha'])
        ->assign('Suchergebnisse', $oSuchergebnisse ?? new \Filter\ProductFilterSearchResults());
 
+$nav = new \JTL\Navigation(Shop::Lang(), Shop::Container()->getLinkService());
+$nav->setPageType(Shop::getPageType());
+$nav->setProductFilter($NaviFilter);
+if (isset($AufgeklappteKategorien) && $AufgeklappteKategorien instanceof KategorieListe) {
+    $nav->setCategoryList($AufgeklappteKategorien);
+} elseif (isset($expandedCategories) && $expandedCategories instanceof KategorieListe) {
+    $nav->setCategoryList($expandedCategories);
+}
+if (isset($AktuellerArtikel) && $AktuellerArtikel instanceof Artikel) {
+    $nav->setProduct($AktuellerArtikel);
+}
+if (isset($link) && $link instanceof \Link\Link) {
+    $nav->setLink($link);
+}
+if (isset($breadCrumbName, $breadCrumbURL)) {
+    $breadCrumbEntry = new \JTL\NavigationEntry();
+    $breadCrumbEntry->setURL($breadCrumbURL);
+    $breadCrumbEntry->setName($breadCrumbName);
+    $breadCrumbEntry->setURLFull($breadCrumbURL);
+    $nav->setCustomNavigationEntry($breadCrumbEntry);
+}
+
 require_once PFAD_ROOT . PFAD_INCLUDES . 'besucher.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 Kampagne::checkCampaignParameters();
@@ -146,6 +168,7 @@ $visitorCount = $Einstellungen['global']['global_zaehler_anzeigen'] === 'Y'
     ? (int)Shop::Container()->getDB()->query('SELECT nZaehler FROM tbesucherzaehler', \DB\ReturnType::SINGLE_OBJECT)->nZaehler
     : 0;
 $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))
+       ->assign('Brotnavi', $nav->createNavigation())
        ->assign('nIsSSL', RequestHelper::checkSSL())
        ->assign('boxes', $boxesToShow)
        ->assign('nZeitGebraucht', isset($nStartzeit) ? (microtime(true) - $nStartzeit) : 0)

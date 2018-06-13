@@ -411,6 +411,10 @@ Iframe.prototype = {
         var newPortlet = this.jq(html);
 
         this.selectedElm.replaceWith(newPortlet);
+
+        var area = newPortlet.parent();
+
+        this.pagetree.updateArea(area);
         this.setSelected(newPortlet);
         this.updateDropTargets();
         this.gui.setUnsaved(true, true);

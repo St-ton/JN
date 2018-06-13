@@ -39,7 +39,10 @@ if (isset($_GET['i'])) {
             eosZahlungsNachricht($bestellung);
         }
     }
-    Shop::Container()->getDB()->query("DELETE FROM tbestellid WHERE dDatum < date_sub(now(),INTERVAL 30 DAY)", 4);
+    Shop::Container()->getDB()->query(
+        'DELETE FROM tbestellid WHERE dDatum < date_sub(now(),INTERVAL 30 DAY)',
+        \DB\ReturnType::DEFAULT
+    );
     $smarty->assign('abschlussseite', 1);
 } else {
     if (isset($_POST['kommentar'])) {

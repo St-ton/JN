@@ -46,8 +46,14 @@ html, body {
     position: relative;
 
     #sidebarInnerPanel {
-        max-height: calc(100vh - 160px);
+        height: calc(100vh - 160px);
         overflow-y: auto;
+
+        .tab-content {
+            min-height: 100%;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
     }
 
     #topNav {
@@ -280,9 +286,69 @@ html, body {
     }
 }
 
+#pageTreeView {
+    box-shadow: inset 0 0 10px 0 rgba(189, 189, 189, 0.8);
+    border-radius: 0.5em;
+    padding: 1em 0;
+
+    a {
+        text-decoration: none;
+    }
+
+    ul {
+        list-style: none;
+        padding: 0;
+        padding-left: 1em;
+        margin: 0;
+    }
+
+    a {
+        display: inline-block;
+        padding: 0.25em;
+    }
+
+    li {
+        > a {
+            > .fa-chevron-down {
+                display: none;
+            }
+            > .fa-chevron-right {
+                display: inline-block;
+            }
+        }
+        > ul {
+            display: none;
+        }
+
+        &.expanded {
+            > a {
+                > .fa-chevron-down {
+                    display: inline-block;
+                }
+                > .fa-chevron-right {
+                    display: none;
+                }
+            }
+            > ul {
+                display: block;
+            }
+        }
+
+        &.leaf {
+            > a > .fa {
+                visibility: hidden;
+            }
+        }
+
+        &.selected {
+            > .item-label {
+                font-weight: bold;
+            }
+        }
+    }
+}
+
 #debugPageTree {
-    overflow: auto;
-    max-height: 70vh;
     white-space: nowrap;
     padding: 0.5em;
     background-color: @portlet-btn-bg;
@@ -297,11 +363,11 @@ html, body {
     li {
         cursor: text;
 
-        &:before {
-            content: '\00a0\00a0';
-            display: inline-block;
-            font-family: monospace;
-        }
+        //&:before {
+        //    content: '\00a0\00a0';
+        //    display: inline-block;
+        //    font-family: monospace;
+        //}
     }
 
     span {
@@ -324,12 +390,12 @@ html, body {
         }
 
         &.expanded {
-            &:before {
-                content: '- ';
-                color: #00f;
-                display: inline;
-                font-family: monospace;
-            }
+            //&:before {
+            //    content: '- ';
+            //    color: #00f;
+            //    display: inline;
+            //    font-family: monospace;
+            //}
 
             > ul {
                 display: block;
@@ -337,12 +403,12 @@ html, body {
         }
 
         &:not(.expanded) {
-            &:before {
-                content: '+ ';
-                color: #00f;
-                display: inline;
-                font-family: monospace;
-            }
+            //&:before {
+            //    content: '+ ';
+            //    color: #00f;
+            //    display: inline;
+            //    font-family: monospace;
+            //}
         }
     }
 }

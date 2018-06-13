@@ -208,7 +208,7 @@ Page.prototype = {
     {
         withDom = withDom || false;
 
-        var result = {key: this.key, areas: {}};
+        var result = {id: this.id, url: this.url, key: this.key, areas: {}};
         var areas  = this.rootAreas;
 
         for(var i=0; i<areas.length; i++) {

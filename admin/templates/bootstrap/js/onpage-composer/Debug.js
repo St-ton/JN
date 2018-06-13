@@ -1,10 +1,12 @@
-function Debug()
+function Debug(page)
 {
     debuglog('construct Debug');
 
     bindProtoOnHandlers(this);
 
-    this.viewInfoTree = undefined;
+    this.page = page;
+    // this.viewInfoTree = undefined;
+    this.observer = new MutationObserver(this.onMutation);
 }
 
 Debug.prototype = {
@@ -15,7 +17,20 @@ Debug.prototype = {
     {
         debuglog('Debug init');
 
+        //installGuiElements(this, ['pageTreeView']);
+
         installGuiElements(this, ['debugPageTree', 'debugTreeRefresh']);
+
+        this.page.rootAreas.each(function(i, elm) {
+            this.observer.observe(elm, {childList: true});
+        }.bind(this));
+    },
+
+    onMutation: function(mutations)
+    {
+        mutations.forEach(function(mutation) {
+            log(mutation);
+        });
     },
 
     onDebugTreeRefresh: function()

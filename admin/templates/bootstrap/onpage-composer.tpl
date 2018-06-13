@@ -13,7 +13,6 @@
     <link rel="stylesheet" href="{$templateUrl}css/bootstrap-colorpicker.min.css">
     <link rel="stylesheet" href="{$templateUrl}css/typeaheadjs.css">
     <link rel="stylesheet" href="{$templateUrl}css/bootstrap-tour.min.css">
-
     <link rel="stylesheet" href="{$templateUrl}css/bootstrap-datetimepicker.min.css">
 
     <link rel="stylesheet" href="{$templateUrl}css/onpage-composer/host.css">
@@ -31,7 +30,6 @@
     <script src="{$templateUrl}js/download.js"></script>
     <script src="{$templateUrl}js/bootstrap-tour.min.js"></script>
     <script src="{$templateUrl}js/typeahead.bundle.js"></script>
-
     <script src="{$templateUrl}js/bootstrap-datetimepicker.min.js"></script>
 
     <script src="{$templateUrl}js/onpage-composer/utils.js"></script>
@@ -41,7 +39,7 @@
     <script src="{$templateUrl}js/onpage-composer/Page.js"></script>
     <script src="{$templateUrl}js/onpage-composer/IO.js"></script>
     <script src="{$templateUrl}js/onpage-composer/Tutorial.js"></script>
-    <script src="{$templateUrl}js/onpage-composer/Debug.js"></script>
+    <script src="{$templateUrl}js/onpage-composer/PageTree.js"></script>
 
     <script>
         var opc = new OPC({
@@ -123,7 +121,7 @@
             <li class="active"><a href="#portlets" data-toggle="tab">Portlets</a></li>
             <li><a href="#blueprints" data-toggle="tab">Vorlagen</a></li>
             <li><a href="#revisions" data-toggle="tab">Versionen</a></li>
-            <li><a href="#debug" data-toggle="tab" title="Seitenstruktur"><i class="fa fa-sitemap"></i></a></li>
+            <li><a href="#pagetree" data-toggle="tab" title="Seitenstruktur"><i class="fa fa-sitemap"></i></a></li>
         </ul>
 
         <div id="sidebarInnerPanel" class="container-fluid">
@@ -173,11 +171,8 @@
                     </div>
                 </div>
 
-                <div class="tab-pane" id="debug">
-                    <button class="btn btn-primary" id="debugTreeRefresh">
-                        <i class="fa fa-refresh"></i>
-                    </button>
-                    <div id="debugPageTree"></div>
+                <div class="tab-pane" id="pagetree">
+                    <div id="pageTreeView"></div>
                 </div>
 
             </div>
@@ -431,7 +426,7 @@
                     <h4 class="modal-title">Lokale Änderungen wiederherstellen?</h4>
                 </div>
                 <div class="modal-body">
-                    <div class="alert alert-danger" id="errorAlert">
+                    <div class="alert alert-info" id="errorAlert">
                         Dieser Entwurf hat lokal ungespeicherte Änderungen. Wollen Sie diese wiederherstellen?
                     </div>
                 </div>
@@ -465,7 +460,7 @@
         <button type="button" class="btn btn-default btn-sm" id="btnParent" title="Gehe eine Ebene höher">
             <i class="fa fa-level-up"></i>
         </button>
-        <button type="button" class="btn btn-default btn-sm" id="btnTrash" title="Auswahl löschen">
+        <button type="button" class="btn btn-default btn-sm" id="btnTrash" title="Auswahl löschen [Entf]">
             <i class="fa fa-trash"></i>
         </button>
     </div>

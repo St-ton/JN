@@ -26,7 +26,7 @@ Iframe.prototype = {
 
     constructor: Iframe,
 
-    init: function(loadCB)
+    init: function(loadCB, pagetree)
     {
         debuglog('Iframe init');
 
@@ -41,6 +41,8 @@ Iframe.prototype = {
             'btnParent',
             'btnTrash',
         ]);
+
+        this.pagetree = pagetree;
 
         this.iframe
             .attr('src', this.getIframePageUrl())
@@ -106,10 +108,13 @@ Iframe.prototype = {
 
     onPageLoad: function(loadCB)
     {
+        debuglog('Iframe onPageLoad');
+
         loadCB = loadCB || noop;
 
         this.enableEditingEvents();
         this.updateDropTargets();
+        this.pagetree.render();
         this.gui.hideLoader();
 
         loadCB();
@@ -245,7 +250,11 @@ Iframe.prototype = {
 
     onPortletDrop: function(e)
     {
+        debuglog('Iframe onPortletDrop');
+
         if(this.dropTarget !== null) {
+            var oldArea = this.draggedElm.parent();
+
             this.dropTarget.replaceWith(this.draggedElm);
             this.updateDropTargets();
             this.setSelected(this.draggedElm);
@@ -255,10 +264,13 @@ Iframe.prototype = {
                 this.setSelected();
                 this.io.createPortlet(this.dragNewPortletCls, this.onNewPortletCreated);
             } else if(this.dragNewBlueprintId > 0) {
-                this.newPortletDropTarget= this.draggedElm;
+                this.newPortletDropTarget = this.draggedElm;
                 this.setSelected();
                 this.io.getBlueprintPreview(this.dragNewBlueprintId, this.onNewPortletCreated);
             } else {
+                this.pagetree.updateArea(oldArea);
+                this.pagetree.updateArea(this.draggedElm.parent());
+                this.setSelected(this.draggedElm);
                 this.gui.setUnsaved(true, true);
             }
         }
@@ -269,6 +281,10 @@ Iframe.prototype = {
         var newElement = this.createPortletElm(data);
 
         this.newPortletDropTarget.replaceWith(newElement);
+
+        var newArea = newElement.parent();
+
+        this.pagetree.updateArea(newArea);
         this.setSelected(newElement);
         this.updateDropTargets();
         this.gui.setUnsaved(true, true);
@@ -336,6 +352,8 @@ Iframe.prototype = {
 
             this.selectedElm = elm;
         }
+
+        this.pagetree.setSelected(this.selectedElm);
     },
 
     setDropTarget: function(elm)
@@ -401,10 +419,12 @@ Iframe.prototype = {
     onBtnClone: function()
     {
         if(this.selectedElm !== null) {
+            var area = this.selectedElm.parent();
             var copiedElm = this.selectedElm.clone();
             copiedElm.insertAfter(this.selectedElm);
             copiedElm.removeClass('opc-selected');
             copiedElm.removeClass('opc-hovered');
+            this.pagetree.updateArea(area);
             this.setSelected(this.selectedElm);
             this.updateDropTargets();
             this.gui.setUnsaved(true, true);
@@ -432,7 +452,9 @@ Iframe.prototype = {
     onBtnTrash: function()
     {
         if(this.selectedElm !== null) {
+            var area = this.selectedElm.parent();
             this.selectedElm.remove();
+            this.pagetree.updateArea(area);
             this.setSelected();
             this.updateDropTargets();
             this.gui.setUnsaved(true, true);

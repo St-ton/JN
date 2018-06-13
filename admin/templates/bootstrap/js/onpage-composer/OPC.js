@@ -8,12 +8,11 @@ function OPC(env)
 
     this.error    = env.error;
     this.io       = new IO(this.onIOReady);
-    //this.page     = new Page(this.io, env.pageId, env.pageUrl, env.fullPageUrl);
     this.page     = new Page(this.io, env.shopUrl, env.pageKey);
     this.gui      = new GUI(this.io, this.page, env.kcfinderUrl);
     this.iframe   = new Iframe(this.io, this.gui, this.page, env.shopUrl, env.templateUrl);
     this.tutorial = new Tutorial(this.gui, this.iframe);
-    this.debug    = new Debug();
+    this.pagetree = new PageTree(this.page, this.iframe);
 }
 
 OPC.prototype = {
@@ -27,7 +26,7 @@ OPC.prototype = {
         this.gui.init(this.iframe, this.tutorial, this.error);
         this.tutorial.init();
         this.page.init(this.onPageLocked);
-        this.debug.init();
+        this.pagetree.init();
     },
 
     onPageLocked: function(state)
@@ -37,7 +36,7 @@ OPC.prototype = {
         if (state === false) {
             this.gui.showError('Die Seite wird derzeit bearbeitet und kann von Ihnen nicht bearbeitet werden.');
         } else {
-            this.iframe.init(this.onPageLoadInital);
+            this.iframe.init(this.onPageLoadInital, this.pagetree);
         }
     },
 
@@ -55,8 +54,10 @@ OPC.prototype = {
 
     onPageLoad: function()
     {
+        debuglog('OPC onPageLoad');
+
         this.gui.hideLoader();
-        this.debug.refresh();
+        this.pagetree.render();
     },
 
     selectImageProp: function(propName)

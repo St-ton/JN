@@ -61,6 +61,7 @@ class PageService
             'publicateDraft',
             'saveDraft',
             'createPagePreview',
+            'deleteDraft',
         ];
     }
 

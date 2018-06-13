@@ -16,6 +16,7 @@ $pageKey = verifyGPCDataInteger('pageKey');
 $pageId  = verifyGPDataString('pageId');
 $pageUrl = verifyGPDataString('pageUrl');
 $action  = verifyGPDataString('action');
+$async   = verifyGPDataString('async');
 $shopUrl = rtrim(\Shop::getURL(), '/');
 $opc     = \Shop::Container()->getOPC();
 $opcPage = \Shop::Container()->getOPCPageService();
@@ -40,10 +41,20 @@ try {
         $pageKey = $page->getKey();
     } elseif ($action === 'discard') {
         $opcPage->deleteDraft($pageKey);
+
+        if ($async === 'yes') {
+            exit('ok');
+        }
+
         header('Location: ' . $fullPageUrl);
         exit();
     } elseif ($action === 'restore') {
         $opcPage->deletePage($pageId);
+
+        if ($async === 'yes') {
+            exit('ok');
+        }
+
         header('Location: ' . $fullPageUrl);
         exit();
     }

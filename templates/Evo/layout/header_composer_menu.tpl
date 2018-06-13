@@ -23,9 +23,25 @@
         </a>
         <a href="admin/onpage-composer.php{$queryDraft}&action=discard"
            class="btn btn-sm btn-danger opc-draft-item-discard pull-right"
-           title="Entwurf verwerfen">
+           title="Entwurf verwerfen" id="btnDiscard{$draftKey}">
             <i class="fa fa-times"></i>
         </a>
+        <script>
+            (function() {
+                var btnDiscard = $('#btnDiscard{$draftKey}');
+                btnDiscard.click(function(e) {
+                    e.preventDefault();
+                    var href = btnDiscard.attr('href');
+                    $.ajax(href + '&async=yes', {
+                        success: function(jqxhr, textStatus) {
+                            if(jqxhr === 'ok') {
+                                btnDiscard.closest('.list-group-item').remove();
+                            }
+                        }
+                    })
+                });
+            })();
+        </script>
     </div>
 {/function}
 
@@ -76,10 +92,27 @@
                 {if $pageDrafts|count > 0}
                     <p>
                         <a href="admin/onpage-composer.php{$query}&action=restore" class="btn btn-sm btn-danger"
-                           title="Verwirft alle vorhandenen Entwürfe!">
+                           title="Verwirft alle vorhandenen Entwürfe!" id="btnDiscardAll">
                             <i class="fa fa-times"></i>
                             Alle Entwürfe verwerfen
                         </a>
+                        <script>
+                            (function() {
+                                var btnDiscardAll = $('#btnDiscardAll');
+                                btnDiscardAll.click(function(e) {
+                                    e.preventDefault();
+                                    var href = btnDiscardAll.attr('href');
+                                    $.ajax(href + '&async=yes', {
+                                        success: function(jqxhr, textStatus) {
+                                            if(jqxhr === 'ok') {
+                                                btnDiscardAll.closest('p').remove();
+                                                $('#opc-switcher .list-group').remove();
+                                            }
+                                        }
+                                    })
+                                });
+                            })();
+                        </script>
                     </p>
                     <p><label>Neuer Entwurf:</label></p>
                 {/if}

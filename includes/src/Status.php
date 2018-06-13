@@ -440,4 +440,17 @@ class Status
             return $passwordService->needsRehash($hash->cEmergencyCode);
         });
     }
+
+    /**
+     * @return array
+     */
+    public function getDuplicateLinkGroupTemplateNames(): array
+    {
+        return Shop::Container()->getDB()->query(
+            'SELECT * FROM tlinkgruppe
+                GROUP BY cTemplatename
+                HAVING COUNT(*) > 1',
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
+    }
 }

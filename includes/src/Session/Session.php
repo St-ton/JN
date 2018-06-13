@@ -203,11 +203,9 @@ class Session
             checkeSpracheWaehrung($lang);
             $checked = true;
         }
-        if ($updateGlobals
-            || !isset($_SESSION['cISOSprache'], $_SESSION['kSprache'], $_SESSION['Kundengruppe'])
-        ) {
+        if ($updateGlobals || !isset($_SESSION['cISOSprache'], $_SESSION['kSprache'], $_SESSION['Kundengruppe'])) {
             $this->updateGlobals();
-            if ($updateLanguage) {
+            if ($updateLanguage && isset($_SESSION['Kunde'])) {
                 // Kundensprache ändern, wenn im eingeloggten Zustand die Sprache geändert wird
                 /** @var array('Kunde' => \Kunde) $_SESSION */
                 $_SESSION['Kunde']->kSprache = $_SESSION['kSprache'];

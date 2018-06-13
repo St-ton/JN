@@ -153,24 +153,61 @@ class Migration_20180522105000 extends Migration implements IMigration
                 FROM tlink 
                 JOIN tlinkgruppe
                     ON tlinkgruppe.kLinkgruppe = tlink.kLinkgruppe)");
+        $externalLinks = Shop::Container()->getDB()->query(
+            "SELECT * FROM tlink
+                WHERE tlink.cURL IS NOT NULL 
+                  AND tlink.cURL != ''",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
+        foreach ($externalLinks as $externalLink) {
+            Shop::Container()->getDB()->update(
+                'tlinksprache',
+                'kLink',
+                $externalLink->kLink,
+                (object)['cSeo' => $externalLink->cURL]
+            );
+        }
         $this->execute("ALTER TABLE `tlink` 
             DROP COLUMN `kLinkgruppe`,
+            DROP COLUMN `cURL`,
             DROP PRIMARY KEY,
-            ADD PRIMARY KEY (`kLink`)");
+            ADD PRIMARY KEY (`kLink`)"
+        );
     }
 
     public function down()
     {
         $this->execute("ALTER TABLE `tlink` ADD COLUMN `kLinkgruppe` TINYINT(3) UNSIGNED NOT NULL;");
+        $this->execute("ALTER TABLE `tlink` ADD COLUMN `cURL` VARCHAR(255) DEFAULT NULL;");
         $assoc = Shop::Container()->getDB()->query(
             "SELECT linkID, linkGroupID 
                 FROM tlinkgroupassociations",
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($assoc as $item) {
-            $upd = new stdClass();
-            $upd->kLinkgruppe = $item->linkGroupID;
-            Shop::Container()->getDB()->update('tlink', 'kLink', $item->linkID, $upd);
+            Shop::Container()->getDB()->update(
+                'tlink',
+                'kLink',
+                $item->linkID,
+                (object)['kLinkgruppe' => $item->linkGroupID]
+            );
+        }
+        $external = Shop::Container()->getDB()->query(
+            "SELECT tlink.kLink, tlinksprache.cSeo
+                FROM tlink 
+                JOIN tlinksprache
+                    ON tlink.kLink = tlinksprache.kLink
+                WHERE tlink.nLinkart = 2
+                GROUP BY tlink.kLink",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
+        foreach ($external as $item) {
+            Shop::Container()->getDB()->update(
+                'tlink',
+                'kLink',
+                $item->kLink,
+                (object)['cURL' => $item->cSeo]
+            );
         }
         $this->execute("DROP TABLE tlinkgroupassociations");
         $this->execute("ALTER TABLE `tlinkgruppe` CHANGE COLUMN `kLinkgruppe` `kLinkgruppe` TINYINT(3) UNSIGNED NOT NULL AUTO_INCREMENT");

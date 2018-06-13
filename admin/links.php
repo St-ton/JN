@@ -214,17 +214,29 @@ if (isset($_POST['neu_linkgruppe']) && (int)$_POST['neu_linkgruppe'] === 1 && va
     if (count($oPlausiCMS->getPlausiVar()) === 0) {
         $kLinkgruppe = 0;
         if ((int)$_POST['kLinkgruppe'] === 0) {
-            $linkAdmin->createOrUpdateLinkGroup(0, $_POST);
-            $hinweis .= 'Linkgruppe wurde erfolgreich hinzugef&uuml;gt.';
+            $linkGroupTemplateExists = Shop::Container()->getDB()->select(
+                'tlinkgruppe',
+                'cTemplatename',
+                $_POST['cTemplatename']
+            );
+            if ($linkGroupTemplateExists !== null) {
+                $step   = 'neue Linkgruppe';
+                $fehler = 'Fehler: Bitte wählen Sie einen eindeutigen Template-Namen.';
+                $smarty->assign('xPlausiVar_arr', $oPlausiCMS->getPlausiVar())
+                       ->assign('xPostVar_arr', $oPlausiCMS->getPostVar());
+            } else {
+                $linkAdmin->createOrUpdateLinkGroup(0, $_POST);
+                $hinweis .= 'Linkgruppe wurde erfolgreich hinzugefügt.';
+            }
         } else {
             $linkgruppe = $linkAdmin->createOrUpdateLinkGroup((int)$_POST['kLinkgruppe'], $_POST);
-            $hinweis    .= "Die Linkgruppe <strong>$linkgruppe->cName</strong> wurde erfolgreich ge&auml;ndert.";
+            $hinweis    .= 'Die Linkgruppe <strong>' . $linkgruppe->cName . '</strong> wurde erfolgreich geändert.';
             $step       = 'uebersicht';
         }
         $clearCache = true;
     } else {
         $step   = 'neue Linkgruppe';
-        $fehler = 'Fehler: Bitte f&uuml;llen Sie alle Pflichtangaben aus!';
+        $fehler = 'Fehler: Bitte füllen Sie alle Pflichtangaben aus!';
         $smarty->assign('xPlausiVar_arr', $oPlausiCMS->getPlausiVar())
                ->assign('xPostVar_arr', $oPlausiCMS->getPostVar());
     }

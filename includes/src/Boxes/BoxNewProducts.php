@@ -62,7 +62,7 @@ final class BoxNewProducts extends AbstractBox
                 $products = new \ArtikelListe();
                 $products->getArtikelByKeys($productIDs, 0, count($productIDs));
                 $this->setProducts($products);
-                $this->setURL(baueSuchSpecialURL(SEARCHSPECIALS_NEWPRODUCTS));
+                $this->setURL(\SearchSpecialHelper::buildURL(SEARCHSPECIALS_NEWPRODUCTS));
                 executeHook(HOOK_BOXEN_INC_NEUIMSORTIMENT, [
                     'box'        => &$this,
                     'cache_tags' => &$cacheTags,

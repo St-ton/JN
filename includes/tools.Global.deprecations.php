@@ -1675,3 +1675,119 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
 
     return '';
 }
+
+/**
+ * @param int $kSprache
+ * @return array
+ * @deprecated since 5.0.0
+ */
+function holeAlleSuchspecialOverlays(int $kSprache = 0)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use SearchSpecialHelper::getAll() instead.', E_USER_DEPRECATED);
+
+    return SearchSpecialHelper::getAll($kSprache);
+}
+
+/**
+ * @return array
+ * @deprecated since 5.0.0
+ */
+function baueAlleSuchspecialURLs()
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use SearchSpecialHelper::buildAllURLs() instead.', E_USER_DEPRECATED);
+
+    return SearchSpecialHelper::buildAllURLs();
+}
+
+/**
+ * @param int $kKey
+ * @return mixed|string
+ * @deprecated since 5.0.0
+ */
+function baueSuchSpecialURL(int $kKey)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use SearchSpecialHelper::buildURL() instead.', E_USER_DEPRECATED);
+
+    return SearchSpecialHelper::buildURL($kKey);
+}
+
+/**
+ * Bekommmt ein Array von Objekten und baut ein assoziatives Array
+ *
+ * @param array $oObjekt_arr
+ * @param string $cKey
+ * @return array
+ * @deprecated since 5.0.0
+ */
+function baueAssocArray(array $oObjekt_arr, $cKey)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Try \Functional\reindex() instead.', E_USER_DEPRECATED);
+
+    $oObjektAssoc_arr = [];
+    foreach ($oObjekt_arr as $oObjekt) {
+        if (is_object($oObjekt)) {
+            $oMember_arr = array_keys(get_object_vars($oObjekt));
+            if (is_array($oMember_arr) && count($oMember_arr) > 0) {
+                $oObjektAssoc_arr[$oObjekt->$cKey] = new stdClass();
+                foreach ($oMember_arr as $oMember) {
+                    $oObjektAssoc_arr[$oObjekt->$cKey]->$oMember = $oObjekt->$oMember;
+                }
+            }
+        }
+    }
+
+    return $oObjektAssoc_arr;
+}
+
+/**
+ * Erhält ein Array von Keys und fügt Sie zu einem String zusammen
+ * wobei jeder Key durch den Seperator getrennt wird (z.b. ;1;5;6;).
+ *
+ * @param array  $cKey_arr
+ * @param string $cSeperator
+ * @return string
+ * @deprecated since 5.0.0
+ */
+function gibKeyStringFuerKeyArray($cKey_arr, $cSeperator)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    $cKeys = '';
+    if (is_array($cKey_arr) && count($cKey_arr) > 0 && strlen($cSeperator) > 0) {
+        $cKeys .= ';';
+        foreach ($cKey_arr as $i => $cKey) {
+            if ($i > 0) {
+                $cKeys .= ';' . $cKey;
+            } else {
+                $cKeys .= $cKey;
+            }
+        }
+        $cKeys .= ';';
+    }
+
+    return $cKeys;
+}
+
+/**
+ * Bekommt einen String von Keys getrennt durch einen seperator (z.b. ;1;5;6;)
+ * und gibt ein Array mit den Keys zurück
+ *
+ * @param string $cKeys
+ * @param string $cSeperator
+ * @return array
+ * @deprecated since 5.0.0
+ */
+function gibKeyArrayFuerKeyString($cKeys, $cSeperator)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    $cTMP_arr = explode($cSeperator, $cKeys);
+    $kKey_arr = [];
+    if (is_array($cTMP_arr) && count($cTMP_arr) > 0) {
+        foreach ($cTMP_arr as $cTMP) {
+            if (strlen($cTMP) > 0) {
+                $kKey_arr[] = (int)$cTMP;
+            }
+        }
+    }
+
+    return $kKey_arr;
+}

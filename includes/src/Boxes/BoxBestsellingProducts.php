@@ -76,7 +76,7 @@ final class BoxBestsellingProducts extends AbstractBox
                 $products = new \ArtikelListe();
                 $products->getArtikelByKeys($kArtikel_arr, 0, count($kArtikel_arr));
                 $this->setProducts($products);
-                $this->setURL(baueSuchSpecialURL(SEARCHSPECIALS_BESTSELLER));
+                $this->setURL(\SearchSpecialHelper::buildURL(SEARCHSPECIALS_BESTSELLER));
             }
 
             executeHook(HOOK_BOXEN_INC_BESTSELLER, [

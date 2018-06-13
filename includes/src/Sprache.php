@@ -934,10 +934,10 @@ class Sprache
         if (count($languages) > 0) {
             switch ($nOption) {
                 case 2:
-                    return baueAssocArray($languages, 'cISO');
+                    return \Functional\reindex($languages, function ($e) { return $e->cISO; });
 
                 case 1:
-                    return baueAssocArray($languages, 'kSprache');
+                    return \Functional\reindex($languages, function ($e) { return $e->kSprache; });
 
                 case 0:
                 default:
@@ -951,18 +951,18 @@ class Sprache
                 return $s;
             },
             Shop::Container()->getDB()->query(
-                "SELECT *
+                'SELECT *
                     FROM tsprache
-                    ORDER BY cShopStandard DESC, cNameDeutsch",
+                    ORDER BY cShopStandard DESC, cNameDeutsch',
                     \DB\ReturnType::ARRAY_OF_OBJECTS
             )
         );
         switch ($nOption) {
             case 2:
-                return baueAssocArray($oSprach_arr, 'cISO');
+                return \Functional\reindex($oSprach_arr, function ($e) { return $e->cISO; });
 
             case 1:
-                return baueAssocArray($oSprach_arr, 'kSprache');
+                return \Functional\reindex($oSprach_arr, function ($e) { return $e->kSprache; });
 
             case 0:
             default:

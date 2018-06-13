@@ -55,7 +55,7 @@ final class BoxUpcomingProducts extends AbstractBox
                 $products = new \ArtikelListe();
                 $products->getArtikelByKeys($productIDs, 0, count($productIDs));
                 $this->setProducts($products);
-                $this->setURL(baueSuchSpecialURL(SEARCHSPECIALS_UPCOMINGPRODUCTS));
+                $this->setURL(\SearchSpecialHelper::buildURL(SEARCHSPECIALS_UPCOMINGPRODUCTS));
                 executeHook(HOOK_BOXEN_INC_ERSCHEINENDEPRODUKTE, [
                     'box'        => &$this,
                     'cache_tags' => &$cacheTags,

@@ -4253,7 +4253,7 @@ class Artikel
     public function baueSuchspecialBildoverlay(int $kSprache = 0)
     {
         $languageID        = $kSprache > 0 ? $kSprache : Shop::getLanguageID();
-        $searchSpecial_arr = holeAlleSuchspecialOverlays($languageID);
+        $searchSpecial_arr = SearchSpecialHelper::getAll($languageID);
         // Suchspecialbildoverlay
         // Kleinste Prio und somit die Wichtigste, steht immer im Element 0 vom Array (nPrio ASC)
         if (!empty($searchSpecial_arr) && is_array($searchSpecial_arr) && count($searchSpecial_arr) > 0) {

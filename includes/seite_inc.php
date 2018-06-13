@@ -61,8 +61,7 @@ function gibStartBoxen()
             }
         }
         if (count($kArtikel_arr) > 0) {
-            $box->cURL    = baueSuchSpecialURL($cURL);
-            //hole anzuzeigende Artikel
+            $box->cURL    = SearchSpecialHelper::buildURL($cURL);
             $box->Artikel = new ArtikelListe();
             $box->Artikel->getArtikelByKeys($kArtikel_arr, 0, count($kArtikel_arr));
         }

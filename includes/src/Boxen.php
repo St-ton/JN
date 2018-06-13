@@ -284,7 +284,7 @@ class Boxen
                         $oBox->anzeigen = 'Y';
                         $oBox->Artikel  = new ArtikelListe();
                         $oBox->Artikel->getArtikelByKeys($kArtikel_arr, 0, count($kArtikel_arr));
-                        $oBox->cURL = baueSuchSpecialURL(SEARCHSPECIALS_BESTSELLER);
+                        $oBox->cURL = SearchSpecialHelper::buildURL(SEARCHSPECIALS_BESTSELLER);
                     }
                     $cacheTags = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
                     executeHook(HOOK_BOXEN_INC_BESTSELLER, ['box' => &$oBox, 'cache_tags' => &$cacheTags]);
@@ -604,7 +604,7 @@ class Boxen
                 }
                 $oBox->anzeigen     = 'Y';
                 $oBox->oArtikel_arr = $oArtikel_arr;
-                $oBox->cURL         = baueSuchSpecialURL(SEARCHSPECIALS_TOPREVIEWS);
+                $oBox->cURL         = SearchSpecialHelper::buildURL(SEARCHSPECIALS_TOPREVIEWS);
                 $cacheTags          = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
                 executeHook(HOOK_BOXEN_INC_TOPBEWERTET, ['box' => &$oBox, 'cache_tags' => &$cacheTags]);
                 Shop::Cache()->set($cacheID, $oBox, $cacheTags);
@@ -870,7 +870,7 @@ class Boxen
                     $oBox->anzeigen = 'Y';
                     $oBox->Artikel  = new ArtikelListe();
                     $oBox->Artikel->getArtikelByKeys($kArtikel_arr, 0, count($kArtikel_arr));
-                    $oBox->cURL = baueSuchSpecialURL(SEARCHSPECIALS_UPCOMINGPRODUCTS);
+                    $oBox->cURL = SearchSpecialHelper::buildURL(SEARCHSPECIALS_UPCOMINGPRODUCTS);
                     executeHook(HOOK_BOXEN_INC_ERSCHEINENDEPRODUKTE, ['box' => &$oBox, 'cache_tags' => &$cacheTags]);
                 }
                 Shop::Cache()->set($cacheID, $oBox, $cacheTags);
@@ -941,7 +941,7 @@ class Boxen
                     $oBox->anzeigen = 'Y';
                     $oBox->Artikel  = new ArtikelListe();
                     $oBox->Artikel->getArtikelByKeys($kArtikel_arr, 0, count($kArtikel_arr));
-                    $oBox->cURL = baueSuchSpecialURL(SEARCHSPECIALS_TOPOFFERS);
+                    $oBox->cURL = SearchSpecialHelper::buildURL(SEARCHSPECIALS_TOPOFFERS);
                     executeHook(HOOK_BOXEN_INC_TOPANGEBOTE, ['box' => &$oBox, 'cache_tags' => &$cacheTags]);
                 }
                 Shop::Cache()->set($cacheID, $oBox, $cacheTags);
@@ -991,7 +991,7 @@ class Boxen
                     $oBox->anzeigen = 'Y';
                     $oBox->Artikel  = new ArtikelListe();
                     $oBox->Artikel->getArtikelByKeys($kArtikel_arr, 0, count($kArtikel_arr));
-                    $oBox->cURL = baueSuchSpecialURL(SEARCHSPECIALS_NEWPRODUCTS);
+                    $oBox->cURL = SearchSpecialHelper::buildURL(SEARCHSPECIALS_NEWPRODUCTS);
                     executeHook(HOOK_BOXEN_INC_NEUIMSORTIMENT, ['box' => &$oBox, 'cache_tags' => &$cacheTags]);
                 }
                 Shop::Cache()->set($cacheID, $oBox, $cacheTags);
@@ -1044,7 +1044,7 @@ class Boxen
                     $oBox->anzeigen = 'Y';
                     $oBox->Artikel  = new ArtikelListe();
                     $oBox->Artikel->getArtikelByKeys($kArtikel_arr, 0, count($kArtikel_arr));
-                    $oBox->cURL = baueSuchSpecialURL(SEARCHSPECIALS_SPECIALOFFERS);
+                    $oBox->cURL = SearchSpecialHelper::buildURL(SEARCHSPECIALS_SPECIALOFFERS);
                     executeHook(HOOK_BOXEN_INC_SONDERANGEBOTE, ['box' => &$oBox, 'cache_tags' => &$cacheTags]);
                 }
                 Shop::Cache()->set($cacheID, $oBox, $cacheTags);

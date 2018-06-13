@@ -9,17 +9,15 @@
  */
 function holeAlleKampagnenDefinitionen()
 {
-    $oKampagneDef_arr = Shop::Container()->getDB()->query(
-        "SELECT *
-            FROM tkampagnedef
-            ORDER BY kKampagneDef", 2
+    return \Functional\reindex(Shop::Container()->getDB()->query(
+            'SELECT *
+                FROM tkampagnedef
+                ORDER BY kKampagneDef',
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        ), function ($e) {
+            return $e->kKampagneDef;
+        }
     );
-
-    if (is_array($oKampagneDef_arr) && count($oKampagneDef_arr) > 0) {
-        $oKampagneDef_arr = baueAssocArray($oKampagneDef_arr, 'kKampagneDef');
-    }
-
-    return $oKampagneDef_arr;
 }
 
 /**
@@ -33,7 +31,8 @@ function holeKampagne($kKampagne)
         return Shop::Container()->getDB()->query(
             "SELECT *, DATE_FORMAT(dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE
                 FROM tkampagne
-                WHERE kKampagne = " . $kKampagne, 1
+                WHERE kKampagne = " . $kKampagne,
+            \DB\ReturnType::SINGLE_OBJECT
         );
     }
 
@@ -97,7 +96,8 @@ function holeKampagneGesamtStats($oKampagne_arr, $oKampagneDef_arr)
         "SELECT kKampagne, kKampagneDef, SUM(fWert) AS fAnzahl
             FROM tkampagnevorgang
             " . $cSQL . "
-            GROUP BY kKampagne, kKampagneDef", 2
+            GROUP BY kKampagne, kKampagneDef",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 
     if (is_array($oStats_arr) && count($oStats_arr) > 0) {
@@ -257,7 +257,8 @@ function holeKampagneDetailStats($kKampagne, $oKampagneDef_arr)
             FROM tkampagnevorgang
             " . $cSQLWHERE . "
                 AND kKampagne = " . $kKampagne . "
-            " . $cSQLGROUPBY . ", kKampagneDef", 2
+            " . $cSQLGROUPBY . ", kKampagneDef",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     // Vorbelegen
     $oStatsAssoc_arr = [];
@@ -351,7 +352,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                 FROM tkampagnevorgang
                 " . $cSQLWHERE . "
                     AND kKampagne = " . (int)$kKampagne . "
-                    AND kKampagneDef = " . (int)$oKampagneDef->kKampagneDef . $cBlaetterSQL1, 2
+                    AND kKampagneDef = " . (int)$oKampagneDef->kKampagneDef . $cBlaetterSQL1,
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         // Stamp Text
         switch ((int)$_SESSION['Kampagne']->nDetailAnsicht) {
@@ -392,7 +394,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         " . $cSQLWHERE . "
                             AND kKampagne = " . (int)$kKampagne . "
                             AND kKampagneDef = " . (int)$oKampagneDef->kKampagneDef . "
-                        ORDER BY tkampagnevorgang.dErstellt DESC" . $cBlaetterSQL1, 2
+                        ORDER BY tkampagnevorgang.dErstellt DESC" . $cBlaetterSQL1,
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
 
                 if (is_array($oDaten_arr) && count($oDaten_arr) > 0) {
@@ -437,7 +440,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         " . $cSQLWHERE . "
                             AND kKampagne = " . (int)$kKampagne . "
                             AND kKampagneDef = " . (int)$oKampagneDef->kKampagneDef . "
-                        ORDER BY tkampagnevorgang.dErstellt DESC", 2
+                        ORDER BY tkampagnevorgang.dErstellt DESC",
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
 
                 if (is_array($oDaten_arr) && count($oDaten_arr) > 0) {
@@ -491,7 +495,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         " . $cSQLWHERE . "
                             AND kKampagne = " . (int)$kKampagne . "
                             AND kKampagneDef = " . (int)$oKampagneDef->kKampagneDef . "
-                        ORDER BY tkampagnevorgang.dErstellt DESC", 2
+                        ORDER BY tkampagnevorgang.dErstellt DESC",
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
 
                 if (is_array($oDaten_arr) && count($oDaten_arr) > 0) {
@@ -542,7 +547,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         " . $cSQLWHERE . "
                             AND kKampagne = " . (int)$kKampagne . "
                             AND kKampagneDef = " . (int)$oKampagneDef->kKampagneDef . "
-                        ORDER BY tkampagnevorgang.dErstellt DESC", 2
+                        ORDER BY tkampagnevorgang.dErstellt DESC",
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 $dCount = count($oDaten_arr);
                 if (is_array($oDaten_arr) && $dCount > 0) {
@@ -599,7 +605,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         " . $cSQLWHERE . "
                             AND kKampagne = " . (int)$kKampagne . "
                             AND kKampagneDef = " . (int)$oKampagneDef->kKampagneDef . "
-                        ORDER BY tkampagnevorgang.dErstellt DESC", 2
+                        ORDER BY tkampagnevorgang.dErstellt DESC",
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
 
                 if (is_array($oDaten_arr) && count($oDaten_arr) > 0) {
@@ -637,7 +644,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         " . $cSQLWHERE . "
                             AND kKampagne = " . (int)$kKampagne . "
                             AND kKampagneDef = " . (int)$oKampagneDef->kKampagneDef . "
-                        ORDER BY tkampagnevorgang.dErstellt DESC", 2
+                        ORDER BY tkampagnevorgang.dErstellt DESC",
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
 
                 if (is_array($oDaten_arr) && count($oDaten_arr) > 0) {
@@ -670,7 +678,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         " . $cSQLWHERE . "
                             AND kKampagne = " . (int)$kKampagne . "
                             AND kKampagneDef = " . (int)$oKampagneDef->kKampagneDef . "
-                        ORDER BY tkampagnevorgang.dErstellt DESC", 2
+                        ORDER BY tkampagnevorgang.dErstellt DESC",
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 $dCount = count($oDaten_arr);
                 if (is_array($oDaten_arr) && $dCount > 0) {
@@ -720,7 +729,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         " . $cSQLWHERE . "
                             AND kKampagne = " . (int)$kKampagne . "
                             AND kKampagneDef = " . (int)$oKampagneDef->kKampagneDef . "
-                        ORDER BY tkampagnevorgang.dErstellt DESC", 2
+                        ORDER BY tkampagnevorgang.dErstellt DESC",
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 $dCount = count($oDaten_arr);
                 if (is_array($oDaten_arr) && $dCount > 0) {
@@ -771,7 +781,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         " . $cSQLWHERE . "
                             AND tkampagnevorgang.kKampagne = " . (int)$kKampagne . "
                             AND tkampagnevorgang.kKampagneDef = " . (int)$oKampagneDef->kKampagneDef . "
-                        ORDER BY tkampagnevorgang.dErstellt DESC", 2
+                        ORDER BY tkampagnevorgang.dErstellt DESC",
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
 
                 if (is_array($oDaten_arr) && count($oDaten_arr) > 0) {
@@ -813,7 +824,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         " . $cSQLWHERE . "
                             AND tkampagnevorgang.kKampagne = " . (int)$kKampagne . "
                             AND tkampagnevorgang.kKampagneDef = " . (int)$oKampagneDef->kKampagneDef . "
-                        ORDER BY tkampagnevorgang.dErstellt DESC", 2
+                        ORDER BY tkampagnevorgang.dErstellt DESC",
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
 
                 if (is_array($oDaten_arr) && count($oDaten_arr) > 0) {

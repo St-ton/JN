@@ -26,17 +26,17 @@ class PlausiCMS extends Plausi
                     $this->xPlausiVar_arr['cName'] = 1;
                 }
                 // cKundengruppen
-                if (!is_array($this->xPostVar_arr['cKundengruppen']) || count($this->xPostVar_arr['cKundengruppen']) === 0) {
+                if (!is_array($this->xPostVar_arr['cKundengruppen'])
+                    || count($this->xPostVar_arr['cKundengruppen']) === 0
+                ) {
                     $this->xPlausiVar_arr['cKundengruppen'] = 1;
                 }
                 // nLinkart
                 if (!isset($this->xPostVar_arr['nLinkart']) || (int)$this->xPostVar_arr['nLinkart'] === 0) {
                     $this->xPlausiVar_arr['nLinkart'] = 1;
-                } elseif ((int)$this->xPostVar_arr['nLinkart'] === 2 &&
-                    (!isset($this->xPostVar_arr['cURL']) || strlen($this->xPostVar_arr['cURL']) === 0)) {
-                    $this->xPlausiVar_arr['nLinkart'] = 2;
-                } elseif ((int)$this->xPostVar_arr['nLinkart'] === 3 &&
-                    (!isset($this->xPostVar_arr['nSpezialseite']) || (int)$this->xPostVar_arr['nSpezialseite'] <= 0)) {
+                } elseif ((int)$this->xPostVar_arr['nLinkart'] === 3
+                    && (!isset($this->xPostVar_arr['nSpezialseite']) || (int)$this->xPostVar_arr['nSpezialseite'] <= 0)
+                ) {
                     $this->xPlausiVar_arr['nLinkart'] = 3;
                 }
 

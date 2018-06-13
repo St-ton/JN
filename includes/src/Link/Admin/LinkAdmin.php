@@ -420,14 +420,13 @@ final class LinkAdmin
      * @param array $post
      * @return Link
      */
-    public function createOrUpdateLink($post)
+    public function createOrUpdateLink(array $post): Link
     {
         $link                     = new \stdClass();
         $link->kLink              = (int)$post['kLink'];
         $link->kPlugin            = (int)$post['kPlugin'];
         $link->cName              = htmlspecialchars($post['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
         $link->nLinkart           = (int)$post['nLinkart'];
-        $link->cURL               = $post['cURL'] ?? null;
         $link->nSort              = !empty($post['nSort']) ? $post['nSort'] : 0;
         $link->bSSL               = (int)$post['bSSL'];
         $link->bIsActive          = 1;
@@ -452,7 +451,6 @@ final class LinkAdmin
         }
         if ($link->nLinkart > 2 && isset($post['nSpezialseite']) && (int)$post['nSpezialseite'] > 0) {
             $link->nLinkart = (int)$post['nSpezialseite'];
-            $link->cURL     = '';
         }
 
         if ((int)$post['kLink'] === 0) {
@@ -480,12 +478,18 @@ final class LinkAdmin
             $linkSprache->cTitle      = '';
             $linkSprache->cContent    = '';
             if (!empty($post['cName_' . $sprache->cISO])) {
-                $linkSprache->cName = htmlspecialchars($post['cName_' . $sprache->cISO], ENT_COMPAT | ENT_HTML401,
-                    JTL_CHARSET);
+                $linkSprache->cName = htmlspecialchars(
+                    $post['cName_' . $sprache->cISO],
+                    ENT_COMPAT | ENT_HTML401,
+                    JTL_CHARSET
+                );
             }
             if (!empty($post['cTitle_' . $sprache->cISO])) {
-                $linkSprache->cTitle = htmlspecialchars($post['cTitle_' . $sprache->cISO], ENT_COMPAT | ENT_HTML401,
-                    JTL_CHARSET);
+                $linkSprache->cTitle = htmlspecialchars(
+                    $post['cTitle_' . $sprache->cISO],
+                    ENT_COMPAT | ENT_HTML401,
+                    JTL_CHARSET
+                );
             }
             if (!empty($post['cContent_' . $sprache->cISO])) {
                 $linkSprache->cContent = parseText($post['cContent_' . $sprache->cISO], $kLink);
@@ -499,12 +503,16 @@ final class LinkAdmin
                 $linkSprache->cMetaTitle = htmlspecialchars($post['cMetaTitle_' . $sprache->cISO],
                     ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
             }
-            $linkSprache->cMetaKeywords    = htmlspecialchars($post['cMetaKeywords_' . $sprache->cISO],
-                ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-            $linkSprache->cMetaDescription = htmlspecialchars($post['cMetaDescription_' . $sprache->cISO],
-                ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+            $linkSprache->cMetaKeywords    = htmlspecialchars(
+                $post['cMetaKeywords_' . $sprache->cISO],
+                ENT_COMPAT | ENT_HTML401, JTL_CHARSET
+            );
+            $linkSprache->cMetaDescription = htmlspecialchars(
+                $post['cMetaDescription_' . $sprache->cISO],
+                ENT_COMPAT | ENT_HTML401, JTL_CHARSET
+            );
             $this->db->delete('tlinksprache', ['kLink', 'cISOSprache'], [$kLink, $sprache->cISO]);
-            $linkSprache->cSeo = getSeo($linkSprache->cSeo);
+            $linkSprache->cSeo = $link->nLinkart === 2 ? $linkSprache->cSeo : getSeo($linkSprache->cSeo);
             $this->db->insert('tlinksprache', $linkSprache);
             $oSpracheTMP = $this->db->select('tsprache', 'cISO ', $linkSprache->cISOSprache);
             if (isset($oSpracheTMP->kSprache) && $oSpracheTMP->kSprache > 0) {

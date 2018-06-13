@@ -277,7 +277,7 @@ final class Link extends AbstractLink
             $this->setTitle($link->localizedTitle ?? $link->cName, $languageID);
             $this->setLanguageID($languageID, $languageID);
             $this->setSEO($link->localizedUrl ?? '', $languageID);
-            $this->setURL($this->linkType === 2 ? $link->cURL : ($baseURL . $link->localizedUrl), $languageID);
+            $this->setURL($this->linkType === 2 ? $link->localizedUrl : ($baseURL . $link->localizedUrl), $languageID);
             if (($this->id === null || $this->id === 0) && isset($link->kLink)) {
                 $this->setID((int)$link->kLink);
             }

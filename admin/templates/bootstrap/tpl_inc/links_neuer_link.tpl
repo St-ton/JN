@@ -79,8 +79,7 @@
                             </p>
                             <p class="multi_input">
                                 <input type="radio" id="nLink2" name="nLinkart" value="2" onclick="$('#nLinkInput2').val('http://')" tabindex="3" {if isset($Link->getLinkType()) && $Link->getLinkType() === 2}checked{/if} />
-                                <label for="nLink2">{#linkToExternalURL#}</label>
-                                <input class="form-control" type="text" name="cURL" value="{if $Link->getURL() && $Link->getLinkType() === 2}{$Link->getURL()}{/if}" id="nLink2" style="border:1px solid #ccc;margin-right:20px;" />
+                                <label for="nLink2">{#linkToExternalURL#} (anlegen unter "Suchmaschinenname")</label>
                             </p>
                             <p class="multi_input" style="margin-bottom: 10px;">
                                 <input type="radio" id="nLink3" name="nLinkart" value="3" {if $Link->getLinkType() > 2}checked{/if} />

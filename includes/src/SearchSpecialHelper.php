@@ -125,7 +125,7 @@ class SearchSpecialHelper
 
         $oSeo->kSuchspecial = $kKey;
         executeHook(HOOK_BOXEN_INC_SUCHSPECIALURL);
-        $url = baueURL($oSeo, URLART_SEARCHSPECIALS);
+        $url = UrlHelper::buildURL($oSeo, URLART_SEARCHSPECIALS);
         Shop::Cache()->set($cacheID, $url, [CACHING_GROUP_CATEGORY]);
 
         return $url;

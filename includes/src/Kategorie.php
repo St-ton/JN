@@ -257,8 +257,8 @@ class Kategorie
         $imageBaseURL = Shop::getImageBaseURL();
         $helper       = KategorieHelper::getInstance($kSprache, $kKundengruppe);
         // URL bauen
-        $this->cURL     = baueURL($this, URLART_KATEGORIE);
-        $this->cURLFull = baueURL($this, URLART_KATEGORIE, 0, false, true);
+        $this->cURL     = UrlHelper::buildURL($this, URLART_KATEGORIE);
+        $this->cURLFull = UrlHelper::buildURL($this, URLART_KATEGORIE, true);
         // Baue Kategoriepfad
         $this->cKategoriePfad_arr = $helper->getPath($this, false);
         $this->cKategoriePfad     = implode(' > ', $this->cKategoriePfad_arr);

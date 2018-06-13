@@ -58,8 +58,8 @@ final class BoxSearchCloud extends AbstractBox
                 $cloudEntry->Klasse   = ($prio_step < 1) ?
                     rand(1, 10) :
                     (round(($cloudEntry->nAnzahlGesuche - $searchCloudEntries[$count - 1]->nAnzahlGesuche) / $prio_step) + 1);
-                $cloudEntry->cURL     = baueURL($cloudEntry, URLART_LIVESUCHE);
-                $cloudEntry->cURLFull = baueURL($cloudEntry, URLART_LIVESUCHE, 0, false, true);
+                $cloudEntry->cURL     = \UrlHelper::buildURL($cloudEntry, URLART_LIVESUCHE);
+                $cloudEntry->cURLFull = \UrlHelper::buildURL($cloudEntry, URLART_LIVESUCHE, true);
             }
             $this->setShow(true);
             //hole anzuzeigende Suchwolke

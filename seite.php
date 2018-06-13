@@ -26,7 +26,7 @@ if ($link === null || !$link->isVisible()) {
     $link = $linkHelper->getSpecialPage(LINKTYP_STARTSEITE);
     $link->setRedirectCode(301);
 }
-$requestURL = baueURL($link, URLART_SEITE);
+$requestURL = UrlHelper::buildURL($link, URLART_SEITE);
 if ($link->getLinkType() === LINKTYP_STARTSEITE) {
     // Work Around für die Startseite
     $cCanonicalURL = Shop::getURL() . '/';

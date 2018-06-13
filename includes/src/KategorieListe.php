@@ -337,13 +337,8 @@ class KategorieListe
                 //EXPERIMENTAL_MULTILANG_SHOP END
 
                 // URL bauen
-                if (isset($oKategorie->cSeo) && strlen($oKategorie->cSeo) > 0) {
-                    $oKategorie->cURL     = baueURL($oKategorie, URLART_KATEGORIE);
-                    $oKategorie->cURLFull = baueURL($oKategorie, URLART_KATEGORIE, 0, false, true);
-                } else {
-                    $oKategorie->cURL     = baueURL($oKategorie, URLART_KATEGORIE, 0, true);
-                    $oKategorie->cURLFull = baueURL($oKategorie, URLART_KATEGORIE, 0, true, true);
-                }
+                $oKategorie->cURL     = UrlHelper::buildURL($oKategorie, URLART_KATEGORIE);
+                $oKategorie->cURLFull = UrlHelper::buildURL($oKategorie, URLART_KATEGORIE, true);
                 // lokalisieren
                 if ($kSprache > 0 && !Sprache::isDefaultLanguageActive() && strlen($oKategorie->cName_spr) > 0) {
                     $oKategorie->cName         = $oKategorie->cName_spr;

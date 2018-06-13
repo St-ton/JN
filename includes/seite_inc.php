@@ -151,7 +151,7 @@ function gibNews($conf)
                 ? ''
                 : $imageBaseURL . $oNews->cPreviewImage;
             $oNews->cText             = StringHandler::parseNewsText($oNews->cText);
-            $oNews->cURL              = baueURL($oNews, URLART_NEWS);
+            $oNews->cURL              = UrlHelper::buildURL($oNews, URLART_NEWS);
             $oNews->cURLFull          = $shopURL . $oNews->cURL;
             $oNews->cMehrURL          = '<a href="' . $oNews->cURL . '">' .
                 Shop::Lang()->get('moreLink', 'news') .
@@ -264,8 +264,8 @@ function gibLivesucheTop($conf)
             $suchwolke->Klasse   = ($prio_step < 1) ?
                 rand(1, 10) :
                 (round(($suchwolke->nAnzahlGesuche - $suchwolke_objs[$count - 1]->nAnzahlGesuche) / $prio_step) + 1);
-            $suchwolke->cURL     = baueURL($suchwolke, URLART_LIVESUCHE);
-            $suchwolke->cURLFull = baueURL($suchwolke, URLART_LIVESUCHE, 0, false, true);
+            $suchwolke->cURL     = UrlHelper::buildURL($suchwolke, URLART_LIVESUCHE);
+            $suchwolke->cURLFull = UrlHelper::buildURL($suchwolke, URLART_LIVESUCHE, true);
             $Suchwolke_arr[]     = $suchwolke;
         }
     }
@@ -310,6 +310,7 @@ function gibLivesucheLast($conf)
                 AND tseo.kSprache = " . Shop::getLanguage() . "
             WHERE tsuchanfrage.kSprache = " . Shop::getLanguage() . "
                 AND tsuchanfrage.nAktiv = 1
+                AND tsuchanfrage.kSuchanfrage > 0
             ORDER BY tsuchanfrage.dZuletztGesucht DESC
             LIMIT " . $limit,
         \DB\ReturnType::ARRAY_OF_OBJECTS
@@ -321,14 +322,12 @@ function gibLivesucheLast($conf)
         (($suchwolke_objs[0]->nAnzahlGesuche - $suchwolke_objs[$count - 1]->nAnzahlGesuche) / 9) :
         0;
     foreach ($suchwolke_objs as $suchwolke) {
-        if ($suchwolke->kSuchanfrage > 0) {
-            $suchwolke->Klasse   = ($prio_step < 1) ?
-                rand(1, 10) :
-                round(($suchwolke->nAnzahlGesuche - $suchwolke_objs[$count - 1]->nAnzahlGesuche) / $prio_step) + 1;
-            $suchwolke->cURL     = baueURL($suchwolke, URLART_LIVESUCHE);
-            $suchwolke->cURLFull = baueURL($suchwolke, URLART_LIVESUCHE, 0, false, true);
-            $Suchwolke_arr[]     = $suchwolke;
-        }
+        $suchwolke->Klasse   = ($prio_step < 1) ?
+            rand(1, 10) :
+            round(($suchwolke->nAnzahlGesuche - $suchwolke_objs[$count - 1]->nAnzahlGesuche) / $prio_step) + 1;
+        $suchwolke->cURL     = UrlHelper::buildURL($suchwolke, URLART_LIVESUCHE);
+        $suchwolke->cURLFull = UrlHelper::buildURL($suchwolke, URLART_LIVESUCHE, true);
+        $Suchwolke_arr[]     = $suchwolke;
     }
 
     return $Suchwolke_arr;
@@ -370,8 +369,8 @@ function gibTagging($conf)
             $tagwolke->Klasse   = ($prio_step < 1) ?
                 rand(1, 10) :
                 (round(($tagwolke->Anzahl - $tagwolke_objs[$count - 1]->Anzahl) / $prio_step) + 1);
-            $tagwolke->cURL     = baueURL($tagwolke, URLART_TAG);
-            $tagwolke->cURLFull = baueURL($tagwolke, URLART_TAG, 0, false, true);
+            $tagwolke->cURL     = UrlHelper::buildURL($tagwolke, URLART_TAG);
+            $tagwolke->cURLFull = UrlHelper::buildURL($tagwolke, URLART_TAG, true);
             $Tagwolke_arr[]     = $tagwolke;
         }
     }
@@ -398,8 +397,8 @@ function gibNewsletterHistory()
     );
     // URLs bauen
     foreach ($oNewsletterHistory_arr as $oNewsletterHistory) {
-        $oNewsletterHistory->cURL     = baueURL($oNewsletterHistory, URLART_NEWS);
-        $oNewsletterHistory->cURLFull = baueURL($oNewsletterHistory, URLART_NEWS, 0, false, true);
+        $oNewsletterHistory->cURL     = UrlHelper::buildURL($oNewsletterHistory, URLART_NEWS);
+        $oNewsletterHistory->cURLFull = UrlHelper::buildURL($oNewsletterHistory, URLART_NEWS, true);
     }
 
     return $oNewsletterHistory_arr;
@@ -664,12 +663,12 @@ function gibSitemapNews()
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($entries as $oNews) {
-                $oNews->cURL     = baueURL($oNews, URLART_NEWS);
-                $oNews->cURLFull = baueURL($oNews, URLART_NEWS, 0, false, true);
+                $oNews->cURL     = UrlHelper::buildURL($oNews, URLART_NEWS);
+                $oNews->cURLFull = UrlHelper::buildURL($oNews, URLART_NEWS, true);
             }
             $news->oNews_arr = $entries;
-            $news->cURL      = baueURL($news, URLART_NEWSMONAT);
-            $news->cURLFull  = baueURL($news, URLART_NEWSMONAT, 0, false, true);
+            $news->cURL      = UrlHelper::buildURL($news, URLART_NEWSMONAT);
+            $news->cURLFull  = UrlHelper::buildURL($news, URLART_NEWSMONAT, true);
         }
         Shop::Cache()->set($cacheID, $overview, [CACHING_GROUP_NEWS]);
     }
@@ -713,8 +712,8 @@ function gibNewsKategorie()
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($newsCategories as $newsCategory) {
-            $newsCategory->cURL      = baueURL($newsCategory, URLART_NEWSKATEGORIE);
-            $newsCategory->cURLFull  = baueURL($newsCategory, URLART_NEWSKATEGORIE, 0, false, true);
+            $newsCategory->cURL      = UrlHelper::buildURL($newsCategory, URLART_NEWSKATEGORIE);
+            $newsCategory->cURLFull  = UrlHelper::buildURL($newsCategory, URLART_NEWSKATEGORIE, true);
 
             $entries = Shop::Container()->getDB()->query(
                 "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, tnews.cVorschauText, 
@@ -741,8 +740,8 @@ function gibNewsKategorie()
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($entries as $entry) {
-                $entry->cURL     = baueURL($entry, URLART_NEWS);
-                $entry->cURLFull = baueURL($entry, URLART_NEWS, 0, false, true);
+                $entry->cURL     = UrlHelper::buildURL($entry, URLART_NEWS);
+                $entry->cURLFull = UrlHelper::buildURL($entry, URLART_NEWS, true);
             }
             $newsCategory->oNews_arr = $entries;
         }

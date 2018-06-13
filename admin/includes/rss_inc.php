@@ -64,21 +64,19 @@ function generiereRSSXML()
                         $lagerfilter
                         AND cNeu = 'Y' 
                         AND DATE_SUB(now(), INTERVAL " . $alter_tage . " DAY) < dErstellt
-                    ORDER BY dLetzteAktualisierung DESC", 2
+                    ORDER BY dLetzteAktualisierung DESC",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-
-            if (is_array($artikelarr) && count($artikelarr) > 0) {
-                foreach ($artikelarr as $artikel) {
-                    $url = $shopURL . '/' . baueURL($artikel, URLART_ARTIKEL);
-                    $xml .= '
-		        <item>
-			        <title>' . wandelXMLEntitiesUm($artikel->cName) . '</title>
-			        <description>' . wandelXMLEntitiesUm($artikel->cKurzBeschreibung) . '</description>
-			        <link>' . $url . '</link>
-			        <guid>' . $url . '</guid>
-			        <pubDate>' . bauerfc2822datum($artikel->dLetzteAktualisierung) . '</pubDate>
-		        </item>';
-                }
+            foreach ($artikelarr as $artikel) {
+                $url = UrlHelper::buildURL($artikel, URLART_ARTIKEL, true);
+                $xml .= '
+            <item>
+                <title>' . wandelXMLEntitiesUm($artikel->cName) . '</title>
+                <description>' . wandelXMLEntitiesUm($artikel->cKurzBeschreibung) . '</description>
+                <link>' . $url . '</link>
+                <guid>' . $url . '</guid>
+                <pubDate>' . bauerfc2822datum($artikel->dLetzteAktualisierung) . '</pubDate>
+            </item>';
             }
         }
 
@@ -90,21 +88,19 @@ function generiereRSSXML()
                     WHERE DATE_SUB(now(), INTERVAL " . $alter_tage . " DAY) < dGueltigVon
                         AND nAktiv = 1
                         AND dGueltigVon <= now()
-                    ORDER BY dGueltigVon DESC", 2
+                    ORDER BY dGueltigVon DESC",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-
-            if (is_array($oNews_arr) && count($oNews_arr) > 0) {
-                foreach ($oNews_arr as $oNews) {
-                    $url = $shopURL . '/' . baueURL($oNews, URLART_NEWS);
-                    $xml .= '
-                <item>
-                    <title>' . wandelXMLEntitiesUm($oNews->cBetreff) . '</title>
-                    <description>' . wandelXMLEntitiesUm($oNews->cVorschauText) . '</description>
-                    <link>' . $url . '</link>
-                    <guid>' . $url . '</guid>
-                    <pubDate>' . bauerfc2822datum($oNews->dGueltigVon) . '</pubDate>
-                </item>';
-                }
+            foreach ($oNews_arr as $oNews) {
+                $url = UrlHelper::buildURL($oNews, URLART_NEWS);
+                $xml .= '
+            <item>
+                <title>' . wandelXMLEntitiesUm($oNews->cBetreff) . '</title>
+                <description>' . wandelXMLEntitiesUm($oNews->cVorschauText) . '</description>
+                <link>' . $url . '</link>
+                <guid>' . $url . '</guid>
+                <pubDate>' . bauerfc2822datum($oNews->dGueltigVon) . '</pubDate>
+            </item>';
             }
         }
         // bewertungen beachten?
@@ -113,20 +109,19 @@ function generiereRSSXML()
                 "SELECT *, dDatum, DATE_FORMAT(dDatum, \"%a, %d %b %y %h:%i:%s +0100\") AS dErstellt_RSS
                     FROM tbewertung
                     WHERE DATE_SUB(now(), INTERVAL " . $alter_tage . " DAY) < dDatum
-                        AND nAktiv = 1", 2
+                        AND nAktiv = 1",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-            if (is_array($oBewertung_arr) && count($oBewertung_arr) > 0) {
-                foreach ($oBewertung_arr as $oBewertung) {
-                    $url = $shopURL . '/' . baueURL($oBewertung, URLART_ARTIKEL);
-                    $xml .= '
-                <item>
-                    <title>bewertung ' . wandelXMLEntitiesUm($oBewertung->cTitel) . ' von ' . wandelXMLEntitiesUm($oBewertung->cName) . '</title>
-                    <description>' . wandelXMLEntitiesUm($oBewertung->cText) . '</description>
-                    <link>' . $url . '</link>
-                    <guid>' . $url . '</guid>
-                    <pubDate>' . bauerfc2822datum($oBewertung->dDatum) . '</pubDate>
-                </item>';
-                }
+            foreach ($oBewertung_arr as $oBewertung) {
+                $url = UrlHelper::buildURL($oBewertung, URLART_ARTIKEL, true);
+                $xml .= '
+            <item>
+                <title>bewertung ' . wandelXMLEntitiesUm($oBewertung->cTitel) . ' von ' . wandelXMLEntitiesUm($oBewertung->cName) . '</title>
+                <description>' . wandelXMLEntitiesUm($oBewertung->cText) . '</description>
+                <link>' . $url . '</link>
+                <guid>' . $url . '</guid>
+                <pubDate>' . bauerfc2822datum($oBewertung->dDatum) . '</pubDate>
+            </item>';
             }
         }
 

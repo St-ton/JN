@@ -203,7 +203,7 @@ function getCorruptedImages($type, $limit)
                     'picture' => ''
                 ];
                 $articleDB           = Shop::Container()->getDB()->select('tartikel', 'kArtikel', $image->getId());
-                $articleDB->cURLFull = baueURL($articleDB, URLART_ARTIKEL, 0, false, true);
+                $articleDB->cURLFull = UrlHelper::buildURL($articleDB, URLART_ARTIKEL, true);
                 $article             = (object) [
                     'articleNr'      => $articleDB->cArtNr,
                     'articleURLFull' => $articleDB->cURLFull

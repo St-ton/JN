@@ -169,8 +169,8 @@ class MerkmalWert
             foreach ($cMember_arr as $cMember) {
                 $this->$cMember = $oMerkmalWert->$cMember;
             }
-            $this->cURL     = baueURL($this, URLART_MERKMAL);
-            $this->cURLFull = baueURL($this, URLART_MERKMAL, 0, false, true);
+            $this->cURL     = UrlHelper::buildURL($this, URLART_MERKMAL);
+            $this->cURLFull = UrlHelper::buildURL($this, URLART_MERKMAL, true);
             executeHook(HOOK_MERKMALWERT_CLASS_LOADFROMDB, ['oMerkmalWert' => &$this]);
         }
         $imageBaseURL = Shop::getImageBaseURL();
@@ -248,8 +248,8 @@ class MerkmalWert
         );
         $imageBaseURL = Shop::getImageBaseURL();
         foreach ($oMerkmalWert_arr as $i => $oMerkmalWert) {
-            $oMerkmalWert->cURL     = baueURL($oMerkmalWert, URLART_MERKMAL);
-            $oMerkmalWert->cURLFull = baueURL($oMerkmalWert, URLART_MERKMAL, 0, false, true);
+            $oMerkmalWert->cURL     = UrlHelper::buildURL($oMerkmalWert, URLART_MERKMAL);
+            $oMerkmalWert->cURLFull = UrlHelper::buildURL($oMerkmalWert, URLART_MERKMAL, true);
 
             if (isset($oMerkmalWert->cBildpfad) && strlen($oMerkmalWert->cBildpfad) > 0) {
                 $oMerkmalWert->cBildpfadKlein  = PFAD_MERKMALWERTBILDER_KLEIN . $oMerkmalWert->cBildpfad;

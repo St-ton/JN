@@ -874,7 +874,7 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
                         'value' => $cValue
                     ];
                 }
-                $cUrl = baueURL($oArtikelTMP, URLART_ARTIKEL, 0, empty($oArtikelTMP->kSeoKey), true);
+                $cUrl = UrlHelper::buildURL($oArtikelTMP, URLART_ARTIKEL, true);
                 $objResponse->jsfunc(
                     '$.evo.article().setArticleContent',
                     $kVaterArtikel,

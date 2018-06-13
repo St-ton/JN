@@ -63,8 +63,8 @@ final class BoxPoll extends AbstractBox
             \Shop::Container()->getCache()->set($cacheID, $polls, $cacheTags);
         }
         foreach ($polls as $poll) {
-            $poll->cURL     = baueURL($poll, URLART_UMFRAGE);
-            $poll->cURLFull = baueURL($poll, URLART_UMFRAGE, 0, false, true);
+            $poll->cURL     = \UrlHelper::buildURL($poll, URLART_UMFRAGE);
+            $poll->cURLFull = \UrlHelper::buildURL($poll, URLART_UMFRAGE, true);
         }
         $this->setItems($polls);
         executeHook(HOOK_BOXEN_INC_UMFRAGE, [

@@ -88,7 +88,7 @@ if ($step === 'umfrage_uebersicht') {
     $oUmfrage_arr = holeUmfrageUebersicht();
     if (is_array($oUmfrage_arr) && count($oUmfrage_arr) > 0) {
         foreach ($oUmfrage_arr as $i => $oUmfrage) {
-            $oUmfrage_arr[$i]->cURL = baueURL($oUmfrage, URLART_UMFRAGE);
+            $oUmfrage_arr[$i]->cURL = UrlHelper::buildURL($oUmfrage, URLART_UMFRAGE);
         }
     } else {
         $cFehler .= Shop::Lang()->get('pollNopoll', 'errorMessages') . '<br />';

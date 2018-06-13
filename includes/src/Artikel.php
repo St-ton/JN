@@ -3130,8 +3130,8 @@ class Artikel
                 );
                 if (!in_array($rawForHash, $imageHashes, true)) {
                     $varKombiPreview                           = new stdClass();
-                    $varKombiPreview->cURL                     = baueURL($preview, URLART_ARTIKEL);
-                    $varKombiPreview->cURLFull                 = baueURL($preview, URLART_ARTIKEL, 0, false, true);
+                    $varKombiPreview->cURL                     = UrlHelper::buildURL($preview, URLART_ARTIKEL);
+                    $varKombiPreview->cURLFull                 = UrlHelper::buildURL($preview, URLART_ARTIKEL, true);
                     $varKombiPreview->cName                    = $preview->cName;
                     $varKombiPreview->cLagerBeachten           = $preview->cLagerBeachten;
                     $varKombiPreview->cLagerKleinerNull        = $preview->cLagerKleinerNull;
@@ -3958,8 +3958,8 @@ class Artikel
         $this->holPreise($kKundengruppe, $oArtikelTMP);
         //globale Einstellung
         $this->setzeSprache($kSprache);
-        $this->cURL     = baueURL($this, URLART_ARTIKEL);
-        $this->cURLFull = baueURL($this, URLART_ARTIKEL, 0, false, true);
+        $this->cURL     = UrlHelper::buildURL($this, URLART_ARTIKEL);
+        $this->cURLFull = UrlHelper::buildURL($this, URLART_ARTIKEL, true);
         if ($this->getOption('nArtikelAttribute', 0) === 1) {
             $this->holArtikelAttribute();
         }
@@ -4070,7 +4070,7 @@ class Artikel
 
             $this->cHersteller         = $oArtikelTMP->cName_thersteller;
             $this->cHerstellerSeo      = $oHersteller->cSeo;
-            $this->cHerstellerURL      = baueURL($oHersteller, URLART_HERSTELLER);
+            $this->cHerstellerURL      = UrlHelper::buildURL($oHersteller, URLART_HERSTELLER);
             $this->cHerstellerHomepage = $oArtikelTMP->cHomepage;
             if (filter_var($this->cHerstellerHomepage, FILTER_VALIDATE_URL) === false) {
                 $this->cHerstellerHomepage = 'http://' . $oArtikelTMP->cHomepage;
@@ -6246,8 +6246,8 @@ class Artikel
         foreach ($tags as $tag) {
             $tag->kTag     = (int)$tag->kTag;
             $tag->Anzahl   = (int)$tag->Anzahl;
-            $tag->cURL     = baueURL($tag, URLART_TAG);
-            $tag->cURLFull = baueURL($tag, URLART_TAG, 0, false, true);
+            $tag->cURL     = UrlHelper::buildURL($tag, URLART_TAG);
+            $tag->cURLFull = UrlHelper::buildURL($tag, URLART_TAG, true);
         }
         executeHook(
             HOOK_ARTIKEL_INC_PRODUKTTAGGING,

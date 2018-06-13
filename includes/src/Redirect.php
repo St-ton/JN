@@ -285,7 +285,7 @@ class Redirect
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return baueURL($oObj, URLART_ARTIKEL);
+        return UrlHelper::buildURL($oObj, URLART_ARTIKEL);
     }
 
     /**

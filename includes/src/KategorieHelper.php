@@ -236,9 +236,7 @@ class KategorieHelper
                     ? BILD_KEIN_KATEGORIEBILD_VORHANDEN
                     : PFAD_KATEGORIEBILDER . $_cat->cPfad;
                 $_cat->cBildURLFull   = $imageBaseURL . $_cat->cBildURL;
-                $_cat->cURL           = empty($_cat->cSeo)
-                    ? baueURL($_cat, URLART_KATEGORIE, 0, true)
-                    : baueURL($_cat, URLART_KATEGORIE);
+                $_cat->cURL           = UrlHelper::buildURL($_cat, URLART_KATEGORIE);
                 $_cat->cURLFull       = $shopURL . '/' . $_cat->cURL;
                 if (self::$kSprache > 0 && !$isDefaultLang) {
                     if (!empty($_cat->cName_spr)) {
@@ -447,9 +445,7 @@ class KategorieHelper
                 ? BILD_KEIN_KATEGORIEBILD_VORHANDEN
                 : PFAD_KATEGORIEBILDER . $_cat->cPfad;
             $_cat->cBildURLFull   = $imageBaseURL . $_cat->cBildURL;
-            $_cat->cURL           = empty($_cat->cSeo)
-                ? baueURL($_cat, URLART_KATEGORIE, 0, true)
-                : baueURL($_cat, URLART_KATEGORIE);
+            $_cat->cURL           = UrlHelper::buildURL($_cat, URLART_KATEGORIE);
             $_cat->cURLFull       = $shopURL . '/' . $_cat->cURL;
             // lokalisieren
             if (self::$kSprache > 0 && !$isDefaultLang) {

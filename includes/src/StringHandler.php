@@ -811,7 +811,7 @@ class StringHandler
                 $cName          = ':' . $cName;
             }
             if ($bVorhanden) {
-                $cURL  = baueURL($oObjekt, $cParameter_arr[$cParameter]);
+                $cURL  = UrlHelper::buildURL($oObjekt, $cParameter_arr[$cParameter]);
                 $cText = str_replace(
                     '$#' . $cParameter . ':' . $cKey . $cName . '#$',
                     '<a href="' . Shop::getURL() . '/' . $cURL . '">' . $oObjekt->cName . '</a>',

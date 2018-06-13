@@ -350,7 +350,7 @@ function generateSitemapXML()
                 $cGoogleImage = $imageBaseURL . $cGoogleImage;
             }
         }
-        $cUrl = baueURL($oArtikel, URLART_ARTIKEL);
+        $cUrl = UrlHelper::buildURL($oArtikel, URLART_ARTIKEL);
 
         if (!isSitemapBlocked($cUrl)) {
             $sitemap_data .= makeURL(
@@ -404,7 +404,7 @@ function generateSitemapXML()
                 $nAnzahlURL_arr[$nDatei] = 0;
                 $sitemap_data            = '';
             }
-            $cUrl = baueURL($oArtikel, URLART_ARTIKEL);
+            $cUrl = UrlHelper::buildURL($oArtikel, URLART_ARTIKEL);
             if (!isSitemapBlocked($cUrl)) {
                 $sitemap_data .= makeURL(
                     $cUrl,
@@ -467,7 +467,7 @@ function generateSitemapXML()
                     }
 
                     $tlink->cLocalizedSeo[$tlink->cISOSprache] = $tlink->cSeo ?? null;
-                    $link                                      = baueURL($tlink, URLART_SEITE);
+                    $link                                      = UrlHelper::buildURL($tlink, URLART_SEITE);
                     if (strlen($tlink->cSeo) > 0) {
                         $link = $tlink->cSeo;
                     } elseif ($_SESSION['cISOSprache'] !== $tlink->cISOSprache) {
@@ -928,7 +928,7 @@ function generateSitemapXML()
         );
         while (($oNews = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $cURL = makeURL(
-                baueURL($oNews, URLART_NEWS),
+                UrlHelper::buildURL($oNews, URLART_NEWS),
                 date_format(date_create($oNews->dGueltigVon), 'c'),
                 FREQ_DAILY,
                 PRIO_HIGH
@@ -962,7 +962,7 @@ function generateSitemapXML()
 
         while (($oNewsKategorie = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $cURL = makeURL(
-                baueURL($oNewsKategorie, URLART_NEWSKATEGORIE),
+                UrlHelper::buildURL($oNewsKategorie, URLART_NEWSKATEGORIE),
                 date_format(date_create($oNewsKategorie->dLetzteAktualisierung), 'c'),
                 FREQ_DAILY,
                 PRIO_HIGH

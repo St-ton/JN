@@ -383,8 +383,8 @@ class Boxen
                         \DB\ReturnType::ARRAY_OF_OBJECTS
                     );
                     foreach ($oUmfrage_arr as $i => $oUmfrage) {
-                        $oUmfrage_arr[$i]->cURL     = baueURL($oUmfrage, URLART_UMFRAGE);
-                        $oUmfrage_arr[$i]->cURLFull = baueURL($oUmfrage, URLART_UMFRAGE, 0, false, true);
+                        $oUmfrage_arr[$i]->cURL     = UrlHelper::buildURL($oUmfrage, URLART_UMFRAGE);
+                        $oUmfrage_arr[$i]->cURLFull = UrlHelper::buildURL($oUmfrage, URLART_UMFRAGE, true);
                     }
                     $cacheTags = [CACHING_GROUP_BOX, CACHING_GROUP_CORE];
                     executeHook(HOOK_BOXEN_INC_UMFRAGE, ['box' => &$oBox, 'cache_tags' => &$cacheTags]);
@@ -483,12 +483,10 @@ class Boxen
                         \DB\ReturnType::ARRAY_OF_OBJECTS
                     );
                     foreach ($oNewsKategorie_arr as $i => $oNewsKategorie) {
-                        $oNewsKategorie_arr[$i]->cURL     = baueURL($oNewsKategorie, URLART_NEWSKATEGORIE);
-                        $oNewsKategorie_arr[$i]->cURLFull = baueURL(
+                        $oNewsKategorie_arr[$i]->cURL     = UrlHelper::buildURL($oNewsKategorie, URLART_NEWSKATEGORIE);
+                        $oNewsKategorie_arr[$i]->cURLFull = UrlHelper::buildURL(
                             $oNewsKategorie,
                             URLART_NEWSKATEGORIE,
-                            0,
-                            false,
                             true
                         );
                     }
@@ -534,12 +532,10 @@ class Boxen
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 foreach ($oNewsMonatsUebersicht_arr as $i => $oNewsMonatsUebersicht) {
-                    $oNewsMonatsUebersicht_arr[$i]->cURL     = baueURL($oNewsMonatsUebersicht, URLART_NEWSMONAT);
-                    $oNewsMonatsUebersicht_arr[$i]->cURLFull = baueURL(
+                    $oNewsMonatsUebersicht_arr[$i]->cURL     = UrlHelper::buildURL($oNewsMonatsUebersicht, URLART_NEWSMONAT);
+                    $oNewsMonatsUebersicht_arr[$i]->cURLFull = UrlHelper::buildURL(
                         $oNewsMonatsUebersicht,
                         URLART_NEWSMONAT,
-                        0,
-                        false,
                         true
                     );
                 }
@@ -767,14 +763,12 @@ class Boxen
                     // Priorität berechnen
                     $prio_step = ($tagwolke_objs[0]->Anzahl - $tagwolke_objs[$count - 1]->Anzahl) / 9;
                     foreach ($tagwolke_objs as $tagwolke) {
-                        if ($tagwolke->kTag > 0) {
-                            $tagwolke->Klasse   = ($prio_step < 1) ?
-                                rand(1, 10) :
-                                (round(($tagwolke->Anzahl - $tagwolke_objs[$count - 1]->Anzahl) / $prio_step) + 1);
-                            $tagwolke->cURL     = baueURL($tagwolke, URLART_TAG);
-                            $tagwolke->cURLFull = baueURL($tagwolke, URLART_TAG, 0, false, true);
-                            $Tagwolke_arr[]     = $tagwolke;
-                        }
+                        $tagwolke->Klasse   = ($prio_step < 1) ?
+                            rand(1, 10) :
+                            (round(($tagwolke->Anzahl - $tagwolke_objs[$count - 1]->Anzahl) / $prio_step) + 1);
+                        $tagwolke->cURL     = UrlHelper::buildURL($tagwolke, URLART_TAG);
+                        $tagwolke->cURLFull = UrlHelper::buildURL($tagwolke, URLART_TAG, true);
+                        $Tagwolke_arr[]     = $tagwolke;
                     }
                 }
                 $cacheTags = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
@@ -807,6 +801,7 @@ class Boxen
                             AND tseo.kSprache = " . $kSprache . "
                         WHERE tsuchanfrage.kSprache = " . $kSprache . "
                             AND tsuchanfrage.nAktiv = 1
+                            AND tsuchanfrage.kSuchanfrage > 0
                         GROUP BY tsuchanfrage.kSuchanfrage
                         ORDER BY tsuchanfrage.nAnzahlGesuche DESC
                         LIMIT " . $nWolkenLimit,
@@ -816,14 +811,12 @@ class Boxen
                     // Priorität berechnen
                     $prio_step = ($oSuchwolke_arr[0]->nAnzahlGesuche - $oSuchwolke_arr[$count - 1]->nAnzahlGesuche) / 9;
                     foreach ($oSuchwolke_arr as $i => $oSuchwolke) {
-                        if ($oSuchwolke->kSuchanfrage > 0) {
-                            $oSuchwolke->Klasse   = ($prio_step < 1) ?
-                                rand(1, 10) :
-                                (round(($oSuchwolke->nAnzahlGesuche - $oSuchwolke_arr[$count - 1]->nAnzahlGesuche) / $prio_step) + 1);
-                            $oSuchwolke->cURL     = baueURL($oSuchwolke, URLART_LIVESUCHE);
-                            $oSuchwolke->cURLFull = baueURL($oSuchwolke, URLART_LIVESUCHE, 0, false, true);
-                            $oSuchwolke_arr[$i]   = $oSuchwolke;
-                        }
+                        $oSuchwolke->Klasse   = ($prio_step < 1) ?
+                            rand(1, 10) :
+                            (round(($oSuchwolke->nAnzahlGesuche - $oSuchwolke_arr[$count - 1]->nAnzahlGesuche) / $prio_step) + 1);
+                        $oSuchwolke->cURL     = UrlHelper::buildURL($oSuchwolke, URLART_LIVESUCHE);
+                        $oSuchwolke->cURLFull = UrlHelper::buildURL($oSuchwolke, URLART_LIVESUCHE, true);
+                        $oSuchwolke_arr[$i]   = $oSuchwolke;
                     }
                     $oBox->anzeigen = 'Y';
                     //hole anzuzeigende Suchwolke

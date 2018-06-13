@@ -47,14 +47,8 @@ final class BoxNewsCurrentMonth extends AbstractBox
             ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($newsOverview as $item) {
-            $item->cURL     = baueURL($item, URLART_NEWSMONAT);
-            $item->cURLFull = baueURL(
-                $item,
-                URLART_NEWSMONAT,
-                0,
-                false,
-                true
-            );
+            $item->cURL     = \UrlHelper::buildURL($item, URLART_NEWSMONAT);
+            $item->cURLFull = \UrlHelper::buildURL($item, URLART_NEWSMONAT, true);
         }
         $this->setShow(count($newsOverview) > 0);
         $this->setItems($newsOverview);

@@ -251,4 +251,96 @@ class UrlHelper
 
         return $this;
     }
+    /**
+     * @param object $obj
+     * @param int    $type
+     * @param bool   $full
+     * @return string
+     * @former baueURL()
+     * @since 5.0.0
+     */
+    public static function buildURL($obj, int $type, bool $full = false): string
+    {
+        if ($obj instanceof \Link\LinkInterface) {
+            return $obj->getURL();
+        }
+        $lang   = !Sprache::isDefaultLanguageActive(true)
+            ? ('&lang=' . Shop::getLanguageCode())
+            : '';
+        $prefix = $full === false ? '' : Shop::getURL() . '/';
+
+        if ($type && $obj) {
+            executeHook(HOOK_TOOLSGLOBAL_INC_SWITCH_BAUEURL, ['obj' => &$obj, 'art' => &$type]);
+            switch ($type) {
+                case URLART_ARTIKEL:
+                    return !empty($obj->cSeo)
+                        ? $prefix . $obj->cSeo
+                        : $prefix . '?a=' . $obj->kArtikel . $lang;
+
+                case URLART_KATEGORIE:
+                    return !empty($obj->cSeo)
+                        ? $prefix . $obj->cSeo
+                        : $prefix . '?k=' . $obj->kKategorie . $lang;
+                case URLART_SEITE:
+                    if (isset($_SESSION['cISOSprache'], $obj->cLocalizedSeo[$_SESSION['cISOSprache']])
+                        && strlen($obj->cLocalizedSeo[$_SESSION['cISOSprache']])
+                    ) {
+                        return $prefix . $obj->cLocalizedSeo[$_SESSION['cISOSprache']];
+                    }
+                    // Hole aktuelle Spezialseite und gib den URL Dateinamen zurück
+                    $oSpezialseite = Shop::Container()->getDB()->select('tspezialseite', 'nLinkart', (int)$obj->nLinkart);
+
+                    return !empty($oSpezialseite->cDateiname)
+                        ? $prefix . $oSpezialseite->cDateiname
+                        : $prefix . '?s=' . $obj->kLink . $lang;
+
+                case URLART_HERSTELLER:
+                    return !empty($obj->cSeo)
+                        ? $prefix . $obj->cSeo
+                        : $prefix . '?h=' . $obj->kHersteller . $lang;
+
+                case URLART_LIVESUCHE:
+                    return !empty($obj->cSeo)
+                        ? $prefix . $obj->cSeo
+                        : $prefix . '?l=' . $obj->kSuchanfrage . $lang;
+
+                case URLART_TAG:
+                    return !empty($obj->cSeo)
+                        ? $prefix . $obj->cSeo
+                        : $prefix . '?t=' . $obj->kTag . $lang;
+
+                case URLART_MERKMAL:
+                    return !empty($obj->cSeo)
+                        ? $prefix . $obj->cSeo
+                        : $prefix . '?m=' . $obj->kMerkmalWert . $lang;
+
+                case URLART_NEWS:
+                    return !empty($obj->cSeo)
+                        ? $prefix . $obj->cSeo
+                        : $prefix . '?n=' . $obj->kNews . $lang;
+
+                case URLART_NEWSMONAT:
+                    return !empty($obj->cSeo)
+                        ? $prefix . $obj->cSeo
+                        : $prefix . '?nm=' . $obj->kNewsMonatsUebersicht . $lang;
+
+                case URLART_NEWSKATEGORIE:
+                    return !empty($obj->cSeo)
+                        ? $prefix . $obj->cSeo
+                        : $prefix . '?nk=' . $obj->kNewsKategorie . $lang;
+
+                case URLART_UMFRAGE:
+                    return !empty($obj->cSeo)
+                        ? $prefix . $obj->cSeo
+                        : $prefix . '?u=' . $obj->kUmfrage . $lang;
+
+                case URLART_SEARCHSPECIALS:
+                    return !empty($obj->cSeo)
+                        ? $prefix . $obj->cSeo
+                        : $prefix . '?q=' . $obj->kSuchspecial . $lang;
+            }
+        }
+
+        return '';
+    }
 }

@@ -1864,3 +1864,19 @@ function entschluesselXTEA($cText)
 
     return Shop::Container()->getCryptoService()->decryptXTEA($cText);
 }
+
+/**
+ * @param object $obj
+ * @param int    $art
+ * @param int    $row
+ * @param bool   $bForceNonSeo
+ * @param bool   $bFull
+ * @return string
+ * @deprecated since 5.0.0
+ */
+function baueURL($obj, $art, $row = 0, $bForceNonSeo = false, $bFull = false)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use UrlHelper::buildURL() instead.', E_USER_DEPRECATED);
+
+    return UrlHelper::buildURL($obj, $art, $bFull);
+}

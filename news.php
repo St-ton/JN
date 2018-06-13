@@ -90,8 +90,8 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
             $cMetaKeywords      = $oNewsArchiv->cMetaKeywords ?? '';
             $oNewsKategorie_arr = getNewsCategory($kNews);
             foreach ($oNewsKategorie_arr as $oNewsKategorie) {
-                $oNewsKategorie->cURL     = baueURL($oNewsKategorie, URLART_NEWSKATEGORIE);
-                $oNewsKategorie->cURLFull = baueURL($oNewsKategorie, URLART_NEWSKATEGORIE, 0, false, true);
+                $oNewsKategorie->cURL     = UrlHelper::buildURL($oNewsKategorie, URLART_NEWSKATEGORIE);
+                $oNewsKategorie->cURLFull = UrlHelper::buildURL($oNewsKategorie, URLART_NEWSKATEGORIE, true);
             }
             Shop::Smarty()->assign('R_LOGIN_NEWSCOMMENT', R_LOGIN_NEWSCOMMENT)
                 ->assign('oNewsKategorie_arr', $oNewsKategorie_arr);
@@ -207,11 +207,11 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
             Shop::Smarty()->assign('oNewsKommentar_arr', $oNewsKommentar_arr)
                 ->assign('oPagiComments', $oPagiComments);
             // Canonical
-            if (strpos(baueURL($oNewsArchiv, URLART_NEWS), '.php') === false) {
-                $cCanonicalURL = Shop::getURL() . '/' . baueURL($oNewsArchiv, URLART_NEWS);
+            if (strpos(UrlHelper::buildURL($oNewsArchiv, URLART_NEWS), '.php') === false) {
+                $cCanonicalURL = UrlHelper::buildURL($oNewsArchiv, URLART_NEWS, true);
             }
             $breadCrumbName = $oNewsArchiv->cBetreff ?? Shop::Lang()->get('news', 'breadcrumb');
-            $breadCrumbURL  = baueURL($oNewsArchiv, URLART_NEWS);
+            $breadCrumbURL  = UrlHelper::buildURL($oNewsArchiv, URLART_NEWS);
 
             executeHook(HOOK_NEWS_PAGE_DETAILANSICHT);
         } else {
@@ -318,7 +318,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                 $oNewsUebersicht->oDatei_arr = holeNewsBilder($oNewsUebersicht->kNews, $cUploadVerzeichnis);
             }
             $oNewsUebersicht->cText        = StringHandler::parseNewsText($oNewsUebersicht->cText);
-            $oNewsUebersicht->cURL         = baueURL($oNewsUebersicht, URLART_NEWS);
+            $oNewsUebersicht->cURL         = UrlHelper::buildURL($oNewsUebersicht, URLART_NEWS);
             $oNewsUebersicht->cURLFull     = $shopURL . $oNewsUebersicht->cURL;
             $oNewsUebersicht->cMehrURL     = '<a href="' . $oNewsUebersicht->cURL . '">' .
                 Shop::Lang()->get('moreLink', 'news') .

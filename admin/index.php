@@ -30,12 +30,7 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
     $ret['captcha'] = 0;
     $ret['csrf']    = 0;
     if (file_exists(CAPTCHA_LOCKFILE)) {
-        if (!isset($_POST['captcha']) || !$_POST['captcha']) {
-            $ret['captcha'] = 1;
-        }
-        if (!isset($_POST['md5']) || !$_POST['md5'] || ($_POST['md5'] !== md5(PFAD_ROOT . strtoupper($_POST['captcha'])))) {
-            $ret['captcha'] = 2;
-        }
+        $ret['captcha'] = Shop::Container()->getCaptchaService()->validate($_POST) ? 0 : 2;
     }
     // Check if shop version is new enough for csrf validation
     if (version_compare(Shop::getShopVersion(), 400, '>=') === true) {
@@ -53,37 +48,37 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
         $cPass   = $_POST['passwort'];
         $nReturn = $oAccount->login($cLogin, $cPass);
         switch ($nReturn) {
-            case AdminAccount::ERROR_INVALID_PASSWORD_LOCKED:
+            case AdminLoginStatus::ERROR_INVALID_PASSWORD_LOCKED:
                 @touch(CAPTCHA_LOCKFILE);
                 break;
 
-            case AdminAccount::ERROR_USER_NOT_FOUND:
-            case AdminAccount::ERROR_INVALID_PASSWORD:
+            case AdminLoginStatus::ERROR_USER_NOT_FOUND:
+            case AdminLoginStatus::ERROR_INVALID_PASSWORD:
                 $cFehler = 'Benutzername oder Passwort falsch';
                 if (isset($_SESSION['AdminAccount']->TwoFA_expired) && true === $_SESSION['AdminAccount']->TwoFA_expired) {
                     $cFehler = '2-Faktor-Auth-Code abgelaufen';
                 }
                 break;
 
-            case AdminAccount::ERROR_USER_DISABLED:
+            case AdminLoginStatus::ERROR_USER_DISABLED:
                 $cFehler = 'Anmeldung zur Zeit nicht m&ouml;glich';
                 break;
 
-            case AdminAccount::ERROR_LOGIN_EXPIRED:
+            case AdminLoginStatus::ERROR_LOGIN_EXPIRED:
                 $cFehler = 'Anmeldedaten nicht mehr g&uuml;ltig';
                 break;
 
-            case AdminAccount::ERROR_TWO_FACTOR_AUTH_EXPIRED:
+            case AdminLoginStatus::ERROR_TWO_FACTOR_AUTH_EXPIRED:
                 if (isset($_SESSION['AdminAccount']->TwoFA_expired) && true === $_SESSION['AdminAccount']->TwoFA_expired) {
                     $cFehler = '2-Faktor-Authentifizierungs-Code abgelaufen';
                 }
                 break;
 
-            case AdminAccount::ERROR_NOT_AUTHORIZED:
+            case AdminLoginStatus::ERROR_NOT_AUTHORIZED:
                 $cFehler = 'Keine Berechtigungen vorhanden';
                 break;
 
-            case AdminAccount::LOGIN_OK:
+            case AdminLoginStatus::LOGIN_OK:
                 $_SESSION['loginIsValid'] = true; // "enable" the "header.tpl"-navigation again
                 if (file_exists(CAPTCHA_LOCKFILE)) {
                     unlink(CAPTCHA_LOCKFILE);
@@ -136,7 +131,7 @@ switch ($profilerState) {
         break;
 }
 if (file_exists(CAPTCHA_LOCKFILE)) {
-    $smarty->assign('code_adminlogin', generiereCaptchaCode(3));
+    $smarty->assign('code_adminlogin', Shop::Container()->getCaptchaService()->isEnabled());
 }
 $smarty->assign('bProfilerActive', $profilerState !== 0)
        ->assign('profilerType', $type)

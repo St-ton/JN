@@ -157,7 +157,8 @@ function pruefeBetreffVorhanden()
         "SELECT kKontaktBetreff
             FROM tkontaktbetreff
             WHERE FIND_IN_SET('" . $kKundengruppe . "', REPLACE(cKundengruppen, ';', ',')) > 0
-                OR cKundengruppen = '0'", 2
+                OR cKundengruppen = '0'",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 
     return (is_array($oBetreff_arr) && count($oBetreff_arr) > 0);
@@ -276,7 +277,7 @@ function floodSchutz($min)
             WHERE cIP = :ip 
                 AND date_sub(now(), INTERVAL :min MINUTE) < dErstellt",
         ['ip' => Shop::Container()->getDB()->escape(gibIP()), 'min' => $min],
-        1
+        \DB\ReturnType::SINGLE_OBJECT
     );
 
     return (isset($history->kKontaktHistory) && $history->kKontaktHistory > 0);

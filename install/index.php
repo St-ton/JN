@@ -71,7 +71,6 @@ if (!version_compare($szPhpVersion, '5.4.0', '>=')) {
     exit(-1);
 }
 
-$shop = Shop::getInstance();
 require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 require_once PFAD_ROOT . PFAD_INSTALL . PFAD_INCLUDES . 'install_inc.php';
@@ -195,7 +194,7 @@ switch ($step) {
             $cHinweis .= '<br />' . $DB->getError() . ' Nr: ' . $DB->getErrorCode();
         }
         // Zahlungarten auf Nutzbarkeit pruefen
-        pruefeZahlungsartNutzbarkeit();
+        checkPayments($DB);
 
         if (strlen($cHinweis) === 0) {
             if (!schreibeConfigDateiInstall(

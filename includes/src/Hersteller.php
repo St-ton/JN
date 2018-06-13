@@ -246,7 +246,8 @@ class Hersteller
                     AND tseo.cKey = 'kHersteller'
                     AND tseo.kSprache = {$kSprache}
                 {$sqlWhere}
-                ORDER BY thersteller.nSortNr, thersteller.cName", 2
+                ORDER BY thersteller.nSortNr, thersteller.cName",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         $results = [];
         foreach ($objs as $obj) {

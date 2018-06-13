@@ -5,7 +5,7 @@
  */
 include PFAD_ROOT . PFAD_INCLUDES . 'spiderlist_inc.php';
 
-$userAgent    = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
+$userAgent    = $_SERVER['HTTP_USER_AGENT'] ?? '';
 $kBesucherBot = istSpider($userAgent);
 // check, if the visitor is a bot and save that
 if ($kBesucherBot > 0) {
@@ -153,7 +153,7 @@ function refreshCustomerOrderId($nCustomerId)
         Shop::DB()::RET_SINGLE_OBJECT
     );
 
-    return (isset($oOrder->kBestellung)) ? $oOrder->kBestellung : 0;
+    return intval($oOrder->kBestellung ?? 0);
 }
 
 /**
@@ -161,7 +161,7 @@ function refreshCustomerOrderId($nCustomerId)
  */
 function gibBrowser()
 {
-    $agent = isset($_SERVER['HTTP_USER_AGENT']) ? strtolower($_SERVER['HTTP_USER_AGENT']) : '';
+    $agent    = strtolower($_SERVER['HTTP_USER_AGENT'] ?? '');
     $szMobile = '';
     if (stripos($agent, 'iphone') !== false
         || stripos($agent, 'ipad') !== false
@@ -262,7 +262,7 @@ function gibBot()
 function werteRefererAus($kBesucher, $referer)
 {
     $kBesucher           = (int)$kBesucher;
-    $roh                 = $_SERVER['HTTP_REFERER'];
+    $roh                 = $_SERVER['HTTP_REFERER'] ?? '';
     $ausdruck            = new stdClass();
     $ausdruck->kBesucher = $kBesucher;
     $ausdruck->cRohdaten = StringHandler::filterXSS($_SERVER['HTTP_REFERER']);

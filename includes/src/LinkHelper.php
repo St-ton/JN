@@ -316,7 +316,11 @@ class LinkHelper
             $customerGroupID = isset($_SESSION['Kundengruppe'])
                 ? Session::CustomerGroup()->getID()
                 : Kundengruppe::getDefaultGroupID();
-            $Linkgruppen     = Shop::Container()->getDB()->query("SELECT * FROM tlinkgruppe", 2);
+            $Linkgruppen     = Shop::Container()->getDB()->query(
+                "SELECT * 
+                    FROM tlinkgruppe",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
+            );
             $linkGroups      = new stdClass();
             $shopURL         = Shop::getURL() . '/';
             $shopURLSSL      = Shop::getURL(true) . '/';
@@ -351,7 +355,8 @@ class LinkHelper
                             AND (tlink.cKundengruppen IS NULL
                             OR tlink.cKundengruppen = 'NULL'
                             OR FIND_IN_SET('{$customerGroupID}', REPLACE(tlink.cKundengruppen, ';', ',')) > 0)
-                        ORDER BY tlink.nSort, tlink.cName", 2
+                        ORDER BY tlink.nSort, tlink.cName",
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 $links = [];
                 foreach ($linkData as $item) {
@@ -370,7 +375,8 @@ class LinkHelper
                                 AND tseo.kKey = tlinksprache.kLink
                                 AND tseo.kSprache = tsprache.kSprache
                             WHERE tlinksprache.kLink = " . $link->kLink . "
-                            GROUP BY tlinksprache.cISOSprache", 2
+                            GROUP BY tlinksprache.cISOSprache",
+                        \DB\ReturnType::ARRAY_OF_OBJECTS
                     );
                     if ($linkLanguages === false) {
                         $linkLanguages = [];
@@ -411,7 +417,8 @@ class LinkHelper
                     WHERE tlink.kLink = tlinksprache.kLink
                         AND tlink.nLinkart = " . LINKTYP_STARTSEITE . "
                     GROUP BY tlinksprache.cISOSprache
-                    ORDER BY tlink.kLink", 2
+                    ORDER BY tlink.kLink",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             $session['Link_Startseite'] = [];
 
@@ -446,7 +453,8 @@ class LinkHelper
                     WHERE tlink.kLink = tlinksprache.kLink
                         AND tlink.nLinkart = " . LINKTYP_VERSAND . $cKundengruppenSQL . "
                     GROUP BY tlinksprache.cISOSprache
-                    ORDER BY tlink.kLink", 2
+                    ORDER BY tlink.kLink",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             $session['Link_Versandseite'] = [];
 
@@ -471,7 +479,8 @@ class LinkHelper
                     WHERE tlink.kLink = tlinksprache.kLink
                         AND tlink.nLinkart = " . LINKTYP_AGB . "
                     GROUP BY tlinksprache.cISOSprache
-                    ORDER BY tlink.kLink", 2
+                    ORDER BY tlink.kLink",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
 
             $session['Link_AGB'] = [];
@@ -497,7 +506,8 @@ class LinkHelper
                     WHERE tlink.kLink = tlinksprache.kLink
                         AND tlink.nLinkart = " . LINKTYP_DATENSCHUTZ . "
                     GROUP BY tlinksprache.cISOSprache
-                    ORDER BY tlink.kLink", 2
+                    ORDER BY tlink.kLink",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
 
             $session['Link_Datenschutz'] = [];
@@ -612,7 +622,8 @@ class LinkHelper
             "SELECT kLink, nLinkart, cName 
                 FROM tlink 
                 WHERE nLinkart >= 5 
-                ORDER BY nLinkart", 2
+                ORDER BY nLinkart",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oLink_arr as &$oLink) {
             $oObj           = new stdClass();
@@ -711,7 +722,7 @@ class LinkHelper
      *
      * @former aktiviereLinks()
      * @param int $pageType
-     * @return array
+     * @return stdClass
      */
     public function activate($pageType)
     {
@@ -726,7 +737,6 @@ class LinkHelper
                 continue;
             }
             $linkgruppe->kVaterLinkAktiv = 0;
-
             $cnt = count($linkgruppe->Links);
             foreach ($linkgruppe->Links as $link) {
                 $link->aktiv = 0;
@@ -743,7 +753,7 @@ class LinkHelper
                     case PAGE_EIGENE:
                         // Hoechste Ebene
                         $kVaterLink = $link->kVaterLink;
-                        if ($kVaterLink === 0 && $this->isChildActive($kVaterLink, Shop::$kLink)) {
+                        if ($kVaterLink === 0 && $this->isChildActive($link->kLink, Shop::$kLink)) {
                             $link->aktiv = 1;
                         }
                         if ($link->kLink === Shop::$kLink) {

@@ -72,7 +72,8 @@ class Kampagne
         $oKampagne = Shop::Container()->getDB()->query(
             "SELECT tkampagne.*, DATE_FORMAT(tkampagne.dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE
                 FROM tkampagne
-                WHERE tkampagne.kKampagne = " . (int)$kKampagne, 1
+                WHERE tkampagne.kKampagne = " . (int)$kKampagne,
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         if (isset($oKampagne->kKampagne) && $oKampagne->kKampagne > 0) {

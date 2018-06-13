@@ -4,7 +4,7 @@
     </div>
     <div class="box-body panel-body">
         {if empty($smarty.session.Kunde->kKunde)}
-            <form action="{get_static_route id='jtl.php' secure=true}" method="post" class="form box_login">
+            <form action="{get_static_route id='jtl.php' secure=true}" method="post" class="form box_login evo-validate">
                 <input type="hidden" name="login" value="1" />
                 {$jtl_token}
                 <div class="form-group required">
@@ -17,8 +17,8 @@
                 </div>
 
                 {if isset($showLoginCaptcha) && $showLoginCaptcha}
-                    <div class="form-group text-center float-label-control">
-                        <div class="g-recaptcha" data-sitekey="{$Einstellungen.global.global_google_recaptcha_public}" data-callback="captcha_filled"></div>
+                    <div class="form-group text-center float-label-control required">
+                        {captchaMarkup getBody=true}
                     </div>
                 {/if}
 

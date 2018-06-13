@@ -13,6 +13,7 @@ $smarty->registerPlugin('function', 'getCurrencyConversionSmarty', 'getCurrencyC
        ->registerPlugin('function', 'formatVersion', 'formatVersion')
        ->registerPlugin('function', 'gravatarImage', 'gravatarImage')
        ->registerPlugin('function', 'getRevisions', 'getRevisions')
+       ->registerPlugin('function', 'captchaMarkup', 'captchaMarkup')
        ->registerPlugin('modifier', 'permission', 'permission');
 
 /**
@@ -115,8 +116,6 @@ function getHelpDesc($params, $smarty)
 function permission($cRecht)
 {
     $bOkay = false;
-    global $smarty;
-
     if (isset($_SESSION['AdminAccount'])) {
         if ((int)$_SESSION['AdminAccount']->oGroup->kAdminlogingruppe === ADMINGROUP) {
             $bOkay = true;
@@ -129,10 +128,6 @@ function permission($cRecht)
                 }
             }
         }
-    }
-
-    if (!$bOkay) {
-        $smarty->debugging = false;
     }
 
     return $bOkay;
@@ -215,7 +210,7 @@ function formatVersion($params, $smarty)
  * array['d']     - Default imageset to use [ 404 | mm | identicon | monsterid | wavatar ]
  * array['r']     - Maximum rating (inclusive) [ g | pg | r | x ]
  *
- * @params JTLSmarty $smarty
+ * @param JTLSmarty $smarty
  * @source https://gravatar.com/site/implement/images/php/
  * @return string
  */
@@ -240,4 +235,18 @@ function gravatarImage($params, $smarty)
     ]);
 
     return $url;
+}
+
+/**
+ * @param array     $params
+ * @param JTLSmarty $smarty
+ * @return string
+ */
+function captchaMarkup($params, $smarty)
+{
+    if (isset($params['getBody']) && $params['getBody']) {
+        return Shop::Container()->getCaptchaService()->getBodyMarkup($smarty);
+    } else {
+        return Shop::Container()->getCaptchaService()->getHeadMarkup($smarty);
+    }
 }

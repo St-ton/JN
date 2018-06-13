@@ -346,7 +346,7 @@ function giboWunschliste($kWunschliste = 0, $cURLID = '')
         $oWunschliste = Shop::Container()->getDB()->executeQueryPrepared(
             "SELECT * FROM twunschliste WHERE cURLID LIKE :id",
             ['id' => $cURLID],
-            1
+            \DB\ReturnType::SINGLE_OBJECT
         );
     }
     return (isset($oWunschliste->kWunschliste) && $oWunschliste->kWunschliste > 0)

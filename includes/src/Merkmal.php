@@ -146,7 +146,8 @@ class Merkmal
                 FROM tmerkmal
                 {$cJoin}
                 WHERE tmerkmal.kMerkmal =  {$kMerkmal}
-                ORDER BY tmerkmal.nSort", 1
+                ORDER BY tmerkmal.nSort",
+            \DB\ReturnType::SINGLE_OBJECT
         );
         if (isset($oMerkmal->kMerkmal) && $oMerkmal->kMerkmal > 0) {
             $cMember_arr = array_keys(get_object_vars($oMerkmal));
@@ -201,9 +202,15 @@ class Merkmal
                 $this->nBildGrossVorhanden = 1;
             }
         }
-        $this->cBildURLGross  = $imageBaseURL . $this->cBildpfadGross;
-        $this->cBildURLNormal = $imageBaseURL . $this->cBildpfadNormal;
-        $this->cBildURLKlein  = $imageBaseURL . $this->cBildpfadKlein;
+        $this->cBildURLGross       = $imageBaseURL . $this->cBildpfadGross;
+        $this->cBildURLNormal      = $imageBaseURL . $this->cBildpfadNormal;
+        $this->cBildURLKlein       = $imageBaseURL . $this->cBildpfadKlein;
+        $this->kMerkmal            = (int)$this->kMerkmal;
+        $this->nSort               = (int)$this->nSort;
+        $this->nBildKleinVorhanden = (int)$this->nBildKleinVorhanden;
+        $this->nBildGrossVorhanden = (int)$this->nBildGrossVorhanden;
+        $this->kSprache            = (int)$this->kSprache;
+        $this->nGlobal             = (int)$this->nGlobal;
 
         executeHook(HOOK_MERKMAL_CLASS_LOADFROMDB);
         Shop::set($id, $this);
@@ -253,7 +260,8 @@ class Merkmal
                     FROM tmerkmal
                     {$cJoin}
                     WHERE tmerkmal.kMerkmal {$cSQL}
-                    ORDER BY tmerkmal.nSort", 2
+                    ORDER BY tmerkmal.nSort",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
 
             if ($bMMW && is_array($oMerkmal_arr) && count($oMerkmal_arr) > 0) {

@@ -225,7 +225,7 @@
                         <input type="hidden" name="a" value="{if !empty({$Artikel->kVariKindArtikel})}{$Artikel->kVariKindArtikel}{else}{$Artikel->kArtikel}{/if}" />
                     </form>
                     <div class="expandable">
-                        <form id="buy_form_{$Artikel->kArtikel}" action="{$ShopURL}" method="post" class="form form-basket" data-toggle="basket-add">
+                        <form id="buy_form_{$Artikel->kArtikel}" action="{$ShopURL}" method="post" class="form form-basket evo-validate" data-toggle="basket-add">
                             {block name="form-expandable"}
                             {if $hasOnlyListableVariations > 0 && !$Artikel->bHasKonfig && $Artikel->kEigenschaftKombi === 0}
                                 <div class="hidden-xs basket-variations">

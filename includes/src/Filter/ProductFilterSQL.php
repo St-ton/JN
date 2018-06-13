@@ -6,10 +6,12 @@
 
 namespace Filter;
 
+use function Functional\reduce_left;
+
 /**
  * Class ProductFilterSQL
  */
-class ProductFilterSQL
+class ProductFilterSQL implements ProductFilterSQLInterface
 {
     /**
      * @var ProductFilter
@@ -32,9 +34,9 @@ class ProductFilterSQL
     }
 
     /**
-     * @return \stdClass
+     * @inheritdoc
      */
-    public function getOrder()
+    public function getOrder(): \stdClass
     {
         $Artikelsortierung = (int)$this->conf['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
         $sort              = new \stdClass();
@@ -121,16 +123,7 @@ class ProductFilterSQL
     }
 
     /**
-     * @param array  $select
-     * @param array  $joins
-     * @param array  $conditions
-     * @param array  $having
-     * @param string $order
-     * @param string $limit
-     * @param array  $groupBy
-     * @param string $type
-     * @return string
-     * @throws \InvalidArgumentException
+     * @inheritdoc
      */
     public function getBaseQuery(
         array $select = ['tartikel.kArtikel'],
@@ -156,22 +149,15 @@ class ProductFilterSQL
                         AND tartikelsichtbarkeit.kKundengruppe = ' . $this->productFilter->getCustomerGroupID());
         // remove duplicate joins
         $checked = [];
-        $joins   = array_filter(
-            $joins,
-            function ($j) use (&$checked) {
-                if (is_string($j)) {
-                    throw new \InvalidArgumentException('getBaseQuery() got join as string: ' . $j);
-                }
-                /** @var FilterJoin $j */
-                if (!in_array($j->getTable(), $checked, true)) {
-                    $checked[] = $j->getTable();
-
-                    return true;
-                }
-
-                return false;
+        $joins   = reduce_left($joins, function(FilterJoinInterface $value, $i, $c, $reduction) use (&$checked) {
+            $key = $value->getTable();
+            if (!in_array($key, $checked, true)) {
+                $checked[]   = $key;
+                $reduction[] = $value;
             }
-        );
+
+            return $reduction;
+        }, []);
         // default base conditions
         $conditions[] = 'tartikelsichtbarkeit.kArtikel IS NULL';
 
@@ -202,10 +188,10 @@ class ProductFilterSQL
         // merge FilterQuery-Conditions
         $filterQueryIndices = [];
         $filterQueries      = array_filter($conditions, function ($f) {
-            return is_object($f) && get_class($f) === 'FilterQuery';
+            return is_object($f) && get_class($f) === FilterQuery::class;
         });
         foreach ($filterQueries as $idx => $condition) {
-            /** @var FilterQuery $condition */
+            /** @var FilterQueryInterface $condition */
             if (count($filterQueryIndices) === 0) {
                 $filterQueryIndices[] = $idx;
                 continue;
@@ -214,7 +200,7 @@ class ProductFilterSQL
             $currentWhere = $condition->getWhere();
             foreach ($filterQueryIndices as $i) {
                 $check = $conditions[$i];
-                /** @var FilterQuery $check */
+                /** @var FilterQueryInterface $check */
                 if ($currentWhere === $check->getWhere()) {
                     $found = true;
                     $check->setParams(array_merge_recursive($check->getParams(), $condition->getParams()));
@@ -228,7 +214,7 @@ class ProductFilterSQL
         }
         // build sql string
         $cond = implode(' AND ', array_map(function ($a) {
-            if (is_string($a) || (is_object($a) && get_class($a) === 'FilterQuery')) {
+            if (is_string($a) || (is_object($a) && get_class($a) === FilterQuery::class)) {
                 return $a;
             }
 
@@ -244,10 +230,8 @@ class ProductFilterSQL
             (empty($limit) ? '' : ('#order by sql' . "\n" . 'LIMIT ' . $limit));
     }
 
-
     /**
-     * @param bool $withAnd
-     * @return string
+     * @inheritdoc
      */
     public function getStockFilterSQL($withAnd = true): string
     {

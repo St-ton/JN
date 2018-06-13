@@ -1,7 +1,7 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
 ifndef('MAX_REVISIONS', 5);
 
@@ -21,34 +21,45 @@ class Revision
     public function __construct()
     {
         $this->mapping = [
-            'link'   => [
+            'link'       => [
                 'table'         => 'tlink',
                 'id'            => 'kLink',
                 'reference'     => 'tlinksprache',
                 'reference_id'  => 'kLink',
                 'reference_key' => 'cISOSprache'
             ],
-            'export' => [
+            'export'     => [
                 'table' => 'texportformat',
                 'id'    => 'kExportformat'
             ],
-            'mail'   => [
+            'mail'       => [
                 'table'         => 'temailvorlage',
                 'id'            => 'kEmailvorlage',
                 'reference'     => 'temailvorlagesprache',
                 'reference_id'  => 'kEmailvorlage',
                 'reference_key' => 'kSprache'
             ],
-            'news' => [
+            'news'       => [
                 'table' => 'tnews',
                 'id'    => 'kNews'
             ],
-            'box' => [
+            'box'        => [
                 'table'         => 'tboxen',
                 'id'            => 'kBox',
                 'reference'     => 'tboxsprache',
                 'reference_id'  => 'kBox',
                 'reference_key' => 'cISO'
+            ],
+            'newsletterstd' => [
+                'table'         => 'tnewslettervorlage',
+                'id'            => 'kNewsletterVorlage',
+                'reference'     => 'tnewslettervorlagestdvarinhalt',
+                'reference_id'  => 'kNewslettervorlage',
+                'reference_key' => 'kNewslettervorlageStdVar'
+            ],
+            'newsletter' => [
+                'table'         => 'tnewslettervorlage',
+                'id'            => 'kNewsletterVorlage'
             ]
         ];
     }
@@ -76,7 +87,7 @@ class Revision
 
     /**
      * @param int $id
-     * @return object
+     * @return stdClass|null
      */
     public function getRevision($id)
     {
@@ -92,56 +103,56 @@ class Revision
      * @return bool
      * @throws InvalidArgumentException
      */
-    public function addRevision($type, $key, $secondary = false, $author = null, $utf8 = true)
+    public function addRevision($type, $key, $secondary = false, $author = null, $utf8 = true): bool
     {
         if (MAX_REVISIONS <= 0) {
             return false;
         }
         $key = (int)$key;
-        if (!empty($key) && ($mapping = $this->getMapping($type)) !== null) {
-            if ($author === null) {
-                $author = $_SESSION['AdminAccount']->cLogin ?? '?';
-            }
-            $field           = $mapping['id'];
-            $currentRevision = Shop::Container()->getDB()->select($mapping['table'], $mapping['id'], $key);
-            if ($currentRevision === null || empty($currentRevision->$field)) {
+        if (empty($key) || ($mapping = $this->getMapping($type)) === null) {
+            throw new InvalidArgumentException('Invalid type/key given. Got type ' . $type . ' and key ' . $key);
+        }
+        if ($author === null) {
+            $author = $_SESSION['AdminAccount']->cLogin ?? '?';
+        }
+        $field           = $mapping['id'];
+        $currentRevision = Shop::Container()->getDB()->select($mapping['table'], $mapping['id'], $key);
+        if ($currentRevision === null || empty($currentRevision->$field)) {
+            return false;
+        }
+        $revision                     = new stdClass();
+        $revision->type               = $type;
+        $revision->reference_primary  = $key;
+        $revision->content            = $currentRevision;
+        $revision->author             = $author;
+        $revision->custom_table       = $mapping['table'];
+        $revision->custom_primary_key = $mapping['id'];
+
+        if ($secondary !== false && !empty($mapping['reference'])) {
+            $field               = $mapping['reference_key'];
+            $referencedRevisions = Shop::Container()->getDB()->selectAll($mapping['reference'],
+                $mapping['reference_id'], $key);
+            if (empty($referencedRevisions)) {
                 return false;
             }
-            $revision                     = new stdClass();
-            $revision->type               = $type;
-            $revision->reference_primary  = $key;
-            $revision->content            = $currentRevision;
-            $revision->author             = $author;
-            $revision->custom_table       = $mapping['table'];
-            $revision->custom_primary_key = $mapping['id'];
-
-            if ($secondary !== false && !empty($mapping['reference'])) {
-                $field               = $mapping['reference_key'];
-                $referencedRevisions = Shop::Container()->getDB()->selectAll($mapping['reference'], $mapping['reference_id'], $key);
-                if (empty($referencedRevisions)) {
-                    return false;
-                }
-                $revision->content->references = [];
-                foreach ($referencedRevisions as $referencedRevision) {
-                    $revision->content->references[$referencedRevision->$field] = $referencedRevision;
-                }
+            $revision->content->references = [];
+            foreach ($referencedRevisions as $referencedRevision) {
+                $revision->content->references[$referencedRevision->$field] = $referencedRevision;
             }
-            $revision->content = json_encode($revision->content);
-            $this->storeRevision($revision);
-            $this->housekeeping($type, $key);
-
-            return true;
         }
+        $revision->content = json_encode($revision->content);
+        $this->storeRevision($revision);
+        $this->housekeeping($type, $key);
 
-        throw new InvalidArgumentException('Invalid type/key given. Got type ' . $type . ' and key ' . $key);
+        return true;
     }
 
     /**
      * @param string $type
      * @param int    $primary
-     * @return array|int
+     * @return array
      */
-    public function getRevisions($type, $primary)
+    public function getRevisions($type, $primary): array
     {
         return array_map(function ($e) {
             $e->content = json_decode($e->content);
@@ -170,7 +181,7 @@ class Revision
      * @param object $revision
      * @return int
      */
-    private function storeRevision($revision)
+    private function storeRevision($revision): int
     {
         return Shop::Container()->getDB()->insert('trevisions', $revision);
     }
@@ -182,7 +193,7 @@ class Revision
      * @param bool   $utf8 - @deprecated since 5.0
      * @return bool
      */
-    public function restoreRevision($type, $id, $secondary = false, $utf8 = true)
+    public function restoreRevision($type, $id, $secondary = false, $utf8 = true): bool
     {
         $revision = $this->getRevision($id);
         $mapping  = $this->getMapping($type); // get static mapping from build in content types
@@ -229,7 +240,7 @@ class Revision
      * @param int $id
      * @return int
      */
-    public function deleteRevision($id)
+    public function deleteRevision($id): int
     {
         return Shop::Container()->getDB()->delete('trevisions', 'id', (int)$id);
     }
@@ -241,7 +252,7 @@ class Revision
      * @param int    $key
      * @return int
      */
-    private function housekeeping($type, $key) : int
+    private function housekeeping($type, $key): int
     {
         return Shop::Container()->getDB()->queryPrepared(
             'DELETE a 

@@ -337,9 +337,9 @@ class WarenkorbPos
         foreach (Session::Currencies() as $currency) {
             $currencyName = $currency->getName();
             // Standardartikel
-            $this->cGesamtpreisLocalized[0][$currencyName] = gibPreisStringLocalized(berechneBrutto($this->fPreis * $this->nAnzahl, gibUst($this->kSteuerklasse)), $currency);
+            $this->cGesamtpreisLocalized[0][$currencyName] = gibPreisStringLocalized(berechneBrutto($this->fPreis * $this->nAnzahl, gibUst($this->kSteuerklasse), 4), $currency);
             $this->cGesamtpreisLocalized[1][$currencyName] = gibPreisStringLocalized($this->fPreis * $this->nAnzahl, $currency);
-            $this->cEinzelpreisLocalized[0][$currencyName] = gibPreisStringLocalized(berechneBrutto($this->fPreis, gibUst($this->kSteuerklasse)), $currency);
+            $this->cEinzelpreisLocalized[0][$currencyName] = gibPreisStringLocalized(berechneBrutto($this->fPreis, gibUst($this->kSteuerklasse), 4), $currency);
             $this->cEinzelpreisLocalized[1][$currencyName] = gibPreisStringLocalized($this->fPreis, $currency);
 
             if (!empty($this->Artikel->cVPEEinheit) && isset($this->Artikel->cVPE) && $this->Artikel->cVPE === 'Y' && $this->Artikel->fVPEWert > 0) {
@@ -347,9 +347,9 @@ class WarenkorbPos
             }
 
             if ($this->istKonfigVater()) {
-                $this->cKonfigpreisLocalized[0][$currencyName]       = gibPreisStringLocalized(berechneBrutto($this->fPreis * $this->nAnzahl, gibUst($this->kSteuerklasse)), $currency);
+                $this->cKonfigpreisLocalized[0][$currencyName]       = gibPreisStringLocalized(berechneBrutto($this->fPreis * $this->nAnzahl, gibUst($this->kSteuerklasse), 4), $currency);
                 $this->cKonfigpreisLocalized[1][$currencyName]       = gibPreisStringLocalized($this->fPreis * $this->nAnzahl, $currency);
-                $this->cKonfigeinzelpreisLocalized[0][$currencyName] = gibPreisStringLocalized(berechneBrutto($this->fPreis, gibUst($this->kSteuerklasse)), $currency);
+                $this->cKonfigeinzelpreisLocalized[0][$currencyName] = gibPreisStringLocalized(berechneBrutto($this->fPreis, gibUst($this->kSteuerklasse), 4), $currency);
                 $this->cKonfigeinzelpreisLocalized[1][$currencyName] = gibPreisStringLocalized($this->fPreis, $currency);
             }
 

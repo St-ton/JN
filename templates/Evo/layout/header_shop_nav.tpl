@@ -24,18 +24,18 @@
             </a>
             <ul id="login-dropdown" class="dropdown-menu dropdown-menu-right">
                 <li>
-                    <form action="{get_static_route id='jtl.php' secure=true}" method="post" class="form">
+                    <form action="{get_static_route id='jtl.php' secure=true}" method="post" class="form evo-validate">
                         {$jtl_token}
                         <fieldset id="quick-login">
                             <div class="form-group">
-                                <input type="email" name="email" id="email_quick" class="form-control" placeholder="{lang key='emailadress'}" required/>
+                                <input type="email" name="email" id="email_quick" class="form-control" placeholder="{lang key='emailadress'}" required autocomplete="quick-login-email"/>
                             </div>
                             <div class="form-group">
-                                <input type="password" name="passwort" id="password_quick" class="form-control" placeholder="{lang key='password'}" required/>
+                                <input type="password" name="passwort" id="password_quick" class="form-control" placeholder="{lang key='password'}" required autocomplete="quick-login-password"/>
                             </div>
                             {if isset($showLoginCaptcha) && $showLoginCaptcha}
-                                <div class="form-group text-center float-label-control">
-                                    <div class="g-recaptcha" data-sitekey="{$Einstellungen.global.global_google_recaptcha_public}" data-callback="captcha_filled"></div>
+                                <div class="form-group text-center float-label-control required">
+                                    {captchaMarkup getBody=true}
                                 </div>
                             {/if}
                             <div class="form-group">

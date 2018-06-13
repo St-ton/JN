@@ -18,13 +18,10 @@ function gibVaterSQL()
  * @param int $kKundengruppe
  * @return array
  */
-function gibTopAngebote($nLimit, $kKundengruppe = 0)
+function gibTopAngebote($nLimit = 20, $kKundengruppe = 0)
 {
     $kKundengruppe = (int)$kKundengruppe;
     $nLimit        = (int)$nLimit;
-    if (!$nLimit) {
-        $nLimit = 20;
-    }
     if (!$kKundengruppe) {
         $kKundengruppe = Kundengruppe::getDefaultGroupID();
     }
@@ -37,27 +34,23 @@ function gibTopAngebote($nLimit, $kKundengruppe = 0)
             WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 AND tartikel.cTopArtikel = 'Y'
                 " . gibVaterSQL() . "
-                " . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(), 2
+                " . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(),
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 
-    return array_random_assoc($topArticles, min(count($topArticles), $nLimit));
+    return randomizeAndLimit($topArticles, min(count($topArticles), $nLimit));
 }
 
 /**
  * @param array $arr
- * @param int   $num
+ * @param limit $num
  * @return array
  */
-function array_random_assoc($arr, $num = 1)
+function randomizeAndLimit($arr, $limit = 1)
 {
-    $r    = [];
-    $keys = array_keys($arr);
-    shuffle($keys);
-    for ($i = 0; $i < $num; ++$i) {
-        $r[] = $arr[$keys[$i]];
-    }
+    shuffle($arr);
 
-    return $r;
+    return array_slice($arr, 0, $limit);
 }
 
 /**
@@ -65,13 +58,10 @@ function array_random_assoc($arr, $num = 1)
  * @param int $kKundengruppe
  * @return array
  */
-function gibBestseller($nLimit, $kKundengruppe = 0)
+function gibBestseller($nLimit = 20, $kKundengruppe = 0)
 {
     $kKundengruppe = (int)$kKundengruppe;
     $nLimit        = (int)$nLimit;
-    if (!$nLimit) {
-        $nLimit = 20;
-    }
     if (!$kKundengruppe) {
         $kKundengruppe = Kundengruppe::getDefaultGroupID();
     }
@@ -90,11 +80,11 @@ function gibBestseller($nLimit, $kKundengruppe = 0)
                 AND round(tbestseller.fAnzahl) >= " . $nSchwelleBestseller . "
                 " . gibVaterSQL() . "
                 " . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . "
-            ORDER BY fAnzahl DESC
-            LIMIT " . $nLimit, 2
+            ORDER BY fAnzahl DESC",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 
-    return array_random_assoc($bestsellers, min(count($bestsellers), $nLimit));
+    return randomizeAndLimit($bestsellers, min(count($bestsellers), $nLimit));
 }
 
 /**
@@ -102,13 +92,10 @@ function gibBestseller($nLimit, $kKundengruppe = 0)
  * @param int $kKundengruppe
  * @return array
  */
-function gibSonderangebote($nLimit, $kKundengruppe = 0)
+function gibSonderangebote($nLimit = 20, $kKundengruppe = 0)
 {
     $kKundengruppe = (int)$kKundengruppe;
     $nLimit        = (int)$nLimit;
-    if (!$nLimit) {
-        $nLimit = 20;
-    }
     if (!$kKundengruppe) {
         $kKundengruppe = Kundengruppe::getDefaultGroupID();
     }
@@ -130,10 +117,11 @@ function gibSonderangebote($nLimit, $kKundengruppe = 0)
                 AND (tartikelsonderpreis.dEnde >= CURDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')
                 AND (tartikelsonderpreis.nAnzahl < tartikel.fLagerbestand OR tartikelsonderpreis.nIstAnzahl = 0)
                 " . gibVaterSQL() . "
-                " . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(), 2
+                " . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(),
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 
-    return array_random_assoc($specialOffers, min(count($specialOffers), $nLimit));
+    return randomizeAndLimit($specialOffers, min(count($specialOffers), $nLimit));
 }
 
 /**
@@ -166,8 +154,9 @@ function gibNeuImSortiment($nLimit, $kKundengruppe = 0)
                 AND dErscheinungsdatum <= now()
                 AND DATE_SUB(now(), INTERVAL " . $nAlterTage . " DAY) < tartikel.dErstellt
                 " . gibVaterSQL() . "
-                " . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(), 2
+                " . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(),
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 
-    return array_random_assoc($new, min(count($new), $nLimit));
+    return randomizeAndLimit($new, min(count($new), $nLimit));
 }

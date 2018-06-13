@@ -112,11 +112,12 @@ class Status
     protected function getPluginSharedHooks()
     {
         $sharedPlugins = [];
-        $sharedHookIds = Shop::Container()->getDB()->executeQuery(
+        $sharedHookIds = Shop::Container()->getDB()->query(
             "SELECT nHook
                 FROM tpluginhook
                 GROUP BY nHook
-                HAVING COUNT(DISTINCT kPlugin) > 1", 2
+                HAVING COUNT(DISTINCT kPlugin) > 1",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($sharedHookIds as $hookData) {
             $hookId                 = (int)$hookData->nHook;
@@ -127,7 +128,8 @@ class Status
                     INNER JOIN tplugin
                         ON tpluginhook.kPlugin = tplugin.kPlugin
                     WHERE tpluginhook.nHook = " . $hookId . "
-                        AND tplugin.nStatus = 2", 2
+                        AND tplugin.nStatus = 2",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($plugins as $plugin) {
                 $sharedPlugins[$hookId][$plugin->cPluginID] = $plugin;
@@ -309,7 +311,8 @@ class Status
             "SELECT kKategorie, cName
                 FROM tkategorie
                 WHERE kOberkategorie > 0
-                    AND kOberkategorie NOT IN (SELECT DISTINCT kKategorie FROM tkategorie)", 2
+                    AND kOberkategorie NOT IN (SELECT DISTINCT kKategorie FROM tkategorie)",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
 
         return $has === true
@@ -326,8 +329,19 @@ class Status
 
         return isset($conf['artikeluebersicht']['suche_fulltext'])
             && $conf['artikeluebersicht']['suche_fulltext'] !== 'N'
-            && (!Shop::Container()->getDB()->query("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'", 1)
-                || !Shop::Container()->getDB()->query("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'", 1));
+            && (!Shop::Container()->getDB()->query(
+                "SHOW INDEX 
+                    FROM tartikel 
+                    WHERE KEY_NAME = 'idx_tartikel_fulltext'",
+                    \DB\ReturnType::SINGLE_OBJECT
+                )
+                || !Shop::Container()->getDB()->query(
+                    "SHOW INDEX 
+                        FROM tartikelsprache 
+                        WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'",
+                    \DB\ReturnType::SINGLE_OBJECT
+                )
+            );
     }
 
     /**
@@ -337,7 +351,11 @@ class Status
     {
         $fNewVersions = false;
         // get installed plugins from DB
-        $oPluginsDB = Shop::Container()->getDB()->query('SELECT `cVerzeichnis`, `nVersion` FROM `tplugin`', 2);
+        $oPluginsDB = Shop::Container()->getDB()->query(
+            'SELECT `cVerzeichnis`, `nVersion` 
+                FROM `tplugin`',
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
         if (!is_array($oPluginsDB) || 1 > count($oPluginsDB)) {
             return false; // there are no plugins installed
         }
@@ -411,8 +429,9 @@ class Status
         $passwordService = Shop::Container()->getPasswordService();
         $hashes          = Shop::Container()->getDB()->query("
             SELECT *
-            FROM tadmin2facodes
-            GROUP BY kAdminlogin", 2
+                FROM tadmin2facodes
+                GROUP BY kAdminlogin",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
 
         return some($hashes, function ($hash) use ($passwordService) {

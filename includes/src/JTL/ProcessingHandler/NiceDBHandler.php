@@ -7,6 +7,7 @@
 namespace JTL\ProcessingHandler;
 
 use Monolog\Handler\AbstractProcessingHandler;
+use Monolog\Logger;
 
 /**
  * Class NiceDBHandler

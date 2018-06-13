@@ -106,12 +106,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
 
     /**
      * @deprecated since 4.05
-     * @param int                                         $kKategorie
-     * @param stdClass|\Filter\ProductFilter              $NaviFilter
-     * @param stdClass                                    $FilterSQL
-     * @param stdClass|\Filter\ProductFilterSearchResults $oSuchergebnisse
-     * @param int                                         $nArtikelProSeite
-     * @param int                                         $nLimitN
+     * @param int                                                  $kKategorie
+     * @param stdClass|\Filter\ProductFilter                       $NaviFilter
+     * @param stdClass                                             $FilterSQL
+     * @param stdClass|\Filter\ProductFilterSearchResultsInterface $oSuchergebnisse
+     * @param int                                                  $nArtikelProSeite
+     * @param int                                                  $nLimitN
      */
     function baueFilterSelectionWizard($kKategorie, &$NaviFilter, &$FilterSQL, &$oSuchergebnisse, &$nArtikelProSeite, &$nLimitN)
     {

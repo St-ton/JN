@@ -35,9 +35,9 @@
                                 <span class="label label-success success">aktiv</span>
                             {else}
                                 {if $emailvorlage->nFehlerhaft == 1}
-                                    <span class="label label-danger">fehlerhaft</span>
+                                    <span class="label label-danger error">fehlerhaft</span>
                                 {else}
-                                    <span class="label label-info">inaktiv</span>
+                                    <span class="label label-info error">inaktiv</span>
                                 {/if}
                             {/if}
                             </h4>
@@ -47,8 +47,8 @@
                                 {$jtl_token}
                                 <div class="btn-group">
                                     <button type="submit" name="preview" value="{$emailvorlage->kEmailvorlage}" class="btn btn-default mail"><i class="fa fa-envelope"></i> {#testmail#}</button>
-                                    <button type="submit" name="kEmailvorlage" value="{$emailvorlage->kEmailvorlage}" class="btn btn-default" title="{#modify#}"><i class="fa fa-edit"></i></button>
-                                    <button type="submit" name="resetConfirm" value="{$emailvorlage->kEmailvorlage}" class="btn btn-default reset" title="{#resetEmailTemplate#}"><i class="fa fa-refresh"></i></button>
+                                    <button type="submit" name="kEmailvorlage" value="{$emailvorlage->kEmailvorlage}" class="btn btn-primary" title="{#modify#}"><i class="fa fa-edit"></i></button>
+                                    <button type="submit" name="resetConfirm" value="{$emailvorlage->kEmailvorlage}" class="btn btn-danger reset" title="{#resetEmailTemplate#}"><i class="fa fa-refresh"></i></button>
                                 </div>
                             </form>
                         </td>
@@ -97,8 +97,8 @@
                                 <input type="hidden" name="kPlugin" value="{$oPluginEmailvorlage->kPlugin}" />
                                 <div class="btn-group">
                                     <button name="preview" value="{$oPluginEmailvorlage->kEmailvorlage}" class="btn btn-default button mail"><i class="fa fa-envelope"></i> {#testmail#}</button>
-                                    <button name="kEmailvorlage" value="{$oPluginEmailvorlage->kEmailvorlage}" class="btn btn-default" title="{#modify#}"><i class="fa fa-edit"></i></button>
-                                    <button name="resetConfirm" value="{$oPluginEmailvorlage->kEmailvorlage}" class="btn btn-default reset" title="{#resetEmailTemplate#}"><i class="fa fa-refresh"></i></button>
+                                    <button name="kEmailvorlage" value="{$oPluginEmailvorlage->kEmailvorlage}" class="btn btn-primary" title="{#modify#}"><i class="fa fa-edit"></i></button>
+                                    <button name="resetConfirm" value="{$oPluginEmailvorlage->kEmailvorlage}" class="btn btn-danger reset" title="{#resetEmailTemplate#}"><i class="fa fa-refresh"></i></button>
                                 </div>
                             </form>
                         </td>

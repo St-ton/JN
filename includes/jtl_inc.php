@@ -190,7 +190,8 @@ function setzeWarenkorbPersInWarenkorb($kKunde)
                     WHERE tartikelattribut.kArtikel = " . $kArtikelGeschenk . "
                         AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
                         AND CAST(tartikelattribut.cWert AS DECIMAL) <= " .
-                            $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true), 1
+                            $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true),
+                \DB\ReturnType::SINGLE_OBJECT
             );
             if (isset($oArtikelGeschenk->kArtikel) && $oArtikelGeschenk->kArtikel > 0) {
                 fuegeEinInWarenkorbPers(
@@ -230,7 +231,8 @@ function setzeWarenkorbPersInWarenkorb($kKunde)
                     WHERE tartikelattribut.kArtikel = " . $kArtikelGeschenk . "
                         AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
                         AND CAST(tartikelattribut.cWert AS DECIMAL) <= " .
-                            $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true), 1
+                            $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true),
+                \DB\ReturnType::SINGLE_OBJECT
             );
             if (isset($oArtikelGeschenk->kArtikel) && $oArtikelGeschenk->kArtikel > 0) {
                 if ($oArtikelGeschenk->fLagerbestand <= 0
@@ -283,7 +285,8 @@ function pruefeWarenkorbArtikelSichtbarkeit($kKundengruppe)
                     "SELECT kArtikel
                         FROM tartikelsichtbarkeit
                         WHERE kArtikel = " . (int)$oPosition->kArtikel . "
-                            AND kKundengruppe = " . $kKundengruppe, 1
+                            AND kKundengruppe = " . $kKundengruppe,
+                    \DB\ReturnType::SINGLE_OBJECT
                 );
 
                 if (isset($oArtikelSichtbarkeit->kArtikel)
@@ -297,7 +300,8 @@ function pruefeWarenkorbArtikelSichtbarkeit($kKundengruppe)
                     "SELECT fVKNetto
                        FROM tpreise
                        WHERE kArtikel = " . (int)$oPosition->kArtikel . "
-                           AND kKundengruppe = " . $kKundengruppe, 1
+                           AND kKundengruppe = " . $kKundengruppe,
+                    \DB\ReturnType::SINGLE_OBJECT
                 );
 
                 if (!isset($oArtikelPreis->fVKNetto)) {
@@ -393,7 +397,8 @@ function fuehreLoginAus($userLogin, $passLogin)
                                             WHERE tartikelattribut.kArtikel = " . $kArtikelGeschenk . "
                                                 AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
                                                 AND CAST(tartikelattribut.cWert AS DECIMAL) <= " .
-                                                    $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true), 1
+                                                    $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true),
+                                        \DB\ReturnType::SINGLE_OBJECT
                                     );
                                     if ((isset($oArtikelGeschenk->kArtikel) && $oArtikelGeschenk->kArtikel > 0)
                                         && ($oArtikelGeschenk->fLagerbestand > 0

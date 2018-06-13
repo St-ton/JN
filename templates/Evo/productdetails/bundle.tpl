@@ -1,5 +1,5 @@
 {if !empty($Products)}
-    <form action="{if !empty($ProductMain->cURLFull)}{$ProductMain->cURLFull}{else}index.php{/if}" method="post" id="form_bundles">
+    <form action="{if !empty($ProductMain->cURLFull)}{$ProductMain->cURLFull}{else}index.php{/if}" method="post" id="form_bundles" class="evo-validate">
         <div class="panel panel-default">
             <input type="hidden" name="a" value="{$ProductMain->kArtikel}" />
             <input type="hidden" name="addproductbundle" value="1" />
@@ -14,7 +14,7 @@
                         {foreach name=bundles from=$Products item=Product}
                             <li>
                                 <a href="{$Product->cURLFull}">
-                                    <img src="{if $Product->Bilder[0]->cURLKlein}{$Product->Bilder[0]->cURLKlein}{else}{$BILD_KEIN_ARTIKELBILD_VORHANDEN}{/if}" alt="{$Product->cName}" title="{$Product->cName}" />
+                                    <img src="{if $Product->Bilder[0]->cURLKlein}{$Product->Bilder[0]->cURLKlein}{else}{$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN}{/if}" alt="{$Product->cName}" title="{$Product->cName}" />
                                 </a>
                             </li>
                             {if !$smarty.foreach.bundles.last}

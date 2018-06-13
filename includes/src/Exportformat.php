@@ -165,7 +165,9 @@ class Exportformat
                LEFT JOIN tkampagne 
                   ON tkampagne.kKampagne = texportformat.kKampagne
                   AND tkampagne.nAktiv = 1
-               WHERE texportformat.kExportformat = " . $kExportformat, 1);
+               WHERE texportformat.kExportformat = " . $kExportformat,
+            \DB\ReturnType::SINGLE_OBJECT
+        );
         if (isset($oObj->kExportformat) && $oObj->kExportformat > 0) {
             foreach (get_object_vars($oObj) as $k => $v) {
                 $this->$k = $v;
@@ -691,13 +693,26 @@ class Exportformat
             $this->oldSession               = new stdClass();
             $this->oldSession->Kundengruppe = $_SESSION['Kundengruppe'];
             $this->oldSession->kSprache     = $_SESSION['kSprache'];
+            $this->oldSession->cISO         = $_SESSION['cISOSprache'];
             $this->oldSession->Waehrung     = Session::Currency();
         }
         $this->currency = $this->kWaehrung > 0
             ? new Currency($this->kWaehrung)
             : (new Currency())->getDefault();
         setzeSteuersaetze();
-        $net = Shop::Container()->getDB()->select('tkundengruppe', 'kKundengruppe', $this->getKundengruppe());
+        $net       = Shop::Container()->getDB()->select('tkundengruppe', 'kKundengruppe', $this->getKundengruppe());
+        $languages = \Functional\map(Shop::Container()->getDB()->query(
+            "SELECT * 
+                FROM tsprache",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        ), function ($lang) {
+            $lang->kSprache = (int)$lang->kSprache;
+
+            return $lang;
+        });
+        $langISO   = \Functional\first($languages, function ($l) {
+            return $l->kSprache === $this->getSprache();
+        });
 
         $_SESSION['Kundengruppe']  = (new Kundengruppe($this->getKundengruppe()))
             ->setMayViewPrices(1)
@@ -705,8 +720,9 @@ class Exportformat
             ->setIsMerchant($net !== null ? $net->nNettoPreise : 0);
         $_SESSION['kKundengruppe'] = $this->getKundengruppe();
         $_SESSION['kSprache']      = $this->getSprache();
-        $_SESSION['Sprachen']      = Shop::Container()->getDB()->query("SELECT * FROM tsprache", 2);
+        $_SESSION['Sprachen']      = $languages;
         $_SESSION['Waehrung']      = $this->currency;
+        Shop::setLanguage($this->getSprache(), $langISO->cISO ?? null);
 
         return $this;
     }
@@ -720,6 +736,8 @@ class Exportformat
             $_SESSION['Kundengruppe'] = $this->oldSession->Kundengruppe;
             $_SESSION['Waehrung']     = $this->oldSession->Waehrung;
             $_SESSION['kSprache']     = $this->oldSession->kSprache;
+            $_SESSION['cISOSprache']  = $this->oldSession->cISO;
+            Shop::setLanguage($this->oldSession->kSprache, $this->oldSession->cISO);
         }
 
         return $this;
@@ -1053,7 +1071,7 @@ class Exportformat
         }
         $datei = fopen(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName, 'a');
         if ($max === null) {
-            $maxObj = Shop::Container()->getDB()->executeQuery($this->getExportSQL(true), 1);
+            $maxObj = Shop::Container()->getDB()->executeQuery($this->getExportSQL(true), \DB\ReturnType::SINGLE_OBJECT);
             $max    = (int)$maxObj->nAnzahl;
         } else {
             $max = (int)$max;
@@ -1107,7 +1125,7 @@ class Exportformat
             $findTwo[]    = ';';
             $replaceTwo[] = $this->config['exportformate_semikolon'];
         }
-        foreach (Shop::Container()->getDB()->query($this->getExportSQL(), 10) as $iterArticle) {
+        foreach (Shop::Container()->getDB()->query($this->getExportSQL(), \DB\ReturnType::QUERYSINGLE) as $iterArticle) {
             $started = true;
             $Artikel = new Artikel();
             $Artikel->fuelleArtikel(
@@ -1133,7 +1151,7 @@ class Exportformat
                 }
                 $Artikel->oKategorie_arr = $categories;
             }
-
+            ++$this->queue->nLimitN;
             if ($Artikel->kArtikel > 0) {
                 if ($Artikel->cacheHit === true) {
                     ++$cacheHits;
@@ -1222,12 +1240,9 @@ class Exportformat
                 }
 
                 executeHook(HOOK_DO_EXPORT_OUTPUT_FETCHED);
-                if (!$isAsync) {
-                    ++$queueObject->nLimitN;
+                if (!$isAsync && ($queueObject->nLimitN % max(round($queueObject->nLimitM / 10), 10)) === 0) {
                     //max. 10 status updates per run
-                    if (($queueObject->nLimitN % max(round($queueObject->nLimitM / 10), 10)) === 0) {
-                        Jtllog::cronLog($queueObject->nLimitN . '/' . $max . ' products exported', 2);
-                    }
+                    Jtllog::cronLog($queueObject->nLimitN . '/' . $max . ' products exported', 2);
                 }
             }
         }
@@ -1238,12 +1253,13 @@ class Exportformat
         }
 
         if ($isCron === false) {
-            if ($max > $this->queue->nLimitN + $this->queue->nLimitM) {
+            if ($max > $this->queue->nLimitN) {
                 fclose($datei);
-                Shop::Container()->getDB()->query("
-                    UPDATE texportqueue 
+                Shop::Container()->getDB()->query(
+                    "UPDATE texportqueue 
                       SET nLimit_n = nLimit_n + " . $this->queue->nLimitM . " 
-                      WHERE kExportqueue = " . (int)$this->queue->kExportqueue, 4
+                      WHERE kExportqueue = " . (int)$this->queue->kExportqueue,
+                    \DB\ReturnType::DEFAULT
                 );
                 $protocol = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')
                     || (function_exists('pruefeSSL') && pruefeSSL() === 2))
@@ -1254,7 +1270,7 @@ class Exportformat
                     $oCallback->kExportformat = $this->getExportformat();
                     $oCallback->kExportqueue  = $this->queue->kExportqueue;
                     $oCallback->nMax          = $max;
-                    $oCallback->nCurrent      = $this->queue->nLimitN + $this->queue->nLimitM;
+                    $oCallback->nCurrent      = $this->queue->nLimitN;
                     $oCallback->bFinished     = false;
                     $oCallback->bFirst        = ((int)$this->queue->nLimitN === 0);
                     $oCallback->cURL          = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
@@ -1268,10 +1284,11 @@ class Exportformat
                     header('Location: ' . $cURL);
                 }
             } else {
-                Shop::Container()->getDB()->query("
-                    UPDATE texportformat 
+                Shop::Container()->getDB()->query(
+                    "UPDATE texportformat 
                         SET dZuletztErstellt = now() 
-                        WHERE kExportformat = " . $this->getExportformat(), 4
+                        WHERE kExportformat = " . $this->getExportformat(),
+                    \DB\ReturnType::DEFAULT
                 );
                 Shop::Container()->getDB()->delete('texportqueue', 'kExportqueue', (int)$this->queue->kExportqueue);
 
@@ -1432,11 +1449,13 @@ class Exportformat
         $error = false;
         try {
             $article       = null;
-            $articleObject = Shop::Container()->getDB()->query("
-                SELECT * 
+            $articleObject = Shop::Container()->getDB()->query(
+                "SELECT * 
                     FROM tartikel 
                     WHERE kVaterArtikel = 0 
-                    AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1", 1);
+                    AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1",
+                \DB\ReturnType::SINGLE_OBJECT
+            );
             if (!empty($articleObject->kArtikel)) {
                 $oArtikelOptionen                            = new stdClass();
                 $oArtikelOptionen->nMerkmale                 = 1;

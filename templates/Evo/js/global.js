@@ -160,8 +160,8 @@ function navigation()
 }
 
 function addValidationListener() {
-    var forms  = $('form'),
-        inputs = $('input,select,textarea'),
+    var forms  = $('form.evo-validate'),
+        inputs = $('form.evo-validate input,form.evo-validate select,form.evo-validate textarea'),
         $body  = $('body');
 
     for (var i = 0; i < forms.length; i++) {
@@ -219,10 +219,6 @@ function addValidationListener() {
             }
         }, true);
     }
-}
-
-function captcha_filled() {
-    $('.g-recaptcha').closest('.form-group').find('div.form-error-msg').remove();
 }
 
 function isTouchCapable() {

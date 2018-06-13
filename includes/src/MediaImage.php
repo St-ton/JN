@@ -388,7 +388,9 @@ class MediaImage implements IMedia
                     'SELECT tartikelpict.cPfad AS path, tartikelpict.nNr AS number, tartikelpict.kArtikel ' . $cols . '
                         FROM tartikelpict
                         INNER JOIN tartikel
-                          ON tartikelpict.kArtikel = tartikel.kArtikel' . $limitStmt, 10);
+                          ON tartikelpict.kArtikel = tartikel.kArtikel' . $limitStmt,
+                    \DB\ReturnType::QUERYSINGLE
+                    );
                 break;
 
             default:
@@ -468,7 +470,11 @@ class MediaImage implements IMedia
     {
         $prepared = self::getImageStmt($type, $id);
         if ($prepared !== null) {
-            $primary = Shop::Container()->getDB()->queryPrepared($prepared->stmt, $prepared->bind, 1);
+            $primary = Shop::Container()->getDB()->queryPrepared(
+                $prepared->stmt,
+                $prepared->bind,
+                \DB\ReturnType::SINGLE_OBJECT
+            );
             if (is_object($primary)) {
                 return max(1, (int)$primary->number);
             }
@@ -595,6 +601,6 @@ class MediaImage implements IMedia
             return filesize($thumb);
         }
 
-        return $req->path;
+        return $req->getPath();
     }
 }

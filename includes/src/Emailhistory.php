@@ -158,17 +158,18 @@ class Emailhistory
         if ($cSqlLimit === null) {
             $cSqlLimit = '';
         }
-        $oObj_arr = Shop::Container()->getDB()->query("SELECT * FROM temailhistory ORDER BY dSent DESC" . $cSqlLimit, 2);
-        if (is_array($oObj_arr) && count($oObj_arr) > 0) {
-            $oEmailhistory_arr = [];
-            foreach ($oObj_arr as $oObj) {
-                $oEmailhistory_arr[] = new self(null, $oObj);
-            }
-
-            return $oEmailhistory_arr;
+        $oObj_arr = Shop::Container()->getDB()->query(
+            "SELECT * 
+                FROM temailhistory 
+                ORDER BY dSent DESC" . $cSqlLimit,
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
+        $oEmailhistory_arr = [];
+        foreach ($oObj_arr as $oObj) {
+            $oEmailhistory_arr[] = new self(null, $oObj);
         }
 
-        return [];
+        return $oEmailhistory_arr;
     }
 
     /**
@@ -190,7 +191,12 @@ class Emailhistory
         if (count($kEmailhistory_arr) > 0) {
             $kEmailhistory_arr = array_map(function ($i) { return (int)$i; }, $kEmailhistory_arr);
 
-            return Shop::Container()->getDB()->query("DELETE FROM temailhistory WHERE kEmailhistory IN (" . implode(',', $kEmailhistory_arr) . ")", 3);
+            return Shop::Container()->getDB()->query(
+                "DELETE 
+                    FROM temailhistory 
+                    WHERE kEmailhistory IN (" . implode(',', $kEmailhistory_arr) . ")",
+                \DB\ReturnType::AFFECTED_ROWS
+            );
         }
 
         return false;

@@ -87,8 +87,6 @@ if (strlen($cSh) > 0) {
         $session = Session::getInstance(false, false);
     }
     require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellabschluss_inc.php';
-    // EOS Workaround für Server to Server Kommunikation
-    pruefeEOSServerCom($cSh);
 
     Jtllog::writeLog('Session Hash: ' . $cSh . ' ergab cModulId aus Session: ' .
         (isset($_SESSION['Zahlungsart']->cModulId)

@@ -104,7 +104,11 @@ class KategorieHelper
 
                 return $_SESSION['oKategorie_arr_new'];
             }
-            $categoryCountObj    = Shop::Container()->getDB()->query('SELECT count(*) AS cnt FROM tkategorie', 1);
+            $categoryCountObj    = Shop::Container()->getDB()->query(
+                'SELECT count(*) AS cnt 
+                    FROM tkategorie',
+                \DB\ReturnType::SINGLE_OBJECT
+            );
             $categoryCount       = (int)$categoryCountObj->cnt;
             $categoryLimit       = CATEGORY_FULL_LOAD_LIMIT;
             self::$limitReached  = ($categoryCount >= $categoryLimit);
@@ -200,7 +204,8 @@ class KategorieHelper
                     AND parent.kOberKategorie = 0 " . $visibilityWhere . $depthWhere . "
                     
                 GROUP BY node.kKategorie
-                ORDER BY node.lft", 2
+                ORDER BY node.lft",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             $_catAttribut_arr = Shop::Container()->getDB()->query(
                 "SELECT tkategorieattribut.kKategorie, 
@@ -212,7 +217,8 @@ class KategorieHelper
                         ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
                         AND tkategorieattributsprache.kSprache = " . self::$kSprache . "
                     ORDER BY tkategorieattribut.kKategorie, tkategorieattribut.bIstFunktionsAttribut DESC, 
-                    tkategorieattribut.nSort", 2
+                    tkategorieattribut.nSort",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($_catAttribut_arr as $_catAttribut) {
                 $catID = (int)$_catAttribut->kKategorie;
@@ -400,13 +406,14 @@ class KategorieHelper
                 LEFT JOIN tkategoriesichtbarkeit
                     ON node.kKategorie = tkategoriesichtbarkeit.kKategorie
                     AND tkategoriesichtbarkeit.kKundengruppe = " . self::$kKundengruppe . $seoJoin . $imageJoin .
-            $hasArticlesCheckJoin . $stockJoin . $visibilityJoin . "                     
-            WHERE node.nLevel > 0 AND parent.nLevel > 0
-                AND tkategoriesichtbarkeit.kKategorie IS NULL AND node.lft BETWEEN parent.lft AND parent.rght
-                AND node.kKategorie = " . (int)$categoryID . $visibilityWhere . "
-                
-            GROUP BY parent.kKategorie
-            ORDER BY parent.lft", 2
+                $hasArticlesCheckJoin . $stockJoin . $visibilityJoin . "                     
+                WHERE node.nLevel > 0 AND parent.nLevel > 0
+                    AND tkategoriesichtbarkeit.kKategorie IS NULL AND node.lft BETWEEN parent.lft AND parent.rght
+                    AND node.kKategorie = " . (int)$categoryID . $visibilityWhere . "
+                    
+                GROUP BY parent.kKategorie
+                ORDER BY parent.lft",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         $_catAttribut_arr = Shop::Container()->getDB()->query(
             "SELECT tkategorieattribut.kKategorie, 
@@ -419,7 +426,8 @@ class KategorieHelper
                     AND tkategorieattributsprache.kSprache = " . self::$kSprache . "
                 WHERE tkategorieattribut.kKategorie = " . $categoryID . "
                 ORDER BY tkategorieattribut.kKategorie, tkategorieattribut.bIstFunktionsAttribut DESC, 
-                tkategorieattribut.nSort", 2
+                tkategorieattribut.nSort",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (is_array($_catAttribut_arr)) {
             foreach ($_catAttribut_arr as $_catAttribut) {
@@ -638,6 +646,24 @@ class KategorieHelper
     }
 
     /**
+     * @param string        $attribute
+     * @param string        $value
+     * @param callable|null $callback
+     * @return mixed
+     * @since 5.0
+     */
+    public static function getCategoryByAttribute($attribute, $value, callable $callback = null)
+    {
+        $cat = ($res = self::getDataByAttribute($attribute, $value)) !== null
+            ? new Kategorie($res->kKategorie)
+            : null;
+
+        return is_callable($callback)
+            ? $callback($cat)
+            : $cat;
+    }
+
+    /**
      * @param Kategorie $Kategorie
      * @param bool      $bString
      * @return array|string
@@ -745,7 +771,8 @@ class KategorieHelper
                 $dist_kategorieboxen = Shop::Container()->getDB()->query(
                     "SELECT DISTINCT(cWert) 
                         FROM tkategorieattribut 
-                        WHERE cName = '" . KAT_ATTRIBUT_KATEGORIEBOX . "'", 2
+                        WHERE cName = '" . KAT_ATTRIBUT_KATEGORIEBOX . "'",
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 foreach ($dist_kategorieboxen as $katboxNr) {
                     $nr = (int)$katboxNr->cWert;

@@ -186,7 +186,8 @@ class WarenkorbPers
                 FROM twarenkorbpers
                 JOIN twarenkorbperspos 
                     ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers
-                WHERE twarenkorbperspos.kWarenkorbPersPos = " . $kWarenkorbPersPos, 1
+                WHERE twarenkorbperspos.kWarenkorbPersPos = " . $kWarenkorbPersPos,
+            \DB\ReturnType::SINGLE_OBJECT
         );
         // Prüfen ob der eingeloggte Kunde auch der Besitzer der zu löschenden WarenkorbPersPos ist
         if (isset($oKunde->kKunde) && $oKunde->kKunde == $_SESSION['Kunde']->kKunde) {

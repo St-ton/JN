@@ -147,7 +147,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                         JOIN tdownload 
                             ON tdownload.kDownload = tartikeldownload.kDownload
                         WHERE tartikeldownload.kDownload = " . (int)$this->kDownload . "
-                        ORDER BY tdownload.nSort", 2
+                        ORDER BY tdownload.nSort",
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
             }
         }
@@ -247,7 +248,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                         ' . $cSQLJoin . '
                         WHERE ' . $cSQLWhere . '
                         GROUP BY tartikeldownload.kDownload
-                        ORDER BY tdownload.nSort, tdownload.dErstellt DESC', 2
+                        ORDER BY tdownload.nSort, tdownload.dErstellt DESC',
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 foreach ($oDown_arr as $i => &$oDown) {
                     $oDownload_arr[$i] = new self(

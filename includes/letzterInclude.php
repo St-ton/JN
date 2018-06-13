@@ -8,9 +8,7 @@ $smarty        = Shop::Smarty();
 $oBrowser      = getBrowser();
 $linkHelper    = LinkHelper::getInstance();
 $oTemplate     = Template::getInstance();
-$bMobilAktiv   = $oTemplate->isMobileTemplateActive();
 $tplDir        = PFAD_TEMPLATES . $oTemplate->getDir() . '/';
-$bMobile       = false;
 $shopLogo      = Shop::getLogo();
 $shopURL       = Shop::getURL();
 $cart          = $_SESSION['Warenkorb'] ?? new Warenkorb();
@@ -21,23 +19,17 @@ $themeDir      = empty($Einstellungen['template']['theme']['theme_default'])
 $cShopName     = empty($Einstellungen['global']['global_shopname'])
     ? 'JTL-Shop'
     : $Einstellungen['global']['global_shopname'];
-if (!$bMobilAktiv && $oBrowser->bMobile && !isset($_SESSION['bAskMobil']) && $oTemplate->hasMobileTemplate()) {
-    $_SESSION['bAskMobil'] = true;
-    $bMobile               = true;
-}
 $cMinify_arr = $oTemplate->getMinifyArray();
 $cCSS_arr    = $cMinify_arr["{$themeDir}.css"] ?? [];
 $cJS_arr     = $cMinify_arr['jtl3.js'] ?? [];
-if (!$bMobilAktiv) {
-    executeHook(HOOK_LETZTERINCLUDE_CSS_JS, [
-        'cCSS_arr'                  => &$cCSS_arr,
-        'cJS_arr'                   => &$cJS_arr,
-        'cPluginCss_arr'            => &$cMinify_arr['plugin_css'],
-        'cPluginCssConditional_arr' => &$cMinify_arr['plugin_css_conditional'],
-        'cPluginJsHead_arr'         => &$cMinify_arr['plugin_js_head'],
-        'cPluginJsBody_arr'         => &$cMinify_arr['plugin_js_body']
-    ]);
-}
+executeHook(HOOK_LETZTERINCLUDE_CSS_JS, [
+    'cCSS_arr'                  => &$cCSS_arr,
+    'cJS_arr'                   => &$cJS_arr,
+    'cPluginCss_arr'            => &$cMinify_arr['plugin_css'],
+    'cPluginCssConditional_arr' => &$cMinify_arr['plugin_css_conditional'],
+    'cPluginJsHead_arr'         => &$cMinify_arr['plugin_js_head'],
+    'cPluginJsBody_arr'         => &$cMinify_arr['plugin_js_body']
+]);
 $kKundengruppe = (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0)
     ? $_SESSION['Kunde']->kKundengruppe
     : Session::CustomerGroup()->getID();
@@ -75,7 +67,6 @@ $smarty->assign('linkgroups', $linkHelper->activate($pagetType))
        ->assign('manufacturers', HerstellerHelper::getInstance()->getManufacturers())
        ->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
        ->assign('oUnterKategorien_arr', KategorieHelper::getSubcategoryList($AktuelleKategorie, false))
-       ->assign('bMobilMoeglich', $bMobile)
        ->assign('cPluginCssConditional_arr', $cMinify_arr['plugin_css_conditional'])
        ->assign('cPluginJsHead_arr', $cMinify_arr['plugin_js_head'])
        ->assign('cPluginJsBody_arr', $cMinify_arr['plugin_js_body'])
@@ -89,14 +80,11 @@ $smarty->assign('linkgroups', $linkHelper->activate($pagetType))
        ->assign('currentThemeDirFull', $shopURL . '/' . $tplDir . 'themes/' . $themeDir . '/')
        ->assign('session_name', session_name())
        ->assign('session_id', session_id())
-       ->assign('session_notwendig', false)
-       ->assign('lang', $_SESSION['cISOSprache'])
+       ->assign('lang', Shop::getLanguageCode())
        ->assign('ShopURL', $shopURL)
        ->assign('imageBaseURL', Shop::getImageBaseURL())
        ->assign('ShopURLSSL', Shop::getURL(true))
        ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant())
-       ->assign('PFAD_GFX_BEWERTUNG_STERNE', PFAD_GFX_BEWERTUNG_STERNE)
-       ->assign('PFAD_BILDER_BANNER', PFAD_BILDER_BANNER)
        ->assign('Anrede_m', Shop::Lang()->get('salutationM'))
        ->assign('Anrede_w', Shop::Lang()->get('salutationW'))
        ->assign('oTrennzeichenGewicht', Trennzeichen::getUnit(JTL_SEPARATOR_WEIGHT, Shop::getLanguageID()))
@@ -126,23 +114,10 @@ $smarty->assign('linkgroups', $linkHelper->activate($pagetType))
        ->assign('bAjaxRequest', isAjaxRequest())
        ->assign('oBrowser', $oBrowser)
        ->assign('jtl_token', getTokenInput())
-       ->assign('JTL_CHARSET', JTL_CHARSET)
-       ->assign('PFAD_INCLUDES_LIBS', PFAD_INCLUDES_LIBS)
-       ->assign('PFAD_FLASHCHART', PFAD_FLASHCHART)
-       ->assign('PFAD_MINIFY', PFAD_MINIFY)
-       ->assign('PFAD_UPLOADIFY', PFAD_UPLOADIFY)
-       ->assign('PFAD_UPLOAD_CALLBACK', PFAD_UPLOAD_CALLBACK)
        ->assign('oSuchspecialoverlay_arr', holeAlleSuchspecialOverlays(Shop::getLanguageID()))
        ->assign('oSuchspecial_arr', baueAlleSuchspecialURLs())
        ->assign('ShopLogoURL', $shopLogo)
        ->assign('ShopLogoURL_abs', $shopLogo === '' ? '' : ($shopURL . $shopLogo))
-       ->assign('TS_BUYERPROT_CLASSIC', TS_BUYERPROT_CLASSIC)
-       ->assign('TS_BUYERPROT_EXCELLENCE', TS_BUYERPROT_EXCELLENCE)
-       ->assign('CHECKBOX_ORT_REGISTRIERUNG', CHECKBOX_ORT_REGISTRIERUNG)
-       ->assign('CHECKBOX_ORT_BESTELLABSCHLUSS', CHECKBOX_ORT_BESTELLABSCHLUSS)
-       ->assign('CHECKBOX_ORT_NEWSLETTERANMELDUNG', CHECKBOX_ORT_NEWSLETTERANMELDUNG)
-       ->assign('CHECKBOX_ORT_KUNDENDATENEDITIEREN', CHECKBOX_ORT_KUNDENDATENEDITIEREN)
-       ->assign('CHECKBOX_ORT_KONTAKT', CHECKBOX_ORT_KONTAKT)
        ->assign('nSeitenTyp', $pagetType)
        ->assign('bExclusive', isset($_GET['exclusive_content']))
        ->assign('bAdminWartungsmodus', isset($bAdminWartungsmodus) && $bAdminWartungsmodus)
@@ -152,18 +127,11 @@ $smarty->assign('linkgroups', $linkHelper->activate($pagetType))
        ->assign('Einstellungen', $Einstellungen)
        ->assign('deletedPositions', Warenkorb::$deletedPositions)
        ->assign('updatedPositions', Warenkorb::$updatedPositions)
-       ->assign('BILD_KEIN_KATEGORIEBILD_VORHANDEN', BILD_KEIN_KATEGORIEBILD_VORHANDEN)
-       ->assign('BILD_KEIN_ARTIKELBILD_VORHANDEN', BILD_KEIN_ARTIKELBILD_VORHANDEN)
-       ->assign('BILD_KEIN_HERSTELLERBILD_VORHANDEN', BILD_KEIN_HERSTELLERBILD_VORHANDEN)
-       ->assign('BILD_KEIN_MERKMALBILD_VORHANDEN', BILD_KEIN_MERKMALBILD_VORHANDEN)
-       ->assign('BILD_KEIN_MERKMALWERTBILD_VORHANDEN', BILD_KEIN_MERKMALWERTBILD_VORHANDEN)
        ->assign('cCanonicalURL', $cCanonicalURL ?? null)
+       ->assign('Firma', new Firma())
        ->assign('AktuelleKategorie', $AktuelleKategorie)
        ->assign('showLoginCaptcha', isset($_SESSION['showLoginCaptcha']) && $_SESSION['showLoginCaptcha'])
        ->assign('PFAD_SLIDER', $shopURL . '/' . PFAD_BILDER_SLIDER)
-       ->assign('ERWDARSTELLUNG_ANSICHT_LISTE', ERWDARSTELLUNG_ANSICHT_LISTE)
-       ->assign('ERWDARSTELLUNG_ANSICHT_GALERIE', ERWDARSTELLUNG_ANSICHT_GALERIE)
-       ->assign('ERWDARSTELLUNG_ANSICHT_MOSAIK', ERWDARSTELLUNG_ANSICHT_MOSAIK)
        ->assign('Suchergebnisse', $oSuchergebnisse ?? new \Filter\ProductFilterSearchResults());
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'besucher.php';

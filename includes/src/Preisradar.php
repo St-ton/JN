@@ -30,7 +30,8 @@ class Preisradar
                 GROUP BY kArtikel
                 HAVING count(*) >= 2
                 ORDER BY dDate DESC
-                LIMIT {$nLimit}", 2
+                LIMIT {$nLimit}",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (is_array($oObj_arr) && count($oObj_arr) > 0) {
             $cArtikelSQL = " kArtikel IN (";
@@ -67,7 +68,8 @@ class Preisradar
                       )
                   ) as x
                   WHERE x.{$cArtikelSQL}
-                  LIMIT " . ($nLimit * 2), 2
+                  LIMIT " . ($nLimit * 2),
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             // Hilfs Array bauen, welches nur die letzten zwei Preisänderungen pro Artikel speichert
             // Um damit hinterher die Differenz zu ermitteln

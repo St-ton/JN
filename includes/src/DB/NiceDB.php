@@ -180,7 +180,7 @@ class NiceDB implements DbInterface
      * @throws \Exception
      * @deprecated since Shop 5 use Shop::Container()->getDB() instead
      */
-    public static function getInstance($DBHost = null, $DBUser = null, $DBpass = null, $DBdatabase = null)
+    public static function getInstance($DBHost = null, $DBUser = null, $DBpass = null, $DBdatabase = null): DbInterface
     {
         return self::$instance ?? new self($DBHost, $DBUser, $DBpass, $DBdatabase);
     }
@@ -197,7 +197,7 @@ class NiceDB implements DbInterface
     }
 
     /**
-     * @inheritdoc
+     * @inh eritdoc
      */
     public function getConfig()
     {
@@ -207,7 +207,7 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
-    public function reInit()
+    public function reInit(): DbInterface
     {
         $dsn = 'mysql:dbname=' . $this->config['database'];
         if (defined('DB_SOCKET')) {
@@ -236,7 +236,7 @@ class NiceDB implements DbInterface
      * @param null|array $backtrace
      * @return $this
      */
-    private function analyzeQuery($type, $stmt, $time = 0, $backtrace = null)
+    private function analyzeQuery($type, $stmt, $time = 0, $backtrace = null): DbInterface
     {
         $explain = 'EXPLAIN ' . $stmt;
         try {
@@ -304,7 +304,7 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
-    public function close()
+    public function close(): bool
     {
         $this->pdo = null;
 
@@ -314,7 +314,7 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
-    public function isConnected()
+    public function isConnected(): bool
     {
         return $this->isConnected;
     }
@@ -322,7 +322,7 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
-    public function getServerInfo()
+    public function getServerInfo(): string
     {
         return $this->pdo->getAttribute(PDO::ATTR_SERVER_VERSION);
     }
@@ -330,7 +330,7 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
-    public function info()
+    public function info(): string
     {
         return $this->getServerInfo();
     }
@@ -338,7 +338,7 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
-    public function getServerStats()
+    public function getServerStats(): string
     {
         return $this->pdo->getAttribute(PDO::ATTR_SERVER_INFO);
     }
@@ -346,7 +346,7 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
-    public function stats()
+    public function stats(): string
     {
         return $this->getServerStats();
     }
@@ -356,7 +356,7 @@ class NiceDB implements DbInterface
      *
      * @return PDO
      */
-    public function DB()
+    public function DB(): PDO
     {
         return $this->pdo;
     }
@@ -364,7 +364,7 @@ class NiceDB implements DbInterface
     /**
      * @return PDO
      */
-    public function getPDO()
+    public function getPDO(): PDO
     {
         return $this->pdo;
     }
@@ -374,7 +374,7 @@ class NiceDB implements DbInterface
      * @throws InvalidEntityNameException
      * @throws \InvalidArgumentException
      */
-    public function insertRow($tableName, $object, $echo = false, $bExecuteHook = false)
+    public function insertRow($tableName, $object, $echo = false, $bExecuteHook = false): int
     {
         $this->validateEntityName($tableName);
         $this->validateDbObject($object);
@@ -438,7 +438,7 @@ class NiceDB implements DbInterface
             if ($this->logErrors && $this->logfileName) {
                 $this->writeLog(
                     $stmt . "\n" .
-                    $this->pdo->errorCode() . ': ' . $this->pdo->errorInfo() .
+                    $this->getErrorCode() . ': ' . $this->getErrorMessage() .
                     "\n\nBacktrace:" . print_r(debug_backtrace(), 1)
                 );
             }
@@ -495,7 +495,7 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
-    public function insert($tableName, $object, $echo = false, $bExecuteHook = false)
+    public function insert($tableName, $object, $echo = false, $bExecuteHook = false): int
     {
         return $this->insertRow($tableName, $object, $echo, $bExecuteHook);
     }
@@ -503,7 +503,7 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
-    public function updateRow($tableName, $keyname, $keyvalue, $object, $echo = false)
+    public function updateRow($tableName, $keyname, $keyvalue, $object, $echo = false): int
     {
         $this->validateEntityName($tableName);
         foreach ((array)$keyname as $x) {
@@ -594,7 +594,7 @@ class NiceDB implements DbInterface
         }
         if (!$res) {
             if ($this->logErrors && $this->logfileName) {
-                $this->writeLog($stmt . "\n" . $this->pdo->errorCode() . ": " . $this->pdo->errorInfo());
+                $this->writeLog($stmt . "\n" . $this->getErrorCode() . ': ' . $this->getErrorMessage());
             }
             $ret = -1;
         } else {
@@ -635,7 +635,7 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
-    public function update($tableName, $keyname, $keyvalue, $object, $echo = false)
+    public function update($tableName, $keyname, $keyvalue, $object, $echo = false): int
     {
         return $this->updateRow($tableName, $keyname, $keyvalue, $object, $echo);
     }
@@ -709,7 +709,7 @@ class NiceDB implements DbInterface
         }
         if (!$res) {
             if ($this->logErrors && $this->logfileName) {
-                $this->writeLog($stmt . "\n" . $this->pdo->errorCode() . ': ' . $this->pdo->errorInfo());
+                $this->writeLog($stmt . "\n" . $this->getErrorCode() . ': ' . $this->getErrorMessage());
             }
 
             return null;
@@ -965,7 +965,7 @@ class NiceDB implements DbInterface
             if ($this->logErrors && $this->logfileName) {
                 $this->writeLog(
                     $stmt . "\n" .
-                    $this->pdo->errorCode() . ': ' . $this->pdo->errorInfo() .
+                    $this->getErrorCode() . ': ' . $this->getErrorMessage() .
                     "\n\nBacktrace: " . print_r(debug_backtrace(), true)
                 );
             }
@@ -974,23 +974,23 @@ class NiceDB implements DbInterface
         }
 
         switch ($return) {
-            case self::RET_SINGLE_OBJECT:
+            case ReturnType::SINGLE_OBJECT:
                 $ret = $res->fetchObject();
                 break;
-            case self::RET_ARRAY_OF_OBJECTS:
+            case ReturnType::ARRAY_OF_OBJECTS:
                 $ret = [];
                 while (($row = $res->fetchObject()) !== false) {
                     $ret[] = $row;
                 }
                 break;
-            case self::RET_AFFECTED_ROWS:
+            case ReturnType::AFFECTED_ROWS:
                 $ret = $res->rowCount();
                 break;
-            case self::RET_LAST_INSERTED_ID:
+            case ReturnType::LAST_INSERTED_ID:
                 $id  = $this->pdo->lastInsertId();
                 $ret = ($id > 0) ? $id : 1;
                 break;
-            case self::RET_SINGLE_ASSOC_ARRAY:
+            case ReturnType::SINGLE_ASSOC_ARRAY:
                 $ret = $res->fetchAll(PDO::FETCH_NAMED);
                 if (is_array($ret) && isset($ret[0])) {
                     $ret = $ret[0];
@@ -998,13 +998,13 @@ class NiceDB implements DbInterface
                     $ret = null;
                 }
                 break;
-            case self::RET_ARRAY_OF_ASSOC_ARRAYS:
+            case ReturnType::ARRAY_OF_ASSOC_ARRAYS:
                 $ret = $res->fetchAll(PDO::FETCH_ASSOC);
                 break;
-            case self::RET_QUERYSINGLE:
+            case ReturnType::QUERYSINGLE:
                 $ret = $res;
                 break;
-            case self::RET_ARRAY_OF_BOTH_ARRAYS:
+            case ReturnType::ARRAY_OF_BOTH_ARRAYS:
                 $ret = $res->fetchAll(PDO::FETCH_BOTH);
                 break;
             default:
@@ -1030,7 +1030,7 @@ class NiceDB implements DbInterface
      * @inheritdoc
      * @throws InvalidEntityNameException
      */
-    public function deleteRow($tableName, $keyname, $keyvalue, $echo = false)
+    public function deleteRow($tableName, $keyname, $keyvalue, $echo = false): int
     {
         $this->validateEntityName($tableName);
         foreach ((array)$keyname as $i) {
@@ -1086,7 +1086,7 @@ class NiceDB implements DbInterface
         }
         if (!$res) {
             if ($this->logErrors && $this->logfileName) {
-                $this->writeLog($stmt . "\n" . $this->pdo->errorCode() . ': ' . $this->pdo->errorInfo());
+                $this->writeLog($stmt . "\n" . $this->getErrorCode() . ': ' . $this->getErrorMessage());
             }
 
             return -1;
@@ -1111,7 +1111,7 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
-    public function delete($tableName, $keyname, $keyvalue, $echo = false)
+    public function delete($tableName, $keyname, $keyvalue, $echo = false): int
     {
         return $this->deleteRow($tableName, $keyname, $keyvalue, $echo);
     }
@@ -1136,7 +1136,7 @@ class NiceDB implements DbInterface
         }
         if (!$res) {
             if ($this->logErrors && $this->logfileName) {
-                $this->writeLog($stmt . "\n" . $this->pdo->errorCode() . ': ' . $this->pdo->errorInfo());
+                $this->writeLog($stmt . "\n" . $this->getErrorCode() . ': ' . $this->getErrorMessage());
             }
 
             return 0;
@@ -1166,7 +1166,7 @@ class NiceDB implements DbInterface
      * @return bool
      * @deprecated since 4.0
      */
-    protected function isMysqliResult($res)
+    protected function isMysqliResult($res): bool
     {
         return is_object($res) && $res instanceof \mysqli_result;
     }
@@ -1175,7 +1175,7 @@ class NiceDB implements DbInterface
      * @param mixed $res
      * @return bool
      */
-    protected function isPdoResult($res)
+    protected function isPdoResult($res): bool
     {
         return is_object($res) && $res instanceof PDOStatement;
     }
@@ -1308,7 +1308,7 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
-    public function commit()
+    public function commit(): bool
     {
         if ($this->transactionCount-- === 1) {
             return $this->pdo->commit();
@@ -1326,7 +1326,7 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
-    public function rollback()
+    public function rollback(): bool
     {
         $result = false;
         if ($this->transactionCount >= 0) {
@@ -1447,7 +1447,7 @@ class NiceDB implements DbInterface
     }
 
     /**
-    @inheritdoc
+     * @inheritdoc
      */
     public function serialize()
     {

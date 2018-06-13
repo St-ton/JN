@@ -1,13 +1,14 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
 
 namespace Model;
 
 /**
  * Class AuthLogEntry
+ *
  * @package Model
  */
 class AuthLogEntry
@@ -30,7 +31,7 @@ class AuthLogEntry
     /**
      * @return array
      */
-    public function asArray() : array
+    public function asArray(): array
     {
         return [
             'ip'   => $this->getIP(),
@@ -42,7 +43,7 @@ class AuthLogEntry
     /**
      * @return string
      */
-    public function getIP() : string
+    public function getIP(): string
     {
         return $this->ip;
     }
@@ -58,7 +59,7 @@ class AuthLogEntry
     /**
      * @return string
      */
-    public function getUser() : string
+    public function getUser(): string
     {
         return $this->user;
     }
@@ -74,7 +75,7 @@ class AuthLogEntry
     /**
      * @return int
      */
-    public function getCode() : int
+    public function getCode(): int
     {
         return $this->code;
     }

@@ -98,6 +98,7 @@
 
             this.registerSimpleVariations($wrapper);
             this.registerSwitchVariations($wrapper);
+            this.registerBulkPrices($wrapper);
             this.registerImageSwitch($wrapper);
             this.registerArticleOverlay($wrapper);
             this.registerFinish($wrapper);
@@ -162,6 +163,23 @@
                         that.variationPrice($(this), true, wrapper);
                     });
                 });
+        },
+
+        registerBulkPrices: function($wrapper) {
+            var $bulkPrice = $('.bulk-price', $wrapper),
+                that       = this;
+
+            if ($bulkPrice.length > 0) {
+                $('#quantity', $wrapper)
+                    .each(function(i, item) {
+                        var $item   = $(item),
+                            wrapper = '#' + $item.closest('form').closest('div').attr('id');
+
+                        $item.on('change', function () {
+                            that.variationPrice($(this), true, wrapper);
+                        });
+                    });
+            }
         },
 
         registerSwitchVariations: function($wrapper) {

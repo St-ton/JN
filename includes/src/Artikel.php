@@ -1203,7 +1203,7 @@ class Artikel
                 'kEigenschaftWert', $kEigenschaftWert,
                 'kKundengruppe', $kKundengruppe
             );
-            if (!is_object($EW_aufpreis)) {
+            if (!is_object($EW_aufpreis) && $this->Preise->isDiscountable()) {
                 $EW_aufpreis = Shop::Container()->getDB()->select('teigenschaftwert', 'kEigenschaftWert', $kEigenschaftWert);
             }
             if ($EW_aufpreis !== null) {
@@ -2213,7 +2213,7 @@ class Artikel
         $kLetzteVariation = 0;
         $nZaehler         = -1;
         $nFreifelder      = 0;
-        $rabattTemp       = $this->getDiscount($kKundengruppe, $this->kArtikel);
+        $rabattTemp       = $this->Preise->isDiscountable() ? $this->getDiscount($kKundengruppe, $this->kArtikel) : 0;
         $outOfStock       = '(' . Shop::Lang()->get('outofstock', 'productDetails') . ')';
         $nGenauigkeit     = isset($this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT])
         && (int)$this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0
@@ -2368,7 +2368,7 @@ class Artikel
 
             if (isset($value->fAufpreisNetto) && $value->fAufpreisNetto != 0) {
                 $surcharge                    = $value->fAufpreisNetto;
-                $value->cAufpreisLocalized[0] = gibPreisStringLocalized(berechneBrutto($surcharge, $taxRate), $currency);
+                $value->cAufpreisLocalized[0] = gibPreisStringLocalized(berechneBrutto($surcharge, $taxRate, 4), $currency);
                 $value->cAufpreisLocalized[1] = gibPreisStringLocalized($surcharge, $currency);
                 // Wenn der Artikel ein VarikombiKind ist, rechne nicht nochmal die Variationsaufpreise drauf
                 if ($this->kVaterArtikel > 0) {
@@ -3130,13 +3130,11 @@ class Artikel
                 }
                 if (isset($preview->inWarenkorbLegbar)
                     && $preview->inWarenkorbLegbar === 0
-                    && (
-                        ($this->conf['global']['artikel_artikelanzeigefilter'] === '1'
+                    && ((int)$this->conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_ALLE
+                        || ($this->conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
                             && $preview->fLagerbestand > 0)
-                        || ($this->conf['global']['artikel_artikelanzeigefilter'] === '3'
-                            && ($preview->cLagerKleinerNull === 'Y'
-                                || $preview->fLagerbestand > 0)
-                        )
+                        || ((int)$this->conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
+                            && ($preview->cLagerKleinerNull === 'Y' || $preview->fLagerbestand > 0))
                     )
                 ) {
                     $preview->inWarenkorbLegbar = 1;
@@ -3313,7 +3311,7 @@ class Artikel
             if (!$kKundengruppe) {
                 $kKundengruppe = Session::CustomerGroup()->getID();
             }
-            $discount = $this->getDiscount($kKundengruppe, $this->kArtikel);
+            $discount = $this->Preise->isDiscountable() ? $this->getDiscount($kKundengruppe, $this->kArtikel) : 0;
 
             if ($oArtikelTMP->Preise->fVK[0] > $this->Preise->fVK[0]
                 || $oArtikelTMP->Preise->fVK[0] < $this->Preise->fVK[0]
@@ -3492,28 +3490,29 @@ class Artikel
      */
     public static function getDetailOptions()
     {
-        $conf                                    = Shop::getSettings([CONF_ARTIKELDETAILS]);
-        $oArtikelOptionen                        = new stdClass();
-        $oArtikelOptionen->nMerkmale             = 1;
-        $oArtikelOptionen->nKategorie            = 1;
-        $oArtikelOptionen->nAttribute            = 1;
-        $oArtikelOptionen->nArtikelAttribute     = 1;
-        $oArtikelOptionen->nMedienDatei          = 1;
-        $oArtikelOptionen->nVariationKombi       = 1;
-        $oArtikelOptionen->nVariationKombiKinder = 1;
-        $oArtikelOptionen->nWarenlager           = 1;
-        $oArtikelOptionen->nVariationDetailPreis = 1;
-        $oArtikelOptionen->nRatings              = 1;
-        $oArtikelOptionen->nWarenkorbmatrix      = (int)($conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeige'] === 'Y');
-        $oArtikelOptionen->nStueckliste          = (int)($conf['artikeldetails']['artikeldetails_stueckliste_anzeigen'] === 'Y');
-        $oArtikelOptionen->nProductBundle        = (int)($conf['artikeldetails']['artikeldetails_produktbundle_nutzen'] === 'Y');
-        $oArtikelOptionen->nDownload             = 1;
-        $oArtikelOptionen->nKonfig               = 1;
-        $oArtikelOptionen->nMain                 = 1;
-        $oArtikelOptionen->bSimilar              = true;
-        $oArtikelOptionen->nLanguageURLs         = 1;
+        $conf                           = Shop::getSettings([CONF_ARTIKELDETAILS]);
+        $options                        = new stdClass();
+        $options->nMerkmale             = 1;
+        $options->nKategorie            = 1;
+        $options->nAttribute            = 1;
+        $options->nArtikelAttribute     = 1;
+        $options->nMedienDatei          = 1;
+        $options->nVariationKombi       = 1;
+        $options->nVariationKombiKinder = 1;
+        $options->nWarenlager           = 1;
+        $options->nVariationDetailPreis = 1;
+        $options->nRatings              = 1;
+        $options->nWarenkorbmatrix      = (int)($conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeige'] === 'Y');
+        $options->nStueckliste          = (int)($conf['artikeldetails']['artikeldetails_stueckliste_anzeigen'] === 'Y');
+        $options->nProductBundle        = (int)($conf['artikeldetails']['artikeldetails_produktbundle_nutzen'] === 'Y');
+        $options->nDownload             = 1;
+        $options->nKonfig               = 1;
+        $options->nMain                 = 1;
+        $options->bSimilar              = true;
+        $options->nLanguageURLs         = 1;
+        $options->nVariationen         = 1;
 
-        return $oArtikelOptionen;
+        return $options;
     }
 
     /**
@@ -3527,6 +3526,7 @@ class Artikel
         $options->nArtikelAttribute = 1;
         $options->nKonfig           = 1;
         $options->nDownload         = 1;
+        $options->nVariationen      = 1;
 
         return $options;
     }
@@ -4031,7 +4031,9 @@ class Artikel
         if (!isset($oArtikelOptionen->nVariationKombi)) {
             $oArtikelOptionen->nVariationKombi = 0;
         }
-        $this->holVariationen($kKundengruppe, $kSprache, $oArtikelOptionen->nVariationKombi);
+        if (!isset($oArtikelOptionen->nVariationen) || $oArtikelOptionen->nVariationen === 1) {
+            $this->holVariationen($kKundengruppe, $kSprache, $oArtikelOptionen->nVariationKombi);
+        }
         /* Sobald ein KindArtikel teurer ist als der Vaterartikel, muss nVariationsAufpreisVorhanden auf 1
            gesetzt werden damit in der Artikelvorschau ein "Preis ab ..." erscheint
            aber nur wenn auch Preise angezeigt werden, this->Preise also auch vorhanden ist */
@@ -4608,19 +4610,62 @@ class Artikel
         $fPreis        = ($fPreisStaffel > 0) ? $fPreisStaffel : $this->Preise->fVKNetto;
         $currency      = Session::Currency();
         $per           = ' ' . Shop::Lang()->get('vpePer') . ' ' . $basepriceUnit;
+        $ust           = gibUst($this->kSteuerklasse);
 
-        $this->cLocalizedVPE[0] = gibPreisStringLocalized(
-            berechneBrutto($fPreis / $this->fVPEWert, gibUst($this->kSteuerklasse), $nGenauigkeit),
-            $currency,
-            1,
-            $nGenauigkeit
-        ) . $per;
-        $this->cLocalizedVPE[1] = gibPreisStringLocalized(
-            $fPreis / $this->fVPEWert,
-            $currency,
-            1,
-            $nGenauigkeit
-        ) . $per;
+        if ((int)Shop::getPageType() === PAGE_ARTIKELLISTE && $this->Preise->oPriceRange !== null && $this->Preise->oPriceRange->isRange()) {
+            if ($this->Preise->oPriceRange->rangeWidth() <= $this->conf['artikeluebersicht']['articleoverview_pricerange_width']) {
+                $this->cLocalizedVPE[0] = gibPreisStringLocalized(
+                    berechneBrutto($this->Preise->oPriceRange->minNettoPrice / $this->fVPEWert, $ust, $nGenauigkeit),
+                    $currency,
+                    1,
+                    $nGenauigkeit
+                ) . ' - '
+                . gibPreisStringLocalized(
+                    berechneBrutto($this->Preise->oPriceRange->maxNettoPrice / $this->fVPEWert, $ust, $nGenauigkeit),
+                    $currency,
+                    1,
+                    $nGenauigkeit
+                ) . $per;
+                $this->cLocalizedVPE[1] = gibPreisStringLocalized(
+                    $this->Preise->oPriceRange->minNettoPrice / $this->fVPEWert,
+                    $currency,
+                    1,
+                    $nGenauigkeit
+                ) . ' - '
+                . gibPreisStringLocalized(
+                    $this->Preise->oPriceRange->maxNettoPrice / $this->fVPEWert,
+                    $currency,
+                    1,
+                    $nGenauigkeit
+                ) . $per;
+            } else {
+                $this->cLocalizedVPE[0] = Shop::Lang()->get('priceStarting') . ' ' . gibPreisStringLocalized(
+                    berechneBrutto($this->Preise->oPriceRange->minNettoPrice / $this->fVPEWert, $ust, $nGenauigkeit),
+                    $currency,
+                    1,
+                    $nGenauigkeit
+                ) . $per;
+                $this->cLocalizedVPE[1] = Shop::Lang()->get('priceStarting') . ' ' . gibPreisStringLocalized(
+                    $this->Preise->oPriceRange->minNettoPrice / $this->fVPEWert,
+                    $currency,
+                    1,
+                    $nGenauigkeit
+                ) . $per;
+            }
+        } else {
+            $this->cLocalizedVPE[0] = gibPreisStringLocalized(
+                berechneBrutto($fPreis / $this->fVPEWert, $ust, $nGenauigkeit),
+                $currency,
+                1,
+                $nGenauigkeit
+            ) . $per;
+            $this->cLocalizedVPE[1] = gibPreisStringLocalized(
+                $fPreis / $this->fVPEWert,
+                $currency,
+                1,
+                $nGenauigkeit
+            ) . $per;
+        }
 
         return $this;
     }
@@ -4781,7 +4826,7 @@ class Artikel
         foreach ($this->Preise->fPreis_arr as $key => $fPreis) {
             $basePriceUnit = ArtikelHelper::getBasePriceUnit($this, $fPreis, $this->Preise->nAnzahl_arr[$key]);
 
-            $this->fStaffelpreisVPE_arr[] = [
+            $this->cStaffelpreisLocalizedVPE_arr[] = [
                 gibPreisStringLocalized(
                     berechneBrutto(
                         $basePriceUnit->fBasePreis,
@@ -4800,7 +4845,7 @@ class Artikel
                 )  . $per . $basePriceUnit->cVPEEinheit
             ];
 
-            $this->cStaffelpreisLocalizedVPE_arr[] = [
+            $this->fStaffelpreisVPE_arr[] = [
                 berechneBrutto(
                     $basePriceUnit->fBasePreis,
                     gibUst($this->kSteuerklasse),
@@ -4809,7 +4854,7 @@ class Artikel
                 $basePriceUnit->fBasePreis,
             ];
 
-            $this->staffelPreis_arr[$key]['cBasePriceLocalized'] = $this->fStaffelpreisVPE_arr[$key] ?? null;
+            $this->staffelPreis_arr[$key]['cBasePriceLocalized'] = $this->cStaffelpreisLocalizedVPE_arr[$key] ?? null;
         }
 
         return $this;

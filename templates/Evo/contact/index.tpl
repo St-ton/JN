@@ -30,7 +30,7 @@
                         {lang key="fillOut" section="global"}
                     </div>
                 {/if}
-                <form name="contact" action="{get_static_route id='kontakt.php'}" method="post">
+                <form name="contact" action="{get_static_route id='kontakt.php'}" method="post" class="evo-validate">
                     {$jtl_token}
                     <fieldset>
                         <legend>{lang key="contact" section="global"}</legend>
@@ -170,15 +170,11 @@
                         </div>
                     </fieldset>
                     {if (!isset($smarty.session.bAnti_spam_already_checked) || $smarty.session.bAnti_spam_already_checked !== true) &&
-                        isset($Einstellungen.global.anti_spam_method) && $Einstellungen.global.anti_spam_method !== 'N' && 
                         isset($Einstellungen.kontakt.kontakt_abfragen_captcha) && $Einstellungen.kontakt.kontakt_abfragen_captcha !== 'N' && empty($smarty.session.Kunde->kKunde)}
                         <hr>
                         <div class="row">
-                            <div class="col-xs-12 col-md-12">
-                                <div class="g-recaptcha form-group" data-sitekey="{$Einstellungen.global.global_google_recaptcha_public}" data-callback="captcha_filled"></div>
-                                {if !empty($fehlendeAngaben.captcha)}
-                                    <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>{lang key="invalidToken" section="global"}</div>
-                                {/if}
+                            <div class="col-xs-12 col-md-12{if !empty($fehlendeAngaben.captcha)} has-error{/if} required">
+                                {captchaMarkup getBody=true}
                                 <hr>
                             </div>
                         </div>

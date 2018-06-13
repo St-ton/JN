@@ -83,7 +83,12 @@ class Boxen
         if ($nSeite >= 0) {
             $cSQL = 'WHERE (cVerfuegbar = "' . (int)$nSeite . '" OR cVerfuegbar = "0")';
         }
-        $oVorlage_arr = Shop::Container()->getDB()->query("SELECT * FROM tboxvorlage " . $cSQL . " ORDER BY cVerfuegbar ASC", 2);
+        $oVorlage_arr = Shop::Container()->getDB()->query(
+            "SELECT * 
+                FROM tboxvorlage " . $cSQL . " 
+                ORDER BY cVerfuegbar ASC",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+            );
         foreach ($oVorlage_arr as $oVorlage) {
             $nID   = 0;
             $cName = 'Vorlage';
@@ -163,7 +168,8 @@ class Boxen
                     ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
                 WHERE tboxensichtbar.kSeite = " . $nSeite . $cPluginAktiv .
                     " AND tboxen.kContainer = 0 " . $cSQLAktiv . "
-                ORDER BY tboxensichtbar.nSort ASC", 2
+                ORDER BY tboxensichtbar.nSort ASC",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oBoxen_arr as $oBox) {
             $oBox->kBox        = (int)$oBox->kBox;
@@ -246,7 +252,8 @@ class Boxen
                                 ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
                             WHERE (tboxensichtbar.kSeite = " . $nSeite . ")
                                 AND tboxen.kContainer = " . $kContainer . $cSQLAktiv . "
-                                ORDER BY tboxensichtbar.nSort ASC", 2
+                                ORDER BY tboxensichtbar.nSort ASC",
+                        \DB\ReturnType::ARRAY_OF_OBJECTS
                     );
                     if (count($oContainerBoxen_arr) > 0) {
                         foreach ($oContainerBoxen_arr as $childBox) {
@@ -403,14 +410,15 @@ class Boxen
                         "SELECT tartikel.kArtikel
                             FROM tbestseller, tartikel
                             LEFT JOIN tartikelsichtbarkeit 
-                                ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
+                                ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                                 AND tartikelsichtbarkeit.kKundengruppe = $kKundengruppe
                             WHERE tartikelsichtbarkeit.kArtikel IS NULL
                                 AND tbestseller.kArtikel = tartikel.kArtikel
                                 AND round(tbestseller.fAnzahl) >= " . $nAnzahl . "
                                 $this->cVaterSQL
                                 $this->lagerFilter
-                            ORDER BY fAnzahl DESC LIMIT " . $limit, 2
+                            ORDER BY fAnzahl DESC LIMIT " . $limit,
+                        \DB\ReturnType::ARRAY_OF_OBJECTS
                     );
                     if (is_array($menge) && count($menge) > 0) {
                         $rndkeys = array_rand($menge, min($anzahl, count($menge)));
@@ -526,7 +534,8 @@ class Boxen
                                     AND dGueltigBis >= now()) || (dGueltigVon <= now() 
                                     AND dGueltigBis = '0000-00-00 00:00:00'))
                             GROUP BY tumfrage.kUmfrage
-                            ORDER BY tumfrage.dGueltigVon DESC" . $cSQL, 2
+                            ORDER BY tumfrage.dGueltigVon DESC" . $cSQL,
+                        \DB\ReturnType::ARRAY_OF_OBJECTS
                     );
                     foreach ($oUmfrage_arr as $i => $oUmfrage) {
                         $oUmfrage_arr[$i]->cURL     = baueURL($oUmfrage, URLART_UMFRAGE);
@@ -624,7 +633,8 @@ class Boxen
                                     OR FIND_IN_SET('" . Session::CustomerGroup()->getID() . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                                 AND tnews.kSprache = " . $kSprache . "
                             GROUP BY tnewskategorienews.kNewsKategorie
-                            ORDER BY tnewskategorie.nSort DESC" . $cSQL, 2
+                            ORDER BY tnewskategorie.nSort DESC" . $cSQL,
+                        \DB\ReturnType::ARRAY_OF_OBJECTS
                     );
                     foreach ($oNewsKategorie_arr as $i => $oNewsKategorie) {
                         $oNewsKategorie_arr[$i]->cURL     = baueURL($oNewsKategorie, URLART_NEWSKATEGORIE);
@@ -657,17 +667,20 @@ class Boxen
                     "SELECT tseo.cSeo, tnewsmonatsuebersicht.cName, tnewsmonatsuebersicht.kNewsMonatsUebersicht, 
                         month(tnews.dGueltigVon) AS nMonat, year( tnews.dGueltigVon ) AS nJahr, count(*) AS nAnzahl
                         FROM tnews
-                        JOIN tnewsmonatsuebersicht ON tnewsmonatsuebersicht.nMonat = month(tnews.dGueltigVon)
+                        JOIN tnewsmonatsuebersicht 
+                            ON tnewsmonatsuebersicht.nMonat = month(tnews.dGueltigVon)
                             AND tnewsmonatsuebersicht.nJahr = year(tnews.dGueltigVon)
                             AND tnewsmonatsuebersicht.kSprache = " . $kSprache . "
-                        LEFT JOIN tseo ON cKey = 'kNewsMonatsUebersicht'
+                        LEFT JOIN tseo 
+                            ON cKey = 'kNewsMonatsUebersicht'
                             AND kKey = tnewsmonatsuebersicht.kNewsMonatsUebersicht
                             AND tseo.kSprache = " . $kSprache . "
                         WHERE tnews.dGueltigVon < now()
                             AND tnews.nAktiv = 1
                             AND tnews.kSprache = " . $kSprache . "
                         GROUP BY year(tnews.dGueltigVon) , month(tnews.dGueltigVon)
-                        ORDER BY tnews.dGueltigVon DESC" . $cSQL, 2
+                        ORDER BY tnews.dGueltigVon DESC" . $cSQL,
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 foreach ($oNewsMonatsUebersicht_arr as $i => $oNewsMonatsUebersicht) {
                     $oNewsMonatsUebersicht_arr[$i]->cURL     = baueURL($oNewsMonatsUebersicht, URLART_NEWSMONAT);
@@ -694,7 +707,8 @@ class Boxen
                         WHERE round(fDurchschnittsBewertung) >= " . (int)$this->boxConfig['boxen']['boxen_topbewertet_minsterne'] . "
                         $this->cVaterSQL
                         ORDER BY tartikelext.fDurchschnittsBewertung DESC
-                        LIMIT " . (int)$this->boxConfig['boxen']['boxen_topbewertet_basisanzahl'], 2
+                        LIMIT " . (int)$this->boxConfig['boxen']['boxen_topbewertet_basisanzahl'],
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 if (count($oTopBewertet_arr) === 0) {
                     break;
@@ -887,7 +901,8 @@ class Boxen
                         WHERE ttag.nAktiv = 1 
                             AND ttag.kSprache = " . $kSprache . " 
                         GROUP BY ttag.kTag 
-                        ORDER BY Anzahl DESC" . $limitSQL, 2
+                        ORDER BY Anzahl DESC" . $limitSQL,
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
 
                 if (is_array($tagwolke_objs) && ($count = count($tagwolke_objs)) > 0) {
@@ -936,7 +951,8 @@ class Boxen
                             AND tsuchanfrage.nAktiv = 1
                         GROUP BY tsuchanfrage.kSuchanfrage
                         ORDER BY tsuchanfrage.nAnzahlGesuche DESC
-                        LIMIT " . $nWolkenLimit, 2
+                        LIMIT " . $nWolkenLimit,
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 if (is_array($oSuchwolke_arr) && ($count = count($oSuchwolke_arr)) > 0) {
                     // Priorität berechnen
@@ -985,7 +1001,8 @@ class Boxen
                             $this->lagerFilter
                             $this->cVaterSQL
                             AND now() < tartikel.dErscheinungsdatum
-                        ORDER BY rand() LIMIT " . $limit, 2
+                        ORDER BY rand() LIMIT " . $limit,
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 $kArtikel_arr = array_map(function ($e) { return (int)$e->kArtikel; }, $menge);
                 $cacheTags    = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
@@ -1053,7 +1070,8 @@ class Boxen
                             AND tartikel.cTopArtikel = 'Y'
                             $this->lagerFilter
                             $this->cVaterSQL
-                        ORDER BY rand() LIMIT " . $limit, 2
+                        ORDER BY rand() LIMIT " . $limit,
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 $kArtikel_arr = array_map(function ($e) { return (int)$e->kArtikel; }, $menge);
                 $cacheTags    = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
@@ -1100,7 +1118,8 @@ class Boxen
                             $this->cVaterSQL
                             AND cNeu = 'Y' 
                             AND DATE_SUB(now(),INTERVAL $alter_tage DAY) < dErstellt
-                        ORDER BY rand() LIMIT " . $limit, 2
+                        ORDER BY rand() LIMIT " . $limit,
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 $kArtikel_arr = array_map(function ($e) { return (int)$e->kArtikel; }, $menge);
                 $cacheTags    = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
@@ -1150,7 +1169,8 @@ class Boxen
                                 OR tartikelsonderpreis.dEnde = '0000-00-00')
                             $this->lagerFilter
                             $this->cVaterSQL
-                        ORDER BY rand() LIMIT " . $limit, 2
+                        ORDER BY rand() LIMIT " . $limit,
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 $kArtikel_arr = array_map(function ($e) { return (int)$e->kArtikel; }, $menge);
                 $cacheTags    = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
@@ -1610,7 +1630,8 @@ class Boxen
                 FROM tboxen
                 LEFT JOIN tboxvorlage 
                     ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
-                WHERE kBox = " . $kBox, 1
+                WHERE kBox = " . $kBox,
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         $oBox->oSprache_arr      = ($oBox && ($oBox->eTyp === 'text' || $oBox->eTyp === 'catbox'))
@@ -1684,7 +1705,8 @@ class Boxen
                     WHERE tboxensichtbar.kSeite = " . (int)$nSeite . "
                         AND tboxen.ePosition = '" . $ePosition . "'
                         AND tboxen.kContainer = " . (int)$kContainer . "
-                ORDER BY tboxensichtbar.nSort DESC LIMIT 1", 1
+                ORDER BY tboxensichtbar.nSort DESC LIMIT 1",
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         return $oBox ? ++$oBox->nSort : 0;
@@ -1801,7 +1823,7 @@ class Boxen
      */
     public function gibLinkGruppen()
     {
-        return Shop::Container()->getDB()->query("SELECT * FROM tlinkgruppe", 2);
+        return Shop::Container()->getDB()->query("SELECT * FROM tlinkgruppe", \DB\ReturnType::ARRAY_OF_OBJECTS);
     }
 
     /**
@@ -1822,8 +1844,8 @@ class Boxen
     }
 
     /**
-     * @param ProductFilter              $productFilter
-     * @param ProductFilterSearchResults $oSuchergebnisse
+     * @param \Filter\ProductFilter              $productFilter
+     * @param \Filter\ProductFilterSearchResults $oSuchergebnisse
      * @return bool
      */
     public function gibBoxenFilterNach($productFilter, $oSuchergebnisse)
@@ -1978,19 +2000,21 @@ class Boxen
         $layout         = $tpl->getBoxLayoutXML();
         $invisibleBoxes = [];
         foreach ($layout as $position => $isAvailable) {
-            if ($isAvailable === false) {
-                $box = Shop::Container()->getDB()->select('tboxen', 'ePosition', $position);
-                if ($box !== null && isset($box->kBox)) {
-                    $boxes = Shop::Container()->getDB()->query(
-                        "SELECT tboxen.*, tboxvorlage.eTyp, tboxvorlage.cName, tboxvorlage.cTemplate 
-                            FROM tboxen 
-                                LEFT JOIN tboxvorlage
-                                ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
-                            WHERE ePosition = '" . $position . "'", 2
-                    );
-                    foreach ($boxes as $box) {
-                        $invisibleBoxes[] = $box;
-                    }
+            if ($isAvailable !== false) {
+                continue;
+            }
+            $box = Shop::Container()->getDB()->select('tboxen', 'ePosition', $position);
+            if ($box !== null && isset($box->kBox)) {
+                $boxes = Shop::Container()->getDB()->query(
+                    "SELECT tboxen.*, tboxvorlage.eTyp, tboxvorlage.cName, tboxvorlage.cTemplate 
+                        FROM tboxen 
+                            LEFT JOIN tboxvorlage
+                            ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
+                        WHERE ePosition = '" . $position . "'",
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
+                );
+                foreach ($boxes as $box) {
+                    $invisibleBoxes[] = $box;
                 }
             }
         }

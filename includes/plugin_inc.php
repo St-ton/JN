@@ -139,14 +139,13 @@ function gibPluginEinstellungen($kPlugin)
                 LEFT JOIN tplugineinstellungenconf 
                     ON tplugineinstellungenconf.kPlugin = tplugin.kPlugin 
                     AND tplugineinstellungen.cName = tplugineinstellungenconf.cWertName
-                WHERE tplugin.kPlugin = " . (int)$kPlugin, 2
+                WHERE tplugin.kPlugin = " . (int)$kPlugin,
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        if (is_array($oPluginEinstellungenTMP_arr) && count($oPluginEinstellungenTMP_arr) > 0) {
-            foreach ($oPluginEinstellungenTMP_arr as $oPluginEinstellungenTMP) {
-                $oPluginEinstellungen_arr[$oPluginEinstellungenTMP->cName] = $oPluginEinstellungenTMP->cConf === 'M'
-                    ? unserialize($oPluginEinstellungenTMP->cWert)
-                    : $oPluginEinstellungenTMP->cWert;
-            }
+        foreach ($oPluginEinstellungenTMP_arr as $oPluginEinstellungenTMP) {
+            $oPluginEinstellungen_arr[$oPluginEinstellungenTMP->cName] = $oPluginEinstellungenTMP->cConf === 'M'
+                ? unserialize($oPluginEinstellungenTMP->cWert)
+                : $oPluginEinstellungenTMP->cWert;
         }
     }
 
@@ -211,13 +210,7 @@ function gibPluginSprachvariablen($kPlugin, $cISO = '')
  */
 function aenderPluginStatus($nStatus, $kPlugin)
 {
-    $nStatus = (int)$nStatus;
-    $kPlugin = (int)$kPlugin;
-    if ($nStatus > 0 && $kPlugin > 0) {
-        return Shop::Container()->getDB()->query("UPDATE tplugin SET nStatus = " . $nStatus . " WHERE kPlugin = " . $kPlugin, 3) > 0;
-    }
-
-    return false;
+    return Shop::Container()->getDB()->update('tplugin', 'kPlugin', $kPlugin, (object)['nStatus' => $nStatus]) > 0;
 }
 
 /**
@@ -228,11 +221,10 @@ function aenderPluginStatus($nStatus, $kPlugin)
 function gibPlugincModulId($kPlugin, $cNameZahlungsmethode)
 {
     $kPlugin = (int)$kPlugin;
-    if ($kPlugin > 0 && strlen($cNameZahlungsmethode) > 0) {
-        return 'kPlugin_' . $kPlugin . '_' . strtolower(str_replace([' ', '-', '_'], '', $cNameZahlungsmethode));
-    }
 
-    return '';
+    return $kPlugin > 0 && strlen($cNameZahlungsmethode) > 0
+        ? 'kPlugin_' . $kPlugin . '_' . strtolower(str_replace([' ', '-', '_'], '', $cNameZahlungsmethode))
+        : '';
 }
 
 /**
@@ -266,8 +258,11 @@ function gibPluginExtendedTemplates()
     $oTemplate_arr = Shop::Container()->getDB()->query(
         "SELECT tplugintemplate.cTemplate, tplugin.cVerzeichnis, tplugin.nVersion
             FROM tplugintemplate
-            JOIN tplugin ON tplugintemplate.kPlugin = tplugin.kPlugin
-                WHERE tplugin.nStatus = 2 ORDER BY tplugin.nPrio DESC", 2
+            JOIN tplugin 
+                ON tplugintemplate.kPlugin = tplugin.kPlugin
+                WHERE tplugin.nStatus = 2 
+            ORDER BY tplugin.nPrio DESC",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($oTemplate_arr as $oTemplate) {
         $cTemplatePfad = PFAD_ROOT . PFAD_PLUGIN . $oTemplate->cVerzeichnis . '/' .
@@ -279,16 +274,4 @@ function gibPluginExtendedTemplates()
     }
 
     return $cTemplate_arr;
-}
-
-/**
- * Holt ein Array mit allen Hooks die von Plugins benutzt werden.
- * Zu jedem Hook in dem Array, gibt es ein weiteres Array mit Plugins die an diesem Hook geladen werden.
- * @deprecated since 4.0
- * @return array|mixed
- */
-function gibPluginHookListe()
-{
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Plugin::getHookList();
 }

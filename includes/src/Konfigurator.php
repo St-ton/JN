@@ -61,7 +61,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 "SELECT kArtikel, kKonfigGruppe
                      FROM tartikelkonfiggruppe
                      WHERE tartikelkonfiggruppe.kArtikel = " . (int)$kArtikel . "
-                     ORDER BY tartikelkonfiggruppe.nSort ASC", 2
+                     ORDER BY tartikelkonfiggruppe.nSort ASC",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
 
             return is_array($oGruppen_arr) && count($oGruppen_arr) > 0;

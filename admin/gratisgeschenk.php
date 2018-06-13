@@ -26,7 +26,8 @@ $oConfig_arr = Shop::Container()->getDB()->query(
     "SELECT *
         FROM teinstellungenconf
         WHERE kEinstellungenConf IN (" . implode(',', $settingsIDs) . ")
-        ORDER BY nSort", 2
+        ORDER BY nSort",
+    \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 $configCount = count($oConfig_arr);
 for ($i = 0; $i < $configCount; $i++) {

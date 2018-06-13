@@ -78,7 +78,7 @@ if (RequestHelper::verifyGPCDataInt('bewertung_editieren') === 1 && validateToke
 } elseif (isset($_POST['bewertung_aktiv']) && (int)$_POST['bewertung_aktiv'] === 1) {
     if (isset($_POST['cArtNr'])) {
         // Bewertungen holen
-        $oBewertungAktiv_arr = Shop::Container()->getDB()->executeQueryPrepared(
+        $oBewertungAktiv_arr = Shop::Container()->getDB()->queryPrepared(
             "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
                 FROM tbewertung
                 LEFT JOIN tartikel 
@@ -91,7 +91,7 @@ if (RequestHelper::verifyGPCDataInt('bewertung_editieren') === 1 && validateToke
                 'lang' => (int)$_SESSION['kSprache'],
                 'cartnr' => '%' .  $_POST['cArtNr'] . '%'
             ],
-            2
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         $smarty->assign('cArtNr', StringHandler::filterXSS($_POST['cArtNr']));
     }
@@ -127,7 +127,13 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
     }
 
     // Config holen
-    $oConfig_arr = Shop::Container()->getDB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_BEWERTUNG, '*', 'nSort');
+    $oConfig_arr = Shop::Container()->getDB()->selectAll(
+        'teinstellungenconf',
+        'kEinstellungenSektion',
+        CONF_BEWERTUNG,
+        '*',
+        'nSort'
+    );
     $configCount = count($oConfig_arr);
     for ($i = 0; $i < $configCount; $i++) {
         if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
@@ -170,14 +176,16 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
         "SELECT count(*) AS nAnzahl
             FROM tbewertung
             WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
-                AND nAktiv = 0", 1
+                AND nAktiv = 0",
+        \DB\ReturnType::SINGLE_OBJECT
     )->nAnzahl;
     // Aktive Bewertungen Anzahl holen
     $nBewertungenAktiv = (int)Shop::Container()->getDB()->query(
         "SELECT count(*) AS nAnzahl
             FROM tbewertung
             WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
-                AND nAktiv = 1", 1
+                AND nAktiv = 1",
+        \DB\ReturnType::SINGLE_OBJECT
     )->nAnzahl;
 
     // Paginationen
@@ -197,7 +205,8 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
             WHERE tbewertung.kSprache = " . (int)$_SESSION['kSprache'] . "
                 AND tbewertung.nAktiv = 0
             ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC
-            LIMIT " . $oPagiInaktiv->getLimitSQL(), 2
+            LIMIT " . $oPagiInaktiv->getLimitSQL(),
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     // Aktive Bewertungen
     $oBewertungLetzten50_arr = Shop::Container()->getDB()->query(
@@ -208,7 +217,8 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
             WHERE tbewertung.kSprache = " . (int)$_SESSION['kSprache'] . "
                 AND tbewertung.nAktiv = 1
             ORDER BY tbewertung.dDatum DESC
-            LIMIT " . $oPageAktiv->getLimitSQL(), 2
+            LIMIT " . $oPageAktiv->getLimitSQL(),
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 
     $smarty->assign('oPagiInaktiv', $oPagiInaktiv)

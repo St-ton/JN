@@ -441,7 +441,10 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && vali
 }
 
 if ($step === 'neue Versandart') {
-    $versandlaender = Shop::Container()->getDB()->query("SELECT *, cDeutsch AS cName FROM tland ORDER BY cDeutsch", 2);
+    $versandlaender = Shop::Container()->getDB()->query(
+        'SELECT *, cDeutsch AS cName FROM tland ORDER BY cDeutsch', 
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
     if ($versandberechnung->cModulId === 'vm_versandberechnung_gewicht_jtl') {
         $smarty->assign('einheit', 'kg');
     }
@@ -465,7 +468,10 @@ if ($step === 'neue Versandart') {
            ->assign('versandlaender', $versandlaender)
            ->assign('versandberechnung', $versandberechnung)
            ->assign('waehrung', $standardwaehrung->cName)
-           ->assign('kundengruppen', Shop::Container()->getDB()->query("SELECT kKundengruppe, cName FROM tkundengruppe ORDER BY kKundengruppe", 2))
+           ->assign('kundengruppen', Shop::Container()->getDB()->query(
+               'SELECT kKundengruppe, cName FROM tkundengruppe ORDER BY kKundengruppe',
+               \DB\ReturnType::ARRAY_OF_OBJECTS
+           ))
            ->assign('oVersandartSpracheAssoc_arr', getShippingLanguage($kVersandartTMP, $sprachen))
            ->assign('gesetzteVersandklassen', isset($Versandart->cVersandklassen)
                ? gibGesetzteVersandklassen($Versandart->cVersandklassen)
@@ -476,9 +482,18 @@ if ($step === 'neue Versandart') {
 }
 
 if ($step === 'uebersicht') {
-    $oKundengruppen_arr  = Shop::Container()->getDB()->query("SELECT kKundengruppe, cName FROM tkundengruppe ORDER BY kKundengruppe", 2);
-    $versandberechnungen = Shop::Container()->getDB()->query("SELECT * FROM tversandberechnung ORDER BY cName", 2);
-    $versandarten        = Shop::Container()->getDB()->query("SELECT * FROM tversandart ORDER BY nSort, cName", 2);
+    $oKundengruppen_arr  = Shop::Container()->getDB()->query(
+        'SELECT kKundengruppe, cName FROM tkundengruppe ORDER BY kKundengruppe',
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
+    $versandberechnungen = Shop::Container()->getDB()->query(
+        'SELECT * FROM tversandberechnung ORDER BY cName',
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
+    $versandarten        = Shop::Container()->getDB()->query(
+        'SELECT * FROM tversandart ORDER BY nSort, cName',
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
     $vCount              = count($versandarten);
     for ($i = 0; $i < $vCount; $i++) {
         $versandarten[$i]->versandartzahlungsarten = Shop::Container()->getDB()->query(
@@ -486,7 +501,8 @@ if ($step === 'uebersicht') {
                 FROM tversandartzahlungsart
                 JOIN tzahlungsart ON tzahlungsart.kZahlungsart = tversandartzahlungsart.kZahlungsart
                 WHERE tversandartzahlungsart.kVersandart = " . (int)$versandarten[$i]->kVersandart . "
-                ORDER BY tzahlungsart.cAnbieter, tzahlungsart.nSort, tzahlungsart.cName", 2
+                ORDER BY tzahlungsart.cAnbieter, tzahlungsart.nSort, tzahlungsart.cName",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
 
         $count = count($versandarten[$i]->versandartzahlungsarten);

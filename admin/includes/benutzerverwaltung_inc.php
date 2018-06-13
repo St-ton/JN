@@ -614,11 +614,11 @@ function benutzerverwaltungActionGroupEdit(JTLSmarty $smarty, array &$messages)
 function benutzerverwaltungActionGroupDelete(JTLSmarty $smarty, array &$messages)
 {
     $kAdminlogingruppe = (int)$_POST['id'];
-
-    $oResult = Shop::Container()->getDB()->query("
-                    SELECT count(*) AS member_count
-                      FROM tadminlogin
-                      WHERE kAdminlogingruppe = " . $kAdminlogingruppe, 1
+    $oResult           = Shop::Container()->getDB()->query(
+        "SELECT count(*) AS member_count
+            FROM tadminlogin
+            WHERE kAdminlogingruppe = " . $kAdminlogingruppe,
+        \DB\ReturnType::SINGLE_OBJECT
     );
     // stop the deletion with a message, if there are accounts in this group
     if (0 !== (int)$oResult->member_count) {

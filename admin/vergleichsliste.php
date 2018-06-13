@@ -38,7 +38,8 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && vali
                 OR kEinstellungenSektion = " . CONF_VERGLEICHSLISTE . "
                 )
                 AND cConf = 'Y'
-            ORDER BY nSort", 2
+            ORDER BY nSort",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     $configCount = count($oConfig_arr);
     for ($i = 0; $i < $configCount; $i++) {

@@ -368,7 +368,8 @@ function gibKundeGuthaben($fGuthaben, $kKunde)
         Shop::Container()->getDB()->query(
             "UPDATE tkunde
                 SET fGuthaben = fGuthaben + " . (float)$fGuthaben . "
-                WHERE kKunde = " . (int)$kKunde, 4
+                WHERE kKunde = " . (int)$kKunde,
+            \DB\ReturnType::DEFAULT
         );
 
         return true;

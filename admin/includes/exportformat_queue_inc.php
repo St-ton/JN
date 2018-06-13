@@ -42,7 +42,8 @@ function holeExportformatCron()
             $oExportformatCron_arr[$i]->oJobQueue       = Shop::Container()->getDB()->query(
                 "SELECT *, DATE_FORMAT(dZuletztGelaufen, '%d.%m.%Y %H:%i') AS dZuletztGelaufen_de 
                     FROM tjobqueue 
-                    WHERE kCron = " . (int)$oExportformatCron->kCron, 1
+                    WHERE kCron = " . (int)$oExportformatCron->kCron,
+                \DB\ReturnType::SINGLE_OBJECT
             );
             $oExportformatCron_arr[$i]->nAnzahlArtikel       = holeMaxExportArtikelAnzahl($oExportformatCron);
             $oExportformatCron_arr[$i]->nAnzahlArtikelYatego = Shop::Container()->getDB()->query(
@@ -50,7 +51,8 @@ function holeExportformatCron()
                     FROM tartikel 
                     JOIN tartikelattribut 
                         ON tartikelattribut.kArtikel = tartikel.kArtikel 
-                    WHERE tartikelattribut.cName = 'yategokat'", 1
+                    WHERE tartikelattribut.cName = 'yategokat'",
+                \DB\ReturnType::SINGLE_OBJECT
             );
         }
 
@@ -71,7 +73,8 @@ function holeCron($kCron)
         $oCron = Shop::Container()->getDB()->query(
             "SELECT *, DATE_FORMAT(tcron.dStart, '%d.%m.%Y %H:%i') AS dStart_de
                 FROM tcron
-                WHERE kCron = " . $kCron, 1
+                WHERE kCron = " . $kCron,
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         if (!empty($oCron->kCron) && $oCron->kCron > 0) {

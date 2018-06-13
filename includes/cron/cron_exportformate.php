@@ -244,7 +244,10 @@ function gibYategoExport($exportformat, $oJobQueue, $ExportEinstellungen)
     define('DESCRIPTION_TAGS', '<a><b><i><u><p><br><hr><h1><h2><h3><h4><h5><h6><ul><ol><li><span><font><table><colgroup>');
 
     if (!pruefeYategoExportPfad()) {
-        Shop::Container()->getDB()->query("UPDATE texportformat SET dZuletztErstellt = now() WHERE kExportformat = " . (int)$oJobQueue->kKey, 4);
+        Shop::Container()->getDB()->query(
+            "UPDATE texportformat SET dZuletztErstellt = now() WHERE kExportformat = " . (int)$oJobQueue->kKey,
+            \DB\ReturnType::DEFAULT
+        );
         $oJobQueue->deleteJobInDB();
 
         return false;
@@ -330,7 +333,8 @@ function gibYategoExport($exportformat, $oJobQueue, $ExportEinstellungen)
         Shop::Container()->getDB()->query(
             "UPDATE texportformat 
                 SET dZuletztErstellt = now() 
-                WHERE kExportformat = " . (int)$oJobQueue->kKey, 4
+                WHERE kExportformat = " . (int)$oJobQueue->kKey,
+            \DB\ReturnType::DEFAULT
         );
         $oJobQueue->deleteJobInDB();
     }

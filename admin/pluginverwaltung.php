@@ -267,7 +267,10 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && vali
                 $cFehler = 'Fehler: Die Sprachvariable konnte nicht gefunden werden.';
             }
         } else { // Editieren
-            $oSprache_arr              = Shop::Container()->getDB()->query("SELECT * FROM tsprache", 2);
+            $oSprache_arr              = Shop::Container()->getDB()->query(
+                'SELECT * FROM tsprache',
+                \DB\ReturnType::ARRAY_OF_OBJECTS
+            );
             $oPluginSprachvariable_arr = gibSprachVariablen($kPlugin);
             foreach ($oSprache_arr as $oSprache) {
                 foreach ($oPluginSprachvariable_arr as $oPluginSprachvariable) {
@@ -373,8 +376,10 @@ if ($step === 'pluginverwaltung_uebersicht') {
            ->assign('PluginIndex_arr', $allPlugins->index);
 } elseif ($step === 'pluginverwaltung_sprachvariablen') { // Sprachvariablen
     $kPlugin      = RequestHelper::verifyGPCDataInt('kPlugin');
-    $oSprache_arr = Shop::Container()->getDB()->query("SELECT * FROM tsprache", 2);
-
+    $oSprache_arr = Shop::Container()->getDB()->query(
+        'SELECT * FROM tsprache',
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
     $smarty->assign('oSprache_arr', $oSprache_arr)
            ->assign('kPlugin', $kPlugin)
            ->assign('oPluginSprachvariable_arr', gibSprachVariablen($kPlugin));

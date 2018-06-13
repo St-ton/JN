@@ -70,7 +70,7 @@ if (isset($_REQUEST['action']) && validateToken()) {
             // Variable loeschen
             Shop::Lang()->loesche($_GET['kSprachsektion'], $_GET['cName']);
             Shop::Cache()->flushTags([CACHING_GROUP_LANGUAGE]);
-            Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+            Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = now()', \DB\ReturnType::DEFAULT);
             $cHinweis = 'Variable ' . $_GET['cName'] . ' wurde erfolgreich gel&ouml;scht.';
             break;
         case 'savevar':
@@ -136,7 +136,7 @@ if (isset($_REQUEST['action']) && validateToken()) {
                     'tsprachlog', ['cSektion', 'cName'], [$oVariable->cSprachsektion, $oVariable->cName]
                 );
                 Shop::Cache()->flushTags([CACHING_GROUP_LANGUAGE]);
-                Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+                Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = now()', \DB\ReturnType::DEFAULT4);
             }
 
             break;
@@ -156,7 +156,7 @@ if (isset($_REQUEST['action']) && validateToken()) {
             }
 
             Shop::Cache()->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE]);
-            Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+            Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = now()', \DB\ReturnType::DEFAULT);
 
             $cHinweis = count($cChanged_arr) > 0
                 ? 'Variablen erfolgreich ge&auml;ndert: ' . implode(', ', $cChanged_arr)
@@ -169,7 +169,7 @@ if (isset($_REQUEST['action']) && validateToken()) {
                 ->setzeSprache($cISOSprache)
                 ->clearLog();
             Shop::Cache()->flushTags([CACHING_GROUP_LANGUAGE]);
-            Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+            Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = now()', \DB\ReturnType::DEFAULT);
             $cHinweis .= 'Liste erfolgreich zur&uuml;ckgesetzt.';
             break;
         default:

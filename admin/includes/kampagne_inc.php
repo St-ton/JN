@@ -1049,7 +1049,8 @@ function speicherKampagne($oKampagne)
         $oKampagneTMP = Shop::Container()->getDB()->query(
             "SELECT *
                 FROM tkampagne
-                WHERE kKampagne = " . (int)$oKampagne->kKampagne, 1
+                WHERE kKampagne = " . (int)$oKampagne->kKampagne,
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         if (isset($oKampagneTMP->kKampagne)) {
@@ -1073,7 +1074,8 @@ function speicherKampagne($oKampagne)
     $oKampagneTMP = Shop::Container()->getDB()->queryPrepared(
         "SELECT kKampagne
             FROM tkampagne
-            WHERE cName = :cName", ['cName' => $oKampagne->cName], 1
+            WHERE cName = :cName", ['cName' => $oKampagne->cName],
+        \DB\ReturnType::SINGLE_OBJECT
     );
 
     if (isset($oKampagneTMP->kKampagne) && $oKampagneTMP->kKampagne > 0 && (!isset($oKampagne->kKampagne) || $oKampagne->kKampagne == 0)) {
@@ -1084,7 +1086,8 @@ function speicherKampagne($oKampagne)
         $oKampagneTMP = Shop::Container()->getDB()->queryPrepared(
             "SELECT kKampagne
                 FROM tkampagne
-                WHERE cParameter = :param", ['param' => $oKampagne->cParameter], 1
+                WHERE cParameter = :param", ['param' => $oKampagne->cParameter],
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         if (isset($oKampagneTMP->kKampagne) && $oKampagneTMP->kKampagne > 0 && (!isset($oKampagne->kKampagne) || $oKampagne->kKampagne == 0)) {

@@ -27,10 +27,10 @@ function gibAlleSuchspecialOverlays()
  * @param int $kSuchspecialOverlay
  * @return mixed
  */
-function gibSuchspecialOverlay($kSuchspecialOverlay)
+function gibSuchspecialOverlay(int $kSuchspecialOverlay)
 {
-    return Shop::Container()->getDB()->query("
-        SELECT tsuchspecialoverlay.*, tsuchspecialoverlaysprache.kSprache, tsuchspecialoverlaysprache.cBildPfad, 
+    return Shop::Container()->getDB()->query(
+        "SELECT tsuchspecialoverlay.*, tsuchspecialoverlaysprache.kSprache, tsuchspecialoverlaysprache.cBildPfad, 
             tsuchspecialoverlaysprache.nAktiv, tsuchspecialoverlaysprache.nPrio, tsuchspecialoverlaysprache.nMargin, 
             tsuchspecialoverlaysprache.nTransparenz, tsuchspecialoverlaysprache.nGroesse, 
             tsuchspecialoverlaysprache.nPosition
@@ -38,7 +38,8 @@ function gibSuchspecialOverlay($kSuchspecialOverlay)
             LEFT JOIN tsuchspecialoverlaysprache 
                 ON tsuchspecialoverlaysprache.kSuchspecialOverlay = tsuchspecialoverlay.kSuchspecialOverlay
                 AND tsuchspecialoverlaysprache.kSprache = " . (int)$_SESSION['kSprache'] . "
-            WHERE tsuchspecialoverlay.kSuchspecialOverlay = " . (int)$kSuchspecialOverlay, 1
+            WHERE tsuchspecialoverlay.kSuchspecialOverlay = " . $kSuchspecialOverlay,
+        \DB\ReturnType::SINGLE_OBJECT
     );
 }
 

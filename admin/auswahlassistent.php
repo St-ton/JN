@@ -126,7 +126,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             "SELECT " . $cSQLSelect . "
                 FROM tmerkmal
                 " . $cSQLJoin . "
-                ORDER BY tmerkmal.nSort", 2
+                ORDER BY tmerkmal.nSort",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         $smarty->assign('oMerkmal_arr', $oMerkmal_arr)
                ->assign('oAuswahlAssistentGruppe_arr',

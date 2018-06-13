@@ -180,7 +180,8 @@ if ($step === 'kampagne_uebersicht') {
                 FROM tkampagnevorgang
                 " . $cSQLWHERE . "
                     AND kKampagne = " . (int)$kKampagne . "
-                    AND kKampagneDef = " . (int)$oKampagneDef->kKampagneDef, 2
+                    AND kKampagneDef = " . (int)$oKampagneDef->kKampagneDef,
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
 
         $oPagiDefDetail = (new Pagination('defdetail'))
@@ -222,9 +223,9 @@ switch ((int)$_SESSION['Kampagne']->nAnsicht) {
         break;
 }
 
-if ((int)$cDatumNow_arr['cTag'] === (int)$cDatum_arr['cTag'] &&
-    (int)$cDatumNow_arr['cMonat'] === (int)$cDatum_arr['cMonat'] &&
-    (int)$cDatumNow_arr['cJahr'] === (int)$cDatum_arr['cJahr']
+if ((int)$cDatumNow_arr['cTag'] === (int)$cDatum_arr['cTag']
+    && (int)$cDatumNow_arr['cMonat'] === (int)$cDatum_arr['cMonat']
+    && (int)$cDatumNow_arr['cJahr'] === (int)$cDatum_arr['cJahr']
 ) {
     $smarty->assign('nGreaterNow', 1);
 }

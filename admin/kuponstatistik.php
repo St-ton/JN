@@ -9,8 +9,14 @@ $oAccount->permission('STATS_COUPON_VIEW', true, true);
 /** @global JTLSmarty $smarty */
 $step        = 'kuponstatistik_uebersicht';
 $cWhere      = '';
-$coupons_arr = Shop::Container()->getDB()->query("SELECT kKupon, cName FROM tkupon ORDER BY cName DESC", 9);
-$oDateShop   = Shop::Container()->getDB()->query("SELECT MIN(DATE(dZeit)) AS startDate FROM tbesucherarchiv", 1);
+$coupons_arr = Shop::Container()->getDB()->query(
+    'SELECT kKupon, cName FROM tkupon ORDER BY cName DESC',
+    \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
+);
+$oDateShop   = Shop::Container()->getDB()->query(
+    'SELECT MIN(DATE(dZeit)) AS startDate FROM tbesucherarchiv', 
+    \DB\ReturnType::SINGLE_OBJECT
+);
 $startDate   = DateTime::createFromFormat('Y-m-j', $oDateShop->startDate);
 $endDate     = DateTime::createFromFormat('Y-m-j', date('Y-m-j'));
 
@@ -62,7 +68,8 @@ $nCountOrders_arr = Shop::Container()->getDB()->query(
         FROM tbestellung
         WHERE dErstellt BETWEEN '" . $dStart . "'
             AND '" . $dEnd . "'
-            AND tbestellung.cStatus != " . BESTELLUNG_STATUS_STORNO, 8
+            AND tbestellung.cStatus != " . BESTELLUNG_STATUS_STORNO,
+    \DB\ReturnType::SINGLE_ASSOC_ARRAY
 );
 
 $nCountUsedCouponsOrder = 0;

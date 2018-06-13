@@ -135,7 +135,8 @@ function bearbeiteInsert($xml)
                         FROM tkategorie, tsprache
                         WHERE tkategorie.kKategorie = " . (int)$kategorie_arr[0]->kKategorie . "
                             AND tsprache.cStandard = 'Y'
-                            AND tkategorie.cSeo != ''", 4
+                            AND tkategorie.cSeo != ''",
+                \DB\ReturnType::DEFAULT
             );
 
             executeHook(HOOK_KATEGORIE_XML_BEARBEITEINSERT, ['oKategorie' => $kategorie_arr[0]]);

@@ -61,8 +61,8 @@ if ($kSektion > 0) {
     $section = Shop::Container()->getDB()->select('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
     $smarty->assign('kEinstellungenSektion', $section->kEinstellungenSektion);
 } else {
-    $section = Shop::Container()->getDB()->select('teinstellungensektion', 'kEinstellungenSektion', 1);
-    $smarty->assign('kEinstellungenSektion', 1);
+    $section = Shop::Container()->getDB()->select('teinstellungensektion', 'kEinstellungenSektion', CONF_GLOBAL);
+    $smarty->assign('kEinstellungenSektion', CONF_GLOBAL);
 }
 
 if ($bSuche) {
@@ -140,7 +140,7 @@ if (isset($_POST['einstellungen_bearbeiten'])
         }
     }
 
-    Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+    Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = now()', \DB\ReturnType::DEFAULT);
     $cHinweis    = 'Die Einstellungen wurden erfolgreich gespeichert.';
     $tagsToFlush = [CACHING_GROUP_OPTION];
     if ($kSektion === 1 || $kSektion === 4 || $kSektion === 5) {

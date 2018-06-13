@@ -378,11 +378,9 @@ function loescheNewsKategorie($kNewsKategorie_arr)
  * @param int $kSprache
  * @return stdClass
  */
-function editiereNewskategorie($kNewsKategorie, $kSprache)
+function editiereNewskategorie(int $kNewsKategorie, int $kSprache)
 {
     $oNewsKategorie = new stdClass();
-    $kNewsKategorie = (int)$kNewsKategorie;
-    $kSprache       = (int)$kSprache;
     if ($kNewsKategorie > 0 && $kSprache > 0) {
         $oNewsKategorie = Shop::Container()->getDB()->query(
             "SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,
@@ -394,7 +392,8 @@ function editiereNewskategorie($kNewsKategorie, $kSprache)
                 LEFT JOIN tseo ON tseo.cKey = 'kNewsKategorie'
                     AND tseo.kKey = tnewskategorie.kNewsKategorie
                     AND tseo.kSprache = " . $kSprache . "
-                WHERE kNewsKategorie = " . $kNewsKategorie, 1
+                WHERE kNewsKategorie = " . $kNewsKategorie,
+            \DB\ReturnType::SINGLE_OBJECT
         );
     }
 

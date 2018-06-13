@@ -65,13 +65,18 @@ for ($i = 0; $i < $configCount; $i++) {
 }
 
 // Emails auslesen und in Smarty assignen
-$oEmailBlacklist_arr = Shop::Container()->getDB()->query("SELECT * FROM temailblacklist", 2);
+$oEmailBlacklist_arr = Shop::Container()->getDB()->query(
+    "SELECT * 
+        FROM temailblacklist",
+    \DB\ReturnType::ARRAY_OF_OBJECTS
+);
 // Geblockte Emails auslesen und assignen
 $oEmailBlacklistBlock_arr = Shop::Container()->getDB()->query("
     SELECT *, DATE_FORMAT(dLetzterBlock, '%d.%m.%Y %H:%i') AS Datum
         FROM temailblacklistblock
         ORDER BY dLetzterBlock DESC
-        LIMIT 100", 2
+        LIMIT 100",
+    \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 
 $smarty->assign('Sprachen', Sprache::getAllLanguages())

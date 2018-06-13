@@ -34,8 +34,13 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
     }
 
     try {
-        if (Shop::Container()->getDB()->query("SHOW INDEX FROM $index WHERE KEY_NAME = 'idx_{$index}_fulltext'", 1)) {
-            Shop::Container()->getDB()->executeQuery("ALTER TABLE $index DROP KEY idx_{$index}_fulltext", 10);
+        if (Shop::Container()->getDB()->query(
+            "SHOW INDEX FROM $index WHERE KEY_NAME = 'idx_{$index}_fulltext'", \DB\ReturnType::SINGLE_OBJECT)
+        ) {
+            Shop::Container()->getDB()->executeQuery(
+                "ALTER TABLE $index DROP KEY idx_{$index}_fulltext",
+                \DB\ReturnType::QUERYSINGLE
+            );
         }
     } catch (Exception $e) {
         // Fehler beim Index löschen ignorieren
@@ -66,7 +71,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
 
         try {
             Shop::Container()->getDB()->executeQuery(
-                "UPDATE tsuchcache SET dGueltigBis = DATE_ADD(NOW(), INTERVAL 10 MINUTE)",
+                'UPDATE tsuchcache SET dGueltigBis = DATE_ADD(NOW(), INTERVAL 10 MINUTE)',
                 \DB\ReturnType::QUERYSINGLE
             );
             $res = Shop::Container()->getDB()->executeQuery(
@@ -107,7 +112,11 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
     exit;
 }
 
-if (isset($_POST['einstellungen_bearbeiten']) && (int)$_POST['einstellungen_bearbeiten'] === 1 && $kSektion > 0 && validateToken()) {
+if (isset($_POST['einstellungen_bearbeiten'])
+    && (int)$_POST['einstellungen_bearbeiten'] === 1
+    && $kSektion > 0
+    && validateToken()
+) {
     $sucheFulltext = isset($_POST['suche_fulltext']) ? in_array($_POST['suche_fulltext'], ['Y', 'B'], true) : false;
 
     if ($sucheFulltext) {
@@ -117,7 +126,10 @@ if (isset($_POST['einstellungen_bearbeiten']) && (int)$_POST['einstellungen_bear
             $cFehler                 = 'Die Volltextsuche erfordert MySQL ab Version 5.6!';
         } else {
             // Bei Volltextsuche die Mindeswortlänge an den DB-Parameter anpassen
-            $oValue                     = Shop::Container()->getDB()->query('SELECT @@ft_min_word_len AS ft_min_word_len', 1);
+            $oValue                     = Shop::Container()->getDB()->query(
+                'SELECT @@ft_min_word_len AS ft_min_word_len',
+                \DB\ReturnType::SINGLE_OBJECT
+            );
             $_POST['suche_min_zeichen'] = $oValue ? $oValue->ft_min_word_len : $_POST['suche_min_zeichen'];
         }
     }
@@ -165,7 +177,8 @@ $Conf    = Shop::Container()->getDB()->query(
         FROM teinstellungenconf
         WHERE nModul = 0 
             AND kEinstellungenSektion = $kSektion
-        ORDER BY nSort", 2
+        ORDER BY nSort",
+    \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 
 $configCount = count($Conf);

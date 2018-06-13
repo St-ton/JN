@@ -83,7 +83,8 @@ $oSitemapDownloadYears_arr = Shop::Container()->getDB()->query(
     "SELECT YEAR(dErstellt) AS year, COUNT(*) AS count
         FROM tsitemaptracker
         GROUP BY 1
-        ORDER BY 1 DESC", 2
+        ORDER BY 1 DESC",
+    \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 if (!isset($oSitemapDownloadYears_arr) || count($oSitemapDownloadYears_arr) === 0) {
     $oSitemapDownloadYears_arr[] = (object)[
@@ -108,7 +109,8 @@ $oSitemapDownload_arr = Shop::Container()->getDB()->query(
             ON tbesucherbot.kBesucherBot = tsitemaptracker.kBesucherBot
         WHERE YEAR(tsitemaptracker.dErstellt) = " . $nYearDownloads . "
         ORDER BY tsitemaptracker.dErstellt DESC
-        LIMIT " . $oSitemapDownloadPagination->getLimitSQL(), 2
+        LIMIT " . $oSitemapDownloadPagination->getLimitSQL(),
+    \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 
 // Sitemap Reports
@@ -116,7 +118,8 @@ $oSitemapReportYears_arr = Shop::Container()->getDB()->query(
     "SELECT YEAR(dErstellt) AS year, COUNT(*) AS count
         FROM tsitemapreport
         GROUP BY 1
-        ORDER BY 1 DESC", 2
+        ORDER BY 1 DESC",
+    \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 if (!isset($oSitemapReportYears_arr) || count($oSitemapReportYears_arr) === 0) {
     $oSitemapReportYears_arr[] = (object)[
@@ -137,7 +140,8 @@ $oSitemapReport_arr = Shop::Container()->getDB()->query(
         FROM tsitemapreport
         WHERE YEAR(tsitemapreport.dErstellt) = " . $nYearReports . "
         ORDER BY tsitemapreport.dErstellt DESC
-        LIMIT " . $oSitemapReportPagination->getLimitSQL(), 2
+        LIMIT " . $oSitemapReportPagination->getLimitSQL(),
+    \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 
 if (is_array($oSitemapReport_arr) && count($oSitemapReport_arr) > 0) {

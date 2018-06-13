@@ -405,7 +405,8 @@ function plzimportActionCheckStatus()
         $impData = Shop::Container()->getDB()->query(
             "SELECT count(*) AS nAnzahl
                 FROM tplz
-                WHERE cLandISO = 'IMP'", 1
+                WHERE cLandISO = 'IMP'",
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         $result = (object)[

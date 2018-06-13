@@ -144,8 +144,14 @@ if ($action === 'bearbeiten') {
 // Seite ausgeben
 if ($action === 'bearbeiten') {
     // Seite: Bearbeiten
-    $oSteuerklasse_arr = Shop::Container()->getDB()->query("SELECT kSteuerklasse, cName FROM tsteuerklasse", 2);
-    $oKundengruppe_arr = Shop::Container()->getDB()->query("SELECT kKundengruppe, cName FROM tkundengruppe", 2);
+    $oSteuerklasse_arr = Shop::Container()->getDB()->query(
+        "SELECT kSteuerklasse, cName FROM tsteuerklasse",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
+    $oKundengruppe_arr = Shop::Container()->getDB()->query(
+        "SELECT kKundengruppe, cName FROM tkundengruppe",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
     $oHersteller_arr   = getManufacturers($oKupon->cHersteller);
     $oKategorie_arr    = getCategories($oKupon->cKategorien);
     $kKunde_arr        = array_filter(

@@ -440,7 +440,8 @@ function fuelleFehlendeMMWInSeo($oMM_arr)
                                         AND tseo.kKey = " . (int)$oMMW->kMerkmalWert . "
                                         AND tseo.kSprache = " . (int)$oSprache->kSprache . "
                                 WHERE tmerkmalwertsprache.kMerkmalWert = " . (int)$oMMW->kMerkmalWert . "
-                                    AND tmerkmalwertsprache.kSprache = " . (int)$oSprache->kSprache, 4
+                                    AND tmerkmalwertsprache.kSprache = " . (int)$oSprache->kSprache,
+                            \DB\ReturnType::DEFAULT
                         );
                         //insert in tseo
                         //@todo: 1062: Duplicate entry '' for key 'PRIMARY'
@@ -487,7 +488,8 @@ function loescheMerkmal($kMerkmal, $update = 1)
                 INNER JOIN tmerkmal
                     ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
                 WHERE tseo.cKey = 'kMerkmalWert'
-                    AND tmerkmal.kMerkmal = " . $kMerkmal, 4
+                    AND tmerkmal.kMerkmal = " . $kMerkmal,
+            \DB\ReturnType::DEFAULT
         );
 
         if ($update) {
@@ -524,7 +526,8 @@ function loescheNurMerkmal($kMerkmal)
                 INNER JOIN tmerkmal
                     ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
                 WHERE tseo.cKey = 'kMerkmalWert'
-                    AND tmerkmal.kMerkmal = " . $kMerkmal, 4
+                    AND tmerkmal.kMerkmal = " . $kMerkmal,
+            \DB\ReturnType::DEFAULT
         );
 
         Shop::Container()->getDB()->delete('tmerkmal', 'kMerkmal', $kMerkmal);

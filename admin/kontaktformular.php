@@ -141,7 +141,10 @@ if ($step === 'uebersicht') {
         );
         $Conf[$i]->gesetzterWert = $setValue->cWert ?? null;
     }
-    $neuerBetreffs = Shop::Container()->getDB()->query("SELECT * FROM tkontaktbetreff ORDER BY nSort", 2);
+    $neuerBetreffs = Shop::Container()->getDB()->query(
+        "SELECT * FROM tkontaktbetreff ORDER BY nSort",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
     $nCount        = count($neuerBetreffs);
     for ($i = 0; $i < $nCount; $i++) {
         $kunden = '';
@@ -149,18 +152,22 @@ if ($step === 'uebersicht') {
             $kunden = 'alle';
         } else {
             $kKundengruppen = explode(';', $neuerBetreffs[$i]->cKundengruppen);
-            if (is_array($kKundengruppen)) {
-                foreach ($kKundengruppen as $kKundengruppe) {
-                    if (is_numeric($kKundengruppe)) {
-                        $kndgrp = Shop::Container()->getDB()->select('tkundengruppe', 'kKundengruppe', (int)$kKundengruppe);
-                        $kunden .= ' ' . $kndgrp->cName;
-                    }
+            foreach ($kKundengruppen as $kKundengruppe) {
+                if (is_numeric($kKundengruppe)) {
+                    $kndgrp = Shop::Container()->getDB()->select('tkundengruppe', 'kKundengruppe', (int)$kKundengruppe);
+                    $kunden .= ' ' . $kndgrp->cName;
                 }
             }
         }
         $neuerBetreffs[$i]->Kundengruppen = $kunden;
     }
-    $SpezialContent = Shop::Container()->getDB()->selectAll('tspezialcontentsprache', 'nSpezialContent', SC_KONTAKTFORMULAR, '*', 'cTyp');
+    $SpezialContent = Shop::Container()->getDB()->selectAll(
+        'tspezialcontentsprache',
+        'nSpezialContent',
+        SC_KONTAKTFORMULAR,
+        '*',
+        'cTyp'
+    );
     $Content        = [];
     $contentCount   = count($SpezialContent);
     for ($i = 0; $i < $contentCount; $i++) {
@@ -177,7 +184,10 @@ if ($step === 'betreff') {
         $neuerBetreff = Shop::Container()->getDB()->select('tkontaktbetreff', 'kKontaktBetreff', (int)$_GET['kKontaktBetreff']);
     }
 
-    $kundengruppen = Shop::Container()->getDB()->query("SELECT * FROM tkundengruppe ORDER BY cName", 2);
+    $kundengruppen = Shop::Container()->getDB()->query(
+        "SELECT * FROM tkundengruppe ORDER BY cName",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
     $smarty->assign('Betreff', $neuerBetreff)
            ->assign('kundengruppen', $kundengruppen)
            ->assign('gesetzteKundengruppen', getGesetzteKundengruppen($neuerBetreff))

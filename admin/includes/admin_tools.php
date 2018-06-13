@@ -59,7 +59,8 @@ function saveAdminSettings($settingsIDs, &$cPost_arr, $tags = [CACHING_GROUP_OPT
         "SELECT *
             FROM teinstellungenconf
             WHERE kEinstellungenConf IN (" . implode(',', $settingsIDs) . ")
-            ORDER BY nSort", 2
+            ORDER BY nSort",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     if (is_array($oConfig_arr) && count($oConfig_arr) > 0) {
         foreach ($oConfig_arr as $config) {
@@ -145,12 +146,11 @@ function bearbeiteListBox($cListBox_arr, $cWertName, $kEinstellungenSektion)
  * @param array $tags
  * @return string
  */
-function saveAdminSectionSettings($kEinstellungenSektion, &$cPost_arr, $tags = [CACHING_GROUP_OPTION])
+function saveAdminSectionSettings(int $kEinstellungenSektion, &$cPost_arr, $tags = [CACHING_GROUP_OPTION])
 {
     if (!validateToken()) {
         return 'Fehler: Cross site request forgery.';
     }
-    $kEinstellungenSektion = (int)$kEinstellungenSektion;
     $oConfig_arr           = Shop::Container()->getDB()->selectAll(
         'teinstellungenconf',
         ['kEinstellungenSektion', 'cConf'],
@@ -208,7 +208,7 @@ function saveAdminSectionSettings($kEinstellungenSektion, &$cPost_arr, $tags = [
  * @param bool $bAktivAbfragen
  * @return array
  */
-function holeAlleKampagnen($bInterneKampagne = false, $bAktivAbfragen = true)
+function holeAlleKampagnen(bool $bInterneKampagne = false, bool $bAktivAbfragen = true)
 {
     $cAktivSQL  = $bAktivAbfragen ? " WHERE nAktiv = 1" : '';
     $cInternSQL = '';
@@ -223,15 +223,13 @@ function holeAlleKampagnen($bInterneKampagne = false, $bAktivAbfragen = true)
             FROM tkampagne
             " . $cAktivSQL . "
             " . $cInternSQL . "
-            ORDER BY kKampagne", 2
+            ORDER BY kKampagne",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-
-    if (is_array($oKampagneTMP_arr) && count($oKampagneTMP_arr) > 0) {
-        foreach ($oKampagneTMP_arr as $oKampagneTMP) {
-            $oKampagne = new Kampagne($oKampagneTMP->kKampagne);
-            if (isset($oKampagne->kKampagne) && $oKampagne->kKampagne > 0) {
-                $oKampagne_arr[$oKampagne->kKampagne] = $oKampagne;
-            }
+    foreach ($oKampagneTMP_arr as $oKampagneTMP) {
+        $oKampagne = new Kampagne($oKampagneTMP->kKampagne);
+        if (isset($oKampagne->kKampagne) && $oKampagne->kKampagne > 0) {
+            $oKampagne_arr[$oKampagne->kKampagne] = $oKampagne;
         }
     }
 
@@ -478,7 +476,10 @@ function ermittleDatumWoche($cDatum)
 function getJTLVersionDB($bDate = false)
 {
     $nRet     = 0;
-    $nVersion = Shop::Container()->getDB()->query("SELECT nVersion, dAktualisiert FROM tversion", 1);
+    $nVersion = Shop::Container()->getDB()->query(
+        'SELECT nVersion, dAktualisiert FROM tversion', 
+        \DB\ReturnType::SINGLE_OBJECT
+    );
     if (isset($nVersion->nVersion) && is_numeric($nVersion->nVersion)) {
         $nRet = (int)$nVersion->nVersion;
     }

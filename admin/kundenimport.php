@@ -53,7 +53,10 @@ if (isset($_POST['kundenimport'], $_FILES['csv']['tmp_name'])
 }
 
 $smarty->assign('sprachen', Sprache::getAllLanguages())
-       ->assign('kundengruppen', Shop::Container()->getDB()->query("SELECT * FROM tkundengruppe ORDER BY cName", 2))
+       ->assign('kundengruppen', Shop::Container()->getDB()->query(
+           "SELECT * FROM tkundengruppe ORDER BY cName",
+           \DB\ReturnType::ARRAY_OF_OBJECTS
+       ))
        ->assign('step', $step ?? null)
        ->assign('hinweis', $hinweis ?? null)
        ->display('kundenimport.tpl');
@@ -161,10 +164,11 @@ function processImport($fmt, $data)
         if (isset($_SESSION['kundenimport']['cLand']) && strlen($_SESSION['kundenimport']['cLand']) > 0) {
             $kunde->cLand = $_SESSION['kundenimport']['cLand'];
         } else {
-            $oRes = Shop::Container()->getDB()->query("
-                SELECT cWert AS cLand 
+            $oRes = Shop::Container()->getDB()->query(
+                "SELECT cWert AS cLand 
                     FROM teinstellungen 
-                    WHERE cName = 'kundenregistrierung_standardland'", 1
+                    WHERE cName = 'kundenregistrierung_standardland'",
+                \DB\ReturnType::SINGLE_OBJECT
             );
             if (is_object($oRes) && isset($oRes->cLand) && strlen($oRes->cLand) > 0) {
                 $_SESSION['kundenimport']['cLand'] = $oRes->cLand;
@@ -175,7 +179,7 @@ function processImport($fmt, $data)
     $cPasswortKlartext = '';
     if ((int)$_POST['PasswortGenerieren'] === 1) {
         $cPasswortKlartext = Shop::Container()->getPasswordService()->generate(PASSWORD_DEFAULT_LENGTH);
-        $kunde->cPasswort  = $kunde->generatePasswordHash($cPasswortKlartext);
+        $kunde->cPasswort  = Shop::Container()->getPasswordService()->hash($cPasswortKlartext);
     }
     $oTMP              = new stdClass();
     $oTMP->cNachname   = $kunde->cNachname;

@@ -45,8 +45,9 @@ function gibAnzahlBestellungen($cSuchFilter)
         ? " WHERE cBestellNr LIKE '%" . Shop::DB()->escape($cSuchFilter) . "%'"
         : '';
     $oBestellung = Shop::Container()->getDB()->query(
-        "SELECT count(*) AS nAnzahl
-            FROM tbestellung" . $cSuchFilterSQL, 1
+        'SELECT count(*) AS nAnzahl
+            FROM tbestellung' . $cSuchFilterSQL,
+        \DB\ReturnType::SINGLE_OBJECT
     );
     if (isset($oBestellung->nAnzahl) && $oBestellung->nAnzahl > 0) {
         return (int)$oBestellung->nAnzahl;
@@ -68,7 +69,8 @@ function setzeAbgeholtZurueck($kBestellung_arr)
             "SELECT kKunde
                 FROM tbestellung
                 WHERE kBestellung IN(" . implode(',', $kBestellung_arr) . ")
-                    AND cAbgeholt = 'Y'", 2
+                    AND cAbgeholt = 'Y'",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (is_array($oKunde_arr) && count($oKunde_arr) > 0) {
             $kKunde_arr = [];
@@ -81,7 +83,8 @@ function setzeAbgeholtZurueck($kBestellung_arr)
             Shop::Container()->getDB()->query(
                 "UPDATE tkunde
                     SET cAbgeholt = 'N'
-                    WHERE kKunde IN(" . implode(',', $kKunde_arr) . ")", 3
+                    WHERE kKunde IN(" . implode(',', $kKunde_arr) . ")",
+                \DB\ReturnType::AFFECTED_ROWS
             );
         }
         // Bestellungen cAbgeholt zurücksetzen
@@ -89,7 +92,8 @@ function setzeAbgeholtZurueck($kBestellung_arr)
             "UPDATE tbestellung
                 SET cAbgeholt = 'N'
                 WHERE kBestellung IN(" . implode(',', $kBestellung_arr) . ")
-                    AND cAbgeholt = 'Y'", 3
+                    AND cAbgeholt = 'Y'",
+            \DB\ReturnType::AFFECTED_ROWS
         );
 
         // Zahlungsinfo cAbgeholt zurücksetzen
@@ -97,7 +101,8 @@ function setzeAbgeholtZurueck($kBestellung_arr)
             "UPDATE tzahlungsinfo
                 SET cAbgeholt = 'N'
                 WHERE kBestellung IN(" . implode(',', $kBestellung_arr) . ")
-                    AND cAbgeholt = 'Y'", 3
+                    AND cAbgeholt = 'Y'",
+            \DB\ReturnType::AFFECTED_ROWS
         );
 
         return -1;

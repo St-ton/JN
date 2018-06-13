@@ -48,15 +48,17 @@ function gibBrandings()
  * @param int $kBranding
  * @return mixed
  */
-function gibBranding($kBranding)
+function gibBranding(int $kBranding)
 {
-    return Shop::Container()->getDB()->query(
-        "SELECT tbranding.*, tbranding.kBranding AS kBrandingTMP, tbrandingeinstellung.*
+    return Shop::Container()->getDB()->queryPrepared(
+        'SELECT tbranding.*, tbranding.kBranding AS kBrandingTMP, tbrandingeinstellung.*
             FROM tbranding
             LEFT JOIN tbrandingeinstellung 
                 ON tbrandingeinstellung.kBranding = tbranding.kBranding
-            WHERE tbranding.kBranding = " . (int)$kBranding . "
-            GROUP BY tbranding.kBranding", 1
+            WHERE tbranding.kBranding = :bid
+            GROUP BY tbranding.kBranding',
+        ['bid' => $kBranding],
+        \DB\ReturnType::SINGLE_OBJECT
     );
 }
 
@@ -66,9 +68,8 @@ function gibBranding($kBranding)
  * @param array $cFiles_arr
  * @return bool
  */
-function speicherEinstellung($kBranding, $cPost_arr, $cFiles_arr)
+function speicherEinstellung(int $kBranding, $cPost_arr, $cFiles_arr)
 {
-    $kBranding                          = (int)$kBranding;
     $oBrandingEinstellung               = new stdClass();
     $oBrandingEinstellung->kBranding    = $kBranding;
     $oBrandingEinstellung->cPosition    = $cPost_arr['cPosition'];
@@ -80,15 +81,20 @@ function speicherEinstellung($kBranding, $cPost_arr, $cFiles_arr)
         $oBrandingEinstellung->cBrandingBild = 'kBranding_' . $kBranding .
             mappeFileTyp($cFiles_arr['cBrandingBild']['type']);
     } else {
-        $oBrandingEinstellungTMP             = Shop::Container()->getDB()->select('tbrandingeinstellung', 'kBranding', $kBranding);
-        $oBrandingEinstellung->cBrandingBild = (!empty($oBrandingEinstellungTMP->cBrandingBild))
+        $oBrandingEinstellungTMP             = Shop::Container()->getDB()->select(
+            'tbrandingeinstellung',
+            'kBranding',
+            $kBranding
+        );
+        $oBrandingEinstellung->cBrandingBild = !empty($oBrandingEinstellungTMP->cBrandingBild)
             ? $oBrandingEinstellungTMP->cBrandingBild
             : '';
     }
 
-    if ($oBrandingEinstellung->kBranding > 0 &&
-        strlen($oBrandingEinstellung->cPosition) > 0 &&
-        strlen($oBrandingEinstellung->cBrandingBild) > 0) {
+    if ($oBrandingEinstellung->kBranding > 0
+        && strlen($oBrandingEinstellung->cPosition) > 0
+        && strlen($oBrandingEinstellung->cBrandingBild) > 0
+    ) {
         // Alte Einstellung loeschen
         Shop::Container()->getDB()->delete('tbrandingeinstellung', 'kBranding', $kBranding);
 
@@ -112,19 +118,19 @@ function speicherEinstellung($kBranding, $cPost_arr, $cFiles_arr)
  * @return bool
  * @todo: make size (2097152) configurable?
  */
-function speicherBrandingBild($cFiles_arr, $kBranding)
+function speicherBrandingBild($cFiles_arr, int $kBranding)
 {
-    if ($cFiles_arr['cBrandingBild']['type'] === 'image/jpeg' ||
-        $cFiles_arr['cBrandingBild']['type'] === 'image/pjpeg' ||
-        $cFiles_arr['cBrandingBild']['type'] === 'image/gif' ||
-        $cFiles_arr['cBrandingBild']['type'] === 'image/png' ||
-        $cFiles_arr['cBrandingBild']['type'] === 'image/bmp') {
-        if ($cFiles_arr['cBrandingBild']['size'] <= 2097152) {
-            $cUploadDatei = PFAD_ROOT . PFAD_BRANDINGBILDER . 'kBranding_' .
-                $kBranding . mappeFileTyp($cFiles_arr['cBrandingBild']['type']);
+    if (($cFiles_arr['cBrandingBild']['type'] === 'image/jpeg'
+        || $cFiles_arr['cBrandingBild']['type'] === 'image/pjpeg'
+        || $cFiles_arr['cBrandingBild']['type'] === 'image/gif'
+        || $cFiles_arr['cBrandingBild']['type'] === 'image/png'
+        || $cFiles_arr['cBrandingBild']['type'] === 'image/bmp'
+    ) && $cFiles_arr['cBrandingBild']['size'] <= 2097152
+    ) {
+        $cUploadDatei = PFAD_ROOT . PFAD_BRANDINGBILDER . 'kBranding_' .
+            $kBranding . mappeFileTyp($cFiles_arr['cBrandingBild']['type']);
 
-            return move_uploaded_file($cFiles_arr['cBrandingBild']['tmp_name'], $cUploadDatei);
-        }
+        return move_uploaded_file($cFiles_arr['cBrandingBild']['tmp_name'], $cUploadDatei);
     }
 
     return false;
@@ -133,7 +139,7 @@ function speicherBrandingBild($cFiles_arr, $kBranding)
 /**
  * @param int $kBranding
  */
-function loescheBrandingBild($kBranding)
+function loescheBrandingBild(int $kBranding)
 {
     if (file_exists(PFAD_ROOT . PFAD_BRANDINGBILDER . 'kBranding_' . $kBranding . '.jpg')) {
         @unlink(PFAD_ROOT . PFAD_BRANDINGBILDER . 'kBranding_' . $kBranding . '.jpg');

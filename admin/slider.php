@@ -99,9 +99,8 @@ switch ($cAction) {
 
                 header('Location: ' . $cRedirectUrl);
                 exit;
-            } else {
-                $cFehler .= 'Slider konnte nicht gespeichert werden.';
             }
+            $cFehler .= 'Slider konnte nicht gespeichert werden.';
 
             if (empty($cFehler)) {
                 $cHinweis = '&Auml;nderungen erfolgreich gespeichert.';
@@ -173,9 +172,8 @@ switch ($cAction) {
         if ($bSuccess === true) {
             header('Location: ' . $cRedirectUrl);
             exit;
-        } else {
-            $cFehler = 'Slider konnte nicht entfernt werden.';
         }
+        $cFehler = 'Slider konnte nicht entfernt werden.';
         break;
 
     default:
@@ -188,5 +186,8 @@ $smarty->assign('PFAD_KCFINDER', PFAD_KCFINDER)
        ->assign('cHinweis', $cHinweis)
        ->assign('cAction', $cAction)
        ->assign('kSlider', $kSlider)
-       ->assign('oSlider_arr', Shop::Container()->getDB()->query("SELECT * FROM tslider", 2))
+       ->assign('oSlider_arr', Shop::Container()->getDB()->query(
+           'SELECT * FROM tslider', 
+           \DB\ReturnType::ARRAY_OF_OBJECTS
+       ))
        ->display('slider.tpl');

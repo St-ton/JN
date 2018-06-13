@@ -141,7 +141,7 @@ if (isset($_POST['einstellungen_bearbeiten']) && validateToken()) {
             Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
         }
     }
-    Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+    Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = now()', \DB\ReturnType::DEFAULT);
     Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
 
     $smarty->assign('saved', true);

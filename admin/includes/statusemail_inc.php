@@ -91,10 +91,10 @@ function ladeStatusemailEinstellungen()
     $oStatusemailEinstellungen->cIntervallMoeglich_arr = gibIntervallMoeglichkeiten();
     $oStatusemailEinstellungen->cInhaltMoeglich_arr    = gibInhaltMoeglichkeiten();
     $oStatusemailEinstellungen->nIntervall_arr         = isset($oStatusemailEinstellungen->cIntervall)
-        ? gibKeyArrayFuerKeyString($oStatusemailEinstellungen->cIntervall, ';')
+        ? StringHandler::parseSSK($oStatusemailEinstellungen->cIntervall)
         : [];
     $oStatusemailEinstellungen->nInhalt_arr            = isset($oStatusemailEinstellungen->cInhalt)
-        ? gibKeyArrayFuerKeyString($oStatusemailEinstellungen->cInhalt, ';')
+        ? StringHandler::parseSSK($oStatusemailEinstellungen->cInhalt)
         : [];
 
     return $oStatusemailEinstellungen;

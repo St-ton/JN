@@ -40,7 +40,8 @@ if (count($oLinkOberGruppe_arr) > 0) {
     $oPluginSearch = Shop::Container()->getDB()->query(
         "SELECT kPlugin, cName
             FROM tplugin
-            WHERE cPluginID = 'jtl_search'", 1
+            WHERE cPluginID = 'jtl_search'",
+        \DB\ReturnType::SINGLE_OBJECT
     );
     foreach ($oLinkOberGruppe_arr as $i => $oLinkOberGruppe) {
         $oLinkOberGruppe_arr[$i]->oLinkGruppe_arr = [];

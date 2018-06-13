@@ -71,20 +71,23 @@ if (isset($_POST['resetEmailvorlage'])
                     FROM temailvorlage
                     LEFT JOIN temailvorlagesprache
                         ON temailvorlagesprache.kEmailvorlage = temailvorlage.kEmailvorlage
-                    WHERE temailvorlage.kEmailvorlage = " . (int)$_POST['kEmailvorlage'], 4
+                    WHERE temailvorlage.kEmailvorlage = " . (int)$_POST['kEmailvorlage'],
+                \DB\ReturnType::DEFAULT
             );
             Shop::Container()->getDB()->query(
                 "INSERT INTO temailvorlage
                     SELECT *
                     FROM temailvorlageoriginal
-                    WHERE temailvorlageoriginal.kEmailvorlage = " . (int)$_POST['kEmailvorlage'], 4
+                    WHERE temailvorlageoriginal.kEmailvorlage = " . (int)$_POST['kEmailvorlage'],
+                \DB\ReturnType::DEFAULT
             );
         }
         Shop::Container()->getDB()->query(
             "INSERT INTO " . $cTableSprache . "
                 SELECT *
                 FROM " . $cTableSpracheOriginal . "
-                WHERE " . $cTableSpracheOriginal . ".kEmailvorlage = " . (int)$_POST['kEmailvorlage'], 4
+                WHERE " . $cTableSpracheOriginal . ".kEmailvorlage = " . (int)$_POST['kEmailvorlage'],
+            \DB\ReturnType::DEFAULT
         );
         $languages = Sprache::getAllLanguages();
         if (empty(RequestHelper::verifyGPCDataInt('kPlugin'))) {

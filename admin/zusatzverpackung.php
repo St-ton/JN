@@ -51,28 +51,26 @@ if (isset($_POST['eintragen']) && (int)$_POST['eintragen'] === 1 && validateToke
                         FROM tverpackung
                         LEFT JOIN tverpackungsprache 
                             ON tverpackungsprache.kVerpackung = tverpackung.kVerpackung
-                        WHERE tverpackung.kVerpackung = " . $kVerpackung, 3
+                        WHERE tverpackung.kVerpackung = " . $kVerpackung,
+                    \DB\ReturnType::AFFECTED_ROWS
                 );
-
                 $oVerpackung->kVerpackung = $kVerpackung;
                 Shop::Container()->getDB()->insert('tverpackung', $oVerpackung);
             } else {
                 $kVerpackung = Shop::Container()->getDB()->insert('tverpackung', $oVerpackung);
             }
             // In tverpackungsprache adden
-            if (is_array($oSprache_arr) && count($oSprache_arr) > 0) {
-                foreach ($oSprache_arr as $i => $oSprache) {
-                    $oVerpackungSprache                = new stdClass();
-                    $oVerpackungSprache->kVerpackung   = $kVerpackung;
-                    $oVerpackungSprache->cISOSprache   = $oSprache->cISO;
-                    $oVerpackungSprache->cName         = (!empty($_POST['cName_' . $oSprache->cISO]))
-                        ? htmlspecialchars($_POST['cName_' . $oSprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
-                        : htmlspecialchars($_POST['cName_' . $oSprache_arr[0]->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-                    $oVerpackungSprache->cBeschreibung = (!empty($_POST['cBeschreibung_' . $oSprache->cISO]))
-                        ? htmlspecialchars($_POST['cBeschreibung_' . $oSprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
-                        : htmlspecialchars($_POST['cBeschreibung_' . $oSprache_arr[0]->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-                    Shop::Container()->getDB()->insert('tverpackungsprache', $oVerpackungSprache);
-                }
+            foreach ($oSprache_arr as $i => $oSprache) {
+                $oVerpackungSprache                = new stdClass();
+                $oVerpackungSprache->kVerpackung   = $kVerpackung;
+                $oVerpackungSprache->cISOSprache   = $oSprache->cISO;
+                $oVerpackungSprache->cName         = (!empty($_POST['cName_' . $oSprache->cISO]))
+                    ? htmlspecialchars($_POST['cName_' . $oSprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
+                    : htmlspecialchars($_POST['cName_' . $oSprache_arr[0]->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+                $oVerpackungSprache->cBeschreibung = (!empty($_POST['cBeschreibung_' . $oSprache->cISO]))
+                    ? htmlspecialchars($_POST['cBeschreibung_' . $oSprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
+                    : htmlspecialchars($_POST['cBeschreibung_' . $oSprache_arr[0]->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+                Shop::Container()->getDB()->insert('tverpackungsprache', $oVerpackungSprache);
             }
 
             unset($oVerpackung);
@@ -126,10 +124,8 @@ if (isset($_POST['eintragen']) && (int)$_POST['eintragen'] === 1 && validateToke
             $kVerpackung,
             'cISOSprache, cName, cBeschreibung'
         );
-        if (is_array($oVerpackungSprach_arr) && count($oVerpackungSprach_arr) > 0) {
-            foreach ($oVerpackungSprach_arr as $oVerpackungSprach) {
-                $oVerpackung->oSprach_arr[$oVerpackungSprach->cISOSprache] = $oVerpackungSprach;
-            }
+        foreach ($oVerpackungSprach_arr as $oVerpackungSprach) {
+            $oVerpackung->oSprach_arr[$oVerpackungSprach->cISOSprache] = $oVerpackungSprach;
         }
         $oKundengruppe                  = gibKundengruppeObj($oVerpackung->cKundengruppe);
         $oVerpackung->kKundengruppe_arr = $oKundengruppe->kKundengruppe_arr;
@@ -147,20 +143,22 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0 && validateToken()) {
     $oVerpackungSprache_arr = Shop::Container()->getDB()->selectAll('tverpackungsprache', 'kVerpackung', $kVerpackung);
     $smarty->assign('oVerpackungSprache_arr', $oVerpackungSprache_arr);
 } else {
-    // Kundengruppen holen
-    $oKundengruppe_arr = Shop::Container()->getDB()->query("SELECT kKundengruppe, cName FROM tkundengruppe", 2);
-    // Steuerklassen
-    $oSteuerklasse_arr = Shop::Container()->getDB()->query("SELECT * FROM tsteuerklasse", 2);
-    // Verpackung aus der DB holen und assignen
-    $oVerpackung_arr = Shop::Container()->getDB()->query("SELECT * FROM tverpackung", 2);
-
-    // cKundengruppe exploden
-    if (is_array($oVerpackung_arr) && count($oVerpackung_arr) > 0) {
-        foreach ($oVerpackung_arr as $i => $oVerpackung) {
-            $oKundengruppe                          = gibKundengruppeObj($oVerpackung->cKundengruppe);
-            $oVerpackung_arr[$i]->kKundengruppe_arr = $oKundengruppe->kKundengruppe_arr;
-            $oVerpackung_arr[$i]->cKundengruppe_arr = $oKundengruppe->cKundengruppe_arr;
-        }
+    $oKundengruppe_arr = Shop::Container()->getDB()->query(
+        'SELECT kKundengruppe, cName FROM tkundengruppe', 
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
+    $oSteuerklasse_arr = Shop::Container()->getDB()->query(
+        'SELECT * FROM tsteuerklasse', 
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
+    $oVerpackung_arr = Shop::Container()->getDB()->query(
+        'SELECT * FROM tverpackung', 
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
+    foreach ($oVerpackung_arr as $i => $oVerpackung) {
+        $oKundengruppe                          = gibKundengruppeObj($oVerpackung->cKundengruppe);
+        $oVerpackung_arr[$i]->kKundengruppe_arr = $oKundengruppe->kKundengruppe_arr;
+        $oVerpackung_arr[$i]->cKundengruppe_arr = $oKundengruppe->cKundengruppe_arr;
     }
     $smarty->assign('oKundengruppe_arr', $oKundengruppe_arr)
            ->assign('oSteuerklasse_arr', $oSteuerklasse_arr)
@@ -184,7 +182,10 @@ function gibKundengruppeObj($cKundengruppe)
 
     if (strlen($cKundengruppe) > 0) {
         // Kundengruppen holen
-        $oKundengruppe_arr = Shop::Container()->getDB()->query("SELECT kKundengruppe, cName FROM tkundengruppe", 2);
+        $oKundengruppe_arr = Shop::Container()->getDB()->query(
+            'SELECT kKundengruppe, cName FROM tkundengruppe',
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
         $kKundengruppe_arr = explode(';', $cKundengruppe);
         if (is_array($kKundengruppe_arr) && count($kKundengruppe_arr) > 0) {
             if (!in_array('-1', $kKundengruppe_arr)) {

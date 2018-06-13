@@ -317,7 +317,8 @@ $advancedSettings = Shop::Container()->getDB()->query(
         FROM teinstellungenconf 
         WHERE (nStandardAnzeigen = 0 OR nStandardAnzeigen = 2)
             AND kEinstellungenSektion = " . CONF_CACHING . "
-        ORDER BY nSort", 2
+        ORDER BY nSort",
+    \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 $settingsCount    = count($advancedSettings);
 for ($i = 0; $i < $settingsCount; ++$i) {

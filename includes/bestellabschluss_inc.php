@@ -279,7 +279,8 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
         Shop::Container()->getDB()->query(
             "UPDATE tkunde
                 SET fGuthaben = fGuthaben - " . (float)$_SESSION['Bestellung']->fGuthabenGenutzt . "
-                WHERE kKunde = " . (int)$Bestellung->kKunde, 4
+                WHERE kKunde = " . (int)$Bestellung->kKunde,
+            \DB\ReturnType::DEFAULT
         );
         $_SESSION['Kunde']->fGuthaben -= $_SESSION['Bestellung']->fGuthabenGenutzt;
     }
@@ -556,7 +557,10 @@ function aktualisiereBestseller($kArtikel, $Anzahl)
     }
     $best_obj = Shop::Container()->getDB()->select('tbestseller', 'kArtikel', $kArtikel);
     if (isset($best_obj->kArtikel) && $best_obj->kArtikel > 0) {
-        Shop::Container()->getDB()->query("UPDATE tbestseller SET fAnzahl = fAnzahl + " . $Anzahl . " WHERE kArtikel = " . $kArtikel, 4);
+        Shop::Container()->getDB()->query(
+            "UPDATE tbestseller SET fAnzahl = fAnzahl + " . $Anzahl . " WHERE kArtikel = " . $kArtikel,
+            \DB\ReturnType::DEFAULT
+        );
     } else {
         $Bestseller           = new stdClass();
         $Bestseller->kArtikel = $kArtikel;
@@ -573,7 +577,10 @@ function aktualisiereBestseller($kArtikel, $Anzahl)
         }
         $best_obj = Shop::Container()->getDB()->select('tbestseller', 'kArtikel', $kArtikel);
         if (isset($best_obj->kArtikel) && $best_obj->kArtikel > 0) {
-            Shop::Container()->getDB()->query("UPDATE tbestseller SET fAnzahl = fAnzahl + " . $Anzahl . " WHERE kArtikel = " . $kArtikel, 4);
+            Shop::Container()->getDB()->query(
+                "UPDATE tbestseller SET fAnzahl = fAnzahl + " . $Anzahl . " WHERE kArtikel = " . $kArtikel,
+                \DB\ReturnType::DEFAULT
+            );
         } else {
             $Bestseller           = new stdClass();
             $Bestseller->kArtikel = $kArtikel;
@@ -600,7 +607,8 @@ function aktualisiereXselling($kArtikel, $kZielArtikel)
             "UPDATE txsellkauf
               SET nAnzahl = nAnzahl + 1
               WHERE kArtikel = " . $kArtikel . "
-                AND kXSellArtikel = " . $kZielArtikel, 4
+                AND kXSellArtikel = " . $kZielArtikel,
+            \DB\ReturnType::DEFAULT
         );
     } else {
         $xs                = new stdClass();
@@ -635,7 +643,8 @@ function aktualisiereLagerbestand($Artikel, $nAnzahl, $WarenkorbPosEigenschaftAr
                 Shop::Container()->getDB()->query(
                     "UPDATE teigenschaftwert
                         SET fLagerbestand = fLagerbestand - " . ($nAnzahl * $EigenschaftWert->fPackeinheit) . "
-                        WHERE kEigenschaftWert = " . (int)$eWert->kEigenschaftWert, 4
+                        WHERE kEigenschaftWert = " . (int)$eWert->kEigenschaftWert,
+                    \DB\ReturnType::DEFAULT
                 );
             }
         } elseif ($Artikel->fPackeinheit > 0) {
@@ -647,7 +656,8 @@ function aktualisiereLagerbestand($Artikel, $nAnzahl, $WarenkorbPosEigenschaftAr
                     "UPDATE tartikel
                         SET fLagerbestand = IF (fLagerbestand >= " . ($nAnzahl * $Artikel->fPackeinheit) . ",
                         (fLagerbestand - " . ($nAnzahl * $Artikel->fPackeinheit) . "), fLagerbestand)
-                        WHERE kArtikel = " . (int)$Artikel->kArtikel, 4
+                        WHERE kArtikel = " . (int)$Artikel->kArtikel,
+                    \DB\ReturnType::DEFAULT
                 );
                 $tmpArtikel = Shop::Container()->getDB()->select('tartikel', 'kArtikel', (int)$Artikel->kArtikel, null, null, null, null, false, 'fLagerbestand');
                 if ($tmpArtikel !== null) {
@@ -868,7 +878,10 @@ function KuponVerwendungen($oBestellung)
     }
     $kKupon = (int)$kKupon;
     if ($kKupon > 0) {
-        Shop::Container()->getDB()->query("UPDATE tkupon SET nVerwendungenBisher = nVerwendungenBisher + 1 WHERE kKupon = " . $kKupon, 4);
+        Shop::Container()->getDB()->query(
+            "UPDATE tkupon SET nVerwendungenBisher = nVerwendungenBisher + 1 WHERE kKupon = " . $kKupon,
+            \DB\ReturnType::DEFAULT
+        );
         $KuponKunde                = new stdClass();
         $KuponKunde->kKupon        = $kKupon;
         $KuponKunde->kKunde        = $_SESSION['Warenkorb']->kKunde;

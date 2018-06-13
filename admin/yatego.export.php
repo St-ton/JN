@@ -82,8 +82,14 @@ if ($bWaehrungsCheck) {
         $smarty->assign('Exportformat', $exportformat)
                ->assign('oConfig_arr', $Conf)
                ->assign('oSprachen', Sprache::getAllLanguages())
-               ->assign('kundengruppen', Shop::Container()->getDB()->query("SELECT * FROM tkundengruppe ORDER BY cName", 2))
-               ->assign('waehrungen', Shop::Container()->getDB()->query("SELECT * FROM twaehrung ORDER BY cStandard DESC", 2))
+               ->assign('kundengruppen', Shop::Container()->getDB()->query(
+                   'SELECT * FROM tkundengruppe ORDER BY cName', 
+                   \DB\ReturnType::ARRAY_OF_OBJECTS
+               ))
+               ->assign('waehrungen', Shop::Container()->getDB()->query(
+                   'SELECT * FROM twaehrung ORDER BY cStandard DESC', 
+                   \DB\ReturnType::ARRAY_OF_OBJECTS
+               ))
                ->assign('oKampagne_arr', holeAlleKampagnen(false, true));
     }
 }

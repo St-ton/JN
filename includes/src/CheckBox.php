@@ -146,8 +146,8 @@ class CheckBox
         $this->nLogging          = (int)$this->nLogging;
         $this->nSort             = (int)$this->nSort;
         $this->cID               = 'CheckBox_' . $this->kCheckBox;
-        $this->kKundengruppe_arr = gibKeyArrayFuerKeyString($oCheckBox->cKundengruppe, ';');
-        $this->kAnzeigeOrt_arr   = gibKeyArrayFuerKeyString($oCheckBox->cAnzeigeOrt, ';');
+        $this->kKundengruppe_arr = StringHandler::parseSSK($oCheckBox->cKundengruppe);
+        $this->kAnzeigeOrt_arr   = StringHandler::parseSSK($oCheckBox->cAnzeigeOrt);
         // CheckBoxFunktion
         // Falls mal kCheckBoxFunktion gesetzt war aber diese Funktion nicht mehr existiert (deinstallation vom Plugin)
         // wird kCheckBoxFunktion auf 0 gesetzt

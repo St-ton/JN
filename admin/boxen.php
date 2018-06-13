@@ -176,7 +176,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && valida
             break;
     }
     $flushres = Shop::Cache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_BOX, 'boxes']);
-    Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+    Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = now()', \DB\ReturnType::DEFAULT4);
 }
 $oBoxen_arr      = $boxService->buildList($nPage, false, true);
 $oVorlagen_arr   = $boxAdmin->getTemplates($nPage);

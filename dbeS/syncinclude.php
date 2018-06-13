@@ -189,7 +189,7 @@ function DBDelInsert($tablename, $object_arr, $del)
 {
     if (is_array($object_arr)) {
         if ($del) {
-            Shop::Container()->getDB()->query("DELETE FROM $tablename", 4);
+            Shop::Container()->getDB()->query("DELETE FROM $tablename", \DB\ReturnType::DEFAULT);
         }
         foreach ($object_arr as $object) {
             //hack? unset arrays/objects that would result in nicedb exceptions

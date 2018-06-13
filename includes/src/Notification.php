@@ -168,6 +168,16 @@ class Notification implements IteratorAggregate, Countable
                 'benutzerverwaltung.php');
         }
 
+        if (count($status->getDuplicateLinkGroupTemplateNames()) > 0) {
+            $this->add(
+                NotificationEntry::TYPE_WARNING,
+                'Ungültige Linkgruppen',
+                'Eine oder mehrere Linkgruppen nutzen nicht-eindeutige Template-Namen: ' .
+                    implode(', ', \Functional\pluck($status->getDuplicateLinkGroupTemplateNames(), 'cName')),
+                'links.php'
+            );
+        }
+
 
         return $this;
     }

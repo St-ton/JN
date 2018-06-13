@@ -251,3 +251,48 @@ function function_is_disabled($fn_name)
     return in_array($fn_name, explode(',', ini_get('disable_functions')), true);
 }
 
+
+// functions transfered from tools.Global to bypass for now the Shop-Container - - - - - - - - - - - - - - - -
+
+/**
+ * @param NiceDB|object $oDB
+ */
+function checkPayments($oDB)
+{
+    $oPayments = $oDB->selectAll('tzahlungsart', 'nActive', 1);
+    foreach ($oPayments as $oZahlungsart) {
+        // Bei SOAP oder CURL => versuche die Zahlungsart auf nNutzbar = 1 zu stellen, falls nicht schon geschehen
+        if ((int)$oZahlungsart->nSOAP === 1 || (int)$oZahlungsart->nCURL === 1 || (int)$oZahlungsart->nSOCKETS === 1) {
+            activatePayment($oDB, $oZahlungsart);
+        }
+    }
+}
+
+/**
+ * Bei SOAP oder CURL => versuche die Zahlungsart auf nNutzbar = 1 zu stellen, falls nicht schon geschehen
+ *
+ * @param Zahlungsart|object $oZahlungsart
+ * @return bool
+ */
+function activatePayment($oDB, $oZahlungsart)
+{
+    if ($oZahlungsart->kZahlungsart > 0) {
+        $kZahlungsart = (int)$oZahlungsart->kZahlungsart;
+        $nNutzbar     = 0;
+        // SOAP
+        if (!empty($oZahlungsart->nSOAP)) {
+            $nNutzbar = pruefeSOAP() ? 1 : 0;
+        }
+        // CURL
+        if (!empty($oZahlungsart->nCURL)) {
+            $nNutzbar = pruefeCURL() ? 1 : 0;
+        }
+        // SOCKETS
+        if (!empty($oZahlungsart->nSOCKETS)) {
+            $nNutzbar = pruefeSOCKETS() ? 1 : 0;
+        }
+        $oDB->update('tzahlungsart', 'kZahlungsart', $kZahlungsart, (object)['nNutzbar' => $nNutzbar]);
+    }
+
+    return false;
+}

@@ -11,6 +11,7 @@ use DB\DbInterface;
 use DB\Services\GcServiceInterface;
 use Exceptions\CircularReferenceException;
 use Exceptions\ServiceNotFoundException;
+use Services\JTL\CaptchaServiceInterface;
 use Services\JTL\CryptoServiceInterface;
 use Services\JTL\PasswordServiceInterface;
 use Psr\Log\LoggerInterface;
@@ -81,4 +82,9 @@ interface DefaultServicesInterface extends ContainerInterface
      * @return \OPC\Locker
      */
     public function getOPCLocker();
+
+    /**
+     * @return CaptchaServiceInterface
+     */
+    public function getCaptchaService() : CaptchaServiceInterface;
 }

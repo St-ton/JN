@@ -601,6 +601,6 @@ class MediaImage implements IMedia
             return filesize($thumb);
         }
 
-        return $req->path;
+        return $req->getPath();
     }
 }

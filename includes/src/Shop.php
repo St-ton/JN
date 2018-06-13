@@ -1847,5 +1847,14 @@ final class Shop
         $container->setSingleton(OPC\Locker::class, function (Container $container) {
             return new OPC\Locker($container->getOPCPageDB());
         });
+
+        // Captcha
+        $container->setSingleton(\Services\JTL\CaptchaServiceInterface::class, function (Container $container) {
+            return new \Services\JTL\CaptchaService(new \Services\JTL\SimpleCaptchaService(
+                // Captcha Prüfung ist bei eingeloggtem Kunden, bei bereits erfolgter Prüfung
+                // oder ausgeschaltetem Captcha nicht notwendig
+                !(Session::get('bAnti_spam_already_checked', false) || Session::Customer()->isLoggedIn())
+            ));
+        });
     }
 }

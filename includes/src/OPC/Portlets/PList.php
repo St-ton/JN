@@ -93,7 +93,8 @@ class PList extends \OPC\Portlet
                     'lower-roman' => 'kleine röm. Zahlen',
                     'upper-latin' => 'latein. Großbuchstaben',
                     'upper-roman' => 'große röm. Zahlen',
-                ]
+                ],
+                'required'   => true,
             ],
         ];
     }

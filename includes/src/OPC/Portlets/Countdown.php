@@ -40,22 +40,23 @@ class Countdown extends \OPC\Portlet
     public function getPropertyDesc()
     {
         return [
-            'date' => [
-                'label' => 'Zieldatum',
-                'type' => 'date',
+            'date'         => [
+                'label'      => 'Zieldatum',
+                'type'       => 'date',
+                'dspl_width' => 50,
+                'required'   => true,
+            ],
+            'time'         => [
+                'label'      => 'Zielzeit',
+                'type'       => 'time',
                 'dspl_width' => 50,
             ],
-            'time' => [
-                'label' => 'Zielzeit',
-                'type' => 'time',
-                'dspl_width' => 50,
-            ],
-            'class' => [
+            'class'        => [
                 'label' => 'CSS Klasse',
             ],
             'expired-text' => [
                 'label' => 'Text nach Ablauf',
-                'type' => 'richtext',
+                'type'  => 'richtext',
             ]
         ];
     }

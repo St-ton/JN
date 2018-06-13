@@ -246,28 +246,33 @@ trait PortletHtml
         switch ($type) {
             case 'number':
                 $res .= "<input type='number' class='form-control$class' name='$propname' value='$prop'"
-                    . " id='config-$propname'$placeholder>";
+                    . " id='config-$propname'$placeholder";
+                $res .= $propDesc['required'] ? " required>" : ">";
                 break;
             case 'email':
                 $res .= "<input type='email' class='form-control$class' name='$propname' value='$prop'"
-                    . " id='config-$propname'$placeholder>";
+                    . " id='config-$propname'$placeholder";
+                $res .= $propDesc['required'] ? " required>" : ">";
                 break;
             case 'date':
                 $res .= "<input type='date' class='form-control$class' name='$propname' value='$prop'"
-                    . " id='config-$propname'>";
+                    . " id='config-$propname'";
+                $res .= $propDesc['required'] ? " required>" : ">";
                 break;
             case 'time':
                 $res .= "<input type='time' class='form-control$class' name='$propname' value='$prop'"
-                    . " id='config-$propname'>";
+                    . " id='config-$propname'";
+                $res .= $propDesc['required'] ? " required>" : ">";
                 break;
             case 'password':
                 $res .= "<input type='password' class='form-control$class' name='$propname' value='$prop'"
-                    . " id='config-$propname'>";
+                    . " id='config-$propname'";
+                $res .= $propDesc['required'] ? " required>" : ">";
                 break;
             case 'checkbox':
                 $res .= "<div class='checkbox$class'><label><input type='checkbox' name='" . $propname . "' value='1'";
                 $res .= $prop == "1" ? " checked" : "";
-                $res .= ">";
+                $res .= $propDesc['required'] ? " required>" : ">";
                 $res .= !empty($propDesc['option']) ? $propDesc['option'] : $label;
                 $res .= "</label></div>";
                 break;
@@ -284,14 +289,16 @@ trait PortletHtml
                     $selected = $prop == $value ? " checked" : "";
                     $res      .= "<label";
                     $res      .= !empty($propDesc['inline']) ? ' class="radio-inline"' : '';
-                    $res      .= "><input type='radio' name='$propname' value='$value'"
-                        . "$selected>$name</label>";
+                    $res      .= "><input type='radio' name='$propname' value='$value'" . "$selected";
+                    $res      .= $propDesc['required'] ? " required" : "";
+                    $res      .= ">$name</label>";
                     $res      .= !empty($propDesc['inline']) ? "" : "</div>";
                 }
                 $res      .= "</div>";
                 break;
             case 'select':
-                $res .= "<select class='form-control$class' name='$propname'>";
+                $res .= "<select class='form-control$class' name='$propname'";
+                $res .= $propDesc['required'] ? " required>" : ">";
 
                 foreach ($propDesc['options'] as $key => $val) {
                     if (stripos($key, 'optgroup') !== false) {
@@ -314,15 +321,16 @@ trait PortletHtml
             case 'image':
                 $previewImgUrl = empty($prop) ? \Shop::getURL() . '/gfx/keinBild.gif' : $prop;
 
-                $res .= "<input type='hidden' name='$propname' value='$prop'>"
-                    . "<button type='button' class='btn btn-default image-btn' "
+                $res .= "<input type='hidden' name='$propname' value='$prop'>";
+                $res .= "<button type='button' class='btn btn-default image-btn' "
                     . "onclick='opc.selectImageProp(\"$propname\")'>"
                     . "<img src='$previewImgUrl' alt='Chosen image' id='preview-img-$propname'>"
                     . "</button>";
                 break;
             case 'richtext':
-                $res .= "<textarea name='$propname' id='textarea-$propname' class='form-control'>"
-                    . htmlspecialchars($prop)
+                $res .= "<textarea name='$propname' id='textarea-$propname' class='form-control'";
+                $res .= $propDesc['required'] ? " required>" : ">";
+                $res .= htmlspecialchars($prop)
                     . "</textarea>"
                     . "<script>CKEDITOR.replace('textarea-$propname', {baseFloatZIndex: 9000});"
                     . "opc.setConfigSaveCallback(function() {"
@@ -331,7 +339,9 @@ trait PortletHtml
                 break;
             case 'color':
                 $res .= "<div id='$propname' class='input-group colorpicker-component$class'>
-                                <input class='form-control' name='$propname' value='$prop'>
+                                <input class='form-control' name='$propname' value='$prop'";
+                $res .= $propDesc['required'] ? " required" : "";
+                $res .=">
                                 <span class='input-group-addon'><i></i></span></div>"
                     . "<script>$('#$propname').colorpicker({format: 'rgba',colorSelectors: {
                     '#ffffff': '#ffffff',
@@ -385,7 +395,9 @@ trait PortletHtml
             case 'text':
             default:
                 $res .= "<input type='text' class='form-control' name='$propname' value='$prop'"
-                    . " id='config-$propname'>";
+                    . " id='config-$propname'";
+                $res .= $propDesc['required'] ? " required" : "";
+                $res .= ">";
                 break;
         }
 

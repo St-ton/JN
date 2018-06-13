@@ -17,12 +17,12 @@
         </div>
     </div>
     <script>
-        function setCardHeight() {
+        function setCardHeight(id) {
             var max_h = 0;
-            $('#{$instance->getProperty("uid")} .face').each(function (e) {
+            $('#'+id+' .face > div').each(function (e) {
                 max_h = Math.max($(this).prop("scrollHeight"), max_h);
             });
-            $('#{$instance->getProperty("uid")} .card').css('min-height',max_h);
+            $('#'+id+' .card').css('min-height',max_h+'px');
         }
 
         {if $isPreview}
@@ -33,7 +33,7 @@
                 } else {
                     card.addClass('flipped');
                 }
-                setCardHeight();
+                setCardHeight('{$instance->getProperty("uid")}');
             });
         {else}
             $('#{$instance->getProperty("uid")}').click(function () {
@@ -43,11 +43,12 @@
                 } else {
                     card.addClass('flipped');
                 }
+                setCardHeight('{$instance->getProperty("uid")}');
             });
         {/if}
 
         $(document).ready(function () {
-            setCardHeight();
+            setCardHeight('{$instance->getProperty("uid")}');
         });
     </script>
 </div>

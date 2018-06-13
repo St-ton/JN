@@ -226,8 +226,7 @@ $nav = $Einstellungen['artikeldetails']['artikeldetails_navi_blaettern'] === 'Y'
     ? gibNaviBlaettern($AktuellerArtikel->kArtikel, $AktuelleKategorie->kKategorie)
     : null;
 
-$smarty->assign('Brotnavi', createNavigation($AktuelleSeite, $AufgeklappteKategorien, $AktuellerArtikel))
-       ->assign('showMatrix', $AktuellerArtikel->showMatrix())
+$smarty->assign('showMatrix', $AktuellerArtikel->showMatrix())
        ->assign('arNichtErlaubteEigenschaftswerte', $nonAllowed)
        ->assign('oAehnlicheArtikel_arr', $similarArticles)
        ->assign('UVPlocalized', $AktuellerArtikel->cUVPLocalized)

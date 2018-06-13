@@ -13,7 +13,6 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'kundenwerbenkeunden_inc.php';
 
 $AktuelleSeite = 'MEIN KONTO';
-$cBrotNavi     = '';
 $linkHelper    = Shop::Container()->getLinkService();
 $Einstellungen = Shop::getSettings([
     CONF_GLOBAL,
@@ -239,13 +238,6 @@ if ($customerID > 0) {
                 $step                    = 'wunschliste anzeigen';
                 $cHinweis               .= wunschlisteAktualisieren($kWunschliste);
                 $_SESSION['Wunschliste'] = new Wunschliste($_SESSION['Wunschliste']->kWunschliste ?? $kWunschliste);
-                $cBrotNavi               = createNavigation(
-                    '',
-                    0,
-                    0,
-                    $_SESSION['Wunschliste']->cName,
-                    'jtl.php?wl=' . $_SESSION['Wunschliste']->kWunschliste
-                );
             }
         }
     }
@@ -285,13 +277,6 @@ if ($customerID > 0) {
                         // Wunschliste aufbauen und cPreis setzen (Artikelanzahl mit eingerechnet)
                         $CWunschliste = bauecPreis(new Wunschliste($kWunschliste));
                         Shop::Smarty()->assign('CWunschliste', $CWunschliste);
-                        $cBrotNavi = createNavigation(
-                            '',
-                            0,
-                            0,
-                            $CWunschliste->cName,
-                            'jtl.php?wl=' . $CWunschliste->kWunschliste
-                        );
                     }
                 } else {
                     // Maske aufbauen
@@ -299,13 +284,6 @@ if ($customerID > 0) {
                     // Wunschliste aufbauen und cPreis setzen (Artikelanzahl mit eingerechnet)
                     $CWunschliste = bauecPreis(new Wunschliste($kWunschliste));
                     Shop::Smarty()->assign('CWunschliste', $CWunschliste);
-                    $cBrotNavi = createNavigation(
-                        '',
-                        0,
-                        0,
-                        $CWunschliste->cName,
-                        'jtl.php?wl=' . $CWunschliste->kWunschliste
-                    );
                 }
             }
         }
@@ -321,13 +299,6 @@ if ($customerID > 0) {
                 $oWunschliste->entferneAllePos();
                 if ($_SESSION['Wunschliste']->kWunschliste == $oWunschliste->kWunschliste) {
                     $_SESSION['Wunschliste']->CWunschlistePos_arr = [];
-                    $cBrotNavi                                    = createNavigation(
-                        '',
-                        0,
-                        0,
-                        $_SESSION['Wunschliste']->cName,
-                        'jtl.php?wl=' . $_SESSION['Wunschliste']->kWunschliste
-                    );
                 }
                 $cHinweis .= Shop::Lang()->get('wishlistDelAll', 'messages');
             }
@@ -345,13 +316,6 @@ if ($customerID > 0) {
                 $oWunschliste->CWunschlistePos_arr = $oWunschlistePosSuche_arr;
                 Shop::Smarty()->assign('wlsearch', $cSuche)
                               ->assign('CWunschliste', $oWunschliste);
-                $cBrotNavi = createNavigation(
-                    '',
-                    0,
-                    0,
-                    $oWunschliste->cName,
-                    'jtl.php?wl=' . $oWunschliste->kWunschliste
-                );
             }
         }
     } elseif (RequestHelper::verifyGPCDataInt('wl') > 0 && RequestHelper::verifyGPCDataInt('wlvm') === 0) { // Wunschliste anzeigen
@@ -392,13 +356,6 @@ if ($customerID > 0) {
 
                 Shop::Smarty()->assign('CWunschliste', $CWunschliste);
                 $step      = 'wunschliste anzeigen';
-                $cBrotNavi = createNavigation(
-                    '',
-                    0,
-                    0,
-                    $CWunschliste->cName,
-                    'jtl.php?wl=' . $CWunschliste->kWunschliste
-                );
             }
         }
     }
@@ -849,9 +806,6 @@ if ($customerID > 0) {
     Shop::Smarty()->assign('Kunde', $_SESSION['Kunde'])
         ->assign('customerAttribute_arr', $_SESSION['Kunde']->cKundenattribut_arr);
 }
-if (empty($cBrotNavi)) {
-    $cBrotNavi = createNavigation($AktuelleSeite);
-}
 // Canonical
 $cCanonicalURL = $linkHelper->getStaticRoute('jtl.php', true);
 // Metaangaben
@@ -865,7 +819,6 @@ Shop::Smarty()
     ->assign('cFehler', $cFehler)
     ->assign('hinweis', $cHinweis)
     ->assign('step', $step)
-    ->assign('Brotnavi', $cBrotNavi)
     ->assign('BESTELLUNG_STATUS_BEZAHLT', BESTELLUNG_STATUS_BEZAHLT)
     ->assign('BESTELLUNG_STATUS_VERSANDT', BESTELLUNG_STATUS_VERSANDT)
     ->assign('BESTELLUNG_STATUS_OFFEN', BESTELLUNG_STATUS_OFFEN)

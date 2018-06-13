@@ -61,8 +61,7 @@ $AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-Shop::Smarty()->assign('Brotnavi', createNavigation($AktuelleSeite))
-    ->assign('editRechnungsadresse', $editRechnungsadresse)
+Shop::Smarty()->assign('editRechnungsadresse', $editRechnungsadresse)
     ->assign('Ueberschrift', $titel)
     ->assign('hinweis', $hinweis)
     ->assign('step', $step)

@@ -74,12 +74,6 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
     Shop::Smarty()->assign('BereitsBewertet', pruefeKundeArtikelBewertet(
         $AktuellerArtikel->kArtikel,
         $_SESSION['Kunde']->kKunde))
-        ->assign('Brotnavi', createNavigation(
-            $AktuelleSeite,
-            0,
-            0,
-            Shop::Lang()->get('bewertung', 'breadcrumb'),
-            'bewertung.php?a=' . $AktuellerArtikel->kArtikel . '&bfa=1'))
         ->assign('Artikel', $AktuellerArtikel)
         ->assign('oBewertung', Shop::Container()->getDB()->select(
             'tbewertung',

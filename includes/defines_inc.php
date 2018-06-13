@@ -371,6 +371,10 @@ define('PAGE_404', 36);
 define('PAGE_IO', 37);
 define('PAGE_BESTELLSTATUS', 38);
 define('PAGE_MEDIA', 39);
+define('PAGE_NEWSMONAT', 40);
+define('PAGE_NEWSDETAIL', 41);
+define('PAGE_NEWSKATEGORIE', 42);
+
 // Boxen
 define('BOX_CONTAINER', 0);
 define('BOX_BESTSELLER', 1);

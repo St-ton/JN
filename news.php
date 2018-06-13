@@ -14,6 +14,8 @@ if (Shop::$directEntry === true) {
 } else {
     $cParameter_arr = [];
 }
+$breadCrumbName         = null;
+$breadCrumbURL          = null;
 $cHinweis               = '';
 $cFehler                = '';
 $step                   = 'news_uebersicht';
@@ -64,6 +66,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
     }
     if ($cParameter_arr['kNews'] > 0 || (isset($kNews) && $kNews > 0)) {
         // Detailansicht anzeigen
+        Shop::setPageType(PAGE_NEWSDETAIL);
         Shop::$AktuelleSeite = 'NEWSDETAIL';
         $AktuelleSeite       = 'NEWSDETAIL';
         $step                = 'news_detailansicht';
@@ -74,10 +77,10 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
 
         if ($oNewsArchiv !== false) {
             if (isset($oNewsArchiv->kNews) && $oNewsArchiv->kNews > 0) {
-                $oNewsArchiv->cText = StringHandler::parseNewsText($oNewsArchiv->cText);
+                $oNewsArchiv->cText      = StringHandler::parseNewsText($oNewsArchiv->cText);
                 $oNewsArchiv->oDatei_arr = [];
                 if (is_dir($cUploadVerzeichnis . $oNewsArchiv->kNews)) {
-                    $oNewsArchiv->oDatei_arr     = holeNewsBilder($oNewsArchiv->kNews, $cUploadVerzeichnis);
+                    $oNewsArchiv->oDatei_arr = holeNewsBilder($oNewsArchiv->kNews, $cUploadVerzeichnis);
                 }
                 Shop::Smarty()->assign('oNewsArchiv', $oNewsArchiv);
             }
@@ -86,9 +89,9 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
             $cMetaDescription   = $oNewsArchiv->cMetaDescription ?? '';
             $cMetaKeywords      = $oNewsArchiv->cMetaKeywords ?? '';
             $oNewsKategorie_arr = getNewsCategory($kNews);
-            foreach ($oNewsKategorie_arr as $j => $oNewsKategorie) {
-                $oNewsKategorie_arr[$j]->cURL     = baueURL($oNewsKategorie, URLART_NEWSKATEGORIE);
-                $oNewsKategorie_arr[$j]->cURLFull = baueURL($oNewsKategorie, URLART_NEWSKATEGORIE, 0, false, true);
+            foreach ($oNewsKategorie_arr as $oNewsKategorie) {
+                $oNewsKategorie->cURL     = baueURL($oNewsKategorie, URLART_NEWSKATEGORIE);
+                $oNewsKategorie->cURLFull = baueURL($oNewsKategorie, URLART_NEWSKATEGORIE, 0, false, true);
             }
             Shop::Smarty()->assign('R_LOGIN_NEWSCOMMENT', R_LOGIN_NEWSCOMMENT)
                 ->assign('oNewsKategorie_arr', $oNewsKategorie_arr);
@@ -207,16 +210,12 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
             if (strpos(baueURL($oNewsArchiv, URLART_NEWS), '.php') === false) {
                 $cCanonicalURL = Shop::getURL() . '/' . baueURL($oNewsArchiv, URLART_NEWS);
             }
-            Shop::Smarty()->assign('Brotnavi', createNavigation(
-                Shop::$AktuelleSeite,
-                0,
-                0,
-                $oNewsArchiv->cBetreff ?? Shop::Lang()->get('news', 'breadcrumb'),
-                baueURL($oNewsArchiv, URLART_NEWS))
-            );
+            $breadCrumbName = $oNewsArchiv->cBetreff ?? Shop::Lang()->get('news', 'breadcrumb');
+            $breadCrumbURL  = baueURL($oNewsArchiv, URLART_NEWS);
 
             executeHook(HOOK_NEWS_PAGE_DETAILANSICHT);
         } else {
+            Shop::setPageType(PAGE_NEWS);
             Shop::$AktuelleSeite = 'NEWS';
             $AktuelleSeite       = 'NEWS';
             Shop::Smarty()->assign('cNewsErr', 1);
@@ -224,14 +223,16 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
         }
     } else { // Beitragsübersicht anzeigen
         if ($cParameter_arr['kNewsKategorie'] > 0) { // NewsKategorie Übersicht
+            Shop::setPageType(PAGE_NEWSKATEGORIE);
             Shop::$AktuelleSeite = 'NEWSKATEGORIE';
             $AktuelleSeite       = 'NEWSKATEGORIE';
             $kNewsKategorie      = (int)$cParameter_arr['kNewsKategorie'];
             $oNewsKategorie      = getCurrentNewsCategory($kNewsKategorie, true);
 
             if (!isset($oNewsKategorie) || !is_object($oNewsKategorie)) {
-                Shop::$AktuelleSeite = 'NEWS';
-                $cFehler .= Shop::Lang()->get('newsRestricted', 'news');
+                Shop::setPageType(PAGE_NEWS);
+                Shop::$AktuelleSeite                  = 'NEWS';
+                $cFehler                              .= Shop::Lang()->get('newsRestricted', 'news');
                 $_SESSION['NewsNaviFilter']->nNewsKat = -1;
                 baueNewsKruemel(Shop::Smarty(), Shop::$AktuelleSeite, $cCanonicalURL);
             } else {
@@ -243,15 +244,9 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                 }
                 // Canonical
                 if (isset($oNewsKategorie->cSeo)) {
-                    $cCanonicalURL = Shop::getURL() . '/' . $oNewsKategorie->cSeo;
-                    Shop::Smarty()->assign('Brotnavi', createNavigation(
-                            Shop::$AktuelleSeite,
-                            0,
-                            0,
-                            $oNewsKategorie->cName,
-                            $cCanonicalURL
-                        )
-                    );
+                    $cCanonicalURL  = Shop::getURL() . '/' . $oNewsKategorie->cSeo;
+                    $breadCrumbURL  = $cCanonicalURL;
+                    $breadCrumbName = $oNewsKategorie->cName;
                 }
                 if (!isset($_SESSION['NewsNaviFilter'])) {
                     $_SESSION['NewsNaviFilter'] = new stdClass();
@@ -260,21 +255,16 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                 $_SESSION['NewsNaviFilter']->cDatum   = -1;
             }
         } elseif ($cParameter_arr['kNewsMonatsUebersicht'] > 0) { // Monatsuebersicht
+            Shop::setPageType(PAGE_NEWSMONAT);
             Shop::$AktuelleSeite   = 'NEWSMONAT';
             $AktuelleSeite         = 'NEWSMONAT';
             $kNewsMonatsUebersicht = (int)$cParameter_arr['kNewsMonatsUebersicht'];
             $oNewsMonatsUebersicht = getMonthOverview($kNewsMonatsUebersicht);
 
             if (isset($oNewsMonatsUebersicht->cSeo)) {
-                $cCanonicalURL = Shop::getURL() . '/' . $oNewsMonatsUebersicht->cSeo;
-                Shop::Smarty()->assign('Brotnavi', createNavigation(
-                        Shop::$AktuelleSeite,
-                        0,
-                        0,
-                        $oNewsMonatsUebersicht->cName,
-                        $cCanonicalURL
-                    )
-                );
+                $cCanonicalURL  = Shop::getURL() . '/' . $oNewsMonatsUebersicht->cSeo;
+                $breadCrumbURL  = $cCanonicalURL;
+                $breadCrumbName = $oNewsMonatsUebersicht->cName;
             }
             if (!isset($_SESSION['NewsNaviFilter'])) {
                 $_SESSION['NewsNaviFilter'] = new stdClass();
@@ -285,6 +275,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
         } else { // Startseite News Übersicht
             Shop::$AktuelleSeite = 'NEWS';
             $AktuelleSeite       = 'NEWS';
+            Shop::setPageType(PAGE_NEWS);
             baueNewsKruemel(Shop::Smarty(), Shop::$AktuelleSeite, $cCanonicalURL);
         }
 
@@ -307,7 +298,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
         $oNewsUebersichtAll = getFullNewsOverview($oSQL);
         // Pagination
         $newsCountShow = isset($Einstellungen['news']['news_anzahl_uebersicht'])
-                && (int)$Einstellungen['news']['news_anzahl_uebersicht'] > 0
+        && (int)$Einstellungen['news']['news_anzahl_uebersicht'] > 0
             ? (int)$Einstellungen['news']['news_anzahl_uebersicht']
             : 10;
         $oPagination   = (new Pagination())
@@ -318,35 +309,27 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
         // Get filtered news of current page
         $oNewsUebersicht_arr = getNewsOverview($oSQL, $oPagination->getLimitSQL());
         $oDatum_arr          = getNewsDateArray($oSQL);
-        $cKeywords           = '';
         $shopURL             = Shop::getURL() . '/';
-        if (is_array($oNewsUebersicht_arr) && count($oNewsUebersicht_arr) > 0) {
-            foreach ($oNewsUebersicht_arr as $i => $oNewsUebersicht) {
-                if ($i > 0) {
-                    $cKeywords .= ', ' . $oNewsUebersicht->cBetreff;
-                } else {
-                    $cKeywords .= $oNewsUebersicht->cBetreff;
-                }
-                $oNewsUebersicht_arr[$i]->cPreviewImageFull = empty($oNewsUebersicht_arr[$i]->cPreviewImage)
-                    ? ''
-                    : $shopURL . $oNewsUebersicht_arr[$i]->cPreviewImage;
-                if (is_dir($cUploadVerzeichnis . $oNewsUebersicht->kNews)) {
-                    $oNewsUebersicht_arr[$i]->oDatei_arr = holeNewsBilder($oNewsUebersicht->kNews, $cUploadVerzeichnis);
-                }
-                $oNewsUebersicht_arr[$i]->cText             = StringHandler::parseNewsText($oNewsUebersicht_arr[$i]->cText);
-                $oNewsUebersicht_arr[$i]->cURL              = baueURL($oNewsUebersicht, URLART_NEWS);
-                $oNewsUebersicht_arr[$i]->cURLFull          = $shopURL . $oNewsUebersicht_arr[$i]->cURL;
-                $oNewsUebersicht_arr[$i]->cMehrURL          = '<a href="' . $oNewsUebersicht_arr[$i]->cURL . '">' .
-                    Shop::Lang()->get('moreLink', 'news') .
-                    '</a>';
-                $oNewsUebersicht_arr[$i]->cMehrURLFull      = '<a href="' . $oNewsUebersicht_arr[$i]->cURLFull . '">' .
-                    Shop::Lang()->get('moreLink', 'news') .
-                    '</a>';
+        foreach ($oNewsUebersicht_arr as $oNewsUebersicht) {
+            $oNewsUebersicht->cPreviewImageFull = empty($oNewsUebersicht->cPreviewImage)
+                ? ''
+                : $shopURL . $oNewsUebersicht->cPreviewImage;
+            if (is_dir($cUploadVerzeichnis . $oNewsUebersicht->kNews)) {
+                $oNewsUebersicht->oDatei_arr = holeNewsBilder($oNewsUebersicht->kNews, $cUploadVerzeichnis);
             }
+            $oNewsUebersicht->cText        = StringHandler::parseNewsText($oNewsUebersicht->cText);
+            $oNewsUebersicht->cURL         = baueURL($oNewsUebersicht, URLART_NEWS);
+            $oNewsUebersicht->cURLFull     = $shopURL . $oNewsUebersicht->cURL;
+            $oNewsUebersicht->cMehrURL     = '<a href="' . $oNewsUebersicht->cURL . '">' .
+                Shop::Lang()->get('moreLink', 'news') .
+                '</a>';
+            $oNewsUebersicht->cMehrURLFull = '<a href="' . $oNewsUebersicht->cURLFull . '">' .
+                Shop::Lang()->get('moreLink', 'news') .
+                '</a>';
         }
         $cMetaTitle       = strlen($cMetaDescription) < 1
             ? Shop::Lang()->get('news', 'news') . ' ' .
-                Shop::Lang()->get('from', 'global') . ' ' . $Einstellungen['global']['global_shopname']
+            Shop::Lang()->get('from', 'global') . ' ' . $Einstellungen['global']['global_shopname']
             : $cMetaTitle;
         $cMetaDescription = strlen($cMetaDescription) < 1
             ? Shop::Lang()->get('newsMetaDesc', 'news')
@@ -372,7 +355,8 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
         executeHook(HOOK_NEWS_PAGE_NEWSUEBERSICHT);
     }
 
-    $cMetaTitle = \Filter\Metadata::prepareMeta($cMetaTitle, null, (int)$Einstellungen['metaangaben']['global_meta_maxlaenge_title']);
+    $cMetaTitle = \Filter\Metadata::prepareMeta($cMetaTitle, null,
+        (int)$Einstellungen['metaangaben']['global_meta_maxlaenge_title']);
 
     Shop::Smarty()->assign('hinweis', $cHinweis)
         ->assign('fehler', $cFehler)

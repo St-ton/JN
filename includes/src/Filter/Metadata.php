@@ -381,10 +381,8 @@ class Metadata implements MetadataInterface
             } elseif ($this->conf['navigationsfilter']['kategorie_bild_anzeigen'] === 'B') {
                 $this->imageURL = $currentCategory->getKategorieBild();
             }
-            $this->breadCrumb = createNavigation('PRODUKTE', $openCategories);
         } elseif ($this->productFilter->hasManufacturer()) {
             $this->manufacturer = new \Hersteller($this->productFilter->getManufacturer()->getValue());
-
             if ($this->conf['navigationsfilter']['hersteller_bild_anzeigen'] === 'Y') {
                 $this->name = $this->manufacturer->getName();
             } elseif ($this->conf['navigationsfilter']['hersteller_bild_anzeigen'] === 'BT') {
@@ -398,13 +396,6 @@ class Metadata implements MetadataInterface
                      ->setMetaDescription($this->manufacturer->cMetaDescription)
                      ->setMetaKeywords($this->manufacturer->cMetaKeywords);
             }
-            $this->breadCrumb = createNavigation(
-                '',
-                '',
-                0,
-                $this->getBreadCrumbName(),
-                $this->productFilter->getFilterURL()->getURL()
-            );
         } elseif ($this->productFilter->hasAttributeValue()) {
             $this->attributeValue = new \MerkmalWert($this->productFilter->getAttributeValue()->getValue());
             if ($this->conf['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'Y') {
@@ -420,24 +411,6 @@ class Metadata implements MetadataInterface
                      ->setMetaDescription($this->attributeValue->cMetaDescription)
                      ->setMetaKeywords($this->attributeValue->cMetaKeywords);
             }
-            $this->breadCrumb = createNavigation(
-                '',
-                '',
-                0,
-                $this->getBreadCrumbName(),
-                $this->productFilter->getFilterURL()->getURL()
-            );
-        } elseif ($this->productFilter->hasTag()
-            || $this->productFilter->hasSearchSpecial()
-            || $this->productFilter->hasSearch()
-        ) {
-            $this->breadCrumb = createNavigation(
-                '',
-                '',
-                0,
-                $this->getBreadCrumbName(),
-                $this->productFilter->getFilterURL()->getURL()
-            );
         }
 
         return $this;

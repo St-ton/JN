@@ -248,8 +248,7 @@ $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 
-Shop::Smarty()->assign('Brotnavi', createNavigation($AktuelleSeite))
-    ->assign('WarensummeLocalized', Session::Cart()->gibGesamtsummeWarenLocalized())
+Shop::Smarty()->assign('WarensummeLocalized', Session::Cart()->gibGesamtsummeWarenLocalized())
     ->assign('Bestellung', $bestellung);
 
 unset(

@@ -113,8 +113,7 @@ if (isset($Einstellungen['trustedshops']['trustedshops_nutzen']) && $Einstellung
     }
 }
 
-$smarty->assign('Brotnavi', createNavigation($AktuelleSeite))
-       ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
+$smarty->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
        ->assign('Bestellung', $bestellung)
        ->assign('Kunde', $_SESSION['Kunde'] ?? null)
        ->assign('bOrderConf', true)

@@ -230,8 +230,7 @@ $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 WarenkorbHelper::addVariationPictures($cart);
-Shop::Smarty()->assign('Brotnavi', createNavigation($AktuelleSeite))
-    ->assign('AGB', gibAGBWRB(Shop::getLanguage(), Session::CustomerGroup()->getID()))
+Shop::Smarty()->assign('AGB', gibAGBWRB(Shop::getLanguage(), Session::CustomerGroup()->getID()))
     ->assign('Ueberschrift', Shop::Lang()->get('orderStep0Title', 'checkout'))
     ->assign('UeberschriftKlein', Shop::Lang()->get('orderStep0Title2', 'checkout'))
     ->assign('hinweis', $cHinweis)

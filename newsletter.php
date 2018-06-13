@@ -22,11 +22,9 @@ foreach ($links as $l) {
         break;
     }
 }
-$Link       = new stdClass();
 $linkHelper = Shop::Container()->getLinkService();
 if (isset($oLink->kLink) && $oLink->kLink > 0) {
-    $Link = $linkHelper->getLinkByID($oLink->kLink);
-    Shop::Smarty()->assign('Brotnavi', createNavigation($AktuelleSeite, 0, 0, $Link->getName(), $Link->getURL()));
+    $link = $linkHelper->getLinkByID($oLink->kLink);
 } else {
     $oLink                   = Shop::Container()->getDB()->select('tlink', 'nLinkart', LINKTYP_404);
     $bFileNotFound           = true;
@@ -34,7 +32,6 @@ if (isset($oLink->kLink) && $oLink->kLink > 0) {
     Shop::$bFileNotFound     = true;
     Shop::$is404             = true;
     $cParameter_arr['is404'] = true;
-    require_once PFAD_ROOT . 'seite.php';
     return;
 }
 

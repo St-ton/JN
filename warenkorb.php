@@ -161,8 +161,7 @@ if (!empty($_SESSION['Warenkorbhinweise'])) {
 }
 
 WarenkorbHelper::addVariationPictures($cart);
-$smarty->assign('Brotnavi', createNavigation($AktuelleSeite))
-       ->assign('MsgWarning', $MsgWarning)
+$smarty->assign('MsgWarning', $MsgWarning)
        ->assign('Schnellkaufhinweis', $Schnellkaufhinweis)
        ->assign('laender', VersandartHelper::getPossibleShippingCountries($kKundengruppe))
        ->assign('KuponMoeglich', kuponMoeglich())

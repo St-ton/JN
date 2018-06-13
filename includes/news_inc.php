@@ -393,34 +393,10 @@ function baueNewsMetaStart($oNewsNaviFilter)
  * @param JTLSmarty   $smarty
  * @param string|null $AktuelleSeite
  * @param string      $cCanonicalURL
+ * @deprecated since 5.0.0
  */
 function baueNewsKruemel($smarty, $AktuelleSeite, &$cCanonicalURL)
 {
-    $oLink = Shop::Container()->getDB()->select('tlink', 'nLinkart', LINKTYP_NEWS);
-    if (isset($oLink->kLink) && $oLink->kLink > 0) {
-        $Link       = Shop::Container()->getLinkService()->getLinkByID($oLink->kLink);
-        $requestURL = baueURL($Link, URLART_SEITE);
-        // Canonical
-        if (strpos($requestURL, '.php') === false) {
-            $cCanonicalURL = Shop::getURL() . '/' . $requestURL;
-        }
-        if (empty($AktuelleSeite)) {
-            $AktuelleSeite = null;
-        }
-        $smarty->assign('Brotnavi', createNavigation($AktuelleSeite, 0, 0, $Link->getName(), $requestURL));
-    } else {
-        // Canonical
-        $cCanonicalURL = Shop::getURL() . '/news.php';
-        $smarty->assign('Brotnavi',
-            createNavigation(
-                $AktuelleSeite,
-                0,
-                0,
-                Shop::Lang()->get('news', 'breadcrumb'),
-                'news.php'
-            )
-        );
-    }
 }
 
 /**

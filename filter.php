@@ -150,7 +150,6 @@ $smarty->assign('NaviFilter', $NaviFilter)
            true,
            $pages,
            $Einstellungen['artikeluebersicht']['artikeluebersicht_max_seitenzahl']))
-       ->assign('Brotnavi', $oNavigationsinfo->getBreadCrumb())
        ->assign('Sortierliste', $NaviFilter->getMetaData()->getSortingOptions())
        ->assign('Suchergebnisse', $oSuchergebnisse)
        ->assign('oNavigationsinfo', $oNavigationsinfo)

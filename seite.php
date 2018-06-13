@@ -43,9 +43,7 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
         exit();
     }
     $AktuelleSeite = 'STARTSEITE';
-    $Navigation    = createNavigation($AktuelleSeite);
     $smarty->assign('StartseiteBoxen', gibStartBoxen())
-           ->assign('Navigation', $Navigation)
            ->assign('oNews_arr', ($Einstellungen['news']['news_benutzen'] === 'Y') ? gibNews($Einstellungen) : []);
     AuswahlAssistent::startIfRequired(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::getLanguage(), $smarty);
     if ($Einstellungen['news']['news_benutzen'] === 'Y') {
@@ -93,26 +91,7 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
 require_once PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_SEITE_PAGE_IF_LINKART);
 // MetaTitle bei bFileNotFound redirect
-if (Shop::getPageType() === PAGE_404) {
-    $Navigation = createNavigation(
-        $AktuelleSeite,
-        0,
-        0,
-        Shop::Lang()->get('pagenotfound', 'breadcrumb'),
-        $requestURL
-    );
-} else {
-    $Navigation = createNavigation(
-        $AktuelleSeite,
-        0,
-        0,
-        $link->getName() ?? '',
-        $requestURL,
-        Shop::$kLink
-    );
-}
-$smarty->assign('Brotnavi', $Navigation)
-       ->assign('Link', $link)
+$smarty->assign('Link', $link)
        ->assign('bSeiteNichtGefunden', Shop::getPageType() === PAGE_404)
        ->assign('cFehler', !empty($cFehler) ? $cFehler : null)
        ->assign('meta_language', StringHandler::convertISO2ISO639(Shop::getLanguageCode()));

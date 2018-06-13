@@ -67,14 +67,6 @@ if (isset($cParameter_arr['kUmfrage']) && $cParameter_arr['kUmfrage'] > 0) {
                 }
                 $_SESSION['Umfrage']->kUmfrage = $oUmfrage->kUmfrage;
                 $smarty->assign('oUmfrage', $oUmfrage)
-                       ->assign('Brotnavi', createNavigation(
-                               Shop::getPageType(),
-                               0,
-                               0,
-                               Shop::Lang()->get('umfrage', 'breadcrumb') .
-                               ' - ' . $oUmfrage->cName, baueURL($oUmfrage, URLART_UMFRAGE)
-                           )
-                       )
                        ->assign('oNavi_arr', baueSeitenNavi($oUmfrageFrageTMP_arr, $oUmfrage->nAnzahlFragen))
                        ->assign('nAktuelleSeite', $cParameter_arr['kSeite'])
                        ->assign('nAnzahlSeiten', bestimmeAnzahlSeiten($oUmfrageFrageTMP_arr));
@@ -103,14 +95,7 @@ if ($step === 'umfrage_uebersicht') {
     }
     $cCanonicalURL = Shop::getURL() . '/umfrage.php';
 
-    $smarty->assign('Brotnavi', createNavigation(
-            Shop::$AktuelleSeite,
-            0,
-            0,
-            Shop::Lang()->get('umfragen', 'breadcrumb'),
-            'umfrage.php?'
-        )
-    )->assign('oUmfrage_arr', $oUmfrage_arr);
+    $smarty->assign('oUmfrage_arr', $oUmfrage_arr);
 
     executeHook(HOOK_UMFRAGE_PAGE_UEBERSICHT);
 }

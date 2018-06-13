@@ -25,21 +25,21 @@ final class BoxBestsellingProducts extends AbstractBox
         $customerGroupID = \Session::CustomerGroup()->getID();
         if ($customerGroupID && \Session::CustomerGroup()->mayViewCategories()) {
             $kArtikel_arr   = [];
+            $cached         = true;
             $cacheTags      = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
             $stockFilterSQL = \Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $parentSQL      = ' AND tartikel.kVaterArtikel = 0';
-            $limit          = (int)$this->config['boxen']['box_bestseller_anzahl_basis'];
-            $cached         = true;
             $anzahl         = (int)$this->config['boxen']['box_bestseller_anzahl_anzeige'];
-            $minCount        = ((int)$this->config['global']['global_bestseller_minanzahl'] > 0)
-                ? (int)$this->config['global']['global_bestseller_minanzahl']
-                : 100;
-            if ($limit < 1) {
-                $limit = 10;
-            }
-            $cacheID = 'bx_bstsl_' . $customerGroupID . '_' . md5($parentSQL . $stockFilterSQL);
+            $cacheID        = 'bx_bstsl_' . $customerGroupID . '_' . md5($parentSQL . $stockFilterSQL);
             if (($productIDs = \Shop::Container()->getCache()->get($cacheID)) === false) {
-                $cached     = false;
+                $cached   = false;
+                $minCount = ((int)$this->config['global']['global_bestseller_minanzahl'] > 0)
+                    ? (int)$this->config['global']['global_bestseller_minanzahl']
+                    : 100;
+                $limit    = (int)$this->config['boxen']['box_bestseller_anzahl_basis'];
+                if ($limit < 1) {
+                    $limit = 10;
+                }
                 $productIDs = \Shop::Container()->getDB()->query(
                     "SELECT tartikel.kArtikel
                         FROM tbestseller, tartikel

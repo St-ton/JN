@@ -73,163 +73,36 @@ function landISO($cLand)
 }
 
 /**
- * @param object $obj
- * @param int    $art
- * @return array
+ * @param string $langISO
  */
-function baueSprachURLS($obj, $art)
-{
-    $urls   = [];
-    $seoobj = null;
-    if (!($art && $obj && count(Session::Languages()) > 0)) {
-        return [];
-    }
-    foreach (Session::Languages() as $Sprache) {
-        if ((int)$Sprache->kSprache === Shop::getLanguageID()) {
-            continue;
-        }
-        switch ($art) {
-            case URLART_ARTIKEL:
-                //@deprecated since 4.05 - this is now done within the article class itself
-                if ($Sprache->cStandard !== 'Y') {
-                    $seoobj = Shop::Container()->getDB()->queryPrepared(
-                        "SELECT tseo.cSeo
-                            FROM tartikelsprache
-                            LEFT JOIN tseo
-                                ON tseo.cKey = 'kArtikel'
-                                AND tseo.kKey = tartikelsprache.kArtikel
-                                AND tseo.kSprache = :lid
-                            WHERE tartikelsprache.kArtikel = :aid
-                            AND tartikelsprache.kSprache = :lid",
-                        [
-                            'lid' => (int)$Sprache->kSprache,
-                            'aid' => (int)$obj->kArtikel
-                        ],
-                        \DB\ReturnType::SINGLE_OBJECT
-                    );
-                } else {
-                    $seoobj = Shop::Container()->getDB()->queryPrepared(
-                        "SELECT tseo.cSeo
-                            FROM tartikel
-                            LEFT JOIN tseo
-                                ON tseo.cKey = 'kArtikel'
-                                AND tseo.kKey = tartikel.kArtikel
-                                AND tseo.kSprache = :lid
-                            WHERE tartikel.kArtikel = :aid",
-                        [
-                            'lid' => (int)$Sprache->kSprache,
-                            'aid' => (int)$obj->kArtikel
-                        ],
-                        \DB\ReturnType::SINGLE_OBJECT
-                    );
-                }
-                $url = (isset($seoobj->cSeo) && $seoobj->cSeo)
-                    ? $seoobj->cSeo
-                    : '?a=' . $obj->kArtikel . '&amp;lang=' . $Sprache->cISO;
-                break;
-
-            case URLART_KATEGORIE:
-                if ($Sprache->cStandard !== 'Y') {
-                    $seoobj = Shop::Container()->getDB()->queryPrepared(
-                        "SELECT tseo.cSeo
-                            FROM tkategoriesprache
-                            LEFT JOIN tseo
-                                ON tseo.cKey = 'kKategorie'
-                                AND tseo.kKey = tkategoriesprache.kKategorie
-                                AND tseo.kSprache = :lid
-                                WHERE tkategoriesprache.kKategorie = :cid
-                            AND tkategoriesprache.kSprache = :lid",
-                        [
-                            'lid' => (int)$Sprache->kSprache,
-                            'cid' => (int)$obj->kKategorie
-                        ],
-                        \DB\ReturnType::SINGLE_OBJECT
-                    );
-                } else {
-                    $seoobj = Shop::Container()->getDB()->queryPrepared(
-                        "SELECT tseo.cSeo
-                            FROM tkategorie
-                            LEFT JOIN tseo
-                                ON tseo.cKey = 'kKategorie'
-                                AND tseo.kKey = tkategorie.kKategorie
-                                AND tseo.kSprache = :lid
-                            WHERE tkategorie.kKategorie = :cid",
-                        [
-                            'lid' => (int)$Sprache->kSprache,
-                            'cid' => (int)$obj->kKategorie
-                        ],
-                        \DB\ReturnType::SINGLE_OBJECT
-                    );
-                }
-                $url = $seoobj->cSeo ?? '?k=' . $obj->kKategorie . '&amp;lang=' . $Sprache->cISO;
-                break;
-
-            case URLART_SEITE:
-                //@deprecated since 4.05 - this is now done within the link helper
-                $seoobj = Shop::Container()->getDB()->queryPrepared(
-                    "SELECT tseo.cSeo
-                        FROM tlinksprache
-                        LEFT JOIN tseo
-                            ON tseo.cKey = 'kLink'
-                            AND tseo.kKey = tlinksprache.kLink
-                            AND tseo.kSprache = :lid
-                        WHERE tlinksprache.kLink = :lnkid
-                            AND tlinksprache.cISOSprache = :ciso",
-                    [
-                        'lid'   => (int)$Sprache->kSprache,
-                        'lnkid' => (int)$obj->kLink,
-                        'ciso'  => $Sprache->cISO
-                    ],
-                    \DB\ReturnType::SINGLE_OBJECT
-                );
-                $url    = (isset($seoobj->cSeo) && $seoobj->cSeo)
-                    ? $seoobj->cSeo
-                    : '?s=' . $obj->kLink . '&amp;lang=' . $Sprache->cISO;
-                break;
-
-            default:
-                $url = $obj . '&amp;lang=' . $Sprache->cISO;
-                break;
-        }
-        $urls[$Sprache->cISO] = $url;
-    }
-
-    return $urls;
-}
-
-/**
- * @param string $lang
- */
-function checkeSpracheWaehrung($lang = '')
+function checkeSpracheWaehrung($langISO = '')
 {
     /** @var array('Vergleichsliste' => Vergleichsliste,'Warenkorb' => Warenkorb) $_SESSION */
-    if (strlen($lang) > 0) {
+    if (strlen($langISO) > 0) {
         //Kategorien zurücksetzen, da sie lokalisiert abgelegt wurden
-        if ($lang !== Shop::getLanguageCode()) {
+        if ($langISO !== Shop::getLanguageCode()) {
             $_SESSION['oKategorie_arr']     = [];
             $_SESSION['oKategorie_arr_new'] = [];
         }
-        $bSpracheDa = false;
-        $Sprachen   = Sprache::getAllLanguages();
-        foreach ($Sprachen as $Sprache) {
-            if ($Sprache->cISO === $lang) {
-                $_SESSION['cISOSprache'] = $Sprache->cISO;
-                $_SESSION['kSprache']    = (int)$Sprache->kSprache;
-                Shop::setLanguage($Sprache->kSprache, $Sprache->cISO);
-                unset($_SESSION['Suche']);
-                $bSpracheDa = true;
-                setzeLinks();
-                if (isset($_SESSION['Wunschliste'])) {
-                    Session::WishList()->umgebungsWechsel();
-                }
-                if (isset($_SESSION['Vergleichsliste'])) {
-                    Session::CompareList()->umgebungsWechsel();
-                }
-                $_SESSION['currentLanguage'] = clone $Sprache;
-                unset($_SESSION['currentLanguage']->cURL);
+        $lang = \Functional\first(Sprache::getAllLanguages(), function ($l) use ($langISO) {
+            return $l->cISO === $langISO;
+        });
+        if ($lang !== null) {
+            $_SESSION['cISOSprache'] = $lang->cISO;
+            $_SESSION['kSprache']    = (int)$lang->kSprache;
+            Shop::setLanguage($lang->kSprache, $lang->cISO);
+            unset($_SESSION['Suche']);
+            setzeLinks();
+            if (isset($_SESSION['Wunschliste'])) {
+                Session::WishList()->umgebungsWechsel();
             }
-        }
-        if (!$bSpracheDa) { //lang mitgegeben, aber nicht mehr in db vorhanden -> alter Sprachlink
+            if (isset($_SESSION['Vergleichsliste'])) {
+                Session::CompareList()->umgebungsWechsel();
+            }
+            $_SESSION['currentLanguage'] = clone $lang;
+            unset($_SESSION['currentLanguage']->cURL);
+        } else {
+            // lang mitgegeben, aber nicht mehr in db vorhanden -> alter Sprachlink
             $kArtikel              = RequestHelper::verifyGPCDataInt('a');
             $kKategorie            = RequestHelper::verifyGPCDataInt('k');
             $kSeite                = RequestHelper::verifyGPCDataInt('s');
@@ -356,34 +229,26 @@ function checkeSpracheWaehrung($lang = '')
         }
     }
 
-    $waehrung = RequestHelper::verifyGPDataString('curr');
-    if ($waehrung) {
-        $Waehrungen = Shop::Container()->getDB()->query(
-            "SELECT cISO, kWaehrung
-                FROM twaehrung",
-            \DB\ReturnType::ARRAY_OF_OBJECTS
-        );
-        $cart       = Session::Cart();
-        foreach ($Waehrungen as $Waehrung) {
-            if ($Waehrung->cISO === $waehrung) {
-                $currency = new Currency($Waehrung->kWaehrung);
-
-                $_SESSION['Waehrung']      = $currency;
-                $_SESSION['cWaehrungName'] = $currency->getName();
-
-                if (isset($_SESSION['Wunschliste'])) {
-                    Session::WishList()->umgebungsWechsel();
-                }
-                if (isset($_SESSION['Vergleichsliste'])) {
-                    Session::CompareList()->umgebungsWechsel();
-                }
-                // Trusted Shops Kaeuferschutz raus falls vorhanden
-                unset($_SESSION['TrustedShops']);
-                if ($cart !== null) {
-                    $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
-                    if (count($cart->PositionenArr) > 0) {
-                        $cart->setzePositionsPreise();
-                    }
+    $currencyCode = RequestHelper::verifyGPDataString('curr');
+    if ($currencyCode) {
+        $cart     = \Session\Session::Cart();
+        $currency = \Functional\first(\Session\Session::Currencies(), function (Currency $c) use ($currencyCode) {
+            return $c->getCode() === $currencyCode;
+        });
+        if ($currency !== null) {
+            $_SESSION['Waehrung']      = $currency;
+            $_SESSION['cWaehrungName'] = $currency->getName();
+            if (isset($_SESSION['Wunschliste'])) {
+                \Session\Session::WishList()->umgebungsWechsel();
+            }
+            if (isset($_SESSION['Vergleichsliste'])) {
+                \Session\Session::CompareList()->umgebungsWechsel();
+            }
+            unset($_SESSION['TrustedShops']);
+            if ($cart !== null) {
+                $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
+                if (count($cart->PositionenArr) > 0) {
+                    $cart->setzePositionsPreise();
                 }
             }
         }

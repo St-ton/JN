@@ -1880,3 +1880,16 @@ function baueURL($obj, $art, $row = 0, $bForceNonSeo = false, $bFull = false)
 
     return UrlHelper::buildURL($obj, $art, $bFull);
 }
+
+/**
+ * @param object $obj
+ * @param int    $art
+ * @return array
+ * @deprecated since 5.0.0
+ */
+function baueSprachURLS($obj, $art)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated and doesn\'t do anything.', E_USER_DEPRECATED);
+
+    return [];
+}

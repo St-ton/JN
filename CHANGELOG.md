@@ -1,5 +1,12 @@
 # JTL-Shop Changelog
 
+## [4.05.7]
+
+Dieses Update enthält Sicherheitsfixes (CSRF mit XSS oder SQL-Injections im Admin-Backend). 
+
+Wichtig: 
+* [SHOP-2349] - shopinfo.xml-Generator für elektronischer-markt.de wird eingestellt
+
 ## [4.05.6]
 
 * Sicherheitsupdate

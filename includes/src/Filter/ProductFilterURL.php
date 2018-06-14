@@ -202,7 +202,7 @@ class ProductFilterURL
                 }
             }
         }
-        if ($languageID !== \Shop::getLanguageID()) {
+        if (empty($seoFilterParams) && $languageID !== \Shop::getLanguageID()) {
             $language = first(Session::Languages(), function ($l) use ($languageID) {
                 return $l->kSprache === $languageID;
             });
@@ -225,9 +225,9 @@ class ProductFilterURL
     /**
      * @param \stdClass[] $seoParts
      * @param array       $nonSeoParts
-     * @return mixed
+     * @return string
      */
-    private function buildURLString($seoParts, $nonSeoParts)
+    private function buildURLString(array $seoParts, array $nonSeoParts): string
     {
         $url = '';
         foreach ($seoParts as $seoData) {

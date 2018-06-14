@@ -1822,5 +1822,13 @@ final class Shop
         $container->setSingleton(DbService\GcServiceInterface::class, function (Container $container) {
             return new DbService\GcService($container->getDB());
         });
+        // Captcha
+        $container->setSingleton(\Services\JTL\CaptchaServiceInterface::class, function (Container $container) {
+            return new \Services\JTL\CaptchaService(new \Services\JTL\SimpleCaptchaService(
+                // Captcha Prüfung ist bei eingeloggtem Kunden, bei bereits erfolgter Prüfung
+                // oder ausgeschaltetem Captcha nicht notwendig
+                !(Session::get('bAnti_spam_already_checked', false) || Session::Customer()->isLoggedIn())
+            ));
+        });
     }
 }

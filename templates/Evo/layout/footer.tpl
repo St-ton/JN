@@ -143,6 +143,7 @@
                     <div class="language-dropdown dropdown visible-xs col-xs-6 text-center">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="{lang key='selectLang'}">
                             <i class="fa fa-language"></i>
+                            {lang key="language"}
                             <span class="caret"></span>
                         </a>
                         <ul id="language-dropdown-small" class="dropdown-menu dropdown-menu-right">
@@ -172,9 +173,8 @@
                                 <i class="fa fa-usd" title="{$smarty.session.Waehrung->getName()}"></i>
                             {elseif $smarty.session.Waehrung->getCode() === 'GBP'}
                                 <i class="fa fa-gbp" title="{$smarty.session.Waehrung->getName()}"></i>
-                            {else}
-                                {$smarty.session.Waehrung->getName()}
-                            {/if} <span class="caret"></span>
+                            {/if}
+                            {lang key="currency"} <span class="caret"></span>
                         </a>
                         <ul id="currency-dropdown-small" class="dropdown-menu dropdown-menu-right">
                             {foreach from=$smarty.session.Waehrungen item=oWaehrung}
@@ -333,6 +333,7 @@
             $.get('includes/cron_inc.php');
         {/if}
     </script>
+    {captchaMarkup getBody=false}
 {/block}
 </body>
 </html>

@@ -33,7 +33,7 @@ class Metadata implements MetadataInterface
     /**
      * @var string
      */
-    private $breadCrumb;
+    private $breadCrumb = '';
 
     /**
      * @var string
@@ -838,7 +838,7 @@ class Metadata implements MetadataInterface
         if ($this->productFilter->hasCategory()) {
             $this->breadCrumb = $this->productFilter->getCategory()->getName();
 
-            return $this->breadCrumb;
+            return $this->breadCrumb ?? '';
         }
         if ($this->productFilter->hasManufacturer()) {
             $this->breadCrumb = $this->productFilter->getManufacturer()->getName();
@@ -858,7 +858,7 @@ class Metadata implements MetadataInterface
         if ($this->productFilter->hasSearchSpecial()) {
             $this->breadCrumb = $this->productFilter->getSearchSpecial()->getName();
 
-            return $this->breadCrumb;
+            return $this->breadCrumb ?? '';
         }
         if ($this->productFilter->hasSearch()) {
             $this->breadCrumb = $this->productFilter->getSearch()->getName();

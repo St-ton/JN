@@ -24,8 +24,8 @@ $smarty->registerPlugin('function', 'gibPreisStringLocalizedSmarty', 'gibPreisSt
        ->registerPlugin('function', 'hasOnlyListableVariations', 'hasOnlyListableVariations')
        ->registerPlugin('modifier', 'has_trans', 'has_translation')
        ->registerPlugin('modifier', 'trans', 'get_translation')
-       ->registerPlugin('function', 'get_product_list', 'get_product_list');
-
+       ->registerPlugin('function', 'get_product_list', 'get_product_list')
+       ->registerPlugin('function', 'captchaMarkup', 'captchaMarkup');
 
 /**
  * @param array     $params
@@ -765,4 +765,18 @@ function has_translation($mixed, $to = null)
     $to = $to ?: Shop::getLanguage(true);
 
     return is_string($mixed) ?: isset($mixed[$to]);
+}
+
+/**
+ * @param array     $params
+ * @param JTLSmarty $smarty
+ * @return string
+ */
+function captchaMarkup($params, $smarty)
+{
+    if (isset($params['getBody']) && $params['getBody']) {
+        return Shop::Container()->getCaptchaService()->getBodyMarkup($smarty);
+    } else {
+        return Shop::Container()->getCaptchaService()->getHeadMarkup($smarty);
+    }
 }

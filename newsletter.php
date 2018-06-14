@@ -263,7 +263,7 @@ Shop::Smarty()->assign('hinweis', $cHinweis)
     ->assign('fehler', $cFehler)
     ->assign('cOption', $cOption)
     ->assign('nAnzeigeOrt', CHECKBOX_ORT_NEWSLETTERANMELDUNG)
-    ->assign('code_newsletter', generiereCaptchaCode($Einstellungen['newsletter']['newsletter_sicherheitscode']));
+    ->assign('code_newsletter', false);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 

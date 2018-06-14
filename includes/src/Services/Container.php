@@ -9,6 +9,7 @@ namespace Services;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\Services\GcServiceInterface;
+use Services\JTL\CaptchaServiceInterface;
 use Services\JTL\CryptoServiceInterface;
 use Services\JTL\PasswordServiceInterface;
 use Psr\Log\LoggerInterface;
@@ -69,5 +70,13 @@ class Container extends ContainerBase implements DefaultServicesInterface
     public function getCache(): JTLCacheInterface
     {
         return $this->get(JTLCacheInterface::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getCaptchaService(): CaptchaServiceInterface
+    {
+        return $this->get(CaptchaServiceInterface::class);
     }
 }

@@ -244,10 +244,8 @@ $smarty->assign('Navigation', createNavigation($AktuelleSeite, $AufgeklappteKate
        ->assign('verfuegbarkeitsBenachrichtigung', gibVerfuegbarkeitsformularAnzeigen(
            $AktuellerArtikel,
            $Einstellungen['artikeldetails']['benachrichtigung_nutzen']))
-       ->assign('code_fragezumprodukt',
-           generiereCaptchaCode($Einstellungen['artikeldetails']['produktfrage_abfragen_captcha']))
-       ->assign('code_benachrichtigung_verfuegbarkeit',
-           generiereCaptchaCode($Einstellungen['artikeldetails']['benachrichtigung_abfragen_captcha']))
+       ->assign('code_fragezumprodukt', false)
+       ->assign('code_benachrichtigung_verfuegbarkeit', false)
        ->assign('ProdukttagHinweis', bearbeiteProdukttags($AktuellerArtikel))
        ->assign('ProduktTagging', $AktuellerArtikel->tags)
        ->assign('BlaetterNavi', $oBlaetterNavi)

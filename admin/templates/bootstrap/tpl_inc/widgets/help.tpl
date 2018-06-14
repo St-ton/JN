@@ -2,7 +2,7 @@
 
     <div class="row text-center">
         <div class="col-xs-6 border-right">
-            <a href="https://guide.jtl-software.de/jtl/JTL-Shop" target="_blank" rel="noopener">
+            <a href="https://jtl-url.de/0762z" target="_blank" rel="noopener">
                 <i class="fa fa-book text-four-times text-info"></i>
                 <h4>Dokumentation</h4>
             </a>

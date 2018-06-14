@@ -39,12 +39,9 @@ function unique_NewsletterCode($dbfeld, $code)
  */
 function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
 {
-    global $cFehler, $cHinweis, $Einstellungen;
+    global $cFehler, $cHinweis;
 
-    if (!isset($Einstellungen['newsletter'])) {
-        $oSettings_arr               = Shop::getSettings([CONF_NEWSLETTER]);
-        $Einstellungen['newsletter'] = $oSettings_arr['newsletter'];
-    }
+    $Einstellungen              = Shop::getSettings([CONF_NEWSLETTER]);
     $oPlausi                    = new stdClass();
     $oPlausi->nPlausi_arr       = [];
     $oNewsletterEmpfaengerKunde = null;
@@ -68,7 +65,11 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
             : null;
         if (!$bPruefeDaten || count($oPlausi->nPlausi_arr) === 0) {
             // Pruefen ob Email bereits vorhanden
-            $oNewsletterEmpfaenger = Shop::Container()->getDB()->select('tnewsletterempfaenger', 'cEmail', $oKunde->cEmail);
+            $oNewsletterEmpfaenger = Shop::Container()->getDB()->select(
+                'tnewsletterempfaenger',
+                'cEmail',
+                $oKunde->cEmail
+            );
             if (!empty($oNewsletterEmpfaenger->dEingetragen)) {
                 $oNewsletterEmpfaenger->Datum =
                     (new DateTime($oNewsletterEmpfaenger->dEingetragen))->format('d.m.Y H:i');
@@ -106,9 +107,9 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
                     : 0;
                 $oNewsletterEmpfaenger->nAktiv   = 0;
                 // Double OPT nur für unregistrierte? --> Kunden brauchen nichts bestaetigen
-                if (isset($_SESSION['Kunde']->kKunde) &&
-                    $_SESSION['Kunde']->kKunde > 0 &&
-                    $Einstellungen['newsletter']['newsletter_doubleopt'] === 'U'
+                if (isset($_SESSION['Kunde']->kKunde)
+                    && $_SESSION['Kunde']->kKunde > 0
+                    && $Einstellungen['newsletter']['newsletter_doubleopt'] === 'U'
                 ) {
                     $oNewsletterEmpfaenger->nAktiv = 1;
                 }
@@ -214,12 +215,12 @@ function newsletterAnmeldungPlausi($oKunde)
  * @param int $kKunde
  * @return bool
  */
-function pruefeObBereitsAbonnent($kKunde)
+function pruefeObBereitsAbonnent(int $kKunde)
 {
     if ($kKunde > 0) {
-        $oNewsletterEmpfaenger = Shop::Container()->getDB()->select('tnewsletterempfaenger', 'kKunde', (int)$kKunde);
+        $oNewsletterEmpfaenger = Shop::Container()->getDB()->select('tnewsletterempfaenger', 'kKunde', $kKunde);
 
-        return (isset($oNewsletterEmpfaenger->kKunde) && $oNewsletterEmpfaenger->kKunde > 0);
+        return isset($oNewsletterEmpfaenger->kKunde) && $oNewsletterEmpfaenger->kKunde > 0;
     }
 
     return false;
@@ -230,7 +231,7 @@ function pruefeObBereitsAbonnent($kKunde)
  * @param string $cKundengruppeKey
  * @return bool
  */
-function pruefeNLHistoryKundengruppe($kKundengruppe, $cKundengruppeKey)
+function pruefeNLHistoryKundengruppe(int $kKundengruppe, $cKundengruppeKey)
 {
     if (strlen($cKundengruppeKey) > 0) {
         $kKundengruppe_arr    = [];
@@ -246,7 +247,7 @@ function pruefeNLHistoryKundengruppe($kKundengruppe, $cKundengruppeKey)
         if (in_array(0, $kKundengruppe_arr, true)) {
             return true;
         }
-        if ((int)$kKundengruppe > 0 && in_array((int)$kKundengruppe, $kKundengruppe_arr, true)) {
+        if ($kKundengruppe > 0 && in_array($kKundengruppe, $kKundengruppe_arr, true)) {
             return true;
         }
     }

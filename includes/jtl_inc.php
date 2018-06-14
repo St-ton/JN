@@ -108,9 +108,8 @@ function gibRedirect($cRedirect)
  * @param int $kKundengruppe
  * @return bool
  */
-function pruefeKategorieSichtbarkeit($kKundengruppe)
+function pruefeKategorieSichtbarkeit(int $kKundengruppe)
 {
-    $kKundengruppe = (int)$kKundengruppe;
     if (!$kKundengruppe) {
         return false;
     }
@@ -169,9 +168,8 @@ function pruefeKategorieSichtbarkeit($kKundengruppe)
  * @param int $kKunde
  * @return bool
  */
-function setzeWarenkorbPersInWarenkorb($kKunde)
+function setzeWarenkorbPersInWarenkorb(int $kKunde)
 {
-    $kKunde = (int)$kKunde;
     if (!$kKunde) {
         return false;
     }
@@ -245,7 +243,7 @@ function setzeWarenkorbPersInWarenkorb($kKunde)
                      ->fuegeEin($kArtikelGeschenk, 1, [], C_WARENKORBPOS_TYP_GRATISGESCHENK);
             }
         } else {
-            fuegeEinInWarenkorb(
+            WarenkorbHelper::addProductIDToCart(
                 $oWarenkorbPersPos->kArtikel,
                 $oWarenkorbPersPos->fAnzahl,
                 $oWarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr,
@@ -267,10 +265,9 @@ function setzeWarenkorbPersInWarenkorb($kKunde)
  *
  * @param int $kKundengruppe
  */
-function pruefeWarenkorbArtikelSichtbarkeit($kKundengruppe)
+function pruefeWarenkorbArtikelSichtbarkeit(int $kKundengruppe)
 {
-    $kKundengruppe = (int)$kKundengruppe;
-    $cart          = Session::Cart();
+    $cart = Session::Cart();
     if ($kKundengruppe > 0
         && isset($cart->PositionenArr)
         && count($cart->PositionenArr) > 0

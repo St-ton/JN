@@ -11,14 +11,13 @@
 function kundeSpeichern($cPost_arr)
 {
     global $Kunde,
-           $GlobaleEinstellungen,
-           $Einstellungen,
            $step,
            $editRechnungsadresse,
            $knd,
            $cKundenattribut_arr;
 
     unset($_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['Zahlungsart']);
+    $conf = Shop::getSettings([CONF_GLOBAL, CONF_KUNDENWERBENKUNDEN]);
     $cart = Session::Cart();
     $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
          ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART);
@@ -70,7 +69,7 @@ function kundeSpeichern($cPost_arr)
                 if (is_array($oKundenfeldNichtEditierbar_arr) && count($oKundenfeldNichtEditierbar_arr) > 0) {
                     $cSQL .= ' AND (';
                     foreach ($oKundenfeldNichtEditierbar_arr as $i => $oKundenfeldNichtEditierbar) {
-                        if ($i == 0) {
+                        if ($i === 0) {
                             $cSQL .= 'kKundenfeld != ' . (int)$oKundenfeldNichtEditierbar->kKundenfeld;
                         } else {
                             $cSQL .= ' AND kKundenfeld != ' . (int)$oKundenfeldNichtEditierbar->kKundenfeld;
@@ -79,7 +78,10 @@ function kundeSpeichern($cPost_arr)
                     $cSQL .= ')';
                 }
 
-                Shop::Container()->getDB()->query("DELETE FROM tkundenattribut WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde . $cSQL, 3);
+                Shop::Container()->getDB()->query(
+                    'DELETE FROM tkundenattribut WHERE kKunde = ' . (int)$_SESSION['Kunde']->kKunde . $cSQL,
+                    \DB\ReturnType::AFFECTED_ROWS
+                );
                 $nKundenattributKey_arr = array_keys($cKundenattribut_arr);
                 foreach ($nKundenattributKey_arr as $kKundenfeld) {
                     $oKundenattribut              = new stdClass();
@@ -96,13 +98,19 @@ function kundeSpeichern($cPost_arr)
             $_SESSION['Kunde']->cKundenattribut_arr = $cKundenattribut_arr;
         } else {
             // Guthaben des Neukunden aufstocken insofern er geworben wurde
-            $oNeukunde     = Shop::Container()->getDB()->select('tkundenwerbenkunden', 'cEmail', $knd->cMail, 'nRegistriert', 0);
+            $oNeukunde     = Shop::Container()->getDB()->select(
+                'tkundenwerbenkunden',
+                'cEmail',
+                $knd->cMail,
+                'nRegistriert',
+                0
+            );
             $kKundengruppe = Session::CustomerGroup()->getID();
-            if (isset($oNeukunde->kKundenWerbenKunden, $Einstellungen['kundenwerbenkunden']['kwk_kundengruppen'])
+            if (isset($oNeukunde->kKundenWerbenKunden, $conf['kundenwerbenkunden']['kwk_kundengruppen'])
                 && $oNeukunde->kKundenWerbenKunden > 0
-                && (int)$Einstellungen['kundenwerbenkunden']['kwk_kundengruppen'] > 0
+                && (int)$conf['kundenwerbenkunden']['kwk_kundengruppen'] > 0
             ) {
-                $kKundengruppe = (int)$Einstellungen['kundenwerbenkunden']['kwk_kundengruppen'];
+                $kKundengruppe = (int)$conf['kundenwerbenkunden']['kwk_kundengruppen'];
             }
 
             $knd->kKundengruppe = $kKundengruppe;
@@ -110,12 +118,12 @@ function kundeSpeichern($cPost_arr)
             $knd->cAbgeholt     = 'N';
             $knd->cSperre       = 'N';
             //konto sofort aktiv?
-            $knd->cAktiv = $GlobaleEinstellungen['global']['global_kundenkonto_aktiv'] === 'A'
+            $knd->cAktiv = $conf['global']['global_kundenkonto_aktiv'] === 'A'
                 ? 'N'
                 : 'Y';
             $customer             = new Kunde();
             $cPasswortKlartext    = $knd->cPasswort;
-            $knd->cPasswort       = $customer->generatePasswordHash($cPasswortKlartext);
+            $knd->cPasswort       = Shop::Container()->getPasswordService()->hash($cPasswortKlartext);
             $knd->dErstellt       = 'now()';
             $knd->nRegistriert    = 1;
             $knd->angezeigtesLand = ISO2land($knd->cLand);
@@ -149,7 +157,7 @@ function kundeSpeichern($cPost_arr)
                     Shop::Container()->getDB()->insert('tkundenattribut', $oKundenattribut);
                 }
             }
-            if ($Einstellungen['global']['global_kundenkonto_aktiv'] !== 'A') {
+            if ($conf['global']['global_kundenkonto_aktiv'] !== 'A') {
                 $_SESSION['Kunde']                      = new Kunde($knd->kKunde);
                 $_SESSION['Kunde']->cKundenattribut_arr = $cKundenattribut_arr;
             } else {
@@ -157,10 +165,15 @@ function kundeSpeichern($cPost_arr)
             }
             // Guthaben des Neukunden aufstocken insofern er geworben wurde
             if (isset($oNeukunde->kKundenWerbenKunden) && $oNeukunde->kKundenWerbenKunden > 0) {
-                Shop::Container()->getDB()->query(
-                    "UPDATE tkunde
-                        SET fGuthaben = fGuthaben + " . (float)$Einstellungen['kundenwerbenkunden']['kwk_neukundenguthaben'] . "
-                        WHERE kKunde = " . (int)$knd->kKunde, 3
+                Shop::Container()->getDB()->queryPrepared(
+                    'UPDATE tkunde
+                        SET fGuthaben = fGuthaben + :amount
+                        WHERE kKunde = :cid',
+                    [
+                        'cid'    => (int)$knd->kKunde,
+                        'amount' => (float)$conf['kundenwerbenkunden']['kwk_neukundenguthaben']
+                    ],
+                    \DB\ReturnType::AFFECTED_ROWS
                 );
                 $_upd               = new stdClass();
                 $_upd->nRegistriert = 1;
@@ -194,7 +207,7 @@ function kundeSpeichern($cPost_arr)
         if (isset($cPost_arr['ajaxcheckout_return']) && (int)$cPost_arr['ajaxcheckout_return'] === 1) {
             return 1;
         }
-        if ($GlobaleEinstellungen['global']['global_kundenkonto_aktiv'] !== 'A') {
+        if ($conf['global']['global_kundenkonto_aktiv'] !== 'A') {
             //weiterleitung zu mein Konto
             header('Location: ' . Shop::Container()->getLinkService()
                                                    ->getStaticRoute('jtl.php', true) . '?reg=1', true, 303);
@@ -223,7 +236,7 @@ function kundeSpeichern($cPost_arr)
 /**
  * @param int $nCheckout
  */
-function gibFormularDaten($nCheckout = 0)
+function gibFormularDaten(int $nCheckout = 0)
 {
     global $cKundenattribut_arr, $Kunde;
 
@@ -250,7 +263,7 @@ function gibFormularDaten($nCheckout = 0)
             lang_passwortlaenge(Shop::getSettingValue(CONF_KUNDEN, 'kundenregistrierung_passwortlaenge')))
         ->assign('oKundenfeld_arr', gibSelbstdefKundenfelder());
 
-    if ((int)$nCheckout === 1) {
+    if ($nCheckout === 1) {
         Shop::Smarty()->assign('checkout', 1)
             ->assign('bestellschritt', [1 => 1, 2 => 3, 3 => 3, 4 => 3, 5 => 3]); // Rechnungsadresse ändern
     }

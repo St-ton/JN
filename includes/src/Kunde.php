@@ -736,10 +736,10 @@ class Kunde
     /**
      * @param int $length
      * @return bool|string
-     * @deprecated since 5.0
+     * @deprecated since 5.0.0
      * @throws Exception
      */
-    public function generatePassword($length = 12)
+    public function generatePassword(int $length = 12)
     {
         return Shop::Container()->getPasswordService()->generate($length);
     }
@@ -747,7 +747,7 @@ class Kunde
     /**
      * @param string $password
      * @return false|string
-     * @deprecated since 5.0
+     * @deprecated since 5.0.0
      * @throws Exception
      */
     public function generatePasswordHash($password)

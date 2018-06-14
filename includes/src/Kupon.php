@@ -686,9 +686,9 @@ class Kupon
     public function getTranslation(int $kKupon = 0): array
     {
         $translationList = [];
-        if(isset($_SESSION['Sprachen'])){
+        if (isset($_SESSION['Sprachen'])) {
             foreach ($_SESSION['Sprachen'] as $Sprache) {
-                $name_spr = Shop::Container()->getDB()->select(
+                $name_spr                        = Shop::Container()->getDB()->select(
                     'tkuponsprache',
                     'kKupon',
                     $kKupon,

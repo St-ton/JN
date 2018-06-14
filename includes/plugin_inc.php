@@ -8,7 +8,7 @@
  * @param int   $nHook
  * @param array $args_arr
  */
-function executeHook($nHook, $args_arr = [])
+function executeHook(int $nHook, $args_arr = [])
 {
     global $smarty;
 
@@ -75,7 +75,7 @@ function executeHook($nHook, $args_arr = [])
  * @param array  $xParam_arr
  * @return bool
  */
-function pluginLizenzpruefung(&$oPlugin, $xParam_arr = [])
+function pluginLizenzpruefung(Plugin $oPlugin, array $xParam_arr = []): bool
 {
     if (isset($oPlugin->cLizenzKlasse, $oPlugin->cLizenzKlasseName)
         && strlen($oPlugin->cLizenzKlasse) > 0
@@ -112,14 +112,14 @@ function pluginLizenzpruefung(&$oPlugin, $xParam_arr = [])
  * @param Plugin $oPlugin
  * @param int    $nStatus
  */
-function aenderPluginZahlungsartStatus(&$oPlugin, $nStatus)
+function aenderPluginZahlungsartStatus($oPlugin, int $nStatus)
 {
     if (isset($oPlugin->kPlugin, $oPlugin->oPluginZahlungsmethodeAssoc_arr)
         && $oPlugin->kPlugin > 0
         && count($oPlugin->oPluginZahlungsmethodeAssoc_arr) > 0
     ) {
         foreach ($oPlugin->oPluginZahlungsmethodeAssoc_arr as $cModulId => $oPluginZahlungsmethodeAssoc) {
-            Shop::Container()->getDB()->update('tzahlungsart', 'cModulId', $cModulId, (object)['nActive' => (int)$nStatus]);
+            Shop::Container()->getDB()->update('tzahlungsart', 'cModulId', $cModulId, (object)['nActive' => $nStatus]);
         }
     }
 }
@@ -157,7 +157,7 @@ function gibPluginEinstellungen(int $kPlugin)
  * @param string $cISO
  * @return array
  */
-function gibPluginSprachvariablen(int $kPlugin, $cISO = '')
+function gibPluginSprachvariablen(int $kPlugin, $cISO = ''): array
 {
     $return = [];
     $cSQL   = '';
@@ -179,7 +179,8 @@ function gibPluginSprachvariablen(int $kPlugin, $cISO = '')
                     ON tpluginsprachvariablecustomsprache.kPlugin = tpluginsprachvariable.kPlugin
                     AND tpluginsprachvariablecustomsprache.kPluginSprachvariable = tpluginsprachvariable.kPluginSprachvariable
                     AND tpluginsprachvariablesprache.cISO = tpluginsprachvariablecustomsprache.cISO
-                WHERE tpluginsprachvariable.kPlugin = " . $kPlugin . $cSQL, 9
+                WHERE tpluginsprachvariable.kPlugin = " . $kPlugin . $cSQL,
+        \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
     );
     if (!is_array($oPluginSprachvariablen) || count($oPluginSprachvariablen) < 1) {
         $oPluginSprachvariablen = Shop::Container()->getDB()->query(
@@ -190,13 +191,12 @@ function gibPluginSprachvariablen(int $kPlugin, $cISO = '')
                     concat('#', tpluginsprachvariable.cName, '#') AS customValue, '" .
                     strtoupper($cISO) . "' AS cISO
                 FROM tpluginsprachvariable
-                WHERE tpluginsprachvariable.kPlugin = " . $kPlugin, 9
+                WHERE tpluginsprachvariable.kPlugin = " . $kPlugin,
+            \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
         );
     }
-    if (is_array($oPluginSprachvariablen) && count($oPluginSprachvariablen) > 0) {
-        foreach ($oPluginSprachvariablen as $_sv) {
-            $return[$_sv['cName']] = $_sv['customValue'];
-        }
+    foreach ($oPluginSprachvariablen as $_sv) {
+        $return[$_sv['cName']] = $_sv['customValue'];
     }
 
     return $return;
@@ -207,7 +207,7 @@ function gibPluginSprachvariablen(int $kPlugin, $cISO = '')
  * @param int $kPlugin
  * @return bool
  */
-function aenderPluginStatus(int $nStatus, int $kPlugin)
+function aenderPluginStatus(int $nStatus, int $kPlugin): bool
 {
     return Shop::Container()->getDB()->update('tplugin', 'kPlugin', $kPlugin, (object)['nStatus' => $nStatus]) > 0;
 }
@@ -217,7 +217,7 @@ function aenderPluginStatus(int $nStatus, int $kPlugin)
  * @param string $cNameZahlungsmethode
  * @return string
  */
-function gibPlugincModulId(int $kPlugin, string $cNameZahlungsmethode)
+function gibPlugincModulId(int $kPlugin, string $cNameZahlungsmethode): string
 {
     return $kPlugin > 0 && strlen($cNameZahlungsmethode) > 0
         ? 'kPlugin_' . $kPlugin . '_' . strtolower(str_replace([' ', '-', '_'], '', $cNameZahlungsmethode))
@@ -228,7 +228,7 @@ function gibPlugincModulId(int $kPlugin, string $cNameZahlungsmethode)
  * @param string $cModulId
  * @return int
  */
-function gibkPluginAuscModulId(string $cModulId)
+function gibkPluginAuscModulId(string $cModulId): int
 {
     return preg_match('/^kPlugin_(\d+)_/', $cModulId, $cMatch_arr)
         ? (int)$cMatch_arr[1]
@@ -239,7 +239,7 @@ function gibkPluginAuscModulId(string $cModulId)
  * @param string $cPluginID
  * @return int
  */
-function gibkPluginAuscPluginID(string $cPluginID)
+function gibkPluginAuscPluginID(string $cPluginID): int
 {
     $oPlugin = Shop::Container()->getDB()->select('tplugin', 'cPluginID', $cPluginID);
 
@@ -249,7 +249,7 @@ function gibkPluginAuscPluginID(string $cPluginID)
 /**
  * @return array
  */
-function gibPluginExtendedTemplates()
+function gibPluginExtendedTemplates(): array
 {
     $cTemplate_arr = [];
     $oTemplate_arr = Shop::Container()->getDB()->query(

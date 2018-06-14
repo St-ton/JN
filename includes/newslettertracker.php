@@ -10,7 +10,10 @@ $session = \Session\Session::getInstance();
 // kK   = kKampagne
 // kN   = kNewsletter
 // kNE  = kNewsletterEmpfaenger
-if (RequestHelper::verifyGPCDataInt('kK') > 0 && RequestHelper::verifyGPCDataInt('kN') > 0 && RequestHelper::verifyGPCDataInt('kNE') > 0) {
+if (RequestHelper::verifyGPCDataInt('kK') > 0
+    && RequestHelper::verifyGPCDataInt('kN') > 0
+    && RequestHelper::verifyGPCDataInt('kNE') > 0
+) {
     $kKampagne             = RequestHelper::verifyGPCDataInt('kK');
     $kNewsletter           = RequestHelper::verifyGPCDataInt('kN');
     $kNewsletterEmpfaenger = RequestHelper::verifyGPCDataInt('kNE');

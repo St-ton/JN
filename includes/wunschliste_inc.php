@@ -26,58 +26,59 @@ function setzeWunschlisteInSession()
  * @param int $kWunschliste
  * @return string
  */
-function wunschlisteLoeschen($kWunschliste)
+function wunschlisteLoeschen(int $kWunschliste)
 {
-    $hinweis      = '';
-    $kWunschliste = (int)$kWunschliste;
-    if ($kWunschliste > 0) {
-        // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
-        $oWunschliste = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $kWunschliste);
-        $customer     = Session::Customer();
-        if (isset($oWunschliste->kKunde) && (int)$oWunschliste->kKunde === $customer->getID()) {
-            // Hole alle Positionen der Wunschliste
-            $oWunschlistePos_arr = Shop::Container()->getDB()->selectAll(
-                'twunschlistepos',
-                'kWunschliste',
-                $kWunschliste,
-                'kWunschlistePos'
+    $hinweis = '';
+    if ($kWunschliste === 0) {
+        return $hinweis;
+    }
+    // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
+    $oWunschliste = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $kWunschliste);
+    $customer     = Session::Customer();
+    if (isset($oWunschliste->kKunde) && (int)$oWunschliste->kKunde === $customer->getID()) {
+        // Hole alle Positionen der Wunschliste
+        $oWunschlistePos_arr = Shop::Container()->getDB()->selectAll(
+            'twunschlistepos',
+            'kWunschliste',
+            $kWunschliste,
+            'kWunschlistePos'
+        );
+        // Alle Eigenschaften und Positionen aus DB löschen
+        foreach ($oWunschlistePos_arr as $oWunschlistePos) {
+            Shop::Container()->getDB()->delete(
+                'twunschlisteposeigenschaft',
+                'kWunschlistePos',
+                $oWunschlistePos->kWunschlistePos
             );
-            // Alle Eigenschaften und Positionen aus DB löschen
-            foreach ($oWunschlistePos_arr as $oWunschlistePos) {
-                Shop::Container()->getDB()->delete(
-                    'twunschlisteposeigenschaft',
-                    'kWunschlistePos',
-                    $oWunschlistePos->kWunschlistePos
-                );
-            }
-            // Lösche alle Positionen mit $kWunschliste
-            Shop::Container()->getDB()->delete('twunschlistepos', 'kWunschliste', $kWunschliste);
-            // Lösche Wunschliste aus der DB
-            Shop::Container()->getDB()->delete('twunschliste', 'kWunschliste', $kWunschliste);
-            // Lösche Wunschliste aus der Session (falls Wunschliste = Standard)
-            if (isset($_SESSION['Wunschliste']->kWunschliste)
-                && (int)$_SESSION['Wunschliste']->kWunschliste === $kWunschliste
-            ) {
-                unset($_SESSION['Wunschliste']);
-            }
-            // Wenn die gelöschte Wunschliste nStandard = 1 war => neue setzen
-            if ((int)$oWunschliste->nStandard === 1) {
-                // Neue Wunschliste holen (falls vorhanden) und nStandard=1 neu setzen
-                $oWunschliste = Shop::Container()->getDB()->select('twunschliste', 'kKunde', $customer->getID());
-                if (isset($oWunschliste->kWunschliste)) {
-                    Shop::Container()->getDB()->query(
-                        'UPDATE twunschliste 
-                            SET nStandard = 1 
-                            WHERE kWunschliste = ' . (int)$oWunschliste->kWunschliste, 3
-                    );
-                    // Neue Standard Wunschliste in die Session laden
-                    $_SESSION['Wunschliste'] = new Wunschliste($oWunschliste->kWunschliste);
-                    $GLOBALS['hinweis']      = $_SESSION['Wunschliste']->ueberpruefePositionen();
-                }
-            }
-
-            $hinweis = Shop::Lang()->get('wishlistDelete', 'messages');
         }
+        // Lösche alle Positionen mit $kWunschliste
+        Shop::Container()->getDB()->delete('twunschlistepos', 'kWunschliste', $kWunschliste);
+        // Lösche Wunschliste aus der DB
+        Shop::Container()->getDB()->delete('twunschliste', 'kWunschliste', $kWunschliste);
+        // Lösche Wunschliste aus der Session (falls Wunschliste = Standard)
+        if (isset($_SESSION['Wunschliste']->kWunschliste)
+            && (int)$_SESSION['Wunschliste']->kWunschliste === $kWunschliste
+        ) {
+            unset($_SESSION['Wunschliste']);
+        }
+        // Wenn die gelöschte Wunschliste nStandard = 1 war => neue setzen
+        if ((int)$oWunschliste->nStandard === 1) {
+            // Neue Wunschliste holen (falls vorhanden) und nStandard=1 neu setzen
+            $oWunschliste = Shop::Container()->getDB()->select('twunschliste', 'kKunde', $customer->getID());
+            if (isset($oWunschliste->kWunschliste)) {
+                Shop::Container()->getDB()->query(
+                    'UPDATE twunschliste 
+                        SET nStandard = 1 
+                        WHERE kWunschliste = ' . (int)$oWunschliste->kWunschliste,
+                    \DB\ReturnType::AFFECTED_ROWS
+                );
+                // Neue Standard Wunschliste in die Session laden
+                $_SESSION['Wunschliste'] = new Wunschliste($oWunschliste->kWunschliste);
+                $GLOBALS['hinweis']      = $_SESSION['Wunschliste']->ueberpruefePositionen();
+            }
+        }
+
+        $hinweis = Shop::Lang()->get('wishlistDelete', 'messages');
     }
 
     return $hinweis;
@@ -87,20 +88,24 @@ function wunschlisteLoeschen($kWunschliste)
  * @param int $kWunschliste
  * @return string
  */
-function wunschlisteAktualisieren($kWunschliste)
+function wunschlisteAktualisieren(int $kWunschliste)
 {
-    $hinweis      = '';
-    $kWunschliste = (int)$kWunschliste;
+    $hinweis = '';
     if (isset($_POST['WunschlisteName']) && strlen($_POST['WunschlisteName']) > 0) {
         $cName = StringHandler::htmlentities(StringHandler::filterXSS(substr($_POST['WunschlisteName'], 0, 254)));
         Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', $kWunschliste, (object)['cName' => $cName]);
     }
     // aktualisiere Positionen
-    $oWunschlistePos_arr = Shop::Container()->getDB()->selectAll('twunschlistepos', 'kWunschliste', $kWunschliste, 'kWunschlistePos');
+    $oWunschlistePos_arr = Shop::Container()->getDB()->selectAll(
+        'twunschlistepos',
+        'kWunschliste',
+        $kWunschliste,
+        'kWunschlistePos'
+    );
     // Prüfen ab Positionen vorhanden
     if (count($oWunschlistePos_arr) > 0) {
         foreach ($oWunschlistePos_arr as $oWunschlistePos) {
-            $kWunschlistePos = $oWunschlistePos->kWunschlistePos;
+            $kWunschlistePos = (int)$oWunschlistePos->kWunschlistePos;
             // Ist ein Kommentar vorhanden
             if (strlen($_POST['Kommentar_' . $kWunschlistePos]) > 0) {
                 $cKommentar = substr($_POST['Kommentar_' . $kWunschlistePos], 0, 254);
@@ -109,7 +114,7 @@ function wunschlisteAktualisieren($kWunschliste)
                 $_upd->cKommentar = StringHandler::htmlentities(
                     StringHandler::filterXSS(Shop::Container()->getDB()->escape($cKommentar))
                 );
-                Shop::Container()->getDB()->update('twunschlistepos', 'kWunschlistePos', (int)$kWunschlistePos, $_upd);
+                Shop::Container()->getDB()->update('twunschlistepos', 'kWunschlistePos', $kWunschlistePos, $_upd);
             }
             // Ist eine Anzahl gesezt
             if ((int)$_POST['Anzahl_' . $kWunschlistePos] > 0) {
@@ -117,7 +122,7 @@ function wunschlisteAktualisieren($kWunschliste)
                 // Anzahl der Position updaten
                 $_upd          = new stdClass();
                 $_upd->fAnzahl = $fAnzahl;
-                Shop::Container()->getDB()->update('twunschlistepos', 'kWunschlistePos', (int)$kWunschlistePos, $_upd);
+                Shop::Container()->getDB()->update('twunschlistepos', 'kWunschlistePos', $kWunschlistePos, $_upd);
             }
         }
         $hinweis = Shop::Lang()->get('wishlistUpdate', 'messages');
@@ -130,49 +135,49 @@ function wunschlisteAktualisieren($kWunschliste)
  * @param int $kWunschliste
  * @return string
  */
-function wunschlisteStandard($kWunschliste)
+function wunschlisteStandard(int $kWunschliste)
 {
-    $hinweis      = '';
-    $kWunschliste = (int)$kWunschliste;
-    if ($kWunschliste > 0) {
-        // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
-        $oWunschliste = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $kWunschliste);
-        if ($oWunschliste !== null && (int)$oWunschliste->kKunde === Session::Customer()->getID()) {
-            // Wunschliste auf Standard setzen
-            Shop::Container()->getDB()->update(
-                'twunschliste',
-                'kKunde',
-                (int)$_SESSION['Kunde']->kKunde,
-                (object)['nStandard' => 0]
-            );
-            Shop::Container()->getDB()->update(
-                'twunschliste',
-                'kWunschliste',
-                $kWunschliste,
-                (object)['nStandard' => 1]
-            );
-            // Session updaten
-            unset($_SESSION['Wunschliste']);
-            $_SESSION['Wunschliste'] = new Wunschliste($kWunschliste);
-            $GLOBALS['hinweis']      = $_SESSION['Wunschliste']->ueberpruefePositionen();
+    $hinweis = '';
+    if ($kWunschliste === 0) {
+        return $hinweis;
+    }
+    // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
+    $oWunschliste = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $kWunschliste);
+    if ($oWunschliste !== null && (int)$oWunschliste->kKunde === Session::Customer()->getID()) {
+        // Wunschliste auf Standard setzen
+        Shop::Container()->getDB()->update(
+            'twunschliste',
+            'kKunde',
+            (int)$_SESSION['Kunde']->kKunde,
+            (object)['nStandard' => 0]
+        );
+        Shop::Container()->getDB()->update(
+            'twunschliste',
+            'kWunschliste',
+            $kWunschliste,
+            (object)['nStandard' => 1]
+        );
+        // Session updaten
+        unset($_SESSION['Wunschliste']);
+        $_SESSION['Wunschliste'] = new Wunschliste($kWunschliste);
+        $GLOBALS['hinweis']      = $_SESSION['Wunschliste']->ueberpruefePositionen();
 
-            $hinweis = Shop::Lang()->get('wishlistStandard', 'messages');
-        }
+        $hinweis = Shop::Lang()->get('wishlistStandard', 'messages');
     }
 
     return $hinweis;
 }
 
 /**
- * @param string $cWunschlisteName
+ * @param string $name
  * @return string
  */
-function wunschlisteSpeichern($cWunschlisteName)
+function wunschlisteSpeichern($name)
 {
     $hinweis = '';
-    if ($_SESSION['Kunde']->kKunde > 0 && !empty($cWunschlisteName)) {
+    if ($_SESSION['Kunde']->kKunde > 0 && !empty($name)) {
         $CWunschliste            = new Wunschliste();
-        $CWunschliste->cName     = $cWunschlisteName;
+        $CWunschliste->cName     = $name;
         $CWunschliste->nStandard = 0;
         unset(
             $CWunschliste->CWunschlistePos_arr,
@@ -194,10 +199,9 @@ function wunschlisteSpeichern($cWunschlisteName)
  * @param int   $kWunschliste
  * @return string
  */
-function wunschlisteSenden(array $cEmail_arr, $kWunschliste)
+function wunschlisteSenden(array $cEmail_arr, int $kWunschliste)
 {
-    $hinweis      = '';
-    $kWunschliste = (int)$kWunschliste;
+    $hinweis = '';
     // Wurden Emails übergeben?
     if (count($cEmail_arr) > 0) {
         $conf                = Shop::getSettings([CONF_GLOBAL]);
@@ -275,10 +279,8 @@ function wunschlisteSenden(array $cEmail_arr, $kWunschliste)
  * @param int $kWunschlistePos
  * @return array|bool
  */
-function gibEigenschaftenZuWunschliste($kWunschliste, $kWunschlistePos)
+function gibEigenschaftenZuWunschliste(int $kWunschliste, int $kWunschlistePos)
 {
-    $kWunschliste    = (int)$kWunschliste;
-    $kWunschlistePos = (int)$kWunschlistePos;
     if ($kWunschliste > 0 && $kWunschlistePos > 0) {
         // $oEigenschaftwerte_arr anlegen
         $oEigenschaftwerte_arr          = [];
@@ -287,17 +289,15 @@ function gibEigenschaftenZuWunschliste($kWunschliste, $kWunschlistePos)
             'kWunschlistePos',
             $kWunschlistePos
         );
-        if (is_array($oWunschlistePosEigenschaft_arr) && count($oWunschlistePosEigenschaft_arr) > 0) {
-            foreach ($oWunschlistePosEigenschaft_arr as $oWunschlistePosEigenschaft) {
-                $oEigenschaftwerte                       = new stdClass();
-                $oEigenschaftwerte->kEigenschaftWert     = $oWunschlistePosEigenschaft->kEigenschaftWert;
-                $oEigenschaftwerte->kEigenschaft         = $oWunschlistePosEigenschaft->kEigenschaft;
-                $oEigenschaftwerte->cEigenschaftName     = $oWunschlistePosEigenschaft->cEigenschaftName;
-                $oEigenschaftwerte->cEigenschaftWertName = $oWunschlistePosEigenschaft->cEigenschaftWertName;
-                $oEigenschaftwerte->cFreifeldWert        = $oWunschlistePosEigenschaft->cFreifeldWert;
+        foreach ($oWunschlistePosEigenschaft_arr as $oWunschlistePosEigenschaft) {
+            $oEigenschaftwerte                       = new stdClass();
+            $oEigenschaftwerte->kEigenschaftWert     = $oWunschlistePosEigenschaft->kEigenschaftWert;
+            $oEigenschaftwerte->kEigenschaft         = $oWunschlistePosEigenschaft->kEigenschaft;
+            $oEigenschaftwerte->cEigenschaftName     = $oWunschlistePosEigenschaft->cEigenschaftName;
+            $oEigenschaftwerte->cEigenschaftWertName = $oWunschlistePosEigenschaft->cEigenschaftWertName;
+            $oEigenschaftwerte->cFreifeldWert        = $oWunschlistePosEigenschaft->cFreifeldWert;
 
-                $oEigenschaftwerte_arr[] = $oEigenschaftwerte;
-            }
+            $oEigenschaftwerte_arr[] = $oEigenschaftwerte;
         }
 
         return $oEigenschaftwerte_arr;
@@ -310,9 +310,8 @@ function gibEigenschaftenZuWunschliste($kWunschliste, $kWunschlistePos)
  * @param int $kWunschlistePos
  * @return object|bool
  */
-function giboWunschlistePos($kWunschlistePos)
+function giboWunschlistePos(int $kWunschlistePos)
 {
-    $kWunschlistePos = (int)$kWunschlistePos;
     if ($kWunschlistePos > 0) {
         $oWunschlistePos = Shop::Container()->getDB()->select('twunschlistepos', 'kWunschlistePos', $kWunschlistePos);
         if (!empty($oWunschlistePos->kWunschliste)) {
@@ -335,11 +334,9 @@ function giboWunschlistePos($kWunschlistePos)
  * @param string $cURLID
  * @return bool|stdClass
  */
-function giboWunschliste($kWunschliste = 0, $cURLID = '')
+function giboWunschliste(int $kWunschliste = 0, string $cURLID = '')
 {
-    $kWunschliste = (int)$kWunschliste;
     $oWunschliste = null;
-
     if ($kWunschliste > 0) {
         $oWunschliste = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $kWunschliste);
     } elseif ($cURLID !== '') {
@@ -387,20 +384,18 @@ function bauecPreis($oWunschliste)
  * @param int $nMSGCode
  * @return string
  */
-function mappeWunschlisteMSG($nMSGCode)
+function mappeWunschlisteMSG(int $nMSGCode)
 {
     $cMSG = '';
-    if ((int)$nMSGCode > 0) {
-        switch ($nMSGCode) {
-            case 1:
-                $cMSG = Shop::Lang()->get('basketAdded', 'messages');
-                break;
-            case 2:
-                $cMSG = Shop::Lang()->get('basketAllAdded', 'messages');
-                break;
-            default:
-                break;
-        }
+    switch ($nMSGCode) {
+        case 1:
+            $cMSG = Shop::Lang()->get('basketAdded', 'messages');
+            break;
+        case 2:
+            $cMSG = Shop::Lang()->get('basketAllAdded', 'messages');
+            break;
+        default:
+            break;
     }
 
     return $cMSG;

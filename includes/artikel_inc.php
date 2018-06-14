@@ -9,9 +9,8 @@
  * @param bool|null $isParent
  * @return stdClass|null
  */
-function gibArtikelXSelling($kArtikel, $isParent = null)
+function gibArtikelXSelling(int $kArtikel, $isParent = null)
 {
-    $kArtikel = (int)$kArtikel;
     if ($kArtikel <= 0) {
         return null;
     }
@@ -356,9 +355,8 @@ function sendeArtikelWeiterempfehlen()
  * @param int $min
  * @return bool
  */
-function floodSchutzProduktanfrage($min = 0)
+function floodSchutzProduktanfrage(int $min = 0)
 {
-    $min = (int)$min;
     if ($min <= 0) {
         return false;
     }
@@ -375,7 +373,7 @@ function floodSchutzProduktanfrage($min = 0)
 }
 
 /**
- * @deprecated deprecated since version 4.03
+ * @deprecated since 4.03
  * @param int $min
  * @return bool
  */
@@ -517,9 +515,8 @@ function baueFormularVorgabenBenachrichtigung()
  * @param int $min
  * @return bool
  */
-function floodSchutzBenachrichtigung($min)
+function floodSchutzBenachrichtigung(int $min)
 {
-    $min = (int)$min;
     if (!$min) {
         return false;
     }
@@ -540,10 +537,8 @@ function floodSchutzBenachrichtigung($min)
  * @param int $kKategorie
  * @return stdClass
  */
-function gibNaviBlaettern($kArtikel, $kKategorie)
+function gibNaviBlaettern(int $kArtikel, int $kKategorie)
 {
-    $kArtikel        = (int)$kArtikel;
-    $kKategorie      = (int)$kKategorie;
     $navi            = new stdClass();
     $customerGroupID = Session::CustomerGroup()->getID();
     // Wurde der Artikel von der Artikelübersicht aus angeklickt?
@@ -636,12 +631,11 @@ function gibNaviBlaettern($kArtikel, $kKategorie)
 }
 
 /**
- * @param $nEigenschaftWert
+ * @param int $nEigenschaftWert
  * @return array
  */
-function gibNichtErlaubteEigenschaftswerte($nEigenschaftWert)
+function gibNichtErlaubteEigenschaftswerte(int $nEigenschaftWert)
 {
-    $nEigenschaftWert = (int)$nEigenschaftWert;
     if ($nEigenschaftWert) {
         $arNichtErlaubteEigenschaftswerte  = Shop::Container()->getDB()->selectAll(
             'teigenschaftwertabhaengigkeit',
@@ -1074,9 +1068,8 @@ function fasseVariVaterUndKindZusammen($oVaterArtikel, $oKindArtikel)
  * @param int $kArtikel
  * @return array
  */
-function holeAehnlicheArtikel($kArtikel)
+function holeAehnlicheArtikel(int $kArtikel)
 {
-    $kArtikel               = (int)$kArtikel;
     $oArtikel_arr           = [];
     $cLimit                 = ' LIMIT 3';
     $conf                   = Shop::getSettings([CONF_ARTIKELDETAILS]);
@@ -1259,20 +1252,19 @@ function holeAehnlicheArtikel($kArtikel)
 }
 
 /**
- * @param int $Productkey
+ * @param int $productID
  * @return bool
  */
-function ProductBundleWK($Productkey)
+function ProductBundleWK(int $productID)
 {
-    $Productkey = (int)$Productkey;
-    if ($Productkey > 0) {
+    if ($productID > 0) {
         $oOption                             = new stdClass();
         $oOption->nMerkmale                  = 1;
         $oOption->nAttribute                 = 1;
         $oOption->nArtikelAttribute          = 1;
         $oOption->nKeineSichtbarkeitBeachten = 1;
 
-        return fuegeEinInWarenkorb($Productkey, 1, [], 0, false, 0, $oOption);
+        return WarenkorbHelper::addProductIDToCart($productID, 1, [], 0, false, 0, $oOption);
     }
 
     return false;

@@ -112,8 +112,8 @@ function gibNews($conf)
         if ((int)$conf['news']['news_anzahl_content'] > 0) {
             $cSQL = ' LIMIT ' . (int)$conf['news']['news_anzahl_content'];
         }
-        $oNews_arr = Shop::Container()->getDB()->query("
-            SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, 
+        $oNews_arr = Shop::Container()->getDB()->query(
+            "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, 
                 tnews.cVorschauText, tnews.cMetaTitle, tnews.cMetaDescription, tnews.cMetaKeywords, 
                 tnews.nAktiv, tnews.dErstellt, tnews.cPreviewImage, tseo.cSeo,
                 count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl, 
@@ -803,7 +803,7 @@ function gibGratisGeschenkArtikel($conf)
 /**
  * @param int $nLinkart
  */
-function pruefeSpezialseite($nLinkart)
+function pruefeSpezialseite(int $nLinkart)
 {
     $specialPages = Shop::Container()->getLinkService()->getLinkGroupByName('specialpages');
     if ($nLinkart > 0 && $specialPages !== null) {

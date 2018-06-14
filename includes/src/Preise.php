@@ -267,7 +267,7 @@ class Preise
         }
         $this->berechneVKs();
         $this->oPriceRange = new PriceRange($kArtikel, $kKundengruppe, $kKunde);
-        executeHook('HOOK_PRICES_CONSTRUCT', [
+        executeHook(HOOK_PRICES_CONSTRUCT, [
             'customerGroupID' => $kKundengruppe,
             'customerID'      => $kKunde,
             'productID'       => $kArtikel,

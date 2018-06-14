@@ -8,6 +8,8 @@
 
 namespace Services\JTL;
 
+use Exception;
+use Session;
 use Shop;
 
 /**
@@ -67,27 +69,20 @@ class SimpleCaptchaService implements CaptchaServiceInterface
         }
 
         $cryptoService = Shop::Container()->getCryptoService();
-        $code          = '';
-        $chars         = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-
-        for ($i = 0; $i < 4; $i++) {
-            try {
-                $code .= $chars{$cryptoService->randomInt(0, strlen($chars) - 1)};
-            } catch (\Exception $e) {
-                $code .= $chars{rand(0, strlen($chars) - 1)};
-            }
-        }
-
         try {
-            $rndInt = $cryptoService->randomInt(0, 9);
-        } catch (\Exception $e) {
-            $rndInt = rand(0, 9);
+            $token = $cryptoService->randomString(8);
+            $code  = $cryptoService->randomString(12);
+            $code  = $code . ':' . time();
+        } catch (Exception $e) {
+            $token = 'token';
+            $code  = rand() . ':' . time();
         }
 
-        $captchaURL = Shop::getURL() . '/' . PFAD_INCLUDES . 'captcha/captcha.php?c=' . encodeCode($code) . '&amp;s=3&amp;l=' . $rndInt;
+        Session::set('simplecaptcha.token', $token);
+        Session::set('simplecaptcha.code', $code);
 
-        return $smarty->assign('captchaCodeURL', $captchaURL)
-                      ->assign('captchaCodemd5', md5(PFAD_ROOT . $code))
+        return $smarty->assign('captchaToken', $token)
+                      ->assign('captchaCode', sha1($code))
                       ->fetch('snippets/simple_captcha.tpl');
     }
 
@@ -101,8 +96,21 @@ class SimpleCaptchaService implements CaptchaServiceInterface
             return true;
         }
 
-        return isset($requestData['captcha'])
-            && isset($requestData['md5'])
-            && ($requestData['md5'] === md5(PFAD_ROOT . strtoupper($requestData['captcha'])));
+        $token = Session::get('simplecaptcha.token');
+        $code  = Session::get('simplecaptcha.code');
+
+        if (!isset($token) || !isset($code)) {
+            return false;
+        }
+
+        Session::set('simplecaptcha.token', null);
+        Session::set('simplecaptcha.code', null);
+
+        $time = substr($code, strpos($code, ':') + 1);
+
+        // if form is filled out during lower than 5 seconds it must be a bot...
+        return time() > $time + 5
+            && isset($requestData[$token])
+            && ($requestData[$token] === sha1($code));
     }
 }

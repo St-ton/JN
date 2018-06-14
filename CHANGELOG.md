@@ -297,6 +297,13 @@ Bitte beachten Sie auch das aktualisierte Handbuch zum PayPal-Plugin: http://jtl
 * [SHOP-1674] - Neue Smarty Blocks in snippets/shipping_tax_info.tpl und productdetails/price.tpl
 * [SHOP-1694] - Backstretch-Hintergrundbild verursacht Fehler bei geringer Netzgeschwindigkeit
 
+## [4.05.7]
+
+Dieses Update enthält Sicherheitsfixes (CSRF mit XSS oder SQL-Injections im Admin-Backend). 
+
+Wichtig: 
+* [SHOP-2349] - shopinfo.xml-Generator für elektronischer-markt.de wird eingestellt
+
 ## [4.05.6] - 2018-01-29
 
 * Sicherheitsupdate

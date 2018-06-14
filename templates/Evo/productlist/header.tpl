@@ -65,11 +65,11 @@
         {foreach name=unterkats from=$oUnterKategorien_arr item=Unterkat}
             <div class="col-xs-6 col-md-4 col-lg-3">
                 <div class="thumbnail">
-                    <a href="{$Unterkat->cURLFull}">
-                        {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}
+                    {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}
+                        <a href="{$Unterkat->cURLFull}">
                             <img src="{$Unterkat->cBildURLFull}" alt="{$Unterkat->cName}"/>
-                        {/if}
-                    </a>
+                        </a>
+                    {/if}
                     {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'B'}
                         <div class="caption text-center">
                             <a href="{$Unterkat->cURLFull}">
@@ -77,7 +77,7 @@
                             </a>
                         </div>
                     {/if}
-                    {if $Einstellungen.navigationsfilter.unterkategorien_beschreibung_anzeigen === 'Y'}
+                    {if $Einstellungen.navigationsfilter.unterkategorien_beschreibung_anzeigen === 'Y' && !empty($Unterkat->cBeschreibung)}
                         <p class="item_desc small text-muted">{$Unterkat->cBeschreibung|strip_tags|truncate:68}</p>
                     {/if}
                     {if $Einstellungen.navigationsfilter.unterkategorien_lvl2_anzeigen === 'Y'}

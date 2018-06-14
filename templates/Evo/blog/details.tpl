@@ -135,7 +135,6 @@
                                                 </div>
 
                                                 {if (!isset($smarty.session.bAnti_spam_already_checked) || $smarty.session.bAnti_spam_already_checked !== true) &&
-                                                    isset($Einstellungen.global.anti_spam_method) && $Einstellungen.global.anti_spam_method !== 'N' &&
                                                     isset($Einstellungen.news.news_sicherheitscode) && $Einstellungen.news.news_sicherheitscode !== 'N' && empty($smarty.session.Kunde->kKunde)}
                                                     <div class="form-group float-label-control{if !empty($nPlausiValue_arr.captcha)} has-error{/if} required">
                                                         {captchaMarkup getBody=true}

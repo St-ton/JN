@@ -871,7 +871,7 @@ class WarenkorbHelper
                 break;
             }
         }
-        executeHook('HOOK_ADD_TO_CART_CHECK', [
+        executeHook(HOOK_ADD_TO_CART_CHECK, [
             'product'       => $product,
             'quantity'      => $qty,
             'attributes'    => $attributes,

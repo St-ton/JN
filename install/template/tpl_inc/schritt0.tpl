@@ -126,7 +126,7 @@
 <h2 class="welcome">Herzlich Willkommen bei der Installation Ihres neuen JTL-Shops</h2>
 <div class="well">
     <p>Wir freuen uns, dass Sie sich für JTL-Shop entschieden haben. Bei dieser Installation führen wir Sie Schritt für Schritt durch die Installation Ihres neuen Shops.</p>
-    <p>Tipps und Hilfestellungen zur Installation finden Sie in unserem <a href="http://jtl-url.de/shop3inst" target="_blank"><i class="fa fa-external-link"></i> Installationsguide</a>. Bei offenen Fragen können Sie eine Anfrage im <a href="http://kundencenter.jtl-software.de/" target="_blank"><i class="fa fa-external-link"></i> Kundencenter</a> stellen. Einer unserer Mitarbeiter hilft Ihnen gerne weiter.</p>
+    <p>Tipps und Hilfestellungen zur Installation finden Sie in unserem <a href="https://jtl-url.de/shop3inst" target="_blank"><i class="fa fa-external-link"></i> Installationsguide</a>. Bei offenen Fragen können Sie eine Anfrage im <a href="https://kundencenter.jtl-software.de/" target="_blank"><i class="fa fa-external-link"></i> Kundencenter</a> stellen. Einer unserer Mitarbeiter hilft Ihnen gerne weiter.</p>
     {if isset($versionAbort) && $versionAbort === false }<p><strong>Wir wünschen Ihnen viel Erfolg und viel Freude mit Ihrem neuen JTL-Shop!</strong></p> {/if}
 </div>
 

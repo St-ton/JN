@@ -102,7 +102,7 @@ if (strlen($oBillpay->getSetting('pid')) > 0 &&
         ->assign('oPagiLog', $oPagiLog);
 } else {
     $cFehler = 'Billpay wurde bisher nicht konfiguriert. ' .
-        '<a href="https://guide.jtl-software.de/BillPay_in_JTL-Shop_einrichten" rel="noopener" target="_blank">' .
+        '<a href="https://jtl-url.de/0kqhs" rel="noopener" target="_blank">' .
         '<i class="fa fa-external-link"></i> Zur Dokumentation</a>';
 }
 

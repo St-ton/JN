@@ -15,6 +15,7 @@ use Filter\Type;
 use Filter\ProductFilter;
 use Filter\States\BaseAttribute;
 use function Functional\every;
+use Shop;
 
 /**
  * Class ItemAttribute
@@ -352,16 +353,14 @@ class ItemAttribute extends BaseAttribute
                     ->setOrigin(__CLASS__));
             }
             if (count($activeOrFilterIDs) > 0) {
-                $state->addSelect(', IF(tmerkmal.nMehrfachauswahl, tartikel.kArtikel, ssj2.kArtikel) AS kArtikel');
-                $state->addJoin((new FilterJoin())
-                    ->setComment('join active OR filter from ' . __METHOD__)
-                    ->setType('LEFT JOIN')
-                    ->setTable('(SELECT DISTINCT kArtikel
-                                    FROM tartikelmerkmal
-                                        WHERE kMerkmalWert IN (' . implode(', ', $activeOrFilterIDs) . ' )
-                                ) AS ssj2')
-                    ->setOn('tartikel.kArtikel = ssj2.kArtikel')
-                    ->setOrigin(__CLASS__));
+                $state->addSelect(', IF(tartikel.kArtikel IN (SELECT im1.kArtikel
+                             FROM tartikelmerkmal AS im1
+                             WHERE im1.kMerkmalWert IN (' . implode(', ', array_merge($activeOrFilterIDs, ['tartikelmerkmal.kMerkmalWert'])) . ')
+                             GROUP BY im1.kArtikel
+                             HAVING COUNT(im1.kArtikel) = (SELECT COUNT(DISTINCT im2.kMerkmal)
+                                                           FROM tartikelmerkmal im2
+                                                           WHERE im2.kMerkmalWert IN
+                                                                 (' . implode(', ', array_merge($activeOrFilterIDs, ['tartikelmerkmal.kMerkmalWert'])) . '))), tartikel.kArtikel, NULL) AS kArtikel');
             } else {
                 $state->addSelect(', tartikel.kArtikel AS kArtikel');
             }

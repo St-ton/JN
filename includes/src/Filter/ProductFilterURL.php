@@ -15,6 +15,8 @@ use Filter\Items\ItemRating;
 use Filter\Items\ItemSearchSpecial;
 use Filter\Items\ItemTag;
 use Filter\States\BaseSearchQuery;
+use function Functional\first;
+use Session\Session;
 
 /**
  * Class ProductFilterURL
@@ -200,16 +202,17 @@ class ProductFilterURL
                 }
             }
         }
-        if ($languageID !== \Shop::getLanguageID()) {
-            $languageCode = null;
-            foreach (\Session::Languages() as $language) {
-                if ($language->kSprache === $languageID) {
-                    $languageCode = $language->cISO;
-                }
+        if (empty($seoFilterParams) && $languageID !== \Shop::getLanguageID()) {
+            $language = first(Session::Languages(), function ($l) use ($languageID) {
+                return $l->kSprache === $languageID;
+            });
+            if ($language !== null) {
+                $nonSeoFilterParams['lang'] = $language->cISO;
             }
-            if ($languageCode !== null) {
-                $nonSeoFilterParams['lang'] = $languageCode;
-            }
+        }
+        if ($debug) {
+            \Shop::dbg($seoFilterParams, false, '$seoFilterParams:');
+            \Shop::dbg($nonSeoFilterParams, false, '$nonSeoFilterParams:');
         }
         $url .= $this->buildURLString($seoFilterParams, $nonSeoFilterParams);
         if ($debug) {
@@ -222,9 +225,9 @@ class ProductFilterURL
     /**
      * @param \stdClass[] $seoParts
      * @param array       $nonSeoParts
-     * @return mixed
+     * @return string
      */
-    private function buildURLString($seoParts, $nonSeoParts)
+    private function buildURLString(array $seoParts, array $nonSeoParts): string
     {
         $url = '';
         foreach ($seoParts as $seoData) {

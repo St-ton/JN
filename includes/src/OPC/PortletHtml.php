@@ -245,36 +245,21 @@ trait PortletHtml
 
         switch ($type) {
             case 'number':
-                $res .= "<input type='number' class='form-control$class' name='$propname' value='$prop'"
-                    . " id='config-$propname'$placeholder";
-                $res .= $propDesc['required'] ? " required>" : ">";
-                break;
             case 'email':
-                $res .= "<input type='email' class='form-control$class' name='$propname' value='$prop'"
-                    . " id='config-$propname'$placeholder";
-                $res .= $propDesc['required'] ? " required>" : ">";
-                break;
             case 'date':
-                $res .= "<input type='date' class='form-control$class' name='$propname' value='$prop'"
-                    . " id='config-$propname'";
-                $res .= $propDesc['required'] ? " required>" : ">";
-                break;
             case 'time':
-                $res .= "<input type='time' class='form-control$class' name='$propname' value='$prop'"
-                    . " id='config-$propname'";
-                $res .= $propDesc['required'] ? " required>" : ">";
-                break;
             case 'password':
-                $res .= "<input type='password' class='form-control$class' name='$propname' value='$prop'"
-                    . " id='config-$propname'";
-                $res .= $propDesc['required'] ? " required>" : ">";
+                $res .= "<input type='$type' class='form-control$class' name='$propname' value='$prop'
+                            id='config-$propname'$placeholder" . ($propDesc['required'] ? " required>" : ">");
                 break;
             case 'checkbox':
-                $res .= "<div class='checkbox$class'><label><input type='checkbox' name='" . $propname . "' value='1'";
-                $res .= $prop == "1" ? " checked" : "";
-                $res .= $propDesc['required'] ? " required>" : ">";
-                $res .= !empty($propDesc['option']) ? $propDesc['option'] : $label;
-                $res .= "</label></div>";
+                $res .= $this->getConfigPanelSnippet($instance, 'checkbox', [
+                    'option'   => $propDesc['option'],
+                    'required' => $propDesc['required'],
+                    'class'    => $class,
+                    'prop'     => $prop,
+                    'propname' => $propname,
+                ]);
                 break;
             case 'textlist':
                 $res .= $this->getConfigPanelSnippet($instance, 'textlist', [
@@ -283,93 +268,62 @@ trait PortletHtml
                 ]);
                 break;
             case 'radio':
-                $res      .= "<div class='radio'>";
-                foreach ($propDesc['options'] as $value => $name) {
-                    $res      .= !empty($propDesc['inline']) ? "" : "<div class='radio$class'>";
-                    $selected = $prop == $value ? " checked" : "";
-                    $res      .= "<label";
-                    $res      .= !empty($propDesc['inline']) ? ' class="radio-inline"' : '';
-                    $res      .= "><input type='radio' name='$propname' value='$value'" . "$selected";
-                    $res      .= $propDesc['required'] ? " required" : "";
-                    $res      .= ">$name</label>";
-                    $res      .= !empty($propDesc['inline']) ? "" : "</div>";
-                }
-                $res      .= "</div>";
+                $res .= $this->getConfigPanelSnippet($instance, 'radio', [
+                    'options'  => $propDesc['options'],
+                    'inline'   => $propDesc['inline'],
+                    'required' => $propDesc['required'],
+                    'class'    => $class,
+                    'prop'     => $prop,
+                    'propname' => $propname,
+                ]);
                 break;
             case 'select':
-                $res .= "<select class='form-control$class' name='$propname'";
-                $res .= $propDesc['required'] ? " required>" : ">";
-
-                foreach ($propDesc['options'] as $key => $val) {
-                    if (stripos($key, 'optgroup') !== false) {
-                        $res .= "<optgroup label='" . $val['label'] . "'>";
-
-                        foreach ($val['options'] as $gr_option) {
-                            $selected = ($prop === $gr_option) ? " selected" : "";
-                            $res     .= "<option value='$gr_option' $selected>$gr_option</option>";
-                        }
-
-                        $res .= "</optgroup>";
-                    } else {
-                        $selected = ($prop == $key) ? " selected" : "";
-                        $res     .= "<option value='$key' $selected>$val</option>";
-                    }
-                }
-
-                $res .= '</select>';
+                $res .= $this->getConfigPanelSnippet($instance, 'select', [
+                    'options'  => $propDesc['options'],
+                    'inline'   => $propDesc['inline'],
+                    'required' => $propDesc['required'],
+                    'class'    => $class,
+                    'prop'     => $prop,
+                    'propname' => $propname,
+                ]);
                 break;
             case 'image':
-                $previewImgUrl = empty($prop) ? \Shop::getURL() . '/gfx/keinBild.gif' : $prop;
-
-                $res .= "<input type='hidden' name='$propname' value='$prop'>";
-                $res .= "<button type='button' class='btn btn-default image-btn' "
-                    . "onclick='opc.selectImageProp(\"$propname\")'>"
-                    . "<img src='$previewImgUrl' alt='Chosen image' id='preview-img-$propname'>"
-                    . "</button>";
+                $res .= $this->getConfigPanelSnippet($instance, 'image', [
+                    'previewImgUrl' => empty($prop) ? \Shop::getURL() . '/gfx/keinBild.gif' : $prop,
+                    'prop'          => $prop,
+                    'propname'      => $propname,
+                ]);
                 break;
             case 'richtext':
-                $res .= "<textarea name='$propname' id='textarea-$propname' class='form-control'";
-                $res .= $propDesc['required'] ? " required>" : ">";
-                $res .= htmlspecialchars($prop)
-                    . "</textarea>"
-                    . "<script>CKEDITOR.replace('textarea-$propname', {baseFloatZIndex: 9000});"
-                    . "opc.setConfigSaveCallback(function() {"
-                    . "$('#textarea-$propname').val(CKEDITOR.instances['textarea-$propname'].getData());"
-                    . "})</script>";
+                $res .= $this->getConfigPanelSnippet($instance, 'richtext', [
+                    'prop'     => $prop,
+                    'propname' => $propname,
+                    'required' => $propDesc['required'],
+                ]);
                 break;
             case 'color':
-                $res .= "<div id='$propname' class='input-group colorpicker-component$class'>
-                                <input class='form-control' name='$propname' value='$prop'";
-                $res .= $propDesc['required'] ? " required" : "";
-                $res .=">
-                                <span class='input-group-addon'><i></i></span></div>"
-                    . "<script>$('#$propname').colorpicker({format: 'rgba',colorSelectors: {
-                    '#ffffff': '#ffffff',
-                    '#777777': '#777777',
-                    '#337ab7': '#337ab7',
-                    '#5cb85c': '#5cb85c',
-                    '#5cbcf6': '#5cbcf6',
-                    '#f0ad4e': '#f0ad4e',
-                    '#d9534f': '#d9534f',
-                    '#000000': '#000000'
-                }});</script>";
+                $res .= $this->getConfigPanelSnippet($instance, 'color', [
+                    'prop'     => $prop,
+                    'propname' => $propname,
+                    'required' => $propDesc['required'],
+                    'class'    => $class,
+                ]);
                 break;
             case 'filter':
                 $res .= $this->getConfigPanelSnippet($instance, 'filter', [
-                    'propname'   => $propname,
-                    'prop'       => $prop
+                    'propname' => $propname,
+                    'prop'     => $prop
                 ]);
                 break;
             case 'icon':
                 $res .= $this->getConfigPanelSnippet($instance, 'icon', [
-                    'propname'   => $propname,
-                    'prop'       => $prop,
-                    'uid'        => uniqid('', false)
+                    'propname' => $propname,
+                    'prop'     => $prop,
+                    'uid'      => uniqid('', false)
                 ]);
                 break;
             case 'hidden':
-                $res .= "<input type='hidden' name='$propname' value='$prop'"
-                    . " id='config-$propname'>";
+                $res .= "<input type='hidden' name='$propname' value='$prop' id='config-$propname'>";
                 break;
             case 'banner-zones':
                 $res .= $this->getConfigPanelSnippet($instance, 'banner-zones');
@@ -384,20 +338,16 @@ trait PortletHtml
                 ]);
                 break;
             case 'video':
-                $previewVidUrl = empty($prop) ? \Shop::getURL() . '/gfx/keinBild.gif' : $prop;
-                $res .= "<input type='hidden' name='$propname' value='$prop'>"
-                    . "<button type='button' class='btn btn-default image-btn' "
-                    . "onclick='opc.selectVideoProp(\"$propname\")'>"
-                    . "<video width='300' height='160' controls controlsList='nodownload' id='cont-preview-vid-$propname'>"
-                    . "<source src='$previewVidUrl' id='preview-vid-$propname' type='video/mp4'>"
-                    . "Your browser does not support the video tag.</video></button>";
+                $res .= $this->getConfigPanelSnippet($instance, 'video', [
+                    'previewVidUrl' => empty($prop) ? \Shop::getURL() . '/gfx/keinBild.gif' : $prop,
+                    'prop'          => $prop,
+                    'propname'      => $propname,
+                ]);
                 break;
             case 'text':
             default:
-                $res .= "<input type='text' class='form-control' name='$propname' value='$prop'"
-                    . " id='config-$propname'";
-                $res .= $propDesc['required'] ? " required" : "";
-                $res .= ">";
+                $res .= "<input type='text' class='form-control' name='$propname' value='$prop'
+                            id='config-$propname'" . ($propDesc['required'] ? " required>" : ">");
                 break;
         }
 

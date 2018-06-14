@@ -54,7 +54,7 @@ class Accordion extends \OPC\Portlet
             ],
             'cllps-button-text'   => [
                 'label'                => 'Buttontext',
-                'type'                 => 'Text',
+                'type'                 => 'text',
                 'default'              => 'hier ein text',
                 'dspl_width'           => 50,
                 'collapseControlStart' => true,

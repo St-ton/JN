@@ -1002,21 +1002,6 @@ function getArticleByVariations($kArtikel, $kVariationKombi_arr)
 }
 
 /**
- * @return IOResponse
- */
-function generateToken()
-{
-    $objResponse             = new IOResponse();
-    $cToken                  = gibToken();
-    $cName                   = gibTokenName();
-    $token_arr               = ['name' => $cName, 'token' => $cToken];
-    $_SESSION['xcrsf_token'] = json_encode($token_arr);
-    $objResponse->script("doXcsrfToken('" . $cName . "', '" . $cToken . "');");
-
-    return $objResponse;
-}
-
-/**
  * @param int $categoryId
  * @return IOResponse
  */
@@ -1097,4 +1082,20 @@ function setSelectionWizardAnswers($cKey, $kKey, $kSprache, $kSelection_arr)
     }
 
     return $response;
+}
+
+/**
+ * @return IOResponse
+ * @deprecated since 5.0.0
+ */
+function generateToken()
+{
+    $objResponse             = new IOResponse();
+    $cToken                  = gibToken();
+    $cName                   = gibTokenName();
+    $token_arr               = ['name' => $cName, 'token' => $cToken];
+    $_SESSION['xcrsf_token'] = json_encode($token_arr);
+    $objResponse->script("doXcsrfToken('" . $cName . "', '" . $cToken . "');");
+
+    return $objResponse;
 }

@@ -225,7 +225,7 @@ function wunschlisteSenden(array $cEmail_arr, int $kWunschliste)
         for ($i = 0; $i < $oWunschlisteVersand->nAnzahlEmpfaenger; $i++) {
             // Email auf "Echtheit" prüfen
             $cEmail = StringHandler::filterXSS($cEmail_arr[$i]);
-            if (!pruefeEmailblacklist($cEmail)) {
+            if (!SimpleMail::checkBlacklist($cEmail)) {
                 $oMail->mail          = new stdClass();
                 $oMail->mail->toEmail = $cEmail;
                 $oMail->mail->toName  = $cEmail;

@@ -332,27 +332,6 @@ function gibVerfuegbarkeitsformularAnzeigen(Artikel $Artikel, string $einstellun
 }
 
 /**
- * @param array $articles
- * @param int   $weightAcc
- * @param int   $shippingWeightAcc
- */
-function baueGewicht(array $articles, $weightAcc = 2, $shippingWeightAcc = 2)
-{
-    $weightAcc         = (int)$weightAcc;
-    $shippingWeightAcc = (int)$shippingWeightAcc;
-    foreach ($articles as $article) {
-        if ($article->fGewicht > 0) {
-            $article->Versandgewicht    = str_replace('.', ',', round($article->fGewicht, $shippingWeightAcc));
-            $article->Versandgewicht_en = round($article->fGewicht, $shippingWeightAcc);
-        }
-        if ($article->fArtikelgewicht > 0) {
-            $article->Artikelgewicht    = str_replace('.', ',', round($article->fArtikelgewicht, $weightAcc));
-            $article->Artikelgewicht_en = round($article->fArtikelgewicht, $weightAcc);
-        }
-    }
-}
-
-/**
  *
  */
 function setzeSpracheUndWaehrungLink()
@@ -594,73 +573,6 @@ function setzeSpracheUndWaehrungLink()
 }
 
 /**
- * Prüft ob eine die angegebende Email in temailblacklist vorhanden ist
- * Gibt true zurück, falls Email geblockt, ansonsten false
- *
- * @param string $cEmail
- * @return bool
- */
-function pruefeEmailblacklist(string $cEmail)
-{
-    $cEmail = strtolower(StringHandler::filterXSS($cEmail));
-    if (StringHandler::filterEmailAddress($cEmail) === false) {
-        return true;
-    }
-    $Einstellungen = Shop::getSettings([CONF_EMAILBLACKLIST]);
-    if ($Einstellungen['emailblacklist']['blacklist_benutzen'] !== 'Y') {
-        return false;
-    }
-    $oEmailBlackList_arr = Shop::Container()->getDB()->query(
-        "SELECT cEmail
-            FROM temailblacklist",
-        \DB\ReturnType::ARRAY_OF_OBJECTS
-    );
-    foreach ($oEmailBlackList_arr as $oEmailBlackList) {
-        if (strpos($oEmailBlackList->cEmail, '*') !== false) {
-            $cEmailBlackListRegEx = str_replace("*", "[a-z0-9\-\_\.\@\+]*", $oEmailBlackList->cEmail);
-            preg_match('/' . $cEmailBlackListRegEx . '/', $cEmail, $cTreffer_arr);
-            // Blocked
-            if (isset($cTreffer_arr[0]) && strlen($cEmail) === strlen($cTreffer_arr[0])) {
-                // Email schonmal geblockt worden?
-                $oEmailblacklistBlock = Shop::Container()->getDB()->select('temailblacklistblock', 'cEmail', $cEmail);
-                if (!empty($oEmailblacklistBlock->cEmail)) {
-                    $_upd                = new stdClass();
-                    $_upd->dLetzterBlock = 'now()';
-                    Shop::Container()->getDB()->update('temailblacklistblock', 'cEmail', $cEmail, $_upd);
-                } else {
-                    // temailblacklistblock Eintrag
-                    $oEmailblacklistBlock                = new stdClass();
-                    $oEmailblacklistBlock->cEmail        = $cEmail;
-                    $oEmailblacklistBlock->dLetzterBlock = 'now()';
-                    Shop::Container()->getDB()->insert('temailblacklistblock', $oEmailblacklistBlock);
-                }
-
-                return true;
-            }
-        } elseif (strtolower($oEmailBlackList->cEmail) === strtolower($cEmail)) {
-            // Email schonmal geblockt worden?
-            $oEmailblacklistBlock = Shop::Container()->getDB()->select('temailblacklistblock', 'cEmail', $cEmail);
-
-            if (!empty($oEmailblacklistBlock->cEmail)) {
-                $_upd                = new stdClass();
-                $_upd->dLetzterBlock = 'now()';
-                Shop::Container()->getDB()->update('temailblacklistblock', 'cEmail', $cEmail, $_upd);
-            } else {
-                // temailblacklistblock Eintrag
-                $oEmailblacklistBlock                = new stdClass();
-                $oEmailblacklistBlock->cEmail        = $cEmail;
-                $oEmailblacklistBlock->dLetzterBlock = 'now()';
-                Shop::Container()->getDB()->insert('temailblacklistblock', $oEmailblacklistBlock);
-            }
-
-            return true;
-        }
-    }
-
-    return false;
-}
-
-/**
  * @param string $cURL
  * @return bool
  */
@@ -864,58 +776,6 @@ function json_safe_encode($data)
     }
 
     return $data;
-}
-
-/**
- * @return mixed
- */
-function gibLetztenTokenDaten()
-{
-    return isset($_SESSION['xcrsf_token'])
-        ? json_decode($_SESSION['xcrsf_token'], true)
-        : '';
-}
-
-/**
- * @param bool $bAlten
- * @return string
- */
-function gibToken($bAlten = false)
-{
-    if ($bAlten) {
-        $cToken_arr = gibLetztenTokenDaten();
-        if (!empty($cToken_arr) && array_key_exists('token', $cToken_arr)) {
-            return $cToken_arr['token'];
-        }
-    }
-
-    return sha1(md5(microtime(true)) . (rand(0, 5000000000) * 1000));
-}
-
-/**
- * @param bool $bAlten
- * @return string
- */
-function gibTokenName($bAlten = false)
-{
-    if ($bAlten) {
-        $cToken_arr = gibLetztenTokenDaten();
-        if (!empty($cToken_arr) && array_key_exists('name', $cToken_arr)) {
-            return $cToken_arr['name'];
-        }
-    }
-
-    return substr(sha1(md5(microtime(true)) . (rand(0, 1000000000) * 1000)), 0, 4);
-}
-
-/**
- * @return bool
- */
-function validToken()
-{
-    $cName = gibTokenName(true);
-
-    return isset($_POST[$cName]) && gibToken(true) === $_POST[$cName];
 }
 
 /**

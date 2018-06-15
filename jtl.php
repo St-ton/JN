@@ -153,7 +153,7 @@ if ($customerID > 0) {
     if ($Einstellungen['kundenwerbenkunden']['kwk_nutzen'] === 'Y' && RequestHelper::verifyGPCDataInt('KwK') === 1) {
         $step = 'kunden_werben_kunden';
         if (RequestHelper::verifyGPCDataInt('kunde_werben') === 1) {
-            if (!pruefeEmailblacklist($_POST['cEmail'])) {
+            if (!SimpleMail::checkBlacklist($_POST['cEmail'])) {
                 if (pruefeEingabe($_POST)) {
                     if (setzeKwKinDB($_POST, $Einstellungen)) {
                         $cHinweis .= sprintf(

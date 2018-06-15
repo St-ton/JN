@@ -148,7 +148,7 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
         : null;
     $oKunde->cRegIp    = RequestHelper::getIP(); // IP of the current event-issuer
 
-    if (!pruefeEmailblacklist($oKunde->cEmail)) {
+    if (!SimpleMail::checkBlacklist($oKunde->cEmail)) {
         Shop::Smarty()->assign('oPlausi', fuegeNewsletterEmpfaengerEin($oKunde, true));
         Shop::Container()->getDB()->delete('tnewsletterempfaengerblacklist', 'cMail', $oKunde->cEmail);
     } else {

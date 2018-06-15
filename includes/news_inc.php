@@ -124,7 +124,7 @@ function pruefeKundenKommentar($cKommentar, $cName = '', $cEmail = '', $kNews, $
             $nPlausiValue_arr['captcha'] = 2;
         }
     }
-    if ((!isset($nPlausiValue_arr['cName']) || !$nPlausiValue_arr['cName']) && pruefeEmailblacklist($cEmail)) {
+    if ((!isset($nPlausiValue_arr['cName']) || !$nPlausiValue_arr['cName']) && SimpleMail::checkBlacklist($cEmail)) {
         $nPlausiValue_arr['cEmail'] = 2;
     }
 

@@ -1893,3 +1893,103 @@ function baueSprachURLS($obj, $art)
 
     return [];
 }
+
+/**
+ * @param array $products
+ * @param int   $weightAcc
+ * @param int   $shippingWeightAcc
+ * @deprecated since 5.0.0 - not used in core anymore
+ */
+function baueGewicht(array $products, int $weightAcc = 2, int $shippingWeightAcc = 2)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    foreach ($products as $product) {
+        if ($product->fGewicht > 0) {
+            $product->Versandgewicht    = str_replace('.', ',', round($product->fGewicht, $shippingWeightAcc));
+            $product->Versandgewicht_en = round($product->fGewicht, $shippingWeightAcc);
+        }
+        if ($product->fArtikelgewicht > 0) {
+            $product->Artikelgewicht    = str_replace('.', ',', round($product->fArtikelgewicht, $weightAcc));
+            $product->Artikelgewicht_en = round($product->fArtikelgewicht, $weightAcc);
+        }
+    }
+}
+
+/**
+ * Prüft ob eine die angegebende Email in temailblacklist vorhanden ist
+ * Gibt true zurück, falls Email geblockt, ansonsten false
+ *
+ * @param string $cEmail
+ * @return bool
+ * @deprecated since 5.0.0
+ */
+function pruefeEmailblacklist(string $cEmail)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use SimpleMail::checkBlacklist() instead.', E_USER_DEPRECATED);
+
+    return SimpleMail::checkBlacklist($cEmail);
+}
+
+/**
+ * @return mixed
+ * @deprecated since 5.0.0
+ */
+function gibLetztenTokenDaten()
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+
+    return isset($_SESSION['xcrsf_token'])
+        ? json_decode($_SESSION['xcrsf_token'], true)
+        : '';
+}
+
+/**
+ * @param bool $bAlten
+ * @return string
+ * @deprecated since 5.0.0
+ */
+function gibToken(bool $bAlten = false)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+
+    if ($bAlten) {
+        $cToken_arr = gibLetztenTokenDaten();
+        if (!empty($cToken_arr) && array_key_exists('token', $cToken_arr)) {
+            return $cToken_arr['token'];
+        }
+    }
+
+    return sha1(md5(microtime(true)) . (rand(0, 5000000000) * 1000));
+}
+
+/**
+ * @param bool $bAlten
+ * @return string
+ * @deprecated since 5.0.0
+ */
+function gibTokenName(bool $bAlten = false)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+
+    if ($bAlten) {
+        $cToken_arr = gibLetztenTokenDaten();
+        if (!empty($cToken_arr) && array_key_exists('name', $cToken_arr)) {
+            return $cToken_arr['name'];
+        }
+    }
+
+    return substr(sha1(md5(microtime(true)) . (rand(0, 1000000000) * 1000)), 0, 4);
+}
+
+/**
+ * @return bool
+ * @deprecated since 5.0.0
+ */
+function validToken()
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+
+    $cName = gibTokenName(true);
+
+    return isset($_POST[$cName]) && gibToken(true) === $_POST[$cName];
+}

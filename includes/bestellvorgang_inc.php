@@ -2051,7 +2051,7 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
         // email is empty
     } elseif (StringHandler::filterEmailAddress($data['email']) === false) {
         $ret['email'] = 2;
-    } elseif (pruefeEmailblacklist($data['email'])) {
+    } elseif (SimpleMail::checkBlacklist($data['email'])) {
         $ret['email'] = 3;
     }
     if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {

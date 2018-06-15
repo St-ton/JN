@@ -50,7 +50,7 @@ if (isset($_GET['i'])) {
     } elseif (!isset($_SESSION['kommentar'])) {
         $_SESSION['kommentar'] = '';
     }
-    if (pruefeEmailblacklist($_SESSION['Kunde']->cMail)) {
+    if (SimpleMail::checkBlacklist($_SESSION['Kunde']->cMail)) {
         header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') .
             '?mailBlocked=1', true, 303);
         exit;

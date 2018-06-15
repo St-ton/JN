@@ -24,7 +24,7 @@ function gibFehlendeEingabenKontaktformular()
     if (StringHandler::filterEmailAddress($_POST['email']) === false) {
         $ret['email'] = 2;
     }
-    if (pruefeEmailblacklist($_POST['email'])) {
+    if (SimpleMail::checkBlacklist($_POST['email'])) {
         $ret['email'] = 3;
     }
     if (!$_POST['vorname'] && $conf['kontakt']['kontakt_abfragen_vorname'] === 'Y') {

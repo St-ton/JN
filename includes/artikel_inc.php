@@ -206,7 +206,7 @@ function gibFehlendeEingabenProduktanfrageformular()
     if (!$_POST['nachricht']) {
         $ret['nachricht'] = 1;
     }
-    if (pruefeEmailblacklist($_POST['email'])) {
+    if (SimpleMail::checkBlacklist($_POST['email'])) {
         $ret['email'] = 3;
     }
     if (StringHandler::filterEmailAddress($_POST['email']) === false) {
@@ -464,7 +464,7 @@ function gibFehlendeEingabenBenachrichtigungsformular()
     } elseif (StringHandler::filterEmailAddress($_POST['email']) === false) {
         $ret['email'] = 2;
     }
-    if (pruefeEmailblacklist($_POST['email'])) {
+    if (SimpleMail::checkBlacklist($_POST['email'])) {
         $ret['email'] = 3;
     }
     if (empty($_POST['vorname']) && $conf['artikeldetails']['benachrichtigung_abfragen_vorname'] === 'Y') {

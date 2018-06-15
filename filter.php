@@ -88,13 +88,13 @@ if (!isset($_SESSION['ArtikelProSeite'])
     );
 }
 // Verfügbarkeitsbenachrichtigung pro Artikel
-$oSuchergebnisse->getProducts()->transform(function ($article) use ($Einstellungen) {
-    $article->verfuegbarkeitsBenachrichtigung = gibVerfuegbarkeitsformularAnzeigen(
-        $article,
+$oSuchergebnisse->getProducts()->transform(function ($product) use ($Einstellungen) {
+    $product->verfuegbarkeitsBenachrichtigung = gibVerfuegbarkeitsformularAnzeigen(
+        $product,
         $Einstellungen['artikeldetails']['benachrichtigung_nutzen']
     );
 
-    return $article;
+    return $product;
 });
 if ($oSuchergebnisse->getProducts()->count() === 0) {
     if ($NaviFilter->hasCategory()) {

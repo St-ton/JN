@@ -185,13 +185,11 @@ function bearbeiteFrageZumProdukt()
             } else {
                 $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('questionNotPossible', 'messages');
             }
+        } elseif (isset($fehlendeAngaben['email']) && $fehlendeAngaben['email'] === 3) {
+            $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('blockedEmail');
         } else {
-            if (isset($fehlendeAngaben['email']) && $fehlendeAngaben['email'] === 3) {
-                $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('blockedEmail');
-            } else {
-                Shop::Smarty()->assign('Anfrage', baueProduktanfrageFormularVorgaben());
-                $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('fillOutQuestion', 'messages');
-            }
+            Shop::Smarty()->assign('Anfrage', baueProduktanfrageFormularVorgaben());
+            $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('fillOutQuestion', 'messages');
         }
     } else {
         $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('productquestionPleaseLogin', 'errorMessages');
@@ -445,13 +443,11 @@ function bearbeiteBenachrichtigung()
             } else {
                 $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('notificationNotPossible', 'messages');
             }
+        } elseif (isset($fehlendeAngaben['email']) && $fehlendeAngaben['email'] === 3) {
+            $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('blockedEmail');
         } else {
-            if (isset($fehlendeAngaben['email']) && $fehlendeAngaben['email'] === 3) {
-                $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('blockedEmail');
-            } else {
-                Shop::Smarty()->assign('Benachrichtigung', baueFormularVorgabenBenachrichtigung());
-                $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('fillOutNotification', 'messages');
-            }
+            Shop::Smarty()->assign('Benachrichtigung', baueFormularVorgabenBenachrichtigung());
+            $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('fillOutNotification', 'messages');
         }
     }
 }

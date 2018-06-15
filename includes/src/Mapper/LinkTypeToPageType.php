@@ -68,13 +68,12 @@ class LinkTypeToPageType
             case LINKTYP_AUSWAHLASSISTENT:
                 return PAGE_AUSWAHLASSISTENT;
             case LINKTYP_IMPRESSUM:
-                return PAGE_UNBEKANNT; // @todo?
+            case LINKTYP_BATTERIEGESETZ_HINWEISE:
+                return PAGE_EIGENE;
             case LINKTYP_RMA:
                 return PAGE_RMA;
             case LINKTYP_404:
                 return PAGE_404;
-            case LINKTYP_BATTERIEGESETZ_HINWEISE:
-                return PAGE_UNBEKANNT; // @todo?
             case LINKTYP_WRB_FORMULAR:
                 return PAGE_WRB;
             case LINKTYP_BESTELLVORGANG:

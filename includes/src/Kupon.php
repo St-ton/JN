@@ -699,7 +699,7 @@ class Kupon
                     false,
                     'cName'
                 );
-                $translationList[$Sprache->cISO] = $name_spr->cName;
+                $translationList[$Sprache->cISO] = $name_spr->cName ?? '';
             }
         }
 

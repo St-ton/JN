@@ -136,7 +136,7 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
 
         $oResponse->nType  = 0;
         $oResponse->cLabel = Shop::Lang()->get('basket');
-        $oResponse->cHints = utf8_convert_recursive($localizedErrors);
+        $oResponse->cHints = StringHandler::utf8_convert_recursive($localizedErrors);
         $objResponse->script('this.response = ' . json_encode($oResponse) . ';');
 
         return $objResponse;
@@ -165,7 +165,6 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
     // Wenn Kupon vorhanden und prozentual auf ganzen Warenkorb,
     // dann verwerfen und neu anlegen
     Kupon::reCheck();
-    setzeLinks();
     // Persistenter Warenkorb
     if (!isset($_POST['login'])) {
         WarenkorbPers::addToCheck($kArtikel, $anzahl, $oEigenschaftwerte_arr);
@@ -1045,7 +1044,7 @@ function getRegionsByCountry($country)
 
     if (strlen($country) === 2) {
         $regions = Staat::getRegions($country);
-        $regions = utf8_convert_recursive($regions);
+        $regions = StringHandler::utf8_convert_recursive($regions);
         $response->script("this.response = " . json_encode($regions) . ";");
     }
 

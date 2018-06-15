@@ -540,7 +540,7 @@ function unhtmlSession()
     $lieferadresse->cAdressZusatz = StringHandler::unhtmlentities($_SESSION['Lieferadresse']->cAdressZusatz);
     $lieferadresse->cMobil        = StringHandler::unhtmlentities($_SESSION['Lieferadresse']->cMobil);
 
-    $lieferadresse->angezeigtesLand = ISO2land($lieferadresse->cLand);
+    $lieferadresse->angezeigtesLand = Sprache::getCountryCodeByCountryName($lieferadresse->cLand);
 
     $_SESSION['Lieferadresse'] = $lieferadresse;
 }

@@ -2791,7 +2791,7 @@ function getKundendaten($post, $kundenaccount, $htmlentities = 1)
     if (preg_match('/^\d{2}\.\d{2}\.(\d{4})$/', $customer->dGeburtstag)) {
         $customer->dGeburtstag = DateTime::createFromFormat('d.m.Y', $customer->dGeburtstag)->format('Y-m-d');
     }
-    $customer->angezeigtesLand = ISO2land($customer->cLand);
+    $customer->angezeigtesLand = Sprache::getCountryCodeByCountryName($customer->cLand);
     if (!empty($customer->cBundesland)) {
         $oISO = Staat::getRegionByIso($customer->cBundesland, $customer->cLand);
         if (is_object($oISO)) {
@@ -2907,7 +2907,7 @@ function getLieferdaten($post)
     $Lieferadresse->cBundesland     = isset($post['bundesland'])
         ? StringHandler::filterXSS($post['bundesland'])
         : null;
-    $Lieferadresse->angezeigtesLand = ISO2land($Lieferadresse->cLand);
+    $Lieferadresse->angezeigtesLand = Sprache::getCountryCodeByCountryName($Lieferadresse->cLand);
 
     if (!empty($Lieferadresse->cBundesland)) {
         $oISO = Staat::getRegionByIso($Lieferadresse->cBundesland, $Lieferadresse->cLand);
@@ -3248,7 +3248,7 @@ function setzeLieferadresseAusRechnungsadresse()
     $Lieferadresse->cAdressZusatz   = $_SESSION['Kunde']->cAdressZusatz;
     $Lieferadresse->cMobil          = $_SESSION['Kunde']->cMobil;
     $Lieferadresse->cBundesland     = $_SESSION['Kunde']->cBundesland;
-    $Lieferadresse->angezeigtesLand = ISO2land($Lieferadresse->cLand);
+    $Lieferadresse->angezeigtesLand = Sprache::getCountryCodeByCountryName($Lieferadresse->cLand);
     $_SESSION['Lieferadresse']      = $Lieferadresse;
 
     return $Lieferadresse;
@@ -3453,7 +3453,7 @@ function setzeSesssionAccountwahlLogin($oKunde)
             $_SESSION['NeukundenKupon'],
             $_SESSION['Kupon']
         );
-        $oKunde->angezeigtesLand = ISO2land($oKunde->cLand);
+        $oKunde->angezeigtesLand = Sprache::getCountryCodeByCountryName($oKunde->cLand);
         $session                 = \Session\Session::getInstance();
         $session->setCustomer($oKunde);
 

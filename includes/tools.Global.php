@@ -945,7 +945,7 @@ function validateCaptcha(array $requestData)
 function getTokenInput()
 {
     if (!isset($_SESSION['jtl_token'])) {
-        $_SESSION['jtl_token'] = Shop::Container()->getCryptoService()->randomString(32)();
+        $_SESSION['jtl_token'] = Shop::Container()->getCryptoService()->randomString(32);
     }
 
     return '<input type="hidden" class="jtl_token" name="jtl_token" value="' . $_SESSION['jtl_token'] . '" />';

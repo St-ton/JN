@@ -471,7 +471,7 @@ final class Link extends AbstractLink
     {
         $idx = $idx ?? \Shop::getLanguageID();
 
-        return $this->urls[$idx] ?? '';
+        return $this->urls[$idx] ?? 'index.php?s=' . $this->getID();
     }
 
     /**

@@ -310,10 +310,9 @@ function setzeLinks()
  * @param string $einstellung
  * @return int
  */
-function gibVerfuegbarkeitsformularAnzeigen($Artikel, $einstellung)
+function gibVerfuegbarkeitsformularAnzeigen(Artikel $Artikel, string $einstellung): int
 {
-    if (isset($einstellung)
-        && $einstellung !== 'N'
+    if ($einstellung !== 'N'
         && ((int)$Artikel->inWarenkorbLegbar === INWKNICHTLEGBAR_LAGER
             || (int)$Artikel->inWarenkorbLegbar === INWKNICHTLEGBAR_LAGERVAR
             || ($Artikel->fLagerbestand <= 0 && $Artikel->cLagerKleinerNull === 'Y'))
@@ -1017,11 +1016,5 @@ function dateAddWeekday($date, $weekdays)
  */
 function eingabenKorrekt($fehlendeAngaben)
 {
-    foreach ($fehlendeAngaben as $angabe) {
-        if ($angabe > 0) {
-            return 0;
-        }
-    }
-
-    return 1;
+    return (int)\Functional\none($fehlendeAngaben, function ($e) { return $e > 0; });
 }

@@ -1027,4 +1027,125 @@ class Sprache
 
         return $lang;
     }
+
+    /**
+     * @former setzeSpracheUndWaehrungLink()
+     * @since 5.0.0
+     */
+    public static function generateLanguageAndCurrencyLinks()
+    {
+        global $oZusatzFilter, $AktuellerArtikel, $AktuelleSeite;
+        $kLink         = Shop::$kLink;
+        $kSeite        = Shop::$kSeite;
+        $shopURL       = Shop::getURL() . '/';
+        $helper        = Shop::Container()->getLinkService();
+        $productFilter = Shop::getProductFilter();
+        if ($kSeite !== null && $kSeite > 0) {
+            $kLink = $kSeite;
+        }
+        $ls          = Shop::Container()->getLinkService();
+        $mapper      = new \Mapper\PageTypeToLinkType();
+        $mapped      = $mapper->map(Shop::getPageType());
+        $specialPage = $mapped > 0 ? $ls->getSpecialPage($mapped) : null;
+        $page        = $kLink > 0 ? $ls->getPageLink($kLink) : null;
+        if (count(Session::Languages()) > 1) {
+            /** @var Artikel $AktuellerArtikel */
+            if ($AktuellerArtikel !== null
+                && $AktuellerArtikel->kArtikel > 0
+                && empty($AktuellerArtikel->cSprachURL_arr)
+            ) {
+                $AktuellerArtikel->baueArtikelSprachURL();
+            }
+            foreach (Session::Languages() as $lang) {
+                if (isset($AktuellerArtikel->cSprachURL_arr[$lang->cISO])) {
+                    $lang->cURL     = $AktuellerArtikel->cSprachURL_arr[$lang->cISO];
+                    $lang->cURLFull = $shopURL . $AktuellerArtikel->cSprachURL_arr[$lang->cISO];
+                } elseif ($specialPage !== null) {
+                    if (Shop::getPageType() === PAGE_STARTSEITE) {
+                        $url            = '?lang=' . $lang->cISO;
+                        $lang->cURLFull = $lang->cURL;
+                    } elseif ($specialPage->getFileName() !== null) {
+                        $url = $helper->getStaticRoute($specialPage->getFileName(), false, false, $lang->cISO);
+                        // check if there is a SEO link for the given file
+                        if ($url === $specialPage->getFileName()) { //no SEO link - fall back to php file with GET param
+                            $url = $shopURL . $specialPage->getFileName() . '?lang=' . $lang->cISO;
+                        } else { //there is a SEO link - make it a full URL
+                            $url = $helper->getStaticRoute($specialPage->getFileName(), true, false, $lang->cISO);
+                        }
+                    } else {
+                        $url = $specialPage->getURL($lang->kSprache);
+                    }
+                    $lang->cURL     = $url;
+                    $lang->cURLFull = $url;
+                    executeHook(HOOK_TOOLSGLOBAL_INC_SWITCH_SETZESPRACHEUNDWAEHRUNG_SPRACHE);
+                } elseif ($page !== null) {
+                    $lang->cURL     = $page->getURL($lang->kSprache);
+                    $lang->cURLFull = $lang->cURL;
+                } else {
+                    $originalLanguage = $productFilter->getLanguageID();
+                    $productFilter->setLanguageID($lang->kSprache);
+                    $url = $productFilter->getFilterURL()->getURL($oZusatzFilter);
+                    $productFilter->setLanguageID($originalLanguage);
+                    if ($productFilter->getPage() > 1) {
+                        if (strpos($url, 'navi.php') !== false) {
+                            $url .= '&amp;seite=' . $productFilter->getPage();
+                        } else {
+                            $url .= SEP_SEITE . $productFilter->getPage();
+                        }
+                    }
+                    $lang->cURL     = $url;
+                    $lang->cURLFull = $url;
+                }
+            }
+        }
+        if (count(Session::Currencies()) > 1) {
+            if ($AktuellerArtikel !== null
+                && $AktuellerArtikel->kArtikel > 0
+                && empty($AktuellerArtikel->cSprachURL_arr)
+            ) {
+                $AktuellerArtikel->baueArtikelSprachURL(false);
+            }
+            $currentCurrencyCode = Session\Session::Currency()->getID();
+            foreach (Session::Currencies() as $currency) {
+                if (isset($AktuellerArtikel->cSprachURL_arr[Shop::getLanguageCode()])) {
+                    $url = $AktuellerArtikel->cSprachURL_arr[Shop::getLanguageCode()];
+                } elseif ($specialPage !== null) {
+                    $url = $specialPage->getURL();
+                    if (empty($url)) {
+                        if (Shop::getPageType() === PAGE_STARTSEITE) {
+                            $url = '';
+                        } elseif ($specialPage->getFileName() !== null) {
+                            $url = $helper->getStaticRoute($specialPage->getFileName(), false);
+                            //check if there is a SEO link for the given file
+                            if ($url === $specialPage->getFileName()) { //no SEO link - fall back to php file with GET param
+                                $url = $shopURL . $specialPage->getFileName();
+                            } else { //there is a SEO link - make it a full URL
+                                $url = $helper->getStaticRoute($specialPage->getFileName(), true);
+                            }
+                        }
+                    }
+                } elseif ($page !== null) {
+                    $url = $page->getURL();
+                } else {
+                    $url = $productFilter->getFilterURL()->getURL($oZusatzFilter);
+                }
+                if ($currency->getID() !== $currentCurrencyCode) {
+                    $url = $url . (strpos($url, '?') === false ? '?' : '&') . 'curr=' . $currency->getCode();
+                }
+                $currency->setURL($url);
+                $currency->setURLFull(strpos($url, Shop::getURL()) === false
+                    ? ($shopURL . $url)
+                    : $url);
+            }
+        }
+        executeHook(HOOK_TOOLSGLOBAL_INC_SETZESPRACHEUNDWAEHRUNG_WAEHRUNG, [
+            'oNaviFilter'       => &$productFilter,
+            'oZusatzFilter'     => &$oZusatzFilter,
+            'cSprachURL'        => [],
+            'oAktuellerArtikel' => &$AktuellerArtikel,
+            'kSeite'            => &$kSeite,
+            'kLink'             => &$kLink,
+            'AktuelleSeite'     => &$AktuelleSeite
+        ]);
+    }
 }

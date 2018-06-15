@@ -86,14 +86,14 @@ interface LinkServiceInterface
      * @param int $nLinkart
      * @return LinkInterface|null
      */
-    public function getSpecialPage($nLinkart);
+    public function getSpecialPage(int $nLinkart);
 
     /**
      * @former gibLinkKeySpecialSeite()
      * @param int $nLinkart
      * @return int|bool
      */
-    public function getSpecialPageID($nLinkart);
+    public function getSpecialPageID(int $nLinkart);
 
     /**
      * for compatability only
@@ -102,7 +102,7 @@ interface LinkServiceInterface
      * @param int $nLinkart
      * @return int|bool
      */
-    public function getSpecialPageLinkKey($nLinkart);
+    public function getSpecialPageLinkKey(int $nLinkart);
 
     /**
      * @param string $name

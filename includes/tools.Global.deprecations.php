@@ -1993,3 +1993,13 @@ function validToken()
 
     return isset($_POST[$cName]) && gibToken(true) === $_POST[$cName];
 }
+
+/**
+ * @deprecated since 5.0.0
+ */
+function setzeSpracheUndWaehrungLink()
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use Sprache::generateLanguageAndCurrencyLinks() instead.', E_USER_DEPRECATED);
+
+    Sprache::generateLanguageAndCurrencyLinks();
+}

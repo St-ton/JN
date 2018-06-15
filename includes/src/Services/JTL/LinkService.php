@@ -221,7 +221,7 @@ final class LinkService implements LinkServiceInterface
      * @param int $nLinkart
      * @return LinkInterface|null
      */
-    public function getSpecialPage($nLinkart)
+    public function getSpecialPage(int $nLinkart)
     {
         $lg = $this->getLinkGroupByName('specialpages');
 
@@ -235,7 +235,7 @@ final class LinkService implements LinkServiceInterface
     /**
      * @inheritdoc
      */
-    public function getSpecialPageID($nLinkart)
+    public function getSpecialPageID(int $nLinkart)
     {
         $link = $this->getSpecialPage($nLinkart);
 
@@ -245,7 +245,7 @@ final class LinkService implements LinkServiceInterface
     /**
      * @inheritdoc
      */
-    public function getSpecialPageLinkKey($nLinkart)
+    public function getSpecialPageLinkKey(int $nLinkart)
     {
         return $this->getSpecialPageID($nLinkart);
     }

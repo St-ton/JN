@@ -847,4 +847,66 @@ class StringHandler
 
         return $res;
     }
+
+    /**
+     * @param string|array|object $data the string, array or object to convert recursively
+     * @param bool                $encode true if data should be utf-8-encoded or false if data should be utf-8-decoded
+     * @param bool                $copy false if objects should be changed, true if they should be cloned first
+     * @return string|array|object converted data
+     */
+    public static function utf8_convert_recursive($data, $encode = true, $copy = false)
+    {
+        if (is_string($data)) {
+            $isUtf8 = mb_detect_encoding($data, 'UTF-8', true) !== false;
+
+            if ((!$isUtf8 && $encode) || ($isUtf8 && !$encode)) {
+                $data = $encode ? self::convertUTF8($data) : self::convertISO($data);
+            }
+        } elseif (is_array($data)) {
+            foreach ($data as $key => $val) {
+                $newKey = (string)self::utf8_convert_recursive($key, $encode);
+                $newVal = self::utf8_convert_recursive($val, $encode);
+                unset($data[$key]);
+                $data[$newKey] = $newVal;
+            }
+        } elseif (is_object($data)) {
+            if ($copy) {
+                $data = clone $data;
+            }
+
+            foreach (get_object_vars($data) as $key => $val) {
+                $newKey = (string)self::utf8_convert_recursive($key, $encode);
+                $newVal = self::utf8_convert_recursive($val, $encode);
+                unset($data->$key);
+                $data->$newKey = $newVal;
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * JSON-Encode $data only if it is not already encoded, meaning it avoids double encoding
+     *
+     * @param mixed $data
+     * @return string|bool - false when $data is not encodable
+     * @throws Exception
+     */
+    public static function json_safe_encode($data)
+    {
+        $data = self::utf8_convert_recursive($data);
+        // encode data if not already encoded
+        if (is_string($data)) {
+            // data is a string
+            json_decode($data);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                // it is not a JSON string yet
+                $data = json_encode($data);
+            }
+        } else {
+            $data = json_encode($data);
+        }
+
+        return $data;
+    }
 }

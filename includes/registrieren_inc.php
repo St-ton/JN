@@ -121,12 +121,11 @@ function kundeSpeichern($cPost_arr)
             $knd->cAktiv = $conf['global']['global_kundenkonto_aktiv'] === 'A'
                 ? 'N'
                 : 'Y';
-            $customer             = new Kunde();
             $cPasswortKlartext    = $knd->cPasswort;
             $knd->cPasswort       = Shop::Container()->getPasswordService()->hash($cPasswortKlartext);
             $knd->dErstellt       = 'now()';
             $knd->nRegistriert    = 1;
-            $knd->angezeigtesLand = ISO2land($knd->cLand);
+            $knd->angezeigtesLand = Sprache::getCountryCodeByCountryName($knd->cLand);
             // Work Around Mail zerhaut cLand
             $cLand = $knd->cLand;
             //mail

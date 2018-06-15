@@ -5803,7 +5803,7 @@ class Artikel
             $NettoPreise              = Session::CustomerGroup()->isMerchant();
         }
         if (!isset($_SESSION['Link_Versandseite'])) {
-            setzeLinks();
+            Session\Session::setSpecialLinks();
         }
         $NettoPreise = (bool)$NettoPreise;
         $inklexkl    = Shop::Lang()->get($NettoPreise === true ? 'excl' : 'incl', 'productDetails');
@@ -6295,7 +6295,7 @@ class Artikel
             $net                      = Session::CustomerGroup()->isMerchant();
         }
         if (!isset($_SESSION['Link_Versandseite'])) {
-            setzeLinks();
+            Session\Session::setSpecialLinks();
         }
         $taxText = $this->AttributeAssoc[ART_ATTRIBUT_STEUERTEXT] ?? false;
 

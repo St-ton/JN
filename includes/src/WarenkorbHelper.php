@@ -619,7 +619,6 @@ class WarenkorbHelper
                         // Vergleichsliste neu in der Session anlegen
                         $_SESSION['Vergleichsliste'] = $oVergleichsliste;
                         Shop::Smarty()->assign('hinweis', Shop::Lang()->get('comparelistProductadded', 'messages'));
-                        setzeLinks();
                     }
                 }
             }
@@ -1415,7 +1414,6 @@ class WarenkorbHelper
         );
         // Wenn Kupon vorhanden und der cWertTyp prozentual ist, dann verwerfen und neuanlegen
         Kupon::reCheck();
-        setzeLinks();
         // Persistenter Warenkorb
         if (!isset($_POST['login']) && !isset($_REQUEST['basket2Pers'])) {
             WarenkorbPers::addToCheck($kArtikel, $anzahl, $oEigenschaftwerte_arr, $cUnique, $kKonfigitem);

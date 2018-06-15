@@ -112,7 +112,7 @@ class IO
         header('Pragma: no-cache');
         header('Content-type: application/json');
 
-        die(json_safe_encode($data));
+        die(StringHandler::json_safe_encode($data));
     }
 
     /**

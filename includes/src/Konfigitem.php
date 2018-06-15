@@ -173,7 +173,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             ];
             $result = array_merge($override, $virtual);
 
-            return utf8_convert_recursive($result);
+            return StringHandler::utf8_convert_recursive($result);
         }
 
         /**

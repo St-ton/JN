@@ -35,7 +35,7 @@ if (RequestHelper::verifyGPCDataInt('wlidmsg') > 0) {
 if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
     $Kunde = new Kunde($_SESSION['Kunde']->kKunde);
     if ($Kunde->kKunde > 0) {
-        $Kunde->angezeigtesLand = ISO2land($Kunde->cLand);
+        $Kunde->angezeigtesLand = Sprache::getCountryCodeByCountryName($Kunde->cLand);
         $session->setCustomer($Kunde);
     }
 }
@@ -529,7 +529,7 @@ if ($customerID > 0) {
                 }
             }
             $step                               = 'bestellung';
-            $_SESSION['Kunde']->angezeigtesLand = ISO2land($_SESSION['Kunde']->cLand);
+            $_SESSION['Kunde']->angezeigtesLand = Sprache::getCountryCodeByCountryName($_SESSION['Kunde']->cLand);
             krsort($_SESSION['Kunde']->cKundenattribut_arr);
             Shop::Smarty()->assign('Bestellung', $bestellung)
                 ->assign('Kunde', $bestellung->oRechnungsadresse)// Work Around Daten von trechnungsadresse

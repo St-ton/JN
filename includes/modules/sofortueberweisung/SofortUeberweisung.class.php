@@ -248,7 +248,7 @@ class SofortUeberweisung extends PaymentMethod
         // ISO pruefen
         preg_match("/[a-zA-Z]{2}/", $this->strSenderCountryID, $cTreffer1_arr);
         if (strlen($cTreffer1_arr[0]) !== strlen($this->strSenderCountryID)) {
-            $cISO = landISO($this->strSenderCountryID);
+            $cISO = Sprache::getIsoCodeByCountryName($this->strSenderCountryID);
             if (strlen($cISO) > 0 && $cISO !== 'noISO') {
                 $this->strSenderCountryID = $cISO;
             }

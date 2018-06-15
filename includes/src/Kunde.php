@@ -321,7 +321,7 @@ class Kunde
                 foreach (get_object_vars($oUser) as $k => $v) {
                     $this->$k = $v;
                 }
-                $this->angezeigtesLand = ISO2land($this->cLand);
+                $this->angezeigtesLand = Sprache::getCountryCodeByCountryName($this->cLand);
                 $this->holeKundenattribute();
                 // check if password has to be updated because of PASSWORD_DEFAULT method changes or using old md5 hash
                 if (isset($oUser->cPasswort) && $passwordService->needsRehash($oUser->cPasswort)) {
@@ -428,7 +428,7 @@ class Kunde
                 }
                 // Anrede mappen
                 $this->cAnredeLocalized = self::mapSalutation($this->cAnrede, $this->kSprache);
-                $this->angezeigtesLand  = ISO2land($this->cLand);
+                $this->angezeigtesLand  = Sprache::getCountryCodeByCountryName($this->cLand);
                 //$this->cLand = landISO($this->cLand);
                 $this->holeKundenattribute()->entschluesselKundendaten();
                 $this->kKunde         = (int)$this->kKunde;
@@ -626,7 +626,7 @@ class Kunde
     {
         preg_match('/[a-zA-Z]{2}/', $cLandISO, $cTreffer1_arr);
         if (strlen($cTreffer1_arr[0]) !== strlen($cLandISO)) {
-            $cISO = landISO($cLandISO);
+            $cISO = Sprache::getIsoCodeByCountryName($cLandISO);
             if ($cISO !== 'noISO' && strlen($cISO) > 0) {
                 $cLandISO = $cISO;
             }

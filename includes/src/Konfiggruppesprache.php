@@ -50,7 +50,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function jsonSerialize()
         {
-            return utf8_convert_recursive([
+            return StringHandler::utf8_convert_recursive([
                 'cName'         => $this->cName,
                 'cBeschreibung' => $this->cBeschreibung
             ]);

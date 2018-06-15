@@ -49,7 +49,7 @@ class TaxHelper
             \DB\ReturnType::SINGLE_OBJECT
         );
         if (!empty($Firma->cLand)) {
-            $merchantCountryCode = landISO($Firma->cLand);
+            $merchantCountryCode = Sprache::getIsoCodeByCountryName($Firma->cLand);
         }
         if (defined('STEUERSATZ_STANDARD_LAND')) {
             $merchantCountryCode = STEUERSATZ_STANDARD_LAND;
@@ -58,9 +58,9 @@ class TaxHelper
         if ($steuerland) {
             $deliveryCountryCode = $steuerland;
         }
-        if (!empty(Session::Customer()->cLand)) {
-            $deliveryCountryCode = Session::Customer()->cLand;
-            $billingCountryCode  = Session::Customer()->cLand;
+        if (!empty(Session\Session::Customer()->cLand)) {
+            $deliveryCountryCode = Session\Session::Customer()->cLand;
+            $billingCountryCode  = Session\Session::Customer()->cLand;
         }
         if (!empty($_SESSION['Lieferadresse']->cLand)) {
             $deliveryCountryCode = $_SESSION['Lieferadresse']->cLand;
@@ -76,11 +76,11 @@ class TaxHelper
         // Kunde hat eine zum Rechnungland passende, gueltige USt-ID gesetzt &&
         // Firmen-Land != Kunden-Rechnungsland && Firmen-Land != Kunden-Lieferland
         $UstBefreiungIGL = false;
-        if (!empty(Session::Customer()->cUSTID)
+        if (!empty(Session\Session::Customer()->cUSTID)
             && $merchantCountryCode !== $deliveryCountryCode
             && $merchantCountryCode !== $billingCountryCode
-            && (strcasecmp($billingCountryCode, substr(Session::Customer()->cUSTID, 0, 2)) === 0
-                || (strcasecmp($billingCountryCode, 'GR') === 0 && strcasecmp(substr(Session::Customer()->cUSTID, 0, 2),
+            && (strcasecmp($billingCountryCode, substr(Session\Session::Customer()->cUSTID, 0, 2)) === 0
+                || (strcasecmp($billingCountryCode, 'GR') === 0 && strcasecmp(substr(Session\Session::Customer()->cUSTID, 0, 2),
                         'EL') === 0))
         ) {
             $deliveryCountry = Shop::Container()->getDB()->select('tland', 'cISO', $deliveryCountryCode);
@@ -101,7 +101,7 @@ class TaxHelper
             // Keine Steuerzone für $deliveryCountryCode hinterlegt - das ist fatal!
             $redirURL  = Shop::Container()->getLinkService()->getStaticRoute('bestellvorgang.php') . '?editRechnungsadresse=1';
             $urlHelper = new UrlHelper(Shop::getURL() . $_SERVER['REQUEST_URI']);
-            $country   = ISO2land($deliveryCountryCode);
+            $country   = Sprache::getCountryCodeByCountryName($deliveryCountryCode);
 
             Jtllog::writeLog('Keine Steuerzone f&uuml;r "' . $country . '" hinterlegt!', JTLLOG_LEVEL_ERROR);
 
@@ -161,7 +161,7 @@ class TaxHelper
             }
         }
         if (isset($_SESSION['Warenkorb']) && $_SESSION['Warenkorb'] instanceof Warenkorb) {
-            Session::Cart()->setzePositionsPreise();
+            Session\Session::Cart()->setzePositionsPreise();
         }
     }
 

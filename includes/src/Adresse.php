@@ -202,7 +202,7 @@ class Adresse
     {
         preg_match('/[a-zA-Z]{2}/', $iso, $matches);
         if (strlen($matches[0]) !== strlen($iso)) {
-            $o = landISO($iso);
+            $o = Sprache::getIsoCodeByCountryName($iso);
             if ($o !== 'noISO' && strlen($o) > 0) {
                 $iso = $o;
             }

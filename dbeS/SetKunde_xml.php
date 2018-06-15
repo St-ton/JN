@@ -204,7 +204,7 @@ function bearbeite($xml)
                 $xml_obj['kunden']['tkunde'][0]['cStrasse'] .= ' ' . $xml_obj['kunden']['tkunde'][0]['cHausnummer'];
                 unset($xml_obj['kunden']['tkunde'][0]['cHausnummer']);
                 //Land ausgeschrieben der Wawi geben
-                $xml_obj['kunden']['tkunde'][0]['cLand'] = ISO2land($xml_obj['kunden']['tkunde'][0]['cLand']);
+                $xml_obj['kunden']['tkunde'][0]['cLand'] = Sprache::getCountryCodeByCountryName($xml_obj['kunden']['tkunde'][0]['cLand']);
 
                 unset($xml_obj['kunden']['tkunde'][0]['cPasswort']);
                 $xml_obj['kunden']['tkunde']['0 attr']             = buildAttributes($xml_obj['kunden']['tkunde'][0]);

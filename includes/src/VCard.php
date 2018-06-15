@@ -628,11 +628,11 @@ class VCard
             $Kunde->cPLZ          = $adr->PostalCode ?? '';
             $Kunde->cOrt          = $adr->Locality ?? '';
             $Kunde->cBundesland   = $adr->Region ?? '';
-            $Kunde->cLand         = isset($adr->Country) ? landISO($adr->Country) : '';
+            $Kunde->cLand         = isset($adr->Country) ? Sprache::getIsoCodeByCountryName($adr->Country) : '';
             if (empty($adr->Country) && !empty($adr->Region)) {
-                $Kunde->cLand = landISO($adr->Region);
+                $Kunde->cLand = Sprache::getIsoCodeByCountryName($adr->Region);
             }
-            if ($Kunde->cLand == 'noISO') {
+            if ($Kunde->cLand === 'noISO') {
                 $Kunde->cLand = $Einstellungen['kunden']['kundenregistrierung_standardland'];
             }
             if (preg_match('/^(.*)[\. ]*([0-9]+[a-zA-Z]?)$/U', $Kunde->cStrasse, $hits)) {

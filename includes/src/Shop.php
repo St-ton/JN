@@ -1266,7 +1266,7 @@ final class Shop
         $spr   = self::Lang()->getIsoFromLangID($languageID);
         $cLang = $spr->cISO ?? null;
         if ($cLang !== $_SESSION['cISOSprache']) {
-            checkeSpracheWaehrung($cLang);
+            Session\Session::checkReset($cLang);
             TaxHelper::setTaxRates();
         }
     }

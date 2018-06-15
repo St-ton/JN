@@ -336,7 +336,7 @@ class VersandartHelper
                         Session::Cart()->PositionenArr
                     ))
                     ->assign('Versandarten', $oVersandart_arr)
-                    ->assign('Versandland', ISO2land(StringHandler::filterXSS($cLand)))
+                    ->assign('Versandland', Sprache::getCountryCodeByCountryName($cLand))
                     ->assign('VersandPLZ', StringHandler::filterXSS($cPLZ));
             } else {
                 $cError = Shop::Lang()->get('noDispatchAvailable');

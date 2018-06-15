@@ -2003,3 +2003,77 @@ function setzeSpracheUndWaehrungLink()
 
     Sprache::generateLanguageAndCurrencyLinks();
 }
+
+/**
+ * @param string|array|object $data the string, array or object to convert recursively
+ * @param bool                $encode true if data should be utf-8-encoded or false if data should be utf-8-decoded
+ * @param bool                $copy false if objects should be changed, true if they should be cloned first
+ * @return string|array|object converted data
+ * @deprecated since 5.0.0
+ */
+function utf8_convert_recursive($data, $encode = true, $copy = false)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use StringHandler::utf8_convert_recursive() instead.', E_USER_DEPRECATED);
+
+    return StringHandler::utf8_convert_recursive($data, $encode, $copy);
+}
+
+/**
+ * JSON-Encode $data only if it is not already encoded, meaning it avoids double encoding
+ *
+ * @param mixed $data
+ * @return string|bool - false when $data is not encodable
+ * @throws Exception
+ * @deprecated since 5.0.0
+ */
+function json_safe_encode($data)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use StringHandler::json_safe_encode() instead.', E_USER_DEPRECATED);
+
+    return StringHandler::json_safe_encode($data);
+}
+
+/**
+ * @param string $langISO
+ * @deprecated since 5.0.0
+ */
+function checkeSpracheWaehrung($langISO = '')
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use Session::checkReset() instead.', E_USER_DEPRECATED);
+
+    Session\Session::checkReset($langISO);
+}
+/**
+ * @param string $cISO
+ * @return string
+ * @deprecated since 5.0.0
+ */
+function ISO2land($cISO)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use Sprache::getCountryCodeByCountryName() instead.', E_USER_DEPRECATED);
+
+    return Sprache::getCountryCodeByCountryName($cISO);
+}
+
+/**
+ * @param string $cLand
+ * @return string
+ * @deprecated since 5.0.0
+ */
+function landISO($cLand)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use Sprache::getIsoCodeByCountryName() instead.', E_USER_DEPRECATED);
+
+    return Sprache::getIsoCodeByCountryName($cLand);
+}
+
+/**
+ * @return \Link\LinkGroupCollection
+ * @deprecated since 5.0.0
+ */
+function setzeLinks()
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use Session::setSpecialLinks() instead.', E_USER_DEPRECATED);
+
+    return Session\Session::setSpecialLinks();
+}

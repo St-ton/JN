@@ -954,7 +954,7 @@ class Sprache
                 'SELECT *
                     FROM tsprache
                     ORDER BY cShopStandard DESC, cNameDeutsch',
-                    \DB\ReturnType::ARRAY_OF_OBJECTS
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             )
         );
         switch ($nOption) {
@@ -1147,5 +1147,41 @@ class Sprache
             'kLink'             => &$kLink,
             'AktuelleSeite'     => &$AktuelleSeite
         ]);
+    }
+    /**
+     * @param string $cISO
+     * @return string
+     * @former ISO2land()
+     * @since 5.0.0
+     */
+    public static function getCountryCodeByCountryName(string $cISO): string
+    {
+        if (strlen($cISO) > 2) {
+            return $cISO;
+        }
+        $cSpalte = Shop::getLanguageCode() === 'ger' ? 'cDeutsch' : 'cEnglisch';
+        $land    = Shop::Container()->getDB()->select('tland', 'cISO', $cISO);
+
+        return $land->$cSpalte ?? $cISO;
+    }
+
+    /**
+     * @param string $cLand
+     * @return string
+     * @former landISO()
+     * @since 5.0.0
+     */
+    public static function getIsoCodeByCountryName(string $cLand): string
+    {
+        $iso = Shop::Container()->getDB()->select('tland', 'cDeutsch', $cLand);
+        if (!empty($iso->cISO)) {
+            return $iso->cISO;
+        }
+        $iso = Shop::Container()->getDB()->select('tland', 'cEnglisch', $cLand);
+        if (!empty($iso->cISO)) {
+            return $iso->cISO;
+        }
+
+        return 'noISO';
     }
 }

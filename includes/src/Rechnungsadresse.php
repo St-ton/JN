@@ -64,7 +64,7 @@ class Rechnungsadresse extends Adresse
         $this->fromObject($obj);
 
         $this->cAnredeLocalized = Kunde::mapSalutation($this->cAnrede, 0, $this->kKunde);
-        $this->angezeigtesLand  = ISO2land($this->cLand);
+        $this->angezeigtesLand  = Sprache::getCountryCodeByCountryName($this->cLand);
         if ($this->kRechnungsadresse > 0) {
             $this->decrypt();
         }

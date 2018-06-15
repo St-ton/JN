@@ -263,10 +263,10 @@ function gibGuenstigsteVersandart($lieferland, $versandklassen, $kKundengruppe, 
  * @return array
  * @deprecated since 5.0.0 - not used in core
  */
-function pruefeVariationAusverkauft($kArtikel = 0, $oArtikel = null)
+function pruefeVariationAusverkauft(int $kArtikel = 0, $oArtikel = null): array
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    if ((int)$kArtikel > 0) {
+    if ($kArtikel > 0) {
         $oArtikel = (new Artikel())->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
     }
 
@@ -412,7 +412,7 @@ function formatCurrency($fSumme)
  * @return array
  * @deprecated since 5.0.0
  */
-function gibSuchspecialEinstellungMapping(array $oSuchspecialEinstellung_arr)
+function gibSuchspecialEinstellungMapping(array $oSuchspecialEinstellung_arr): array
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $oEinstellungen_arr = [];
@@ -447,10 +447,10 @@ function gibSuchspecialEinstellungMapping(array $oSuchspecialEinstellung_arr)
  * @return string
  * @deprecated since 5.0.0 - not used in core
  */
-function mappeSeitentyp($nSeitentyp)
+function mappeSeitentyp(int $nSeitentyp)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    switch ((int)$nSeitentyp) {
+    switch ($nSeitentyp) {
         case PAGE_ARTIKEL:
             return 'Artikeldetails';
 

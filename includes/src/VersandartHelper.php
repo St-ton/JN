@@ -1088,7 +1088,7 @@ class VersandartHelper
             && (!empty($Artikel->FunktionsAttribute['versandkosten'])
                 || !empty($Artikel->FunktionsAttribute['versandkosten gestaffelt']))
         ) {
-            $fArticleSpecific = VersandartHelper::gibArtikelabhaengigeVersandkosten($cISO, $Artikel, 1);
+            $fArticleSpecific = self::gibArtikelabhaengigeVersandkosten($cISO, $Artikel, 1);
             $preis            += $fArticleSpecific->fKosten ?? 0;
         }
         //Deckelung?
@@ -1388,125 +1388,123 @@ class VersandartHelper
     }
 
     /**
-     * @param int  $kKundengruppe
-     * @param bool $bIgnoreSetting
-     * @param bool $bForceAll
+     * @param int  $customerGroupID
+     * @param bool $ignoreConf
+     * @param bool $force
      * @return array
      * @former gibBelieferbareLaender()
      * @since 5.0.0
      */
-    public static function getPossibleShippingCountries(int $kKundengruppe = 0, bool $bIgnoreSetting = false, bool $bForceAll = false): array
+    public static function getPossibleShippingCountries(int $customerGroupID = 0, bool $ignoreConf = false, bool $force = false): array
     {
-        if (empty($kKundengruppe)) {
-            $kKundengruppe = Kundengruppe::getDefaultGroupID();
+        if (empty($customerGroupID)) {
+            $customerGroupID = Kundengruppe::getDefaultGroupID();
         }
-        $sprache = Shop::Container()->getDB()->select('tsprache', 'kSprache', Shop::getLanguageID());
-        $sel_var = 'cDeutsch';
+        $lang    = Shop::Container()->getDB()->select('tsprache', 'kSprache', Shop::getLanguageID());
+        $rowName = 'cDeutsch';
         $conf    = Shop::getSettings([CONF_KUNDEN]);
-        if (strtolower($sprache->cNameEnglisch) !== 'german') {
-            $sel_var = 'cEnglisch';
+        if (strtolower($lang->cNameEnglisch) !== 'german') {
+            $rowName = 'cEnglisch';
         }
-        if (!$bForceAll && ($conf['kunden']['kundenregistrierung_nur_lieferlaender'] === 'Y' || $bIgnoreSetting)) {
-            $laender_arr = [];
-            $ll_obj_arr  = Shop::Container()->getDB()->query(
+        if (!$force && ($conf['kunden']['kundenregistrierung_nur_lieferlaender'] === 'Y' || $ignoreConf)) {
+            $countryCodes = [];
+            $ll_obj_arr   = Shop::Container()->getDB()->query(
                 "SELECT cLaender
                     FROM tversandart
                     WHERE (cKundengruppen = '-1'
-                      OR FIND_IN_SET('{$kKundengruppe}', REPLACE(cKundengruppen, ';', ',')) > 0)",
+                      OR FIND_IN_SET('{$customerGroupID}', REPLACE(cKundengruppen, ';', ',')) > 0)",
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($ll_obj_arr as $cLaender) {
                 $pcs = explode(' ', $cLaender->cLaender);
-                foreach ($pcs as $land) {
-                    if ($land && !in_array($land, $laender_arr, true)) {
-                        $laender_arr[] = $land;
+                foreach ($pcs as $countryCode) {
+                    if ($countryCode && !in_array($countryCode, $countryCodes, true)) {
+                        $countryCodes[] = $countryCode;
                     }
                 }
             }
-            $laender_arr = array_map(function ($e) {
+            $countryCodes = array_map(function ($e) {
                 return '"' . $e . '"';
-            }, $laender_arr);
-            $where       = ' cISO IN (' . implode(',', $laender_arr) . ')';
-            $laender     = count($laender_arr) > 0
+            }, $countryCodes);
+            $where        = ' cISO IN (' . implode(',', $countryCodes) . ')';
+            $countries    = count($countryCodes) > 0
                 ? Shop::Container()->getDB()->query(
-                    "SELECT cISO, $sel_var AS cName
+                    "SELECT cISO, $rowName AS cName
                         FROM tland
                         WHERE $where
-                        ORDER BY $sel_var",
+                        ORDER BY $rowName",
                     \DB\ReturnType::ARRAY_OF_OBJECTS)
                 : [];
         } else {
-            $laender = Shop::Container()->getDB()->query(
-                "SELECT cISO, $sel_var AS cName
+            $countries = Shop::Container()->getDB()->query(
+                "SELECT cISO, $rowName AS cName
                     FROM tland
-                    ORDER BY $sel_var",
+                    ORDER BY $rowName",
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         }
-        usort(
-            $laender, function ($a, $b) {
-                $a = mb_convert_case($a->cName, MB_CASE_LOWER, 'utf-8');
-                $b = mb_convert_case($b->cName, MB_CASE_LOWER, 'utf-8');
-                $a = str_replace(
-                    ['ä', 'ü', 'ö', 'ss'],
-                    ['a', 'u', 'o', 'ß'],
-                    $a
-                );
-                $b = str_replace(
-                    ['ä', 'ü', 'ö', 'ss'],
-                    ['a', 'u', 'o', 'ß'],
-                    $b
-                );
-                if ($a === $b) {
-                    return 0;
-                }
-
-                return $a < $b ? -1 : 1;
+        usort($countries, function ($a, $b) {
+            $a = mb_convert_case($a->cName, MB_CASE_LOWER, 'utf-8');
+            $b = mb_convert_case($b->cName, MB_CASE_LOWER, 'utf-8');
+            $a = str_replace(
+                ['ä', 'ü', 'ö', 'ss'],
+                ['a', 'u', 'o', 'ß'],
+                $a
+            );
+            $b = str_replace(
+                ['ä', 'ü', 'ö', 'ss'],
+                ['a', 'u', 'o', 'ß'],
+                $b
+            );
+            if ($a === $b) {
+                return 0;
             }
-        );
+
+            return $a < $b ? -1 : 1;
+        });
         executeHook(HOOK_TOOLSGLOBAL_INC_GIBBELIEFERBARELAENDER, [
-            'oLaender_arr' => &$laender
+            'oLaender_arr' => &$countries
         ]);
 
-        return $laender;
+        return $countries;
     }
 
     /**
-     * @param int $kKundengruppe
+     * @param int $customerGroupID
      * @return array
      * @former gibMoeglicheVerpackungen()
      * @since 5.0.0
      */
-    public static function getPossiblePackagings(int $kKundengruppe): array
+    public static function getPossiblePackagings(int $customerGroupID): array
     {
-        $fSummeWarenkorb = Session::Cart()->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true);
-        $oVerpackung_arr = Shop::Container()->getDB()->query(
+        $cartSum      = Session::Cart()->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true);
+        $packagings   = Shop::Container()->getDB()->queryPrepared(
             "SELECT * FROM tverpackung
-            JOIN tverpackungsprache
-                ON tverpackung.kVerpackung = tverpackungsprache.kVerpackung
-            WHERE tverpackungsprache.cISOSprache = '" . Shop::getLanguageCode() . "'
-            AND (tverpackung.cKundengruppe = '-1'
-                OR FIND_IN_SET('" . $kKundengruppe . "', REPLACE(tverpackung.cKundengruppe, ';', ',')) > 0)
-            AND " . $fSummeWarenkorb . " >= tverpackung.fMindestbestellwert
-            AND tverpackung.nAktiv = 1
-            ORDER BY tverpackung.kVerpackung",
+                JOIN tverpackungsprache
+                    ON tverpackung.kVerpackung = tverpackungsprache.kVerpackung
+                WHERE tverpackungsprache.cISOSprache = :lcode
+                AND (tverpackung.cKundengruppe = '-1'
+                    OR FIND_IN_SET(:cid, REPLACE(tverpackung.cKundengruppe, ';', ',')) > 0)
+                AND :csum >= tverpackung.fMindestbestellwert
+                AND tverpackung.nAktiv = 1
+                ORDER BY tverpackung.kVerpackung",
+            [
+                'lcode' => Shop::getLanguageCode(),
+                'cid'   => $customerGroupID,
+                'csum'  => $cartSum
+            ],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         $currencyCode = Session::Currency()->getID();
-        foreach ($oVerpackung_arr as $i => $oVerpackung) {
-            $oVerpackung_arr[$i]->nKostenfrei = 0;
-            if ($fSummeWarenkorb >= $oVerpackung->fKostenfrei
-                && $oVerpackung->fBrutto > 0
-                && $oVerpackung->fKostenfrei != 0
-            ) {
-                $oVerpackung_arr[$i]->nKostenfrei = 1;
-            }
-            $oVerpackung_arr[$i]->fBruttoLocalized = Preise::getLocalizedPriceString(
-                $oVerpackung_arr[$i]->fBrutto,
-                $currencyCode
-            );
+        foreach ($packagings as $packaging) {
+            $packaging->nKostenfrei      = ($cartSum >= $packaging->fKostenfrei
+                && $packaging->fBrutto > 0
+                && $packaging->fKostenfrei != 0)
+                ? 1
+                : 0;
+            $packaging->fBruttoLocalized = Preise::getLocalizedPriceString($packaging->fBrutto, $currencyCode);
         }
 
-        return $oVerpackung_arr;
+        return $packagings;
     }
 }

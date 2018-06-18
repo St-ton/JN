@@ -320,9 +320,7 @@ abstract class AbstractBox implements BoxInterface
         if ($this->show === false) {
             return false;
         }
-        $visible = empty($this->filter)
-            || ($pageType > 0 && isset($this->filter[$pageType])
-                && $this->filter[$pageType] === true);
+        $visible = empty($this->filter) || (isset($this->filter[$pageType]) && $this->filter[$pageType] === true);
 
         if ($visible === false && $pageID > 0 && isset($this->filter[$pageType]) && is_array($this->filter[$pageType])) {
             $visible = in_array($pageID, $this->filter[$pageType], true);

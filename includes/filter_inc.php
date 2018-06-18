@@ -749,8 +749,8 @@ function baueArtikelAnzahl($FilterSQL, &$oSuchergebnisse, $nArtikelProSeite = 20
                 ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
                 AND tartikelsichtbarkeit.kKundengruppe = ' . Session::CustomerGroup()->getID() . '
             WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                AND tartikel.kVaterArtikel = 0 ' . 
-                gibLagerfilter() . ' ' . 
+                AND tartikel.kVaterArtikel = 0 ' .
+                gibLagerfilter() . ' ' .
                 ($FilterSQL->oSuchspecialFilterSQL->cWhere ?? '') . ' ' .
                 ($FilterSQL->oSuchFilterSQL->cWhere ?? '') . ' ' .
                 ($FilterSQL->oHerstellerFilterSQL->cWhere ?? '') . ' ' .
@@ -762,7 +762,7 @@ function baueArtikelAnzahl($FilterSQL, &$oSuchergebnisse, $nArtikelProSeite = 20
                 ' GROUP BY tartikel.kArtikel ' . 
                 ($FilterSQL->oMerkmalFilterSQL->cHaving ?? '') .
                 ') AS tAnzahl',
-        1
+        \DB\ReturnType::SINGLE_OBJECT
     );
     executeHook(
         HOOK_FILTER_INC_BAUEARTIKELANZAHL, [

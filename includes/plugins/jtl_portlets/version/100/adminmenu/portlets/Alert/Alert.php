@@ -21,9 +21,7 @@ class Alert extends \OPC\Portlet
 
     public function getFinalHtml($instance)
     {
-        $text = $instance->getProperty('some-text');
         $instance->addClass('alert alert-' . $instance->getProperty('type-select'));
-
 
         return $this->getFinalHtmlFromTpl($instance);
     }
@@ -35,15 +33,11 @@ class Alert extends \OPC\Portlet
 
     public function getPropertyDesc()
     {
-        \Shop::dbg($this->getPlugin()->cPluginPfad . 'lang');
-        $path = $this->getPlugin()->cPluginPfad . 'lang';
-        \Shop::Lang()->setLocalization('jtl_portlets', $path);
-
         return [
             'some-text'   => [
                 'label'   => _('a text'),
                 'type'    => 'text',
-                'default' => gettext('Hello world!'),
+                'default' => _('Hello world!'),
             ],
             'type-select' => [
                 'label'   => _('Alert Type'),

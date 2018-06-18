@@ -12,7 +12,7 @@ $cFehler         = '';
 $step            = 'uebersicht';
 $nAnzahlProSeite = 30;
 $oEmailhistory   = new Emailhistory();
-$cAction         = (isset($_POST['a']) && validateToken()) ? $_POST['a'] : '';
+$cAction         = (isset($_POST['a']) && FormHelper::validateToken()) ? $_POST['a'] : '';
 
 if ($cAction === 'delete') {
     if (isset($_POST['remove_all'])) {

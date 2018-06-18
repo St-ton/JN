@@ -103,7 +103,7 @@ if (count($oLinkOberGruppe_arr) > 0) {
             );
             $oLinkOberGruppe_arr[$i]->oLinkGruppe_arr[] = $pluginManager;
             $pluginCount                                = count($oPlugin_arr);
-            $maxEntries                                 = ($pluginCount > 24) ? 10 : 6;
+            $maxEntries                                 = $pluginCount > 24 ? 10 : 6;
             $pluginListChunks                           = array_chunk($oPlugin_arr, $maxEntries);
             foreach ($pluginListChunks as $_chunk) {
                 $pluginList                                 = new stdClass();
@@ -115,7 +115,7 @@ if (count($oLinkOberGruppe_arr) > 0) {
                 //make the submenu full-width if more then 12 plugins are listed
                 $oLinkOberGruppe_arr[$i]->class = 'yamm-fw';
             }
-        } elseif ($oLinkOberGruppe->kAdminmenueGruppe == 17 && $oAccount->permission('PLUGIN_ADMIN_VIEW')) {
+        } elseif ((int)$oLinkOberGruppe->kAdminmenueGruppe === 17 && $oAccount->permission('PLUGIN_ADMIN_VIEW')) {
             if (isset($oPluginSearch->kPlugin) && $oPluginSearch->kPlugin > 0) {
                 $oPluginSearch->cLinkname = 'JTL Search';
                 $oPluginSearch->cURL      = $shopURL . '/' . PFAD_ADMIN .
@@ -124,7 +124,7 @@ if (count($oLinkOberGruppe_arr) > 0) {
 
                 $nI                                   = count($oLinkOberGruppe_arr[$i]->oLink_arr);
                 $oLinkOberGruppe_arr[$i]->oLink_arr[] = $oPluginSearch;
-                objectSort($oLinkOberGruppe_arr[$i]->oLink_arr, 'cLinkname');
+                ObjectHelper::sortBy($oLinkOberGruppe_arr[$i]->oLink_arr, 'cLinkname');
             }
         } else {
             $oLinkOberGruppe_arr[$i]->oLink_arr = $oAccount->getVisibleMenu((int)$adminLoginGruppe,
@@ -145,7 +145,7 @@ if (is_array($currentTemplateDir)) {
 }
 
 $smarty->assign('URL_SHOP', $shopURL)
-       ->assign('jtl_token', getTokenInput())
+       ->assign('jtl_token', FormHelper::getTokenInput())
        ->assign('shopURL', $shopURL)
        ->assign('shopVersion', Shop::getVersion())
        ->assign('PFAD_ADMIN', PFAD_ADMIN)

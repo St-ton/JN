@@ -11,7 +11,7 @@ if (!$oAccount->getIsAuthenticated()) {
     header(RequestHelper::makeHTTPHeader(401));
     exit;
 }
-if (!validateToken()) {
+if (!FormHelper::validateToken()) {
     $io = IO::getInstance();
     $io->respondAndExit(new IOError('CSRF validation failed.', 500));
 }

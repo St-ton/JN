@@ -115,7 +115,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
 if (isset($_POST['einstellungen_bearbeiten'])
     && (int)$_POST['einstellungen_bearbeiten'] === 1
     && $kSektion > 0
-    && validateToken()
+    && FormHelper::validateToken()
 ) {
     $sucheFulltext = isset($_POST['suche_fulltext']) ? in_array($_POST['suche_fulltext'], ['Y', 'B'], true) : false;
 

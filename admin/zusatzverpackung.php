@@ -14,7 +14,7 @@ $cFehler      = '';
 $step         = 'zusatzverpackung';
 $oSprache_arr = Sprache::getAllLanguages();
 // Zusatzverpackung speichern
-if (isset($_POST['eintragen']) && (int)$_POST['eintragen'] === 1 && validateToken()) {
+if (isset($_POST['eintragen']) && (int)$_POST['eintragen'] === 1 && FormHelper::validateToken()) {
     $kVerpackung         = (int)$_POST['kVerpackung'];
     $fBrutto             = isset($_POST['fBrutto']) ? (float)$_POST['fBrutto'] : 0;
     $fMindestbestellwert = isset($_POST['fMindestbestellwert']) ? (float)$_POST['fMindestbestellwert'] : 0;
@@ -82,7 +82,7 @@ if (isset($_POST['eintragen']) && (int)$_POST['eintragen'] === 1 && validateToke
     } else {
         $cFehler .= 'Fehler: Bitte geben Sie der Verpackung einen Namen.<br />';
     }
-} elseif (isset($_POST['bearbeiten']) && (int)$_POST['bearbeiten'] === 1 && validateToken()) {
+} elseif (isset($_POST['bearbeiten']) && (int)$_POST['bearbeiten'] === 1 && FormHelper::validateToken()) {
     // Verpackungen bearbeiten (aktualisieren / loeschen)
     if (isset($_POST['loeschen']) && $_POST['loeschen'] === 'delete') {
         if (is_array($_POST['kVerpackung']) && count($_POST['kVerpackung']) > 0) {
@@ -99,7 +99,7 @@ if (isset($_POST['eintragen']) && (int)$_POST['eintragen'] === 1 && validateToke
             $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine Verpackung.<br />';
         }
     } elseif (isset($_POST['aktualisieren']) &&
-        $_POST['aktualisieren'] === 'refresh' && validateToken()) {
+        $_POST['aktualisieren'] === 'refresh' && FormHelper::validateToken()) {
         // Aktualisieren
         // Alle Verpackungen deaktivieren
         Shop::Container()->getDB()->query("UPDATE tverpackung SET nAktiv = 0", 3);
@@ -112,7 +112,7 @@ if (isset($_POST['eintragen']) && (int)$_POST['eintragen'] === 1 && validateToke
             $cHinweis .= 'Ihre markierten Verpackungen wurden erfolgreich aktualisiert.<br />';
         }
     }
-} elseif (RequestHelper::verifyGPCDataInt('edit') > 0 && validateToken()) { // Editieren
+} elseif (RequestHelper::verifyGPCDataInt('edit') > 0 && FormHelper::validateToken()) { // Editieren
     $kVerpackung = RequestHelper::verifyGPCDataInt('edit');
     $oVerpackung = Shop::Container()->getDB()->select('tverpackung', 'kVerpackung', $kVerpackung);
 
@@ -137,7 +137,7 @@ if (isset($_POST['eintragen']) && (int)$_POST['eintragen'] === 1 && validateToke
 }
 
 // tverpackungsprache anzeigen
-if (isset($_GET['a']) && (int)$_GET['a'] > 0 && validateToken()) {
+if (isset($_GET['a']) && (int)$_GET['a'] > 0 && FormHelper::validateToken()) {
     $step                   = 'anzeigen';
     $kVerpackung            = (int)$_GET['a'];
     $oVerpackungSprache_arr = Shop::Container()->getDB()->selectAll('tverpackungsprache', 'kVerpackung', $kVerpackung);

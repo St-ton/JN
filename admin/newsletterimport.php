@@ -17,7 +17,7 @@ $fehler  = '';
 
 if ((int)$_POST['newsletterimport'] === 1 &&
     isset($_POST['newsletterimport'], $_FILES['csv']['tmp_name']) &&
-    validateToken() &&
+    FormHelper::validateToken() &&
     strlen($_FILES['csv']['tmp_name']) > 0
 ) {
     $file = fopen($_FILES['csv']['tmp_name'], 'r');

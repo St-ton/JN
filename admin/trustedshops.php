@@ -19,7 +19,7 @@ setzeSpracheTrustedShops();
 
 $Einstellungen = Shop::getSettings([CONF_TRUSTEDSHOPS]);
 
-if (isset($_POST['kaeuferschutzeinstellungen']) && (int)$_POST['kaeuferschutzeinstellungen'] === 1 && validateToken()) {
+if (isset($_POST['kaeuferschutzeinstellungen']) && (int)$_POST['kaeuferschutzeinstellungen'] === 1 && FormHelper::validateToken()) {
     // Lpesche das Zertifikat
     if (isset($_POST['delZertifikat'])) {
         $oTrustedShops = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
@@ -114,7 +114,7 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && (int)$_POST['kaeuferschutzein
         Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
         unset($oConfig_arr);
     }
-} elseif (isset($_POST['kaeuferschutzupdate']) && (int)$_POST['kaeuferschutzupdate'] === 1 && validateToken()) {
+} elseif (isset($_POST['kaeuferschutzupdate']) && (int)$_POST['kaeuferschutzupdate'] === 1 && FormHelper::validateToken()) {
     // Kaeuferprodukte updaten
     $oTrustedShops = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
     //$oZertifikat = $oTrustedShops->gibTrustedShopsZertifikatISO($_SESSION['TrustedShops']->oSprache->cISOSprache);
@@ -125,7 +125,7 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && (int)$_POST['kaeuferschutzein
     } else {
         $cFehler .= 'Fehler: Ihre K&auml;uferschutzprodukte konnten nicht aktualisiert werden.';
     }
-} elseif (isset($_POST['kundenbewertungeinstellungen']) && (int)$_POST['kundenbewertungeinstellungen'] === 1 && validateToken()) {
+} elseif (isset($_POST['kundenbewertungeinstellungen']) && (int)$_POST['kundenbewertungeinstellungen'] === 1 && FormHelper::validateToken()) {
     // Kundenbewertung Einstellungen
     $oTrustedShops = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
     $cPreStatus    = $Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'];
@@ -369,9 +369,9 @@ if ($step === 'uebersicht') {
 }
 $smarty->assign('TS_BUYERPROT_CLASSIC', TS_BUYERPROT_CLASSIC)
        ->assign('TS_BUYERPROT_EXCELLENCE', TS_BUYERPROT_EXCELLENCE)
-       ->assign('bAllowfopen', pruefeALLOWFOPEN())
-       ->assign('bSOAP', pruefeSOAP())
-       ->assign('bCURL', pruefeCURL())
+       ->assign('bAllowfopen', PHPSettingsHelper::checkAllowFopen())
+       ->assign('bSOAP', PHPSettingsHelper::checkSOAP())
+       ->assign('bCURL', PHPSettingsHelper::checkCURL())
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->assign('step', $step)

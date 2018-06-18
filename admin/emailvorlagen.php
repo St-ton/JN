@@ -58,7 +58,7 @@ if (isset($_POST['resetConfirm']) && (int)$_POST['resetConfirm'] > 0) {
 if (isset($_POST['resetEmailvorlage'])
     && (int)$_POST['resetEmailvorlage'] === 1
     && (int)$_POST['kEmailvorlage'] > 0
-    && validateToken()
+    && FormHelper::validateToken()
 ) {
     $oEmailvorlage = Shop::Container()->getDB()->select($cTable, 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
     if ($oEmailvorlage->kEmailvorlage > 0 && isset($_POST['resetConfirmJaSubmit'])) {
@@ -533,11 +533,11 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
                 $bestellung->oEstimatedDelivery->longestMin,
                 $bestellung->oEstimatedDelivery->longestMax
             );
-            $bestellung->cEstimatedDeliveryEx          = dateAddWeekday(
+            $bestellung->cEstimatedDeliveryEx          = DateHelper::dateAddWeekday(
                 $bestellung->dErstellt,
                 $bestellung->oEstimatedDelivery->longestMin
             )->format('d.m.Y') . ' - ' .
-                dateAddWeekday($bestellung->dErstellt, $bestellung->oEstimatedDelivery->longestMax)->format('d.m.Y');
+                DateHelper::dateAddWeekday($bestellung->dErstellt, $bestellung->oEstimatedDelivery->longestMax)->format('d.m.Y');
 
             $kunde->kSprache                       = $Sprache->kSprache;
             $NewsletterEmpfaenger->kSprache        = $Sprache->kSprache;
@@ -575,7 +575,7 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
 }
 if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
     && (int)$_POST['Aendern'] === 1
-    && (int)$_POST['kEmailvorlage'] > 0 && validateToken()
+    && (int)$_POST['kEmailvorlage'] > 0 && FormHelper::validateToken()
 ) {
     $step                        = 'uebersicht';
     $kEmailvorlage               = (int)$_POST['kEmailvorlage'];
@@ -802,7 +802,7 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
 if (((isset($_POST['kEmailvorlage']) && (int)$_POST['kEmailvorlage'] > 0 && $continue === true)
         || $step === 'prebearbeiten'
         || (isset($_GET['a']) && $_GET['a'] === 'pdfloeschen')
-    ) && validateToken()
+    ) && FormHelper::validateToken()
 ) {
     $cUploadVerzeichnis  = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
     $Emailvorlagesprache = [];

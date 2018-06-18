@@ -17,7 +17,7 @@ $cFehler       = '';
 
 setzeSprache();
 
-if (isset($_POST['speichern']) && validateToken()) {
+if (isset($_POST['speichern']) && FormHelper::validateToken()) {
     $cHinweis .= saveAdminSectionSettings(CONF_NAVIGATIONSFILTER, $_POST);
     Shop::Cache()->flushTags([CACHING_GROUP_CATEGORY]);
     if (is_array($_POST['nVon'])

@@ -13,7 +13,7 @@ $cFehler       = '';
 
 setzeSprache();
 
-if (isset($_POST['speichern']) && validateToken()) {
+if (isset($_POST['speichern']) && FormHelper::validateToken()) {
     $cHinweis .= saveAdminSectionSettings(CONF_SITEMAP, $_POST);
     if (isset($_POST['nVon']) && is_array($_POST['nVon']) && count($_POST['nVon']) > 0 &&
         is_array($_POST['nBis']) && count($_POST['nBis']) > 0) {

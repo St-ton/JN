@@ -14,7 +14,7 @@ $oAccount->permission('SYSTEMLOG_VIEW', true, true);
 $cHinweis    = '';
 $cFehler     = '';
 $minLogLevel = Shop::getConfigValue(CONF_GLOBAL, 'systemlog_flag');
-if (validateToken()) {
+if (FormHelper::validateToken()) {
     if (RequestHelper::verifyGPDataString('action') === 'clearsyslog') {
         Jtllog::deleteAll();
         $cHinweis = 'Ihr Systemlog wurde erfolgreich gel&ouml;scht.';

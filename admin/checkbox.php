@@ -24,13 +24,13 @@ if (isset($_POST['erstellenShowButton'])) {
     $cTab = 'erstellen';
 } elseif (RequestHelper::verifyGPCDataInt('uebersicht') === 1) { // Loeschen, aktivieren, deaktivieren
     $kCheckBox_arr = $_POST['kCheckBox'];
-    if (isset($_POST['checkboxAktivierenSubmit']) && validateToken()) {
+    if (isset($_POST['checkboxAktivierenSubmit']) && FormHelper::validateToken()) {
         $oCheckBox->aktivateCheckBox($kCheckBox_arr);
         $cHinweis = 'Ihre markierten Checkboxen wurden erfolgreich aktiviert.';
-    } elseif (isset($_POST['checkboxDeaktivierenSubmit']) && validateToken()) {
+    } elseif (isset($_POST['checkboxDeaktivierenSubmit']) && FormHelper::validateToken()) {
         $oCheckBox->deaktivateCheckBox($kCheckBox_arr);
         $cHinweis = 'Ihre markierten Checkboxen wurden erfolgreich deaktiviert.';
-    } elseif (isset($_POST['checkboxLoeschenSubmit']) && validateToken()) {
+    } elseif (isset($_POST['checkboxLoeschenSubmit']) && FormHelper::validateToken()) {
         $oCheckBox->deleteCheckBox($kCheckBox_arr);
         $cHinweis = 'Ihre markierten Checkboxen wurden erfolgreich gel&ouml;scht.';
     }
@@ -39,7 +39,7 @@ if (isset($_POST['erstellenShowButton'])) {
     $cStep     = 'erstellen';
     $cTab      = $cStep;
     $smarty->assign('oCheckBox', new CheckBox($kCheckBox, true));
-} elseif (RequestHelper::verifyGPCDataInt('erstellen') === 1 && validateToken()) { // Erstellen
+} elseif (RequestHelper::verifyGPCDataInt('erstellen') === 1 && FormHelper::validateToken()) { // Erstellen
     $cStep       = 'erstellen';
     $kCheckBox   = RequestHelper::verifyGPCDataInt('kCheckBox');
     $cPlausi_arr = plausiCheckBox($_POST, $oSprach_arr);

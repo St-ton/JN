@@ -10,7 +10,7 @@ $oAccount->permission('RESET_SHOP_VIEW', true, true);
 /** @global JTLSmarty $smarty */
 $cHinweis = '';
 $cFehler  = '';
-if (isset($_POST['zuruecksetzen']) && (int)$_POST['zuruecksetzen'] === 1 && validateToken()) {
+if (isset($_POST['zuruecksetzen']) && (int)$_POST['zuruecksetzen'] === 1 && FormHelper::validateToken()) {
     $cOption_arr = $_POST['cOption_arr'];
     if (is_array($cOption_arr) && count($cOption_arr) > 0) {
         foreach ($cOption_arr as $cOption) {

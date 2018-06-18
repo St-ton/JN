@@ -74,7 +74,7 @@ if ($res > 0) {
 }
 
 // Aktion ausgeloest?
-if (validateToken()) {
+if (FormHelper::validateToken()) {
     if (isset($_POST['action'])) {
         if ($_POST['action'] === 'speichern') {
             // Kupon speichern

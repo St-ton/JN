@@ -30,14 +30,14 @@ $cHinweis = '';
 $cFehler  = '';
 $step     = 'shoplogouploader_uebersicht';
 // Upload
-if (!empty($_FILES) && validateToken()) {
+if (!empty($_FILES) && FormHelper::validateToken()) {
     $status           = saveShopLogo($_FILES);
     $response         = new stdClass();
     $response->status = ($status === 1) ? 'OK' : 'FAILED';
     echo json_encode($response);
     die();
 }
-if (RequestHelper::verifyGPCDataInt('upload') === 1 && validateToken()) {
+if (RequestHelper::verifyGPCDataInt('upload') === 1 && FormHelper::validateToken()) {
     if (isset($_POST['delete'])) {
         $delete = deleteShopLogo(Shop::getLogo());
         if ($delete === true) {

@@ -54,7 +54,7 @@ if (!$oSpracheNews) {
     $oSpracheNews = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
 }
 // News
-if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0 && validateToken()) {
+if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0 && FormHelper::validateToken()) {
     $cHinweis .= saveAdminSectionSettings(CONF_NEWS, $_POST, [CACHING_GROUP_OPTION, CACHING_GROUP_NEWS]);
     if (count($Sprachen) > 0) {
         // tnewsmonatspraefix loeschen
@@ -75,7 +75,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0 && valida
     }
 }
 
-if (RequestHelper::verifyGPCDataInt('news') === 1 && validateToken()) {
+if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()) {
     // Neue News erstellen
     if ((isset($_POST['erstellen']) && (int)$_POST['erstellen'] === 1 && isset($_POST['news_erstellen'])) ||
         (isset($_POST['news_erstellen']) && (int)$_POST['news_erstellen'] === 1)) {

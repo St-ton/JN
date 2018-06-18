@@ -10,14 +10,14 @@ $oAccount->permission('SETTINGS_CONTACTFORM_VIEW', true, true);
 $cHinweis = '';
 $cTab     = 'config';
 $step     = 'uebersicht';
-if (isset($_GET['del']) && (int)$_GET['del'] > 0 && validateToken()) {
+if (isset($_GET['del']) && (int)$_GET['del'] > 0 && FormHelper::validateToken()) {
     Shop::Container()->getDB()->delete('tkontaktbetreff', 'kKontaktBetreff', (int)$_GET['del']);
     Shop::Container()->getDB()->delete('tkontaktbetreffsprache', 'kKontaktBetreff', (int)$_GET['del']);
 
     $cHinweis = 'Der Betreff wurde erfolgreich gel&ouml;scht';
 }
 
-if (isset($_POST['content']) && (int)$_POST['content'] === 1 && validateToken()) {
+if (isset($_POST['content']) && (int)$_POST['content'] === 1 && FormHelper::validateToken()) {
     Shop::Container()->getDB()->delete('tspezialcontentsprache', 'nSpezialContent', SC_KONTAKTFORMULAR);
     $sprachen = Sprache::getAllLanguages();
     foreach ($sprachen as $sprache) {
@@ -50,7 +50,7 @@ if (isset($_POST['content']) && (int)$_POST['content'] === 1 && validateToken())
     $cTab = 'content';
 }
 
-if (isset($_POST['betreff']) && (int)$_POST['betreff'] === 1 && validateToken()) {
+if (isset($_POST['betreff']) && (int)$_POST['betreff'] === 1 && FormHelper::validateToken()) {
     if ($_POST['cName'] && $_POST['cMail']) {
         $neuerBetreff        = new stdClass();
         $neuerBetreff->cName = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
@@ -114,7 +114,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
 }
 
 if (((isset($_GET['kKontaktBetreff']) && (int)$_GET['kKontaktBetreff'] > 0) ||
-        (isset($_GET['neu']) && (int)$_GET['neu'] === 1)) && validateToken()
+        (isset($_GET['neu']) && (int)$_GET['neu'] === 1)) && FormHelper::validateToken()
 ) {
     $step = 'betreff';
 }

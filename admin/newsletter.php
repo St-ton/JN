@@ -33,7 +33,7 @@ if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
 // Einstellungen
-if (validateToken()) {
+if (FormHelper::validateToken()) {
     if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
         if (isset($_POST['speichern'])) {
             $step = 'uebersicht';

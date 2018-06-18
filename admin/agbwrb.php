@@ -15,7 +15,7 @@ $step     = 'agbwrb_uebersicht';
 
 setzeSprache();
 
-if (RequestHelper::verifyGPCDataInt('agbwrb') === 1 && validateToken()) {
+if (RequestHelper::verifyGPCDataInt('agbwrb') === 1 && FormHelper::validateToken()) {
     // Editieren
     if (RequestHelper::verifyGPCDataInt('agbwrb_edit') === 1) {
         if (RequestHelper::verifyGPCDataInt('kKundengruppe') > 0) {

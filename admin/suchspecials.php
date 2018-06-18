@@ -23,7 +23,7 @@ if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
 // Einstellungen
 if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
     $cHinweis .= saveAdminSectionSettings(CONF_SUCHSPECIAL, $_POST);
-} elseif (isset($_POST['suchspecials']) && (int)$_POST['suchspecials'] === 1 && validateToken()) {
+} elseif (isset($_POST['suchspecials']) && (int)$_POST['suchspecials'] === 1 && FormHelper::validateToken()) {
     // Suchspecials aus der DB holen und in smarty assignen
     $oSuchSpecials_arr       = Shop::Container()->getDB()->selectAll(
         'tseo',

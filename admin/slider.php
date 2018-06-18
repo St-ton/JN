@@ -13,7 +13,7 @@ $cFehler      = '';
 $cHinweis     = '';
 $_kSlider     = 0;
 $cRedirectUrl = Shop::getURL() . '/' . PFAD_ADMIN . 'slider.php';
-$cAction      = (isset($_REQUEST['action']) && validateToken())
+$cAction      = (isset($_REQUEST['action']) && FormHelper::validateToken())
     ? $_REQUEST['action']
     : 'view';
 $kSlider      = isset($_REQUEST['id'])
@@ -46,7 +46,7 @@ switch ($cAction) {
     default:
         $smarty->assign('disabled', '');
         // Daten Speichern
-        if (!empty($_POST) && validateToken()) {
+        if (!empty($_POST) && FormHelper::validateToken()) {
             $oSlider  = new Slider();
             $_kSlider = $_POST['kSlider'];
             $oSlider->load($kSlider);

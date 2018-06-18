@@ -15,7 +15,7 @@ $cSuchFilter     = '';
 $nAnzahlProSeite = 15;
 
 // Bestellung Wawi Abholung zuruecksetzen
-if (RequestHelper::verifyGPCDataInt('zuruecksetzen') === 1 && validateToken()) {
+if (RequestHelper::verifyGPCDataInt('zuruecksetzen') === 1 && FormHelper::validateToken()) {
     if (isset($_POST['kBestellung'])) {
         switch (setzeAbgeholtZurueck($_POST['kBestellung'])) {
             case -1: // Alles O.K.

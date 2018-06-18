@@ -22,7 +22,7 @@ $format = [
 if (isset($_POST['kundenimport'], $_FILES['csv']['tmp_name'])
     && (int)$_POST['kundenimport'] === 1
     && $_FILES['csv']
-    && validateToken()
+    && FormHelper::validateToken()
     && strlen($_FILES['csv']['tmp_name']) > 0
 ) {
     $delimiter = guessCsvDelimiter($_FILES['csv']['tmp_name']);

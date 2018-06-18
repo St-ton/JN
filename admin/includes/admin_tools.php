@@ -148,7 +148,7 @@ function bearbeiteListBox($cListBox_arr, $cWertName, $kEinstellungenSektion)
  */
 function saveAdminSectionSettings(int $kEinstellungenSektion, &$cPost_arr, $tags = [CACHING_GROUP_OPTION])
 {
-    if (!validateToken()) {
+    if (!FormHelper::validateToken()) {
         return 'Fehler: Cross site request forgery.';
     }
     $oConfig_arr           = Shop::Container()->getDB()->selectAll(
@@ -313,7 +313,7 @@ function holeBewertungserinnerungSettings()
  */
 function setzeSprache()
 {
-    if (validateToken() && RequestHelper::verifyGPCDataInt('sprachwechsel') === 1) {
+    if (FormHelper::validateToken() && RequestHelper::verifyGPCDataInt('sprachwechsel') === 1) {
         // Wähle explizit gesetzte Sprache als aktuelle Sprache
         $oSprache = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$_POST['kSprache']);
 

@@ -23,7 +23,7 @@
  */
 function handleCsvImportAction($importerId, $target, $fields = [], $cDelim = null, $importType = 2)
 {
-    if (validateToken() && RequestHelper::verifyGPDataString('importcsv') === $importerId) {
+    if (FormHelper::validateToken() && RequestHelper::verifyGPDataString('importcsv') === $importerId) {
         if (isset($_FILES['csvfile']['type']) &&
             (
                 $_FILES['csvfile']['type'] === 'application/vnd.ms-excel' ||

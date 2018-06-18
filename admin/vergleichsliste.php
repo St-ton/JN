@@ -29,7 +29,7 @@ if (isset($_POST['zeitfilter']) && (int)$_POST['zeitfilter'] === 1) {
         : 0;
 }
 
-if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && validateToken()) {
+if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && FormHelper::validateToken()) {
     $oConfig_arr = Shop::Container()->getDB()->query(
         "SELECT *
             FROM teinstellungenconf

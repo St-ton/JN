@@ -62,7 +62,7 @@ function holeKampagneGesamtStats($oKampagne_arr, $oKampagneDef_arr)
 {
     $oKampagneStat_arr = [];
     $cSQL              = '';
-    $cDatum_arr        = gibDatumTeile($_SESSION['Kampagne']->cStamp);
+    $cDatum_arr        = DateHelper::getDateParts($_SESSION['Kampagne']->cStamp);
     switch ((int)$_SESSION['Kampagne']->nAnsicht) {
         case 1:    // Monat
             $cSQL = "WHERE '" . $cDatum_arr['cJahr'] . "-" . 
@@ -997,7 +997,7 @@ function gibStamp($cStampOld, $nSprung, $nAnsicht)
                     return date('Y-m-d');
                 }
 
-                $cDatum_arr = gibDatumTeile($oDate->cStampNew);
+                $cDatum_arr = DateHelper::getDateParts($oDate->cStampNew);
 
                 return $cDatum_arr['cJahr'] . '-' . $cDatum_arr['cMonat'] . '-' . $cDatum_arr['cTag'];
                 break;
@@ -1008,7 +1008,7 @@ function gibStamp($cStampOld, $nSprung, $nAnsicht)
                     return date('Y-m-d');
                 }
 
-                $cDatum_arr = gibDatumTeile($oDate->cStampNew);
+                $cDatum_arr = DateHelper::getDateParts($oDate->cStampNew);
 
                 return $cDatum_arr['cJahr'] . '-' . $cDatum_arr['cMonat'] . '-' . $cDatum_arr['cTag'];
                 break;
@@ -1019,7 +1019,7 @@ function gibStamp($cStampOld, $nSprung, $nAnsicht)
                     return date('Y-m-d');
                 }
 
-                $cDatum_arr = gibDatumTeile($oDate->cStampNew);
+                $cDatum_arr = DateHelper::getDateParts($oDate->cStampNew);
 
                 return $cDatum_arr['cJahr'] . '-' . $cDatum_arr['cMonat'] . '-' . $cDatum_arr['cTag'];
                 break;

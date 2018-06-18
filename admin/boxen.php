@@ -13,7 +13,7 @@ $nPage      = isset($_REQUEST['page']) ? (int)$_REQUEST['page'] : 0;
 $boxService = Shop::Container()->getBoxService();
 $boxAdmin   = new \Boxes\Admin\BoxAdmin(Shop::Container()->getDB(), $boxService);
 $bOk        = false;
-if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && validateToken()) {
+if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && FormHelper::validateToken()) {
     switch ($_REQUEST['action']) {
         case 'delete-invisible':
             if (!empty($_POST['kInvisibleBox']) && count($_POST['kInvisibleBox']) > 0) {

@@ -71,7 +71,7 @@ if ($bSuche) {
 if (isset($_POST['einstellungen_bearbeiten'])
     && (int)$_POST['einstellungen_bearbeiten'] === 1
     && $kSektion > 0
-    && validateToken()
+    && FormHelper::validateToken()
 ) {
     // Einstellungssuche
     $oSQL = new stdClass();

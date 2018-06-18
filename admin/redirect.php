@@ -20,7 +20,7 @@ $cHinweis  = '';
 $cFehler   = '';
 $redirects = $_POST['redirects'] ?? [];
 
-if (validateToken()) {
+if (FormHelper::validateToken()) {
     switch (RequestHelper::verifyGPDataString('action')) {
         case 'save':
             foreach ($redirects as $kRedirect => $redirect) {

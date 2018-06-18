@@ -24,7 +24,7 @@ if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
     $cTab = RequestHelper::verifyGPDataString('tab');
 }
 // Bewertung editieren
-if (RequestHelper::verifyGPCDataInt('bewertung_editieren') === 1 && validateToken()) {
+if (RequestHelper::verifyGPCDataInt('bewertung_editieren') === 1 && FormHelper::validateToken()) {
     if (editiereBewertung($_POST)) {
         $cHinweis .= 'Ihre Bewertung wurde erfolgreich editiert. ';
 
@@ -49,7 +49,7 @@ if (RequestHelper::verifyGPCDataInt('bewertung_editieren') === 1 && validateToke
     }
 } elseif (isset($_POST['bewertung_nicht_aktiv']) && (int)$_POST['bewertung_nicht_aktiv'] === 1) {
     // Bewertungen aktivieren
-    if (isset($_POST['aktivieren'])  && validateToken()) {
+    if (isset($_POST['aktivieren'])  && FormHelper::validateToken()) {
         if (is_array($_POST['kBewertung']) && count($_POST['kBewertung']) > 0) {
             $kArtikel_arr = $_POST['kArtikel'];
             foreach ($_POST['kBewertung'] as $i => $kBewertung) {
@@ -67,7 +67,7 @@ if (RequestHelper::verifyGPCDataInt('bewertung_editieren') === 1 && validateToke
             Shop::Cache()->flushTags($cacheTags);
             $cHinweis .= count($_POST['kBewertung']) . " Bewertung(en) wurde(n) erfolgreich aktiviert.";
         }
-    } elseif (isset($_POST['loeschen']) && validateToken()) { // Bewertungen loeschen
+    } elseif (isset($_POST['loeschen']) && FormHelper::validateToken()) { // Bewertungen loeschen
         if (is_array($_POST['kBewertung']) && count($_POST['kBewertung']) > 0) {
             foreach ($_POST['kBewertung'] as $kBewertung) {
                 Shop::Container()->getDB()->delete('tbewertung', 'kBewertung', (int)$kBewertung);
@@ -96,7 +96,7 @@ if (RequestHelper::verifyGPCDataInt('bewertung_editieren') === 1 && validateToke
         $smarty->assign('cArtNr', StringHandler::filterXSS($_POST['cArtNr']));
     }
     // Bewertungen loeschen
-    if (isset($_POST['loeschen']) && is_array($_POST['kBewertung']) && count($_POST['kBewertung']) > 0 && validateToken()) {
+    if (isset($_POST['loeschen']) && is_array($_POST['kBewertung']) && count($_POST['kBewertung']) > 0 && FormHelper::validateToken()) {
         $kArtikel_arr = $_POST['kArtikel'];
         foreach ($_POST['kBewertung'] as $i => $kBewertung) {
             // Loesche Guthaben aus tbewertungguthabenbonus und aktualisiere tkunde
@@ -121,7 +121,7 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
         $smarty->assign('nFZ', 1);
     }
 } elseif ($step === 'bewertung_uebersicht') {
-    if (isset($_GET['a']) && $_GET['a'] === 'delreply' && validateToken()) {
+    if (isset($_GET['a']) && $_GET['a'] === 'delreply' && FormHelper::validateToken()) {
         removeReply(RequestHelper::verifyGPCDataInt('kBewertung'));
         $cHinweis = 'Antwort zu einer Bewertung wurde entfernt.';
     }

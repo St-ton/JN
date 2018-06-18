@@ -36,7 +36,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
         $cHinweis .= saveAdminSectionSettings(CONF_UMFRAGE, $_POST);
     }
     // Umfrage
-    if (RequestHelper::verifyGPCDataInt('umfrage') === 1 && validateToken()) {
+    if (RequestHelper::verifyGPCDataInt('umfrage') === 1 && FormHelper::validateToken()) {
         // Umfrage erstellen
         if (isset($_POST['umfrage_erstellen']) && (int)$_POST['umfrage_erstellen'] === 1) {
             $step = 'umfrage_erstellen';
@@ -194,7 +194,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             } else {
                 $cFehler .= 'Fehler: Bitte geben Sie einen Namen, mindestens eine Kundengruppe und ein g&uuml;ltiges Anfangsdatum ein.<br />';
             }
-        } elseif (isset($_POST['umfrage_frage_speichern']) && (int)$_POST['umfrage_frage_speichern'] === 1 && validateToken()) { // Frage speichern
+        } elseif (isset($_POST['umfrage_frage_speichern']) && (int)$_POST['umfrage_frage_speichern'] === 1 && FormHelper::validateToken()) { // Frage speichern
             $kUmfrage                 = (int)$_POST['kUmfrage'];
             $kUmfrageFrage            = isset($_POST['kUmfrageFrage']) ? (int)$_POST['kUmfrageFrage'] : 0;
             $cName                    = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
@@ -276,7 +276,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 $step = 'umfrage_frage_erstellen';
                 $cFehler .= 'Fehler: Bitte tragen Sie mindestens einen Namen und einen Typ ein.<br />';
             }
-        } elseif (isset($_POST['umfrage_loeschen']) && (int)$_POST['umfrage_loeschen'] === 1 && validateToken()) {
+        } elseif (isset($_POST['umfrage_loeschen']) && (int)$_POST['umfrage_loeschen'] === 1 && FormHelper::validateToken()) {
             // Umfrage loeschen
             if (is_array($_POST['kUmfrage']) && count($_POST['kUmfrage']) > 0) {
                 foreach ($_POST['kUmfrage'] as $kUmfrage) {
@@ -313,7 +313,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine Umfrage.<br />';
             }
         } // Frage loeschen
-        elseif (isset($_POST['umfrage_frage_loeschen']) && (int)$_POST['umfrage_frage_loeschen'] === 1 && validateToken()) {
+        elseif (isset($_POST['umfrage_frage_loeschen']) && (int)$_POST['umfrage_frage_loeschen'] === 1 && FormHelper::validateToken()) {
             $step = 'umfrage_vorschau';
             // Ganze Frage loeschen mit allen Antworten und Matrixen
             if (is_array($_POST['kUmfrageFrage']) && count($_POST['kUmfrageFrage']) > 0) {
@@ -360,7 +360,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             Shop::Cache()->flushTags([CACHING_GROUP_CORE]);
         } elseif (isset($_POST['umfrage_frage_hinzufuegen'])
             && (int)$_POST['umfrage_frage_hinzufuegen'] === 1
-            && validateToken()
+            && FormHelper::validateToken()
         ) { // Frage hinzufuegen
             $step = 'umfrage_frage_erstellen';
             $smarty->assign('kUmfrageTMP', $kUmfrageTMP);
@@ -392,7 +392,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 $smarty->assign('oUmfrageFrage', holeSonstigeTextAntworten($kUmfrageFrage, $nAnzahlAnwort, $nMaxAntworten));
             }
         } elseif ((isset($_GET['fe']) && (int)$_GET['fe'] === 1) ||
-            ($step === 'umfrage_frage_bearbeiten' && validateToken())
+            ($step === 'umfrage_frage_bearbeiten' && FormHelper::validateToken())
         ) { // Frage bearbeiten
             $step = 'umfrage_frage_erstellen';
 
@@ -487,7 +487,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
         }
 
         if ($kUmfrageTMP > 0 && (!isset($_POST['umfrage_frage_edit_speichern']) || (int)$_POST['umfrage_frage_edit_speichern'] !== 1) &&
-            (!isset($_GET['fe']) || (int)$_GET['fe']) !== 1 && validateToken()) {
+            (!isset($_GET['fe']) || (int)$_GET['fe']) !== 1 && FormHelper::validateToken()) {
             $smarty->assign('oUmfrageFrage_arr', Shop::Container()->getDB()->selectAll(
                 'tumfragefrage',
                 'kUmfrage',

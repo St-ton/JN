@@ -51,7 +51,7 @@ Shop::bootstrap();
 
 if ($oAccount->logged()) {
     Shop::fire('backend.notification', Notification::getInstance()->buildDefault());
-    if (isset($_POST['revision-action'], $_POST['revision-type'], $_POST['revision-id']) && validateToken()) {
+    if (isset($_POST['revision-action'], $_POST['revision-type'], $_POST['revision-id']) && FormHelper::validateToken()) {
         $revision = new Revision();
         if ($_POST['revision-action'] === 'restore') {
             $revision->restoreRevision(

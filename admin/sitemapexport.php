@@ -59,7 +59,7 @@ $nYearDownloads = RequestHelper::verifyGPCDataInt('nYear_downloads');
 $nYearReports   = RequestHelper::verifyGPCDataInt('nYear_reports');
 
 // Sitemap Downloads - Jahr löschen
-if (isset($_POST['action']) && $_POST['action'] === 'year_downloads_delete' && validateToken()) {
+if (isset($_POST['action']) && $_POST['action'] === 'year_downloads_delete' && FormHelper::validateToken()) {
     Shop::Container()->getDB()->query(
         "DELETE FROM tsitemaptracker
             WHERE YEAR(tsitemaptracker.dErstellt) = " . $nYearDownloads, 3
@@ -69,7 +69,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'year_downloads_delete' && v
 }
 
 // Sitemap Reports - Jahr löschen
-if (isset($_POST['action']) && $_POST['action'] === 'year_reports_delete' && validateToken()) {
+if (isset($_POST['action']) && $_POST['action'] === 'year_reports_delete' && FormHelper::validateToken()) {
     Shop::Container()->getDB()->query(
         "DELETE FROM tsitemapreport
             WHERE YEAR(tsitemapreport.dErstellt) = " . $nYearReports, 3

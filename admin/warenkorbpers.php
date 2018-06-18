@@ -35,14 +35,14 @@ if (strlen(RequestHelper::verifyGPDataString('cSuche')) > 0) {
 if (isset($_POST['einstellungen'])
     && (int)$_POST['einstellungen'] === 1
     && (isset($_POST['speichern']) || (isset($_POST['a']) && $_POST['a'] === 'speichern'))
-    && validateToken()
+    && FormHelper::validateToken()
 ) {
     $step = 'uebersicht';
     $cHinweis .= saveAdminSettings($settingsIDs, $_POST);
     $smarty->assign('tab', 'einstellungen');
 }
 
-if (isset($_GET['l']) && (int)$_GET['l'] > 0 && validateToken()) {
+if (isset($_GET['l']) && (int)$_GET['l'] > 0 && FormHelper::validateToken()) {
     $kKunde         = (int)$_GET['l'];
     $oWarenkorbPers = new WarenkorbPers($kKunde);
 

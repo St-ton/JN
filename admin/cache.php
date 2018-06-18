@@ -12,7 +12,7 @@ $error        = '';
 $cacheAction  = '';
 $step         = 'uebersicht';
 $tab          = 'uebersicht';
-$action       = (isset($_POST['a']) && validateToken()) ? $_POST['a'] : null;
+$action       = (isset($_POST['a']) && FormHelper::validateToken()) ? $_POST['a'] : null;
 $cache        = null;
 $opcacheStats = null;
 if (0 < strlen(RequestHelper::verifyGPDataString('tab'))) {

@@ -124,9 +124,9 @@ if (RequestHelper::verifyGPCDataInt('nSort') > 0) {
 }
 
 // Freischalten
-if (RequestHelper::verifyGPCDataInt('freischalten') === 1 && validateToken()) {
+if (RequestHelper::verifyGPCDataInt('freischalten') === 1 && FormHelper::validateToken()) {
     // Bewertungen
-    if (RequestHelper::verifyGPCDataInt('bewertungen') === 1 && validateToken()) {
+    if (RequestHelper::verifyGPCDataInt('bewertungen') === 1 && FormHelper::validateToken()) {
         if (isset($_POST['freischaltensubmit'])) {
             if (schalteBewertungFrei($_POST['kBewertung'], $_POST['kArtikel'], $_POST['kBewertungAll'])) {
                 $cHinweis .= 'Ihre markierten Bewertungen wurden erfolgreich freigeschaltet.<br />';
@@ -140,7 +140,7 @@ if (RequestHelper::verifyGPCDataInt('freischalten') === 1 && validateToken()) {
                 $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine Bewertung.<br />';
             }
         }
-    } elseif (RequestHelper::verifyGPCDataInt('suchanfragen') === 1 && validateToken()) { // Suchanfragen
+    } elseif (RequestHelper::verifyGPCDataInt('suchanfragen') === 1 && FormHelper::validateToken()) { // Suchanfragen
         // Mappen
         if (isset($_POST['submitMapping'])) {
             $cMapping = RequestHelper::verifyGPDataString('cMapping');
@@ -199,7 +199,7 @@ if (RequestHelper::verifyGPCDataInt('freischalten') === 1 && validateToken()) {
                 $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine Suchanfrage.<br />';
             }
         }
-    } elseif (RequestHelper::verifyGPCDataInt('tags') === 1 && validateToken()) { // Tags
+    } elseif (RequestHelper::verifyGPCDataInt('tags') === 1 && FormHelper::validateToken()) { // Tags
         if (isset($_POST['freischaltensubmit'])) {
             if (isset($_POST['kTag']) && schalteTagsFrei($_POST['kTag'])) {
                 $cHinweis .= 'Ihre markierten Tags wurden erfolgreich freigeschaltet.<br />';
@@ -213,7 +213,7 @@ if (RequestHelper::verifyGPCDataInt('freischalten') === 1 && validateToken()) {
                 $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Tag.<br />';
             }
         }
-    } elseif (RequestHelper::verifyGPCDataInt('newskommentare') === 1 && validateToken()) { // Newskommentare
+    } elseif (RequestHelper::verifyGPCDataInt('newskommentare') === 1 && FormHelper::validateToken()) { // Newskommentare
         if (isset($_POST['freischaltensubmit'])) {
             if (isset($_POST['kNewsKommentar']) && schalteNewskommentareFrei($_POST['kNewsKommentar'])) {
                 $cHinweis .= 'Ihre markierten Newskommentare wurden erfolgreich freigeschaltet.<br />';
@@ -227,7 +227,7 @@ if (RequestHelper::verifyGPCDataInt('freischalten') === 1 && validateToken()) {
                 $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newskommentar.<br />';
             }
         }
-    } elseif (RequestHelper::verifyGPCDataInt('newsletterempfaenger') === 1 && validateToken()) { // Newsletterempfaenger
+    } elseif (RequestHelper::verifyGPCDataInt('newsletterempfaenger') === 1 && FormHelper::validateToken()) { // Newsletterempfaenger
         if (isset($_POST['freischaltensubmit'])) {
             if (isset($_POST['kNewsletterEmpfaenger']) && schalteNewsletterempfaengerFrei($_POST['kNewsletterEmpfaenger'])) {
                 $cHinweis .= 'Ihre markierten Newsletterempf&auml;nger wurden erfolgreich freigeschaltet.<br />';

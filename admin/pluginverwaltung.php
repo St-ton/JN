@@ -81,7 +81,7 @@ if (!empty($_FILES['file_data'])) {
     die(json_encode($response));
 }
 
-if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && validateToken()) {
+if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && FormHelper::validateToken()) {
     // Eine Aktion wurde von der Uebersicht aus gestartet
     $kPlugin_arr = $_POST['kPlugin'] ?? [];
     // Lizenzkey eingeben
@@ -95,7 +95,7 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && vali
     } elseif (isset($_POST['lizenzkeyadd'])
         && (int)$_POST['lizenzkeyadd'] === 1
         && (int)$_POST['kPlugin'] > 0
-        && validateToken()
+        && FormHelper::validateToken()
     ) { // Lizenzkey eingeben
         $step    = 'pluginverwaltung_lizenzkey';
         $kPlugin = (int)$_POST['kPlugin'];
@@ -124,7 +124,7 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && vali
         Shop::Cache()->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
         $smarty->assign('kPlugin', $kPlugin)
                ->assign('oPlugin', $oPlugin);
-    } elseif (is_array($kPlugin_arr) && count($kPlugin_arr) > 0 && validateToken()) {
+    } elseif (is_array($kPlugin_arr) && count($kPlugin_arr) > 0 && FormHelper::validateToken()) {
         foreach ($kPlugin_arr as $kPlugin) {
             $kPlugin = (int)$kPlugin;
             // Aktivieren
@@ -209,7 +209,7 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && vali
             }
         }
         Shop::Cache()->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN, CACHING_GROUP_BOX]);
-    } elseif (RequestHelper::verifyGPCDataInt('updaten') === 1 && validateToken()) { // Updaten
+    } elseif (RequestHelper::verifyGPCDataInt('updaten') === 1 && FormHelper::validateToken()) { // Updaten
         $kPlugin      = RequestHelper::verifyGPCDataInt('kPlugin');
         $nReturnValue = updatePlugin($kPlugin);
         if ($nReturnValue === 1) {
@@ -222,7 +222,7 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && vali
         }
     } elseif (RequestHelper::verifyGPCDataInt('sprachvariablen') === 1) { // Sprachvariablen editieren
         $step = 'pluginverwaltung_sprachvariablen';
-    } elseif (isset($_POST['installieren']) && validateToken()) {
+    } elseif (isset($_POST['installieren']) && FormHelper::validateToken()) {
         $cVerzeichnis_arr = $_POST['cVerzeichnis'];
         if (is_array($cVerzeichnis_arr) && count($cVerzeichnis_arr) > 0) {
             foreach ($cVerzeichnis_arr as $cVerzeichnis) {
@@ -239,7 +239,7 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && vali
     } else {
         $cFehler = 'Fehler: Bitte w&auml;hlen Sie mindestens ein Plugin aus.';
     }
-} elseif (RequestHelper::verifyGPCDataInt('pluginverwaltung_sprachvariable') === 1 && validateToken()) { // Plugin Sprachvariablen
+} elseif (RequestHelper::verifyGPCDataInt('pluginverwaltung_sprachvariable') === 1 && FormHelper::validateToken()) { // Plugin Sprachvariablen
     $step = 'pluginverwaltung_sprachvariablen';
     if (RequestHelper::verifyGPCDataInt('kPlugin') > 0) {
         $kPlugin = RequestHelper::verifyGPCDataInt('kPlugin');

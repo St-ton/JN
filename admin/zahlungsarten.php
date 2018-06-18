@@ -22,7 +22,7 @@ if (RequestHelper::verifyGPCDataInt('checkNutzbar') === 1) {
 // reset log
 if (($action = RequestHelper::verifyGPDataString('a')) !== ''
     && ($kZahlungsart = RequestHelper::verifyGPCDataInt('kZahlungsart')) > 0
-    && $action === 'logreset' && validateToken()
+    && $action === 'logreset' && FormHelper::validateToken()
 ) {
     $oZahlungsart = Shop::Container()->getDB()->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
 
@@ -31,7 +31,7 @@ if (($action = RequestHelper::verifyGPDataString('a')) !== ''
         $hinweis = 'Der Fehlerlog von ' . $oZahlungsart->cName . ' wurde erfolgreich zur&uuml;ckgesetzt.';
     }
 }
-if (RequestHelper::verifyGPCDataInt('kZahlungsart') > 0 && $action !== 'logreset' && validateToken()) {
+if (RequestHelper::verifyGPCDataInt('kZahlungsart') > 0 && $action !== 'logreset' && FormHelper::validateToken()) {
     $step = 'einstellen';
     if ($action === 'payments') {
         // Zahlungseingaenge
@@ -43,7 +43,7 @@ if (RequestHelper::verifyGPCDataInt('kZahlungsart') > 0 && $action !== 'logreset
 }
 
 if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart'])
-    && (int)$_POST['einstellungen_bearbeiten'] === 1 && (int)$_POST['kZahlungsart'] > 0 && validateToken()
+    && (int)$_POST['einstellungen_bearbeiten'] === 1 && (int)$_POST['kZahlungsart'] > 0 && FormHelper::validateToken()
 ) {
     $step              = 'uebersicht';
     $zahlungsart       = Shop::Container()->getDB()->select('tzahlungsart', 'kZahlungsart', (int)$_POST['kZahlungsart']);
@@ -275,7 +275,7 @@ if ($step === 'einstellen') {
 } elseif ($step === 'payments') {
     if (isset($_POST['action'], $_POST['kEingang_arr'])
         && $_POST['action'] === 'paymentwawireset'
-        && validateToken()
+        && FormHelper::validateToken()
     ) {
         $kEingang_arr = $_POST['kEingang_arr'];
         array_walk($kEingang_arr, function (&$i) {

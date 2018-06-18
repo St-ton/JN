@@ -15,7 +15,7 @@ $cHinweis = '';
 $cFehler  = '';
 $step     = 'trennzeichen_uebersicht';
 // Speichern
-if (RequestHelper::verifyGPCDataInt('save') === 1 && validateToken()) {
+if (RequestHelper::verifyGPCDataInt('save') === 1 && FormHelper::validateToken()) {
     $oPlausiTrennzeichen = new PlausiTrennzeichen();
     $oPlausiTrennzeichen->setPostVar($_POST);
     $oPlausiTrennzeichen->doPlausi();

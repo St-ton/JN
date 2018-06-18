@@ -21,7 +21,7 @@ if ($step === 'plugin_uebersicht') {
     if ($kPlugin > 0) {
         // Ein Settinglink wurde submitted
         if (RequestHelper::verifyGPCDataInt('Setting') === 1) {
-            if (!validateToken()) {
+            if (!FormHelper::validateToken()) {
                 $bError = true;
             } else {
                 $bError                     = false;

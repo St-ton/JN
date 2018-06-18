@@ -11,7 +11,7 @@ $Einstellungen = Shop::getSettings([CONF_METAANGABEN]);
 $chinweis      = '';
 $cfehler       = '';
 setzeSprache();
-if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && validateToken()) {
+if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && FormHelper::validateToken()) {
     saveAdminSectionSettings(CONF_METAANGABEN, $_POST);
 
     $cTitle           = $_POST['Title'];

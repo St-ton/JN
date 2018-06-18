@@ -19,7 +19,7 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
     if (version_compare(Shop::getShopVersion(), 400, '>=') === true) {
         // Check if template version is new enough for csrf validation
         $tpl = AdminTemplate::getInstance();
-        if ($tpl::$cTemplate === 'bootstrap' && !validateToken()) {
+        if ($tpl::$cTemplate === 'bootstrap' && !FormHelper::validateToken()) {
             $ret['csrf'] = 1;
         }
     }

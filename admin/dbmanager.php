@@ -57,7 +57,7 @@ switch (true) {
     case isset($_GET['select']):
         $table = $_GET['select'];
 
-        if (!preg_match('/^\w+$/i', $table, $m) || !validateToken()) {
+        if (!preg_match('/^\w+$/i', $table, $m) || !FormHelper::validateToken()) {
             die('Not allowed.');
         }
 
@@ -154,7 +154,7 @@ switch (true) {
             $query = $_POST['sql_query_edit'];
         }
 
-        if ($query !== null && validateToken()) {
+        if ($query !== null && FormHelper::validateToken()) {
             try {
                 $parser = new SqlParser\Parser($query);
 

@@ -20,7 +20,7 @@ $oDateShop   = Shop::Container()->getDB()->query(
 $startDate   = DateTime::createFromFormat('Y-m-j', $oDateShop->startDate);
 $endDate     = DateTime::createFromFormat('Y-m-j', date('Y-m-j'));
 
-if (isset($_POST['formFilter']) && $_POST['formFilter'] > 0 && validateToken()) {
+if (isset($_POST['formFilter']) && $_POST['formFilter'] > 0 && FormHelper::validateToken()) {
     if ((int)$_POST['kKupon'] > -1) {
         $cWhere = "(SELECT kKupon 
                         FROM tkuponbestellung 

@@ -21,20 +21,20 @@ $nSteuersatzKey_arr = array_keys($_SESSION['Steuersatz']);
 if (isset($_POST['neu'], $_POST['kVersandberechnung']) &&
     (int)$_POST['neu'] === 1 &&
     (int)$_POST['kVersandberechnung'] > 0 &&
-    validateToken()
+    FormHelper::validateToken()
 ) {
     $step = 'neue Versandart';
 }
-if (isset($_POST['kVersandberechnung']) && (int)$_POST['kVersandberechnung'] > 0 && validateToken()) {
+if (isset($_POST['kVersandberechnung']) && (int)$_POST['kVersandberechnung'] > 0 && FormHelper::validateToken()) {
     $versandberechnung = Shop::Container()->getDB()->select('tversandberechnung', 'kVersandberechnung', (int)$_POST['kVersandberechnung']);
 }
 
 //we need to flush the options caching group because of gibVersandkostenfreiAb(), baueVersandkostenfreiLaenderString() etc.
-if (isset($_POST['del']) && (int)$_POST['del'] > 0 && validateToken() && Versandart::deleteInDB($_POST['del'])) {
+if (isset($_POST['del']) && (int)$_POST['del'] > 0 && FormHelper::validateToken() && Versandart::deleteInDB($_POST['del'])) {
     $cHinweis .= 'Versandart erfolgreich gel&ouml;scht!';
     Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
 }
-if (isset($_POST['edit']) && (int)$_POST['edit'] > 0 && validateToken()) {
+if (isset($_POST['edit']) && (int)$_POST['edit'] > 0 && FormHelper::validateToken()) {
     $step                        = 'neue Versandart';
     $Versandart                  = Shop::Container()->getDB()->select('tversandart', 'kVersandart', (int)$_POST['edit']);
     $VersandartZahlungsarten     = Shop::Container()->getDB()->selectAll('tversandartzahlungsart', 'kVersandart', (int)$_POST['edit'], '*', 'kZahlungsart');
@@ -48,7 +48,7 @@ if (isset($_POST['edit']) && (int)$_POST['edit'] > 0 && validateToken()) {
            ->assign('gewaehlteLaender', explode(' ', $Versandart->cLaender));
 }
 
-if (isset($_POST['clone']) && (int)$_POST['clone'] > 0 && validateToken()) {
+if (isset($_POST['clone']) && (int)$_POST['clone'] > 0 && FormHelper::validateToken()) {
     $step = 'uebersicht';
     if (Versandart::cloneShipping($_POST['clone'])) {
         $cHinweis .= 'Versandart wurde erfolgreich dupliziert';
@@ -59,11 +59,11 @@ if (isset($_POST['clone']) && (int)$_POST['clone'] > 0 && validateToken()) {
 }
 
 if (isset($_GET['cISO'], $_GET['zuschlag'], $_GET['kVersandart']) &&
-    (int)$_GET['zuschlag'] === 1 && (int)$_GET['kVersandart'] > 0 && validateToken()) {
+    (int)$_GET['zuschlag'] === 1 && (int)$_GET['kVersandart'] > 0 && FormHelper::validateToken()) {
     $step = 'Zuschlagsliste';
 }
 
-if (isset($_GET['delzus']) && (int)$_GET['delzus'] > 0 && validateToken()) {
+if (isset($_GET['delzus']) && (int)$_GET['delzus'] > 0 && FormHelper::validateToken()) {
     $step = 'Zuschlagsliste';
     Shop::Container()->getDB()->queryPrepared(
         "DELETE tversandzuschlag, tversandzuschlagsprache
@@ -79,7 +79,7 @@ if (isset($_GET['delzus']) && (int)$_GET['delzus'] > 0 && validateToken()) {
     $cHinweis .= 'Zuschlagsliste erfolgreich gel&ouml;scht!';
 }
 // Zuschlagliste editieren
-if (RequestHelper::verifyGPCDataInt('editzus') > 0 && validateToken()) {
+if (RequestHelper::verifyGPCDataInt('editzus') > 0 && FormHelper::validateToken()) {
     $kVersandzuschlag = RequestHelper::verifyGPCDataInt('editzus');
     $cISO             = StringHandler::convertISO6392ISO(RequestHelper::verifyGPDataString('cISO'));
 
@@ -103,14 +103,14 @@ if (RequestHelper::verifyGPCDataInt('editzus') > 0 && validateToken()) {
     }
 }
 
-if (isset($_GET['delplz']) && (int)$_GET['delplz'] > 0 && validateToken()) {
+if (isset($_GET['delplz']) && (int)$_GET['delplz'] > 0 && FormHelper::validateToken()) {
     $step = 'Zuschlagsliste';
     Shop::Container()->getDB()->delete('tversandzuschlagplz', 'kVersandzuschlagPlz', (int)$_GET['delplz']);
     Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
     $cHinweis .= 'PLZ/PLZ-Bereich erfolgreich gel&ouml;scht.';
 }
 
-if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && validateToken()) {
+if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && FormHelper::validateToken()) {
     $step          = 'Zuschlagsliste';
     $oZipValidator = new ZipValidator($_POST['cISO']);
     $ZuschlagPLZ   = new stdClass();
@@ -210,7 +210,7 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
     }
 }
 
-if (isset($_POST['neuerZuschlag']) && (int)$_POST['neuerZuschlag'] === 1 && validateToken()) {
+if (isset($_POST['neuerZuschlag']) && (int)$_POST['neuerZuschlag'] === 1 && FormHelper::validateToken()) {
     $step     = 'Zuschlagsliste';
     $Zuschlag = new stdClass();
     if (RequestHelper::verifyGPCDataInt('kVersandzuschlag') > 0) {
@@ -261,7 +261,7 @@ if (isset($_POST['neuerZuschlag']) && (int)$_POST['neuerZuschlag'] === 1 && vali
     }
 }
 
-if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && validateToken()) {
+if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && FormHelper::validateToken()) {
     $Versandart                           = new stdClass();
     $Versandart->cName                    = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
     $Versandart->kVersandberechnung       = (int)$_POST['kVersandberechnung'];

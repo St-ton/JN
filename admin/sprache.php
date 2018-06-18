@@ -20,7 +20,7 @@ setzeSprache();
 $kSprache    = (int)$_SESSION['kSprache'];
 $cISOSprache = $_SESSION['cISOSprache'];
 
-if (validateToken() && RequestHelper::verifyGPDataString('importcsv') === 'langvars' && isset($_FILES['csvfile']['tmp_name'])) {
+if (FormHelper::validateToken() && RequestHelper::verifyGPDataString('importcsv') === 'langvars' && isset($_FILES['csvfile']['tmp_name'])) {
     $csvFilename = $_FILES['csvfile']['tmp_name'];
     $importType  = RequestHelper::verifyGPCDataInt('importType');
     $res         = Shop::Lang()->import($csvFilename, $cISOSprache, $importType);
@@ -54,7 +54,7 @@ foreach ($oSpracheAvailable_arr as $oSprache) {
     $oSprache->bImported = in_array($oSprache, $oSpracheInstalled_arr);
 }
 
-if (isset($_REQUEST['action']) && validateToken()) {
+if (isset($_REQUEST['action']) && FormHelper::validateToken()) {
     $action = $_REQUEST['action'];
 
     switch ($action) {

@@ -25,7 +25,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $cHinweis .= saveAdminSectionSettings(CONF_KUNDENWERBENKUNDEN, $_POST);
 }
 // KwK
-if (RequestHelper::verifyGPCDataInt('KwK') === 1 && validateToken()) {
+if (RequestHelper::verifyGPCDataInt('KwK') === 1 && FormHelper::validateToken()) {
     // Einladung vom Neukunden loeschen
     if (RequestHelper::verifyGPCDataInt('nichtreggt_loeschen') === 1) {
         $kKundenWerbenKunden_arr = $_POST['kKundenWerbenKunden'];

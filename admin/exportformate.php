@@ -14,11 +14,11 @@ $step                = 'uebersicht';
 $oSmartyError        = new stdClass();
 $oSmartyError->nCode = 0;
 $link                = null;
-if (isset($_GET['neuerExport']) && (int)$_GET['neuerExport'] === 1 && validateToken()) {
+if (isset($_GET['neuerExport']) && (int)$_GET['neuerExport'] === 1 && FormHelper::validateToken()) {
     $step = 'neuer Export';
 }
 // hacky
-if (isset($_GET['kExportformat']) && (int)$_GET['kExportformat'] > 0 && !isset($_GET['action']) && validateToken()) {
+if (isset($_GET['kExportformat']) && (int)$_GET['kExportformat'] > 0 && !isset($_GET['action']) && FormHelper::validateToken()) {
     $step                   = 'neuer Export';
     $_POST['kExportformat'] = (int)$_GET['kExportformat'];
 
@@ -31,7 +31,7 @@ if (isset($_GET['kExportformat']) && (int)$_GET['kExportformat'] > 0 && !isset($
         }
     }
 }
-if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && validateToken()) {
+if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && FormHelper::validateToken()) {
     $ef          = new Exportformat();
     $checkResult = $ef->check($_POST);
     if ($checkResult === true) {
@@ -96,7 +96,7 @@ if (isset($_POST['action']) && strlen($_POST['action']) > 0 && (int)$_POST['kExp
     $cAction       = $_GET['action'];
     $kExportformat = (int)$_GET['kExportformat'];
 }
-if ($cAction !== null && $kExportformat !== null && validateToken()) {
+if ($cAction !== null && $kExportformat !== null && FormHelper::validateToken()) {
     switch ($cAction) {
         case 'export':
             $bAsync               = isset($_GET['ajax']);

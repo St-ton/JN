@@ -20,7 +20,7 @@ $settingsIDs       = [427, 428, 431, 433, 434, 435, 430];
 if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
-if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && validateToken()) {
+if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && FormHelper::validateToken()) {
     //Formular wurde abgeschickt
     if (!isset($_POST['delete'])) {
         if (is_array($_POST['kTagAll']) && count($_POST['kTagAll']) > 0) {
@@ -173,7 +173,7 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && validateToken())
             $cFehler .= 'Bitte w&auml;hlen Sie mindestens einen Tag aus.<br />';
         }
     }
-} elseif (isset($_POST['tagging']) && (int)$_POST['tagging'] === 2 && validateToken()) { // Mappinglist
+} elseif (isset($_POST['tagging']) && (int)$_POST['tagging'] === 2 && FormHelper::validateToken()) { // Mappinglist
     if (isset($_POST['delete'])) {
         if (is_array($_POST['kTagMapping'])) {
             foreach ($_POST['kTagMapping'] as $kTagMapping) {

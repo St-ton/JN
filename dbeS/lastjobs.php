@@ -13,7 +13,7 @@ if (auth()) {
     $cError = '';
     // TMP Verzeichnis leeren
     if (!KEEP_SYNC_FILES) {
-        delDirRecursively(PFAD_ROOT . PFAD_DBES_TMP);
+        FileSystemHelper::delDirRecursively(PFAD_ROOT . PFAD_DBES_TMP);
     }
 
     LastJob::getInstance()->finishStdJobs();

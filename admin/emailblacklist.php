@@ -17,7 +17,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $cHinweis .= saveAdminSectionSettings(CONF_EMAILBLACKLIST, $_POST);
 }
 // Kundenfelder
-if (isset($_POST['emailblacklist']) && (int)$_POST['emailblacklist'] === 1 && validateToken()) {
+if (isset($_POST['emailblacklist']) && (int)$_POST['emailblacklist'] === 1 && FormHelper::validateToken()) {
     // Speichern
     $cEmail_arr = explode(';', $_POST['cEmail']);
 

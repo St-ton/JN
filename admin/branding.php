@@ -13,7 +13,7 @@ $step     = 'branding_uebersicht';
 
 if (RequestHelper::verifyGPCDataInt('branding') === 1) {
     $step = 'branding_detail';
-    if (isset($_POST['speicher_einstellung']) && (int)$_POST['speicher_einstellung'] === 1 && validateToken()) {
+    if (isset($_POST['speicher_einstellung']) && (int)$_POST['speicher_einstellung'] === 1 && FormHelper::validateToken()) {
         if (speicherEinstellung(RequestHelper::verifyGPCDataInt('kBranding'), $_POST, $_FILES)) {
             $cHinweis .= 'Ihre Einstellung wurde erfolgreich gespeichert.<br />';
         } else {

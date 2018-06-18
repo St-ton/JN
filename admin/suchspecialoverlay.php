@@ -17,7 +17,7 @@ setzeSprache();
 if (RequestHelper::verifyGPCDataInt('suchspecialoverlay') === 1) {
     $step = 'suchspecialoverlay_detail';
 
-    if (isset($_POST['speicher_einstellung']) && (int)$_POST['speicher_einstellung'] === 1 && validateToken()) {
+    if (isset($_POST['speicher_einstellung']) && (int)$_POST['speicher_einstellung'] === 1 && FormHelper::validateToken()) {
         if (speicherEinstellung(RequestHelper::verifyGPCDataInt('kSuchspecialOverlay'), $_POST, $_FILES)) {
             Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
             $cHinweis .= 'Ihre Einstellung wurde erfolgreich gespeichert.<br />';

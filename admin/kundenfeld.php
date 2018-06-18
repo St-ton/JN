@@ -25,7 +25,7 @@ if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
 // Einstellungen
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $cHinweis .= saveAdminSectionSettings(CONF_KUNDENFELD, $_POST);
-} elseif (isset($_POST['kundenfelder']) && (int)$_POST['kundenfelder'] === 1 && validateToken()) { // Kundenfelder
+} elseif (isset($_POST['kundenfelder']) && (int)$_POST['kundenfelder'] === 1 && FormHelper::validateToken()) { // Kundenfelder
     $success = true;
     if (isset($_POST['loeschen'])) {
         $kKundenfeld_arr = $_POST['kKundenfeld'];
@@ -42,7 +42,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
         } else {
             $cFehler .= "Fehler: Bitte w&auml;hlen Sie mindestens ein Kundenfeld aus.<br />";
         }
-    } elseif (isset($_POST['aktualisieren']) && validateToken()) { // Aktualisieren
+    } elseif (isset($_POST['aktualisieren']) && FormHelper::validateToken()) { // Aktualisieren
         // Kundenfelder auslesen und in Smarty assignen
         foreach ($customerFields->getCustomerFields() as $customerField) {
             $customerField->nSort = (int)$_POST['nSort_' . $customerField->kKundenfeld];

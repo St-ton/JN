@@ -110,7 +110,7 @@ $smarty->assign('cFehlerBillpay', $cFehler);
 
 $Conf = Shop::Container()->getDB()->selectAll('teinstellungenconf', ['cModulId', 'cConf'], ['za_billpay_jtl', 'Y'], '*', 'nSort');
 
-if (isset($_POST['einstellungen_bearbeiten']) && validateToken()) {
+if (isset($_POST['einstellungen_bearbeiten']) && FormHelper::validateToken()) {
     foreach ($Conf as $i => $oConfig) {
         unset($aktWert);
         $aktWert = new stdClass();

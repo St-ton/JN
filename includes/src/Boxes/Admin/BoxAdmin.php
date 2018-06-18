@@ -10,7 +10,6 @@ namespace Boxes\Admin;
 use Boxes\BoxType;
 use DB\DbInterface;
 use DB\ReturnType;
-use function Functional\group;
 use function Functional\map;
 use Services\JTL\BoxServiceInterface;
 

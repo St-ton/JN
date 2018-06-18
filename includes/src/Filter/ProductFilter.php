@@ -1856,7 +1856,7 @@ class ProductFilter
                 }
                 if (count($orFilters) > 0) {
                     if ($type === 'mf') {
-                        $groupedOrFilters = group($orFilters, function (FilterInterface $f) {
+                        $groupedOrFilters = group($orFilters, function (ItemAttribute $f) {
                             return $f->getAttributeID();
                         });
                     } else {

@@ -133,16 +133,15 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         }
 
         /**
-         * @param object        $objFrom
-         * @param stdClass|null $objTo
-         * @return null|stdClass
+         * @param object      $objFrom
+         * @param object|null $objTo
+         * @return null|object
          */
         private static function copyMembers($objFrom, &$objTo = null)
         {
             if (!is_object($objTo)) {
                 $objTo = new stdClass();
             }
-
             $cMember_arr = array_keys(get_object_vars($objFrom));
             if (is_array($cMember_arr) && count($cMember_arr) > 0) {
                 foreach ($cMember_arr as $cMember) {

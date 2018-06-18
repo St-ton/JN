@@ -483,7 +483,7 @@ class Bestellung
             if ($disableFactor === true) {
                 $this->Waehrung->fFaktor = 1;
             }
-            $this->Steuerpositionen = TaxHelper::getOldTaxPositions($this->Positionen, $nNettoPreis, $htmlWaehrung, $this->Waehrung);
+            $this->Steuerpositionen = TaxHelper::getOldTaxPositions($this->Positionen, $nNettoPreis, (bool)$htmlWaehrung, $this->Waehrung);
             if ($this->kZahlungsart > 0) {
                 require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
                 $this->Zahlungsart = Shop::Container()->getDB()->select('tzahlungsart', 'kZahlungsart', (int)$this->kZahlungsart);

@@ -119,9 +119,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         }
 
         /**
-         * @param object        $objFrom
-         * @param null|stdClass $objTo
-         * @return null|stdClass
+         * @param object      $objFrom
+         * @param null|object $objTo
+         * @return null|object
          */
         private static function copyMembers($objFrom, &$objTo = null)
         {

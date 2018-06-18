@@ -116,7 +116,7 @@ class MediaImageRequest
     /**
      * @return MediaImageSize
      */
-    public function getSize()
+    public function getSize(): MediaImageSize
     {
         return new MediaImageSize($this->size);
     }
@@ -132,21 +132,21 @@ class MediaImageRequest
     /**
      * @return int
      */
-    public function getNumber()
+    public function getNumber(): int
     {
-        return max((int) $this->number, 1);
+        return max((int)$this->number, 1);
     }
 
     /**
      * @return int
      */
-    public function getRatio()
+    public function getRatio(): int
     {
-        return max((int) $this->ratio, 1);
+        return max((int)$this->ratio, 1);
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getPath()
     {
@@ -158,7 +158,7 @@ class MediaImageRequest
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getExt()
     {
@@ -172,10 +172,9 @@ class MediaImageRequest
 
     /**
      * @param bool $absolute
-     *
      * @return null|string
      */
-    public function getRaw($absolute = false)
+    public function getRaw(bool $absolute = false)
     {
         $path = $this->getPath();
         $path = empty($path) ? null : sprintf('%s%s', self::getStoragePath(), $path);
@@ -186,9 +185,8 @@ class MediaImageRequest
     }
 
     /**
-     * @param null|MediaImageSize $size
-     * @param bool                $absolute
-     *
+     * @param string|MediaImageSize $size
+     * @param bool                  $absolute
      * @return string
      */
     public function getThumb($size = null, $absolute = false)
@@ -202,17 +200,16 @@ class MediaImageRequest
 
         $thumb = sprintf('%s/%d/%s/%s%s.%s', self::getCachePath($this->getType()), $this->getId(), $size, $this->getName(), $number, $ext);
 
-        return ($absolute === true)
+        return $absolute === true
             ? PFAD_ROOT . $thumb
             : $thumb;
     }
 
     /**
-     * @param null|string|MediaImageSize $size
-     *
+     * @param string|MediaImageSize $size
      * @return string
      */
-    public function getFallbackThumb($size = null)
+    public function getFallbackThumb($size = null): string
     {
         $size = $size ?? $this->getSize();
 
@@ -221,10 +218,9 @@ class MediaImageRequest
 
     /**
      * @param null|string $size
-     *
      * @return string
      */
-    public function getThumbUrl($size = null)
+    public function getThumbUrl($size = null): string
     {
         return Shop::getImageBaseURL() . $this->getThumb($size);
     }
@@ -275,7 +271,7 @@ class MediaImageRequest
     /**
      * @return string
      */
-    public static function getStoragePath()
+    public static function getStoragePath(): string
     {
         return PFAD_MEDIA_IMAGE_STORAGE;
     }
@@ -285,7 +281,7 @@ class MediaImageRequest
      *
      * @return string
      */
-    public static function getCachePath($type)
+    public static function getCachePath(string $type): string
     {
         return PFAD_MEDIA_IMAGE . $type;
     }

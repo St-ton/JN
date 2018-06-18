@@ -65,6 +65,7 @@ class Updater
      * Has pending updates to execute
      *
      * @return bool
+     * @throws Exception
      */
     public function hasPendingUpdates(): bool
     {

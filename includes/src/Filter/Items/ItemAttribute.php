@@ -15,7 +15,6 @@ use Filter\Type;
 use Filter\ProductFilter;
 use Filter\States\BaseAttribute;
 use function Functional\every;
-use Shop;
 
 /**
  * Class ItemAttribute
@@ -372,7 +371,8 @@ class ItemAttribute extends BaseAttribute
     }
 
     /**
-     * @inheritdoc
+     * @param null|array $data
+     * @return FilterOption[]
      */
     public function getOptions($data = null): array
     {

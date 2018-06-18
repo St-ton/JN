@@ -6,8 +6,6 @@
 
 namespace Services;
 
-use Exceptions\ServiceNotFoundException;
-
 /**
  * Interface ContainerInterface
  */

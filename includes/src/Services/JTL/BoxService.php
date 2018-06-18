@@ -6,7 +6,6 @@
 
 namespace Services\JTL;
 
-use Boxes\BoxFactory;
 use Boxes\BoxFactoryInterface;
 use Boxes\BoxInterface;
 use Boxes\BoxPlugin;

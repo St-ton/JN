@@ -11,7 +11,6 @@ use function Functional\group;
 use function Functional\map;
 use function Functional\reduce_left;
 use function Functional\reindex;
-use JTL\Navigation;
 use Tightenco\Collect\Support\Collection;
 
 /**

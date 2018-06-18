@@ -871,7 +871,7 @@ class IOMethods
 
             // Alle EigenschaftWerte vorhanden, Kind-Artikel ermitteln
             if (count($kGesetzteEigeschaftWert_arr) >= $oArtikel->nVariationOhneFreifeldAnzahl) {
-                $oArtikelTMP = getArticleByVariations($kVaterArtikel, $kGesetzteEigeschaftWert_arr);
+                $oArtikelTMP = $this->getArticleByVariations($kVaterArtikel, $kGesetzteEigeschaftWert_arr);
 
                 if ($oArtikelTMP !== null && $kArtikelKind !== (int)$oArtikelTMP->kArtikel) {
                     $oGesetzteEigeschaftWerte_arr = [];

@@ -377,7 +377,7 @@ class WarenkorbHelper
         }
 
         if (!$isConfigArticle) {
-            return fuegeEinInWarenkorb($articleID, $count, $attributes);
+            return WarenkorbHelper::addProductIDToCart($articleID, $count, $attributes);
         }
         $bValid                  = true;
         $aError_arr              = [];
@@ -480,7 +480,7 @@ class WarenkorbHelper
             // Eindeutige ID
             $cUnique = uniqid('', true);
             // Hauptartikel in den WK legen
-            fuegeEinInWarenkorb($articleID, $count, $attributes, 0, $cUnique);
+            self::addProductIDToCart($articleID, $count, $attributes, 0, $cUnique);
             // Konfigartikel in den WK legen
             foreach ($oKonfigitem_arr as $oKonfigitem) {
                 $oKonfigitem->isKonfigItem = true;
@@ -1313,7 +1313,7 @@ class WarenkorbHelper
         foreach ($attributes as $i => $oAlleEigenschaftPost) {
             if (!$_SESSION['variBoxAnzahl_arr'][$i]->bError) {
                 //#8224, #7482 -> do not call setzePositionsPreise() in loop @ Wanrekob::fuegeEin()
-                fuegeEinInWarenkorb(
+                self::addProductIDToCart(
                     $oAlleEigenschaftPost->kArtikel,
                     (float)$variBoxAnzahl_arr[$i],
                     $oAlleEigenschaftPost->oEigenschaft_arr,

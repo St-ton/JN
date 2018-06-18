@@ -28,11 +28,11 @@ if (isset($_GET['vlph']) && (int)$_GET['vlph'] === 1) {
     }
 } else {
     $oVergleichsliste = new Vergleichsliste();
-    $oMerkVaria_arr   = baueMerkmalundVariation($oVergleichsliste);
+    $oMerkVaria_arr   = Vergleichsliste::buildAttributeAndVariation($oVergleichsliste);
     // Füge den Vergleich für Statistikzwecke in die DB ein
-    setzeVergleich($oVergleichsliste);
+    Vergleichsliste::setComparison($oVergleichsliste);
     for ($i = 0; $i < 8; ++$i) {
-        $cElement = gibMaxPrioSpalteV($cExclude, $conf);
+        $cElement = Vergleichsliste::gibMaxPrioSpalteV($cExclude, $conf);
         if (strlen($cElement) > 1) {
             $cExclude[] = $cElement;
         }

@@ -28,22 +28,22 @@ function gibStartBoxen()
         $menge        = null;
         switch ($box->name) {
             case 'TopAngebot':
-                $menge = gibTopAngebote($limit_nr, $kKundengruppe);
+                $menge = SearchSpecialHelper::getTopOffers($limit_nr, $kKundengruppe);
                 $cURL  = SEARCHSPECIALS_TOPOFFERS;
                 break;
 
             case 'Bestseller':
-                $menge = gibBestseller($limit_nr, $kKundengruppe);
+                $menge = SearchSpecialHelper::getBestsellers($limit_nr, $kKundengruppe);
                 $cURL  = SEARCHSPECIALS_BESTSELLER;
                 break;
 
             case 'Sonderangebote':
-                $menge = gibSonderangebote($limit_nr, $kKundengruppe);
+                $menge = SearchSpecialHelper::getSpecialOffers($limit_nr, $kKundengruppe);
                 $cURL  = SEARCHSPECIALS_SPECIALOFFERS;
                 break;
 
             case 'NeuImSortiment':
-                $menge = gibNeuImSortiment($limit_nr, $kKundengruppe);
+                $menge = SearchSpecialHelper::getNewProducts($limit_nr, $kKundengruppe);
                 $cURL  = SEARCHSPECIALS_NEWPRODUCTS;
                 break;
         }

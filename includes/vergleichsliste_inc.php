@@ -7,116 +7,48 @@
 /**
  * @param Vergleichsliste $oVergleichsliste
  * @return array
+ * @deprecated since 5.0.0
  */
 function baueMerkmalundVariation($oVergleichsliste)
 {
-    $Tmp_arr          = [];
-    $oMerkmale_arr    = [];
-    $oVariationen_arr = [];
-    // Falls es min. einen Artikel in der Vergleichsliste gibt ...
-    if (isset($oVergleichsliste->oArtikel_arr) && count($oVergleichsliste->oArtikel_arr) > 0) {
-        // Alle Artikel in der Vergleichsliste durchgehen
-        foreach ($oVergleichsliste->oArtikel_arr as $oArtikel) {
-            // Falls ein Artikel min. ein Merkmal besitzt
-            if (isset($oArtikel->oMerkmale_arr) && count($oArtikel->oMerkmale_arr) > 0) {
-                // Falls das Merkmal Array nicht leer ist
-                if (count($oMerkmale_arr) > 0) {
-                    foreach ($oArtikel->oMerkmale_arr as $oMerkmale) {
-                        if (!istMerkmalEnthalten($oMerkmale_arr, $oMerkmale->kMerkmal)) {
-                            $oMerkmale_arr[] = $oMerkmale;
-                        }
-                    }
-                } else {
-                    $oMerkmale_arr = $oArtikel->oMerkmale_arr;
-                }
-            }
-            // Falls ein Artikel min. eine Variation enthält
-            if (isset($oArtikel->Variationen) && count($oArtikel->Variationen) > 0) {
-                if (count($oVariationen_arr) > 0) {
-                    foreach ($oArtikel->Variationen as $oVariationen) {
-                        if (!istVariationEnthalten($oVariationen_arr, $oVariationen->cName)) {
-                            $oVariationen_arr[] = $oVariationen;
-                        }
-                    }
-                } else {
-                    $oVariationen_arr = $oArtikel->Variationen;
-                }
-            }
-        }
-    }
-
-    $Tmp_arr[0] = $oMerkmale_arr;
-    $Tmp_arr[1] = $oVariationen_arr;
-
-    return $Tmp_arr;
+    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+    return Vergleichsliste::buildAttributeAndVariation($oVergleichsliste);
 }
 
 /**
  * @param array $oMerkmale_arr
  * @param int   $kMerkmal
  * @return bool
+ * @deprecated since 5.0.0
  */
 function istMerkmalEnthalten($oMerkmale_arr, $kMerkmal)
 {
-    return \Functional\some($oMerkmale_arr, function ($e) use ($kMerkmal) {
-        return (int)$e->kMerkmal === $kMerkmal;
-    });
+    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+    return Vergleichsliste::containsAttribute($oMerkmale_arr, $kMerkmal);
 }
 
 /**
  * @param array  $oVariationen_arr
  * @param string $cName
  * @return bool
+ * @deprecated since 5.0.0
  */
 function istVariationEnthalten($oVariationen_arr, $cName)
 {
-    return \Functional\some($oVariationen_arr, function ($e) use ($cName) {
-        return $e->cName === $cName;
-    });
+    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+    return Vergleichsliste::containsVariation($oVariationen_arr, $cName);
 }
 
 /**
  * @param array $cExclude
  * @param array $config
  * @return string
+ * @deprecated since 5.0.0
  */
 function gibMaxPrioSpalteV($cExclude, $config)
 {
-    $nMax     = 0;
-    $cElement = '';
-    if ($config['vergleichsliste']['vergleichsliste_artikelnummer'] > $nMax && !in_array('cArtNr', $cExclude, true)) {
-        $nMax     = $config['vergleichsliste']['vergleichsliste_artikelnummer'];
-        $cElement = 'cArtNr';
-    }
-    if ($config['vergleichsliste']['vergleichsliste_hersteller'] > $nMax && !in_array('cHersteller', $cExclude, true)) {
-        $nMax     = $config['vergleichsliste']['vergleichsliste_hersteller'];
-        $cElement = 'cHersteller';
-    }
-    if ($config['vergleichsliste']['vergleichsliste_beschreibung'] > $nMax && !in_array('cBeschreibung', $cExclude, true)) {
-        $nMax     = $config['vergleichsliste']['vergleichsliste_beschreibung'];
-        $cElement = 'cBeschreibung';
-    }
-    if ($config['vergleichsliste']['vergleichsliste_kurzbeschreibung'] > $nMax && !in_array('cKurzBeschreibung', $cExclude, true)) {
-        $nMax     = $config['vergleichsliste']['vergleichsliste_kurzbeschreibung'];
-        $cElement = 'cKurzBeschreibung';
-    }
-    if ($config['vergleichsliste']['vergleichsliste_artikelgewicht'] > $nMax && !in_array('fArtikelgewicht', $cExclude, true)) {
-        $nMax     = $config['vergleichsliste']['vergleichsliste_artikelgewicht'];
-        $cElement = 'fArtikelgewicht';
-    }
-    if ($config['vergleichsliste']['vergleichsliste_versandgewicht'] > $nMax && !in_array('fGewicht', $cExclude, true)) {
-        $nMax     = $config['vergleichsliste']['vergleichsliste_versandgewicht'];
-        $cElement = 'fGewicht';
-    }
-    if ($config['vergleichsliste']['vergleichsliste_merkmale'] > $nMax && !in_array('Merkmale', $cExclude, true)) {
-        $nMax     = $config['vergleichsliste']['vergleichsliste_merkmale'];
-        $cElement = 'Merkmale';
-    }
-    if ($config['vergleichsliste']['vergleichsliste_variationen'] > $nMax && !in_array('Variationen', $cExclude, true)) {
-        $cElement = 'Variationen';
-    }
-
-    return $cElement;
+    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+    return Vergleichsliste::gibMaxPrioSpalteV($cExclude, $config);
 }
 
 /**
@@ -124,35 +56,10 @@ function gibMaxPrioSpalteV($cExclude, $config)
  * Es sind allerdings nur 3 Einträge pro IP und Tag möglich
  *
  * @param Vergleichsliste $oVergleichsliste
+ * @deprecated since 5.0.0
  */
 function setzeVergleich($oVergleichsliste)
 {
-    if (isset($oVergleichsliste->oArtikel_arr)
-        && is_array($oVergleichsliste->oArtikel_arr)
-        && count($oVergleichsliste->oArtikel_arr) > 0
-    ) {
-        $nVergleiche = Shop::Container()->getDB()->queryPrepared(
-            'SELECT count(kVergleichsliste) AS nVergleiche
-                FROM tvergleichsliste
-                WHERE cIP = :ip
-                    AND dDate > DATE_SUB(now(),INTERVAL 1 DAY)',
-            ['ip' => RequestHelper::getIP()],
-            \DB\ReturnType::SINGLE_OBJECT
-        );
-
-        if ($nVergleiche->nVergleiche < 3) {
-            $oVergleichslisteTable        = new stdClass();
-            $oVergleichslisteTable->cIP   = RequestHelper::getIP();
-            $oVergleichslisteTable->dDate = date('Y-m-d H:i:s');
-            $kVergleichsliste = Shop::Container()->getDB()->insert('tvergleichsliste', $oVergleichslisteTable);
-            foreach ($oVergleichsliste->oArtikel_arr as $oArtikel) {
-                $oVergleichslistePosTable                   = new stdClass();
-                $oVergleichslistePosTable->kVergleichsliste = $kVergleichsliste;
-                $oVergleichslistePosTable->kArtikel         = $oArtikel->kArtikel;
-                $oVergleichslistePosTable->cArtikelName     = $oArtikel->cName;
-
-                Shop::Container()->getDB()->insert('tvergleichslistepos', $oVergleichslistePosTable);
-            }
-        }
-    }
+    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+    Vergleichsliste::setComparison($oVergleichsliste);
 }

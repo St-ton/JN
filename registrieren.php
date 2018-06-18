@@ -51,7 +51,7 @@ if ($step === 'formular') {
 }
 if (isset($_FILES['vcard'])
     && $Einstellungen['kunden']['kundenregistrierung_vcardupload'] === 'Y'
-    && formHelper::validateToken()
+    && FormHelper::validateToken()
 ) {
     gibKundeFromVCard($_FILES['vcard']['tmp_name']);
 }

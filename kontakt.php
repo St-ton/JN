@@ -20,11 +20,11 @@ $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
 $cCanonicalURL          = '';
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-if (pruefeBetreffVorhanden()) {
+if (FormHelper::checkSubject()) {
     $step            = 'formular';
     $fehlendeAngaben = [];
     if (isset($_POST['kontakt']) && (int)$_POST['kontakt'] === 1) {
-        $fehlendeAngaben = gibFehlendeEingabenKontaktformular();
+        $fehlendeAngaben = FormHelper::getMissingContactFormData();
         $kKundengruppe   = Session::CustomerGroup()->getID();
         // CheckBox Plausi
         $oCheckBox       = new CheckBox();
@@ -38,8 +38,8 @@ if (pruefeBetreffVorhanden()) {
 
         if ($nReturnValue) {
             $step = 'floodschutz';
-            if (!floodSchutz($Einstellungen['kontakt']['kontakt_sperre_minuten'])) {
-                $oNachricht = baueKontaktFormularVorgaben();
+            if (!FormHelper::checkFloodProtection($Einstellungen['kontakt']['kontakt_sperre_minuten'])) {
+                $oNachricht = FormHelper::baueKontaktFormularVorgaben();
                 // CheckBox Spezialfunktion ausfuehren
                 $oCheckBox->triggerSpecialFunction(
                     CHECKBOX_ORT_KONTAKT,
@@ -48,7 +48,7 @@ if (pruefeBetreffVorhanden()) {
                     $_POST,
                     ['oKunde' => $oNachricht, 'oNachricht' => $oNachricht]
                 )->checkLogging(CHECKBOX_ORT_KONTAKT, $kKundengruppe, $_POST, true);
-                bearbeiteNachricht();
+                FormHelper::editMessage();
                 $step = 'nachricht versendet';
             }
         }
@@ -69,7 +69,8 @@ if (pruefeBetreffVorhanden()) {
             WHERE (cKundengruppen = 0 
             OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
                 . "', REPLACE(cKundengruppen, ';', ',')) > 0) 
-            ORDER BY nSort", 2
+            ORDER BY nSort",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($subjects as $subject) {
         if ($subject->kKontaktBetreff > 0) {
@@ -83,7 +84,7 @@ if (pruefeBetreffVorhanden()) {
             $subject->AngezeigterName = $localization->cName;
         }
     }
-    $Vorgaben = baueKontaktFormularVorgaben();
+    $Vorgaben = FormHelper::baueKontaktFormularVorgaben();
     // Canonical
     $cCanonicalURL = $linkHelper->getStaticRoute('kontakt.php');
     // Metaangaben

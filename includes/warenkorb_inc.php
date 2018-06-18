@@ -326,7 +326,7 @@ function checkeSchnellkauf()
         }
         if (isset($artikel->kArtikel) && $artikel->kArtikel > 0) {
             $oArtikel = (new Artikel())->fuelleArtikel($artikel->kArtikel, Artikel::getDefaultOptions());
-            if ($oArtikel !== null && $oArtikel->kArtikel > 0 && fuegeEinInWarenkorb(
+            if ($oArtikel !== null && $oArtikel->kArtikel > 0 && WarenkorbHelper::addProductIDToCart(
                 $artikel->kArtikel,
                 1,
                 ArtikelHelper::getSelectedPropertiesForArticle($artikel->kArtikel)

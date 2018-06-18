@@ -368,7 +368,7 @@ function fuehreLoginAus($userLogin, $passLogin)
                 $session = \Session\Session::getInstance();
                 $session->setCustomer($Kunde);
                 // Setzt aktuelle Wunschliste (falls vorhanden) vom Kunden in die Session
-                setzeWunschlisteInSession();
+                Wunschliste::persistInSession();
                 // Redirect URL
                 $cURL = StringHandler::filterXSS(RequestHelper::verifyGPDataString('cURL'));
                 // Lade WarenkorbPers
@@ -423,7 +423,7 @@ function fuehreLoginAus($userLogin, $passLogin)
                                     );
                                 //Artikel in den Warenkorb einfügen
                                 } else {
-                                    fuegeEinInWarenkorb(
+                                    WarenkorbHelper::addProductIDToCart(
                                         $oWarenkorbPersPos->kArtikel,
                                         $oWarenkorbPersPos->fAnzahl,
                                         $oWarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr,

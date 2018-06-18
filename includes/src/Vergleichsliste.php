@@ -111,4 +111,165 @@ class Vergleichsliste
             return (int)$e->kArtikel === $kArtikel;
         });
     }
+
+    /**
+     * @param Vergleichsliste $compareList
+     * @return array
+     * @former baueMerkmalundVariation()
+     * @since 5.0.0
+     */
+    public static function buildAttributeAndVariation($compareList)
+    {
+        $Tmp_arr          = [];
+        $oMerkmale_arr    = [];
+        $oVariationen_arr = [];
+        // Falls es min. einen Artikel in der Vergleichsliste gibt ...
+        if (isset($compareList->oArtikel_arr) && count($compareList->oArtikel_arr) > 0) {
+            // Alle Artikel in der Vergleichsliste durchgehen
+            foreach ($compareList->oArtikel_arr as $oArtikel) {
+                // Falls ein Artikel min. ein Merkmal besitzt
+                if (isset($oArtikel->oMerkmale_arr) && count($oArtikel->oMerkmale_arr) > 0) {
+                    // Falls das Merkmal Array nicht leer ist
+                    if (count($oMerkmale_arr) > 0) {
+                        foreach ($oArtikel->oMerkmale_arr as $oMerkmale) {
+                            if (!self::containsAttribute($oMerkmale_arr, $oMerkmale->kMerkmal)) {
+                                $oMerkmale_arr[] = $oMerkmale;
+                            }
+                        }
+                    } else {
+                        $oMerkmale_arr = $oArtikel->oMerkmale_arr;
+                    }
+                }
+                // Falls ein Artikel min. eine Variation enthält
+                if (isset($oArtikel->Variationen) && count($oArtikel->Variationen) > 0) {
+                    if (count($oVariationen_arr) > 0) {
+                        foreach ($oArtikel->Variationen as $oVariationen) {
+                            if (!self::containsVariation($oVariationen_arr, $oVariationen->cName)) {
+                                $oVariationen_arr[] = $oVariationen;
+                            }
+                        }
+                    } else {
+                        $oVariationen_arr = $oArtikel->Variationen;
+                    }
+                }
+            }
+        }
+
+        $Tmp_arr[0] = $oMerkmale_arr;
+        $Tmp_arr[1] = $oVariationen_arr;
+
+        return $Tmp_arr;
+    }
+
+    /**
+     * @param array $oMerkmale_arr
+     * @param int   $kMerkmal
+     * @return bool
+     * @former istMerkmalEnthalten()
+     * @since 5.0.0
+     */
+    public static function containsAttribute(array $oMerkmale_arr, int $kMerkmal): bool
+    {
+        return \Functional\some($oMerkmale_arr, function ($e) use ($kMerkmal) {
+            return (int)$e->kMerkmal === $kMerkmal;
+        });
+    }
+
+    /**
+     * @param array  $oVariationen_arr
+     * @param string $cName
+     * @return bool
+     * @former istVariationEnthalten()
+     * @since 5.0.0
+     */
+    public static function containsVariation(array $oVariationen_arr, string $cName): bool
+    {
+        return \Functional\some($oVariationen_arr, function ($e) use ($cName) {
+            return $e->cName === $cName;
+        });
+    }
+
+    /**
+     * @param array $exclude
+     * @param array $config
+     * @return string
+     * @since 5.0.0
+     */
+    public static function gibMaxPrioSpalteV($exclude, $config)
+    {
+        $nMax     = 0;
+        $cElement = '';
+        $conf     = $config['vergleichsliste'];
+        if ($conf['vergleichsliste_artikelnummer'] > $nMax && !in_array('cArtNr', $exclude, true)) {
+            $nMax     = $conf['vergleichsliste_artikelnummer'];
+            $cElement = 'cArtNr';
+        }
+        if ($conf['vergleichsliste_hersteller'] > $nMax && !in_array('cHersteller', $exclude, true)) {
+            $nMax     = $conf['vergleichsliste_hersteller'];
+            $cElement = 'cHersteller';
+        }
+        if ($conf['vergleichsliste_beschreibung'] > $nMax && !in_array('cBeschreibung', $exclude, true)) {
+            $nMax     = $conf['vergleichsliste_beschreibung'];
+            $cElement = 'cBeschreibung';
+        }
+        if ($conf['vergleichsliste_kurzbeschreibung'] > $nMax && !in_array('cKurzBeschreibung', $exclude, true)) {
+            $nMax     = $conf['vergleichsliste_kurzbeschreibung'];
+            $cElement = 'cKurzBeschreibung';
+        }
+        if ($conf['vergleichsliste_artikelgewicht'] > $nMax && !in_array('fArtikelgewicht', $exclude, true)) {
+            $nMax     = $conf['vergleichsliste_artikelgewicht'];
+            $cElement = 'fArtikelgewicht';
+        }
+        if ($conf['vergleichsliste_versandgewicht'] > $nMax && !in_array('fGewicht', $exclude, true)) {
+            $nMax     = $conf['vergleichsliste_versandgewicht'];
+            $cElement = 'fGewicht';
+        }
+        if ($conf['vergleichsliste_merkmale'] > $nMax && !in_array('Merkmale', $exclude, true)) {
+            $nMax     = $conf['vergleichsliste_merkmale'];
+            $cElement = 'Merkmale';
+        }
+        if ($conf['vergleichsliste_variationen'] > $nMax && !in_array('Variationen', $exclude, true)) {
+            $cElement = 'Variationen';
+        }
+
+        return $cElement;
+    }
+
+    /**
+     * Fügt nach jedem Preisvergleich eine Statistik in die Datenbank.
+     * Es sind allerdings nur 3 Einträge pro IP und Tag möglich
+     *
+     * @param Vergleichsliste $compareList
+     */
+    public static function setComparison($compareList)
+    {
+        if (isset($compareList->oArtikel_arr)
+            && is_array($compareList->oArtikel_arr)
+            && count($compareList->oArtikel_arr) > 0
+        ) {
+            $nVergleiche = Shop::Container()->getDB()->queryPrepared(
+                'SELECT count(kVergleichsliste) AS nVergleiche
+                    FROM tvergleichsliste
+                    WHERE cIP = :ip
+                        AND dDate > DATE_SUB(now(),INTERVAL 1 DAY)',
+                ['ip' => RequestHelper::getIP()],
+                \DB\ReturnType::SINGLE_OBJECT
+            );
+
+            if ($nVergleiche->nVergleiche < 3) {
+                $compareListTable        = new stdClass();
+                $compareListTable->cIP   = RequestHelper::getIP();
+                $compareListTable->dDate = date('Y-m-d H:i:s');
+                $kVergleichsliste = Shop::Container()->getDB()->insert('tvergleichsliste', $compareListTable);
+                foreach ($compareList->oArtikel_arr as $oArtikel) {
+                    $compareListPosTable                   = new stdClass();
+                    $compareListPosTable->kVergleichsliste = $kVergleichsliste;
+                    $compareListPosTable->kArtikel         = $oArtikel->kArtikel;
+                    $compareListPosTable->cArtikelName     = $oArtikel->cName;
+
+                    Shop::Container()->getDB()->insert('tvergleichslistepos', $compareListPosTable);
+                }
+            }
+        }
+    }
 }

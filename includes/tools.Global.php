@@ -15,7 +15,6 @@
 function getCurrencyConversion($fPreisNetto, $fPreisBrutto, $cClass = '', bool $bForceSteuer = true)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Currency::getCurrencyConversion() instead', E_USER_DEPRECATED);
-
     return Currency::getCurrencyConversion($fPreisNetto, $fPreisBrutto, $cClass, $bForceSteuer);
 }
 
@@ -27,7 +26,6 @@ function getCurrencyConversion($fPreisNetto, $fPreisBrutto, $cClass = '', bool $
 function checkeTel($data)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use StringHandler::checkPhoneNumber instead', E_USER_DEPRECATED);
-
     return StringHandler::checkPhoneNumber($data);
 }
 
@@ -39,7 +37,6 @@ function checkeTel($data)
 function checkeDatum($data)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use StringHandler::checkDate instead', E_USER_DEPRECATED);
-
     return StringHandler::checkDate($data);
 }
 
@@ -76,7 +73,6 @@ function cryptPasswort($cPasswort, $cHashPasswort = null)
 function gibUID(int $nAnzahlStellen = 40, string $cString = '')
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-
     $cUID            = '';
     $cSalt           = '';
     $cSaltBuchstaben = 'aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ0123456789';
@@ -122,7 +118,6 @@ function gibUID(int $nAnzahlStellen = 40, string $cString = '')
 function optionaleRundung($gesamtsumme)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use WarenkorbHelper::roundOptional() instead', E_USER_DEPRECATED);
-
     return WarenkorbHelper::roundOptional($gesamtsumme);
 }
 
@@ -133,7 +128,6 @@ function optionaleRundung($gesamtsumme)
 function gibSeitenTyp()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-
     return Shop::getPageType();
 }
 
@@ -146,7 +140,6 @@ function gibSeitenTyp()
 function filterXSS($cString, $nSuche = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-
     return StringHandler::filterXSS($cString, $nSuche);
 }
 
@@ -158,7 +151,6 @@ function filterXSS($cString, $nSuche = 0)
 function gibShopURL($bForceSSL = false)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-
     return Shop::getURL($bForceSSL);
 }
 
@@ -192,7 +184,6 @@ function writeLog($logfile, $entry, $level)
 function pruefeHttps()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-
     return false;
 }
 
@@ -201,8 +192,7 @@ function pruefeHttps()
  */
 function loeseHttps()
 {
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-}
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);}
 
 /**
  * @return array
@@ -211,7 +201,6 @@ function loeseHttps()
 function holePreisanzeigeEinstellungen()
 {
     trigger_error(__FUNCTION__ . ' is deprecated and does not return correct values anymore.', E_USER_DEPRECATED);
-
     return [];
 }
 
@@ -235,7 +224,6 @@ function checkeWarenkorbEingang()
 function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $precision = 2)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-
     return WarenkorbHelper::addToCartCheck($Artikel, $anzahl, $oEigenschaftwerte_arr, $precision);
 }
 
@@ -251,7 +239,6 @@ function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $p
 function gibGuenstigsteVersandart($lieferland, $versandklassen, $kKundengruppe, $oArtikel, $checkProductDepedency = true)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-
     return VersandartHelper::getFavourableShippingMethod($lieferland, $versandklassen, $kKundengruppe, $oArtikel, $checkProductDepedency);
 }
 
@@ -339,7 +326,6 @@ function sortiereFilter($oFilter_arr, $cKey)
 function holeGlobaleMetaAngaben()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-
     return \Filter\Metadata::getGlobalMetaData();
 }
 
@@ -350,7 +336,6 @@ function holeGlobaleMetaAngaben()
 function holeExcludedKeywords()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-
     return \Filter\Metadata::getExcludes();
 }
 
@@ -555,7 +540,6 @@ function mappeSeitentyp(int $nSeitentyp)
 function getSytemlogFlag($cache = true)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-
     return Jtllog::getSytemlogFlag($cache);
 }
 
@@ -592,7 +576,6 @@ function baueUnterkategorieListeHTML($AktuelleKategorie)
 function gibKategoriepfad($Kategorie, $kKundengruppe, $kSprache, $bString = true)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-
     return KategorieHelper::getInstance($kSprache, $kKundengruppe)->getPath($Kategorie, $bString);
 }
 
@@ -603,7 +586,6 @@ function gibKategoriepfad($Kategorie, $kKundengruppe, $kSprache, $bString = true
 function gibLagerfilter()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-
     return Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
 }
 
@@ -615,7 +597,6 @@ function gibLagerfilter()
 function pruefeVariBoxAnzahl($variBoxAnzahl_arr = [])
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-
     return WarenkorbHelper::checkVariboxAmount($variBoxAnzahl_arr);
 }
 
@@ -703,7 +684,6 @@ function gibAlleKategorienNoHTML($nKategorieBox = 0)
 function pruefeWarenkorbStueckliste($oArtikel, $fAnzahl)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use WarenkorbHelper::checkCartPartComponent() instead.', E_USER_DEPRECATED);
-
     return WarenkorbHelper::checkCartPartComponent($oArtikel, $fAnzahl);
 }
 
@@ -727,7 +707,6 @@ function pruefeKampagnenParameter()
 function setzeKampagnenVorgang(int $kKampagneDef, int $kKey, $fWert, $cCustomData = null)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Kampagne::setCampaignAction() instead.', E_USER_DEPRECATED);
-
     return Kampagne::setCampaignAction($kKampagneDef, $kKey, $fWert, $cCustomData);
 }
 
@@ -741,7 +720,6 @@ function setzeKampagnenVorgang(int $kKampagneDef, int $kKey, $fWert, $cCustomDat
 function mappeKundenanrede($cAnrede, int $kSprache, int $kKunde = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Kunde::mapSalutation() instead.', E_USER_DEPRECATED);
-
     return Kunde::mapSalutation($cAnrede, $kSprache, $kKunde);
 }
 
@@ -755,7 +733,6 @@ function mappeKundenanrede($cAnrede, int $kSprache, int $kKunde = 0)
 function aktiviereZahlungsart($oZahlungsart)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use ZahlungsartHelper::activatePaymentMethod instead.', E_USER_DEPRECATED);
-
     return ZahlungsartHelper::activatePaymentMethod($oZahlungsart);
 }
 
@@ -765,7 +742,6 @@ function aktiviereZahlungsart($oZahlungsart)
 function pruefeZahlungsartNutzbarkeit()
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use ZahlungsartHelper::checkPaymentMethodAvailability instead.', E_USER_DEPRECATED);
-
     ZahlungsartHelper::checkPaymentMethodAvailability();
 }
 
@@ -778,7 +754,6 @@ function pruefeZahlungsartNutzbarkeit()
 function gibTrustedShopsBewertenButton(string $cMail, string $cBestellNr)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use TrustedShops::getRatingButton instead.', E_USER_DEPRECATED);
-
     return TrustedShops::getRatingButton($cMail, $cBestellNr);
 }
 
@@ -799,7 +774,6 @@ function gibTrustedShopsBewertenButton(string $cMail, string $cBestellNr)
 function parseNewsText($cText)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use StringHandler::parseNewsText() instead.', E_USER_DEPRECATED);
-
     return StringHandler::parseNewsText($cText);
 }
 
@@ -812,7 +786,6 @@ function parseNewsText($cText)
 function checkeWunschlisteParameter()
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Wunschliste::checkeParameters() instead.', E_USER_DEPRECATED);
-
     return Wunschliste::checkeParameters();
 }
 
@@ -826,7 +799,6 @@ function checkeWunschlisteParameter()
 function gibVersandZuschlag($versandart, $cISO, $plz)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use VersandartHelper::getAdditionalFees() instead.', E_USER_DEPRECATED);
-
     return VersandartHelper::getAdditionalFees($versandart, $cISO, $plz);
 }
 
@@ -841,7 +813,6 @@ function gibVersandZuschlag($versandart, $cISO, $plz)
 function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use VersandartHelper::calculateShippingFees() instead.', E_USER_DEPRECATED);
-
     return VersandartHelper::calculateShippingFees($versandart, $cISO, $oZusatzArtikel, $Artikel);
 }
 
@@ -858,7 +829,6 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
 function gibGuenstigsteVersandkosten($cISO, $Artikel, $barzahlungZulassen, $kKundengruppe)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use VersandartHelper::getLowestShippingFees() instead.', E_USER_DEPRECATED);
-
     return VersandartHelper::getLowestShippingFees($cISO, $Artikel, $barzahlungZulassen, $kKundengruppe);
 }
 
@@ -872,7 +842,6 @@ function gibGuenstigsteVersandkosten($cISO, $Artikel, $barzahlungZulassen, $kKun
 function setFsession($kWaehrung, $ArtSort, $ArtZahl)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-
     return false;
 }
 
@@ -883,7 +852,6 @@ function setFsession($kWaehrung, $ArtSort, $ArtZahl)
 function getFsession()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-
     return false;
 }
 
@@ -909,7 +877,6 @@ function guessCsvDelimiter($filename)
 function urlNotFoundRedirect(array $hookInfos = null, bool $forceExit = false)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Redirect::urlNotFoundRedirect() instead.', E_USER_DEPRECATED);
-
     return Redirect::urlNotFoundRedirect($hookInfos, $forceExit);
 }
 
@@ -922,7 +889,6 @@ function urlNotFoundRedirect(array $hookInfos = null, bool $forceExit = false)
 function getDeliverytimeEstimationText($minDeliveryDays, $maxDeliveryDays)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use VersandartHelper::getDeliverytimeEstimationText() instead.', E_USER_DEPRECATED);
-
     return VersandartHelper::getDeliverytimeEstimationText($minDeliveryDays, $maxDeliveryDays);
 }
 
@@ -936,7 +902,6 @@ function getDeliverytimeEstimationText($minDeliveryDays, $maxDeliveryDays)
 function prepareMeta($metaProposal, $metaSuffix = null, $maxLength = null)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Metadata::prepareMeta() instead.', E_USER_DEPRECATED);
-
     return \Filter\Metadata::prepareMeta($metaProposal, $metaSuffix, $maxLength);
 }
 
@@ -950,7 +915,6 @@ function prepareMeta($metaProposal, $metaSuffix = null, $maxLength = null)
 function truncateMetaDescription($cDesc)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Metadata::truncateMetaDescription() instead.', E_USER_DEPRECATED);
-
     return \Filter\Metadata::truncateMetaDescription($cDesc);
 }
 
@@ -963,7 +927,6 @@ function truncateMetaDescription($cDesc)
 function gibStuecklistenKomponente(int $kStueckliste, $bAssoc = false)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use WarenkorbHelper::getPartComponent() instead.', E_USER_DEPRECATED);
-
     return WarenkorbHelper::getPartComponent($kStueckliste, $bAssoc);
 }
 
@@ -976,7 +939,6 @@ function gibStuecklistenKomponente(int $kStueckliste, $bAssoc = false)
 function doMainwordRedirect($NaviFilter, $nAnzahl, $bSeo = false)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Redirect::doMainwordRedirect() instead.', E_USER_DEPRECATED);
-
     Redirect::doMainwordRedirect($NaviFilter, $nAnzahl, $bSeo);
 }
 
@@ -994,7 +956,6 @@ function doMainwordRedirect($NaviFilter, $nAnzahl, $bSeo = false)
 function convertCurrency($price, $iso = null, $id = null, $useRounding = true, $precision = 2)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Currency::convertCurrency() instead.', E_USER_DEPRECATED);
-
     return Currency::convertCurrency($price, $iso, $id, $useRounding, $precision);
 }
 /**
@@ -1005,7 +966,6 @@ function convertCurrency($price, $iso = null, $id = null, $useRounding = true, $
 function gibPreisString($price)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-
     return str_replace(',', '.', sprintf('%.2f', $price));
 }
 
@@ -1018,7 +978,6 @@ function gibPreisString($price)
 function gibSprachKeyISO($cISO = '', int $kSprache = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Sprache::getLanguageDataByType() instead.', E_USER_DEPRECATED);
-
     return Sprache::getLanguageDataByType($cISO, $kSprache);
 }
 
@@ -1040,7 +999,6 @@ function altenKuponNeuBerechnen()
 function checkeKuponWKPos($oWKPosition, $Kupon)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use WarenkorbHelper::checkCouponCartPositions() instead.', E_USER_DEPRECATED);
-
     return WarenkorbHelper::checkCouponCartPositions($oWKPosition, $Kupon);
 }
 
@@ -1053,7 +1011,6 @@ function checkeKuponWKPos($oWKPosition, $Kupon)
 function checkSetPercentCouponWKPos($oWKPosition, $Kupon)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use WarenkorbHelper::checkSetPercentCouponWKPos() instead.', E_USER_DEPRECATED);
-
     return WarenkorbHelper::checkSetPercentCouponWKPos($oWKPosition, $Kupon);
 }
 
@@ -1065,7 +1022,6 @@ function checkSetPercentCouponWKPos($oWKPosition, $Kupon)
 function gibUst(int $kSteuerklasse)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use TaxHelper::getSalesTax() instead.', E_USER_DEPRECATED);
-
     return TaxHelper::getSalesTax($kSteuerklasse);
 }
 
@@ -1090,7 +1046,6 @@ function setzeSteuersaetze($steuerland = null)
 function gibAlteSteuerpositionen($Positionen, $Nettopreise = -1, $htmlWaehrung = 1, $oWaehrung = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use TaxHelper::getOldTaxPositions() instead.', E_USER_DEPRECATED);
-
     return TaxHelper::getOldTaxPositions($Positionen, $Nettopreise, $htmlWaehrung, $oWaehrung);
 }
 
@@ -1103,7 +1058,6 @@ function gibAlteSteuerpositionen($Positionen, $Nettopreise = -1, $htmlWaehrung =
 function baueVersandkostenfreiString($oVersandart, $fWarenkorbSumme)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use VersandartHelper::getShippingFreeString() instead.', E_USER_DEPRECATED);
-
     return VersandartHelper::getShippingFreeString($oVersandart, $fWarenkorbSumme);
 }
 
@@ -1115,7 +1069,6 @@ function baueVersandkostenfreiString($oVersandart, $fWarenkorbSumme)
 function baueVersandkostenfreiLaenderString($oVersandart)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use VersandartHelper::getShippingFreeCountriesString() instead.', E_USER_DEPRECATED);
-
     return VersandartHelper::getShippingFreeCountriesString($oVersandart);
 }
 
@@ -1132,7 +1085,6 @@ function baueVersandkostenfreiLaenderString($oVersandart)
 function gibAlleSprachen(int $nOption = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Sprache::getAllLanguages() instead.', E_USER_DEPRECATED);
-
     return Sprache::getAllLanguages($nOption);
 }
 
@@ -1145,7 +1097,6 @@ function gibAlleSprachen(int $nOption = 0)
 function standardspracheAktiv($bShop = false, $kSprache = null)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Sprache::isDefaultLanguageActive() instead.', E_USER_DEPRECATED);
-
     return Sprache::isDefaultLanguageActive($bShop, $kSprache);
 }
 
@@ -1157,7 +1108,6 @@ function standardspracheAktiv($bShop = false, $kSprache = null)
 function gibStandardWaehrung($bISO = false)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Session directly instead.', E_USER_DEPRECATED);
-
     return $bISO === true ? Session::Currency()->getCode() : Session::Currency()->getID();
 }
 
@@ -1169,7 +1119,6 @@ function gibStandardWaehrung($bISO = false)
 function gibStandardsprache($bShop = true)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Sprache::getDefaultLanguage() instead.', E_USER_DEPRECATED);
-
     return Sprache::getDefaultLanguage($bShop);
 }
 
@@ -1190,7 +1139,6 @@ function resetNeuKundenKupon()
 function reCaptchaConfigured()
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use CaptchaService::isConfigured() instead.', E_USER_DEPRECATED);
-
     return false;
 }
 
@@ -1202,7 +1150,6 @@ function reCaptchaConfigured()
 function validateReCaptcha($response)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use CaptchaService::validate() instead.', E_USER_DEPRECATED);
-
     return false;
 }
 
@@ -1214,7 +1161,6 @@ function validateReCaptcha($response)
 function gibCaptchaCode($sec)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use CaptchaService instead.', E_USER_DEPRECATED);
-
     return '';
 }
 
@@ -1226,7 +1172,6 @@ function gibCaptchaCode($sec)
 function generiereCaptchaCode($sec)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use CaptchaService instead.', E_USER_DEPRECATED);
-
     return false;
 }
 
@@ -1238,7 +1183,6 @@ function generiereCaptchaCode($sec)
 function encodeCode($klartext)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use SimpleCaptchaService::encodeCode() instead.', E_USER_DEPRECATED);
-
     return \Services\JTL\SimpleCaptchaService::encodeCode($klartext);
 }
 
@@ -1251,7 +1195,6 @@ function encodeCode($klartext)
 function gibVersandkostenfreiAb(int $kKundengruppe, $cLand = '')
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use VersandartHelper::getFreeShippingMinimum() instead.', E_USER_DEPRECATED);
-
     return VersandartHelper::getFreeShippingMinimum($kKundengruppe, $cLand);
 }
 
@@ -1265,7 +1208,6 @@ function gibVersandkostenfreiAb(int $kKundengruppe, $cLand = '')
 function gibPreisLocalizedOhneFaktor($preis, $waehrung = 0, $html = true)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Preise::getLocalizedPriceWithoutFactor() instead.', E_USER_DEPRECATED);
-
     return Preise::getLocalizedPriceWithoutFactor($preis, $waehrung, $html);
 }
 
@@ -1280,7 +1222,6 @@ function gibPreisLocalizedOhneFaktor($preis, $waehrung = 0, $html = true)
 function gibPreisStringLocalized($price, $currency = 0, $html = 1, $decimals = 2)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Preise::getLocalizedPriceString() instead.', E_USER_DEPRECATED);
-
     return Preise::getLocalizedPriceString($price, $currency, $html, $decimals);
 }
 
@@ -1292,7 +1233,6 @@ function gibPreisStringLocalized($price, $currency = 0, $html = 1, $decimals = 2
 function valid_email($email)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use StringHandler::filterEmailAddress() instead.', E_USER_DEPRECATED);
-
     return StringHandler::filterEmailAddress($email) !== false;
 }
 
@@ -1306,7 +1246,6 @@ function valid_email($email)
 function generateCSRFToken()
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use CryptoService instead.', E_USER_DEPRECATED);
-
     return Shop::Container()->getCryptoService()->randomString(32);
 }
 
@@ -1320,7 +1259,6 @@ function generateCSRFToken()
 function fuegeVariBoxInWK($variBoxAnzahl_arr, $kArtikel, $bIstVater, $bExtern = false)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use WarenkorbHelper::fuegeVariBoxInWK() instead.', E_USER_DEPRECATED);
-
     WarenkorbHelper::addVariboxToCart($variBoxAnzahl_arr, (int)$kArtikel, (bool)$bIstVater, (bool)$bExtern);
 }
 
@@ -1344,7 +1282,6 @@ function fuegeEinInWarenkorbPers(
     $cResponsibility = 'core'
 ) {
     trigger_error(__FUNCTION__ . ' is deprecated. Use WarenkorbPers::addToCheck() instead.', E_USER_DEPRECATED);
-
     WarenkorbPers::addToCheck($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, $cUnique, $kKonfigitem, $nPosTyp, $cResponsibility);
 }
 
@@ -1363,7 +1300,6 @@ function fuegeEinInWarenkorbPers(
 function findeKindArtikelZuEigenschaft($kArtikel, $es0, $esWert0, $es1 = 0, $esWert1 = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use ArtikelHelper::getChildProdctIDByAttribute() instead.', E_USER_DEPRECATED);
-
     return ArtikelHelper::getChildProdctIDByAttribute($kArtikel, $es0, $esWert0, $es1, $esWert1);
 }
 
@@ -1376,7 +1312,6 @@ function findeKindArtikelZuEigenschaft($kArtikel, $es0, $esWert0, $es1 = 0, $esW
 function gibVarKombiEigenschaftsWerte($kArtikel, $bSichtbarkeitBeachten = true)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use ArtikelHelper::getVarCombiAttributeValues() instead.', E_USER_DEPRECATED);
-
     return ArtikelHelper::getVarCombiAttributeValues((int)$kArtikel, (bool)$bSichtbarkeitBeachten);
 }
 
@@ -1390,7 +1325,6 @@ function gibVarKombiEigenschaftsWerte($kArtikel, $bSichtbarkeitBeachten = true)
 function berechneBrutto($price, $taxRate, $precision = 2)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use TaxHelper::getGross() instead.', E_USER_DEPRECATED);
-
     return TaxHelper::getGross($price, $taxRate, $precision);
 }
 
@@ -1404,7 +1338,6 @@ function berechneBrutto($price, $taxRate, $precision = 2)
 function berechneNetto($price, $taxRate, $precision = 2)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use TaxHelper::getNet() instead.', E_USER_DEPRECATED);
-
     return TaxHelper::getNet($price, $taxRate, $precision);
 }
 
@@ -1433,7 +1366,6 @@ function fuegeEinInWarenkorb(
     $cResponsibility = 'core'
 ) {
     trigger_error(__FUNCTION__ . ' is deprecated. Use WarenkorbHelper::addProductIDToCart() instead.', E_USER_DEPRECATED);
-
     return WarenkorbHelper::addProductIDToCart(
         $kArtikel,
         $anzahl,
@@ -1457,7 +1389,6 @@ function fuegeEinInWarenkorb(
 function findeVariation($oVariation_arr, $kEigenschaft, $kEigenschaftWert)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use ArtikelHelper::findVariation() instead.', E_USER_DEPRECATED);
-
     return ArtikelHelper::findVariation($oVariation_arr, (int)$kEigenschaft, (int)$kEigenschaftWert);
 }
 
@@ -1468,7 +1399,6 @@ function findeVariation($oVariation_arr, $kEigenschaft, $kEigenschaftWert)
 function getDefaultLanguageID()
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Sprache::getDefaultLanguage() instead.', E_USER_DEPRECATED);
-
     return Sprache::getDefaultLanguage(true)->kSprache;
 }
 
@@ -1519,7 +1449,6 @@ function verifyGPDataString($var)
 function getRealIp()
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use RequestHelper::getRealIP() instead.', E_USER_DEPRECATED);
-
     return RequestHelper::getRealIP();
 }
 
@@ -1531,7 +1460,6 @@ function getRealIp()
 function gibIP($bBestellung = false)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use RequestHelper::getIP() instead.', E_USER_DEPRECATED);
-
     return RequestHelper::getIP($bBestellung);
 }
 
@@ -1560,7 +1488,6 @@ function makeHTTPHeader($nStatusCode)
 function pruefeSSL()
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use RequestHelper::checkSSL() instead.', E_USER_DEPRECATED);
-
     return RequestHelper::checkSSL();
 }
 
@@ -1631,7 +1558,6 @@ function isAjaxRequest()
 function gibBelieferbareLaender(int $kKundengruppe = 0, bool $bIgnoreSetting = false, bool $bForceAll = false)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use VersandartHelper::getPossibleShippingCountries() instead.', E_USER_DEPRECATED);
-
     return VersandartHelper::getPossibleShippingCountries($kKundengruppe, $bIgnoreSetting, $bForceAll);
 }
 
@@ -1642,7 +1568,6 @@ function gibBelieferbareLaender(int $kKundengruppe = 0, bool $bIgnoreSetting = f
 function gibMoeglicheVerpackungen($kKundengruppe)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use VersandartHelper::getPossiblePackagings() instead.', E_USER_DEPRECATED);
-
     return VersandartHelper::getPossiblePackagings($kKundengruppe);
 }
 
@@ -1655,7 +1580,6 @@ function gibMoeglicheVerpackungen($kKundengruppe)
 function formatSize($size, $format = '%.2f')
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use StringHandler::formatSize() instead.', E_USER_DEPRECATED);
-
     return StringHandler::formatSize($size, $format);
 }
 
@@ -1672,7 +1596,6 @@ function formatSize($size, $format = '%.2f')
 function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname = '', $linkURL = '', $kLink = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Navigation class instead.', E_USER_DEPRECATED);
-
     return '';
 }
 
@@ -1684,7 +1607,6 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
 function holeAlleSuchspecialOverlays(int $kSprache = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use SearchSpecialHelper::getAll() instead.', E_USER_DEPRECATED);
-
     return SearchSpecialHelper::getAll($kSprache);
 }
 
@@ -1695,7 +1617,6 @@ function holeAlleSuchspecialOverlays(int $kSprache = 0)
 function baueAlleSuchspecialURLs()
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use SearchSpecialHelper::buildAllURLs() instead.', E_USER_DEPRECATED);
-
     return SearchSpecialHelper::buildAllURLs();
 }
 
@@ -1707,7 +1628,6 @@ function baueAlleSuchspecialURLs()
 function baueSuchSpecialURL(int $kKey)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use SearchSpecialHelper::buildURL() instead.', E_USER_DEPRECATED);
-
     return SearchSpecialHelper::buildURL($kKey);
 }
 
@@ -1722,7 +1642,6 @@ function baueSuchSpecialURL(int $kKey)
 function baueAssocArray(array $oObjekt_arr, $cKey)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Try \Functional\reindex() instead.', E_USER_DEPRECATED);
-
     $oObjektAssoc_arr = [];
     foreach ($oObjekt_arr as $oObjekt) {
         if (is_object($oObjekt)) {
@@ -1800,7 +1719,6 @@ function gibKeyArrayFuerKeyString($cKeys, $cSeperator)
 function setzeMerkmalFilter($nFilter_arr = [])
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use ProductFilter::initAttributeFilter() instead.', E_USER_DEPRECATED);
-
     return \Filter\ProductFilter::initAttributeFilter($nFilter_arr);
 }
 
@@ -1812,7 +1730,6 @@ function setzeMerkmalFilter($nFilter_arr = [])
 function setzeSuchFilter($nFilter_arr = [])
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use ProductFilter::initSearchFilter() instead.', E_USER_DEPRECATED);
-
     return \Filter\ProductFilter::initSearchFilter($nFilter_arr);
 }
 
@@ -1824,7 +1741,6 @@ function setzeSuchFilter($nFilter_arr = [])
 function setzeTagFilter($nFilter_arr = [])
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use ProductFilter::initTagFilter() instead.', E_USER_DEPRECATED);
-
     return \Filter\ProductFilter::initTagFilter($nFilter_arr);
 }
 
@@ -1837,7 +1753,6 @@ function setzeTagFilter($nFilter_arr = [])
 function gibAGBWRB(int $kSprache, int $kKundengruppe)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use LinkService::getAGBWRB() instead.', E_USER_DEPRECATED);
-
     return Shop::Container()->getLinkService()->getAGBWRB($kSprache, $kKundengruppe);
 }
 
@@ -1849,7 +1764,6 @@ function gibAGBWRB(int $kSprache, int $kKundengruppe)
 function verschluesselXTEA($cText)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use CryptoService::encryptXTEA() instead.', E_USER_DEPRECATED);
-
     return Shop::Container()->getCryptoService()->encryptXTEA($cText);
 }
 
@@ -1861,7 +1775,6 @@ function verschluesselXTEA($cText)
 function entschluesselXTEA($cText)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use CryptoService::decryptXTEA() instead.', E_USER_DEPRECATED);
-
     return Shop::Container()->getCryptoService()->decryptXTEA($cText);
 }
 
@@ -1877,7 +1790,6 @@ function entschluesselXTEA($cText)
 function baueURL($obj, $art, $row = 0, $bForceNonSeo = false, $bFull = false)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use UrlHelper::buildURL() instead.', E_USER_DEPRECATED);
-
     return UrlHelper::buildURL($obj, $art, $bFull);
 }
 
@@ -1890,7 +1802,6 @@ function baueURL($obj, $art, $row = 0, $bForceNonSeo = false, $bFull = false)
 function baueSprachURLS($obj, $art)
 {
     trigger_error(__FUNCTION__ . ' is deprecated and doesn\'t do anything.', E_USER_DEPRECATED);
-
     return [];
 }
 
@@ -1926,7 +1837,6 @@ function baueGewicht(array $products, int $weightAcc = 2, int $shippingWeightAcc
 function pruefeEmailblacklist(string $cEmail)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use SimpleMail::checkBlacklist() instead.', E_USER_DEPRECATED);
-
     return SimpleMail::checkBlacklist($cEmail);
 }
 
@@ -1937,7 +1847,6 @@ function pruefeEmailblacklist(string $cEmail)
 function gibLetztenTokenDaten()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-
     return isset($_SESSION['xcrsf_token'])
         ? json_decode($_SESSION['xcrsf_token'], true)
         : '';
@@ -1951,7 +1860,6 @@ function gibLetztenTokenDaten()
 function gibToken(bool $bAlten = false)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-
     if ($bAlten) {
         $cToken_arr = gibLetztenTokenDaten();
         if (!empty($cToken_arr) && array_key_exists('token', $cToken_arr)) {
@@ -1970,7 +1878,6 @@ function gibToken(bool $bAlten = false)
 function gibTokenName(bool $bAlten = false)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-
     if ($bAlten) {
         $cToken_arr = gibLetztenTokenDaten();
         if (!empty($cToken_arr) && array_key_exists('name', $cToken_arr)) {
@@ -1988,7 +1895,6 @@ function gibTokenName(bool $bAlten = false)
 function validToken()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-
     $cName = gibTokenName(true);
 
     return isset($_POST[$cName]) && gibToken(true) === $_POST[$cName];
@@ -2000,7 +1906,6 @@ function validToken()
 function setzeSpracheUndWaehrungLink()
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Sprache::generateLanguageAndCurrencyLinks() instead.', E_USER_DEPRECATED);
-
     Sprache::generateLanguageAndCurrencyLinks();
 }
 
@@ -2014,7 +1919,6 @@ function setzeSpracheUndWaehrungLink()
 function utf8_convert_recursive($data, $encode = true, $copy = false)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use StringHandler::utf8_convert_recursive() instead.', E_USER_DEPRECATED);
-
     return StringHandler::utf8_convert_recursive($data, $encode, $copy);
 }
 
@@ -2029,7 +1933,6 @@ function utf8_convert_recursive($data, $encode = true, $copy = false)
 function json_safe_encode($data)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use StringHandler::json_safe_encode() instead.', E_USER_DEPRECATED);
-
     return StringHandler::json_safe_encode($data);
 }
 
@@ -2040,7 +1943,6 @@ function json_safe_encode($data)
 function checkeSpracheWaehrung($langISO = '')
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Session::checkReset() instead.', E_USER_DEPRECATED);
-
     Session\Session::checkReset($langISO);
 }
 /**
@@ -2051,7 +1953,6 @@ function checkeSpracheWaehrung($langISO = '')
 function ISO2land($cISO)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Sprache::getCountryCodeByCountryName() instead.', E_USER_DEPRECATED);
-
     return Sprache::getCountryCodeByCountryName($cISO);
 }
 
@@ -2063,7 +1964,6 @@ function ISO2land($cISO)
 function landISO($cLand)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Sprache::getIsoCodeByCountryName() instead.', E_USER_DEPRECATED);
-
     return Sprache::getIsoCodeByCountryName($cLand);
 }
 
@@ -2074,7 +1974,6 @@ function landISO($cLand)
 function setzeLinks()
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Session::setSpecialLinks() instead.', E_USER_DEPRECATED);
-
     return Session\Session::setSpecialLinks();
 }
 /**
@@ -2085,7 +1984,6 @@ function setzeLinks()
 function pruefeSOAP($cURL = '')
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use PHPSettingsHelper::checkSOAP() instead.', E_USER_DEPRECATED);
-
     return PHPSettingsHelper::checkSOAP($cURL);
 }
 
@@ -2097,7 +1995,6 @@ function pruefeSOAP($cURL = '')
 function pruefeCURL($cURL = '')
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use PHPSettingsHelper::checkCURL() instead.', E_USER_DEPRECATED);
-
     return PHPSettingsHelper::checkCURL($cURL);
 }
 
@@ -2108,7 +2005,6 @@ function pruefeCURL($cURL = '')
 function pruefeALLOWFOPEN()
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use PHPSettingsHelper::checkAllowFopen() instead.', E_USER_DEPRECATED);
-
     return PHPSettingsHelper::checkAllowFopen();
 }
 
@@ -2120,7 +2016,6 @@ function pruefeALLOWFOPEN()
 function pruefeSOCKETS($cSOCKETS = '')
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use PHPSettingsHelper::checkSockets() instead.', E_USER_DEPRECATED);
-
     return PHPSettingsHelper::checkSockets($cSOCKETS);
 }
 
@@ -2132,7 +2027,6 @@ function pruefeSOCKETS($cSOCKETS = '')
 function phpLinkCheck($url)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use PHPSettingsHelper::phpLinkCheck() instead.', E_USER_DEPRECATED);
-
     return PHPSettingsHelper::phpLinkCheck($url);
 }
 
@@ -2145,7 +2039,6 @@ function phpLinkCheck($url)
 function dateAddWeekday($date, $weekdays)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use DateHelper::dateAddWeekday() instead.', E_USER_DEPRECATED);
-
     return DateHelper::dateAddWeekday($date, $weekdays);
 }
 
@@ -2158,7 +2051,6 @@ function dateAddWeekday($date, $weekdays)
 function objectSort(&$data, $key, $bStringToLower = false)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use ObjectHelper::sortBy() instead.', E_USER_DEPRECATED);
-
     ObjectHelper::sortBy($data, $key, $bStringToLower);
 }
 
@@ -2170,7 +2062,6 @@ function objectSort(&$data, $key, $bStringToLower = false)
 function kopiereMembers($originalObj)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use ObjectHelper::kopiereMembers() instead.', E_USER_DEPRECATED);
-
     return ObjectHelper::copyMembers($originalObj);
 }
 
@@ -2182,7 +2073,6 @@ function kopiereMembers($originalObj)
 function memberCopy($src, &$dest)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use ObjectHelper::memberCopy() instead.', E_USER_DEPRECATED);
-
     ObjectHelper::memberCopy($src, $dest);
 }
 
@@ -2194,7 +2084,6 @@ function memberCopy($src, &$dest)
 function deepCopy($oObj)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use ObjectHelper::deepCopy() instead.', E_USER_DEPRECATED);
-
     return ObjectHelper::deepCopy($oObj);
 }
 
@@ -2206,7 +2095,6 @@ function deepCopy($oObj)
 function validateCaptcha(array $requestData)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use FormHelper::validateCaptcha() instead.', E_USER_DEPRECATED);
-
     return FormHelper::validateCaptcha($requestData);
 }
 
@@ -2219,7 +2107,6 @@ function validateCaptcha(array $requestData)
 function getTokenInput()
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use FormHelper::getTokenInput() instead.', E_USER_DEPRECATED);
-
     return FormHelper::getTokenInput();
 }
 
@@ -2231,7 +2118,6 @@ function getTokenInput()
 function validateToken()
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use FormHelper::validateToken() instead.', E_USER_DEPRECATED);
-
     return FormHelper::validateToken();
 }
 
@@ -2243,7 +2129,6 @@ function validateToken()
 function eingabenKorrekt($fehlendeAngaben)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use FormHelper::eingabenKorrekt() instead.', E_USER_DEPRECATED);
-
     return FormHelper::eingabenKorrekt($fehlendeAngaben);
 }
 
@@ -2255,7 +2140,6 @@ function eingabenKorrekt($fehlendeAngaben)
 function delDirRecursively(string $dir)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use FileSystemHelper::delDirRecursively() instead.', E_USER_DEPRECATED);
-
     return FileSystemHelper::delDirRecursively($dir);
 }
 
@@ -2269,7 +2153,6 @@ function delDirRecursively(string $dir)
 function gibDatumTeile(string $cDatum)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use DateHelper::getDateParts() instead.', E_USER_DEPRECATED);
-
     return DateHelper::getDateParts($cDatum);
 }
 /**
@@ -2281,7 +2164,6 @@ function gibDatumTeile(string $cDatum)
 function gibVerfuegbarkeitsformularAnzeigen(Artikel $Artikel, string $einstellung): int
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use ArtikelHelper::showAvailabilityForm() instead.', E_USER_DEPRECATED);
-
     return ArtikelHelper::showAvailabilityForm($Artikel, $einstellung);
 }
 /**
@@ -2291,6 +2173,5 @@ function gibVerfuegbarkeitsformularAnzeigen(Artikel $Artikel, string $einstellun
 function archiviereBesucher()
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Visitor::archive() instead.', E_USER_DEPRECATED);
-
     Visitor::archive();
 }

@@ -58,7 +58,6 @@ $_SESSION['oBesucher'] = $oVisitor;
 function dbLookupVisitor($szUserAgent, $szIp)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Visitor::dbLookup() instead.', E_USER_DEPRECATED);
-
     return Visitor::dbLookup($szUserAgent, $szIp);
 }
 
@@ -73,7 +72,6 @@ function dbLookupVisitor($szUserAgent, $szIp)
 function updateVisitorObject($oVisitor, $oVisitorId,  $szUserAgent, $kBesucherBot)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-
     return Visitor::updateVisitorObject($oVisitor, $oVisitorId, $szUserAgent, $kBesucherBot);
 }
 
@@ -86,7 +84,6 @@ function updateVisitorObject($oVisitor, $oVisitorId,  $szUserAgent, $kBesucherBo
 function createVisitorObject($szUserAgent, $kBesucherBot)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-
     return Visitor::createVisitorObject($szUserAgent, $kBesucherBot);
 }
 
@@ -98,7 +95,6 @@ function createVisitorObject($szUserAgent, $kBesucherBot)
 function dbInsertVisitor($oVisitor)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-
     return Visitor::dbInsert($oVisitor);
 }
 
@@ -111,7 +107,6 @@ function dbInsertVisitor($oVisitor)
 function dbUpdateVisitor($oVisitor, $kBesucher)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-
     return Visitor::dbUpdate($oVisitor, $kBesucher);
 }
 
@@ -123,7 +118,6 @@ function dbUpdateVisitor($oVisitor, $kBesucher)
 function refreshCustomerOrderId($nCustomerId)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-
     return Visitor::refreshCustomerOrderId($nCustomerId);
 }
 
@@ -134,7 +128,6 @@ function refreshCustomerOrderId($nCustomerId)
 function gibBrowser()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-
     return Visitor::getBrowser();
 }
 
@@ -145,7 +138,6 @@ function gibBrowser()
 function gibReferer()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-
     return Visitor::getReferer();
 }
 
@@ -156,7 +148,6 @@ function gibReferer()
 function gibBot()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-
     return Visitor::getBot();
 }
 
@@ -179,7 +170,6 @@ function werteRefererAus($kBesucher, $referer)
 function istSuchmaschine($referer)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-
     return Visitor::isSearchEngine($referer);
 }
 
@@ -191,6 +181,5 @@ function istSuchmaschine($referer)
 function istSpider($cUserAgent)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-
     return Visitor::isSpider($cUserAgent);
 }

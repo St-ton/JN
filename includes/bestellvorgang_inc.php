@@ -376,10 +376,10 @@ function pruefeVersandkostenfreiKuponVorgemerkt()
     $Kuponfehler = [];
     if (isset($_SESSION['oVersandfreiKupon']->kKupon) && $_SESSION['oVersandfreiKupon']->kKupon > 0) {
         // Wurde im WK ein Versandfreikupon eingegeben?
-        $Kuponfehler = checkeKupon($_SESSION['oVersandfreiKupon']);
+        $Kuponfehler = Kupon::checkCoupon($_SESSION['oVersandfreiKupon']);
         if (angabenKorrekt($Kuponfehler)) {
-            kuponAnnehmen($_SESSION['oVersandfreiKupon']);
-            Shop::Smarty()->assign('KuponMoeglich', kuponMoeglich());
+            Kupon::acceptCoupon($_SESSION['oVersandfreiKupon']);
+            Shop::Smarty()->assign('KuponMoeglich', Kupon::couponsAvailable());
         }
     }
 
@@ -573,7 +573,7 @@ function gibStepUnregistriertBestellen()
 function validateCouponInCheckout()
 {
     if (isset($_SESSION['Kupon'])) {
-        $checkCouponResult = checkeKupon($_SESSION['Kupon']);
+        $checkCouponResult = Kupon::checkCoupon($_SESSION['Kupon']);
         if (count($checkCouponResult) !== 0) {
             Session::Cart()->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
             $_SESSION['checkCouponResult'] = $checkCouponResult;
@@ -633,7 +633,7 @@ function gibStepZahlung()
     ) {
         unset($_SESSION['TrustedShops']);
         $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
-        $oTrustedShops = gibTrustedShops();
+        $oTrustedShops = TrustedShops::getTrustedShops();
         if (isset($oTrustedShops->nAktiv)
             && $oTrustedShops->nAktiv == 1
             && $oTrustedShops->eType === TS_BUYERPROT_EXCELLENCE
@@ -642,7 +642,7 @@ function gibStepZahlung()
                 $_SESSION['TrustedShops'] = new stdClass();
             }
             $_SESSION['TrustedShops']->oKaeuferschutzProduktIDAssoc_arr =
-                gibKaeuferschutzProdukteAssocID($oTrustedShops->oKaeuferschutzProdukte->item);
+                TrustedShops::gibKaeuferschutzProdukteAssocID($oTrustedShops->oKaeuferschutzProdukte->item);
             Shop::Smarty()->assign('oTrustedShops', $oTrustedShops)
                 ->assign('PFAD_GFX_TRUSTEDSHOPS', PFAD_GFX_TRUSTEDSHOPS);
         }
@@ -805,7 +805,7 @@ function gibStepBestaetigung($cGet_arr)
     Shop::Smarty()->assign('Kunde', $_SESSION['Kunde'])
         ->assign('customerAttribute_arr', $_SESSION['Kunde']->cKundenattribut_arr)
         ->assign('Lieferadresse', $_SESSION['Lieferadresse'])
-        ->assign('KuponMoeglich', kuponMoeglich())
+        ->assign('KuponMoeglich', Kupon::couponsAvailable())
         ->assign('currentCoupon', Shop::Lang()->get('currentCoupon', 'checkout'))
         ->assign('currentCouponName', !empty($_SESSION['Kupon']->translationList)
             ? $_SESSION['Kupon']->translationList
@@ -922,7 +922,7 @@ function plausiKupon($cPost_arr)
         if ($Kupon !== false && $Kupon->kKupon > 0) {
             $nKuponfehler_arr = checkeKupon($Kupon);
             if (angabenKorrekt($nKuponfehler_arr)) {
-                kuponAnnehmen($Kupon);
+                Kupon::acceptCoupon($Kupon);
                 if ($Kupon->cKuponTyp === 'versandkupon') { // Versandfrei Kupon
                     $_SESSION['oVersandfreiKupon'] = $Kupon;
                 }
@@ -989,7 +989,7 @@ function plausiNeukundenKupon()
                         continue;
                     }
                     if ((empty($verwendet) || $verwendet === 'N') && angabenKorrekt(checkeKupon($NeukundenKupon))) {
-                        kuponAnnehmen($NeukundenKupon);
+                        Kupon::acceptCoupon($NeukundenKupon);
                         if (empty($verwendet)) {
                             $hash    = Kuponneukunde::Hash(
                                 null,
@@ -2396,247 +2396,20 @@ function checkLieferFormular($cPost_arr = null)
 /**
  * @param object|Kupon $Kupon
  * @return array
+ * @deprecated since 5.0.0
  */
 function checkeKupon($Kupon)
 {
-    $ret = [];
-    if ($Kupon->cAktiv !== 'Y') {
-        $ret['ungueltig'] = 1;
-    }
-    if ($Kupon->dGueltigBis !== '0000-00-00 00:00:00' && date_create($Kupon->dGueltigBis) < date_create()) {
-        $ret['ungueltig'] = 2;
-    }
-    if (date_create($Kupon->dGueltigAb) > date_create()) {
-        $ret['ungueltig'] = 3;
-    }
-    if ($Kupon->fMindestbestellwert > Session::Cart()->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)) {
-        $ret['ungueltig'] = 4;
-    }
-    if ($Kupon->cWertTyp === 'festpreis'
-        && $Kupon->nGanzenWKRabattieren === '0'
-        && $Kupon->fMindestbestellwert > gibGesamtsummeKuponartikelImWarenkorb($Kupon, Session::Cart()->PositionenArr)
-    ) {
-        $ret['ungueltig'] = 4;
-    }
-    if ($Kupon->kKundengruppe > 0 && $Kupon->kKundengruppe != Session::CustomerGroup()->getID()) {
-        $ret['ungueltig'] = 5;
-    }
-    if ($Kupon->nVerwendungen > 0 && $Kupon->nVerwendungen <= $Kupon->nVerwendungenBisher) {
-        $ret['ungueltig'] = 6;
-    }
-    if ($Kupon->cArtikel && !warenkorbKuponFaehigArtikel($Kupon, Session::Cart()->PositionenArr)) {
-        $ret['ungueltig'] = 7;
-    }
-    if ($Kupon->cKategorien
-        && $Kupon->cKategorien != -1
-        && !warenkorbKuponFaehigKategorien($Kupon, Session::Cart()->PositionenArr)
-    ) {
-        $ret['ungueltig'] = 8;
-    }
-    if (($Kupon->cKunden != -1 && !empty($_SESSION['Kunde']->kKunde)
-            && strpos($Kupon->cKunden, $_SESSION['Kunde']->kKunde . ';') === false
-            && $Kupon->cKuponTyp !== 'neukundenkupon')
-        || ($Kupon->cKunden != -1 && $Kupon->cKuponTyp !== 'neukundenkupon' && !isset($_SESSION['Kunde']->kKunde))
-    ) {
-        $ret['ungueltig'] = 9;
-    }
-    if ($Kupon->cKuponTyp === 'versandkupon' &&
-        isset($_SESSION['Lieferadresse']) &&
-        strpos($Kupon->cLieferlaender, $_SESSION['Lieferadresse']->cLand) === false
-    ) {
-        $ret['ungueltig'] = 10;
-    }
-    // Neukundenkupon
-    if ($Kupon->cKuponTyp === 'neukundenkupon') {
-        $Hash = Kuponneukunde::Hash(
-            null,
-            trim($_SESSION['Kunde']->cNachname),
-            trim($_SESSION['Kunde']->cStrasse),
-            null,
-            trim($_SESSION['Kunde']->cPLZ),
-            trim($_SESSION['Kunde']->cOrt),
-            trim($_SESSION['Kunde']->cLand)
-        );
-
-        $Kuponneukunde = Kuponneukunde::Load($_SESSION['Kunde']->cMail, $Hash);
-        if ($Kuponneukunde !== null && $Kuponneukunde->cVerwendet === 'Y') {
-            $ret['ungueltig'] = 11;
-        }
-    }
-    //Hersteller
-    if ($Kupon->cHersteller != -1
-        && !empty($Kupon->cHersteller)
-        && !warenkorbKuponFaehigHersteller($Kupon, Session::Cart()->PositionenArr)
-    ) {
-        $ret['ungueltig'] = 12;
-    }
-    $alreadyUsedSQL = '';
-    $bindings       = [];
-    if (!empty($_SESSION['Kunde']->kKunde) && !empty($_SESSION['Kunde']->cMail)) {
-        $alreadyUsedSQL = "SELECT SUM(nVerwendungen) AS nVerwendungen
-                              FROM tkuponkunde
-                              WHERE (kKunde = :customer OR cMail = :mail)
-                                  AND kKupon = :coupon";
-        $bindings       = [
-            'customer' => (int)$_SESSION['Kunde']->kKunde,
-            'mail'     => $_SESSION['Kunde']->cMail,
-            'coupon'   => (int)$Kupon->kKupon
-        ];
-    } elseif (!empty($_SESSION['Kunde']->cMail)) {
-        $alreadyUsedSQL = "SELECT SUM(nVerwendungen) AS nVerwendungen
-                              FROM tkuponkunde
-                              WHERE cMail = :mail
-                                  AND kKupon = :coupon";
-        $bindings       = [
-            'mail'   => $_SESSION['Kunde']->cMail,
-            'coupon' => (int)$Kupon->kKupon
-        ];
-    } elseif (!empty($_SESSION['Kunde']->kKunde)) {
-        $alreadyUsedSQL = "SELECT SUM(nVerwendungen) AS nVerwendungen
-                              FROM tkuponkunde
-                              WHERE kKunde = :customer
-                                  AND kKupon = :coupon";
-        $bindings       = [
-            'customer' => (int)$_SESSION['Kunde']->kKunde,
-            'coupon'   => (int)$Kupon->kKupon
-        ];
-    }
-    if ($alreadyUsedSQL !== '') {
-        //hat der kunde schon die max. Verwendungsanzahl erreicht?
-        $anz = Shop::Container()->getDB()->executeQueryPrepared($alreadyUsedSQL, $bindings, \DB\ReturnType::SINGLE_OBJECT);
-        if (isset($Kupon->nVerwendungenProKunde, $anz->nVerwendungen) &&
-            $anz->nVerwendungen >= $Kupon->nVerwendungenProKunde &&
-            $Kupon->nVerwendungenProKunde > 0
-        ) {
-            $ret['ungueltig'] = 6;
-        }
-    }
-
-    return $ret;
+    return Kupon::checkCoupon($Kupon);
 }
 
 /**
  * @param Kupon|object $Kupon
+ * @deprecated since 5.0.0
  */
 function kuponAnnehmen($Kupon)
 {
-    $cart = Session::Cart();
-    if ((!empty($_SESSION['oVersandfreiKupon']) || !empty($_SESSION['VersandKupon']) || !empty($_SESSION['Kupon']))
-        && isset($_POST['Kuponcode']) && $_POST['Kuponcode']
-    ) {
-        $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
-    }
-    $couponPrice = 0;
-    if ($Kupon->cWertTyp === 'festpreis') {
-        $couponPrice = $Kupon->fWert;
-        if ($Kupon->fWert > $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)) {
-            $couponPrice = $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true);
-        }
-    } elseif ($Kupon->cWertTyp === 'prozent') {
-        // Alle Positionen prüfen ob der Kupon greift und falls ja, dann Position rabattieren
-        if ($Kupon->nGanzenWKRabattieren == 0) {
-            $articleName_arr = [];
-            if (is_array($cart->PositionenArr) && count($cart->PositionenArr) > 0) {
-                $articlePrice = 0;
-                foreach ($cart->PositionenArr as $oWKPosition) {
-                    $articlePrice += WarenkorbHelper::checkSetPercentCouponWKPos($oWKPosition, $Kupon)->fPreis;
-                    if (!empty(WarenkorbHelper::checkSetPercentCouponWKPos($oWKPosition, $Kupon)->cName)) {
-                        $articleName_arr[] = WarenkorbHelper::checkSetPercentCouponWKPos($oWKPosition, $Kupon)->cName;
-                    }
-                }
-                $couponPrice = ($articlePrice / 100) * (float)$Kupon->fWert;
-            }
-        } else { //Rabatt ermitteln für den ganzen WK
-            $couponPrice = ($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true) / 100.0) * $Kupon->fWert;
-        }
-    }
-
-    //posname lokalisiert ablegen
-    $Spezialpos        = new stdClass();
-    $Spezialpos->cName = $Kupon->translationList;
-    foreach ($_SESSION['Sprachen'] as $Sprache) {
-        if ($Kupon->cWertTyp === 'prozent'
-            && $Kupon->nGanzenWKRabattieren == 0
-            && $Kupon->cKuponTyp !== 'neukundenkupon'
-        ) {
-            $Spezialpos->cName[$Sprache->cISO] .= ' ' . $Kupon->fWert . '% ';
-            $discountForArticle                 = Shop::Container()->getDB()->select(
-                'tsprachwerte',
-                'cName',
-                'discountForArticle',
-                'kSprachISO',
-                $Sprache->kSprache,
-                null,
-                null,
-                false,
-                'cWert'
-            );
-
-            $Spezialpos->discountForArticle[$Sprache->cISO] = $discountForArticle->cWert;
-        } elseif ($Kupon->cWertTyp === 'prozent') {
-            $Spezialpos->cName[$Sprache->cISO] .= ' ' . $Kupon->fWert . '%';
-        }
-    }
-    if (isset($articleName_arr)) {
-        $Spezialpos->cArticleNameAffix = $articleName_arr;
-    }
-
-    $postyp = C_WARENKORBPOS_TYP_KUPON;
-    if ($Kupon->cKuponTyp === 'standard') {
-        $_SESSION['Kupon'] = $Kupon;
-        if (Jtllog::doLog(JTLLOG_LEVEL_NOTICE)) {
-            Jtllog::writeLog(
-                'Der Standardkupon' . print_r($Kupon, true) . ' wurde genutzt.',
-                JTLLOG_LEVEL_NOTICE,
-                false,
-                'kKupon',
-                $Kupon->kKupon
-            );
-        }
-    } elseif ($Kupon->cKuponTyp === 'neukundenkupon') {
-        $postyp = C_WARENKORBPOS_TYP_NEUKUNDENKUPON;
-        $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON);
-        $_SESSION['NeukundenKupon']           = $Kupon;
-        $_SESSION['NeukundenKuponAngenommen'] = true;
-        //@todo: erst loggen wenn wirklich bestellt wird. hier kann noch abgebrochen werden
-        if (Jtllog::doLog(JTLLOG_LEVEL_NOTICE)) {
-            Jtllog::writeLog(
-                'Der Neukundenkupon' . print_r($Kupon, true) . ' wurde genutzt.',
-                JTLLOG_LEVEL_NOTICE,
-                false,
-                'kKupon',
-                $Kupon->kKupon
-            );
-        }
-    } elseif ($Kupon->cKuponTyp === 'versandkupon') {
-        // Darf nicht gelöscht werden sondern den Preis nur auf 0 setzen!
-        //$cart->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS);
-        $cart->setzeVersandfreiKupon();
-        $_SESSION['VersandKupon'] = $Kupon;
-        $couponPrice              = 0;
-        $Spezialpos->cName        = $Kupon->translationList;
-        unset($_POST['Kuponcode']);
-        $cart->erstelleSpezialPos(
-            $Spezialpos->cName,
-            1,
-            $couponPrice * -1,
-            $Kupon->kSteuerklasse,
-            $postyp
-        );
-        if (Jtllog::doLog(JTLLOG_LEVEL_NOTICE)) {
-            Jtllog::writeLog(
-                'Der Versandkupon ' . print_r($Kupon, true) . ' wurde genutzt.',
-                JTLLOG_LEVEL_NOTICE,
-                false,
-                'kKupon',
-                $Kupon->kKupon
-            );
-        }
-    }
-    if ($Kupon->cWertTyp === 'prozent' || $Kupon->cWertTyp === 'festpreis') {
-        unset($_POST['Kuponcode']);
-        $cart->erstelleSpezialPos($Spezialpos->cName, 1, $couponPrice * -1, $Kupon->kSteuerklasse, $postyp);
-    }
+    Kupon::acceptCoupon($Kupon);
 }
 
 /**
@@ -2951,87 +2724,11 @@ function guthabenMoeglich()
 
 /**
  * @return int
+ * @deprecated since 5.0.0
  */
 function kuponMoeglich()
 {
-    $cart           = Session::Cart();
-    $moeglich       = 0;
-    $Artikel_qry    = '';
-    $Hersteller_qry = '';
-    $Kats           = [];
-    $Kategorie_qry  = '';
-    $Kunden_qry     = '';
-    if (isset($_SESSION['Zahlungsart']->cModulId) && strpos($_SESSION['Zahlungsart']->cModulId, 'za_billpay') === 0
-        || isset($_SESSION['NeukundenKuponAngenommen']) && $_SESSION['NeukundenKuponAngenommen']) {
-        return 0;
-    }
-    if (is_array($cart->PositionenArr) && count($cart->PositionenArr) > 0) {
-        foreach ($cart->PositionenArr as $Pos) {
-            if (isset($Pos->Artikel->cArtNr) && strlen($Pos->Artikel->cArtNr) > 0) {
-                $Artikel_qry .= " OR FIND_IN_SET('" .
-                    str_replace('%', '\%', Shop::Container()->getDB()->escape($Pos->Artikel->cArtNr))
-                    . "', REPLACE(cArtikel, ';', ',')) > 0";
-            }
-            if (isset($Pos->Artikel->cHersteller) && strlen($Pos->Artikel->cHersteller) > 0) {
-                $Hersteller_qry .= " OR FIND_IN_SET('" .
-                    str_replace('%', '\%', Shop::Container()->getDB()->escape($Pos->Artikel->kHersteller))
-                    . "', REPLACE(cHersteller, ';', ',')) > 0";
-            }
-            if ($Pos->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
-                && isset($Pos->Artikel->kArtikel)
-                && $Pos->Artikel->kArtikel > 0
-            ) {
-                $kArtikel = $Pos->Artikel->kArtikel;
-                // Kind?
-                if (ArtikelHelper::isVariChild($kArtikel)) {
-                    $kArtikel = ArtikelHelper::getParent($kArtikel);
-                }
-                $Kats_arr = Shop::Container()->getDB()->selectAll('tkategorieartikel', 'kArtikel', (int)$kArtikel, 'kKategorie');
-                if (is_array($Kats_arr) && count($Kats_arr) > 0) {
-                    foreach ($Kats_arr as $Kat) {
-                        $Kat->kKategorie = (int)$Kat->kKategorie;
-                        if (!in_array($Kat->kKategorie, $Kats, true)) {
-                            $Kats[] = $Kat->kKategorie;
-                        }
-                    }
-                }
-            }
-        }
-        foreach ($Kats as $Kat) {
-            $Kategorie_qry .= " OR FIND_IN_SET('{$Kat}', REPLACE(cKategorien, ';', ',')) > 0";
-        }
-    }
-
-    if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-        $Kunden_qry = " OR FIND_IN_SET('{$_SESSION['Kunde']->kKunde}', REPLACE(cKunden, ';', ',')) > 0";
-    }
-    $kupons_mgl = Shop::Container()->getDB()->query(
-        "SELECT * FROM tkupon
-            WHERE cAktiv = 'Y'
-                AND dGueltigAb <= now()
-                AND (dGueltigBis > now()
-                    OR dGueltigBis = '0000-00-00 00:00:00')
-                AND fMindestbestellwert <= " . $cart->gibGesamtsummeWaren(true, false) . "
-                AND (cKuponTyp = 'versandkupon'
-                    OR cKuponTyp = 'standard')
-                AND (kKundengruppe = -1
-                    OR kKundengruppe = 0
-                    OR kKundengruppe = " . Session::CustomerGroup()->getID() . ")
-                AND (nVerwendungen = 0
-                    OR nVerwendungen > nVerwendungenBisher)
-                AND (cArtikel = '' $Artikel_qry)
-                AND (cHersteller IS NULL OR cHersteller = '' OR cHersteller = '-1' $Hersteller_qry)
-                AND (cKategorien = ''
-                    OR cKategorien = '-1' $Kategorie_qry)
-                AND (cKunden = ''
-                    OR cKunden = '-1' $Kunden_qry)",
-        \DB\ReturnType::SINGLE_OBJECT
-    );
-    if (!empty($kupons_mgl->kKupon)) {
-        $moeglich = 1;
-    }
-
-    return $moeglich;
+    return Kupon::couponsAvailable();
 }
 
 
@@ -3725,7 +3422,7 @@ function setzeSmartyLieferadresse()
     }
     Shop::Smarty()->assign('laender', VersandartHelper::getPossibleShippingCountries($kKundengruppe))
         ->assign('Kunde', $_SESSION['Kunde'])
-        ->assign('KuponMoeglich', kuponMoeglich())
+        ->assign('KuponMoeglich', Kupon::couponsAvailable())
         ->assign('kLieferadresse', $_SESSION['Bestellung']->kLieferadresse);
     if ($_SESSION['Bestellung']->kLieferadresse == -1) {
         Shop::Smarty()->assign('Lieferadresse', null);
@@ -3760,7 +3457,7 @@ function setzeFehlerSmartyLieferadresse($cFehlendeEingaben_arr, $cPost_arr)
     setzeFehlendeAngaben($cFehlendeEingaben_arr, 'shipping_address');
     Shop::Smarty()->assign('laender', VersandartHelper::getPossibleShippingCountries($kKundengruppe))
         ->assign('Kunde', $_SESSION['Kunde'])
-        ->assign('KuponMoeglich', kuponMoeglich())
+        ->assign('KuponMoeglich', Kupon::couponsAvailable())
         ->assign('kLieferadresse', $_SESSION['Bestellung']->kLieferadresse)
         ->assign('kLieferadresse', $cPost_arr['kLieferadresse']);
     if ($_SESSION['Bestellung']->kLieferadresse == -1) {

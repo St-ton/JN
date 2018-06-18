@@ -1266,6 +1266,7 @@ class TrustedShops
      * @param string $cBestellNr
      * @return null|stdClass
      * @former gibTrustedShopsBewertenButton()
+     * @since 5.0.0
      */
     public static function getRatingButton(string $cMail, string $cBestellNr)
     {
@@ -1305,5 +1306,129 @@ class TrustedShops
         }
 
         return $button;
+    }
+
+    /**
+     * @return stdClass
+     * @since 5.0.0
+     */
+    public static function getTrustedShops()
+    {
+        unset($_SESSION['TrustedShops'], $oTrustedShops);
+        $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639(Shop::getLanguageCode()));
+        $oTrustedShops->holeKaeuferschutzProdukteDB(StringHandler::convertISO2ISO639(Shop::getLanguageCode()), true);
+        // Hole alle Käuferschutzprodukte, die in der DB hinterlegt sind
+        $ts       = new stdClass();
+        $cLandISO = $_SESSION['Lieferadresse']->cLand;
+        if (!$cLandISO) {
+            $cLandISO = $_SESSION['Kunde']->cLand;
+        }
+        // Prüfe, ob TS ID noch gültig ist
+        if ($oTrustedShops->pruefeZertifikat(StringHandler::convertISO2ISO639(Shop::getLanguageCode())) === 1) {
+            // Gib nur die Informationen weiter, die das Template auch braucht
+            $ts->nAktiv                   = $oTrustedShops->nAktiv;
+            $ts->eType                    = $oTrustedShops->eType;
+            $ts->cId                      = $oTrustedShops->tsId;
+            $ts->cISOSprache              = $oTrustedShops->oZertifikat->cISOSprache;
+            $ts->oKaeuferschutzProdukteDB = $oTrustedShops->oKaeuferschutzProdukteDB;
+            $ts->oKaeuferschutzProdukte   = $oTrustedShops->oKaeuferschutzProdukte;
+            if (isset($ts->oKaeuferschutzProdukte->item)) {
+                $ts->oKaeuferschutzProdukte->item = self::filterNichtGebrauchteKaeuferschutzProdukte(
+                    $oTrustedShops->oKaeuferschutzProdukte->item,
+                    Session::Cart()->gibGesamtsummeWaren(false) *
+                    ((100 + (float)$_SESSION['Steuersatz'][Session::Cart()->gibVersandkostenSteuerklasse($cLandISO)]) / 100)
+                );
+            }
+            $ts->cLogoURL                 = $oTrustedShops->cLogoURL;
+            $ts->cSpeicherungURL          = $oTrustedShops->cSpeicherungURL;
+            $ts->cBedingungURL            = $oTrustedShops->cBedingungURL;
+            $ts->cBoxText                 = $oTrustedShops->cBoxText;
+            $ts->cVorausgewaehltesProdukt = isset($oTrustedShops->oKaeuferschutzProdukte->item)
+                ? self::getPreSelectedProduct(
+                    $oTrustedShops->oKaeuferschutzProdukte->item,
+                    Session::Cart()->gibGesamtsummeWaren(false) *
+                    ((100 + (float)$_SESSION['Steuersatz'][Session::Cart()->gibVersandkostenSteuerklasse($cLandISO)]) / 100)
+                )
+                : '';
+        }
+
+        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+            Jtllog::writeLog(
+                "Der TrustedShops Käuferschutz im Bestellvorgang wurde mit folgendem Ergebnis geladen: " .
+                print_r($ts, true),
+                JTLLOG_LEVEL_DEBUG
+            );
+        }
+
+        return $ts;
+    }
+
+    /**
+     * Filter alle Käuferschutzprodukte aus den Produkten in der DB, die für die Warensumme keinen Sinn machen
+     *
+     * @param array $oKaeuferschutzProdukte_arr
+     * @param float $fGesamtSumme
+     * @return array
+     * @since 5.0.0
+     */
+    public static function filterNichtGebrauchteKaeuferschutzProdukte($oKaeuferschutzProdukte_arr, $fGesamtSumme)
+    {
+        $oKaeuferschutzProdukteFilter_arr = [];
+        if (is_array($oKaeuferschutzProdukte_arr) && count($oKaeuferschutzProdukte_arr) > 0) {
+            foreach ($oKaeuferschutzProdukte_arr as $oKaeuferschutzProdukte) {
+                $oKaeuferschutzProdukteFilter_arr[] = $oKaeuferschutzProdukte;
+                if ((float)$fGesamtSumme < (float)$oKaeuferschutzProdukte->protectedAmountDecimal) {
+                    break;
+                }
+            }
+        }
+
+        return $oKaeuferschutzProdukteFilter_arr;
+    }
+
+    /**
+     * Liefer ein Assoc Array mit tsProductID als Keys + Preisen als Werte
+     *
+     * @param array $oKaeuferschutzProdukte_arr
+     * @return array
+     * @since 5.0.0
+     */
+    public static function gibKaeuferschutzProdukteAssocID($oKaeuferschutzProdukte_arr)
+    {
+        $oKaeuferschutzProdukteAssocID_arr = [];
+        if (is_array($oKaeuferschutzProdukte_arr) && count($oKaeuferschutzProdukte_arr) > 0) {
+            foreach ($oKaeuferschutzProdukte_arr as $oKaeuferschutzProdukte) {
+                $oKaeuferschutzProdukteAssocID_arr[$oKaeuferschutzProdukte->tsProductID] = $oKaeuferschutzProdukte->netFee;
+            }
+        }
+
+        return $oKaeuferschutzProdukteAssocID_arr;
+    }
+
+    /**
+     * Liefer das Käuferschutzprodukt (tsProductID), welches vorausgewählt werden soll anhand der Warenkorb Summe
+     *
+     * @param array $products
+     * @param float $totalSum
+     * @return string
+     * @former gibVorausgewaehltesProdukt()
+     * @since 5.0.0
+     */
+    public static function getPreSelectedProduct($products, $totalSum): string
+    {
+        $tsProductID  = '';
+        $lastValue = 0.0;
+        if (is_array($products) && count($products) > 0) {
+            foreach ($products as $product) {
+                if ((float)$totalSum <= (float)$product->protectedAmountDecimal
+                    && ((float)$product->protectedAmountDecimal < $lastValue || $lastValue === 0.0)
+                ) {
+                    $tsProductID  = $product->tsProductID;
+                    $lastValue = (float)$product->protectedAmountDecimal;
+                }
+            }
+        }
+
+        return $tsProductID;
     }
 }

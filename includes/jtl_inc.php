@@ -315,6 +315,7 @@ function pruefeWarenkorbArtikelSichtbarkeit(int $kKundengruppe)
 function fuehreLoginAus($userLogin, $passLogin)
 {
     global $cHinweis;
+    $oKupons  = [];
     $Kunde    = new Kunde();
     $csrfTest = FormHelper::validateToken();
     if ($csrfTest === false) {
@@ -466,30 +467,28 @@ function fuehreLoginAus($userLogin, $passLogin)
                     }
                 }
                 // Kupons übernehmen, wenn erst der Warenkorb befüllt und sich dann angemeldet wurde
-                if (count($oKupons) > 0) {
-                    foreach ($oKupons as $Kupon) {
-                        if (!empty($Kupon)) {
-                            $Kuponfehler  = checkeKupon($Kupon);
-                            $nReturnValue = angabenKorrekt($Kuponfehler);
-                            executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI, [
-                                'error'        => &$Kuponfehler,
-                                'nReturnValue' => &$nReturnValue
-                            ]);
-                            if ($nReturnValue) {
-                                if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === 'standard') {
-                                    kuponAnnehmen($Kupon);
-                                    executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN);
-                                } elseif (!empty($Kupon->kKupon) && $Kupon->cKuponTyp === 'versandkupon') {
-                                    // Versandfrei Kupon
-                                    $_SESSION['oVersandfreiKupon'] = $Kupon;
-                                    Shop::Smarty()->assign(
-                                        'cVersandfreiKuponLieferlaender_arr',
-                                        explode(';', $Kupon->cLieferlaender)
-                                    );
-                                }
-                            } else {
-                                Shop::Smarty()->assign('cKuponfehler', $Kuponfehler['ungueltig']);
+                foreach ($oKupons as $Kupon) {
+                    if (!empty($Kupon)) {
+                        $Kuponfehler  = Kupon::checkCoupon($Kupon);
+                        $nReturnValue = angabenKorrekt($Kuponfehler);
+                        executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI, [
+                            'error'        => &$Kuponfehler,
+                            'nReturnValue' => &$nReturnValue
+                        ]);
+                        if ($nReturnValue) {
+                            if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === 'standard') {
+                                Kupon::acceptCoupon($Kupon);
+                                executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN);
+                            } elseif (!empty($Kupon->kKupon) && $Kupon->cKuponTyp === 'versandkupon') {
+                                // Versandfrei Kupon
+                                $_SESSION['oVersandfreiKupon'] = $Kupon;
+                                Shop::Smarty()->assign(
+                                    'cVersandfreiKuponLieferlaender_arr',
+                                    explode(';', $Kupon->cLieferlaender)
+                                );
                             }
+                        } else {
+                            Shop::Smarty()->assign('cKuponfehler', $Kuponfehler['ungueltig']);
                         }
                     }
                 }

@@ -1455,7 +1455,7 @@ class Warenkorb
             if (isset($_SESSION['Warenkorb']) && $this->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0) {
                 $Kupon = Shop::Container()->getDB()->select('tkupon', 'kKupon', (int)$_SESSION['Kupon']->kKupon);
                 if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === 'standard') {
-                    $isValid = (1 === angabenKorrekt(checkeKupon($Kupon)));
+                    $isValid = (1 === angabenKorrekt(Kupon::checkCoupon($Kupon)));
                     $this->updateCouponValue();
                 } elseif (!empty($Kupon->kKupon) && $Kupon->cKuponTyp === 'versandkupon') {
                     //@todo?
@@ -1477,7 +1477,7 @@ class Warenkorb
                 $Kupon   = Shop::Container()->getDB()->select('tkupon', 'kKupon', (int)$_SESSION['Kupon']->kKupon);
                 $isValid = false;
                 if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === 'standard') {
-                    $isValid = (1 === angabenKorrekt(checkeKupon($Kupon)));
+                    $isValid = (1 === angabenKorrekt(Kupon::checkCoupon($Kupon)));
                 }
             }
             if ($isValid === false) {

@@ -47,7 +47,7 @@ if ($cart !== null
     $Kupon             = $Kupon->getByCode($_POST['Kuponcode']);
     $invalidCouponCode = false;
     if ($Kupon !== false && $Kupon->kKupon > 0) {
-        $Kuponfehler  = checkeKupon($Kupon);
+        $Kuponfehler  = Kupon::checkCoupon($Kupon);
         $nReturnValue = angabenKorrekt($Kuponfehler);
         executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI, [
             'error'        => &$Kuponfehler,
@@ -55,7 +55,7 @@ if ($cart !== null
         ]);
         if ($nReturnValue) {
             if ($Kupon->cKuponTyp === 'standard') {
-                kuponAnnehmen($Kupon);
+                Kupon::acceptCoupon($Kupon);
                 executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN);
             } elseif (!empty($Kupon->kKupon) && $Kupon->cKuponTyp === 'versandkupon') {
                 // Aktiven Kupon aus der Session löschen und dessen Warenkorbposition
@@ -120,7 +120,7 @@ if (isset($_GET['fillOut'])) {
     $mbw = Session::CustomerGroup()->getAttribute(KNDGRP_ATTRIBUT_MINDESTBESTELLWERT);
     if ((int)$_GET['fillOut'] === 9 && $mbw > 0 && $cart->gibGesamtsummeWaren(1, 0) < $mbw) {
         $MsgWarning = Shop::Lang()->get('minordernotreached', 'checkout') . ' ' .
-            gibPreisStringLocalized($mbw);
+            Preise::getLocalizedPriceString($mbw);
     } elseif ((int)$_GET['fillOut'] === 8) {
         $MsgWarning = Shop::Lang()->get('orderNotPossibleNow', 'checkout');
     } elseif ((int)$_GET['fillOut'] === 3) {
@@ -164,7 +164,7 @@ WarenkorbHelper::addVariationPictures($cart);
 $smarty->assign('MsgWarning', $MsgWarning)
        ->assign('Schnellkaufhinweis', $Schnellkaufhinweis)
        ->assign('laender', VersandartHelper::getPossibleShippingCountries($kKundengruppe))
-       ->assign('KuponMoeglich', kuponMoeglich())
+       ->assign('KuponMoeglich', Kupon::couponsAvailable())
        ->assign('currentCoupon', Shop::Lang()->get('currentCoupon', 'checkout'))
        ->assign('currentCouponName', (!empty($_SESSION['Kupon']->translationList)
            ? $_SESSION['Kupon']->translationList

@@ -119,7 +119,7 @@ function pruefeKundenKommentar($cKommentar, $cName = '', $cEmail = '', $kNews, $
         }
         if (isset($conf['news']['news_sicherheitscode'])
             && $conf['news']['news_sicherheitscode'] !== 'N'
-            && !validateCaptcha($_POST)
+            && !FormHelper::validateCaptcha($_POST)
         ) {
             $nPlausiValue_arr['captcha'] = 2;
         }

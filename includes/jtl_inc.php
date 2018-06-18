@@ -316,7 +316,7 @@ function fuehreLoginAus($userLogin, $passLogin)
 {
     global $cHinweis;
     $Kunde    = new Kunde();
-    $csrfTest = validateToken();
+    $csrfTest = FormHelper::validateToken();
     if ($csrfTest === false) {
         $cHinweis .= Shop::Lang()->get('csrfValidationFailed');
         Jtllog::writeLog('CSRF-Warnung fuer Login: ' . $_POST['login']);

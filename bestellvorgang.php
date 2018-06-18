@@ -73,7 +73,7 @@ if (RequestHelper::verifyGPCDataInt('wk') === 1) {
 }
 if (isset($_FILES['vcard'])
     && $Einstellungen['kunden']['kundenregistrierung_vcardupload'] === 'Y'
-    && validateToken()
+    && FormHelper::validateToken()
 ) {
     gibKundeFromVCard($_FILES['vcard']['tmp_name']);
 }

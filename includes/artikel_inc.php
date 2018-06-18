@@ -153,7 +153,7 @@ function bearbeiteFrageZumProdukt()
     if ($conf['artikeldetails']['artikeldetails_fragezumprodukt_anzeigen'] !== 'N') {
         $fehlendeAngaben = gibFehlendeEingabenProduktanfrageformular();
         Shop::Smarty()->assign('fehlendeAngaben_fragezumprodukt', $fehlendeAngaben);
-        $nReturnValue = eingabenKorrekt($fehlendeAngaben);
+        $nReturnValue = FormHelper::eingabenKorrekt($fehlendeAngaben);
 
         executeHook(HOOK_ARTIKEL_INC_FRAGEZUMPRODUKT_PLAUSI);
 
@@ -233,7 +233,7 @@ function gibFehlendeEingabenProduktanfrageformular()
     if ($conf['artikeldetails']['produktfrage_abfragen_mobil'] === 'Y' && !$_POST['mobil']) {
         $ret['mobil'] = 1;
     }
-    if ($conf['artikeldetails']['produktfrage_abfragen_captcha'] !== 'N' && !validateCaptcha($_POST)) {
+    if ($conf['artikeldetails']['produktfrage_abfragen_captcha'] !== 'N' && !FormHelper::validateCaptcha($_POST)) {
         $ret['captcha'] = 2;
     }
     // CheckBox Plausi
@@ -393,7 +393,7 @@ function bearbeiteBenachrichtigung()
     ) {
         $fehlendeAngaben = gibFehlendeEingabenBenachrichtigungsformular();
         Shop::Smarty()->assign('fehlendeAngaben_benachrichtigung', $fehlendeAngaben);
-        $nReturnValue = eingabenKorrekt($fehlendeAngaben);
+        $nReturnValue = FormHelper::eingabenKorrekt($fehlendeAngaben);
 
         executeHook(HOOK_ARTIKEL_INC_BENACHRICHTIGUNG_PLAUSI);
         if ($nReturnValue) {
@@ -473,7 +473,7 @@ function gibFehlendeEingabenBenachrichtigungsformular()
     if (empty($_POST['nachname']) && $conf['artikeldetails']['benachrichtigung_abfragen_nachname'] === 'Y') {
         $ret['nachname'] = 1;
     }
-    if ($conf['artikeldetails']['benachrichtigung_abfragen_captcha'] !== 'N' && !validateCaptcha($_POST)) {
+    if ($conf['artikeldetails']['benachrichtigung_abfragen_captcha'] !== 'N' && !FormHelper::validateCaptcha($_POST)) {
         $ret['captcha'] = 2;
     }
     // CheckBox Plausi

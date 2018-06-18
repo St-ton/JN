@@ -2307,7 +2307,7 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
 
     if (isset($conf['kunden']['registrieren_captcha'])
         && $conf['kunden']['registrieren_captcha'] !== 'N'
-        && !validateCaptcha($data)
+        && !FormHelper::validateCaptcha(FormHelper::validateCaptcha)
     ) {
         $ret['captcha'] = 2;
     }

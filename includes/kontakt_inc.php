@@ -45,7 +45,7 @@ function gibFehlendeEingabenKontaktformular()
     if ($conf['kontakt']['kontakt_abfragen_mobil'] === 'Y') {
         $ret['mobil'] = StringHandler::checkPhoneNumber($_POST['mobil']);
     }
-    if ($conf['kontakt']['kontakt_abfragen_captcha'] !== 'N' && !validateCaptcha($_POST)) {
+    if ($conf['kontakt']['kontakt_abfragen_captcha'] !== 'N' && !FormHelper::validateCaptcha($_POST)) {
         $ret['captcha'] = 2;
     }
 

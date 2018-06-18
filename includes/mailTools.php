@@ -870,7 +870,7 @@ function lokalisiereKunde($sprache, $kunde)
             $kunde->cAnredeLocalized = Shop::Lang()->get('salutationGeneral');
         }
     }
-    $kunde = deepCopy($kunde);
+    $kunde = ObjectHelper::deepCopy($kunde);
     if (isset($kunde->cLand)) {
         $cISOLand = $kunde->cLand;
         $sel_var  = 'cDeutsch';

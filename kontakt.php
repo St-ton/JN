@@ -32,7 +32,7 @@ if (pruefeBetreffVorhanden()) {
             $fehlendeAngaben,
             $oCheckBox->validateCheckBox(CHECKBOX_ORT_KONTAKT, $kKundengruppe, $_POST, true)
         );
-        $nReturnValue    = eingabenKorrekt($fehlendeAngaben);
+        $nReturnValue    = FormHelper::eingabenKorrekt($fehlendeAngaben);
         Shop::Smarty()->assign('cPost_arr', StringHandler::filterXSS($_POST));
         executeHook(HOOK_KONTAKT_PAGE_PLAUSI);
 

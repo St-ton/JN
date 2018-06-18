@@ -50,7 +50,7 @@ if (isset($_SESSION['JTL_REDIRECT']) || RequestHelper::verifyGPCDataInt('r') > 0
 if (isset($_POST['kUpload'])
     && (int)$_POST['kUpload'] > 0
     && !empty($_SESSION['Kunde']->kKunde)
-    && validateToken()
+    && formHelper::validateToken()
 ) {
     $oUploadDatei = new UploadDatei((int)$_POST['kUpload']);
     UploadDatei::send_file_to_browser(
@@ -140,12 +140,12 @@ if ($customerID > 0) {
         exit();
     }
     // Wunschliste loeschen
-    if (RequestHelper::verifyGPCDataInt('wllo') > 0 && validateToken()) {
+    if (RequestHelper::verifyGPCDataInt('wllo') > 0 && formHelper::validateToken()) {
         $step      = 'mein Konto';
         $cHinweis .= wunschlisteLoeschen(RequestHelper::verifyGPCDataInt('wllo'));
     }
     // Wunschliste Standard setzen
-    if (isset($_POST['wls']) && (int)$_POST['wls'] > 0 && validateToken()) {
+    if (isset($_POST['wls']) && (int)$_POST['wls'] > 0 && formHelper::validateToken()) {
         $step      = 'mein Konto';
         $cHinweis .= wunschlisteStandard(RequestHelper::verifyGPCDataInt('wls'));
     }
@@ -326,7 +326,7 @@ if ($customerID > 0) {
             $oWunschliste = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $kWunschliste);
             if (isset($oWunschliste->kKunde) && (int)$oWunschliste->kKunde === Session::Customer()->getID()) {
                 // Wurde nOeffentlich verändert
-                if (isset($_REQUEST['nstd']) && validateToken()) {
+                if (isset($_REQUEST['nstd']) && formHelper::validateToken()) {
                     $nOeffentlich = RequestHelper::verifyGPCDataInt('nstd');
                     // Wurde nstd auf 1 oder 0 gesetzt?
                     if ($nOeffentlich === 0) {
@@ -451,7 +451,7 @@ if ($customerID > 0) {
             Shop::Smarty()->assign('fehlendeAngaben', $fehlendeAngaben);
         }
     }
-    if (isset($_POST['pass_aendern']) && (int)$_POST['pass_aendern'] && validateToken()) {
+    if (isset($_POST['pass_aendern']) && (int)$_POST['pass_aendern'] && formHelper::validateToken()) {
         $step = 'passwort aendern';
         if (!isset($_POST['altesPasswort'], $_POST['neuesPasswort1']) ||
             !$_POST['altesPasswort'] ||
@@ -544,9 +544,9 @@ if ($customerID > 0) {
             if (isset($bestellung->oEstimatedDelivery->longestMin, $bestellung->oEstimatedDelivery->longestMax)) {
                 Shop::Smarty()->assign(
                     'cEstimatedDeliveryEx',
-                    dateAddWeekday($bestellung->dErstellt, $bestellung->oEstimatedDelivery->longestMin)->format('d.m.Y')
+                    DateHelper::dateAddWeekday($bestellung->dErstellt, $bestellung->oEstimatedDelivery->longestMin)->format('d.m.Y')
                     . ' - ' .
-                    dateAddWeekday($bestellung->dErstellt, $bestellung->oEstimatedDelivery->longestMax)->format('d.m.Y')
+                    DateHelper::dateAddWeekday($bestellung->dErstellt, $bestellung->oEstimatedDelivery->longestMax)->format('d.m.Y')
                 );
             }
         } else {
@@ -555,7 +555,7 @@ if ($customerID > 0) {
     }
 
     if (isset($_POST['del_acc']) && (int)$_POST['del_acc'] === 1) {
-        $csrfTest = validateToken();
+        $csrfTest = formHelper::validateToken();
         if ($csrfTest === false) {
             $cHinweis .= Shop::Lang()->get('csrfValidationFailed', 'global');
             Jtllog::writeLog('CSRF-Warnung fuer Account-Loeschung und kKunde ' .

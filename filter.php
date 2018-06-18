@@ -89,7 +89,7 @@ if (!isset($_SESSION['ArtikelProSeite'])
 }
 // Verfügbarkeitsbenachrichtigung pro Artikel
 $oSuchergebnisse->getProducts()->transform(function ($product) use ($Einstellungen) {
-    $product->verfuegbarkeitsBenachrichtigung = gibVerfuegbarkeitsformularAnzeigen(
+    $product->verfuegbarkeitsBenachrichtigung = ArtikelHelper::showAvailabilityForm(
         $product,
         $Einstellungen['artikeldetails']['benachrichtigung_nutzen']
     );

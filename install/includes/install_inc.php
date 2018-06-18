@@ -281,15 +281,15 @@ function activatePayment($oDB, $oZahlungsart)
         $nNutzbar     = 0;
         // SOAP
         if (!empty($oZahlungsart->nSOAP)) {
-            $nNutzbar = pruefeSOAP() ? 1 : 0;
+            $nNutzbar = PHPSettingsHelper::checkSOAP() ? 1 : 0;
         }
         // CURL
         if (!empty($oZahlungsart->nCURL)) {
-            $nNutzbar = pruefeCURL() ? 1 : 0;
+            $nNutzbar = PHPSettingsHelper::checkCURL() ? 1 : 0;
         }
         // SOCKETS
         if (!empty($oZahlungsart->nSOCKETS)) {
-            $nNutzbar = pruefeSOCKETS() ? 1 : 0;
+            $nNutzbar = PHPSettingsHelper::checkSockets() ? 1 : 0;
         }
         $oDB->update('tzahlungsart', 'kZahlungsart', $kZahlungsart, (object)['nNutzbar' => $nNutzbar]);
     }

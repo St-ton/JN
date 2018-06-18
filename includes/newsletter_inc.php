@@ -204,7 +204,7 @@ function newsletterAnmeldungPlausi($oKunde)
 {
     $Einstellungen = Shop::getSettings([CONF_NEWSLETTER]);
     $nPlausi_arr   = [];
-    if ($Einstellungen['newsletter']['newsletter_sicherheitscode'] !== 'N' && !validateCaptcha($_POST)) {
+    if ($Einstellungen['newsletter']['newsletter_sicherheitscode'] !== 'N' && !FormHelper::validateCaptcha($_POST)) {
         $nPlausi_arr['captcha'] = 2;
     }
 

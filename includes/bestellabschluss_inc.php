@@ -1311,12 +1311,12 @@ function finalisiereBestellung($cBestellNr = '', $bSendeMail = true)
     $obj->tbestellung = $bestellung;
 
     if (isset($bestellung->oEstimatedDelivery->longestMin, $bestellung->oEstimatedDelivery->longestMax)) {
-        $obj->tbestellung->cEstimatedDeliveryEx = dateAddWeekday(
+        $obj->tbestellung->cEstimatedDeliveryEx = DateHelper::dateAddWeekday(
             $bestellung->dErstellt,
             $bestellung->oEstimatedDelivery->longestMin
         )->format('d.m.Y')
             . ' - ' .
-            dateAddWeekday($bestellung->dErstellt, $bestellung->oEstimatedDelivery->longestMax)->format('d.m.Y');
+            DateHelper::dateAddWeekday($bestellung->dErstellt, $bestellung->oEstimatedDelivery->longestMax)->format('d.m.Y');
     }
 
     // Work Around cLand

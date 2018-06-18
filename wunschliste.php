@@ -42,7 +42,7 @@ if (!empty($_POST['addToCart'])) {
 } elseif (isset($_POST['action'])) {
     $action = $_POST['action'];
 }
-if ($action !== null && isset($_POST['kWunschliste'], $_SESSION['Kunde']->kKunde) && validateToken()) {
+if ($action !== null && isset($_POST['kWunschliste'], $_SESSION['Kunde']->kKunde) && formHelper::validateToken()) {
     $kWunschliste = (int)$_POST['kWunschliste'];
     // check if wishlist belongs to logged in customer
     $oWunschliste = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $kWunschliste);
@@ -224,7 +224,7 @@ if ($action !== null && isset($_POST['kWunschliste'], $_SESSION['Kunde']->kKunde
         default:
             break;
     }
-} elseif ($action === 'search' && $kWunschliste > 0 && validateToken()) {
+} elseif ($action === 'search' && $kWunschliste > 0 && formHelper::validateToken()) {
     // Suche in einer öffentlichen Wunschliste
     $cSuche = StringHandler::filterXSS(RequestHelper::verifyGPDataString('cSuche'));
     if (strlen($cSuche) > 0) {

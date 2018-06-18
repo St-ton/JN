@@ -60,7 +60,7 @@ class KategoriePict
      */
     public function insertInDB(): int
     {
-        return Shop::Container()->getDB()->insert('tkategoriepict', kopiereMembers($this));
+        return Shop::Container()->getDB()->insert('tkategoriepict', ObjectHelper::copyMembers($this));
     }
 
     /**
@@ -68,7 +68,7 @@ class KategoriePict
      */
     public function updateInDB(): int
     {
-        $obj = kopiereMembers($this);
+        $obj = ObjectHelper::copyMembers($this);
 
         return Shop::Container()->getDB()->update('tkategoriepict', 'kKategoriePict', $obj->kKategoriePict, $obj);
     }

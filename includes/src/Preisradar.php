@@ -91,7 +91,7 @@ class Preisradar
                 $oMaxDiff_arr[]         = $oProduct;
             }
         }
-        objectSort($oMaxDiff_arr, 'fProzentDiff');
+        ObjectHelper::sortBy($oMaxDiff_arr, 'fProzentDiff');
 
         return array_reverse($oMaxDiff_arr);
     }

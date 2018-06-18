@@ -75,7 +75,7 @@ class WunschlistePosEigenschaft
     {
         $this->kWunschlistePosEigenschaft = Shop::Container()->getDB()->insert(
             'twunschlisteposeigenschaft',
-            kopiereMembers($this)
+            ObjectHelper::copyMembers($this)
         );
 
         return $this;

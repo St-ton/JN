@@ -125,7 +125,7 @@ class WarenkorbPosEigenschaft
      */
     public function insertInDB(): self
     {
-        $obj = kopiereMembers($this);
+        $obj = ObjectHelper::copyMembers($this);
         unset($obj->kWarenkorbPosEigenschaft, $obj->cAufpreisLocalized, $obj->fGewichtsdifferenz, $obj->cTyp);
         //sql strict mode
         if ($obj->fAufpreis === null || $obj->fAufpreis === '') {
@@ -143,7 +143,7 @@ class WarenkorbPosEigenschaft
      */
     public function updateInDB(): int
     {
-        $obj = kopiereMembers($this);
+        $obj = ObjectHelper::copyMembers($this);
 
         return Shop::Container()->getDB()->update(
             'twarenkorbposeigenschaft',

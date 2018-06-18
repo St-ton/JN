@@ -141,4 +141,71 @@ class PHPSettingsHelper
     {
         return is_writable($this->tempDir());
     }
+    /**
+     * @param string $cURL
+     * @return bool
+     * @former pruefeSOAP()
+     * @since 5.0.0
+     */
+    public static function checkSOAP(string $cURL = ''): bool
+    {
+        return !(strlen($cURL) > 0 && !self::phpLinkCheck($cURL)) && class_exists('SoapClient');
+    }
+
+    /**
+     * @param string $cURL
+     * @return bool
+     * @former pruefeCURL()
+     * @since 5.0.0
+     */
+    public static function checkCURL(string $cURL = ''): bool
+    {
+        return !(strlen($cURL) > 0 && !self::phpLinkCheck($cURL)) && function_exists('curl_init');
+    }
+
+    /**
+     * @return bool
+     * @former pruefeALLOWFOPEN()
+     * @since 5.0.0
+     */
+    public static function checkAllowFopen(): bool
+    {
+        return (int)ini_get('allow_url_fopen') === 1;
+    }
+
+    /**
+     * @param string $cSOCKETS
+     * @return bool
+     * @former pruefeSOCKETS()
+     * @since 5.0.0
+     */
+    public static function checkSockets(string $cSOCKETS = ''): bool
+    {
+        return !(strlen($cSOCKETS) > 0 && !self::phpLinkCheck($cSOCKETS)) && function_exists('fsockopen');
+    }
+
+    /**
+     * @param string $url
+     * @return bool
+     * @former phpLinkCheck()
+     * @since 5.0.0
+     */
+    public static function phpLinkCheck(string $url): bool
+    {
+        $url    = parse_url(trim($url));
+        $scheme = strtolower($url['scheme']);
+        if ($scheme !== 'http' && $scheme !== 'https') {
+            return false;
+        }
+        if (!isset($url['port'])) {
+            $url['port'] = 80;
+        }
+        if (!isset($url['path'])) {
+            $url['path'] = '/';
+        }
+
+        return !fsockopen($url['host'], $url['port'], $errno, $errstr, 30)
+            ? false
+            : true;
+    }
 }

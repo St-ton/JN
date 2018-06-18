@@ -89,7 +89,7 @@ class CustomerFields
      */
     public function getCustomerFields()
     {
-        return deepCopy($this->customerFields);
+        return ObjectHelper::deepCopy($this->customerFields);
     }
 
     /**

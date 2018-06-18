@@ -286,7 +286,7 @@ class Kunde
                 && isset($attempts->nLoginversuche)
                 && (int)$attempts->nLoginversuche >= (int)$conf['kunden']['kundenlogin_max_loginversuche']
             ) {
-                if (validateCaptcha($_POST)) {
+                if (FormHelper::validateCaptcha($_POST)) {
                     return true;
                 }
 
@@ -439,7 +439,7 @@ class Kunde
 
                 $this->dGeburtstag_formatted = date_format(date_create($this->dGeburtstag), 'd.m.Y');
                 $this->cGuthabenLocalized    = $this->gibGuthabenLocalized();
-                $cDatum_arr                  = gibDatumTeile($this->dErstellt);
+                $cDatum_arr                  = DateHelper::getDateParts($this->dErstellt);
                 $this->dErstellt_DE          = $cDatum_arr['cTag'] . '.' .
                     $cDatum_arr['cMonat'] . '.' .
                     $cDatum_arr['cJahr'];
@@ -541,7 +541,7 @@ class Kunde
 
         $this->cAnredeLocalized   = self::mapSalutation($this->cAnrede, $this->kSprache);
         $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
-        $cDatum_arr               = gibDatumTeile($this->dErstellt);
+        $cDatum_arr               = DateHelper::getDateParts($this->dErstellt);
         $this->dErstellt_DE       = $cDatum_arr['cTag'] . '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'];
 
         return $this->kKunde;
@@ -557,7 +557,7 @@ class Kunde
         }
 
         $this->verschluesselKundendaten();
-        $obj = kopiereMembers($this);
+        $obj = ObjectHelper::copyMembers($this);
 
         $cKundenattribut_arr = [];
         if (is_array($obj->cKundenattribut_arr)) {
@@ -589,7 +589,7 @@ class Kunde
 
         $this->cAnredeLocalized   = self::mapSalutation($this->cAnrede, $this->kSprache);
         $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
-        $cDatum_arr               = gibDatumTeile($this->dErstellt);
+        $cDatum_arr               = DateHelper::getDateParts($this->dErstellt);
         $this->dErstellt_DE       = $cDatum_arr['cTag'] . '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'];
 
         return $cReturn;

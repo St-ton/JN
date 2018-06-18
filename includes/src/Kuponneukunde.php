@@ -84,7 +84,7 @@ class Kuponneukunde
         if ($this->kKuponNeukunde > 0) {
             Shop::Container()->getDB()->delete('tkuponneukunde', 'kKuponNeukunde', (int)$this->kKuponNeukunde);
         }
-        $obj = kopiereMembers($this);
+        $obj = ObjectHelper::copyMembers($this);
         unset($obj->kKuponNeukunde);
 
         return Shop::Container()->getDB()->insert('tkuponneukunde', $obj) > 0;

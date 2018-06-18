@@ -174,7 +174,7 @@ class ZahlungsInfo
     {
         $this->cAbgeholt = 'N';
         $this->verschluesselZahlungsinfo();
-        $obj = kopiereMembers($this);
+        $obj = ObjectHelper::copyMembers($this);
         unset($obj->kZahlungsInfo);
         $this->kZahlungsInfo = Shop::Container()->getDB()->insert('tzahlungsinfo', $obj);
         $this->entschluesselZahlungsinfo();
@@ -190,7 +190,7 @@ class ZahlungsInfo
     public function updateInDB(): int
     {
         $this->verschluesselZahlungsinfo();
-        $obj     = kopiereMembers($this);
+        $obj     = ObjectHelper::copyMembers($this);
         $cReturn = Shop::Container()->getDB()->update('tzahlungsinfo', 'kZahlungsInfo', $obj->kZahlungsInfo, $obj);
         $this->entschluesselZahlungsinfo();
 

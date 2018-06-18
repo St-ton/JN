@@ -102,7 +102,7 @@ class Kampagne
         $obj->dErstellt  = $this->dErstellt;
 
         $this->kKampagne    = Shop::Container()->getDB()->insert('tkampagne', $obj);
-        $cDatum_arr         = gibDatumTeile($this->dErstellt);
+        $cDatum_arr         = DateHelper::getDateParts($this->dErstellt);
         $this->dErstellt_DE = $cDatum_arr['cTag'] . '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'] . ' ' .
             $cDatum_arr['cStunde'] . ':' . $cDatum_arr['cMinute'] . ':' . $cDatum_arr['cSekunde'];
 
@@ -126,7 +126,7 @@ class Kampagne
         $obj->kKampagne  = $this->kKampagne;
 
         $res                = Shop::Container()->getDB()->update('tkampagne', 'kKampagne', $obj->kKampagne, $obj);
-        $cDatum_arr         = gibDatumTeile($this->dErstellt);
+        $cDatum_arr         = DateHelper::getDateParts($this->dErstellt);
         $this->dErstellt_DE = $cDatum_arr['cTag'] . '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'] . ' ' .
             $cDatum_arr['cStunde'] . ':' . $cDatum_arr['cMinute'] . ':' . $cDatum_arr['cSekunde'];
 
@@ -204,7 +204,7 @@ class Kampagne
                         && strtolower($oKampagne->cWert) === strtolower(RequestHelper::verifyGPDataString($oKampagne->cParameter)))
                 )
             ) {
-                $referrer = gibReferer();
+                $referrer = Visitor::getReferer();
                 //wurde der HIT für diesen Besucher schon gezaehlt?
                 $oVorgang = Shop::Container()->getDB()->select(
                     'tkampagnevorgang',

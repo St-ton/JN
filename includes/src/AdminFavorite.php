@@ -68,7 +68,7 @@ class AdminFavorite
      */
     public function insertInDB(): int
     {
-        $obj = kopiereMembers($this);
+        $obj = ObjectHelper::copyMembers($this);
         unset($obj->kAdminfav);
 
         return Shop::Container()->getDB()->insert('tadminfavs', $obj);
@@ -81,7 +81,7 @@ class AdminFavorite
      */
     public function updateInDB(): int
     {
-        $obj = kopiereMembers($this);
+        $obj = ObjectHelper::copyMembers($this);
 
         return Shop::Container()->getDB()->update('tadminfavs', 'kAdminfav', $obj->kAdminfav, $obj);
     }

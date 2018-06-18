@@ -160,7 +160,7 @@ class Versandart
      */
     public function insertInDB()
     {
-        $obj = kopiereMembers($this);
+        $obj = ObjectHelper::copyMembers($this);
         unset(
             $obj->oVersandartSprache_arr,
             $obj->oVersandartStaffel_arr,
@@ -180,7 +180,7 @@ class Versandart
      */
     public function updateInDB()
     {
-        $obj = kopiereMembers($this);
+        $obj = ObjectHelper::copyMembers($this);
         unset(
             $obj->oVersandartSprache_arr,
             $obj->oVersandartStaffel_arr,

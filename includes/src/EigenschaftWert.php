@@ -100,7 +100,7 @@ class EigenschaftWert
      */
     public function insertInDB(): int
     {
-        $obj = kopiereMembers($this);
+        $obj = ObjectHelper::copyMembers($this);
         unset($obj->fAufpreis);
 
         return Shop::Container()->getDB()->insert('teigenschaftwert', $obj);
@@ -113,7 +113,7 @@ class EigenschaftWert
      */
     public function updateInDB(): int
     {
-        $obj = kopiereMembers($this);
+        $obj = ObjectHelper::copyMembers($this);
         unset($obj->fAufpreis);
 
         return Shop::Container()->getDB()->update('teigenschaftwert', 'kEigenschaftWert', $obj->kEigenschaftWert, $obj);

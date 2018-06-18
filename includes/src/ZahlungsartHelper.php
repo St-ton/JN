@@ -135,15 +135,15 @@ class ZahlungsartHelper
             $nNutzbar     = 0;
             // SOAP
             if (!empty($paymentMethod->nSOAP)) {
-                $nNutzbar = pruefeSOAP() ? 1 : 0;
+                $nNutzbar = PHPSettingsHelper::checkSOAP() ? 1 : 0;
             }
             // CURL
             if (!empty($paymentMethod->nCURL)) {
-                $nNutzbar = pruefeCURL() ? 1 : 0;
+                $nNutzbar = PHPSettingsHelper::checkCURL() ? 1 : 0;
             }
             // SOCKETS
             if (!empty($paymentMethod->nSOCKETS)) {
-                $nNutzbar = pruefeSOCKETS() ? 1 : 0;
+                $nNutzbar = PHPSettingsHelper::checkSockets() ? 1 : 0;
             }
             Shop::Container()->getDB()->update(
                 'tzahlungsart',

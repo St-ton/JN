@@ -94,7 +94,7 @@ class Tag
      */
     public function insertInDB(): int
     {
-        $obj = kopiereMembers($this);
+        $obj = ObjectHelper::copyMembers($this);
         unset($obj->kTag);
 
         return Shop::Container()->getDB()->insert('ttag', $obj);
@@ -107,7 +107,7 @@ class Tag
      */
     public function updateInDB(): int
     {
-        $obj = kopiereMembers($this);
+        $obj = ObjectHelper::copyMembers($this);
 
         return Shop::Container()->getDB()->update('ttag', 'kTag', $obj->kTag, $obj);
     }

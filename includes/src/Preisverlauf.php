@@ -112,7 +112,7 @@ class Preisverlauf
      */
     public function insertInDB(): int
     {
-        $obj = kopiereMembers($this);
+        $obj = ObjectHelper::copyMembers($this);
         unset($obj->kPreisverlauf);
         $this->kPreisverlauf = Shop::Container()->getDB()->insert('tpreisverlauf', $obj);
 
@@ -126,7 +126,7 @@ class Preisverlauf
      */
     public function updateInDB(): int
     {
-        $obj = kopiereMembers($this);
+        $obj = ObjectHelper::copyMembers($this);
 
         return Shop::Container()->getDB()->update('tpreisverlauf', 'kPreisverlauf', $obj->kPreisverlauf, $obj);
     }

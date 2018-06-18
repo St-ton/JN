@@ -257,8 +257,8 @@ class Kundendatenhistory extends MainModel
 
             if (!Kunde::isEqual($oKundeOld, $oKundeNew)) {
                 $cryptoService = Shop::Container()->getCryptoService(); 
-                $oKundeOld = deepCopy($oKundeOld);
-                $oKundeNew = deepCopy($oKundeNew);
+                $oKundeOld = ObjectHelper::deepCopy($oKundeOld);
+                $oKundeNew = ObjectHelper::deepCopy($oKundeNew);
                 // Encrypt Old
                 $oKundeOld->cNachname = $cryptoService->encryptXTEA(trim($oKundeOld->cNachname));
                 $oKundeOld->cFirma    = $cryptoService->encryptXTEA(trim($oKundeOld->cFirma));

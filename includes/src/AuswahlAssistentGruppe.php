@@ -167,7 +167,7 @@ class AuswahlAssistentGruppe
     {
         $cPlausi_arr = $this->checkGroup($cParam_arr);
         if (count($cPlausi_arr) === 0) {
-            $oObj = kopiereMembers($this);
+            $oObj = ObjectHelper::copyMembers($this);
 
             $this->nAktiv                  = (int)$this->nAktiv;
             $this->kSprache                = (int)$this->kSprache;

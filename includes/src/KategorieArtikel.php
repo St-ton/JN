@@ -59,7 +59,7 @@ class KategorieArtikel
      */
     public function insertInDB(): int
     {
-        return Shop::Container()->getDB()->insert('tkategorieartikel', kopiereMembers($this));
+        return Shop::Container()->getDB()->insert('tkategorieartikel', ObjectHelper::copyMembers($this));
     }
 
     /**
@@ -69,7 +69,7 @@ class KategorieArtikel
      */
     public function updateInDB(): int
     {
-        $obj = kopiereMembers($this);
+        $obj = ObjectHelper::copyMembers($this);
 
         return Shop::Container()->getDB()->update('tkategorieartikel', 'kKategorieArtikel', $obj->kKategorieArtikel, $obj);
     }

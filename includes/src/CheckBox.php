@@ -310,12 +310,12 @@ class CheckBox
                     // Festdefinierte Shopfunktionen
                     switch ($oCheckBox->oCheckBoxFunktion->cID) {
                         case 'jtl_newsletter': // Newsletteranmeldung
-                            $xParamas_arr['oKunde'] = kopiereMembers($xParamas_arr['oKunde']);
+                            $xParamas_arr['oKunde'] = ObjectHelper::copyMembers($xParamas_arr['oKunde']);
                             $this->sfCheckBoxNewsletter($xParamas_arr['oKunde']);
                             break;
 
                         case 'jtl_adminmail': // CheckBoxMail
-                            $xParamas_arr['oKunde'] = kopiereMembers($xParamas_arr['oKunde']);
+                            $xParamas_arr['oKunde'] = ObjectHelper::copyMembers($xParamas_arr['oKunde']);
                             $this->sfCheckBoxMailToAdmin($xParamas_arr['oKunde'], $oCheckBox, $nAnzeigeOrt);
                             break;
 
@@ -482,7 +482,7 @@ class CheckBox
     public function insertDB($cTextAssoc_arr, $cBeschreibungAssoc_arr): self
     {
         if (is_array($cTextAssoc_arr) && count($cTextAssoc_arr) > 0) {
-            $oCheckBox = kopiereMembers($this);
+            $oCheckBox = ObjectHelper::copyMembers($this);
             unset(
                 $oCheckBox->cID,
                 $oCheckBox->kKundengruppe_arr,

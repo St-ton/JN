@@ -820,4 +820,31 @@ class ArtikelHelper
 
         return false;
     }
+    /**
+     * @param Artikel $Artikel
+     * @param string $einstellung
+     * @return int
+     * @former gibVerfuegbarkeitsformularAnzeigen()
+     * @since 5.0.0
+     */
+    public static function showAvailabilityForm(Artikel $Artikel, string $einstellung): int
+    {
+        if ($einstellung !== 'N'
+            && ((int)$Artikel->inWarenkorbLegbar === INWKNICHTLEGBAR_LAGER
+                || (int)$Artikel->inWarenkorbLegbar === INWKNICHTLEGBAR_LAGERVAR
+                || ($Artikel->fLagerbestand <= 0 && $Artikel->cLagerKleinerNull === 'Y'))
+        ) {
+            switch ($einstellung) {
+                case 'Y':
+                    return 1;
+                case 'P':
+                    return 2;
+                case 'L':
+                default:
+                    return 3;
+            }
+        }
+
+        return 0;
+    }
 }

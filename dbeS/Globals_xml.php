@@ -146,8 +146,9 @@ function bearbeiteUpdates($xml)
                 //hack?
                 unset($_me->kBezugsMassEinheit);
             }
+            unset($_me);
             DBDelInsert('tmasseinheit', $oMasseinheit_arr, 1);
-            Shop::Container()->getDB()->query('TRUNCATE TABLE tmasseinheitsprache', \DB\ReturnType::DEFAULT4);
+            Shop::Container()->getDB()->query('TRUNCATE TABLE tmasseinheitsprache', \DB\ReturnType::DEFAULT);
             $meCount = count($oMasseinheit_arr);
             for ($i = 0; $i < $meCount; $i++) {
                 if (count($oMasseinheit_arr) < 2) {

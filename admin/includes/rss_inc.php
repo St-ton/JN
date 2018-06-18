@@ -40,7 +40,7 @@ function generiereRSSXML()
 			<link>' . $shopURL . '</link>
 		</image>';
         //Artikel STD Sprache
-        $lagerfilter = gibLagerfilter();
+        $lagerfilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL()();
         $alter_tage  = (int)$Einstellungen['rss']['rss_alterTage'];
         if (!$alter_tage) {
             $alter_tage = 14;

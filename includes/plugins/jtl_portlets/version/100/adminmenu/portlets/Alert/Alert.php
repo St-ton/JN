@@ -14,10 +14,9 @@ class Alert extends \OPC\Portlet
 {
     public function getPreviewHtml($instance)
     {
-        $text = $instance->getProperty('some-text');
         $instance->addClass('alert alert-' . $instance->getProperty('type-select'));
 
-        return "<div {$instance->getAttributeString()} {$instance->getDataAttributeString()} role='alert'>$text</div>";
+        return $this->getPreviewHtmlFromTpl($instance);
     }
 
     public function getFinalHtml($instance)
@@ -25,7 +24,8 @@ class Alert extends \OPC\Portlet
         $text = $instance->getProperty('some-text');
         $instance->addClass('alert alert-' . $instance->getProperty('type-select'));
 
-        return "<div {$instance->getAttributeString()} role='alert'>$text</div>";
+
+        return $this->getFinalHtmlFromTpl($instance);
     }
 
     public function getButtonHtml()

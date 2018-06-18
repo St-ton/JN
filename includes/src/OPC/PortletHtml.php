@@ -48,10 +48,18 @@ trait PortletHtml
      */
     final protected function getPreviewHtmlFromTpl($instance)
     {
-        return (new \JTLSmarty(true))
+        $smarty     = new \JTLSmarty(true);
+        $pathprefix = '';
+
+        if ($this->getPlugin() !== null) {
+            $pathprefix = PFAD_ROOT . PFAD_PLUGIN . $this->getPlugin()->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION
+                . $this->getPlugin()->getCurrentVersion() . '/' . PFAD_PLUGIN_ADMINMENU  . '/';
+        }
+
+        return $smarty
             ->assign('portlet', $this)
             ->assign('instance', $instance)
-            ->fetch('portlets/' . $this->getClass() . '/preview.tpl');
+            ->fetch($pathprefix . 'portlets/' . $this->getClass() . '/preview.tpl');
     }
 
     /**
@@ -61,10 +69,18 @@ trait PortletHtml
      */
     final protected function getFinalHtmlFromTpl($instance)
     {
-        return \Shop::Smarty()
+        $smarty     = \Shop::Smarty();
+        $pathprefix = '';
+
+        if ($this->getPlugin() !== null) {
+            $pathprefix = PFAD_ROOT . PFAD_PLUGIN . $this->getPlugin()->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION
+                . $this->getPlugin()->getCurrentVersion() . '/' . PFAD_PLUGIN_ADMINMENU  . '/';
+        }
+
+        return $smarty
             ->assign('portlet', $this)
             ->assign('instance', $instance)
-            ->fetch('portlets/' . $this->getClass() . '/final.tpl');
+            ->fetch($pathprefix . 'portlets/' . $this->getClass() . '/final.tpl');
     }
 
     /**
@@ -74,10 +90,18 @@ trait PortletHtml
      */
     final protected function getConfigPanelHtmlFromTpl($instance)
     {
-        return (new \JTLSmarty(true))
+        $smarty     = (new \JTLSmarty(true));
+        $pathprefix = '';
+
+        if ($this->getPlugin() !== null) {
+            $pathprefix = PFAD_ROOT . PFAD_PLUGIN . $this->getPlugin()->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION
+                . $this->getPlugin()->getCurrentVersion() . '/' . PFAD_PLUGIN_ADMINMENU  . '/';
+        }
+
+        return $smarty
             ->assign('portlet', $this)
             ->assign('instance', $instance)
-            ->fetch('portlets/' . $this->getClass() . '/configpanel.tpl');
+            ->fetch($pathprefix . 'portlets/' . $this->getClass() . '/configpanel.tpl');
     }
 
     /**

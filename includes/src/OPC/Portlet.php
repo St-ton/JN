@@ -191,7 +191,7 @@ abstract class Portlet implements \JsonSerializable
     }
 
     /**
-     * @return null|\Plugin
+     * @return \Plugin
      */
     public function getPlugin()
     {

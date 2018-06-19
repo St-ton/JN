@@ -384,17 +384,21 @@ class Navigation
                 break;
 
             case PAGE_NEWSLETTER:
-                $ele->setName($this->link->getName());
-                $ele->setURL($this->link->getURL());
-                $ele->setURLFull($this->baseURL . $this->link->getURL());
-                $breadCrumb[] = $ele;
+                if ($this->link !== null) {
+                    $ele->setName($this->link->getName());
+                    $ele->setURL($this->link->getURL());
+                    $ele->setURLFull($this->baseURL . $this->link->getURL());
+                    $breadCrumb[] = $ele;
+                }
                 break;
 
             case PAGE_UMFRAGE:
-                $ele->setName($this->link->getName());
-                $ele->setURL($this->link->getURL());
-                $ele->setURLFull($this->baseURL . $this->link->getURL());
-                $breadCrumb[] = $ele;
+                if ($this->link !== null) {
+                    $ele->setName($this->link->getName());
+                    $ele->setURL($this->link->getURL());
+                    $ele->setURLFull($this->baseURL . $this->link->getURL());
+                    $breadCrumb[] = $ele;
+                }
                 break;
 
             case PAGE_NEWSDETAIL:

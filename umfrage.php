@@ -19,6 +19,7 @@ $oUmfrageFrageTMP_arr   = [];
 $Einstellungen          = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_UMFRAGE]);
 $linkHelper             = Shop::Container()->getLinkService();
 $kLink                  = $linkHelper->getSpecialPageLinkKey(LINKTYP_UMFRAGE);
+$link                   = (new \Link\Link(Shop::Container()->getDB()))->load($kLink);
 $AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;

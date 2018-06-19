@@ -27,11 +27,10 @@ class Migration_20180615100733 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute("UPDATE tsprachwerte SET cWert='valid until' WHERE cName='validUntil' AND kSprachISO=2");
+        $this->setLocalization('eng', 'global', 'validUntil', 'valid until');
     }
 
     public function down()
     {
-        $this->execute("UPDATE tsprachwerte SET cWert='G&uuml;ltig bis' WHERE cName='validUntil' AND kSprachISO=2");
     }
 }

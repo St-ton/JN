@@ -10,6 +10,7 @@
  */
 function gibVaterSQL()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return SearchSpecialHelper::getParentSQL();
 }
 
@@ -21,6 +22,7 @@ function gibVaterSQL()
  */
 function gibTopAngebote(int $nLimit = 20, int $kKundengruppe = 0)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return SearchSpecialHelper::getTopOffers($nLimit, $kKundengruppe);
 }
 
@@ -32,6 +34,7 @@ function gibTopAngebote(int $nLimit = 20, int $kKundengruppe = 0)
  */
 function randomizeAndLimit(array $arr, int $limit = 1)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return SearchSpecialHelper::randomizeAndLimit($arr, $limit);
 }
 
@@ -43,6 +46,7 @@ function randomizeAndLimit(array $arr, int $limit = 1)
  */
 function gibBestseller(int $nLimit = 20, int $kKundengruppe = 0)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return SearchSpecialHelper::getBestsellers($nLimit, $kKundengruppe);
 }
 
@@ -54,6 +58,7 @@ function gibBestseller(int $nLimit = 20, int $kKundengruppe = 0)
  */
 function gibSonderangebote(int $nLimit = 20, int $kKundengruppe = 0)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return SearchSpecialHelper::getSpecialOffers($nLimit, $kKundengruppe);
 }
 
@@ -65,5 +70,6 @@ function gibSonderangebote(int $nLimit = 20, int $kKundengruppe = 0)
  */
 function gibNeuImSortiment(int $nLimit, int $kKundengruppe = 0)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return SearchSpecialHelper::getNewProducts($nLimit, $kKundengruppe);
 }

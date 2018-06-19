@@ -3,51 +3,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-include PFAD_ROOT . PFAD_INCLUDES . 'spiderlist_inc.php';
-
-$userAgent    = $_SERVER['HTTP_USER_AGENT'] ?? '';
-$kBesucherBot = Visitor::isSpider($userAgent);
-// check, if the visitor is a bot and save that
-if ($kBesucherBot > 0) {
-    Shop::Container()->getDB()->queryPrepared(
-        'UPDATE tbesucherbot SET dZeit = now() WHERE kBesucherBot = :_kBesucherBot',
-        ['_kBesucherBot' => $kBesucherBot],
-        \DB\ReturnType::AFFECTED_ROWS
-    );
-}
-// cleanup `tbesucher`
-Visitor::archive();
-
-$oVisitor = Visitor::dbLookup($userAgent, RequestHelper::getIP());
-if (null === $oVisitor) {
-    if (isset($_SESSION['oBesucher'])) {
-        // update the session-object with a new kBesucher-ID(!) (re-write it in the session at the end of the script)
-        $oVisitor = Visitor::updateVisitorObject($_SESSION['oBesucher'], 0, $userAgent, $kBesucherBot);
-    } else {
-        // create a new visitor-object
-        $oVisitor = Visitor::createVisitorObject($userAgent, $kBesucherBot);
-    }
-    // get back the new ID of that visitor (and write it back into the session)
-    $oVisitor->kBesucher = Visitor::dbInsert($oVisitor);
-    // allways increment the visitor-counter (if no bot)
-    Shop::Container()->getDB()->query("UPDATE tbesucherzaehler SET nZaehler = nZaehler + 1",
-        \DB\ReturnType::AFFECTED_ROWS
-    );
-} else {
-    // prevent counting internal redirects by counting only the next request above 3 seconds
-    $iTimeDiff = (new DateTime())->getTimestamp() - (new DateTime($oVisitor->dLetzteAktivitaet))->getTimestamp();
-    if (2 < $iTimeDiff) {
-        $oVisitor = Visitor::updateVisitorObject($oVisitor, $oVisitor->kBesucher, $userAgent, $kBesucherBot);
-        // update the db and simultaneously retrieve the ID to update the session below
-        $oVisitor->kBesucher = Visitor::dbUpdate($oVisitor, $oVisitor->kBesucher);
-    } else {
-        // time-diff is to low! so we do nothing but update this "last-action"-time in the session
-        $oVisitor->dLetzteAktivitaet = (new \DateTime())->format('Y-m-d H:i:s');
-    }
-}
-// "update" the session
-$_SESSION['oBesucher'] = $oVisitor;
-
 
 /**
  * @param string $szUserAgent

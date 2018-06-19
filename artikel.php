@@ -38,16 +38,16 @@ $fBelohnung = (isset($_GET['fB']) && (float)$_GET['fB'] > 0) ? (float)$_GET['fB'
 $cHinweis = $smarty->getTemplateVars('hinweis');
 $shopURL  = Shop::getURL() . '/';
 if (empty($cHinweis)) {
-    $cHinweis = mappingFehlerCode(RequestHelper::verifyGPDataString('cHinweis'), $fBelohnung);
+    $cHinweis = ArtikelHelper::mapErrorCode(RequestHelper::verifyGPDataString('cHinweis'), $fBelohnung);
 }
 $cFehler = $smarty->getTemplateVars('fehler');
 if (empty($cFehler)) {
-    $cFehler = mappingFehlerCode(RequestHelper::verifyGPDataString('cFehler'));
+    $cFehler = ArtikelHelper::mapErrorCode(RequestHelper::verifyGPDataString('cFehler'));
 }
 // Product Bundle in WK?
 if (isset($_POST['a'])
     && RequestHelper::verifyGPCDataInt('addproductbundle') === 1
-    && ProductBundleWK($_POST['a'])
+    && ArtikelHelper::addProductBundleToCart($_POST['a'])
 ) {
     $cHinweis       = Shop::Lang()->get('basketAllAdded', 'messages');
     Shop::$kArtikel = (int)$_POST['aBundle'];
@@ -107,7 +107,7 @@ if (Shop::$kVariKindArtikel > 0) {
     $oVariKindArtikel->verfuegbarkeitsBenachrichtigung = ArtikelHelper::showAvailabilityForm(
         $oVariKindArtikel,
         $Einstellungen['artikeldetails']['benachrichtigung_nutzen']);
-    $AktuellerArtikel = fasseVariVaterUndKindZusammen($AktuellerArtikel, $oVariKindArtikel);
+    $AktuellerArtikel = ArtikelHelper::combineParentAndChild($AktuellerArtikel, $oVariKindArtikel);
     $bCanonicalURL    = $Einstellungen['artikeldetails']['artikeldetails_canonicalurl_varkombikind'] !== 'N';
     $cCanonicalURL    = $AktuellerArtikel->baueVariKombiKindCanonicalURL(SHOP_SEO, $AktuellerArtikel, $bCanonicalURL);
 }
@@ -127,12 +127,12 @@ if (empty($cCanonicalURL)) {
     $cCanonicalURL = $shopURL . $AktuellerArtikel->cSeo;
 }
 $AktuellerArtikel->berechneSieSparenX($Einstellungen['artikeldetails']['sie_sparen_x_anzeigen']);
-baueArtikelhinweise();
+ArtikelHelper::getProductMessages();
 
 if (isset($_POST['fragezumprodukt']) && (int)$_POST['fragezumprodukt'] === 1) {
-    bearbeiteFrageZumProdukt();
+    ArtikelHelper::checkProductQuestion();
 } elseif (isset($_POST['benachrichtigung_verfuegbarkeit']) && (int)$_POST['benachrichtigung_verfuegbarkeit'] === 1) {
-    bearbeiteBenachrichtigung();
+    ArtikelHelper::checkAvailabilityMessage();
 }
 // hole aktuelle Kategorie, falls eine gesetzt
 $kKategorie             = $AktuellerArtikel->gibKategorie();
@@ -203,7 +203,7 @@ $nAnzahlBewertungen = $bewertung_sterne === 0
     ? $AktuellerArtikel->Bewertungen->nAnzahlSprache
     : $AktuellerArtikel->Bewertungen->nSterne_arr[5 - $bewertung_sterne];
 // Baue Blaetter Navigation
-$oBlaetterNavi = baueBewertungNavi(
+$oBlaetterNavi = ArtikelHelper::getRatingNavigation(
     $bewertung_seite,
     $bewertung_sterne,
     $nAnzahlBewertungen,
@@ -211,19 +211,19 @@ $oBlaetterNavi = baueBewertungNavi(
 );
 // Konfig bearbeiten
 if (RequestHelper::hasGPCData('ek')) {
-    holeKonfigBearbeitenModus(RequestHelper::verifyGPCDataInt('ek'), $smarty);
+    ArtikelHelper::getEditConfigMode(RequestHelper::verifyGPCDataInt('ek'), $smarty);
 }
 if ($AktuellerArtikel->Variationen) {
     foreach ($AktuellerArtikel->Variationen as $Variation) {
         if ($Variation->Werte && $Variation->cTyp !== 'FREIFELD' && $Variation->cTyp !== 'PFLICHT-FREIFELD') {
             foreach ($Variation->Werte as $Wert) {
-                $nonAllowed[$Wert->kEigenschaftWert] = gibNichtErlaubteEigenschaftswerte($Wert->kEigenschaftWert);
+                $nonAllowed[$Wert->kEigenschaftWert] = ArtikelHelper::getNonAllowedAttributeValues($Wert->kEigenschaftWert);
             }
         }
     }
 }
 $nav = $Einstellungen['artikeldetails']['artikeldetails_navi_blaettern'] === 'Y'
-    ? gibNaviBlaettern($AktuellerArtikel->kArtikel, $AktuelleKategorie->kKategorie)
+    ? ArtikelHelper::getProductNavigation($AktuellerArtikel->kArtikel, $AktuelleKategorie->kKategorie)
     : null;
 
 $smarty->assign('showMatrix', $AktuellerArtikel->showMatrix())
@@ -233,8 +233,8 @@ $smarty->assign('showMatrix', $AktuellerArtikel->showMatrix())
        ->assign('UVPBruttolocalized', Preise::getLocalizedPriceString($AktuellerArtikel->fUVPBrutto))
        ->assign('Artikel', $AktuellerArtikel)
        ->assign('Xselling', !empty($AktuellerArtikel->kVariKindArtikel)
-           ? gibArtikelXSelling($AktuellerArtikel->kVariKindArtikel)
-           : gibArtikelXSelling($AktuellerArtikel->kArtikel, $AktuellerArtikel->nIstVater > 0))
+           ? ArtikelHelper::getXSelling($AktuellerArtikel->kVariKindArtikel)
+           : ArtikelHelper::getXSelling($AktuellerArtikel->kArtikel, $AktuellerArtikel->nIstVater > 0))
        ->assign('Artikelhinweise', $Artikelhinweise)
        ->assign('PositiveFeedback', $PositiveFeedback)
        ->assign('verfuegbarkeitsBenachrichtigung', ArtikelHelper::showAvailabilityForm(
@@ -242,7 +242,7 @@ $smarty->assign('showMatrix', $AktuellerArtikel->showMatrix())
            $Einstellungen['artikeldetails']['benachrichtigung_nutzen']))
        ->assign('code_fragezumprodukt', false)
        ->assign('code_benachrichtigung_verfuegbarkeit', false)
-       ->assign('ProdukttagHinweis', bearbeiteProdukttags($AktuellerArtikel))
+       ->assign('ProdukttagHinweis', ArtikelHelper::editProductTags($AktuellerArtikel))
        ->assign('ProduktTagging', $AktuellerArtikel->tags)
        ->assign('BlaetterNavi', $oBlaetterNavi)
        ->assign('BewertungsTabAnzeigen', $BewertungsTabAnzeigen)

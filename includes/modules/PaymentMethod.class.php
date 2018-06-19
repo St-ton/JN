@@ -729,7 +729,7 @@ class PaymentMethod
         $oTmpPlugin    = $oPlugin;
         $paymentMethod = null;
         // Zahlungsart als Plugin
-        $kPlugin = gibkPluginAuscModulId($moduleId);
+        $kPlugin = Plugin::getIDByModuleID($moduleId);
         if ($kPlugin > 0) {
             $oPlugin            = new Plugin($kPlugin);
             $GLOBALS['oPlugin'] = $oPlugin;

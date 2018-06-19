@@ -1423,7 +1423,7 @@ function getPaymentSurchageDiscount($Zahlungsart)
  */
 function gibPluginZahlungsart($cModulId)
 {
-    $kPlugin = gibkPluginAuscModulId($cModulId);
+    $kPlugin = Plugin::getIDByModuleID($cModulId);
     if ($kPlugin > 0) {
         $oPlugin = new Plugin($kPlugin);
         if ($oPlugin->kPlugin > 0) {
@@ -1684,12 +1684,12 @@ function zahlungsartGueltig($Zahlungsart)
     }
     // Interne Zahlungsartpruefung ob wichtige Parameter gesetzt sind
     require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
-    $kPlugin = gibkPluginAuscModulId($Zahlungsart->cModulId);
+    $kPlugin = Plugin::getIDByModuleID($Zahlungsart->cModulId);
     if ($kPlugin > 0) {
         $oPlugin = new Plugin($kPlugin);
         if ($oPlugin->kPlugin > 0) {
             // Plugin muss aktiv sein
-            if ($oPlugin->nStatus != 2) {
+            if ($oPlugin->nStatus !== Plugin::PLUGIN_ACTIVATED) {
                 return false;
             }
             require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' .
@@ -1713,7 +1713,7 @@ function zahlungsartGueltig($Zahlungsart)
                 return false;
             }
             // Lizenzprüfung
-            if (!pluginLizenzpruefung($oPlugin, ['cModulId' => $Zahlungsart->cModulId])) {
+            if (!Plugin::licenseCheck($oPlugin, ['cModulId' => $Zahlungsart->cModulId])) {
                 return false;
             }
 

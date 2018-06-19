@@ -111,7 +111,7 @@ if (RequestHelper::verifyGPCDataInt('zusatzschritt') === 1) {
     }
 }
 // Zahlungsart als Plugin
-$kPlugin = gibkPluginAuscModulId($bestellung->Zahlungsart->cModulId);
+$kPlugin = Plugin::getIDByModuleID($bestellung->Zahlungsart->cModulId);
 if ($kPlugin > 0) {
     $oPlugin = new Plugin($kPlugin);
     if ($oPlugin->kPlugin > 0) {

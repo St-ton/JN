@@ -982,7 +982,7 @@ function setzeSmartyWeiterleitung($bestellung)
         );
     }
     // Zahlungsart als Plugin
-    $kPlugin = gibkPluginAuscModulId($_SESSION['Zahlungsart']->cModulId);
+    $kPlugin = Plugin::getIDByModuleID($_SESSION['Zahlungsart']->cModulId);
     if ($kPlugin > 0) {
         $oPlugin            = new Plugin($kPlugin);
         $GLOBALS['oPlugin'] = $oPlugin;

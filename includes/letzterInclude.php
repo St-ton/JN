@@ -5,7 +5,6 @@
  */
 
 $smarty        = Shop::Smarty();
-$oBrowser      = getBrowser();
 $oTemplate     = Template::getInstance();
 $tplDir        = PFAD_TEMPLATES . $oTemplate->getDir() . '/';
 $shopLogo      = Shop::getLogo();
@@ -108,7 +107,6 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('oSpezialseiten_arr', $linkHelper->getSpecialPages())
        ->assign('bNoIndex', $linkHelper->checkNoIndex())
        ->assign('bAjaxRequest', RequestHelper::isAjaxRequest())
-       ->assign('oBrowser', $oBrowser)
        ->assign('jtl_token', FormHelper::getTokenInput())
        ->assign('ShopLogoURL', $shopLogo)
        ->assign('ShopLogoURL_abs', $shopLogo === '' ? '' : ($shopURL . $shopLogo))
@@ -151,6 +149,7 @@ if (isset($breadCrumbName, $breadCrumbURL)) {
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'besucher.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
+Visitor::generateData();
 Kampagne::checkCampaignParameters();
 Sprache::generateLanguageAndCurrencyLinks();
 $oExtension = (new ExtensionPoint($pagetType, Shop::getParameters(), Shop::getLanguageID(), $kKundengruppe))->load();

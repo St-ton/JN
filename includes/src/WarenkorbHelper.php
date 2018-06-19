@@ -1483,7 +1483,7 @@ class WarenkorbHelper
                 }
             }
         }
-        self::delteAllSpecialPositions();
+        self::deleteAllSpecialPositions();
         if (!$cart->enthaltenSpezialPos(C_WARENKORBPOS_TYP_ARTIKEL)) {
             unset($_SESSION['Kupon']);
             $_SESSION['Warenkorb'] = new Warenkorb();
@@ -1697,7 +1697,7 @@ class WarenkorbHelper
             ) {
                 $oKuponTmp = $_SESSION['Kupon'];
             }
-            self::delteAllSpecialPositions();
+            self::deleteAllSpecialPositions();
             if (isset($oKuponTmp->kKupon) && $oKuponTmp->kKupon > 0) {
                 $_SESSION['Kupon'] = $oKuponTmp;
                 foreach ($cart->PositionenArr as $i => $oWKPosition) {
@@ -1776,7 +1776,7 @@ class WarenkorbHelper
      * @former loescheAlleSpezialPos()
      * @since 5.0.0
      */
-    public static function delteAllSpecialPositions()
+    public static function deleteAllSpecialPositions()
     {
         Session::Cart()
                ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)

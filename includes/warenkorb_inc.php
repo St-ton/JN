@@ -49,7 +49,7 @@ function checkeSchnellkauf()
 function loescheAlleSpezialPos()
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    WarenkorbHelper::delteAllSpecialPositions();
+    WarenkorbHelper::deleteAllSpecialPositions();
 }
 
 /**

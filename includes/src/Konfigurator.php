@@ -83,58 +83,52 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public static function postcheckBasket(&$oBasket)
         {
-            // TODO: bIgnoreLimits
-            // REF: $_POST['konfig_ignore_limits']
-
-            if (!function_exists('loescheWarenkorbPositionen')) {
-                require_once PFAD_INCLUDES . 'warenkorb_inc.php';
+            if (!is_array($oBasket->PositionenArr) || count($oBasket->PositionenArr) === 0) {
+                return;
             }
+            $beDeletednPos_arr = [];
+            foreach ($oBasket->PositionenArr as $nPos => $oPosition) {
+                $bDeleted = false;
+                if ($oPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
+                    // Konfigvater
+                    if ($oPosition->cUnique && $oPosition->kKonfigitem == 0) {
+                        $oKonfigitem_arr = [];
 
-            if (is_array($oBasket->PositionenArr) && count($oBasket->PositionenArr) > 0) {
-                $beDeletednPos_arr = [];
-                foreach ($oBasket->PositionenArr as $nPos => $oPosition) {
-                    $bDeleted = false;
-                    if ($oPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
-                        // Konfigvater
-                        if ($oPosition->cUnique && $oPosition->kKonfigitem == 0) {
-                            $oKonfigitem_arr = [];
-
-                            // Alle Kinder suchen
-                            foreach ($oBasket->PositionenArr as $oChildPosition) {
-                                if ($oChildPosition->cUnique &&
-                                    $oChildPosition->cUnique === $oPosition->cUnique
-                                    && $oChildPosition->kKonfigitem > 0
-                                ) {
-                                    $oKonfigitem_arr[] = new Konfigitem($oChildPosition->kKonfigitem);
-                                }
-                            }
-
-                            // Konfiguration validieren
-                            if (self::validateBasket($oPosition->kArtikel, $oKonfigitem_arr) !== true) {
-                                $bDeleted = true;
-                                $beDeletednPos_arr[] = $nPos;
-                                //loescheWarenkorbPosition($nPos);
-                            }
-                        } // Standardartikel ebenfalls auf eine mögliche Konfiguration prüfen
-                        elseif (!$oPosition->cUnique) {
-                            // Konfiguration vorhanden -> löschen
-                            if (self::hasKonfig($oPosition->kArtikel)) {
-                                $bDeleted = true;
-                                $beDeletednPos_arr[] = $nPos;
-                                //loescheWarenkorbPosition($nPos);
+                        // Alle Kinder suchen
+                        foreach ($oBasket->PositionenArr as $oChildPosition) {
+                            if ($oChildPosition->cUnique &&
+                                $oChildPosition->cUnique === $oPosition->cUnique
+                                && $oChildPosition->kKonfigitem > 0
+                            ) {
+                                $oKonfigitem_arr[] = new Konfigitem($oChildPosition->kKonfigitem);
                             }
                         }
 
-                        if ($bDeleted) {
-                            // $Warenkorbhinweise
-                            $cISO = $_SESSION['cISOSprache'];
-                            Jtllog::writeLog('Validierung der Konfiguration fehlgeschlagen - Warenkorbposition wurde entfernt: ' .
-                                $oPosition->cName[$cISO] . '(' . $oPosition->kArtikel . ')');
+                        // Konfiguration validieren
+                        if (self::validateBasket($oPosition->kArtikel, $oKonfigitem_arr) !== true) {
+                            $bDeleted = true;
+                            $beDeletednPos_arr[] = $nPos;
+                            //loescheWarenkorbPosition($nPos);
+                        }
+                    } // Standardartikel ebenfalls auf eine mögliche Konfiguration prüfen
+                    elseif (!$oPosition->cUnique) {
+                        // Konfiguration vorhanden -> löschen
+                        if (self::hasKonfig($oPosition->kArtikel)) {
+                            $bDeleted = true;
+                            $beDeletednPos_arr[] = $nPos;
+                            //loescheWarenkorbPosition($nPos);
                         }
                     }
+
+                    if ($bDeleted) {
+                        // $Warenkorbhinweise
+                        $cISO = $_SESSION['cISOSprache'];
+                        Jtllog::writeLog('Validierung der Konfiguration fehlgeschlagen - Warenkorbposition wurde entfernt: ' .
+                            $oPosition->cName[$cISO] . '(' . $oPosition->kArtikel . ')');
+                    }
                 }
-                loescheWarenkorbPositionen($beDeletednPos_arr);
             }
+            WarenkorbHelper::deleteCartPositions($beDeletednPos_arr);
         }
 
         /**

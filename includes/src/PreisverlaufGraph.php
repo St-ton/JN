@@ -422,7 +422,7 @@ class PreisverlaufGraph
      * @param int $nMonat
      * @return array
      */
-    public function holePreisverlauf(int $kArtikel, int $kKundegruppe, int $nMonat)
+    public function holePreisverlauf(int $kArtikel, int $kKundegruppe, int $nMonat): array
     {
         $oPreisverlauf_arr = Shop::Container()->getDB()->queryPrepared(
             'SELECT fVKNetto, UNIX_TIMESTAMP(dDate) AS timestamp
@@ -473,7 +473,7 @@ class PreisverlaufGraph
      * @param int $nMonat
      * @return bool
      */
-    public function berechneMinMaxPreis(int $kArtikel, $kKundegruppe, $nMonat)
+    public function berechneMinMaxPreis(int $kArtikel, int $kKundegruppe, int $nMonat): bool
     {
         $this->oPreisverlaufData_arr = $this->holePreisverlauf($kArtikel, $kKundegruppe, $nMonat);
 

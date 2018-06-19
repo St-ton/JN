@@ -255,7 +255,7 @@ final class Link extends AbstractLink
             }
             $this->setParent((int)$link->kVaterLink);
             $this->setPluginID((int)$link->kPlugin);
-            $this->setPluginEnabled($link->pluginState === null || (int)$link->pluginState === 2);
+            $this->setPluginEnabled($link->pluginState === null || (int)$link->pluginState === \Plugin::PLUGIN_ACTIVATED);
             $this->setLinkGroups(array_unique(array_map('intval', explode(',', $link->linkGroups))));
             $this->setLinkGroupID((int)$this->linkGroups[0]);
             $this->setLinkType((int)$link->nLinkart);

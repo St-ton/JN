@@ -728,12 +728,13 @@ final class Shop
     {
         $cacheID = 'plgnbtsrp';
         if (($plugins = self::Cache()->get($cacheID)) === false) {
-            $plugins = self::Container()->getDB()->query(
+            $plugins = self::Container()->getDB()->queryPrepared(
                 'SELECT kPlugin 
                     FROM tplugin 
-                    WHERE nStatus = 2 
+                    WHERE nStatus = :state
                       AND bBootstrap = 1 
                     ORDER BY nPrio ASC',
+                ['state' => Plugin::PLUGIN_ACTIVATED],
                 \DB\ReturnType::ARRAY_OF_OBJECTS) ?: [];
             self::Cache()->set($cacheID, $plugins, [CACHING_GROUP_PLUGIN]);
         }
@@ -946,7 +947,7 @@ final class Shop
                 : 1)
             : false;
         // Fremdparameter
-        $seo = extFremdeParameter($seo);
+        $seo = RequestHelper::extractExternalParams($seo);
         if ($seo) {
             foreach (self::$productFilter->getCustomFilters() as $customFilter) {
                 $seoParam = $customFilter->getUrlParamSEO();

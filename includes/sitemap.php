@@ -5,7 +5,6 @@
  */
 define('JTL_INCLUDE_ONLY_DB', 1);
 require_once __DIR__ . '/globalinclude.php';
-include PFAD_ROOT . PFAD_INCLUDES . 'spiderlist_inc.php';
 
 $cDatei = isset($_GET['datei'])
     ? getRequestFile($_GET['datei'])
@@ -46,11 +45,9 @@ sendRequestFile($cDatei);
  */
 function getRequestBot()
 {
-    $cSpider_arr       = getSpiderArr();
-    $cBotUserAgent_arr = array_keys($cSpider_arr);
-    foreach ($cBotUserAgent_arr as $cBotUserAgent) {
-        if (stripos($_SERVER['HTTP_USER_AGENT'], $cBotUserAgent) !== false) {
-            $oBesucherBot = Shop::Container()->getDB()->select('tbesucherbot', 'cUserAgent', $cBotUserAgent);
+    foreach (array_keys(Visitor::getSpiders()) as $agent) {
+        if (stripos($_SERVER['HTTP_USER_AGENT'], $agent) !== false) {
+            $oBesucherBot = Shop::Container()->getDB()->select('tbesucherbot', 'cUserAgent', $agent);
 
             return isset($oBesucherBot->kBesucherBot) ? (int)$oBesucherBot->kBesucherBot : 0;
         }

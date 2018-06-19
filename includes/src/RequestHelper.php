@@ -347,4 +347,30 @@ class RequestHelper
             || (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
                 && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest');
     }
+
+    /**
+     * Affiliate trennen
+     *
+     * @param string|bool $seo
+     * @return string|bool
+     * @former extFremdeParameter()
+     * @since 5.0.0
+     */
+    public static function extractExternalParams($seo)
+    {
+        $oSeo_arr = preg_split('/[' . EXT_PARAMS_SEPERATORS_REGEX . ']+/', $seo);
+        if (is_array($oSeo_arr) && count($oSeo_arr) > 1) {
+            $seo = $oSeo_arr[0];
+            $cnt = count($oSeo_arr);
+            for ($i = 1; $i < $cnt; $i++) {
+                $keyValue = explode('=', $oSeo_arr[$i]);
+                if (count($keyValue) > 1) {
+                    list($cName, $cWert)                = $keyValue;
+                    $_SESSION['FremdParameter'][$cName] = $cWert;
+                }
+            }
+        }
+
+        return $seo;
+    }
 }

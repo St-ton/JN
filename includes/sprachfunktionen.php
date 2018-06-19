@@ -132,7 +132,7 @@ function lang_suche_mindestanzahl($suchausdruck, $anzahl)
  * @param int $status
  * @return mixed
  */
-function lang_bestellstatus($status)
+function lang_bestellstatus(int $status)
 {
     switch ($status) {
         case BESTELLUNG_STATUS_OFFEN:
@@ -158,13 +158,13 @@ function lang_bestellstatus($status)
  * @param int       $kKonfigitem
  * @return string
  */
-function lang_mindestbestellmenge($Artikel, $beabsichtigteKaufmenge, $kKonfigitem = 0)
+function lang_mindestbestellmenge($Artikel, $beabsichtigteKaufmenge, int $kKonfigitem = 0)
 {
     if ($Artikel->cEinheit) {
         $Artikel->cEinheit = ' ' . $Artikel->cEinheit;
     }
     $cName = $Artikel->cName;
-    if ((int)$kKonfigitem > 0 && class_exists('Konfigitem')) {
+    if ($kKonfigitem > 0 && class_exists('Konfigitem')) {
         $cName = (new Konfigitem($kKonfigitem))->getName();
     }
 

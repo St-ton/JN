@@ -6,81 +6,24 @@
 
 /**
  * @return array
+ * @deprecated since 5.0.0
  */
 function gibSuchSpalten()
 {
-    $cSuchspalten_arr = [];
-    for ($i = 0; $i < 10; ++$i) {
-        $cSuchspalten_arr[] = gibMaxPrioSpalte($cSuchspalten_arr);
-    }
-    // Leere Spalten entfernen
-    if (is_array($cSuchspalten_arr) && count($cSuchspalten_arr) > 0) {
-        foreach ($cSuchspalten_arr as $i => $cSuchspalten) {
-            if (strlen($cSuchspalten) === 0) {
-                unset($cSuchspalten_arr[$i]);
-            }
-        }
-        $cSuchspalten_arr = array_merge($cSuchspalten_arr);
-    }
-
-    return $cSuchspalten_arr;
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    return \Filter\States\BaseSearchQuery::getSearchRows(Shop::getSettings([CONF_ARTIKELUEBERSICHT]));
 }
 
 /**
  * @param array $exclude
+ * @param array $conf
  * @return string
+ * @deprecated since 5.0.0
  */
-function gibMaxPrioSpalte($exclude)
+function gibMaxPrioSpalte($exclude, $conf = null)
 {
-    $max             = 0;
-    $aktEle          = '';
-    $cTabellenPrefix = 'tartikel.';
-    $conf            = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
-
-    if (!Sprache::isDefaultLanguageActive()) {
-        $cTabellenPrefix = 'tartikelsprache.';
-    }
-    if (!in_array($cTabellenPrefix . 'cName', $exclude, true) && $conf['artikeluebersicht']['suche_prio_name'] > $max) {
-        $max    = $conf['artikeluebersicht']['suche_prio_name'];
-        $aktEle = $cTabellenPrefix . 'cName';
-    }
-    if (!in_array($cTabellenPrefix . 'cSeo', $exclude, true) && $conf['artikeluebersicht']['suche_prio_name'] > $max) {
-        $max    = $conf['artikeluebersicht']['suche_prio_name'];
-        $aktEle = $cTabellenPrefix . 'cSeo';
-    }
-    if (!in_array('tartikel.cSuchbegriffe', $exclude, true) && $conf['artikeluebersicht']['suche_prio_suchbegriffe'] > $max) {
-        $max    = $conf['artikeluebersicht']['suche_prio_suchbegriffe'];
-        $aktEle = 'tartikel.cSuchbegriffe';
-    }
-    if (!in_array('tartikel.cArtNr', $exclude, true) && $conf['artikeluebersicht']['suche_prio_artikelnummer'] > $max) {
-        $max    = $conf['artikeluebersicht']['suche_prio_artikelnummer'];
-        $aktEle = 'tartikel.cArtNr';
-    }
-    if (!in_array($cTabellenPrefix . 'cKurzBeschreibung', $exclude, true) && $conf['artikeluebersicht']['suche_prio_kurzbeschreibung'] > $max) {
-        $max    = $conf['artikeluebersicht']['suche_prio_kurzbeschreibung'];
-        $aktEle = $cTabellenPrefix . 'cKurzBeschreibung';
-    }
-    if (!in_array($cTabellenPrefix . 'cBeschreibung', $exclude, true) && $conf['artikeluebersicht']['suche_prio_beschreibung'] > $max) {
-        $max    = $conf['artikeluebersicht']['suche_prio_beschreibung'];
-        $aktEle = $cTabellenPrefix . 'cBeschreibung';
-    }
-    if (!in_array('tartikel.cBarcode', $exclude, true) && $conf['artikeluebersicht']['suche_prio_ean'] > $max) {
-        $max    = $conf['artikeluebersicht']['suche_prio_ean'];
-        $aktEle = 'tartikel.cBarcode';
-    }
-    if (!in_array('tartikel.cISBN', $exclude, true) && $conf['artikeluebersicht']['suche_prio_isbn'] > $max) {
-        $max    = $conf['artikeluebersicht']['suche_prio_isbn'];
-        $aktEle = 'tartikel.cISBN';
-    }
-    if (!in_array('tartikel.cHAN', $exclude, true) && $conf['artikeluebersicht']['suche_prio_han'] > $max) {
-        $max    = $conf['artikeluebersicht']['suche_prio_han'];
-        $aktEle = 'tartikel.cHAN';
-    }
-    if (!in_array('tartikel.cAnmerkung', $exclude, true) && $conf['artikeluebersicht']['suche_prio_anmerkung'] > $max) {
-        $aktEle = 'tartikel.cAnmerkung';
-    }
-
-    return $aktEle;
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    return \Filter\States\BaseSearchQuery::getPrioritizedRows($exclude, $conf);
 }
 
 /**

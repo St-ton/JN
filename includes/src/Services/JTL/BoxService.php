@@ -339,9 +339,10 @@ class BoxService implements BoxServiceInterface
             ? ' AND tboxen.ePosition IN (' . implode(',', $visiblePositions) . ')'
             : '';
         $cPluginAktiv     = $active
-            ? " AND (tplugin.nStatus IS NULL OR tplugin.nStatus = 2  OR tboxvorlage.eTyp != 'plugin')"
+            ? " AND (tplugin.nStatus IS NULL OR tplugin.nStatus = " .
+            \Plugin::PLUGIN_ACTIVATED . "  OR tboxvorlage.eTyp != 'plugin')"
             : '';
-        if (true || ($grouped = \Shop::Cache()->get($cacheID)) === false) {
+        if (($grouped = \Shop::Cache()->get($cacheID)) === false) {
             $sql     = 'SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, 
                        tboxen.cTitel, tboxen.ePosition, tboxensichtbar.kSeite, tboxensichtbar.nSort, 
                        tboxensichtbar.bAktiv, tboxensichtbar.cFilter, tboxvorlage.eTyp, 

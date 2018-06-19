@@ -158,7 +158,7 @@ class IOMethods
         $errors = WarenkorbHelper::addToCartCheck($Artikel, $amount, $properties);
 
         if (count($errors) > 0) {
-            $localizedErrors = baueArtikelhinweise($errors, true, $Artikel, $amount);
+            $localizedErrors = ArtikelHelper::getProductMessages($errors, true, $Artikel, $amount);
 
             $oResponse->nType  = 0;
             $oResponse->cLabel = Shop::Lang()->get('basket');
@@ -209,7 +209,7 @@ class IOMethods
         $kKundengruppe = (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0)
             ? $_SESSION['Kunde']->kKundengruppe
             : Session::CustomerGroup()->getID();
-        $oXSelling     = gibArtikelXSelling($kArtikel, $Artikel->nIstVater > 0);
+        $oXSelling     = ArtikelHelper::getXSelling($kArtikel, $Artikel->nIstVater > 0);
 
         $smarty->assign('WarenkorbVersandkostenfreiHinweis', VersandartHelper::getShippingFreeString(
             VersandartHelper::getFreeShippingMinimum($kKundengruppe),
@@ -590,13 +590,20 @@ class IOMethods
         $smarty          = Shop::Smarty();
         $oResponse       = new IOResponse();
         $Artikel         = new Artikel();
-        $articleId       = (int)($aValues['VariKindArtikel'] ?? $aValues['a']);
+        $productID       = (int)($aValues['VariKindArtikel'] ?? $aValues['a']);
         $items           = $aValues['item'] ?? [];
         $quantities      = $aValues['quantity'] ?? [];
         $variationValues = $aValues['eigenschaftwert'] ?? [];
-        $oKonfig         = buildConfig($articleId, $aValues['anzahl'], $variationValues, $items, $quantities, []);
+        $oKonfig         = ArtikelHelper::buildConfig(
+            $productID, 
+            $aValues['anzahl'], 
+            $variationValues, 
+            $items, 
+            $quantities, 
+            []
+        );
         $net             = Session::CustomerGroup()->getIsMerchant();
-        $Artikel->fuelleArtikel($articleId, null);
+        $Artikel->fuelleArtikel($productID, null);
         $Artikel->Preise->cVKLocalized[$net] =
             Preise::getLocalizedPriceString($Artikel->Preise->fVK[$net] * $aValues['anzahl'], 0, true);
 

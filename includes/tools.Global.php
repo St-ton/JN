@@ -2175,3 +2175,16 @@ function archiviereBesucher()
     trigger_error(__FUNCTION__ . ' is deprecated. Use Visitor::archive() instead.', E_USER_DEPRECATED);
     Visitor::archive();
 }
+
+/**
+ * Affiliate trennen
+ *
+ * @param string $seo
+ * @return string
+ * @deprecated since 5.0.0
+ */
+function extFremdeParameter($seo)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated. Use RequestHelper::extractExternalParams() instead.', E_USER_DEPRECATED);
+    return RequestHelper::extractExternalParams($seo);
+}

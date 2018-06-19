@@ -20,9 +20,11 @@ if (!isset($_GET['kSteuerklasse'])) {
  * @param array $data
  * @param int   $max
  * @return mixed
+ * @deprecated since 5.0.0
  */
 function expandPriceArray($data, $max)
 {
+    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
     for ($i = 1; $i <= $max; $i++) {
         if ($i > 1 && !isset($data[$i])) {
             $data[$i] = $data[$i - 1];

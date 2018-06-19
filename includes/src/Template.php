@@ -184,12 +184,13 @@ class Template
      */
     public function getPluginResources(): array
     {
-        $resourcesc = Shop::Container()->getDB()->query(
-            "SELECT * FROM tplugin_resources
+        $resourcesc = Shop::Container()->getDB()->queryPrepared(
+            'SELECT * FROM tplugin_resources
                 JOIN tplugin
                     ON tplugin.kPlugin = tplugin_resources.kPlugin
-                WHERE tplugin.nStatus = 2
-                ORDER BY tplugin_resources.priority DESC",
+                WHERE tplugin.nStatus = :state
+                ORDER BY tplugin_resources.priority DESC',
+            ['state' => Plugin::PLUGIN_ACTIVATED],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         $grouped    = \Functional\group($resourcesc, function ($e) {

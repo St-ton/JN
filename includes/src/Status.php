@@ -113,26 +113,30 @@ class Status
     {
         $sharedPlugins = [];
         $sharedHookIds = Shop::Container()->getDB()->query(
-            "SELECT nHook
+            'SELECT nHook
                 FROM tpluginhook
                 GROUP BY nHook
-                HAVING COUNT(DISTINCT kPlugin) > 1",
+                HAVING COUNT(DISTINCT kPlugin) > 1',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($sharedHookIds as $hookData) {
-            $hookId                 = (int)$hookData->nHook;
-            $sharedPlugins[$hookId] = [];
-            $plugins                = Shop::Container()->getDB()->query(
-                "SELECT DISTINCT tpluginhook.kPlugin, tplugin.cName, tplugin.cPluginID
+            $hookID                 = (int)$hookData->nHook;
+            $sharedPlugins[$hookID] = [];
+            $plugins                = Shop::Container()->getDB()->queryPrepared(
+                'SELECT DISTINCT tpluginhook.kPlugin, tplugin.cName, tplugin.cPluginID
                     FROM tpluginhook
                     INNER JOIN tplugin
                         ON tpluginhook.kPlugin = tplugin.kPlugin
-                    WHERE tpluginhook.nHook = " . $hookId . "
-                        AND tplugin.nStatus = 2",
+                    WHERE tpluginhook.nHook = :hook
+                        AND tplugin.nStatus = :state',
+                [
+                    'hook'  => $hookID,
+                    'state' => Plugin::PLUGIN_ACTIVATED
+                ],
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($plugins as $plugin) {
-                $sharedPlugins[$hookId][$plugin->cPluginID] = $plugin;
+                $sharedPlugins[$hookID][$plugin->cPluginID] = $plugin;
             }
         }
 

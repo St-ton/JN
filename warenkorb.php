@@ -19,16 +19,16 @@ $Einstellungen = Shop::getSettings([
     CONF_SONSTIGES
 ]);
 Shop::setPageType(PAGE_WARENKORB);
-$Schnellkaufhinweis       = checkeSchnellkauf();
+$Schnellkaufhinweis       = WarenkorbHelper::checkQuickBuy();
 $linkHelper               = Shop::Container()->getLinkService();
 $KuponcodeUngueltig       = false;
 $nVersandfreiKuponGueltig = false;
 $cart                     = Session::Cart();
 $kLink                    = $linkHelper->getSpecialPageLinkKey(LINKTYP_WARENKORB);
 // Warenkorbaktualisierung?
-uebernehmeWarenkorbAenderungen();
+WarenkorbHelper::applyCartChanges();
 // validiere Konfigurationen
-validiereWarenkorbKonfig();
+WarenkorbHelper::validateCartConfig();
 pruefeGuthabenNutzen();
 // Versandermittlung?
 if (isset($_POST['land'], $_POST['plz'])
@@ -127,7 +127,7 @@ if (isset($_GET['fillOut'])) {
         $MsgWarning = Shop::Lang()->get('yourbasketisempty', 'checkout');
     } elseif ((int)$_GET['fillOut'] === 10) {
         $MsgWarning = Shop::Lang()->get('missingProducts', 'checkout');
-        loescheAlleSpezialPos();
+        WarenkorbHelper::delteAllSpecialPositions();
     } elseif ((int)$_GET['fillOut'] === UPLOAD_ERROR_NEED_UPLOAD) {
         $MsgWarning = Shop::Lang()->get('missingFilesUpload', 'checkout');
     }
@@ -172,9 +172,9 @@ $smarty->assign('MsgWarning', $MsgWarning)
        ->assign('currentShippingCouponName', (!empty($_SESSION['oVersandfreiKupon']->translationList)
            ? $_SESSION['oVersandfreiKupon']->translationList
            : null))
-       ->assign('xselling', gibXSelling())
-       ->assign('oArtikelGeschenk_arr', gibGratisGeschenke($Einstellungen))
-       ->assign('BestellmengeHinweis', pruefeBestellMengeUndLagerbestand($Einstellungen))
+       ->assign('xselling', WarenkorbHelper::getXSelling())
+       ->assign('oArtikelGeschenk_arr', WarenkorbHelper::getFreeGifts($Einstellungen))
+       ->assign('BestellmengeHinweis', WarenkorbHelper::checkOrderAmountAndStock($Einstellungen))
        ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
        ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK)
        ->assign('cErrorVersandkosten', $cErrorVersandkosten ?? null)

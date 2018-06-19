@@ -255,3 +255,97 @@ function getShippingByName($cSearch)
 
     return $allShippingsByName;
 }
+
+/**
+ * @param array $shipClasses
+ * @return array $missingShippingClassCombi
+ */
+function getCombinations($base,$n){
+    $baselen = count($base);
+    if($baselen == 0){
+        return;
+    }
+    if($n == 1){
+        $return = array();
+        foreach($base as $b){
+            $return[] = array($b);
+        }
+        return $return;
+    }else{
+        //get one level lower combinations
+        $oneLevelLower = getCombinations($base,$n-1);
+        //for every one level lower combinations add one element to them that the last element of a combination is preceeded by the element which follows it in base array if there is none, does not add
+        $newCombs = array();
+        foreach($oneLevelLower as $oll){
+            $lastEl = $oll[$n-2];
+            $found = false;
+            foreach($base as  $key => $b){
+                if($b == $lastEl){
+                    $found = true;
+                    continue;
+                    //last element found
+                }
+                if($found == true){
+                    //add to combinations with last element
+                    if($key < $baselen){
+                        $tmp = $oll;
+                        $newCombination = array_slice($tmp,0);
+                        $newCombination[]=$b;
+                        $newCombs[] = array_slice($newCombination,0);
+                    }
+                }
+            }
+        }
+    }
+
+    return $newCombs;
+}
+
+/**
+ * @return array $missingShippingClassCombi
+ */
+function getMissingShippingClassCombi()
+{
+    $shippingClasses = Shop::Container()->getDB()->selectAll('tversandklasse',[],[],'kVersandklasse');
+    $shipClasses = [];
+    foreach ($shippingClasses as $sc) {
+        $shipClasses[] = $sc->kVersandklasse;
+    }
+
+    $combinationsInShippings = Shop::Container()->getDB()->selectAll('tversandart',[],[],'cVersandklassen');
+    $combinationInUse = [];
+    foreach ($combinationsInShippings as $com) {
+        $vk = trim($com->cVersandklassen);
+        $vk_arr = explode(' ',$vk);
+        if (is_array($vk_arr)) {
+            Shop::dbg($vk_arr);
+            foreach ($vk_arr as $_vk) {
+                $combinationInUse[] = trim($_vk);
+            }
+        } else {
+
+            $combinationInUse[] = trim($com->cVersandklassen);
+        }
+
+    }
+
+    Shop::dbg($combinationInUse,false,'combInUse');
+    if (false && in_array('-1',$combinationInUse)) {
+
+        return [];
+    }
+
+    $shipClasses = [1,2,3,4];
+
+    Shop::dbg($shipClasses,false,'shipClasses');
+    $len = count($shipClasses);
+    $possibleShippingClassCombinations = [];
+    for($i = 1; $i<=$len; $i++){
+        $result = getCombinations($shipClasses,$i);
+        foreach($result as $c){
+            $possibleShippingClassCombinations[]= implode("-",$c);
+        }
+    }
+
+    return array_diff($possibleShippingClassCombinations,$combinationInUse);
+}

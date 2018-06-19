@@ -589,6 +589,22 @@ if ($step === 'uebersicht') {
         }
     }
 
+    Shop::dbg('header');
+    $missingShippingClassCombis = getMissingShippingClassCombi();
+    Shop::dbg($missingShippingClassCombis, false, 'missing combis');
+    if (!empty($missingShippingClassCombis)) {
+        $cFehler .= '<p>Es sind nicht alle Versandklassenkombination von den Versandarten abgedeckt.</p>
+                        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseShippingClasses" aria-expanded="false" aria-controls="collapseShippingClasses">
+                            Fehlende Klassen anzeigen
+                        </button>
+                        <div class="collapse" id="collapseShippingClasses"><div class="row">';
+        foreach ($missingShippingClassCombis as $mscc) {
+            $cFehler .= '<div class="col-xs-12 col-sm-6">['. gibGesetzteVersandklassenUebersicht($mscc)[0].']</div>';
+        }
+        $cFehler .= '</div></div>';
+    }
+
+
     $smarty->assign('versandberechnungen', $versandberechnungen)
            ->assign('versandarten', $versandarten)
            ->assign('waehrung', $standardwaehrung->cName)

@@ -23,15 +23,17 @@
 class Migration_20180524123841 extends Migration implements IMigration
 {
     protected $author = 'Clemens Rudolph';
-    protected $description = 'removing un-used setting-values';
+    protected $description = 'remove un-used setting-values';
 
     public function up()
     {
-        $this->execute('DELETE FROM `teinstellungenconfwerte` WHERE `kEinstellungenConf` = 1427 AND `cName` IN ("Normal", "Quellcode")')
+        // corrects the setting 'bilder_artikel_gross_skalieren'
+        $this->execute('DELETE FROM `teinstellungenconfwerte` WHERE `kEinstellungenConf` = 1427 AND `cName` IN ("Normal", "Quellcode")');
     }
 
     public function down()
     {
-        $this->execute('INSERT INTO `teinstellungenconfwerte` VALUES(1427, "Normal", "N", 0), (1427, "Quellcode", "Q", 1);')
+        // corrects the setting 'bilder_artikel_gross_skalieren'
+        $this->execute('INSERT INTO `teinstellungenconfwerte` VALUES(1427, "Normal", "N", 0), (1427, "Quellcode", "Q", 1);');
     }
 }

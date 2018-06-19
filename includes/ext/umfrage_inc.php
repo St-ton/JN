@@ -222,21 +222,19 @@ function setzeUmfrageErgebnisse()
                     $oUmfrageDurchfuehrungAntwort->kUmfrageFrageAntwort = $kUmfrageFrageAntwort;
                     $oUmfrageDurchfuehrungAntwort->kUmfrageMatrixOption = $kUmfrageMatrixOption;
                     $oUmfrageDurchfuehrungAntwort->cText                = '';
+                } elseif ($cUmfrageFrageAntwort == '-1') {
+                    $oUmfrageDurchfuehrungAntwort->kUmfrageFrageAntwort = 0;
+                    $oUmfrageDurchfuehrungAntwort->kUmfrageMatrixOption = 0;
+                    $oUmfrageDurchfuehrungAntwort->cText                = !empty($oUmfrageFrage->oUmfrageFrageAntwort_arr[$i + 1])
+                        ? StringHandler::htmlentities(StringHandler::filterXSS($oUmfrageFrage->oUmfrageFrageAntwort_arr[$i + 1]))
+                        : '';
+                    array_pop($_SESSION['Umfrage']->oUmfrageFrage_arr[$j]->oUmfrageFrageAntwort_arr);
                 } else {
-                    if ($cUmfrageFrageAntwort == '-1') {
-                        $oUmfrageDurchfuehrungAntwort->kUmfrageFrageAntwort = 0;
-                        $oUmfrageDurchfuehrungAntwort->kUmfrageMatrixOption = 0;
-                        $oUmfrageDurchfuehrungAntwort->cText                = !empty($oUmfrageFrage->oUmfrageFrageAntwort_arr[$i + 1])
-                            ? StringHandler::htmlentities(StringHandler::filterXSS($oUmfrageFrage->oUmfrageFrageAntwort_arr[$i + 1]))
-                            : '';
-                        array_pop($_SESSION['Umfrage']->oUmfrageFrage_arr[$j]->oUmfrageFrageAntwort_arr);
-                    } else {
-                        $oUmfrageDurchfuehrungAntwort->kUmfrageFrageAntwort = $cUmfrageFrageAntwort;
-                        $oUmfrageDurchfuehrungAntwort->kUmfrageMatrixOption = 0;
-                        $oUmfrageDurchfuehrungAntwort->cText                = $oUmfrageFrage->nFreifeld
-                            ? $cUmfrageFrageAntwort
-                            : '';
-                    }
+                    $oUmfrageDurchfuehrungAntwort->kUmfrageFrageAntwort = $cUmfrageFrageAntwort;
+                    $oUmfrageDurchfuehrungAntwort->kUmfrageMatrixOption = 0;
+                    $oUmfrageDurchfuehrungAntwort->cText                = $oUmfrageFrage->nFreifeld
+                        ? $cUmfrageFrageAntwort
+                        : '';
                 }
 
                 Shop::Container()->getDB()->insert('tumfragedurchfuehrungantwort', $oUmfrageDurchfuehrungAntwort);

@@ -920,7 +920,7 @@ function plausiKupon($cPost_arr)
         $Kupon = new Kupon();
         $Kupon = $Kupon->getByCode($_POST['Kuponcode']);
         if ($Kupon !== false && $Kupon->kKupon > 0) {
-            $nKuponfehler_arr = checkeKupon($Kupon);
+            $nKuponfehler_arr = Kupon::checkCoupon($Kupon);
             if (angabenKorrekt($nKuponfehler_arr)) {
                 Kupon::acceptCoupon($Kupon);
                 if ($Kupon->cKuponTyp === 'versandkupon') { // Versandfrei Kupon
@@ -988,7 +988,7 @@ function plausiNeukundenKupon()
                         // ...falls ja, versuche nächsten Neukundenkupon
                         continue;
                     }
-                    if ((empty($verwendet) || $verwendet === 'N') && angabenKorrekt(checkeKupon($NeukundenKupon))) {
+                    if ((empty($verwendet) || $verwendet === 'N') && angabenKorrekt(Kupon::checkCoupon($NeukundenKupon))) {
                         Kupon::acceptCoupon($NeukundenKupon);
                         if (empty($verwendet)) {
                             $hash    = Kuponneukunde::Hash(
@@ -2220,56 +2220,49 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
                     && $oKundenfeld->nEditierbar == 1
                 ) {
                     $ret['custom'][$oKundenfeld->kKundenfeld] = 1;
-                } else {
-                    if (isset($data['custom_' . $oKundenfeld->kKundenfeld])
-                        && $data['custom_' . $oKundenfeld->kKundenfeld]
-                    ) {
-                        // Datum
-                        // 1 = leer
-                        // 2 = falsches Format
-                        // 3 = falsches Datum
-                        // 0 = o.k.
-                        if ($oKundenfeld->cTyp === 'datum') {
-                            $_dat   = StringHandler::filterXSS($data['custom_' . $oKundenfeld->kKundenfeld]);
-                            $_datTs = strtotime($_dat);
-                            $_dat   = ($_datTs !== false) ? date('d.m.Y', $_datTs) : false;
-                            $check  = StringHandler::checkDate($_dat);
-                            if ($check !== 0) {
-                                $ret['custom'][$oKundenfeld->kKundenfeld] = $check;
-                            }
-                        } elseif ($oKundenfeld->cTyp === 'zahl') {
-                            // Zahl, 4 = keine Zahl
-                            if ($data['custom_' . $oKundenfeld->kKundenfeld] != (float)$data['custom_' . $oKundenfeld->kKundenfeld]
-                            ) {
-                                $ret['custom'][$oKundenfeld->kKundenfeld] = 4;
-                            }
+                } elseif (isset($data['custom_' . $oKundenfeld->kKundenfeld])
+                    && $data['custom_' . $oKundenfeld->kKundenfeld]
+                ) {
+                    // Datum
+                    // 1 = leer
+                    // 2 = falsches Format
+                    // 3 = falsches Datum
+                    // 0 = o.k.
+                    if ($oKundenfeld->cTyp === 'datum') {
+                        $_dat   = StringHandler::filterXSS($data['custom_' . $oKundenfeld->kKundenfeld]);
+                        $_datTs = strtotime($_dat);
+                        $_dat   = ($_datTs !== false) ? date('d.m.Y', $_datTs) : false;
+                        $check  = StringHandler::checkDate($_dat);
+                        if ($check !== 0) {
+                            $ret['custom'][$oKundenfeld->kKundenfeld] = $check;
+                        }
+                    } elseif ($oKundenfeld->cTyp === 'zahl') {
+                        // Zahl, 4 = keine Zahl
+                        if ($data['custom_' . $oKundenfeld->kKundenfeld] != (float)$data['custom_' . $oKundenfeld->kKundenfeld]) {
+                            $ret['custom'][$oKundenfeld->kKundenfeld] = 4;
                         }
                     }
                 }
-            } else { // Neuer Kunde
-                if (empty($data['custom_' . $oKundenfeld->kKundenfeld]) && $oKundenfeld->nPflicht == 1) {
-                    $ret['custom'][$oKundenfeld->kKundenfeld] = 1;
-                } else {
-                    if ($data['custom_' . $oKundenfeld->kKundenfeld]) {
-                        // Datum
-                        // 1 = leer
-                        // 2 = falsches Format
-                        // 3 = falsches Datum
-                        // 0 = o.k.
-                        if ($oKundenfeld->cTyp === 'datum') {
-                            $_dat   = StringHandler::filterXSS($data['custom_' . $oKundenfeld->kKundenfeld]);
-                            $_datTs = strtotime($_dat);
-                            $_dat   = ($_datTs !== false) ? date('d.m.Y', $_datTs) : false;
-                            $check  = StringHandler::checkDate($_dat);
-                            if ($check !== 0) {
-                                $ret['custom'][$oKundenfeld->kKundenfeld] = $check;
-                            }
-                        } elseif ($oKundenfeld->cTyp === 'zahl') {
-                            // Zahl, 4 = keine Zahl
-                            if ($data['custom_' . $oKundenfeld->kKundenfeld] != (float)$data['custom_' . $oKundenfeld->kKundenfeld]) {
-                                $ret['custom'][$oKundenfeld->kKundenfeld] = 4;
-                            }
-                        }
+            } elseif (empty($data['custom_' . $oKundenfeld->kKundenfeld]) && $oKundenfeld->nPflicht == 1) {
+                $ret['custom'][$oKundenfeld->kKundenfeld] = 1;
+            } elseif ($data['custom_' . $oKundenfeld->kKundenfeld]) {
+                // Datum
+                // 1 = leer
+                // 2 = falsches Format
+                // 3 = falsches Datum
+                // 0 = o.k.
+                if ($oKundenfeld->cTyp === 'datum') {
+                    $_dat   = StringHandler::filterXSS($data['custom_' . $oKundenfeld->kKundenfeld]);
+                    $_datTs = strtotime($_dat);
+                    $_dat   = ($_datTs !== false) ? date('d.m.Y', $_datTs) : false;
+                    $check  = StringHandler::checkDate($_dat);
+                    if ($check !== 0) {
+                        $ret['custom'][$oKundenfeld->kKundenfeld] = $check;
+                    }
+                } elseif ($oKundenfeld->cTyp === 'zahl') {
+                    // Zahl, 4 = keine Zahl
+                    if ($data['custom_' . $oKundenfeld->kKundenfeld] != (float)$data['custom_' . $oKundenfeld->kKundenfeld]) {
+                        $ret['custom'][$oKundenfeld->kKundenfeld] = 4;
                     }
                 }
             }
@@ -2307,7 +2300,7 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
 
     if (isset($conf['kunden']['registrieren_captcha'])
         && $conf['kunden']['registrieren_captcha'] !== 'N'
-        && !FormHelper::validateCaptcha(FormHelper::validateCaptcha)
+        && !FormHelper::validateCaptcha($data)
     ) {
         $ret['captcha'] = 2;
     }

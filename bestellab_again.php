@@ -141,16 +141,6 @@ if ($kPlugin > 0) {
     $paymentMethod           = new WorldPay($bestellung->Zahlungsart->cModulId);
     $paymentMethod->cModulId = $bestellung->Zahlungsart->cModulId;
     $paymentMethod->preparePaymentProcess($bestellung);
-} elseif ($bestellung->Zahlungsart->cModulId === 'za_moneybookers_jtl') {
-    require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'moneybookers/moneybookers.php';
-    Shop::Smarty()->assign(
-        'moneybookersform',
-        gib_moneybookers_form(
-            $bestellung,
-            strtolower($Einstellungen['zahlungsarten']['zahlungsart_moneybookers_empfaengermail']),
-            $successPaymentURL
-        )
-    );
 } elseif ($bestellung->Zahlungsart->cModulId === 'za_ipayment_jtl') {
     require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ipayment/iPayment.class.php';
     $paymentMethod           = new iPayment($bestellung->Zahlungsart->cModulId);

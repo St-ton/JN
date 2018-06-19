@@ -860,8 +860,8 @@ function KuponVerwendungen($oBestellung)
     }
     if (isset($_SESSION['Kupon']->kKupon) && $_SESSION['Kupon']->kKupon > 0) {
         $kKupon = $_SESSION['Kupon']->kKupon;
-        if (isset($_SESSION['Kupon']->cWertTyp) &&
-            ($_SESSION['Kupon']->cWertTyp === 'prozent' || $_SESSION['Kupon']->cWertTyp === 'festpreis')
+        if (isset($_SESSION['Kupon']->cWertTyp)
+            && ($_SESSION['Kupon']->cWertTyp === 'prozent' || $_SESSION['Kupon']->cWertTyp === 'festpreis')
         ) {
             $cKuponTyp = $_SESSION['Kupon']->cWertTyp;
         }
@@ -869,7 +869,7 @@ function KuponVerwendungen($oBestellung)
     if (is_array($_SESSION['Warenkorb']->PositionenArr) && count($_SESSION['Warenkorb']->PositionenArr) > 0) {
         foreach ($_SESSION['Warenkorb']->PositionenArr as $i => $Position) {
             if (!isset($_SESSION['VersandKupon']) && ($Position->nPosTyp == 3 || $Position->nPosTyp == 7)) {
-                $fKuponwertBrutto = berechneBrutto(
+                $fKuponwertBrutto = TaxHelper::getGross(
                     $Position->fPreisEinzelNetto,
                     TaxHelper::getSalesTax($Position->kSteuerklasse)
                 ) * (-1);
@@ -1012,16 +1012,6 @@ function setzeSmartyWeiterleitung($bestellung)
         $paymentMethod           = new WorldPay($_SESSION['Zahlungsart']->cModulId);
         $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
         $paymentMethod->preparePaymentProcess($bestellung);
-    } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_moneybookers_jtl') {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'moneybookers/moneybookers.php';
-        Shop::Smarty()->assign(
-            'moneybookersform',
-            gib_moneybookers_form(
-                $bestellung,
-                strtolower($Einstellungen['zahlungsarten']['zahlungsart_moneybookers_empfaengermail']),
-                $successPaymentURL
-            )
-        );
     } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_ipayment_jtl') {
         require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ipayment/iPayment.class.php';
         $paymentMethod           = new iPayment($_SESSION['Zahlungsart']->cModulId);
@@ -1251,16 +1241,14 @@ function pruefeVerfuegbarkeit()
     $xResult_arr = ['cArtikelName_arr' => []];
     $conf        = Shop::getSettings([CONF_GLOBAL]);
     foreach (Session::Cart()->PositionenArr as $i => $oPosition) {
-        if ($oPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
-            // Mit Lager arbeiten und Lagerbestand darf < 0 werden?
-            if (isset($oPosition->Artikel->cLagerBeachten) && $oPosition->Artikel->cLagerBeachten === 'Y'
-                && $oPosition->Artikel->cLagerKleinerNull === 'Y'
-                && $conf['global']['global_lieferverzoegerung_anzeigen'] === 'Y'
-            ) {
-                if ($oPosition->nAnzahl > $oPosition->Artikel->fLagerbestand) {
-                    $xResult_arr['cArtikelName_arr'][] = $oPosition->Artikel->cName;
-                }
-            }
+        if ($oPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
+            && isset($oPosition->Artikel->cLagerBeachten)
+            && $oPosition->Artikel->cLagerBeachten === 'Y'
+            && $oPosition->Artikel->cLagerKleinerNull === 'Y'
+            && $conf['global']['global_lieferverzoegerung_anzeigen'] === 'Y'
+            && $oPosition->nAnzahl > $oPosition->Artikel->fLagerbestand
+        ) {
+            $xResult_arr['cArtikelName_arr'][] = $oPosition->Artikel->cName;
         }
     }
 

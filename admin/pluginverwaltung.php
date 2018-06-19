@@ -107,14 +107,14 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
             $cLicenceMethod = PLUGIN_LICENCE_METHODE;
             if ($oPluginLicence->$cLicenceMethod(StringHandler::filterXSS($_POST['cKey']))) {
                 $oPlugin->cFehler = '';
-                $oPlugin->nStatus = 2;
+                $oPlugin->nStatus = Plugin::PLUGIN_ACTIVATED;
                 $oPlugin->cLizenz = StringHandler::filterXSS($_POST['cKey']);
                 $oPlugin->updateInDB();
                 $cHinweis = 'Ihr Plugin-Lizenzschl&uuml;ssel wurde gespeichert.';
                 $step     = 'pluginverwaltung_uebersicht';
                 $reload   = true;
                 // Lizenzpruefung bestanden => aktiviere alle Zahlungsarten (falls vorhanden)
-                aenderPluginZahlungsartStatus($oPlugin, 1);
+                Plugin::updatePaymentMethodState($oPlugin, 1);
             } else {
                 $cFehler = 'Fehler: Ihr Lizenzschl&uuml;ssel ist ung&uuml;ltig.';
             }

@@ -51,7 +51,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
             $item_arr = explode('.', $item, 2);
 
             return $item_arr[1];
-        }, gibSuchSpalten());
+        }, \Filter\States\BaseSearchQuery::getSearchRows());
 
         switch ($index) {
             case 'tartikel':

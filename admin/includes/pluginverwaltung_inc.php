@@ -1822,7 +1822,7 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
     $nXMLVersion       = (int)$baseNode['XMLVersion']; // XML Version
     $cLizenzKlasse     = '';
     $cLizenzKlasseName = '';
-    $nStatus           = 2;
+    $nStatus           = Plugin::PLUGIN_ACTIVATED;
     $tagsToFlush       = [];
     $basePath          = PFAD_ROOT . PFAD_PLUGIN . $cVerzeichnis . '/';
     if (isset($baseNode['LicenceClass'], $baseNode['LicenceClassFile'])
@@ -1831,7 +1831,7 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
     ) {
         $cLizenzKlasse     = $baseNode['LicenceClass'];
         $cLizenzKlasseName = $baseNode['LicenceClassFile'];
-        $nStatus           = 5;
+        $nStatus           = Plugin::PLUGIN_LICENSE_KEY_MISSING;
     }
     // tplugin füllen
     $oPlugin                       = new stdClass();
@@ -2448,7 +2448,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
         }
         $oZahlungsart                         = new stdClass();
         $oZahlungsart->cName                  = $Method_arr['Name'];
-        $oZahlungsart->cModulId               = gibPlugincModulId($kPlugin, $Method_arr['Name']);
+        $oZahlungsart->cModulId               = Plugin::getModuleIDByPluginID($kPlugin, $Method_arr['Name']);
         $oZahlungsart->cKundengruppen         = '';
         $oZahlungsart->cPluginTemplate        = $Method_arr['TemplateFile'] ?? null;
         $oZahlungsart->cZusatzschrittTemplate = $Method_arr['AdditionalTemplateFile'] ?? null;
@@ -2495,7 +2495,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
         }
         // tpluginzahlungsartklasse füllen
         $oPluginZahlungsartKlasse                         = new stdClass();
-        $oPluginZahlungsartKlasse->cModulId               = gibPlugincModulId($kPlugin, $Method_arr['Name']);
+        $oPluginZahlungsartKlasse->cModulId               = Plugin::getModuleIDByPluginID($kPlugin, $Method_arr['Name']);
         $oPluginZahlungsartKlasse->kPlugin                = $kPlugin;
         $oPluginZahlungsartKlasse->cClassPfad             = $Method_arr['ClassFile'] ?? null;
         $oPluginZahlungsartKlasse->cClassName             = $Method_arr['ClassName'] ?? null;
@@ -3581,7 +3581,12 @@ function aktivierePlugin($kPlugin)
         || $nReturnValue === PLUGIN_CODE_DUPLICATE_PLUGIN_ID
         || $nReturnValue === PLUGIN_CODE_OK_BUT_NOT_SHOP4_COMPATIBLE
     ) {
-        $nRow              = Shop::Container()->getDB()->update('tplugin', 'kPlugin', $kPlugin, (object)['nStatus' => 2]);
+        $nRow = Shop::Container()->getDB()->update(
+            'tplugin',
+            'kPlugin',
+            $kPlugin,
+            (object)['nStatus' => Plugin::PLUGIN_ACTIVATED]
+        );
         Shop::Container()->getDB()->update('tadminwidgets', 'kPlugin', $kPlugin, (object)['bActive' => 1]);
         Shop::Container()->getDB()->update('tlink', 'kPlugin', $kPlugin, (object)['bIsActive' => 1]);
 
@@ -3612,7 +3617,7 @@ function deaktivierePlugin($kPlugin)
     if (($p = Plugin::bootstrapper($kPlugin)) !== null) {
         $p->disabled();
     }
-    Shop::Container()->getDB()->update('tplugin', 'kPlugin', $kPlugin, (object)['nStatus' => 1]);
+    Shop::Container()->getDB()->update('tplugin', 'kPlugin', $kPlugin, (object)['nStatus' => Plugin::PLUGIN_DISABLED]);
     Shop::Container()->getDB()->update('tadminwidgets', 'kPlugin', $kPlugin, (object)['bActive' => 0]);
     Shop::Container()->getDB()->update('tlink', 'kPlugin', $kPlugin, (object)['bIsActive' => 0]);
 

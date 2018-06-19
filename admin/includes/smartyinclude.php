@@ -83,12 +83,13 @@ foreach ($mainGroups as $mainGroup) {
     $mainGroup->oLinkGruppe_arr = $childLinks;
     // Plugin Work Around
     if ((int)$mainGroup->kAdminmenueGruppe === LINKTYP_BACKEND_PLUGINS && $oAccount->permission('PLUGIN_ADMIN_VIEW')) {
-        $pluginLinks = Shop::Container()->getDB()->query(
-            "SELECT DISTINCT tplugin.kPlugin, tplugin.cName, tplugin.cPluginID, tplugin.nPrio
+        $pluginLinks = Shop::Container()->getDB()->queryPrepared(
+            'SELECT DISTINCT tplugin.kPlugin, tplugin.cName, tplugin.cPluginID, tplugin.nPrio
                 FROM tplugin INNER JOIN tpluginadminmenu
                     ON tplugin.kPlugin = tpluginadminmenu.kPlugin
-                WHERE tplugin.nStatus = 2
-                ORDER BY tplugin.nPrio, tplugin.cName",
+                WHERE tplugin.nStatus = :state
+                ORDER BY tplugin.nPrio, tplugin.cName',
+            ['state' => Plugin::PLUGIN_ACTIVATED],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($pluginLinks as $pluginLink) {

@@ -14,7 +14,6 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
 function buildSearchResults($FilterSQL, $NaviFilter)
 {
     trigger_error('filter_inc.php: calling buildSearchResults() is deprecated.', E_USER_DEPRECATED);
-
     return updateNaviFilter($NaviFilter)->getProducts();
 }
 

@@ -22,29 +22,46 @@ function createSearchIndex($index, $create)
     }
 
     try {
-        if (Shop::Container()->getDB()->query("SHOW INDEX FROM $index WHERE KEY_NAME = 'idx_{$index}_fulltext'", 1)) {
-            Shop::Container()->getDB()->executeQuery("ALTER TABLE $index DROP KEY idx_{$index}_fulltext", 10);
+        if (Shop::Container()->getDB()->query(
+            "SHOW INDEX FROM $index WHERE KEY_NAME = 'idx_{$index}_fulltext'",
+            \DB\ReturnType::SINGLE_OBJECT)
+        ) {
+            Shop::Container()->getDB()->executeQuery(
+                "ALTER TABLE $index DROP KEY idx_{$index}_fulltext",
+                \DB\ReturnType::QUERYSINGLE
+            );
         }
     } catch (Exception $e) {
         // Fehler beim Index löschen ignorieren
     }
 
     if ($create === 'Y') {
-        $cSuchspalten_arr = array_map(function ($item) {
+        $searchRows = array_map(function ($item) {
             $item_arr = explode('.', $item, 2);
 
             return $item_arr[1];
-        }, gibSuchSpalten());
+        }, \Filter\States\BaseSearchQuery::getSearchRows());
 
         switch ($index) {
             case 'tartikel':
-                $cSpalten_arr = array_intersect(
-                    $cSuchspalten_arr,
-                    ['cName', 'cSeo', 'cSuchbegriffe', 'cArtNr', 'cKurzBeschreibung', 'cBeschreibung', 'cBarcode', 'cISBN', 'cHAN', 'cAnmerkung']
+                $rows = array_intersect(
+                    $searchRows,
+                    [
+                        'cName',
+                        'cSeo',
+                        'cSuchbegriffe',
+                        'cArtNr',
+                        'cKurzBeschreibung',
+                        'cBeschreibung',
+                        'cBarcode',
+                        'cISBN',
+                        'cHAN',
+                        'cAnmerkung'
+                    ]
                 );
                 break;
             case 'tartikelsprache':
-                $cSpalten_arr = array_intersect($cSuchspalten_arr, ['cName', 'cSeo', 'cKurzBeschreibung', 'cBeschreibung']);
+                $rows = array_intersect($searchRows, ['cName', 'cSeo', 'cKurzBeschreibung', 'cBeschreibung']);
                 break;
             default:
                 return new IOError('Ungültiger Index angegeben', 403);
@@ -57,7 +74,7 @@ function createSearchIndex($index, $create)
             );
             $res = Shop::Container()->getDB()->executeQuery(
                 "ALTER TABLE $index
-                    ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $cSpalten_arr) . ")",
+                    ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $rows) . ")",
                 \DB\ReturnType::QUERYSINGLE
             );
         } catch (Exception $e) {

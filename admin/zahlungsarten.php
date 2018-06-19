@@ -79,8 +79,8 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart'])
     Shop::Container()->getDB()->update('tzahlungsart', 'kZahlungsart', (int)$zahlungsart->kZahlungsart, $upd);
     // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
     if (strpos($zahlungsart->cModulId, 'kPlugin_') !== false) {
-        $kPlugin     = gibkPluginAuscModulId($zahlungsart->cModulId);
-        $cModulId    = gibPlugincModulId($kPlugin, $zahlungsart->cName);
+        $kPlugin     = Plugin::getIDByModuleID($zahlungsart->cModulId);
+        $cModulId    = Plugin::getModuleIDByPluginID($kPlugin, $zahlungsart->cName);
         $Conf        = Shop::Container()->getDB()->query(
             "SELECT *
                 FROM tplugineinstellungenconf
@@ -187,8 +187,8 @@ if ($step === 'einstellen') {
         }
         // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
         if (strpos($zahlungsart->cModulId, 'kPlugin_') !== false) {
-            $kPlugin     = gibkPluginAuscModulId($zahlungsart->cModulId);
-            $cModulId    = gibPlugincModulId($kPlugin, $zahlungsart->cName);
+            $kPlugin     = Plugin::getIDByModuleID($zahlungsart->cModulId);
+            $cModulId    = Plugin::getModuleIDByPluginID($kPlugin, $zahlungsart->cName);
             $Conf        = Shop::Container()->getDB()->query(
                 "SELECT *
                     FROM tplugineinstellungenconf

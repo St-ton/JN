@@ -1,4 +1,17 @@
 {if (isset($Boxen) && isset($Boxen.Suchwolke) && $Boxen.Suchwolke->Suchbegriffe|@count > 0) || (isset($oBox->Suchbegriffe) && $oBox->Suchbegriffe|@count > 0)}
+    <script>
+        $('document').ready(function() {
+            var searchItems = {$oBox->Suchbegriffe|json_encode};
+            var searchcloudTags = [];
+            $.each(searchItems, function(key, value) {
+                searchcloudTags.push( { text: value.cSuche, weight: value.nAnzahlGesuche, link: 'index.php?qs=' + value.cSuche } );
+            } );
+            $("#searchcloud").jQCloud(searchcloudTags, {
+                autoResize: true,
+                steps: 7
+            } );
+        } );
+    </script>
     <section class="panel panel-default box box-searchcloud" id="sidebox{$oBox->kBox}">
         <div class="panel-heading">
             <h5 class="panel-title">{lang key="searchcloud" section="global"}</h5>
@@ -10,9 +23,7 @@
                 {else}{*3.19*}
                     {assign var=from value=$Boxen.Suchwolke->Suchbegriffe}
                 {/if}
-                {foreach name=suchwolken from=$from item=Suchwolken}
-                    <a href="{$Suchwolken->cURLFull}" class="tag{$Suchwolken->Klasse}">{$Suchwolken->cSuche}</a>
-                {/foreach}
+                <div id="searchcloud"></div>
             </div>
         </div>
     </section>

@@ -517,13 +517,13 @@ class AdminAccount
         );
         if ($oGroup !== null && isset($oGroup->kAdminlogingruppe)) {
             $oGroup->kAdminlogingruppe = (int)$oGroup->kAdminlogingruppe;
-            $oPermission_arr = Shop::Container()->getDB()->selectAll(
+            $oPermission_arr           = Shop::Container()->getDB()->selectAll(
                 'tadminrechtegruppe',
                 'kAdminlogingruppe',
                 $kAdminlogingruppe,
                 'cRecht'
             );
-            $oGroup->oPermission_arr = [];
+            $oGroup->oPermission_arr   = [];
             foreach ($oPermission_arr as $oPermission) {
                 $oGroup->oPermission_arr[] = $oPermission->cRecht;
             }

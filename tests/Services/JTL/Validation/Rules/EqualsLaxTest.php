@@ -6,7 +6,10 @@
 
 namespace Services\JTL\Validation\Rules;
 
-
+/**
+ * Class EqualsLaxTest
+ * @package Services\JTL\Validation\Rules
+ */
 class EqualsLaxTest extends \PHPUnit_Framework_TestCase
 {
     public function test()

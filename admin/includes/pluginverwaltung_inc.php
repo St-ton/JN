@@ -219,9 +219,7 @@ function extractPlugin($zipFile)
         $response->status     = 'FAILED';
         $response->messages[] = 'Invalid archive';
     } else {
-        $res     = $zip->extract(PCLZIP_OPT_PATH, $unzipPath, PCLZIP_CB_PRE_EXTRACT, 'pluginPreExtractCallBack');
-        $success = [];
-        $fail    = [];
+        $res = $zip->extract(PCLZIP_OPT_PATH, $unzipPath, PCLZIP_CB_PRE_EXTRACT, 'pluginPreExtractCallBack');
         if ($res !== 0) {
             foreach ($res as $_file) {
                 if ($_file['status'] === 'ok' || $_file['status'] === 'already_a_directory') {

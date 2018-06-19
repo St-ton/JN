@@ -1154,8 +1154,6 @@ function isIntervalExceeded($dStart, $cInterval)
  */
 function sendStatusMail()
 {
-    global $smarty;
-
     $oStatusemail                 = Shop::Container()->getDB()->select('tstatusemail', 'nAktiv', 1);
     $oStatusemail->nIntervall_arr = StringHandler::parseSSK($oStatusemail->cIntervall);
     $oStatusemail->nInhalt_arr    = StringHandler::parseSSK($oStatusemail->cInhalt);
@@ -1187,7 +1185,9 @@ function sendStatusMail()
         $oMailObjekt = baueStatusEmail($oStatusemail, $dVon, $dBis);
 
         if ($oMailObjekt) {
-            $oMailObjekt->cIntervall = (JTL_CHARSET !== 'utf-8' ? StringHandler::convertISO($cIntervalAdj) : $cIntervalAdj) . ' Status-Email';
+            $oMailObjekt->cIntervall = (JTL_CHARSET !== 'utf-8'
+                    ? StringHandler::convertISO($cIntervalAdj)
+                    : $cIntervalAdj) . ' Status-Email';
 
             sendeMail(MAILTEMPLATE_STATUSEMAIL, $oMailObjekt, $oMailObjekt->mail);
 

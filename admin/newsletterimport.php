@@ -100,7 +100,7 @@ function pruefeNLEBlacklist($cMail)
         StringHandler::filterXSS(strip_tags($cMail))
     );
 
-    return (!empty($oNEB->cMail));
+    return !empty($oNEB->cMail);
 }
 
 /**
@@ -161,10 +161,7 @@ function unique_NewsletterCode($dbfeld, $code)
  */
 function processImport($fmt, $data)
 {
-    if (isset($oTMP) && is_object($oTMP)) {
-        unset($oTMP);
-    }
-    unset($newsletterempfaenger);
+    unset($oTMP, $newsletterempfaenger);
 
     $newsletterempfaenger = new NewsletterEmpfaenger();
     $cnt                  = count($fmt); // only columns that have no empty header jtl-shop/issues#296

@@ -45,7 +45,7 @@ if (FormHelper::validateToken()) {
             && isset($_POST['abonnentloeschenSubmit']))
     ) {
         if (loescheAbonnenten($_POST['kNewsletterEmpfaenger'])) { // Newsletterabonnenten loeschen
-            $cHinweis .= 'Ihre markierten Newsletter-Abonnenten wurden erfolgreich gel&ouml;scht.<br />';
+            $cHinweis .= 'Ihre markierten Newsletter-Abonnenten wurden erfolgreich gelöscht.<br />';
         } else {
             $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newsletter-Abonnenten.<br />';
         }
@@ -107,8 +107,8 @@ if (FormHelper::validateToken()) {
                     $cHinweis .= $oNewsletterQueue->cBetreff . "\", ";
                 }
 
-                $cHinweis = substr($cHinweis, 0, strlen($cHinweis) - 2);
-                $cHinweis .= ' wurden erfolgreich gel&ouml;scht.<br />';
+                $cHinweis = substr($cHinweis, 0, -2);
+                $cHinweis .= ' wurden erfolgreich gelöscht.<br />';
             } else {
                 $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newsletter.<br />';
             }
@@ -123,8 +123,8 @@ if (FormHelper::validateToken()) {
                     Shop::Container()->getDB()->delete('tnewsletterhistory', 'kNewsletterHistory', (int)$kNewsletterHistory);
                     $cHinweis .= $kNewsletterHistory . ', ';
                 }
-                $cHinweis = substr($cHinweis, 0, strlen($cHinweis) - 2);
-                $cHinweis .= " wurden erfolgreich gel&ouml;scht.<br />";
+                $cHinweis = substr($cHinweis, 0, -2);
+                $cHinweis .= " wurden erfolgreich gelöscht.<br />";
             } else {
                 $cFehler .= "Fehler: Bitte markieren Sie mindestens eine History.<br />";
             }
@@ -452,7 +452,7 @@ if (FormHelper::validateToken()) {
                     }
                 }
                 if (strlen($cKundengruppe) > 0) {
-                    $cKundengruppe = substr($cKundengruppe, 0, strlen($cKundengruppe) - 2);
+                    $cKundengruppe = substr($cKundengruppe, 0, -2);
                 }
                 // tnewsletterhistory objekt bauen
                 $oNewsletterHistory                   = new stdClass();
@@ -546,7 +546,7 @@ if (FormHelper::validateToken()) {
                         }
                     }
                 }
-                $cHinweis .= 'Die Newslettervorlage wurde erfolgreich gel&ouml;scht.<br />';
+                $cHinweis .= 'Die Newslettervorlage wurde erfolgreich gelöscht.<br />';
             } else {
                 $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newsletter.<br />';
             }

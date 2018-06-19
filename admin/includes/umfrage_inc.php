@@ -388,101 +388,99 @@ function holeUmfrageStatistik(int $kUmfrage)
             }
             //Ergebnismatrix für die Frage setzen
             $oUmfrageStats->oUmfrageFrage_arr[$i]->oErgebnisMatrix_arr = $oErgebnisMatrix_arr;
+        } elseif ($oUmfrageFrage->cTyp === 'text_klein' || $oUmfrageFrage->cTyp === 'text_gross') {
+            $oUmfrageFrageAntwort_arr = Shop::Container()->getDB()->query(
+                "SELECT cText AS cName, count(cText) AS nAnzahlAntwort
+                    FROM tumfragedurchfuehrungantwort
+                    WHERE kUmfrageFrage = " . (int)$oUmfrageFrage->kUmfrageFrage . "
+                        AND TRIM(cText) !=''
+                    GROUP BY cText
+                    ORDER BY nAnzahlAntwort DESC
+                    LIMIT " . UMFRAGE_MAXANZAHLANZEIGEN,
+                \DB\ReturnType::ARRAY_OF_OBJECTS
+            );
+            // Anzahl Antworten
+            foreach ($oUmfrageFrageAntwort_arr as $j => $oUmfrageFrageAntwort) {
+                $oUmfrageStats->oUmfrageFrage_arr[$i]->nAnzahlAntworten += $oUmfrageFrageAntwort->nAnzahlAntwort;
+            }
+            // Anzahl Sonstiger Antworten
+            $oUmfrageFrageAntwortTMP = Shop::Container()->getDB()->query(
+                "SELECT SUM(b.nAnzahlAntwort) AS nAnzahlAntwort
+                     FROM
+                     (
+                        SELECT count(cText) AS nAnzahlAntwort
+                            FROM tumfragedurchfuehrungantwort
+                            WHERE kUmfrageFrage = " . (int)$oUmfrageFrage->kUmfrageFrage . "
+                            GROUP BY cText
+                            ORDER BY nAnzahlAntwort DESC
+                            LIMIT " . UMFRAGE_MAXANZAHLANZEIGEN . ", " . count($oUmfrageFrageAntwort_arr) . "
+                     ) AS b",
+                \DB\ReturnType::SINGLE_OBJECT
+            );
+            if (isset($oUmfrageFrageAntwortTMP->nAnzahlAntwort) && (int)$oUmfrageFrageAntwortTMP->nAnzahlAntwort > 0) {
+                $oUmfrageStats->oUmfrageFrage_arr[$i]->nAnzahlAntworten += (int)$oUmfrageFrageAntwortTMP->nAnzahlAntwort;
+                $oTMP        = new stdClass();
+                $oTMP->cName = '<a href="umfrage.php?umfrage=1&uf=' . $oUmfrageFrage->kUmfrageFrage . '&aa=' . $oUmfrageStats->oUmfrageFrage_arr[$i]->nAnzahlAntworten .
+                    '&ma=' . count($oUmfrageFrageAntwort_arr) . '&a=zeige_sonstige">Sonstige</a>';
+                $oTMP->nAnzahlAntwort = $oUmfrageFrageAntwortTMP->nAnzahlAntwort;
+                $oTMP->fProzent       = round(($oUmfrageFrageAntwortTMP->nAnzahlAntwort / $oUmfrageStats->oUmfrageFrage_arr[$i]->nAnzahlAntworten) * 100, 1);
+            }
+            $oUmfrageStats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr = [];
+            //$oUmfrageStats->oUmfrageFrage_arr[$i]->nAnzahlAntworten = count($oUmfrageFrageAntwort_arr);
+            if (is_array($oUmfrageFrageAntwort_arr) && count($oUmfrageFrageAntwort_arr) > 0) {
+                $oUmfrageStats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr = $oUmfrageFrageAntwort_arr;
+
+                foreach ($oUmfrageFrageAntwort_arr as $j => $oUmfrageFrageAntwort) {
+                    $oUmfrageStats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr[$j]->fProzent =
+                        round(($oUmfrageFrageAntwort->nAnzahlAntwort / $oUmfrageStats->oUmfrageFrage_arr[$i]->nAnzahlAntworten) * 100, 1);
+                }
+            }
+            // Sontiges Element (falls vorhanden) dem Antworten Array hinzufügen
+            if (isset($oUmfrageFrageAntwortTMP->nAnzahlAntwort) && (int)$oUmfrageFrageAntwortTMP->nAnzahlAntwort > 0) {
+                $oUmfrageStats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr[] = $oTMP;
+            }
         } else {
-            if ($oUmfrageFrage->cTyp === 'text_klein' || $oUmfrageFrage->cTyp === 'text_gross') {
-                $oUmfrageFrageAntwort_arr = Shop::Container()->getDB()->query(
+            $oUmfrageFrageAntwort_arr = Shop::Container()->getDB()->query(
+                "SELECT tumfragefrageantwort.kUmfrageFrageAntwort, tumfragefrageantwort.cName, 
+                    count(tumfragedurchfuehrungantwort.kUmfrageFrageAntwort) AS nAnzahlAntwort
+                    FROM tumfragefrageantwort
+                    LEFT JOIN tumfragedurchfuehrungantwort 
+                        ON tumfragedurchfuehrungantwort.kUmfrageFrageAntwort = tumfragefrageantwort.kUmfrageFrageAntwort
+                    WHERE tumfragefrageantwort.kUmfrageFrage = " . (int)$oUmfrageFrage->kUmfrageFrage . "
+                    GROUP BY tumfragefrageantwort.kUmfrageFrageAntwort
+                    ORDER BY nAnzahlAntwort DESC, tumfragefrageantwort.kUmfrageFrageAntwort",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
+            );
+            $oAnzahl = Shop::Container()->getDB()->query(
+                "SELECT count(*) AS nAnzahl
+                    FROM tumfragedurchfuehrungantwort
+                    WHERE kUmfrageFrage = " . (int)$oUmfrageFrage->kUmfrageFrage . "
+                        AND kUmfrageFrageAntwort != 0",
+                \DB\ReturnType::SINGLE_OBJECT
+            );
+            $oUmfrageFrageAntwortFreifeld_arr = [];
+            if ($oUmfrageStats->oUmfrageFrage_arr[$i]->nFreifeld == 1) {
+                $oUmfrageFrageAntwortFreifeld_arr = Shop::Container()->getDB()->query(
                     "SELECT cText AS cName, count(cText) AS nAnzahlAntwort
                         FROM tumfragedurchfuehrungantwort
                         WHERE kUmfrageFrage = " . (int)$oUmfrageFrage->kUmfrageFrage . "
+                            AND kUmfrageFrageAntwort = 0
+                            AND kUmfrageMatrixOption = 0
                             AND TRIM(cText) !=''
                         GROUP BY cText
-                        ORDER BY nAnzahlAntwort DESC
-                        LIMIT " . UMFRAGE_MAXANZAHLANZEIGEN,
+                        ORDER BY nAnzahlAntwort DESC",
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
-                // Anzahl Antworten
-                foreach ($oUmfrageFrageAntwort_arr as $j => $oUmfrageFrageAntwort) {
-                    $oUmfrageStats->oUmfrageFrage_arr[$i]->nAnzahlAntworten += $oUmfrageFrageAntwort->nAnzahlAntwort;
-                }
-                // Anzahl Sonstiger Antworten
-                $oUmfrageFrageAntwortTMP = Shop::Container()->getDB()->query(
-                    "SELECT SUM(b.nAnzahlAntwort) AS nAnzahlAntwort
-                         FROM
-                         (
-                            SELECT count(cText) AS nAnzahlAntwort
-                                FROM tumfragedurchfuehrungantwort
-                                WHERE kUmfrageFrage = " . (int)$oUmfrageFrage->kUmfrageFrage . "
-                                GROUP BY cText
-                                ORDER BY nAnzahlAntwort DESC
-                                LIMIT " . UMFRAGE_MAXANZAHLANZEIGEN . ", " . count($oUmfrageFrageAntwort_arr) . "
-                         ) AS b",
-                    \DB\ReturnType::SINGLE_OBJECT
-                );
-                if (isset($oUmfrageFrageAntwortTMP->nAnzahlAntwort) && (int)$oUmfrageFrageAntwortTMP->nAnzahlAntwort > 0) {
-                    $oUmfrageStats->oUmfrageFrage_arr[$i]->nAnzahlAntworten += (int)$oUmfrageFrageAntwortTMP->nAnzahlAntwort;
-                    $oTMP        = new stdClass();
-                    $oTMP->cName = '<a href="umfrage.php?umfrage=1&uf=' . $oUmfrageFrage->kUmfrageFrage . '&aa=' . $oUmfrageStats->oUmfrageFrage_arr[$i]->nAnzahlAntworten .
-                        '&ma=' . count($oUmfrageFrageAntwort_arr) . '&a=zeige_sonstige">Sonstige</a>';
-                    $oTMP->nAnzahlAntwort = $oUmfrageFrageAntwortTMP->nAnzahlAntwort;
-                    $oTMP->fProzent       = round(($oUmfrageFrageAntwortTMP->nAnzahlAntwort / $oUmfrageStats->oUmfrageFrage_arr[$i]->nAnzahlAntworten) * 100, 1);
-                }
-                $oUmfrageStats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr = [];
-                //$oUmfrageStats->oUmfrageFrage_arr[$i]->nAnzahlAntworten = count($oUmfrageFrageAntwort_arr);
-                if (is_array($oUmfrageFrageAntwort_arr) && count($oUmfrageFrageAntwort_arr) > 0) {
-                    $oUmfrageStats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr = $oUmfrageFrageAntwort_arr;
+            }
+            $oUmfrageStats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr = array_merge($oUmfrageFrageAntwort_arr, $oUmfrageFrageAntwortFreifeld_arr);
+            $oUmfrageStats->oUmfrageFrage_arr[$i]->nAnzahlAntworten         = $oAnzahl->nAnzahl + count($oUmfrageFrageAntwortFreifeld_arr);
 
-                    foreach ($oUmfrageFrageAntwort_arr as $j => $oUmfrageFrageAntwort) {
+            if (is_array($oUmfrageStats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr) && count($oUmfrageStats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr) > 0) {
+                foreach ($oUmfrageStats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr as $j => $oUmfrageFrageAntwort) {
+                    $oUmfrageStats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr[$j]->fProzent = 0.0;
+                    if ($oUmfrageStats->oUmfrageFrage_arr[$i]->nAnzahlAntworten > 0) {
                         $oUmfrageStats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr[$j]->fProzent =
                             round(($oUmfrageFrageAntwort->nAnzahlAntwort / $oUmfrageStats->oUmfrageFrage_arr[$i]->nAnzahlAntworten) * 100, 1);
-                    }
-                }
-                // Sontiges Element (falls vorhanden) dem Antworten Array hinzufügen
-                if (isset($oUmfrageFrageAntwortTMP->nAnzahlAntwort) && (int)$oUmfrageFrageAntwortTMP->nAnzahlAntwort > 0) {
-                    $oUmfrageStats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr[] = $oTMP;
-                }
-            } else {
-                $oUmfrageFrageAntwort_arr = Shop::Container()->getDB()->query(
-                    "SELECT tumfragefrageantwort.kUmfrageFrageAntwort, tumfragefrageantwort.cName, 
-                        count(tumfragedurchfuehrungantwort.kUmfrageFrageAntwort) AS nAnzahlAntwort
-                        FROM tumfragefrageantwort
-                        LEFT JOIN tumfragedurchfuehrungantwort 
-                            ON tumfragedurchfuehrungantwort.kUmfrageFrageAntwort = tumfragefrageantwort.kUmfrageFrageAntwort
-                        WHERE tumfragefrageantwort.kUmfrageFrage = " . (int)$oUmfrageFrage->kUmfrageFrage . "
-                        GROUP BY tumfragefrageantwort.kUmfrageFrageAntwort
-                        ORDER BY nAnzahlAntwort DESC, tumfragefrageantwort.kUmfrageFrageAntwort",
-                    \DB\ReturnType::ARRAY_OF_OBJECTS
-                );
-                $oAnzahl = Shop::Container()->getDB()->query(
-                    "SELECT count(*) AS nAnzahl
-                        FROM tumfragedurchfuehrungantwort
-                        WHERE kUmfrageFrage = " . (int)$oUmfrageFrage->kUmfrageFrage . "
-                            AND kUmfrageFrageAntwort != 0",
-                    \DB\ReturnType::SINGLE_OBJECT
-                );
-                $oUmfrageFrageAntwortFreifeld_arr = [];
-                if ($oUmfrageStats->oUmfrageFrage_arr[$i]->nFreifeld == 1) {
-                    $oUmfrageFrageAntwortFreifeld_arr = Shop::Container()->getDB()->query(
-                        "SELECT cText AS cName, count(cText) AS nAnzahlAntwort
-                            FROM tumfragedurchfuehrungantwort
-                            WHERE kUmfrageFrage = " . (int)$oUmfrageFrage->kUmfrageFrage . "
-                                AND kUmfrageFrageAntwort = 0
-                                AND kUmfrageMatrixOption = 0
-                                AND TRIM(cText) !=''
-                            GROUP BY cText
-                            ORDER BY nAnzahlAntwort DESC",
-                        \DB\ReturnType::ARRAY_OF_OBJECTS
-                    );
-                }
-                $oUmfrageStats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr = array_merge($oUmfrageFrageAntwort_arr, $oUmfrageFrageAntwortFreifeld_arr);
-                $oUmfrageStats->oUmfrageFrage_arr[$i]->nAnzahlAntworten         = $oAnzahl->nAnzahl + count($oUmfrageFrageAntwortFreifeld_arr);
-
-                if (is_array($oUmfrageStats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr) && count($oUmfrageStats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr) > 0) {
-                    foreach ($oUmfrageStats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr as $j => $oUmfrageFrageAntwort) {
-                        $oUmfrageStats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr[$j]->fProzent = 0.0;
-                        if ($oUmfrageStats->oUmfrageFrage_arr[$i]->nAnzahlAntworten > 0) {
-                            $oUmfrageStats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr[$j]->fProzent =
-                                round(($oUmfrageFrageAntwort->nAnzahlAntwort / $oUmfrageStats->oUmfrageFrage_arr[$i]->nAnzahlAntworten) * 100, 1);
-                        }
                     }
                 }
             }

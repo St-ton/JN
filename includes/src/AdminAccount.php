@@ -336,7 +336,7 @@ class AdminAccount
     public function getVisibleMenu(int $nAdminLoginGroup, int $nAdminMenuGroup): array
     {
         if ($nAdminLoginGroup === ADMINGROUP) {
-            $oLink_arr = Shop::Container()->getDB()->selectAll(
+            $links = Shop::Container()->getDB()->selectAll(
                 'tadminmenu',
                 'kAdminmenueGruppe',
                 $nAdminMenuGroup,
@@ -344,7 +344,7 @@ class AdminAccount
                 'cLinkname, nSort'
             );
         } else {
-            $oLink_arr = Shop::Container()->getDB()->queryPrepared(
+            $links = Shop::Container()->getDB()->queryPrepared(
                 'SELECT tadminmenu.* 
                     FROM tadminmenu 
                     JOIN tadminrechtegruppe 
@@ -360,7 +360,13 @@ class AdminAccount
             );
         }
 
-        return $oLink_arr;
+        return \Functional\map($links, function ($e) {
+            $e->kAdminmenu        = (int)$e->kAdminmenu;
+            $e->kAdminmenueGruppe = (int)$e->kAdminmenueGruppe;
+            $e->nSort             = (int)$e->nSort;
+
+            return $e;
+        });
     }
 
     /**

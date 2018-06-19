@@ -102,19 +102,15 @@ function rechneUmAlleXStunden($nAlleXStd)
                 } else {
                     $nAlleXStd .= ' Jahre';
                 }
+            } elseif ($nAlleXStd == 1) {
+                $nAlleXStd .= ' Tag';
             } else {
-                if ($nAlleXStd == 1) {
-                    $nAlleXStd .= ' Tag';
-                } else {
-                    $nAlleXStd .= ' Tage';
-                }
+                $nAlleXStd .= ' Tage';
             }
+        } elseif ($nAlleXStd > 1) {
+            $nAlleXStd .= ' Stunden';
         } else {
-            if ($nAlleXStd > 1) {
-                $nAlleXStd .= ' Stunden';
-            } else {
-                $nAlleXStd .= ' Stunde';
-            }
+            $nAlleXStd .= ' Stunde';
         }
 
         return $nAlleXStd;
@@ -124,22 +120,24 @@ function rechneUmAlleXStunden($nAlleXStd)
 }
 
 /**
- * @return bool
+ * @return array
  */
 function holeAlleExportformate()
 {
-    $oExportformat_arr = Shop::Container()->getDB()->selectAll('texportformat', [], [], '*', 'cName, kSprache, kKundengruppe, kWaehrung');
-    if (is_array($oExportformat_arr) && count($oExportformat_arr) > 0) {
-        foreach ($oExportformat_arr as $i => $oExportformat) {
-            $oExportformat_arr[$i]->Sprache      = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$oExportformat->kSprache);
-            $oExportformat_arr[$i]->Waehrung     = Shop::Container()->getDB()->select('twaehrung', 'kWaehrung', (int)$oExportformat->kWaehrung);
-            $oExportformat_arr[$i]->Kundengruppe = Shop::Container()->getDB()->select('tkundengruppe', 'kKundengruppe', (int)$oExportformat->kKundengruppe);
-        }
-
-        return $oExportformat_arr;
+    $oExportformat_arr = Shop::Container()->getDB()->selectAll(
+        'texportformat',
+        [],
+        [],
+        '*',
+        'cName, kSprache, kKundengruppe, kWaehrung'
+    );
+    foreach ($oExportformat_arr as $oExportformat) {
+        $oExportformat->Sprache      = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$oExportformat->kSprache);
+        $oExportformat->Waehrung     = new Currency((int)$oExportformat->kSprache);
+        $oExportformat->Kundengruppe = new Kundengruppe((int)$oExportformat->kKundengruppe);
     }
 
-    return false;
+    return $oExportformat_arr;
 }
 
 /**
@@ -411,7 +409,7 @@ function exportformatQueueActionErstellenEintragen(JTLSmarty $smarty, array &$me
 {
     $kExportformat = (int)$_POST['kExportformat'];
     $dStart        = $_POST['dStart'];
-    $nAlleXStunden = (!empty($_POST['nAlleXStundenCustom']))
+    $nAlleXStunden = !empty($_POST['nAlleXStundenCustom'])
         ? (int)$_POST['nAlleXStundenCustom']
         : (int)$_POST['nAlleXStunden'];
     $oValues       = new stdClass();

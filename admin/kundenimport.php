@@ -25,7 +25,7 @@ if (isset($_POST['kundenimport'], $_FILES['csv']['tmp_name'])
     && FormHelper::validateToken()
     && strlen($_FILES['csv']['tmp_name']) > 0
 ) {
-    $delimiter = guessCsvDelimiter($_FILES['csv']['tmp_name']);
+    $delimiter = getCsvDelimiter($_FILES['csv']['tmp_name']);
     $file = fopen($_FILES['csv']['tmp_name'], 'r');
     if ($file !== false) {
         $row      = 0;
@@ -39,9 +39,8 @@ if (isset($_POST['kundenimport'], $_FILES['csv']['tmp_name'])
                 if ($fmt === -1) {
                     $hinweis .= ' - Format nicht erkannt!';
                     break;
-                } else {
-                    $hinweis .= '<br><br>Importiere...<br>';
                 }
+                $hinweis .= '<br><br>Importiere...<br>';
             } else {
                 $hinweis .= '<br>Zeile ' . $row . ': ' . processImport($fmt, $data);
             }
@@ -101,10 +100,8 @@ function checkformat($data)
         if (!in_array('cPasswort', $fmt, true) || !in_array('cMail', $fmt, true)) {
             return -1;
         }
-    } else {
-        if (!in_array('cMail', $fmt, true)) {
-            return -1;
-        }
+    } elseif (!in_array('cMail', $fmt, true)) {
+        return -1;
     }
 
     return $fmt;

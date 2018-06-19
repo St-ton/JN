@@ -307,7 +307,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                         \DB\ReturnType::AFFECTED_ROWS
                     );
                 }
-                $cHinweis .= 'Ihre markierten Umfragen wurden erfolgreich gel&ouml;scht.<br />';
+                $cHinweis .= 'Ihre markierten Umfragen wurden erfolgreich gelöscht.<br />';
                 Shop::Cache()->flushTags([CACHING_GROUP_CORE]);
             } else {
                 $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine Umfrage.<br />';
@@ -323,7 +323,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                     loescheFrage($kUmfrageFrage);
                 }
 
-                $cHinweis = 'Ihre markierten Fragen wurden erfolgreich gel&ouml;scht.<br>';
+                $cHinweis = 'Ihre markierten Fragen wurden erfolgreich gelöscht.<br>';
             }
             // Bestimmte Antworten loeschen
             if (is_array($_POST['kUmfrageFrageAntwort']) && count($_POST['kUmfrageFrageAntwort']) > 0) {
@@ -338,7 +338,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                             WHERE tumfragefrageantwort.kUmfrageFrageAntwort = " . $kUmfrageFrageAntwort, 3
                     );
                 }
-                $cHinweis .= "Ihre markierten Antworten wurden erfolgreich gel&ouml;scht.<br>";
+                $cHinweis .= "Ihre markierten Antworten wurden erfolgreich gelöscht.<br>";
             }
             // Bestimmte Optionen loeschen
             if (isset($_POST['kUmfrageMatrixOption']) &&
@@ -355,7 +355,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                     );
                 }
 
-                $cHinweis .= 'Ihre markierten Optionen wurden erfolgreich gel&ouml;scht.<br />';
+                $cHinweis .= 'Ihre markierten Optionen wurden erfolgreich gelöscht.<br />';
             }
             Shop::Cache()->flushTags([CACHING_GROUP_CORE]);
         } elseif (isset($_POST['umfrage_frage_hinzufuegen'])
@@ -457,27 +457,24 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                         '*',
                         'nSort'
                     );
-                    if (count($oUmfrage->oUmfrageFrage_arr) > 0) {
-                        foreach ($oUmfrage->oUmfrageFrage_arr as $i => $oUmfrageFrage) {
-                            // Mappe Fragentyp
-                            $oUmfrage->oUmfrageFrage_arr[$i]->cTypMapped = mappeFragenTyp($oUmfrageFrage->cTyp);
+                    foreach ($oUmfrage->oUmfrageFrage_arr as $i => $oUmfrageFrage) {
+                        // Mappe Fragentyp
+                        $oUmfrage->oUmfrageFrage_arr[$i]->cTypMapped = mappeFragenTyp($oUmfrageFrage->cTyp);
 
-                            $oUmfrage->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr = Shop::Container()->getDB()->selectAll(
-                                'tumfragefrageantwort',
-                                'kUmfrageFrage',
-                                (int)$oUmfrage->oUmfrageFrage_arr[$i]->kUmfrageFrage,
-                                'kUmfrageFrageAntwort, kUmfrageFrage, cName',
-                                'nSort'
-                            );
-                            $oUmfrage->oUmfrageFrage_arr[$i]->oUmfrageMatrixOption_arr = [];
-                            $oUmfrage->oUmfrageFrage_arr[$i]->oUmfrageMatrixOption_arr = Shop::Container()->getDB()->selectAll(
-                                'tumfragematrixoption',
-                                'kUmfrageFrage',
-                                (int)$oUmfrage->oUmfrageFrage_arr[$i]->kUmfrageFrage,
-                                'kUmfrageMatrixOption, kUmfrageFrage, cName',
-                                'nSort'
-                            );
-                        }
+                        $oUmfrage->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr = Shop::Container()->getDB()->selectAll(
+                            'tumfragefrageantwort',
+                            'kUmfrageFrage',
+                            (int)$oUmfrage->oUmfrageFrage_arr[$i]->kUmfrageFrage,
+                            'kUmfrageFrageAntwort, kUmfrageFrage, cName',
+                            'nSort'
+                        );
+                        $oUmfrage->oUmfrageFrage_arr[$i]->oUmfrageMatrixOption_arr = Shop::Container()->getDB()->selectAll(
+                            'tumfragematrixoption',
+                            'kUmfrageFrage',
+                            (int)$oUmfrage->oUmfrageFrage_arr[$i]->kUmfrageFrage,
+                            'kUmfrageMatrixOption, kUmfrageFrage, cName',
+                            'nSort'
+                        );
                     }
                     $smarty->assign('oUmfrage', $oUmfrage);
                 }

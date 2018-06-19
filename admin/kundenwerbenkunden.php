@@ -25,18 +25,19 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $cHinweis .= saveAdminSectionSettings(CONF_KUNDENWERBENKUNDEN, $_POST);
 }
 // KwK
-if (RequestHelper::verifyGPCDataInt('KwK') === 1 && FormHelper::validateToken()) {
-    // Einladung vom Neukunden loeschen
-    if (RequestHelper::verifyGPCDataInt('nichtreggt_loeschen') === 1) {
-        $kKundenWerbenKunden_arr = $_POST['kKundenWerbenKunden'];
-        if (is_array($kKundenWerbenKunden_arr) && count($kKundenWerbenKunden_arr) > 0) {
-            foreach ($kKundenWerbenKunden_arr as $kKundenWerbenKunden) {
-                Shop::Container()->getDB()->delete('tkundenwerbenkunden', 'kKundenWerbenKunden', (int)$kKundenWerbenKunden);
-            }
-            $cHinweis .= 'Ihre markierten Neukunden wurden erfolgreich gel&ouml;scht.<br />';
-        } else {
-            $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Neukunden<br />';
+if (RequestHelper::verifyGPCDataInt('KwK') === 1
+    && RequestHelper::verifyGPCDataInt('nichtreggt_loeschen') === 1
+    && FormHelper::validateToken()
+) {
+// Einladung vom Neukunden loeschen
+    $kKundenWerbenKunden_arr = $_POST['kKundenWerbenKunden'];
+    if (is_array($kKundenWerbenKunden_arr) && count($kKundenWerbenKunden_arr) > 0) {
+        foreach ($kKundenWerbenKunden_arr as $kKundenWerbenKunden) {
+            Shop::Container()->getDB()->delete('tkundenwerbenkunden', 'kKundenWerbenKunden', (int)$kKundenWerbenKunden);
         }
+        $cHinweis .= 'Ihre markierten Neukunden wurden erfolgreich gelöscht.<br />';
+    } else {
+        $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Neukunden<br />';
     }
 }
 

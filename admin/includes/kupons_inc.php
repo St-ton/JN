@@ -117,7 +117,6 @@ function normalizeDate($string)
 
 /**
  * @param string $cKuponTyp
- * @param array $columns
  * @param string $cWhereSQL
  * @param string $cOrderSQL
  * @param string $cLimitSQL
@@ -313,6 +312,7 @@ function createNewCoupon($cKuponTyp)
  * Read coupon settings from the edit page form and create a Kupon instance of it
  * 
  * @return Kupon
+ * @throws Exception
  */
 function createCouponFromInput()
 {
@@ -353,9 +353,10 @@ function createCouponFromInput()
         !in_array('-1', $_POST['kHersteller'])) {
         $oKupon->cHersteller = StringHandler::createSSK($_POST['kHersteller']);
     }
-    if (!empty($_POST['kKategorien']) &&
-        is_array($_POST['kKategorien']) && count($_POST['kKategorien']) > 0 &&
-        !in_array('-1', $_POST['kKategorien'])) {
+    if (!empty($_POST['kKategorien'])
+        && is_array($_POST['kKategorien']) && count($_POST['kKategorien']) > 0
+        && !in_array('-1', $_POST['kKategorien'])
+    ) {
         $oKupon->cKategorien = StringHandler::createSSK($_POST['kKategorien']);
     }
     if (!empty($_POST['cKunden']) && $_POST['cKunden'] != "-1") {
@@ -363,7 +364,7 @@ function createCouponFromInput()
     }
     if (isset($_POST['couponCreation'])) {
         $massCreationCoupon                  = new stdClass();
-        $massCreationCoupon->cActiv          = (!empty($_POST['couponCreation']))
+        $massCreationCoupon->cActiv          = !empty($_POST['couponCreation'])
             ? (int)$_POST['couponCreation']
             : 0;
         $massCreationCoupon->numberOfCoupons = ($massCreationCoupon->cActiv === 1 && !empty($_POST['numberOfCoupons']))
@@ -397,8 +398,8 @@ function createCouponFromInput()
  */
 function getCouponCount($cKuponTyp = 'standard', $cWhereSQL = '')
 {
-    $oKuponDB = Shop::Container()->getDB()->query("
-        SELECT count(kKupon) AS count
+    $oKuponDB = Shop::Container()->getDB()->query(
+        "SELECT count(kKupon) AS count
             FROM tkupon
             WHERE cKuponTyp = '" . $cKuponTyp . "'" .
             ($cWhereSQL !== '' ? " AND " . $cWhereSQL : ""),

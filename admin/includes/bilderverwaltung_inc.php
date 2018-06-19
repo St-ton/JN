@@ -9,7 +9,7 @@
  * @return array
  * @throws Exception
  */
-function getItems($filesize = false)
+function getItems(bool $filesize = false)
 {
     $smarty = JTLSmarty::getInstance(false, true);
     $smarty->configLoad('german.conf', 'bilderverwaltung');
@@ -39,11 +39,10 @@ function loadStats($type)
 
 /**
  * @param int $index
- * @return stdClass
+ * @return stdClass|IOError
  */
-function cleanupStorage($index)
+function cleanupStorage(int $index)
 {
-    $index      = (int)$index;
     $startIndex = $index;
 
     if ($index === null) {
@@ -113,7 +112,7 @@ function cleanupStorage($index)
  * @param bool   $isAjax
  * @return array
  */
-function clearImageCache($type, $isAjax = false)
+function clearImageCache($type, bool $isAjax = false)
 {
     if ($type !== null && preg_match('/[a-z]*/', $type)) {
         MediaImage::clearCache($type);
@@ -123,6 +122,8 @@ function clearImageCache($type, $isAjax = false)
         }
         Shop::Smarty()->assign('success', 'Cache wurde erfolgreich zur&uuml;ckgesetzt');
     }
+
+    return [];
 }
 
 /**
@@ -131,10 +132,8 @@ function clearImageCache($type, $isAjax = false)
  * @return IOError|object
  * @throws Exception
  */
-function generateImageCache($type, $index)
+function generateImageCache($type, int $index)
 {
-    $index = (int)$index;
-
     if ($type === null || $index === null) {
         return new IOError('Invalid argument request', 500);
     }
@@ -186,7 +185,7 @@ function generateImageCache($type, $index)
  * @return array
  * @throws Exception
  */
-function getCorruptedImages($type, $limit)
+function getCorruptedImages($type, int $limit)
 {
     static $offset = 0;
     $corruptedImages = [];

@@ -352,78 +352,76 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
             if (isset($cError_arr['bMinAdmin']) && (int)$cError_arr['bMinAdmin'] === 1) {
                 $messages['error'] .= 'Es muss mindestens ein Administrator im System vorhanden sein.';
             }
-        } else {
-            if ($oTmpAcc->kAdminlogin > 0) {
-                if (!$dGueltigBisAktiv) {
-                    $oTmpAcc->dGueltigBis = '_DBNULL_';
-                }
+        } elseif ($oTmpAcc->kAdminlogin > 0) {
+            if (!$dGueltigBisAktiv) {
+                $oTmpAcc->dGueltigBis = '_DBNULL_';
+            }
+            // if we change the current admin-user, we have to update his session-credentials too!
+            if ((int)$oTmpAcc->kAdminlogin === (int)$_SESSION['AdminAccount']->kAdminlogin
+                && $oTmpAcc->cLogin !== $_SESSION['AdminAccount']->cLogin) {
+                $_SESSION['AdminAccount']->cLogin = $oTmpAcc->cLogin;
+            }
+            if (strlen($oTmpAcc->cPass) > 0) {
+                $oTmpAcc->cPass = Shop::Container()->getPasswordService()->hash($oTmpAcc->cPass);
                 // if we change the current admin-user, we have to update his session-credentials too!
-                if ((int)$oTmpAcc->kAdminlogin === (int)$_SESSION['AdminAccount']->kAdminlogin
-                    && $oTmpAcc->cLogin !== $_SESSION['AdminAccount']->cLogin) {
-                    $_SESSION['AdminAccount']->cLogin = $oTmpAcc->cLogin;
-                }
-                if (strlen($oTmpAcc->cPass) > 0) {
-                    $oTmpAcc->cPass = Shop::Container()->getPasswordService()->hash($oTmpAcc->cPass);
-                    // if we change the current admin-user, we have to update his session-credentials too!
-                    if ((int)$oTmpAcc->kAdminlogin === (int)$_SESSION['AdminAccount']->kAdminlogin) {
-                        $_SESSION['AdminAccount']->cPass = $oTmpAcc->cPass;
-                    }
-                } else {
-                    unset($oTmpAcc->cPass);
-                }
-
-                if (Shop::Container()->getDB()->update('tadminlogin', 'kAdminlogin', $oTmpAcc->kAdminlogin, $oTmpAcc) >= 0
-                    && benutzerverwaltungSaveAttributes($oTmpAcc, $tmpAttribs, $messages, $cError_arr)
-                ) {
-                    $result = true;
-                    executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
-                        'oAccount' => $oTmpAcc,
-                        'type'     => 'SAVE',
-                        'attribs'  => &$tmpAttribs,
-                        'messages' => &$messages,
-                        'result'   => &$result,
-                    ]);
-                    if (true === $result) {
-                        $messages['notice'] .= 'Benutzer wurde erfolgreich gespeichert.';
-
-                        return 'index_redirect';
-                    }
-                    $smarty->assign('cError_arr', array_merge($cError_arr, (array)$result));
-                } else {
-                    $messages['error'] .= 'Benutzer konnte nicht gespeichert werden.';
-                    $smarty->assign('cError_arr', $cError_arr);
+                if ((int)$oTmpAcc->kAdminlogin === (int)$_SESSION['AdminAccount']->kAdminlogin) {
+                    $_SESSION['AdminAccount']->cPass = $oTmpAcc->cPass;
                 }
             } else {
-                unset($oTmpAcc->kAdminlogin);
-                $oTmpAcc->bAktiv        = 1;
-                $oTmpAcc->nLoginVersuch = 0;
-                $oTmpAcc->dLetzterLogin = '_DBNULL_';
-                if (!isset($oTmpAcc->dGueltigBis) || strlen($oTmpAcc->dGueltigBis) === 0) {
-                    $oTmpAcc->dGueltigBis = '_DBNULL_';
-                }
-                $oTmpAcc->cPass = Shop::Container()->getPasswordService()->hash($oTmpAcc->cPass);
+                unset($oTmpAcc->cPass);
+            }
 
-                if (($oTmpAcc->kAdminlogin = Shop::Container()->getDB()->insert('tadminlogin', $oTmpAcc))
-                    && benutzerverwaltungSaveAttributes($oTmpAcc, $tmpAttribs, $messages, $cError_arr)
-                ) {
-                    $result = true;
-                    executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
-                        'oAccount' => $oTmpAcc,
-                        'type'     => 'SAVE',
-                        'attribs'  => &$tmpAttribs,
-                        'messages' => &$messages,
-                        'result'   => &$result,
-                    ]);
-                    if (true === $result) {
-                        $messages['notice'] .= 'Benutzer wurde erfolgreich hinzugef&uuml;gt';
+            if (Shop::Container()->getDB()->update('tadminlogin', 'kAdminlogin', $oTmpAcc->kAdminlogin, $oTmpAcc) >= 0
+                && benutzerverwaltungSaveAttributes($oTmpAcc, $tmpAttribs, $messages, $cError_arr)
+            ) {
+                $result = true;
+                executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
+                    'oAccount' => $oTmpAcc,
+                    'type'     => 'SAVE',
+                    'attribs'  => &$tmpAttribs,
+                    'messages' => &$messages,
+                    'result'   => &$result,
+                ]);
+                if (true === $result) {
+                    $messages['notice'] .= 'Benutzer wurde erfolgreich gespeichert.';
 
-                        return 'index_redirect';
-                    }
-                    $smarty->assign('cError_arr', array_merge($cError_arr, (array)$result));
-                } else {
-                    $messages['error'] .= 'Benutzer konnte nicht angelegt werden.';
-                    $smarty->assign('cError_arr', $cError_arr);
+                    return 'index_redirect';
                 }
+                $smarty->assign('cError_arr', array_merge($cError_arr, (array)$result));
+            } else {
+                $messages['error'] .= 'Benutzer konnte nicht gespeichert werden.';
+                $smarty->assign('cError_arr', $cError_arr);
+            }
+        } else {
+            unset($oTmpAcc->kAdminlogin);
+            $oTmpAcc->bAktiv        = 1;
+            $oTmpAcc->nLoginVersuch = 0;
+            $oTmpAcc->dLetzterLogin = '_DBNULL_';
+            if (!isset($oTmpAcc->dGueltigBis) || strlen($oTmpAcc->dGueltigBis) === 0) {
+                $oTmpAcc->dGueltigBis = '_DBNULL_';
+            }
+            $oTmpAcc->cPass = Shop::Container()->getPasswordService()->hash($oTmpAcc->cPass);
+
+            if (($oTmpAcc->kAdminlogin = Shop::Container()->getDB()->insert('tadminlogin', $oTmpAcc))
+                && benutzerverwaltungSaveAttributes($oTmpAcc, $tmpAttribs, $messages, $cError_arr)
+            ) {
+                $result = true;
+                executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
+                    'oAccount' => $oTmpAcc,
+                    'type'     => 'SAVE',
+                    'attribs'  => &$tmpAttribs,
+                    'messages' => &$messages,
+                    'result'   => &$result,
+                ]);
+                if (true === $result) {
+                    $messages['notice'] .= 'Benutzer wurde erfolgreich hinzugef&uuml;gt';
+
+                    return 'index_redirect';
+                }
+                $smarty->assign('cError_arr', array_merge($cError_arr, (array)$result));
+            } else {
+                $messages['error'] .= 'Benutzer konnte nicht angelegt werden.';
+                $smarty->assign('cError_arr', $cError_arr);
             }
         }
 

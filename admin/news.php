@@ -726,55 +726,46 @@ if ($step === 'news_uebersicht') {
             ORDER BY tnews.dGueltigVon DESC",
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    $oNewsAnzahl = Shop::Container()->getDB()->query(
-        'SELECT FOUND_ROWS() AS nAnzahl',
-        \DB\ReturnType::SINGLE_OBJECT
-    );
-
-    if (is_array($oNews_arr) && count($oNews_arr) > 0) {
-        foreach ($oNews_arr as $i => $oNews) {
-            $oNews_arr[$i]->cKundengruppe_arr = [];
-            $kKundengruppe_arr                = [];
-            $kKundengruppe_arr                = StringHandler::parseSSK($oNews->cKundengruppe);
-
-            foreach ($kKundengruppe_arr as $kKundengruppe) {
-                if ($kKundengruppe == -1) {
-                    $oNews_arr[$i]->cKundengruppe_arr[] = 'Alle';
-                } else {
-                    $oKundengruppe = Shop::Container()->getDB()->select('tkundengruppe', 'kKundengruppe', (int)$kKundengruppe);
-                    if (!empty($oKundengruppe->cName)) {
-                        $oNews_arr[$i]->cKundengruppe_arr[] = $oKundengruppe->cName;
-                    }
+    foreach ($oNews_arr as $i => $oNews) {
+        $oNews_arr[$i]->cKundengruppe_arr = [];
+        $kKundengruppe_arr                = StringHandler::parseSSK($oNews->cKundengruppe);
+        foreach ($kKundengruppe_arr as $kKundengruppe) {
+            if ($kKundengruppe == -1) {
+                $oNews_arr[$i]->cKundengruppe_arr[] = 'Alle';
+            } else {
+                $oKundengruppe = Shop::Container()->getDB()->select('tkundengruppe', 'kKundengruppe', (int)$kKundengruppe);
+                if (!empty($oKundengruppe->cName)) {
+                    $oNews_arr[$i]->cKundengruppe_arr[] = $oKundengruppe->cName;
                 }
             }
-            //add row "Kategorie" to news
-            $oCategorytoNews_arr = Shop::Container()->getDB()->query(
-                "SELECT tnewskategorie.cName
-                    FROM tnewskategorie
-                    LEFT JOIN tnewskategorienews 
-                        ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
-                    WHERE tnewskategorienews.kNews = " . (int)$oNews->kNews ." 
-                    ORDER BY tnewskategorie.nSort",
-                \DB\ReturnType::ARRAY_OF_OBJECTS
-            );
-            $Kategoriearray = [];
-            foreach ($oCategorytoNews_arr as $j => $KategorieAusgabe) {
-                $Kategoriearray[] = $KategorieAusgabe->cName;
-            }
-            $oNews_arr[$i]->KategorieAusgabe = implode(',<br />', $Kategoriearray);
-            // Limit News comments on aktiv comments
-            $oNewsKommentarAktiv = Shop::Container()->getDB()->query(
-                "SELECT count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahlAktiv
-                    FROM tnews
-                    LEFT JOIN tnewskommentar 
-                        ON tnewskommentar.kNews = tnews.kNews
-                    WHERE tnewskommentar.nAktiv = 1 
-                        AND tnews.kNews = " . (int)$oNews->kNews . "
-                        AND tnews.kSprache = " . (int)$_SESSION['kSprache'],
-                \DB\ReturnType::SINGLE_OBJECT
-            );
-            $oNews_arr[$i]->nNewsKommentarAnzahl = $oNewsKommentarAktiv->nNewsKommentarAnzahlAktiv;
         }
+        //add row "Kategorie" to news
+        $oCategorytoNews_arr = Shop::Container()->getDB()->query(
+            "SELECT tnewskategorie.cName
+                FROM tnewskategorie
+                LEFT JOIN tnewskategorienews 
+                    ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
+                WHERE tnewskategorienews.kNews = " . (int)$oNews->kNews ." 
+                ORDER BY tnewskategorie.nSort",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
+        $Kategoriearray = [];
+        foreach ($oCategorytoNews_arr as $j => $KategorieAusgabe) {
+            $Kategoriearray[] = $KategorieAusgabe->cName;
+        }
+        $oNews_arr[$i]->KategorieAusgabe = implode(',<br />', $Kategoriearray);
+        // Limit News comments on aktiv comments
+        $oNewsKommentarAktiv = Shop::Container()->getDB()->query(
+            "SELECT count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahlAktiv
+                FROM tnews
+                LEFT JOIN tnewskommentar 
+                    ON tnewskommentar.kNews = tnews.kNews
+                WHERE tnewskommentar.nAktiv = 1 
+                    AND tnews.kNews = " . (int)$oNews->kNews . "
+                    AND tnews.kSprache = " . (int)$_SESSION['kSprache'],
+            \DB\ReturnType::SINGLE_OBJECT
+        );
+        $oNews_arr[$i]->nNewsKommentarAnzahl = $oNewsKommentarAktiv->nNewsKommentarAnzahlAktiv;
     }
     // Newskommentare die auf eine Freischaltung warten
     $oNewsKommentar_arr = Shop::Container()->getDB()->query(

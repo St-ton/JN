@@ -282,7 +282,6 @@ function generateSitemapXML()
     $nAnzahlURL_arr = [];
     $nSitemapLimit  = 25000;
     $sitemap_data   = '';
-    $shopURL        = Shop::getURL();
     $imageBaseURL   = Shop::getImageBaseURL();
     //Hauptseite
     $sitemap_data .= makeURL('', null, FREQ_ALWAYS, PRIO_VERYHIGH);

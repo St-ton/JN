@@ -113,28 +113,27 @@ if ($action === 'bearbeiten') {
         $cFehler .= '</ul>';
         $action   = 'bearbeiten';
         augmentCoupon($oKupon);
-    } else {
-        // Validierung erfolgreich => Kupon speichern
-        if (saveCoupon($oKupon, $oSprache_arr) > 0) {
-            // erfolgreich gespeichert => evtl. Emails versenden
-            if (isset($_POST['informieren']) && $_POST['informieren'] === 'Y' &&
-                ($oKupon->cKuponTyp === 'standard' || $oKupon->cKuponTyp === 'versandkupon') &&
-                $oKupon->cAktiv === 'Y') {
-                informCouponCustomers($oKupon);
-            }
-            $cHinweis = 'Der Kupon wurde erfolgreich gespeichert.';
-        } else {
-            $cFehler = 'Der Kupon konnte nicht gespeichert werden.';
+    } elseif (saveCoupon($oKupon, $oSprache_arr) > 0) {// Validierung erfolgreich => Kupon speichern
+        // erfolgreich gespeichert => evtl. Emails versenden
+        if (isset($_POST['informieren'])
+            && $_POST['informieren'] === 'Y'
+            && ($oKupon->cKuponTyp === 'standard' || $oKupon->cKuponTyp === 'versandkupon')
+            && $oKupon->cAktiv === 'Y'
+        ) {
+            informCouponCustomers($oKupon);
         }
+        $cHinweis = 'Der Kupon wurde erfolgreich gespeichert.';
+    } else {
+        $cFehler = 'Der Kupon konnte nicht gespeichert werden.';
     }
 } elseif ($action === 'loeschen') {
     // Kupons loeschen
     if (isset($_POST['kKupon_arr']) && is_array($_POST['kKupon_arr']) && count($_POST['kKupon_arr']) > 0) {
         $kKupon_arr = array_map('intval', $_POST['kKupon_arr']);
         if (loescheKupons($kKupon_arr)) {
-            $cHinweis = 'Ihre markierten Kupons wurden erfolgreich gel&ouml;scht.';
+            $cHinweis = 'Ihre markierten Kupons wurden erfolgreich gelöscht.';
         } else {
-            $cFehler = 'Fehler: Ein oder mehrere Kupons konnten nicht gel&ouml;scht werden.';
+            $cFehler = 'Fehler: Ein oder mehrere Kupons konnten nicht gelöscht werden.';
         }
     } else {
         $cFehler = 'Fehler: Bitte markieren Sie mindestens einen Kupon.';

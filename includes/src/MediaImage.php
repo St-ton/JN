@@ -25,7 +25,7 @@ class MediaImage implements IMedia
      * @param int    $number
      * @return MediaImageRequest
      */
-    public static function getRequest($type, $id, $mixed, $size, $number = 1)
+    public static function getRequest($type, $id, $mixed, $size, int $number = 1): MediaImageRequest
     {
         $name = Image::getCustomName($type, $mixed);
 
@@ -47,7 +47,7 @@ class MediaImage implements IMedia
      *
      * @return string
      */
-    public static function getThumb($type, $id, $mixed, $size, $number = 1)
+    public static function getThumb($type, $id, $mixed, $size, int $number = 1): string
     {
         $name     = Image::getCustomName($type, $mixed);
         $settings = Image::getSettings();
@@ -64,7 +64,8 @@ class MediaImage implements IMedia
         if (!file_exists($thumbAbs) && !file_exists(PFAD_ROOT . $req->getRaw())) {
             $fallback = $req->getFallbackThumb($size);
             $thumb    = file_exists(PFAD_ROOT . $fallback)
-                ? $fallback : BILD_KEIN_ARTIKELBILD_VORHANDEN;
+                ? $fallback
+                : BILD_KEIN_ARTIKELBILD_VORHANDEN;
         }
 
         return $thumb;
@@ -77,7 +78,7 @@ class MediaImage implements IMedia
      * @param int    $number
      * @return string
      */
-    public static function getThumbUrl($type, $id, $size, $number = 1)
+    public static function getThumbUrl($type, $id, $size, int $number = 1): string
     {
         $req = MediaImageRequest::create([
             'type'   => $type,
@@ -94,7 +95,7 @@ class MediaImage implements IMedia
      * @return stdClass
      * @throws Exception
      */
-    public static function getStats($type, $filesize = false)
+    public static function getStats($type, bool $filesize = false): stdClass
     {
         $result = (object) [
             'total'     => 0,
@@ -173,7 +174,7 @@ class MediaImage implements IMedia
      * @param string $request
      * @return bool
      */
-    public function isValid($request)
+    public function isValid($request): bool
     {
         return $this->parse($request) !== null;
     }
@@ -182,7 +183,7 @@ class MediaImage implements IMedia
      * @param string $imageUrl
      * @return MediaImageRequest
      */
-    public static function toRequest($imageUrl)
+    public static function toRequest($imageUrl): MediaImageRequest
     {
         $self = new self();
 
@@ -293,7 +294,7 @@ class MediaImage implements IMedia
      * @param bool              $overwrite
      * @return array
      */
-    public static function cacheImage(MediaImageRequest $req, $overwrite = false)
+    public static function cacheImage(MediaImageRequest $req, bool $overwrite = false): array
     {
         $result   = [];
         $rawImage = null;
@@ -350,7 +351,7 @@ class MediaImage implements IMedia
      * @return MediaImageRequest[]
      * @throws Exception
      */
-    public static function getImages($type, $notCached = false, $offset = null, $limit = null)
+    public static function getImages($type, bool $notCached = false, int $offset = null, int $limit = null): array
     {
         $requests = [];
         switch ($type) {
@@ -421,7 +422,7 @@ class MediaImage implements IMedia
      *
      * @return bool
      */
-    public static function isCached(MediaImageRequest $req)
+    public static function isCached(MediaImageRequest $req): bool
     {
         return file_exists($req->getThumb(Image::SIZE_XS, true))
             && file_exists($req->getThumb(Image::SIZE_SM, true))
@@ -431,7 +432,6 @@ class MediaImage implements IMedia
 
     /**
      * @param string $request
-     *
      * @return array|null
      */
     private function parse($request)
@@ -451,10 +451,9 @@ class MediaImage implements IMedia
 
     /**
      * @param string $request
-     *
      * @return MediaImageRequest
      */
-    private function create($request)
+    private function create($request): MediaImageRequest
     {
         $matches = $this->parse($request);
 
@@ -486,11 +485,10 @@ class MediaImage implements IMedia
     /**
      * @param string $type
      * @param int    $id
-     * @return stdClass
+     * @return stdClass|null
      */
-    public static function getImageStmt($type, $id)
+    public static function getImageStmt($type, int $id)
     {
-        $id = (int)$id;
         switch ($type) {
             case Image::TYPE_PRODUCT:
                 $res = [
@@ -546,13 +544,16 @@ class MediaImage implements IMedia
      * @param int    $id
      * @return bool
      */
-    public static function imageCount($type, $id)
+    public static function imageCount($type, int $id): int
     {
-        $id       = (int)$id;
         $prepared = static::getImageStmt($type, $id);
 
         if ($prepared !== null) {
-            $imageCount = Shop::Container()->getDB()->queryPrepared($prepared->stmt, $prepared->bind, 3);
+            $imageCount = Shop::Container()->getDB()->queryPrepared(
+                $prepared->stmt,
+                $prepared->bind,
+                \DB\ReturnType::AFFECTED_ROWS
+            );
 
             return is_numeric($imageCount) ? (int)$imageCount : 0;
         }
@@ -565,7 +566,7 @@ class MediaImage implements IMedia
      * @param int    $id
      * @return bool
      */
-    public static function hasImage($type, $id)
+    public static function hasImage($type, int $id): bool
     {
         return static::imageCount($type, $id) > 0;
     }
@@ -576,9 +577,9 @@ class MediaImage implements IMedia
      * @param object $mixed
      * @param string $size
      * @param int    $number
-     * @return string
+     * @return string|null
      */
-    public static function getRawOrFilesize($type, $id, $mixed, $size, $number = 1)
+    public static function getRawOrFilesize($type, $id, $mixed, $size, int $number = 1)
     {
         $name     = Image::getCustomName($type, $mixed);
         $settings = Image::getSettings();

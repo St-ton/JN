@@ -115,12 +115,12 @@ switch ($action) {
     case 'flush_object_cache' :
         $tab = 'massaction';
         if ($cache !== null && $cache->flushAll() !== false) {
-            $notice = 'Object Cache wurde erfolgreich gel&ouml;scht.';
+            $notice = 'Object Cache wurde erfolgreich gelöscht.';
         } else {
             if (0 < strlen($error)) {
                 $error .= '<br />';
             }
-            $error .= 'Der Cache konnte nicht gel&ouml;scht werden.';
+            $error .= 'Der Cache konnte nicht gelöscht werden.';
         }
         break;
     case 'settings' :
@@ -251,13 +251,11 @@ switch ($action) {
                     $pParameters['count']++;
                 } else {
                     $pParameters['error'] .= 'Datei <strong>' . $pParameters['path'] . $pParameters['filename'] .
-                        '</strong> konnte nicht gel&ouml;scht werden!<br/>';
+                        '</strong> konnte nicht gelöscht werden!<br/>';
                 }
-            } else {
-                if (!@rmdir($pParameters['path'] . $pParameters['filename'])) {
-                    $pParameters['error'] .= 'Verzeichnis <strong>' . $pParameters['path'] . $pParameters['filename'] .
-                        '</strong> konnte nicht gel&ouml;scht werden!<br/>';
-                }
+            } elseif (!@rmdir($pParameters['path'] . $pParameters['filename'])) {
+                $pParameters['error'] .= 'Verzeichnis <strong>' . $pParameters['path'] . $pParameters['filename'] .
+                    '</strong> konnte nicht gelöscht werden!<br/>';
             }
         };
         $deleteCount  = 0;
@@ -273,7 +271,7 @@ switch ($action) {
         $dirMan->getData(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR, $callback, $cbParameters);
         $notice .= 'Es wurden <strong>' .
             number_format($cbParameters['count']) .
-            '</strong> Dateien im Templatecache gel&ouml;scht!';
+            '</strong> Dateien im Templatecache gelöscht!';
         break;
     default:
         break;

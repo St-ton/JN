@@ -261,10 +261,10 @@ function dbUpdateIO()
     $updater  = new Updater();
 
     try {
-        if ($template->xmlData->cShopVersion != $template->shopVersion) {
-            if ($template->setTemplate($template->xmlData->cName, $template->xmlData->eTyp)) {
-                unset($_SESSION['cTemplate'], $_SESSION['template']);
-            }
+        if ($template->xmlData->cShopVersion != $template->shopVersion
+            && $template->setTemplate($template->xmlData->cName, $template->xmlData->eTyp)
+        ) {
+            unset($_SESSION['cTemplate'], $_SESSION['template']);
         }
 
         $dbVersion       = $updater->getCurrentDatabaseVersion();
@@ -376,7 +376,7 @@ function dbupdaterStatusTpl()
 function dbupdaterMigration($id = null, $version = null, $dir = null)
 {
     try {
-        $migration = new MigrationManager($version);
+        $migration = new MigrationManager();
 
         if ($id !== null && in_array($dir, [IMigration::UP, IMigration::DOWN], true)) {
             $migration->executeMigrationById($id, $dir);

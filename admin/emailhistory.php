@@ -20,14 +20,11 @@ if ($cAction === 'delete') {
             // 'true' signalizes 'something went wrong during DB-query'
             $cFehler = 'Fehler: eMail-History konnte nicht gel&ouml;scht werden!';
         }
+    } elseif (isset($_POST['kEmailhistory']) && is_array($_POST['kEmailhistory']) && count($_POST['kEmailhistory']) > 0) {
+        $oEmailhistory->deletePack($_POST['kEmailhistory']);
+        $cHinweis = 'Ihre markierten Logbucheintr&auml;ge wurden erfolgreich gel&ouml;scht.';
     } else {
-        if (isset($_POST['kEmailhistory']) && is_array($_POST['kEmailhistory']) && count($_POST['kEmailhistory']) > 0) {
-            $oEmailhistory->deletePack($_POST['kEmailhistory']);
-            $cHinweis = 'Ihre markierten Logbucheintr&auml;ge wurden erfolgreich gel&ouml;scht.';
-        } else {
-            $cFehler = 'Fehler: Bitte markieren Sie mindestens einen Logbucheintrag.';
-        }
-
+        $cFehler = 'Fehler: Bitte markieren Sie mindestens einen Logbucheintrag.';
     }
 }
 

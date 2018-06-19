@@ -64,10 +64,10 @@ if (isset($_POST['eintragen']) && (int)$_POST['eintragen'] === 1 && FormHelper::
                 $oVerpackungSprache                = new stdClass();
                 $oVerpackungSprache->kVerpackung   = $kVerpackung;
                 $oVerpackungSprache->cISOSprache   = $oSprache->cISO;
-                $oVerpackungSprache->cName         = (!empty($_POST['cName_' . $oSprache->cISO]))
+                $oVerpackungSprache->cName         = !empty($_POST['cName_' . $oSprache->cISO])
                     ? htmlspecialchars($_POST['cName_' . $oSprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
                     : htmlspecialchars($_POST['cName_' . $oSprache_arr[0]->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-                $oVerpackungSprache->cBeschreibung = (!empty($_POST['cBeschreibung_' . $oSprache->cISO]))
+                $oVerpackungSprache->cBeschreibung = !empty($_POST['cBeschreibung_' . $oSprache->cISO])
                     ? htmlspecialchars($_POST['cBeschreibung_' . $oSprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
                     : htmlspecialchars($_POST['cBeschreibung_' . $oSprache_arr[0]->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
                 Shop::Container()->getDB()->insert('tverpackungsprache', $oVerpackungSprache);
@@ -77,7 +77,7 @@ if (isset($_POST['eintragen']) && (int)$_POST['eintragen'] === 1 && FormHelper::
             $cHinweis .= 'Die Verpackung "' . $_POST['cName_' .
                 $oSprache_arr[0]->cISO] . '" wurde erfolgreich gespeichert.<br />';
         } else {
-            $cFehler .= 'Fehler: Bitte w&auml;hlen Sie mindestens eine Kundengruppe aus.<br />';
+            $cFehler .= 'Fehler: Bitte wählen Sie mindestens eine Kundengruppe aus.<br />';
         }
     } else {
         $cFehler .= 'Fehler: Bitte geben Sie der Verpackung einen Namen.<br />';
@@ -94,12 +94,14 @@ if (isset($_POST['eintragen']) && (int)$_POST['eintragen'] === 1 && FormHelper::
                 Shop::Container()->getDB()->delete('tverpackungsprache', 'kVerpackung', $kVerpackung);
             }
 
-            $cHinweis .= 'Die markierten Verpackungen wurden erfolgreich gel&ouml;scht.<br />';
+            $cHinweis .= 'Die markierten Verpackungen wurden erfolgreich gelöscht.<br />';
         } else {
             $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine Verpackung.<br />';
         }
-    } elseif (isset($_POST['aktualisieren']) &&
-        $_POST['aktualisieren'] === 'refresh' && FormHelper::validateToken()) {
+    } elseif (isset($_POST['aktualisieren'])
+        && $_POST['aktualisieren'] === 'refresh'
+        && FormHelper::validateToken()
+    ) {
         // Aktualisieren
         // Alle Verpackungen deaktivieren
         Shop::Container()->getDB()->query("UPDATE tverpackung SET nAktiv = 0", 3);
@@ -201,12 +203,10 @@ function gibKundengruppeObj($cKundengruppe)
                         }
                     }
                 }
-            } else {
-                if (count($oKundengruppe_arr) > 0) {
-                    foreach ($oKundengruppe_arr as $oKundengruppe) {
-                        $kKundengruppeTMP_arr[] = $oKundengruppe->kKundengruppe;
-                        $cKundengruppeTMP_arr[] = $oKundengruppe->cName;
-                    }
+            } elseif (count($oKundengruppe_arr) > 0) {
+                foreach ($oKundengruppe_arr as $oKundengruppe) {
+                    $kKundengruppeTMP_arr[] = $oKundengruppe->kKundengruppe;
+                    $cKundengruppeTMP_arr[] = $oKundengruppe->cName;
                 }
             }
         }

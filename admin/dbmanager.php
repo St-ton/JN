@@ -160,37 +160,36 @@ switch (true) {
 
                 if (is_array($parser->errors) && count($parser->errors) > 0) {
                     throw $parser->errors[0];
-                } else {
-                    $q = SqlParser\Utils\Query::getAll($query);
-
-                    if ($q['is_select'] !== true) {
-                        throw new \Exception(sprintf('Query is restricted to SELECT statements'));
-                    }
-
-                    foreach ($q['select_tables'] as $t) {
-                        $table  = $t[0];
-                        $dbname = $t[1];
-                        if ($dbname !== null && strcasecmp($dbname, DB_NAME) !== 0) {
-                            throw new \Exception(sprintf('Well, at least u tried :)'));
-                        }
-                        if (in_array(strtolower($table), $restrictedTables, true)) {
-                            throw new \Exception(sprintf('Permission denied for table `%s`', $table));
-                        }
-                    }
-
-                    $stmt = $q['statement'];
-
-                    if ($q['limit'] === false) {
-                        $stmt->limit = new SqlParser\Components\Limit(50, 0);
-                    }
-
-                    $newQuery = $stmt->build();
-                    $query    = SqlParser\Utils\Formatter::format($newQuery, ['type' => 'text']);
-
-                    $result = exec_query($newQuery);
-
-                    $smarty->assign('result', $result);
                 }
+                $q = SqlParser\Utils\Query::getAll($query);
+
+                if ($q['is_select'] !== true) {
+                    throw new \Exception(sprintf('Query is restricted to SELECT statements'));
+                }
+
+                foreach ($q['select_tables'] as $t) {
+                    $table  = $t[0];
+                    $dbname = $t[1];
+                    if ($dbname !== null && strcasecmp($dbname, DB_NAME) !== 0) {
+                        throw new \Exception(sprintf('Well, at least u tried :)'));
+                    }
+                    if (in_array(strtolower($table), $restrictedTables, true)) {
+                        throw new \Exception(sprintf('Permission denied for table `%s`', $table));
+                    }
+                }
+
+                $stmt = $q['statement'];
+
+                if ($q['limit'] === false) {
+                    $stmt->limit = new SqlParser\Components\Limit(50, 0);
+                }
+
+                $newQuery = $stmt->build();
+                $query    = SqlParser\Utils\Formatter::format($newQuery, ['type' => 'text']);
+
+                $result = exec_query($newQuery);
+
+                $smarty->assign('result', $result);
             } catch (Exception $e) {
                 $smarty->assign('error', $e);
             }

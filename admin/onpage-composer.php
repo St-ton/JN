@@ -18,10 +18,11 @@ $pageUrl = verifyGPDataString('pageUrl');
 $action  = verifyGPDataString('action');
 $async   = verifyGPDataString('async');
 $shopUrl = rtrim(\Shop::getURL(), '/');
-$opc     = \Shop::Container()->getOPC();
-$opcPage = \Shop::Container()->getOPCPageService();
-$opcDB   = \Shop::Container()->getOPCDB();
 $error   = null;
+
+$opc       = \Shop::Container()->getOPC();
+$opcPage   = \Shop::Container()->getOPCPageService();
+$opcPageDB = \Shop::Container()->getOPCPageDB();
 
 $templateUrl = $shopUrl . '/' . PFAD_ADMIN . $currentTemplateDir;
 $fullPageUrl = $shopUrl . $pageUrl;
@@ -34,10 +35,10 @@ try {
             ->setUrl($pageUrl)
             ->setReplace($action === 'replace')
             ->setName(
-                'Entwurf ' . ($opcDB->getPageDraftCount($pageId) + 1)
+                'Entwurf ' . ($opcPageDB->getDraftCount($pageId) + 1)
                 . ($action === 'extend' ? ' (erweitert)' : ' (ersetzt)')
             );
-        $opcDB->savePage($page);
+        $opcPageDB->saveDraft($page);
         $pageKey = $page->getKey();
     } elseif ($action === 'discard') {
         $opcPage->deleteDraft($pageKey);

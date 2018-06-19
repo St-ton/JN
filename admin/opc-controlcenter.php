@@ -15,22 +15,30 @@ $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 $notice = '';
 $error  = '';
 $action = verifyGPDataString('action');
-$opc    = \Shop::Container()->getOPC();
-$opcdb  = \Shop::Container()->getOPCDB();
+
+$opc       = \Shop::Container()->getOPC();
+$opcPage   = \Shop::Container()->getOPCPageService();
+$opcPageDB = \Shop::Container()->getOPCPageDB();
 
 $pagesPagi = (new Pagination('pages'))
-    ->setItemCount($opcdb->getPageCount())
+    ->setItemCount($opcPageDB->getPageCount())
     ->assemble();
 
-if (validateToken() && $action === 'restore') {
-    $pageId = verifyGPDataString('pageId');
-    $page   = $opc->getPage($pageId);
-    $opc->deletePage($pageId);
-    $notice = 'Der Composer-Inhalt für die Seite "' . $page->getUrl() . '" wurde zurückgesetzt.';
+if (validateToken()) {
+    if ($action === 'restore') {
+        $pageId = verifyGPDataString('pageId');
+        $opcPage->deletePage($pageId);
+        $notice = 'Der Composer-Inhalt für die Seite wurde zurückgesetzt.';
+    } elseif ($action === 'discard') {
+        $pageKey = verifyGPDataString('pageKey');
+        $opcPage->deleteDraft($pageKey);
+        $notice = 'Der Entwurf wurde gelöscht.';
+    }
 }
 
 $smarty
     ->assign('opc', $opc)
+    ->assign('opcPageDB', $opcPageDB)
     ->assign('pagesPagi', $pagesPagi)
     ->assign('cHinweis', $notice)
     ->assign('cFehler', $error)

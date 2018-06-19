@@ -26,6 +26,25 @@ class PageDB
     }
 
     /**
+     * @return int
+     */
+    public function getPageCount()
+    {
+        return $this->shopDB->query("SELECT count(DISTINCT cPageId) AS count FROM topcpage", 1)->count;
+    }
+
+    /**
+     * @return array
+     */
+    public function getPages()
+    {
+        return $this->shopDB->query(
+            "SELECT cPageId, cPageUrl FROM topcpage GROUP BY cPageId, cPageUrl",
+            2
+        );
+    }
+
+    /**
      * @param string $id
      * @return array
      */

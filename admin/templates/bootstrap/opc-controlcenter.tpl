@@ -23,37 +23,101 @@
                     <thead>
                     <tr>
                         <th>URL</th>
-                        <th>Ersetzt/Erweitert</th>
-                        <th>Letzte Änderung</th>
-                        <th>Gerade bearbeitet</th>
+                        <th>Seiten-ID</th>
                         <th></th>
                     </tr>
                     </thead>
                     <tbody>
                         {foreach array_slice(
-                            $opc->getPages(), $pagesPagi->getFirstPageItem(), $pagesPagi->getPageItemCount()
+                            $opcPageDB->getPages(), $pagesPagi->getFirstPageItem(), $pagesPagi->getPageItemCount()
                         ) as $page}
+                            {assign var="publicPageRow" value=$opcPageDB->getPublicPageRow($page->cPageId)}
                             <tr>
                                 <td>
-                                    <a href="{$URL_SHOP}{$page->getUrl()}" target="_blank">{$page->getUrl()}</a>
+                                    <a href="{$URL_SHOP}{$page->cPageUrl}" target="_blank">{$page->cPageUrl}</a>
                                 </td>
-                                <td>{if $page->isReplace()}Ersetzt{else}Erweitert{/if}</td>
-                                <td>{$page->getLastModified()|date_format:'%c'}</td>
-                                <td>{if empty($page->getLockedBy())}{else}{$page->getLockedBy()}{/if}</td>
                                 <td>
-                                    <div class="btn-group">
+                                    <a href="#page-{$page->cPageId}" data-toggle="collapse">{$page->cPageId}</a>
+                                </td>
+                                <td>
+                                    <div class="btn-group pull-right">
                                         <button class="btn btn-default" title="Vorschau"
-                                                data-src="{$URL_SHOP}{$page->getUrl()}" data-toggle="modal"
-                                                data-target="#previewModal"><i class="fa fa-eye"></i>
+                                                data-src="{$URL_SHOP}{$page->cPageUrl}"
+                                                data-toggle="modal"
+                                                data-target="#previewModal">
+                                            <i class="fa fa-eye"></i>
                                         </button>
-                                        <a class="btn btn-danger" title="Seite zurücksetzen"
-                                           href="?token={$smarty.session.jtl_token}&action=restore&pageId={$page->getId()}">
+                                        <a class="btn btn-danger" title="Alle Entwürfe löschen"
+                                           href="{strip}?token={$smarty.session.jtl_token}&
+                                                 action=restore&pageId={$page->cPageId}{/strip}">
                                             <i class="fa fa-trash"></i>
                                         </a>
-                                        <a class="btn btn-primary" title="Bearbeiten" target="_blank"
-                                           href="./onpage-composer.php?token={$smarty.session.jtl_token}&pageUrl={$page->getUrl()}&pageId={$page->getId()}&action=edit">
-                                            <i class="fa fa-pencil"></i>
-                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">
+                                    <div  class="collapse" id="page-{$page->cPageId}">
+                                    <table class="list table ">
+                                        <thead>
+                                        <tr>
+                                            <th>Entwurf</th>
+                                            <th>Veröffentlichen Ab</th>
+                                            <th>Veröffentlichen Bis</th>
+                                            <th>Ersetzt/Erweitert</th>
+                                            <th>Letzte Änderung</th>
+                                            <th>Gerade bearbeitet</th>
+                                            <th></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {foreach $opcPageDB->getDrafts($page->cPageId) as $draft}
+                                            <tr>
+                                                <td>{$draft->getName()}</td>
+                                                <td>
+                                                    {if empty($draft->getPublishFrom())}
+                                                        <span class="text-danger">Unveröffentlicht</span>
+                                                    {elseif $publicPageRow->kPage == $draft->getKey()}
+                                                        <span class="text-success">
+                                                            {$draft->getPublishFrom()|date_format:'%c'}
+                                                        </span>
+                                                    {else}
+                                                        {$draft->getPublishFrom()|date_format:'%c'}
+                                                    {/if}
+                                                </td>
+                                                <td>
+                                                    {if empty($draft->getPublishTo())}
+                                                        Auf unbestimmte Zeit
+                                                    {else}
+                                                        {$draft->getPublishTo()|date_format:'%c'}
+                                                    {/if}
+                                                </td>
+                                                <td>{if $draft->isReplace()}Ersetzt{else}Erweitert{/if}</td>
+                                                <td>{$draft->getLastModified()|date_format:'%c'}</td>
+                                                <td>
+                                                    {if empty($draft->getLockedBy())}{else}{$draft->getLockedBy()}{/if}
+                                                </td>
+                                                <td>
+                                                    <div class="btn-group">
+                                                        <a class="btn btn-primary" title="Bearbeiten" target="_blank"
+                                                           href="{strip}./onpage-composer.php?
+                                                                token={$smarty.session.jtl_token}&
+                                                                pageKey={$draft->getKey()}&
+                                                                action=edit{/strip}">
+                                                            <i class="fa fa-pencil"></i>
+                                                        </a>
+                                                        <a class="btn btn-danger" title="Seite zurücksetzen"
+                                                           href="{strip}?token={$smarty.session.jtl_token}&
+                                                                 action=discard&
+                                                                 pageKey={$draft->getKey()}{/strip}">
+                                                            <i class="fa fa-trash"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {/foreach}
+                                        </tbody>
+                                    </table>
                                     </div>
                                 </td>
                             </tr>
@@ -78,7 +142,7 @@
                     {foreach $opc->getPortletGroups() as $group}
                         {foreach $group->getPortlets() as $portlet}
                         <tr>
-                            <td>{$portlet->getButtonHtml()}</td>
+                            <td>{$portlet->getTitle()}</td>
                             <td>{$portlet->getGroup()}</td>
                             <td>
                                 {if $portlet->getPluginId() > 0}
@@ -141,6 +205,9 @@
 
         var modal = $(this);
         modal.find('#previewFrame').attr('src', frameSrc);
+    });
+    $('.collapse').on('show.bs.collapse', function () {
+        $('.collapse.in').collapse('hide');
     });
 </script>
 

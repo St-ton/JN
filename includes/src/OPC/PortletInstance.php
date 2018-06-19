@@ -286,13 +286,11 @@ class PortletInstance implements \JsonSerializable
      */
     public function updateAttributes()
     {
-        $styles      = $this->getStyles();
         $styleString = '';
-        $animations  = $this->getAnimations();
 
-        foreach ($styles as $styleName => $styleValue) {
+        foreach ($this->getStyles() as $styleName => $styleValue) {
             if (!empty($styleValue)) {
-                if (strpos($styleName,'hidden-') !== false && !empty($styleValue)) {
+                if (strpos($styleName, 'hidden-') !== false && !empty($styleValue)) {
                     $this->addClass($styleName);
                 } else {
                     if (stripos($styleName, 'margin-') !== false ||
@@ -311,7 +309,7 @@ class PortletInstance implements \JsonSerializable
 
         $this->setAttribute('style', $styleString);
 
-        foreach ($animations as $aniName => $aniValue) {
+        foreach ($this->getAnimations() as $aniName => $aniValue) {
             if ($aniName === 'animation-style' && !empty($aniValue)) {
                 $this->addClass("wow " . $aniValue);
             } else {

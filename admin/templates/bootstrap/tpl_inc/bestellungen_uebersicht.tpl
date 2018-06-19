@@ -53,7 +53,7 @@
                                 </td>
                                 <td>{$oBestellung->cBestellNr}</td>
                                 <td>{if isset($oBestellung->oKunde->cVorname) || isset($oBestellung->oKunde->cNachname) || isset($oBestellung->oKunde->cFirma)}{$oBestellung->oKunde->cVorname} {$oBestellung->oKunde->cNachname}{if isset($oBestellung->oKunde->cFirma) && $oBestellung->oKunde->cFirma|strlen > 0} ({$oBestellung->oKunde->cFirma}){/if}{else}{#noAccount#}{/if}</td>
-                                <td>{if $oBestellung->oKunde->nRegistriert === 1}{#yes#}{else}{#no#}{/if}</td>
+                                <td>{if isset($oBestellung->oKunde) && $oBestellung->oKunde->nRegistriert === 1}{#yes#}{else}{#no#}{/if}</td>
                                 <td>{$oBestellung->cVersandartName}</td>
                                 <td>{$oBestellung->cZahlungsartName}</td>
                                 <td class="tcenter">{if $oBestellung->cAbgeholt === 'Y'}{#yes#}{else}{#no#}{/if}</td>

@@ -526,7 +526,7 @@ function pruefeFehlendeAngaben($context)
  */
 function gibStepAccountwahl()
 {
-    global $hinweis, $Kunde;
+    global $hinweis;
     // Einstellung global_kundenkonto_aktiv ist auf 'A' und Kunde wurde nach der Registrierung zurück zur Accountwahl geleitet
     if (isset($_REQUEST['reg']) && (int)$_REQUEST['reg'] === 1) {
         $hinweis = Shop::Lang()->get('accountCreated') . '<br />' . Shop::Lang()->get('loginNotActivated');
@@ -542,7 +542,6 @@ function gibStepAccountwahl()
 function gibStepUnregistriertBestellen()
 {
     global $Kunde;
-    $conf      = Shop::getSettings([CONF_KUNDEN]);
     $herkunfte = Shop::Container()->getDB()->query(
         "SELECT * 
             FROM tkundenherkunft 
@@ -1341,15 +1340,15 @@ function zahlungsartKorrekt($kZahlungsart)
 function getPaymentSurchageDiscount($Zahlungsart)
 {
     if ($Zahlungsart->fAufpreis != 0) {
-        $_SESSION['Warenkorb']
-            ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
-            ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR);
+        $cart = Session\Session::Cart();
+        $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
+             ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR);
         //lokalisieren
         $Zahlungsart->cPreisLocalized = Preise::getLocalizedPriceString($Zahlungsart->fAufpreis);
         $Aufpreis = $Zahlungsart->fAufpreis;
         if ($Zahlungsart->cAufpreisTyp === 'prozent') {
             $fGuthaben = $_SESSION['Bestellung']->fGuthabenGenutzt ?? 0;
-            $Aufpreis = (($_SESSION['Warenkorb']->gibGesamtsummeWarenExt(
+            $Aufpreis  = (($cart->gibGesamtsummeWarenExt(
                             [
                                 C_WARENKORBPOS_TYP_ARTIKEL,
                                 C_WARENKORBPOS_TYP_VERSANDPOS,
@@ -1393,22 +1392,22 @@ function getPaymentSurchageDiscount($Zahlungsart)
             }
         }
         if ($Zahlungsart->cModulId === 'za_nachnahme_jtl') {
-            $_SESSION['Warenkorb']->erstelleSpezialPos(
+            $cart->erstelleSpezialPos(
                 $Spezialpos->cGebuehrname,
                 1,
                 $Aufpreis,
-                $_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($_SESSION['Lieferadresse']->cLand),
+                $cart->gibVersandkostenSteuerklasse($_SESSION['Lieferadresse']->cLand),
                 C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR,
                 true,
                 true,
                 $Zahlungsart->cHinweisText
             );
         } else {
-            $_SESSION['Warenkorb']->erstelleSpezialPos(
+            $cart->erstelleSpezialPos(
                 $Spezialpos->cGebuehrname,
                 1,
                 $Aufpreis,
-                $_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($_SESSION['Lieferadresse']->cLand),
+                $cart->gibVersandkostenSteuerklasse($_SESSION['Lieferadresse']->cLand),
                 C_WARENKORBPOS_TYP_ZAHLUNGSART,
                 true,
                 true,
@@ -2102,13 +2101,15 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
         //skip
     } elseif (empty($data['ustid']) && $conf['kunden']['kundenregistrierung_abfragen_ustid'] === 'Y') {
         $ret['ustid'] = 1;
-    } elseif ($conf['kunden']['kundenregistrierung_abfragen_ustid'] !== 'N'
-        && isset($data['ustid']) && $data['ustid'] !== ''
+    } elseif (isset($data['ustid'])
+        && $data['ustid'] !== ''
+        && $conf['kunden']['kundenregistrierung_abfragen_ustid'] !== 'N'
     ) {
         if (!isset($_SESSION['Kunde']->cUSTID)
             || (isset($_SESSION['Kunde']->cUSTID) && $_SESSION['Kunde']->cUSTID !== $data['ustid'])
         ) {
             $bAnalizeCheck = false; // flag to signalize further analization
+            $vViesResult   = null;
             if ('Y' === $conf['kunden']['shop_ustid_bzstpruefung']) { // backend-setting: "Einstellungen -> Formulareinstellungen ->"
                 $oVies         = new UstIDvies();
                 $vViesResult   = $oVies->doCheckID(trim($data['ustid']));

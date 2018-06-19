@@ -970,12 +970,7 @@ function speicherUploads($oBestellung)
  */
 function setzeSmartyWeiterleitung($bestellung)
 {
-    global $Einstellungen;
-
-    $successPaymentURL = '';
-    // Uploads speichern
     speicherUploads($bestellung);
-
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
         Jtllog::writeLog(
             'setzeSmartyWeiterleitung wurde mit folgender Zahlungsart ausgefuehrt: ' .
@@ -1068,11 +1063,6 @@ function setzeSmartyWeiterleitung($bestellung)
     } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_paymentpartner_jtl') {
         require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'paymentpartner/PaymentPartner.class.php';
         $paymentMethod           = new PaymentPartner($_SESSION['Zahlungsart']->cModulId);
-        $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
-        $paymentMethod->preparePaymentProcess($bestellung);
-    } elseif (strpos($_SESSION['Zahlungsart']->cModulId, 'za_mbqc_') === 0) {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'moneybookers_qc/MoneyBookersQC.class.php';
-        $paymentMethod           = new MoneyBookersQC($_SESSION['Zahlungsart']->cModulId);
         $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
         $paymentMethod->preparePaymentProcess($bestellung);
     } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_eos_jtl') {

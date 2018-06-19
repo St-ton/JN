@@ -92,7 +92,7 @@ class NavigationEntry
     /**
      * @return bool
      */
-    public function isHasChild(): bool
+    public function getHasChild(): bool
     {
         return $this->hasChild;
     }

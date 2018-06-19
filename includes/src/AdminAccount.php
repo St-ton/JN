@@ -211,7 +211,7 @@ class AdminAccount
         if ($verified === true || ($cPassCrypted !== null && $oAdmin->cPass === $cPassCrypted)) {
             // Wartungsmodus aktiv? Nein => loesche Session
             $settings = Shop::getSettings(CONF_GLOBAL);
-            if ($settings['global']['wartungsmodus_aktiviert'] === 'N' && is_array($_SESSION) && count($_SESSION) > 0) {
+            if (is_array($_SESSION) && $settings['global']['wartungsmodus_aktiviert'] === 'N' && count($_SESSION) > 0) {
                 foreach ($_SESSION as $i => $xSession) {
                     unset($_SESSION[$i]);
                 }

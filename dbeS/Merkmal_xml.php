@@ -361,11 +361,9 @@ function bearbeiteInsert($xml)
                     ['kKey', 'cKey', 'kSprache'],
                     [(int)$MerkmalWertSprache_arr[$j]->kMerkmalWert, 'kMerkmalWert', (int)$MerkmalWertSprache_arr[$j]->kSprache]
                 );
-                if (trim($MerkmalWertSprache_arr[$j]->cSeo)) {
-                    $cSeo = getFlatSeoPath($MerkmalWertSprache_arr[$j]->cSeo);
-                } else {
-                    $cSeo = getFlatSeoPath($MerkmalWertSprache_arr[$j]->cWert);
-                }
+                $cSeo = trim($MerkmalWertSprache_arr[$j]->cSeo)
+                    ? getFlatSeoPath($MerkmalWertSprache_arr[$j]->cSeo)
+                    : getFlatSeoPath($MerkmalWertSprache_arr[$j]->cWert);
 
                 $MerkmalWertSprache_arr[$j]->cSeo = getSeo($cSeo);
                 $MerkmalWertSprache_arr[$j]->cSeo = checkSeo($MerkmalWertSprache_arr[$j]->cSeo);
@@ -382,8 +380,8 @@ function bearbeiteInsert($xml)
                     $oMM_arr[$i]->oMMW_arr[$o]->kSprache_arr[] = $MerkmalWertSprache_arr[$j]->kSprache;
                 }
 
-                if (isset($MerkmalWertSprache_arr[$j]->kSprache, $oSprachSTD->kSprache) &&
-                    $MerkmalWertSprache_arr[$j]->kSprache == $oSprachSTD->kSprache
+                if (isset($MerkmalWertSprache_arr[$j]->kSprache, $oSprachSTD->kSprache)
+                    && $MerkmalWertSprache_arr[$j]->kSprache == $oSprachSTD->kSprache
                 ) {
                     $oMM_arr[$i]->oMMW_arr[$o]->cNameSTD            = $MerkmalWertSprache_arr[$j]->cWert;
                     $oMM_arr[$i]->oMMW_arr[$o]->cSeoSTD             = $MerkmalWertSprache_arr[$j]->cSeo;

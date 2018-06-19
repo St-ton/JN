@@ -199,18 +199,12 @@ if ($kPlugin > 0) {
     $paymentMethod           = new PaymentPartner($bestellung->Zahlungsart->cModulId);
     $paymentMethod->cModulId = $bestellung->Zahlungsart->cModulId;
     $paymentMethod->preparePaymentProcess($bestellung);
-} elseif (strpos($bestellung->Zahlungsart->cModulId, 'za_mbqc_') === 0) {
-    require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'moneybookers_qc/MoneyBookersQC.class.php';
-    $paymentMethod           = new MoneyBookersQC($bestellung->Zahlungsart->cModulId);
-    $paymentMethod->cModulId = $bestellung->Zahlungsart->cModulId;
-    $paymentMethod->preparePaymentProcess($bestellung);
 } elseif ($bestellung->Zahlungsart->cModulId === 'za_eos_jtl') {
     require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'eos/EOS.class.php';
     $paymentMethod           = new EOS($bestellung->Zahlungsart->cModulId);
     $paymentMethod->cModulId = $bestellung->Zahlungsart->cModulId;
     $paymentMethod->preparePaymentProcess($bestellung);
-} // EOS Payment Solution
-elseif ($bestellung->Zahlungsart->cModulId === 'za_eos_dd_jtl') {
+} elseif ($bestellung->Zahlungsart->cModulId === 'za_eos_dd_jtl') {
     require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'eos/EOS.class.php';
     $paymentMethod           = new EOS($bestellung->Zahlungsart->cModulId);
     $paymentMethod->cModulId = $bestellung->Zahlungsart->cModulId;

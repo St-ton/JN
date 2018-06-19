@@ -851,8 +851,7 @@ function bearbeiteProdukttags($AktuellerArtikel)
                         $neuerTag->cSeo     = getSeo($tag);
                         $neuerTag->cSeo     = checkSeo($neuerTag->cSeo);
                         $neuerTag->nAktiv   = 0;
-                        $kTag               = (int)$neuerTag->insertInDB();
-                        $newTag             = new Tag($kTag);
+                        $kTag               = $neuerTag->insertInDB();
                         if ($kTag > 0) {
                             $tagArticle           = new TagArticle();
                             $tagArticle->kTag     = $kTag;

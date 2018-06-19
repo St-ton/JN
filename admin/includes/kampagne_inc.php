@@ -787,7 +787,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                 );
 
                 if (is_array($oDaten_arr) && count($oDaten_arr) > 0) {
-                    $_SESSION['Kundengruppe']->setMayViewPrices(1);
+                    Session\Session::CustomerGroup()->setMayViewPrices(1);
                     $count = count($oDaten_arr);
                     for ($i = 0; $i < $count; $i++) {
                         if (isset($oDaten_arr[$i]->fVKNetto) && $oDaten_arr[$i]->fVKNetto > 0) {

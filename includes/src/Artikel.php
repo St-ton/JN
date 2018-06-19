@@ -3600,9 +3600,9 @@ class Artikel
                     $this->cacheHit = true;
                     // Warenkorbmatrix Variationskinder holen?
                     if ((isset($oArtikelOptionen->nWarenkorbmatrix) && $oArtikelOptionen->nWarenkorbmatrix === 1)
-                        || (isset($this->FunktionsAttribute[FKT_ATTRIBUT_WARENKORBMATRIX])
+                        || (isset($this->FunktionsAttribute[FKT_ATTRIBUT_WARENKORBMATRIX], $oArtikelOptionen->nMain)
                             && (int)$this->FunktionsAttribute[FKT_ATTRIBUT_WARENKORBMATRIX] === 1
-                            && isset($oArtikelOptionen->nMain) && $oArtikelOptionen->nMain === 1)
+                            && $oArtikelOptionen->nMain === 1)
                     ) {
                         $this->oVariationKombiKinderAssoc_arr = $this->holeVariationKombiKinderAssoc(
                             $kKundengruppe,

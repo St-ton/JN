@@ -169,7 +169,7 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && FormHelper::va
 
 if ($continue
     && ((isset($_POST['kLink']) && (int)$_POST['kLink'] > 0)
-        || (isset($_GET['kLink']) && (int)$_GET['kLink'] && isset($_GET['delpic'])))
+        || (isset($_GET['kLink'], $_GET['delpic']) && (int)$_GET['kLink']))
     && FormHelper::validateToken()
 ) {
     $step = 'neuer Link';

@@ -57,9 +57,8 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
                     Shop::Container()->getDB()->delete('tpasswordreset', 'kKunde', $customer->kKunde);
                     header('Location: ' . $linkHelper->getStaticRoute('jtl.php') . '?updated_pw=true');
                     exit();
-                } else {
-                    $cFehler = Shop::Lang()->get('invalidCustomer', 'account data');
                 }
+                $cFehler = Shop::Lang()->get('invalidCustomer', 'account data');
             } else {
                 $cFehler = Shop::Lang()->get('invalidHash', 'account data');
             }

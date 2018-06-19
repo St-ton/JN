@@ -999,8 +999,9 @@ class Warenkorb
             $gesamtsumme = round($gesamtsumme, 2);
         }
         if (!empty($gutscheinBeruecksichtigen)
-            && (isset($_SESSION['Bestellung']->GuthabenNutzen) && $_SESSION['Bestellung']->GuthabenNutzen == 1)
-            && (isset($_SESSION['Bestellung']->fGuthabenGenutzt) && $_SESSION['Bestellung']->fGuthabenGenutzt > 0)
+            && isset($_SESSION['Bestellung']->GuthabenNutzen, $_SESSION['Bestellung']->fGuthabenGenutzt)
+            && $_SESSION['Bestellung']->GuthabenNutzen == 1
+            && $_SESSION['Bestellung']->fGuthabenGenutzt > 0
         ) {
             $gesamtsumme -= $_SESSION['Bestellung']->fGuthabenGenutzt * $conversionFactor;
         }

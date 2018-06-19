@@ -675,8 +675,7 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
                         $nFehler = 1;
                         break;
                     }
-                } elseif (isset($_FILES['pdf_' . $i . '_' . $Sprache->kSprache]['name'])
-                    && isset($_POST['dateiname_' . $i . '_' . $Sprache->kSprache])
+                } elseif (isset($_FILES['pdf_' . $i . '_' . $Sprache->kSprache]['name'], $_POST['dateiname_' . $i . '_' . $Sprache->kSprache])
                     && strlen($_FILES['pdf_' . $i . '_' . $Sprache->kSprache]['name']) > 0
                     && strlen($_POST['dateiname_' . $i . '_' . $Sprache->kSprache]) === 0
                 ) {

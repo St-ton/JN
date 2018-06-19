@@ -84,7 +84,7 @@ if (empty($AktuellerArtikel->kArtikel)) {
     // #6317 - send 301 redirect when filtered
     if ((((int)$Einstellungen['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER)
         || ((int)$Einstellungen['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL))
-        && $Einstellungen['global']['artikel_artikelanzeigefilter_seo'] === '301'
+        && (int)$Einstellungen['global']['artikel_artikelanzeigefilter_seo'] === 301
     ) {
         http_response_code(301);
         header('Location: ' . $shopURL);

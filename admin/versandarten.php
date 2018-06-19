@@ -319,8 +319,11 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && Form
             $staffelDa = true;
         }
         //preisstaffel beachten
-        if (!isset($_POST['bis'][0]) || strlen($_POST['bis'][0]) === 0 ||
-            !isset($_POST['preis'][0]) || strlen($_POST['preis'][0]) === 0) {
+        if (!isset($_POST['bis'][0])
+            || strlen($_POST['bis'][0]) === 0
+            || !isset($_POST['preis'][0])
+            || strlen($_POST['preis'][0]) === 0
+        ) {
             $staffelDa = false;
         }
         if (is_array($_POST['bis']) && is_array($_POST['preis'])) {

@@ -100,10 +100,9 @@ class iPayment extends PaymentMethod
 
         if (isset($_GET['jtls'])) {
             die(1);
-        } else {
-            header('Location: ' . $this->getReturnURL($order));
-            exit();
         }
+        header('Location: ' . $this->getReturnURL($order));
+        exit();
     }
 
     /**

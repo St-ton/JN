@@ -166,11 +166,13 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                 $bFragenEnde = false;
             }
             if (!$bFragenEnde
-                && isset($_SESSION['AuswahlAssistent']->kMerkmalGesetzt_arr)
+                && isset(
+                    $_SESSION['AuswahlAssistent']->kMerkmalGesetzt_arr,
+                    $_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr[$_SESSION['AuswahlAssistent']->nFrage]->oMerkmal->kMerkmal,
+                    $_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr[$_SESSION['AuswahlAssistent']->nFrage]->oMerkmal->oMerkmalWert_arr
+                )
                 && !in_array($MerkmalFilter->kMerkmal, $_SESSION['AuswahlAssistent']->kMerkmalGesetzt_arr, true)
-                && isset($_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr[$_SESSION['AuswahlAssistent']->nFrage]->oMerkmal->kMerkmal)
                 && $MerkmalFilter->kMerkmal == $_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr[$_SESSION['AuswahlAssistent']->nFrage]->oMerkmal->kMerkmal
-                && isset($_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr[$_SESSION['AuswahlAssistent']->nFrage]->oMerkmal->oMerkmalWert_arr)
             ) {
                 $kMerkmalWertDrin_arr = [];
                 foreach ($_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr[$_SESSION['AuswahlAssistent']->nFrage]->oMerkmal->oMerkmalWert_arr as $i => $oMerkmalWertAlle) {

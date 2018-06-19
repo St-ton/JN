@@ -58,13 +58,16 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0 && FormHe
     $cHinweis .= saveAdminSectionSettings(CONF_NEWS, $_POST, [CACHING_GROUP_OPTION, CACHING_GROUP_NEWS]);
     if (count($Sprachen) > 0) {
         // tnewsmonatspraefix loeschen
-        Shop::Container()->getDB()->query("TRUNCATE tnewsmonatspraefix", 3);
+        Shop::Container()->getDB()->query("TRUNCATE tnewsmonatspraefix", \DB\ReturnType::AFFECTED_ROWS);
 
         foreach ($Sprachen as $oSpracheTMP) {
             $oNewsMonatsPraefix           = new stdClass();
             $oNewsMonatsPraefix->kSprache = $oSpracheTMP->kSprache;
             if (strlen($_POST['praefix_' . $oSpracheTMP->cISO]) > 0) {
-                $oNewsMonatsPraefix->cPraefix = htmlspecialchars($_POST['praefix_' . $oSpracheTMP->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+                $oNewsMonatsPraefix->cPraefix = htmlspecialchars(
+                    $_POST['praefix_' . $oSpracheTMP->cISO],
+                    ENT_COMPAT | ENT_HTML401, JTL_CHARSET
+                );
             } else {
                 $oNewsMonatsPraefix->cPraefix = ($oSpracheTMP->cISO === 'ger')
                     ? 'Newsuebersicht'
@@ -77,8 +80,9 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0 && FormHe
 
 if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()) {
     // Neue News erstellen
-    if ((isset($_POST['erstellen']) && (int)$_POST['erstellen'] === 1 && isset($_POST['news_erstellen'])) ||
-        (isset($_POST['news_erstellen']) && (int)$_POST['news_erstellen'] === 1)) {
+    if ((isset($_POST['erstellen'], $_POST['news_erstellen']) && (int)$_POST['erstellen'] === 1)
+        || (isset($_POST['news_erstellen']) && (int)$_POST['news_erstellen'] === 1)
+    ) {
         $oNewsKategorie_arr = holeNewskategorie($_SESSION['kSprache']);
         // News erstellen, $oNewsKategorie_arr leer = Fehler ausgeben
         if (count($oNewsKategorie_arr) > 0) {
@@ -89,9 +93,8 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
             $cFehler .= 'Fehler: Bitte legen Sie zuerst eine Newskategorie an.<br />';
             $step = 'news_uebersicht';
         }
-    } elseif ((isset($_POST['erstellen'])
-            && (int)$_POST['erstellen'] === 1
-            && isset($_POST['news_kategorie_erstellen']))
+    } elseif ((isset($_POST['erstellen'], $_POST['news_kategorie_erstellen'])
+            && (int)$_POST['erstellen'] === 1)
         || (isset($_POST['news_kategorie_erstellen']) && (int)$_POST['news_kategorie_erstellen'] === 1)
     ) {
         $step = 'news_kategorie_erstellen';
@@ -119,7 +122,7 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
                     }
                 } else {
                     $step = 'news_kommentar_editieren';
-                    $cFehler .= 'Fehler: Bitte &uuml;berpr&uuml;fen Sie Ihre Eingaben.<br />';
+                    $cFehler .= 'Fehler: Bitte überprüfen Sie Ihre Eingaben.<br />';
                     $oNewsKommentar                 = new stdClass();
                     $oNewsKommentar->kNewsKommentar = $_POST['kNewsKommentar'];
                     $oNewsKommentar->kNews          = $_POST['kNews'];

@@ -273,28 +273,28 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                             $oAlteSuche = Shop::Container()->getDB()->select('tsuchanfrageerfolglos', 'cSuche', $suchanfragemapping_obj->cSuche);
 
                             //check if loops would be created with mapping
-                            $loopCheck = false;
-                            $mappingLoopCheckSucheTMP = $suchanfragemapping_obj->cSucheNeu;
-                            while (!empty($mappingLoopCheckSucheTMP)) {
-                                if($mappingLoopCheckSucheTMP === $suchanfragemapping_obj->cSuche) {
-                                    $loopCheck = true;
+                            $bIsLoop = false;
+                            $sSearchMappingTMP = $suchanfragemapping_obj->cSucheNeu;
+                            while (!empty($sSearchMappingTMP)) {
+                                if($sSearchMappingTMP === $suchanfragemapping_obj->cSuche) {
+                                    $bIsLoop = true;
                                     break;
                                 }
-                                $SuchausdruckmappingTMP = \Shop::Container()->getDB()->select(
+                                $oSearchMappingNextTMP = \Shop::Container()->getDB()->select(
                                     'tsuchanfragemapping',
                                     'kSprache',
                                     $_SESSION['kSprache'],
                                     'cSuche',
-                                    $mappingLoopCheckSucheTMP
+                                    $sSearchMappingTMP
                                 );
-                                if (!empty($SuchausdruckmappingTMP->cSucheNeu)) {
-                                    $mappingLoopCheckSucheTMP = $SuchausdruckmappingTMP->cSucheNeu;
+                                if (!empty($oSearchMappingNextTMP->cSucheNeu)) {
+                                    $sSearchMappingTMP = $oSearchMappingNextTMP->cSucheNeu;
                                 } else {
-                                    $mappingLoopCheckSucheTMP = null;
+                                    $sSearchMappingTMP = null;
                                 }
                             }
 
-                            if(!$loopCheck) {
+                            if(!$bIsLoop) {
                                 if (isset($oAlteSuche->kSuchanfrageErfolglos) && $oAlteSuche->kSuchanfrageErfolglos > 0) {
                                     $oCheckMapping = Shop::Container()->getDB()->select('tsuchanfrageerfolglos', 'cSuche', $suchanfragemapping_obj->cSuche);
                                     Shop::Container()->getDB()->insert('tsuchanfragemapping', $suchanfragemapping_obj);

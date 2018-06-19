@@ -594,9 +594,10 @@ class IOMethods
         $items           = $aValues['item'] ?? [];
         $quantities      = $aValues['quantity'] ?? [];
         $variationValues = $aValues['eigenschaftwert'] ?? [];
+        $amount          = $aValues['anzahl'] ?? 1;
         $oKonfig         = ArtikelHelper::buildConfig(
             $productID, 
-            $aValues['anzahl'], 
+            $amount,
             $variationValues, 
             $items, 
             $quantities, 
@@ -605,7 +606,7 @@ class IOMethods
         $net             = Session::CustomerGroup()->getIsMerchant();
         $Artikel->fuelleArtikel($productID, null);
         $Artikel->Preise->cVKLocalized[$net] =
-            Preise::getLocalizedPriceString($Artikel->Preise->fVK[$net] * $aValues['anzahl'], 0, true);
+            Preise::getLocalizedPriceString($Artikel->Preise->fVK[$net] * $amount, 0, true);
 
         $smarty->assign('oKonfig', $oKonfig)
                ->assign('NettoPreise', $net)
@@ -802,8 +803,10 @@ class IOMethods
      * @param int   $kEigenschaftWert
      * @return IOResponse
      */
-    public function checkVarkombiDependencies($aValues, int $kEigenschaft = 0, int $kEigenschaftWert = 0): IOResponse
+    public function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWert = 0): IOResponse
     {
+        $kEigenschaft                = (int)$kEigenschaft;
+        $kEigenschaftWert            = (int)$kEigenschaftWert;
         $oArtikel                    = null;
         $objResponse                 = new IOResponse();
         $kVaterArtikel               = (int)$aValues['a'];
@@ -944,8 +947,9 @@ class IOMethods
 
                     foreach ($kVerfuegbareEigenschaftWert_arr as $kVerfuegbareEigenschaftWert) {
                         //nur für noch auswählbare Varkombis Lagerbestand holen und Infos setzen
-                        if (in_array($kEigenschaft,
-                                $kNichtGesetzteEigenschaft_arr) || $kZuletztGesetzteEigenschaft === 0) {
+                        if (in_array($kEigenschaft,$kNichtGesetzteEigenschaft_arr)
+                            || $kZuletztGesetzteEigenschaft === 0
+                        ) {
                             $kMoeglicheEigeschaftWert_arr[$kEigenschaft] = $kVerfuegbareEigenschaftWert;
                             $oKindArtikel                                = $this->getArticleStockInfo(
                                 $kVaterArtikel,

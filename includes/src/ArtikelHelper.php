@@ -2235,7 +2235,8 @@ class ArtikelHelper
                     $oKonfig->fGesamtpreis[1] += $configItem->getPreis(true) * $configItem->fAnzahlWK;
                     $oKonfiggruppe->bAktiv    = true;
                     //Konfigitem mit Lagerinfos
-                    if ($configItem->getArtikel()->cLagerBeachten === 'Y'
+                    if ($configItem->getArtikel() !== null
+                        && $configItem->getArtikel()->cLagerBeachten === 'Y'
                         && $oKonfig->nMinDeliveryDays < $configItem->getArtikel()->nMinDeliveryDays
                     ) {
                         $oKonfig->nMinDeliveryDays      = $configItem->getArtikel()->nMinDeliveryDays;

@@ -3,7 +3,7 @@
 /**
  * check for existens of a shop-DB (by looking for a specific table)
  *
- * @param NiceDB $niceDB
+ * @param \DB\DbInterface $niceDB
  * @return int returns =3(table `tsynclogin` not exist) or =4(table `tsynclogin` exist) or =false for failed
  */
 function pruefeMySQLDaten($niceDB)
@@ -12,9 +12,9 @@ function pruefeMySQLDaten($niceDB)
         return 1;
     }
 
-    $obj = $niceDB->executeQuery("SHOW TABLES LIKE 'tsynclogin'", 1);
+    $obj = $niceDB->executeQuery("SHOW TABLES LIKE 'tsynclogin'", \DB\ReturnType::SINGLE_OBJECT);
 
-    return ($obj !== false) ? 4 : 3;
+    return $obj !== false ? 4 : 3;
 }
 
 /**
@@ -40,7 +40,7 @@ function pruefeBereitsInstalliert()
  */
 function gibIniDateien()
 {
-    $cDateien_arr = array(
+    $cDateien_arr = [
         'php.ini',
         PFAD_ADMIN . 'php.ini',
         PFAD_ADMIN . 'includes/php.ini',
@@ -57,7 +57,7 @@ function gibIniDateien()
         'includes/plugins/jtl_search/version/105/frontend/php.ini',
         'includes/php.ini',
         'install/php.ini'
-    );
+    ];
 
     return $cDateien_arr;
 }
@@ -68,10 +68,10 @@ function gibIniDateien()
 function gibVorhandeneIniDateien()
 {
     if (!defined('PFAD_ROOT')) {
-        return array();
+        return [];
     }
 
-    $cVorhandeneDateien_arr = array();
+    $cVorhandeneDateien_arr = [];
     $cDateien_arr           = gibIniDateien();
     if (is_array($cDateien_arr) && count($cDateien_arr) > 0) {
         foreach ($cDateien_arr as $cDatei) {
@@ -90,11 +90,11 @@ function gibVorhandeneIniDateien()
  */
 function pruefeSchritt1Eingaben()
 {
-    return (isset($_POST['adminuser'], $_POST['adminpass'], $_POST['syncuser'], $_POST['syncpass']) &&
-        strlen($_POST['adminuser']) > 0 &&
-        strlen($_POST['adminpass']) > 0 &&
-        strlen($_POST['syncuser']) > 0 &&
-        strlen($_POST['syncpass']) > 0
+    return (isset($_POST['adminuser'], $_POST['adminpass'], $_POST['syncuser'], $_POST['syncpass'])
+        && strlen($_POST['adminuser']) > 0
+        && strlen($_POST['adminpass']) > 0
+        && strlen($_POST['syncuser']) > 0
+        && strlen($_POST['syncpass']) > 0
     );
 }
 
@@ -206,37 +206,35 @@ function uname($part = 'a')
     if (!function_is_disabled('php_uname')) {
         $result = @php_uname($part);
     } elseif (function_exists('posix_uname') && !function_is_disabled('posix_uname')) {
-        $posix_equivs = array(
+        $posix_equivs = [
             'm' => 'machine',
             'n' => 'nodename',
             'r' => 'release',
             's' => 'sysname'
-        );
+        ];
         $puname = @posix_uname();
         $result = ($part === 'a' || !array_key_exists($part, $posix_equivs))
             ? implode(' ', $puname)
             : $puname[$posix_equivs[$part]]
         ;
-    } else {
-        if (!function_is_disabled('phpinfo')) {
-            ob_start();
-            phpinfo(INFO_GENERAL);
-            $pinfo = ob_get_contents();
-            ob_end_clean();
-            if (preg_match('~System.*?(</B></td><TD ALIGN="left">| => |v">)([^<]*)~i', $pinfo, $match)) {
-                $uname = $match[2];
-                if ($part === 'r') {
-                    $result = '';
-                    if (!empty($uname) && preg_match('/\S+\s+\S+\s+([0-9.]+)/', $uname, $matchver)) {
-                        $result = $matchver[1];
-                    }
-                } else {
-                    $result = $uname;
+    } elseif (!function_is_disabled('phpinfo')) {
+        ob_start();
+        phpinfo(INFO_GENERAL);
+        $pinfo = ob_get_contents();
+        ob_end_clean();
+        if (preg_match('~System.*?(</B></td><TD ALIGN="left">| => |v">)([^<]*)~i', $pinfo, $match)) {
+            $uname = $match[2];
+            if ($part === 'r') {
+                $result = '';
+                if (!empty($uname) && preg_match('/\S+\s+\S+\s+([0-9.]+)/', $uname, $matchver)) {
+                    $result = $matchver[1];
                 }
+            } else {
+                $result = $uname;
             }
-        } else {
-            $result = '';
         }
+    } else {
+        $result = '';
     }
 
     return $result;
@@ -250,9 +248,6 @@ function function_is_disabled($fn_name)
 {
     return in_array($fn_name, explode(',', ini_get('disable_functions')), true);
 }
-
-
-// functions transfered from tools.Global to bypass for now the Shop-Container - - - - - - - - - - - - - - - -
 
 /**
  * @param NiceDB|object $oDB
@@ -271,6 +266,7 @@ function checkPayments($oDB)
 /**
  * Bei SOAP oder CURL => versuche die Zahlungsart auf nNutzbar = 1 zu stellen, falls nicht schon geschehen
  *
+ * @param \DB\DbInterface    $oDB
  * @param Zahlungsart|object $oZahlungsart
  * @return bool
  */

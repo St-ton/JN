@@ -70,7 +70,7 @@ class PaymentMethod
         // extract: za_mbqc_visa_jtl => myqc_visa
         $pattern = '&za_(.*)_jtl&is';
         preg_match($pattern, $moduleID, $subpattern);
-        $this->moduleAbbr = isset($subpattern[1]) ? $subpattern[1] : null;
+        $this->moduleAbbr = $subpattern[1] ?? null;
 
         $this->loadSettings();
         $this->init($nAgainCheckout);
@@ -87,14 +87,12 @@ class PaymentMethod
         $this->name = '';
         // Fetch Caption/Name and Image from DB
         $result               = Shop::Container()->getDB()->select('tzahlungsart', 'cModulId', $this->moduleID);
-        $this->caption        = isset($result->cName)
-            ? $result->cName
-            : null;
+        $this->caption        = $result->cName ?? null;
         $this->duringCheckout = isset($result->nWaehrendBestellung)
             ? (int)$result->nWaehrendBestellung
             : 0;
 
-        if ($nAgainCheckout == 1) {
+        if ((int)$nAgainCheckout === 1) {
             $this->duringCheckout = 0;
         }
 
@@ -111,7 +109,7 @@ class PaymentMethod
             ? Shop::Container()->getDB()->query("SELECT cId FROM tbestellid WHERE kBestellung = " . (int)$order->kBestellung, 1)
             : null;
 
-        return isset($orderId->cId) ? $orderId->cId : null;
+        return $orderId->cId ?? null;
     }
 
     /**
@@ -437,12 +435,8 @@ class PaymentMethod
     {
         $Einstellungen = Shop::getSettings([CONF_ZAHLUNGSARTEN, CONF_PLUGINZAHLUNGSARTEN]);
 
-        return isset($Einstellungen['zahlungsarten']['zahlungsart_' . $this->moduleAbbr . '_' . $key])
-            ? $Einstellungen['zahlungsarten']['zahlungsart_' . $this->moduleAbbr . '_' . $key]
-            : (isset($Einstellungen['pluginzahlungsarten'][$this->moduleID . '_' . $key])
-                ? $Einstellungen['pluginzahlungsarten'][$this->moduleID . '_' . $key]
-                : null
-            );
+        return $Einstellungen['zahlungsarten']['zahlungsart_' . $this->moduleAbbr . '_' . $key]
+            ?? ($Einstellungen['pluginzahlungsarten'][$this->moduleID . '_' . $key] ?? null);
     }
 
     /**
@@ -584,14 +578,10 @@ class PaymentMethod
     public function getCache($cKey = null)
     {
         if ($cKey === null) {
-            return isset($_SESSION[$this->moduleID])
-                ? $_SESSION[$this->moduleID]
-                : null;
+            return $_SESSION[$this->moduleID] ?? null;
         }
 
-        return isset($_SESSION[$this->moduleID][$cKey])
-            ? $_SESSION[$this->moduleID][$cKey]
-            : null;
+        return $_SESSION[$this->moduleID][$cKey] ?? null;
     }
 
     /**

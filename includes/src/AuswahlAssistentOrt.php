@@ -242,10 +242,8 @@ class AuswahlAssistentOrt
                         ) {
                             $cPlausi_arr['cKategorie'] = 3;
                         }
-                    } else {
-                        if (self::isCategoryTaken($cKategorie, $cParam_arr['kSprache'])) {
-                            $cPlausi_arr['cKategorie'] = 3;
-                        }
+                    } elseif (self::isCategoryTaken($cKategorie, $cParam_arr['kSprache'])) {
+                        $cPlausi_arr['cKategorie'] = 3;
                     }
                 }
             }
@@ -265,10 +263,8 @@ class AuswahlAssistentOrt
                         ) {
                             $cPlausi_arr['kLink_arr'] = 1;
                         }
-                    } else {
-                        if (self::isLinkTaken($kLink, $cParam_arr['kSprache'])) {
-                            $cPlausi_arr['kLink_arr'] = 1;
-                        }
+                    } elseif (self::isLinkTaken($kLink, $cParam_arr['kSprache'])) {
+                        $cPlausi_arr['kLink_arr'] = 1;
                     }
                 }
             }
@@ -282,10 +278,8 @@ class AuswahlAssistentOrt
                 ) {
                     $cPlausi_arr['nStartseite'] = 1;
                 }
-            } else {
-                if (self::isStartPageTaken($cParam_arr['kSprache'])) {
-                    $cPlausi_arr['nStartseite'] = 1;
-                }
+            } elseif (self::isStartPageTaken($cParam_arr['kSprache'])) {
+                $cPlausi_arr['nStartseite'] = 1;
             }
         }
 

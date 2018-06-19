@@ -157,7 +157,7 @@ class AdminTemplate
                         $tplGroups_arr[$name] = [];
                     }
                     foreach ($oCSS->File as $oFile) {
-                        $cFile     = (string) $oFile->attributes()->Path;
+                        $cFile     = (string)$oFile->attributes()->Path;
                         $cFilePath = self::$isAdmin === false
                             ? PFAD_ROOT . PFAD_TEMPLATES . $oXML->Ordner . '/' . $cFile
                             : PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $oXML->Ordner . '/' . $cFile;

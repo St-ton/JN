@@ -330,12 +330,10 @@ class ItemAttribute extends BaseAttribute
                     } else {
                         $activeOrFilterIDs[] = $values;
                     }
+                } elseif (is_array($values)) {
+                    $activeAndFilterIDs = $values;
                 } else {
-                    if (is_array($values)) {
-                        $activeAndFilterIDs = $values;
-                    } else {
-                        $activeAndFilterIDs[] = $values;
-                    }
+                    $activeAndFilterIDs[] = $values;
                 }
             }
             if (count($activeAndFilterIDs) > 0) {

@@ -112,12 +112,8 @@ class Billpay extends PaymentMethod
 
                 return $oResult;
             }
-            $cCustomerMessage = isset($oResult['responseStatus']['customerMessage'])
-                ? $oResult['responseStatus']['customerMessage']
-                : null;
-            $cMerchantMessage = isset($oResult['responseStatus']['merchantMessage'])
-                ? $oResult['responseStatus']['merchantMessage']
-                : null;
+            $cCustomerMessage = $oResult['responseStatus']['customerMessage'] ?? null;
+            $cMerchantMessage = $oResult['responseStatus']['merchantMessage'] ?? null;
 
             if ($cCustomerMessage !== null) {
                 $this->assignMessage($cCustomerMessage, 'error');
@@ -1381,9 +1377,7 @@ class Billpay extends PaymentMethod
             $Einstellungen = Shop::getSettings([CONF_ZAHLUNGSARTEN]);
         }
 
-        return isset($Einstellungen['zahlungsarten']['zahlungsart_billpay_' . $key])
-            ? $Einstellungen['zahlungsarten']['zahlungsart_billpay_' . $key]
-            : null;
+        return $Einstellungen['zahlungsarten']['zahlungsart_billpay_' . $key] ?? null;
     }
 
     /**

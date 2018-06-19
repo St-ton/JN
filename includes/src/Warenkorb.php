@@ -323,28 +323,26 @@ class Warenkorb
                             if ($Eigenschaft->kArtikel == $NeuePosition->Artikel->kVaterArtikel) {
                                 $NeuePosition->setzeVariationsWert($EigenschaftWert->kEigenschaft, $EigenschaftWert->kEigenschaftWert);
                             }
-                        } else {
-                            if ($Eigenschaft->kArtikel == $NeuePosition->kArtikel) {
-                                // Variationswert hat eigene Artikelnummer und der Artikel hat nur eine Dimension als Variation?
-                                if (isset($EigenschaftWert->cArtNr)
-                                    && count($NeuePosition->Artikel->Variationen) === 1
-                                    && strlen($EigenschaftWert->cArtNr) > 0
-                                ) {
-                                    $NeuePosition->cArtNr          = $EigenschaftWert->cArtNr;
-                                    $NeuePosition->Artikel->cArtNr = $EigenschaftWert->cArtNr;
-                                }
+                        } elseif ($Eigenschaft->kArtikel == $NeuePosition->kArtikel) {
+                            // Variationswert hat eigene Artikelnummer und der Artikel hat nur eine Dimension als Variation?
+                            if (isset($EigenschaftWert->cArtNr)
+                                && count($NeuePosition->Artikel->Variationen) === 1
+                                && strlen($EigenschaftWert->cArtNr) > 0
+                            ) {
+                                $NeuePosition->cArtNr          = $EigenschaftWert->cArtNr;
+                                $NeuePosition->Artikel->cArtNr = $EigenschaftWert->cArtNr;
+                            }
 
-                                $NeuePosition->setzeVariationsWert($EigenschaftWert->kEigenschaft, $EigenschaftWert->kEigenschaftWert);
+                            $NeuePosition->setzeVariationsWert($EigenschaftWert->kEigenschaft, $EigenschaftWert->kEigenschaftWert);
 
-                                // aktuellen Eigenschaftswert mit Bild ermitteln und Variationsbild an der Position speichern
-                                $kEigenschaftWert = $EigenschaftWert->kEigenschaftWert;
-                                $oVariationWert   = current(array_filter($eWert->Werte, function ($item) use ($kEigenschaftWert) {
-                                    return $item->kEigenschaftWert === $kEigenschaftWert && !empty($item->cPfadNormal);
-                                }));
+                            // aktuellen Eigenschaftswert mit Bild ermitteln und Variationsbild an der Position speichern
+                            $kEigenschaftWert = $EigenschaftWert->kEigenschaftWert;
+                            $oVariationWert   = current(array_filter($eWert->Werte, function ($item) use ($kEigenschaftWert) {
+                                return $item->kEigenschaftWert === $kEigenschaftWert && !empty($item->cPfadNormal);
+                            }));
 
-                                if ($oVariationWert !== false) {
-                                    WarenkorbHelper::setVariationPicture($NeuePosition, $oVariationWert);
-                                }
+                            if ($oVariationWert !== false) {
+                                WarenkorbHelper::setVariationPicture($NeuePosition, $oVariationWert);
                             }
                         }
                     }
@@ -528,15 +526,13 @@ class Warenkorb
             }
             //round net price
             $NeuePosition->fPreis = round($NeuePosition->fPreis, 2);
+        } elseif ($brutto) {
+            //calculate net price based on rounded gross price
+            $NeuePosition->fPreis = round($preis, 2) / (100 + TaxHelper::getSalesTax($kSteuerklasse)) * 100.0;
         } else {
-            if ($brutto) {
-                //calculate net price based on rounded gross price
-                $NeuePosition->fPreis = round($preis, 2) / (100 + TaxHelper::getSalesTax($kSteuerklasse)) * 100.0;
-            } else {
-                //calculate rounded gross price then calculate net price again.
-                $NeuePosition->fPreis = round($preis * (100 + TaxHelper::getSalesTax($kSteuerklasse)) / 100, 2) /
-                    (100 + TaxHelper::getSalesTax($kSteuerklasse)) * 100.0;
-            }
+            //calculate rounded gross price then calculate net price again.
+            $NeuePosition->fPreis = round($preis * (100 + TaxHelper::getSalesTax($kSteuerklasse)) / 100, 2) /
+                (100 + TaxHelper::getSalesTax($kSteuerklasse)) * 100.0;
         }
 
         $NeuePosition->fPreisEinzelNetto = $NeuePosition->fPreis;

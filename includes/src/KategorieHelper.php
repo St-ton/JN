@@ -176,20 +176,18 @@ class KategorieHelper
                 $visibilityJoin = " LEFT JOIN tartikelsichtbarkeit
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                     AND tartikelsichtbarkeit.kKundengruppe = " . self::$kKundengruppe;
+            } elseif ($filterEmpty === true) {
+                $countSelect    = ", COUNT(tkategorieartikel.kArtikel) AS cnt";
+                $visibilityJoin = " LEFT JOIN tartikelsichtbarkeit
+                    ON tkategorieartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                    AND tartikelsichtbarkeit.kKundengruppe = " . self::$kKundengruppe;
             } else {
-                if ($filterEmpty === true) {
-                    $countSelect    = ", COUNT(tkategorieartikel.kArtikel) AS cnt";
-                    $visibilityJoin = " LEFT JOIN tartikelsichtbarkeit
-                        ON tkategorieartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = " . self::$kKundengruppe;
-                } else {
-                    //if we want to display all categories without filtering out empty ones, we don't have to check the product count
-                    //this saves a very expensive join - cnt will be always -1
-                    $countSelect = ", -1 AS cnt";
-                    $hasArticlesCheckJoin = "";
-                    $visibilityJoin       = "";
-                    $visibilityWhere      = "";
-                }
+                //if we want to display all categories without filtering out empty ones, we don't have to check the product count
+                //this saves a very expensive join - cnt will be always -1
+                $countSelect = ", -1 AS cnt";
+                $hasArticlesCheckJoin = "";
+                $visibilityJoin       = "";
+                $visibilityWhere      = "";
             }
             $nodes            = Shop::Container()->getDB()->query(
                 "SELECT node.kKategorie, node.kOberKategorie" . $nameSelect .
@@ -265,39 +263,37 @@ class KategorieHelper
                     $current                     = $_cat;
                     $currentParent               = $_cat;
                     $hierarchy                   = [$_cat->kKategorie];
+                } elseif ($current !== null && $_cat->kOberKategorie === $current->kKategorie) {
+                    $current->bUnterKategorien = 1;
+                    if (!isset($current->Unterkategorien)) {
+                        $current->Unterkategorien = [];
+                    }
+                    $current->Unterkategorien[$_cat->kKategorie] = $_cat;
+                    $current                                     = $_cat;
+                    $hierarchy[]                                 = $_cat->kOberKategorie;
+                    $hierarchy                                   = array_unique($hierarchy);
+                } elseif ($currentParent !== null && $_cat->kOberKategorie === $currentParent->kKategorie) {
+                    $currentParent->bUnterKategorien                   = 1;
+                    $currentParent->Unterkategorien[$_cat->kKategorie] = $_cat;
+                    $current                                           = $_cat;
+                    $hierarchy                                         = [$_cat->kOberKategorie, $_cat->kKategorie];
                 } else {
-                    if ($current !== null && $_cat->kOberKategorie === $current->kKategorie) {
-                        $current->bUnterKategorien = 1;
-                        if (!isset($current->Unterkategorien)) {
-                            $current->Unterkategorien = [];
+                    $newCurrent = $fullCats;
+                    $i          = 0;
+                    foreach ($hierarchy as $_i) {
+                        if ($newCurrent[$_i]->kKategorie === $_cat->kOberKategorie) {
+                            $current                                     = $newCurrent[$_i];
+                            $current->bUnterKategorien                   = 1;
+                            $current->Unterkategorien[$_cat->kKategorie] = $_cat;
+                            array_splice($hierarchy, $i);
+                            $hierarchy[] = $_cat->kOberKategorie;
+                            $hierarchy[] = $_cat->kKategorie;
+                            $hierarchy   = array_unique($hierarchy);
+                            $current     = $_cat;
+                            break;
                         }
-                        $current->Unterkategorien[$_cat->kKategorie] = $_cat;
-                        $current                                     = $_cat;
-                        $hierarchy[]                                 = $_cat->kOberKategorie;
-                        $hierarchy                                   = array_unique($hierarchy);
-                    } elseif ($currentParent !== null && $_cat->kOberKategorie === $currentParent->kKategorie) {
-                        $currentParent->bUnterKategorien                   = 1;
-                        $currentParent->Unterkategorien[$_cat->kKategorie] = $_cat;
-                        $current                                           = $_cat;
-                        $hierarchy                                         = [$_cat->kOberKategorie, $_cat->kKategorie];
-                    } else {
-                        $newCurrent = $fullCats;
-                        $i          = 0;
-                        foreach ($hierarchy as $_i) {
-                            if ($newCurrent[$_i]->kKategorie === $_cat->kOberKategorie) {
-                                $current                                     = $newCurrent[$_i];
-                                $current->bUnterKategorien                   = 1;
-                                $current->Unterkategorien[$_cat->kKategorie] = $_cat;
-                                array_splice($hierarchy, $i);
-                                $hierarchy[] = $_cat->kOberKategorie;
-                                $hierarchy[] = $_cat->kKategorie;
-                                $hierarchy   = array_unique($hierarchy);
-                                $current     = $_cat;
-                                break;
-                            }
-                            $newCurrent = $newCurrent[$_i]->Unterkategorien;
-                            ++$i;
-                        }
+                        $newCurrent = $newCurrent[$_i]->Unterkategorien;
+                        ++$i;
                     }
                 }
             }
@@ -382,20 +378,18 @@ class KategorieHelper
             $visibilityJoin = " LEFT JOIN tartikelsichtbarkeit
                 ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                 AND tartikelsichtbarkeit.kKundengruppe = " . self::$kKundengruppe;
+        } elseif ($filterEmpty === true) {
+            $countSelect    = ", COUNT(tkategorieartikel.kArtikel) AS cnt";
+            $visibilityJoin = " LEFT JOIN tartikelsichtbarkeit
+                ON tkategorieartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                AND tartikelsichtbarkeit.kKundengruppe = " . self::$kKundengruppe;
         } else {
-            if ($filterEmpty === true) {
-                $countSelect    = ", COUNT(tkategorieartikel.kArtikel) AS cnt";
-                $visibilityJoin = " LEFT JOIN tartikelsichtbarkeit
-                    ON tkategorieartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . self::$kKundengruppe;
-            } else {
-                //if we want to display all categories without filtering out empty ones, we don't have to check the product count
-                //this saves a very expensive join - cnt will be always -1
-                $countSelect = ", -1 AS cnt";
-                $hasArticlesCheckJoin = "";
-                $visibilityJoin       = "";
-                $visibilityWhere      = "";
-            }
+            //if we want to display all categories without filtering out empty ones, we don't have to check the product count
+            //this saves a very expensive join - cnt will be always -1
+            $countSelect = ', -1 AS cnt';
+            $hasArticlesCheckJoin = '';
+            $visibilityJoin       = '';
+            $visibilityWhere      = '';
         }
         $nodes            = Shop::Container()->getDB()->query(
             "SELECT parent.kKategorie, parent.kOberKategorie" . $nameSelect .

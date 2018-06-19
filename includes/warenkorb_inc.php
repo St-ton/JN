@@ -181,11 +181,10 @@ function uebernehmeWarenkorbAenderungen()
                 // maximale Bestellmenge des Artikels beachten
                 if (isset($Artikel->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE])
                     && $Artikel->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE] > 0
+                    && $_POST['anzahl'][$i] > $Artikel->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE]
                 ) {
-                    if ($_POST['anzahl'][$i] > $Artikel->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE]) {
-                        $gueltig                         = false;
-                        $_SESSION['Warenkorbhinweise'][] = Shop::Lang()->get('wkMaxorderlimit', 'messages');
-                    }
+                    $gueltig                         = false;
+                    $_SESSION['Warenkorbhinweise'][] = Shop::Lang()->get('wkMaxorderlimit', 'messages');
                 }
                 //schaue, ob genug auf Lager von jeder var
                 if ($Artikel->cLagerBeachten === 'Y'
@@ -483,23 +482,21 @@ function pruefeBestellMengeUndLagerbestand($Einstellungen = [])
     $cArtikelName = '';
     $bVorhanden   = false;
     $cISOSprache  = $_SESSION['cISOSprache'];
-    if (!is_array($Einstellungen) || !isset($Einstellungen['global'])) {
+    if (!isset($Einstellungen['global'])) {
         $Einstellungen = Shop::getSettings([CONF_GLOBAL]);
     }
     if (is_array($cart->PositionenArr) && count($cart->PositionenArr) > 0) {
         foreach ($cart->PositionenArr as $i => $oPosition) {
-            if ($oPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
-                // Mit Lager arbeiten und Lagerbestand darf < 0 werden?
-                if (isset($oPosition->Artikel) && $oPosition->Artikel->cLagerBeachten === 'Y'
-                    && $oPosition->Artikel->cLagerKleinerNull === 'Y'
-                    && $Einstellungen['global']['global_lieferverzoegerung_anzeigen'] === 'Y'
-                ) {
-                    if ($oPosition->nAnzahl > $oPosition->Artikel->fLagerbestand) {
-                        $bVorhanden    = true;
-                        $cName         = is_array($oPosition->cName) ? $oPosition->cName[$cISOSprache] : $oPosition->cName;
-                        $cArtikelName .= '<li>' . $cName . '</li>';
-                    }
-                }
+            if ($oPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
+                && isset($oPosition->Artikel)
+                && $oPosition->Artikel->cLagerBeachten === 'Y'
+                && $oPosition->Artikel->cLagerKleinerNull === 'Y'
+                && $Einstellungen['global']['global_lieferverzoegerung_anzeigen'] === 'Y'
+                && $oPosition->nAnzahl > $oPosition->Artikel->fLagerbestand
+            ) {
+                $bVorhanden    = true;
+                $cName         = is_array($oPosition->cName) ? $oPosition->cName[$cISOSprache] : $oPosition->cName;
+                $cArtikelName .= '<li>' . $cName . '</li>';
             }
         }
     }

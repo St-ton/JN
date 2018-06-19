@@ -1707,11 +1707,9 @@ class Artikel
                         $tabExists = true;
                         break;
                     }
-                } else {
-                    if ($cMedienTyp === $oMedienDatei->cMedienTyp) {
-                        $tabExists = true;
-                        break;
-                    }
+                } elseif ($cMedienTyp === $oMedienDatei->cMedienTyp) {
+                    $tabExists = true;
+                    break;
                 }
             }
             // Falls nicht enthalten => eintragen
@@ -2421,16 +2419,13 @@ class Artikel
                         ) {
                             $this->VariationenOhneFreifeld[$i]->Werte[$j]->nNichtLieferbar = 1;
                         }
-                    } else {
-                        // Lagerbestand beachten?
-                        if ($this->cLagerVariation === 'Y'
-                            && $this->cLagerBeachten === 'Y'
-                            && $this->cLagerKleinerNull === 'N'
-                            && $oVariationsWert->fLagerbestand <= 0
-                            && $this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_lagerbeachten'] === 'Y'
-                        ) {
-                            $this->VariationenOhneFreifeld[$i]->Werte[$j]->nNichtLieferbar = 1;
-                        }
+                    } elseif ($this->cLagerVariation === 'Y'
+                        && $this->cLagerBeachten === 'Y'
+                        && $this->cLagerKleinerNull === 'N'
+                        && $oVariationsWert->fLagerbestand <= 0
+                        && $this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_lagerbeachten'] === 'Y'
+                    ) {
+                        $this->VariationenOhneFreifeld[$i]->Werte[$j]->nNichtLieferbar = 1;
                     }
                 }
             }
@@ -4920,14 +4915,14 @@ class Artikel
      *
      * @param object $obj
      * @return $this
-     * @deprecated since 5.0
+     * @deprecated since 5.0.0
      */
     public function mapData($obj)
     {
         $members = array_keys(get_object_vars($obj));
         foreach ($members as $member) {
             $this->$member = ($member === 'cBeschreibung' || $member === 'cKurzBeschreibung')
-                ? parseNewsText($obj->$member)
+                ? StringHandler::parseNewsText($obj->$member)
                 : $obj->$member;
         }
 
@@ -4936,9 +4931,9 @@ class Artikel
 
     /**
      * @return int
-     * @deprecated since 5.0
+     * @deprecated since 5.0.0
      */
-    public function insertInDB()
+    public function insertInDB(): int
     {
         $obj                           = new stdClass();
         $obj->kArtikel                 = $this->kArtikel;
@@ -5003,7 +4998,7 @@ class Artikel
 
     /**
      * @return $this
-     * @deprecated since 5.0
+     * @deprecated since 5.0.0
      */
     public function updateInDB()
     {
@@ -5115,9 +5110,9 @@ class Artikel
      * setzt Daten aus Sync POST request.
      *
      * @return bool - true, wenn alle notwendigen Daten vorhanden, sonst false
-     * @deprecated since 5.0
+     * @deprecated since 5.0.0
      */
-    public function setzePostDaten()
+    public function setzePostDaten(): bool
     {
         return false;
     }

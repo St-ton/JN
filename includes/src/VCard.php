@@ -602,15 +602,12 @@ class VCard
                     } else {
                         $Kunde->cTitel = implode(' ', $this->N->Prefixes);
                     }
+                } elseif (Shop::Lang()->get('salutationM') === $this->N->Prefixes) {
+                    $Kunde->cAnrede = 'm';
+                } elseif (Shop::Lang()->get('salutationW') === $this->N->Prefixes) {
+                    $Kunde->cAnrede = 'w';
                 } else {
-                    // Workaround fals prefix für Anrede genutzt wird
-                    if (Shop::Lang()->get('salutationM') === $this->N->Prefixes) {
-                        $Kunde->cAnrede = 'm';
-                    } elseif (Shop::Lang()->get('salutationW') === $this->N->Prefixes) {
-                        $Kunde->cAnrede = 'w';
-                    } else {
-                        $Kunde->cTitel = $this->N->Prefixes;
-                    }
+                    $Kunde->cTitel = $this->N->Prefixes;
                 }
             }
 

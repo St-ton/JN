@@ -110,7 +110,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                             }
 
                             // Konfiguration validieren
-                            if (($aError_arr = self::validateBasket($oPosition->kArtikel, $oKonfigitem_arr)) !== true) {
+                            if (self::validateBasket($oPosition->kArtikel, $oKonfigitem_arr) !== true) {
                                 $bDeleted = true;
                                 $beDeletednPos_arr[] = $nPos;
                                 //loescheWarenkorbPosition($nPos);

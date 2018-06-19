@@ -472,7 +472,7 @@ class VersandartHelper
                     $cVariation0 = substr($oArtikel['cInputData'], 1);
                     list($kEigenschaft0, $kEigenschaftWert0) = explode(':', $cVariation0);
 
-                    $oVariation = findeVariation($oArtikelTMP->Variationen, $kEigenschaft0, $kEigenschaftWert0);
+                    $oVariation = ArtikelHelper::findVariation($oArtikelTMP->Variationen, $kEigenschaft0, $kEigenschaftWert0);
 
                     $oZusatzArtikel->fAnzahl         += $oArtikel['fAnzahl'];
                     $oZusatzArtikel->fWarenwertNetto += $oArtikel['fAnzahl'] *
@@ -485,8 +485,8 @@ class VersandartHelper
                     list($kEigenschaft0, $kEigenschaftWert0) = explode(':', $cVariation0);
                     list($kEigenschaft1, $kEigenschaftWert1) = explode(':', $cVariation1);
 
-                    $oVariation0 = findeVariation($oArtikelTMP->Variationen, $kEigenschaft0, $kEigenschaftWert0);
-                    $oVariation1 = findeVariation($oArtikelTMP->Variationen, $kEigenschaft1, $kEigenschaftWert1);
+                    $oVariation0 = ArtikelHelper::findVariation($oArtikelTMP->Variationen, $kEigenschaft0, $kEigenschaftWert0);
+                    $oVariation1 = ArtikelHelper::findVariation($oArtikelTMP->Variationen, $kEigenschaft1, $kEigenschaftWert1);
 
                     $oZusatzArtikel->fAnzahl         += $oArtikel['fAnzahl'];
                     $oZusatzArtikel->fWarenwertNetto += $oArtikel['fAnzahl'] *

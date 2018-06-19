@@ -374,7 +374,7 @@ function generateSitemapXML()
         if ($SpracheTMP->kSprache === $defaultLangID) {
             continue;
         }
-        $res = Shop::DB()->queryPrepared(
+        $res = Shop::Container()->getDB()->queryPrepared(
             "SELECT tartikel.kArtikel, tartikel.dLetzteAktualisierung, tseo.cSeo
                FROM tartikelsprache, tartikel
                JOIN tseo 
@@ -420,7 +420,7 @@ function generateSitemapXML()
 
     if ($conf['sitemap']['sitemap_seiten_anzeigen'] === 'Y') {
         // Links alle sprachen
-        $res = Shop::DB()->queryPrepared(
+        $res = Shop::Container()->getDB()->queryPrepared(
             "SELECT tlink.nLinkart, tlinksprache.kLink, tlinksprache.cISOSprache, tlink.bSSL
                      FROM tlink
                      JOIN tlinkgruppe 

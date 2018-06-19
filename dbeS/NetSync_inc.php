@@ -302,11 +302,9 @@ class NetSyncHandler
      */
     public static function create($cClass)
     {
-        if (self::$oInstance === null) {
-            if (class_exists($cClass)) {
-                new $cClass;
-                set_exception_handler([$cClass, 'exception']);
-            }
+        if (self::$oInstance === null && class_exists($cClass)) {
+            new $cClass;
+            set_exception_handler([$cClass, 'exception']);
         }
     }
 

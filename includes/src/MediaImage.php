@@ -542,7 +542,7 @@ class MediaImage implements IMedia
     /**
      * @param string $type
      * @param int    $id
-     * @return bool
+     * @return int
      */
     public static function imageCount($type, int $id): int
     {

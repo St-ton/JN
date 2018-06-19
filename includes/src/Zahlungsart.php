@@ -506,13 +506,11 @@ class Zahlungsart extends MainModel
         if ($kKey > 0) {
             if ($xOption['iso'] !== null) {
                 $iso = $xOption['iso'];
+            } elseif (isset($_SESSION['cISOSprache'])) {
+                $iso = $_SESSION['cISOSprache'];
             } else {
-                if (isset($_SESSION['cISOSprache'])) {
-                    $iso = $_SESSION['cISOSprache'];
-                } else {
-                    $language = Sprache::getDefaultLanguage(true);
-                    $iso      = $language->cISO;
-                }
+                $language = Sprache::getDefaultLanguage(true);
+                $iso      = $language->cISO;
             }
 
             $oObj = Shop::Container()->getDB()->queryPrepared(

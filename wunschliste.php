@@ -190,19 +190,17 @@ if ($action !== null && isset($_POST['kWunschliste'], $_SESSION['Kunde']->kKunde
             if ($userOK === true && isset($_POST['kWunschlisteTarget'])) {
                 $cHinweis .= Wunschliste::delete((int)$_POST['kWunschlisteTarget']);
                 if ((int)$_POST['kWunschlisteTarget'] === $kWunschliste) {
-                    //the currently active one was deleted, search for a new one
+                    // the currently active one was deleted, search for a new one
                     $newWishlist = Shop::Container()->getDB()->select('twunschliste', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
                     if (isset($newWishlist->kWunschliste)) {
                         $kWunschliste           = (int)$newWishlist->kWunschliste;
                         $newWishlist->nStandard = 1;
                         Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', $kWunschliste, $newWishlist);
-                    } else {
-                        //the only existing wishlist was deleted, create a new one
-                        if (empty($_SESSION['Wunschliste']->kWunschliste)) {
-                            $_SESSION['Wunschliste'] = new Wunschliste();
-                            $_SESSION['Wunschliste']->schreibeDB();
-                            $kWunschliste = $_SESSION['Wunschliste']->kWunschliste;
-                        }
+                    } elseif (empty($_SESSION['Wunschliste']->kWunschliste)) {
+                        // the only existing wishlist was deleted, create a new one
+                        $_SESSION['Wunschliste'] = new Wunschliste();
+                        $_SESSION['Wunschliste']->schreibeDB();
+                        $kWunschliste = $_SESSION['Wunschliste']->kWunschliste;
                     }
                 }
             }

@@ -24,7 +24,7 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
         }
     }
     $loginName = isset($_POST['benutzer'])
-        ? StringHandler::filterXSS(Shop::DB()->escape($_POST['benutzer']))
+        ? StringHandler::filterXSS(Shop::Container()->getDB()->escape($_POST['benutzer']))
         : '---';
     if ($ret['captcha'] === 0 && $ret['csrf'] === 0) {
         $cLogin  = $_POST['benutzer'];

@@ -14,21 +14,20 @@ function gibBestellungsUebersicht($cLimitSQL, $cSuchFilter)
     $oBestellung_arr = [];
     $cSuchFilterSQL  = '';
     if (strlen($cSuchFilter)) {
-        $cSuchFilterSQL = " WHERE cBestellNr LIKE '%" . Shop::DB()->escape($cSuchFilter) . "%'";
+        $cSuchFilterSQL = " WHERE cBestellNr LIKE '%" . Shop::Container()->getDB()->escape($cSuchFilter) . "%'";
     }
     $oBestellungToday_arr = Shop::Container()->getDB()->query(
         "SELECT kBestellung
             FROM tbestellung
             " . $cSuchFilterSQL . "
-            ORDER BY dErstellt DESC" . $cLimitSQL, 2
+            ORDER BY dErstellt DESC" . $cLimitSQL,
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    if (is_array($oBestellungToday_arr) && count($oBestellungToday_arr) > 0) {
-        foreach ($oBestellungToday_arr as $oBestellungToday) {
-            if (isset($oBestellungToday->kBestellung) && $oBestellungToday->kBestellung > 0) {
-                $oBestellung = new Bestellung($oBestellungToday->kBestellung);
-                $oBestellung->fuelleBestellung(1, 0, false);
-                $oBestellung_arr[] = $oBestellung;
-            }
+    foreach ($oBestellungToday_arr as $oBestellungToday) {
+        if (isset($oBestellungToday->kBestellung) && $oBestellungToday->kBestellung > 0) {
+            $oBestellung = new Bestellung($oBestellungToday->kBestellung);
+            $oBestellung->fuelleBestellung(1, 0, false);
+            $oBestellung_arr[] = $oBestellung;
         }
     }
 
@@ -42,7 +41,7 @@ function gibBestellungsUebersicht($cLimitSQL, $cSuchFilter)
 function gibAnzahlBestellungen($cSuchFilter)
 {
     $cSuchFilterSQL = (strlen($cSuchFilter) > 0)
-        ? " WHERE cBestellNr LIKE '%" . Shop::DB()->escape($cSuchFilter) . "%'"
+        ? " WHERE cBestellNr LIKE '%" . Shop::Container()->getDB()->escape($cSuchFilter) . "%'"
         : '';
     $oBestellung = Shop::Container()->getDB()->query(
         'SELECT count(*) AS nAnzahl

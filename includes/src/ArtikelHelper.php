@@ -336,15 +336,13 @@ class ArtikelHelper
                             $nVorhanden = 0;
                             break;
                         }
-                    } else {
-                        if (!isset($_SESSION['variBoxAnzahl_arr'])) {
-                            //redirekt zum artikel, um variation/en zu waehlen / MBM beachten
-                            header('Location: ' . Shop::getURL() .
-                                '/?a=' . $kArtikel .
-                                '&n=' . (int)$_POST['anzahl'] .
-                                '&r=' . R_VARWAEHLEN, true, 302);
-                            exit();
-                        }
+                    } elseif (!isset($_SESSION['variBoxAnzahl_arr'])) {
+                        //redirekt zum artikel, um variation/en zu waehlen / MBM beachten
+                        header('Location: ' . Shop::getURL() .
+                            '/?a=' . $kArtikel .
+                            '&n=' . (int)$_POST['anzahl'] .
+                            '&r=' . R_VARWAEHLEN, true, 302);
+                        exit();
                     }
                 } else {
                     unset($oEigenschaftwerte);
@@ -466,15 +464,13 @@ class ArtikelHelper
                         $nVorhanden = 0;
                         break;
                     }
-                } else {
-                    if (!isset($_SESSION['variBoxAnzahl_arr']) && $bRedirect) {
-                        //redirekt zum artikel, um variation/en zu waehlen  MBM beachten
-                        header('Location: ' . Shop::getURL() .
-                            '/?a=' . $kArtikel .
-                            '&n=' . (int)$_POST['anzahl'] .
-                            '&r=' . R_VARWAEHLEN, true, 302);
-                        exit();
-                    }
+                } elseif (!isset($_SESSION['variBoxAnzahl_arr']) && $bRedirect) {
+                    //redirekt zum artikel, um variation/en zu waehlen  MBM beachten
+                    header('Location: ' . Shop::getURL() .
+                        '/?a=' . $kArtikel .
+                        '&n=' . (int)$_POST['anzahl'] .
+                        '&r=' . R_VARWAEHLEN, true, 302);
+                    exit();
                 }
             } else {
                 if ($oEigenschaft->cTyp === 'PFLICHT-FREIFELD'

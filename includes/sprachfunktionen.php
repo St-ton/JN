@@ -24,7 +24,7 @@ function lang_warenkorb_warenkorbEnthaeltXArtikel($warenkorb)
 
         return $ret;
     }
-    $nArtikel = get_class($warenkorb) === 'Warenkorb'
+    $nArtikel = $warenkorb instanceof Warenkorb
         ? $warenkorb->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL])
         : 0;
     $nArtikel = str_replace('.', ',', $nArtikel);

@@ -190,15 +190,13 @@ class ProductFilterURL
             foreach ($filters as $f) {
                 if (!empty($f->seo) && !empty($f->sep)) {
                     $seoFilterParams[] = $f;
+                } elseif (!isset($nonSeoFilterParams[$filterID])) {
+                    $nonSeoFilterParams[$filterID] = $f->value;
+                } elseif (!is_array($nonSeoFilterParams[$filterID])) {
+                    $nonSeoFilterParams[$filterID]   = [$nonSeoFilterParams[$filterID]];
+                    $nonSeoFilterParams[$filterID][] = $f->value;
                 } else {
-                    if (!isset($nonSeoFilterParams[$filterID])) {
-                        $nonSeoFilterParams[$filterID] = $f->value;
-                    } elseif (!is_array($nonSeoFilterParams[$filterID])) {
-                        $nonSeoFilterParams[$filterID]   = [$nonSeoFilterParams[$filterID]];
-                        $nonSeoFilterParams[$filterID][] = $f->value;
-                    } else {
-                        $nonSeoFilterParams[$filterID][] = $f->value;
-                    }
+                    $nonSeoFilterParams[$filterID][] = $f->value;
                 }
             }
         }

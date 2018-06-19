@@ -92,12 +92,12 @@ function createSearchIndex($index, $create)
 }
 
 /**
- * @return array|IOError
+ * @return array
  */
 function clearSearchCache()
 {
-    Shop::DB()->executeQuery("DELETE FROM tsuchcachetreffer", \DB\ReturnType::AFFECTED_ROWS);
-    Shop::DB()->executeQuery("DELETE FROM tsuchcache", \DB\ReturnType::AFFECTED_ROWS);
+    Shop::Container()->getDB()->query('DELETE FROM tsuchcachetreffer', \DB\ReturnType::AFFECTED_ROWS);
+    Shop::Container()->getDB()->query('DELETE FROM tsuchcache', \DB\ReturnType::AFFECTED_ROWS);
 
     return ['hinweis' => 'Der Such-Cache wurde gelöscht'];
 }

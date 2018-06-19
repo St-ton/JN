@@ -37,7 +37,7 @@ function handleCsvImportAction($importerId, $target, $fields = [], $cDelim = nul
             $nErrors     = 0;
 
             if ($cDelim === null) {
-                $cDelim = guessCsvDelimiter($csvFilename);
+                $cDelim = getCsvDelimiter($csvFilename);
             }
 
             if (count($fields) === 0) {

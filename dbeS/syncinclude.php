@@ -316,11 +316,9 @@ function buildAttributes(&$arr, $cExclude_arr = [])
         $keys     = array_keys($arr);
         $keyCount = count($keys);
         for ($i = 0; $i < $keyCount; $i++) {
-            if (!in_array($keys[$i], $cExclude_arr)) {
-                if ($keys[$i]{0} === 'k') {
-                    $attr_arr[$keys[$i]] = $arr[$keys[$i]];
-                    unset($arr[$keys[$i]]);
-                }
+            if (!in_array($keys[$i], $cExclude_arr) && $keys[$i]{0} === 'k') {
+                $attr_arr[$keys[$i]] = $arr[$keys[$i]];
+                unset($arr[$keys[$i]]);
             }
         }
     }

@@ -898,19 +898,15 @@ class Metadata implements MetadataInterface
                     $oSeite->nSeite = $i;
                     if ($i === $oSeitenzahlen->AktuelleSeite) {
                         $oSeite->cURL = '';
+                    } elseif ($oSeite->nSeite === 1) {
+                        $oSeite->cURL = $naviURL . $cFilterShopURL;
+                    } elseif ($bSeo) {
+                        $cURL         = $naviURL;
+                        $oSeite->cURL = strpos(basename($cURL), 'index.php') !== false
+                            ? $cURL . '&amp;seite=' . $oSeite->nSeite . $cFilterShopURL
+                            : $cURL . SEP_SEITE . $oSeite->nSeite;
                     } else {
-                        if ($oSeite->nSeite === 1) {
-                            $oSeite->cURL = $naviURL . $cFilterShopURL;
-                        } else {
-                            if ($bSeo) {
-                                $cURL         = $naviURL;
-                                $oSeite->cURL = strpos(basename($cURL), 'index.php') !== false
-                                    ? $cURL . '&amp;seite=' . $oSeite->nSeite . $cFilterShopURL
-                                    : $cURL . SEP_SEITE . $oSeite->nSeite;
-                            } else {
-                                $oSeite->cURL = $naviURL . '&amp;seite=' . $oSeite->nSeite . $cFilterShopURL;
-                            }
-                        }
+                        $oSeite->cURL = $naviURL . '&amp;seite=' . $oSeite->nSeite . $cFilterShopURL;
                     }
                     $oSeite_arr[] = $oSeite;
                 }
@@ -922,19 +918,15 @@ class Metadata implements MetadataInterface
 
                     if ($i + 1 === $oSeitenzahlen->AktuelleSeite) {
                         $oSeite->cURL = '';
+                    } elseif ($oSeite->nSeite === 1) {
+                        $oSeite->cURL = $naviURL . $cFilterShopURL;
+                    } elseif ($bSeo) {
+                        $cURL         = $naviURL;
+                        $oSeite->cURL = strpos(basename($cURL), 'index.php') !== false
+                            ? $cURL . '&amp;seite=' . $oSeite->nSeite . $cFilterShopURL
+                            : $cURL . SEP_SEITE . $oSeite->nSeite;
                     } else {
-                        if ($oSeite->nSeite === 1) {
-                            $oSeite->cURL = $naviURL . $cFilterShopURL;
-                        } else {
-                            if ($bSeo) {
-                                $cURL         = $naviURL;
-                                $oSeite->cURL = strpos(basename($cURL), 'index.php') !== false
-                                    ? $cURL . '&amp;seite=' . $oSeite->nSeite . $cFilterShopURL
-                                    : $cURL . SEP_SEITE . $oSeite->nSeite;
-                            } else {
-                                $oSeite->cURL = $naviURL . '&amp;seite=' . $oSeite->nSeite . $cFilterShopURL;
-                            }
-                        }
+                        $oSeite->cURL = $naviURL . '&amp;seite=' . $oSeite->nSeite . $cFilterShopURL;
                     }
                     $oSeite_arr[] = $oSeite;
                 }
@@ -946,20 +938,18 @@ class Metadata implements MetadataInterface
                 $oSeite_arr['zurueck']->nSeite = (int)$oSeitenzahlen->AktuelleSeite - 1;
                 if ($oSeite_arr['zurueck']->nSeite === 1) {
                     $oSeite_arr['zurueck']->cURL = $naviURL . $cFilterShopURL;
-                } else {
-                    if ($bSeo) {
-                        $cURL = $naviURL;
-                        if (strpos(basename($cURL), 'index.php') !== false) {
-                            $oSeite_arr['zurueck']->cURL = $cURL . '&amp;seite=' .
-                                $oSeite_arr['zurueck']->nSeite . $cFilterShopURL;
-                        } else {
-                            $oSeite_arr['zurueck']->cURL = $cURL . SEP_SEITE .
-                                $oSeite_arr['zurueck']->nSeite;
-                        }
-                    } else {
-                        $oSeite_arr['zurueck']->cURL = $naviURL . '&amp;seite=' .
+                } elseif ($bSeo) {
+                    $cURL = $naviURL;
+                    if (strpos(basename($cURL), 'index.php') !== false) {
+                        $oSeite_arr['zurueck']->cURL = $cURL . '&amp;seite=' .
                             $oSeite_arr['zurueck']->nSeite . $cFilterShopURL;
+                    } else {
+                        $oSeite_arr['zurueck']->cURL = $cURL . SEP_SEITE .
+                            $oSeite_arr['zurueck']->nSeite;
                     }
+                } else {
+                    $oSeite_arr['zurueck']->cURL = $naviURL . '&amp;seite=' .
+                        $oSeite_arr['zurueck']->nSeite . $cFilterShopURL;
                 }
             }
             // Baue Vor-URL

@@ -377,7 +377,7 @@ class WarenkorbHelper
         }
 
         if (!$isConfigArticle) {
-            return WarenkorbHelper::addProductIDToCart($articleID, $count, $attributes);
+            return self::addProductIDToCart($articleID, $count, $attributes);
         }
         $bValid                  = true;
         $aError_arr              = [];
@@ -1231,37 +1231,35 @@ class WarenkorbHelper
                 $oVariKombi->kEigenschaftWert0              = (int)$kEigenschaftWert0;
                 $_SESSION['variBoxAnzahl_arr'][$cKeys]      = $oVariKombi;
                 $_POST['eigenschaftwert_' . $kEigenschaft0] = $kEigenschaftWert0;
-            } else {
-                if ($bExtern) {
-                    $cComb_arr                        = explode('_', $cKeys);
-                    $oVariKombi                       = new stdClass();
-                    $oVariKombi->fAnzahl              = (float)$variBoxAnzahl_arr[$cKeys];
-                    $oVariKombi->kEigenschaft_arr     = [];
-                    $oVariKombi->kEigenschaftWert_arr = [];
-                    foreach ($cComb_arr as $cComb) {
-                        list($kEigenschaft, $kEigenschaftWert) = explode(':', $cComb);
-                        $oVariKombi->kEigenschaft_arr[]            = (int)$kEigenschaft;
-                        $oVariKombi->kEigenschaftWert_arr[]        = (int)$kEigenschaftWert;
-                        $_POST['eigenschaftwert_' . $kEigenschaft] = (int)$kEigenschaftWert;
-                    }
-                    $_SESSION['variBoxAnzahl_arr'][$cKeys] = $oVariKombi;
-                } else {
-                    list($cVariation0, $cVariation1) = explode('_', $cKeys);
-                    list($kEigenschaft0, $kEigenschaftWert0) = explode(':', $cVariation0);
-                    list($kEigenschaft1, $kEigenschaftWert1) = explode(':', $cVariation1);
-                    // In die Session einbauen
-                    $oVariKombi                                 = new stdClass();
-                    $oVariKombi->fAnzahl                        = (float)$variBoxAnzahl_arr[$cKeys];
-                    $oVariKombi->cVariation0                    = StringHandler::filterXSS($cVariation0);
-                    $oVariKombi->cVariation1                    = StringHandler::filterXSS($cVariation1);
-                    $oVariKombi->kEigenschaft0                  = (int)$kEigenschaft0;
-                    $oVariKombi->kEigenschaftWert0              = (int)$kEigenschaftWert0;
-                    $oVariKombi->kEigenschaft1                  = (int)$kEigenschaft1;
-                    $oVariKombi->kEigenschaftWert1              = (int)$kEigenschaftWert1;
-                    $_SESSION['variBoxAnzahl_arr'][$cKeys]      = $oVariKombi;
-                    $_POST['eigenschaftwert_' . $kEigenschaft0] = $kEigenschaftWert0;
-                    $_POST['eigenschaftwert_' . $kEigenschaft1] = $kEigenschaftWert1;
+            } elseif ($bExtern) {
+                $cComb_arr                        = explode('_', $cKeys);
+                $oVariKombi                       = new stdClass();
+                $oVariKombi->fAnzahl              = (float)$variBoxAnzahl_arr[$cKeys];
+                $oVariKombi->kEigenschaft_arr     = [];
+                $oVariKombi->kEigenschaftWert_arr = [];
+                foreach ($cComb_arr as $cComb) {
+                    list($kEigenschaft, $kEigenschaftWert) = explode(':', $cComb);
+                    $oVariKombi->kEigenschaft_arr[]            = (int)$kEigenschaft;
+                    $oVariKombi->kEigenschaftWert_arr[]        = (int)$kEigenschaftWert;
+                    $_POST['eigenschaftwert_' . $kEigenschaft] = (int)$kEigenschaftWert;
                 }
+                $_SESSION['variBoxAnzahl_arr'][$cKeys] = $oVariKombi;
+            } else {
+                list($cVariation0, $cVariation1) = explode('_', $cKeys);
+                list($kEigenschaft0, $kEigenschaftWert0) = explode(':', $cVariation0);
+                list($kEigenschaft1, $kEigenschaftWert1) = explode(':', $cVariation1);
+                // In die Session einbauen
+                $oVariKombi                                 = new stdClass();
+                $oVariKombi->fAnzahl                        = (float)$variBoxAnzahl_arr[$cKeys];
+                $oVariKombi->cVariation0                    = StringHandler::filterXSS($cVariation0);
+                $oVariKombi->cVariation1                    = StringHandler::filterXSS($cVariation1);
+                $oVariKombi->kEigenschaft0                  = (int)$kEigenschaft0;
+                $oVariKombi->kEigenschaftWert0              = (int)$kEigenschaftWert0;
+                $oVariKombi->kEigenschaft1                  = (int)$kEigenschaft1;
+                $oVariKombi->kEigenschaftWert1              = (int)$kEigenschaftWert1;
+                $_SESSION['variBoxAnzahl_arr'][$cKeys]      = $oVariKombi;
+                $_POST['eigenschaftwert_' . $kEigenschaft0] = $kEigenschaftWert0;
+                $_POST['eigenschaftwert_' . $kEigenschaft1] = $kEigenschaftWert1;
             }
             $attributes[$cKeys]                   = new stdClass();
             $attributes[$cKeys]->oEigenschaft_arr = [];

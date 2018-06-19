@@ -226,14 +226,12 @@ class UrlHelper
                 $new_path = preg_replace('!/([^/]+)$!x', '', $new_path);
             } elseif (preg_match($pattern_d, $path)) {
                 $path = preg_replace($pattern_d, '', $path);
-            } else {
-                if (preg_match($pattern_e, $path, $matches)) {
-                    $first_path_segment = $matches[1];
+            } elseif (preg_match($pattern_e, $path, $matches)) {
+                $first_path_segment = $matches[1];
 
-                    $path = preg_replace('/^' . preg_quote($first_path_segment, '/') . '/', '', $path, 1);
+                $path = preg_replace('/^' . preg_quote($first_path_segment, '/') . '/', '', $path, 1);
 
-                    $new_path .= $first_path_segment;
-                }
+                $new_path .= $first_path_segment;
             }
         }
 

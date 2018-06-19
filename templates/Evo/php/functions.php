@@ -787,7 +787,7 @@ function captchaMarkup($params, $smarty)
 {
     if (isset($params['getBody']) && $params['getBody']) {
         return Shop::Container()->getCaptchaService()->getBodyMarkup($smarty);
-    } else {
-        return Shop::Container()->getCaptchaService()->getHeadMarkup($smarty);
     }
+
+    return Shop::Container()->getCaptchaService()->getHeadMarkup($smarty);
 }

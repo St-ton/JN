@@ -61,22 +61,20 @@ class AuswahlAssistentFrage
 
     /**
      * @param int  $kAuswahlAssistentFrage
-     * @param bool $bOnlyActive
+     * @param bool $activeOnly
      */
-    public function __construct($kAuswahlAssistentFrage = 0, $bOnlyActive = true)
+    public function __construct(int $kAuswahlAssistentFrage = 0, bool $activeOnly = true)
     {
-        $kAuswahlAssistentFrage = (int)$kAuswahlAssistentFrage;
-
         if ($kAuswahlAssistentFrage > 0) {
-            $this->loadFromDB($kAuswahlAssistentFrage, $bOnlyActive);
+            $this->loadFromDB($kAuswahlAssistentFrage, $activeOnly);
         }
     }
 
     /**
-     * @param int  $kAuswahlAssistentFrage
-     * @param bool $bOnlyActive
+     * @param int  $questionID
+     * @param bool $activeOnly
      */
-    private function loadFromDB($kAuswahlAssistentFrage, $bOnlyActive = true)
+    private function loadFromDB(int $questionID, bool $activeOnly = true)
     {
         $oDbResult = Shop::Container()->getDB()->query(
             "SELECT af.*, m.cBildpfad, COALESCE(ms.cName, m.cName) AS cName, m.cBildpfad
@@ -88,11 +86,10 @@ class AuswahlAssistentFrage
                     LEFT JOIN tmerkmalsprache AS ms
                         ON ms.kMerkmal = m.kMerkmal 
                             AND ms.kSprache = ag.kSprache
-                WHERE af.kAuswahlAssistentFrage = " . $kAuswahlAssistentFrage .
-                    ($bOnlyActive ? " AND af.nAktiv = 1" : ""),
-            1
+                WHERE af.kAuswahlAssistentFrage = " . $questionID .
+                    ($activeOnly ? " AND af.nAktiv = 1" : ""),
+            \DB\ReturnType::SINGLE_OBJECT
         );
-
         if ($oDbResult !== null && $oDbResult !== false) {
             foreach (get_object_vars($oDbResult) as $name => $value) {
                 $this->$name = $value;
@@ -106,28 +103,28 @@ class AuswahlAssistentFrage
     }
 
     /**
-     * @param int  $kAuswahlAssistentGruppe
-     * @param bool $bAktiv
+     * @param int  $groupID
+     * @param bool $activeOnly
      * @return array
      */
-    public static function getQuestions(int $kAuswahlAssistentGruppe, bool $bAktiv = true): array
+    public static function getQuestions(int $groupID, bool $activeOnly = true): array
     {
         $oAuswahlAssistentFrage_arr = [];
-        if ($kAuswahlAssistentGruppe > 0) {
+        if ($groupID > 0) {
             $cAktivSQL = '';
-            if ($bAktiv) {
+            if ($activeOnly) {
                 $cAktivSQL = " AND nAktiv = 1";
             }
             $oFrage_arr = Shop::Container()->getDB()->query(
                 "SELECT *
                     FROM tauswahlassistentfrage
-                    WHERE kAuswahlAssistentGruppe = " . (int)$kAuswahlAssistentGruppe .
+                    WHERE kAuswahlAssistentGruppe = " . (int)$groupID .
                     $cAktivSQL . "
                     ORDER BY nSort",
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($oFrage_arr as $oFrage) {
-                $oAuswahlAssistentFrage_arr[] = new self($oFrage->kAuswahlAssistentFrage, $bAktiv);
+                $oAuswahlAssistentFrage_arr[] = new self($oFrage->kAuswahlAssistentFrage, $activeOnly);
             }
         }
 

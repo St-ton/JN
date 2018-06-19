@@ -73,21 +73,21 @@ class AuswahlAssistentGruppe
     }
 
     /**
-     * @param int  $kAuswahlAssistentGruppe
+     * @param int  $groupID
      * @param bool $bAktiv
      * @param bool $bAktivFrage
      * @param bool $bBackend
      */
-    private function loadFromDB(int $kAuswahlAssistentGruppe, bool $bAktiv, bool $bAktivFrage, bool $bBackend)
+    private function loadFromDB(int $groupID, bool $bAktiv, bool $bAktivFrage, bool $bBackend)
     {
-        if ($kAuswahlAssistentGruppe > 0) {
+        if ($groupID > 0) {
             $cAktivSQL = $bAktiv ? ' AND nAktiv = 1' : '';
             $oGruppe   = Shop::Container()->getDB()->queryPrepared(
                 "SELECT *
                     FROM tauswahlassistentgruppe
                     WHERE kAuswahlAssistentGruppe = :groupID" .
                     $cAktivSQL,
-                ['groupID' => $kAuswahlAssistentGruppe],
+                ['groupID' => $groupID],
                 \DB\ReturnType::SINGLE_OBJECT
             );
             if (isset($oGruppe->kAuswahlAssistentGruppe) && $oGruppe->kAuswahlAssistentGruppe > 0) {
@@ -180,11 +180,11 @@ class AuswahlAssistentGruppe
                 $oObj->oAuswahlAssistentOrt_arr,
                 $oObj->oAuswahlAssistentFrage_arr
             );
-            $kAuswahlAssistentGruppe = Shop::Container()->getDB()->insert('tauswahlassistentgruppe', $oObj);
-            if ($kAuswahlAssistentGruppe > 0) {
-                AuswahlAssistentOrt::saveLocation($cParam_arr, $kAuswahlAssistentGruppe);
+            $groupID = Shop::Container()->getDB()->insert('tauswahlassistentgruppe', $oObj);
+            if ($groupID > 0) {
+                AuswahlAssistentOrt::saveLocation($cParam_arr, $groupID);
 
-                return $bPrimary ? $kAuswahlAssistentGruppe : true;
+                return $bPrimary ? $groupID : true;
             }
 
             return false;
@@ -257,7 +257,7 @@ class AuswahlAssistentGruppe
             && is_array($cParam_arr['kAuswahlAssistentGruppe_arr'])
             && count($cParam_arr['kAuswahlAssistentGruppe_arr']) > 0
         ) {
-            foreach ($cParam_arr['kAuswahlAssistentGruppe_arr'] as $kAuswahlAssistentGruppe) {
+            foreach ($cParam_arr['kAuswahlAssistentGruppe_arr'] as $groupID) {
                 Shop::Container()->getDB()->queryPrepared(
                     'DELETE tag, taf, tao
                         FROM tauswahlassistentgruppe tag
@@ -266,7 +266,7 @@ class AuswahlAssistentGruppe
                         LEFT JOIN tauswahlassistentort tao
                             ON tao.kAuswahlAssistentGruppe = tag.kAuswahlAssistentGruppe
                         WHERE tag.kAuswahlAssistentGruppe = :groupID', 
-                    ['groupID' => (int)$kAuswahlAssistentGruppe],
+                    ['groupID' => (int)$groupID],
                     \DB\ReturnType::AFFECTED_ROWS
                 );
             }
@@ -278,17 +278,17 @@ class AuswahlAssistentGruppe
     }
 
     /**
-     * @param int $kAuswahlAssistentGruppe
+     * @param int $groupID
      * @return int
      */
-    public static function getLanguage(int $kAuswahlAssistentGruppe): int
+    public static function getLanguage(int $groupID): int
     {
-        if ($kAuswahlAssistentGruppe > 0) {
+        if ($groupID > 0) {
             $oGruppe = Shop::Container()->getDB()->queryPrepared(
                 'SELECT kSprache
                     FROM tauswahlassistentgruppe
                     WHERE kAuswahlAssistentGruppe = :groupID',
-                ['groupID' => $kAuswahlAssistentGruppe],
+                ['groupID' => $groupID],
                 \DB\ReturnType::SINGLE_OBJECT
             );
             if (isset($oGruppe->kSprache) && $oGruppe->kSprache > 0) {

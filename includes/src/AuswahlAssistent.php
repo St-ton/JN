@@ -87,10 +87,8 @@ class AuswahlAssistent
      * @param int    $kSprache
      * @param bool   $bOnlyActive
      */
-    public function __construct($cKey, $kKey, $kSprache = 0, $bOnlyActive = true)
+    public function __construct($cKey, int $kKey, int $kSprache = 0, bool $bOnlyActive = true)
     {
-        $kKey         = (int)$kKey;
-        $kSprache     = (int)$kSprache;
         $oNice        = Nice::getInstance();
         $this->config = Shop::getSettings(CONF_AUSWAHLASSISTENT)['auswahlassistent'];
 
@@ -109,7 +107,7 @@ class AuswahlAssistent
      * @param int    $kSprache
      * @param bool   $bOnlyActive
      */
-    private function loadFromDB($cKey, $kKey, $kSprache, $bOnlyActive = true)
+    private function loadFromDB($cKey, int $kKey, int $kSprache, bool $bOnlyActive = true)
     {
         $oDbResult = Shop::Container()->getDB()->queryPrepared(
             'SELECT *
@@ -163,7 +161,7 @@ class AuswahlAssistent
      * @param int $kWert
      * @return $this
      */
-    public function setNextSelection($kWert)
+    public function setNextSelection(int $kWert)
     {
         if ($this->nCurQuestion < count($this->oFrage_arr)) {
             $this->kSelection_arr[] = $kWert;
@@ -176,10 +174,9 @@ class AuswahlAssistent
     /**
      * @return $this
      */
-    public function filter()
+    public function filter(): self
     {
         $cParameter_arr = [];
-
         if ($this->cKey === AUSWAHLASSISTENT_ORT_KATEGORIE) {
             $cParameter_arr['kKategorie'] = $this->kKey;
 
@@ -196,19 +193,19 @@ class AuswahlAssistent
         $AktuelleKategorie  = isset($cParameter_arr['kKategorie'])
             ? new Kategorie($cParameter_arr['kKategorie'])
             : null;
-        $oMerkmalFilter_arr = (new \Filter\ProductFilterSearchResults())->setFilterOptions(
+        $attributeFilters = (new \Filter\ProductFilterSearchResults())->setFilterOptions(
             $NaviFilter,
             $AktuelleKategorie,
             true
         )->getAttributeFilterOptions();
 
-        foreach ($oMerkmalFilter_arr as $oMerkmalFilter) {
-            /** @var \Filter\Items\ItemAttribute $oMerkmalFilter */
-            if (array_key_exists($oMerkmalFilter->getValue(), $this->oFrage_assoc)) {
-                $oFrage                    = $this->oFrage_assoc[$oMerkmalFilter->getValue()];
-                $oFrage->oWert_arr         = $oMerkmalFilter->getOptions();
+        foreach ($attributeFilters as $attributeFilter) {
+            /** @var \Filter\Items\ItemAttribute $attributeFilter */
+            if (array_key_exists($attributeFilter->getValue(), $this->oFrage_assoc)) {
+                $oFrage                    = $this->oFrage_assoc[$attributeFilter->getValue()];
+                $oFrage->oWert_arr         = $attributeFilter->getOptions();
                 $oFrage->nTotalResultCount = 0;
-                foreach ($oMerkmalFilter->getOptions() as $oWert) {
+                foreach ($attributeFilter->getOptions() as $oWert) {
                     $oFrage->nTotalResultCount                            += $oWert->getCount();
                     $oFrage->oWert_assoc[$oWert->getData('kMerkmalWert')] = $oWert;
                 }
@@ -233,7 +230,7 @@ class AuswahlAssistent
     /**
      * @return int
      */
-    public function getLocationId()
+    public function getLocationId(): int
     {
         return $this->kAuswahlAssistentOrt;
     }
@@ -241,7 +238,7 @@ class AuswahlAssistent
     /**
      * @return int
      */
-    public function getGroupId()
+    public function getGroupId(): int
     {
         return $this->kAuswahlAssistentGruppe;
     }
@@ -249,7 +246,7 @@ class AuswahlAssistent
     /**
      * @return string
      */
-    public function getLocationKeyName()
+    public function getLocationKeyName(): string
     {
         return $this->cKey;
     }
@@ -257,7 +254,7 @@ class AuswahlAssistent
     /**
      * @return int
      */
-    public function getLocationKeyId()
+    public function getLocationKeyId(): int
     {
         return $this->kKey;
     }
@@ -265,7 +262,7 @@ class AuswahlAssistent
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->cName;
     }
@@ -273,7 +270,7 @@ class AuswahlAssistent
     /**
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->cBeschreibung;
     }
@@ -290,7 +287,7 @@ class AuswahlAssistent
      * @param int $nFrage
      * @return AuswahlAssistentFrage
      */
-    public function getQuestion($nFrage)
+    public function getQuestion(int $nFrage)
     {
         return $this->oFrage_arr[$nFrage];
     }
@@ -314,7 +311,7 @@ class AuswahlAssistent
     /**
      * @return int
      */
-    public function getCurQuestion()
+    public function getCurQuestion(): int
     {
         return $this->nCurQuestion;
     }
@@ -322,7 +319,7 @@ class AuswahlAssistent
     /**
      * @return array
      */
-    public function getSelections()
+    public function getSelections(): array
     {
         return $this->kSelection_arr;
     }
@@ -348,7 +345,7 @@ class AuswahlAssistent
     }
 
     /**
-     * @return stdClass
+     * @return stdClass|null
      */
     public function getLastSelectedValue()
     {
@@ -386,7 +383,7 @@ class AuswahlAssistent
      * @param \Filter\ProductFilter|null $pf
      * @return self|null
      */
-    public static function startIfRequired($cKey, $kKey, $kSprache = 0, $smarty = null, $selected = [], $pf = null)
+    public static function startIfRequired($cKey, int $kKey, int $kSprache = 0, $smarty = null, $selected = [], $pf = null)
     {
         // only start if enabled in the backend settings
         if (!self::isRequired()) {
@@ -418,7 +415,7 @@ class AuswahlAssistent
     /**
      * @return array
      */
-    public static function getLinks()
+    public static function getLinks(): array
     {
         return Shop::Container()->getDB()->selectAll('tlink', 'nLinkart', LINKTYP_AUSWAHLASSISTENT);
     }
@@ -433,23 +430,6 @@ class AuswahlAssistent
     public static function getGroupsByLocation($cKey, $kKey, $kSprache)
     {
         trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-        if ((int)$kKey > 0 && (int)$kSprache > 0 && strlen($cKey) > 0) {
-            $oOrt = Shop::Container()->getDB()->executeQueryPrepared(
-                'SELECT tao.kAuswahlAssistentGruppe
-                        FROM tauswahlassistentort tao
-                        JOIN tauswahlassistentgruppe  tag
-                            ON tag.kAuswahlAssistentGruppe = tao.kAuswahlAssistentGruppe
-                            AND tag.kSprache = :lang
-                        WHERE tao.cKey = :ckey
-                            AND tao.kKey = :kkey',
-                ['lang' => $kSprache, 'ckey' => $cKey, 'kkey' => $kKey],
-                \DB\ReturnType::SINGLE_OBJECT
-            );
-
-            if (isset($oOrt->kAuswahlAssistentGruppe) && $oOrt->kAuswahlAssistentGruppe > 0) {
-                return new AuswahlAssistentGruppe($oOrt->kAuswahlAssistentGruppe);
-            }
-        }
 
         return false;
     }

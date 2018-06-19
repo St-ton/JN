@@ -702,7 +702,7 @@ class ProductFilterSearchResults implements ProductFilterSearchResultsInterface
         $searchSpecialFilters    = $productFilter->getSearchSpecialFilter()->getOptions();
         $attribtuteFilterOptions = $productFilter->getAttributeFilterCollection()->getOptions([
             'oAktuelleKategorie' => $currentCategory,
-            'bForce'             => $selectionWizard === true && function_exists('starteAuswahlAssistent')
+            'bForce'             => $selectionWizard === true
         ]);
         $searchFilterOptions     = [];
         foreach ($productFilter->getSearchFilter() as $searchFilter) {

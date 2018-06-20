@@ -149,7 +149,7 @@
                 $(e).children('[class*="col-"]').children().responsiveEqualHeightGrid();
             });
             $('.row-eq-height.gallery > [class*="col-"], #product-list .product-wrapper').each(function(i, e) {
-                $(e).height($('div', $(e)).outerHeight());
+                $(e).height($('div', $(e)).outerHeight()).addClass('setHeight');
             });
         },
         

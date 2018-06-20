@@ -206,28 +206,31 @@ switch ((int)$_SESSION['Kampagne']->nAnsicht) {
         $cZeitraum = '01.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'] . ' - ' .
             date('t', mktime(0, 0, 0, (int)$cDatum_arr['cMonat'], 1, (int)$cDatum_arr['cJahr'])) .
             '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'];
+        $bGreaterNow = ((int)$cDatumNow_arr['cMonat'] === (int)$cDatum_arr['cMonat'] &&
+            (int)$cDatumNow_arr['cJahr'] === (int)$cDatum_arr['cJahr']) ? true : false;
         $smarty->assign('cZeitraum', $cZeitraum)
-               ->assign('cZeitraumParam', base64_encode($cZeitraum));
+            ->assign('cZeitraumParam', base64_encode($cZeitraum))
+            ->assign('bGreaterNow', $bGreaterNow);
         break;
     case 2:    // Woche
-        $cDate_arr = ermittleDatumWoche($cDatum_arr['cJahr'] . '-' . $cDatum_arr['cMonat'] . '-' . $cDatum_arr['cTag']);
-        $cZeitraum = date('d.m.Y', $cDate_arr[0]) . ' - ' . date('d.m.Y', $cDate_arr[1]);
+        $cDate_arr   = ermittleDatumWoche($cDatum_arr['cJahr'] . '-' . $cDatum_arr['cMonat'] . '-' . $cDatum_arr['cTag']);
+        $cZeitraum   = date('d.m.Y', $cDate_arr[0]) . ' - ' . date('d.m.Y', $cDate_arr[1]);
+        $bGreaterNow = (date('Y-m-d', $cDate_arr[1]) < $cDatumNow_arr['cDatum']) ? false : true;
         $smarty->assign('cZeitraum', $cZeitraum)
-               ->assign('cZeitraumParam', base64_encode($cZeitraum));
+            ->assign('cZeitraumParam', base64_encode($cZeitraum))
+            ->assign('bGreaterNow', $bGreaterNow);
         break;
     case 3:    // Tag
-        $cZeitraum = $cDatum_arr['cTag'] . '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'];
+        $cZeitraum   = $cDatum_arr['cTag'] . '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'];
+        $bGreaterNow = ((int)$cDatumNow_arr['cTag'] === (int)$cDatum_arr['cTag'] &&
+            (int)$cDatumNow_arr['cMonat'] === (int)$cDatum_arr['cMonat'] &&
+            (int)$cDatumNow_arr['cJahr'] === (int)$cDatum_arr['cJahr']) ? true : false;
         $smarty->assign('cZeitraum', $cZeitraum)
-               ->assign('cZeitraumParam', base64_encode($cZeitraum));
+            ->assign('cZeitraumParam', base64_encode($cZeitraum))
+            ->assign('bGreaterNow', $bGreaterNow);
         break;
 }
 
-if ((int)$cDatumNow_arr['cTag'] === (int)$cDatum_arr['cTag'] &&
-    (int)$cDatumNow_arr['cMonat'] === (int)$cDatum_arr['cMonat'] &&
-    (int)$cDatumNow_arr['cJahr'] === (int)$cDatum_arr['cJahr']
-) {
-    $smarty->assign('nGreaterNow', 1);
-}
 $smarty->assign('PFAD_ADMIN', PFAD_ADMIN)
        ->assign('PFAD_TEMPLATES', PFAD_TEMPLATES)
        ->assign('PFAD_GFX', PFAD_GFX)

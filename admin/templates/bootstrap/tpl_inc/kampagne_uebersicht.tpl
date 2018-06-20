@@ -203,7 +203,7 @@
                     <div class="panel-footer">
                         <div class="btn-group">
                             <a href="kampagne.php?tab=globalestats&nStamp=-1&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-angle-double-left"></i> Fr&uuml;her</a>
-                            {if isset($nGreaterNow) && !$nGreaterNow}
+                            {if isset($bGreaterNow) && !$bGreaterNow}
                                 <a href="kampagne.php?tab=globalestats&nStamp=1&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-angle-double-right"></i> Sp&auml;ter</a>
                             {/if}
                         </div>

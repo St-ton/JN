@@ -58,7 +58,7 @@ class MediaImageRequest
      * @param array|object $mixed
      * @return MediaImageRequest
      */
-    public static function create($mixed)
+    public static function create($mixed): MediaImageRequest
     {
         $new = new self();
 
@@ -68,10 +68,9 @@ class MediaImageRequest
     /**
      * @param array|object      $mixed
      * @param MediaImageRequest $new
-     *
      * @return MediaImageRequest
      */
-    public function copy(&$mixed, MediaImageRequest $new)
+    public function copy(&$mixed, MediaImageRequest $new): MediaImageRequest
     {
         $mixed = (object)$mixed;
         foreach ($mixed as $property => &$value) {
@@ -90,15 +89,15 @@ class MediaImageRequest
     /**
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
-        return (int) $this->id;
+        return (int)$this->id;
     }
 
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         if (empty($this->name)) {
             $this->name = 'image';
@@ -108,7 +107,7 @@ class MediaImageRequest
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getType()
     {
@@ -124,7 +123,7 @@ class MediaImageRequest
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getSizeType()
     {
@@ -181,7 +180,7 @@ class MediaImageRequest
         $path = $this->getPath();
         $path = empty($path) ? null : sprintf('%s%s', self::getStoragePath(), $path);
 
-        return ($path !== null && $absolute === true)
+        return $path !== null && $absolute === true
             ? PFAD_ROOT . $path
             : $path;
     }
@@ -191,16 +190,24 @@ class MediaImageRequest
      * @param bool                  $absolute
      * @return string
      */
-    public function getThumb($size = null, $absolute = false)
+    public function getThumb($size = null, bool $absolute = false): string
     {
-        $size   = $size ?? $this->getSize();
-        $number = $this->getNumber() > 1
+        $size     = $size ?? $this->getSize();
+        $number   = $this->getNumber() > 1
             ? '~' . $this->getNumber()
             : '';
         $settings = Image::getSettings();
         $ext      = $this->ext ?: $settings['format'];
 
-        $thumb = sprintf('%s/%d/%s/%s%s.%s', self::getCachePath($this->getType()), $this->getId(), $size, $this->getName(), $number, $ext);
+        $thumb = sprintf(
+            '%s/%d/%s/%s%s.%s',
+            self::getCachePath($this->getType()),
+            $this->getId(),
+            $size,
+            $this->getName(),
+            $number,
+            $ext
+        );
 
         return $absolute === true
             ? PFAD_ROOT . $thumb
@@ -215,7 +222,12 @@ class MediaImageRequest
     {
         $size = $size ?? $this->getSize();
 
-        return sprintf('%s/%s/%s', rtrim(PFAD_PRODUKTBILDER, '/'), Image::mapSize($size, true), $this->getPath());
+        return sprintf(
+            '%s/%s/%s',
+            rtrim(PFAD_PRODUKTBILDER, '/'),
+            Image::mapSize($size, true),
+            $this->getPath()
+        );
     }
 
     /**
@@ -280,7 +292,6 @@ class MediaImageRequest
 
     /**
      * @param string $type
-     *
      * @return string
      */
     public static function getCachePath(string $type): string

@@ -348,14 +348,30 @@ Iframe.prototype = {
                 this.portletToolbar.show();
                 this.toolbarPopper.reference = elm[0];
                 this.toolbarPopper.update();
-                var offs = elm.offset();
-                this.ctx.scrollTo(offs.left, offs.top - 256);
+                this.scrollIntoView(elm);
             }
 
             this.selectedElm = elm;
         }
 
         this.pagetree.setSelected(this.selectedElm);
+    },
+
+    scrollIntoView: function(elm)
+    {
+        var offsTop    = elm.offset().top;
+        var viewTop    = this.jq(this.ctx).scrollTop();
+        var diffTop    = offsTop - 128 - viewTop;
+        var viewBottom = viewTop + $(this.ctx).height();
+        var diffBottom = offsTop + 128 + elm.height() - viewBottom;
+
+        if(diffTop < 0) {
+            this.ctx.scrollBy(0, diffTop);
+        }
+
+        if(diffBottom > 0) {
+            this.ctx.scrollBy(0, diffBottom);
+        }
     },
 
     setDropTarget: function(elm)

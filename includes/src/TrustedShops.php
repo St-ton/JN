@@ -1096,6 +1096,8 @@ class TrustedShops
             $oZertifikat              = new stdClass();
             $oZertifikat->cWSUser     = null;
             $oZertifikat->cWSPasswort = null;
+
+            return $oZertifikat;
         }
         $oZertifikat->cWSUser     = trim(Shop::Container()->getCryptoService()->decryptXTEA($oZertifikat->cWSUser));
         $oZertifikat->cWSPasswort = trim(Shop::Container()->getCryptoService()->decryptXTEA($oZertifikat->cWSPasswort));

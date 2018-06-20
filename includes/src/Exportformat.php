@@ -213,9 +213,7 @@ class Exportformat
     }
 
     /**
-     * Store the class in the database
-     *
-     * @param bool $bPrim - Controls the return of the method
+     * @param bool $bPrim
      * @return bool|int
      */
     public function save($bPrim = true)
@@ -699,7 +697,7 @@ class Exportformat
         $this->currency = $this->kWaehrung > 0
             ? new Currency($this->kWaehrung)
             : (new Currency())->getDefault();
-        setzeSteuersaetze();
+        TaxHelper::setTaxRates();
         $net       = Shop::Container()->getDB()->select('tkundengruppe', 'kKundengruppe', $this->getKundengruppe());
         $languages = \Functional\map(Shop::Container()->getDB()->query(
             "SELECT * 
@@ -1194,8 +1192,8 @@ class Exportformat
                             $Artikel->cKurzBeschreibung)))
                     )
                 );
-                $Artikel->fUst                  = gibUst($Artikel->kSteuerklasse);
-                $Artikel->Preise->fVKBrutto     = berechneBrutto(
+                $Artikel->fUst                  = TaxHelper::getSalesTax($Artikel->kSteuerklasse);
+                $Artikel->Preise->fVKBrutto     = TaxHelper::getGross(
                     $Artikel->Preise->fVKNetto * $this->currency->getConversionFactor(),
                     $Artikel->fUst
                 );
@@ -1208,14 +1206,14 @@ class Exportformat
                 );
                 // calling gibKategoriepfad() should not be necessary since it has already been called in Kategorie::loadFromDB()
                 $Artikel->Kategoriepfad = $Artikel->Kategorie->cKategoriePfad ?? $helper->getPath($Artikel->Kategorie);
-                $Artikel->Versandkosten = gibGuenstigsteVersandkosten(
+                $Artikel->Versandkosten = VersandartHelper::getLowestShippingFees(
                     $this->config['exportformate_lieferland'] ?? '',
                     $Artikel,
                     0,
                     $this->kKundengruppe
                 );
                 if ($Artikel->Versandkosten !== -1) {
-                    $price = convertCurrency($Artikel->Versandkosten, null, $this->kWaehrung);
+                    $price = Currency::convertCurrency($Artikel->Versandkosten, null, $this->kWaehrung);
                     if ($price !== false) {
                         $Artikel->Versandkosten = $price;
                     }
@@ -1262,7 +1260,7 @@ class Exportformat
                     \DB\ReturnType::DEFAULT
                 );
                 $protocol = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')
-                    || (function_exists('pruefeSSL') && pruefeSSL() === 2))
+                    || RequestHelper::checkSSL() === 2)
                     ? 'https://'
                     : 'http://';
                 if ($isAsync) {

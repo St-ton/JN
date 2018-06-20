@@ -18,14 +18,14 @@ setzeSprache();
 
 // Tabs
 $smarty->assign('cTab', $cStep ?? null);
-if (strlen(verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', verifyGPDataString('tab'));
+if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
 
 // Einstellungen
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $cHinweis .= saveAdminSectionSettings(CONF_KUNDENFELD, $_POST);
-} elseif (isset($_POST['kundenfelder']) && (int)$_POST['kundenfelder'] === 1 && validateToken()) { // Kundenfelder
+} elseif (isset($_POST['kundenfelder']) && (int)$_POST['kundenfelder'] === 1 && FormHelper::validateToken()) { // Kundenfelder
     $success = true;
     if (isset($_POST['loeschen'])) {
         $kKundenfeld_arr = $_POST['kKundenfeld'];
@@ -42,7 +42,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
         } else {
             $cFehler .= "Fehler: Bitte w&auml;hlen Sie mindestens ein Kundenfeld aus.<br />";
         }
-    } elseif (isset($_POST['aktualisieren']) && validateToken()) { // Aktualisieren
+    } elseif (isset($_POST['aktualisieren']) && FormHelper::validateToken()) { // Aktualisieren
         // Kundenfelder auslesen und in Smarty assignen
         foreach ($customerFields->getCustomerFields() as $customerField) {
             $customerField->nSort = (int)$_POST['nSort_' . $customerField->kKundenfeld];
@@ -91,8 +91,8 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
                    ->assign('kKundenfeld', $customerField->kKundenfeld);
         }
     }
-} elseif (verifyGPDataString('a') === 'edit') { // Editieren
-    $kKundenfeld = verifyGPCDataInteger('kKundenfeld');
+} elseif (RequestHelper::verifyGPDataString('a') === 'edit') { // Editieren
+    $kKundenfeld = RequestHelper::verifyGPCDataInt('kKundenfeld');
 
     if ($kKundenfeld > 0) {
         $customerField = $customerFields->getCustomerField($kKundenfeld);
@@ -152,7 +152,7 @@ $smarty->assign('oKundenfeld_arr', $oKundenfeld_arr)
        ->assign('nHighestSortValue', $nHighestSortValue)
        ->assign('nHighestSortDiff', $nHighestSortDiff)
        ->assign('oConfig_arr', $oConfig_arr)
-       ->assign('Sprachen', gibAlleSprachen())
+       ->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->assign('step', $step)

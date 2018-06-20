@@ -6,13 +6,16 @@
 
 namespace Services;
 
+use Boxes\BoxFactoryInterface;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\Services\GcServiceInterface;
 use Exceptions\CircularReferenceException;
 use Exceptions\ServiceNotFoundException;
+use Services\JTL\BoxServiceInterface;
 use Services\JTL\CaptchaServiceInterface;
 use Services\JTL\CryptoServiceInterface;
+use Services\JTL\LinkServiceInterface;
 use Services\JTL\PasswordServiceInterface;
 use Psr\Log\LoggerInterface;
 
@@ -57,6 +60,21 @@ interface DefaultServicesInterface extends ContainerInterface
      * @throws CircularReferenceException
      */
     public function getBackendLogService(): LoggerInterface;
+
+    /**
+     * @return LinkServiceInterface
+     */
+    public function getLinkService(): LinkServiceInterface;
+
+    /**
+     * @return BoxFactoryInterface
+     */
+    public function getBoxFactory(): BoxFactoryInterface;
+
+    /**
+     * @return BoxServiceInterface
+     */
+    public function getBoxService(): BoxServiceInterface;
 
     /**
      * @return CaptchaServiceInterface

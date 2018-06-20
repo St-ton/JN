@@ -12,7 +12,7 @@ abstract class MainModel
     /**
      * @param null|int    $kKey
      * @param null|object $oObj
-     * @param null|array  $xOption
+     * @param null|mixed  $xOption
      */
     public function __construct($kKey = null, $oObj = null, $xOption = null)
     {

@@ -23,13 +23,13 @@ if (!is_writable(PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml')) {
     $cHinweis = '<i>' . PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml</i> wurde erfolgreich aktualisiert.';
 }
 // Tabs
-if (strlen(verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', verifyGPDataString('tab'));
+if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
 
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $cHinweis .= saveAdminSectionSettings(CONF_SITEMAP, $_POST);
-} elseif (verifyGPCDataInteger('download_edit') === 1) { // Sitemap Downloads loeschen
+} elseif (RequestHelper::verifyGPCDataInt('download_edit') === 1) { // Sitemap Downloads loeschen
     $kSitemapTracker_arr = sichereArrayKeys($_POST['kSitemapTracker']);
 
     if (is_array($kSitemapTracker_arr) && count($kSitemapTracker_arr) > 0) {
@@ -41,7 +41,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     }
 
     $cHinweis = 'Ihre markierten Sitemap Downloads wurden erfolgreich gel&ouml;scht.';
-} elseif (verifyGPCDataInteger('report_edit') === 1) { // Sitemap Reports loeschen
+} elseif (RequestHelper::verifyGPCDataInt('report_edit') === 1) { // Sitemap Reports loeschen
     $kSitemapReport_arr = sichereArrayKeys($_POST['kSitemapReport']);
 
     if (is_array($kSitemapReport_arr) && count($kSitemapReport_arr) > 0) {
@@ -55,11 +55,11 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $cHinweis = 'Ihre markierten Sitemap Reports wurden erfolgreich gel&ouml;scht.';
 }
 
-$nYearDownloads = verifyGPCDataInteger('nYear_downloads');
-$nYearReports   = verifyGPCDataInteger('nYear_reports');
+$nYearDownloads = RequestHelper::verifyGPCDataInt('nYear_downloads');
+$nYearReports   = RequestHelper::verifyGPCDataInt('nYear_reports');
 
 // Sitemap Downloads - Jahr löschen
-if (isset($_POST['action']) && $_POST['action'] === 'year_downloads_delete' && validateToken()) {
+if (isset($_POST['action']) && $_POST['action'] === 'year_downloads_delete' && FormHelper::validateToken()) {
     Shop::Container()->getDB()->query(
         "DELETE FROM tsitemaptracker
             WHERE YEAR(tsitemaptracker.dErstellt) = " . $nYearDownloads, 3
@@ -69,7 +69,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'year_downloads_delete' && v
 }
 
 // Sitemap Reports - Jahr löschen
-if (isset($_POST['action']) && $_POST['action'] === 'year_reports_delete' && validateToken()) {
+if (isset($_POST['action']) && $_POST['action'] === 'year_reports_delete' && FormHelper::validateToken()) {
     Shop::Container()->getDB()->query(
         "DELETE FROM tsitemapreport
             WHERE YEAR(tsitemapreport.dErstellt) = " . $nYearReports, 3
@@ -83,7 +83,8 @@ $oSitemapDownloadYears_arr = Shop::Container()->getDB()->query(
     "SELECT YEAR(dErstellt) AS year, COUNT(*) AS count
         FROM tsitemaptracker
         GROUP BY 1
-        ORDER BY 1 DESC", 2
+        ORDER BY 1 DESC",
+    \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 if (!isset($oSitemapDownloadYears_arr) || count($oSitemapDownloadYears_arr) === 0) {
     $oSitemapDownloadYears_arr[] = (object)[
@@ -108,7 +109,8 @@ $oSitemapDownload_arr = Shop::Container()->getDB()->query(
             ON tbesucherbot.kBesucherBot = tsitemaptracker.kBesucherBot
         WHERE YEAR(tsitemaptracker.dErstellt) = " . $nYearDownloads . "
         ORDER BY tsitemaptracker.dErstellt DESC
-        LIMIT " . $oSitemapDownloadPagination->getLimitSQL(), 2
+        LIMIT " . $oSitemapDownloadPagination->getLimitSQL(),
+    \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 
 // Sitemap Reports
@@ -116,7 +118,8 @@ $oSitemapReportYears_arr = Shop::Container()->getDB()->query(
     "SELECT YEAR(dErstellt) AS year, COUNT(*) AS count
         FROM tsitemapreport
         GROUP BY 1
-        ORDER BY 1 DESC", 2
+        ORDER BY 1 DESC",
+    \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 if (!isset($oSitemapReportYears_arr) || count($oSitemapReportYears_arr) === 0) {
     $oSitemapReportYears_arr[] = (object)[
@@ -137,7 +140,8 @@ $oSitemapReport_arr = Shop::Container()->getDB()->query(
         FROM tsitemapreport
         WHERE YEAR(tsitemapreport.dErstellt) = " . $nYearReports . "
         ORDER BY tsitemapreport.dErstellt DESC
-        LIMIT " . $oSitemapReportPagination->getLimitSQL(), 2
+        LIMIT " . $oSitemapReportPagination->getLimitSQL(),
+    \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 
 if (is_array($oSitemapReport_arr) && count($oSitemapReport_arr) > 0) {

@@ -302,11 +302,9 @@ class NetSyncHandler
      */
     public static function create($cClass)
     {
-        if (self::$oInstance === null) {
-            if (class_exists($cClass)) {
-                new $cClass;
-                set_exception_handler([$cClass, 'exception']);
-            }
+        if (self::$oInstance === null && class_exists($cClass)) {
+            new $cClass;
+            set_exception_handler([$cClass, 'exception']);
         }
     }
 
@@ -361,9 +359,9 @@ class NetSyncHandler
      */
     public function streamFile($filename, $mimetype, $outname = '')
     {
-        $HTTP_USER_AGENT = (!empty($_SERVER['HTTP_USER_AGENT']))
-            ? $_SERVER['HTTP_USER_AGENT']
-            : '';
+        $HTTP_USER_AGENT = empty($_SERVER['HTTP_USER_AGENT'])
+            ? ''
+            : $_SERVER['HTTP_USER_AGENT'];
         $browser_agent   = 'other';
         if (preg_match('/^Opera(\/| )([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT) === 1) {
             $browser_agent = 'opera';

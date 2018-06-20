@@ -6,8 +6,6 @@
 
 namespace Services;
 
-use Exceptions\ServiceNotFoundException;
-
 /**
  * Interface ContainerInterface
  */
@@ -31,7 +29,7 @@ interface ContainerInterface extends \Psr\Container\ContainerInterface
     public function setFactory($id, $factory);
 
     /**
-     * @param $id
+     * @param string $id
      * @return callable
      */
     public function getFactoryMethod($id);

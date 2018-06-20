@@ -116,7 +116,7 @@ class ImageStorage
             : null;
 
         if ($httpModifiedSince === $lastModifiedDate || $httpNoneMatch === $tagHash) {
-            header(makeHTTPHeader(304));
+            header(RequestHelper::makeHTTPHeader(304));
             exit;
         }
     }

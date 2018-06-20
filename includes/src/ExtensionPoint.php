@@ -35,26 +35,33 @@ class ExtensionPoint
      * @param int   $kSprache
      * @param int   $kKundengruppe
      */
-    public function __construct($nSeitenTyp, $cParam_arr, $kSprache, $kKundengruppe)
+    public function __construct(int $nSeitenTyp, array $cParam_arr, int $kSprache, int $kKundengruppe)
     {
-        $this->nSeitenTyp    = (int)$nSeitenTyp;
+        $this->nSeitenTyp    = $nSeitenTyp;
         $this->cParam_arr    = $cParam_arr;
-        $this->kSprache      = (int)$kSprache;
-        $this->kKundengruppe = (int)$kKundengruppe;
+        $this->kSprache      = $kSprache;
+        $this->kKundengruppe = $kKundengruppe;
     }
 
     /**
      * @return $this
      */
-    public function load()
+    public function load(): self
     {
         $oKey           = $this->getPageKey();
-        $oExtension_arr = Shop::Container()->getDB()->query(
+        $oExtension_arr = Shop::Container()->getDB()->queryPrepared(
             "SELECT * FROM textensionpoint
-                WHERE (kSprache = '{$this->kSprache}' OR kSprache = 0)
-                AND (kKundengruppe = '{$this->kKundengruppe}' OR kKundengruppe = 0)
-                AND (nSeite = '{$this->nSeitenTyp}' OR nSeite = 0)
-                AND ( (cKey = '{$oKey->cKey}' AND (cValue = '{$oKey->cValue}' OR cValue = '')) OR cValue = '')",
+                WHERE (kSprache = :lid OR kSprache = 0)
+                    AND (kKundengruppe = :cgid OR kKundengruppe = 0)
+                    AND (nSeite = :ptype OR nSeite = 0)
+                    AND ( (cKey = :cky AND (cValue = :cval OR cValue = '')) OR cValue = '')",
+            [
+                'lid'   => $this->kSprache,
+                'cgid'  => $this->kKundengruppe,
+                'ptype' => $this->nSeitenTyp,
+                'cky'   => $oKey->cKey,
+                'cval'  => $oKey->cValue
+            ],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oExtension_arr as $oExtension) {
@@ -75,7 +82,7 @@ class ExtensionPoint
     /**
      * @return stdClass
      */
-    public function getPageKey()
+    public function getPageKey(): stdClass
     {
         $oKey         = new stdClass();
         $oKey->cValue = '';

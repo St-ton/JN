@@ -21,7 +21,7 @@ if (isset($oWaehrung->kWaehrung) && $oWaehrung->kWaehrung > 0) {
 
 if ($bWaehrungsCheck) {
     // Yatego Export
-    if (verifyGPCDataInteger('yatego') === 1) {
+    if (RequestHelper::verifyGPCDataInt('yatego') === 1) {
         // Yatego Export Einstellungen
         if (isset($_POST['einstellungensubmit'])) {
             if (setzeEinstellung($_POST, $oWaehrung->kWaehrung)) {
@@ -36,9 +36,9 @@ if ($bWaehrungsCheck) {
                 $cFehler .= 'Fehler: Das Yatego Exportformat konnte nicht gefunden werden.<br />';
             }
         }
-    } elseif (strlen(verifyGPDataString('rdy')) > 0) { // Export abgeschlossen
+    } elseif (strlen(RequestHelper::verifyGPDataString('rdy')) > 0) { // Export abgeschlossen
         $cHinweis = 'Der Yategoexport hat erfolgreich ' .
-            base64_decode(verifyGPDataString('rdy')) . ' Artikel exportiert.';
+            base64_decode(RequestHelper::verifyGPDataString('rdy')) . ' Artikel exportiert.';
 
         $smarty->assign('cTab', 'export');
     }
@@ -81,9 +81,15 @@ if ($bWaehrungsCheck) {
 
         $smarty->assign('Exportformat', $exportformat)
                ->assign('oConfig_arr', $Conf)
-               ->assign('oSprachen', gibAlleSprachen())
-               ->assign('kundengruppen', Shop::Container()->getDB()->query("SELECT * FROM tkundengruppe ORDER BY cName", 2))
-               ->assign('waehrungen', Shop::Container()->getDB()->query("SELECT * FROM twaehrung ORDER BY cStandard DESC", 2))
+               ->assign('oSprachen', Sprache::getAllLanguages())
+               ->assign('kundengruppen', Shop::Container()->getDB()->query(
+                   'SELECT * FROM tkundengruppe ORDER BY cName', 
+                   \DB\ReturnType::ARRAY_OF_OBJECTS
+               ))
+               ->assign('waehrungen', Shop::Container()->getDB()->query(
+                   'SELECT * FROM twaehrung ORDER BY cStandard DESC', 
+                   \DB\ReturnType::ARRAY_OF_OBJECTS
+               ))
                ->assign('oKampagne_arr', holeAlleKampagnen(false, true));
     }
 }

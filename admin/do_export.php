@@ -8,7 +8,7 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
 
 @ini_set('max_execution_time', 0);
 
-if (!isset($_GET['e']) || !((int)$_GET['e'] > 0) || !validateToken()) {
+if (!isset($_GET['e']) || !((int)$_GET['e'] > 0) || !FormHelper::validateToken()) {
     die('0');
 }
 

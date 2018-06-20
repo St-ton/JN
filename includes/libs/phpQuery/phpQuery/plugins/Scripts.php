@@ -20,7 +20,7 @@ abstract class phpQueryObjectPlugin_Scripts
     /**
      * @var array
      */
-    public static $config = array();
+    public static $config = [];
 
     /**
      * @param $self
@@ -36,9 +36,9 @@ abstract class phpQueryObjectPlugin_Scripts
         if (phpQueryPlugin_Scripts::$scriptMethods[$arg1]) {
             phpQuery::callbackRun(
                 phpQueryPlugin_Scripts::$scriptMethods[$arg1],
-                array($self, $params, &$return, $config)
+                [$self, $params, &$return, $config]
             );
-        } elseif ($arg1 != '__config' && file_exists(dirname(__FILE__)."/Scripts/$arg1.php")) {
+        } elseif ($arg1 !== '__config' && file_exists(dirname(__FILE__)."/Scripts/$arg1.php")) {
             phpQuery::debug("Loading script '$arg1'");
             require dirname(__FILE__)."/Scripts/$arg1.php";
         } else {
@@ -58,7 +58,7 @@ abstract class phpQueryPlugin_Scripts
     /**
      * @var array
      */
-    public static $scriptMethods = array();
+    public static $scriptMethods = [];
 
     /**
      *
@@ -81,7 +81,6 @@ abstract class phpQueryPlugin_Scripts
      *
      * @param $name
      * @param $callback
-     * @return bool
      * @throws Exception
      */
     public static function script($name, $callback)

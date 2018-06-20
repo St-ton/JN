@@ -35,11 +35,6 @@ class AdminTemplate
     private static $helper;
 
     /**
-     * @var object
-     */
-    public $xmlData;
-
-    /**
      * @var string
      */
     public $name;
@@ -75,15 +70,14 @@ class AdminTemplate
     public function __construct()
     {
         self::$helper  = TemplateHelper::getInstance(true);
-        $this->xmlData = self::$helper->getData(self::$cTemplate);
         $this->init();
         self::$instance = $this;
     }
 
     /**
-     * @return AdminTemplate
+     * @return $this
      */
-    public static function getInstance()
+    public static function getInstance(): self
     {
         return self::$instance ?? new self();
     }
@@ -102,7 +96,7 @@ class AdminTemplate
      * @param bool $absolute
      * @return string
      */
-    public function getDir($absolute = false)
+    public function getDir(bool $absolute = false): string
     {
         return $absolute
             ? (PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . self::$cTemplate)
@@ -112,7 +106,7 @@ class AdminTemplate
     /**
      * @return $this
      */
-    public function init()
+    public function init(): self
     {
         $cacheID = 'current_template__admin';
         if (($oTemplate = Shop::Cache()->get($cacheID)) !== false) {
@@ -123,7 +117,7 @@ class AdminTemplate
                 self::$cTemplate = $oTemplate->cTemplate;
                 Shop::Cache()->set($cacheID, $oTemplate, [CACHING_GROUP_TEMPLATE]);
 
-                return $oTemplate->cTemplate;
+                return $this;
             }
             // fall back to admin template "default"
             self::$cTemplate = 'default';
@@ -136,68 +130,68 @@ class AdminTemplate
      * get array of static resources in minify compatible format
      *
      * @param bool $absolute
-     * @return array|mixed
+     * @return array
      */
-    public function getMinifyArray($absolute = false)
+    public function getMinifyArray(bool $absolute = false): array
     {
         $cOrdner   = $this->getDir();
         $folders   = [];
         $folders[] = $cOrdner;
         $cacheID   = 'template_minify_data_adm_' . $cOrdner . (($absolute === true) ? '_a' : '');
         if (($tplGroups_arr = Shop::Cache()->get($cacheID)) === false) {
-            $tplGroups_arr = [];
+            $tplGroups_arr = [
+                'admin_css' => [],
+                'admin_js'  => []
+            ];
             foreach ($folders as $cOrdner) {
                 $oXML = self::$helper->getXML($cOrdner, true);
-                if (isset($oXML->Minify->CSS)) {
-                    /** @var SimpleXMLElement $oCSS */
-                    foreach ($oXML->Minify->CSS as $oCSS) {
-                        $name = (string) $oCSS->attributes()->Name;
-                        if (!isset($tplGroups_arr[$name])) {
-                            $tplGroups_arr[$name] = [];
-                        }
-                        foreach ($oCSS->File as $oFile) {
-                            $cFile     = (string) $oFile->attributes()->Path;
-                            $cFilePath = self::$isAdmin === false
-                                ? PFAD_ROOT . PFAD_TEMPLATES . $oXML->Ordner . '/' . $cFile
-                                : PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $oXML->Ordner . '/' . $cFile;
-                            if (file_exists($cFilePath)) {
-                                $tplGroups_arr[$name][] = ($absolute === true ? PFAD_ROOT : '') .
-                                    (self::$isAdmin === true ? PFAD_ADMIN : '') .
-                                    PFAD_TEMPLATES . $cOrdner . '/' . (string)$oFile->attributes()->Path;
-                                $cCustomFilePath = str_replace('.css', '_custom.css', $cFilePath);
-                                if (file_exists($cCustomFilePath)) {
-                                    $tplGroups_arr[$name][] = str_replace('.css', '_custom.css',
-                                        ($absolute === true ? PFAD_ROOT : '') .
-                                        (self::$isAdmin === true ? PFAD_ADMIN : '') .
-                                        PFAD_TEMPLATES . $cOrdner . '/' . (string)$oFile->attributes()->Path);
-                                }
-                            }
-                        }
-                        // assign custom.css
-                        $cCustomFilePath = PFAD_ROOT . 'templates/' . $oXML->Ordner . '/themes/custom.css';
-                        if (file_exists($cCustomFilePath)) {
-                            $tplGroups_arr[$name][] = (($absolute === true) ? PFAD_ROOT : '') .
-                                (self::$isAdmin === true ? PFAD_ADMIN : '') .
-                                PFAD_TEMPLATES . $cOrdner . '/' . 'themes/custom.css';
-                        }
-                    }
-                } else {
-                    $tplGroups_arr['admin_css'] = [];
+                if ($oXML === null) {
+                    continue;
                 }
-                if (isset($oXML->Minify->JS)) {
-                    foreach ($oXML->Minify->JS as $oJS) {
-                        $name = (string)$oJS->attributes()->Name;
-                        if (!isset($tplGroups_arr[$name])) {
-                            $tplGroups_arr[$name] = [];
-                        }
-                        foreach ($oJS->File as $oFile) {
+                $cssSource = $oXML->Minify->CSS ?? [];
+                $jsSource  = $oXML->Minify->JS ?? [];
+                /** @var SimpleXMLElement $oCSS */
+                foreach ($cssSource as $oCSS) {
+                    $name = (string)$oCSS->attributes()->Name;
+                    if (!isset($tplGroups_arr[$name])) {
+                        $tplGroups_arr[$name] = [];
+                    }
+                    foreach ($oCSS->File as $oFile) {
+                        $cFile     = (string)$oFile->attributes()->Path;
+                        $cFilePath = self::$isAdmin === false
+                            ? PFAD_ROOT . PFAD_TEMPLATES . $oXML->Ordner . '/' . $cFile
+                            : PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $oXML->Ordner . '/' . $cFile;
+                        if (file_exists($cFilePath)) {
                             $tplGroups_arr[$name][] = ($absolute === true ? PFAD_ROOT : '') .
                                 (self::$isAdmin === true ? PFAD_ADMIN : '') .
                                 PFAD_TEMPLATES . $cOrdner . '/' . (string)$oFile->attributes()->Path;
+                            $cCustomFilePath = str_replace('.css', '_custom.css', $cFilePath);
+                            if (file_exists($cCustomFilePath)) {
+                                $tplGroups_arr[$name][] = str_replace('.css', '_custom.css',
+                                    ($absolute === true ? PFAD_ROOT : '') .
+                                    (self::$isAdmin === true ? PFAD_ADMIN : '') .
+                                    PFAD_TEMPLATES . $cOrdner . '/' . (string)$oFile->attributes()->Path);
+                            }
                         }
                     }
-                } else {
-                    $tplGroups_arr['admin_js'] = [];
+                    // assign custom.css
+                    $cCustomFilePath = PFAD_ROOT . 'templates/' . $oXML->Ordner . '/themes/custom.css';
+                    if (file_exists($cCustomFilePath)) {
+                        $tplGroups_arr[$name][] = (($absolute === true) ? PFAD_ROOT : '') .
+                            (self::$isAdmin === true ? PFAD_ADMIN : '') .
+                            PFAD_TEMPLATES . $cOrdner . '/' . 'themes/custom.css';
+                    }
+                }
+                foreach ($jsSource as $oJS) {
+                    $name = (string)$oJS->attributes()->Name;
+                    if (!isset($tplGroups_arr[$name])) {
+                        $tplGroups_arr[$name] = [];
+                    }
+                    foreach ($oJS->File as $oFile) {
+                        $tplGroups_arr[$name][] = ($absolute === true ? PFAD_ROOT : '') .
+                            (self::$isAdmin === true ? PFAD_ADMIN : '') .
+                            PFAD_TEMPLATES . $cOrdner . '/' . (string)$oFile->attributes()->Path;
+                    }
                 }
             }
             $cacheTags = [CACHING_GROUP_OPTION, CACHING_GROUP_TEMPLATE, CACHING_GROUP_PLUGIN];
@@ -216,14 +210,14 @@ class AdminTemplate
      * @param bool $minify - generates absolute links for minify when true
      * @return array - list of js/css resources
      */
-    public function getResources($minify = true)
+    public function getResources(bool $minify = true): array
     {
         self::$isAdmin = true;
         $outputCSS     = '';
         $outputJS      = '';
         $baseURL       = Shop::getURL();
-        $files         = $this->getMinifyArray($minify);
         $version       = Shop::getVersion();
+        $files         = $this->getMinifyArray($minify);
         if ($minify === false) {
             $fileSuffix = '?v=' . $version;
             foreach ($files['admin_js'] as $_file) {

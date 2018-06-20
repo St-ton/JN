@@ -17,19 +17,19 @@ interface PasswordServiceInterface
      * @return string
      * @throws \Exception
      */
-    public function generate($length);
+    public function generate($length): string;
 
     /**
      * @param string $password
      * @return string
      * @throws \Exception
      */
-    public function hash($password);
+    public function hash($password): string;
 
     /**
      * @param string $password
      * @param string $hash
-     * @return mixed
+     * @return string|bool
      * @throws \Exception
      */
     public function verify($password, $hash);
@@ -39,11 +39,11 @@ interface PasswordServiceInterface
      * @return bool
      * @throws \Exception
      */
-    public function needsRehash($hash);
+    public function needsRehash($hash): bool;
 
     /**
-     * @param $hash
+     * @param string $hash
      * @return mixed
      */
-    public function getInfo($hash);
+    public function getInfo($hash): array;
 }

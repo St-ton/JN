@@ -59,9 +59,8 @@ class EigenschaftWert
      *
      * @param int $kEigenschaftWert - Falls angegeben, wird der EigenschaftWert mit angegebenem kEigenschaftWert aus der DB geholt
      */
-    public function __construct($kEigenschaftWert = 0)
+    public function __construct(int $kEigenschaftWert = 0)
     {
-        $kEigenschaftWert = (int)$kEigenschaftWert;
         if ($kEigenschaftWert > 0) {
             $this->loadFromDB($kEigenschaftWert);
         }
@@ -73,9 +72,8 @@ class EigenschaftWert
      * @param int $kEigenschaftWert
      * @return $this
      */
-    public function loadFromDB($kEigenschaftWert)
+    public function loadFromDB(int $kEigenschaftWert): self
     {
-        $kEigenschaftWert = (int)$kEigenschaftWert;
         if ($kEigenschaftWert > 0) {
             $obj = Shop::Container()->getDB()->select('teigenschaftwert', 'kEigenschaftWert', $kEigenschaftWert);
             if (isset($obj->kEigenschaftWert) && $obj->kEigenschaftWert > 0) {
@@ -100,9 +98,9 @@ class EigenschaftWert
      *
      * @return int
      */
-    public function insertInDB()
+    public function insertInDB(): int
     {
-        $obj = kopiereMembers($this);
+        $obj = ObjectHelper::copyMembers($this);
         unset($obj->fAufpreis);
 
         return Shop::Container()->getDB()->insert('teigenschaftwert', $obj);
@@ -113,9 +111,9 @@ class EigenschaftWert
      *
      * @return int
      */
-    public function updateInDB()
+    public function updateInDB(): int
     {
-        $obj = kopiereMembers($this);
+        $obj = ObjectHelper::copyMembers($this);
         unset($obj->fAufpreis);
 
         return Shop::Container()->getDB()->update('teigenschaftwert', 'kEigenschaftWert', $obj->kEigenschaftWert, $obj);
@@ -124,15 +122,11 @@ class EigenschaftWert
     /**
      * setzt Daten aus Sync POST request.
      *
-     * @return bool - true, wenn alle notwendigen Daten vorhanden, sonst false
+     * @return bool
+     * @deprecated since 5.0.0
      */
-    public function setzePostDaten()
+    public function setzePostDaten(): bool
     {
-        $this->kEigenschaftWert = (int)$_POST['KeyEigenschaftWert'];
-        $this->kEigenschaft     = (int)$_POST['KeyEigenschaft'];
-        $this->fAufpreis        = (int)$_POST['Aufpreis'];
-        $this->cName            = StringHandler::htmlentities(StringHandler::filterXSS($_POST['Name']));
-
-        return ($this->kEigenschaftWert > 0 && $this->kEigenschaft > 0);
+        return false;
     }
 }

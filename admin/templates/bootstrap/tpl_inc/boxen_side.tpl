@@ -36,7 +36,7 @@
                                 </div>
                             </div>
                         </li>
-                        {foreach name="box" from=$oBox_arr item=oBox}
+                        {foreach $oBox_arr as $oBox}
                             {include file="tpl_inc/box_single.tpl" oBox=$oBox nPage=$nPage position=$direction}
                         {/foreach}
                         <li class="list-group-item boxSaveRow">

@@ -371,7 +371,12 @@ define('PAGE_404', 36);
 define('PAGE_IO', 37);
 define('PAGE_BESTELLSTATUS', 38);
 define('PAGE_MEDIA', 39);
+define('PAGE_NEWSMONAT', 40);
+define('PAGE_NEWSDETAIL', 41);
+define('PAGE_NEWSKATEGORIE', 42);
+
 // Boxen
+define('BOX_CONTAINER', 0);
 define('BOX_BESTSELLER', 1);
 define('BOX_KATEGORIEN', 2);
 define('BOX_VERGLEICHSLISTE', 3);
@@ -401,6 +406,8 @@ define('BOX_FILTER_BEWERTUNG', 26);
 define('BOX_FILTER_MERKMALE', 27);
 define('BOX_FILTER_SUCHE', 28);
 define('BOX_FILTER_SUCHSPECIAL', 29);
+define('BOX_FILTER_HERSTELLER', 101);
+define('BOX_FILTER_KATEGORIE', 102);
 define('BOX_EIGENE_BOX_OHNE_RAHMEN', 30);
 define('BOX_EIGENE_BOX_MIT_RAHMEN', 31);
 define('BOX_TAGWOLKE', 32);
@@ -488,6 +495,13 @@ define('TEMPLATE_XML', 'template.xml');
 // Seo
 define('SHOP_SEO', true);
 // Sessionspeicherung 1 => DB, sonst => Dateien
-define('ES_SESSIONS', 0);
 // Max Anzahl an Variationswerten für Warenkorbmatrix
 define('ART_MATRIX_MAX', 250);
+
+define('BROWSER_UNKNOWN', 0);
+define('BROWSER_MSIE', 1);
+define('BROWSER_FIREFOX', 2);
+define('BROWSER_CHROME', 3);
+define('BROWSER_SAFARI', 4);
+define('BROWSER_OPERA', 5);
+define('BROWSER_NETSCAPE', 6);

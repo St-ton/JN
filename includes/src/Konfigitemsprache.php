@@ -31,8 +31,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         protected $cBeschreibung = '';
 
         /**
-         * Constructor
-         *
+         * Konfigitemsprache constructor.
          * @param int $kKonfigitem
          * @param int $kSprache
          */
@@ -57,7 +56,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 'kSprache', $kSprache
             );
             if ($oObj !== null && empty($oObj->cName)) {
-                $kSprache         = gibStandardsprache();
+                $kSprache         = Sprache::getDefaultLanguage();
                 $StandardLanguage = Shop::Container()->getDB()->select(
                     'tkonfigitemsprache',
                     'kKonfigitem', $kKonfigitem,
@@ -69,7 +68,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 $oObj->cName      = $StandardLanguage->cName;
             }
             if ($oObj !== null && empty($oObj->cBeschreibung)) {
-                $kSprache            = gibStandardsprache();
+                $kSprache            = Sprache::getDefaultLanguage();
                 $StandardLanguage    = Shop::Container()->getDB()->select(
                     'tkonfigitemsprache',
                     'kKonfigitem', $kKonfigitem,
@@ -90,12 +89,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Store the class in the database
-         *
-         * @param bool $bPrim - Controls the return of the method
+         * @param bool $bPrim
          * @return bool|int
          */
-        public function save($bPrim = true)
+        public function save(bool $bPrim = true)
         {
             $oObj        = new stdClass();
             $cMember_arr = array_keys(get_object_vars($this));
@@ -116,8 +113,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Update the class in the database
-         *
          * @return int
          */
         public function update(): int
@@ -135,8 +130,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Delete the class in the database
-         *
          * @return int
          */
         public function delete(): int

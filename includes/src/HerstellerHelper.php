@@ -20,7 +20,7 @@ class HerstellerHelper
     public $cacheID;
 
     /**
-     * @var array|mixed
+     * @var array
      */
     public $manufacturers;
 
@@ -41,7 +41,7 @@ class HerstellerHelper
             if (Shop::getLanguage() > 0) {
                 self::$langID = Shop::getLanguage();
             } else {
-                $_lang        = gibStandardsprache();
+                $_lang        = Sprache::getDefaultLanguage();
                 self::$langID = (int)$_lang->kSprache;
             }
         }
@@ -52,7 +52,7 @@ class HerstellerHelper
     /**
      * @return HerstellerHelper
      */
-    public static function getInstance()
+    public static function getInstance(): self
     {
         return (self::$_instance === null || Shop::getLanguage() !== self::$langID)
             ? new self()
@@ -60,9 +60,9 @@ class HerstellerHelper
     }
 
     /**
-     * @return array|mixed
+     * @return array
      */
-    public function getManufacturers()
+    public function getManufacturers(): array
     {
         if ($this->manufacturers !== null) {
             return $this->manufacturers;
@@ -70,7 +70,7 @@ class HerstellerHelper
         if (($manufacturers = Shop::Cache()->get($this->cacheID)) === false) {
             $lagerfilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             // fixes for admin backend
-            $manufacturers   = Shop::Container()->getDB()->query(
+            $manufacturers = Shop::Container()->getDB()->query(
                 "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
                         thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
                         therstellersprache.cMetaDescription, therstellersprache.cBeschreibung, tseo.cSeo
@@ -96,9 +96,9 @@ class HerstellerHelper
                     ORDER BY thersteller.nSortNr, thersteller.cName",
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-            $shopURL      = Shop::getURL() . '/';
-            $imageBaseURL = Shop::getImageBaseURL();
-            foreach ($manufacturers as $manufacturer) {
+            $shopURL       = Shop::getURL() . '/';
+            $imageBaseURL  = Shop::getImageBaseURL();
+            foreach ($manufacturers as &$manufacturer) {
                 if (!empty($manufacturer->cBildpfad)) {
                     $manufacturer->cBildpfadKlein  = PFAD_HERSTELLERBILDER_KLEIN . $manufacturer->cBildpfad;
                     $manufacturer->cBildpfadNormal = PFAD_HERSTELLERBILDER_NORMAL . $manufacturer->cBildpfad;
@@ -109,7 +109,10 @@ class HerstellerHelper
                 $manufacturer->cBildURLKlein  = $imageBaseURL . $manufacturer->cBildpfadKlein;
                 $manufacturer->cBildURLNormal = $imageBaseURL . $manufacturer->cBildpfadKlein;
                 $manufacturer->cURLFull       = $shopURL . $manufacturer->cSeo;
+                $instance                     = new Hersteller();
+                $manufacturer                 = $instance->loadFromObject($manufacturer);
             }
+            unset($manufacturer);
             $cacheTags = [CACHING_GROUP_MANUFACTURER, CACHING_GROUP_CORE];
             executeHook(HOOK_GET_MANUFACTURERS, [
                 'cached'        => false,
@@ -131,12 +134,12 @@ class HerstellerHelper
 
     /**
      * @param string        $attribute
-     * @param string        $value
+     * @param string|int    $value
      * @param callable|null $callback
      * @return mixed
      * @since 5.0
      */
-    public static function getDataByAttribute($attribute, $value, callable $callback = null)
+    public static function getDataByAttribute(string $attribute, $value, callable $callback = null)
     {
         $res = Shop::Container()->getDB()->select('thersteller', $attribute, $value);
 
@@ -147,14 +150,14 @@ class HerstellerHelper
 
     /**
      * @param string        $attribute
-     * @param string        $value
+     * @param string|int    $value
      * @param callable|null $callback
      * @return mixed
      * @since 5.0
      */
-    public static function getManufacturerByAttribute($attribute, $value, callable $callback = null)
+    public static function getManufacturerByAttribute(string $attribute, $value, callable $callback = null)
     {
-        $mf  = ($res = self::getDataByAttribute($attribute, $value)) !== null
+        $mf = ($res = self::getDataByAttribute($attribute, $value)) !== null
             ? new Hersteller($res->kHersteller)
             : null;
 

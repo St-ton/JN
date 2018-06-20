@@ -110,14 +110,12 @@ function loescheKonfiggruppe($kKonfiggruppe)
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
         Jtllog::writeLog('Loesche Konfiggruppe: ' . $kKonfiggruppe, JTLLOG_LEVEL_DEBUG, false, 'Konfig_xml');
     }
-    if ($kKonfiggruppe > 0) {
-        if (class_exists('Konfiggruppe')) {
-            // todo: alle items löschen
-            $oKonfig = new Konfiggruppe($kKonfiggruppe);
-            $nRows   = $oKonfig->delete();
-            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog('Rows: ' . $nRows . ' geloescht', JTLLOG_LEVEL_DEBUG, false, 'Konfig_xml');
-            }
+    if ($kKonfiggruppe > 0 && class_exists('Konfiggruppe')) {
+        // todo: alle items löschen
+        $oKonfig = new Konfiggruppe($kKonfiggruppe);
+        $nRows   = $oKonfig->delete();
+        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+            Jtllog::writeLog('Rows: ' . $nRows . ' geloescht', JTLLOG_LEVEL_DEBUG, false, 'Konfig_xml');
         }
     }
 }
@@ -145,13 +143,11 @@ function loescheKonfigitempreis($kKonfigitem)
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
         Jtllog::writeLog('Loesche Konfigitempreis: ' . $kKonfigitem, JTLLOG_LEVEL_DEBUG, false, 'Konfig_xml');
     }
-    if ($kKonfigitem > 0) {
-        if (class_exists('Konfigitempreis')) {
-            $oKonfig = new Konfigitempreis($kKonfigitem);
-            $nRows   = $oKonfig->delete();
-            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog('Rows: ' . $nRows . ' geloescht', JTLLOG_LEVEL_DEBUG, false, 'Konfig_xml');
-            }
+    if ($kKonfigitem > 0 && class_exists('Konfigitempreis')) {
+        $oKonfig = new Konfigitempreis($kKonfigitem);
+        $nRows   = $oKonfig->delete();
+        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+            Jtllog::writeLog('Rows: ' . $nRows . ' geloescht', JTLLOG_LEVEL_DEBUG, false, 'Konfig_xml');
         }
     }
 }

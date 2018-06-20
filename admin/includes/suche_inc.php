@@ -38,7 +38,7 @@ function adminSearch($query, $data = false)
         if (count($groupedSettings) === 0) {
             $result = new IOError('No search results');
         } else {
-            $result = (object)['data' => utf8_convert_recursive($groupedSettings)];
+            $result = (object)['data' => StringHandler::utf8_convert_recursive($groupedSettings)];
         }
     } else {
         Shop::Smarty()->assign('settings', !empty($settings->oEinstellung_arr) ? $groupedSettings : null)

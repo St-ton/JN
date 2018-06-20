@@ -45,7 +45,7 @@ if (isset($_GET['check'])) {
 if (isset($_GET['faviconError'])) {
     $cFehler .= 'Favicon konnten nicht gespeichert werden - bitte Schreibrechte &uumlberpr&uuml;fen.';
 }
-if (isset($_POST['type']) && $_POST['type'] === 'layout' && validateToken()) {
+if (isset($_POST['type']) && $_POST['type'] === 'layout' && FormHelper::validateToken()) {
     $oCSS           = new SimpleCSS();
     $cOrdner        = basename($_POST['ordner']);
     $cCustomCSSFile = $oCSS->getCustomCSSFile($cOrdner);
@@ -78,7 +78,7 @@ if (isset($_POST['type']) && $_POST['type'] === 'layout' && validateToken()) {
         }
     }
 }
-if (isset($_POST['type']) && $_POST['type'] === 'settings' && validateToken()) {
+if (isset($_POST['type']) && $_POST['type'] === 'settings' && FormHelper::validateToken()) {
     $cOrdner      = Shop::Container()->getDB()->escape($_POST['ordner']);
     $parentFolder = null;
     $tplXML       = $oTemplate->leseXML($cOrdner);
@@ -145,7 +145,7 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && validateToken()) {
         PFAD_ADMIN . 'shoptemplate.php?check=' .
         ($bCheck ? 'true' : 'false') . $faviconError, true, 301);
 }
-if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && validateToken()) {
+if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && FormHelper::validateToken()) {
     $cOrdner      = Shop::Container()->getDB()->escape($_GET['settings']);
     $oTpl         = $templateHelper->getData($cOrdner, $admin);
     $tplXML       = $templateHelper->getXML($cOrdner, false);

@@ -34,9 +34,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
          * @param int $kDownload
          * @param int $kSprache
          */
-        public function __construct($kDownload = 0, $kSprache = 0)
+        public function __construct(int $kDownload = 0, int $kSprache = 0)
         {
-            if ((int)$kDownload > 0 && (int)$kSprache > 0) {
+            if ($kDownload > 0 && $kSprache > 0) {
                 $this->loadFromDB($kDownload, $kSprache);
             }
         }
@@ -45,14 +45,14 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
          * @param int $kDownload
          * @param int $kSprache
          */
-        private function loadFromDB($kDownload, $kSprache)
+        private function loadFromDB(int $kDownload, int $kSprache)
         {
             $oDownloadSprache = Shop::Container()->getDB()->select(
                 'tdownloadsprache',
                 'kDownload',
-                (int)$kDownload,
+                $kDownload,
                 'kSprache',
-                (int)$kSprache
+                $kSprache
             );
             if ($oDownloadSprache !== null && (int)$oDownloadSprache->kDownload > 0) {
                 $cMember_arr = array_keys(get_object_vars($oDownloadSprache));
@@ -68,9 +68,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
 
         /**
          * @param bool $bPrimary
-         * @return bool
+         * @return bool|int
          */
-        public function save($bPrimary = false)
+        public function save(bool $bPrimary = false)
         {
             $oObj      = $this->kopiereMembers();
             $kDownload = Shop::Container()->getDB()->insert('tdownloadsprache', $oObj);
@@ -82,9 +82,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         }
 
         /**
-         * @return mixed
+         * @return int
          */
-        public function update()
+        public function update(): int
         {
             $_upd                = new stdClass();
             $_upd->cName         = $this->getName();
@@ -102,9 +102,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
          * @param int $kDownload
          * @return $this
          */
-        public function setDownload($kDownload)
+        public function setDownload(int $kDownload): self
         {
-            $this->kDownload = (int)$kDownload;
+            $this->kDownload = $kDownload;
 
             return $this;
         }
@@ -113,9 +113,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
          * @param int $kSprache
          * @return $this
          */
-        public function setSprache($kSprache)
+        public function setSprache(int $kSprache): self
         {
-            $this->kSprache = (int)$kSprache;
+            $this->kSprache = $kSprache;
 
             return $this;
         }
@@ -124,7 +124,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
          * @param string $cName
          * @return $this
          */
-        public function setName($cName)
+        public function setName($cName): self
         {
             $this->cName = $cName;
 
@@ -135,7 +135,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
          * @param string $cBeschreibung
          * @return $this
          */
-        public function setBeschreibung($cBeschreibung)
+        public function setBeschreibung($cBeschreibung): self
         {
             $this->cBeschreibung = $cBeschreibung;
 
@@ -145,7 +145,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         /**
          * @return int
          */
-        public function getDownload()
+        public function getDownload(): int
         {
             return (int)$this->kDownload;
         }
@@ -153,7 +153,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         /**
          * @return int
          */
-        public function getSprache()
+        public function getSprache(): int
         {
             return (int)$this->kSprache;
         }
@@ -177,7 +177,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         /**
          * @return stdClass
          */
-        private function kopiereMembers()
+        private function kopiereMembers(): stdClass
         {
             $obj         = new stdClass();
             $cMember_arr = array_keys(get_object_vars($this));

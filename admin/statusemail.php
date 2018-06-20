@@ -14,7 +14,7 @@ $cHinweis = '';
 $cFehler  = '';
 $step     = 'statusemail_uebersicht';
 
-if (validateToken()) {
+if (FormHelper::validateToken()) {
     if (isset($_POST['action']) && $_POST['action'] === 'sendnow') {
         sendStatusMail();
     }

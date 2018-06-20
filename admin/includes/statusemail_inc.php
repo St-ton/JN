@@ -10,7 +10,7 @@
 function speicherStatusemailEinstellungen()
 {
     if ((int)$_POST['nAktiv'] === 0
-        || (valid_email($_POST['cEmail'])
+        || (StringHandler::filterEmailAddress($_POST['cEmail']) !== false
             && is_array($_POST['cIntervall_arr'])
             && count($_POST['cIntervall_arr']) > 0
             && is_array($_POST['cInhalt_arr'])
@@ -91,10 +91,10 @@ function ladeStatusemailEinstellungen()
     $oStatusemailEinstellungen->cIntervallMoeglich_arr = gibIntervallMoeglichkeiten();
     $oStatusemailEinstellungen->cInhaltMoeglich_arr    = gibInhaltMoeglichkeiten();
     $oStatusemailEinstellungen->nIntervall_arr         = isset($oStatusemailEinstellungen->cIntervall)
-        ? gibKeyArrayFuerKeyString($oStatusemailEinstellungen->cIntervall, ';')
+        ? StringHandler::parseSSK($oStatusemailEinstellungen->cIntervall)
         : [];
     $oStatusemailEinstellungen->nInhalt_arr            = isset($oStatusemailEinstellungen->cInhalt)
-        ? gibKeyArrayFuerKeyString($oStatusemailEinstellungen->cInhalt, ';')
+        ? StringHandler::parseSSK($oStatusemailEinstellungen->cInhalt)
         : [];
 
     return $oStatusemailEinstellungen;
@@ -1154,8 +1154,6 @@ function isIntervalExceeded($dStart, $cInterval)
  */
 function sendStatusMail()
 {
-    global $smarty;
-
     $oStatusemail                 = Shop::Container()->getDB()->select('tstatusemail', 'nAktiv', 1);
     $oStatusemail->nIntervall_arr = StringHandler::parseSSK($oStatusemail->cIntervall);
     $oStatusemail->nInhalt_arr    = StringHandler::parseSSK($oStatusemail->cInhalt);
@@ -1187,7 +1185,9 @@ function sendStatusMail()
         $oMailObjekt = baueStatusEmail($oStatusemail, $dVon, $dBis);
 
         if ($oMailObjekt) {
-            $oMailObjekt->cIntervall = (JTL_CHARSET !== 'utf-8' ? StringHandler::convertISO($cIntervalAdj) : $cIntervalAdj) . ' Status-Email';
+            $oMailObjekt->cIntervall = (JTL_CHARSET !== 'utf-8'
+                    ? StringHandler::convertISO($cIntervalAdj)
+                    : $cIntervalAdj) . ' Status-Email';
 
             sendeMail(MAILTEMPLATE_STATUSEMAIL, $oMailObjekt, $oMailObjekt->mail);
 

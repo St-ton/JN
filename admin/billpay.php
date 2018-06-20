@@ -14,8 +14,8 @@ $cFehler           = null;
 $cStep             = 'uebersicht';
 /** @global JTLSmarty $smarty */
 $smarty->assign('cTab', $cStep);
-if (strlen(verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', verifyGPDataString('tab'));
+if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
 /** @var Billpay $oBillpay */
 $oBillpay = PaymentMethod::create('za_billpay_jtl');
@@ -110,7 +110,7 @@ $smarty->assign('cFehlerBillpay', $cFehler);
 
 $Conf = Shop::Container()->getDB()->selectAll('teinstellungenconf', ['cModulId', 'cConf'], ['za_billpay_jtl', 'Y'], '*', 'nSort');
 
-if (isset($_POST['einstellungen_bearbeiten']) && validateToken()) {
+if (isset($_POST['einstellungen_bearbeiten']) && FormHelper::validateToken()) {
     foreach ($Conf as $i => $oConfig) {
         unset($aktWert);
         $aktWert = new stdClass();
@@ -141,7 +141,7 @@ if (isset($_POST['einstellungen_bearbeiten']) && validateToken()) {
             Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
         }
     }
-    Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+    Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = now()', \DB\ReturnType::DEFAULT);
     Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
 
     $smarty->assign('saved', true);

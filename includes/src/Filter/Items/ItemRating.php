@@ -11,7 +11,6 @@ use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
 use Filter\FilterInterface;
-use Filter\Type;
 use Filter\ProductFilter;
 
 /**
@@ -39,7 +38,6 @@ class ItemRating extends AbstractFilter
         parent::__construct($productFilter);
         $this->setIsCustom(false)
              ->setUrlParam('bf')
-             ->setUrlParamSEO(null)
              ->setVisibility($this->getConfig()['navigationsfilter']['bewertungsfilter_benutzen'])
              ->setFrontendName(\Shop::Lang()->get('Votes'));
     }

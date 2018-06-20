@@ -96,7 +96,7 @@ class FilterTextField extends FilterField
     /**
      * @return int
      */
-    public function getTestOp()
+    public function getTestOp(): int
     {
         return (int)$this->nTestOp;
     }
@@ -104,15 +104,15 @@ class FilterTextField extends FilterField
     /**
      * @return int
      */
-    public function getDataType()
+    public function getDataType(): int
     {
         return $this->nDataType;
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
-    public function isCustomTestOp()
+    public function isCustomTestOp(): bool
     {
         return $this->bCustomTestOp;
     }

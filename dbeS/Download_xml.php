@@ -113,19 +113,16 @@ function bearbeiteInsert($xml)
 /**
  * @param int $kDownload
  */
-function loescheDownload($kDownload)
+function loescheDownload(int $kDownload)
 {
-    $kDownload = (int)$kDownload;
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
         Jtllog::writeLog('Loesche Download: ' . $kDownload, JTLLOG_LEVEL_DEBUG, false, 'Download_xml');
     }
-    if ($kDownload > 0) {
-        if (class_exists('Download')) {
-            $oDownload = new Download($kDownload);
-            $nRows     = $oDownload->delete();
-            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog('Rows: ' . $nRows . ' geloescht', JTLLOG_LEVEL_DEBUG, false, 'Download_xml');
-            }
+    if ($kDownload > 0 && class_exists('Download')) {
+        $oDownload = new Download($kDownload);
+        $nRows     = $oDownload->delete();
+        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+            Jtllog::writeLog('Rows: ' . $nRows . ' geloescht', JTLLOG_LEVEL_DEBUG, false, 'Download_xml');
         }
     }
 }

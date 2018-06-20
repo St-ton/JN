@@ -116,7 +116,7 @@ class GrafikFont
      *
      * @return bool
      */
-    public function transform()
+    public function transform(): bool
     {
         $bReturn        = false;
         $bCent          = false;
@@ -130,7 +130,7 @@ class GrafikFont
         }
         $strHTML  = '<div class="grafikpreis">';
         $Waehrung = Session::Currency();
-        if (!$Waehrung->kWaehrung) {
+        if (!($Waehrung->getID() > 0)) {
             $Waehrung = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
         }
         $strTrennzeichenCent = $Waehrung->cTrennzeichenCent;

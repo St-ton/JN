@@ -9,8 +9,14 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
  */
 function show_confirmation($bestellung)
 {
-    $einstellungApiKey       = Shop::Container()->getDB()->query("SELECT cWert FROM teinstellungen WHERE cName = 'zahlungsart_safetypay_apikey'", 1);
-    $einstellungSignatureKey = Shop::Container()->getDB()->query("SELECT cWert FROM teinstellungen WHERE cName = 'zahlungsart_safetypay_signaturekey'", 1);
+    $einstellungApiKey       = Shop::Container()->getDB()->query(
+        "SELECT cWert FROM teinstellungen WHERE cName = 'zahlungsart_safetypay_apikey'",
+        \DB\ReturnType::SINGLE_OBJECT
+    );
+    $einstellungSignatureKey = Shop::Container()->getDB()->query(
+        "SELECT cWert FROM teinstellungen WHERE cName = 'zahlungsart_safetypay_signaturekey'",
+        \DB\ReturnType::SINGLE_OBJECT
+    );
     $TransactionData         = null;
 
     define('SAFETYPAY_APIKEY', $einstellungApiKey->cWert);
@@ -19,17 +25,17 @@ function show_confirmation($bestellung)
     require_once __DIR__ . '/class/safetypayProxyAPI.php';
     require_once __DIR__ . '/include/safetypay_functions.php';
 
-    $pLanguageShop          = isset($_REQUEST['languageShop']) ? $_REQUEST['languageShop'] : $_POST['languageShop'];
-    $pCurrency              = isset($_REQUEST['Currency']) ? $_REQUEST['Currency'] : (isset($_POST['Currency']) ? $_POST['Currency'] : '');
-    $pToCurrency            = isset($_REQUEST['slcToCurrency']) ? $_REQUEST['slcToCurrency'] : (isset($_POST['slcToCurrency']) ? $_POST['slcToCurrency'] : '');
-    $pBankID                = isset($_REQUEST['slcBankID']) ? $_REQUEST['slcBankID'] : $_POST['slcBankID'];
-    $txtAmount              = isset($_REQUEST['txtAmount']) ? $_REQUEST['txtAmount'] : (isset($_POST['txtAmount']) ? $_POST['txtAmount'] : '');
-    $pTrackingCode          = isset($_REQUEST['TrackingCode']) ? $_REQUEST['TrackingCode'] : $_POST['TrackingCode'];
-    $pCalculationQuoteRefNo = isset($_REQUEST['CalcQuoteReferenceNo']) ? $_REQUEST['CalcQuoteReferenceNo'] : $_POST['CalcQuoteReferenceNo'];
+    $pLanguageShop          = $_REQUEST['languageShop'] ?? $_POST['languageShop'];
+    $pCurrency              = $_REQUEST['Currency'] ?? ($_POST['Currency'] ?? '');
+    $pToCurrency            = $_REQUEST['slcToCurrency'] ?? ($_POST['slcToCurrency'] ?? '');
+    $pBankID                = $_REQUEST['slcBankID'] ?? $_POST['slcBankID'];
+    $txtAmount              = $_REQUEST['txtAmount'] ?? ($_POST['txtAmount'] ?? '');
+    $pTrackingCode          = $_REQUEST['TrackingCode'] ?? $_POST['TrackingCode'];
+    $pCalculationQuoteRefNo = $_REQUEST['CalcQuoteReferenceNo'] ?? $_POST['CalcQuoteReferenceNo'];
     $pMerchantReferenceNo   = $bestellung->cBestellNr;
-    $pURLPaymentSuccesfully = isset($_REQUEST['URLPaymentSuccesfully']) ? $_REQUEST['URLPaymentSuccesfully'] : $_POST['URLPaymentSuccesfully'];
-    $pURLPaymentFailed      = isset($_REQUEST['URLPaymentFailed']) ? $_REQUEST['URLPaymentFailed'] : $_POST['URLPaymentFailed'];
-    $pSubmit                = isset($_REQUEST['Submit']) ? $_REQUEST['Submit'] : $_POST['Submit'];
+    $pURLPaymentSuccesfully = $_REQUEST['URLPaymentSuccesfully'] ?? $_POST['URLPaymentSuccesfully'];
+    $pURLPaymentFailed      = $_REQUEST['URLPaymentFailed'] ?? $_POST['URLPaymentFailed'];
+    $pSubmit                = $_REQUEST['Submit'] ?? $_POST['Submit'];
 
     // Instance of SafetyPay Proxy Class
     $proxySTP = new SafetyPayProxy();

@@ -1,3 +1,3 @@
-<div class="box box-container" id="sidebox{$oBox->kBox}">
-    {$oBox->innerHTML}
+<div class="box box-container" id="sidebox{$oBox->getID()}">
+    {$oBox->getHTML()}
 </div>

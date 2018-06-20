@@ -9,23 +9,6 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 /** @global AdminAccount $oAccount */
 $oUpdater = new Updater();
 $cFehler  = '';
-
-//Work Around => Update 300 => 308
-if ($oUpdater->getCurrentDatabaseVersion() < 308) {
-    $oAdmin = Shop::Container()->getDB()->query("SELECT * FROM tadminlogin LIMIT 1", 1);
-    if (is_object($oAdmin) && !isset($oAdmin->kAdminlogingruppe)) {
-        Shop::Container()->getDB()->query("ALTER TABLE `tadminlogin` ADD `dLetzterLogin` DATETIME NOT NULL", 3);
-        Shop::Container()->getDB()->query("ALTER TABLE `tadminlogin` CHANGE  `cName`  `cLogin` VARCHAR( 20 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;", 3);
-        Shop::Container()->getDB()->query("ALTER TABLE `tadminlogin` ADD  `cName` VARCHAR( 255 ) NOT NULL AFTER  `cPass` ;", 3);
-        Shop::Container()->getDB()->query("ALTER TABLE `tadminlogin` ADD  `bAktiv` BOOL NOT NULL DEFAULT  '1';", 3);
-        Shop::Container()->getDB()->query("ALTER TABLE `tadminlogin` ADD  `kAdminlogin` INT( 10 ) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST;", 3);
-        Shop::Container()->getDB()->query("ALTER TABLE `tadminlogin` CHANGE  `dLetzterLogin`  `dLetzterLogin` DATETIME NULL;", 3);
-        Shop::Container()->getDB()->query("ALTER TABLE `tadminlogin` ADD  `dGueltigBis` DATETIME NULL AFTER  `dLetzterLogin` ;", 3);
-        Shop::Container()->getDB()->query("ALTER TABLE `tadminlogin` ADD  `cMail` VARCHAR( 255 ) NOT NULL AFTER  `cName` ;", 3);
-        Shop::Container()->getDB()->query("ALTER TABLE `tadminlogin` ADD  `kAdminlogingruppe` INT( 10 ) UNSIGNED NOT NULL AFTER  `cMail` ;", 3);
-        Shop::Container()->getDB()->query("UPDATE `tadminlogin` SET `kAdminlogingruppe`=1;", 3);
-    }
-}
 if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
     $ret['captcha'] = 0;
     $ret['csrf']    = 0;
@@ -36,12 +19,12 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
     if (version_compare(Shop::getShopVersion(), 400, '>=') === true) {
         // Check if template version is new enough for csrf validation
         $tpl = AdminTemplate::getInstance();
-        if ($tpl::$cTemplate === 'bootstrap' && !validateToken()) {
+        if ($tpl::$cTemplate === 'bootstrap' && !FormHelper::validateToken()) {
             $ret['csrf'] = 1;
         }
     }
     $loginName = isset($_POST['benutzer'])
-        ? StringHandler::filterXSS(Shop::DB()->escape($_POST['benutzer']))
+        ? StringHandler::filterXSS(Shop::Container()->getDB()->escape($_POST['benutzer']))
         : '---';
     if ($ret['captcha'] === 0 && $ret['csrf'] === 0) {
         $cLogin  = $_POST['benutzer'];
@@ -180,7 +163,6 @@ function redirectToURI($szURI)
     header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . base64_decode($szURI));
     exit;
 }
-
 
 unset($_SESSION['AdminAccount']->TwoFA_active);
 if ($oAccount->getIsAuthenticated()) {

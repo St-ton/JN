@@ -201,7 +201,7 @@ class MediaImage implements IMedia
             $request  = '/' . ltrim($request, '/');
             $mediaReq = $this->create($request);
 
-            $imgNames = Shop::Container()->getDB()->executeQueryPrepared(
+            $imgNames = Shop::Container()->getDB()->queryPrepared(
                 "SELECT kArtikel, cName, cSeo, cArtNr, cBarcode
                     FROM tartikel AS a
                     WHERE kArtikel = :kArtikel
@@ -209,7 +209,7 @@ class MediaImage implements IMedia
                     FROM tartikelsprache AS asp JOIN tartikel AS a ON asp.kArtikel = a.kArtikel
                     WHERE asp.kArtikel = :kArtikel",
                 ['kArtikel' => (int)$mediaReq->id],
-                2
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
 
             if (count($imgNames) === 0) {
@@ -221,9 +221,12 @@ class MediaImage implements IMedia
 
             foreach ($imgNames as $imgName) {
                 $imgName->imgPath = self::getThumb(
-                    $mediaReq->type, $mediaReq->id, $imgName, $mediaReq->size, $mediaReq->number
+                    $mediaReq->type,
+                    $mediaReq->id,
+                    $imgName,
+                    $mediaReq->size,
+                    $mediaReq->number
                 );
-
                 if ('/' . $imgName->imgPath === $request) {
                     $matchFound = true;
                     $thumbPath  = PFAD_ROOT . $imgName->imgPath;
@@ -251,7 +254,6 @@ class MediaImage implements IMedia
                 self::writeHttp($imanee, true);
             } else {
                 http_response_code(500);
-                // echo $e->getTraceAsString();
             }
         }
         exit;

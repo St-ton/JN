@@ -224,8 +224,6 @@ function sendeMail($ModulId, $Object, $mail = null)
         [(int)$Emailvorlage->kEmailvorlage, (int)$Sprache->kSprache]
     );
     $Emailvorlage->cBetreff = injectSubject($Object, $Emailvorlagesprache->cBetreff ?? null);
-    error_log('betreff: ' . $Emailvorlage->cBetreff);
-
     if (isset($Emailvorlage->oEinstellungAssoc_arr['cEmailSenderName'])) {
         $absender_name = $Emailvorlage->oEinstellungAssoc_arr['cEmailSenderName'];
     }

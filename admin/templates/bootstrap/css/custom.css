@@ -2988,3 +2988,7 @@ h2 .btn-group {
 .logtext {
     max-height: 32em;
 }
+
+.word-break-all {
+    word-break: break-all;
+}

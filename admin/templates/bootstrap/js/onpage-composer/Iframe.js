@@ -348,6 +348,8 @@ Iframe.prototype = {
                 this.portletToolbar.show();
                 this.toolbarPopper.reference = elm[0];
                 this.toolbarPopper.update();
+                var offs = elm.offset();
+                this.ctx.scrollTo(offs.left, offs.top - 256);
             }
 
             this.selectedElm = elm;

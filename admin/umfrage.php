@@ -326,7 +326,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 $cHinweis = 'Ihre markierten Fragen wurden erfolgreich gelöscht.<br>';
             }
             // Bestimmte Antworten loeschen
-            if (is_array($_POST['kUmfrageFrageAntwort']) && count($_POST['kUmfrageFrageAntwort']) > 0) {
+            if (isset($_POST['kUmfrageFrageAntwort']) && is_array($_POST['kUmfrageFrageAntwort']) && count($_POST['kUmfrageFrageAntwort']) > 0) {
                 foreach ($_POST['kUmfrageFrageAntwort'] as $kUmfrageFrageAntwort) {
                     $kUmfrageFrageAntwort = (int)$kUmfrageFrageAntwort;
 

@@ -25,7 +25,8 @@ $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
 $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-
+Shop::dbg($_POST);
+//unset($_SESSION['Umfrage']);
 // Umfrage durchführen
 if (isset($cParameter_arr['kUmfrage']) && $cParameter_arr['kUmfrage'] > 0) {
     $step = 'umfrage_uebersicht';
@@ -36,17 +37,35 @@ if (isset($cParameter_arr['kUmfrage']) && $cParameter_arr['kUmfrage'] > 0) {
         )
         || $Einstellungen['umfrage']['umfrage_einloggen'] === 'N'
     ) {
-        // Umfrage holen
+
+
+//        Shop::dbg($_SESSION['Umfrage'], false, '$_SESSION[\'Umfrage\']:');
+
+
         $oUmfrage = holeAktuelleUmfrage($cParameter_arr['kUmfrage']);
+
+
+        $db = Shop::Container()->getDB();
+
+        $survey = new \Survey\Survey($db, Nice::getInstance(), new \Survey\SurveyQuestionFactory($db));
+        $survey->load($oUmfrage->kUmfrage);
+
+        $controller = new \Survey\Controller($db, $survey, $smarty);
+        $controller->checkAlreadyVoted(Session\Session::Customer()->getID(), $_SESSION['oBesucher']->cID);
+//        Shop::dbg($survey, true, 'survey:');
+
+//        Shop::dbg($_SESSION['oBesucher'], true);
+
         if ($oUmfrage->kUmfrage > 0) {
             if (pruefeUserUmfrage($oUmfrage->kUmfrage, $_SESSION['Kunde']->kKunde, $_SESSION['oBesucher']->cID)) {
                 $step = 'umfrage_durchfuehren';
                 // Auswertung
                 if (isset($_POST['end'])) {
+                    $controller->saveAnswers($_POST);
                     speicherFragenInSession($_POST);
                     if (pruefeEingabe($_POST) > 0) {
                         $cFehler .= Shop::Lang()->get('pollRequired', 'errorMessages') . '<br>';
-                    } elseif ($_SESSION['Umfrage']->nEnde == 0) {
+                    } elseif ($_SESSION['Umfrage']->nEnde === 0) {
                         $step = 'umfrage_ergebnis';
                         executeHook(HOOK_UMFRAGE_PAGE_UMFRAGEERGEBNIS);
                         // Auswertung
@@ -66,6 +85,8 @@ if (isset($cParameter_arr['kUmfrage']) && $cParameter_arr['kUmfrage'] > 0) {
                         $cParameter_arr['kSeite']
                     );
                 }
+                Shop::dbg($step, false, 'step:');
+                Shop::dbg($oUmfrage->oUmfrageFrage_arr, true, '$oUmfrage:');
                 $_SESSION['Umfrage']->kUmfrage = $oUmfrage->kUmfrage;
                 $smarty->assign('oUmfrage', $oUmfrage)
                        ->assign('oNavi_arr', baueSeitenNavi($oUmfrageFrageTMP_arr, $oUmfrage->nAnzahlFragen))

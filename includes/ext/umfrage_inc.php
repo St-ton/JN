@@ -106,6 +106,7 @@ function speicherFragenInSession($cPost_arr)
                 $_SESSION['Umfrage']->oUmfrageFrage_arr[$kUmfrageFrage]->oUmfrageFrageAntwort_arr = $cPost_arr[$kUmfrageFrage];
             }
         }
+        Shop::dbg($_SESSION['Umfrage'], true, 'saved answers:');
     }
 }
 

@@ -625,7 +625,7 @@ function checkSelect(selectBox) {ldelim}
                             <td>
                                 <select id="nFreifeld" name="nFreifeld" class="form-control combo">
                                     <option value="1"{if isset($oUmfrageFrage->nFreifeld) && $oUmfrageFrage->nFreifeld == 1}selected{/if}>Ja</option>
-                                    <option value="0"{if isset($oUmfrageFrage->nFreifeld) && $oUmfrageFrage->nFreifeld == 0}selected{/if}>Nein</option>
+                                    <option value="0"{if !isset($oUmfrageFrage->nFreifeld) || (isset($oUmfrageFrage->nFreifeld) && $oUmfrageFrage->nFreifeld == 0)}selected{/if}>Nein</option>
                                 </select>
                             </td>
                         </tr>
@@ -659,7 +659,7 @@ function checkSelect(selectBox) {ldelim}
                             {foreach name=umfragematrixoption from=$oUmfrageFrage->oUmfrageMatrixOption_arr item=oUmfrageMatrixOption}
                             <input name="kUmfrageMatrixOption[]" type="hidden" value="{$oUmfrageMatrixOption->kUmfrageMatrixOption}" />
                             <tr>
-                                <td>Option {$smarty.foreach.umfragematrixoption.iteration}:<input name="cNameOption[]"  type="text" value="{$oUmfrageMatrixOption->cName}" /> {#umfrageQSort#}: <input name="nSortOption[]"  type="text" value="{$oUmfrageMatrixOption->nSort}" style="width: 40px;"></td>
+                                <td>Option {$smarty.foreach.umfragematrixoption.iteration}:<input name="cNameOption[]" class="form-control" type="text" value="{$oUmfrageMatrixOption->cName}" /> {#umfrageQSort#}: <input name="nSortOption[]"  type="text" value="{$oUmfrageMatrixOption->nSort}" style="width: 40px;"></td>
                             </tr>
                             {/foreach}
                             {/if}

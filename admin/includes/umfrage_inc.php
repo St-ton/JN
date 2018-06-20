@@ -58,7 +58,7 @@ function gibJahrMonatVonDateTime($cDateTimeStr)
  * @param array  $kUmfrageMatrixOption_arr
  * @return stdClass
  */
-function updateAntwortUndOption($kUmfrageFrage, $cTyp, $cNameOption_arr, $cNameAntwort_arr, $nSortAntwort_arr, $nSortOption_arr, $kUmfrageFrageAntwort_arr, $kUmfrageMatrixOption_arr)
+function updateAntwortUndOption($kUmfrageFrage, $cTyp, $cNameOption_arr = [], $cNameAntwort_arr = [], $nSortAntwort_arr = [], $nSortOption_arr = [], $kUmfrageFrageAntwort_arr = [], $kUmfrageMatrixOption_arr = [])
 {
     $oAnzahlAUndOVorhanden                   = new stdClass();
     $oAnzahlAUndOVorhanden->nAnzahlAntworten = count($kUmfrageFrageAntwort_arr);

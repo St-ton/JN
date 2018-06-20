@@ -84,7 +84,7 @@ if (isset($_POST['resetEmailvorlage']) && (int)$_POST['resetEmailvorlage'] === 1
                     WHERE " . $cTableSpracheOriginal . ".kEmailvorlage = " . (int)$_POST['kEmailvorlage'], 4
             );
             $languages = gibAlleSprachen();
-            if (empty(verifyGPCDataInteger('kPlugin'))) {
+            if (verifyGPCDataInteger('kPlugin') === 0) {
                 $vorlage   = Shop::DB()->select('temailvorlageoriginal', 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
                 if (isset($vorlage->cDateiname) && strlen($vorlage->cDateiname) > 0) {
                     foreach ($languages as $_lang) {

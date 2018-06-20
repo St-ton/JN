@@ -8,6 +8,9 @@ namespace Survey;
 
 use DB\DbInterface;
 use DB\ReturnType;
+use function Functional\first;
+use function Functional\map;
+use Tightenco\Collect\Support\Collection;
 
 /**
  * Class SurveyQuestion
@@ -15,6 +18,8 @@ use DB\ReturnType;
  */
 class SurveyQuestion
 {
+    use \MagicCompatibilityTrait;
+
     const TYPE_MULTI = 'multiple_multi';
 
     const TYPE_MULTI_SINGLE = 'multiple_single';
@@ -81,17 +86,29 @@ class SurveyQuestion
     private $db;
 
     /**
+     * @var Collection
+     */
+    private $matrixOptions;
+
+    /**
+     * @var Collection
+     */
+    private $answerOptions;
+
+    /**
      * @var array
      */
     private static $mapping = [
-        'kUmfrageFrage' => 'ID',
-        'kUmfrage'      => 'SurveyID',
-        'cTyp'          => 'Type',
-        'cName'         => 'Name',
-        'cBeschreibung' => 'Description',
-        'nSort'         => 'Sort',
-        'nFreifeld'     => 'FreeField',
-        'nNotwendig'    => 'Required',
+        'kUmfrageFrage'            => 'ID',
+        'kUmfrage'                 => 'SurveyID',
+        'cTyp'                     => 'Type',
+        'cName'                    => 'Name',
+        'cBeschreibung'            => 'Description',
+        'nSort'                    => 'Sort',
+        'nFreifeld'                => 'FreeField',
+        'nNotwendig'               => 'Required',
+        'oUmfrageMatrixOption_arr' => 'MatrixOptions',
+        'oUmfrageFrageAntwort_arr' => 'AnswerOptions',
     ];
 
     /**
@@ -100,16 +117,9 @@ class SurveyQuestion
      */
     public function __construct(DbInterface $db)
     {
-        $this->db = $db;
-    }
-
-    /**
-     * @param string $value
-     * @return string|null
-     */
-    private function getMapping($value)
-    {
-        return self::$mapping[$value] ?? null;
+        $this->db            = $db;
+        $this->matrixOptions = new Collection();
+        $this->answerOptions = new Collection();
     }
 
     /**
@@ -119,10 +129,48 @@ class SurveyQuestion
     public function map(\stdClass $data): self
     {
         foreach (get_object_vars($data) as $var => $value) {
-            if (($mapping = $this->getMapping($var)) !== null) {
+            if (($mapping = self::getMapping($var)) !== null) {
                 $method = 'set' . $mapping;
                 $this->$method($value);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param array $data
+     * @return $this
+     */
+    public function mapGroup(array $data): self
+    {
+        $baseData = first($data);
+        $this->map($baseData);
+        if (!empty($baseData->answerID)) {
+            foreach ($data as $question) {
+                $answer = new AnswerOption();
+                $answer->setID((int)$question->answerID);
+                $answer->setQuestionID((int)$question->kUmfrageFrage);
+                $answer->setSort((int)$question->answerSort);
+                $answer->setName($question->answerName);
+                $this->answerOptions->push($answer);
+            }
+            $this->answerOptions = $this->answerOptions->unique()->sortBy(function (AnswerOption $e) {
+                return $e->getSort();
+            });
+        }
+        if (!empty($baseData->matrixID)) {
+            foreach ($data as $question) {
+                $matrix = new MatrixOption();
+                $matrix->setID((int)$question->matrixID);
+                $matrix->setQuestionID((int)$question->kUmfrageFrage);
+                $matrix->setSort((int)$question->matrixSort);
+                $matrix->setName($question->matrixName);
+                $this->matrixOptions->push($matrix);
+            }
+            $this->matrixOptions = $this->matrixOptions->unique()->sortBy(function (MatrixOption $e) {
+                return $e->getSort();
+            });
         }
 
         return $this;
@@ -135,15 +183,26 @@ class SurveyQuestion
     public function load(int $id): self
     {
         $question = $this->db->queryPrepared(
-            'SELECT * 
+            'SELECT tumfragefrage.*, 
+            tumfragefrageantwort.kUmfrageFrageAntwort AS answerID, 
+            tumfragefrageantwort.cName AS answerName, 
+            tumfragefrageantwort.nSort AS answerSort,
+            tumfragematrixoption.kUmfrageMatrixOption AS matrixID, 
+            tumfragematrixoption.cName AS matrixName, 
+            tumfragematrixoption.nSort AS matrixSort
                 FROM tumfragefrage
-                WHERE kUmfrageFrage = :id',
+                LEFT JOIN tumfragefrageantwort
+                    ON tumfragefrage.kUmfrageFrage = tumfragefrageantwort.kUmfrageFrage
+                LEFT JOIN tumfragematrixoption
+                    ON tumfragefrage.kUmfrageFrage = tumfragematrixoption.kUmfrageFrage
+                WHERE tumfragefrage.kUmfrageFrage = :id',
             ['id' => $id],
-            ReturnType::SINGLE_OBJECT
+            ReturnType::ARRAY_OF_OBJECTS
         );
-        if ($question !== null) {
-            $this->map($question);
-        }
+        $question = map($question, function (\stdClass $e) {
+            return $e->kUmfragefrage;
+        });
+        $this->mapGroup($question);
 
         return $this;
     }
@@ -247,7 +306,15 @@ class SurveyQuestion
     /**
      * @return bool
      */
-    public function isFreeField(): bool
+    public function getFreeField(): bool
+    {
+        return $this->hasFreeField();
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasFreeField(): bool
     {
         return $this->freeField;
     }
@@ -258,6 +325,14 @@ class SurveyQuestion
     public function setFreeField(bool $freeField)
     {
         $this->freeField = $freeField;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getRequired(): bool
+    {
+        return $this->isRequired();
     }
 
     /**
@@ -274,6 +349,38 @@ class SurveyQuestion
     public function setRequired(bool $required)
     {
         $this->required = $required;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getMatrixOptions(): Collection
+    {
+        return $this->matrixOptions;
+    }
+
+    /**
+     * @param Collection $matrixOptions
+     */
+    public function setMatrixOptions(Collection $matrixOptions)
+    {
+        $this->matrixOptions = $matrixOptions;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getAnswerOptions(): Collection
+    {
+        return $this->answerOptions;
+    }
+
+    /**
+     * @param Collection $answerOptions
+     */
+    public function setAnswerOptions(Collection $answerOptions)
+    {
+        $this->answerOptions = $answerOptions;
     }
 
     /**

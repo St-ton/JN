@@ -9,6 +9,7 @@ namespace Survey;
 
 use DB\DbInterface;
 use DB\ReturnType;
+use function Functional\group;
 use Tightenco\Collect\Support\Collection;
 
 /**
@@ -113,20 +114,22 @@ class Survey
      * @var array
      */
     private static $mapping = [
-        'kUmfrage'      => 'ID',
-        'kSprache'      => 'LanguageID',
-        'kKupon'        => 'CouponID',
-        'cKundengruppe' => 'CustomerGroups',
-        'cName'         => 'Name',
-        'cSeo'          => 'URL',
-        'cBeschreibung' => 'Description',
-        'fGuthaben'     => 'Credits',
-        'nBonuspunkte'  => 'BonusCredits',
-        'nAktiv'        => 'IsActive',
-        'dGueltigVon'   => 'ValidFrom',
-        'dGueltigBis'   => 'ValidUntil',
-        'dErstellt'     => 'Created',
-        'nAnzahlFragen' => 'QuestionCount',
+        'kUmfrage'          => 'ID',
+        'kSprache'          => 'LanguageID',
+        'kKupon'            => 'CouponID',
+        'cKundengruppe'     => 'CustomerGroups',
+        'cName'             => 'Name',
+        'cSeo'              => 'URL',
+        'cBeschreibung'     => 'Description',
+        'fGuthaben'         => 'Credits',
+        'nBonuspunkte'      => 'BonusCredits',
+        'nAktiv'            => 'IsActive',
+        'dGueltigVon'       => 'ValidFrom',
+        'dGueltigBis'       => 'ValidUntil',
+        'dGueltigVon_de'    => 'ValidFromFormatted',
+        'dErstellt'         => 'Created',
+        'nAnzahlFragen'     => 'QuestionCount',
+        'oUmfrageFrage_arr' => 'Questions',
     ];
 
     /**
@@ -170,16 +173,36 @@ class Survey
             ['sid' => $id],
             ReturnType::SINGLE_OBJECT
         );
-        if ($survey !== null) {
+        if ($survey !== false) {
             foreach (get_object_vars($survey) as $var => $value) {
                 if (($mapping = self::getMapping($var)) !== null) {
                     $method = 'set' . $mapping;
                     $this->$method($value);
                 }
             }
-            $questions = $this->db->selectAll('tumfragefrage', 'kUmfrage', $this->getID());
-            foreach ($questions as $questionData) {
-                $this->questions->push($this->factory->create()->map($questionData));
+            $questions = $this->db->queryPrepared(
+                'SELECT tumfragefrage.*, 
+                    tumfragefrageantwort.kUmfrageFrageAntwort AS answerID, 
+                    tumfragefrageantwort.cName AS answerName, 
+                    tumfragefrageantwort.nSort AS answerSort,
+                    tumfragematrixoption.kUmfrageMatrixOption AS matrixID, 
+                    tumfragematrixoption.cName AS matrixName, 
+                    tumfragematrixoption.nSort AS matrixSort
+                    FROM tumfragefrage
+                    LEFT JOIN tumfragefrageantwort
+                        ON tumfragefrage.kUmfrageFrage = tumfragefrageantwort.kUmfrageFrage
+                    LEFT JOIN tumfragematrixoption
+                        ON tumfragefrage.kUmfrageFrage = tumfragematrixoption.kUmfrageFrage
+                    WHERE tumfragefrage.kUmfrage = :sid',
+                ['sid' => $this->getID()],
+                ReturnType::ARRAY_OF_OBJECTS
+            );
+            $questions = group($questions, function (\stdClass $e) {
+                return $e->kUmfrageFrage;
+            });
+            foreach ($questions as $questionID => $questionData) {
+                $question = $this->factory->create();
+                $this->questions->push($question->mapGroup($questionData));
             }
         }
 
@@ -448,6 +471,14 @@ class Survey
     {
         $this->questions     = $questions;
         $this->questionCount = $questions->count();
+    }
+
+    /**
+     * @return string
+     */
+    public function getValidFromFormatted(): string
+    {
+        return $this->validFrom->format('d.m.Y');
     }
 
     /**

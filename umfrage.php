@@ -16,6 +16,7 @@ $cCanonicalURL          = '';
 $step                   = 'umfrage_uebersicht';
 $nAktuelleSeite         = 1;
 $oUmfrageFrageTMP_arr   = [];
+$oUmfrage_arr = [];
 $Einstellungen          = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_UMFRAGE]);
 $linkHelper             = Shop::Container()->getLinkService();
 $kLink                  = $linkHelper->getSpecialPageLinkKey(LINKTYP_UMFRAGE);
@@ -25,7 +26,10 @@ $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
 $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-Shop::dbg($_POST);
+
+$db = Shop::Container()->getDB();
+$controller = new \Survey\Controller($db, $smarty);
+//Shop::dbg($_POST);
 //unset($_SESSION['Umfrage']);
 // Umfrage durchführen
 if (isset($cParameter_arr['kUmfrage']) && $cParameter_arr['kUmfrage'] > 0) {
@@ -38,38 +42,23 @@ if (isset($cParameter_arr['kUmfrage']) && $cParameter_arr['kUmfrage'] > 0) {
         || $Einstellungen['umfrage']['umfrage_einloggen'] === 'N'
     ) {
 
-
-//        Shop::dbg($_SESSION['Umfrage'], false, '$_SESSION[\'Umfrage\']:');
-
-
-        $oUmfrage = holeAktuelleUmfrage($cParameter_arr['kUmfrage']);
-
-
-        $db = Shop::Container()->getDB();
-
         $survey = new \Survey\Survey($db, Nice::getInstance(), new \Survey\SurveyQuestionFactory($db));
-        $survey->load($oUmfrage->kUmfrage);
+        $survey->load($cParameter_arr['kUmfrage']);
 
-        $controller = new \Survey\Controller($db, $survey, $smarty);
-        $controller->checkAlreadyVoted(Session\Session::Customer()->getID(), $_SESSION['oBesucher']->cID);
-//        Shop::dbg($survey, true, 'survey:');
+        $controller->setSurvey($survey);
 
-//        Shop::dbg($_SESSION['oBesucher'], true);
-
-        if ($oUmfrage->kUmfrage > 0) {
-            if (pruefeUserUmfrage($oUmfrage->kUmfrage, $_SESSION['Kunde']->kKunde, $_SESSION['oBesucher']->cID)) {
+        if ($survey->getID() > 0) {
+            if ($controller->checkAlreadyVoted(Session\Session::Customer()->getID(), $_SESSION['oBesucher']->cID)) {
                 $step = 'umfrage_durchfuehren';
-                // Auswertung
                 if (isset($_POST['end'])) {
                     $controller->saveAnswers($_POST);
-                    speicherFragenInSession($_POST);
                     if (pruefeEingabe($_POST) > 0) {
                         $cFehler .= Shop::Lang()->get('pollRequired', 'errorMessages') . '<br>';
                     } elseif ($_SESSION['Umfrage']->nEnde === 0) {
                         $step = 'umfrage_ergebnis';
                         executeHook(HOOK_UMFRAGE_PAGE_UMFRAGEERGEBNIS);
                         // Auswertung
-                        bearbeiteUmfrageAuswertung($oUmfrage);
+                        bearbeiteUmfrageAuswertung($survey);
                     } else {
                         $step = 'umfrage_uebersicht';
                     }
@@ -77,19 +66,15 @@ if (isset($cParameter_arr['kUmfrage']) && $cParameter_arr['kUmfrage'] > 0) {
                 if ($step === 'umfrage_durchfuehren') {
                     $oNavi_arr = [];
                     // Durchfuehrung
-                    bearbeiteUmfrageDurchfuehrung(
-                        $cParameter_arr['kUmfrage'],
-                        $oUmfrage,
-                        $oUmfrageFrageTMP_arr,
+                    $oUmfrageFrageTMP_arr = $controller->bearbeiteUmfrageDurchfuehrung(
+                        $survey,
                         $oNavi_arr,
                         $cParameter_arr['kSeite']
                     );
                 }
-                Shop::dbg($step, false, 'step:');
-                Shop::dbg($oUmfrage->oUmfrageFrage_arr, true, '$oUmfrage:');
-                $_SESSION['Umfrage']->kUmfrage = $oUmfrage->kUmfrage;
-                $smarty->assign('oUmfrage', $oUmfrage)
-                       ->assign('oNavi_arr', baueSeitenNavi($oUmfrageFrageTMP_arr, $oUmfrage->nAnzahlFragen))
+                $_SESSION['Umfrage']->kUmfrage = $survey->getID();
+                $smarty->assign('oUmfrage', $survey)
+                       ->assign('oNavi_arr', baueSeitenNavi($oUmfrageFrageTMP_arr, $survey->getQuestionCount()))
                        ->assign('nAktuelleSeite', $cParameter_arr['kSeite'])
                        ->assign('nAnzahlSeiten', bestimmeAnzahlSeiten($oUmfrageFrageTMP_arr));
 
@@ -106,25 +91,20 @@ if (isset($cParameter_arr['kUmfrage']) && $cParameter_arr['kUmfrage'] > 0) {
 }
 
 if ($step === 'umfrage_uebersicht') {
-    // Umfrage Übersicht
-    $oUmfrage_arr = holeUmfrageUebersicht();
-    if (is_array($oUmfrage_arr) && count($oUmfrage_arr) > 0) {
-        foreach ($oUmfrage_arr as $i => $oUmfrage) {
-            $oUmfrage_arr[$i]->cURL = UrlHelper::buildURL($oUmfrage, URLART_UMFRAGE);
-        }
-    } else {
+    $oUmfrage_arr = $controller->getOverview();
+    if (count($oUmfrage_arr) === 0) {
         $cFehler .= Shop::Lang()->get('pollNopoll', 'errorMessages') . '<br />';
     }
     $cCanonicalURL = Shop::getURL() . '/umfrage.php';
 
-    $smarty->assign('oUmfrage_arr', $oUmfrage_arr);
 
     executeHook(HOOK_UMFRAGE_PAGE_UEBERSICHT);
 }
 
 $smarty->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
-       ->assign('step', $step);
+       ->assign('step', $step)
+       ->assign('oUmfrage_arr', $oUmfrage_arr);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 

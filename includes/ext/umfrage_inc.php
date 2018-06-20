@@ -42,7 +42,7 @@ function baueSeitenAnfaenge($oUmfrageFrage_arr)
 }
 
 /**
- * @param array $oUmfrageFrage_arr
+ * @param array|\Tightenco\Collect\Support\Collection $oUmfrageFrage_arr
  * @param int   $nAnzahlFragen
  * @return array
  */
@@ -106,7 +106,6 @@ function speicherFragenInSession($cPost_arr)
                 $_SESSION['Umfrage']->oUmfrageFrage_arr[$kUmfrageFrage]->oUmfrageFrageAntwort_arr = $cPost_arr[$kUmfrageFrage];
             }
         }
-        Shop::dbg($_SESSION['Umfrage'], true, 'saved answers:');
     }
 }
 
@@ -130,15 +129,20 @@ function findeFragenUndUpdateSession($cPost_arr)
 }
 
 /**
- * @param array $oUmfrageFrage_arr
+ * @param \Tightenco\Collect\Support\Collection $oUmfrageFrage_arr
  * @return array
  */
-function findeFragenInSession(array $oUmfrageFrage_arr)
+function findeFragenInSession($oUmfrageFrage_arr)
 {
     $nSessionFragenWerte_arr = [];
     foreach ($oUmfrageFrage_arr as $oUmfrageFrage) {
+        /**
+         * @var \Survey\SurveyQuestion $oUmfrageFrage
+         */
         foreach ($_SESSION['Umfrage']->oUmfrageFrage_arr as $i => $oUmfrageFrageSession) {
-            if ($oUmfrageFrageSession->kUmfrageFrage != $oUmfrageFrage->kUmfrageFrage) {
+            Shop::dbg($oUmfrageFrageSession, true, '$oUmfrageFrageSession:');
+            if ($oUmfrageFrageSession->kUmfrageFrage
+                != $oUmfrageFrage->getID()) {
                 continue;
             }
             if (isset($oUmfrageFrageSession->oUmfrageFrageAntwort_arr)
@@ -545,37 +549,36 @@ function bearbeiteUmfrageAuswertung($oUmfrage)
 
 /**
  * @param int    $kUmfrage
- * @param object $oUmfrage
+ * @param \Survey\Survey $oUmfrage
  * @param array  $oUmfrageFrageTMP_arr
  * @param array  $oNavi_arr
  * @param int    $nAktuelleSeite
  * @return null|void
  */
-function bearbeiteUmfrageDurchfuehrung($kUmfrage, $oUmfrage, &$oUmfrageFrageTMP_arr, &$oNavi_arr, &$nAktuelleSeite)
+function bearbeiteUmfrageDurchfuehrung(int $kUmfrage, $oUmfrage, &$oUmfrageFrageTMP_arr, &$oNavi_arr, &$nAktuelleSeite)
 {
     // Modulprüfung
     $oNice = Nice::getInstance();
     if (!$oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE) || !$kUmfrage || !isset($oUmfrage->kUmfrage)) {
         return;
     }
-    $kUmfrage = (int)$kUmfrage;
     // Ersten Trenner suchen
-    $oUmfrageFrageTMP_arr = Shop::Container()->getDB()->selectAll('tumfragefrage', 'kUmfrage', $kUmfrage, '*', 'nSort');
-
-    $oNavi_arr      = baueSeitenNavi($oUmfrageFrageTMP_arr, $oUmfrage->nAnzahlFragen);
+    $oUmfrageFrageTMP_arr = $oUmfrage->getQuestions();
+    $oNavi_arr      = baueSeitenNavi($oUmfrageFrageTMP_arr, $oUmfrage->getQuestionCount());
     $cSQL           = '';
     $nAktuelleSeite = 1;
 
     if (RequestHelper::verifyGPCDataInt('s') === 0) {
         unset($_SESSION['Umfrage']);
         $_SESSION['Umfrage']                    = new stdClass();
-        $_SESSION['Umfrage']->kUmfrage          = $oUmfrage->kUmfrage;
+        $_SESSION['Umfrage']->kUmfrage          = $oUmfrage->getID();
         $_SESSION['Umfrage']->oUmfrageFrage_arr = [];
         $_SESSION['Umfrage']->nEnde             = 0;
 
         // Speicher alle Fragen in Session
         if (is_array($oUmfrageFrageTMP_arr) && count($oUmfrageFrageTMP_arr) > 0) {
             foreach ($oUmfrageFrageTMP_arr as $oUmfrageFrageTMP) {
+                Shop::dbg($oUmfrageFrageTMP, false, 'adding to session:');
                 $_SESSION['Umfrage']->oUmfrageFrage_arr[$oUmfrageFrageTMP->kUmfrageFrage] = $oUmfrageFrageTMP;
             }
         }
@@ -629,6 +632,5 @@ function bearbeiteUmfrageDurchfuehrung($kUmfrage, $oUmfrage, &$oUmfrageFrageTMP_
         }
     }
 
-    $oUmfrage->oUmfrageFrage_arr = $oUmfrageFrage_arr;
-    Shop::Smarty()->assign('nSessionFragenWerte_arr', findeFragenInSession($oUmfrageFrage_arr));
+    Shop::Smarty()->assign('nSessionFragenWerte_arr', findeFragenInSession($oUmfrage->getQuestions()));
 }

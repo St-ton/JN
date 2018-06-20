@@ -23,7 +23,7 @@
 class Migration_20180615084957 extends Migration implements IMigration
 {
     protected $author = 'Clemens Rudolph';
-    protected $description = 'remove un-used settings completely';
+    protected $description = 'remove unused settings completely';
 
     public function up()
     {

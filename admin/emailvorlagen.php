@@ -90,7 +90,7 @@ if (isset($_POST['resetEmailvorlage'])
             \DB\ReturnType::DEFAULT
         );
         $languages = Sprache::getAllLanguages();
-        if (empty(RequestHelper::verifyGPCDataInt('kPlugin'))) {
+        if (RequestHelper::verifyGPCDataInt('kPlugin') === 0) {
             $vorlage   = Shop::Container()->getDB()->select('temailvorlageoriginal', 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
             if (isset($vorlage->cDateiname) && strlen($vorlage->cDateiname) > 0) {
                 foreach ($languages as $_lang) {

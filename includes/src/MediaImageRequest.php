@@ -32,7 +32,7 @@ class MediaImageRequest
     /**
      * @var int
      */
-    public $number;
+    public $number = 1;
 
     /**
      * @var int
@@ -56,7 +56,6 @@ class MediaImageRequest
 
     /**
      * @param array|object $mixed
-     *
      * @return MediaImageRequest
      */
     public static function create($mixed)
@@ -80,6 +79,9 @@ class MediaImageRequest
             unset($mixed->$property);
         }
         unset($value);
+        if (!empty($new->number)) {
+            $new->number = 1;
+        }
         $mixed = null;
 
         return $new;

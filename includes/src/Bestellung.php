@@ -664,7 +664,7 @@ class Bestellung
         $this->fGesamtsummeKundenwaehrung = WarenkorbHelper::roundOptional($this->fWarensummeKundenwaehrung + $this->fVersandKundenwaehrung);
 
         $oData       = new stdClass();
-        $oData->cPLZ = $this->oRechnungsadresse->cPLZ ?? $this->Lieferadresse->cPLZ;
+        $oData->cPLZ = $this->oRechnungsadresse->cPLZ ?? ($this->Lieferadresse->cPLZ ?? '');
         $this->oLieferschein_arr = [];
         if ((int)$this->kBestellung > 0) {
             $kLieferschein_arr = Shop::Container()->getDB()->selectAll(

@@ -23,7 +23,7 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">{$oUmfrageFrage->cName} {if $oUmfrageFrage->nNotwendig == 1} *{/if}</h3>
                     </div>
-                    <div class="panel-body">
+                    <div class="panel-body form-group">
                         {if $oUmfrageFrage->cBeschreibung}
                             <p>{$oUmfrageFrage->cBeschreibung}</p>
                             <hr>

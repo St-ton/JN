@@ -6,8 +6,15 @@
 
 namespace OPC;
 
+/**
+ * Trait PortletAnimations
+ * @package OPC
+ */
 trait PortletAnimations
 {
+    /**
+     * @return array
+     */
     public function getAnimationsPropertyDesc()
     {
         return [

@@ -9,6 +9,10 @@ namespace OPC;
 use Filter\AbstractFilter;
 use Filter\Type;
 
+/**
+ * Class Service
+ * @package OPC
+ */
 class Service
 {
     /**

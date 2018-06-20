@@ -6,8 +6,15 @@
 
 namespace OPC;
 
+/**
+ * Trait PortletStyles
+ * @package OPC
+ */
 trait PortletStyles
 {
+    /**
+     * @return array
+     */
     public function getStylesPropertyDesc()
     {
         return [

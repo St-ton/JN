@@ -6,6 +6,10 @@
 
 namespace OPC;
 
+/**
+ * Class PortletInstance
+ * @package OPC
+ */
 class PortletInstance implements \JsonSerializable
 {
     /**

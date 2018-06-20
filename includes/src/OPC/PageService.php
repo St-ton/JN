@@ -6,6 +6,10 @@
 
 namespace OPC;
 
+/**
+ * Class PageService
+ * @package OPC
+ */
 class PageService
 {
     /**

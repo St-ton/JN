@@ -6,6 +6,10 @@
 
 namespace OPC;
 
+/**
+ * Class Blueprint
+ * @package OPC
+ */
 class Blueprint implements \JsonSerializable
 {
     /**

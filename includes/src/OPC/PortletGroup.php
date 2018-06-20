@@ -6,6 +6,10 @@
 
 namespace OPC;
 
+/**
+ * Class PortletGroup
+ * @package OPC
+ */
 class PortletGroup
 {
     /**

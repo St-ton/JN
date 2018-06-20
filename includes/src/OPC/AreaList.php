@@ -6,6 +6,10 @@
 
 namespace OPC;
 
+/**
+ * Class AreaList
+ * @package OPC
+ */
 class AreaList implements \JsonSerializable
 {
     /**

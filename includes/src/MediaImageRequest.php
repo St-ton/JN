@@ -78,7 +78,7 @@ class MediaImageRequest
             unset($mixed->$property);
         }
         unset($value);
-        if (!empty($new->number)) {
+        if (empty($new->number)) {
             $new->number = 1;
         }
         $mixed = null;

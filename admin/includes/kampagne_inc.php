@@ -910,7 +910,7 @@ function gibDetailDatumZeitraum()
             $nTMPStamp       = $nFromStamp;
             while ($nTMPStamp <= $nToStamp) {
                 $nDatumWoche_arr               = ermittleDatumWoche(date('Y-m-d', $nTMPStamp));
-                $cZeitraum_arr['cDatum'][]     = date('W', $nTMPStamp);
+                $cZeitraum_arr['cDatum'][]     = date('Y-W', $nTMPStamp);
                 $cZeitraum_arr['cDatumFull'][] = date('d.m.Y', $nDatumWoche_arr[0]) . ' - ' . date('d.m.Y', $nDatumWoche_arr[1]);
                 $nAnzahlTageProMonat           = date('t', $nTMPStamp);
 

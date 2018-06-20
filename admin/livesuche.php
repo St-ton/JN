@@ -271,12 +271,41 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                             $suchanfragemapping_obj->nAnzahlGesuche = $Suchanfrageerfolglos->nAnzahlGesuche;
 
                             $oAlteSuche = Shop::Container()->getDB()->select('tsuchanfrageerfolglos', 'cSuche', $suchanfragemapping_obj->cSuche);
-                            if (isset($oAlteSuche->kSuchanfrageErfolglos) && $oAlteSuche->kSuchanfrageErfolglos > 0) {
-                                Shop::Container()->getDB()->insert('tsuchanfragemapping', $suchanfragemapping_obj);
-                                Shop::Container()->getDB()->delete('tsuchanfrageerfolglos', 'kSuchanfrageErfolglos', (int)$oAlteSuche->kSuchanfrageErfolglos);
 
-                                $hinweis .= 'Die Suchanfrage "' . $suchanfragemapping_obj->cSuche .
-                                    '" wurde erfolgreich auf "' . $suchanfragemapping_obj->cSucheNeu . '" gemappt.<br />';
+                            //check if loops would be created with mapping
+                            $bIsLoop = false;
+                            $sSearchMappingTMP = $suchanfragemapping_obj->cSucheNeu;
+                            while (!empty($sSearchMappingTMP)) {
+                                if($sSearchMappingTMP === $suchanfragemapping_obj->cSuche) {
+                                    $bIsLoop = true;
+                                    break;
+                                }
+                                $oSearchMappingNextTMP = \Shop::Container()->getDB()->select(
+                                    'tsuchanfragemapping',
+                                    'kSprache',
+                                    $_SESSION['kSprache'],
+                                    'cSuche',
+                                    $sSearchMappingTMP
+                                );
+                                if (!empty($oSearchMappingNextTMP->cSucheNeu)) {
+                                    $sSearchMappingTMP = $oSearchMappingNextTMP->cSucheNeu;
+                                } else {
+                                    $sSearchMappingTMP = null;
+                                }
+                            }
+
+                            if(!$bIsLoop) {
+                                if (isset($oAlteSuche->kSuchanfrageErfolglos) && $oAlteSuche->kSuchanfrageErfolglos > 0) {
+                                    $oCheckMapping = Shop::Container()->getDB()->select('tsuchanfrageerfolglos', 'cSuche', $suchanfragemapping_obj->cSuche);
+                                    Shop::Container()->getDB()->insert('tsuchanfragemapping', $suchanfragemapping_obj);
+                                    Shop::Container()->getDB()->delete('tsuchanfrageerfolglos', 'kSuchanfrageErfolglos', (int)$oAlteSuche->kSuchanfrageErfolglos);
+
+                                    $hinweis .= 'Die Suchanfrage "' . $suchanfragemapping_obj->cSuche .
+                                        '" wurde erfolgreich auf "' . $suchanfragemapping_obj->cSucheNeu . '" gemappt.<br />';
+                                }
+                            } else {
+                                $fehler .= 'Das Mapping von "' . $suchanfragemapping_obj->cSuche .
+                                    '" auf "'. $suchanfragemapping_obj->cSucheNeu . '" w&uuml;rde eine Schleife verursachen.<br />';
                             }
                         }
                     } else {

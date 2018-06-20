@@ -259,7 +259,7 @@ function getShippingByName($cSearch)
 /**
  * @param array $shipClasses
  * @param int   $length
- * @return array $missingShippingClassCombi
+ * @return array $possibleShippingClassCombi
  */
 function getCombinations($base,$n){
     $baselen = count($base);

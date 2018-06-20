@@ -329,10 +329,33 @@
                     </ul>
                 </div>
                 <div class="panel-footer">
-                    <button id="addNewShippingClassCombi" class="btn btn-success" type="button"
-                            onclick="addShippingCombination();$('.select2').select2();">
-                        <span class="glyphicon glyphicon-plus"></span> {#addShippingClass#}
-                    </button>
+                    <div class="btn-group" role="group">
+                        <button id="addNewShippingClassCombi" class="btn btn-success" type="button"
+                                onclick="addShippingCombination();$('.select2').select2();">
+                            <span class="glyphicon glyphicon-plus"></span> {#addShippingClass#}
+                        </button>
+                        {if !empty($missingShippingClassCombi)}
+                        <button class="btn btn-warning" type="button" data-toggle="collapse" data-target="#collapseShippingClasses" aria-expanded="false" aria-controls="collapseShippingClasses">
+                            {#showMissingCombinations#}
+                        </button>
+                        {/if}
+                    </div>
+                    {if !empty($missingShippingClassCombi)}
+                    <div class="collapse" id="collapseShippingClasses">
+                        <div class="row">
+                            {if $missingShippingClassCombi === -1}
+                                <div class="col-xs-12">
+                                    {#coverageShippingClassCombination#}
+                                    {#noShipClassCombiValidation#|replace:'%s':$smarty.const.SHIP_CLASS_MAX_VALIDATION_COUNT}
+                                </div>
+                            {else}
+                                {foreach $missingShippingClassCombi as $mscc}
+                                    <div class="col-xs-12 col-sm-6">[{$mscc}]</div>
+                                {/foreach}
+                            {/if}
+                        </div>
+                    </div>
+                    {/if}
                 </div>
             </div>
 

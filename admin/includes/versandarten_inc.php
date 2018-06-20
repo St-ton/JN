@@ -258,6 +258,7 @@ function getShippingByName($cSearch)
 
 /**
  * @param array $shipClasses
+ * @param int   $length
  * @return array $missingShippingClassCombi
  */
 function getCombinations($base,$n){
@@ -302,7 +303,7 @@ function getCombinations($base,$n){
 }
 
 /**
- * @return array $missingShippingClassCombi
+ * @return array|int $missingShippingClassCombi, -1 if too many shipping classes exist
  */
 function getMissingShippingClassCombi()
 {
@@ -318,27 +319,25 @@ function getMissingShippingClassCombi()
         $vk = trim($com->cVersandklassen);
         $vk_arr = explode(' ',$vk);
         if (is_array($vk_arr)) {
-            Shop::dbg($vk_arr);
             foreach ($vk_arr as $_vk) {
                 $combinationInUse[] = trim($_vk);
             }
         } else {
-
             $combinationInUse[] = trim($com->cVersandklassen);
         }
-
     }
 
-    Shop::dbg($combinationInUse,false,'combInUse');
-    if (false && in_array('-1',$combinationInUse)) {
+    // if a shipping method is valid for all classes return
+    if (in_array('-1',$combinationInUse)) {
 
         return [];
     }
 
-    $shipClasses = [1,2,3,4];
-
-    Shop::dbg($shipClasses,false,'shipClasses');
     $len = count($shipClasses);
+    if ($len > SHIP_CLASS_MAX_VALIDATION_COUNT) {
+
+        return -1;
+    }
     $possibleShippingClassCombinations = [];
     for($i = 1; $i<=$len; $i++){
         $result = getCombinations($shipClasses,$i);
@@ -346,6 +345,10 @@ function getMissingShippingClassCombi()
             $possibleShippingClassCombinations[]= implode("-",$c);
         }
     }
+    $res = array_diff($possibleShippingClassCombinations,$combinationInUse);
+    foreach ($res as &$mscc) {
+        $mscc = gibGesetzteVersandklassenUebersicht($mscc)[0];
+    }
 
-    return array_diff($possibleShippingClassCombinations,$combinationInUse);
+    return $res;
 }

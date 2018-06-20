@@ -45,6 +45,7 @@ if (isset($_POST['edit']) && (int)$_POST['edit'] > 0 && validateToken()) {
     $smarty->assign('VersandartZahlungsarten', reorganizeObjectArray($VersandartZahlungsarten, 'kZahlungsart'))
            ->assign('VersandartStaffeln', $VersandartStaffeln)
            ->assign('Versandart', $Versandart)
+           ->assign('missingShippingClassCombi', getMissingShippingClassCombi())
            ->assign('gewaehlteLaender', explode(' ', $Versandart->cLaender));
 }
 
@@ -470,6 +471,7 @@ if ($step === 'neue Versandart') {
            ->assign('gesetzteVersandklassen', isset($Versandart->cVersandklassen)
                ? gibGesetzteVersandklassen($Versandart->cVersandklassen)
                : null)
+           ->assign('missingShippingClassCombi', getMissingShippingClassCombi())
            ->assign('gesetzteKundengruppen', isset($Versandart->cKundengruppen)
                ? gibGesetzteKundengruppen($Versandart->cKundengruppen)
                : null);
@@ -589,21 +591,11 @@ if ($step === 'uebersicht') {
         }
     }
 
-    Shop::dbg('header');
     $missingShippingClassCombis = getMissingShippingClassCombi();
-    Shop::dbg($missingShippingClassCombis, false, 'missing combis');
     if (!empty($missingShippingClassCombis)) {
-        $cFehler .= '<p>Es sind nicht alle Versandklassenkombination von den Versandarten abgedeckt.</p>
-                        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseShippingClasses" aria-expanded="false" aria-controls="collapseShippingClasses">
-                            Fehlende Klassen anzeigen
-                        </button>
-                        <div class="collapse" id="collapseShippingClasses"><div class="row">';
-        foreach ($missingShippingClassCombis as $mscc) {
-            $cFehler .= '<div class="col-xs-12 col-sm-6">['. gibGesetzteVersandklassenUebersicht($mscc)[0].']</div>';
-        }
-        $cFehler .= '</div></div>';
+        $cFehler .= $smarty->assign('missingShippingClassCombis', $missingShippingClassCombis)
+                           ->fetch('tpl_inc/versandarten_fehlende_kombis.tpl');
     }
-
 
     $smarty->assign('versandberechnungen', $versandberechnungen)
            ->assign('versandarten', $versandarten)

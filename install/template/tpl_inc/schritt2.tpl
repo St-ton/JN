@@ -19,7 +19,7 @@
     </div>
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title">Onlineshop-Einstellungen in JTL-Wawi eintragen</h3>
+            <h3 class="panel-title">Onlineshop-Anbindung in JTL-Wawi eintragen</h3>
         </div>
         <div class="panel-body">
             <p>Tragen Sie nun die nachfolgenden Daten im Men&uuml; <code>Onlineshop -&gt; Onlineshop-Anbindung</code> der JTL-Wawi ein.</p>

@@ -53,7 +53,7 @@
         <div class="panel-body">
             <p class="well">
                 Für die Synchronisation zwischen JTL-Wawi und JTL-Shop wird ein Synchronisations-Benutzer benötigt.<br>
-                Diese Daten werden in den Onlineshop-Einstellungen der JTL-Wawi eingetragen (Näheres dazu im nächsten Schritt).
+                Diese Daten werden in der Onlineshop-Anbindung der JTL-Wawi eingetragen (Näheres dazu im nächsten Schritt).
             </p>
 
             <div class="col-xs-12">

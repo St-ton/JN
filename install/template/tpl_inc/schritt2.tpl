@@ -19,10 +19,10 @@
     </div>
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title">Webshop-Einstellungen in JTL-Wawi eintragen</h3>
+            <h3 class="panel-title">Onlineshop-Einstellungen in JTL-Wawi eintragen</h3>
         </div>
         <div class="panel-body">
-            <p>Tragen Sie nun die nachfolgenden Daten im Men&uuml; <code>Webshop -&gt; Webshop-Einstellungen</code> der JTL-Wawi ein.</p>
+            <p>Tragen Sie nun die nachfolgenden Daten im Men&uuml; <code>Onlineshop -&gt; Onlineshop-Anbindung</code> der JTL-Wawi ein.</p>
 
             <table class="table table-bordered">
                 <tr>
@@ -33,7 +33,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><strong>Webshop-URL</strong></td>
+                    <td><strong>Onlineshop-URL</strong></td>
                     <td>{$URL_SHOP}</td>
                 <tr>
                     <td><strong>Sync-Benutzer</strong></td>

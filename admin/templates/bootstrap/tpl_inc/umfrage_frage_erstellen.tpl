@@ -31,7 +31,7 @@ function addInputRow() {ldelim}
 
     label2 = document.createElement('label');
     label2.setAttribute('for', 'nSortAntwort_' + i);
-    label2.innerHTML = '  {#umfrageQSort#}: ';
+    label2.innerHTML = '  {#umfrageQSort#}';
     label2.style.paddingLeft = '5px';
     label2.style.paddingRight = '5px';
 
@@ -46,11 +46,18 @@ function addInputRow() {ldelim}
 {rdelim}
 
 function addInputRowOption() {ldelim}
-    var row, cell_1, input1, input2, myTex1, myText2, paragraph;
+    var row, cell_1, input1, input2, myTex1, myText2, paragraph, label1, label2;
     row = document.getElementById('formtableOption').insertRow(im);
     row.id = im;
 
     cell_1 = row.insertCell(0);
+
+    label1 = document.createElement('label');
+    label2 = document.createElement('label');
+    label1.for = 'cNameOption_' + im;
+    label1.style = 'padding-right: 5px;';
+    label2.for = 'cSortOption_' + im;
+    label2.style = 'padding-left: 5px; padding-right: 5px;';
 
     paragraph = document.createElement('p');
     paragraph.className = 'form-inline';
@@ -68,13 +75,16 @@ function addInputRowOption() {ldelim}
     input2.id = 'nSortOption_' + im;
     input2.style.width = '40px';
 
-    myText1 = document.createTextNode('Option ' + im + ':');
-    myText2 = document.createTextNode('  {#umfrageQSort#}:');
+    myText1 = document.createTextNode('Option ' + im);
+    myText2 = document.createTextNode('  {#umfrageQSort#}');
 
-    paragraph.appendChild(myText1);
+    label1.appendChild(myText1);
+    label2.appendChild(myText2);
+
+    paragraph.appendChild(label1);
     paragraph.appendChild(input1);
 
-    paragraph.appendChild(myText2);
+    paragraph.appendChild(label2);
     paragraph.appendChild(input2);
 
     cell_1.appendChild(paragraph);
@@ -84,7 +94,7 @@ function addInputRowOption() {ldelim}
 
 function resetteFormtable() {ldelim}
     var table, row, cell_1;
-    document.getElementById('formtableOptionDIV').innerHTML = "";
+    document.getElementById('question-options').innerHTML = "";
     table = document.createElement('table');
     table.id = "formtableOption";
     im = 1;
@@ -92,9 +102,9 @@ function resetteFormtable() {ldelim}
     cell_1 = row.insertCell(0);
     cell_1.className = "left";
     cell_1.id = "buttonsOption";
-    document.getElementById('formtableOptionDIV').appendChild(table);
+    document.getElementById('question-options').appendChild(table);
 
-    document.getElementById('formtableDIV').innerHTML = "";
+    document.getElementById('question-answers').innerHTML = "";
     table = document.createElement('table');
     table.id = "formtable";
     i = 1;
@@ -103,7 +113,7 @@ function resetteFormtable() {ldelim}
     cell_1 = row.insertCell(0);
     cell_1.className = "left";
     cell_1.id = "buttons";
-    document.getElementById('formtableDIV').appendChild(table);
+    document.getElementById('question-answers').appendChild(table);
 {rdelim}
 
 function checkSelect(selectBox) {ldelim}
@@ -143,7 +153,7 @@ function checkSelect(selectBox) {ldelim}
 
             label2 = document.createElement('label');
             label2.setAttribute('for', 'nSortAntwort_' + i);
-            label2.innerHTML = '  {#umfrageQSort#}: ';
+            label2.innerHTML = '  {#umfrageQSort#}';
             label2.style.paddingLeft = '5px';
             label2.style.paddingRight = '5px';
 
@@ -159,7 +169,7 @@ function checkSelect(selectBox) {ldelim}
             button.type = 'button';
             button.name = 'button';
             button.setAttribute('class', 'btn btn-primary');
-            button.innerHTML = 'Antwort hinzuf&uuml;gen';
+            button.innerHTML = 'Antwort hinzufügen';
             button.onclick = function() {ldelim} addInputRow(); {rdelim};
 
             document.getElementById('buttons').appendChild(button);
@@ -195,7 +205,7 @@ function checkSelect(selectBox) {ldelim}
 
             label2 = document.createElement('label');
             label2.setAttribute('for', 'nSortAntwort_' + i);
-            label2.innerHTML = '  {#umfrageQSort#}: ';
+            label2.innerHTML = '  {#umfrageQSort#}';
             label2.style.paddingLeft = '5px';
             label2.style.paddingRight = '5px';
 
@@ -211,7 +221,7 @@ function checkSelect(selectBox) {ldelim}
             button.type = 'button';
             button.name = 'button';
             button.setAttribute('class', 'btn btn-primary');
-            button.innerHTML = 'Antwort hinzuf&uuml;gen';
+            button.innerHTML = 'Antwort hinzufügen';
             button.onclick = function() {ldelim} addInputRow(); {rdelim};
 
             document.getElementById('buttons').appendChild(button);
@@ -248,7 +258,7 @@ function checkSelect(selectBox) {ldelim}
 
             label2 = document.createElement('label');
             label2.setAttribute('for', 'nSortAntwort_' + i);
-            label2.innerHTML = '  {#umfrageQSort#}: ';
+            label2.innerHTML = '  {#umfrageQSort#}';
             label2.style.paddingLeft = '5px';
             label2.style.paddingRight = '5px';
 
@@ -264,7 +274,7 @@ function checkSelect(selectBox) {ldelim}
             button.type = 'button';
             button.name = 'button';
             button.setAttribute('class', 'btn btn-primary');
-            button.innerHTML = 'Antwort hinzuf&uuml;gen';
+            button.innerHTML = 'Antwort hinzufügen';
             button.onclick = function() {ldelim} addInputRow(); {rdelim};
 
             document.getElementById('buttons').appendChild(button);
@@ -300,7 +310,7 @@ function checkSelect(selectBox) {ldelim}
 
             label2 = document.createElement('label');
             label2.setAttribute('for', 'nSortAntwort_' + i);
-            label2.innerHTML = '  {#umfrageQSort#}: ';
+            label2.innerHTML = '  {#umfrageQSort#}';
             label2.style.paddingLeft = '5px';
             label2.style.paddingRight = '5px';
 
@@ -316,7 +326,7 @@ function checkSelect(selectBox) {ldelim}
             button.type = 'button';
             button.name = 'button';
             button.setAttribute('class', 'btn btn-primary');
-            button.innerHTML = 'Antwort hinzuf&uuml;gen';
+            button.innerHTML = 'Antwort hinzufügen';
             button.onclick = function() {ldelim} addInputRow(); {rdelim};
 
             document.getElementById('buttons').appendChild(button);
@@ -351,8 +361,8 @@ function checkSelect(selectBox) {ldelim}
             input2.id = 'nSortOption_' + im;
             input2.style.width = '40px';
 
-            myText1 = document.createTextNode('Option ' + im + ':');
-            myText2 = document.createTextNode('  {#umfrageQSort#}:');
+            myText1 = document.createTextNode('Option ' + im);
+            myText2 = document.createTextNode('  {#umfrageQSort#}');
 
             label1 = document.createElement('label');
             label1.setAttribute('for', 'cNameOption_' + im);
@@ -361,7 +371,7 @@ function checkSelect(selectBox) {ldelim}
 
             label2 = document.createElement('label');
             label2.setAttribute('for', 'nSortOption_' + im);
-            label2.innerHTML = '  {#umfrageQSort#}: ';
+            label2.innerHTML = '  {#umfrageQSort#}';
             label2.style.paddingLeft = '5px';
             label2.style.paddingRight = '5px';
 
@@ -377,7 +387,7 @@ function checkSelect(selectBox) {ldelim}
             button.type = 'button';
             button.name = 'button';
             button.setAttribute('class', 'btn btn-primary');
-            button.innerHTML = 'Option hinzuf&uuml;gen';
+            button.innerHTML = 'Option hinzufügen';
             button.onclick = function() {ldelim} addInputRowOption(); {rdelim};
 
             document.getElementById('buttonsOption').appendChild(button);
@@ -412,7 +422,7 @@ function checkSelect(selectBox) {ldelim}
 
             label2 = document.createElement('label');
             label2.setAttribute('for', 'nSortAntwort_' + i);
-            label2.innerHTML = '  {#umfrageQSort#}: ';
+            label2.innerHTML = '  {#umfrageQSort#}';
             label2.style.paddingLeft = '5px';
             label2.style.paddingRight = '5px';
 
@@ -428,7 +438,7 @@ function checkSelect(selectBox) {ldelim}
             button.type = 'button';
             button.name = 'button';
             button.setAttribute('class', 'btn btn-primary');
-            button.innerHTML = 'Antwort hinzuf&uuml;gen';
+            button.innerHTML = 'Antwort hinzufügen';
             button.onclick = function() {ldelim} addInputRow(); {rdelim};
 
             document.getElementById('buttons').appendChild(button);
@@ -464,7 +474,7 @@ function checkSelect(selectBox) {ldelim}
 
             label2 = document.createElement('label');
             label2.setAttribute('for', 'nSortOption_' + im);
-            label2.innerHTML = '  {#umfrageQSort#}: ';
+            label2.innerHTML = '  {#umfrageQSort#}';
             label2.style.paddingLeft = '5px';
             label2.style.paddingRight = '5px';
 
@@ -480,7 +490,7 @@ function checkSelect(selectBox) {ldelim}
             button.type = 'button';
             button.name = 'button';
             button.setAttribute('class', 'btn btn-primary');
-            button.innerHTML = 'Option hinzuf&uuml;gen';
+            button.innerHTML = 'Option hinzufügen';
             button.onclick = function() {ldelim} addInputRowOption(); {rdelim};
 
             document.getElementById('buttonsOption').appendChild(button);
@@ -514,7 +524,7 @@ function checkSelect(selectBox) {ldelim}
 
             label2 = document.createElement('label');
             label2.setAttribute('for', 'nSortAntwort_' + i);
-            label2.innerHTML = '  {#umfrageQSort#}: ';
+            label2.innerHTML = '  {#umfrageQSort#}';
             label2.style.paddingLeft = '5px';
             label2.style.paddingRight = '5px';
 
@@ -530,7 +540,7 @@ function checkSelect(selectBox) {ldelim}
             button.type = 'button';
             button.name = 'button';
             button.setAttribute('class', 'btn btn-primary');
-            button.innerHTML = 'Antwort hinzuf&uuml;gen';
+            button.innerHTML = 'Antwort hinzufügen';
             button.onclick = function() {ldelim} addInputRow(); {rdelim};
 
             document.getElementById('buttons').appendChild(button);
@@ -590,12 +600,12 @@ function checkSelect(selectBox) {ldelim}
                     </div>
                     <table class="kundenfeld table">
                         <tr>
-                            <td><label for="cName">{#umfrageQ#}:</label></td>
+                            <td><label for="cName">{#umfrageQ#}</label></td>
                             <td><input class="form-control" id="cName" name="cName" type="text"  value="{if isset($oUmfrageFrage->cName)}{$oUmfrageFrage->cName}{/if}" /></td>
                         </tr>
 
                         <tr>
-                            <td><label for="cTypSelect">{#umfrageType#}:</label></td>
+                            <td><label for="cTypSelect">{#umfrageType#}</label></td>
                             <td>
                                 <span class="input-group-wrap">
                                     <select name="cTyp" id="cTypSelect" class="form-control combo" onchange="checkSelect(this);">
@@ -616,12 +626,12 @@ function checkSelect(selectBox) {ldelim}
                         </tr>
 
                         <tr>
-                            <td><label for="nSort">{#umfrageSort#}:</label></td>
+                            <td><label for="nSort">{#umfrageSort#}</label></td>
                             <td><input class="form-control" id="nSort" name="nSort" type="text"  value="{if isset($oUmfrageFrage->nSort)}{$oUmfrageFrage->nSort}{/if}" /></td>
                         </tr>
 
                         <tr>
-                            <td><label for="nFreifeld">{#umfrageQFreeField#}:</label></td>
+                            <td><label for="nFreifeld">{#umfrageQFreeField#}</label></td>
                             <td>
                                 <select id="nFreifeld" name="nFreifeld" class="form-control combo">
                                     <option value="1"{if isset($oUmfrageFrage->nFreifeld) && $oUmfrageFrage->nFreifeld == 1}selected{/if}>Ja</option>
@@ -631,7 +641,7 @@ function checkSelect(selectBox) {ldelim}
                         </tr>
 
                         <tr>
-                            <td><label for="nNotwendig">{#umfrageQEssential#}:</label></td>
+                            <td><label for="nNotwendig">{#umfrageQEssential#}</label></td>
                             <td>
                                 <select id="nNotwendig" name="nNotwendig" class="form-control combo">
                                     <option value="1"{if isset($oUmfrageFrage->nNotwendig) && $oUmfrageFrage->nNotwendig == 1}selected{/if}>Ja</option>
@@ -641,37 +651,37 @@ function checkSelect(selectBox) {ldelim}
                         </tr>
 
                         <tr>
-                            <td><label for="cBeschreibung">{#umfrageText#}:</label></td>
+                            <td><label for="cBeschreibung">{#umfrageText#}</label></td>
                             <td><textarea id="cBeschreibung" class="ckeditor" name="cBeschreibung" rows="15" cols="60">{if isset($oUmfrageFrage->cBeschreibung)}{$oUmfrageFrage->cBeschreibung}{/if}</textarea></td>
                         </tr>
                     </table>
 
-                    <div id="formtableOptionDIV">
+                    <div id="question-options">
                         <table id="formtableOption" class="kundenfeld">
                             <tr>
                                 <td id="buttonsOption">
                                     {if isset($oUmfrageFrage->oUmfrageMatrixOption_arr) && $oUmfrageFrage->oUmfrageMatrixOption_arr|@count > 0}
-                                        <button name="button" type="button" value="Option hinzuf&uuml;gen" onclick="addInputRowOption();" class="btn btn-primary"><i class="fa fa-share"></i> Option hinzuf&uuml;gen</button>
+                                        <button name="button" type="button" value="Option hinzufügen" onclick="addInputRowOption();" class="btn btn-primary"><i class="fa fa-share"></i> Option hinzufügen</button>
                                     {/if}
                                 </td>
                             </tr>
                             {if isset($oUmfrageFrage->oUmfrageMatrixOption_arr) && $oUmfrageFrage->oUmfrageMatrixOption_arr|@count > 0}
-                            {foreach name=umfragematrixoption from=$oUmfrageFrage->oUmfrageMatrixOption_arr item=oUmfrageMatrixOption}
-                            <input name="kUmfrageMatrixOption[]" type="hidden" value="{$oUmfrageMatrixOption->kUmfrageMatrixOption}" />
-                            <tr>
-                                <td>Option {$smarty.foreach.umfragematrixoption.iteration}:<input name="cNameOption[]" class="form-control" type="text" value="{$oUmfrageMatrixOption->cName}" /> {#umfrageQSort#}: <input name="nSortOption[]"  type="text" value="{$oUmfrageMatrixOption->nSort}" style="width: 40px;"></td>
-                            </tr>
-                            {/foreach}
+                                {foreach name=umfragematrixoption from=$oUmfrageFrage->oUmfrageMatrixOption_arr item=oUmfrageMatrixOption}
+                                    <input name="kUmfrageMatrixOption[]" type="hidden" value="{$oUmfrageMatrixOption->kUmfrageMatrixOption}" />
+                                    <tr>
+                                        <td>Option {$smarty.foreach.umfragematrixoption.iteration}<input name="cNameOption[]" class="form-control" type="text" value="{$oUmfrageMatrixOption->cName}" /> {#umfrageQSort#} <input name="nSortOption[]" class="form-control"  type="text" value="{$oUmfrageMatrixOption->nSort}" style="width: 40px;"></td>
+                                    </tr>
+                                {/foreach}
                             {/if}
                         </table>
                     </div>
 
-                    <div id="formtableDIV">
+                    <div id="question-answers">
                         <table id="formtable" class="kundenfeld table">
                             <tr>
                                 <td id="buttons">
                                     {if isset($oUmfrageFrage->oUmfrageFrageAntwort_arr) && $oUmfrageFrage->oUmfrageFrageAntwort_arr|@count > 0}
-                                        <button class="btn btn-succcess" name="button" value="Antwort hinzuf&uuml;gen" type="button" onclick="addInputRow();"><i class="fa fa-share"></i> Antwort hinzuf&uuml;gen</button>
+                                        <button class="btn btn-succcess" name="button" value="Antwort hinzufügen" type="button" onclick="addInputRow();"><i class="fa fa-share"></i> Antwort hinzufügen</button>
                                     {/if}
                                 </td>
                             </tr>
@@ -683,7 +693,7 @@ function checkSelect(selectBox) {ldelim}
                                             <input name="kUmfrageFrageAntwort[]" type="hidden" value="{$oUmfrageFrageAntwort->kUmfrageFrageAntwort}" />
                                             <label for="cNameAntwort-{$smarty.foreach.umfragefrageantwort.index}">Antwort {$smarty.foreach.umfragefrageantwort.iteration}</label>
                                             <input class="form-control" id="cNameAntwort-{$smarty.foreach.umfragefrageantwort.index}" name="cNameAntwort[]"  type="text" value="{$oUmfrageFrageAntwort->cName}" />
-                                            <label for="nSortAntwort-{$smarty.foreach.umfragefrageantwort.index}">{#umfrageQSort#}:</label>
+                                            <label for="nSortAntwort-{$smarty.foreach.umfragefrageantwort.index}">{#umfrageQSort#}</label>
                                             <input id="nSortAntwort-{$smarty.foreach.umfragefrageantwort.index}" name="nSortAntwort[]"  type="text" class="form-control" value="{$oUmfrageFrageAntwort->nSort}" style="width: 40px;" />
                                         </p>
                                     </td>

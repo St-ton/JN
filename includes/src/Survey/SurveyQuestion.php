@@ -98,6 +98,11 @@ class SurveyQuestion
     /**
      * @var array
      */
+    private $givenAnswer = [];
+
+    /**
+     * @var array
+     */
     private static $mapping = [
         'kUmfrageFrage'            => 'ID',
         'kUmfrage'                 => 'SurveyID',
@@ -381,6 +386,25 @@ class SurveyQuestion
     public function setAnswerOptions(Collection $answerOptions)
     {
         $this->answerOptions = $answerOptions;
+    }
+
+    /**
+     * @param int $idx
+     * @return array
+     */
+    public function getGivenAnswer(int $idx = null): array
+    {
+        return $idx !== 0
+            ? $this->givenAnswer[$idx] ?? null
+            : $this->givenAnswer;
+    }
+
+    /**
+     * @param array $givenAnswer
+     */
+    public function setGivenAnswer(array $givenAnswer)
+    {
+        $this->givenAnswer = $givenAnswer;
     }
 
     /**

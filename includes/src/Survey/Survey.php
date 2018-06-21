@@ -193,7 +193,8 @@ class Survey
                         ON tumfragefrage.kUmfrageFrage = tumfragefrageantwort.kUmfrageFrage
                     LEFT JOIN tumfragematrixoption
                         ON tumfragefrage.kUmfrageFrage = tumfragematrixoption.kUmfrageFrage
-                    WHERE tumfragefrage.kUmfrage = :sid',
+                    WHERE tumfragefrage.kUmfrage = :sid
+                    ORDER BY tumfragefrage.nSort',
                 ['sid' => $this->getID()],
                 ReturnType::ARRAY_OF_OBJECTS
             );

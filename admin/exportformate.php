@@ -144,7 +144,8 @@ if ($cAction !== null && $kExportformat !== null && FormHelper::validateToken())
                       AND tjobqueue.cJobArt = 'exportformat'
                    LEFT JOIN texportqueue 
                       ON texportqueue.kExportformat = texportformat.kExportformat
-                   WHERE texportformat.kExportformat = " . $kExportformat, 3
+                   WHERE texportformat.kExportformat = " . $kExportformat,
+                \DB\ReturnType::AFFECTED_ROWS
             );
 
             if ($bDeleted > 0) {
@@ -155,9 +156,10 @@ if ($cAction !== null && $kExportformat !== null && FormHelper::validateToken())
             break;
         case 'exported':
             $exportformat = Shop::Container()->getDB()->select('texportformat', 'kExportformat', $kExportformat);
-            if ($exportformat->cDateiname && (file_exists(PFAD_ROOT . PFAD_EXPORT . $exportformat->cDateiname) ||
-                    file_exists(PFAD_ROOT . PFAD_EXPORT . $exportformat->cDateiname . '.zip') ||
-                    (isset($exportformat->nSplitgroesse) && (int)$exportformat->nSplitgroesse > 0))
+            if ($exportformat->cDateiname
+                && (file_exists(PFAD_ROOT . PFAD_EXPORT . $exportformat->cDateiname)
+                    || file_exists(PFAD_ROOT . PFAD_EXPORT . $exportformat->cDateiname . '.zip')
+                    || (isset($exportformat->nSplitgroesse) && (int)$exportformat->nSplitgroesse > 0))
             ) {
                 if (empty($_GET['hasError'])) {
                     $hinweis = 'Das Exportformat <b>' . $exportformat->cName . '</b> wurde erfolgreich erstellt.';
@@ -199,7 +201,9 @@ if ($step === 'uebersicht') {
             (int)$exportformate[$i]->kKundengruppe
         );
         $exportformate[$i]->bPluginContentExtern = false;
-        if ($exportformate[$i]->kPlugin > 0 && strpos($exportformate[$i]->cContent, PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
+        if ($exportformate[$i]->kPlugin > 0
+            && strpos($exportformate[$i]->cContent, PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false
+        ) {
             $exportformate[$i]->bPluginContentExtern = true;
         }
     }

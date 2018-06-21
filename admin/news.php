@@ -699,15 +699,11 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
                             AND tnewskommentar.kNews = " . (int)$oNews->kNews,
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
+                foreach ($oNewsKommentar_arr as $i => $oNewsKommentar) {
+                    $oKunde = new Kunde($oNewsKommentar->kKunde ?? 0);
 
-                if (is_array($oNewsKommentar_arr) && count($oNewsKommentar_arr) > 0) {
-                    foreach ($oNewsKommentar_arr as $i => $oNewsKommentar) {
-                        $oKunde = new Kunde($oNewsKommentar->kKunde);
-
-                        $oNewsKommentar_arr[$i]->cNachname = $oKunde->cNachname;
-                    }
+                    $oNewsKommentar_arr[$i]->cNachname = $oKunde->cNachname;
                 }
-
                 $smarty->assign('oNewsKommentar_arr', $oNewsKommentar_arr);
             }
         }
@@ -789,7 +785,7 @@ if ($step === 'news_uebersicht') {
         \DB\ReturnType::SINGLE_OBJECT
     );
     foreach ($oNewsKommentar_arr as $i => $oNewsKommentar) {
-        $oKunde = new Kunde($oNewsKommentar->kKunde);
+        $oKunde = new Kunde($oNewsKommentar->kKunde ?? 0);
 
         $oNewsKommentar_arr[$i]->cNachname = $oKunde->cNachname;
     }

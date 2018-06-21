@@ -614,8 +614,11 @@ class Link extends MainModel
         $kVaterLinkgruppe = (int)$kVaterLinkgruppe;
         if ($kVaterLink > 0) {
             if (!empty($kVaterLinkgruppe)) {
-                $oLink_arr = Shop::Container()->getDB()->selectAll('tlink', ['kVaterLink', 'kLinkgruppe'],
-                    [$kVaterLink, $kVaterLinkgruppe]);
+                $oLink_arr = Shop::Container()->getDB()->selectAll(
+                    'tlink',
+                    ['kVaterLink', 'kLinkgruppe'],
+                    [$kVaterLink, $kVaterLinkgruppe]
+                );
             } else {
                 $oLink_arr = Shop::Container()->getDB()->selectAll('tlink', 'kVaterLink', $kVaterLink);
             }

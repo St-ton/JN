@@ -22,7 +22,7 @@ if (isset($_POST['emailblacklist']) && (int)$_POST['emailblacklist'] === 1 && Fo
     $cEmail_arr = explode(';', $_POST['cEmail']);
 
     if (is_array($cEmail_arr) && count($cEmail_arr) > 0) {
-        Shop::Container()->getDB()->query("TRUNCATE temailblacklist", 3);
+        Shop::Container()->getDB()->query("TRUNCATE temailblacklist", \DB\ReturnType::AFFECTED_ROWS);
 
         foreach ($cEmail_arr as $cEmail) {
             $cEmail = strip_tags(trim($cEmail));
@@ -71,8 +71,8 @@ $oEmailBlacklist_arr = Shop::Container()->getDB()->query(
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 // Geblockte Emails auslesen und assignen
-$oEmailBlacklistBlock_arr = Shop::Container()->getDB()->query("
-    SELECT *, DATE_FORMAT(dLetzterBlock, '%d.%m.%Y %H:%i') AS Datum
+$oEmailBlacklistBlock_arr = Shop::Container()->getDB()->query(
+    "SELECT *, DATE_FORMAT(dLetzterBlock, '%d.%m.%Y %H:%i') AS Datum
         FROM temailblacklistblock
         ORDER BY dLetzterBlock DESC
         LIMIT 100",

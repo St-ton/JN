@@ -74,7 +74,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                         FROM tumfragefrageantwort
                         LEFT JOIN tumfragedurchfuehrungantwort
                             ON tumfragedurchfuehrungantwort.kUmfrageFrageAntwort = tumfragefrageantwort.kUmfrageFrageAntwort
-                        WHERE tumfragefrageantwort.kUmfrageFrageAntwort = " . $kUmfrageFrageAntwort, 3
+                        WHERE tumfragefrageantwort.kUmfrageFrageAntwort = " . $kUmfrageFrageAntwort,
+                    \DB\ReturnType::AFFECTED_ROWS
                 );
             }
             Shop::Cache()->flushTags([CACHING_GROUP_CORE]);
@@ -88,7 +89,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                         FROM tumfragematrixoption
                         LEFT JOIN tumfragedurchfuehrungantwort
                             ON tumfragedurchfuehrungantwort.kUmfrageMatrixOption = tumfragematrixoption.kUmfrageMatrixOption
-                        WHERE tumfragematrixoption.kUmfrageMatrixOption = " . $kUmfrageMatrixOption, 3
+                        WHERE tumfragematrixoption.kUmfrageMatrixOption = " . $kUmfrageMatrixOption,
+                    \DB\ReturnType::AFFECTED_ROWS
                 );
             }
             Shop::Cache()->flushTags([CACHING_GROUP_CORE]);
@@ -127,13 +129,15 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             $dGueltigBis = $_POST['dGueltigBis'];
 
             // Sind die wichtigen Daten vorhanden?
-            if (strlen($cName) > 0 && 
-                (is_array($kKundengruppe_arr) && count($kKundengruppe_arr) > 0) && 
-                strlen($dGueltigVon) > 0) {
-                if (($kKupon == 0 && $fGuthaben == 0 && $nBonuspunkte == 0) || 
-                    ($kKupon > 0 && $fGuthaben == 0 && $nBonuspunkte == 0) ||
-                    ($kKupon == 0 && $fGuthaben > 0 && $nBonuspunkte == 0) || 
-                    ($kKupon == 0 && $fGuthaben == 0 && $nBonuspunkte > 0)) {
+            if (strlen($cName) > 0 
+                && (is_array($kKundengruppe_arr) && count($kKundengruppe_arr) > 0) 
+                && strlen($dGueltigVon) > 0
+            ) {
+                if (($kKupon == 0 && $fGuthaben == 0 && $nBonuspunkte == 0) 
+                    || ($kKupon > 0 && $fGuthaben == 0 && $nBonuspunkte == 0) 
+                    || ($kKupon == 0 && $fGuthaben > 0 && $nBonuspunkte == 0) 
+                    || ($kKupon == 0 && $fGuthaben == 0 && $nBonuspunkte > 0)
+                ) {
                     $step                    = 'umfrage_frage_erstellen';
                     $oUmfrage                = new stdClass();
                     $oUmfrage->kSprache      = $_SESSION['kSprache'];
@@ -192,9 +196,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                     $cFehler .= 'Fehler: Bitte geben Sie nur eine Belohnungsart an.<br />';
                 }
             } else {
-                $cFehler .= 'Fehler: Bitte geben Sie einen Namen, mindestens eine Kundengruppe und ein g&uuml;ltiges Anfangsdatum ein.<br />';
+                $cFehler .= 'Fehler: Bitte geben Sie einen Namen, mindestens eine Kundengruppe und ein gültiges Anfangsdatum ein.<br />';
             }
-        } elseif (isset($_POST['umfrage_frage_speichern']) && (int)$_POST['umfrage_frage_speichern'] === 1 && FormHelper::validateToken()) { // Frage speichern
+        } elseif (isset($_POST['umfrage_frage_speichern']) && (int)$_POST['umfrage_frage_speichern'] === 1) { 
+            // Frage speichern
             $kUmfrage                 = (int)$_POST['kUmfrage'];
             $kUmfrageFrage            = isset($_POST['kUmfrageFrage']) ? (int)$_POST['kUmfrageFrage'] : 0;
             $cName                    = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
@@ -231,7 +236,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                     $step          = 'umfrage_vorschau';
                     $kUmfrageFrage = (int)$_POST['kUmfrageFrage'];
                     if (!pruefeTyp($cTyp, $kUmfrageFrage)) {
-                        $cFehler .= 'Fehler: Ihr Fragentyp ist leider nicht kompatibel mit dem voherigen. Um den Fragetyp zu &auml;ndern, resetten Sie bitte die Frage.';
+                        $cFehler .= 'Fehler: Ihr Fragentyp ist leider nicht kompatibel mit dem voherigen. Um den Fragetyp zu ändern, resetten Sie bitte die Frage.';
                         $step = 'umfrage_frage_bearbeiten';
                     }
                     //loescheFrage($kUmfrageFrage);
@@ -276,7 +281,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 $step = 'umfrage_frage_erstellen';
                 $cFehler .= 'Fehler: Bitte tragen Sie mindestens einen Namen und einen Typ ein.<br />';
             }
-        } elseif (isset($_POST['umfrage_loeschen']) && (int)$_POST['umfrage_loeschen'] === 1 && FormHelper::validateToken()) {
+        } elseif (isset($_POST['umfrage_loeschen']) && (int)$_POST['umfrage_loeschen'] === 1) {
             // Umfrage loeschen
             if (is_array($_POST['kUmfrage']) && count($_POST['kUmfrage']) > 0) {
                 foreach ($_POST['kUmfrage'] as $kUmfrage) {
@@ -290,10 +295,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                             WHERE kUmfrage = " . $kUmfrage,
                         \DB\ReturnType::ARRAY_OF_OBJECTS
                     );
-                    if (is_array($oUmfrageFrage_arr) && count($oUmfrageFrage_arr) > 0) {
-                        foreach ($oUmfrageFrage_arr as $oUmfrageFrage) {
-                            loescheFrage($oUmfrageFrage->kUmfrageFrage);
-                        }
+                    foreach ($oUmfrageFrage_arr as $oUmfrageFrage) {
+                        loescheFrage($oUmfrageFrage->kUmfrageFrage);
                     }
                     // tseo loeschen
                     Shop::Container()->getDB()->delete('tseo', ['cKey', 'kKey'], ['kUmfrage', $kUmfrage]);
@@ -313,7 +316,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine Umfrage.<br />';
             }
         } // Frage loeschen
-        elseif (isset($_POST['umfrage_frage_loeschen']) && (int)$_POST['umfrage_frage_loeschen'] === 1 && FormHelper::validateToken()) {
+        elseif (isset($_POST['umfrage_frage_loeschen']) && (int)$_POST['umfrage_frage_loeschen'] === 1) {
             $step = 'umfrage_vorschau';
             // Ganze Frage loeschen mit allen Antworten und Matrixen
             if (is_array($_POST['kUmfrageFrage']) && count($_POST['kUmfrageFrage']) > 0) {
@@ -335,15 +338,17 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                             FROM tumfragefrageantwort
                             LEFT JOIN tumfragedurchfuehrungantwort
                                 ON tumfragedurchfuehrungantwort.kUmfrageFrageAntwort = tumfragefrageantwort.kUmfrageFrageAntwort
-                            WHERE tumfragefrageantwort.kUmfrageFrageAntwort = " . $kUmfrageFrageAntwort, 3
+                            WHERE tumfragefrageantwort.kUmfrageFrageAntwort = " . $kUmfrageFrageAntwort,
+                        \DB\ReturnType::AFFECTED_ROWS
                     );
                 }
                 $cHinweis .= "Ihre markierten Antworten wurden erfolgreich gelöscht.<br>";
             }
             // Bestimmte Optionen loeschen
-            if (isset($_POST['kUmfrageMatrixOption']) &&
-                is_array($_POST['kUmfrageMatrixOption']) &&
-                count($_POST['kUmfrageMatrixOption']) > 0) {
+            if (isset($_POST['kUmfrageMatrixOption'])
+                && is_array($_POST['kUmfrageMatrixOption'])
+                && count($_POST['kUmfrageMatrixOption']) > 0
+            ) {
                 foreach ($_POST['kUmfrageMatrixOption'] as $kUmfrageMatrixOption) {
                     $kUmfrageMatrixOption = (int)$kUmfrageMatrixOption;
                     Shop::Container()->getDB()->query(
@@ -351,7 +356,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                             FROM tumfragematrixoption
                             LEFT JOIN tumfragedurchfuehrungantwort
                                 ON tumfragedurchfuehrungantwort.kUmfrageMatrixOption = tumfragematrixoption.kUmfrageMatrixOption
-                            WHERE tumfragematrixoption.kUmfrageMatrixOption = " . $kUmfrageMatrixOption, 3
+                            WHERE tumfragematrixoption.kUmfrageMatrixOption = " . $kUmfrageMatrixOption,
+                        \DB\ReturnType::AFFECTED_ROWS
                     );
                 }
 
@@ -360,7 +366,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             Shop::Cache()->flushTags([CACHING_GROUP_CORE]);
         } elseif (isset($_POST['umfrage_frage_hinzufuegen'])
             && (int)$_POST['umfrage_frage_hinzufuegen'] === 1
-            && FormHelper::validateToken()
         ) { // Frage hinzufuegen
             $step = 'umfrage_frage_erstellen';
             $smarty->assign('kUmfrageTMP', $kUmfrageTMP);
@@ -378,7 +383,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 $smarty->assign('oUmfrageStats', holeUmfrageStatistik($kUmfrageTMP));
             } else {
                 $step = 'umfrage_vorschau';
-                $cFehler .= 'Fehler: F&uuml;r diese Umfrage gibt es noch keine Stastistik.';
+                $cFehler .= 'Fehler: Für diese Umfrage gibt es noch keine Stastistik.';
             }
         } elseif (isset($_GET['a']) && $_GET['a'] === 'zeige_sonstige') {
             // Umfragestatistik Sonstige Texte anzeigen
@@ -479,12 +484,14 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                     $smarty->assign('oUmfrage', $oUmfrage);
                 }
             } else {
-                $cFehler .= 'Fehler: Bitte w&auml;hlen Sie eine korrekte Umfrage aus.<br>';
+                $cFehler .= 'Fehler: Bitte wählen Sie eine korrekte Umfrage aus.<br>';
             }
         }
 
-        if ($kUmfrageTMP > 0 && (!isset($_POST['umfrage_frage_edit_speichern']) || (int)$_POST['umfrage_frage_edit_speichern'] !== 1) &&
-            (!isset($_GET['fe']) || (int)$_GET['fe']) !== 1 && FormHelper::validateToken()) {
+        if ($kUmfrageTMP > 0 
+            && (!isset($_POST['umfrage_frage_edit_speichern']) || (int)$_POST['umfrage_frage_edit_speichern'] !== 1)
+            && (!isset($_GET['fe']) || (int)$_GET['fe']) !== 1
+        ) {
             $smarty->assign('oUmfrageFrage_arr', Shop::Container()->getDB()->selectAll(
                 'tumfragefrage',
                 'kUmfrage',

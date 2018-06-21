@@ -199,12 +199,22 @@ for ($i = 0; $i < $configCount; $i++) {
 }
 
 if ($Einstellungen['artikeluebersicht']['suche_fulltext'] !== 'N'
-    && (!Shop::Container()->getDB()->query("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'", 1)
-        || !Shop::Container()->getDB()->query("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'", 1))) {
+    && (!Shop::Container()->getDB()->query(
+            "SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'",
+            \DB\ReturnType::SINGLE_OBJECT
+        )
+        || !Shop::Container()->getDB()->query(
+            "SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'",
+            \DB\ReturnType::SINGLE_OBJECT)
+    )) {
     $cFehler = 'Der Volltextindex ist nicht vorhanden! ' .
         'Die Erstellung des Index kann jedoch einige Zeit in Anspruch nehmen. ' .
         '<a href="sucheinstellungen.php" title="Aktualisieren"><i class="alert-danger fa fa-refresh"></i></a>';
-    Notification::getInstance()->add(NotificationEntry::TYPE_WARNING, 'Der Volltextindex wird erstellt!', 'sucheinstellungen.php');
+    Notification::getInstance()->add(
+        NotificationEntry::TYPE_WARNING,
+        'Der Volltextindex wird erstellt!',
+        'sucheinstellungen.php'
+    );
 }
 
 $smarty->configLoad('german.conf', 'einstellungen')

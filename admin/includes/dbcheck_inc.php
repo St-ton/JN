@@ -341,7 +341,10 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
                     if (!DBMigrationHelper::isTableInUse($table)) {
                         if (version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
                             // If MySQL version is lower than 5.6 use alternative lock method and delete all fulltext indexes because these are not supported
-                            Shop::Container()->getDB()->executeQuery(DBMigrationHelper::sqlAddLockInfo($oTable), 10);
+                            Shop::Container()->getDB()->executeQuery(
+                                DBMigrationHelper::sqlAddLockInfo($oTable),
+                                \DB\ReturnType::QUERYSINGLE
+                            );
                             $fulltextIndizes = DBMigrationHelper::getFulltextIndizes($oTable->TABLE_NAME);
 
                             if ($fulltextIndizes) {
@@ -385,7 +388,7 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
                     $sql    = DBMigrationHelper::sqlConvertUTF8($oTable);
 
                     if (!empty($sql)) {
-                        if (Shop::Container()->getDB()->executeQuery($sql, 10)) {
+                        if (Shop::Container()->getDB()->executeQuery($sql, \DB\ReturnType::QUERYSINGLE)) {
                             // Get next table for migration...
                             $result = doMigrateToInnoDB_utf8('start', '', 1, $exclude);
                         } else {

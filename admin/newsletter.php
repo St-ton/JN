@@ -527,18 +527,19 @@ if (FormHelper::validateToken()) {
                 foreach ($_POST['kNewsletterVorlage'] as $kNewsletterVorlage) {
                     $oNewslettervorlage = Shop::Container()->getDB()->query(
                         "SELECT kNewsletterVorlage, kNewslettervorlageStd
-                        FROM tnewslettervorlage
-                        WHERE kNewsletterVorlage = " . (int)$kNewsletterVorlage,
+                            FROM tnewslettervorlage
+                            WHERE kNewsletterVorlage = " . (int)$kNewsletterVorlage,
                         \DB\ReturnType::SINGLE_OBJECT
                     );
 
                     if (isset($oNewslettervorlage->kNewsletterVorlage) && $oNewslettervorlage->kNewsletterVorlage > 0) {
                         if (isset($oNewslettervorlage->kNewslettervorlageStd) && $oNewslettervorlage->kNewslettervorlageStd > 0) {
                             Shop::Container()->getDB()->query(
-                                "DELETE tnewslettervorlage, tnewslettervorlagestdvarinhalt FROM tnewslettervorlage
-                                LEFT JOIN tnewslettervorlagestdvarinhalt 
-                                    ON tnewslettervorlagestdvarinhalt.kNewslettervorlage = tnewslettervorlage.kNewsletterVorlage
-                                WHERE tnewslettervorlage.kNewsletterVorlage = " . (int)$kNewsletterVorlage,
+                                "DELETE tnewslettervorlage, tnewslettervorlagestdvarinhalt 
+                                    FROM tnewslettervorlage
+                                    LEFT JOIN tnewslettervorlagestdvarinhalt 
+                                        ON tnewslettervorlagestdvarinhalt.kNewslettervorlage = tnewslettervorlage.kNewsletterVorlage
+                                    WHERE tnewslettervorlage.kNewsletterVorlage = " . (int)$kNewsletterVorlage,
                                 \DB\ReturnType::AFFECTED_ROWS
                             );
                         } else {
@@ -663,17 +664,14 @@ if ($step === 'uebersicht') {
             WHERE kSprache = " . (int)$_SESSION['kSprache'],
         \DB\ReturnType::SINGLE_OBJECT
     );
-
-    if (is_array($oNewslettervorlageStd_arr) && count($oNewslettervorlageStd_arr) > 0) {
-        foreach ($oNewslettervorlageStd_arr as $i => $oNewslettervorlageStd) {
-            // tnewslettervorlagestdvars holen
-            $oNewslettervorlageStd_arr[$i]->oNewsletttervorlageStdVar_arr = Shop::Container()->getDB()->query(
-                "SELECT *
-                    FROM tnewslettervorlagestdvar
-                    WHERE kNewslettervorlageStd = " . (int)$oNewslettervorlageStd->kNewslettervorlageStd,
-                \DB\ReturnType::ARRAY_OF_OBJECTS
-            );
-        }
+    foreach ($oNewslettervorlageStd_arr as $i => $oNewslettervorlageStd) {
+        // tnewslettervorlagestdvars holen
+        $oNewslettervorlageStd_arr[$i]->oNewsletttervorlageStdVar_arr = Shop::Container()->getDB()->query(
+            "SELECT *
+                FROM tnewslettervorlagestdvar
+                WHERE kNewslettervorlageStd = " . (int)$oNewslettervorlageStd->kNewslettervorlageStd,
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
     }
     $smarty->assign('oNewslettervorlageStd_arr', $oNewslettervorlageStd_arr);
     // Inaktive Abonnenten
@@ -693,14 +691,12 @@ if ($step === 'uebersicht') {
             LIMIT " . $oPagiInaktiveAbos->getLimitSQL(),
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    if (is_array($oNewsletterEmpfaenger_arr) && count($oNewsletterEmpfaenger_arr) > 0) {
-        foreach ($oNewsletterEmpfaenger_arr as $i => $oNewsletterEmpfaenger) {
-            $oKunde                                   = new Kunde($oNewsletterEmpfaenger->kKunde ?? null);
-            $oNewsletterEmpfaenger_arr[$i]->cNachname = $oKunde->cNachname;
-        }
-
-        $smarty->assign('oNewsletterEmpfaenger_arr', $oNewsletterEmpfaenger_arr);
+    foreach ($oNewsletterEmpfaenger_arr as $i => $oNewsletterEmpfaenger) {
+        $oKunde                                   = new Kunde($oNewsletterEmpfaenger->kKunde ?? null);
+        $oNewsletterEmpfaenger_arr[$i]->cNachname = $oKunde->cNachname;
     }
+
+    $smarty->assign('oNewsletterEmpfaenger_arr', $oNewsletterEmpfaenger_arr);
     // Hole alle Newsletter die in der History sind
     $oNewsletterHistory_arr = Shop::Container()->getDB()->query(
         "SELECT kNewsletterHistory, nAnzahl, cBetreff, cKundengruppe,  

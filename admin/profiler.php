@@ -103,12 +103,12 @@ $smarty->assign('pluginProfilerData', $pluginProfilerData)
  * @param int  $runID
  * @return mixed
  */
-function deleteProfileRun($all = false, $runID = 0)
+function deleteProfileRun(bool $all = false, $runID = 0)
 {
     if ($all === true) {
-        $count = Shop::Container()->getDB()->query("DELETE FROM tprofiler", 3);
-        Shop::Container()->getDB()->query("ALTER TABLE tprofiler AUTO_INCREMENT = 1", 3);
-        Shop::Container()->getDB()->query("ALTER TABLE tprofiler_runs AUTO_INCREMENT = 1", 3);
+        $count = Shop::Container()->getDB()->query("DELETE FROM tprofiler", \DB\ReturnType::AFFECTED_ROWS);
+        Shop::Container()->getDB()->query("ALTER TABLE tprofiler AUTO_INCREMENT = 1", \DB\ReturnType::AFFECTED_ROWS);
+        Shop::Container()->getDB()->query("ALTER TABLE tprofiler_runs AUTO_INCREMENT = 1", \DB\ReturnType::AFFECTED_ROWS);
 
         return $count;
     }

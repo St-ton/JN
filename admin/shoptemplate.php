@@ -139,7 +139,7 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && FormHelper::valida
     } else {
         $cFehler = 'Template bzw. Einstellungen konnten nicht ge&auml;ndert werden.';
     }
-    Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+    Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", \DB\ReturnType::DEFAULT);
     //re-init smarty with new template - problematic because of re-including functions.php
     header('Location: ' . Shop::getURL() . '/' .
         PFAD_ADMIN . 'shoptemplate.php?check=' .
@@ -169,7 +169,7 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && FormHelper::val
         } else {
             $cFehler = 'Template bzw. Einstellungen konnten nicht ge&auml;ndert werden.';
         }
-        Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+        Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", \DB\ReturnType::DEFAULT);
         //re-init smarty with new template - problematic because of re-including functions.php
         header('Location: ' . $shopURL . PFAD_ADMIN . 'shoptemplate.php', true, 301);
     } else {
@@ -177,9 +177,9 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && FormHelper::val
         foreach ($tplConfXML as $_conf) {
             // iterate over each "Setting" in this "Section"
             foreach ($_conf->oSettings_arr as $_setting) {
-                if ($_setting->cType === 'upload' &&
-                    isset($_setting->rawAttributes['target'], $_setting->rawAttributes['targetFileName']) &&
-                    !file_exists(PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/'
+                if ($_setting->cType === 'upload'
+                    && isset($_setting->rawAttributes['target'], $_setting->rawAttributes['targetFileName'])
+                    && !file_exists(PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/'
                         . $_setting->rawAttributes['targetFileName'])
                 ) {
 
@@ -245,7 +245,7 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && FormHelper::val
         $cFehler = 'Template konnte nicht ge&auml;ndert werden.';
     }
 
-    Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+    Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", \DB\ReturnType::DEFAULT);
 }
 $smarty->assign('admin', ($admin === true) ? 1 : 0)
        ->assign('oTemplate_arr', $templateHelper->getFrontendTemplates())

@@ -50,7 +50,7 @@ class GivenAnswer
         }
         if ($type === QuestionType::MULTI_SINGLE
             || $type === QuestionType::MULTI
-            || $type === QuestionType::TYPE_SELECT
+            || $type === QuestionType::SELECT_SINGLE
         ) {
             if (!is_array($this->answer)) {
                 return false;

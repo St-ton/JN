@@ -14,7 +14,7 @@ use MyCLabs\Enum\Enum;
  * @package Filter
  * @method static QuestionType MULTI()
  * @method static QuestionType MULTI_SINGLE()
- * @method static QuestionType SELECT()
+ * @method static QuestionType SELECT_SINGLE()
  * @method static QuestionType SELECT_MULTI()
  * @method static QuestionType TEXT_SMALL()
  * @method static QuestionType TEXT_BIG()

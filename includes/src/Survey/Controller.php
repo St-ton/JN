@@ -154,7 +154,7 @@ class Controller
     {
         $indices = [0];
         $questions->each(function (SurveyQuestion $question, $i) use (&$indices) {
-            if ($question->getType() === 'text_statisch_seitenwechsel') {
+            if ($question->getType() === QuestionType::TEXT_PAGE_CHANGE) {
                 $indices[] = $i + 1;
             }
         });
@@ -203,12 +203,12 @@ class Controller
             $question   = $this->survey->getQuestionByID($questionID);
             $type       = $question !== null ? $question->getType() : null;
             if ($question === null
-                || $type === SurveyQuestion::TYPE_TEXT_PAGE_CHANGE
-                || $type === SurveyQuestion::TYPE_TEXT_STATIC
+                || $type === SurveyQuestion::TEXT_PAGE_CHANGE
+                || $type === SurveyQuestion::TEXT_STATIC
             ) {
                 continue;
             }
-            if ($type === SurveyQuestion::TYPE_MATRIX) {
+            if ($type === SurveyQuestion::MATRIX_SINGLE) {
                 $answer = [];
 
                 foreach ($question->getAnswerOptions() as $answerOption) {
@@ -354,12 +354,12 @@ class Controller
     {
         if ($customerID > 0) {
             return $this->db->queryPrepared(
-                'UPDATE tkunde
+                    'UPDATE tkunde
                     SET fGuthaben = fGuthaben + :crdt
                     WHERE kKunde = :cid',
-                ['crdt' => (float)$credits, 'cid'  => $customerID],
-                ReturnType::AFFECTED_ROWS
-            ) > 0;
+                    ['crdt' => (float)$credits, 'cid' => $customerID],
+                    ReturnType::AFFECTED_ROWS
+                ) > 0;
         }
 
         return false;
@@ -390,8 +390,8 @@ class Controller
         foreach ($_SESSION['Umfrage']->oUmfrageFrage_arr as $j => $answer) {
             /** @var GivenAnswer $answer */
             $type = $answer->getQuestionType();
-            if ($type === 'text_statisch'
-                || $type === 'text_statisch_seitenwechsel'
+            if ($type === QuestionType::TEXT_STATIC
+                || $type === QuestionType::TEXT_PAGE_CHANGE
                 || !is_array($answer->getAnswer())
                 || count($answer->getAnswer()) === 0
             ) {
@@ -408,13 +408,13 @@ class Controller
                 $data->kUmfrageDurchfuehrung = $id;
                 $data->kUmfrageFrage         = $answer->getQuestionID();
 
-                if ($type === 'text_klein' || $type === 'text_gross') {
+                if ($type === QuestionType::TEXT_SMALL || $type === QuestionType::TEXT_BIG) {
                     $data->kUmfrageFrageAntwort = 0;
                     $data->kUmfrageMatrixOption = 0;
                     $data->cText                = !empty($given)
                         ? \StringHandler::htmlentities(\StringHandler::filterXSS(ltrim($given)))
                         : '';
-                } elseif ($type === 'matrix_single' || $type === 'matrix_multi') {
+                } elseif ($type === QuestionType::MATRIX_SINGLE || $type === QuestionType::MATRIX_MULTI) {
                     list($kUmfrageFrageAntwort, $kUmfrageMatrixOption) = explode('_', $given);
                     $data->kUmfrageFrageAntwort = $kUmfrageFrageAntwort;
                     $data->kUmfrageMatrixOption = $kUmfrageMatrixOption;
@@ -453,21 +453,21 @@ class Controller
         }
         foreach ($cPost_arr['kUmfrageFrage'] as $i => $questionID) {
             $questionID = (int)$questionID;
-            $question = $this->survey->getQuestionByID($questionID);
+            $question   = $this->survey->getQuestionByID($questionID);
 
             if ($question === null || $question->isRequired() !== true) {
                 continue;
             }
-            $type = $question->getType();
+            $type          = $question->getType();
             $answerOptions = $question->getAnswerOptions();
-            if ($type === 'matrix_single' || $type === 'matrix_multi') {
+            if ($type === QuestionType::MATRIX_SINGLE || $type === QuestionType::MATRIX_MULTI) {
                 if ($answerOptions->count() > 0) {
                     foreach ($answerOptions as $answerOption) {
-                        if ($type === 'matrix_single') {
+                        if ($type === QuestionType::MATRIX_SINGLE) {
                             if (!isset($cPost_arr[$questionID . '_' . $answerOption->getID()])) {
                                 return $questionID;
                             }
-                        } elseif ($type === 'matrix_multi') {
+                        } elseif ($type === QuestionType::MATRIX_MULTI) {
                             if (is_array($cPost_arr[$questionID]) && count($cPost_arr[$questionID]) > 0) {
                                 $exists = false;
                                 foreach ($cPost_arr[$questionID] as $givenMatrix) {
@@ -487,7 +487,7 @@ class Controller
                         }
                     }
                 }
-            } elseif ($type === 'text_klein' || $type === 'text_gross') {
+            } elseif ($type === QuestionType::TEXT_SMALL || $type === QuestionType::TEXT_BIG) {
                 if (!isset($cPost_arr[$questionID]) || trim($cPost_arr[$questionID][0]) === '') {
                     return $questionID;
                 }

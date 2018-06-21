@@ -20,26 +20,6 @@ class SurveyQuestion
 {
     use \MagicCompatibilityTrait;
 
-    const TYPE_MULTI = 'multiple_multi';
-
-    const TYPE_MULTI_SINGLE = 'multiple_single';
-
-    const TYPE_SELECT = 'select_single';
-
-    const TYPE_SELECT_MULTI = 'select_multi';
-
-    const TYPE_TEXT_SMALL = 'text_klein';
-
-    const TYPE_TEXT_BIG = 'text_gross';
-
-    const TYPE_MATRIX = 'matrix_single';
-
-    const TYPE_MATRIX_MULTI = 'matrix_multi';
-
-    const TYPE_TEXT_STATIC = 'text_statisch';
-
-    const TYPE_TEXT_PAGE_CHANGE = 'text_statisch_seitenwechsel';
-
     /**
      * @var int
      */

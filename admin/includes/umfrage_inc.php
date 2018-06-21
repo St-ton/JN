@@ -62,7 +62,7 @@ function updateAntwortUndOption($kUmfrageFrage, $cTyp, $cNameOption_arr = [], $c
     $oAnzahlAUndOVorhanden->nAnzahlAntworten = count($kUmfrageFrageAntwort_arr);
     $oAnzahlAUndOVorhanden->nAnzahlOptionen  = count($kUmfrageMatrixOption_arr);
 
-    if ($cTyp !== 'text_klein' & $cTyp !== 'text_gross') {
+    if ($cTyp !== \Survey\QuestionType::TEXT_SMALL & $cTyp !== \Survey\QuestionType::TEXT_BIG) {
         // Vorhandene Antworten updaten
         if (is_array($kUmfrageFrageAntwort_arr) && count($kUmfrageFrageAntwort_arr) > 0) {
             foreach ($kUmfrageFrageAntwort_arr as $i => $kUmfrageFrageAntwort) {
@@ -73,7 +73,7 @@ function updateAntwortUndOption($kUmfrageFrage, $cTyp, $cNameOption_arr = [], $c
             }
         }
         // Matrix
-        if ($cTyp === 'matrix_single' || $cTyp === 'matrix_multi') {
+        if ($cTyp === \Survey\QuestionType::MATRIX_SINGLE || $cTyp === \Survey\QuestionType::MATRIX_MULTI) {
             if (is_array($kUmfrageMatrixOption_arr) && count($kUmfrageMatrixOption_arr) > 0) {
                 foreach ($kUmfrageMatrixOption_arr as $j => $kUmfrageMatrixOption) {
                     $_upd        = new stdClass();
@@ -101,7 +101,7 @@ function speicherAntwortZuFrage($kUmfrageFrage, $cTyp, $cNameOption, $cNameAntwo
 {
     $kUmfrageFrage = (int)$kUmfrageFrage;
     switch ($cTyp) {
-        case 'multiple_single':
+        case \Survey\QuestionType::MULTI_SINGLE:
             if (is_array($cNameAntwort) && count($cNameAntwort) > 0) {
                 $count = count($cNameAntwort);
                 for ($i = $oAnzahlAUndOVorhanden->nAnzahlAntworten; $i < $count; $i++) {
@@ -115,7 +115,7 @@ function speicherAntwortZuFrage($kUmfrageFrage, $cTyp, $cNameOption, $cNameAntwo
                 }
             }
             break;
-        case 'multiple_multi':
+        case \Survey\QuestionType::MULTI:
             if (is_array($cNameAntwort) && count($cNameAntwort) > 0) {
                 $count = count($cNameAntwort);
                 for ($i = $oAnzahlAUndOVorhanden->nAnzahlAntworten; $i < $count; $i++) {
@@ -129,7 +129,7 @@ function speicherAntwortZuFrage($kUmfrageFrage, $cTyp, $cNameOption, $cNameAntwo
                 }
             }
             break;
-        case 'select_single':
+        case \Survey\QuestionType::SELECT_SINGLE:
             if (is_array($cNameAntwort) && count($cNameAntwort) > 0) {
                 $count = count($cNameAntwort);
                 for ($i = $oAnzahlAUndOVorhanden->nAnzahlAntworten; $i < $count; $i++) {
@@ -143,7 +143,7 @@ function speicherAntwortZuFrage($kUmfrageFrage, $cTyp, $cNameOption, $cNameAntwo
                 }
             }
             break;
-        case 'select_multi':
+        case \Survey\QuestionType::SELECT_MULTI:
             if (is_array($cNameAntwort) && count($cNameAntwort) > 0) {
                 $count = count($cNameAntwort);
                 for ($i = $oAnzahlAUndOVorhanden->nAnzahlAntworten; $i < $count; $i++) {
@@ -157,7 +157,7 @@ function speicherAntwortZuFrage($kUmfrageFrage, $cTyp, $cNameOption, $cNameAntwo
                 }
             }
             break;
-        case 'matrix_single':
+        case \Survey\QuestionType::MATRIX_SINGLE:
             if (is_array($cNameAntwort) && is_array($cNameOption) && count($cNameAntwort) > 0 && count($cNameOption) > 0) {
                 $count = count($cNameAntwort);
                 for ($i = $oAnzahlAUndOVorhanden->nAnzahlAntworten; $i < $count; $i++) {
@@ -181,7 +181,7 @@ function speicherAntwortZuFrage($kUmfrageFrage, $cTyp, $cNameOption, $cNameAntwo
                 }
             }
             break;
-        case 'matrix_multi':
+        case \Survey\QuestionType::MATRIX_MULTI:
             if (is_array($cNameAntwort) && is_array($cNameOption) && count($cNameAntwort) > 0 && count($cNameOption) > 0) {
                 $count = count($cNameAntwort);
                 for ($i = $oAnzahlAUndOVorhanden->nAnzahlAntworten; $i < $count; $i++) {
@@ -281,13 +281,17 @@ function holeUmfrageStatistik(int $kUmfrage)
     $oUmfrageStats->nAnzahlDurchfuehrung = count($oUmfrageDurchfuehrung_arr);
     // Laufe alle Fragen der Umfrage durch und berechne die Statistik
     foreach ($oUmfrageFrage_arr as $i => $oUmfrageFrage) {
-        if ($oUmfrageFrage->cTyp === 'text_statisch_seitenwechsel' || $oUmfrageFrage->cTyp === 'text_statisch') {
+        if ($oUmfrageFrage->cTyp === \Survey\QuestionType::TEXT_PAGE_CHANGE
+            || $oUmfrageFrage->cTyp === \Survey\QuestionType::TEXT_STATIC
+        ) {
             continue;
         }
         $oUmfrageStats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr = [];
 
         // Matrix
-        if ($oUmfrageFrage->cTyp === 'matrix_single' || $oUmfrageFrage->cTyp === 'matrix_multi') {
+        if ($oUmfrageFrage->cTyp === \Survey\QuestionType::MATRIX_SINGLE
+            || $oUmfrageFrage->cTyp === \Survey\QuestionType::MATRIX_MULTI
+        ) {
             $oUmfrageFrageAntwort_arr = [];
             $matrixOpt_arr            = [];
             $oErgebnisMatrix_arr      = [];
@@ -386,7 +390,9 @@ function holeUmfrageStatistik(int $kUmfrage)
             }
             //Ergebnismatrix für die Frage setzen
             $oUmfrageStats->oUmfrageFrage_arr[$i]->oErgebnisMatrix_arr = $oErgebnisMatrix_arr;
-        } elseif ($oUmfrageFrage->cTyp === 'text_klein' || $oUmfrageFrage->cTyp === 'text_gross') {
+        } elseif ($oUmfrageFrage->cTyp === \Survey\QuestionType::TEXT_SMALL
+            || $oUmfrageFrage->cTyp === \Survey\QuestionType::TEXT_BIG
+        ) {
             $oUmfrageFrageAntwort_arr = Shop::Container()->getDB()->query(
                 "SELECT cText AS cName, count(cText) AS nAnzahlAntwort
                     FROM tumfragedurchfuehrungantwort
@@ -546,45 +552,35 @@ function holeSonstigeTextAntworten(int $kUmfrageFrage, $nAnzahlAnwort, $nMaxAntw
 function mappeFragenTyp($cTyp)
 {
     switch ($cTyp) {
-        case 'multiple_single':
+        case \Survey\QuestionType::MULTI_SINGLE:
             return 'Multiple Choice (Eine Antwort)';
-            break;
 
-        case 'multiple_multi':
+        case \Survey\QuestionType::MULTI:
             return 'Multiple Choice (Viele Antworten)';
-            break;
 
-        case 'select_single':
+        case \Survey\QuestionType::SELECT_SINGLE:
             return 'Selectbox (Eine Antwort)';
-            break;
 
-        case 'select_multi':
+        case \Survey\QuestionType::SELECT_MULTI:
             return 'SelectBox (Viele Antworten)';
-            break;
 
-        case 'text_klein':
+        case \Survey\QuestionType::TEXT_SMALL:
             return 'Textfeld (klein)';
-            break;
 
-        case 'text_gross':
+        case \Survey\QuestionType::TEXT_BIG:
             return 'Textfeld (groß)';
-            break;
 
-        case 'matrix_single':
+        case \Survey\QuestionType::MATRIX_SINGLE:
             return 'Matrix (Eine Antwort pro Zeile)';
-            break;
 
-        case 'matrix_multi':
+        case \Survey\QuestionType::MATRIX_MULTI:
             return 'Matrix (Viele Antworten pro Zeile)';
-            break;
 
-        case 'text_statisch':
+        case \Survey\QuestionType::TEXT_STATIC:
             return 'Statischer Trenntext';
-            break;
 
-        case 'text_statisch_seitenwechsel':
+        case \Survey\QuestionType::TEXT_PAGE_CHANGE:
             return 'Statischer Trenntext + Seitenwechsel';
-            break;
 
         default:
             return '';

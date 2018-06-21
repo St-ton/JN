@@ -35,7 +35,7 @@ class GivenAnswer
     public function isActive(int $answerID, int $matrixID = null): bool
     {
         $type = $this->getQuestionType();
-        if ($type === 'matrix_single') { // @todo
+        if ($type === QuestionType::MATRIX_SINGLE) {
             if (!is_array($this->answer)) {
                 return false;
             }
@@ -48,7 +48,10 @@ class GivenAnswer
 
             return false;
         }
-        if ($type === 'multiple_single' || $type === 'multiple_multi' || $type === 'select_single') {
+        if ($type === QuestionType::MULTI_SINGLE
+            || $type === QuestionType::MULTI
+            || $type === QuestionType::TYPE_SELECT
+        ) {
             if (!is_array($this->answer)) {
                 return false;
             }

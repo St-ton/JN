@@ -32,23 +32,23 @@
                             <hr>
                         {/if}
 
-                        {if $question->getType() === 'select_single'}
+                        {if $question->getType() === \Survey\QuestionType::SELECT_SINGLE}
                             <select name="{$questionID}[]" class="form-control"{if $question->isRequired()} required{/if}>
                                 <option value="">{lang key='pleaseChoose'}</option>
-                        {elseif $question->getType() === 'select_multi'}
+                        {elseif $question->getType() === \Survey\QuestionType::SELECT_MULTI}
                             <select name="{$questionID}[]" multiple="multiple" class="form-control"{if $question->isRequired()} required{/if}>
-                        {elseif $question->getType() === 'text_klein'}
+                        {elseif $question->getType() === \Survey\QuestionType::TEXT_SMALL}
                             <input name="{$questionID}[]"
                                    type="text"
                                    value="{if $nSessionFragenWerte_arr[$questionID]->getAnswer(0) !== null}{$nSessionFragenWerte_arr[$questionID]->getAnswer(0)}{/if}"
                                    class="form-control"{if $question->isRequired()} required{/if}>
-                        {elseif $question->getType() === 'text_gross'}
+                        {elseif $question->getType() === \Survey\QuestionType::TEXT_BIG}
                             {strip}
                                 <textarea name="{$questionID}[]" rows="7" cols="60" class="form-control"{if $question->isRequired()} required{/if}>
                                     {if $nSessionFragenWerte_arr[$questionID]->getAnswer(0) !== null}{$nSessionFragenWerte_arr[$questionID]->getAnswer(0)}{/if}
                                 </textarea>
                             {/strip}
-                        {elseif $question->getType() === 'matrix_single'}
+                        {elseif $question->getType() === \Survey\QuestionType::MATRIX_SINGLE}
                             <table class="table table-bordered">
                             <thead>
                                 <td>&nbsp;</td>
@@ -56,7 +56,7 @@
                                     <td>{$matrixOption->getName()}</td>
                                 {/foreach}
                             </thead>
-                        {elseif $question->getType() === 'matrix_multi'}
+                        {elseif $question->getType() === \Survey\QuestionType::MATRIX_MULTI}
                             <table class="table table-bordered">
                             <tr>
                                 <td>&nbsp;</td>
@@ -68,7 +68,7 @@
                         {foreach $question->getAnswerOptions() as $answer}
                             {math equation='x-y' x=$answer@iteration y=1 assign='i'}
 
-                            {if $question->getType() === 'multiple_single'}
+                            {if $question->getType() === \Survey\QuestionType::MULTI_SINGLE}
                                 <div class="radio">
                                     <label>
                                         <input name="{$questionID}[]"
@@ -79,7 +79,7 @@
                                 </div>
                             {/if}
 
-                            {if $question->getType() === 'multiple_multi'}
+                            {if $question->getType() === \Survey\QuestionType::MULTI}
                                 <div class="checkbox">
                                     <label>
                                         <input name="{$questionID}[]"
@@ -90,19 +90,19 @@
                                 </div>
                             {/if}
 
-                            {if $question->getType() === 'select_single'}
+                            {if $question->getType() === \Survey\QuestionType::SELECT_SINGLE}
                                 <option value="{$answer->getID()}"
                                     {if $nSessionFragenWerte_arr[$questionID]->isActive($answer->getID())} selected{/if}> {$answer->getName()}
                                 </option>
                             {/if}
 
-                            {if $question->getType() === 'select_multi'}
+                            {if $question->getType() === \Survey\QuestionType::SELECT_MULTI}
                                 <option value="{$answer->getID()}"
                                     {if !empty($nSessionFragenWerte_arr[$questionID]->getAnswer())}{foreach $nSessionFragenWerte_arr[$questionID]->getAnswer() as $cUmfrageFrageAntwort}{if $cUmfrageFrageAntwort == $answer->getID()} selected{/if}{/foreach}{/if}> {$answer->getName()}
                                 </option>
                             {/if}
 
-                            {if $question->getType() === 'matrix_single'}
+                            {if $question->getType() === \Survey\QuestionType::MATRIX_SINGLE}
                                 <tr>
                                     <td>{$answer->getName()}</td>
                                     {foreach $question->getMatrixOptions() as $oUmfrageMatrixOption}
@@ -121,7 +121,7 @@
                                 </tr>
                             {/if}
 
-                            {if $question->getType() === 'matrix_multi'}
+                            {if $question->getType() === \Survey\QuestionType::MATRIX_MULTI}
                                 <tr>
                                     <td>{$answer->getName()}</td>
                                     {foreach $question->getMatrixOptions() as $oUmfrageMatrixOption}
@@ -137,18 +137,18 @@
                             {/if}
 
                         {/foreach}
-                        {if $question->getType() === 'select_single'}
+                        {if $question->getType() === \Survey\QuestionType::SELECT_SINGLE}
                             </select>
-                        {elseif $question->getType() === 'select_multi'}
+                        {elseif $question->getType() === \Survey\QuestionType::SELECT_MULTI}
                             </select>
-                        {elseif $question->getType() === 'matrix_single'}
+                        {elseif $question->getType() === \Survey\QuestionType::MATRIX_SINGLE}
                              </table>
-                        {elseif $question->getType() === 'matrix_multi'}
+                        {elseif $question->getType() === \Survey\QuestionType::MATRIX_MULTI}
                              </table>
                         {/if}
 
                         {if $question->hasFreeField()}
-                            {if $question->getType() === 'multiple_single'}
+                            {if $question->getType() === \Survey\QuestionType::MULTI_SINGLE}
                                 <div class="radio">
                                     <label>
                                         <input name="{$questionID}[]"
@@ -161,7 +161,7 @@
                                             value="{if $nSessionFragenWerte_arr[$questionID]->getAnswer(1) !== null}{$nSessionFragenWerte_arr[$questionID]->getAnswer(1)}{/if}"/>
                                     </label>
                                 </div>
-                            {elseif $question->getType() === 'multiple_multi'}
+                            {elseif $question->getType() === \Survey\QuestionType::MULTI}
                                 <input name="{$questionID}[]"
                                        type="checkbox"
                                        value="-1"

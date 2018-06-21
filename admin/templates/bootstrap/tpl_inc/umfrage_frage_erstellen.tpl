@@ -610,16 +610,16 @@ function checkSelect(selectBox) {ldelim}
                                 <span class="input-group-wrap">
                                     <select name="cTyp" id="cTypSelect" class="form-control combo" onchange="checkSelect(this);">
                                         <option {if isset($oUmfrageFrage->kUmfrageFrage) && $oUmfrageFrage->kUmfrageFrage > 0}{else}selected{/if}></option>
-                                        <option value="multiple_single"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === 'multiple_single'}selected{/if}>Multiple Choice (Eine Antwort)</option>
-                                        <option value="multiple_multi"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === 'multiple_multi'}selected{/if}>Multiple Choice (Viele Antworten)</option>
-                                        <option value="select_single"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === 'select_single'}selected{/if}>Selectbox (Eine Antwort)</option>
-                                        <option value="select_multi"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === 'select_multi'}selected{/if}>SelectBox (Viele Antworten)</option>
-                                        <option value="text_klein"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === 'text_klein'}selected{/if}>Textfeld (klein)</option>
-                                        <option value="text_gross"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === 'text_gross'}selected{/if}>Textfeld (gro&szlig;)</option>
-                                        <option value="matrix_single"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === 'matrix_single'}selected{/if}>Matrix (Eine Antwort pro Zeile)</option>
-                                        <option value="matrix_multi"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === 'matrix_multi'}selected{/if}>Matrix (Viele Antworten pro Zeile)</option>
-                                        <option value="text_statisch"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === 'text_statisch'}selected{/if}>Statischer Trenntext</option>
-                                        <option value="text_statisch_seitenwechsel"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === 'text_statisch'}selected{/if}>Statischer Trenntext + Seitenwechsel</option>
+                                        <option value="{\Survey\QuestionType::MULTI_SINGLE}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \Survey\QuestionType::MULTI_SINGLE}selected{/if}>Multiple Choice (Eine Antwort)</option>
+                                        <option value="{\Survey\QuestionType::MULTI}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \Survey\QuestionType::MULTI}selected{/if}>Multiple Choice (Viele Antworten)</option>
+                                        <option value="{\Survey\QuestionType::SELECT_SINGLE}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \Survey\QuestionType::SELECT_SINGLE}selected{/if}>Selectbox (Eine Antwort)</option>
+                                        <option value="{\Survey\QuestionType::SELECT_MULTI}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \Survey\QuestionType::SELECT_MULTI}selected{/if}>SelectBox (Viele Antworten)</option>
+                                        <option value="{\Survey\QuestionType::TEXT_SMALL}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \Survey\QuestionType::TEXT_SMALL}selected{/if}>Textfeld (klein)</option>
+                                        <option value="{\Survey\QuestionType::TEXT_BIG}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \Survey\QuestionType::TEXT_BIG}selected{/if}>Textfeld (groß)</option>
+                                        <option value="{\Survey\QuestionType::MATRIX_SINGLE}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \Survey\QuestionType::MATRIX_SINGLE}selected{/if}>Matrix (Eine Antwort pro Zeile)</option>
+                                        <option value="{\Survey\QuestionType::MATRIX_MULTI}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \Survey\QuestionType::MATRIX_MULTI}selected{/if}>Matrix (Viele Antworten pro Zeile)</option>
+                                        <option value="{\Survey\QuestionType::TEXT_STATIC}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \Survey\QuestionType::TEXT_STATIC}selected{/if}>Statischer Trenntext</option>
+                                        <option value="{\Survey\QuestionType::TEXT_PAGE_CHANGE}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \Survey\QuestionType::TEXT_PAGE_CHANGE}selected{/if}>Statischer Trenntext + Seitenwechsel</option>
                                     </select>
                                 </span>
                             </td>

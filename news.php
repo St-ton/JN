@@ -36,8 +36,6 @@ $linkHelper             = Shop::Container()->getLinkService();
 $kLink                  = $linkHelper->getSpecialPageLinkKey(LINKTYP_NEWS);
 $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
-$startKat               = new Kategorie();
-$startKat->kKategorie   = 0;
 $cUploadVerzeichnis     = PFAD_ROOT . PFAD_NEWSBILDER;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 

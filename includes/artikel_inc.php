@@ -24,7 +24,7 @@ function gibArtikelXSelling($kArtikel, $isParent = null)
             "SELECT txsell.*, txsellgruppe.cName, txsellgruppe.cBeschreibung
                 FROM txsell
                 JOIN tartikel
-                    ON txsell.kXSellArtikel = tartikel.kArtikel 
+                    ON txsell.kXSellArtikel = tartikel.kArtikel
                 LEFT JOIN txsellgruppe
                     ON txsellgruppe.kXSellGruppe = txsell.kXSellGruppe
 				    AND txsellgruppe.kSprache = :lid
@@ -98,7 +98,7 @@ function gibArtikelXSelling($kArtikel, $isParent = null)
                     IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel) AS kXSellArtikel,
                     SUM(txsellkauf.nAnzahl) nAnzahl
                     FROM txsellkauf
-                    JOIN tartikel 
+                    JOIN tartikel
                         ON tartikel.kArtikel = txsellkauf.kXSellArtikel
                     WHERE txsellkauf.kArtikel = {$kArtikel}
                         AND (tartikel.kVaterArtikel != (
@@ -429,12 +429,12 @@ function bearbeiteBenachrichtigung()
                 )->checkLogging(CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT, $kKundengruppe, $_POST, true);
 
                 $kVerfuegbarkeitsbenachrichtigung = Shop::Container()->getDB()->queryPrepared('
-                    INSERT INTO tverfuegbarkeitsbenachrichtigung 
-                        (cVorname, cNachname, cMail, kSprache, kArtikel, cIP, dErstellt, nStatus) 
-                        VALUES 
+                    INSERT INTO tverfuegbarkeitsbenachrichtigung
+                        (cVorname, cNachname, cMail, kSprache, kArtikel, cIP, dErstellt, nStatus)
+                        VALUES
                         (:cVorname, :cNachname, :cMail, :kSprache, :kArtikel, :cIP, now(), :nStatus)
-                        ON DUPLICATE KEY UPDATE 
-                            cVorname = :cVorname, cNachname = :cNachname, ksprache = :kSprache, 
+                        ON DUPLICATE KEY UPDATE
+                            cVorname = :cVorname, cNachname = :cNachname, ksprache = :kSprache,
                             cIP = :cIP, dErstellt = now(), nStatus = :nStatus', get_object_vars($Benachrichtigung),
                     \DB\ReturnType::LAST_INSERTED_ID
                 );
@@ -769,7 +769,7 @@ function bearbeiteProdukttags($AktuellerArtikel)
             }
             // Posts die älter als 24 Stunden sind löschen
             Shop::Container()->getDB()->query(
-                "DELETE FROM ttagkunde 
+                "DELETE FROM ttagkunde
                     WHERE dZeit < DATE_SUB(now(),INTERVAL 1 MONTH)",
                 \DB\ReturnType::DEFAULT
             );
@@ -1125,31 +1125,28 @@ function holeAehnlicheArtikel($kArtikel)
         }
         $lagerFilter         = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
         $customerGroupID     = Session::CustomerGroup()->getID();
-        $oArtikelMerkmal_arr = Shop::Container()->getDB()->query(
-            "SELECT merkmalartikel.kArtikel, merkmalartikel.kVaterArtikel
-                FROM (
-                    SELECT DISTINCT tartikelmerkmal.kArtikel, tartikel.kVaterArtikel, 
-                    tartikelmerkmal.kMerkmal, tartikelmerkmal.kMerkmalWert
+        $oArtikelMerkmal_arr = Shop::Container()->getDB()->queryPrepared(
+            "SELECT tartikelmerkmal.kArtikel, tartikel.kVaterArtikel
                     FROM tartikelmerkmal
-                    JOIN tartikel 
-                        ON tartikel.kArtikel = tartikelmerkmal.kArtikel
-                        AND tartikel.kVaterArtikel != {$kArtikel}
-                        AND (tartikel.nIstVater = 1 OR tartikel.kEigenschaftKombi = 0)
-                    LEFT JOIN tartikelsichtbarkeit 
-                        ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = {$customerGroupID}
-                  WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                        AND tartikelmerkmal.kArtikel != {$kArtikel}
+                        JOIN tartikel ON tartikel.kArtikel = tartikelmerkmal.kArtikel
+                            AND tartikel.kVaterArtikel != :kArtikel
+                            AND (tartikel.nIstVater = 1 OR tartikel.kEigenschaftKombi = 0)
+                        JOIN tartikelmerkmal similarMerkmal ON similarMerkmal.kArtikel = :kArtikel
+                            AND similarMerkmal.kMerkmal = tartikelmerkmal.kMerkmal
+                            AND similarMerkmal.kMerkmalWert = tartikelmerkmal.kMerkmalWert
+                        LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
+                            AND tartikelsichtbarkeit.kKundengruppe = :customerGroupID
+                    WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                        AND tartikelmerkmal.kArtikel != :kArtikel
                         {$lagerFilter}
                         {$cSQLXSeller}
-                ) AS merkmalartikel
-                JOIN tartikelmerkmal similarMerkmal 
-                    ON similarMerkmal.kArtikel = {$kArtikel}
-                    AND similarMerkmal.kMerkmal = merkmalartikel.kMerkmal
-                    AND similarMerkmal.kMerkmalWert = merkmalartikel.kMerkmalWert
-                GROUP BY merkmalartikel.kArtikel
-                ORDER BY COUNT(similarMerkmal.kMerkmal) DESC
-                " . $cLimit,
+                    GROUP BY tartikelmerkmal.kArtikel
+                    ORDER BY COUNT(tartikelmerkmal.kMerkmal) DESC
+                    " . $cLimit,
+            [
+                'kArtikel'        => $kArtikel,
+                'customerGroupID' => $customerGroupID
+            ],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (is_array($oArtikelMerkmal_arr) && count($oArtikelMerkmal_arr) > 0) {
@@ -1174,13 +1171,13 @@ function holeAehnlicheArtikel($kArtikel)
                         WHERE kArtikel = " . $kArtikel . "
                         AND nSort <= 10
                     ) AS ssSuchCache
-                    JOIN tsuchcachetreffer 
+                    JOIN tsuchcachetreffer
                         ON tsuchcachetreffer.kSuchCache = ssSuchCache.kSuchCache
                         AND tsuchcachetreffer.kArtikel != " . $kArtikel . "
-                    LEFT JOIN tartikelsichtbarkeit 
+                    LEFT JOIN tartikelsichtbarkeit
                         ON tsuchcachetreffer.kArtikel = tartikelsichtbarkeit.kArtikel
                         AND tartikelsichtbarkeit.kKundengruppe = " . $customerGroupID . "
-                    JOIN tartikel 
+                    JOIN tartikel
                         ON tartikel.kArtikel = tsuchcachetreffer.kArtikel
                         AND tartikel.kVaterArtikel != " . $kArtikel . "
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
@@ -1213,13 +1210,13 @@ function holeAehnlicheArtikel($kArtikel)
                                 FROM ttagartikel
                                 WHERE kArtikel = " . $kArtikel . "
                         ) AS ssTag
-                        JOIN ttagartikel 
+                        JOIN ttagartikel
                             ON ttagartikel.kTag = ssTag.kTag
                             AND ttagartikel.kArtikel != " . $kArtikel . "
-                        LEFT JOIN tartikelsichtbarkeit 
+                        LEFT JOIN tartikelsichtbarkeit
                             ON ttagartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                             AND tartikelsichtbarkeit.kKundengruppe = " . $customerGroupID . "
-                        JOIN tartikel 
+                        JOIN tartikel
                             ON tartikel.kArtikel = ttagartikel.kArtikel
                             AND tartikel.kVaterArtikel != " . $kArtikel . "
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL

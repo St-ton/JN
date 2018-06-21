@@ -58,7 +58,7 @@ class WidgetVisitorsOnline extends WidgetBase
         );
         $cryptoService = Shop::Container()->getCryptoService();
         foreach ($oVisitors_arr as $i => $oVisitor) {
-            $oVisitors_arr[$i]->cNachname = trim($cryptoService->decryptXTEA($oVisitor->cNachname));
+            $oVisitors_arr[$i]->cNachname = trim($cryptoService->decryptXTEA($oVisitor->cNachname ?? ''));
             if ($oVisitor->kBestellung > 0) {
                 $oVisitors_arr[$i]->fGesamtsumme = Preise::getLocalizedPriceString($oVisitor->fGesamtsumme);
             }

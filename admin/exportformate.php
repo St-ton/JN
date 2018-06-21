@@ -42,7 +42,7 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && FormHelper
             $revision = new Revision();
             $revision->addRevision('export', $kExportformat);
             $ef->update();
-            $hinweis .= 'Das Exportformat <strong>' . $ef->getName() . '</strong> wurde erfolgreich ge&auml;ndert.';
+            $hinweis .= 'Das Exportformat <strong>' . $ef->getName() . '</strong> wurde erfolgreich geändert.';
         } else {
             //insert
             $kExportformat = $ef->save();
@@ -84,7 +84,7 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && FormHelper
         $smarty->assign('cPlausiValue_arr', $checkResult)
                ->assign('cPostVar_arr', StringHandler::filterXSS($_POST));
         $step   = 'neuer Export';
-        $fehler = 'Fehler: Bitte &uuml;berpr&uuml;fen Sie Ihre Eingaben.';
+        $fehler = 'Fehler: Bitte überprüfen Sie Ihre Eingaben.';
     }
 }
 $cAction       = null;
@@ -149,9 +149,9 @@ if ($cAction !== null && $kExportformat !== null && FormHelper::validateToken())
             );
 
             if ($bDeleted > 0) {
-                $hinweis = 'Exportformat erfolgreich gel&ouml;scht.';
+                $hinweis = 'Exportformat erfolgreich gelöscht.';
             } else {
-                $fehler = 'Exportformat konnte nicht gel&ouml;scht werden.';
+                $fehler = 'Exportformat konnte nicht gelöscht werden.';
             }
             break;
         case 'exported':

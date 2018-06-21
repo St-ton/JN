@@ -35,12 +35,12 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
                 $success = $success && $customerFields->delete((int)$kKundenfeld);
             }
             if ($success) {
-                $cHinweis .= "Die ausgew&auml;hlten Kundenfelder wurden erfolgreich gel&ouml;scht.<br />";
+                $cHinweis .= "Die ausgewählten Kundenfelder wurden erfolgreich gelöscht.<br />";
             } else {
-                $cFehler .= 'Die ausgew&auml;hlten Kundenfelder konnten nicht gel&ouml;scht werden.<br />';
+                $cFehler .= 'Die ausgewählten Kundenfelder konnten nicht gelöscht werden.<br />';
             }
         } else {
-            $cFehler .= "Fehler: Bitte w&auml;hlen Sie mindestens ein Kundenfeld aus.<br />";
+            $cFehler .= "Fehler: Bitte wählen Sie mindestens ein Kundenfeld aus.<br />";
         }
     } elseif (isset($_POST['aktualisieren']) && FormHelper::validateToken()) { // Aktualisieren
         // Kundenfelder auslesen und in Smarty assignen
@@ -84,7 +84,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
             if (isset($vWrongFields['cName']) && 2 === $vWrongFields['cName']) {
                 $cFehler = 'Ein Feld mit diesen Namen existiert bereits!';
             } else {
-                $cFehler = 'Fehler: Bitte f&uuml;llen Sie alle Pflichtangaben aus!';
+                $cFehler = 'Fehler: Bitte füllen Sie alle Pflichtangaben aus!';
             }
             $smarty->assign('xPlausiVar_arr', $oPlausi->getPlausiVar())
                    ->assign('xPostVar_arr', $oPlausi->getPostVar())

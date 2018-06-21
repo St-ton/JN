@@ -135,7 +135,7 @@ if (RequestHelper::verifyGPCDataInt('freischalten') === 1 && FormHelper::validat
             }
         } elseif (isset($_POST['freischaltenleoschen'])) {
             if (loescheBewertung($_POST['kBewertung'])) {
-                $cHinweis .= 'Ihre markierten Bewertungen wurden erfolgreich gel&ouml;scht.<br />';
+                $cHinweis .= 'Ihre markierten Bewertungen wurden erfolgreich gelöscht.<br />';
             } else {
                 $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine Bewertung.<br />';
             }
@@ -160,7 +160,7 @@ if (RequestHelper::verifyGPCDataInt('freischalten') === 1 && FormHelper::validat
                     } else {
                         switch ($nReturnValue) {
                             case 2:
-                                $cFehler = 'Fehler: Mapping konnte aufgrund eines unbekannten Fehlers nicht durchgef&uuml;hrt werden.';
+                                $cFehler = 'Fehler: Mapping konnte aufgrund eines unbekannten Fehlers nicht durchgeführt werden.';
                                 break;
                             case 3:
                                 $cFehler = 'Fehler: Mindestens eine Suchanfrage wurde nicht in der Datenbank gefunden.';
@@ -194,7 +194,7 @@ if (RequestHelper::verifyGPCDataInt('freischalten') === 1 && FormHelper::validat
             }
         } elseif (isset($_POST['freischaltenleoschen'])) {
             if (isset($_POST['kSuchanfrage']) && loescheSuchanfragen($_POST['kSuchanfrage'])) {
-                $cHinweis .= 'Ihre markierten Suchanfragen wurden erfolgreich gel&ouml;scht.<br />';
+                $cHinweis .= 'Ihre markierten Suchanfragen wurden erfolgreich gelöscht.<br />';
             } else {
                 $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine Suchanfrage.<br />';
             }
@@ -208,7 +208,7 @@ if (RequestHelper::verifyGPCDataInt('freischalten') === 1 && FormHelper::validat
             }
         } elseif (isset($_POST['freischaltenleoschen'])) {
             if (isset($_POST['kTag']) && loescheTags($_POST['kTag'])) {
-                $cHinweis .= 'Ihre markierten Tags wurden erfolgreich gel&ouml;scht.<br />';
+                $cHinweis .= 'Ihre markierten Tags wurden erfolgreich gelöscht.<br />';
             } else {
                 $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Tag.<br />';
             }
@@ -222,7 +222,7 @@ if (RequestHelper::verifyGPCDataInt('freischalten') === 1 && FormHelper::validat
             }
         } elseif (isset($_POST['freischaltenleoschen'])) {
             if (isset($_POST['kNewsKommentar']) && loescheNewskommentare($_POST['kNewsKommentar'])) {
-                $cHinweis .= 'Ihre markierten Newskommentare wurden erfolgreich gel&ouml;scht.<br />';
+                $cHinweis .= 'Ihre markierten Newskommentare wurden erfolgreich gelöscht.<br />';
             } else {
                 $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newskommentar.<br />';
             }
@@ -230,15 +230,15 @@ if (RequestHelper::verifyGPCDataInt('freischalten') === 1 && FormHelper::validat
     } elseif (RequestHelper::verifyGPCDataInt('newsletterempfaenger') === 1 && FormHelper::validateToken()) { // Newsletterempfaenger
         if (isset($_POST['freischaltensubmit'])) {
             if (isset($_POST['kNewsletterEmpfaenger']) && schalteNewsletterempfaengerFrei($_POST['kNewsletterEmpfaenger'])) {
-                $cHinweis .= 'Ihre markierten Newsletterempf&auml;nger wurden erfolgreich freigeschaltet.<br />';
+                $cHinweis .= 'Ihre markierten Newsletterempfänger wurden erfolgreich freigeschaltet.<br />';
             } else {
-                $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newsletterempf&auml;nger.<br />';
+                $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newsletterempfänger.<br />';
             }
         } elseif (isset($_POST['freischaltenleoschen'])) {
             if (isset($_POST['kNewsletterEmpfaenger']) && loescheNewsletterempfaenger($_POST['kNewsletterEmpfaenger'])) {
-                $cHinweis .= 'Ihre markierten Newsletterempf&auml;nger wurden erfolgreich gel&ouml;scht.<br />';
+                $cHinweis .= 'Ihre markierten Newsletterempfänger wurden erfolgreich gelöscht.<br />';
             } else {
-                $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newsletterempf&auml;nger.<br />';
+                $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newsletterempfänger.<br />';
             }
         }
     }

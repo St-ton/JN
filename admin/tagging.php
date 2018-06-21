@@ -164,13 +164,13 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && FormHelper::vali
                     //also delete possible mappings TO this tag
                     Shop::Container()->getDB()->delete('ttagmapping', 'cNameNeu', $oTag->cName);
                     Shop::Container()->getDB()->delete('ttagartikel', 'kTag', $kTag);
-                    $cHinweis .= 'Der Tag "' . $oTag->cName . '" wurde erfolgreich gel&ouml;scht.<br />';
+                    $cHinweis .= 'Der Tag "' . $oTag->cName . '" wurde erfolgreich gelöscht.<br />';
                 } else {
                     $cFehler .= 'Es wurde kein Tag mit der ID "' . $kTag . '" gefunden.<br />';
                 }
             }
         } else {
-            $cFehler .= 'Bitte w&auml;hlen Sie mindestens einen Tag aus.<br />';
+            $cFehler .= 'Bitte wählen Sie mindestens einen Tag aus.<br />';
         }
     }
 } elseif (isset($_POST['tagging']) && (int)$_POST['tagging'] === 2 && FormHelper::validateToken()) { // Mappinglist
@@ -182,13 +182,13 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && FormHelper::vali
                 if (strlen($oMapping->cName) > 0) {
                     Shop::Container()->getDB()->delete('ttagmapping', 'kTagMapping', $kTagMapping);
 
-                    $cHinweis .= 'Das Mapping "' . $oMapping->cName . '" wurde erfolgreich gel&ouml;scht.<br />';
+                    $cHinweis .= 'Das Mapping "' . $oMapping->cName . '" wurde erfolgreich gelöscht.<br />';
                 } else {
                     $cFehler .= 'Es wurde kein Mapping mit der ID "' . $kTagMapping . '" gefunden.<br />';
                 }
             }
         } else {
-            $cFehler .= 'Bitte w&auml;hlen Sie mindestens ein Mapping aus.<br />';
+            $cFehler .= 'Bitte wählen Sie mindestens ein Mapping aus.<br />';
         }
     }
 } elseif ((isset($_POST['a']) && $_POST['a'] === 'saveSettings') ||
@@ -207,10 +207,10 @@ if (RequestHelper::verifyGPCDataInt('kTag') > 0 && RequestHelper::verifyGPCDataI
     if (!empty($_POST['kArtikel_arr']) && is_array($_POST['kArtikel_arr']) &&
         count($_POST['kArtikel_arr']) && RequestHelper::verifyGPCDataInt('detailloeschen') === 1) {
         if (loescheTagsVomArtikel($_POST['kArtikel_arr'], RequestHelper::verifyGPCDataInt('kTag'))) {
-            $cHinweis = 'Der Tag wurde erfolgreich bei Ihren markierten Artikeln gel&ouml;scht.';
+            $cHinweis = 'Der Tag wurde erfolgreich bei Ihren markierten Artikeln gelöscht.';
         } else {
             $step    = 'detail';
-            $cFehler = 'Fehler: Ihre markierten Artikel zum Produkttag konnten nicht gel&ouml;scht werden.';
+            $cFehler = 'Fehler: Ihre markierten Artikel zum Produkttag konnten nicht gelöscht werden.';
         }
     }
     $oTagArtikel_arr = holeTagDetail(

@@ -41,9 +41,9 @@ if (RequestHelper::verifyGPCDataInt('upload') === 1 && FormHelper::validateToken
     if (isset($_POST['delete'])) {
         $delete = deleteShopLogo(Shop::getLogo());
         if ($delete === true) {
-            $cHinweis .= 'Ihr Logo wurde erfolgreich gel&ouml;scht.<br />';
+            $cHinweis .= 'Ihr Logo wurde erfolgreich gelöscht.<br />';
         } else {
-            $cFehler .= 'Fehler beim L&ouml;schen des Logos.<br />';
+            $cFehler .= 'Fehler beim Löschen des Logos.<br />';
         }
     }
     $nReturnValue = saveShopLogo($_FILES);

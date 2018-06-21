@@ -17,7 +17,7 @@ $minLogLevel = Shop::getConfigValue(CONF_GLOBAL, 'systemlog_flag');
 if (FormHelper::validateToken()) {
     if (RequestHelper::verifyGPDataString('action') === 'clearsyslog') {
         Jtllog::deleteAll();
-        $cHinweis = 'Ihr Systemlog wurde erfolgreich gel&ouml;scht.';
+        $cHinweis = 'Ihr Systemlog wurde erfolgreich gelöscht.';
     } elseif (RequestHelper::verifyGPDataString('action') === 'save') {
         $minLogLevel = (int)($_POST['minLogLevel'] ?? 0);
         Shop::Container()->getDB()->update('teinstellungen', 'cName', 'systemlog_flag', (object)['cWert' => $minLogLevel]);
@@ -29,12 +29,12 @@ if (FormHelper::validateToken()) {
             foreach ($_REQUEST['selected'] as $kLog) {
                 $oLog = new Jtllog($kLog);
                 if ($oLog->delete() === -1) {
-                    $cFehler .= 'Log-Eintrag vom ' . $oLog->getErstellt() . ' konnte nicht gel&ouml;scht werden.<br>';
+                    $cFehler .= 'Log-Eintrag vom ' . $oLog->getErstellt() . ' konnte nicht gelöscht werden.<br>';
                 }
             }
 
             if ($cFehler === '') {
-                $cHinweis = 'Alle markierten Log-Eintr&auml;ge wurden gel&ouml;scht.';
+                $cHinweis = 'Alle markierten Log-Einträge wurden gelöscht.';
             }
         }
     }

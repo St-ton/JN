@@ -46,9 +46,9 @@ if (isset($_POST['removefromlinkgroup'], $_POST['kLinkgruppe'])
 if (isset($_POST['dellink']) && (int)$_POST['dellink'] > 0 && FormHelper::validateToken()) {
     $res = $linkAdmin->deleteLink((int)$_POST['dellink']);
     if ($res > 0) {
-        $hinweis .= 'Link erfolgreich gel&ouml;scht!';
+        $hinweis .= 'Link erfolgreich gelöscht!';
     } else {
-        $fehler .= 'Link konnte nicht gel&ouml;scht werden.';
+        $fehler .= 'Link konnte nicht gelöscht werden.';
     }
     $clearCache = true;
     $step       = 'uebersicht';
@@ -77,12 +77,12 @@ if (((isset($_POST['dellinkgruppe']) && (int)$_POST['dellinkgruppe'] > 0)
         $linkGroupID = (int)$_POST['kLinkgruppe'];
     }
     if ($linkAdmin->deleteLinkGroup($linkGroupID) > 0) {
-        $hinweis    .= 'Linkgruppe erfolgreich gel&ouml;scht!';
+        $hinweis    .= 'Linkgruppe erfolgreich gelöscht!';
         $clearCache = true;
         $step       = 'uebersicht';
         $_POST      = [];
     } else {
-        $fehler .= 'Linkgruppe konnte nicht gel&ouml;scht werden.';
+        $fehler .= 'Linkgruppe konnte nicht gelöscht werden.';
     }
 }
 
@@ -108,9 +108,9 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && FormHelper::va
     if (count($oPlausiCMS->getPlausiVar()) === 0) {
         $link = $linkAdmin->createOrUpdateLink($_POST);
         if ((int)$_POST['kLink'] === 0) {
-            $hinweis .= 'Link wurde erfolgreich hinzugef&uuml;gt.';
+            $hinweis .= 'Link wurde erfolgreich hinzugefügt.';
         } else {
-            $hinweis .= 'Der Link <strong>' . $link->getName() . '</strong> wurde erfolgreich ge&auml;ndert.';
+            $hinweis .= 'Der Link <strong>' . $link->getName() . '</strong> wurde erfolgreich geändert.';
         }
         $clearCache = true;
         $kLink      = 0;
@@ -151,7 +151,7 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && FormHelper::va
         $link = new \Link\Link($db);
         $link->setLinkGroupID((int)$_POST['kLinkgruppe']);
         $link->setLinkGroups([(int)$_POST['kLinkgruppe']]);
-        $fehler = 'Fehler: Bitte f&uuml;llen Sie alle Pflichtangaben aus!';
+        $fehler = 'Fehler: Bitte füllen Sie alle Pflichtangaben aus!';
         $smarty->assign('xPlausiVar_arr', $oPlausiCMS->getPlausiVar())
                ->assign('xPostVar_arr', $oPlausiCMS->getPostVar());
     }

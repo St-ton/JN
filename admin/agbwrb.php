@@ -28,7 +28,7 @@ if (RequestHelper::verifyGPCDataInt('agbwrb') === 1 && FormHelper::validateToken
             $smarty->assign('kKundengruppe', RequestHelper::verifyGPCDataInt('kKundengruppe'))
                    ->assign('oAGBWRB', $oAGBWRB);
         } else {
-            $cFehler .= 'Fehler: Bitte geben Sie eine g&uuml;ltige Kundengruppe an.<br />';
+            $cFehler .= 'Fehler: Bitte geben Sie eine gültige Kundengruppe an.<br />';
         }
     } elseif (RequestHelper::verifyGPCDataInt('agbwrb_editieren_speichern') === 1) { // Speichern
         if (speicherAGBWRB(

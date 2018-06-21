@@ -76,10 +76,10 @@ if (FormHelper::validateToken()) {
                 $smarty->assign('oNewsletter', $oNewsletter);
             } else {
                 Shop::Container()->getDB()->insert('tnewsletterempfaenger', $oNewsletter);
-                $cHinweis = 'Newsletter-Empf&auml;nger wurde erfolgreich hinzugef&uuml;gt';
+                $cHinweis = 'Newsletter-Empfänger wurde erfolgreich hinzugefügt';
             }
         } else {
-            $cFehler = 'Bitte f&uuml;llen Sie das Feld Email aus.';
+            $cFehler = 'Bitte füllen Sie das Feld Email aus.';
             $smarty->assign('oNewsletter', $oNewsletter);
         }
     } elseif (isset($_POST['newsletterqueue']) && (int)$_POST['newsletterqueue'] === 1) { // Queue
@@ -437,9 +437,9 @@ if (FormHelper::validateToken()) {
                             }
                         } else {
                             if ($nCount_arr[0] > 0) {
-                                $cKundengruppe .= ', Newsletterempf&auml;nger ohne Kundenkonto';
+                                $cKundengruppe .= ', Newsletterempfänger ohne Kundenkonto';
                             } else {
-                                $cKundengruppe .= 'Newsletterempf&auml;nger ohne Kundenkonto';
+                                $cKundengruppe .= 'Newsletterempfänger ohne Kundenkonto';
                             }
                             if ($nCount_arr[1] > 0) {
                                 $cKundengruppeKey .= ';0';
@@ -500,7 +500,7 @@ if (FormHelper::validateToken()) {
             $oEmailempfaenger->cLoeschCode = '78rev6gj8er6we87gw6er8';
             $oEmailempfaenger->cLoeschURL  = Shop::getURL() . '/newsletter.php?lang=ger&lc=' . $oEmailempfaenger->cLoeschCode;
             if (empty($oEmailempfaenger->cEmail)) {
-                $result = 'Die Empf&auml;nger-Adresse zum Testen ist leer.';
+                $result = 'Die Empfänger-Adresse zum Testen ist leer.';
             } else {
                 $mailSmarty = bereiteNewsletterVor($Einstellungen);
                 $result     = versendeNewsletter(

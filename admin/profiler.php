@@ -13,16 +13,16 @@ if (isset($_POST['delete-run-submit']) && FormHelper::validateToken()) {
     if (isset($_POST['run-id']) && is_numeric($_POST['run-id'])) {
         $res = deleteProfileRun(false, (int)$_POST['run-id']);
         if (is_numeric($res) && $res > 0) {
-            $cHinweis = 'Eintrag erfolgreich gel&ouml;scht.';
+            $cHinweis = 'Eintrag erfolgreich gelöscht.';
         } else {
-            $cFehler = 'Eintrag konnte nicht gel&ouml;scht werden.';
+            $cFehler = 'Eintrag konnte nicht gelöscht werden.';
         }
     } elseif (isset($_POST['delete-all']) && $_POST['delete-all'] === 'y') {
         $res = deleteProfileRun(true);
         if (is_numeric($res) && $res > 0) {
-            $cHinweis = 'Eintr&auml;ge erfolgreich gel&ouml;scht. ';
+            $cHinweis = 'Einträge erfolgreich gelöscht. ';
         } else {
-            $cFehler = 'Eintr&auml;ge konnten nicht gel&ouml;scht werden. ';
+            $cFehler = 'Einträge konnten nicht gelöscht werden. ';
         }
     }
 }

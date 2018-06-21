@@ -67,7 +67,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'year_downloads_delete' && F
             WHERE YEAR(tsitemaptracker.dErstellt) = " . $nYearDownloads,
         \DB\ReturnType::AFFECTED_ROWS
     );
-    $cHinweis       = 'Ihre markierten Sitemap Downloads f&uuml;r ' . $nYearDownloads . ' wurden erfolgreich gelöscht.';
+    $cHinweis       = 'Ihre markierten Sitemap Downloads für ' . $nYearDownloads . ' wurden erfolgreich gelöscht.';
     $nYearDownloads = 0;
 }
 
@@ -78,7 +78,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'year_reports_delete' && For
             WHERE YEAR(tsitemapreport.dErstellt) = " . $nYearReports,
         \DB\ReturnType::AFFECTED_ROWS
     );
-    $cHinweis     = 'Ihre Sitemap Reports f&uuml;r ' . $nYearReports . ' wurden erfolgreich gelöscht.';
+    $cHinweis     = 'Ihre Sitemap Reports für ' . $nYearReports . ' wurden erfolgreich gelöscht.';
     $nYearReports = 0;
 }
 

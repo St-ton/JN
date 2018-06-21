@@ -34,7 +34,7 @@ if (RequestHelper::verifyGPCDataInt('bewertung_editieren') === 1 && FormHelper::
         }
     } else {
         $step = 'bewertung_editieren';
-        $cFehler .= 'Fehler: Bitte &uuml;berpr&uuml;fen Sie Ihre Eingaben. ';
+        $cFehler .= 'Fehler: Bitte überprüfen Sie Ihre Eingaben. ';
     }
 } elseif (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
 
@@ -72,7 +72,7 @@ if (RequestHelper::verifyGPCDataInt('bewertung_editieren') === 1 && FormHelper::
             foreach ($_POST['kBewertung'] as $kBewertung) {
                 Shop::Container()->getDB()->delete('tbewertung', 'kBewertung', (int)$kBewertung);
             }
-            $cHinweis .= count($_POST['kBewertung']) . " Bewertung(en) wurde(n) erfolgreich gel&ouml;scht.";
+            $cHinweis .= count($_POST['kBewertung']) . " Bewertung(en) wurde(n) erfolgreich gelöscht.";
         }
     }
 } elseif (isset($_POST['bewertung_aktiv']) && (int)$_POST['bewertung_aktiv'] === 1) {
@@ -110,7 +110,7 @@ if (RequestHelper::verifyGPCDataInt('bewertung_editieren') === 1 && FormHelper::
         array_walk($cacheTags, function(&$i) { $i = CACHING_GROUP_ARTICLE . '_' . $i; });
         Shop::Cache()->flushTags($cacheTags);
 
-        $cHinweis .= count($_POST['kBewertung']) . ' Bewertung(en) wurde(n) erfolgreich gel&ouml;scht.';
+        $cHinweis .= count($_POST['kBewertung']) . ' Bewertung(en) wurde(n) erfolgreich gelöscht.';
     }
 }
 

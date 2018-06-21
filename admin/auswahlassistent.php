@@ -47,7 +47,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                 $cHinweis = 'Ihre Frage wurde erfolgreich gespeichert.';
                 $cTab     = 'uebersicht';
             } elseif (is_array($cPlausi_arr) && count($cPlausi_arr) > 0) {
-                $cFehler = 'Fehler: Bitte f&uuml;llen Sie alle Felder korrekt aus.';
+                $cFehler = 'Fehler: Bitte füllen Sie alle Felder korrekt aus.';
                 $smarty->assign('cPost_arr', StringHandler::filterXSS($_POST))
                        ->assign('cPlausi_arr', $cPlausi_arr)
                        ->assign('kAuswahlAssistentFrage',
@@ -56,9 +56,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         }
     } elseif (isset($_GET['a'], $_GET['q']) && $_GET['a'] === 'delQuest' && (int)$_GET['q'] > 0 && FormHelper::validateToken()) {
         if (AuswahlAssistentFrage::deleteQuestion(['kAuswahlAssistentFrage_arr' => [$_GET['q']]])) {
-            $cHinweis = 'Ihre ausgew&auml;hlte Frage wurden erfolgreich gel&ouml;scht.';
+            $cHinweis = 'Ihre ausgewählte Frage wurden erfolgreich gelöscht.';
         } else {
-            $cFehler = 'Fehler: Ihre ausgew&auml;hlte Frage konnten nicht gel&ouml;scht werden.';
+            $cFehler = 'Fehler: Ihre ausgewählte Frage konnten nicht gelöscht werden.';
         }
     } elseif (isset($_GET['a']) && $_GET['a'] === 'editQuest' && (int)$_GET['q'] > 0 && FormHelper::validateToken()) {
         $step = 'edit-question';
@@ -87,7 +87,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                 $cTab     = 'uebersicht';
             } elseif (is_array($cPlausi_arr) && count($cPlausi_arr) > 0) {
                 $step    = 'edit-group';
-                $cFehler = 'Fehler: Bitte f&uuml;llen Sie alle Felder korrekt aus.';
+                $cFehler = 'Fehler: Bitte füllen Sie alle Felder korrekt aus.';
                 $smarty->assign('cPost_arr', StringHandler::filterXSS($_POST))
                        ->assign('cPlausi_arr', $cPlausi_arr)
                        ->assign('kAuswahlAssistentGruppe', (isset($_POST['kAuswahlAssistentGruppe'])
@@ -96,9 +96,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             }
         } elseif ($_POST['a'] === 'delGrp') {
             if (AuswahlAssistentGruppe::deleteGroup($_POST)) {
-                $cHinweis = 'Ihre ausgew&auml;hlten Gruppen wurden erfolgreich gel&ouml;scht.';
+                $cHinweis = 'Ihre ausgewählten Gruppen wurden erfolgreich gelöscht.';
             } else {
-                $cFehler = 'Fehler: Ihre ausgew&auml;hlten Gruppen konnten nicht gel&ouml;scht werden.';
+                $cFehler = 'Fehler: Ihre ausgewählten Gruppen konnten nicht gelöscht werden.';
             }
         } elseif ($_POST['a'] === 'saveSettings') {
             $step = 'uebersicht';

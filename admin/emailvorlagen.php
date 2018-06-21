@@ -124,7 +124,7 @@ if (isset($_POST['resetEmailvorlage'])
                 }
             }
         }
-        $cHinweis .= 'Ihre markierte Emailvorlage wurde erfolgreich zur&uuml;ckgesetzt.<br />';
+        $cHinweis .= 'Ihre markierte Emailvorlage wurde erfolgreich zurückgesetzt.<br />';
     }
 }
 if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
@@ -193,7 +193,7 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
 
     $bestellung->Positionen[0]->WarenkorbPosEigenschaftArr                           = [];
     $bestellung->Positionen[0]->WarenkorbPosEigenschaftArr[0]                        = new stdClass();
-    $bestellung->Positionen[0]->WarenkorbPosEigenschaftArr[0]->cEigenschaftName      = 'Kapazit&auml;t';
+    $bestellung->Positionen[0]->WarenkorbPosEigenschaftArr[0]->cEigenschaftName      = 'Kapazität';
     $bestellung->Positionen[0]->WarenkorbPosEigenschaftArr[0]->cEigenschaftWertName  = '400GB';
     $bestellung->Positionen[0]->WarenkorbPosEigenschaftArr[0]->fAufpreis             = 128.45;
     $bestellung->Positionen[0]->WarenkorbPosEigenschaftArr[0]->cAufpreisLocalized[0] = '149,00 EUR';
@@ -631,7 +631,7 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
                             unset($_POST['dateiname_' . ($i + 1) . '_' . $Sprache->kSprache]);
                         } else {
                             $cFehler .= 'Fehler: Ihr Dateiname "' . $_POST['dateiname_' . ($i + 1) . '_' . $Sprache->kSprache] .
-                                '" enth&auml;lt unzul&auml;ssige Zeichen (Erlaubt sind A-Z, a-z, 0-9, _ und -).<br />';
+                                '" enthält unzulässige Zeichen (Erlaubt sind A-Z, a-z, 0-9, _ und -).<br />';
                             $nFehler = 1;
                             break;
                         }
@@ -658,7 +658,7 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
                                 '_' . $Sprache->kSprache . '_' . $i . $cPlugin . '.pdf';
                             if (!move_uploaded_file($_FILES['pdf_' . $i . '_' . $Sprache->kSprache]['tmp_name'], $cUploadDatei)) {
                                 $cFehler .= 'Fehler: Die Dateien konnten nicht geschrieben werden. ' .
-                                    'Pr&uuml;fen Sie bitte, ob das PDF Verzeichnis Schreibrechte besitzt.<br />';
+                                    'Prüfen Sie bitte, ob das PDF Verzeichnis Schreibrechte besitzt.<br />';
                                 $nFehler = 1;
                                 break;
                             }
@@ -671,7 +671,7 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
                             break;
                         }
                     } else {
-                        $cFehler .= 'Fehler: Die Datei muss ein PDF sein und darf maximal 2MB gro&szlig; sein.<br />';
+                        $cFehler .= 'Fehler: Die Datei muss ein PDF sein und darf maximal 2MB groß sein.<br />';
                         $nFehler = 1;
                         break;
                     }
@@ -697,7 +697,7 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
                         $cDateiname_arr[] = $_POST['dateiname_' . $j . '_' . $Sprache->kSprache];
                     } else {
                         $cFehler .= 'Fehler: Ihr Dateiname "' . $_POST['dateiname_' . $j . '_' . $Sprache->kSprache] .
-                            '" enth&auml;lt unzul&auml;ssige Zeichen (Erlaubt sind A-Z, a-z, 0-9, _ und -).<br />';
+                            '" enthält unzulässige Zeichen (Erlaubt sind A-Z, a-z, 0-9, _ und -).<br />';
                         $nFehler = 1;
                         break;
                     }
@@ -788,7 +788,7 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
         $step = 'prebearbeiten';
     } elseif ($oSmartyError->nCode == 0) {
         setzeFehler((int)$_POST['kEmailvorlage'], false, true);
-        $cHinweis = 'Emailvorlage erfolgreich ge&auml;ndert.';
+        $cHinweis = 'Emailvorlage erfolgreich geändert.';
         $step     = 'uebersicht';
         $continue = (isset($_POST['continue']) && $_POST['continue'] === '1');
     } else {
@@ -848,7 +848,7 @@ if (((isset($_POST['kEmailvorlage']) && (int)$_POST['kEmailvorlage'] > 0 && $con
              (int)$_POST['kS']],
             $upd
         );
-        $cHinweis .= 'Ihre Dateianh&auml;nge f&uuml;r Ihre gew&auml;hlte Sprache, wurden erfolgreich gel&ouml;scht.<br />';
+        $cHinweis .= 'Ihre Dateianhänge für Ihre gewählte Sprache, wurden erfolgreich gelöscht.<br />';
     }
 
     $step       = 'bearbeiten';

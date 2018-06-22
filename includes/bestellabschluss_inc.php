@@ -1065,32 +1065,6 @@ function setzeSmartyWeiterleitung($bestellung)
         $paymentMethod           = new PaymentPartner($_SESSION['Zahlungsart']->cModulId);
         $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
         $paymentMethod->preparePaymentProcess($bestellung);
-    } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_eos_jtl') {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'eos/EOS.class.php';
-        $paymentMethod           = new EOS($_SESSION['Zahlungsart']->cModulId);
-        $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
-        $paymentMethod->preparePaymentProcess($bestellung);
-    } // EOS Payment Solution
-    elseif ($_SESSION['Zahlungsart']->cModulId === 'za_eos_dd_jtl') {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'eos/EOS.class.php';
-        $paymentMethod           = new EOS($_SESSION['Zahlungsart']->cModulId);
-        $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
-        $paymentMethod->preparePaymentProcess($bestellung);
-    } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_eos_cc_jtl') {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'eos/EOS.class.php';
-        $paymentMethod           = new EOS($_SESSION['Zahlungsart']->cModulId);
-        $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
-        $paymentMethod->preparePaymentProcess($bestellung);
-    } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_eos_direct_jtl') {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'eos/EOS.class.php';
-        $paymentMethod           = new EOS($_SESSION['Zahlungsart']->cModulId);
-        $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
-        $paymentMethod->preparePaymentProcess($bestellung);
-    } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_eos_ewallet_jtl') {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'eos/EOS.class.php';
-        $paymentMethod           = new EOS($_SESSION['Zahlungsart']->cModulId);
-        $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
-        $paymentMethod->preparePaymentProcess($bestellung);
     } elseif (strpos($_SESSION['Zahlungsart']->cModulId, 'za_billpay') === 0) {
         require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
         $paymentMethod           = PaymentMethod::create($_SESSION['Zahlungsart']->cModulId);

@@ -13,7 +13,10 @@ $cFehler  = '';
 $step     = 'yategoexport_uebersicht';
 
 // Pruefe EUR als Waehrung
-$oWaehrung       = Shop::Container()->getDB()->query("SELECT kWaehrung FROM twaehrung WHERE cISO = 'EUR'", 1);
+$oWaehrung       = Shop::Container()->getDB()->query(
+    "SELECT kWaehrung FROM twaehrung WHERE cISO = 'EUR'",
+    \DB\ReturnType::SINGLE_OBJECT
+);
 $bWaehrungsCheck = false;
 if (isset($oWaehrung->kWaehrung) && $oWaehrung->kWaehrung > 0) {
     $bWaehrungsCheck = true;
@@ -27,7 +30,7 @@ if ($bWaehrungsCheck) {
             if (setzeEinstellung($_POST, $oWaehrung->kWaehrung)) {
                 $cHinweis .= 'Ihre Einstellungen wurden erfolgreich gespeichert.<br />';
             } else {
-                $cFehler .= 'Fehler: Bitte &uuml;berpr&uuml;fen Sie Ihre Einstellungen.<br />';
+                $cFehler .= 'Fehler: Bitte überprüfen Sie Ihre Einstellungen.<br />';
             }
 
             $smarty->assign('cTab', 'settings');

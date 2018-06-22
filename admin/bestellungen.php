@@ -19,7 +19,7 @@ if (RequestHelper::verifyGPCDataInt('zuruecksetzen') === 1 && FormHelper::valida
     if (isset($_POST['kBestellung'])) {
         switch (setzeAbgeholtZurueck($_POST['kBestellung'])) {
             case -1: // Alles O.K.
-                $cHinweis = 'Ihr markierten Bestellungen wurden erfolgreich zur&uuml;ckgesetzt.';
+                $cHinweis = 'Ihr markierten Bestellungen wurden erfolgreich zurückgesetzt.';
                 break;
             case 1:  // Array mit Keys nicht vorhanden oder leer
                 $cFehler = 'Fehler: Bitte markieren Sie mindestens eine Bestellung.';

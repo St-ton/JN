@@ -142,7 +142,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                        kRMAStatus = " . $this->kRMAStatus . ",
                        cRMANumber = '" . $this->cRMANumber . "',
                        dErstellt = '" . $this->dErstellt . "'
-                   WHERE kRMA = " . $this->kRMA, 3
+                   WHERE kRMA = " . $this->kRMA,
+                \DB\ReturnType::AFFECTED_ROWS
             );
         }
 

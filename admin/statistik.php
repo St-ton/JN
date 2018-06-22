@@ -73,10 +73,8 @@ if ($_SESSION['Statistik']->nTyp == STATS_ADMIN_TYPE_KUNDENHERKUNFT
 }
 // Table
 $cMember_arr = [];
-if (is_array($oStat_arr) && count($oStat_arr) > 0) {
-    foreach ($oStat_arr as $oStat) {
-        $cMember_arr[] = array_keys(get_object_vars($oStat));
-    }
+foreach ($oStat_arr as $oStat) {
+    $cMember_arr[] = array_keys(get_object_vars($oStat));
 }
 
 $oPagination = (new Pagination())
@@ -84,19 +82,19 @@ $oPagination = (new Pagination())
     ->assemble();
 
 $smarty->assign('headline', GetTypeNameStats($_SESSION['Statistik']->nTyp))
-    ->assign('cHinweis', $cHinweis)
-    ->assign('cFehler', $cFehler)
-    ->assign('nTyp', $_SESSION['Statistik']->nTyp)
-    ->assign('oStat_arr', $oStat_arr)
-    ->assign('oStatJSON', getJSON($oStat_arr, $nAnzeigeIntervall, $_SESSION['Statistik']->nTyp))
-    ->assign('cMember_arr', mappeDatenMember($cMember_arr, gibMappingDaten($_SESSION['Statistik']->nTyp)))
-    ->assign('STATS_ADMIN_TYPE_BESUCHER', STATS_ADMIN_TYPE_BESUCHER)
-    ->assign('STATS_ADMIN_TYPE_KUNDENHERKUNFT', STATS_ADMIN_TYPE_KUNDENHERKUNFT)
-    ->assign('STATS_ADMIN_TYPE_SUCHMASCHINE', STATS_ADMIN_TYPE_SUCHMASCHINE)
-    ->assign('STATS_ADMIN_TYPE_UMSATZ', STATS_ADMIN_TYPE_UMSATZ)
-    ->assign('STATS_ADMIN_TYPE_EINSTIEGSSEITEN', STATS_ADMIN_TYPE_EINSTIEGSSEITEN)
-    ->assign('nPosAb', $oPagination->getFirstPageItem())
-    ->assign('nPosBis', $oPagination->getFirstPageItem() + $oPagination->getPageItemCount())
-    ->assign('oPagination', $oPagination)
-    ->assign('oFilter', $oFilter)
-    ->display('statistik.tpl');
+       ->assign('cHinweis', $cHinweis)
+       ->assign('cFehler', $cFehler)
+       ->assign('nTyp', $_SESSION['Statistik']->nTyp)
+       ->assign('oStat_arr', $oStat_arr)
+       ->assign('oStatJSON', getJSON($oStat_arr, $nAnzeigeIntervall, $_SESSION['Statistik']->nTyp))
+       ->assign('cMember_arr', mappeDatenMember($cMember_arr, gibMappingDaten($_SESSION['Statistik']->nTyp)))
+       ->assign('STATS_ADMIN_TYPE_BESUCHER', STATS_ADMIN_TYPE_BESUCHER)
+       ->assign('STATS_ADMIN_TYPE_KUNDENHERKUNFT', STATS_ADMIN_TYPE_KUNDENHERKUNFT)
+       ->assign('STATS_ADMIN_TYPE_SUCHMASCHINE', STATS_ADMIN_TYPE_SUCHMASCHINE)
+       ->assign('STATS_ADMIN_TYPE_UMSATZ', STATS_ADMIN_TYPE_UMSATZ)
+       ->assign('STATS_ADMIN_TYPE_EINSTIEGSSEITEN', STATS_ADMIN_TYPE_EINSTIEGSSEITEN)
+       ->assign('nPosAb', $oPagination->getFirstPageItem())
+       ->assign('nPosBis', $oPagination->getFirstPageItem() + $oPagination->getPageItemCount())
+       ->assign('oPagination', $oPagination)
+       ->assign('oFilter', $oFilter)
+       ->display('statistik.tpl');

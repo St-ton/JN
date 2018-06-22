@@ -92,7 +92,7 @@ if (RequestHelper::verifyGPCDataInt('neu') === 1 && FormHelper::validateToken())
         $nReturnValue = loescheGewaehlteKampagnen($_POST['kKampagne']);
 
         if ($nReturnValue == 1) {
-            $cHinweis = 'Ihre ausgew&auml;hlten Kampagnen wurden erfolgreich gel&ouml;scht.';
+            $cHinweis = 'Ihre ausgewählten Kampagnen wurden erfolgreich gelöscht.';
         }
     } else {
         $cFehler = 'Fehler: Bitte markieren Sie mindestens eine Kampagne.';

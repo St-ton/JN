@@ -17,7 +17,7 @@ if (RequestHelper::verifyGPCDataInt('branding') === 1) {
         if (speicherEinstellung(RequestHelper::verifyGPCDataInt('kBranding'), $_POST, $_FILES)) {
             $cHinweis .= 'Ihre Einstellung wurde erfolgreich gespeichert.<br />';
         } else {
-            $cFehler .= 'Fehler: Bitte f&uuml;llen Sie alle Felder komplett aus.<br />';
+            $cFehler .= 'Fehler: Bitte füllen Sie alle Felder komplett aus.<br />';
         }
     }
     // Hole bestimmtes branding

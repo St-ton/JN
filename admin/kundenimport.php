@@ -129,20 +129,20 @@ function processImport($fmt, $data)
         }
     }
     if (StringHandler::filterEmailAddress($kunde->cMail) === false) {
-        return 'keine g&uuml;ltige Email ($kunde->cMail) ! &Uuml;bergehe diesen Datensatz.';
+        return 'keine gültige Email ($kunde->cMail) ! Übergehe diesen Datensatz.';
     }
     if ((int)$_POST['PasswortGenerieren'] !== 1
         && (!$kunde->cPasswort || $kunde->cPasswort === 'd41d8cd98f00b204e9800998ecf8427e')
     ) {
-        return 'kein Passwort! &Uuml;bergehe diesen Datensatz. (Kann unregstrierter JTL Shop Kunde sein)';
+        return 'kein Passwort! Übergehe diesen Datensatz. (Kann unregstrierter JTL Shop Kunde sein)';
     }
     if (!$kunde->cNachname) {
-        return 'kein Nachname! &Uuml;bergehe diesen Datensatz.';
+        return 'kein Nachname! Übergehe diesen Datensatz.';
     }
 
     $old_mail = Shop::Container()->getDB()->select('tkunde', 'cMail', $kunde->cMail);
     if (isset($old_mail->kKunde) && $old_mail->kKunde > 0) {
-        return "Kunde mit dieser Emailadresse bereits vorhanden: ($kunde->cMail)! &Uuml;bergehe Datensatz.";
+        return "Kunde mit dieser Emailadresse bereits vorhanden: ($kunde->cMail)! Übergehe Datensatz.";
     }
     if ($kunde->cAnrede === 'f' || strtolower($kunde->cAnrede) === 'frau') {
         $kunde->cAnrede = 'w';

@@ -37,13 +37,13 @@ if (isset($_POST['key'], $_POST['upload'])) {
 }
 if (isset($_GET['check'])) {
     if ($_GET['check'] === 'true') {
-        $cHinweis = 'Template und Einstellungen wurden erfolgreich ge&auml;ndert.';
+        $cHinweis = 'Template und Einstellungen wurden erfolgreich geändert.';
     } elseif ($_GET['check'] === 'false') {
-        $cFehler = 'Template bzw. Einstellungen konnten nicht ge&auml;ndert werden.';
+        $cFehler = 'Template bzw. Einstellungen konnten nicht geändert werden.';
     }
 }
 if (isset($_GET['faviconError'])) {
-    $cFehler .= 'Favicon konnten nicht gespeichert werden - bitte Schreibrechte &uumlberpr&uuml;fen.';
+    $cFehler .= 'Favicon konnten nicht gespeichert werden - bitte Schreibrechte &uumlberprüfen.';
 }
 if (isset($_POST['type']) && $_POST['type'] === 'layout' && FormHelper::validateToken()) {
     $oCSS           = new SimpleCSS();
@@ -56,9 +56,9 @@ if (isset($_POST['type']) && $_POST['type'] === 'layout' && FormHelper::validate
             $bOk = is_writable($cCustomCSSFile);
         }
         if ($bOk) {
-            $cHinweis = 'Layout wurde erfolgreich zur&uuml;ckgesetzt.';
+            $cHinweis = 'Layout wurde erfolgreich zurückgesetzt.';
         } else {
-            $cFehler = 'Layout konnte nicht zur&uuml;ckgesetzt werden.';
+            $cFehler = 'Layout konnte nicht zurückgesetzt werden.';
         }
     } else {
         $cSelector_arr  = $_POST['selector'];
@@ -72,7 +72,7 @@ if (isset($_POST['type']) && $_POST['type'] === 'layout' && FormHelper::validate
         $cCSS   = $oCSS->renderCSS();
         $nCheck = file_put_contents($cCustomCSSFile, $cCSS);
         if ($nCheck === false) {
-            $cFehler = 'Style-Datei konnte nicht geschrieben werden. &Uuml;berpr&uuml;fen Sie die Dateirechte von ' . $cCustomCSSFile . '.';
+            $cFehler = 'Style-Datei konnte nicht geschrieben werden. Überprüfen Sie die Dateirechte von ' . $cCustomCSSFile . '.';
         } else {
             $cHinweis = 'Layout wurde erfolgreich angepasst.';
         }
@@ -135,11 +135,11 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && FormHelper::valida
     }
     $bCheck = __switchTemplate($_POST['ordner'], $_POST['eTyp']);
     if ($bCheck) {
-        $cHinweis = 'Template und Einstellungen wurden erfolgreich ge&auml;ndert.';
+        $cHinweis = 'Template und Einstellungen wurden erfolgreich geändert.';
     } else {
-        $cFehler = 'Template bzw. Einstellungen konnten nicht ge&auml;ndert werden.';
+        $cFehler = 'Template bzw. Einstellungen konnten nicht geändert werden.';
     }
-    Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+    Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", \DB\ReturnType::DEFAULT);
     //re-init smarty with new template - problematic because of re-including functions.php
     header('Location: ' . Shop::getURL() . '/' .
         PFAD_ADMIN . 'shoptemplate.php?check=' .
@@ -165,11 +165,11 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && FormHelper::val
         $oTpl->eTyp = 'admin';
         $bCheck     = __switchTemplate($cOrdner, $oTpl->eTyp);
         if ($bCheck) {
-            $cHinweis = 'Template und Einstellungen wurden erfolgreich ge&auml;ndert.';
+            $cHinweis = 'Template und Einstellungen wurden erfolgreich geändert.';
         } else {
-            $cFehler = 'Template bzw. Einstellungen konnten nicht ge&auml;ndert werden.';
+            $cFehler = 'Template bzw. Einstellungen konnten nicht geändert werden.';
         }
-        Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+        Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", \DB\ReturnType::DEFAULT);
         //re-init smarty with new template - problematic because of re-including functions.php
         header('Location: ' . $shopURL . PFAD_ADMIN . 'shoptemplate.php', true, 301);
     } else {
@@ -177,9 +177,9 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && FormHelper::val
         foreach ($tplConfXML as $_conf) {
             // iterate over each "Setting" in this "Section"
             foreach ($_conf->oSettings_arr as $_setting) {
-                if ($_setting->cType === 'upload' &&
-                    isset($_setting->rawAttributes['target'], $_setting->rawAttributes['targetFileName']) &&
-                    !file_exists(PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/'
+                if ($_setting->cType === 'upload'
+                    && isset($_setting->rawAttributes['target'], $_setting->rawAttributes['targetFileName'])
+                    && !file_exists(PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/'
                         . $_setting->rawAttributes['targetFileName'])
                 ) {
 
@@ -240,12 +240,12 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && FormHelper::val
 } elseif (isset($_GET['switch']) && strlen($_GET['switch']) > 0) {
     $bCheck = __switchTemplate($_GET['switch'], ($admin === true ? 'admin' : 'standard'));
     if ($bCheck) {
-        $cHinweis = 'Template wurde erfolgreich ge&auml;ndert.';
+        $cHinweis = 'Template wurde erfolgreich geändert.';
     } else {
-        $cFehler = 'Template konnte nicht ge&auml;ndert werden.';
+        $cFehler = 'Template konnte nicht geändert werden.';
     }
 
-    Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+    Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", \DB\ReturnType::DEFAULT);
 }
 $smarty->assign('admin', ($admin === true) ? 1 : 0)
        ->assign('oTemplate_arr', $templateHelper->getFrontendTemplates())

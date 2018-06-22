@@ -306,7 +306,8 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
         $oXSellingTMP_arr = Shop::Container()->getDB()->query(
             "SELECT kXSellArtikel
                 FROM txsell
-                WHERE kArtikel = " . (int)$Artikel->kArtikel, 9
+                WHERE kArtikel = " . (int)$Artikel->kArtikel,
+            \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
         );
         $oXSelling_arr    = [];
         if (is_array($oXSellingTMP_arr) && count($oXSellingTMP_arr) > 0) {
@@ -667,7 +668,8 @@ function holeMaxExportArtikelAnzahl(&$oExportformat)
             " . $cSQL_arr['Join'] . "
             WHERE tartikelattribut.kArtikelAttribut IS NULL" . $cSQL_arr['Where'] . "
                 AND tartikelsichtbarkeit.kArtikel IS NULL
-                {$sql}", 1
+                {$sql}",
+        \DB\ReturnType::SINGLE_OBJECT
     );
     Shop::Cache()->set($cid, $count, [CACHING_GROUP_CORE], 120);
 

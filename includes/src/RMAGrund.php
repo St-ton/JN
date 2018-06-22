@@ -112,7 +112,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                        cGrund = '" . $this->cGrund . "',
                        cKommentar = '" . $this->cKommentar . "',
                        nAktiv = " . $this->nAktiv . "
-                   WHERE kRMAGrund = " . $this->kRMAGrund, 3
+                   WHERE kRMAGrund = " . $this->kRMAGrund,
+                \DB\ReturnType::AFFECTED_ROWS
             );
         }
 

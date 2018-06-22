@@ -47,7 +47,7 @@ if (isset($_GET['l']) && (int)$_GET['l'] > 0 && FormHelper::validateToken()) {
     $oWarenkorbPers = new WarenkorbPers($kKunde);
 
     if ($oWarenkorbPers->entferneSelf()) {
-        $cHinweis .= 'Ihr ausgew&auml;hlter Warenkorb wurde erfolgreich gel&ouml;scht.';
+        $cHinweis .= 'Ihr ausgewählter Warenkorb wurde erfolgreich gelöscht.';
     }
 
     unset($oWarenkorbPers);

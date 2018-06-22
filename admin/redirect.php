@@ -32,7 +32,7 @@ if (FormHelper::validateToken()) {
                         Shop::Container()->getDB()->update('tredirect', 'kRedirect', $oRedirect->kRedirect, $oRedirect);
                     } else {
                         $cFehler .=
-                            "&Auml;nderungen konnten nicht gespeichert werden, da die weiterzuleitende URL " .
+                            "Änderungen konnten nicht gespeichert werden, da die weiterzuleitende URL " .
                             "'" . $redirect['cToUrl'] . "' nicht erreichbar ist.<br>";
                     }
                 }
@@ -53,7 +53,7 @@ if (FormHelper::validateToken()) {
             if ($oRedirect->saveExt(RequestHelper::verifyGPDataString('cFromUrl'), RequestHelper::verifyGPDataString('cToUrl'))) {
                 $cHinweis = 'Ihre Weiterleitung wurde erfolgreich gespeichert';
             } else {
-                $cFehler = 'Fehler: Bitte pr&uuml;fen Sie Ihre Eingaben';
+                $cFehler = 'Fehler: Bitte prüfen Sie Ihre Eingaben';
                 $smarty
                     ->assign('cTab', 'new_redirect')
                     ->assign('cFromUrl', RequestHelper::verifyGPDataString('cFromUrl'))
@@ -67,11 +67,11 @@ if (FormHelper::validateToken()) {
                 if (move_uploaded_file($_FILES['cFile']['tmp_name'], $cFile)) {
                     $cError_arr = $oRedirect->doImport($cFile);
                     if (count($cError_arr) === 0) {
-                        $cHinweis = 'Der Import wurde erfolgreich durchgef&uuml;hrt';
+                        $cHinweis = 'Der Import wurde erfolgreich durchgeführt';
                     } else {
                         @unlink($cFile);
-                        $cFehler = 'Fehler: Der Import konnte nicht durchgef&uuml;hrt werden." .
-                            "Bitte pr&uuml;fen Sie die CSV-Datei<br><br>' . implode('<br>', $cError_arr);
+                        $cFehler = 'Fehler: Der Import konnte nicht durchgeführt werden." .
+                            "Bitte prüfen Sie die CSV-Datei<br><br>' . implode('<br>', $cError_arr);
                     }
                 }
             }

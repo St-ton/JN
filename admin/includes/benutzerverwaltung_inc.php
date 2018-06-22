@@ -166,7 +166,7 @@ function benutzerverwaltungSaveAttributes(stdClass $oAccount, array $extAttribs,
                 ],
                 \DB\ReturnType::AFFECTED_ROWS
             )) {
-                $messages['error'] .= $key . ' konnte nicht ge&auml;ndert werden!';
+                $messages['error'] .= $key . ' konnte nicht geändert werden!';
             }
             $handledKeys[] = $key;
         }
@@ -202,10 +202,10 @@ function benutzerverwaltungActionAccountLock(JTLSmarty $smarty, array &$messages
     $oAccount    = Shop::Container()->getDB()->select('tadminlogin', 'kAdminlogin', $kAdminlogin);
 
     if (!empty($oAccount->kAdminlogin) && (int)$oAccount->kAdminlogin === (int)$_SESSION['AdminAccount']->kAdminlogin) {
-        $messages['error'] .= 'Sie k&ouml;nnen sich nicht selbst sperren.';
+        $messages['error'] .= 'Sie können sich nicht selbst sperren.';
     } elseif (is_object($oAccount)) {
         if ((int)$oAccount->kAdminlogingruppe === ADMINGROUP) {
-            $messages['error'] .= 'Administratoren k&ouml;nnen nicht gesperrt werden.';
+            $messages['error'] .= 'Administratoren können nicht gesperrt werden.';
         } else {
             $result = true;
             Shop::Container()->getDB()->update('tadminlogin', 'kAdminlogin', $kAdminlogin, (object)['bAktiv' => 0]);
@@ -348,7 +348,7 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
         }
         if (count($cError_arr) > 0) {
             $smarty->assign('cError_arr', $cError_arr);
-            $messages['error'] .= 'Bitte alle Pflichtfelder ausf&uuml;llen.';
+            $messages['error'] .= 'Bitte alle Pflichtfelder ausfüllen.';
             if (isset($cError_arr['bMinAdmin']) && (int)$cError_arr['bMinAdmin'] === 1) {
                 $messages['error'] .= 'Es muss mindestens ein Administrator im System vorhanden sein.';
             }
@@ -414,7 +414,7 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
                     'result'   => &$result,
                 ]);
                 if (true === $result) {
-                    $messages['notice'] .= 'Benutzer wurde erfolgreich hinzugef&uuml;gt';
+                    $messages['notice'] .= 'Benutzer wurde erfolgreich hinzugefügt';
 
                     return 'index_redirect';
                 }
@@ -483,7 +483,7 @@ function benutzerverwaltungActionAccountDelete(JTLSmarty $smarty, array &$messag
     $oAccount    = Shop::Container()->getDB()->select('tadminlogin', 'kAdminlogin', $kAdminlogin);
 
     if (isset($oAccount->kAdminlogin) && (int)$oAccount->kAdminlogin === (int)$_SESSION['AdminAccount']->kAdminlogin) {
-        $messages['error'] .= 'Sie k&ouml;nnen sich nicht selbst l&ouml;schen';
+        $messages['error'] .= 'Sie können sich nicht selbst löschen';
     } elseif (is_object($oAccount)) {
         if ((int)$oAccount->kAdminlogingruppe === ADMINGROUP && $oCount->nCount <= 1) {
             $messages['error'] .= 'Es muss mindestens ein Administrator im System vorhanden sein.';
@@ -498,10 +498,10 @@ function benutzerverwaltungActionAccountDelete(JTLSmarty $smarty, array &$messag
                 'result'   => &$result,
             ]);
             if (true === $result) {
-                $messages['notice'] .= 'Benutzer wurde erfolgreich gel&ouml;scht.';
+                $messages['notice'] .= 'Benutzer wurde erfolgreich gelöscht.';
             }
         } else {
-            $messages['error'] .= 'Benutzer konnte nicht gel&ouml;scht werden.';
+            $messages['error'] .= 'Benutzer konnte nicht gelöscht werden.';
         }
     } else {
         $messages['error'] .= 'Benutzer wurde nicht gefunden.';
@@ -546,9 +546,9 @@ function benutzerverwaltungActionGroupEdit(JTLSmarty $smarty, array &$messages)
                    ->assign('cAdminGroupPermission_arr', $oAdminGroupPermission_arr);
 
             if (isset($cError_arr['cPerm'])) {
-                $messages['error'] .= 'Mindestens eine Berechtigung ausw&auml;hlen.';
+                $messages['error'] .= 'Mindestens eine Berechtigung auswählen.';
             } else {
-                $messages['error'] .= 'Bitte alle Pflichtfelder ausf&uuml;llen.';
+                $messages['error'] .= 'Bitte alle Pflichtfelder ausfüllen.';
             }
         } else {
             if ($oAdminGroup->kAdminlogingruppe > 0) {
@@ -627,7 +627,7 @@ function benutzerverwaltungActionGroupDelete(JTLSmarty $smarty, array &$messages
                             . 'Bitte entfernen Sie dies' . (2 > $oResult->member_count ? 'es' : 'e')
                             . ' Gruppenmitglied'  . (2 > $oResult->member_count ? '' : 'er')
                             . ' oder weisen Sie ' . (2 > $oResult->member_count ? 'es' : 'sie')
-                            . ' einer anderen Gruppe zu, bevor Sie die Gruppe l&ouml;schen!';
+                            . ' einer anderen Gruppe zu, bevor Sie die Gruppe löschen!';
 
         return 'group_redirect';
     }
@@ -635,7 +635,7 @@ function benutzerverwaltungActionGroupDelete(JTLSmarty $smarty, array &$messages
     if ($kAdminlogingruppe !== ADMINGROUP) {
         Shop::Container()->getDB()->delete('tadminlogingruppe', 'kAdminlogingruppe', $kAdminlogingruppe);
         Shop::Container()->getDB()->delete('tadminrechtegruppe', 'kAdminlogingruppe', $kAdminlogingruppe);
-        $messages['notice'] .= 'Gruppe wurde erfolgreich gel&ouml;scht.';
+        $messages['notice'] .= 'Gruppe wurde erfolgreich gelöscht.';
     } else {
         $messages['error'] .= 'Gruppe kann nicht entfernt werden.';
     }

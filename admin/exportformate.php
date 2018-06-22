@@ -42,7 +42,7 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && FormHelper
             $revision = new Revision();
             $revision->addRevision('export', $kExportformat);
             $ef->update();
-            $hinweis .= 'Das Exportformat <strong>' . $ef->getName() . '</strong> wurde erfolgreich ge&auml;ndert.';
+            $hinweis .= 'Das Exportformat <strong>' . $ef->getName() . '</strong> wurde erfolgreich geändert.';
         } else {
             //insert
             $kExportformat = $ef->save();
@@ -84,7 +84,7 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && FormHelper
         $smarty->assign('cPlausiValue_arr', $checkResult)
                ->assign('cPostVar_arr', StringHandler::filterXSS($_POST));
         $step   = 'neuer Export';
-        $fehler = 'Fehler: Bitte &uuml;berpr&uuml;fen Sie Ihre Eingaben.';
+        $fehler = 'Fehler: Bitte überprüfen Sie Ihre Eingaben.';
     }
 }
 $cAction       = null;
@@ -144,20 +144,22 @@ if ($cAction !== null && $kExportformat !== null && FormHelper::validateToken())
                       AND tjobqueue.cJobArt = 'exportformat'
                    LEFT JOIN texportqueue 
                       ON texportqueue.kExportformat = texportformat.kExportformat
-                   WHERE texportformat.kExportformat = " . $kExportformat, 3
+                   WHERE texportformat.kExportformat = " . $kExportformat,
+                \DB\ReturnType::AFFECTED_ROWS
             );
 
             if ($bDeleted > 0) {
-                $hinweis = 'Exportformat erfolgreich gel&ouml;scht.';
+                $hinweis = 'Exportformat erfolgreich gelöscht.';
             } else {
-                $fehler = 'Exportformat konnte nicht gel&ouml;scht werden.';
+                $fehler = 'Exportformat konnte nicht gelöscht werden.';
             }
             break;
         case 'exported':
             $exportformat = Shop::Container()->getDB()->select('texportformat', 'kExportformat', $kExportformat);
-            if ($exportformat->cDateiname && (file_exists(PFAD_ROOT . PFAD_EXPORT . $exportformat->cDateiname) ||
-                    file_exists(PFAD_ROOT . PFAD_EXPORT . $exportformat->cDateiname . '.zip') ||
-                    (isset($exportformat->nSplitgroesse) && (int)$exportformat->nSplitgroesse > 0))
+            if ($exportformat->cDateiname
+                && (file_exists(PFAD_ROOT . PFAD_EXPORT . $exportformat->cDateiname)
+                    || file_exists(PFAD_ROOT . PFAD_EXPORT . $exportformat->cDateiname . '.zip')
+                    || (isset($exportformat->nSplitgroesse) && (int)$exportformat->nSplitgroesse > 0))
             ) {
                 if (empty($_GET['hasError'])) {
                     $hinweis = 'Das Exportformat <b>' . $exportformat->cName . '</b> wurde erfolgreich erstellt.';
@@ -199,7 +201,9 @@ if ($step === 'uebersicht') {
             (int)$exportformate[$i]->kKundengruppe
         );
         $exportformate[$i]->bPluginContentExtern = false;
-        if ($exportformate[$i]->kPlugin > 0 && strpos($exportformate[$i]->cContent, PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
+        if ($exportformate[$i]->kPlugin > 0
+            && strpos($exportformate[$i]->cContent, PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false
+        ) {
             $exportformate[$i]->bPluginContentExtern = true;
         }
     }

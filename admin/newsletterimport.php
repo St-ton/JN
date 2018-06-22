@@ -172,22 +172,22 @@ function processImport($fmt, $data)
     }
 
     if (StringHandler::filterEmailAddress($newsletterempfaenger->cEmail) === false) {
-        return "keine g&uuml;ltige Email ($newsletterempfaenger->cEmail)! &Uuml;bergehe diesen Datensatz.";
+        return "keine gültige Email ($newsletterempfaenger->cEmail)! Übergehe diesen Datensatz.";
     }
     // NewsletterEmpfaengerBlacklist
     if (pruefeNLEBlacklist($newsletterempfaenger->cEmail)) {
-        return "keine g&uuml;ltige Email ($newsletterempfaenger->cEmail)! " .
-            "Kunde hat sich auf die Blacklist setzen lassen! &Uuml;bergehe diesen Datensatz.";
+        return "keine gültige Email ($newsletterempfaenger->cEmail)! " .
+            "Kunde hat sich auf die Blacklist setzen lassen! Übergehe diesen Datensatz.";
     }
 
     if (!$newsletterempfaenger->cNachname) {
-        return 'kein Nachname! &Uuml;bergehe diesen Datensatz.';
+        return 'kein Nachname! Übergehe diesen Datensatz.';
     }
 
     $old_mail = Shop::Container()->getDB()->select('tnewsletterempfaenger', 'cEmail', $newsletterempfaenger->cEmail);
     if (isset($old_mail->kNewsletterEmpfaenger) && $old_mail->kNewsletterEmpfaenger > 0) {
-        return "Newsletterempf&auml;nger mit dieser Emailadresse bereits vorhanden: (" .
-            $newsletterempfaenger->cEmail . ")! &Uuml;bergehe Datensatz.";
+        return "Newsletterempfänger mit dieser Emailadresse bereits vorhanden: (" .
+            $newsletterempfaenger->cEmail . ")! Übergehe Datensatz.";
     }
 
     if ($newsletterempfaenger->cAnrede === 'f') {

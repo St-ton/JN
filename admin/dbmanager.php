@@ -118,7 +118,7 @@ switch (true) {
 
         // count without limit
         $query = implode(' ', $queryParts);
-        $count = Shop::Container()->getDB()->executeQueryPrepared($query, $queryParams, 3);
+        $count = Shop::Container()->getDB()->queryPrepared($query, $queryParams, \DB\ReturnType::AFFECTED_ROWS);
         $pages = (int)ceil($count / $filter['limit']);
 
         // limit
@@ -128,9 +128,16 @@ switch (true) {
 
         $query = implode(' ', $queryParts);
         $info  = null;
-        $data  = Shop::Container()->getDB()->executeQueryPrepared($query, $queryParams, 9, false, false, function ($o) use (&$info) {
-            $info = $o;
-        });
+        $data  = Shop::Container()->getDB()->queryPrepared(
+            $query,
+            $queryParams,
+            \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS,
+            false,
+            false,
+            function ($o) use (&$info) {
+                $info = $o;
+            }
+        );
 
         $smarty->assign('selectedTable', $table)
                ->assign('data', $data)

@@ -21,16 +21,16 @@ if (isset($_POST['mail']) && FormHelper::validateToken()) {
             $_upd->cPass              = Shop::Container()->getPasswordService()->hash($_POST['pw_new']);
             $update                   = Shop::Container()->getDB()->update('tadminlogin', 'cMail', $_POST['fpm'], $_upd);
             if ($update > 0) {
-                $cHinweis = 'Passwort wurde erfolgreich ge&auml;ndert.';
+                $cHinweis = 'Passwort wurde erfolgreich geändert.';
                 header('Location: index.php?pw_updated=true');
             } else {
-                $cFehler = 'Passwort konnte nicht ge&auml;ndert werden.';
+                $cFehler = 'Passwort konnte nicht geändert werden.';
             }
         } else {
-            $cFehler = 'Ung&uuml;tiger Hash &uuml;bergeben.';
+            $cFehler = 'Ungütiger Hash übergeben.';
         }
     } else {
-        $cFehler = 'Passw&ouml;rter stimmen nicht &uuml;berein.';
+        $cFehler = 'Passwörter stimmen nicht überein.';
     }
     $smarty->assign('fpwh', $_POST['fpwh'])
            ->assign('fpm', $_POST['fpm']);

@@ -109,7 +109,7 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
             $cFehler = 'Banner konnte nicht angelegt werden.';
         }
     } else {
-        $cFehler = 'Bitte f&uuml;llen Sie alle Pflichtfelder die mit einem * marktiert sind aus';
+        $cFehler = 'Bitte füllen Sie alle Pflichtfelder die mit einem * marktiert sind aus';
         $smarty->assign('cPlausi_arr', $cPlausi_arr)
                ->assign('cName', $_POST['cName'] ?? null)
                ->assign('vDatum', $_POST['vDatum'] ?? null)

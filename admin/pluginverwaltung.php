@@ -110,13 +110,13 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
                 $oPlugin->nStatus = Plugin::PLUGIN_ACTIVATED;
                 $oPlugin->cLizenz = StringHandler::filterXSS($_POST['cKey']);
                 $oPlugin->updateInDB();
-                $cHinweis = 'Ihr Plugin-Lizenzschl&uuml;ssel wurde gespeichert.';
+                $cHinweis = 'Ihr Plugin-Lizenzschlüssel wurde gespeichert.';
                 $step     = 'pluginverwaltung_uebersicht';
                 $reload   = true;
                 // Lizenzpruefung bestanden => aktiviere alle Zahlungsarten (falls vorhanden)
                 Plugin::updatePaymentMethodState($oPlugin, 1);
             } else {
-                $cFehler = 'Fehler: Ihr Lizenzschl&uuml;ssel ist ung&uuml;ltig.';
+                $cFehler = 'Fehler: Ihr Lizenzschlüssel ist ungültig.';
             }
         } else {
             $cFehler = 'Fehler: Ihr Plugin wurde nicht in der Datenbank gefunden.';
@@ -133,16 +133,16 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
 
                 switch ($nReturnValue) {
                     case PLUGIN_CODE_OK:
-                        if ($cHinweis !== 'Ihre ausgew&auml;hlten Plugins wurden erfolgreich aktiviert.') {
-                            $cHinweis .= 'Ihre ausgew&auml;hlten Plugins wurden erfolgreich aktiviert.';
+                        if ($cHinweis !== 'Ihre ausgewählten Plugins wurden erfolgreich aktiviert.') {
+                            $cHinweis .= 'Ihre ausgewählten Plugins wurden erfolgreich aktiviert.';
                         }
                         $reload = true;
                         break;
                     case PLUGIN_CODE_WRONG_PARAM:
-                        $cFehler = 'Fehler: Bitte w&auml;hlen Sie mindestens ein Plugin aus.';
+                        $cFehler = 'Fehler: Bitte wählen Sie mindestens ein Plugin aus.';
                         break;
                     case PLUGIN_CODE_NO_PLUGIN_FOUND:
-                        $cFehler = 'Fehler: Ihr ausgew&auml;hltes Plugin konnte nicht in der Datenbank gefunden werden oder ist schon aktiv.';
+                        $cFehler = 'Fehler: Ihr ausgewähltes Plugin konnte nicht in der Datenbank gefunden werden oder ist schon aktiv.';
                         break;
                 }
 
@@ -154,16 +154,16 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
 
                 switch ($nReturnValue) {
                     case PLUGIN_CODE_OK: // Alles O.K. Plugin wurde deaktiviert
-                        if ($cHinweis !== 'Ihre ausgew&auml;hlten Plugins wurden erfolgreich deaktiviert.') {
-                            $cHinweis .= 'Ihre ausgew&auml;hlten Plugins wurden erfolgreich deaktiviert.';
+                        if ($cHinweis !== 'Ihre ausgewählten Plugins wurden erfolgreich deaktiviert.') {
+                            $cHinweis .= 'Ihre ausgewählten Plugins wurden erfolgreich deaktiviert.';
                         }
                         $reload = true;
                         break;
                     case PLUGIN_CODE_WRONG_PARAM: // $kPlugin wurde nicht uebergeben
-                        $cFehler = 'Fehler: Bitte w&auml;hlen Sie mindestens ein Plugin aus.';
+                        $cFehler = 'Fehler: Bitte wählen Sie mindestens ein Plugin aus.';
                         break;
                     case PLUGIN_CODE_NO_PLUGIN_FOUND: // SQL Fehler bzw. Plugin nicht gefunden
-                        $cFehler = 'Fehler: Ihr ausgew&auml;hltes Plugin konnte nicht in der Datenbank gefunden werden.';
+                        $cFehler = 'Fehler: Ihr ausgewähltes Plugin konnte nicht in der Datenbank gefunden werden.';
                         break;
                 }
             } elseif (isset($_POST['deinstallieren'])) { // Deinstallieren
@@ -173,7 +173,7 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
 
                     switch ($nReturnValue) {
                         case PLUGIN_CODE_WRONG_PARAM: // $kPlugin wurde nicht uebergeben
-                            $cFehler = 'Fehler: Bitte w&auml;hlen Sie mindestens ein Plugin aus.';
+                            $cFehler = 'Fehler: Bitte wählen Sie mindestens ein Plugin aus.';
                             break;
                             // @todo: 3 is never returned
                         case 3: // SQL Fehler bzw. Plugin nicht gefunden
@@ -184,7 +184,7 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
                             break;
                         case PLUGIN_CODE_OK: // Alles O.K. Plugin wurde deinstalliert
                         default:
-                            $cHinweis = 'Ihre ausgew&auml;hlten Plugins wurden erfolgreich deinstalliert.';
+                            $cHinweis = 'Ihre ausgewählten Plugins wurden erfolgreich deinstalliert.';
                             $reload   = true;
                             break;
                     }
@@ -198,7 +198,7 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
                     $nReturnValue = reloadPlugin($oPlugin, true);
 
                     if ($nReturnValue === PLUGIN_CODE_OK || $nReturnValue === PLUGIN_CODE_OK_BUT_NOT_SHOP4_COMPATIBLE) {
-                        $cHinweis = 'Ihre ausgew&auml;hlten Plugins wurden erfolgreich neu geladen.';
+                        $cHinweis = 'Ihre ausgewählten Plugins wurden erfolgreich neu geladen.';
                         $reload = true;
                     } else {
                         $cFehler = 'Fehler: Ein Plugin konnte nicht neu geladen werden.';
@@ -228,7 +228,7 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
             foreach ($cVerzeichnis_arr as $cVerzeichnis) {
                 $nReturnValue = installierePluginVorbereitung(basename($cVerzeichnis));
                 if ($nReturnValue === PLUGIN_CODE_OK || $nReturnValue === PLUGIN_CODE_OK_BUT_NOT_SHOP4_COMPATIBLE) {
-                    $cHinweis = 'Ihre ausgew&auml;hlten Plugins wurden erfolgreich installiert.';
+                    $cHinweis = 'Ihre ausgewählten Plugins wurden erfolgreich installiert.';
                     $reload   = true;
                 } elseif ($nReturnValue > PLUGIN_CODE_OK && $nReturnValue !== PLUGIN_CODE_OK_BUT_NOT_SHOP4_COMPATIBLE) {
                     $cFehler = 'Fehler: Bei der Installation ist ein Fehler aufgetreten. Fehlercode: ' . $nReturnValue;
@@ -237,7 +237,7 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
         }
         Shop::Cache()->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
     } else {
-        $cFehler = 'Fehler: Bitte w&auml;hlen Sie mindestens ein Plugin aus.';
+        $cFehler = 'Fehler: Bitte wählen Sie mindestens ein Plugin aus.';
     }
 } elseif (RequestHelper::verifyGPCDataInt('pluginverwaltung_sprachvariable') === 1 && FormHelper::validateToken()) { // Plugin Sprachvariablen
     $step = 'pluginverwaltung_sprachvariablen';
@@ -259,9 +259,9 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
                     [$kPlugin, $oPluginSprachvariable->cName]
                 );
                 if ($nRow >= 0) {
-                    $cHinweis = 'Sie haben den Installationszustand der ausgew&auml;hlten Variable erfolgreich wiederhergestellt.';
+                    $cHinweis = 'Sie haben den Installationszustand der ausgewählten Variable erfolgreich wiederhergestellt.';
                 } else {
-                    $cFehler = 'Fehler: Ihre ausgew&auml;hlte Sprachvariable wurde nicht gefunden.';
+                    $cFehler = 'Fehler: Ihre ausgewählte Sprachvariable wurde nicht gefunden.';
                 }
             } else {
                 $cFehler = 'Fehler: Die Sprachvariable konnte nicht gefunden werden.';
@@ -295,7 +295,7 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
                     Shop::Container()->getDB()->insert('tpluginsprachvariablecustomsprache', $oPluginSprachvariableCustomSprache);
                 }
             }
-            $cHinweis = 'Ihre &Auml;nderungen wurden erfolgreich &uuml;bernommen.';
+            $cHinweis = 'Ihre Änderungen wurden erfolgreich übernommen.';
             $step     = 'pluginverwaltung_uebersicht';
             $reload   = true;
         }
@@ -392,7 +392,7 @@ if ($reload === true) {
 }
 if (defined('PLUGIN_DEV_MODE') && PLUGIN_DEV_MODE === true) {
     $pluginDevNotice = 'Ihr Shop befindet sich im Plugin-Entwicklungsmodus. ' .
-        '&Auml;nderungen an der XML-Datei eines aktivierten Plugins bewirken ein automatisches Update.';
+        'Änderungen an der XML-Datei eines aktivierten Plugins bewirken ein automatisches Update.';
     $cHinweis        = empty($cHinweis)
         ? $pluginDevNotice
         : $pluginDevNotice . '<br>' . $cHinweis;

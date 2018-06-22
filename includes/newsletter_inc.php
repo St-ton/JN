@@ -236,11 +236,9 @@ function pruefeNLHistoryKundengruppe(int $kKundengruppe, $cKundengruppeKey)
     if (strlen($cKundengruppeKey) > 0) {
         $kKundengruppe_arr    = [];
         $cKundengruppeKey_arr = explode(';', $cKundengruppeKey);
-        if (is_array($cKundengruppeKey_arr) && count($cKundengruppeKey_arr) > 0) {
-            foreach ($cKundengruppeKey_arr as $_cKundengruppeKey) {
-                if ((int)$_cKundengruppeKey > 0 || (strlen($_cKundengruppeKey) > 0 && (int)$_cKundengruppeKey === 0)) {
-                    $kKundengruppe_arr[] = (int)$_cKundengruppeKey;
-                }
+        foreach ($cKundengruppeKey_arr as $_cKundengruppeKey) {
+            if ((int)$_cKundengruppeKey > 0 || (strlen($_cKundengruppeKey) > 0 && (int)$_cKundengruppeKey === 0)) {
+                $kKundengruppe_arr[] = (int)$_cKundengruppeKey;
             }
         }
         // Für alle sichtbar

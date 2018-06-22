@@ -11,7 +11,7 @@ $Einstellungen = Shop::getSettings([CONF_METAANGABEN]);
 $chinweis      = '';
 $cfehler       = '';
 setzeSprache();
-if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && validateToken()) {
+if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && FormHelper::validateToken()) {
     saveAdminSectionSettings(CONF_METAANGABEN, $_POST);
 
     $cTitle           = $_POST['Title'];
@@ -103,7 +103,7 @@ $excludeKeywords = Shop::Container()->getDB()->select('texcludekeywords', 'cISOS
 $smarty->assign('oConfig_arr', $oConfig_arr)
        ->assign('oMetaangaben_arr', $cTMP_arr)
        ->assign('keywords', $excludeKeywords)
-       ->assign('Sprachen', gibAlleSprachen())
+       ->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('hinweis', $chinweis)
        ->assign('fehler', $cfehler)
        ->display('globalemetaangaben.tpl');

@@ -20,9 +20,9 @@ setzeSprache();
 $kSprache    = (int)$_SESSION['kSprache'];
 $cISOSprache = $_SESSION['cISOSprache'];
 
-if (validateToken() && verifyGPDataString('importcsv') === 'langvars' && isset($_FILES['csvfile']['tmp_name'])) {
+if (FormHelper::validateToken() && RequestHelper::verifyGPDataString('importcsv') === 'langvars' && isset($_FILES['csvfile']['tmp_name'])) {
     $csvFilename = $_FILES['csvfile']['tmp_name'];
-    $importType  = verifyGPCDataInteger('importType');
+    $importType  = RequestHelper::verifyGPCDataInt('importType');
     $res         = Shop::Lang()->import($csvFilename, $cISOSprache, $importType);
 
     if ($res === false) {
@@ -54,7 +54,7 @@ foreach ($oSpracheAvailable_arr as $oSprache) {
     $oSprache->bImported = in_array($oSprache, $oSpracheInstalled_arr);
 }
 
-if (isset($_REQUEST['action']) && validateToken()) {
+if (isset($_REQUEST['action']) && FormHelper::validateToken()) {
     $action = $_REQUEST['action'];
 
     switch ($action) {
@@ -70,7 +70,7 @@ if (isset($_REQUEST['action']) && validateToken()) {
             // Variable loeschen
             Shop::Lang()->loesche($_GET['kSprachsektion'], $_GET['cName']);
             Shop::Cache()->flushTags([CACHING_GROUP_LANGUAGE]);
-            Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+            Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = now()', \DB\ReturnType::DEFAULT);
             $cHinweis = 'Variable ' . $_GET['cName'] . ' wurde erfolgreich gel&ouml;scht.';
             break;
         case 'savevar':
@@ -136,7 +136,7 @@ if (isset($_REQUEST['action']) && validateToken()) {
                     'tsprachlog', ['cSektion', 'cName'], [$oVariable->cSprachsektion, $oVariable->cName]
                 );
                 Shop::Cache()->flushTags([CACHING_GROUP_LANGUAGE]);
-                Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+                Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = now()', \DB\ReturnType::DEFAULT);
             }
 
             break;
@@ -156,7 +156,7 @@ if (isset($_REQUEST['action']) && validateToken()) {
             }
 
             Shop::Cache()->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE]);
-            Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+            Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = now()', \DB\ReturnType::DEFAULT);
 
             $cHinweis = count($cChanged_arr) > 0
                 ? 'Variablen erfolgreich ge&auml;ndert: ' . implode(', ', $cChanged_arr)
@@ -169,7 +169,7 @@ if (isset($_REQUEST['action']) && validateToken()) {
                 ->setzeSprache($cISOSprache)
                 ->clearLog();
             Shop::Cache()->flushTags([CACHING_GROUP_LANGUAGE]);
-            Shop::Container()->getDB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+            Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = now()', \DB\ReturnType::DEFAULT);
             $cHinweis .= 'Liste erfolgreich zur&uuml;ckgesetzt.';
             break;
         default:

@@ -26,7 +26,7 @@ for ($i = 0; $i < $configCount; $i++) {
 }
 
 $smarty->assign('oConfig_arr', $oConfig_arr)
-       ->assign('sprachen', gibAlleSprachen())
+       ->assign('sprachen', Sprache::getAllLanguages())
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cfehler)
        ->display('preisverlauf.tpl');

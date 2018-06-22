@@ -32,7 +32,7 @@ class DirManager
      * @param array         $parameters
      * @return $this
      */
-    public function getData($path, $userfunc = null, array $parameters = null)
+    public function getData(string $path, callable $userfunc = null, array $parameters = null): self
     {
         // Linux or Windows?
         $islinux = true;
@@ -43,10 +43,8 @@ class DirManager
             if (strpos(substr($path, strlen($path) - 1, 1), '/') === false) {
                 $path .= '/';
             }
-        } else {
-            if (strpos(substr($path, strlen($path) - 1, 1), '\\') === false) {
-                $path .= '\\';
-            }
+        } elseif (strpos(substr($path, strlen($path) - 1, 1), '\\') === false) {
+            $path .= '\\';
         }
         if (is_dir($path)) {
             $this->path = $path;

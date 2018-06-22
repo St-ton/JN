@@ -14,17 +14,17 @@ $oAccount->permission('SYSTEMLOG_VIEW', true, true);
 $cHinweis    = '';
 $cFehler     = '';
 $minLogLevel = Shop::getConfigValue(CONF_GLOBAL, 'systemlog_flag');
-if (validateToken()) {
-    if (verifyGPDataString('action') === 'clearsyslog') {
+if (FormHelper::validateToken()) {
+    if (RequestHelper::verifyGPDataString('action') === 'clearsyslog') {
         Jtllog::deleteAll();
         $cHinweis = 'Ihr Systemlog wurde erfolgreich gel&ouml;scht.';
-    } elseif (verifyGPDataString('action') === 'save') {
+    } elseif (RequestHelper::verifyGPDataString('action') === 'save') {
         $minLogLevel = (int)($_POST['minLogLevel'] ?? 0);
         Shop::Container()->getDB()->update('teinstellungen', 'cName', 'systemlog_flag', (object)['cWert' => $minLogLevel]);
         Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
         $cHinweis = 'Ihre Einstellungen wurden erfolgreich gespeichert.';
         $smarty->assign('cTab', 'config');
-    } elseif (verifyGPDataString('action') === 'delselected') {
+    } elseif (RequestHelper::verifyGPDataString('action') === 'delselected') {
         if (isset($_REQUEST['selected'])) {
             foreach ($_REQUEST['selected'] as $kLog) {
                 $oLog = new Jtllog($kLog);

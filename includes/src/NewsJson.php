@@ -51,7 +51,7 @@ class NewsJson
      */
     public function toJson()
     {
-        return json_encode(utf8_convert_recursive($this));
+        return json_encode(StringHandler::utf8_convert_recursive($this));
     }
 
     /**

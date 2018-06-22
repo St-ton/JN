@@ -31,7 +31,7 @@ class cache_apc implements ICachingMethod
     private $u;
 
     /**
-     * @param $options
+     * @param array $options
      */
     public function __construct($options)
     {

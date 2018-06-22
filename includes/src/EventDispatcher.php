@@ -31,7 +31,7 @@ final class EventDispatcher
      * @param string $eventName
      * @return bool
      */
-    public function hasListeners($eventName)
+    public function hasListeners($eventName): bool
     {
         return isset($this->listeners[$eventName]) || isset($this->wildcards[$eventName]);
     }
@@ -90,7 +90,7 @@ final class EventDispatcher
      * @param string $eventName
      * @return array
      */
-    public function getListeners($eventName)
+    public function getListeners($eventName): array
     {
         $listeners = $this->getWildcardListeners($eventName);
         if (isset($this->listeners[$eventName])) {
@@ -106,7 +106,7 @@ final class EventDispatcher
      * @param  string  $eventName
      * @return array
      */
-    private function getWildcardListeners($eventName)
+    private function getWildcardListeners($eventName): array
     {
         $wildcards = [];
         foreach ($this->wildcards as $key => $listeners) {

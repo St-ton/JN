@@ -1,11 +1,11 @@
-{if $bBoxenFilterNach && $BoxenEinstellungen.navigationsfilter.preisspannenfilter_benutzen === 'box' && $Suchergebnisse->getPriceRangeFilterOptions()|@count > 0}
-    <section class="panel panel-default box box-filter-price" id="sidebox{$oBox->kBox}">
+{if $oBox->show()}
+    <section class="panel panel-default box box-filter-price" id="sidebox{$oBox->getID()}">
         <div class="panel-heading">
-            <h5 class="panel-title">{lang key="rangeOfPrices" section="global"}</h5>
+            <div class="panel-title">{lang key='rangeOfPrices'}</div>
         </div>
         <div class="box-body">
             {*{include file='snippets/filter/pricerange.tpl'}*}
-            {include file='snippets/filter/genericFilterItem.tpl' filter=$NaviFilter->getPriceRangeFilter()}
+            {include file='snippets/filter/genericFilterItem.tpl' filter=$oBox->getItems()}
         </div>
     </section>
 {/if}

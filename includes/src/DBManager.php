@@ -12,14 +12,14 @@ class DBManager
     /**
      * @return array
      */
-    public static function getTables()
+    public static function getTables(): array
     {
         $tables = [];
         $rows   = Shop::Container()->getDB()->query(
             "SHOW FULL TABLES 
                 WHERE Table_type='BASE TABLE'",
             \DB\ReturnType::ARRAY_OF_OBJECTS
-            );
+        );
 
         foreach ($rows as $row) {
             $tables[] = current($row);
@@ -32,7 +32,7 @@ class DBManager
      * @param string $table
      * @return array
      */
-    public static function getColumns($table)
+    public static function getColumns(string $table): array
     {
         $list    = [];
         $table   = Shop::Container()->getDB()->escape($table);
@@ -53,7 +53,7 @@ class DBManager
      * @param string $table
      * @return array
      */
-    public static function getIndexes($table)
+    public static function getIndexes(string $table): array
     {
         $list    = [];
         $table   = Shop::Container()->getDB()->escape($table);
@@ -94,9 +94,9 @@ class DBManager
     /**
      * @param string      $database
      * @param string|null $table
-     * @return array|mixed
+     * @return array|stdClass
      */
-    public static function getStatus($database, $table = null)
+    public static function getStatus(string $database, $table = null)
     {
         $database = Shop::Container()->getDB()->escape($database);
 

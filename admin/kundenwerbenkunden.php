@@ -17,26 +17,27 @@ $step          = 'kwk_uebersicht';
 setzeSprache();
 
 // Tabs
-if (strlen(verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', verifyGPDataString('tab'));
+if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
 // KwK
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $cHinweis .= saveAdminSectionSettings(CONF_KUNDENWERBENKUNDEN, $_POST);
 }
 // KwK
-if (verifyGPCDataInteger('KwK') === 1 && validateToken()) {
-    // Einladung vom Neukunden loeschen
-    if (verifyGPCDataInteger('nichtreggt_loeschen') === 1) {
-        $kKundenWerbenKunden_arr = $_POST['kKundenWerbenKunden'];
-        if (is_array($kKundenWerbenKunden_arr) && count($kKundenWerbenKunden_arr) > 0) {
-            foreach ($kKundenWerbenKunden_arr as $kKundenWerbenKunden) {
-                Shop::Container()->getDB()->delete('tkundenwerbenkunden', 'kKundenWerbenKunden', (int)$kKundenWerbenKunden);
-            }
-            $cHinweis .= 'Ihre markierten Neukunden wurden erfolgreich gel&ouml;scht.<br />';
-        } else {
-            $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Neukunden<br />';
+if (RequestHelper::verifyGPCDataInt('KwK') === 1
+    && RequestHelper::verifyGPCDataInt('nichtreggt_loeschen') === 1
+    && FormHelper::validateToken()
+) {
+// Einladung vom Neukunden loeschen
+    $kKundenWerbenKunden_arr = $_POST['kKundenWerbenKunden'];
+    if (is_array($kKundenWerbenKunden_arr) && count($kKundenWerbenKunden_arr) > 0) {
+        foreach ($kKundenWerbenKunden_arr as $kKundenWerbenKunden) {
+            Shop::Container()->getDB()->delete('tkundenwerbenkunden', 'kKundenWerbenKunden', (int)$kKundenWerbenKunden);
         }
+        $cHinweis .= 'Ihre markierten Neukunden wurden erfolgreich gelöscht.<br />';
+    } else {
+        $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Neukunden<br />';
     }
 }
 
@@ -90,18 +91,21 @@ if ($step === 'kwk_uebersicht') {
 
     // Anzahl
     $oAnzahlReg = Shop::Container()->getDB()->query(
-        "SELECT count(*) AS nAnzahl
+        'SELECT count(*) AS nAnzahl
             FROM tkundenwerbenkunden
-            WHERE nRegistriert = 0", 1
+            WHERE nRegistriert = 0',
+        \DB\ReturnType::SINGLE_OBJECT
     );
     $oAnzahlNichtReg = Shop::Container()->getDB()->query(
-        "SELECT count(*) AS nAnzahl
+        'SELECT count(*) AS nAnzahl
             FROM tkundenwerbenkunden
-            WHERE nRegistriert = 1", 1
+            WHERE nRegistriert = 1',
+        \DB\ReturnType::SINGLE_OBJECT
     );
     $oAnzahlPraemie = Shop::Container()->getDB()->query(
-        "SELECT count(*) AS nAnzahl
-            FROM tkundenwerbenkundenbonus", 1
+        'SELECT count(*) AS nAnzahl
+            FROM tkundenwerbenkundenbonus',
+        \DB\ReturnType::SINGLE_OBJECT
     );
 
     // Paginationen
@@ -125,7 +129,8 @@ if ($step === 'kwk_uebersicht') {
                 ON tkunde.kKunde = tkundenwerbenkunden.kKunde
             WHERE tkundenwerbenkunden.nRegistriert = 0
             ORDER BY tkundenwerbenkunden.dErstellt DESC 
-            LIMIT " . $oPagiNichtReg->getLimitSQL(), 2
+            LIMIT " . $oPagiNichtReg->getLimitSQL(),
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     if (is_array($oKwKNichtReg_arr) && count($oKwKNichtReg_arr) > 0) {
         foreach ($oKwKNichtReg_arr as $i => $oKwKNichtReg) {
@@ -144,7 +149,8 @@ if ($step === 'kwk_uebersicht') {
                 ON tkunde.cMail = tkundenwerbenkunden.cEmail
             WHERE tkundenwerbenkunden.nRegistriert = 1
             ORDER BY tkundenwerbenkunden.dErstellt DESC 
-            LIMIT " . $oPagiReg->getLimitSQL(), 2
+            LIMIT " . $oPagiReg->getLimitSQL(),
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     if (is_array($oKwKReg_arr) && count($oKwKReg_arr) > 0) {
         foreach ($oKwKReg_arr as $i => $oKwKReg) {
@@ -164,7 +170,8 @@ if ($step === 'kwk_uebersicht') {
             JOIN tkunde 
                 ON tkunde.kKunde = tkundenwerbenkundenbonus.kKunde
             ORDER BY dErhalten DESC 
-            LIMIT " . $oPagiPraemie->getLimitSQL(), 2
+            LIMIT " . $oPagiPraemie->getLimitSQL(),
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 
     if (is_array($oKwKBestandBonus_arr) && count($oKwKBestandBonus_arr) > 0) {
@@ -183,7 +190,7 @@ if ($step === 'kwk_uebersicht') {
         ->assign('oPagiReg', $oPagiReg)
         ->assign('oPagiPraemie', $oPagiPraemie);
 }
-$smarty->assign('Sprachen', gibAlleSprachen())
+$smarty->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('kSprache', $_SESSION['kSprache'])
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)

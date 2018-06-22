@@ -226,13 +226,13 @@ function generateSitemapXML()
     //  YYYY-MM-DD (eg 1997-07-16)
     //  YYYY-MM-DDThh:mmTZD (eg 1997-07-16T19:20+01:00)
     $defaultCustomerGroupID  = Kundengruppe::getDefaultGroupID();
-    $Sprachen                = gibAlleSprachen();
+    $Sprachen                = Sprache::getAllLanguages();
     $oSpracheAssoc_arr       = gibAlleSprachenAssoc($Sprachen);
-    $defaultLang             = gibStandardsprache(true);
+    $defaultLang             = Sprache::getDefaultLanguage(true);
     $defaultLangID           = (int)$defaultLang->kSprache;
     $_SESSION['kSprache']    = $defaultLangID;
     $_SESSION['cISOSprache'] = $defaultLang->cISO;
-    setzeSteuersaetze();
+    TaxHelper::setTaxRates();
     if (!isset($_SESSION['Kundengruppe'])) {
         $_SESSION['Kundengruppe'] = new Kundengruppe();
     }
@@ -282,7 +282,6 @@ function generateSitemapXML()
     $nAnzahlURL_arr = [];
     $nSitemapLimit  = 25000;
     $sitemap_data   = '';
-    $shopURL        = Shop::getURL();
     $imageBaseURL   = Shop::getImageBaseURL();
     //Hauptseite
     $sitemap_data .= makeURL('', null, FREQ_ALWAYS, PRIO_VERYHIGH);
@@ -350,7 +349,7 @@ function generateSitemapXML()
                 $cGoogleImage = $imageBaseURL . $cGoogleImage;
             }
         }
-        $cUrl = baueURL($oArtikel, URLART_ARTIKEL);
+        $cUrl = UrlHelper::buildURL($oArtikel, URLART_ARTIKEL);
 
         if (!isSitemapBlocked($cUrl)) {
             $sitemap_data .= makeURL(
@@ -375,7 +374,7 @@ function generateSitemapXML()
         if ($SpracheTMP->kSprache === $defaultLangID) {
             continue;
         }
-        $res = Shop::DB()->queryPrepared(
+        $res = Shop::Container()->getDB()->queryPrepared(
             "SELECT tartikel.kArtikel, tartikel.dLetzteAktualisierung, tseo.cSeo
                FROM tartikelsprache, tartikel
                JOIN tseo 
@@ -404,7 +403,7 @@ function generateSitemapXML()
                 $nAnzahlURL_arr[$nDatei] = 0;
                 $sitemap_data            = '';
             }
-            $cUrl = baueURL($oArtikel, URLART_ARTIKEL);
+            $cUrl = UrlHelper::buildURL($oArtikel, URLART_ARTIKEL);
             if (!isSitemapBlocked($cUrl)) {
                 $sitemap_data .= makeURL(
                     $cUrl,
@@ -421,7 +420,7 @@ function generateSitemapXML()
 
     if ($conf['sitemap']['sitemap_seiten_anzeigen'] === 'Y') {
         // Links alle sprachen
-        $res = Shop::DB()->queryPrepared(
+        $res = Shop::Container()->getDB()->queryPrepared(
             "SELECT tlink.nLinkart, tlinksprache.kLink, tlinksprache.cISOSprache, tlink.bSSL
                      FROM tlink
                      JOIN tlinkgruppe 
@@ -467,7 +466,7 @@ function generateSitemapXML()
                     }
 
                     $tlink->cLocalizedSeo[$tlink->cISOSprache] = $tlink->cSeo ?? null;
-                    $link                                      = baueURL($tlink, URLART_SEITE);
+                    $link                                      = UrlHelper::buildURL($tlink, URLART_SEITE);
                     if (strlen($tlink->cSeo) > 0) {
                         $link = $tlink->cSeo;
                     } elseif ($_SESSION['cISOSprache'] !== $tlink->cISOSprache) {
@@ -928,7 +927,7 @@ function generateSitemapXML()
         );
         while (($oNews = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $cURL = makeURL(
-                baueURL($oNews, URLART_NEWS),
+                UrlHelper::buildURL($oNews, URLART_NEWS),
                 date_format(date_create($oNews->dGueltigVon), 'c'),
                 FREQ_DAILY,
                 PRIO_HIGH
@@ -962,7 +961,7 @@ function generateSitemapXML()
 
         while (($oNewsKategorie = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $cURL = makeURL(
-                baueURL($oNewsKategorie, URLART_NEWSKATEGORIE),
+                UrlHelper::buildURL($oNewsKategorie, URLART_NEWSKATEGORIE),
                 date_format(date_create($oNewsKategorie->dLetzteAktualisierung), 'c'),
                 FREQ_DAILY,
                 PRIO_HIGH
@@ -999,10 +998,10 @@ function generateSitemapXML()
         // ping sitemap to Google and Bing
         if ($conf['sitemap']['sitemap_google_ping'] === 'Y') {
             $encodedSitemapIndexURL = urlencode(Shop::getURL() . '/sitemap_index.xml');
-            if (200 !== ($httpStatus = http_get_status('http://www.google.com/webmasters/tools/ping?sitemap=' . $encodedSitemapIndexURL))) {
+            if (200 !== ($httpStatus = RequestHelper::http_get_status('http://www.google.com/webmasters/tools/ping?sitemap=' . $encodedSitemapIndexURL))) {
                 Jtllog::writeLog('Sitemap ping to Google failed with status ' . $httpStatus, JTLLOG_LEVEL_NOTICE);
             }
-            if (200 !== ($httpStatus = http_get_status('http://www.bing.com/ping?sitemap=' . $encodedSitemapIndexURL))) {
+            if (200 !== ($httpStatus = RequestHelper::http_get_status('http://www.bing.com/ping?sitemap=' . $encodedSitemapIndexURL))) {
                 Jtllog::writeLog('Sitemap ping to Bing failed with status ' . $httpStatus, JTLLOG_LEVEL_NOTICE);
             }
         }

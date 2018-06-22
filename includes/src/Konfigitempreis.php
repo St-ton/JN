@@ -36,8 +36,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         protected $nTyp;
 
         /**
-         * Constructor
-         *
+         * Konfigitempreis constructor.
          * @param int $kKonfigitem
          * @param int $kKundengruppe
          */
@@ -49,8 +48,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Loads database member into class member
-         *
          * @param int $kKonfigitem
          * @param int $kKundengruppe
          */
@@ -80,9 +77,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Store the class in the database
-         *
-         * @param bool $bPrim - Controls the return of the method
+         * @param bool $bPrim
          * @return bool|int
          */
         public function save(bool $bPrim = true)
@@ -106,8 +101,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Update the class in the database
-         *
          * @return int
          */
         public function update(): int
@@ -126,8 +119,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Delete the class in the database
-         *
          * @return int
          */
         public function delete(): int

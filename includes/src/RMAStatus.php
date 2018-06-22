@@ -36,25 +36,22 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         protected $nAktiv;
 
         /**
-         * Constructor
-         *
+         * RMAStatus constructor.
          * @param int $kRMAStatus
          */
-        public function __construct($kRMAStatus = 0)
+        public function __construct(int $kRMAStatus = 0)
         {
-            if ((int)$kRMAStatus > 0) {
+            if ($kRMAStatus > 0) {
                 $this->loadFromDB($kRMAStatus);
             }
         }
 
         /**
-         * Loads database member into class member
-         *
          * @param int $kRMAStatus
          */
-        private function loadFromDB($kRMAStatus)
+        private function loadFromDB(int $kRMAStatus)
         {
-            $oObj = Shop::Container()->getDB()->select('trmastatus', 'kRMAStatus', (int)$kRMAStatus);
+            $oObj = Shop::Container()->getDB()->select('trmastatus', 'kRMAStatus', $kRMAStatus);
             if (isset($oObj->kRMAStatus) && $oObj->kRMAStatus > 0) {
                 $cMember_arr = array_keys(get_object_vars($oObj));
                 foreach ($cMember_arr as $cMember) {
@@ -64,12 +61,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Store the class in the database
-         *
-         * @param bool $bPrim - Controls the return of the method
+         * @param bool $bPrim
          * @return bool|int
          */
-        public function save($bPrim = true)
+        public function save(bool $bPrim = true)
         {
             $oObj        = new stdClass();
             $cMember_arr = array_keys(get_object_vars($this));
@@ -90,8 +85,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Update the class in the database
-         *
          * @return int
          */
         public function update()
@@ -106,8 +99,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Delete the class in the database
-         *
          * @return int
          */
         public function delete()

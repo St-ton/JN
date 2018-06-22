@@ -65,19 +65,19 @@ class WunschlistePos
      * @param float  $fAnzahl
      * @param int    $kWunschliste
      */
-    public function __construct($kArtikel, $cArtikelName, $fAnzahl, $kWunschliste)
+    public function __construct(int $kArtikel, $cArtikelName, $fAnzahl, int $kWunschliste)
     {
-        $this->kArtikel     = (int)$kArtikel;
+        $this->kArtikel     = $kArtikel;
         $this->cArtikelName = $cArtikelName;
         $this->fAnzahl      = $fAnzahl;
-        $this->kWunschliste = (int)$kWunschliste;
+        $this->kWunschliste = $kWunschliste;
     }
 
     /**
      * @param array $oEigenschaftwerte_arr
      * @return $this
      */
-    public function erstellePosEigenschaften($oEigenschaftwerte_arr)
+    public function erstellePosEigenschaften(array $oEigenschaftwerte_arr): self
     {
         foreach ($oEigenschaftwerte_arr as $oEigenschaftwerte) {
             $CWunschlistePosEigenschaft = new WunschlistePosEigenschaft(
@@ -98,7 +98,7 @@ class WunschlistePos
     /**
      * @return $this
      */
-    public function schreibeDB()
+    public function schreibeDB(): self
     {
         $oTemp                = new stdClass();
         $oTemp->kWunschliste  = $this->kWunschliste;
@@ -116,7 +116,7 @@ class WunschlistePos
     /**
      * @return $this
      */
-    public function updateDB()
+    public function updateDB(): self
     {
         $oTemp                  = new stdClass();
         $oTemp->kWunschlistePos = $this->kWunschlistePos;
@@ -137,16 +137,10 @@ class WunschlistePos
      * @param int $kEigenschaftWert
      * @return bool
      */
-    public function istEigenschaftEnthalten($kEigenschaft, $kEigenschaftWert)
+    public function istEigenschaftEnthalten(int $kEigenschaft, int $kEigenschaftWert): bool
     {
-        foreach ($this->CWunschlistePosEigenschaft_arr as $CWunschlistePosEigenschaft) {
-            if ($CWunschlistePosEigenschaft->kEigenschaft == $kEigenschaft
-                && $CWunschlistePosEigenschaft->kEigenschaftWert == $kEigenschaftWert
-            ) {
-                return true;
-            }
-        }
-
-        return false;
+        return \Functional\some($this->CWunschlistePosEigenschaft_arr, function ($e) use ($kEigenschaft, $kEigenschaftWert) {
+            return (int)$e->kEigenschaft === $kEigenschaft && (int)$e->kEigenschaftWert === $kEigenschaftWert;
+        });
     }
 }

@@ -365,7 +365,7 @@ function bearbeiteUpdate($xml)
                     WHEN tzahlungsart.cName LIKE :name3 THEN 3
                     END, kZahlungsart",
             [
-                'iso'    => gibSprachKeyISO('', (int)$oBestellung->kSprache),
+                'iso'    => Sprache::getLanguageDataByType('', (int)$oBestellung->kSprache),
                 'search' => "%{$cZahlungsartName}%",
                 'name1'  => $cZahlungsartName,
                 'name2'  => "{$cZahlungsartName}%",
@@ -375,7 +375,7 @@ function bearbeiteUpdate($xml)
         );
         if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
             Jtllog::writeLog(
-                'Zahlungsart Matching (' . gibSprachKeyISO('', (int)$oBestellung->kSprache) . '): ' . $xml['tbestellung']['cZahlungsartName'] . ' matched: ' . $oZahlungsart->cName,
+                'Zahlungsart Matching (' . Sprache::getLanguageDataByType('', (int)$oBestellung->kSprache) . '): ' . $xml['tbestellung']['cZahlungsartName'] . ' matched: ' . $oZahlungsart->cName,
                 JTLLOG_LEVEL_DEBUG,
                 false,
                 'Bestellungen_xml'
@@ -408,7 +408,8 @@ function bearbeiteUpdate($xml)
             fGesamtsumme = '" . Shop::Container()->getDB()->escape($oBestellung->fGesamtsumme) . "',
             cKommentar = '" . Shop::Container()->getDB()->escape($oBestellung->cKommentar) . "'
             {$cZAUpdateSQL}
-            WHERE kBestellung = " . (int)$oBestellungAlt->kBestellung, 4
+            WHERE kBestellung = " . (int)$oBestellungAlt->kBestellung,
+        \DB\ReturnType::DEFAULT
     );
     //aktualisliere lieferadresse
     $oLieferadresse = new Lieferadresse($oBestellungAlt->kLieferadresse);
@@ -438,7 +439,8 @@ function bearbeiteUpdate($xml)
             Shop::Container()->getDB()->query(
                 "UPDATE tbestellung
                     SET kLieferadresse = " . (int)$oLieferadresse->kLieferadresse . "
-                    WHERE kBestellung = " . (int)$oBestellungAlt->kBestellung, 4
+                    WHERE kBestellung = " . (int)$oBestellungAlt->kBestellung,
+                \DB\ReturnType::DEFAULT
             );
         }
     } elseif ($oBestellungAlt->kLieferadresse > 0) { //falls lieferadresse vorhanden zurücksetzen

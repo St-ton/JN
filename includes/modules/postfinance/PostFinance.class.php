@@ -32,9 +32,7 @@ class PostFinance extends PaymentMethod
     {
         global $Einstellungen;
 
-        return isset($Einstellungen['zahlungsarten']['zahlungsart_postfinance_pspid'])
-            ? $Einstellungen['zahlungsarten']['zahlungsart_postfinance_pspid']
-            : null;
+        return $Einstellungen['zahlungsarten']['zahlungsart_postfinance_pspid'] ?? null;
     }
 
     /**
@@ -44,9 +42,7 @@ class PostFinance extends PaymentMethod
     {
         global $Einstellungen;
 
-        return isset($Einstellungen['zahlungsarten']['zahlungsart_postfinance_sha1in'])
-            ? $Einstellungen['zahlungsarten']['zahlungsart_postfinance_sha1in']
-            : null;
+        return $Einstellungen['zahlungsarten']['zahlungsart_postfinance_sha1in'] ?? null;
     }
 
     /**
@@ -56,9 +52,7 @@ class PostFinance extends PaymentMethod
     {
         global $Einstellungen;
 
-        return isset($Einstellungen['zahlungsarten']['zahlungsart_postfinance_sha1out'])
-            ? $Einstellungen['zahlungsarten']['zahlungsart_postfinance_sha1out']
-            : null;
+        return $Einstellungen['zahlungsarten']['zahlungsart_postfinance_sha1out'] ?? null;
     }
 
     /**
@@ -68,9 +62,7 @@ class PostFinance extends PaymentMethod
     {
         global $Einstellungen;
 
-        return isset($Einstellungen['zahlungsarten']['zahlungsart_postfinance_server'])
-            ? $Einstellungen['zahlungsarten']['zahlungsart_postfinance_server']
-            : null;
+        return $Einstellungen['zahlungsarten']['zahlungsart_postfinance_server'] ?? null;
     }
 
     /**

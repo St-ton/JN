@@ -7,7 +7,6 @@
 namespace Filter\Items;
 
 use Filter\AbstractFilter;
-use Filter\FilterJoin;
 use Filter\FilterOption;
 use Filter\FilterInterface;
 use Filter\ProductFilter;
@@ -70,7 +69,6 @@ class ItemSort extends AbstractFilter
                 ->setParam($this->getUrlParam())
                 ->setName($sortingOption->angezeigterName)
                 ->setValue((int)$sortingOption->value)
-                ->setCount(null)
                 ->setSort($i);
         }
         $this->options = $options;

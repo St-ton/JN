@@ -1,6 +1,8 @@
 {assign var=Suchergebnisse value=$NaviFilter->getSearchResults(false)}
 {if $Suchergebnisse->getProducts()|@count > 0}
-    {if $Einstellungen.navigationsfilter.allgemein_tagfilter_benutzen === 'Y' && $Suchergebnisse->getTagFilterOptions()|@count > 0 && $Suchergebnisse->getTagFilterJSON()}
+    {if $Einstellungen.navigationsfilter.allgemein_tagfilter_benutzen !== 'N'
+        && $Einstellungen.navigationsfilter.allgemein_tagfilter_benutzen !== 'box'
+        && $Suchergebnisse->getTagFilterOptions()|@count > 0 && $Suchergebnisse->getTagFilterJSON()}
         <hr>
         <div class="panel panel-default tags">
             <div class="panel-heading">{lang key="productsTaggedAs" section="productOverview"}</div>
@@ -11,7 +13,10 @@
             </div>
         </div>
     {/if}
-    {if $Einstellungen.navigationsfilter.suchtrefferfilter_nutzen === 'Y' && $Suchergebnisse->getSearchFilterOptions()|@count > 0 && $Suchergebnisse->getSearchFilterJSON() && !$NaviFilter->hasSearchFilter()}
+    {if $Einstellungen.navigationsfilter.suchtrefferfilter_nutzen === 'Y'
+        && $Suchergebnisse->getSearchFilterOptions()|@count > 0
+        && $Suchergebnisse->getSearchFilterJSON()
+        && !$NaviFilter->hasSearchFilter()}
         <hr>
         <div class="panel panel-default tags search-terms">
             <div class="panel-heading">{lang key="productsSearchTerm" section="productOverview"}</div>
@@ -72,10 +77,24 @@
                     <input type="hidden" name="t" value="{$NaviFilter->getTag()->getValue()}" />
                 {/if}
                 {if $NaviFilter->hasCategoryFilter()}
-                    <input type="hidden" name="kf" value="{$NaviFilter->getCategoryFilter()->getValue()}" />
+                    {assign var=cfv value=$NaviFilter->getCategoryFilter()->getValue()}
+                    {if is_array($cfv)}
+                        {foreach $cfv as $val}
+                            <input type="hidden" name="hf" value="{$val}" />
+                        {/foreach}
+                    {else}
+                        <input type="hidden" name="kf" value="{$cfv}" />
+                    {/if}
                 {/if}
                 {if $NaviFilter->hasManufacturerFilter()}
-                    <input type="hidden" name="hf" value="{$NaviFilter->getManufacturerFilter()->getValue()}" />
+                    {assign var=mfv value=$NaviFilter->getManufacturerFilter()->getValue()}
+                    {if is_array($mfv)}
+                        {foreach $mfv as $val}
+                            <input type="hidden" name="hf" value="{$val}" />
+                        {/foreach}
+                    {else}
+                        <input type="hidden" name="hf" value="{$mvf}" />
+                    {/if}
                 {/if}
                 {if $NaviFilter->hasAttributeFilter()}
                     {foreach name=merkmalfilter from=$NaviFilter->getAttributeFilter() item=attributeFilter}

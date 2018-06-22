@@ -55,8 +55,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Loads database member into class member
-         *
          * @param int  $kRMA
          * @param bool $bCustomer
          * @param bool $bRMAArtikel
@@ -103,9 +101,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Store the class in the database
-         *
-         * @param bool $bPrim - Controls the return of the method
+         * @param bool $bPrim
          * @return bool|int
          */
         public function save($bPrim = true)
@@ -135,8 +131,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Update the class in the database
-         *
          * @return int
          */
         public function update()
@@ -153,8 +147,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Delete the class in the database
-         *
          * @return int
          */
         public function delete()
@@ -333,17 +325,14 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * @param $kBestellung
+         * @param int $kBestellung
          * @return Bestellung
          */
-        public static function getOrderProducts($kBestellung)
+        public static function getOrderProducts(int $kBestellung)
         {
-            $kBestellung = (int)$kBestellung;
             $oBestellung = new Bestellung();
-
             if ($kBestellung > 0) {
                 $oBestellung = new Bestellung($kBestellung, true);
-
                 if (isset($oBestellung->kBestellung, $oBestellung->Positionen)
                     && $oBestellung->kBestellung > 0
                     && is_array($oBestellung->Positionen)
@@ -454,10 +443,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * @param $kKunde
-         * @param $kBestellung
-         * @param $kArtikel_arr
-         * @param $cRMAPostAssoc_arr
+         * @param int   $kKunde
+         * @param int   $kBestellung
+         * @param array $kArtikel_arr
+         * @param array $cRMAPostAssoc_arr
          * @return bool
          */
         public static function isRMAAlreadySend($kKunde, $kBestellung, $kArtikel_arr, &$cRMAPostAssoc_arr)
@@ -465,7 +454,13 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
             $kKunde      = (int)$kKunde;
             $kBestellung = (int)$kBestellung;
 
-            if (!$kKunde || !$kBestellung || !is_array($kArtikel_arr) || count($kArtikel_arr) === 0 || !is_array($cRMAPostAssoc_arr) || count($cRMAPostAssoc_arr) === 0) {
+            if (!$kKunde
+                || !$kBestellung
+                || !is_array($kArtikel_arr)
+                || count($kArtikel_arr) === 0
+                || !is_array($cRMAPostAssoc_arr)
+                || count($cRMAPostAssoc_arr) === 0
+            ) {
                 return true;
             }
 
@@ -828,7 +823,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                     if (isset($_SESSION['kSprache'])) {
                         $kSprache = $_SESSION['kSprache'];
                     } else {
-                        $oSprache = gibStandardsprache(true);
+                        $oSprache = Sprache::getDefaultLanguage(true);
                         $kSprache = $oSprache->kSprache;
                     }
                 }

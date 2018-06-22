@@ -6,8 +6,14 @@
 
 namespace DB\Services;
 
-
+/**
+ * Interface GcServiceInterface
+ * @package DB\Services
+ */
 interface GcServiceInterface
 {
-    public function run();
+    /**
+     * @return $this
+     */
+    public function run(): GcServiceInterface;
 }

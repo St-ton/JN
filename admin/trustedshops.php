@@ -19,7 +19,7 @@ setzeSpracheTrustedShops();
 
 $Einstellungen = Shop::getSettings([CONF_TRUSTEDSHOPS]);
 
-if (isset($_POST['kaeuferschutzeinstellungen']) && (int)$_POST['kaeuferschutzeinstellungen'] === 1 && validateToken()) {
+if (isset($_POST['kaeuferschutzeinstellungen']) && (int)$_POST['kaeuferschutzeinstellungen'] === 1 && FormHelper::validateToken()) {
     // Lpesche das Zertifikat
     if (isset($_POST['delZertifikat'])) {
         $oTrustedShops = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
@@ -31,7 +31,8 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && (int)$_POST['kaeuferschutzein
                 Shop::Container()->getDB()->query(
                     "DELETE FROM teinstellungen
                         WHERE kEinstellungenSektion = " . CONF_TRUSTEDSHOPS . "
-                            AND cName = 'trustedshops_nutzen'", 4
+                            AND cName = 'trustedshops_nutzen'",
+                    \DB\ReturnType::DEFAULT
                 );
                 $aktWert                        = new stdClass();
                 $aktWert->cWert                 = 'N';
@@ -53,7 +54,8 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && (int)$_POST['kaeuferschutzein
                 WHERE kEinstellungenSektion = " . CONF_TRUSTEDSHOPS . "
                     AND cConf = 'Y'
                     AND cWertName != 'trustedshops_kundenbewertung_anzeigen'
-                ORDER BY nSort", 2
+                ORDER BY nSort",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         $configCount = count($oConfig_arr);
         for ($i = 0; $i < $configCount; $i++) {
@@ -112,7 +114,7 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && (int)$_POST['kaeuferschutzein
         Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
         unset($oConfig_arr);
     }
-} elseif (isset($_POST['kaeuferschutzupdate']) && (int)$_POST['kaeuferschutzupdate'] === 1 && validateToken()) {
+} elseif (isset($_POST['kaeuferschutzupdate']) && (int)$_POST['kaeuferschutzupdate'] === 1 && FormHelper::validateToken()) {
     // Kaeuferprodukte updaten
     $oTrustedShops = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
     //$oZertifikat = $oTrustedShops->gibTrustedShopsZertifikatISO($_SESSION['TrustedShops']->oSprache->cISOSprache);
@@ -123,7 +125,7 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && (int)$_POST['kaeuferschutzein
     } else {
         $cFehler .= 'Fehler: Ihre K&auml;uferschutzprodukte konnten nicht aktualisiert werden.';
     }
-} elseif (isset($_POST['kundenbewertungeinstellungen']) && (int)$_POST['kundenbewertungeinstellungen'] === 1 && validateToken()) {
+} elseif (isset($_POST['kundenbewertungeinstellungen']) && (int)$_POST['kundenbewertungeinstellungen'] === 1 && FormHelper::validateToken()) {
     // Kundenbewertung Einstellungen
     $oTrustedShops = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
     $cPreStatus    = $Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'];
@@ -229,7 +231,8 @@ if ($step === 'uebersicht') {
         "SELECT *
             FROM teinstellungenconf
             WHERE kEinstellungenSektion = " . CONF_TRUSTEDSHOPS . "
-            ORDER BY nSort", 2
+            ORDER BY nSort",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     $configCount = count($oConfig_arr);
     for ($i = 0; $i < $configCount; $i++) {
@@ -238,13 +241,15 @@ if ($step === 'uebersicht') {
                 "SELECT *
                     FROM teinstellungenconfwerte
                     WHERE kEinstellungenConf = " . (int)$oConfig_arr[$i]->kEinstellungenConf . "
-                    ORDER BY nSort", 2
+                    ORDER BY nSort",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         } elseif ($oConfig_arr[$i]->cInputTyp === 'listbox') {
             $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->query(
                 "SELECT kKundengruppe, cName
                     FROM tkundengruppe
-                    ORDER BY cStandard DESC", 2
+                    ORDER BY cStandard DESC",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         }
 
@@ -253,7 +258,8 @@ if ($step === 'uebersicht') {
                 "SELECT cWert
                     FROM teinstellungen
                     WHERE kEinstellungenSektion = " . CONF_TRUSTEDSHOPS . "
-                        AND cName = '" . $oConfig_arr[$i]->cWertName . "'", 2
+                        AND cName = '" . $oConfig_arr[$i]->cWertName . "'",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             $oConfig_arr[$i]->gesetzterWert = $oSetValue;
         } else {
@@ -261,7 +267,8 @@ if ($step === 'uebersicht') {
                 "SELECT cWert
                     FROM teinstellungen
                     WHERE kEinstellungenSektion = " . CONF_TRUSTEDSHOPS . "
-                        AND cName = '" . $oConfig_arr[$i]->cWertName . "'", 1
+                        AND cName = '" . $oConfig_arr[$i]->cWertName . "'",
+                \DB\ReturnType::SINGLE_OBJECT
             );
             $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
         }
@@ -272,8 +279,9 @@ if ($step === 'uebersicht') {
 
     $oTrustedShops = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
 
-    if (isset($_POST['kaeuferschutzupdate'], $_POST['tsupdate']) && (int)$_POST['kaeuferschutzupdate'] === 1 &&
-        $Einstellungen['trustedshops']['trustedshops_nutzen'] === 'Y'
+    if (isset($_POST['kaeuferschutzupdate'], $_POST['tsupdate'])
+        && (int)$_POST['kaeuferschutzupdate'] === 1
+        && $Einstellungen['trustedshops']['trustedshops_nutzen'] === 'Y'
     ) {
         $smarty->assign('oKaeuferschutzProdukteDB', $oTrustedShops->oKaeuferschutzProdukteDB);
         $smarty->assign('oZertifikat', $oTrustedShops->gibTrustedShopsZertifikatISO($_SESSION['TrustedShops']->oSprache->cISOSprache));
@@ -361,9 +369,9 @@ if ($step === 'uebersicht') {
 }
 $smarty->assign('TS_BUYERPROT_CLASSIC', TS_BUYERPROT_CLASSIC)
        ->assign('TS_BUYERPROT_EXCELLENCE', TS_BUYERPROT_EXCELLENCE)
-       ->assign('bAllowfopen', pruefeALLOWFOPEN())
-       ->assign('bSOAP', pruefeSOAP())
-       ->assign('bCURL', pruefeCURL())
+       ->assign('bAllowfopen', PHPSettingsHelper::checkAllowFopen())
+       ->assign('bSOAP', PHPSettingsHelper::checkSOAP())
+       ->assign('bCURL', PHPSettingsHelper::checkCURL())
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->assign('step', $step)

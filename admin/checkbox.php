@@ -14,34 +14,34 @@ $cHinweis          = '';
 $cFehler           = '';
 $cStep             = 'uebersicht';
 $nAnzahlProSeite   = 15;
-$oSprach_arr       = gibAlleSprachen();
+$oSprach_arr       = Sprache::getAllLanguages();
 $oCheckBox         = new CheckBox();
 $cTab              = $cStep;
-if (strlen(verifyGPDataString('tab')) > 0) {
-    $cTab = verifyGPDataString('tab');
+if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
+    $cTab = RequestHelper::verifyGPDataString('tab');
 }
 if (isset($_POST['erstellenShowButton'])) {
     $cTab = 'erstellen';
-} elseif (verifyGPCDataInteger('uebersicht') === 1) { // Loeschen, aktivieren, deaktivieren
+} elseif (RequestHelper::verifyGPCDataInt('uebersicht') === 1) { // Loeschen, aktivieren, deaktivieren
     $kCheckBox_arr = $_POST['kCheckBox'];
-    if (isset($_POST['checkboxAktivierenSubmit']) && validateToken()) {
+    if (isset($_POST['checkboxAktivierenSubmit']) && FormHelper::validateToken()) {
         $oCheckBox->aktivateCheckBox($kCheckBox_arr);
         $cHinweis = 'Ihre markierten Checkboxen wurden erfolgreich aktiviert.';
-    } elseif (isset($_POST['checkboxDeaktivierenSubmit']) && validateToken()) {
+    } elseif (isset($_POST['checkboxDeaktivierenSubmit']) && FormHelper::validateToken()) {
         $oCheckBox->deaktivateCheckBox($kCheckBox_arr);
         $cHinweis = 'Ihre markierten Checkboxen wurden erfolgreich deaktiviert.';
-    } elseif (isset($_POST['checkboxLoeschenSubmit']) && validateToken()) {
+    } elseif (isset($_POST['checkboxLoeschenSubmit']) && FormHelper::validateToken()) {
         $oCheckBox->deleteCheckBox($kCheckBox_arr);
         $cHinweis = 'Ihre markierten Checkboxen wurden erfolgreich gel&ouml;scht.';
     }
-} elseif (verifyGPCDataInteger('edit') > 0) {
-    $kCheckBox = verifyGPCDataInteger('edit');
+} elseif (RequestHelper::verifyGPCDataInt('edit') > 0) {
+    $kCheckBox = RequestHelper::verifyGPCDataInt('edit');
     $cStep     = 'erstellen';
     $cTab      = $cStep;
     $smarty->assign('oCheckBox', new CheckBox($kCheckBox, true));
-} elseif (verifyGPCDataInteger('erstellen') === 1 && validateToken()) { // Erstellen
+} elseif (RequestHelper::verifyGPCDataInt('erstellen') === 1 && FormHelper::validateToken()) { // Erstellen
     $cStep       = 'erstellen';
-    $kCheckBox   = verifyGPCDataInteger('kCheckBox');
+    $kCheckBox   = RequestHelper::verifyGPCDataInt('kCheckBox');
     $cPlausi_arr = plausiCheckBox($_POST, $oSprach_arr);
     if (count($cPlausi_arr) === 0) {
         $oCheckBox = speicherCheckBox($_POST, $oSprach_arr);
@@ -72,8 +72,18 @@ $smarty->assign('oCheckBox_arr', $oCheckBox_arr)
        ->assign('CHECKBOX_ORT_KUNDENDATENEDITIEREN', CHECKBOX_ORT_KUNDENDATENEDITIEREN)
        ->assign('CHECKBOX_ORT_KONTAKT', CHECKBOX_ORT_KONTAKT)
        ->assign('oSprache_arr', $oSprach_arr)
-       ->assign('oKundengruppe_arr', Shop::Container()->getDB()->query("SELECT * FROM tkundengruppe ORDER BY cName", 2))
-       ->assign('oLink_arr', Shop::Container()->getDB()->query("SELECT * FROM tlink ORDER BY cName", 2))
+       ->assign('oKundengruppe_arr', Shop::Container()->getDB()->query(
+           "SELECT * 
+                FROM tkundengruppe 
+                ORDER BY cName",
+           \DB\ReturnType::ARRAY_OF_OBJECTS
+       ))
+       ->assign('oLink_arr', Shop::Container()->getDB()->query(
+            "SELECT * 
+              FROM tlink 
+              ORDER BY cName",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+       ))
        ->assign('oCheckBoxFunktion_arr', $oCheckBox->getCheckBoxFunctions())
        ->assign('cHinweis', $cHinweis)
        ->assign('cFehler', $cFehler)

@@ -6,11 +6,14 @@
 
 namespace Services;
 
+use Boxes\BoxFactoryInterface;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\Services\GcServiceInterface;
+use Services\JTL\BoxServiceInterface;
 use Services\JTL\CaptchaServiceInterface;
 use Services\JTL\CryptoServiceInterface;
+use Services\JTL\LinkServiceInterface;
 use Services\JTL\PasswordServiceInterface;
 use Psr\Log\LoggerInterface;
 
@@ -70,6 +73,30 @@ class Container extends ContainerBase implements DefaultServicesInterface
     public function getCache(): JTLCacheInterface
     {
         return $this->get(JTLCacheInterface::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getLinkService(): LinkServiceInterface
+    {
+        return $this->get(LinkServiceInterface::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getBoxFactory(): BoxFactoryInterface
+    {
+        return $this->get(BoxFactoryInterface::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getBoxService(): BoxServiceInterface
+    {
+        return $this->get(BoxServiceInterface::class);
     }
 
     /**

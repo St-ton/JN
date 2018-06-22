@@ -21,7 +21,7 @@ function editiereBewertung($cPost_arr)
 {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'bewertung_inc.php';
 
-    $kBewertung = verifyGPCDataInteger('kBewertung');
+    $kBewertung = RequestHelper::verifyGPCDataInt('kBewertung');
     $conf       = Shop::getSettings([CONF_BEWERTUNG]);
     if (
         $kBewertung > 0 &&

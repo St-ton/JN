@@ -4,27 +4,27 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once __DIR__ . '/includes/globalinclude.php';
-$session = Session::getInstance();
+$session = \Session\Session::getInstance();
 require_once PFAD_ROOT . PFAD_INCLUDES . 'kontakt_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 Shop::setPageType(PAGE_KONTAKT);
 $AktuelleSeite = 'KONTAKT';
 $Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_KONTAKTFORMULAR]);
-$linkHelper    = LinkHelper::getInstance();
+$linkHelper    = Shop::Container()->getLinkService();
 $kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_KONTAKT);
 //hole alle OberKategorien
-$AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
+$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
 $cCanonicalURL          = '';
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-if (pruefeBetreffVorhanden()) {
+if (FormHelper::checkSubject()) {
     $step            = 'formular';
     $fehlendeAngaben = [];
     if (isset($_POST['kontakt']) && (int)$_POST['kontakt'] === 1) {
-        $fehlendeAngaben = gibFehlendeEingabenKontaktformular();
+        $fehlendeAngaben = FormHelper::getMissingContactFormData();
         $kKundengruppe   = Session::CustomerGroup()->getID();
         // CheckBox Plausi
         $oCheckBox       = new CheckBox();
@@ -32,14 +32,14 @@ if (pruefeBetreffVorhanden()) {
             $fehlendeAngaben,
             $oCheckBox->validateCheckBox(CHECKBOX_ORT_KONTAKT, $kKundengruppe, $_POST, true)
         );
-        $nReturnValue    = eingabenKorrekt($fehlendeAngaben);
+        $nReturnValue    = FormHelper::eingabenKorrekt($fehlendeAngaben);
         Shop::Smarty()->assign('cPost_arr', StringHandler::filterXSS($_POST));
         executeHook(HOOK_KONTAKT_PAGE_PLAUSI);
 
         if ($nReturnValue) {
             $step = 'floodschutz';
-            if (!floodSchutz($Einstellungen['kontakt']['kontakt_sperre_minuten'])) {
-                $oNachricht = baueKontaktFormularVorgaben();
+            if (!FormHelper::checkFloodProtection($Einstellungen['kontakt']['kontakt_sperre_minuten'])) {
+                $oNachricht = FormHelper::baueKontaktFormularVorgaben();
                 // CheckBox Spezialfunktion ausfuehren
                 $oCheckBox->triggerSpecialFunction(
                     CHECKBOX_ORT_KONTAKT,
@@ -48,7 +48,7 @@ if (pruefeBetreffVorhanden()) {
                     $_POST,
                     ['oKunde' => $oNachricht, 'oNachricht' => $oNachricht]
                 )->checkLogging(CHECKBOX_ORT_KONTAKT, $kKundengruppe, $_POST, true);
-                bearbeiteNachricht();
+                FormHelper::editMessage();
                 $step = 'nachricht versendet';
             }
         }
@@ -69,7 +69,8 @@ if (pruefeBetreffVorhanden()) {
             WHERE (cKundengruppen = 0 
             OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
                 . "', REPLACE(cKundengruppen, ';', ',')) > 0) 
-            ORDER BY nSort", 2
+            ORDER BY nSort",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($subjects as $subject) {
         if ($subject->kKontaktBetreff > 0) {
@@ -83,7 +84,7 @@ if (pruefeBetreffVorhanden()) {
             $subject->AngezeigterName = $localization->cName;
         }
     }
-    $Vorgaben = baueKontaktFormularVorgaben();
+    $Vorgaben = FormHelper::baueKontaktFormularVorgaben();
     // Canonical
     $cCanonicalURL = $linkHelper->getStaticRoute('kontakt.php');
     // Metaangaben
@@ -105,9 +106,7 @@ if (pruefeBetreffVorhanden()) {
     $SpezialContent = new stdClass();
 }
 
-Shop::Smarty()->assign('Navigation', createNavigation($AktuelleSeite))
-    ->assign('Spezialcontent', $SpezialContent)
-    ->assign('requestURL', $requestURL ?? null);
+Shop::Smarty()->assign('Spezialcontent', $SpezialContent);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_KONTAKT_PAGE);

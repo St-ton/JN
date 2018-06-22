@@ -1,28 +1,14 @@
-{if isset($oBox->anzeigen) && $oBox->anzeigen === 'Y' && $oBox->cLogoURL|strlen > 0}
-    <section class="panel panel-default box box-trustedshops-seal" id="sidebox{$oBox->kBox}">
-        {if $oBox->ePosition != 'bottom'}
+{if $oBox->show()}
+    <section class="panel panel-default box box-trustedshops-seal" id="sidebox{$oBox->getID()}">
+        {if $oBox->getPosition() !== \Boxes\BoxPosition::BOTTOM}
             <div class="panel-heading">
-                <h5 class="panel-title">{lang key="safety" section="global"}</h5>
+                <div class="panel-title">{lang key='safety'}</div>
             </div>
         {/if}
         <div class="box-body panel-body text-center">
-            <p><a href="{$oBox->cLogoURL}"><img src="{$oBox->cBild}" alt="{lang key="ts_signtitle" section="global"}" /></a></p>
+            <p><a href="{$oBox->getLogoURL()}"><img src="{$oBox->getImageURL()}" alt="{lang key='ts_signtitle'}" /></a></p>
             <small class="description">
-                <a title="{lang key='ts_info_classic_title' section='global'} {$cShopName}" href="{$oBox->cLogoSiegelBoxURL}">{$cShopName} {lang key="ts_classic_text" section="global"}</a>
-            </small>
-        </div>
-    </section>
-{elseif isset($Boxen.TrustedShopsSiegelbox) && $Boxen.TrustedShopsSiegelbox->anzeigen === 'Y' && $Boxen.TrustedShopsSiegelbox->cLogoURL|strlen > 0}
-    <section class="panel panel-default box box-trustedshops-seal" id="sidebox{$oBox->kBox}">
-        {if $oBox->ePosition != 'bottom'}
-            <div class="panel-heading">
-                <h5 class="panel-title">{lang key="safety" section="global"}</h5>
-            </div>
-        {/if}
-        <div class="box-body panel-body text-center">
-            <p><a href="{$oBox->cLogoURL}"><img src="{$oBox->cBild}" alt="{lang key="ts_signtitle" section="global"}" /></a></p>
-            <small class="description">
-                <a title="{lang key='ts_info_classic_title' section='global'} {$cShopName}" href="{$oBox->cLogoSiegelBoxURL}">{$cShopName} {lang key="ts_classic_text" section="global"}</a>
+                <a title="{lang key='ts_info_classic_title'} {$cShopName}" href="{$oBox->getLogoSealURL()}">{$cShopName} {lang key='ts_classic_text'}</a>
             </small>
         </div>
     </section>

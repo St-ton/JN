@@ -20,8 +20,8 @@ $cHinweis  = '';
 $cFehler   = '';
 $redirects = $_POST['redirects'] ?? [];
 
-if (validateToken()) {
-    switch (verifyGPDataString('action')) {
+if (FormHelper::validateToken()) {
+    switch (RequestHelper::verifyGPDataString('action')) {
         case 'save':
             foreach ($redirects as $kRedirect => $redirect) {
                 $oRedirect = new Redirect($kRedirect);
@@ -50,14 +50,14 @@ if (validateToken()) {
             break;
         case 'new':
             $oRedirect = new Redirect();
-            if ($oRedirect->saveExt(verifyGPDataString('cFromUrl'), verifyGPDataString('cToUrl'))) {
+            if ($oRedirect->saveExt(RequestHelper::verifyGPDataString('cFromUrl'), RequestHelper::verifyGPDataString('cToUrl'))) {
                 $cHinweis = 'Ihre Weiterleitung wurde erfolgreich gespeichert';
             } else {
                 $cFehler = 'Fehler: Bitte pr&uuml;fen Sie Ihre Eingaben';
                 $smarty
                     ->assign('cTab', 'new_redirect')
-                    ->assign('cFromUrl', verifyGPDataString('cFromUrl'))
-                    ->assign('cToUrl', verifyGPDataString('cToUrl'));
+                    ->assign('cFromUrl', RequestHelper::verifyGPDataString('cFromUrl'))
+                    ->assign('cToUrl', RequestHelper::verifyGPDataString('cToUrl'));
             }
             break;
         case 'csvimport':

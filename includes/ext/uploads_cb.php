@@ -14,8 +14,8 @@ function retCode($bOk)
 {
     die(json_encode(['status' => $bOk ? 'ok' : 'error']));
 }
-$session = Session::getInstance();
-if (!validateToken()) {
+$session = \Session\Session::getInstance();
+if (!FormHelper::validateToken()) {
     retCode(0);
 }
 // upload file

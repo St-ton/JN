@@ -15,26 +15,26 @@ $step     = 'agbwrb_uebersicht';
 
 setzeSprache();
 
-if (verifyGPCDataInteger('agbwrb') === 1 && validateToken()) {
+if (RequestHelper::verifyGPCDataInt('agbwrb') === 1 && FormHelper::validateToken()) {
     // Editieren
-    if (verifyGPCDataInteger('agbwrb_edit') === 1) {
-        if (verifyGPCDataInteger('kKundengruppe') > 0) {
+    if (RequestHelper::verifyGPCDataInt('agbwrb_edit') === 1) {
+        if (RequestHelper::verifyGPCDataInt('kKundengruppe') > 0) {
             $step    = 'agbwrb_editieren';
             $oAGBWRB = Shop::Container()->getDB()->select(
                 'ttext',
                 'kSprache', (int)$_SESSION['kSprache'],
-                'kKundengruppe', verifyGPCDataInteger('kKundengruppe')
+                'kKundengruppe', RequestHelper::verifyGPCDataInt('kKundengruppe')
             );
-            $smarty->assign('kKundengruppe', verifyGPCDataInteger('kKundengruppe'))
+            $smarty->assign('kKundengruppe', RequestHelper::verifyGPCDataInt('kKundengruppe'))
                    ->assign('oAGBWRB', $oAGBWRB);
         } else {
             $cFehler .= 'Fehler: Bitte geben Sie eine g&uuml;ltige Kundengruppe an.<br />';
         }
-    } elseif (verifyGPCDataInteger('agbwrb_editieren_speichern') === 1) { // Speichern
+    } elseif (RequestHelper::verifyGPCDataInt('agbwrb_editieren_speichern') === 1) { // Speichern
         if (speicherAGBWRB(
-            verifyGPCDataInteger('kKundengruppe'),
+            RequestHelper::verifyGPCDataInt('kKundengruppe'),
             $_SESSION['kSprache'],
-            $_POST, verifyGPCDataInteger('kText'))
+            $_POST, RequestHelper::verifyGPCDataInt('kText'))
         ) {
             $cHinweis .= 'Ihre AGB bzw. WRB wurde erfolgreich gespeichert.<br />';
         } else {
@@ -62,6 +62,6 @@ if ($step === 'agbwrb_uebersicht') {
 $smarty->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->assign('step', $step)
-       ->assign('Sprachen', gibAlleSprachen())
+       ->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('kSprache', $_SESSION['kSprache'])
        ->display('agbwrb.tpl');

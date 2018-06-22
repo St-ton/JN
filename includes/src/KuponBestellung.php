@@ -50,31 +50,28 @@ class KuponBestellung
     public $dErstellt;
 
     /**
-     * Constructor
-     *
-     * @param int $kKupon - primarykey
-     * @param int $kBestellung - primarykey
+     * KuponBestellung constructor.
+     * @param int $kKupon
+     * @param int $kBestellung
      */
-    public function __construct($kKupon = 0, $kBestellung = 0)
+    public function __construct(int $kKupon = 0, int $kBestellung = 0)
     {
-        if ((int)$kKupon > 0 && (int)$kBestellung > 0) {
+        if ($kKupon > 0 && $kBestellung > 0) {
             $this->loadFromDB($kKupon, $kBestellung);
         }
     }
 
     /**
-     * Loads database member into class member
-     *
      * @param int $kKupon
      * @param int $kBestellung
      * @return $this
      */
-    private function loadFromDB($kKupon = 0, $kBestellung = 0)
+    private function loadFromDB(int $kKupon = 0, int $kBestellung = 0)
     {
         $oObj = Shop::Container()->getDB()->select(
             'tkuponbestelllung',
-            'kKupon', (int)$kKupon,
-            'kBestellung', (int)$kBestellung
+            'kKupon', $kKupon,
+            'kBestellung', $kBestellung
         );
 
         if (isset($oObj->kKupon) && $oObj->kKupon > 0) {
@@ -88,12 +85,10 @@ class KuponBestellung
     }
 
     /**
-     * Store the class in the database
-     *
-     * @param bool $bPrim - Controls the return of the method
+     * @param bool $bPrim
      * @return bool|int
      */
-    public function save($bPrim = true)
+    public function save(bool $bPrim = true)
     {
         $oObj        = new stdClass();
         $cMember_arr = array_keys(get_object_vars($this));
@@ -113,11 +108,9 @@ class KuponBestellung
     }
 
     /**
-     * Update the class in the database
-     *
      * @return int
      */
-    public function update()
+    public function update(): int
     {
         $_upd                      = new stdClass();
         $_upd->kKupon              = $this->kKupon;
@@ -138,11 +131,9 @@ class KuponBestellung
     }
 
     /**
-     * Delete the class in the database
-     *
      * @return int
      */
-    public function delete()
+    public function delete(): int
     {
         return Shop::Container()->getDB()->delete('tkupon', ['kKupon','kBestellung'], [(int)$this->kKupon,(int)$this->kBestellung]);
     }
@@ -151,9 +142,9 @@ class KuponBestellung
      * @param int $kKupon
      * @return $this
      */
-    public function setKupon($kKupon)
+    public function setKupon(int $kKupon)
     {
-        $this->kKupon = (int)$kKupon;
+        $this->kKupon = $kKupon;
 
         return $this;
     }
@@ -162,9 +153,9 @@ class KuponBestellung
      * @param int $kBestellung
      * @return $this
      */
-    public function setBestellung($kBestellung)
+    public function setBestellung(int $kBestellung)
     {
-        $this->kBestellung = (int)$kBestellung;
+        $this->kBestellung = $kBestellung;
 
         return $this;
     }
@@ -173,9 +164,9 @@ class KuponBestellung
      * @param int $kKunde
      * @return $this
      */
-    public function setKunden($kKunde)
+    public function setKunden(int $kKunde)
     {
-        $this->kKunde = (int)$kKunde;
+        $this->kKunde = $kKunde;
 
         return $this;
     }
@@ -307,7 +298,7 @@ class KuponBestellung
      * @param int    $kKupon
      * @return array
      */
-    public static function getOrdersWithUsedCoupons($dStart, $dEnd, $kKupon = 0)
+    public static function getOrdersWithUsedCoupons($dStart, $dEnd, int $kKupon = 0)
     {
         return Shop::Container()->getDB()->query(
             "SELECT kbs.*, wkp.cName, kp.kKupon
@@ -322,8 +313,9 @@ class KuponBestellung
                     AND '" . $dEnd . "'
                     AND bs.cStatus != " . BESTELLUNG_STATUS_STORNO . "
                     AND (wkp.nPosTyp = 3 OR wkp.nPosTyp = 7) " .
-                ((int)$kKupon > 0 ? " AND kp.kKupon = " . (int)$kKupon : '') . "
-                ORDER BY kbs.dErstellt DESC", 9
+                ($kKupon > 0 ? " AND kp.kKupon = " . $kKupon : '') . "
+                ORDER BY kbs.dErstellt DESC",
+            \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
         );
     }
 }

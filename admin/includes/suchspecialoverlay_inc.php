@@ -27,10 +27,10 @@ function gibAlleSuchspecialOverlays()
  * @param int $kSuchspecialOverlay
  * @return mixed
  */
-function gibSuchspecialOverlay($kSuchspecialOverlay)
+function gibSuchspecialOverlay(int $kSuchspecialOverlay)
 {
-    return Shop::Container()->getDB()->query("
-        SELECT tsuchspecialoverlay.*, tsuchspecialoverlaysprache.kSprache, tsuchspecialoverlaysprache.cBildPfad, 
+    return Shop::Container()->getDB()->query(
+        "SELECT tsuchspecialoverlay.*, tsuchspecialoverlaysprache.kSprache, tsuchspecialoverlaysprache.cBildPfad, 
             tsuchspecialoverlaysprache.nAktiv, tsuchspecialoverlaysprache.nPrio, tsuchspecialoverlaysprache.nMargin, 
             tsuchspecialoverlaysprache.nTransparenz, tsuchspecialoverlaysprache.nGroesse, 
             tsuchspecialoverlaysprache.nPosition
@@ -38,7 +38,8 @@ function gibSuchspecialOverlay($kSuchspecialOverlay)
             LEFT JOIN tsuchspecialoverlaysprache 
                 ON tsuchspecialoverlaysprache.kSuchspecialOverlay = tsuchspecialoverlay.kSuchspecialOverlay
                 AND tsuchspecialoverlaysprache.kSprache = " . (int)$_SESSION['kSprache'] . "
-            WHERE tsuchspecialoverlay.kSuchspecialOverlay = " . (int)$kSuchspecialOverlay, 1
+            WHERE tsuchspecialoverlay.kSuchspecialOverlay = " . $kSuchspecialOverlay,
+        \DB\ReturnType::SINGLE_OBJECT
     );
 }
 
@@ -336,13 +337,13 @@ function erstelleFixedOverlay($cBild, $nGroesse, $nTransparenz, $cFormat, $cPfad
  */
 function speicherBild($cFiles_arr, $oSuchspecialoverlaySprache)
 {
-    if ($cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/jpeg' ||
-        $cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/pjpeg' ||
-        $cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/jpg' ||
-        $cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/gif' ||
-        $cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/png' ||
-        $cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/bmp' ||
-        $cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/x-png'
+    if ($cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/jpeg'
+        || $cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/pjpeg'
+        || $cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/jpg'
+        || $cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/gif'
+        || $cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/png'
+        || $cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/bmp'
+        || $cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/x-png'
     ) {
         if (empty($cFiles_arr['cSuchspecialOverlayBild']['error'])) {
             $cFormat   = mappeFileTyp($cFiles_arr['cSuchspecialOverlayBild']['type']);
@@ -352,21 +353,21 @@ function speicherBild($cFiles_arr, $oSuchspecialoverlaySprache)
 
             erstelleFixedOverlay(
                 $cOriginal,
-                ($oSuchspecialoverlaySprache->nGroesse * 4),
+                $oSuchspecialoverlaySprache->nGroesse * 4,
                 $oSuchspecialoverlaySprache->nTransparenz,
                 $cFormat,
                 PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY_RETINA . $cName
             );
             erstelleFixedOverlay(
                 $cOriginal,
-                ($oSuchspecialoverlaySprache->nGroesse * 3),
+                $oSuchspecialoverlaySprache->nGroesse * 3,
                 $oSuchspecialoverlaySprache->nTransparenz,
                 $cFormat,
                 PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY_GROSS . $cName
             );
             erstelleFixedOverlay(
                 $cOriginal,
-                ($oSuchspecialoverlaySprache->nGroesse * 2),
+                $oSuchspecialoverlaySprache->nGroesse * 2,
                 $oSuchspecialoverlaySprache->nTransparenz,
                 $cFormat,
                 PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY_NORMAL . $cName

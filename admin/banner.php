@@ -10,9 +10,9 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'banner_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 $cFehler  = '';
 $cHinweis = '';
-$cAction  = (isset($_REQUEST['action']) && validateToken()) ? $_REQUEST['action'] : 'view';
+$cAction  = (isset($_REQUEST['action']) && FormHelper::validateToken()) ? $_REQUEST['action'] : 'view';
 
-if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && validateToken()) {
+if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && FormHelper::validateToken()) {
     $cPlausi_arr = [];
     $oBanner     = new ImageMap();
     $kImageMap   = (isset($_POST['kImageMap']) ? (int)$_POST['kImageMap'] : null);

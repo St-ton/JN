@@ -178,8 +178,8 @@ class UT extends PaymentMethod
     {
         if (isset($_GET['fail']) && (int)$_GET['fail'] === 1) {
             /*** Session Hash ***/
-            $cPh = verifyGPDataString('ph');
-            $cSh = verifyGPDataString('sh');
+            $cPh = RequestHelper::verifyGPDataString('ph');
+            $cSh = RequestHelper::verifyGPDataString('sh');
 
             switch ((int)$_GET['error']) {
                 case 1:

@@ -35,10 +35,10 @@
                                 <strong>{#boxActions#}</strong>
                             </div>
                         </li>
-                        {foreach name="box" from=$oBox_arr item=oBox}
-                            {if $oBox->bContainer}
+                        {foreach $oBox_arr as $oBox}
+                            {if $oBox->getBaseType() === $smarty.const.BOX_CONTAINER}
                                 {include file="tpl_inc/box_single.tpl" oBox=$oBox nPage=$nPage position=$direction}
-                                {foreach from=$oBox->oContainer_arr item=oContainerBox}
+                                {foreach $oBox->getChildren() as $oContainerBox}
                                     {include file="tpl_inc/box_single.tpl" oBox=$oContainerBox nPage=$nPage position=$direction}
                                 {/foreach}
                             {else}

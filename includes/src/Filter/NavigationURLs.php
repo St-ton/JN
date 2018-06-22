@@ -173,7 +173,7 @@ class NavigationURLs implements NavigationURLsInterface
     /**
      * @inheritdoc
      */
-    function getManufacturers(): string
+    public function getManufacturers(): string
     {
         return $this->manufacturers;
     }

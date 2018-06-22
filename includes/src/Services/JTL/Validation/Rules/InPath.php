@@ -27,7 +27,7 @@ class InPath implements RuleInterface
 
     /**
      * InPath constructor.
-     * @param $path
+     * @param string|\Path $path
      * @throws InvalidPathStateException
      */
     public function __construct($path)

@@ -117,8 +117,8 @@ function baueBlaetterNaviGetterSetter($nAnzahl, $nAnzahlProSeite)
             $oBlaetterNaviConf->$nAktuelleSeite = 1;
             $oBlaetterNaviConf->$cLimit         = 0;
             // GET || POST
-            if (verifyGPCDataInteger('s' . $i) > 0) {
-                $nSeite                             = verifyGPCDataInteger('s' . $i);
+            if (RequestHelper::verifyGPCDataInt('s' . $i) > 0) {
+                $nSeite                             = RequestHelper::verifyGPCDataInt('s' . $i);
                 $oBlaetterNaviConf->$cOffset        = (($nSeite - 1) * $nAnzahlProSeite);
                 $oBlaetterNaviConf->$cSQL           = ' LIMIT ' . (($nSeite - 1) * $nAnzahlProSeite) . ", " . $nAnzahlProSeite;
                 $oBlaetterNaviConf->$nAktuelleSeite = $nSeite;

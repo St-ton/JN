@@ -10,11 +10,11 @@ $oAccount->permission('MODULE_WISHLIST_VIEW', true, true);
 $cHinweis          = '';
 $settingsIDs       = [442, 443, 440, 439, 445, 446, 1460];
 // Tabs
-if (strlen(verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', verifyGPDataString('tab'));
+if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
 // Einstellungen
-if (verifyGPCDataInteger('einstellungen') === 1) {
+if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
     $cHinweis .= saveAdminSettings($settingsIDs, $_POST);
 }
 // Anzahl Wunschzettel, gewünschte Artikel, versendete Wunschzettel
@@ -27,17 +27,20 @@ $oWunschlistePos = Shop::Container()->getDB()->query(
             JOIN twunschlistepos 
                 ON twunschliste.kWunschliste = twunschlistepos.kWunschliste
             GROUP BY twunschliste.kWunschliste
-        ) AS tWunsch", 1
+        ) AS tWunsch",
+    \DB\ReturnType::SINGLE_OBJECT
 );
 $oWunschlisteArtikel = Shop::Container()->getDB()->query(
     "SELECT count(*) AS nAnzahl
-        FROM twunschlistepos", 1
+        FROM twunschlistepos",
+    \DB\ReturnType::SINGLE_OBJECT
 );
 $oWunschlisteFreunde = Shop::Container()->getDB()->query(
     "SELECT count(*) AS nAnzahl
         FROM twunschliste
         JOIN twunschlisteversand 
-            ON twunschliste.kWunschliste = twunschlisteversand.kWunschliste", 1
+            ON twunschliste.kWunschliste = twunschlisteversand.kWunschliste",
+    \DB\ReturnType::SINGLE_OBJECT
 );
 // Paginationen
 $oPagiPos = (new Pagination('pos'))
@@ -61,12 +64,11 @@ $CWunschlisteVersand_arr = Shop::Container()->getDB()->query(
             ON twunschliste.kKunde = tkunde.kKunde
         ORDER BY twunschlisteversand.dZeit DESC
         LIMIT " . $oPagiFreunde->getLimitSQL(),
-    2);
+    \DB\ReturnType::ARRAY_OF_OBJECTS);
 // cNachname entschluesseln
-if (is_array($CWunschlisteVersand_arr) && count($CWunschlisteVersand_arr) > 0) {
-    foreach ($CWunschlisteVersand_arr as $i => $CWunschlisteVersand) {
+foreach ($CWunschlisteVersand_arr as $i => $CWunschlisteVersand) {
+    if ($CWunschlisteVersand->kKunde !== null) {
         $oKunde = new Kunde($CWunschlisteVersand->kKunde);
-
         $CWunschlisteVersand_arr[$i]->cNachname = $oKunde->cNachname;
     }
 }
@@ -83,11 +85,10 @@ $CWunschliste_arr = Shop::Container()->getDB()->query(
         GROUP BY twunschliste.kWunschliste
         ORDER BY twunschliste.dErstellt DESC
         LIMIT " . $oPagiPos->getLimitSQL(),
-    2);
-if (is_array($CWunschliste_arr) && count($CWunschliste_arr) > 0) {
-    foreach ($CWunschliste_arr as $i => $CWunschliste) {
+    \DB\ReturnType::ARRAY_OF_OBJECTS);
+foreach ($CWunschliste_arr as $i => $CWunschliste) {
+    if ($CWunschliste->kKunde !== null) {
         $oKunde = new Kunde($CWunschliste->kKunde);
-
         $CWunschliste_arr[$i]->cNachname = $oKunde->cNachname;
     }
 }
@@ -99,13 +100,14 @@ $CWunschlistePos_arr = Shop::Container()->getDB()->query(
         GROUP BY kArtikel
         ORDER BY Anzahl DESC
         LIMIT " . $oPagiArtikel->getLimitSQL(),
-    2);
+    \DB\ReturnType::ARRAY_OF_OBJECTS);
 // Config holen
 $oConfig_arr = Shop::Container()->getDB()->query(
     "SELECT *
         FROM teinstellungenconf
         WHERE kEinstellungenConf IN (" . implode(',', $settingsIDs) . ")
-        ORDER BY nSort", 2
+        ORDER BY nSort",
+    \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 $configCount = count($oConfig_arr);
 for ($i = 0; $i < $configCount; $i++) {

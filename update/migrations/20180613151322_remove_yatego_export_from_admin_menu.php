@@ -28,6 +28,8 @@ class Migration_20180613151322 extends Migration implements IMigration
     public function up()
     {
         $this->execute("DELETE FROM tadminmenu WHERE cURL = 'yatego.export.php'");
+        $this->execute("DELETE FROM tadminrecht WHERE cRecht = 'EXPORT_YATEGO_VIEW'");
+        $this->execute("DELETE FROM tadminrechtegruppe WHERE cRecht = 'EXPORT_YATEGO_VIEW'");
     }
 
     public function down()
@@ -35,5 +37,8 @@ class Migration_20180613151322 extends Migration implements IMigration
         $this->execute("INSERT INTO `tadminmenu` 
             (`kAdminmenu`, `kAdminmenueGruppe`, `cModulId`, `cLinkname`, `cURL`, `cRecht`, `nSort`) 
             VALUES (46,12,'core_jtl','Yatego Export','yatego.export.php','EXPORT_YATEGO_VIEW', 70)");
+        $this->execute("INSERT INTO `tadminrecht` 
+            (`cRecht`, `cBeschreibung`, `kAdminrechtemodul`) 
+            VALUES ('EXPORT_YATEGO_VIEW','Yatego Export',7)");
     }
 }

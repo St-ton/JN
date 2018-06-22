@@ -45,13 +45,6 @@ function holeExportformatCron()
                     WHERE kCron = " . (int)$oExportformatCron->kCron, 1
             );
             $oExportformatCron_arr[$i]->nAnzahlArtikel       = holeMaxExportArtikelAnzahl($oExportformatCron);
-            $oExportformatCron_arr[$i]->nAnzahlArtikelYatego = Shop::Container()->getDB()->query(
-                "SELECT count(*) AS nAnzahl 
-                    FROM tartikel 
-                    JOIN tartikelattribut 
-                        ON tartikelattribut.kArtikel = tartikel.kArtikel 
-                    WHERE tartikelattribut.cName = 'yategokat'", 1
-            );
         }
 
         return $oExportformatCron_arr;

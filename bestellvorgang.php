@@ -124,23 +124,18 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
         $plz           = isset($_SESSION['Lieferadresse']->cPLZ) ? $_SESSION['Lieferadresse']->cPLZ : $_SESSION['Kunde']->cPLZ;
         $kKundengruppe = isset($_SESSION['Kunde']->kKundengruppe) ? $_SESSION['Kunde']->kKundengruppe : $_SESSION['Kundengruppe']->kKundengruppe;
 
-        $oGuenstigsteVersandart = null;
-        $oVersandart_arr        = VersandartHelper::getPossibleShippingMethods($land, $plz, VersandartHelper::getShippingClasses($_SESSION['Warenkorb']), $kKundengruppe);
-        $activeVersandart       = gibAktiveVersandart($oVersandart_arr);
+        $oVersandart_arr  = VersandartHelper::getPossibleShippingMethods(
+            $land,
+            $plz,
+            VersandartHelper::getShippingClasses($_SESSION['Warenkorb']),
+            $kKundengruppe
+        );
+        $activeVersandart = gibAktiveVersandart($oVersandart_arr);
 
-        if (empty($activeVersandart)) {
-            foreach ($oVersandart_arr as $oVersandart) {
-                if ($oGuenstigsteVersandart === null || $oVersandart->fEndpreis < $oGuenstigsteVersandart->fEndpreis) {
-                    $oGuenstigsteVersandart = $oVersandart;
-                }
-            }
-
-            if ($oGuenstigsteVersandart !== null) {
-                pruefeVersandartWahl($oGuenstigsteVersandart->kVersandart, ['kVerpackung' => array_keys(gibAktiveVerpackung(gibMoeglicheVerpackungen($kKundengruppe)))]);
-            }
-        } else {
-            pruefeVersandartWahl($activeVersandart, ['kVerpackung' => array_keys(gibAktiveVerpackung(gibMoeglicheVerpackungen($kKundengruppe)))]);
-        }
+        pruefeVersandartWahl(
+            $activeVersandart,
+            ['kVerpackung' => array_keys(gibAktiveVerpackung(gibMoeglicheVerpackungen($kKundengruppe)))]
+        );
     }
 }
 //Download-Artikel vorhanden?

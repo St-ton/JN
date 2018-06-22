@@ -1604,14 +1604,14 @@ function gibAktiveVersandart($oVersandarten_arr)
     if (isset($_SESSION['Versandart'])) {
         $_SESSION['AktiveVersandart'] = $_SESSION['Versandart']->kVersandart;
     } elseif (!empty($_SESSION['AktiveVersandart']) && is_array($oVersandarten_arr) && count($oVersandarten_arr) > 0) {
-        $active = $_SESSION['AktiveVersandart'];
+        $active = (int)$_SESSION['AktiveVersandart'];
         if (array_reduce($oVersandarten_arr, function ($carry, $item) use ($active) {
-            return $item->kVersandart === $active ? $item->kVersandart : $carry;
-        }, 0) !== $_SESSION['AktiveVersandart']) {
+                return (int)$item->kVersandart === $active ? (int)$item->kVersandart : $carry;
+        }, 0) !== (int)$_SESSION['AktiveVersandart']) {
             $_SESSION['AktiveVersandart'] = $oVersandarten_arr[0]->kVersandart;
         }
     } else {
-        $_SESSION['AktiveVersandart'] = 0;
+        $_SESSION['AktiveVersandart'] = $oVersandarten_arr[0]->kVersandart;
     }
 
     return $_SESSION['AktiveVersandart'];
@@ -1626,14 +1626,14 @@ function gibAktiveZahlungsart($oZahlungsarten_arr)
     if (isset($_SESSION['Zahlungsart'])) {
         $_SESSION['AktiveZahlungsart'] = $_SESSION['Zahlungsart']->kZahlungsart;
     } elseif (!empty($_SESSION['AktiveZahlungsart']) && is_array($oZahlungsarten_arr) && count($oZahlungsarten_arr) > 0) {
-        $active = $_SESSION['AktiveZahlungsart'];
+        $active = (int)$_SESSION['AktiveZahlungsart'];
         if (array_reduce($oZahlungsarten_arr, function ($carry, $item) use ($active) {
-            return $item->kZahlungsart === $active ? $item->kZahlungsart : $carry;
-        }, 0) !== $_SESSION['AktiveZahlungsart']) {
+                return (int)$item->kZahlungsart === $active ? (int)$item->kZahlungsart : $carry;
+        }, 0) !== (int)$_SESSION['AktiveZahlungsart']) {
             $_SESSION['AktiveZahlungsart'] = $oZahlungsarten_arr[0]->kZahlungsart;
         }
     } else {
-        $_SESSION['AktiveZahlungsart'] = 0;
+        $_SESSION['AktiveZahlungsart'] = $oZahlungsarten_arr[0]->kZahlungsart;
     }
 
     return $_SESSION['AktiveZahlungsart'];

@@ -3565,19 +3565,21 @@ li span.value {
 }
 
 //searchcloud
-.generate-columns(7);
-.generate-columns(@n, @i: 1) when (@i =< @n) {
+.generate-jqcloud-classes(7);
+.generate-jqcloud-classes(@n, @i: 1) when (@i =< @n) {
     .jqcloud-word.w@{i} {
-        color: tint(@brand-primary, 100% - @i * 14%);
-        font-size: calc(100% + @searchcloud-font-size-scaling*@i - @searchcloud-font-size-scaling);
+        color: tint(@brand-primary, 77% - @i * 11%);
+        font-size: calc(100% + @searchcloud-font-size-scaling*(@i - 1));
     }
-    .generate-columns(@n, (@i + 1));
+    .generate-jqcloud-classes(@n, (@i + 1));
 }
+
 .jqcloud {
     line-height: normal;
     overflow: hidden;
     position: relative;
 }
+
 .jqcloud-word a {
     color: inherit !important;
     font-size: inherit !important;
@@ -3586,7 +3588,8 @@ li span.value {
         color: @link-hover-color !important;
     }
 }
-#searchcloud {
+
+.searchcloud {
     width: 100%;
     height:200px;
 }

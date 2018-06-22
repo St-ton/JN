@@ -18,46 +18,44 @@ function holeExportformatCron()
             FROM texportformat
             JOIN tcron ON tcron.cJobArt = 'exportformat'
                 AND tcron.kKey = texportformat.kExportformat
-            ORDER BY tcron.dStart DESC", 2
+            ORDER BY tcron.dStart DESC",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-
-    if (is_array($oExportformatCron_arr) && count($oExportformatCron_arr) > 0) {
-        foreach ($oExportformatCron_arr as $i => $oExportformatCron) {
-            $oExportformatCron_arr[$i]->cAlleXStdToDays = rechneUmAlleXStunden($oExportformatCron->nAlleXStd);
-            $oExportformatCron_arr[$i]->Sprache         = Shop::Container()->getDB()->select(
-                'tsprache',
-                'kSprache',
-                (int)$oExportformatCron->kSprache
-            );
-            $oExportformatCron_arr[$i]->Waehrung        = Shop::Container()->getDB()->select(
-                'twaehrung',
-                'kWaehrung',
-                (int)$oExportformatCron->kWaehrung
-            );
-            $oExportformatCron_arr[$i]->Kundengruppe    = Shop::Container()->getDB()->select(
-                'tkundengruppe',
-                'kKundengruppe',
-                (int)$oExportformatCron->kKundengruppe
-            );
-            $oExportformatCron_arr[$i]->oJobQueue       = Shop::Container()->getDB()->query(
-                "SELECT *, DATE_FORMAT(dZuletztGelaufen, '%d.%m.%Y %H:%i') AS dZuletztGelaufen_de 
-                    FROM tjobqueue 
-                    WHERE kCron = " . (int)$oExportformatCron->kCron, 1
-            );
-            $oExportformatCron_arr[$i]->nAnzahlArtikel       = holeMaxExportArtikelAnzahl($oExportformatCron);
-            $oExportformatCron_arr[$i]->nAnzahlArtikelYatego = Shop::Container()->getDB()->query(
-                "SELECT count(*) AS nAnzahl 
-                    FROM tartikel 
-                    JOIN tartikelattribut 
-                        ON tartikelattribut.kArtikel = tartikel.kArtikel 
-                    WHERE tartikelattribut.cName = 'yategokat'", 1
-            );
-        }
-
-        return $oExportformatCron_arr;
+    foreach ($oExportformatCron_arr as $oExportformatCron) {
+        $oExportformatCron->cAlleXStdToDays      = rechneUmAlleXStunden($oExportformatCron->nAlleXStd);
+        $oExportformatCron->Sprache              = Shop::Container()->getDB()->select(
+            'tsprache',
+            'kSprache',
+            (int)$oExportformatCron->kSprache
+        );
+        $oExportformatCron->Waehrung             = Shop::Container()->getDB()->select(
+            'twaehrung',
+            'kWaehrung',
+            (int)$oExportformatCron->kWaehrung
+        );
+        $oExportformatCron->Kundengruppe         = Shop::Container()->getDB()->select(
+            'tkundengruppe',
+            'kKundengruppe',
+            (int)$oExportformatCron->kKundengruppe
+        );
+        $oExportformatCron->oJobQueue            = Shop::Container()->getDB()->query(
+            "SELECT *, DATE_FORMAT(dZuletztGelaufen, '%d.%m.%Y %H:%i') AS dZuletztGelaufen_de 
+                FROM tjobqueue 
+                WHERE kCron = " . (int)$oExportformatCron->kCron,
+            \DB\ReturnType::SINGLE_OBJECT
+        );
+        $oExportformatCron->nAnzahlArtikel       = holeMaxExportArtikelAnzahl($oExportformatCron);
+        $oExportformatCron->nAnzahlArtikelYatego = Shop::Container()->getDB()->query(
+            "SELECT count(*) AS nAnzahl 
+                FROM tartikel 
+                JOIN tartikelattribut 
+                    ON tartikelattribut.kArtikel = tartikel.kArtikel 
+                WHERE tartikelattribut.cName = 'yategokat'",
+            \DB\ReturnType::SINGLE_OBJECT
+        );
     }
 
-    return false;
+    return $oExportformatCron_arr;
 }
 
 /**
@@ -71,7 +69,8 @@ function holeCron($kCron)
         $oCron = Shop::Container()->getDB()->query(
             "SELECT *, DATE_FORMAT(tcron.dStart, '%d.%m.%Y %H:%i') AS dStart_de
                 FROM tcron
-                WHERE kCron = " . $kCron, 1
+                WHERE kCron = " . $kCron,
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         if (!empty($oCron->kCron) && $oCron->kCron > 0) {
@@ -99,19 +98,15 @@ function rechneUmAlleXStunden($nAlleXStd)
                 } else {
                     $nAlleXStd .= ' Jahre';
                 }
+            } elseif ($nAlleXStd == 1) {
+                $nAlleXStd .= ' Tag';
             } else {
-                if ($nAlleXStd == 1) {
-                    $nAlleXStd .= ' Tag';
-                } else {
-                    $nAlleXStd .= ' Tage';
-                }
+                $nAlleXStd .= ' Tage';
             }
+        } elseif ($nAlleXStd > 1) {
+            $nAlleXStd .= ' Stunden';
         } else {
-            if ($nAlleXStd > 1) {
-                $nAlleXStd .= ' Stunden';
-            } else {
-                $nAlleXStd .= ' Stunde';
-            }
+            $nAlleXStd .= ' Stunde';
         }
 
         return $nAlleXStd;
@@ -121,22 +116,24 @@ function rechneUmAlleXStunden($nAlleXStd)
 }
 
 /**
- * @return bool
+ * @return array
  */
 function holeAlleExportformate()
 {
-    $oExportformat_arr = Shop::Container()->getDB()->selectAll('texportformat', [], [], '*', 'cName, kSprache, kKundengruppe, kWaehrung');
-    if (is_array($oExportformat_arr) && count($oExportformat_arr) > 0) {
-        foreach ($oExportformat_arr as $i => $oExportformat) {
-            $oExportformat_arr[$i]->Sprache      = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$oExportformat->kSprache);
-            $oExportformat_arr[$i]->Waehrung     = Shop::Container()->getDB()->select('twaehrung', 'kWaehrung', (int)$oExportformat->kWaehrung);
-            $oExportformat_arr[$i]->Kundengruppe = Shop::Container()->getDB()->select('tkundengruppe', 'kKundengruppe', (int)$oExportformat->kKundengruppe);
-        }
-
-        return $oExportformat_arr;
+    $oExportformat_arr = Shop::Container()->getDB()->selectAll(
+        'texportformat',
+        [],
+        [],
+        '*',
+        'cName, kSprache, kKundengruppe, kWaehrung'
+    );
+    foreach ($oExportformat_arr as $oExportformat) {
+        $oExportformat->Sprache      = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$oExportformat->kSprache);
+        $oExportformat->Waehrung     = new Currency((int)$oExportformat->kSprache);
+        $oExportformat->Kundengruppe = new Kundengruppe((int)$oExportformat->kKundengruppe);
     }
 
-    return false;
+    return $oExportformat_arr;
 }
 
 /**
@@ -310,7 +307,7 @@ function exportformatQueueActionErstellen(JTLSmarty $smarty, array &$messages)
  */
 function exportformatQueueActionEditieren(JTLSmarty $smarty, array &$messages)
 {
-    $kCron = verifyGPCDataInteger('kCron');
+    $kCron = RequestHelper::verifyGPCDataInt('kCron');
     $oCron = $kCron > 0 ? holeCron($kCron) : 0;
 
     if (is_object($oCron) && $oCron->kCron > 0) {
@@ -388,7 +385,7 @@ function exportformatQueueActionTriggern(JTLSmarty $smarty, array &$messages)
  */
 function exportformatQueueActionFertiggestellt(JTLSmarty $smarty, array &$messages)
 {
-    $nStunden = verifyGPCDataInteger('nStunden');
+    $nStunden = RequestHelper::verifyGPCDataInt('nStunden');
     if ($nStunden <= 0) {
         $nStunden = 24;
     }
@@ -408,7 +405,7 @@ function exportformatQueueActionErstellenEintragen(JTLSmarty $smarty, array &$me
 {
     $kExportformat = (int)$_POST['kExportformat'];
     $dStart        = $_POST['dStart'];
-    $nAlleXStunden = (!empty($_POST['nAlleXStundenCustom']))
+    $nAlleXStunden = !empty($_POST['nAlleXStundenCustom'])
         ? (int)$_POST['nAlleXStundenCustom']
         : (int)$_POST['nAlleXStunden'];
     $oValues       = new stdClass();
@@ -530,6 +527,6 @@ function exportformatQueueFinalize($step, JTLSmarty $smarty, array &$messages)
     $smarty->assign('hinweis', $messages['notice'])
            ->assign('fehler', $messages['error'])
            ->assign('step', $step)
-           ->assign('cTab', verifyGPDataString('tab'))
+           ->assign('cTab', RequestHelper::verifyGPDataString('tab'))
            ->display('exportformat_queue.tpl');
 }

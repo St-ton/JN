@@ -13,7 +13,7 @@ $cFehler       = '';
 
 setzeSprache();
 
-if (isset($_POST['speichern']) && validateToken()) {
+if (isset($_POST['speichern']) && FormHelper::validateToken()) {
     $cHinweis .= saveAdminSectionSettings(CONF_SITEMAP, $_POST);
     if (isset($_POST['nVon']) && is_array($_POST['nVon']) && count($_POST['nVon']) > 0 &&
         is_array($_POST['nBis']) && count($_POST['nBis']) > 0) {
@@ -61,7 +61,7 @@ for ($i = 0; $i < $configCount; $i++) {
 }
 
 $smarty->assign('oConfig_arr', $oConfig_arr)
-       ->assign('Sprachen', gibAlleSprachen())
+       ->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->display('shopsitemap.tpl');

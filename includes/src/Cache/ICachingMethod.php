@@ -112,7 +112,7 @@ interface ICachingMethod
     /**
      * clear cache by cid or gid
      *
-     * @param string $cacheID
+     * @param string|array $cacheID
      * @return bool - success
      */
     public function flush($cacheID): bool;
@@ -137,4 +137,14 @@ interface ICachingMethod
      * @return array
      */
     public function getStats(): array;
+
+    /**
+     * @return string|null
+     */
+    public function getJournalID();
+
+    /**
+     * @param string $id
+     */
+    public function setJournalID($id);
 }

@@ -167,8 +167,8 @@ class phpQueryObject implements Iterator, Countable, ArrayAccess
     }
 
     /**
-     * @access private
-     * @TODO documentWrapper
+     * @param $node
+     * @return bool
      */
     protected function isRoot($node)
     {
@@ -255,8 +255,6 @@ class phpQueryObject implements Iterator, Countable, ArrayAccess
      * Unloads whole document from memory.
      * CAUTION! None further operations will be possible on this document.
      * All objects refering to it will be useless.
-     *
-     * @return phpQueryObject
      */
     public function unloadDocument()
     {
@@ -298,6 +296,7 @@ class phpQueryObject implements Iterator, Countable, ArrayAccess
 
     /**
      * @link http://docs.jquery.com/Ajax/serializeArray
+     * @param null $submit
      * @return array
      */
     public function serializeArray($submit = null)
@@ -575,8 +574,11 @@ class phpQueryObject implements Iterator, Countable, ArrayAccess
     /**
      * Return matched DOM nodes.
      *
-     * @param int $index
-     * @return array|DOMElement Single DOMElement or array of DOMElement.
+     * @param null $index
+     * @param null $callback1
+     * @param null $callback2
+     * @param null $callback3
+     * @return array|bool|mixed|null
      */
     public function get($index = null, $callback1 = null, $callback2 = null, $callback3 = null)
     {
@@ -769,9 +771,7 @@ class phpQueryObject implements Iterator, Countable, ArrayAccess
                     $detachAfter = $testNode;
                     break;
                 }
-                $testNode = isset($testNode->parentNode)
-                    ? $testNode->parentNode
-                    : null;
+                $testNode = $testNode->parentNode ?? null;
             }
             $xpath = $this->documentWrapper->isXHTML
                 ? $this->getNodeXpath($stackNode, 'html')
@@ -1092,9 +1092,7 @@ class phpQueryObject implements Iterator, Countable, ArrayAccess
                     str_replace(', ', ',', trim($args, "\"'"))
                 );
                 $start = $args[0];
-                $end   = isset($args[1])
-                    ? $args[1]
-                    : null;
+                $end   = $args[1] ?? null;
                 if ($end > 0) {
                     $end = $end - $start;
                 }
@@ -1329,6 +1327,8 @@ class phpQueryObject implements Iterator, Countable, ArrayAccess
      * - $index int
      * - $node DOMNode
      *
+     * @param $callback
+     * @param $_skipHistory
      * @return phpQueryObject
      * @link http://docs.jquery.com/Traversing/filter
      */
@@ -2313,9 +2313,9 @@ class phpQueryObject implements Iterator, Countable, ArrayAccess
     }
 
     /**
-     * Enter description here...
-     *
+     * @param $content
      * @return phpQueryObject
+     * @throws Exception
      */
     public function beforePHP($content)
     {
@@ -2323,8 +2323,9 @@ class phpQueryObject implements Iterator, Countable, ArrayAccess
     }
 
     /**
-     * @param String|phpQuery
+     * @param $seletor
      * @return phpQueryObject
+     * @throws Exception
      */
     public function insertBefore($seletor)
     {
@@ -2334,6 +2335,7 @@ class phpQueryObject implements Iterator, Countable, ArrayAccess
     /**
      * @param $content
      * @return phpQueryObject
+     * @throws Exception
      */
     public function after($content)
     {
@@ -2343,6 +2345,7 @@ class phpQueryObject implements Iterator, Countable, ArrayAccess
     /**
      * @param $content
      * @return phpQueryObject
+     * @throws Exception
      */
     public function afterPHP($content)
     {
@@ -2352,6 +2355,7 @@ class phpQueryObject implements Iterator, Countable, ArrayAccess
     /**
      * @param $seletor
      * @return phpQueryObject
+     * @throws Exception
      */
     public function insertAfter($seletor)
     {
@@ -2730,7 +2734,10 @@ class phpQueryObject implements Iterator, Countable, ArrayAccess
     }
 
     /**
-     * @access private
+     * @param      $direction
+     * @param null $selector
+     * @param bool $limitToOne
+     * @return array
      */
     protected function getElementSiblings($direction, $selector = null, $limitToOne = false)
     {
@@ -2859,9 +2866,7 @@ class phpQueryObject implements Iterator, Countable, ArrayAccess
      */
     protected function elementsContainsNode($nodeToCheck, $elementsStack = null)
     {
-        $loop = $elementsStack !== null
-            ? $elementsStack
-            : $this->elements;
+        $loop = $elementsStack ?? $this->elements;
         foreach ($loop as $node) {
             if ($node->isSameNode($nodeToCheck)) {
                 return true;
@@ -3321,13 +3326,11 @@ class phpQueryObject implements Iterator, Countable, ArrayAccess
     }
 
     /**
-     * Enter description here...
-     *
-     * @param array|string $callback Expects $node as first param, $index as second
-     * @param array        $scope External variables passed to callback. Use compact('varName1', 'varName2'...) and extract($scope)
-     * @param array        $arg1 Will ba passed as third and futher args to callback.
-     * @param array        $arg2 Will ba passed as fourth and futher args to callback, and so on...
-     * @return phpQueryObject
+     * @param      $callback
+     * @param null $param1
+     * @param null $param2
+     * @param null $param3
+     * @return $this
      */
     public function each($callback, $param1 = null, $param2 = null, $param3 = null)
     {
@@ -3447,6 +3450,7 @@ class phpQueryObject implements Iterator, Countable, ArrayAccess
      * Proper functionality is choosed automagicaly.
      *
      * @see phpQueryObject::_next()
+     * @param $cssSelector
      * @return phpQueryObject
      */
     public function next($cssSelector = null)
@@ -3511,12 +3515,9 @@ class phpQueryObject implements Iterator, Countable, ArrayAccess
     }
 
     /**
-     * Returns node's XPath.
-     *
-     * @param $oneNode
-     * @return string
-     * @TODO use native getNodePath is avaible
-     * @access private
+     * @param null $oneNode
+     * @param null $namespace
+     * @return array|mixed
      */
     protected function getNodeXpath($oneNode = null, $namespace = null)
     {

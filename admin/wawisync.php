@@ -10,7 +10,7 @@ $oAccount->permission('WAWI_SYNC_VIEW', true, true);
 $cFehler  = '';
 $cHinweis = '';
 
-if (isset($_POST['wawi-pass'], $_POST['wawi-user']) && validateToken()) {
+if (isset($_POST['wawi-pass'], $_POST['wawi-user']) && FormHelper::validateToken()) {
     $passwordService = Shop::Container()->getPasswordService();
     $passInfo        = $passwordService->getInfo($_POST['wawi-pass']);
     $upd             = new stdClass();

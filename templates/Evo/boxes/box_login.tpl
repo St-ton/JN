@@ -1,6 +1,6 @@
-<section class="panel panel-default box box-login" id="sidebox{$oBox->kBox}">
+<section class="panel panel-default box box-login" id="sidebox{$oBox->getID()}">
     <div class="panel-heading">
-        <h5 class="panel-title">{if empty($smarty.session.Kunde)}{lang key='login'}{else}{lang key='hello'}, {$smarty.session.Kunde->cVorname} {$smarty.session.Kunde->cNachname}{/if}</h5>
+        <div class="panel-title">{if empty($smarty.session.Kunde)}{lang key='login'}{else}{lang key='hello'}, {$smarty.session.Kunde->cVorname} {$smarty.session.Kunde->cNachname}{/if}</div>
     </div>
     <div class="box-body panel-body">
         {if empty($smarty.session.Kunde->kKunde)}

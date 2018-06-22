@@ -54,13 +54,9 @@ class EOS extends ServerPaymentMethod
 
         if (!isset($Einstellungen['zahlungsarten']['zahlungsart_' . $this->payment . '_haendlerid'])) {
             $cSetting_arr = Shop::getSettings([CONF_ZAHLUNGSARTEN]);
-            $cSetting     = isset($cSetting_arr['zahlungsarten']['zahlungsart_' . $this->payment . '_haendlerid'])
-                ? $cSetting_arr['zahlungsarten']['zahlungsart_' . $this->payment . '_haendlerid']
-                : null;
+            $cSetting     = $cSetting_arr['zahlungsarten']['zahlungsart_' . $this->payment . '_haendlerid'] ??  null;
         } else {
-            $cSetting = isset($Einstellungen['zahlungsarten']['zahlungsart_' . $this->payment . '_haendlerid'])
-                ? $Einstellungen['zahlungsarten']['zahlungsart_' . $this->payment . '_haendlerid']
-                : null;
+            $cSetting = $Einstellungen['zahlungsarten']['zahlungsart_' . $this->payment . '_haendlerid'] ?? null;
         }
 
         return $cSetting;

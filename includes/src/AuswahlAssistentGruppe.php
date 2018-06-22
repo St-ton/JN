@@ -65,7 +65,7 @@ class AuswahlAssistentGruppe
      * @param bool $bAktivFrage
      * @param bool $bBackend
      */
-    public function __construct($groupID = 0, $bAktiv = true, $bAktivFrage = true, $bBackend = false)
+    public function __construct(int $groupID = 0, bool $bAktiv = true, bool $bAktivFrage = true, bool $bBackend = false)
     {
         if ($groupID > 0) {
             $this->loadFromDB($groupID, $bAktiv, $bAktivFrage, $bBackend);
@@ -73,21 +73,21 @@ class AuswahlAssistentGruppe
     }
 
     /**
-     * @param int  $kAuswahlAssistentGruppe
+     * @param int  $groupID
      * @param bool $bAktiv
      * @param bool $bAktivFrage
      * @param bool $bBackend
      */
-    private function loadFromDB($kAuswahlAssistentGruppe, $bAktiv, $bAktivFrage, $bBackend)
+    private function loadFromDB(int $groupID, bool $bAktiv, bool $bAktivFrage, bool $bBackend)
     {
-        if ($kAuswahlAssistentGruppe > 0) {
+        if ($groupID > 0) {
             $cAktivSQL = $bAktiv ? ' AND nAktiv = 1' : '';
             $oGruppe   = Shop::Container()->getDB()->queryPrepared(
                 "SELECT *
                     FROM tauswahlassistentgruppe
                     WHERE kAuswahlAssistentGruppe = :groupID" .
                     $cAktivSQL,
-                ['groupID' => (int)$kAuswahlAssistentGruppe],
+                ['groupID' => $groupID],
                 \DB\ReturnType::SINGLE_OBJECT
             );
             if (isset($oGruppe->kAuswahlAssistentGruppe) && $oGruppe->kAuswahlAssistentGruppe > 0) {
@@ -140,7 +140,7 @@ class AuswahlAssistentGruppe
      * @param bool $bBackend
      * @return array
      */
-    public static function getGroups($kSprache, $bAktiv = true, $bAktivFrage = true, $bBackend = false)
+    public static function getGroups(int $kSprache, bool $bAktiv = true, bool $bAktivFrage = true, bool $bBackend = false): array
     {
         $oGruppe_arr    = [];
         $cAktivSQL      = $bAktiv ? ' AND nAktiv = 1' : '';
@@ -148,7 +148,7 @@ class AuswahlAssistentGruppe
             'SELECT kAuswahlAssistentGruppe
                 FROM tauswahlassistentgruppe
                 WHERE kSprache = :langID' . $cAktivSQL,
-            ['langID' => (int)$kSprache],
+            ['langID' => $kSprache],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oGruppeTMP_arr as $oGruppeTMP) {
@@ -163,11 +163,11 @@ class AuswahlAssistentGruppe
      * @param bool  $bPrimary
      * @return array|bool
      */
-    public function saveGroup($cParam_arr, $bPrimary = false)
+    public function saveGroup(array $cParam_arr, bool $bPrimary = false)
     {
         $cPlausi_arr = $this->checkGroup($cParam_arr);
         if (count($cPlausi_arr) === 0) {
-            $oObj = kopiereMembers($this);
+            $oObj = ObjectHelper::copyMembers($this);
 
             $this->nAktiv                  = (int)$this->nAktiv;
             $this->kSprache                = (int)$this->kSprache;
@@ -180,11 +180,11 @@ class AuswahlAssistentGruppe
                 $oObj->oAuswahlAssistentOrt_arr,
                 $oObj->oAuswahlAssistentFrage_arr
             );
-            $kAuswahlAssistentGruppe = Shop::Container()->getDB()->insert('tauswahlassistentgruppe', $oObj);
-            if ($kAuswahlAssistentGruppe > 0) {
-                AuswahlAssistentOrt::saveLocation($cParam_arr, $kAuswahlAssistentGruppe);
+            $groupID = Shop::Container()->getDB()->insert('tauswahlassistentgruppe', $oObj);
+            if ($groupID > 0) {
+                AuswahlAssistentOrt::saveLocation($cParam_arr, $groupID);
 
-                return $bPrimary ? $kAuswahlAssistentGruppe : true;
+                return $bPrimary ? $groupID : true;
             }
 
             return false;
@@ -197,7 +197,7 @@ class AuswahlAssistentGruppe
      * @param array $cParam_arr
      * @return array|bool
      */
-    public function updateGroup($cParam_arr)
+    public function updateGroup(array $cParam_arr)
     {
         $cPlausi_arr = $this->checkGroup($cParam_arr, true);
         if (count($cPlausi_arr) === 0) {
@@ -226,7 +226,7 @@ class AuswahlAssistentGruppe
      * @param bool  $bUpdate
      * @return array
      */
-    public function checkGroup($cParam_arr, $bUpdate = false)
+    public function checkGroup(array $cParam_arr, bool $bUpdate = false): array
     {
         $cPlausi_arr = [];
         // Name
@@ -251,13 +251,13 @@ class AuswahlAssistentGruppe
      * @param array $cParam_arr
      * @return bool
      */
-    public static function deleteGroup($cParam_arr)
+    public static function deleteGroup(array $cParam_arr): bool
     {
         if (isset($cParam_arr['kAuswahlAssistentGruppe_arr'])
             && is_array($cParam_arr['kAuswahlAssistentGruppe_arr'])
             && count($cParam_arr['kAuswahlAssistentGruppe_arr']) > 0
         ) {
-            foreach ($cParam_arr['kAuswahlAssistentGruppe_arr'] as $kAuswahlAssistentGruppe) {
+            foreach ($cParam_arr['kAuswahlAssistentGruppe_arr'] as $groupID) {
                 Shop::Container()->getDB()->queryPrepared(
                     'DELETE tag, taf, tao
                         FROM tauswahlassistentgruppe tag
@@ -266,7 +266,7 @@ class AuswahlAssistentGruppe
                         LEFT JOIN tauswahlassistentort tao
                             ON tao.kAuswahlAssistentGruppe = tag.kAuswahlAssistentGruppe
                         WHERE tag.kAuswahlAssistentGruppe = :groupID', 
-                    ['groupID' => (int)$kAuswahlAssistentGruppe],
+                    ['groupID' => (int)$groupID],
                     \DB\ReturnType::AFFECTED_ROWS
                 );
             }
@@ -278,17 +278,17 @@ class AuswahlAssistentGruppe
     }
 
     /**
-     * @param int $kAuswahlAssistentGruppe
+     * @param int $groupID
      * @return int
      */
-    public static function getLanguage($kAuswahlAssistentGruppe)
+    public static function getLanguage(int $groupID): int
     {
-        if ($kAuswahlAssistentGruppe > 0) {
+        if ($groupID > 0) {
             $oGruppe = Shop::Container()->getDB()->queryPrepared(
                 'SELECT kSprache
                     FROM tauswahlassistentgruppe
                     WHERE kAuswahlAssistentGruppe = :groupID',
-                ['groupID' => (int)$kAuswahlAssistentGruppe], 
+                ['groupID' => $groupID],
                 \DB\ReturnType::SINGLE_OBJECT
             );
             if (isset($oGruppe->kSprache) && $oGruppe->kSprache > 0) {

@@ -6,7 +6,7 @@
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'statistik_inc.php';
 
-$nStatsType = verifyGPCDataInteger('s');
+$nStatsType = RequestHelper::verifyGPCDataInt('s');
 switch ($nStatsType) {
     case 1:
         $oAccount->permission('STATS_VISITOR_VIEW', true, true);
@@ -37,8 +37,8 @@ if (!isset($_SESSION['Statistik'])) {
     $_SESSION['Statistik']->nTyp = STATS_ADMIN_TYPE_BESUCHER;
 }
 // Stat Typ
-if (verifyGPCDataInteger('s') > 0) {
-    $_SESSION['Statistik']->nTyp = verifyGPCDataInteger('s');
+if (RequestHelper::verifyGPCDataInt('s') > 0) {
+    $_SESSION['Statistik']->nTyp = RequestHelper::verifyGPCDataInt('s');
 }
 
 $oFilter    = new Filter('statistics');

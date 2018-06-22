@@ -15,7 +15,7 @@ $cHinweis = '';
 $cFehler  = '';
 $step     = 'trennzeichen_uebersicht';
 // Speichern
-if (verifyGPCDataInteger('save') === 1 && validateToken()) {
+if (RequestHelper::verifyGPCDataInt('save') === 1 && FormHelper::validateToken()) {
     $oPlausiTrennzeichen = new PlausiTrennzeichen();
     $oPlausiTrennzeichen->setPostVar($_POST);
     $oPlausiTrennzeichen->doPlausi();
@@ -45,6 +45,6 @@ if (verifyGPCDataInteger('save') === 1 && validateToken()) {
 $smarty->assign('cHinweis', $cHinweis)
        ->assign('cFehler', $cFehler)
        ->assign('step', $step)
-       ->assign('Sprachen', gibAlleSprachen())
+       ->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('oTrennzeichenAssoc_arr', Trennzeichen::getAll($_SESSION['kSprache']))
        ->display('trennzeichen.tpl');

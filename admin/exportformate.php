@@ -14,11 +14,11 @@ $step                = 'uebersicht';
 $oSmartyError        = new stdClass();
 $oSmartyError->nCode = 0;
 $link                = null;
-if (isset($_GET['neuerExport']) && (int)$_GET['neuerExport'] === 1 && validateToken()) {
+if (isset($_GET['neuerExport']) && (int)$_GET['neuerExport'] === 1 && FormHelper::validateToken()) {
     $step = 'neuer Export';
 }
 // hacky
-if (isset($_GET['kExportformat']) && (int)$_GET['kExportformat'] > 0 && !isset($_GET['action']) && validateToken()) {
+if (isset($_GET['kExportformat']) && (int)$_GET['kExportformat'] > 0 && !isset($_GET['action']) && FormHelper::validateToken()) {
     $step                   = 'neuer Export';
     $_POST['kExportformat'] = (int)$_GET['kExportformat'];
 
@@ -31,7 +31,7 @@ if (isset($_GET['kExportformat']) && (int)$_GET['kExportformat'] > 0 && !isset($
         }
     }
 }
-if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && validateToken()) {
+if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && FormHelper::validateToken()) {
     $ef          = new Exportformat();
     $checkResult = $ef->check($_POST);
     if ($checkResult === true) {
@@ -96,7 +96,7 @@ if (isset($_POST['action']) && strlen($_POST['action']) > 0 && (int)$_POST['kExp
     $cAction       = $_GET['action'];
     $kExportformat = (int)$_GET['kExportformat'];
 }
-if ($cAction !== null && $kExportformat !== null && validateToken()) {
+if ($cAction !== null && $kExportformat !== null && FormHelper::validateToken()) {
     switch ($cAction) {
         case 'export':
             $bAsync               = isset($_GET['ajax']);
@@ -175,12 +175,29 @@ if ($cAction !== null && $kExportformat !== null && validateToken()) {
 }
 
 if ($step === 'uebersicht') {
-    $exportformate = Shop::Container()->getDB()->query("SELECT * FROM texportformat ORDER BY cName", 2);
+    $exportformate = Shop::Container()->getDB()->query(
+        "SELECT * 
+            FROM texportformat 
+            ORDER BY cName",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
     $eCount        = count($exportformate);
     for ($i = 0; $i < $eCount; $i++) {
-        $exportformate[$i]->Sprache              = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$exportformate[$i]->kSprache);
-        $exportformate[$i]->Waehrung             = Shop::Container()->getDB()->select('twaehrung', 'kWaehrung', (int)$exportformate[$i]->kWaehrung);
-        $exportformate[$i]->Kundengruppe         = Shop::Container()->getDB()->select('tkundengruppe', 'kKundengruppe', (int)$exportformate[$i]->kKundengruppe);
+        $exportformate[$i]->Sprache              = Shop::Container()->getDB()->select(
+            'tsprache',
+            'kSprache',
+            (int)$exportformate[$i]->kSprache
+        );
+        $exportformate[$i]->Waehrung             = Shop::Container()->getDB()->select(
+            'twaehrung',
+            'kWaehrung',
+            (int)$exportformate[$i]->kWaehrung
+        );
+        $exportformate[$i]->Kundengruppe         = Shop::Container()->getDB()->select(
+            'tkundengruppe',
+            'kKundengruppe',
+            (int)$exportformate[$i]->kKundengruppe
+        );
         $exportformate[$i]->bPluginContentExtern = false;
         if ($exportformate[$i]->kPlugin > 0 && strpos($exportformate[$i]->cContent, PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
             $exportformate[$i]->bPluginContentExtern = true;
@@ -190,14 +207,28 @@ if ($step === 'uebersicht') {
 }
 
 if ($step === 'neuer Export') {
-    $smarty->assign('sprachen', gibAlleSprachen())
-           ->assign('kundengruppen', Shop::Container()->getDB()->query("SELECT * FROM tkundengruppe ORDER BY cName", 2))
-           ->assign('waehrungen', Shop::Container()->getDB()->query("SELECT * FROM twaehrung ORDER BY cStandard DESC", 2))
+    $smarty->assign('sprachen', Sprache::getAllLanguages())
+           ->assign('kundengruppen', Shop::Container()->getDB()->query(
+               "SELECT * 
+                    FROM tkundengruppe 
+                    ORDER BY cName",
+               \DB\ReturnType::ARRAY_OF_OBJECTS
+           ))
+           ->assign('waehrungen', Shop::Container()->getDB()->query(
+               "SELECT * 
+                    FROM twaehrung 
+                    ORDER BY cStandard DESC",
+               \DB\ReturnType::ARRAY_OF_OBJECTS
+           ))
            ->assign('oKampagne_arr', holeAlleKampagnen(false, true));
 
     $exportformat = null;
     if (isset($_POST['kExportformat']) && (int)$_POST['kExportformat'] > 0) {
-        $exportformat             = Shop::Container()->getDB()->select('texportformat', 'kExportformat', (int)$_POST['kExportformat']);
+        $exportformat             = Shop::Container()->getDB()->select(
+            'texportformat',
+            'kExportformat',
+            (int)$_POST['kExportformat']
+        );
         $exportformat->cKopfzeile = str_replace("\t", "<tab>", $exportformat->cKopfzeile);
         $exportformat->cContent   = str_replace("\t", "<tab>", $exportformat->cContent);
         $exportformat->cFusszeile = str_replace("\t", "<tab>", $exportformat->cFusszeile);
@@ -207,7 +238,13 @@ if ($step === 'neuer Export') {
         $smarty->assign('Exportformat', $exportformat);
     }
 
-    $Conf      = Shop::Container()->getDB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_EXPORTFORMATE, '*', 'nSort');
+    $Conf      = Shop::Container()->getDB()->selectAll(
+        'teinstellungenconf',
+        'kEinstellungenSektion',
+        CONF_EXPORTFORMATE,
+        '*',
+        'nSort'
+    );
     $confCount = count($Conf);
     for ($i = 0; $i < $confCount; $i++) {
         if ($Conf[$i]->cInputTyp === 'selectbox') {

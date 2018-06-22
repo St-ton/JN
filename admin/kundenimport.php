@@ -22,10 +22,10 @@ $format = [
 if (isset($_POST['kundenimport'], $_FILES['csv']['tmp_name'])
     && (int)$_POST['kundenimport'] === 1
     && $_FILES['csv']
-    && validateToken()
+    && FormHelper::validateToken()
     && strlen($_FILES['csv']['tmp_name']) > 0
 ) {
-    $delimiter = guessCsvDelimiter($_FILES['csv']['tmp_name']);
+    $delimiter = getCsvDelimiter($_FILES['csv']['tmp_name']);
     $file = fopen($_FILES['csv']['tmp_name'], 'r');
     if ($file !== false) {
         $row      = 0;
@@ -39,9 +39,8 @@ if (isset($_POST['kundenimport'], $_FILES['csv']['tmp_name'])
                 if ($fmt === -1) {
                     $hinweis .= ' - Format nicht erkannt!';
                     break;
-                } else {
-                    $hinweis .= '<br><br>Importiere...<br>';
                 }
+                $hinweis .= '<br><br>Importiere...<br>';
             } else {
                 $hinweis .= '<br>Zeile ' . $row . ': ' . processImport($fmt, $data);
             }
@@ -52,8 +51,11 @@ if (isset($_POST['kundenimport'], $_FILES['csv']['tmp_name'])
     }
 }
 
-$smarty->assign('sprachen', gibAlleSprachen())
-       ->assign('kundengruppen', Shop::Container()->getDB()->query("SELECT * FROM tkundengruppe ORDER BY cName", 2))
+$smarty->assign('sprachen', Sprache::getAllLanguages())
+       ->assign('kundengruppen', Shop::Container()->getDB()->query(
+           "SELECT * FROM tkundengruppe ORDER BY cName",
+           \DB\ReturnType::ARRAY_OF_OBJECTS
+       ))
        ->assign('step', $step ?? null)
        ->assign('hinweis', $hinweis ?? null)
        ->display('kundenimport.tpl');
@@ -98,10 +100,8 @@ function checkformat($data)
         if (!in_array('cPasswort', $fmt, true) || !in_array('cMail', $fmt, true)) {
             return -1;
         }
-    } else {
-        if (!in_array('cMail', $fmt, true)) {
-            return -1;
-        }
+    } elseif (!in_array('cMail', $fmt, true)) {
+        return -1;
     }
 
     return $fmt;
@@ -128,13 +128,13 @@ function processImport($fmt, $data)
             $kunde->{$fmt[$i]} = $data[$i];
         }
     }
-    if (!valid_email($kunde->cMail)) {
+    if (StringHandler::filterEmailAddress($kunde->cMail) === false) {
         return 'keine g&uuml;ltige Email ($kunde->cMail) ! &Uuml;bergehe diesen Datensatz.';
     }
-    if ((int)$_POST['PasswortGenerieren'] !== 1) {
-        if (!$kunde->cPasswort || $kunde->cPasswort === 'd41d8cd98f00b204e9800998ecf8427e') {
-            return 'kein Passwort! &Uuml;bergehe diesen Datensatz. (Kann unregstrierter JTL Shop Kunde sein)';
-        }
+    if ((int)$_POST['PasswortGenerieren'] !== 1
+        && (!$kunde->cPasswort || $kunde->cPasswort === 'd41d8cd98f00b204e9800998ecf8427e')
+    ) {
+        return 'kein Passwort! &Uuml;bergehe diesen Datensatz. (Kann unregstrierter JTL Shop Kunde sein)';
     }
     if (!$kunde->cNachname) {
         return 'kein Nachname! &Uuml;bergehe diesen Datensatz.';
@@ -161,10 +161,11 @@ function processImport($fmt, $data)
         if (isset($_SESSION['kundenimport']['cLand']) && strlen($_SESSION['kundenimport']['cLand']) > 0) {
             $kunde->cLand = $_SESSION['kundenimport']['cLand'];
         } else {
-            $oRes = Shop::Container()->getDB()->query("
-                SELECT cWert AS cLand 
+            $oRes = Shop::Container()->getDB()->query(
+                "SELECT cWert AS cLand 
                     FROM teinstellungen 
-                    WHERE cName = 'kundenregistrierung_standardland'", 1
+                    WHERE cName = 'kundenregistrierung_standardland'",
+                \DB\ReturnType::SINGLE_OBJECT
             );
             if (is_object($oRes) && isset($oRes->cLand) && strlen($oRes->cLand) > 0) {
                 $_SESSION['kundenimport']['cLand'] = $oRes->cLand;
@@ -175,7 +176,7 @@ function processImport($fmt, $data)
     $cPasswortKlartext = '';
     if ((int)$_POST['PasswortGenerieren'] === 1) {
         $cPasswortKlartext = Shop::Container()->getPasswordService()->generate(PASSWORD_DEFAULT_LENGTH);
-        $kunde->cPasswort  = $kunde->generatePasswordHash($cPasswortKlartext);
+        $kunde->cPasswort  = Shop::Container()->getPasswordService()->hash($cPasswortKlartext);
     }
     $oTMP              = new stdClass();
     $oTMP->cNachname   = $kunde->cNachname;

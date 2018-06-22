@@ -10,7 +10,7 @@ $oAccount->permission('WAREHOUSE_VIEW', true, true);
 $cStep    = 'uebersicht';
 $cHinweis = '';
 $cFehler  = '';
-$cAction  = (isset($_POST['a']) && validateToken()) ? $_POST['a'] : null;
+$cAction  = (isset($_POST['a']) && FormHelper::validateToken()) ? $_POST['a'] : null;
 
 switch ($cAction) {
     case 'update':
@@ -47,7 +47,7 @@ switch ($cAction) {
 
 if ($cStep === 'uebersicht') {
     $smarty->assign('oWarenlager_arr', Warenlager::getAll(false, true))
-           ->assign('oSprache_arr', gibAlleSprachen());
+           ->assign('oSprache_arr', Sprache::getAllLanguages());
 }
 
 $smarty->assign('cStep', $cStep)

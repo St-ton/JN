@@ -39,23 +39,20 @@ class AdminFavorite
      *
      * @param int $kAdminfav
      */
-    public function __construct($kAdminfav = 0)
+    public function __construct(int $kAdminfav = 0)
     {
-        $kAdminfav = (int)$kAdminfav;
         if ($kAdminfav > 0) {
             $this->loadFromDB($kAdminfav);
         }
     }
 
     /**
-     * Setzt AdminFavorite mit Daten aus der DB mit spezifiziertem Primary Key
-     *
-     * @param int $kAdminfav Primary Key
+     * @param int $kAdminfav
      * @return $this
      */
-    public function loadFromDB($kAdminfav)
+    public function loadFromDB(int $kAdminfav): self
     {
-        $obj = Shop::Container()->getDB()->select('tadminfavs', 'kAdminfav', (int)$kAdminfav);
+        $obj = Shop::Container()->getDB()->select('tadminfavs', 'kAdminfav', $kAdminfav);
         foreach (get_object_vars($obj) as $k => $v) {
             $this->$k = $v;
         }
@@ -67,11 +64,11 @@ class AdminFavorite
     /**
      * Fügt Datensatz in DB ein. Primary Key wird in this gesetzt.
      *
-     * @return mixed
+     * @return int
      */
-    public function insertInDB()
+    public function insertInDB(): int
     {
-        $obj = kopiereMembers($this);
+        $obj = ObjectHelper::copyMembers($this);
         unset($obj->kAdminfav);
 
         return Shop::Container()->getDB()->insert('tadminfavs', $obj);
@@ -82,18 +79,18 @@ class AdminFavorite
      *
      * @return int
      */
-    public function updateInDB()
+    public function updateInDB(): int
     {
-        $obj = kopiereMembers($this);
+        $obj = ObjectHelper::copyMembers($this);
 
         return Shop::Container()->getDB()->update('tadminfavs', 'kAdminfav', $obj->kAdminfav, $obj);
     }
 
     /**
-     * @param $kAdminlogin
-     * @return array|int
+     * @param int $kAdminlogin
+     * @return array
      */
-    public static function fetchAll($kAdminlogin)
+    public static function fetchAll(int $kAdminlogin): array
     {
         $favs = Shop::Container()->getDB()->selectAll(
             'tadminfavs',
@@ -118,20 +115,16 @@ class AdminFavorite
     }
 
     /**
-     * @param $kAdminlogin
-     * @param $title
-     * @param $url
-     * @param int $sort
+     * @param int    $id
+     * @param string $title
+     * @param string $url
+     * @param int    $sort
      * @return bool
      */
-    public static function add($kAdminlogin, $title, $url, $sort = -1)
+    public static function add(int $id, $title, $url, int $sort = -1): bool
     {
         $urlHelper = new UrlHelper($url);
-
-        $id   = (int)$kAdminlogin;
-        $sort = (int)$sort;
-
-        $url = str_replace(
+        $url       = str_replace(
             [Shop::getURL(), Shop::getURL(true)],
             '',
             $urlHelper->normalize()
@@ -162,18 +155,15 @@ class AdminFavorite
     }
 
     /**
-     * @param $kAdminlogin
+     * @param int $id
      * @param int $kAdminfav
      */
-    public static function remove($kAdminlogin, $kAdminfav = 0)
+    public static function remove($id, int $kAdminfav = 0)
     {
-        $kAdminfav   = (int)$kAdminfav;
-        $kAdminlogin = (int)$kAdminlogin;
-
         if ($kAdminfav > 0) {
-            Shop::Container()->getDB()->delete('tadminfavs', ['kAdminfav', 'kAdminlogin'], [$kAdminfav, $kAdminlogin]);
+            Shop::Container()->getDB()->delete('tadminfavs', ['kAdminfav', 'kAdminlogin'], [$kAdminfav, $id]);
         } else {
-            Shop::Container()->getDB()->delete('tadminfavs', 'kAdminlogin', $kAdminlogin);
+            Shop::Container()->getDB()->delete('tadminfavs', 'kAdminlogin', $id);
         }
     }
 }

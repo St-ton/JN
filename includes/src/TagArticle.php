@@ -29,10 +29,8 @@ class TagArticle
      * @param int $kTag
      * @param int $kArtikel
      */
-    public function __construct($kTag = 0, $kArtikel = 0)
+    public function __construct(int $kTag = 0, int $kArtikel = 0)
     {
-        $kTag = (int)$kTag;
-        $kArtikel = (int)$kArtikel;
         if ($kTag > 0 && $kArtikel > 0) {
             $this->loadFromDB($kTag, $kArtikel);
         }
@@ -45,9 +43,9 @@ class TagArticle
      * @param int $kArtikel
      * @return $this
      */
-    private function loadFromDB($kTag, $kArtikel)
+    private function loadFromDB(int $kTag, int $kArtikel): self
     {
-        $obj = Shop::Container()->getDB()->select('ttagartikel', 'kTag', (int)$kTag, 'kArtikel', (int)$kArtikel);
+        $obj = Shop::Container()->getDB()->select('ttagartikel', 'kTag', $kTag, 'kArtikel', $kArtikel);
         if ($obj !== null) {
             foreach (get_object_vars($obj) as $k => $v) {
                 $this->$k = $v;
@@ -60,11 +58,11 @@ class TagArticle
     /**
      * Fügt Datensatz in DB ein. Primary Key wird in this gesetzt.
      *
-     * @return mixed
+     * @return int
      */
-    public function insertInDB()
+    public function insertInDB(): int
     {
-        $obj = kopiereMembers($this);
+        $obj = ObjectHelper::copyMembers($this);
 
         return Shop::Container()->getDB()->insert('ttagartikel', $obj);
     }
@@ -74,9 +72,9 @@ class TagArticle
      *
      * @return int
      */
-    public function updateInDB()
+    public function updateInDB(): int
     {
-        $obj = kopiereMembers($this);
+        $obj = ObjectHelper::copyMembers($this);
 
         return Shop::Container()->getDB()->update('ttagartikel', ['kTag', 'kArtikel'], [$obj->kTag, $obj->kArtikel], $obj);
     }

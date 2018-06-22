@@ -32,7 +32,8 @@ function includeMailTemplate($params, $smarty)
                 "SELECT " . $row . " AS content
                     FROM temailvorlagesprache
                     WHERE kSprache = " . (int)$currenLanguage->kSprache .
-                    " AND kEmailvorlage = " . (int)$vorlage->kEmailvorlage, 1
+                    " AND kEmailvorlage = " . (int)$vorlage->kEmailvorlage,
+                \DB\ReturnType::SINGLE_OBJECT
             );
         }
         if (isset($res->content)) {
@@ -155,7 +156,7 @@ function sendeMail($ModulId, $Object, $mail = null)
                ->assign('WRB', $WRB)
                ->assign('DSE', $DSE)
                ->assign('WRBForm', $WRBForm)
-               ->assign('IP', StringHandler::htmlentities(StringHandler::filterXSS(gibIP())));
+               ->assign('IP', StringHandler::htmlentities(StringHandler::filterXSS(RequestHelper::getIP())));
 
     $Object = lokalisiereInhalt($Object);
     // ModulId von einer Plugin Emailvorlage vorhanden?
@@ -223,8 +224,6 @@ function sendeMail($ModulId, $Object, $mail = null)
         [(int)$Emailvorlage->kEmailvorlage, (int)$Sprache->kSprache]
     );
     $Emailvorlage->cBetreff = injectSubject($Object, $Emailvorlagesprache->cBetreff ?? null);
-    error_log('betreff: ' . $Emailvorlage->cBetreff);
-
     if (isset($Emailvorlage->oEinstellungAssoc_arr['cEmailSenderName'])) {
         $absender_name = $Emailvorlage->oEinstellungAssoc_arr['cEmailSenderName'];
     }
@@ -273,7 +272,7 @@ function sendeMail($ModulId, $Object, $mail = null)
                     && strlen($oTrustedShopsKundenbewertung->cTSID) > 0
                     && $oTrustedShopsKundenbewertung->nStatus == 1
                 ) {
-                    $mailSmarty->assign('oTrustedShopsBewertenButton', gibTrustedShopsBewertenButton(
+                    $mailSmarty->assign('oTrustedShopsBewertenButton', TrustedShops::getRatingButton(
                         $Object->tbestellung->oRechnungsadresse->cMail,
                         $Object->tbestellung->cBestellNr
                     ));
@@ -314,7 +313,7 @@ function sendeMail($ModulId, $Object, $mail = null)
                     StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])
                 );
                 if (strlen($oTrustedShopsKundenbewertung->cTSID) > 0 && $oTrustedShopsKundenbewertung->nStatus == 1) {
-                    $mailSmarty->assign('oTrustedShopsBewertenButton', gibTrustedShopsBewertenButton(
+                    $mailSmarty->assign('oTrustedShopsBewertenButton', TrustedShops::getRatingButton(
                         $Object->tbestellung->oRechnungsadresse->cMail,
                         $Object->tbestellung->cBestellNr
                     ));
@@ -357,7 +356,7 @@ function sendeMail($ModulId, $Object, $mail = null)
                     StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])
                 );
                 if (strlen($oTrustedShopsKundenbewertung->cTSID) > 0 && $oTrustedShopsKundenbewertung->nStatus == 1) {
-                    $mailSmarty->assign('oTrustedShopsBewertenButton', gibTrustedShopsBewertenButton(
+                    $mailSmarty->assign('oTrustedShopsBewertenButton', TrustedShops::getRatingButton(
                         $Object->tbestellung->oRechnungsadresse->cMail,
                         $Object->tbestellung->cBestellNr
                     ));
@@ -425,7 +424,7 @@ function sendeMail($ModulId, $Object, $mail = null)
                     StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])
                 );
                 if (strlen($oTrustedShopsKundenbewertung->cTSID) > 0 && $oTrustedShopsKundenbewertung->nStatus == 1) {
-                    $mailSmarty->assign('oTrustedShopsBewertenButton', gibTrustedShopsBewertenButton(
+                    $mailSmarty->assign('oTrustedShopsBewertenButton', TrustedShops::getRatingButton(
                         $Object->tbestellung->oRechnungsadresse->cMail,
                         $Object->tbestellung->cBestellNr
                     ));
@@ -477,10 +476,10 @@ function sendeMail($ModulId, $Object, $mail = null)
         case MAILTEMPLATE_BEWERTUNG_GUTHABEN:
             $waehrung = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
 
-            $Object->oBewertungGuthabenBonus->fGuthabenBonusLocalized = gibPreisStringLocalized(
+            $Object->oBewertungGuthabenBonus->fGuthabenBonusLocalized = Preise::getLocalizedPriceString(
                 $Object->oBewertungGuthabenBonus->fGuthabenBonus,
                 $waehrung,
-                0
+                false
             );
             $mailSmarty->assign('oKunde', $Object->tkunde)
                        ->assign('oBewertungGuthabenBonus', $Object->oBewertungGuthabenBonus);
@@ -704,14 +703,13 @@ function verschickeMail($mail)
         );
     } else {
         //phpmailer
-        $phpmailer = new PHPMailer();
+        $phpmailer = new \PHPMailer\PHPMailer\PHPMailer();
         $lang      = ($mail->lang === 'DE' || $mail->lang === 'ger') ? 'de' : 'end';
         $phpmailer->setLanguage($lang, PFAD_ROOT . PFAD_PHPMAILER . 'language/');
         $phpmailer->CharSet  = JTL_CHARSET;
         $phpmailer->Timeout  = SOCKET_TIMEOUT;
-        $phpmailer->From     = $mail->fromEmail;
         $phpmailer->Sender   = $mail->fromEmail;
-        $phpmailer->FromName = $mail->fromName;
+        $phpmailer->setFrom($mail->fromEmail, $mail->fromName);
         $phpmailer->addAddress($mail->toEmail, (!empty($mail->toName) ? $mail->toName : ''));
         $phpmailer->addReplyTo($mail->replyToEmail, $mail->replyToName);
         $phpmailer->Subject = $mail->subject;
@@ -844,7 +842,7 @@ function injectSubject($Object, $Betreff)
 function lokalisiereInhalt($Object)
 {
     if (isset($Object->tgutschein->fWert) && $Object->tgutschein->fWert != 0) {
-        $Object->tgutschein->cLocalizedWert = gibPreisStringLocalized($Object->tgutschein->fWert, 0, 0);
+        $Object->tgutschein->cLocalizedWert = Preise::getLocalizedPriceString($Object->tgutschein->fWert, 0, false);
     }
 
     return $Object;
@@ -870,7 +868,7 @@ function lokalisiereKunde($sprache, $kunde)
             $kunde->cAnredeLocalized = Shop::Lang()->get('salutationGeneral');
         }
     }
-    $kunde = deepCopy($kunde);
+    $kunde = ObjectHelper::deepCopy($kunde);
     if (isset($kunde->cLand)) {
         $cISOLand = $kunde->cLand;
         $sel_var  = 'cDeutsch';

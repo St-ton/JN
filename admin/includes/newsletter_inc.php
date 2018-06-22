@@ -74,7 +74,8 @@ function versendeNewsletter(
                 FROM tkunde
                 JOIN tkundengruppe 
                     ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
-                WHERE tkunde.kKunde = " . (int)$oKunde->kKunde, 1
+                WHERE tkunde.kKunde = " . (int)$oKunde->kKunde,
+            \DB\ReturnType::SINGLE_OBJECT
         );
         if (isset($oKundengruppe->nNettoPreise)) {
             $NettoPreise = $oKundengruppe->nNettoPreise;

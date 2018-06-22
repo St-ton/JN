@@ -8,10 +8,10 @@
 require_once __DIR__ . '/includes/admininclude.php';
 
 if (!$oAccount->getIsAuthenticated()) {
-    header(makeHTTPHeader(401));
+    header(RequestHelper::makeHTTPHeader(401));
     exit;
 }
-if (!validateToken()) {
+if (!FormHelper::validateToken()) {
     $io = IO::getInstance();
     $io->respondAndExit(new IOError('CSRF validation failed.', 500));
 }

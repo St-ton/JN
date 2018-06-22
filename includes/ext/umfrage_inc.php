@@ -222,21 +222,19 @@ function setzeUmfrageErgebnisse()
                     $oUmfrageDurchfuehrungAntwort->kUmfrageFrageAntwort = $kUmfrageFrageAntwort;
                     $oUmfrageDurchfuehrungAntwort->kUmfrageMatrixOption = $kUmfrageMatrixOption;
                     $oUmfrageDurchfuehrungAntwort->cText                = '';
+                } elseif ($cUmfrageFrageAntwort == '-1') {
+                    $oUmfrageDurchfuehrungAntwort->kUmfrageFrageAntwort = 0;
+                    $oUmfrageDurchfuehrungAntwort->kUmfrageMatrixOption = 0;
+                    $oUmfrageDurchfuehrungAntwort->cText                = !empty($oUmfrageFrage->oUmfrageFrageAntwort_arr[$i + 1])
+                        ? StringHandler::htmlentities(StringHandler::filterXSS($oUmfrageFrage->oUmfrageFrageAntwort_arr[$i + 1]))
+                        : '';
+                    array_pop($_SESSION['Umfrage']->oUmfrageFrage_arr[$j]->oUmfrageFrageAntwort_arr);
                 } else {
-                    if ($cUmfrageFrageAntwort == '-1') {
-                        $oUmfrageDurchfuehrungAntwort->kUmfrageFrageAntwort = 0;
-                        $oUmfrageDurchfuehrungAntwort->kUmfrageMatrixOption = 0;
-                        $oUmfrageDurchfuehrungAntwort->cText                = !empty($oUmfrageFrage->oUmfrageFrageAntwort_arr[$i + 1])
-                            ? StringHandler::htmlentities(StringHandler::filterXSS($oUmfrageFrage->oUmfrageFrageAntwort_arr[$i + 1]))
-                            : '';
-                        array_pop($_SESSION['Umfrage']->oUmfrageFrage_arr[$j]->oUmfrageFrageAntwort_arr);
-                    } else {
-                        $oUmfrageDurchfuehrungAntwort->kUmfrageFrageAntwort = $cUmfrageFrageAntwort;
-                        $oUmfrageDurchfuehrungAntwort->kUmfrageMatrixOption = 0;
-                        $oUmfrageDurchfuehrungAntwort->cText                = $oUmfrageFrage->nFreifeld
-                            ? $cUmfrageFrageAntwort
-                            : '';
-                    }
+                    $oUmfrageDurchfuehrungAntwort->kUmfrageFrageAntwort = $cUmfrageFrageAntwort;
+                    $oUmfrageDurchfuehrungAntwort->kUmfrageMatrixOption = 0;
+                    $oUmfrageDurchfuehrungAntwort->cText                = $oUmfrageFrage->nFreifeld
+                        ? $cUmfrageFrageAntwort
+                        : '';
                 }
 
                 Shop::Container()->getDB()->insert('tumfragedurchfuehrungantwort', $oUmfrageDurchfuehrungAntwort);
@@ -368,7 +366,8 @@ function gibKundeGuthaben($fGuthaben, $kKunde)
         Shop::Container()->getDB()->query(
             "UPDATE tkunde
                 SET fGuthaben = fGuthaben + " . (float)$fGuthaben . "
-                WHERE kKunde = " . (int)$kKunde, 4
+                WHERE kKunde = " . (int)$kKunde,
+            \DB\ReturnType::DEFAULT
         );
 
         return true;
@@ -520,7 +519,7 @@ function bearbeiteUmfrageAuswertung($oUmfrage)
         } elseif ($oUmfrage->fGuthaben > 0) { // Guthaben?
             $cHinweis = sprintf(
                 Shop::Lang()->get('pollCredit', 'messages'),
-                gibPreisStringLocalized($oUmfrage->fGuthaben)
+                Preise::getLocalizedPriceString($oUmfrage->fGuthaben)
             );
             // Kunde Guthaben gutschreiben
             if(!gibKundeGuthaben($oUmfrage->fGuthaben, $_SESSION['Kunde']->kKunde)){
@@ -566,7 +565,7 @@ function bearbeiteUmfrageDurchfuehrung($kUmfrage, $oUmfrage, &$oUmfrageFrageTMP_
     $cSQL           = '';
     $nAktuelleSeite = 1;
 
-    if (verifyGPCDataInteger('s') === 0) {
+    if (RequestHelper::verifyGPCDataInt('s') === 0) {
         unset($_SESSION['Umfrage']);
         $_SESSION['Umfrage']                    = new stdClass();
         $_SESSION['Umfrage']->kUmfrage          = $oUmfrage->kUmfrage;
@@ -582,7 +581,7 @@ function bearbeiteUmfrageDurchfuehrung($kUmfrage, $oUmfrage, &$oUmfrageFrageTMP_
 
         $cSQL .= $oNavi_arr[0]->nVon . ', ' . $oNavi_arr[0]->nAnzahl;
     } else {
-        $nAktuelleSeite = verifyGPCDataInteger('s');
+        $nAktuelleSeite = RequestHelper::verifyGPCDataInt('s');
 
         if (isset($_POST['next'])) {
             speicherFragenInSession($_POST);

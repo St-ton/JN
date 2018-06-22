@@ -7,10 +7,8 @@
 namespace Filter\Items;
 
 use Filter\AbstractFilter;
-use Filter\FilterJoin;
 use Filter\FilterOption;
 use Filter\FilterInterface;
-use Filter\Type;
 use Filter\ProductFilter;
 
 /**
@@ -79,7 +77,6 @@ class ItemLimit extends AbstractFilter
                 ->setParam($this->getUrlParam())
                 ->setName($name)
                 ->setValue($limitOption)
-                ->setCount(null)
                 ->setSort($i);
         }
         $this->options = $options;

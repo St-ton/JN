@@ -363,7 +363,7 @@ function bearbeiteInsert($xml, array $conf)
     //Artikelsprache
     $artikelsprache_arr = mapArray($xml['tartikel'], 'tartikelsprache', $GLOBALS['mArtikelSprache']);
     if (is_array($artikelsprache_arr)) {
-        $oShopSpracheAssoc_arr = gibAlleSprachen(1);
+        $oShopSpracheAssoc_arr = Sprache::getAllLanguages(1);
         $langCount             = count($artikelsprache_arr);
         for ($i = 0; $i < $langCount; ++$i) {
             // Sprachen die nicht im Shop vorhanden sind überspringen

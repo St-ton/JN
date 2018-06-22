@@ -44,7 +44,7 @@ class AuswahlAssistentOrt
      * @param int  $kAuswahlAssistentGruppe
      * @param bool $bBackend
      */
-    public function __construct($kAuswahlAssistentOrt = 0, $kAuswahlAssistentGruppe = 0, $bBackend = false)
+    public function __construct(int $kAuswahlAssistentOrt = 0, int $kAuswahlAssistentGruppe = 0, bool $bBackend = false)
     {
         if ($kAuswahlAssistentOrt > 0 || $kAuswahlAssistentGruppe > 0) {
             $this->loadFromDB($kAuswahlAssistentOrt, $kAuswahlAssistentGruppe, $bBackend);
@@ -56,10 +56,8 @@ class AuswahlAssistentOrt
      * @param int  $kAuswahlAssistentGruppe
      * @param bool $bBackend
      */
-    private function loadFromDB($kAuswahlAssistentOrt, $kAuswahlAssistentGruppe, $bBackend)
+    private function loadFromDB(int $kAuswahlAssistentOrt, int $kAuswahlAssistentGruppe, bool $bBackend)
     {
-        $kAuswahlAssistentGruppe = (int)$kAuswahlAssistentGruppe;
-        $kAuswahlAssistentOrt    = (int)$kAuswahlAssistentOrt;
         if ($kAuswahlAssistentGruppe > 0) {
             $this->oOrt_arr = [];
             $oOrtTMP_arr    = Shop::Container()->getDB()->selectAll(
@@ -135,9 +133,8 @@ class AuswahlAssistentOrt
      * @param int   $kAuswahlAssistentGruppe
      * @return bool
      */
-    public static function saveLocation($cParam_arr, $kAuswahlAssistentGruppe)
+    public static function saveLocation(array $cParam_arr, int $kAuswahlAssistentGruppe): bool
     {
-        $kAuswahlAssistentGruppe = (int)$kAuswahlAssistentGruppe;
         if ($kAuswahlAssistentGruppe > 0 && is_array($cParam_arr) && count($cParam_arr) > 0) {
             // Kategorie
             if (isset($cParam_arr['cKategorie']) && strlen($cParam_arr['cKategorie']) > 0) {
@@ -156,9 +153,9 @@ class AuswahlAssistentOrt
                 }
             }
             // Spezialseite
-            if (isset($cParam_arr['kLink_arr']) &&
-                is_array($cParam_arr['kLink_arr']) &&
-                count($cParam_arr['kLink_arr']) > 0
+            if (isset($cParam_arr['kLink_arr'])
+                && is_array($cParam_arr['kLink_arr'])
+                && count($cParam_arr['kLink_arr']) > 0
             ) {
                 foreach ($cParam_arr['kLink_arr'] as $kLink) {
                     if ((int)$kLink > 0) {
@@ -190,9 +187,8 @@ class AuswahlAssistentOrt
      * @param int   $kAuswahlAssistentGruppe
      * @return bool
      */
-    public static function updateLocation($cParam_arr, $kAuswahlAssistentGruppe)
+    public static function updateLocation(array $cParam_arr, int $kAuswahlAssistentGruppe): bool
     {
-        $kAuswahlAssistentGruppe = (int)$kAuswahlAssistentGruppe;
         if ($kAuswahlAssistentGruppe > 0 && is_array($cParam_arr) && count($cParam_arr) > 0) {
             $nRow = Shop::Container()->getDB()->delete(
                 'tauswahlassistentort',
@@ -200,10 +196,8 @@ class AuswahlAssistentOrt
                 $kAuswahlAssistentGruppe
             );
 
-            if ($nRow > 0) {
-                if (self::saveLocation($cParam_arr, $kAuswahlAssistentGruppe)) {
-                    return true;
-                }
+            if ($nRow > 0 && self::saveLocation($cParam_arr, $kAuswahlAssistentGruppe)) {
+                return true;
             }
         }
 
@@ -215,15 +209,15 @@ class AuswahlAssistentOrt
      * @param bool  $bUpdate
      * @return array
      */
-    public static function checkLocation($cParam_arr, $bUpdate = false)
+    public static function checkLocation(array $cParam_arr, bool $bUpdate = false): array
     {
         $cPlausi_arr = [];
         // Ort
-        if ((!isset($cParam_arr['cKategorie']) || strlen($cParam_arr['cKategorie']) === 0) &&
-            (!isset($cParam_arr['kLink_arr']) ||
-                !is_array($cParam_arr['kLink_arr']) ||
-                count($cParam_arr['kLink_arr']) === 0) &&
-            $cParam_arr['nStartseite'] == 0
+        if ((!isset($cParam_arr['cKategorie']) || strlen($cParam_arr['cKategorie']) === 0)
+            && (!isset($cParam_arr['kLink_arr'])
+                || !is_array($cParam_arr['kLink_arr'])
+                || count($cParam_arr['kLink_arr']) === 0)
+            && $cParam_arr['nStartseite'] == 0
         ) {
             $cPlausi_arr['cOrt'] = 1;
         }
@@ -248,10 +242,8 @@ class AuswahlAssistentOrt
                         ) {
                             $cPlausi_arr['cKategorie'] = 3;
                         }
-                    } else {
-                        if (self::isCategoryTaken($cKategorie, $cParam_arr['kSprache'])) {
-                            $cPlausi_arr['cKategorie'] = 3;
-                        }
+                    } elseif (self::isCategoryTaken($cKategorie, $cParam_arr['kSprache'])) {
+                        $cPlausi_arr['cKategorie'] = 3;
                     }
                 }
             }
@@ -271,10 +263,8 @@ class AuswahlAssistentOrt
                         ) {
                             $cPlausi_arr['kLink_arr'] = 1;
                         }
-                    } else {
-                        if (self::isLinkTaken($kLink, $cParam_arr['kSprache'])) {
-                            $cPlausi_arr['kLink_arr'] = 1;
-                        }
+                    } elseif (self::isLinkTaken($kLink, $cParam_arr['kSprache'])) {
+                        $cPlausi_arr['kLink_arr'] = 1;
                     }
                 }
             }
@@ -288,10 +278,8 @@ class AuswahlAssistentOrt
                 ) {
                     $cPlausi_arr['nStartseite'] = 1;
                 }
-            } else {
-                if (self::isStartPageTaken($cParam_arr['kSprache'])) {
-                    $cPlausi_arr['nStartseite'] = 1;
-                }
+            } elseif (self::isStartPageTaken($cParam_arr['kSprache'])) {
+                $cPlausi_arr['nStartseite'] = 1;
             }
         }
 
@@ -304,13 +292,13 @@ class AuswahlAssistentOrt
      * @param int $kAuswahlAssistentGruppe
      * @return bool
      */
-    public static function isCategoryTaken($kKategorie, $kSprache, $kAuswahlAssistentGruppe = 0)
+    public static function isCategoryTaken(int $kKategorie, int $kSprache, int $kAuswahlAssistentGruppe = 0): bool
     {
-        if ((int)$kKategorie === 0 || (int)$kSprache === 0) {
+        if ($kKategorie === 0 || $kSprache === 0) {
             return false;
         }
         $cOrtSQL = $kAuswahlAssistentGruppe > 0
-            ? " AND tauswahlassistentort.kAuswahlAssistentGruppe != " . (int)$kAuswahlAssistentGruppe
+            ? " AND tauswahlassistentort.kAuswahlAssistentGruppe != " . $kAuswahlAssistentGruppe
             : '';
         $oOrt    = Shop::Container()->getDB()->queryPrepared(
             "SELECT kAuswahlAssistentOrt
@@ -322,8 +310,8 @@ class AuswahlAssistentOrt
                     AND tauswahlassistentort.kKey = :catID",
             [
                 'keyID'  => AUSWAHLASSISTENT_ORT_KATEGORIE,
-                'catID'  => (int)$kKategorie,
-                'langID' => (int)$kSprache,
+                'catID'  => $kKategorie,
+                'langID' => $kSprache,
             ],
             \DB\ReturnType::SINGLE_OBJECT
         );
@@ -337,13 +325,13 @@ class AuswahlAssistentOrt
      * @param int $kAuswahlAssistentGruppe
      * @return bool
      */
-    public static function isLinkTaken($kLink, $kSprache, $kAuswahlAssistentGruppe = 0)
+    public static function isLinkTaken(int $kLink, int $kSprache, int $kAuswahlAssistentGruppe = 0): bool
     {
-        if ((int)$kLink === 0 || (int)$kSprache === 0) {
+        if ($kLink === 0 || $kSprache === 0) {
             return false;
         }
         $cOrtSQL = $kAuswahlAssistentGruppe > 0
-            ? " AND tauswahlassistentort.kAuswahlAssistentGruppe != " . (int)$kAuswahlAssistentGruppe
+            ? " AND tauswahlassistentort.kAuswahlAssistentGruppe != " . $kAuswahlAssistentGruppe
             : '';
         $oOrt    = Shop::Container()->getDB()->queryPrepared(
             "SELECT kAuswahlAssistentOrt
@@ -354,9 +342,9 @@ class AuswahlAssistentOrt
                 WHERE tauswahlassistentort.cKey = :keyID" . $cOrtSQL . "
                     AND tauswahlassistentort.kKey = :linkID",
             [
-                'langID' => (int)$kSprache,
+                'langID' => $kSprache,
                 'keyID'  => AUSWAHLASSISTENT_ORT_LINK,
-                'linkID' => (int)$kLink
+                'linkID' => $kLink
             ],
             \DB\ReturnType::SINGLE_OBJECT
         );
@@ -369,13 +357,13 @@ class AuswahlAssistentOrt
      * @param int $kAuswahlAssistentGruppe
      * @return bool
      */
-    public static function isStartPageTaken($kSprache, $kAuswahlAssistentGruppe = 0)
+    public static function isStartPageTaken(int $kSprache, int $kAuswahlAssistentGruppe = 0): bool
     {
-        if ((int)$kSprache === 0) {
+        if ($kSprache === 0) {
             return false;
         }
         $cOrtSQL = $kAuswahlAssistentGruppe > 0
-            ? " AND tauswahlassistentort.kAuswahlAssistentGruppe != " . (int)$kAuswahlAssistentGruppe
+            ? " AND tauswahlassistentort.kAuswahlAssistentGruppe != " . $kAuswahlAssistentGruppe
             : '';
         $oOrt    = Shop::Container()->getDB()->queryPrepared(
             "SELECT kAuswahlAssistentOrt
@@ -385,7 +373,7 @@ class AuswahlAssistentOrt
                     AND tauswahlassistentgruppe.kSprache = :langID
                 WHERE tauswahlassistentort.cKey = :keyID" . $cOrtSQL . "
                     AND tauswahlassistentort.kKey = 1",
-            ['langID' => (int)$kSprache, 'keyID'  => AUSWAHLASSISTENT_ORT_STARTSEITE],
+            ['langID' => $kSprache, 'keyID'  => AUSWAHLASSISTENT_ORT_STARTSEITE],
             \DB\ReturnType::SINGLE_OBJECT
         );
 
@@ -399,9 +387,9 @@ class AuswahlAssistentOrt
      * @param bool   $bBackend
      * @return AuswahlAssistentOrt|null
      */
-    public static function getLocation($cKey, $kKey, $kSprache, $bBackend = false)
+    public static function getLocation($cKey, int $kKey, int $kSprache, bool $bBackend = false)
     {
-        if ((int)$kKey > 0 && (int)$kSprache > 0 && strlen($cKey) > 0) {
+        if ($kKey > 0 && $kSprache > 0 && strlen($cKey) > 0) {
             $oOrt = Shop::Container()->getDB()->executeQueryPrepared(
                 "SELECT kAuswahlAssistentOrt
                         FROM tauswahlassistentort
@@ -411,9 +399,9 @@ class AuswahlAssistentOrt
                         WHERE tauswahlassistentort.cKey = :keyID
                             AND tauswahlassistentort.kKey = :kkey",
                 [
-                    'langID' => (int)$kSprache,
+                    'langID' => $kSprache,
                     'keyID'  => $cKey,
-                    'kkey'   => (int)$kKey
+                    'kkey'   => $kKey
                 ],
                 \DB\ReturnType::SINGLE_OBJECT
             );

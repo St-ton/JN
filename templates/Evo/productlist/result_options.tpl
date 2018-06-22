@@ -69,7 +69,7 @@
                                 {if count($filter->getFilterCollection()) > 0}
                                     {block name='productlist-result-options-'|cat:$filter->getNiceName()}
                                         {foreach $filter->getOptions() as $subFilter}
-                                            {if !$subFilter->getVisibility()->equals(\Filter\Visibility::SHOW_NEVER())}
+                                            {if !$subFilter->getVisibility()->equals(\Filter\Visibility::SHOW_NEVER()) && !$subFilter->getVisibility()->equals(\Filter\Visibility::SHOW_BOX())}
                                                 <div class="form-group dropdown filter-type-{$filter->getNiceName()}">
                                                     <a href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-expanded="false">
                                                         {$subFilter->getFrontendName()} <span class="caret"></span>

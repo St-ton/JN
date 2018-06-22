@@ -12,7 +12,7 @@ use Filter\FilterJoin;
 use Filter\FilterOption;
 use Filter\FilterInterface;
 use Filter\ProductFilter;
-use Filter\States\BaseCategory;
+use function Functional\filter;
 
 /**
  * Class BaseSearchQuery
@@ -147,7 +147,7 @@ class BaseSearchQuery extends AbstractFilter
     /**
      * @return string
      */
-    public function getUrlParam()
+    public function getUrlParam(): string
     {
         if ($this->productFilter->getRealSearch() !== null && !$this->productFilter->hasSearchQuery()) {
             return 'suche';
@@ -189,7 +189,7 @@ class BaseSearchQuery extends AbstractFilter
                 WHERE cKey = 'kSuchanfrage' 
                     AND kKey = :key",
             ['key' => $this->getID()],
-            1
+            ReturnType::SINGLE_OBJECT
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
@@ -361,7 +361,7 @@ class BaseSearchQuery extends AbstractFilter
                 ->setClassName($this->getClassName())
                 ->setName($searchFilter->cSuche)
                 ->setValue((int)$searchFilter->kSuchanfrage)
-                ->setCount($searchFilter->nAnzahl);
+                ->setCount((int)$searchFilter->nAnzahl);
             if (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0 && $nPrioStep > 0) {
                 $fo->setClass(round(
                         ($searchFilter->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) /
@@ -475,7 +475,7 @@ class BaseSearchQuery extends AbstractFilter
             return 0;
         }
         // Array mit nach Prio sort. Suchspalten holen
-        $searchColumnn_arr     = gibSuchSpalten();
+        $searchColumnn_arr     = self::getSearchRows($this->getConfig());
         $searchColumns         = $this->getSearchColumnClasses($searchColumnn_arr);
         $oSuchCache            = new \stdClass();
         $oSuchCache->kSprache  = $kSprache;
@@ -501,7 +501,7 @@ class BaseSearchQuery extends AbstractFilter
             return 0;
         }
 
-        if ($this->getLanguageID() > 0 && !standardspracheAktiv()) {
+        if ($this->getLanguageID() > 0 && !\Sprache::isDefaultLanguageActive()) {
             $cSQL = 'SELECT ' . $kSuchCache . ', IF(tartikel.kVaterArtikel > 0, 
                         tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP, ';
         } else {
@@ -511,7 +511,7 @@ class BaseSearchQuery extends AbstractFilter
         // Shop2 Suche - mehr als 3 Suchwörter *
         if (count($cSuch_arr) > 3) {
             $cSQL .= " 1 ";
-            if ($this->getLanguageID() > 0 && !standardspracheAktiv()) {
+            if ($this->getLanguageID() > 0 && !\Sprache::isDefaultLanguageActive()) {
                 $cSQL .= ' FROM tartikel
                                 LEFT JOIN tartikelsprache
                                     ON tartikelsprache.kArtikel = tartikel.kArtikel
@@ -799,7 +799,7 @@ class BaseSearchQuery extends AbstractFilter
                 $cSQL .= ')';
             }
 
-            if ($this->getLanguageID() > 0 && !standardspracheAktiv()) {
+            if ($this->getLanguageID() > 0 && !\Sprache::isDefaultLanguageActive()) {
                 $cSQL .= ' FROM tartikel
                             LEFT JOIN tartikelsprache
                                 ON tartikelsprache.kArtikel = tartikel.kArtikel
@@ -913,7 +913,7 @@ class BaseSearchQuery extends AbstractFilter
                     FROM tartikel
                     WHERE $match " . $this->productFilter->getFilterSQL()->getStockFilterSQL() . " ";
 
-            if (\Shop::getLanguage() > 0 && !standardspracheAktiv()) {
+            if (\Shop::getLanguage() > 0 && !\Sprache::isDefaultLanguageActive()) {
                 $score = "MATCH (" . implode(', ', $cSprachSpalten_arr) . ")
                             AGAINST ('" . implode(' ', $cSuch_arr) . "' IN NATURAL LANGUAGE MODE)";
                 if ($cFullText === 'B') {
@@ -1031,5 +1031,81 @@ class BaseSearchQuery extends AbstractFilter
         }
 
         return $active;
+    }
+
+    /**
+     * @param array $config
+     * @return array
+     * @former gibSuchSpalten()
+     */
+    public static function getSearchRows(array $config = null): array
+    {
+        $searchRows = [];
+        $config     = $config ?? \Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
+        for ($i = 0; $i < 10; ++$i) {
+            $searchRows[] = self::getPrioritizedRows($searchRows, $config);
+        }
+
+        return filter($searchRows, function ($r) {
+            return $r !== '';
+        });
+    }
+
+    /**
+     * @param array $exclude
+     * @param array $conf
+     * @return string
+     * @former gibMaxPrioSpalte()
+     */
+    public static function getPrioritizedRows(array $exclude, array $conf = null): string
+    {
+        $max     = 0;
+        $current = '';
+        $prefix  = 'tartikel.';
+        $conf    = $conf['artikeluebersicht'] ?? \Shop::getSettings([CONF_ARTIKELUEBERSICHT])['artikeluebersicht'];
+        if (!\Sprache::isDefaultLanguageActive()) {
+            $prefix = 'tartikelsprache.';
+        }
+        if (!in_array($prefix . 'cName', $exclude, true) && $conf['suche_prio_name'] > $max) {
+            $max     = $conf['suche_prio_name'];
+            $current = $prefix . 'cName';
+        }
+        if (!in_array($prefix . 'cSeo', $exclude, true) && $conf['suche_prio_name'] > $max) {
+            $max     = $conf['suche_prio_name'];
+            $current = $prefix . 'cSeo';
+        }
+        if (!in_array('tartikel.cSuchbegriffe', $exclude, true) && $conf['suche_prio_suchbegriffe'] > $max) {
+            $max     = $conf['suche_prio_suchbegriffe'];
+            $current = 'tartikel.cSuchbegriffe';
+        }
+        if (!in_array('tartikel.cArtNr', $exclude, true) && $conf['suche_prio_artikelnummer'] > $max) {
+            $max     = $conf['suche_prio_artikelnummer'];
+            $current = 'tartikel.cArtNr';
+        }
+        if (!in_array($prefix . 'cKurzBeschreibung', $exclude, true) && $conf['suche_prio_kurzbeschreibung'] > $max) {
+            $max     = $conf['suche_prio_kurzbeschreibung'];
+            $current = $prefix . 'cKurzBeschreibung';
+        }
+        if (!in_array($prefix . 'cBeschreibung', $exclude, true) && $conf['suche_prio_beschreibung'] > $max) {
+            $max     = $conf['suche_prio_beschreibung'];
+            $current = $prefix . 'cBeschreibung';
+        }
+        if (!in_array('tartikel.cBarcode', $exclude, true) && $conf['suche_prio_ean'] > $max) {
+            $max     = $conf['suche_prio_ean'];
+            $current = 'tartikel.cBarcode';
+        }
+        if (!in_array('tartikel.cISBN', $exclude, true) && $conf['suche_prio_isbn'] > $max) {
+            $max     = $conf['suche_prio_isbn'];
+            $current = 'tartikel.cISBN';
+        }
+        if (!in_array('tartikel.cHAN', $exclude, true) && $conf['suche_prio_han'] > $max) {
+            $max     = $conf['suche_prio_han'];
+            $current = 'tartikel.cHAN';
+        }
+        if (!in_array('tartikel.cAnmerkung', $exclude, true) && $conf['suche_prio_anmerkung'] > $max) {
+            $current = 'tartikel.cAnmerkung';
+        }
+
+        return $current;
     }
 }

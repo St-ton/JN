@@ -135,7 +135,8 @@ function bearbeiteInsert($xml)
                         FROM tkategorie, tsprache
                         WHERE tkategorie.kKategorie = " . (int)$kategorie_arr[0]->kKategorie . "
                             AND tsprache.cStandard = 'Y'
-                            AND tkategorie.cSeo != ''", 4
+                            AND tkategorie.cSeo != ''",
+                \DB\ReturnType::DEFAULT
             );
 
             executeHook(HOOK_KATEGORIE_XML_BEARBEITEINSERT, ['oKategorie' => $kategorie_arr[0]]);
@@ -144,7 +145,7 @@ function bearbeiteInsert($xml)
         //Kategoriesprache
         $kategoriesprache_arr = mapArray($xml['tkategorie'], 'tkategoriesprache', $GLOBALS['mKategorieSprache']);
         if (is_array($kategoriesprache_arr)) {
-            $oShopSpracheAssoc_arr = gibAlleSprachen(1);
+            $oShopSpracheAssoc_arr = Sprache::getAllLanguages(1);
             $lCount                = count($kategoriesprache_arr);
             for ($i = 0; $i < $lCount; ++$i) {
                 // Sprachen die nicht im Shop vorhanden sind überspringen

@@ -61,9 +61,9 @@ class ItemSearchSpecial extends AbstractFilter
      * @param array|int|string $value
      * @return $this
      */
-    public function setValueCompat($value)
+    public function setValueCompat(int $value)
     {
-        $this->value = [(int)$value];
+        $this->value = [$value];
 
         return $this;
     }
@@ -278,7 +278,7 @@ class ItemSearchSpecial extends AbstractFilter
      */
     public function getOptions($data = null): array
     {
-        if ($this->getConfig()['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] !== 'Y') {
+        if ($this->getConfig()['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] === 'N') {
             $this->options = [];
         }
         if ($this->options !== null) {

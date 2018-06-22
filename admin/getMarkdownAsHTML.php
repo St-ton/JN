@@ -15,7 +15,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->redirectOnFailure();
 
-if (isset($_POST['path']) && validateToken()) {
+if (isset($_POST['path']) && FormHelper::validateToken()) {
     $szMdStyle = '
         <style>
             div.markdown {

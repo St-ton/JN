@@ -98,8 +98,8 @@ function speicherCheckBox($cPost_arr, $oSprache_arr)
     }
     $oCheckBox->kCheckBoxFunktion = (int)$cPost_arr['kCheckBoxFunktion'];
     $oCheckBox->cName             = htmlspecialchars($cPost_arr['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-    $oCheckBox->cKundengruppe     = gibKeyStringFuerKeyArray($cPost_arr['kKundengruppe'], ';');
-    $oCheckBox->cAnzeigeOrt       = gibKeyStringFuerKeyArray($cPost_arr['cAnzeigeOrt'], ';');
+    $oCheckBox->cKundengruppe     = StringHandler::createSSK($cPost_arr['kKundengruppe']);
+    $oCheckBox->cAnzeigeOrt       = StringHandler::createSSK($cPost_arr['cAnzeigeOrt']);
     $oCheckBox->nAktiv            = 0;
     if ($cPost_arr['nAktiv'] === 'Y') {
         $oCheckBox->nAktiv = 1;

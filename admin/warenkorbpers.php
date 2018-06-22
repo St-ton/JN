@@ -16,12 +16,12 @@ $cSucheSQL         = new stdClass();
 $cSucheSQL->cJOIN  = '';
 $cSucheSQL->cWHERE = '';
 // Tabs
-if (strlen(verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', verifyGPDataString('tab'));
+if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
 // Suche
-if (strlen(verifyGPDataString('cSuche')) > 0) {
-    $cSuche = Shop::Container()->getDB()->escape(StringHandler::filterXSS(verifyGPDataString('cSuche')));
+if (strlen(RequestHelper::verifyGPDataString('cSuche')) > 0) {
+    $cSuche = Shop::Container()->getDB()->escape(StringHandler::filterXSS(RequestHelper::verifyGPDataString('cSuche')));
 
     if (strlen($cSuche) > 0) {
         $cSucheSQL->cWHERE = " WHERE (tkunde.cKundenNr LIKE '%" . $cSuche . "%'
@@ -35,14 +35,14 @@ if (strlen(verifyGPDataString('cSuche')) > 0) {
 if (isset($_POST['einstellungen'])
     && (int)$_POST['einstellungen'] === 1
     && (isset($_POST['speichern']) || (isset($_POST['a']) && $_POST['a'] === 'speichern'))
-    && validateToken()
+    && FormHelper::validateToken()
 ) {
     $step = 'uebersicht';
     $cHinweis .= saveAdminSettings($settingsIDs, $_POST);
     $smarty->assign('tab', 'einstellungen');
 }
 
-if (isset($_GET['l']) && (int)$_GET['l'] > 0 && validateToken()) {
+if (isset($_GET['l']) && (int)$_GET['l'] > 0 && FormHelper::validateToken()) {
     $kKunde         = (int)$_GET['l'];
     $oWarenkorbPers = new WarenkorbPers($kKunde);
 

@@ -20,7 +20,7 @@ class Linechart extends Chartdata
     public $_xAxis;
 
     /**
-     * @param $label
+     * @param string $label
      * @return $this
      */
     public function addAxis($label)

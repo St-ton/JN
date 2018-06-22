@@ -36,9 +36,11 @@
                             <th></th>
                             <th class="tleft">{#orderNumber#}</th>
                             <th class="tleft">{#orderCostumer#}</th>
+                            <th class="tleft">{#orderCostumerRegistered#}</th>
                             <th class="tleft">{#orderShippingName#}</th>
                             <th class="tleft">{#orderPaymentName#}</th>
                             <th>{#orderWawiPickedUp#}</th>
+                            <th>{#orderStatus#}</th>
                             <th>{#orderSum#}</th>
                             <th class="tright">{#orderDate#}</th>
                         </tr>
@@ -51,9 +53,25 @@
                                 </td>
                                 <td>{$oBestellung->cBestellNr}</td>
                                 <td>{if isset($oBestellung->oKunde->cVorname) || isset($oBestellung->oKunde->cNachname) || isset($oBestellung->oKunde->cFirma)}{$oBestellung->oKunde->cVorname} {$oBestellung->oKunde->cNachname}{if isset($oBestellung->oKunde->cFirma) && $oBestellung->oKunde->cFirma|strlen > 0} ({$oBestellung->oKunde->cFirma}){/if}{else}{#noAccount#}{/if}</td>
+                                <td>{if isset($oBestellung->oKunde) && $oBestellung->oKunde->nRegistriert === 1}{#yes#}{else}{#no#}{/if}</td>
                                 <td>{$oBestellung->cVersandartName}</td>
                                 <td>{$oBestellung->cZahlungsartName}</td>
                                 <td class="tcenter">{if $oBestellung->cAbgeholt === 'Y'}{#yes#}{else}{#no#}{/if}</td>
+                                <td class="tcenter">
+                                    {if $oBestellung->cStatus == 1}
+                                        {#orderNew#}
+                                    {elseif $oBestellung->cStatus == 2}
+                                        {#orderInProgress#}
+                                    {elseif $oBestellung->cStatus == 3}
+                                        {#orderPayed#}
+                                    {elseif $oBestellung->cStatus == 4}
+                                        {#orderShipped#}
+                                    {elseif $oBestellung->cStatus == 5}
+                                        {#orderPartlyShipped#}
+                                    {elseif $oBestellung->cStatus == -1}
+                                        {#orderCanceled#}
+                                    {/if}
+                                </td>
                                 <td class="tcenter">{$oBestellung->WarensummeLocalized[0]}</td>
                                 <td class="tright">{$oBestellung->dErstelldatum_de}</td>
                             </tr>

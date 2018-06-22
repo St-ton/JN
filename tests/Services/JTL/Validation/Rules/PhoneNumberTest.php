@@ -6,7 +6,10 @@
 
 namespace Services\JTL\Validation\Rules;
 
-
+/**
+ * Class PhoneNumberTest
+ * @package Services\JTL\Validation\Rules
+ */
 class PhoneNumberTest extends \PHPUnit_Framework_TestCase
 {
     public function test()

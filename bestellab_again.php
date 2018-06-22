@@ -18,7 +18,7 @@ $Einstellungen = Shop::getSettings([
     CONF_ZAHLUNGSARTEN
 ]);
 $kBestellung   = (int)$_REQUEST['kBestellung'];
-$linkHelper    = LinkHelper::getInstance();
+$linkHelper    = Shop::Container()->getLinkService();
 $bestellung    = (new Bestellung($kBestellung))->fuelleBestellung();
 //abfragen, ob diese Bestellung dem Kunden auch gehoert
 //bei Gastbestellungen ist ggf das Kundenobjekt bereits entfernt bzw nRegistriert = 0
@@ -43,7 +43,7 @@ $obj->tbestellung = $bestellung;
 Shop::Smarty()->assign('Bestellung', $bestellung);
 
 $oZahlungsInfo = new stdClass();
-if (verifyGPCDataInteger('zusatzschritt') === 1) {
+if (RequestHelper::verifyGPCDataInt('zusatzschritt') === 1) {
     $bZusatzangabenDa = false;
     switch ($bestellung->Zahlungsart->cModulId) {
         case 'za_kreditkarte_jtl':
@@ -111,7 +111,7 @@ if (verifyGPCDataInteger('zusatzschritt') === 1) {
     }
 }
 // Zahlungsart als Plugin
-$kPlugin = gibkPluginAuscModulId($bestellung->Zahlungsart->cModulId);
+$kPlugin = Plugin::getIDByModuleID($bestellung->Zahlungsart->cModulId);
 if ($kPlugin > 0) {
     $oPlugin = new Plugin($kPlugin);
     if ($oPlugin->kPlugin > 0) {
@@ -141,16 +141,6 @@ if ($kPlugin > 0) {
     $paymentMethod           = new WorldPay($bestellung->Zahlungsart->cModulId);
     $paymentMethod->cModulId = $bestellung->Zahlungsart->cModulId;
     $paymentMethod->preparePaymentProcess($bestellung);
-} elseif ($bestellung->Zahlungsart->cModulId === 'za_moneybookers_jtl') {
-    require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'moneybookers/moneybookers.php';
-    Shop::Smarty()->assign(
-        'moneybookersform',
-        gib_moneybookers_form(
-            $bestellung,
-            strtolower($Einstellungen['zahlungsarten']['zahlungsart_moneybookers_empfaengermail']),
-            $successPaymentURL
-        )
-    );
 } elseif ($bestellung->Zahlungsart->cModulId === 'za_ipayment_jtl') {
     require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ipayment/iPayment.class.php';
     $paymentMethod           = new iPayment($bestellung->Zahlungsart->cModulId);
@@ -209,18 +199,12 @@ if ($kPlugin > 0) {
     $paymentMethod           = new PaymentPartner($bestellung->Zahlungsart->cModulId);
     $paymentMethod->cModulId = $bestellung->Zahlungsart->cModulId;
     $paymentMethod->preparePaymentProcess($bestellung);
-} elseif (strpos($bestellung->Zahlungsart->cModulId, 'za_mbqc_') === 0) {
-    require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'moneybookers_qc/MoneyBookersQC.class.php';
-    $paymentMethod           = new MoneyBookersQC($bestellung->Zahlungsart->cModulId);
-    $paymentMethod->cModulId = $bestellung->Zahlungsart->cModulId;
-    $paymentMethod->preparePaymentProcess($bestellung);
 } elseif ($bestellung->Zahlungsart->cModulId === 'za_eos_jtl') {
     require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'eos/EOS.class.php';
     $paymentMethod           = new EOS($bestellung->Zahlungsart->cModulId);
     $paymentMethod->cModulId = $bestellung->Zahlungsart->cModulId;
     $paymentMethod->preparePaymentProcess($bestellung);
-} // EOS Payment Solution
-elseif ($bestellung->Zahlungsart->cModulId === 'za_eos_dd_jtl') {
+} elseif ($bestellung->Zahlungsart->cModulId === 'za_eos_dd_jtl') {
     require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'eos/EOS.class.php';
     $paymentMethod           = new EOS($bestellung->Zahlungsart->cModulId);
     $paymentMethod->cModulId = $bestellung->Zahlungsart->cModulId;
@@ -242,14 +226,13 @@ elseif ($bestellung->Zahlungsart->cModulId === 'za_eos_dd_jtl') {
     $paymentMethod->preparePaymentProcess($bestellung);
 }
 //hole aktuelle Kategorie, falls eine gesetzt
-$AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
+$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 
-Shop::Smarty()->assign('Navigation', createNavigation($AktuelleSeite))
-    ->assign('WarensummeLocalized', Session::Cart()->gibGesamtsummeWarenLocalized())
+Shop::Smarty()->assign('WarensummeLocalized', Session::Cart()->gibGesamtsummeWarenLocalized())
     ->assign('Bestellung', $bestellung);
 
 unset(

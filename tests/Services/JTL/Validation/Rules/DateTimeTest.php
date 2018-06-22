@@ -6,7 +6,10 @@
 
 namespace Services\JTL\Validation\Rules;
 
-
+/**
+ * Class DateTimeTest
+ * @package Services\JTL\Validation\Rules
+ */
 class DateTimeTest extends \PHPUnit_Framework_TestCase
 {
     public function test()

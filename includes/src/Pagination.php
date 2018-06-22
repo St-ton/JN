@@ -168,7 +168,7 @@ class Pagination
     }
 
     /**
-     * @param $nItemsPerPageOption_arr - array of integers to be offered as items per page count options (non-empty)
+     * @param array $nItemsPerPageOption_arr - array of integers to be offered as items per page count options (non-empty)
      * @return $this
      */
     public function setItemsPerPageOptions($nItemsPerPageOption_arr)
@@ -201,7 +201,7 @@ class Pagination
     }
 
     /**
-     * @param $oItem_arr - item array to be paginated and sorted
+     * @param array $oItem_arr - item array to be paginated and sorted
      * @return $this
      */
     public function setItemArray($oItem_arr)

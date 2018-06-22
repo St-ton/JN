@@ -90,12 +90,10 @@ class phpQueryObjectPlugin_WebBrowser
     public static function location($self, $url = null)
     {
         // TODO if ! $url return actual location ???
-        $xhr = isset($self->document->xhr)
-            ? $self->document->xhr
-            : null;
-        $xhr = phpQuery::ajax(array(
-            'url' => $url,
-        ), $xhr);
+        $xhr = $self->document->xhr ?? null;
+        $xhr = phpQuery::ajax([
+            'url' => $url
+        ], $xhr);
         $return = false;
         if ($xhr->getLastResponse()->isSuccessful()) {
             $return = phpQueryPlugin_WebBrowser::browserReceive($xhr);
@@ -285,6 +283,7 @@ class phpQueryPlugin_WebBrowser
     /**
      * @param      $e
      * @param null $callback
+     * @throws Zend_Http_Client_Exception
      */
     public static function hadleClick($e, $callback = null)
     {
@@ -292,23 +291,21 @@ class phpQueryPlugin_WebBrowser
         $type = null;
         if ($node->is('a[href]')) {
             // TODO document.location
-            $xhr = isset($node->document->xhr)
-                ? $node->document->xhr
-                : null;
-            $xhr = phpQuery::ajax(array(
+            $xhr = $node->document->xhr ?? null;
+            $xhr = phpQuery::ajax([
                 'url' => resolve_url($e->data[0], $node->attr('href')),
                 'referer' => $node->document->location,
-            ), $xhr);
+            ], $xhr);
             if ((! $callback || !($callback instanceof Callback)) && $e->data[1]) {
                 $callback = $e->data[1];
             }
             if ($xhr->getLastResponse()->isSuccessful() && $callback) {
-                phpQuery::callbackRun($callback, array(
+                phpQuery::callbackRun($callback, [
                     self::browserReceive($xhr)
-                ));
+                ]);
             }
         } elseif ($node->is(':submit') && $node->parents('form')->size()) {
-            $node->parents('form')->trigger('submit', array($e));
+            $node->parents('form')->trigger('submit', [$e]);
         }
     }
 
@@ -370,7 +367,7 @@ function glue_url($parsed)
     }
     $uri = isset($parsed['scheme']) ? $parsed['scheme'] . ':' . ((strtolower($parsed['scheme']) == 'mailto') ? '' : '//') : '';
     $uri .= isset($parsed['user']) ? $parsed['user'] . ($parsed['pass'] ? ':' . $parsed['pass'] : '') . '@' : '';
-    $uri .= isset($parsed['host']) ? $parsed['host'] : '';
+    $uri .= $parsed['host'] ?? '';
     $uri .= isset($parsed['port']) ? ':' . $parsed['port'] : '';
     if (isset($parsed['path'])) {
         $uri .= (substr($parsed['path'], 0, 1) == '/') ? $parsed['path'] : '/' . $parsed['path'];
@@ -426,24 +423,24 @@ function resolve_url($base, $url)
         // the directory portion
         $end = array_pop($url_path);
         foreach ($url_path as $segment) {
-            if ($segment == '.') {
+            if ($segment === '.') {
                 // skip
-            } elseif ($segment == '..' && $path && $path[sizeof($path) - 1] != '..') {
+            } elseif ($segment === '..' && $path && $path[count($path) - 1] != '..') {
                 array_pop($path);
             } else {
                 $path[] = $segment;
             }
         }
         // Step 6d, 6f: remove "." and ".." from file portion
-        if ($end == '.') {
+        if ($end === '.') {
             $path[] = '';
-        } elseif ($end == '..' && $path && $path[sizeof($path) - 1] != '..') {
-            $path[sizeof($path) - 1] = '';
+        } elseif ($end === '..' && $path && $path[count($path) - 1] != '..') {
+            $path[count($path) - 1] = '';
         } else {
             $path[] = $end;
         }
         // Step 6h
-        $base['path'] = join('/', $path);
+        $base['path'] = implode('/', $path);
     }
     // Step 7
     return glue_url($base);

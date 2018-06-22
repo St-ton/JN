@@ -283,7 +283,19 @@ class JobQueue
      * @param string   $dStartZeit
      * @param string   $dZuletztGelaufen
      */
-    public function __construct($kJobQueue = null, $kCron = 0, $kKey = 0, $nLimitN = 0, $nLimitM = 0, $nInArbeit = 0, $cJobArt = '', $cTabelle = '', $cKey = '', $dStartZeit = 'now()', $dZuletztGelaufen = '0000-00-00')
+    public function __construct(
+        $kJobQueue = null,
+        $kCron = 0,
+        $kKey = 0,
+        $nLimitN = 0,
+        $nLimitM = 0,
+        $nInArbeit = 0,
+        $cJobArt = '',
+        $cTabelle = '',
+        $cKey = '',
+        $dStartZeit = 'now()',
+        $dZuletztGelaufen = '0000-00-00'
+    )
     {
         $this->kJobQueue        = $kJobQueue;
         $this->kCron            = $kCron;
@@ -299,12 +311,16 @@ class JobQueue
     }
 
     /**
-     * @return object|null
+     * @return stdClass|null
      */
     public function holeJobArt()
     {
         if ($this->kKey > 0 && strlen($this->cTabelle) > 0) {
-            return Shop::Container()->getDB()->select(Shop::Container()->getDB()->escape($this->cTabelle), Shop::Container()->getDB()->escape($this->cKey), (int)$this->kKey);
+            return Shop::Container()->getDB()->select(
+                Shop::Container()->getDB()->escape($this->cTabelle),
+                Shop::Container()->getDB()->escape($this->cKey),
+                (int)$this->kKey
+            );
         }
 
         return null;
@@ -313,16 +329,16 @@ class JobQueue
     /**
      * @return int
      */
-    public function speicherJobInDB()
+    public function speicherJobInDB(): int
     {
-        if ($this->kKey > 0 &&
-            $this->nLimitM > 0 &&
-            strlen($this->cJobArt) > 0 &&
-            strlen($this->cKey) > 0 &&
-            strlen($this->cTabelle) > 0 &&
-            strlen($this->dStartZeit) > 0
+        if ($this->kKey > 0
+            && $this->nLimitM > 0
+            && strlen($this->cJobArt) > 0
+            && strlen($this->cKey) > 0
+            && strlen($this->cTabelle) > 0
+            && strlen($this->dStartZeit) > 0
         ) {
-            $queue = kopiereMembers($this);
+            $queue = ObjectHelper::copyMembers($this);
             unset($queue->kJobQueue);
 
             return Shop::Container()->getDB()->insert('tjobqueue', $queue);
@@ -334,7 +350,7 @@ class JobQueue
     /**
      * @return int
      */
-    public function updateJobInDB()
+    public function updateJobInDB(): int
     {
         if ($this->kJobQueue > 0) {
             $_upd                   = new stdClass();
@@ -358,9 +374,9 @@ class JobQueue
     /**
      * @return int
      */
-    public function deleteJobInDB()
+    public function deleteJobInDB(): int
     {
-        return ($this->kJobQueue > 0)
+        return $this->kJobQueue > 0
             ? Shop::Container()->getDB()->delete('tjobqueue', 'kJobQueue', (int)$this->kJobQueue)
             : 0;
     }
@@ -368,7 +384,7 @@ class JobQueue
     /**
      * @return bool
      */
-    public function updateExportformatQueueBearbeitet()
+    public function updateExportformatQueueBearbeitet(): bool
     {
         if ($this->kJobQueue > 0) {
             Shop::Container()->getDB()->delete('texportformatqueuebearbeitet', 'kJobQueue', (int)$this->kJobQueue);

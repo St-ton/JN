@@ -17,12 +17,13 @@ $step                   = 'umfrage_uebersicht';
 $nAktuelleSeite         = 1;
 $oUmfrageFrageTMP_arr   = [];
 $Einstellungen          = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_UMFRAGE]);
-$linkHelper             = LinkHelper::getInstance();
+$linkHelper             = Shop::Container()->getLinkService();
 $kLink                  = $linkHelper->getSpecialPageLinkKey(LINKTYP_UMFRAGE);
+$link                   = (new \Link\Link(Shop::Container()->getDB()))->load($kLink);
 $AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
-$AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
+$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 
 // Umfrage durchführen
@@ -67,14 +68,6 @@ if (isset($cParameter_arr['kUmfrage']) && $cParameter_arr['kUmfrage'] > 0) {
                 }
                 $_SESSION['Umfrage']->kUmfrage = $oUmfrage->kUmfrage;
                 $smarty->assign('oUmfrage', $oUmfrage)
-                       ->assign('Navigation', createNavigation(
-                               Shop::getPageType(),
-                               0,
-                               0,
-                               Shop::Lang()->get('umfrage', 'breadcrumb') .
-                               ' - ' . $oUmfrage->cName, baueURL($oUmfrage, URLART_UMFRAGE)
-                           )
-                       )
                        ->assign('oNavi_arr', baueSeitenNavi($oUmfrageFrageTMP_arr, $oUmfrage->nAnzahlFragen))
                        ->assign('nAktuelleSeite', $cParameter_arr['kSeite'])
                        ->assign('nAnzahlSeiten', bestimmeAnzahlSeiten($oUmfrageFrageTMP_arr));
@@ -96,21 +89,14 @@ if ($step === 'umfrage_uebersicht') {
     $oUmfrage_arr = holeUmfrageUebersicht();
     if (is_array($oUmfrage_arr) && count($oUmfrage_arr) > 0) {
         foreach ($oUmfrage_arr as $i => $oUmfrage) {
-            $oUmfrage_arr[$i]->cURL = baueURL($oUmfrage, URLART_UMFRAGE);
+            $oUmfrage_arr[$i]->cURL = UrlHelper::buildURL($oUmfrage, URLART_UMFRAGE);
         }
     } else {
         $cFehler .= Shop::Lang()->get('pollNopoll', 'errorMessages') . '<br />';
     }
     $cCanonicalURL = Shop::getURL() . '/umfrage.php';
 
-    $smarty->assign('Navigation', createNavigation(
-            Shop::$AktuelleSeite,
-            0,
-            0,
-            Shop::Lang()->get('umfragen', 'breadcrumb'),
-            'umfrage.php?'
-        )
-    )->assign('oUmfrage_arr', $oUmfrage_arr);
+    $smarty->assign('oUmfrage_arr', $oUmfrage_arr);
 
     executeHook(HOOK_UMFRAGE_PAGE_UEBERSICHT);
 }

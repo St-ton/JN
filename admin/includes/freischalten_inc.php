@@ -174,41 +174,41 @@ function schalteBewertungFrei($kBewertung_arr, $kArtikel_arr, $kBewertungAll_arr
  */
 function schalteSuchanfragenFrei($kSuchanfrage_arr)
 {
-    if (is_array($kSuchanfrage_arr) && count($kSuchanfrage_arr) > 0) {
-        foreach ($kSuchanfrage_arr as $i => $kSuchanfrage) {
-            $kSuchanfrage = (int)$kSuchanfrage;
-            $oSuchanfrage = Shop::Container()->getDB()->query(
-                "SELECT kSuchanfrage, kSprache, cSuche
-                    FROM tsuchanfrage
-                    WHERE kSuchanfrage = " . $kSuchanfrage, 1
+    if (!is_array($kSuchanfrage_arr) || count($kSuchanfrage_arr) === 0) {
+        return false;
+    }
+    foreach ($kSuchanfrage_arr as $i => $kSuchanfrage) {
+        $kSuchanfrage = (int)$kSuchanfrage;
+        $oSuchanfrage = Shop::Container()->getDB()->query(
+            "SELECT kSuchanfrage, kSprache, cSuche
+                FROM tsuchanfrage
+                WHERE kSuchanfrage = " . $kSuchanfrage,
+            \DB\ReturnType::SINGLE_OBJECT
+        );
+
+        if ($oSuchanfrage->kSuchanfrage > 0) {
+            Shop::Container()->getDB()->delete(
+                'tseo',
+                ['cKey', 'kKey', 'kSprache'],
+                ['kSuchanfrage', $kSuchanfrage, (int)$oSuchanfrage->kSprache]
             );
-
-            if ($oSuchanfrage->kSuchanfrage > 0) {
-                Shop::Container()->getDB()->delete(
-                    'tseo',
-                    ['cKey', 'kKey', 'kSprache'],
-                    ['kSuchanfrage', $kSuchanfrage, (int)$oSuchanfrage->kSprache]
-                );
-                // Aktivierte Suchanfragen in tseo eintragen
-                $oSeo           = new stdClass();
-                $oSeo->cSeo     = checkSeo(getSeo($oSuchanfrage->cSuche));
-                $oSeo->cKey     = 'kSuchanfrage';
-                $oSeo->kKey     = $kSuchanfrage;
-                $oSeo->kSprache = $oSuchanfrage->kSprache;
-                Shop::Container()->getDB()->insert('tseo', $oSeo);
-                Shop::Container()->getDB()->update(
-                    'tsuchanfrage',
-                    'kSuchanfrage',
-                    $kSuchanfrage,
-                    (object)['nAktiv' => 1, 'cSeo' => $oSeo->cSeo]
-                );
-            }
+            // Aktivierte Suchanfragen in tseo eintragen
+            $oSeo           = new stdClass();
+            $oSeo->cSeo     = checkSeo(getSeo($oSuchanfrage->cSuche));
+            $oSeo->cKey     = 'kSuchanfrage';
+            $oSeo->kKey     = $kSuchanfrage;
+            $oSeo->kSprache = $oSuchanfrage->kSprache;
+            Shop::Container()->getDB()->insert('tseo', $oSeo);
+            Shop::Container()->getDB()->update(
+                'tsuchanfrage',
+                'kSuchanfrage',
+                $kSuchanfrage,
+                (object)['nAktiv' => 1, 'cSeo' => $oSeo->cSeo]
+            );
         }
-
-        return true;
     }
 
-    return false;
+    return true;
 }
 
 /**
@@ -511,14 +511,16 @@ function mappeLiveSuche($kSuchanfrage_arr, $cMapping)
             "UPDATE tsuchanfrage
                 SET nAnzahlGesuche = nAnzahlGesuche+" . $oSuchanfrage->nAnzahlGesuche . "
                 WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
-                    AND kSuchanfrage = " . (int)$oSuchanfrageNeu->kSuchanfrage, 4
+                    AND kSuchanfrage = " . (int)$oSuchanfrageNeu->kSuchanfrage,
+            \DB\ReturnType::DEFAULT
         );
         Shop::Container()->getDB()->delete('tsuchanfrage', 'kSuchanfrage', (int)$oSuchanfrage->kSuchanfrage);
         Shop::Container()->getDB()->query(
             "UPDATE tseo
                 SET kKey = " . (int)$oSuchanfrageNeu->kSuchanfrage . "
                 WHERE cKey = 'kSuchanfrage'
-                    AND kKey = " . (int)$oSuchanfrage->kSuchanfrage, 4
+                    AND kKey = " . (int)$oSuchanfrage->kSuchanfrage,
+            \DB\ReturnType::DEFAULT
         );
     }
 
@@ -534,10 +536,11 @@ function gibMaxBewertungen()
         "SELECT count(*) AS nAnzahl
             FROM tbewertung
             WHERE nAktiv = 0
-                AND kSprache = " . (int)$_SESSION['kSprache'], 1
+                AND kSprache = " . (int)$_SESSION['kSprache'],
+        \DB\ReturnType::SINGLE_OBJECT
     );
 
-    return isset($oTMP->nAnzahl) ? (int)$oTMP->nAnzahl : 0;
+    return (int)$oTMP->nAnzahl;
 }
 
 /**
@@ -549,10 +552,11 @@ function gibMaxSuchanfragen()
         "SELECT count(*) AS nAnzahl
             FROM tsuchanfrage
             WHERE nAktiv = 0
-                AND kSprache = " . (int)$_SESSION['kSprache'], 1
+                AND kSprache = " . (int)$_SESSION['kSprache'],
+        \DB\ReturnType::SINGLE_OBJECT
     );
 
-    return isset($oTMP->nAnzahl) ? (int)$oTMP->nAnzahl : 0;
+    return (int)$oTMP->nAnzahl;
 }
 
 /**
@@ -564,10 +568,11 @@ function gibMaxTags()
         "SELECT count(*) AS nAnzahl
             FROM ttag
             WHERE nAktiv = 0
-                AND kSprache = " . (int)$_SESSION['kSprache'], 1
+                AND kSprache = " . (int)$_SESSION['kSprache'],
+        \DB\ReturnType::SINGLE_OBJECT
     );
 
-    return isset($oTMP->nAnzahl) ? (int)$oTMP->nAnzahl : 0;
+    return (int)$oTMP->nAnzahl;
 }
 
 /**
@@ -580,10 +585,11 @@ function gibMaxNewskommentare()
             FROM tnewskommentar
             JOIN tnews ON tnews.kNews = tnewskommentar.kNews
             WHERE tnewskommentar.nAktiv = 0
-                AND tnews.kSprache = " . (int)$_SESSION['kSprache'], 1
+                AND tnews.kSprache = " . (int)$_SESSION['kSprache'],
+        \DB\ReturnType::SINGLE_OBJECT
     );
 
-    return isset($oTMP->nAnzahl) ? (int)$oTMP->nAnzahl : 0;
+    return (int)$oTMP->nAnzahl;
 }
 
 /**
@@ -595,8 +601,9 @@ function gibMaxNewsletterEmpfaenger()
         "SELECT count(*) AS nAnzahl
             FROM tnewsletterempfaenger
             WHERE nAktiv = 0
-                AND kSprache = " . (int)$_SESSION['kSprache'], 1
+                AND kSprache = " . (int)$_SESSION['kSprache'],
+        \DB\ReturnType::SINGLE_OBJECT
     );
 
-    return isset($oTMP->nAnzahl) ? (int)$oTMP->nAnzahl : 0;
+    return (int)$oTMP->nAnzahl;
 }

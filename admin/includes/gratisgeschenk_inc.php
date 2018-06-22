@@ -117,14 +117,11 @@ function gibAnzahlAktiverGeschenke()
     $nAnzahlGeschenke = Shop::Container()->getDB()->query(
         "SELECT count(*) AS nAnzahl
             FROM tartikelattribut
-            WHERE cName = '" . ART_ATTRIBUT_GRATISGESCHENKAB . "'", 1
+            WHERE cName = '" . ART_ATTRIBUT_GRATISGESCHENKAB . "'",
+        \DB\ReturnType::SINGLE_OBJECT
     );
 
-    if (isset($nAnzahlGeschenke->nAnzahl) && $nAnzahlGeschenke->nAnzahl > 0) {
-        return $nAnzahlGeschenke->nAnzahl;
-    }
-
-    return 0;
+    return (int)$nAnzahlGeschenke->nAnzahl;
 }
 
 /**
@@ -135,14 +132,11 @@ function gibAnzahlHaeufigGekaufteGeschenke()
     $nAnzahlGeschenke = Shop::Container()->getDB()->query(
         "SELECT count(DISTINCT(kArtikel)) AS nAnzahl
             FROM twarenkorbpos
-            WHERE nPosTyp = " . C_WARENKORBPOS_TYP_GRATISGESCHENK, 1
+            WHERE nPosTyp = " . C_WARENKORBPOS_TYP_GRATISGESCHENK,
+        \DB\ReturnType::SINGLE_OBJECT
     );
 
-    if (isset($nAnzahlGeschenke->nAnzahl) && $nAnzahlGeschenke->nAnzahl > 0) {
-        return (int)$nAnzahlGeschenke->nAnzahl;
-    }
-
-    return 0;
+    return (int)$nAnzahlGeschenke->nAnzahl;
 }
 
 /**
@@ -160,12 +154,9 @@ function gibAnzahlLetzten100Geschenke()
                     ORDER BY kWarenkorbPos DESC
                     LIMIT 100
                 ) AS sub1
-            GROUP BY sub1.kArtikel", 1
+            GROUP BY sub1.kArtikel",
+        \DB\ReturnType::SINGLE_OBJECT
     );
 
-    if (isset($nAnzahlGeschenke->nAnzahl) && $nAnzahlGeschenke->nAnzahl > 0) {
-        return $nAnzahlGeschenke->nAnzahl;
-    }
-
-    return 0;
+    return (int)$nAnzahlGeschenke->nAnzahl;
 }

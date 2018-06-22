@@ -405,7 +405,8 @@ function plzimportActionCheckStatus()
         $impData = Shop::Container()->getDB()->query(
             "SELECT count(*) AS nAnzahl
                 FROM tplz
-                WHERE cLandISO = 'IMP'", 1
+                WHERE cLandISO = 'IMP'",
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         $result = (object)[
@@ -647,7 +648,7 @@ function plzimportMakeResponse($data, $error = null)
     header('Content-type: application/json');
 
     if ($error !== null) {
-        header(makeHTTPHeader(500), true, $error);
+        header(RequestHelper::makeHTTPHeader(500), true, $error);
     }
 
     $result = (object)[

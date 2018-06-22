@@ -29,11 +29,11 @@ $_SESSION['Kundengruppe'] = new Kundengruppe($oKundengruppe->kKundengruppe);
 
 setzeSprache();
 // Tabs
-if (strlen(verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', verifyGPDataString('tab'));
+if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
 // Einstellungen
-if (validateToken()) {
+if (FormHelper::validateToken()) {
     if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
         if (isset($_POST['speichern'])) {
             $step = 'uebersicht';
@@ -41,15 +41,15 @@ if (validateToken()) {
         }
     } elseif ((isset($_POST['newsletterabonnent_loeschen'])
             && (int)$_POST['newsletterabonnent_loeschen'] === 1)
-        || (verifyGPCDataInteger('inaktiveabonnenten') === 1
+        || (RequestHelper::verifyGPCDataInt('inaktiveabonnenten') === 1
             && isset($_POST['abonnentloeschenSubmit']))
     ) {
         if (loescheAbonnenten($_POST['kNewsletterEmpfaenger'])) { // Newsletterabonnenten loeschen
-            $cHinweis .= 'Ihre markierten Newsletter-Abonnenten wurden erfolgreich gel&ouml;scht.<br />';
+            $cHinweis .= 'Ihre markierten Newsletter-Abonnenten wurden erfolgreich gelöscht.<br />';
         } else {
             $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newsletter-Abonnenten.<br />';
         }
-    } elseif (isset($_POST['abonnentfreischaltenSubmit']) && verifyGPCDataInteger('inaktiveabonnenten') === 1) {
+    } elseif (isset($_POST['abonnentfreischaltenSubmit']) && RequestHelper::verifyGPCDataInt('inaktiveabonnenten') === 1) {
         // Newsletterabonnenten freischalten
         if (aktiviereAbonnenten($_POST['kNewsletterEmpfaenger'])) {
             $cHinweis .= 'Ihre markierten Newsletter-Abonnenten wurden erfolgreich freigeschaltet.<br />';
@@ -107,8 +107,8 @@ if (validateToken()) {
                     $cHinweis .= $oNewsletterQueue->cBetreff . "\", ";
                 }
 
-                $cHinweis = substr($cHinweis, 0, strlen($cHinweis) - 2);
-                $cHinweis .= ' wurden erfolgreich gel&ouml;scht.<br />';
+                $cHinweis = substr($cHinweis, 0, -2);
+                $cHinweis .= ' wurden erfolgreich gelöscht.<br />';
             } else {
                 $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newsletter.<br />';
             }
@@ -123,8 +123,8 @@ if (validateToken()) {
                     Shop::Container()->getDB()->delete('tnewsletterhistory', 'kNewsletterHistory', (int)$kNewsletterHistory);
                     $cHinweis .= $kNewsletterHistory . ', ';
                 }
-                $cHinweis = substr($cHinweis, 0, strlen($cHinweis) - 2);
-                $cHinweis .= " wurden erfolgreich gel&ouml;scht.<br />";
+                $cHinweis = substr($cHinweis, 0, -2);
+                $cHinweis .= " wurden erfolgreich gelöscht.<br />";
             } else {
                 $cFehler .= "Fehler: Bitte markieren Sie mindestens eine History.<br />";
             }
@@ -144,8 +144,8 @@ if (validateToken()) {
                 $smarty->assign('oNewsletterHistory', $oNewsletterHistory);
             }
         }
-    } elseif (strlen(verifyGPDataString('cSucheInaktiv')) > 0) { // Inaktive Abonnentensuche
-        $cSuche = Shop::Container()->getDB()->escape(StringHandler::filterXSS(verifyGPDataString('cSucheInaktiv')));
+    } elseif (strlen(RequestHelper::verifyGPDataString('cSucheInaktiv')) > 0) { // Inaktive Abonnentensuche
+        $cSuche = Shop::Container()->getDB()->escape(StringHandler::filterXSS(RequestHelper::verifyGPDataString('cSucheInaktiv')));
 
         if (strlen($cSuche) > 0) {
             $cInaktiveSucheSQL->cWHERE = " AND (tnewsletterempfaenger.cVorname LIKE '%" . $cSuche .
@@ -154,8 +154,8 @@ if (validateToken()) {
         }
 
         $smarty->assign('cSucheInaktiv', $cSuche);
-    } elseif (strlen(verifyGPDataString('cSucheAktiv')) > 0) { // Aktive Abonnentensuche
-        $cSuche = Shop::Container()->getDB()->escape(StringHandler::filterXSS(verifyGPDataString('cSucheAktiv')));
+    } elseif (strlen(RequestHelper::verifyGPDataString('cSucheAktiv')) > 0) { // Aktive Abonnentensuche
+        $cSuche = Shop::Container()->getDB()->escape(StringHandler::filterXSS(RequestHelper::verifyGPDataString('cSucheAktiv')));
 
         if (strlen($cSuche) > 0) {
             $cAktiveSucheSQL->cWHERE = " AND (tnewsletterempfaenger.cVorname LIKE '%" . $cSuche .
@@ -164,8 +164,8 @@ if (validateToken()) {
         }
 
         $smarty->assign('cSucheAktiv', $cSuche);
-    } elseif (verifyGPCDataInteger('vorschau') > 0) { // Vorschau
-        $kNewsletterVorlage = verifyGPCDataInteger('vorschau');
+    } elseif (RequestHelper::verifyGPCDataInt('vorschau') > 0) { // Vorschau
+        $kNewsletterVorlage = RequestHelper::verifyGPCDataInt('vorschau');
         // Infos der Vorlage aus DB holen
         $oNewsletterVorlage = Shop::Container()->getDB()->query(
             "SELECT *, DATE_FORMAT(dStartZeit, '%d.%m.%Y %H:%i') AS Datum
@@ -174,7 +174,7 @@ if (validateToken()) {
             \DB\ReturnType::SINGLE_OBJECT
         );
         $preview = null;
-        if (verifyGPCDataInteger('iframe') === 1) {
+        if (RequestHelper::verifyGPCDataInt('iframe') === 1) {
             $step = 'vorlage_vorschau_iframe';
             $smarty->assign('cURL', 'newsletter.php?vorschau=' . $kNewsletterVorlage . '&token=' . $_SESSION['jtl_token']);
             $preview = baueNewsletterVorschau($oNewsletterVorlage);
@@ -186,7 +186,7 @@ if (validateToken()) {
         $smarty->assign('oNewsletterVorlage', $oNewsletterVorlage)
                ->assign('cFehler', is_string($preview) ? $preview : null)
                ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant());
-    } elseif (verifyGPCDataInteger('newslettervorlagenstd') === 1) { // Vorlagen Std
+    } elseif (RequestHelper::verifyGPCDataInt('newslettervorlagenstd') === 1) { // Vorlagen Std
         $oKundengruppe_arr = Shop::Container()->getDB()->query(
             "SELECT kKundengruppe, cName
                 FROM tkundengruppe
@@ -206,13 +206,13 @@ if (validateToken()) {
                ->assign('oKampagne_arr', holeAlleKampagnen(false, true))
                ->assign('cTime', time());
         // Vorlage speichern
-        if (verifyGPCDataInteger('vorlage_std_speichern') === 1) {
-            $kNewslettervorlageStd = verifyGPCDataInteger('kNewslettervorlageStd');
+        if (RequestHelper::verifyGPCDataInt('vorlage_std_speichern') === 1) {
+            $kNewslettervorlageStd = RequestHelper::verifyGPCDataInt('kNewslettervorlageStd');
             if ($kNewslettervorlageStd > 0) {
                 $step               = 'vorlage_std_erstellen';
                 $kNewslettervorlage = 0;
-                if (verifyGPCDataInteger('kNewsletterVorlage') > 0) {
-                    $kNewslettervorlage = verifyGPCDataInteger('kNewsletterVorlage');
+                if (RequestHelper::verifyGPCDataInt('kNewsletterVorlage') > 0) {
+                    $kNewslettervorlage = RequestHelper::verifyGPCDataInt('kNewsletterVorlage');
                 }
                 $oNewslettervorlageStd = holeNewslettervorlageStd($kNewslettervorlageStd, $kNewslettervorlage);
                 $cPlausiValue_arr      = speicherVorlageStd(
@@ -238,8 +238,8 @@ if (validateToken()) {
                     }
                 }
             }
-        } elseif (verifyGPCDataInteger('editieren') > 0) { // Editieren
-            $kNewslettervorlage    = verifyGPCDataInteger('editieren');
+        } elseif (RequestHelper::verifyGPCDataInt('editieren') > 0) { // Editieren
+            $kNewslettervorlage    = RequestHelper::verifyGPCDataInt('editieren');
             $step                  = 'vorlage_std_erstellen';
             $oNewslettervorlageStd = holeNewslettervorlageStd(0, $kNewslettervorlage);
             $oExplodedArtikel      = explodecArtikel($oNewslettervorlageStd->cArtikel);
@@ -255,14 +255,14 @@ if (validateToken()) {
                    ->assign('kKundengruppe_arr', $kKundengruppe_arr);
         }
         // Vorlage Std erstellen
-        if (verifyGPCDataInteger('vorlage_std_erstellen') === 1 && verifyGPCDataInteger('kNewsletterVorlageStd') > 0) {
+        if (RequestHelper::verifyGPCDataInt('vorlage_std_erstellen') === 1 && RequestHelper::verifyGPCDataInt('kNewsletterVorlageStd') > 0) {
             $step                  = 'vorlage_std_erstellen';
-            $kNewsletterVorlageStd = verifyGPCDataInteger('kNewsletterVorlageStd');
+            $kNewsletterVorlageStd = RequestHelper::verifyGPCDataInt('kNewsletterVorlageStd');
             // Hole Std Vorlage
             $oNewslettervorlageStd = holeNewslettervorlageStd($kNewsletterVorlageStd);
             $smarty->assign('oNewslettervorlageStd', $oNewslettervorlageStd);
         }
-    } elseif (verifyGPCDataInteger('newslettervorlagen') === 1) {
+    } elseif (RequestHelper::verifyGPCDataInt('newslettervorlagen') === 1) {
         // Vorlagen
         $oKundengruppe_arr = Shop::Container()->getDB()->query(
             "SELECT kKundengruppe, cName
@@ -291,9 +291,9 @@ if (validateToken()) {
         ) {
             // Vorlage editieren/vorbereiten
             $step               = 'vorlage_erstellen';
-            $kNewsletterVorlage = verifyGPCDataInteger('vorbereiten');
+            $kNewsletterVorlage = RequestHelper::verifyGPCDataInt('vorbereiten');
             if ($kNewsletterVorlage === 0) {
-                $kNewsletterVorlage = verifyGPCDataInteger('editieren');
+                $kNewsletterVorlage = RequestHelper::verifyGPCDataInt('editieren');
             }
             // Infos der Vorlage aus DB holen
             $oNewsletterVorlage = Shop::Container()->getDB()->query(
@@ -452,7 +452,7 @@ if (validateToken()) {
                     }
                 }
                 if (strlen($cKundengruppe) > 0) {
-                    $cKundengruppe = substr($cKundengruppe, 0, strlen($cKundengruppe) - 2);
+                    $cKundengruppe = substr($cKundengruppe, 0, -2);
                 }
                 // tnewsletterhistory objekt bauen
                 $oNewsletterHistory                   = new stdClass();
@@ -546,7 +546,7 @@ if (validateToken()) {
                         }
                     }
                 }
-                $cHinweis .= 'Die Newslettervorlage wurde erfolgreich gel&ouml;scht.<br />';
+                $cHinweis .= 'Die Newslettervorlage wurde erfolgreich gelöscht.<br />';
             } else {
                 $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newsletter.<br />';
             }
@@ -753,7 +753,7 @@ if ($step === 'uebersicht') {
            ->assign('oPagiHistory', $oPagiHistory)
            ->assign('oPagiAlleAbos', $oPagiAlleAbos);
 }
-$smarty->assign('Sprachen', gibAlleSprachen())
+$smarty->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->assign('step', $step)

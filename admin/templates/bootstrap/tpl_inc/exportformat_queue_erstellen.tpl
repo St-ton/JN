@@ -32,10 +32,10 @@
                         <td>
                             <select name="kExportformat" id="kExportformat" class="form-control">
                                 <option value="-1"></option>
-                                {foreach name=exportformate from=$oExportformat_arr item=oExportformat}
+                                {foreach $oExportformat_arr as $oExportformat}
                                     <option value="{$oExportformat->kExportformat}"{if (isset($oFehler->kExportformat) && $oFehler->kExportformat == $oExportformat->kExportformat) || (isset($oCron->kKey) && $oCron->kKey == $oExportformat->kExportformat)} selected{/if}>{$oExportformat->cName}
-                                        ({$oExportformat->Sprache->cNameDeutsch} / {$oExportformat->Waehrung->cName}
-                                        / {$oExportformat->Kundengruppe->cName})
+                                        ({$oExportformat->Sprache->cNameDeutsch} / {$oExportformat->Waehrung->getName()}
+                                        / {$oExportformat->Kundengruppe->getName()})
                                     </option>
                                 {/foreach}
                             </select>

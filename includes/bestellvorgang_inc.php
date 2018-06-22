@@ -1640,7 +1640,7 @@ function gibAktiveZahlungsart($oZahlungsarten_arr)
             $_SESSION['AktiveZahlungsart'] = $oZahlungsarten_arr[0]->kZahlungsart;
         }
     } else {
-        $_SESSION['AktiveZahlungsart'] = $oZahlungsarten_arr[0]->kVersandart;
+        $_SESSION['AktiveZahlungsart'] = $oZahlungsarten_arr[0]->kZahlungsart;
     }
 
     return $_SESSION['AktiveZahlungsart'];

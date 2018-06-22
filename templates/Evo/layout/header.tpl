@@ -121,8 +121,7 @@
     {/if}
     
     {block name="header"}
-        {*TODO Editor: 'true' durch bIsEditable ersetzen, also prüfen od auf dieser seite editiert werden darf*}
-        {if !empty($bLiveEditMode) && true}
+        {if Shop::isAdmin()}
             {include file='layout/header_composer_menu.tpl'}
         {/if}
 

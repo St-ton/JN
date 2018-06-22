@@ -43,4 +43,9 @@ interface SortingOptionInterface
      * @param int $priority
      */
     public function setPriority(int $priority);
+
+    /**
+     * @return int|string|array
+     */
+    public function getValue();
 }

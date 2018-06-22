@@ -22,6 +22,9 @@ class Factory
      */
     private $productFilter;
 
+    /**
+     * @var array
+     */
     private static $defaultSortingOptions = [
         SEARCH_SORT_STANDARD,
         SEARCH_SORT_NAME_ASC,
@@ -39,12 +42,31 @@ class Factory
     ];
 
     /**
+     * @var array
+     */
+    private $mapping = [];
+
+    /**
      * Factory constructor.
      * @param ProductFilter $productFilter
      */
     public function __construct(ProductFilter $productFilter)
     {
         $this->productFilter = $productFilter;
+
+        executeHook(HOOK_PRODUCTFILTER_REGISTER_SEARCH_OPTION, [
+            'factory'       => $this,
+            'productFilter' => $this->productFilter
+        ]);
+    }
+
+    /**
+     * @param int    $value
+     * @param string $className
+     */
+    public function registerSortingOption(int $value, string $className)
+    {
+        $this->mapping[$value] = $className;
     }
 
     /**
@@ -59,6 +81,9 @@ class Factory
                 $all->push($option);
             }
         }
+        foreach ($this->mapping as $id => $class) {
+            $all->push(new $class($this->productFilter));
+        }
 
         return $all;
     }
@@ -72,6 +97,9 @@ class Factory
     {
         $mapper  = new SortingType();
         $mapping = $mapper->mapSortTypeToClassName($type);
+        if ($mapping === null) {
+            $mapping = $this->mapping[$type] ?? null;
+        }
         if ($mapping === null) {
             throw new \InvalidArgumentException('Cannot map type ' . $type);
         }

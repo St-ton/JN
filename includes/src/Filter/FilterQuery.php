@@ -161,7 +161,7 @@ class FilterQuery implements FilterQueryInterface
      */
     public function __toString(): string
     {
-        return $this->getSql();
+        return $this->getSQL();
     }
 
     /**
@@ -197,7 +197,7 @@ class FilterQuery implements FilterQueryInterface
     /**
      * @inheritdoc
      */
-    public function getSql(): string
+    public function getSQL(): string
     {
         $where = $this->where;
         if (count($this->params) > 0) {

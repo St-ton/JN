@@ -12,6 +12,7 @@ use Filter\FilterOption;
 use Filter\FilterInterface;
 use Filter\ProductFilter;
 use Filter\SortingOptions\Factory;
+use Filter\SortingOptions\SortDefault;
 use Filter\SortingOptions\SortingOptionInterface;
 use Mapper\SortingType;
 use Tightenco\Collect\Support\Collection;
@@ -129,10 +130,6 @@ class ItemSort extends AbstractFilter
             throw new \LogicException('Factory has to be set first.');
         }
         $sortingOptions = $this->factory->getAll();
-        executeHook(HOOK_PRODUCTFILTER_REGISTER_SEARCH_OPTION, [
-            'class'   => $this,
-            'options' => &$sortingOptions
-        ]);
         $this->sortingOptions = $sortingOptions->sortByDesc(function (SortingOptionInterface $i) {
             return $i->getPriority();
         });
@@ -166,6 +163,9 @@ class ItemSort extends AbstractFilter
         $additionalFilter = new self($this->productFilter);
         $activeSortType   = $_SESSION['Usersortierung'] ?? -1;
         foreach ($this->sortingOptions as $i => $sortingOption) {
+            if (get_class($sortingOption) === SortDefault::class) {
+                continue;
+            }
             /** @var SortingOptionInterface $sortingOption */
             $value     = $sortingOption->getValue();
             $options[] = (new FilterOption())
@@ -181,8 +181,6 @@ class ItemSort extends AbstractFilter
                 ->setSort($i);
         }
         $this->options = $options;
-
-//        \Shop::dbg($options, false, 'sorting options@ItemSort:');
 
         return $options;
     }

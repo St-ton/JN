@@ -61,11 +61,14 @@ class SortingType
             case SEARCH_SORT_RATING:
                 return RatingDESC::class;
             default:
-//                return null;
-                die('default sort!');
+                return null;
         }
     }
 
+    /**
+     * @param string|int $sort
+     * @return int
+     */
     public function mapUserSorting($sort): int
     {
         if (is_numeric($sort)) {

@@ -13,16 +13,11 @@ namespace Filter;
 interface ProductFilterSQLInterface
 {
     /**
-     * @return \stdClass
-     */
-    public function getOrder(): \stdClass;
-
-    /**
      * @param array  $select
      * @param array  $joins
      * @param array  $conditions
      * @param array  $having
-     * @param string $order
+     * @param string $sort
      * @param string $limit
      * @param array  $groupBy
      * @param string $type
@@ -34,7 +29,7 @@ interface ProductFilterSQLInterface
         array $joins,
         array $conditions,
         array $having = [],
-        $order = null,
+        $sort = null,
         $limit = '',
         array $groupBy = ['tartikel.kArtikel'],
         $type = 'filter'

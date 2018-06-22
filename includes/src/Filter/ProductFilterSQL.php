@@ -37,116 +37,20 @@ class ProductFilterSQL implements ProductFilterSQLInterface
     /**
      * @inheritdoc
      */
-    public function getOrder(): \stdClass
-    {
-        $Artikelsortierung = (int)$this->conf['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
-        $sort              = new \stdClass();
-        $sort->join        = (new FilterJoin())->setOrigin(__CLASS__);
-        if (isset($_SESSION['Usersortierung'])) {
-            $mapper = new SortingType();
-            $Artikelsortierung = $mapper->mapUserSorting($_SESSION['Usersortierung']);
-        }
-        $_SESSION['Usersortierung'] = $Artikelsortierung;
-        if ($_SESSION['Usersortierung'] === SEARCH_SORT_STANDARD && $this->productFilter->getSort() > 0) {
-            $Artikelsortierung = $this->productFilter->getSort();
-        }
-//        \Shop::dbg($Artikelsortierung, false, '$Artikelsortierung:');
-//        \Shop::dbg($this->productFilter->getSort(), false, '$this->productFilter->getSort():');
-//        \Shop::dbg($this->productFilter->getSorting(), false, '$this->productFilter->getSorting():');
-//        \Shop::dbg($this->productFilter->getSorting()->sortingOptions, true, 'sortingOptions:');
-        switch ($Artikelsortierung) {
-            case SEARCH_SORT_STANDARD:
-                $sort->orderBy = 'tartikel.nSort, tartikel.cName';
-                if ($this->productFilter->getCategory()->getValue() > 0) {
-                    $sort->orderBy = 'tartikel.nSort, tartikel.cName';
-                } elseif (isset($_SESSION['Usersortierung'])
-                    && $_SESSION['Usersortierung'] === SEARCH_SORT_STANDARD
-                    && $this->productFilter->getSearch()->getSearchCacheID() > 0
-                ) {
-                    $sort->orderBy = 'jSuche.nSort'; // was tsuchcachetreffer in 4.06, but is aliased to jSuche
-                }
-                break;
-            case SEARCH_SORT_NAME_ASC:
-                $sort->orderBy = 'tartikel.cName';
-                break;
-            case SEARCH_SORT_NAME_DESC:
-                $sort->orderBy = 'tartikel.cName DESC';
-                break;
-            case SEARCH_SORT_PRICE_ASC:
-                $sort->orderBy = 'tpreise.fVKNetto, tartikel.cName';
-                $sort->join->setComment('join from SORT by price ASC')
-                           ->setType('JOIN')
-                           ->setTable('tpreise')
-                           ->setOn('tartikel.kArtikel = tpreise.kArtikel 
-                                        AND tpreise.kKundengruppe = ' . $this->productFilter->getCustomerGroupID());
-                break;
-            case SEARCH_SORT_PRICE_DESC:
-                $sort->orderBy = 'tpreise.fVKNetto DESC, tartikel.cName';
-                $sort->join->setComment('join from SORT by price DESC')
-                           ->setType('JOIN')
-                           ->setTable('tpreise')
-                           ->setOn('tartikel.kArtikel = tpreise.kArtikel 
-                                        AND tpreise.kKundengruppe = ' . $this->productFilter->getCustomerGroupID());
-                break;
-            case SEARCH_SORT_EAN:
-                $sort->orderBy = 'tartikel.cBarcode, tartikel.cName';
-                break;
-            case SEARCH_SORT_NEWEST_FIRST:
-                $sort->orderBy = 'tartikel.dErstellt DESC, tartikel.cName';
-                break;
-            case SEARCH_SORT_PRODUCTNO:
-                $sort->orderBy = 'tartikel.cArtNr, tartikel.cName';
-                break;
-            case SEARCH_SORT_AVAILABILITY:
-                $sort->orderBy = 'tartikel.fLagerbestand DESC, tartikel.cLagerKleinerNull DESC, tartikel.cName';
-                break;
-            case SEARCH_SORT_WEIGHT:
-                $sort->orderBy = 'tartikel.fGewicht, tartikel.cName';
-                break;
-            case SEARCH_SORT_DATEOFISSUE:
-                $sort->orderBy = 'tartikel.dErscheinungsdatum DESC, tartikel.cName';
-                break;
-            case SEARCH_SORT_BESTSELLER:
-                $sort->orderBy = 'tbestseller.fAnzahl DESC, tartikel.cName';
-                $sort->join->setComment('join from SORT by bestseller')
-                           ->setType('LEFT JOIN')
-                           ->setTable('tbestseller')
-                           ->setOn('tartikel.kArtikel = tbestseller.kArtikel');
-                break;
-            case SEARCH_SORT_RATING:
-                $sort->orderBy = 'tbewertung.nSterne DESC, tartikel.cName';
-                $sort->join->setComment('join from SORT by rating')
-                           ->setType('LEFT JOIN')
-                           ->setTable('tbewertung')
-                           ->setOn('tbewertung.kArtikel = tartikel.kArtikel');
-                break;
-            default:
-                die('default sort!');
-                $sort->orderBy = 'tartikel.nSort, tartikel.cName';
-                break;
-        }
-//        \Shop::dbg($sort, false, 'getOrder() returns:');
-
-        return $sort;
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function getBaseQuery(
         array $select = ['tartikel.kArtikel'],
         array $joins,
         array $conditions,
         array $having = [],
-        $order = null,
+        $sort = null,
         $limit = '',
         array $groupBy = ['tartikel.kArtikel'],
         $type = 'filter'
     ): string {
-        if ($order === null) {
-            $orderData = $this->getOrder();
-            $joins[]   = $orderData->join;
-            $order     = $orderData->orderBy;
+        if ($sort === null) {
+            $sort    = $this->productFilter->getSorting()->getActiveSorting();
+            $joins[] = $sort->getJoin();
+            $sort    = $sort->getOrderBy();
         }
         $joins[] = (new FilterJoin())
             ->setComment('product visiblity join from getBaseQuery')
@@ -189,7 +93,7 @@ class ProductFilterSQL implements ProductFilterSQLInterface
             'conditions'    => &$conditions,
             'groupBy'       => &$groupBy,
             'having'        => &$having,
-            'order'         => &$order,
+            'order'         => &$sort,
             'limit'         => &$limit,
             'productFilter' => $this
         ]);
@@ -234,7 +138,7 @@ class ProductFilterSQL implements ProductFilterSQLInterface
             (empty($cond) ? '' : (' WHERE ' . $cond . "\n")) .
             (empty($groupBy) ? '' : ('#default group by' . "\n" . 'GROUP BY ' . implode(', ', $groupBy) . "\n")) .
             (implode(' AND ', $having) . "\n") .
-            (empty($order) ? '' : ('#limit sql' . "\n" . 'ORDER BY ' . $order)) .
+            (empty($sort) ? '' : ('#limit sql' . "\n" . 'ORDER BY ' . $sort)) .
             (empty($limit) ? '' : ('#order by sql' . "\n" . 'LIMIT ' . $limit));
     }
 

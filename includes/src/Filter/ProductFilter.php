@@ -1661,10 +1661,7 @@ class ProductFilter
     public function getProductKeys(): Collection
     {
         $state   = $this->getCurrentStateData();
-//        $order   = $this->getFilterSQL()->getOrder();
-//        \Shop::dbg($order, false, 'before:');
         $sorting = $this->getSorting()->getActiveSorting();
-        \Shop::dbg($sorting->getOrderBy(), false, '$sorting->getOrderBy():');
         $joins   = $state->getJoins();
         $joins[] = $sorting->getJoin();
         $qry     = $this->getFilterSQL()->getBaseQuery(
@@ -1677,7 +1674,6 @@ class ProductFilter
             ['tartikel.kArtikel'],
             'listing'
         );
-        \Shop::dbg($qry, false, '$qry:');
 
         $productKeys = collect(array_map(
             function ($e) {
@@ -1687,7 +1683,7 @@ class ProductFilter
         ));
 
         $orderData         = new \stdClass();
-//        $orderData->cJoin  = $sorting->getJoin()->getSQL();
+        $orderData->cJoin  = $sorting->getJoin()->getSQL();
         $orderData->cOrder = $sorting->getOrderBy();
 
         executeHook(HOOK_FILTER_INC_GIBARTIKELKEYS, [

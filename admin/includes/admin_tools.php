@@ -94,7 +94,7 @@ function saveAdminSettings($settingsIDs, &$cPost_arr, $tags = [CACHING_GROUP_OPT
     }
     Shop::Cache()->flushTags($tags);
 
-    return 'Ihre Einstellungen wurden erfolgreich &uuml;bernommen.';
+    return 'Ihre Einstellungen wurden erfolgreich übernommen.';
 }
 
 /**
@@ -192,7 +192,7 @@ function saveAdminSectionSettings(int $kEinstellungenSektion, &$cPost_arr, $tags
     }
     Shop::Cache()->flushTags($tags);
 
-    return 'Ihre Einstellungen wurden erfolgreich &uuml;bernommen.';
+    return 'Ihre Einstellungen wurden erfolgreich übernommen.';
 }
 
 /**

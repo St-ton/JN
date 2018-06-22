@@ -859,7 +859,7 @@ function holeArtikel($cArtNr_arr)
                     } else {
                         $GLOBALS['step'] = 'versand_vorbereiten';
                         $GLOBALS['cFehler'] .= 'Fehler, der Artikel ' . $cArtNr .
-                            ' ist f&uuml;r einige Kundengruppen nicht sichtbar.<br>';
+                            ' ist für einige Kundengruppen nicht sichtbar.<br>';
                     }
                 } else {
                     $GLOBALS['step'] = 'versand_vorbereiten';
@@ -1329,7 +1329,7 @@ function gibArtikelObjekte($kArtikel_arr, $oKampagne = '', int $kKundengruppe = 
 
             if (!($oArtikel->kArtikel > 0)) {
                 Jtllog::writeLog(
-                    "Newsletter Cron konnte den Artikel ({$kArtikel}) f&uuml;r Kundengruppe " .
+                    "Newsletter Cron konnte den Artikel ({$kArtikel}) für Kundengruppe " .
                     "({$kKundengruppe}) und Sprache ({$kSprache}) nicht laden (Sichtbarkeit?)",
                     JTLLOG_LEVEL_NOTICE, false, 'Newsletter Artikel', $kArtikel
                 );

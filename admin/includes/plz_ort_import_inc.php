@@ -437,7 +437,7 @@ function plzimportActionDelTempImport()
 
     return [
         'type'    => 'success',
-        'message' => 'Temporärer Import wurde gel&ouml;scht!',
+        'message' => 'Temporärer Import wurde gelöscht!',
     ];
 }
 

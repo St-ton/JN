@@ -840,7 +840,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         'cVorname'            => 'Vorname',
                         'cNachname'           => 'Nachname',
                         'cEmail'              => 'eMail',
-                        'dErstelltTrack_DE'   => 'Datum der &Ouml;ffnung',
+                        'dErstelltTrack_DE'   => 'Datum der Öffnung',
                         'dErstelltVorgang_DE' => 'Vorgangsdatum'
                     ];
                 }
@@ -1378,7 +1378,7 @@ function GetTypes()
         3  => 'Anmeldung',
         4  => 'Verkaufssumme',
         5  => 'Frage zum Produkt',
-        6  => 'Verf&uuml;gbarkeitsanfrage',
+        6  => 'Verfügbarkeitsanfrage',
         7  => 'Login',
         8  => 'Produkt auf Wunschliste',
         9  => 'Produkt in den Warenkorb',

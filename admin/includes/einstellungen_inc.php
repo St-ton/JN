@@ -231,7 +231,7 @@ function gibEinstellungsSektionsPfad(int $kEinstellungenSektion)
         // Einstellungssektion ist in den Defines
         switch ($kEinstellungenSektion) {
             case CONF_ZAHLUNGSARTEN:
-                return 'Storefront-&gt;Zahlungsarten-&gt;&Uuml;bersicht';
+                return 'Storefront-&gt;Zahlungsarten-&gt;Übersicht';
             case CONF_EXPORTFORMATE:
                 return 'System-&gt;Export-&gt;Exportformate';
             case CONF_KONTAKTFORMULAR:

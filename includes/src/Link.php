@@ -696,7 +696,7 @@ class Link extends MainModel
             $cQuery .= implode(', ', $cSet_arr);
             $cQuery .= " WHERE kLink = {$this->getLink()} AND klinkgruppe = {$this->getLinkgruppe()}";
 
-            return Shop::Container()->getDB()->query($cQuery, 3);
+            return Shop::Container()->getDB()->query($cQuery, \DB\ReturnType::AFFECTED_ROWS);
         }
         throw new Exception("ERROR: Object has no members!");
     }

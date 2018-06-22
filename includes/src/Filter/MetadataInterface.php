@@ -142,7 +142,7 @@ interface MetadataInterface
      * @param \Kategorie|null $category
      * @return string
      */
-    public function generateMetaKeywords($products, $category = null): string;
+    public function generateMetaKeywords($products, \Kategorie $category = null): string;
 
     /**
      * @param ProductFilterSearchResultsInterface $searchResults
@@ -150,7 +150,7 @@ interface MetadataInterface
      * @param \Kategorie|null                     $category
      * @return string
      */
-    public function generateMetaTitle($searchResults, $globalMeta, $category = null): string;
+    public function generateMetaTitle($searchResults, $globalMeta, \Kategorie $category = null): string;
 
     /**
      * Erstellt für die NaviMetas die gesetzten Mainwords + Filter und stellt diese vor jedem Meta an.
@@ -177,28 +177,28 @@ interface MetadataInterface
     public function getBreadCrumbName();
 
     /**
-     * @param bool      $bSeo
-     * @param \stdClass $oSeitenzahlen
-     * @param int       $nMaxAnzeige
-     * @param string    $cFilterShopURL
+     * @param bool      $seo
+     * @param \stdClass $pages
+     * @param int       $maxPages
+     * @param string    $filterURL
      * @return array
      * @former baueSeitenNaviURL
      */
-    public function buildPageNavigation($bSeo, $oSeitenzahlen, $nMaxAnzeige = 7, $cFilterShopURL = ''): array;
+    public function buildPageNavigation(bool $seo, $pages, int $maxPages = 7, string $filterURL = ''): array;
 
     /**
-     * @param int $nDarstellung
+     * @param int $viewType
      * @return \stdClass
      * @former gibErweiterteDarstellung
      */
-    public function getExtendedView($nDarstellung = 0): \stdClass;
+    public function getExtendedView(int $viewType = 0): \stdClass;
 
     /**
      * @param bool $bExtendedJTLSearch
      * @return array
      * @former gibSortierliste
      */
-    public function getSortingOptions($bExtendedJTLSearch = false): array;
+    public function getSortingOptions(bool $bExtendedJTLSearch = false): array;
 
     /**
      * @param array $search
@@ -211,7 +211,7 @@ interface MetadataInterface
      * @param null|\Kategorie $currentCategory
      * @return $this
      */
-    public function setUserSort($currentCategory = null): MetadataInterface;
+    public function setUserSort(\Kategorie $currentCategory = null): MetadataInterface;
 
     /**
      * @param int|string $sort

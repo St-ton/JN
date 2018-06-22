@@ -1601,25 +1601,28 @@ class ProductFilter
      */
     public function getProductKeys(): Collection
     {
-        $state = $this->getCurrentStateData();
-        $qry   = $this->getFilterSQL()->getBaseQuery(
+        $state   = $this->getCurrentStateData();
+        $order   = $this->getFilterSQL()->getOrder();
+        $joins   = $state->getJoins();
+        $joins[] = $order->join;
+        $qry     = $this->getFilterSQL()->getBaseQuery(
             ['tartikel.kArtikel'],
-            $state->getJoins(),
+            $joins,
             $state->getConditions(),
             $state->getHaving(),
-            null,
+            $order->orderBy,
             '',
             ['tartikel.kArtikel'],
             'listing'
         );
 
-        $productKeys       = collect(array_map(
+        $productKeys = collect(array_map(
             function ($e) {
                 return (int)$e->kArtikel;
             },
             \Shop::Container()->getDB()->query($qry, ReturnType::ARRAY_OF_OBJECTS)
         ));
-        $order             = $this->getFilterSQL()->getOrder();
+
         $orderData         = new \stdClass();
         $orderData->cJoin  = $order->join->getSQL();
         $orderData->cOrder = $order->orderBy;
@@ -1664,13 +1667,13 @@ class ProductFilter
     }
 
     /**
-     * @param bool            $forProductListing - if true, return ProductFilterSearchResults instance, otherwise products only
-     * @param \Kategorie|null $currentCategory
-     * @param bool            $fillProducts - if true, return Artikel class instances, otherwise keys only
+     * @param bool            $listing - if true, return ProductFilterSearchResults instance, otherwise products only
+     * @param \Kategorie|null $category
+     * @param bool            $fill - if true, return Artikel class instances, otherwise keys only
      * @param int             $limit
      * @return ProductFilterSearchResultsInterface|\Tightenco\Collect\Support\Collection
      */
-    public function getProducts($forProductListing = true, $currentCategory = null, $fillProducts = true, $limit = null)
+    public function getProducts(bool $listing = true, \Kategorie $category = null, bool $fill = true, int $limit = null)
     {
         $limitPerPage = $limit ?? $this->metaData->getProductsPerPageLimit();
         $nLimitN      = $limitPerPage * ($this->nSeite - 1);
@@ -1700,19 +1703,13 @@ class ProductFilter
             $pages                = new \stdClass();
             $pages->AktuelleSeite = $this->nSeite;
             $pages->MaxSeiten     = $limitPerPage > 0 ? ceil($productCount / $limitPerPage) : 1;
-            $pages->minSeite      = min(
-                $pages->AktuelleSeite - $max / 2,
-                0
-            );
-            $pages->maxSeite      = max(
-                $pages->MaxSeiten,
-                $pages->minSeite + $max - 1
-            );
+            $pages->minSeite      = min($pages->AktuelleSeite - $max / 2, 0);
+            $pages->maxSeite      = max($pages->MaxSeiten, $pages->minSeite + $max - 1);
             if ($pages->maxSeite > $pages->MaxSeiten) {
                 $pages->maxSeite = $pages->MaxSeiten;
             }
             $this->searchResults->setPages($pages)
-                                ->setFilterOptions($this, $currentCategory)
+                                ->setFilterOptions($this, $category)
                                 ->setSearchTermWrite($this->metaData->getHeader());
         } else {
             $productList = $this->searchResults->getProducts();
@@ -1727,7 +1724,7 @@ class ProductFilter
                 ->setSearchTerm(strip_tags(trim($this->params['cSuche'])))
                 ->setError($error);
         }
-        if ($fillProducts === true) {
+        if ($fill === true) {
             // @todo: slice list of IDs when not filling?
             $opt                        = new \stdClass();
             $opt->nMerkmale             = 1;
@@ -1753,7 +1750,7 @@ class ProductFilter
 
         $this->searchResults->setProducts($productList);
 
-        if ($forProductListing === true) {
+        if ($listing === true) {
             // Weiterleitung, falls nur 1 Artikel rausgeholt
             $hasSubCategories = ($categoryID = $this->getCategory()->getValue()) > 0
                 ? (new \Kategorie($categoryID, $this->languageID, $this->customerGroupID))
@@ -1775,7 +1772,7 @@ class ProductFilter
             }
         }
 
-        return $forProductListing === true
+        return $listing === true
             ? $this->searchResults
             : $productList;
     }

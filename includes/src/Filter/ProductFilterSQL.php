@@ -116,6 +116,7 @@ class ProductFilterSQL implements ProductFilterSQLInterface
                            ->setOn('tbewertung.kArtikel = tartikel.kArtikel');
                 break;
             default:
+                die('default sort!');
                 break;
         }
 

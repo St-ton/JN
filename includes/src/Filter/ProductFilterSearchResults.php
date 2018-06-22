@@ -713,7 +713,6 @@ class ProductFilterSearchResults implements ProductFilterSearchResultsInterface
                 }
             }
         }
-
         $this->setManufacturerFilterOptions($manufacturerOptions)
              ->setSortingOptions($productFilter->getSorting()->getOptions())
              ->setLimitOptions($productFilter->getLimits()->getOptions())

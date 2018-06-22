@@ -51,7 +51,7 @@ switch ($action) {
                         $hookInfo = ['type' => $cacheType, 'key' => null, 'isTag' => true];
                         $flush    = $cache->flushTags([$cacheType], $hookInfo);
                         if ($flush === false) {
-                            $error .= '<br />Konnte Cache "' . $cacheType . '" nicht l&ouml;schen (evtl. bereits leer).';
+                            $error .= '<br />Konnte Cache "' . $cacheType . '" nicht löschen (evtl. bereits leer).';
                         } else {
                             $okCount++;
                         }
@@ -60,7 +60,7 @@ switch ($action) {
                         $notice .= $okCount . ' Caches erfolgreich geleert.';
                     }
                 } else {
-                    $error .= 'Kein Cache-Typ ausgew&auml;hlt.';
+                    $error .= 'Kein Cache-Typ ausgewählt.';
                 }
                 break;
             case 'activate' :
@@ -80,10 +80,10 @@ switch ($action) {
                         $upd
                     );
                     if ($res > 0) {
-                        $notice .= 'Ausgew&auml;hlte Typen erfolgreich aktiviert.';
+                        $notice .= 'Ausgewählte Typen erfolgreich aktiviert.';
                     }
                 } else {
-                    $error .= 'Kein Cache-Typ ausgew&auml;hlt.';
+                    $error .= 'Kein Cache-Typ ausgewählt.';
                 }
                 break;
             case 'deactivate' :
@@ -102,10 +102,10 @@ switch ($action) {
                         $upd
                     );
                     if ($res > 0) {
-                        $notice .= 'Ausgew&auml;hlte Typen erfolgreich deaktiviert.';
+                        $notice .= 'Ausgewählte Typen erfolgreich deaktiviert.';
                     }
                 } else {
-                    $error .= 'Kein Cache-Typ ausgew&auml;hlt.';
+                    $error .= 'Kein Cache-Typ ausgewählt.';
                 }
                 break;
             default :
@@ -188,7 +188,7 @@ switch ($action) {
                     if ($value->cWert !== 'null') {
                         $notice .= '<strong>' . $value->cWert . '</strong> wurde als Cache-Methode gespeichert.<br />';
                     } else {
-                        $notice .= 'Konnte keine funktionierende Cache-Methode ausw&auml;hlen.';
+                        $notice .= 'Konnte keine funktionierende Cache-Methode auswählen.';
                     }
                 }
                 Shop::Container()->getDB()->delete(
@@ -202,7 +202,7 @@ switch ($action) {
         }
         $cache->flushAll();
         $cache->setJtlCacheConfig();
-        $notice .= 'Ihre Einstellungen wurden &uuml;bernommen.<br />';
+        $notice .= 'Ihre Einstellungen wurden übernommen.<br />';
         $tab = 'settings';
         break;
     case 'benchmark' :

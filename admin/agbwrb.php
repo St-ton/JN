@@ -28,7 +28,7 @@ if (RequestHelper::verifyGPCDataInt('agbwrb') === 1 && FormHelper::validateToken
             $smarty->assign('kKundengruppe', RequestHelper::verifyGPCDataInt('kKundengruppe'))
                    ->assign('oAGBWRB', $oAGBWRB);
         } else {
-            $cFehler .= 'Fehler: Bitte geben Sie eine g&uuml;ltige Kundengruppe an.<br />';
+            $cFehler .= 'Fehler: Bitte geben Sie eine gültige Kundengruppe an.<br />';
         }
     } elseif (RequestHelper::verifyGPCDataInt('agbwrb_editieren_speichern') === 1) { // Speichern
         if (speicherAGBWRB(
@@ -50,10 +50,8 @@ if ($step === 'agbwrb_uebersicht') {
     $oAGBWRB_arr    = [];
     $oAGBWRBTMP_arr = Shop::Container()->getDB()->selectAll('ttext', 'kSprache', (int)$_SESSION['kSprache']);
     // Assoc Array mit kKundengruppe machen
-    if (is_array($oAGBWRBTMP_arr) && count($oAGBWRBTMP_arr) > 0) {
-        foreach ($oAGBWRBTMP_arr as $i => $oAGBWRBTMP) {
-            $oAGBWRB_arr[$oAGBWRBTMP->kKundengruppe] = $oAGBWRBTMP;
-        }
+    foreach ($oAGBWRBTMP_arr as $i => $oAGBWRBTMP) {
+        $oAGBWRB_arr[$oAGBWRBTMP->kKundengruppe] = $oAGBWRBTMP;
     }
     $smarty->assign('oKundengruppe_arr', $oKundengruppe_arr)
            ->assign('oAGBWRB_arr', $oAGBWRB_arr);

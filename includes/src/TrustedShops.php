@@ -610,7 +610,8 @@ class TrustedShops
                     Shop::Container()->getDB()->query(
                         "UPDATE ttrustedshopszertifikat 
                             SET dChecked = '{$this->dChecked}' 
-                            WHERE kTrustedShopsZertifikat = {$this->kTrustedShopsZertifikat}", 3
+                            WHERE kTrustedShopsZertifikat = {$this->kTrustedShopsZertifikat}",
+                        \DB\ReturnType::AFFECTED_ROWS
                     );
                 }
             } else {
@@ -725,7 +726,8 @@ class TrustedShops
                 $nRow = Shop::Container()->getDB()->query(
                     "UPDATE ttrustedshopszertifikat
                         SET nAktiv = 0
-                        WHERE kTrustedShopsZertifikat = " . (int)$oZertifikat->kTrustedShopsZertifikat, 3
+                        WHERE kTrustedShopsZertifikat = " . (int)$oZertifikat->kTrustedShopsZertifikat,
+                    \DB\ReturnType::AFFECTED_ROWS
                 );
                 if ($nRow > 0) {
                     Jtllog::writeLog('Das TrustedShops Zertifikat mit der ID ' . $cTSID . ' wurde deaktiviert!', JTLLOG_LEVEL_NOTICE);
@@ -835,7 +837,8 @@ class TrustedShops
                     FROM ttrustedshopszertifikat
                     LEFT JOIN ttrustedeshopsprodukt 
                         ON ttrustedeshopsprodukt.kTrustedShopsZertifikat = ttrustedshopszertifikat.kTrustedShopsZertifikat
-                        WHERE ttrustedshopszertifikat.cISOSprache = '" . $oZertifikat->cISOSprache . "'", 4
+                        WHERE ttrustedshopszertifikat.cISOSprache = '" . $oZertifikat->cISOSprache . "'",
+                \DB\ReturnType::DEFAULT
             );
 
             $oZertifikat->dChecked = $this->dChecked;

@@ -44,11 +44,11 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
                 break;
 
             case AdminLoginStatus::ERROR_USER_DISABLED:
-                $cFehler = 'Anmeldung zur Zeit nicht m&ouml;glich';
+                $cFehler = 'Anmeldung zur Zeit nicht möglich';
                 break;
 
             case AdminLoginStatus::ERROR_LOGIN_EXPIRED:
-                $cFehler = 'Anmeldedaten nicht mehr g&uuml;ltig';
+                $cFehler = 'Anmeldedaten nicht mehr gültig';
                 break;
 
             case AdminLoginStatus::ERROR_TWO_FACTOR_AUTH_EXPIRED:

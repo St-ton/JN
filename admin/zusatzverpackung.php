@@ -98,13 +98,10 @@ if (isset($_POST['eintragen']) && (int)$_POST['eintragen'] === 1 && FormHelper::
         } else {
             $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine Verpackung.<br />';
         }
-    } elseif (isset($_POST['aktualisieren'])
-        && $_POST['aktualisieren'] === 'refresh'
-        && FormHelper::validateToken()
-    ) {
+    } elseif (isset($_POST['aktualisieren']) && $_POST['aktualisieren'] === 'refresh') {
         // Aktualisieren
         // Alle Verpackungen deaktivieren
-        Shop::Container()->getDB()->query("UPDATE tverpackung SET nAktiv = 0", 3);
+        Shop::Container()->getDB()->query("UPDATE tverpackung SET nAktiv = 0", \DB\ReturnType::AFFECTED_ROWS);
         if (is_array($_POST['nAktiv']) && count($_POST['nAktiv']) > 0) {
             foreach ($_POST['nAktiv'] as $kVerpackung) {
                 $upd         = new stdClass();

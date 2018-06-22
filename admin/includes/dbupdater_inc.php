@@ -189,7 +189,7 @@ function mappeFehlerCode(int $nFehlerCode)
     if ($nFehlerCode > 0) {
         switch ($nFehlerCode) {
             case 1:
-                return 'Fehler: Ein SQL-Befehl im Update konnte nicht ausgef&uuml;hrt werden. ' .
+                return 'Fehler: Ein SQL-Befehl im Update konnte nicht ausgeführt werden. ' .
                     'Bitte versuchen Sie es erneut.';
                 break;
             case 100:

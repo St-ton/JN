@@ -30,12 +30,12 @@ if (RequestHelper::verifyGPCDataInt('save') === 1 && FormHelper::validateToken()
             $smarty->assign('xPostVar_arr', $oPlausiTrennzeichen->getPostVar());
         }
     } else {
-        $cFehler = 'Fehler: Bitte f&uuml;llen Sie alle Pflichtangaben aus!';
+        $cFehler = 'Fehler: Bitte füllen Sie alle Pflichtangaben aus!';
         if (isset($xPlausiVar_arr['nDezimal_' . JTL_SEPARATOR_WEIGHT]) && $xPlausiVar_arr['nDezimal_' . JTL_SEPARATOR_WEIGHT] == 2) {
-            $cFehler = 'Fehler: Die Anzahl der Dezimalstellen beim Gewicht d&uuml;rfen nicht gr&ouml;&szlig;er 4 sein!';
+            $cFehler = 'Fehler: Die Anzahl der Dezimalstellen beim Gewicht dürfen nicht größer 4 sein!';
         }
         if (isset($xPlausiVar_arr['nDezimal_' . JTL_SEPARATOR_AMOUNT]) && $xPlausiVar_arr['nDezimal_' . JTL_SEPARATOR_AMOUNT] == 2) {
-            $cFehler = 'Fehler: Die Anzahl der Dezimalstellen bei der Menge d&uuml;rfen nicht gr&ouml;&szlig;er 2 sein!';
+            $cFehler = 'Fehler: Die Anzahl der Dezimalstellen bei der Menge dürfen nicht größer 2 sein!';
         }
         $smarty->assign('xPlausiVar_arr', $oPlausiTrennzeichen->getPlausiVar())
                ->assign('xPostVar_arr', $oPlausiTrennzeichen->getPostVar());

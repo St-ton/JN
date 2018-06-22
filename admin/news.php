@@ -353,7 +353,7 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
             $step = 'news_editieren';
             $smarty->assign('cPostVar_arr', $_POST)
                    ->assign('cPlausiValue_arr', $cPlausiValue_arr);
-            $cFehler .= 'Fehler: Bitte f&uuml;llen Sie alle Pflichtfelder aus.<br />';
+            $cFehler .= 'Fehler: Bitte füllen Sie alle Pflichtfelder aus.<br />';
 
             if (isset($_POST['kNews']) && is_numeric($_POST['kNews'])) {
                 $continueWith = (int)$_POST['kNews'];
@@ -410,10 +410,10 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
                 }
             }
 
-            $cHinweis .= 'Ihre markierten News wurden erfolgreich gel&ouml;scht.<br />';
+            $cHinweis .= 'Ihre markierten News wurden erfolgreich gelöscht.<br />';
             newsRedirect('aktiv', $cHinweis);
         } else {
-            $cFehler .= 'Fehler: Sie m&uuml;ssen mindestens eine News ausgew&auml;hlt haben.<br />';
+            $cFehler .= 'Fehler: Sie müssen mindestens eine News ausgewählt haben.<br />';
         }
     } elseif (isset($_POST['news_kategorie_speichern']) && (int)$_POST['news_kategorie_speichern'] === 1) {
         //Newskategorie speichern
@@ -498,7 +498,7 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
             $cHinweis .= 'Ihre Newskategorie "' . $cName . '" wurde erfolgreich eingetragen.<br />';
             newsRedirect('kategorien', $cHinweis);
         } else {
-            $cFehler .= 'Fehler: Bitte &uuml;berpr&uuml;fen Sie Ihre Eingaben.<br />';
+            $cFehler .= 'Fehler: Bitte überprüfen Sie Ihre Eingaben.<br />';
             $step = 'news_kategorie_erstellen';
 
             $oNewsKategorie = editiereNewskategorie(RequestHelper::verifyGPCDataInt('kNewsKategorie'), $_SESSION['kSprache']);
@@ -518,7 +518,7 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
         // Newskategorie loeschen
         $step = 'news_uebersicht';
         if (loescheNewsKategorie($_POST['kNewsKategorie'])) {
-            $cHinweis .= 'Ihre markierten Newskategorien wurden erfolgreich gel&ouml;scht.<br />';
+            $cHinweis .= 'Ihre markierten Newskategorien wurden erfolgreich gelöscht.<br />';
             newsRedirect('kategorien', $cHinweis);
         } else {
             $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine Newskategorie.<br />';
@@ -529,9 +529,9 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
         $kNewsKategorie = (int) $_GET['kNewsKategorie'];
         if (strlen(RequestHelper::verifyGPDataString('delpic')) > 0) {
             if (loescheNewsBild(RequestHelper::verifyGPDataString('delpic'), $kNewsKategorie, $cUploadVerzeichnisKat)) {
-                $cHinweis .= 'Ihr ausgew&auml;hltes Newsbild wurde erfolgreich gel&ouml;scht.';
+                $cHinweis .= 'Ihr ausgewähltes Newsbild wurde erfolgreich gelöscht.';
             } else {
-                $cFehler .= 'Fehler: Ihr ausgew&auml;hltes Newsbild konnte nicht gel&ouml;scht werden.';
+                $cFehler .= 'Fehler: Ihr ausgewähltes Newsbild konnte nicht gelöscht werden.';
             }
         }
         if (isset($_GET['kNewsKategorie']) && (int)$_GET['kNewsKategorie'] > 0) {
@@ -572,11 +572,11 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
                 Shop::Container()->getDB()->delete('tnewskommentar', 'kNewsKommentar', (int)$kNewsKommentar);
             }
 
-            $cHinweis .= 'Ihre markierten Kommentare wurden erfolgreich gel&ouml;scht.<br />';
+            $cHinweis .= 'Ihre markierten Kommentare wurden erfolgreich gelöscht.<br />';
             $tab = RequestHelper::verifyGPDataString('tab');
             newsRedirect(empty($tab) ? 'inaktiv' : $tab, $cHinweis);
         } else {
-            $cFehler .= 'Fehler: Sie m&uuml;ssen mindestens einen Kommentar markieren.<br />';
+            $cFehler .= 'Fehler: Sie müssen mindestens einen Kommentar markieren.<br />';
         }
     }
     if ((isset($_GET['news_editieren']) && (int)$_GET['news_editieren'] === 1) ||
@@ -589,9 +589,9 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
         // Sollen einzelne Newsbilder geloescht werden?
         if (strlen(RequestHelper::verifyGPDataString('delpic')) > 0) {
             if (loescheNewsBild(RequestHelper::verifyGPDataString('delpic'), $kNews, $cUploadVerzeichnis)) {
-                $cHinweis .= 'Ihr ausgew&auml;hltes Newsbild wurde erfolgreich gel&ouml;scht.';
+                $cHinweis .= 'Ihr ausgewähltes Newsbild wurde erfolgreich gelöscht.';
             } else {
-                $cFehler .= 'Fehler: Ihr ausgew&auml;hltes Newsbild konnte nicht gel&ouml;scht werden.';
+                $cFehler .= 'Fehler: Ihr ausgewähltes Newsbild konnte nicht gelöscht werden.';
             }
         }
 
@@ -673,7 +673,7 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
                             Shop::Container()->getDB()->delete('tnewskommentar', 'kNewsKommentar', (int)$kNewsKommentar);
                         }
 
-                        $cHinweis .= "Ihre markierten Kommentare wurden erfolgreich gel&ouml;scht.<br />";
+                        $cHinweis .= "Ihre markierten Kommentare wurden erfolgreich gelöscht.<br />";
                         $tab = RequestHelper::verifyGPDataString('tab');
                         newsRedirect(empty($tab) ? 'inaktiv' : $tab, $cHinweis, [
                             'news'  => '1',
@@ -682,7 +682,7 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
                             'token' => $_SESSION['jtl_token'],
                         ]);
                     } else {
-                        $cFehler .= "Fehler: Sie m&uuml;ssen mindestens einen Kommentar markieren.<br />";
+                        $cFehler .= "Fehler: Sie müssen mindestens einen Kommentar markieren.<br />";
                     }
                 }
                 // Newskommentare
@@ -699,15 +699,11 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
                             AND tnewskommentar.kNews = " . (int)$oNews->kNews,
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
+                foreach ($oNewsKommentar_arr as $i => $oNewsKommentar) {
+                    $oKunde = new Kunde($oNewsKommentar->kKunde ?? 0);
 
-                if (is_array($oNewsKommentar_arr) && count($oNewsKommentar_arr) > 0) {
-                    foreach ($oNewsKommentar_arr as $i => $oNewsKommentar) {
-                        $oKunde = new Kunde($oNewsKommentar->kKunde);
-
-                        $oNewsKommentar_arr[$i]->cNachname = $oKunde->cNachname;
-                    }
+                    $oNewsKommentar_arr[$i]->cNachname = $oKunde->cNachname;
                 }
-
                 $smarty->assign('oNewsKommentar_arr', $oNewsKommentar_arr);
             }
         }
@@ -789,7 +785,7 @@ if ($step === 'news_uebersicht') {
         \DB\ReturnType::SINGLE_OBJECT
     );
     foreach ($oNewsKommentar_arr as $i => $oNewsKommentar) {
-        $oKunde = new Kunde($oNewsKommentar->kKunde);
+        $oKunde = new Kunde($oNewsKommentar->kKunde ?? 0);
 
         $oNewsKommentar_arr[$i]->cNachname = $oKunde->cNachname;
     }

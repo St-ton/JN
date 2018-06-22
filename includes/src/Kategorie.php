@@ -508,7 +508,10 @@ class Kategorie
         if (!Shop::has('checkCategoryVisibility')) {
             Shop::set(
                 'checkCategoryVisibility',
-                Shop::Container()->getDB()->query('SELECT kKategorie FROM tkategoriesichtbarkeit', 3) > 0
+                Shop::Container()->getDB()->query(
+                    'SELECT kKategorie FROM tkategoriesichtbarkeit',
+                    \DB\ReturnType::AFFECTED_ROWS
+                ) > 0
             );
         }
         if (!Shop::get('checkCategoryVisibility')) {

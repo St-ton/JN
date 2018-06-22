@@ -22,7 +22,7 @@ if (RequestHelper::verifyGPCDataInt('suchspecialoverlay') === 1) {
             Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
             $cHinweis .= 'Ihre Einstellung wurde erfolgreich gespeichert.<br />';
         } else {
-            $cFehler .= 'Fehler: Bitte f&uuml;llen Sie alle Felder komplett aus.<br />';
+            $cFehler .= 'Fehler: Bitte füllen Sie alle Felder komplett aus.<br />';
         }
     }
     // Hole bestimmtes SuchspecialOverlay

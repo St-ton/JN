@@ -113,7 +113,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                 executeHook(HOOK_NEWS_PAGE_NEWSKOMMENTAR_PLAUSI);
 
                 if ($Einstellungen['news']['news_kommentare_eingeloggt'] === 'Y' && !empty($_SESSION['Kunde']->kKunde)) {
-                    if (is_array($nPlausiValue_arr) && count($nPlausiValue_arr) === 0) {
+                    if (count($nPlausiValue_arr) === 0) {
                         $oNewsKommentar             = new stdClass();
                         $oNewsKommentar->kNews      = (int)$_POST['kNews'];
                         $oNewsKommentar->kKunde     = (int)$_SESSION['Kunde']->kKunde;
@@ -143,7 +143,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                             ->assign('cPostVar_arr', StringHandler::filterXSS($_POST));
                     }
                 } elseif ($Einstellungen['news']['news_kommentare_eingeloggt'] === 'N') {
-                    if (is_array($nPlausiValue_arr) && count($nPlausiValue_arr) === 0) {
+                    if (count($nPlausiValue_arr) === 0) {
                         $cEmail = $_POST['cEmail'] ?? null;
                         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                             $cEmail = $_SESSION['Kunde']->cMail;

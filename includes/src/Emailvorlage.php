@@ -116,7 +116,11 @@ class Emailvorlage
                 $this->$cMember = $oObj->$cMember;
             }
             // Settings
-            $this->oEinstellung_arr = Shop::Container()->getDB()->selectAll($cTableSetting, 'kEmailvorlage', $this->kEmailvorlage);
+            $this->oEinstellung_arr = Shop::Container()->getDB()->selectAll(
+                $cTableSetting,
+                'kEmailvorlage',
+                $this->kEmailvorlage
+            );
             // Assoc bauen
             if (is_array($this->oEinstellung_arr) && count($this->oEinstellung_arr) > 0) {
                 $this->oEinstellungAssoc_arr = [];

@@ -103,7 +103,7 @@ switch ($cAction) {
             $cFehler .= 'Slider konnte nicht gespeichert werden.';
 
             if (empty($cFehler)) {
-                $cHinweis = '&Auml;nderungen erfolgreich gespeichert.';
+                $cHinweis = 'Änderungen erfolgreich gespeichert.';
             }
         }
         break;

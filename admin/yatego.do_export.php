@@ -204,7 +204,10 @@ function getCats($catlist)
     if (is_array($catlist) && count($catlist)) {
         // fetch all categories in $cats with index kKategorie
         $cats = [];
-        $res  = Shop::Container()->getDB()->query("SELECT kKategorie, cName, kOberKategorie, nSort FROM tkategorie", 10);
+        $res  = Shop::Container()->getDB()->query(
+            'SELECT kKategorie, cName, kOberKategorie, nSort FROM tkategorie',
+            \DB\ReturnType::QUERYSINGLE
+        );
         while ($row = $res->fetch(PDO::FETCH_OBJ)) {
             $cats[$row->kKategorie] = $row;
         }

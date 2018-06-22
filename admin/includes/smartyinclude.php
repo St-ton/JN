@@ -101,7 +101,7 @@ foreach ($mainGroups as $mainGroup) {
         }
         $mainGroup->oLinkGruppe_arr   = [];
         $pluginManager                = new stdClass();
-        $pluginManager->cName         = '&Uuml;bersicht';
+        $pluginManager->cName         = 'Übersicht';
         $pluginManager->break         = false;
         $pluginManager->oLink_arr     = Shop::Container()->getDB()->selectAll(
             'tadminmenu',

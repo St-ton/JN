@@ -18,7 +18,8 @@ function holeTagDetailAnzahl($kTag, $kSprache)
                 JOIN ttag 
                     ON ttag.kTag = ttagartikel.kTag
                     AND ttag.kSprache = " . (int)$kSprache . "
-                WHERE ttagartikel.kTag = " . (int)$kTag, 1
+                WHERE ttagartikel.kTag = " . (int)$kTag,
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         return isset($oTagArtikel->nAnzahl)
@@ -110,10 +111,11 @@ function loescheTagsVomArtikel($kArtikel_arr, int $kTag)
 function flushAffectedArticleCache(array $tagIDs)
 {
     //get tagged article IDs to invalidate their cache
-    $_affectedArticles = Shop::Container()->getDB()->query("
-        SELECT DISTINCT kArtikel
+    $_affectedArticles = Shop::Container()->getDB()->query(
+        "SELECT DISTINCT kArtikel
             FROM ttagartikel
-            WHERE kTag IN (" . implode(', ', $tagIDs) . ")", 2
+            WHERE kTag IN (" . implode(', ', $tagIDs) . ")",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     if (count($_affectedArticles) > 0) {
         $articleCacheIDs = [];

@@ -3728,6 +3728,7 @@ function loescheSession($nStep)
 /**
  * @param int $nHinweisCode
  * @return string
+ * @todo: check if this is only used by the old EOS payment method
  */
 function mappeBestellvorgangZahlungshinweis($nHinweisCode)
 {

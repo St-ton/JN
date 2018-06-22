@@ -423,7 +423,8 @@ function gibArtikelsortierung($NaviFilter)
 function mappeUsersortierung($nUsersortierung)
 {
     trigger_error('filter_inc.php: calling mappeUsersortierung() is deprecated.', E_USER_DEPRECATED);
-    return updateNaviFilter($NaviFilter)->getMetaData()->mapUserSorting($nUsersortierung);
+    $mapper = new \Mapper\SortingType();
+    return $mapper->mapUserSorting($nUsersortierung);
 }
 
 /**
@@ -665,27 +666,172 @@ function sortierKategoriepfade($a, $b)
 }
 
 /**
- * @param null|array $Einstellungen
+ * @param null|array $conf
  * @param bool $bExtendedJTLSearch
  * @return array
  * @deprecated since 5.0.0
  */
-function gibSortierliste($Einstellungen = null, $bExtendedJTLSearch = false)
+function gibSortierliste($conf = null, $bExtendedJTLSearch = false)
 {
     trigger_error('filter_inc.php: calling gibSortierliste() is deprecated.', E_USER_DEPRECATED);
-    return Shop::getProductFilter()->getMetaData()->getSortingOptions($bExtendedJTLSearch);
+    $conf           = $conf ?? Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
+    $sortingOptions = [];
+    $search         = [];
+    if ($bExtendedJTLSearch !== false) {
+        static $names = [
+            'suche_sortierprio_name',
+            'suche_sortierprio_name_ab',
+            'suche_sortierprio_preis',
+            'suche_sortierprio_preis_ab'
+        ];
+        static $values = [
+            SEARCH_SORT_NAME_ASC,
+            SEARCH_SORT_NAME_DESC,
+            SEARCH_SORT_PRICE_ASC,
+            SEARCH_SORT_PRICE_DESC
+        ];
+        static $languages = ['sortNameAsc', 'sortNameDesc', 'sortPriceAsc', 'sortPriceDesc'];
+        foreach ($names as $i => $name) {
+            $obj                  = new \stdClass();
+            $obj->name            = $name;
+            $obj->value           = $values[$i];
+            $obj->angezeigterName = Shop::Lang()->get($languages[$i]);
+
+            $sortingOptions[] = $obj;
+        }
+
+        return $sortingOptions;
+    }
+    while (($obj = gibNextSortPrio($search, $conf)) !== null) {
+        $search[] = $obj->name;
+        unset($obj->name);
+        $sortingOptions[] = $obj;
+    }
+
+    return $sortingOptions;
 }
 
 /**
  * @deprecated since 5.0.0
  * @param array $search
- * @param null|array $Einstellungen
+ * @param null|array $conf
  * @return null|stdClass
  */
-function gibNextSortPrio($search, $Einstellungen = null)
+function gibNextSortPrio($search, $conf = null)
 {
     trigger_error('filter_inc.php: calling gibNextSortPrio() is deprecated.', E_USER_DEPRECATED);
-    return Shop::getProductFilter()->getMetaData()->getNextSearchPriority($search);
+    $conf = $conf ?? Shop::getConfig([CONF_ARTIKELUEBERSICHT]);
+    $max  = 0;
+    $obj  = null;
+    if ($max < $conf['artikeluebersicht']['suche_sortierprio_name']
+        && !in_array('suche_sortierprio_name', $search, true)
+    ) {
+        $obj                  = new \stdClass();
+        $obj->name            = 'suche_sortierprio_name';
+        $obj->value           = SEARCH_SORT_NAME_ASC;
+        $obj->angezeigterName = \Shop::Lang()->get('sortNameAsc');
+        $max                  = $conf['artikeluebersicht']['suche_sortierprio_name'];
+    }
+    if ($max < $conf['artikeluebersicht']['suche_sortierprio_name_ab']
+        && !in_array('suche_sortierprio_name_ab', $search, true)
+    ) {
+        $obj                  = new \stdClass();
+        $obj->name            = 'suche_sortierprio_name_ab';
+        $obj->value           = SEARCH_SORT_NAME_DESC;
+        $obj->angezeigterName = \Shop::Lang()->get('sortNameDesc');
+        $max                  = $conf['artikeluebersicht']['suche_sortierprio_name_ab'];
+    }
+    if ($max < $conf['artikeluebersicht']['suche_sortierprio_preis']
+        && !in_array('suche_sortierprio_preis', $search, true)
+    ) {
+        $obj                  = new \stdClass();
+        $obj->name            = 'suche_sortierprio_preis';
+        $obj->value           = SEARCH_SORT_PRICE_ASC;
+        $obj->angezeigterName = \Shop::Lang()->get('sortPriceAsc');
+        $max                  = $conf['artikeluebersicht']['suche_sortierprio_preis'];
+    }
+    if ($max < $conf['artikeluebersicht']['suche_sortierprio_preis_ab']
+        && !in_array('suche_sortierprio_preis_ab', $search, true)
+    ) {
+        $obj                  = new \stdClass();
+        $obj->name            = 'suche_sortierprio_preis_ab';
+        $obj->value           = SEARCH_SORT_PRICE_DESC;
+        $obj->angezeigterName = \Shop::Lang()->get('sortPriceDesc');
+        $max                  = $conf['artikeluebersicht']['suche_sortierprio_preis_ab'];
+    }
+    if ($max < $conf['artikeluebersicht']['suche_sortierprio_ean']
+        && !in_array('suche_sortierprio_ean', $search, true)
+    ) {
+        $obj                  = new \stdClass();
+        $obj->name            = 'suche_sortierprio_ean';
+        $obj->value           = SEARCH_SORT_EAN;
+        $obj->angezeigterName = \Shop::Lang()->get('sortEan');
+        $max                  = $conf['artikeluebersicht']['suche_sortierprio_ean'];
+    }
+    if ($max < $conf['artikeluebersicht']['suche_sortierprio_erstelldatum']
+        && !in_array('suche_sortierprio_erstelldatum', $search, true)
+    ) {
+        $obj                  = new \stdClass();
+        $obj->name            = 'suche_sortierprio_erstelldatum';
+        $obj->value           = SEARCH_SORT_NEWEST_FIRST;
+        $obj->angezeigterName = \Shop::Lang()->get('sortNewestFirst');
+        $max                  = $conf['artikeluebersicht']['suche_sortierprio_erstelldatum'];
+    }
+    if ($max < $conf['artikeluebersicht']['suche_sortierprio_artikelnummer']
+        && !in_array('suche_sortierprio_artikelnummer', $search, true)
+    ) {
+        $obj                  = new \stdClass();
+        $obj->name            = 'suche_sortierprio_artikelnummer';
+        $obj->value           = SEARCH_SORT_PRODUCTNO;
+        $obj->angezeigterName = \Shop::Lang()->get('sortProductno');
+        $max                  = $conf['artikeluebersicht']['suche_sortierprio_artikelnummer'];
+    }
+    if ($max < $conf['artikeluebersicht']['suche_sortierprio_lagerbestand']
+        && !in_array('suche_sortierprio_lagerbestand', $search, true)
+    ) {
+        $obj                  = new \stdClass();
+        $obj->name            = 'suche_sortierprio_lagerbestand';
+        $obj->value           = SEARCH_SORT_AVAILABILITY;
+        $obj->angezeigterName = \Shop::Lang()->get('sortAvailability');
+        $max                  = $conf['artikeluebersicht']['suche_sortierprio_lagerbestand'];
+    }
+    if ($max < $conf['artikeluebersicht']['suche_sortierprio_gewicht']
+        && !in_array('suche_sortierprio_gewicht', $search, true)
+    ) {
+        $obj                  = new \stdClass();
+        $obj->name            = 'suche_sortierprio_gewicht';
+        $obj->value           = SEARCH_SORT_WEIGHT;
+        $obj->angezeigterName = \Shop::Lang()->get('sortWeight');
+        $max                  = $conf['artikeluebersicht']['suche_sortierprio_gewicht'];
+    }
+    if ($max < $conf['artikeluebersicht']['suche_sortierprio_erscheinungsdatum']
+        && !in_array('suche_sortierprio_erscheinungsdatum', $search, true)
+    ) {
+        $obj                  = new \stdClass();
+        $obj->name            = 'suche_sortierprio_erscheinungsdatum';
+        $obj->value           = SEARCH_SORT_DATEOFISSUE;
+        $obj->angezeigterName = \Shop::Lang()->get('sortDateofissue');
+        $max                  = $conf['artikeluebersicht']['suche_sortierprio_erscheinungsdatum'];
+    }
+    if ($max < $conf['artikeluebersicht']['suche_sortierprio_bestseller']
+        && !in_array('suche_sortierprio_bestseller', $search, true)
+    ) {
+        $obj                  = new \stdClass();
+        $obj->name            = 'suche_sortierprio_bestseller';
+        $obj->value           = SEARCH_SORT_BESTSELLER;
+        $obj->angezeigterName = \Shop::Lang()->get('bestseller');
+        $max                  = $conf['artikeluebersicht']['suche_sortierprio_bestseller'];
+    }
+    if ($max < $conf['artikeluebersicht']['suche_sortierprio_bewertung']
+        && !in_array('suche_sortierprio_bewertung', $search, true)
+    ) {
+        $obj                  = new \stdClass();
+        $obj->name            = 'suche_sortierprio_bewertung';
+        $obj->value           = SEARCH_SORT_RATING;
+        $obj->angezeigterName = \Shop::Lang()->get('rating');
+    }
+
+    return $obj;
 }
 
 /**

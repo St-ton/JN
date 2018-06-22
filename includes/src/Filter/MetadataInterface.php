@@ -117,11 +117,11 @@ interface MetadataInterface
     public function hasData(): bool;
 
     /**
-     * @param \Kategorie|null      $currentCategory
+     * @param \Kategorie|null      $category
      * @param \KategorieListe|null $openCategories
      * @return $this
      */
-    public function getNavigationInfo($currentCategory = null, $openCategories = null): MetadataInterface;
+    public function getNavigationInfo(\Kategorie $category = null, \KategorieListe $openCategories = null): MetadataInterface;
 
     /**
      * @param array                               $products
@@ -192,32 +192,6 @@ interface MetadataInterface
      * @former gibErweiterteDarstellung
      */
     public function getExtendedView(int $viewType = 0): \stdClass;
-
-    /**
-     * @param bool $bExtendedJTLSearch
-     * @return array
-     * @former gibSortierliste
-     */
-    public function getSortingOptions(bool $bExtendedJTLSearch = false): array;
-
-    /**
-     * @param array $search
-     * @return null|\stdClass
-     * @former gibNextSortPrio
-     */
-    public function getNextSearchPriority(array $search);
-
-    /**
-     * @param null|\Kategorie $currentCategory
-     * @return $this
-     */
-    public function setUserSort(\Kategorie $currentCategory = null): MetadataInterface;
-
-    /**
-     * @param int|string $sort
-     * @return int
-     */
-    public static function mapUserSorting($sort): int;
 
     /**
      * @return int

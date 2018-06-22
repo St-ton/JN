@@ -40,7 +40,7 @@ if ($NaviFilter->hasCategory()) {
 }
 
 // Usersortierung
-$NaviFilter->getMetaData()->setUserSort($AktuelleKategorie);
+$NaviFilter->setUserSort($AktuelleKategorie);
 // Erweiterte Darstellung Artikelübersicht
 $oSuchergebnisse = $NaviFilter->getProducts(true, $AktuelleKategorie);
 $pages           = $oSuchergebnisse->getPages();
@@ -150,7 +150,6 @@ $smarty->assign('NaviFilter', $NaviFilter)
            true,
            $pages,
            $Einstellungen['artikeluebersicht']['artikeluebersicht_max_seitenzahl']))
-       ->assign('Sortierliste', $NaviFilter->getMetaData()->getSortingOptions())
        ->assign('Suchergebnisse', $oSuchergebnisse)
        ->assign('oNavigationsinfo', $oNavigationsinfo)
        ->assign('SEO', true)

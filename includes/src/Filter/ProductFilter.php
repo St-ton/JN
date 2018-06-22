@@ -18,6 +18,7 @@ use Filter\Items\ItemRating;
 use Filter\Items\ItemSearchSpecial;
 use Filter\Items\ItemSort;
 use Filter\Items\ItemTag;
+use Filter\SortingOptions\Factory;
 use Filter\States\DummyState;
 use Filter\States\BaseAttribute;
 use Filter\States\BaseCategory;
@@ -29,6 +30,7 @@ use function Functional\first;
 use function Functional\group;
 use function Functional\map;
 use function Functional\select;
+use Mapper\SortingType;
 use Tightenco\Collect\Support\Collection;
 
 /**
@@ -714,6 +716,9 @@ class ProductFilter
 
         $this->sorting = new ItemSort($this);
         $this->limits  = new ItemLimit($this);
+
+        $this->sorting->setFactory(new Factory($this));
+        $this->sorting->registerSortingOptions();
 
         return $this;
     }
@@ -1595,6 +1600,60 @@ class ProductFilter
     }
 
     /**
+     * @param \Kategorie|null $category
+     * @return $this
+     */
+    public function setUserSort(\Kategorie $category = null): self
+    {
+        $gpcSort = \RequestHelper::verifyGPCDataInt('Sortierung');
+        // user wants to reset default sorting
+        if ($gpcSort === SEARCH_SORT_STANDARD) {
+            unset($_SESSION['Usersortierung'], $_SESSION['nUsersortierungWahl'], $_SESSION['UsersortierungVorSuche']);
+        }
+        // no sorting configured - use default from config
+        if (!isset($_SESSION['Usersortierung'])) {
+            unset($_SESSION['nUsersortierungWahl']);
+            $_SESSION['Usersortierung'] = (int)$this->conf['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
+        }
+        if (!isset($_SESSION['nUsersortierungWahl'])) {
+            $_SESSION['Usersortierung'] = (int)$this->conf['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
+        }
+        if (!isset($_SESSION['nUsersortierungWahl']) && $this->getSearch()->getSearchCacheID() > 0) {
+            // nur bei initialsuche Sortierung zurücksetzen
+            $_SESSION['UsersortierungVorSuche'] = $_SESSION['Usersortierung'];
+            $_SESSION['Usersortierung']         = SEARCH_SORT_STANDARD;
+        }
+        // custom category attribute
+        if ($category !== null && !empty($category->categoryFunctionAttributes[KAT_ATTRIBUT_ARTIKELSORTIERUNG])) {
+            $mapper = new SortingType();
+            $_SESSION['Usersortierung'] = $mapper->mapUserSorting(
+                $category->categoryFunctionAttributes[KAT_ATTRIBUT_ARTIKELSORTIERUNG]
+            );
+        }
+        if (isset($_SESSION['UsersortierungVorSuche']) && (int)$_SESSION['UsersortierungVorSuche'] > 0) {
+            $_SESSION['Usersortierung'] = (int)$_SESSION['UsersortierungVorSuche'];
+        }
+        // search special sorting
+        if ($this->hasSearchSpecial()) {
+            $oSuchspecialEinstellung_arr = $this->metaData::getSearchSpecialConfigMapping($this->conf['suchspecials']);
+            $idx    = $this->getSearchSpecial()->getValue();
+            $ssConf = isset($oSuchspecialEinstellung_arr[$idx]) ?: null;
+            if ($ssConf !== null && $ssConf !== -1 && count($oSuchspecialEinstellung_arr) > 0) {
+                $_SESSION['Usersortierung'] = (int)$oSuchspecialEinstellung_arr[$idx];
+            }
+        }
+        // explicitly set by user
+        if ($gpcSort > 0 && $gpcSort !== SEARCH_SORT_STANDARD) {
+            $_SESSION['Usersortierung']         = $gpcSort;
+            $_SESSION['UsersortierungVorSuche'] = $_SESSION['Usersortierung'];
+            $_SESSION['nUsersortierungWahl']    = 1;
+        }
+        $this->sorting->setActiveSortingType($_SESSION['Usersortierung']);
+
+        return $this;
+    }
+
+    /**
      * get list of product IDs matching the current filter
      *
      * @return Collection
@@ -1602,19 +1661,23 @@ class ProductFilter
     public function getProductKeys(): Collection
     {
         $state   = $this->getCurrentStateData();
-        $order   = $this->getFilterSQL()->getOrder();
+//        $order   = $this->getFilterSQL()->getOrder();
+//        \Shop::dbg($order, false, 'before:');
+        $sorting = $this->getSorting()->getActiveSorting();
+        \Shop::dbg($sorting->getOrderBy(), false, '$sorting->getOrderBy():');
         $joins   = $state->getJoins();
-        $joins[] = $order->join;
+        $joins[] = $sorting->getJoin();
         $qry     = $this->getFilterSQL()->getBaseQuery(
             ['tartikel.kArtikel'],
             $joins,
             $state->getConditions(),
             $state->getHaving(),
-            $order->orderBy,
+            $sorting->getOrderBy(),
             '',
             ['tartikel.kArtikel'],
             'listing'
         );
+        \Shop::dbg($qry, false, '$qry:');
 
         $productKeys = collect(array_map(
             function ($e) {
@@ -1624,8 +1687,8 @@ class ProductFilter
         ));
 
         $orderData         = new \stdClass();
-        $orderData->cJoin  = $order->join->getSQL();
-        $orderData->cOrder = $order->orderBy;
+//        $orderData->cJoin  = $sorting->getJoin()->getSQL();
+        $orderData->cOrder = $sorting->getOrderBy();
 
         executeHook(HOOK_FILTER_INC_GIBARTIKELKEYS, [
             'oArtikelKey_arr' => &$productKeys,

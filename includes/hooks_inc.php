@@ -1747,6 +1747,12 @@ define('HOOK_PRODUCTFILTER_CREATE', 252);
 define('HOOK_PRODUCTFILTER_GET_BASE_QUERY', 253);
 
 /**
+ * @since 5.0.0
+ * @todo
+ */
+define('HOOK_PRODUCTFILTER_REGISTER_SEARCH_OPTION', 254);
+
+/**
  * in Preise::__construct()
  *
  * @since 5.0.0

@@ -7,6 +7,7 @@
 namespace Filter;
 
 use function Functional\reduce_left;
+use Mapper\SortingType;
 
 /**
  * Class ProductFilterSQL
@@ -42,13 +43,17 @@ class ProductFilterSQL implements ProductFilterSQLInterface
         $sort              = new \stdClass();
         $sort->join        = (new FilterJoin())->setOrigin(__CLASS__);
         if (isset($_SESSION['Usersortierung'])) {
-            $Artikelsortierung = Metadata::mapUserSorting($_SESSION['Usersortierung']);
+            $mapper = new SortingType();
+            $Artikelsortierung = $mapper->mapUserSorting($_SESSION['Usersortierung']);
         }
         $_SESSION['Usersortierung'] = $Artikelsortierung;
         if ($_SESSION['Usersortierung'] === SEARCH_SORT_STANDARD && $this->productFilter->getSort() > 0) {
             $Artikelsortierung = $this->productFilter->getSort();
         }
-        $sort->orderBy = 'tartikel.nSort, tartikel.cName';
+//        \Shop::dbg($Artikelsortierung, false, '$Artikelsortierung:');
+//        \Shop::dbg($this->productFilter->getSort(), false, '$this->productFilter->getSort():');
+//        \Shop::dbg($this->productFilter->getSorting(), false, '$this->productFilter->getSorting():');
+//        \Shop::dbg($this->productFilter->getSorting()->sortingOptions, true, 'sortingOptions:');
         switch ($Artikelsortierung) {
             case SEARCH_SORT_STANDARD:
                 $sort->orderBy = 'tartikel.nSort, tartikel.cName';
@@ -117,8 +122,10 @@ class ProductFilterSQL implements ProductFilterSQLInterface
                 break;
             default:
                 die('default sort!');
+                $sort->orderBy = 'tartikel.nSort, tartikel.cName';
                 break;
         }
+//        \Shop::dbg($sort, false, 'getOrder() returns:');
 
         return $sort;
     }

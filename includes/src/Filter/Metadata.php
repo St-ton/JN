@@ -334,40 +334,6 @@ class Metadata implements MetadataInterface
     /**
      * @inheritdoc
      */
-    public static function getSearchSpecialConfigMapping(array $config): array
-    {
-        $mapping = [];
-        foreach ($config as $key => $oSuchspecialEinstellung) {
-            switch ($key) {
-                case 'suchspecials_sortierung_bestseller':
-                    $mapping[SEARCHSPECIALS_BESTSELLER] = $oSuchspecialEinstellung;
-                    break;
-                case 'suchspecials_sortierung_sonderangebote':
-                    $mapping[SEARCHSPECIALS_SPECIALOFFERS] = $oSuchspecialEinstellung;
-                    break;
-                case 'suchspecials_sortierung_neuimsortiment':
-                    $mapping[SEARCHSPECIALS_NEWPRODUCTS] = $oSuchspecialEinstellung;
-                    break;
-                case 'suchspecials_sortierung_topangebote':
-                    $mapping[SEARCHSPECIALS_TOPOFFERS] = $oSuchspecialEinstellung;
-                    break;
-                case 'suchspecials_sortierung_inkuerzeverfuegbar':
-                    $mapping[SEARCHSPECIALS_UPCOMINGPRODUCTS] = $oSuchspecialEinstellung;
-                    break;
-                case 'suchspecials_sortierung_topbewertet':
-                    $mapping[SEARCHSPECIALS_TOPREVIEWS] = $oSuchspecialEinstellung;
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        return $mapping;
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function getNavigationInfo(\Kategorie $category = null, \KategorieListe $openCategories = null): MetadataInterface
     {
         if ($category !== null && $this->productFilter->hasCategory()) {

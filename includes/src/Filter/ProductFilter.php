@@ -1635,7 +1635,7 @@ class ProductFilter
         }
         // search special sorting
         if ($this->hasSearchSpecial()) {
-            $oSuchspecialEinstellung_arr = $this->metaData::getSearchSpecialConfigMapping($this->conf['suchspecials']);
+            $oSuchspecialEinstellung_arr = $this->getSearchSpecialConfigMapping();
             $idx    = $this->getSearchSpecial()->getValue();
             $ssConf = isset($oSuchspecialEinstellung_arr[$idx]) ?: null;
             if ($ssConf !== null && $ssConf !== -1 && count($oSuchspecialEinstellung_arr) > 0) {
@@ -1651,6 +1651,24 @@ class ProductFilter
         $this->sorting->setActiveSortingType($_SESSION['Usersortierung']);
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSearchSpecialConfigMapping(): array
+    {
+        $config  = $this->conf['suchspecials'];
+        $mapping = [
+            SEARCHSPECIALS_BESTSELLER       => $config['suchspecials_sortierung_bestseller'],
+            SEARCHSPECIALS_SPECIALOFFERS    => $config['suchspecials_sortierung_sonderangebote'],
+            SEARCHSPECIALS_NEWPRODUCTS      => $config['suchspecials_sortierung_neuimsortiment'],
+            SEARCHSPECIALS_TOPOFFERS        => $config['suchspecials_sortierung_topangebote'],
+            SEARCHSPECIALS_UPCOMINGPRODUCTS => $config['suchspecials_sortierung_inkuerzeverfuegbar'],
+            SEARCHSPECIALS_TOPREVIEWS       => $config['suchspecials_sortierung_topbewertet'],
+        ];
+
+        return $mapping;
     }
 
     /**

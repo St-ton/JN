@@ -37,7 +37,7 @@ class Info
     /**
      * @var array
      */
-    private static $mapping = [
+    public static $mapping = [
         'AktuelleSeite' => 'CurrentPage',
         'MaxSeiten'     => 'MaxPages',
         'minSeite'      => 'MinPage',

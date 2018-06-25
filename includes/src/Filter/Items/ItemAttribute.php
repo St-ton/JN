@@ -47,7 +47,7 @@ class ItemAttribute extends BaseAttribute
     /**
      * @var array
      */
-    private static $mapping = [
+    public static $mapping = [
         'kMerkmal'     => 'AttributeIDCompat',
         'kMerkmalWert' => 'ValueCompat',
         'cName'        => 'Name',

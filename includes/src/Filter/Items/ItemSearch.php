@@ -47,7 +47,7 @@ class ItemSearch extends AbstractFilter
     /**
      * @var array
      */
-    private static $mapping = [
+    public static $mapping = [
         'kSuchanfrage' => 'Value',
         'cSuche'       => 'Name',
         'Fehler'       => 'Error'

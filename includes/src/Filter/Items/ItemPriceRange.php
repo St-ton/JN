@@ -49,7 +49,7 @@ class ItemPriceRange extends AbstractFilter
     /**
      * @var array
      */
-    private static $mapping = [
+    public static $mapping = [
         'cName'          => 'Name',
         'nAnzahlArtikel' => 'Count',
         'cWert'          => 'Value',

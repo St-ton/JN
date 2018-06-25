@@ -43,7 +43,7 @@ class Pagination
     /**
      * @var array
      */
-    private static $mapping = [
+    public static $mapping = [
         'zurueck' => 'Prev',
         'vor'     => 'Next',
     ];
@@ -96,8 +96,9 @@ class Pagination
     }
 
     /**
+     * for shop4 compatibility only!
+     *
      * @return array
-     * for shop4 compatibility only
      */
     public function getItemsCompat(): array
     {

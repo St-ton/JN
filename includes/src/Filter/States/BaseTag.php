@@ -26,7 +26,7 @@ class BaseTag extends AbstractFilter
     /**
      * @var array
      */
-    private static $mapping = [
+    public static $mapping = [
         'kTag'  => 'ValueCompat',
         'cName' => 'Name'
     ];

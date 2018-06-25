@@ -37,7 +37,7 @@ class Item
     /**
      * @var array
      */
-    private static $mapping = [
+    public static $mapping = [
         'cURL'   => 'URL',
         'page'   => 'Page',
         'nSeite' => 'Page',

@@ -25,7 +25,7 @@ class ItemSearchSpecial extends AbstractFilter
     /**
      * @var array
      */
-    private static $mapping = [
+    public static $mapping = [
         'cName' => 'Name',
         'kKey'  => 'ValueCompat'
     ];

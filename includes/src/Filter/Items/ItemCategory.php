@@ -100,7 +100,7 @@ class ItemCategory extends BaseCategory
         );
         $options            = [];
         // Kategoriefilter anzeige
-        if ($categoryFilterType === 'HF' && (!$this->productFilter->hasCategory())) {
+        if ($categoryFilterType === 'HF' && !$this->productFilter->hasCategory()) {
             //@todo: $this instead of $naviFilter->KategorieFilter?
             $kKatFilter = $this->productFilter->hasCategoryFilter()
                 ? ''
@@ -111,13 +111,13 @@ class ItemCategory extends BaseCategory
                 ->setType('JOIN')
                 ->setTable('(
             SELECT tkategorieartikel.kArtikel, oberkategorie.kOberKategorie, oberkategorie.kKategorie
-            FROM tkategorieartikel
-            INNER JOIN tkategorie 
-                ON tkategorie.kKategorie = tkategorieartikel.kKategorie
-            INNER JOIN tkategorie oberkategorie 
-                ON tkategorie.lft BETWEEN oberkategorie.lft 
-                AND oberkategorie.rght
-            ) tkategorieartikelgesamt')
+                FROM tkategorieartikel
+                INNER JOIN tkategorie 
+                    ON tkategorie.kKategorie = tkategorieartikel.kKategorie
+                INNER JOIN tkategorie oberkategorie 
+                    ON tkategorie.lft BETWEEN oberkategorie.lft 
+                    AND oberkategorie.rght
+                ) tkategorieartikelgesamt')
                 ->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel ' . $kKatFilter)
                 ->setOrigin(__CLASS__));
             $state->addJoin((new FilterJoin())
@@ -146,8 +146,10 @@ class ItemCategory extends BaseCategory
         if (!\Shop::has('checkCategoryVisibility')) {
             \Shop::set(
                 'checkCategoryVisibility',
-                \Shop::Container()->getDB()->query('SELECT kKategorie FROM tkategoriesichtbarkeit',
-                    ReturnType::AFFECTED_ROWS) > 0
+                \Shop::Container()->getDB()->query(
+                    'SELECT kKategorie FROM tkategoriesichtbarkeit',
+                    ReturnType::AFFECTED_ROWS
+                ) > 0
             );
         }
         if (\Shop::get('checkCategoryVisibility')) {
@@ -160,7 +162,6 @@ class ItemCategory extends BaseCategory
 
             $state->addCondition('tkategoriesichtbarkeit.kKategorie IS NULL');
         }
-        // nicht Standardsprache? Dann hole Namen nicht aus tkategorie sondern aus tkategoriesprache
         $cSQLKategorieSprache        = new \stdClass();
         $cSQLKategorieSprache->cJOIN = '';
         $select                      = ['tkategorie.kKategorie', 'tkategorie.nSort'];
@@ -203,8 +204,7 @@ class ItemCategory extends BaseCategory
         $helper           = \KategorieHelper::getInstance($langID, $customerGroupID);
         foreach ($categories as $category) {
             $category->kKategorie = (int)$category->kKategorie;
-            // Anzeigen als Kategoriepfad
-            if ($categoryFilterType === 'KP') {
+            if ($categoryFilterType === 'KP') { // category path
                 $category->cName = $helper->getPath(new \Kategorie($category->kKategorie, $langID, $customerGroupID));
             }
             $options[] = (new FilterOption())
@@ -219,7 +219,6 @@ class ItemCategory extends BaseCategory
                 ->setCount((int)$category->nAnzahl)
                 ->setSort((int)$category->nSort);
         }
-        // neue Sortierung
         if ($categoryFilterType === 'KP') {
             usort($options, function ($a, $b) {
                 /** @var FilterOption $a */

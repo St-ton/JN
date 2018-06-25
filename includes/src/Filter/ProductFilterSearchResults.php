@@ -158,7 +158,7 @@ class ProductFilterSearchResults implements ProductFilterSearchResultsInterface
     /**
      * @var array
      */
-    private static $mapping = [
+    public static $mapping = [
         'Artikel'             => 'ProductsCompat',
         'GesamtanzahlArtikel' => 'ProductCount',
         'ArtikelBis'          => 'OffsetEnd',

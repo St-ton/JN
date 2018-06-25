@@ -25,7 +25,7 @@ class BaseSearchQuery extends AbstractFilter
     /**
      * @var array
      */
-    private static $mapping = [
+    public static $mapping = [
         'kSuchanfrage' => 'ID',
         'kSuchcache'   => 'SearchCacheID',
         'cSuche'       => 'Name',

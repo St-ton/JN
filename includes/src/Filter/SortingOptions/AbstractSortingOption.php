@@ -34,7 +34,7 @@ abstract class AbstractSortingOption extends FilterOption implements SortingOpti
     /**
      * @var array
      */
-    private static $mapping = [
+    public static $mapping = [
         'angezeigterName' => 'Name',
         'value'           => 'Value'
     ];

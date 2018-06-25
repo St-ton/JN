@@ -24,7 +24,7 @@ class ItemRating extends AbstractFilter
     /**
      * @var array
      */
-    private static $mapping = [
+    public static $mapping = [
         'nSterne' => 'Value'
     ];
 

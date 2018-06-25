@@ -80,7 +80,7 @@ class Metadata implements MetadataInterface
     /**
      * @var array
      */
-    private static $mapping = [
+    public static $mapping = [
         'cMetaTitle'       => 'MetaTitle',
         'cMetaDescription' => 'MetaDescription',
         'cMetaKeywords'    => 'MetaKeywords',

@@ -246,7 +246,7 @@ class ProductFilter
      * @todo: fix working with arrays
      * @see https://stackoverflow.com/questions/13421661/getting-indirect-modification-of-overloaded-property-has-no-effect-notice
      */
-    private static $mapping = [
+    public static $mapping = [
         'nAnzahlFilter'      => 'FilterCount',
         'nAnzahlProSeite'    => 'ProductLimit',
         'Kategorie'          => 'Category',

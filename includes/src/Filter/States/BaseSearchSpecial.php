@@ -22,7 +22,7 @@ class BaseSearchSpecial extends AbstractFilter
     /**
      * @var array
      */
-    private static $mapping = [
+    public static $mapping = [
         'kKey' => 'ValueCompat'
     ];
 
@@ -139,7 +139,9 @@ class BaseSearchSpecial extends AbstractFilter
                     ? (int)$age
                     : 30;
 
-                return "tartikel.cNeu = 'Y' AND DATE_SUB(now(),INTERVAL $alter_tage DAY) < tartikel.dErstellt AND tartikel.cNeu = 'Y'";
+                return "tartikel.cNeu = 'Y' 
+                    AND DATE_SUB(now(), INTERVAL $alter_tage DAY) < tartikel.dErstellt 
+                    AND tartikel.cNeu = 'Y'";
 
             case SEARCHSPECIALS_TOPOFFERS:
                 return "tartikel.cTopArtikel = 'Y'";

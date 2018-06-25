@@ -15,14 +15,13 @@ $Einstellungen      = Shopsetting::getInstance()->getAll();
 $bestsellers        = [];
 $suchanfrage        = '';
 $doSearch           = true;
-$AktuelleKategorie  = new stdClass();
-$expandedCategories = new stdClass();
+$AktuelleKategorie  = new Kategorie();
+$expandedCategories = new KategorieListe();
 $hasError           = false;
 $cParameter_arr     = Shop::getParameters();
 if ($NaviFilter->hasCategory()) {
     $AktuelleSeite               = 'PRODUKTE';
     $kKategorie                  = $NaviFilter->getCategory()->getValue();
-    $AktuelleKategorie           = new Kategorie($kKategorie);
     $_SESSION['LetzteKategorie'] = $kKategorie;
     if ($AktuelleKategorie->kKategorie === null) {
         //temp. workaround: do not return 404 when non-localized existing category is loaded
@@ -35,10 +34,8 @@ if ($NaviFilter->hasCategory()) {
             return;
         }
     }
-    $expandedCategories = new KategorieListe();
     $expandedCategories->getOpenCategories($AktuelleKategorie);
 }
-
 // Usersortierung
 $NaviFilter->setUserSort($AktuelleKategorie);
 // Erweiterte Darstellung Artikelübersicht

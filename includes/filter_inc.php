@@ -598,7 +598,7 @@ function setzeUsersortierung($NaviFilter)
 {
     trigger_error('filter_inc.php: calling setzeUsersortierung() is deprecated.', E_USER_DEPRECATED);
     global $AktuelleKategorie;
-    updateNaviFilter($NaviFilter)->getMetaData()->setUserSort($AktuelleKategorie);
+    updateNaviFilter($NaviFilter)->setUserSort($AktuelleKategorie);
 }
 
 /**

@@ -240,8 +240,6 @@ $smarty->assign('showMatrix', $AktuellerArtikel->showMatrix())
        ->assign('verfuegbarkeitsBenachrichtigung', ArtikelHelper::showAvailabilityForm(
            $AktuellerArtikel,
            $Einstellungen['artikeldetails']['benachrichtigung_nutzen']))
-       ->assign('code_fragezumprodukt', false)
-       ->assign('code_benachrichtigung_verfuegbarkeit', false)
        ->assign('ProdukttagHinweis', ArtikelHelper::editProductTags($AktuellerArtikel))
        ->assign('ProduktTagging', $AktuellerArtikel->tags)
        ->assign('BlaetterNavi', $oBlaetterNavi)

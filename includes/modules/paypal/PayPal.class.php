@@ -3,16 +3,16 @@
 include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 
 // Debug
-define('PP_D_MODE', 0); // 1 = An / 0 = Aus
-define('PP_D_PFAD', PFAD_LOGFILES . 'paypal.log');
+ifndef('PP_D_MODE', 0); // 1 = An / 0 = Aus
+ifndef('PP_D_PFAD', PFAD_LOGFILES . 'paypal.log');
 // Sandbox
-define('URL_TEST', 'https://www.sandbox.paypal.com/cgi-bin/webscr');
-define('URLVALID_TEST', 'tls://www.sandbox.paypal.com');
-define('URLHOST_TEST', 'www.sandbox.paypal.com');
+ifndef('URL_TEST', 'https://www.sandbox.paypal.com/cgi-bin/webscr');
+ifndef('URLVALID_TEST', 'ssl://www.sandbox.paypal.com');
+ifndef('URLHOST_TEST', 'www.sandbox.paypal.com');
 // Live
-define('URL_LIVE', 'https://www.paypal.com/cgi-bin/webscr');
-define('URLVALID_LIVE', 'tls://www.paypal.com');
-define('URLHOST_LIVE', 'www.paypal.com');
+ifndef('URL_LIVE', 'https://www.paypal.com/cgi-bin/webscr');
+ifndef('URLVALID_LIVE', 'ssl://www.paypal.com');
+ifndef('URLHOST_LIVE', 'www.paypal.com');
 
 /**
  * Class PayPal

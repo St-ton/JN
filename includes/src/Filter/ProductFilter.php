@@ -18,6 +18,7 @@ use Filter\Items\ItemRating;
 use Filter\Items\ItemSearchSpecial;
 use Filter\Items\ItemSort;
 use Filter\Items\ItemTag;
+use Filter\Pagination\Info;
 use Filter\SortingOptions\Factory;
 use Filter\States\DummyState;
 use Filter\States\BaseAttribute;
@@ -1777,14 +1778,21 @@ class ProductFilter
             $this->searchResults->setOffsetStart($nLimitN + 1)
                                 ->setOffsetEnd($end > 0 ? $end : $productCount);
 
-            $pages                = new \stdClass();
-            $pages->AktuelleSeite = $this->nSeite;
-            $pages->MaxSeiten     = $limitPerPage > 0 ? ceil($productCount / $limitPerPage) : 1;
-            $pages->minSeite      = min($pages->AktuelleSeite - $max / 2, 0);
-            $pages->maxSeite      = max($pages->MaxSeiten, $pages->minSeite + $max - 1);
-            if ($pages->maxSeite > $pages->MaxSeiten) {
-                $pages->maxSeite = $pages->MaxSeiten;
+            $total   = $limitPerPage > 0 ? ceil($productCount / $limitPerPage) : 1;
+            $minPage = max($this->nSeite - floor($max / 2), 1);
+            $maxPage = $minPage + $max - 1;
+            if ($maxPage > $total) {
+                $diff    = $total - $maxPage;
+                $maxPage = $total;
+                $minPage += $diff;
+                $minPage = max($minPage, 1);
             }
+            $pages = new Info();
+            $pages->setMinPage($minPage);
+            $pages->setMaxPage($maxPage);
+            $pages->setTotalPages($total);
+            $pages->setCurrentPage($this->nSeite);
+
             $this->searchResults->setPages($pages)
                                 ->setFilterOptions($this, $category)
                                 ->setSearchTermWrite($this->metaData->getHeader());

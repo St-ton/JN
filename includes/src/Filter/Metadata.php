@@ -7,6 +7,7 @@
 namespace Filter;
 
 use DB\ReturnType;
+use Filter\Pagination\Info;
 use function Functional\group;
 use function Functional\map;
 use function Functional\reduce_left;
@@ -460,9 +461,9 @@ class Metadata implements MetadataInterface
                     )
                     : trim($cKatDescription);
                 // Seitenzahl anhaengen ab Seite 2 (Doppelte Meta-Descriptions vermeiden, #5992)
-                if ($searchResults->getPages()->AktuelleSeite > 1
-                    && $searchResults->getOffsetStart() > 0
+                if ($searchResults->getOffsetStart() > 0
                     && $searchResults->getOffsetEnd() > 0
+                    && $searchResults->getPages()->getCurrentPage() > 1
                 ) {
                     $cMetaDescription .= ', ' . \Shop::Lang()->get('products') .
                         " {$searchResults->getOffsetStart()} - {$searchResults->getOffsetEnd()}";
@@ -492,9 +493,9 @@ class Metadata implements MetadataInterface
                 ' ' . $cArtikelName
                 : $this->getMetaStart($searchResults) . ': ' . $cArtikelName;
             // Seitenzahl anhaengen ab Seite 2 (Doppelte Meta-Descriptions vermeiden, #5992)
-            if ($searchResults->getPages()->AktuelleSeite > 1
-                && $searchResults->getOffsetStart() > 0
+            if ($searchResults->getOffsetStart() > 0
                 && $searchResults->getOffsetEnd() > 0
+                && $searchResults->getPages()->getCurrentPage() > 1
             ) {
                 $cMetaDescription .= ', ' . \Shop::Lang()->get('products') . ' ' .
                     $searchResults->getOffsetStart() . ' - ' . $searchResults->getOffsetEnd();
@@ -650,9 +651,9 @@ class Metadata implements MetadataInterface
             }
         }
         // Seitenzahl anhaengen ab Seite 2 (Doppelte Titles vermeiden, #5992)
-        if ($searchResults->getPages()->AktuelleSeite > 1) {
+        if ($searchResults->getPages()->getCurrentPage() > 1) {
             $cMetaTitle .= ', ' . \Shop::Lang()->get('page') . ' ' .
-                $searchResults->getPages()->AktuelleSeite;
+                $searchResults->getPages()->getCurrentPage();
         }
         // Globalen Meta Title ueberall anhaengen
         if ($append === true && !empty($globalMeta[$languageID]->Title)) {
@@ -821,7 +822,7 @@ class Metadata implements MetadataInterface
     /**
      * @inheritdoc
      */
-    public function buildPageNavigation(bool $seo, $pages, int $maxPages = 7, string $filterURL = ''): array
+    public function buildPageNavigation(bool $seo, Info $pages, int $maxPages = 7, string $filterURL = ''): array
     {
         if (strlen($filterURL) > 0) {
             $seo = false;
@@ -829,36 +830,32 @@ class Metadata implements MetadataInterface
         $oSeite_arr = [];
         $naviURL    = $this->productFilter->getFilterURL()->getURL();
         $seo        = $seo && strpos($naviURL, '?') === false;
-        if (isset($pages->MaxSeiten, $pages->AktuelleSeite)
-            && $pages->MaxSeiten > 0
-            && $pages->AktuelleSeite > 0
-        ) {
-            $pages->AktuelleSeite = (int)$pages->AktuelleSeite;
-            $nMax                 = (int)floor($maxPages / 2);
-            if ($pages->MaxSeiten > $maxPages) {
-                if ($pages->AktuelleSeite - $nMax >= 1) {
+        if ($pages->getTotalPages() > 0 && $pages->getCurrentPage()> 0) {
+            $nMax = (int)floor($maxPages / 2);
+            if ($pages->getTotalPages() > $maxPages) {
+                if ($pages->getCurrentPage() - $nMax >= 1) {
                     $nDiff = 0;
-                    $nVon  = $pages->AktuelleSeite - $nMax;
+                    $nVon  = $pages->getCurrentPage() - $nMax;
                 } else {
                     $nVon  = 1;
-                    $nDiff = $nMax - $pages->AktuelleSeite + 1;
+                    $nDiff = $nMax - $pages->getCurrentPage() + 1;
                 }
-                if ($pages->AktuelleSeite + $nMax + $nDiff <= $pages->MaxSeiten) {
-                    $nBis = $pages->AktuelleSeite + $nMax + $nDiff;
+                if ($pages->getCurrentPage() + $nMax + $nDiff <= $pages->getTotalPages()) {
+                    $nBis = $pages->getCurrentPage() + $nMax + $nDiff;
                 } else {
-                    $nDiff = $pages->AktuelleSeite + $nMax - $pages->MaxSeiten;
+                    $nDiff = $pages->getCurrentPage() + $nMax - $pages->getTotalPages();
                     if ($nDiff === 0) {
                         $nVon -= ($maxPages - ($nMax + 1));
                     } elseif ($nDiff > 0) {
-                        $nVon = $pages->AktuelleSeite - $nMax - $nDiff;
+                        $nVon = $pages->getCurrentPage() - $nMax - $nDiff;
                     }
-                    $nBis = (int)$pages->MaxSeiten;
+                    $nBis = $pages->getTotalPages();
                 }
                 // Laufe alle Seiten durch und baue URLs + Seitenzahl
                 for ($i = $nVon; $i <= $nBis; ++$i) {
                     $oSeite         = new \stdClass();
                     $oSeite->nSeite = $i;
-                    if ($i === $pages->AktuelleSeite) {
+                    if ($i === $pages->getCurrentPage()) {
                         $oSeite->cURL = '';
                     } elseif ($oSeite->nSeite === 1) {
                         $oSeite->cURL = $naviURL . $filterURL;
@@ -874,11 +871,11 @@ class Metadata implements MetadataInterface
                 }
             } else {
                 // Laufe alle Seiten durch und baue URLs + Seitenzahl
-                for ($i = 0; $i < $pages->MaxSeiten; ++$i) {
+                for ($i = 0; $i < $pages->getTotalPages(); ++$i) {
                     $oSeite         = new \stdClass();
                     $oSeite->nSeite = $i + 1;
 
-                    if ($i + 1 === $pages->AktuelleSeite) {
+                    if ($i + 1 === $pages->getCurrentPage()) {
                         $oSeite->cURL = '';
                     } elseif ($oSeite->nSeite === 1) {
                         $oSeite->cURL = $naviURL . $filterURL;
@@ -896,8 +893,8 @@ class Metadata implements MetadataInterface
             // Baue Zurück-URL
             $oSeite_arr['zurueck']       = new \stdClass();
             $oSeite_arr['zurueck']->nBTN = 1;
-            if ($pages->AktuelleSeite > 1) {
-                $oSeite_arr['zurueck']->nSeite = (int)$pages->AktuelleSeite - 1;
+            if ($pages->getCurrentPage() > 1) {
+                $oSeite_arr['zurueck']->nSeite = $pages->getCurrentPage() - 1;
                 if ($oSeite_arr['zurueck']->nSeite === 1) {
                     $oSeite_arr['zurueck']->cURL = $naviURL . $filterURL;
                 } elseif ($seo) {
@@ -917,8 +914,8 @@ class Metadata implements MetadataInterface
             // Baue Vor-URL
             $oSeite_arr['vor']       = new \stdClass();
             $oSeite_arr['vor']->nBTN = 1;
-            if ($pages->AktuelleSeite < $pages->maxSeite) {
-                $oSeite_arr['vor']->nSeite = $pages->AktuelleSeite + 1;
+            if ($pages->getCurrentPage() < $pages->getMaxPage()) {
+                $oSeite_arr['vor']->nSeite = $pages->getCurrentPage() + 1;
                 if ($seo) {
                     $cURL = $naviURL;
                     if (strpos(basename($cURL), 'index.php') !== false) {

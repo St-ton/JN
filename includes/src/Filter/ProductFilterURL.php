@@ -389,8 +389,8 @@ class ProductFilterURL
         }
         // Filter reset
         $pages  = $searchResults->getPages();
-        $cSeite = $pages->AktuelleSeite > 1
-            ? SEP_SEITE . $pages->AktuelleSeite
+        $cSeite = $pages->getCurrentPage() > 1
+            ? SEP_SEITE . $pages->getCurrentPage()
             : '';
 
         $url->setUnsetAll($this->getURL(null, true) . $cSeite);

@@ -7,6 +7,7 @@
 namespace Filter;
 
 use Boxes\AbstractBox;
+use Filter\Pagination\Info;
 use function Functional\every;
 use Tightenco\Collect\Support\Collection;
 
@@ -187,11 +188,7 @@ class ProductFilterSearchResults implements ProductFilterSearchResultsInterface
     {
         $this->products             = new Collection();
         $this->productKeys          = new Collection();
-        $this->pages                = new \stdClass();
-        $this->pages->AktuelleSeite = 0;
-        $this->pages->MaxSeiten     = 0;
-        $this->pages->minSeite      = 0;
-        $this->pages->maxSeite      = 0;
+        $this->pages                = new Info();
         if ($legacy !== null) {
             $this->convert($legacy);
         }
@@ -344,7 +341,7 @@ class ProductFilterSearchResults implements ProductFilterSearchResultsInterface
     /**
      * @inheritdoc
      */
-    public function getPages(): \stdClass
+    public function getPages(): Info
     {
         return $this->pages;
     }
@@ -352,7 +349,7 @@ class ProductFilterSearchResults implements ProductFilterSearchResultsInterface
     /**
      * @inheritdoc
      */
-    public function setPages($pages): ProductFilterSearchResultsInterface
+    public function setPages(Info $pages): ProductFilterSearchResultsInterface
     {
         $this->pages = $pages;
 

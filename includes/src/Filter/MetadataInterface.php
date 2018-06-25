@@ -7,6 +7,8 @@
 namespace Filter;
 
 
+use Filter\Pagination\Info;
+
 /**
  * Class Metadata
  */
@@ -177,14 +179,14 @@ interface MetadataInterface
     public function getBreadCrumbName();
 
     /**
-     * @param bool      $seo
-     * @param \stdClass $pages
-     * @param int       $maxPages
-     * @param string    $filterURL
+     * @param bool   $seo
+     * @param Info   $pages
+     * @param int    $maxPages
+     * @param string $filterURL
      * @return array
      * @former baueSeitenNaviURL
      */
-    public function buildPageNavigation(bool $seo, $pages, int $maxPages = 7, string $filterURL = ''): array;
+    public function buildPageNavigation(bool $seo, Info $pages, int $maxPages = 7, string $filterURL = ''): array;
 
     /**
      * @param int $viewType

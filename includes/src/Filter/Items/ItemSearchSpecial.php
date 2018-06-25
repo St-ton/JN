@@ -41,8 +41,8 @@ class ItemSearchSpecial extends AbstractFilter
         $this->setIsCustom(false)
              ->setUrlParam('qf')
              ->setFrontendName(\Shop::Lang()->get('specificProducts'))
-             ->setVisibility($this->getConfig()['navigationsfilter']['allgemein_suchspecialfilter_benutzen'])
-             ->setType($this->getConfig()['navigationsfilter']['search_special_filter_type'] === 'O'
+             ->setVisibility($this->getConfig('navigationsfilter')['allgemein_suchspecialfilter_benutzen'])
+             ->setType($this->getConfig('navigationsfilter')['search_special_filter_type'] === 'O'
                  ? Type::OR()
                  : Type::AND());
     }
@@ -278,7 +278,7 @@ class ItemSearchSpecial extends AbstractFilter
      */
     public function getOptions($data = null): array
     {
-        if ($this->getConfig()['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] === 'N') {
+        if ($this->getConfig('navigationsfilter')['allgemein_suchspecialfilter_benutzen'] === 'N') {
             $this->options = [];
         }
         if ($this->options !== null) {
@@ -295,7 +295,7 @@ class ItemSearchSpecial extends AbstractFilter
             switch ($i) {
                 case SEARCHSPECIALS_BESTSELLER:
                     $name    = \Shop::Lang()->get('bestsellers');
-                    $nAnzahl = (($min = $this->getConfig()['global']['global_bestseller_minanzahl']) > 0)
+                    $nAnzahl = (($min = $this->getConfig('global')['global_bestseller_minanzahl']) > 0)
                         ? (int)$min
                         : 100;
 
@@ -334,7 +334,7 @@ class ItemSearchSpecial extends AbstractFilter
                     break;
                 case SEARCHSPECIALS_NEWPRODUCTS:
                     $name                = \Shop::Lang()->get('newProducts');
-                    $alter_tage          = (($age = $this->getConfig()['boxen']['box_neuimsortiment_alter_tage']) > 0)
+                    $alter_tage          = (($age = $this->getConfig('boxen')['box_neuimsortiment_alter_tage']) > 0)
                         ? (int)$age
                         : 30;
                     $state->addCondition("tartikel.cNeu = 'Y' 
@@ -359,7 +359,7 @@ class ItemSearchSpecial extends AbstractFilter
                             ->setOrigin(__CLASS__));
                     }
                     $state->addCondition('ROUND(tartikelext.fDurchschnittsBewertung) >= ' .
-                        (int)$this->getConfig()['boxen']['boxen_topbewertet_minsterne']);
+                        (int)$this->getConfig('boxen')['boxen_topbewertet_minsterne']);
                     break;
                 default:
                     break;

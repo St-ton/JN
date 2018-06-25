@@ -24,7 +24,7 @@ class DateCreated extends AbstractSortingOption
         parent::__construct($productFilter);
         $this->orderBy = 'tartikel.dErstellt DESC, tartikel.cName';
         $this->setName(\Shop::Lang()->get('sortNewestFirst'));
-        $this->setPriority($this->getConfig()['artikeluebersicht']['suche_sortierprio_erstelldatum']);
+        $this->setPriority($this->getConfig('artikeluebersicht')['suche_sortierprio_erstelldatum']);
         $this->setValue(SEARCH_SORT_NEWEST_FIRST);
     }
 }

@@ -30,7 +30,7 @@ class ItemCategory extends BaseCategory
         $this->setIsCustom(false)
              ->setUrlParam('kf')
              ->setUrlParamSEO(SEP_KAT)
-             ->setVisibility($this->getConfig()['navigationsfilter']['allgemein_kategoriefilter_benutzen'])
+             ->setVisibility($this->getConfig('navigationsfilter')['allgemein_kategoriefilter_benutzen'])
              ->setFrontendName(\Shop::Lang()->get('allCategories'));
     }
 
@@ -47,7 +47,7 @@ class ItemCategory extends BaseCategory
                                 WHERE tparent.kKategorie = ' . $this->getValue() . ')';
         }
 
-        return $this->getConfig()['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF'
+        return $this->getConfig('navigationsfilter')['kategoriefilter_anzeigen_als'] === 'HF'
             ? '(tkategorieartikelgesamt.kOberKategorie = ' . $this->getValue() .
             ' OR tkategorieartikelgesamt.kKategorie = ' . $this->getValue() . ') '
             : ' tkategorieartikel.kKategorie = ' . $this->getValue();
@@ -62,7 +62,7 @@ class ItemCategory extends BaseCategory
             ->setOrigin(__CLASS__)
             ->setComment('join from ' . __METHOD__)
             ->setType('JOIN');
-        if ($this->getConfig()['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF') {
+        if ($this->getConfig('navigationsfilter')['kategoriefilter_anzeigen_als'] === 'HF') {
             $join->setTable('(
                 SELECT tkategorieartikel.kArtikel, oberkategorie.kOberKategorie, oberkategorie.kKategorie
                     FROM tkategorieartikel
@@ -87,12 +87,12 @@ class ItemCategory extends BaseCategory
         if ($this->options !== null) {
             return $this->options;
         }
-        if ($this->getConfig()['navigationsfilter']['allgemein_kategoriefilter_benutzen'] === 'N') {
+        if ($this->getConfig('navigationsfilter')['allgemein_kategoriefilter_benutzen'] === 'N') {
             $this->options = [];
 
             return $this->options;
         }
-        $categoryFilterType = $this->getConfig()['navigationsfilter']['kategoriefilter_anzeigen_als'];
+        $categoryFilterType = $this->getConfig('navigationsfilter')['kategoriefilter_anzeigen_als'];
         $state              = $this->productFilter->getCurrentStateData(
             $this->getType()->equals(Type::OR())
                 ? $this->getClassName()

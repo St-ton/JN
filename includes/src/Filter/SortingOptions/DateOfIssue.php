@@ -24,7 +24,7 @@ class DateOfIssue extends AbstractSortingOption
         parent::__construct($productFilter);
         $this->orderBy = 'tartikel.dErscheinungsdatum DESC, tartikel.cName';
         $this->setName(\Shop::Lang()->get('sortDateofissue'));
-        $this->setPriority($this->getConfig()['artikeluebersicht']['suche_sortierprio_erscheinungsdatum']);
+        $this->setPriority($this->getConfig('artikeluebersicht')['suche_sortierprio_erscheinungsdatum']);
         $this->setValue(SEARCH_SORT_DATEOFISSUE);
     }
 }

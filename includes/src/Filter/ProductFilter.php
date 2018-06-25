@@ -500,11 +500,12 @@ class ProductFilter
     }
 
     /**
-     * @return array
+     * @param string|null $section
+     * @return array|string|int
      */
-    public function getConfig(): array
+    public function getConfig($section = null)
     {
-        return $this->conf;
+        return $section === null ? $this->conf : $this->conf[$section];
     }
 
     /**
@@ -824,7 +825,7 @@ class ProductFilter
             if (!$this->baseState->isInitialized()) {
                 $this->baseState = $this->searchQuery;
             }
-            $limit                      = $this->metaData->getProductsPerPageLimit();
+            $limit                      = $this->limits->getProductsPerPageLimit();
             $oExtendedJTLSearchResponse = null;
             $this->bExtendedJTLSearch   = false;
 
@@ -844,7 +845,7 @@ class ProductFilter
                 'nArtikelProSeite'           => &$limit,
                 'nSeite'                     => &$this->nSeite,
                 'nSortierung'                => $_SESSION['Usersortierung'] ?? null,
-                'bLagerbeachten'             => (int)$this->getConfig()['global']['artikel_artikelanzeigefilter'] ===
+                'bLagerbeachten'             => (int)$this->getConfig('global')['artikel_artikelanzeigefilter'] ===
                     EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
             ]);
         }
@@ -1753,7 +1754,7 @@ class ProductFilter
      */
     public function getProducts(bool $listing = true, \Kategorie $category = null, bool $fill = true, int $limit = null)
     {
-        $limitPerPage = $limit ?? $this->metaData->getProductsPerPageLimit();
+        $limitPerPage = $limit ?? $this->limits->getProductsPerPageLimit();
         $nLimitN      = $limitPerPage * ($this->nSeite - 1);
         $max          = (int)$this->conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'];
         $error        = false;
@@ -1842,7 +1843,7 @@ class ProductFilter
                     ->existierenUnterkategorien()
                 : false;
             if ($productList->count() === 1
-                && $this->getConfig()['navigationsfilter']['allgemein_weiterleitung'] === 'Y'
+                && $this->getConfig('navigationsfilter')['allgemein_weiterleitung'] === 'Y'
                 && ($this->getFilterCount() > 0
                     || ($this->getCategory()->getValue() > 0 && !$hasSubCategories)
                     || !empty($this->EchteSuche->cSuche))

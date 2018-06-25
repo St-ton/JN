@@ -99,8 +99,8 @@ class BaseSearchQuery extends AbstractFilter
     public function setName($name): FilterInterface
     {
         $this->error = null;
-        $minChars    = ((int)$this->getConfig()['artikeluebersicht']['suche_min_zeichen'] > 0)
-            ? (int)$this->getConfig()['artikeluebersicht']['suche_min_zeichen']
+        $minChars    = ($min = (int)$this->getConfig('artikeluebersicht')['suche_min_zeichen']) > 0
+            ? $min
             : 3;
         if (strlen($name) > 0 || (isset($_GET['qs']) && $_GET['qs'] === '')) {
             preg_match("/[\w" . utf8_decode('äÄüÜöÖß') . "\.\-]{" . $minChars . ",}/",
@@ -271,7 +271,7 @@ class BaseSearchQuery extends AbstractFilter
             return $this->options;
         }
         $options  = [];
-        $naviConf = $this->getConfig()['navigationsfilter'];
+        $naviConf = $this->getConfig('navigationsfilter');
         if ($naviConf['suchtrefferfilter_nutzen'] === 'N') {
             return $options;
         }
@@ -458,8 +458,8 @@ class BaseSearchQuery extends AbstractFilter
             return (int)$oSuchCache->kSuchCache; // Gib gültigen Suchcache zurück
         }
         // wenn kein Suchcache vorhanden
-        $nMindestzeichen = ((int)$this->getConfig()['artikeluebersicht']['suche_min_zeichen'] > 0)
-            ? (int)$this->getConfig()['artikeluebersicht']['suche_min_zeichen']
+        $nMindestzeichen = ($min = (int)$this->getConfig('artikeluebersicht')['suche_min_zeichen']) > 0
+            ? $min
             : 3;
         if (strlen($cSuche) < $nMindestzeichen) {
             require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
@@ -483,17 +483,15 @@ class BaseSearchQuery extends AbstractFilter
         $oSuchCache->dErstellt = 'now()';
         $kSuchCache            = \Shop::Container()->getDB()->insert('tsuchcache', $oSuchCache);
 
-        if ($this->getConfig()['artikeluebersicht']['suche_fulltext'] !== 'N'
-            && $this->isFulltextIndexActive()
-        ) {
+        if ($this->getConfig('artikeluebersicht')['suche_fulltext'] !== 'N' && $this->isFulltextIndexActive()) {
             $oSuchCache->kSuchCache = $kSuchCache;
 
             return $this->editFullTextSearchCache(
                 $oSuchCache,
                 $searchColumnn_arr,
                 $cSuch_arr,
-                $this->getConfig()['artikeluebersicht']['suche_max_treffer'],
-                $this->getConfig()['artikeluebersicht']['suche_fulltext']
+                $this->getConfig('artikeluebersicht')['suche_max_treffer'],
+                $this->getConfig('artikeluebersicht')['suche_fulltext']
             );
         }
 
@@ -828,7 +826,7 @@ class BaseSearchQuery extends AbstractFilter
             'INSERT INTO tsuchcachetreffer ' .
             $cSQL .
             ' GROUP BY kArtikelTMP
-                LIMIT ' . (int)$this->getConfig()['artikeluebersicht']['suche_max_treffer'],
+                LIMIT ' . (int)$this->getConfig('artikeluebersicht')['suche_max_treffer'],
             ReturnType::AFFECTED_ROWS
         );
 

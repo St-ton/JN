@@ -143,7 +143,7 @@ class BaseManufacturer extends AbstractFilter
             return $this->options;
         }
         $options = [];
-        if ($this->getConfig()['navigationsfilter']['allgemein_herstellerfilter_benutzen'] === 'N') {
+        if ($this->getConfig('navigationsfilter')['allgemein_herstellerfilter_benutzen'] === 'N') {
             return $options;
         }
         $state = $this->productFilter->getCurrentStateData($this->getType()->equals(Type::OR())

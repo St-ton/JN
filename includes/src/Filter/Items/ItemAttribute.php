@@ -65,7 +65,7 @@ class ItemAttribute extends BaseAttribute
         $this->setIsCustom(false)
              ->setUrlParam('mf')
              ->setUrlParamSEO(SEP_MERKMAL)
-             ->setVisibility($this->getConfig()['navigationsfilter']['merkmalfilter_verwenden']);
+             ->setVisibility($this->getConfig('navigationsfilter')['merkmalfilter_verwenden']);
     }
 
     /**
@@ -377,17 +377,18 @@ class ItemAttribute extends BaseAttribute
         if ($this->options !== null) {
             return $this->options;
         }
+        $conf = $this->getConfig('navigationsfilter');
         $currentCategory     = $data['oAktuelleKategorie'] ?? null;
         $force               = $data['bForce'] ?? false;
         $catAttributeFilters = [];
         $attributeFilters    = [];
-        $useAttributeFilter  = $this->getConfig()['navigationsfilter']['merkmalfilter_verwenden'] !== 'N';
+        $useAttributeFilter  = $conf['merkmalfilter_verwenden'] !== 'N';
         $attributeLimit      = $force === true
             ? 0
-            : (int)$this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmale'];
+            : (int)$conf['merkmalfilter_maxmerkmale'];
         $attributeValueLimit = $force === true
             ? 0
-            : (int)$this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmalwerte'];
+            : (int)$conf['merkmalfilter_maxmerkmalwerte'];
 
         if (!$force && !$useAttributeFilter) {
             return $attributeFilters;

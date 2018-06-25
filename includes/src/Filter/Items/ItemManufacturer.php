@@ -28,9 +28,9 @@ class ItemManufacturer extends BaseManufacturer
         $this->setIsCustom(false)
              ->setUrlParam('hf')
              ->setUrlParamSEO(SEP_HST)
-             ->setVisibility($this->getConfig()['navigationsfilter']['allgemein_herstellerfilter_benutzen'])
+             ->setVisibility($this->getConfig('navigationsfilter')['allgemein_herstellerfilter_benutzen'])
              ->setFrontendName(\Shop::Lang()->get('allManufacturers'))
-             ->setType($this->getConfig()['navigationsfilter']['manufacturer_filter_type'] === 'O'
+             ->setType($this->getConfig('navigationsfilter')['manufacturer_filter_type'] === 'O'
                  ? Type::OR()
                  : Type::AND());
     }

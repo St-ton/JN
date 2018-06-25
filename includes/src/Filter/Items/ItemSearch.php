@@ -223,7 +223,7 @@ class ItemSearch extends AbstractFilter
             return false;
         }
         // Ist MD5(IP) bereits X mal im Cache
-        $max_ip_count = (int)$this->getConfig()['artikeluebersicht']['livesuche_max_ip_count'] * 100;
+        $max_ip_count = (int)$this->getConfig('artikeluebersicht')['livesuche_max_ip_count'] * 100;
         $ip_cache_erg = \Shop::Container()->getDB()->executeQueryPrepared(
             'SELECT count(*) AS anzahl
                 FROM tsuchanfragencache
@@ -411,12 +411,11 @@ class ItemSearch extends AbstractFilter
             return $this->options;
         }
         $options = [];
-        if ($this->getConfig()['navigationsfilter']['suchtrefferfilter_nutzen'] === 'N') {
+        if ($this->getConfig('navigationsfilter')['suchtrefferfilter_nutzen'] === 'N') {
             return $options;
         }
         $this->generateSearchCaches();
-        $nLimit = (isset($this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl'])
-            && ($limit = (int)$this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl']) > 0)
+        $nLimit = ($limit = (int)$this->getConfig('navigationsfilter')['suchtrefferfilter_anzahl']) > 0
             ? ' LIMIT ' . $limit
             : '';
         $state  = $this->productFilter->getCurrentStateData();

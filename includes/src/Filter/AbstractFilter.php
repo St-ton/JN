@@ -536,9 +536,9 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function getConfig(): array
+    public function getConfig($idx = null)
     {
-        return $this->productFilter->getConfig();
+        return $this->productFilter->getConfig($idx);
     }
 
     /**

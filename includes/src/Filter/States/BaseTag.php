@@ -136,7 +136,7 @@ class BaseTag extends AbstractFilter
             return $this->options;
         }
         $options = [];
-        if ($this->getConfig()['navigationsfilter']['allgemein_tagfilter_benutzen'] === 'N') {
+        if ($this->getConfig('navigationsfilter')['allgemein_tagfilter_benutzen'] === 'N') {
             return $options;
         }
         $state = $this->productFilter->getCurrentStateData($this->getType()->equals(Type::OR())
@@ -180,7 +180,7 @@ class BaseTag extends AbstractFilter
                     AND tseo.kSprache = " . $this->getLanguageID() . "
                 GROUP BY ssMerkmal.kTag
                 ORDER BY nAnzahl DESC LIMIT 0, " .
-            (int)$this->getConfig()['navigationsfilter']['tagfilter_max_anzeige'],
+            (int)$this->getConfig('navigationsfilter')['tagfilter_max_anzeige'],
             ReturnType::ARRAY_OF_OBJECTS
         );
         $additionalFilter    = new ItemTag($this->productFilter);

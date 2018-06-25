@@ -69,7 +69,7 @@ class ItemPriceRange extends AbstractFilter
         parent::__construct($productFilter);
         $this->setIsCustom(false)
              ->setUrlParam('pf')
-             ->setVisibility($this->getConfig()['navigationsfilter']['preisspannenfilter_benutzen'])
+             ->setVisibility($this->getConfig('navigationsfilter')['preisspannenfilter_benutzen'])
              ->setFrontendName(\Shop::Lang()->get('rangeOfPrices'));
     }
 
@@ -312,7 +312,7 @@ class ItemPriceRange extends AbstractFilter
             ? $_SESSION['Kunde']->fRabatt
             : 0.0;
         // Wenn Option vorhanden, dann nur Spannen anzeigen, in denen Artikel vorhanden sind
-        if ($this->getConfig()['navigationsfilter']['preisspannenfilter_anzeige_berechnung'] === 'A') {
+        if ($this->getConfig('navigationsfilter')['preisspannenfilter_anzeige_berechnung'] === 'A') {
             $nPreisMin = $oPreis->fMinPreis;
             $nStep     = $oPreis->fStep;
             $ranges    = [];
@@ -374,7 +374,7 @@ class ItemPriceRange extends AbstractFilter
         // Prüfe, ob es nur einen Artikel in der Artikelübersicht gibt
         // falls ja und es ist noch kein Preisspannenfilter gesetzt, dürfen keine Preisspannenfilter angezeigt werden
         if (($productCount === 1 && !$this->isInitialized())
-            || $this->getConfig()['navigationsfilter']['preisspannenfilter_benutzen'] === 'N'
+            || $this->getConfig('navigationsfilter')['preisspannenfilter_benutzen'] === 'N'
         ) {
             return $options;
         }
@@ -417,7 +417,7 @@ class ItemPriceRange extends AbstractFilter
                         AND tartikelsichtbarkeit.kKundengruppe = ' . $this->getCustomerGroupID())
             ->setOrigin(__CLASS__));
         // Automatisch
-        if ($this->getConfig()['navigationsfilter']['preisspannenfilter_anzeige_berechnung'] === 'A') {
+        if ($this->getConfig('navigationsfilter')['preisspannenfilter_anzeige_berechnung'] === 'A') {
             $fSteuersatzMax = 0.0;
             $fSteuersatzMin = 0.0;
             // Finde den höchsten und kleinsten Steuersatz
@@ -594,7 +594,7 @@ class ItemPriceRange extends AbstractFilter
         }
         // Preisspannen ohne Artikel ausblenden (falls im Backend eingestellt)
         if (count($options) > 0
-            && $this->getConfig()['navigationsfilter']['preisspannenfilter_spannen_ausblenden'] === 'Y'
+            && $this->getConfig('navigationsfilter')['preisspannenfilter_spannen_ausblenden'] === 'Y'
         ) {
             $options = array_filter(
                 $options,
@@ -677,7 +677,7 @@ class ItemPriceRange extends AbstractFilter
         ];
         $nStep      = 10;
         $fDiffPreis = (float)($fMax - $fMin) * 1000;
-        $nMaxSteps  = $this->getConfig()['navigationsfilter']['preisspannenfilter_anzeige_berechnung'] === 'M'
+        $nMaxSteps  = $this->getConfig('navigationsfilter')['preisspannenfilter_anzeige_berechnung'] === 'M'
             ? 10
             : 5;
         foreach ($fStepWert_arr as $i => $fStepWert) {

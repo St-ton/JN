@@ -38,7 +38,7 @@ class ItemRating extends AbstractFilter
         parent::__construct($productFilter);
         $this->setIsCustom(false)
              ->setUrlParam('bf')
-             ->setVisibility($this->getConfig()['navigationsfilter']['bewertungsfilter_benutzen'])
+             ->setVisibility($this->getConfig('navigationsfilter')['bewertungsfilter_benutzen'])
              ->setFrontendName(\Shop::Lang()->get('Votes'));
     }
 
@@ -108,7 +108,7 @@ class ItemRating extends AbstractFilter
         if ($this->options !== null) {
             return $this->options;
         }
-        if ($this->getConfig()['navigationsfilter']['bewertungsfilter_benutzen'] === 'N') {
+        if ($this->getConfig('navigationsfilter')['bewertungsfilter_benutzen'] === 'N') {
             $this->hide();
             $this->options = [];
 

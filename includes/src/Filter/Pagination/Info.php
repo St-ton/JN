@@ -39,9 +39,9 @@ class Info
      */
     private static $mapping = [
         'AktuelleSeite' => 'CurrentPage',
-        'MaxSeiten' => 'MaxPages',
-        'minSeite' => 'MinPage',
-        'maxSeite' => 'MaxPage',
+        'MaxSeiten'     => 'MaxPages',
+        'minSeite'      => 'MinPage',
+        'maxSeite'      => 'MaxPage',
     ];
 
     /**

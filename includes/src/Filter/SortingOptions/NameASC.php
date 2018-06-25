@@ -24,7 +24,7 @@ class NameASC extends AbstractSortingOption
         parent::__construct($productFilter);
         $this->orderBy = 'tartikel.cName';
         $this->setName(\Shop::Lang()->get('sortNameAsc'));
-        $this->setPriority($this->getConfig()['artikeluebersicht']['suche_sortierprio_name']);
+        $this->setPriority($this->getConfig('artikeluebersicht')['suche_sortierprio_name']);
         $this->setValue(SEARCH_SORT_NAME_ASC);
     }
 }

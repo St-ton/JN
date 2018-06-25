@@ -175,18 +175,9 @@ interface MetadataInterface
 
     /**
      * @return string|null
+     * @deprecated since 5.0.0
      */
     public function getBreadCrumbName();
-
-    /**
-     * @param bool   $seo
-     * @param Info   $pages
-     * @param int    $maxPages
-     * @param string $filterURL
-     * @return array
-     * @former baueSeitenNaviURL
-     */
-    public function buildPageNavigation(bool $seo, Info $pages, int $maxPages = 7, string $filterURL = ''): array;
 
     /**
      * @param int $viewType
@@ -194,11 +185,6 @@ interface MetadataInterface
      * @former gibErweiterteDarstellung
      */
     public function getExtendedView(int $viewType = 0): \stdClass;
-
-    /**
-     * @return int
-     */
-    public function getProductsPerPageLimit(): int;
 
     /**
      * @return bool

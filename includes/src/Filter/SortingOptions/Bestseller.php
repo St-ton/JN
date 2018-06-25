@@ -28,7 +28,7 @@ class Bestseller extends AbstractSortingOption
                    ->setTable('tbestseller')
                    ->setOn('tartikel.kArtikel = tbestseller.kArtikel');
         $this->setName(\Shop::Lang()->get('bestseller'));
-        $this->setPriority($this->getConfig()['artikeluebersicht']['suche_sortierprio_bestseller']);
+        $this->setPriority($this->getConfig('artikeluebersicht')['suche_sortierprio_bestseller']);
         $this->setValue(SEARCH_SORT_BESTSELLER);
     }
 }

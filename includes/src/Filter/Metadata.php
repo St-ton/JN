@@ -813,123 +813,11 @@ class Metadata implements MetadataInterface
 
     /**
      * @inheritdoc
+     * @deprecated since 5.0.0
      */
     public function getBreadCrumbName()
     {
         return $this->breadCrumb;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function buildPageNavigation(bool $seo, Info $pages, int $maxPages = 7, string $filterURL = ''): array
-    {
-        if (strlen($filterURL) > 0) {
-            $seo = false;
-        }
-        $oSeite_arr = [];
-        $naviURL    = $this->productFilter->getFilterURL()->getURL();
-        $seo        = $seo && strpos($naviURL, '?') === false;
-        if ($pages->getTotalPages() > 0 && $pages->getCurrentPage()> 0) {
-            $nMax = (int)floor($maxPages / 2);
-            if ($pages->getTotalPages() > $maxPages) {
-                if ($pages->getCurrentPage() - $nMax >= 1) {
-                    $nDiff = 0;
-                    $nVon  = $pages->getCurrentPage() - $nMax;
-                } else {
-                    $nVon  = 1;
-                    $nDiff = $nMax - $pages->getCurrentPage() + 1;
-                }
-                if ($pages->getCurrentPage() + $nMax + $nDiff <= $pages->getTotalPages()) {
-                    $nBis = $pages->getCurrentPage() + $nMax + $nDiff;
-                } else {
-                    $nDiff = $pages->getCurrentPage() + $nMax - $pages->getTotalPages();
-                    if ($nDiff === 0) {
-                        $nVon -= ($maxPages - ($nMax + 1));
-                    } elseif ($nDiff > 0) {
-                        $nVon = $pages->getCurrentPage() - $nMax - $nDiff;
-                    }
-                    $nBis = $pages->getTotalPages();
-                }
-                // Laufe alle Seiten durch und baue URLs + Seitenzahl
-                for ($i = $nVon; $i <= $nBis; ++$i) {
-                    $oSeite         = new \stdClass();
-                    $oSeite->nSeite = $i;
-                    if ($i === $pages->getCurrentPage()) {
-                        $oSeite->cURL = '';
-                    } elseif ($oSeite->nSeite === 1) {
-                        $oSeite->cURL = $naviURL . $filterURL;
-                    } elseif ($seo) {
-                        $cURL         = $naviURL;
-                        $oSeite->cURL = strpos(basename($cURL), 'index.php') !== false
-                            ? $cURL . '&amp;seite=' . $oSeite->nSeite . $filterURL
-                            : $cURL . SEP_SEITE . $oSeite->nSeite;
-                    } else {
-                        $oSeite->cURL = $naviURL . '&amp;seite=' . $oSeite->nSeite . $filterURL;
-                    }
-                    $oSeite_arr[] = $oSeite;
-                }
-            } else {
-                // Laufe alle Seiten durch und baue URLs + Seitenzahl
-                for ($i = 0; $i < $pages->getTotalPages(); ++$i) {
-                    $oSeite         = new \stdClass();
-                    $oSeite->nSeite = $i + 1;
-
-                    if ($i + 1 === $pages->getCurrentPage()) {
-                        $oSeite->cURL = '';
-                    } elseif ($oSeite->nSeite === 1) {
-                        $oSeite->cURL = $naviURL . $filterURL;
-                    } elseif ($seo) {
-                        $cURL         = $naviURL;
-                        $oSeite->cURL = strpos(basename($cURL), 'index.php') !== false
-                            ? $cURL . '&amp;seite=' . $oSeite->nSeite . $filterURL
-                            : $cURL . SEP_SEITE . $oSeite->nSeite;
-                    } else {
-                        $oSeite->cURL = $naviURL . '&amp;seite=' . $oSeite->nSeite . $filterURL;
-                    }
-                    $oSeite_arr[] = $oSeite;
-                }
-            }
-            // Baue Zurück-URL
-            $oSeite_arr['zurueck']       = new \stdClass();
-            $oSeite_arr['zurueck']->nBTN = 1;
-            if ($pages->getCurrentPage() > 1) {
-                $oSeite_arr['zurueck']->nSeite = $pages->getCurrentPage() - 1;
-                if ($oSeite_arr['zurueck']->nSeite === 1) {
-                    $oSeite_arr['zurueck']->cURL = $naviURL . $filterURL;
-                } elseif ($seo) {
-                    $cURL = $naviURL;
-                    if (strpos(basename($cURL), 'index.php') !== false) {
-                        $oSeite_arr['zurueck']->cURL = $cURL . '&amp;seite=' .
-                            $oSeite_arr['zurueck']->nSeite . $filterURL;
-                    } else {
-                        $oSeite_arr['zurueck']->cURL = $cURL . SEP_SEITE .
-                            $oSeite_arr['zurueck']->nSeite;
-                    }
-                } else {
-                    $oSeite_arr['zurueck']->cURL = $naviURL . '&amp;seite=' .
-                        $oSeite_arr['zurueck']->nSeite . $filterURL;
-                }
-            }
-            // Baue Vor-URL
-            $oSeite_arr['vor']       = new \stdClass();
-            $oSeite_arr['vor']->nBTN = 1;
-            if ($pages->getCurrentPage() < $pages->getMaxPage()) {
-                $oSeite_arr['vor']->nSeite = $pages->getCurrentPage() + 1;
-                if ($seo) {
-                    $cURL = $naviURL;
-                    if (strpos(basename($cURL), 'index.php') !== false) {
-                        $oSeite_arr['vor']->cURL = $cURL . '&amp;seite=' . $oSeite_arr['vor']->nSeite . $filterURL;
-                    } else {
-                        $oSeite_arr['vor']->cURL = $cURL . SEP_SEITE . $oSeite_arr['vor']->nSeite;
-                    }
-                } else {
-                    $oSeite_arr['vor']->cURL = $naviURL . '&amp;seite=' . $oSeite_arr['vor']->nSeite . $filterURL;
-                }
-            }
-        }
-
-        return $oSeite_arr;
     }
 
     /**
@@ -1042,28 +930,6 @@ class Metadata implements MetadataInterface
         $extendedView->cURL_arr[ERWDARSTELLUNG_ANSICHT_MOSAIK]  = $naviURL . ERWDARSTELLUNG_ANSICHT_MOSAIK;
 
         return $extendedView;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getProductsPerPageLimit(): int
-    {
-        if ($this->productFilter->getProductLimit() !== 0) {
-            $limit = $this->productFilter->getProductLimit();
-        } elseif (isset($_SESSION['ArtikelProSeite']) && $_SESSION['ArtikelProSeite'] !== 0) {
-            $limit = $_SESSION['ArtikelProSeite'];
-        } elseif (isset($_SESSION['oErweiterteDarstellung']->nAnzahlArtikel)
-            && $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel !== 0
-        ) {
-            $limit = $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel;
-        } else {
-            $limit = ($max = $this->conf['artikeluebersicht']['artikeluebersicht_artikelproseite']) !== 0
-                ? $max
-                : 20;
-        }
-
-        return min((int)$limit, ARTICLES_PER_PAGE_HARD_LIMIT);
     }
 
     /**

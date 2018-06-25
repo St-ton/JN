@@ -6,10 +6,16 @@
 
 namespace Filter\Pagination;
 
-
+/**
+ * Class ItemFactory
+ * @package Filter\Pagination
+ */
 class ItemFactory
 {
-    public function create()
+    /**
+     * @return Item
+     */
+    public function create(): Item
     {
         return new Item();
     }

@@ -35,8 +35,7 @@
                     <a href="{$oErweiterteDarstellung->cURL_arr[$smarty.const.ERWDARSTELLUNG_ANSICHT_LISTE]}"
                        id="ed_list"
                        class="btn btn-default btn-option ed list{if $oErweiterteDarstellung->nDarstellung === $smarty.const.ERWDARSTELLUNG_ANSICHT_LISTE} active{/if}"
-                       role="button" title="{lang key='list'
-                       section='productOverview'}">
+                       role="button" title="{lang key='list' section='productOverview'}">
                         <span class="fa fa-th-list"></span>
                     </a>
                     <a href="{$oErweiterteDarstellung->cURL_arr[$smarty.const.ERWDARSTELLUNG_ANSICHT_GALERIE]}"

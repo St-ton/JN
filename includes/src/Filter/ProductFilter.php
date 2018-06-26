@@ -411,19 +411,29 @@ class ProductFilter
     }
 
     /**
-     * @param bool $products
-     * @return ProductFilterSearchResultsInterface|Collection
+     * @return Collection
      */
-    public function getSearchResults($products = true)
+    public function getSearchResultProducts(): Collection
     {
         if ($this->searchResults === null) {
             $this->searchResults = new ProductFilterSearchResults();
             $this->searchResults->setProducts(new Collection());
         }
 
-        return $products === true
-            ? $this->searchResults->getProducts()
-            : $this->searchResults;
+        return $this->searchResults->getProducts();
+    }
+
+    /**
+     * @return ProductFilterSearchResultsInterface
+     */
+    public function getSearchResults(): ProductFilterSearchResultsInterface
+    {
+        if ($this->searchResults === null) {
+            $this->searchResults = new ProductFilterSearchResults();
+            $this->searchResults->setProducts(new Collection());
+        }
+
+        return $this->searchResults;
     }
 
     /**
@@ -1680,20 +1690,15 @@ class ProductFilter
      */
     public function getProductKeys(): Collection
     {
-        $state   = $this->getCurrentStateData();
         $sorting = $this->getSorting()->getActiveSorting();
-        $joins   = $state->getJoins();
-        $joins[] = $sorting->getJoin();
-        $qry     = $this->getFilterSQL()->getBaseQuery(
-            ['tartikel.kArtikel'],
-            $joins,
-            $state->getConditions(),
-            $state->getHaving(),
-            $sorting->getOrderBy(),
-            '',
-            ['tartikel.kArtikel'],
-            'listing'
-        );
+        $sql     = (new FilterStateSQL())->from($this->getCurrentStateData());
+        $sql->addJoin($sorting->getJoin());
+        $sql->setSelect(['tartikel.kArtikel']);
+        $sql->setOrderBy($sorting->getOrderBy());
+        $sql->setLimit('');
+        $sql->setGroupBy(['tartikel.kArtikel']);
+
+        $qry = $this->getFilterSQL()->getBaseQuery($sql, 'listing');
 
         $productKeys = collect(array_map(
             function ($e) {
@@ -1907,9 +1912,13 @@ class ProductFilter
         $stateCondition = $state->getSQLCondition();
         $stateJoin      = $state->getSQLJoin();
         $data           = new FilterStateSQL();
-        $having         = [];
-        $conditions     = [];
-        $joins          = is_array($stateJoin)
+        $data->setGroupBy([]);
+        $data->setOrderBy('');
+        $data->setLimit('');
+        $data->setSelect([]);
+        $having     = [];
+        $conditions = [];
+        $joins      = is_array($stateJoin)
             ? $stateJoin
             : [$stateJoin];
         if (!empty($stateCondition)) {

@@ -529,18 +529,6 @@ class StringHandler
     }
 
     /**
-     * @param string $haystack
-     * @param string $needle
-     * @return bool
-     */
-    public static function endsWith(string $haystack, string $needle): bool
-    {
-        $length = strlen($needle);
-
-        return $length === 0 || substr($haystack, -$length) === $needle;
-    }
-
-    /**
      * @param string $number
      * @return int
      * @former checkeTel()

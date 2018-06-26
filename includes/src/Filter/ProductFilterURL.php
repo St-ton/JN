@@ -252,7 +252,7 @@ class ProductFilterURL
     public function createUnsetFilterURLs($url, $searchResults = null): NavigationURLsInterface
     {
         if ($searchResults === null) {
-            $searchResults = $this->productFilter->getSearchResults(false);
+            $searchResults = $this->productFilter->getSearchResults();
         }
         $extraFilter    = (new ItemCategory($this->productFilter))->init(null)->setDoUnset(true);
         $_categoriesURL = $this->getURL($extraFilter);

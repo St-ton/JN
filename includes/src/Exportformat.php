@@ -749,6 +749,7 @@ class Exportformat
     {
         $where = '';
         $join  = '';
+        $limit = '';
 
         switch ($this->getVarKombiOption()) {
             case 2:
@@ -792,12 +793,13 @@ class Exportformat
             )';
         }
 
-        $select = $countOnly === true
-            ? 'count(*) AS nAnzahl'
-            : 'tartikel.kArtikel';
-        $limit  = $countOnly === true
-            ? ''
-            : (" ORDER BY kArtikel LIMIT " . $this->getQueue()->nLimitN . ", " . $this->getQueue()->nLimitM);
+        if ($countOnly === true) {
+            $select = 'count(*) AS nAnzahl';
+        } else {
+            $select     = 'tartikel.kArtikel';
+            $limit      = ' ORDER BY tartikel.kArtikel LIMIT ' . $this->getQueue()->nLimitM;
+            $condition .= ' AND tartikel.kArtikel > ' . $this->getQueue()->nLastArticleID;
+        }
 
         return "SELECT " . $select . "
             FROM tartikel
@@ -1124,7 +1126,6 @@ class Exportformat
             $replaceTwo[] = $this->config['exportformate_semikolon'];
         }
         foreach (Shop::Container()->getDB()->query($this->getExportSQL(), \DB\ReturnType::QUERYSINGLE) as $iterArticle) {
-            $started = true;
             $Artikel = new Artikel();
             $Artikel->fuelleArtikel(
                 $iterArticle['kArtikel'],
@@ -1149,8 +1150,12 @@ class Exportformat
                 }
                 $Artikel->oKategorie_arr = $categories;
             }
-            ++$this->queue->nLimitN;
+
             if ($Artikel->kArtikel > 0) {
+                $started = true;
+                ++$this->queue->nLimitN;
+                $this->queue->nLastArticleID = $Artikel->kArtikel;
+
                 if ($Artikel->cacheHit === true) {
                     ++$cacheHits;
                 } else {
@@ -1251,12 +1256,19 @@ class Exportformat
         }
 
         if ($isCron === false) {
-            if ($max > $this->queue->nLimitN) {
+            if ($started === true) {
+                // One or more articles have been exported
                 fclose($datei);
-                Shop::Container()->getDB()->query(
-                    "UPDATE texportqueue 
-                      SET nLimit_n = nLimit_n + " . $this->queue->nLimitM . " 
-                      WHERE kExportqueue = " . (int)$this->queue->kExportqueue,
+                Shop::Container()->getDB()->queryPrepared(
+                    "UPDATE texportqueue SET
+                        nLimit_n       = nLimit_n + :nLimitM,
+                        nLastArticleID = :nLastArticleID
+                      WHERE kExportqueue = :kExportqueue",
+                    [
+                        'nLimitM'        => $this->queue->nLimitM,
+                        'nLastArticleID' => $this->queue->nLastArticleID,
+                        'kExportqueue'   => (int)$this->queue->kExportqueue,
+                    ],
                     \DB\ReturnType::DEFAULT
                 );
                 $protocol = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')
@@ -1264,16 +1276,17 @@ class Exportformat
                     ? 'https://'
                     : 'http://';
                 if ($isAsync) {
-                    $oCallback                = new stdClass();
-                    $oCallback->kExportformat = $this->getExportformat();
-                    $oCallback->kExportqueue  = $this->queue->kExportqueue;
-                    $oCallback->nMax          = $max;
-                    $oCallback->nCurrent      = $this->queue->nLimitN;
-                    $oCallback->bFinished     = false;
-                    $oCallback->bFirst        = ((int)$this->queue->nLimitN === 0);
-                    $oCallback->cURL          = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
-                    $oCallback->cacheMisses   = $cacheMisses;
-                    $oCallback->cacheHits     = $cacheHits;
+                    $oCallback                 = new stdClass();
+                    $oCallback->kExportformat  = $this->getExportformat();
+                    $oCallback->kExportqueue   = $this->queue->kExportqueue;
+                    $oCallback->nMax           = $max;
+                    $oCallback->nCurrent       = $this->queue->nLimitN;
+                    $oCallback->nLastArticleID = $this->queue->nLastArticleID;
+                    $oCallback->bFinished      = false;
+                    $oCallback->bFirst         = ((int)$this->queue->nLimitN === 0);
+                    $oCallback->cURL           = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
+                    $oCallback->cacheMisses    = $cacheMisses;
+                    $oCallback->cacheHits      = $cacheHits;
                     echo json_encode($oCallback);
                 } else {
                     $cURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] .
@@ -1282,6 +1295,7 @@ class Exportformat
                     header('Location: ' . $cURL);
                 }
             } else {
+                // There are no more articles to export
                 Shop::Container()->getDB()->query(
                     "UPDATE texportformat 
                         SET dZuletztErstellt = now() 
@@ -1303,14 +1317,15 @@ class Exportformat
                 $this->splitFile();
                 if ($back === true) {
                     if ($isAsync) {
-                        $oCallback                = new stdClass();
-                        $oCallback->kExportformat = $this->getExportformat();
-                        $oCallback->nMax          = $max;
-                        $oCallback->nCurrent      = $this->queue->nLimitN;
-                        $oCallback->bFinished     = true;
-                        $oCallback->cacheMisses   = $cacheMisses;
-                        $oCallback->cacheHits     = $cacheHits;
-                        $oCallback->errorMessage  = $errorMessage;
+                        $oCallback                 = new stdClass();
+                        $oCallback->kExportformat  = $this->getExportformat();
+                        $oCallback->nMax           = $max;
+                        $oCallback->nCurrent       = $this->queue->nLimitN;
+                        $oCallback->nLastArticleID = $this->queue->nLastArticleID;
+                        $oCallback->bFinished      = true;
+                        $oCallback->cacheMisses    = $cacheMisses;
+                        $oCallback->cacheHits      = $cacheHits;
+                        $oCallback->errorMessage   = $errorMessage;
 
                         echo json_encode($oCallback);
                     } else {
@@ -1327,7 +1342,7 @@ class Exportformat
             $queueObject->updateExportformatQueueBearbeitet();
             $queueObject->setDZuletztGelaufen(date('Y-m-d H:i'))->setNInArbeit(0)->updateJobInDB();
             //finalize job when there are no more articles to export
-            if (($queueObject->nLimitN >= $max) || $started === false) {
+            if ($started === false) {
                 Jtllog::cronLog('Finalizing job.', 2);
                 Shop::Container()->getDB()->update(
                     'texportformat',

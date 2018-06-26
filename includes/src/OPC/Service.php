@@ -21,14 +21,14 @@ class Service
     protected $adminName = '';
 
     /**
-     * @var null|DB
+     * @var DB
      */
-    protected $db = null;
+    protected $db;
 
     /**
      * @var null|Page
      */
-    protected $curPage = null;
+    protected $curPage;
 
     /**
      * Service constructor.
@@ -42,7 +42,7 @@ class Service
     /**
      * @return array list of the OPC service methods to be exposed for AJAX requests
      */
-    public function getIOFunctionNames()
+    public function getIOFunctionNames(): array
     {
         return [
             'getIOFunctionNames',
@@ -75,22 +75,23 @@ class Service
     }
 
     /**
+     * @param bool $withInactive
      * @return PortletGroup[]
      * @throws \Exception
      */
-    public function getPortletGroups($withInactive = false)
+    public function getPortletGroups(bool $withInactive = false)
     {
         return $this->db->getPortletGroups($withInactive);
     }
 
     /**
+     * @param bool $withInactive
      * @return Blueprint[]
      * @throws \Exception
      */
-    public function getBlueprints($withInactive = false)
+    public function getBlueprints(bool $withInactive = false): array
     {
         $blueprints = [];
-
         foreach ($this->db->getAllBlueprintIds($withInactive) as $blueprintId) {
             $blueprints[] = $this->getBlueprint($blueprintId);
         }
@@ -103,7 +104,7 @@ class Service
      * @return Blueprint
      * @throws \Exception
      */
-    public function getBlueprint($id)
+    public function getBlueprint(int $id)
     {
         $blueprint = (new Blueprint())
             ->setId($id);
@@ -117,7 +118,7 @@ class Service
      * @param int $id
      * @return PortletInstance
      */
-    public function getBlueprintInstance($id)
+    public function getBlueprintInstance(int $id)
     {
         return $this->getBlueprint($id)->getInstance();
     }
@@ -126,7 +127,7 @@ class Service
      * @param int $id
      * @return string
      */
-    public function getBlueprintPreview($id)
+    public function getBlueprintPreview(int $id)
     {
         return $this->getBlueprintInstance($id)->getPreviewHtml();
     }
@@ -200,24 +201,24 @@ class Service
     /**
      * @return bool
      */
-    public function isEditMode()
+    public function isEditMode(): bool
     {
-        return verifyGPDataString('opcEditMode') === 'yes';
+        return \RequestHelper::verifyGPDataString('opcEditMode') === 'yes';
     }
 
     /**
      * @return int
      */
-    public function getEditedPageKey()
+    public function getEditedPageKey(): int
     {
-        return verifyGPCDataInteger('opcEditedPageKey');
+        return \RequestHelper::verifyGPCDataInt('opcEditedPageKey');
     }
 
     /**
      * @param array $enabledFilters
      * @return array
      */
-    public function getFilterOptions($enabledFilters = [])
+    public function getFilterOptions(array $enabledFilters = []): array
     {
         \Shop::setLanguage(1);
 

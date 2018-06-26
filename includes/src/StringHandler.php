@@ -533,7 +533,7 @@ class StringHandler
      * @param string $needle
      * @return bool
      */
-    public static function endsWith($haystack, $needle)
+    public static function endsWith(string $haystack, string $needle): bool
     {
         $length = strlen($needle);
 

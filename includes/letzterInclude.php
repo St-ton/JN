@@ -152,18 +152,9 @@ if (isset($breadCrumbName, $breadCrumbURL)) {
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'besucher.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
-<<<<<<< HEAD
-
-// Kampagnen
-pruefeKampagnenParameter();
-// Währungs- und Sprachlinks (um die Sprache oder Währung zu wechseln ohne die aktuelle Seite zu verlieren)
-setzeSpracheUndWaehrungLink();
-// Extension Point
-=======
 Visitor::generateData();
 Kampagne::checkCampaignParameters();
 Sprache::generateLanguageAndCurrencyLinks();
->>>>>>> master
 $oExtension = (new ExtensionPoint($pagetType, Shop::getParameters(), Shop::getLanguageID(), $kKundengruppe))->load();
 executeHook(HOOK_LETZTERINCLUDE_INC);
 $boxes       = Shop::Container()->getBoxService();

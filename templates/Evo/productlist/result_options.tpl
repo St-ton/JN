@@ -1,6 +1,6 @@
 {assign var=contentFilters value=$NaviFilter->getAvailableContentFilters()}
 {assign var=show_filters value=$Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab == 0
-        || $NaviFilter->getSearchResults(false)->getProductCount() >= $Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab
+        || $NaviFilter->getSearchResults()->getProductCount() >= $Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab
         || $NaviFilter->getFilterCount() > 0}
 <div id="result-options" class="panel-wrap{if !$show_filters} hidden-xs{/if}">
     <div class="row">
@@ -74,7 +74,7 @@
                                                     <a href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-expanded="false">
                                                         {$subFilter->getFrontendName()} <span class="caret"></span>
                                                     </a>
-                                                    {include file='snippets/filter/genericFilterItem.tpl' class='dropdown-menu' filter=$subFilter sub=true}
+                                                    {include file='snippets/filter/genericFilterItem.tpl' itemClass='' class='dropdown-menu' filter=$subFilter sub=true}
                                                 </div>
                                             {/if}
                                         {/foreach}
@@ -138,7 +138,7 @@
                     {/foreach}
                     {if $NaviFilter->getURL()->getUnsetAll() !== null}
                         {strip}
-                            <a href="{$NaviFilter->getURL()->getUnsetAll()}" title="{lang key="removeFilters" section='global'}" class="label label-warning">
+                            <a href="{$NaviFilter->getURL()->getUnsetAll()}" title="{lang key='removeFilters'}" class="label label-warning">
                                 {lang key='removeFilters'}
                             </a>
                         {/strip}

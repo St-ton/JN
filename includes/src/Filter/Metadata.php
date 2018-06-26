@@ -31,9 +31,9 @@ class Metadata implements MetadataInterface
     private $conf;
 
     /**
-     * @var string
+     * @var array
      */
-    private $breadCrumb = '';
+    private $breadCrumb = [];
 
     /**
      * @var string
@@ -103,7 +103,7 @@ class Metadata implements MetadataInterface
     /**
      * @inheritdoc
      */
-    public function getBreadCrumb(): string
+    public function getBreadCrumb(): array
     {
         return $this->breadCrumb;
     }
@@ -370,8 +370,8 @@ class Metadata implements MetadataInterface
     public function getNavigationInfo($currentCategory = null, $openCategories = null): MetadataInterface
     {
         if ($currentCategory !== null && $this->productFilter->hasCategory()) {
+            /** @var \Kategorie $currentCategory */
             $this->category = $currentCategory;
-
             if ($this->conf['navigationsfilter']['kategorie_bild_anzeigen'] === 'Y') {
                 $this->name = $this->category->getName();
             } elseif ($this->conf['navigationsfilter']['kategorie_bild_anzeigen'] === 'BT') {
@@ -380,10 +380,8 @@ class Metadata implements MetadataInterface
             } elseif ($this->conf['navigationsfilter']['kategorie_bild_anzeigen'] === 'B') {
                 $this->imageURL = $currentCategory->getKategorieBild();
             }
-            $this->breadCrumb = createNavigation('PRODUKTE', $openCategories);
         } elseif ($this->productFilter->hasManufacturer()) {
             $this->manufacturer = new \Hersteller($this->productFilter->getManufacturer()->getValue());
-
             if ($this->conf['navigationsfilter']['hersteller_bild_anzeigen'] === 'Y') {
                 $this->name = $this->manufacturer->getName();
             } elseif ($this->conf['navigationsfilter']['hersteller_bild_anzeigen'] === 'BT') {
@@ -397,13 +395,6 @@ class Metadata implements MetadataInterface
                      ->setMetaDescription($this->manufacturer->cMetaDescription)
                      ->setMetaKeywords($this->manufacturer->cMetaKeywords);
             }
-            $this->breadCrumb = createNavigation(
-                '',
-                '',
-                0,
-                $this->getBreadCrumbName(),
-                $this->productFilter->getFilterURL()->getURL()
-            );
         } elseif ($this->productFilter->hasAttributeValue()) {
             $this->attributeValue = new \MerkmalWert($this->productFilter->getAttributeValue()->getValue());
             if ($this->conf['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'Y') {
@@ -419,24 +410,6 @@ class Metadata implements MetadataInterface
                      ->setMetaDescription($this->attributeValue->cMetaDescription)
                      ->setMetaKeywords($this->attributeValue->cMetaKeywords);
             }
-            $this->breadCrumb = createNavigation(
-                '',
-                '',
-                0,
-                $this->getBreadCrumbName(),
-                $this->productFilter->getFilterURL()->getURL()
-            );
-        } elseif ($this->productFilter->hasTag()
-            || $this->productFilter->hasSearchSpecial()
-            || $this->productFilter->hasSearch()
-        ) {
-            $this->breadCrumb = createNavigation(
-                '',
-                '',
-                0,
-                $this->getBreadCrumbName(),
-                $this->productFilter->getFilterURL()->getURL()
-            );
         }
 
         return $this;
@@ -457,7 +430,7 @@ class Metadata implements MetadataInterface
             : 0;
         // Prüfen ob bereits eingestellte Metas gesetzt sind
         if (!empty($this->metaDescription)) {
-            return prepareMeta(
+            return self::prepareMeta(
                 strip_tags($this->metaDescription),
                 null,
                 $maxLength
@@ -470,7 +443,7 @@ class Metadata implements MetadataInterface
             $category = $category ?? new \Kategorie($this->productFilter->getCategory()->getValue());
             if (!empty($category->cMetaDescription)) {
                 // meta description via new method
-                return prepareMeta(
+                return self::prepareMeta(
                     strip_tags($category->cMetaDescription),
                     null,
                     $maxLength
@@ -478,7 +451,7 @@ class Metadata implements MetadataInterface
             }
             if (!empty($category->categoryAttributes['meta_description']->cWert)) {
                 // Hat die aktuelle Kategorie als Kategorieattribut eine Meta Description gesetzt?
-                return prepareMeta(
+                return self::prepareMeta(
                     strip_tags($category->categoryAttributes['meta_description']->cWert),
                     null,
                     $maxLength
@@ -486,7 +459,7 @@ class Metadata implements MetadataInterface
             }
             if (!empty($category->KategorieAttribute['meta_description'])) {
                 /** @deprecated since 4.05 - this is for compatibilty only! */
-                return prepareMeta(
+                return self::prepareMeta(
                     strip_tags($category->KategorieAttribute['meta_description']),
                     null,
                     $maxLength
@@ -530,7 +503,7 @@ class Metadata implements MetadataInterface
                         " {$searchResults->getOffsetStart()} - {$searchResults->getOffsetEnd()}";
                 }
 
-                return prepareMeta($cMetaDescription, null, $maxLength);
+                return self::prepareMeta($cMetaDescription, null, $maxLength);
             }
         }
         // Keine eingestellten Metas vorhanden => generiere Standard Metas
@@ -563,7 +536,7 @@ class Metadata implements MetadataInterface
             }
         }
 
-        return prepareMeta(strip_tags($cMetaDescription), null, $maxLength);
+        return self::prepareMeta(strip_tags($cMetaDescription), null, $maxLength);
     }
 
     /**
@@ -890,10 +863,7 @@ class Metadata implements MetadataInterface
         if (strlen($cFilterShopURL) > 0) {
             $bSeo = false;
         }
-        $cURL        = '';
         $oSeite_arr  = [];
-        $nVon        = 0; // Die aktuellen Seiten in der Navigation, die angezeigt werden sollen.
-        $nBis        = 0; // Begrenzt durch $nMaxAnzeige.
         $naviURL     = $this->productFilter->getFilterURL()->getURL();
         $bSeo        = $bSeo && strpos($naviURL, '?') === false;
         $nMaxAnzeige = (int)$nMaxAnzeige;
@@ -928,19 +898,15 @@ class Metadata implements MetadataInterface
                     $oSeite->nSeite = $i;
                     if ($i === $oSeitenzahlen->AktuelleSeite) {
                         $oSeite->cURL = '';
+                    } elseif ($oSeite->nSeite === 1) {
+                        $oSeite->cURL = $naviURL . $cFilterShopURL;
+                    } elseif ($bSeo) {
+                        $cURL         = $naviURL;
+                        $oSeite->cURL = strpos(basename($cURL), 'index.php') !== false
+                            ? $cURL . '&amp;seite=' . $oSeite->nSeite . $cFilterShopURL
+                            : $cURL . SEP_SEITE . $oSeite->nSeite;
                     } else {
-                        if ($oSeite->nSeite === 1) {
-                            $oSeite->cURL = $naviURL . $cFilterShopURL;
-                        } else {
-                            if ($bSeo) {
-                                $cURL         = $naviURL;
-                                $oSeite->cURL = strpos(basename($cURL), 'index.php') !== false
-                                    ? $cURL . '&amp;seite=' . $oSeite->nSeite . $cFilterShopURL
-                                    : $cURL . SEP_SEITE . $oSeite->nSeite;
-                            } else {
-                                $oSeite->cURL = $naviURL . '&amp;seite=' . $oSeite->nSeite . $cFilterShopURL;
-                            }
-                        }
+                        $oSeite->cURL = $naviURL . '&amp;seite=' . $oSeite->nSeite . $cFilterShopURL;
                     }
                     $oSeite_arr[] = $oSeite;
                 }
@@ -952,19 +918,15 @@ class Metadata implements MetadataInterface
 
                     if ($i + 1 === $oSeitenzahlen->AktuelleSeite) {
                         $oSeite->cURL = '';
+                    } elseif ($oSeite->nSeite === 1) {
+                        $oSeite->cURL = $naviURL . $cFilterShopURL;
+                    } elseif ($bSeo) {
+                        $cURL         = $naviURL;
+                        $oSeite->cURL = strpos(basename($cURL), 'index.php') !== false
+                            ? $cURL . '&amp;seite=' . $oSeite->nSeite . $cFilterShopURL
+                            : $cURL . SEP_SEITE . $oSeite->nSeite;
                     } else {
-                        if ($oSeite->nSeite === 1) {
-                            $oSeite->cURL = $naviURL . $cFilterShopURL;
-                        } else {
-                            if ($bSeo) {
-                                $cURL         = $naviURL;
-                                $oSeite->cURL = strpos(basename($cURL), 'index.php') !== false
-                                    ? $cURL . '&amp;seite=' . $oSeite->nSeite . $cFilterShopURL
-                                    : $cURL . SEP_SEITE . $oSeite->nSeite;
-                            } else {
-                                $oSeite->cURL = $naviURL . '&amp;seite=' . $oSeite->nSeite . $cFilterShopURL;
-                            }
-                        }
+                        $oSeite->cURL = $naviURL . '&amp;seite=' . $oSeite->nSeite . $cFilterShopURL;
                     }
                     $oSeite_arr[] = $oSeite;
                 }
@@ -976,20 +938,18 @@ class Metadata implements MetadataInterface
                 $oSeite_arr['zurueck']->nSeite = (int)$oSeitenzahlen->AktuelleSeite - 1;
                 if ($oSeite_arr['zurueck']->nSeite === 1) {
                     $oSeite_arr['zurueck']->cURL = $naviURL . $cFilterShopURL;
-                } else {
-                    if ($bSeo) {
-                        $cURL = $naviURL;
-                        if (strpos(basename($cURL), 'index.php') !== false) {
-                            $oSeite_arr['zurueck']->cURL = $cURL . '&amp;seite=' .
-                                $oSeite_arr['zurueck']->nSeite . $cFilterShopURL;
-                        } else {
-                            $oSeite_arr['zurueck']->cURL = $cURL . SEP_SEITE .
-                                $oSeite_arr['zurueck']->nSeite;
-                        }
-                    } else {
-                        $oSeite_arr['zurueck']->cURL = $naviURL . '&amp;seite=' .
+                } elseif ($bSeo) {
+                    $cURL = $naviURL;
+                    if (strpos(basename($cURL), 'index.php') !== false) {
+                        $oSeite_arr['zurueck']->cURL = $cURL . '&amp;seite=' .
                             $oSeite_arr['zurueck']->nSeite . $cFilterShopURL;
+                    } else {
+                        $oSeite_arr['zurueck']->cURL = $cURL . SEP_SEITE .
+                            $oSeite_arr['zurueck']->nSeite;
                     }
+                } else {
+                    $oSeite_arr['zurueck']->cURL = $naviURL . '&amp;seite=' .
+                        $oSeite_arr['zurueck']->nSeite . $cFilterShopURL;
                 }
             }
             // Baue Vor-URL
@@ -1302,7 +1262,7 @@ class Metadata implements MetadataInterface
      */
     public function setUserSort($currentCategory = null): MetadataInterface
     {
-        $gpcSort = verifyGPCDataInteger('Sortierung');
+        $gpcSort = \RequestHelper::verifyGPCDataInt('Sortierung');
         // Der User möchte die Standardsortierung wiederherstellen
         if ($gpcSort === 100) {
             unset($_SESSION['Usersortierung'], $_SESSION['nUsersortierungWahl'], $_SESSION['UsersortierungVorSuche']);
@@ -1347,7 +1307,6 @@ class Metadata implements MetadataInterface
             $_SESSION['Usersortierung']         = $gpcSort;
             $_SESSION['UsersortierungVorSuche'] = $_SESSION['Usersortierung'];
             $_SESSION['nUsersortierungWahl']    = 1;
-            setFsession(0, $_SESSION['Usersortierung'], 0);
         }
 
         return $this;
@@ -1358,9 +1317,7 @@ class Metadata implements MetadataInterface
      */
     public static function mapUserSorting($sort): int
     {
-        // Ist die Usersortierung ein Integer => Return direkt den Integer
-        preg_match('/\d+/', $sort, $cTreffer_arr);
-        if (isset($cTreffer_arr[0]) && strlen($sort) === strlen($cTreffer_arr[0])) {
+        if (is_numeric($sort)) {
             return (int)$sort;
         }
         // Usersortierung ist ein String aus einem Kategorieattribut
@@ -1428,6 +1385,72 @@ class Metadata implements MetadataInterface
         }
 
         return min($limit, ARTICLES_PER_PAGE_HARD_LIMIT);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function checkNoIndex(): bool
+    {
+        $bNoIndex = false;
+        switch (basename($_SERVER['SCRIPT_NAME'])) {
+            case 'wartung.php':
+            case 'navi.php':
+            case 'bestellabschluss.php':
+            case 'bestellvorgang.php':
+            case 'jtl.php':
+            case 'pass.php':
+            case 'registrieren.php':
+            case 'warenkorb.php':
+            case 'wunschliste.php':
+                $bNoIndex = true;
+                break;
+            default:
+                break;
+        }
+        if ($this->productFilter->hasSearch()) {
+            $bNoIndex = true;
+        }
+        if (!$bNoIndex) {
+            $bNoIndex = $this->productFilter->hasAttributeValue()
+                && $this->productFilter->getAttributeValue()->getValue() > 0
+                && $this->conf['global']['global_merkmalwert_url_indexierung'] === 'N';
+        }
+
+        return $bNoIndex;
+    }
+
+    /**
+     * return trimmed description without (double) line breaks
+     *
+     * @param string $cDesc
+     * @return string
+     */
+    public static function truncateMetaDescription(string $cDesc): string
+    {
+        $conf      = \Shop::getSettings([CONF_METAANGABEN]);
+        $maxLength = !empty($conf['metaangaben']['global_meta_maxlaenge_description'])
+            ? (int)$conf['metaangaben']['global_meta_maxlaenge_description']
+            : 0;
+
+        return self::prepareMeta($cDesc, null, $maxLength);
+    }
+
+    /**
+     * @param string $metaProposal the proposed meta text value.
+     * @param string $metaSuffix append suffix to meta value that wont be shortened
+     * @param int $maxLength $metaProposal will be truncated to $maxlength - strlen($metaSuffix) characters
+     * @return string truncated meta value with optional suffix (always appended if set)
+     */
+    public static function prepareMeta(string $metaProposal, string $metaSuffix = null, int $maxLength = null): string
+    {
+        $metaProposal = str_replace('"', '', \StringHandler::unhtmlentities($metaProposal));
+        $metaSuffix   = !empty($metaSuffix) ? $metaSuffix : '';
+        if (!empty($maxLength) && $maxLength > 0) {
+            $metaProposal = substr($metaProposal, 0, $maxLength);
+        }
+
+        return \StringHandler::htmlentities(trim(preg_replace('/\s\s+/', ' ', $metaProposal))) . $metaSuffix;
     }
 
     /**

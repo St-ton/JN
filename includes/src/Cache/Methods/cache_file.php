@@ -105,7 +105,7 @@ class cache_file implements ICachingMethod
     {
         $res = [];
         foreach ($cacheIDs as $_cid) {
-            $res[$_cid] = $this->load($cacheIDs);
+            $res[$_cid] = $this->load($_cid);
         }
 
         return $res;

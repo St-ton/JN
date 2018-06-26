@@ -99,9 +99,9 @@ class IO
     {
         // respond with an error?
         if (is_object($data)) {
-            if (get_class($data) === 'IOError') {
-                header(makeHTTPHeader($data->code), true, $data->code);
-            } elseif (get_class($data) === 'IOFile') {
+            if ($data instanceof IOError) {
+                header(RequestHelper::makeHTTPHeader($data->code), true, $data->code);
+            } elseif ($data instanceof IOFile) {
                 $this->pushFile($data->filename, $data->mimetype);
             }
         }
@@ -112,7 +112,7 @@ class IO
         header('Pragma: no-cache');
         header('Content-type: application/json');
 
-        die(json_safe_encode($data));
+        die(StringHandler::json_safe_encode($data));
     }
 
     /**
@@ -121,7 +121,7 @@ class IO
      * @param string $name
      * @return bool
      */
-    public function exists($name)
+    public function exists($name): bool
     {
         return isset($this->functions[$name]);
     }

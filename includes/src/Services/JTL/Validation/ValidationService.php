@@ -234,6 +234,9 @@ class ValidationService implements ValidationServiceInterface
         return $this->validateSet($this->cookie, $rulesConfig);
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function createMissingResult()
     {
         $result = new ValidationResult(null);

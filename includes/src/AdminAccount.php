@@ -37,7 +37,7 @@ class AdminAccount
     /**
      * @param bool $bInitialize
      */
-    public function __construct($bInitialize = true)
+    public function __construct(bool $bInitialize = true)
     {
         $this->authLogger    = Shop::Container()->getBackendLogService();
         $this->messageMapper = new \Mapper\AdminLoginStatusMessageMapper();
@@ -56,7 +56,7 @@ class AdminAccount
      * @return bool - true if successfully verified
      * @throws Exception
      */
-    public function verifyResetPasswordHash($hash, $mail): bool
+    public function verifyResetPasswordHash(string $hash, string $mail): bool
     {
         $user = Shop::Container()->getDB()->select('tadminlogin', 'cMail', $mail);
         if ($user !== null) {
@@ -92,7 +92,7 @@ class AdminAccount
      * @return bool - true if valid admin account
      * @throws Exception
      */
-    public function prepareResetPassword($mail): bool
+    public function prepareResetPassword(string $mail): bool
     {
         $cryptoService            = Shop::Container()->getCryptoService();
         $passwordService          = Shop::Container()->getPasswordService();
@@ -124,11 +124,11 @@ class AdminAccount
      * @param string $user
      * @return int
      */
-    private function handleLoginResult($code, $user): int
+    private function handleLoginResult(int $code, string $user): int
     {
         $log = new \Model\AuthLogEntry();
 
-        $log->setIP(getRealIp());
+        $log->setIP(RequestHelper::getRealIP());
         $log->setCode($code);
         $log->setUser($user);
 
@@ -147,7 +147,7 @@ class AdminAccount
      * @return int
      * @throws Exception
      */
-    public function login($cLogin, $cPass)
+    public function login(string $cLogin, string $cPass): int
     {
         $oAdmin = Shop::Container()->getDB()->select(
             'tadminlogin',
@@ -211,7 +211,7 @@ class AdminAccount
         if ($verified === true || ($cPassCrypted !== null && $oAdmin->cPass === $cPassCrypted)) {
             // Wartungsmodus aktiv? Nein => loesche Session
             $settings = Shop::getSettings(CONF_GLOBAL);
-            if ($settings['global']['wartungsmodus_aktiviert'] === 'N' && is_array($_SESSION) && count($_SESSION) > 0) {
+            if (is_array($_SESSION) && $settings['global']['wartungsmodus_aktiviert'] === 'N' && count($_SESSION) > 0) {
                 foreach ($_SESSION as $i => $xSession) {
                     unset($_SESSION[$i]);
                 }
@@ -221,7 +221,7 @@ class AdminAccount
             //check password hash and update if necessary
             $this->checkAndUpdateHash($cPass);
             if (!$this->getIsTwoFaAuthenticated()) {
-                return $this->handleLoginResult(AdminLoginStatus::ERROR_TWO_FACTOR_AUTH_EXPIRED);
+                return $this->handleLoginResult(AdminLoginStatus::ERROR_TWO_FACTOR_AUTH_EXPIRED, $cLogin);
             }
 
             return $this->handleLoginResult($this->logged()
@@ -238,7 +238,7 @@ class AdminAccount
     /**
      * @return $this
      */
-    public function logout()
+    public function logout(): self
     {
         $this->_bLogged = false;
         session_destroy();
@@ -249,7 +249,7 @@ class AdminAccount
     /**
      * @return $this
      */
-    public function lock()
+    public function lock(): self
     {
         $this->_bLogged = false;
 
@@ -308,7 +308,7 @@ class AdminAccount
      * @param bool   $bShowNoAccessPage
      * @return bool
      */
-    public function permission($cRecht, $bRedirectToLogin = false, $bShowNoAccessPage = false)
+    public function permission($cRecht, $bRedirectToLogin = false, $bShowNoAccessPage = false): bool
     {
         if ($bRedirectToLogin) {
             $this->redirectOnFailure();
@@ -333,13 +333,10 @@ class AdminAccount
      * @param int $nAdminMenuGroup
      * @return array
      */
-    public function getVisibleMenu($nAdminLoginGroup, $nAdminMenuGroup): array
+    public function getVisibleMenu(int $nAdminLoginGroup, int $nAdminMenuGroup): array
     {
-        $nAdminLoginGroup = (int)$nAdminLoginGroup;
-        $nAdminMenuGroup  = (int)$nAdminMenuGroup;
-
         if ($nAdminLoginGroup === ADMINGROUP) {
-            $oLink_arr = Shop::Container()->getDB()->selectAll(
+            $links = Shop::Container()->getDB()->selectAll(
                 'tadminmenu',
                 'kAdminmenueGruppe',
                 $nAdminMenuGroup,
@@ -347,7 +344,7 @@ class AdminAccount
                 'cLinkname, nSort'
             );
         } else {
-            $oLink_arr = Shop::Container()->getDB()->queryPrepared(
+            $links = Shop::Container()->getDB()->queryPrepared(
                 'SELECT tadminmenu.* 
                     FROM tadminmenu 
                     JOIN tadminrechtegruppe 
@@ -363,7 +360,13 @@ class AdminAccount
             );
         }
 
-        return $oLink_arr;
+        return \Functional\map($links, function ($e) {
+            $e->kAdminmenu        = (int)$e->kAdminmenu;
+            $e->kAdminmenueGruppe = (int)$e->kAdminmenueGruppe;
+            $e->nSort             = (int)$e->nSort;
+
+            return $e;
+        });
     }
 
     /**
@@ -388,7 +391,7 @@ class AdminAccount
     /**
      * @return $this
      */
-    private function _validateSession()
+    private function _validateSession(): self
     {
         $this->_bLogged = false;
         if (isset($_SESSION['AdminAccount']->cLogin, $_SESSION['AdminAccount']->cPass, $_SESSION['AdminAccount']->cURL)
@@ -426,9 +429,9 @@ class AdminAccount
     }
 
     /**
-     * @return array|int
+     * @return array
      */
-    public function favorites()
+    public function favorites(): array
     {
         return $this->logged()
             ? AdminFavorite::fetchAll($_SESSION['AdminAccount']->kAdminlogin)
@@ -439,13 +442,13 @@ class AdminAccount
      * @param stdClass $oAdmin
      * @return $this
      */
-    private function _toSession($oAdmin)
+    private function _toSession($oAdmin): self
     {
         $oGroup = $this->_getPermissionsByGroup($oAdmin->kAdminlogingruppe);
         if (is_object($oGroup) || (int)$oAdmin->kAdminlogingruppe === ADMINGROUP) {
             $_SESSION['AdminAccount']              = new stdClass();
             $_SESSION['AdminAccount']->cURL        = Shop::getURL();
-            $_SESSION['AdminAccount']->kAdminlogin = $oAdmin->kAdminlogin;
+            $_SESSION['AdminAccount']->kAdminlogin = (int)$oAdmin->kAdminlogin;
             $_SESSION['AdminAccount']->cLogin      = $oAdmin->cLogin;
             $_SESSION['AdminAccount']->cMail       = $oAdmin->cMail;
             $_SESSION['AdminAccount']->cPass       = $oAdmin->cPass;
@@ -472,7 +475,7 @@ class AdminAccount
      * @param string $cLogin
      * @return $this
      */
-    private function _setLastLogin($cLogin)
+    private function _setLastLogin($cLogin): self
     {
         Shop::Container()->getDB()->update('tadminlogin', 'cLogin', $cLogin, (object)['dLetzterLogin' => 'now()']);
 
@@ -484,7 +487,7 @@ class AdminAccount
      * @param bool   $bReset
      * @return $this
      */
-    private function _setRetryCount($cLogin, $bReset = false)
+    private function _setRetryCount(string $cLogin, bool $bReset = false): self
     {
         if ($bReset) {
             Shop::Container()->getDB()->update('tadminlogin', 'cLogin', $cLogin, (object)['nLoginVersuch' => 0]);
@@ -505,26 +508,27 @@ class AdminAccount
      * @param int $kAdminlogingruppe
      * @return bool|object
      */
-    private function _getPermissionsByGroup($kAdminlogingruppe)
+    private function _getPermissionsByGroup(int $kAdminlogingruppe)
     {
-        $kAdminlogingruppe = (int)$kAdminlogingruppe;
-        $oGroup            = Shop::Container()->getDB()->select('tadminlogingruppe', 'kAdminlogingruppe',
-            $kAdminlogingruppe);
+        $oGroup = Shop::Container()->getDB()->select(
+            'tadminlogingruppe',
+            'kAdminlogingruppe',
+            $kAdminlogingruppe
+        );
         if ($oGroup !== null && isset($oGroup->kAdminlogingruppe)) {
-            $oPermission_arr = Shop::Container()->getDB()->selectAll(
+            $oGroup->kAdminlogingruppe = (int)$oGroup->kAdminlogingruppe;
+            $oPermission_arr           = Shop::Container()->getDB()->selectAll(
                 'tadminrechtegruppe',
                 'kAdminlogingruppe',
                 $kAdminlogingruppe,
                 'cRecht'
             );
-            if (is_array($oPermission_arr)) {
-                $oGroup->oPermission_arr = [];
-                foreach ($oPermission_arr as $oPermission) {
-                    $oGroup->oPermission_arr[] = $oPermission->cRecht;
-                }
-
-                return $oGroup;
+            $oGroup->oPermission_arr   = [];
+            foreach ($oPermission_arr as $oPermission) {
+                $oGroup->oPermission_arr[] = $oPermission->cRecht;
             }
+
+            return $oGroup;
         }
 
         return false;
@@ -532,11 +536,11 @@ class AdminAccount
 
     /**
      * @param string $password
-     * @return false|string
+     * @return string
      * @deprecated since 5.0
      * @throws Exception
      */
-    public static function generatePasswordHash($password)
+    public static function generatePasswordHash(string $password): string
     {
         return Shop::Container()->getPasswordService()->hash($password);
     }
@@ -548,7 +552,7 @@ class AdminAccount
      * @return bool - true when hash was updated
      * @throws Exception
      */
-    private function checkAndUpdateHash($password): bool
+    private function checkAndUpdateHash(string $password): bool
     {
         $passwordService = Shop::Container()->getPasswordService();
         // only update hash if the db update to 4.00+ was already executed

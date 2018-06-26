@@ -30,9 +30,7 @@ class BillpayPaylater extends Billpay
      */
     public function preparePaymentProcess($oOrder)
     {
-        $oPaymentEx = isset($_SESSION['za_billpay_jtl']['oOrderEx'])
-            ? $_SESSION['za_billpay_jtl']['oOrderEx']
-            : null;
+        $oPaymentEx = $_SESSION['za_billpay_jtl']['oOrderEx'] ?? null;
 
         if ($oPaymentEx === null) {
             BPHelper::log("canceled capture, invalid session information");
@@ -68,14 +66,14 @@ class BillpayPaylater extends Billpay
 
             unset($_SESSION['za_billpay_jtl']['oOrderEx']);
 
-            $session = Session::getInstance();
+            $session = \Session\Session::getInstance();
             $session->cleanUp();
         }
 
         Shop::Smarty()->assign('oOrder', $oOrder)
             ->assign('oPaymentEx', $oPaymentEx)
             ->assign('nPaymentType', IPL_CORE_PAYMENT_TYPE_PAY_LATER)
-            ->assign('nSSL', pruefeSSL())
+            ->assign('nSSL', RequestHelper::checkSSL())
             ->assign('nState', $nState);
     }
 
@@ -84,9 +82,7 @@ class BillpayPaylater extends Billpay
      */
     public function preauthRequest()
     {
-        $oPaymentEx = isset($_SESSION['za_billpay_jtl']['oOrderEx'])
-            ? $_SESSION['za_billpay_jtl']['oOrderEx']
-            : null;
+        $oPaymentEx = $_SESSION['za_billpay_jtl']['oOrderEx'] ?? null;
 
         if ($oPaymentEx !== null) {
             $cName['ger'] = 'Bearbeitungsgeb&uuml;hr';

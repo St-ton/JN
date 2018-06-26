@@ -83,15 +83,16 @@ class ContainerBase implements ContainerInterface
     }
 
     /**
-     * @inheritdoc
+     * @param string $id
+     * @return bool
      */
-    public function has($id)
+    public function has($id): bool
     {
         return isset($this->entries[$id]);
     }
 
     /**
-     * @param $id
+     * @param string $id
      * @throws ServiceNotFoundException
      */
     protected function checkExistence($id)
@@ -102,7 +103,7 @@ class ContainerBase implements ContainerInterface
     }
 
     /**
-     * @param $id
+     * @param string $id
      * @throws \Exception
      */
     protected function checkUninitialized($id)
@@ -113,8 +114,8 @@ class ContainerBase implements ContainerInterface
     }
 
     /**
-     * @param $id
-     * @param $type
+     * @param string $id
+     * @param int    $type
      * @throws \Exception
      */
     protected function checkOverrideMatchingType($id, $type)

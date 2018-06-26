@@ -12,11 +12,11 @@ $error        = '';
 $cacheAction  = '';
 $step         = 'uebersicht';
 $tab          = 'uebersicht';
-$action       = (isset($_POST['a']) && validateToken()) ? $_POST['a'] : null;
+$action       = (isset($_POST['a']) && FormHelper::validateToken()) ? $_POST['a'] : null;
 $cache        = null;
 $opcacheStats = null;
-if (0 < strlen(verifyGPDataString('tab'))) {
-    $smarty->assign('tab', verifyGPDataString('tab'));
+if (0 < strlen(RequestHelper::verifyGPDataString('tab'))) {
+    $smarty->assign('tab', RequestHelper::verifyGPDataString('tab'));
 }
 try {
     $cache = Shop::Container()->getCache();
@@ -51,7 +51,7 @@ switch ($action) {
                         $hookInfo = ['type' => $cacheType, 'key' => null, 'isTag' => true];
                         $flush    = $cache->flushTags([$cacheType], $hookInfo);
                         if ($flush === false) {
-                            $error .= '<br />Konnte Cache "' . $cacheType . '" nicht l&ouml;schen (evtl. bereits leer).';
+                            $error .= '<br />Konnte Cache "' . $cacheType . '" nicht löschen (evtl. bereits leer).';
                         } else {
                             $okCount++;
                         }
@@ -60,7 +60,7 @@ switch ($action) {
                         $notice .= $okCount . ' Caches erfolgreich geleert.';
                     }
                 } else {
-                    $error .= 'Kein Cache-Typ ausgew&auml;hlt.';
+                    $error .= 'Kein Cache-Typ ausgewählt.';
                 }
                 break;
             case 'activate' :
@@ -80,10 +80,10 @@ switch ($action) {
                         $upd
                     );
                     if ($res > 0) {
-                        $notice .= 'Ausgew&auml;hlte Typen erfolgreich aktiviert.';
+                        $notice .= 'Ausgewählte Typen erfolgreich aktiviert.';
                     }
                 } else {
-                    $error .= 'Kein Cache-Typ ausgew&auml;hlt.';
+                    $error .= 'Kein Cache-Typ ausgewählt.';
                 }
                 break;
             case 'deactivate' :
@@ -102,10 +102,10 @@ switch ($action) {
                         $upd
                     );
                     if ($res > 0) {
-                        $notice .= 'Ausgew&auml;hlte Typen erfolgreich deaktiviert.';
+                        $notice .= 'Ausgewählte Typen erfolgreich deaktiviert.';
                     }
                 } else {
-                    $error .= 'Kein Cache-Typ ausgew&auml;hlt.';
+                    $error .= 'Kein Cache-Typ ausgewählt.';
                 }
                 break;
             default :
@@ -115,12 +115,12 @@ switch ($action) {
     case 'flush_object_cache' :
         $tab = 'massaction';
         if ($cache !== null && $cache->flushAll() !== false) {
-            $notice = 'Object Cache wurde erfolgreich gel&ouml;scht.';
+            $notice = 'Object Cache wurde erfolgreich gelöscht.';
         } else {
             if (0 < strlen($error)) {
                 $error .= '<br />';
             }
-            $error .= 'Der Cache konnte nicht gel&ouml;scht werden.';
+            $error .= 'Der Cache konnte nicht gelöscht werden.';
         }
         break;
     case 'settings' :
@@ -188,7 +188,7 @@ switch ($action) {
                     if ($value->cWert !== 'null') {
                         $notice .= '<strong>' . $value->cWert . '</strong> wurde als Cache-Methode gespeichert.<br />';
                     } else {
-                        $notice .= 'Konnte keine funktionierende Cache-Methode ausw&auml;hlen.';
+                        $notice .= 'Konnte keine funktionierende Cache-Methode auswählen.';
                     }
                 }
                 Shop::Container()->getDB()->delete(
@@ -202,7 +202,7 @@ switch ($action) {
         }
         $cache->flushAll();
         $cache->setJtlCacheConfig();
-        $notice .= 'Ihre Einstellungen wurden &uuml;bernommen.<br />';
+        $notice .= 'Ihre Einstellungen wurden übernommen.<br />';
         $tab = 'settings';
         break;
     case 'benchmark' :
@@ -251,13 +251,11 @@ switch ($action) {
                     $pParameters['count']++;
                 } else {
                     $pParameters['error'] .= 'Datei <strong>' . $pParameters['path'] . $pParameters['filename'] .
-                        '</strong> konnte nicht gel&ouml;scht werden!<br/>';
+                        '</strong> konnte nicht gelöscht werden!<br/>';
                 }
-            } else {
-                if (!@rmdir($pParameters['path'] . $pParameters['filename'])) {
-                    $pParameters['error'] .= 'Verzeichnis <strong>' . $pParameters['path'] . $pParameters['filename'] .
-                        '</strong> konnte nicht gel&ouml;scht werden!<br/>';
-                }
+            } elseif (!@rmdir($pParameters['path'] . $pParameters['filename'])) {
+                $pParameters['error'] .= 'Verzeichnis <strong>' . $pParameters['path'] . $pParameters['filename'] .
+                    '</strong> konnte nicht gelöscht werden!<br/>';
             }
         };
         $deleteCount  = 0;
@@ -273,7 +271,7 @@ switch ($action) {
         $dirMan->getData(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR, $callback, $cbParameters);
         $notice .= 'Es wurden <strong>' .
             number_format($cbParameters['count']) .
-            '</strong> Dateien im Templatecache gel&ouml;scht!';
+            '</strong> Dateien im Templatecache gelöscht!';
         break;
     default:
         break;
@@ -317,7 +315,8 @@ $advancedSettings = Shop::Container()->getDB()->query(
         FROM teinstellungenconf 
         WHERE (nStandardAnzeigen = 0 OR nStandardAnzeigen = 2)
             AND kEinstellungenSektion = " . CONF_CACHING . "
-        ORDER BY nSort", 2
+        ORDER BY nSort",
+    \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 $settingsCount    = count($advancedSettings);
 for ($i = 0; $i < $settingsCount; ++$i) {

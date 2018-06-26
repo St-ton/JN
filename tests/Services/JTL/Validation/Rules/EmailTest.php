@@ -6,7 +6,10 @@
 
 namespace Services\JTL\Validation\Rules;
 
-
+/**
+ * Class EmailTest
+ * @package Services\JTL\Validation\Rules
+ */
 class EmailTest extends \PHPUnit_Framework_TestCase
 {
     public function test()

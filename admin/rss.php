@@ -11,7 +11,7 @@ $oAccount->permission('EXPORT_RSSFEED_VIEW', true, true);
 $cHinweis = '';
 $cFehler  = '';
 
-if (isset($_GET['f']) && (int)$_GET['f'] === 1 && validateToken()) {
+if (isset($_GET['f']) && (int)$_GET['f'] === 1 && FormHelper::validateToken()) {
     if (generiereRSSXML()) {
         $cHinweis = 'RSS Feed wurde erstellt!';
     } else {

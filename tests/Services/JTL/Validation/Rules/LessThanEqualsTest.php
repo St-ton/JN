@@ -6,7 +6,10 @@
 
 namespace Services\JTL\Validation\Rules;
 
-
+/**
+ * Class LessThanEqualsTest
+ * @package Services\JTL\Validation\Rules
+ */
 class LessThanEqualsTest extends \PHPUnit_Framework_TestCase
 {
     public function test()

@@ -39,9 +39,7 @@ class PaymentPartner extends ServerPaymentMethod
     {
         global $Einstellungen;
 
-        return isset($Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_login'])
-            ? $Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_login']
-            : null;
+        return $Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_login'] ?? null;
     }
 
     /**
@@ -51,9 +49,7 @@ class PaymentPartner extends ServerPaymentMethod
     {
         global $Einstellungen;
 
-        return isset($Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_password'])
-            ? $Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_password']
-            : null;
+        return $Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_password'] ?? null;
     }
 
     /**
@@ -63,9 +59,7 @@ class PaymentPartner extends ServerPaymentMethod
     {
         global $Einstellungen;
 
-        return isset($Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_channel'])
-            ? $Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_channel']
-            : null;
+        return $Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_channel'] ?? null;
     }
 
     /**
@@ -75,9 +69,7 @@ class PaymentPartner extends ServerPaymentMethod
     {
         global $Einstellungen;
 
-        return isset($Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_sender'])
-            ? $Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_sender']
-            : null;
+        return $Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_sender'] ?? null;
     }
 
     /**

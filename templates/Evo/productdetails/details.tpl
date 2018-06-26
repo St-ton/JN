@@ -143,7 +143,7 @@
                     <p class="product-category word-break">
                         <span class="text-muted">{lang key="category"}: </span>
                         {assign var=i_kat value=$Brotnavi|@count}{assign var=i_kat value=$i_kat-2}
-                        <a href="{$Brotnavi[$i_kat]->url}" itemprop="category">{$Brotnavi[$i_kat]->name}</a>
+                        <a href="{$Brotnavi[$i_kat]->getURLFull()}" itemprop="category">{$Brotnavi[$i_kat]->getName()}</a>
                     </p>
                     {/block}
                 {/if}

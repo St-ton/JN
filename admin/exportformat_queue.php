@@ -20,22 +20,22 @@ $messages = [
     'notice' => '',
     'error'  => '',
 ];
-if (isset($action['erstellen']) && (int)$action['erstellen'] === 1 && validateToken()) {
+if (isset($action['erstellen']) && (int)$action['erstellen'] === 1 && FormHelper::validateToken()) {
     $step = exportformatQueueActionErstellen($smarty, $messages);
 }
-if (isset($action['editieren']) && (int)$action['editieren'] === 1 && validateToken()) {
+if (isset($action['editieren']) && (int)$action['editieren'] === 1 && FormHelper::validateToken()) {
     $step = exportformatQueueActionEditieren($smarty, $messages);
 }
-if (isset($action['loeschen']) && (int)$action['loeschen'] === 1 && validateToken()) {
+if (isset($action['loeschen']) && (int)$action['loeschen'] === 1 && FormHelper::validateToken()) {
     $step = exportformatQueueActionLoeschen($smarty, $messages);
 }
-if (isset($action['triggern']) && (int)$action['triggern'] === 1 && validateToken()) {
+if (isset($action['triggern']) && (int)$action['triggern'] === 1 && FormHelper::validateToken()) {
     $step = exportformatQueueActionTriggern($smarty, $messages);
 }
-if (isset($action['fertiggestellt']) && (int)$action['fertiggestellt'] === 1 && validateToken()) {
+if (isset($action['fertiggestellt']) && (int)$action['fertiggestellt'] === 1 && FormHelper::validateToken()) {
     $step = exportformatQueueActionFertiggestellt($smarty, $messages);
 }
-if (isset($action['erstellen_eintragen']) && (int)$action['erstellen_eintragen'] === 1 && validateToken()) {
+if (isset($action['erstellen_eintragen']) && (int)$action['erstellen_eintragen'] === 1 && FormHelper::validateToken()) {
     $step = exportformatQueueActionErstellenEintragen($smarty, $messages);
 }
 

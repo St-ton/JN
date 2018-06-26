@@ -18,7 +18,7 @@ class AdminIO extends IO
      * @param AdminAccount $oAccount
      * @return $this
      */
-    public function setAccount(AdminAccount $oAccount)
+    public function setAccount(AdminAccount $oAccount): self
     {
         $this->oAccount = $oAccount;
 

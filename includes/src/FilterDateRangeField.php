@@ -3,6 +3,10 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+/**
+ * Class FilterDateRangeField
+ */
 class FilterDateRangeField extends FilterField
 {
     /**
@@ -54,7 +58,7 @@ class FilterDateRangeField extends FilterField
     /**
      * @return string
      */
-    public function getStart()
+    public function getStart(): string
     {
         return $this->dStart;
     }
@@ -62,7 +66,7 @@ class FilterDateRangeField extends FilterField
     /**
      * @return string
      */
-    public function getEnd()
+    public function getEnd(): string
     {
         return $this->dEnd;
     }

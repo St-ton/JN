@@ -17,7 +17,7 @@ $fehler  = '';
 
 if ((int)$_POST['newsletterimport'] === 1 &&
     isset($_POST['newsletterimport'], $_FILES['csv']['tmp_name']) &&
-    validateToken() &&
+    FormHelper::validateToken() &&
     strlen($_FILES['csv']['tmp_name']) > 0
 ) {
     $file = fopen($_FILES['csv']['tmp_name'], 'r');
@@ -43,8 +43,11 @@ if ((int)$_POST['newsletterimport'] === 1 &&
     }
 }
 
-$smarty->assign('sprachen', gibAlleSprachen())
-       ->assign('kundengruppen', Shop::Container()->getDB()->query("SELECT * FROM tkundengruppe ORDER BY cName", 2))
+$smarty->assign('sprachen', Sprache::getAllLanguages())
+       ->assign('kundengruppen', Shop::Container()->getDB()->query(
+           'SELECT * FROM tkundengruppe ORDER BY cName',
+           \DB\ReturnType::ARRAY_OF_OBJECTS
+       ))
        ->assign('hinweis', $hinweis)
        ->assign('fehler', $fehler)
        ->display('newsletterimport.tpl');
@@ -97,7 +100,7 @@ function pruefeNLEBlacklist($cMail)
         StringHandler::filterXSS(strip_tags($cMail))
     );
 
-    return (!empty($oNEB->cMail));
+    return !empty($oNEB->cMail);
 }
 
 /**
@@ -158,10 +161,7 @@ function unique_NewsletterCode($dbfeld, $code)
  */
 function processImport($fmt, $data)
 {
-    if (isset($oTMP) && is_object($oTMP)) {
-        unset($oTMP);
-    }
-    unset($newsletterempfaenger);
+    unset($oTMP, $newsletterempfaenger);
 
     $newsletterempfaenger = new NewsletterEmpfaenger();
     $cnt                  = count($fmt); // only columns that have no empty header jtl-shop/issues#296
@@ -171,23 +171,23 @@ function processImport($fmt, $data)
         }
     }
 
-    if (!valid_email($newsletterempfaenger->cEmail)) {
-        return "keine g&uuml;ltige Email ($newsletterempfaenger->cEmail)! &Uuml;bergehe diesen Datensatz.";
+    if (StringHandler::filterEmailAddress($newsletterempfaenger->cEmail) === false) {
+        return "keine gültige Email ($newsletterempfaenger->cEmail)! Übergehe diesen Datensatz.";
     }
     // NewsletterEmpfaengerBlacklist
     if (pruefeNLEBlacklist($newsletterempfaenger->cEmail)) {
-        return "keine g&uuml;ltige Email ($newsletterempfaenger->cEmail)! " .
-            "Kunde hat sich auf die Blacklist setzen lassen! &Uuml;bergehe diesen Datensatz.";
+        return "keine gültige Email ($newsletterempfaenger->cEmail)! " .
+            "Kunde hat sich auf die Blacklist setzen lassen! Übergehe diesen Datensatz.";
     }
 
     if (!$newsletterempfaenger->cNachname) {
-        return 'kein Nachname! &Uuml;bergehe diesen Datensatz.';
+        return 'kein Nachname! Übergehe diesen Datensatz.';
     }
 
     $old_mail = Shop::Container()->getDB()->select('tnewsletterempfaenger', 'cEmail', $newsletterempfaenger->cEmail);
     if (isset($old_mail->kNewsletterEmpfaenger) && $old_mail->kNewsletterEmpfaenger > 0) {
-        return "Newsletterempf&auml;nger mit dieser Emailadresse bereits vorhanden: (" .
-            $newsletterempfaenger->cEmail . ")! &Uuml;bergehe Datensatz.";
+        return "Newsletterempfänger mit dieser Emailadresse bereits vorhanden: (" .
+            $newsletterempfaenger->cEmail . ")! Übergehe Datensatz.";
     }
 
     if ($newsletterempfaenger->cAnrede === 'f') {

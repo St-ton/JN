@@ -22,14 +22,14 @@ class LastJob
      * @param int $hours
      * @return stdClass[]
      */
-    public function getRepeatedJobs($hours)
+    public function getRepeatedJobs(int $hours)
     {
         return Shop::Container()->getDB()->query(
             "SELECT kJob, nJob, dErstellt
                 FROM tlastjob
                 WHERE cType = 'RPT'
                     AND (dErstellt = '0000-00-00 00:00:00'
-                        OR DATE_ADD(dErstellt, INTERVAL " . (int)$hours . " HOUR) < NOW())",
+                        OR DATE_ADD(dErstellt, INTERVAL " . $hours . " HOUR) < NOW())",
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
@@ -37,7 +37,7 @@ class LastJob
     /**
      * @return stdClass[]
      */
-    public function getStdJobs()
+    public function getStdJobs(): array
     {
         return Shop::Container()->getDB()->selectAll(
             'tlastjob',
@@ -52,9 +52,9 @@ class LastJob
      * @param int $nJob
      * @return null|stdClass
      */
-    public function getJob($nJob)
+    public function getJob(int $nJob)
     {
-        return Shop::Container()->getDB()->select('tlastjob', 'nJob', (int)$nJob);
+        return Shop::Container()->getDB()->select('tlastjob', 'nJob', $nJob);
     }
 
     /**
@@ -62,13 +62,13 @@ class LastJob
      * @param string $cJobName
      * @return stdClass
      */
-    public function run($nJob, $cJobName = null)
+    public function run(int $nJob, $cJobName = null)
     {
         $job = $this->getJob($nJob);
         if ($job === null) {
             $job = (object)[
                 'cType'     => 'STD',
-                'nJob'      => (int)$nJob,
+                'nJob'      => $nJob,
                 'cJobName'  => $cJobName,
                 'nCounter'  => 1,
                 'dErstellt' => date('Y-m-d H:i:s'),
@@ -90,7 +90,7 @@ class LastJob
      * @param int $nJob
      * @return bool
      */
-    public function restartJob($nJob)
+    public function restartJob(int $nJob)
     {
         $job = (object)[
             'nCounter'  => 0,
@@ -98,12 +98,11 @@ class LastJob
             'nFinished' => 0,
         ];
 
-        return Shop::Container()->getDB()->update('tlastjob', 'nJob', (int)$nJob, $job);
+        return Shop::Container()->getDB()->update('tlastjob', 'nJob', $nJob, $job);
     }
 
     /**
      * @param int|null $nJob
-     * @return void
      */
     public function finishStdJobs($nJob = null)
     {

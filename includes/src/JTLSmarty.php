@@ -13,7 +13,7 @@ require_once PFAD_ROOT . PFAD_PHPQUERY . 'phpquery.class.php';
 class JTLSmarty extends SmartyBC
 {
     /**
-     * @var JTLCache
+     * @var \Cache\JTLCacheInterface
      */
     public $jtlCache;
 
@@ -60,7 +60,7 @@ class JTLSmarty extends SmartyBC
      * @param bool   $tplCache
      * @param string $context
      */
-    public function __construct($fast_init = false, $isAdmin = false, $tplCache = true, $context = 'frontend')
+    public function __construct(bool $fast_init = false, bool $isAdmin = false, bool $tplCache = true, string $context = 'frontend')
     {
         parent::__construct();
         Smarty::$_CHARSET = JTL_CHARSET;
@@ -154,7 +154,7 @@ class JTLSmarty extends SmartyBC
      * @param array|null $config
      * @return $this
      */
-    public function setCachingParams($config = null)
+    public function setCachingParams(array $config = null)
     {
         // instantiate new cache - we use different options here
         if ($config === null) {
@@ -250,14 +250,14 @@ class JTLSmarty extends SmartyBC
      * @param bool   $minifyJS
      * @return string
      */
-    private function minify_html($html, $minifyCSS = false, $minifyJS = false)
+    private function minify_html(string $html, bool $minifyCSS = false, bool $minifyJS = false)
     {
         $options = [];
         if ($minifyCSS === true) {
-            $options['cssMinifier'] = ['Minify_CSS', 'minify'];
+            $options['cssMinifier'] = [Minify_CSS::class, 'minify'];
         }
         if ($minifyJS === true) {
-            $options['jsMinifier'] = ['\JSMin\JSMin', 'minify'];
+            $options['jsMinifier'] = [\JSMin\JSMin::class, 'minify'];
         }
         try {
             $res = (new Minify_HTML($html, $options))->process();
@@ -358,9 +358,8 @@ class JTLSmarty extends SmartyBC
      * @param bool   $middle
      * @return mixed|string
      */
-    public function truncate($string, $length = 80, $etc = '...', $break_words = false, $middle = false)
+    public function truncate($string, int $length = 80, $etc = '...', bool $break_words = false, bool $middle = false)
     {
-        $length = (int)$length;
         if ($length === 0) {
             return '';
         }

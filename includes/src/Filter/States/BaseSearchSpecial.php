@@ -8,10 +8,8 @@ namespace Filter\States;
 
 use Filter\AbstractFilter;
 use Filter\FilterJoin;
-use Filter\FilterOption;
 use Filter\FilterInterface;
 use Filter\ProductFilter;
-use Filter\States\BaseCategory;
 
 /**
  * Class BaseSearchSpecial

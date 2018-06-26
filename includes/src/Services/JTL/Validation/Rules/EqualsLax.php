@@ -19,14 +19,17 @@ class EqualsLax implements RuleInterface
 
     /**
      * Equals constructor.
-     * @param $expected
+     * @param mixed $expected
      */
     public function __construct($expected)
     {
         $this->expected = $expected;
     }
 
-
+    /**
+     * @param mixed $value
+     * @return RuleResult
+     */
     public function validate($value)
     {
         return $this->expected == $value

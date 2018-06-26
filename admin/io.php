@@ -8,9 +8,18 @@
 require_once __DIR__ . '/includes/admininclude.php';
 
 if (!$oAccount->getIsAuthenticated()) {
+<<<<<<< HEAD
     AdminIO::getInstance()->respondAndExit(new IOError('Not authenticated as admin.', 401));
 } elseif (!validateToken()) {
     AdminIO::getInstance()->respondAndExit(new IOError('CSRF validation failed.', 403));
+=======
+    header(RequestHelper::makeHTTPHeader(401));
+    exit;
+}
+if (!FormHelper::validateToken()) {
+    $io = IO::getInstance();
+    $io->respondAndExit(new IOError('CSRF validation failed.', 500));
+>>>>>>> master
 }
 
 $jsonApi = JSONAPI::getInstance();

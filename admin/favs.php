@@ -14,7 +14,7 @@ $oAccount->redirectOnFailure();
 
 $kAdminlogin = (int)$_SESSION['AdminAccount']->kAdminlogin;
 
-if (validateToken() && verifyGPDataString('action') === 'save' && isset($_POST['title'], $_POST['url'])) {
+if (FormHelper::validateToken() && RequestHelper::verifyGPDataString('action') === 'save' && isset($_POST['title'], $_POST['url'])) {
     $titles = $_POST['title'];
     $urls   = $_POST['url'];
 

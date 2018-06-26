@@ -6,7 +6,10 @@
 
 namespace Services\JTL\Validation\Rules;
 
-
+/**
+ * Class InArrayStrictTest
+ * @package Services\JTL\Validation\Rules
+ */
 class InArrayStrictTest extends \PHPUnit_Framework_TestCase
 {
     public function test()

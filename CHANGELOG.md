@@ -297,7 +297,12 @@ Bitte beachten Sie auch das aktualisierte Handbuch zum PayPal-Plugin: http://jtl
 * [SHOP-1674] - Neue Smarty Blocks in snippets/shipping_tax_info.tpl und productdetails/price.tpl
 * [SHOP-1694] - Backstretch-Hintergrundbild verursacht Fehler bei geringer Netzgeschwindigkeit
 
-## [4.05.7]
+## [4.05.8]
+
+Dieses Update enthält ausschließlich einen TLS1.2-Fix für das alte PayPal-Classic-Zahlungsmodul. 
+PayPal-Plugin-Zahlarten sind nicht betroffen. 
+
+## [4.05.7] - 2018-06-19
 
 Dieses Update enthält Sicherheitsfixes (CSRF mit XSS oder SQL-Injections im Admin-Backend). 
 

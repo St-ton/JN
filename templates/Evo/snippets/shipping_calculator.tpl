@@ -91,9 +91,8 @@
                         {if isset($checkout) && $checkout}
                             {$link={get_static_route id='warenkorb.php'}}
                         {else}
-                            {$link="index.php?s={$Link->kLink}"}
+                            {$link="index.php?s={$Link->getID()}"}
                         {/if}
-                        <pre>{$Link|var_dump}</pre>
                         <a href="{$link}" class="btn btn-default">{lang key="newEstimation" section="checkout"}</a>
                     {else}
                         <div class="row">

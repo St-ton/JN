@@ -387,7 +387,7 @@ class Navigation
                 if ($this->link !== null) {
                     $ele->setName($this->link->getName());
                     $ele->setURL($this->link->getURL());
-                    $ele->setURLFull($this->baseURL . $this->link->getURL());
+                    $ele->setURLFull($this->link->getURL());
                     $breadCrumb[] = $ele;
                 }
                 break;
@@ -396,7 +396,7 @@ class Navigation
                 if ($this->link !== null) {
                     $ele->setName($this->link->getName());
                     $ele->setURL($this->link->getURL());
-                    $ele->setURLFull($this->baseURL . $this->link->getURL());
+                    $ele->setURLFull($this->link->getURL());
                     $breadCrumb[] = $ele;
                 }
                 break;

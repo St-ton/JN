@@ -51,8 +51,6 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
         exit;
     }
     $AufgeklappteKategorien = new KategorieListe();
-    $startKat               = new Kategorie();
-    $startKat->kKategorie   = 0;
     if ($AktuellerArtikel->Bewertungen === null) {
         $AktuellerArtikel->holeBewertung(
             Shop::getLanguage(),

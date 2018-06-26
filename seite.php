@@ -13,8 +13,6 @@ $AktuelleSeite          = 'SEITE';
 $Einstellungen          = Shopsetting::getInstance()->getAll();
 $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
-$startKat               = new Kategorie();
-$startKat->kKategorie   = 0;
 $linkHelper             = Shop::Container()->getLinkService();
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 // hole Link
@@ -35,8 +33,6 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
 }
 // hole aktuelle Kategorie, falls eine gesetzt
 $AufgeklappteKategorien = new KategorieListe();
-$startKat               = new Kategorie();
-$startKat->kKategorie   = 0;
 if ($link->getLinkType() === LINKTYP_STARTSEITE) {
     if ($link->getRedirectCode() > 0) {
         header('Location: ' . $cCanonicalURL, true, $link->getRedirectCode());

@@ -33,11 +33,6 @@ if (isset($_GET['i'])) {
         $bestellung->fuelleBestellung(0);
         speicherUploads($bestellung);
         Shop::Container()->getDB()->delete('tbestellid', 'kBestellung', (int)$bestellid->kBestellung);
-        // Zahlungsanbieter
-        if (isset($_GET['za']) && $_GET['za'] === 'eos') {
-            include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'eos/eos.php';
-            eosZahlungsNachricht($bestellung);
-        }
     }
     Shop::Container()->getDB()->query(
         'DELETE FROM tbestellid WHERE dDatum < date_sub(now(),INTERVAL 30 DAY)',
@@ -104,8 +99,6 @@ if (isset($_GET['i'])) {
 }
 $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
-$startKat               = new Kategorie();
-$startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 // Trusted Shops Kaeuferschutz Classic
 if (isset($Einstellungen['trustedshops']['trustedshops_nutzen']) && $Einstellungen['trustedshops']['trustedshops_nutzen'] === 'Y') {

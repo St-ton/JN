@@ -1981,31 +1981,28 @@ class ArtikelHelper
             }
             $lagerFilter         = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $customerGroupID     = Session::CustomerGroup()->getID();
-            $oArtikelMerkmal_arr = Shop::Container()->getDB()->query(
-                "SELECT merkmalartikel.kArtikel, merkmalartikel.kVaterArtikel
-                    FROM (
-                        SELECT DISTINCT tartikelmerkmal.kArtikel, tartikel.kVaterArtikel, 
-                        tartikelmerkmal.kMerkmal, tartikelmerkmal.kMerkmalWert
-                        FROM tartikelmerkmal
-                        JOIN tartikel 
-                            ON tartikel.kArtikel = tartikelmerkmal.kArtikel
-                            AND tartikel.kVaterArtikel != {$kArtikel}
+            $oArtikelMerkmal_arr = Shop::Container()->getDB()->queryPrepared(
+                "SELECT tartikelmerkmal.kArtikel, tartikel.kVaterArtikel
+                    FROM tartikelmerkmal
+                        JOIN tartikel ON tartikel.kArtikel = tartikelmerkmal.kArtikel
+                            AND tartikel.kVaterArtikel != :kArtikel
                             AND (tartikel.nIstVater = 1 OR tartikel.kEigenschaftKombi = 0)
-                        LEFT JOIN tartikelsichtbarkeit 
-                            ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
-                            AND tartikelsichtbarkeit.kKundengruppe = {$customerGroupID}
-                      WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                            AND tartikelmerkmal.kArtikel != {$kArtikel}
-                            {$lagerFilter}
-                            {$cSQLXSeller}
-                    ) AS merkmalartikel
-                    JOIN tartikelmerkmal similarMerkmal 
-                        ON similarMerkmal.kArtikel = {$kArtikel}
-                        AND similarMerkmal.kMerkmal = merkmalartikel.kMerkmal
-                        AND similarMerkmal.kMerkmalWert = merkmalartikel.kMerkmalWert
-                    GROUP BY merkmalartikel.kArtikel
-                    ORDER BY COUNT(similarMerkmal.kMerkmal) DESC
-                " . $cLimit,
+                        JOIN tartikelmerkmal similarMerkmal ON similarMerkmal.kArtikel = :kArtikel
+                            AND similarMerkmal.kMerkmal = tartikelmerkmal.kMerkmal
+                            AND similarMerkmal.kMerkmalWert = tartikelmerkmal.kMerkmalWert
+                        LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
+                            AND tartikelsichtbarkeit.kKundengruppe = :customerGroupID
+                    WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                        AND tartikelmerkmal.kArtikel != :kArtikel
+                        {$lagerFilter}
+                        {$cSQLXSeller}
+                    GROUP BY tartikelmerkmal.kArtikel
+                    ORDER BY COUNT(tartikelmerkmal.kMerkmal) DESC
+                    " . $cLimit,
+                [
+                    'kArtikel'        => $kArtikel,
+                    'customerGroupID' => $customerGroupID
+                ],
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             if (is_array($oArtikelMerkmal_arr) && count($oArtikelMerkmal_arr) > 0) {

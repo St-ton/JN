@@ -841,7 +841,6 @@ abstract class AbstractBox implements BoxInterface
     {
         $res           = get_object_vars($this);
         $res['config'] = '*truncated*';
-//        $res['filter'] = '*truncated*';
 
         return $res;
     }

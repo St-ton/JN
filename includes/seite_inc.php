@@ -3,7 +3,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once PFAD_ROOT . PFAD_INCLUDES . 'artikelsuchspecial_inc.php';
 
 /**
  * @return array
@@ -35,7 +34,7 @@ function gibNews($conf)
 function gibNextBoxPrio($search, $conf)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return CMSHelper::gibNextBoxPrio($search, $conf);
+    return null;
 }
 
 /**

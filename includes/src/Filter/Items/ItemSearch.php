@@ -11,6 +11,7 @@ use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
 use Filter\FilterInterface;
+use Filter\FilterStateSQL;
 use Filter\ProductFilter;
 use Filter\States\BaseSearchQuery;
 
@@ -418,39 +419,38 @@ class ItemSearch extends AbstractFilter
         $nLimit = ($limit = (int)$this->getConfig('navigationsfilter')['suchtrefferfilter_anzahl']) > 0
             ? ' LIMIT ' . $limit
             : '';
-        $state  = $this->productFilter->getCurrentStateData();
-
-        $state->addJoin((new FilterJoin())
+        $sql    = (new FilterStateSQL())->from($this->productFilter->getCurrentStateData());
+        $sql->setSelect([
+            'tsuchanfrage.kSuchanfrage',
+            'tsuchcache.kSuchCache',
+            'tsuchanfrage.cSuche',
+            'tartikel.kArtikel'
+        ]);
+        $sql->setOrderBy(null);
+        $sql->setLimit('');
+        $sql->setGroupBy(['tsuchanfrage.kSuchanfrage', 'tartikel.kArtikel']);
+        $sql->addJoin((new FilterJoin())
             ->setComment('JOIN1 from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('tsuchcachetreffer')
             ->setOn('tartikel.kArtikel = tsuchcachetreffer.kArtikel')
             ->setOrigin(__CLASS__));
-        $state->addJoin((new FilterJoin())
+        $sql->addJoin((new FilterJoin())
             ->setComment('JOIN2 from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('tsuchcache')
             ->setOn('tsuchcache.kSuchCache = tsuchcachetreffer.kSuchCache')
             ->setOrigin(__CLASS__));
-        $state->addJoin((new FilterJoin())
+        $sql->addJoin((new FilterJoin())
             ->setComment('JOIN3 from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('tsuchanfrage')
             ->setOn('tsuchanfrage.cSuche = tsuchcache.cSuche 
                         AND tsuchanfrage.kSprache = ' . $this->getLanguageID())
             ->setOrigin(__CLASS__));
+        $sql->addCondition('tsuchanfrage.nAktiv = 1');
 
-        $state->addCondition('tsuchanfrage.nAktiv = 1');
-
-        $query         = $this->productFilter->getFilterSQL()->getBaseQuery(
-            ['tsuchanfrage.kSuchanfrage', 'tsuchcache.kSuchCache', 'tsuchanfrage.cSuche', 'tartikel.kArtikel'],
-            $state->getJoins(),
-            $state->getConditions(),
-            $state->getHaving(),
-            null,
-            '',
-            ['tsuchanfrage.kSuchanfrage', 'tartikel.kArtikel']
-        );
+        $query         = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
         $searchFilters = \Shop::Container()->getDB()->query(
             'SELECT ssMerkmal.kSuchanfrage, ssMerkmal.kSuchCache, ssMerkmal.cSuche, COUNT(*) AS nAnzahl
                 FROM (' . $query . ') AS ssMerkmal

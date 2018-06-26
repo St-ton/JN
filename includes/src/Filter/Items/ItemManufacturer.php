@@ -41,7 +41,7 @@ class ItemManufacturer extends BaseManufacturer
      */
     public function setValue($value): FilterInterface
     {
-        $this->value = is_array($value) ? $value : (int)$value;
+        $this->value = is_array($value) ? array_map('intval', $value) : (int)$value;
 
         return $this;
     }

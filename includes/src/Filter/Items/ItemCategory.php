@@ -9,6 +9,7 @@ namespace Filter\Items;
 use DB\ReturnType;
 use Filter\FilterJoin;
 use Filter\FilterOption;
+use Filter\FilterStateSQL;
 use Filter\Type;
 use Filter\ProductFilter;
 use Filter\States\BaseCategory;
@@ -99,6 +100,7 @@ class ItemCategory extends BaseCategory
                 : null
         );
         $options            = [];
+        $sql                = (new FilterStateSQL())->from($state);
         // Kategoriefilter anzeige
         if ($categoryFilterType === 'HF' && !$this->productFilter->hasCategory()) {
             //@todo: $this instead of $naviFilter->KategorieFilter?
@@ -106,7 +108,7 @@ class ItemCategory extends BaseCategory
                 ? ''
                 : ' AND tkategorieartikelgesamt.kOberKategorie = 0';
 
-            $state->addJoin((new FilterJoin())
+            $sql->addJoin((new FilterJoin())
                 ->setComment('join1 from ' . __METHOD__)
                 ->setType('JOIN')
                 ->setTable('(
@@ -120,7 +122,7 @@ class ItemCategory extends BaseCategory
                 ) tkategorieartikelgesamt')
                 ->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel ' . $kKatFilter)
                 ->setOrigin(__CLASS__));
-            $state->addJoin((new FilterJoin())
+            $sql->addJoin((new FilterJoin())
                 ->setComment('join2 from ' . __METHOD__)
                 ->setType('JOIN')
                 ->setTable('tkategorie')
@@ -129,14 +131,14 @@ class ItemCategory extends BaseCategory
         } else {
             // @todo: this instead of $naviFilter->Kategorie?
             if (!$this->productFilter->hasCategory()) {
-                $state->addJoin((new FilterJoin())
+                $sql->addJoin((new FilterJoin())
                     ->setComment('join3 from ' . __METHOD__)
                     ->setType('JOIN')
                     ->setTable('tkategorieartikel')
                     ->setOn('tartikel.kArtikel = tkategorieartikel.kArtikel')
                     ->setOrigin(__CLASS__));
             }
-            $state->addJoin((new FilterJoin())
+            $sql->addJoin((new FilterJoin())
                 ->setComment('join4 from ' . __METHOD__)
                 ->setType('JOIN')
                 ->setTable('tkategorie')
@@ -153,21 +155,21 @@ class ItemCategory extends BaseCategory
             );
         }
         if (\Shop::get('checkCategoryVisibility')) {
-            $state->addJoin((new FilterJoin())
+            $sql->addJoin((new FilterJoin())
                 ->setComment('join5 from ' . __METHOD__)
                 ->setType('LEFT JOIN')
                 ->setTable('tkategoriesichtbarkeit')
                 ->setOn('tkategoriesichtbarkeit.kKategorie = tkategorie.kKategorie')
                 ->setOrigin(__CLASS__));
 
-            $state->addCondition('tkategoriesichtbarkeit.kKategorie IS NULL');
+            $sql->addCondition('tkategoriesichtbarkeit.kKategorie IS NULL');
         }
         $cSQLKategorieSprache        = new \stdClass();
         $cSQLKategorieSprache->cJOIN = '';
         $select                      = ['tkategorie.kKategorie', 'tkategorie.nSort'];
         if (!\Sprache::isDefaultLanguageActive()) {
-            $select[]       = "IF(tkategoriesprache.cName = '', tkategorie.cName, tkategoriesprache.cName) AS cName";
-            $state->addJoin((new FilterJoin())
+            $select[] = "IF(tkategoriesprache.cName = '', tkategorie.cName, tkategoriesprache.cName) AS cName";
+            $sql->addJoin((new FilterJoin())
                 ->setComment('join5 from ' . __METHOD__)
                 ->setType('JOIN')
                 ->setTable('tkategoriesprache')
@@ -177,16 +179,12 @@ class ItemCategory extends BaseCategory
         } else {
             $select[] = 'tkategorie.cName';
         }
+        $sql->setSelect($select);
+        $sql->setOrderBy(null);
+        $sql->setLimit('');
+        $sql->setGroupBy(['tkategorie.kKategorie', 'tartikel.kArtikel']);
 
-        $query            = $this->productFilter->getFilterSQL()->getBaseQuery(
-            $select,
-            $state->getJoins(),
-            $state->getConditions(),
-            $state->getHaving(),
-            null,
-            '',
-            ['tkategorie.kKategorie', 'tartikel.kArtikel']
-        );
+        $query            = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
         $categories       = \Shop::Container()->getDB()->executeQuery(
             "SELECT tseo.cSeo, ssMerkmal.kKategorie, ssMerkmal.cName, 
                 ssMerkmal.nSort, COUNT(*) AS nAnzahl

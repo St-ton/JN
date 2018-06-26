@@ -11,6 +11,7 @@ use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
 use Filter\FilterInterface;
+use Filter\FilterStateSQL;
 use Filter\ProductFilter;
 
 /**
@@ -116,28 +117,23 @@ class ItemRating extends AbstractFilter
         }
         $options = [];
         $state   = $this->productFilter->getCurrentStateData();
-        $state->addJoin($this->getSQLJoin());
-
-        $query            = $this->productFilter->getFilterSQL()->getBaseQuery(
-            [
-                'ROUND(tartikelext.fDurchschnittsBewertung, 0) AS nSterne',
-                'tartikel.kArtikel'
-            ],
-            $state->getJoins(),
-            $state->getConditions(),
-            $state->getHaving()
-        );
+        $sql     = (new FilterStateSQL())->from($state);
+        $sql->setSelect(['ROUND(tartikelext.fDurchschnittsBewertung, 0) AS nSterne', 'tartikel.kArtikel']);
+        $sql->setOrderBy(null);
+        $sql->setLimit('');
+        $sql->setGroupBy(['tartikel.kArtikel']);
+        $sql->addJoin($this->getSQLJoin());
         $res              = \Shop::Container()->getDB()->query(
             'SELECT ssMerkmal.nSterne, COUNT(*) AS nAnzahl
-                FROM (' . $query . ' ) AS ssMerkmal
+                FROM (' . $this->productFilter->getFilterSQL()->getBaseQuery($sql) . ' ) AS ssMerkmal
                 GROUP BY ssMerkmal.nSterne
                 ORDER BY ssMerkmal.nSterne DESC',
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $nSummeSterne     = 0;
+        $stars            = 0;
         $additionalFilter = new self($this->getProductFilter());
         foreach ($res as $row) {
-            $nSummeSterne += (int)$row->nAnzahl;
+            $stars += (int)$row->nAnzahl;
 
             $options[] = (new FilterOption())
                 ->setParam($this->getUrlParam())
@@ -152,7 +148,7 @@ class ItemRating extends AbstractFilter
                     \Shop::Lang()->get($row->nSterne > 1 ? 'starPlural' : 'starSingular')
                 )
                 ->setValue((int)$row->nSterne)
-                ->setCount($nSummeSterne);
+                ->setCount($stars);
         }
         $this->options = $options;
         if (count($options) === 0) {

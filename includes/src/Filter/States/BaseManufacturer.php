@@ -11,6 +11,7 @@ use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
 use Filter\FilterInterface;
+use Filter\FilterStateSQL;
 use Filter\Type;
 use Filter\Items\ItemManufacturer;
 use Filter\ProductFilter;
@@ -150,30 +151,26 @@ class BaseManufacturer extends AbstractFilter
             ? $this->getClassName()
             : null
         );
-
-        $state->addJoin((new FilterJoin())
+        $sql   = (new FilterStateSQL())->from($state);
+        $sql->setSelect([
+            'thersteller.kHersteller',
+            'thersteller.cName',
+            'thersteller.nSortNr',
+            'tartikel.kArtikel'
+        ]);
+        $sql->setOrderBy(null);
+        $sql->setLimit('');
+        $sql->setGroupBy(['tartikel.kArtikel']);
+        $sql->addJoin((new FilterJoin())
             ->setComment('JOIN from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('thersteller')
             ->setOn('tartikel.kHersteller = thersteller.kHersteller')
             ->setOrigin(__CLASS__));
-
-        $query            = $this->productFilter->getFilterSQL()->getBaseQuery(
-            [
-                'thersteller.kHersteller',
-                'thersteller.cName',
-                'thersteller.nSortNr',
-                'tartikel.kArtikel'
-            ],
-            $state->getJoins(),
-            $state->getConditions(),
-            $state->getHaving()
-        );
+        $query            = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
         $manufacturers    = \Shop::Container()->getDB()->query(
             "SELECT tseo.cSeo, ssMerkmal.kHersteller, ssMerkmal.cName, ssMerkmal.nSortNr, COUNT(*) AS nAnzahl
-                FROM (" .
-            $query .
-            ") AS ssMerkmal
+                FROM (" . $query . ") AS ssMerkmal
                     LEFT JOIN tseo 
                         ON tseo.kKey = ssMerkmal.kHersteller
                         AND tseo.cKey = 'kHersteller'

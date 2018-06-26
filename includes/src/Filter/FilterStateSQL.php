@@ -30,15 +30,44 @@ class FilterStateSQL implements FilterStateSQLInterface
     protected $joins = [];
 
     /**
+     * @var array
+     */
+    protected $select = ['tartikel.kArtikel'];
+
+    /**
+     * @var string|null
+     */
+    private $orderBy = '';
+
+    /**
      * @var string
      */
-    protected $select = '';
+    private $limit = '';
+
+    /**
+     * @var array
+     */
+    private $groupBy = ['tartikel.kArtikel'];
 
     /**
      * FilterStateSQL constructor.
      */
     public function __construct()
     {
+    }
+
+    /**
+     * @param FilterStateSQLInterface $source
+     * @return $this
+     */
+    public function from(FilterStateSQLInterface $source): FilterStateSQLInterface
+    {
+        $this->setJoins($source->getJoins());
+        $this->setSelect($source->getSelect());
+        $this->setConditions($source->getConditions());
+        $this->setHaving($source->getHaving());
+
+        return $this;
     }
 
     /**
@@ -140,7 +169,7 @@ class FilterStateSQL implements FilterStateSQLInterface
     /**
      * @inheritdoc
      */
-    public function getSelect(): string
+    public function getSelect(): array
     {
         return $this->select;
     }
@@ -148,7 +177,7 @@ class FilterStateSQL implements FilterStateSQLInterface
     /**
      * @inheritdoc
      */
-    public function setSelect(string $select)
+    public function setSelect(array $select)
     {
         $this->select = $select;
     }
@@ -156,10 +185,69 @@ class FilterStateSQL implements FilterStateSQLInterface
     /**
      * @inheritdoc
      */
-    public function addSelect(string $select): string
+    public function addSelect(string $select): array
     {
-        $this->select .= $select;
+        $this->select[] = $select;
 
         return $this->select;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getOrderBy()
+    {
+        return $this->orderBy;
+    }
+
+    /**
+     * @param string|null $orderBy
+     */
+    public function setOrderBy($orderBy)
+    {
+        $this->orderBy = $orderBy;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLimit(): string
+    {
+        return $this->limit;
+    }
+
+    /**
+     * @param string $limit
+     */
+    public function setLimit(string $limit)
+    {
+        $this->limit = $limit;
+    }
+
+    /**
+     * @return array
+     */
+    public function getGroupBy(): array
+    {
+        return $this->groupBy;
+    }
+
+    /**
+     * @param string $groupBy
+     * @return array
+     */
+    public function addGroupBy(string $groupBy): array
+    {
+        $this->groupBy[] = $groupBy;
+
+        return $this->groupBy;
+    }
+
+    /**
+     * @param array $groupBy
+     */
+    public function setGroupBy(array $groupBy)
+    {
+        $this->groupBy = $groupBy;
     }
 }

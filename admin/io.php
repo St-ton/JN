@@ -10,7 +10,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 if (!$oAccount->getIsAuthenticated()) {
     AdminIO::getInstance()->respondAndExit(new IOError('Not authenticated as admin.', 401));
 }
-if (!FormHelper::validateToken()()) {
+if (!FormHelper::validateToken()) {
     AdminIO::getInstance()->respondAndExit(new IOError('CSRF validation failed.', 403));
 }
 

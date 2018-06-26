@@ -268,8 +268,7 @@ function load_boxes($params, $smarty)
 {
     $cTplData     = '';
     $cOldTplDir   = '';
-    $boxes        = Boxen::getInstance();
-    $oBoxen_arr   = $boxes->compatGet();
+    $oBoxen_arr   = Shop::Container()->getBoxService()->compatGet();
     $cTemplateDir = $smarty->getTemplateDir($smarty->context);
     if (is_array($oBoxen_arr) && isset($params['type'])) {
         $cType   = $params['type'];

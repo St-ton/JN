@@ -13,27 +13,12 @@ namespace Filter;
 interface ProductFilterSQLInterface
 {
     /**
-     * @param array  $select
-     * @param array  $joins
-     * @param array  $conditions
-     * @param array  $having
-     * @param string $sort
-     * @param string $limit
-     * @param array  $groupBy
-     * @param string $type
+     * @param FilterStateSQLInterface $state
+     * @param string                  $type
      * @return string
      * @throws \InvalidArgumentException
      */
-    public function getBaseQuery(
-        array $select = ['tartikel.kArtikel'],
-        array $joins,
-        array $conditions,
-        array $having = [],
-        $sort = null,
-        $limit = '',
-        array $groupBy = ['tartikel.kArtikel'],
-        $type = 'filter'
-    ): string;
+    public function getBaseQuery(FilterStateSQLInterface $state, string $type = 'filter'): string;
 
     /**
      * @param bool $withAnd

@@ -37,16 +37,15 @@ class ProductFilterSQL implements ProductFilterSQLInterface
     /**
      * @inheritdoc
      */
-    public function getBaseQuery(
-        array $select = ['tartikel.kArtikel'],
-        array $joins,
-        array $conditions,
-        array $having = [],
-        $sort = null,
-        $limit = '',
-        array $groupBy = ['tartikel.kArtikel'],
-        $type = 'filter'
-    ): string {
+    public function getBaseQuery(FilterStateSQLInterface $state, string $type = 'filter'): string {
+        $select     = $state->getSelect();
+        $joins      = $state->getJoins();
+        $conditions = $state->getConditions();
+        $having     = $state->getHaving();
+        $sort       = $state->getOrderBy();
+        $limit      = $state->getLimit();
+        $groupBy    = $state->getGroupBy();
+
         if ($sort === null) {
             $sort    = $this->productFilter->getSorting()->getActiveSorting();
             $joins[] = $sort->getJoin();

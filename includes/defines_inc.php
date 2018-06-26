@@ -472,7 +472,7 @@ define('JTLSUPPORT_EMAIL', 'support@jtl-software.de');
 define('JTLURL_BASE', 'https://ext.jtl-software.de/');
 define('JTLURL_HP', 'https://www.jtl-software.de/');
 define('JTLURL_GET_DUK', JTLURL_BASE . 'json_duk.php');
-define('JTLURL_GET_SHOPNEWS', JTLURL_HP . 'news_json.php?notimeline=1&limit=5');
+define('JTLURL_GET_SHOPNEWS', 'https://feed.jtl-software.de/websitenews');
 define('JTLURL_GET_SHOPPATCH', JTLURL_BASE . 'json_patch.php');
 define('JTLURL_GET_SHOPMARKETPLACE', JTLURL_BASE . 'json_marketplace.php');
 define('JTLURL_GET_SHOPHELP', JTLURL_BASE . 'jtlhelp.php');

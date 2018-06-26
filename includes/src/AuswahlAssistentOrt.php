@@ -65,10 +65,8 @@ class AuswahlAssistentOrt
                 'kAuswahlAssistentGruppe',
                 $kAuswahlAssistentGruppe
             );
-            if (is_array($oOrtTMP_arr) && count($oOrtTMP_arr) > 0) {
-                foreach ($oOrtTMP_arr as $oOrtTMP) {
-                    $this->oOrt_arr[] = new self($oOrtTMP->kAuswahlAssistentOrt, 0, $bBackend);
-                }
+            foreach ($oOrtTMP_arr as $oOrtTMP) {
+                $this->oOrt_arr[] = new self($oOrtTMP->kAuswahlAssistentOrt, 0, $bBackend);
             }
         } elseif ($kAuswahlAssistentOrt > 0) {
             $oOrt = Shop::Container()->getDB()->select(
@@ -78,10 +76,8 @@ class AuswahlAssistentOrt
             );
             if (isset($oOrt->kAuswahlAssistentOrt) && $oOrt->kAuswahlAssistentOrt > 0) {
                 $cMember_arr = array_keys(get_object_vars($oOrt));
-                if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-                    foreach ($cMember_arr as $cMember) {
-                        $this->$cMember = $oOrt->$cMember;
-                    }
+                foreach ($cMember_arr as $cMember) {
+                    $this->$cMember = $oOrt->$cMember;
                 }
                 $this->kAuswahlAssistentGruppe = (int)$this->kAuswahlAssistentGruppe;
                 $this->kAuswahlAssistentOrt    = (int)$this->kAuswahlAssistentOrt;
@@ -139,16 +135,14 @@ class AuswahlAssistentOrt
             // Kategorie
             if (isset($cParam_arr['cKategorie']) && strlen($cParam_arr['cKategorie']) > 0) {
                 $cKategorie_arr = explode(';', $cParam_arr['cKategorie']);
-                if (is_array($cKategorie_arr) && count($cKategorie_arr) > 0) {
-                    foreach ($cKategorie_arr as $cKategorie) {
-                        if ((int)$cKategorie > 0 && strlen($cKategorie) > 0) {
-                            $oOrt                          = new stdClass();
-                            $oOrt->kAuswahlAssistentGruppe = $kAuswahlAssistentGruppe;
-                            $oOrt->cKey                    = AUSWAHLASSISTENT_ORT_KATEGORIE;
-                            $oOrt->kKey                    = $cKategorie;
+                foreach ($cKategorie_arr as $cKategorie) {
+                    if ((int)$cKategorie > 0 && strlen($cKategorie) > 0) {
+                        $oOrt                          = new stdClass();
+                        $oOrt->kAuswahlAssistentGruppe = $kAuswahlAssistentGruppe;
+                        $oOrt->cKey                    = AUSWAHLASSISTENT_ORT_KATEGORIE;
+                        $oOrt->kKey                    = $cKategorie;
 
-                            Shop::Container()->getDB()->insert('tauswahlassistentort', $oOrt);
-                        }
+                        Shop::Container()->getDB()->insert('tauswahlassistentort', $oOrt);
                     }
                 }
             }

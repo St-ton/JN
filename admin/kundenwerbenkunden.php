@@ -65,7 +65,8 @@ if ($step === 'kwk_uebersicht') {
             $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->query(
                 "SELECT kKundengruppe, cName
                     FROM tkundengruppe
-                    ORDER BY cStandard DESC", 2
+                    ORDER BY cStandard DESC",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         }
 
@@ -132,12 +133,10 @@ if ($step === 'kwk_uebersicht') {
             LIMIT " . $oPagiNichtReg->getLimitSQL(),
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    if (is_array($oKwKNichtReg_arr) && count($oKwKNichtReg_arr) > 0) {
-        foreach ($oKwKNichtReg_arr as $i => $oKwKNichtReg) {
-            $oKunde = new Kunde($oKwKNichtReg->kKundeBestand);
+    foreach ($oKwKNichtReg_arr as $i => $oKwKNichtReg) {
+        $oKunde = new Kunde($oKwKNichtReg->kKundeBestand ?? 0);
 
-            $oKwKNichtReg_arr[$i]->cBestandNachname = $oKunde->cNachname;
-        }
+        $oKwKNichtReg_arr[$i]->cBestandNachname = $oKunde->cNachname;
     }
     // tkundenwerbenkunden registrierte Kunden
     $oKwKReg_arr = Shop::Container()->getDB()->query(
@@ -152,14 +151,12 @@ if ($step === 'kwk_uebersicht') {
             LIMIT " . $oPagiReg->getLimitSQL(),
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    if (is_array($oKwKReg_arr) && count($oKwKReg_arr) > 0) {
-        foreach ($oKwKReg_arr as $i => $oKwKReg) {
-            $oBestandsKunde = new Kunde($oKwKReg->kKunde);
+    foreach ($oKwKReg_arr as $i => $oKwKReg) {
+        $oBestandsKunde = new Kunde($oKwKReg->kKunde ?? 0);
 
-            $oKwKReg_arr[$i]->cBestandVorname  = $oBestandsKunde->cVorname;
-            $oKwKReg_arr[$i]->cBestandNachname = $oBestandsKunde->cNachname;
-            $oKwKReg_arr[$i]->cMail            = $oBestandsKunde->cMail;
-        }
+        $oKwKReg_arr[$i]->cBestandVorname  = $oBestandsKunde->cVorname;
+        $oKwKReg_arr[$i]->cBestandNachname = $oBestandsKunde->cNachname;
+        $oKwKReg_arr[$i]->cMail            = $oBestandsKunde->cMail;
     }
     // letzten 100 Bestandskunden die Guthaben erhalten haben
     $oKwKBestandBonus_arr = Shop::Container()->getDB()->query(
@@ -173,15 +170,11 @@ if ($step === 'kwk_uebersicht') {
             LIMIT " . $oPagiPraemie->getLimitSQL(),
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
+    foreach ($oKwKBestandBonus_arr as $i => $oKwKBestandBonus) {
+        $oKunde = new Kunde($oKwKBestandBonus->kKundeBestand ?? 0);
 
-    if (is_array($oKwKBestandBonus_arr) && count($oKwKBestandBonus_arr) > 0) {
-        foreach ($oKwKBestandBonus_arr as $i => $oKwKBestandBonus) {
-            $oKunde = new Kunde($oKwKBestandBonus->kKundeBestand);
-
-            $oKwKBestandBonus_arr[$i]->cBestandNachname = $oKunde->cNachname;
-        }
+        $oKwKBestandBonus_arr[$i]->cBestandNachname = $oKunde->cNachname;
     }
-
     $smarty->assign('oConfig_arr', $oConfig_arr)
         ->assign('oKwKNichtReg_arr', $oKwKNichtReg_arr)
         ->assign('oKwKReg_arr', $oKwKReg_arr)

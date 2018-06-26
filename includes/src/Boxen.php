@@ -1531,14 +1531,16 @@ class Boxen
                                 SET nSort = " . $nSort . ",
                                     bAktiv = " . $bAktiv . " 
                                 WHERE kBox = " . $kBox . " 
-                                    AND kSeite = " . $i, 4
+                                    AND kSeite = " . $i,
+                            \DB\ReturnType::DEFAULT
                         ) !== false)
                     : (Shop::Container()->getDB()->query(
                             "INSERT INTO tboxensichtbar 
                                 SET kBox = " . $kBox . ",
                                     kSeite = " . $i . ", 
                                     nSort = " . $nSort . ", 
-                                    bAktiv = " . $bAktiv, 4
+                                    bAktiv = " . $bAktiv,
+                            \DB\ReturnType::DEFAULT
                         ) === true);
             }
 
@@ -1550,7 +1552,8 @@ class Boxen
                   SET kBox = " . $kBox . ", 
                       kSeite = " . $nSeite . ", 
                       nSort = " . $nSort . ", 
-                      bAktiv = " . $bAktiv, 3
+                      bAktiv = " . $bAktiv,
+                \DB\ReturnType::AFFECTED_ROWS
             ) !== false;
     }
 

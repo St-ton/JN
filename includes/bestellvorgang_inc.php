@@ -1640,7 +1640,7 @@ function gibAktiveZahlungsart($oZahlungsarten_arr)
             $_SESSION['AktiveZahlungsart'] = $oZahlungsarten_arr[0]->kZahlungsart;
         }
     } else {
-        $_SESSION['AktiveZahlungsart'] = $oZahlungsarten_arr[0]->kVersandart;
+        $_SESSION['AktiveZahlungsart'] = $oZahlungsarten_arr[0]->kZahlungsart;
     }
 
     return $_SESSION['AktiveZahlungsart'];
@@ -3728,6 +3728,7 @@ function loescheSession($nStep)
 /**
  * @param int $nHinweisCode
  * @return string
+ * @todo: check if this is only used by the old EOS payment method
  */
 function mappeBestellvorgangZahlungshinweis($nHinweisCode)
 {

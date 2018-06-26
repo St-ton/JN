@@ -2556,10 +2556,10 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
         }
         // Zahlungsmethode Einstellungen
         // Vordefinierte Einstellungen
-        $cName_arr         = ['Anzahl Bestellungen n&ouml;tig', 'Mindestbestellwert', 'Maximaler Bestellwert'];
+        $cName_arr         = ['Anzahl Bestellungen nötig', 'Mindestbestellwert', 'Maximaler Bestellwert'];
         $cWertName_arr     = ['min_bestellungen', 'min', 'max'];
         $cBeschreibung_arr = [
-            'Nur Kunden, die min. soviele Bestellungen bereits durchgef&uuml;hrt haben, k&ouml;nnen diese Zahlungsart nutzen.',
+            'Nur Kunden, die min. soviele Bestellungen bereits durchgeführt haben, können diese Zahlungsart nutzen.',
             'Erst ab diesem Bestellwert kann diese Zahlungsart genutzt werden.',
             'Nur bis zu diesem Bestellwert wird diese Zahlungsart angeboten. (einschliesslich)'];
         $nSort_arr         = [100, 101, 102];
@@ -4290,7 +4290,7 @@ function mappePlausiFehler($nFehlerCode, $oPlugin)
                 $return .= 'Uninstall File existiert nicht';
                 break;
             case PLUGIN_CODE_IONCUBE_REQUIRED:
-                $return .= 'Das Plugin ben&ouml;tigt ionCube';
+                $return .= 'Das Plugin benötigt ionCube';
                 break;
             case PLUGIN_CODE_INVALID_OPTIONS_SOURE_FILE:
                 $return .= 'OptionsSource-Datei wurde nicht angegeben';

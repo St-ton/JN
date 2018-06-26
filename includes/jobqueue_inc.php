@@ -33,6 +33,7 @@ if (is_array($oJobQueue_arr) && count($oJobQueue_arr) > 0) {
             $oJobQueueTMP->dStartZeit,
             $oJobQueueTMP->dZuletztGelaufen
         );
+        $oJobQueue->setNLastArticleID($oJobQueueTMP->nLastArticleID ?? 0);
         Jtllog::cronLog('Got job ' . $oJobQueue->kJobQueue . ' (kCron = ' .
             $oJobQueue->kCron . ', type = ' . $oJobQueue->cJobArt . ')');
         if (Jtllog::doLog(JTLLOG_LEVEL_NOTICE)) {

@@ -25,7 +25,8 @@ function plzimportGetPLZOrt()
                 GROUP BY tplz_backup.cLandISO
             ) AS backup ON backup.cLandISO = tplz.cLandISO
             GROUP BY tplz.cLandISO, tland.cDeutsch, tland.cKontinent
-            ORDER BY tplz.cLandISO", 2
+            ORDER BY tplz.cLandISO",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 
     foreach ($plzOrt_arr as $key => $oPLZOrt) {
@@ -129,8 +130,11 @@ function plzimportDoImport($target, array $sessData, $result)
         plzimportWriteSession('Import', $sessData);
 
         Shop::Container()->getDB()->delete('tplz_backup', 'cLandISO', $isoLand);
-        Shop::Container()->getDB()->queryPrepared("INSERT INTO tplz_backup SELECT * FROM tplz WHERE cLandISO = :isoCode", ['isoCode' => $isoLand],
-            3);
+        Shop::Container()->getDB()->queryPrepared(
+            'INSERT INTO tplz_backup SELECT * FROM tplz WHERE cLandISO = :isoCode', 
+            ['isoCode' => $isoLand],
+            \DB\ReturnType::AFFECTED_ROWS
+        );
         Shop::Container()->getDB()->delete('tplz', 'cLandISO', $isoLand);
 
         $sessData['step']   = 95;
@@ -271,8 +275,8 @@ function plzimportActionIndex(JTLSmarty $smarty, array &$messages)
 {
     $status = plzimportActionCheckStatus();
 
-    if (isset($status) && $status->running) {
-        $messages['notice'] = 'Es l&auml;uft bereits ein Import. Bitte warten Sie bis dieser abgeschlossen ist!';
+    if (isset($status->running) && $status->running) {
+        $messages['notice'] = 'Es läuft bereits ein Import. Bitte warten Sie bis dieser abgeschlossen ist!';
     }
 
     $smarty->assign('oPlzOrt_arr', plzimportGetPLZOrt());
@@ -285,9 +289,7 @@ function plzimportActionUpdateIndex()
 {
     Shop::Smarty()->assign('oPlzOrt_arr', plzimportGetPLZOrt());
 
-    return [
-        'listHTML' => Shop::Smarty()->fetch('tpl_inc/plz_ort_import_index_list.tpl')
-    ];
+    return ['listHTML' => Shop::Smarty()->fetch('tpl_inc/plz_ort_import_index_list.tpl')];
 }
 
 /**
@@ -435,7 +437,7 @@ function plzimportActionDelTempImport()
 
     return [
         'type'    => 'success',
-        'message' => 'Tempor&auml;rer Import wurde gel&ouml;scht!',
+        'message' => 'Temporärer Import wurde gelöscht!',
     ];
 }
 
@@ -468,7 +470,8 @@ function plzimportActionLoadAvailableDownloads()
                 "SELECT cISO, cDeutsch
                     FROM tland
                     WHERE cISO IN (" . implode(", ", $quotedHits) . ")
-                    ORDER BY cISO", 2
+                    ORDER BY cISO",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
 
             foreach ($oLand_arr as $key => $oLand) {
@@ -537,16 +540,16 @@ function plzimportActionRestoreBackup($target = '')
 
     if (!empty($target)) {
         Shop::Container()->getDB()->delete('tplz', 'cLandISO', $target);
-        Shop::Container()->getDB()->queryPrepared("INSERT INTO tplz SELECT * FROM tplz_backup WHERE cLandISO = :target", ['target' => $target], 3);
+        Shop::Container()->getDB()->queryPrepared(
+            'INSERT INTO tplz SELECT * FROM tplz_backup WHERE cLandISO = :target', 
+            ['target' => $target],
+            \DB\ReturnType::AFFECTED_ROWS
+        );
         Shop::Container()->getDB()->delete('tplz_backup', 'cLandISO', $target);
 
-        $result = (object)[
-            'result' => 'success',
-        ];
+        $result = (object)['result' => 'success'];
     } else {
-        $result = (object)[
-            'result' => 'failure',
-        ];
+        $result = (object)['result' => 'failure'];
     }
 
     return $result;
@@ -588,7 +591,8 @@ function plzimportOpenSession($sessID)
                 VALUES ('plzimport." . $sessID . "', " . (time() + 2 * 60) . ", '')
                 ON DUPLICATE KEY UPDATE
                 nSessionExpires = " . (time() + 2 * 60) . ",
-                cSessionData    = ''", 3
+                cSessionData    = ''",
+            \DB\ReturnType::AFFECTED_ROWS
         );
 
         return true;

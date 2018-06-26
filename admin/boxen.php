@@ -24,7 +24,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && FormHe
                         ++$cnt;
                     }
                 }
-                $cHinweis = $cnt . ' Box(en) wurde(n) erfolgreich gel&ouml;scht.';
+                $cHinweis = $cnt . ' Box(en) wurde(n) erfolgreich gelöscht.';
             }
             break;
 
@@ -38,14 +38,14 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && FormHe
                     // Neuer Container
                     $bOk = $boxAdmin->create(0, $nPage, $ePosition);
                     if ($bOk) {
-                        $cHinweis = 'Container wurde erfolgreich hinzugef&uuml;gt.';
+                        $cHinweis = 'Container wurde erfolgreich hinzugefügt.';
                     } else {
                         $cFehler = 'Container konnte nicht angelegt werden.';
                     }
                 } else {
                     $bOk = $boxAdmin->create($kBox, $nPage, $ePosition, $kContainer);
                     if ($bOk) {
-                        $cHinweis = 'Box wurde erfolgreich hinzugef&uuml;gt.';
+                        $cHinweis = 'Box wurde erfolgreich hinzugefügt.';
                     } else {
                         $cFehler = 'Box konnte nicht angelegt werden.';
                     }

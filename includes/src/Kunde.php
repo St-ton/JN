@@ -228,7 +228,7 @@ class Kunde
     /**
      * @param int $kKunde
      */
-    public function __construct(int $kKunde = 0)
+    public function __construct(int $kKunde = null)
     {
         if ($kKunde > 0) {
             $this->loadFromDB($kKunde);

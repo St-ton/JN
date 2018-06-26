@@ -78,43 +78,42 @@ $nShoppingCartAmountAll = 0;
 $nCouponAmountAll       = 0;
 $tmpUser                = [];
 $date                   = [];
-if (isset($usedCouponsOrder) && is_array($usedCouponsOrder)) {
-    foreach ($usedCouponsOrder as $key => $usedCouponOrder) {
-        $oKunde                              = new Kunde($usedCouponOrder['kKunde']);
-        $usedCouponsOrder[$key]['cUserName'] = $oKunde->cVorname . ' ' . $oKunde->cNachname;
-        unset($oKunde);
-        $usedCouponsOrder[$key]['nCouponValue']        =
-            Preise::getLocalizedPriceWithoutFactor($usedCouponOrder['fKuponwertBrutto']);
-        $usedCouponsOrder[$key]['nShoppingCartAmount'] =
-            Preise::getLocalizedPriceWithoutFactor($usedCouponOrder['fGesamtsummeBrutto']);
-        $usedCouponsOrder[$key]['cOrderPos_arr']       = Shop::Container()->getDB()->query("
-            SELECT CONCAT_WS(' ',wk.cName,wk.cHinweis) AS cName,
-                wk.fPreis+(wk.fPreis/100*wk.fMwSt) AS nPreis, wk.nAnzahl
-                FROM twarenkorbpos AS wk
-                LEFT JOIN tbestellung AS bs 
-                    ON wk.kWarenkorb = bs.kWarenkorb
-                WHERE bs.kBestellung = " . (int)$usedCouponOrder['kBestellung'], 9
-        );
-        foreach ($usedCouponsOrder[$key]['cOrderPos_arr'] as $posKey => $value) {
-            $usedCouponsOrder[$key]['cOrderPos_arr'][$posKey]['nAnzahl']      =
-                str_replace('.', ',', number_format($value['nAnzahl'], 2));
-            $usedCouponsOrder[$key]['cOrderPos_arr'][$posKey]['nPreis']       =
-                Preise::getLocalizedPriceWithoutFactor($value['nPreis']);
-            $usedCouponsOrder[$key]['cOrderPos_arr'][$posKey]['nGesamtPreis'] =
-                Preise::getLocalizedPriceWithoutFactor($value['nAnzahl'] * $value['nPreis']);
-        }
-
-        $nCountUsedCouponsOrder++;
-        $nShoppingCartAmountAll += $usedCouponOrder['fGesamtsummeBrutto'];
-        $nCouponAmountAll += (float)$usedCouponOrder['fKuponwertBrutto'];
-        if (!in_array($usedCouponOrder['kKunde'], $tmpUser)) {
-            $nCountCustomers++;
-            $tmpUser[] = $usedCouponOrder['kKunde'];
-        }
-        $date[$key] = $usedCouponOrder['dErstellt'];
+foreach ($usedCouponsOrder as $key => $usedCouponOrder) {
+    $oKunde                              = new Kunde($usedCouponOrder['kKunde'] ?? 0);
+    $usedCouponsOrder[$key]['cUserName'] = $oKunde->cVorname . ' ' . $oKunde->cNachname;
+    unset($oKunde);
+    $usedCouponsOrder[$key]['nCouponValue']        =
+        Preise::getLocalizedPriceWithoutFactor($usedCouponOrder['fKuponwertBrutto']);
+    $usedCouponsOrder[$key]['nShoppingCartAmount'] =
+        Preise::getLocalizedPriceWithoutFactor($usedCouponOrder['fGesamtsummeBrutto']);
+    $usedCouponsOrder[$key]['cOrderPos_arr']       = Shop::Container()->getDB()->query(
+        "SELECT CONCAT_WS(' ',wk.cName,wk.cHinweis) AS cName,
+            wk.fPreis+(wk.fPreis/100*wk.fMwSt) AS nPreis, wk.nAnzahl
+            FROM twarenkorbpos AS wk
+            LEFT JOIN tbestellung AS bs 
+                ON wk.kWarenkorb = bs.kWarenkorb
+            WHERE bs.kBestellung = " . (int)$usedCouponOrder['kBestellung'],
+        \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
+    );
+    foreach ($usedCouponsOrder[$key]['cOrderPos_arr'] as $posKey => $value) {
+        $usedCouponsOrder[$key]['cOrderPos_arr'][$posKey]['nAnzahl']      =
+            str_replace('.', ',', number_format($value['nAnzahl'], 2));
+        $usedCouponsOrder[$key]['cOrderPos_arr'][$posKey]['nPreis']       =
+            Preise::getLocalizedPriceWithoutFactor($value['nPreis']);
+        $usedCouponsOrder[$key]['cOrderPos_arr'][$posKey]['nGesamtPreis'] =
+            Preise::getLocalizedPriceWithoutFactor($value['nAnzahl'] * $value['nPreis']);
     }
-    array_multisort($date, SORT_DESC, $usedCouponsOrder);
+
+    $nCountUsedCouponsOrder++;
+    $nShoppingCartAmountAll += $usedCouponOrder['fGesamtsummeBrutto'];
+    $nCouponAmountAll += (float)$usedCouponOrder['fKuponwertBrutto'];
+    if (!in_array($usedCouponOrder['kKunde'], $tmpUser)) {
+        $nCountCustomers++;
+        $tmpUser[] = $usedCouponOrder['kKunde'];
+    }
+    $date[$key] = $usedCouponOrder['dErstellt'];
 }
+array_multisort($date, SORT_DESC, $usedCouponsOrder);
 
 $nPercentCountUsedCoupons = (isset($nCountOrders_arr['nCount']) && (int)$nCountOrders_arr['nCount'] > 0)
     ? number_format(100 / (int)$nCountOrders_arr['nCount'] * $nCountUsedCouponsOrder, 2)

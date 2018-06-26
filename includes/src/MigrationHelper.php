@@ -135,17 +135,18 @@ class MigrationHelper
      */
     public static function verifyIntegrity()
     {
-        Shop::Container()->getDB()->query("
-            CREATE TABLE IF NOT EXISTS tmigration 
+        Shop::Container()->getDB()->query(
+            "CREATE TABLE IF NOT EXISTS tmigration 
             (
                 kMigration bigint(14) NOT NULL, 
                 nVersion int(3) NOT NULL, 
                 dExecuted datetime NOT NULL,
                 PRIMARY KEY (kMigration)
-            ) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'", 3
+            ) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'",
+            \DB\ReturnType::AFFECTED_ROWS
         );
-        Shop::Container()->getDB()->query("
-            CREATE TABLE IF NOT EXISTS tmigrationlog 
+        Shop::Container()->getDB()->query(
+            "CREATE TABLE IF NOT EXISTS tmigrationlog 
             (
                 kMigrationlog int(10) NOT NULL AUTO_INCREMENT, 
                 kMigration bigint(20) NOT NULL, 
@@ -154,7 +155,8 @@ class MigrationHelper
                 cLog text NOT NULL, 
                 dCreated datetime NOT NULL, 
                 PRIMARY KEY (kMigrationlog)
-            ) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'", 3
+            ) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'",
+            \DB\ReturnType::AFFECTED_ROWS
         );
     }
 }

@@ -17,7 +17,7 @@ $step             = 'uebersicht';
 // Check Nutzbar
 if (RequestHelper::verifyGPCDataInt('checkNutzbar') === 1) {
     ZahlungsartHelper::checkPaymentMethodAvailability();
-    $hinweis = 'Ihre Zahlungsarten wurden auf Nutzbarkeit gepr&uuml;ft.';
+    $hinweis = 'Ihre Zahlungsarten wurden auf Nutzbarkeit geprüft.';
 }
 // reset log
 if (($action = RequestHelper::verifyGPDataString('a')) !== ''
@@ -28,7 +28,7 @@ if (($action = RequestHelper::verifyGPDataString('a')) !== ''
 
     if (isset($oZahlungsart->cModulId) && strlen($oZahlungsart->cModulId) > 0) {
         (new ZahlungsLog($oZahlungsart->cModulId))->loeschen();
-        $hinweis = 'Der Fehlerlog von ' . $oZahlungsart->cName . ' wurde erfolgreich zur&uuml;ckgesetzt.';
+        $hinweis = 'Der Fehlerlog von ' . $oZahlungsart->cName . ' wurde erfolgreich zurückgesetzt.';
     }
 }
 if (RequestHelper::verifyGPCDataInt('kZahlungsart') > 0 && $action !== 'logreset' && FormHelper::validateToken()) {

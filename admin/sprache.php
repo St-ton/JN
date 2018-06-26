@@ -40,7 +40,7 @@ $oSektion_arr          = Shop::Lang()->getSections();
 $bSpracheAktiv         = false;
 
 if (count($oSpracheInstalled_arr) !== count($oSpracheAvailable_arr)) {
-    $cHinweis = 'Es sind neue Sprache(n) verf&uuml;gbar.';
+    $cHinweis = 'Es sind neue Sprache(n) verfügbar.';
 }
 
 foreach ($oSpracheInstalled_arr as $oSprache) {
@@ -71,7 +71,7 @@ if (isset($_REQUEST['action']) && FormHelper::validateToken()) {
             Shop::Lang()->loesche($_GET['kSprachsektion'], $_GET['cName']);
             Shop::Cache()->flushTags([CACHING_GROUP_LANGUAGE]);
             Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = now()', \DB\ReturnType::DEFAULT);
-            $cHinweis = 'Variable ' . $_GET['cName'] . ' wurde erfolgreich gel&ouml;scht.';
+            $cHinweis = 'Variable ' . $_GET['cName'] . ' wurde erfolgreich gelöscht.';
             break;
         case 'savevar':
             // neue Variable speichern
@@ -108,9 +108,9 @@ if (isset($_REQUEST['action']) && FormHelper::validateToken()) {
             }
 
             if (count($oVariable->bOverwrite_arr) !== count($oWertDB_arr)) {
-                $cFehler_arr[] = 'Die Variable existiert bereits f&uuml;r folgende Sprachen: ' .
+                $cFehler_arr[] = 'Die Variable existiert bereits für folgende Sprachen: ' .
                     implode(' und ', array_map(function ($oWertDB) { return $oWertDB->cSpracheName; }, $oWertDB_arr)) .
-                    '. Bitte w&auml;hlen Sie aus, welche Versionen sie &uuml;berschreiben m&ouml;chten!';
+                    '. Bitte wählen Sie aus, welche Versionen sie überschreiben möchten!';
             }
 
             if (count($cFehler_arr) > 0) {
@@ -159,8 +159,8 @@ if (isset($_REQUEST['action']) && FormHelper::validateToken()) {
             Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = now()', \DB\ReturnType::DEFAULT);
 
             $cHinweis = count($cChanged_arr) > 0
-                ? 'Variablen erfolgreich ge&auml;ndert: ' . implode(', ', $cChanged_arr)
-                : 'Keine Variable wurde ge&auml;ndert';
+                ? 'Variablen erfolgreich geändert: ' . implode(', ', $cChanged_arr)
+                : 'Keine Variable wurde geändert';
 
             break;
         case 'clearlog':
@@ -170,7 +170,7 @@ if (isset($_REQUEST['action']) && FormHelper::validateToken()) {
                 ->clearLog();
             Shop::Cache()->flushTags([CACHING_GROUP_LANGUAGE]);
             Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = now()', \DB\ReturnType::DEFAULT);
-            $cHinweis .= 'Liste erfolgreich zur&uuml;ckgesetzt.';
+            $cHinweis .= 'Liste erfolgreich zurückgesetzt.';
             break;
         default:
             break;

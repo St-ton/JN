@@ -614,8 +614,11 @@ class Link extends MainModel
         $kVaterLinkgruppe = (int)$kVaterLinkgruppe;
         if ($kVaterLink > 0) {
             if (!empty($kVaterLinkgruppe)) {
-                $oLink_arr = Shop::Container()->getDB()->selectAll('tlink', ['kVaterLink', 'kLinkgruppe'],
-                    [$kVaterLink, $kVaterLinkgruppe]);
+                $oLink_arr = Shop::Container()->getDB()->selectAll(
+                    'tlink',
+                    ['kVaterLink', 'kLinkgruppe'],
+                    [$kVaterLink, $kVaterLinkgruppe]
+                );
             } else {
                 $oLink_arr = Shop::Container()->getDB()->selectAll('tlink', 'kVaterLink', $kVaterLink);
             }
@@ -693,7 +696,7 @@ class Link extends MainModel
             $cQuery .= implode(', ', $cSet_arr);
             $cQuery .= " WHERE kLink = {$this->getLink()} AND klinkgruppe = {$this->getLinkgruppe()}";
 
-            return Shop::Container()->getDB()->query($cQuery, 3);
+            return Shop::Container()->getDB()->query($cQuery, \DB\ReturnType::AFFECTED_ROWS);
         }
         throw new Exception("ERROR: Object has no members!");
     }

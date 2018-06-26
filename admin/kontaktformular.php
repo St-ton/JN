@@ -14,7 +14,7 @@ if (isset($_GET['del']) && (int)$_GET['del'] > 0 && FormHelper::validateToken())
     Shop::Container()->getDB()->delete('tkontaktbetreff', 'kKontaktBetreff', (int)$_GET['del']);
     Shop::Container()->getDB()->delete('tkontaktbetreffsprache', 'kKontaktBetreff', (int)$_GET['del']);
 
-    $cHinweis = 'Der Betreff wurde erfolgreich gel&ouml;scht';
+    $cHinweis = 'Der Betreff wurde erfolgreich gelöscht';
 }
 
 if (isset($_POST['content']) && (int)$_POST['content'] === 1 && FormHelper::validateToken()) {
@@ -71,12 +71,12 @@ if (isset($_POST['betreff']) && (int)$_POST['betreff'] === 1 && FormHelper::vali
         if ((int)$_POST['kKontaktBetreff'] === 0) {
             //einfuegen
             $kKontaktBetreff = Shop::Container()->getDB()->insert('tkontaktbetreff', $neuerBetreff);
-            $cHinweis .= 'Betreff wurde erfolgreich hinzugef&uuml;gt.';
+            $cHinweis .= 'Betreff wurde erfolgreich hinzugefügt.';
         } else {
             //updaten
             $kKontaktBetreff = (int)$_POST['kKontaktBetreff'];
             Shop::Container()->getDB()->update('tkontaktbetreff', 'kKontaktBetreff', $kKontaktBetreff, $neuerBetreff);
-            $cHinweis .= "Der Betreff <strong>$neuerBetreff->cName</strong> wurde erfolgreich ge&auml;ndert.";
+            $cHinweis .= "Der Betreff <strong>$neuerBetreff->cName</strong> wurde erfolgreich geändert.";
         }
         $sprachen            = Sprache::getAllLanguages();
         $neuerBetreffSprache = new stdClass();

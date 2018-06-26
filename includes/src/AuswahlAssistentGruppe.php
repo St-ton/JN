@@ -92,10 +92,8 @@ class AuswahlAssistentGruppe
             );
             if (isset($oGruppe->kAuswahlAssistentGruppe) && $oGruppe->kAuswahlAssistentGruppe > 0) {
                 $cMember_arr = array_keys(get_object_vars($oGruppe));
-                if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-                    foreach ($cMember_arr as $cMember) {
-                        $this->$cMember = $oGruppe->$cMember;
-                    }
+                foreach ($cMember_arr as $cMember) {
+                    $this->$cMember = $oGruppe->$cMember;
                 }
                 $this->kAuswahlAssistentGruppe = (int)$this->kAuswahlAssistentGruppe;
                 $this->kSprache                = (int)$this->kSprache;

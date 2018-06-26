@@ -220,7 +220,8 @@ function loescheFrage($kUmfrageFrage)
                 FROM tumfragefrage
                 LEFT JOIN tumfragedurchfuehrungantwort 
                     ON tumfragedurchfuehrungantwort.kUmfrageFrage = tumfragefrage.kUmfrageFrage
-                WHERE tumfragefrage.kUmfrageFrage = " . $kUmfrageFrage, 3
+                WHERE tumfragefrage.kUmfrageFrage = " . $kUmfrageFrage,
+            \DB\ReturnType::AFFECTED_ROWS
         );
         Shop::Container()->getDB()->delete('tumfragefrageantwort', 'kUmfrageFrage', $kUmfrageFrage);
         Shop::Container()->getDB()->delete('tumfragematrixoption', 'kUmfrageFrage', $kUmfrageFrage);

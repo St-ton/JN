@@ -199,31 +199,6 @@ if ($kPlugin > 0) {
     $paymentMethod           = new PaymentPartner($bestellung->Zahlungsart->cModulId);
     $paymentMethod->cModulId = $bestellung->Zahlungsart->cModulId;
     $paymentMethod->preparePaymentProcess($bestellung);
-} elseif ($bestellung->Zahlungsart->cModulId === 'za_eos_jtl') {
-    require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'eos/EOS.class.php';
-    $paymentMethod           = new EOS($bestellung->Zahlungsart->cModulId);
-    $paymentMethod->cModulId = $bestellung->Zahlungsart->cModulId;
-    $paymentMethod->preparePaymentProcess($bestellung);
-} elseif ($bestellung->Zahlungsart->cModulId === 'za_eos_dd_jtl') {
-    require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'eos/EOS.class.php';
-    $paymentMethod           = new EOS($bestellung->Zahlungsart->cModulId);
-    $paymentMethod->cModulId = $bestellung->Zahlungsart->cModulId;
-    $paymentMethod->preparePaymentProcess($bestellung);
-} elseif ($bestellung->Zahlungsart->cModulId === 'za_eos_cc_jtl') {
-    require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'eos/EOS.class.php';
-    $paymentMethod           = new EOS($bestellung->Zahlungsart->cModulId);
-    $paymentMethod->cModulId = $bestellung->Zahlungsart->cModulId;
-    $paymentMethod->preparePaymentProcess($bestellung);
-} elseif ($bestellung->Zahlungsart->cModulId === 'za_eos_direct_jtl') {
-    require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'eos/EOS.class.php';
-    $paymentMethod           = new EOS($bestellung->Zahlungsart->cModulId);
-    $paymentMethod->cModulId = $bestellung->Zahlungsart->cModulId;
-    $paymentMethod->preparePaymentProcess($bestellung);
-} elseif ($bestellung->Zahlungsart->cModulId === 'za_eos_ewallet_jtl') {
-    require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'eos/EOS.class.php';
-    $paymentMethod           = new EOS($bestellung->Zahlungsart->cModulId);
-    $paymentMethod->cModulId = $bestellung->Zahlungsart->cModulId;
-    $paymentMethod->preparePaymentProcess($bestellung);
 }
 //hole aktuelle Kategorie, falls eine gesetzt
 $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));

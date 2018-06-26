@@ -9,8 +9,8 @@
  */
 function gibAlleSuchspecialOverlays()
 {
-    return Shop::Container()->getDB()->query("
-        SELECT tsuchspecialoverlay.*, tsuchspecialoverlaysprache.kSprache, 
+    return Shop::Container()->getDB()->query(
+        "SELECT tsuchspecialoverlay.*, tsuchspecialoverlaysprache.kSprache, 
             tsuchspecialoverlaysprache.cBildPfad, tsuchspecialoverlaysprache.nAktiv,
             tsuchspecialoverlaysprache.nPrio, tsuchspecialoverlaysprache.nMargin,
             tsuchspecialoverlaysprache.nTransparenz,
@@ -19,7 +19,8 @@ function gibAlleSuchspecialOverlays()
             LEFT JOIN tsuchspecialoverlaysprache 
                 ON tsuchspecialoverlaysprache.kSuchspecialOverlay = tsuchspecialoverlay.kSuchspecialOverlay
                 AND tsuchspecialoverlaysprache.kSprache = " . (int)$_SESSION['kSprache'] . "
-            ORDER BY tsuchspecialoverlay.cSuchspecial", 2
+            ORDER BY tsuchspecialoverlay.cSuchspecial",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 }
 
@@ -116,7 +117,7 @@ function speicherEinstellung($kSuchspecialOverlay, $cPost_arr, $cFiles_arr)
  */
 function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $pct)
 {
-    if (!isset($pct)) {
+    if ($pct === null) {
         return false;
     }
     $pct /= 100;

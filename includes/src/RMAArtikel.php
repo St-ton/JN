@@ -166,7 +166,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                        fAnzahl = " . $this->fAnzahl . ",
                        cGrund = " . $this->cGrund . ",
                        cKommentar = " . $this->cKommentar . "
-                   WHERE kRMA = " . $this->kRMA, 3
+                   WHERE kRMA = " . $this->kRMA,
+                \DB\ReturnType::AFFECTED_ROWS
             );
         }
 

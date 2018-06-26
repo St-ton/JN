@@ -175,16 +175,14 @@ function holeEinstellungAbteil($oSQL, $nSort, $kEinstellungenSektion)
                 FROM teinstellungenconf
                 WHERE nSort > " . (int)$nSort . "
                     AND kEinstellungenSektion = " . (int)$kEinstellungenSektion . "
-                ORDER BY nSort", 2
+                ORDER BY nSort",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-
-        if (is_array($oEinstellungTMP_arr) && count($oEinstellungTMP_arr) > 0) {
-            foreach ($oEinstellungTMP_arr as $oEinstellungTMP) {
-                if ($oEinstellungTMP->cConf !== 'N') {
-                    $oSQL->oEinstellung_arr[] = $oEinstellungTMP;
-                } else {
-                    break;
-                }
+        foreach ($oEinstellungTMP_arr as $oEinstellungTMP) {
+            if ($oEinstellungTMP->cConf !== 'N') {
+                $oSQL->oEinstellung_arr[] = $oEinstellungTMP;
+            } else {
+                break;
             }
         }
     }
@@ -208,16 +206,14 @@ function holeEinstellungHeadline($nSort, $sectionID)
                 FROM teinstellungenconf
                 WHERE nSort < " . $nSort . "
                     AND kEinstellungenSektion = " . $sectionID . "
-                ORDER BY nSort DESC", 2
+                ORDER BY nSort DESC",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-
-        if (is_array($oEinstellungTMP_arr) && count($oEinstellungTMP_arr) > 0) {
-            foreach ($oEinstellungTMP_arr as $oEinstellungTMP) {
-                if ($oEinstellungTMP->cConf === 'N') {
-                    $configHead                = $oEinstellungTMP;
-                    $configHead->cSektionsPfad = gibEinstellungsSektionsPfad($sectionID);
-                    break;
-                }
+        foreach ($oEinstellungTMP_arr as $oEinstellungTMP) {
+            if ($oEinstellungTMP->cConf === 'N') {
+                $configHead                = $oEinstellungTMP;
+                $configHead->cSektionsPfad = gibEinstellungsSektionsPfad($sectionID);
+                break;
             }
         }
     }
@@ -235,7 +231,7 @@ function gibEinstellungsSektionsPfad(int $kEinstellungenSektion)
         // Einstellungssektion ist in den Defines
         switch ($kEinstellungenSektion) {
             case CONF_ZAHLUNGSARTEN:
-                return 'Storefront-&gt;Zahlungsarten-&gt;&Uuml;bersicht';
+                return 'Storefront-&gt;Zahlungsarten-&gt;Übersicht';
             case CONF_EXPORTFORMATE:
                 return 'System-&gt;Export-&gt;Exportformate';
             case CONF_KONTAKTFORMULAR:

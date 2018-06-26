@@ -67,7 +67,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && Form
         Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
     }
 
-    $cHinweis .= 'Ihre Einstellungen wurden &uuml;bernommen.';
+    $cHinweis .= 'Ihre Einstellungen wurden übernommen.';
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
 }
 

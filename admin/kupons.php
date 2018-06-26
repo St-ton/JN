@@ -67,7 +67,7 @@ $res = handleCsvImportAction('kupon', function ($obj, $importType = 2) {
 });
 
 if ($res > 0) {
-    $cFehler  = 'Konnte CSV-Datei nicht vollst&auml;ndig importieren. ';
+    $cFehler  = 'Konnte CSV-Datei nicht vollständig importieren. ';
     $cFehler .= ($res === 1 ? '1 Zeile ist' : $res . ' Zeilen sind') . ' nicht importierbar.';
 } elseif ($res === 0) {
     $cHinweis = 'CSV-Datei wurde erfolgreich importiert.';
@@ -104,7 +104,7 @@ if ($action === 'bearbeiten') {
     $cFehler_arr = validateCoupon($oKupon);
     if (count($cFehler_arr) > 0) {
         // Es gab Fehler bei der Validierung => weiter bearbeiten
-        $cFehler = 'Bitte &uuml;berpr&uuml;fen Sie folgende Eingaben:<ul>';
+        $cFehler = 'Bitte überprüfen Sie folgende Eingaben:<ul>';
 
         foreach ($cFehler_arr as $fehler) {
             $cFehler .= '<li>' . $fehler . '</li>';

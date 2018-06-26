@@ -275,7 +275,10 @@ class Jtllog
 
         if (isset($oObj->nCount) && (int)$oObj->nCount > JTLLOG_MAX_LOGSIZE) {
             $nLimit = (int)$oObj->nCount - JTLLOG_MAX_LOGSIZE;
-            Shop::Container()->getDB()->query("DELETE FROM tjtllog ORDER BY dErstellt LIMIT {$nLimit}", 4);
+            Shop::Container()->getDB()->query(
+                "DELETE FROM tjtllog ORDER BY dErstellt LIMIT {$nLimit}",
+                \DB\ReturnType::DEFAULT
+            );
         }
     }
 

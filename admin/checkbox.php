@@ -32,7 +32,7 @@ if (isset($_POST['erstellenShowButton'])) {
         $cHinweis = 'Ihre markierten Checkboxen wurden erfolgreich deaktiviert.';
     } elseif (isset($_POST['checkboxLoeschenSubmit']) && FormHelper::validateToken()) {
         $oCheckBox->deleteCheckBox($kCheckBox_arr);
-        $cHinweis = 'Ihre markierten Checkboxen wurden erfolgreich gel&ouml;scht.';
+        $cHinweis = 'Ihre markierten Checkboxen wurden erfolgreich gelöscht.';
     }
 } elseif (RequestHelper::verifyGPCDataInt('edit') > 0) {
     $kCheckBox = RequestHelper::verifyGPCDataInt('edit');
@@ -48,7 +48,7 @@ if (isset($_POST['erstellenShowButton'])) {
         $cStep     = 'uebersicht';
         $cHinweis  = 'Ihre Checkbox wurde erfolgreich erstellt.';
     } else {
-        $cFehler = 'Fehler: Bitte f&uuml;llen Sie alle n&ouml;tigen Angaben aus!';
+        $cFehler = 'Fehler: Bitte füllen Sie alle nötigen Angaben aus!';
         $smarty->assign('cPost_arr', StringHandler::filterXSS($_POST))
                ->assign('cPlausi_arr', $cPlausi_arr);
         if ($kCheckBox > 0) {

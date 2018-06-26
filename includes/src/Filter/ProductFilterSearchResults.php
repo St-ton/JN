@@ -9,6 +9,9 @@ namespace Filter;
 use Boxes\AbstractBox;
 use Filter\Pagination\Info;
 use function Functional\every;
+use function Functional\filter;
+use function Functional\invoke;
+use function Functional\map;
 use Tightenco\Collect\Support\Collection;
 
 /**
@@ -682,6 +685,51 @@ class ProductFilterSearchResults implements ProductFilterSearchResultsInterface
     }
 
     /**
+     * @param FilterInterface[] $activeFilters
+     * @param FilterInterface[] $availableFilters
+     */
+    private function autoActivateOptions($activeFilters, $availableFilters)
+    {
+        foreach ($activeFilters as $activeFilter) {
+            $class        = $activeFilter->getClassName();
+            $activeValues = $activeFilter->getActiveValues();
+            foreach ($this->getActiveFiltersByClassName($availableFilters, $class, $activeValues) as $filter) {
+                $currentValues = $filter->getActiveValues();
+                $act           = is_array($currentValues)
+                    ? map($currentValues, function ($e) {
+                        return $e->getValue();
+                    })
+                    : [$currentValues->getValue()];
+                $this->updateOptions($filter, $act);
+            }
+        }
+    }
+
+    /**
+     * @param FilterInterface $filter
+     * @param array           $values
+     */
+    private function updateOptions(FilterInterface $filter, $values)
+    {
+        invoke(filter($filter->getOptions(), function (FilterOption $e) use ($values) {
+            return in_array($e->getValue(), $values, true);
+        }), 'setIsActive', [true]);
+    }
+
+    /**
+     * @param FilterInterface[] $filters
+     * @param string $class
+     * @param array $activeValues
+     * @return array
+     */
+    private function getActiveFiltersByClassName($filters, $class, $activeValues): array
+    {
+        return filter($filters, function (FilterInterface $f) use ($class, $activeValues) {
+            return $f->getClassName() === $class && $f->getActiveValues() === $activeValues;
+        });
+    }
+
+    /**
      * @inheritdoc
      */
     public function setFilterOptions(
@@ -710,6 +758,19 @@ class ProductFilterSearchResults implements ProductFilterSearchResultsInterface
                 }
             }
         }
+        $this->autoActivateOptions($productFilter->getActiveFilters(), $productFilter->getAvailableFilters());
+
+        $customFilterOptions = map(
+            $productFilter->getCustomFilters(),
+            function (FilterInterface $e) {
+                if (count($e->getOptions()) === 0) {
+                    $e->hide();
+                }
+
+                return $e;
+            }
+        );
+
         $this->setManufacturerFilterOptions($manufacturerOptions)
              ->setSortingOptions($productFilter->getSorting()->getOptions())
              ->setLimitOptions($productFilter->getLimits()->getOptions())
@@ -720,18 +781,7 @@ class ProductFilterSearchResults implements ProductFilterSearchResultsInterface
              ->setSearchFilterOptions($searchFilterOptions)
              ->setSearchSpecialFilterOptions($searchSpecialFilters)
              ->setAttributeFilterOptions($attribtuteFilterOptions)
-             ->setCustomFilterOptions(array_filter(
-                 $productFilter->getAvailableFilters(),
-                 function ($e) {
-                     /** @var FilterInterface $e */
-                     $isCustom = $e->isCustom();
-                     if ($isCustom && count($e->getOptions()) === 0) {
-                         $e->hide();
-                     }
-
-                     return $isCustom;
-                 }
-             ))
+             ->setCustomFilterOptions($customFilterOptions)
              ->setSearchFilterJSON(AbstractBox::getJSONString(array_map(
                  function ($e) {
                      $e->cURL = \StringHandler::htmlentitydecode($e->cURL);
@@ -809,7 +859,6 @@ class ProductFilterSearchResults implements ProductFilterSearchResultsInterface
                 // hide the whole attribute filter collection if every filter consists of only active options
                 $productFilter->getAttributeFilterCollection()->hide();
             }
-
         }
         $productFilter->getAttributeFilterCollection()
                       ->setFilterCollection($attribtuteFilterOptions);

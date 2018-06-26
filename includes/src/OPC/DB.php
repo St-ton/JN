@@ -6,6 +6,8 @@
 
 namespace OPC;
 
+use DB\ReturnType;
+
 /**
  * Class DB
  * @package OPC
@@ -123,14 +125,17 @@ class DB
     }
 
     /**
-     * @return PortletGroup[]
+     * @param bool $withInactive
+     * @return array
      * @throws \Exception
      */
-    public function getPortletGroups($withInactive = false)
+    public function getPortletGroups(bool $withInactive = false): array
     {
-        $groupNames = $this->shopDB->query("SELECT DISTINCT(cGroup) FROM topcportlet ORDER BY cGroup ASC", 2);
+        $groupNames = $this->shopDB->query(
+            'SELECT DISTINCT(cGroup) FROM topcportlet ORDER BY cGroup ASC',
+            ReturnType::ARRAY_OF_OBJECTS
+        );
         $groups     = [];
-
         foreach ($groupNames as $groupName) {
             $groups[] = $this->getPortletGroup($groupName->cGroup, $withInactive);
         }
@@ -140,10 +145,11 @@ class DB
 
     /**
      * @param string $groupName
+     * @param bool   $withInactive
      * @return PortletGroup
      * @throws \Exception
      */
-    public function getPortletGroup($groupName, $withInactive = false)
+    public function getPortletGroup(string $groupName, bool $withInactive = false): PortletGroup
     {
         $portletsDB = $this->shopDB->selectAll(
             'topcportlet',
@@ -167,7 +173,7 @@ class DB
      * @return Portlet[]
      * @throws \Exception
      */
-    public function getAllPortlets()
+    public function getAllPortlets(): array
     {
         $portlets   = [];
         $portletsDB = $this->shopDB->selectAll('topcportlet', [], [], 'cClass', 'cTitle');
@@ -184,18 +190,22 @@ class DB
      */
     public function getPortletCount()
     {
-        return (int)$this->shopDB->query("SELECT count(kPortlet) AS count FROM topcportlet", 1)->count;
+        return (int)$this->shopDB->query(
+            'SELECT count(kPortlet) AS count FROM topcportlet',
+            ReturnType::SINGLE_OBJECT
+        )->count;
     }
 
     /**
      * @param string $class
      * @return Portlet
      * @throws \Exception
+     * @throws \InvalidArgumentException
      */
-    public function getPortlet($class)
+    public function getPortlet(string $class): Portlet
     {
         if ($class === '') {
-            throw new \Exception("The OPC portlet class name '$class' is invalid.");
+            throw new \InvalidArgumentException("The OPC portlet class name '$class' is invalid.");
         }
 
         $portletDB = $this->shopDB->select('topcportlet', 'cClass', $class);

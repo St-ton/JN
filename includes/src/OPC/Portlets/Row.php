@@ -8,63 +8,81 @@ namespace OPC\Portlets;
 
 use OPC\PortletInstance;
 
+/**
+ * Class Row
+ * @package OPC\Portlets
+ */
 class Row extends \OPC\Portlet
 {
-    public function getPreviewHtml($instance)
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     * @throws \Exception
+     */
+    public function getPreviewHtml(PortletInstance $instance): string
     {
         $instance->addClass($instance->getProperty('class'));
 
         return $this->getPreviewHtmlFromTpl($instance);
     }
 
-    public function getFinalHtml($instance)
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     * @throws \Exception
+     */
+    public function getFinalHtml(PortletInstance $instance): string
     {
         $instance->addClass($instance->getProperty('class'));
 
         return $this->getFinalHtmlFromTpl($instance);
     }
 
-    public function getButtonHtml()
+    /**
+     * @return string
+     */
+    public function getButtonHtml(): string
     {
         return '<i class="fa fa-columns"></i><br>Spalten';
     }
 
-    public function getConfigPanelHtml($instance)
-    {
-        return $this->getAutoConfigPanelHtml($instance);
-    }
-
-    public function getPropertyDesc()
+    /**
+     * @return array
+     */
+    public function getPropertyDesc(): array
     {
         return [
             'layout-xs' => [
-                'label'   => '<i class="fa fa-mobile"></i> Layout XS',
-                'type'    => 'text',
-                'default' => '6+6',
-                'dspl_width' => 50,
+                'label'          => '<i class="fa fa-mobile"></i> Layout XS',
+                'type'           => 'text',
+                'default'        => '6+6',
+                'dspl_width'     => 50,
                 'layoutCollapse' => [
                     'layout-sm' => [
-                        'label'   => '<i class="fa fa-tablet"></i> Layout S',
-                        'type'    => 'text',
+                        'label' => '<i class="fa fa-tablet"></i> Layout S',
+                        'type'  => 'text',
                     ],
                     'layout-md' => [
-                        'label'   => '<i class="fa fa-laptop"></i> Layout M',
-                        'type'    => 'text',
+                        'label' => '<i class="fa fa-laptop"></i> Layout M',
+                        'type'  => 'text',
                     ],
                     'layout-lg' => [
-                        'label'   => '<i class="fa fa-desktop"></i> Layout L',
-                        'type'    => 'text',
+                        'label' => '<i class="fa fa-desktop"></i> Layout L',
+                        'type'  => 'text',
                     ],
                 ]
             ],
-            'class' => [
-                'label' => 'CSS Klasse',
+            'class'     => [
+                'label'      => 'CSS Klasse',
                 'dspl_width' => 50,
             ],
         ];
     }
 
-    public function getPropertyTabs()
+    /**
+     * @return array
+     */
+    public function getPropertyTabs(): array
     {
         return [
             'Styles'    => 'styles',
@@ -76,7 +94,7 @@ class Row extends \OPC\Portlet
      * @param PortletInstance $instance
      * @return array
      */
-    public function getLayouts($instance)
+    public function getLayouts(PortletInstance $instance): array
     {
         $layoutXS = explode('+', $instance->getProperty('layout-xs'));
         $layoutSM = explode('+', $instance->getProperty('layout-sm'));
@@ -92,18 +110,18 @@ class Row extends \OPC\Portlet
             $sumMD = 0;
             $sumLG = 0;
 
-            for ($x=0;$x<=$i;++$x) {
-                $sumXS = !empty($layoutXS[$x]) ? ($sumXS+$layoutXS[$x]) : $sumXS;
-                $sumSM = !empty($layoutSM[$x]) ? ($sumSM+$layoutSM[$x]) : $sumSM;
-                $sumMD = !empty($layoutMD[$x]) ? ($sumMD+$layoutMD[$x]) : $sumMD;
-                $sumLG = !empty($layoutLG[$x]) ? ($sumLG+$layoutLG[$x]) : $sumLG;
+            for ($x = 0; $x <= $i; ++$x) {
+                $sumXS = !empty($layoutXS[$x]) ? ($sumXS + $layoutXS[$x]) : $sumXS;
+                $sumSM = !empty($layoutSM[$x]) ? ($sumSM + $layoutSM[$x]) : $sumSM;
+                $sumMD = !empty($layoutMD[$x]) ? ($sumMD + $layoutMD[$x]) : $sumMD;
+                $sumLG = !empty($layoutLG[$x]) ? ($sumLG + $layoutLG[$x]) : $sumLG;
             }
 
             $colLayout = [
-                'xs' => isset($layoutXS[$i]) ? $layoutXS[$i] : '',
-                'sm' => isset($layoutSM[$i]) ? $layoutSM[$i] : '',
-                'md' => isset($layoutMD[$i]) ? $layoutMD[$i] : '',
-                'lg' => isset($layoutLG[$i]) ? $layoutLG[$i] : '',
+                'xs'      => $layoutXS[$i] ?? '',
+                'sm'      => $layoutSM[$i] ?? '',
+                'md'      => $layoutMD[$i] ?? '',
+                'lg'      => $layoutLG[$i] ?? '',
                 'divider' => [
                     'xs' => $sumXS === 0 ? false : ($sumXS % 12 === 0),
                     'sm' => $sumSM === 0 ? false : ($sumSM % 12 === 0),
@@ -117,10 +135,13 @@ class Row extends \OPC\Portlet
         return $colLayouts;
     }
 
-    public function getColClasses($colLayout)
+    /**
+     * @param array $colLayout
+     * @return string
+     */
+    public function getColClasses(array $colLayout): string
     {
         $result = '';
-
         foreach ($colLayout as $size => $value) {
             if (!empty($value) && is_array($value) === false) {
                 $result .= "col-$size-$value ";
@@ -130,10 +151,13 @@ class Row extends \OPC\Portlet
         return $result;
     }
 
-    public function getDividers($colLayout)
+    /**
+     * @param array $colLayout
+     * @return string
+     */
+    public function getDividers(array $colLayout): string
     {
         $result = '';
-
         foreach ($colLayout['divider'] as $size => $value) {
             if (!empty($value)) {
                 $result .= '<div class="clearfix visible-' . $size . '-block"></div>';

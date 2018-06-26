@@ -8,9 +8,18 @@ namespace OPC\Portlets;
 
 use OPC\PortletInstance;
 
+/**
+ * Class Flipcard
+ * @package OPC\Portlets
+ */
 class Flipcard extends \OPC\Portlet
 {
-    public function getPreviewHtml($instance)
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     * @throws \Exception
+     */
+    public function getPreviewHtml(PortletInstance $instance): string
     {
         $instance->setProperty('uid', uniqid('flp-', false));
         $instance->addClass('flip');
@@ -20,7 +29,12 @@ class Flipcard extends \OPC\Portlet
         return $this->getPreviewHtmlFromTpl($instance);
     }
 
-    public function getFinalHtml($instance)
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     * @throws \Exception
+     */
+    public function getFinalHtml(PortletInstance $instance): string
     {
         $instance->addClass('flip');
         $instance->addClass($instance->getProperty('flip-style'));
@@ -29,17 +43,18 @@ class Flipcard extends \OPC\Portlet
         return $this->getFinalHtmlFromTpl($instance);
     }
 
-    public function getButtonHtml()
+    /**
+     * @return string
+     */
+    public function getButtonHtml(): string
     {
         return '<i class="fa fa-clone"></i><br/> Flipcard';
     }
 
-    public function getConfigPanelHtml($instance)
-    {
-        return $this->getAutoConfigPanelHtml($instance);
-    }
-
-    public function getPropertyDesc()
+    /**
+     * @return array
+     */
+    public function getPropertyDesc(): array
     {
         return [
             'class'      => [
@@ -60,7 +75,10 @@ class Flipcard extends \OPC\Portlet
         ];
     }
 
-    public function getPropertyTabs()
+    /**
+     * @return array
+     */
+    public function getPropertyTabs(): array
     {
         return [
             'Styles'    => 'styles',

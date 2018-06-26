@@ -9,57 +9,70 @@ namespace OPC\Portlets;
 use function Couchbase\defaultDecoder;
 use OPC\PortletInstance;
 
+/**
+ * Class PList
+ * @package OPC\Portlets
+ */
 class PList extends \OPC\Portlet
 {
-    public function getPreviewHtml($instance)
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     */
+    public function getPreviewHtml(PortletInstance $instance): string
     {
         $res = '<div ' . $instance->getAttributeString() . ' ' . $instance->getDataAttributeString() . '>
-                    <'. $instance->getProperty('listType');
+                    <' . $instance->getProperty('listType');
         if (!empty($instance->getProperty('list-style-type'))) {
-            $res .= ' style="list-style-type:'. $instance->getProperty('list-style-type') .'"';
+            $res .= ' style="list-style-type:' . $instance->getProperty('list-style-type') . '"';
         }
         $res .= '>';
 
         for ($x = 0; $x < (int)$instance->getProperty('count'); ++$x) {
-            $res .= '<li><div class="opc-area" data-area-id="sub_'. $x . '">'
-                . $instance->getSubareaPreviewHtml('sub_'. $x) . '</div></li>';
+            $res .= '<li><div class="opc-area" data-area-id="sub_' . $x . '">'
+                . $instance->getSubareaPreviewHtml('sub_' . $x) . '</div></li>';
         }
 
-        $res .= '</'. $instance->getProperty('listType') .'></div>';
+        $res .= '</' . $instance->getProperty('listType') . '></div>';
 
         return $res;
     }
 
-    public function getFinalHtml($instance)
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     */
+    public function getFinalHtml(PortletInstance $instance): string
     {
         $res = '<div ' . $instance->getAttributeString() . '>
-                    <'. $instance->getProperty('listType');
+                    <' . $instance->getProperty('listType');
         if (!empty($instance->getProperty('list-style-type'))) {
-            $res .= ' style="list-style-type:'. $instance->getProperty('list-style-type') .'"';
+            $res .= ' style="list-style-type:' . $instance->getProperty('list-style-type') . '"';
         }
         $res .= '>';
 
         for ($x = 0; $x < (int)$instance->getProperty('count'); ++$x) {
             $res .= '<li><div>'
-                . $instance->getSubareaFinalHtml('sub_'. $x) . '</div></li>';
+                . $instance->getSubareaFinalHtml('sub_' . $x) . '</div></li>';
         }
 
-        $res .= '</'. $instance->getProperty('listType') .'></div>';
+        $res .= '</' . $instance->getProperty('listType') . '></div>';
 
         return $res;
     }
 
-    public function getButtonHtml()
+    /**
+     * @return string
+     */
+    public function getButtonHtml(): string
     {
         return '<i class="fa fa-list-ol"></i><br/> Liste';
     }
 
-    public function getConfigPanelHtml($instance)
-    {
-        return $this->getAutoConfigPanelHtml($instance);
-    }
-
-    public function getPropertyDesc()
+    /**
+     * @return array
+     */
+    public function getPropertyDesc(): array
     {
         return [
             // general
@@ -99,10 +112,13 @@ class PList extends \OPC\Portlet
         ];
     }
 
-    public function getPropertyTabs()
+    /**
+     * @return array
+     */
+    public function getPropertyTabs(): array
     {
         return [
-            'Styles'    => 'styles',
+            'Styles' => 'styles',
         ];
     }
 }

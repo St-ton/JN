@@ -35,7 +35,7 @@ class PortletGroup
     /**
      * @return Portlet[]
      */
-    public function getPortlets()
+    public function getPortlets(): array
     {
         return $this->portlets;
     }
@@ -43,7 +43,7 @@ class PortletGroup
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -52,7 +52,7 @@ class PortletGroup
      * @param Portlet $portlet
      * @return $this
      */
-    public function addPortlet(Portlet $portlet)
+    public function addPortlet(Portlet $portlet): self
     {
         $this->portlets[] = $portlet;
 

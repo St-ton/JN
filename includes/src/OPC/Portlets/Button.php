@@ -8,9 +8,17 @@ namespace OPC\Portlets;
 
 use OPC\PortletInstance;
 
+/**
+ * Class Button
+ * @package OPC\Portlets
+ */
 class Button extends \OPC\Portlet
 {
-    public function getPreviewHtml($instance)
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     */
+    public function getPreviewHtml(PortletInstance $instance): string
     {
         // general
         $text          = $instance->getProperty('btn-text');
@@ -33,7 +41,7 @@ class Button extends \OPC\Portlet
         $dataAttribute = $instance->getDataAttributeString();
 
         $previewButton = "<a ";
-        $wrapperClass = "";
+        $wrapperClass  = "";
         if (!empty($alignment)) {
             $wrapperClass = $alignment !== 'inline' ? 'text-' . $alignment : 'inline-block';
         }
@@ -52,10 +60,13 @@ class Button extends \OPC\Portlet
         return "<div class='" . $wrapperClass . "' $dataAttribute>" . $previewButton . "</div>";
     }
 
-    public function getFinalHtml($instance)
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     */
+    public function getFinalHtml(PortletInstance $instance): string
     {
         // general
-
         $text          = $instance->getProperty('btn-text');
         $type          = $instance->getProperty('btn-type');
         $size          = $instance->getProperty('btn-size');
@@ -78,7 +89,7 @@ class Button extends \OPC\Portlet
                  ->addClass("btn-$size")
                  ->addClass(!empty($fullWidthflag) ? 'btn-block' : '');
 
-        $attributes    = $instance->getAttributeString();
+        $attributes = $instance->getAttributeString();
 
         $previewButton = "<a ";
 
@@ -108,17 +119,18 @@ class Button extends \OPC\Portlet
         return "<div class='" . $wrapperClass . "'>" . $previewButton . "</div>";
     }
 
-    public function getButtonHtml()
+    /**
+     * @return string
+     */
+    public function getButtonHtml(): string
     {
         return '<img class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Button';
     }
 
-    public function getConfigPanelHtml($instance)
-    {
-        return $this->getAutoConfigPanelHtml($instance);
-    }
-
-    public function getPropertyDesc()
+    /**
+     * @return array
+     */
+    public function getPropertyDesc(): array
     {
         return [
             'btn-text'              => [
@@ -143,7 +155,7 @@ class Button extends \OPC\Portlet
             'btn-size'              => [
                 'label'      => 'Größe',
                 'type'       => 'select',
-                'options'            => [
+                'options'    => [
                     'xs' => 'XS',
                     'sm' => 'S',
                     'md' => 'M',
@@ -155,7 +167,7 @@ class Button extends \OPC\Portlet
             'btn-alignment'         => [
                 'label'      => 'Ausrichtung',
                 'type'       => 'select',
-                'options' => [
+                'options'    => [
                     'inline' => 'ohne',
                     'left'   => 'links',
                     'right'  => 'rechts',
@@ -182,7 +194,7 @@ class Button extends \OPC\Portlet
                 'label'                => 'Iconausrichtung',
                 'type'                 => 'select',
                 'options'              => [
-                    'left' => 'links',
+                    'left'  => 'links',
                     'right' => 'rechts'
                 ],
                 'collapseControlStart' => true,
@@ -226,7 +238,10 @@ class Button extends \OPC\Portlet
         ];
     }
 
-    public function getPropertyTabs()
+    /**
+     * @return array
+     */
+    public function getPropertyTabs(): array
     {
         return [
             'Icon'      => [

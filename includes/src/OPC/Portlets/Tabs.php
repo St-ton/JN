@@ -6,24 +6,46 @@
 
 namespace OPC\Portlets;
 
+use OPC\PortletInstance;
+
+/**
+ * Class Tabs
+ * @package OPC\Portlets
+ */
 class Tabs extends \OPC\Portlet
 {
-    public function getPreviewHtml($inst)
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     * @throws \Exception
+     */
+    public function getPreviewHtml(PortletInstance $instance): string
     {
-        return $this->getPreviewHtmlFromTpl($inst);
+        return $this->getPreviewHtmlFromTpl($instance);
     }
 
-    public function getFinalHtml($inst)
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     * @throws \Exception
+     */
+    public function getFinalHtml(PortletInstance $instance): string
     {
-        return $this->getFinalHtmlFromTpl($inst);
+        return $this->getFinalHtmlFromTpl($instance);
     }
 
-    public function getButtonHtml()
+    /**
+     * @return string
+     */
+    public function getButtonHtml(): string
     {
         return '<img class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Tabs';
     }
 
-    public function getPropertyDesc()
+    /**
+     * @return array
+     */
+    public function getPropertyDesc(): array
     {
         return [
             'tabs' => [
@@ -34,7 +56,10 @@ class Tabs extends \OPC\Portlet
         ];
     }
 
-    public function getPropertyTabs()
+    /**
+     * @return array
+     */
+    public function getPropertyTabs(): array
     {
         return [
             'Styles'    => 'styles',

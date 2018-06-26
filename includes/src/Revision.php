@@ -72,7 +72,7 @@ class Revision
      * @param string $type
      * @return string|null
      */
-    private function getMapping($type)
+    private function getMapping(string $type)
     {
         return $this->mapping[$type] ?? null;
     }
@@ -82,7 +82,7 @@ class Revision
      * @param array  $mapping
      * @return $this
      */
-    public function addMapping($name, $mapping)
+    public function addMapping(string $name, array $mapping): self
     {
         $this->mapping[$name] = $mapping;
 
@@ -101,31 +101,26 @@ class Revision
     /**
      * @param string $type
      * @param int $key
-     * @return object|null
+     * @return stdClass|null
      */
-    public function getLatestRevision($type, $key)
+    public function getLatestRevision($type, int $key)
     {
-        $key     = (int)$key;
         $mapping = $this->getMapping($type);
-
-        if ($key === 0 || is_null($mapping)) {
+        if ($key === 0 || $mapping === null) {
             throw new InvalidArgumentException("Invalid revision type $type");
         }
 
-        $latestRevision = Shop::DB()->query(
-            "SELECT *
+        $latestRevision = Shop::Container()->getDB()->queryPrepared(
+            'SELECT *
                 FROM trevisions
-                WHERE type = '" . Shop::DB()->escape($type) . "'
-                    AND reference_primary = $key
-                ORDER BY timestamp DESC",
-            1
+                WHERE type = :tp
+                    AND reference_primary = :ref
+                ORDER BY timestamp DESC',
+            ['tp' => $type, 'ref' => $key],
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
-        if (!is_object($latestRevision)) {
-            return null;
-        }
-
-        return $latestRevision;
+        return is_object($latestRevision) ? $latestRevision : null;
     }
 
     /**
@@ -241,7 +236,11 @@ class Revision
     {
         $revision = $this->getRevision($id);
         $mapping  = $this->getMapping($type); // get static mapping from build in content types
-        if ($revision !== null && $mapping === null && !empty($revision->custom_table) && !empty($revision->custom_primary_key)) {
+        if ($revision !== null
+            && $mapping === null
+            && !empty($revision->custom_table)
+            && !empty($revision->custom_primary_key)
+        ) {
             // load dynamic mapping from DB
             $mapping = ['table' => $revision->custom_table, 'id' => $revision->custom_primary_key];
         }

@@ -13,22 +13,23 @@ namespace OPC;
 trait PortletHtml
 {
     /**
-     * @param PortletInstance $inst
+     * @param PortletInstance $instance
      * @return string
      */
-    abstract public function getPreviewHtml($inst);
+    abstract public function getPreviewHtml(PortletInstance $instance): string;
 
     /**
      * @param PortletInstance $instance
      * @return string
      */
-    abstract public function getFinalHtml($instance);
+    abstract public function getFinalHtml(PortletInstance $instance): string;
 
     /**
      * @param PortletInstance $instance
      * @return string
+     * @throws \Exception
      */
-    public function getConfigPanelHtml($instance)
+    public function getConfigPanelHtml(PortletInstance $instance): string
     {
         return $this->getAutoConfigPanelHtml($instance);
     }
@@ -36,7 +37,7 @@ trait PortletHtml
     /**
      * @return string
      */
-    public function getButtonHtml()
+    public function getButtonHtml(): string
     {
         return $this->getTitle();
     }
@@ -46,7 +47,7 @@ trait PortletHtml
      * @return string
      * @throws \Exception
      */
-    final protected function getPreviewHtmlFromTpl($instance)
+    final protected function getPreviewHtmlFromTpl(PortletInstance $instance): string
     {
         $smarty     = new \JTLSmarty(true);
         $pathprefix = '';
@@ -67,7 +68,7 @@ trait PortletHtml
      * @return string
      * @throws \Exception
      */
-    final protected function getFinalHtmlFromTpl($instance)
+    final protected function getFinalHtmlFromTpl($instance): string
     {
         $smarty     = \Shop::Smarty();
         $pathprefix = '';
@@ -88,9 +89,9 @@ trait PortletHtml
      * @return string
      * @throws \Exception
      */
-    final protected function getConfigPanelHtmlFromTpl($instance)
+    final protected function getConfigPanelHtmlFromTpl(PortletInstance $instance): string
     {
-        $smarty     = (new \JTLSmarty(true));
+        $smarty     = new \JTLSmarty(true);
         $pathprefix = '';
 
         if ($this->getPlugin() !== null) {
@@ -98,10 +99,9 @@ trait PortletHtml
                 . $this->getPlugin()->getCurrentVersion() . '/' . PFAD_PLUGIN_ADMINMENU  . '/';
         }
 
-        return $smarty
-            ->assign('portlet', $this)
-            ->assign('instance', $instance)
-            ->fetch($pathprefix . 'portlets/' . $this->getClass() . '/configpanel.tpl');
+        return $smarty->assign('portlet', $this)
+                      ->assign('instance', $instance)
+                      ->fetch($pathprefix . 'portlets/' . $this->getClass() . '/configpanel.tpl');
     }
 
     /**
@@ -111,7 +111,7 @@ trait PortletHtml
      * @return string
      * @throws \Exception
      */
-    final protected function getConfigPanelSnippet($instance, $id, $extraAssigns = [])
+    final protected function getConfigPanelSnippet(PortletInstance $instance, $id, $extraAssigns = []): string
     {
         $smarty = new \JTLSmarty(true);
 
@@ -119,17 +119,17 @@ trait PortletHtml
             $smarty->assign($name, $val);
         }
 
-        return $smarty
-            ->assign('portlet', $this)
-            ->assign('instance', $instance)
-            ->fetch("portlets/OPC/config.$id.tpl");
+        return $smarty->assign('portlet', $this)
+                      ->assign('instance', $instance)
+                      ->fetch("portlets/OPC/config.$id.tpl");
     }
 
     /**
      * @param PortletInstance $instance
      * @return string
+     * @throws \Exception
      */
-    final protected function getAutoConfigPanelHtml($instance)
+    final protected function getAutoConfigPanelHtml(PortletInstance $instance): string
     {
         $desc = $this->getPropertyDesc();
         $tabs = $this->getPropertyTabs();
@@ -144,8 +144,7 @@ trait PortletHtml
             } else {
                 foreach ($propnames as $i => $propname) {
                     $tabs[$tabname][$propname] = $desc[$propname];
-                    unset($tabs[$tabname][$i]);
-                    unset($desc[$propname]);
+                    unset($tabs[$tabname][$i], $desc[$propname]);
                 }
             }
         }
@@ -190,7 +189,9 @@ trait PortletHtml
                                             $('#collapseContainer$cllpsID').hide();
                                         }
                                     });";
-                    if ($props[$propDesc['showOnProp']]['type'] == 'checkbox' || $props[$propDesc['showOnProp']]['type'] == 'radio') {
+                    if ($props[$propDesc['showOnProp']]['type'] === 'checkbox'
+                        || $props[$propDesc['showOnProp']]['type'] === 'radio'
+                    ) {
                         $res .="    
                                     if ($('[name=\"" . $propDesc['showOnProp'] . "\"][value=\"" . $propDesc['showOnPropValue'] . "\"]').prop('checked') == true){
                                         $('#collapseContainer$cllpsID').show();
@@ -238,7 +239,7 @@ trait PortletHtml
      * @return string
      * @throws \Exception
      */
-    final protected function getAutoConfigProp(PortletInstance $instance, $propname, $propDesc, $containerId = null)
+    final protected function getAutoConfigProp(PortletInstance $instance, $propname, $propDesc, $containerId = null): string
     {
         $res   = '';
         $label = $propDesc['label'] ?? $propname;
@@ -387,7 +388,7 @@ trait PortletHtml
      * @param string $innerHtml
      * @return string
      */
-    final protected function getPreviewRootHtml($instance, $tag = 'div', $innerHtml = '')
+    final protected function getPreviewRootHtml(PortletInstance $instance, string $tag = 'div', string $innerHtml = ''): string
     {
         $attributes    = $instance->getAttributeString();
         $dataAttribute = $instance->getDataAttributeString();
@@ -401,7 +402,7 @@ trait PortletHtml
      * @param string $innerHtml
      * @return string
      */
-    final protected function getFinalRootHtml($instance, $tag = 'div', $innerHtml = '')
+    final protected function getFinalRootHtml(PortletInstance $instance, string $tag = 'div', string $innerHtml = ''): string
     {
         $attributes = $instance->getAttributeString();
 
@@ -411,7 +412,7 @@ trait PortletHtml
     /**
      * @return string
      */
-    final protected function getDefaultIconSvgUrl()
+    final protected function getDefaultIconSvgUrl(): string
     {
         return \Shop::getURL() . '/' . PFAD_TEMPLATES . 'Evo/portlets/' . $this->getClass() . '/icon.svg';
     }

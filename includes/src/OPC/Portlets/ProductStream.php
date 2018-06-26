@@ -9,9 +9,17 @@ namespace OPC\Portlets;
 use Filter\Type;
 use OPC\PortletInstance;
 
+/**
+ * Class ProductStream
+ * @package OPC\Portlets
+ */
 class ProductStream extends \OPC\Portlet
 {
-    public function getPreviewHtml($instance)
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     */
+    public function getPreviewHtml(PortletInstance $instance): string
     {
         $instance->addClass('text-center');
         $attributes    = $instance->getAttributeString();
@@ -26,22 +34,28 @@ class ProductStream extends \OPC\Portlet
             . "</div>";
     }
 
-    public function getFinalHtml($instance)
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     * @throws \Exception
+     */
+    public function getFinalHtml(PortletInstance $instance): string
     {
         return $this->getFinalHtmlFromTpl($instance);
     }
 
-    public function getButtonHtml()
+    /**
+     * @return string
+     */
+    public function getButtonHtml(): string
     {
         return '<img class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Product<br>Stream';
     }
 
-    public function getConfigPanelHtml($instance)
-    {
-        return $this->getAutoConfigPanelHtml($instance);
-    }
-
-    public function getPropertyDesc()
+    /**
+     * @return array
+     */
+    public function getPropertyDesc(): array
     {
         return [
             'listStyle'    => [
@@ -77,7 +91,10 @@ class ProductStream extends \OPC\Portlet
         ];
     }
 
-    public function getPropertyTabs()
+    /**
+     * @return array
+     */
+    public function getPropertyTabs(): array
     {
         return [
             'Styles' => 'styles',
@@ -86,17 +103,15 @@ class ProductStream extends \OPC\Portlet
 
     /**
      * @param PortletInstance $instance
-     * @return int[]
+     * @return \Tightenco\Collect\Support\Collection
      */
     public function getFilteredProductIds(PortletInstance $instance)
     {
-        \Shop::setLanguage(1);
-
         $enabledFilters = $instance->getProperty('filters');
         $productFilter  = new \Filter\ProductFilter();
 
         foreach ($enabledFilters as $enabledFilter) {
-            /** @var \Filter\AbstractFilter $newFilter **/
+            /** @var \Filter\AbstractFilter $newFilter * */
             $newFilter = new $enabledFilter['class']($productFilter);
             $newFilter->setType(Type::AND());
             $productFilter->addActiveFilter($newFilter, $enabledFilter['value']);
@@ -109,14 +124,13 @@ class ProductStream extends \OPC\Portlet
      * @param PortletInstance $instance
      * @return \Artikel[]
      */
-    public function getFilteredProducts(PortletInstance $instance)
+    public function getFilteredProducts(PortletInstance $instance): array
     {
         $products = [];
-
+        $options  = \Artikel::getDefaultOptions();
         foreach ($this->getFilteredProductIds($instance) as $kArtikel) {
-            $kArtikel = (int)$kArtikel;
-            $product  = new \Artikel($kArtikel);
-            $product->fuelleArtikel($kArtikel, null);
+            $product = new \Artikel();
+            $product->fuelleArtikel($kArtikel, $options);
             $products[] = $product;
         }
 

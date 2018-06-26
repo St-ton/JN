@@ -8,9 +8,17 @@ namespace OPC\Portlets;
 
 use OPC\PortletInstance;
 
+/**
+ * Class ImageSlider
+ * @package OPC\Portlets
+ */
 class ImageSlider extends \OPC\Portlet
 {
-    public function getPreviewHtml($instance)
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     */
+    public function getPreviewHtml(PortletInstance $instance): string
     {
         $instance->setProperty('uid', uniqid('sldr-', false));
         $images = $instance->getProperty('slides');
@@ -23,22 +31,27 @@ class ImageSlider extends \OPC\Portlet
                 }
             );
         }
-        $instance->setProperty('slides',$images);
+        $instance->setProperty('slides', $images);
         $instance->addClass('text-center');
 
         if (!empty($images[0]['url'])) {
             return
                 '<div ' . $instance->getAttributeString() . $instance->getDataAttributeString() .
-                '><img src="'.$images[0]['url'].
+                '><img src="' . $images[0]['url'] .
                 '" style="width: 98%; filter: grayscale(50%) opacity(60%)">' .
                 '<p style="color: #5cbcf6; font-size: 40px; font-weight: bold; margin-top: -65px;">' .
                 'Slider</p></div>';
         }
 
-        return '<div ' . $instance->getAttributeString() . $instance->getDataAttributeString() .'>Slider</div>';
+        return '<div ' . $instance->getAttributeString() . $instance->getDataAttributeString() . '>Slider</div>';
     }
 
-    public function getFinalHtml($instance)
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     * @throws \Exception
+     */
+    public function getFinalHtml(PortletInstance $instance): string
     {
         $images = $instance->getProperty('slides');
         unset($images['NEU']);
@@ -51,28 +64,38 @@ class ImageSlider extends \OPC\Portlet
             );
         }
         foreach ($images as &$slide) {
-            if(empty($slide['width']['xs'])) $slide['width']['xs'] = 12;
-            if(empty($slide['width']['sm'])) $slide['width']['sm'] = $slide['width']['xs'];
-            if(empty($slide['width']['md'])) $slide['width']['md'] = $slide['width']['sm'];
-            if(empty($slide['width']['lg'])) $slide['width']['lg'] = $slide['width']['md'];
+            if (empty($slide['width']['xs'])) {
+                $slide['width']['xs'] = 12;
+            }
+            if (empty($slide['width']['sm'])) {
+                $slide['width']['sm'] = $slide['width']['xs'];
+            }
+            if (empty($slide['width']['md'])) {
+                $slide['width']['md'] = $slide['width']['sm'];
+            }
+            if (empty($slide['width']['lg'])) {
+                $slide['width']['lg'] = $slide['width']['md'];
+            }
             $slide['img_attr'] = $instance->getImageAttributes($slide['url'], null, null, $slide['width']);
         }
-        $instance->setProperty('slides',$images);
+        unset($slide);
+        $instance->setProperty('slides', $images);
 
         return $this->getFinalHtmlFromTpl($instance);
     }
 
-    public function getButtonHtml()
+    /**
+     * @return string
+     */
+    public function getButtonHtml(): string
     {
         return '<img class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Image Slider';
     }
 
-    public function getConfigPanelHtml($instance)
-    {
-        return $this->getAutoConfigPanelHtml($instance);
-    }
-
-    public function getPropertyDesc()
+    /**
+     * @return array
+     */
+    public function getPropertyDesc(): array
     {
         return [
             'slider-theme'                => [
@@ -245,7 +268,10 @@ class ImageSlider extends \OPC\Portlet
         ];
     }
 
-    public function getPropertyTabs()
+    /**
+     * @return array
+     */
+    public function getPropertyTabs(): array
     {
         return [
             'Slides' => ['slides'],

@@ -8,33 +8,42 @@ namespace OPC\Portlets;
 
 use OPC\PortletInstance;
 
+/**
+ * Class Divider
+ * @package OPC\Portlets
+ */
 class Divider extends \OPC\Portlet
 {
-    public function getPreviewHtml($instance)
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     */
+    public function getPreviewHtml(PortletInstance $instance): string
     {
-        $res = '<hr ' . $instance->getAttributeString(). ' ' . $instance->getDataAttributeString() . '>';
-
-        return $res;
+        return '<hr ' . $instance->getAttributeString(). ' ' . $instance->getDataAttributeString() . '>';
     }
 
-    public function getFinalHtml($instance)
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     */
+    public function getFinalHtml(PortletInstance $instance): string
     {
-        $res = '<hr ' . $instance->getAttributeString(). '>';
-
-        return $res;
+        return '<hr ' . $instance->getAttributeString(). '>';
     }
 
-    public function getButtonHtml()
+    /**
+     * @return string
+     */
+    public function getButtonHtml(): string
     {
         return '<img class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Trennlinie';
     }
 
-    public function getConfigPanelHtml($instance)
-    {
-        return $this->getAutoConfigPanelHtml($instance);
-    }
-
-    public function getPropertyDesc()
+    /**
+     * @return array
+     */
+    public function getPropertyDesc(): array
     {
         return [
             'id' => [
@@ -43,7 +52,10 @@ class Divider extends \OPC\Portlet
         ];
     }
 
-    public function getPropertyTabs()
+    /**
+     * @return array
+     */
+    public function getPropertyTabs(): array
     {
         return [
             'Styles'    => 'styles',

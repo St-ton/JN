@@ -13,9 +13,9 @@ namespace OPC;
 class Locker
 {
     /**
-     * @var null|PageDB
+     * @var PageDB
      */
-    protected $pageDB = null;
+    protected $pageDB;
 
     /**
      * Locker constructor.
@@ -32,12 +32,13 @@ class Locker
      * @param string $userName
      * @param Page $page
      * @return bool
+     * @throws \InvalidArgumentException
      * @throws \Exception
      */
-    public function lock(string $userName, Page $page)
+    public function lock(string $userName, Page $page): bool
     {
         if ($userName === '') {
-            throw new \Exception('Name of the user that locks this page is empty.');
+            throw new \InvalidArgumentException('Name of the user that locks this page is empty.');
         }
 
         $lockedBy = $page->getLockedBy();

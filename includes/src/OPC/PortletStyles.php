@@ -15,12 +15,12 @@ trait PortletStyles
     /**
      * @return array
      */
-    public function getStylesPropertyDesc()
+    public function getStylesPropertyDesc(): array
     {
         return [
             'hidden-xs'        => [
                 'label'      => '<i class="fa fa-mobile"></i> Sichtbarkeit XS',
-                'option'    => 'ausblenden',
+                'option'     => 'ausblenden',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],

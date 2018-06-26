@@ -24,7 +24,7 @@ abstract class Portlet implements \JsonSerializable
     /**
      * @var null|\Plugin
      */
-    protected $plugin = null;
+    protected $plugin;
 
     /**
      * @var string
@@ -56,10 +56,9 @@ abstract class Portlet implements \JsonSerializable
     /**
      * @return array
      */
-    final public function getDefaultProps()
+    final public function getDefaultProps(): array
     {
         $defProps = [];
-
         foreach ($this->getPropertyDesc() as $name => $propDesc) {
             $defProps[$name] = $propDesc['default'] ?? '';
         }
@@ -70,7 +69,7 @@ abstract class Portlet implements \JsonSerializable
     /**
      * @return array
      */
-    public function getPropertyDesc()
+    public function getPropertyDesc(): array
     {
         return [];
     }
@@ -78,7 +77,7 @@ abstract class Portlet implements \JsonSerializable
     /**
      * @return array
      */
-    public function getPropertyTabs()
+    public function getPropertyTabs(): array
     {
         return [];
     }
@@ -86,7 +85,7 @@ abstract class Portlet implements \JsonSerializable
     /**
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -94,7 +93,7 @@ abstract class Portlet implements \JsonSerializable
     /**
      * @return int
      */
-    public function getPluginId()
+    public function getPluginId(): int
     {
         return $this->plugin === null ? 0 : $this->plugin->kPlugin;
     }
@@ -102,7 +101,7 @@ abstract class Portlet implements \JsonSerializable
     /**
      * @return string
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->title;
     }
@@ -110,7 +109,7 @@ abstract class Portlet implements \JsonSerializable
     /**
      * @return string
      */
-    public function getClass()
+    public function getClass(): string
     {
         return $this->class;
     }
@@ -118,7 +117,7 @@ abstract class Portlet implements \JsonSerializable
     /**
      * @return string
      */
-    public function getGroup()
+    public function getGroup(): string
     {
         return $this->group;
     }
@@ -126,7 +125,7 @@ abstract class Portlet implements \JsonSerializable
     /**
      * @return bool
      */
-    public function isActive()
+    public function isActive(): bool
     {
         return $this->active;
     }
@@ -148,11 +147,7 @@ abstract class Portlet implements \JsonSerializable
      */
     public function setPluginId(int $pluginId) : Portlet
     {
-        if ($pluginId > 0) {
-            $this->plugin = new \Plugin($pluginId);
-        } else {
-            $this->plugin = null;
-        }
+        $this->plugin = $pluginId > 0 ? new \Plugin($pluginId) : null;
 
         return $this;
     }
@@ -191,7 +186,7 @@ abstract class Portlet implements \JsonSerializable
     }
 
     /**
-     * @return \Plugin
+     * @return \Plugin|null
      */
     public function getPlugin()
     {
@@ -204,7 +199,7 @@ abstract class Portlet implements \JsonSerializable
      */
     public function setActive(bool $active) : Portlet
     {
-        $this->active = (bool)$active;
+        $this->active = $active;
 
         return $this;
     }

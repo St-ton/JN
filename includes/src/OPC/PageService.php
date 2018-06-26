@@ -20,27 +20,28 @@ class PageService
     /**
      * @var null|Service
      */
-    protected $opc = null;
+    protected $opc;
 
     /**
      * @var null|PageDB
      */
-    protected $pageDB = null;
+    protected $pageDB;
 
     /**
      * @var null|Locker
      */
-    protected $locker = null;
+    protected $locker;
 
     /**
      * @var null|Page
      */
-    protected $curPage = null;
+    protected $curPage;
 
     /**
      * PageService constructor.
-     * @param PageDB $pageDB
-     * @param Locker $locker
+     * @param Service $opc
+     * @param PageDB  $pageDB
+     * @param Locker  $locker
      */
     public function __construct(Service $opc, PageDB $pageDB, Locker $locker)
     {
@@ -52,7 +53,7 @@ class PageService
     /**
      * @return array list of the OPC service methods to be exposed for AJAX requests
      */
-    public function getPageIOFunctionNames()
+    public function getPageIOFunctionNames(): array
     {
         return [
             'getPageIOFunctionNames',
@@ -73,7 +74,7 @@ class PageService
      * @param \AdminIO $io
      * @throws \Exception
      */
-    public function registerAdminIOFunctions($io)
+    public function registerAdminIOFunctions(\AdminIO $io)
     {
         $this->adminName = $io->getAccount()->account()->cLogin;
 
@@ -87,7 +88,7 @@ class PageService
      * @param string $id
      * @return Page
      */
-    public function createDraft($id)
+    public function createDraft($id): Page
     {
         return (new Page())->setId($id);
     }
@@ -97,7 +98,7 @@ class PageService
      * @return Page
      * @throws \Exception
      */
-    public function getDraft(int $key)
+    public function getDraft(int $key): Page
     {
         return $this->pageDB->getDraft($key);
     }
@@ -107,7 +108,7 @@ class PageService
      * @return Page
      * @throws \Exception
      */
-    public function getRevision(int $revId)
+    public function getRevision(int $revId): Page
     {
         return $this->pageDB->getRevision($revId);
     }
@@ -116,7 +117,7 @@ class PageService
      * @param int $key
      * @return array
      */
-    public function getRevisionList(int $key)
+    public function getRevisionList(int $key): array
     {
         return $this->pageDB->getRevisionList($key);
     }
@@ -134,7 +135,7 @@ class PageService
      * @return Page
      * @throws \Exception
      */
-    public function getCurPage()
+    public function getCurPage(): Page
     {
         $isEditMode    = $this->opc->isEditMode();
         $editedPageKey = $this->opc->getEditedPageKey();
@@ -160,7 +161,7 @@ class PageService
      * @param string $id
      * @return Page[]
      */
-    public function getDrafts(string $id)
+    public function getDrafts(string $id): array
     {
         return $this->pageDB->getDrafts($id);
     }
@@ -170,7 +171,7 @@ class PageService
      * @return string[]
      * @throws \Exception
      */
-    public function getDraftPreview(int $key)
+    public function getDraftPreview(int $key): array
     {
         return $this->getDraft($key)->getAreaList()->getPreviewHtml();
     }
@@ -180,7 +181,7 @@ class PageService
      * @return string[]
      * @throws \Exception
      */
-    public function getRevisionPreview(int $revId)
+    public function getRevisionPreview(int $revId): array
     {
         return $this->getRevision($revId)->getAreaList()->getPreviewHtml();
     }
@@ -189,17 +190,17 @@ class PageService
      * @param array $data
      * @throws \Exception
      */
-    public function saveDraft($data)
+    public function saveDraft(array $data)
     {
         $draft = $this->getDraft($data['key'])->deserialize($data);
         $this->pageDB->saveDraft($draft);
     }
 
     /**
-     * @param $data
+     * @param array $data
      * @throws \Exception
      */
-    public function publicateDraft($data)
+    public function publicateDraft(array $data)
     {
         $page = (new Page())->deserialize($data);
         $this->pageDB->saveDraftPublicationStatus($page);
@@ -209,7 +210,7 @@ class PageService
      * @param string $id
      * @return $this
      */
-    public function deletePage($id)
+    public function deletePage(string $id)
     {
         $this->pageDB->deletePage($id);
 
@@ -220,7 +221,7 @@ class PageService
      * @param int $key
      * @return $this
      */
-    public function deleteDraft($key)
+    public function deleteDraft(int $key): self
     {
         $this->pageDB->deleteDraft($key);
 
@@ -238,10 +239,10 @@ class PageService
     }
 
     /**
-     * @param $key
+     * @param int $key
      * @throws \Exception
      */
-    public function unlockDraft($key)
+    public function unlockDraft(int $key)
     {
         $page = (new Page())->setKey($key);
         $this->locker->unlock($page);
@@ -251,9 +252,10 @@ class PageService
      * @param array $data
      * @return string[]
      */
-    public function createPagePreview($data)
+    public function createPagePreview(array $data): array
     {
         $page = (new Page())->deserialize($data);
+
         return $page->getAreaList()->getPreviewHtml();
     }
 }

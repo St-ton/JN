@@ -8,30 +8,46 @@ namespace OPC\Portlets;
 
 use OPC\PortletInstance;
 
+/**
+ * Class Accordion
+ * @package OPC\Portlets
+ */
 class Accordion extends \OPC\Portlet
 {
-    public function getPreviewHtml($instance)
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     * @throws \Exception
+     */
+    public function getPreviewHtml($instance): string
     {
         $instance->setProperty('uid', uniqid('cllps_', false));
+
         return $this->getPreviewHtmlFromTpl($instance);
     }
 
-    public function getFinalHtml($instance)
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     * @throws \Exception
+     */
+    public function getFinalHtml($instance): string
     {
         return $this->getFinalHtmlFromTpl($instance);
     }
 
-    public function getButtonHtml()
+    /**
+     * @return string
+     */
+    public function getButtonHtml(): string
     {
         return '<img class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Akkordeon';
     }
 
-    public function getConfigPanelHtml($instance)
-    {
-        return $this->getAutoConfigPanelHtml($instance);
-    }
-
-    public function getPropertyDesc()
+    /**
+     * @return array
+     */
+    public function getPropertyDesc(): array
     {
         return [
             'cllps-initial-state' => [
@@ -92,7 +108,10 @@ class Accordion extends \OPC\Portlet
         ];
     }
 
-    public function getPropertyTabs()
+    /**
+     * @return array
+     */
+    public function getPropertyTabs(): array
     {
         return [
             'Styles' => 'styles',

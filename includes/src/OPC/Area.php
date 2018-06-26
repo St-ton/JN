@@ -41,7 +41,7 @@ class Area implements \JsonSerializable
     /**
      * @param PortletInstance $portlet
      */
-    public function addPortlet($portlet)
+    public function addPortlet(PortletInstance $portlet)
     {
         $this->content[] = $portlet;
     }
@@ -49,7 +49,7 @@ class Area implements \JsonSerializable
     /**
      * @return PortletInstance[]
      */
-    public function getContent()
+    public function getContent(): array
     {
         return $this->content;
     }
@@ -57,10 +57,9 @@ class Area implements \JsonSerializable
     /**
      * @return string
      */
-    public function getPreviewHtml()
+    public function getPreviewHtml(): string
     {
         $result = '';
-
         foreach ($this->content as $portletInstance) {
             $result .= $portletInstance->getPreviewHtml();
         }
@@ -71,10 +70,9 @@ class Area implements \JsonSerializable
     /**
      * @return string
      */
-    public function getFinalHtml()
+    public function getFinalHtml(): string
     {
         $result = '';
-
         foreach ($this->content as $portletInstance) {
             $result .= $portletInstance->getFinalHtml();
         }
@@ -85,6 +83,7 @@ class Area implements \JsonSerializable
     /**
      * @param array $data
      * @return $this
+     * @throws \Exception
      */
     public function deserialize($data)
     {

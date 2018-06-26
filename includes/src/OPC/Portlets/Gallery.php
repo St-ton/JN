@@ -8,9 +8,18 @@ namespace OPC\Portlets;
 
 use OPC\PortletInstance;
 
+/**
+ * Class Gallery
+ * @package OPC\Portlets
+ */
 class Gallery extends \OPC\Portlet
 {
-    public function getPreviewHtml($instance)
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     * @throws \Exception
+     */
+    public function getPreviewHtml(PortletInstance $instance): string
     {
         $instance->setProperty('uid', uniqid('gllry-', false));
         $images = $instance->getProperty('gllry_images');
@@ -24,24 +33,37 @@ class Gallery extends \OPC\Portlet
             );
         }
         foreach ($images as &$slide) {
-            if(empty($slide['width']['xs'])) $slide['width']['xs'] = 12;
-            if(empty($slide['width']['sm'])) $slide['width']['sm'] = $slide['width']['xs'];
-            if(empty($slide['width']['md'])) $slide['width']['md'] = $slide['width']['sm'];
-            if(empty($slide['width']['lg'])) $slide['width']['lg'] = $slide['width']['md'];
+            if (empty($slide['width']['xs'])) {
+                $slide['width']['xs'] = 12;
+            }
+            if (empty($slide['width']['sm'])) {
+                $slide['width']['sm'] = $slide['width']['xs'];
+            }
+            if (empty($slide['width']['md'])) {
+                $slide['width']['md'] = $slide['width']['sm'];
+            }
+            if (empty($slide['width']['lg'])) {
+                $slide['width']['lg'] = $slide['width']['md'];
+            }
             $slide['img_attr'] = $instance->getImageAttributes($slide['url'], null, null, $slide['width']);
         }
-        $instance->setProperty('gllry_images',$images);
+        unset($slide);
+        $instance->setProperty('gllry_images', $images);
         $id = !empty($instance->getProperty('id')) ? $instance->getProperty('id') : uniqid('gllry_', false);
         $instance->setAttribute('id', $id);
 
-        $instance
-            ->addClass('row')
-            ->addClass('gllry-container');
+        $instance->addClass('row')
+                 ->addClass('gllry-container');
 
         return $this->getPreviewHtmlFromTpl($instance);
     }
 
-    public function getFinalHtml($instance)
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     * @throws \Exception
+     */
+    public function getFinalHtml(PortletInstance $instance): string
     {
         $images = $instance->getProperty('gllry_images');
         unset($images['NEU']);
@@ -54,33 +76,41 @@ class Gallery extends \OPC\Portlet
             );
         }
         foreach ($images as &$slide) {
-            if(empty($slide['width']['xs'])) $slide['width']['xs'] = 12;
-            if(empty($slide['width']['sm'])) $slide['width']['sm'] = $slide['width']['xs'];
-            if(empty($slide['width']['md'])) $slide['width']['md'] = $slide['width']['sm'];
-            if(empty($slide['width']['lg'])) $slide['width']['lg'] = $slide['width']['md'];
+            if (empty($slide['width']['xs'])) {
+                $slide['width']['xs'] = 12;
+            }
+            if (empty($slide['width']['sm'])) {
+                $slide['width']['sm'] = $slide['width']['xs'];
+            }
+            if (empty($slide['width']['md'])) {
+                $slide['width']['md'] = $slide['width']['sm'];
+            }
+            if (empty($slide['width']['lg'])) {
+                $slide['width']['lg'] = $slide['width']['md'];
+            }
             $slide['img_attr'] = $instance->getImageAttributes($slide['url'], null, null, $slide['width']);
         }
+        unset($slide);
+        $instance->setProperty('gllry_images', $images);
 
-        $instance->setProperty('gllry_images',$images);
-
-        $instance
-            ->addClass('row')
-            ->addClass('gllry-container');
+        $instance->addClass('row')
+                 ->addClass('gllry-container');
 
         return $this->getFinalHtmlFromTpl($instance);
     }
 
-    public function getButtonHtml()
+    /**
+     * @return string
+     */
+    public function getButtonHtml(): string
     {
         return '<img class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Gallery';
     }
 
-    public function getConfigPanelHtml($instance)
-    {
-        return $this->getAutoConfigPanelHtml($instance);
-    }
-
-    public function getPropertyDesc()
+    /**
+     * @return array
+     */
+    public function getPropertyDesc(): array
     {
         return [
             'gllry_height' => [
@@ -102,7 +132,10 @@ class Gallery extends \OPC\Portlet
         ];
     }
 
-    public function getPropertyTabs()
+    /**
+     * @return array
+     */
+    public function getPropertyTabs(): array
     {
         return [
             'Images' => ['gllry_images'],

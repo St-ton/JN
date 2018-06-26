@@ -25,12 +25,12 @@ class Blueprint implements \JsonSerializable
     /**
      * @var null|PortletInstance
      */
-    protected $instance = null;
+    protected $instance;
 
     /**
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -39,7 +39,7 @@ class Blueprint implements \JsonSerializable
      * @param int $id
      * @return $this
      */
-    public function setId($id)
+    public function setId(int $id): self
     {
         $this->id = $id;
 
@@ -49,7 +49,7 @@ class Blueprint implements \JsonSerializable
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -58,7 +58,7 @@ class Blueprint implements \JsonSerializable
      * @param string $name
      * @return $this
      */
-    public function setName($name)
+    public function setName(string $name): self
     {
         $this->name = $name;
 
@@ -66,7 +66,7 @@ class Blueprint implements \JsonSerializable
     }
 
     /**
-     * @return PortletInstance
+     * @return PortletInstance|null
      */
     public function getInstance()
     {
@@ -74,10 +74,10 @@ class Blueprint implements \JsonSerializable
     }
 
     /**
-     * @param PortletInstance $instance
+     * @param PortletInstance|null $instance
      * @return $this;
      */
-    public function setInstance($instance)
+    public function setInstance($instance): self
     {
         $this->instance = $instance;
 
@@ -87,6 +87,7 @@ class Blueprint implements \JsonSerializable
     /**
      * @param array $data
      * @return $this
+     * @throws \Exception
      */
     public function deserialize($data)
     {

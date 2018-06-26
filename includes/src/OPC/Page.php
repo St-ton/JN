@@ -25,12 +25,12 @@ class Page implements \JsonSerializable
     /**
      * @var null|string
      */
-    protected $publishFrom = null;
+    protected $publishFrom;
 
     /**
      * @var null|string
      */
-    protected $publishTo = null;
+    protected $publishTo;
 
     /**
      * @var string
@@ -70,7 +70,7 @@ class Page implements \JsonSerializable
     /**
      * @var null|AreaList
      */
-    protected $areaList = null;
+    protected $areaList;
 
     /**
      * Page constructor.
@@ -83,7 +83,7 @@ class Page implements \JsonSerializable
     /**
      * @return int
      */
-    public function getKey() : int
+    public function getKey(): int
     {
         return $this->key;
     }
@@ -92,7 +92,7 @@ class Page implements \JsonSerializable
      * @param int $key
      * @return $this
      */
-    public function setKey(int $key)
+    public function setKey(int $key): self
     {
         $this->key = $key;
 
@@ -102,7 +102,7 @@ class Page implements \JsonSerializable
     /**
      * @return string
      */
-    public function getId() : string
+    public function getId(): string
     {
         return $this->id;
     }
@@ -111,7 +111,7 @@ class Page implements \JsonSerializable
      * @param string $id
      * @return $this
      */
-    public function setId(string $id)
+    public function setId(string $id): self
     {
         $this->id = $id;
 
@@ -130,7 +130,7 @@ class Page implements \JsonSerializable
      * @param null|string $publishFrom
      * @return Page
      */
-    public function setPublishFrom($publishFrom)
+    public function setPublishFrom($publishFrom): self
     {
         $this->publishFrom = $publishFrom === '0000-00-00 00:00:00' ? null : $publishFrom;
 
@@ -149,7 +149,7 @@ class Page implements \JsonSerializable
      * @param null|string $publishTo
      * @return Page
      */
-    public function setPublishTo($publishTo)
+    public function setPublishTo($publishTo): self
     {
         $this->publishTo = $publishTo === '0000-00-00 00:00:00' ? null : $publishTo;
 
@@ -159,7 +159,7 @@ class Page implements \JsonSerializable
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -168,7 +168,7 @@ class Page implements \JsonSerializable
      * @param string $name
      * @return Page
      */
-    public function setName($name): Page
+    public function setName($name): self
     {
         $this->name = $name;
 
@@ -178,7 +178,7 @@ class Page implements \JsonSerializable
     /**
      * @return int
      */
-    public function getRevId() : int
+    public function getRevId(): int
     {
         return $this->revId;
     }
@@ -187,7 +187,7 @@ class Page implements \JsonSerializable
      * @param int $revId
      * @return Page
      */
-    public function setRevId(int $revId) : Page
+    public function setRevId(int $revId): self
     {
         $this->revId = $revId;
 
@@ -197,7 +197,7 @@ class Page implements \JsonSerializable
     /**
      * @return string
      */
-    public function getUrl() : string
+    public function getUrl(): string
     {
         return $this->url;
     }
@@ -206,7 +206,7 @@ class Page implements \JsonSerializable
      * @param string $url
      * @return $this
      */
-    public function setUrl(string $url)
+    public function setUrl(string $url): self
     {
         $this->url = $url;
 
@@ -216,7 +216,7 @@ class Page implements \JsonSerializable
     /**
      * @return string
      */
-    public function getLastModified() : string
+    public function getLastModified(): string
     {
         return $this->lastModified;
     }
@@ -225,7 +225,7 @@ class Page implements \JsonSerializable
      * @param string $lastModified
      * @return $this
      */
-    public function setLastModified(string $lastModified)
+    public function setLastModified(string $lastModified): self
     {
         $this->lastModified = $lastModified;
 
@@ -235,7 +235,7 @@ class Page implements \JsonSerializable
     /**
      * @return string
      */
-    public function getLockedBy() : string
+    public function getLockedBy(): string
     {
         return $this->lockedBy;
     }
@@ -244,7 +244,7 @@ class Page implements \JsonSerializable
      * @param string $lockedBy
      * @return $this
      */
-    public function setLockedBy(string $lockedBy)
+    public function setLockedBy(string $lockedBy): self
     {
         $this->lockedBy = $lockedBy;
 
@@ -254,7 +254,7 @@ class Page implements \JsonSerializable
     /**
      * @return string
      */
-    public function getLockedAt() : string
+    public function getLockedAt(): string
     {
         return $this->lockedAt;
     }
@@ -263,7 +263,7 @@ class Page implements \JsonSerializable
      * @param string $lockedAt
      * @return $this
      */
-    public function setLockedAt(string $lockedAt)
+    public function setLockedAt(string $lockedAt): self
     {
         $this->lockedAt = $lockedAt;
 
@@ -273,24 +273,24 @@ class Page implements \JsonSerializable
     /**
      * @return bool
      */
-    public function isReplace()
+    public function isReplace(): bool
     {
         return $this->replace;
     }
 
     /**
-     * @param $replace
+     * @param bool $replace
      * @return $this
      */
-    public function setReplace($replace)
+    public function setReplace(bool $replace): self
     {
-        $this->replace = (bool)$replace;
+        $this->replace = $replace;
 
         return $this;
     }
 
     /**
-     * @return AreaList
+     * @return AreaList|null
      */
     public function getAreaList()
     {

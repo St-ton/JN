@@ -15,7 +15,7 @@ trait PortletAnimations
     /**
      * @return array
      */
-    public function getAnimationsPropertyDesc()
+    public function getAnimationsPropertyDesc(): array
     {
         return [
             'animation-style'    => [

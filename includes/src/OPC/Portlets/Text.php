@@ -8,9 +8,18 @@ namespace OPC\Portlets;
 
 use OPC\PortletInstance;
 
+/**
+ * Class Text
+ * @package OPC\Portlets
+ */
 class Text extends \OPC\Portlet
 {
-    public function getHtml(PortletInstance $instance, $preview = false)
+    /**
+     * @param PortletInstance $instance
+     * @param bool            $preview
+     * @return string
+     */
+    public function getHtml(PortletInstance $instance, $preview = false): string
     {
         return '<div '
             . $instance->getAttributeString()
@@ -19,30 +28,39 @@ class Text extends \OPC\Portlet
             . '</div>';
     }
 
-    public function getPreviewHtml($instance)
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     */
+    public function getPreviewHtml(PortletInstance $instance): string
     {
         return $this->getHtml($instance, true);
     }
 
-    public function getFinalHtml($instance)
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     */
+    public function getFinalHtml(PortletInstance $instance): string
     {
         return $this->getHtml($instance);
     }
 
-    public function getButtonHtml()
+    /**
+     * @return string
+     */
+    public function getButtonHtml(): string
     {
         return '<i class="fa fa-font"></i><br>Text';
     }
 
-    public function getConfigPanelHtml($instance)
-    {
-        return $this->getAutoConfigPanelHtml($instance);
-    }
-
-    public function getPropertyDesc()
+    /**
+     * @return array
+     */
+    public function getPropertyDesc(): array
     {
         return [
-            'text'  => [
+            'text' => [
                 'label'   => 'Text',
                 'type'    => 'richtext',
                 'default' => '<p>Rich Text Content</p>',
@@ -50,7 +68,10 @@ class Text extends \OPC\Portlet
         ];
     }
 
-    public function getPropertyTabs()
+    /**
+     * @return array
+     */
+    public function getPropertyTabs(): array
     {
         return [
             'Styles' => 'styles',

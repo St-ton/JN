@@ -9,13 +9,21 @@ namespace OPC\Portlets;
 use function Couchbase\defaultDecoder;
 use OPC\PortletInstance;
 
+/**
+ * Class Panel
+ * @package OPC\Portlets
+ */
 class Panel extends \OPC\Portlet
 {
-    public function getPreviewHtml($instance)
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     */
+    public function getPreviewHtml(PortletInstance $instance): string
     {
         $instance->addClass('panel')->addClass('panel-' . $instance->getProperty('panel-state'))->addClass($instance->getProperty('panel-class'));
 
-        $ret  = '<div ' . $instance->getAttributeString() . ' ' . $instance->getDataAttributeString() . '>';
+        $ret = '<div ' . $instance->getAttributeString() . ' ' . $instance->getDataAttributeString() . '>';
         $ret .= !empty($instance->getProperty('title-flag')) ? '<div class="panel-heading opc-area" data-area-id="pnl_title">' . $instance->getSubareaPreviewHtml('pnl_title') . '</div>' : '';
         $ret .= '<div class="panel-body opc-area" data-area-id="pnl_body">' . $instance->getSubareaPreviewHtml('pnl_body') . '</div>';
         $ret .= !empty($instance->getProperty('footer-flag')) ? '<div class="panel-footer opc-area" data-area-id="pnl_footer">' . $instance->getSubareaPreviewHtml('pnl_footer') . '</div>' : '';
@@ -24,11 +32,15 @@ class Panel extends \OPC\Portlet
         return $ret;
     }
 
-    public function getFinalHtml($instance)
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     */
+    public function getFinalHtml(PortletInstance $instance): string
     {
         $instance->addClass('panel')->addClass('panel-' . $instance->getProperty('panel-state'))->addClass($instance->getProperty('panel-class'));
 
-        $ret  = '<div ' . $instance->getAttributeString() . '>';
+        $ret = '<div ' . $instance->getAttributeString() . '>';
         $ret .= !empty($instance->getProperty('title-flag')) ? '<div class="panel-heading">' . $instance->getSubareaFinalHtml('pnl_title') . '</div>' : '';
         $ret .= '<div class="panel-body">' . $instance->getSubareaFinalHtml('pnl_body') . '</div>';
         $ret .= !empty($instance->getProperty('footer-flag')) ? '<div class="panel-footer">' . $instance->getSubareaFinalHtml('pnl_footer') . '</div>' : '';
@@ -37,17 +49,18 @@ class Panel extends \OPC\Portlet
         return $ret;
     }
 
-    public function getButtonHtml()
+    /**
+     * @return string
+     */
+    public function getButtonHtml(): string
     {
         return '<i class="fa fa-square-o"></i><br/> Panel';
     }
 
-    public function getConfigPanelHtml($instance)
-    {
-        return $this->getAutoConfigPanelHtml($instance);
-    }
-
-    public function getPropertyDesc()
+    /**
+     * @return array
+     */
+    public function getPropertyDesc(): array
     {
         return [
             'panel-class' => [
@@ -80,7 +93,10 @@ class Panel extends \OPC\Portlet
         ];
     }
 
-    public function getPropertyTabs()
+    /**
+     * @return array
+     */
+    public function getPropertyTabs(): array
     {
         return [
             'Styles'    => 'styles',

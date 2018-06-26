@@ -6,24 +6,44 @@
 
 namespace OPC\Portlets;
 
+use OPC\PortletInstance;
+
+/**
+ * Class Heading
+ * @package OPC\Portlets
+ */
 class Heading extends \OPC\Portlet
 {
-    public function getPreviewHtml($inst)
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     */
+    public function getPreviewHtml(PortletInstance $instance): string
     {
-        return $this->getPreviewRootHtml($inst, 'h' . $inst->getProperty('level'), $inst->getProperty('text'));
+        return $this->getPreviewRootHtml($instance, 'h' . $instance->getProperty('level'), $instance->getProperty('text'));
     }
 
-    public function getFinalHtml($inst)
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     */
+    public function getFinalHtml(PortletInstance $instance): string
     {
-        return $this->getFinalRootHtml($inst, 'h' . $inst->getProperty('level'), $inst->getProperty('text'));
+        return $this->getFinalRootHtml($instance, 'h' . $instance->getProperty('level'), $instance->getProperty('text'));
     }
 
-    public function getButtonHtml()
+    /**
+     * @return string
+     */
+    public function getButtonHtml(): string
     {
         return '<i class="fa fa-header"></i><br>Überschrift';
     }
 
-    public function getPropertyDesc()
+    /**
+     * @return array
+     */
+    public function getPropertyDesc(): array
     {
         return [
             'level' => [
@@ -50,7 +70,10 @@ class Heading extends \OPC\Portlet
         ];
     }
 
-    public function getPropertyTabs()
+    /**
+     * @return array
+     */
+    public function getPropertyTabs(): array
     {
         return [
             'Styles'    => 'styles',

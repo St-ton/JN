@@ -7,6 +7,8 @@
 namespace OPC;
 
 use Filter\AbstractFilter;
+use Filter\FilterOption;
+use Filter\Items\ItemAttribute;
 use Filter\Type;
 
 /**
@@ -64,7 +66,7 @@ class Service
      * @param \AdminIO $io
      * @throws \Exception
      */
-    public function registerAdminIOFunctions($io)
+    public function registerAdminIOFunctions(\AdminIO $io)
     {
         $this->adminName = $io->getAccount()->account()->cLogin;
 
@@ -79,7 +81,7 @@ class Service
      * @return PortletGroup[]
      * @throws \Exception
      */
-    public function getPortletGroups(bool $withInactive = false)
+    public function getPortletGroups(bool $withInactive = false): array
     {
         return $this->db->getPortletGroups($withInactive);
     }
@@ -104,7 +106,7 @@ class Service
      * @return Blueprint
      * @throws \Exception
      */
-    public function getBlueprint(int $id)
+    public function getBlueprint(int $id): Blueprint
     {
         $blueprint = (new Blueprint())
             ->setId($id);
@@ -117,8 +119,9 @@ class Service
     /**
      * @param int $id
      * @return PortletInstance
+     * @throws \Exception
      */
-    public function getBlueprintInstance(int $id)
+    public function getBlueprintInstance(int $id): PortletInstance
     {
         return $this->getBlueprint($id)->getInstance();
     }
@@ -126,8 +129,9 @@ class Service
     /**
      * @param int $id
      * @return string
+     * @throws \Exception
      */
-    public function getBlueprintPreview(int $id)
+    public function getBlueprintPreview(int $id): string
     {
         return $this->getBlueprintInstance($id)->getPreviewHtml();
     }
@@ -161,7 +165,7 @@ class Service
      * @return PortletInstance
      * @throws \Exception
      */
-    public function createPortletInstance($class)
+    public function createPortletInstance($class): PortletInstance
     {
         return new PortletInstance($this->db->getPortlet($class));
     }
@@ -171,7 +175,7 @@ class Service
      * @return PortletInstance
      * @throws \Exception
      */
-    public function getPortletInstance($data)
+    public function getPortletInstance($data): PortletInstance
     {
         return $this->createPortletInstance($data['class'])
             ->deserialize($data);
@@ -182,7 +186,7 @@ class Service
      * @return string
      * @throws \Exception
      */
-    public function getPortletPreviewHtml($data)
+    public function getPortletPreviewHtml($data): string
     {
         return $this->getPortletInstance($data)->getPreviewHtml();
     }
@@ -193,7 +197,7 @@ class Service
      * @return string
      * @throws \Exception
      */
-    public function getConfigPanelHtml($portletClass, $props)
+    public function getConfigPanelHtml($portletClass, $props): string
     {
         return $this->getPortletInstance(['class' => $portletClass, 'properties' => $props])->getConfigPanelHtml();
     }
@@ -220,8 +224,6 @@ class Service
      */
     public function getFilterOptions(array $enabledFilters = []): array
     {
-        \Shop::setLanguage(1);
-
         $productFilter    = new \Filter\ProductFilter();
         $availableFilters = $productFilter->getAvailableFilters();
         $results          = [];
@@ -240,12 +242,12 @@ class Service
             $name    = $availableFilter->getFrontendName();
             $options = [];
 
-            if (\StringHandler::endsWith($class, 'ItemAttribute')) {
+            if ($class === ItemAttribute::class) {
                 $name = 'Merkmale';
 
                 foreach ($availableFilter->getOptions() as $option) {
                     foreach ($option->getOptions() as $suboption) {
-                        /** @var \Filter\FilterOption $suboption */
+                        /** @var FilterOption $suboption */
                         $value    = $suboption->kMerkmalWert;
                         $mapindex = $class . ':' . $value;
 

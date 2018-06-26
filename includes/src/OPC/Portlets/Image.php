@@ -8,9 +8,18 @@ namespace OPC\Portlets;
 
 use OPC\PortletInstance;
 
+/**
+ * Class Image
+ * @package OPC\Portlets
+ */
 class Image extends \OPC\Portlet
 {
-    public function getHtml(PortletInstance $instance, $preview = false)
+    /**
+     * @param PortletInstance $instance
+     * @param bool            $preview
+     * @return string
+     */
+    public function getHtml(PortletInstance $instance, $preview = false): string
     {
         $instance->setImageAttributes();
         if (!empty($instance->getProperty('responsive'))) {
@@ -26,27 +35,36 @@ class Image extends \OPC\Portlet
             . '>';
     }
 
-    public function getPreviewHtml($instance)
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     */
+    public function getPreviewHtml(PortletInstance $instance): string
     {
         return $this->getHtml($instance, true);
     }
 
-    public function getFinalHtml($instance)
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     */
+    public function getFinalHtml(PortletInstance $instance): string
     {
         return $this->getHtml($instance);
     }
 
-    public function getButtonHtml()
+    /**
+     * @return string
+     */
+    public function getButtonHtml(): string
     {
         return '<i class="fa fa-image"></i><br/> Bild';
     }
 
-    public function getConfigPanelHtml($instance)
-    {
-        return $this->getAutoConfigPanelHtml($instance);
-    }
-
-    public function getPropertyDesc()
+    /**
+     * @return array
+     */
+    public function getPropertyDesc(): array
     {
         return [
             'src'        => [
@@ -85,7 +103,10 @@ class Image extends \OPC\Portlet
         ];
     }
 
-    public function getPropertyTabs()
+    /**
+     * @return array
+     */
+    public function getPropertyTabs(): array
     {
         return [
             'Styles' => 'styles',

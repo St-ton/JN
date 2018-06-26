@@ -9,9 +9,17 @@ namespace OPC\Portlets;
 use function Functional\unique;
 use OPC\PortletInstance;
 
+/**
+ * Class Container
+ * @package OPC\Portlets
+ */
 class Container extends \OPC\Portlet
 {
-    public function getPreviewHtml($instance)
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     */
+    public function getPreviewHtml(PortletInstance $instance): string
     {
         $instance->setProperty('uid', uniqid('cntr-', false));
         if (!empty($instance->getProperty('parallax-flag')) && !empty($instance->getProperty('src'))) {
@@ -20,7 +28,7 @@ class Container extends \OPC\Portlet
 
             $instance->setStyle(
                 'background',
-                'url("' . \Shop::getURL() . '/' . PFAD_MEDIAFILES . 'Bilder/.xs/' . $name .'")'
+                'url("' . \Shop::getURL() . '/' . PFAD_MEDIAFILES . 'Bilder/.xs/' . $name . '")'
             );
 
             $instance->setStyle('background-size', 'cover');
@@ -32,15 +40,19 @@ class Container extends \OPC\Portlet
             $instance->addClass($instance->getProperty("class"));
         }
 
-        $res = "<div ".$instance->getAttributeString().$instance->getDataAttributeString().">";
+        $res = "<div " . $instance->getAttributeString() . $instance->getDataAttributeString() . ">";
 
         $res .= "<div class='opc-area' data-area-id='cntr-0'>"
-                . $instance->getSubareaPreviewHtml('cntr-0') . "</div></div>";
+            . $instance->getSubareaPreviewHtml('cntr-0') . "</div></div>";
 
         return $res;
     }
 
-    public function getFinalHtml($instance)
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     */
+    public function getFinalHtml(PortletInstance $instance): string
     {
         if (!empty($instance->getProperty('parallax-flag')) && !empty($instance->getProperty('src'))) {
             $name = explode('/', $instance->getProperty('src'));
@@ -57,25 +69,26 @@ class Container extends \OPC\Portlet
             $instance->addClass($instance->getProperty("class"));
         }
 
-        $res = "<div ".$instance->getAttributeString().">";
+        $res = "<div " . $instance->getAttributeString() . ">";
 
-        $res.= $instance->getSubareaFinalHtml('cntr-0');
+        $res .= $instance->getSubareaFinalHtml('cntr-0');
         $res .= "</div>";
 
         return $res;
     }
 
-    public function getButtonHtml()
+    /**
+     * @return string
+     */
+    public function getButtonHtml(): string
     {
         return '<i class="fa fa-object-group"></i><br/> Container';
     }
 
-    public function getConfigPanelHtml($instance)
-    {
-        return $this->getAutoConfigPanelHtml($instance);
-    }
-
-    public function getPropertyDesc()
+    /**
+     * @return array
+     */
+    public function getPropertyDesc(): array
     {
         return [
             'class'         => [
@@ -109,7 +122,10 @@ class Container extends \OPC\Portlet
         ];
     }
 
-    public function getPropertyTabs()
+    /**
+     * @return array
+     */
+    public function getPropertyTabs(): array
     {
         return [
             'Styles'    => 'styles',

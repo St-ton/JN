@@ -6,6 +6,9 @@
 
 namespace OPC;
 
+use DB\DbInterface;
+use DB\ReturnType;
+
 /**
  * Class PageDB
  * @package OPC
@@ -13,14 +16,15 @@ namespace OPC;
 class PageDB
 {
     /**
-     * @var null|\DB\DbInterface
+     * @var DbInterface
      */
-    protected $shopDB = null;
+    protected $shopDB;
 
     /**
      * PageDB constructor.
+     * @param DbInterface $shopDB
      */
-    public function __construct(\DB\DbInterface $shopDB)
+    public function __construct(DbInterface $shopDB)
     {
         $this->shopDB = $shopDB;
     }
@@ -28,9 +32,12 @@ class PageDB
     /**
      * @return int
      */
-    public function getPageCount()
+    public function getPageCount(): int
     {
-        return $this->shopDB->query("SELECT count(DISTINCT cPageId) AS count FROM topcpage", 1)->count;
+        return $this->shopDB->query(
+            'SELECT count(DISTINCT cPageId) AS count FROM topcpage',
+            ReturnType::SINGLE_OBJECT
+        )->count;
     }
 
     /**
@@ -39,8 +46,8 @@ class PageDB
     public function getPages()
     {
         return $this->shopDB->query(
-            "SELECT cPageId, cPageUrl FROM topcpage GROUP BY cPageId, cPageUrl",
-            2
+            'SELECT cPageId, cPageUrl FROM topcpage GROUP BY cPageId, cPageUrl',
+            ReturnType::ARRAY_OF_OBJECTS
         );
     }
 
@@ -48,7 +55,7 @@ class PageDB
      * @param string $id
      * @return array
      */
-    public function getDraftRows($id)
+    public function getDraftRows($id): array
     {
         return $this->shopDB->selectAll('topcpage', 'cPageId', $id);
     }
@@ -57,12 +64,12 @@ class PageDB
      * @param string $id
      * @return int
      */
-    public function getDraftCount($id)
+    public function getDraftCount($id): int
     {
-        return $this->shopDB->queryPrepared(
-            "SELECT count(kPage) AS count FROM topcpage WHERE cPageId = :id",
+        return (int)$this->shopDB->queryPrepared(
+            'SELECT count(kPage) AS count FROM topcpage WHERE cPageId = :id',
             ['id' => $id],
-            1
+            ReturnType::SINGLE_OBJECT
         )->count;
     }
 
@@ -76,7 +83,7 @@ class PageDB
         $draftRow = $this->shopDB->select('topcpage', 'kPage', $key);
 
         if (!is_object($draftRow)) {
-            throw new \Exception("The OPC page draft could not be found in the database.");
+            throw new \Exception('The OPC page draft could not be found in the database.');
         }
 
         return $draftRow;
@@ -93,7 +100,7 @@ class PageDB
         $revisionRow = $revision->getRevision($revId);
 
         if (!is_object($revisionRow)) {
-            throw new \Exception("The OPC page revision could not be found in the database.");
+            throw new \Exception('The OPC page revision could not be found in the database.');
         }
 
         return json_decode($revisionRow->content);
@@ -101,32 +108,29 @@ class PageDB
 
     /**
      * @param string $id
-     * @return array|int|null|object
+     * @return null|\stdClass
      */
     public function getPublicPageRow(string $id)
     {
         $publicRow = $this->shopDB->queryPrepared(
-            "SELECT * FROM topcpage
-                    WHERE cPageId = :pageId
-                        AND dPublishFrom IS NOT NULL
-                        AND dPublishFrom <= NOW()
-                        AND (dPublishTo > NOW() OR dPublishTo IS NULL)
-                    ORDER BY dPublishFrom DESC",
-            ['pageId' => $id], 1
+            'SELECT * FROM topcpage
+                WHERE cPageId = :pageId
+                    AND dPublishFrom IS NOT NULL
+                    AND dPublishFrom <= NOW()
+                    AND (dPublishTo > NOW() OR dPublishTo IS NULL)
+                ORDER BY dPublishFrom DESC',
+            ['pageId' => $id],
+            ReturnType::SINGLE_OBJECT
         );
 
-        if (!is_object($publicRow)) {
-            return null;
-        }
-
-        return $publicRow;
+        return !is_object($publicRow) ? null : $publicRow;
     }
 
     /**
      * @param string $id
      * @return Page[]
      */
-    public function getDrafts(string $id)
+    public function getDrafts(string $id): array
     {
         $drafts = [];
 
@@ -165,7 +169,7 @@ class PageDB
      * @param int $key
      * @return array
      */
-    public function getRevisionList(int $key)
+    public function getRevisionList(int $key): array
     {
         $revision = new \Revision();
 
@@ -192,9 +196,11 @@ class PageDB
      * @return $this
      * @throws \Exception
      */
-    public function saveDraft(Page $page)
+    public function saveDraft(Page $page): self
     {
-        if ($page->getUrl() === '' || $page->getLastModified() === '' || $page->getLockedAt() === ''
+        if ($page->getUrl() === ''
+            || $page->getLastModified() === ''
+            || $page->getLockedAt() === ''
             || strlen($page->getId()) !== 32
         ) {
             throw new \Exception('The OPC page data to be saved is incomplete or invalid.');
@@ -246,7 +252,7 @@ class PageDB
      * @return $this
      * @throws \Exception
      */
-    public function saveDraftLockStatus(Page $page)
+    public function saveDraftLockStatus(Page $page): self
     {
         $pageDB = (object)[
             'cLockedBy' => $page->getLockedBy(),
@@ -265,7 +271,7 @@ class PageDB
      * @return $this
      * @throws \Exception
      */
-    public function saveDraftPublicationStatus(Page $page)
+    public function saveDraftPublicationStatus(Page $page): self
     {
         $pageDB = (object)[
             'dPublishFrom' => $page->getPublishFrom() ?? '_DBNULL_',
@@ -284,7 +290,7 @@ class PageDB
      * @param string $id
      * @return $this
      */
-    public function deletePage($id)
+    public function deletePage(string $id): self
     {
         $this->shopDB->delete('topcpage', 'cPageId', $id);
 
@@ -295,7 +301,7 @@ class PageDB
      * @param int $key
      * @return $this
      */
-    public function deleteDraft($key)
+    public function deleteDraft(int $key): self
     {
         $this->shopDB->delete('topcpage', 'kPage', $key);
 

@@ -8,9 +8,17 @@ namespace OPC\Portlets;
 
 use OPC\PortletInstance;
 
+/**
+ * Class Banner
+ * @package OPC\Portlets
+ */
 class Banner extends \OPC\Portlet
 {
-    public function getPreviewHtml($instance)
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     */
+    public function getPreviewHtml(PortletInstance $instance): string
     {
         $instance->setProperty('kImageMap', uniqid('', false));
         $instance->addClass('img-responsive');
@@ -23,12 +31,17 @@ class Banner extends \OPC\Portlet
             '</div>';
     }
 
-    public function getFinalHtml($instance)
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     * @throws \SmartyException
+     */
+    public function getFinalHtml(PortletInstance $instance): string
     {
         $instance->addClass('img-responsive');
         $instance->setImageAttributes();
         $oImageMap = (object)[
-            'cTitel' => $instance->getProperty('kImageMap'),
+            'cTitel'    => $instance->getProperty('kImageMap'),
             'cBildPfad' => $instance->getProperty('src'),
             'oArea_arr' => !empty($instance->getProperty('zones')) ? json_decode($instance->getProperty('zones')) : null,
         ];
@@ -39,10 +52,10 @@ class Banner extends \OPC\Portlet
         $cParse_arr           = parse_url($oImageMap->cBildPfad);
         $oImageMap->cBild     = substr($cParse_arr['path'], strrpos($cParse_arr['path'], '/') + 1);
         list($width, $height) = getimagesize($cBildPfad);
-        $oImageMap->fWidth    = $width;
-        $oImageMap->fHeight   = $height;
-        $defaultOptions       = \Artikel::getDefaultOptions();
-        $fill                 = true;
+        $oImageMap->fWidth  = $width;
+        $oImageMap->fHeight = $height;
+        $defaultOptions     = \Artikel::getDefaultOptions();
+        $fill               = true;
 
         if (!empty($oImageMap->oArea_arr)) {
             foreach ($oImageMap->oArea_arr as &$oArea) {
@@ -82,44 +95,48 @@ class Banner extends \OPC\Portlet
                     ->fetch('portlets/Banner/final.banner.tpl');
     }
 
-    public function getButtonHtml()
+    /**
+     * @return string
+     */
+    public function getButtonHtml(): string
     {
         return '<img class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Banner';
     }
 
-    public function getConfigPanelHtml($instance)
-    {
-        return $this->getAutoConfigPanelHtml($instance);
-    }
-
-    public function getPropertyDesc()
+    /**
+     * @return array
+     */
+    public function getPropertyDesc(): array
     {
         return [
-            'src'       => [
+            'src'   => [
                 'label'      => 'Bild',
                 'default'    => \Shop::getURL() . '/' . PFAD_TEMPLATES . 'Evo/portlets/Banner/preview.banner.png',
                 'type'       => 'image',
                 'dspl_width' => 50,
                 'required'   => true,
             ],
-            'zones'     => [
+            'zones' => [
                 'type'    => 'banner-zones',
                 'default' => [],
             ],
-            'class'     => [
+            'class' => [
                 'label' => 'CSS Class',
             ],
-            'alt'       => [
+            'alt'   => [
                 'label' => 'Altenativtext',
             ],
-            'title'     => [
+            'title' => [
                 'label' => 'Titel'
             ],
         ];
 
     }
 
-    public function getPropertyTabs()
+    /**
+     * @return array
+     */
+    public function getPropertyTabs(): array
     {
         return [
             'Styles'    => 'styles',

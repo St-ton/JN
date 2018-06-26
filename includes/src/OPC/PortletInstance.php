@@ -61,7 +61,7 @@ class PortletInstance implements \JsonSerializable
     /**
      * @var null|AreaList mapping area ids to subareas
      */
-    protected $subareaList = null;
+    protected $subareaList;
 
     /**
      * PortletInstance constructor.
@@ -77,7 +77,7 @@ class PortletInstance implements \JsonSerializable
     /**
      * @return Portlet
      */
-    public function getPortlet()
+    public function getPortlet(): Portlet
     {
         return $this->portlet;
     }
@@ -85,7 +85,7 @@ class PortletInstance implements \JsonSerializable
     /**
      * @return string
      */
-    public function getPreviewHtml()
+    public function getPreviewHtml(): string
     {
         return $this->portlet->getPreviewHtml($this);
     }
@@ -93,7 +93,7 @@ class PortletInstance implements \JsonSerializable
     /**
      * @return string
      */
-    public function getFinalHtml()
+    public function getFinalHtml(): string
     {
         return $this->portlet->getFinalHtml($this);
     }
@@ -101,7 +101,7 @@ class PortletInstance implements \JsonSerializable
     /**
      * @return string
      */
-    public function getConfigPanelHtml()
+    public function getConfigPanelHtml(): string
     {
         return $this->portlet->getConfigPanelHtml($this);
     }
@@ -110,7 +110,7 @@ class PortletInstance implements \JsonSerializable
      * @param string $id
      * @return string
      */
-    public function getSubareaPreviewHtml($id)
+    public function getSubareaPreviewHtml($id): string
     {
         return $this->hasSubarea($id)
             ? $this->getSubarea($id)->getPreviewHtml()
@@ -121,7 +121,7 @@ class PortletInstance implements \JsonSerializable
      * @param string $id
      * @return string
      */
-    public function getSubareaFinalHtml($id)
+    public function getSubareaFinalHtml($id): string
     {
         return $this->hasSubarea($id)
             ? $this->getSubarea($id)->getFinalHtml()
@@ -139,10 +139,10 @@ class PortletInstance implements \JsonSerializable
 
     /**
      * @param string $name
-     * @param mixed $value
+     * @param mixed  $value
      * @return PortletInstance
      */
-    public function setProperty($name, $value)
+    public function setProperty($name, $value): self
     {
         $this->properties[$name] = $value;
 
@@ -153,7 +153,7 @@ class PortletInstance implements \JsonSerializable
      * @param string $name
      * @return bool
      */
-    public function hasProperty($name)
+    public function hasProperty($name): bool
     {
         return array_key_exists($name, $this->properties);
     }
@@ -179,7 +179,7 @@ class PortletInstance implements \JsonSerializable
      * @param string $id
      * @return bool
      */
-    public function hasSubarea($id)
+    public function hasSubarea($id): bool
     {
         return $this->subareaList->hasArea($id);
     }
@@ -188,7 +188,7 @@ class PortletInstance implements \JsonSerializable
      * @param Area $area
      * @return PortletInstance
      */
-    public function putSubarea($area)
+    public function putSubarea(Area $area): self
     {
         $this->subareaList->putArea($area);
 
@@ -196,10 +196,10 @@ class PortletInstance implements \JsonSerializable
     }
 
     /**
-     * @param $name
+     * @param string $name
      * @return string
      */
-    public function getAttribute($name)
+    public function getAttribute($name): string
     {
         return $this->attributes[$name] ?? '';
     }
@@ -209,7 +209,7 @@ class PortletInstance implements \JsonSerializable
      * @param string $value
      * @return $this
      */
-    public function setAttribute($name, $value)
+    public function setAttribute($name, $value): self
     {
         $this->attributes[$name] = $value;
 
@@ -220,11 +220,11 @@ class PortletInstance implements \JsonSerializable
      * @param string $className
      * @return $this
      */
-    public function addClass($className)
+    public function addClass(string $className): self
     {
         $classes = explode(' ', $this->getAttribute('class'));
 
-        if (!in_array($className, $classes)) {
+        if (!in_array($className, $classes, true)) {
             $classes[] = $className;
         }
 
@@ -236,7 +236,7 @@ class PortletInstance implements \JsonSerializable
     /**
      * @return array
      */
-    public function getStyles()
+    public function getStyles(): array
     {
         foreach ($this->portlet->getStylesPropertyDesc() as $propname => $propdesc) {
             if ($this->hasProperty($propname)) {
@@ -250,7 +250,7 @@ class PortletInstance implements \JsonSerializable
     /**
      * @return array
      */
-    public function getAnimations()
+    public function getAnimations(): array
     {
         foreach ($this->portlet->getAnimationsPropertyDesc() as $propname => $propdesc) {
             if ($this->hasProperty($propname)) {
@@ -266,7 +266,7 @@ class PortletInstance implements \JsonSerializable
      * @param string $value
      * @return $this
      */
-    public function setStyle($name, $value)
+    public function setStyle($name, $value): self
     {
         $this->styles[$name] = $value;
 
@@ -278,7 +278,7 @@ class PortletInstance implements \JsonSerializable
      * @param string $value
      * @return $this
      */
-    public function setAnimation($name, $value)
+    public function setAnimation($name, $value): self
     {
         $this->animations[$name] = $value;
 
@@ -288,7 +288,7 @@ class PortletInstance implements \JsonSerializable
     /**
      * @return $this
      */
-    public function updateAttributes()
+    public function updateAttributes(): self
     {
         $styleString = '';
 
@@ -296,17 +296,15 @@ class PortletInstance implements \JsonSerializable
             if (!empty($styleValue)) {
                 if (strpos($styleName, 'hidden-') !== false && !empty($styleValue)) {
                     $this->addClass($styleName);
+                } elseif (stripos($styleName, 'margin-') !== false
+                    || stripos($styleName, 'padding-') !== false
+                    || stripos($styleName, 'border-width') !== false
+                    || stripos($styleName, '-width') !== false
+                    || stripos($styleName, '-height') !== false
+                ) {
+                    $styleString .= "$styleName:" . htmlspecialchars($styleValue, ENT_QUOTES) . "px; ";
                 } else {
-                    if (stripos($styleName, 'margin-') !== false ||
-                        stripos($styleName, 'padding-') !== false ||
-                        stripos($styleName, 'border-width') !== false ||
-                        stripos($styleName, '-width') !== false ||
-                        stripos($styleName, '-height') !== false
-                    ) {
-                        $styleString .= "$styleName:" . htmlspecialchars($styleValue, ENT_QUOTES) . "px; ";
-                    } else {
-                        $styleString .= "$styleName:" . htmlspecialchars($styleValue, ENT_QUOTES) . "; ";
-                    }
+                    $styleString .= "$styleName:" . htmlspecialchars($styleValue, ENT_QUOTES) . "; ";
                 }
             }
         }
@@ -316,26 +314,28 @@ class PortletInstance implements \JsonSerializable
         foreach ($this->getAnimations() as $aniName => $aniValue) {
             if ($aniName === 'animation-style' && !empty($aniValue)) {
                 $this->addClass("wow " . $aniValue);
-            } else {
-                if (!empty($aniValue)) {
-                    $this->setAttribute($aniName, $aniValue);
-                }
+            } elseif (!empty($aniValue)) {
+                $this->setAttribute($aniName, $aniValue);
             }
         }
 
         return $this;
     }
 
-    public function getAttributes()
+    /**
+     * @return array
+     */
+    public function getAttributes(): array
     {
         $this->updateAttributes();
+
         return $this->attributes;
     }
 
     /**
      * @return string
      */
-    public function getAttributeString()
+    public function getAttributeString(): string
     {
         $result = '';
 
@@ -349,7 +349,7 @@ class PortletInstance implements \JsonSerializable
     /**
      * @return string
      */
-    public function getDataAttributeString()
+    public function getDataAttributeString(): string
     {
         return 'data-portlet="' . htmlspecialchars(json_encode($this->jsonSerializeShort()), ENT_QUOTES) . '"';
     }
@@ -360,7 +360,7 @@ class PortletInstance implements \JsonSerializable
      * @param string $title
      * @return array
      */
-    public function getImageAttributes($src = null, $alt = null, $title = null, $divisor = 1)
+    public function getImageAttributes($src = null, $alt = null, $title = null, $divisor = 1): array
     {
         $src      = $src ?? $this->getProperty('src');
         $alt      = $alt ?? $this->getProperty('alt');
@@ -370,12 +370,13 @@ class PortletInstance implements \JsonSerializable
 
         if (empty($src)) {
             $src = \Shop::getURL() . '/gfx/keinBild.gif';
+
             return [
-                'srcset' => $srcset,
+                'srcset'   => $srcset,
                 'srcsizes' => $srcsizes,
-                'src' => $src,
-                'alt' => $alt,
-                'title' => $title,
+                'src'      => $src,
+                'alt'      => $alt,
+                'title'    => $title,
             ];
         }
 
@@ -418,22 +419,22 @@ class PortletInstance implements \JsonSerializable
                     switch ($breakpoint) {
                         case 'xs':
                             $breakpoint = 767;
-                            $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
+                            $srcsizes   .= '(max-width: ' . $breakpoint . 'px) '
                                 . (int)($col * 100 * $factor) . 'vw, ';
                             break;
                         case 'sm':
                             $breakpoint = 991;
-                            $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
+                            $srcsizes   .= '(max-width: ' . $breakpoint . 'px) '
                                 . (int)($col * $breakpoint * $factor) . 'px, ';
                             break;
                         case 'md':
                             $breakpoint = 1199;
-                            $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
+                            $srcsizes   .= '(max-width: ' . $breakpoint . 'px) '
                                 . (int)($col * $breakpoint * $factor) . 'px, ';
                             break;
                         case 'lg':
                             $breakpoint = 1200;
-                            $srcsizes  .= '(min-width: ' . $breakpoint . 'px) '
+                            $srcsizes   .= '(min-width: ' . $breakpoint . 'px) '
                                 . (int)($col * $breakpoint * $factor) . 'px, ';
                             break;
                         default:
@@ -444,14 +445,14 @@ class PortletInstance implements \JsonSerializable
         }
 
         $srcsizes .= '100vw';
-        $src       = PFAD_MEDIAFILES . 'Bilder/.md/' . $name;
+        $src      = PFAD_MEDIAFILES . 'Bilder/.md/' . $name;
 
         return [
-            'srcset' => $srcset,
+            'srcset'   => $srcset,
             'srcsizes' => $srcsizes,
-            'src' => $src,
-            'alt' => $alt,
-            'title' => $title,
+            'src'      => $src,
+            'alt'      => $alt,
+            'title'    => $title,
         ];
     }
 
@@ -459,7 +460,7 @@ class PortletInstance implements \JsonSerializable
      * @param string $src
      * @param string $alt
      * @param string $title
-     * @param int $divisor
+     * @param int    $divisor
      * @return $this
      */
     public function setImageAttributes($src = null, $alt = null, $title = null, $divisor = 1)

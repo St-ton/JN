@@ -20,7 +20,7 @@ class AreaList implements \JsonSerializable
     /**
      * @return $this
      */
-    public function clear()
+    public function clear(): self
     {
         $this->areas = [];
 
@@ -31,7 +31,7 @@ class AreaList implements \JsonSerializable
      * @param Area $area
      * @return $this
      */
-    public function putArea($area)
+    public function putArea(Area $area): self
     {
         $this->areas[$area->getId()] = $area;
 
@@ -42,7 +42,7 @@ class AreaList implements \JsonSerializable
      * @param string $id
      * @return bool
      */
-    public function hasArea($id)
+    public function hasArea($id): bool
     {
         return array_key_exists($id, $this->areas);
     }
@@ -59,7 +59,7 @@ class AreaList implements \JsonSerializable
     /**
      * @return Area[]
      */
-    public function getAreas()
+    public function getAreas(): array
     {
         return $this->areas;
     }
@@ -67,10 +67,9 @@ class AreaList implements \JsonSerializable
     /**
      * @return string[] the rendered HTML content of this page
      */
-    public function getPreviewHtml()
+    public function getPreviewHtml(): array
     {
         $result = [];
-
         foreach ($this->areas as $id => $area) {
             $result[$id] = $area->getPreviewHtml();
         }
@@ -81,10 +80,9 @@ class AreaList implements \JsonSerializable
     /**
      * @return string[] the rendered HTML content of this page
      */
-    public function getFinalHtml()
+    public function getFinalHtml(): array
     {
         $result = [];
-
         foreach ($this->areas as $id => $area) {
             $result[$id] = $area->getFinalHtml();
         }
@@ -111,7 +109,6 @@ class AreaList implements \JsonSerializable
     public function jsonSerialize()
     {
         $res = [];
-
         foreach ($this->areas as $id => $area) {
             $res[$id] = $area->jsonSerialize();
         }

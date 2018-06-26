@@ -19,7 +19,7 @@ class Migration_20180507101900 extends Migration implements IMigration
             cClass VARCHAR(255) NOT NULL,
             cGroup VARCHAR(255) NOT NULL,
             bActive TINYINT NOT NULL DEFAULT 1
-        )");
+        ) ENGINE=InnoDB COLLATE utf8_unicode_ci");
 
         $this->execute("CREATE TABLE topcblueprint (
             kBlueprint INT AUTO_INCREMENT PRIMARY KEY,
@@ -27,7 +27,7 @@ class Migration_20180507101900 extends Migration implements IMigration
             cName VARCHAR(255) NOT NULL,
             cJson LONGTEXT,
             bActive TINYINT NOT NULL DEFAULT 1
-        )");
+        ) ENGINE=InnoDB COLLATE utf8_unicode_ci");
 
         $this->execute("CREATE TABLE topcpage (
             kPage INT AUTO_INCREMENT PRIMARY KEY,
@@ -42,7 +42,7 @@ class Migration_20180507101900 extends Migration implements IMigration
             dLockedAt DATETIME NOT NULL,
             bReplace BOOL NOT NULL,
             UNIQUE KEY (cPageId, dPublishFrom)
-        )");
+        ) ENGINE=InnoDB COLLATE utf8_unicode_ci");
 
         $this->execute("INSERT INTO tadminmenu (kAdminmenueGruppe, cModulId, cLinkname, cURL, cRecht, nSort)
             VALUES ('4', 'core_jtl', 'OnPage Composer', 'opc-controlcenter.php', 'CONTENT_PAGE_VIEW', '115');");

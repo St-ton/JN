@@ -63,10 +63,7 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
     if (isset($_POST['land'], $_POST['plz']) && !VersandartHelper::getShippingCosts($_POST['land'], $_POST['plz'])) {
         $smarty->assign('fehler', Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages'));
     }
-    if (!isset($kKundengruppe)) {
-        $kKundengruppe = Kundengruppe::getDefaultGroupID();
-    }
-    $smarty->assign('laender', VersandartHelper::getPossibleShippingCountries($kKundengruppe));
+    $smarty->assign('laender', VersandartHelper::getPossibleShippingCountries(Session\Session::CustomerGroup()->getID()));
 } elseif ($link->getLinkType() === LINKTYP_LIVESUCHE) {
     $smarty->assign('LivesucheTop', gibLivesucheTop($Einstellungen))
            ->assign('LivesucheLast', gibLivesucheLast($Einstellungen));
@@ -77,9 +74,12 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
 } elseif ($link->getLinkType() === LINKTYP_NEWSLETTERARCHIV) {
     $smarty->assign('oNewsletterHistory_arr', gibNewsletterHistory());
 } elseif ($link->getLinkType() === LINKTYP_SITEMAP) {
-    gibSeiteSitemap($Einstellungen, $smarty);
+    Shop::setPageType(PAGE_SITEMAP);
+    $sitemap = new \JTL\Sitemap(Shop::Container()->getDB(), Shop::Container()->getCache(), $Einstellungen);
+    $sitemap->assignData($smarty);
 } elseif ($link->getLinkType() === LINKTYP_404) {
-    gibSeiteSitemap($Einstellungen, $smarty);
+    $sitemap = new \JTL\Sitemap(Shop::Container()->getDB(), Shop::Container()->getCache(), $Einstellungen);
+    $sitemap->assignData($smarty);
     Shop::setPageType(PAGE_404);
 } elseif ($link->getLinkType() === LINKTYP_GRATISGESCHENK) {
     if ($Einstellungen['sonstiges']['sonstiges_gratisgeschenk_nutzen'] === 'Y') {

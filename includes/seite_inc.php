@@ -72,27 +72,6 @@ function gibStartBoxen()
 }
 
 /**
- * @param array $Einstellungen
- * @return mixed
- */
-function gibAuswahlAssistentFragen($Einstellungen)
-{
-    if ($Einstellungen['auswahlassistent']['auswahlassistent_anzeige_startseite'] === 'Y') {
-        require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'auswahlassistent_inc.php';
-
-        if (function_exists('gibAAFrage')) {
-            $oSpracheStd = Sprache::getDefaultLanguage(true);
-
-            return gibAAFrage($_SESSION['AuswahlAssistent']['nFrage'], Shop::getLanguage(), (int)$oSpracheStd->kSprache);
-        }
-    } else {
-        unset($_SESSION['AuswahlAssistent']);
-    }
-
-    return null;
-}
-
-/**
  * @param array $conf
  * @return array|mixed
  */
@@ -261,9 +240,9 @@ function gibLivesucheTop($conf)
         : 0;
     foreach ($suchwolke_objs as $suchwolke) {
         if ($suchwolke->kSuchanfrage > 0) {
-            $suchwolke->Klasse   = ($prio_step < 1) ?
-                rand(1, 10) :
-                (round(($suchwolke->nAnzahlGesuche - $suchwolke_objs[$count - 1]->nAnzahlGesuche) / $prio_step) + 1);
+            $suchwolke->Klasse   = $prio_step < 1
+                ? rand(1, 10)
+                : (round(($suchwolke->nAnzahlGesuche - $suchwolke_objs[$count - 1]->nAnzahlGesuche) / $prio_step) + 1);
             $suchwolke->cURL     = UrlHelper::buildURL($suchwolke, URLART_LIVESUCHE);
             $suchwolke->cURLFull = UrlHelper::buildURL($suchwolke, URLART_LIVESUCHE, true);
             $Suchwolke_arr[]     = $suchwolke;
@@ -271,22 +250,6 @@ function gibLivesucheTop($conf)
     }
 
     return $Suchwolke_arr;
-}
-
-/**
- * @param object $a
- * @param object $b
- * @return int
- */
-function wolkesort($a, $b)
-{
-    if ($a->nAnzahlGesuche < $b->nAnzahlGesuche) {
-        return 1;
-    }
-
-    return $a->nAnzahlGesuche > $b->nAnzahlGesuche
-        ? -1
-        : 0;
 }
 
 /**
@@ -405,353 +368,6 @@ function gibNewsletterHistory()
 }
 
 /**
- * @return KategorieListe
- */
-function gibSitemapKategorien()
-{
-    $helper                    = KategorieHelper::getInstance();
-    $oKategorieliste           = new KategorieListe();
-    $oKategorieliste->elemente = $helper->combinedGetAll();
-
-    return $oKategorieliste;
-}
-
-/**
- * @return array
- */
-function gibSitemapGlobaleMerkmale()
-{
-    $isDefaultLanguage = Sprache::isDefaultLanguageActive();
-    $cacheID           = 'gsgm_' . (($isDefaultLanguage === true) ? 'd_' : '') . Shop::getLanguage();
-    if (($oMerkmal_arr = Shop::Cache()->get($cacheID)) === false) {
-        $oMerkmal_arr    = [];
-        $cMerkmalTabelle = 'tmerkmal';
-        $cSQL            = " JOIN tmerkmalwert ON tmerkmalwert.kMerkmal = tmerkmal.kMerkmal";
-        $cSQL .= " JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert";
-        $cMerkmalWhere = '';
-        if ($isDefaultLanguage === false) {
-            $cMerkmalTabelle = "tmerkmalsprache";
-            $cSQL            = " JOIN tmerkmal ON tmerkmal.kMerkmal = tmerkmalsprache.kMerkmal";
-            $cSQL .= " JOIN tmerkmalwert ON tmerkmalwert.kMerkmal = tmerkmal.kMerkmal";
-            $cSQL .= " JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert";
-            $cMerkmalWhere = " AND tmerkmalsprache.kSprache = " . Shop::getLanguage();
-        }
-        $oMerkmalTMP_arr = Shop::Container()->getDB()->query(
-            "SELECT {$cMerkmalTabelle}.*, tmerkmalwertsprache.cWert, tseo.cSeo, tmerkmalwertsprache.kMerkmalWert, 
-                tmerkmal.nSort, tmerkmal.nGlobal, tmerkmal.cTyp, tmerkmalwert.cBildPfad AS cBildPfadMW, 
-                tmerkmal.cBildpfad
-                FROM {$cMerkmalTabelle}
-                {$cSQL}
-                JOIN tartikelmerkmal 
-                    ON tartikelmerkmal.kMerkmalWert = tmerkmalwertsprache.kMerkmalWert
-                LEFT JOIN tseo 
-                    ON tseo.cKey = 'kMerkmalWert'
-                    AND tseo.kKey = tmerkmalwertsprache.kMerkmalWert
-                    AND tseo.kSprache = " . Shop::getLanguage() . "
-                WHERE tmerkmal.nGlobal = 1
-                    AND tmerkmalwertsprache.kSprache = " . Shop::getLanguage() . "
-                    {$cMerkmalWhere}
-                GROUP BY tmerkmalwertsprache.kMerkmalWert
-                ORDER BY tmerkmal.nSort, {$cMerkmalTabelle}.cName, tmerkmalwert.nSort, tmerkmalwertsprache.cWert",
-            \DB\ReturnType::ARRAY_OF_OBJECTS
-        );
-        $nPos    = 0;
-        $shopURL = Shop::getURL() . '/';
-        foreach ($oMerkmalTMP_arr as $i => &$oMerkmalTMP) {
-            $oMerkmalWert = new stdClass();
-            $oMerkmal     = new stdClass();
-            if ($i > 0) {
-                // Alle weiteren Durchläufe
-                if ($oMerkmal_arr[$nPos]->kMerkmal == $oMerkmalTMP->kMerkmal) {
-                    $oMerkmalWert->kMerkmalWert = $oMerkmalTMP->kMerkmalWert;
-                    $oMerkmalWert->cWert        = $oMerkmalTMP->cWert;
-                    $oMerkmalWert->cSeo         = $oMerkmalTMP->cSeo;
-                    $oMerkmalWert->cBildPfadMW  = $oMerkmalTMP->cBildPfadMW;
-
-                    verarbeiteMerkmalWertBild($oMerkmalWert);
-                    // cURL bauen
-                    $oMerkmalWert->cURL = strlen($oMerkmalWert->cSeo) > 0
-                        ? $shopURL . $oMerkmalWert->cSeo
-                        : $shopURL . '?m=' . $oMerkmalWert->kMerkmalWert;
-
-                    $oMerkmal_arr[$nPos]->oMerkmalWert_arr[] = $oMerkmalWert;
-                } else {
-                    $oMerkmal->kMerkmal  = $oMerkmalTMP->kMerkmal;
-                    $oMerkmal->cName     = $oMerkmalTMP->cName;
-                    $oMerkmal->nSort     = $oMerkmalTMP->nSort;
-                    $oMerkmal->nGlobal   = $oMerkmalTMP->nGlobal;
-                    $oMerkmal->cBildpfad = $oMerkmalTMP->cBildpfad;
-                    $oMerkmal->cTyp      = $oMerkmalTMP->cTyp;
-
-                    verarbeiteMerkmalBild($oMerkmal);
-                    $oMerkmalWert->kMerkmalWert = $oMerkmalTMP->kMerkmalWert;
-                    $oMerkmalWert->cWert        = $oMerkmalTMP->cWert;
-                    $oMerkmalWert->cSeo         = $oMerkmalTMP->cSeo;
-                    $oMerkmalWert->cBildPfadMW  = $oMerkmalTMP->cBildPfadMW;
-
-                    verarbeiteMerkmalWertBild($oMerkmalWert);
-                    // cURL bauen
-                    $oMerkmalWert->cURL = (strlen($oMerkmalWert->cSeo) > 0)
-                        ? $shopURL . $oMerkmalWert->cSeo
-                        : $shopURL . '?m=' . $oMerkmalWert->kMerkmalWert;
-
-                    $oMerkmal->oMerkmalWert_arr[] = $oMerkmalWert;
-                    $oMerkmal_arr[]               = $oMerkmal;
-
-                    ++$nPos;
-                }
-            } else { // Erster Durchlauf
-                $oMerkmal->kMerkmal         = $oMerkmalTMP->kMerkmal ?? null;
-                $oMerkmal->cName            = $oMerkmalTMP->cName ?? null;
-                $oMerkmal->nSort            = $oMerkmalTMP->nSort ?? null;
-                $oMerkmal->nGlobal          = $oMerkmalTMP->nGlobal ?? null;
-                $oMerkmal->cBildpfad        = $oMerkmalTMP->cBildpfad ?? null;
-                $oMerkmal->cTyp             = $oMerkmalTMP->cTyp ?? null;
-                $oMerkmal->oMerkmalWert_arr = [];
-
-                verarbeiteMerkmalBild($oMerkmal);
-                $oMerkmalWert->kMerkmalWert = $oMerkmalTMP->kMerkmalWert;
-                $oMerkmalWert->cWert        = $oMerkmalTMP->cWert;
-                $oMerkmalWert->cSeo         = $oMerkmalTMP->cSeo;
-                $oMerkmalWert->cBildPfadMW  = $oMerkmalTMP->cBildPfadMW;
-
-                verarbeiteMerkmalWertBild($oMerkmalWert);
-                // cURL bauen
-                $oMerkmalWert->cURL = (strlen($oMerkmalWert->cSeo) > 0)
-                    ? $shopURL . $oMerkmalWert->cSeo
-                    : $shopURL . '?m=' . $oMerkmalWert->kMerkmalWert;
-                $oMerkmal->oMerkmalWert_arr[] = $oMerkmalWert;
-                $oMerkmal_arr[]               = $oMerkmal;
-            }
-        }
-        unset($oMerkmalTMP);
-    }
-    Shop::Cache()->set($cacheID, $oMerkmal_arr, [CACHING_GROUP_CATEGORY]);
-
-    return $oMerkmal_arr;
-}
-
-/**
- * @param object $oMerkmal
- */
-function verarbeiteMerkmalBild(&$oMerkmal)
-{
-    $imageBaseURL = Shop::getImageBaseURL();
-
-    $oMerkmal->cBildpfadKlein       = BILD_KEIN_MERKMALBILD_VORHANDEN;
-    $oMerkmal->nBildKleinVorhanden  = 0;
-    $oMerkmal->cBildpfadNormal      = BILD_KEIN_MERKMALBILD_VORHANDEN;
-    $oMerkmal->nBildNormalVorhanden = 0;
-    if (strlen($oMerkmal->cBildpfad) > 0) {
-        if (file_exists(PFAD_MERKMALBILDER_KLEIN . $oMerkmal->cBildpfad)) {
-            $oMerkmal->cBildpfadKlein      = PFAD_MERKMALBILDER_KLEIN . $oMerkmal->cBildpfad;
-            $oMerkmal->nBildKleinVorhanden = 1;
-        }
-        if (file_exists(PFAD_MERKMALBILDER_NORMAL . $oMerkmal->cBildpfad)) {
-            $oMerkmal->cBildpfadNormal     = PFAD_MERKMALBILDER_NORMAL . $oMerkmal->cBildpfad;
-            $oMerkmal->nBildGrossVorhanden = 1;
-        }
-    }
-    $oMerkmal->cBildURLKlein  = $imageBaseURL . $oMerkmal->cBildpfadKlein;
-    $oMerkmal->cBildURLNormal = $imageBaseURL . $oMerkmal->cBildpfadNormal;
-}
-
-/**
- * @param object $oMerkmalWert
- */
-function verarbeiteMerkmalWertBild(&$oMerkmalWert)
-{
-    $imageBaseURL = Shop::getImageBaseURL();
-
-    $oMerkmalWert->cBildpfadKlein       = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
-    $oMerkmalWert->nBildKleinVorhanden  = 0;
-    $oMerkmalWert->cBildpfadNormal      = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
-    $oMerkmalWert->nBildNormalVorhanden = 0;
-    if (isset($oMerkmalWert->cBildPfadMW) && strlen($oMerkmalWert->cBildPfadMW) > 0) {
-        if (file_exists(PFAD_MERKMALWERTBILDER_KLEIN . $oMerkmalWert->cBildPfadMW)) {
-            $oMerkmalWert->cBildpfadKlein      = PFAD_MERKMALWERTBILDER_KLEIN . $oMerkmalWert->cBildPfadMW;
-            $oMerkmalWert->nBildKleinVorhanden = 1;
-        }
-        if (file_exists(PFAD_MERKMALWERTBILDER_NORMAL . $oMerkmalWert->cBildPfadMW)) {
-            $oMerkmalWert->cBildpfadNormal      = PFAD_MERKMALWERTBILDER_NORMAL . $oMerkmalWert->cBildPfadMW;
-            $oMerkmalWert->nBildNormalVorhanden = 1;
-        }
-    }
-    $oMerkmalWert->cBildURLKlein  = $imageBaseURL . $oMerkmalWert->cBildpfadKlein;
-    $oMerkmalWert->cBildURLNormal = $imageBaseURL . $oMerkmalWert->cBildpfadNormal;
-}
-
-/**
- * @param array $conf
- * @return array
- */
-function gibBoxNews($conf)
-{
-    $nBoxenLimit = (int)$conf['news']['news_anzahl_box'] > 0
-        ? (int)$conf['news']['news_anzahl_box']
-        : 3;
-
-    return Shop::Container()->getDB()->query(
-        "SELECT DATE_FORMAT(dErstellt, '%M, %Y') AS Datum, count(*) AS nAnzahl, 
-            DATE_FORMAT(dErstellt, '%m') AS nMonat
-            FROM tnews
-            WHERE kSprache = " . Shop::getLanguage() . "
-                AND nAktiv = 1
-                AND (
-                    cKundengruppe LIKE '%;-1;%' 
-                    OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
-                        . "', REPLACE(cKundengruppe, ';', ',')) > 0
-                    )
-            GROUP BY DATE_FORMAT(dErstellt, '%M')
-            ORDER BY dErstellt DESC
-            LIMIT " . $nBoxenLimit,
-        \DB\ReturnType::ARRAY_OF_OBJECTS
-    );
-}
-
-/**
- * @return array
- */
-function gibSitemapNews()
-{
-    $cacheID = 'sitemap_news';
-    if (($overview = Shop::Cache()->get($cacheID)) === false) {
-        $overview = Shop::Container()->getDB()->query(
-            "SELECT tseo.cSeo, tnewsmonatsuebersicht.cName, tnewsmonatsuebersicht.kNewsMonatsUebersicht, 
-                month(tnews.dGueltigVon) AS nMonat, year(tnews.dGueltigVon) AS nJahr, count(*) AS nAnzahl
-                FROM tnews
-                JOIN tnewsmonatsuebersicht ON tnewsmonatsuebersicht.nMonat = month(tnews.dGueltigVon)
-                    AND tnewsmonatsuebersicht.nJahr = year(tnews.dGueltigVon)
-                    AND tnewsmonatsuebersicht.kSprache =1
-                LEFT JOIN tseo ON cKey = 'kNewsMonatsUebersicht'
-                    AND kKey = tnewsmonatsuebersicht.kNewsMonatsUebersicht
-                    AND tseo.kSprache = " . Shop::getLanguage() . "
-                WHERE tnews.dGueltigVon < now()
-                    AND tnews.nAktiv = 1
-                    AND tnews.kSprache = " . Shop::getLanguage() . "
-                GROUP BY year(tnews.dGueltigVon) , month(tnews.dGueltigVon)
-                ORDER BY tnews.dGueltigVon DESC",
-            \DB\ReturnType::ARRAY_OF_OBJECTS
-        );
-        foreach ($overview as $news) {
-            $entries = Shop::Container()->getDB()->query(
-                "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, 
-                    tnews.cVorschauText, tnews.cMetaTitle, tnews.cMetaDescription, tnews.cMetaKeywords,
-                    tnews.nAktiv, tnews.dErstellt, tseo.cSeo,
-                    count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl, 
-                    DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de
-                    FROM tnews
-                    LEFT JOIN tnewskommentar 
-                        ON tnews.kNews = tnewskommentar.kNews
-                    LEFT JOIN tseo 
-                        ON tseo.cKey = 'kNews'
-                        AND tseo.kKey = tnews.kNews
-                        AND tseo.kSprache = " . Shop::getLanguage() . "
-                    WHERE tnews.kSprache = " . Shop::getLanguage() . "
-                        AND tnews.nAktiv = 1
-                        AND (
-                            tnews.cKundengruppe LIKE '%;-1;%' 
-                            OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
-                                . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0
-                            )
-                        AND (MONTH(tnews.dGueltigVon) = '" . $news->nMonat . "') 
-                        && (tnews.dGueltigVon <= now())
-                        AND (YEAR(tnews.dGueltigVon) = '" . $news->nJahr . "') 
-                        && (tnews.dGueltigVon <= now())
-                    GROUP BY tnews.kNews
-                    ORDER BY dGueltigVon DESC",
-                \DB\ReturnType::ARRAY_OF_OBJECTS
-            );
-            foreach ($entries as $oNews) {
-                $oNews->cURL     = UrlHelper::buildURL($oNews, URLART_NEWS);
-                $oNews->cURLFull = UrlHelper::buildURL($oNews, URLART_NEWS, true);
-            }
-            $news->oNews_arr = $entries;
-            $news->cURL      = UrlHelper::buildURL($news, URLART_NEWSMONAT);
-            $news->cURLFull  = UrlHelper::buildURL($news, URLART_NEWSMONAT, true);
-        }
-        Shop::Cache()->set($cacheID, $overview, [CACHING_GROUP_NEWS]);
-    }
-
-    return $overview;
-}
-
-/**
- * @return mixed
- */
-function gibNewsKategorie()
-{
-    $cacheID = 'news_category_' . Shop::getLanguage() . '_' . Session::CustomerGroup()->getID();
-    if (($newsCategories = Shop::Cache()->get($cacheID)) === false) {
-        $newsCategories = Shop::Container()->getDB()->query(
-            "SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,
-                tnewskategorie.cBeschreibung, tnewskategorie.cMetaTitle, tnewskategorie.cMetaDescription,
-                tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung, 
-                tnewskategorie.cPreviewImage, tseo.cSeo,
-                count(DISTINCT(tnewskategorienews.kNews)) AS nAnzahlNews
-                FROM tnewskategorie
-                LEFT JOIN tnewskategorienews 
-                    ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
-                LEFT JOIN tnews 
-                    ON tnews.kNews = tnewskategorienews.kNews
-                LEFT JOIN tseo 
-                    ON tseo.cKey = 'kNewsKategorie'
-                    AND tseo.kKey = tnewskategorie.kNewsKategorie
-                    AND tseo.kSprache = " . Shop::getLanguage() . "
-                WHERE tnewskategorie.kSprache = " . Shop::getLanguage() . "
-                    AND tnewskategorie.nAktiv = 1
-                    AND tnews.nAktiv = 1
-                    AND tnews.dGueltigVon <= now()
-                    AND (
-                        tnews.cKundengruppe LIKE '%;-1;%' 
-                        OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
-                            . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0
-                        )
-                GROUP BY tnewskategorienews.kNewsKategorie
-                ORDER BY tnewskategorie.nSort DESC",
-            \DB\ReturnType::ARRAY_OF_OBJECTS
-        );
-        foreach ($newsCategories as $newsCategory) {
-            $newsCategory->cURL      = UrlHelper::buildURL($newsCategory, URLART_NEWSKATEGORIE);
-            $newsCategory->cURLFull  = UrlHelper::buildURL($newsCategory, URLART_NEWSKATEGORIE, true);
-
-            $entries = Shop::Container()->getDB()->query(
-                "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, tnews.cVorschauText, 
-                    tnews.cMetaTitle, tnews.cMetaDescription, tnews.cMetaKeywords, tnews.nAktiv, tnews.dErstellt, 
-                    tseo.cSeo, DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de
-                    FROM tnews
-                    JOIN tnewskategorienews 
-                        ON tnewskategorienews.kNews = tnews.kNews
-                    LEFT JOIN tseo 
-                        ON tseo.cKey = 'kNews'
-                        AND tseo.kKey = tnews.kNews
-                        AND tseo.kSprache = " . Shop::getLanguage() . "
-                    WHERE tnews.kSprache = " . Shop::getLanguage() . "
-                        AND tnewskategorienews.kNewsKategorie = " . (int)$newsCategory->kNewsKategorie . "
-                        AND tnews.nAktiv = 1
-                        AND tnews.dGueltigVon <= now()
-                        AND (
-                            tnews.cKundengruppe LIKE '%;-1;%' 
-                            OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
-                                . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0
-                            )
-                    GROUP BY tnews.kNews
-                    ORDER BY tnews.dGueltigVon DESC",
-                \DB\ReturnType::ARRAY_OF_OBJECTS
-            );
-            foreach ($entries as $entry) {
-                $entry->cURL     = UrlHelper::buildURL($entry, URLART_NEWS);
-                $entry->cURLFull = UrlHelper::buildURL($entry, URLART_NEWS, true);
-            }
-            $newsCategory->oNews_arr = $entries;
-        }
-        Shop::Cache()->set($cacheID, $newsCategories, [CACHING_GROUP_NEWS]);
-    }
-
-    return $newsCategories;
-}
-
-/**
  * @param array $conf
  * @return array
  */
@@ -775,11 +391,11 @@ function gibGratisGeschenkArtikel($conf)
             LEFT JOIN tartikelsichtbarkeit 
                 ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                 AND tartikelsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() .
-            " WHERE tartikelsichtbarkeit.kArtikel IS NULL
+        " WHERE tartikelsichtbarkeit.kArtikel IS NULL
             AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "' " .
-            Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() .
-            $cSQLSort .
-            $cSQLLimit,
+        Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() .
+        $cSQLSort .
+        $cSQLLimit,
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 
@@ -801,10 +417,114 @@ function gibGratisGeschenkArtikel($conf)
 }
 
 /**
+ * @param array $Einstellungen
+ * @return null
+ * @deprecated since 5.0.0
+ */
+function gibAuswahlAssistentFragen($Einstellungen)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated and does not do anything useful.', E_USER_DEPRECATED);
+    return null;
+}
+
+/**
+ * @return KategorieListe
+ * @deprecated since 5.0.0
+ */
+function gibSitemapKategorien()
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    $oKategorieliste           = new KategorieListe();
+    $oKategorieliste->elemente = KategorieHelper::getInstance()->combinedGetAll();
+
+    return $oKategorieliste;
+}
+
+/**
+ * @return array
+ * @deprecated since 5.0.0
+ */
+function gibSitemapGlobaleMerkmale()
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    $sm = new \JTL\Sitemap(Shop::Container()->getDB(), Shop::Container()->getCache(), Shop::getConfig([CONF_SITEMAP]));
+
+    return $sm->getGlobalAttributes();
+}
+
+/**
+ * @param object $oMerkmal
+ * @deprecated since 5.0.0
+ */
+function verarbeiteMerkmalBild(&$oMerkmal)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated and does not do anything useful.', E_USER_DEPRECATED);
+}
+
+/**
+ * @param object $oMerkmalWert
+ * @deprecated since 5.0.0
+ */
+function verarbeiteMerkmalWertBild(&$oMerkmalWert)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated and does not do anything useful.', E_USER_DEPRECATED);
+}
+
+/**
+ * @param array $conf
+ * @return array
+ * @deprecated since 5.0.0
+ */
+function gibBoxNews($conf)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated and does not return anything useful.', E_USER_DEPRECATED);
+    return [];
+}
+
+/**
+ * @return array
+ * @deprecated since 5.0.0
+ */
+function gibSitemapNews()
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    $sm = new \JTL\Sitemap(Shop::Container()->getDB(), Shop::Container()->getCache(), Shop::getConfig([CONF_NEWS]));
+
+    return $sm->getNews();
+}
+
+/**
+ * @return array
+ * @deprecated since 5.0.0
+ */
+function gibNewsKategorie()
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    $sm = new \JTL\Sitemap(Shop::Container()->getDB(), Shop::Container()->getCache(), Shop::getConfig([CONF_SITEMAP]));
+
+    return $sm->getNewsCategories();
+}
+
+/**
+ * @param array $conf
+ * @param JTLSmarty $smarty
+ * @deprecated since 5.0.0
+ */
+function gibSeiteSitemap($conf, $smarty)
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    Shop::setPageType(PAGE_SITEMAP);
+    $sm = new \JTL\Sitemap(Shop::Container()->getDB(), Shop::Container()->getCache(), $conf);
+    $sm->assignData($smarty);
+}
+
+/**
  * @param int $nLinkart
+ * @deprecated since 5.0.0
  */
 function pruefeSpezialseite(int $nLinkart)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $specialPages = Shop::Container()->getLinkService()->getLinkGroupByName('specialpages');
     if ($nLinkart > 0 && $specialPages !== null) {
         $res = $specialPages->getLinks()->first(function (\Link\LinkInterface $l) use ($nLinkart) {
@@ -816,98 +536,4 @@ function pruefeSpezialseite(int $nLinkart)
             exit();
         }
     }
-}
-
-/**
- * @param array $conf
- * @param JTLSmarty $smarty
- */
-function gibSeiteSitemap($conf, $smarty)
-{
-    Shop::setPageType(PAGE_SITEMAP);
-
-    $smarty->assign('oKategorieliste', $conf['sitemap']['sitemap_kategorien_anzeigen'] === 'Y'
-        ? gibSitemapKategorien()
-        : null);
-    $smarty->assign('oGlobaleMerkmale_arr', $conf['sitemap']['sitemap_globalemerkmale_anzeigen'] === 'Y'
-        ? gibSitemapGlobaleMerkmale()
-        : null);
-    $smarty->assign('oHersteller_arr', $conf['sitemap']['sitemap_hersteller_anzeigen'] === 'Y'
-        ? Hersteller::getAll()
-        : null);
-    $smarty->assign('oNewsMonatsUebersicht_arr', $conf['news']['news_benutzen'] === 'Y'
-    && $conf['sitemap']['sitemap_news_anzeigen'] === 'Y'
-        ? gibSitemapNews()
-        : null);
-    $smarty->assign('oNewsKategorie_arr', $conf['sitemap']['sitemap_newskategorien_anzeigen'] === 'Y'
-        ? gibNewsKategorie()
-        : null);
-}
-
-/**
- * @deprecated since 4.0
- * @param array $Einstellungen
- * @return array
- */
-function gibSitemapHersteller($Einstellungen)
-{
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Hersteller::getAll();
-}
-
-/**
- * @deprecated since 4.0
- * @param int $kLink
- * @return mixed|stdClass
- */
-function holeSeitenLink($kLink)
-{
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Shop::Container()->getLinkService()->getLinkByID($kLink);
-}
-
-/**
- * @deprecated since 4.0
- * @param int $kLink
- * @return mixed|stdClass
- */
-function holeSeitenLinkSprache($kLink)
-{
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Shop::Container()->getLinkService()->getLinkByID($kLink);
-}
-
-/**
- * @return mixed
- * @deprecated since 4.03
- */
-function gibNewsArchiv()
-{
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Shop::Container()->getDB()->query(
-        "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, tnews.cVorschauText, 
-            tnews.cMetaTitle, tnews.cMetaDescription, tnews.cMetaKeywords, tnews.nAktiv, tnews.dErstellt, tseo.cSeo,
-            count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl, 
-            DATE_FORMAT(tnews.dErstellt, '%d.%m.%Y  %H:%i') AS dErstellt_de,
-            DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de, 
-            DATE_FORMAT(tnews.dGueltigBis, '%d.%m.%Y  %H:%i') AS dGueltigBis_de
-            FROM tnews
-            LEFT JOIN tnewskommentar 
-                ON tnewskommentar.kNews = tnews.kNews
-            LEFT JOIN tseo 
-                ON tseo.cKey = 'kNews'
-                AND tseo.kKey = tnews.kNews
-                AND tseo.kSprache = " . Shop::getLanguage() . "
-            WHERE tnews.kSprache = " . Shop::getLanguage() . "
-                AND tnews.nAktiv = 1
-                AND MONTH(tnews.dErstellt) = '" . date('m') . "'
-                AND (
-                    tnews.cKundengruppe LIKE '%;-1;%' 
-                    OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
-                        . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0
-                    )
-            GROUP BY tnews.kNews
-            ORDER BY tnews.dErstellt DESC",
-        \DB\ReturnType::ARRAY_OF_OBJECTS
-    );
 }

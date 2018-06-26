@@ -576,13 +576,13 @@ class Plugin
             }
         }
         // EditorPortlets
-        $this->oPluginEditorPortlet_arr = Shop::DB()->selectAll('topcportlet', 'kPlugin', (int)$this->kPlugin);
+        $this->oPluginEditorPortlet_arr = Shop::Container()->getDB()->selectAll('topcportlet', 'kPlugin', (int)$this->kPlugin);
         if (is_array($this->oPluginEditorPortlet_arr) && count($this->oPluginEditorPortlet_arr) > 0) {
             foreach ($this->oPluginEditorPortlet_arr as $i => $oPluginEditorPortlet) {
                 $this->oPluginEditorPortlet_arr[$i]->cClassAbs =
                     $this->cAdminmenuPfad . PFAD_PLUGIN_PORTLETS . $oPluginEditorPortlet->cClass . '/'
                     . $oPluginEditorPortlet->cClass . '.php';
-                
+
                 $this->oPluginEditorPortletAssoc_arr[$oPluginEditorPortlet->kPortlet] =
                     $this->oPluginEditorPortlet_arr[$i];
             }

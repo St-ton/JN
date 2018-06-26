@@ -15,6 +15,7 @@ use DB\DbInterface;
 use DB\ReturnType;
 use Filter\ProductFilter;
 use Filter\ProductFilterSearchResults;
+use Filter\ProductFilterSearchResultsInterface;
 use Filter\Visibility;
 
 /**
@@ -175,11 +176,11 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * @param ProductFilter              $pf
-     * @param ProductFilterSearchResults $sr
+     * @param ProductFilter                       $pf
+     * @param ProductFilterSearchResultsInterface $sr
      * @return bool
      */
-    public function gibBoxenFilterNach(ProductFilter $pf, ProductFilterSearchResults $sr): bool
+    public function showBoxes(ProductFilter $pf, ProductFilterSearchResultsInterface $sr): bool
     {
         $cf  = $pf->getCategoryFilter();
         $mf  = $pf->getManufacturerFilter();
@@ -263,8 +264,8 @@ class BoxService implements BoxServiceInterface
         }
         $originalArticle = $smarty->getTemplateVars('Artikel');
         $productFilter   = \Shop::getProductFilter();
-        $filterAfter     = !empty($this->config)
-            ? $this->gibBoxenFilterNach($productFilter, $productFilter->getSearchResults(false))
+        $showBoxes       = !empty($this->config)
+            ? $this->showBoxes($productFilter, $productFilter->getSearchResults())
             : 0;
         $htmlArray       = [
             'top'    => null,
@@ -273,7 +274,7 @@ class BoxService implements BoxServiceInterface
             'left'   => null
         ];
         $smarty->assign('BoxenEinstellungen', $this->config)
-               ->assign('bBoxenFilterNach', $filterAfter)
+               ->assign('bBoxenFilterNach', $showBoxes)
                ->assign('NettoPreise', \Session::CustomerGroup()->getIsMerchant());
 
         $boxRenderer = new DefaultRenderer($smarty);

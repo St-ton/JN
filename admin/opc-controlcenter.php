@@ -14,23 +14,23 @@ $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 
 $notice = '';
 $error  = '';
-$action = verifyGPDataString('action');
+$action = RequestHelper::verifyGPDataString('action');
 
-$opc       = \Shop::Container()->getOPC();
-$opcPage   = \Shop::Container()->getOPCPageService();
-$opcPageDB = \Shop::Container()->getOPCPageDB();
+$opc       = Shop::Container()->getOPC();
+$opcPage   = Shop::Container()->getOPCPageService();
+$opcPageDB = Shop::Container()->getOPCPageDB();
 
 $pagesPagi = (new Pagination('pages'))
     ->setItemCount($opcPageDB->getPageCount())
     ->assemble();
 
-if (validateToken()) {
+if (FormHelper::validateToken()) {
     if ($action === 'restore') {
-        $pageId = verifyGPDataString('pageId');
+        $pageId = RequestHelper::verifyGPDataString('pageId');
         $opcPage->deletePage($pageId);
         $notice = 'Der Composer-Inhalt für die Seite wurde zurückgesetzt.';
     } elseif ($action === 'discard') {
-        $pageKey = verifyGPDataString('pageKey');
+        $pageKey = RequestHelper::verifyGPCDataInt('pageKey');
         $opcPage->deleteDraft($pageKey);
         $notice = 'Der Entwurf wurde gelöscht.';
     }

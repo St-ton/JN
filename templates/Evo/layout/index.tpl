@@ -23,12 +23,14 @@
 
             {include file='snippets/opc_mount_point.tpl' id='opc_link_content_prepend'}
 
-            {$Link->Sprache->cContent}
+            {if !empty($Link->getContent())}
+                {$Link->getContent()}
+            {/if}
 
             {include file='snippets/opc_mount_point.tpl' id='opc_link_content_append'}
         {/if}
 
-        {if $Link->getLinkType() == $smarty.const.LINKTYP_AGB}
+        {if $Link->getLinkType() === $smarty.const.LINKTYP_AGB}
             <div id="tos" class="well well-sm">
                 {if $AGB->cAGBContentHtml}
                     {$AGB->cAGBContentHtml}

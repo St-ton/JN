@@ -43,7 +43,7 @@ define('PLUGIN_CODE_MISSING_VERSION_DIR', 32);
 define('PLUGIN_CODE_INVALID_CONF', 33);
 define('PLUGIN_CODE_INVALID_CONF_VALUE_NAME', 34);
 define('PLUGIN_CODE_INVALID_XML_VERSION', 35);
-//@tod: 35 vs 9
+//@todo: 35 vs 9
 define('PLUGIN_CODE_INVALID_SHOP_VERSION', 36);
 define('PLUGIN_CODE_SHOP_VERSION_COMPATIBILITY', 37);
 define('PLUGIN_CODE_MISSING_FRONTEND_LINKS', 38);
@@ -156,7 +156,6 @@ define('PLUGIN_CODE_SQL_ERROR', 3);
 define('PLUGIN_CODE_SQL_WRONG_TABLE_NAME_DELETE', 4);
 define('PLUGIN_CODE_SQL_WRONG_TABLE_NAME_CREATE', 5);
 define('PLUGIN_CODE_SQL_INVALID_FILE_CONTENT', 6);
-
 
 /**
  * sanitize names from plugins downloaded via gitlab
@@ -1342,12 +1341,12 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
     }
 
     // Plausi OPC Portlets (falls vorhanden)
-    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets']) &&
-        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'])
+    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'])
+        && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'])
     ) {
-        if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet']) &&
-            is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet']) &&
-            count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet']) > 0
+        if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet'])
+            && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet'])
+            && count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet']) > 0
         ) {
             foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet'] as $u => $Portlet_arr) {
                 preg_match("/[0-9]+\sattr/", $u, $cTreffer1_arr);
@@ -1398,17 +1397,17 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                 }
             }
         } else {
-            return 132;// Keine Portlets vorhanden
+            return PLUGIN_CODE_MISSING_PORTLETS;// Keine Portlets vorhanden
         }
     }
 
     // Plausi OPC Blueprints (falls vorhanden)
-    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints']) &&
-        is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'])
+    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'])
+        && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'])
     ) {
-        if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint']) &&
-            is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint']) &&
-            count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint']) > 0
+        if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint'])
+            && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint'])
+            && count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint']) > 0
         ) {
             foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint'] as $u => $blueprint) {
                 preg_match("/[0-9]+\sattr/", $u, $cTreffer1_arr);

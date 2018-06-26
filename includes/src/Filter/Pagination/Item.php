@@ -39,8 +39,8 @@ class Item
      */
     public static $mapping = [
         'cURL'   => 'URL',
-        'page'   => 'Page',
-        'nSeite' => 'Page',
+        'page'   => 'PageNumber',
+        'nSeite' => 'PageNumber',
     ];
 
     /**

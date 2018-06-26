@@ -39,7 +39,7 @@ class Info
      */
     public static $mapping = [
         'AktuelleSeite' => 'CurrentPage',
-        'MaxSeiten'     => 'MaxPages',
+        'MaxSeiten'     => 'TotalPages',
         'minSeite'      => 'MinPage',
         'maxSeite'      => 'MaxPage',
     ];

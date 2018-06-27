@@ -26,7 +26,7 @@ final class BoxTopRatedProducts extends AbstractBox
         $cacheID   = 'bx_tprtd_' . $config['boxen']['boxen_topbewertet_minsterne'] . '_' .
             $config['boxen']['boxen_topbewertet_basisanzahl'] . md5($parentSQL);
         $cached    = true;
-        if (($productData = \Shop::Container()->getCache()->get($cacheID)) !== false) {
+        if (($productData = \Shop::Container()->getCache()->get($cacheID)) === false) {
             $cached      = false;
             $productData = \Shop::Container()->getDB()->query(
                 "SELECT tartikel.kArtikel, tartikelext.fDurchschnittsBewertung

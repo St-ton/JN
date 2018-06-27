@@ -10,24 +10,16 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'warenkorb_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'trustedshops_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
-$Einstellungen = Shop::getSettings([
-    CONF_GLOBAL,
-    CONF_RSS,
-    CONF_KUNDEN,
-    CONF_KAUFABWICKLUNG,
-    CONF_ZAHLUNGSARTEN,
-    CONF_EMAILS,
-    CONF_TRUSTEDSHOPS
-]);
+$Einstellungen = Shopsetting::getInstance()->getAll();
 Shop::setPageType(PAGE_BESTELLABSCHLUSS);
 $linkHelper    = Shop::Container()->getLinkService();
 $AktuelleSeite = 'BESTELLVORGANG';
 $kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_BESTELLABSCHLUSS);
 $cart          = Session::Cart();
 $smarty        = Shop::Smarty();
+$bestellung    = null;
 if (isset($_GET['i'])) {
-    $bestellung = null;
-    $bestellid  = Shop::Container()->getDB()->select('tbestellid', 'cId', Shop::Container()->getDB()->escape($_GET['i']));
+    $bestellid = Shop::Container()->getDB()->select('tbestellid', 'cId', $_GET['i']);
     if (isset($bestellid->kBestellung) && $bestellid->kBestellung > 0) {
         $bestellung = new Bestellung($bestellid->kBestellung);
         $bestellung->fuelleBestellung(0);
@@ -78,11 +70,11 @@ if (isset($_GET['i'])) {
             exit;
         }
         $bestellung = finalisiereBestellung();
-        $bestellid  = (isset($bestellung->kBestellung) && $bestellung->kBestellung > 0)
+        $bestellid  = $bestellung->kBestellung > 0
             ? Shop::Container()->getDB()->select('tbestellid', 'kBestellung', $bestellung->kBestellung)
             : false;
         if ($bestellung->Lieferadresse === null
-            && isset($_SESSION['Lieferadresse'])
+            && isset($_SESSION['Lieferadresse']->cVorname)
             && strlen($_SESSION['Lieferadresse']->cVorname) > 0
         ) {
             $bestellung->Lieferadresse = gibLieferadresseAusSession();
@@ -101,9 +93,8 @@ $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategor
 $AufgeklappteKategorien = new KategorieListe();
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 // Trusted Shops Kaeuferschutz Classic
-if (isset($Einstellungen['trustedshops']['trustedshops_nutzen']) && $Einstellungen['trustedshops']['trustedshops_nutzen'] === 'Y') {
+if ($Einstellungen['trustedshops']['trustedshops_nutzen'] === 'Y') {
     $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
-
     if ((int)$oTrustedShops->nAktiv === 1 && strlen($oTrustedShops->tsId) > 0) {
         $smarty->assign('oTrustedShops', $oTrustedShops);
     }

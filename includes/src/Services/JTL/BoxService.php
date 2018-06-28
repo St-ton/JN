@@ -191,17 +191,17 @@ class BoxService implements BoxServiceInterface
         $ssf = $pf->getSearchSpecialFilter();
         $sf  = $pf->searchFilterCompat;
 
-        $invis      = Visibility::SHOW_NEVER();
-        $visContent = Visibility::SHOW_CONTENT();
+        $invis      = Visibility::SHOW_NEVER;
+        $visContent = Visibility::SHOW_CONTENT;
 
-        return ((!$cf->getVisibility()->equals($invis) && !$cf->getVisibility()->equals($visContent))
-            || (!$mf->getVisibility()->equals($invis) && !$mf->getVisibility()->equals($visContent))
-            || (!$prf->getVisibility()->equals($invis) && !$prf->getVisibility()->equals($visContent))
-            || (!$rf->getVisibility()->equals($invis) && !$rf->getVisibility()->equals($visContent))
-            || (!$tf->getVisibility()->equals($invis) && !$tf->getVisibility()->equals($visContent))
-            || (!$afc->getVisibility()->equals($invis) && !$afc->getVisibility()->equals($visContent))
-            || (!$ssf->getVisibility()->equals($invis) && !$ssf->getVisibility()->equals($visContent))
-            || (!$sf->getVisibility()->equals($invis) && !$sf->getVisibility()->equals($visContent))
+        return (($cf->getVisibility() !== $invis && $cf->getVisibility() !== $visContent)
+            || ($mf->getVisibility() !== $invis && $mf->getVisibility() !== $visContent)
+            || ($prf->getVisibility() !== $invis && $prf->getVisibility() !== $visContent)
+            || ($rf->getVisibility() !== $invis && $rf->getVisibility() !== $visContent)
+            || ($tf->getVisibility() !== $invis && $tf->getVisibility() !== $visContent)
+            || ($afc->getVisibility() !== $invis && $afc->getVisibility() !== $visContent)
+            || ($ssf->getVisibility() !== $invis && $ssf->getVisibility() !== $visContent)
+            || ($sf->getVisibility() !== $invis && $sf->getVisibility() !== $visContent)
         );
     }
 

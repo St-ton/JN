@@ -44,8 +44,8 @@ class ItemSearchSpecial extends AbstractFilter
              ->setFrontendName(\Shop::Lang()->get('specificProducts'))
              ->setVisibility($this->getConfig('navigationsfilter')['allgemein_suchspecialfilter_benutzen'])
              ->setType($this->getConfig('navigationsfilter')['search_special_filter_type'] === 'O'
-                 ? Type::OR()
-                 : Type::AND());
+                 ? Type::OR
+                 : Type::AND);
     }
 
     /**
@@ -148,7 +148,7 @@ class ItemSearchSpecial extends AbstractFilter
      */
     public function getSQLCondition(): string
     {
-        $or         = $this->getType()->equals(Type::OR());
+        $or         = $this->getType() === Type::OR;
         $conf       = $this->getConfig();
         $conditions = [];
         foreach ($this->getValue() as $value) {
@@ -288,7 +288,7 @@ class ItemSearchSpecial extends AbstractFilter
         $name             = '';
         $options          = [];
         $additionalFilter = new self($this->productFilter);
-        $ignore           = $this->getType()->equals(Type::OR())
+        $ignore           = $this->getType() === Type::OR
             ? $this->getClassName()
             : null;
         for ($i = 1; $i < 7; ++$i) {

@@ -376,7 +376,7 @@ class ProductFilterURL
             $extraFilter = clone $filter;
             $urls        = [];
             $extraFilter->setDoUnset(true);
-            if ($filter->getType()->equals(Type::OR())) {
+            if ($filter->getType() === Type::OR) {
                 foreach ($filter->getValue() as $filterValue) {
                     $extraFilter->setValue($filterValue);
                     $urls[$filterValue] = $this->getURL($extraFilter);

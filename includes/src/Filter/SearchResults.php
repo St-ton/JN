@@ -832,7 +832,7 @@ class SearchResults implements SearchResultsInterface
                 /** @var FilterOption $af */
                 $options = $af->getOptions();
                 if (is_array($options)
-                    && !$af->getVisibility()->equals(Visibility::SHOW_NEVER())
+                    && $af->getVisibility() !== Visibility::SHOW_NEVER
                     && array_reduce(
                         $options,
                         function ($carry, $option) {
@@ -846,7 +846,7 @@ class SearchResults implements SearchResultsInterface
                 }
             }
             if (every($attribtuteFilterOptions, function (FilterOption $item) {
-                return $item->getVisibility()->equals(Visibility::SHOW_NEVER());
+                return $item->getVisibility() === Visibility::SHOW_NEVER;
             })) {
                 // hide the whole attribute filter collection if every filter consists of only active options
                 $productFilter->getAttributeFilterCollection()->hide();

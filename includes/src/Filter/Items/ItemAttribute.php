@@ -16,6 +16,9 @@ use Filter\Type;
 use Filter\ProductFilter;
 use Filter\States\BaseAttribute;
 use function Functional\every;
+use function Functional\first;
+use function Functional\group;
+use function Functional\map;
 
 /**
  * Class ItemAttribute
@@ -144,7 +147,7 @@ class ItemAttribute extends BaseAttribute
                  ->setAttributeID($value->kMerkmal)
                  ->setIsMultiSelect($value->nMehrfachauswahl === 1);
 
-            return $this->setType($this->isMultiSelect() ? Type::OR : Type::AND)
+            return $this->setType($this->isMultiSelect() ? Type:: OR : Type:: AND)
                         ->setSeo($this->getAvailableLanguages());
 
         }
@@ -329,7 +332,7 @@ class ItemAttribute extends BaseAttribute
                 } else {
                     $activeValues[] = $values;
                 }
-                if ($filter->getType() === Type::OR) {
+                if ($filter->getType() === Type:: OR) {
                     if (is_array($values)) {
                         $activeOrFilterIDs = $values;
                     } else {
@@ -395,7 +398,6 @@ class ItemAttribute extends BaseAttribute
         $conf                = $this->getConfig('navigationsfilter');
         $currentCategory     = $data['oAktuelleKategorie'] ?? null;
         $force               = $data['bForce'] ?? false;
-        $catAttributeFilters = [];
         $attributeFilters    = [];
         $useAttributeFilter  = $conf['merkmalfilter_verwenden'] !== 'N';
         $attributeLimit      = $force === true
@@ -404,15 +406,11 @@ class ItemAttribute extends BaseAttribute
         $attributeValueLimit = $force === true
             ? 0
             : (int)$conf['merkmalfilter_maxmerkmalwerte'];
-
         if (!$force && !$useAttributeFilter) {
             return $attributeFilters;
         }
-        // Ist Kategorie Mainword, dann prüfe die Kategorie-Funktionsattribute auf merkmalfilter
+        $state = $this->getState();
         if ($currentCategory !== null
-            && isset($currentCategory->categoryFunctionAttributes)
-            && is_array($currentCategory->categoryFunctionAttributes)
-            && count($currentCategory->categoryFunctionAttributes) > 0
             && !empty($currentCategory->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER])
             && $this->productFilter->hasCategory()
         ) {
@@ -420,9 +418,17 @@ class ItemAttribute extends BaseAttribute
                 ';',
                 $currentCategory->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER]
             );
+            if (count($catAttributeFilters) > 0) {
+                $state->addCondition('tmerkmal.cName IN (' . implode(',', map(
+                        $catAttributeFilters,
+                        function ($e) {
+                            return '"' . $e . '"';
+                        }
+                    )) . ')');
+            }
         }
-        $baseQry               = $this->productFilter->getFilterSQL()->getBaseQuery($this->getState());
-        $qryRes                = \Shop::Container()->getDB()->executeQuery(
+        $baseQry                   = $this->productFilter->getFilterSQL()->getBaseQuery($state);
+        $qryRes                    = \Shop::Container()->getDB()->executeQuery(
             "SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
             ssMerkmal.nMehrfachauswahl, ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, 
             ssMerkmal.cMMBildPfad, COUNT(DISTINCT ssMerkmal.kArtikel) AS nAnzahl
@@ -431,44 +437,35 @@ class ItemAttribute extends BaseAttribute
                 ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert",
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $currentAttributeValue = $this->productFilter->getAttributeValue()->getValue();
-        $additionalFilter      = new self($this->productFilter);
-        // get unique attributes from query result
-        $checked                   = [];
-        $attributeFilterCollection = [];
-        $hasCatAttributeFilter     = count($catAttributeFilters) > 0;
-        foreach ($qryRes as $attributeValue) {
-            $attributeValue->kMerkmal         = (int)$attributeValue->kMerkmal;
-            $attributeValue->nAnzahl          = (int)$attributeValue->nAnzahl;
-            $attributeValue->nMehrfachauswahl = (int)$attributeValue->nMehrfachauswahl;
-            if (!in_array($attributeValue->kMerkmal, $checked, true)
-                && (!$hasCatAttributeFilter || in_array($attributeValue->cName, $catAttributeFilters, true))
-            ) {
-                $attribute                                            = new \stdClass();
-                $attribute->kMerkmal                                  = $attributeValue->kMerkmal;
-                $attribute->cName                                     = $attributeValue->cName;
-                $attribute->cMMBildPfad                               = $attributeValue->cMMBildPfad;
-                $attribute->cTyp                                      = $attributeValue->cTyp;
-                $attribute->nMehrfachauswahl                          = $attributeValue->nMehrfachauswahl;
-                $attribute->attributeValues                           = [];
-                $attributeFilterCollection[$attributeValue->kMerkmal] = $attribute;
-            }
-            unset(
-                $attributeValue->nMehrfachauswahl,
-                $attributeValue->cMMBildPfad,
-                $attributeValue->cName,
-                $attributeValue->cTyp
-            );
-        }
-        // add attribute values to corresponding attributes
-        foreach ($qryRes as $attributeValue) {
-            if ($attributeValue->nAnzahl >= 1) {
-                $attributeFilterCollection[$attributeValue->kMerkmal]->attributeValues[] = $attributeValue;
-            }
+        $currentAttributeValue     = $this->productFilter->getAttributeValue()->getValue();
+        $additionalFilter          = new self($this->productFilter);
+        $attributeFilterCollection = group($qryRes, function ($e) {
+            return $e->kMerkmal;
+        });
+        foreach ($attributeFilterCollection as $attributeID => $attributeValues) {
+            $first                                   = first($attributeValues);
+            $attribute                               = new \stdClass();
+            $attribute->kMerkmal                     = (int)$first->kMerkmal;
+            $attribute->nMehrfachauswahl             = (int)$first->nMehrfachauswahl;
+            $attribute->cName                        = $first->cName;
+            $attribute->cMMBildPfad                  = $first->cMMBildPfad;
+            $attribute->cTyp                         = $first->cTyp;
+            $attribute->attributeValues              = map($attributeValues, function ($e) {
+                $av               = new \stdClass();
+                $av->kMerkmal     = (int)$e->kMerkmal;
+                $av->kMerkmalWert = (int)$e->kMerkmalWert;
+                $av->cMMWBildPfad = $e->cMMWBildPfad;
+                $av->cWert        = $e->cWert;
+                $av->nAnzahl      = (int)$e->nAnzahl;
+
+                return $av;
+            });
+            $attributeFilterCollection[$attributeID] = $attribute;
         }
         $imageBaseURL       = \Shop::getImageBaseURL();
         $filterURLGenerator = $this->productFilter->getFilterURL();
-        foreach ($attributeFilterCollection as $i => $attributeFilter) {
+        $i                  = 0;
+        foreach ($attributeFilterCollection as $attributeFilter) {
             $baseSrcSmall  = strlen($attributeFilter->cMMBildPfad) > 0
                 ? PFAD_MERKMALBILDER_KLEIN . $attributeFilter->cMMBildPfad
                 : BILD_KEIN_MERKMALBILD_VORHANDEN;
@@ -485,7 +482,7 @@ class ItemAttribute extends BaseAttribute
                    ->setData('cBildURLKlein', $imageBaseURL . $baseSrcSmall)
                    ->setData('cBildURLNormal', $imageBaseURL . $baseSrcNormal);
             $option->setParam($this->getUrlParam());
-            $option->setType($attributeFilter->nMehrfachauswahl === 1 ? Type::OR : Type::AND);
+            $option->setType($attributeFilter->nMehrfachauswahl === 1 ? Type:: OR : Type:: AND);
             $option->setType($this->getType());
             $option->setClassName($this->getClassName());
             $option->setName($attributeFilter->cName);
@@ -509,7 +506,7 @@ class ItemAttribute extends BaseAttribute
                                ->setData('cBildpfadNormal', strlen($filterValue->cMMWBildPfad) > 0
                                    ? PFAD_MERKMALWERTBILDER_NORMAL . $filterValue->cMMWBildPfad
                                    : BILD_KEIN_MERKMALWERTBILD_VORHANDEN);
-                $attributeValue->setType($attributeFilter->nMehrfachauswahl === 1 ? Type::OR : Type::AND);
+                $attributeValue->setType($attributeFilter->nMehrfachauswahl === 1 ? Type:: OR : Type:: AND);
                 $attributeValue->setClassName($this->getClassName());
                 $attributeValue->setParam($this->getUrlParam());
                 $attributeValue->setName(htmlentities($filterValue->cWert));
@@ -526,6 +523,9 @@ class ItemAttribute extends BaseAttribute
             $option->setData('oMerkmalWerte_arr', $attributeOptions);
             if (($optionsCount = count($attributeOptions)) > 0) {
                 $attributeFilters[] = $option->setCount($optionsCount);
+            }
+            if ($attributeLimit > 0 && ++$i >= $attributeLimit) {
+                break;
             }
         }
         foreach ($attributeFilters as $af) {

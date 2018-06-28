@@ -283,9 +283,9 @@ class ItemAttribute extends BaseAttribute
             ->setOn('tmerkmal.kMerkmal = tartikelmerkmal.kMerkmal')
             ->setOrigin(__CLASS__));
 
-        $kSprache         = $this->getLanguageID();
+        $langID         = $this->getLanguageID();
         $kStandardSprache = \Sprache::getDefaultLanguage()->kSprache;
-        if ($kSprache !== $kStandardSprache) {
+        if ($langID !== $kStandardSprache) {
             $state->setSelect([
                 'COALESCE(tmerkmalsprache.cName, tmerkmal.cName) AS cName',
                 'COALESCE(fremdSprache.cSeo, standardSprache.cSeo) AS cSeo',
@@ -296,7 +296,7 @@ class ItemAttribute extends BaseAttribute
                 ->setType('LEFT JOIN')
                 ->setTable('tmerkmalsprache')
                 ->setOn('tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal 
-                            AND tmerkmalsprache.kSprache = ' . $kSprache)
+                            AND tmerkmalsprache.kSprache = ' . $langID)
                 ->setOrigin(__CLASS__));
             $state->addJoin((new FilterJoin())
                 ->setComment('non default lang join2 from ' . __METHOD__)
@@ -310,7 +310,7 @@ class ItemAttribute extends BaseAttribute
                 ->setType('LEFT JOIN')
                 ->setTable('tmerkmalwertsprache AS fremdSprache')
                 ->setOn('fremdSprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert 
-                            AND fremdSprache.kSprache = ' . $kSprache)
+                            AND fremdSprache.kSprache = ' . $langID)
                 ->setOrigin(__CLASS__));
         } else {
             $state->setSelect(['tmerkmalwertsprache.cWert', 'tmerkmalwertsprache.cSeo', 'tmerkmal.cName']);
@@ -319,7 +319,7 @@ class ItemAttribute extends BaseAttribute
                 ->setType('INNER JOIN')
                 ->setTable('tmerkmalwertsprache')
                 ->setOn('tmerkmalwertsprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert
-                            AND tmerkmalwertsprache.kSprache = ' . $kSprache)
+                            AND tmerkmalwertsprache.kSprache = ' . $langID)
                 ->setOrigin(__CLASS__));
         }
 

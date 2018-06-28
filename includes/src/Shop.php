@@ -1178,8 +1178,11 @@ final class Shop
             }
             $oSeo = self::Container()->getDB()->select('tseo', 'cSeo', $seo);
             // EXPERIMENTAL_MULTILANG_SHOP
-            if (isset($oSeo->kSprache) && self::$kSprache !== $oSeo->kSprache &&
-                defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true) {
+            if (isset($oSeo->kSprache)
+                && self::$kSprache !== $oSeo->kSprache
+                && defined('EXPERIMENTAL_MULTILANG_SHOP')
+                && EXPERIMENTAL_MULTILANG_SHOP === true
+            ) {
                 $oSeo->kSprache = self::$kSprache;
             }
             // EXPERIMENTAL_MULTILANG_SHOP END
@@ -1261,14 +1264,15 @@ final class Shop
      */
     private static function updateLanguage(int $languageID)
     {
-        if (self::$productFilter->getLanguageID() !== $languageID) {
-            self::$productFilter->setLanguageID($languageID);
-        }
         $spr   = self::Lang()->getIsoFromLangID($languageID);
         $cLang = $spr->cISO ?? null;
         if ($cLang !== $_SESSION['cISOSprache']) {
             Session\Session::checkReset($cLang);
             TaxHelper::setTaxRates();
+        }
+        if (self::$productFilter->getLanguageID() !== $languageID) {
+            self::$productFilter->setLanguageID($languageID);
+            self::$productFilter->initBaseStates();
         }
     }
 

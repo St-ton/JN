@@ -213,26 +213,27 @@ if (isset($_POST['neu_linkgruppe']) && (int)$_POST['neu_linkgruppe'] === 1 && Fo
 
     if (count($oPlausiCMS->getPlausiVar()) === 0) {
         $kLinkgruppe = 0;
-        if ((int)$_POST['kLinkgruppe'] === 0) {
-            $linkGroupTemplateExists = Shop::Container()->getDB()->select(
-                'tlinkgruppe',
-                'cTemplatename',
-                $_POST['cTemplatename']
-            );
-            if ($linkGroupTemplateExists !== null) {
-                $step   = 'neue Linkgruppe';
-                $fehler = 'Fehler: Bitte wählen Sie einen eindeutigen Template-Namen.';
-                $smarty->assign('xPlausiVar_arr', $oPlausiCMS->getPlausiVar())
-                       ->assign('xPostVar_arr', $oPlausiCMS->getPostVar());
-            } else {
+        $linkGroupTemplateExists = Shop::Container()->getDB()->select(
+            'tlinkgruppe',
+            'cTemplatename',
+            $_POST['cTemplatename']
+        );
+        if ($linkGroupTemplateExists !== null && $_POST['kLinkgruppe'] !== $linkGroupTemplateExists->kLinkgruppe) {
+            $step   = 'neue Linkgruppe';
+            $fehler = 'Fehler: Bitte wählen Sie einen eindeutigen Template-Namen.';
+            $smarty->assign('xPlausiVar_arr', $oPlausiCMS->getPlausiVar())
+                ->assign('xPostVar_arr', $oPlausiCMS->getPostVar());
+        } else {
+            if ((int)$_POST['kLinkgruppe'] === 0) {
                 $linkAdmin->createOrUpdateLinkGroup(0, $_POST);
                 $hinweis .= 'Linkgruppe wurde erfolgreich hinzugefügt.';
+            } else {
+                $linkgruppe  = $linkAdmin->createOrUpdateLinkGroup((int)$_POST['kLinkgruppe'], $_POST);
+                $hinweis    .= 'Die Linkgruppe <strong>' . $linkgruppe->cName . '</strong> wurde erfolgreich geändert.';
             }
-        } else {
-            $linkgruppe = $linkAdmin->createOrUpdateLinkGroup((int)$_POST['kLinkgruppe'], $_POST);
-            $hinweis    .= 'Die Linkgruppe <strong>' . $linkgruppe->cName . '</strong> wurde erfolgreich geändert.';
-            $step       = 'uebersicht';
+            $step = 'uebersicht';
         }
+
         $clearCache = true;
     } else {
         $step   = 'neue Linkgruppe';

@@ -1754,12 +1754,15 @@ class ProductFilter
      * @param int             $limit
      * @return SearchResultsInterface
      */
-    public function generateSearchResults(\Kategorie $category = null, bool $fill = true, int $limit = null): SearchResultsInterface
-    {
-        $productsPerPage = $limit ?? $this->limits->getProductsPerPageLimit();
-        $nLimitN      = $productsPerPage * ($this->nSeite - 1);
-        $maxPaginationPageCount          = (int)$this->conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'];
-        $error        = false;
+    public function generateSearchResults(
+        \Kategorie $category = null,
+        bool $fill = true,
+        int $limit = null
+    ): SearchResultsInterface {
+        $productsPerPage        = $limit ?? $this->limits->getProductsPerPageLimit();
+        $nLimitN                = $productsPerPage * ($this->nSeite - 1);
+        $maxPaginationPageCount = (int)$this->conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'];
+        $error                  = false;
         if ($this->searchResults === null) {
             $productList         = new Collection();
             $productKeys         = $this->getProductKeys();
@@ -1777,7 +1780,6 @@ class ProductFilter
                 }
             }
             $end = min($nLimitN + $productsPerPage, $productCount);
-
             $this->searchResults->setOffsetStart($nLimitN + 1)
                                 ->setOffsetEnd($end > 0 ? $end : $productCount);
             $total   = $productsPerPage > 0 ? ceil($productCount / $productsPerPage) : 1;

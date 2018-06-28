@@ -604,8 +604,16 @@ class Plugin
             $this->oPluginAdminWidgetAssoc_arr[$oPluginAdminWidget->kWidget] =
                 $this->oPluginAdminWidget_arr[$i];
         }
-        // EditorPortlets
-        $this->oPluginEditorPortlet_arr = Shop::Container()->getDB()->selectAll('topcportlet', 'kPlugin', (int)$this->kPlugin);
+        // OPC-Portlets
+        try {
+            $this->oPluginEditorPortlet_arr = Shop::Container()->getDB()->selectAll(
+                'topcportlet',
+                'kPlugin',
+                (int)$this->kPlugin
+            );
+        } catch (\InvalidArgumentException $e) {
+            $this->oPluginEditorPortlet_arr = [];
+        }
         foreach ($this->oPluginEditorPortlet_arr as $i => $oPluginEditorPortlet) {
             $this->oPluginEditorPortlet_arr[$i]->cClassAbs =
                 $this->cAdminmenuPfad . PFAD_PLUGIN_PORTLETS . $oPluginEditorPortlet->cClass . '/'

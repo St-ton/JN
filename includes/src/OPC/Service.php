@@ -211,6 +211,14 @@ class Service
     }
 
     /**
+     * @return bool
+     */
+    public function isOPCInstalled(): bool
+    {
+        return $this->db->isOPCInstalled();
+    }
+
+    /**
      * @return int
      */
     public function getEditedPageKey(): int

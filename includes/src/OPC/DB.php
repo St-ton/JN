@@ -238,4 +238,19 @@ class DB
             ->setGroup($portletDB->cGroup)
             ->setActive((int)$portletDB->bActive === 1);
     }
+
+    /**
+     * @return bool
+     */
+    public function isOPCInstalled(): bool
+    {
+        try {
+            $this->shopDB->selectAll('topcportlet', [], []);
+            $this->shopDB->selectAll('topcblueprint', [], []);
+            $this->shopDB->selectAll('topcpage', [], []);
+            return true;
+        } catch (\InvalidArgumentException $e) {
+            return false;
+        }
+    }
 }

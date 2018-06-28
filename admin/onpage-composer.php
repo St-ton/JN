@@ -27,41 +27,45 @@ $opcPageDB = Shop::Container()->getOPCPageDB();
 $templateUrl = $shopUrl . '/' . PFAD_ADMIN . $currentTemplateDir;
 $fullPageUrl = $shopUrl . $pageUrl;
 
-try {
-    if ($action === 'edit') {
-        $page = $opcPage->getDraft($pageKey);
-    } elseif ($action === 'replace' || $action === 'extend') {
-        $page = $opcPage->createDraft($pageId)
-                        ->setUrl($pageUrl)
-                        ->setReplace($action === 'replace')
-                        ->setName(
-                            'Entwurf ' . ($opcPageDB->getDraftCount($pageId) + 1)
-                            . ($action === 'extend' ? ' (erweitert)' : ' (ersetzt)')
-                        );
-        $opcPageDB->saveDraft($page);
-        $pageKey = $page->getKey();
-    } elseif ($action === 'discard') {
-        $opcPage->deleteDraft($pageKey);
+if ($opc->isOPCInstalled() === false) {
+    $error = 'The OPC update is not installed properly. Please update your migrations.';
+} else {
+    try {
+        if ($action === 'edit') {
+            $page = $opcPage->getDraft($pageKey);
+        } elseif ($action === 'replace' || $action === 'extend') {
+            $page = $opcPage->createDraft($pageId)
+                            ->setUrl($pageUrl)
+                            ->setReplace($action === 'replace')
+                            ->setName(
+                                'Entwurf ' . ($opcPageDB->getDraftCount($pageId) + 1)
+                                . ($action === 'extend' ? ' (erweitert)' : ' (ersetzt)')
+                            );
+            $opcPageDB->saveDraft($page);
+            $pageKey = $page->getKey();
+        } elseif ($action === 'discard') {
+            $opcPage->deleteDraft($pageKey);
 
-        if ($async === 'yes') {
-            exit('ok');
+            if ($async === 'yes') {
+                exit('ok');
+            }
+
+            header('Location: ' . $fullPageUrl);
+            exit();
         }
+        if ($action === 'restore') {
+            $opcPage->deletePage($pageId);
 
-        header('Location: ' . $fullPageUrl);
-        exit();
-    }
-    if ($action === 'restore') {
-        $opcPage->deletePage($pageId);
+            if ($async === 'yes') {
+                exit('ok');
+            }
 
-        if ($async === 'yes') {
-            exit('ok');
+            header('Location: ' . $fullPageUrl);
+            exit();
         }
-
-        header('Location: ' . $fullPageUrl);
-        exit();
+    } catch (Exception $e) {
+        $error = $e->getMessage();
     }
-} catch (Exception $e) {
-    $error = $e->getMessage();
 }
 
 $smarty->assign('shopUrl', $shopUrl)

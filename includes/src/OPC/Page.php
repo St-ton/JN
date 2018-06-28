@@ -290,9 +290,9 @@ class Page implements \JsonSerializable
     }
 
     /**
-     * @return AreaList|null
+     * @return AreaList
      */
-    public function getAreaList()
+    public function getAreaList(): AreaList
     {
         return $this->areaList;
     }

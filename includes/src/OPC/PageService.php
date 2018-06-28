@@ -141,7 +141,9 @@ class PageService
         $editedPageKey = $this->opc->getEditedPageKey();
 
         if ($this->curPage === null) {
-            if ($isEditMode && $editedPageKey > 0) {
+            if ($this->opc->isOPCInstalled() === false) {
+                $this->curPage = new Page();
+            } elseif ($isEditMode && $editedPageKey > 0) {
                 $this->curPage = $this->getDraft($editedPageKey);
             } else {
                 $curPageUrl                    = '/' . ltrim(\Shop::getRequestUri(), '/');
@@ -163,7 +165,11 @@ class PageService
      */
     public function getDrafts(string $id): array
     {
-        return $this->pageDB->getDrafts($id);
+        if ($this->opc->isOPCInstalled()) {
+            return $this->pageDB->getDrafts($id);
+        }
+
+        return [];
     }
 
     /**

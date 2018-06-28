@@ -699,6 +699,7 @@ class ProductFilter
 
         $this->searchSpecial = new BaseSearchSpecial($this);
 
+        $this->filters         = [];
         $this->attributeFilter = [];
         $this->searchFilter    = [];
         $this->tagFilter       = [];

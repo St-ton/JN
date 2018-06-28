@@ -487,10 +487,7 @@ class ItemAttribute extends BaseAttribute
                    ->setData('cBildURLKlein', $imageBaseURL . $baseSrcSmall)
                    ->setData('cBildURLNormal', $imageBaseURL . $baseSrcNormal);
             $option->setParam($this->getUrlParam());
-            $option->setType($attributeFilter->nMehrfachauswahl === 1
-                ? Type::OR()
-                : Type::AND()
-            );
+            $option->setType(new Type($attributeFilter->nMehrfachauswahl === 1 ? Type::OR : Type::AND));
             $option->setType($this->getType());
             $option->setClassName($this->getClassName());
             $option->setName($attributeFilter->cName);
@@ -514,9 +511,7 @@ class ItemAttribute extends BaseAttribute
                                ->setData('cBildpfadNormal', strlen($filterValue->cMMWBildPfad) > 0
                                    ? PFAD_MERKMALWERTBILDER_NORMAL . $filterValue->cMMWBildPfad
                                    : BILD_KEIN_MERKMALWERTBILD_VORHANDEN);
-                $attributeValue->setType($attributeFilter->nMehrfachauswahl === 1
-                    ? Type::OR()
-                    : Type::AND());
+                $attributeValue->setType(new Type($attributeFilter->nMehrfachauswahl === 1? Type::OR : Type::AND));
                 $attributeValue->setClassName($this->getClassName());
                 $attributeValue->setParam($this->getUrlParam());
                 $attributeValue->setName(htmlentities($filterValue->cWert));

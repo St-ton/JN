@@ -166,9 +166,9 @@ abstract class AbstractFilter implements FilterInterface
      */
     public function __construct($productFilter = null)
     {
-        $this->type       = Type::AND();
-        $this->visibility = Visibility::SHOW_ALWAYS();
-        $this->inputType  = InputType::SELECT();
+        $this->type       = new Type(Type::AND);
+        $this->visibility = new Visibility(Visibility::SHOW_ALWAYS);
+        $this->inputType  = new InputType(InputType::SELECT);
         if ($productFilter !== null) {
             $this->setBaseData($productFilter)->setClassName(get_class($this));
         }

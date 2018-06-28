@@ -250,9 +250,10 @@ class ItemAttribute extends BaseAttribute
     }
 
     /**
+     * @param \Kategorie|null $category
      * @return FilterStateSQLInterface
      */
-    protected function getState(): FilterStateSQLInterface
+    protected function getState(\Kategorie $category = null): FilterStateSQLInterface
     {
         $base  = $this->productFilter->getCurrentStateData(self::class);
         $state = (new FilterStateSQL())->from($base);
@@ -382,6 +383,23 @@ class ItemAttribute extends BaseAttribute
         $state->addSelect('tmerkmal.cTyp');
         $state->addSelect('tmerkmal.nMehrfachauswahl');
         $state->addSelect('tmerkmal.cBildPfad AS cMMBildPfad');
+        if ($category !== null
+            && !empty($category->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER])
+            && $this->productFilter->hasCategory()
+        ) {
+            $catAttributeFilters = explode(
+                ';',
+                $category->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER]
+            );
+            if (count($catAttributeFilters) > 0) {
+                $state->addCondition('tmerkmal.cName IN (' . implode(',', map(
+                        $catAttributeFilters,
+                        function ($e) {
+                            return '"' . $e . '"';
+                        }
+                    )) . ')');
+            }
+        }
 
         return $state;
     }
@@ -396,7 +414,6 @@ class ItemAttribute extends BaseAttribute
             return $this->options;
         }
         $conf                = $this->getConfig('navigationsfilter');
-        $currentCategory     = $data['oAktuelleKategorie'] ?? null;
         $force               = $data['bForce'] ?? false;
         $attributeFilters    = [];
         $useAttributeFilter  = $conf['merkmalfilter_verwenden'] !== 'N';
@@ -409,24 +426,7 @@ class ItemAttribute extends BaseAttribute
         if (!$force && !$useAttributeFilter) {
             return $attributeFilters;
         }
-        $state = $this->getState();
-        if ($currentCategory !== null
-            && !empty($currentCategory->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER])
-            && $this->productFilter->hasCategory()
-        ) {
-            $catAttributeFilters = explode(
-                ';',
-                $currentCategory->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER]
-            );
-            if (count($catAttributeFilters) > 0) {
-                $state->addCondition('tmerkmal.cName IN (' . implode(',', map(
-                        $catAttributeFilters,
-                        function ($e) {
-                            return '"' . $e . '"';
-                        }
-                    )) . ')');
-            }
-        }
+        $state                     = $this->getState($data['oAktuelleKategorie'] ?? null);
         $baseQry                   = $this->productFilter->getFilterSQL()->getBaseQuery($state);
         $qryRes                    = \Shop::Container()->getDB()->executeQuery(
             "SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 

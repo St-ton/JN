@@ -179,7 +179,7 @@ interface DbInterface extends \Serializable
         string $select = '*',
         string $orderBy = '',
         string $limit = ''
-    ): array;
+    );
 
     /**
      * @param string           $tableName
@@ -197,7 +197,7 @@ interface DbInterface extends \Serializable
         string $select = '*',
         string $orderBy = '',
         string $limit = ''
-    ): array;
+    );
 
     /**
      * executes query and returns misc data

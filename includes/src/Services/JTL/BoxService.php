@@ -347,7 +347,8 @@ class BoxService implements BoxServiceInterface
             \Plugin::PLUGIN_ACTIVATED . "  OR tboxvorlage.eTyp != 'plugin')"
             : '';
         if (($grouped = \Shop::Cache()->get($cacheID)) === false) {
-            $sql     = 'SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, 
+            $boxData = $this->db->query(
+                'SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, 
                        tboxen.cTitel, tboxen.ePosition, tboxensichtbar.kSeite, tboxensichtbar.nSort, 
                        tboxensichtbar.bAktiv, tboxensichtbar.cFilter, tboxvorlage.eTyp, 
                        tboxvorlage.cName, tboxvorlage.cTemplate, tplugin.nStatus AS pluginStatus,
@@ -365,11 +366,9 @@ class BoxService implements BoxServiceInterface
                         ON tboxsprache.kBox = tboxen.kBox
                     LEFT JOIN tsprache
                         ON tsprache.cISO = tboxsprache.cISO
-                    WHERE tboxen.kContainer > -1 ' . $cSQLAktiv . $cPluginAktiv .
-                ' GROUP BY tboxsprache.kBoxSprache, tboxen.kBox, tboxensichtbar.cFilter
-                    ORDER BY tboxensichtbar.nSort, tboxen.kBox ASC';
-            $boxData = $this->db->query(
-                $sql,
+                    WHERE tboxen.kContainer > -1 ' . $cSQLAktiv . $cPluginAktiv . ' 
+                    GROUP BY tboxsprache.kBoxSprache, tboxen.kBox, tboxensichtbar.cFilter
+                    ORDER BY tboxensichtbar.nSort, tboxen.kBox ASC',
                 ReturnType::ARRAY_OF_OBJECTS
             );
             $grouped = \Functional\group($boxData, function ($e) {

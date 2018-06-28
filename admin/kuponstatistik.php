@@ -61,7 +61,7 @@ if (isset($_POST['formFilter']) && $_POST['formFilter'] > 0 && FormHelper::valid
 $dStart = $startDate->format('Y-m-d 00:00:00');
 $dEnd   = $endDate->format('Y-m-d 23:59:59');
 
-$usedCouponsOrder = KuponBestellung::getOrdersWithUsedCoupons($dStart, $dEnd, RequestHelper::verifyGPDataString('kKupon'));
+$usedCouponsOrder = KuponBestellung::getOrdersWithUsedCoupons($dStart, $dEnd, (int)RequestHelper::verifyGPDataString('kKupon'));
 
 $nCountOrders_arr = Shop::Container()->getDB()->query(
     "SELECT count(*) AS nCount

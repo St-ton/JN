@@ -370,7 +370,6 @@ class SearchResults implements SearchResultsInterface
         return $this;
     }
 
-
     /**
      * @inheritdoc
      */

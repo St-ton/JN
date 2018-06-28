@@ -19,7 +19,7 @@ class Accordion extends \OPC\Portlet
      * @return string
      * @throws \Exception
      */
-    public function getPreviewHtml($instance): string
+    public function getPreviewHtml(PortletInstance $instance): string
     {
         $instance->setProperty('uid', uniqid('cllps_', false));
 
@@ -31,7 +31,7 @@ class Accordion extends \OPC\Portlet
      * @return string
      * @throws \Exception
      */
-    public function getFinalHtml($instance): string
+    public function getFinalHtml(PortletInstance $instance): string
     {
         return $this->getFinalHtmlFromTpl($instance);
     }

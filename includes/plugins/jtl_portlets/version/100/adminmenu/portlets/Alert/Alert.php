@@ -12,26 +12,26 @@ namespace OPC\Portlets;
  */
 class Alert extends \OPC\Portlet
 {
-    public function getPreviewHtml($instance)
+    public function getPreviewHtml(\OPC\PortletInstance $instance): string
     {
         $instance->addClass('alert alert-' . $instance->getProperty('type-select'));
 
         return $this->getPreviewHtmlFromTpl($instance);
     }
 
-    public function getFinalHtml($instance)
+    public function getFinalHtml(\OPC\PortletInstance $instance): string
     {
         $instance->addClass('alert alert-' . $instance->getProperty('type-select'));
 
         return $this->getFinalHtmlFromTpl($instance);
     }
 
-    public function getButtonHtml()
+    public function getButtonHtml(): string
     {
         return '<i class="fa fa-exclamation-circle"></i><br>Alert';
     }
 
-    public function getPropertyDesc()
+    public function getPropertyDesc(): array
     {
         return [
             'some-text'   => [

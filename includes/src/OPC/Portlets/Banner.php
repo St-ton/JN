@@ -34,7 +34,7 @@ class Banner extends \OPC\Portlet
     /**
      * @param PortletInstance $instance
      * @return string
-     * @throws \SmartyException
+     * @throws \SmartyException|\Exception
      */
     public function getFinalHtml(PortletInstance $instance): string
     {
@@ -52,10 +52,10 @@ class Banner extends \OPC\Portlet
         $cParse_arr           = parse_url($oImageMap->cBildPfad);
         $oImageMap->cBild     = substr($cParse_arr['path'], strrpos($cParse_arr['path'], '/') + 1);
         list($width, $height) = getimagesize($cBildPfad);
-        $oImageMap->fWidth  = $width;
-        $oImageMap->fHeight = $height;
-        $defaultOptions     = \Artikel::getDefaultOptions();
-        $fill               = true;
+        $oImageMap->fWidth    = $width;
+        $oImageMap->fHeight   = $height;
+        $defaultOptions       = \Artikel::getDefaultOptions();
+        $fill                 = true;
 
         if (!empty($oImageMap->oArea_arr)) {
             foreach ($oImageMap->oArea_arr as &$oArea) {
@@ -88,11 +88,12 @@ class Banner extends \OPC\Portlet
             }
         }
 
-        return \Shop::Smarty()->assign('oBanner', $oImageMap)
-                    ->assign('attribString', $instance->getAttributeString())
-                    ->assign('srcString', $instance->getProperty('src'))
-                    ->assign('isFluid', $isFluid)
-                    ->fetch('portlets/Banner/final.banner.tpl');
+        return \Shop::Smarty()
+            ->assign('oBanner', $oImageMap)
+            ->assign('attribString', $instance->getAttributeString())
+            ->assign('srcString', $instance->getProperty('src'))
+            ->assign('isFluid', $isFluid)
+            ->fetch('portlets/Banner/final.banner.tpl');
     }
 
     /**

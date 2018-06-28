@@ -134,7 +134,7 @@ abstract class Portlet implements \JsonSerializable
      * @param int $id
      * @return Portlet
      */
-    public function setId(int $id) : Portlet
+    public function setId(int $id): self
     {
         $this->id = $id;
 
@@ -145,7 +145,7 @@ abstract class Portlet implements \JsonSerializable
      * @param int $pluginId
      * @return Portlet
      */
-    public function setPluginId(int $pluginId) : Portlet
+    public function setPluginId(int $pluginId): self
     {
         $this->plugin = $pluginId > 0 ? new \Plugin($pluginId) : null;
 
@@ -156,7 +156,7 @@ abstract class Portlet implements \JsonSerializable
      * @param string $title
      * @return Portlet
      */
-    public function setTitle(string $title) : Portlet
+    public function setTitle(string $title): self
     {
         $this->title = $title;
 
@@ -167,7 +167,7 @@ abstract class Portlet implements \JsonSerializable
      * @param string $class
      * @return Portlet
      */
-    public function setClass(string $class) : Portlet
+    public function setClass(string $class): self
     {
         $this->class = $class;
 
@@ -178,7 +178,7 @@ abstract class Portlet implements \JsonSerializable
      * @param string $group
      * @return Portlet
      */
-    public function setGroup(string $group) : Portlet
+    public function setGroup(string $group): self
     {
         $this->group = $group;
 
@@ -197,7 +197,7 @@ abstract class Portlet implements \JsonSerializable
      * @param bool $active
      * @return Portlet
      */
-    public function setActive(bool $active) : Portlet
+    public function setActive(bool $active): self
     {
         $this->active = $active;
 
@@ -207,7 +207,7 @@ abstract class Portlet implements \JsonSerializable
     /**
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'id'           => $this->getId(),

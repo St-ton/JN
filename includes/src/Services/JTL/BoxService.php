@@ -14,8 +14,8 @@ use Boxes\Renderer\DefaultRenderer;
 use DB\DbInterface;
 use DB\ReturnType;
 use Filter\ProductFilter;
-use Filter\ProductFilterSearchResults;
-use Filter\ProductFilterSearchResultsInterface;
+use Filter\SearchResults;
+use Filter\SearchResultsInterface;
 use Filter\Visibility;
 
 /**
@@ -176,11 +176,11 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * @param ProductFilter                       $pf
-     * @param ProductFilterSearchResultsInterface $sr
+     * @param ProductFilter          $pf
+     * @param SearchResultsInterface $sr
      * @return bool
      */
-    public function showBoxes(ProductFilter $pf, ProductFilterSearchResultsInterface $sr): bool
+    public function showBoxes(ProductFilter $pf, SearchResultsInterface $sr): bool
     {
         $cf  = $pf->getCategoryFilter();
         $mf  = $pf->getManufacturerFilter();

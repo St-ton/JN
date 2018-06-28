@@ -123,7 +123,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('Firma', new Firma())
        ->assign('AktuelleKategorie', $AktuelleKategorie)
        ->assign('showLoginCaptcha', isset($_SESSION['showLoginCaptcha']) && $_SESSION['showLoginCaptcha'])
-       ->assign('Suchergebnisse', $oSuchergebnisse ?? new \Filter\ProductFilterSearchResults());
+       ->assign('Suchergebnisse', $oSuchergebnisse ?? new \Filter\SearchResults());
 
 $nav = new \JTL\Navigation(Shop::Lang(), Shop::Container()->getLinkService());
 $nav->setPageType(Shop::getPageType());

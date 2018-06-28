@@ -441,12 +441,12 @@ class Boxen
     }
 
     /**
-     * @param \Filter\ProductFilter              $pf
-     * @param \Filter\ProductFilterSearchResults $sr
+     * @param \Filter\ProductFilter $pf
+     * @param \Filter\SearchResults $sr
      * @return bool
      * @deprecated since 5.0.0
      */
-    public function gibBoxenFilterNach(\Filter\ProductFilter $pf, \Filter\ProductFilterSearchResults $sr): bool
+    public function gibBoxenFilterNach(\Filter\ProductFilter $pf, \Filter\SearchResults $sr): bool
     {
         return $this->boxService->showBoxes($pf, $sr);
     }

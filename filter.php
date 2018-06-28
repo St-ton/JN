@@ -52,19 +52,13 @@ if ($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'
     $productsIDs = $oSuchergebnisse->getProducts()->map(function ($article) {
         return (int)$article->kArtikel;
     });
-    $limit       = isset($Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'])
-        ? (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl']
-        : 3;
-    $minsells    = isset($Einstellungen['global']['global_bestseller_minanzahl'])
-        ? (int)$Einstellungen['global']['global_bestseller_minanzahl']
-        : 10;
     $bestsellers = Bestseller::buildBestsellers(
         $productsIDs,
         Session::CustomerGroup()->getID(),
         Session::CustomerGroup()->mayViewCategories(),
         false,
-        $limit,
-        $minsells
+        (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'],
+        (int)$Einstellungen['global']['global_bestseller_minanzahl']
     );
     $products = $oSuchergebnisse->getProducts()->all();
     Bestseller::ignoreProducts($products, $bestsellers);

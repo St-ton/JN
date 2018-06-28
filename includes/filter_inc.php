@@ -497,9 +497,11 @@ function gibHeaderAnzeige()
 function erstelleFilterLoesenURLs($bSeo, $oSuchergebnisse)
 {
     trigger_error('filter_inc.php: calling erstelleFilterLoesenURLs() is deprecated.', E_USER_DEPRECATED);
+    $sr = new \Filter\SearchResults();
+    $sr->convert($oSuchergebnisse);
     Shop::getProductFilter()->getFilterURL()->createUnsetFilterURLs(
         new stdClass(),
-        new \Filter\ProductFilterSearchResults($oSuchergebnisse)
+        $sr
     );
 }
 
@@ -525,9 +527,11 @@ function truncateMetaTitle($cTitle)
 function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $globalMeta)
 {
     trigger_error('filter_inc.php: calling gibNaviMetaTitle() is deprecated.', E_USER_DEPRECATED);
+    $sr = new \Filter\SearchResults();
+    $sr->convert($oSuchergebnisse);
 
     return (new \Filter\Metadata(updateNaviFilter($NaviFilter)))->generateMetaTitle(
-        new \Filter\ProductFilterSearchResults($oSuchergebnisse),
+        $sr,
         $globalMeta
     );
 }
@@ -543,10 +547,12 @@ function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $globalMeta)
 function gibNaviMetaDescription($articles, $NaviFilter, $oSuchergebnisse, $globalMeta)
 {
     trigger_error('filter_inc.php: calling gibNaviMetaDescription() is deprecated.', E_USER_DEPRECATED);
+    $sr = new \Filter\SearchResults();
+    $sr->convert($oSuchergebnisse);
 
     return (new \Filter\Metadata(updateNaviFilter($NaviFilter)))->generateMetaDescription(
         $articles,
-        new \Filter\ProductFilterSearchResults($oSuchergebnisse),
+        $sr,
         $globalMeta
     );
 }
@@ -575,7 +581,10 @@ function gibNaviMetaKeywords($articles, $NaviFilter, $excludeKeywords = [])
 function gibMetaStart($NaviFilter, $oSuchergebnisse)
 {
     trigger_error('filter_inc.php: calling gibMetaStart() is deprecated.', E_USER_DEPRECATED);
-    return (new \Filter\Metadata(updateNaviFilter($NaviFilter)))->getMetaStart(new \Filter\ProductFilterSearchResults($oSuchergebnisse));
+    $pf = updateNaviFilter($NaviFilter);
+    $sr = new \Filter\SearchResults();
+    $sr->convert($oSuchergebnisse);
+    return (new \Filter\Metadata($pf))->getMetaStart($sr);
 }
 
 /**
@@ -1056,5 +1065,6 @@ function baueArtikelAnzahl($FilterSQL, &$oSuchergebnisse, $nArtikelProSeite = 20
     if ($oSuchergebnisse->Seitenzahlen->maxSeite > $oSuchergebnisse->Seitenzahlen->MaxSeiten) {
         $oSuchergebnisse->Seitenzahlen->maxSeite = $oSuchergebnisse->Seitenzahlen->MaxSeiten;
     }
-    $oSuchergebnisse = new \Filter\ProductFilterSearchResults($oSuchergebnisse);
+    $sr = new \Filter\SearchResults();
+    $oSuchergebnisse = $sr->convert($oSuchergebnisse);
 }

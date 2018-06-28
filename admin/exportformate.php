@@ -99,13 +99,14 @@ if (isset($_POST['action']) && strlen($_POST['action']) > 0 && (int)$_POST['kExp
 if ($cAction !== null && $kExportformat !== null && FormHelper::validateToken()) {
     switch ($cAction) {
         case 'export':
-            $bAsync               = isset($_GET['ajax']);
-            $queue                = new stdClass();
-            $queue->kExportformat = $kExportformat;
-            $queue->nLimit_n      = 0;
-            $queue->nLimit_m      = $bAsync ? EXPORTFORMAT_ASYNC_LIMIT_M : EXPORTFORMAT_LIMIT_M;
-            $queue->dErstellt     = 'now()';
-            $queue->dZuBearbeiten = 'now()';
+            $bAsync                = isset($_GET['ajax']);
+            $queue                 = new stdClass();
+            $queue->kExportformat  = $kExportformat;
+            $queue->nLimit_n       = 0;
+            $queue->nLimit_m       = $bAsync ? EXPORTFORMAT_ASYNC_LIMIT_M : EXPORTFORMAT_LIMIT_M;
+            $queue->nLastArticleID = 0;
+            $queue->dErstellt      = 'now()';
+            $queue->dZuBearbeiten  = 'now()';
 
             $kExportqueue = Shop::Container()->getDB()->insert('texportqueue', $queue);
 

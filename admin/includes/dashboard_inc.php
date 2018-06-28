@@ -165,9 +165,24 @@ function getRemoteData($cURL, $nTimeout = 15)
  */
 function getRemoteDataIO($cURL, $cDataName, $cTpl, $cWrapperID, $cPost = null, $cCallback = null, $bDecodeUTF8 = false)
 {
-    $response = new IOResponse();
-    $cData    = RequestHelper::http_get_contents($cURL, 15, $cPost);
-    $oData    = json_decode($cData);
+    $response         = new IOResponse();
+    $oURLsToCache_arr = ['oNews_arr'];
+
+    if (in_array($cDataName, $oURLsToCache_arr, true)) {
+        $cacheID = $cDataName . '_' . $cTpl . '_' . md5($cWrapperID . $cURL);
+        if (($cData = Shop::Container()->getCache()->get($cacheID)) === false) {
+            $cData = RequestHelper::http_get_contents($cURL, 15, $cPost);
+            Shop::Cache()->set($cacheID, $cData, [CACHING_GROUP_OBJECT], 3600);
+        }
+    } else {
+        $cData = RequestHelper::http_get_contents($cURL, 15, $cPost);
+    }
+
+    if (strpos($cData, '<?xml') === 0) {
+        $oData = simplexml_load_string($cData);
+    } else {
+        $oData = json_decode($cData);
+    }
     $oData    = $bDecodeUTF8 ? StringHandler::utf8_convert_recursive($oData) : $oData;
     Shop::Smarty()->assign($cDataName, $oData);
     $cWrapper = Shop::Smarty()->fetch('tpl_inc/' . $cTpl);

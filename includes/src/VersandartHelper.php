@@ -1232,6 +1232,9 @@ class VersandartHelper
      */
     public static function getShippingFreeString($oVersandart, $fWarenkorbSumme)
     {
+        if (isset($_SESSION['oVersandfreiKupon'])) {
+            return '';
+        }
         if (is_object($oVersandart)
             && (float)$oVersandart->fVersandkostenfreiAbX > 0
             && isset($_SESSION['Warenkorb'], $_SESSION['Steuerland'])

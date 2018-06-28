@@ -49,7 +49,8 @@
                                         </button>
                                         <a class="btn btn-danger" title="Alle Entwürfe löschen"
                                            href="{strip}?token={$smarty.session.jtl_token}&
-                                                 action=restore&pageId={$page->cPageId}{/strip}">
+                                                 action=restore&pageId={$page->cPageId}{/strip}"
+                                           onclick="return confirm('Wollen Sie wirklich alle Entwürfe für die Seite löschen?');">
                                             <i class="fa fa-trash"></i>
                                         </a>
                                     </div>
@@ -98,7 +99,7 @@
                                                     {if empty($draft->getLockedBy())}{else}{$draft->getLockedBy()}{/if}
                                                 </td>
                                                 <td>
-                                                    <div class="btn-group">
+                                                    <div class="btn-group pull-right">
                                                         <a class="btn btn-primary" title="Bearbeiten" target="_blank"
                                                            href="{strip}./onpage-composer.php?
                                                                 token={$smarty.session.jtl_token}&
@@ -106,10 +107,11 @@
                                                                 action=edit{/strip}">
                                                             <i class="fa fa-pencil"></i>
                                                         </a>
-                                                        <a class="btn btn-danger" title="Seite zurücksetzen"
+                                                        <a class="btn btn-danger" title="Entwurf löschen"
                                                            href="{strip}?token={$smarty.session.jtl_token}&
                                                                  action=discard&
-                                                                 pageKey={$draft->getKey()}{/strip}">
+                                                                 pageKey={$draft->getKey()}{/strip}"
+                                                           onclick="return confirm('Wollen Sie diesen Entwurf wirklich löschen?');">
                                                             <i class="fa fa-trash"></i>
                                                         </a>
                                                     </div>

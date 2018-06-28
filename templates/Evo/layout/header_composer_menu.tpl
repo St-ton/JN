@@ -23,7 +23,7 @@
         </a>
         <a href="admin/onpage-composer.php{$queryDraft}&action=discard"
            class="btn btn-sm btn-danger opc-draft-item-discard pull-right"
-           title="Entwurf verwerfen" id="btnDiscard{$draftKey}">
+           title="Entwurf löschen" id="btnDiscard{$draftKey}">
             <i class="fa fa-times"></i>
         </a>
         <script>
@@ -31,14 +31,16 @@
                 var btnDiscard = $('#btnDiscard{$draftKey}');
                 btnDiscard.click(function(e) {
                     e.preventDefault();
-                    var href = btnDiscard.attr('href');
-                    $.ajax(href + '&async=yes', {
-                        success: function(jqxhr, textStatus) {
-                            if(jqxhr === 'ok') {
-                                btnDiscard.closest('.list-group-item').remove();
+                    if(confirm("Wollen Sie diesen Entwurf wirklich löschen?")) {
+                        var href = btnDiscard.attr('href');
+                        $.ajax(href + '&async=yes', {
+                            success: function(jqxhr, textStatus) {
+                                if(jqxhr === 'ok') {
+                                    btnDiscard.closest('.list-group-item').remove();
+                                }
                             }
-                        }
-                    })
+                        });
+                    }
                 });
             })();
         </script>
@@ -101,15 +103,17 @@
                                 var btnDiscardAll = $('#btnDiscardAll');
                                 btnDiscardAll.click(function(e) {
                                     e.preventDefault();
-                                    var href = btnDiscardAll.attr('href');
-                                    $.ajax(href + '&async=yes', {
-                                        success: function(jqxhr, textStatus) {
-                                            if(jqxhr === 'ok') {
-                                                btnDiscardAll.closest('p').remove();
-                                                $('#opc-switcher .list-group').remove();
+                                    if(confirm('Wollen Sie wirklich alle Entwürfe für die Seite löschen?')) {
+                                        var href = btnDiscardAll.attr('href');
+                                        $.ajax(href + '&async=yes', {
+                                            success: function(jqxhr, textStatus) {
+                                                if(jqxhr === 'ok') {
+                                                    btnDiscardAll.closest('p').remove();
+                                                    $('#opc-switcher .list-group').remove();
+                                                }
                                             }
-                                        }
-                                    })
+                                        });
+                                    }
                                 });
                             })();
                         </script>

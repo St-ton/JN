@@ -14,7 +14,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
 function buildSearchResults($FilterSQL, $NaviFilter)
 {
     trigger_error('filter_inc.php: calling buildSearchResults() is deprecated.', E_USER_DEPRECATED);
-    return updateNaviFilter($NaviFilter)->getProducts();
+    return updateNaviFilter($NaviFilter)->generateSearchResults();
 }
 
 /**
@@ -37,13 +37,13 @@ function buildSearchResultPage(&$oSearchResult, $nProductCount, $nLimitN, $nPage
  * @param object   $NaviFilter
  * @param bool     $bExtern
  * @param stdClass $oSuchergebnisse
- * @return \Filter\ProductFilter
+ * @return \Tightenco\Collect\Support\Collection
  * @deprecated since 5.0.0
  */
 function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $oSuchergebnisse)
 {
     trigger_error('filter_inc.php: calling gibArtikelKeys() is deprecated.', E_USER_DEPRECATED);
-    return updateNaviFilter($NaviFilter)->getProducts(false, null, true, (int)$nArtikelProSeite);
+    return updateNaviFilter($NaviFilter)->generateSearchResults(null, true, (int)$nArtikelProSeite);
 }
 
 /**

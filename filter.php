@@ -38,8 +38,28 @@ if ($NaviFilter->hasCategory()) {
     $expandedCategories->getOpenCategories($AktuelleKategorie);
 }
 $NaviFilter->setUserSort($AktuelleKategorie);
-$oSuchergebnisse = $NaviFilter->getProducts(true, $AktuelleKategorie);
+$oSuchergebnisse = $NaviFilter->generateSearchResults($AktuelleKategorie);
 $pages           = $oSuchergebnisse->getPages();
+if ($oSuchergebnisse->getVisibleProductCount() === 1
+    && $Einstellungen('navigationsfilter')['allgemein_weiterleitung'] === 'Y'
+) {
+    $hasSubCategories = ($categoryID = $this->getCategory()->getValue()) > 0
+        ? (new \Kategorie($categoryID, $this->languageID, $this->customerGroupID))
+            ->existierenUnterkategorien()
+        : false;
+    if ($NaviFilter->getFilterCount() > 0
+        || $NaviFilter->getRealSearch() !== null
+        || ($NaviFilter->getCategory()->getValue() > 0 && !$hasSubCategories)
+    ) {
+        http_response_code(301);
+        $product = $oSuchergebnisse->getProducts()->pop();
+        $url     = empty($product->cURL)
+            ? (\Shop::getURL() . '/?a=' . $product->kArtikel)
+            : (\Shop::getURL() . '/' . $product->cURL);
+        header('Location: ' . $url);
+        exit;
+    }
+}
 if ($pages->getCurrentPage() > 0 && $pages->getTotalPages() > 0
     && ($oSuchergebnisse->getVisibleProductCount() === 0 || ($pages->getCurrentPage() > $pages->getTotalPages()))
 ) {

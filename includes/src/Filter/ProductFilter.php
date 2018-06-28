@@ -244,8 +244,6 @@ class ProductFilter
 
     /**
      * @var array
-     * @todo: fix working with arrays
-     * @see https://stackoverflow.com/questions/13421661/getting-indirect-modification-of-overloaded-property-has-no-effect-notice
      */
     public static $mapping = [
         'nAnzahlFilter'      => 'FilterCount',
@@ -1751,17 +1749,16 @@ class ProductFilter
     }
 
     /**
-     * @param bool            $listing - if true, return SearchResults instance, otherwise products only
      * @param \Kategorie|null $category
      * @param bool            $fill - if true, return Artikel class instances, otherwise keys only
      * @param int             $limit
-     * @return SearchResultsInterface|\Tightenco\Collect\Support\Collection
+     * @return SearchResultsInterface
      */
-    public function getProducts(bool $listing = true, \Kategorie $category = null, bool $fill = true, int $limit = null)
+    public function generateSearchResults(\Kategorie $category = null, bool $fill = true, int $limit = null): SearchResultsInterface
     {
-        $limitPerPage = $limit ?? $this->limits->getProductsPerPageLimit();
-        $nLimitN      = $limitPerPage * ($this->nSeite - 1);
-        $max          = (int)$this->conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'];
+        $productsPerPage = $limit ?? $this->limits->getProductsPerPageLimit();
+        $nLimitN      = $productsPerPage * ($this->nSeite - 1);
+        $maxPaginationPageCount          = (int)$this->conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'];
         $error        = false;
         if ($this->searchResults === null) {
             $productList         = new Collection();
@@ -1779,14 +1776,13 @@ class ProductFilter
                     $error = $this->searchQuery->getError();
                 }
             }
-            $end = min($nLimitN + $limitPerPage, $productCount);
+            $end = min($nLimitN + $productsPerPage, $productCount);
 
             $this->searchResults->setOffsetStart($nLimitN + 1)
                                 ->setOffsetEnd($end > 0 ? $end : $productCount);
-
-            $total   = $limitPerPage > 0 ? ceil($productCount / $limitPerPage) : 1;
-            $minPage = max($this->nSeite - floor($max / 2), 1);
-            $maxPage = $minPage + $max - 1;
+            $total   = $productsPerPage > 0 ? ceil($productCount / $productsPerPage) : 1;
+            $minPage = max($this->nSeite - floor($maxPaginationPageCount / 2), 1);
+            $maxPage = $minPage + $maxPaginationPageCount - 1;
             if ($maxPage > $total) {
                 $diff    = $total - $maxPage;
                 $maxPage = $total;
@@ -1828,10 +1824,10 @@ class ProductFilter
             $opt->nVariationDetailPreis = (int)$this->conf['artikeldetails']['artikel_variationspreisanzeige'] !== 0
                 ? 1
                 : 0;
-            if ($limitPerPage < 0) {
-                $limitPerPage = null;
+            if ($productsPerPage < 0) {
+                $productsPerPage = null;
             }
-            foreach ($productKeys->forPage($this->nSeite, $limitPerPage) as $id) {
+            foreach ($productKeys->forPage($this->nSeite, $productsPerPage) as $id) {
                 $productList->push((new \Artikel())->fuelleArtikel($id, $opt));
             }
             $this->searchResults->setVisibleProductCount($productList->count());
@@ -1841,31 +1837,7 @@ class ProductFilter
 
         $this->searchResults->setProducts($productList);
 
-        if ($listing === true) {
-            // Weiterleitung, falls nur 1 Artikel rausgeholt
-            $hasSubCategories = ($categoryID = $this->getCategory()->getValue()) > 0
-                ? (new \Kategorie($categoryID, $this->languageID, $this->customerGroupID))
-                    ->existierenUnterkategorien()
-                : false;
-            if ($productList->count() === 1
-                && $this->getConfig('navigationsfilter')['allgemein_weiterleitung'] === 'Y'
-                && ($this->getFilterCount() > 0
-                    || ($this->getCategory()->getValue() > 0 && !$hasSubCategories)
-                    || !empty($this->EchteSuche->cSuche))
-            ) {
-                http_response_code(301);
-                $product = $productList->pop();
-                $url     = empty($product->cURL)
-                    ? (\Shop::getURL() . '/?a=' . $product->kArtikel)
-                    : (\Shop::getURL() . '/' . $product->cURL);
-                header('Location: ' . $url);
-                exit;
-            }
-        }
-
-        return $listing === true
-            ? $this->searchResults
-            : $productList;
+        return $this->searchResults;
     }
 
     /**

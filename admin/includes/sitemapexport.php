@@ -1202,7 +1202,7 @@ function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSpr
         default :
             return $cURL_arr;
     }
-    $oSuchergebnisse = $naviFilter->getProducts(true, null, false, (int)$nArtikelProSeite);
+    $oSuchergebnisse = $naviFilter->generateSearchResults(null, false, (int)$nArtikelProSeite);
     $shopURL         = Shop::getURL();
     $shopURLSSL      = Shop::getURL(true);
     $search          = [$shopURL . '/', $shopURLSSL . '/'];

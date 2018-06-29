@@ -2,13 +2,12 @@
     {block name="content-closingtag"}
     </div>{* /content *}
     {/block}
-    
+
     {block name="aside"}
     {has_boxes position='left' assign='hasLeftBox'}
     {if !$bExclusive && $hasLeftBox && !empty($boxes.left|strip_tags|trim)}
         {block name="footer-sidepanel-left"}
-        <aside id="sidepanel_left"
-               class="hidden-print col-xs-12 {if $nSeitenTyp === 2} col-md-4 col-md-pull-8 {/if} col-lg-3 col-lg-pull-9">
+        <aside id="sidepanel_left" class="hidden-print col-xs-12 {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE} col-md-4 col-md-pull-8 {/if} col-lg-3 col-lg-pull-9">
             {block name="footer-sidepanel-left-content"}{$boxes.left}{/block}
         </aside>
         {/block}
@@ -31,7 +30,6 @@
     </div>{* /content-wrapper*}
     {/block}
 {/block}
-
 {block name="footer"}
 {if !$bExclusive}
     <div class="clearfix"></div>
@@ -40,24 +38,33 @@
             {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'fluid'}
                 <div class="container-block clearfix">
             {/if}
-
             {block name="footer-boxes"}
-            {load_boxes_raw type='bottom' assign='arrBoxBottom' array=true}
-            {if isset($arrBoxBottom) && count($arrBoxBottom) > 0}
+            {getBoxesByPosition position='bottom' assign='footerBoxes'}
+            {if isset($footerBoxes) && count($footerBoxes) > 0}
                 <div class="row" id="footer-boxes">
-                    {foreach name=bottomBoxes from=$arrBoxBottom item=box}
-                        {if ($box.obj->kBoxvorlage != 0 && $box.obj->anzeigen === 'Y' )
-                        || ($box.obj->kBoxvorlage == 0 && !empty($box.obj->oContainer_arr))}
-                            <div class="{block name="footer-boxes-class"}col-xs-12 col-sm-6 col-md-3{/block}">
-                                {if isset($box.obj) && isset($box.tpl)}
-                                    {assign var=oBox value=$box.obj}
-                                    {include file=$box.tpl}
-                                {/if}
-                            </div>
-                        {/if}
+                    {foreach $footerBoxes as $box}
+                        <div class="{block name="footer-boxes-class"}col-xs-12 col-sm-6 col-md-3{/block}">
+                            {$box->getRenderedContent()}
+                        </div>
                     {/foreach}
                 </div>
             {/if}
+            {*{load_boxes_raw type='bottom' assign='arrBoxBottom' array=true}*}
+            {*{if isset($arrBoxBottom) && count($arrBoxBottom) > 0}*}
+                {*<div class="row" id="footer-boxes">*}
+                    {*{foreach name=bottomBoxes from=$arrBoxBottom item=box}*}
+                        {*{if ($box.obj->getBaseType() !== 0 && $box.obj->show())*}
+                        {*|| ($box.obj->getBaseType() === 0 && !empty($box.obj->getChildren()))}*}
+                            {*<div class="{block name="footer-boxes-class"}col-xs-12 col-sm-6 col-md-3{/block}">*}
+                                {*{if isset($box.obj) && isset($box.tpl)}*}
+                                    {*{assign var=oBox value=$box.obj}*}
+                                    {*{include file=$box.tpl}*}
+                                {*{/if}*}
+                            {*</div>*}
+                        {*{/if}*}
+                    {*{/foreach}*}
+                {*</div>*}
+            {*{/if}*}
             {/block}
 
             {block name="footer-additional"}
@@ -143,6 +150,7 @@
                     <div class="language-dropdown dropdown visible-xs col-xs-6 text-center">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="{lang key='selectLang'}">
                             <i class="fa fa-language"></i>
+                            {lang key="language"}
                             <span class="caret"></span>
                         </a>
                         <ul id="language-dropdown-small" class="dropdown-menu dropdown-menu-right">
@@ -172,9 +180,8 @@
                                 <i class="fa fa-usd" title="{$smarty.session.Waehrung->getName()}"></i>
                             {elseif $smarty.session.Waehrung->getCode() === 'GBP'}
                                 <i class="fa fa-gbp" title="{$smarty.session.Waehrung->getName()}"></i>
-                            {else}
-                                {$smarty.session.Waehrung->getName()}
-                            {/if} <span class="caret"></span>
+                            {/if}
+                            {lang key="currency"} <span class="caret"></span>
                         </a>
                         <ul id="currency-dropdown-small" class="dropdown-menu dropdown-menu-right">
                             {foreach from=$smarty.session.Waehrungen item=oWaehrung}
@@ -194,9 +201,9 @@
                     {lang key="footnoteInclusiveVat" section="global" assign="footnoteVat"}
                 {/if}
                 {if $Einstellungen.global.global_versandhinweis === 'zzgl'}
-                    {lang key="footnoteExclusiveShipping" section="global" printf=$oSpezialseiten_arr[6]->cURL assign="footnoteShipping"}
+                    {lang key="footnoteExclusiveShipping" section="global" printf=$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() assign="footnoteShipping"}
                 {elseif $Einstellungen.global.global_versandhinweis === 'inkl'}
-                    {lang key="footnoteInclusiveShipping" section="global" printf=$oSpezialseiten_arr[6]->cURL assign="footnoteShipping"}
+                    {lang key="footnoteInclusiveShipping" section="global" printf=$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() assign="footnoteShipping"}
                 {/if}
                 {block name="footer-vat-notice"}
                     <p class="padded-lg-top">
@@ -248,7 +255,7 @@
 {* JavaScripts *}
 {block name="footer-js"}
     {assign var="isFluidContent" value=false}
-    {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid' && isset($Link) && $Link->bIsFluid}
+    {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid' && isset($Link) && $Link->getIsFluid()}
         {assign var="isFluidContent" value=true}
     {/if}
 
@@ -333,6 +340,7 @@
             $.get('includes/cron_inc.php');
         {/if}
     </script>
+    {captchaMarkup getBody=false}
 {/block}
 </body>
 </html>

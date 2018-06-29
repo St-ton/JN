@@ -15,7 +15,7 @@ $messages = [
     'error'  => '',
 ];
 
-if (isset($_REQUEST['action']) && validateToken()) {
+if (isset($_REQUEST['action']) && FormHelper::validateToken()) {
     $cAction = StringHandler::filterXSS($_REQUEST['action']);
 }
 

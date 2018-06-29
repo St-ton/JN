@@ -167,16 +167,18 @@ function bearbeiteGutscheine($xml)
                             print_r($gutschein, true), JTLLOG_LEVEL_DEBUG, 'kGutschein', $kGutschein);
                     }
                     //kundenkto erhöhen
-                    Shop::Container()->getDB()->query("
-                        UPDATE tkunde 
+                    Shop::Container()->getDB()->query(
+                        "UPDATE tkunde 
                           SET fGuthaben = fGuthaben+" . (float)$gutschein->fWert . " 
-                          WHERE kKunde = " . (int)$gutschein->kKunde, 4
+                          WHERE kKunde = " . (int)$gutschein->kKunde,
+                        \DB\ReturnType::DEFAULT
                     );
-                    Shop::Container()->getDB()->query("
-                        UPDATE tkunde 
+                    Shop::Container()->getDB()->query(
+                        "UPDATE tkunde 
                           SET fGuthaben = 0 
                           WHERE kKunde = " . (int)$gutschein->kKunde . " 
-                          AND fGuthaben < 0", 3
+                          AND fGuthaben < 0",
+                        \DB\ReturnType::AFFECTED_ROWS
                     );
                     //mail
                     $kunde           = new Kunde((int)$gutschein->kKunde);

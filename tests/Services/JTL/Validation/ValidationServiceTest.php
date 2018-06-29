@@ -9,6 +9,10 @@ namespace Services\JTL\Validation;
 
 use Services\JTL\Validation\Rules\Email;
 
+/**
+ * Class ValidationServiceTest
+ * @package Services\JTL\Validation
+ */
 class ValidationServiceTest extends \PHPUnit_Framework_TestCase
 {
     public function test_validate_happyPath()

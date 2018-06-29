@@ -8,7 +8,13 @@ defined('JTLCRON') || define('JTLCRON', true);
 if (!isset($bCronManuell) || !$bCronManuell) {
     require_once __DIR__ . '/globalinclude.php';
 }
-$oJobQueue_arr = Shop::Container()->getDB()->query("SELECT * FROM tjobqueue WHERE nInArbeit = 0 AND dStartZeit < now()", 2);
+$oJobQueue_arr = Shop::Container()->getDB()->query(
+    'SELECT * 
+        FROM tjobqueue 
+        WHERE nInArbeit = 0 
+            AND dStartZeit < now()',
+    \DB\ReturnType::ARRAY_OF_OBJECTS
+);
 if (is_array($oJobQueue_arr) && count($oJobQueue_arr) > 0) {
     foreach ($oJobQueue_arr as $i => $oJobQueueTMP) {
         if ($i >= JOBQUEUE_LIMIT_JOBS) {
@@ -27,6 +33,7 @@ if (is_array($oJobQueue_arr) && count($oJobQueue_arr) > 0) {
             $oJobQueueTMP->dStartZeit,
             $oJobQueueTMP->dZuletztGelaufen
         );
+        $oJobQueue->setNLastArticleID($oJobQueueTMP->nLastArticleID ?? 0);
         Jtllog::cronLog('Got job ' . $oJobQueue->kJobQueue . ' (kCron = ' .
             $oJobQueue->kCron . ', type = ' . $oJobQueue->cJobArt . ')');
         if (Jtllog::doLog(JTLLOG_LEVEL_NOTICE)) {

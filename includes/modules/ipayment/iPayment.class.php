@@ -100,10 +100,9 @@ class iPayment extends PaymentMethod
 
         if (isset($_GET['jtls'])) {
             die(1);
-        } else {
-            header('Location: ' . $this->getReturnURL($order));
-            exit();
         }
+        header('Location: ' . $this->getReturnURL($order));
+        exit();
     }
 
     /**
@@ -153,12 +152,8 @@ class iPayment extends PaymentMethod
         $trxaccount_id = isset($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_ipayment_account_id'])
             ? strtolower($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_ipayment_account_id'])
             : null;
-        $trxuser_id    = isset($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_ipayment_trxuser_id'])
-            ? $GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_ipayment_trxuser_id']
-            : null;
-        $trxpassword   = isset($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_ipayment_trxpassword'])
-            ? $GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_ipayment_trxpassword']
-            : null;
+        $trxuser_id    = $GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_ipayment_trxuser_id'] ?? null;
+        $trxpassword   = $GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_ipayment_trxpassword'] ?? null;
         if (strlen($trxaccount_id) === 0) {
             ZahlungsLog::add($this->moduleID, 'Pflichtparameter "Account-ID" ist nicht gesetzt!', null, LOGLEVEL_ERROR);
 

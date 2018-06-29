@@ -40,11 +40,10 @@ class Rechnungsadresse extends Adresse
     public $angezeigtesLand;
 
     /**
-     * Konstruktor
-     *
-     * @param int $kRechnungsadresse - Falls angegeben, wird der Rechnungsadresse mit angegebenem kRechnungsadresse aus der DB geholt
+     * Rechnungsadresse constructor.
+     * @param int $kRechnungsadresse
      */
-    public function __construct($kRechnungsadresse = 0)
+    public function __construct(int $kRechnungsadresse = 0)
     {
         if ($kRechnungsadresse > 0) {
             $this->loadFromDB($kRechnungsadresse);
@@ -52,24 +51,20 @@ class Rechnungsadresse extends Adresse
     }
 
     /**
-     * Setzt Rechnungsadresse mit Daten aus der DB mit spezifiziertem Primary Key
-     *
      * @param int $kRechnungsadresse
      * @return int|Rechnungsadresse
      */
-    public function loadFromDB($kRechnungsadresse)
+    public function loadFromDB(int $kRechnungsadresse)
     {
-        $obj = Shop::Container()->getDB()->select('trechnungsadresse', 'kRechnungsadresse', (int)$kRechnungsadresse);
+        $obj = Shop::Container()->getDB()->select('trechnungsadresse', 'kRechnungsadresse', $kRechnungsadresse);
 
         if ($obj === null || $obj->kRechnungsadresse < 1) {
             return 0;
         }
-
         $this->fromObject($obj);
 
-        // Anrede mappen
-        $this->cAnredeLocalized = mappeKundenanrede($this->cAnrede, 0, $this->kKunde);
-        $this->angezeigtesLand  = ISO2land($this->cLand);
+        $this->cAnredeLocalized = Kunde::mapSalutation($this->cAnrede, 0, $this->kKunde);
+        $this->angezeigtesLand  = Sprache::getCountryCodeByCountryName($this->cLand);
         if ($this->kRechnungsadresse > 0) {
             $this->decrypt();
         }
@@ -80,11 +75,9 @@ class Rechnungsadresse extends Adresse
     }
 
     /**
-     * Fügt Datensatz in DB ein. Primary Key wird in this gesetzt.
-     *
-     * @return int - Key von eingefügter Rechnungsadresse
+     * @return int
      */
-    public function insertInDB()
+    public function insertInDB(): int
     {
         $this->encrypt();
         $obj = $this->toObject();
@@ -102,11 +95,9 @@ class Rechnungsadresse extends Adresse
     }
 
     /**
-     * Updatet Daten in der DB. Betroffen ist der Datensatz mit gleichem Primary Key
-     *
      * @return int
      */
-    public function updateInDB()
+    public function updateInDB(): int
     {
         $this->encrypt();
         $obj = $this->toObject();
@@ -115,18 +106,18 @@ class Rechnungsadresse extends Adresse
 
         unset($obj->angezeigtesLand, $obj->cAnredeLocalized);
 
-        $cReturn = Shop::Container()->getDB()->update('trechnungsadresse', 'kRechnungsadresse', $obj->kRechnungsadresse, $obj);
+        $res = Shop::Container()->getDB()->update('trechnungsadresse', 'kRechnungsadresse', $obj->kRechnungsadresse, $obj);
         $this->decrypt();
         // Anrede mappen
         $this->cAnredeLocalized = $this->mappeAnrede($this->cAnrede);
 
-        return $cReturn;
+        return $res;
     }
 
     /**
      * @return array
      */
-    public function gibRechnungsadresseAssoc()
+    public function gibRechnungsadresseAssoc(): array
     {
         if ($this->kRechnungsadresse > 0) {
             // wawi needs these attributes in exactly this order

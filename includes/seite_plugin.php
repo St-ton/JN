@@ -3,21 +3,20 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-global $kLink, $smarty;
-
+$kLink = (int)Shop::$kLink;
 if ($kLink !== null && $kLink > 0) {
-    $oPluginLinkDatei = Shop::Container()->getDB()->select('tpluginlinkdatei', 'kLink', (int)$kLink);
+    $oPluginLinkDatei = Shop::Container()->getDB()->select('tpluginlinkdatei', 'kLink', $kLink);
     if (isset($oPluginLinkDatei->cDatei) && strlen($oPluginLinkDatei->cDatei) > 0) {
         Shop::setPageType(PAGE_PLUGIN);
         $oPlugin = new Plugin($oPluginLinkDatei->kPlugin);
         // Smarty Assigns
-        $smarty->assign('oPlugin', $oPlugin);
+        Shop::Smarty()->assign('oPlugin', $oPlugin);
         if (strlen($oPluginLinkDatei->cTemplate) > 0) {
-            $smarty->assign('cPluginTemplate', $oPlugin->cFrontendPfad .
+            Shop::Smarty()->assign('cPluginTemplate', $oPlugin->cFrontendPfad .
                 PFAD_PLUGIN_TEMPLATE . $oPluginLinkDatei->cTemplate)
                    ->assign('nFullscreenTemplate', 0);
         } else {
-            $smarty->assign('cPluginTemplate', $oPlugin->cFrontendPfad .
+            Shop::Smarty()->assign('cPluginTemplate', $oPlugin->cFrontendPfad .
                 PFAD_PLUGIN_TEMPLATE . $oPluginLinkDatei->cFullscreenTemplate)
                    ->assign('nFullscreenTemplate', 1);
         }

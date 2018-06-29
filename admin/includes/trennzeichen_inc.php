@@ -26,10 +26,8 @@ function speicherTrennzeichen($cPostAssoc_arr)
             if (isset($cPostAssoc_arr[$idx])) {
                 $oTrennzeichen->setTrennzeichen($cPostAssoc_arr[$idx])
                               ->update();
-            } else { // Speichern
-                if (!$oTrennzeichen->save()) {
-                    return false;
-                }
+            } elseif (!$oTrennzeichen->save()) {
+                return false;
             }
         }
     }

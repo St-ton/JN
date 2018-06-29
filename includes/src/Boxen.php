@@ -6,13 +6,19 @@
 
 /**
  * Class Boxen
+ * @deprecated since 5.0.0
  */
 class Boxen
 {
+    use MagicCompatibilityTrait;
+
     /**
      * @var array
      */
-    public $boxes = [];
+    private static $mapping = [
+        'boxes'     => 'BoxList',
+        'boxConfig' => 'Config'
+    ];
 
     /**
      * @var array
@@ -47,48 +53,66 @@ class Boxen
     private static $_instance;
 
     /**
-     * @return Boxen
+     * @var \Services\JTL\BoxService
      */
-    public static function getInstance()
+    private $boxService;
+
+    /**
+     * @return Boxen
+     * @deprecated since 5.0.0
+     */
+    public static function getInstance(): self
     {
+        trigger_error(__CLASS__ . ' is deprecated.', E_USER_DEPRECATED);
+
         return self::$_instance ?? new self();
     }
 
     /**
-     *
+     * @deprecated since 5.0.0
      */
     public function __construct()
     {
-        $this->boxConfig = Shop::getSettings([
-            CONF_GLOBAL,
-            CONF_BOXEN,
-            CONF_VERGLEICHSLISTE,
-            CONF_NAVIGATIONSFILTER,
-            CONF_NEWS,
-            CONF_UMFRAGE,
-            CONF_TRUSTEDSHOPS
-        ]);
-        self::$_instance = $this;
+        $this->boxService = Shop::Container()->getBoxService();
+        self::$_instance  = $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getBoxList(): array
+    {
+        return $this->boxService->getBoxes();
+    }
+
+    /**
+     * @param array $boxList
+     */
+    public function setBoxList(array $boxList)
+    {
+        trigger_error(__CLASS__ . ': setting boxes here is not possible anymore.', E_USER_DEPRECATED);
     }
 
     /**
      * @param int $nSeite
      * @return array
+     * @deprecated since 5.0.0
      */
-    public function holeVorlagen($nSeite = -1)
+    public function holeVorlagen(int $nSeite = -1): array
     {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         $cSQL          = '';
         $oVorlagen_arr = [];
 
         if ($nSeite >= 0) {
-            $cSQL = 'WHERE (cVerfuegbar = "' . (int)$nSeite . '" OR cVerfuegbar = "0")';
+            $cSQL = 'WHERE (cVerfuegbar = "' . $nSeite . '" OR cVerfuegbar = "0")';
         }
         $oVorlage_arr = Shop::Container()->getDB()->query(
             "SELECT * 
                 FROM tboxvorlage " . $cSQL . " 
                 ORDER BY cVerfuegbar ASC",
             \DB\ReturnType::ARRAY_OF_OBJECTS
-            );
+        );
         foreach ($oVorlage_arr as $oVorlage) {
             $nID   = 0;
             $cName = 'Vorlage';
@@ -122,12 +146,15 @@ class Boxen
      * @param int    $kBox
      * @param string $cISO
      * @return mixed
+     * @deprecated since 5.0.0
      */
-    public function gibBoxInhalt($kBox, $cISO = '')
+    public function gibBoxInhalt(int $kBox, string $cISO = '')
     {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+
         return strlen($cISO) > 0
-            ? Shop::Container()->getDB()->select('tboxsprache', 'kBox', (int)$kBox, 'cISO', $cISO)
-            : Shop::Container()->getDB()->selectAll('tboxsprache', 'kBox', (int)$kBox);
+            ? Shop::Container()->getDB()->select('tboxsprache', 'kBox', $kBox, 'cISO', $cISO)
+            : Shop::Container()->getDB()->selectAll('tboxsprache', 'kBox', $kBox);
     }
 
     /**
@@ -135,203 +162,20 @@ class Boxen
      * @param bool $bAktiv
      * @param bool $bVisible
      * @param bool $force
-     * @return array|mixed
+     * @return array
+     * @deprecated since 5.0.0
      */
-    public function holeBoxen($nSeite = 0, $bAktiv = true, $bVisible = false, $force = false)
+    public function holeBoxen(int $nSeite = 0, bool $bAktiv = true, bool $bVisible = false, bool $force = false): array
     {
-        $nSeite  = (int)$nSeite;
-        $cacheID = 'box_' . $nSeite . '_' . (($bAktiv === true) ? '1' : '0') .
-            '_' . (($bVisible === true) ? '1' : '0') . '_' . Shop::getLanguage();
-
-        if (($oBox_arr = Shop::Cache()->get($cacheID)) !== false) {
-            return $oBox_arr;
-        }
-        $this->visibility = $this->holeBoxAnzeige($nSeite);
-        $validPageTypes   = $this->getValidPageTypes();
-        $oBox_arr         = [];
-        $cacheTags        = [CACHING_GROUP_OBJECT, CACHING_GROUP_BOX, 'boxes'];
-        $cSQLAktiv        = $bAktiv ? " AND bAktiv = 1 " : "";
-        $cPluginAktiv     = $bAktiv
-            ? " AND (tplugin.nStatus IS NULL OR tplugin.nStatus = 2  OR tboxvorlage.eTyp != 'plugin')"
-            : "";
-        $oBoxen_arr       = Shop::Container()->getDB()->query(
-            "SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, 
-                   tboxen.cTitel, tboxen.ePosition, tboxensichtbar.kSeite, tboxensichtbar.nSort, 
-                   tboxensichtbar.bAktiv, tboxensichtbar.cFilter, tboxvorlage.eTyp, 
-                   tboxvorlage.cName, tboxvorlage.cTemplate, tplugin.nStatus AS pluginStatus
-                FROM tboxen
-                LEFT JOIN tboxensichtbar
-                    ON tboxen.kBox = tboxensichtbar.kBox
-                LEFT JOIN tplugin
-                    ON tboxen.kCustomID = tplugin.kPlugin
-                LEFT JOIN tboxvorlage
-                    ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
-                WHERE tboxensichtbar.kSeite = " . $nSeite . $cPluginAktiv .
-                    " AND tboxen.kContainer = 0 " . $cSQLAktiv . "
-                ORDER BY tboxensichtbar.nSort ASC",
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+        trigger_error(
+            __METHOD__ . ' is deprecated. Consider using ' . get_class($this->boxService) . ' instead',
+            E_USER_DEPRECATED
         );
-        foreach ($oBoxen_arr as $oBox) {
-            $oBox->kBox        = (int)$oBox->kBox;
-            $oBox->kBoxvorlage = (int)$oBox->kBoxvorlage;
-            $oBox->kCustomID   = (int)$oBox->kCustomID;
-            $oBox->kContainer  = (int)$oBox->kContainer;
-            $oBox->kSeite      = (int)$oBox->kSeite;
-            $oBox->nSort       = (int)$oBox->nSort;
-            $oBox->bAktiv      = (int)$oBox->bAktiv;
-            if (!empty($oBox->cFilter)) {
-                $_tmp          = explode(',', $oBox->cFilter);
-                $filterOptions = [];
-                foreach ($_tmp as $_filterValue) {
-                    $filterEntry       = [];
-                    $filterEntry['id'] = (int)$_filterValue;
-                    $name              = null;
-                    if ($nSeite === PAGE_ARTIKELLISTE) { //map category name
-                        $name = Shop::Container()->getDB()->select(
-                            'tkategorie',
-                            'kKategorie', (int)$_filterValue,
-                            null, null,
-                            null, null,
-                            false,
-                            'cName'
-                        );
-                    } elseif ($nSeite === PAGE_ARTIKEL) { //map article name
-                        $name = Shop::Container()->getDB()->select(
-                            'tartikel',
-                            'kArtikel', (int)$_filterValue,
-                            null, null,
-                            null, null,
-                            false,
-                            'cName'
-                        );
-                    } elseif ($nSeite === PAGE_HERSTELLER) { //map manufacturer name
-                        $name = Shop::Container()->getDB()->select(
-                            'thersteller',
-                            'kHersteller', (int)$_filterValue,
-                            null, null,
-                            null, null,
-                            false,
-                            'cName'
-                        );
-                    } elseif ($nSeite === PAGE_EIGENE) { //map page name
-                        $name = Shop::Container()->getDB()->select(
-                            'tlink',
-                            'kLink', (int)$_filterValue,
-                            null, null,
-                            null, null,
-                            false,
-                            'cName'
-                        );
-                    }
-                    $filterEntry['name'] = $name->cName ?? '???';
-                    $filterOptions[]     = $filterEntry;
-                }
-                $oBox->cFilter = $filterOptions;
-            } else {
-                $oBox->cFilter = [];
-            }
-            unset($oBox->pluginStatus);
-            if ($oBox->eTyp === 'plugin') {
-                $cacheTags[] = CACHING_GROUP_PLUGIN . '_' . $oBox->kCustomID;
-            }
-            if ($force === true
-                || (isset($this->visibility[$oBox->ePosition]) && $this->visibility[$oBox->ePosition] === true)
-            ) {
-                $kContainer           = (int)$oBox->kBox;
-                $oBox->oContainer_arr = [];
-                $oBox->nContainer     = 0;
-                if ($kContainer > 0) {
-                    $oContainerBoxen_arr = Shop::Container()->getDB()->query(
-                        "SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, tboxen.cTitel, 
-                            tboxen.ePosition, tboxensichtbar.kSeite, tboxensichtbar.nSort, tboxensichtbar.bAktiv, 
-                            tboxvorlage.eTyp, tboxvorlage.cName, tboxvorlage.cTemplate
-                            FROM tboxen
-                            LEFT JOIN tboxensichtbar
-                                ON tboxen.kBox = tboxensichtbar.kBox
-                            LEFT JOIN tboxvorlage
-                                ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
-                            WHERE (tboxensichtbar.kSeite = " . $nSeite . ")
-                                AND tboxen.kContainer = " . $kContainer . $cSQLAktiv . "
-                                ORDER BY tboxensichtbar.nSort ASC",
-                        \DB\ReturnType::ARRAY_OF_OBJECTS
-                    );
-                    if (count($oContainerBoxen_arr) > 0) {
-                        foreach ($oContainerBoxen_arr as $childBox) {
-                            $childBox->bContainer  = 0;
-                            $childBox->kBox        = (int)$childBox->kBox;
-                            $childBox->kBoxvorlage = (int)$childBox->kBoxvorlage;
-                            $childBox->kCustomID   = (int)$childBox->kCustomID;
-                            $childBox->kContainer  = (int)$childBox->kContainer;
-                            $childBox->kSeite      = (int)$childBox->kSeite;
-                            $childBox->nSort       = (int)$childBox->nSort;
-                            $childBox->bAktiv      = (int)$childBox->bAktiv;
-                            $oVisible_arr     = Shop::Container()->getDB()->selectAll('tboxensichtbar', ['kBox', 'bAktiv'], [(int)$childBox->kBox, 1]);
-                            if (count($oVisible_arr) >= count($validPageTypes)) {
-                                $childBox->cVisibleOn = "sichtbar auf allen Seiten";
-                                $childBox->nVisibility = 1;
-                            } elseif (count($oVisible_arr) === 0) {
-                                $childBox->cVisibleOn = "auf keiner Seite sichtbar";
-                                $childBox->nVisibility = 0;
-                            } else {
-                                $childBox->cVisibleOn = "sichtbar auf manchen Seiten";
-                                $childBox->nVisibility = 2;
-                            }
-                        }
-                        $oBox->oContainer_arr = $oContainerBoxen_arr;
-                        $oBox->nContainer     = count($oContainerBoxen_arr);
-                    }
-                }
-                if (empty($oBox->cTitel)) {
-                    $oBox->cTitel = $oBox->cName;
-                }
-                if ($bAktiv && ($oBox->eTyp === 'text' || $oBox->eTyp === 'catbox')) {
-                    $cISO           = !empty($_SESSION['cISOSprache'])
-                        ? $_SESSION['cISOSprache']
-                        : 'ger';
-                    $oBox->cTitel   = '';
-                    $oBox->cInhalt  = '';
-                    $oSpracheInhalt = $this->gibBoxInhalt($oBox->kBox, $cISO);
-                    if (is_object($oSpracheInhalt)) {
-                        $oBox->cTitel  = $oSpracheInhalt->cTitel;
-                        $oBox->cInhalt = $oSpracheInhalt->cInhalt;
-                    }
-                } elseif ($bAktiv && $oBox->kBoxvorlage === 0 && !empty($oBox->oContainer_arr)) { //container
-                    foreach ($oBox->oContainer_arr as $_box) {
-                        if (isset($_box->eTyp) && ($_box->eTyp === 'text' || $_box->eTyp === 'catbox')) {
-                            $cISO           = !empty($_SESSION['cISOSprache'])
-                                ? $_SESSION['cISOSprache']
-                                : 'ger';
-                            $_box->cTitel   = '';
-                            $_box->cInhalt  = '';
-                            $oSpracheInhalt = $this->gibBoxInhalt($_box->kBox, $cISO);
-                            if (is_object($oSpracheInhalt)) {
-                                $_box->cTitel  = $oSpracheInhalt->cTitel;
-                                $_box->cInhalt = $oSpracheInhalt->cInhalt;
-                            }
-                        }
-                    }
-                }
-                $oBox->bContainer = $oBox->kBoxvorlage === 0;
-                if ($bVisible) {
-                    $oBox->cVisibleOn = '';
-                    $oVisible_arr     = Shop::Container()->getDB()->selectAll('tboxensichtbar', ['kBox', 'bAktiv'], [(int)$oBox->kBox, 1]);
-                    if (count($oVisible_arr) >= count($validPageTypes)) {
-                        $oBox->cVisibleOn = "sichtbar auf allen Seiten";
-                        $oBox->nVisibility = 1;
-                    } elseif (count($oVisible_arr) === 0) {
-                        $oBox->cVisibleOn = "auf keiner Seite sichtbar";
-                        $oBox->nVisibility = 0;
-                    } else {
-                        $oBox->cVisibleOn = "sichtbar auf manchen Seiten";
-                        $oBox->nVisibility = 2;
-                    }
-                }
-                $oBox_arr[$oBox->ePosition][] = $oBox;
-            }
+        if (count($this->boxService->getBoxes()) === 0) {
+            return $this->boxService->buildList($nSeite, $bAktiv, $bVisible);
         }
-        Shop::Cache()->set($cacheID, $oBox_arr, array_unique($cacheTags));
 
-        return $oBox_arr;
+        return $this->boxService->getBoxes();
     }
 
     /**
@@ -341,11 +185,16 @@ class Boxen
      * @param bool $bAktiv
      * @param bool $bVisible
      * @return $this
+     * @deprecated since 5.0.0
      */
-    public function build($nSeite = 0, $bAktiv = true, $bVisible = false)
+    public function build(int $nSeite = 0, bool $bAktiv = true, bool $bVisible = false): self
     {
-        if (count($this->boxes) === 0) {
-            $this->boxes = $this->holeBoxen($nSeite, $bAktiv, $bVisible);
+        trigger_error(
+            __METHOD__ . ' is deprecated. Consider using ' . get_class($this->boxService) . ' instead',
+            E_USER_DEPRECATED
+        );
+        if (count($this->boxService->getBoxes()) === 0) {
+            $this->boxService->buildList($nSeite, $bAktiv, $bVisible);
         }
 
         return $this;
@@ -355,19 +204,14 @@ class Boxen
      * read linkgroup array and search for specific ID
      *
      * @param int $id
-     * @return array|null
+     * @return \Link\LinkGroupInterface|null
+     * @deprecated since 5.0.0
      */
-    private function getLinkGroupByID($id)
+    private function getLinkGroupByID(int $id)
     {
-        $linkHelper = LinkHelper::getInstance();
-        $linkGroups = $linkHelper->getLinkGroups();
-        foreach ($linkGroups as $_tpl => $_lnkgrp) {
-            if (isset($_lnkgrp->kLinkgruppe) && $_lnkgrp->kLinkgruppe === $id) {
-                return ['tpl' => $_tpl, 'grp' => $_lnkgrp];
-            }
-        }
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
 
-        return null;
+        return Shop::Container()->getLinkService()->getLinkGroupByID($id);
     }
 
     /**
@@ -376,11 +220,12 @@ class Boxen
      * @param int    $kBoxVorlage
      * @param object $oBox
      * @return mixed
+     * @deprecated since 5.0.0
      */
-    public function prepareBox($kBoxVorlage, $oBox)
+    public function prepareBox(int $kBoxVorlage, $oBox)
     {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         $kKundengruppe     = Session::CustomerGroup()->getID();
-        $kBoxVorlage       = (int)$kBoxVorlage;
         $currencyCachePart = '_cur_' . Session::Currency()->getID();
         $kSprache          = Shop::getLanguage();
         switch ($kBoxVorlage) {
@@ -439,7 +284,7 @@ class Boxen
                         $oBox->anzeigen = 'Y';
                         $oBox->Artikel  = new ArtikelListe();
                         $oBox->Artikel->getArtikelByKeys($kArtikel_arr, 0, count($kArtikel_arr));
-                        $oBox->cURL = baueSuchSpecialURL(SEARCHSPECIALS_BESTSELLER);
+                        $oBox->cURL = SearchSpecialHelper::buildURL(SEARCHSPECIALS_BESTSELLER);
                     }
                     $cacheTags = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
                     executeHook(HOOK_BOXEN_INC_BESTSELLER, ['box' => &$oBox, 'cache_tags' => &$cacheTags]);
@@ -452,8 +297,8 @@ class Boxen
             case BOX_TRUSTEDSHOPS_GUETESIEGEL :
                 $oBox->compatName = 'TrustedShopsSiegelbox';
                 if ($this->boxConfig['trustedshops']['trustedshops_nutzen'] === 'Y') {
-                    $oTrustedShops    = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
-                    $shopURL          = Shop::getURL(true) . '/';
+                    $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
+                    $shopURL       = Shop::getURL(true) . '/';
                     if ((int)$oTrustedShops->nAktiv === 1 && strlen($oTrustedShops->tsId) > 0) {
                         $oBox->anzeigen          = 'Y';
                         $oBox->cLogoURL          = $oTrustedShops->cLogoURL;
@@ -538,8 +383,8 @@ class Boxen
                         \DB\ReturnType::ARRAY_OF_OBJECTS
                     );
                     foreach ($oUmfrage_arr as $i => $oUmfrage) {
-                        $oUmfrage_arr[$i]->cURL     = baueURL($oUmfrage, URLART_UMFRAGE);
-                        $oUmfrage_arr[$i]->cURLFull = baueURL($oUmfrage, URLART_UMFRAGE, 0, false, true);
+                        $oUmfrage_arr[$i]->cURL     = UrlHelper::buildURL($oUmfrage, URLART_UMFRAGE);
+                        $oUmfrage_arr[$i]->cURLFull = UrlHelper::buildURL($oUmfrage, URLART_UMFRAGE, true);
                     }
                     $cacheTags = [CACHING_GROUP_BOX, CACHING_GROUP_CORE];
                     executeHook(HOOK_BOXEN_INC_UMFRAGE, ['box' => &$oBox, 'cache_tags' => &$cacheTags]);
@@ -552,18 +397,19 @@ class Boxen
             case BOX_PREISRADAR :
                 $oBox->compatName = 'Preisradar';
                 $oBox->anzeigen   = 'N';
-                $nLimit  = (isset($this->boxConfig['boxen']['boxen_preisradar_anzahl'])
+                $nLimit           = (isset($this->boxConfig['boxen']['boxen_preisradar_anzahl'])
                     && (int)$this->boxConfig['boxen']['boxen_preisradar_anzahl'] > 0)
                     ? (int)$this->boxConfig['boxen']['boxen_preisradar_anzahl']
                     : 3;
-                $nTage   = (isset($this->boxConfig['boxen']['boxen_preisradar_anzahltage'])
+                $nTage            = (isset($this->boxConfig['boxen']['boxen_preisradar_anzahltage'])
                     && (int)$this->boxConfig['boxen']['boxen_preisradar_anzahltage'] > 0)
                     ? (int)$this->boxConfig['boxen']['boxen_preisradar_anzahltage']
                     : 30;
-                $cacheID = 'box_price_radar_' . $currencyCachePart . $nTage . '_' . $nLimit .
+                $cacheID          = 'box_price_radar_' . $currencyCachePart . $nTage . '_' . $nLimit .
                     '_' . $kSprache . '_' . Session::CustomerGroup()->getID();
                 if (($oBoxCached = Shop::Cache()->get($cacheID)) === false) {
-                    $oPreisradar_arr         = Preisradar::getProducts(Session::CustomerGroup()->getID(), $nLimit, $nTage);
+                    $oPreisradar_arr         = Preisradar::getProducts(Session::CustomerGroup()->getID(), $nLimit,
+                        $nTage);
                     $oBox->Artikel           = new stdClass();
                     $oBox->Artikel->elemente = [];
                     if (count($oPreisradar_arr) > 0) {
@@ -574,19 +420,19 @@ class Boxen
                             $oArtikel->fuelleArtikel($oPreisradar->kArtikel, $defaultOptions);
                             $oArtikel->oPreisradar                     = new stdClass();
                             $oArtikel->oPreisradar->fDiff              = $oPreisradar->fDiff * -1;
-                            $oArtikel->oPreisradar->fDiffLocalized[0]  = gibPreisStringLocalized(
-                                berechneBrutto($oArtikel->oPreisradar->fDiff, $oArtikel->Preise->fUst)
+                            $oArtikel->oPreisradar->fDiffLocalized[0]  = Preise::getLocalizedPriceString(
+                                TaxHelper::getGross($oArtikel->oPreisradar->fDiff, $oArtikel->Preise->fUst)
                             );
-                            $oArtikel->oPreisradar->fDiffLocalized[1]  = gibPreisStringLocalized(
+                            $oArtikel->oPreisradar->fDiffLocalized[1]  = Preise::getLocalizedPriceString(
                                 $oArtikel->oPreisradar->fDiff
                             );
-                            $oArtikel->oPreisradar->fOldVKLocalized[0] = gibPreisStringLocalized(
-                                berechneBrutto(
+                            $oArtikel->oPreisradar->fOldVKLocalized[0] = Preise::getLocalizedPriceString(
+                                TaxHelper::getGross(
                                     $oArtikel->Preise->fVKNetto + $oArtikel->oPreisradar->fDiff,
                                     $oArtikel->Preise->fUst
                                 )
                             );
-                            $oArtikel->oPreisradar->fOldVKLocalized[1] = gibPreisStringLocalized(
+                            $oArtikel->oPreisradar->fOldVKLocalized[1] = Preise::getLocalizedPriceString(
                                 $oArtikel->Preise->fVKNetto + $oArtikel->oPreisradar->fDiff
                             );
                             $oArtikel->oPreisradar->fProzentDiff       = $oPreisradar->fProzentDiff;
@@ -637,8 +483,12 @@ class Boxen
                         \DB\ReturnType::ARRAY_OF_OBJECTS
                     );
                     foreach ($oNewsKategorie_arr as $i => $oNewsKategorie) {
-                        $oNewsKategorie_arr[$i]->cURL     = baueURL($oNewsKategorie, URLART_NEWSKATEGORIE);
-                        $oNewsKategorie_arr[$i]->cURLFull = baueURL($oNewsKategorie, URLART_NEWSKATEGORIE, 0, false, true);
+                        $oNewsKategorie_arr[$i]->cURL     = UrlHelper::buildURL($oNewsKategorie, URLART_NEWSKATEGORIE);
+                        $oNewsKategorie_arr[$i]->cURLFull = UrlHelper::buildURL(
+                            $oNewsKategorie,
+                            URLART_NEWSKATEGORIE,
+                            true
+                        );
                     }
                     $oBox->anzeigen           = 'Y';
                     $oBox->oNewsKategorie_arr = $oNewsKategorie_arr;
@@ -651,10 +501,9 @@ class Boxen
                 break;
 
             case BOX_HERSTELLER :
-                $helper              = HerstellerHelper::getInstance();
                 $oBox->compatName    = 'Hersteller';
                 $oBox->anzeigen      = 'Y';
-                $oBox->manufacturers = $helper->getManufacturers();
+                $oBox->manufacturers = HerstellerHelper::getInstance()->getManufacturers();
                 break;
 
             case BOX_NEWS_AKTUELLER_MONAT :
@@ -683,8 +532,12 @@ class Boxen
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 foreach ($oNewsMonatsUebersicht_arr as $i => $oNewsMonatsUebersicht) {
-                    $oNewsMonatsUebersicht_arr[$i]->cURL     = baueURL($oNewsMonatsUebersicht, URLART_NEWSMONAT);
-                    $oNewsMonatsUebersicht_arr[$i]->cURLFull = baueURL($oNewsMonatsUebersicht, URLART_NEWSMONAT, 0, false, true);
+                    $oNewsMonatsUebersicht_arr[$i]->cURL     = UrlHelper::buildURL($oNewsMonatsUebersicht, URLART_NEWSMONAT);
+                    $oNewsMonatsUebersicht_arr[$i]->cURLFull = UrlHelper::buildURL(
+                        $oNewsMonatsUebersicht,
+                        URLART_NEWSMONAT,
+                        true
+                    );
                 }
                 $oBox->anzeigen                  = 'Y';
                 $oBox->oNewsMonatsUebersicht_arr = $oNewsMonatsUebersicht_arr;
@@ -693,7 +546,7 @@ class Boxen
                 break;
 
             case BOX_TOP_BEWERTET :
-                $cacheID          = 'box_top_rated_' . $currencyCachePart . $this->boxConfig['boxen']['boxen_topbewertet_minsterne'] . '_' .
+                $cacheID = 'box_top_rated_' . $currencyCachePart . $this->boxConfig['boxen']['boxen_topbewertet_minsterne'] . '_' .
                     $kSprache . '_' . $this->boxConfig['boxen']['boxen_topbewertet_basisanzahl'] . md5($this->cVaterSQL);
                 if (($boxCached = Shop::Cache()->get($cacheID)) !== false) {
                     $oBox = $boxCached;
@@ -721,7 +574,7 @@ class Boxen
                     $kArtikel_arr[]         = (int)$oTopBewertet->kArtikel;
                 }
                 // Wenn das Array Elemente besitzt
-                if (is_array($kArtikel_arr) && count($kArtikel_arr) > 0) {
+                if (count($kArtikel_arr) > 0) {
                     // Gib mir X viele Random Keys
                     $nAnzahlKeys = (int)$this->boxConfig['boxen']['boxen_topbewertet_anzahl'];
                     if (count($oTopBewertet_arr) < (int)$this->boxConfig['boxen']['boxen_topbewertet_anzahl']) {
@@ -747,7 +600,7 @@ class Boxen
                 }
                 $oBox->anzeigen     = 'Y';
                 $oBox->oArtikel_arr = $oArtikel_arr;
-                $oBox->cURL         = baueSuchSpecialURL(SEARCHSPECIALS_TOPREVIEWS);
+                $oBox->cURL         = SearchSpecialHelper::buildURL(SEARCHSPECIALS_TOPREVIEWS);
                 $cacheTags          = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
                 executeHook(HOOK_BOXEN_INC_TOPBEWERTET, ['box' => &$oBox, 'cache_tags' => &$cacheTags]);
                 Shop::Cache()->set($cacheID, $oBox, $cacheTags);
@@ -770,17 +623,18 @@ class Boxen
                         $cZusatzParams .= '&' . $cPostMember . '=' . $_REQUEST[$cPostMember];
                     }
                 }
-                $cZusatzParams = StringHandler::filterXSS($cZusatzParams);
-                $oTMP_arr      = [];
-                $cRequestURI   = Shop::getRequestUri();
+                $cZusatzParams  = StringHandler::filterXSS($cZusatzParams);
+                $oTMP_arr       = [];
+                $cRequestURI    = Shop::getRequestUri();
+                $defaultOptions = Artikel::getDefaultOptions();
                 if ($cRequestURI === 'io.php') {
                     // Box wird von einem Ajax-Call gerendert
                     $cRequestURI = LinkHelper::getInstance()->getStaticRoute('vergleichsliste.php');
                 }
                 foreach ($oArtikel_arr as $oArtikel) {
-                    $nPosAnd     = strrpos($cRequestURI, '&');
-                    $nPosQuest   = strrpos($cRequestURI, '?');
-                    $nPosWD      = strpos($cRequestURI, 'vlplo=');
+                    $nPosAnd   = strrpos($cRequestURI, '&');
+                    $nPosQuest = strrpos($cRequestURI, '?');
+                    $nPosWD    = strpos($cRequestURI, 'vlplo=');
 
                     if ($nPosWD) {
                         $cRequestURI = substr($cRequestURI, 0, $nPosWD);
@@ -801,7 +655,7 @@ class Boxen
                         $cDeleteParam = 'vlplo=';
                     }
                     $artikel = new Artikel();
-                    $artikel->fuelleArtikel($oArtikel->kArtikel, Artikel::getDefaultOptions());
+                    $artikel->fuelleArtikel($oArtikel->kArtikel, $defaultOptions);
                     $artikel->cURLDEL = $cRequestURI . $cDeleteParam . $oArtikel->kArtikel . $cZusatzParams;
                     if (isset($oArtikel->oVariationen_arr) && count($oArtikel->oVariationen_arr) > 0) {
                         $artikel->Variationen = $oArtikel->oVariationen_arr;
@@ -869,7 +723,7 @@ class Boxen
                                 (100 + $_SESSION['Steuersatz'][$CWunschlistePos->Artikel->kSteuerklasse]) / 100)
                             : 0;
                     }
-                    $CWunschlistePos->cPreis = gibPreisStringLocalized($fPreis, Session::Currency());
+                    $CWunschlistePos->cPreis = Preise::getLocalizedPriceString($fPreis, Session::Currency());
                 }
                 $oBox->anzeigen            = 'Y';
                 $oBox->nAnzeigen           = (int)$this->boxConfig['boxen']['boxen_wunschzettel_anzahl'];
@@ -905,18 +759,16 @@ class Boxen
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
 
-                if (is_array($tagwolke_objs) && ($count = count($tagwolke_objs)) > 0) {
+                if (($count = count($tagwolke_objs)) > 0) {
                     // Priorität berechnen
                     $prio_step = ($tagwolke_objs[0]->Anzahl - $tagwolke_objs[$count - 1]->Anzahl) / 9;
                     foreach ($tagwolke_objs as $tagwolke) {
-                        if ($tagwolke->kTag > 0) {
-                            $tagwolke->Klasse = ($prio_step < 1) ?
-                                rand(1, 10) :
-                                (round(($tagwolke->Anzahl - $tagwolke_objs[$count - 1]->Anzahl) / $prio_step) + 1);
-                            $tagwolke->cURL     = baueURL($tagwolke, URLART_TAG);
-                            $tagwolke->cURLFull = baueURL($tagwolke, URLART_TAG, 0, false, true);
-                            $Tagwolke_arr[] = $tagwolke;
-                        }
+                        $tagwolke->Klasse   = ($prio_step < 1) ?
+                            rand(1, 10) :
+                            (round(($tagwolke->Anzahl - $tagwolke_objs[$count - 1]->Anzahl) / $prio_step) + 1);
+                        $tagwolke->cURL     = UrlHelper::buildURL($tagwolke, URLART_TAG);
+                        $tagwolke->cURLFull = UrlHelper::buildURL($tagwolke, URLART_TAG, true);
+                        $Tagwolke_arr[]     = $tagwolke;
                     }
                 }
                 $cacheTags = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
@@ -949,23 +801,22 @@ class Boxen
                             AND tseo.kSprache = " . $kSprache . "
                         WHERE tsuchanfrage.kSprache = " . $kSprache . "
                             AND tsuchanfrage.nAktiv = 1
+                            AND tsuchanfrage.kSuchanfrage > 0
                         GROUP BY tsuchanfrage.kSuchanfrage
                         ORDER BY tsuchanfrage.nAnzahlGesuche DESC
                         LIMIT " . $nWolkenLimit,
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
-                if (is_array($oSuchwolke_arr) && ($count = count($oSuchwolke_arr)) > 0) {
+                if (($count = count($oSuchwolke_arr)) > 0) {
                     // Priorität berechnen
                     $prio_step = ($oSuchwolke_arr[0]->nAnzahlGesuche - $oSuchwolke_arr[$count - 1]->nAnzahlGesuche) / 9;
                     foreach ($oSuchwolke_arr as $i => $oSuchwolke) {
-                        if ($oSuchwolke->kSuchanfrage > 0) {
-                            $oSuchwolke->Klasse   = ($prio_step < 1) ?
-                                rand(1, 10) :
-                                (round(($oSuchwolke->nAnzahlGesuche - $oSuchwolke_arr[$count - 1]->nAnzahlGesuche) / $prio_step) + 1);
-                            $oSuchwolke->cURL     = baueURL($oSuchwolke, URLART_LIVESUCHE);
-                            $oSuchwolke->cURLFull = baueURL($oSuchwolke, URLART_LIVESUCHE, 0, false, true);
-                            $oSuchwolke_arr[$i]   = $oSuchwolke;
-                        }
+                        $oSuchwolke->Klasse   = ($prio_step < 1) ?
+                            rand(1, 10) :
+                            (round(($oSuchwolke->nAnzahlGesuche - $oSuchwolke_arr[$count - 1]->nAnzahlGesuche) / $prio_step) + 1);
+                        $oSuchwolke->cURL     = UrlHelper::buildURL($oSuchwolke, URLART_LIVESUCHE);
+                        $oSuchwolke->cURLFull = UrlHelper::buildURL($oSuchwolke, URLART_LIVESUCHE, true);
+                        $oSuchwolke_arr[$i]   = $oSuchwolke;
                     }
                     $oBox->anzeigen = 'Y';
                     //hole anzuzeigende Suchwolke
@@ -991,7 +842,7 @@ class Boxen
                     $oBox = $oBoxCached;
                     break;
                 }
-                $menge = Shop::Container()->getDB()->query(
+                $menge        = Shop::Container()->getDB()->query(
                     "SELECT tartikel.kArtikel
                         FROM tartikel
                         LEFT JOIN tartikelsichtbarkeit 
@@ -1004,13 +855,15 @@ class Boxen
                         ORDER BY rand() LIMIT " . $limit,
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
-                $kArtikel_arr = array_map(function ($e) { return (int)$e->kArtikel; }, $menge);
+                $kArtikel_arr = array_map(function ($e) {
+                    return (int)$e->kArtikel;
+                }, $menge);
                 $cacheTags    = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
                 if (count($kArtikel_arr) > 0) {
                     $oBox->anzeigen = 'Y';
                     $oBox->Artikel  = new ArtikelListe();
                     $oBox->Artikel->getArtikelByKeys($kArtikel_arr, 0, count($kArtikel_arr));
-                    $oBox->cURL = baueSuchSpecialURL(SEARCHSPECIALS_UPCOMINGPRODUCTS);
+                    $oBox->cURL = SearchSpecialHelper::buildURL(SEARCHSPECIALS_UPCOMINGPRODUCTS);
                     executeHook(HOOK_BOXEN_INC_ERSCHEINENDEPRODUKTE, ['box' => &$oBox, 'cache_tags' => &$cacheTags]);
                 }
                 Shop::Cache()->set($cacheID, $oBox, $cacheTags);
@@ -1060,7 +913,7 @@ class Boxen
                     $oBox = $oBoxCached;
                     break;
                 }
-                $menge = Shop::Container()->getDB()->query(
+                $menge        = Shop::Container()->getDB()->query(
                     "SELECT tartikel.kArtikel
                         FROM tartikel
                         LEFT JOIN tartikelsichtbarkeit 
@@ -1073,13 +926,15 @@ class Boxen
                         ORDER BY rand() LIMIT " . $limit,
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
-                $kArtikel_arr = array_map(function ($e) { return (int)$e->kArtikel; }, $menge);
+                $kArtikel_arr = array_map(function ($e) {
+                    return (int)$e->kArtikel;
+                }, $menge);
                 $cacheTags    = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
                 if (count($kArtikel_arr) > 0) {
                     $oBox->anzeigen = 'Y';
                     $oBox->Artikel  = new ArtikelListe();
                     $oBox->Artikel->getArtikelByKeys($kArtikel_arr, 0, count($kArtikel_arr));
-                    $oBox->cURL = baueSuchSpecialURL(SEARCHSPECIALS_TOPOFFERS);
+                    $oBox->cURL = SearchSpecialHelper::buildURL(SEARCHSPECIALS_TOPOFFERS);
                     executeHook(HOOK_BOXEN_INC_TOPANGEBOTE, ['box' => &$oBox, 'cache_tags' => &$cacheTags]);
                 }
                 Shop::Cache()->set($cacheID, $oBox, $cacheTags);
@@ -1106,7 +961,7 @@ class Boxen
                     $oBox = $oBoxCached;
                     break;
                 }
-                $menge = Shop::Container()->getDB()->query(
+                $menge        = Shop::Container()->getDB()->query(
                     "SELECT tartikel.kArtikel
                         FROM tartikel
                         LEFT JOIN tartikelsichtbarkeit 
@@ -1121,13 +976,15 @@ class Boxen
                         ORDER BY rand() LIMIT " . $limit,
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
-                $kArtikel_arr = array_map(function ($e) { return (int)$e->kArtikel; }, $menge);
+                $kArtikel_arr = array_map(function ($e) {
+                    return (int)$e->kArtikel;
+                }, $menge);
                 $cacheTags    = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
                 if (count($kArtikel_arr) > 0) {
                     $oBox->anzeigen = 'Y';
                     $oBox->Artikel  = new ArtikelListe();
                     $oBox->Artikel->getArtikelByKeys($kArtikel_arr, 0, count($kArtikel_arr));
-                    $oBox->cURL = baueSuchSpecialURL(SEARCHSPECIALS_NEWPRODUCTS);
+                    $oBox->cURL = SearchSpecialHelper::buildURL(SEARCHSPECIALS_NEWPRODUCTS);
                     executeHook(HOOK_BOXEN_INC_NEUIMSORTIMENT, ['box' => &$oBox, 'cache_tags' => &$cacheTags]);
                 }
                 Shop::Cache()->set($cacheID, $oBox, $cacheTags);
@@ -1150,7 +1007,7 @@ class Boxen
                     $oBox = $oBoxCached;
                     break;
                 }
-                $menge = Shop::Container()->getDB()->query(
+                $menge        = Shop::Container()->getDB()->query(
                     "SELECT tartikel.kArtikel
                         FROM tartikel
                         JOIN tartikelsonderpreis 
@@ -1172,13 +1029,15 @@ class Boxen
                         ORDER BY rand() LIMIT " . $limit,
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
-                $kArtikel_arr = array_map(function ($e) { return (int)$e->kArtikel; }, $menge);
+                $kArtikel_arr = array_map(function ($e) {
+                    return (int)$e->kArtikel;
+                }, $menge);
                 $cacheTags    = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
                 if (count($kArtikel_arr) > 0) {
                     $oBox->anzeigen = 'Y';
                     $oBox->Artikel  = new ArtikelListe();
                     $oBox->Artikel->getArtikelByKeys($kArtikel_arr, 0, count($kArtikel_arr));
-                    $oBox->cURL = baueSuchSpecialURL(SEARCHSPECIALS_SPECIALOFFERS);
+                    $oBox->cURL = SearchSpecialHelper::buildURL(SEARCHSPECIALS_SPECIALOFFERS);
                     executeHook(HOOK_BOXEN_INC_SONDERANGEBOTE, ['box' => &$oBox, 'cache_tags' => &$cacheTags]);
                 }
                 Shop::Cache()->set($cacheID, $oBox, $cacheTags);
@@ -1238,9 +1097,11 @@ class Boxen
      * @param string $filename_cache
      * @param int    $timeout
      * @return bool
+     * @deprecated since 5.0.0
      */
-    private function cachecheck($filename_cache, $timeout = 10800)
+    private function cachecheck(string $filename_cache, int $timeout = 10800): bool
     {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         $filename_cache = PFAD_ROOT . PFAD_GFX_TRUSTEDSHOPS . $filename_cache;
 
         return file_exists($filename_cache)
@@ -1252,163 +1113,60 @@ class Boxen
      * @return array
      * @throws Exception
      * @throws SmartyException
+     * @deprecated since 5.0.0
      */
-    public function render()
+    public function render(): array
     {
-        $smarty          = Shop::Smarty();
-        $originalArticle = $smarty->getTemplateVars('Artikel');
-        $productFilter   = Shop::getProductFilter();
-        $smarty->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant());
-        // check whether filters should be displayed after a box
-        $filterAfter = !empty($this->boxConfig)
-            ? $this->gibBoxenFilterNach($productFilter, $productFilter->getSearchResults(false))
-            : 0;
-        $path              = 'boxes/';
-        $this->lagerFilter = $productFilter->getFilterSQL()->getStockFilterSQL();
-        $htmlArray         = [
-            'top'    => null,
-            'right'  => null,
-            'bottom' => null,
-            'left'   => null
-        ];
-        $smarty->assign('BoxenEinstellungen', $this->boxConfig)
-               ->assign('bBoxenFilterNach', $filterAfter);
-        foreach ($this->boxes as $_position => $_boxes) {
-            $htmlArray[$_position]     = '';
-            $this->rawData[$_position] = [];
-            if (is_array($_boxes)) {
-                foreach ($_boxes as $_box) {
-                    if (!empty($_box->cFilter)) {
-                        $allowedIDs = [];
-                        foreach ($_box->cFilter as $_filter) {
-                            $allowedIDs[] = (int)$_filter['id'];
-                        }
-                        $pageType   = (int)$_box->kSeite;
-                        if ($pageType === PAGE_ARTIKELLISTE) {
-                            if (!in_array((int)Shop::$kKategorie, $allowedIDs, true)) {
-                                continue;
-                            }
-                        } elseif ($pageType === PAGE_ARTIKEL) {
-                            if (!in_array((int)Shop::$kArtikel, $allowedIDs, true)) {
-                                continue;
-                            }
-                        } elseif ($pageType === PAGE_EIGENE) {
-                            if (!in_array((int)Shop::$kLink, $allowedIDs, true)) {
-                                continue;
-                            }
-                        } elseif ($pageType === PAGE_HERSTELLER) {
-                            if (!in_array((int)Shop::$kHersteller, $allowedIDs, true)) {
-                                continue;
-                            }
-                        }
-                    }
-                    if (isset($_box->bContainer) && $_box->bContainer === true) {
-                        //prepare boxes within a container
-                        $_box->cTemplate = 'box_container.tpl';
-                        $_box->innerHTML = '';
-                        $_box->children  = [];
-                        foreach ($_box->oContainer_arr as $_cbox) {
-                            $_cbox = $this->prepareBox($_cbox->kBoxvorlage, $_cbox);
-                            if ($_cbox->eTyp === 'link') {
-                                $linkGroup = $this->getLinkGroupByID($_cbox->kCustomID);
-                                if ($linkGroup !== null) {
-                                    $_cbox->oLinkGruppe         = $linkGroup['grp'];
-                                    $_cbox->oLinkGruppeTemplate = $linkGroup['tpl'];
-                                    $smarty->assign('oBox', $_cbox);
-                                } else {
-                                    continue;
-                                }
-                            } else {
-                                $smarty->assign('oBox', $_cbox);
-                            }
-                            if (!empty($_cbox->cTemplate)) {
-                                $_box->innerHTML .= trim(($_cbox->eTyp === 'plugin')
-                                    ? $smarty->fetch($_cbox->cTemplate)
-                                    : $smarty->fetch($path . $_cbox->cTemplate));
-                            }
-                            $_box->children[] = ['obj' => $_cbox, 'tpl' => $path . $_cbox->cTemplate];
-                        }
-                    }
-                    $_box = $this->prepareBox($_box->kBoxvorlage, $_box);
-                    if ($_box->eTyp === 'link') {
-                        $linkGroup = $this->getLinkGroupByID($_box->kCustomID);
-                        if ($linkGroup !== null) {
-                            $_box->oLinkGruppe         = $linkGroup['grp'];
-                            $_box->oLinkGruppeTemplate = $linkGroup['tpl'];
-                            $smarty->assign('oBox', $_box);
-                        } else {
-                            continue;
-                        }
-                    } else {
-                        $smarty->assign('oBox', $_box);
-                    }
-                    $this->rawData[$_position][] = ['obj' => $_box, 'tpl' => ($_box->eTyp === 'plugin')
-                        ? $_box->cTemplate
-                        : ($path . $_box->cTemplate)];
-                    $_oldPlugin                  = null;
-                    if ($_box->eTyp === 'plugin') {
-                        $_oldPlugin = $smarty->getTemplateVars('oPlugin');
-                        $smarty->assign('oPlugin', $_box->oPlugin);
-                    }
-                    if (!empty($_box->cTemplate)) {
-                        $htmlArray[$_position] .= trim(($_box->eTyp === 'plugin')
-                            ? $smarty->fetch($_box->cTemplate)
-                            : $smarty->fetch($path . $_box->cTemplate));
-                    }
-                    if ($_oldPlugin !== null) {
-                        $smarty->assign('oPlugin', $_oldPlugin);
-                    }
-                }
-            }
-        }
-        if ($originalArticle !== null) {
-            //avoid modification of article object on render loop
-            $smarty->assign('Artikel', $originalArticle);
-        }
+        trigger_error(
+            __METHOD__ . ' is deprecated. Consider using ' . get_class($this->boxService) . ' instead',
+            E_USER_DEPRECATED
+        );
 
-        return $htmlArray;
+        return $this->boxService->render($this->boxService->getBoxes());
     }
 
     /**
      * @param int $kArtikel
      * @param int $nMaxAnzahl
+     * @deprecated since 5.0.0
      */
-    public function addRecentlyViewed($kArtikel, $nMaxAnzahl = null)
+    public function addRecentlyViewed(int $kArtikel, $nMaxAnzahl = null)
     {
-        $kArtikel = (int)$kArtikel;
-        if ($kArtikel > 0) {
-            if ($nMaxAnzahl === null) {
-                $nMaxAnzahl = (int)$this->boxConfig['boxen']['box_zuletztangesehen_anzahl'];
-            }
-            if (!isset($_SESSION['ZuletztBesuchteArtikel']) || !is_array($_SESSION['ZuletztBesuchteArtikel'])) {
-                $_SESSION['ZuletztBesuchteArtikel'] = [];
-            }
-            $oArtikel           = new stdClass();
-            $oArtikel->kArtikel = $kArtikel;
-            if (isset($_SESSION['ZuletztBesuchteArtikel']) && count($_SESSION['ZuletztBesuchteArtikel']) > 0) {
-                $alreadyPresent = false;
-                foreach ($_SESSION['ZuletztBesuchteArtikel'] as $_article) {
-                    if (isset($_article->kArtikel) && $_article->kArtikel === $oArtikel->kArtikel) {
-                        $alreadyPresent = true;
-                        break;
-                    }
-                }
-                if ($alreadyPresent === false) {
-                    if (count($_SESSION['ZuletztBesuchteArtikel']) < $nMaxAnzahl) {
-                        $_SESSION['ZuletztBesuchteArtikel'][] = $oArtikel;
-                    } else {
-                        $oTMP_arr = array_reverse($_SESSION['ZuletztBesuchteArtikel']);
-                        array_pop($oTMP_arr);
-                        $oTMP_arr                           = array_reverse($oTMP_arr);
-                        $oTMP_arr[]                         = $oArtikel;
-                        $_SESSION['ZuletztBesuchteArtikel'] = $oTMP_arr;
-                    }
-                }
-            } else {
-                $_SESSION['ZuletztBesuchteArtikel'][] = $oArtikel;
-            }
-            executeHook(HOOK_ARTIKEL_INC_ZULETZTANGESEHEN);
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+        if ($kArtikel <= 0) {
+            return;
         }
+        if ($nMaxAnzahl === null) {
+            $nMaxAnzahl = (int)$this->boxConfig['boxen']['box_zuletztangesehen_anzahl'];
+        }
+        if (!isset($_SESSION['ZuletztBesuchteArtikel']) || !is_array($_SESSION['ZuletztBesuchteArtikel'])) {
+            $_SESSION['ZuletztBesuchteArtikel'] = [];
+        }
+        $oArtikel           = new stdClass();
+        $oArtikel->kArtikel = $kArtikel;
+        if (isset($_SESSION['ZuletztBesuchteArtikel']) && count($_SESSION['ZuletztBesuchteArtikel']) > 0) {
+            $alreadyPresent = false;
+            foreach ($_SESSION['ZuletztBesuchteArtikel'] as $_article) {
+                if (isset($_article->kArtikel) && $_article->kArtikel === $oArtikel->kArtikel) {
+                    $alreadyPresent = true;
+                    break;
+                }
+            }
+            if ($alreadyPresent === false) {
+                if (count($_SESSION['ZuletztBesuchteArtikel']) < $nMaxAnzahl) {
+                    $_SESSION['ZuletztBesuchteArtikel'][] = $oArtikel;
+                } else {
+                    $oTMP_arr = array_reverse($_SESSION['ZuletztBesuchteArtikel']);
+                    array_pop($oTMP_arr);
+                    $oTMP_arr                           = array_reverse($oTMP_arr);
+                    $oTMP_arr[]                         = $oArtikel;
+                    $_SESSION['ZuletztBesuchteArtikel'] = $oTMP_arr;
+                }
+            }
+        } else {
+            $_SESSION['ZuletztBesuchteArtikel'][] = $oArtikel;
+        }
+        executeHook(HOOK_ARTIKEL_INC_ZULETZTANGESEHEN);
     }
 
     /**
@@ -1416,8 +1174,9 @@ class Boxen
      * @param int $kSeite
      * @return string
      */
-    public function mappekSeite($kSeite)
+    public function mappekSeite(int $kSeite): string
     {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         switch ($kSeite) {
             default:
             case PAGE_UNBEKANNT:
@@ -1495,13 +1254,14 @@ class Boxen
      * @param int  $nSeite
      * @param bool $bGlobal
      * @return array|bool
+     * @deprecated since 5.0.0
      */
-    public function holeBoxAnzeige($nSeite, $bGlobal = true)
+    public function holeBoxAnzeige(int $nSeite, bool $bGlobal = true)
     {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         if ($this->visibility !== null) {
             return $this->visibility;
         }
-        $nSeite      = (int)$nSeite;
         $oBoxAnzeige = [];
         $oBox_arr    = Shop::Container()->getDB()->selectAll('tboxenanzeige', 'nSeite', $nSeite);
         if (is_array($oBox_arr) && count($oBox_arr)) {
@@ -1523,22 +1283,23 @@ class Boxen
      * @param string   $ePosition
      * @param bool|int $bAnzeigen
      * @return bool
+     * @deprecated since 5.0.0
      */
-    public function setzeBoxAnzeige($nSeite, $ePosition, $bAnzeigen)
+    public function setzeBoxAnzeige(int $nSeite, string $ePosition, $bAnzeigen): bool
     {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         $bAnzeigen      = (int)$bAnzeigen;
-        $nSeite         = (int)$nSeite;
         $validPageTypes = $this->getValidPageTypes();
         if ($nSeite === 0) {
             $bOk = true;
             for ($i = 0; $i < count($validPageTypes) && $bOk; $i++) {
                 $bOk = Shop::Container()->getDB()->executeQueryPrepared(
-                  "REPLACE INTO tboxenanzeige 
-                      SET bAnzeigen = :show,
-                          nSeite = :page, 
-                          ePosition = :position",
+                        "REPLACE INTO tboxenanzeige 
+                        SET bAnzeigen = :show,
+                            nSeite = :page, 
+                            ePosition = :position",
                         ['show' => $bAnzeigen, 'page' => $i, 'position' => $ePosition],
-                        4
+                        \DB\ReturnType::DEFAULT
                     ) && $bOk;
             }
 
@@ -1551,26 +1312,33 @@ class Boxen
                     nSeite = :page, 
                     ePosition = :position",
             ['show' => $bAnzeigen, 'page' => $nSeite, 'position' => $ePosition],
-            4
+            \DB\ReturnType::DEFAULT
         );
     }
 
     /**
      * @param int $kBoxvorlage
-     * @return mixed
+     * @return stdClass|null
+     * @deprecated since 5.0.0
      */
-    public function holeVorlage($kBoxvorlage)
+    public function holeVorlage(int $kBoxvorlage)
     {
-        return Shop::Container()->getDB()->select('tboxvorlage', 'kBoxvorlage', (int)$kBoxvorlage);
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+
+        return Shop::Container()->getDB()->select('tboxvorlage', 'kBoxvorlage', $kBoxvorlage);
     }
 
     /**
      * @param string $ePosition
-     * @return mixed
+     * @return array
+     * @deprecated since 5.0.0
      */
-    public function holeContainer($ePosition)
+    public function holeContainer(string $ePosition): array
     {
-        return Shop::Container()->getDB()->selectAll('tboxen', ['kBoxvorlage', 'ePosition'], [0, $ePosition], 'kBox', 'kBox ASC');
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+
+        return Shop::Container()->getDB()->selectAll('tboxen', ['kBoxvorlage', 'ePosition'], [0, $ePosition], 'kBox',
+            'kBox ASC');
     }
 
     /**
@@ -1579,11 +1347,11 @@ class Boxen
      * @param string $ePosition
      * @param int    $kContainer
      * @return bool
+     * @deprecated since 5.0.0
      */
-    public function setzeBox($kBoxvorlage, $nSeite, $ePosition = 'left', $kContainer = 0)
+    public function setzeBox(int $kBoxvorlage, int $nSeite, string $ePosition = 'left', int $kContainer = 0): bool
     {
-        $kBoxvorlage    = (int)$kBoxvorlage;
-        $nSeite         = (int)$nSeite;
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         $validPageTypes = $this->getValidPageTypes();
         $oBox           = new stdClass();
         $oBoxVorlage    = $this->holeVorlage($kBoxvorlage);
@@ -1619,11 +1387,12 @@ class Boxen
 
     /**
      * @param int $kBox
-     * @return mixed
+     * @return stdClass
+     * @deprecated since 5.0.0
      */
-    public function holeBox($kBox)
+    public function holeBox(int $kBox): stdClass
     {
-        $kBox = (int)$kBox;
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         $oBox = Shop::Container()->getDB()->query(
             "SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.cTitel, tboxen.ePosition,
                 tboxvorlage.eTyp, tboxvorlage.cName, tboxvorlage.cVerfuegbar, tboxvorlage.cTemplate
@@ -1648,15 +1417,17 @@ class Boxen
      * @param int    $kBox
      * @param string $cTitel
      * @param int    $kCustomID
-     * @return mixed
+     * @return bool
+     * @deprecated since 5.0.0
      */
-    public function bearbeiteBox($kBox, $cTitel, $kCustomID = 0)
+    public function bearbeiteBox(int $kBox, $cTitel, int $kCustomID = 0): bool
     {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         $oBox            = new stdClass();
         $oBox->cTitel    = $cTitel;
         $oBox->kCustomID = $kCustomID;
 
-        return Shop::Container()->getDB()->update('tboxen', 'kBox', (int)$kBox, $oBox) >= 0;
+        return Shop::Container()->getDB()->update('tboxen', 'kBox', $kBox, $oBox) >= 0;
     }
 
     /**
@@ -1665,11 +1436,12 @@ class Boxen
      * @param string $cTitel
      * @param string $cInhalt
      * @return bool
+     * @deprecated since 5.0.0
      */
-    public function bearbeiteBoxSprache($kBox, $cISO, $cTitel, $cInhalt)
+    public function bearbeiteBoxSprache(int $kBox, string $cISO, string $cTitel, string $cInhalt): bool
     {
-        $kBox    = (int)$kBox;
-        $oBox    = Shop::Container()->getDB()->select('tboxsprache', 'kBox', $kBox, 'cISO', $cISO);
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+        $oBox = Shop::Container()->getDB()->select('tboxsprache', 'kBox', $kBox, 'cISO', $cISO);
         if (isset($oBox->kBox)) {
             $_upd          = new stdClass();
             $_upd->cTitel  = $cTitel;
@@ -1691,21 +1463,25 @@ class Boxen
      * @param string $ePosition
      * @param int    $kContainer
      * @return int
+     * @deprecated since 5.0.0
      */
-    public function letzteSortierID($nSeite, $ePosition = 'left', $kContainer = 0)
+    public function letzteSortierID(int $nSeite, string $ePosition = 'left', int $kContainer = 0): int
     {
-        if ($kContainer === null) {
-            $kContainer = 0;
-        }
-        $oBox = Shop::Container()->getDB()->query(
-            "SELECT tboxensichtbar.nSort, tboxen.ePosition
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+        $oBox = Shop::Container()->getDB()->queryPrepared(
+            'SELECT tboxensichtbar.nSort, tboxen.ePosition
                 FROM tboxensichtbar
                 LEFT JOIN tboxen
                     ON tboxensichtbar.kBox = tboxen.kBox
-                    WHERE tboxensichtbar.kSeite = " . (int)$nSeite . "
-                        AND tboxen.ePosition = '" . $ePosition . "'
-                        AND tboxen.kContainer = " . (int)$kContainer . "
-                ORDER BY tboxensichtbar.nSort DESC LIMIT 1",
+                    WHERE tboxensichtbar.kSeite = :pageid
+                        AND tboxen.ePosition = :position
+                        AND tboxen.kContainer = :containerid
+                ORDER BY tboxensichtbar.nSort DESC LIMIT 1',
+            [
+                'pageid'      => $nSeite,
+                'position'    => $ePosition,
+                'containerid' => $kContainer
+            ],
             \DB\ReturnType::SINGLE_OBJECT
         );
 
@@ -1713,21 +1489,23 @@ class Boxen
     }
 
     /**
-     * @param int $kBox
-     * @param int $kSeite
+     * @param int          $kBox
+     * @param int          $kSeite
      * @param string|array $cFilter
      * @return int
+     * @deprecated since 5.0.0
      */
-    public function filterBoxVisibility($kBox, $kSeite, $cFilter = '')
+    public function filterBoxVisibility(int $kBox, int $kSeite, $cFilter = ''): int
     {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         if (is_array($cFilter)) {
             $cFilter = array_unique($cFilter);
             $cFilter = implode(',', $cFilter);
         }
-        $_upd           = new stdClass();
-        $_upd->cFilter  = $cFilter;
+        $_upd          = new stdClass();
+        $_upd->cFilter = $cFilter;
 
-        return Shop::Container()->getDB()->update('tboxensichtbar', ['kBox', 'kSeite'], [(int)$kBox, (int)$kSeite], $_upd);
+        return Shop::Container()->getDB()->update('tboxensichtbar', ['kBox', 'kSeite'], [$kBox, $kSeite], $_upd);
     }
 
     /**
@@ -1736,12 +1514,12 @@ class Boxen
      * @param int      $nSort
      * @param bool|int $bAktiv
      * @return bool
+     * @deprecated since 5.0.0
      */
-    public function sortBox($kBox, $nSeite, $nSort, $bAktiv = true)
+    public function sortBox(int $kBox, int $nSeite, int $nSort, $bAktiv = true): bool
     {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         $bAktiv         = (int)$bAktiv;
-        $kBox           = (int)$kBox;
-        $nSeite         = (int)$nSeite;
         $validPageTypes = $this->getValidPageTypes();
         if ($nSeite === 0) {
             $bOk = true;
@@ -1749,18 +1527,20 @@ class Boxen
                 $oBox = Shop::Container()->getDB()->select('tboxensichtbar', 'kBox', $kBox);
                 $bOk  = !empty($oBox)
                     ? (Shop::Container()->getDB()->query(
-                        "UPDATE tboxensichtbar 
-                            SET nSort = " . $nSort . ",
-                                bAktiv = " . $bAktiv . " 
-                            WHERE kBox = " . $kBox . " 
-                                AND kSeite = " . $i, 4
+                            "UPDATE tboxensichtbar 
+                                SET nSort = " . $nSort . ",
+                                    bAktiv = " . $bAktiv . " 
+                                WHERE kBox = " . $kBox . " 
+                                    AND kSeite = " . $i,
+                            \DB\ReturnType::DEFAULT
                         ) !== false)
                     : (Shop::Container()->getDB()->query(
-                        "INSERT INTO tboxensichtbar 
-                            SET kBox = " . $kBox . ",
-                                kSeite = " . $i . ", 
-                                nSort = " . $nSort . ", 
-                                bAktiv = " . $bAktiv, 4
+                            "INSERT INTO tboxensichtbar 
+                                SET kBox = " . $kBox . ",
+                                    kSeite = " . $i . ", 
+                                    nSort = " . $nSort . ", 
+                                    bAktiv = " . $bAktiv,
+                            \DB\ReturnType::DEFAULT
                         ) === true);
             }
 
@@ -1768,11 +1548,12 @@ class Boxen
         }
 
         return Shop::Container()->getDB()->query(
-            "REPLACE INTO tboxensichtbar 
-              SET kBox = " . $kBox . ", 
-                  kSeite = " . $nSeite . ", 
-                  nSort = " . $nSort . ", 
-                  bAktiv = " . $bAktiv, 3
+                "REPLACE INTO tboxensichtbar 
+                  SET kBox = " . $kBox . ", 
+                      kSeite = " . $nSeite . ", 
+                      nSort = " . $nSort . ", 
+                      bAktiv = " . $bAktiv,
+                \DB\ReturnType::AFFECTED_ROWS
             ) !== false;
     }
 
@@ -1781,25 +1562,30 @@ class Boxen
      * @param int      $nSeite
      * @param bool|int $bAktiv
      * @return bool
+     * @deprecated since 5.0.0
      */
-    public function aktiviereBox($kBox, $nSeite, $bAktiv = true)
+    public function aktiviereBox(int $kBox, int $nSeite, $bAktiv = true): bool
     {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         $bAktiv         = (int)$bAktiv;
-        $kBox           = (int)$kBox;
-        $nSeite         = (int)$nSeite;
         $validPageTypes = $this->getValidPageTypes();
         if ($nSeite === 0) {
             $bOk = true;
             for ($i = 0; $i < count($validPageTypes) && $bOk; $i++) {
-                $_upd          = new stdClass();
-                $_upd->bAktiv  = $bAktiv;
-                $bOk           = Shop::Container()->getDB()->update('tboxensichtbar', ['kBox', 'kSeite'], [$kBox, $i], $_upd) >= 0;
+                $_upd         = new stdClass();
+                $_upd->bAktiv = $bAktiv;
+                $bOk          = Shop::Container()->getDB()->update(
+                        'tboxensichtbar',
+                        ['kBox', 'kSeite'],
+                        [$kBox, $i],
+                        $_upd
+                    ) >= 0;
             }
 
             return $bOk;
         }
-        $_upd          = new stdClass();
-        $_upd->bAktiv  = $bAktiv;
+        $_upd         = new stdClass();
+        $_upd->bAktiv = $bAktiv;
 
         return Shop::Container()->getDB()->update('tboxensichtbar', ['kBox', 'kSeite'], [$kBox, 0], $_upd) >= 0;
     }
@@ -1807,11 +1593,12 @@ class Boxen
     /**
      * @param int $kBox
      * @return bool
+     * @deprecated since 5.0.0
      */
-    public function loescheBox($kBox)
+    public function loescheBox(int $kBox): bool
     {
-        $kBox = (int)$kBox;
-        $bOk  = Shop::Container()->getDB()->delete('tboxen', 'kBox', $kBox) > 0;
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+        $bOk = Shop::Container()->getDB()->delete('tboxen', 'kBox', $kBox) > 0;
 
         return $bOk
             ? (Shop::Container()->getDB()->delete('tboxensichtbar', 'kBox', $kBox) > 0)
@@ -1820,21 +1607,26 @@ class Boxen
 
     /**
      * @return array
+     * @deprecated since 5.0.0
      */
-    public function gibLinkGruppen()
+    public function gibLinkGruppen(): array
     {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+
         return Shop::Container()->getDB()->query("SELECT * FROM tlinkgruppe", \DB\ReturnType::ARRAY_OF_OBJECTS);
     }
 
     /**
      * @param int $kBoxvorlage
      * @return bool
+     * @deprecated since 5.0.0
      */
-    public function isVisible($kBoxvorlage)
+    public function isVisible(int $kBoxvorlage): bool
     {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         foreach ($this->boxes as $_position => $_boxes) {
             foreach ($_boxes as $_box) {
-                if ((int)$_box->kBoxvorlage === (int)$kBoxvorlage) {
+                if ((int)$_box->kBoxvorlage === $kBoxvorlage) {
                     return true;
                 }
             }
@@ -1844,52 +1636,34 @@ class Boxen
     }
 
     /**
-     * @param \Filter\ProductFilter              $productFilter
-     * @param \Filter\ProductFilterSearchResults $oSuchergebnisse
+     * @param \Filter\ProductFilter              $pf
+     * @param \Filter\ProductFilterSearchResults $sr
      * @return bool
+     * @deprecated since 5.0.0
      */
-    public function gibBoxenFilterNach($productFilter, $oSuchergebnisse)
+    public function gibBoxenFilterNach(\Filter\ProductFilter $pf, \Filter\ProductFilterSearchResults $sr): bool
     {
-        $conf = Shop::getSettings([CONF_GLOBAL]);
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+        $cf  = $pf->getCategoryFilter();
+        $mf  = $pf->getManufacturerFilter();
+        $prf = $pf->getPriceRangeFilter();
+        $rf  = $pf->getRatingFilter();
+        $tf  = $pf->tagFilterCompat;
+        $afc = $pf->getAttributeFilterCollection();
+        $ssf = $pf->getSearchSpecialFilter();
+        $sf  = $pf->searchFilterCompat;
 
-        return (
-            ($productFilter->hasCategoryFilter()
-                && $this->boxConfig['navigationsfilter']['allgemein_kategoriefilter_benutzen'] === 'Y')
-            ||
-            ($productFilter->hasManufacturerFilter()
-                && $this->boxConfig['navigationsfilter']['allgemein_herstellerfilter_benutzen'] === 'Y')
-            ||
-            ($productFilter->hasPriceRangeFilter()
-                && $this->boxConfig['navigationsfilter']['preisspannenfilter_benutzen'] !== 'N'
-                && (int)$conf['global']['global_sichtbarkeit'] === 1)
-            ||
-            ($productFilter->hasRatingFilter()
-                && $this->boxConfig['navigationsfilter']['bewertungsfilter_benutzen'] !== 'N')
-            ||
-            ($productFilter->hasTagFilter()
-                && $this->boxConfig['navigationsfilter']['allgemein_tagfilter_benutzen'] === 'Y')
-            ||
-            (count($oSuchergebnisse->getAttributeFilterOptions()) > 0
-                && $this->boxConfig['navigationsfilter']['merkmalfilter_verwenden'] === 'box')
-            ||
-            ($productFilter->hasAttributeFilter()
-                && $this->boxConfig['navigationsfilter']['merkmalfilter_verwenden'] === 'box')
-            ||
-            (count($oSuchergebnisse->getRatingFilterOptions()) > 0
-                && $this->boxConfig['navigationsfilter']['bewertungsfilter_benutzen'] === 'box')
-            ||
-            (count($oSuchergebnisse->getPriceRangeFilterOptions()) > 0
-                && $this->boxConfig['navigationsfilter']['preisspannenfilter_benutzen'] === 'box'
-                && (int)$conf['global']['global_sichtbarkeit'] === 1)
-            ||
-            (count($oSuchergebnisse->getSearchSpecialFilterOptions()) > 0
-                && $this->boxConfig['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] === 'Y')
-            ||
-            ($productFilter->hasSearchSpecialFilter()
-                && $this->boxConfig['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] === 'Y')
-            ||
-            ($productFilter->hasSearchFilter()
-                && $this->boxConfig['navigationsfilter']['suchtrefferfilter_nutzen'] === 'Y')
+        $invis      = \Filter\Visibility::SHOW_NEVER();
+        $visContent = \Filter\Visibility::SHOW_CONTENT();
+
+        return ((!$cf->getVisibility()->equals($invis) && !$cf->getVisibility()->equals($visContent))
+            || (!$mf->getVisibility()->equals($invis) && !$mf->getVisibility()->equals($visContent))
+            || (!$prf->getVisibility()->equals($invis) && !$prf->getVisibility()->equals($visContent))
+            || (!$rf->getVisibility()->equals($invis) && !$rf->getVisibility()->equals($visContent))
+            || (!$tf->getVisibility()->equals($invis) && !$tf->getVisibility()->equals($visContent))
+            || (!$afc->getVisibility()->equals($invis) && !$afc->getVisibility()->equals($visContent))
+            || (!$ssf->getVisibility()->equals($invis) && !$ssf->getVisibility()->equals($visContent))
+            || (!$sf->getVisibility()->equals($invis) && !$sf->getVisibility()->equals($visContent))
         );
     }
 
@@ -1898,19 +1672,24 @@ class Boxen
      * to allow custom renderes
      *
      * @return array
+     * @deprecated since 5.0.0
      */
-    public function getRawData()
+    public function getRawData(): array
     {
-        return $this->rawData;
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+
+        return $this->boxService->getRawData();
     }
 
     /**
      * compatibility layer for gibBoxen() which returns unrendered content
      *
      * @return array
+     * @deprecated since 5.0.0
      */
-    public function compatGet()
+    public function compatGet(): array
     {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         $boxes = [];
         foreach ($this->rawData as $_type => $_boxes) {
             $boxes[$_type] = [];
@@ -1931,9 +1710,16 @@ class Boxen
      * @param bool   $cColor
      * @param bool   $cColorHover
      * @return string
+     * @deprecated since 5.0.0
      */
-    public static function gibJSONString($oCloud_arr, $nSpeed = '1', $nOpacity = '0.2', $cColor = false, $cColorHover = false)
-    {
+    public static function gibJSONString(
+        $oCloud_arr,
+        $nSpeed = '1',
+        $nOpacity = '0.2',
+        $cColor = false,
+        $cColorHover = false
+    ): string {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         $iCur = 0;
         $iMax = 15;
         if (!count($oCloud_arr)) {
@@ -1976,9 +1762,11 @@ class Boxen
      * get classname for sidebar panels
      *
      * @return string
+     * @deprecated since 5.0.0
      */
-    public function getClass()
+    public function getClass(): string
     {
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
         $class = '';
         $i     = 0;
         foreach ($this->boxes as $position => $_boxes) {
@@ -1993,47 +1781,69 @@ class Boxen
 
     /**
      * @return array
+     * @deprecated since 5.0.0
      */
-    public function getInvisibleBoxes()
+    public function getInvisibleBoxes(): array
     {
-        $tpl            = Template::getInstance();
-        $layout         = $tpl->getBoxLayoutXML();
-        $invisibleBoxes = [];
-        foreach ($layout as $position => $isAvailable) {
-            if ($isAvailable !== false) {
-                continue;
-            }
-            $box = Shop::Container()->getDB()->select('tboxen', 'ePosition', $position);
-            if ($box !== null && isset($box->kBox)) {
-                $boxes = Shop::Container()->getDB()->query(
-                    "SELECT tboxen.*, tboxvorlage.eTyp, tboxvorlage.cName, tboxvorlage.cTemplate 
-                        FROM tboxen 
-                            LEFT JOIN tboxvorlage
-                            ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
-                        WHERE ePosition = '" . $position . "'",
-                    \DB\ReturnType::ARRAY_OF_OBJECTS
-                );
-                foreach ($boxes as $box) {
-                    $invisibleBoxes[] = $box;
-                }
-            }
-        }
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+        $unavailabe = \Functional\filter(Template::getInstance()->getBoxLayoutXML(), function ($e) {
+            return $e === false;
+        });
+        $mapped     = \Functional\map($unavailabe, function ($e, $key) {
+            return "'" . $key . "'";
+        });
 
-        return $invisibleBoxes;
+        return Shop::Container()->getDB()->query(
+            'SELECT tboxen.*, tboxvorlage.eTyp, tboxvorlage.cName, tboxvorlage.cTemplate 
+                FROM tboxen 
+                    LEFT JOIN tboxvorlage
+                    ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
+                WHERE ePosition IN (' . implode(',', $mapped) . ')',
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
     }
 
     /**
      * @return array
+     * @deprecated since 5.0.0
      */
-    public function getValidPageTypes()
+    public function getValidPageTypes(): array
     {
         return [
-            PAGE_UNBEKANNT, PAGE_ARTIKEL, PAGE_ARTIKELLISTE, PAGE_WARENKORB, PAGE_MEINKONTO,
-            PAGE_KONTAKT, PAGE_UMFRAGE, PAGE_NEWS, PAGE_NEWSLETTER, PAGE_LOGIN, PAGE_REGISTRIERUNG, PAGE_BESTELLVORGANG,
-            PAGE_BEWERTUNG, PAGE_DRUCKANSICHT, PAGE_PASSWORTVERGESSEN, PAGE_WARTUNG, PAGE_WUNSCHLISTE,
-            PAGE_VERGLEICHSLISTE, PAGE_STARTSEITE, PAGE_VERSAND, PAGE_AGB, PAGE_DATENSCHUTZ, PAGE_TAGGING,
-            PAGE_LIVESUCHE, PAGE_HERSTELLER, PAGE_SITEMAP, PAGE_GRATISGESCHENK, PAGE_WRB, PAGE_PLUGIN,
-            PAGE_NEWSLETTERARCHIV, PAGE_NEWSARCHIV, PAGE_EIGENE, PAGE_AUSWAHLASSISTENT, PAGE_BESTELLABSCHLUSS,
+            PAGE_UNBEKANNT,
+            PAGE_ARTIKEL,
+            PAGE_ARTIKELLISTE,
+            PAGE_WARENKORB,
+            PAGE_MEINKONTO,
+            PAGE_KONTAKT,
+            PAGE_UMFRAGE,
+            PAGE_NEWS,
+            PAGE_NEWSLETTER,
+            PAGE_LOGIN,
+            PAGE_REGISTRIERUNG,
+            PAGE_BESTELLVORGANG,
+            PAGE_BEWERTUNG,
+            PAGE_DRUCKANSICHT,
+            PAGE_PASSWORTVERGESSEN,
+            PAGE_WARTUNG,
+            PAGE_WUNSCHLISTE,
+            PAGE_VERGLEICHSLISTE,
+            PAGE_STARTSEITE,
+            PAGE_VERSAND,
+            PAGE_AGB,
+            PAGE_DATENSCHUTZ,
+            PAGE_TAGGING,
+            PAGE_LIVESUCHE,
+            PAGE_HERSTELLER,
+            PAGE_SITEMAP,
+            PAGE_GRATISGESCHENK,
+            PAGE_WRB,
+            PAGE_PLUGIN,
+            PAGE_NEWSLETTERARCHIV,
+            PAGE_NEWSARCHIV,
+            PAGE_EIGENE,
+            PAGE_AUSWAHLASSISTENT,
+            PAGE_BESTELLABSCHLUSS,
             PAGE_RMA
         ];
     }

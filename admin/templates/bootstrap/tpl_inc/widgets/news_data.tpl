@@ -1,13 +1,13 @@
-{if is_array($oNews_arr)}
+{if is_object($oNews_arr) && !empty($oNews_arr->channel->item)}
     <ul class="linklist">
         {strip}
-        {foreach name="news" from=$oNews_arr item=oNews}
-            <li>
-                <p>
-                    <a class="" href="{$oNews->cUrlExt|urldecode}" target="_blank" rel="noopener"><span class="date label label-default pull-right">{$oNews->dErstellt|date_format:"%d.%m.%Y"}</span>{$oNews->cBetreff}</a>
-                </p>
-            </li>
-        {/foreach}
+            {foreach $oNews_arr->channel->item as $oNews}
+                <li>
+                    <p>
+                        <a class="" href="{$oNews->link|urldecode}" target="_blank" rel="noopener"><span class="date label label-default pull-right">{$oNews->pubDate|date_format:"%d.%m.%Y"}</span>{$oNews->title}</a>
+                    </p>
+                </li>
+            {/foreach}
         {/strip}
     </ul>
 {else}

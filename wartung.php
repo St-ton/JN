@@ -12,17 +12,12 @@ if ($Einstellungen['global']['wartungsmodus_aktiviert'] === 'N') {
     exit;
 }
 Shop::setPageType(PAGE_WARTUNG);
-if (isset($Link)) {
-    $requestURL = baueURL($Link, URLART_SEITE);
-    $sprachURL  = $Link->languageURLs ?? baueSprachURLS($Link, URLART_SEITE);
-}
 //hole aktuelle Kategorie, falls eine gesetzt
-$AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
+$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-Shop::Smarty()->assign('Navigation', createNavigation($AktuelleSeite));
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 

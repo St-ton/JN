@@ -13,6 +13,7 @@ $smarty->registerPlugin('function', 'getCurrencyConversionSmarty', 'getCurrencyC
        ->registerPlugin('function', 'formatVersion', 'formatVersion')
        ->registerPlugin('function', 'gravatarImage', 'gravatarImage')
        ->registerPlugin('function', 'getRevisions', 'getRevisions')
+       ->registerPlugin('function', 'captchaMarkup', 'captchaMarkup')
        ->registerPlugin('modifier', 'permission', 'permission');
 
 /**
@@ -51,7 +52,8 @@ function getCurrencyConversionSmarty($params, $smarty)
         $params['cClass'] = '';
     }
 
-    return getCurrencyConversion($params['fPreisNetto'], $params['fPreisBrutto'], $params['cClass'], $bForceSteuer);
+    return Currency::getCurrencyConversion($params['fPreisNetto'], $params['fPreisBrutto'], $params['cClass'],
+        $bForceSteuer);
 }
 
 /**
@@ -202,7 +204,7 @@ function formatVersion($params, $smarty)
 /**
  * Get either a Gravatar URL or complete image tag for a specified email address.
  *
- * @param array $params
+ * @param array     $params
  *
  * array['email'] - The email address
  * array['s']     - Size in pixels, defaults to 80px [ 1 - 2048 ]
@@ -234,4 +236,18 @@ function gravatarImage($params, $smarty)
     ]);
 
     return $url;
+}
+
+/**
+ * @param array     $params
+ * @param JTLSmarty $smarty
+ * @return string
+ */
+function captchaMarkup($params, $smarty)
+{
+    if (isset($params['getBody']) && $params['getBody']) {
+        return Shop::Container()->getCaptchaService()->getBodyMarkup($smarty);
+    }
+
+    return Shop::Container()->getCaptchaService()->getHeadMarkup($smarty);
 }

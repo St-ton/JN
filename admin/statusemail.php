@@ -14,15 +14,15 @@ $cHinweis = '';
 $cFehler  = '';
 $step     = 'statusemail_uebersicht';
 
-if (validateToken()) {
+if (FormHelper::validateToken()) {
     if (isset($_POST['action']) && $_POST['action'] === 'sendnow') {
         sendStatusMail();
     }
     elseif (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
         if (speicherStatusemailEinstellungen()) {
-            $cHinweis .= 'Ihre Einstellungen wurden &uuml;bernommen.<br>';
+            $cHinweis .= 'Ihre Einstellungen wurden übernommen.<br>';
         } else {
-            $cFehler .= 'Fehler: Ihre Einstellungen konnte nicht gespeichert werden. Bitte pr&uuml;fen Sie Ihre Eingaben.<br>';
+            $cFehler .= 'Fehler: Ihre Einstellungen konnte nicht gespeichert werden. Bitte prüfen Sie Ihre Eingaben.<br>';
         }
         $step = 'statusemail_uebersicht';
     }

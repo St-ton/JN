@@ -25,10 +25,8 @@ if (auth()) {
  * @param string $dRechnungErstellt
  * @param int    $kSprache
  */
-function handleData($kBestellung, $dRechnungErstellt, $kSprache)
+function handleData(int $kBestellung, $dRechnungErstellt, int $kSprache)
 {
-    $kBestellung = (int)$kBestellung;
-    $kSprache    = (int)$kSprache;
     if ($kBestellung > 0 && $kSprache > 0) {
         $oBestellung = Shop::Container()->getDB()->query(
             "SELECT tbestellung.kBestellung, tbestellung.fGesamtsumme, tzahlungsart.cModulId
@@ -36,7 +34,8 @@ function handleData($kBestellung, $dRechnungErstellt, $kSprache)
                 LEFT JOIN tzahlungsart
                   ON tbestellung.kZahlungsart = tzahlungsart.kZahlungsart
                 WHERE tbestellung.kBestellung = " . $kBestellung . " 
-                LIMIT 1", 1
+                LIMIT 1",
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         if ($oBestellung) {
@@ -52,10 +51,9 @@ function handleData($kBestellung, $dRechnungErstellt, $kSprache)
                     $cResponse = createResponse($oBestellung->kBestellung, ($oInvoice->nType == 0 ? 'FAILURE' : 'SUCCESS'), $oInvoice->cInfo);
                     zipRedirect(time() . '.jtl', $cResponse);
                     exit;
-                } else {
-                    // could not create invoice
-                    pushError("Invoice handleData: Fehler beim Erstellen der Rechnung (kBestellung: {$oBestellung->kBestellung}).");
                 }
+                // could not create invoice
+                pushError("Invoice handleData: Fehler beim Erstellen der Rechnung (kBestellung: {$oBestellung->kBestellung}).");
             } else {
                 // payment method does not exist
                 pushError("Invoice handleData: Für die Zahlungsart {$oPaymentMethod->cName} kann keine Rechnung erstellt werden (kBestellung: {$oBestellung->kBestellung}).");
@@ -65,7 +63,7 @@ function handleData($kBestellung, $dRechnungErstellt, $kSprache)
             pushError("Invoice handleData: Keine Bestellung mit kBestellung {$kBestellung} gefunden!");
         }
     } else {
-        pushError("Invoice handleData: Fehlerhafte Parameter (kBestellung: {kBestellung}, kSprache: {$kSprache}).");
+        pushError("Invoice handleData: Fehlerhafte Parameter (kBestellung: {$kBestellung}, kSprache: {$kSprache}).");
     }
 }
 
@@ -80,7 +78,10 @@ function createResponse($kBestellung, $cTyp, $cComment)
     $aResponse                               = ['tbestellung' => []];
     $aResponse['tbestellung']['kBestellung'] = $kBestellung;
     $aResponse['tbestellung']['cTyp']        = $cTyp;
-    $aResponse['tbestellung']['cKommentar']  = html_entity_decode( $cComment, ENT_COMPAT | ENT_HTML401, 'ISO-8859-1' ); // decode entities for jtl-wawi.
+    $aResponse['tbestellung']['cKommentar']  = html_entity_decode(
+        $cComment,
+        ENT_COMPAT | ENT_HTML401, 'ISO-8859-1'
+    ); // decode entities for jtl-wawi.
     //Entities are html-encoded since https://gitlab.jtl-software.de/jtlshop/jtl-shop/commit/e81f7a93797d8e57d00a1705cc5f13191eee9ca1
 
     return $aResponse;

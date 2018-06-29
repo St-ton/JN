@@ -20,7 +20,7 @@ $Einstellungen = Shop::getSettings([
     CONF_TRUSTEDSHOPS
 ]);
 Shop::setPageType(PAGE_BESTELLABSCHLUSS);
-$linkHelper    = LinkHelper::getInstance();
+$linkHelper    = Shop::Container()->getLinkService();
 $AktuelleSeite = 'BESTELLVORGANG';
 $kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_BESTELLABSCHLUSS);
 $cart          = Session::Cart();
@@ -33,13 +33,11 @@ if (isset($_GET['i'])) {
         $bestellung->fuelleBestellung(0);
         speicherUploads($bestellung);
         Shop::Container()->getDB()->delete('tbestellid', 'kBestellung', (int)$bestellid->kBestellung);
-        // Zahlungsanbieter
-        if (isset($_GET['za']) && $_GET['za'] === 'eos') {
-            include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'eos/eos.php';
-            eosZahlungsNachricht($bestellung);
-        }
     }
-    Shop::Container()->getDB()->query("DELETE FROM tbestellid WHERE dDatum < date_sub(now(),INTERVAL 30 DAY)", 4);
+    Shop::Container()->getDB()->query(
+        'DELETE FROM tbestellid WHERE dDatum < date_sub(now(),INTERVAL 30 DAY)',
+        \DB\ReturnType::DEFAULT
+    );
     $smarty->assign('abschlussseite', 1);
 } else {
     if (isset($_POST['kommentar'])) {
@@ -47,7 +45,7 @@ if (isset($_GET['i'])) {
     } elseif (!isset($_SESSION['kommentar'])) {
         $_SESSION['kommentar'] = '';
     }
-    if (pruefeEmailblacklist($_SESSION['Kunde']->cMail)) {
+    if (SimpleMail::checkBlacklist($_SESSION['Kunde']->cMail)) {
         header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') .
             '?mailBlocked=1', true, 303);
         exit;
@@ -73,7 +71,7 @@ if (isset($_GET['i'])) {
             && $wkChecksum !== $cart->cChecksumme
         ) {
             if (!$cart->enthaltenSpezialPos(C_WARENKORBPOS_TYP_ARTIKEL)) {
-                loescheAlleSpezialPos();
+                WarenkorbHelper::deleteAllSpecialPositions();
             }
             $_SESSION['Warenkorbhinweise'][] = Shop::Lang()->get('yourbasketismutating', 'checkout');
             header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php'), true, 303);
@@ -99,7 +97,7 @@ if (isset($_GET['i'])) {
     }
     setzeSmartyWeiterleitung($bestellung);
 }
-$AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
+$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
@@ -113,9 +111,7 @@ if (isset($Einstellungen['trustedshops']['trustedshops_nutzen']) && $Einstellung
     }
 }
 
-$smarty->assign('Navigation', createNavigation($AktuelleSeite))
-       ->assign('Firma', Shop::Container()->getDB()->query("SELECT * FROM tfirma", 1))
-       ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
+$smarty->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
        ->assign('Bestellung', $bestellung)
        ->assign('Kunde', $_SESSION['Kunde'] ?? null)
        ->assign('bOrderConf', true)
@@ -123,7 +119,9 @@ $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK);
 
 // Plugin Zahlungsmethode beachten
-$kPlugin = isset($bestellung->Zahlungsart->cModulId) ? gibkPluginAuscModulId($bestellung->Zahlungsart->cModulId) : 0;
+$kPlugin = isset($bestellung->Zahlungsart->cModulId)
+    ? Plugin::getIDByModuleID($bestellung->Zahlungsart->cModulId)
+    : 0;
 if ($kPlugin > 0) {
     $oPlugin = new Plugin($kPlugin);
     $smarty->assign('oPlugin', $oPlugin);
@@ -131,7 +129,7 @@ if ($kPlugin > 0) {
 if (empty($_SESSION['Zahlungsart']->nWaehrendBestellung) || isset($_GET['i'])) {
     if ($Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
         $smarty->assign('oTrustedShopsBewertenButton',
-            gibTrustedShopsBewertenButton($bestellung->oRechnungsadresse->cMail, $bestellung->cBestellNr)
+            TrustedShops::getRatingButton($bestellung->oRechnungsadresse->cMail, $bestellung->cBestellNr)
         );
     }
     $session->cleanUp();

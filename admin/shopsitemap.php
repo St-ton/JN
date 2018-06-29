@@ -13,12 +13,16 @@ $cFehler       = '';
 
 setzeSprache();
 
-if (isset($_POST['speichern']) && validateToken()) {
+if (isset($_POST['speichern']) && FormHelper::validateToken()) {
     $cHinweis .= saveAdminSectionSettings(CONF_SITEMAP, $_POST);
-    if (isset($_POST['nVon']) && is_array($_POST['nVon']) && count($_POST['nVon']) > 0 &&
-        is_array($_POST['nBis']) && count($_POST['nBis']) > 0) {
+    if (isset($_POST['nVon'])
+        && is_array($_POST['nVon'])
+        && count($_POST['nVon']) > 0
+        && is_array($_POST['nBis'])
+        && count($_POST['nBis']) > 0
+    ) {
         // Tabelle leeren
-        Shop::Container()->getDB()->query("TRUNCATE TABLE tpreisspannenfilter", 3);
+        Shop::Container()->getDB()->query("TRUNCATE TABLE tpreisspannenfilter", \DB\ReturnType::AFFECTED_ROWS);
         for ($i = 0; $i < 10; $i++) {
             // Neue Werte in die DB einfuegen
             if ((int)$_POST['nVon'][$i] >= 0 && (int)$_POST['nBis'][$i] > 0) {
@@ -61,7 +65,7 @@ for ($i = 0; $i < $configCount; $i++) {
 }
 
 $smarty->assign('oConfig_arr', $oConfig_arr)
-       ->assign('Sprachen', gibAlleSprachen())
+       ->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->display('shopsitemap.tpl');

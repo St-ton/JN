@@ -114,9 +114,9 @@ class Versandart
      *
      * @param int $kVersandart
      */
-    public function __construct($kVersandart = 0)
+    public function __construct(int $kVersandart = 0)
     {
-        if ((int)$kVersandart > 0) {
+        if ($kVersandart > 0) {
             $this->loadFromDB($kVersandart);
         }
     }
@@ -127,9 +127,9 @@ class Versandart
      * @param int $kVersandart
      * @return int
      */
-    public function loadFromDB($kVersandart)
+    public function loadFromDB(int $kVersandart)
     {
-        $obj = Shop::Container()->getDB()->select('tversandart', 'kVersandart', (int)$kVersandart);
+        $obj = Shop::Container()->getDB()->select('tversandart', 'kVersandart', $kVersandart);
         if ($obj === null || !$obj->kVersandart) {
             return 0;
         }
@@ -137,12 +137,11 @@ class Versandart
         foreach ($members as $member) {
             $this->$member = $obj->$member;
         }
+        $this->kVersandart = (int)$this->kVersandart;
         // VersandartSprache
-        $oVersandartSprache_arr = Shop::Container()->getDB()->selectAll('tversandartsprache', 'kVersandart', (int)$this->kVersandart);
-        if (is_array($oVersandartSprache_arr) && count($oVersandartSprache_arr) > 0) {
-            foreach ($oVersandartSprache_arr as $oVersandartSprache) {
-                $this->oVersandartSprache_arr[$oVersandartSprache->cISOSprache] = $oVersandartSprache;
-            }
+        $oVersandartSprache_arr = Shop::Container()->getDB()->selectAll('tversandartsprache', 'kVersandart', $this->kVersandart);
+        foreach ($oVersandartSprache_arr as $oVersandartSprache) {
+            $this->oVersandartSprache_arr[$oVersandartSprache->cISOSprache] = $oVersandartSprache;
         }
         // Versandstaffel
         $this->oVersandartStaffel_arr = Shop::Container()->getDB()->selectAll(
@@ -161,7 +160,7 @@ class Versandart
      */
     public function insertInDB()
     {
-        $obj = kopiereMembers($this);
+        $obj = ObjectHelper::copyMembers($this);
         unset(
             $obj->oVersandartSprache_arr,
             $obj->oVersandartStaffel_arr,
@@ -181,7 +180,7 @@ class Versandart
      */
     public function updateInDB()
     {
-        $obj = kopiereMembers($this);
+        $obj = ObjectHelper::copyMembers($this);
         unset(
             $obj->oVersandartSprache_arr,
             $obj->oVersandartStaffel_arr,
@@ -197,9 +196,8 @@ class Versandart
      * @param int $kVersandart
      * @return bool
      */
-    public static function deleteInDB($kVersandart)
+    public static function deleteInDB(int $kVersandart)
     {
-        $kVersandart = (int)$kVersandart;
         if ($kVersandart > 0) {
             Shop::Container()->getDB()->delete('tversandart', 'kVersandart', $kVersandart);
             Shop::Container()->getDB()->delete('tversandartsprache', 'kVersandart', $kVersandart);
@@ -212,7 +210,8 @@ class Versandart
                         ON tversandzuschlagplz.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
                     LEFT JOIN tversandzuschlagsprache 
                         ON tversandzuschlagsprache.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
-                    WHERE tversandzuschlag.kVersandart = {$kVersandart}", 4
+                    WHERE tversandzuschlag.kVersandart = {$kVersandart}",
+                \DB\ReturnType::DEFAULT
             );
 
             return true;
@@ -225,9 +224,8 @@ class Versandart
      * @param int $kVersandart
      * @return bool
      */
-    public static function cloneShipping($kVersandart)
+    public static function cloneShipping(int $kVersandart): bool
     {
-        $kVersandart  = (int)$kVersandart;
         $cSection_arr = [
             'tversandartsprache'     => 'kVersandart',
             'tversandartstaffel'     => 'kVersandartStaffel',
@@ -260,7 +258,7 @@ class Versandart
      * @param int    $value
      * @return array
      */
-    private static function getShippingSection($table, $key, $value)
+    private static function getShippingSection($table, $key, $value): array
     {
         $value = (int)$value;
 
@@ -309,11 +307,8 @@ class Versandart
      * @param int $oldKey
      * @param int $newKey
      */
-    private static function cloneShippingSectionSpecial($oldKey, $newKey)
+    private static function cloneShippingSectionSpecial(int $oldKey, int $newKey)
     {
-        $oldKey = (int)$oldKey;
-        $newKey = (int)$newKey;
-
         if ($oldKey > 0 && $newKey > 0) {
             $cSectionSub_arr = [
                 'tversandzuschlagplz'     => 'kVersandzuschlagPlz',

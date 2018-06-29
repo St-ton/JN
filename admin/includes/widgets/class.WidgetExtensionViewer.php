@@ -20,6 +20,7 @@ class WidgetExtensionViewer extends WidgetBase
         foreach ($oModul_arr as &$oModul) {
             $oModul->bActive = $oNice->checkErweiterung($oModul->kModulId);
         }
+        unset($oModul);
         $this->oSmarty->assign('oModul_arr', $oModul_arr);
     }
 

@@ -9,44 +9,22 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 /** @global AdminAccount $oAccount */
 $oUpdater = new Updater();
 $cFehler  = '';
-
-//Work Around => Update 300 => 308
-if ($oUpdater->getCurrentDatabaseVersion() < 308) {
-    $oAdmin = Shop::Container()->getDB()->query("SELECT * FROM tadminlogin LIMIT 1", 1);
-    if (is_object($oAdmin) && !isset($oAdmin->kAdminlogingruppe)) {
-        Shop::Container()->getDB()->query("ALTER TABLE `tadminlogin` ADD `dLetzterLogin` DATETIME NOT NULL", 3);
-        Shop::Container()->getDB()->query("ALTER TABLE `tadminlogin` CHANGE  `cName`  `cLogin` VARCHAR( 20 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;", 3);
-        Shop::Container()->getDB()->query("ALTER TABLE `tadminlogin` ADD  `cName` VARCHAR( 255 ) NOT NULL AFTER  `cPass` ;", 3);
-        Shop::Container()->getDB()->query("ALTER TABLE `tadminlogin` ADD  `bAktiv` BOOL NOT NULL DEFAULT  '1';", 3);
-        Shop::Container()->getDB()->query("ALTER TABLE `tadminlogin` ADD  `kAdminlogin` INT( 10 ) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST;", 3);
-        Shop::Container()->getDB()->query("ALTER TABLE `tadminlogin` CHANGE  `dLetzterLogin`  `dLetzterLogin` DATETIME NULL;", 3);
-        Shop::Container()->getDB()->query("ALTER TABLE `tadminlogin` ADD  `dGueltigBis` DATETIME NULL AFTER  `dLetzterLogin` ;", 3);
-        Shop::Container()->getDB()->query("ALTER TABLE `tadminlogin` ADD  `cMail` VARCHAR( 255 ) NOT NULL AFTER  `cName` ;", 3);
-        Shop::Container()->getDB()->query("ALTER TABLE `tadminlogin` ADD  `kAdminlogingruppe` INT( 10 ) UNSIGNED NOT NULL AFTER  `cMail` ;", 3);
-        Shop::Container()->getDB()->query("UPDATE `tadminlogin` SET `kAdminlogingruppe`=1;", 3);
-    }
-}
 if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
     $ret['captcha'] = 0;
     $ret['csrf']    = 0;
     if (file_exists(CAPTCHA_LOCKFILE)) {
-        if (!isset($_POST['captcha']) || !$_POST['captcha']) {
-            $ret['captcha'] = 1;
-        }
-        if (!isset($_POST['md5']) || !$_POST['md5'] || ($_POST['md5'] !== md5(PFAD_ROOT . strtoupper($_POST['captcha'])))) {
-            $ret['captcha'] = 2;
-        }
+        $ret['captcha'] = Shop::Container()->getCaptchaService()->validate($_POST) ? 0 : 2;
     }
     // Check if shop version is new enough for csrf validation
     if (version_compare(Shop::getShopVersion(), 400, '>=') === true) {
         // Check if template version is new enough for csrf validation
         $tpl = AdminTemplate::getInstance();
-        if ($tpl::$cTemplate === 'bootstrap' && !validateToken()) {
+        if ($tpl::$cTemplate === 'bootstrap' && !FormHelper::validateToken()) {
             $ret['csrf'] = 1;
         }
     }
     $loginName = isset($_POST['benutzer'])
-        ? StringHandler::filterXSS(Shop::DB()->escape($_POST['benutzer']))
+        ? StringHandler::filterXSS(Shop::Container()->getDB()->escape($_POST['benutzer']))
         : '---';
     if ($ret['captcha'] === 0 && $ret['csrf'] === 0) {
         $cLogin  = $_POST['benutzer'];
@@ -66,11 +44,11 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
                 break;
 
             case AdminLoginStatus::ERROR_USER_DISABLED:
-                $cFehler = 'Anmeldung zur Zeit nicht m&ouml;glich';
+                $cFehler = 'Anmeldung zur Zeit nicht möglich';
                 break;
 
             case AdminLoginStatus::ERROR_LOGIN_EXPIRED:
-                $cFehler = 'Anmeldedaten nicht mehr g&uuml;ltig';
+                $cFehler = 'Anmeldedaten nicht mehr gültig';
                 break;
 
             case AdminLoginStatus::ERROR_TWO_FACTOR_AUTH_EXPIRED:
@@ -136,7 +114,7 @@ switch ($profilerState) {
         break;
 }
 if (file_exists(CAPTCHA_LOCKFILE)) {
-    $smarty->assign('code_adminlogin', generiereCaptchaCode(3));
+    $smarty->assign('code_adminlogin', Shop::Container()->getCaptchaService()->isEnabled());
 }
 $smarty->assign('bProfilerActive', $profilerState !== 0)
        ->assign('profilerType', $type)
@@ -185,7 +163,6 @@ function redirectToURI($szURI)
     header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . base64_decode($szURI));
     exit;
 }
-
 
 unset($_SESSION['AdminAccount']->TwoFA_active);
 if ($oAccount->getIsAuthenticated()) {

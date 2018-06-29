@@ -16,7 +16,7 @@ final class Communication
      * @return mixed
      * @throws Exception
      */
-    private static function doCall($cURL, $xPostData_arr, $bPost = true)
+    private static function doCall(string $cURL, array $xPostData_arr, bool $bPost = true)
     {
         if (function_exists('curl_init')) {
             $ch = curl_init();
@@ -30,7 +30,7 @@ final class Communication
             curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 60);
             curl_setopt($ch, CURLOPT_TIMEOUT, 60);
 
-            $cContent = curl_exec_follow($ch);
+            $cContent = RequestHelper::curl_exec_follow($ch);
 
             curl_close($ch);
         } else {
@@ -47,7 +47,7 @@ final class Communication
      * @return string
      * @throws Exception
      */
-    public static function postData($cURL, $xData_arr = [], $bPost = true)
+    public static function postData(string $cURL, $xData_arr = [], bool $bPost = true)
     {
         return is_array($xData_arr)
             ? self::doCall($cURL, $xData_arr, $bPost)
@@ -61,7 +61,7 @@ final class Communication
      * @return mixed|string
      * @throws Exception
      */
-    public static function sendFile($cURL, $cFile, $bDeleteFile = false)
+    public static function sendFile(string $cURL, string $cFile, bool$bDeleteFile = false)
     {
         if (file_exists($cFile)) {
             $aData_arr['opt_file'] = '@' . $cFile;

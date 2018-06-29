@@ -121,7 +121,7 @@ class KategorieHelper
             $descriptionSelect   = ", '' AS cBeschreibung";
             $shopURL             = Shop::getURL(true);
             $imageBaseURL        = Shop::getImageBaseURL();
-            $isDefaultLang       = standardspracheAktiv();
+            $isDefaultLang       = Sprache::isDefaultLanguageActive();
             $visibilityWhere     = " AND tartikelsichtbarkeit.kArtikel IS NULL";
             $depthWhere          = self::$limitReached === true
                 ? " AND node.nLevel <= " . CATEGORY_FULL_LOAD_MAX_LEVEL
@@ -176,20 +176,18 @@ class KategorieHelper
                 $visibilityJoin = " LEFT JOIN tartikelsichtbarkeit
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                     AND tartikelsichtbarkeit.kKundengruppe = " . self::$kKundengruppe;
+            } elseif ($filterEmpty === true) {
+                $countSelect    = ", COUNT(tkategorieartikel.kArtikel) AS cnt";
+                $visibilityJoin = " LEFT JOIN tartikelsichtbarkeit
+                    ON tkategorieartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                    AND tartikelsichtbarkeit.kKundengruppe = " . self::$kKundengruppe;
             } else {
-                if ($filterEmpty === true) {
-                    $countSelect    = ", COUNT(tkategorieartikel.kArtikel) AS cnt";
-                    $visibilityJoin = " LEFT JOIN tartikelsichtbarkeit
-                        ON tkategorieartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = " . self::$kKundengruppe;
-                } else {
-                    //if we want to display all categories without filtering out empty ones, we don't have to check the product count
-                    //this saves a very expensive join - cnt will be always -1
-                    $countSelect = ", -1 AS cnt";
-                    $hasArticlesCheckJoin = "";
-                    $visibilityJoin       = "";
-                    $visibilityWhere      = "";
-                }
+                //if we want to display all categories without filtering out empty ones, we don't have to check the product count
+                //this saves a very expensive join - cnt will be always -1
+                $countSelect = ", -1 AS cnt";
+                $hasArticlesCheckJoin = "";
+                $visibilityJoin       = "";
+                $visibilityWhere      = "";
             }
             $nodes            = Shop::Container()->getDB()->query(
                 "SELECT node.kKategorie, node.kOberKategorie" . $nameSelect .
@@ -236,9 +234,7 @@ class KategorieHelper
                     ? BILD_KEIN_KATEGORIEBILD_VORHANDEN
                     : PFAD_KATEGORIEBILDER . $_cat->cPfad;
                 $_cat->cBildURLFull   = $imageBaseURL . $_cat->cBildURL;
-                $_cat->cURL           = empty($_cat->cSeo)
-                    ? baueURL($_cat, URLART_KATEGORIE, 0, true)
-                    : baueURL($_cat, URLART_KATEGORIE);
+                $_cat->cURL           = UrlHelper::buildURL($_cat, URLART_KATEGORIE);
                 $_cat->cURLFull       = $shopURL . '/' . $_cat->cURL;
                 if (self::$kSprache > 0 && !$isDefaultLang) {
                     if (!empty($_cat->cName_spr)) {
@@ -255,7 +251,7 @@ class KategorieHelper
                 /** @deprecated since version 4.05 - usage of KategorieAttribute is deprecated, use categoryFunctionAttributes instead */
                 $_cat->KategorieAttribute = &$_cat->categoryFunctionAttributes;
                 //interne Verlinkung $#k:X:Y#$
-                $_cat->cBeschreibung    = parseNewsText($_cat->cBeschreibung);
+                $_cat->cBeschreibung    = StringHandler::parseNewsText($_cat->cBeschreibung);
                 $_cat->bUnterKategorien = 0;
                 $_cat->Unterkategorien  = [];
                 // Kurzbezeichnung
@@ -267,39 +263,37 @@ class KategorieHelper
                     $current                     = $_cat;
                     $currentParent               = $_cat;
                     $hierarchy                   = [$_cat->kKategorie];
+                } elseif ($current !== null && $_cat->kOberKategorie === $current->kKategorie) {
+                    $current->bUnterKategorien = 1;
+                    if (!isset($current->Unterkategorien)) {
+                        $current->Unterkategorien = [];
+                    }
+                    $current->Unterkategorien[$_cat->kKategorie] = $_cat;
+                    $current                                     = $_cat;
+                    $hierarchy[]                                 = $_cat->kOberKategorie;
+                    $hierarchy                                   = array_unique($hierarchy);
+                } elseif ($currentParent !== null && $_cat->kOberKategorie === $currentParent->kKategorie) {
+                    $currentParent->bUnterKategorien                   = 1;
+                    $currentParent->Unterkategorien[$_cat->kKategorie] = $_cat;
+                    $current                                           = $_cat;
+                    $hierarchy                                         = [$_cat->kOberKategorie, $_cat->kKategorie];
                 } else {
-                    if ($current !== null && $_cat->kOberKategorie === $current->kKategorie) {
-                        $current->bUnterKategorien = 1;
-                        if (!isset($current->Unterkategorien)) {
-                            $current->Unterkategorien = [];
+                    $newCurrent = $fullCats;
+                    $i          = 0;
+                    foreach ($hierarchy as $_i) {
+                        if ($newCurrent[$_i]->kKategorie === $_cat->kOberKategorie) {
+                            $current                                     = $newCurrent[$_i];
+                            $current->bUnterKategorien                   = 1;
+                            $current->Unterkategorien[$_cat->kKategorie] = $_cat;
+                            array_splice($hierarchy, $i);
+                            $hierarchy[] = $_cat->kOberKategorie;
+                            $hierarchy[] = $_cat->kKategorie;
+                            $hierarchy   = array_unique($hierarchy);
+                            $current     = $_cat;
+                            break;
                         }
-                        $current->Unterkategorien[$_cat->kKategorie] = $_cat;
-                        $current                                     = $_cat;
-                        $hierarchy[]                                 = $_cat->kOberKategorie;
-                        $hierarchy                                   = array_unique($hierarchy);
-                    } elseif ($currentParent !== null && $_cat->kOberKategorie === $currentParent->kKategorie) {
-                        $currentParent->bUnterKategorien                   = 1;
-                        $currentParent->Unterkategorien[$_cat->kKategorie] = $_cat;
-                        $current                                           = $_cat;
-                        $hierarchy                                         = [$_cat->kOberKategorie, $_cat->kKategorie];
-                    } else {
-                        $newCurrent = $fullCats;
-                        $i          = 0;
-                        foreach ($hierarchy as $_i) {
-                            if ($newCurrent[$_i]->kKategorie === $_cat->kOberKategorie) {
-                                $current                                     = $newCurrent[$_i];
-                                $current->bUnterKategorien                   = 1;
-                                $current->Unterkategorien[$_cat->kKategorie] = $_cat;
-                                array_splice($hierarchy, $i);
-                                $hierarchy[] = $_cat->kOberKategorie;
-                                $hierarchy[] = $_cat->kKategorie;
-                                $hierarchy   = array_unique($hierarchy);
-                                $current     = $_cat;
-                                break;
-                            }
-                            $newCurrent = $newCurrent[$_i]->Unterkategorien;
-                            ++$i;
-                        }
+                        $newCurrent = $newCurrent[$_i]->Unterkategorien;
+                        ++$i;
                     }
                 }
             }
@@ -327,7 +321,7 @@ class KategorieHelper
      * @param int $categoryID
      * @return array
      */
-    public function getFallBackFlatTree($categoryID)
+    public function getFallBackFlatTree(int $categoryID)
     {
         $filterEmpty         = (int)self::$config['global']['kategorien_anzeigefilter'] === EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE;
         $stockFilter         = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
@@ -339,7 +333,7 @@ class KategorieHelper
         $descriptionSelect   = ", '' AS cBeschreibung";
         $shopURL             = Shop::getURL(true);
         $imageBaseURL        = Shop::getImageBaseURL();
-        $isDefaultLang       = standardspracheAktiv();
+        $isDefaultLang       = Sprache::isDefaultLanguageActive();
         $visibilityWhere     = ' AND tartikelsichtbarkeit.kArtikel IS NULL';
         $getDescription      = (!(isset(self::$config['template']['megamenu']['show_maincategory_info'])
             && isset(self::$config['template']['megamenu']['show_categories'])
@@ -384,20 +378,18 @@ class KategorieHelper
             $visibilityJoin = " LEFT JOIN tartikelsichtbarkeit
                 ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                 AND tartikelsichtbarkeit.kKundengruppe = " . self::$kKundengruppe;
+        } elseif ($filterEmpty === true) {
+            $countSelect    = ", COUNT(tkategorieartikel.kArtikel) AS cnt";
+            $visibilityJoin = " LEFT JOIN tartikelsichtbarkeit
+                ON tkategorieartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                AND tartikelsichtbarkeit.kKundengruppe = " . self::$kKundengruppe;
         } else {
-            if ($filterEmpty === true) {
-                $countSelect    = ", COUNT(tkategorieartikel.kArtikel) AS cnt";
-                $visibilityJoin = " LEFT JOIN tartikelsichtbarkeit
-                    ON tkategorieartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . self::$kKundengruppe;
-            } else {
-                //if we want to display all categories without filtering out empty ones, we don't have to check the product count
-                //this saves a very expensive join - cnt will be always -1
-                $countSelect = ", -1 AS cnt";
-                $hasArticlesCheckJoin = "";
-                $visibilityJoin       = "";
-                $visibilityWhere      = "";
-            }
+            //if we want to display all categories without filtering out empty ones, we don't have to check the product count
+            //this saves a very expensive join - cnt will be always -1
+            $countSelect = ', -1 AS cnt';
+            $hasArticlesCheckJoin = '';
+            $visibilityJoin       = '';
+            $visibilityWhere      = '';
         }
         $nodes            = Shop::Container()->getDB()->query(
             "SELECT parent.kKategorie, parent.kOberKategorie" . $nameSelect .
@@ -409,7 +401,7 @@ class KategorieHelper
                 $hasArticlesCheckJoin . $stockJoin . $visibilityJoin . "                     
                 WHERE node.nLevel > 0 AND parent.nLevel > 0
                     AND tkategoriesichtbarkeit.kKategorie IS NULL AND node.lft BETWEEN parent.lft AND parent.rght
-                    AND node.kKategorie = " . (int)$categoryID . $visibilityWhere . "
+                    AND node.kKategorie = " . $categoryID . $visibilityWhere . "
                     
                 GROUP BY parent.kKategorie
                 ORDER BY parent.lft",
@@ -447,9 +439,7 @@ class KategorieHelper
                 ? BILD_KEIN_KATEGORIEBILD_VORHANDEN
                 : PFAD_KATEGORIEBILDER . $_cat->cPfad;
             $_cat->cBildURLFull   = $imageBaseURL . $_cat->cBildURL;
-            $_cat->cURL           = empty($_cat->cSeo)
-                ? baueURL($_cat, URLART_KATEGORIE, 0, true)
-                : baueURL($_cat, URLART_KATEGORIE);
+            $_cat->cURL           = UrlHelper::buildURL($_cat, URLART_KATEGORIE);
             $_cat->cURLFull       = $shopURL . '/' . $_cat->cURL;
             // lokalisieren
             if (self::$kSprache > 0 && !$isDefaultLang) {
@@ -466,7 +456,7 @@ class KategorieHelper
             /** @deprecated since version 4.05 - usage of KategorieAttribute is deprecated, use categoryFunctionAttributes instead */
             $_cat->KategorieAttribute = &$_cat->categoryFunctionAttributes;
             //interne Verlinkung $#k:X:Y#$
-            $_cat->cBeschreibung    = parseNewsText($_cat->cBeschreibung);
+            $_cat->cBeschreibung    = StringHandler::parseNewsText($_cat->cBeschreibung);
             $_cat->bUnterKategorien = 0;
             $_cat->Unterkategorien  = [];
             $fullCats[]             = $_cat;
@@ -530,7 +520,7 @@ class KategorieHelper
      * @param int $id
      * @return bool
      */
-    public static function categoryExists($id)
+    public static function categoryExists(int $id): bool
     {
         return Shop::Container()->getDB()->select('tkategorie', 'kKategorie', (int)$id) !== null;
     }
@@ -539,22 +529,22 @@ class KategorieHelper
      * @param int $id
      * @return null|object
      */
-    public function getCategoryById($id)
+    public function getCategoryById(int $id)
     {
         if (self::$fullCategories === null) {
             self::$fullCategories = $this->combinedGetAll();
         }
 
-        return $this->findCategoryInList((int)$id, self::$fullCategories);
+        return $this->findCategoryInList($id, self::$fullCategories);
     }
 
     /**
      * @param int $id
      * @return array
      */
-    public function getChildCategoriesById($id)
+    public function getChildCategoriesById(int $id)
     {
-        $current = $this->getCategoryById((int)$id);
+        $current = $this->getCategoryById($id);
 
         return $current !== null && isset($current->Unterkategorien)
             ? array_values($current->Unterkategorien)
@@ -568,7 +558,7 @@ class KategorieHelper
      * @param bool $noChildren - remove child categories from array?
      * @return array
      */
-    public function getFlatTree($id, $noChildren = true)
+    public function getFlatTree(int $id, bool $noChildren = true): array
     {
         if (self::$fullCategories === null) {
             self::$fullCategories = $this->combinedGetAll();
@@ -610,7 +600,7 @@ class KategorieHelper
      * @param array|object $haystack
      * @return object|bool
      */
-    private function findCategoryInList($id, $haystack)
+    private function findCategoryInList(int $id, $haystack)
     {
         if (isset($haystack->kKategorie) && (int)$haystack->kKategorie === $id) {
             return $haystack;

@@ -33,15 +33,28 @@ class Updater
 
             // While updating from 3.xx to 4.xx provide a default admin-template row
             if ($dbVersion < 400) {
-                $count = (int)Shop::Container()->getDB()->query("SELECT * FROM `ttemplate` WHERE `eTyp`='admin'", 3);
+                $count = (int)Shop::Container()->getDB()->query(
+                    "SELECT * FROM `ttemplate` WHERE `eTyp`='admin'",
+                    \DB\ReturnType::AFFECTED_ROWS
+                );
                 if ($count === 0) {
-                    Shop::Container()->getDB()->query("ALTER TABLE `ttemplate` CHANGE `eTyp` `eTyp` ENUM('standard','mobil','admin') NOT NULL", 3);
-                    Shop::Container()->getDB()->query("INSERT INTO `ttemplate` (`cTemplate`, `eTyp`) VALUES ('bootstrap', 'admin')", 3);
+                    Shop::Container()->getDB()->query(
+                        "ALTER TABLE `ttemplate` 
+                            CHANGE `eTyp` `eTyp` ENUM('standard','mobil','admin') NOT NULL",
+                        \DB\ReturnType::AFFECTED_ROWS
+                    );
+                    Shop::Container()->getDB()->query(
+                        "INSERT INTO `ttemplate` (`cTemplate`, `eTyp`) VALUES ('bootstrap', 'admin')",
+                        \DB\ReturnType::AFFECTED_ROWS
+                    );
                 }
             }
 
             if ($dbVersion < 404) {
-                Shop::Container()->getDB()->query("ALTER TABLE `tversion` CHANGE `nTyp` `nTyp` INT(4) UNSIGNED NOT NULL", 3);
+                Shop::Container()->getDB()->query(
+                    "ALTER TABLE `tversion` CHANGE `nTyp` `nTyp` INT(4) UNSIGNED NOT NULL",
+                    \DB\ReturnType::AFFECTED_ROWS
+                );
             }
 
             static::$isVerified = true;
@@ -52,8 +65,9 @@ class Updater
      * Has pending updates to execute
      *
      * @return bool
+     * @throws Exception
      */
-    public function hasPendingUpdates()
+    public function hasPendingUpdates(): bool
     {
         $fileVersion = $this->getCurrentFileVersion();
         $dbVersion   = $this->getCurrentDatabaseVersion();
@@ -72,10 +86,10 @@ class Updater
      * Create a database backup file including structure and data
      *
      * @param string $file
-     * @param bool $compress
+     * @param bool   $compress
      * @throws Exception
      */
-    public function createSqlDump($file, $compress = true)
+    public function createSqlDump(string $file, bool $compress = true)
     {
         if ($compress) {
             $info = pathinfo($file);
@@ -104,7 +118,7 @@ class Updater
      * @param bool $compress
      * @return string
      */
-    public function createSqlDumpFile($compress = true)
+    public function createSqlDumpFile(bool $compress = true)
     {
         $file = PFAD_ROOT . PFAD_EXPORT_BACKUP . date('YmdHis') . '_backup.sql';
         if ($compress) {
@@ -115,7 +129,7 @@ class Updater
     }
 
     /**
-     * @return mixed
+     * @return stdClass
      * @throws Exception
      */
     public function getVersion()
@@ -131,7 +145,7 @@ class Updater
     /**
      * @return int
      */
-    public function getCurrentFileVersion()
+    public function getCurrentFileVersion(): int
     {
         return JTL_VERSION;
     }
@@ -140,7 +154,7 @@ class Updater
      * @return int
      * @throws Exception
      */
-    public function getCurrentDatabaseVersion()
+    public function getCurrentDatabaseVersion(): int
     {
         $v = $this->getVersion();
 
@@ -151,11 +165,9 @@ class Updater
      * @param int $version
      * @return int|mixed
      */
-    public function getTargetVersion($version)
+    public function getTargetVersion(int $version)
     {
-        $version = (int)$version;
-        $majors  = [219 => 300, 320 => 400];
-
+        $majors = [219 => 300, 320 => 400];
         if (array_key_exists($version, $majors)) {
             $targetVersion = $majors[$version];
         } else {
@@ -173,11 +185,9 @@ class Updater
      * @param int $version
      * @return int|mixed
      */
-    public function getPreviousVersion($version)
+    public function getPreviousVersion(int $version)
     {
-        $version = (int)$version;
-        $majors  = [300 => 219, 400 => 320];
-
+        $majors = [300 => 219, 400 => 320];
         if (array_key_exists($version, $majors)) {
             $previousVersion = $majors[$version];
         } else {
@@ -191,16 +201,16 @@ class Updater
      * @param int $targetVersion
      * @return string
      */
-    protected function getUpdateDir($targetVersion)
+    protected function getUpdateDir(int $targetVersion)
     {
-        return sprintf('%s%d', PFAD_ROOT . PFAD_UPDATE, (int)$targetVersion);
+        return sprintf('%s%d', PFAD_ROOT . PFAD_UPDATE, $targetVersion);
     }
 
     /**
      * @param int $targetVersion
      * @return string
      */
-    protected function getSqlUpdatePath($targetVersion)
+    protected function getSqlUpdatePath(int $targetVersion)
     {
         return sprintf('%s/update1.sql', $this->getUpdateDir($targetVersion));
     }
@@ -210,7 +220,7 @@ class Updater
      * @return array
      * @throws Exception
      */
-    protected function getSqlUpdates($targetVersion)
+    protected function getSqlUpdates(int $targetVersion)
     {
         $sqlFile = $this->getSqlUpdatePath($targetVersion);
 
@@ -275,7 +285,7 @@ class Updater
 
             foreach ($sqls as $i => $sql) {
                 $currentLine = $i;
-                Shop::Container()->getDB()->executeQuery($sql, 3);
+                Shop::Container()->getDB()->query($sql, \DB\ReturnType::AFFECTED_ROWS);
             }
         } catch (\PDOException $e) {
             $code  = (int)$e->errorInfo[1];
@@ -291,10 +301,22 @@ class Updater
                     $errorCountForLine = $version->nFehler + 1;
                 }
 
-                Shop::Container()->getDB()->executeQuery(
-                    "UPDATE tversion SET
-                     nZeileVon = 1, nZeileBis = {$currentLine}, nFehler = {$errorCountForLine},
-                     nTyp = {$code}, cFehlerSQL = '{$error}', dAktualisiert = now()", 3
+                Shop::Container()->getDB()->queryPrepared(
+                    'UPDATE tversion SET
+                         nZeileVon = 1, 
+                         nZeileBis = :rw, 
+                         nFehler = :errcnt,
+                         nTyp = :type, 
+                         cFehlerSQL = :err, 
+                         dAktualisiert = now()',
+                    [
+                        'rw'     => $currentLine,
+                        'errcnt' => $errorCountForLine,
+                        'type'   => $code,
+                        'err'    => $error
+                        
+                    ],
+                    \DB\ReturnType::AFFECTED_ROWS
                 );
 
                 throw $e;
@@ -311,7 +333,7 @@ class Updater
      * @return mixed
      * @throws Exception
      */
-    protected function updateByMigration($targetVersion)
+    protected function updateByMigration(int $targetVersion)
     {
         $manager           = new MigrationManager();
         $pendingMigrations = $manager->getPendingMigrations();
@@ -347,10 +369,17 @@ class Updater
      */
     protected function setVersion($targetVersion)
     {
-        Shop::Container()->getDB()->executeQuery(
+        Shop::Container()->getDB()->queryPrepared(
             "UPDATE tversion SET 
-            nVersion = {$targetVersion}, nZeileVon = 1, nZeileBis = 0, 
-            nFehler = 0, nTyp = 1, cFehlerSQL = '', dAktualisiert = now()", 3
+                nVersion = :ver, 
+                nZeileVon = 1, 
+                nZeileBis = 0, 
+                nFehler = 0, 
+                nTyp = 1, 
+                cFehlerSQL = '', 
+                dAktualisiert = now()",
+            ['ver' => $targetVersion],
+            \DB\ReturnType::AFFECTED_ROWS
         );
     }
 
@@ -366,8 +395,9 @@ class Updater
             ? (object)[
                 'code'  => $version->nTyp,
                 'error' => $version->cFehlerSQL,
-                'sql'   => $version->nVersion < 402 ?
-                    $this->getErrorSqlByFile() : null
+                'sql'   => $version->nVersion < 402
+                    ? $this->getErrorSqlByFile()
+                    : null
             ]
             : null;
     }
@@ -389,7 +419,7 @@ class Updater
     /**
      * @return array
      */
-    public function getUpdateDirs()
+    public function getUpdateDirs(): array
     {
         $directories = [];
         $dir         = PFAD_ROOT . PFAD_UPDATE;

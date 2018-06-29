@@ -52,7 +52,7 @@ class Media
      * @param string $requestUri
      * @return bool
      */
-    public function isValidRequest($requestUri)
+    public function isValidRequest($requestUri): bool
     {
         foreach ($this->types as $type) {
             if ($type->isValid($requestUri)) {

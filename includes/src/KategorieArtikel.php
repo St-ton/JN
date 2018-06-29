@@ -27,11 +27,11 @@ class KategorieArtikel
     /**
      * Konstruktor
      *
-     * @param int $kKategorieArtikel - Falls angegeben, wird der KategorieArtikel mit angegebenem kKategorieArtikel aus der DB geholt
+     * @param int $kKategorieArtikel
      */
-    public function __construct($kKategorieArtikel = 0)
+    public function __construct(int $kKategorieArtikel = 0)
     {
-        if ((int)$kKategorieArtikel > 0) {
+        if ($kKategorieArtikel > 0) {
             $this->loadFromDB($kKategorieArtikel);
         }
     }
@@ -42,9 +42,9 @@ class KategorieArtikel
      * @param int $kKategorieArtikel
      * @return $this
      */
-    public function loadFromDB($kKategorieArtikel)
+    public function loadFromDB(int $kKategorieArtikel)
     {
-        $obj = Shop::Container()->getDB()->select('tkategorieartikel', 'kKategorieArtikel', (int)$kKategorieArtikel);
+        $obj = Shop::Container()->getDB()->select('tkategorieartikel', 'kKategorieArtikel', $kKategorieArtikel);
         foreach (get_object_vars($obj) as $k => $v) {
             $this->$k = $v;
         }
@@ -57,9 +57,9 @@ class KategorieArtikel
      *
      * @return int
      */
-    public function insertInDB()
+    public function insertInDB(): int
     {
-        return Shop::Container()->getDB()->insert('tkategorieartikel', kopiereMembers($this));
+        return Shop::Container()->getDB()->insert('tkategorieartikel', ObjectHelper::copyMembers($this));
     }
 
     /**
@@ -67,9 +67,9 @@ class KategorieArtikel
      *
      * @return int
      */
-    public function updateInDB()
+    public function updateInDB(): int
     {
-        $obj = kopiereMembers($this);
+        $obj = ObjectHelper::copyMembers($this);
 
         return Shop::Container()->getDB()->update('tkategorieartikel', 'kKategorieArtikel', $obj->kKategorieArtikel, $obj);
     }
@@ -77,14 +77,11 @@ class KategorieArtikel
     /**
      * setzt Daten aus Sync POST request.
      *
-     * @return Bool true, wenn alle notwendigen Daten vorhanden, sonst false
+     * @return bool
+     * @deprecated since 5.0.0
      */
-    public function setzePostDaten()
+    public function setzePostDaten(): bool
     {
-        $this->kKategorieArtikel = (int)$_POST['KeyKategorieArtikel'];
-        $this->kArtikel          = (int)$_POST['KeyArtikel'];
-        $this->kKategorie        = (int)$_POST['KeyKategorie'];
-
-        return ($this->kKategorie > 0 && $this->kArtikel > 0 && $this->kKategorieArtikel > 0);
+        return false;
     }
 }

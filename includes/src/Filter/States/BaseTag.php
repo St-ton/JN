@@ -139,8 +139,7 @@ class BaseTag extends AbstractFilter
         if ($this->getConfig()['navigationsfilter']['allgemein_tagfilter_benutzen'] === 'N') {
             return $options;
         }
-        $joinedTables = [];
-        $state        = $this->productFilter->getCurrentStateData($this->getType()->equals(Type::OR())
+        $state = $this->productFilter->getCurrentStateData($this->getType()->equals(Type::OR())
             ? $this->getClassName()
             : null
         );
@@ -210,7 +209,7 @@ class BaseTag extends AbstractFilter
                 ->setClassName($this->getClassName())
                 ->setName($tag->cName)
                 ->setValue((int)$tag->kTag)
-                ->setCount($tag->nAnzahl);
+                ->setCount((int)$tag->nAnzahl);
         }
         $this->options = $options;
 

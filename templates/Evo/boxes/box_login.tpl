@@ -1,6 +1,6 @@
-<section class="panel panel-default box box-login" id="sidebox{$oBox->kBox}">
+<section class="panel panel-default box box-login" id="sidebox{$oBox->getID()}">
     <div class="panel-heading">
-        <h5 class="panel-title">{if empty($smarty.session.Kunde)}{lang key='login'}{else}{lang key='hello'}, {$smarty.session.Kunde->cVorname} {$smarty.session.Kunde->cNachname}{/if}</h5>
+        <div class="panel-title">{if empty($smarty.session.Kunde)}{lang key='login'}{else}{lang key='hello'}, {$smarty.session.Kunde->cVorname} {$smarty.session.Kunde->cNachname}{/if}</div>
     </div>
     <div class="box-body panel-body">
         {if empty($smarty.session.Kunde->kKunde)}
@@ -17,8 +17,8 @@
                 </div>
 
                 {if isset($showLoginCaptcha) && $showLoginCaptcha}
-                    <div class="form-group text-center float-label-control">
-                        <div class="g-recaptcha" data-sitekey="{$Einstellungen.global.global_google_recaptcha_public}" data-callback="captcha_filled"></div>
+                    <div class="form-group text-center float-label-control required">
+                        {captchaMarkup getBody=true}
                     </div>
                 {/if}
 

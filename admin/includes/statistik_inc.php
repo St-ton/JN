@@ -256,7 +256,8 @@ function getJSON($oStat_arr, $nAnzeigeIntervall, $nTyp)
             $oWaehrung = Shop::Container()->getDB()->query(
                 "SELECT *
                     FROM twaehrung
-                    WHERE cStandard = 'Y'", 1
+                    WHERE cStandard = 'Y'",
+                \DB\ReturnType::SINGLE_OBJECT
             );
 
             return setDot($data, $x_labels_arr, null, $fMin, $fMax, $fStep, $oWaehrung->cName);

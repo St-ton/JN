@@ -12,9 +12,9 @@ use MyCLabs\Enum\Enum;
  * Class ComponentPropertyType
  *
  * @package Filter
- * @method InputType SELECT()
- * @method InputType CHECKBOX()
- * @method InputType BUTTON()
+ * @method static InputType SELECT()
+ * @method static InputType CHECKBOX()
+ * @method static InputType BUTTON()
  */
 class InputType extends Enum
 {

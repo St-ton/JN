@@ -137,7 +137,7 @@ class WarenkorbPersPos
     /**
      * @return $this
      */
-    public function schreibeDB()
+    public function schreibeDB(): self
     {
         $oTemp                   = new stdClass();
         $oTemp->kWarenkorbPers   = $this->kWarenkorbPers;
@@ -157,7 +157,7 @@ class WarenkorbPersPos
     /**
      * @return int
      */
-    public function updateDB()
+    public function updateDB(): int
     {
         $oTemp                    = new stdClass();
         $oTemp->kWarenkorbPersPos = $this->kWarenkorbPersPos;

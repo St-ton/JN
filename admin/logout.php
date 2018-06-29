@@ -5,7 +5,7 @@
  */
 require_once __DIR__ . '/includes/admininclude.php';
 
-if (validateToken()) {
+if (FormHelper::validateToken()) {
     $oAccount->logout();
 }
 $oAccount->redirectOnFailure();

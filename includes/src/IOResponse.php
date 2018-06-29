@@ -25,7 +25,7 @@ class IOResponse implements JsonSerializable
      * @param mixed $data
      * @return $this
      */
-    public function assign($target, $attr, $data)
+    public function assign($target, $attr, $data): self
     {
         $this->assigns[] = (object)[
             'target' => $target,
@@ -40,7 +40,7 @@ class IOResponse implements JsonSerializable
      * @param string $js
      * @return $this
      */
-    public function script($js)
+    public function script($js): self
     {
         $this->scripts[] = $js;
 
@@ -51,7 +51,7 @@ class IOResponse implements JsonSerializable
      * @param string $function
      * @return $this
      */
-    public function jsfunc($function)
+    public function jsfunc($function): self
     {
         $arguments = func_get_args();
         array_shift($arguments);
@@ -64,7 +64,7 @@ class IOResponse implements JsonSerializable
                 case 'array':
                 case 'object':
                 case 'string':
-                    $value = utf8_convert_recursive($value);
+                    $value = StringHandler::utf8_convert_recursive($value);
                     $value = json_encode($value);
                     break;
 
@@ -96,7 +96,7 @@ class IOResponse implements JsonSerializable
             $orange = 'background: #e86c00; color: #fff;';
             $grey   = 'background: #e8e8e8; color: #333;';
 
-            $args = json_encode(utf8_convert_recursive($arguments));
+            $args = json_encode(StringHandler::utf8_convert_recursive($arguments));
 
             $this->script("console.groupCollapsed('%c CALL %c {$function}()', '$orange', '$reset');");
             $this->script("console.log('%c METHOD %c {$function}()', '$grey', '$reset');");
@@ -118,7 +118,7 @@ class IOResponse implements JsonSerializable
     /**
      * @return array
      */
-    public function generateCallTrace()
+    public function generateCallTrace(): array
     {
         $str   = (new Exception())->getTraceAsString();
         $trace = explode("\n", $str);
@@ -137,7 +137,7 @@ class IOResponse implements JsonSerializable
     /**
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'js'  => $this->scripts,

@@ -211,3 +211,4 @@ function writeLogTMP($entry)
     fwrite($logfile, "\n[" . date('m.d.y H:i:s') . ' ' . microtime() . '] ' . $_SERVER['SCRIPT_NAME'] . "\n" . $entry);
     fclose($logfile);
 }
+

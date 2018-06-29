@@ -17,10 +17,10 @@ $cFehler           = '';
 $step              = 'uebersicht';
 $settingsIDs       = [427, 428, 431, 433, 434, 435, 430];
 // Tabs
-if (strlen(verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', verifyGPDataString('tab'));
+if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
-if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && validateToken()) {
+if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && FormHelper::validateToken()) {
     //Formular wurde abgeschickt
     if (!isset($_POST['delete'])) {
         if (is_array($_POST['kTagAll']) && count($_POST['kTagAll']) > 0) {
@@ -41,13 +41,15 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && validateToken())
             Shop::Container()->getDB()->query(
                 "DELETE FROM tseo
                     WHERE cKey = 'kTag'
-                        AND kKey" . $cSQLDel, 3
+                        AND kKey" . $cSQLDel,
+                \DB\ReturnType::AFFECTED_ROWS
             );
             // Deaktivierten Tag in ttag updaten
             Shop::Container()->getDB()->query(
                 "UPDATE ttag
                     SET cSeo = ''
-                    WHERE kTag" . $cSQLDel, 3
+                    WHERE kTag" . $cSQLDel,
+                \DB\ReturnType::AFFECTED_ROWS
             );
             // nAktiv Reihe updaten
             if (is_array($_POST['nAktiv'])) {
@@ -84,61 +86,61 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && validateToken())
                     ON ttagartikel.kTag = ttag.kTag
                 WHERE ttag.kSprache = " . (int)$_SESSION['kSprache'] . " 
                 GROUP BY ttag.cName
-                ORDER BY Anzahl DESC", 2
+                ORDER BY Anzahl DESC",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        if (is_array($Tags) && count($Tags) > 0) {
-            foreach ($Tags as $tag) {
-                if ($tag->cName !== $_POST['mapping_' . $tag->kTag]) {
-                    if (strlen($_POST['mapping_' . $tag->kTag]) > 0) {
-                        $tagmapping_obj           = new stdClass();
-                        $tagmapping_obj->kSprache = (int)$_SESSION['kSprache'];
-                        $tagmapping_obj->cName    = $tag->cName;
-                        $tagmapping_obj->cNameNeu = Shop::Container()->getDB()->escape($_POST['mapping_' . $tag->kTag]);
+        foreach ($Tags as $tag) {
+            if ($tag->cName !== $_POST['mapping_' . $tag->kTag]) {
+                if (strlen($_POST['mapping_' . $tag->kTag]) > 0) {
+                    $tagmapping_obj           = new stdClass();
+                    $tagmapping_obj->kSprache = (int)$_SESSION['kSprache'];
+                    $tagmapping_obj->cName    = $tag->cName;
+                    $tagmapping_obj->cNameNeu = Shop::Container()->getDB()->escape($_POST['mapping_' . $tag->kTag]);
 
-                        $Neuertag = Shop::Container()->getDB()->select('ttag', 'cName', $tagmapping_obj->cNameNeu);
+                    $Neuertag = Shop::Container()->getDB()->select('ttag', 'cName', $tagmapping_obj->cNameNeu);
 
-                        if (isset($Neuertag->kTag) && $Neuertag->kTag > 0) {
-                            Shop::Container()->getDB()->insert('ttagmapping', $tagmapping_obj);
-                            Shop::Container()->getDB()->delete('ttag', 'kTag', $tag->kTag);
-                            $upd = new stdClass();
-                            $upd->kKey = (int)$Neuertag->kTag;
-                            Shop::Container()->getDB()->update('tseo', ['cKey', 'kKey'], ['kTag', (int)$tag->kTag], $upd);
-                            $tagmappings = Shop::Container()->getDB()->selectAll('ttagartikel', 'ktag', (int)$tag->kTag);
+                    if (isset($Neuertag->kTag) && $Neuertag->kTag > 0) {
+                        Shop::Container()->getDB()->insert('ttagmapping', $tagmapping_obj);
+                        Shop::Container()->getDB()->delete('ttag', 'kTag', $tag->kTag);
+                        $upd = new stdClass();
+                        $upd->kKey = (int)$Neuertag->kTag;
+                        Shop::Container()->getDB()->update('tseo', ['cKey', 'kKey'], ['kTag', (int)$tag->kTag], $upd);
+                        $tagmappings = Shop::Container()->getDB()->selectAll('ttagartikel', 'ktag', (int)$tag->kTag);
 
-                            foreach ($tagmappings as $tagmapping) {
-                                //update tab amount, delete product tagging with old tag ID
-                                if (Shop::Container()->getDB()->query(
-                                        "UPDATE ttagartikel 
-                                            SET nAnzahlTagging = nAnzahlTagging+" . $tagmapping->nAnzahlTagging . "
-                                            WHERE kTag = " . (int)$Neuertag->kTag . " 
-                                                AND kArtikel = " . (int)$tagmapping->kArtikel, 3
-                                    ) > 0
-                                ) {
-                                    Shop::Container()->getDB()->delete(
-                                        'ttagartikel',
-                                        ['kTag', 'kArtikel'],
-                                        [(int)$tag->kTag, (int)$tagmapping->kArtikel]
-                                    );
-                                } else {
-                                    $upd = new stdClass();
-                                    $upd->kTag = (int)$Neuertag->kTag;
-                                    Shop::Container()->getDB()->update(
-                                        'ttagartikel',
-                                        ['kTag', 'kArtikel'],
-                                        [(int)$tag->kTag, (int)$tagmapping->kArtikel],
-                                        $upd
-                                    );
-                                }
+                        foreach ($tagmappings as $tagmapping) {
+                            //update tab amount, delete product tagging with old tag ID
+                            if (Shop::Container()->getDB()->query(
+                                    "UPDATE ttagartikel 
+                                        SET nAnzahlTagging = nAnzahlTagging+" . $tagmapping->nAnzahlTagging . "
+                                        WHERE kTag = " . (int)$Neuertag->kTag . " 
+                                            AND kArtikel = " . (int)$tagmapping->kArtikel,
+                                    \DB\ReturnType::AFFECTED_ROWS
+                                ) > 0
+                            ) {
+                                Shop::Container()->getDB()->delete(
+                                    'ttagartikel',
+                                    ['kTag', 'kArtikel'],
+                                    [(int)$tag->kTag, (int)$tagmapping->kArtikel]
+                                );
+                            } else {
+                                $upd = new stdClass();
+                                $upd->kTag = (int)$Neuertag->kTag;
+                                Shop::Container()->getDB()->update(
+                                    'ttagartikel',
+                                    ['kTag', 'kArtikel'],
+                                    [(int)$tag->kTag, (int)$tagmapping->kArtikel],
+                                    $upd
+                                );
                             }
-                            $cHinweis .= 'Der Tag "' . $tagmapping_obj->cName . '" wurde erfolgreich auf "' .
-                                $tagmapping_obj->cNameNeu . '" gemappt.<br />';
                         }
-
-                        unset($tagmapping_obj);
+                        $cHinweis .= 'Der Tag "' . $tagmapping_obj->cName . '" wurde erfolgreich auf "' .
+                            $tagmapping_obj->cNameNeu . '" gemappt.<br />';
                     }
-                } else {
-                    $cHinweis .= 'Der Tag "' . $tag->cName . '" kann nicht auf den gleichen Tagbegriff gemappt werden.';
+
+                    unset($tagmapping_obj);
                 }
+            } else {
+                $cHinweis .= 'Der Tag "' . $tag->cName . '" kann nicht auf den gleichen Tagbegriff gemappt werden.';
             }
         }
         $cHinweis .= 'Die Tags wurden erfolgreich aktualisiert.<br />';
@@ -156,21 +158,22 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && validateToken())
                             LEFT JOIN tseo 
                                 ON tseo.cKey = 'kTag'
                                 AND tseo.kKey = ttag.kTag
-                            WHERE ttag.kTag = " . $kTag, 4
+                            WHERE ttag.kTag = " . $kTag,
+                        \DB\ReturnType::DEFAULT
                     );
                     //also delete possible mappings TO this tag
                     Shop::Container()->getDB()->delete('ttagmapping', 'cNameNeu', $oTag->cName);
                     Shop::Container()->getDB()->delete('ttagartikel', 'kTag', $kTag);
-                    $cHinweis .= 'Der Tag "' . $oTag->cName . '" wurde erfolgreich gel&ouml;scht.<br />';
+                    $cHinweis .= 'Der Tag "' . $oTag->cName . '" wurde erfolgreich gelöscht.<br />';
                 } else {
                     $cFehler .= 'Es wurde kein Tag mit der ID "' . $kTag . '" gefunden.<br />';
                 }
             }
         } else {
-            $cFehler .= 'Bitte w&auml;hlen Sie mindestens einen Tag aus.<br />';
+            $cFehler .= 'Bitte wählen Sie mindestens einen Tag aus.<br />';
         }
     }
-} elseif (isset($_POST['tagging']) && (int)$_POST['tagging'] === 2 && validateToken()) { // Mappinglist
+} elseif (isset($_POST['tagging']) && (int)$_POST['tagging'] === 2 && FormHelper::validateToken()) { // Mappinglist
     if (isset($_POST['delete'])) {
         if (is_array($_POST['kTagMapping'])) {
             foreach ($_POST['kTagMapping'] as $kTagMapping) {
@@ -179,13 +182,13 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && validateToken())
                 if (strlen($oMapping->cName) > 0) {
                     Shop::Container()->getDB()->delete('ttagmapping', 'kTagMapping', $kTagMapping);
 
-                    $cHinweis .= 'Das Mapping "' . $oMapping->cName . '" wurde erfolgreich gel&ouml;scht.<br />';
+                    $cHinweis .= 'Das Mapping "' . $oMapping->cName . '" wurde erfolgreich gelöscht.<br />';
                 } else {
                     $cFehler .= 'Es wurde kein Mapping mit der ID "' . $kTagMapping . '" gefunden.<br />';
                 }
             }
         } else {
-            $cFehler .= 'Bitte w&auml;hlen Sie mindestens ein Mapping aus.<br />';
+            $cFehler .= 'Bitte wählen Sie mindestens ein Mapping aus.<br />';
         }
     }
 } elseif ((isset($_POST['a']) && $_POST['a'] === 'saveSettings') ||
@@ -193,44 +196,46 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && validateToken())
     $cHinweis .= saveAdminSettings($settingsIDs, $_POST);
 }
 // Tagdetail
-if (verifyGPCDataInteger('kTag') > 0 && verifyGPCDataInteger('tagdetail') === 1) {
+if (RequestHelper::verifyGPCDataInt('kTag') > 0 && RequestHelper::verifyGPCDataInt('tagdetail') === 1) {
     $step = 'detail';
     // Pagination
-    $nTagDetailAnzahl = holeTagDetailAnzahl(verifyGPCDataInteger('kTag'), $_SESSION['kSprache']);
+    $nTagDetailAnzahl = holeTagDetailAnzahl(RequestHelper::verifyGPCDataInt('kTag'), $_SESSION['kSprache']);
     $oPagiTagDetail   = (new Pagination('detail'))
         ->setItemCount($nTagDetailAnzahl)
         ->assemble();
     // Tag von einem odere mehreren Artikeln loesen
     if (!empty($_POST['kArtikel_arr']) && is_array($_POST['kArtikel_arr']) &&
-        count($_POST['kArtikel_arr']) && verifyGPCDataInteger('detailloeschen') === 1) {
-        if (loescheTagsVomArtikel($_POST['kArtikel_arr'], verifyGPCDataInteger('kTag'))) {
-            $cHinweis = 'Der Tag wurde erfolgreich bei Ihren markierten Artikeln gel&ouml;scht.';
+        count($_POST['kArtikel_arr']) && RequestHelper::verifyGPCDataInt('detailloeschen') === 1) {
+        if (loescheTagsVomArtikel($_POST['kArtikel_arr'], RequestHelper::verifyGPCDataInt('kTag'))) {
+            $cHinweis = 'Der Tag wurde erfolgreich bei Ihren markierten Artikeln gelöscht.';
         } else {
             $step    = 'detail';
-            $cFehler = 'Fehler: Ihre markierten Artikel zum Produkttag konnten nicht gel&ouml;scht werden.';
+            $cFehler = 'Fehler: Ihre markierten Artikel zum Produkttag konnten nicht gelöscht werden.';
         }
     }
     $oTagArtikel_arr = holeTagDetail(
-        verifyGPCDataInteger('kTag'),
+        RequestHelper::verifyGPCDataInt('kTag'),
         (int)$_SESSION['kSprache'],
         ' LIMIT ' . $oPagiTagDetail->getLimitSQL()
     );
     $smarty->assign('oTagArtikel_arr', $oTagArtikel_arr)
         ->assign('oPagiTagDetail', $oPagiTagDetail)
-        ->assign('kTag', verifyGPCDataInteger('kTag'))
+        ->assign('kTag', RequestHelper::verifyGPCDataInt('kTag'))
         ->assign('cTagName', $oTagArtikel_arr[0]->cName ?? '');
 } else {
     // Anzahl Tags fuer diese Sprache
     $nAnzahlTags = Shop::Container()->getDB()->query(
         "SELECT count(*) AS nAnzahl
             FROM ttag
-            WHERE kSprache = " . (int)$_SESSION['kSprache'], 1
+            WHERE kSprache = " . (int)$_SESSION['kSprache'],
+        \DB\ReturnType::SINGLE_OBJECT
     );
     // Anzahl Tag Mappings fuer diese Sprache
     $nAnzahlTagMappings = Shop::Container()->getDB()->query(
         "SELECT count(*) AS nAnzahl
             FROM ttagmapping
-            WHERE kSprache = " . (int)$_SESSION['kSprache'], 1
+            WHERE kSprache = " . (int)$_SESSION['kSprache'],
+        \DB\ReturnType::SINGLE_OBJECT
     );
 
     // Paginationen
@@ -241,30 +246,33 @@ if (verifyGPCDataInteger('kTag') > 0 && verifyGPCDataInteger('tagdetail') === 1)
         ->setItemCount($nAnzahlTagMappings->nAnzahl)
         ->assemble();
 
-    $Sprachen = gibAlleSprachen();
-    $Tags     = Shop::Container()->getDB()->query("
-        SELECT ttag.kTag, ttag.cName, ttag.nAktiv, sum(ttagartikel.nAnzahlTagging) AS Anzahl 
+    $Sprachen = Sprache::getAllLanguages();
+    $Tags     = Shop::Container()->getDB()->query(
+        'SELECT ttag.kTag, ttag.cName, ttag.nAktiv, sum(ttagartikel.nAnzahlTagging) AS Anzahl 
             FROM ttag
             JOIN ttagartikel 
                 ON ttagartikel.kTag = ttag.kTag
-            WHERE ttag.kSprache = " . (int)$_SESSION['kSprache'] . "
+            WHERE ttag.kSprache = ' . (int)$_SESSION['kSprache'] . '
             GROUP BY ttag.cName
             ORDER BY Anzahl DESC
-            LIMIT " . $oPagiTags->getLimitSQL(), 2
+            LIMIT ' . $oPagiTags->getLimitSQL(),
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    $Tagmapping = Shop::Container()->getDB()->query("
-        SELECT *
+    $Tagmapping = Shop::Container()->getDB()->query(
+        'SELECT *
             FROM ttagmapping
-            WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
-            LIMIT " . $oPagiTagMappings->getLimitSQL(), 2
+            WHERE kSprache = ' . (int)$_SESSION['kSprache'] . '
+            LIMIT ' . $oPagiTagMappings->getLimitSQL(),
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 
     // Config holen
     $oConfig_arr = Shop::Container()->getDB()->query(
-        "SELECT *
+        'SELECT *
             FROM teinstellungenconf
-            WHERE kEinstellungenConf IN (" . implode(',', $settingsIDs) . ")
-            ORDER BY nSort", 2
+            WHERE kEinstellungenConf IN (' . implode(',', $settingsIDs) . ')
+            ORDER BY nSort',
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     $configCount = count($oConfig_arr);
     for ($i = 0; $i < $configCount; $i++) {

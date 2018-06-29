@@ -30,8 +30,6 @@
             {include file='checkout/modules/paypal/bestellabschluss.tpl'}
         {elseif $Bestellung->Zahlungsart->cModulId === 'za_kreditkarte_jtl'}
             {include file='account/retrospective_payment.tpl'}
-        {elseif $Bestellung->Zahlungsart->cModulId === 'za_eos_jtl'}
-            {include file='checkout/modules/eos/bestellabschluss.tpl'}
         {elseif $Bestellung->Zahlungsart->cModulId === 'za_ut_stand_jtl'}
             {include file='checkout/modules/ut/bestellabschluss.tpl'}
         {elseif (substr($Bestellung->Zahlungsart->cModulId, 0, 8) === 'za_mbqc_')}
@@ -60,14 +58,6 @@
             {include file='checkout/modules/uos/bestellabschluss.tpl'}
         {elseif $Bestellung->Zahlungsart->cModulId === 'za_uos_ebank_direct_jtl'}
             {include file='checkout/modules/uos/bestellabschluss.tpl'}
-        {elseif $Bestellung->Zahlungsart->cModulId === 'za_eos_dd_jtl'}
-            {include file='checkout/modules/eos/bestellabschluss.tpl'}
-        {elseif $Bestellung->Zahlungsart->cModulId === 'za_eos_cc_jtl'}
-            {include file='checkout/modules/eos/bestellabschluss.tpl'}
-        {elseif $Bestellung->Zahlungsart->cModulId === 'za_eos_direct_jtl'}
-            {include file='checkout/modules/eos/bestellabschluss.tpl'}
-        {elseif $Bestellung->Zahlungsart->cModulId === 'za_eos_ewallet_jtl'}
-            {include file='checkout/modules/eos/bestellabschluss.tpl'}
         {elseif $Bestellung->Zahlungsart->cModulId === 'za_billpay_jtl'}
             {include file='checkout/modules/billpay/bestellabschluss.tpl'}
         {elseif $Bestellung->Zahlungsart->cModulId === 'za_billpay_invoice_jtl'}

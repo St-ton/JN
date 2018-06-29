@@ -47,7 +47,7 @@ class Migration_20171116114700 extends Migration implements IMigration
         } else {
             $this->hiddenLinkGroupID = (int)$hiddenLinkGroup->kLinkgruppe;
         }
-        $this->languages = gibAlleSprachen();
+        $this->languages = Sprache::getAllLanguages();
 
         $this->createSeo(LINKTYP_WARENKORB, 'Warenkorb', 'Warenkorb', 'Cart');
         $this->createSeo(LINKTYP_BESTELLVORGANG, 'Bestellvorgang', 'Bestellvorgang', 'Checkout');

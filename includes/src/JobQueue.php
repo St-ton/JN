@@ -37,6 +37,11 @@ class JobQueue
     /**
      * @var int
      */
+    public $nLastArticleID;
+
+    /**
+     * @var int
+     */
     public $nInArbeit;
 
     /**
@@ -65,7 +70,7 @@ class JobQueue
     public $dZuletztGelaufen;
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getKJobQueue()
     {
@@ -73,10 +78,10 @@ class JobQueue
     }
 
     /**
-     * @param int $kJobQueue
+     * @param int|null $kJobQueue
      * @return $this
      */
-    public function setKJobQueue($kJobQueue)
+    public function setKJobQueue($kJobQueue):self
     {
         $this->kJobQueue = $kJobQueue;
 
@@ -86,18 +91,18 @@ class JobQueue
     /**
      * @return int
      */
-    public function getKCron()
+    public function getKCron():int
     {
-        return $this->kCron;
+        return $this->kCron ?? 0;
     }
 
     /**
      * @param int $kCron
      * @return $this
      */
-    public function setKCron($kCron)
+    public function setKCron(int $kCron):self
     {
-        $this->kCron = (int)$kCron;
+        $this->kCron = $kCron;
 
         return $this;
     }
@@ -105,16 +110,16 @@ class JobQueue
     /**
      * @return int
      */
-    public function getKKey()
+    public function getKKey():int
     {
-        return $this->kKey;
+        return $this->kKey ?? 0;
     }
 
     /**
      * @param int $kKey
      * @return $this
      */
-    public function setKKey($kKey)
+    public function setKKey(int $kKey):self
     {
         $this->kKey = $kKey;
 
@@ -124,18 +129,18 @@ class JobQueue
     /**
      * @return int
      */
-    public function getNLimitN()
+    public function getNLimitN():int
     {
-        return $this->nLimitN;
+        return $this->nLimitN ?? 0;
     }
 
     /**
      * @param int $nLimitN
      * @return $this
      */
-    public function setNLimitN($nLimitN)
+    public function setNLimitN(int $nLimitN):self
     {
-        $this->nLimitN = (int)$nLimitN;
+        $this->nLimitN = $nLimitN;
 
         return $this;
     }
@@ -143,18 +148,18 @@ class JobQueue
     /**
      * @return int
      */
-    public function getNLimitM()
+    public function getNLimitM():int
     {
-        return $this->nLimitM;
+        return $this->nLimitM ?? 0;
     }
 
     /**
      * @param int $nLimitM
      * @return $this
      */
-    public function setNLimitM($nLimitM)
+    public function setNLimitM(int $nLimitM):self
     {
-        $this->nLimitM = (int)$nLimitM;
+        $this->nLimitM = $nLimitM;
 
         return $this;
     }
@@ -162,18 +167,37 @@ class JobQueue
     /**
      * @return int
      */
-    public function getNInArbeit()
+    public function getNLastArticleID():int
     {
-        return $this->nInArbeit;
+        return $this->nLastArticleID ?? 0;
+    }
+
+    /**
+     * @param int $nLastArticleID
+     * @return $this
+     */
+    public function setNLastArticleID(int $nLastArticleID):self
+    {
+        $this->nLastArticleID = $nLastArticleID;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNInArbeit():int
+    {
+        return $this->nInArbeit ?? 0;
     }
 
     /**
      * @param int $nInArbeit
      * @return $this
      */
-    public function setNInArbeit($nInArbeit)
+    public function setNInArbeit(int $nInArbeit):self
     {
-        $this->nInArbeit = (int)$nInArbeit;
+        $this->nInArbeit = $nInArbeit;
 
         return $this;
     }
@@ -181,16 +205,16 @@ class JobQueue
     /**
      * @return string
      */
-    public function getCJobArt()
+    public function getCJobArt():string
     {
-        return $this->cJobArt;
+        return $this->cJobArt ?? '';
     }
 
     /**
      * @param string $cJobArt
      * @return $this
      */
-    public function setCJobArt($cJobArt)
+    public function setCJobArt(string $cJobArt):self
     {
         $this->cJobArt = $cJobArt;
 
@@ -200,9 +224,9 @@ class JobQueue
     /**
      * @return string
      */
-    public function getCTabelle()
+    public function getCTabelle():string
     {
-        return $this->cTabelle;
+        return $this->cTabelle ?? '';
     }
 
     /**
@@ -221,7 +245,7 @@ class JobQueue
      */
     public function getCKey()
     {
-        return $this->cKey;
+        return $this->cKey ?? '';
     }
 
     /**
@@ -237,7 +261,7 @@ class JobQueue
      */
     public function getDStartZeit()
     {
-        return $this->dStartZeit;
+        return $this->dStartZeit ?? 'now()';
     }
 
     /**
@@ -256,7 +280,7 @@ class JobQueue
      */
     public function getDZuletztGelaufen()
     {
-        return $this->dZuletztGelaufen;
+        return $this->dZuletztGelaufen ?? '0000-00-00';
     }
 
     /**
@@ -283,14 +307,26 @@ class JobQueue
      * @param string   $dStartZeit
      * @param string   $dZuletztGelaufen
      */
-    public function __construct($kJobQueue = null, $kCron = 0, $kKey = 0, $nLimitN = 0, $nLimitM = 0, $nInArbeit = 0, $cJobArt = '', $cTabelle = '', $cKey = '', $dStartZeit = 'now()', $dZuletztGelaufen = '0000-00-00')
-    {
-        $this->kJobQueue        = $kJobQueue;
-        $this->kCron            = $kCron;
-        $this->kKey             = $kKey;
-        $this->nLimitN          = $nLimitN;
-        $this->nLimitM          = $nLimitM;
-        $this->nInArbeit        = $nInArbeit;
+    public function __construct(
+        $kJobQueue = null,
+        $kCron = 0,
+        $kKey = 0,
+        $nLimitN = 0,
+        $nLimitM = 0,
+        $nInArbeit = 0,
+        $cJobArt = '',
+        $cTabelle = '',
+        $cKey = '',
+        $dStartZeit = 'now()',
+        $dZuletztGelaufen = '0000-00-00'
+    ) {
+        $this->kJobQueue        = $kJobQueue === null ? null : (int)$kJobQueue;
+        $this->kCron            = (int)$kCron;
+        $this->kKey             = (int)$kKey;
+        $this->nLimitN          = (int)$nLimitN;
+        $this->nLimitM          = (int)$nLimitM;
+        $this->nLastArticleID   = 0;
+        $this->nInArbeit        = (int)$nInArbeit;
         $this->cJobArt          = $cJobArt;
         $this->cTabelle         = $cTabelle;
         $this->cKey             = $cKey;
@@ -299,12 +335,16 @@ class JobQueue
     }
 
     /**
-     * @return object|null
+     * @return stdClass|null
      */
     public function holeJobArt()
     {
         if ($this->kKey > 0 && strlen($this->cTabelle) > 0) {
-            return Shop::Container()->getDB()->select(Shop::Container()->getDB()->escape($this->cTabelle), Shop::Container()->getDB()->escape($this->cKey), (int)$this->kKey);
+            return Shop::Container()->getDB()->select(
+                Shop::Container()->getDB()->escape($this->cTabelle),
+                Shop::Container()->getDB()->escape($this->cKey),
+                (int)$this->kKey
+            );
         }
 
         return null;
@@ -313,16 +353,16 @@ class JobQueue
     /**
      * @return int
      */
-    public function speicherJobInDB()
+    public function speicherJobInDB(): int
     {
-        if ($this->kKey > 0 &&
-            $this->nLimitM > 0 &&
-            strlen($this->cJobArt) > 0 &&
-            strlen($this->cKey) > 0 &&
-            strlen($this->cTabelle) > 0 &&
-            strlen($this->dStartZeit) > 0
+        if ($this->kKey > 0
+            && $this->nLimitM > 0
+            && strlen($this->cJobArt) > 0
+            && strlen($this->cKey) > 0
+            && strlen($this->cTabelle) > 0
+            && strlen($this->dStartZeit) > 0
         ) {
-            $queue = kopiereMembers($this);
+            $queue = ObjectHelper::copyMembers($this);
             unset($queue->kJobQueue);
 
             return Shop::Container()->getDB()->insert('tjobqueue', $queue);
@@ -334,7 +374,7 @@ class JobQueue
     /**
      * @return int
      */
-    public function updateJobInDB()
+    public function updateJobInDB(): int
     {
         if ($this->kJobQueue > 0) {
             $_upd                   = new stdClass();
@@ -342,6 +382,7 @@ class JobQueue
             $_upd->kKey             = (int)$this->kKey;
             $_upd->nLimitN          = (int)$this->nLimitN;
             $_upd->nLimitM          = (int)$this->nLimitM;
+            $_upd->nLastArticleID   = (int)$this->nLastArticleID;
             $_upd->nInArbeit        = (int)$this->nInArbeit;
             $_upd->cJobArt          = $this->cJobArt;
             $_upd->cTabelle         = $this->cTabelle;
@@ -358,9 +399,9 @@ class JobQueue
     /**
      * @return int
      */
-    public function deleteJobInDB()
+    public function deleteJobInDB(): int
     {
-        return ($this->kJobQueue > 0)
+        return $this->kJobQueue > 0
             ? Shop::Container()->getDB()->delete('tjobqueue', 'kJobQueue', (int)$this->kJobQueue)
             : 0;
     }
@@ -368,7 +409,7 @@ class JobQueue
     /**
      * @return bool
      */
-    public function updateExportformatQueueBearbeitet()
+    public function updateExportformatQueueBearbeitet(): bool
     {
         if ($this->kJobQueue > 0) {
             Shop::Container()->getDB()->delete('texportformatqueuebearbeitet', 'kJobQueue', (int)$this->kJobQueue);

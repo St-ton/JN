@@ -239,24 +239,28 @@ function baueArtikelExportSQL(&$oExportformat)
             $cSQL_arr['Where'] = " AND (tartikel.nIstVater != 1 OR tartikel.kEigenschaftKombi > 0)";
             break;
     }
-    if (isset($cExportEinstellungAssoc_arr['exportformate_lager_ueber_null']) &&
-        $cExportEinstellungAssoc_arr['exportformate_lager_ueber_null'] === 'Y') {
+    if (isset($cExportEinstellungAssoc_arr['exportformate_lager_ueber_null'])
+        && $cExportEinstellungAssoc_arr['exportformate_lager_ueber_null'] === 'Y'
+    ) {
         $cSQL_arr['Where'] .= " AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y'))";
-    } elseif (isset($cExportEinstellungAssoc_arr['exportformate_lager_ueber_null']) &&
-        $cExportEinstellungAssoc_arr['exportformate_lager_ueber_null'] === 'O') {
+    } elseif (isset($cExportEinstellungAssoc_arr['exportformate_lager_ueber_null'])
+        && $cExportEinstellungAssoc_arr['exportformate_lager_ueber_null'] === 'O'
+    ) {
         $cSQL_arr['Where'] .= " AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y') 
                                     OR tartikel.cLagerKleinerNull = 'Y')";
     }
 
-    if (isset($cExportEinstellungAssoc_arr['exportformate_preis_ueber_null']) &&
-        $cExportEinstellungAssoc_arr['exportformate_preis_ueber_null'] === 'Y') {
+    if (isset($cExportEinstellungAssoc_arr['exportformate_preis_ueber_null'])
+        && $cExportEinstellungAssoc_arr['exportformate_preis_ueber_null'] === 'Y'
+    ) {
         $cSQL_arr['Join'] .= " JOIN tpreise ON tpreise.kArtikel = tartikel.kArtikel
                                 AND tpreise.kKundengruppe = " . (int)$oExportformat->kKundengruppe . "
                                 AND tpreise.fVKNetto > 0";
     }
 
-    if (isset($cExportEinstellungAssoc_arr['exportformate_beschreibung']) &&
-        $cExportEinstellungAssoc_arr['exportformate_beschreibung'] === 'Y') {
+    if (isset($cExportEinstellungAssoc_arr['exportformate_beschreibung'])
+        && $cExportEinstellungAssoc_arr['exportformate_beschreibung'] === 'Y'
+    ) {
         $cSQL_arr['Where'] .= " AND tartikel.cBeschreibung != ''";
     }
 
@@ -301,7 +305,8 @@ function holeMaxExportArtikelAnzahl(&$oExportformat)
             " . $cSQL_arr['Join'] . "
             WHERE tartikelattribut.kArtikelAttribut IS NULL" . $cSQL_arr['Where'] . "
                 AND tartikelsichtbarkeit.kArtikel IS NULL
-                {$sql}", 1
+                {$sql}",
+        \DB\ReturnType::SINGLE_OBJECT
     );
     Shop::Cache()->set($cid, $count, [CACHING_GROUP_CORE], 120);
 

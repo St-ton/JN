@@ -191,7 +191,7 @@ interface FilterInterface
     /**
      * get a nice name
      *
-     * @return string
+     * @return string|null
      */
     public function getName();
 
@@ -200,7 +200,7 @@ interface FilterInterface
      *
      * @return string
      */
-    public function getUrlParam();
+    public function getUrlParam(): string;
 
     /**
      * @param string $param
@@ -213,7 +213,7 @@ interface FilterInterface
      *
      * @return string
      */
-    public function getUrlParamSEO();
+    public function getUrlParamSEO(): string;
 
     /**
      * @param string $param
@@ -237,10 +237,10 @@ interface FilterInterface
     /**
      * set basic information for using this filter
      *
-     * @param ProductFilter|null $productFilter
+     * @param ProductFilter $productFilter
      * @return $this
      */
-    public function setBaseData($productFilter): FilterInterface;
+    public function setBaseData(ProductFilter $productFilter): FilterInterface;
 
     /**
      * the language ID currently active in the shop
@@ -268,7 +268,7 @@ interface FilterInterface
      *
      * @return string
      */
-    public function getClassName();
+    public function getClassName(): string;
 
     /**
      * set the filter's class name
@@ -283,7 +283,7 @@ interface FilterInterface
      *
      * @return string
      */
-    public function getNiceName();
+    public function getNiceName(): string;
 
     /**
      * set the filter's class name
@@ -296,24 +296,24 @@ interface FilterInterface
     /**
      * @return int
      */
-    public function getCount();
+    public function getCount(): int;
 
     /**
      * @param int $count
      * @return $this
      */
-    public function setCount($count);
+    public function setCount(int $count): FilterInterface;
 
     /**
      * @return int
      */
-    public function getSort();
+    public function getSort(): int;
 
     /**
      * @param int $sort
      * @return $this
      */
-    public function setSort($sort);
+    public function setSort(int $sort): FilterInterface;
 
     /**
      * @return bool
@@ -374,7 +374,7 @@ interface FilterInterface
     /**
      * @return string
      */
-    public function getFrontendName();
+    public function getFrontendName(): string;
 
     /**
      * @param InputType $type
@@ -394,7 +394,7 @@ interface FilterInterface
     public function setIcon($icon): FilterInterface;
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getIcon();
 

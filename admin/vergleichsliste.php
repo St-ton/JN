@@ -11,8 +11,8 @@ $cHinweis = '';
 $cFehler  = '';
 $cSetting = '(469, 470)';
 // Tabs
-if (strlen(verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', verifyGPDataString('tab'));
+if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
 // Zeitfilter
 if (!isset($_SESSION['Vergleichsliste'])) {
@@ -29,7 +29,7 @@ if (isset($_POST['zeitfilter']) && (int)$_POST['zeitfilter'] === 1) {
         : 0;
 }
 
-if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && validateToken()) {
+if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && FormHelper::validateToken()) {
     $oConfig_arr = Shop::Container()->getDB()->query(
         "SELECT *
             FROM teinstellungenconf
@@ -38,7 +38,8 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && vali
                 OR kEinstellungenSektion = " . CONF_VERGLEICHSLISTE . "
                 )
                 AND cConf = 'Y'
-            ORDER BY nSort", 2
+            ORDER BY nSort",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     $configCount = count($oConfig_arr);
     for ($i = 0; $i < $configCount; $i++) {
@@ -66,7 +67,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && vali
         Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
     }
 
-    $cHinweis .= 'Ihre Einstellungen wurden &uuml;bernommen.';
+    $cHinweis .= 'Ihre Einstellungen wurden übernommen.';
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
 }
 
@@ -154,7 +155,7 @@ if (is_array($oTopVergleichsliste_arr) && count($oTopVergleichsliste_arr) > 0) {
 $smarty->assign('Letzten20Vergleiche', $oLetzten20Vergleichsliste_arr)
     ->assign('TopVergleiche', $oTopVergleichsliste_arr)
     ->assign('oPagination', $oPagination)
-    ->assign('sprachen', gibAlleSprachen())
+    ->assign('sprachen', Sprache::getAllLanguages())
     ->assign('hinweis', $cHinweis)
     ->assign('fehler', $cFehler)
     ->display('vergleichsliste.tpl');

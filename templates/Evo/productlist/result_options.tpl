@@ -61,7 +61,7 @@
     </div>{* /row *}
     {if $show_filters}
         {if count($contentFilters) > 0}
-            <div id="filter-collapsible" class="collapse in top10" aria-expanded="true">
+            <div id="filter-collapsible" class="collapse top10{if $Einstellungen.template.productlist.initial_display_filter === 'Y'} in" aria-expanded="true{/if}">
                 <nav class="panel panel-default">
                     <div id="navbar-filter" class="panel-body">
                         <div class="fs-0">
@@ -69,7 +69,7 @@
                                 {if count($filter->getFilterCollection()) > 0}
                                     {block name='productlist-result-options-'|cat:$filter->getNiceName()}
                                         {foreach $filter->getOptions() as $subFilter}
-                                            {if !$subFilter->getVisibility()->equals(\Filter\Visibility::SHOW_NEVER())}
+                                            {if !$subFilter->getVisibility()->equals(\Filter\Visibility::SHOW_NEVER()) && !$subFilter->getVisibility()->equals(\Filter\Visibility::SHOW_BOX())}
                                                 <div class="form-group dropdown filter-type-{$filter->getNiceName()}">
                                                     <a href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-expanded="false">
                                                         {$subFilter->getFrontendName()} <span class="caret"></span>

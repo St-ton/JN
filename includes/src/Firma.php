@@ -107,7 +107,7 @@ class Firma
     /**
      * @param bool $load
      */
-    public function __construct($load = true)
+    public function __construct(bool $load = true)
     {
         if ($load) {
             $this->loadFromDB();
@@ -119,7 +119,7 @@ class Firma
      *
      * @return $this
      */
-    public function loadFromDB()
+    public function loadFromDB(): self
     {
         $obj = Shop::Container()->getDB()->query("SELECT * FROM tfirma LIMIT 1", \DB\ReturnType::SINGLE_OBJECT);
         foreach (get_object_vars($obj) as $k => $v) {
@@ -135,7 +135,7 @@ class Firma
      *
      * @return int
      */
-    public function updateInDB()
+    public function updateInDB(): int
     {
         $obj                = new stdClass();
         $obj->cName         = $this->cName;
@@ -165,26 +165,10 @@ class Firma
      * setzt Daten aus Sync POST request.
      *
      * @return bool
+     * @deprecated since 5.0.0
      */
-    public function setzePostDaten()
+    public function setzePostDaten(): bool
     {
-        $this->cName        = StringHandler::htmlentities(StringHandler::filterXSS($_POST['Name']));
-        $this->cUnternehmer = StringHandler::htmlentities(StringHandler::filterXSS($_POST['Unternehmer']));
-        $this->cStrasse     = StringHandler::htmlentities(StringHandler::filterXSS($_POST['Strasse']));
-        $this->cHausnummer  = StringHandler::htmlentities(StringHandler::filterXSS($_POST['Hausnummer']));
-        $this->cPLZ         = StringHandler::htmlentities(StringHandler::filterXSS($_POST['PLZ']));
-        $this->cOrt         = StringHandler::htmlentities(StringHandler::filterXSS($_POST['Ort']));
-        $this->cLand        = StringHandler::htmlentities(StringHandler::filterXSS($_POST['Land']));
-        $this->cTel         = StringHandler::htmlentities(StringHandler::filterXSS($_POST['Tel']));
-        $this->cFax         = StringHandler::htmlentities(StringHandler::filterXSS($_POST['Fax']));
-        $this->cEMail       = StringHandler::htmlentities(StringHandler::filterXSS($_POST['EMail']));
-        $this->cWWW         = StringHandler::htmlentities(StringHandler::filterXSS($_POST['WWW']));
-        $this->cBLZ         = StringHandler::htmlentities(StringHandler::filterXSS($_POST['BLZ']));
-        $this->cKontoNr     = StringHandler::htmlentities(StringHandler::filterXSS($_POST['KontoNr']));
-        $this->cBank        = StringHandler::htmlentities(StringHandler::filterXSS($_POST['Bank']));
-        $this->cUSTID       = StringHandler::htmlentities(StringHandler::filterXSS($_POST['USTID']));
-        $this->cSteuerNr    = StringHandler::htmlentities(StringHandler::filterXSS($_POST['SteuerNr']));
-
-        return true;
+        return false;
     }
 }

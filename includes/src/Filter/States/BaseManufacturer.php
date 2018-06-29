@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -13,7 +13,7 @@ use Filter\FilterOption;
 use Filter\FilterInterface;
 use Filter\FilterStateSQL;
 use Filter\Type;
-use Filter\Items\ItemManufacturer;
+use Filter\Items\Manufacturer;
 use Filter\ProductFilter;
 
 /**
@@ -179,7 +179,7 @@ class BaseManufacturer extends AbstractFilter
                     ORDER BY ssMerkmal.nSortNr, ssMerkmal.cName",
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $additionalFilter = new ItemManufacturer($this->productFilter);
+        $additionalFilter = new Manufacturer($this->productFilter);
         foreach ($manufacturers as $manufacturer) {
             // attributes for old filter templates
             $manufacturer->kHersteller = (int)$manufacturer->kHersteller;

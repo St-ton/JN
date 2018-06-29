@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -18,10 +18,10 @@ use Mapper\SortingType;
 use Tightenco\Collect\Support\Collection;
 
 /**
- * Class ItemSort
+ * Class Sort
  * @package Filter\Items
  */
-class ItemSort extends AbstractFilter
+class Sort extends AbstractFilter
 {
     /**
      * @var Factory
@@ -44,7 +44,7 @@ class ItemSort extends AbstractFilter
     protected $activeSortingType;
 
     /**
-     * ItemSort constructor.
+     * Sort constructor.
      *
      * @param ProductFilter $productFilter
      */

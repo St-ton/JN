@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @copyright (c) JTL-Software-GmbH
@@ -8,16 +8,16 @@
 namespace Filter;
 
 use DB\ReturnType;
-use Filter\Items\ItemSearch;
-use Filter\Items\ItemAttribute;
-use Filter\Items\ItemCategory;
-use Filter\Items\ItemLimit;
-use Filter\Items\ItemManufacturer;
-use Filter\Items\ItemPriceRange;
-use Filter\Items\ItemRating;
-use Filter\Items\ItemSearchSpecial;
-use Filter\Items\ItemSort;
-use Filter\Items\ItemTag;
+use Filter\Items\Search;
+use Filter\Items\Attribute;
+use Filter\Items\Category;
+use Filter\Items\Limit;
+use Filter\Items\Manufacturer;
+use Filter\Items\PriceRange;
+use Filter\Items\Rating;
+use Filter\Items\SearchSpecial;
+use Filter\Items\Sort;
+use Filter\Items\Tag;
 use Filter\Pagination\Info;
 use Filter\SortingOptions\Factory;
 use Filter\States\DummyState;
@@ -58,7 +58,7 @@ class ProductFilter
     private $category;
 
     /**
-     * @var ItemCategory
+     * @var Category
      */
     private $categoryFilter;
 
@@ -68,7 +68,7 @@ class ProductFilter
     private $manufacturer;
 
     /**
-     * @var ItemManufacturer
+     * @var Manufacturer
      */
     private $manufacturerFilter;
 
@@ -83,32 +83,32 @@ class ProductFilter
     private $searchQuery;
 
     /**
-     * @var ItemSearch[]
+     * @var Search[]
      */
     private $searchFilter = [];
 
     /**
-     * @var ItemTag[]
+     * @var Tag[]
      */
     private $tagFilter = [];
 
     /**
-     * @var ItemAttribute[]
+     * @var Attribute[]
      */
     private $attributeFilter = [];
 
     /**
-     * @var ItemSearchSpecial
+     * @var SearchSpecial
      */
     private $searchSpecialFilter;
 
     /**
-     * @var ItemRating
+     * @var Rating
      */
     private $ratingFilter;
 
     /**
-     * @var ItemPriceRange
+     * @var PriceRange
      */
     private $priceRangeFilter;
 
@@ -123,7 +123,7 @@ class ProductFilter
     private $searchSpecial;
 
     /**
-     * @var ItemSearch
+     * @var Search
      */
     private $search;
 
@@ -183,17 +183,17 @@ class ProductFilter
     private $url;
 
     /**
-     * @var ItemTag
+     * @var Tag
      */
     public $tagFilterCompat;
 
     /**
-     * @var ItemAttribute
+     * @var Attribute
      */
     private $attributeFilterCollection;
 
     /**
-     * @var ItemSearch
+     * @var Search
      */
     public $searchFilterCompat;
 
@@ -228,17 +228,17 @@ class ProductFilter
     private $bExtendedJTLSearch;
 
     /**
-     * @var bool
+     * @var int
      */
     private $showChildProducts;
 
     /**
-     * @var ItemSort
+     * @var Sort
      */
     private $sorting;
 
     /**
-     * @var ItemLimit
+     * @var Limit
      */
     private $limits;
 
@@ -286,15 +286,15 @@ class ProductFilter
         $this->filterURL         = new ProductFilterURL($this);
         $this->showChildProducts = defined('SHOW_CHILD_PRODUCTS')
             ? SHOW_CHILD_PRODUCTS
-            : false;
+            : 0;
         executeHook(HOOK_PRODUCTFILTER_CREATE, ['productFilter' => $this]);
         $this->initBaseStates();
     }
 
     /**
-     * @return bool
+     * @return int
      */
-    public function showChildProducts(): bool
+    public function showChildProducts(): int
     {
         return $this->showChildProducts;
     }
@@ -584,18 +584,18 @@ class ProductFilter
     }
 
     /**
-     * @return ItemSort
+     * @return Sort
      */
-    public function getSorting(): ItemSort
+    public function getSorting(): Sort
     {
         return $this->sorting;
     }
 
     /**
-     * @param ItemSort $sorting
+     * @param Sort $sorting
      * @return $this
      */
-    public function setSorting(ItemSort $sorting): self
+    public function setSorting(Sort $sorting): self
     {
         $this->sorting = $sorting;
 
@@ -603,18 +603,18 @@ class ProductFilter
     }
 
     /**
-     * @return ItemLimit
+     * @return Limit
      */
-    public function getLimits(): ItemLimit
+    public function getLimits(): Limit
     {
         return $this->limits;
     }
 
     /**
-     * @param ItemLimit $limits
+     * @param Limit $limits
      * @return $this
      */
-    public function setLimits(ItemLimit $limits): self
+    public function setLimits(Limit $limits): self
     {
         $this->limits = $limits;
 
@@ -683,10 +683,10 @@ class ProductFilter
     public function initBaseStates(): self
     {
         $this->category       = new BaseCategory($this);
-        $this->categoryFilter = new ItemCategory($this);
+        $this->categoryFilter = new Category($this);
 
         $this->manufacturer       = new BaseManufacturer($this);
-        $this->manufacturerFilter = new ItemManufacturer($this);
+        $this->manufacturerFilter = new Manufacturer($this);
 
         $this->searchQuery = new BaseSearchQuery($this);
 
@@ -701,17 +701,17 @@ class ProductFilter
         $this->searchFilter    = [];
         $this->tagFilter       = [];
 
-        $this->searchSpecialFilter = new ItemSearchSpecial($this);
+        $this->searchSpecialFilter = new SearchSpecial($this);
 
-        $this->ratingFilter = new ItemRating($this);
+        $this->ratingFilter = new Rating($this);
 
-        $this->priceRangeFilter = new ItemPriceRange($this);
+        $this->priceRangeFilter = new PriceRange($this);
 
-        $this->tagFilterCompat           = new ItemTag($this);
-        $this->attributeFilterCollection = new ItemAttribute($this);
-        $this->searchFilterCompat        = new ItemSearch($this);
+        $this->tagFilterCompat           = new Tag($this);
+        $this->attributeFilterCollection = new Attribute($this);
+        $this->searchFilterCompat        = new Search($this);
 
-        $this->search = new ItemSearch($this);
+        $this->search = new Search($this);
 
         $this->baseState = new DummyState($this);
 
@@ -724,8 +724,8 @@ class ProductFilter
         $this->filters[] = $this->priceRangeFilter;
         $this->filters[] = $this->ratingFilter;
 
-        $this->sorting = new ItemSort($this);
-        $this->limits  = new ItemLimit($this);
+        $this->sorting = new Sort($this);
+        $this->limits  = new Limit($this);
 
         $this->sorting->setFactory(new Factory($this));
         $this->sorting->registerSortingOptions();
@@ -770,7 +770,7 @@ class ProductFilter
         }
         $this->initAttributeFilters($params['MerkmalFilter_arr']);
         foreach ($params['TagFilter_arr'] as $tf) {
-            $this->tagFilter[] = $this->addActiveFilter(new ItemTag($this), $tf);
+            $this->tagFilter[] = $this->addActiveFilter(new Tag($this), $tf);
         }
         if ($params['kSuchspecialFilter'] > 0 && count($params['searchSpecialFilters']) === 0) {
             // backwards compatibility
@@ -782,7 +782,7 @@ class ProductFilter
 
         // @todo - same as suchfilter?
         foreach ($params['SuchFilter_arr'] as $sf) {
-            $this->searchFilter[] = $this->addActiveFilter(new ItemSearch($this), $sf);
+            $this->searchFilter[] = $this->addActiveFilter(new Search($this), $sf);
         }
         if ($params['nSortierung'] > 0) {
             $this->nSortierung = (int)$params['nSortierung'];
@@ -916,7 +916,7 @@ class ProductFilter
             $attribute->kMerkmal         = (int)$attribute->kMerkmal;
             $attribute->kMerkmalWert     = (int)$attribute->kMerkmalWert;
             $attribute->nMehrfachauswahl = (int)$attribute->nMehrfachauswahl;
-            $this->attributeFilter[]     = $this->addActiveFilter(new ItemAttribute($this), $attribute);
+            $this->attributeFilter[]     = $this->addActiveFilter(new Attribute($this), $attribute);
         }
 
         return $this;
@@ -1117,7 +1117,7 @@ class ProductFilter
     }
 
     /**
-     * @return ItemManufacturer
+     * @return Manufacturer
      */
     public function getManufacturerFilter(): FilterInterface
     {
@@ -1125,7 +1125,7 @@ class ProductFilter
     }
 
     /**
-     * @param ItemManufacturer|\stdClass $filter
+     * @param Manufacturer|\stdClass $filter
      * @return $this
      */
     public function setManufacturerFilter($filter): self
@@ -1156,7 +1156,7 @@ class ProductFilter
     }
 
     /**
-     * @param ItemManufacturer $filter
+     * @param Manufacturer $filter
      * @return $this
      */
     public function setManufacturer($filter): self
@@ -1181,7 +1181,7 @@ class ProductFilter
     /**
      * returns ALL registered attribute filters
      *
-     * @return ItemAttribute[]
+     * @return Attribute[]
      */
     public function getAttributeFilters(): array
     {
@@ -1192,7 +1192,7 @@ class ProductFilter
      * this method works like pre Shop 4.06 - only returns ACTIVE attribute filters
      *
      * @param null|int $idx
-     * @return ItemAttribute|ItemAttribute[]
+     * @return Attribute|Attribute[]
      */
     public function getAttributeFilter($idx = null)
     {
@@ -1265,7 +1265,7 @@ class ProductFilter
     }
 
     /**
-     * @return ItemAttribute
+     * @return Attribute
      */
     public function getAttributeFilterCollection(): FilterInterface
     {
@@ -1274,7 +1274,7 @@ class ProductFilter
 
     /**
      * @param null|int $idx
-     * @return ItemTag|ItemTag[]
+     * @return Tag|Tag[]
      */
     public function getTagFilter(int $idx = null)
     {
@@ -1352,7 +1352,7 @@ class ProductFilter
     }
 
     /**
-     * @return ItemCategory
+     * @return Category
      */
     public function getCategoryFilter(): FilterInterface
     {
@@ -1383,7 +1383,7 @@ class ProductFilter
     }
 
     /**
-     * @return ItemSearch
+     * @return Search
      */
     public function getSearch(): FilterInterface
     {
@@ -1427,7 +1427,7 @@ class ProductFilter
 
     /**
      * @param null|int $idx
-     * @return ItemSearch|ItemSearch[]
+     * @return Search|Search[]
      */
     public function getSearchFilter(int $idx = null)
     {
@@ -1470,7 +1470,7 @@ class ProductFilter
     }
 
     /**
-     * @return ItemSearchSpecial
+     * @return SearchSpecial
      */
     public function getSearchSpecialFilter(): FilterInterface
     {
@@ -1507,7 +1507,7 @@ class ProductFilter
     }
 
     /**
-     * @return ItemRating
+     * @return Rating
      */
     public function getRatingFilter(): FilterInterface
     {
@@ -1534,7 +1534,7 @@ class ProductFilter
     }
 
     /**
-     * @return ItemPriceRange
+     * @return PriceRange
      */
     public function getPriceRangeFilter(): FilterInterface
     {
@@ -1783,7 +1783,7 @@ class ProductFilter
             $end = min($nLimitN + $productsPerPage, $productCount);
             $this->searchResults->setOffsetStart($nLimitN + 1)
                                 ->setOffsetEnd($end > 0 ? $end : $productCount);
-            $total   = $productsPerPage > 0 ? ceil($productCount / $productsPerPage) : 1;
+            $total   = $productsPerPage > 0 ? (int)ceil($productCount / $productsPerPage) : 1;
             $minPage = max($this->nSeite - floor($maxPaginationPageCount / 2), 1);
             $maxPage = $minPage + $maxPaginationPageCount - 1;
             if ($maxPage > $total) {
@@ -1940,7 +1940,7 @@ class ProductFilter
     private function extractConditionsFromORFilters(array $filters, array $conditions): array
     {
         $groupedOrFilters = group($filters, function (FilterInterface $f) {
-            return $f->getClassName() === ItemAttribute::class
+            return $f->getClassName() === Attribute::class
                 ? $f->getAttributeID()
                 : $f->getPrimaryKeyRow();
         });

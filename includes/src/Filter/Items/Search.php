@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -16,10 +16,10 @@ use Filter\ProductFilter;
 use Filter\States\BaseSearchQuery;
 
 /**
- * Class ItemSearch
+ * Class Search
  * @package Filter
  */
-class ItemSearch extends AbstractFilter
+class Search extends AbstractFilter
 {
     use \MagicCompatibilityTrait;
 
@@ -55,7 +55,7 @@ class ItemSearch extends AbstractFilter
     ];
 
     /**
-     * ItemSearch constructor.
+     * Search constructor.
      *
      * @param ProductFilter $productFilter
      */
@@ -349,7 +349,7 @@ class ItemSearch extends AbstractFilter
         if (is_array($searchFilter)) {
             $count       = count($searchFilter);
             $searchCache = array_map(function ($f) {
-                /** @var ItemSearch $f */
+                /** @var Search $f */
                 return $f->getValue();
             }, $searchFilter);
         } elseif ($searchFilter->getSearchCacheID() > 0) {
@@ -487,7 +487,7 @@ class ItemSearch extends AbstractFilter
             ? ($searchFilters[0]->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) / 9
             : 0;
         $activeValues     = array_map(function($f) { // @todo: create method for this logic
-            /** @var ItemSearch $f */
+            /** @var Search $f */
             return $f->getValue();
         }, $this->productFilter->getSearchFilter());
 

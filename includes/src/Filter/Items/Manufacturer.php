@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -12,13 +12,13 @@ use Filter\ProductFilter;
 use Filter\States\BaseManufacturer;
 
 /**
- * Class ItemManufacturer
+ * Class Manufacturer
  * @package Filter\Items
  */
-class ItemManufacturer extends BaseManufacturer
+class Manufacturer extends BaseManufacturer
 {
     /**
-     * ItemManufacturer constructor.
+     * Manufacturer constructor.
      *
      * @param ProductFilter $productFilter
      */

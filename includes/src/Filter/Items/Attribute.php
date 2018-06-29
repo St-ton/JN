@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -21,10 +21,10 @@ use function Functional\group;
 use function Functional\map;
 
 /**
- * Class ItemAttribute
+ * Class Attribute
  * @package Filter\Items
  */
-class ItemAttribute extends BaseAttribute
+class Attribute extends BaseAttribute
 {
     use \MagicCompatibilityTrait;
 
@@ -59,7 +59,7 @@ class ItemAttribute extends BaseAttribute
     ];
 
     /**
-     * ItemAttribute constructor.
+     * Attribute constructor.
      *
      * @param ProductFilter $productFilter
      */
@@ -82,7 +82,7 @@ class ItemAttribute extends BaseAttribute
 
     /**
      * @param bool $isMultiSelect
-     * @return ItemAttribute
+     * @return Attribute
      */
     public function setIsMultiSelect(bool $isMultiSelect): FilterInterface
     {
@@ -218,7 +218,7 @@ class ItemAttribute extends BaseAttribute
             ' WHERE ' . $this->getPrimaryKeyRow() . ' IN (' .
             $this->getValue() .
             '))' .
-            ' #condition from ItemAttribute::getSQLCondition() ' . $this->getName() . "\n";
+            ' #condition from Attribute::getSQLCondition() ' . $this->getName() . "\n";
     }
 
     /**
@@ -242,7 +242,7 @@ class ItemAttribute extends BaseAttribute
     {
         return array_reduce($this->productFilter->getAttributeFilter(),
             function ($a, $b) use ($kMerkmalWert) {
-                /** @var ItemAttribute $b */
+                /** @var Attribute $b */
                 return $a || $b->getValue() === $kMerkmalWert;
             },
             false

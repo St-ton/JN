@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -121,7 +121,7 @@ class FilterOption extends AbstractFilter
      * @param string $class
      * @return $this
      */
-    public function setClass($class): FilterInterface
+    public function setClass(string $class): FilterInterface
     {
         $this->class = $class;
 

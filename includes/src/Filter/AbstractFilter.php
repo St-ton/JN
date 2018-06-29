@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -193,7 +193,7 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function setIsActive($active): FilterInterface
+    public function setIsActive(bool $active): FilterInterface
     {
         $this->isActive = $active;
 
@@ -203,7 +203,7 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function setIsInitialized($value): FilterInterface
+    public function setIsInitialized(bool $value): FilterInterface
     {
         $this->isInitialized = $value;
 
@@ -256,7 +256,7 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function getFilterCollection($onlyVisible = true): array
+    public function getFilterCollection(bool $onlyVisible = true): array
     {
         return $onlyVisible === false
             ? $this->filterCollection
@@ -530,7 +530,7 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function getConfig($idx = null)
+    public function getConfig($idx = null): array
     {
         return $this->productFilter->getConfig($idx);
     }

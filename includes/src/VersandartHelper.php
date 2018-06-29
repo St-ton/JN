@@ -1016,7 +1016,7 @@ class VersandartHelper
             case 'vm_versandberechnung_gewicht_jtl':
                 $warenkorbgewicht = $Artikel
                     ? $Artikel->fGewicht
-                    : Session::Cart()->getWeight();
+                    : Session::Cart()->getWeight(true);
                 $warenkorbgewicht += $oZusatzArtikel->fGewicht;
                 $versand          = Shop::Container()->getDB()->queryPrepared(
                     'SELECT *
@@ -1037,7 +1037,7 @@ class VersandartHelper
             case 'vm_versandberechnung_warenwert_jtl':
                 $warenkorbwert = $Artikel
                     ? $Artikel->Preise->fVKNetto
-                    : Session::Cart()->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true);
+                    : Session::Cart()->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true, true);
                 $warenkorbwert += $oZusatzArtikel->fWarenwertNetto;
                 $versand       = Shop::Container()->getDB()->queryPrepared(
                     'SELECT *
@@ -1059,7 +1059,7 @@ class VersandartHelper
                 $artikelanzahl = 1;
                 if (!$Artikel) {
                     $artikelanzahl = isset($_SESSION['Warenkorb'])
-                        ? Session::Cart()->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL])
+                        ? Session::Cart()->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL], true)
                         : 0;
                 }
                 $artikelanzahl += $oZusatzArtikel->fAnzahl;
@@ -1085,8 +1085,8 @@ class VersandartHelper
         }
         //artikelabhaengiger Versand?
         if ($versandart->cNurAbhaengigeVersandart === 'Y'
-            && (!empty($Artikel->FunktionsAttribute['versandkosten'])
-                || !empty($Artikel->FunktionsAttribute['versandkosten gestaffelt']))
+            && (!empty($Artikel->FunktionsAttribute[FKT_ATTRIBUT_VERSANDKOSTEN])
+                || !empty($Artikel->FunktionsAttribute[FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT]))
         ) {
             $fArticleSpecific = self::gibArtikelabhaengigeVersandkosten($cISO, $Artikel, 1);
             $preis            += $fArticleSpecific->fKosten ?? 0;
@@ -1167,8 +1167,8 @@ class VersandartHelper
                 AND (cKundengruppen = '-1'
                     OR FIND_IN_SET('{$kKundengruppe}', REPLACE(cKundengruppen, ';', ',')) > 0)";
         // artikelabhaengige Versandarten nur laden und prüfen wenn der Artikel das entsprechende Funktionasattribut hat
-        if (empty($Artikel->FunktionsAttribute['versandkosten'])
-            && empty($Artikel->FunktionsAttribute['versandkosten gestaffelt'])
+        if (empty($Artikel->FunktionsAttribute[FKT_ATTRIBUT_VERSANDKOSTEN])
+            && empty($Artikel->FunktionsAttribute[FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT])
         ) {
             $query .= " AND cNurAbhaengigeVersandart = 'N'";
         }

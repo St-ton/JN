@@ -6516,4 +6516,13 @@ class Artikel
     {
         return $this->options->$option ?? $default;
     }
+
+    /**
+     * @return bool
+     */
+    public function isUsedForShippingCostCalculation(): bool
+    {
+        $oExcludedAttributes_arr = [FKT_ATTRIBUT_VERSANDKOSTEN, FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT];
+        return (count(array_intersect_key(array_flip($oExcludedAttributes_arr), $this->FunktionsAttribute)) === 0);
+    }
 }

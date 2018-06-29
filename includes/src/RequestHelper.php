@@ -111,7 +111,7 @@ class RequestHelper
         if (($bBestellung && $conf['kaufabwicklung']['bestellabschluss_ip_speichern'] === 'N')
             || (!$bBestellung && $conf['global']['global_ips_speichern'] === 'N')
         ) {
-            $ip = substr($ip, 0, strpos($ip, '.', strpos($ip, '.') + 1) + 1) . '*.*';
+            $ip = (new IpAnonymizer($ip))->anonymize();
         }
 
         return $ip;

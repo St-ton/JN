@@ -32,7 +32,7 @@ class IpAnonymizer
 
         switch (strlen($this->bRawIp)) {
             case 4:
-                 $this->szIP = $this->rmLeadingZero($szIP);
+                 $this->szIP     = $this->rmLeadingZero($szIP);
                  $this->szIpMask = $this->getMaskV4();
                 break;
             case 16:
@@ -106,4 +106,3 @@ class IpAnonymizer
         return $this->vShopConf['global']['ip_anonymize_mask_v6'];
     }
 }
-

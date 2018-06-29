@@ -29,7 +29,7 @@ class Migration_20180628131539 extends Migration implements IMigration
     {
         $this->setConfig(
             'ip_anonymize_mask_v4',                                                                // setting name
-            '255.255.255.0',                                                                         // default value of setting
+            '255.255.255.0',                                                                       // default value of setting
             CONF_GLOBAL,                                                                           // section of setting (see: includes / defines_inc.php)
             'IPv4-Adress-Anonymisiermaske',                                                        // caption of setting in the backend
             'text',                                                                                // setting-type

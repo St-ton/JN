@@ -203,12 +203,12 @@ class Controller
             $question   = $this->survey->getQuestionByID($questionID);
             $type       = $question !== null ? $question->getType() : null;
             if ($question === null
-                || $type === SurveyQuestion::TEXT_PAGE_CHANGE
-                || $type === SurveyQuestion::TEXT_STATIC
+                || $type === QuestionType::TEXT_PAGE_CHANGE
+                || $type === QuestionType::TEXT_STATIC
             ) {
                 continue;
             }
-            if ($type === SurveyQuestion::MATRIX_SINGLE) {
+            if ($type === QuestionType::MATRIX_SINGLE) {
                 $answer = [];
 
                 foreach ($question->getAnswerOptions() as $answerOption) {

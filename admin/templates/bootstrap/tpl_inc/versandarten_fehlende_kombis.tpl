@@ -1,6 +1,6 @@
 {config_load file="$lang.conf" section="versandarten"}
 
-{if !empty($missingShippingClassCombis) && $missingShippingClassCombis === -1}
+{if $missingShippingClassCombis === -1}
     <p>
         {#coverageShippingClassCombination#}
         {#noShipClassCombiValidation#|sprintf:$smarty.const.SHIPPING_CLASS_MAX_VALIDATION_COUNT}

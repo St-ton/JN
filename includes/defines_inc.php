@@ -316,7 +316,6 @@ define('JOBQUEUE_LIMIT_M_STATUSEMAIL', '1');
 defined('EXPORTFORMAT_LIMIT_M') || define('EXPORTFORMAT_LIMIT_M', 2000);
 defined('EXPORTFORMAT_ASYNC_LIMIT_M') || define('EXPORTFORMAT_ASYNC_LIMIT_M', 15);
 // Special Exportformate
-define('SPECIAL_EXPORTFORMAT_YATEGO', 1);
 // Shop Template Logo Name
 define('SHOPLOGO_NAME', 'jtlshoplogo');
 // Erweiterte Artikelübersicht Darstellung

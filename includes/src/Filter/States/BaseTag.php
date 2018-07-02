@@ -11,6 +11,7 @@ use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
 use Filter\FilterInterface;
+use Filter\FilterStateSQL;
 use Filter\Type;
 use Filter\Items\ItemTag;
 use Filter\ProductFilter;
@@ -26,7 +27,7 @@ class BaseTag extends AbstractFilter
     /**
      * @var array
      */
-    private static $mapping = [
+    public static $mapping = [
         'kTag'  => 'ValueCompat',
         'cName' => 'Name'
     ];
@@ -136,42 +137,40 @@ class BaseTag extends AbstractFilter
             return $this->options;
         }
         $options = [];
-        if ($this->getConfig()['navigationsfilter']['allgemein_tagfilter_benutzen'] === 'N') {
+        if ($this->getConfig('navigationsfilter')['allgemein_tagfilter_benutzen'] === 'N') {
             return $options;
         }
         $state = $this->productFilter->getCurrentStateData($this->getType()->equals(Type::OR())
             ? $this->getClassName()
             : null
         );
-        $state->addJoin((new FilterJoin())
+        $sql   = (new FilterStateSQL())->from($state);
+        $sql->setSelect([
+            'ttag.kTag',
+            'ttag.cName',
+            'ttagartikel.nAnzahlTagging',
+            'tartikel.kArtikel'
+        ]);
+        $sql->setOrderBy(null);
+        $sql->setLimit('');
+        $sql->setGroupBy(['ttag.kTag', 'tartikel.kArtikel']);
+
+        $sql->addJoin((new FilterJoin())
             ->setComment('join1 from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('ttagartikel')
             ->setOn('ttagartikel.kArtikel = tartikel.kArtikel')
             ->setOrigin(__CLASS__));
-        $state->addJoin((new FilterJoin())
+        $sql->addJoin((new FilterJoin())
             ->setComment('join2 from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('ttag')
             ->setOn('ttagartikel.kTag = ttag.kTag')
             ->setOrigin(__CLASS__));
-        $state->addCondition('ttag.nAktiv = 1');
-        $state->addCondition('ttag.kSprache = ' . $this->getLanguageID());
-        $query               = $this->productFilter->getFilterSQL()->getBaseQuery(
-            [
-                'ttag.kTag',
-                'ttag.cName',
-                'ttagartikel.nAnzahlTagging',
-                'tartikel.kArtikel'
-            ],
-            $state->getDeduplicatedJoins(),
-            $state->getConditions(),
-            $state->getHaving(),
-            null,
-            '',
-            ['ttag.kTag', 'tartikel.kArtikel']
-        );
-        $tags                = \Shop::Container()->getDB()->query(
+        $sql->addCondition('ttag.nAktiv = 1');
+        $sql->addCondition('ttag.kSprache = ' . $this->getLanguageID());
+        $query            = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
+        $tags             = \Shop::Container()->getDB()->query(
             "SELECT tseo.cSeo, ssMerkmal.kTag, ssMerkmal.cName, 
                 COUNT(*) AS nAnzahl, SUM(ssMerkmal.nAnzahlTagging) AS nAnzahlTagging
                     FROM (" . $query . ") AS ssMerkmal
@@ -180,10 +179,10 @@ class BaseTag extends AbstractFilter
                     AND tseo.kSprache = " . $this->getLanguageID() . "
                 GROUP BY ssMerkmal.kTag
                 ORDER BY nAnzahl DESC LIMIT 0, " .
-            (int)$this->getConfig()['navigationsfilter']['tagfilter_max_anzeige'],
+            (int)$this->getConfig('navigationsfilter')['tagfilter_max_anzeige'],
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $additionalFilter    = new ItemTag($this->productFilter);
+        $additionalFilter = new ItemTag($this->productFilter);
         // Priorität berechnen
         $nPrioStep = 0;
         $nCount    = count($tags);

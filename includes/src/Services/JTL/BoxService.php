@@ -15,6 +15,7 @@ use DB\DbInterface;
 use DB\ReturnType;
 use Filter\ProductFilter;
 use Filter\ProductFilterSearchResults;
+use Filter\ProductFilterSearchResultsInterface;
 use Filter\Visibility;
 
 /**
@@ -175,11 +176,11 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * @param ProductFilter              $pf
-     * @param ProductFilterSearchResults $sr
+     * @param ProductFilter                       $pf
+     * @param ProductFilterSearchResultsInterface $sr
      * @return bool
      */
-    public function gibBoxenFilterNach(ProductFilter $pf, ProductFilterSearchResults $sr): bool
+    public function showBoxes(ProductFilter $pf, ProductFilterSearchResultsInterface $sr): bool
     {
         $cf  = $pf->getCategoryFilter();
         $mf  = $pf->getManufacturerFilter();
@@ -263,8 +264,8 @@ class BoxService implements BoxServiceInterface
         }
         $originalArticle = $smarty->getTemplateVars('Artikel');
         $productFilter   = \Shop::getProductFilter();
-        $filterAfter     = !empty($this->config)
-            ? $this->gibBoxenFilterNach($productFilter, $productFilter->getSearchResults(false))
+        $showBoxes       = !empty($this->config)
+            ? $this->showBoxes($productFilter, $productFilter->getSearchResults())
             : 0;
         $htmlArray       = [
             'top'    => null,
@@ -273,7 +274,7 @@ class BoxService implements BoxServiceInterface
             'left'   => null
         ];
         $smarty->assign('BoxenEinstellungen', $this->config)
-               ->assign('bBoxenFilterNach', $filterAfter)
+               ->assign('bBoxenFilterNach', $showBoxes)
                ->assign('NettoPreise', \Session::CustomerGroup()->getIsMerchant());
 
         $boxRenderer = new DefaultRenderer($smarty);
@@ -331,6 +332,9 @@ class BoxService implements BoxServiceInterface
                 $visiblePositions[] = $position;
             }
         }
+        if (count($visiblePositions) === 0) {
+            return [];
+        }
         $visiblePositions = \Functional\map($visiblePositions, function ($e) {
             return "'" . $e . "'";
         });
@@ -343,7 +347,8 @@ class BoxService implements BoxServiceInterface
             \Plugin::PLUGIN_ACTIVATED . "  OR tboxvorlage.eTyp != 'plugin')"
             : '';
         if (($grouped = \Shop::Cache()->get($cacheID)) === false) {
-            $sql     = 'SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, 
+            $boxData = $this->db->query(
+                'SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, 
                        tboxen.cTitel, tboxen.ePosition, tboxensichtbar.kSeite, tboxensichtbar.nSort, 
                        tboxensichtbar.cFilter, tboxvorlage.eTyp, 
                        tboxvorlage.cName, tboxvorlage.cTemplate, tplugin.nStatus AS pluginStatus,
@@ -361,11 +366,9 @@ class BoxService implements BoxServiceInterface
                         ON tboxsprache.kBox = tboxen.kBox
                     LEFT JOIN tsprache
                         ON tsprache.cISO = tboxsprache.cISO
-                    WHERE tboxen.kContainer > -1 ' . $cSQLAktiv . $cPluginAktiv .
-                ' GROUP BY tboxsprache.kBoxSprache, tboxen.kBox, tboxensichtbar.cFilter
-                    ORDER BY tboxensichtbar.nSort, tboxen.kBox ASC';
-            $boxData = $this->db->query(
-                $sql,
+                    WHERE tboxen.kContainer > -1 ' . $cSQLAktiv . $cPluginAktiv . ' 
+                    GROUP BY tboxsprache.kBoxSprache, tboxen.kBox, tboxensichtbar.cFilter
+                    ORDER BY tboxensichtbar.nSort, tboxen.kBox ASC',
                 ReturnType::ARRAY_OF_OBJECTS
             );
             $grouped = \Functional\group($boxData, function ($e) {

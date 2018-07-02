@@ -808,7 +808,7 @@ class Sprache
                                 'val'     => $cWert,
                                 'sys'     => $bSystem
                             ],
-                            4
+                            \DB\ReturnType::DEFAULT
                         );
                         $nUpdateCount++;
                         break;
@@ -839,7 +839,7 @@ class Sprache
                                     'val'     => $cWert,
                                     'sys'     => $bSystem
                                 ],
-                                4
+                                \DB\ReturnType::DEFAULT
                             );
                             $nUpdateCount++;
                         }

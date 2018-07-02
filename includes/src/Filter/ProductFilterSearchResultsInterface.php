@@ -6,6 +6,7 @@
 
 namespace Filter;
 
+use Filter\Pagination\Info;
 use Tightenco\Collect\Support\Collection;
 
 
@@ -98,15 +99,15 @@ interface ProductFilterSearchResultsInterface
     public function setOffsetEnd($offsetEnd): ProductFilterSearchResultsInterface;
 
     /**
-     * @return \stdClass
+     * @return Info
      */
-    public function getPages(): \stdClass;
+    public function getPages(): Info;
 
     /**
-     * @param \stdClass $pages
+     * @param Info $pages
      * @return $this
      */
-    public function setPages($pages): ProductFilterSearchResultsInterface;
+    public function setPages(Info $pages): ProductFilterSearchResultsInterface;
 
     /**
      * @return string|null

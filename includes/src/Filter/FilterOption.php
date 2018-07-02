@@ -62,7 +62,7 @@ class FilterOption extends AbstractFilter
     /**
      * @var array
      */
-    private static $mapping = [
+    public static $mapping = [
         'cName'          => 'Name',
         'nAnzahl'        => 'Count',
         'nAnzahlArtikel' => 'Count',

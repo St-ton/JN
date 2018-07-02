@@ -7,6 +7,8 @@
 namespace Filter;
 
 
+use Filter\Pagination\Info;
+
 /**
  * Class Metadata
  */
@@ -117,11 +119,11 @@ interface MetadataInterface
     public function hasData(): bool;
 
     /**
-     * @param \Kategorie|null      $currentCategory
+     * @param \Kategorie|null      $category
      * @param \KategorieListe|null $openCategories
      * @return $this
      */
-    public function getNavigationInfo($currentCategory = null, $openCategories = null): MetadataInterface;
+    public function getNavigationInfo(\Kategorie $category = null, \KategorieListe $openCategories = null): MetadataInterface;
 
     /**
      * @param array                               $products
@@ -142,7 +144,7 @@ interface MetadataInterface
      * @param \Kategorie|null $category
      * @return string
      */
-    public function generateMetaKeywords($products, $category = null): string;
+    public function generateMetaKeywords($products, \Kategorie $category = null): string;
 
     /**
      * @param ProductFilterSearchResultsInterface $searchResults
@@ -150,7 +152,7 @@ interface MetadataInterface
      * @param \Kategorie|null                     $category
      * @return string
      */
-    public function generateMetaTitle($searchResults, $globalMeta, $category = null): string;
+    public function generateMetaTitle($searchResults, $globalMeta, \Kategorie $category = null): string;
 
     /**
      * Erstellt für die NaviMetas die gesetzten Mainwords + Filter und stellt diese vor jedem Meta an.
@@ -173,56 +175,16 @@ interface MetadataInterface
 
     /**
      * @return string|null
+     * @deprecated since 5.0.0
      */
     public function getBreadCrumbName();
 
     /**
-     * @param bool      $bSeo
-     * @param \stdClass $oSeitenzahlen
-     * @param int       $nMaxAnzeige
-     * @param string    $cFilterShopURL
-     * @return array
-     * @former baueSeitenNaviURL
-     */
-    public function buildPageNavigation($bSeo, $oSeitenzahlen, $nMaxAnzeige = 7, $cFilterShopURL = ''): array;
-
-    /**
-     * @param int $nDarstellung
+     * @param int $viewType
      * @return \stdClass
      * @former gibErweiterteDarstellung
      */
-    public function getExtendedView($nDarstellung = 0): \stdClass;
-
-    /**
-     * @param bool $bExtendedJTLSearch
-     * @return array
-     * @former gibSortierliste
-     */
-    public function getSortingOptions($bExtendedJTLSearch = false): array;
-
-    /**
-     * @param array $search
-     * @return null|\stdClass
-     * @former gibNextSortPrio
-     */
-    public function getNextSearchPriority(array $search);
-
-    /**
-     * @param null|\Kategorie $currentCategory
-     * @return $this
-     */
-    public function setUserSort($currentCategory = null): MetadataInterface;
-
-    /**
-     * @param int|string $sort
-     * @return int
-     */
-    public static function mapUserSorting($sort): int;
-
-    /**
-     * @return int
-     */
-    public function getProductsPerPageLimit(): int;
+    public function getExtendedView(int $viewType = 0): \stdClass;
 
     /**
      * @return bool

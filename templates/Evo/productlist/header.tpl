@@ -181,7 +181,7 @@
 {if $Suchergebnisse->getProductCount() > 0}
     <div class="row list-pageinfo top10">
         <div class="col-xs-4 page-current">
-            <strong>{lang key='page' section='productOverview'} {$Suchergebnisse->getPages()->AktuelleSeite}</strong> {lang key='of' section='productOverview'} {$Suchergebnisse->getPages()->MaxSeiten}
+            <strong>{lang key='page' section='productOverview'} {$Suchergebnisse->getPages()->getCurrentPage()}</strong> {lang key='of' section='productOverview'} {$Suchergebnisse->getPages()->getTotalPages()}
         </div>
         <div class="col-xs-8 page-total text-right">
             {lang key='products'} {$Suchergebnisse->getOffsetStart()} - {$Suchergebnisse->getOffsetEnd()} {lang key='of' section='productOverview'} {$Suchergebnisse->getProductCount()}

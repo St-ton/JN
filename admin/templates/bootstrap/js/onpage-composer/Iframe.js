@@ -404,18 +404,25 @@ Iframe.prototype = {
     togglePreview: function()
     {
         if (this.previewMode) {
-            this.updateDropTargets();
-            this.enableEditingEvents();
-            this.portlets().removeClass('opc-preview');
-            this.previewMode = false;
-        }
-        else {
-            this.stripDropTargets();
-            this.disableEditingEvents();
-            this.setSelected();
-            this.setHovered();
-            this.portlets().addClass('opc-preview');
-            this.previewMode = true;
+            this.gui.showLoader();
+            this.page.hideLivePreview(function() {
+                this.enableEditingEvents();
+                this.portlets().removeClass('opc-preview');
+                this.pagetree.render();
+                this.updateDropTargets();
+                this.previewMode = false;
+                this.gui.hideLoader();
+            }.bind(this));
+        } else {
+            this.gui.showLoader();
+            this.page.showLivePreview(function () {
+                this.disableEditingEvents();
+                this.setSelected();
+                this.setHovered();
+                this.portlets().addClass('opc-preview');
+                this.previewMode = true;
+                this.gui.hideLoader();
+            }.bind(this));
         }
     },
 

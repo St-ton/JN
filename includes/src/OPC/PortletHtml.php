@@ -70,7 +70,7 @@ trait PortletHtml
      */
     final protected function getFinalHtmlFromTpl($instance): string
     {
-        $smarty     = \Shop::Smarty();
+        $smarty     = new \JTLSmarty(true);
         $pathprefix = '';
 
         if ($this->getPlugin() !== null) {

@@ -62,10 +62,12 @@ class PageService
             'lockDraft',
             'unlockDraft',
             'getDraftPreview',
+            'getDraftFinal',
             'getRevisionPreview',
             'publicateDraft',
             'saveDraft',
             'createPagePreview',
+            'createPageLivePreview',
             'deleteDraft',
         ];
     }
@@ -183,6 +185,16 @@ class PageService
     }
 
     /**
+     * @param int $key
+     * @return array
+     * @throws \Exception
+     */
+    public function getDraftFinal(int $key): array
+    {
+        return $this->getDraft($key)->getAreaList()->getFinalHtml();
+    }
+
+    /**
      * @param int $revId
      * @return string[]
      * @throws \Exception
@@ -263,5 +275,16 @@ class PageService
         $page = (new Page())->deserialize($data);
 
         return $page->getAreaList()->getPreviewHtml();
+    }
+
+    /**
+     * @param array $data
+     * @return string[]
+     */
+    public function createPageLivePreview(array $data): array
+    {
+        $page = (new Page())->deserialize($data);
+
+        return $page->getAreaList()->getFinalHtml();
     }
 }

@@ -109,5 +109,6 @@ class Migration_20180507101900 extends Migration implements IMigration
         $this->execute("DROP TABLE topcpage");
 
         $this->execute("DELETE FROM tadminmenu WHERE cLinkname='OnPage Composer';");
+        $this->execute("DELETE FROM trevisions WHERE type='opcpage';");
     }
 }

@@ -21,14 +21,15 @@ final class BoxTopRatedProducts extends AbstractBox
     public function __construct(array $config)
     {
         parent::__construct($config);
-        $parentSQL = ' AND tartikel.kVaterArtikel = 0';
-        $cacheTags = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
-        $cacheID   = 'bx_tprtd_' . $config['boxen']['boxen_topbewertet_minsterne'] . '_' .
+        $this->products = [];
+        $parentSQL      = ' AND tartikel.kVaterArtikel = 0';
+        $cacheTags      = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
+        $cacheID        = 'bx_tprtd_' . $config['boxen']['boxen_topbewertet_minsterne'] . '_' .
             $config['boxen']['boxen_topbewertet_basisanzahl'] . md5($parentSQL);
-        $cached    = true;
-        if (($productData = \Shop::Container()->getCache()->get($cacheID)) === false) {
-            $cached      = false;
-            $productData = \Shop::Container()->getDB()->query(
+        $cached         = true;
+        if (($topRated = \Shop::Container()->getCache()->get($cacheID)) === false) {
+            $cached   = false;
+            $topRated = \Shop::Container()->getDB()->query(
                 "SELECT tartikel.kArtikel, tartikelext.fDurchschnittsBewertung
                     FROM tartikel
                     JOIN tartikelext ON tartikel.kArtikel = tartikelext.kArtikel
@@ -38,24 +39,33 @@ final class BoxTopRatedProducts extends AbstractBox
                     LIMIT " . (int)$config['boxen']['boxen_topbewertet_basisanzahl'],
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            \Shop::Container()->getCache()->set($cacheID, $productData, $cacheTags);
+            \Shop::Container()->getCache()->set($cacheID, $topRated, $cacheTags);
         }
-        if (count($productData) > 0) {
-            $defaultOptions = \Artikel::getDefaultOptions();
-            $products       = [];
-            $max            = (int)$config['boxen']['boxen_topbewertet_anzahl'];
-            shuffle($productData);
-            foreach ($productData as $i => $item) {
-                if ($i >= $max) {
-                    break;
+        if (count($topRated) > 0) {
+            $productIDs = [];
+            foreach ($topRated as $oTopBewertet) {
+                $oTopBewertet->kArtikel = (int)$oTopBewertet->kArtikel;
+                $productIDs[]           = (int)$oTopBewertet->kArtikel;
+            }
+            if (count($productIDs) > 0) {
+                $max = (int)$config['boxen']['boxen_topbewertet_anzahl'];
+                if (count($topRated) < (int)$config['boxen']['boxen_topbewertet_anzahl']) {
+                    $max = count($topRated);
                 }
-                $product = new \Artikel();
-                $product->fuelleArtikel((int)$item->kArtikel, $defaultOptions);
-                $product->fDurchschnittsBewertung = round($item->fDurchschnittsBewertung * 2) / 2;
-                $products[]                       = $product;
+                $defaultOptions = \Artikel::getDefaultOptions();
+                foreach (array_rand($productIDs, $max) as $i => $id) {
+                    $this->products[] = (new \Artikel())->fuelleArtikel($productIDs[$id], $defaultOptions);
+                }
+                foreach ($topRated as $oTopBewertet) {
+                    foreach ($this->products as $j => $oArtikel) {
+                        if ($oTopBewertet->kArtikel === $oArtikel->kArtikel) {
+                            $this->products[$j]->fDurchschnittsBewertung = round($oTopBewertet->fDurchschnittsBewertung * 2) / 2;
+                        }
+                    }
+                }
             }
             $this->setShow(true);
-            $this->setProducts($products);
+            $this->setProducts($this->products);
             $this->setURL(\SearchSpecialHelper::buildURL(SEARCHSPECIALS_TOPREVIEWS));
 
             executeHook(HOOK_BOXEN_INC_TOPBEWERTET, [

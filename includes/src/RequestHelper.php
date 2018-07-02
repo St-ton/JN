@@ -63,10 +63,10 @@ class RequestHelper
 
     /**
      * @param string $var
-     * @return string
+     * @return string|array
      * @since 5.0.0
      */
-    public static function verifyGPDataString($var): string
+    public static function verifyGPDataString($var)
     {
         if (isset($_POST[$var])) {
             return $_POST[$var];

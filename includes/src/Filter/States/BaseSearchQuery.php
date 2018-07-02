@@ -11,6 +11,7 @@ use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
 use Filter\FilterInterface;
+use Filter\FilterStateSQL;
 use Filter\ProductFilter;
 use function Functional\filter;
 
@@ -25,7 +26,7 @@ class BaseSearchQuery extends AbstractFilter
     /**
      * @var array
      */
-    private static $mapping = [
+    public static $mapping = [
         'kSuchanfrage' => 'ID',
         'kSuchcache'   => 'SearchCacheID',
         'cSuche'       => 'Name',
@@ -99,8 +100,8 @@ class BaseSearchQuery extends AbstractFilter
     public function setName($name): FilterInterface
     {
         $this->error = null;
-        $minChars    = ((int)$this->getConfig()['artikeluebersicht']['suche_min_zeichen'] > 0)
-            ? (int)$this->getConfig()['artikeluebersicht']['suche_min_zeichen']
+        $minChars    = ($min = (int)$this->getConfig('artikeluebersicht')['suche_min_zeichen']) > 0
+            ? $min
             : 3;
         if (strlen($name) > 0 || (isset($_GET['qs']) && $_GET['qs'] === '')) {
             preg_match("/[\w" . utf8_decode('äÄüÜöÖß') . "\.\-]{" . $minChars . ",}/",
@@ -271,68 +272,61 @@ class BaseSearchQuery extends AbstractFilter
             return $this->options;
         }
         $options  = [];
-        $naviConf = $this->getConfig()['navigationsfilter'];
+        $naviConf = $this->getConfig('navigationsfilter');
         if ($naviConf['suchtrefferfilter_nutzen'] === 'N') {
             return $options;
         }
-        $nLimit = (isset($naviConf['suchtrefferfilter_anzahl'])
-            && ($limit = (int)$naviConf['suchtrefferfilter_anzahl']) > 0)
-            ? ' LIMIT ' . $limit
+        $limit = (isset($naviConf['suchtrefferfilter_anzahl'])
+            && ($n = (int)$naviConf['suchtrefferfilter_anzahl']) > 0)
+            ? ' LIMIT ' . $n
             : '';
-        $state  = $this->productFilter->getCurrentStateData();
-
-        $state->addJoin((new FilterJoin())
+        $sql   = (new FilterStateSQL())->from($this->productFilter->getCurrentStateData());
+        $sql->setSelect(['tsuchanfrage.kSuchanfrage', 'tsuchanfrage.cSuche', 'tartikel.kArtikel']);
+        $sql->setOrderBy(null);
+        $sql->setLimit('');
+        $sql->setGroupBy(['tsuchanfrage.kSuchanfrage', 'tartikel.kArtikel']);
+        $sql->addJoin((new FilterJoin())
             ->setComment('JOIN1 from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('tsuchcachetreffer')
             ->setOn('tartikel.kArtikel = tsuchcachetreffer.kArtikel')
             ->setOrigin(__CLASS__));
-        $state->addJoin((new FilterJoin())
+        $sql->addJoin((new FilterJoin())
             ->setComment('JOIN2 from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('tsuchcache')
             ->setOn('tsuchcache.kSuchCache = tsuchcachetreffer.kSuchCache')
             ->setOrigin(__CLASS__));
-        $state->addJoin((new FilterJoin())
+        $sql->addJoin((new FilterJoin())
             ->setComment('JOIN3 from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('tsuchanfrage')
             ->setOn('tsuchanfrage.cSuche = tsuchcache.cSuche 
                         AND tsuchanfrage.kSprache = ' . $this->getLanguageID())
             ->setOrigin(__CLASS__));
-
-        $state->addCondition('tsuchanfrage.nAktiv = 1');
-
-        $query            = $this->productFilter->getFilterSQL()->getBaseQuery(
-            ['tsuchanfrage.kSuchanfrage', 'tsuchanfrage.cSuche', 'tartikel.kArtikel'],
-            $state->getJoins(),
-            $state->getConditions(),
-            $state->getHaving(),
-            null,
-            '',
-            ['tsuchanfrage.kSuchanfrage', 'tartikel.kArtikel']
-        );
-        $searchFilters    = \Shop::Container()->getDB()->query(
+        $sql->addCondition('tsuchanfrage.nAktiv = 1');
+        $query          = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
+        $searchFilters  = \Shop::Container()->getDB()->query(
             'SELECT ssMerkmal.kSuchanfrage, ssMerkmal.cSuche, COUNT(*) AS nAnzahl
                 FROM (' . $query . ') AS ssMerkmal
                     GROUP BY ssMerkmal.kSuchanfrage
-                    ORDER BY ssMerkmal.cSuche' . $nLimit,
+                    ORDER BY ssMerkmal.cSuche' . $limit,
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $kSuchanfrage_arr = [];
+        $searchQueryIDs = [];
         if ($this->productFilter->hasSearch()) {
-            $kSuchanfrage_arr[] = (int)$this->productFilter->getSearch()->getValue();
+            $searchQueryIDs[] = (int)$this->productFilter->getSearch()->getValue();
         }
         if ($this->productFilter->hasSearchFilter()) {
             foreach ($this->productFilter->getSearchFilter() as $oSuchFilter) {
                 if ($oSuchFilter->getValue() > 0) {
-                    $kSuchanfrage_arr[] = (int)$oSuchFilter->getValue();
+                    $searchQueryIDs[] = (int)$oSuchFilter->getValue();
                 }
             }
         }
         // entferne bereits gesetzte Filter aus dem Ergebnis-Array
         foreach ($searchFilters as $j => $searchFilter) {
-            foreach ($kSuchanfrage_arr as $searchQuery) {
+            foreach ($searchQueryIDs as $searchQuery) {
                 if ($searchFilter->kSuchanfrage === $searchQuery) {
                     unset($searchFilters[$j]);
                     break;
@@ -458,8 +452,8 @@ class BaseSearchQuery extends AbstractFilter
             return (int)$oSuchCache->kSuchCache; // Gib gültigen Suchcache zurück
         }
         // wenn kein Suchcache vorhanden
-        $nMindestzeichen = ((int)$this->getConfig()['artikeluebersicht']['suche_min_zeichen'] > 0)
-            ? (int)$this->getConfig()['artikeluebersicht']['suche_min_zeichen']
+        $nMindestzeichen = ($min = (int)$this->getConfig('artikeluebersicht')['suche_min_zeichen']) > 0
+            ? $min
             : 3;
         if (strlen($cSuche) < $nMindestzeichen) {
             require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
@@ -483,17 +477,15 @@ class BaseSearchQuery extends AbstractFilter
         $oSuchCache->dErstellt = 'now()';
         $kSuchCache            = \Shop::Container()->getDB()->insert('tsuchcache', $oSuchCache);
 
-        if ($this->getConfig()['artikeluebersicht']['suche_fulltext'] !== 'N'
-            && $this->isFulltextIndexActive()
-        ) {
+        if ($this->getConfig('artikeluebersicht')['suche_fulltext'] !== 'N' && $this->isFulltextIndexActive()) {
             $oSuchCache->kSuchCache = $kSuchCache;
 
             return $this->editFullTextSearchCache(
                 $oSuchCache,
                 $searchColumnn_arr,
                 $cSuch_arr,
-                $this->getConfig()['artikeluebersicht']['suche_max_treffer'],
-                $this->getConfig()['artikeluebersicht']['suche_fulltext']
+                $this->getConfig('artikeluebersicht')['suche_max_treffer'],
+                $this->getConfig('artikeluebersicht')['suche_fulltext']
             );
         }
 
@@ -828,7 +820,7 @@ class BaseSearchQuery extends AbstractFilter
             'INSERT INTO tsuchcachetreffer ' .
             $cSQL .
             ' GROUP BY kArtikelTMP
-                LIMIT ' . (int)$this->getConfig()['artikeluebersicht']['suche_max_treffer'],
+                LIMIT ' . (int)$this->getConfig('artikeluebersicht')['suche_max_treffer'],
             ReturnType::AFFECTED_ROWS
         );
 
@@ -882,11 +874,9 @@ class BaseSearchQuery extends AbstractFilter
         $oSuchCache,
         $searchColumnn_arr,
         $cSuch_arr,
-        $nLimit = 0,
+        int $nLimit = 0,
         $cFullText = 'Y'
     ): int {
-        $nLimit = (int)$nLimit;
-
         if ($oSuchCache->kSuchCache > 0) {
             $cArtikelSpalten_arr = array_map(function ($item) {
                 $item_arr = explode('.', $item, 2);
@@ -932,13 +922,13 @@ class BaseSearchQuery extends AbstractFilter
             }
 
             $cISQL = "INSERT INTO tsuchcachetreffer
-                    SELECT kSuchCache, kArtikelTMP, ROUND(MAX(15 - score) * 10)
-                    FROM ($cSQL) AS i
-                    LEFT JOIN tartikelsichtbarkeit 
-                        ON tartikelsichtbarkeit.kArtikel = i.kArtikelTMP
-                        AND tartikelsichtbarkeit.kKundengruppe = " . \Session::CustomerGroup()->getID() . "
-                    WHERE tartikelsichtbarkeit.kKundengruppe IS NULL
-                    GROUP BY kSuchCache, kArtikelTMP" . ($nLimit > 0 ? " LIMIT $nLimit" : '');
+                        SELECT kSuchCache, kArtikelTMP, ROUND(MAX(15 - score) * 10)
+                        FROM ($cSQL) AS i
+                        LEFT JOIN tartikelsichtbarkeit 
+                            ON tartikelsichtbarkeit.kArtikel = i.kArtikelTMP
+                            AND tartikelsichtbarkeit.kKundengruppe = " . \Session::CustomerGroup()->getID() . "
+                        WHERE tartikelsichtbarkeit.kKundengruppe IS NULL
+                        GROUP BY kSuchCache, kArtikelTMP" . ($nLimit > 0 ? " LIMIT $nLimit" : '');
 
             \Shop::Container()->getDB()->query($cISQL, ReturnType::AFFECTED_ROWS);
         }

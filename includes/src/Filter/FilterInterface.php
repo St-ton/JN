@@ -259,9 +259,10 @@ interface FilterInterface
     /**
      * get shop settings, derived from Navigationsfilter class
      *
-     * @return array
+     * @param string|null $idx
+     * @return array|string|int
      */
-    public function getConfig(): array;
+    public function getConfig($idx = null);
 
     /**
      * get the filter's class name

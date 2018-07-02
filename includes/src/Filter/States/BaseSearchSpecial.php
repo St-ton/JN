@@ -22,7 +22,7 @@ class BaseSearchSpecial extends AbstractFilter
     /**
      * @var array
      */
-    private static $mapping = [
+    public static $mapping = [
         'kKey' => 'ValueCompat'
     ];
 
@@ -115,7 +115,7 @@ class BaseSearchSpecial extends AbstractFilter
     {
         switch ($this->value) {
             case SEARCHSPECIALS_BESTSELLER:
-                $nAnzahl = (($min = $this->getConfig()['global']['global_bestseller_minanzahl']) > 0)
+                $nAnzahl = (($min = $this->getConfig('global')['global_bestseller_minanzahl']) > 0)
                     ? (int)$min
                     : 100;
 
@@ -135,11 +135,13 @@ class BaseSearchSpecial extends AbstractFilter
                                     AND " . $tsp . " .kKundengruppe = " . \Session::CustomerGroup()->getID();
 
             case SEARCHSPECIALS_NEWPRODUCTS:
-                $alter_tage = (($age = $this->getConfig()['boxen']['box_neuimsortiment_alter_tage']) > 0)
+                $alter_tage = (($age = $this->getConfig('boxen')['box_neuimsortiment_alter_tage']) > 0)
                     ? (int)$age
                     : 30;
 
-                return "tartikel.cNeu = 'Y' AND DATE_SUB(now(),INTERVAL $alter_tage DAY) < tartikel.dErstellt AND tartikel.cNeu = 'Y'";
+                return "tartikel.cNeu = 'Y' 
+                    AND DATE_SUB(now(), INTERVAL $alter_tage DAY) < tartikel.dErstellt 
+                    AND tartikel.cNeu = 'Y'";
 
             case SEARCHSPECIALS_TOPOFFERS:
                 return "tartikel.cTopArtikel = 'Y'";
@@ -149,7 +151,7 @@ class BaseSearchSpecial extends AbstractFilter
 
             case SEARCHSPECIALS_TOPREVIEWS:
                 if (!$this->productFilter->hasRatingFilter()) {
-                    $nMindestSterne = ($min = $this->getConfig()['boxen']['boxen_topbewertet_minsterne']) > 0
+                    $nMindestSterne = ($min = $this->getConfig('boxen')['boxen_topbewertet_minsterne']) > 0
                         ? (int)$min
                         : 4;
 

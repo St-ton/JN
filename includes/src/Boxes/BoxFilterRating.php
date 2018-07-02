@@ -21,9 +21,9 @@ final class BoxFilterRating extends AbstractBox
     public function __construct(array $config)
     {
         parent::__construct($config);
-        $filter = \Shop::getProductFilter()->getRatingFilter();
-        $searchResults   = \Shop::getProductFilter()->getSearchResults();
-        $show            = $filter->getVisibility() !== Visibility::SHOW_NEVER
+        $filter        = \Shop::getProductFilter()->getRatingFilter();
+        $searchResults = \Shop::getProductFilter()->getSearchResults();
+        $show          = $filter->getVisibility() !== Visibility::SHOW_NEVER
             && $filter->getVisibility() !== Visibility::SHOW_CONTENT
             && (!empty($searchResults->getRatingFilterOptions()) || $filter->isInitialized());
         $this->setShow($show);

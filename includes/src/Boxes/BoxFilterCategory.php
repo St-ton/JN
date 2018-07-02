@@ -21,9 +21,9 @@ final class BoxFilterCategory extends AbstractBox
     public function __construct(array $config)
     {
         parent::__construct($config);
-        $filter = \Shop::getProductFilter()->getCategoryFilter();
-        $searchResults   = \Shop::getProductFilter()->getSearchResults();
-        $show            = $filter->getVisibility() !== Visibility::SHOW_NEVER
+        $filter        = \Shop::getProductFilter()->getCategoryFilter();
+        $searchResults = \Shop::getProductFilter()->getSearchResults();
+        $show          = $filter->getVisibility() !== Visibility::SHOW_NEVER
             && $filter->getVisibility() !== Visibility::SHOW_CONTENT
             && (!empty($searchResults->getCategoryFilterOptions()) || $filter->isInitialized());
         $this->setShow($show);

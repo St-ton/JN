@@ -39,7 +39,7 @@ class Migration_20180628131539 extends Migration implements IMigration
             ],
             true
         );
-        $this->setconfig(
+        $this->setConfig(
             'ip_anonymize_mask_v6',                                                                // setting name
             'ffff:ffff:ffff:ffff:0000:0000:0000:0000',                                             // default value of setting
             CONF_GLOBAL,                                                                           // section of setting (see: includes / defines_inc.php)

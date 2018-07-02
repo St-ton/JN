@@ -233,7 +233,7 @@ abstract class AbstractFilter implements FilterInterface
             }
             $this->activeValues[] = (new FilterOption())
                 ->setURL($this->getSeo($this->getLanguageID()))
-                ->setFrontendName($instance->getName())
+                ->setFrontendName($instance->getName() ?? '')
                 ->setValue($value)
                 ->setName($instance->getFrontendName())
                 ->setType($this->getType());

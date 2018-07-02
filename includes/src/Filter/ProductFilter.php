@@ -287,8 +287,8 @@ class ProductFilter
         $this->showChildProducts = defined('SHOW_CHILD_PRODUCTS')
             ? SHOW_CHILD_PRODUCTS
             : 0;
-        executeHook(HOOK_PRODUCTFILTER_CREATE, ['productFilter' => $this]);
         $this->initBaseStates();
+        executeHook(HOOK_PRODUCTFILTER_CREATE, ['productFilter' => $this]);
     }
 
     /**
@@ -1636,7 +1636,7 @@ class ProductFilter
         }
         // custom category attribute
         if ($category !== null && !empty($category->categoryFunctionAttributes[KAT_ATTRIBUT_ARTIKELSORTIERUNG])) {
-            $mapper                     = new SortingType();
+            $mapper = new SortingType();
             $_SESSION['Usersortierung'] = $mapper->mapUserSorting(
                 $category->categoryFunctionAttributes[KAT_ATTRIBUT_ARTIKELSORTIERUNG]
             );
@@ -1646,6 +1646,7 @@ class ProductFilter
         }
         // search special sorting
         if ($this->hasSearchSpecial()) {
+            //@todo oooooooooooooooooo!
             $oSuchspecialEinstellung_arr = $this->getSearchSpecialConfigMapping();
             $idx                         = $this->getSearchSpecial()->getValue();
             $ssConf                      = isset($oSuchspecialEinstellung_arr[$idx]) ?: null;
@@ -1696,9 +1697,7 @@ class ProductFilter
         $sql->setOrderBy($sorting->getOrderBy());
         $sql->setLimit('');
         $sql->setGroupBy(['tartikel.kArtikel']);
-
-        $qry = $this->getFilterSQL()->getBaseQuery($sql, 'listing');
-
+        $qry         = $this->getFilterSQL()->getBaseQuery($sql, 'listing');
         $productKeys = collect(array_map(
             function ($e) {
                 return (int)$e->kArtikel;

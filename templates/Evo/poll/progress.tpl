@@ -24,7 +24,7 @@
             <div {if $question->isRequired()}class="required"{/if}>
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{$question->getName()} {if $question->isRequired()} *{/if}}</h3>
+                        <h3 class="panel-title">{$question->getName()} {if $question->isRequired()} *{/if}</h3>
                     </div>
                     <div class="panel-body form-group">
                         {if !empty($question->getDescription())}

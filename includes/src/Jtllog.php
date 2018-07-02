@@ -244,7 +244,6 @@ class Jtllog
                 $cSQLWhere .= " AND cLog LIKE '%" . $cFilter . "%'";
             }
         }
-
         $oLog = Shop::Container()->getDB()->query(
             "SELECT count(*) AS nAnzahl 
                 FROM tjtllog" .

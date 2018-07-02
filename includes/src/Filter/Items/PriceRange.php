@@ -454,12 +454,14 @@ class PriceRange extends AbstractFilter
             $sql->setOrderBy(null);
             $sql->setLimit('');
             $sql->setGroupBy(['tartikel.kArtikel']);
-            $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
-            $qry       = 'SELECT MAX(ssMerkmal.fMax) AS fMax, MIN(ssMerkmal.fMin) AS fMin 
-                              FROM (' . $baseQuery . ' ) AS ssMerkmal';
-            $minMax    = \Shop::Container()->getDB()->query($qry, ReturnType::SINGLE_OBJECT);
+            $baseQry = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
+            $minMax  = \Shop::Container()->getDB()->query(
+                'SELECT MAX(ssMerkmal.fMax) AS fMax, MIN(ssMerkmal.fMin) AS fMin 
+                    FROM (' . $baseQry . ' ) AS ssMerkmal',
+                ReturnType::SINGLE_OBJECT
+            );
             if (isset($minMax->fMax) && $minMax->fMax > 0) {
-                $oPreis = $this->calculateSteps(
+                $oPreis                 = $this->calculateSteps(
                     $minMax->fMax * $currency->getConversionFactor(),
                     $minMax->fMin * $currency->getConversionFactor()
                 );
@@ -478,7 +480,7 @@ class PriceRange extends AbstractFilter
                 $sql->setGroupBy(['tartikel.kArtikel']);
                 $dbRes            = \Shop::Container()->getDB()->query(
                     'SELECT ' . $cSelectSQL . ' FROM (' .
-                        $this->productFilter->getFilterSQL()->getBaseQuery($sql) . ' ) AS ssMerkmal',
+                    $this->productFilter->getFilterSQL()->getBaseQuery($sql) . ' ) AS ssMerkmal',
                     ReturnType::SINGLE_OBJECT
                 );
                 $priceRanges      = [];
@@ -537,7 +539,6 @@ class PriceRange extends AbstractFilter
                 if (!$oPreis->nAnzahlSpannen || !$oPreis->fMaxPreis) {
                     return [];
                 }
-                $state      = $this->productFilter->getCurrentStateData();
                 $cSelectSQL = '';
                 $count      = count($ranges);
                 for ($i = 0; $i < $count; ++$i) {
@@ -554,10 +555,9 @@ class PriceRange extends AbstractFilter
                 foreach ($this->getSQLJoin() as $join) {
                     $sql->addJoin($join);
                 }
-                $query = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
-                $qry   = 'SELECT ' . $cSelectSQL . ' FROM (' . $query . ' ) AS ssMerkmal';
-                $dbRes = \Shop::Container()->getDB()->query(
-                    $qry,
+                $baseQry = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
+                $dbRes   = \Shop::Container()->getDB()->query(
+                    'SELECT ' . $cSelectSQL . ' FROM (' . $baseQry . ' ) AS ssMerkmal',
                     ReturnType::SINGLE_OBJECT
                 );
 

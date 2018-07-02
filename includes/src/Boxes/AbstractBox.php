@@ -252,7 +252,7 @@ abstract class AbstractBox implements BoxInterface
         $this->setCustomID((int)$data->kCustomID);
         $this->setContainerID((int)$data->kContainer);
         $this->setSort((int)$data->nSort);
-        $this->setIsActive((int)$data->bAktiv === 1);
+        $this->setIsActive(true);
         if ($this->products === null) {
             $this->products = new \ArtikelListe();
         }

@@ -6518,11 +6518,22 @@ class Artikel
     }
 
     /**
+     * @param string $cISO
      * @return bool
      */
-    public function isUsedForShippingCostCalculation(): bool
+    public function isUsedForShippingCostCalculation($cISO = null): bool
     {
         $oExcludedAttributes_arr = [FKT_ATTRIBUT_VERSANDKOSTEN, FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT];
-        return (count(array_intersect_key(array_flip($oExcludedAttributes_arr), $this->FunktionsAttribute)) === 0);
+        $cISO                    = $cISO ?? $this->cCachedCountryCode;
+
+        foreach ($oExcludedAttributes_arr as $cExcludedAttribute) {
+            if (isset($this->FunktionsAttribute[$cExcludedAttribute])
+                && (strpos($this->FunktionsAttribute[$cExcludedAttribute], $cISO) !== false)
+                && array_key_exists($cExcludedAttribute, $this->FunktionsAttribute)
+            ) {
+                return false;
+            }
+        }
+        return true;
     }
 }

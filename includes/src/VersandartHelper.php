@@ -172,6 +172,8 @@ class VersandartHelper
         $cNurAbhaengigeVersandart = self::normalerArtikelversand($lieferland) === false
             ? 'Y'
             : 'N';
+        $excludeShippingCostAttributes = $cNurAbhaengigeVersandart === 'N';
+
         $methods                  = Shop::Container()->getDB()->queryPrepared(
             "SELECT * FROM tversandart
                 WHERE cNurAbhaengigeVersandart = :depOnly
@@ -200,7 +202,7 @@ class VersandartHelper
             $shippingMethod->nMinLiefertage     = (int)$shippingMethod->nMinLiefertage;
             $shippingMethod->nMaxLiefertage     = (int)$shippingMethod->nMaxLiefertage;
             $shippingMethod->Zuschlag           = self::getAdditionalFees($shippingMethod, $cISO, $plz);
-            $shippingMethod->fEndpreis          = self::calculateShippingFees($shippingMethod, $cISO, null);
+            $shippingMethod->fEndpreis          = self::calculateShippingFees($shippingMethod, $cISO, null, 0, $excludeShippingCostAttributes);
             if ($shippingMethod->fEndpreis === -1) {
                 unset($methods[$i]);
                 continue;
@@ -989,10 +991,11 @@ class VersandartHelper
      * @param String            $cISO
      * @param Artikel|stdClass  $oZusatzArtikel
      * @param Artikel|int       $Artikel
+     * @param bool              $excludeShippingCostAttributes - exclude articles with these attributes from weight, amount and count calculation
      * @return int|string
      * @former berechneVersandpreis()
      */
-    public static function calculateShippingFees($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
+    public static function calculateShippingFees($versandart, $cISO, $oZusatzArtikel, $Artikel = 0, $excludeShippingCostAttributes = false)
     {
         if (!isset($oZusatzArtikel->fAnzahl)) {
             if (!isset($oZusatzArtikel)) {
@@ -1016,7 +1019,7 @@ class VersandartHelper
             case 'vm_versandberechnung_gewicht_jtl':
                 $warenkorbgewicht = $Artikel
                     ? $Artikel->fGewicht
-                    : Session::Cart()->getWeight(true);
+                    : Session::Cart()->getWeight($cISO, $excludeShippingCostAttributes);
                 $warenkorbgewicht += $oZusatzArtikel->fGewicht;
                 $versand          = Shop::Container()->getDB()->queryPrepared(
                     'SELECT *
@@ -1037,7 +1040,7 @@ class VersandartHelper
             case 'vm_versandberechnung_warenwert_jtl':
                 $warenkorbwert = $Artikel
                     ? $Artikel->Preise->fVKNetto
-                    : Session::Cart()->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true, true);
+                    : Session::Cart()->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true, $cISO, $excludeShippingCostAttributes);
                 $warenkorbwert += $oZusatzArtikel->fWarenwertNetto;
                 $versand       = Shop::Container()->getDB()->queryPrepared(
                     'SELECT *
@@ -1059,7 +1062,7 @@ class VersandartHelper
                 $artikelanzahl = 1;
                 if (!$Artikel) {
                     $artikelanzahl = isset($_SESSION['Warenkorb'])
-                        ? Session::Cart()->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL], true)
+                        ? Session::Cart()->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL], $cISO, $excludeShippingCostAttributes)
                         : 0;
                 }
                 $artikelanzahl += $oZusatzArtikel->fAnzahl;

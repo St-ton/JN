@@ -334,22 +334,22 @@
                                 onclick="addShippingCombination();$('.select2').select2();">
                             <span class="glyphicon glyphicon-plus"></span> {#addShippingClass#}
                         </button>
-                        {if !empty($missingShippingClassCombi)}
+                        {if !empty($missingShippingClassCombis)}
                         <button class="btn btn-warning" type="button" data-toggle="collapse" data-target="#collapseShippingClasses" aria-expanded="false" aria-controls="collapseShippingClasses">
                             {#showMissingCombinations#}
                         </button>
                         {/if}
                     </div>
-                    {if !empty($missingShippingClassCombi)}
+                    {if !empty($missingShippingClassCombis)}
                     <div class="collapse" id="collapseShippingClasses">
                         <div class="row">
-                            {if $missingShippingClassCombi === -1}
+                            {if $missingShippingClassCombis === -1}
                                 <div class="col-xs-12">
                                     {#coverageShippingClassCombination#}
-                                    {#noShipClassCombiValidation#|replace:'%s':$smarty.const.SHIP_CLASS_MAX_VALIDATION_COUNT}
+                                    {#noShipClassCombiValidation#|replace:'%s':$smarty.const.SHIPPING_CLASS_MAX_VALIDATION_COUNT}
                                 </div>
                             {else}
-                                {foreach $missingShippingClassCombi as $mscc}
+                                {foreach $missingShippingClassCombis as $mscc}
                                     <div class="col-xs-12 col-sm-6">[{$mscc}]</div>
                                 {/foreach}
                             {/if}

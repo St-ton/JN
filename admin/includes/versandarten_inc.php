@@ -234,7 +234,7 @@ function getZuschlagNames(int $kVersandzuschlag)
 
 /**
  * @param string $cSearch
- * @return array $allShippingsByName
+ * @return array
  */
 function getShippingByName($cSearch)
 {
@@ -273,41 +273,44 @@ function getShippingByName($cSearch)
 /**
  * @param array $shipClasses
  * @param int   $length
- * @return array $missingShippingClassCombi
+ * @return array
  */
-function getCombinations($base,$n){
+function getCombinations($base, $n)
+{
     $baselen = count($base);
-    if($baselen == 0){
-        return;
+    if ($baselen === 0) {
+
+        return [];
     }
-    if($n == 1){
-        $return = array();
-        foreach($base as $b){
+    if ($n === 1) {
+        $return = [];
+        foreach ($base as $b) {
             $return[] = array($b);
         }
+
         return $return;
-    }else{
-        //get one level lower combinations
-        $oneLevelLower = getCombinations($base,$n-1);
-        //for every one level lower combinations add one element to them that the last element of a combination is preceeded by the element which follows it in base array if there is none, does not add
-        $newCombs = array();
-        foreach($oneLevelLower as $oll){
-            $lastEl = $oll[$n-2];
-            $found = false;
-            foreach($base as  $key => $b){
-                if($b == $lastEl){
-                    $found = true;
-                    continue;
-                    //last element found
-                }
-                if($found == true){
-                    //add to combinations with last element
-                    if($key < $baselen){
-                        $tmp = $oll;
-                        $newCombination = array_slice($tmp,0);
-                        $newCombination[]=$b;
-                        $newCombs[] = array_slice($newCombination,0);
-                    }
+    }
+
+    //get one level lower combinations
+    $oneLevelLower = getCombinations($base, $n - 1);
+    //for every one level lower combinations add one element to them that the last element of a combination is preceeded by the element which follows it in base array if there is none, does not add
+    $newCombs = [];
+    foreach ($oneLevelLower as $oll) {
+        $lastEl = $oll[$n - 2];
+        $found  = false;
+        foreach ($base as $key => $b) {
+            if ($b === $lastEl) {
+                $found = true;
+                continue;
+                //last element found
+            }
+            if ($found === true) {
+                //add to combinations with last element
+                if ($key < $baselen) {
+                    $tmp              = $oll;
+                    $newCombination   = array_slice($tmp, 0);
+                    $newCombination[] = $b;
+                    $newCombs[]       = array_slice($newCombination, 0);
                 }
             }
         }
@@ -317,21 +320,22 @@ function getCombinations($base,$n){
 }
 
 /**
- * @return array|int $missingShippingClassCombi, -1 if too many shipping classes exist
+ * @return array|int -1 if too many shipping classes exist
  */
 function getMissingShippingClassCombi()
 {
-    $shippingClasses = Shop::Container()->getDB()->selectAll('tversandklasse',[],[],'kVersandklasse');
-    $shipClasses = [];
+    $shippingClasses         = Shop::Container()->getDB()->selectAll('tversandklasse', [], [], 'kVersandklasse');
+    $shipClasses             = [];
+    $combinationsInShippings = Shop::Container()->getDB()->selectAll('tversandart', [], [], 'cVersandklassen');
+    $combinationInUse        = [];
+
     foreach ($shippingClasses as $sc) {
         $shipClasses[] = $sc->kVersandklasse;
     }
 
-    $combinationsInShippings = Shop::Container()->getDB()->selectAll('tversandart',[],[],'cVersandklassen');
-    $combinationInUse = [];
     foreach ($combinationsInShippings as $com) {
-        $vk = trim($com->cVersandklassen);
-        $vk_arr = explode(' ',$vk);
+        $vk     = trim($com->cVersandklassen);
+        $vk_arr = explode(' ', $vk);
         if (is_array($vk_arr)) {
             foreach ($vk_arr as $_vk) {
                 $combinationInUse[] = trim($_vk);
@@ -342,24 +346,26 @@ function getMissingShippingClassCombi()
     }
 
     // if a shipping method is valid for all classes return
-    if (in_array('-1',$combinationInUse)) {
+    if (in_array('-1', $combinationInUse)) {
 
         return [];
     }
 
     $len = count($shipClasses);
-    if ($len > SHIP_CLASS_MAX_VALIDATION_COUNT) {
+    if ($len > SHIPPING_CLASS_MAX_VALIDATION_COUNT) {
 
         return -1;
     }
+
     $possibleShippingClassCombinations = [];
-    for($i = 1; $i<=$len; $i++){
-        $result = getCombinations($shipClasses,$i);
-        foreach($result as $c){
-            $possibleShippingClassCombinations[]= implode("-",$c);
+    for ($i = 1; $i <= $len; $i++) {
+        $result = getCombinations($shipClasses, $i);
+        foreach ($result as $c) {
+            $possibleShippingClassCombinations[] = implode("-", $c);
         }
     }
-    $res = array_diff($possibleShippingClassCombinations,$combinationInUse);
+
+    $res = array_diff($possibleShippingClassCombinations, $combinationInUse);
     foreach ($res as &$mscc) {
         $mscc = gibGesetzteVersandklassenUebersicht($mscc)[0];
     }

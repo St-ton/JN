@@ -18,6 +18,9 @@ $cFehler            = '';
 $step               = 'uebersicht';
 $Versandart         = null;
 $nSteuersatzKey_arr = array_keys($_SESSION['Steuersatz']);
+
+$smarty->assign('missingShippingClassCombis', getMissingShippingClassCombi());
+
 if (isset($_POST['neu'], $_POST['kVersandberechnung']) &&
     (int)$_POST['neu'] === 1 &&
     (int)$_POST['kVersandberechnung'] > 0 &&
@@ -45,7 +48,6 @@ if (isset($_POST['edit']) && (int)$_POST['edit'] > 0 && FormHelper::validateToke
     $smarty->assign('VersandartZahlungsarten', reorganizeObjectArray($VersandartZahlungsarten, 'kZahlungsart'))
            ->assign('VersandartStaffeln', $VersandartStaffeln)
            ->assign('Versandart', $Versandart)
-           ->assign('missingShippingClassCombi', getMissingShippingClassCombi())
            ->assign('gewaehlteLaender', explode(' ', $Versandart->cLaender));
 }
 
@@ -480,7 +482,6 @@ if ($step === 'neue Versandart') {
            ->assign('gesetzteVersandklassen', isset($Versandart->cVersandklassen)
                ? gibGesetzteVersandklassen($Versandart->cVersandklassen)
                : null)
-           ->assign('missingShippingClassCombi', getMissingShippingClassCombi())
            ->assign('gesetzteKundengruppen', isset($Versandart->cKundengruppen)
                ? gibGesetzteKundengruppen($Versandart->cKundengruppen)
                : null);
@@ -610,10 +611,8 @@ if ($step === 'uebersicht') {
         }
     }
 
-    $missingShippingClassCombis = getMissingShippingClassCombi();
     if (!empty($missingShippingClassCombis)) {
-        $cFehler .= $smarty->assign('missingShippingClassCombis', $missingShippingClassCombis)
-                           ->fetch('tpl_inc/versandarten_fehlende_kombis.tpl');
+        $cFehler .= $smarty->fetch('tpl_inc/versandarten_fehlende_kombis.tpl');
     }
 
     $smarty->assign('versandberechnungen', $versandberechnungen)

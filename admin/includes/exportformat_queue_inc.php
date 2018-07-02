@@ -18,39 +18,36 @@ function holeExportformatCron()
             FROM texportformat
             JOIN tcron ON tcron.cJobArt = 'exportformat'
                 AND tcron.kKey = texportformat.kExportformat
-            ORDER BY tcron.dStart DESC", 2
+            ORDER BY tcron.dStart DESC",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-
-    if (is_array($oExportformatCron_arr) && count($oExportformatCron_arr) > 0) {
-        foreach ($oExportformatCron_arr as $i => $oExportformatCron) {
-            $oExportformatCron_arr[$i]->cAlleXStdToDays = rechneUmAlleXStunden($oExportformatCron->nAlleXStd);
-            $oExportformatCron_arr[$i]->Sprache         = Shop::Container()->getDB()->select(
-                'tsprache',
-                'kSprache',
-                (int)$oExportformatCron->kSprache
-            );
-            $oExportformatCron_arr[$i]->Waehrung        = Shop::Container()->getDB()->select(
-                'twaehrung',
-                'kWaehrung',
-                (int)$oExportformatCron->kWaehrung
-            );
-            $oExportformatCron_arr[$i]->Kundengruppe    = Shop::Container()->getDB()->select(
-                'tkundengruppe',
-                'kKundengruppe',
-                (int)$oExportformatCron->kKundengruppe
-            );
-            $oExportformatCron_arr[$i]->oJobQueue       = Shop::Container()->getDB()->query(
-                "SELECT *, DATE_FORMAT(dZuletztGelaufen, '%d.%m.%Y %H:%i') AS dZuletztGelaufen_de 
-                    FROM tjobqueue 
-                    WHERE kCron = " . (int)$oExportformatCron->kCron, 1
-            );
-            $oExportformatCron_arr[$i]->nAnzahlArtikel       = holeMaxExportArtikelAnzahl($oExportformatCron);
-        }
-
-        return $oExportformatCron_arr;
+    foreach ($oExportformatCron_arr as $oExportformatCron) {
+        $oExportformatCron->cAlleXStdToDays      = rechneUmAlleXStunden($oExportformatCron->nAlleXStd);
+        $oExportformatCron->Sprache              = Shop::Container()->getDB()->select(
+            'tsprache',
+            'kSprache',
+            (int)$oExportformatCron->kSprache
+        );
+        $oExportformatCron->Waehrung             = Shop::Container()->getDB()->select(
+            'twaehrung',
+            'kWaehrung',
+            (int)$oExportformatCron->kWaehrung
+        );
+        $oExportformatCron->Kundengruppe         = Shop::Container()->getDB()->select(
+            'tkundengruppe',
+            'kKundengruppe',
+            (int)$oExportformatCron->kKundengruppe
+        );
+        $oExportformatCron->oJobQueue            = Shop::Container()->getDB()->query(
+            "SELECT *, DATE_FORMAT(dZuletztGelaufen, '%d.%m.%Y %H:%i') AS dZuletztGelaufen_de 
+                FROM tjobqueue 
+                WHERE kCron = " . (int)$oExportformatCron->kCron,
+            \DB\ReturnType::SINGLE_OBJECT
+        );
+        $oExportformatCron->nAnzahlArtikel       = holeMaxExportArtikelAnzahl($oExportformatCron);
     }
 
-    return false;
+    return $oExportformatCron_arr;
 }
 
 /**

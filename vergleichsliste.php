@@ -15,8 +15,6 @@ $oMerkVaria_arr   = [[], []];
 //hole aktuelle Kategorie, falls eine gesetzt
 $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
-$startKat               = new Kategorie();
-$startKat->kKategorie   = -1;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 // VergleichslistePos in den Warenkorb adden
 if (isset($_GET['vlph']) && (int)$_GET['vlph'] === 1) {

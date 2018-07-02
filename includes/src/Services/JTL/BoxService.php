@@ -345,7 +345,7 @@ class BoxService implements BoxServiceInterface
         if (($grouped = \Shop::Cache()->get($cacheID)) === false) {
             $sql     = 'SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, 
                        tboxen.cTitel, tboxen.ePosition, tboxensichtbar.kSeite, tboxensichtbar.nSort, 
-                       tboxensichtbar.bAktiv, tboxensichtbar.cFilter, tboxvorlage.eTyp, 
+                       tboxensichtbar.cFilter, tboxvorlage.eTyp, 
                        tboxvorlage.cName, tboxvorlage.cTemplate, tplugin.nStatus AS pluginStatus,
                        GROUP_CONCAT(tboxensichtbar.kSeite) AS pageIDs,
                        GROUP_CONCAT(tboxensichtbar.bAktiv) AS pageVisibilities,                       

@@ -7,7 +7,7 @@
         <div class="panel panel-default tags">
             <div class="panel-heading">{lang key='productsTaggedAs' section='productOverview'}</div>
             <div class="panel-body">
-                {foreach name=tagfilter from=$Suchergebnisse->getTagFilterOptions() item=oTag}
+                {foreach$Suchergebnisse->getTagFilterOptions() as $oTag}
                     <a href="{$oTag->getURL()}" class="label label-primary tag{$oTag->getClass()}">{$oTag->getName()}</a>
                 {/foreach}
             </div>
@@ -21,7 +21,7 @@
         <div class="panel panel-default tags search-terms">
             <div class="panel-heading">{lang key='productsSearchTerm' section='productOverview'}</div>
             <div class="panel-body">
-                {foreach name=suchfilter from=$Suchergebnisse->getSearchFilterOptions() item=oSuchFilter}
+                {foreach $Suchergebnisse->getSearchFilterOptions() as $oSuchFilter}
                     <a href="{$oSuchFilter->getURL()}" class="label label-primary tag{$oSuchFilter->getClass()}">{$oSuchFilter->getName()}</a>
                 {/foreach}
             </div>
@@ -87,17 +87,17 @@
                             <input type="hidden" name="hf" value="{$val}" />
                         {/foreach}
                     {else}
-                        <input type="hidden" name="hf" value="{$mvf}" />
+                        <input type="hidden" name="hf" value="{$mfv}" />
                     {/if}
                 {/if}
                 {if $NaviFilter->hasAttributeFilter()}
-                    {foreach name=merkmalfilter from=$NaviFilter->getAttributeFilter() item=attributeFilter}
-                        <input type="hidden" name="mf{$smarty.foreach.merkmalfilter.iteration}" value="{$attributeFilter->getValue()}" />
+                    {foreach $NaviFilter->getAttributeFilter() as $attributeFilter}
+                        <input type="hidden" name="mf{$attributeFilter@iteration}" value="{$attributeFilter->getValue()}" />
                     {/foreach}
                 {/if}
                 {if $NaviFilter->hasTagFilter()}
-                    {foreach name=tagfilter from=$NaviFilter->getTagFilter() item=tagFilter}
-                        <input type="hidden" name="tf{$smarty.foreach.tagfilter.iteration}" value="{$tagFilter->getValue()}" />
+                    {foreach $NaviFilter->getTagFilter() as $tagFilter}
+                        <input type="hidden" name="tf{$tagFilter@iteration}" value="{$tagFilter->getValue()}" />
                     {/foreach}
                 {/if}
 

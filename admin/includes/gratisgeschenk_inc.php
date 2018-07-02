@@ -10,16 +10,18 @@
  */
 function holeAktiveGeschenke($cSQL)
 {
-    $oAktiveGeschenk_arr = [];
+    $oAktiveGeschenkTMP_arr = [];
+    $oAktiveGeschenk_arr    = [];
     if (strlen($cSQL) > 0) {
         $oAktiveGeschenkTMP_arr = Shop::Container()->getDB()->query(
             "SELECT kArtikel
                 FROM tartikelattribut
                 WHERE cName = '" . ART_ATTRIBUT_GRATISGESCHENKAB . "'
-                ORDER BY CAST(cWert AS SIGNED) DESC" . $cSQL, 2
+                ORDER BY CAST(cWert AS SIGNED) DESC" . $cSQL,
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
-    if (isset($oAktiveGeschenkTMP_arr) && is_array($oAktiveGeschenkTMP_arr) && count($oAktiveGeschenkTMP_arr) > 0) {
+    if (count($oAktiveGeschenkTMP_arr) > 0) {
         $articleOptions = Artikel::getDefaultOptions();
         $articleOptions->nKeinLagerbestandBeachten = 1;
         foreach ($oAktiveGeschenkTMP_arr as $oAktiveGeschenkTMP) {
@@ -40,19 +42,20 @@ function holeAktiveGeschenke($cSQL)
  */
 function holeHaeufigeGeschenke($cSQL)
 {
-    $oHaeufigGeschenk_arr = [];
-
+    $oHaeufigGeschenk_arr    = [];
+    $oHaeufigGeschenkTMP_arr = [];
     if (strlen($cSQL) > 0) {
         $oHaeufigGeschenkTMP_arr = Shop::Container()->getDB()->query(
             "SELECT kArtikel, count(*) AS nAnzahl
                 FROM twarenkorbpos
                 WHERE nPosTyp = " . C_WARENKORBPOS_TYP_GRATISGESCHENK . "
                 GROUP BY kArtikel
-                ORDER BY nAnzahl DESC, cName" . $cSQL, 2
+                ORDER BY nAnzahl DESC, cName" . $cSQL,
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
 
-    if (isset($oHaeufigGeschenkTMP_arr) && is_array($oHaeufigGeschenkTMP_arr) && count($oHaeufigGeschenkTMP_arr) > 0) {
+    if (count($oHaeufigGeschenkTMP_arr) > 0) {
         $articleOptions = Artikel::getDefaultOptions();
         $articleOptions->nKeinLagerbestandBeachten = 1;
         foreach ($oHaeufigGeschenkTMP_arr as $oHaeufigGeschenkTMP) {
@@ -74,8 +77,8 @@ function holeHaeufigeGeschenke($cSQL)
  */
 function holeLetzten100Geschenke($cSQL)
 {
-    $oLetzten100Geschenk_arr = [];
-
+    $oLetzten100Geschenk_arr    = [];
+    $oLetzten100GeschenkTMP_arr = [];
     if (strlen($cSQL) > 0) {
         $oLetzten100GeschenkTMP_arr = Shop::Container()->getDB()->query(
             "SELECT sub1.kArtikel, count(*) AS nAnzahl
@@ -88,12 +91,11 @@ function holeLetzten100Geschenke($cSQL)
                         LIMIT 100
                     ) AS sub1
                 GROUP BY sub1.kArtikel
-                ORDER BY nAnzahl DESC" . $cSQL, 2
+                ORDER BY nAnzahl DESC" . $cSQL,
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
-    if (isset($oLetzten100GeschenkTMP_arr) &&
-        is_array($oLetzten100GeschenkTMP_arr) &&
-        count($oLetzten100GeschenkTMP_arr) > 0) {
+    if (count($oLetzten100GeschenkTMP_arr) > 0) {
         $articleOptions = Artikel::getDefaultOptions();
         $articleOptions->nKeinLagerbestandBeachten = 1;
         foreach ($oLetzten100GeschenkTMP_arr as $oLetzten100GeschenkTMP) {
@@ -117,14 +119,11 @@ function gibAnzahlAktiverGeschenke()
     $nAnzahlGeschenke = Shop::Container()->getDB()->query(
         "SELECT count(*) AS nAnzahl
             FROM tartikelattribut
-            WHERE cName = '" . ART_ATTRIBUT_GRATISGESCHENKAB . "'", 1
+            WHERE cName = '" . ART_ATTRIBUT_GRATISGESCHENKAB . "'",
+        \DB\ReturnType::SINGLE_OBJECT
     );
 
-    if (isset($nAnzahlGeschenke->nAnzahl) && $nAnzahlGeschenke->nAnzahl > 0) {
-        return $nAnzahlGeschenke->nAnzahl;
-    }
-
-    return 0;
+    return (int)$nAnzahlGeschenke->nAnzahl;
 }
 
 /**
@@ -135,14 +134,11 @@ function gibAnzahlHaeufigGekaufteGeschenke()
     $nAnzahlGeschenke = Shop::Container()->getDB()->query(
         "SELECT count(DISTINCT(kArtikel)) AS nAnzahl
             FROM twarenkorbpos
-            WHERE nPosTyp = " . C_WARENKORBPOS_TYP_GRATISGESCHENK, 1
+            WHERE nPosTyp = " . C_WARENKORBPOS_TYP_GRATISGESCHENK,
+        \DB\ReturnType::SINGLE_OBJECT
     );
 
-    if (isset($nAnzahlGeschenke->nAnzahl) && $nAnzahlGeschenke->nAnzahl > 0) {
-        return (int)$nAnzahlGeschenke->nAnzahl;
-    }
-
-    return 0;
+    return (int)$nAnzahlGeschenke->nAnzahl;
 }
 
 /**
@@ -160,12 +156,9 @@ function gibAnzahlLetzten100Geschenke()
                     ORDER BY kWarenkorbPos DESC
                     LIMIT 100
                 ) AS sub1
-            GROUP BY sub1.kArtikel", 1
+            GROUP BY sub1.kArtikel",
+        \DB\ReturnType::SINGLE_OBJECT
     );
 
-    if (isset($nAnzahlGeschenke->nAnzahl) && $nAnzahlGeschenke->nAnzahl > 0) {
-        return $nAnzahlGeschenke->nAnzahl;
-    }
-
-    return 0;
+    return (int)$nAnzahlGeschenke->nAnzahl;
 }

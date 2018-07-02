@@ -21,7 +21,7 @@ function bestellungKomplett()
         && $_SESSION['Zahlungsart']
         && (int)$_SESSION['Versandart']->kVersandart > 0
         && (int)$_SESSION['Zahlungsart']->kZahlungsart > 0
-        && verifyGPCDataInteger('abschluss') === 1
+        && RequestHelper::verifyGPCDataInt('abschluss') === 1
         && count($_SESSION['cPlausi_arr']) === 0
     ) ? 1 : 0;
 }
@@ -158,7 +158,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
                 ? StringHandler::unhtmlentities($Position->cLieferstatus[$_SESSION['cISOSprache']])
                 : '';
             $Position->kWarenkorb    = $_SESSION['Warenkorb']->kWarenkorb;
-            $Position->fMwSt         = gibUst($Position->kSteuerklasse);
+            $Position->fMwSt         = TaxHelper::getSalesTax($Position->kSteuerklasse);
             $Position->kWarenkorbPos = $Position->insertInDB();
             if (is_array($Position->WarenkorbPosEigenschaftArr) && count($Position->WarenkorbPosEigenschaftArr) > 0) {
                 // Bei einem Varkombikind dürfen nur FREIFELD oder PFLICHT-FREIFELD gespeichert werden,
@@ -279,7 +279,8 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
         Shop::Container()->getDB()->query(
             "UPDATE tkunde
                 SET fGuthaben = fGuthaben - " . (float)$_SESSION['Bestellung']->fGuthabenGenutzt . "
-                WHERE kKunde = " . (int)$Bestellung->kKunde, 4
+                WHERE kKunde = " . (int)$Bestellung->kKunde,
+            \DB\ReturnType::DEFAULT
         );
         $_SESSION['Kunde']->fGuthaben -= $_SESSION['Bestellung']->fGuthabenGenutzt;
     }
@@ -289,7 +290,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
         $Bestellung->dBezahltDatum    = 'now()';
         $Bestellung->cZahlungsartName = Shop::Lang()->get('paymentNotNecessary', 'checkout');
     }
-    $Bestellung->cIP = $_SESSION['IP']->cIP ?? gibIP(true);
+    $Bestellung->cIP = $_SESSION['IP']->cIP ?? RequestHelper::getIP(true);
     //#8544
     $Bestellung->fWaehrungsFaktor = Session::Currency()->getConversionFactor();
 
@@ -352,9 +353,9 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     // Kampagne
     if (isset($_SESSION['Kampagnenbesucher'])) {
         // Verkauf
-        setzeKampagnenVorgang(KAMPAGNE_DEF_VERKAUF, $Bestellung->kBestellung, 1.0);
+        Kampagne::setCampaignAction(KAMPAGNE_DEF_VERKAUF, $Bestellung->kBestellung, 1.0);
         // Verkaufssumme
-        setzeKampagnenVorgang(KAMPAGNE_DEF_VERKAUFSSUMME, $Bestellung->kBestellung, $Bestellung->fGesamtsumme);
+        Kampagne::setCampaignAction(KAMPAGNE_DEF_VERKAUFSSUMME, $Bestellung->kBestellung, $Bestellung->fGesamtsumme);
     }
 
     executeHook(HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB_ENDE, [
@@ -434,14 +435,15 @@ function saveZahlungsInfo($kKunde, $kBestellung, $bZahlungAgain = false)
  */
 function speicherKundenKontodaten($oZahlungsinfo)
 {
+    $cryptoService = Shop::Container()->getCryptoService();
     $oKundenKontodaten            = new stdClass();
     $oKundenKontodaten->kKunde    = $_SESSION['Warenkorb']->kKunde;
-    $oKundenKontodaten->cBLZ      = verschluesselXTEA($oZahlungsinfo->cBLZ);
-    $oKundenKontodaten->nKonto    = verschluesselXTEA($oZahlungsinfo->cKontoNr);
-    $oKundenKontodaten->cInhaber  = verschluesselXTEA($oZahlungsinfo->cInhaber);
-    $oKundenKontodaten->cBankName = verschluesselXTEA($oZahlungsinfo->cBankName);
-    $oKundenKontodaten->cIBAN     = verschluesselXTEA($oZahlungsinfo->cIBAN);
-    $oKundenKontodaten->cBIC      = verschluesselXTEA($oZahlungsinfo->cBIC);
+    $oKundenKontodaten->cBLZ      = $cryptoService->encryptXTEA($oZahlungsinfo->cBLZ);
+    $oKundenKontodaten->nKonto    = $cryptoService->encryptXTEA($oZahlungsinfo->cKontoNr);
+    $oKundenKontodaten->cInhaber  = $cryptoService->encryptXTEA($oZahlungsinfo->cInhaber);
+    $oKundenKontodaten->cBankName = $cryptoService->encryptXTEA($oZahlungsinfo->cBankName);
+    $oKundenKontodaten->cIBAN     = $cryptoService->encryptXTEA($oZahlungsinfo->cIBAN);
+    $oKundenKontodaten->cBIC      = $cryptoService->encryptXTEA($oZahlungsinfo->cBIC);
 
     Shop::Container()->getDB()->insert('tkundenkontodaten', $oKundenKontodaten);
 }
@@ -538,7 +540,7 @@ function unhtmlSession()
     $lieferadresse->cAdressZusatz = StringHandler::unhtmlentities($_SESSION['Lieferadresse']->cAdressZusatz);
     $lieferadresse->cMobil        = StringHandler::unhtmlentities($_SESSION['Lieferadresse']->cMobil);
 
-    $lieferadresse->angezeigtesLand = ISO2land($lieferadresse->cLand);
+    $lieferadresse->angezeigtesLand = Sprache::getCountryCodeByCountryName($lieferadresse->cLand);
 
     $_SESSION['Lieferadresse'] = $lieferadresse;
 }
@@ -555,7 +557,10 @@ function aktualisiereBestseller($kArtikel, $Anzahl)
     }
     $best_obj = Shop::Container()->getDB()->select('tbestseller', 'kArtikel', $kArtikel);
     if (isset($best_obj->kArtikel) && $best_obj->kArtikel > 0) {
-        Shop::Container()->getDB()->query("UPDATE tbestseller SET fAnzahl = fAnzahl + " . $Anzahl . " WHERE kArtikel = " . $kArtikel, 4);
+        Shop::Container()->getDB()->query(
+            "UPDATE tbestseller SET fAnzahl = fAnzahl + " . $Anzahl . " WHERE kArtikel = " . $kArtikel,
+            \DB\ReturnType::DEFAULT
+        );
     } else {
         $Bestseller           = new stdClass();
         $Bestseller->kArtikel = $kArtikel;
@@ -572,7 +577,10 @@ function aktualisiereBestseller($kArtikel, $Anzahl)
         }
         $best_obj = Shop::Container()->getDB()->select('tbestseller', 'kArtikel', $kArtikel);
         if (isset($best_obj->kArtikel) && $best_obj->kArtikel > 0) {
-            Shop::Container()->getDB()->query("UPDATE tbestseller SET fAnzahl = fAnzahl + " . $Anzahl . " WHERE kArtikel = " . $kArtikel, 4);
+            Shop::Container()->getDB()->query(
+                "UPDATE tbestseller SET fAnzahl = fAnzahl + " . $Anzahl . " WHERE kArtikel = " . $kArtikel,
+                \DB\ReturnType::DEFAULT
+            );
         } else {
             $Bestseller           = new stdClass();
             $Bestseller->kArtikel = $kArtikel;
@@ -599,7 +607,8 @@ function aktualisiereXselling($kArtikel, $kZielArtikel)
             "UPDATE txsellkauf
               SET nAnzahl = nAnzahl + 1
               WHERE kArtikel = " . $kArtikel . "
-                AND kXSellArtikel = " . $kZielArtikel, 4
+                AND kXSellArtikel = " . $kZielArtikel,
+            \DB\ReturnType::DEFAULT
         );
     } else {
         $xs                = new stdClass();
@@ -634,7 +643,8 @@ function aktualisiereLagerbestand($Artikel, $nAnzahl, $WarenkorbPosEigenschaftAr
                 Shop::Container()->getDB()->query(
                     "UPDATE teigenschaftwert
                         SET fLagerbestand = fLagerbestand - " . ($nAnzahl * $EigenschaftWert->fPackeinheit) . "
-                        WHERE kEigenschaftWert = " . (int)$eWert->kEigenschaftWert, 4
+                        WHERE kEigenschaftWert = " . (int)$eWert->kEigenschaftWert,
+                    \DB\ReturnType::DEFAULT
                 );
             }
         } elseif ($Artikel->fPackeinheit > 0) {
@@ -646,7 +656,8 @@ function aktualisiereLagerbestand($Artikel, $nAnzahl, $WarenkorbPosEigenschaftAr
                     "UPDATE tartikel
                         SET fLagerbestand = IF (fLagerbestand >= " . ($nAnzahl * $Artikel->fPackeinheit) . ",
                         (fLagerbestand - " . ($nAnzahl * $Artikel->fPackeinheit) . "), fLagerbestand)
-                        WHERE kArtikel = " . (int)$Artikel->kArtikel, 4
+                        WHERE kArtikel = " . (int)$Artikel->kArtikel,
+                    \DB\ReturnType::DEFAULT
                 );
                 $tmpArtikel = Shop::Container()->getDB()->select('tartikel', 'kArtikel', (int)$Artikel->kArtikel, null, null, null, null, false, 'fLagerbestand');
                 if ($tmpArtikel !== null) {
@@ -849,8 +860,8 @@ function KuponVerwendungen($oBestellung)
     }
     if (isset($_SESSION['Kupon']->kKupon) && $_SESSION['Kupon']->kKupon > 0) {
         $kKupon = $_SESSION['Kupon']->kKupon;
-        if (isset($_SESSION['Kupon']->cWertTyp) &&
-            ($_SESSION['Kupon']->cWertTyp === 'prozent' || $_SESSION['Kupon']->cWertTyp === 'festpreis')
+        if (isset($_SESSION['Kupon']->cWertTyp)
+            && ($_SESSION['Kupon']->cWertTyp === 'prozent' || $_SESSION['Kupon']->cWertTyp === 'festpreis')
         ) {
             $cKuponTyp = $_SESSION['Kupon']->cWertTyp;
         }
@@ -858,13 +869,19 @@ function KuponVerwendungen($oBestellung)
     if (is_array($_SESSION['Warenkorb']->PositionenArr) && count($_SESSION['Warenkorb']->PositionenArr) > 0) {
         foreach ($_SESSION['Warenkorb']->PositionenArr as $i => $Position) {
             if (!isset($_SESSION['VersandKupon']) && ($Position->nPosTyp == 3 || $Position->nPosTyp == 7)) {
-                $fKuponwertBrutto = berechneBrutto($Position->fPreisEinzelNetto, gibUst($Position->kSteuerklasse)) * (-1);
+                $fKuponwertBrutto = TaxHelper::getGross(
+                    $Position->fPreisEinzelNetto,
+                    TaxHelper::getSalesTax($Position->kSteuerklasse)
+                ) * (-1);
             }
         }
     }
     $kKupon = (int)$kKupon;
     if ($kKupon > 0) {
-        Shop::Container()->getDB()->query("UPDATE tkupon SET nVerwendungenBisher = nVerwendungenBisher + 1 WHERE kKupon = " . $kKupon, 4);
+        Shop::Container()->getDB()->query(
+            "UPDATE tkupon SET nVerwendungenBisher = nVerwendungenBisher + 1 WHERE kKupon = " . $kKupon,
+            \DB\ReturnType::DEFAULT
+        );
         $KuponKunde                = new stdClass();
         $KuponKunde->kKupon        = $kKupon;
         $KuponKunde->kKunde        = $_SESSION['Warenkorb']->kKunde;
@@ -953,12 +970,7 @@ function speicherUploads($oBestellung)
  */
 function setzeSmartyWeiterleitung($bestellung)
 {
-    global $Einstellungen;
-
-    $successPaymentURL = '';
-    // Uploads speichern
     speicherUploads($bestellung);
-
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
         Jtllog::writeLog(
             'setzeSmartyWeiterleitung wurde mit folgender Zahlungsart ausgefuehrt: ' .
@@ -970,7 +982,7 @@ function setzeSmartyWeiterleitung($bestellung)
         );
     }
     // Zahlungsart als Plugin
-    $kPlugin = gibkPluginAuscModulId($_SESSION['Zahlungsart']->cModulId);
+    $kPlugin = Plugin::getIDByModuleID($_SESSION['Zahlungsart']->cModulId);
     if ($kPlugin > 0) {
         $oPlugin            = new Plugin($kPlugin);
         $GLOBALS['oPlugin'] = $oPlugin;
@@ -995,16 +1007,6 @@ function setzeSmartyWeiterleitung($bestellung)
         $paymentMethod           = new WorldPay($_SESSION['Zahlungsart']->cModulId);
         $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
         $paymentMethod->preparePaymentProcess($bestellung);
-    } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_moneybookers_jtl') {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'moneybookers/moneybookers.php';
-        Shop::Smarty()->assign(
-            'moneybookersform',
-            gib_moneybookers_form(
-                $bestellung,
-                strtolower($Einstellungen['zahlungsarten']['zahlungsart_moneybookers_empfaengermail']),
-                $successPaymentURL
-            )
-        );
     } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_ipayment_jtl') {
         require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ipayment/iPayment.class.php';
         $paymentMethod           = new iPayment($_SESSION['Zahlungsart']->cModulId);
@@ -1061,37 +1063,6 @@ function setzeSmartyWeiterleitung($bestellung)
     } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_paymentpartner_jtl') {
         require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'paymentpartner/PaymentPartner.class.php';
         $paymentMethod           = new PaymentPartner($_SESSION['Zahlungsart']->cModulId);
-        $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
-        $paymentMethod->preparePaymentProcess($bestellung);
-    } elseif (strpos($_SESSION['Zahlungsart']->cModulId, 'za_mbqc_') === 0) {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'moneybookers_qc/MoneyBookersQC.class.php';
-        $paymentMethod           = new MoneyBookersQC($_SESSION['Zahlungsart']->cModulId);
-        $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
-        $paymentMethod->preparePaymentProcess($bestellung);
-    } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_eos_jtl') {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'eos/EOS.class.php';
-        $paymentMethod           = new EOS($_SESSION['Zahlungsart']->cModulId);
-        $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
-        $paymentMethod->preparePaymentProcess($bestellung);
-    } // EOS Payment Solution
-    elseif ($_SESSION['Zahlungsart']->cModulId === 'za_eos_dd_jtl') {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'eos/EOS.class.php';
-        $paymentMethod           = new EOS($_SESSION['Zahlungsart']->cModulId);
-        $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
-        $paymentMethod->preparePaymentProcess($bestellung);
-    } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_eos_cc_jtl') {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'eos/EOS.class.php';
-        $paymentMethod           = new EOS($_SESSION['Zahlungsart']->cModulId);
-        $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
-        $paymentMethod->preparePaymentProcess($bestellung);
-    } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_eos_direct_jtl') {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'eos/EOS.class.php';
-        $paymentMethod           = new EOS($_SESSION['Zahlungsart']->cModulId);
-        $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
-        $paymentMethod->preparePaymentProcess($bestellung);
-    } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_eos_ewallet_jtl') {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'eos/EOS.class.php';
-        $paymentMethod           = new EOS($_SESSION['Zahlungsart']->cModulId);
         $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
         $paymentMethod->preparePaymentProcess($bestellung);
     } elseif (strpos($_SESSION['Zahlungsart']->cModulId, 'za_billpay') === 0) {
@@ -1177,7 +1148,7 @@ function fakeBestellung()
             }
 
             $bestellung->Positionen[$i]->cName = $bestellung->Positionen[$i]->cName[$_SESSION['cISOSprache']];
-            $bestellung->Positionen[$i]->fMwSt = gibUst($oPositionen->kSteuerklasse);
+            $bestellung->Positionen[$i]->fMwSt = TaxHelper::getSalesTax($oPositionen->kSteuerklasse);
             $bestellung->Positionen[$i]->setzeGesamtpreisLocalized();
         }
     }
@@ -1186,7 +1157,7 @@ function fakeBestellung()
     }
     $conf = Shop::getSettings([CONF_KAUFABWICKLUNG]);
     if ($conf['kaufabwicklung']['bestellabschluss_ip_speichern'] === 'Y') {
-        $bestellung->cIP = gibIP();
+        $bestellung->cIP = RequestHelper::getIP();
     }
 
     return $bestellung->fuelleBestellung(0, true);
@@ -1234,16 +1205,14 @@ function pruefeVerfuegbarkeit()
     $xResult_arr = ['cArtikelName_arr' => []];
     $conf        = Shop::getSettings([CONF_GLOBAL]);
     foreach (Session::Cart()->PositionenArr as $i => $oPosition) {
-        if ($oPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
-            // Mit Lager arbeiten und Lagerbestand darf < 0 werden?
-            if (isset($oPosition->Artikel->cLagerBeachten) && $oPosition->Artikel->cLagerBeachten === 'Y'
-                && $oPosition->Artikel->cLagerKleinerNull === 'Y'
-                && $conf['global']['global_lieferverzoegerung_anzeigen'] === 'Y'
-            ) {
-                if ($oPosition->nAnzahl > $oPosition->Artikel->fLagerbestand) {
-                    $xResult_arr['cArtikelName_arr'][] = $oPosition->Artikel->cName;
-                }
-            }
+        if ($oPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
+            && isset($oPosition->Artikel->cLagerBeachten)
+            && $oPosition->Artikel->cLagerBeachten === 'Y'
+            && $oPosition->Artikel->cLagerKleinerNull === 'Y'
+            && $conf['global']['global_lieferverzoegerung_anzeigen'] === 'Y'
+            && $oPosition->nAnzahl > $oPosition->Artikel->fLagerbestand
+        ) {
+            $xResult_arr['cArtikelName_arr'][] = $oPosition->Artikel->cName;
         }
     }
 
@@ -1294,12 +1263,12 @@ function finalisiereBestellung($cBestellNr = '', $bSendeMail = true)
     $obj->tbestellung = $bestellung;
 
     if (isset($bestellung->oEstimatedDelivery->longestMin, $bestellung->oEstimatedDelivery->longestMax)) {
-        $obj->tbestellung->cEstimatedDeliveryEx = dateAddWeekday(
+        $obj->tbestellung->cEstimatedDeliveryEx = DateHelper::dateAddWeekday(
             $bestellung->dErstellt,
             $bestellung->oEstimatedDelivery->longestMin
         )->format('d.m.Y')
             . ' - ' .
-            dateAddWeekday($bestellung->dErstellt, $bestellung->oEstimatedDelivery->longestMax)->format('d.m.Y');
+            DateHelper::dateAddWeekday($bestellung->dErstellt, $bestellung->oEstimatedDelivery->longestMax)->format('d.m.Y');
     }
 
     // Work Around cLand

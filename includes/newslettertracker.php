@@ -5,15 +5,18 @@
  */
 require_once __DIR__ . '/globalinclude.php';
 
-$session = Session::getInstance();
+$session = \Session\Session::getInstance();
 
 // kK   = kKampagne
 // kN   = kNewsletter
 // kNE  = kNewsletterEmpfaenger
-if (verifyGPCDataInteger('kK') > 0 && verifyGPCDataInteger('kN') > 0 && verifyGPCDataInteger('kNE') > 0) {
-    $kKampagne             = verifyGPCDataInteger('kK');
-    $kNewsletter           = verifyGPCDataInteger('kN');
-    $kNewsletterEmpfaenger = verifyGPCDataInteger('kNE');
+if (RequestHelper::verifyGPCDataInt('kK') > 0
+    && RequestHelper::verifyGPCDataInt('kN') > 0
+    && RequestHelper::verifyGPCDataInt('kNE') > 0
+) {
+    $kKampagne             = RequestHelper::verifyGPCDataInt('kK');
+    $kNewsletter           = RequestHelper::verifyGPCDataInt('kN');
+    $kNewsletterEmpfaenger = RequestHelper::verifyGPCDataInt('kNE');
     // Prüfe ob der Newsletter vom Newsletterempfänger bereits geöffnet wurde.
     $oNewsletterTrackTMP = Shop::Container()->getDB()->select(
         'tnewslettertrack',
@@ -40,7 +43,7 @@ if (verifyGPCDataInteger('kK') > 0 && verifyGPCDataInteger('kN') > 0 && verifyGP
             // Kampagnenbesucher in die Session
             $_SESSION['Kampagnenbesucher'] = $oKampagne;
 
-            setzeKampagnenVorgang(KAMPAGNE_DEF_NEWSLETTER, $kNewsletterTrack, 1);
+            Kampagne::setCampaignAction(KAMPAGNE_DEF_NEWSLETTER, $kNewsletterTrack, 1);
         }
     }
 }

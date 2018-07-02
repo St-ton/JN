@@ -10,7 +10,7 @@
 function speicherStatusemailEinstellungen()
 {
     if ((int)$_POST['nAktiv'] === 0
-        || (valid_email($_POST['cEmail'])
+        || (StringHandler::filterEmailAddress($_POST['cEmail']) !== false
             && is_array($_POST['cIntervall_arr'])
             && count($_POST['cIntervall_arr']) > 0
             && is_array($_POST['cInhalt_arr'])
@@ -91,10 +91,10 @@ function ladeStatusemailEinstellungen()
     $oStatusemailEinstellungen->cIntervallMoeglich_arr = gibIntervallMoeglichkeiten();
     $oStatusemailEinstellungen->cInhaltMoeglich_arr    = gibInhaltMoeglichkeiten();
     $oStatusemailEinstellungen->nIntervall_arr         = isset($oStatusemailEinstellungen->cIntervall)
-        ? gibKeyArrayFuerKeyString($oStatusemailEinstellungen->cIntervall, ';')
+        ? StringHandler::parseSSK($oStatusemailEinstellungen->cIntervall)
         : [];
     $oStatusemailEinstellungen->nInhalt_arr            = isset($oStatusemailEinstellungen->cInhalt)
-        ? gibKeyArrayFuerKeyString($oStatusemailEinstellungen->cInhalt, ';')
+        ? StringHandler::parseSSK($oStatusemailEinstellungen->cInhalt)
         : [];
 
     return $oStatusemailEinstellungen;
@@ -118,33 +118,33 @@ function gibIntervallMoeglichkeiten()
 function gibInhaltMoeglichkeiten()
 {
     return [
-        'Anzahl Produkte pro Kundengruppe'             => 1,
-        'Anzahl Neukunden'                             => 2,
-        'Anzahl Neukunden, die gekauft haben'          => 3,
-        'Anzahl Bestellungen'                          => 4,
-        'Anzahl Bestellungen von Neukunden'            => 5,
-        'Anzahl Zahlungseing&auml;nge zu Bestellungen' => 23,
-        'Anzahl versendeter Bestellungen'              => 24,
-        'Anzahl Besucher'                              => 6,
-        'Anzahl Besucher von Suchmaschinen'            => 7,
-        'Anzahl Bewertungen'                           => 8,
-        'Anzahl Bewertungen nicht freigeschaltet'      => 9,
-        'Anzahl Bewertungsguthaben gezahlt'            => 10,
-        'Anzahl Tags'                                  => 11,
-        'Anzahl Tags nicht freigeschaltet'             => 12,
-        'Anzahl geworbener Kunden'                     => 13,
-        'Anzahl geworbener Kunden, die gekauft haben'  => 14,
-        'Anzahl versendeter Wunschlisten'              => 15,
-        'Anzahl durchgef&uuml;hrter Umfragen'          => 16,
-        'Anzahl neuer Newskommentare'                  => 17,
-        'Anzahl Newskommentare nicht freigeschaltet'   => 18,
-        'Anzahl neuer Produktanfragen'                 => 19,
-        'Anzahl neuer Verf&uuml;gbarkeitsanfragen'     => 20,
-        'Anzahl Produktvergleiche'                     => 21,
-        'Anzahl genutzter Kupons'                      => 22,
-        'Letzte Fehlermeldungen im Systemlog'          => 25,
-        'Letzte Hinweise im Systemlog'                 => 26,
-        'Letzte Debugeintr&auml;ge im Systemlog'       => 27
+        'Anzahl Produkte pro Kundengruppe'            => 1,
+        'Anzahl Neukunden'                            => 2,
+        'Anzahl Neukunden, die gekauft haben'         => 3,
+        'Anzahl Bestellungen'                         => 4,
+        'Anzahl Bestellungen von Neukunden'           => 5,
+        'Anzahl Zahlungseingänge zu Bestellungen'     => 23,
+        'Anzahl versendeter Bestellungen'             => 24,
+        'Anzahl Besucher'                             => 6,
+        'Anzahl Besucher von Suchmaschinen'           => 7,
+        'Anzahl Bewertungen'                          => 8,
+        'Anzahl Bewertungen nicht freigeschaltet'     => 9,
+        'Anzahl Bewertungsguthaben gezahlt'           => 10,
+        'Anzahl Tags'                                 => 11,
+        'Anzahl Tags nicht freigeschaltet'            => 12,
+        'Anzahl geworbener Kunden'                    => 13,
+        'Anzahl geworbener Kunden, die gekauft haben' => 14,
+        'Anzahl versendeter Wunschlisten'             => 15,
+        'Anzahl durchgeführter Umfragen'              => 16,
+        'Anzahl neuer Newskommentare'                 => 17,
+        'Anzahl Newskommentare nicht freigeschaltet'  => 18,
+        'Anzahl neuer Produktanfragen'                => 19,
+        'Anzahl neuer Verfügbarkeitsanfragen'         => 20,
+        'Anzahl Produktvergleiche'                    => 21,
+        'Anzahl genutzter Kupons'                     => 22,
+        'Letzte Fehlermeldungen im Systemlog'         => 25,
+        'Letzte Hinweise im Systemlog'                => 26,
+        'Letzte Debugeinträge im Systemlog'           => 27
     ];
 }
 
@@ -1154,8 +1154,6 @@ function isIntervalExceeded($dStart, $cInterval)
  */
 function sendStatusMail()
 {
-    global $smarty;
-
     $oStatusemail                 = Shop::Container()->getDB()->select('tstatusemail', 'nAktiv', 1);
     $oStatusemail->nIntervall_arr = StringHandler::parseSSK($oStatusemail->cIntervall);
     $oStatusemail->nInhalt_arr    = StringHandler::parseSSK($oStatusemail->cInhalt);
@@ -1187,7 +1185,9 @@ function sendStatusMail()
         $oMailObjekt = baueStatusEmail($oStatusemail, $dVon, $dBis);
 
         if ($oMailObjekt) {
-            $oMailObjekt->cIntervall = (JTL_CHARSET !== 'utf-8' ? StringHandler::convertISO($cIntervalAdj) : $cIntervalAdj) . ' Status-Email';
+            $oMailObjekt->cIntervall = (JTL_CHARSET !== 'utf-8'
+                    ? StringHandler::convertISO($cIntervalAdj)
+                    : $cIntervalAdj) . ' Status-Email';
 
             sendeMail(MAILTEMPLATE_STATUSEMAIL, $oMailObjekt, $oMailObjekt->mail);
 

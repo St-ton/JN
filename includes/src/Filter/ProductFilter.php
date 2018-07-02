@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -270,14 +271,12 @@ class ProductFilter
      * @param int   $currentLanguageID
      * @param array $config
      */
-    public function __construct($languages = null, $currentLanguageID = null, $config = null)
+    public function __construct(array $languages = null, int $currentLanguageID = null, array $config = null)
     {
         $this->url               = new NavigationURLs();
         $this->languages         = $languages ?? \Sprache::getInstance()->getLangArray();
         $this->conf              = $config ?? \Shopsetting::getInstance()->getAll();
-        $this->languageID        = $currentLanguageID === null
-            ? \Shop::getLanguageID()
-            : (int)$currentLanguageID;
+        $this->languageID        = $currentLanguageID ?? \Shop::getLanguageID();
         $this->customerGroupID   = \Session::CustomerGroup()->getID();
         $this->baseURL           = \Shop::getURL() . '/';
         $this->metaData          = new Metadata($this);
@@ -312,7 +311,7 @@ class ProductFilter
     /**
      * @return int
      */
-    public function getSort()
+    public function getSort(): int
     {
         return $this->nSortierung;
     }
@@ -321,7 +320,7 @@ class ProductFilter
      * @param int $nSortierung
      * @return ProductFilter
      */
-    public function setSort($nSortierung): self
+    public function setSort(int $nSortierung): self
     {
         $this->nSortierung = $nSortierung;
 
@@ -340,7 +339,7 @@ class ProductFilter
      * @param NavigationURLsInterface $url
      * @return ProductFilter
      */
-    public function setURL(NavigationURLsInterface $url)
+    public function setURL(NavigationURLsInterface $url): self
     {
         $this->url = $url;
 
@@ -392,7 +391,7 @@ class ProductFilter
     /**
      * @return ProductFilterURL
      */
-    public function getFilterURL()
+    public function getFilterURL(): ProductFilterURL
     {
         return $this->filterURL;
     }
@@ -446,7 +445,7 @@ class ProductFilter
     /**
      * @return int
      */
-    public function getPage()
+    public function getPage(): int
     {
         return $this->nSeite;
     }
@@ -471,7 +470,7 @@ class ProductFilter
      * @param FilterInterface $filter
      * @return $this
      */
-    public function setBaseState($filter): self
+    public function setBaseState(FilterInterface $filter): self
     {
         $this->baseState = $filter;
 
@@ -557,7 +556,7 @@ class ProductFilter
     /**
      * @return int
      */
-    public function getProductLimit()
+    public function getProductLimit(): int
     {
         return $this->productLimit;
     }
@@ -576,7 +575,7 @@ class ProductFilter
     /**
      * @return ItemSort
      */
-    public function getSorting()
+    public function getSorting(): ItemSort
     {
         return $this->sorting;
     }
@@ -585,7 +584,7 @@ class ProductFilter
      * @param ItemSort $sorting
      * @return $this
      */
-    public function setSorting($sorting): self
+    public function setSorting(ItemSort $sorting): self
     {
         $this->sorting = $sorting;
 
@@ -595,7 +594,7 @@ class ProductFilter
     /**
      * @return ItemLimit
      */
-    public function getLimits()
+    public function getLimits(): ItemLimit
     {
         return $this->limits;
     }
@@ -604,7 +603,7 @@ class ProductFilter
      * @param ItemLimit $limits
      * @return $this
      */
-    public function setLimits($limits): self
+    public function setLimits(ItemLimit $limits): self
     {
         $this->limits = $limits;
 
@@ -614,7 +613,7 @@ class ProductFilter
     /**
      * @return array
      */
-    public function getParams()
+    public function getParams(): array
     {
         return array_merge($this->getParamsPrototype(), $this->params);
     }
@@ -723,7 +722,7 @@ class ProductFilter
      * @param array $params
      * @return $this
      */
-    public function initStates($params): self
+    public function initStates(array $params): self
     {
         $params = array_merge($this->getParamsPrototype(), $params);
         if ($params['kKategorie'] > 0) {
@@ -794,7 +793,7 @@ class ProductFilter
                     $this->baseState = $this->searchQuery;
                 }
             }
-        } elseif (strlen($params['cSuche']) > 0) {
+        } elseif ($params['cSuche'] !== null && strlen($params['cSuche']) > 0) {
             $params['cSuche'] = \StringHandler::filterXSS($params['cSuche']);
             $this->search->setName($params['cSuche']);
             $this->searchQuery->setName($params['cSuche']);
@@ -843,7 +842,7 @@ class ProductFilter
                     EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
             ]);
         }
-        $this->nSeite = max(1, verifyGPCDataInteger('seite'));
+        $this->nSeite = max(1, \RequestHelper::verifyGPCDataInt('seite'));
         foreach ($this->getCustomFilters() as $filter) {
             $filterParam = $filter->getUrlParam();
             $filterClass = $filter->getClassName();
@@ -855,7 +854,7 @@ class ProductFilter
                 // escape all input values
                 if (($filter->getType()->equals(Type::OR()) && is_array($_GET[$filterParam]))
                     || ($filter->getType()->equals(Type::AND())
-                        && (verifyGPCDataInteger($filterParam) > 0 || verifyGPDataString($filterParam) !== ''))
+                        && (\RequestHelper::verifyGPCDataInt($filterParam) > 0 || \RequestHelper::verifyGPDataString($filterParam) !== ''))
                 ) {
                     $filterValue = is_array($_GET[$filterParam])
                         ? array_map([\Shop::Container()->getDB(), 'realEscape'], $_GET[$filterParam])
@@ -923,7 +922,7 @@ class ProductFilter
      * @return FilterInterface
      * @throws \InvalidArgumentException
      */
-    public function registerFilterByClassName($filterName): FilterInterface
+    public function registerFilterByClassName(string $filterName): FilterInterface
     {
         $filter = null;
         if (class_exists($filterName)) {
@@ -969,7 +968,7 @@ class ProductFilter
      * @param string $filterClassName
      * @return int|null
      */
-    public function getFilterValue($filterClassName)
+    public function getFilterValue(string $filterClassName)
     {
         return array_reduce(
             $this->activeFilters,
@@ -986,7 +985,7 @@ class ProductFilter
      * @param string $filterClassName
      * @return bool
      */
-    public function hasFilter($filterClassName): bool
+    public function hasFilter(string $filterClassName): bool
     {
         return $this->getActiveFilterByClassName($filterClassName) !== null;
     }
@@ -995,7 +994,7 @@ class ProductFilter
      * @param string $filterClassName
      * @return FilterInterface|null
      */
-    public function getFilterByClassName($filterClassName)
+    public function getFilterByClassName(string $filterClassName)
     {
         $filter = array_filter(
             $this->filters,
@@ -1012,7 +1011,7 @@ class ProductFilter
      * @param string $filterClassName
      * @return FilterInterface|null
      */
-    public function getActiveFilterByClassName($filterClassName)
+    public function getActiveFilterByClassName(string $filterClassName)
     {
         $filter = array_filter(
             $this->activeFilters,
@@ -1088,7 +1087,7 @@ class ProductFilter
      * @param FilterInterface $filter
      * @return bool
      */
-    public function override($className, FilterInterface $filter): bool
+    public function override(string $className, FilterInterface $filter): bool
     {
         foreach ($this->filters as $i => $registerdFilter) {
             if ($registerdFilter->getClassName() === $className) {
@@ -1110,7 +1109,7 @@ class ProductFilter
     }
 
     /**
-     * @param ItemManufacturer $filter
+     * @param ItemManufacturer|\stdClass $filter
      * @return $this
      */
     public function setManufacturerFilter($filter): self
@@ -1436,7 +1435,7 @@ class ProductFilter
     }
 
     /**
-     * @param BaseSearchSpecial $filter
+     * @param FilterInterface $filter
      * @return $this
      */
     public function setSearchSpecial(FilterInterface $filter): self
@@ -1463,7 +1462,7 @@ class ProductFilter
     }
 
     /**
-     * @param ItemSearchSpecial $filter
+     * @param FilterInterface $filter
      * @return $this
      */
     public function setSearchSpecialFilter(FilterInterface $filter): self
@@ -1500,7 +1499,7 @@ class ProductFilter
     }
 
     /**
-     * @param ItemRating $filter
+     * @param FilterInterface $filter
      * @return $this
      */
     public function setRatingFilter(FilterInterface $filter): self
@@ -1527,7 +1526,7 @@ class ProductFilter
     }
 
     /**
-     * @param ItemPriceRange $filter
+     * @param FilterInterface $filter
      * @return $this
      */
     public function setPriceRangeFilter(FilterInterface $filter): self
@@ -1785,7 +1784,7 @@ class ProductFilter
      * @param bool $byType
      * @return array|FilterInterface[]
      */
-    public function getActiveFilters($byType = false): array
+    public function getActiveFilters(bool $byType = false): array
     {
         if ($byType === false) {
             return $this->activeFilters;
@@ -1856,13 +1855,19 @@ class ProductFilter
                     }
                 }
                 if (count($orFilters) > 0) {
-                    // group OR filters by their primary key row
-                    $groupedOrFilters = group($orFilters, function (FilterInterface $f) {
-                        return $f->getPrimaryKeyRow();
-                    });
-                    foreach ($groupedOrFilters as $primaryKeyRow => $orFilters) {
+                    if ($type === 'mf') {
+                        $groupedOrFilters = group($orFilters, function (ItemAttribute $f) {
+                            return $f->getAttributeID();
+                        });
+                    } else {
+                        // group OR filters by their primary key row
+                        $groupedOrFilters = group($orFilters, function (FilterInterface $f) {
+                            return $f->getPrimaryKeyRow();
+                        });
+                    }
+                    foreach ($groupedOrFilters as $idx => $orFilters) {
                         /** @var FilterInterface[] $orFilters */
-                        $values = implode(
+                        $values        = implode(
                             ',',
                             array_map(function ($f) {
                                 /** @var FilterInterface $f */
@@ -1871,13 +1876,15 @@ class ProductFilter
                                 return is_array($val) ? implode(',', $val) : $val;
                             }, $orFilters)
                         );
-                        $table  = first($orFilters)->getTableAlias();
+                        $first         = first($orFilters);
+                        $primaryKeyRow = $first->getPrimaryKeyRow();
+                        $table         = $first->getTableAlias();
                         if (empty($table)) {
                             $table = first($orFilters)->getTableName();
                         }
                         $conditions[] = "\n#combined conditions from OR filter " . $primaryKeyRow . "\n" .
                             $table . '.kArtikel IN ' .
-                            '(SELECT kArtikel FROM ' . first($orFilters)->getTableName() . ' WHERE ' .
+                            '(SELECT kArtikel FROM ' . $first->getTableName() . ' WHERE ' .
                             $primaryKeyRow . ' IN (' . $values . '))';
                     }
                 }
@@ -1916,6 +1923,136 @@ class ProductFilter
         $data->setJoins($joins);
 
         return $data;
+    }
+
+    /**
+     * @param array $nFilter_arr
+     * @return array
+     */
+    public static function initAttributeFilter(array $nFilter_arr = []): array
+    {
+        $filter = [];
+        if (is_array($nFilter_arr) && count($nFilter_arr) > 1) {
+            foreach ($nFilter_arr as $nFilter) {
+                if ((int)$nFilter > 0) {
+                    $filter[] = (int)$nFilter;
+                }
+            }
+        } elseif (isset($_GET['mf'])) {
+            if (is_string($_GET['mf'])) {
+                $filter[] = $_GET['mf'];
+            } else {
+                foreach ($_GET['mf'] as $mf => $value) {
+                    $filter[] = $value;
+                }
+            }
+        } elseif (isset($_POST['mf'])) {
+            if (is_string($_POST['mf'])) {
+                $filter[] = $_POST['mf'];
+            } else {
+                foreach ($_POST['mf'] as $mf => $value) {
+                    $filter[] = $value;
+                }
+            }
+        } elseif (count($_GET) > 0) {
+            foreach ($_GET as $key => $value) {
+                if (preg_match('/mf\d+/i', $key)) {
+                    $filter[] = (int)$value;
+                }
+            }
+        } elseif (count($_POST) > 0) {
+            foreach ($_POST as $key => $value) {
+                if (preg_match('/mf\d+/i', $key)) {
+                    $filter[] = (int)$value;
+                }
+            }
+        }
+
+        return $filter;
+    }
+
+    /**
+     * @param array $nFilter_arr
+     * @return array
+     */
+    public static function initSearchFilter(array $nFilter_arr = []): array
+    {
+        $filter = [];
+        if (is_array($nFilter_arr) && count($nFilter_arr) > 1) {
+            foreach ($nFilter_arr as $nFilter) {
+                if ((int)$nFilter > 0) {
+                    $filter[] = (int)$nFilter;
+                }
+            }
+        } elseif (isset($_GET['sf'])) {
+            if (is_string($_GET['sf'])) {
+                $filter[] = $_GET['sf'];
+            } else {
+                foreach ($_GET['sf'] as $mf => $value) {
+                    $filter[] = $value;
+                }
+            }
+        } elseif (isset($_POST['sf'])) {
+            if (is_string($_POST['sf'])) {
+                $filter[] = $_POST['sf'];
+            } else {
+                foreach ($_POST['sf'] as $mf => $value) {
+                    $filter[] = $value;
+                }
+            }
+        } else {
+            $i = 1;
+            while ($i < 20) {
+                if (\RequestHelper::verifyGPCDataInt('sf' . $i) > 0) {
+                    $filter[] = \RequestHelper::verifyGPCDataInt('sf' . $i);
+                }
+                ++$i;
+            }
+        }
+
+        return $filter;
+    }
+
+    /**
+     * @param array $nFilter_arr
+     * @return array
+     */
+    public static function initTagFilter(array $nFilter_arr = []): array
+    {
+        $filter = [];
+        if (is_array($nFilter_arr) && count($nFilter_arr) > 1) {
+            foreach ($nFilter_arr as $nFilter) {
+                if ((int)$nFilter > 0) {
+                    $filter[] = (int)$nFilter;
+                }
+            }
+        } elseif (isset($_GET['tf'])) {
+            if (is_string($_GET['tf'])) {
+                $filter[] = $_GET['tf'];
+            } else {
+                foreach ($_GET['tf'] as $mf => $value) {
+                    $filter[] = $value;
+                }
+            }
+        } elseif (isset($_POST['tf'])) {
+            if (is_string($_POST['tf'])) {
+                $filter[] = $_POST['tf'];
+            } else {
+                foreach ($_POST['tf'] as $mf => $value) {
+                    $filter[] = $value;
+                }
+            }
+        } else {
+            $i = 1;
+            while ($i < 20) {
+                if (\RequestHelper::verifyGPCDataInt('tf' . $i) > 0) {
+                    $filter[] = \RequestHelper::verifyGPCDataInt('tf' . $i);
+                }
+                ++$i;
+            }
+        }
+
+        return $filter;
     }
 
     /**

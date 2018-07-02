@@ -51,22 +51,20 @@ class Versand
      * @param int         $kVersand
      * @param null|object $oData
      */
-    public function __construct($kVersand = 0, $oData = null)
+    public function __construct(int $kVersand = 0, $oData = null)
     {
-        if ((int)$kVersand > 0) {
+        if ($kVersand > 0) {
             $this->loadFromDB($kVersand, $oData);
         }
     }
 
     /**
-     * Loads database member into class member
-     *
      * @param int         $kVersand
      * @param null|object $oData
      */
-    private function loadFromDB($kVersand = 0, $oData = null)
+    private function loadFromDB(int $kVersand = 0, $oData = null)
     {
-        $oObj = Shop::Container()->getDB()->select('tversand', 'kVersand', (int)$kVersand);
+        $oObj = Shop::Container()->getDB()->select('tversand', 'kVersand', $kVersand);
 
         $this->oData = $oData;
 
@@ -79,12 +77,10 @@ class Versand
     }
 
     /**
-     * Store the class in the database
-     *
-     * @param bool $bPrim - Controls the return of the method
+     * @param bool $bPrim
      * @return bool|int
      */
-    public function save($bPrim = true)
+    public function save(bool $bPrim = true)
     {
         $oObj        = new stdClass();
         $cMember_arr = array_keys(get_object_vars($this));
@@ -106,11 +102,9 @@ class Versand
     }
 
     /**
-     * Update the class in the database
-     *
      * @return int
      */
-    public function update()
+    public function update(): int
     {
         $_upd                = new stdClass();
         $_upd->kLieferschein = (int)$this->kLieferschein;
@@ -124,11 +118,9 @@ class Versand
     }
 
     /**
-     * Delete the class in the database
-     *
      * @return int
      */
-    public function delete()
+    public function delete(): int
     {
         return Shop::Container()->getDB()->delete('tversand', 'kVersand', (int)$this->kVersand);
     }
@@ -137,9 +129,9 @@ class Versand
      * @param int $kVersand
      * @return $this
      */
-    public function setVersand($kVersand)
+    public function setVersand(int $kVersand)
     {
-        $this->kVersand = (int)$kVersand;
+        $this->kVersand = $kVersand;
 
         return $this;
     }
@@ -148,9 +140,9 @@ class Versand
      * @param int $kLieferschein
      * @return $this
      */
-    public function setLieferschein($kLieferschein)
+    public function setLieferschein(int $kLieferschein)
     {
-        $this->kLieferschein = (int)$kLieferschein;
+        $this->kLieferschein = $kLieferschein;
 
         return $this;
     }

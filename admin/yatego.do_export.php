@@ -18,13 +18,14 @@ define('PATH', PFAD_ROOT . PFAD_EXPORT_YATEGO);
 define('DESCRIPTION_TAGS', '<a><b><i><u><p><br><hr><h1><h2><h3><h4><h5><h6><ul><ol><li><span><font><table><colgroup>');
 
 $exportformat = Shop::Container()->getDB()->query(
-    "SELECT texportformat.*, tkampagne.cParameter AS tkampagne_cParameter, 
+    'SELECT texportformat.*, tkampagne.cParameter AS tkampagne_cParameter, 
         tkampagne.cWert AS tkampagne_cWert
         FROM texportformat
         LEFT JOIN tkampagne 
             ON tkampagne.kKampagne = texportformat.kKampagne
             AND tkampagne.nAktiv = 1
-        WHERE texportformat.nSpecial = 1", 1
+        WHERE texportformat.nSpecial = 1',
+    \DB\ReturnType::SINGLE_OBJECT
 );
 
 $queue = Shop::Container()->getDB()->select('texportqueue', 'kExportformat', (int)$exportformat->kExportformat);
@@ -33,7 +34,10 @@ if (!$queue->kExportformat || !$queue->nLimit_m) {
 }
 
 if (!pruefeYategoExportPfad()) {
-    Shop::Container()->getDB()->query("UPDATE texportformat SET dZuletztErstellt = now() WHERE nSpecial = 1", 4);
+    Shop::Container()->getDB()->query(
+        'UPDATE texportformat SET dZuletztErstellt = now() WHERE nSpecial = 1', 
+        \DB\ReturnType::DEFAULT
+    );
     Shop::Container()->getDB()->delete('texportqueue', 'kExportqueue', (int)$queue->kExportqueue);
 
     die('2');
@@ -60,7 +64,7 @@ $oGlobal_arr          = [];
 $oGlobal_arr['lager'] = [];
 $KategorieListe       = [];
 
-setzeSteuersaetze();
+TaxHelper::setTaxRates();
 $_SESSION['Kundengruppe']->setMayViewPrices(1)->setMayViewCategories(1)->setID($exportformat->kKundengruppe);
 $_SESSION['kSprache']      = (int)$exportformat->kSprache;
 $_SESSION['kKundengruppe'] = (int)$exportformat->kKundengruppe;
@@ -73,7 +77,8 @@ $res = Shop::Container()->getDB()->query(
         WHERE tartikelattribut.cName = 'yategokat'
             AND tartikel.kVaterArtikel = 0
         ORDER BY tartikel.kArtikel
-        LIMIT " . $queue->nLimit_n . ", " . $queue->nLimit_m, 2
+        LIMIT " . $queue->nLimit_n . ", " . $queue->nLimit_m,
+    \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 $defaultOptions = Artikel::getDefaultOptions();
 foreach ($res as $tartikel) {
@@ -111,26 +116,30 @@ $max_artikel = Shop::Container()->getDB()->query(
         FROM tartikel
         JOIN tartikelattribut 
             ON tartikelattribut.kArtikel = tartikel.kArtikel
-        WHERE tartikelattribut.cName = 'yategokat'", 1
+        WHERE tartikelattribut.cName = 'yategokat'",
+    \DB\ReturnType::SINGLE_OBJECT
 );
 
 if ($max_artikel->cnt > $queue->nLimit_n + $queue->nLimit_m) {
-    Shop::Container()->getDB()->query("
-        UPDATE texportqueue 
+    Shop::Container()->getDB()->query(
+        "UPDATE texportqueue 
             SET nLimit_n = nLimit_n+" . $queue->nLimit_m . " 
-            WHERE kExportqueue = " . (int)$queue->kExportqueue, 4
+            WHERE kExportqueue = " . (int)$queue->kExportqueue,
+        \DB\ReturnType::DEFAULT
     );
     header('Location: http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] .
         '?back=admin&token=' . $_SESSION['jtl_token']);
     exit;
-} else {
-    Shop::Container()->getDB()->query("UPDATE texportformat SET dZuletztErstellt = now() WHERE nSpecial = 1", 4);
-    Shop::Container()->getDB()->delete('texportqueue', 'kExportqueue', (int)$queue->kExportqueue);
-    if ($_GET['back'] === 'admin') {
-        header('Location: yatego.export.php?token=' . $_SESSION['jtl_token'] .
-            '&rdy=' . base64_encode((int)$max_artikel->cnt));
-        exit;
-    }
+}
+Shop::Container()->getDB()->query(
+    'UPDATE texportformat SET dZuletztErstellt = now() WHERE nSpecial = 1', 
+    \DB\ReturnType::DEFAULT
+);
+Shop::Container()->getDB()->delete('texportqueue', 'kExportqueue', (int)$queue->kExportqueue);
+if ($_GET['back'] === 'admin') {
+    header('Location: yatego.export.php?token=' . $_SESSION['jtl_token'] .
+        '&rdy=' . base64_encode((int)$max_artikel->cnt));
+    exit;
 }
 
 /**
@@ -195,7 +204,10 @@ function getCats($catlist)
     if (is_array($catlist) && count($catlist)) {
         // fetch all categories in $cats with index kKategorie
         $cats = [];
-        $res  = Shop::Container()->getDB()->query("SELECT kKategorie, cName, kOberKategorie, nSort FROM tkategorie", 10);
+        $res  = Shop::Container()->getDB()->query(
+            'SELECT kKategorie, cName, kOberKategorie, nSort FROM tkategorie',
+            \DB\ReturnType::QUERYSINGLE
+        );
         while ($row = $res->fetch(PDO::FETCH_OBJ)) {
             $cats[$row->kKategorie] = $row;
         }

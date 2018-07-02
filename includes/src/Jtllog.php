@@ -30,7 +30,7 @@ class Jtllog
     protected $cKey;
 
     /**
-     * @var int
+     * @var int|string
      */
     protected $kKey;
 
@@ -40,26 +40,23 @@ class Jtllog
     protected $dErstellt;
 
     /**
-     * Constructor
-     *
-     * @param int $kLog primarykey
+     * Jtllog constructor.
+     * @param int $kLog
      */
-    public function __construct($kLog = 0)
+    public function __construct(int $kLog = 0)
     {
-        if ((int)$kLog > 0) {
+        if ($kLog > 0) {
             $this->loadFromDB($kLog);
         }
     }
 
     /**
-     * Loads database member into class member
-     *
      * @param int $kLog
      * @return $this
      */
-    private function loadFromDB($kLog)
+    private function loadFromDB(int $kLog): self
     {
-        $oObj = Shop::Container()->getDB()->select('tjtllog', 'kLog', (int)$kLog);
+        $oObj = Shop::Container()->getDB()->select('tjtllog', 'kLog', $kLog);
         if (isset($oObj->kLog) && $oObj->kLog > 0) {
             foreach (get_object_vars($oObj) as $k => $v) {
                 $this->$k = $v;
@@ -70,12 +67,10 @@ class Jtllog
     }
 
     /**
-     * Store the class in the database
-     *
-     * @param bool $bPrim - Controls the return of the method
+     * @param bool $bPrim
      * @return bool|int
      */
-    public function save($bPrim = true)
+    public function save(bool $bPrim = true)
     {
         $oObj        = new stdClass();
         $cMember_arr = array_keys(get_object_vars($this));
@@ -97,11 +92,9 @@ class Jtllog
     }
 
     /**
-     * Update the class in the database
-     *
      * @return int
      */
-    public function update()
+    public function update(): int
     {
         $_upd            = new stdClass();
         $_upd->nLevel    = (int)$this->nLevel;
@@ -131,7 +124,7 @@ class Jtllog
      * @param int $nLevel
      * @return bool
      */
-    public static function doLog($nLevel = JTLLOG_LEVEL_ERROR)
+    public static function doLog($nLevel = JTLLOG_LEVEL_ERROR): bool
     {
         return $nLevel >= self::getSytemlogFlag();
     }
@@ -178,7 +171,7 @@ class Jtllog
      * @param int    $nLimitM
      * @return array
      */
-    public static function getLog($cFilter = '', $nLevel = 0, $nLimitN = 0, $nLimitM = 1000)
+    public static function getLog(string $cFilter = '', int $nLevel = 0, int $nLimitN = 0, int $nLimitM = 1000): array
     {
         $oJtllog_arr = [];
         $conditions  = [];
@@ -187,9 +180,9 @@ class Jtllog
             $conditions[]   = "cLog LIKE :clog";
             $values['clog'] = '%' . $cFilter . '%';
         }
-        if ((int)$nLevel > 0) {
+        if ($nLevel > 0) {
             $conditions[]     = "nLevel = :nlevel";
-            $values['nlevel'] = (int)$nLevel;
+            $values['nlevel'] = $nLevel;
         }
         $cSQLWhere = count($conditions) > 0
             ? ' WHERE ' . implode(' AND ', $conditions)
@@ -218,7 +211,7 @@ class Jtllog
      * @param string $cLimitSQL
      * @return array
      */
-    public static function getLogWhere($cWhereSQL = '', $cLimitSQL = '')
+    public static function getLogWhere(string $cWhereSQL = '', $cLimitSQL = ''): array
     {
         return Shop::Container()->getDB()->query(
             "SELECT *
@@ -226,7 +219,7 @@ class Jtllog
                 ($cWhereSQL !== '' ? " WHERE " . $cWhereSQL : "") .
                 " ORDER BY dErstellt DESC " .
                 ($cLimitSQL !== '' ? " LIMIT " . $cLimitSQL : ""),
-            2
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
 
@@ -237,11 +230,11 @@ class Jtllog
      * @param int    $nLevel
      * @return int
      */
-    public static function getLogCount($cFilter, $nLevel = 0)
+    public static function getLogCount(string $cFilter, int $nLevel = 0): int
     {
         $cSQLWhere = '';
-        if ((int)$nLevel > 0) {
-            $cSQLWhere = " WHERE nLevel = " . (int)$nLevel;
+        if ($nLevel > 0) {
+            $cSQLWhere = " WHERE nLevel = " . $nLevel;
         }
 
         if (strlen($cFilter) > 0) {
@@ -265,9 +258,7 @@ class Jtllog
     }
 
     /**
-     * Write a Log into the database
-     *
-     * @return void
+     * Write a log into the database
      */
     public static function truncateLog()
     {
@@ -284,7 +275,10 @@ class Jtllog
 
         if (isset($oObj->nCount) && (int)$oObj->nCount > JTLLOG_MAX_LOGSIZE) {
             $nLimit = (int)$oObj->nCount - JTLLOG_MAX_LOGSIZE;
-            Shop::Container()->getDB()->query("DELETE FROM tjtllog ORDER BY dErstellt LIMIT {$nLimit}", 4);
+            Shop::Container()->getDB()->query(
+                "DELETE FROM tjtllog ORDER BY dErstellt LIMIT {$nLimit}",
+                \DB\ReturnType::DEFAULT
+            );
         }
     }
 
@@ -293,9 +287,9 @@ class Jtllog
      *
      * @return int
      */
-    public static function deleteAll()
+    public static function deleteAll(): int
     {
-        return Shop::Container()->getDB()->query("TRUNCATE TABLE tjtllog", 3);
+        return Shop::Container()->getDB()->query("TRUNCATE TABLE tjtllog", \DB\ReturnType::AFFECTED_ROWS);
     }
 
     /**
@@ -303,7 +297,7 @@ class Jtllog
      *
      * @return int
      */
-    public function delete()
+    public function delete(): int
     {
         return Shop::Container()->getDB()->delete('tjtllog', 'kLog', $this->getkLog());
     }
@@ -312,9 +306,9 @@ class Jtllog
      * @param int $kLog
      * @return $this
      */
-    public function setkLog($kLog)
+    public function setkLog(int $kLog): self
     {
-        $this->kLog = (int)$kLog;
+        $this->kLog = $kLog;
 
         return $this;
     }
@@ -323,9 +317,9 @@ class Jtllog
      * @param int $nLevel
      * @return $this
      */
-    public function setLevel($nLevel)
+    public function setLevel(int $nLevel): self
     {
-        $this->nLevel = (int)$nLevel;
+        $this->nLevel = $nLevel;
 
         return $this;
     }
@@ -335,7 +329,7 @@ class Jtllog
      * @param bool   $bFilter
      * @return $this
      */
-    public function setcLog($cLog, $bFilter = true)
+    public function setcLog(string $cLog, bool $bFilter = true): self
     {
         $this->cLog = $bFilter ? StringHandler::filterXSS($cLog) : $cLog;
 
@@ -346,7 +340,7 @@ class Jtllog
      * @param string $cKey
      * @return $this
      */
-    public function setcKey($cKey)
+    public function setcKey($cKey): self
     {
         $this->cKey = Shop::Container()->getDB()->escape($cKey);
 
@@ -354,12 +348,12 @@ class Jtllog
     }
 
     /**
-     * @param int $kKey
+     * @param int|string $kKey
      * @return $this
      */
-    public function setkKey($kKey)
+    public function setkKey($kKey): self
     {
-        $this->kKey = (int)$kKey;
+        $this->kKey = $kKey;
 
         return $this;
     }
@@ -368,7 +362,7 @@ class Jtllog
      * @param string $dErstellt
      * @return $this
      */
-    public function setErstellt($dErstellt)
+    public function setErstellt($dErstellt): self
     {
         $this->dErstellt = Shop::Container()->getDB()->escape($dErstellt);
 
@@ -380,7 +374,7 @@ class Jtllog
      * @return int
      * @deprecated since 5.0.0
      */
-    public static function setBitFlag($nFlag_arr)
+    public static function setBitFlag($nFlag_arr): int
     {
         return JTLLOG_LEVEL_NOTICE;
     }
@@ -388,7 +382,7 @@ class Jtllog
     /**
      * @return int
      */
-    public function getkLog()
+    public function getkLog(): int
     {
         return (int)$this->kLog;
     }
@@ -396,7 +390,7 @@ class Jtllog
     /**
      * @return int
      */
-    public function getLevel()
+    public function getLevel(): int
     {
         return (int)$this->nLevel;
     }
@@ -418,7 +412,7 @@ class Jtllog
     }
 
     /**
-     * @return int
+     * @return int|string
      */
     public function getkKey()
     {
@@ -436,10 +430,10 @@ class Jtllog
     /**
      * @param int $nVal
      * @param int $nFlag
-     * @return int
+     * @return bool
      * @deprecated since 5.0.0
      */
-    public static function isBitFlagSet($nVal, $nFlag)
+    public static function isBitFlagSet($nVal, $nFlag): bool
     {
         return false;
     }
@@ -449,7 +443,7 @@ class Jtllog
      * @param int    $level
      * @return bool
      */
-    public static function cronLog($string, $level = 1)
+    public static function cronLog(string $string, int $level = 1): bool
     {
         if (defined('VERBOSE_CRONJOBS') && VERBOSE_CRONJOBS >= $level && PHP_SAPI === 'cli') {
             $now = new DateTime();
@@ -466,7 +460,7 @@ class Jtllog
      * @return int
      * @former getSytemlogFlag()
      */
-    public static function getSytemlogFlag($cache = true)
+    public static function getSytemlogFlag(bool $cache = true): int
     {
         $conf = Shop::getSettings([CONF_GLOBAL]);
         if ($cache === true && isset($conf['global']['systemlog_flag'])) {

@@ -86,7 +86,7 @@ function bearbeiteHersteller($xml)
     if (isset($xml['hersteller']['thersteller']) && is_array($xml['hersteller']['thersteller'])) {
         $hersteller_arr = mapArray($xml['hersteller'], 'thersteller', $GLOBALS['mHersteller']);
         if (is_array($hersteller_arr)) {
-            $oSprache_arr = gibAlleSprachen();
+            $oSprache_arr = Sprache::getAllLanguages();
             $mfCount      = count($hersteller_arr);
             $cacheTags    = [];
             for ($i = 0; $i < $mfCount; $i++) {

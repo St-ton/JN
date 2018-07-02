@@ -10,11 +10,6 @@
 class Template
 {
     /**
-     * @var bool
-     */
-    public static $bMobil = false;
-
-    /**
      * @var string
      */
     public static $cTemplate;
@@ -93,15 +88,15 @@ class Template
     /**
      * @return Template
      */
-    public static function getInstance()
+    public static function getInstance(): self
     {
         return self::$frontEndInstance ?? new self();
     }
 
     /**
-     * @return string
+     * @return $this
      */
-    public function init()
+    public function init(): self
     {
         if (isset($_SESSION['template']->cTemplate)) {
             self::$cTemplate   = $_SESSION['template']->cTemplate;
@@ -187,64 +182,40 @@ class Template
      *
      * @return array
      */
-    public function getPluginResources()
+    public function getPluginResources(): array
     {
-        $pluginResCSS = Shop::Container()->getDB()->query(
-            "SELECT * FROM tplugin_resources
-                JOIN tplugin ON tplugin.kPlugin = tplugin_resources.kPlugin
-                WHERE tplugin_resources.type = 'CSS'
-                    AND tplugin.nStatus = 2
-                    AND (tplugin_resources.conditional IS NULL
-                    OR tplugin_resources.conditional = '')
-                ORDER BY tplugin_resources.priority DESC",
-            \DB\ReturnType::ARRAY_OF_OBJECTS
-        );
-        $pluginResCSSconditional = Shop::Container()->getDB()->query(
-            "SELECT * FROM tplugin_resources
-                JOIN tplugin ON tplugin.kPlugin = tplugin_resources.kPlugin
-                WHERE tplugin_resources.type = 'CSS'
-                    AND tplugin.nStatus = 2
-                    AND tplugin_resources.conditional IS NOT NULL
-                    AND tplugin_resources.conditional != ''
-                ORDER BY tplugin_resources.priority DESC",
-            \DB\ReturnType::ARRAY_OF_OBJECTS
-        );
-        $pluginResJSHead = Shop::Container()->getDB()->query(
-            "SELECT * FROM tplugin_resources
+        $resourcesc = Shop::Container()->getDB()->queryPrepared(
+            'SELECT * FROM tplugin_resources
                 JOIN tplugin
                     ON tplugin.kPlugin = tplugin_resources.kPlugin
-                WHERE tplugin_resources.type = 'JS'
-                    AND tplugin_resources.position = 'head'
-                    AND tplugin.nStatus = 2
-                ORDER BY tplugin_resources.priority DESC",
+                WHERE tplugin.nStatus = :state
+                ORDER BY tplugin_resources.priority DESC',
+            ['state' => Plugin::PLUGIN_ACTIVATED],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        $pluginResJSBody = Shop::Container()->getDB()->query(
-            "SELECT * FROM tplugin_resources
-                JOIN tplugin
-                    ON tplugin.kPlugin = tplugin_resources.kPlugin
-                WHERE tplugin_resources.type = 'JS'
-                    AND tplugin_resources.position = 'body'
-                    AND tplugin.nStatus = 2
-                ORDER BY tplugin_resources.priority DESC",
-            \DB\ReturnType::ARRAY_OF_OBJECTS
-        );
+        $grouped    = \Functional\group($resourcesc, function ($e) {
+            return $e->type;
+        });
+        if (isset($grouped['js'])) {
+            $grouped['js'] = \Functional\group($grouped['js'], function ($e) {
+                return $e->position;
+            });
+        }
 
         return [
-            'css'             => $this->getPluginResourcesPath($pluginResCSS),
-            'css_conditional' => $this->getPluginResourcesPath($pluginResCSSconditional),
-            'js_head'         => $this->getPluginResourcesPath($pluginResJSHead),
-            'js_body'         => $this->getPluginResourcesPath($pluginResJSBody)
+            'css'     => $this->getPluginResourcesPath($grouped['css'] ?? []),
+            'js_head' => $this->getPluginResourcesPath($grouped['js']['head'] ?? []),
+            'js_body' => $this->getPluginResourcesPath($grouped['js']['body'] ?? [])
         ];
     }
 
     /**
      * get resource path for single plugins
      *
-     * @param array $items
+     * @param stdClass[] $items
      * @return array
      */
-    private function getPluginResourcesPath($items)
+    private function getPluginResourcesPath(array $items): array
     {
         foreach ($items as &$item) {
             $item->abs = PFAD_ROOT . PFAD_PLUGIN . $item->cVerzeichnis . '/' .
@@ -264,19 +235,18 @@ class Template
      * @param SimpleXMLElement $node
      * @return bool
      */
-    private function checkCondition($node)
+    private function checkCondition($node): bool
     {
-        $_settingsGroup     = constant((string)$node->attributes()->DependsOnSettingGroup);
-        $_settingValue      = (string)$node->attributes()->DependsOnSettingValue;
-        $_settingComparison = (string)$node->attributes()->DependsOnSettingComparison;
-        $_setting           = (string)$node->attributes()->DependsOnSetting;
-        $conf               = Shop::getSettings([$_settingsGroup]);
-        $hierarchy          = explode('.', $_setting);
-        $iterations         = count($hierarchy);
-        $i                  = 0;
-        $optionsOK          = false;
-        if (empty($_settingComparison)) {
-            $_settingComparison = '==';
+        $settingsGroup = constant((string)$node->attributes()->DependsOnSettingGroup);
+        $settingValue  = (string)$node->attributes()->DependsOnSettingValue;
+        $comparator    = (string)$node->attributes()->DependsOnSettingComparison;
+        $setting       = (string)$node->attributes()->DependsOnSetting;
+        $conf          = Shop::getSettings([$settingsGroup]);
+        $hierarchy     = explode('.', $setting);
+        $iterations    = count($hierarchy);
+        $i             = 0;
+        if (empty($comparator)) {
+            $comparator = '==';
         }
         foreach ($hierarchy as $_h) {
             $conf = $conf[$_h] ?? null;
@@ -284,26 +254,26 @@ class Template
                 return false;
             }
             if (++$i === $iterations) {
-                switch ($_settingComparison) {
+                switch ($comparator) {
                     case '==':
-                        return $conf == $_settingValue;
+                        return $conf == $settingValue;
                     case '===':
-                        return $conf === $_settingValue;
+                        return $conf === $settingValue;
                     case '>=':
-                        return $conf >= $_settingValue;
+                        return $conf >= $settingValue;
                     case '<=':
-                        return $conf <= $_settingValue;
+                        return $conf <= $settingValue;
                     case '>':
-                        return $conf > $_settingValue;
+                        return $conf > $settingValue;
                     case '<':
-                        return $conf < $_settingValue;
+                        return $conf < $settingValue;
                     default:
                         return false;
                 }
             }
         }
 
-        return $optionsOK;
+        return false;
     }
 
     /**
@@ -325,91 +295,93 @@ class Template
         $folders[] = $cOrdner;
         $cacheID   = 'tpl_mnfy_dt_' . $cOrdner . $parentHash;
         if (($tplGroups_arr = Shop::Cache()->get($cacheID)) === false) {
-            $tplGroups_arr = [];
+            $tplGroups_arr = [
+                'plugin_css'     => [],
+                'plugin_js_head' => [],
+                'plugin_js_body' => []
+            ];
             foreach ($folders as $cOrdner) {
                 $oXML = self::$helper->getXML($cOrdner);
-                if (isset($oXML->Minify->CSS)) {
-                    /** @var SimpleXMLElement $oCSS */
-                    foreach ($oXML->Minify->CSS as $oCSS) {
-                        $name = (string)$oCSS->attributes()->Name;
-                        if (!isset($tplGroups_arr[$name])) {
-                            $tplGroups_arr[$name] = [];
-                        }
-                        /** @var SimpleXMLElement $oFile */
-                        foreach ($oCSS->File as $oFile) {
-                            $cFile     = (string)$oFile->attributes()->Path;
-                            $cFilePath = self::$isAdmin === false
-                                ? PFAD_ROOT . PFAD_TEMPLATES . $oXML->Ordner . '/' . $cFile
-                                : PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $oXML->Ordner . '/' . $cFile;
-                            if (file_exists($cFilePath)
-                                && (empty($oFile->attributes()->DependsOnSetting) || $this->checkCondition($oFile) === true)
-                            ) {
-                                $_file           = PFAD_TEMPLATES . $cOrdner . '/' . (string)$oFile->attributes()->Path;
-                                $cCustomFilePath = str_replace('.css', '_custom.css', $cFilePath);
-                                if (file_exists($cCustomFilePath)) { //add _custom file if existing
-                                    $_file                  = str_replace(
-                                        '.css',
-                                        '_custom.css',
-                                        PFAD_TEMPLATES . $cOrdner . '/' . (string)$oFile->attributes()->Path
-                                    );
-                                    $tplGroups_arr[$name][] = [
-                                        'idx' => str_replace('.css', '_custom.css', (string)$oFile->attributes()->Path),
-                                        'abs' => realpath(PFAD_ROOT  . $_file),
-                                        'rel' => $_file
-                                    ];
-                                } else { //otherwise add normal file
-                                    $tplGroups_arr[$name][] = [
-                                        'idx' => $cFile,
-                                        'abs' => realpath(PFAD_ROOT  . $_file),
-                                        'rel' => $_file
-                                    ];
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    $tplGroups_arr['admin_css'] = [];
+                if ($oXML === null) {
+                    continue;
                 }
-                if (isset($oXML->Minify->JS)) {
-                    /** @var SimpleXMLElement $oJS */
-                    foreach ($oXML->Minify->JS as $oJS) {
-                        $name = (string)$oJS->attributes()->Name;
-                        if (!isset($tplGroups_arr[$name])) {
-                            $tplGroups_arr[$name] = [];
-                        }
-                        foreach ($oJS->File as $oFile) {
-                            if (empty($oFile->attributes()->DependsOnSetting) ||
-                                $this->checkCondition($oFile) === true
-                            ) {
-                                $_file    = PFAD_TEMPLATES . $cOrdner . '/' . (string)$oFile->attributes()->Path;
-                                $newEntry = [
-                                    'idx' => (string)$oFile->attributes()->Path,
-                                    'abs' => PFAD_ROOT  . $_file,
+                $cssSource = $oXML->Minify->CSS ?? [];
+                $jsSource  = $oXML->Minify->JS ?? [];
+                /** @var SimpleXMLElement $oCSS */
+                foreach ($cssSource as $oCSS) {
+                    $name = (string)$oCSS->attributes()->Name;
+                    if (!isset($tplGroups_arr[$name])) {
+                        $tplGroups_arr[$name] = [];
+                    }
+                    /** @var SimpleXMLElement $oFile */
+                    foreach ($oCSS->File as $oFile) {
+                        $cFile     = (string)$oFile->attributes()->Path;
+                        $cFilePath = self::$isAdmin === false
+                            ? PFAD_ROOT . PFAD_TEMPLATES . $oXML->Ordner . '/' . $cFile
+                            : PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $oXML->Ordner . '/' . $cFile;
+                        if (file_exists($cFilePath)
+                            && (empty($oFile->attributes()->DependsOnSetting) || $this->checkCondition($oFile) === true)
+                        ) {
+                            $_file           = PFAD_TEMPLATES . $cOrdner . '/' . (string)$oFile->attributes()->Path;
+                            $cCustomFilePath = str_replace('.css', '_custom.css', $cFilePath);
+                            if (file_exists($cCustomFilePath)) { //add _custom file if existing
+                                $_file                  = str_replace(
+                                    '.css',
+                                    '_custom.css',
+                                    PFAD_TEMPLATES . $cOrdner . '/' . (string)$oFile->attributes()->Path
+                                );
+                                $tplGroups_arr[$name][] = [
+                                    'idx' => str_replace('.css', '_custom.css', (string)$oFile->attributes()->Path),
+                                    'abs' => realpath(PFAD_ROOT . $_file),
                                     'rel' => $_file
                                 ];
-                                $found    = false;
-                                if (!empty($oFile->attributes()->override)
-                                    && (string)$oFile->attributes()->override === 'true'
-                                ) {
-                                    $idxToOverride = (string)$oFile->attributes()->Path;
-                                    $max           = count($tplGroups_arr[$name]);
-                                    for ($i = 0; $i < $max; $i++) {
-                                        if ($tplGroups_arr[$name][$i]['idx'] === $idxToOverride) {
-                                            $tplGroups_arr[$name][$i] = $newEntry;
-                                            $found                    = true;
-                                            break;
-                                        }
-                                    }
-                                }
-                                if ($found === false) {
-                                    $tplGroups_arr[$name][] = $newEntry;
-                                }
+                            } else { //otherwise add normal file
+                                $tplGroups_arr[$name][] = [
+                                    'idx' => $cFile,
+                                    'abs' => realpath(PFAD_ROOT . $_file),
+                                    'rel' => $_file
+                                ];
                             }
                         }
                     }
                 }
-                $pluginRes                   = $this->getPluginResources();
-                $tplGroups_arr['plugin_css'] = [];
+                /** @var SimpleXMLElement $oJS */
+                foreach ($jsSource as $oJS) {
+                    $name = (string)$oJS->attributes()->Name;
+                    if (!isset($tplGroups_arr[$name])) {
+                        $tplGroups_arr[$name] = [];
+                    }
+                    foreach ($oJS->File as $oFile) {
+                        if (!empty($oFile->attributes()->DependsOnSetting) && $this->checkCondition($oFile) !== true) {
+                            continue;
+                        }
+                        $_file    = PFAD_TEMPLATES . $cOrdner . '/' . (string)$oFile->attributes()->Path;
+                        $newEntry = [
+                            'idx' => (string)$oFile->attributes()->Path,
+                            'abs' => PFAD_ROOT . $_file,
+                            'rel' => $_file
+                        ];
+                        $found    = false;
+                        if (!empty($oFile->attributes()->override)
+                            && (string)$oFile->attributes()->override === 'true'
+                        ) {
+                            $idxToOverride = (string)$oFile->attributes()->Path;
+                            $max           = count($tplGroups_arr[$name]);
+                            for ($i = 0; $i < $max; $i++) {
+                                if ($tplGroups_arr[$name][$i]['idx'] === $idxToOverride) {
+                                    $tplGroups_arr[$name][$i] = $newEntry;
+                                    $found                    = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if ($found === false) {
+                            $tplGroups_arr[$name][] = $newEntry;
+                        }
+                    }
+                }
+
+                $pluginRes = $this->getPluginResources();
                 foreach ($pluginRes['css'] as $_cssRes) {
                     $cCustomFilePath = str_replace('.css', '_custom.css', $_cssRes->abs);
                     if (file_exists($cCustomFilePath)) {
@@ -426,15 +398,6 @@ class Template
                         ];
                     }
                 }
-                $tplGroups_arr['plugin_css_conditional'] = [];
-                foreach ($pluginRes['css_conditional'] as $_csscRes) {
-                    $tplGroups_arr['css_conditional'][] = [
-                        'idx' => $_csscRes->cName,
-                        'abs' => $_csscRes->abs,
-                        'rel' => $_csscRes->rel
-                    ];
-                }
-                $tplGroups_arr['plugin_js_head'] = [];
                 foreach ($pluginRes['js_head'] as $_jshRes) {
                     $tplGroups_arr['plugin_js_head'][] = [
                         'idx' => $_jshRes->cName,
@@ -442,7 +405,6 @@ class Template
                         'rel' => $_jshRes->rel
                     ];
                 }
-                $tplGroups_arr['plugin_js_body'] = [];
                 foreach ($pluginRes['js_body'] as $_jsbRes) {
                     $tplGroups_arr['plugin_js_body'][] = [
                         'idx' => $_jsbRes->cName,
@@ -452,7 +414,10 @@ class Template
                 }
             }
             $cacheTags = [CACHING_GROUP_OPTION, CACHING_GROUP_TEMPLATE, CACHING_GROUP_PLUGIN];
-            executeHook(HOOK_CSS_JS_LIST, ['groups' => &$tplGroups_arr, 'cache_tags' => &$cacheTags]);
+            executeHook(HOOK_CSS_JS_LIST, [
+                'groups'     => &$tplGroups_arr,
+                'cache_tags' => &$cacheTags
+            ]);
             Shop::Cache()->set($cacheID, $tplGroups_arr, $cacheTags);
         }
         foreach ($tplGroups_arr as $name => $_tplGroup) {
@@ -469,7 +434,7 @@ class Template
      * @return bool
      * @deprecated since 5.0.0
      */
-    private function getMobileTemplate()
+    private function getMobileTemplate(): bool
     {
         return false;
     }
@@ -478,7 +443,7 @@ class Template
      * @deprecated since 5.0.0
      * @return bool
      */
-    public function hasMobileTemplate()
+    public function hasMobileTemplate(): bool
     {
         return false;
     }
@@ -487,7 +452,7 @@ class Template
      * @return bool
      * @deprecated since 5.0.0
      */
-    public function isMobileTemplateActive()
+    public function isMobileTemplateActive(): bool
     {
         return false;
     }
@@ -495,25 +460,27 @@ class Template
     /**
      * get current template's active skin
      *
-     * @return string
+     * @return string|null
      */
     public function getSkin()
     {
         $cSkin = Shop::Container()->getDB()->select(
             'ttemplateeinstellungen',
             ['cName', 'cSektion', 'cTemplate'],
-            ['theme_default', 'theme',
-             self::$cTemplate]
+            [
+                'theme_default',
+                'theme',
+                self::$cTemplate
+            ]
         );
 
         return $cSkin->cWert ?? null;
     }
 
     /**
-     * @param bool $bMobil
      * @return $this
      */
-    public function setzeKundenTemplate($bMobil = false)
+    public function setzeKundenTemplate(): self
     {
         unset($_SESSION['template'], $_SESSION['cTemplate']);
         $this->init();
@@ -524,9 +491,9 @@ class Template
     /**
      * @param string      $folder - the current template's dir name
      * @param string|null $parent
-     * @return array|null
+     * @return array
      */
-    public function leseEinstellungenXML($folder, $parent = null)
+    public function leseEinstellungenXML($folder, $parent = null): array
     {
         self::$cTemplate = $folder;
         $oDBSettings     = $this->getConfig();
@@ -607,7 +574,9 @@ class Template
                         }
                         // get the tag-content of "TextAreaValue"; trim leading and trailing spaces
                         $vszTextLines = mb_split("\n", (string)$XMLSetting->TextAreaValue);
-                        array_walk($vszTextLines, function (&$szLine) { $szLine = trim($szLine); });
+                        array_walk($vszTextLines, function (&$szLine) {
+                            $szLine = trim($szLine);
+                        });
                         $oSetting->cTextAreaValue = implode("\n", $vszTextLines);
                     }
                     foreach ($oSection->oSettings_arr as $_setting) {
@@ -670,14 +639,14 @@ class Template
             }
         }
 
-        return count($oSection_arr) > 0 ? $oSection_arr : null;
+        return $oSection_arr;
     }
 
     /**
      * @param string|null $cOrdner
-     * @return array|bool
+     * @return array
      */
-    public function getBoxLayoutXML($cOrdner = null)
+    public function getBoxLayoutXML($cOrdner = null): array
     {
         $oItem_arr     = [];
         $cOrdner_arr   = self::$parent !== null ? [self::$parent] : [];
@@ -685,7 +654,7 @@ class Template
 
         foreach ($cOrdner_arr as $dir) {
             $oXML = self::$helper->getXML($dir);
-            if ($oXML && isset($oXML->Boxes) && count($oXML->Boxes) === 1) {
+            if (isset($oXML->Boxes) && count($oXML->Boxes) === 1) {
                 $oXMLBoxes_arr = $oXML->Boxes[0];
                 /** @var SimpleXMLElement $oXMLContainer */
                 foreach ($oXMLBoxes_arr as $oXMLContainer) {
@@ -696,15 +665,15 @@ class Template
             }
         }
 
-        return count($oItem_arr) > 0 ? $oItem_arr : false;
+        return $oItem_arr;
     }
 
     /**
      * @param string $cOrdner
-     * @return array|bool
+     * @return array
      * @todo: self::$parent
      */
-    public function leseLessXML($cOrdner)
+    public function leseLessXML($cOrdner): array
     {
         $oXML           = self::$helper->getXML($cOrdner);
         $oLessFiles_arr = [];
@@ -732,9 +701,9 @@ class Template
      *
      * @param string $cOrdner
      * @param string $eTyp
-     * @return mixed
+     * @return bool
      */
-    public function setTemplate($cOrdner, $eTyp = 'standard')
+    public function setTemplate($cOrdner, $eTyp = 'standard'): bool
     {
         Shop::Container()->getDB()->delete('ttemplate', 'eTyp', $eTyp);
         Shop::Container()->getDB()->delete('ttemplate', 'cTemplate', $cOrdner);
@@ -765,8 +734,8 @@ class Template
             ? (int)$parentConfig->ShopVersion
             : (int)$tplConfig->ShopVersion;
         $tplObject->preview     = (string)$tplConfig->Preview;
-        $bCheck                 = Shop::Container()->getDB()->insert('ttemplate', $tplObject);
-        if ($bCheck) {
+        $inserted               = Shop::Container()->getDB()->insert('ttemplate', $tplObject);
+        if ($inserted > 0) {
             if (!$dh = opendir(PFAD_ROOT . PFAD_COMPILEDIR)) {
                 return false;
             }
@@ -781,7 +750,7 @@ class Template
         }
         Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_TEMPLATE]);
 
-        return $bCheck;
+        return $inserted > 0;
     }
 
     /**
@@ -803,7 +772,7 @@ class Template
      * @param string $cWert
      * @return $this
      */
-    public function setConfig($cOrdner, $cSektion, $cName, $cWert)
+    public function setConfig($cOrdner, $cSektion, $cName, $cWert): self
     {
         $oSetting = Shop::Container()->getDB()->select(
             'ttemplateeinstellungen',
@@ -835,7 +804,7 @@ class Template
      * @return bool
      * @deprecated since 5.0.0
      */
-    public function IsMobile()
+    public function IsMobile(): bool
     {
         return false;
     }
@@ -844,13 +813,13 @@ class Template
      * @param bool $absolute
      * @return string
      */
-    public function getDir($absolute = false)
+    public function getDir($absolute = false): string
     {
         return $absolute ? (PFAD_ROOT . PFAD_TEMPLATES . self::$cTemplate) : self::$cTemplate;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getName()
     {
@@ -868,13 +837,13 @@ class Template
     /**
      * @return float
      */
-    public function getVersion()
+    public function getVersion(): float
     {
         return (float)$this->version;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getAuthor()
     {
@@ -882,7 +851,7 @@ class Template
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getURL()
     {
@@ -892,13 +861,13 @@ class Template
     /**
      * @return TemplateHelper
      */
-    public function getHelper()
+    public function getHelper(): TemplateHelper
     {
         return self::$helper;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getPreview()
     {
@@ -906,7 +875,7 @@ class Template
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getShopVersion()
     {
@@ -915,53 +884,9 @@ class Template
 
     /**
      * @param bool $bRedirect
+     * @deprecated since 5.0.0
      */
     public function check($bRedirect = true)
     {
-        if (isset($_GET['mt'])) {
-            $this->setzeKundenTemplate((boolean)(int)$_GET['mt']);
-            $cUrlShop_arr    = parse_url(Shop::getURL());
-            $ref             = $_SERVER['HTTP_REFERER'] ?? '';
-            $cUrlReferer_arr = parse_url($ref);
-            if ($bRedirect
-                && $ref !== ''
-                && strcasecmp($cUrlShop_arr['host'], $cUrlReferer_arr['host']) === 0
-            ) {
-                header('Location: ' . preg_replace('/&?mt=[^&]*/', '', $_SERVER['HTTP_REFERER']));
-                exit;
-            }
-        }
-    }
-
-    /**
-     * get the current template folder
-     *
-     * @param bool $bCache
-     * @return string|null
-     * @deprecated since 4.0
-     */
-    public function holeAktuellenTemplateOrdner($bCache = true)
-    {
-        return self::$cTemplate;
-    }
-
-    /**
-     * @param string|null $cOrdner
-     * @return array|bool
-     * @deprecated since 4.0
-     */
-    public function leseBoxenContainerXML($cOrdner = null)
-    {
-        return $this->getBoxLayoutXML($cOrdner);
-    }
-
-    /**
-     * @param bool $bCache
-     * @return string
-     * @deprecated since 4.0
-     */
-    public function getShopTemplate($bCache = true)
-    {
-        return $this->getDir();
     }
 }

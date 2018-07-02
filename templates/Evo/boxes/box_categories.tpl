@@ -1,10 +1,10 @@
-{if isset($Einstellungen.global.global_sichtbarkeit) && ($Einstellungen.global.global_sichtbarkeit != 3 || isset($smarty.session.Kunde->kKunde) && $smarty.session.Kunde->kKunde != 0)}
-    {assign var="nID" value=$oBox->kCustomID}
+{if $oBox->show()}
+    {assign var='nID' value=$oBox->getCustomID()}
     {get_category_array categoryId=0 categoryBoxNumber=$nID assign='categories'}
     {if !empty($categories)}
         <section class="panel panel-default box box-categories word-break" id="sidebox_categories{$nID}">
             <div class="panel-heading">
-                <h5 class="panel-title">{if !empty($oBox->cTitel)}{$oBox->cTitel}{else}{lang key="categories" section="global"}{/if}</h5>
+                <div class="panel-title">{if !empty($oBox->getTitle())}{$oBox->getTitle()}{else}{lang key='categories'}{/if}</div>
             </div>
             <div class="box-body">
                 <nav class="nav-panel">

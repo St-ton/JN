@@ -6,10 +6,11 @@
 ob_start();
 
 require_once __DIR__ . '/includes/globalinclude.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'io_inc.php';
 
 $AktuelleSeite = 'IO';
 $io            = IO::getInstance();
+$ioMethods     = new IOMethods($io);
+$ioMethods->registerMethods();
 Shop::Smarty()->setCaching(false)
     ->assign('BILD_KEIN_KATEGORIEBILD_VORHANDEN', BILD_KEIN_KATEGORIEBILD_VORHANDEN)
     ->assign('BILD_KEIN_ARTIKELBILD_VORHANDEN', BILD_KEIN_ARTIKELBILD_VORHANDEN)
@@ -22,7 +23,7 @@ Shop::Smarty()->setCaching(false)
 Shop::setPageType(PAGE_IO);
 
 if (!isset($_REQUEST['io'])) {
-    header(makeHTTPHeader(400));
+    header(RequestHelper::makeHTTPHeader(400));
     exit;
 }
 
@@ -37,7 +38,7 @@ try {
     $data = $io->handleRequest($request);
 } catch (Exception $e) {
     $data = $e->getMessage();
-    header(makeHTTPHeader(500));
+    header(RequestHelper::makeHTTPHeader(500));
 }
 
 ob_end_clean();

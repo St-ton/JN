@@ -258,7 +258,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
         $Artikel->cKurzBeschreibungHTML = StringHandler::removeWhitespace(
             str_replace($find, $replace, $Artikel->cKurzBeschreibungHTML)
         );
-        $Artikel->Preise->fVKBrutto     = berechneBrutto($Artikel->Preise->fVKNetto, gibUst($Artikel->kSteuerklasse));
+        $Artikel->Preise->fVKBrutto     = TaxHelper::getGross($Artikel->Preise->fVKNetto, TaxHelper::getSalesTax($Artikel->kSteuerklasse));
 
         //Kategoriepfad
         $Artikel->Kategorie     = new Kategorie(
@@ -267,7 +267,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
             $exportformat->kKundengruppe
         );
         $Artikel->Kategoriepfad = $Artikel->Kategorie->cKategoriePfad;
-        $Artikel->Versandkosten = gibGuenstigsteVersandkosten(
+        $Artikel->Versandkosten = VersandartHelper::getLowestShippingFees(
             $ExportEinstellungen['exportformate_lieferland'],
             $Artikel,
             0,
@@ -306,7 +306,8 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
         $oXSellingTMP_arr = Shop::Container()->getDB()->query(
             "SELECT kXSellArtikel
                 FROM txsell
-                WHERE kArtikel = " . (int)$Artikel->kArtikel, 9
+                WHERE kArtikel = " . (int)$Artikel->kArtikel,
+            \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
         );
         $oXSelling_arr    = [];
         if (is_array($oXSellingTMP_arr) && count($oXSellingTMP_arr) > 0) {
@@ -601,24 +602,28 @@ function baueArtikelExportSQL(&$oExportformat)
             $cSQL_arr['Where'] = " AND (tartikel.nIstVater != 1 OR tartikel.kEigenschaftKombi > 0)";
             break;
     }
-    if (isset($cExportEinstellungAssoc_arr['exportformate_lager_ueber_null']) &&
-        $cExportEinstellungAssoc_arr['exportformate_lager_ueber_null'] === 'Y') {
+    if (isset($cExportEinstellungAssoc_arr['exportformate_lager_ueber_null'])
+        && $cExportEinstellungAssoc_arr['exportformate_lager_ueber_null'] === 'Y'
+    ) {
         $cSQL_arr['Where'] .= " AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y'))";
-    } elseif (isset($cExportEinstellungAssoc_arr['exportformate_lager_ueber_null']) &&
-        $cExportEinstellungAssoc_arr['exportformate_lager_ueber_null'] === 'O') {
+    } elseif (isset($cExportEinstellungAssoc_arr['exportformate_lager_ueber_null'])
+        && $cExportEinstellungAssoc_arr['exportformate_lager_ueber_null'] === 'O'
+    ) {
         $cSQL_arr['Where'] .= " AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y') 
                                     OR tartikel.cLagerKleinerNull = 'Y')";
     }
 
-    if (isset($cExportEinstellungAssoc_arr['exportformate_preis_ueber_null']) &&
-        $cExportEinstellungAssoc_arr['exportformate_preis_ueber_null'] === 'Y') {
+    if (isset($cExportEinstellungAssoc_arr['exportformate_preis_ueber_null'])
+        && $cExportEinstellungAssoc_arr['exportformate_preis_ueber_null'] === 'Y'
+    ) {
         $cSQL_arr['Join'] .= " JOIN tpreise ON tpreise.kArtikel = tartikel.kArtikel
                                 AND tpreise.kKundengruppe = " . (int)$oExportformat->kKundengruppe . "
                                 AND tpreise.fVKNetto > 0";
     }
 
-    if (isset($cExportEinstellungAssoc_arr['exportformate_beschreibung']) &&
-        $cExportEinstellungAssoc_arr['exportformate_beschreibung'] === 'Y') {
+    if (isset($cExportEinstellungAssoc_arr['exportformate_beschreibung'])
+        && $cExportEinstellungAssoc_arr['exportformate_beschreibung'] === 'Y'
+    ) {
         $cSQL_arr['Where'] .= " AND tartikel.cBeschreibung != ''";
     }
 
@@ -663,7 +668,8 @@ function holeMaxExportArtikelAnzahl(&$oExportformat)
             " . $cSQL_arr['Join'] . "
             WHERE tartikelattribut.kArtikelAttribut IS NULL" . $cSQL_arr['Where'] . "
                 AND tartikelsichtbarkeit.kArtikel IS NULL
-                {$sql}", 1
+                {$sql}",
+        \DB\ReturnType::SINGLE_OBJECT
     );
     Shop::Cache()->set($cid, $count, [CACHING_GROUP_CORE], 120);
 

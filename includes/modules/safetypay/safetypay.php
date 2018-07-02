@@ -23,15 +23,15 @@ function gib_safetypay_form($Kunde, $Warenkorb, $Einstellungen)
         $pLanguageShop          = 'DE';
         $pCurrency              = 'EUR';
         $pToCurrency            = 'EUR';
-        $pBankID                = (isset($_REQUEST['slcBankID']) ? $_REQUEST['slcBankID'] : $_POST['slcBankID']);
+        $pBankID                = $_REQUEST['slcBankID'] ?? $_POST['slcBankID'];
         $txtAmount              = $Warenkorb->gibGesamtsummeWaren(true, false);
-        $pTrackingCode          = (isset($_REQUEST['TrackingCode']) ? $_REQUEST['TrackingCode'] : $_POST['TrackingCode']);
-        $pCalculationQuoteRefNo = (isset($_REQUEST['CalcQuoteReferenceNo']) ? $_REQUEST['CalcQuoteReferenceNo'] : $_POST['CalcQuoteReferenceNo']);
+        $pTrackingCode          = $_REQUEST['TrackingCode'] ?? $_POST['TrackingCode'];
+        $pCalculationQuoteRefNo = $_REQUEST['CalcQuoteReferenceNo'] ?? $_POST['CalcQuoteReferenceNo'];
         $pMerchantReferenceNo   = '';
-        $pURLPaymentSuccesfully = (isset($_REQUEST['URLPaymentSuccesfully']) ? $_REQUEST['URLPaymentSuccesfully'] : $_POST['URLPaymentSuccesfully']);
-        $pURLPaymentFailed      = (isset($_REQUEST['URLPaymentFailed']) ? $_REQUEST['URLPaymentFailed'] : $_POST['URLPaymentFailed']);
+        $pURLPaymentSuccesfully = $_REQUEST['URLPaymentSuccesfully'] ?? $_POST['URLPaymentSuccesfully'];
+        $pURLPaymentFailed      = $_REQUEST['URLPaymentFailed'] ?? $_POST['URLPaymentFailed'];
 
-        $pSubmit = (isset($_REQUEST['Submit']) ? $_REQUEST['Submit'] : $_POST['Submit']);
+        $pSubmit = $_REQUEST['Submit'] ?? $_POST['Submit'];
 
         // Instance of SafetyPay Proxy Class
         $proxySTP = new SafetyPayProxy();

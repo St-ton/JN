@@ -32,7 +32,7 @@ class MediaImageRequest
     /**
      * @var int
      */
-    public $number;
+    public $number = 1;
 
     /**
      * @var int
@@ -56,10 +56,9 @@ class MediaImageRequest
 
     /**
      * @param array|object $mixed
-     *
      * @return MediaImageRequest
      */
-    public static function create($mixed)
+    public static function create($mixed): MediaImageRequest
     {
         $new = new self();
 
@@ -69,10 +68,9 @@ class MediaImageRequest
     /**
      * @param array|object      $mixed
      * @param MediaImageRequest $new
-     *
      * @return MediaImageRequest
      */
-    public function copy(&$mixed, MediaImageRequest $new)
+    public function copy(&$mixed, MediaImageRequest $new): MediaImageRequest
     {
         $mixed = (object)$mixed;
         foreach ($mixed as $property => &$value) {
@@ -80,6 +78,9 @@ class MediaImageRequest
             unset($mixed->$property);
         }
         unset($value);
+        if (empty($new->number)) {
+            $new->number = 1;
+        }
         $mixed = null;
 
         return $new;
@@ -88,15 +89,15 @@ class MediaImageRequest
     /**
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
-        return (int) $this->id;
+        return (int)$this->id;
     }
 
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         if (empty($this->name)) {
             $this->name = 'image';
@@ -106,7 +107,7 @@ class MediaImageRequest
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getType()
     {
@@ -116,13 +117,13 @@ class MediaImageRequest
     /**
      * @return MediaImageSize
      */
-    public function getSize()
+    public function getSize(): MediaImageSize
     {
         return new MediaImageSize($this->size);
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getSizeType()
     {
@@ -132,21 +133,21 @@ class MediaImageRequest
     /**
      * @return int
      */
-    public function getNumber()
+    public function getNumber(): int
     {
-        return max((int) $this->number, 1);
+        return max((int)$this->number, 1);
     }
 
     /**
      * @return int
      */
-    public function getRatio()
+    public function getRatio(): int
     {
-        return max((int) $this->ratio, 1);
+        return max((int)$this->ratio, 1);
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getPath()
     {
@@ -158,7 +159,7 @@ class MediaImageRequest
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getExt()
     {
@@ -172,59 +173,68 @@ class MediaImageRequest
 
     /**
      * @param bool $absolute
-     *
      * @return null|string
      */
-    public function getRaw($absolute = false)
+    public function getRaw(bool $absolute = false)
     {
         $path = $this->getPath();
         $path = empty($path) ? null : sprintf('%s%s', self::getStoragePath(), $path);
 
-        return ($path !== null && $absolute === true)
+        return $path !== null && $absolute === true
             ? PFAD_ROOT . $path
             : $path;
     }
 
     /**
-     * @param null|MediaImageSize $size
-     * @param bool                $absolute
-     *
+     * @param string|MediaImageSize $size
+     * @param bool                  $absolute
      * @return string
      */
-    public function getThumb($size = null, $absolute = false)
+    public function getThumb($size = null, bool $absolute = false): string
     {
-        $size   = $size ?? $this->getSize();
-        $number = $this->getNumber() > 1
+        $size     = $size ?? $this->getSize();
+        $number   = $this->getNumber() > 1
             ? '~' . $this->getNumber()
             : '';
         $settings = Image::getSettings();
         $ext      = $this->ext ?: $settings['format'];
 
-        $thumb = sprintf('%s/%d/%s/%s%s.%s', self::getCachePath($this->getType()), $this->getId(), $size, $this->getName(), $number, $ext);
+        $thumb = sprintf(
+            '%s/%d/%s/%s%s.%s',
+            self::getCachePath($this->getType()),
+            $this->getId(),
+            $size,
+            $this->getName(),
+            $number,
+            $ext
+        );
 
-        return ($absolute === true)
+        return $absolute === true
             ? PFAD_ROOT . $thumb
             : $thumb;
     }
 
     /**
-     * @param null|string|MediaImageSize $size
-     *
+     * @param string|MediaImageSize $size
      * @return string
      */
-    public function getFallbackThumb($size = null)
+    public function getFallbackThumb($size = null): string
     {
         $size = $size ?? $this->getSize();
 
-        return sprintf('%s/%s/%s', rtrim(PFAD_PRODUKTBILDER, '/'), Image::mapSize($size, true), $this->getPath());
+        return sprintf(
+            '%s/%s/%s',
+            rtrim(PFAD_PRODUKTBILDER, '/'),
+            Image::mapSize($size, true),
+            $this->getPath()
+        );
     }
 
     /**
      * @param null|string $size
-     *
      * @return string
      */
-    public function getThumbUrl($size = null)
+    public function getThumbUrl($size = null): string
     {
         return Shop::getImageBaseURL() . $this->getThumb($size);
     }
@@ -275,17 +285,16 @@ class MediaImageRequest
     /**
      * @return string
      */
-    public static function getStoragePath()
+    public static function getStoragePath(): string
     {
         return PFAD_MEDIA_IMAGE_STORAGE;
     }
 
     /**
      * @param string $type
-     *
      * @return string
      */
-    public static function getCachePath($type)
+    public static function getCachePath(string $type): string
     {
         return PFAD_MEDIA_IMAGE . $type;
     }

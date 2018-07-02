@@ -74,7 +74,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
             }
             // Load only product name
             if ($bProductName) {
-                $oSprache = gibStandardsprache();
+                $oSprache = Sprache::getDefaultLanguage();
                 if (($kSprache > 0 && $kSprache == $oSprache->kSprache) || !$kSprache) {
                     $oObj = Shop::Container()->getDB()->query(
                         "SELECT cName 
@@ -130,12 +130,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Store the class in the database
-         *
-         * @param bool $bPrim - Controls the return of the method
+         * @param bool $bPrim
          * @return bool|int
          */
-        public function save($bPrim = true)
+        public function save(bool $bPrim = true)
         {
             $oObj        = new stdClass();
             $cMember_arr = array_keys(get_object_vars($this));
@@ -156,8 +154,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Update the class in the database
-         *
          * @return int
          */
         public function update()
@@ -170,13 +166,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                        fAnzahl = " . $this->fAnzahl . ",
                        cGrund = " . $this->cGrund . ",
                        cKommentar = " . $this->cKommentar . "
-                   WHERE kRMA = " . $this->kRMA, 3
+                   WHERE kRMA = " . $this->kRMA,
+                \DB\ReturnType::AFFECTED_ROWS
             );
         }
 
         /**
-         * Delete the class in the database
-         *
          * @return int
          */
         public function delete()

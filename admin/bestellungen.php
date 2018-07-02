@@ -15,11 +15,11 @@ $cSuchFilter     = '';
 $nAnzahlProSeite = 15;
 
 // Bestellung Wawi Abholung zuruecksetzen
-if (verifyGPCDataInteger('zuruecksetzen') === 1 && validateToken()) {
+if (RequestHelper::verifyGPCDataInt('zuruecksetzen') === 1 && FormHelper::validateToken()) {
     if (isset($_POST['kBestellung'])) {
         switch (setzeAbgeholtZurueck($_POST['kBestellung'])) {
             case -1: // Alles O.K.
-                $cHinweis = 'Ihr markierten Bestellungen wurden erfolgreich zur&uuml;ckgesetzt.';
+                $cHinweis = 'Ihr markierten Bestellungen wurden erfolgreich zurückgesetzt.';
                 break;
             case 1:  // Array mit Keys nicht vorhanden oder leer
                 $cFehler = 'Fehler: Bitte markieren Sie mindestens eine Bestellung.';
@@ -28,8 +28,8 @@ if (verifyGPCDataInteger('zuruecksetzen') === 1 && validateToken()) {
     } else {
         $cFehler = 'Fehler: Bitte markieren Sie mindestens eine Bestellung.';
     }
-} elseif (verifyGPCDataInteger('Suche') === 1) { // Bestellnummer gesucht
-    $cSuche = StringHandler::filterXSS(verifyGPDataString('cSuche'));
+} elseif (RequestHelper::verifyGPCDataInt('Suche') === 1) { // Bestellnummer gesucht
+    $cSuche = StringHandler::filterXSS(RequestHelper::verifyGPDataString('cSuche'));
     if (strlen($cSuche) > 0) {
         $cSuchFilter = $cSuche;
     } else {

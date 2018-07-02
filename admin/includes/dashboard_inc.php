@@ -6,12 +6,17 @@
 
 /**
  * @param bool $bActive
- * @return mixed
+ * @return array
  */
-function getWidgets($bActive = true)
+function getWidgets(bool $bActive = true)
 {
-    $oWidget_arr = Shop::Container()->getDB()->selectAll('tadminwidgets', 'bActive', (int)$bActive, '*', 'eContainer ASC, nPos ASC');
-    if ($bActive && is_array($oWidget_arr) && count($oWidget_arr) > 0) {
+    $oWidget_arr = Shop::Container()->getDB()->selectAll(
+        'tadminwidgets',
+        'bActive',
+        (int)$bActive, '*',
+        'eContainer ASC, nPos ASC'
+    );
+    if ($bActive) {
         foreach ($oWidget_arr as $i => $oWidget) {
             $oWidget_arr[$i]->cContent = '';
             $cClass                    = 'Widget' . $oWidget->cClass;
@@ -153,16 +158,33 @@ function getRemoteData($cURL, $nTimeout = 15)
  * @param string $cTpl
  * @param string $cWrapperID
  * @param string $cPost
- * @param bool $bDecodeUTF8
+ * @param null   $cCallback
+ * @param bool   $bDecodeUTF8
  * @return IOResponse
+ * @throws SmartyException
  */
 function getRemoteDataIO($cURL, $cDataName, $cTpl, $cWrapperID, $cPost = null, $cCallback = null, $bDecodeUTF8 = false)
 {
-    $response = new IOResponse();
-    $cData    = http_get_contents($cURL, 15, $cPost);
-    $oData    = json_decode($cData);
-    $oData    = $bDecodeUTF8 ? utf8_convert_recursive($oData) : $oData;
-    Shop::Smarty()->assign($cDataName, $oData);;
+    $response         = new IOResponse();
+    $oURLsToCache_arr = ['oNews_arr'];
+
+    if (in_array($cDataName, $oURLsToCache_arr, true)) {
+        $cacheID = $cDataName . '_' . $cTpl . '_' . md5($cWrapperID . $cURL);
+        if (($cData = Shop::Container()->getCache()->get($cacheID)) === false) {
+            $cData = RequestHelper::http_get_contents($cURL, 15, $cPost);
+            Shop::Cache()->set($cacheID, $cData, [CACHING_GROUP_OBJECT], 3600);
+        }
+    } else {
+        $cData = RequestHelper::http_get_contents($cURL, 15, $cPost);
+    }
+
+    if (strpos($cData, '<?xml') === 0) {
+        $oData = simplexml_load_string($cData);
+    } else {
+        $oData = json_decode($cData);
+    }
+    $oData    = $bDecodeUTF8 ? StringHandler::utf8_convert_recursive($oData) : $oData;
+    Shop::Smarty()->assign($cDataName, $oData);
     $cWrapper = Shop::Smarty()->fetch('tpl_inc/' . $cTpl);
     $response->assign($cWrapperID, 'innerHTML', $cWrapper);
 
@@ -173,13 +195,19 @@ function getRemoteDataIO($cURL, $cDataName, $cTpl, $cWrapperID, $cPost = null, $
     return $response;
 }
 
+/**
+ * @param string $cTpl
+ * @param string $cWrapperID
+ * @return IOResponse
+ * @throws SmartyException
+ */
 function getShopInfoIO($cTpl, $cWrapperID)
 {
     $response = new IOResponse();
 
-    $api = Shop::Container()->get(\Network\JTLApi::class);
-    $oSubscription = $api->getSubscription();
-    $oLatestVersion = $api->getLatestVersion();
+    $api              = Shop::Container()->get(\Network\JTLApi::class);
+    $oSubscription    = $api->getSubscription();
+    $oLatestVersion   = $api->getLatestVersion();
     $bUpdateAvailable = $api->hasNewerVersion();
 
     $strLatestVersion = $oLatestVersion
@@ -197,6 +225,10 @@ function getShopInfoIO($cTpl, $cWrapperID)
     return $response;
 }
 
+/**
+ * @return IOResponse
+ * @throws SmartyException
+ */
 function getAvailableWidgetsIO()
 {
     $response             = new IOResponse();

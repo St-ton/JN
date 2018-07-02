@@ -91,18 +91,18 @@ include __DIR__ . '/class/safetypayProxyAPI.php';
 
 $proxySTP = new safetypayProxy();
 
-$GetAmount = str_replace(',', '', (isset($_REQUEST['amount']) ? $_REQUEST['amount'] : $_GET['amount']));
-$GetCurr   = (isset($_REQUEST['curr']) ? $_REQUEST['curr'] : $_GET['curr']);
-$GetTOCurr = (isset($_REQUEST['tocurr']) ? $_REQUEST['tocurr'] : $_GET['tocurr']);
+$GetAmount = str_replace(',', '', $_REQUEST['amount'] ?? $_GET['amount']);
+$GetCurr   = $_REQUEST['curr'] ?? $_GET['curr'];
+$GetTOCurr = $_REQUEST['tocurr'] ?? $_GET['tocurr'];
 
 if (strlen($GetAmount) === 0) {
-    $GetAmount = str_replace(',', '', (isset($_REQUEST['stp_totalamount']) ? $_REQUEST['stp_totalamount'] : $_GET['stp_totalamount']));
+    $GetAmount = str_replace(',', '', $_REQUEST['stp_totalamount'] ?? $_GET['stp_totalamount']);
 }
 if (strlen($GetCurr) === 0) {
-    $GetCurr = (isset($_REQUEST['stp_defaultcurrency']) ? $_REQUEST['stp_defaultcurrency'] : $_GET['stp_defaultcurrency']);
+    $GetCurr = $_REQUEST['stp_defaultcurrency'] ?? $_GET['stp_defaultcurrency'];
 }
 if (strlen($GetTOCurr) === 0) {
-    $GetTOCurr = (isset($_REQUEST['stp_currencies']) ? $_REQUEST['stp_currencies'] : $_GET['stp_currencies']);
+    $GetTOCurr = $_REQUEST['stp_currencies'] ?? $_GET['stp_currencies'];
 }
 
 // SAFETYPAY_APIKEY, SAFETYPAY_SIGNTATURE_KEY und Umgebungseinstellung aus der DB laden

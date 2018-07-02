@@ -12,22 +12,15 @@ $oVergleichsliste = null;
 $conf             = Shop::getSettings([CONF_VERGLEICHSLISTE, CONF_ARTIKELDETAILS]);
 $cExclude         = [];
 $oMerkVaria_arr   = [[], []];
-if (isset($Link)) {
-    $requestURL = baueURL($Link, URLART_SEITE);
-    $sprachURL  = $Link->languageURLs ?? baueSprachURLS($Link, URLART_SEITE);
-} else {
-    $sprachURL  = null;
-    $requestURL = null;
-}
 //hole aktuelle Kategorie, falls eine gesetzt
-$AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
+$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
 $startKat->kKategorie   = -1;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 // VergleichslistePos in den Warenkorb adden
 if (isset($_GET['vlph']) && (int)$_GET['vlph'] === 1) {
-    $kArtikel = verifyGPCDataInteger('a');
+    $kArtikel = RequestHelper::verifyGPCDataInt('a');
     if ($kArtikel > 0) {
         //redirekt zum artikel, um variation/en zu wählen / MBM beachten
         header('Location: ' . Shop::getURL() . '/?a=' . $kArtikel);
@@ -35,11 +28,11 @@ if (isset($_GET['vlph']) && (int)$_GET['vlph'] === 1) {
     }
 } else {
     $oVergleichsliste = new Vergleichsliste();
-    $oMerkVaria_arr   = baueMerkmalundVariation($oVergleichsliste);
+    $oMerkVaria_arr   = Vergleichsliste::buildAttributeAndVariation($oVergleichsliste);
     // Füge den Vergleich für Statistikzwecke in die DB ein
-    setzeVergleich($oVergleichsliste);
+    Vergleichsliste::setComparison($oVergleichsliste);
     for ($i = 0; $i < 8; ++$i) {
-        $cElement = gibMaxPrioSpalteV($cExclude, $conf);
+        $cElement = Vergleichsliste::gibMaxPrioSpalteV($cExclude, $conf);
         if (strlen($cElement) > 1) {
             $cExclude[] = $cElement;
         }
@@ -49,7 +42,7 @@ if (isset($_GET['vlph']) && (int)$_GET['vlph'] === 1) {
 if ($oVergleichsliste !== null) {
     $oArtikel_arr     = [];
     $defaultOptions   = Artikel::getDefaultOptions();
-    $linkHelper       = LinkHelper::getInstance();
+    $linkHelper       = Shop::Container()->getLinkService();
     $baseURL          = $linkHelper->getStaticRoute('vergleichsliste.php');
     foreach ($oVergleichsliste->oArtikel_arr as $oArtikel) {
         $artikel = (new Artikel())->fuelleArtikel($oArtikel->kArtikel, $defaultOptions);
@@ -75,7 +68,6 @@ Shop::Smarty()->assign('nBreiteTabelle', $nBreiteArtikel * count($oVergleichslis
     ->assign('oVariationen_arr', $oMerkVaria_arr[1])
     ->assign('print', (isset($_GET['print']) && (int)$_GET['print'] === 1) ? 1 : 0)
     ->assign('oVergleichsliste', $oVergleichsliste)
-    ->assign('Navigation', createNavigation($AktuelleSeite))
     ->assign('Einstellungen_Vergleichsliste', $conf);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';

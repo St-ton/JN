@@ -6,9 +6,15 @@
 
 namespace Services;
 
-
+/**
+ * Class HelloWorldService
+ * @package Services
+ */
 class HelloWorldService implements HelloWorldServiceInterface
 {
+    /**
+     * @return string
+     */
     public function getHelloWorldString()
     {
         return " Hello World ";

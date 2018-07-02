@@ -6,7 +6,10 @@
 
 namespace Services;
 
-
+/**
+ * Interface HelloWorldServiceInterface
+ * @package Services
+ */
 interface HelloWorldServiceInterface
 {
     /**

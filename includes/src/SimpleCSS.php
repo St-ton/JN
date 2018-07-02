@@ -17,9 +17,9 @@ class SimpleCSS
     public $cCSS_arr = [];
 
     /**
-     * @param $cSelector
-     * @param $cAttribute
-     * @param $cValue
+     * @param string $cSelector
+     * @param string $cAttribute
+     * @param string $cValue
      * @return $this
      */
     public function addCSS($cSelector, $cAttribute, $cValue)
@@ -34,7 +34,7 @@ class SimpleCSS
     }
 
     /**
-     * @param $cFile
+     * @param string $cFile
      * @return bool
      */
     public function addFile($cFile)
@@ -79,7 +79,7 @@ class SimpleCSS
     }
 
     /**
-     * @param $cData_arr
+     * @param array $cData_arr
      * @return array
      */
     public function trimCSSData($cData_arr)
@@ -96,7 +96,7 @@ class SimpleCSS
     }
 
     /**
-     * @param $cSelector
+     * @param string $cSelector
      * @return bool
      */
     public function getSelector($cSelector)
@@ -109,8 +109,8 @@ class SimpleCSS
     }
 
     /**
-     * @param $cSelector
-     * @param $cKey
+     * @param string $cSelector
+     * @param string $cKey
      * @return bool
      */
     public function getAttribute($cSelector, $cKey)
@@ -179,8 +179,8 @@ class SimpleCSS
     }
 
     /**
-     * @param $cValue
-     * @param $cType
+     * @param string $cValue
+     * @param string $cType
      * @return bool|string
      */
     public function getAttrAs($cValue, $cType)
@@ -218,9 +218,9 @@ class SimpleCSS
     }
 
     /**
-     * @param $r
-     * @param $g
-     * @param $b
+     * @param array|int $r
+     * @param int $g
+     * @param int $b
      * @return string
      */
     public function rgb2html($r, $g, $b)
@@ -244,7 +244,7 @@ class SimpleCSS
     }
 
     /**
-     * @param $color
+     * @param string $color
      * @return array|bool
      */
     public function html2rgb($color)

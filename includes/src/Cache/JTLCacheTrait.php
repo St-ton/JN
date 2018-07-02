@@ -57,6 +57,22 @@ trait JTLCacheTrait
     }
 
     /**
+     * @return string|null
+     */
+    public function getJournalID()
+    {
+        return $this->journalID;
+    }
+
+    /**
+     * @param string $id
+     */
+    public function setJournalID($id)
+    {
+        $this->journalID = $id;
+    }
+
+    /**
      * test data availability and integrity
      *
      * @return bool

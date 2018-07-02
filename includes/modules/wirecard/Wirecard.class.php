@@ -29,9 +29,7 @@ class Wirecard extends PaymentMethod
     {
         global $Einstellungen;
 
-        return isset($Einstellungen['zahlungsarten']['zahlungsart_wirecard_customer_id'])
-            ? $Einstellungen['zahlungsarten']['zahlungsart_wirecard_customer_id']
-            : null;
+        return $Einstellungen['zahlungsarten']['zahlungsart_wirecard_customer_id'] ?? null;
     }
 
     /**
@@ -41,9 +39,7 @@ class Wirecard extends PaymentMethod
     {
         global $Einstellungen;
 
-        return isset($Einstellungen['zahlungsarten']['zahlungsart_wirecard_secret'])
-            ? $Einstellungen['zahlungsarten']['zahlungsart_wirecard_secret']
-            : null;
+        return $Einstellungen['zahlungsarten']['zahlungsart_wirecard_secret'] ?? null;
     }
 
     /**
@@ -97,18 +93,16 @@ class Wirecard extends PaymentMethod
      */
     public function handleNotification($order, $paymentHash, $args)
     {
-        if ($args['paymentState'] === 'SUCCESS') {
-            if ($this->verifyNotification($order, $paymentHash, $args)) {
-                $incomingPayment              = new stdClass();
-                $incomingPayment->fBetrag     = $order->fGesamtsummeKundenwaehrung;
-                $incomingPayment->cISO        = $order->Waehrung->cISO;
-                $incomingPayment->cEmpfaenger = 'Wirecard Order No. ' . $args['orderNumber'];
+        if ($args['paymentState'] === 'SUCCESS' && $this->verifyNotification($order, $paymentHash, $args)) {
+            $incomingPayment              = new stdClass();
+            $incomingPayment->fBetrag     = $order->fGesamtsummeKundenwaehrung;
+            $incomingPayment->cISO        = $order->Waehrung->cISO;
+            $incomingPayment->cEmpfaenger = 'Wirecard Order No. ' . $args['orderNumber'];
 
-                $this->addIncomingPayment($order, $incomingPayment);
-                $this->setOrderStatusToPaid($order);
-                $this->sendConfirmationMail($order);
-                $this->updateNotificationID($order->kBestellung, $args['orderNumber']);
-            }
+            $this->addIncomingPayment($order, $incomingPayment);
+            $this->setOrderStatusToPaid($order);
+            $this->sendConfirmationMail($order);
+            $this->updateNotificationID($order->kBestellung, $args['orderNumber']);
         }
     }
 

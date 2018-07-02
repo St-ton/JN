@@ -22,7 +22,9 @@ class PasswordService implements PasswordServiceInterface
      */
     const ASCII_MAX = 127;
 
-    /** @var CryptoServiceInterface  */
+    /**
+     * @var CryptoServiceInterface
+     */
     protected $cryptoService;
 
     /**
@@ -37,7 +39,7 @@ class PasswordService implements PasswordServiceInterface
     /**
      * @inheritdoc
      */
-    public function generate($length)
+    public function generate($length): string
     {
         /**
          * I have chosen to not use random_bytes, because using special characters in passwords is recommended. It is
@@ -56,7 +58,7 @@ class PasswordService implements PasswordServiceInterface
     /**
      * @inheritdoc
      */
-    public function hash($password)
+    public function hash($password): string
     {
         return password_hash($password, PASSWORD_DEFAULT);
     }
@@ -81,7 +83,7 @@ class PasswordService implements PasswordServiceInterface
     /**
      * @inheritdoc
      */
-    public function needsRehash($hash)
+    public function needsRehash($hash): bool
     {
         $length = strlen($hash);
 
@@ -93,7 +95,7 @@ class PasswordService implements PasswordServiceInterface
     /**
      * @inheritdoc
      */
-    public function getInfo($hash)
+    public function getInfo($hash): array
     {
         return password_get_info($hash);
     }

@@ -16,12 +16,12 @@ interface IMigration
     const DOWN = 'down';
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function up();
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function down();
 

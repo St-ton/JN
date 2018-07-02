@@ -16,14 +16,14 @@ $step          = 'suchspecials';
 setzeSprache();
 
 // Tabs
-if (strlen(verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', verifyGPDataString('tab'));
+if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
 
 // Einstellungen
-if (verifyGPCDataInteger('einstellungen') === 1) {
+if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
     $cHinweis .= saveAdminSectionSettings(CONF_SUCHSPECIAL, $_POST);
-} elseif (isset($_POST['suchspecials']) && (int)$_POST['suchspecials'] === 1 && validateToken()) {
+} elseif (isset($_POST['suchspecials']) && (int)$_POST['suchspecials'] === 1 && FormHelper::validateToken()) {
     // Suchspecials aus der DB holen und in smarty assignen
     $oSuchSpecials_arr       = Shop::Container()->getDB()->selectAll(
         'tseo',
@@ -143,7 +143,7 @@ if (verifyGPCDataInteger('einstellungen') === 1) {
     ) {
         $cInKuerzeVerfuegbarSeo = checkSeo(getSeo($cInKuerzeVerfuegbarSeo));
         if ($cInKuerzeVerfuegbarSeo !== $_POST['in_kuerze_verfuegbar']) {
-            $cHinweis .= 'Das In k&uuml;rze Verf&uuml;gbar Seo "' .
+            $cHinweis .= 'Das In kürze Verfügbar Seo "' .
                 strip_tags(Shop::Container()->getDB()->escape($_POST['in_kuerze_verfuegbar'])) .
                 '" war bereits vorhanden und wurde auf "' . $cInKuerzeVerfuegbarSeo . '" umbenannt.<br />';
         }
@@ -165,7 +165,7 @@ if (verifyGPCDataInteger('einstellungen') === 1) {
         $cTopBewertetSeo = checkSeo(getSeo($cTopBewertetSeo));
 
         if ($cTopBewertetSeo !== $_POST['top_bewertet']) {
-            $cHinweis .= 'Das In k&uuml;rze Verf&uuml;gbar Seo "' .
+            $cHinweis .= 'Das In kürze Verfügbar Seo "' .
                 strip_tags(Shop::Container()->getDB()->escape($_POST['top_bewertet'])) .
                 '" war bereits vorhanden und wurde auf "' . $cTopBewertetSeo . '" umbenannt.<br />';
         }
@@ -193,7 +193,8 @@ if (verifyGPCDataInteger('einstellungen') === 1) {
             "DELETE FROM tseo
                 WHERE cKey = 'suchspecial'
                     AND kSprache = " . (int)$_SESSION['kSprache'] . "
-                    AND kKey IN (" . $cSQL . ")", 3
+                    AND kKey IN (" . $cSQL . ")",
+            \DB\ReturnType::AFFECTED_ROWS
         );
 
         // Neu Setzen
@@ -223,7 +224,8 @@ if (verifyGPCDataInteger('einstellungen') === 1) {
             "DELETE FROM tseo
                 WHERE cKey = 'suchspecial'
                     AND kSprache = " . (int)$_SESSION['kSprache'] . "
-                    AND kKey IN (" . $cSQL . ")", 3
+                    AND kKey IN (" . $cSQL . ")",
+            \DB\ReturnType::AFFECTED_ROWS
         );
     }
 
@@ -239,10 +241,8 @@ $oSuchSpecials_arrTMP = Shop::Container()->getDB()->selectAll(
     'kKey'
 );
 $oSuchSpecials_arr    = [];
-if (is_array($oSuchSpecials_arrTMP) && count($oSuchSpecials_arrTMP) > 0) {
-    foreach ($oSuchSpecials_arrTMP as $oSuchSpecials) {
-        $oSuchSpecials_arr[$oSuchSpecials->kKey] = $oSuchSpecials->cSeo;
-    }
+foreach ($oSuchSpecials_arrTMP as $oSuchSpecials) {
+    $oSuchSpecials_arr[$oSuchSpecials->kKey] = $oSuchSpecials->cSeo;
 }
 
 // Config holen
@@ -274,7 +274,7 @@ for ($i = 0; $i < $configCount; $i++) {
 
 $smarty->assign('oConfig_arr', $oConfig_arr)
        ->assign('oSuchSpecials_arr', $oSuchSpecials_arr)
-       ->assign('Sprachen', gibAlleSprachen())
+       ->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->assign('step', $step)

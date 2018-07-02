@@ -20,7 +20,7 @@ class Status
 
     /**
      * @param string $name
-     * @param mixed $arguments
+     * @param mixed  $arguments
      * @return mixed
      */
     public function __call($name, $arguments)
@@ -33,7 +33,7 @@ class Status
     }
 
     /**
-     * @return JTLCache
+     * @return \Cache\JTLCacheInterface
      */
     protected function getObjectCache()
     {
@@ -69,7 +69,7 @@ class Status
      *
      * @return bool  true='no errors', false='something is wrong'
      */
-    protected function validDatabaseStruct()
+    protected function validDatabaseStruct(): bool
     {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbcheck_inc.php';
 
@@ -85,7 +85,7 @@ class Status
      *
      * @return bool  true='no errors', false='something is wrong'
      */
-    protected function validFileStruct()
+    protected function validFileStruct(): bool
     {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'filecheck_inc.php';
 
@@ -99,7 +99,7 @@ class Status
     /**
      * @return bool
      */
-    protected function validFolderPermissions()
+    protected function validFolderPermissions(): bool
     {
         $permissionStat = (new Systemcheck_Platform_Filesystem(PFAD_ROOT))->getFolderStats();
 
@@ -109,30 +109,34 @@ class Status
     /**
      * @return array
      */
-    protected function getPluginSharedHooks()
+    protected function getPluginSharedHooks(): array
     {
         $sharedPlugins = [];
         $sharedHookIds = Shop::Container()->getDB()->query(
-            "SELECT nHook
+            'SELECT nHook
                 FROM tpluginhook
                 GROUP BY nHook
-                HAVING COUNT(DISTINCT kPlugin) > 1",
+                HAVING COUNT(DISTINCT kPlugin) > 1',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($sharedHookIds as $hookData) {
-            $hookId                 = (int)$hookData->nHook;
-            $sharedPlugins[$hookId] = [];
-            $plugins                = Shop::Container()->getDB()->query(
-                "SELECT DISTINCT tpluginhook.kPlugin, tplugin.cName, tplugin.cPluginID
+            $hookID                 = (int)$hookData->nHook;
+            $sharedPlugins[$hookID] = [];
+            $plugins                = Shop::Container()->getDB()->queryPrepared(
+                'SELECT DISTINCT tpluginhook.kPlugin, tplugin.cName, tplugin.cPluginID
                     FROM tpluginhook
                     INNER JOIN tplugin
                         ON tpluginhook.kPlugin = tplugin.kPlugin
-                    WHERE tpluginhook.nHook = " . $hookId . "
-                        AND tplugin.nStatus = 2",
+                    WHERE tpluginhook.nHook = :hook
+                        AND tplugin.nStatus = :state',
+                [
+                    'hook'  => $hookID,
+                    'state' => Plugin::PLUGIN_ACTIVATED
+                ],
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($plugins as $plugin) {
-                $sharedPlugins[$hookId][$plugin->cPluginID] = $plugin;
+                $sharedPlugins[$hookID][$plugin->cPluginID] = $plugin;
             }
         }
 
@@ -142,7 +146,7 @@ class Status
     /**
      * @return bool
      */
-    protected function hasPendingUpdates()
+    protected function hasPendingUpdates(): bool
     {
         return (new Updater())->hasPendingUpdates();
     }
@@ -150,7 +154,7 @@ class Status
     /**
      * @return bool
      */
-    protected function hasActiveProfiler()
+    protected function hasActiveProfiler(): bool
     {
         return Profiler::getIsActive() !== 0;
     }
@@ -158,7 +162,7 @@ class Status
     /**
      * @return bool
      */
-    protected function hasInstallDir()
+    protected function hasInstallDir(): bool
     {
         return is_dir(PFAD_ROOT . 'install');
     }
@@ -166,7 +170,7 @@ class Status
     /**
      * @return bool
      */
-    protected function hasDifferentTemplateVersion()
+    protected function hasDifferentTemplateVersion(): bool
     {
         return JTL_VERSION != Template::getInstance()->getShopVersion();
     }
@@ -174,7 +178,7 @@ class Status
     /**
      * @return bool
      */
-    protected function hasMobileTemplateIssue()
+    protected function hasMobileTemplateIssue(): bool
     {
         $oTemplate = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'standard');
         if ($oTemplate !== null && isset($oTemplate->cTemplate)) {
@@ -200,7 +204,7 @@ class Status
     /**
      * @return bool
      */
-    protected function hasStandardTemplateIssue()
+    protected function hasStandardTemplateIssue(): bool
     {
         return Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'standard') === null;
     }
@@ -208,7 +212,7 @@ class Status
     /**
      * @return bool
      */
-    protected function hasValidEnvironment()
+    protected function hasValidEnvironment(): bool
     {
         $systemcheck = new Systemcheck_Environment();
         $systemcheck->executeTestGroup('Shop4');
@@ -235,7 +239,7 @@ class Status
     /**
      * @return array
      */
-    protected function getMySQLStats()
+    protected function getMySQLStats(): array
     {
         $stats = Shop::Container()->getDB()->stats();
         $info  = Shop::Container()->getDB()->info();
@@ -253,7 +257,7 @@ class Status
     /**
      * @return array
      */
-    protected function getPaymentMethodsWithError()
+    protected function getPaymentMethodsWithError(): array
     {
         $incorrectPaymentMethods = [];
         $paymentMethods          = Shop::Container()->getDB()->selectAll(
@@ -265,7 +269,7 @@ class Status
         );
         foreach ($paymentMethods as $method) {
             if (($logCount = ZahlungsLog::count($method->cModulId, JTLLOG_LEVEL_ERROR)) > 0) {
-                $method->logCount = $logCount;
+                $method->logCount          = $logCount;
                 $incorrectPaymentMethods[] = $method;
             }
         }
@@ -276,7 +280,7 @@ class Status
     /**
      * @return bool
      */
-    protected function hasInvalidPollCoupons()
+    protected function hasInvalidPollCoupons(): bool
     {
         $aPollCoupons        = Shop::Container()->getDB()->selectAll('tumfrage', 'nAktiv', 1);
         $invalidCouponsFound = false;
@@ -305,7 +309,7 @@ class Status
      * @param bool $has
      * @return array|bool
      */
-    protected function getOrphanedCategories($has = true)
+    protected function getOrphanedCategories(bool $has = true)
     {
         $categories = Shop::Container()->getDB()->query(
             "SELECT kKategorie, cName
@@ -323,14 +327,14 @@ class Status
     /**
      * @return bool
      */
-    protected function hasFullTextIndexError()
+    protected function hasFullTextIndexError(): bool
     {
-        $conf = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
+        $conf = Shop::getSettings([CONF_ARTIKELUEBERSICHT])['artikeluebersicht'];
 
-        return isset($conf['artikeluebersicht']['suche_fulltext'])
-            && $conf['artikeluebersicht']['suche_fulltext'] !== 'N'
+        return isset($conf['suche_fulltext'])
+            && $conf['suche_fulltext'] !== 'N'
             && (!Shop::Container()->getDB()->query(
-                "SHOW INDEX 
+                    "SHOW INDEX 
                     FROM tartikel 
                     WHERE KEY_NAME = 'idx_tartikel_fulltext'",
                     \DB\ReturnType::SINGLE_OBJECT
@@ -347,7 +351,7 @@ class Status
     /**
      * @return bool
      */
-    protected function hasNewPluginVersions()
+    protected function hasNewPluginVersions(): bool
     {
         $fNewVersions = false;
         // get installed plugins from DB
@@ -380,6 +384,7 @@ class Status
                 }
             }
         }
+
         return $fNewVersions;
     }
 
@@ -388,7 +393,7 @@ class Status
      *
      * @return bool
      */
-    public function hasInvalidPasswordResetMailTemplate()
+    public function hasInvalidPasswordResetMailTemplate(): bool
     {
         $translations = Shop::Container()->getDB()->query(
             "SELECT lang.cContentText, lang.cContentHtml
@@ -400,7 +405,7 @@ class Status
         );
         foreach ($translations as $t) {
             $old = '{$neues_passwort}';
-            if(strpos($t->cContentHtml, $old) !== false || strpos($t->cContentText, $old) !== false) {
+            if (strpos($t->cContentHtml, $old) !== false || strpos($t->cContentText, $old) !== false) {
                 return true;
             }
         }
@@ -414,9 +419,10 @@ class Status
      *
      * @return bool
      */
-    public function hasInsecureMailConfig()
+    public function hasInsecureMailConfig(): bool
     {
         $emailConf = Shop::getConfig([CONF_EMAILS])['emails'];
+
         return $emailConf['email_methode'] === 'smtp' && empty(trim($emailConf['email_smtp_verschluesselung']));
     }
 
@@ -424,7 +430,7 @@ class Status
      * @return bool
      * @throws Exception
      */
-    protected function needPasswordRehash2FA()
+    protected function needPasswordRehash2FA(): bool
     {
         $passwordService = Shop::Container()->getPasswordService();
         $hashes          = Shop::Container()->getDB()->query("
@@ -439,4 +445,16 @@ class Status
         });
     }
 
+    /**
+     * @return array
+     */
+    public function getDuplicateLinkGroupTemplateNames(): array
+    {
+        return Shop::Container()->getDB()->query(
+            'SELECT * FROM tlinkgruppe
+                GROUP BY cTemplatename
+                HAVING COUNT(*) > 1',
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
+    }
 }

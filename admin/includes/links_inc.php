@@ -1,20 +1,27 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
 
 /**
- * @param array $oLink_arr
- * @param int   $kVaterLink
- * @param int   $nLevel
- * @return array
+ * @param \Link\LinkGroupInterface $linkGroup
+ * @param int                      $kVaterLink
+ * @return \Tightenco\Collect\Support\Collection
  */
-function build_navigation_subs_admin($oLink_arr, $kVaterLink = 0, $nLevel = 0)
+function build_navigation_subs_admin($linkGroup, $kVaterLink = 0)
 {
-    $oNew_arr = [];
-    foreach ($oLink_arr as &$oLink) {
-        if ($oLink->kVaterLink == $kVaterLink) {
-            $oLink->nLevel   = $nLevel;
-            $oLink->oSub_arr = build_navigation_subs_admin($oLink_arr, $oLink->kLink, $nLevel + 1);
-            $oNew_arr[]      = $oLink;
+    $kVaterLink = (int)$kVaterLink;
+    $oNew_arr   = new \Tightenco\Collect\Support\Collection();
+    $lh         = Shop::Container()->getLinkService();
+    foreach ($linkGroup->getLinks() as $link) {
+        $link->setLevel(count($lh->getParentIDs($link->getID())));
+        /** @var \Link\Link $link */
+        if ($link->getParent() !== $kVaterLink) {
+            continue;
         }
+        $link->setChildLinks(build_navigation_subs_admin($linkGroup, $link->getID()));
+        $oNew_arr->push($link);
     }
 
     return $oNew_arr;
@@ -36,14 +43,11 @@ function gibLetzteBildNummer($kLink)
             }
         }
     }
-    $nMax       = 0;
-    $imageCount = count($cBild_arr);
-    if ($imageCount > 0) {
-        for ($i = 0; $i < $imageCount; $i++) {
-            $cNummer = substr($cBild_arr[$i], 4, (strlen($cBild_arr[$i]) - strpos($cBild_arr[$i], '.')) - 3);
-            if ($cNummer > $nMax) {
-                $nMax = $cNummer;
-            }
+    $nMax = 0;
+    foreach ($cBild_arr as $image) {
+        $cNummer = substr($image, 4, (strlen($image) - strpos($image, '.')) - 3);
+        if ($cNummer > $nMax) {
+            $nMax = $cNummer;
         }
     }
 
@@ -131,12 +135,24 @@ function calcRatio($cDatei, $nMaxBreite, $nMaxHoehe)
 /**
  * @param int $kLink
  * @param int $kLinkgruppe
+ * @return int
  */
-function removeLink($kLink, $kLinkgruppe)
+function removeLink($kLink, $kLinkgruppe = 0)
 {
-    $oLink              = new Link($kLink, null, true);
-    $oLink->kLinkgruppe = $kLinkgruppe;
-    $oLink->delete(true, $kLinkgruppe);
+    return Shop::Container()->getDB()->executeQueryPrepared(
+        "DELETE tlink, tlinksprache, tseo, tlinkgroupassociations
+            FROM tlink
+            LEFT JOIN tlinkgroupassociations
+                ON tlinkgroupassociations.linkID = tlink.kLink
+            LEFT JOIN tlinksprache
+                ON tlink.kLink = tlinksprache.kLink
+            LEFT JOIN tseo
+                ON tseo.cKey = 'kLink'
+                AND tseo.kKey = :lid
+            WHERE tlink.kLink = :lid",
+        ['lid' => $kLink],
+        \DB\ReturnType::AFFECTED_ROWS
+    );
 }
 
 /**
@@ -154,7 +170,7 @@ function getLinkVar($kLink, $var)
     $kLink = (int)$kLink;
     // tseo work around
     if ($var === 'cSeo') {
-        $linknamen = Shop::Container()->getDB()->query(
+        $links = Shop::Container()->getDB()->query(
             "SELECT tlinksprache.cISOSprache, tseo.cSeo
                 FROM tlinksprache
                 JOIN tsprache 
@@ -163,14 +179,14 @@ function getLinkVar($kLink, $var)
                     ON tseo.cKey = 'kLink'
                     AND tseo.kKey = tlinksprache.kLink
                     AND tseo.kSprache = tsprache.kSprache
-                WHERE tlinksprache.kLink = " . $kLink, 2
+                WHERE tlinksprache.kLink = " . $kLink,
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     } else {
-        $linknamen = Shop::Container()->getDB()->selectAll('tlinksprache', 'kLink', $kLink);
+        $links = Shop::Container()->getDB()->selectAll('tlinksprache', 'kLink', $kLink);
     }
-    $linkCount = count($linknamen);
-    for ($i = 0; $i < $linkCount; $i++) {
-        $namen[$linknamen[$i]->cISOSprache] = $linknamen[$i]->$var;
+    foreach ($links as $link) {
+        $namen[$link->cISOSprache] = $link->$var;
     }
 
     return $namen;
@@ -183,7 +199,18 @@ function getLinkVar($kLink, $var)
 function getGesetzteKundengruppen($link)
 {
     $ret = [];
-    if (!isset($link->cKundengruppen) || !$link->cKundengruppen || $link->cKundengruppen == 'NULL') {
+    if ($link instanceof \Link\LinkInterface) {
+        $cGroups = $link->getCustomerGroups();
+        if (count($cGroups) === 0) {
+            $ret[0] = true;
+        }
+        foreach ($cGroups as $customerGroup) {
+            $ret[$customerGroup] = true;
+        }
+
+        return $ret;
+    }
+    if (!isset($link->cKundengruppen) || !$link->cKundengruppen || strtolower($link->cKundengruppen) === 'null') {
         $ret[0] = true;
 
         return $ret;
@@ -208,10 +235,9 @@ function getLinkgruppeNames($kLinkgruppe)
     if (!$kLinkgruppe) {
         return $namen;
     }
-    $linknamen = Shop::Container()->getDB()->selectAll('tlinkgruppesprache', 'kLinkgruppe', (int)$kLinkgruppe);
-    $linkCount = count($linknamen);
-    for ($i = 0; $i < $linkCount; $i++) {
-        $namen[$linknamen[$i]->cISOSprache] = $linknamen[$i]->cName;
+    $links = Shop::Container()->getDB()->selectAll('tlinkgruppesprache', 'kLinkgruppe', (int)$kLinkgruppe);
+    foreach ($links as $link) {
+        $namen[$link->cISOSprache] = $link->cName;
     }
 
     return $namen;
@@ -234,30 +260,7 @@ function holeSpezialseiten()
     return Shop::Container()->getDB()->query(
         "SELECT *
             FROM tspezialseite
-            ORDER BY nSort", 2
+            ORDER BY nSort",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-}
-
-/**
- * @param array $oSub_arr
- * @param int   $kLinkgruppe
- * @param int   $kLinkgruppeAlt
- */
-function aenderLinkgruppeRek($oSub_arr, $kLinkgruppe, $kLinkgruppeAlt)
-{
-    if (is_array($oSub_arr) && count($oSub_arr) > 0) {
-        foreach ($oSub_arr as $oSub) {
-            $exists = Shop::Container()->getDB()->select('tlink', ['kLink', 'kLinkgruppe'],[(int)$oSub->kLink,  (int)$kLinkgruppe]);
-            if (empty($exists)) {
-                $oSub->setLinkgruppe($kLinkgruppe)
-                    ->save();
-                aenderLinkgruppeRek($oSub->oSub_arr, $kLinkgruppe, $kLinkgruppeAlt);
-                $oSub->setLinkgruppe($kLinkgruppeAlt)
-                    ->delete(false, $kLinkgruppeAlt);
-            } else {
-                $oSub->setVaterLink(0)
-                     ->update();
-            }
-        }
-    }
 }

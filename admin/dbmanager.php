@@ -57,7 +57,7 @@ switch (true) {
     case isset($_GET['select']):
         $table = $_GET['select'];
 
-        if (!preg_match('/^\w+$/i', $table, $m) || !validateToken()) {
+        if (!preg_match('/^\w+$/i', $table, $m) || !FormHelper::validateToken()) {
             die('Not allowed.');
         }
 
@@ -118,7 +118,7 @@ switch (true) {
 
         // count without limit
         $query = implode(' ', $queryParts);
-        $count = Shop::Container()->getDB()->executeQueryPrepared($query, $queryParams, 3);
+        $count = Shop::Container()->getDB()->queryPrepared($query, $queryParams, \DB\ReturnType::AFFECTED_ROWS);
         $pages = (int)ceil($count / $filter['limit']);
 
         // limit
@@ -128,9 +128,16 @@ switch (true) {
 
         $query = implode(' ', $queryParts);
         $info  = null;
-        $data  = Shop::Container()->getDB()->executeQueryPrepared($query, $queryParams, 9, false, false, function ($o) use (&$info) {
-            $info = $o;
-        });
+        $data  = Shop::Container()->getDB()->queryPrepared(
+            $query,
+            $queryParams,
+            \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS,
+            false,
+            false,
+            function ($o) use (&$info) {
+                $info = $o;
+            }
+        );
 
         $smarty->assign('selectedTable', $table)
                ->assign('data', $data)
@@ -154,43 +161,42 @@ switch (true) {
             $query = $_POST['sql_query_edit'];
         }
 
-        if ($query !== null && validateToken()) {
+        if ($query !== null && FormHelper::validateToken()) {
             try {
                 $parser = new SqlParser\Parser($query);
 
                 if (is_array($parser->errors) && count($parser->errors) > 0) {
                     throw $parser->errors[0];
-                } else {
-                    $q = SqlParser\Utils\Query::getAll($query);
-
-                    if ($q['is_select'] !== true) {
-                        throw new \Exception(sprintf('Query is restricted to SELECT statements'));
-                    }
-
-                    foreach ($q['select_tables'] as $t) {
-                        $table  = $t[0];
-                        $dbname = $t[1];
-                        if ($dbname !== null && strcasecmp($dbname, DB_NAME) !== 0) {
-                            throw new \Exception(sprintf('Well, at least u tried :)'));
-                        }
-                        if (in_array(strtolower($table), $restrictedTables, true)) {
-                            throw new \Exception(sprintf('Permission denied for table `%s`', $table));
-                        }
-                    }
-
-                    $stmt = $q['statement'];
-
-                    if ($q['limit'] === false) {
-                        $stmt->limit = new SqlParser\Components\Limit(50, 0);
-                    }
-
-                    $newQuery = $stmt->build();
-                    $query    = SqlParser\Utils\Formatter::format($newQuery, ['type' => 'text']);
-
-                    $result = exec_query($newQuery);
-
-                    $smarty->assign('result', $result);
                 }
+                $q = SqlParser\Utils\Query::getAll($query);
+
+                if ($q['is_select'] !== true) {
+                    throw new \Exception(sprintf('Query is restricted to SELECT statements'));
+                }
+
+                foreach ($q['select_tables'] as $t) {
+                    $table  = $t[0];
+                    $dbname = $t[1];
+                    if ($dbname !== null && strcasecmp($dbname, DB_NAME) !== 0) {
+                        throw new \Exception(sprintf('Well, at least u tried :)'));
+                    }
+                    if (in_array(strtolower($table), $restrictedTables, true)) {
+                        throw new \Exception(sprintf('Permission denied for table `%s`', $table));
+                    }
+                }
+
+                $stmt = $q['statement'];
+
+                if ($q['limit'] === false) {
+                    $stmt->limit = new SqlParser\Components\Limit(50, 0);
+                }
+
+                $newQuery = $stmt->build();
+                $query    = SqlParser\Utils\Formatter::format($newQuery, ['type' => 'text']);
+
+                $result = exec_query($newQuery);
+
+                $smarty->assign('result', $result);
             } catch (Exception $e) {
                 $smarty->assign('error', $e);
             }

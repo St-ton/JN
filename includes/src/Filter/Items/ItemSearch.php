@@ -11,7 +11,6 @@ use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
 use Filter\FilterInterface;
-use Filter\Type;
 use Filter\ProductFilter;
 use Filter\States\BaseSearchQuery;
 
@@ -63,14 +62,13 @@ class ItemSearch extends AbstractFilter
     {
         parent::__construct($productFilter);
         $this->setIsCustom(false)
-             ->setUrlParam('sf')
-             ->setUrlParamSEO(null);
+             ->setUrlParam('sf');
     }
 
     /**
      * @return int
      */
-    public function getSearchCacheID()
+    public function getSearchCacheID(): int
     {
         return $this->searchCacheID;
     }
@@ -79,9 +77,9 @@ class ItemSearch extends AbstractFilter
      * @param int $id
      * @return $this
      */
-    public function setSearchCacheID($id)
+    public function setSearchCacheID(int $id)
     {
-        $this->searchCacheID = (int)$id;
+        $this->searchCacheID = $id;
 
         return $this;
     }
@@ -110,7 +108,7 @@ class ItemSearch extends AbstractFilter
      */
     public function setValue($value) : FilterInterface
     {
-        $this->searchID = (int)$value;
+        $this->searchID = $value;
 
         return $this;
     }
@@ -137,7 +135,7 @@ class ItemSearch extends AbstractFilter
                 WHERE cKey = 'kSuchanfrage' 
                     AND kKey = :kkey",
             ['kkey' => $this->getValue()],
-            1
+            ReturnType::SINGLE_OBJECT
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
@@ -202,7 +200,7 @@ class ItemSearch extends AbstractFilter
      * @return bool
      * @former suchanfragenSpeichern
      */
-    public function saveQuery($hits, $query = '', $real = false, $languageIDExt = 0, $filterSpam = true)
+    public function saveQuery($hits, $query = '', $real = false, $languageIDExt = 0, $filterSpam = true): bool
     {
         if ($query === '') {
             $query = $this->getName();
@@ -231,7 +229,7 @@ class ItemSearch extends AbstractFilter
                 FROM tsuchanfragencache
                 WHERE kSprache = :lang
                 AND cIP = :ip',
-            ['lang' => $languageID, 'ip' => gibIP()],
+            ['lang' => $languageID, 'ip' => \RequestHelper::getIP()],
             ReturnType::SINGLE_OBJECT
         );
         $ipUsed       = \Shop::Container()->getDB()->select(
@@ -241,7 +239,7 @@ class ItemSearch extends AbstractFilter
             'cSuche',
             $Suchausdruck,
             'cIP',
-            gibIP(),
+            \RequestHelper::getIP(),
             false,
             'kSuchanfrageCache'
         );
@@ -252,7 +250,7 @@ class ItemSearch extends AbstractFilter
             // Fülle Suchanfragencache
             $searchQueryCache           = new \stdClass();
             $searchQueryCache->kSprache = $languageID;
-            $searchQueryCache->cIP      = gibIP();
+            $searchQueryCache->cIP      = \RequestHelper::getIP();
             $searchQueryCache->cSuche   = $Suchausdruck;
             $searchQueryCache->dZeit    = 'now()';
             \Shop::Container()->getDB()->insert('tsuchanfragencache', $searchQueryCache);
@@ -512,7 +510,7 @@ class ItemSearch extends AbstractFilter
                 ->setParam($this->getUrlParam())
                 ->setName($searchFilter->cSuche)
                 ->setValue((int)$searchFilter->kSuchanfrage)
-                ->setCount($searchFilter->nAnzahl);
+                ->setCount((int)$searchFilter->nAnzahl);
         }
         $this->options = $options;
 

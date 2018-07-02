@@ -74,7 +74,8 @@ function versendeNewsletter(
                 FROM tkunde
                 JOIN tkundengruppe 
                     ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
-                WHERE tkunde.kKunde = " . (int)$oKunde->kKunde, 1
+                WHERE tkunde.kKunde = " . (int)$oKunde->kKunde,
+            \DB\ReturnType::SINGLE_OBJECT
         );
         if (isset($oKundengruppe->nNettoPreise)) {
             $NettoPreise = $oKundengruppe->nNettoPreise;
@@ -858,7 +859,7 @@ function holeArtikel($cArtNr_arr)
                     } else {
                         $GLOBALS['step'] = 'versand_vorbereiten';
                         $GLOBALS['cFehler'] .= 'Fehler, der Artikel ' . $cArtNr .
-                            ' ist f&uuml;r einige Kundengruppen nicht sichtbar.<br>';
+                            ' ist für einige Kundengruppen nicht sichtbar.<br>';
                     }
                 } else {
                     $GLOBALS['step'] = 'versand_vorbereiten';
@@ -1173,7 +1174,7 @@ function gibAbonnent($cPost_arr)
         \DB\ReturnType::SINGLE_OBJECT
     );
     if (isset($oAbonnent->kNewsletterEmpfaenger) && $oAbonnent->kNewsletterEmpfaenger > 0) {
-        $oKunde               = new Kunde($oAbonnent->kKunde);
+        $oKunde               = new Kunde($oAbonnent->kKunde ?? 0);
         $oAbonnent->cNachname = $oKunde->cNachname;
 
         return $oAbonnent;
@@ -1311,50 +1312,51 @@ function gibAHKKeys($cKey, $bArtikelnummer = false)
  * @param int           $kSprache
  * @return array
  */
-function gibArtikelObjekte($kArtikel_arr, $oKampagne = '', $kKundengruppe = 0, $kSprache = 0)
+function gibArtikelObjekte($kArtikel_arr, $oKampagne = '', int $kKundengruppe = 0, int $kSprache = 0)
 {
-    $oArtikel_arr = [];
-    if (is_array($kArtikel_arr) && count($kArtikel_arr) > 0) {
-        $shopURL        = Shop::getURL() . '/';
-        $imageBaseURL   = Shop::getImageBaseURL();
-        $defaultOptions = Artikel::getDefaultOptions();
-        foreach ($kArtikel_arr as $kArtikel) {
-            if ((int)$kArtikel > 0) {
-                $_SESSION['Kundengruppe']->setMayViewPrices(1);
-                $oArtikel = new Artikel();
-                $oArtikel->fuelleArtikel($kArtikel, $defaultOptions, $kKundengruppe, $kSprache);
+    if (!is_array($kArtikel_arr) || count($kArtikel_arr) === 0) {
+        return [];
+    }
+    $oArtikel_arr   = [];
+    $shopURL        = Shop::getURL() . '/';
+    $imageBaseURL   = Shop::getImageBaseURL();
+    $defaultOptions = Artikel::getDefaultOptions();
+    foreach ($kArtikel_arr as $kArtikel) {
+        if ((int)$kArtikel > 0) {
+            $_SESSION['Kundengruppe']->setMayViewPrices(1);
+            $oArtikel = new Artikel();
+            $oArtikel->fuelleArtikel($kArtikel, $defaultOptions, $kKundengruppe, $kSprache);
 
-                if (!($oArtikel->kArtikel > 0)) {
-                    Jtllog::writeLog(
-                        "Newsletter Cron konnte den Artikel ({$kArtikel}) f&uuml;r Kundengruppe " . 
-                        "({$kKundengruppe}) und Sprache ({$kSprache}) nicht laden (Sichtbarkeit?)",
-                        JTLLOG_LEVEL_NOTICE, false, 'Newsletter Artikel', $kArtikel
-                    );
+            if (!($oArtikel->kArtikel > 0)) {
+                Jtllog::writeLog(
+                    "Newsletter Cron konnte den Artikel ({$kArtikel}) für Kundengruppe " .
+                    "({$kKundengruppe}) und Sprache ({$kSprache}) nicht laden (Sichtbarkeit?)",
+                    JTLLOG_LEVEL_NOTICE, false, 'Newsletter Artikel', $kArtikel
+                );
 
-                    continue;
-                }
-                $oArtikel->cURL = $shopURL . $oArtikel->cURL;
-                // Kampagne URL
-                if (isset($oKampagne->cParameter) && strlen($oKampagne->cParameter) > 0) {
-                    $cSep = '?';
-                    if (strpos($oArtikel->cURL, '.php') !== false) {
-                        $cSep = '&';
-                    }
-                    $oArtikel->cURL = $oArtikel->cURL . $cSep . $oKampagne->cParameter . '=' . $oKampagne->cWert;
-                }
-                // Artikelbilder absolut machen
-                $imageCount = count($oArtikel->Bilder);
-                if (is_array($oArtikel->Bilder) && $imageCount > 0) {
-                    for ($i = 0; $i < $imageCount; $i++) {
-                        $oArtikel->Bilder[$i]->cPfadMini   = $imageBaseURL . $oArtikel->Bilder[$i]->cPfadMini;
-                        $oArtikel->Bilder[$i]->cPfadKlein  = $imageBaseURL . $oArtikel->Bilder[$i]->cPfadKlein;
-                        $oArtikel->Bilder[$i]->cPfadNormal = $imageBaseURL . $oArtikel->Bilder[$i]->cPfadNormal;
-                        $oArtikel->Bilder[$i]->cPfadGross  = $imageBaseURL . $oArtikel->Bilder[$i]->cPfadGross;
-                    }
-                    $oArtikel->cVorschaubild = $imageBaseURL . $oArtikel->cVorschaubild;
-                }
-                $oArtikel_arr[] = $oArtikel;
+                continue;
             }
+            $oArtikel->cURL = $shopURL . $oArtikel->cURL;
+            // Kampagne URL
+            if (isset($oKampagne->cParameter) && strlen($oKampagne->cParameter) > 0) {
+                $cSep = '?';
+                if (strpos($oArtikel->cURL, '.php') !== false) {
+                    $cSep = '&';
+                }
+                $oArtikel->cURL = $oArtikel->cURL . $cSep . $oKampagne->cParameter . '=' . $oKampagne->cWert;
+            }
+            // Artikelbilder absolut machen
+            $imageCount = count($oArtikel->Bilder);
+            if (is_array($oArtikel->Bilder) && $imageCount > 0) {
+                for ($i = 0; $i < $imageCount; $i++) {
+                    $oArtikel->Bilder[$i]->cPfadMini   = $imageBaseURL . $oArtikel->Bilder[$i]->cPfadMini;
+                    $oArtikel->Bilder[$i]->cPfadKlein  = $imageBaseURL . $oArtikel->Bilder[$i]->cPfadKlein;
+                    $oArtikel->Bilder[$i]->cPfadNormal = $imageBaseURL . $oArtikel->Bilder[$i]->cPfadNormal;
+                    $oArtikel->Bilder[$i]->cPfadGross  = $imageBaseURL . $oArtikel->Bilder[$i]->cPfadGross;
+                }
+                $oArtikel->cVorschaubild = $imageBaseURL . $oArtikel->cVorschaubild;
+            }
+            $oArtikel_arr[] = $oArtikel;
         }
     }
 
@@ -1371,31 +1373,32 @@ function gibArtikelObjekte($kArtikel_arr, $oKampagne = '', $kKundengruppe = 0, $
  */
 function gibHerstellerObjekte($kHersteller_arr, $oKampagne = 0, $kSprache = 0)
 {
+    if (!is_array($kHersteller_arr) || count($kHersteller_arr) === 0) {
+        return [];
+    }
     $oHersteller_arr = [];
     $shopURL         = Shop::getURL() . '/';
     $imageBaseURL    = Shop::getImageBaseURL();
-    if (is_array($kHersteller_arr) && count($kHersteller_arr) > 0) {
-        foreach ($kHersteller_arr as $kHersteller) {
-            $kHersteller = (int)$kHersteller;
-            if ($kHersteller > 0) {
-                $oHersteller = new Hersteller($kHersteller);
-                if (strpos($oHersteller->cURL, $shopURL) === false) {
-                    $oHersteller->cURL = $oHersteller->cURL = $shopURL . $oHersteller->cURL;
-                }
-                // Kampagne URL
-                if (isset($oKampagne->cParameter) && strlen($oKampagne->cParameter) > 0) {
-                    $cSep = '?';
-                    if (strpos($oHersteller->cURL, '.php') !== false) {
-                        $cSep = '&';
-                    }
-                    $oHersteller->cURL = $oHersteller->cURL . $cSep . $oKampagne->cParameter . '=' . $oKampagne->cWert;
-                }
-                // Herstellerbilder absolut machen
-                $oHersteller->cBildpfadKlein  = $imageBaseURL . $oHersteller->cBildpfadKlein;
-                $oHersteller->cBildpfadNormal = $imageBaseURL . $oHersteller->cBildpfadNormal;
-
-                $oHersteller_arr[] = $oHersteller;
+    foreach ($kHersteller_arr as $kHersteller) {
+        $kHersteller = (int)$kHersteller;
+        if ($kHersteller > 0) {
+            $oHersteller = new Hersteller($kHersteller);
+            if (strpos($oHersteller->cURL, $shopURL) === false) {
+                $oHersteller->cURL = $oHersteller->cURL = $shopURL . $oHersteller->cURL;
             }
+            // Kampagne URL
+            if (isset($oKampagne->cParameter) && strlen($oKampagne->cParameter) > 0) {
+                $cSep = '?';
+                if (strpos($oHersteller->cURL, '.php') !== false) {
+                    $cSep = '&';
+                }
+                $oHersteller->cURL = $oHersteller->cURL . $cSep . $oKampagne->cParameter . '=' . $oKampagne->cWert;
+            }
+            // Herstellerbilder absolut machen
+            $oHersteller->cBildpfadKlein  = $imageBaseURL . $oHersteller->cBildpfadKlein;
+            $oHersteller->cBildpfadNormal = $imageBaseURL . $oHersteller->cBildpfadNormal;
+
+            $oHersteller_arr[] = $oHersteller;
         }
     }
 
@@ -1411,27 +1414,27 @@ function gibHerstellerObjekte($kHersteller_arr, $oKampagne = 0, $kSprache = 0)
  */
 function gibKategorieObjekte($kKategorie_arr, $oKampagne = 0)
 {
+    if (!is_array($kKategorie_arr) || count($kKategorie_arr) === 0) {
+        return [];
+    }
     $oKategorie_arr = [];
-
-    if (is_array($kKategorie_arr) && count($kKategorie_arr) > 0) {
-        $shopURL = Shop::getURL() . '/';
-        foreach ($kKategorie_arr as $kKategorie) {
-            $kKategorie = (int)$kKategorie;
-            if ($kKategorie > 0) {
-                $oKategorie = new Kategorie($kKategorie);
-                if (strpos($oKategorie->cURL, $shopURL) === false) {
-                    $oKategorie->cURL = $shopURL . $oKategorie->cURL;
-                }
-                // Kampagne URL
-                if (isset($oKampagne->cParameter) && strlen($oKampagne->cParameter) > 0) {
-                    $cSep = '?';
-                    if (strpos($oKategorie->cURL, '.php') !== false) {
-                        $cSep = '&';
-                    }
-                    $oKategorie->cURL = $oKategorie->cURL . $cSep . $oKampagne->cParameter . '=' . $oKampagne->cWert;
-                }
-                $oKategorie_arr[] = $oKategorie;
+    $shopURL        = Shop::getURL() . '/';
+    foreach ($kKategorie_arr as $kKategorie) {
+        $kKategorie = (int)$kKategorie;
+        if ($kKategorie > 0) {
+            $oKategorie = new Kategorie($kKategorie);
+            if (strpos($oKategorie->cURL, $shopURL) === false) {
+                $oKategorie->cURL = $shopURL . $oKategorie->cURL;
             }
+            // Kampagne URL
+            if (isset($oKampagne->cParameter) && strlen($oKampagne->cParameter) > 0) {
+                $cSep = '?';
+                if (strpos($oKategorie->cURL, '.php') !== false) {
+                    $cSep = '&';
+                }
+                $oKategorie->cURL = $oKategorie->cURL . $cSep . $oKampagne->cParameter . '=' . $oKampagne->cWert;
+            }
+            $oKategorie_arr[] = $oKategorie;
         }
     }
 

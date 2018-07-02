@@ -25,7 +25,7 @@ final class Marketplace
      */
     public function fetch($query)
     {
-        if (get_class($query) !== 'MarketplaceQuery') {
+        if (!$query instanceof MarketplaceQuery) {
             throw new InvalidArgumentException('Paramter query must be an instance of MarketplaceQuery');
         }
         $url      = sprintf("%s?s=%s&c=marketplace%s", self::API_URL, self::API_TOKEN, $query);

@@ -22,7 +22,7 @@ abstract class AbstractLink implements LinkInterface
         'cURL'               => 'URL',
         'cURLFull'           => 'URL',
         'cURLFullSSL'        => 'URL',
-        'cLocalizedName'     => 'Name',
+        'cLocalizedName'     => 'NamesCompat',
         'cLocalizedTitle'    => 'Title',
         'kLink'              => 'ID',
         'kSprache'           => 'LanguageID',
@@ -139,5 +139,19 @@ abstract class AbstractLink implements LinkInterface
     public function setVisibleLoggedInOnlyCompat($value)
     {
         $this->setVisibleLoggedInOnly($value === 'Y' || $value === true);
+    }
+
+    /**
+     * @return array
+     */
+    public function getNamesCompat(): array
+    {
+        $byCode = [];
+        $languages = \Sprache::getAllLanguages(1);
+        foreach ($this->getNames() as $langID => $name) {
+            $byCode[$languages[$langID]->cISO] = $name;
+        }
+
+        return $byCode;
     }
 }

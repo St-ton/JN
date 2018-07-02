@@ -138,8 +138,6 @@ if (isset($_POST['fragezumprodukt']) && (int)$_POST['fragezumprodukt'] === 1) {
 $kKategorie             = $AktuellerArtikel->gibKategorie();
 $AktuelleKategorie      = new Kategorie($kKategorie);
 $AufgeklappteKategorien = new KategorieListe();
-$startKat               = new Kategorie();
-$startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 $nAnzahlBewertungen    = 0;
 $bewertung_seite       = RequestHelper::verifyGPCDataInt('btgseite');
@@ -240,8 +238,6 @@ $smarty->assign('showMatrix', $AktuellerArtikel->showMatrix())
        ->assign('verfuegbarkeitsBenachrichtigung', ArtikelHelper::showAvailabilityForm(
            $AktuellerArtikel,
            $Einstellungen['artikeldetails']['benachrichtigung_nutzen']))
-       ->assign('code_fragezumprodukt', false)
-       ->assign('code_benachrichtigung_verfuegbarkeit', false)
        ->assign('ProdukttagHinweis', ArtikelHelper::editProductTags($AktuellerArtikel))
        ->assign('ProduktTagging', $AktuellerArtikel->tags)
        ->assign('BlaetterNavi', $oBlaetterNavi)

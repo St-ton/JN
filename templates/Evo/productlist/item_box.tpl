@@ -131,8 +131,8 @@
             <input type="hidden" name="wke" value="1" />
             <input type="hidden" name="overview" value="1" />
             <input type="hidden" name="Sortierung" value="{if !empty($Suchergebnisse->Sortierung)}{$Suchergebnisse->Sortierung}{/if}" />
-            {if $Suchergebnisse->getPages()->AktuelleSeite > 1}
-                <input type="hidden" name="seite" value="{$Suchergebnisse->getPages()->AktuelleSeite}" />
+            {if $Suchergebnisse->getPages()->getCurrentPage() > 1}
+                <input type="hidden" name="seite" value="{$Suchergebnisse->getPages()->getCurrentPage()}" />
             {/if}
             {if $NaviFilter->hasCategory()}
                 <input type="hidden" name="k" value="{$NaviFilter->getCategory()->getValue()}" />

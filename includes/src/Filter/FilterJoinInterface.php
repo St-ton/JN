@@ -71,5 +71,5 @@ interface FilterJoinInterface
     /**
      * @return string
      */
-    public function getSql(): string;
+    public function getSQL(): string;
 }

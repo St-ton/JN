@@ -77,12 +77,12 @@
     {/block}
 
     {* Pagination *}
-    {if isset($Suchergebnisse) && $Suchergebnisse->getPages()->maxSeite > 1 && isset($oNaviSeite_arr) && $oNaviSeite_arr|@count > 0}
-        {if $Suchergebnisse->getPages()->AktuelleSeite > 1}
-            <link rel="prev" href="{$oNaviSeite_arr.zurueck->cURL}">
+    {if isset($Suchergebnisse) && $Suchergebnisse->getPages()->getMaxPage() > 1}
+        {if $Suchergebnisse->getPages()->getCurrentPage() > 1}
+            <link rel="prev" href="{$filterPagination->getPrev()->getURL()}">
         {/if}
-        {if $Suchergebnisse->getPages()->AktuelleSeite < $Suchergebnisse->getPages()->maxSeite}
-            <link rel="next" href="{$oNaviSeite_arr.vor->cURL}">
+        {if $Suchergebnisse->getPages()->getCurrentPage() < $Suchergebnisse->getPages()->getMaxPage()}
+            <link rel="next" href="{$filterPagination->getNext()->getURL()}">
         {/if}
     {/if}
 

@@ -43,8 +43,6 @@ if (strlen($_GET['uid']) === 40) {
 $step                   = 'bestellung';
 $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
-$startKat               = new Kategorie();
-$startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 
 $smarty->assign('step', $step)

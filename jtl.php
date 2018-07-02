@@ -72,8 +72,6 @@ if (isset($_POST['login']) && (int)$_POST['login'] === 1 && !empty($_POST['email
 $customerID             = Session::Customer()->getID();
 $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
-$startKat               = new Kategorie();
-$startKat->kKategorie   = 0;
 $editRechnungsadresse   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 

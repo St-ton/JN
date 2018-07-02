@@ -15,8 +15,6 @@ Shop::setPageType(PAGE_WARTUNG);
 //hole aktuelle Kategorie, falls eine gesetzt
 $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
-$startKat               = new Kategorie();
-$startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';

@@ -252,7 +252,7 @@ class ProductFilterURL
     public function createUnsetFilterURLs($url, $searchResults = null): NavigationURLsInterface
     {
         if ($searchResults === null) {
-            $searchResults = $this->productFilter->getSearchResults(false);
+            $searchResults = $this->productFilter->getSearchResults();
         }
         $extraFilter    = (new ItemCategory($this->productFilter))->init(null)->setDoUnset(true);
         $_categoriesURL = $this->getURL($extraFilter);
@@ -389,8 +389,8 @@ class ProductFilterURL
         }
         // Filter reset
         $pages  = $searchResults->getPages();
-        $cSeite = $pages->AktuelleSeite > 1
-            ? SEP_SEITE . $pages->AktuelleSeite
+        $cSeite = $pages->getCurrentPage() > 1
+            ? SEP_SEITE . $pages->getCurrentPage()
             : '';
 
         $url->setUnsetAll($this->getURL(null, true) . $cSeite);

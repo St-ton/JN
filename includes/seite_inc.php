@@ -811,7 +811,7 @@ function pruefeSpezialseite(int $nLinkart)
             return $l->getLinkType() === $nLinkart;
         });
         /** @var \Link\LinkInterface $res */
-        if ($res !== null && $res->getFileName() !== null) {
+        if ($res !== null && $res->getFileName() !== '') {
             header('Location: ' . Shop::Container()->getLinkService()->getStaticRoute($res->getFileName()));
             exit();
         }

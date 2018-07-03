@@ -211,6 +211,7 @@
                                 <label for="nSort">{#sortnr#}</label>
                             </span>
                             <input class="form-control" type="text" id="nSort" name="nSort" value="{if isset($Versandart->nSort)}{$Versandart->nSort}{/if}" />
+                            <span class="input-group-addon">{getHelpDesc cDesc=#VersandartenSortDesc#}</span>
                         </li>
 
                         <li class="input-group">

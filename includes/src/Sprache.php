@@ -1078,8 +1078,13 @@ class Sprache
                     $lang->cURLFull = $url;
                     executeHook(HOOK_TOOLSGLOBAL_INC_SWITCH_SETZESPRACHEUNDWAEHRUNG_SPRACHE);
                 } elseif ($page !== null) {
-                    $lang->cURL     = $page->getURL($lang->kSprache);
-                    $lang->cURLFull = $lang->cURL;
+                    $lang->cURL = $page->getURL($lang->kSprache);
+                    if (strpos($lang->cURL, '/?s=') !== false) {
+                        $lang->cURL     .= '&amp;lang=' . $lang->cISO;
+                        $lang->cURLFull = rtrim($shopURL, '/') . $lang->cURL;
+                    } else {
+                        $lang->cURLFull = $lang->cURL;
+                    }
                 } else {
                     $originalLanguage = $productFilter->getLanguageID();
                     $productFilter->setLanguageID($lang->kSprache);

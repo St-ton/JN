@@ -12,10 +12,10 @@
                         <table class="table table-striped">
                             <tbody>
                                 <tr>
-                                    <td>{lang key="accountHolder" section="checkout"}:</td><td>{$oPaymentInfo->cInhaber}</td>
+                                    <td>{lang key='accountHolder' section='checkout'}:</td><td>{$oPaymentInfo->cInhaber}</td>
                                 </tr>
                                 <tr>
-                                    <td>{lang key="bank" section="checkout"}:</td><td>{$oPaymentInfo->cBankName}</td>
+                                    <td>{lang key='bank' section='checkout'}:</td><td>{$oPaymentInfo->cBankName}</td>
                                 </tr>
                                 <tr>
                                     <td>IBAN:</td><td>{$oPaymentInfo->cIBAN}</td>
@@ -24,7 +24,7 @@
                                     <td>BIC:</td><td>{$oPaymentInfo->cBIC}</td>
                                 </tr>
                                 <tr>
-                                    <td>{lang key="purpose" section="checkout"}:</td><td>{$oPaymentInfo->cVerwendungszweck}</td>
+                                    <td>{lang key='purpose' section='checkout'}:</td><td>{$oPaymentInfo->cVerwendungszweck}</td>
                                 </tr>
                             </tbody>
                         </table>

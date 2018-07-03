@@ -3,18 +3,18 @@
  * @license http://jtl-url.de/jtlshoplicense
  *}
  
-{block name="header"}
+{block name='header'}
     {if !isset($bAjaxRequest) || !$bAjaxRequest}
         {include file='layout/header.tpl'}
     {/if}
 {/block}
 
-{block name="content"}
+{block name='content'}
     <div id="result-wrapper">
         <div id="checkout">
-            {include file="checkout/inc_steps.tpl"}
+            {include file='checkout/inc_steps.tpl'}
     
-            {include file="snippets/extension.tpl"}
+            {include file='snippets/extension.tpl'}
             {if $step === 'accountwahl'}
                 {include file='checkout/step0_login_or_register.tpl'}{*bestellvorgang_accountwahl.tpl*}
             {elseif $step === 'edit_customer_address' || $step === 'Lieferadresse'}
@@ -32,7 +32,7 @@
     {if (isset($nWarenkorb2PersMerge) && $nWarenkorb2PersMerge === 1)}
         <script type="text/javascript">
             $(function() {
-                eModal.confirm({ldelim}message: '{lang key="basket2PersMerge" section="login"}', label1: '{lang key="no" section="global"}', label2: '{lang key="yes" section="global"}'{rdelim}, '{lang key="basket" section="global"}', function(res) {
+                eModal.confirm({ldelim}message: '{lang key='basket2PersMerge' section='login'}', label1: '{lang key='no' section='global'}', label2: '{lang key='yes' section='global'}'{rdelim}, '{lang key='basket' section='global'}', function(res) {
                     if (res) {
                         window.location = "{get_static_route id='bestellvorgang.php'}?basket2Pers=1"
                     }
@@ -48,7 +48,7 @@
     </script>
 {/block}
 
-{block name="footer"}
+{block name='footer'}
     {if !isset($bAjaxRequest) || !$bAjaxRequest}
         {include file='layout/footer.tpl'}
     {/if}

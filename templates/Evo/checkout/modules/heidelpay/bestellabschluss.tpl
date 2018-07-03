@@ -2,7 +2,7 @@
     {if $status === 'error'}
         <strong>{$error}</strong>
     {else}
-        {lang key="heidelpayDesc" section=""}
+        {lang key='heidelpayDesc' section=''}
         {strip}
             <div>
                 <a href="{$url}">

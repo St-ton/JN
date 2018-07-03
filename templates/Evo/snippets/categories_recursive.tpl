@@ -23,7 +23,7 @@
             {get_category_parents categoryId=$activeId assign='activeParents'}
         {/if}
         {if !isset($activeParents)}
-            {assign var="activeParents" value=null}
+            {assign var='activeParents' value=null}
         {/if}
         {if empty($categories)}
             {if !isset($categoryBoxNumber)}
@@ -32,7 +32,7 @@
             {get_category_array categoryId=$categoryId categoryBoxNumber=$categoryBoxNumber assign='categories'}
         {/if}
         {if !empty($categories)}
-            {foreach name='categories' from=$categories item='category'}
+            {foreach $categories as $category}
                 {assign var='hasItems' value=false}
                 {if isset($category->bUnterKategorien) && $category->bUnterKategorien && (($i+1) < $limit)}
                     {assign var='hasItems' value=true}

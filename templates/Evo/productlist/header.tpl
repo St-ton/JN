@@ -28,7 +28,7 @@
 
 {include file='snippets/extension.tpl'}
 
-{block name="productlist-header"}
+{block name='productlist-header'}
 {if $oNavigationsinfo->hasData()}
     <div class="title">{if $oNavigationsinfo->getName()}<h1>{$oNavigationsinfo->getName()}</h1>{/if}</div>
     <div class="desc clearfix">
@@ -59,10 +59,10 @@
 {/if}
 {/block}
 
-{block name="productlist-subcategories"}
+{block name='productlist-subcategories'}
 {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'N' && $oUnterKategorien_arr|@count > 0}
     <div class="row row-eq-height content-cats-small clearfix">
-        {foreach name=unterkats from=$oUnterKategorien_arr item=Unterkat}
+        {foreach $oUnterKategorien_arr as $Unterkat}
             <div class="col-xs-6 col-md-4 col-lg-3">
                 <div class="thumbnail">
                     {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}
@@ -84,7 +84,7 @@
                         {if isset($Unterkat->Unterkategorien) && $Unterkat->Unterkategorien|@count > 0}
                             <hr class="hr-sm">
                             <ul class="list-unstyled small subsub">
-                                {foreach from=$Unterkat->Unterkategorien item=UnterUnterKat}
+                                {foreach $Unterkat->Unterkategorien as $UnterUnterKat}
                                     <li>
                                         <a href="{$UnterUnterKat->cURLFull}" title="{$UnterUnterKat->cName}">{$UnterUnterKat->cName}</a>
                                     </li>
@@ -140,8 +140,8 @@
             {*<input type="hidden" name="pf" value="{$NaviFilter->getPriceRangeFilter()->getValue()}" />*}
         {*{/if}*}
         {*{if $NaviFilter->hasAttributeFilter()}*}
-            {*{foreach name=merkmalfilter from=$NaviFilter->getAttributeFilter() item=attributeFilter}*}
-                {*<input type="hidden" name="mf{$smarty.foreach.merkmalfilter.iteration}" value="{$attributeFilter->getValue()}" />*}
+            {*{foreach $NaviFilter->getAttributeFilter() as $attributeFilter}*}
+                {*<input type="hidden" name="mf{$attributeFilter@iteration}" value="{$attributeFilter->getValue()}" />*}
             {*{/foreach}*}
         {*{/if}*}
         {*{if isset($cJTLSearchStatedFilter_arr) && is_array($cJTLSearchStatedFilter_arr)}*}
@@ -150,13 +150,13 @@
             {*{/foreach}*}
         {*{/if}*}
         {*{if $NaviFilter->hasTagFilter()}*}
-            {*{foreach name=tagfilter from=$NaviFilter->getTagFilter() item=tagFilter}*}
-                {*<input type="hidden" name="tf{$smarty.foreach.tagfilter.iteration}" value="{$tagFilter->getValue()}" />*}
+            {*{foreach $NaviFilter->getTagFilter() as $tagFilter}*}
+                {*<input type="hidden" name="tf{$$tagFilter@iteration}" value="{$tagFilter->getValue()}" />*}
             {*{/foreach}*}
         {*{/if}*}
         {*{if $NaviFilter->hasSearchFilter()}*}
-            {*{foreach name=suchfilter from=$NaviFilter->getSearchFilter() item=searchFilter}*}
-                {*<input type="hidden" name="sf{$smarty.foreach.suchfilter.iteration}" value="{$searchFilter->getValue()}" />*}
+            {*{foreach $NaviFilter->getSearchFilter() as $searchFilter}*}
+                {*<input type="hidden" name="sf{$searchFilter@iteration}" value="{$searchFilter->getValue()}" />*}
             {*{/foreach}*}
         {*{/if}*}
         {*{include file='productlist/result_options.tpl'}*}

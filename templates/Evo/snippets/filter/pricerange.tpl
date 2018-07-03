@@ -11,7 +11,7 @@
             </li>
         {/if}
     {else}
-        {foreach name=preisspannen from=$Suchergebnisse->Preisspanne item=oPreisspannenfilter}
+        {foreach $Suchergebnisse->Preisspanne as $oPreisspannenfilter}
             <li>
                 <a href="{$oPreisspannenfilter->cURL}" rel="nofollow">
                     <span class="badge pull-right">{$oPreisspannenfilter->nAnzahlArtikel}</span>

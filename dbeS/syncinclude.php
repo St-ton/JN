@@ -153,6 +153,7 @@ function checkFile()
 
 /**
  * @return bool
+ * @throws Exception
  */
 function auth()
 {
@@ -188,7 +189,7 @@ function DBDelInsert($tablename, $object_arr, $del)
 {
     if (is_array($object_arr)) {
         if ($del) {
-            Shop::Container()->getDB()->query("DELETE FROM $tablename", 4);
+            Shop::Container()->getDB()->query("DELETE FROM $tablename", \DB\ReturnType::DEFAULT);
         }
         foreach ($object_arr as $object) {
             //hack? unset arrays/objects that would result in nicedb exceptions
@@ -315,11 +316,9 @@ function buildAttributes(&$arr, $cExclude_arr = [])
         $keys     = array_keys($arr);
         $keyCount = count($keys);
         for ($i = 0; $i < $keyCount; $i++) {
-            if (!in_array($keys[$i], $cExclude_arr)) {
-                if ($keys[$i]{0} === 'k') {
-                    $attr_arr[$keys[$i]] = $arr[$keys[$i]];
-                    unset($arr[$keys[$i]]);
-                }
+            if (!in_array($keys[$i], $cExclude_arr) && $keys[$i]{0} === 'k') {
+                $attr_arr[$keys[$i]] = $arr[$keys[$i]];
+                unset($arr[$keys[$i]]);
             }
         }
     }
@@ -513,19 +512,24 @@ function fuelleArtikelKategorieRabatt($oArtikel, $oKundengruppe_arr)
     Shop::Container()->getDB()->delete('tartikelkategorierabatt', 'kArtikel', (int)$oArtikel->kArtikel);
     if (is_array($oKundengruppe_arr) && count($oKundengruppe_arr) > 0) {
         foreach ($oKundengruppe_arr as $oKundengruppe) {
-            $oMaxRabatt = Shop::Container()->getDB()->query(
+            $oMaxRabatt = Shop::Container()->getDB()->queryPrepared(
                 "SELECT tkategoriekundengruppe.fRabatt, tkategoriekundengruppe.kKategorie
                     FROM tkategoriekundengruppe
                     JOIN tkategorieartikel 
                         ON tkategorieartikel.kKategorie = tkategoriekundengruppe.kKategorie
-                        AND tkategorieartikel.kArtikel = {$oArtikel->kArtikel}
+                        AND tkategorieartikel.kArtikel = :kArtikel
                     LEFT JOIN tkategoriesichtbarkeit
                         ON tkategoriesichtbarkeit.kKategorie = tkategoriekundengruppe.kKategorie
-                        AND tkategoriesichtbarkeit.kKundengruppe = {$oKundengruppe->kKundengruppe}
+                        AND tkategoriesichtbarkeit.kKundengruppe = :kKundengruppe
                     WHERE tkategoriesichtbarkeit.kKategorie IS NULL
-                        AND tkategoriekundengruppe.kKundengruppe = {$oKundengruppe->kKundengruppe}
+                        AND tkategoriekundengruppe.kKundengruppe = :kKundengruppe
                     ORDER BY tkategoriekundengruppe.fRabatt DESC
-                    LIMIT 1", 1
+                    LIMIT 1",
+                [
+                    'kArtikel'      => $oArtikel->kArtikel,
+                    'kKundengruppe' => $oKundengruppe->kKundengruppe,
+                ],
+                \DB\ReturnType::SINGLE_OBJECT
             );
 
             if (isset($oMaxRabatt->fRabatt) && $oMaxRabatt->fRabatt > 0) {
@@ -605,12 +609,17 @@ function setzePreisverlauf($kArtikel, $kKundengruppe, $fVKNetto)
     $kKundengruppe = (int)$kKundengruppe;
     $fVKNetto      = (float)$fVKNetto;
 
-    $oPreis_arr = Shop::Container()->getDB()->query(
+    $oPreis_arr = Shop::Container()->getDB()->queryPrepared(
         "SELECT kPreisverlauf, fVKNetto, dDate, IF(dDate = CURDATE(), 1, 0) bToday
             FROM tpreisverlauf
-            WHERE kArtikel = {$kArtikel}
-	            AND kKundengruppe = {$kKundengruppe}
-            ORDER BY dDate DESC LIMIT 2", 2
+            WHERE kArtikel = :kArtikel
+	            AND kKundengruppe = :kKundengruppe
+            ORDER BY dDate DESC LIMIT 2",
+        [
+            'kArtikel'      => $kArtikel,
+            'kKundengruppe' => $kKundengruppe,
+        ],
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 
     if (!empty($oPreis_arr[0]) && (int)$oPreis_arr[0]->bToday === 1) {
@@ -1043,6 +1052,119 @@ function handleOldPriceFormat($objs)
 }
 
 /**
+ * @param int $kArtikel
+ */
+function handlePriceRange($kArtikel)
+{
+    $priceRangeArr = Shop::Container()->getDB()->queryPrepared(
+        "SELECT baseprice.kArtikel,
+                COALESCE(baseprice.kKundengruppe, 0) AS kKundengruppe,
+                COALESCE(baseprice.kKunde, 0) AS kKunde,
+                baseprice.nRangeType,
+                MIN(IF(varaufpreis.fMinAufpreisNetto IS NULL, baseprice.fVKNetto, baseprice.fVKNetto + varaufpreis.fMinAufpreisNetto)) fVKNettoMin,
+                MAX(IF(varaufpreis.fMaxAufpreisNetto IS NULL, baseprice.fVKNetto, baseprice.fVKNetto + varaufpreis.fMaxAufpreisNetto)) fVKNettoMax,
+                baseprice.nLagerAnzahlMax,
+                baseprice.dStart,
+                baseprice.dEnde
+            FROM (
+                SELECT IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) kArtikel,
+                    tartikel.kArtikel kKindArtikel,
+                    tartikel.nIstVater,
+                    tpreis.kKundengruppe,
+                    tpreis.kKunde,
+                    IF (tpreis.kKundengruppe > 0, 9, 1) nRangeType,
+                    null nLagerAnzahlMax,
+                    tpreisdetail.fVKNetto,
+                    null dStart, null dEnde
+                FROM tartikel
+                INNER JOIN tpreis ON tpreis.kArtikel = tartikel.kArtikel
+                INNER JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
+
+                UNION ALL
+
+                SELECT IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) kArtikel,
+                    tartikel.kArtikel kKindArtikel,
+                    tartikel.nIstVater,
+                    tsonderpreise.kKundengruppe,
+                    null kKunde,
+                    IF(tartikelsonderpreis.nIstAnzahl = 0 AND tartikelsonderpreis.nIstDatum = 0, 5, 3) nRangeType,
+                    IF(tartikelsonderpreis.nIstAnzahl = 0, null, tartikelsonderpreis.nAnzahl) nLagerAnzahlMax,
+                    IF(tsonderpreise.fNettoPreis < tpreisdetail.fVKNetto, tsonderpreise.fNettoPreis, tpreisdetail.fVKNetto) fVKNetto,
+                    tartikelsonderpreis.dStart dStart,
+                    IF(tartikelsonderpreis.nIstDatum = 0, null, tartikelsonderpreis.dEnde) dEnde
+                FROM tartikel
+                INNER JOIN tpreis ON tpreis.kArtikel = tartikel.kArtikel
+	            INNER JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
+                INNER JOIN tartikelsonderpreis ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
+                INNER JOIN tsonderpreise ON tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis
+                WHERE tartikelsonderpreis.cAktiv = 'Y'
+            ) baseprice
+            LEFT JOIN (
+                SELECT variations.kArtikel, variations.kKundengruppe,
+                    SUM(variations.fMinAufpreisNetto) fMinAufpreisNetto,
+                    SUM(variations.fMaxAufpreisNetto) fMaxAufpreisNetto
+                FROM (
+                    SELECT teigenschaft.kArtikel,
+                        tkundengruppe.kKundengruppe,
+                        teigenschaft.kEigenschaft,
+                        MIN(COALESCE(teigenschaftwertaufpreis.fAufpreisNetto, teigenschaftwert.fAufpreisNetto)) fMinAufpreisNetto,
+                        MAX(COALESCE(teigenschaftwertaufpreis.fAufpreisNetto, teigenschaftwert.fAufpreisNetto)) fMaxAufpreisNetto
+                    FROM teigenschaft
+                    INNER JOIN teigenschaftwert ON teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
+                    JOIN tkundengruppe
+                    LEFT JOIN teigenschaftwertaufpreis ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
+                        AND teigenschaftwertaufpreis.kKundengruppe = tkundengruppe.kKundengruppe
+                    GROUP BY teigenschaft.kArtikel, tkundengruppe.kKundengruppe, teigenschaft.kEigenschaft
+                ) variations
+                GROUP BY variations.kArtikel, variations.kKundengruppe
+            ) varaufpreis ON varaufpreis.kArtikel = baseprice.kKindArtikel AND baseprice.nIstVater = 0
+            WHERE baseprice.kArtikel = :kArtikel
+            GROUP BY baseprice.kArtikel,
+                baseprice.kKundengruppe,
+                baseprice.kKunde,
+                baseprice.nRangeType,
+                baseprice.nLagerAnzahlMax,
+                baseprice.dStart,
+                baseprice.dEnde",
+        ['kArtikel' => $kArtikel],
+        \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
+    );
+
+    $updated = [];
+    foreach ($priceRangeArr as $priceRange) {
+        Shop::Container()->getDB()->queryPrepared(
+            "INSERT INTO tpricerange (kArtikel, kKundengruppe, kKunde, nRangeType, fVKNettoMin, fVKNettoMax, nLagerAnzahlMax, dStart, dEnde)
+                VALUES (:kArtikel, :kKundengruppe, :kKunde, :nRangeType, :fVKNettoMin, :fVKNettoMax, :nLagerAnzahlMax, :dStart, :dEnde)
+                ON DUPLICATE KEY UPDATE
+                    fVKNettoMin = :fVKNettoMin,
+                    fVKNettoMax = :fVKNettoMax,
+                    nLagerAnzahlMax = :nLagerAnzahlMax,
+                    dStart = :dStart,
+                    dEnde = :dEnde",
+            $priceRange,
+            \DB\ReturnType::AFFECTED_ROWS
+        );
+        $updated[] = "({$priceRange['kKundengruppe']}, {$priceRange['nRangeType']})";
+    }
+
+    if (count($updated) > 0) {
+        Shop::Container()->getDB()->queryPrepared(
+            "DELETE FROM tpricerange
+                WHERE kArtikel = :kArtikel
+                    AND (kKundengruppe, nRangeType) NOT IN (" . implode($updated, ', ') . ")",
+            ['kArtikel' => $kArtikel],
+            \DB\ReturnType::AFFECTED_ROWS
+        );
+    } else {
+        Shop::Container()->getDB()->queryPrepared(
+            "DELETE FROM tpricerange WHERE kArtikel = :kArtikel",
+            ['kArtikel' => $kArtikel],
+            \DB\ReturnType::AFFECTED_ROWS
+        );
+    }
+}
+
+/**
  * @param object $obj
  * @param int    $index
  * @param int    $priceId
@@ -1171,8 +1293,12 @@ function unzipSyncFiles($zipFile, $targetPath, $source = '')
             }
             $archive->close();
             if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog('unzipSyncFiles: Zip entpackt in ' . $targetPath, JTLLOG_LEVEL_DEBUG, false,
-                    'syncinclude');
+                Jtllog::writeLog(
+                    'unzipSyncFiles: Zip entpackt in ' . $targetPath,
+                    JTLLOG_LEVEL_DEBUG,
+                    false,
+                    'syncinclude'
+                );
             }
 
             return array_filter(array_map(function ($e) {
@@ -1181,7 +1307,6 @@ function unzipSyncFiles($zipFile, $targetPath, $source = '')
                     : null;
             }, $filenames));
         }
-
     } else {
         if (Jtllog::doLog(JTLLOG_LEVEL_NOTICE)) {
             Jtllog::writeLog(

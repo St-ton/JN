@@ -226,13 +226,13 @@ function generateSitemapXML()
     //  YYYY-MM-DD (eg 1997-07-16)
     //  YYYY-MM-DDThh:mmTZD (eg 1997-07-16T19:20+01:00)
     $defaultCustomerGroupID  = Kundengruppe::getDefaultGroupID();
-    $Sprachen                = gibAlleSprachen();
+    $Sprachen                = Sprache::getAllLanguages();
     $oSpracheAssoc_arr       = gibAlleSprachenAssoc($Sprachen);
-    $defaultLang             = gibStandardsprache(true);
+    $defaultLang             = Sprache::getDefaultLanguage(true);
     $defaultLangID           = (int)$defaultLang->kSprache;
     $_SESSION['kSprache']    = $defaultLangID;
     $_SESSION['cISOSprache'] = $defaultLang->cISO;
-    setzeSteuersaetze();
+    TaxHelper::setTaxRates();
     if (!isset($_SESSION['Kundengruppe'])) {
         $_SESSION['Kundengruppe'] = new Kundengruppe();
     }
@@ -282,7 +282,6 @@ function generateSitemapXML()
     $nAnzahlURL_arr = [];
     $nSitemapLimit  = 25000;
     $sitemap_data   = '';
-    $shopURL        = Shop::getURL();
     $imageBaseURL   = Shop::getImageBaseURL();
     //Hauptseite
     $sitemap_data .= makeURL('', null, FREQ_ALWAYS, PRIO_VERYHIGH);
@@ -324,7 +323,7 @@ function generateSitemapXML()
             'kGrpID' => $defaultCustomerGroupID,
             'langID' => $defaultLangID
         ], 
-        NiceDB::RET_QUERYSINGLE
+        \DB\ReturnType::QUERYSINGLE
     );
     while (($oArtikel = $res->fetch(PDO::FETCH_OBJ)) !== false) {
         if ($nSitemap > $nSitemapLimit) {
@@ -350,7 +349,7 @@ function generateSitemapXML()
                 $cGoogleImage = $imageBaseURL . $cGoogleImage;
             }
         }
-        $cUrl = baueURL($oArtikel, URLART_ARTIKEL);
+        $cUrl = UrlHelper::buildURL($oArtikel, URLART_ARTIKEL);
 
         if (!isSitemapBlocked($cUrl)) {
             $sitemap_data .= makeURL(
@@ -375,7 +374,7 @@ function generateSitemapXML()
         if ($SpracheTMP->kSprache === $defaultLangID) {
             continue;
         }
-        $res = Shop::DB()->queryPrepared(
+        $res = Shop::Container()->getDB()->queryPrepared(
             "SELECT tartikel.kArtikel, tartikel.dLetzteAktualisierung, tseo.cSeo
                FROM tartikelsprache, tartikel
                JOIN tseo 
@@ -394,7 +393,7 @@ function generateSitemapXML()
                 'kGrpID' => $defaultCustomerGroupID,
                 'langID' => $SpracheTMP->kSprache
             ],
-            NiceDB::RET_QUERYSINGLE
+            \DB\ReturnType::QUERYSINGLE
         );
         while (($oArtikel = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             if ($nSitemap > $nSitemapLimit) {
@@ -404,7 +403,7 @@ function generateSitemapXML()
                 $nAnzahlURL_arr[$nDatei] = 0;
                 $sitemap_data            = '';
             }
-            $cUrl = baueURL($oArtikel, URLART_ARTIKEL);
+            $cUrl = UrlHelper::buildURL($oArtikel, URLART_ARTIKEL);
             if (!isSitemapBlocked($cUrl)) {
                 $sitemap_data .= makeURL(
                     $cUrl,
@@ -421,7 +420,7 @@ function generateSitemapXML()
 
     if ($conf['sitemap']['sitemap_seiten_anzeigen'] === 'Y') {
         // Links alle sprachen
-        $res = Shop::DB()->queryPrepared(
+        $res = Shop::Container()->getDB()->queryPrepared(
             "SELECT tlink.nLinkart, tlinksprache.kLink, tlinksprache.cISOSprache, tlink.bSSL
                      FROM tlink
                      JOIN tlinkgruppe 
@@ -437,7 +436,7 @@ function generateSitemapXML()
                           OR FIND_IN_SET(:cGrpID, REPLACE(tlink.cKundengruppen, ';', ',')) > 0)
                      ORDER BY tlinksprache.kLink",
             ['cGrpID' => $defaultCustomerGroupID],
-            NiceDB::RET_QUERYSINGLE
+            \DB\ReturnType::QUERYSINGLE
         );
         while (($tlink = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             if (spracheEnthalten($tlink->cISOSprache, $Sprachen)) {
@@ -451,7 +450,7 @@ function generateSitemapXML()
                         'linkID' => $tlink->kLink,
                         'langID' => $oSpracheAssoc_arr[$tlink->cISOSprache]
                     ],
-                    NiceDB::RET_SINGLE_OBJECT
+                    \DB\ReturnType::SINGLE_OBJECT
                 );
                 if (isset($oSeo->cSeo) && strlen($oSeo->cSeo) > 0) {
                     $tlink->cSeo = $oSeo->cSeo;
@@ -467,7 +466,7 @@ function generateSitemapXML()
                     }
 
                     $tlink->cLocalizedSeo[$tlink->cISOSprache] = $tlink->cSeo ?? null;
-                    $link                                      = baueURL($tlink, URLART_SEITE);
+                    $link                                      = UrlHelper::buildURL($tlink, URLART_SEITE);
                     if (strlen($tlink->cSeo) > 0) {
                         $link = $tlink->cSeo;
                     } elseif ($_SESSION['cISOSprache'] !== $tlink->cISOSprache) {
@@ -502,7 +501,7 @@ function generateSitemapXML()
                 'langID' => $defaultLangID,
                 'cGrpID' => $defaultCustomerGroupID
             ],
-            NiceDB::RET_QUERYSINGLE
+            \DB\ReturnType::QUERYSINGLE
         );
         while (($tkategorie = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $cURL_arr = baueExportURL(
@@ -557,7 +556,7 @@ function generateSitemapXML()
                     'langID' => $SpracheTMP->kSprache,
                     'cGrpID' => $defaultCustomerGroupID
                 ],
-                NiceDB::RET_QUERYSINGLE
+                \DB\ReturnType::QUERYSINGLE
             );
             while (($tkategorie = $res->fetch(PDO::FETCH_OBJ)) !== false) {
                 $cURL_arr = baueExportURL(
@@ -606,7 +605,7 @@ function generateSitemapXML()
                   AND ttag.nAktiv = 1
                ORDER BY ttag.kTag",
             ['langID' => $defaultLangID],
-            NiceDB::RET_QUERYSINGLE
+            \DB\ReturnType::QUERYSINGLE
         );
         while (($oTag = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $cURL_arr = baueExportURL(
@@ -650,7 +649,7 @@ function generateSitemapXML()
                           AND ttag.nAktiv = 1
                       ORDER BY ttag.kTag",
                 ['langID' => $SpracheTMP->kSprache],
-                NiceDB::RET_QUERYSINGLE
+                \DB\ReturnType::QUERYSINGLE
             );
             while (($oTag = $res->fetch(PDO::FETCH_OBJ)) !== false) {
                 $cURL_arr = baueExportURL(
@@ -692,7 +691,7 @@ function generateSitemapXML()
                     AND tseo.kSprache = :langID
                  ORDER BY thersteller.kHersteller",
             ['langID' => $defaultLangID],
-            NiceDB::RET_QUERYSINGLE
+            \DB\ReturnType::QUERYSINGLE
         );
         while (($oHersteller = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $cURL_arr = baueExportURL(
@@ -734,7 +733,7 @@ function generateSitemapXML()
                     AND tsuchanfrage.nAktiv = 1
                  ORDER BY tsuchanfrage.kSuchanfrage",
             ['langID' => $defaultLangID],
-            NiceDB::RET_QUERYSINGLE
+            \DB\ReturnType::QUERYSINGLE
         );
         while (($oSuchanfrage = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $cURL_arr = baueExportURL(
@@ -778,7 +777,7 @@ function generateSitemapXML()
                         AND tsuchanfrage.nAktiv = 1
                      ORDER BY tsuchanfrage.kSuchanfrage",
                 ['langID' => $SpracheTMP->kSprache],
-                NiceDB::RET_QUERYSINGLE
+                \DB\ReturnType::QUERYSINGLE
             );
             while (($oSuchanfrage = $res->fetch(PDO::FETCH_OBJ)) !== false) {
                 $cURL_arr = baueExportURL(
@@ -826,7 +825,7 @@ function generateSitemapXML()
                 WHERE tmerkmal.nGlobal = 1
                 GROUP BY tmerkmalwert.kMerkmalWert
                 ORDER BY tmerkmal.kMerkmal, tmerkmal.cName",
-            NiceDB::RET_QUERYSINGLE
+            \DB\ReturnType::QUERYSINGLE
         );
         while (($oMerkmalWert = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $cURL_arr = baueExportURL(
@@ -881,7 +880,7 @@ function generateSitemapXML()
                         GROUP BY tmerkmalwert.kMerkmalWert
                         ORDER BY tmerkmal.kMerkmal, tmerkmal.cName",
                 ['langID' => $SpracheTMP->kSprache],
-                NiceDB::RET_QUERYSINGLE
+                \DB\ReturnType::QUERYSINGLE
             );
             while (($oMerkmalWert = $res->fetch(PDO::FETCH_OBJ)) !== false) {
                 $cURL_arr = baueExportURL(
@@ -924,11 +923,11 @@ function generateSitemapXML()
                     AND (tnews.cKundengruppe LIKE '%;-1;%'
                     OR FIND_IN_SET('" . Session::CustomerGroup()->getID() . "', REPLACE(tnews.cKundengruppe, ';',',')) > 0) 
                     ORDER BY tnews.dErstellt",
-            NiceDB::RET_QUERYSINGLE
+            \DB\ReturnType::QUERYSINGLE
         );
         while (($oNews = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $cURL = makeURL(
-                baueURL($oNews, URLART_NEWS),
+                UrlHelper::buildURL($oNews, URLART_NEWS),
                 date_format(date_create($oNews->dGueltigVon), 'c'),
                 FREQ_DAILY,
                 PRIO_HIGH
@@ -957,12 +956,12 @@ function generateSitemapXML()
                     AND tseo.kKey = tnewskategorie.kNewsKategorie
                     AND tseo.kSprache = tnewskategorie.kSprache
                  WHERE tnewskategorie.nAktiv = 1",
-            NiceDB::RET_QUERYSINGLE
+            \DB\ReturnType::QUERYSINGLE
         );
 
         while (($oNewsKategorie = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $cURL = makeURL(
-                baueURL($oNewsKategorie, URLART_NEWSKATEGORIE),
+                UrlHelper::buildURL($oNewsKategorie, URLART_NEWSKATEGORIE),
                 date_format(date_create($oNewsKategorie->dLetzteAktualisierung), 'c'),
                 FREQ_DAILY,
                 PRIO_HIGH
@@ -999,10 +998,10 @@ function generateSitemapXML()
         // ping sitemap to Google and Bing
         if ($conf['sitemap']['sitemap_google_ping'] === 'Y') {
             $encodedSitemapIndexURL = urlencode(Shop::getURL() . '/sitemap_index.xml');
-            if (200 !== ($httpStatus = http_get_status('http://www.google.com/webmasters/tools/ping?sitemap=' . $encodedSitemapIndexURL))) {
+            if (200 !== ($httpStatus = RequestHelper::http_get_status('http://www.google.com/webmasters/tools/ping?sitemap=' . $encodedSitemapIndexURL))) {
                 Jtllog::writeLog('Sitemap ping to Google failed with status ' . $httpStatus, JTLLOG_LEVEL_NOTICE);
             }
-            if (200 !== ($httpStatus = http_get_status('http://www.bing.com/ping?sitemap=' . $encodedSitemapIndexURL))) {
+            if (200 !== ($httpStatus = RequestHelper::http_get_status('http://www.bing.com/ping?sitemap=' . $encodedSitemapIndexURL))) {
                 Jtllog::writeLog('Sitemap ping to Bing failed with status ' . $httpStatus, JTLLOG_LEVEL_NOTICE);
             }
         }
@@ -1055,7 +1054,7 @@ function holeGoogleImage($artikel)
                 ORDER BY tartikelpict.nNr
                 LIMIT 1",
             ['artNr' => $cArtNr],
-            NiceDB::RET_SINGLE_OBJECT
+            \DB\ReturnType::SINGLE_OBJECT
         );
     }
 
@@ -1068,7 +1067,7 @@ function holeGoogleImage($artikel)
                 ORDER BY nNr 
                 LIMIT 1',
             ['articleID' => (int)$oArtikel->kArtikel],
-            NiceDB::RET_SINGLE_OBJECT
+            \DB\ReturnType::SINGLE_OBJECT
         );
     }
 
@@ -1149,7 +1148,7 @@ function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSpr
     $kKey           = (int)$kKey;
 
     Shop::setLanguage($kSprache);
-    $naviFilter = new ProductFilter($oSprach_arr, $kSprache, $config);
+    $naviFilter = new \Filter\ProductFilter($oSprach_arr, $kSprache, $config);
     switch ($cKey) {
         case 'kKategorie':
             $params['kKategorie'] = $kKey;
@@ -1173,7 +1172,7 @@ function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSpr
                         WHERE kSuchanfrage = :ks
                         ORDER BY kSuchanfrage",
                     ['ks' => $kKey],
-                    NiceDB::RET_SINGLE_OBJECT
+                    \DB\ReturnType::SINGLE_OBJECT
                 );
                 if (!empty($oSuchanfrage->cSuche)) {
                     $naviFilter->getSearchQuery()->setID($kKey)->setName($oSuchanfrage->cSuche);

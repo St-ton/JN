@@ -43,6 +43,7 @@ if (auth()) {
     $xml_obj['bestellungen']['tbestellung'] = $oBestellung_arr;
 
     if (is_array($xml_obj['bestellungen']['tbestellung'])) {
+        $cryptoService = Shop::Container()->getCryptoService();
         $xml_obj['bestellungen attr']['anzahl'] = count($xml_obj['bestellungen']['tbestellung']);
         for ($i = 0; $i < $xml_obj['bestellungen attr']['anzahl']; $i++) {
             $xml_obj['bestellungen']['tbestellung'][$i . ' attr'] = buildAttributes($xml_obj['bestellungen']['tbestellung'][$i]);
@@ -110,6 +111,8 @@ if (auth()) {
             if (isset($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cHausnummer'])) {
                 $xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cStrasse'] .= ' ' . trim($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cHausnummer']);
             }
+            //Trim Konkatenation
+            $xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cStrasse'] = trim($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cStrasse']);
             unset($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cHausnummer']);
 
             $oRechnungsadresse        = new Rechnungsadresse($xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kRechnungsadresse']);
@@ -129,6 +132,8 @@ if (auth()) {
             $xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse attr'] = buildAttributes($xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']);
             //Strasse und Hausnummer zusammenführen
             $xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cStrasse'] .= ' ' . trim($xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cHausnummer']);
+            //Trim Konkatenation
+            $xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cStrasse'] = trim($xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cStrasse']);
             unset($xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cHausnummer']);
 
             $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo'] = Shop::Container()->getDB()->query(
@@ -140,28 +145,28 @@ if (auth()) {
             );
             // Entschlüsseln
             $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBankName'] = isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBankName'])
-                ? entschluesselXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBankName'])
+                ? $cryptoService->decryptXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBankName'])
                 : null;
             $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBLZ']      = isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBLZ'])
-                ? entschluesselXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBLZ'])
+                ? $cryptoService->decryptXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBLZ'])
                 : null;
             $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cInhaber']  = isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cInhaber'])
-                ? entschluesselXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cInhaber'])
+                ? $cryptoService->decryptXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cInhaber'])
                 : null;
             $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cKontoNr']  = isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cKontoNr'])
-                ? entschluesselXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cKontoNr'])
+                ? $cryptoService->decryptXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cKontoNr'])
                 : null;
             $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cIBAN']     = isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cIBAN'])
-                ? entschluesselXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cIBAN'])
+                ? $cryptoService->decryptXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cIBAN'])
                 : null;
             $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBIC']      = isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBIC'])
-                ? entschluesselXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBIC'])
+                ? $cryptoService->decryptXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBIC'])
                 : null;
             $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cKartenNr'] = isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cKartenNr'])
-                ? entschluesselXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cKartenNr'])
+                ? $cryptoService->decryptXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cKartenNr'])
                 : null;
             $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cCVV']      = isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cCVV'])
-                ? trim(entschluesselXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cCVV']))
+                ? trim($cryptoService->decryptXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cCVV']))
                 : null;
             if (strlen($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cCVV']) > 4) {
                 $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cCVV'] = substr($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cCVV'], 0, 4);

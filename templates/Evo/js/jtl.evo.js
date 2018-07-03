@@ -13,7 +13,7 @@
     var EvoClass = function() {};
 
     EvoClass.prototype = {
-        options: { captcha: {} },
+        options: {},
 
         constructor: EvoClass,
 
@@ -121,7 +121,7 @@
                 $(e).children('[class*="col-"]').children().responsiveEqualHeightGrid();
             });
             $('.row-eq-height.gallery > [class*="col-"], #product-list .product-wrapper').each(function(i, e) {
-                $(e).height($('div', $(e)).outerHeight());
+                $(e).height($('div', $(e)).outerHeight()).addClass('setHeight');
             });
         },
         
@@ -196,28 +196,11 @@
         },
         
         renderCaptcha: function(parameters) {
-            if (typeof parameters !== 'undefined') {
-                this.options.captcha = 
-                    $.extend({}, this.options.captcha, parameters);
-            }
-
-            if (typeof grecaptcha === 'undefined' && !this.options.captcha.loaded) {
-                this.options.captcha.loaded = true;
-                var lang                    = document.documentElement.lang;
-                $.getScript("https://www.google.com/recaptcha/api.js?render=explicit&onload=g_recaptcha_callback&hl=" + lang);
-            } else {
-                $('.g-recaptcha').each(function(index, item) {
-                    parameters = $.extend({}, $(item).data(), parameters);
-                    try {
-                        grecaptcha.render(item, parameters);
-                    }
-                    catch(e) { }
-                });
-            }
-            $('.g-recaptcha-response').attr('required', true);
+            this.trigger('captcha.render', parameters);
         },
         
         popupDep: function() {
+            var that  = this;
             $('#main-wrapper').on('click', '.popup-dep', function(e) {
                 var id    = '#popup' + $(this).attr('id'),
                     title = $(this).attr('title'),
@@ -228,24 +211,8 @@
                     keyboard: true,
                     tabindex: -1,
                     onShown:function () {
-                        //the modal just copies all the html.. so we got duplicate IDs which confuses recaptcha
-                        var recaptcha = $('.tmp-modal-content .g-recaptcha');
-                        if (recaptcha.length === 1) {
-                            var siteKey = recaptcha.data('sitekey'),
-                                newRecaptcha = $('<div />');
-                            if (typeof  siteKey !== 'undefined') {
-                                //create empty recapcha div, give it a unique id and delete the old one
-                                newRecaptcha.attr('id', 'popup-recaptcha').addClass('g-recaptcha form-group');
-                                recaptcha.replaceWith(newRecaptcha);
-                                grecaptcha.render('popup-recaptcha', {
-                                    'sitekey' : siteKey,
-                                    'callback' : 'captcha_filled'
-
-                                });
-                            }
-                        }
+                        that.trigger('captcha.render.popup', {popup: $(this)});
                         addValidationListener();
-                        $('.g-recaptcha-response').attr('required', true);
                     }
                 });
                 return false;
@@ -313,7 +280,9 @@
         preventDropdownToggle: function() {
             $('a.dropdown-toggle').click(function(e){
                 var elem = e.target;
-                if (elem.getAttribute('aria-expanded') == 'true' && elem.getAttribute('href') != '#') {
+                var viewport = $('body').data('viewport');
+
+                if (viewport!=='xs' && viewport!=='sm' && elem.getAttribute('aria-expanded') == 'true' && elem.getAttribute('href') != '#') {
                     window.location.href = elem.getAttribute('href');
                     e.preventDefault();
                 }
@@ -464,7 +433,3 @@
     // =================
     $.evo = new EvoClass();
 })(jQuery);
-
-function g_recaptcha_callback() {
-    $.evo.renderCaptcha();
-}

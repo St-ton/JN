@@ -1,22 +1,34 @@
 # JTL-Shop Changelog
 
-## [4.06.4]
+## [4.06.6]
+
+Dieses Update enthält Fehlerbehebungen. 
+
+Alle für diese Zielversion gelösten Vorgänge finden Sie unter diesem Link: https://jtl-url.de/cl4066
+
+## [4.06.5] - 2018-06-12
+
+Dieses Update enthält Fehlerbehebungen. 
+
+Alle für diese Zielversion gelösten Vorgänge finden Sie unter diesem Link: https://jtl-url.de/cl4065
+
+## [4.06.4] - 2018-04-25
 
 Dieses Update enthält Bugfixes und Sicherheitsupdates.
 
 Alle für diese Zielversion gelösten Vorgänge finden Sie unter diesem Link: https://jtl-url.de/cl4064
 
-## [4.06.3]
+## [4.06.3] - 2018-01-29
 
 Dieses Update enthält Bugfixes und Sicherheitsupdates.
 
 Alle für diese Zielversion gelösten Vorgänge finden Sie unter diesem Link: https://jtl-url.de/cl4063
 
-## [4.06.2]
+## [4.06.2] - 2017-11-28
 
 * Sicherheitsupdate
 
-## [4.06.1]
+## [4.06.1] - 2017-11-24
 
 * [SHOP-1345] - Kupon-Statistikfilter liefert inkorrekte Ergebnisse
 * [SHOP-1579] - VarKombi Artikeldetails des Kinds nicht erreichbar, wenn Kind nicht in Warenkorb legbar
@@ -291,20 +303,32 @@ Bitte beachten Sie auch das aktualisierte Handbuch zum PayPal-Plugin: http://jtl
 * [SHOP-1674] - Neue Smarty Blocks in snippets/shipping_tax_info.tpl und productdetails/price.tpl
 * [SHOP-1694] - Backstretch-Hintergrundbild verursacht Fehler bei geringer Netzgeschwindigkeit
 
-## [4.05.6]
+## [4.05.8]
+
+Dieses Update enthält ausschließlich einen TLS1.2-Fix für das alte PayPal-Classic-Zahlungsmodul. 
+PayPal-Plugin-Zahlarten sind nicht betroffen. 
+
+## [4.05.7] - 2018-06-19
+
+Dieses Update enthält Sicherheitsfixes (CSRF mit XSS oder SQL-Injections im Admin-Backend). 
+
+Wichtig: 
+* [SHOP-2349] - shopinfo.xml-Generator für elektronischer-markt.de wird eingestellt
+
+## [4.05.6] - 2018-01-29
 
 * Sicherheitsupdate
 
-## [4.05.5]
+## [4.05.5] - 2017-11-25
 
 * Sicherheitsupdate
 
-## [4.05.4]
+## [4.05.4] - 2017-11-24
 
 * Schutzfunktion im Uploadmodul verbessert
 
 
-## [4.05.3]
+## [4.05.3] - 2017-04-27
 
 ### Bugfixes
 

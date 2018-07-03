@@ -31,36 +31,40 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         protected $kKonfiggruppe;
 
         /**
-         * @var
+         * @var int
          */
         protected $bSelektiert;
 
         /**
-         * @var
+         * @var int
          */
         protected $bEmpfohlen;
 
         /**
-         * @var
+         * @var int
          */
         protected $bPreis;
 
         /**
-         * @var
+         * @var int
          */
         protected $bName;
+
         /**
-         * @var
+         * @var int
          */
         protected $bRabatt;
+
         /**
-         * @var
+         * @var int
          */
         protected $bZuschlag;
+
         /**
-         * @var
+         * @var int
          */
         protected $bIgnoreMultiplier;
+
         /**
          * @var float
          */
@@ -127,11 +131,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param int $kKonfigitem - primary key
          * @param int $kSprache
          * @param int $kKundengruppe
-         * @access public
          */
-        public function __construct($kKonfigitem = 0, $kSprache = 0, $kKundengruppe = 0)
+        public function __construct(int $kKonfigitem = 0, int $kSprache = 0, int $kKundengruppe = 0)
         {
-            if ((int)$kKonfigitem > 0) {
+            if ($kKonfigitem > 0) {
                 $this->loadFromDB($kKonfigitem, $kSprache, $kKundengruppe);
             }
         }
@@ -141,7 +144,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          *
          * @return array
          */
-        public function jsonSerialize()
+        public function jsonSerialize(): array
         {
             $cKurzBeschreibung = $this->getKurzBeschreibung();
             $virtual = [
@@ -165,13 +168,13 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                     (float)$this->getPreis(true)
                 ],
                 'fPreisLocalized' => [
-                    gibPreisStringLocalized($this->getPreis()),
-                    gibPreisStringLocalized($this->getPreis(true))
+                    Preise::getLocalizedPriceString($this->getPreis()),
+                    Preise::getLocalizedPriceString($this->getPreis(true))
                 ]
             ];
             $result = array_merge($override, $virtual);
 
-            return utf8_convert_recursive($result);
+            return StringHandler::utf8_convert_recursive($result);
         }
 
         /**
@@ -182,10 +185,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param int $kKundengruppe
          * @return $this
          */
-        private function loadFromDB($kKonfigitem = 0, $kSprache = 0, $kKundengruppe = 0)
+        private function loadFromDB(int $kKonfigitem = 0, int $kSprache = 0, int $kKundengruppe = 0): self
         {
-            $oObj = Shop::Container()->getDB()->select('tkonfigitem', 'kKonfigitem', (int)$kKonfigitem);
-
+            $oObj = Shop::Container()->getDB()->select('tkonfigitem', 'kKonfigitem', $kKonfigitem);
             if (isset($oObj->kKonfigitem) && $oObj->kKonfigitem > 0) {
                 $cMember_arr = array_keys(get_object_vars($oObj));
                 foreach ($cMember_arr as $cMember) {
@@ -193,7 +195,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 }
 
                 if (!$kSprache) {
-                    $kSprache = $_SESSION['kSprache'] ?? getDefaultLanguageID();
+                    $kSprache = Shop::getLanguageID() ?? Sprache::getDefaultLanguage(true)->kSprache;
                 }
                 if (!$kKundengruppe) {
                     $kKundengruppe = Session::CustomerGroup()->getID();
@@ -210,8 +212,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 $this->bRabatt           = (int)$this->bRabatt;
                 $this->bZuschlag         = (int)$this->bZuschlag;
                 $this->bIgnoreMultiplier = (int)$this->bIgnoreMultiplier;
-                $this->kSprache          = (int)$kSprache;
-                $this->kKundengruppe     = (int)$kKundengruppe;
+                $this->kSprache          = $kSprache;
+                $this->kKundengruppe     = $kKundengruppe;
                 $this->oSprache          = new Konfigitemsprache($this->kKonfigitem, $kSprache);
                 $this->oPreis            = new Konfigitempreis($this->kKonfigitem, $kKundengruppe);
                 $this->oArtikel          = null;
@@ -222,6 +224,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                     $oArtikelOptionen->nVariationKombi            = 1;
                     $oArtikelOptionen->nVariationKombiKinder      = 1;
                     $oArtikelOptionen->nKeineSichtbarkeitBeachten = 1;
+                    $oArtikelOptionen->nVariationen               = 0;
 
                     $this->oArtikel = new Artikel();
                     $this->oArtikel->fuelleArtikel($this->kArtikel, $oArtikelOptionen, $kKundengruppe, $kSprache);
@@ -234,25 +237,16 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         /**
          * @return bool
          */
-        public function isValid()
+        public function isValid(): bool
         {
-            if ($this->kArtikel > 0) {
-                if (!$this->oArtikel->kArtikel) {
-                    return false;
-                }
-            }
-
-            return true;
+            return !($this->kArtikel > 0 && empty($this->oArtikel->kArtikel));
         }
 
         /**
-         * Store in database
-         *
-         * @param bool $bPrim - Controls the return of the method
+         * @param bool $bPrim
          * @return bool|int
-         * @access public
          */
-        public function save($bPrim = true)
+        public function save(bool $bPrim = true)
         {
             $oObj                    = new stdClass();
             $oObj->kKonfiggruppe     = $this->kKonfiggruppe;
@@ -279,9 +273,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @return mixed
+         * @return int
          */
-        public function update()
+        public function update(): int
         {
             $_upd                    = new stdClass();
             $_upd->kKonfiggruppe     = $this->kKonfiggruppe;
@@ -303,29 +297,28 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @return mixed
+         * @return int
          */
-        public function delete()
+        public function delete(): int
         {
             return Shop::Container()->getDB()->delete('tkonfigitem', 'kKonfigitem', (int)$this->kKonfigitem);
         }
 
         /**
          * @param int $kKonfiggruppe
-         * @return array|bool
+         * @return array
          */
-        public static function fetchAll($kKonfiggruppe)
+        public static function fetchAll(int $kKonfiggruppe): array
         {
-            $oItem_arr = Shop::Container()->getDB()->query("
-                SELECT kKonfigitem 
-                    FROM tkonfigitem 
-                    WHERE kKonfiggruppe = " . (int)$kKonfiggruppe . " 
-                    ORDER BY nSort ASC", 2
-            );
-            if (!is_array($oItem_arr)) {
-                return [];
-            }
             $oItemEx_arr = [];
+            $oItem_arr   = Shop::Container()->getDB()->queryPrepared(
+                "SELECT kKonfigitem 
+                    FROM tkonfigitem 
+                    WHERE kKonfiggruppe = :groupID 
+                    ORDER BY nSort ASC",
+                ['groupID' => $kKonfiggruppe],
+                \DB\ReturnType::ARRAY_OF_OBJECTS
+            );
             foreach ($oItem_arr as &$oItem) {
                 $kKonfigitem = $oItem->kKonfigitem;
                 $oItem       = new self($kKonfigitem);
@@ -341,9 +334,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param int $kKonfigitem
          * @return $this
          */
-        public function setKonfigitem($kKonfigitem)
+        public function setKonfigitem(int $kKonfigitem): self
         {
-            $this->kKonfigitem = (int)$kKonfigitem;
+            $this->kKonfigitem = $kKonfigitem;
 
             return $this;
         }
@@ -352,9 +345,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param int $kArtikel
          * @return $this
          */
-        public function setArtikelKey($kArtikel)
+        public function setArtikelKey(int $kArtikel): self
         {
-            $this->kArtikel = (int)$kArtikel;
+            $this->kArtikel = $kArtikel;
 
             return $this;
         }
@@ -363,7 +356,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param Artikel $oArtikel
          * @return $this
          */
-        public function setArtikel($oArtikel)
+        public function setArtikel(Artikel $oArtikel): self
         {
             $this->oArtikel = $oArtikel;
 
@@ -374,20 +367,17 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param int $nPosTyp
          * @return $this
          */
-        public function setPosTyp($nPosTyp)
+        public function setPosTyp(int $nPosTyp): self
         {
-            $this->nPosTyp = (int)$nPosTyp;
+            $this->nPosTyp = $nPosTyp;
 
             return $this;
         }
 
         /**
-         * Gets the kKonfigitem
-         *
-         * @access public
          * @return int
          */
-        public function getKonfigitem()
+        public function getKonfigitem(): int
         {
             return (int)$this->kKonfigitem;
         }
@@ -395,27 +385,21 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         /**
          * @return int
          */
-        public function getKonfiggruppe()
+        public function getKonfiggruppe(): int
         {
             return (int)$this->kKonfiggruppe;
         }
 
         /**
-         * Gets the oArtikel
-         *
-         * @access public
          * @return int
          */
-        public function getArtikelKey()
+        public function getArtikelKey(): int
         {
             return (int)$this->kArtikel;
         }
 
         /**
-         * Gets the oArtikel
-         *
-         * @access public
-         * @return object
+         * @return Artikel|null
          */
         public function getArtikel()
         {
@@ -423,10 +407,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Gets the nPosTyp
-         *
-         * @access public
-         * @return int
+         * @return int|null
          */
         public function getPosTyp()
         {
@@ -434,7 +415,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @return int
+         * @return int|null
          */
         public function getSelektiert()
         {
@@ -442,7 +423,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @return int
+         * @return int|null
          */
         public function getEmpfohlen()
         {
@@ -450,10 +431,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Gets the oSprache
-         *
-         * @access public
-         * @return Konfigitemsprache
+         * @return Konfigitemsprache|null
          */
         public function getSprache()
         {
@@ -461,7 +439,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @return string
+         * @return string|null
          */
         public function getName()
         {
@@ -477,7 +455,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @return string
+         * @return string|null
          */
         public function getBeschreibung()
         {
@@ -493,7 +471,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @return string
+         * @return string|null
          */
         public function getKurzBeschreibung()
         {
@@ -513,10 +491,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function getBildPfad()
         {
-            if ($this->oArtikel) {
-                if ($this->oArtikel->Bilder[0]->cPfadKlein !== BILD_KEIN_ARTIKELBILD_VORHANDEN) {
-                    return $this->oArtikel->Bilder[0];
-                }
+            if ($this->oArtikel && $this->oArtikel->Bilder[0]->cPfadKlein !== BILD_KEIN_ARTIKELBILD_VORHANDEN) {
+                return $this->oArtikel->Bilder[0];
             }
 
             return null;
@@ -525,7 +501,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         /**
          * @return bool
          */
-        public function getUseOwnName()
+        public function getUseOwnName(): bool
         {
             return !$this->bName;
         }
@@ -560,7 +536,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 $fVKPreis *= Session::Currency()->getConversionFactor();
             }
             if (!$bForceNetto && !Session::CustomerGroup()->isMerchant()) {
-                $fVKPreis = berechneBrutto($fVKPreis, gibUst($this->getSteuerklasse()), 4);
+                $fVKPreis = TaxHelper::getGross($fVKPreis, TaxHelper::getSalesTax($this->getSteuerklasse()), 4);
             }
 
             return $fVKPreis;
@@ -572,7 +548,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param int $totalAmount
          * @return float|int
          */
-        public function getFullPrice($bForceNetto = false, $bConvertCurrency = false, $totalAmount = 1)
+        public function getFullPrice(bool $bForceNetto = false, bool $bConvertCurrency = false, $totalAmount = 1)
         {
             $fVKPreis    = 0.0;
             $isConverted = false;
@@ -602,7 +578,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 $fVKPreis *= (float)$waehrung->fFaktor;
             }
             if (!$bForceNetto && !Session::CustomerGroup()->getIsMerchant()) {
-                $fVKPreis = berechneBrutto($fVKPreis, gibUst($this->getSteuerklasse()), 4);
+                $fVKPreis = TaxHelper::getGross($fVKPreis, TaxHelper::getSalesTax($this->getSteuerklasse()), 4);
             }
 
             return $fVKPreis * $this->fAnzahl * $totalAmount;
@@ -611,7 +587,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         /**
          * @return bool
          */
-        public function hasPreis()
+        public function hasPreis(): bool
         {
             return $this->getPreis(true) != 0;
         }
@@ -619,7 +595,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         /**
          * @return bool
          */
-        public function hasRabatt()
+        public function hasRabatt(): bool
         {
             return $this->getRabatt() > 0;
         }
@@ -627,7 +603,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         /**
          * @return float
          */
-        public function getRabatt()
+        public function getRabatt(): float
         {
             $fRabatt = 0.0;
             if ($this->oArtikel && $this->bPreis) {
@@ -635,7 +611,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 if ($fTmp < 0) {
                     $fRabatt = $fTmp * -1;
                     if ($this->oPreis->getTyp() == 0 && !Session::CustomerGroup()->isMerchant()) {
-                        $fRabatt = berechneBrutto($fRabatt, gibUst($this->getSteuerklasse()));
+                        $fRabatt = TaxHelper::getGross($fRabatt, TaxHelper::getSalesTax($this->getSteuerklasse()));
                     }
                 }
             }
@@ -646,7 +622,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         /**
          * @return bool
          */
-        public function hasZuschlag()
+        public function hasZuschlag(): bool
         {
             return $this->getZuschlag() > 0;
         }
@@ -654,7 +630,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         /**
          * @return float
          */
-        public function getZuschlag()
+        public function getZuschlag(): float
         {
             $fZuschlag = 0.0;
             if ($this->oArtikel && $this->bPreis) {
@@ -662,7 +638,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 if ($fTmp > 0) {
                     $fZuschlag = $fTmp;
                     if ($this->oPreis->getTyp() == 0 && !Session::CustomerGroup()->isMerchant()) {
-                        $fZuschlag = berechneBrutto($fZuschlag, gibUst($this->getSteuerklasse()));
+                        $fZuschlag = TaxHelper::getGross($fZuschlag, TaxHelper::getSalesTax($this->getSteuerklasse()));
                     }
                 }
             }
@@ -674,10 +650,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param bool $bHTML
          * @return string
          */
-        public function getRabattLocalized($bHTML = true)
+        public function getRabattLocalized(bool $bHTML = true): string
         {
             if ($this->oPreis->getTyp() == 0) {
-                return gibPreisStringLocalized($this->getRabatt(), 0, $bHTML);
+                return Preise::getLocalizedPriceString($this->getRabatt(), 0, $bHTML);
             }
 
             return $this->getRabatt() . '%';
@@ -687,10 +663,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param bool $bHTML
          * @return string
          */
-        public function getZuschlagLocalized($bHTML = true)
+        public function getZuschlagLocalized(bool $bHTML = true): string
         {
             if ($this->oPreis->getTyp() == 0) {
-                return gibPreisStringLocalized($this->getZuschlag(), 0, $bHTML);
+                return Preise::getLocalizedPriceString($this->getZuschlag(), 0, $bHTML);
             }
 
             return $this->getZuschlag() . '%';
@@ -699,7 +675,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         /**
          * @return int
          */
-        public function getSteuerklasse()
+        public function getSteuerklasse(): int
         {
             $kSteuerklasse = 0;
             if ($this->oArtikel && $this->bPreis) {
@@ -717,9 +693,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param bool $bForceNetto
          * @return string
          */
-        public function getPreisLocalized($bHTML = true, $bSigned = true, $bForceNetto = false)
+        public function getPreisLocalized(bool $bHTML = true, bool $bSigned = true, bool $bForceNetto = false): string
         {
-            $cLocalized = gibPreisStringLocalized($this->getPreis($bForceNetto), 0, $bHTML);
+            $cLocalized = Preise::getLocalizedPriceString($this->getPreis($bForceNetto), 0, $bHTML);
             if ($bSigned && $this->getPreis() > 0) {
                 $cLocalized = '+' . $cLocalized;
             }
@@ -733,15 +709,13 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param int $totalAmount
          * @return string
          */
-        public function getFullPriceLocalized($bHTML = true, $bForceNetto = false, $totalAmount = 1)
+        public function getFullPriceLocalized(bool $bHTML = true, bool $bForceNetto = false, $totalAmount = 1): string
         {
-            $cLocalized = gibPreisStringLocalized($this->getFullPrice($bForceNetto, false, $totalAmount), 0, $bHTML);
-
-            return $cLocalized;
+            return Preise::getLocalizedPriceString($this->getFullPrice($bForceNetto, false, $totalAmount), 0, $bHTML);
         }
 
         /**
-         * @return float
+         * @return float|null
          */
         public function getMin()
         {
@@ -749,7 +723,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @return float
+         * @return float|null
          */
         public function getMax()
         {
@@ -775,7 +749,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @return mixed
+         * @return int|null
          */
         public function showRabatt()
         {
@@ -783,7 +757,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @return mixed
+         * @return int|null
          */
         public function showZuschlag()
         {
@@ -791,7 +765,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @return mixed
+         * @return int|null
          */
         public function ignoreMultiplier()
         {
@@ -799,7 +773,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @return int
+         * @return int|null
          */
         public function getSprachKey()
         {
@@ -807,11 +781,24 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @return int
+         * @return int|null
          */
         public function getKundengruppe()
         {
             return $this->kKundengruppe;
+        }
+
+        /**
+         * @return bool
+         */
+        public function isInStock(): bool
+        {
+            $tmpPro = $this->getArtikel();
+
+            return empty($this->kArtikel)
+                || (!($tmpPro->cLagerBeachten === 'Y'
+                    && $tmpPro->cLagerKleinerNull === 'N'
+                    && (float)$tmpPro->fLagerbestand <= 0));
         }
     }
 }

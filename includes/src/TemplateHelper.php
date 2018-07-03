@@ -32,7 +32,7 @@ class TemplateHelper
     /**
      * @param bool $isAdmin
      */
-    public function __construct($isAdmin = false)
+    public function __construct(bool $isAdmin = false)
     {
         $this->isAdmin         = $isAdmin;
         $idx                   = $isAdmin ? 'admin' : 'frontend';
@@ -43,7 +43,7 @@ class TemplateHelper
      * @param bool $isAdmin
      * @return TemplateHelper
      */
-    public static function getInstance($isAdmin = false) : self
+    public static function getInstance(bool $isAdmin = false): self
     {
         $idx = $isAdmin ? 'admin' : 'frontend';
 
@@ -53,7 +53,7 @@ class TemplateHelper
     /**
      * @return $this
      */
-    public function disableCaching() : self
+    public function disableCaching(): self
     {
         $this->cachingEnabled = false;
 
@@ -63,7 +63,7 @@ class TemplateHelper
     /**
      * @return $this
      */
-    public function enableCaching() : self
+    public function enableCaching(): self
     {
         $this->cachingEnabled = true;
 
@@ -74,7 +74,7 @@ class TemplateHelper
      * @param string $dir
      * @return $this
      */
-    public function setTemplateDir($dir) : self
+    public function setTemplateDir(string $dir): self
     {
         $this->templateDir = $dir;
 
@@ -86,7 +86,7 @@ class TemplateHelper
      *
      * @return array
      */
-    public function getAdminTemplates() : array
+    public function getAdminTemplates(): array
     {
         $templates = [];
         $folders   = $this->getAdminTemplateFolders();
@@ -103,7 +103,7 @@ class TemplateHelper
     /**
      * @return array
      */
-    public function getStoredTemplates() : array
+    public function getStoredTemplates(): array
     {
         $storedTemplates = [];
 
@@ -134,7 +134,7 @@ class TemplateHelper
      *
      * @return array
      */
-    public function getFrontendTemplates() : array
+    public function getFrontendTemplates(): array
     {
         $templates = [];
         $folders   = $this->getFrontendTemplateFolders();
@@ -166,7 +166,7 @@ class TemplateHelper
      * @param int    $depth
      * @return array
      */
-    public function getFolders($path, $depth = 0) : array
+    public function getFolders(string $path, int $depth = 0): array
     {
         $result = [];
 
@@ -191,7 +191,7 @@ class TemplateHelper
      * @param bool $path
      * @return array
      */
-    private function getFrontendTemplateFolders($path = false) : array
+    private function getFrontendTemplateFolders($path = false): array
     {
         $res      = [];
         $iterator = new DirectoryIterator(PFAD_ROOT . PFAD_TEMPLATES);
@@ -210,7 +210,7 @@ class TemplateHelper
      * @param bool $path
      * @return array
      */
-    private function getAdminTemplateFolders(bool $path = false) : array
+    private function getAdminTemplateFolders(bool $path = false): array
     {
         $res      = [];
         $iterator = new DirectoryIterator(PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES);
@@ -231,7 +231,7 @@ class TemplateHelper
      * @param bool|null $isAdmin
      * @return null|SimpleXMLElement|SimpleXMLObject
      */
-    public function getXML($cOrdner, $isAdmin = null)
+    public function getXML($cOrdner, bool $isAdmin = null)
     {
         $isAdmin  = $isAdmin ?? $this->isAdmin;
         $cXMLFile = $isAdmin === false
@@ -264,7 +264,7 @@ class TemplateHelper
      * @param string $cOrdner
      * @return array|bool
      */
-    public function getConfig($cOrdner)
+    public function getConfig(string $cOrdner)
     {
         $oSetting_arr = Shop::Container()->getDB()->selectAll('ttemplateeinstellungen', 'cTemplate', $cOrdner);
         if (is_array($oSetting_arr) && count($oSetting_arr) > 0) {
@@ -285,9 +285,9 @@ class TemplateHelper
     /**
      * @param string    $cOrdner
      * @param bool|null $isAdmin
-     * @return mixed|stdClass
+     * @return bool|stdClass
      */
-    public function getData($cOrdner, $isAdmin = null)
+    public function getData($cOrdner, bool $isAdmin = null)
     {
         $isAdmin = $isAdmin ?? $this->isAdmin;
         $cacheID = 'tpl_' . $cOrdner . ($isAdmin ? '_admin' : '');
@@ -332,7 +332,7 @@ class TemplateHelper
             }
         }
 
-        $oTemplate_arr = Shop::Container()->getDB()->query('SELECT * FROM ttemplate', NiceDB::RET_ARRAY_OF_OBJECTS);
+        $oTemplate_arr = Shop::Container()->getDB()->query('SELECT * FROM ttemplate', \DB\ReturnType::ARRAY_OF_OBJECTS);
         foreach ($oTemplate_arr as $oTpl) {
             if (!isset($oTemplate->bAktiv) || !$oTemplate->bAktiv) {
                 $oTemplate->bAktiv = (strcasecmp($oTemplate->cOrdner, $oTpl->cTemplate) === 0);

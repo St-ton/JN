@@ -14,11 +14,12 @@ use Cache\JTLCacheTrait;
  * Implements caching via phpredis
  *
  * @see https://github.com/nicolasff/phpredis
+ * @package Cache\Methods
  */
 class cache_redis implements ICachingMethod
 {
     use JTLCacheTrait;
-    
+
     /**
      * @var cache_redis
      */
@@ -62,7 +63,7 @@ class cache_redis implements ICachingMethod
      * @param bool        $persist
      * @return bool
      */
-    private function setRedis($host = null, $port = null, $pass = null, $database = null, $persist = false) : bool
+    private function setRedis($host = null, $port = null, $pass = null, $database = null, $persist = false): bool
     {
         $redis   = new \Redis();
         $connect = $persist === false ? 'connect' : 'pconnect';
@@ -93,12 +94,9 @@ class cache_redis implements ICachingMethod
     }
 
     /**
-     * @param string   $cacheID
-     * @param mixed    $content
-     * @param int|null $expiration
-     * @return bool
+     * @inheritdoc
      */
-    public function store($cacheID, $content, $expiration = null) : bool
+    public function store($cacheID, $content, $expiration = null): bool
     {
         try {
             $res = $this->_redis->set($cacheID, $content);
@@ -117,11 +115,9 @@ class cache_redis implements ICachingMethod
     }
 
     /**
-     * @param array    $idContent
-     * @param int|null $expiration
-     * @return bool|mixed
+     * @inheritdoc
      */
-    public function storeMulti($idContent, $expiration = null)
+    public function storeMulti($idContent, $expiration = null): bool
     {
         try {
             $res = $this->_redis->mset($idContent);
@@ -138,8 +134,7 @@ class cache_redis implements ICachingMethod
     }
 
     /**
-     * @param string $cacheID
-     * @return bool|mixed|string
+     * @inheritdoc
      */
     public function load($cacheID)
     {
@@ -153,10 +148,9 @@ class cache_redis implements ICachingMethod
     }
 
     /**
-     * @param array $cacheIDs
-     * @return array|bool|mixed
+     * @inheritdoc
      */
-    public function loadMulti($cacheIDs)
+    public function loadMulti(array $cacheIDs): array
     {
         try {
             $res    = $this->_redis->mget($cacheIDs);
@@ -171,23 +165,22 @@ class cache_redis implements ICachingMethod
         } catch (\RedisException $e) {
             echo 'Redis exception: ' . $e->getMessage();
 
-            return false;
+            return [];
         }
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
-    public function isAvailable() : bool
+    public function isAvailable(): bool
     {
         return class_exists('Redis');
     }
 
     /**
-     * @param string $cacheID
-     * @return bool|int
+     * @inheritdoc
      */
-    public function flush($cacheID) : bool
+    public function flush($cacheID): bool
     {
         try {
             return $this->_redis->delete($cacheID) > 0;
@@ -199,11 +192,9 @@ class cache_redis implements ICachingMethod
     }
 
     /**
-     * @param array|string $tags
-     * @param string       $cacheID
-     * @return bool
+     * @inheritdoc
      */
-    public function setCacheTag($tags = [], $cacheID) : bool
+    public function setCacheTag($tags = [], $cacheID): bool
     {
         $res   = false;
         $redis = $this->_redis->multi();
@@ -222,40 +213,33 @@ class cache_redis implements ICachingMethod
     }
 
     /**
-     * custom prefix for tag IDs
-     *
-     * @param string $tagName
-     * @return string
+     * @inheritdoc
      */
-    private static function _keyFromTagName($tagName) : string
+    private static function _keyFromTagName($tagName): string
     {
         return 'tag_' . $tagName;
     }
 
     /**
-     * redis can delete multiple cacheIDs at once
-     *
-     * @param array|string $tags
-     * @return int
+     * @inheritdoc
      */
-    public function flushTags($tags) : int
+    public function flushTags($tags): int
     {
         return $this->flush(array_unique($this->getKeysByTag($tags)));
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
-    public function flushAll() : bool
+    public function flushAll(): bool
     {
         return $this->_redis->flushDB();
     }
 
     /**
-     * @param array|string $tags
-     * @return array
+     * @inheritdoc
      */
-    public function getKeysByTag($tags = []) : array
+    public function getKeysByTag($tags = []): array
     {
         $matchTags = \is_string($tags)
             ? [self::_keyFromTagName($tags)]
@@ -279,18 +263,17 @@ class cache_redis implements ICachingMethod
     }
 
     /**
-     * @param string $cacheID
-     * @return bool
+     * @inheritdoc
      */
-    public function keyExists($cacheID) : bool
+    public function keyExists($cacheID): bool
     {
         return $this->_redis->exists($cacheID);
     }
 
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function getStats() : array
+    public function getStats(): array
     {
         $numEntries  = null;
         $slowLog     = [];

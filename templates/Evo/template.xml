@@ -3,8 +3,8 @@
     <Name>Evo</Name>
     <Author>JTL-Software-GmbH</Author>
     <URL>https://www.jtl-software.de</URL>
-    <Version>4.06</Version>
-    <ShopVersion>406</ShopVersion>
+    <Version>5.0.0</Version>
+    <ShopVersion>500</ShopVersion>
     <Preview>preview.png</Preview>
     <Description>JTL-Shop Responsive-Template</Description>
     <Settings>
@@ -141,6 +141,10 @@
                 <Option Value="9999"><![CDATA[keine Beschr&auml;nkung]]></Option>
             </Setting>
             <Setting Description="Quickview für Artikeldetails" Key="quickview_productlist" Type="select" Value="N">
+                <Option Value="Y">Ja</Option>
+                <Option Value="N">Nein</Option>
+            </Setting>
+            <Setting Description="Filteroptionen bei Seitenanruf anzeigen?" Key="initial_display_filter" Type="select" Value="Y">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>

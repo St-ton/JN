@@ -3,7 +3,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  *}
 
-{if !empty($oTrustedShops->tsId) && $oTrustedShops->eType == $TS_BUYERPROT_CLASSIC}
+{if !empty($oTrustedShops->tsId) && $oTrustedShops->eType == $smarty.const.TS_BUYERPROT_CLASSIC}
     <table width=400 border="0" cellspacing="0" cellpadding="4">
         <tr>
             <td width="90">

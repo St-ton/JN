@@ -49,9 +49,9 @@ class Trennzeichen
      *
      * @param int $kTrennzeichen
      */
-    public function __construct($kTrennzeichen = 0)
+    public function __construct(int $kTrennzeichen = 0)
     {
-        if ((int)$kTrennzeichen > 0) {
+        if ($kTrennzeichen > 0) {
             $this->loadFromDB($kTrennzeichen);
         }
     }
@@ -59,13 +59,12 @@ class Trennzeichen
     /**
      * Loads database member into class member
      *
-     * @param int $kTrennzeichen primarykey
+     * @param int $kTrennzeichen
      * @return $this
      */
-    private function loadFromDB($kTrennzeichen = 0)
+    private function loadFromDB(int $kTrennzeichen = 0): self
     {
-        $kTrennzeichen = (int)$kTrennzeichen;
-        $cacheID       = 'units_lfdb_' . $kTrennzeichen;
+        $cacheID = 'units_lfdb_' . $kTrennzeichen;
         if (($oObj = Shop::Cache()->get($cacheID)) === false) {
             $oObj = Shop::Container()->getDB()->select('ttrennzeichen', 'kTrennzeichen', $kTrennzeichen);
             Shop::Cache()->set($cacheID, $oObj, [CACHING_GROUP_CORE]);
@@ -89,14 +88,18 @@ class Trennzeichen
      * @param int $kSprache
      * @return mixed
      */
-    private static function getUnitObject($nEinheit, $kSprache)
+    private static function getUnitObject(int $nEinheit, int $kSprache)
     {
         if (isset(self::$unitObject[$kSprache][$nEinheit])) {
             return self::$unitObject[$kSprache][$nEinheit];
         }
-        $cacheID = 'units_' . (int)$nEinheit . '_' . (int)$kSprache;
+        $cacheID = 'units_' . $nEinheit . '_' . $kSprache;
         if (($oObj = Shop::Cache()->get($cacheID)) === false) {
-            $oObj = Shop::Container()->getDB()->select('ttrennzeichen', 'nEinheit', $nEinheit, 'kSprache', (int)$kSprache);
+            $oObj = Shop::Container()->getDB()->select(
+                'ttrennzeichen',
+                'nEinheit', $nEinheit,
+                'kSprache', $kSprache
+            );
             Shop::Cache()->set($cacheID, $oObj, [CACHING_GROUP_CORE]);
         }
         if (!isset(self::$unitObject[$kSprache])) {
@@ -115,12 +118,10 @@ class Trennzeichen
      * @param int $fAmount
      * @return int|string|Trennzeichen
      */
-    public static function getUnit($nEinheit, $kSprache, $fAmount = -1)
+    public static function getUnit(int $nEinheit, int $kSprache, $fAmount = -1)
     {
-        $nEinheit = (int)$nEinheit;
-        $kSprache = (int)$kSprache;
         if (!$kSprache) {
-            $oSprache = gibStandardsprache(true);
+            $oSprache = Sprache::getDefaultLanguage(true);
             $kSprache = (int)$oSprache->kSprache;
         }
 
@@ -146,11 +147,11 @@ class Trennzeichen
      * @param int $kSprache
      * @return mixed|bool
      */
-    public static function insertMissingRow($nEinheit, $kSprache)
+    public static function insertMissingRow(int $nEinheit, int $kSprache)
     {
         // Standardwert [kSprache][nEinheit]
         $xRowAssoc_arr = [];
-        foreach (gibAlleSprachen() as $language) {
+        foreach (Sprache::getAllLanguages() as $language) {
             $xRowAssoc_arr[$language->kSprache][JTL_SEPARATOR_WEIGHT] = [
                 'nDezimalstellen'   => 2,
                 'cDezimalZeichen'   => ',',
@@ -167,8 +168,6 @@ class Trennzeichen
                 'cTausenderZeichen' => '.'
             ];
         }
-        $nEinheit = (int)$nEinheit;
-        $kSprache = (int)$kSprache;
         if ($nEinheit > 0 && $kSprache > 0) {
             if (!isset($xRowAssoc_arr[$kSprache][$nEinheit])) {
                 $xRowAssoc_arr[$kSprache]            = [];
@@ -187,7 +186,7 @@ class Trennzeichen
                       NULL, {$kSprache}, {$nEinheit}, {$xRowAssoc_arr[$kSprache][$nEinheit]['nDezimalstellen']}, 
                       '{$xRowAssoc_arr[$kSprache][$nEinheit]['cDezimalZeichen']}',
                     '{$xRowAssoc_arr[$kSprache][$nEinheit]['cTausenderZeichen']}')",
-                NiceDB::RET_AFFECTED_ROWS
+                \DB\ReturnType::AFFECTED_ROWS
             );
         }
 
@@ -198,9 +197,8 @@ class Trennzeichen
      * @param int $kSprache
      * @return array
      */
-    public static function getAll($kSprache)
+    public static function getAll(int $kSprache)
     {
-        $kSprache = (int)$kSprache;
         $cacheID  = 'units_all_' . $kSprache;
         if (($oObjAssoc_arr = Shop::Cache()->get($cacheID)) === false) {
             $oObjAssoc_arr = [];
@@ -214,7 +212,7 @@ class Trennzeichen
                 );
                 foreach ($oObjTMP_arr as $oObjTMP) {
                     if (isset($oObjTMP->kTrennzeichen) && $oObjTMP->kTrennzeichen > 0) {
-                        $oTrennzeichen = new self($oObjTMP->kTrennzeichen);
+                        $oTrennzeichen                               = new self($oObjTMP->kTrennzeichen);
                         $oObjAssoc_arr[$oTrennzeichen->getEinheit()] = $oTrennzeichen;
                     }
                 }
@@ -226,10 +224,10 @@ class Trennzeichen
     }
 
     /**
-     * @param bool $bPrim - Controls the return of the method
+     * @param bool $bPrim
      * @return bool|int
      */
-    public function save($bPrim = true)
+    public function save(bool $bPrim = true)
     {
         $oObj        = new stdClass();
         $cMember_arr = array_keys(get_object_vars($this));
@@ -252,7 +250,7 @@ class Trennzeichen
     /**
      * @return int
      */
-    public function update()
+    public function update(): int
     {
         $upd                    = new stdClass();
         $upd->kSprache          = (int)$this->kSprache;
@@ -260,25 +258,25 @@ class Trennzeichen
         $upd->nDezimalstellen   = $this->nDezimalstellen;
         $upd->cDezimalZeichen   = $this->cDezimalZeichen;
         $upd->cTausenderZeichen = $this->cTausenderZeichen;
-        
-        return Shop::Container()->getDB()->update('ttrennzeichen', 'kTrennzeichen', (int)$this->kTrennzeichen, $upd);
+
+        return Shop::Container()->getDB()->update('ttrennzeichen', 'kTrennzeichen', $this->kTrennzeichen, $upd);
     }
 
     /**
      * @return int
      */
-    public function delete()
+    public function delete(): int
     {
-        return Shop::Container()->getDB()->delete('ttrennzeichen', 'kTrennzeichen', (int)$this->kTrennzeichen);
+        return Shop::Container()->getDB()->delete('ttrennzeichen', 'kTrennzeichen', $this->kTrennzeichen);
     }
 
     /**
      * @param int $kTrennzeichen
      * @return $this
      */
-    public function setTrennzeichen($kTrennzeichen)
+    public function setTrennzeichen(int $kTrennzeichen): self
     {
-        $this->kTrennzeichen = (int)$kTrennzeichen;
+        $this->kTrennzeichen = $kTrennzeichen;
 
         return $this;
     }
@@ -287,9 +285,9 @@ class Trennzeichen
      * @param int $kSprache
      * @return $this
      */
-    public function setSprache($kSprache)
+    public function setSprache(int $kSprache): self
     {
-        $this->kSprache = (int)$kSprache;
+        $this->kSprache = $kSprache;
 
         return $this;
     }
@@ -298,9 +296,9 @@ class Trennzeichen
      * @param int $nEinheit
      * @return $this
      */
-    public function setEinheit($nEinheit)
+    public function setEinheit(int $nEinheit): self
     {
-        $this->nEinheit = (int)$nEinheit;
+        $this->nEinheit = $nEinheit;
 
         return $this;
     }
@@ -309,9 +307,9 @@ class Trennzeichen
      * @param int $nDezimalstellen
      * @return $this
      */
-    public function setDezimalstellen($nDezimalstellen)
+    public function setDezimalstellen(int $nDezimalstellen): self
     {
-        $this->nDezimalstellen = (int)$nDezimalstellen;
+        $this->nDezimalstellen = $nDezimalstellen;
 
         return $this;
     }
@@ -320,7 +318,7 @@ class Trennzeichen
      * @param string $cDezimalZeichen
      * @return $this
      */
-    public function setDezimalZeichen($cDezimalZeichen)
+    public function setDezimalZeichen($cDezimalZeichen): self
     {
         $this->cDezimalZeichen = $cDezimalZeichen;
 
@@ -331,7 +329,7 @@ class Trennzeichen
      * @param string $cTausenderZeichen
      * @return $this
      */
-    public function setTausenderZeichen($cTausenderZeichen)
+    public function setTausenderZeichen($cTausenderZeichen): self
     {
         $this->cTausenderZeichen = $cTausenderZeichen;
 
@@ -387,33 +385,33 @@ class Trennzeichen
     }
 
     /**
-     * @return mixed
+     * @return int|bool
      */
     public static function migrateUpdate()
     {
         $conf      = Shop::getSettings([CONF_ARTIKELDETAILS, CONF_ARTIKELUEBERSICHT]);
-        $languages = gibAlleSprachen();
+        $languages = Sprache::getAllLanguages();
         if (is_array($languages) && count($languages) > 0) {
-            Shop::Container()->getDB()->query('TRUNCATE ttrennzeichen', NiceDB::RET_AFFECTED_ROWS);
+            Shop::Container()->getDB()->query('TRUNCATE ttrennzeichen', \DB\ReturnType::AFFECTED_ROWS);
             $units = [JTL_SEPARATOR_WEIGHT, JTL_SEPARATOR_AMOUNT, JTL_SEPARATOR_LENGTH];
             foreach ($languages as $language) {
                 foreach ($units as $unit) {
                     $sep = new self();
                     if ($unit === JTL_SEPARATOR_WEIGHT) {
                         $dec = isset($conf['artikeldetails']['artikeldetails_gewicht_stellenanzahl'])
-                            && strlen($conf['artikeldetails']['artikeldetails_gewicht_stellenanzahl']) > 0
+                        && strlen($conf['artikeldetails']['artikeldetails_gewicht_stellenanzahl']) > 0
                             ? $conf['artikeldetails']['artikeldetails_gewicht_stellenanzahl']
                             : 2;
                         $sep->setDezimalstellen($dec);
                     } else {
                         $sep->setDezimalstellen(2);
                     }
-                    $sep10 = isset($conf['artikeldetails']['artikeldetails_zeichen_nachkommatrenner'])
-                        && strlen($conf['artikeldetails']['artikeldetails_zeichen_nachkommatrenner']) > 0
+                    $sep10   = isset($conf['artikeldetails']['artikeldetails_zeichen_nachkommatrenner'])
+                    && strlen($conf['artikeldetails']['artikeldetails_zeichen_nachkommatrenner']) > 0
                         ? $conf['artikeldetails']['artikeldetails_zeichen_nachkommatrenner']
                         : ',';
                     $sep1000 = isset($conf['artikeldetails']['artikeldetails_zeichen_tausendertrenner'])
-                        && strlen($conf['artikeldetails']['artikeldetails_zeichen_tausendertrenner']) > 0
+                    && strlen($conf['artikeldetails']['artikeldetails_zeichen_tausendertrenner']) > 0
                         ? $conf['artikeldetails']['artikeldetails_zeichen_tausendertrenner']
                         : '.';
                     $sep->setDezimalZeichen($sep10)
@@ -431,8 +429,8 @@ class Trennzeichen
                     LEFT JOIN teinstellungen 
                         ON teinstellungen.cName = teinstellungenconf.cWertName
                     WHERE teinstellungenconf.kEinstellungenConf IN (1458, 1459, 495, 497, 499, 501)",
-                NiceDB::RET_AFFECTED_ROWS
-                );
+                \DB\ReturnType::AFFECTED_ROWS
+            );
         }
 
         return false;

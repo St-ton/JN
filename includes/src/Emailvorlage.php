@@ -67,6 +67,11 @@ class Emailvorlage
     /**
      * @var int
      */
+    protected $nDSE;
+
+    /**
+     * @var int
+     */
     protected $nFehlerhaft;
 
     /**
@@ -85,9 +90,9 @@ class Emailvorlage
      * @param int  $kEmailvorlage
      * @param bool $bPlugin
      */
-    public function __construct($kEmailvorlage = 0, $bPlugin = false)
+    public function __construct(int $kEmailvorlage = 0, bool $bPlugin = false)
     {
-        if ((int)$kEmailvorlage > 0) {
+        if ($kEmailvorlage > 0) {
             $this->loadFromDB($kEmailvorlage, $bPlugin);
         }
     }
@@ -99,9 +104,8 @@ class Emailvorlage
      * @param bool $bPlugin
      * @return $this
      */
-    private function loadFromDB($kEmailvorlage, $bPlugin)
+    private function loadFromDB(int $kEmailvorlage, bool $bPlugin): self
     {
-        $kEmailvorlage = (int)$kEmailvorlage;
         $cTable        = $bPlugin ? 'tpluginemailvorlage' : 'temailvorlage';
         $cTableSetting = $bPlugin ? 'tpluginemailvorlageeinstellungen' : 'temailvorlageeinstellungen';
         $oObj          = Shop::Container()->getDB()->select($cTable, 'kEmailvorlage', $kEmailvorlage);
@@ -112,7 +116,11 @@ class Emailvorlage
                 $this->$cMember = $oObj->$cMember;
             }
             // Settings
-            $this->oEinstellung_arr = Shop::Container()->getDB()->selectAll($cTableSetting, 'kEmailvorlage', $this->kEmailvorlage);
+            $this->oEinstellung_arr = Shop::Container()->getDB()->selectAll(
+                $cTableSetting,
+                'kEmailvorlage',
+                $this->kEmailvorlage
+            );
             // Assoc bauen
             if (is_array($this->oEinstellung_arr) && count($this->oEinstellung_arr) > 0) {
                 $this->oEinstellungAssoc_arr = [];
@@ -129,9 +137,9 @@ class Emailvorlage
      * @param int
      * @return $this
      */
-    public function setEmailvorlage($kEmailvorlage)
+    public function setEmailvorlage(int $kEmailvorlage): self
     {
-        $this->kEmailvorlage = (int)$kEmailvorlage;
+        $this->kEmailvorlage = $kEmailvorlage;
 
         return $this;
     }
@@ -140,7 +148,7 @@ class Emailvorlage
      * @param string
      * @return $this
      */
-    public function setName($cName)
+    public function setName($cName): self
     {
         $this->cName = $cName;
 
@@ -151,7 +159,7 @@ class Emailvorlage
      * @param string
      * @return $this
      */
-    public function setBeschreibung($cBeschreibung)
+    public function setBeschreibung($cBeschreibung): self
     {
         $this->cBeschreibung = $cBeschreibung;
 
@@ -162,7 +170,7 @@ class Emailvorlage
      * @param string
      * @return $this
      */
-    public function setMailTyp($cMailTyp)
+    public function setMailTyp($cMailTyp): self
     {
         $this->cMailTyp = $cMailTyp;
 
@@ -173,7 +181,7 @@ class Emailvorlage
      * @param string
      * @return $this
      */
-    public function setModulId($cModulId)
+    public function setModulId($cModulId): self
     {
         $this->cModulId = $cModulId;
 
@@ -184,7 +192,7 @@ class Emailvorlage
      * @param string
      * @return $this
      */
-    public function setDateiname($cDateiname)
+    public function setDateiname($cDateiname): self
     {
         $this->cDateiname = $cDateiname;
 
@@ -195,7 +203,7 @@ class Emailvorlage
      * @param string
      * @return $this
      */
-    public function setAktiv($cAktiv)
+    public function setAktiv($cAktiv): self
     {
         $this->cAktiv = $cAktiv;
 
@@ -206,9 +214,9 @@ class Emailvorlage
      * @param int
      * @return $this
      */
-    public function setAKZ($nAKZ)
+    public function setAKZ(int $nAKZ): self
     {
-        $this->nAKZ = (int)$nAKZ;
+        $this->nAKZ = $nAKZ;
 
         return $this;
     }
@@ -217,9 +225,9 @@ class Emailvorlage
      * @param int
      * @return $this
      */
-    public function setAGB($nAGB)
+    public function setAGB(int $nAGB): self
     {
-        $this->nAGB = (int)$nAGB;
+        $this->nAGB = $nAGB;
 
         return $this;
     }
@@ -228,9 +236,9 @@ class Emailvorlage
      * @param int
      * @return $this
      */
-    public function setWRB($nWRB)
+    public function setWRB(int $nWRB): self
     {
-        $this->nWRB = (int)$nWRB;
+        $this->nWRB = $nWRB;
 
         return $this;
     }
@@ -239,9 +247,9 @@ class Emailvorlage
      * @param int
      * @return $this
      */
-    public function setWRBForm($nWRBForm)
+    public function setDSE(int $nDSE): self
     {
-        $this->nWRBForm = (int)$nWRBForm;
+        $this->nDSE = $nDSE;
 
         return $this;
     }
@@ -250,9 +258,20 @@ class Emailvorlage
      * @param int
      * @return $this
      */
-    public function setFehlerhaft($nFehlerhaft)
+    public function setWRBForm(int $nWRBForm): self
     {
-        $this->nFehlerhaft = (int)$nFehlerhaft;
+        $this->nWRBForm = $nWRBForm;
+
+        return $this;
+    }
+
+    /**
+     * @param int
+     * @return $this
+     */
+    public function setFehlerhaft(int $nFehlerhaft): self
+    {
+        $this->nFehlerhaft = $nFehlerhaft;
 
         return $this;
     }
@@ -260,7 +279,7 @@ class Emailvorlage
     /**
      * @return int
      */
-    public function getEmailvorlage()
+    public function getEmailvorlage(): int
     {
         return (int)$this->kEmailvorlage;
     }
@@ -348,6 +367,14 @@ class Emailvorlage
     /**
      * @return int
      */
+    public function getDSE()
+    {
+        return $this->nDSE;
+    }
+
+    /**
+     * @return int
+     */
     public function getFehlerhaft()
     {
         return $this->nFehlerhaft;
@@ -358,13 +385,12 @@ class Emailvorlage
      * @param bool   $isPlugin
      * @return Emailvorlage|null
      */
-    public static function load($modulId, $isPlugin = false)
+    public static function load(string $modulId, $isPlugin = false)
     {
-        $modulId = StringHandler::filterXSS($modulId);
         $table   = $isPlugin ? 'tpluginemailvorlage' : 'temailvorlage';
         $obj     = Shop::Container()->getDB()->select(
             $table,
-            'cModulId', Shop::Container()->getDB()->escape($modulId),
+            'cModulId', $modulId,
             null, null,
             null, null,
             false,
@@ -372,7 +398,7 @@ class Emailvorlage
         );
 
         return ($obj !== null && isset($obj->kEmailvorlage) && (int)$obj->kEmailvorlage > 0)
-            ? new self($obj->kEmailvorlage, $isPlugin)
+            ? new self((int)$obj->kEmailvorlage, $isPlugin)
             : null;
     }
 }

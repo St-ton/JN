@@ -48,17 +48,17 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         /**
          * @param int $kUploadSchema
          */
-        public function __construct($kUploadSchema = 0)
+        public function __construct(int $kUploadSchema = 0)
         {
-            if ((int)$kUploadSchema > 0) {
+            if ($kUploadSchema > 0) {
                 $this->loadFromDB($kUploadSchema);
             }
         }
 
         /**
-         * @param $kUploadSchema
+         * @param int $kUploadSchema
          */
-        private function loadFromDB($kUploadSchema)
+        private function loadFromDB(int $kUploadSchema)
         {
             $oUpload = Shop::Container()->getDB()->query(
                 "SELECT tuploadschema.kUploadSchema, tuploadschema.kCustomID, tuploadschema.nTyp, 
@@ -67,8 +67,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
                     FROM tuploadschema
                     LEFT JOIN tuploadschemasprache
                         ON tuploadschemasprache.kArtikelUpload = tuploadschema.kUploadSchema
-                        AND tuploadschemasprache.kSprache = " . Shop::getLanguage() . "
-                    WHERE kUploadSchema =  " . (int)$kUploadSchema, 1
+                        AND tuploadschemasprache.kSprache = " . Shop::getLanguageID() . "
+                    WHERE kUploadSchema =  " . $kUploadSchema,
+                \DB\ReturnType::SINGLE_OBJECT
             );
 
             if (isset($oUpload->kUploadSchema) && (int)$oUpload->kUploadSchema > 0) {
@@ -79,7 +80,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         /**
          * @return int
          */
-        public function save()
+        public function save(): int
         {
             return Shop::Container()->getDB()->insert('tuploadschema', self::copyMembers($this));
         }
@@ -87,7 +88,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         /**
          * @return int
          */
-        public function update()
+        public function update(): int
         {
             return Shop::Container()->getDB()->update(
                 'tuploadschema',
@@ -108,13 +109,13 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         /**
          * @param int $kCustomID
          * @param int $nTyp
-         * @return mixed
+         * @return array
          */
-        public static function fetchAll($kCustomID, $nTyp)
+        public static function fetchAll(int $kCustomID, int $nTyp): array
         {
             $cSql = '';
             if ($nTyp === UPLOAD_TYP_WARENKORBPOS) {
-                $cSql = " AND kCustomID = '" . (int)$kCustomID . "'";
+                $cSql = " AND kCustomID = '" . $kCustomID . "'";
             }
 
             return Shop::Container()->getDB()->query(
@@ -126,21 +127,21 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
                     LEFT JOIN tuploadschemasprache
                         ON tuploadschemasprache.kArtikelUpload = tuploadschema.kUploadSchema
                         AND tuploadschemasprache.kSprache = " . Shop::getLanguage() . "
-                    WHERE nTyp = " . (int)$nTyp . $cSql, 2
+                    WHERE nTyp = " . $nTyp . $cSql,
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         }
 
         /**
-         * @param object        $objFrom
-         * @param stdClass|null $objTo
-         * @return null|stdClass
+         * @param object      $objFrom
+         * @param object|null $objTo
+         * @return null|object
          */
         private static function copyMembers($objFrom, &$objTo = null)
         {
             if (!is_object($objTo)) {
                 $objTo = new stdClass();
             }
-
             $cMember_arr = array_keys(get_object_vars($objFrom));
             if (is_array($cMember_arr) && count($cMember_arr) > 0) {
                 foreach ($cMember_arr as $cMember) {

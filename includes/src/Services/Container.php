@@ -6,10 +6,14 @@
 
 namespace Services;
 
+use Boxes\BoxFactoryInterface;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\Services\GcServiceInterface;
+use Services\JTL\BoxServiceInterface;
+use Services\JTL\CaptchaServiceInterface;
 use Services\JTL\CryptoServiceInterface;
+use Services\JTL\LinkServiceInterface;
 use Services\JTL\PasswordServiceInterface;
 use Psr\Log\LoggerInterface;
 
@@ -26,7 +30,7 @@ class Container extends ContainerBase implements DefaultServicesInterface
     /**
      * @inheritdoc
      */
-    public function getDB()
+    public function getDB(): DbInterface
     {
         return $this->get(DbInterface::class);
     }
@@ -34,7 +38,7 @@ class Container extends ContainerBase implements DefaultServicesInterface
     /**
      * @inheritdoc
      */
-    public function getPasswordService()
+    public function getPasswordService(): PasswordServiceInterface
     {
         return $this->get(PasswordServiceInterface::class);
     }
@@ -42,7 +46,7 @@ class Container extends ContainerBase implements DefaultServicesInterface
     /**
      * @inheritdoc
      */
-    public function getCryptoService()
+    public function getCryptoService(): CryptoServiceInterface
     {
         return $this->get(CryptoServiceInterface::class);
     }
@@ -50,7 +54,7 @@ class Container extends ContainerBase implements DefaultServicesInterface
     /**
      * @inheritdoc
      */
-    public function getBackendLogService() : LoggerInterface
+    public function getBackendLogService(): LoggerInterface
     {
         return $this->get('BackendAuthLogger');
     }
@@ -58,7 +62,7 @@ class Container extends ContainerBase implements DefaultServicesInterface
     /**
      * @inheritdoc
      */
-    public function getDBServiceGC()
+    public function getDBServiceGC(): GcServiceInterface
     {
         return $this->get(GcServiceInterface::class);
     }
@@ -66,8 +70,40 @@ class Container extends ContainerBase implements DefaultServicesInterface
     /**
      * @inheritdoc
      */
-    public function getCache()
+    public function getCache(): JTLCacheInterface
     {
         return $this->get(JTLCacheInterface::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getLinkService(): LinkServiceInterface
+    {
+        return $this->get(LinkServiceInterface::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getBoxFactory(): BoxFactoryInterface
+    {
+        return $this->get(BoxFactoryInterface::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getBoxService(): BoxServiceInterface
+    {
+        return $this->get(BoxServiceInterface::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getCaptchaService(): CaptchaServiceInterface
+    {
+        return $this->get(CaptchaServiceInterface::class);
     }
 }

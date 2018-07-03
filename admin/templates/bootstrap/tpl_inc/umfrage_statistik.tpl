@@ -35,7 +35,8 @@
                 {foreach name=umfragefrage from=$oUmfrageStats->oUmfrageFrage_arr item=oUmfrageFrage}
 
                     {if $oUmfrageFrage->oUmfrageFrageAntwort_arr|@count > 0 && $oUmfrageFrage->oUmfrageFrageAntwort_arr}
-                        {if $oUmfrageFrage->cTyp === 'matrix_single' || $oUmfrageFrage->cTyp === 'matrix_multi'}
+                        {if $oUmfrageFrage->cTyp === \Survey\QuestionType::MATRIX_SINGLE
+                        || $oUmfrageFrage->cTyp === \Survey\QuestionType::MATRIX_MULTI}
                             <div class="panel panel-default">
                                 <div class="panel-heading">
                                     <strong>{$oUmfrageFrage->cName}</strong> - {$oUmfrageFrage->cTypMapped}

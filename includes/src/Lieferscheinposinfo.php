@@ -35,26 +35,23 @@ class Lieferscheinposinfo
     protected $dMHD;
 
     /**
-     * Constructor
-     *
+     * Lieferscheinposinfo constructor.
      * @param int $kLieferscheinPosInfo
      */
-    public function __construct($kLieferscheinPosInfo = 0)
+    public function __construct(int $kLieferscheinPosInfo = 0)
     {
-        if ((int)$kLieferscheinPosInfo > 0) {
+        if ($kLieferscheinPosInfo > 0) {
             $this->loadFromDB($kLieferscheinPosInfo);
         }
     }
 
     /**
-     * Loads database member into class member
-     *
      * @param int $kLieferscheinPosInfo
      * @return $this
      */
-    private function loadFromDB($kLieferscheinPosInfo = 0)
+    private function loadFromDB(int $kLieferscheinPosInfo = 0)
     {
-        $oObj = Shop::Container()->getDB()->select('tlieferscheinposinfo', 'kLieferscheinPosInfo', (int)$kLieferscheinPosInfo);
+        $oObj = Shop::Container()->getDB()->select('tlieferscheinposinfo', 'kLieferscheinPosInfo', $kLieferscheinPosInfo);
 
         if ($oObj !== null && $oObj->kLieferscheinPosInfo > 0) {
             $cMember_arr = array_keys(get_object_vars($oObj));
@@ -67,12 +64,10 @@ class Lieferscheinposinfo
     }
 
     /**
-     * Store the class in the database
-     *
-     * @param bool $bPrim Controls the return of the method
+     * @param bool $bPrim
      * @return bool|int
      */
-    public function save($bPrim = true)
+    public function save(bool $bPrim = true)
     {
         $oObj        = new stdClass();
         $cMember_arr = array_keys(get_object_vars($this));
@@ -94,11 +89,9 @@ class Lieferscheinposinfo
     }
 
     /**
-     * Update the class in the database
-     *
      * @return int
      */
-    public function update()
+    public function update(): int
     {
         $_upd                   = new stdClass();
         $_upd->kLieferscheinPos = $this->getLieferscheinPos();
@@ -110,11 +103,9 @@ class Lieferscheinposinfo
     }
 
     /**
-     * Delete the class in the database
-     *
      * @return int
      */
-    public function delete()
+    public function delete(): int
     {
         return Shop::Container()->getDB()->delete('tlieferscheinposinfo', 'kLieferscheinPosInfo', $this->getLieferscheinPosInfo());
     }
@@ -123,9 +114,9 @@ class Lieferscheinposinfo
      * @param int $kLieferscheinPosInfo
      * @return $this
      */
-    public function setLieferscheinPosInfo($kLieferscheinPosInfo)
+    public function setLieferscheinPosInfo(int $kLieferscheinPosInfo)
     {
-        $this->kLieferscheinPosInfo = (int)$kLieferscheinPosInfo;
+        $this->kLieferscheinPosInfo = $kLieferscheinPosInfo;
 
         return $this;
     }
@@ -134,9 +125,9 @@ class Lieferscheinposinfo
      * @param int $kLieferscheinPos
      * @return $this
      */
-    public function setLieferscheinPos($kLieferscheinPos)
+    public function setLieferscheinPos(int $kLieferscheinPos)
     {
-        $this->kLieferscheinPos = (int)$kLieferscheinPos;
+        $this->kLieferscheinPos = $kLieferscheinPos;
 
         return $this;
     }

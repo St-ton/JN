@@ -58,11 +58,6 @@ class Hersteller
     /**
      * @var string
      */
-    public $nGlobal;
-
-    /**
-     * @var string
-     */
     public $cURL;
 
     /**
@@ -74,6 +69,7 @@ class Hersteller
      * @var string
      */
     public $cBildpfadNormal;
+
     /**
      * @var string
      */
@@ -91,9 +87,9 @@ class Hersteller
      * @param int  $kSprache
      * @param bool $noCache - set to true to avoid caching
      */
-    public function __construct($kHersteller = 0, $kSprache = 0, $noCache = false)
+    public function __construct(int $kHersteller = 0, int $kSprache = 0, bool $noCache = false)
     {
-        if ((int)$kHersteller > 0) {
+        if ($kHersteller > 0) {
             $this->loadFromDB($kHersteller, $kSprache, $noCache);
         }
     }
@@ -103,7 +99,7 @@ class Hersteller
      * @param bool     $extras
      * @return $this
      */
-    public function loadFromObject(stdClass $obj, $extras = true)
+    public function loadFromObject(stdClass $obj, $extras = true): self
     {
         $members = array_keys(get_object_vars($obj));
         if (is_array($members) && count($members) > 0) {
@@ -111,6 +107,7 @@ class Hersteller
                 $this->{$member} = $obj->{$member};
             }
             $this->kHersteller = (int)$this->kHersteller;
+            $this->nSortNr     = (int)$this->nSortNr;
         }
         if ($extras) {
             $this->getExtras($obj);
@@ -127,16 +124,14 @@ class Hersteller
      * @param bool $noCache
      * @return $this
      */
-    public function loadFromDB($kHersteller, $kSprache = 0, $noCache = false)
+    public function loadFromDB(int $kHersteller, int $kSprache = 0, bool $noCache = false): self
     {
         //noCache param to avoid problem with de-serialization of class properties with jtl search
-        $kSprache = (int)$kSprache > 0 ? (int)$kSprache : Shop::getLanguageID();
+        $kSprache = $kSprache > 0 ? $kSprache : Shop::getLanguageID();
         if ($kSprache === 0) {
-            $oSprache = gibStandardsprache();
+            $oSprache = Sprache::getDefaultLanguage();
             $kSprache = (int)$oSprache->kSprache;
         }
-        $kHersteller = (int)$kHersteller;
-        $kSprache    = (int)$kSprache;
         $cacheID     = 'manuf_' . $kHersteller . '_' . $kSprache . Shop::Cache()->getBaseID();
         $cacheTags   = [CACHING_GROUP_MANUFACTURER];
         $cached      = true;
@@ -158,15 +153,14 @@ class Hersteller
                     'langID' => $kSprache,
                     'manfID' => $kHersteller
                 ],
-                NiceDB::RET_SINGLE_OBJECT
+                \DB\ReturnType::SINGLE_OBJECT
             );
             $cached = false;
             executeHook(HOOK_HERSTELLER_CLASS_LOADFROMDB, [
-                    'oHersteller' => &$oHersteller,
-                    'cached'      => false,
-                    'cacheTags'   => &$cacheTags
-                ]
-            );
+                'oHersteller' => &$oHersteller,
+                'cached'      => false,
+                'cacheTags'   => &$cacheTags
+            ]);
             Shop::Cache()->set($cacheID, $oHersteller, $cacheTags);
         }
         if ($cached === true) {
@@ -188,7 +182,7 @@ class Hersteller
      * @param stdClass $obj
      * @return $this
      */
-    public function getExtras(stdClass $obj)
+    public function getExtras(stdClass $obj): self
     {
         $shopURL      = Shop::getURL() . '/';
         $imageBaseURL = Shop::getImageBaseURL();
@@ -197,7 +191,7 @@ class Hersteller
             $this->cURL = (isset($obj->cSeo) && strlen($obj->cSeo) > 0)
                 ? $shopURL . $obj->cSeo
                 : $shopURL . '?h=' . $obj->kHersteller;
-            $this->cBeschreibung = parseNewsText($this->cBeschreibung);
+            $this->cBeschreibung = StringHandler::parseNewsText($this->cBeschreibung);
         }
         if (strlen($this->cBildpfad) > 0) {
             $this->cBildpfadKlein  = PFAD_HERSTELLERBILDER_KLEIN . $this->cBildpfad;
@@ -216,10 +210,10 @@ class Hersteller
      * @param bool $productLookup
      * @return array
      */
-    public static function getAll($productLookup = true)
+    public static function getAll(bool $productLookup = true): array
     {
         $sqlWhere = '';
-        $kSprache = Shop::getLanguage();
+        $kSprache = Shop::getLanguageID();
         if ($productLookup) {
             $sqlWhere = "WHERE EXISTS (
                             SELECT 1
@@ -246,7 +240,8 @@ class Hersteller
                     AND tseo.cKey = 'kHersteller'
                     AND tseo.kSprache = {$kSprache}
                 {$sqlWhere}
-                ORDER BY thersteller.nSortNr, thersteller.cName", 2
+                ORDER BY thersteller.nSortNr, thersteller.cName",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         $results = [];
         foreach ($objs as $obj) {

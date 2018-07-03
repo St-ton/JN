@@ -57,11 +57,27 @@ trait JTLCacheTrait
     }
 
     /**
+     * @return string|null
+     */
+    public function getJournalID()
+    {
+        return $this->journalID;
+    }
+
+    /**
+     * @param string $id
+     */
+    public function setJournalID($id)
+    {
+        $this->journalID = $id;
+    }
+
+    /**
      * test data availability and integrity
      *
      * @return bool
      */
-    public function test() : bool
+    public function test(): bool
     {
         //if it's not available, it's not working
         if ($this->isInitialized === false || !$this->isAvailable()) {
@@ -84,7 +100,7 @@ trait JTLCacheTrait
      * @param string $data
      * @return bool
      */
-    public function is_serialized($data) : bool
+    public function is_serialized($data): bool
     {
         //if it isn't a string, it isn't serialized
         if (!\is_string($data)) {
@@ -124,7 +140,7 @@ trait JTLCacheTrait
      * @param mixed $data
      * @return bool
      */
-    public function must_be_serialized($data)
+    public function must_be_serialized($data): bool
     {
         return \is_object($data) || \is_array($data);
     }
@@ -136,7 +152,7 @@ trait JTLCacheTrait
      * @param string       $cacheID - not prefixed
      * @return bool
      */
-    public function writeJournal($tags, $cacheID)
+    public function writeJournal($tags, $cacheID): bool
     {
         if ($this->journal === null) {
             $this->getJournal();
@@ -166,7 +182,7 @@ trait JTLCacheTrait
      * @param array|string $tags
      * @return array
      */
-    public function getKeysByTag($tags) : array
+    public function getKeysByTag($tags): array
     {
         // load journal from extra cache
         $this->getJournal();
@@ -182,6 +198,7 @@ trait JTLCacheTrait
                     }
                 }
             }
+
             // remove duplicate keys from array and return it
             return array_unique($res);
         }
@@ -196,7 +213,7 @@ trait JTLCacheTrait
      * @param string $key
      * @return bool
      */
-    public function keyExists($key) : bool
+    public function keyExists($key): bool
     {
         return false;
     }
@@ -208,7 +225,7 @@ trait JTLCacheTrait
      * @param string       $cacheID
      * @return bool
      */
-    public function setCacheTag($tags, $cacheID) : bool
+    public function setCacheTag($tags, $cacheID): bool
     {
         return $this->writeJournal($tags, $cacheID);
     }
@@ -219,7 +236,7 @@ trait JTLCacheTrait
      * @param array $tags
      * @return int
      */
-    public function flushTags($tags) : int
+    public function flushTags($tags): int
     {
         $deleted = 0;
         foreach ($this->getKeysByTag($tags) as $_id) {
@@ -241,7 +258,7 @@ trait JTLCacheTrait
      * @param array|string $tags
      * @return bool
      */
-    public function clearCacheTags($tags) : bool
+    public function clearCacheTags($tags): bool
     {
         if (\is_array($tags)) {
             foreach ($tags as $tag) {
@@ -276,7 +293,7 @@ trait JTLCacheTrait
      *
      * @return array
      */
-    public function getJournal()
+    public function getJournal(): array
     {
         if ($this->journal === null) {
             $this->journal = ($j = $this->load($this->journalID)) !== false
@@ -293,7 +310,7 @@ trait JTLCacheTrait
      * @param array $array
      * @return array
      */
-    protected function prefixArray($array)
+    protected function prefixArray(array $array): array
     {
         $newKeyArray = [];
         foreach ($array as $_key => $_val) {
@@ -310,7 +327,7 @@ trait JTLCacheTrait
      * @param array $array
      * @return array
      */
-    protected function dePrefixArray($array)
+    protected function dePrefixArray(array $array): array
     {
         $newKeyArray = [];
         foreach ($array as $_key => $_val) {
@@ -327,7 +344,7 @@ trait JTLCacheTrait
      * @param int $seconds
      * @return string
      */
-    protected function secondsToTime($seconds)
+    protected function secondsToTime($seconds): string
     {
         $dtF = new \DateTime("@0");
         $dtT = new \DateTime("@$seconds");
@@ -338,7 +355,7 @@ trait JTLCacheTrait
     /**
      * @return bool
      */
-    public function isInitialized() : bool
+    public function isInitialized(): bool
     {
         return $this->isInitialized;
     }

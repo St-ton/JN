@@ -97,11 +97,13 @@ function pruefeKundenKommentar($cKommentar, $cName = '', $cEmail = '', $kNews, $
             "SELECT count(*) AS nAnzahl
                 FROM tnewskommentar
                 WHERE kNews = " . (int)$kNews . "
-                    AND kKunde = " . (int)$_SESSION['Kunde']->kKunde, 1
+                    AND kKunde = " . (int)$_SESSION['Kunde']->kKunde,
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
-        if ($oNewsKommentar->nAnzahl > (int)$Einstellungen['news']['news_kommentare_anzahlprobesucher'] &&
-            (int)$Einstellungen['news']['news_kommentare_anzahlprobesucher'] !== 0) {
+        if ($oNewsKommentar->nAnzahl > (int)$Einstellungen['news']['news_kommentare_anzahlprobesucher']
+            && (int)$Einstellungen['news']['news_kommentare_anzahlprobesucher'] !== 0
+        ) {
             $nPlausiValue_arr['nAnzahl'] = 1;
         }
 
@@ -112,17 +114,17 @@ function pruefeKundenKommentar($cKommentar, $cName = '', $cEmail = '', $kNews, $
             $nPlausiValue_arr['cName'] = 1;
         }
         // Email prüfen
-        if (!valid_email($cEmail)) {
+        if (StringHandler::filterEmailAddress($cEmail) === false) {
             $nPlausiValue_arr['cEmail'] = 1;
         }
-        if (isset($conf['news']['news_sicherheitscode']) &&
-            $conf['news']['news_sicherheitscode'] !== 'N' &&
-            !validateCaptcha($_POST)
+        if (isset($conf['news']['news_sicherheitscode'])
+            && $conf['news']['news_sicherheitscode'] !== 'N'
+            && !FormHelper::validateCaptcha($_POST)
         ) {
             $nPlausiValue_arr['captcha'] = 2;
         }
     }
-    if ((!isset($nPlausiValue_arr['cName']) || !$nPlausiValue_arr['cName']) && pruefeEmailblacklist($cEmail)) {
+    if ((!isset($nPlausiValue_arr['cName']) || !$nPlausiValue_arr['cName']) && SimpleMail::checkBlacklist($cEmail)) {
         $nPlausiValue_arr['cEmail'] = 2;
     }
 
@@ -170,12 +172,14 @@ function gibNewskommentarFehler($nPlausiValue_arr)
  */
 function holeNewsKategorien($cDatumSQL, $bActiveOnly = false)
 {
-    $kSprache     = Shop::getLanguage();
+    $kSprache     = Shop::getLanguageID();
     $cSQL         = '';
     $activeFilter = $bActiveOnly ? ' AND tnewskategorie.nAktiv = 1 ' : '';
     if (strlen($cDatumSQL) > 0) {
-        $cSQL = "   JOIN tnewskategorienews ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
-                    JOIN tnews ON tnews.kNews = tnewskategorienews.kNews
+        $cSQL = "   JOIN tnewskategorienews 
+                        ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
+                    JOIN tnews 
+                        ON tnews.kNews = tnewskategorienews.kNews
                     " . $cDatumSQL;
     }
 
@@ -187,14 +191,16 @@ function holeNewsKategorien($cDatumSQL, $bActiveOnly = false)
             DATE_FORMAT(tnewskategorie.dLetzteAktualisierung, '%d.%m.%Y  %H:%i') AS dLetzteAktualisierung_de
             FROM tnewskategorie
             " . $cSQL . "
-            LEFT JOIN tseo ON tseo.cKey = 'kNewsKategorie'
+            LEFT JOIN tseo 
+                ON tseo.cKey = 'kNewsKategorie'
                 AND tseo.kKey = tnewskategorie.kNewsKategorie
                 AND tseo.kSprache = " . $kSprache . "
                 AND tnewskategorie.kSprache = " . $kSprache . "
             WHERE tnewskategorie.kSprache = " . $kSprache
             . $activeFilter . "
             GROUP BY tnewskategorie.kNewsKategorie
-            ORDER BY tnewskategorie.nSort", 2
+            ORDER BY tnewskategorie.nSort",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 }
 
@@ -209,7 +215,7 @@ function baueDatum($oDatum_arr)
         foreach ($oDatum_arr as $oDatum) {
             $oTMP            = new stdClass();
             $oTMP->cWert     = $oDatum->nMonat . '-' . $oDatum->nJahr;
-            $oTMP->cName     = mappeDatumName((string)$oDatum->nMonat, (int)$oDatum->nJahr, $_SESSION['cISOSprache']);
+            $oTMP->cName     = mappeDatumName((string)$oDatum->nMonat, (int)$oDatum->nJahr, Shop::getLanguageCode());
             $oDatumTMP_arr[] = $oTMP;
         }
     }
@@ -373,7 +379,7 @@ function baueNewsMetaStart($oNewsNaviFilter)
             'kNewsKategorie',
             (int)$oNewsNaviFilter->nNewsKat,
             'kSprache',
-            Shop::getLanguage()
+            Shop::getLanguageID()
         );
         if (isset($oNewsKat->kNewsKategorie) && $oNewsKat->kNewsKategorie > 0) {
             $cMetaStart .= ' ' . $oNewsKat->cName;
@@ -387,53 +393,23 @@ function baueNewsMetaStart($oNewsNaviFilter)
  * @param JTLSmarty   $smarty
  * @param string|null $AktuelleSeite
  * @param string      $cCanonicalURL
+ * @deprecated since 5.0.0
  */
 function baueNewsKruemel($smarty, $AktuelleSeite, &$cCanonicalURL)
 {
-    $oLink = Shop::Container()->getDB()->select('tlink', 'nLinkart', LINKTYP_NEWS);
-    if (isset($oLink->kLink) && $oLink->kLink > 0) {
-        //hole Link
-        $linkHelper    = LinkHelper::getInstance();
-        $Link          = $linkHelper->getPageLink($oLink->kLink);
-        $Link->Sprache = $linkHelper->getPageLinkLanguage($oLink->kLink);
-        //url
-        global $sprachURL, $requestURL;
-        $requestURL = baueURL($Link, URLART_SEITE);
-        $sprachURL  = $Link->languageURLs ?? baueSprachURLS($Link, URLART_SEITE);
-        // Canonical
-        if (strpos($requestURL, '.php') === false) {
-            $cCanonicalURL = Shop::getURL() . '/' . $requestURL;
-        }
-        if (empty($AktuelleSeite)) {
-            $AktuelleSeite = null;
-        }
-        $smarty->assign('Navigation', createNavigation($AktuelleSeite, 0, 0, $Link->Sprache->cName, $requestURL));
-    } else {
-        // Canonical
-        $cCanonicalURL = Shop::getURL() . '/news.php';
-        $smarty->assign('Navigation',
-            createNavigation(
-                $AktuelleSeite,
-                0,
-                0,
-                Shop::Lang()->get('news', 'breadcrumb'),
-                'news.php'
-            )
-        );
-    }
 }
 
 /**
  * @param int  $kNews
  * @param bool $bActiveOnly
- * @return mixed
+ * @return stdClass|null
  */
-function getNewsArchive($kNews, $bActiveOnly = false)
+function getNewsArchive(int $kNews, bool $bActiveOnly = false)
 {
     $activeFilter = $bActiveOnly ? ' AND tnews.nAktiv = 1 ' : '';
 
-    return Shop::Container()->getDB()->query("
-        SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, 
+    return Shop::Container()->getDB()->query(
+        "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, 
             tnews.cVorschauText, tnews.cPreviewImage, tnews.cMetaTitle, tnews.cMetaDescription, 
             tnews.cMetaKeywords, tnews.nAktiv, tnews.dErstellt, tnews.dGueltigVon, tseo.cSeo,
             DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y %H:%i') AS Datum, 
@@ -442,13 +418,14 @@ function getNewsArchive($kNews, $bActiveOnly = false)
             LEFT JOIN tseo 
                 ON tseo.cKey = 'kNews'
                 AND tseo.kKey = tnews.kNews
-                AND tseo.kSprache = " . Shop::getLanguage() . "
-            WHERE tnews.kNews = " . (int)$kNews . " 
+                AND tseo.kSprache = " . Shop::getLanguageID() . "
+            WHERE tnews.kNews = " . $kNews . " 
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
                     OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
                         . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
-                AND tnews.kSprache = " . Shop::getLanguage()
-                . $activeFilter, 1
+                AND tnews.kSprache = " . Shop::getLanguageID()
+                . $activeFilter,
+        \DB\ReturnType::SINGLE_OBJECT
     );
 }
 
@@ -457,19 +434,23 @@ function getNewsArchive($kNews, $bActiveOnly = false)
  * @param bool $bActiveOnly
  * @return mixed
  */
-function getCurrentNewsCategory($kNewsKategorie, $bActiveOnly = false)
+function getCurrentNewsCategory(int $kNewsKategorie, bool $bActiveOnly = false)
 {
     $activeFilter = $bActiveOnly ? ' AND tnewskategorie.nAktiv = 1 ' : '';
 
-    return Shop::Container()->getDB()->query(
+    return Shop::Container()->getDB()->queryPrepared(
         "SELECT tnewskategorie.cName, tnewskategorie.cMetaTitle, tnewskategorie.cMetaDescription, tseo.cSeo
             FROM tnewskategorie
             LEFT JOIN tseo 
                 ON tseo.cKey = 'kNewsKategorie'
-                AND tseo.kKey = " . (int)$kNewsKategorie . "
-                AND tseo.kSprache = " . Shop::getLanguage() . "
-            WHERE tnewskategorie.kNewsKategorie = " . (int)$kNewsKategorie
-                . $activeFilter, 1
+                AND tseo.kKey = :cat
+                AND tseo.kSprache = :lid
+            WHERE tnewskategorie.kNewsKategorie = :cat" . $activeFilter,
+        [
+            'cat' => $kNewsKategorie,
+            'lid' => Shop::getLanguageID()
+        ],
+        \DB\ReturnType::SINGLE_OBJECT
     );
 }
 
@@ -477,23 +458,17 @@ function getCurrentNewsCategory($kNewsKategorie, $bActiveOnly = false)
  * @param int $kNews
  * @return mixed
  */
-function getNewsCategory($kNews)
+function getNewsCategory(int $kNews)
 {
-    $cSQL                  = '';
-    $oNewsKategorieKey_arr = Shop::Container()->getDB()->selectAll('tnewskategorienews', 'kNews', (int)$kNews, 'kNewsKategorie');
-
-    if (is_array($oNewsKategorieKey_arr) && count($oNewsKategorieKey_arr) > 0) {
-        $cSQL = '';
-        foreach ($oNewsKategorieKey_arr as $i => $oNewsKategorieKey) {
-            if ($oNewsKategorieKey->kNewsKategorie > 0) {
-                if ($i > 0) {
-                    $cSQL .= ', ' . (int)$oNewsKategorieKey->kNewsKategorie;
-                } else {
-                    $cSQL .= (int)$oNewsKategorieKey->kNewsKategorie;
-                }
-            }
-        }
-    }
+    $newsCategories = \Functional\map(
+        \Functional\pluck(Shop::Container()->getDB()->selectAll(
+            'tnewskategorienews',
+            'kNews',
+            $kNews,
+            'kNewsKategorie'
+        ), 'kNewsKategorie'),
+        function ($e) { return (int)$e; }
+    );
 
     return Shop::Container()->getDB()->query(
         "SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,
@@ -507,12 +482,13 @@ function getNewsCategory($kNews)
             LEFT JOIN tseo 
                 ON tseo.cKey = 'kNewsKategorie'
                 AND tseo.kKey = tnewskategorie.kNewsKategorie
-                AND tseo.kSprache = " . Shop::getLanguage() . "
-            WHERE tnewskategorie.kSprache = " . Shop::getLanguage() . "
-                AND tnewskategorienews.kNewsKategorie IN (" . $cSQL . ")
+                AND tseo.kSprache = " . Shop::getLanguageID() . "
+            WHERE tnewskategorie.kSprache = " . Shop::getLanguageID() . "
+                AND tnewskategorienews.kNewsKategorie IN (" . implode(',', $newsCategories) . ")
                 AND tnewskategorie.nAktiv = 1
             GROUP BY tnewskategorie.kNewsKategorie
-            ORDER BY tnewskategorie.nSort DESC", 2
+            ORDER BY tnewskategorie.nSort DESC",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 }
 
@@ -521,15 +497,16 @@ function getNewsCategory($kNews)
  * @param string $cLimitSQL
  * @return mixed
  */
-function getNewsComments($kNews, $cLimitSQL)
+function getNewsComments(int $kNews, $cLimitSQL)
 {
     return Shop::Container()->getDB()->query(
         "SELECT *, DATE_FORMAT(tnewskommentar.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_de
             FROM tnewskommentar
-            WHERE tnewskommentar.kNews = " . (int)$kNews . "
+            WHERE tnewskommentar.kNews = " . $kNews . "
                 AND tnewskommentar.nAktiv = 1
             ORDER BY tnewskommentar.dErstellt DESC
-            LIMIT " . $cLimitSQL, 2
+            LIMIT " . $cLimitSQL,
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 }
 
@@ -537,13 +514,15 @@ function getNewsComments($kNews, $cLimitSQL)
  * @param int $kNews
  * @return mixed
  */
-function getCommentCount($kNews)
+function getCommentCount(int $kNews)
 {
-    return Shop::Container()->getDB()->query(
+    return Shop::Container()->getDB()->queryPrepared(
         "SELECT count(*) AS nAnzahl
             FROM tnewskommentar
-            WHERE kNews = " . (int)$kNews . "
-            AND nAktiv = 1", 1
+            WHERE kNews = :nid
+            AND nAktiv = 1",
+        ['nid' => $kNews],
+        \DB\ReturnType::SINGLE_OBJECT
     );
 }
 
@@ -551,16 +530,21 @@ function getCommentCount($kNews)
  * @param int $kNewsMonatsUebersicht
  * @return mixed
  */
-function getMonthOverview($kNewsMonatsUebersicht)
+function getMonthOverview(int $kNewsMonatsUebersicht)
 {
-    return Shop::Container()->getDB()->query(
+    return Shop::Container()->getDB()->queryPrepared(
         "SELECT tnewsmonatsuebersicht.*, tseo.cSeo
             FROM tnewsmonatsuebersicht
             LEFT JOIN tseo 
                 ON tseo.cKey = 'kNewsMonatsUebersicht'
-                AND tseo.kKey = " . (int)$kNewsMonatsUebersicht . "
-                AND tseo.kSprache = " . Shop::getLanguage() . "
-            WHERE tnewsmonatsuebersicht.kNewsMonatsUebersicht = " . (int)$kNewsMonatsUebersicht, 1
+                AND tseo.kKey = :nmi
+                AND tseo.kSprache = :lid
+            WHERE tnewsmonatsuebersicht.kNewsMonatsUebersicht = :nmi",
+        [
+            'nmi' => $kNewsMonatsUebersicht,
+            'lid' => Shop::getLanguageID()
+        ],
+        \DB\ReturnType::SINGLE_OBJECT
     );
 }
 
@@ -575,9 +559,10 @@ function getNewsOverview($oSQL, $cLimitSQL)
         "SELECT tseo.cSeo, tnews.*, DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y %H:%i') AS dErstellt_de, 
             count(*) AS nAnzahl, count(DISTINCT(tnewskommentar.kNewsKommentar)) AS nNewsKommentarAnzahl
             FROM tnews
-            LEFT JOIN tseo ON tseo.cKey = 'kNews'
+            LEFT JOIN tseo 
+                ON tseo.cKey = 'kNews'
                 AND tseo.kKey = tnews.kNews
-                AND tseo.kSprache = " . Shop::getLanguage() . "
+                AND tseo.kSprache = " . Shop::getLanguageID() . "
             LEFT JOIN tnewskommentar 
                 ON tnewskommentar.kNews = tnews.kNews 
                 AND tnewskommentar.nAktiv = 1
@@ -587,11 +572,12 @@ function getNewsOverview($oSQL, $cLimitSQL)
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
                     OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
                         . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
-                AND tnews.kSprache = " . Shop::getLanguage() . "
+                AND tnews.kSprache = " . Shop::getLanguageID() . "
                 " . $oSQL->cDatumSQL . "
             GROUP BY tnews.kNews
             " . $oSQL->cSortSQL . "
-            LIMIT " . $cLimitSQL, 2
+            LIMIT " . $cLimitSQL,
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 }
 
@@ -611,7 +597,8 @@ function getFullNewsOverview($oSQL)
                     OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
                         . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                 " . $oSQL->cDatumSQL . "
-                AND tnews.kSprache = " . Shop::getLanguage(), 1
+                AND tnews.kSprache = " . Shop::getLanguageID(),
+        \DB\ReturnType::SINGLE_OBJECT
     );
 }
 
@@ -630,9 +617,10 @@ function getNewsDateArray($oSQL)
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
                     OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
                         . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
-                AND tnews.kSprache = " . Shop::getLanguage() . "
+                AND tnews.kSprache = " . Shop::getLanguageID() . "
             GROUP BY nJahr, nMonat
-            ORDER BY dGueltigVon DESC", 2
+            ORDER BY dGueltigVon DESC",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 }
 
@@ -651,10 +639,9 @@ function cmp_obj($a, $b)
  * @param string $cUploadVerzeichnis
  * @return array
  */
-function holeNewsBilder($kNews, $cUploadVerzeichnis)
+function holeNewsBilder(int $kNews, $cUploadVerzeichnis)
 {
     $oDatei_arr = [];
-    $kNews      = (int)$kNews;
     if ($kNews > 0 && is_dir($cUploadVerzeichnis . $kNews)) {
         $DirHandle    = opendir($cUploadVerzeichnis . $kNews);
         $imageBaseURL = Shop::getURL() . '/';

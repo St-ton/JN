@@ -6,7 +6,9 @@
 
 namespace JTL\ProcessingHandler;
 
+use DB\DbInterface;
 use Monolog\Handler\AbstractProcessingHandler;
+use Monolog\Logger;
 
 /**
  * Class NiceDBHandler
@@ -15,17 +17,17 @@ use Monolog\Handler\AbstractProcessingHandler;
 class NiceDBHandler extends AbstractProcessingHandler
 {
     /**
-     * @var \NiceDB
+     * @var DbInterface
      */
     private $db;
 
     /**
      * NiceDBHandler constructor.
-     * @param \NiceDB $db
-     * @param int     $level
-     * @param bool    $bubble
+     * @param DbInterface $db
+     * @param int         $level
+     * @param bool        $bubble
      */
-    public function __construct(\NiceDB $db, $level = Logger::DEBUG, $bubble = true)
+    public function __construct(DbInterface $db, $level = Logger::DEBUG, $bubble = true)
     {
         $this->db = $db;
         parent::__construct($level, $bubble);

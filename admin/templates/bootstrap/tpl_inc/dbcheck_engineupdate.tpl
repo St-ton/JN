@@ -59,7 +59,7 @@
                 <div id="update_automatic" class="tab-pane fade{if $tab === 'update_automatic'} in active{/if}">
                     <h3>Automatisch</h3>
                     <p>Die automatische Migration wird empfohlen, wenn Ihre Shop-Datenbank komplett umgestellt werden mu&szlig; und sich die Datenmenge innerhalb der
-                        <a title="Softwarebeschr&auml;nkungen und Grenzen der JTL-Produkte" href="https://guide.jtl-software.de/Softwarebeschr%C3%A4nkungen_und_Grenzen_der_JTL-Produkte">Spezifikationen</a> f&uuml;r
+                        <a title="Softwarebeschr&auml;nkungen und Grenzen der JTL-Produkte" href="https://jtl-url.de/8qsat">Spezifikationen</a> f&uuml;r
                         JTL-Shop befindet.
                     </p>
                     <p>Bitte haben Sie Geduld! Bei {$engineUpdate->tableCount} Tabellen und einer Datenmenge von ca.&nbsp;{$engineUpdate->dataSize|formatSize:"%.0f"|upper|strip:"&nbsp;"} kann die Migration
@@ -77,7 +77,7 @@
                         {else}
                             ca. {($engineUpdate->estimated[1] / 3600)|ceil} Stunden
                         {/if} dauern. W&auml;hrend der Migration werden zudem wichtige Tabellen im Shop gesperrt, so dass es zu erheblichen Einschr&auml;nkungen im Frontend kommen kann.
-                        Es wird deshalb empfohlen, den <a title="Globale Einstellungen - Wartungsmodus" href="/admin/einstellungen.php?kSektion=1#wartungsmodus_aktiviert">Wartungsmodus</a> zu aktivieren,
+                        Es wird deshalb empfohlen, den <a title="Globale Einstellungen - Wartungsmodus" href="{$shopURL}/{$smarty.const.PFAD_ADMIN}/einstellungen.php?kSektion=1#wartungsmodus_aktiviert">Wartungsmodus</a> zu aktivieren,
                         w&auml;hrend Sie die Migration durchf&uuml;hren!<br />
                         Jede Tabelle wird einzeln in zwei Schritten migriert. Im ersten Schritt erfolgt die Verschiebung in den InnoDB-Tablespace und im Zweiten die Konvertierung der Daten in den UTF-8 Zeichensatz.
                     </p>
@@ -139,13 +139,13 @@
                         auf einem anderen JTL-Shop auszuf&uuml;hren!
                     </p>
                     <p>Bedenken Sie beim Ausf&uuml;hren des Scriptes, dass dieses ggfs. eine l&auml;ngere Zeit f&uuml;r den kompletten Durchlauf ben&ouml;tigt und w&auml;hrenddessen wichtige Tabellen im Shop f&uuml;r den Zugriff gesperrt werden.
-                        Es wird deshalb empfohlen, den <a title="Globale Einstellungen - Wartungsmodus" href="/admin/einstellungen.php?kSektion=1#wartungsmodus_aktiviert">Wartungsmodus</a> zu aktivieren,
+                        Es wird deshalb empfohlen, den <a title="Globale Einstellungen - Wartungsmodus" href="{$shopURL}/{$smarty.const.PFAD_ADMIN}/einstellungen.php?kSektion=1#wartungsmodus_aktiviert">Wartungsmodus</a> zu aktivieren,
                         w&auml;hrend Sie die Migration durchf&uuml;hren!
                     </p>
                     <div class="alert alert-warning">Erstellen Sie unbedingt ein Backup der gesamten Datenbank <strong>BEVOR</strong> Sie das Script ausf&uuml;hren!</div>
                     <div class="alert alert-warning">Verwenden Sie eine Serverkonsole und <strong>NICHT</strong> phpMyAdmin zum Ausf&uuml;hren des Scriptes!</div>
                     <div class="alert alert-warning">Verwenden Sie das Script nur f&uuml;r die Migration <strong>DIESES</strong> JTL-Shops!</div>
-                    <form action="dbcheck.php" method="post">
+                    <form action="{$shopURL}/{$smarty.const.PFAD_ADMIN}/dbcheck.php" method="post">
                         {$jtl_token}
                         <div class="btn-group">
                             <button class="btn btn-primary" name="update" value="script"><i class="fa fa-cogs"></i>&nbsp;Script erstellen</button>

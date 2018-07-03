@@ -94,7 +94,7 @@ class Billpay extends PaymentMethod
         if (isset($_SESSION['za_billpay_jtl']['oOptions_arr'][$cOptionsHash])) {
             return $_SESSION['za_billpay_jtl']['oOptions_arr'][$cOptionsHash];
         }
-        $jsonResults = http_get_contents($cOptionsUrl);
+        $jsonResults = RequestHelper::http_get_contents($cOptionsUrl);
 
         if (empty($jsonResults)) {
             return null;
@@ -112,12 +112,8 @@ class Billpay extends PaymentMethod
 
                 return $oResult;
             }
-            $cCustomerMessage = isset($oResult['responseStatus']['customerMessage'])
-                ? $oResult['responseStatus']['customerMessage']
-                : null;
-            $cMerchantMessage = isset($oResult['responseStatus']['merchantMessage'])
-                ? $oResult['responseStatus']['merchantMessage']
-                : null;
+            $cCustomerMessage = $oResult['responseStatus']['customerMessage'] ?? null;
+            $cMerchantMessage = $oResult['responseStatus']['merchantMessage'] ?? null;
 
             if ($cCustomerMessage !== null) {
                 $this->assignMessage($cCustomerMessage, 'error');
@@ -271,12 +267,12 @@ class Billpay extends PaymentMethod
                     Shop::Smarty()->assign('oOrder', $oOrder)
                         ->assign('oPaymentInfo', $oPaymentInfo)
                         ->assign('nPaymentType', $nPaymentType)
-                        ->assign('nSSL', pruefeSSL())
+                        ->assign('nSSL', RequestHelper::checkSSL())
                         ->assign('nState', 1)
                         ->assign('abschlussseite', 1);
 
                     // clear session
-                    $session = Session::getInstance();
+                    $session = \Session\Session::getInstance();
                     $session->cleanUp();
                 } else {
                     $this->assignMessage($oCapture->get_customer_error_message(), 'error');
@@ -342,7 +338,7 @@ class Billpay extends PaymentMethod
      */
     public function validateAdditional()
     {
-        return isset($_SESSION['za_billpay_jtl']['validated']) && (boolean)$_SESSION['za_billpay_jtl']['validated'];
+        return isset($_SESSION['za_billpay_jtl']['validated']) && (bool)$_SESSION['za_billpay_jtl']['validated'];
     }
 
     /**
@@ -737,7 +733,7 @@ class Billpay extends PaymentMethod
             BPHelper::strEncode($oCustomer->cMobil, 50),       // cellphone
             BPHelper::fmtDate($oCustomer->dGeburtstag, true),  // birthday
             BPHelper::toISO6391(BPHelper::getLanguage()),      // language
-            BPHelper::strEncode(getRealIp()),                  // ip address
+            BPHelper::strEncode(RequestHelper::getRealIP()),                  // ip address
             BPHelper::strEncode($eCustomerGroup, 1)            // customerGroup
         );
 
@@ -789,7 +785,7 @@ class Billpay extends PaymentMethod
             $fNet = $fPreisEinzelNetto * $oBasketInfo->cCurrency->getConversionFactor();
 
             $fAmount[AMT_NET]   = BPHelper::fmtAmount($fNet);
-            $fAmount[AMT_GROSS] = BPHelper::fmtAmount(berechneBrutto($fNet, gibUst($oPosition->kSteuerklasse)));
+            $fAmount[AMT_GROSS] = BPHelper::fmtAmount(TaxHelper::getGross($fNet, TaxHelper::getSalesTax($oPosition->kSteuerklasse)));
 
             if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL || $oPosition->nPosTyp == C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                 $oPreAuth->add_article(
@@ -994,7 +990,7 @@ class Billpay extends PaymentMethod
             } elseif (isset($oOrder->oRechnungsadresse, $oOrder->oRechnungsadresse->cLand)) {
                 $deliveryCountry = $oOrder->oRechnungsadresse->cLand;
             }
-            setzeSteuersaetze($deliveryCountry);
+            TaxHelper::setTaxRates($deliveryCountry);
             $fAmount = $oBasket->gibGesamtsummeWarenOhne(
                 [C_WARENKORBPOS_TYP_ZINSAUFSCHLAG, C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR],
                 true
@@ -1103,7 +1099,7 @@ class Billpay extends PaymentMethod
             } elseif (isset($oOrder->oRechnungsadresse, $oOrder->oRechnungsadresse->cLand)) {
                 $deliveryCountry = $oOrder->oRechnungsadresse->cLand;
             }
-            setzeSteuersaetze($deliveryCountry);
+            TaxHelper::setTaxRates($deliveryCountry);
             $fAmount = $oBasket->gibGesamtsummeWarenOhne(
                     [C_WARENKORBPOS_TYP_ZINSAUFSCHLAG, C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR],
                     true
@@ -1151,8 +1147,9 @@ class Billpay extends PaymentMethod
 
         foreach ($oBasket->PositionenArr as $oPosition) {
             $fPreisEinzelNetto = $oPosition->fPreisEinzelNetto;
-            if (isset($oPosition->WarenkorbPosEigenschaftArr) && is_array($oPosition->WarenkorbPosEigenschaftArr) &&
-                (!isset($oPosition->Artikel->kVaterArtikel) || (int)$oPosition->Artikel->kVaterArtikel === 0)
+            if (isset($oPosition->WarenkorbPosEigenschaftArr)
+                && is_array($oPosition->WarenkorbPosEigenschaftArr)
+                && (!isset($oPosition->Artikel->kVaterArtikel) || (int)$oPosition->Artikel->kVaterArtikel === 0)
             ) {
                 foreach ($oPosition->WarenkorbPosEigenschaftArr as $oWarenkorbPosEigenschaft) {
                     if ($oWarenkorbPosEigenschaft->fAufpreis > 0) {
@@ -1161,7 +1158,7 @@ class Billpay extends PaymentMethod
                 }
             }
             $fAmount      = $fPreisEinzelNetto * $oBasketInfo->cCurrency->getConversionFactor();
-            $fAmountGross = $fAmount * ((100 + gibUst($oPosition->kSteuerklasse)) / 100);
+            $fAmountGross = $fAmount * ((100 + TaxHelper::getSalesTax($oPosition->kSteuerklasse)) / 100);
 
             switch ($oPosition->nPosTyp) {
                 /*case C_WARENKORBPOS_TYP_GRATISGESCHENK:*/
@@ -1380,9 +1377,7 @@ class Billpay extends PaymentMethod
             $Einstellungen = Shop::getSettings([CONF_ZAHLUNGSARTEN]);
         }
 
-        return isset($Einstellungen['zahlungsarten']['zahlungsart_billpay_' . $key])
-            ? $Einstellungen['zahlungsarten']['zahlungsart_billpay_' . $key]
-            : null;
+        return $Einstellungen['zahlungsarten']['zahlungsart_billpay_' . $key] ?? null;
     }
 
     /**
@@ -1473,7 +1468,7 @@ class BPHelper
             $cAmount *= 100;
         }
         if ($bFmt) {
-            $cAmount = gibPreisStringLocalized($cAmount, Session::Currency()->getCode(), true, 2);
+            $cAmount = Preise::getLocalizedPriceString($cAmount, Session::Currency()->getCode(), true, 2);
         }
 
         return $cAmount;
@@ -1490,7 +1485,7 @@ class BPHelper
         $fAmount = round($fAmount, 2);
         $cAmount = number_format($fAmount / 100, 2, '.', '');
         if ($bFmt) {
-            $cAmount = gibPreisStringLocalized($cAmount, Session::Currency()->getCode(), $bHTML, 2);
+            $cAmount = Preise::getLocalizedPriceString($cAmount, Session::Currency()->getCode(), $bHTML, 2);
         }
 
         return $cAmount;

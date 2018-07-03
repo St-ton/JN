@@ -18,57 +18,57 @@ interface DbInterface extends \Serializable
      *
      * @return array
      */
-    public function getConfig();
+    public function getConfig(): array;
 
     /**
      * avoid destructer races with object cache
      *
      * @return $this
      */
-    public function reInit();
+    public function reInit(): DbInterface;
 
     /**
      * close db connection
      *
      * @return bool
      */
-    public function close();
+    public function close(): bool;
 
     /**
      * check if connected
      *
      * @return bool
      */
-    public function isConnected();
+    public function isConnected(): bool;
 
     /**
      * get server version information
      *
      * @return string
      */
-    public function getServerInfo();
+    public function getServerInfo(): string;
 
     /**
      * @return string
      */
-    public function info();
+    public function info(): string;
 
     /**
      * get server stats
      *
      * @return string
      */
-    public function getServerStats();
+    public function getServerStats(): string;
 
     /**
      * @return string
      */
-    public function stats();
+    public function stats(): string;
 
     /**
      * @return \PDO
      */
-    public function getPDO();
+    public function getPDO(): \PDO;
 
     /**
      * insert row into db
@@ -79,7 +79,7 @@ interface DbInterface extends \Serializable
      * @param bool     $bExecuteHook - true -> execute corresponding hook
      * @return int - 0 if fails, PrimaryKeyValue if successful
      */
-    public function insertRow($tableName, $object, $echo = false, $bExecuteHook = false);
+    public function insertRow(string $tableName, $object, bool $echo = false, bool $bExecuteHook = false): int;
 
     /**
      * @param string   $tableName
@@ -88,7 +88,7 @@ interface DbInterface extends \Serializable
      * @param bool     $bExecuteHook
      * @return int
      */
-    public function insert($tableName, $object, $echo = false, $bExecuteHook = false);
+    public function insert(string $tableName, $object, bool $echo = false, bool $bExecuteHook = false): int;
 
     /**
      * update table row
@@ -100,7 +100,7 @@ interface DbInterface extends \Serializable
      * @param int|bool         $echo - true -> print statement
      * @return int - -1 if fails, number of affected rows if successful
      */
-    public function updateRow($tableName, $keyname, $keyvalue, $object, $echo = false);
+    public function updateRow(string $tableName, $keyname, $keyvalue, $object, bool $echo = false): int;
 
     /**
      * @param string           $tableName
@@ -108,9 +108,9 @@ interface DbInterface extends \Serializable
      * @param string|int|array $keyvalue
      * @param object           $object
      * @param bool|int         $echo
-     * @return int mixed
+     * @return int
      */
-    public function update($tableName, $keyname, $keyvalue, $object, $echo = false);
+    public function update(string $tableName, $keyname, $keyvalue, $object, bool $echo = false): int;
 
     /**
      * selects all (*) values in a single row from a table - gives just one row back!
@@ -127,15 +127,15 @@ interface DbInterface extends \Serializable
      * @return null|object - null if fails, resultObject if successful
      */
     public function selectSingleRow(
-        $tableName,
+        string $tableName,
         $keyname,
         $keyvalue,
         $keyname1 = null,
         $keyvalue1 = null,
         $keyname2 = null,
         $keyvalue2 = null,
-        $echo = false,
-        $select = '*'
+        bool $echo = false,
+        string $select = '*'
     );
 
     /**
@@ -151,15 +151,15 @@ interface DbInterface extends \Serializable
      * @return mixed
      */
     public function select(
-        $tableName,
+        string $tableName,
         $keyname,
         $keyvalue,
         $keyname1 = null,
         $keyvalue1 = null,
         $keyname2 = null,
         $keyvalue2 = null,
-        $echo = false,
-        $select = '*'
+        bool $echo = false,
+        string $select = '*'
     );
 
     /**
@@ -172,7 +172,14 @@ interface DbInterface extends \Serializable
      * @return array
      * @throws \InvalidArgumentException
      */
-    public function selectArray($tableName, $keys, $values, $select = '*', $orderBy = '', $limit = '');
+    public function selectArray(
+        string $tableName,
+        $keys,
+        $values,
+        string $select = '*',
+        string $orderBy = '',
+        string $limit = ''
+    ): array;
 
     /**
      * @param string           $tableName
@@ -183,7 +190,14 @@ interface DbInterface extends \Serializable
      * @param string           $limit
      * @return array
      */
-    public function selectAll($tableName, $keys, $values, $select = '*', $orderBy = '', $limit = '');
+    public function selectAll(
+        string $tableName,
+        $keys,
+        $values,
+        string $select = '*',
+        string $orderBy = '',
+        string $limit = ''
+    ): array;
 
     /**
      * executes query and returns misc data
@@ -204,7 +218,7 @@ interface DbInterface extends \Serializable
      * @return array|object|int - 0 if fails, 1 if successful or LastInsertID if specified
      * @throws \InvalidArgumentException
      */
-    public function executeQuery($stmt, $return, $echo = false, $bExecuteHook = false, $fnInfo = null);
+    public function executeQuery($stmt, $return, bool $echo = false, bool $bExecuteHook = false, $fnInfo = null);
 
     /**
      * @param string   $stmt
@@ -213,7 +227,7 @@ interface DbInterface extends \Serializable
      * @param bool     $bExecuteHook
      * @return int|object|array
      */
-    public function query($stmt, $return, $echo = false, $bExecuteHook = false);
+    public function query($stmt, $return, bool $echo = false, bool $bExecuteHook = false);
 
     /**
      * executes query and returns misc data
@@ -239,8 +253,8 @@ interface DbInterface extends \Serializable
         $stmt,
         array $params,
         $return,
-        $echo = false,
-        $bExecuteHook = false,
+        bool $echo = false,
+        bool $bExecuteHook = false,
         $fnInfo = null
     );
 
@@ -250,9 +264,10 @@ interface DbInterface extends \Serializable
      * @param int      $return
      * @param int|bool $echo
      * @param bool     $bExecuteHook
+     * @param mixed    $fnINfo
      * @return int|object|array
      */
-    public function queryPrepared($stmt, $params, $return, $echo = false, $bExecuteHook = false, $fnINfo = null);
+    public function queryPrepared($stmt, $params, $return, bool $echo = false, bool $bExecuteHook = false, $fnINfo = null);
 
     /**
      * @param string $stmt
@@ -270,7 +285,7 @@ interface DbInterface extends \Serializable
      * @param bool|int         $echo - true -> print statement
      * @return int - -1 if fails, #affectedRows if successful
      */
-    public function deleteRow($tableName, $keyname, $keyvalue, $echo = false);
+    public function deleteRow(string $tableName, $keyname, $keyvalue, bool $echo = false): int;
 
     /**
      * @param string           $tableName
@@ -279,7 +294,7 @@ interface DbInterface extends \Serializable
      * @param bool|int         $echo
      * @return int
      */
-    public function delete($tableName, $keyname, $keyvalue, $echo = false);
+    public function delete(string $tableName, $keyname, $keyvalue, bool $echo = false): int;
 
     /**
      * executes a query and gives back the result
@@ -301,7 +316,7 @@ interface DbInterface extends \Serializable
      * @param string|bool $string
      * @return string
      */
-    public function quote($string);
+    public function quote($string): string;
 
     /**
      * Quotes a string for use in a query.
@@ -309,19 +324,19 @@ interface DbInterface extends \Serializable
      * @param string $string
      * @return string
      */
-    public function escape($string);
+    public function escape($string): string;
 
     /**
      * @param string $string
      * @return string mixed
      */
-    public function pdoEscape($string);
+    public function pdoEscape($string): string;
 
     /**
      * @param string $string
      * @return string
      */
-    public function realEscape($string);
+    public function realEscape($string): string;
 
     /**
      * logger
@@ -329,7 +344,7 @@ interface DbInterface extends \Serializable
      * @param string $entry - entry to log
      * @return $this
      */
-    public function writeLog($entry);
+    public function writeLog(string $entry): DbInterface;
 
     /**
      * @return mixed
@@ -362,19 +377,19 @@ interface DbInterface extends \Serializable
     public function getErrorMessage();
 
     /**
-     * @return boolean
+     * @return bool
      */
-    public function beginTransaction();
+    public function beginTransaction(): bool;
 
     /**
      * @return bool
      */
-    public function commit();
+    public function commit(): bool;
 
     /**
      * @return bool
      */
-    public function rollback();
+    public function rollback(): bool;
 
     /**
      * @param string $query

@@ -16,7 +16,7 @@ $cHinweis         = '';
 $cFehler          = '';
 $action           = '';
 $tab              = 'standard';
-$oSprache_arr     = gibAlleSprachen();
+$oSprache_arr     = Sprache::getAllLanguages();
 $oKupon           = null;
 $importDeleteDone = false;
 
@@ -25,8 +25,8 @@ $res = handleCsvImportAction('kupon', function ($obj, $importType = 2) {
     global $importDeleteDone;
 
     if ($importType === 0 && $importDeleteDone === false) {
-        Shop::DB()->query('TRUNCATE TABLE tkupon', NiceDB::RET_AFFECTED_ROWS);
-        Shop::DB()->query('TRUNCATE TABLE tkuponsprache', NiceDB::RET_AFFECTED_ROWS);
+        Shop::Container()->getDB()->query('TRUNCATE TABLE tkupon', \DB\ReturnType::AFFECTED_ROWS);
+        Shop::Container()->getDB()->query('TRUNCATE TABLE tkuponsprache', \DB\ReturnType::AFFECTED_ROWS);
         $importDeleteDone = true;
     }
 
@@ -67,14 +67,14 @@ $res = handleCsvImportAction('kupon', function ($obj, $importType = 2) {
 });
 
 if ($res > 0) {
-    $cFehler  = 'Konnte CSV-Datei nicht vollst&auml;ndig importieren. ';
+    $cFehler  = 'Konnte CSV-Datei nicht vollständig importieren. ';
     $cFehler .= ($res === 1 ? '1 Zeile ist' : $res . ' Zeilen sind') . ' nicht importierbar.';
 } elseif ($res === 0) {
     $cHinweis = 'CSV-Datei wurde erfolgreich importiert.';
 }
 
 // Aktion ausgeloest?
-if (validateToken()) {
+if (FormHelper::validateToken()) {
     if (isset($_POST['action'])) {
         if ($_POST['action'] === 'speichern') {
             // Kupon speichern
@@ -83,7 +83,7 @@ if (validateToken()) {
             // Kupons loeschen
             $action = 'loeschen';
         }
-    } elseif (isset($_GET['kKupon']) && verifyGPCDataInteger('kKupon') >= 0) {
+    } elseif (isset($_GET['kKupon']) && RequestHelper::verifyGPCDataInt('kKupon') >= 0) {
         // Kupon bearbeiten
         $action = 'bearbeiten';
     }
@@ -104,7 +104,7 @@ if ($action === 'bearbeiten') {
     $cFehler_arr = validateCoupon($oKupon);
     if (count($cFehler_arr) > 0) {
         // Es gab Fehler bei der Validierung => weiter bearbeiten
-        $cFehler = 'Bitte &uuml;berpr&uuml;fen Sie folgende Eingaben:<ul>';
+        $cFehler = 'Bitte überprüfen Sie folgende Eingaben:<ul>';
 
         foreach ($cFehler_arr as $fehler) {
             $cFehler .= '<li>' . $fehler . '</li>';
@@ -113,28 +113,27 @@ if ($action === 'bearbeiten') {
         $cFehler .= '</ul>';
         $action   = 'bearbeiten';
         augmentCoupon($oKupon);
-    } else {
-        // Validierung erfolgreich => Kupon speichern
-        if (saveCoupon($oKupon, $oSprache_arr) > 0) {
-            // erfolgreich gespeichert => evtl. Emails versenden
-            if (isset($_POST['informieren']) && $_POST['informieren'] === 'Y' &&
-                ($oKupon->cKuponTyp === 'standard' || $oKupon->cKuponTyp === 'versandkupon') &&
-                $oKupon->cAktiv === 'Y') {
-                informCouponCustomers($oKupon);
-            }
-            $cHinweis = 'Der Kupon wurde erfolgreich gespeichert.';
-        } else {
-            $cFehler = 'Der Kupon konnte nicht gespeichert werden.';
+    } elseif (saveCoupon($oKupon, $oSprache_arr) > 0) {// Validierung erfolgreich => Kupon speichern
+        // erfolgreich gespeichert => evtl. Emails versenden
+        if (isset($_POST['informieren'])
+            && $_POST['informieren'] === 'Y'
+            && ($oKupon->cKuponTyp === 'standard' || $oKupon->cKuponTyp === 'versandkupon')
+            && $oKupon->cAktiv === 'Y'
+        ) {
+            informCouponCustomers($oKupon);
         }
+        $cHinweis = 'Der Kupon wurde erfolgreich gespeichert.';
+    } else {
+        $cFehler = 'Der Kupon konnte nicht gespeichert werden.';
     }
 } elseif ($action === 'loeschen') {
     // Kupons loeschen
     if (isset($_POST['kKupon_arr']) && is_array($_POST['kKupon_arr']) && count($_POST['kKupon_arr']) > 0) {
         $kKupon_arr = array_map('intval', $_POST['kKupon_arr']);
         if (loescheKupons($kKupon_arr)) {
-            $cHinweis = 'Ihre markierten Kupons wurden erfolgreich gel&ouml;scht.';
+            $cHinweis = 'Ihre markierten Kupons wurden erfolgreich gelöscht.';
         } else {
-            $cFehler = 'Fehler: Ein oder mehrere Kupons konnten nicht gel&ouml;scht werden.';
+            $cFehler = 'Fehler: Ein oder mehrere Kupons konnten nicht gelöscht werden.';
         }
     } else {
         $cFehler = 'Fehler: Bitte markieren Sie mindestens einen Kupon.';
@@ -144,8 +143,14 @@ if ($action === 'bearbeiten') {
 // Seite ausgeben
 if ($action === 'bearbeiten') {
     // Seite: Bearbeiten
-    $oSteuerklasse_arr = Shop::Container()->getDB()->query("SELECT kSteuerklasse, cName FROM tsteuerklasse", 2);
-    $oKundengruppe_arr = Shop::Container()->getDB()->query("SELECT kKundengruppe, cName FROM tkundengruppe", 2);
+    $oSteuerklasse_arr = Shop::Container()->getDB()->query(
+        "SELECT kSteuerklasse, cName FROM tsteuerklasse",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
+    $oKundengruppe_arr = Shop::Container()->getDB()->query(
+        "SELECT kKundengruppe, cName FROM tkundengruppe",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
     $oHersteller_arr   = getManufacturers($oKupon->cHersteller);
     $oKategorie_arr    = getCategories($oKupon->cKategorien);
     $kKunde_arr        = array_filter(
@@ -176,10 +181,10 @@ if ($action === 'bearbeiten') {
            ->assign('oKupon', $oKupon);
 } else {
     // Seite: Uebersicht
-    if (hasGPCDataInteger('tab')) {
-        $tab = verifyGPDataString('tab');
-    } elseif (hasGPCDataInteger('cKuponTyp')) {
-        $tab = verifyGPDataString('cKuponTyp');
+    if (RequestHelper::hasGPCData('tab')) {
+        $tab = RequestHelper::verifyGPDataString('tab');
+    } elseif (RequestHelper::hasGPCData('cKuponTyp')) {
+        $tab = RequestHelper::verifyGPDataString('cKuponTyp');
     }
 
     deactivateOutdatedCoupons();

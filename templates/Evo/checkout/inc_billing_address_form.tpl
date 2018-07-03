@@ -17,10 +17,10 @@
             <div class="col-xs-12 col-md-6">
                 <div class="form-group float-label-control{if isset($fehlendeAngaben.anrede)} has-error{/if} required">
                     <label for="salutation" class="control-label">{lang key="salutation" section="account data"}</label>
-                    <select name="anrede" id="salutation" class="form-control" required>
+                    <select name="anrede" id="salutation" class="form-control" required autocomplete="billing sex">
                         <option value="" selected="selected" disabled>{lang key="salutation" section="account data"}</option>
-                        <option value="w" {if isset($cPost_var['anrede']) && $cPost_var['anrede'] === 'w'}selected="selected"{elseif isset($Kunde->cAnrede) && $Kunde->cAnrede === 'w'}selected="selected"{/if}>{$Anrede_w}</option>
-                        <option value="m" {if isset($cPost_var['anrede']) && $cPost_var['anrede'] === 'm'}selected="selected"{elseif isset($Kunde->cAnrede) && $Kunde->cAnrede === 'm'}selected="selected"{/if}>{$Anrede_m}</option>
+                        <option value="w" {if isset($cPost_var['anrede']) && $cPost_var['anrede'] === 'w'}selected="selected"{elseif isset($Kunde->cAnrede) && $Kunde->cAnrede === 'w'}selected="selected"{/if}>{lang key='salutationW'}</option>
+                        <option value="m" {if isset($cPost_var['anrede']) && $cPost_var['anrede'] === 'm'}selected="selected"{elseif isset($Kunde->cAnrede) && $Kunde->cAnrede === 'm'}selected="selected"{/if}>{lang key='salutationM'}</option>
                     </select>
                     {if isset($fehlendeAngaben.anrede)}
                         <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
@@ -43,7 +43,7 @@
                     class="form-control"
                     placeholder="{lang key="title" section="account data"}"
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_titel === 'Y'}required{/if}
-                    >
+                    autocomplete="billing honorific-prefix">
                     {if isset($fehlendeAngaben.titel)}
                         <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                             {lang key="fillOut" section="global"}
@@ -66,6 +66,7 @@
                 class="form-control"
                 placeholder="{lang key="firstName" section="account data"}"
                 {if $Einstellungen.kunden.kundenregistrierung_pflicht_vorname === 'Y'} required{/if}
+                autocomplete="billing given-name"
                 >
                 {if isset($fehlendeAngaben.vorname)}
                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
@@ -89,6 +90,7 @@
                 class="form-control"
                 placeholder="{lang key="lastName" section="account data"}"
                 required
+                autocomplete="billing family-name"
                 >
                 {if isset($fehlendeAngaben.nachname)}
                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
@@ -116,6 +118,7 @@
                 class="form-control"
                 placeholder="{lang key="firm" section="account data"}"
                 {if $Einstellungen.kunden.kundenregistrierung_abfragen_firma === 'Y'} required{/if}
+                autocomplete="billing organization"
                 >
                 {if isset($fehlendeAngaben.firma)}
                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
@@ -161,6 +164,7 @@
                 class="form-control"
                 placeholder="{lang key="street" section="account data"}"
                 required
+                autocomplete="billing address-line1"
                 >
                 {if isset($fehlendeAngaben.strasse)}
                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
@@ -181,6 +185,7 @@
                 class="form-control"
                 placeholder="{lang key="streetnumber" section="account data"}"
                 required
+                autocomplete="billing address-line2"
                 >
                 {if isset($fehlendeAngaben.hausnummer)}
                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
@@ -204,6 +209,7 @@
                     class="form-control"
                     placeholder="{lang key="street2" section="account data"}"
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_adresszusatz === 'Y'} required{/if}
+                    autocomplete="billing address-line3"
                     />
                     {if isset($fehlendeAngaben.adresszusatz)}
                         <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
@@ -219,7 +225,7 @@
         <div class="col-xs-12 col-md-6">
             <div class="form-group float-label-control required{if isset($fehlendeAngaben.land)} has-error{/if}">
                 <label class="control-label" for="country">{lang key="country" section="account data"}</label>
-                <select name="land" id="country" class="country_input form-control" required>
+                <select name="land" id="country" class="country_input form-control" required autocomplete="billing country">
                 <option value="" disabled>{lang key="country" section="account data"}</option>
                 {foreach name=land from=$laender item=land}
                     <option value="{$land->cISO}" {if isset($cPost_var['land']) && $cPost_var['land'] === $land->cISO}selected="selected"{elseif ($Einstellungen.kunden.kundenregistrierung_standardland==$land->cISO && empty($Kunde->cLand)) || !empty($Kunde->cLand) && $Kunde->cLand == $land->cISO}selected="selected"{/if}>{$land->cName}</option>
@@ -249,6 +255,7 @@
                 class="form-control"
                 placeholder="{lang key="state" section="account data"}"
                 {if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y'} required{/if}
+                autocomplete="billing address-level1"
                 >
                 {if isset($fehlendeAngaben.bundesland)}
                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
@@ -272,6 +279,7 @@
                 class="postcode_input form-control"
                 placeholder="{lang key="plz" section="account data"}"
                 required
+                autocomplete="billing postal-code"
                 >
                 {if isset($fehlendeAngaben.plz)}
                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
@@ -296,6 +304,7 @@
                 class="city_input form-control typeahead"
                 placeholder="{lang key="city" section="account data"}"
                 required
+                autocomplete="billing address-level2"
                 >
                 {if isset($fehlendeAngaben.ort)}
                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
@@ -363,6 +372,7 @@
                 class="form-control"
                 placeholder="{lang key="email" section="account data"}"
                 required
+                autocomplete="billing email"
                 >
                 {if isset($fehlendeAngaben.email)}
                 <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
@@ -397,6 +407,7 @@
                     class="form-control"
                     placeholder="{lang key="tel" section="account data"}"
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_tel === 'Y'} required{/if}
+                    autocomplete="billing home tel"
                     />
                     {if isset($fehlendeAngaben.tel)}
                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
@@ -423,6 +434,7 @@
                     class="form-control"
                     placeholder="{lang key="fax" section="account data"}"
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_fax === 'Y'} required{/if}
+                    autocomplete="billing fax tel"
                     />
                     {if isset($fehlendeAngaben.fax)}
                         <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
@@ -453,6 +465,7 @@
                         class="form-control"
                         placeholder="{lang key="mobile" section="account data"}"
                         {if $Einstellungen.kunden.kundenregistrierung_abfragen_mobil === 'Y'} required{/if}
+                        autocomplete="billing mobile tel"
                         />
                         {if isset($fehlendeAngaben.mobil)}
                             <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
@@ -479,6 +492,7 @@
                         class="form-control"
                         placeholder="{lang key="www" section="account data"}"
                         {if $Einstellungen.kunden.kundenregistrierung_abfragen_www === 'Y'} required{/if}
+                        autocomplete="billing url"
                         />
                         {if isset($fehlendeAngaben.www)}
                             <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
@@ -504,6 +518,7 @@
                     class="birthday form-control"
                     placeholder="{lang key="birthdayFormat" section="account data"}"
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_geburtstag === 'Y'} required{/if}
+                    autocomplete="billing bday"
                     >
                     {if isset($fehlendeAngaben.geburtstag)}
                         <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
@@ -584,14 +599,10 @@
 {/if}
 
 {if (!isset($smarty.session.bAnti_spam_already_checked) || $smarty.session.bAnti_spam_already_checked !== true) &&
-    isset($Einstellungen.global.anti_spam_method) && $Einstellungen.global.anti_spam_method !== 'N' &&
     isset($Einstellungen.kunden.registrieren_captcha) && $Einstellungen.kunden.registrieren_captcha !== 'N' && empty($Kunde->kKunde)}
     <hr>
-    <div class="g-recaptcha form-group" data-sitekey="{$Einstellungen.global.global_google_recaptcha_public}" data-callback="captcha_filled"></div>
-    {if isset($fehlendeAngaben.captcha) && $fehlendeAngaben.captcha != false}
-        <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
-            {lang key="invalidToken" section="global"}
-        </div>
-    {/if}
+    <div class="form-group float-label-control required{if isset($fehlendeAngaben.captcha) && $fehlendeAngaben.captcha != false} has-error{/if}">
+        {captchaMarkup getBody=true}
+    </div>
     <hr>
 {/if}

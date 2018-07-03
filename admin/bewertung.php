@@ -15,32 +15,41 @@ $Einstellungen = Shop::getSettings([CONF_BEWERTUNG]);
 $cHinweis      = '';
 $cFehler       = '';
 $step          = 'bewertung_uebersicht';
+$cTab          = 'freischalten';
 $cacheTags     = [];
 
 setzeSprache();
 
-if (strlen(verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', verifyGPDataString('tab'));
+if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
+    $cTab = RequestHelper::verifyGPDataString('tab');
 }
 // Bewertung editieren
-if (verifyGPCDataInteger('bewertung_editieren') === 1 && validateToken()) {
+if (RequestHelper::verifyGPCDataInt('bewertung_editieren') === 1 && FormHelper::validateToken()) {
     if (editiereBewertung($_POST)) {
         $cHinweis .= 'Ihre Bewertung wurde erfolgreich editiert. ';
 
-        if (verifyGPCDataInteger('nFZ') === 1) {
+        if (RequestHelper::verifyGPCDataInt('nFZ') === 1) {
             header('Location: freischalten.php');
             exit();
         }
     } else {
         $step = 'bewertung_editieren';
-        $cFehler .= 'Fehler: Bitte &uuml;berpr&uuml;fen Sie Ihre Eingaben. ';
+        $cFehler .= 'Fehler: Bitte überprüfen Sie Ihre Eingaben. ';
     }
 } elseif (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
-    Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE]);
-    $cHinweis .= saveAdminSectionSettings(CONF_BEWERTUNG, $_POST);
+
+    // Validierung
+    if (RequestHelper::verifyGPDataString('bewertung_guthaben_nutzen') === 'Y'
+        && RequestHelper::verifyGPDataString('bewertung_freischalten') !== 'Y'
+    ) {
+        $cFehler = 'Guthabenbonus kann nur mit "Bewertung freischalten" verwendet werden.';
+    } else {
+        Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE]);
+        $cHinweis .= saveAdminSectionSettings(CONF_BEWERTUNG, $_POST);
+    }
 } elseif (isset($_POST['bewertung_nicht_aktiv']) && (int)$_POST['bewertung_nicht_aktiv'] === 1) {
     // Bewertungen aktivieren
-    if (isset($_POST['aktivieren'])  && validateToken()) {
+    if (isset($_POST['aktivieren'])  && FormHelper::validateToken()) {
         if (is_array($_POST['kBewertung']) && count($_POST['kBewertung']) > 0) {
             $kArtikel_arr = $_POST['kArtikel'];
             foreach ($_POST['kBewertung'] as $i => $kBewertung) {
@@ -58,18 +67,18 @@ if (verifyGPCDataInteger('bewertung_editieren') === 1 && validateToken()) {
             Shop::Cache()->flushTags($cacheTags);
             $cHinweis .= count($_POST['kBewertung']) . " Bewertung(en) wurde(n) erfolgreich aktiviert.";
         }
-    } elseif (isset($_POST['loeschen']) && validateToken()) { // Bewertungen loeschen
+    } elseif (isset($_POST['loeschen']) && FormHelper::validateToken()) { // Bewertungen loeschen
         if (is_array($_POST['kBewertung']) && count($_POST['kBewertung']) > 0) {
             foreach ($_POST['kBewertung'] as $kBewertung) {
                 Shop::Container()->getDB()->delete('tbewertung', 'kBewertung', (int)$kBewertung);
             }
-            $cHinweis .= count($_POST['kBewertung']) . " Bewertung(en) wurde(n) erfolgreich gel&ouml;scht.";
+            $cHinweis .= count($_POST['kBewertung']) . " Bewertung(en) wurde(n) erfolgreich gelöscht.";
         }
     }
 } elseif (isset($_POST['bewertung_aktiv']) && (int)$_POST['bewertung_aktiv'] === 1) {
     if (isset($_POST['cArtNr'])) {
         // Bewertungen holen
-        $oBewertungAktiv_arr = Shop::Container()->getDB()->executeQueryPrepared(
+        $oBewertungAktiv_arr = Shop::Container()->getDB()->queryPrepared(
             "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
                 FROM tbewertung
                 LEFT JOIN tartikel 
@@ -82,12 +91,12 @@ if (verifyGPCDataInteger('bewertung_editieren') === 1 && validateToken()) {
                 'lang' => (int)$_SESSION['kSprache'],
                 'cartnr' => '%' .  $_POST['cArtNr'] . '%'
             ],
-            2
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         $smarty->assign('cArtNr', StringHandler::filterXSS($_POST['cArtNr']));
     }
     // Bewertungen loeschen
-    if (isset($_POST['loeschen']) && is_array($_POST['kBewertung']) && count($_POST['kBewertung']) > 0 && validateToken()) {
+    if (isset($_POST['loeschen']) && is_array($_POST['kBewertung']) && count($_POST['kBewertung']) > 0 && FormHelper::validateToken()) {
         $kArtikel_arr = $_POST['kArtikel'];
         foreach ($_POST['kBewertung'] as $i => $kBewertung) {
             // Loesche Guthaben aus tbewertungguthabenbonus und aktualisiere tkunde
@@ -101,24 +110,30 @@ if (verifyGPCDataInteger('bewertung_editieren') === 1 && validateToken()) {
         array_walk($cacheTags, function(&$i) { $i = CACHING_GROUP_ARTICLE . '_' . $i; });
         Shop::Cache()->flushTags($cacheTags);
 
-        $cHinweis .= count($_POST['kBewertung']) . ' Bewertung(en) wurde(n) erfolgreich gel&ouml;scht.';
+        $cHinweis .= count($_POST['kBewertung']) . ' Bewertung(en) wurde(n) erfolgreich gelöscht.';
     }
 }
 
 if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_editieren') {
     $step = 'bewertung_editieren';
-    $smarty->assign('oBewertung', holeBewertung(verifyGPCDataInteger('kBewertung')));
-    if (verifyGPCDataInteger('nFZ') === 1) {
+    $smarty->assign('oBewertung', holeBewertung(RequestHelper::verifyGPCDataInt('kBewertung')));
+    if (RequestHelper::verifyGPCDataInt('nFZ') === 1) {
         $smarty->assign('nFZ', 1);
     }
 } elseif ($step === 'bewertung_uebersicht') {
-    if (isset($_GET['a']) && $_GET['a'] === 'delreply' && validateToken()) {
-        removeReply(verifyGPCDataInteger('kBewertung'));
+    if (isset($_GET['a']) && $_GET['a'] === 'delreply' && FormHelper::validateToken()) {
+        removeReply(RequestHelper::verifyGPCDataInt('kBewertung'));
         $cHinweis = 'Antwort zu einer Bewertung wurde entfernt.';
     }
 
     // Config holen
-    $oConfig_arr = Shop::Container()->getDB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_BEWERTUNG, '*', 'nSort');
+    $oConfig_arr = Shop::Container()->getDB()->selectAll(
+        'teinstellungenconf',
+        'kEinstellungenSektion',
+        CONF_BEWERTUNG,
+        '*',
+        'nSort'
+    );
     $configCount = count($oConfig_arr);
     for ($i = 0; $i < $configCount; $i++) {
         if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
@@ -161,14 +176,16 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
         "SELECT count(*) AS nAnzahl
             FROM tbewertung
             WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
-                AND nAktiv = 0", 1
+                AND nAktiv = 0",
+        \DB\ReturnType::SINGLE_OBJECT
     )->nAnzahl;
     // Aktive Bewertungen Anzahl holen
     $nBewertungenAktiv = (int)Shop::Container()->getDB()->query(
         "SELECT count(*) AS nAnzahl
             FROM tbewertung
             WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
-                AND nAktiv = 1", 1
+                AND nAktiv = 1",
+        \DB\ReturnType::SINGLE_OBJECT
     )->nAnzahl;
 
     // Paginationen
@@ -188,7 +205,8 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
             WHERE tbewertung.kSprache = " . (int)$_SESSION['kSprache'] . "
                 AND tbewertung.nAktiv = 0
             ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC
-            LIMIT " . $oPagiInaktiv->getLimitSQL(), 2
+            LIMIT " . $oPagiInaktiv->getLimitSQL(),
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     // Aktive Bewertungen
     $oBewertungLetzten50_arr = Shop::Container()->getDB()->query(
@@ -199,7 +217,8 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
             WHERE tbewertung.kSprache = " . (int)$_SESSION['kSprache'] . "
                 AND tbewertung.nAktiv = 1
             ORDER BY tbewertung.dDatum DESC
-            LIMIT " . $oPageAktiv->getLimitSQL(), 2
+            LIMIT " . $oPageAktiv->getLimitSQL(),
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 
     $smarty->assign('oPagiInaktiv', $oPagiInaktiv)
@@ -208,10 +227,11 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
         ->assign('oBewertungLetzten50_arr', $oBewertungLetzten50_arr)
         ->assign('oBewertungAktiv_arr', $oBewertungAktiv_arr ?? null)
         ->assign('oConfig_arr', $oConfig_arr)
-        ->assign('Sprachen', gibAlleSprachen());
+        ->assign('Sprachen', Sprache::getAllLanguages());
 }
 
 $smarty->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->assign('step', $step)
+       ->assign('cTab', $cTab)
        ->display('bewertung.tpl');

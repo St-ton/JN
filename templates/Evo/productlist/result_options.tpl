@@ -1,6 +1,6 @@
 {assign var=contentFilters value=$NaviFilter->getAvailableContentFilters()}
 {assign var=show_filters value=$Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab == 0
-        || $NaviFilter->getSearchResults(false)->getProductCount() >= $Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab
+        || $NaviFilter->getSearchResults()->getProductCount() >= $Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab
         || $NaviFilter->getFilterCount() > 0}
 <div id="result-options" class="panel-wrap{if !$show_filters} hidden-xs{/if}">
     <div class="row">
@@ -35,8 +35,7 @@
                     <a href="{$oErweiterteDarstellung->cURL_arr[$smarty.const.ERWDARSTELLUNG_ANSICHT_LISTE]}"
                        id="ed_list"
                        class="btn btn-default btn-option ed list{if $oErweiterteDarstellung->nDarstellung === $smarty.const.ERWDARSTELLUNG_ANSICHT_LISTE} active{/if}"
-                       role="button" title="{lang key='list'
-                       section='productOverview'}">
+                       role="button" title="{lang key='list' section='productOverview'}">
                         <span class="fa fa-th-list"></span>
                     </a>
                     <a href="{$oErweiterteDarstellung->cURL_arr[$smarty.const.ERWDARSTELLUNG_ANSICHT_GALERIE]}"
@@ -61,41 +60,41 @@
     </div>{* /row *}
     {if $show_filters}
         {if count($contentFilters) > 0}
-            <div id="filter-collapsible" class="collapse in top10" aria-expanded="true">
+            <div id="filter-collapsible" class="collapse top10{if $Einstellungen.template.productlist.initial_display_filter === 'Y'} in" aria-expanded="true{/if}">
                 <nav class="panel panel-default">
                     <div id="navbar-filter" class="panel-body">
                         <div class="fs-0">
                             {foreach $contentFilters as $filter}
                                 {if count($filter->getFilterCollection()) > 0}
-                                    {block name='productlist-result-options-'|cat:$filter->getClassName()}
+                                    {block name='productlist-result-options-'|cat:$filter->getNiceName()}
                                         {foreach $filter->getOptions() as $subFilter}
-                                            {if $subFilter->getVisibility() !== $subFilter::SHOW_NEVER}
-                                                <div class="form-group dropdown filter-type-{$filter->getClassName()}">
+                                            {if !$subFilter->getVisibility()->equals(\Filter\Visibility::SHOW_NEVER()) && !$subFilter->getVisibility()->equals(\Filter\Visibility::SHOW_BOX())}
+                                                <div class="form-group dropdown filter-type-{$filter->getNiceName()}">
                                                     <a href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-expanded="false">
                                                         {$subFilter->getFrontendName()} <span class="caret"></span>
                                                     </a>
-                                                    {include file='snippets/filter/genericFilterItem.tpl' class='dropdown-menu' filter=$subFilter sub=true}
+                                                    {include file='snippets/filter/genericFilterItem.tpl' itemClass='' class='dropdown-menu' filter=$subFilter sub=true}
                                                 </div>
                                             {/if}
                                         {/foreach}
                                     {/block}
                                 {else}
-                                    {block name='productlist-result-options-'|cat:$filter->getClassName()}
-                                        {if $filter->getInputType() === $filter::INPUT_SELECT}
-                                            {assign var=outerClass value='form-group dropdown filter-type-'|cat:$filter->getClassName()}
+                                    {block name='productlist-result-options-'|cat:$filter->getNiceName()}
+                                        {if $filter->getInputType()->equals(\Filter\InputType::SELECT())}
+                                            {assign var=outerClass value='form-group dropdown filter-type-'|cat:$filter->getNiceName()}
                                             {assign var=innerClass value='dropdown-menu'}
                                             {assign var=itemClass value=''}
-                                        {elseif $filter->getInputType() === $filter::INPUT_BUTTON}
-                                            {assign var=outerClass value='form-group no-dropdown filter-type-'|cat:$filter->getClassName()}
+                                        {elseif $filter->getInputType()->equals(\Filter\InputType::BUTTON())}
+                                            {assign var=outerClass value='form-group no-dropdown filter-type-'|cat:$filter->getNiceName()}
                                             {assign var=innerClass value='no-dropdown'}
                                             {assign var=itemClass value='btn btn-default'}
                                         {else}
-                                            {assign var=outerClass value='form-group no-dropdown filter-type-'|cat:$filter->getClassName()}
+                                            {assign var=outerClass value='form-group no-dropdown filter-type-'|cat:$filter->getNiceName()}
                                             {assign var=innerClass value='no-dropdown'}
                                             {assign var=itemClass value=''}
                                         {/if}
                                         <div class="{$outerClass}">
-                                            {if $filter->getInputType() === $filter::INPUT_SELECT}
+                                            {if $filter->getInputType()->equals(\Filter\InputType::SELECT())}
                                                 <a href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-expanded="false">
                                                     {$filter->getFrontendName()} <span class="caret"></span>
                                                 </a>
@@ -122,23 +121,23 @@
                             {if $activeValues|is_array}
                                 {foreach $activeValues as $filterOption}
                                     {strip}
-                                        <a href="{$activeFilter->getUnsetFilterURL($filterOption->getValue())}" rel="nofollow" title="Filter {lang key='delete'}" class="label label-info filter-type-{$activeFilter->getClassName()}">
-                                            {$filterOption->getFrontendName()|html_entity_decode} &nbsp;<span class="fa fa-trash-o"></span>
+                                        <a href="{$activeFilter->getUnsetFilterURL($filterOption->getValue())}" rel="nofollow" title="Filter {lang key='delete'}" class="label label-info filter-type-{$activeFilter->getNiceName()}">
+                                            {$filterOption->getFrontendName()}&nbsp;<span class="fa fa-trash-o"></span>
                                         </a>
                                     {/strip}
                                 {/foreach}
                             {else}
                                 {strip}
-                                    <a href="{$activeFilter->getUnsetFilterURL($activeFilter->getValue())}" rel="nofollow" title="Filter {lang key='delete'}" class="label label-info filter-type-{$activeFilter->getClassName()}">
-                                        {$activeValues->getFrontendName()|html_entity_decode}&nbsp;<span class="fa fa-trash-o"></span>
+                                    <a href="{$activeFilter->getUnsetFilterURL($activeFilter->getValue())}" rel="nofollow" title="Filter {lang key='delete'}" class="label label-info filter-type-{$activeFilter->getNiceName()}">
+                                        {$activeValues->getFrontendName()}&nbsp;<span class="fa fa-trash-o"></span>
                                     </a>
                                 {/strip}
                             {/if}
                         {/if}
                     {/foreach}
-                    {if $NaviFilter->getUnsetAllFiltersURL() !== null}
+                    {if $NaviFilter->getURL()->getUnsetAll() !== null}
                         {strip}
-                            <a href="{$NaviFilter->getUnsetAllFiltersURL()}" title="{lang key="removeFilters" section='global'}" class="label label-warning">
+                            <a href="{$NaviFilter->getURL()->getUnsetAll()}" title="{lang key='removeFilters'}" class="label label-warning">
                                 {lang key='removeFilters'}
                             </a>
                         {/strip}

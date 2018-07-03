@@ -36,37 +36,34 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         protected $nTyp;
 
         /**
-         * Constructor
-         *
+         * Konfigitempreis constructor.
          * @param int $kKonfigitem
          * @param int $kKundengruppe
          */
-        public function __construct($kKonfigitem = 0, $kKundengruppe = 0)
+        public function __construct(int $kKonfigitem = 0, int $kKundengruppe = 0)
         {
-            if ((int)$kKonfigitem > 0 && (int)$kKundengruppe > 0) {
+            if ($kKonfigitem > 0 && $kKundengruppe > 0) {
                 $this->loadFromDB($kKonfigitem, $kKundengruppe);
             }
         }
 
         /**
-         * Loads database member into class member
-         *
          * @param int $kKonfigitem
          * @param int $kKundengruppe
          */
-        private function loadFromDB($kKonfigitem = 0, $kKundengruppe = 0)
+        private function loadFromDB(int $kKonfigitem = 0, int $kKundengruppe = 0)
         {
             $oObj = Shop::Container()->getDB()->select(
                 'tkonfigitempreis',
                 'kKonfigitem',
-                (int)$kKonfigitem,
+                $kKonfigitem,
                 'kKundengruppe',
-                (int)$kKundengruppe
+                $kKundengruppe
             );
 
-            if (isset($oObj->kKonfigitem, $oObj->kKundengruppe) &&
-                $oObj->kKonfigitem > 0 &&
-                $oObj->kKundengruppe > 0
+            if (isset($oObj->kKonfigitem, $oObj->kKundengruppe)
+                && $oObj->kKonfigitem > 0
+                && $oObj->kKundengruppe > 0
             ) {
                 $cMember_arr = array_keys(get_object_vars($oObj));
                 foreach ($cMember_arr as $cMember) {
@@ -80,12 +77,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Store the class in the database
-         *
-         * @param bool $bPrim - Controls the return of the method
+         * @param bool $bPrim
          * @return bool|int
          */
-        public function save($bPrim = true)
+        public function save(bool $bPrim = true)
         {
             $oObj        = new stdClass();
             $cMember_arr = array_keys(get_object_vars($this));
@@ -106,11 +101,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Update the class in the database
-         *
          * @return int
          */
-        public function update()
+        public function update(): int
         {
             $_upd                = new stdClass();
             $_upd->kSteuerklasse = $this->getSteuerklasse();
@@ -126,11 +119,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * Delete the class in the database
-         *
          * @return int
          */
-        public function delete()
+        public function delete(): int
         {
             return Shop::Container()->getDB()->delete(
                 'tkonfigitempreis',
@@ -143,9 +134,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param int $kKonfigitem
          * @return $this
          */
-        public function setKonfigitem($kKonfigitem)
+        public function setKonfigitem(int $kKonfigitem): self
         {
-            $this->kKonfigitem = (int)$kKonfigitem;
+            $this->kKonfigitem = $kKonfigitem;
 
             return $this;
         }
@@ -154,9 +145,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param int $kKundengruppe
          * @return $this
          */
-        public function setKundengruppe($kKundengruppe)
+        public function setKundengruppe(int $kKundengruppe):self
         {
-            $this->kKundengruppe = (int)$kKundengruppe;
+            $this->kKundengruppe = $kKundengruppe;
 
             return $this;
         }
@@ -165,9 +156,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param int $kSteuerklasse
          * @return $this
          */
-        public function setSteuerklasse($kSteuerklasse)
+        public function setSteuerklasse(int $kSteuerklasse): self
         {
-            $this->kSteuerklasse = (int)$kSteuerklasse;
+            $this->kSteuerklasse = $kSteuerklasse;
 
             return $this;
         }
@@ -176,7 +167,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param float $fPreis
          * @return $this
          */
-        public function setPreis($fPreis)
+        public function setPreis($fPreis): self
         {
             $this->fPreis = (float)$fPreis;
 
@@ -186,7 +177,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         /**
          * @return int
          */
-        public function getKonfigitem()
+        public function getKonfigitem(): int
         {
             return (int)$this->kKonfigitem;
         }
@@ -194,7 +185,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         /**
          * @return int
          */
-        public function getKundengruppe()
+        public function getKundengruppe(): int
         {
             return (int)$this->kKundengruppe;
         }
@@ -202,7 +193,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         /**
          * @return int
          */
-        public function getSteuerklasse()
+        public function getSteuerklasse(): int
         {
             return (int)$this->kSteuerklasse;
         }
@@ -211,7 +202,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @param bool $bConvertCurrency
          * @return float
          */
-        public function getPreis($bConvertCurrency = false)
+        public function getPreis(bool $bConvertCurrency = false)
         {
             $fPreis = $this->fPreis;
             if ($bConvertCurrency && $fPreis > 0) {

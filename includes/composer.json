@@ -13,17 +13,17 @@
         "andyftw/ssllabs-php": "^1.2",
         "phpmyadmin/sql-parser": "^3.4",
         "phpgangsta/googleauthenticator": "dev-master",
-        "phpmailer/phpmailer": "~5.2",
+        "phpmailer/phpmailer": "~6.0",
         "jtlshop/qrcodegenerator": "dev-master",
         "erusev/parsedown": "dev-master",
         "pclzip/pclzip": "^2.8",
-        "paragonie/random_compat": "~2.0",
         "psr/container": "1.0.0",
         "lstrojny/functional-php": "~1.7",
         "monolog/monolog": "^1.23",
         "tightenco/collect": "~5.5.0",
         "eloquent/pathogen": "~0.6",
-        "mrclay/minify": "~3.0.0"
+        "mrclay/minify": "~3.0.0",
+        "myclabs/php-enum": "^1.5"
     },
     "require-dev": {
         "phpunit/php-token-stream": "~1.2",
@@ -31,6 +31,11 @@
         "Symfony/Finder": "^2.8",
         "friendsofphp/php-cs-fixer": "~2.1",
         "phpunit/phpunit": "~5.7"
+    },
+    "config": {
+        "platform": {
+            "php": "7.0"
+        }
     },
     "repositories": [
         {

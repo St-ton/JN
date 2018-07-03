@@ -1,7 +1,7 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
 
 /**
@@ -22,9 +22,9 @@ class PremiumPlugin
     private $howTos = [];
 
     /**
-     * @var string
+     * @var stdClass
      */
-    private $longDescription = '';
+    private $longDescription;
 
     /**
      * @var string
@@ -95,18 +95,19 @@ class PremiumPlugin
      * @var string
      */
     private $downloadLink;
-    
+
     /**
      * PremiumPlugin constructor.
+     *
      * @param string $pluginID
      */
-    public function __construct($pluginID)
+    public function __construct(string $pluginID)
     {
         $plugin            = Plugin::getPluginById($pluginID);
         $this->pluginID    = $pluginID;
         $this->exists      = file_exists(PFAD_ROOT . PFAD_PLUGIN . $pluginID . '/info.xml');
-        $this->isInstalled = ($plugin !== null && $plugin->kPlugin > 0);
-        $this->isActivated = ($this->isInstalled && (int)$plugin->nStatus === 2);
+        $this->isInstalled = $plugin !== null && $plugin->kPlugin > 0;
+        $this->isActivated = $this->isInstalled && (int)$plugin->nStatus === Plugin::PLUGIN_ACTIVATED;
         $this->kPlugin     = $this->isInstalled ? (int)$plugin->kPlugin : 0;
     }
 
@@ -122,13 +123,13 @@ class PremiumPlugin
     }
 
     /**
-     * @param $link
+     * @param string $link
      * @return $this
      */
     public function setDownloadLink($link)
     {
         $this->downloadLink = $link;
-        
+
         return $this;
     }
 
@@ -144,7 +145,7 @@ class PremiumPlugin
      * @param string $color
      * @return $this
      */
-    public function setHeaderColor($color)
+    public function setHeaderColor(string $color): self
     {
         $this->headerColor = $color;
 
@@ -154,7 +155,7 @@ class PremiumPlugin
     /**
      * @return string
      */
-    public function getHeaderColor()
+    public function getHeaderColor(): string
     {
         return $this->headerColor;
     }
@@ -203,10 +204,10 @@ class PremiumPlugin
      * @param stdClass $sp
      * @return $this
      */
-    public function setServicePartner($sp)
+    public function setServicePartner($sp): self
     {
         $this->servicePartner = $sp;
-        
+
         return $this;
     }
 
@@ -222,7 +223,7 @@ class PremiumPlugin
      * @param array $screenShots
      * @return $this
      */
-    public function setScreenshots(array $screenShots)
+    public function setScreenshots(array $screenShots): self
     {
         $this->screenShots = $screenShots;
 
@@ -233,7 +234,7 @@ class PremiumPlugin
      * @param stdClass $screenShot
      * @return $this
      */
-    public function addScreenShot(stdClass $screenShot)
+    public function addScreenShot(stdClass $screenShot): self
     {
         $this->screenShots[] = $screenShot;
 
@@ -243,7 +244,7 @@ class PremiumPlugin
     /**
      * @return array
      */
-    public function getScreenShots()
+    public function getScreenShots(): array
     {
         return $this->screenShots;
     }
@@ -257,10 +258,10 @@ class PremiumPlugin
     }
 
     /**
-     * @param $author
+     * @param string $author
      * @return $this
      */
-    public function setAuthor($author)
+    public function setAuthor($author): self
     {
         $this->author = $author;
 
@@ -270,7 +271,7 @@ class PremiumPlugin
     /**
      * @return string
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->title;
     }
@@ -279,9 +280,10 @@ class PremiumPlugin
      * @param string $title
      * @return $this
      */
-    public function setTitle($title)
+    public function setTitle(string $title): self
     {
         $this->title = $title;
+
         return $this;
     }
 
@@ -290,7 +292,7 @@ class PremiumPlugin
      * @param string $description
      * @return $this
      */
-    public function setLongDescription($title, $description)
+    public function setLongDescription(string $title, string $description): self
     {
         $this->longDescription        = new stdClass();
         $this->longDescription->title = $title;
@@ -300,7 +302,7 @@ class PremiumPlugin
     }
 
     /**
-     * @return string
+     * @return stdClass
      */
     public function getLongDescription()
     {
@@ -312,7 +314,7 @@ class PremiumPlugin
      * @param string $description
      * @return $this
      */
-    public function setShortDescription($title, $description)
+    public function setShortDescription(string $title, string $description): self
     {
         $this->shortDescription        = new stdClass();
         $this->shortDescription->title = $title;
@@ -324,7 +326,7 @@ class PremiumPlugin
     /**
      * @return string
      */
-    public function getShortDescription()
+    public function getShortDescription(): string
     {
         return $this->shortDescription;
     }
@@ -333,9 +335,10 @@ class PremiumPlugin
      * @param string $advantage
      * @return $this
      */
-    public function addAdvantage($advantage)
+    public function addAdvantage($advantage): self
     {
         $this->advantages[] = $advantage;
+
         return $this;
     }
 
@@ -343,16 +346,17 @@ class PremiumPlugin
      * @param array $advantages
      * @return $this
      */
-    public function setAdvantages(array $advantages)
+    public function setAdvantages(array $advantages): self
     {
         $this->advantages = $advantages;
+
         return $this;
     }
 
     /**
      * @return array
      */
-    public function getAdvantages()
+    public function getAdvantages(): array
     {
         return $this->advantages;
     }
@@ -361,9 +365,10 @@ class PremiumPlugin
      * @param string $howTo
      * @return $this
      */
-    public function addHowTo($howTo)
+    public function addHowTo($howTo): self
     {
         $this->howTos[] = $howTo;
+
         return $this;
     }
 
@@ -371,16 +376,17 @@ class PremiumPlugin
      * @param array $howTos
      * @return $this
      */
-    public function setHowTos(array $howTos)
+    public function setHowTos(array $howTos): self
     {
         $this->howTos = $howTos;
+
         return $this;
     }
 
     /**
      * @return array
      */
-    public function getHowTos()
+    public function getHowTos(): array
     {
         return $this->howTos;
     }
@@ -390,12 +396,12 @@ class PremiumPlugin
      * @param bool   $relative
      * @return $this
      */
-    public function addBadge($url, $relative = true)
+    public function addBadge(string $url, bool $relative = true): self
     {
         $this->badges[] = $relative
             ? (Shop::getURL() . '/' . PFAD_ADMIN . PFAD_GFX . 'PremiumPlugins/' . $url)
             : $url;
-        
+
         return $this;
     }
 
@@ -403,16 +409,17 @@ class PremiumPlugin
      * @param array $badges
      * @return $this
      */
-    public function setBadges(array $badges)
+    public function setBadges(array $badges): self
     {
         $this->badges = $badges;
+
         return $this;
     }
 
     /**
      * @return array
      */
-    public function getBadges()
+    public function getBadges(): array
     {
         return $this->badges;
     }
@@ -420,7 +427,7 @@ class PremiumPlugin
     /**
      * @return string
      */
-    public function getCertifcationLogo()
+    public function getCertifcationLogo(): string
     {
         return self::CERTIFICATION_LOGO;
     }
@@ -428,7 +435,7 @@ class PremiumPlugin
     /**
      * @return array
      */
-    public function getButtons()
+    public function getButtons(): array
     {
         return $this->buttons;
     }
@@ -441,14 +448,14 @@ class PremiumPlugin
      * @param bool        $external
      * @return $this
      */
-    public function addButton($caption, $link, $class = 'btn btn-default', $fa = null, $external = false)
+    public function addButton($caption, $link, $class = 'btn btn-default', $fa = null, bool $external = false)
     {
-        $btn             = new stdClass();
-        $btn->link       = $link;
-        $btn->caption    = $caption;
-        $btn->class      = $class;
-        $btn->fa         = $fa;
-        $btn->external   = $external;
+        $btn           = new stdClass();
+        $btn->link     = $link;
+        $btn->caption  = $caption;
+        $btn->class    = $class;
+        $btn->fa       = $fa;
+        $btn->external = $external;
         if ($external === true) {
             $btn->fa .= ' fa-external-link';
         }
@@ -460,8 +467,8 @@ class PremiumPlugin
     /**
      * @return bool
      */
-    public function hasCertifcates()
+    public function hasCertifcates(): bool
     {
-        return (isset($this->servicePartner->oZertifizierungen_arr) && count($this->servicePartner->oZertifizierungen_arr) > 0);
+        return isset($this->servicePartner->oZertifizierungen_arr) && count($this->servicePartner->oZertifizierungen_arr) > 0;
     }
 }

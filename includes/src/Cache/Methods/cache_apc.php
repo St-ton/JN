@@ -12,11 +12,12 @@ use Cache\JTLCacheTrait;
 /**
  * Class cache_apc
  * implements the APC Opcode Cache
+ * @package Cache\Methods
  */
 class cache_apc implements ICachingMethod
 {
     use JTLCacheTrait;
-    
+
     /**
      * @var cache_apc
      */
@@ -30,7 +31,7 @@ class cache_apc implements ICachingMethod
     private $u;
 
     /**
-     * @param $options
+     * @param array $options
      */
     public function __construct($options)
     {
@@ -42,12 +43,9 @@ class cache_apc implements ICachingMethod
     }
 
     /**
-     * @param string   $cacheID
-     * @param mixed    $content
-     * @param int|null $expiration
-     * @return bool
+     * @inheritdoc
      */
-    public function store($cacheID, $content, $expiration = null) : bool
+    public function store($cacheID, $content, $expiration = null): bool
     {
         $func = $this->u ? 'apcu_store' : 'apc_store';
 
@@ -55,11 +53,9 @@ class cache_apc implements ICachingMethod
     }
 
     /**
-     * @param array    $keyValue
-     * @param int|null $expiration
-     * @return bool
+     * @inheritdoc
      */
-    public function storeMulti($keyValue, $expiration = null)
+    public function storeMulti($keyValue, $expiration = null): bool
     {
         $func = $this->u ? 'apcu_store' : 'apc_store';
 
@@ -67,8 +63,7 @@ class cache_apc implements ICachingMethod
     }
 
     /**
-     * @param string $cacheID
-     * @return bool|mixed
+     * @inheritdoc
      */
     public function load($cacheID)
     {
@@ -78,13 +73,12 @@ class cache_apc implements ICachingMethod
     }
 
     /**
-     * @param array $cacheIDs
-     * @return bool|mixed
+     * @inheritdoc
      */
-    public function loadMulti($cacheIDs)
+    public function loadMulti(array $cacheIDs): array
     {
         if (!\is_array($cacheIDs)) {
-            return false;
+            return [];
         }
         $func         = $this->u ? 'apcu_fetch' : 'apc_fetch';
         $prefixedKeys = [];
@@ -92,24 +86,24 @@ class cache_apc implements ICachingMethod
             $prefixedKeys[] = $this->options['prefix'] . $_cid;
         }
         $res = $this->dePrefixArray($func($prefixedKeys));
+
         // fill up with false values
         return array_merge(array_fill_keys($cacheIDs, false), $res);
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
-    public function isAvailable() : bool
+    public function isAvailable(): bool
     {
         return ((\function_exists('apc_store') && \function_exists('apc_exists'))
             || (\function_exists('apcu_store') && \function_exists('apcu_exists')));
     }
 
     /**
-     * @param string $cacheID
-     * @return bool
+     * @inheritdoc
      */
-    public function flush($cacheID) : bool
+    public function flush($cacheID): bool
     {
         $func = $this->u ? 'apcu_delete' : 'apc_delete';
 
@@ -117,18 +111,17 @@ class cache_apc implements ICachingMethod
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
-    public function flushAll() : bool
+    public function flushAll(): bool
     {
         return $this->u ? apcu_clear_cache() : apc_clear_cache('user');
     }
 
     /**
-     * @param string $cacheID
-     * @return bool
+     * @inheritdoc
      */
-    public function keyExists($cacheID) : bool
+    public function keyExists($cacheID): bool
     {
         $func = $this->u ? 'apcu_exists' : 'apc_exists';
 
@@ -136,9 +129,9 @@ class cache_apc implements ICachingMethod
     }
 
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function getStats() : array
+    public function getStats(): array
     {
         try {
             $tmp   = $this->u ? apcu_cache_info() : apc_cache_info('user');

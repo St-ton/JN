@@ -126,11 +126,10 @@ class Kategorie
      * @param int  $kKundengruppe
      * @param bool $noCache
      */
-    public function __construct($kKategorie = 0, $kSprache = 0, $kKundengruppe = 0, $noCache = false)
+    public function __construct(int $kKategorie = 0, int $kSprache = 0, int $kKundengruppe = 0, bool $noCache = false)
     {
-        $this->kSprache = (int)$kSprache;
-        if ((int)$kKategorie > 0) {
-            $this->loadFromDB((int)$kKategorie, (int)$kSprache, (int)$kKundengruppe, $noCache);
+        if ($kKategorie > 0) {
+            $this->loadFromDB($kKategorie, $kSprache, $kKundengruppe, false, $noCache);
         }
     }
 
@@ -144,7 +143,7 @@ class Kategorie
      * @param bool $noCache
      * @return $this
      */
-    public function loadFromDB($kKategorie, $kSprache = 0, $kKundengruppe = 0, $recall = false, $noCache = false)
+    public function loadFromDB(int $kKategorie, int $kSprache = 0, int $kKundengruppe = 0, bool $recall = false, bool $noCache = false)
     {
         $oSpracheTmp            = null;
         $oKategorieAttribut_arr = null;
@@ -161,26 +160,25 @@ class Kategorie
         if (!$kSprache) {
             $kSprache = Shop::getLanguageID();
             if (!$kSprache) {
-                $oSpracheTmp = gibStandardsprache();
+                $oSpracheTmp = Sprache::getDefaultLanguage();
                 $kSprache    = $oSpracheTmp->kSprache;
             }
         }
-        $kSprache       = (int)$kSprache;
-        $kKundengruppe  = (int)$kKundengruppe;
-        $kKategorie     = (int)$kKategorie;
         $this->kSprache = $kSprache;
         //exculpate session
-        $cacheID = CACHING_GROUP_CATEGORY . '_' . $kKategorie . '_' . $kSprache . '_cg_' . $kKundengruppe . '_ssl_' . pruefeSSL();
+        $cacheID = CACHING_GROUP_CATEGORY . '_' . $kKategorie .
+            '_' . $kSprache .
+            '_cg_' . $kKundengruppe .
+            '_ssl_' . RequestHelper::checkSSL();
         if (!$noCache && ($category = Shop::Cache()->get($cacheID)) !== false) {
             foreach (get_object_vars($category) as $k => $v) {
                 $this->$k = $v;
             }
             executeHook(HOOK_KATEGORIE_CLASS_LOADFROMDB, [
-                    'oKategorie' => &$this,
-                    'cacheTags'  => [],
-                    'cached'     => true
-                ]
-            );
+                'oKategorie' => &$this,
+                'cacheTags'  => [],
+                'cached'     => true
+            ]);
 
             return $this;
         }
@@ -189,7 +187,7 @@ class Kategorie
         $oSQLKategorie->cSELECT = '';
         $oSQLKategorie->cJOIN   = '';
         $oSQLKategorie->cWHERE  = '';
-        if (!$recall && $kSprache > 0 && !standardspracheAktiv(false, $kSprache)) {
+        if (!$recall && $kSprache > 0 && !Sprache::isDefaultLanguageActive(false, $kSprache)) {
             $oSQLKategorie->cSELECT = 'tkategoriesprache.cName AS cName_spr, 
                 tkategoriesprache.cBeschreibung AS cBeschreibung_spr, 
                 tkategoriesprache.cMetaDescription AS cMetaDescription_spr,
@@ -212,13 +210,14 @@ class Kategorie
                 LEFT JOIN tkategoriepict ON tkategoriepict.kKategorie = tkategorie.kKategorie
                 WHERE tkategorie.kKategorie = " . $kKategorie . "
                     " . $oSQLKategorie->cWHERE . "
-                    AND tkategoriesichtbarkeit.kKategorie IS NULL", 1
+                    AND tkategoriesichtbarkeit.kKategorie IS NULL",
+            \DB\ReturnType::SINGLE_OBJECT
         );
         if ($oKategorie === null || $oKategorie === false) {
-            if (!$recall && !standardspracheAktiv(false, $kSprache)) {
+            if (!$recall && !Sprache::isDefaultLanguageActive(false, $kSprache)) {
                 if (defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true) {
                     if ($oSpracheTmp === null) {
-                        $oSpracheTmp = gibStandardsprache();
+                        $oSpracheTmp = Sprache::getDefaultLanguage();
                     }
                     $kDefaultLang = (int)$oSpracheTmp->kSprache;
                     if ($kDefaultLang !== $kSprache) {
@@ -236,7 +235,7 @@ class Kategorie
         if ((!isset($oKategorie->cSeo) || $oKategorie->cSeo === null || $oKategorie->cSeo === '') &&
             defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true
         ) {
-            $kDefaultLang = $oSpracheTmp !== null ? $oSpracheTmp->kSprache : gibStandardsprache()->kSprache;
+            $kDefaultLang = $oSpracheTmp !== null ? $oSpracheTmp->kSprache : Sprache::getDefaultLanguage()->kSprache;
             $kDefaultLang = (int)$kDefaultLang;
             if ($kSprache !== $kDefaultLang) {
                 $oSeo = Shop::Container()->getDB()->select(
@@ -258,8 +257,8 @@ class Kategorie
         $imageBaseURL = Shop::getImageBaseURL();
         $helper       = KategorieHelper::getInstance($kSprache, $kKundengruppe);
         // URL bauen
-        $this->cURL     = baueURL($this, URLART_KATEGORIE);
-        $this->cURLFull = baueURL($this, URLART_KATEGORIE, 0, false, true);
+        $this->cURL     = UrlHelper::buildURL($this, URLART_KATEGORIE);
+        $this->cURLFull = UrlHelper::buildURL($this, URLART_KATEGORIE, true);
         // Baue Kategoriepfad
         $this->cKategoriePfad_arr = $helper->getPath($this, false);
         $this->cKategoriePfad     = implode(' > ', $this->cKategoriePfad_arr);
@@ -285,7 +284,8 @@ class Kategorie
                         ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
                         AND tkategorieattributsprache.kSprache = " . $kSprache . "
                     WHERE kKategorie = " . (int)$this->kKategorie . "
-                    ORDER BY tkategorieattribut.bIstFunktionsAttribut DESC, tkategorieattribut.nSort", 2
+                    ORDER BY tkategorieattribut.bIstFunktionsAttribut DESC, tkategorieattribut.nSort",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         }
         if ($oKategorieAttribut_arr !== null && is_array($oKategorieAttribut_arr) && count($oKategorieAttribut_arr) > 0) {
@@ -308,7 +308,7 @@ class Kategorie
         /** @deprecated since version 4.05 - usage of KategorieAttribute is deprecated, use categoryFunctionAttributes instead */
         $this->KategorieAttribute = &$this->categoryFunctionAttributes;
         // lokalisieren
-        if ($kSprache > 0 && !standardspracheAktiv()) {
+        if ($kSprache > 0 && !Sprache::isDefaultLanguageActive()) {
             if (isset($oKategorie->cName_spr) && strlen($oKategorie->cName_spr) > 0) {
                 $this->cName = $oKategorie->cName_spr;
                 unset($oKategorie->cName_spr);
@@ -337,8 +337,12 @@ class Kategorie
                 $this->bUnterKategorien = 1;
             }
         }
+        $this->kKategorie     = (int)$this->kKategorie;
+        $this->kOberKategorie = (int)$this->kOberKategorie;
+        $this->nSort          = (int)$this->nSort;
+        $this->nBildVorhanden = (int)$this->nBildVorhanden;
         //interne Verlinkung $#k:X:Y#$
-        $this->cBeschreibung         = parseNewsText($this->cBeschreibung);
+        $this->cBeschreibung         = StringHandler::parseNewsText($this->cBeschreibung);
         // Kurzbezeichnung
         $this->cKurzbezeichnung      = (!empty($this->categoryAttributes[ART_ATTRIBUT_SHORTNAME]) && !empty($this->categoryAttributes[ART_ATTRIBUT_SHORTNAME]->cWert))
             ? $this->categoryAttributes[ART_ATTRIBUT_SHORTNAME]->cWert
@@ -361,7 +365,7 @@ class Kategorie
      *
      * @return int
      */
-    public function insertInDB()
+    public function insertInDB(): int
     {
         $obj                        = new stdClass();
         $obj->kKategorie            = $this->kKategorie;
@@ -380,7 +384,7 @@ class Kategorie
      *
      * @return int
      */
-    public function updateInDB()
+    public function updateInDB(): int
     {
         $obj                        = new stdClass();
         $obj->kKategorie            = $this->kKategorie;
@@ -406,7 +410,7 @@ class Kategorie
             $members = array_keys(get_object_vars($obj));
             foreach ($members as $member) {
                 if ($member === 'cBeschreibung') {
-                    $this->$member = parseNewsText($obj->$member);
+                    $this->$member = StringHandler::parseNewsText($obj->$member);
                 } else {
                     $this->$member = $obj->$member;
                 }
@@ -421,9 +425,9 @@ class Kategorie
      *
      * @return bool - true, wenn Unterkategorien existieren
      */
-    public function existierenUnterkategorien()
+    public function existierenUnterkategorien(): bool
     {
-        return ($this->bUnterKategorien > 0);
+        return $this->bUnterKategorien > 0;
     }
 
     /**
@@ -432,7 +436,7 @@ class Kategorie
      * @param bool $full
      * @return string|null
      */
-    public function getKategorieBild($full = false)
+    public function getKategorieBild(bool $full = false)
     {
         if ($this->kKategorie > 0) {
             if (!empty($this->cBildURL)) {
@@ -471,7 +475,8 @@ class Kategorie
                 "SELECT kOberKategorie
                     FROM tkategorie
                     WHERE kOberKategorie > 0
-                        AND kKategorie = " . (int)$this->kKategorie, 1
+                        AND kKategorie = " . (int)$this->kKategorie,
+                \DB\ReturnType::SINGLE_OBJECT
             );
 
             return isset($oObj->kOberKategorie) ? (int)$oObj->kOberKategorie : false;
@@ -483,17 +488,12 @@ class Kategorie
     /**
      * set data from sync POST request
      *
-     * @return bool - true, wenn alle notwendigen Daten vorhanden, sonst false
+     * @return bool
+     * @deprecated since 5.0.0
      */
-    public function setzePostDaten()
+    public function setzePostDaten(): bool
     {
-        $this->kKategorie     = (int)$_POST['KeyKategorie'];
-        $this->kOberKategorie = (int)$_POST['KeyOberKategorie'];
-        $this->cName          = StringHandler::htmlentities(StringHandler::filterXSS($_POST['KeyName']));
-        $this->cBeschreibung  = StringHandler::htmlentities(StringHandler::filterXSS($_POST['KeyBeschreibung']));
-        $this->nSort          = (int)$_POST['Sort'];
-
-        return ($this->kKategorie > 0 && $this->cName);
+        return false;
     }
 
     /**
@@ -503,12 +503,15 @@ class Kategorie
      * @param int $customerGroupId
      * @return bool
      */
-    public static function isVisible($categoryId, $customerGroupId)
+    public static function isVisible($categoryId, $customerGroupId): bool
     {
         if (!Shop::has('checkCategoryVisibility')) {
             Shop::set(
                 'checkCategoryVisibility',
-                Shop::Container()->getDB()->query('SELECT kKategorie FROM tkategoriesichtbarkeit', 3) > 0
+                Shop::Container()->getDB()->query(
+                    'SELECT kKategorie FROM tkategoriesichtbarkeit',
+                    \DB\ReturnType::AFFECTED_ROWS
+                ) > 0
             );
         }
         if (!Shop::get('checkCategoryVisibility')) {

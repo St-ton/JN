@@ -33,11 +33,11 @@
     && !empty($Artikel->cMedienTyp_arr))}
 {$useTags = ($Einstellungen.artikeldetails.tagging_anzeigen === 'Y' && (count($ProduktTagging) > 0
     || $Einstellungen.artikeldetails.tagging_freischaltung !== 'N'))}
-{$hasVotesHash = isset($smarty.get.ratings_nPage) && count($smarty.get.ratings_nPage) > 0
-    || isset($smarty.get.bewertung_anzeigen) && count($smarty.get.bewertung_anzeigen) > 0
-    || isset($smarty.get.ratings_nItemsPerPage) && count($smarty.get.ratings_nItemsPerPage) > 0
-    || isset($smarty.get.ratings_nSortByDir) && count($smarty.get.ratings_nSortByDir) > 0
-    || isset($smarty.get.btgsterne) && count($smarty.get.btgsterne) > 0}
+{$hasVotesHash = isset($smarty.get.ratings_nPage)
+    || isset($smarty.get.bewertung_anzeigen)
+    || isset($smarty.get.ratings_nItemsPerPage)
+    || isset($smarty.get.ratings_nSortByDir)
+    || isset($smarty.get.btgsterne)}
 {section name=iterator start=1 loop=10}
     {$tab = tab}
     {$tabname = $tab|cat:$smarty.section.iterator.index|cat:" name"}

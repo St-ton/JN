@@ -33,8 +33,10 @@
 {if isset($oNews_arr) && $oNews_arr|@count > 0}
     <hr>
     <h2>{lang key="news" section="news"}</h2>
-    {foreach name=news from=$oNews_arr item=oNewsUebersicht}
-        {include file="blog/preview.tpl"}
-    {/foreach}
+    <div itemprop="about" itemscope itemtype="http://schema.org/Blog">
+        {foreach name=news from=$oNews_arr item=oNewsUebersicht}
+            {include file="blog/preview.tpl"}
+        {/foreach}
+    </div>
 {/if}
 {/block}

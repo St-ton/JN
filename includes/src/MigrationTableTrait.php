@@ -38,8 +38,8 @@ trait MigrationTableTrait
     }
 
     /**
-     * @param $table
-     * @param $column
+     * @param string $table
+     * @param string $column
      */
     public function dropColumn($table, $column)
     {

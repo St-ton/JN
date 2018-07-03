@@ -24,7 +24,7 @@ class Type implements RuleInterface
 
     /**
      * Type constructor.
-     * @param $expected
+     * @param mixed $expected
      */
     public function __construct(string $expected)
     {

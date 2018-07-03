@@ -13,7 +13,7 @@ $cFehler      = '';
 $cHinweis     = '';
 $_kSlider     = 0;
 $cRedirectUrl = Shop::getURL() . '/' . PFAD_ADMIN . 'slider.php';
-$cAction      = (isset($_REQUEST['action']) && validateToken())
+$cAction      = (isset($_REQUEST['action']) && FormHelper::validateToken())
     ? $_REQUEST['action']
     : 'view';
 $kSlider      = isset($_REQUEST['id'])
@@ -33,7 +33,7 @@ switch ($cAction) {
             $oSlide->kSlider      = $kSlider;
             $oSlide->cTitel       = htmlspecialchars($aSlide['cTitel'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
             $oSlide->cBild        = $aSlide['cBild'];
-            $oSlide->cText        = htmlspecialchars($aSlide['cText'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+            $oSlide->cText        = $aSlide['cText'];
             $oSlide->cLink        = $aSlide['cLink'];
             $oSlide->nSort        = $aSlide['nSort'];
             if ((int)$aSlide['delete'] === 1) {
@@ -46,7 +46,7 @@ switch ($cAction) {
     default:
         $smarty->assign('disabled', '');
         // Daten Speichern
-        if (!empty($_POST) && validateToken()) {
+        if (!empty($_POST) && FormHelper::validateToken()) {
             $oSlider  = new Slider();
             $_kSlider = $_POST['kSlider'];
             $oSlider->load($kSlider);
@@ -99,12 +99,11 @@ switch ($cAction) {
 
                 header('Location: ' . $cRedirectUrl);
                 exit;
-            } else {
-                $cFehler .= 'Slider konnte nicht gespeichert werden.';
             }
+            $cFehler .= 'Slider konnte nicht gespeichert werden.';
 
             if (empty($cFehler)) {
-                $cHinweis = '&Auml;nderungen erfolgreich gespeichert.';
+                $cHinweis = 'Änderungen erfolgreich gespeichert.';
             }
         }
         break;
@@ -173,9 +172,8 @@ switch ($cAction) {
         if ($bSuccess === true) {
             header('Location: ' . $cRedirectUrl);
             exit;
-        } else {
-            $cFehler = 'Slider konnte nicht entfernt werden.';
         }
+        $cFehler = 'Slider konnte nicht entfernt werden.';
         break;
 
     default:
@@ -188,5 +186,8 @@ $smarty->assign('PFAD_KCFINDER', PFAD_KCFINDER)
        ->assign('cHinweis', $cHinweis)
        ->assign('cAction', $cAction)
        ->assign('kSlider', $kSlider)
-       ->assign('oSlider_arr', Shop::Container()->getDB()->query("SELECT * FROM tslider", 2))
+       ->assign('oSlider_arr', Shop::Container()->getDB()->query(
+           'SELECT * FROM tslider', 
+           \DB\ReturnType::ARRAY_OF_OBJECTS
+       ))
        ->display('slider.tpl');

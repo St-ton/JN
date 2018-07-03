@@ -93,8 +93,8 @@ class SofortUeberweisung extends PaymentMethod
     public function init($nAgainCheckout = 0)
     {
         parent::init($nAgainCheckout);
-        $this->name    = utf8_decode('SOFORT Überweisung');
-        $this->caption = utf8_decode('SOFORT Überweisung');
+        $this->name    = 'SOFORT Überweisung';
+        $this->caption = 'SOFORT Überweisung';
 
         return $this;
     }
@@ -248,7 +248,7 @@ class SofortUeberweisung extends PaymentMethod
         // ISO pruefen
         preg_match("/[a-zA-Z]{2}/", $this->strSenderCountryID, $cTreffer1_arr);
         if (strlen($cTreffer1_arr[0]) !== strlen($this->strSenderCountryID)) {
-            $cISO = landISO($this->strSenderCountryID);
+            $cISO = Sprache::getIsoCodeByCountryName($this->strSenderCountryID);
             if (strlen($cISO) > 0 && $cISO !== 'noISO') {
                 $this->strSenderCountryID = $cISO;
             }
@@ -277,7 +277,7 @@ class SofortUeberweisung extends PaymentMethod
         ];
 
         $data_implode = implode('|', $data);
-        $this->hash   = sha1(utf8_encode($data_implode));
+        $this->hash   = sha1($data_implode);
 
         if (D_MODE === 1) {
             Jtllog::writeLog(': baueSicherheitsHash data: ' . print_r($data, true), JTLLOG_LEVEL_DEBUG);
@@ -346,38 +346,38 @@ class SofortUeberweisung extends PaymentMethod
         }
         extract($args);
         $data                  = [
-            'transaction'               => isset($args['transaction']) ? $args['transaction'] : null,
-            'user_id'                   => isset($args['user_id']) ? $args['user_id'] : null,
-            'project_id'                => isset($args['project_id']) ? $args['project_id'] : null,
-            'sender_holder'             => isset($args['sender_holder']) ? $args['sender_holder'] : null,
-            'sender_account_number'     => isset($args['sender_account_number']) ? $args['sender_account_number'] : null,
-            'sender_bank_code'          => isset($args['sender_bank_code']) ? $args['sender_bank_code'] : null,
-            'sender_bank_name'          => isset($args['sender_bank_name']) ? $args['sender_bank_name'] : null,
-            'sender_bank_bic'           => isset($args['sender_bank_bic']) ? $args['sender_bank_bic'] : null,
-            'sender_iban'               => isset($args['sender_iban']) ? $args['sender_iban'] : null,
-            'sender_country_id'         => isset($args['sender_country_id']) ? $args['sender_country_id'] : null,
-            'recipient_holder'          => isset($args['recipient_holder']) ? $args['recipient_holder'] : null,
-            'recipient_account_number'  => isset($args['recipient_account_number']) ? $args['recipient_account_number'] : null,
-            'recipient_bank_code'       => isset($args['recipient_bank_code']) ? $args['recipient_bank_code'] : null,
-            'recipient_bank_name'       => isset($args['recipient_bank_name']) ? $args['recipient_bank_name'] : null,
-            'recipient_bank_bic'        => isset($args['recipient_bank_bic']) ? $args['recipient_bank_bic'] : null,
-            'recipient_iban'            => isset($args['recipient_iban']) ? $args['recipient_iban'] : null,
-            'recipient_country_id'      => isset($args['recipient_country_id']) ? $args['recipient_country_id'] : null,
-            'international_transaction' => isset($args['international_transaction']) ? $args['international_transaction'] : null,
-            'amount'                    => isset($args['amount']) ? $args['amount'] : null,
-            'currency_id'               => isset($args['currency_id']) ? $args['currency_id'] : null,
-            'reason_1'                  => isset($args['reason_1']) ? $args['reason_1'] : null,
-            'reason_2'                  => isset($args['reason_2']) ? $args['reason_2'] : null,
-            'security_criteria'         => isset($args['security_criteria']) ? $args['security_criteria'] : null,
-            'user_variable_0'           => isset($args['user_variable_0']) ? $args['user_variable_0'] : null,
-            'user_variable_1'           => isset($args['user_variable_1']) ? $args['user_variable_1'] : null,
-            'user_variable_2'           => isset($args['user_variable_2']) ? $args['user_variable_2'] : null,
-            'user_variable_3'           => isset($args['user_variable_3']) ? $args['user_variable_3'] : null,
-            'user_variable_4'           => isset($args['user_variable_4']) ? $args['user_variable_4'] : null,
-            'user_variable_5'           => isset($args['user_variable_5']) ? $args['user_variable_5'] : null,
-            'created'                   => isset($args['created']) ? $args['created'] : null,
+            'transaction'               => $args['transaction'] ?? null,
+            'user_id'                   => $args['user_id'] ?? null,
+            'project_id'                => $args['project_id'] ?? null,
+            'sender_holder'             => $args['sender_holder'] ?? null,
+            'sender_account_number'     => $args['sender_account_number'] ?? null,
+            'sender_bank_code'          => $args['sender_bank_code'] ?? null,
+            'sender_bank_name'          => $args['sender_bank_name'] ?? null,
+            'sender_bank_bic'           => $args['sender_bank_bic'] ?? null,
+            'sender_iban'               => $args['sender_iban'] ?? null,
+            'sender_country_id'         => $args['sender_country_id'] ?? null,
+            'recipient_holder'          => $args['recipient_holder'] ?? null,
+            'recipient_account_number'  => $args['recipient_account_number'] ?? null,
+            'recipient_bank_code'       => $args['recipient_bank_code'] ?? null,
+            'recipient_bank_name'       => $args['recipient_bank_name'] ?? null,
+            'recipient_bank_bic'        => $args['recipient_bank_bic'] ?? null,
+            'recipient_iban'            => $args['recipient_iban'] ?? null,
+            'recipient_country_id'      => $args['recipient_country_id'] ?? null,
+            'international_transaction' => $args['international_transaction'] ?? null,
+            'amount'                    => $args['amount'] ?? null,
+            'currency_id'               => $args['currency_id'] ?? null,
+            'reason_1'                  => $args['reason_1'] ?? null,
+            'reason_2'                  => $args['reason_2'] ?? null,
+            'security_criteria'         => $args['security_criteria'] ?? null,
+            'user_variable_0'           => $args['user_variable_0'] ?? null,
+            'user_variable_1'           => $args['user_variable_1'] ?? null,
+            'user_variable_2'           => $args['user_variable_2'] ?? null,
+            'user_variable_3'           => $args['user_variable_3'] ?? null,
+            'user_variable_4'           => $args['user_variable_4'] ?? null,
+            'user_variable_5'           => $args['user_variable_5'] ?? null,
+            'created'                   => $args['created'] ?? null,
         ];
-        $hash                  = isset($args['hash']) ? $args['hash'] : null;
+        $hash                  = $args['hash'] ?? null;
         $cNotificationPassword = $this->getNotificationPassword();
         if (strlen($cNotificationPassword) > 0) {
             $data['notification_password'] = $cNotificationPassword;

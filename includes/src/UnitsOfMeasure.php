@@ -38,6 +38,9 @@ class UnitsOfMeasure
         'cm3'    => 'cm<sup>3</sup>'
     ];
 
+    /**
+     * @var array
+     */
     protected static $conversionTable = [
         'mm'  => null,
         'cm'  => [10 => 'mm'],
@@ -73,7 +76,7 @@ class UnitsOfMeasure
     /**
      * @return stdClass[]
      */
-    public static function getUnits()
+    public static function getUnits(): array
     {
         static $units = [];
 
@@ -81,7 +84,8 @@ class UnitsOfMeasure
             $units_tmp = Shop::Container()->getDB()->query(
                 "SELECT kMassEinheit, cCode
                     FROM tmasseinheit
-                    WHERE cCode IN ('" . implode("', '", array_keys(self::$UCUMcodeToPrint)) . "')", 2
+                    WHERE cCode IN ('" . implode("', '", array_keys(self::$UCUMcodeToPrint)) . "')",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($units_tmp as $unit) {
                 $units[$unit->kMassEinheit] = $unit;
@@ -95,11 +99,11 @@ class UnitsOfMeasure
      * @param int $kMassEinheit
      * @return stdClass|null
      */
-    public static function getUnit($kMassEinheit)
+    public static function getUnit(int $kMassEinheit)
     {
         $units = self::getUnits();
 
-        return $units[(int)$kMassEinheit] ?? null;
+        return $units[$kMassEinheit] ?? null;
     }
 
     /**

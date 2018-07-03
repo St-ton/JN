@@ -70,7 +70,7 @@ class Slide
      * @param int $kSlider
      * @param int $kSlide
      */
-    public function __construct($kSlider = 0, $kSlide = 0)
+    public function __construct(int $kSlider = 0, int $kSlide = 0)
     {
         if ($kSlider > 0 && $kSlide > 0) {
             $this->load($kSlider, $kSlide);
@@ -82,20 +82,20 @@ class Slide
      * @param int $kSlide
      * @return bool
      */
-    public function load($kSlider = 0, $kSlide = 0)
+    public function load(int $kSlider = 0, int $kSlide = 0): bool
     {
-        if ((int)$kSlider > 0
-            || (!empty($this->kSlider) && (int)$this->kSlider > 0 && (int)$kSlide > 0)
+        if ($kSlider > 0
+            || (!empty($this->kSlider) && (int)$this->kSlider > 0 && $kSlide > 0)
             || (!empty($this->kSlide) && (int)$this->kSlide > 0)
         ) {
-            if (empty($kSlider) || (int)$kSlider === 0) {
+            if (empty($kSlider) || $kSlider === 0) {
                 $kSlider = $this->kSlider;
             }
-            if (empty($kSlide) || (int)$kSlide === 0) {
+            if (empty($kSlide) || $kSlide === 0) {
                 $kSlide = $this->kSlide;
             }
 
-            $oSlide = Shop::Container()->getDB()->select('tslide', 'kSlide', (int)$kSlide);
+            $oSlide = Shop::Container()->getDB()->select('tslide', 'kSlide', $kSlide);
 
             if (is_object($oSlide)) {
                 $this->set((array)$oSlide);
@@ -111,7 +111,7 @@ class Slide
      * @param array $cData_arr
      * @return $this
      */
-    public function set(array $cData_arr)
+    public function set(array $cData_arr): self
     {
         $cObjectFields_arr = get_class_vars('Slide');
         foreach ($cObjectFields_arr as $cField => $cValue) {
@@ -126,7 +126,7 @@ class Slide
     /**
      * @return $this
      */
-    private function setAbsoluteImagePaths()
+    private function setAbsoluteImagePaths(): self
     {
         $imageBaseURL = Shop::getImageBaseURL();
         $this->cBildAbsolut      = $imageBaseURL . PFAD_MEDIAFILES .
@@ -140,7 +140,7 @@ class Slide
     /**
      * @return bool
      */
-    public function save()
+    public function save(): bool
     {
         if (!empty($this->cBild)) {
             $cShopUrl  = parse_url(Shop::getURL(), PHP_URL_PATH);
@@ -166,13 +166,13 @@ class Slide
 
         return $this->kSlide === null
             ? $this->append()
-            : $this->update();
+            : $this->update() > 0;
     }
 
     /**
      * @return int
      */
-    private function update()
+    private function update(): int
     {
         $oSlide = clone $this;
         if (empty($oSlide->cThumbnail)) {
@@ -186,7 +186,7 @@ class Slide
     /**
      * @return bool
      */
-    private function append()
+    private function append(): bool
     {
         if (!empty($this->cBild)) {
             $oSlide = clone $this;
@@ -198,7 +198,7 @@ class Slide
                         WHERE kSlider = :sliderID
                         ORDER BY nSort DESC LIMIT 1',
                     ['sliderID' => $this->kSlider],
-                    NiceDB::RET_SINGLE_OBJECT
+                    \DB\ReturnType::SINGLE_OBJECT
                 );
                 $oSlide->nSort = (!is_object($oSort) || (int)$oSort->nSort === 0) ? 1 : ($oSort->nSort + 1);
             }
@@ -216,10 +216,10 @@ class Slide
     /**
      * @return bool
      */
-    public function delete()
+    public function delete(): bool
     {
         return $this->kSlide !== null
             && (int)$this->kSlide > 0
-            && Shop::DB()->delete('tslide', 'kSlide', (int)$this->kSlide) > 0;
+            && Shop::Container()->getDB()->delete('tslide', 'kSlide', (int)$this->kSlide) > 0;
     }
 }

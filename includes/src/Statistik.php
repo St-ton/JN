@@ -55,8 +55,8 @@ class Statistik
         $this->nStampBis         = 0;
 
         if (strlen($cDatumVon) > 0 && strlen($cDatumBis) > 0) {
-            $this->cDatumVon_arr = gibDatumTeile($cDatumVon);
-            $this->cDatumBis_arr = gibDatumTeile($cDatumBis);
+            $this->cDatumVon_arr = DateHelper::getDateParts($cDatumVon);
+            $this->cDatumBis_arr = DateHelper::getDateParts($cDatumBis);
         } elseif ((int)$nStampVon > 0 && (int)$nStampBis > 0) {
             $this->nStampVon = (int)$nStampVon;
             $this->nStampBis = (int)$nStampBis;
@@ -103,7 +103,8 @@ class Statistik
                         " . $oDatumSQL->cGroupBy . "
                         ) AS t
                         " . $oDatumSQL->cGroupBy . "
-                        ORDER BY dTime ASC", 2
+                        ORDER BY dTime ASC",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
 
             return $this->mergeDaten($oStatTMP_arr);
@@ -142,7 +143,8 @@ class Statistik
                         GROUP BY cReferer
                     ) AS t
                     GROUP BY t.cReferer
-                    ORDER BY nCount DESC", 2
+                    ORDER BY nCount DESC",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
 
             return $oStatTMP_arr;
@@ -214,7 +216,8 @@ class Statistik
                     " . $oDatumSQL->cWhere . "
                     AND cStatus != '-1'
                     " . $oDatumSQL->cGroupBy . "
-                    ORDER BY tbestellung.dErstellt ASC", 2
+                    ORDER BY tbestellung.dErstellt ASC",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
 
             return $this->mergeDaten($oStatTMP_arr);
@@ -251,7 +254,8 @@ class Statistik
                         GROUP BY cEinstiegsseite
                     ) AS t
                     GROUP BY t.cEinstiegsseite
-                    ORDER BY nCount DESC", 2
+                    ORDER BY nCount DESC",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
 
             return $oStatTMP_arr;
@@ -552,7 +556,7 @@ class Statistik
      */
     public function setDatumVon($cDatumVon)
     {
-        $this->cDatumVon_arr = gibDatumTeile($cDatumVon);
+        $this->cDatumVon_arr = DateHelper::getDateParts($cDatumVon);
 
         return $this;
     }
@@ -563,7 +567,7 @@ class Statistik
      */
     public function setDatumBis($cDatumBis)
     {
-        $this->cDatumBis_arr = gibDatumTeile($cDatumBis);
+        $this->cDatumBis_arr = DateHelper::getDateParts($cDatumBis);
 
         return $this;
     }

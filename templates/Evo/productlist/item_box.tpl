@@ -15,10 +15,11 @@
             {/if}
         {include file="snippets/image.tpl" src=$Artikel->Bilder[0]->cURLNormal alt=$alt}
 
-        {if isset($Artikel->oSuchspecialBild)}
-            <img class="overlay-img hidden-xs" src="{$Artikel->oSuchspecialBild->cURLKlein}"
-                 alt="{if isset($Artikel->oSuchspecialBild->cSuchspecial)}{$Artikel->oSuchspecialBild->cSuchspecial}{else}{$Artikel->cName}{/if}" />
-        {/if}
+        {block name="searchspecial-overlay"}
+            {if isset($Artikel->oSuchspecialBild)}
+                {include file="snippets/searchspecials.tpl" src=$Artikel->oSuchspecialBild->cURLKlein alt=$alt}
+            {/if}
+        {/block}
 
         {if $Einstellungen.template.productlist.quickview_productlist === 'Y' && !$Artikel->bHasKonfig}
             <span class="quickview badge hidden-xs" data-src="{$Artikel->cURLFull}" data-target="buy_form_{$Artikel->kArtikel}" title="{$Artikel->cName}">{lang key="downloadPreview" section="productDownloads"}</span>
@@ -33,10 +34,13 @@
         {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}
             {include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}<br>
         {/if}
-        {include file="productdetails/price.tpl" Artikel=$Artikel tplscope=$tplscope}
+        <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+            <link itemprop="businessFunction" href="http://purl.org/goodrelations/v1#Sell" />
+            {include file="productdetails/price.tpl" Artikel=$Artikel tplscope=$tplscope}
+        </div>
     </div>{* /caption *}
     {/block}
-    <form id="buy_form_{$Artikel->kArtikel}" action="index.php" method="post" class="form form-basket" data-toggle="basket-add">
+    <form id="buy_form_{$Artikel->kArtikel}" action="index.php" method="post" class="form form-basket evo-validate" data-toggle="basket-add">
         {$jtl_token}
         {block name="productlist-delivery-status"}
             <div class="delivery-status">
@@ -102,7 +106,7 @@
                                     <span class="input-group-btn">
                                         <button type="submit" class="btn btn-primary" id="submit{$Artikel->kArtikel}"
                                                 title="{lang key="addToCart" section="global"}">
-                                            <span><i class="fa fa-shopping-cart"></i> {lang key="addToCart" section="global"}</span>
+                                            <i class="fa fa-shopping-cart"></i><span class="hidden-xs"> {lang key="addToCart" section="global"}</span>
                                         </button>
                                     </span>
                                 </div>
@@ -127,8 +131,8 @@
             <input type="hidden" name="wke" value="1" />
             <input type="hidden" name="overview" value="1" />
             <input type="hidden" name="Sortierung" value="{if !empty($Suchergebnisse->Sortierung)}{$Suchergebnisse->Sortierung}{/if}" />
-            {if $Suchergebnisse->getPages()->AktuelleSeite > 1}
-                <input type="hidden" name="seite" value="{$Suchergebnisse->getPages()->AktuelleSeite}" />
+            {if $Suchergebnisse->getPages()->getCurrentPage() > 1}
+                <input type="hidden" name="seite" value="{$Suchergebnisse->getPages()->getCurrentPage()}" />
             {/if}
             {if $NaviFilter->hasCategory()}
                 <input type="hidden" name="k" value="{$NaviFilter->getCategory()->getValue()}" />
@@ -146,10 +150,24 @@
                 <input type="hidden" name="t" value="{$NaviFilter->getTag()->getValue()}">
             {/if}
             {if $NaviFilter->hasCategoryFilter()}
-                <input type="hidden" name="kf" value="{$NaviFilter->getCategoryFilter()->getValue()}" />
+                {assign var=cfv value=$NaviFilter->getCategoryFilter()->getValue()}
+                {if is_array($cfv)}
+                    {foreach $cfv as $val}
+                        <input type="hidden" name="hf" value="{$val}" />
+                    {/foreach}
+                {else}
+                    <input type="hidden" name="kf" value="{$cfv}" />
+                {/if}
             {/if}
             {if $NaviFilter->hasManufacturerFilter()}
-                <input type="hidden" name="hf" value="{$NaviFilter->getManufacturerFilter()->getValue()}" />
+                {assign var=mfv value=$NaviFilter->getManufacturerFilter()->getValue()}
+                {if is_array($mfv)}
+                    {foreach $mfv as $val}
+                        <input type="hidden" name="hf" value="{$val}" />
+                    {/foreach}
+                {else}
+                    <input type="hidden" name="hf" value="{$mvf}" />
+                {/if}
             {/if}
             {if $NaviFilter->hasAttributeFilter()}
                 {foreach name=merkmalfilter from=$NaviFilter->getAttributeFilter() item=attributeFilter}

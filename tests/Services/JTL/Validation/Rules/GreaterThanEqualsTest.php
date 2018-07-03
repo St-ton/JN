@@ -6,7 +6,10 @@
 
 namespace Services\JTL\Validation\Rules;
 
-
+/**
+ * Class GreaterThanEqualsTest
+ * @package Services\JTL\Validation\Rules
+ */
 class GreaterThanEqualsTest extends \PHPUnit_Framework_TestCase
 {
     public function test()

@@ -26,7 +26,7 @@
     <div class="col-sm-8 col-sm-offset-2">
         {block name="login-form"}
         <div class="panel-wrap">
-            <form id="login_form" action="{get_static_route id='jtl.php'}" method="post" role="form">
+            <form id="login_form" action="{get_static_route id='jtl.php'}" method="post" role="form" class="evo-validate">
                 {$jtl_token}
                 <fieldset>
                     <legend>{lang section="checkout" key="loginForRegisteredCustomers"}</legend>
@@ -54,8 +54,8 @@
                     </div>
 
                     {if isset($showLoginCaptcha) && $showLoginCaptcha}
-                        <div class="form-group text-center float-label-control">
-                            <div class="g-recaptcha" data-sitekey="{$Einstellungen.global.global_google_recaptcha_public}" data-callback="captcha_filled"></div>
+                        <div class="form-group text-center float-label-control required">
+                            {captchaMarkup getBody=true}
                         </div>
                     {/if}
 

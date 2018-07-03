@@ -18,10 +18,11 @@
 
                     {include file="snippets/image.tpl" src=$Artikel->Bilder[0]->cURLNormal alt=$alt tplscope=$tplscope}
 
-                    {if isset($Artikel->oSuchspecialBild)}
-                        <img class="overlay-img visible-lg" src="{$Artikel->oSuchspecialBild->cURLKlein}"
-                             alt="{if isset($Artikel->oSuchspecialBild->cSuchspecial)}{$Artikel->oSuchspecialBild->cSuchspecial}{else}{$Artikel->cName}{/if}">
-                    {/if}
+                    {block name="searchspecial-overlay"}
+                        {if isset($Artikel->oSuchspecialBild)}
+                            {include file="snippets/searchspecials.tpl" src=$Artikel->oSuchspecialBild->cURLKlein alt=$alt}
+                        {/if}
+                    {/block}
 
                     {if $Einstellungen.template.productlist.quickview_productlist === 'Y' && !$Artikel->bHasKonfig}
                         <span class="quickview badge hidden-xs" data-src="{$Artikel->cURLFull}" data-target="buy_form_{$Artikel->kArtikel}" title="{$Artikel->cName}">{lang key="downloadPreview" section="productDownloads"}</span>
@@ -41,22 +42,24 @@
             {/block}
             {block name="product-manufacturer"}
                 {if $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen !== 'N'}
-                    <div class="media hidden-xs top0 bottom5">
+                    <div class="media hidden-xs top0 bottom5" itemprop="manufacturer" itemscope itemtype="http://schema.org/Organization">
                         {if ($Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'BT'
                             || $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'B')
                             && !empty($Artikel->cHerstellerBildKlein)}
                             <div class="media-left">
                                 {if !empty($Artikel->cHerstellerHomepage)}<a href="{$Artikel->cHerstellerHomepage}">{/if}
                                     <img src="{$Artikel->cHerstellerBildKlein}" alt="" class="img-xs">
+                                    <meta itemprop="image" content="{$ShopURL}/{$Artikel->cHerstellerBildKlein}">
                                 {if !empty($Artikel->cHerstellerHomepage)}</a>{/if}
                             </div>
                         {/if}
                         {if ($Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'BT'
-                            || $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'Y') && !empty($Artikel->cHersteller)}
+                            || $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'Y')
+                            && !empty($Artikel->cHersteller)}
                             <div class="media-body">
                                 <span class="small text-uppercase">
-                                    {if !empty($Artikel->cHerstellerHomepage)}<a href="{$Artikel->cHerstellerHomepage}">{/if}
-                                        {$Artikel->cHersteller}
+                                    {if !empty($Artikel->cHerstellerHomepage)}<a href="{$Artikel->cHerstellerHomepage}" itemprop="url">{/if}
+                                        <span itemprop="name">{$Artikel->cHersteller}</span>
                                     {if !empty($Artikel->cHerstellerHomepage)}</a>{/if}
                                 </span>
                             </div>
@@ -68,13 +71,13 @@
             <div class="product-info hidden-xs">
                 {block name="product-info"}
                     {if $Einstellungen.artikeluebersicht.artikeluebersicht_kurzbeschreibung_anzeigen === 'Y' && $Artikel->cKurzBeschreibung}
-                        <div class="shortdescription">
+                        <div class="shortdescription" itemprop="description">
                             {$Artikel->cKurzBeschreibung}
                         </div>
                     {/if}
                     <ul class="attr-group list-unstyled small text-muted top10 hidden-xs">
                         <li class="item row attr-sku">
-                            <span class="attr-label col-sm-5">{lang key="productNo"}: </span> <span class="value col-sm-7">{$Artikel->cArtNr}</span>
+                            <span class="attr-label col-sm-5">{lang key="productNo"}: </span> <span class="value col-sm-7" itemprop="sku">{$Artikel->cArtNr}</span>
                         </li>
                         {if !empty($Artikel->cISBN)
                             && ($Einstellungen.artikeldetails.isbn_display === 'L'
@@ -145,7 +148,8 @@
 
         </div>{* /col-md-9 *}
         <div class="col-xs-4 product-detail">
-            <div class="product-detail-cell">
+            <div class="product-detail-cell" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+                <link itemprop="businessFunction" href="http://purl.org/goodrelations/v1#Sell" />
                 {block name="form-basket"}
                     {include file="productdetails/price.tpl" Artikel=$Artikel tplscope=$tplscope}
                     <div class="delivery-status">
@@ -221,7 +225,7 @@
                         <input type="hidden" name="a" value="{if !empty({$Artikel->kVariKindArtikel})}{$Artikel->kVariKindArtikel}{else}{$Artikel->kArtikel}{/if}" />
                     </form>
                     <div class="expandable">
-                        <form id="buy_form_{$Artikel->kArtikel}" action="{$ShopURL}" method="post" class="form form-basket" data-toggle="basket-add">
+                        <form id="buy_form_{$Artikel->kArtikel}" action="{$ShopURL}" method="post" class="form form-basket evo-validate" data-toggle="basket-add">
                             {block name="form-expandable"}
                             {if $hasOnlyListableVariations > 0 && !$Artikel->bHasKonfig && $Artikel->kEigenschaftKombi === 0}
                                 <div class="hidden-xs basket-variations">
@@ -272,8 +276,8 @@
                             <input type="hidden" name="wke" value="1" />
                             <input type="hidden" name="overview" value="1" />
                             <input type="hidden" name="Sortierung" value="{if !empty($Suchergebnisse->Sortierung)}{$Suchergebnisse->Sortierung}{/if}" />
-                            {if $Suchergebnisse->getPages()->AktuelleSeite > 1}
-                                <input type="hidden" name="seite" value="{$Suchergebnisse->getPages()->AktuelleSeite}" />
+                            {if $Suchergebnisse->getPages()->getCurrentPage() > 1}
+                                <input type="hidden" name="seite" value="{$Suchergebnisse->getPages()->getCurrentPage()}" />
                             {/if}
                             {if $NaviFilter->hasCategory()}
                                 <input type="hidden" name="k" value="{$NaviFilter->getCategory()->getValue()}" />
@@ -291,10 +295,24 @@
                                 <input type="hidden" name="t" value="{$NaviFilter->getTag()->getValue()}">
                             {/if}
                             {if $NaviFilter->hasCategoryFilter()}
-                                <input type="hidden" name="kf" value="{$NaviFilter->getCategoryFilter()->getValue()}" />
+                                {assign var=cfv value=$NaviFilter->getCategoryFilter()->getValue()}
+                                {if is_array($cfv)}
+                                    {foreach $cfv as $val}
+                                        <input type="hidden" name="hf" value="{$val}" />
+                                    {/foreach}
+                                {else}
+                                    <input type="hidden" name="kf" value="{$cfv}" />
+                                {/if}
                             {/if}
                             {if $NaviFilter->hasManufacturerFilter()}
-                                <input type="hidden" name="hf" value="{$NaviFilter->getManufacturerFilter()->getValue()}" />
+                                {assign var=mfv value=$NaviFilter->getManufacturerFilter()->getValue()}
+                                {if is_array($mfv)}
+                                    {foreach $mfv as $val}
+                                        <input type="hidden" name="hf" value="{$val}" />
+                                    {/foreach}
+                                {else}
+                                    <input type="hidden" name="hf" value="{$mvf}" />
+                                {/if}
                             {/if}
                             {if $NaviFilter->hasAttributeFilter()}
                                 {foreach name=merkmalfilter from=$NaviFilter->getAttributeFilter() item=attributeFilter}

@@ -18,80 +18,79 @@ function gibRedirect($cRedirect)
 
     switch ($cRedirect) {
         case R_LOGIN_WUNSCHLISTE:
-            $linkHelper                  = LinkHelper::getInstance();
             $oRedirect->oParameter_arr   = [];
             $oTMP                        = new stdClass();
             $oTMP->Name                  = 'a';
-            $oTMP->Wert                  = verifyGPCDataInteger('a');
+            $oTMP->Wert                  = RequestHelper::verifyGPCDataInt('a');
             $oRedirect->oParameter_arr[] = $oTMP;
             $oTMP                        = new stdClass();
             $oTMP->Name                  = 'n';
-            $oTMP->Wert                  = verifyGPCDataInteger('n');
+            $oTMP->Wert                  = RequestHelper::verifyGPCDataInt('n');
             $oRedirect->oParameter_arr[] = $oTMP;
             $oTMP                        = new stdClass();
             $oTMP->Name                  = 'Wunschliste';
             $oTMP->Wert                  = 1;
             $oRedirect->oParameter_arr[] = $oTMP;
             $oRedirect->nRedirect        = R_LOGIN_WUNSCHLISTE;
-            $oRedirect->cURL             = $linkHelper->getStaticRoute('wunschliste.php', false);
+            $oRedirect->cURL             = Shop::Container()->getLinkService()->getStaticRoute('wunschliste.php', false);
             $oRedirect->cName            = Shop::Lang()->get('wishlist', 'redirect');
             break;
         case R_LOGIN_BEWERTUNG:
             $oRedirect->oParameter_arr   = [];
             $oTMP                        = new stdClass();
             $oTMP->Name                  = 'a';
-            $oTMP->Wert                  = verifyGPCDataInteger('a');
+            $oTMP->Wert                  = RequestHelper::verifyGPCDataInt('a');
             $oRedirect->oParameter_arr[] = $oTMP;
             $oTMP                        = new stdClass();
             $oTMP->Name                  = 'bfa';
             $oTMP->Wert                  = 1;
             $oRedirect->oParameter_arr[] = $oTMP;
             $oRedirect->nRedirect        = R_LOGIN_BEWERTUNG;
-            $oRedirect->cURL             = 'bewertung.php?a=' . verifyGPCDataInteger('a') . '&bfa=1';
+            $oRedirect->cURL             = 'bewertung.php?a=' . RequestHelper::verifyGPCDataInt('a') . '&bfa=1';
             $oRedirect->cName            = Shop::Lang()->get('review', 'redirect');
             break;
         case R_LOGIN_TAG:
             $oRedirect->oParameter_arr   = [];
             $oTMP                        = new stdClass();
             $oTMP->Name                  = 'a';
-            $oTMP->Wert                  = verifyGPCDataInteger('a');
+            $oTMP->Wert                  = RequestHelper::verifyGPCDataInt('a');
             $oRedirect->oParameter_arr[] = $oTMP;
             $oRedirect->nRedirect        = R_LOGIN_TAG;
-            $oRedirect->cURL             = '?a=' . verifyGPCDataInteger('a');
+            $oRedirect->cURL             = '?a=' . RequestHelper::verifyGPCDataInt('a');
             $oRedirect->cName            = Shop::Lang()->get('tag', 'redirect');
             break;
         case R_LOGIN_NEWSCOMMENT:
             $oRedirect->oParameter_arr   = [];
             $oTMP                        = new stdClass();
             $oTMP->Name                  = 's';
-            $oTMP->Wert                  = verifyGPCDataInteger('s');
+            $oTMP->Wert                  = RequestHelper::verifyGPCDataInt('s');
             $oRedirect->oParameter_arr[] = $oTMP;
             $oTMP                        = new stdClass();
             $oTMP->Name                  = 'n';
-            $oTMP->Wert                  = verifyGPCDataInteger('n');
+            $oTMP->Wert                  = RequestHelper::verifyGPCDataInt('n');
             $oRedirect->oParameter_arr[] = $oTMP;
             $oRedirect->nRedirect        = R_LOGIN_NEWSCOMMENT;
-            $oRedirect->cURL             = '?s=' . verifyGPCDataInteger('s') . '&n=' . verifyGPCDataInteger('n');
+            $oRedirect->cURL             = '?s=' . RequestHelper::verifyGPCDataInt('s') . '&n=' . RequestHelper::verifyGPCDataInt('n');
             $oRedirect->cName            = Shop::Lang()->get('news', 'redirect');
             break;
         case R_LOGIN_UMFRAGE:
             $oRedirect->oParameter_arr   = [];
             $oTMP                        = new stdClass();
             $oTMP->Name                  = 'u';
-            $oTMP->Wert                  = verifyGPCDataInteger('u');
+            $oTMP->Wert                  = RequestHelper::verifyGPCDataInt('u');
             $oRedirect->oParameter_arr[] = $oTMP;
             $oRedirect->nRedirect        = R_LOGIN_UMFRAGE;
-            $oRedirect->cURL             = '?u=' . verifyGPCDataInteger('u');
+            $oRedirect->cURL             = '?u=' . RequestHelper::verifyGPCDataInt('u');
             $oRedirect->cName            = Shop::Lang()->get('poll', 'redirect');
             break;
         case R_LOGIN_RMA:
             $oRedirect->oParameter_arr   = [];
             $oTMP                        = new stdClass();
             $oTMP->Name                  = 's';
-            $oTMP->Wert                  = verifyGPCDataInteger('s');
+            $oTMP->Wert                  = RequestHelper::verifyGPCDataInt('s');
             $oRedirect->oParameter_arr[] = $oTMP;
             $oRedirect->nRedirect        = R_LOGIN_RMA;
-            $oRedirect->cURL             = '?s=' . verifyGPCDataInteger('s');
+            $oRedirect->cURL             = '?s=' . RequestHelper::verifyGPCDataInt('s');
             $oRedirect->cName            = Shop::Lang()->get('rma', 'redirect');
             break;
         default:
@@ -109,9 +108,8 @@ function gibRedirect($cRedirect)
  * @param int $kKundengruppe
  * @return bool
  */
-function pruefeKategorieSichtbarkeit($kKundengruppe)
+function pruefeKategorieSichtbarkeit(int $kKundengruppe)
 {
-    $kKundengruppe = (int)$kKundengruppe;
     if (!$kKundengruppe) {
         return false;
     }
@@ -170,9 +168,8 @@ function pruefeKategorieSichtbarkeit($kKundengruppe)
  * @param int $kKunde
  * @return bool
  */
-function setzeWarenkorbPersInWarenkorb($kKunde)
+function setzeWarenkorbPersInWarenkorb(int $kKunde)
 {
-    $kKunde = (int)$kKunde;
     if (!$kKunde) {
         return false;
     }
@@ -190,10 +187,11 @@ function setzeWarenkorbPersInWarenkorb($kKunde)
                     WHERE tartikelattribut.kArtikel = " . $kArtikelGeschenk . "
                         AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
                         AND CAST(tartikelattribut.cWert AS DECIMAL) <= " .
-                            $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true), 1
+                            $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true),
+                \DB\ReturnType::SINGLE_OBJECT
             );
             if (isset($oArtikelGeschenk->kArtikel) && $oArtikelGeschenk->kArtikel > 0) {
-                fuegeEinInWarenkorbPers(
+                WarenkorbPers::addToCheck(
                     $kArtikelGeschenk,
                     1,
                     [],
@@ -203,12 +201,14 @@ function setzeWarenkorbPersInWarenkorb($kKunde)
                 );
             }
         } else {
-            fuegeEinInWarenkorbPers(
+            WarenkorbPers::addToCheck(
                 $oWarenkorbPos->kArtikel,
                 $oWarenkorbPos->nAnzahl,
                 $oWarenkorbPos->WarenkorbPosEigenschaftArr,
                 $oWarenkorbPos->cUnique,
-                $oWarenkorbPos->kKonfigitem
+                $oWarenkorbPos->kKonfigitem,
+                $oWarenkorbPos->nPosTyp,
+                $oWarenkorbPos->cResponsibility
             );
         }
     }
@@ -228,7 +228,8 @@ function setzeWarenkorbPersInWarenkorb($kKunde)
                     WHERE tartikelattribut.kArtikel = " . $kArtikelGeschenk . "
                         AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
                         AND CAST(tartikelattribut.cWert AS DECIMAL) <= " .
-                            $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true), 1
+                            $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true),
+                \DB\ReturnType::SINGLE_OBJECT
             );
             if (isset($oArtikelGeschenk->kArtikel) && $oArtikelGeschenk->kArtikel > 0) {
                 if ($oArtikelGeschenk->fLagerbestand <= 0
@@ -242,13 +243,16 @@ function setzeWarenkorbPersInWarenkorb($kKunde)
                      ->fuegeEin($kArtikelGeschenk, 1, [], C_WARENKORBPOS_TYP_GRATISGESCHENK);
             }
         } else {
-            fuegeEinInWarenkorb(
+            WarenkorbHelper::addProductIDToCart(
                 $oWarenkorbPersPos->kArtikel,
                 $oWarenkorbPersPos->fAnzahl,
                 $oWarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr,
                 1,
                 $oWarenkorbPersPos->cUnique,
-                $oWarenkorbPersPos->kKonfigitem
+                $oWarenkorbPersPos->kKonfigitem,
+                null,
+                true,
+                $oWarenkorbPersPos->cResponsibility
             );
         }
     }
@@ -261,10 +265,9 @@ function setzeWarenkorbPersInWarenkorb($kKunde)
  *
  * @param int $kKundengruppe
  */
-function pruefeWarenkorbArtikelSichtbarkeit($kKundengruppe)
+function pruefeWarenkorbArtikelSichtbarkeit(int $kKundengruppe)
 {
-    $kKundengruppe = (int)$kKundengruppe;
-    $cart          = Session::Cart();
+    $cart = Session::Cart();
     if ($kKundengruppe > 0
         && isset($cart->PositionenArr)
         && count($cart->PositionenArr) > 0
@@ -278,7 +281,8 @@ function pruefeWarenkorbArtikelSichtbarkeit($kKundengruppe)
                     "SELECT kArtikel
                         FROM tartikelsichtbarkeit
                         WHERE kArtikel = " . (int)$oPosition->kArtikel . "
-                            AND kKundengruppe = " . $kKundengruppe, 1
+                            AND kKundengruppe = " . $kKundengruppe,
+                    \DB\ReturnType::SINGLE_OBJECT
                 );
 
                 if (isset($oArtikelSichtbarkeit->kArtikel)
@@ -292,7 +296,8 @@ function pruefeWarenkorbArtikelSichtbarkeit($kKundengruppe)
                     "SELECT fVKNetto
                        FROM tpreise
                        WHERE kArtikel = " . (int)$oPosition->kArtikel . "
-                           AND kKundengruppe = " . $kKundengruppe, 1
+                           AND kKundengruppe = " . $kKundengruppe,
+                    \DB\ReturnType::SINGLE_OBJECT
                 );
 
                 if (!isset($oArtikelPreis->fVKNetto)) {
@@ -310,8 +315,9 @@ function pruefeWarenkorbArtikelSichtbarkeit($kKundengruppe)
 function fuehreLoginAus($userLogin, $passLogin)
 {
     global $cHinweis;
+    $oKupons  = [];
     $Kunde    = new Kunde();
-    $csrfTest = validateToken();
+    $csrfTest = FormHelper::validateToken();
     if ($csrfTest === false) {
         $cHinweis .= Shop::Lang()->get('csrfValidationFailed');
         Jtllog::writeLog('CSRF-Warnung fuer Login: ' . $_POST['login']);
@@ -358,14 +364,14 @@ function fuehreLoginAus($userLogin, $passLogin)
                 );
                 // Kampagne
                 if (isset($_SESSION['Kampagnenbesucher'])) {
-                    setzeKampagnenVorgang(KAMPAGNE_DEF_LOGIN, $Kunde->kKunde, 1.0); // Login
+                    Kampagne::setCampaignAction(KAMPAGNE_DEF_LOGIN, $Kunde->kKunde, 1.0); // Login
                 }
-                $session = Session::getInstance();
+                $session = \Session\Session::getInstance();
                 $session->setCustomer($Kunde);
                 // Setzt aktuelle Wunschliste (falls vorhanden) vom Kunden in die Session
-                setzeWunschlisteInSession();
+                Wunschliste::persistInSession();
                 // Redirect URL
-                $cURL = StringHandler::filterXSS(verifyGPDataString('cURL'));
+                $cURL = StringHandler::filterXSS(RequestHelper::verifyGPDataString('cURL'));
                 // Lade WarenkorbPers
                 $bPersWarenkorbGeladen = false;
                 if ($Einstellungen['global']['warenkorbpers_nutzen'] === 'Y'
@@ -388,7 +394,8 @@ function fuehreLoginAus($userLogin, $passLogin)
                                             WHERE tartikelattribut.kArtikel = " . $kArtikelGeschenk . "
                                                 AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
                                                 AND CAST(tartikelattribut.cWert AS DECIMAL) <= " .
-                                                    $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true), 1
+                                                    $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true),
+                                        \DB\ReturnType::SINGLE_OBJECT
                                     );
                                     if ((isset($oArtikelGeschenk->kArtikel) && $oArtikelGeschenk->kArtikel > 0)
                                         && ($oArtikelGeschenk->fLagerbestand > 0
@@ -417,7 +424,7 @@ function fuehreLoginAus($userLogin, $passLogin)
                                     );
                                 //Artikel in den Warenkorb einfügen
                                 } else {
-                                    fuegeEinInWarenkorb(
+                                    WarenkorbHelper::addProductIDToCart(
                                         $oWarenkorbPersPos->kArtikel,
                                         $oWarenkorbPersPos->fAnzahl,
                                         $oWarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr,
@@ -425,7 +432,8 @@ function fuehreLoginAus($userLogin, $passLogin)
                                         $oWarenkorbPersPos->cUnique,
                                         $oWarenkorbPersPos->kKonfigitem,
                                         null,
-                                        false
+                                        false,
+                                        $oWarenkorbPersPos->cResponsibility
                                     );
                                 }
                             }
@@ -434,7 +442,6 @@ function fuehreLoginAus($userLogin, $passLogin)
                         $bPersWarenkorbGeladen = true;
                     }
                 }
-                LinkHelper::getInstance()->buildLinkGroups(true);
                 // Pruefe, ob Artikel im Warenkorb vorhanden sind,
                 // welche für den aktuellen Kunden nicht mehr sichtbar sein duerfen
                 pruefeWarenkorbArtikelSichtbarkeit($_SESSION['Kunde']->kKundengruppe);
@@ -460,30 +467,28 @@ function fuehreLoginAus($userLogin, $passLogin)
                     }
                 }
                 // Kupons übernehmen, wenn erst der Warenkorb befüllt und sich dann angemeldet wurde
-                if (count($oKupons) > 0) {
-                    foreach ($oKupons as $Kupon) {
-                        if (!empty($Kupon)) {
-                            $Kuponfehler  = checkeKupon($Kupon);
-                            $nReturnValue = angabenKorrekt($Kuponfehler);
-                            executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI, [
-                                'error'        => &$Kuponfehler,
-                                'nReturnValue' => &$nReturnValue
-                            ]);
-                            if ($nReturnValue) {
-                                if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === 'standard') {
-                                    kuponAnnehmen($Kupon);
-                                    executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN);
-                                } elseif (!empty($Kupon->kKupon) && $Kupon->cKuponTyp === 'versandkupon') {
-                                    // Versandfrei Kupon
-                                    $_SESSION['oVersandfreiKupon'] = $Kupon;
-                                    Shop::Smarty()->assign(
-                                        'cVersandfreiKuponLieferlaender_arr',
-                                        explode(';', $Kupon->cLieferlaender)
-                                    );
-                                }
-                            } else {
-                                Shop::Smarty()->assign('cKuponfehler', $Kuponfehler['ungueltig']);
+                foreach ($oKupons as $Kupon) {
+                    if (!empty($Kupon)) {
+                        $Kuponfehler  = Kupon::checkCoupon($Kupon);
+                        $nReturnValue = angabenKorrekt($Kuponfehler);
+                        executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI, [
+                            'error'        => &$Kuponfehler,
+                            'nReturnValue' => &$nReturnValue
+                        ]);
+                        if ($nReturnValue) {
+                            if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === 'standard') {
+                                Kupon::acceptCoupon($Kupon);
+                                executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN);
+                            } elseif (!empty($Kupon->kKupon) && $Kupon->cKuponTyp === 'versandkupon') {
+                                // Versandfrei Kupon
+                                $_SESSION['oVersandfreiKupon'] = $Kupon;
+                                Shop::Smarty()->assign(
+                                    'cVersandfreiKuponLieferlaender_arr',
+                                    explode(';', $Kupon->cLieferlaender)
+                                );
                             }
+                        } else {
+                            Shop::Smarty()->assign('cKuponfehler', $Kuponfehler['ungueltig']);
                         }
                     }
                 }
@@ -492,7 +497,7 @@ function fuehreLoginAus($userLogin, $passLogin)
                 if ((int)$_SESSION['kSprache'] !== (int)$Kunde->kSprache && !empty($oISOSprache->cISO)) {
                     $_SESSION['kSprache']        = (int)$Kunde->kSprache;
                     $_SESSION['cISOSprache']     = $oISOSprache->cISO;
-                    $_SESSION['currentLanguage'] = gibAlleSprachen(1)[$Kunde->kSprache];
+                    $_SESSION['currentLanguage'] = Sprache::getAllLanguages(1)[$Kunde->kSprache];
                     Shop::setLanguage($Kunde->kSprache, $oISOSprache->cISO);
                     Shop::Lang()->setzeSprache($oISOSprache->cISO);
                 }

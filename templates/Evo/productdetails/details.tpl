@@ -36,7 +36,7 @@
 
 <div class="h1 visible-xs text-center">{$Artikel->cName}</div>
 
-<form id="buy_form" method="post" action="{$Artikel->cURLFull}" >
+<form id="buy_form" method="post" action="{$Artikel->cURLFull}" class="evo-validate">
     {$jtl_token}
     <div class="row product-primary" id="product-offer">
         <div class="product-gallery{if $hasLeftBox} col-sm-5{else} col-sm-6{/if}">
@@ -53,7 +53,6 @@
                             {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'Y' && (!empty($Artikel->cBildpfad_thersteller) || $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B') && isset($Artikel->cHerstellerBildKlein)}
                                 <img src="{$Artikel->cHerstellerBildURLKlein}" alt="{$Artikel->cHersteller}" class="img-sm">
                                 <meta itemprop="image" content="{$Artikel->cHerstellerBildURLKlein}">
-                                <meta itemprop="url" content="{$ShopURL}/{$Artikel->cHerstellerSeo}">
                             {/if}
                             {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'B'}
                                 <span itemprop="name">{$Artikel->cHersteller}</span>
@@ -142,7 +141,7 @@
                     <p class="product-category word-break">
                         <span class="text-muted">{lang key="category"}: </span>
                         {assign var=i_kat value=$Brotnavi|@count}{assign var=i_kat value=$i_kat-2}
-                        <a href="{$Brotnavi[$i_kat]->url}" itemprop="category">{$Brotnavi[$i_kat]->name}</a>
+                        <a href="{$Brotnavi[$i_kat]->getURLFull()}" itemprop="category">{$Brotnavi[$i_kat]->getName()}</a>
                     </p>
                     {/block}
                 {/if}

@@ -23,7 +23,7 @@
  */
 function handleCsvImportAction($importerId, $target, $fields = [], $cDelim = null, $importType = 2)
 {
-    if (validateToken() && verifyGPDataString('importcsv') === $importerId) {
+    if (FormHelper::validateToken() && RequestHelper::verifyGPDataString('importcsv') === $importerId) {
         if (isset($_FILES['csvfile']['type']) &&
             (
                 $_FILES['csvfile']['type'] === 'application/vnd.ms-excel' ||
@@ -37,7 +37,7 @@ function handleCsvImportAction($importerId, $target, $fields = [], $cDelim = nul
             $nErrors     = 0;
 
             if ($cDelim === null) {
-                $cDelim = guessCsvDelimiter($csvFilename);
+                $cDelim = getCsvDelimiter($csvFilename);
             }
 
             if (count($fields) === 0) {
@@ -46,11 +46,11 @@ function handleCsvImportAction($importerId, $target, $fields = [], $cDelim = nul
             }
 
             if (isset($_REQUEST['importType'])) {
-                $importType = verifyGPCDataInteger('importType');
+                $importType = RequestHelper::verifyGPCDataInt('importType');
             }
 
             if ($importType === 0 && is_string($target)) {
-                Shop::Container()->getDB()->query("TRUNCATE $target", NiceDB::RET_AFFECTED_ROWS);
+                Shop::Container()->getDB()->query("TRUNCATE $target", \DB\ReturnType::AFFECTED_ROWS);
             }
 
             while (($row = fgetcsv($fs, 0, $cDelim)) !== false) {

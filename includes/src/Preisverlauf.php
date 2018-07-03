@@ -52,13 +52,9 @@ class Preisverlauf
      * @param int $nMonat
      * @return mixed
      */
-    public function gibPreisverlauf($kArtikel, $kKundengruppe, $nMonat)
+    public function gibPreisverlauf(int $kArtikel, int $kKundengruppe, int $nMonat)
     {
-        $_currency     = null;
-        $kArtikel      = (int)$kArtikel;
-        $kKundengruppe = (int)$kKundengruppe;
-        $nMonat        = (int)$nMonat;
-        $cacheID       = 'gpv_' . $kArtikel . '_' . $kKundengruppe . '_' . $nMonat;
+        $cacheID = 'gpv_' . $kArtikel . '_' . $kKundengruppe . '_' . $nMonat;
         if (($obj_arr = Shop::Cache()->get($cacheID)) === false) {
             $obj_arr = Shop::Container()->getDB()->query(
                 "SELECT tpreisverlauf.fVKNetto, tartikel.fMwst, UNIX_TIMESTAMP(tpreisverlauf.dDate) AS timestamp
@@ -68,23 +64,22 @@ class Preisverlauf
                     WHERE tpreisverlauf.kArtikel = " . $kArtikel . "
                         AND tpreisverlauf.kKundengruppe = " . $kKundengruppe . "
                         AND DATE_SUB(now(), INTERVAL " . $nMonat . " MONTH) < tpreisverlauf.dDate
-                    ORDER BY tpreisverlauf.dDate DESC", 2
+                    ORDER BY tpreisverlauf.dDate DESC",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             $_currency = Session::Currency();
-            if (is_array($obj_arr)) {
-                $dt = new DateTime();
-                foreach ($obj_arr as &$_pv) {
-                    if (isset($_pv->timestamp)) {
-                        $dt->setTimestamp($_pv->timestamp);
-                        $_pv->date   = $dt->format('d.m.');
-                        $_pv->fPreis = Session::CustomerGroup()->isMerchant()
-                            ? round($_pv->fVKNetto * $_currency->getConversionFactor(), 2)
-                            : berechneBrutto($_pv->fVKNetto * $_currency->getConversionFactor(), $_pv->fMwst);
-                        $_pv->currency = $_currency->getCode();
-                    }
+            $dt        = new DateTime();
+            foreach ($obj_arr as &$_pv) {
+                if (isset($_pv->timestamp)) {
+                    $dt->setTimestamp($_pv->timestamp);
+                    $_pv->date   = $dt->format('d.m.');
+                    $_pv->fPreis = Session::CustomerGroup()->isMerchant()
+                        ? round($_pv->fVKNetto * $_currency->getConversionFactor(), 2)
+                        : TaxHelper::getGross($_pv->fVKNetto * $_currency->getConversionFactor(), $_pv->fMwst);
+                    $_pv->currency = $_currency->getCode();
                 }
-                unset($_pv);
             }
+            unset($_pv);
             Shop::Cache()->set($cacheID, $obj_arr, [CACHING_GROUP_ARTICLE, CACHING_GROUP_ARTICLE . '_' . $kArtikel]);
         }
 
@@ -97,9 +92,9 @@ class Preisverlauf
      * @param int $kPreisverlauf
      * @return $this
      */
-    public function loadFromDB($kPreisverlauf)
+    public function loadFromDB(int $kPreisverlauf): self
     {
-        $obj = Shop::Container()->getDB()->select('tpreisverlauf', 'kPreisverlauf', (int)$kPreisverlauf);
+        $obj = Shop::Container()->getDB()->select('tpreisverlauf', 'kPreisverlauf', $kPreisverlauf);
         if ($obj !== null) {
             $members = array_keys(get_object_vars($obj));
             foreach ($members as $member) {
@@ -115,9 +110,9 @@ class Preisverlauf
      *
      * @return int
      */
-    public function insertInDB()
+    public function insertInDB(): int
     {
-        $obj = kopiereMembers($this);
+        $obj = ObjectHelper::copyMembers($this);
         unset($obj->kPreisverlauf);
         $this->kPreisverlauf = Shop::Container()->getDB()->insert('tpreisverlauf', $obj);
 
@@ -129,9 +124,9 @@ class Preisverlauf
      *
      * @return int
      */
-    public function updateInDB()
+    public function updateInDB(): int
     {
-        $obj = kopiereMembers($this);
+        $obj = ObjectHelper::copyMembers($this);
 
         return Shop::Container()->getDB()->update('tpreisverlauf', 'kPreisverlauf', $obj->kPreisverlauf, $obj);
     }
@@ -139,16 +134,11 @@ class Preisverlauf
     /**
      * setzt Daten aus Sync POST request.
      *
-     * @return bool - true, wenn alle notwendigen Daten vorhanden, sonst false
+     * @return bool
+     * @deprecated since 5.0.0
      */
-    public function setzePostDaten()
+    public function setzePostDaten(): bool
     {
-        $this->kPreisverlauf  = (int)$_POST['PStaffelKey'];
-        $this->kArtikel       = (int)$_POST['KeyArtikel'];
-        $this->fPreisPrivat   = (float)$_POST['ArtikelVKBrutto'];
-        $this->fPreisHaendler = (float)$_POST['ArtikelVKHaendlerBrutto'];
-        $this->dDate          = 'now()';
-
-        return $this->kArtikel > 0;
+        return false;
     }
 }

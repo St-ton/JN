@@ -12,9 +12,9 @@
                     {if $filter->getIcon() !== null}
                         <i class="fa {$filter->getIcon()}"></i>
                     {else}
-                        <i class="fa {if $filterIsActive === true}fa-check-square-o{else}fa-square-o{/if} text-muted"></i>
+                        <i class="fa fa-{if $filterIsActive === true}check-{/if}square-o text-muted"></i>
                     {/if}
-                    {if $filter->getClassName() === 'FilterItemRating'}
+                    {if $filter->getNiceName() === 'ItemRating'}
                         {include file='productdetails/rating.tpl' stars=$filterOption->getValue()}
                     {/if}
                     <span class="word-break">{$filterOption->getName()}</span>

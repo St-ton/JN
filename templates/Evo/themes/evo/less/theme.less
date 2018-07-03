@@ -421,13 +421,18 @@ form.navbar-right {
     margin: 0 -15px 0 0;
 }
 
-.navbar-default .nav > li > a, .navbar-default .btn {
+.navbar-default .btn {
     position: relative;
-    padding: 18px 15px 18px 15px;
 }
 
 .nav > li > a {
     padding: 8px 15px;
+}
+
+.navbar-default .nav > li > a,
+.navbar-inverse .nav > li > a {
+    padding: 18px 15px;
+    .navbar-vertical-align(50px);
 }
 
 //
@@ -649,5 +654,9 @@ footer {
     .nav-panel .active > a,
     .nav > li > a:focus {
         background-color: transparent;
+    }
+    .language-dropdown .dropdown-toggle,
+    .currency-dropdown .dropdown-toggle{
+        color: @btn-primary-color;
     }
 }

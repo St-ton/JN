@@ -114,7 +114,9 @@ function gibGesetzteVersandklassen($cVersandklassen)
         "SELECT * 
             FROM tversandklasse
             WHERE kVersandklasse IN (" . implode(',', $uniqueIDs) . ")  
-            ORDER BY kVersandklasse", 2));
+            ORDER BY kVersandklasse",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    ));
     foreach ($PVersandklassen as $vk) {
         $gesetzteVK[$vk->kVersandklasse] = in_array($vk->kVersandklasse, $cVKarr, true);
     }
@@ -145,8 +147,9 @@ function gibGesetzteVersandklassenUebersicht($cVersandklassen)
         "SELECT * 
             FROM tversandklasse 
             WHERE kVersandklasse IN (" . implode(',', $uniqueIDs) . ")
-            ORDER BY kVersandklasse", 2)
-    );
+            ORDER BY kVersandklasse",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    ));
     foreach ($PVersandklassen as $vk) {
         if (in_array($vk->kVersandklasse, $cVKarr, true)) {
             $gesetzteVK[] = $vk->cName;
@@ -167,7 +170,8 @@ function gibGesetzteKundengruppen($cKundengruppen)
     $oKundengruppe_arr = Shop::Container()->getDB()->query(
         "SELECT kKundengruppe
             FROM tkundengruppe
-            ORDER BY kKundengruppe", 2
+            ORDER BY kKundengruppe",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($oKundengruppe_arr as $oKundengruppe) {
         $bGesetzteKG_arr[$oKundengruppe->kKundengruppe] = in_array($oKundengruppe->kKundengruppe, $cKG_arr);
@@ -184,10 +188,14 @@ function gibGesetzteKundengruppen($cKundengruppen)
  * @param array $oSprache_arr
  * @return array
  */
-function getShippingLanguage($kVersandart = 0, $oSprache_arr)
+function getShippingLanguage(int $kVersandart = 0, $oSprache_arr)
 {
     $oVersandartSpracheAssoc_arr = [];
-    $oVersandartSprache_arr      = Shop::Container()->getDB()->selectAll('tversandartsprache', 'kVersandart', (int)$kVersandart);
+    $oVersandartSprache_arr      = Shop::Container()->getDB()->selectAll(
+        'tversandartsprache',
+        'kVersandart',
+        $kVersandart
+    );
     if (is_array($oSprache_arr)) {
         foreach ($oSprache_arr as $oSprache) {
             $oVersandartSpracheAssoc_arr[$oSprache->cISO] = new stdClass();
@@ -206,13 +214,17 @@ function getShippingLanguage($kVersandart = 0, $oSprache_arr)
  * @param int $kVersandzuschlag
  * @return array
  */
-function getZuschlagNames($kVersandzuschlag)
+function getZuschlagNames(int $kVersandzuschlag)
 {
     $names = [];
     if (!$kVersandzuschlag) {
         return $names;
     }
-    $zuschlagnamen = Shop::Container()->getDB()->selectAll('tversandzuschlagsprache', 'kVersandzuschlag', (int)$kVersandzuschlag);
+    $zuschlagnamen = Shop::Container()->getDB()->selectAll(
+        'tversandzuschlagsprache',
+        'kVersandzuschlag',
+        $kVersandzuschlag
+    );
     foreach ($zuschlagnamen as $name) {
         $names[$name->cISOSprache] = $name->cName;
     }
@@ -232,14 +244,16 @@ function getShippingByName($cSearch)
     foreach ($cSearch_arr as $cSearchPos) {
         trim($cSearchPos);
         if (strlen($cSearchPos) > 2) {
-            $shippingByName_arr = Shop::Container()->getDB()->query(
+            $shippingByName_arr = Shop::Container()->getDB()->queryPrepared(
                 "SELECT va.kVersandart, va.cName
                     FROM tversandart AS va
                     LEFT JOIN tversandartsprache AS vs 
                         ON vs.kVersandart = va.kVersandart
-                        AND vs.cName LIKE '%" . Shop::Container()->getDB()->escape($cSearchPos) . "%'
-                    WHERE va.cName LIKE '%" . Shop::Container()->getDB()->escape($cSearchPos) . "%' 
-                    OR vs.cName LIKE '%" . Shop::Container()->getDB()->escape($cSearchPos) . "%'", 2
+                        AND vs.cName LIKE :search
+                    WHERE va.cName LIKE :search
+                    OR vs.cName LIKE :search",
+                ['search' => '%' . $cSearchPos . '%'],
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             if (!empty($shippingByName_arr)) {
                 if (count($shippingByName_arr) > 1) {

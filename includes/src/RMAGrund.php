@@ -61,8 +61,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         {
             $oObj = Shop::Container()->getDB()->query(
                 "SELECT *
-                  FROM trmagrund
-                  WHERE kRMAGrund = " . (int)$kRMAGrund, 1
+                    FROM trmagrund
+                    WHERE kRMAGrund = " . (int)$kRMAGrund,
+                \DB\ReturnType::SINGLE_OBJECT
             );
 
             if ($oObj->kRMAGrund > 0) {
@@ -74,12 +75,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Store the class in the database
-         *
-         * @param bool $bPrim - Controls the return of the method
+         * @param bool $bPrim
          * @return bool|int
          */
-        public function save($bPrim = true)
+        public function save(bool $bPrim = true)
         {
             $oObj        = new stdClass();
             $cMember_arr = array_keys(get_object_vars($this));
@@ -101,8 +100,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Update the class in the database
-         *
          * @return int
          */
         public function update()
@@ -115,13 +112,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                        cGrund = '" . $this->cGrund . "',
                        cKommentar = '" . $this->cKommentar . "',
                        nAktiv = " . $this->nAktiv . "
-                   WHERE kRMAGrund = " . $this->kRMAGrund, 3
+                   WHERE kRMAGrund = " . $this->kRMAGrund,
+                \DB\ReturnType::AFFECTED_ROWS
             );
         }
 
         /**
-         * Delete the class in the database
-         *
          * @return int
          */
         public function delete()
@@ -320,7 +316,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                         FROM trmagrund
                         WHERE kSprache = " . $kSprache . "
                         " . $cSQL . "
-                        ORDER BY nSort", 2
+                        ORDER BY nSort",
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
 
                 if (is_array($oObj_arr) && count($oObj_arr) > 0) {

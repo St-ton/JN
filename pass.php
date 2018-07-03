@@ -8,19 +8,16 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 Shop::setPageType(PAGE_PASSWORTVERGESSEN);
 
-$AktuelleSeite                   = 'PASSWORT VERGESSEN';
-Shop::$AktuelleSeite             = 'PASSWORT VERGESSEN';
-$Einstellungen                   = Shop::getSettings([CONF_GLOBAL, CONF_RSS]);
-$GLOBALS['GlobaleEinstellungen'] = array_merge($GLOBALS['GlobaleEinstellungen'], $Einstellungen);
-$linkHelper                      = LinkHelper::getInstance();
-$kLink                           = $linkHelper->getSpecialPageLinkKey(LINKTYP_PASSWORD_VERGESSEN);
-$AktuelleKategorie               = new Kategorie(verifyGPCDataInteger('kategorie'));
-$AufgeklappteKategorien          = new KategorieListe();
-$startKat                        = new Kategorie();
-$startKat->kKategorie            = 0;
-$step                            = 'formular';
-$hinweis                         = '';
-$cFehler                         = '';
+$AktuelleSeite          = 'PASSWORT VERGESSEN';
+Shop::$AktuelleSeite    = 'PASSWORT VERGESSEN';
+$Einstellungen          = Shop::getSettings([CONF_GLOBAL, CONF_RSS]);
+$linkHelper             = Shop::Container()->getLinkService();
+$kLink                  = $linkHelper->getSpecialPageLinkKey(LINKTYP_PASSWORD_VERGESSEN);
+$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
+$AufgeklappteKategorien = new KategorieListe();
+$step                   = 'formular';
+$hinweis                = '';
+$cFehler                = '';
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 //loginbenutzer?
 if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwort_vergessen'] === 1) {
@@ -58,9 +55,8 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
                     Shop::Container()->getDB()->delete('tpasswordreset', 'kKunde', $customer->kKunde);
                     header('Location: ' . $linkHelper->getStaticRoute('jtl.php') . '?updated_pw=true');
                     exit();
-                } else {
-                    $cFehler = Shop::Lang()->get('invalidCustomer', 'account data');
                 }
+                $cFehler = Shop::Lang()->get('invalidCustomer', 'account data');
             } else {
                 $cFehler = Shop::Lang()->get('invalidHash', 'account data');
             }
@@ -93,9 +89,7 @@ $cMetaDescription = $oMeta->cDesc;
 $cMetaKeywords    = $oMeta->cKeywords;
 Shop::Smarty()->assign('step', $step)
     ->assign('hinweis', $hinweis)
-    ->assign('cFehler', $cFehler)
-    ->assign('Navigation', createNavigation($AktuelleSeite))
-    ->assign('requestURL', $requestURL ?? null);
+    ->assign('cFehler', $cFehler);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 Shop::Smarty()->display('account/password.tpl');

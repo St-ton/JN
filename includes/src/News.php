@@ -415,7 +415,7 @@ class News extends MainModel
         if ($kKey > 0) {
             $kSprache = Shop::getLanguage();
             if ($kSprache <= 0) {
-                $oSprache = gibStandardsprache();
+                $oSprache = Sprache::getDefaultLanguage();
                 $kSprache = (int)$oSprache->kSprache;
             }
 
@@ -432,9 +432,10 @@ class News extends MainModel
                         AND tnewskommentar.nAktiv = 1
                     WHERE tnews.kNews = {$kKey}
                     GROUP BY tnews.kNews
-                    LIMIT 1", 1
+                    LIMIT 1",
+                \DB\ReturnType::SINGLE_OBJECT
             );
-            $oObj->cUrl = baueURL($oObj, URLART_NEWS);
+            $oObj->cUrl = UrlHelper::buildURL($oObj, URLART_NEWS);
 
             $this->loadObject($oObj);
         }
@@ -479,10 +480,10 @@ class News extends MainModel
         }
         $kSprache = Shop::getLanguage();
         if ($kSprache <= 0) {
-            $oSprache = gibStandardsprache();
+            $oSprache = Sprache::getDefaultLanguage();
             $kSprache = (int)$oSprache->kSprache;
         }
-        $oObj_arr = Shop::Container()->getDB()->query(
+        $oObj_arr  = Shop::Container()->getDB()->query(
             "SELECT tseo.cSeo, tnews.*, DATE_FORMAT(tnews.dGueltigVon, '%Y,%m,%d') AS dGueltigVonJS, 
                 COUNT(DISTINCT(tnewskommentar.kNewsKommentar)) AS nNewsKommentarAnzahl
                 FROM tnews
@@ -500,20 +501,16 @@ class News extends MainModel
                 {$cSqlActive}
                 GROUP BY tnews.kNews
                 {$cSqlOrder}
-                {$cSqlLimit}", 2
+                {$cSqlLimit}",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-
-        if (is_array($oObj_arr) && count($oObj_arr) > 0) {
-            $oNews_arr = [];
-            foreach ($oObj_arr as $oObj) {
-                $oObj->cUrl    = baueURL($oObj, URLART_NEWS);
-                $oObj->cUrlExt = Shop::getURL() . "/{$oObj->cUrl}";
-                $oNews_arr[]   = new self(null, $oObj);
-            }
-
-            return $oNews_arr;
+        $oNews_arr = [];
+        foreach ($oObj_arr as $oObj) {
+            $oObj->cUrl    = UrlHelper::buildURL($oObj, URLART_NEWS);
+            $oObj->cUrlExt = Shop::getURL() . "/{$oObj->cUrl}";
+            $oNews_arr[]   = new self(null, $oObj);
         }
 
-        return [];
+        return $oNews_arr;
     }
 }

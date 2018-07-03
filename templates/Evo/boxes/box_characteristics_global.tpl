@@ -1,21 +1,12 @@
-{if isset($oBox->globaleMerkmale) && $oBox->globaleMerkmale|@count > 0}
-    {assign var=gmma value=$oBox->globaleMerkmale}
-{elseif isset($Boxen.oGlobalMerkmal_arr) && $Boxen.oGlobalMerkmal_arr|@count > 0}
-    {assign var=gmma value=$Boxen.oGlobalMerkmal_arr}
-{else}
-    {assign var=gmma value=""}
-{/if}
-
-{foreach name=globalemerkmale from=$gmma item=oMerkmal}
-    {if !empty($oMerkmal)}
-    <section class="panel panel-default box box-global-characteristics" id="sidebox{$oBox->kBox}">
+{foreach $oBox->getItems() as $oMerkmal}
+    <section class="panel panel-default box box-global-characteristics" id="sidebox{$oBox->getID()}">
         <div class="panel-heading">
-            <h5 class="panel-title">
-            {if !empty($oMerkmal->cBildpfadKlein) && $oMerkmal->cBildpfadKlein !== $BILD_KEIN_MERKMALBILD_VORHANDEN}
+            <div class="panel-title">
+            {if !empty($oMerkmal->cBildpfadKlein) && $oMerkmal->cBildpfadKlein !== $smarty.const.BILD_KEIN_MERKMALBILD_VORHANDEN}
                 <img src="{$oMerkmal->cBildURLKlein}" alt="" class="vmiddle" />
             {/if}
             {$oMerkmal->cName}
-            </h5>
+            </div>
         </div>
         <div class="box-body">
             {if ($oMerkmal->cTyp === 'SELECTBOX') && $oMerkmal->oMerkmalWert_arr|@count > 1}
@@ -57,5 +48,4 @@
             {/if}
         </div>
     </section>
-    {/if}
 {/foreach}

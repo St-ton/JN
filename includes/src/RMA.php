@@ -55,8 +55,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Loads database member into class member
-         *
          * @param int  $kRMA
          * @param bool $bCustomer
          * @param bool $bRMAArtikel
@@ -82,7 +80,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                     $oObj_arr              = Shop::Container()->getDB()->query("
                         SELECT kRMA, kArtikel
                             FROM trmaartikel
-                            WHERE kRMA = " . (int)$kRMA, 2
+                            WHERE kRMA = " . (int)$kRMA,
+                        \DB\ReturnType::ARRAY_OF_OBJECTS
                     );
 
                     if (is_array($oObj_arr) && count($oObj_arr) > 0) {
@@ -102,9 +101,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Store the class in the database
-         *
-         * @param bool $bPrim - Controls the return of the method
+         * @param bool $bPrim
          * @return bool|int
          */
         public function save($bPrim = true)
@@ -134,8 +131,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * Update the class in the database
-         *
          * @return int
          */
         public function update()
@@ -147,13 +142,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                        kRMAStatus = " . $this->kRMAStatus . ",
                        cRMANumber = '" . $this->cRMANumber . "',
                        dErstellt = '" . $this->dErstellt . "'
-                   WHERE kRMA = " . $this->kRMA, 3
+                   WHERE kRMA = " . $this->kRMA,
+                \DB\ReturnType::AFFECTED_ROWS
             );
         }
 
         /**
-         * Delete the class in the database
-         *
          * @return int
          */
         public function delete()
@@ -314,7 +308,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                         WHERE kKunde = " . $kKunde . "
                             AND cStatus = '4'
                             " . $cSQL . "
-                        ORDER BY kBestellung DESC", 2
+                        ORDER BY kBestellung DESC",
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
 
                 if (is_array($oBestellungTMP_arr) && count($oBestellungTMP_arr) > 0) {
@@ -331,17 +326,14 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * @param $kBestellung
+         * @param int $kBestellung
          * @return Bestellung
          */
-        public static function getOrderProducts($kBestellung)
+        public static function getOrderProducts(int $kBestellung)
         {
-            $kBestellung = (int)$kBestellung;
             $oBestellung = new Bestellung();
-
             if ($kBestellung > 0) {
                 $oBestellung = new Bestellung($kBestellung, true);
-
                 if (isset($oBestellung->kBestellung, $oBestellung->Positionen)
                     && $oBestellung->kBestellung > 0
                     && is_array($oBestellung->Positionen)
@@ -452,10 +444,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         }
 
         /**
-         * @param $kKunde
-         * @param $kBestellung
-         * @param $kArtikel_arr
-         * @param $cRMAPostAssoc_arr
+         * @param int   $kKunde
+         * @param int   $kBestellung
+         * @param array $kArtikel_arr
+         * @param array $cRMAPostAssoc_arr
          * @return bool
          */
         public static function isRMAAlreadySend($kKunde, $kBestellung, $kArtikel_arr, &$cRMAPostAssoc_arr)
@@ -463,7 +455,13 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
             $kKunde      = (int)$kKunde;
             $kBestellung = (int)$kBestellung;
 
-            if (!$kKunde || !$kBestellung || !is_array($kArtikel_arr) || count($kArtikel_arr) === 0 || !is_array($cRMAPostAssoc_arr) || count($cRMAPostAssoc_arr) === 0) {
+            if (!$kKunde
+                || !$kBestellung
+                || !is_array($kArtikel_arr)
+                || count($kArtikel_arr) === 0
+                || !is_array($cRMAPostAssoc_arr)
+                || count($cRMAPostAssoc_arr) === 0
+            ) {
                 return true;
             }
 
@@ -528,7 +526,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                 "SELECT kRMA
                     FROM trma
                     ORDER BY kRMA DESC
-                    LIMIT 1", 1
+                    LIMIT 1",
+                \DB\ReturnType::SINGLE_OBJECT
             );
 
             $kRMA = 1;
@@ -581,7 +580,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                     FROM tbestellung
                     " . $cSQL . "
                     ORDER BY kBestellung ASC
-                    LIMIT 1", 1
+                    LIMIT 1",
+                \DB\ReturnType::SINGLE_OBJECT
             );
 
             if (isset($oObj->kBestellung) && $oObj->kBestellung > 0) {
@@ -670,7 +670,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                     "SELECT kRMA
                         FROM trma
                         WHERE kKunde = " . $kKunde . "
-                        ORDER BY dErstellt DESC", 2
+                        ORDER BY dErstellt DESC",
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
 
                 if (is_array($oObj_arr) && count($oObj_arr) > 0) {
@@ -697,7 +698,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
             $oObj_arr = Shop::Container()->getDB()->query(
                 "SELECT kRMA
                     FROM trma
-                    ORDER BY dErstellt DESC", 2
+                    ORDER BY dErstellt DESC",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
 
             if (is_array($oObj_arr) && count($oObj_arr) > 0) {
@@ -822,7 +824,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                     if (isset($_SESSION['kSprache'])) {
                         $kSprache = $_SESSION['kSprache'];
                     } else {
-                        $oSprache = gibStandardsprache(true);
+                        $oSprache = Sprache::getDefaultLanguage(true);
                         $kSprache = $oSprache->kSprache;
                     }
                 }

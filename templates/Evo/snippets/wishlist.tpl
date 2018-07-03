@@ -101,40 +101,42 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {foreach name=wunschlistepos from=$CWunschliste->CWunschlistePos_arr item=CWunschlistePos}
+                        {foreach $CWunschliste->CWunschlistePos_arr as $wlPosition}
                             <tr>
                                 <td class="img-col hidden-xs hidden-sm">
-                                    <a href="{$CWunschlistePos->Artikel->cURLFull}">
-                                        <img alt="{$CWunschlistePos->Artikel->cName}" src="{$CWunschlistePos->Artikel->cVorschaubildURL}" class="img-responsive">
+                                    <a href="{$wlPosition->Artikel->cURLFull}">
+                                        <img alt="{$wlPosition->Artikel->cName}" src="{$wlPosition->Artikel->cVorschaubildURL}" class="img-responsive">
                                     </a>
                                 </td>
                                 <td>
-                                    <a href="{$CWunschlistePos->Artikel->cURL}">{$CWunschlistePos->cArtikelName}</a>
-                                    {if $CWunschlistePos->Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
+                                    <a href="{$wlPosition->Artikel->cURL}">{$wlPosition->cArtikelName}</a>
+                                    {if $wlPosition->Artikel->getOption('nShowOnlyOnSEORequest', 0) === 1}
+                                        <p>{lang key="productOutOfStock" section="productDetails"}</p>
+                                    {elseif $wlPosition->Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
                                         <p>{lang key="priceOnApplication" section="global"}</p>
                                     {else}
-                                        {include file="productdetails/price.tpl" Artikel=$CWunschlistePos->Artikel tplscope="wishlist"}
+                                        {include file="productdetails/price.tpl" Artikel=$wlPosition->Artikel tplscope="wishlist"}
                                     {/if}
-                                    {foreach name=eigenschaft from=$CWunschlistePos->CWunschlistePosEigenschaft_arr item=CWunschlistePosEigenschaft}
+                                    {foreach name=eigenschaft from=$wlPosition->CWunschlistePosEigenschaft_arr item=CWunschlistePosEigenschaft}
                                         {if $CWunschlistePosEigenschaft->cFreifeldWert}
                                             <p>
                                             <b>{$CWunschlistePosEigenschaft->cEigenschaftName}:</b>
-                                            {$CWunschlistePosEigenschaft->cFreifeldWert}{if $CWunschlistePos->CWunschlistePosEigenschaft_arr|@count > 1 && !$smarty.foreach.eigenschaft.last}</p>{/if}
+                                            {$CWunschlistePosEigenschaft->cFreifeldWert}{if $wlPosition->CWunschlistePosEigenschaft_arr|@count > 1 && !$smarty.foreach.eigenschaft.last}</p>{/if}
                                         {else}
                                             <p>
                                             <b>{$CWunschlistePosEigenschaft->cEigenschaftName}:</b>
-                                            {$CWunschlistePosEigenschaft->cEigenschaftWertName}{if $CWunschlistePos->CWunschlistePosEigenschaft_arr|@count > 1 && !$smarty.foreach.eigenschaft.last}</p>{/if}
+                                            {$CWunschlistePosEigenschaft->cEigenschaftWertName}{if $wlPosition->CWunschlistePosEigenschaft_arr|@count > 1 && !$smarty.foreach.eigenschaft.last}</p>{/if}
                                         {/if}
                                     {/foreach}
                                 </td>
                                 <td>
-                                    <textarea{if $isCurrenctCustomer !== true} readonly="readonly"{/if} class="form-control" rows="4" name="Kommentar_{$CWunschlistePos->kWunschlistePos}">{$CWunschlistePos->cKommentar}</textarea>
+                                    <textarea{if $isCurrenctCustomer !== true} readonly="readonly"{/if} class="form-control" rows="4" name="Kommentar_{$wlPosition->kWunschlistePos}">{$wlPosition->cKommentar}</textarea>
                                 </td>
-                                {if $CWunschlistePos->Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === "N"}
+                                {if $wlPosition->Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === "N"}
                                     <td></td>
                                     <td class="text-right">
                                         <div class="btn-group-vertical">
-                                            <button href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}&wlplo={$CWunschlistePos->kWunschlistePos}{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}"
+                                            <button href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}&wlplo={$wlPosition->kWunschlistePos}{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}"
                                                class="btn btn-default"
                                                title="{lang key="wishlistremoveItem" section="login"}">
                                                 <span class="fa fa-trash-o"></span>
@@ -144,26 +146,26 @@
                                 {else}
                                     <td>
                                         <input{if $isCurrenctCustomer !== true} readonly="readonly"{/if}
-                                                name="Anzahl_{$CWunschlistePos->kWunschlistePos}"
+                                                name="Anzahl_{$wlPosition->kWunschlistePos}"
                                                 class="wunschliste_anzahl form-control" type="text" size="1"
-                                                value="{$CWunschlistePos->fAnzahl|replace_delim}"><br/>{$CWunschlistePos->Artikel->cEinheit}
+                                                value="{$wlPosition->fAnzahl|replace_delim}"><br/>{$wlPosition->Artikel->cEinheit}
                                     </td>
                                     <td class="text-right">
                                         <div class="btn-group-vertical">
-                                            {if $CWunschlistePos->Artikel->bHasKonfig}
-                                                <a href="{$CWunschlistePos->Artikel->cURLFull}" class="btn btn-primary"
+                                            {if $wlPosition->Artikel->bHasKonfig}
+                                                <a href="{$wlPosition->Artikel->cURLFull}" class="btn btn-primary"
                                                    title="{lang key="product" section="global"} {lang key="configure" section="global"}">
                                                     <span class="fa fa-gears"></span>
                                                 </a>
                                             {else}
-                                                <button name="addToCart" value="{$CWunschlistePos->kWunschlistePos}"
+                                                <button name="addToCart" value="{$wlPosition->kWunschlistePos}"
                                                         class="btn btn-primary"
                                                         title="{lang key="wishlistaddToCart" section="login"}">
                                                     <span class="fa fa-shopping-cart"></span>
                                                 </button>
                                             {/if}
                                             {if $isCurrenctCustomer === true}
-                                                <button name="remove" value="{$CWunschlistePos->kWunschlistePos}"
+                                                <button name="remove" value="{$wlPosition->kWunschlistePos}"
                                                    class="btn btn-default"
                                                    title="{lang key="wishlistremoveItem" section="login"}">
                                                     <span class="fa fa-trash-o"></span>

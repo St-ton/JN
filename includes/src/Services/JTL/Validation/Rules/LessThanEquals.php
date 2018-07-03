@@ -19,7 +19,7 @@ class LessThanEquals implements RuleInterface
 
     /**
      * LessThan constructor.
-     * @param $value
+     * @param mixed $value
      */
     public function __construct($value)
     {

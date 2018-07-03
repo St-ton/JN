@@ -83,8 +83,8 @@
                 <tbody>
                 {foreach from=$corruptedImages key=key item="corruptedImage"}
                     <tr>
-                        <td class="col-xs-6">{$corruptedImage->picture}</td>
-                        <td class="col-xs-6">
+                        <td class="col-xs-7 word-break-all">{$corruptedImage->picture}</td>
+                        <td class="col-xs-5">
                             {$moreCorruptedImages = false}
                             <div class="input-group">
                                 {foreach name='corruptedImageArticle' from=$corruptedImage->article item="article"}

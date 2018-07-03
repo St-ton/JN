@@ -8,51 +8,37 @@
                     <hr>
                 </div><!-- .panel-heading -->
                 <div class="panel-heading">
-                    {if $nPage > 0}
-                        <input type="checkbox" name="box_show" id="box_{$direction}_show"
-                               {if isset($bBoxenAnzeigen.$direction) && $bBoxenAnzeigen.$direction}checked{/if}>
-                        <label for="box_{$direction}_show">Container anzeigen</label>
-                    {else}
-                        {if isset($bBoxenAnzeigen.$direction) && $bBoxenAnzeigen.$direction}
-                            <input type="hidden" name="box_show" value="1" />
-                            <a href="boxen.php?action=container&position={$direction}&value=0&token={$smarty.session.jtl_token}"
-                               title="{$directionName} auf jeder Seite deaktivieren" class="btn btn-warning"
-                               data-toggle="tooltip" data-placement="right">
-                                <i class="fa fa-eye-slash"></i>
-                            </a>
-                        {else}
-                            <input type="hidden" name="box_show" value="0" />
-                            <a href="boxen.php?action=container&position={$direction}&value=1&token={$smarty.session.jtl_token}"
-                               title="{$directionName} auf jeder Seite aktivieren" class="btn btn-success"
-                               data-toggle="tooltip" data-placement="right">
-                                <i class="fa fa-eye"></i>
-                            </a>
-                        {/if}
-                    {/if}
+                    <input type="checkbox" name="box_show" id="box_{$direction}_show" value="1"
+                           {if isset($bBoxenAnzeigen.$direction) && $bBoxenAnzeigen.$direction}checked{/if}>
+                    <label for="box_{$direction}_show">Container anzeigen</label>
+
                 </div><!-- .panel-heading -->
                 {if $oBox_arr|@count > 0}
                     <ul class="list-group">
                         <li class="boxRow">
-                            <div class="col-sm-3 col-xs-4">
+                            <div class="col-sm-2">
                                 <strong>{#boxTitle#}</strong>
                             </div>
-                            <div class="col-sm-2 col-xs-3">
+                            <div class="col-sm-1">
                                 <strong>{#boxType#}</strong>
                             </div>
-                            <div class="col-sm-3 col-xs-4">
+                            <div class="col-sm-3">
                                 <strong>{#boxLabel#}</strong>
                             </div>
-                            <div class="col-sm-2 col-xs-6">
+                            <div class="col-sm-2">
+                                <strong>{#boxState#}</strong>
+                            </div>
+                            <div class="col-sm-2">
                                 <strong>{#boxSort#}</strong>
                             </div>
-                            <div class="col-sm-2 col-xs-6">
+                            <div class="col-sm-2">
                                 <strong>{#boxActions#}</strong>
                             </div>
                         </li>
-                        {foreach name="box" from=$oBox_arr item=oBox}
-                            {if $oBox->bContainer}
+                        {foreach $oBox_arr as $oBox}
+                            {if $oBox->getBaseType() === $smarty.const.BOX_CONTAINER}
                                 {include file="tpl_inc/box_single.tpl" oBox=$oBox nPage=$nPage position=$direction}
-                                {foreach from=$oBox->oContainer_arr item=oContainerBox}
+                                {foreach $oBox->getChildren() as $oContainerBox}
                                     {include file="tpl_inc/box_single.tpl" oBox=$oContainerBox nPage=$nPage position=$direction}
                                 {/foreach}
                             {else}

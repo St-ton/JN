@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  * @package jtl-shop
- * @since 4.07
+ * @since 5.0
  */
 
 /**
@@ -30,7 +30,7 @@ class CustomerFields
      * CustomerFields constructor.
      * @param int $langID
      */
-    public function __construct($langID)
+    public function __construct(int $langID)
     {
         $this->langID = $langID;
         $this->loadFields($langID);
@@ -58,7 +58,7 @@ class CustomerFields
     /**
      * @param int $langID
      */
-    protected function loadFields($langID)
+    protected function loadFields(int $langID)
     {
         $this->customerFields = [];
         $customerFields       = Shop::Container()->getDB()->selectAll('tkundenfeld', 'kSprache', $langID, '*', 'nSort ASC');
@@ -89,14 +89,14 @@ class CustomerFields
      */
     public function getCustomerFields()
     {
-        return deepCopy($this->customerFields);
+        return ObjectHelper::deepCopy($this->customerFields);
     }
 
     /**
      * @param int $kCustomerField
      * @return null|object
      */
-    public function getCustomerField($kCustomerField)
+    public function getCustomerField(int $kCustomerField)
     {
         return $this->customerFields[$kCustomerField] ?? null;
     }
@@ -126,10 +126,8 @@ class CustomerFields
      * @param int $kCustomerField
      * @return bool
      */
-    public function delete($kCustomerField)
+    public function delete(int $kCustomerField)
     {
-        $kCustomerField = (int)$kCustomerField;
-
         if ($kCustomerField !== 0) {
             $ret = Shop::Container()->getDB()->delete('tkundenattribut', 'kKundenfeld', $kCustomerField) >= 0
                 && Shop::Container()->getDB()->delete('tkundenfeldwert', 'kKundenfeld', $kCustomerField) >= 0
@@ -178,7 +176,7 @@ class CustomerFields
                                 AND tkundenfeldwert.cWert = tkundenattribut.cWert
                         )",
             ['kKundenfeld' => $kCustomerField],
-            NiceDB::RET_AFFECTED_ROWS
+            \DB\ReturnType::AFFECTED_ROWS
         );
     }
 
@@ -198,9 +196,7 @@ class CustomerFields
             $oldType                    = $this->customerFields[$key]->cTyp;
             $this->customerFields[$key] = clone $customerField;
             // this entities are not changeable
-            unset($customerField->kKundenfeld);
-            unset($customerField->kSprache);
-            unset($customerField->cWawi);
+            unset($customerField->kKundenfeld, $customerField->kSprache, $customerField->cWawi);
 
             $ret = Shop::Container()->getDB()->update('tkundenfeld', 'kKundenfeld', $key, $customerField) >= 0;
 
@@ -224,7 +220,7 @@ class CustomerFields
 	                            cWert =	CAST(CAST(cWert AS DOUBLE) AS CHAR)
                                 WHERE tkundenattribut.kKundenfeld = :kKundenfeld",
                             ['kKundenfeld' => $key],
-                            NiceDB::RET_AFFECTED_ROWS
+                            \DB\ReturnType::AFFECTED_ROWS
                         );
                         break;
                     case 'datum':
@@ -234,7 +230,7 @@ class CustomerFields
 	                            cWert =	DATE_FORMAT(STR_TO_DATE(cWert, '%d.%m.%Y'), '%d.%m.%Y')
                                 WHERE tkundenattribut.kKundenfeld = :kKundenfeld",
                             ['kKundenfeld' => $key],
-                            NiceDB::RET_AFFECTED_ROWS
+                            \DB\ReturnType::AFFECTED_ROWS
                         );
                         break;
                     case 'text':

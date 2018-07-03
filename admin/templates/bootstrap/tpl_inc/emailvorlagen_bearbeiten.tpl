@@ -108,6 +108,17 @@
                                 </select>
                             </span>
                         </div>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <label for="nDSE">{#emailAddDSE#}</label>
+                            </span>
+                            <span class="input-group-wrap">
+                                <select id="nDSE" name="nDSE" class="form-control">
+                                    <option value="0"{if $Emailvorlage->nDSE == "0"} selected{/if}>{#no#}</option>
+                                    <option value="1"{if $Emailvorlage->nDSE == "1"} selected{/if}>{#yes#}</option>
+                                </select>
+                            </span>
+                        </div>
                     </div>
                 </div>
             {else}
@@ -214,6 +225,7 @@
             <div class="btn-group">
                 <button type="submit" name="continue" value="0" class="btn btn-primary"><i class="fa fa-save"></i> {#save#}</button>
                 <button type="submit" name="continue" value="1" class="btn btn-default">{#saveAndContinue#}</button>
+                <a href="emailvorlagen.php" value="{#cancel#}" class="btn btn-danger"><i class="fa fa-exclamation"></i> {#cancel#}</a>
             </div>
         </div>
     </form>

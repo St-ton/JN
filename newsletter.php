@@ -22,14 +22,9 @@ foreach ($links as $l) {
         break;
     }
 }
-$Link       = new stdClass();
-$linkHelper = LinkHelper::getInstance();
+$linkHelper = Shop::Container()->getLinkService();
 if (isset($oLink->kLink) && $oLink->kLink > 0) {
-    $Link          = $linkHelper->getPageLink($oLink->kLink);
-    $requestURL    = baueURL($Link, URLART_SEITE);
-    $sprachURL     = $Link->languageURLs ?? baueSprachURLS($Link, URLART_SEITE);
-    $Link->Sprache = $linkHelper->getPageLinkLanguage($oLink->kLink);
-    Shop::Smarty()->assign('Navigation', createNavigation($AktuelleSeite, 0, 0, $Link->Sprache->cName, $requestURL));
+    $link = $linkHelper->getLinkByID($oLink->kLink);
 } else {
     $oLink                   = Shop::Container()->getDB()->select('tlink', 'nLinkart', LINKTYP_404);
     $bFileNotFound           = true;
@@ -37,7 +32,6 @@ if (isset($oLink->kLink) && $oLink->kLink > 0) {
     Shop::$bFileNotFound     = true;
     Shop::$is404             = true;
     $cParameter_arr['is404'] = true;
-    require_once PFAD_ROOT . 'seite.php';
     return;
 }
 
@@ -47,10 +41,8 @@ $cCanonicalURL = '';
 $Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_NEWSLETTER]);
 
 //hole alle OberKategorien
-$AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
+$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
-$startKat               = new Kategorie();
-$startKat->kKategorie   = 0;
 $cOption                = 'eintragen';
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 // Freischaltcode wurde übergeben
@@ -79,7 +71,7 @@ if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
         // Protokollieren (freigeschaltet)
         $upd           = new stdClass();
         $upd->dOptCode = 'now()';
-        $upd->cOptIp   = gibIP();
+        $upd->cOptIp   = RequestHelper::getIP();
         Shop::Container()->getDB()->update(
             'tnewsletterempfaengerhistory',
             ['cOptCode', 'cAktion'],
@@ -117,7 +109,7 @@ if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
         $hist->dEingetragen = $recicpient->dEingetragen;
         $hist->dAusgetragen = 'now()';
         $hist->dOptCode     = '0000-00-00';
-        $hist->cRegIp       = gibIP(); // IP of the current event-issuer
+        $hist->cRegIp       = RequestHelper::getIP(); // IP of the current event-issuer
 
         Shop::Container()->getDB()->insert('tnewsletterempfaengerhistory', $hist);
 
@@ -152,13 +144,13 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
     $oKunde->cEmail    = isset($_POST['cEmail'])
         ? StringHandler::filterXSS(Shop::Container()->getDB()->escape(strip_tags($_POST['cEmail'])))
         : null;
-    $oKunde->cRegIp    = gibIP(); // IP of the current event-issuer
+    $oKunde->cRegIp    = RequestHelper::getIP(); // IP of the current event-issuer
 
-    if (!pruefeEmailblacklist($oKunde->cEmail)) {
+    if (!SimpleMail::checkBlacklist($oKunde->cEmail)) {
         Shop::Smarty()->assign('oPlausi', fuegeNewsletterEmpfaengerEin($oKunde, true));
         Shop::Container()->getDB()->delete('tnewsletterempfaengerblacklist', 'cMail', $oKunde->cEmail);
     } else {
-        $cFehler .= valid_email($_POST['cEmail'])
+        $cFehler .= StringHandler::filterEmailAddress($_POST['cEmail']) !== false
             ? (Shop::Lang()->get('kwkEmailblocked', 'errorMessages') . '<br />')
             : (Shop::Lang()->get('invalidEmail') . '<br />');
     }
@@ -172,7 +164,7 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
         : null;
     Shop::Smarty()->assign('oPlausi', $oPlausi);
 } elseif (isset($_POST['abmelden']) && (int)$_POST['abmelden'] === 1) { // Abmelden
-    if (valid_email($_POST['cEmail'])) {
+    if (StringHandler::filterEmailAddress($_POST['cEmail']) !== false) {
         // Pruefen, ob Email bereits vorhanden
         $recicpient = Shop::Container()->getDB()->select(
             'tnewsletterempfaenger',
@@ -204,7 +196,7 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
             $hist->dEingetragen = $recicpient->dEingetragen;
             $hist->dAusgetragen = 'now()';
             $hist->dOptCode     = '0000-00-00';
-            $hist->cRegIp       = gibIP(); // IP of the current event-issuer
+            $hist->cRegIp       = RequestHelper::getIP(); // IP of the current event-issuer
 
             Shop::Container()->getDB()->insert('tnewsletterempfaengerhistory', $hist);
 
@@ -263,7 +255,7 @@ Shop::Smarty()->assign('hinweis', $cHinweis)
     ->assign('fehler', $cFehler)
     ->assign('cOption', $cOption)
     ->assign('nAnzeigeOrt', CHECKBOX_ORT_NEWSLETTERANMELDUNG)
-    ->assign('code_newsletter', generiereCaptchaCode($Einstellungen['newsletter']['newsletter_sicherheitscode']));
+    ->assign('code_newsletter', false);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 

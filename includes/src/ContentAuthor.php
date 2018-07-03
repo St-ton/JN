@@ -17,25 +17,21 @@ class ContentAuthor
      * @param int|null $authorID
      * @return int|boolean
      */
-    public function setAuthor($realm, $contentID, $authorID = null)
+    public function setAuthor(string $realm, int $contentID, int $authorID = null)
     {
-        if ($authorID === null || (int)$authorID === 0) {
+        if ($authorID === null || $authorID === 0) {
             $account = $GLOBALS['oAccount']->account();
-
             if ($account !== false) {
                 $authorID = $account->kAdminlogin;
             }
         }
-
-        $authorID  = (int)$authorID;
-        $contentID = (int)$contentID;
-
         if ($authorID > 0) {
             return Shop::Container()->getDB()->query(
                 "INSERT INTO tcontentauthor (cRealm, kAdminlogin, kContentId)
                     VALUES('" . $realm . "', " . $authorID . ", " . $contentID . ")
                     ON DUPLICATE KEY UPDATE
-                        kAdminlogin = " . $authorID, 4
+                        kAdminlogin = " . $authorID,
+                \DB\ReturnType::DEFAULT
             );
         }
 
@@ -44,7 +40,7 @@ class ContentAuthor
 
     /**
      * @param string $realm
-     * @param int $contentID
+     * @param int    $contentID
      */
     public function clearAuthor($realm, $contentID)
     {
@@ -52,34 +48,36 @@ class ContentAuthor
     }
 
     /**
-     * @param string $realm
-     * @param int $contentID
+     * @param string  $realm
+     * @param int     $contentID
      * @param boolean $activeOnly
      * @return object
      */
-    public function getAuthor($realm, $contentID, $activeOnly = false)
+    public function getAuthor(string $realm, int $contentID, bool $activeOnly = false)
     {
-        $filter = $activeOnly ? 'AND tadminlogin.bAktiv = 1
-                    AND COALESCE(tadminlogin.dGueltigBis, NOW()) >= NOW()' : '';
-
-        $author  = Shop::Container()->getDB()->query(
+        $filter = $activeOnly
+            ? 'AND tadminlogin.bAktiv = 1
+                    AND COALESCE(tadminlogin.dGueltigBis, NOW()) >= NOW()'
+            : '';
+        $author = Shop::Container()->getDB()->queryPrepared(
             "SELECT tcontentauthor.kContentAuthor, tcontentauthor.cRealm, 
                 tcontentauthor.kAdminlogin, tcontentauthor.kContentId,
                 tadminlogin.cName, tadminlogin.cMail
                 FROM tcontentauthor
                 INNER JOIN tadminlogin 
                     ON tadminlogin.kAdminlogin = tcontentauthor.kAdminlogin
-                WHERE tcontentauthor.cRealm = '" . $realm . "'
-                    AND tcontentauthor.kContentId = " . (int)$contentID . "
-                    $filter", 1
+                WHERE tcontentauthor.cRealm = :realm
+                    AND tcontentauthor.kContentId = :contentid " . $filter,
+            ['realm' => $realm, 'contentid' => $contentID],
+            \DB\ReturnType::SINGLE_OBJECT
         );
-
-        if (is_object($author) && (int)$author->kAdminlogin > 0) {
-            $attribs = Shop::Container()->getDB()->query(
+        if (isset($author->kAdminlogin) && (int)$author->kAdminlogin > 0) {
+            $attribs            = Shop::Container()->getDB()->query(
                 "SELECT tadminloginattribut.kAttribut, tadminloginattribut.cName, 
                     tadminloginattribut.cAttribValue, tadminloginattribut.cAttribText
                     FROM tadminloginattribut
-                    WHERE tadminloginattribut.kAdminlogin = " . (int)$author->kAdminlogin, 2
+                    WHERE tadminloginattribut.kAdminlogin = " . (int)$author->kAdminlogin,
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             $author->extAttribs = [];
             foreach ($attribs as $attrib) {
@@ -92,9 +90,9 @@ class ContentAuthor
 
     /**
      * @param array|null $adminRights
-     * @return array of objects
+     * @return array
      */
-    public function getPossibleAuthors(array $adminRights = null)
+    public function getPossibleAuthors(array $adminRights = null): array
     {
         $filter = '';
         if ($adminRights !== null && is_array($adminRights)) {
@@ -113,7 +111,8 @@ class ContentAuthor
                 WHERE tadminlogin.bAktiv = 1
                     AND COALESCE(tadminlogin.dGueltigBis, NOW()) >= NOW()
                     AND tadminlogin.kAdminlogin > 1
-                    $filter", 2
+                    $filter",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
 }

@@ -11,39 +11,31 @@ Shop::run();
 Shop::setPageType(PAGE_BEWERTUNG);
 $cParameter_arr = Shop::getParameters();
 $Einstellungen  = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_BEWERTUNG]);
+
 // Bewertung in die Datenbank speichern
 if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
-    if (pruefeKundeArtikelBewertet($cParameter_arr['kArtikel'], $_SESSION['Kunde']->kKunde)) {
-        $artikel = (new Artikel())->fuelleArtikel($cParameter_arr['kArtikel'], Artikel::getDefaultOptions());
-        $url     = empty($artikel->cURLFull)
-            ? (Shop::getURL() . '/?a=' . $cParameter_arr['kArtikel'])
-            : ($artikel->cURLFull . '?');
-        header('Location: ' . $url . 'bewertung_anzeigen=1&cFehler=f02', true, 301);
-        exit();
-    }
-    // Versuche die Bewertung zu speichern
     speicherBewertung(
         $cParameter_arr['kArtikel'],
-        $_SESSION['Kunde']->kKunde,
+        Session::Customer()->getID(),
         Shop::getLanguage(),
-        verifyGPDataString('cTitel'),
-        verifyGPDataString('cText'),
+        RequestHelper::verifyGPDataString('cTitel'),
+        RequestHelper::verifyGPDataString('cText'),
         $cParameter_arr['nSterne']
     );
 } elseif (isset($_POST['bhjn']) && (int)$_POST['bhjn'] === 1) { // Hilfreich abspeichern
     speicherHilfreich(
         $cParameter_arr['kArtikel'],
-        $_SESSION['Kunde']->kKunde,
+        Session::Customer()->getID(),
         Shop::getLanguage(),
-        verifyGPCDataInteger('btgseite'),
-        verifyGPCDataInteger('btgsterne')
+        RequestHelper::verifyGPCDataInt('btgseite'),
+        RequestHelper::verifyGPCDataInt('btgsterne')
     );
-} elseif (verifyGPCDataInteger('bfa') === 1) {
+} elseif (RequestHelper::verifyGPCDataInt('bfa') === 1) {
     // Prüfe, ob Kunde eingeloggt
     if (empty($_SESSION['Kunde']->kKunde)) {
-        $helper = LinkHelper::getInstance();
+        $helper = Shop::Container()->getLinkService();
         header('Location: ' . $helper->getStaticRoute('jtl.php') .
-                '?a=' . verifyGPCDataInteger('a') .
+                '?a=' . RequestHelper::verifyGPCDataInt('a') .
                 '&bfa=1&r=' . R_LOGIN_BEWERTUNG,
             true,
             303
@@ -59,8 +51,6 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
         exit;
     }
     $AufgeklappteKategorien = new KategorieListe();
-    $startKat               = new Kategorie();
-    $startKat->kKategorie   = 0;
     if ($AktuellerArtikel->Bewertungen === null) {
         $AktuellerArtikel->holeBewertung(
             Shop::getLanguage(),
@@ -82,15 +72,11 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
     Shop::Smarty()->assign('BereitsBewertet', pruefeKundeArtikelBewertet(
         $AktuellerArtikel->kArtikel,
         $_SESSION['Kunde']->kKunde))
-        ->assign('Navigation', createNavigation(
-            $AktuelleSeite,
-            0,
-            0,
-            Shop::Lang()->get('bewertung', 'breadcrumb'),
-            'bewertung.php?a=' . $AktuellerArtikel->kArtikel . '&bfa=1'))
         ->assign('Artikel', $AktuellerArtikel)
-        ->assign('requestURL', $requestURL ?? null)
-        ->assign('sprachURL', $sprachURL ?? null);
+        ->assign('oBewertung', Shop::Container()->getDB()->select(
+            'tbewertung',
+            ['kArtikel', 'kKunde'],
+            [$AktuellerArtikel->kArtikel, Session::Customer()->getID()]));
 
     require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
     Shop::Smarty()->display('productdetails/review_form.tpl');

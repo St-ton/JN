@@ -5,7 +5,7 @@
  */
 require_once __DIR__ . '/includes/globalinclude.php';
 set_exception_handler(function ($e) {
-    header(makeHTTPHeader(404));
+    header(RequestHelper::makeHTTPHeader(404));
     echo $e->getMessage();
     exit;
 });

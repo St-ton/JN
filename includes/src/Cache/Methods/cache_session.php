@@ -12,6 +12,7 @@ use Cache\JTLCacheTrait;
 /**
  * Class cache_session
  * Implements caching via PHP $_SESSION object
+ * @package Cache\Methods
  */
 class cache_session implements ICachingMethod
 {
@@ -33,12 +34,9 @@ class cache_session implements ICachingMethod
     }
 
     /**
-     * @param string   $cacheID
-     * @param mixed    $content
-     * @param int|null $expiration
-     * @return bool
+     * @inheritdoc
      */
-    public function store($cacheID, $content, $expiration = null) : bool
+    public function store($cacheID, $content, $expiration = null): bool
     {
         $_SESSION[$this->options['prefix'] . $cacheID] = [
             'value'     => $content,
@@ -50,11 +48,9 @@ class cache_session implements ICachingMethod
     }
 
     /**
-     * @param array    $keyValue
-     * @param int|null $expiration
-     * @return bool
+     * @inheritdoc
      */
-    public function storeMulti($keyValue, $expiration = null)
+    public function storeMulti($keyValue, $expiration = null): bool
     {
         foreach ($keyValue as $_key => $_value) {
             $this->store($_key, $_value, $expiration);
@@ -64,8 +60,7 @@ class cache_session implements ICachingMethod
     }
 
     /**
-     * @param string $cacheID
-     * @return bool|mixed
+     * @inheritdoc
      */
     public function load($cacheID)
     {
@@ -85,32 +80,30 @@ class cache_session implements ICachingMethod
     }
 
     /**
-     * @param array $cacheIDs
-     * @return array
+     * @inheritdoc
      */
-    public function loadMulti($cacheIDs)
+    public function loadMulti(array $cacheIDs): array
     {
         $res = [];
         foreach ($cacheIDs as $_cid) {
-            $res[$_cid] = $this->load($cacheIDs);
+            $res[$_cid] = $this->load($_cid);
         }
 
         return $res;
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
-    public function isAvailable() : bool
+    public function isAvailable(): bool
     {
         return $_SESSION !== null;
     }
 
     /**
-     * @param string $cacheID
-     * @return bool
+     * @inheritdoc
      */
-    public function flush($cacheID) : bool
+    public function flush($cacheID): bool
     {
         unset($_SESSION[$this->options['prefix'] . $cacheID]);
 
@@ -118,9 +111,9 @@ class cache_session implements ICachingMethod
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
-    public function flushAll() : bool
+    public function flushAll(): bool
     {
         foreach ($_SESSION as $_sessionKey => $_sessionValue) {
             if (strpos($_sessionKey, $this->options['prefix']) === 0) {
@@ -132,18 +125,17 @@ class cache_session implements ICachingMethod
     }
 
     /**
-     * @param string $cacheID
-     * @return bool
+     * @inheritdoc
      */
-    public function keyExists($cacheID) : bool
+    public function keyExists($cacheID): bool
     {
         return isset($_SESSION[$this->options['prefix'] . $cacheID]);
     }
 
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function getStats() : array
+    public function getStats(): array
     {
         $num = 0;
         $tmp = [];

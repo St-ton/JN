@@ -74,9 +74,9 @@ class Emailhistory
      * @param int $kEmailhistory
      * @return $this
      */
-    protected function loadFromDB($kEmailhistory)
+    protected function loadFromDB(int $kEmailhistory): self
     {
-        $oObj = Shop::Container()->getDB()->select('temailhistory', 'kEmailhistory', (int)$kEmailhistory);
+        $oObj = Shop::Container()->getDB()->select('temailhistory', 'kEmailhistory', $kEmailhistory);
         if (isset($oObj->kEmailhistory) && $oObj->kEmailhistory > 0) {
             $cMember_arr = array_keys(get_object_vars($oObj));
             foreach ($cMember_arr as $cMember) {
@@ -92,7 +92,7 @@ class Emailhistory
      * @return bool|int
      * @throws Exception
      */
-    public function save($bPrim = true)
+    public function save(bool $bPrim = true)
     {
         $oObj        = new stdClass();
         $cMember_arr = array_keys(get_object_vars($this));
@@ -117,7 +117,7 @@ class Emailhistory
      * @return int
      * @throws Exception
      */
-    public function update()
+    public function update(): int
     {
         $cQuery      = 'UPDATE temailhistory SET ';
         $cSet_arr    = [];
@@ -136,7 +136,7 @@ class Emailhistory
             $cQuery .= implode(', ', $cSet_arr);
             $cQuery .= " WHERE kEmailhistory = {$this->getEmailhistory()}";
 
-            return Shop::Container()->getDB()->query($cQuery, 3);
+            return Shop::Container()->getDB()->query($cQuery, \DB\ReturnType::AFFECTED_ROWS);
         }
         throw new Exception('ERROR: Object has no members!');
     }
@@ -144,7 +144,7 @@ class Emailhistory
     /**
      * @return int
      */
-    public function delete()
+    public function delete(): int
     {
         return Shop::Container()->getDB()->delete('temailhistory', 'kEmailhistory', $this->getEmailhistory());
     }
@@ -153,44 +153,53 @@ class Emailhistory
      * @param string $cSqlLimit
      * @return array
      */
-    public function getAll($cSqlLimit = '')
+    public function getAll($cSqlLimit = ''): array
     {
         if ($cSqlLimit === null) {
             $cSqlLimit = '';
         }
-        $oObj_arr = Shop::Container()->getDB()->query("SELECT * FROM temailhistory ORDER BY dSent DESC" . $cSqlLimit, 2);
-        if (is_array($oObj_arr) && count($oObj_arr) > 0) {
-            $oEmailhistory_arr = [];
-            foreach ($oObj_arr as $oObj) {
-                $oEmailhistory_arr[] = new self(null, $oObj);
-            }
-
-            return $oEmailhistory_arr;
+        $oObj_arr = Shop::Container()->getDB()->query(
+            "SELECT * 
+                FROM temailhistory 
+                ORDER BY dSent DESC" . $cSqlLimit,
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
+        $oEmailhistory_arr = [];
+        foreach ($oObj_arr as $oObj) {
+            $oEmailhistory_arr[] = new self(null, $oObj);
         }
 
-        return [];
+        return $oEmailhistory_arr;
     }
 
     /**
      * @return int
      */
-    public function getCount()
+    public function getCount(): int
     {
-        $oObj = Shop::Container()->getDB()->query("SELECT count(*) AS nCount FROM temailhistory", 1);
+        $oObj = Shop::Container()->getDB()->query(
+            'SELECT count(*) AS nCount FROM temailhistory',
+            \DB\ReturnType::SINGLE_OBJECT
+        );
 
         return (int)$oObj->nCount;
     }
 
     /**
      * @param array $kEmailhistory_arr
-     * @return bool
+     * @return bool|int
      */
     public function deletePack(array $kEmailhistory_arr)
     {
         if (count($kEmailhistory_arr) > 0) {
             $kEmailhistory_arr = array_map(function ($i) { return (int)$i; }, $kEmailhistory_arr);
 
-            return Shop::Container()->getDB()->query("DELETE FROM temailhistory WHERE kEmailhistory IN (" . implode(',', $kEmailhistory_arr) . ")", 3);
+            return Shop::Container()->getDB()->query(
+                "DELETE 
+                    FROM temailhistory 
+                    WHERE kEmailhistory IN (" . implode(',', $kEmailhistory_arr) . ")",
+                \DB\ReturnType::AFFECTED_ROWS
+            );
         }
 
         return false;
@@ -204,13 +213,13 @@ class Emailhistory
     public function deleteAll()
     {
         Jtllog::writeLog('eMail-History gelöscht', JTLLOG_LEVEL_NOTICE, true, 'Emailhistory');
-        return !Shop::Container()->getDB()->query('TRUNCATE TABLE temailhistory', 3);
+        return !Shop::Container()->getDB()->query('TRUNCATE TABLE temailhistory', \DB\ReturnType::AFFECTED_ROWS);
     }
 
     /**
      * @return int
      */
-    public function getEmailhistory()
+    public function getEmailhistory(): int
     {
         return (int)$this->kEmailhistory;
     }
@@ -219,9 +228,9 @@ class Emailhistory
      * @param int $kEmailhistory
      * @return $this
      */
-    public function setEmailhistory($kEmailhistory)
+    public function setEmailhistory(int $kEmailhistory): self
     {
-        $this->kEmailhistory = (int)$kEmailhistory;
+        $this->kEmailhistory = $kEmailhistory;
 
         return $this;
     }
@@ -229,7 +238,7 @@ class Emailhistory
     /**
      * @return int
      */
-    public function getEmailvorlage()
+    public function getEmailvorlage(): int
     {
         return (int)$this->kEmailvorlage;
     }
@@ -238,9 +247,9 @@ class Emailhistory
      * @param int $kEmailvorlage
      * @return $this
      */
-    public function setEmailvorlage($kEmailvorlage)
+    public function setEmailvorlage(int $kEmailvorlage): self
     {
-        $this->kEmailvorlage = (int)$kEmailvorlage;
+        $this->kEmailvorlage = $kEmailvorlage;
 
         return $this;
     }
@@ -257,7 +266,7 @@ class Emailhistory
      * @param string $cSubject
      * @return $this
      */
-    public function setSubject($cSubject)
+    public function setSubject($cSubject): self
     {
         $this->cSubject = $cSubject;
 
@@ -276,7 +285,7 @@ class Emailhistory
      * @param string $cFromName
      * @return $this
      */
-    public function setFromName($cFromName)
+    public function setFromName($cFromName): self
     {
         $this->cFromName = $cFromName;
 
@@ -295,7 +304,7 @@ class Emailhistory
      * @param string $cFromEmail
      * @return $this
      */
-    public function setFromEmail($cFromEmail)
+    public function setFromEmail($cFromEmail): self
     {
         $this->cFromEmail = $cFromEmail;
 
@@ -314,7 +323,7 @@ class Emailhistory
      * @param string $cToName
      * @return $this
      */
-    public function setToName($cToName)
+    public function setToName($cToName): self
     {
         $this->cToName = $cToName;
 
@@ -333,7 +342,7 @@ class Emailhistory
      * @param string $cToEmail
      * @return $this
      */
-    public function setToEmail($cToEmail)
+    public function setToEmail($cToEmail): self
     {
         $this->cToEmail = $cToEmail;
 
@@ -352,7 +361,7 @@ class Emailhistory
      * @param string $dSent
      * @return $this
      */
-    public function setSent($dSent)
+    public function setSent($dSent): self
     {
         $this->dSent = $dSent;
 

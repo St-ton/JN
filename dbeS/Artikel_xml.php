@@ -47,7 +47,7 @@ if (auth()) {
                     "UPDATE tsuchcache
                         SET dGueltigBis = DATE_ADD(now(), INTERVAL " . SUCHCACHE_LEBENSDAUER . " MINUTE)
                         WHERE dGueltigBis IS NULL",
-                    NiceDB::RET_AFFECTED_ROWS
+                    \DB\ReturnType::AFFECTED_ROWS
                 );
             }
         }
@@ -87,7 +87,7 @@ function bearbeiteDeletes($xml, $conf)
                     JOIN tartikel 
                     ON tartikel.kArtikel = {$kArtikel}
                     AND tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi",
-            NiceDB::RET_AFFECTED_ROWS
+            \DB\ReturnType::AFFECTED_ROWS
         );
         $res[] = loescheArtikel($kArtikel, $nIstVater, false, $conf);
         // Lösche Artikel aus tartikelkategorierabatt
@@ -174,7 +174,7 @@ function bearbeiteInsert($xml, array $conf)
                         LEFT JOIN tartikel
                             ON tartikel.kArtikel = tkategorieartikel.kArtikel
                         WHERE tkategorieartikel.kKategorie = {$newArticleCategory} " . $stockFilter,
-                    NiceDB::RET_SINGLE_OBJECT
+                    \DB\ReturnType::SINGLE_OBJECT
                 );
                 if (isset($articleCount->count) && (int)$articleCount->count === 0) {
                     // the category was previously empty - flush cache
@@ -195,7 +195,7 @@ function bearbeiteInsert($xml, array $conf)
                             LEFT JOIN tartikel
                                 ON tartikel.kArtikel = tkategorieartikel.kArtikel
                             WHERE tkategorieartikel.kKategorie = {$category} " . $stockFilter,
-                        NiceDB::RET_SINGLE_OBJECT
+                        \DB\ReturnType::SINGLE_OBJECT
                     );
                     if (!isset($articleCount->count) || (int)$articleCount->count === 1) {
                         // the category only had this article in it - flush cache
@@ -241,7 +241,7 @@ function bearbeiteInsert($xml, array $conf)
                             WHERE tkategorieartikel.kKategorie IN (" . implode(',', $newArticleCategories) . ") " .
                             $stockFilter .
                             " GROUP BY tkategorieartikel.kKategorie",
-                            NiceDB::RET_ARRAY_OF_OBJECTS
+                            \DB\ReturnType::ARRAY_OF_OBJECTS
                         );
                         foreach ($newArticleCategories as $nac) {
                             if (is_array($articleCount) && !empty($articleCount)) {
@@ -327,7 +327,7 @@ function bearbeiteInsert($xml, array $conf)
                         ON pos.kWarenkorb = b.kWarenkorb
                     WHERE b.cAbgeholt = 'N'
                         AND pos.kArtikel = " . (int)$artikel_arr[0]->kArtikel,
-                NiceDB::RET_SINGLE_OBJECT
+                \DB\ReturnType::SINGLE_OBJECT
             );
             if ($delta->totalquantity > 0) {
                 //subtract delta from stocklevel
@@ -357,13 +357,13 @@ function bearbeiteInsert($xml, array $conf)
                 WHERE tartikel.kArtikel = " . (int)$artikel_arr[0]->kArtikel . " 
                     AND tsprache.cStandard = 'Y' 
                     AND tartikel.cSeo != ''",
-            NiceDB::RET_AFFECTED_ROWS
+            \DB\ReturnType::AFFECTED_ROWS
         );
     }
     //Artikelsprache
     $artikelsprache_arr = mapArray($xml['tartikel'], 'tartikelsprache', $GLOBALS['mArtikelSprache']);
     if (is_array($artikelsprache_arr)) {
-        $oShopSpracheAssoc_arr = gibAlleSprachen(1);
+        $oShopSpracheAssoc_arr = Sprache::getAllLanguages(1);
         $langCount             = count($artikelsprache_arr);
         for ($i = 0; $i < $langCount; ++$i) {
             // Sprachen die nicht im Shop vorhanden sind überspringen
@@ -585,7 +585,6 @@ function bearbeiteInsert($xml, array $conf)
         DBUpdateInsert('tartikelabnahme', $oArtikelAbnahmeIntervalle_arr, 'kArtikel', 'kKundengruppe');
     }
     // Konfig
-    loescheKonfig($Artikel->kArtikel);
     if (isset($xml['tartikel']['tartikelkonfiggruppe']) && is_array($xml['tartikel']['tartikelkonfiggruppe'])) {
         $oArtikelKonfig_arr = mapArray($xml['tartikel'], 'tartikelkonfiggruppe', $GLOBALS['mArtikelkonfiggruppe']);
         if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
@@ -599,14 +598,6 @@ function bearbeiteInsert($xml, array $conf)
         DBUpdateInsert('tartikelkonfiggruppe', $oArtikelKonfig_arr, 'kArtikel', 'kKonfiggruppe');
     }
     // Sonderpreise
-    Shop::Container()->getDB()->query(
-        "DELETE asp, sp
-            FROM tartikelsonderpreis asp 
-            LEFT JOIN tsonderpreise sp 
-            ON sp.kArtikelSonderpreis = asp.kArtikelSonderpreis
-            WHERE asp.kArtikel = " . (int)$artikel_arr[0]->kArtikel,
-        NiceDB::RET_AFFECTED_ROWS
-    );
     if (isset($xml['tartikel']['tartikelsonderpreis'])) {
         updateXMLinDB(
             $xml['tartikel']['tartikelsonderpreis'],
@@ -643,7 +634,7 @@ function bearbeiteInsert($xml, array $conf)
                      ) AS x
                  )
                 WHERE kArtikel = " . (int)$artikel_arr[0]->kArtikel,
-            NiceDB::RET_AFFECTED_ROWS
+            \DB\ReturnType::AFFECTED_ROWS
         );
         // Aktualisiere Merkmale in tartikelmerkmal vom Vaterartikel
         Artikel::beachteVarikombiMerkmalLagerbestand(
@@ -661,7 +652,7 @@ function bearbeiteInsert($xml, array $conf)
                     ) AS x
                 )
                 WHERE kArtikel = " . (int)$artikel_arr[0]->kVaterArtikel,
-            NiceDB::RET_AFFECTED_ROWS);
+            \DB\ReturnType::AFFECTED_ROWS);
         // Aktualisiere Merkmale in tartikelmerkmal vom Vaterartikel
         Artikel::beachteVarikombiMerkmalLagerbestand(
             $artikel_arr[0]->kVaterArtikel,
@@ -676,7 +667,7 @@ function bearbeiteInsert($xml, array $conf)
         $cSQL_arr = explode("\n", $xml['tartikel']['SQLDEL']);
         foreach ($cSQL_arr as $cSQL) {
             if (strlen($cSQL) > 10) {
-                Shop::Container()->getDB()->query($cSQL, NiceDB::RET_AFFECTED_ROWS);
+                Shop::Container()->getDB()->query($cSQL, \DB\ReturnType::AFFECTED_ROWS);
             }
         }
     }
@@ -704,10 +695,10 @@ function bearbeiteInsert($xml, array $conf)
                         "DELETE
                             FROM teigenschaftkombiwert 
                             WHERE kEigenschaftKombi IN (" . implode(',', $kKey_arr) . ")",
-                        NiceDB::RET_AFFECTED_ROWS
+                        \DB\ReturnType::AFFECTED_ROWS
                     );
                 }
-                Shop::Container()->getDB()->query($cSQL, NiceDB::RET_AFFECTED_ROWS);
+                Shop::Container()->getDB()->query($cSQL, \DB\ReturnType::AFFECTED_ROWS);
             }
         }
     }
@@ -720,7 +711,23 @@ function bearbeiteInsert($xml, array $conf)
             if (isset($oArtikelWarenlager->dZulaufDatum) && $oArtikelWarenlager->dZulaufDatum === '') {
                 $oArtikelWarenlager->dZulaufDatum = '0000-00-00 00:00:00';
             }
-            Shop::Container()->getDB()->insert('tartikelwarenlager', $oArtikelWarenlager);
+            // Prevent SQL-Exception if duplicate datasets will be sent falsely
+            Shop::Container()->getDB()->queryPrepared(
+                "INSERT INTO tartikelwarenlager (kArtikel, kWarenlager, fBestand, fZulauf, dZulaufDatum)
+                    VALUES (:kArtikel, :kWarenlager, :fBestand, :fZulauf, :dZulaufDatum)
+                    ON DUPLICATE KEY UPDATE
+                        fBestand = :fBestand,
+                        fZulauf = :fZulauf,
+                        dZulaufDatum = :dZulaufDatum",
+                [
+                    'kArtikel'     => $oArtikelWarenlager->kArtikel,
+                    'kWarenlager'  => $oArtikelWarenlager->kWarenlager,
+                    'fBestand'     => $oArtikelWarenlager->fBestand,
+                    'fZulauf'      => $oArtikelWarenlager->fZulauf,
+                    'dZulaufDatum' => $oArtikelWarenlager->dZulaufDatum,
+                ],
+                \DB\ReturnType::QUERYSINGLE
+            );
         }
     }
     $bTesteSonderpreis = false;
@@ -979,12 +986,14 @@ function bearbeiteInsert($xml, array $conf)
         DBUpdateInsert('teigenschaft', $Eigenschaft_arr, 'kEigenschaft');
     }
     // Alle Shop Kundengruppen holen
-    $oKundengruppe_arr = Shop::Container()->getDB()->query("SELECT kKundengruppe FROM tkundengruppe", NiceDB::RET_ARRAY_OF_OBJECTS);
+    $oKundengruppe_arr = Shop::Container()->getDB()->query("SELECT kKundengruppe FROM tkundengruppe", \DB\ReturnType::ARRAY_OF_OBJECTS);
     $res[]             = (int)$Artikel->kArtikel;
     fuelleArtikelKategorieRabatt($artikel_arr[0], $oKundengruppe_arr);
     if (!empty($artikel_arr[0]->kVaterartikel)) {
         $res[] = (int)$artikel_arr[0]->kVaterartikel;
     }
+    handlePriceRange((int)$Artikel->kArtikel);
+
     //emailbenachrichtigung, wenn verfügbar
     versendeVerfuegbarkeitsbenachrichtigung($artikel_arr[0]);
 
@@ -1016,7 +1025,7 @@ function loescheArtikel($kArtikel, $nIstVater = 0, $bForce = false, $conf = null
                     LEFT JOIN tartikel
                         ON tartikel.kArtikel = tkategorieartikel.kArtikel
                     WHERE tkategorieartikel.kKategorie = " . (int)$category->kKategorie . " " . $stockFilter,
-                NiceDB::RET_SINGLE_OBJECT
+                \DB\ReturnType::SINGLE_OBJECT
             );
             if (!isset($categoryCount->count) || (int)$categoryCount->count === 1) {
                 // the category only had this article in it - flush cache
@@ -1034,12 +1043,12 @@ function loescheArtikel($kArtikel, $nIstVater = 0, $bForce = false, $conf = null
             "SELECT kHersteller 
                 FROM tartikel 
                 WHERE kArtikel = " . $kArtikel,
-            NiceDB::RET_SINGLE_OBJECT
+            \DB\ReturnType::SINGLE_OBJECT
         );
         Shop::Container()->getDB()->delete('tseo', ['cKey', 'kKey'], ['kArtikel', (int)$kArtikel]);
         Shop::Container()->getDB()->delete('tartikel', 'kArtikel', $kArtikel);
         Shop::Container()->getDB()->delete('tpreise', 'kArtikel', $kArtikel);
-        Shop::Container()->getDB()->delete('tartikelsonderpreis', 'kArtikel', $kArtikel);
+        Shop::Container()->getDB()->delete('tpricerange', 'kArtikel', $kArtikel);
         Shop::Container()->getDB()->delete('tkategorieartikel', 'kArtikel', $kArtikel);
         Shop::Container()->getDB()->delete('tartikelsprache', 'kArtikel', $kArtikel);
         Shop::Container()->getDB()->delete('tartikelattribut', 'kArtikel', $kArtikel);
@@ -1047,6 +1056,7 @@ function loescheArtikel($kArtikel, $nIstVater = 0, $bForce = false, $conf = null
         loescheArtikelAttribute($kArtikel);
         loescheArtikelEigenschaftWert($kArtikel);
         loescheArtikelEigenschaft($kArtikel);
+        loescheSonderpreise($kArtikel);
         Shop::Container()->getDB()->delete('txsell', 'kArtikel', $kArtikel);
         Shop::Container()->getDB()->delete('tartikelmerkmal', 'kArtikel', $kArtikel);
         Shop::Container()->getDB()->delete('tartikelsichtbarkeit', 'kArtikel', $kArtikel);
@@ -1133,7 +1143,7 @@ function loescheArtikelEigenschaftWert($kArtikel)
                 JOIN teigenschaft
                     ON teigenschaft.kEigenschaft = teigenschaftwert.kEigenschaft
                 WHERE teigenschaft.kArtikel = $kArtikel",
-            NiceDB::RET_ARRAY_OF_OBJECTS
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
 
         if (is_array($eigenschaftWert_arr) && count($eigenschaftWert_arr)) {
@@ -1292,6 +1302,25 @@ function loescheStueckliste($kStueckliste)
 
 /**
  * @param int $kArtikel
+ * @return int
+ */
+function loescheSonderpreise($kArtikel)
+{
+    return Shop::Container()->getDB()->queryPrepared(
+        "DELETE asp, sp
+            FROM tartikelsonderpreis asp
+            LEFT JOIN tsonderpreise sp
+            ON sp.kArtikelSonderpreis = asp.kArtikelSonderpreis
+            WHERE asp.kArtikel = :articleID",
+        [
+            'articleID' => (int)$kArtikel,
+        ],
+        \DB\ReturnType::AFFECTED_ROWS
+    );
+}
+
+/**
+ * @param int $kArtikel
  */
 function checkArtikelBildLoeschung($kArtikel)
 {
@@ -1339,7 +1368,7 @@ function getConfigParents($kArtikel)
         'SELECT kArtikel 
             FROM tartikelkonfiggruppe 
             WHERE kKonfiggruppe IN (' . implode(',', $configGroupIDs) . ')',
-        NiceDB::RET_ARRAY_OF_OBJECTS
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     if (!is_array($parents) || count($parents) === 0) {
         return $parentProductIDs;
@@ -1411,7 +1440,7 @@ function clearProductCaches($articles)
                     FROM tartikel 
                     WHERE kArtikel IN (' . implode(',', $deps) . ') 
                         AND kHersteller > 0',
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($manufacturers as $manufacturer) {
                 $cacheTags[] = CACHING_GROUP_MANUFACTURER . '_' . (int)$manufacturer->kHersteller;
@@ -1421,7 +1450,7 @@ function clearProductCaches($articles)
                 "SELECT DISTINCT kKategorie
                     FROM tkategorieartikel
                     WHERE kArtikel IN (" . implode(',', $deps) . ')',
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($categories as $category) {
                 $cacheTags[] = CACHING_GROUP_CATEGORY . '_' . (int)$category->kKategorie;
@@ -1432,7 +1461,7 @@ function clearProductCaches($articles)
                     FROM tartikel
                     WHERE kArtikel IN (" . implode(',', $deps) . ')
                     AND kVaterArtikel > 0',
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($parentArticles as $parentArticle) {
                 $cacheTags[] = CACHING_GROUP_ARTICLE . '_' . (int)$parentArticle->id;

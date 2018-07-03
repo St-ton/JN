@@ -19,16 +19,16 @@ $Einstellungen = Shop::getSettings([
     CONF_SONSTIGES
 ]);
 Shop::setPageType(PAGE_WARENKORB);
-$Schnellkaufhinweis       = checkeSchnellkauf();
-$linkHelper               = LinkHelper::getInstance();
+$Schnellkaufhinweis       = WarenkorbHelper::checkQuickBuy();
+$linkHelper               = Shop::Container()->getLinkService();
 $KuponcodeUngueltig       = false;
 $nVersandfreiKuponGueltig = false;
 $cart                     = Session::Cart();
 $kLink                    = $linkHelper->getSpecialPageLinkKey(LINKTYP_WARENKORB);
 // Warenkorbaktualisierung?
-uebernehmeWarenkorbAenderungen();
+WarenkorbHelper::applyCartChanges();
 // validiere Konfigurationen
-validiereWarenkorbKonfig();
+WarenkorbHelper::validateCartConfig();
 pruefeGuthabenNutzen();
 // Versandermittlung?
 if (isset($_POST['land'], $_POST['plz'])
@@ -47,7 +47,7 @@ if ($cart !== null
     $Kupon             = $Kupon->getByCode($_POST['Kuponcode']);
     $invalidCouponCode = false;
     if ($Kupon !== false && $Kupon->kKupon > 0) {
-        $Kuponfehler  = checkeKupon($Kupon);
+        $Kuponfehler  = Kupon::checkCoupon($Kupon);
         $nReturnValue = angabenKorrekt($Kuponfehler);
         executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI, [
             'error'        => &$Kuponfehler,
@@ -55,7 +55,7 @@ if ($cart !== null
         ]);
         if ($nReturnValue) {
             if ($Kupon->cKuponTyp === 'standard') {
-                kuponAnnehmen($Kupon);
+                Kupon::acceptCoupon($Kupon);
                 executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN);
             } elseif (!empty($Kupon->kKupon) && $Kupon->cKuponTyp === 'versandkupon') {
                 // Aktiven Kupon aus der Session löschen und dessen Warenkorbposition
@@ -92,41 +92,40 @@ if (isset($_POST['gratis_geschenk'], $_POST['gratishinzufuegen']) && (int)$_POST
                     ON tartikel.kArtikel = tartikelattribut.kArtikel
                 WHERE tartikelattribut.kArtikel = " . $kArtikelGeschenk . "
                 AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
-                AND CAST(tartikelattribut.cWert AS DECIMAL) <= "
-        . $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true), 1
+                AND CAST(tartikelattribut.cWert AS DECIMAL) <= " .
+        $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true),
+        \DB\ReturnType::SINGLE_OBJECT
     );
     if (isset($oArtikelGeschenk->kArtikel) && $oArtikelGeschenk->kArtikel > 0) {
-        if ($oArtikelGeschenk->fLagerbestand <= 0 &&
-            $oArtikelGeschenk->cLagerKleinerNull === 'N' &&
-            $oArtikelGeschenk->cLagerBeachten === 'Y'
+        if ($oArtikelGeschenk->fLagerbestand <= 0
+            && $oArtikelGeschenk->cLagerKleinerNull === 'N'
+            && $oArtikelGeschenk->cLagerBeachten === 'Y'
         ) {
             $MsgWarning = Shop::Lang()->get('freegiftsNostock', 'errorMessages');
         } else {
             executeHook(HOOK_WARENKORB_PAGE_GRATISGESCHENKEINFUEGEN);
             $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_GRATISGESCHENK)
                  ->fuegeEin($kArtikelGeschenk, 1, [], C_WARENKORBPOS_TYP_GRATISGESCHENK);
-            fuegeEinInWarenkorbPers($kArtikelGeschenk, 1, [], null, null, C_WARENKORBPOS_TYP_GRATISGESCHENK);
+            WarenkorbPers::addToCheck($kArtikelGeschenk, 1, [], '', 0, C_WARENKORBPOS_TYP_GRATISGESCHENK);
         }
     }
 }
 // hole aktuelle Kategorie, falls eine gesetzt
-$AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
+$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
-$startKat               = new Kategorie();
-$startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 if (isset($_GET['fillOut'])) {
     $mbw = Session::CustomerGroup()->getAttribute(KNDGRP_ATTRIBUT_MINDESTBESTELLWERT);
     if ((int)$_GET['fillOut'] === 9 && $mbw > 0 && $cart->gibGesamtsummeWaren(1, 0) < $mbw) {
         $MsgWarning = Shop::Lang()->get('minordernotreached', 'checkout') . ' ' .
-            gibPreisStringLocalized($mbw);
+            Preise::getLocalizedPriceString($mbw);
     } elseif ((int)$_GET['fillOut'] === 8) {
         $MsgWarning = Shop::Lang()->get('orderNotPossibleNow', 'checkout');
     } elseif ((int)$_GET['fillOut'] === 3) {
         $MsgWarning = Shop::Lang()->get('yourbasketisempty', 'checkout');
     } elseif ((int)$_GET['fillOut'] === 10) {
         $MsgWarning = Shop::Lang()->get('missingProducts', 'checkout');
-        loescheAlleSpezialPos();
+        WarenkorbHelper::deleteAllSpecialPositions();
     } elseif ((int)$_GET['fillOut'] === UPLOAD_ERROR_NEED_UPLOAD) {
         $MsgWarning = Shop::Lang()->get('missingFilesUpload', 'checkout');
     }
@@ -154,18 +153,16 @@ if (class_exists('Upload')) {
                ->assign('oUploadSchema_arr', $oUploadSchema_arr);
     }
 }
-if (isset($_SESSION['Warenkorbhinweise']) && $_SESSION['Warenkorbhinweise']) {
+if (!empty($_SESSION['Warenkorbhinweise'])) {
     $cartNotices = $_SESSION['Warenkorbhinweise'];
     unset($_SESSION['Warenkorbhinweise']);
 }
 
 WarenkorbHelper::addVariationPictures($cart);
-$smarty->assign('Navigation', createNavigation($AktuelleSeite))
-       ->assign('MsgWarning', $MsgWarning)
+$smarty->assign('MsgWarning', $MsgWarning)
        ->assign('Schnellkaufhinweis', $Schnellkaufhinweis)
-       ->assign('requestURL', $requestURL ?? null)
-       ->assign('laender', gibBelieferbareLaender($kKundengruppe))
-       ->assign('KuponMoeglich', kuponMoeglich())
+       ->assign('laender', VersandartHelper::getPossibleShippingCountries($kKundengruppe))
+       ->assign('KuponMoeglich', Kupon::couponsAvailable())
        ->assign('currentCoupon', Shop::Lang()->get('currentCoupon', 'checkout'))
        ->assign('currentCouponName', (!empty($_SESSION['Kupon']->translationList)
            ? $_SESSION['Kupon']->translationList
@@ -173,9 +170,9 @@ $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('currentShippingCouponName', (!empty($_SESSION['oVersandfreiKupon']->translationList)
            ? $_SESSION['oVersandfreiKupon']->translationList
            : null))
-       ->assign('xselling', gibXSelling())
-       ->assign('oArtikelGeschenk_arr', gibGratisGeschenke($Einstellungen))
-       ->assign('BestellmengeHinweis', pruefeBestellMengeUndLagerbestand($Einstellungen))
+       ->assign('xselling', WarenkorbHelper::getXSelling())
+       ->assign('oArtikelGeschenk_arr', WarenkorbHelper::getFreeGifts($Einstellungen))
+       ->assign('BestellmengeHinweis', WarenkorbHelper::checkOrderAmountAndStock($Einstellungen))
        ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
        ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK)
        ->assign('cErrorVersandkosten', $cErrorVersandkosten ?? null)

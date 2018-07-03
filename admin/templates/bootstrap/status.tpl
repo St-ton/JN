@@ -285,11 +285,6 @@
                             <p>Alle Vorraussetzungen wurden erf&uuml;llt</p>
                         </div>
                     {/if}
-                    {if isset($phpLT55) && $phpLT55}
-                        <div class="alert alert-warning">
-                            <p class="small">{#systemcheckPHPLT55#|sprintf:phpversion()}</p>
-                        </div>
-                    {/if}
                 </div>
             </div>
         </div>

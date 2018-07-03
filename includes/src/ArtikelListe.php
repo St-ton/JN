@@ -32,20 +32,17 @@ class ArtikelListe
      * @param int    $kSprache
      * @return Artikel[]
      */
-    public function getTopNeuArtikel($topneu, $anzahl = 3, $kKundengruppe = 0, $kSprache = 0)
+    public function getTopNeuArtikel($topneu, int $anzahl = 3, int $kKundengruppe = 0, int $kSprache = 0): array
     {
         $this->elemente = [];
         if (!Session::CustomerGroup()->mayViewCategories()) {
             return $this->elemente;
         }
-        $kKundengruppe = (int)$kKundengruppe;
-        $kSprache      = (int)$kSprache;
-        $anzahl        = (int)$anzahl;
-        $cacheID       = 'jtl_tpnw_' . (is_string($topneu) ? $topneu : '') .
+        $cacheID = 'jtl_tpnw_' . (is_string($topneu) ? $topneu : '') .
             '_' . $anzahl .
             '_' . $kSprache .
             '_' . $kKundengruppe;
-        $objArr        = Shop::Cache()->get($cacheID);
+        $objArr  = Shop::Cache()->get($cacheID);
         if ($objArr === false) {
             $qry = ($topneu === 'neu')
                 ? "cNeu = 'Y'"
@@ -61,7 +58,8 @@ class ArtikelListe
                         AND tartikelsichtbarkeit.kKundengruppe = $kKundengruppe
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND $qry
-                    ORDER BY rand() LIMIT " . $anzahl, 2
+                    ORDER BY rand() LIMIT " . $anzahl,
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             Shop::Cache()->set($cacheID, $objArr, [CACHING_GROUP_CATEGORY]);
         }
@@ -80,7 +78,7 @@ class ArtikelListe
     /**
      * Holt (max) $anzahl an Artikeln aus der angegebenen Kategorie in die Liste
      *
-     * @param int    $kKategorie  Kategorie Key
+     * @param int    $kKategorie Kategorie Key
      * @param int    $limitStart
      * @param int    $limitAnzahl - wieviele Artikel geholt werden sollen. Sind nicht genug in der entsprechenden
      *                            Kategorie enthalten, wird die Maximalanzahl geholt.
@@ -89,8 +87,14 @@ class ArtikelListe
      * @param int    $kSprache
      * @return Artikel[]
      */
-    public function getArtikelFromKategorie($kKategorie, $limitStart, $limitAnzahl, $order, $kKundengruppe = 0, $kSprache = 0)
-    {
+    public function getArtikelFromKategorie(
+        int $kKategorie,
+        int $limitStart,
+        int $limitAnzahl,
+        string $order,
+        int $kKundengruppe = 0,
+        int $kSprache = 0
+    ): array {
         $this->elemente = [];
         if (!$kKategorie || !Session::CustomerGroup()->mayViewCategories()) {
             return $this->elemente;
@@ -101,12 +105,7 @@ class ArtikelListe
         if (!$kSprache) {
             $kSprache = Shop::getLanguageID();
         }
-        $kKategorie    = (int)$kKategorie;
-        $kKundengruppe = (int)$kKundengruppe;
-        $kSprache      = (int)$kSprache;
-        $limitAnzahl   = (int)$limitAnzahl;
-        $limitStart    = (int)$limitStart;
-        $cacheID       = 'jtl_top_' . md5($kKategorie . $limitStart . $limitAnzahl . $kKundengruppe . $kSprache);
+        $cacheID = 'jtl_top_' . md5($kKategorie . $limitStart . $limitAnzahl . $kKundengruppe . $kSprache);
         if (($res = Shop::Cache()->get($cacheID)) !== false) {
             $this->elemente = $res;
         } else {
@@ -114,12 +113,12 @@ class ArtikelListe
             if (Shop::getProductFilter() !== null && Shop::getProductFilter()->hasManufacturer()) {
                 $hstSQL = ' AND tartikel.kHersteller = ' . Shop::getProductFilter()->getManufacturer()->getValue() . ' ';
             }
-            $lagerfilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-            $objArr      = Shop::Container()->getDB()->query(
+            $lagerfilter    = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
+            $objArr         = Shop::Container()->getDB()->query(
                 "SELECT tartikel.kArtikel
                     FROM tkategorieartikel, tartikel
                     LEFT JOIN tartikelsichtbarkeit
-                        ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
+                        ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                         AND tartikelsichtbarkeit.kKundengruppe = $kKundengruppe
                     " . Preise::getPriceJoinSql($kKundengruppe) . "
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
@@ -129,21 +128,20 @@ class ArtikelListe
                         $lagerfilter
                     ORDER BY $order, nSort
                     LIMIT $limitStart, $limitAnzahl
-                    ", 2
+                    ",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-            if (is_array($objArr)) {
-                $defaultOptions = Artikel::getDefaultOptions();
-                foreach ($objArr as $obj) {
-                    $artikel = new Artikel();
-                    $artikel->fuelleArtikel($obj->kArtikel, $defaultOptions);
-                    $this->elemente[] = $artikel;
-                }
-                Shop::Cache()->set(
-                    $cacheID,
-                    $this->elemente,
-                    [CACHING_GROUP_CATEGORY, CACHING_GROUP_CATEGORY . '_' . $kKategorie]
-                );
+            $defaultOptions = Artikel::getDefaultOptions();
+            foreach ($objArr as $obj) {
+                $artikel = new Artikel();
+                $artikel->fuelleArtikel($obj->kArtikel, $defaultOptions);
+                $this->elemente[] = $artikel;
             }
+            Shop::Cache()->set(
+                $cacheID,
+                $this->elemente,
+                [CACHING_GROUP_CATEGORY, CACHING_GROUP_CATEGORY . '_' . $kKategorie]
+            );
         }
 
         return $this->elemente;
@@ -155,7 +153,7 @@ class ArtikelListe
      * @param int   $maxAnzahl
      * @return Artikel[]
      */
-    public function getArtikelByKeys($kArtikel_arr, $start, $maxAnzahl)
+    public function getArtikelByKeys(array $kArtikel_arr, int $start, int $maxAnzahl): array
     {
         $this->elemente = [];
         if (!Session::CustomerGroup()->mayViewCategories()) {
@@ -164,7 +162,7 @@ class ArtikelListe
         $cnt            = count($kArtikel_arr);
         $anz            = 0;
         $defaultOptions = Artikel::getDefaultOptions();
-        for ($i = (int)$start; $i < $cnt; $i++) {
+        for ($i = $start; $i < $cnt; $i++) {
             $artikel = new Artikel();
             $artikel->fuelleArtikel($kArtikel_arr[$i], $defaultOptions);
             if (!empty($artikel->kArtikel) && $artikel->kArtikel > 0) {
@@ -183,8 +181,11 @@ class ArtikelListe
      * @param KategorieListe $katListe
      * @return Artikel[]
      */
-    public function holeTopArtikel($katListe)
+    public function holeTopArtikel($katListe): array
     {
+        if (!Session::CustomerGroup()->mayViewCategories()) {
+            return $this->elemente;
+        }
         $arr_kKategorie = [];
         if (!empty($katListe->elemente)) {
             foreach ($katListe->elemente as $i => $kategorie) {
@@ -199,9 +200,6 @@ class ArtikelListe
         $cacheID = 'hTA_' . md5(json_encode($arr_kKategorie));
         $objArr  = Shop::Cache()->get($cacheID);
         if ($objArr === false && count($arr_kKategorie) > 0) {
-            if (!Session::CustomerGroup()->mayViewCategories()) {
-                return $this->elemente;
-            }
             $Einstellungen = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
             $kKundengruppe = Session::CustomerGroup()->getID();
             $cLimitSql     = isset($Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl'])
@@ -223,9 +221,10 @@ class ArtikelListe
                         $lagerfilter
                     ORDER BY rand()
                     {$cLimitSql}
-                    ", 2
+                    ",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-            $cacheTags = [CACHING_GROUP_CATEGORY, CACHING_GROUP_OPTION];
+            $cacheTags   = [CACHING_GROUP_CATEGORY, CACHING_GROUP_OPTION];
             foreach ($arr_kKategorie as $category) {
                 $cacheTags[] = CACHING_GROUP_CATEGORY . '_' . $category;
             }
@@ -248,8 +247,11 @@ class ArtikelListe
      * @param ArtikelListe|null $topArtikelliste
      * @return Artikel[]
      */
-    public function holeBestsellerArtikel($katListe, $topArtikelliste = null)
+    public function holeBestsellerArtikel($katListe, $topArtikelliste = null): array
     {
+        if (!Session::CustomerGroup()->mayViewCategories()) {
+            return $this->elemente;
+        }
         $arr_kKategorie = [];
         if (isset($katListe->elemente) && is_array($katListe->elemente)) {
             foreach ($katListe->elemente as $i => $kategorie) {
@@ -261,21 +263,25 @@ class ArtikelListe
                 }
             }
         }
-        $cacheID = 'hBsA_' . md5(json_encode($arr_kKategorie) . json_encode($topArtikelliste));
+        $keys = null;
+        if ($topArtikelliste instanceof self) {
+            $keys = \Functional\map($topArtikelliste->elemente, function ($e) {
+                return $e->cacheID ?? 0;
+            });
+        }
+        $cacheID = 'hBsA_' . md5(json_encode($arr_kKategorie) . json_encode($keys));
         $objArr  = Shop::Cache()->get($cacheID);
         if ($objArr === false && count($arr_kKategorie) > 0) {
-            if (!Session::CustomerGroup()->mayViewCategories()) {
-                return $this->elemente;
-            }
             $kKundengruppe = Session::CustomerGroup()->getID();
             //top artikel nicht nochmal in den bestsellen vorkommen lassen
             $sql_artikelExclude = '';
             if (isset($topArtikelliste->elemente) && is_array($topArtikelliste->elemente)) {
-                foreach ($topArtikelliste->elemente as $ele) {
-                    if ($ele->kArtikel > 0) {
-                        $sql_artikelExclude .= ' AND tartikel.kArtikel != ' . (int)$ele->kArtikel;
-                    }
-                }
+                $exclude            = \Functional\map($topArtikelliste->elemente, function ($e) {
+                    return (int)$e->kArtikel;
+                });
+                $sql_artikelExclude = count($exclude) > 0
+                    ? ' AND tartikel.kArtikel NOT IN (' . implode(',', $exclude) . ')'
+                    : '';
             }
             $conf        = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
             $cLimitSql   = isset($conf['artikeluebersicht']['artikelubersicht_topbest_anzahl'])
@@ -296,10 +302,10 @@ class ArtikelListe
                         AND (tkategorieartikel.kKategorie IN (" . implode(', ', $arr_kKategorie) . "))
                         $lagerfilter
                     ORDER BY tbestseller.fAnzahl DESC
-                    {$cLimitSql}
-                    ", 2
+                    {$cLimitSql}",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-            $cacheTags = [CACHING_GROUP_CATEGORY, CACHING_GROUP_OPTION];
+            $cacheTags   = [CACHING_GROUP_CATEGORY, CACHING_GROUP_OPTION];
             foreach ($arr_kKategorie as $category) {
                 $cacheTags[] = CACHING_GROUP_CATEGORY . '_' . $category;
             }

@@ -15,6 +15,7 @@ use Cache\JTLCacheTrait;
  *
  * @warning Untested
  * @warning Does not support caching groups
+ * @package Cache\Methods
  */
 class cache_xcache implements ICachingMethod
 {
@@ -38,12 +39,9 @@ class cache_xcache implements ICachingMethod
     }
 
     /**
-     * @param string   $cacheID
-     * @param mixed    $content
-     * @param int|null $expiration
-     * @return bool
+     * @inheritdoc
      */
-    public function store($cacheID, $content, $expiration = null) : bool
+    public function store($cacheID, $content, $expiration = null): bool
     {
         return xcache_set(
             $this->options['prefix'] . $cacheID,
@@ -55,11 +53,9 @@ class cache_xcache implements ICachingMethod
     }
 
     /**
-     * @param array    $keyValue
-     * @param int|null $expiration
-     * @return bool
+     * @inheritdoc
      */
-    public function storeMulti($keyValue, $expiration = null)
+    public function storeMulti($keyValue, $expiration = null): bool
     {
         $res = true;
         foreach ($keyValue as $_key => $_value) {
@@ -70,8 +66,7 @@ class cache_xcache implements ICachingMethod
     }
 
     /**
-     * @param string $cacheID
-     * @return bool|mixed
+     * @inheritdoc
      */
     public function load($cacheID)
     {
@@ -85,57 +80,54 @@ class cache_xcache implements ICachingMethod
     }
 
     /**
-     * @param array $cacheIDs
-     * @return array
+     * @inheritdoc
      */
-    public function loadMulti($cacheIDs)
+    public function loadMulti(array $cacheIDs): array
     {
         $res = [];
         foreach ($cacheIDs as $_cid) {
-            $res[$_cid] = $this->load($cacheIDs);
+            $res[$_cid] = $this->load($_cid);
         }
 
         return $res;
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
-    public function isAvailable() : bool
+    public function isAvailable(): bool
     {
         return \function_exists('xcache_set');
     }
 
     /**
-     * @param string $cacheID
-     * @return bool
+     * @inheritdoc
      */
-    public function flush($cacheID) : bool
+    public function flush($cacheID): bool
     {
         return xcache_unset($this->options['prefix'] . $cacheID);
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
-    public function flushAll() : bool
+    public function flushAll(): bool
     {
         return xcache_unset_by_prefix($this->options['prefix']);
     }
 
     /**
-     * @param string $cacheID
-     * @return bool
+     * @inheritdoc
      */
-    public function keyExists($cacheID) : bool
+    public function keyExists($cacheID): bool
     {
         return xcache_isset($cacheID);
     }
 
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function getStats() : array
+    public function getStats(): array
     {
         return [];
     }

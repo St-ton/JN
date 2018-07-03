@@ -5,12 +5,12 @@
 {block name="head"}
 <head>
     {block name="head-meta"}
-        <meta http-equiv="content-type" content="text/html; charset={if isset($smarty.const.JTL_CHARSET)}{$smarty.const.JTL_CHARSET}{else}utf-8{/if}">
+        <meta http-equiv="content-type" content="text/html; charset={$smarty.const.JTL_CHARSET}">
         <meta name="description" itemprop="description" content={block name="head-meta-description"}"{$meta_description|truncate:1000:"":true}{/block}">
         <meta name="keywords" itemprop="keywords" content="{block name="head-meta-keywords"}{$meta_keywords|truncate:255:"":true}{/block}">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="robots" content="{if $bNoIndex === true  || (isset($Link->cNoFollow) && $Link->cNoFollow === 'Y')}noindex{else}index, follow{/if}">
+        <meta name="robots" content="{if $bNoIndex === true  || (isset($Link) && $Link->getNoFollow() === true)}noindex{else}index, follow{/if}">
 
         <meta itemprop="image" content="{$imageBaseURL}{$ShopLogoURL}" />
         <meta itemprop="url" content="{$cCanonicalURL}"/>
@@ -77,12 +77,12 @@
     {/block}
 
     {* Pagination *}
-    {if isset($Suchergebnisse) && $Suchergebnisse->getPages()->maxSeite > 1 && isset($oNaviSeite_arr) && $oNaviSeite_arr|@count > 0}
-        {if $Suchergebnisse->getPages()->AktuelleSeite > 1}
-            <link rel="prev" href="{$oNaviSeite_arr.zurueck->cURL}">
+    {if isset($Suchergebnisse) && $Suchergebnisse->getPages()->getMaxPage() > 1}
+        {if $Suchergebnisse->getPages()->getCurrentPage() > 1}
+            <link rel="prev" href="{$filterPagination->getPrev()->getURL()}">
         {/if}
-        {if $Suchergebnisse->getPages()->AktuelleSeite < $Suchergebnisse->getPages()->maxSeite}
-            <link rel="next" href="{$oNaviSeite_arr.vor->cURL}">
+        {if $Suchergebnisse->getPages()->getCurrentPage() < $Suchergebnisse->getPages()->getMaxPage()}
+            <link rel="next" href="{$filterPagination->getNext()->getURL()}">
         {/if}
     {/if}
 
@@ -99,12 +99,12 @@
 {/block}
 
 {assign var="isFluidContent" value=false}
-{if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid' && isset($Link) && $Link->bIsFluid}
+{if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid' && isset($Link) && $Link->getIsFluid()}
     {assign var="isFluidContent" value=true}
 {/if}
 {has_boxes position='left' assign='hasLeftPanel'}
 {block name="body-tag"}
-<body data-page="{$nSeitenTyp}" class="body-offcanvas"{if isset($Link) && !empty($Link->cIdentifier)} id="{$Link->cIdentifier}"{/if}>
+<body data-page="{$nSeitenTyp}" class="body-offcanvas"{if isset($Link) && !empty($Link->getIdentifier())} id="{$Link->getIdentifier()}"{/if}>
 {/block}
 {block name="main-wrapper-starttag"}
 <div id="main-wrapper" class="main-wrapper{if $bExclusive} exclusive{/if}{if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'boxed'} boxed{else} fluid{/if}{if $hasLeftPanel} aside-active{/if}">
@@ -169,7 +169,7 @@
             {/if}
             
             {block name="header-category-nav"}
-            <div class="category-nav navbar-wrapper hidden-xs">
+            <div class="category-nav navbar-wrapper">
                 {include file="layout/header_category_nav.tpl"}
             </div>{* /category-nav *}
             {/block}
@@ -178,7 +178,6 @@
             {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'fluid'}
                 </div>{* /container-block *}
             {/if}
-            {include file="layout/header_xs_nav.tpl"}
         </header>
     {/block}
 {/if}

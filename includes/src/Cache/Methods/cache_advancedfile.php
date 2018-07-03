@@ -14,6 +14,7 @@ use Cache\JTLCacheTrait;
  *
  * Implements caching via filesystem where tags are not stored in a central file
  * but organized in folder and symlinked to the actual cache entry
+ * @package Cache\Methods
  */
 class cache_advancedfile implements ICachingMethod
 {
@@ -49,12 +50,9 @@ class cache_advancedfile implements ICachingMethod
     }
 
     /**
-     * @param string   $cacheID
-     * @param mixed    $content
-     * @param int|null $expiration
-     * @return bool
+     * @inheritdoc
      */
-    public function store($cacheID, $content, $expiration = null) : bool
+    public function store($cacheID, $content, $expiration = null): bool
     {
         $fileName = $this->getFileName($cacheID);
         $dir      = $this->options['cache_dir'];
@@ -76,11 +74,9 @@ class cache_advancedfile implements ICachingMethod
     }
 
     /**
-     * @param array    $keyValue
-     * @param int|null $expiration
-     * @return bool
+     * @inheritdoc
      */
-    public function storeMulti($keyValue, $expiration = null)
+    public function storeMulti($keyValue, $expiration = null): bool
     {
         foreach ($keyValue as $_key => $_value) {
             $this->store($_key, $_value, $expiration);
@@ -90,8 +86,7 @@ class cache_advancedfile implements ICachingMethod
     }
 
     /**
-     * @param string $cacheID
-     * @return bool|mixed
+     * @inheritdoc
      */
     public function load($cacheID)
     {
@@ -108,23 +103,22 @@ class cache_advancedfile implements ICachingMethod
     }
 
     /**
-     * @param array $cacheIDs
-     * @return array|bool
+     * @inheritdoc
      */
-    public function loadMulti($cacheIDs)
+    public function loadMulti(array $cacheIDs): array
     {
         $res = [];
         foreach ($cacheIDs as $_cid) {
-            $res[$_cid] = $this->load($cacheIDs);
+            $res[$_cid] = $this->load($_cid);
         }
 
         return $res;
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
-    public function isAvailable() : bool
+    public function isAvailable(): bool
     {
         if (!is_dir($this->options['cache_dir'])
             && !mkdir($this->options['cache_dir'])
@@ -137,9 +131,9 @@ class cache_advancedfile implements ICachingMethod
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
-    public function test() : bool
+    public function test(): bool
     {
         return $this->traitTest()
             && touch($this->options['cache_dir'] . 'check')
@@ -150,10 +144,9 @@ class cache_advancedfile implements ICachingMethod
     }
 
     /**
-     * @param string $cacheID
-     * @return bool
+     * @inheritdoc
      */
-    public function flush($cacheID) : bool
+    public function flush($cacheID): bool
     {
         $fileName = $this->getFileName($cacheID);
 
@@ -161,9 +154,9 @@ class cache_advancedfile implements ICachingMethod
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
-    public function flushAll() : bool
+    public function flushAll(): bool
     {
         $rdi = new \RecursiveDirectoryIterator(
             $this->options['cache_dir'],
@@ -184,9 +177,9 @@ class cache_advancedfile implements ICachingMethod
      * this currently only calculate size/file count for real cache entries
      * and ignores symlinks which always are located in sub dirs
      *
-     * @return array
+     * @inheritdoc
      */
-    public function getStats() : array
+    public function getStats(): array
     {
         $dir   = opendir($this->options['cache_dir']);
         $total = 0;
@@ -211,11 +204,9 @@ class cache_advancedfile implements ICachingMethod
     }
 
     /**
-     * @param array|string $tags
-     * @param string       $cacheID
-     * @return bool
+     * @inheritdoc
      */
-    public function setCacheTag($tags = [], $cacheID) : bool
+    public function setCacheTag($tags = [], $cacheID): bool
     {
         $fileName = $this->getFileName($cacheID);
         if ($fileName === false || !file_exists($fileName) || is_link($fileName)) {
@@ -226,36 +217,36 @@ class cache_advancedfile implements ICachingMethod
             $tags = [$tags];
         }
         if (\count($tags) > 0) {
+            $res = true;
             foreach ($tags as $tag) {
                 //create subdirs for every underscore
                 $dirs = explode('_', $tag);
                 $path = $this->options['cache_dir'];
                 foreach ($dirs as $dir) {
                     if ($dir === '') {
-                        return false;
+                        $res = false;
+                        continue;
                     }
                     $path .= $dir . '/';
                     if (!file_exists($path) && !mkdir($path) && !is_dir($path)) {
-                        return false;
+                        $res = false;
+                        continue;
                     }
                 }
                 if (file_exists($path . $cacheID) || !file_exists($fileName) || !symlink($fileName, $path . $cacheID)) {
-                    return false;
+                    $res = false;
+                    continue;
                 }
             }
-            $res = true;
         }
 
         return $res;
     }
 
     /**
-     * removes cache IDs associated with tag from cache
-     *
-     * @param array|string $tags
-     * @return int
+     * @inheritdoc
      */
-    public function flushTags($tags) : int
+    public function flushTags($tags): int
     {
         $deleted = 0;
         if (\is_string($tags)) {
@@ -298,21 +289,17 @@ class cache_advancedfile implements ICachingMethod
      * clean up journal after deleting cache entries
      * not needed for this method
      *
-     * @param string|array $tags
-     * @return bool
+     * @inheritdoc
      */
-    public function clearCacheTags($tags) : bool
+    public function clearCacheTags($tags): bool
     {
         return true;
     }
 
     /**
-     * get cache IDs by cache tag(s)
-     *
-     * @param array|string $tags
-     * @return array
+     * @inheritdoc
      */
-    public function getKeysByTag($tags) : array
+    public function getKeysByTag($tags): array
     {
         if (\is_string($tags)) {
             $tags = [$tags];
@@ -337,6 +324,7 @@ class cache_advancedfile implements ICachingMethod
                     }
                 }
             }
+
             // remove duplicate keys from array and return it
             return array_unique($res);
         }

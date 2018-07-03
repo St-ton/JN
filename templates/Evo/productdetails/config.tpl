@@ -31,7 +31,12 @@
                                     <div class="col-md-{if empty($cBildPfad)}12{else}10{/if} group-items">
                                         <ul class="list-group">
                                             {foreach from=$oGruppe->oItem_arr item=oItem name=konfigitem}
-                                                <li class="list-group-item {if $oItem->getEmpfohlen()}alert-info{/if}" data-id="{$oItem->getKonfigitem()}">
+                                                {if $oItem->isInStock()}
+                                                    {assign var=bSelectable value=1}
+                                                {else}
+                                                    {assign var=bSelectable value=0}
+                                                {/if}
+                                                <li class="list-group-item {if $oItem->getEmpfohlen()}alert-info{/if}{if empty($bSelectable)} disabled{/if}" data-id="{$oItem->getKonfigitem()}">
                                                     {assign var=kKonfigitem value=$oItem->getKonfigitem()}
                                                     {assign var=cKurzBeschreibung value=$oItem->getKurzBeschreibung()}
                                                     {if !empty($cKurzBeschreibung)}
@@ -56,10 +61,11 @@
                                                                        name="item[{$kKonfiggruppe}][]"
                                                                        id="item{$oItem->getKonfigitem()}"
                                                                        value="{$oItem->getKonfigitem()}"
+                                                                       {if empty($bSelectable)} disabled{/if}
                                                                        {if isset($nKonfigitem_arr)} data-selected="{if in_array($oItem->getKonfigitem(), $nKonfigitem_arr)}true{else}false{/if}"{else}
                                                                        {if (!empty($aKonfigerror_arr) && isset($smarty.post.item) && isset($smarty.post.item[$kKonfiggruppe]) && $oItem->getKonfigitem()|in_array:$smarty.post.item[$kKonfiggruppe]) || ($oItem->getSelektiert() && (!isset($aKonfigerror_arr) || !$aKonfigerror_arr))} checked="checked"{/if}{/if} />
                                                                 {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_CHECKBOX}{$oItem->getInitial()}x {/if}
-                                                                {$oItem->getName()}
+                                                                {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
                                                                 {if $smarty.session.Kundengruppe->mayViewPrices()}
                                                                     <span class="badge pull-right">{if $oItem->hasRabatt() && $oItem->showRabatt()}
                                                                     <span class="discount">{$oItem->getRabattLocalized()} {lang key="discount"}</span>{elseif $oItem->hasZuschlag() && $oItem->showZuschlag()}
@@ -101,10 +107,11 @@
                                                     {elseif $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN || $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}
                                                         <option value="{$oItem->getKonfigitem()}"
                                                                 id="item{$oItem->getKonfigitem()}"
+                                                                {if empty($bSelectable)} disabled{/if}
                                                                 {if isset($nKonfigitem_arr)} data-selected="{if in_array($oItem->getKonfigitem(), $nKonfigitem_arr)}true{else}false{/if}"
                                                                 {else}{if $oItem->getSelektiert() && (!isset($aKonfigerror_arr) || !$aKonfigerror_arr)}selected="selected"{/if}{/if}>
                                                             {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}{$oItem->getInitial()} &times; {/if}
-                                                            {$oItem->getName()}
+                                                            {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
                                                             {if $smarty.session.Kundengruppe->mayViewPrices()}
                                                                 &nbsp;&nbsp;&nbsp;&nbsp;
                                                                 {if $oItem->hasRabatt() && $oItem->showRabatt()}({$oItem->getRabattLocalized()} {lang key="discount"})&nbsp;{elseif $oItem->hasZuschlag() && $oItem->showZuschlag()}({$oItem->getZuschlagLocalized()} {lang key="additionalCharge"})&nbsp;{/if}

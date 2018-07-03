@@ -7,7 +7,8 @@
 namespace Cache;
 
 /**
- * Interface ICachingMethod - interface class for caching methods
+ * Interface ICachingMethod
+ * @package Cache
  */
 interface ICachingMethod
 {
@@ -19,7 +20,7 @@ interface ICachingMethod
      * @param int|null $expiration - expiration time in seconds
      * @return bool - success
      */
-    public function store($cacheID, $content, $expiration) : bool;
+    public function store($cacheID, $content, $expiration): bool;
 
     /**
      * store multiple values to multiple keys at once to cache
@@ -28,7 +29,7 @@ interface ICachingMethod
      * @param int|null $expiration - expiration time in seconds
      * @return bool
      */
-    public function storeMulti($idContent, $expiration);
+    public function storeMulti($idContent, $expiration): bool;
 
     /**
      * get value from cache
@@ -44,15 +45,15 @@ interface ICachingMethod
      * @param string $key
      * @return bool
      */
-    public function keyExists($key) : bool;
+    public function keyExists($key): bool;
 
     /**
      * get multiple values at once from cache
      *
      * @param array $cacheIDs
-     * @return mixed|bool
+     * @return array
      */
-    public function loadMulti($cacheIDs);
+    public function loadMulti(array $cacheIDs): array;
 
     /**
      * add cache tags to cached value
@@ -61,7 +62,7 @@ interface ICachingMethod
      * @param string       $cacheID
      * @return bool
      */
-    public function setCacheTag($tags, $cacheID) : bool;
+    public function setCacheTag($tags, $cacheID): bool;
 
     /**
      * get cache IDs by cache tag(s)
@@ -69,7 +70,7 @@ interface ICachingMethod
      * @param array|string $tags
      * @return array
      */
-    public function getKeysByTag($tags) : array;
+    public function getKeysByTag($tags): array;
 
     /**
      * removes cache IDs associated with given tags from cache
@@ -77,14 +78,14 @@ interface ICachingMethod
      * @param array $tags
      * @return int
      */
-    public function flushTags($tags) : int;
+    public function flushTags($tags): int;
 
     /**
      * load journal
      *
-     * @return array|null
+     * @return array
      */
-    public function getJournal();
+    public function getJournal(): array;
 
     /**
      * class singleton getter
@@ -99,41 +100,51 @@ interface ICachingMethod
      *
      * @return bool
      */
-    public function isAvailable() : bool;
+    public function isAvailable(): bool;
 
     /**
      * check if method was successfully initialized
      *
      * @return bool
      */
-    public function isInitialized() : bool;
+    public function isInitialized(): bool;
 
     /**
      * clear cache by cid or gid
      *
-     * @param string $cacheID
+     * @param string|array $cacheID
      * @return bool - success
      */
-    public function flush($cacheID) : bool;
+    public function flush($cacheID): bool;
 
     /**
      * flushes all values from cache
      *
      * @return bool
      */
-    public function flushAll() : bool;
+    public function flushAll(): bool;
 
     /**
      * test data integrity and if functions are working properly - default implementation @JTLCacheTrait
      *
      * @return bool - success
      */
-    public function test() : bool;
+    public function test(): bool;
 
     /**
      * get statistical data for caching method if supported
      *
      * @return array
      */
-    public function getStats() : array;
+    public function getStats(): array;
+
+    /**
+     * @return string|null
+     */
+    public function getJournalID();
+
+    /**
+     * @param string $id
+     */
+    public function setJournalID($id);
 }

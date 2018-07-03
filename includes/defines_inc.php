@@ -5,7 +5,7 @@
  */
 
 // Version
-define('JTL_VERSION', 407);
+define('JTL_VERSION', 500);
 define('JTL_MIN_WAWI_VERSION', 100000);
 define('JTL_MINOR_VERSION', '#JTL_MINOR_VERSION#');
 // Einstellungssektionen
@@ -316,7 +316,6 @@ define('JOBQUEUE_LIMIT_M_STATUSEMAIL', '1');
 defined('EXPORTFORMAT_LIMIT_M') || define('EXPORTFORMAT_LIMIT_M', 2000);
 defined('EXPORTFORMAT_ASYNC_LIMIT_M') || define('EXPORTFORMAT_ASYNC_LIMIT_M', 15);
 // Special Exportformate
-define('SPECIAL_EXPORTFORMAT_YATEGO', 1);
 // Shop Template Logo Name
 define('SHOPLOGO_NAME', 'jtlshoplogo');
 // Erweiterte Artikelübersicht Darstellung
@@ -371,7 +370,12 @@ define('PAGE_404', 36);
 define('PAGE_IO', 37);
 define('PAGE_BESTELLSTATUS', 38);
 define('PAGE_MEDIA', 39);
+define('PAGE_NEWSMONAT', 40);
+define('PAGE_NEWSDETAIL', 41);
+define('PAGE_NEWSKATEGORIE', 42);
+
 // Boxen
+define('BOX_CONTAINER', 0);
 define('BOX_BESTSELLER', 1);
 define('BOX_KATEGORIEN', 2);
 define('BOX_VERGLEICHSLISTE', 3);
@@ -401,6 +405,8 @@ define('BOX_FILTER_BEWERTUNG', 26);
 define('BOX_FILTER_MERKMALE', 27);
 define('BOX_FILTER_SUCHE', 28);
 define('BOX_FILTER_SUCHSPECIAL', 29);
+define('BOX_FILTER_HERSTELLER', 101);
+define('BOX_FILTER_KATEGORIE', 102);
 define('BOX_EIGENE_BOX_OHNE_RAHMEN', 30);
 define('BOX_EIGENE_BOX_MIT_RAHMEN', 31);
 define('BOX_TAGWOLKE', 32);
@@ -465,7 +471,7 @@ define('JTLSUPPORT_EMAIL', 'support@jtl-software.de');
 define('JTLURL_BASE', 'https://ext.jtl-software.de/');
 define('JTLURL_HP', 'https://www.jtl-software.de/');
 define('JTLURL_GET_DUK', JTLURL_BASE . 'json_duk.php');
-define('JTLURL_GET_SHOPNEWS', JTLURL_HP . 'news_json.php?notimeline=1&limit=5');
+define('JTLURL_GET_SHOPNEWS', 'https://feed.jtl-software.de/websitenews');
 define('JTLURL_GET_SHOPPATCH', JTLURL_BASE . 'json_patch.php');
 define('JTLURL_GET_SHOPMARKETPLACE', JTLURL_BASE . 'json_marketplace.php');
 define('JTLURL_GET_SHOPHELP', JTLURL_BASE . 'jtlhelp.php');
@@ -488,6 +494,13 @@ define('TEMPLATE_XML', 'template.xml');
 // Seo
 define('SHOP_SEO', true);
 // Sessionspeicherung 1 => DB, sonst => Dateien
-define('ES_SESSIONS', 0);
 // Max Anzahl an Variationswerten für Warenkorbmatrix
 define('ART_MATRIX_MAX', 250);
+
+define('BROWSER_UNKNOWN', 0);
+define('BROWSER_MSIE', 1);
+define('BROWSER_FIREFOX', 2);
+define('BROWSER_CHROME', 3);
+define('BROWSER_SAFARI', 4);
+define('BROWSER_OPERA', 5);
+define('BROWSER_NETSCAPE', 6);

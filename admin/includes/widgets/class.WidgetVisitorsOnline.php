@@ -15,13 +15,13 @@ class WidgetVisitorsOnline extends WidgetBase
      */
     public function init()
     {
-        archiviereBesucher();
+        Visitor::archive();
     }
 
     /**
      * @return array
      */
-    public function getVisitors()
+    public function getVisitors(): array
     {
         // clause 'ANY_VALUE' is needed by servers, who has the 'sql_mode'-setting 'only_full_group_by' enabled.
         // this is the default since mysql version >= 5.7.x
@@ -53,17 +53,15 @@ class WidgetVisitorsOnline extends WidgetBase
                     LEFT JOIN `tkunde` ON `tbesucher`.`kKunde` = `tkunde`.`kKunde`
             WHERE
                 `tbesucher`.`kBesucherBot` = 0
-                AND `tbesucher`.`kKunde` = 0   -- only guests are of interest here
-        ", 2);
-        if (is_array($oVisitors_arr)) {
-            foreach ($oVisitors_arr as $i => $oVisitor) {
-                $oVisitors_arr[$i]->cNachname = trim(entschluesselXTEA($oVisitor->cNachname));
-                if ($oVisitor->kBestellung > 0) {
-                    $oVisitors_arr[$i]->fGesamtsumme = gibPreisStringLocalized($oVisitor->fGesamtsumme);
-                }
+                AND `tbesucher`.`kKunde` = 0",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
+        $cryptoService = Shop::Container()->getCryptoService();
+        foreach ($oVisitors_arr as $i => $oVisitor) {
+            $oVisitors_arr[$i]->cNachname = trim($cryptoService->decryptXTEA($oVisitor->cNachname ?? ''));
+            if ($oVisitor->kBestellung > 0) {
+                $oVisitors_arr[$i]->fGesamtsumme = Preise::getLocalizedPriceString($oVisitor->fGesamtsumme);
             }
-        } else {
-            $oVisitors_arr = [];
         }
 
         return $oVisitors_arr;
@@ -73,7 +71,7 @@ class WidgetVisitorsOnline extends WidgetBase
      * @param array $oVisitors_arr
      * @return stdClass
      */
-    public function getVisitorsInfo($oVisitors_arr)
+    public function getVisitorsInfo(array $oVisitors_arr): stdClass
     {
         $oInfo            = new stdClass();
         $oInfo->nCustomer = 0;
@@ -96,6 +94,7 @@ class WidgetVisitorsOnline extends WidgetBase
     public function getContent()
     {
         $oVisitors_arr = $this->getVisitors();
+
         return $this->oSmarty->assign('oVisitors_arr', $oVisitors_arr)
             ->assign('oVisitorsInfo', $this->getVisitorsInfo($oVisitors_arr))
             ->fetch('tpl_inc/widgets/visitors_online.tpl');

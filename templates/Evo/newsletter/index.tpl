@@ -35,32 +35,44 @@
                         {block name="newsletter-subscribe-body"}
                         <p>{lang key="newsletterSubscribeDesc" section="newsletter"}</p>
     
-                        <form method="post" action="{get_static_route id='newsletter.php'}" role="form">
+                        <form method="post" action="{get_static_route id='newsletter.php'}" role="form" class="evo-validate">
                             <fieldset>
                                 <div class="form-group float-label-control">
                                     <label for="newslettertitle" class="control-label">{lang key="newslettertitle" section="newsletter"}</label>
                                     <select id="newslettertitle" name="cAnrede" class="form-control">
-                                        <option value="w"{if (isset($oKunde->cAnrede) && $oKunde->cAnrede === 'w')} selected="selected"{/if}>{$Anrede_w}</option>
-                                        <option value="m"{if (isset($oKunde->cAnrede) && $oKunde->cAnrede === 'm')} selected="selected"{/if}>{$Anrede_m}</option>
+                                        <option value="w"{if (isset($oKunde->cAnrede) && $oKunde->cAnrede === 'w')} selected="selected"{/if}>{lang key='salutationW'}</option>
+                                        <option value="m"{if (isset($oKunde->cAnrede) && $oKunde->cAnrede === 'm')} selected="selected"{/if}>{lang key='salutationM'}</option>
                                     </select>
                                 </div>
                                 <div class="form-group float-label-control">
                                     <label for="newsletterfirstname" class="control-label">{lang key="newsletterfirstname" section="newsletter"}</label>
-                                    <input type="text" name="cVorname" class="form-control" value="{if !empty($oPlausi->cPost_arr.cVorname)}{$oPlausi->cPost_arr.cVorname}{elseif !empty($oKunde->cVorname)}{$oKunde->cVorname}{/if}" id="newsletterfirstname" />
+                                    <input type="text" name="cVorname" class="form-control"
+                                           value="{if !empty($oPlausi->cPost_arr.cVorname)}{$oPlausi->cPost_arr.cVorname}{elseif !empty($oKunde->cVorname)}{$oKunde->cVorname}{/if}"
+                                           id="newsletterfirstname"
+                                           autocomplete="given-name"
+                                    />
                                     {if !empty($oPlausi->nPlausi_arr.cVorname)}
                                         <div class="form-error-msg text-danger"><i class="fa fa-warning"></i> {lang key="fillOut" section="global"}</div>
                                     {/if}
                                 </div>
                                 <div class="form-group float-label-control">
                                     <label for="lastName" class="control-label">{lang key="newsletterlastname" section="newsletter"}</label>
-                                    <input type="text" name="cNachname" class="form-control" value="{if !empty($oPlausi->cPost_arr.cNachname)}{$oPlausi->cPost_arr.cNachname}{elseif !empty($oKunde->cNachname)}{$oKunde->cNachname}{/if}" id="lastName" />
+                                    <input type="text" name="cNachname" class="form-control"
+                                           value="{if !empty($oPlausi->cPost_arr.cNachname)}{$oPlausi->cPost_arr.cNachname}{elseif !empty($oKunde->cNachname)}{$oKunde->cNachname}{/if}"
+                                           id="lastName"
+                                           autocomplete="family-name"
+                                    />
                                     {if !empty($oPlausi->nPlausi_arr.cNachname)}
                                         <div class="form-error-msg text-danger"><i class="fa fa-warning"></i> {lang key="fillOut" section="global"}</div>
                                     {/if}
                                 </div>
                                 <div class="form-group float-label-control{if !empty($oPlausi->nPlausi_arr.cEmail)} has-error{/if} required">
                                     <label for="email" class="control-label">{lang key="newsletteremail" section="newsletter"}</label>
-                                    <input type="email" name="cEmail" class="form-control" required value="{if !empty($oPlausi->cPost_arr.cEmail)}{$oPlausi->cPost_arr.cEmail}{elseif !empty($oKunde->cMail)}{$oKunde->cMail}{/if}" id="email" />
+                                    <input type="email" name="cEmail" class="form-control" required
+                                           value="{if !empty($oPlausi->cPost_arr.cEmail)}{$oPlausi->cPost_arr.cEmail}{elseif !empty($oKunde->cMail)}{$oKunde->cMail}{/if}"
+                                           id="email"
+                                           autocomplete="email"
+                                    />
                                     {if !empty($oPlausi->nPlausi_arr.cEmail)}
                                         <div class="form-error-msg text-danger"><i class="fa fa-warning"></i> {lang key="fillOut" section="global"}</div>
                                     {/if}
@@ -71,13 +83,11 @@
                                     {assign var=plausiArr value=array()}
                                 {/if}
                                 {if (!isset($smarty.session.bAnti_spam_already_checked) || $smarty.session.bAnti_spam_already_checked !== true) &&
-                                    isset($Einstellungen.global.anti_spam_method) && $Einstellungen.global.anti_spam_method !== 'N' &&
                                     isset($Einstellungen.newsletter.newsletter_sicherheitscode) && $Einstellungen.newsletter.newsletter_sicherheitscode !== 'N' && empty($smarty.session.Kunde->kKunde)}
                                     <hr>
-                                    <div class="g-recaptcha form-group" data-sitekey="{$Einstellungen.global.global_google_recaptcha_public}" data-callback="captcha_filled"></div>
-                                    {if !empty($plausiArr.captcha) && $plausiArr.captcha === true}
-                                        <div class="form-error-msg text-danger"><i class="fa fa-warning"></i> {lang key="invalidToken" section="global"}</div>
-                                    {/if}
+                                    <div class="form-group float-label-control{if !empty($plausiArr.captcha) && $plausiArr.captcha === true}} has-error{/if} required">
+                                    {captchaMarkup getBody=true}
+                                    </div>
                                 {/if}
                                 {hasCheckBoxForLocation nAnzeigeOrt=$nAnzeigeOrt cPlausi_arr=$plausiArr cPost_arr=$cPost_arr bReturn="bHasCheckbox"}
                                 {if $bHasCheckbox}
@@ -114,11 +124,14 @@
                     {block name="newsletter-unsubscribe-body"}
                     <p>{lang key="newsletterUnsubscribeDesc" section="newsletter"}</p>
     
-                    <form method="post" action="{get_static_route id='newsletter.php'}" name="newsletterabmelden">
+                    <form method="post" action="{get_static_route id='newsletter.php'}" name="newsletterabmelden" class="evo-validate">
                         <fieldset>
                             <div class="form-group float-label-control required{if !empty($oFehlendeAngaben->cUnsubscribeEmail)} has-error{/if}">
                                 <label for="checkOut" class="control-label">{lang key="newsletteremail" section="newsletter"}</label>
-                                <input type="email" class="form-control" required name="cEmail" value="{if !empty($oKunde->cMail)}{$oKunde->cMail}{/if}" id="checkOut" />
+                                <input type="email" class="form-control" required name="cEmail"
+                                       value="{if !empty($oKunde->cMail)}{$oKunde->cMail}{/if}" id="checkOut"
+                                       autocomplete="email"
+                                />
                                 {if !empty($oFehlendeAngaben->cUnsubscribeEmail)}
                                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i> {lang key="fillOut" section="global"}</div>
                                 {/if}

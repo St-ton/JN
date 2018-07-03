@@ -47,7 +47,7 @@
 	set_popup = function() {
 		$("a.billpay_accepted").fancybox({
 			'type' : 'iframe',
-			'href' : 'http://www.billpay.de/api/agb',
+			'href' : 'https://www.billpay.de/api/agb',
 			'transitionIn' : 'fade',
 			'transitionOut' : 'fade',
 			'autoScale' : false,

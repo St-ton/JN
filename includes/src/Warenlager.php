@@ -220,9 +220,9 @@ class Warenlager extends MainModel
      * @param int $id
      * @return $this
      */
-    public function setID($id)
+    public function setID(int $id)
     {
-        $this->kWarenlager = (int)$id;
+        $this->kWarenlager = $id;
 
         return $this;
     }
@@ -457,7 +457,8 @@ class Warenlager extends MainModel
                     "SELECT twarenlager.* {$cSqlSelect}
                          FROM twarenlager
                          {$cSqlJoin}
-                         WHERE twarenlager.kWarenlager = {$kKey}", 1
+                         WHERE twarenlager.kWarenlager = {$kKey}",
+                    \DB\ReturnType::SINGLE_OBJECT
                 );
             }
         }
@@ -471,7 +472,7 @@ class Warenlager extends MainModel
      * @return bool|int
      * @throws Exception
      */
-    public function save($bPrim = true)
+    public function save(bool $bPrim = true)
     {
         $oObj = new stdClass();
         foreach (array_keys(get_object_vars($this)) as $cMember) {
@@ -496,7 +497,7 @@ class Warenlager extends MainModel
      * @return int
      * @throws Exception
      */
-    public function update()
+    public function update(): int
     {
         $cQuery      = "UPDATE twarenlager SET ";
         $cSet_arr    = [];
@@ -516,7 +517,7 @@ class Warenlager extends MainModel
             $cQuery .= implode(', ', $cSet_arr);
             $cQuery .= " WHERE kWarenlager = {$this->kWarenlager}";
 
-            return Shop::Container()->getDB()->query($cQuery, NiceDB::RET_AFFECTED_ROWS);
+            return Shop::Container()->getDB()->query($cQuery, \DB\ReturnType::AFFECTED_ROWS);
         }
         throw new Exception('ERROR: Object has no members!');
     }
@@ -524,7 +525,7 @@ class Warenlager extends MainModel
     /**
      * @return int
      */
-    public function delete()
+    public function delete(): int
     {
         return Shop::Container()->getDB()->queryPrepared(
             'DELETE twarenlager, twarenlagersprache
@@ -533,14 +534,14 @@ class Warenlager extends MainModel
                     ON twarenlagersprache.kWarenlager = twarenlager.kWarenlager
                 WHERE twarenlager.kWarenlager = :lid',
             ['lid' => (int)$this->kWarenlager],
-            NiceDB::RET_AFFECTED_ROWS
+            \DB\ReturnType::AFFECTED_ROWS
         );
     }
 
     /**
      * @return bool
      */
-    public function loadLanguages()
+    public function loadLanguages(): bool
     {
         if ($this->getWarenlager() > 0) {
             $oObj_arr = Shop::Container()->getDB()->selectAll('twarenlagersprache', 'kWarenlager', $this->getWarenlager());
@@ -560,9 +561,9 @@ class Warenlager extends MainModel
     /**
      * @param bool $bActive
      * @param bool $bLoadLanguages
-     * @return array|null
+     * @return array
      */
-    public static function getAll($bActive = true, $bLoadLanguages = false)
+    public static function getAll(bool $bActive = true, bool $bLoadLanguages = false): array
     {
         $oWarenlager_arr = [];
         $cSql            = $bActive ? " WHERE nAktiv = 1" : '';
@@ -570,7 +571,7 @@ class Warenlager extends MainModel
             "SELECT *
                FROM twarenlager
                {$cSql}",
-            NiceDB::RET_ARRAY_OF_OBJECTS
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oObj_arr as $oObj) {
             $oWarenlager = new self(null, $oObj);
@@ -590,10 +591,9 @@ class Warenlager extends MainModel
      * @param bool       $bActive
      * @return array|null
      */
-    public static function getByProduct($kArtikel, $kSprache = null, $xOption_arr = null, $bActive = true)
+    public static function getByProduct(int $kArtikel, int $kSprache = null, $xOption_arr = null, bool $bActive = true)
     {
         $oWarenlager_arr = [];
-        $kArtikel        = (int)$kArtikel;
         if ($kArtikel > 0) {
             $cSql     = $bActive ? " AND twarenlager.nAktiv = 1" : '';
             $oObj_arr = Shop::Container()->getDB()->queryPrepared(
@@ -604,7 +604,7 @@ class Warenlager extends MainModel
                        {$cSql}
                     WHERE tartikelwarenlager.kArtikel = :articleID",
                 ['articleID' => $kArtikel],
-                NiceDB::RET_ARRAY_OF_OBJECTS
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($oObj_arr as $oObj) {
                 $oWarenlager               = new self($oObj->kWarenlager, null, $kSprache);

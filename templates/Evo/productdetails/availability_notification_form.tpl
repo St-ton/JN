@@ -15,7 +15,7 @@
             </div>
         {/if}
     {/if}
-    <form action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}{else}index.php{/if}" method="post" id="article_availability{$Artikel->kArtikel}">
+    <form action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}{else}index.php{/if}" method="post" id="article_availability{$Artikel->kArtikel}" class="evo-validate">
         {$jtl_token}
         <fieldset>
             <legend>{lang key="contact" section="global"}</legend>
@@ -27,7 +27,12 @@
                             <label for="article_availability{$Artikel->kArtikel}_firstName" class="control-label">
                                 {lang key="firstName" section="account data"}
                             </label>
-                            <input type="text" class="form-control" name="vorname" value="{if isset($Benachrichtigung->cVorname)}{$Benachrichtigung->cVorname}{/if}" id="article_availability{$Artikel->kArtikel}_firstName"{if $Einstellungen.$tplscope.benachrichtigung_abfragen_vorname === 'Y'} required{/if}>
+                            <input type="text" class="form-control" name="vorname"
+                                   value="{if isset($Benachrichtigung->cVorname)}{$Benachrichtigung->cVorname}{/if}"
+                                   id="article_availability{$Artikel->kArtikel}_firstName"
+                                   {if $Einstellungen.$tplscope.benachrichtigung_abfragen_vorname === 'Y'} required{/if}
+                                   autocomplete="given-name"
+                            >
                             {if !empty($fehlendeAngaben_benachrichtigung.vorname)}
                                 <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                                     {lang key="fillOut" section="global"}
@@ -43,7 +48,12 @@
                             <label for="article_availability{$Artikel->kArtikel}_lastName" class="control-label">
                                 {lang key="lastName" section="account data"}
                             </label>
-                            <input type="text" class="form-control" name="nachname" value="{if isset($Benachrichtigung->cNachname)}{$Benachrichtigung->cNachname}{/if}" id="article_availability{$Artikel->kArtikel}_lastName"{if $Einstellungen.$tplscope.benachrichtigung_abfragen_nachname === 'Y'} required{/if}>
+                            <input type="text" class="form-control" name="nachname"
+                                   value="{if isset($Benachrichtigung->cNachname)}{$Benachrichtigung->cNachname}{/if}"
+                                   id="article_availability{$Artikel->kArtikel}_lastName"
+                                   {if $Einstellungen.$tplscope.benachrichtigung_abfragen_nachname === 'Y'} required{/if}
+                                   autocomplete="family-name"
+                            >
                             {if !empty($fehlendeAngaben_benachrichtigung.nachname)}
                                 <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                                     {lang key="fillOut" section="global"}
@@ -61,7 +71,12 @@
                         <label for="article_availability{$Artikel->kArtikel}_email" class="control-label">
                             {lang key="email" section="account data"}
                         </label>
-                        <input type="email" class="form-control" name="email" value="{if isset($Lieferadresse->cMail)}{$Lieferadresse->cMail}{/if}" id="article_availability{$Artikel->kArtikel}_email" required>
+                        <input type="email" class="form-control" name="email"
+                               value="{if isset($Lieferadresse->cMail)}{$Lieferadresse->cMail}{/if}"
+                               id="article_availability{$Artikel->kArtikel}_email"
+                               required
+                               autocomplete="email"
+                        >
                         {if !empty($fehlendeAngaben_benachrichtigung.email)}
                             <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                                 {if $fehlendeAngaben_benachrichtigung.email == 1}
@@ -78,22 +93,18 @@
             </div>
     
             {if isset($fehlendeAngaben_benachrichtigung)}
-                {include file='snippets/checkbox.tpl' nAnzeigeOrt=CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT cPlausi_arr=$fehlendeAngaben_benachrichtigung cPost_arr=null}
+                {include file='snippets/checkbox.tpl' nAnzeigeOrt=$smarty.const.CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT cPlausi_arr=$fehlendeAngaben_benachrichtigung cPost_arr=null}
             {else}
-                {include file='snippets/checkbox.tpl' nAnzeigeOrt=CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT cPlausi_arr=null cPost_arr=null cIDPrefix="article_availability{$Artikel->kArtikel}"}
+                {include file='snippets/checkbox.tpl' nAnzeigeOrt=$smarty.const.CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT cPlausi_arr=null cPost_arr=null cIDPrefix="article_availability{$Artikel->kArtikel}"}
             {/if}
     
         </fieldset>
         {if (!isset($smarty.session.bAnti_spam_already_checked) || $smarty.session.bAnti_spam_already_checked !== true) &&
-            isset($Einstellungen.global.anti_spam_method) && $Einstellungen.global.anti_spam_method !== 'N' &&
             isset($Einstellungen.$tplscope.benachrichtigung_abfragen_captcha) && $Einstellungen.$tplscope.benachrichtigung_abfragen_captcha !== 'N' && empty($smarty.session.Kunde->kKunde)}
             <hr>
             <div class="row">
-                <div class="col-xs-12 col-md-12">
-                    <div class="g-recaptcha form-group" data-sitekey="{$Einstellungen.global.global_google_recaptcha_public}" data-callback="captcha_filled"></div>
-                    {if !empty($fehlendeAngaben_benachrichtigung.captcha)}
-                        <div class="form-error-msg text-danger"><i class="fa fa-warning"></i> {lang key="invalidToken" section="global"}</div>
-                    {/if}
+                <div class="col-xs-12 col-md-12{if !empty($fehlendeAngaben_benachrichtigung.captcha)} has-error{/if} required">
+                    {captchaMarkup getBody=true}
                     <hr>
                 </div>
             </div>

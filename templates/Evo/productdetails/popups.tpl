@@ -33,11 +33,11 @@
 <script type="text/javascript">
     $(function() {ldelim}
         {if isset($fehlendeAngaben_benachrichtigung) && count($fehlendeAngaben_benachrichtigung) > 0 && ($verfuegbarkeitsBenachrichtigung == 2 || $verfuegbarkeitsBenachrichtigung == 3) && $Artikel->cLagerBeachten === 'Y'}
-            show_popup('n{$kArtikel}', '{lang key="requestNotification" section="global"}');
+            show_popup('n{$kArtikel}', '{lang key='requestNotification' section='global'}');
         {/if}
 
         {if isset($fehlendeAngaben_fragezumprodukt) && $fehlendeAngaben_fragezumprodukt|@count > 0 && $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'P'}
-            show_popup('z{$kArtikel}', '{lang key="productQuestion" section="productDetails"}');
+            show_popup('z{$kArtikel}', '{lang key='productQuestion' section='productDetails'}');
         {/if}
     {rdelim});
 

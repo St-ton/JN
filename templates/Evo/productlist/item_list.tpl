@@ -68,7 +68,7 @@
             {/block}
 
             <div class="product-info hidden-xs">
-                {block name="product-info"}
+                {block name='product-info'}
                     {if $Einstellungen.artikeluebersicht.artikeluebersicht_kurzbeschreibung_anzeigen === 'Y' && $Artikel->cKurzBeschreibung}
                         <div class="shortdescription" itemprop="description">
                             {$Artikel->cKurzBeschreibung}
@@ -90,7 +90,7 @@
                                 || $Einstellungen.artikeldetails.adr_hazard_display === 'DL')}
                             <li class="item row">
                                 <span class="attr-label col-sm-5">
-                                    {lang key="adrHazardSign"}:
+                                    {lang key='adrHazardSign'}:
                                 </span>
                                 <div class="value col-sm-7">
                                     <table class="adr-table value">
@@ -106,7 +106,7 @@
                         {/if}
                         {if isset($Artikel->dMHD) && isset($Artikel->dMHD_de)}
                             <li class="item row attr-best-before" title="{lang key='productMHDTool'}">
-                                <span class="attr-label col-sm-5">{lang key="productMHD"}: </span> <span class="value col-sm-7">{$Artikel->dMHD_de}</span>
+                                <span class="attr-label col-sm-5">{lang key='productMHD'}: </span> <span class="value col-sm-7">{$Artikel->dMHD_de}</span>
                             </li>
                         {/if}
                         {if $Einstellungen.artikeluebersicht.artikeluebersicht_gewicht_anzeigen === 'Y' && isset($Artikel->cGewicht) && $Artikel->fGewicht > 0}
@@ -137,7 +137,7 @@
                     </ul>
                     {if $Einstellungen.artikeluebersicht.artikeluebersicht_varikombi_anzahl > 0 && $Artikel->oVariationKombiVorschau_arr !== null && $Artikel->oVariationKombiVorschau_arr|@count > 0}
                         <div class="varikombis-thumbs hidden-md hidden-sm">
-                            {foreach name=varikombis from=$Artikel->oVariationKombiVorschau_arr item=oVariationKombiVorschau}
+                            {foreach $Artikel->oVariationKombiVorschau_arr as $oVariationKombiVorschau}
                                 <a href="{$oVariationKombiVorschau->cURL}" class="thumbnail pull-left"><img src="{$oVariationKombiVorschau->cBildMini}" alt="" /></a>
                             {/foreach}
                         </div>
@@ -194,7 +194,7 @@
                     <form action="" method="post" class="hidden-xs product-actions" data-toggle="product-actions">
                         {$jtl_token}
                         <div class="actions btn-group btn-group-xs btn-group-justified" role="group" aria-label="...">
-                            {block name="product-actions"}
+                            {block name='product-actions'}
                                 {if !($Artikel->nIstVater && $Artikel->kVaterArtikel === 0)}
                                     {if $Einstellungen.artikeluebersicht.artikeluebersicht_vergleichsliste_anzeigen === 'Y'}
                                         <div class="btn-group btn-group-xs" role="group">

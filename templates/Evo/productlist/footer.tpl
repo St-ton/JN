@@ -7,7 +7,7 @@
         <div class="panel panel-default tags">
             <div class="panel-heading">{lang key='productsTaggedAs' section='productOverview'}</div>
             <div class="panel-body">
-                {foreach$Suchergebnisse->getTagFilterOptions() as $oTag}
+                {foreach $Suchergebnisse->getTagFilterOptions() as $oTag}
                     <a href="{$oTag->getURL()}" class="label label-primary tag{$oTag->getClass()}">{$oTag->getName()}</a>
                 {/foreach}
             </div>

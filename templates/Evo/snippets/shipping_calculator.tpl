@@ -1,26 +1,26 @@
 {if empty($Versandarten)}
-    {block name="shipping-estimate-form"}
+    {block name='shipping-estimate-form'}
         <div class="panel panel-default" id="shipping-estimate-form">
             <div class="panel-heading">
                 <div class="panel-title">
-                    {block name="shipping-estimate-form-title"}{lang key="estimateShippingCostsTo" section="checkout"}{/block}
+                    {block name='shipping-estimate-form-title'}{lang key='estimateShippingCostsTo' section='checkout'}{/block}
                 </div>
             </div>
             <div class="panel-body">
-                {block name="shipping-estimate-form-body"}
+                {block name='shipping-estimate-form-body'}
                     <div class="form-inline">
-                        <label for="country">{lang key="country" section="account data"}</label>
+                        <label for="country">{lang key='country' section='account data'}</label>
                         <select name="land" id="country" class="form-control">
-                            {foreach name=land from=$laender item=land}
-                                <option value="{$land->cISO}" {if ($Einstellungen.kunden.kundenregistrierung_standardland==$land->cISO && (!isset($smarty.session.Kunde->cLand) || !$smarty.session.Kunde->cLand)) || (isset($smarty.session.Kunde->cLand) && $smarty.session.Kunde->cLand==$land->cISO)}selected{/if}>{$land->cName}</option>
+                            {foreach $laender as $land}
+                                <option value="{$land->cISO}" {if ($Einstellungen.kunden.kundenregistrierung_standardland === $land->cISO && (!isset($smarty.session.Kunde->cLand) || !$smarty.session.Kunde->cLand)) || (isset($smarty.session.Kunde->cLand) && $smarty.session.Kunde->cLand==$land->cISO)}selected{/if}>{$land->cName}</option>
                             {/foreach}
                         </select>
                         &nbsp;
-                        <label class="sr-only" for="plz">{lang key="plz" section="forgot password"}</label>
+                        <label class="sr-only" for="plz">{lang key='plz' section='forgot password'}</label>
                         <span class="input-group">
-                            <input type="text" name="plz" size="8" maxlength="8" value="{if isset($smarty.session.Kunde->cPLZ)}{$smarty.session.Kunde->cPLZ}{/if}" id="plz" class="form-control" placeholder="{lang key="plz" section="forgot password"}">
+                            <input type="text" name="plz" size="8" maxlength="8" value="{if isset($smarty.session.Kunde->cPLZ)}{$smarty.session.Kunde->cPLZ}{/if}" id="plz" class="form-control" placeholder="{lang key='plz' section='forgot password'}">
                             <span class="input-group-btn">
-                                <button name="versandrechnerBTN" class="btn btn-default" type="submit">{lang key="estimateShipping" section="checkout"}</button>
+                                <button name="versandrechnerBTN" class="btn btn-default" type="submit">{lang key='estimateShipping' section='checkout'}</button>
                             </span>
                         </span>
                     </div>
@@ -29,18 +29,18 @@
         </div>
     {/block}
 {else}
-    {block name="shipping-estimated"}
+    {block name='shipping-estimated'}
         <div class="panel panel-default" id="shipping-estimated">
             <div class="panel-heading">
-                <h4 class="panel-title">{block name="shipping-estimated-title"}{lang key="estimateShippingCostsTo" section="checkout"} {$Versandland}, {lang key="plz" section="forgot password"} {$VersandPLZ}{/block}</h4>
+                <h4 class="panel-title">{block name='shipping-estimated-title'}{lang key='estimateShippingCostsTo' section='checkout'} {$Versandland}, {lang key='plz' section='forgot password'} {$VersandPLZ}{/block}</h4>
             </div>
             <div class="panel-body">
-                {block name="shipping-estimated-body"}
+                {block name='shipping-estimated-body'}
                     {if count($ArtikelabhaengigeVersandarten)>0}
                         <table class="table table-striped">
-                            <caption>{lang key="productShippingDesc" section="checkout"}:</caption>
+                            <caption>{lang key='productShippingDesc' section='checkout'}:</caption>
                             <tbody>
-                                {foreach name=artikelversandliste from=$ArtikelabhaengigeVersandarten item=artikelversand}
+                                {foreach $ArtikelabhaengigeVersandarten as $artikelversand}
                                     <tr>
                                         <td>{$artikelversand->cName|trans}</td>
                                         <td class="text-right"><strong>{$artikelversand->cPreisLocalized}</strong>
@@ -52,9 +52,9 @@
                     {/if}
                     {if !empty($Versandarten)}
                         <table class="table table-striped">
-                            <caption>{lang key="shippingMethods" section="global"}:</caption>
+                            <caption>{lang key='shippingMethods' section='global'}:</caption>
                             <tbody>
-                                {foreach name=versand from=$Versandarten item=versandart}
+                                {foreach $Versandarten as $versandart}
                                     <tr id="shipment_{$versandart->kVersandart}">
                                         <td>
                                             {if $versandart->cBild}
@@ -75,7 +75,7 @@
                                             {/if}
                                             {if $versandart->cLieferdauer|trans && $Einstellungen.global.global_versandermittlung_lieferdauer_anzeigen === 'Y'}
                                                 <p class="small">
-                                                    {lang key="shippingTimeLP" section="global"}: {$versandart->cLieferdauer|trans}
+                                                    {lang key='shippingTimeLP' section='global'}: {$versandart->cLieferdauer|trans}
                                                 </p>
                                             {/if}
                                         </td>
@@ -89,14 +89,14 @@
                             </tbody>
                         </table>
                         {if isset($checkout) && $checkout}
-                            {$link={get_static_route id='warenkorb.php'}}
+                            {$link = {get_static_route id='warenkorb.php'}}
                         {else}
-                            {$link="index.php?s={$Link->getID()}"}
+                            {$link = $ShopURL|cat:'/?s='|cat:$Link->getID()}
                         {/if}
-                        <a href="{$link}" class="btn btn-default">{lang key="newEstimation" section="checkout"}</a>
+                        <a href="{$link}" class="btn btn-default">{lang key='newEstimation' section='checkout'}</a>
                     {else}
                         <div class="row">
-                            {lang key="noShippingAvailable" section="checkout"}
+                            {lang key='noShippingAvailable' section='checkout'}
                         </div>
                     {/if}
                 {/block}

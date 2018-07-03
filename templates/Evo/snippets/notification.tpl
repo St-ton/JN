@@ -5,7 +5,7 @@
         {if isset($buttons)}
         <div class="panel-footer">
             <div class="btn-group btn-group-justified btn-group-full" role="group">
-            {foreach name=buttons from=$buttons item=button}
+            {foreach $buttons as $button}
                 <a href="{get_static_route id=$button->href}" class="btn{if isset($button->primary) && $button->primary} btn-primary{else} btn-default{/if}"{if isset($button->dismiss)} data-dismiss="{$button->dismiss}" aria-label="Close"{/if}>
                     {if isset($button->fa)}<i class="fa {$button->fa}"></i>{/if}
                     {$button->title}

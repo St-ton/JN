@@ -1,12 +1,12 @@
-{block name="header"}
+{block name='header'}
     {if !isset($bAjaxRequest) || !$bAjaxRequest}
         {include file='layout/header.tpl'}
     {/if}
 {/block}
 
-{block name="content"}
+{block name='content'}
     <div id="result-wrapper">
-        {block name="productlist-header"}
+        {block name='productlist-header'}
         {include file='productlist/header.tpl'}
         {/block}
     
@@ -34,15 +34,15 @@
         {/if}
         {* Bestseller *}
         {if isset($oBestseller_arr) && $oBestseller_arr|@count > 0}
-            {block name="productlist-bestseller"}
+            {block name='productlist-bestseller'}
             {lang key='bestseller' section='global' assign='slidertitle'}
             {include file='snippets/product_slider.tpl' id='slider-top-products' productlist=$oBestseller_arr title=$slidertitle}
             {/block}
         {/if}
         
-        {block name="productlist-results"}
+        {block name='productlist-results'}
         <div class="row {if $style !== 'list'}row-eq-height row-eq-img-height{/if} {$style}" id="product-list" itemprop="mainEntity" itemscope itemtype="http://schema.org/ItemList">
-            {foreach name=artikel from=$Suchergebnisse->getProducts() item=Artikel}
+            {foreach $Suchergebnisse->getProducts() as $Artikel}
                 <div class="product-wrapper {$grid}" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
                     {if $style === 'list'}
                         {include file='productlist/item_list.tpl' tplscope=$style}
@@ -54,13 +54,13 @@
         </div>
         {/block}
         
-        {block name="productlist-footer"}
+        {block name='productlist-footer'}
             {include file='productlist/footer.tpl'}
         {/block}
     </div>
 {/block}
 
-{block name="footer"}
+{block name='footer'}
     {if !isset($bAjaxRequest) || !$bAjaxRequest}
         {include file='layout/footer.tpl'}
     {/if}

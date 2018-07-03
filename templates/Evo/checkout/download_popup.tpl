@@ -18,7 +18,7 @@
 <div id="popup_wrapper">
     <div id="popup">
         {if $bNoData}
-            <div class="alert alert-danger">{lang key="pageNotFound"}</div>
+            <div class="alert alert-danger">{lang key='pageNotFound'}</div>
         {else}
             {if $cAction === 'download_vorschau'}
                 {include file='account/download_preview.tpl'}

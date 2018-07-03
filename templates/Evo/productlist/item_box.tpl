@@ -22,7 +22,7 @@
         {/block}
 
         {if $Einstellungen.template.productlist.quickview_productlist === 'Y' && !$Artikel->bHasKonfig}
-            <span class="quickview badge hidden-xs" data-src="{$Artikel->cURLFull}" data-target="buy_form_{$Artikel->kArtikel}" title="{$Artikel->cName}">{lang key="downloadPreview" section="productDownloads"}</span>
+            <span class="quickview badge hidden-xs" data-src="{$Artikel->cURLFull}" data-target="buy_form_{$Artikel->kArtikel}" title="{$Artikel->cName}">{lang key='downloadPreview' section='productDownloads'}</span>
         {/if}
     </a>
     {/block}
@@ -107,7 +107,7 @@
 
                                     <span class="input-group-btn">
                                         <button type="submit" class="btn btn-primary" id="submit{$Artikel->kArtikel}"
-                                                title="{lang key="addToCart" section="global"}">
+                                                title="{lang key='addToCart' section='global'}">
                                             <i class="fa fa-shopping-cart"></i><span class="hidden-xs"> {lang key='addToCart'}</span>
                                         </button>
                                     </span>

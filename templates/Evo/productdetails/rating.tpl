@@ -6,7 +6,7 @@
     {else}
         {lang key='productRating' section='product rating' assign='ratingLabelText'}
     {/if}
-    {block name="productdetails-rating"}
+    {block name='productdetails-rating'}
     <span class="rating" title="{$ratingLabelText}: {$stars}/5">
     {strip}
         {if $stars >= 5}

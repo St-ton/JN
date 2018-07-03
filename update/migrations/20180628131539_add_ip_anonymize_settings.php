@@ -28,26 +28,28 @@ class Migration_20180628131539 extends Migration implements IMigration
     public function up()
     {
         $this->setConfig(
-            'ip_anonymize_mask_v4',                                                                // setting name
-            '255.255.255.0',                                                                       // default value of setting
-            CONF_GLOBAL,                                                                           // section of setting (see: includes / defines_inc.php)
-            'IPv4-Adress-Anonymisiermaske',                                                        // caption of setting in the backend
-            'text',                                                                                // setting-type
-            571,                                                                                   // order-position
+            'ip_anonymize_mask_v4',                                                                 // setting name
+            '255.255.255.0',                                                                        // default value of setting
+            CONF_GLOBAL,                                                                            // section of setting (see: includes / defines_inc.php)
+            'IPv4-Adress-Anonymisiermaske',                                                         // caption of setting in the backend
+            'text',                                                                                 // setting-type
+            571,                                                                                    // order-position
              (object) [
-                'cBeschreibung' => 'IP-Maske zum anonymisieren der IP-Adresse des Eink&auml;ufers'
+                 'cBeschreibung' => 'IP-Maske zum Anonymisieren der IP-Adressen von Besuchern<br>'.
+                                    '(z.B.: 82.54.123.42 wird zu 82.54.123.0)'
             ],
             true
         );
         $this->setConfig(
-            'ip_anonymize_mask_v6',                                                                // setting name
-            'ffff:ffff:ffff:ffff:0000:0000:0000:0000',                                             // default value of setting
-            CONF_GLOBAL,                                                                           // section of setting (see: includes / defines_inc.php)
-            'IPv6-Adress-Anonymisiermaske',                                                        // caption of setting in the backend
-            'text',                                                                                // setting-type
-            572,                                                                                   // order-position
+            'ip_anonymize_mask_v6',                                                                 // setting name
+            'ffff:ffff:ffff:ffff:0000:0000:0000:0000',                                              // default value of setting
+            CONF_GLOBAL,                                                                            // section of setting (see: includes / defines_inc.php)
+            'IPv6-Adress-Anonymisiermaske',                                                         // caption of setting in the backend
+            'text',                                                                                 // setting-type
+            572,                                                                                    // order-position
             (object) [
-                'cBeschreibung' => 'IP-Maske zum anonymisieren der IP-Adresse des Eink&auml;ufers'
+                'cBeschreibung' => 'IP-Maske zum Anonymisieren der IP-Adressen von Besuchern<br>'.
+                                   '(z.B.: 2001:0db8:85a3:08d3:1319:8a2e:0370:7347 wird zu 2001:db8:85a3:8d3:0:0:0:0)'
             ],
             true
         );

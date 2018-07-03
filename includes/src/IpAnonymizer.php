@@ -6,6 +6,15 @@
 
 /**
  * class IpAnonymizer
+ *
+ * v4
+ * anonymize()       : 255.255.255.34 -> 255.255.255.0
+ * anonymizeLegacy() : 255.255.255.34 -> 255.255.255.*
+ *
+ * v6
+ * anonymize()       : 2001:0db8:85a3:08d3:1319:8a2e:0370:7347 -> 2001:db8:85a3:8d3:0:0:0:0   (also cuts leading zeros!)
+ * anonymizeLegacy() : 2001:0db8:85a3:08d3:1319:8a2e:0370:7347 -> 2001:0db8:85a3:08d3:*:*:*:*
+ *
  */
 class IpAnonymizer
 {
@@ -39,11 +48,16 @@ class IpAnonymizer
 
         switch (strlen($this->bRawIp)) {
             case 4:
-                 $this->szIP     = $this->rmLeadingZero($szIP);
-                 $this->szIpMask = $this->getMaskV4();
+                $this->szIP     = $this->rmLeadingZero($szIP); // possible leading zeros produce errors in inet_XtoY()-functions
+                $this->szIpMask = $this->getMaskV4();
                 break;
             case 16:
-                 $this->szIpMask = $this->getMaskV6();
+                if (defined('AF_INET6')) {
+                    $this->szIpMask = $this->getMaskV6();
+                } else {
+                    // this should normally never happen! (wrong compile-time setting of PHP)
+                    throw new Exception('PHP wurde mit der Option "--disable-ipv6" compiliert!');
+                }
                 break;
             default:
         }

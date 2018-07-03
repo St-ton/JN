@@ -5,7 +5,7 @@
         {strip}
             <div style="margin:10px 0;">
                 <iframe src="{$url}" width="600" height="700" name="MoneyBookersFrame" frameborder="0">
-                    {lang key="moneybookersQCDesc" section=""}
+                    {lang key='moneybookersQCDesc' section=''}
                     {if $imageSource}
                         <a href="{$url}">
                             <img src="{$imageSource}" alt="Logo {$caption}" />

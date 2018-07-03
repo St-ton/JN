@@ -3,17 +3,17 @@
         <thead>
         <tr>
             <th></th>
-            <th>{lang section="productDownloads" key="downloadName"}</th>
-            <th>{lang section="productDownloads" key="downloadDescription" }</th>
-            <th>{lang section="productDownloads" key="downloadFileType"}</th>
-            <th>{lang section="productDownloads" key="downloadPreview"}</th>
+            <th>{lang section='productDownloads' key='downloadName'}</th>
+            <th>{lang section='productDownloads' key='downloadDescription'}</th>
+            <th>{lang section='productDownloads' key='downloadFileType'}</th>
+            <th>{lang section='productDownloads' key='downloadPreview'}</th>
         </tr>
         </thead>
         <tbody>
-        {foreach name=downloads from=$Artikel->oDownload_arr item=oDownload}
+        {foreach $Artikel->oDownload_arr as $oDownload}
             {if isset($oDownload->oDownloadSprache)}
                 <tr>
-                    <td>{$smarty.foreach.downloads.index+1}.</td>
+                    <td>{$oDownload@index+1}.</td>
                     <td>{$oDownload->oDownloadSprache->getName()}</td>
                     <td>{$oDownload->oDownloadSprache->getBeschreibung()}</td>
                     <td>{$oDownload->getExtension()}</td>

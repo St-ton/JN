@@ -40,7 +40,7 @@
 
         {if isset($Einstellungen.news.news_kategorie_unternewsanzeigen) && $Einstellungen.news.news_kategorie_unternewsanzeigen === 'Y' && !empty($oNewsKategorie_arr)}
             <div class="top10 news-categorylist">
-                {foreach name=newskategorie from=$oNewsKategorie_arr item=oNewsKategorie}
+                {foreach $oNewsKategorie_arr as $oNewsKategorie}
                     <a itemprop="articleSection" href="{$oNewsKategorie->cURLFull}" title="{$oNewsKategorie->cBeschreibung|strip_tags|escape:'html'|truncate:60}" class="badge">{$oNewsKategorie->cName}</a>
                 {/foreach}
             </div>
@@ -57,8 +57,8 @@
                 {/if}
                 <hr>
                 <div class="top10" id="comments">
-                    <h3 class="section-heading">{lang key="newsComments" section="news"}<span itemprop="commentCount" class="hidden">{$oNewsKommentar_arr|count}</span></h3>
-                    {foreach name=kommentare from=$oNewsKommentar_arr item=oNewsKommentar}
+                    <h3 class="section-heading">{lang key='newsComments' section='news'}<span itemprop="commentCount" class="hidden">{$oNewsKommentar_arr|count}</span></h3>
+                    {foreach $oNewsKommentar_arr as $oNewsKommentar}
                         <blockquote class="news-comment">
                             <p itemprop="comment">
                                 {$oNewsKommentar->cKommentar}
@@ -87,7 +87,7 @@
                     <div class="col-xs-12">
                         <div class="panel-wrap">
                             <div class="panel panel-default">
-                                <div class="panel-heading"><h4 class="panel-title">{lang key="newsCommentAdd" section="news"}</h4></div>
+                                <div class="panel-heading"><h4 class="panel-title">{lang key='newsCommentAdd' section='news'}</h4></div>
                                 <div class="panel-body">
                                     <form method="post" action="{if !empty($oNewsArchiv->cSeo)}{$ShopURL}/{$oNewsArchiv->cSeo}{else}{get_static_route id='news.php'}{/if}" class="form evo-validate" id="news-addcomment">
                                         {$jtl_token}
@@ -101,22 +101,22 @@
                                                     <div class="row">
                                                         <div class="col-xs-12 col-md-6">
                                                             <div id="commentName" class="form-group float-label-control{if isset($nPlausiValue_arr.cName)} has-error{/if} required">
-                                                                <label class="control-label commentForm" for="comment-name">{lang key="newsName" section="news"}</label>
+                                                                <label class="control-label commentForm" for="comment-name">{lang key='newsName' section='news'}</label>
                                                                 <input class="form-control" required id="comment-name" name="cName" type="text" value="{if !empty($cPostVar_arr.cName)}{$cPostVar_arr.cName}{/if}" />
                                                                 {if isset($nPlausiValue_arr.cName)}
                                                                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
-                                                                        {lang key="fillOut" section="global"}
+                                                                        {lang key='fillOut' section='global'}
                                                                     </div>
                                                                 {/if}
                                                             </div>
                                                         </div>
                                                         <div class="col-xs-12 col-md-6">
                                                             <div id="commentEmail" class="form-group float-label-control{if isset($nPlausiValue_arr.cEmail)} has-error{/if} required">
-                                                                <label class="control-label commentForm" for="comment-email">{lang key="newsEmail" section="news"}</label>
+                                                                <label class="control-label commentForm" for="comment-email">{lang key='newsEmail' section='news'}</label>
                                                                 <input class="form-control" required id="comment-email" name="cEmail" type="email" value="{if !empty($cPostVar_arr.cEmail)}{$cPostVar_arr.cEmail}{/if}" />
                                                                 {if isset($nPlausiValue_arr.cEmail)}
                                                                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
-                                                                        {lang key="fillOut" section="global"}
+                                                                        {lang key='fillOut' section='global'}
                                                                     </div>
                                                                 {/if}
                                                             </div>
@@ -125,11 +125,11 @@
                                                 {/if}
 
                                                 <div id="commentText" class="form-group float-label-control{if isset($nPlausiValue_arr.cKommentar)} has-error{/if} required">
-                                                    <label class="control-label commentForm" for="comment-text">{lang key="newsComment" section="news"}</label>
+                                                    <label class="control-label commentForm" for="comment-text">{lang key='newsComment' section='news'}</label>
                                                     <textarea id="comment-text" required class="form-control" name="cKommentar">{if !empty($cPostVar_arr.cKommentar)}{$cPostVar_arr.cKommentar}{/if}</textarea>
                                                     {if isset($nPlausiValue_arr.cKommentar)}
                                                         <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
-                                                            {lang key="fillOut" section="global"}
+                                                            {lang key='fillOut' section='global'}
                                                         </div>
                                                     {/if}
                                                 </div>
@@ -141,18 +141,18 @@
                                                     </div>
                                                 {/if}
 
-                                                <input class="btn btn-primary" name="speichern" type="submit" value="{lang key="newsCommentSave" section="news"}" />
+                                                <input class="btn btn-primary" name="speichern" type="submit" value="{lang key='newsCommentSave' section='news'}" />
                                             {elseif $Einstellungen.news.news_kommentare_eingeloggt === 'Y' && !empty($smarty.session.Kunde->kKunde)}
                                                 <div class="form-group float-label-control{if isset($nPlausiValue_arr.cKommentar)} has-error{/if} required">
-                                                    <label class="control-label" for="comment-text"><strong>{lang key="newsComment" section="news"}</strong></label>
+                                                    <label class="control-label" for="comment-text"><strong>{lang key='newsComment' section='news'}</strong></label>
                                                     <textarea id="comment-text" class="form-control" name="cKommentar" required></textarea>
                                                     {if isset($nPlausiValue_arr.cKommentar)}
                                                         <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
-                                                            {lang key="fillOut" section="global"}
+                                                            {lang key='fillOut' section='global'}
                                                         </div>
                                                     {/if}
                                                 </div>
-                                                <input class="btn btn-primary" name="speichern" type="submit" value="{lang key="newsCommentSave" section="news"}" />
+                                                <input class="btn btn-primary" name="speichern" type="submit" value="{lang key='newsCommentSave' section='news'}" />
                                             {/if}
                                         </fieldset>
                                     </form>
@@ -163,7 +163,7 @@
                 </div>
             {else}
                 <hr>
-                <div class="alert alert-danger">{lang key="newsLogin" section="news"}</div>
+                <div class="alert alert-danger">{lang key='newsLogin' section='news'}</div>
             {/if}
         {/if}
     </article>

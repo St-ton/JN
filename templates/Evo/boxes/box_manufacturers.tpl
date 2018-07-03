@@ -11,7 +11,7 @@
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu" aria-labelledby="dropdown-manufacturer">
-                        {foreach name=hersteller from=$oBox->getManufacturers() item=hst}
+                        {foreach $oBox->getManufacturers() as $hst}
                             <li role="presentation">
                                 <a role="menuitem" tabindex="-1" href="{$hst->cSeo}">{$hst->cName|escape:'html'}</a></li>
                         {/foreach}
@@ -21,7 +21,7 @@
         {else}
             <div class="box-body">
                 <ul class="nav nav-list">
-                    {foreach name=hersteller from=$oBox->getManufacturers() item=hst}
+                    {foreach $oBox->getManufacturers() as $hst}
                         <li><a href="{$hst->cSeo}" title="{$hst->cName|escape:'html'}">{$hst->cName|escape:'html'}</a></li>
                     {/foreach}
                 </ul>

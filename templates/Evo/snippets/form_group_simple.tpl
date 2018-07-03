@@ -12,7 +12,7 @@
     {/if}
 {/if}
 
-{if isset($required) && $required == 'Y'}
+{if isset($required) && $required === 'Y'}
     {assign var='isRequired' value=true}
 {else}
     {assign var='isRequired' value=false}
@@ -22,14 +22,14 @@
     {assign var='hasError' value=true}
 {elseif !empty($fehlendeAngaben) && isset($fehlendeAngaben.{$inputName})}
     {assign var='hasError' value=true}
-    {lang assign="invalidReason" key="fillOut" section="global"}
+    {lang assign='invalidReason' key='fillOut' section='global'}
 {else}
     {assign var='hasError' value=false}
 {/if}
 
 
 <div class="form-group{if $hasError} has-error{/if}{if $isRequired} required{/if}">
-    <label for="{$inputId}" class="control-label">{$label}{* {if $isRequired}<span class="indication fa fa-asterisk"></span>{else}<span class="indication">({lang section='checkout' key="conditionalFillOut"})</span>{/if} *}</label>
+    <label for="{$inputId}" class="control-label">{$label}{* {if $isRequired}<span class="indication fa fa-asterisk"></span>{else}<span class="indication">({lang section='checkout' key='conditionalFillOut'})</span>{/if} *}</label>
     <input type="{if isset($inputType)}{$inputType}{else}text{/if}" name="{$inputName}" value="{if isset($inputValue)}{$inputValue}{/if}" id="{$inputId}" class="form-control" placeholder="{if isset($placeholder)}{$placeholder}{else}{$label}{/if}"{if $isRequired} required{/if}>
     {if isset($invalidReason) && $invalidReason|strlen > 0}
         <div class="form-error-msg text-danger"><i class="fa fa-warning"></i> {$invalidReason}</div>

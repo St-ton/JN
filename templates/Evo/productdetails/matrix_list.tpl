@@ -2,11 +2,11 @@
     <div class="table-responsive">
         <table class="table table-striped variation-matrix">
             <tbody>
-            {foreach name="variations" from=$Artikel->oVariationKombiKinderAssoc_arr item=child}
+            {foreach $Artikel->oVariationKombiKinderAssoc_arr as $child}
                 {if $Einstellungen.artikeldetails.artikeldetails_warenkorbmatrix_lagerbeachten !== 'Y' ||
                 ($Einstellungen.artikeldetails.artikeldetails_warenkorbmatrix_lagerbeachten === 'Y' && $child->inWarenkorbLegbar == 1)}
                     {assign var=cVariBox value=''}
-                    {foreach name="childvariations" from=$child->oVariationKombi_arr item=variation}
+                    {foreach $child->oVariationKombi_arr as $variation}
                         {if $cVariBox|strlen > 0}
                             {assign var=cVariBox value=$cVariBox|cat:'_'}
                         {/if}
@@ -22,12 +22,12 @@
                             </div>
                             <div class="small">
                                 {if $child->nErscheinendesProdukt}
-                                    {lang key="productAvailableFrom" section="global"}: <strong>{$child->Erscheinungsdatum_de}</strong>
+                                    {lang key='productAvailableFrom' section='global'}: <strong>{$child->Erscheinungsdatum_de}</strong>
                                     {if $Einstellungen.global.global_erscheinende_kaeuflich === 'Y' && $child->inWarenkorbLegbar == 1}
-                                        ({lang key="preorderPossible" section="global"})
+                                        ({lang key='preorderPossible' section='global'})
                                     {/if}
                                 {/if}
-                                {include file="productdetails/stock.tpl" Artikel=$child tplscope="matrix"}
+                                {include file='productdetails/stock.tpl' Artikel=$child tplscope='matrix'}
                             </div>
                         </td>
                         <td class="col-xs-4 col-sm-3">
@@ -49,7 +49,7 @@
                             <span class="text-muted">&times;</span>
                         </td>
                         <td class="col-xs-2 col-sm-3 text-right">
-                            {include file="productdetails/price.tpl" Artikel=$child tplscope="matrix"}
+                            {include file='productdetails/price.tpl' Artikel=$child tplscope='matrix'}
                         </td>
                     </tr>
                 {/if}
@@ -59,5 +59,5 @@
     </div>
     <input type="hidden" name="variBox" value="1" />
     <input type="hidden" name="varimatrix" value="1" />
-    <button name="inWarenkorb" type="submit" value="{lang key="addToCart" section="global"}" class="submit btn btn-primary pull-right">{lang key="addToCart" section="global"}</button>
+    <button name="inWarenkorb" type="submit" value="{lang key='addToCart' section='global'}" class="submit btn btn-primary pull-right">{lang key='addToCart' section='global'}</button>
 {/if}

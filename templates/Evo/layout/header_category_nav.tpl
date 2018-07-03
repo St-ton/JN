@@ -4,7 +4,7 @@
             <div class="navbar-header">
                 <button type="button" class="btn btn-default navbar-toggle collapsed" data-toggle="collapse" data-target="#evo-navbar-collapse" aria-expanded="false">
                     <span class="sr-only">Toggle navigation</span>
-                    <i class="fa fa-bars"></i> {lang key="allCategories" section="global"}
+                    <i class="fa fa-bars"></i> {lang key='allCategories' section='global'}
                 </button>
                 <ul class="nav navbar-nav navbar-right force-float visible-xs visible-sm">
                     {if isset($smarty.session.Kunde) && isset($smarty.session.Kunde->kKunde) && $smarty.session.Kunde->kKunde > 0}

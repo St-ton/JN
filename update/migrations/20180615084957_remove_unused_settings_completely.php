@@ -59,8 +59,6 @@ class Migration_20180615084957 extends Migration implements IMigration
         // bilder_variationen_gross_skalieren
         $this->execute('INSERT INTO teinstellungen(kEinstellungenSektion,cName,cWert,cModulId) VALUES("9","bilder_variationen_gross_skalieren","","")');
         $this->execute('INSERT INTO teinstellungenconf(kEinstellungenConf,kEinstellungenSektion,cName,cBeschreibung,cWertName,cInputTyp,cModulId,nSort,nStandardAnzeigen,nModul,cConf) VALUES("1427","9","Variationsbilder Groß skalieren","","bilder_variationen_gross_skalieren","selectbox","","127","1","0","Y")');
-        $this->execute('INSERT INTO teinstellungenconfwerte(kEinstellungenConf,cName,cWert,nSort) VALUES("1427","Quellcode","Q","1")');
-        $this->execute('INSERT INTO teinstellungenconfwerte(kEinstellungenConf,cName,cWert,nSort) VALUES("1427","Normal","N","0")');
         $this->execute('INSERT INTO teinstellungenconfwerte(kEinstellungenConf,cName,cWert,nSort) VALUES("1427","Ja","Y","1")');
         $this->execute('INSERT INTO teinstellungenconfwerte(kEinstellungenConf,cName,cWert,nSort) VALUES("1427","Nein","N","2")');
 

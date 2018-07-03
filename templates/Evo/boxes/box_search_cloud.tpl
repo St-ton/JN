@@ -17,9 +17,7 @@
             <div class="panel-title">{lang key='searchcloud'}</div>
         </div>
         <div class="box-body panel-body">
-            <div class="tagbox">
-                <div class="searchcloud"></div>
-            </div>
+            <div class="searchcloud"></div>
         </div>
     </section>
 {/if}

@@ -1,12 +1,14 @@
 {if $oBox->show()}
     <script>
-        $('document').ready(function () {
-            var searchItems = {$oBox->getItems()|json_encode};
-            var searchcloudTags = [];
+        $(document).ready(function () {
+            var searchItems     = {$oBox->getItems()|json_encode},
+                searchcloudTags = [];
+
             $.each(searchItems, function(key, value) {
                 searchcloudTags.push( { text: value.cSuche, weight: value.nAnzahlGesuche, link: 'index.php?qs=' + value.cSuche } );
             } );
-            $(".searchcloud").jQCloud(searchcloudTags, {
+
+            $('.searchcloud').jQCloud(searchcloudTags, {
                 autoResize: true,
                 steps: 7
             } );

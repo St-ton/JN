@@ -73,10 +73,7 @@ if (isset($_GET['i'])) {
         $bestellid  = $bestellung->kBestellung > 0
             ? Shop::Container()->getDB()->select('tbestellid', 'kBestellung', $bestellung->kBestellung)
             : false;
-        if ($bestellung->Lieferadresse === null
-            && isset($_SESSION['Lieferadresse']->cVorname)
-            && strlen($_SESSION['Lieferadresse']->cVorname) > 0
-        ) {
+        if ($bestellung->Lieferadresse === null && !empty($_SESSION['Lieferadresse']->cVorname)) {
             $bestellung->Lieferadresse = gibLieferadresseAusSession();
         }
         $orderCompleteURL  = $linkHelper->getStaticRoute('bestellabschluss.php');

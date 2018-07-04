@@ -1373,7 +1373,7 @@ class VersandartHelper
                         AND (cKundengruppen = '-1'
                             OR FIND_IN_SET(:cGroupID, REPLACE(cKundengruppen, ';', ',')) > 0)
                         " . $cKundeSQLWhere . $cProductSpecificSQLWhere . "
-                    ORDER BY fVersandkostenfreiAbX
+                    ORDER BY tversandart.fVersandkostenfreiAbX, tversandart.nSort ASC
                     LIMIT 1",
                 [
                     'cLangID'        => Shop::getLanguageCode(),

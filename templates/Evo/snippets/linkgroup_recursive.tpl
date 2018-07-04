@@ -22,7 +22,7 @@
             {get_navigation linkgroupIdentifier=$linkgroupIdentifier assign='links'}
         {/if}
         {if !empty($links)}
-            {foreach name='links' from=$links item='li'}
+            {foreach $links as $li}
                 {assign var='hasItems' value=$li->getChildLinks()->count() > 0 && (($i+1) < $limit)}
                 {if isset($activeParents) && is_array($activeParents) && isset($activeParents[$i])}
                     {assign var='activeParent' value=$activeParents[$i]}

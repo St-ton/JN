@@ -7,12 +7,12 @@
         </div>{* /panel-heading *}
         <div class="box-body panel-body">
             <ul class="list-unstyled">
-                {foreach name=vergleich from=$from item=oArtikel}
-                    {if $smarty.foreach.vergleich.iteration <= $nAnzahl}
+                {foreach $from as $oArtikel}
+                    {if $oArtikel@iteration <= $nAnzahl}
                         <li data-id="{$oArtikel->kArtikel}">
                             <a href="{$oArtikel->cURLDEL}" class="remove pull-right" data-name="Vergleichsliste.remove" data-toggle="product-actions" data-value='{ldelim}"a":{$oArtikel->kArtikel}{rdelim}'><span class="fa fa-trash-o"></span></a>
                             <a href="{$oArtikel->cURLFull}">
-                                <img src="{$oArtikel->Bilder[0]->cURLMini}" alt="{$oArtikel->cName|strip_tags|truncate:60|escape:"html"}" class="img-xs" />
+                                <img src="{$oArtikel->Bilder[0]->cURLMini}" alt="{$oArtikel->cName|strip_tags|truncate:60|escape:'html'}" class="img-xs" />
                                 {$oArtikel->cName|truncate:25:"..."}
                             </a>
                         </li>
@@ -21,7 +21,7 @@
             </ul>
             {if count($from) > 1}
                 <hr>
-                <a class="btn btn-default btn-sm btn-block{if $Einstellungen.vergleichsliste.vergleichsliste_target === 'popup'} popup{/if}" href="{get_static_route id='vergleichsliste.php'}"{if $Einstellungen.vergleichsliste.vergleichsliste_target === 'blank'} target="_blank"{/if}>{lang key="gotToCompare" section="global"}</a>
+                <a class="btn btn-default btn-sm btn-block{if $Einstellungen.vergleichsliste.vergleichsliste_target === 'popup'} popup{/if}" href="{get_static_route id='vergleichsliste.php'}"{if $Einstellungen.vergleichsliste.vergleichsliste_target === 'blank'} target="_blank"{/if}>{lang key='gotToCompare' section='global'}</a>
             {/if}
         </div>
     </section>

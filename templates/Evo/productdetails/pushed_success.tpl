@@ -7,13 +7,10 @@
     <div class="panel panel-default ">
         <div class="panel-body">
             <div class="row clearfix">
-                {assign var="showXSellingCart" value=false}
-                {if isset($Xselling->Kauf) && count($Xselling->Kauf->Artikel) > 0}
-                    {assign var="showXSellingCart" value=true}
-                {/if}
+                {assign var='showXSellingCart' value=isset($Xselling->Kauf) && count($Xselling->Kauf->Artikel) > 0}
                 <div class="col-sm-5{if !$showXSellingCart} col-sm-offset-4{/if} text-center">
                     <h4 class="success-title">{$hinweis}</h4>
-                    {block name="pushed-success-product-cell"}
+                    {block name='pushed-success-product-cell'}
                     <div class="product-cell text-center{if isset($class)} {$class}{/if}">
                         <div class="row">
                             <div class="col-xs-4 col-xs-offset-4">
@@ -34,15 +31,15 @@
                     <hr>
                     <p class="btn-group btn-group-justified btn-group-full" role="group">
                         <a href="{get_static_route id='warenkorb.php'}" class="btn btn-default btn-basket"><i class="fa fa-shopping-cart"></i> {lang key='gotoBasket'}</a>
-                        <a href="{$pushedArtikel->cURLFull}" class="btn btn-primary btn-checkout" data-dismiss="{if isset($type)}{$type}{else}modal{/if}" aria-label="Close"><i class="fa fa-arrow-circle-right"></i> {lang key="continueShopping" section="checkout"}</a>
+                        <a href="{$pushedArtikel->cURLFull}" class="btn btn-primary btn-checkout" data-dismiss="{if isset($type)}{$type}{else}modal{/if}" aria-label="Close"><i class="fa fa-arrow-circle-right"></i> {lang key='continueShopping' section='checkout'}</a>
                     </p>
 {*
                     <p class="continue-shopping">
-                        <a href="{get_static_route id='bestellvorgang.php'}">{lang key="checkout" section="basketpreview"}</a>
+                        <a href="{get_static_route id='bestellvorgang.php'}">{lang key='checkout' section='basketpreview'}</a>
                     </p>
 *}
                 </div>
-                {block name="pushed-success-x-sell"}
+                {block name='pushed-success-x-sell'}
                 {if $showXSellingCart}
                     <div class="col-xs-7 recommendations hidden-xs">
                         <h4 class="text-center">{lang key='customerWhoBoughtXBoughtAlsoY' section='productDetails'}</h4>

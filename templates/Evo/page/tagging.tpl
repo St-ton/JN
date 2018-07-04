@@ -4,7 +4,7 @@
  *}
 
 <ul class="list-unstyled">
-    {foreach name=tagging from=$Tagging item=tag}
+    {foreach $Tagging as $tag}
         <li class="tag"><a href="{$tag->cURLFull}">{$tag->cName}</a> <span class="badge pull-right">{$tag->Anzahl}</span></li>
     {/foreach}
 </ul>

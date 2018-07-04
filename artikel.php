@@ -221,7 +221,7 @@ if ($AktuellerArtikel->Variationen) {
     }
 }
 $nav = $Einstellungen['artikeldetails']['artikeldetails_navi_blaettern'] === 'Y'
-    ? ArtikelHelper::getProductNavigation($AktuellerArtikel->kArtikel, $AktuelleKategorie->kKategorie)
+    ? ArtikelHelper::getProductNavigation($AktuellerArtikel->kArtikel ?? 0, $AktuelleKategorie->kKategorie ?? 0)
     : null;
 
 $smarty->assign('showMatrix', $AktuellerArtikel->showMatrix())

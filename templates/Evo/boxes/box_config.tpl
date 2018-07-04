@@ -1,13 +1,13 @@
 <section class="panel panel-default box autoscroll box-config hidden" id="sidebox{$oBox->getID()}">
     <div class="panel-heading">
-        <div class="panel-title">{lang key="yourConfiguration"}</div>
+        <div class="panel-title">{lang key='yourConfiguration'}</div>
     </div>
     <div class="box-body panel-body">
         <div id="box_config_list">
             <!-- ul itemlist -->
         </div>
         <div id="box_config_price">
-            <span class="price_div">{lang key="priceAsConfigured" section="productDetails"}</span>
+            <span class="price_div">{lang key='priceAsConfigured' section='productDetails'}</span>
             <span class="price updateable"><!-- price --></span>
             {if $Artikel->cLocalizedVPE[$NettoPreise]}
                 <small class="price_base updateable">{$Artikel->cLocalizedVPE[$NettoPreise]}</small>

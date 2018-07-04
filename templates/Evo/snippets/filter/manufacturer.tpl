@@ -1,5 +1,5 @@
 <ul class="{if isset($class)}{$class}{else}nav nav-list{/if}">
-    {foreach name=herstellerauswahl from=$Suchergebnisse->Herstellerauswahl item=Hersteller}
+    {foreach $Suchergebnisse->Herstellerauswahl as $Hersteller}
         {if $Hersteller->nAnzahl >= 1}
             <li>
                 <a rel="nofollow" href="{$Hersteller->cURL}">

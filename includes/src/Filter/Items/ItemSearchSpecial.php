@@ -162,6 +162,9 @@ class ItemSearchSpecial extends AbstractFilter
                     break;
 
                 case SEARCHSPECIALS_SPECIALOFFERS:
+                    if ($this->productFilter->hasSearchSpecial()) {
+                        continue;
+                    }
                     $tasp = 'tartikelsonderpreis';
                     $tsp  = 'tsonderpreise';
                     if (!$this->productFilter->hasPriceRangeFilter()) {
@@ -211,7 +214,9 @@ class ItemSearchSpecial extends AbstractFilter
             return '(' . $e . ')';
         }, $conditions);
 
-        return '(' . implode($or === true ? ' OR ' : ' AND ', $conditions) . ')';
+        return count($conditions) > 0
+            ? '(' . implode($or === true ? ' OR ' : ' AND ', $conditions) . ')'
+            : '';
     }
 
     /**
@@ -219,14 +224,18 @@ class ItemSearchSpecial extends AbstractFilter
      */
     public function getSQLJoin()
     {
-        $joins    = [];
-        $values   = $this->getValue();
-        $joinType = $this->getType() === Type:: AND
+        $joins     = [];
+        $values    = $this->getValue();
+        $joinType  = $this->getType() === Type:: AND
             ? 'JOIN'
             : 'LEFT JOIN';
+        $baseValue = $this->productFilter->getSearchSpecial()->getValue();
         foreach ($values as $value) {
             switch ($value) {
                 case SEARCHSPECIALS_BESTSELLER:
+                    if ($baseValue === $value) {
+                        break;
+                    }
                     $joins[] = (new FilterJoin())
                         ->setType($joinType)
                         ->setTable('tbestseller')
@@ -236,6 +245,9 @@ class ItemSearchSpecial extends AbstractFilter
                     break;
 
                 case SEARCHSPECIALS_SPECIALOFFERS:
+                    if ($baseValue === $value) {
+                        break;
+                    }
                     if (!$this->productFilter->hasPriceRangeFilter()) {
                         $joins[] = (new FilterJoin())
                             ->setType($joinType)
@@ -253,6 +265,9 @@ class ItemSearchSpecial extends AbstractFilter
                     break;
 
                 case SEARCHSPECIALS_TOPREVIEWS:
+                    if ($baseValue === $value) {
+                        break;
+                    }
                     if (!$this->productFilter->hasRatingFilter()) {
                         $joins[] = (new FilterJoin())
                             ->setType($joinType)
@@ -285,6 +300,7 @@ class ItemSearchSpecial extends AbstractFilter
         if ($this->options !== null) {
             return $this->options;
         }
+        $baseValue        = $this->productFilter->getSearchSpecial()->getValue();
         $name             = '';
         $options          = [];
         $additionalFilter = new self($this->productFilter);
@@ -372,6 +388,9 @@ class ItemSearchSpecial extends AbstractFilter
             $qry    = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
             $qryRes = \Shop::Container()->getDB()->query($qry, ReturnType::ARRAY_OF_OBJECTS);
             if (($count = count($qryRes)) > 0) {
+                if ($baseValue === $i) {
+                    continue;
+                }
                 $options[$i] = (new FilterOption())
                     ->setIsActive($this->productFilter->filterOptionIsActive($this->getClassName(), $i))
                     ->setURL($this->productFilter->getFilterURL()->getURL($additionalFilter->init($i)))

@@ -16,11 +16,11 @@
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu" aria-labelledby="dropdown-characteristics-{$oMerkmal->kMerkmal}">
-                        {foreach name=merkmalwertfilter from=$oMerkmal->oMerkmalWert_arr item=oMerkmalWert}
+                        {foreach $oMerkmal->oMerkmalWert_arr as $oMerkmalWert}
                             <li role="presentation">
                                 <a role="menuitem" tabindex="-1" href="{$oMerkmalWert->cSeo}">
                                     {if ($oMerkmal->cTyp === 'BILD' || $oMerkmal->cTyp === 'BILD-TEXT') && $oMerkmalWert->nBildKleinVorhanden === 1}
-                                       <img src="{$oMerkmalWert->cBildURLKlein}" alt="{$oMerkmalWert->cWert|escape:"quotes"}" />
+                                       <img src="{$oMerkmalWert->cBildURLKlein}" alt="{$oMerkmalWert->cWert|escape:'quotes'}" />
                                     {/if}
                                     {if $oMerkmal->cTyp !== 'BILD'}
                                         {$oMerkmalWert->cWert}
@@ -32,11 +32,11 @@
                 </div>
             {else}
                 <ul class="nav nav-list">
-                    {foreach name=globalmerkmalwert from=$oMerkmal->oMerkmalWert_arr item=oMerkmalWert}
+                    {foreach $oMerkmal->oMerkmalWert_arr as $oMerkmalWert}
                         <li>
                             <a href="{$oMerkmalWert->cURL}"{if $NaviFilter->hasAttributeValue() && isset($oMerkmalWert->kMerkmalWert) && $NaviFilter->getAttributeValue()->getValue() == $oMerkmalWert->kMerkmalWert} class="active"{/if}>
                                 {if ($oMerkmal->cTyp === 'BILD' || $oMerkmal->cTyp === 'BILD-TEXT') && $oMerkmalWert->nBildKleinVorhanden === 1}
-                                   <img src="{$oMerkmalWert->cBildURLKlein}" alt="{$oMerkmalWert->cWert|escape:"quotes"}" />
+                                   <img src="{$oMerkmalWert->cBildURLKlein}" alt="{$oMerkmalWert->cWert|escape:'quotes'}" />
                                 {/if}
                                 {if $oMerkmal->cTyp !== 'BILD'}
                                     {$oMerkmalWert->cWert}

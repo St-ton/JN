@@ -5,6 +5,6 @@
  * @deprecated since 4.06
  *}
 <div class="row bottom15 form-group">
-    {include file="checkout/inc_payment_methods.tpl"}
+    {include file='checkout/inc_payment_methods.tpl'}
 </div>
-{include file="checkout/inc_payment_trustedshops.tpl"}
+{include file='checkout/inc_payment_trustedshops.tpl'}

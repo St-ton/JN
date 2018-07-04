@@ -1065,6 +1065,8 @@ class Exportformat
         $cacheMisses  = 0;
         $cOutput      = '';
         $errorMessage = '';
+        Shop::dbg($this->queue->nLimitN, false, '$this->queue->nLimitN:');
+        Shop::dbg($this->queue->nLimitM, false, '$this->queue->nLimitM:');
         if ((int)$this->queue->nLimitN === 0 && file_exists(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName)) {
             unlink(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName);
         }
@@ -1299,6 +1301,7 @@ class Exportformat
                         WHERE kExportformat = " . $this->getExportformat(),
                     \DB\ReturnType::DEFAULT
                 );
+                Shop::dbg($this->queue, false, '$this->queue:');
                 Shop::Container()->getDB()->delete('texportqueue', 'kExportqueue', (int)$this->queue->kExportqueue);
 
                 $this->writeFooter($datei);
@@ -1336,8 +1339,6 @@ class Exportformat
                 }
             }
         } else {
-            $queueObject->updateExportformatQueueBearbeitet();
-            $queueObject->setDZuletztGelaufen(date('Y-m-d H:i'))->setNInArbeit(0)->updateJobInDB();
             //finalize job when there are no more articles to export
             if ($started === false) {
                 Jtllog::cronLog('Finalizing job.', 2);
@@ -1347,8 +1348,6 @@ class Exportformat
                     (int)$queueObject->kKey,
                     (object)['dZuletztErstellt' => 'now()']
                 );
-                $queueObject->deleteJobInDB();
-
                 if (file_exists(PFAD_ROOT . PFAD_EXPORT . $this->cDateiname)) {
                     Jtllog::cronLog('Deleting final file ' . PFAD_ROOT . PFAD_EXPORT . $this->cDateiname);
                     unlink(PFAD_ROOT . PFAD_EXPORT . $this->cDateiname);
@@ -1371,7 +1370,7 @@ class Exportformat
             exit();
         }
 
-        return true;
+        return $started;
     }
 
     /**

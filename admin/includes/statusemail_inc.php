@@ -351,7 +351,7 @@ function gibAnzahlVersendeterBestellungen($dVon, $dBis)
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (int)$oBestellung->nAnzahl0;
+        return (int)$oBestellung->nAnzahl;
     }
 
     return 0;

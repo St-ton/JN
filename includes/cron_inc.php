@@ -22,76 +22,21 @@ if (flock($lockfile, LOCK_EX | LOCK_NB) === false) {
     exit;
 }
 
-$oCron_arr = Shop::Container()->getDB()->query(
-    "SELECT tcron.*
-        FROM tcron
-        LEFT JOIN tjobqueue ON tjobqueue.kCron = tcron.kCron
-        WHERE (tcron.dLetzterStart = '0000-00-00 00:00:00' 
-            OR (UNIX_TIMESTAMP(now()) > (UNIX_TIMESTAMP(tcron.dLetzterStart) + (3600 * tcron.nAlleXStd))))
-            AND tcron.dStart < now()
-            AND tjobqueue.kJobQueue IS NULL",
-    \DB\ReturnType::ARRAY_OF_OBJECTS
-);
-if (is_array($oCron_arr) && count($oCron_arr) > 0) {
-    foreach ($oCron_arr as $oCronTMP) {
-        $oCron = new Cron(
-            $oCronTMP->kCron,
-            $oCronTMP->kKey,
-            $oCronTMP->nAlleXStd,
-            $oCronTMP->cName,
-            $oCronTMP->cJobArt,
-            $oCronTMP->cTabelle,
-            $oCronTMP->cKey,
-            $oCronTMP->dStart,
-            $oCronTMP->dStartZeit,
-            $oCronTMP->dLetzterStart
-        );
-        if (Jtllog::doLog(JTLLOG_LEVEL_NOTICE)) {
-            Jtllog::writeLog(print_r($oCron, true), JTLLOG_LEVEL_NOTICE, false, 'kCron', $oCronTMP->kCron);
-        }
-        $nLimitM = 100;
-        switch ($oCron->cJobArt) {
-            case 'newsletter' :
-                if (JOBQUEUE_LIMIT_M_NEWSLETTER > 0) {
-                    $nLimitM = JOBQUEUE_LIMIT_M_NEWSLETTER;
-                }
-                break;
+$db = Shop::Container()->getDB();
 
-            case 'exportformat' :
-                if (JOBQUEUE_LIMIT_M_EXPORTE > 0) {
-                    $nLimitM = JOBQUEUE_LIMIT_M_EXPORTE;
-                }
-                break;
+$queue   = new \Cron\Queue($db);
 
-            case 'statusemail' :
-                if (JOBQUEUE_LIMIT_M_STATUSEMAIL > 0) {
-                    $nLimitM = JOBQUEUE_LIMIT_M_STATUSEMAIL;
-                }
-                break;
+//Shop::dbg($queue->getJobs(), false, 'existing jobs:');
+$factory = new \Cron\JobFactory();
+$checker = new \Cron\Checker($db, Shop::Container()->getBackendLogService(), $factory);
 
-            case 'tskundenbewertung' :
-                $nLimitM = 5;
-                break;
-
-            case 'clearcache' :
-                $nLimitM = 10;
-                break;
-
-            default:
-                break;
-
-        }
-        executeHook(HOOK_CRON_INC_SWITCH, ['nLimitM' => &$nLimitM]);
-
-        $oCron->dLetzterStart = date('Y-m-d H:i');
-        $oCron->speicherInJobQueue($oCron->cJobArt, $oCron->dStart, $nLimitM);
-        $oCron->updateCronDB();
-    }
-} else {
-    Jtllog::cronLog('No cron jobs found', 2);
-}
-// JobQueue include
-require_once PFAD_ROOT . PFAD_INCLUDES . 'jobqueue_inc.php';
+$newJobs = $checker->check();
+$queue->setJobs($newJobs);
+$saved = $queue->saveToDatabase();
+$queue->loadJobsFromDB();
+$queue->addJobs($newJobs);
+defined('JTLCRON') || define('JTLCRON', true);
+$queue->runJobs();
 
 if (file_exists(JOBQUEUE_LOCKFILE)) {
     fclose($lockfile);

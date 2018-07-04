@@ -42,17 +42,17 @@ if (FormHelper::validateToken()) {
 
 $oFilter      = new Filter('syslog');
 $oLevelSelect = $oFilter->addSelectfield('Loglevel', 'nLevel');
-$oLevelSelect->addSelectOption('alle', '');
-$oLevelSelect->addSelectOption('Fehler', '1', 4);
-$oLevelSelect->addSelectOption('Hinweis', '2', 4);
-$oLevelSelect->addSelectOption('Debug', '4', 4);
+$oLevelSelect->addSelectOption('alle', 0);
+$oLevelSelect->addSelectOption('Debug', \Monolog\Logger::DEBUG, 4);
+$oLevelSelect->addSelectOption('Hinweis', \Monolog\Logger::INFO, 4);
+$oLevelSelect->addSelectOption('Fehler', \Monolog\Logger::ERROR, 8);
 $oFilter->addDaterangefield('Zeitraum', 'dErstellt');
 $oSearchfield = $oFilter->addTextfield('Suchtext', 'cLog', 1);
 $oFilter->assemble();
 
 $cSearchString     = $oSearchfield->getValue();
 $nSelectedLevel    = $oLevelSelect->getSelectedOption()->getValue();
-$nTotalLogCount    = Jtllog::getLogCount('');
+$nTotalLogCount    = Jtllog::getLogCount(0);
 $nFilteredLogCount = Jtllog::getLogCount($cSearchString, $nSelectedLevel);
 
 $oPagination = (new Pagination('syslog'))

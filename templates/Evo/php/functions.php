@@ -26,7 +26,8 @@ $smarty->registerPlugin('function', 'gibPreisStringLocalizedSmarty', 'gibPreisSt
        ->registerPlugin('modifier', 'has_trans', 'has_translation')
        ->registerPlugin('modifier', 'trans', 'get_translation')
        ->registerPlugin('function', 'get_product_list', 'get_product_list')
-       ->registerPlugin('function', 'captchaMarkup', 'captchaMarkup');
+       ->registerPlugin('function', 'captchaMarkup', 'captchaMarkup')
+       ->registerPlugin('function', 'getStates', 'getStates');
 
 /**
  * @param array     $params
@@ -790,4 +791,20 @@ function captchaMarkup($params, $smarty)
     }
 
     return Shop::Container()->getCaptchaService()->getHeadMarkup($smarty);
+}
+
+/**
+ * @param array     $params
+ * @param JTLSmarty $smarty
+ * @return object|null
+ */
+function getStates($params, $smarty)
+{
+    $oStates = Staat::getRegions($params['cIso']);
+    $oStates = StringHandler::utf8_convert_recursive($oStates);
+    if (isset($params['assign'])) {
+        $smarty->assign($params['assign'], $oStates);
+        return;
+    }
+    return $oStates;
 }

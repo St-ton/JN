@@ -248,12 +248,14 @@ class PageService
 
     /**
      * @param int $key
+     * @return bool true if the draft could be locked, false if it is still locked by some other user
      * @throws \Exception
      */
     public function lockDraft($key)
     {
         $draft = $this->getDraft($key);
-        $this->locker->lock($this->adminName, $draft);
+
+        return $this->locker->lock($this->adminName, $draft);
     }
 
     /**

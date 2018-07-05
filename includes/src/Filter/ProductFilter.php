@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -17,6 +18,8 @@ use Filter\Items\ItemRating;
 use Filter\Items\ItemSearchSpecial;
 use Filter\Items\ItemSort;
 use Filter\Items\ItemTag;
+use Filter\Pagination\Info;
+use Filter\SortingOptions\Factory;
 use Filter\States\DummyState;
 use Filter\States\BaseAttribute;
 use Filter\States\BaseCategory;
@@ -28,6 +31,7 @@ use function Functional\first;
 use function Functional\group;
 use function Functional\map;
 use function Functional\select;
+use Mapper\SortingType;
 use Tightenco\Collect\Support\Collection;
 
 /**
@@ -242,7 +246,7 @@ class ProductFilter
      * @todo: fix working with arrays
      * @see https://stackoverflow.com/questions/13421661/getting-indirect-modification-of-overloaded-property-has-no-effect-notice
      */
-    private static $mapping = [
+    public static $mapping = [
         'nAnzahlFilter'      => 'FilterCount',
         'nAnzahlProSeite'    => 'ProductLimit',
         'Kategorie'          => 'Category',
@@ -270,14 +274,12 @@ class ProductFilter
      * @param int   $currentLanguageID
      * @param array $config
      */
-    public function __construct($languages = null, $currentLanguageID = null, $config = null)
+    public function __construct(array $languages = null, int $currentLanguageID = null, array $config = null)
     {
         $this->url               = new NavigationURLs();
         $this->languages         = $languages ?? \Sprache::getInstance()->getLangArray();
         $this->conf              = $config ?? \Shopsetting::getInstance()->getAll();
-        $this->languageID        = $currentLanguageID === null
-            ? \Shop::getLanguageID()
-            : (int)$currentLanguageID;
+        $this->languageID        = $currentLanguageID ?? \Shop::getLanguageID();
         $this->customerGroupID   = \Session::CustomerGroup()->getID();
         $this->baseURL           = \Shop::getURL() . '/';
         $this->metaData          = new Metadata($this);
@@ -286,8 +288,8 @@ class ProductFilter
         $this->showChildProducts = defined('SHOW_CHILD_PRODUCTS')
             ? SHOW_CHILD_PRODUCTS
             : false;
-        executeHook(HOOK_PRODUCTFILTER_CREATE, ['productFilter' => $this]);
         $this->initBaseStates();
+        executeHook(HOOK_PRODUCTFILTER_CREATE, ['productFilter' => $this]);
     }
 
     /**
@@ -312,7 +314,7 @@ class ProductFilter
     /**
      * @return int
      */
-    public function getSort()
+    public function getSort(): int
     {
         return $this->nSortierung;
     }
@@ -321,7 +323,7 @@ class ProductFilter
      * @param int $nSortierung
      * @return ProductFilter
      */
-    public function setSort($nSortierung): self
+    public function setSort(int $nSortierung): self
     {
         $this->nSortierung = $nSortierung;
 
@@ -340,7 +342,7 @@ class ProductFilter
      * @param NavigationURLsInterface $url
      * @return ProductFilter
      */
-    public function setURL(NavigationURLsInterface $url)
+    public function setURL(NavigationURLsInterface $url): self
     {
         $this->url = $url;
 
@@ -392,7 +394,7 @@ class ProductFilter
     /**
      * @return ProductFilterURL
      */
-    public function getFilterURL()
+    public function getFilterURL(): ProductFilterURL
     {
         return $this->filterURL;
     }
@@ -409,19 +411,29 @@ class ProductFilter
     }
 
     /**
-     * @param bool $products
-     * @return ProductFilterSearchResultsInterface|Collection
+     * @return Collection
      */
-    public function getSearchResults($products = true)
+    public function getSearchResultProducts(): Collection
     {
         if ($this->searchResults === null) {
             $this->searchResults = new ProductFilterSearchResults();
             $this->searchResults->setProducts(new Collection());
         }
 
-        return $products === true
-            ? $this->searchResults->getProducts()
-            : $this->searchResults;
+        return $this->searchResults->getProducts();
+    }
+
+    /**
+     * @return ProductFilterSearchResultsInterface
+     */
+    public function getSearchResults(): ProductFilterSearchResultsInterface
+    {
+        if ($this->searchResults === null) {
+            $this->searchResults = new ProductFilterSearchResults();
+            $this->searchResults->setProducts(new Collection());
+        }
+
+        return $this->searchResults;
     }
 
     /**
@@ -446,7 +458,7 @@ class ProductFilter
     /**
      * @return int
      */
-    public function getPage()
+    public function getPage(): int
     {
         return $this->nSeite;
     }
@@ -471,7 +483,7 @@ class ProductFilter
      * @param FilterInterface $filter
      * @return $this
      */
-    public function setBaseState($filter): self
+    public function setBaseState(FilterInterface $filter): self
     {
         $this->baseState = $filter;
 
@@ -498,11 +510,12 @@ class ProductFilter
     }
 
     /**
-     * @return array
+     * @param string|null $section
+     * @return array|string|int
      */
-    public function getConfig(): array
+    public function getConfig($section = null)
     {
-        return $this->conf;
+        return $section === null ? $this->conf : $this->conf[$section];
     }
 
     /**
@@ -557,7 +570,7 @@ class ProductFilter
     /**
      * @return int
      */
-    public function getProductLimit()
+    public function getProductLimit(): int
     {
         return $this->productLimit;
     }
@@ -576,7 +589,7 @@ class ProductFilter
     /**
      * @return ItemSort
      */
-    public function getSorting()
+    public function getSorting(): ItemSort
     {
         return $this->sorting;
     }
@@ -585,7 +598,7 @@ class ProductFilter
      * @param ItemSort $sorting
      * @return $this
      */
-    public function setSorting($sorting): self
+    public function setSorting(ItemSort $sorting): self
     {
         $this->sorting = $sorting;
 
@@ -595,7 +608,7 @@ class ProductFilter
     /**
      * @return ItemLimit
      */
-    public function getLimits()
+    public function getLimits(): ItemLimit
     {
         return $this->limits;
     }
@@ -604,7 +617,7 @@ class ProductFilter
      * @param ItemLimit $limits
      * @return $this
      */
-    public function setLimits($limits): self
+    public function setLimits(ItemLimit $limits): self
     {
         $this->limits = $limits;
 
@@ -614,7 +627,7 @@ class ProductFilter
     /**
      * @return array
      */
-    public function getParams()
+    public function getParams(): array
     {
         return array_merge($this->getParamsPrototype(), $this->params);
     }
@@ -686,6 +699,7 @@ class ProductFilter
 
         $this->searchSpecial = new BaseSearchSpecial($this);
 
+        $this->filters         = [];
         $this->attributeFilter = [];
         $this->searchFilter    = [];
         $this->tagFilter       = [];
@@ -716,6 +730,9 @@ class ProductFilter
         $this->sorting = new ItemSort($this);
         $this->limits  = new ItemLimit($this);
 
+        $this->sorting->setFactory(new Factory($this));
+        $this->sorting->registerSortingOptions();
+
         return $this;
     }
 
@@ -723,7 +740,7 @@ class ProductFilter
      * @param array $params
      * @return $this
      */
-    public function initStates($params): self
+    public function initStates(array $params): self
     {
         $params = array_merge($this->getParamsPrototype(), $params);
         if ($params['kKategorie'] > 0) {
@@ -794,7 +811,7 @@ class ProductFilter
                     $this->baseState = $this->searchQuery;
                 }
             }
-        } elseif (strlen($params['cSuche']) > 0) {
+        } elseif ($params['cSuche'] !== null && strlen($params['cSuche']) > 0) {
             $params['cSuche'] = \StringHandler::filterXSS($params['cSuche']);
             $this->search->setName($params['cSuche']);
             $this->searchQuery->setName($params['cSuche']);
@@ -819,7 +836,7 @@ class ProductFilter
             if (!$this->baseState->isInitialized()) {
                 $this->baseState = $this->searchQuery;
             }
-            $limit                      = $this->metaData->getProductsPerPageLimit();
+            $limit                      = $this->limits->getProductsPerPageLimit();
             $oExtendedJTLSearchResponse = null;
             $this->bExtendedJTLSearch   = false;
 
@@ -839,11 +856,11 @@ class ProductFilter
                 'nArtikelProSeite'           => &$limit,
                 'nSeite'                     => &$this->nSeite,
                 'nSortierung'                => $_SESSION['Usersortierung'] ?? null,
-                'bLagerbeachten'             => (int)$this->getConfig()['global']['artikel_artikelanzeigefilter'] ===
+                'bLagerbeachten'             => (int)$this->getConfig('global')['artikel_artikelanzeigefilter'] ===
                     EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
             ]);
         }
-        $this->nSeite = max(1, verifyGPCDataInteger('seite'));
+        $this->nSeite = max(1, \RequestHelper::verifyGPCDataInt('seite'));
         foreach ($this->getCustomFilters() as $filter) {
             $filterParam = $filter->getUrlParam();
             $filterClass = $filter->getClassName();
@@ -855,7 +872,7 @@ class ProductFilter
                 // escape all input values
                 if (($filter->getType()->equals(Type::OR()) && is_array($_GET[$filterParam]))
                     || ($filter->getType()->equals(Type::AND())
-                        && (verifyGPCDataInteger($filterParam) > 0 || verifyGPDataString($filterParam) !== ''))
+                        && (\RequestHelper::verifyGPCDataInt($filterParam) > 0 || \RequestHelper::verifyGPDataString($filterParam) !== ''))
                 ) {
                     $filterValue = is_array($_GET[$filterParam])
                         ? array_map([\Shop::Container()->getDB(), 'realEscape'], $_GET[$filterParam])
@@ -923,7 +940,7 @@ class ProductFilter
      * @return FilterInterface
      * @throws \InvalidArgumentException
      */
-    public function registerFilterByClassName($filterName): FilterInterface
+    public function registerFilterByClassName(string $filterName): FilterInterface
     {
         $filter = null;
         if (class_exists($filterName)) {
@@ -969,7 +986,7 @@ class ProductFilter
      * @param string $filterClassName
      * @return int|null
      */
-    public function getFilterValue($filterClassName)
+    public function getFilterValue(string $filterClassName)
     {
         return array_reduce(
             $this->activeFilters,
@@ -986,7 +1003,7 @@ class ProductFilter
      * @param string $filterClassName
      * @return bool
      */
-    public function hasFilter($filterClassName): bool
+    public function hasFilter(string $filterClassName): bool
     {
         return $this->getActiveFilterByClassName($filterClassName) !== null;
     }
@@ -995,7 +1012,7 @@ class ProductFilter
      * @param string $filterClassName
      * @return FilterInterface|null
      */
-    public function getFilterByClassName($filterClassName)
+    public function getFilterByClassName(string $filterClassName)
     {
         $filter = array_filter(
             $this->filters,
@@ -1012,7 +1029,7 @@ class ProductFilter
      * @param string $filterClassName
      * @return FilterInterface|null
      */
-    public function getActiveFilterByClassName($filterClassName)
+    public function getActiveFilterByClassName(string $filterClassName)
     {
         $filter = array_filter(
             $this->activeFilters,
@@ -1088,7 +1105,7 @@ class ProductFilter
      * @param FilterInterface $filter
      * @return bool
      */
-    public function override($className, FilterInterface $filter): bool
+    public function override(string $className, FilterInterface $filter): bool
     {
         foreach ($this->filters as $i => $registerdFilter) {
             if ($registerdFilter->getClassName() === $className) {
@@ -1110,7 +1127,7 @@ class ProductFilter
     }
 
     /**
-     * @param ItemManufacturer $filter
+     * @param ItemManufacturer|\stdClass $filter
      * @return $this
      */
     public function setManufacturerFilter($filter): self
@@ -1436,7 +1453,7 @@ class ProductFilter
     }
 
     /**
-     * @param BaseSearchSpecial $filter
+     * @param FilterInterface $filter
      * @return $this
      */
     public function setSearchSpecial(FilterInterface $filter): self
@@ -1463,7 +1480,7 @@ class ProductFilter
     }
 
     /**
-     * @param ItemSearchSpecial $filter
+     * @param FilterInterface $filter
      * @return $this
      */
     public function setSearchSpecialFilter(FilterInterface $filter): self
@@ -1500,7 +1517,7 @@ class ProductFilter
     }
 
     /**
-     * @param ItemRating $filter
+     * @param FilterInterface $filter
      * @return $this
      */
     public function setRatingFilter(FilterInterface $filter): self
@@ -1527,7 +1544,7 @@ class ProductFilter
     }
 
     /**
-     * @param ItemPriceRange $filter
+     * @param FilterInterface $filter
      * @return $this
      */
     public function setPriceRangeFilter(FilterInterface $filter): self
@@ -1596,34 +1613,104 @@ class ProductFilter
     }
 
     /**
+     * @param \Kategorie|null $category
+     * @return $this
+     */
+    public function setUserSort(\Kategorie $category = null): self
+    {
+        $gpcSort = \RequestHelper::verifyGPCDataInt('Sortierung');
+        // user wants to reset default sorting
+        if ($gpcSort === SEARCH_SORT_STANDARD) {
+            unset($_SESSION['Usersortierung'], $_SESSION['nUsersortierungWahl'], $_SESSION['UsersortierungVorSuche']);
+        }
+        // no sorting configured - use default from config
+        if (!isset($_SESSION['Usersortierung'])) {
+            unset($_SESSION['nUsersortierungWahl']);
+            $_SESSION['Usersortierung'] = (int)$this->conf['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
+        }
+        if (!isset($_SESSION['nUsersortierungWahl'])) {
+            $_SESSION['Usersortierung'] = (int)$this->conf['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
+        }
+        if (!isset($_SESSION['nUsersortierungWahl']) && $this->getSearch()->getSearchCacheID() > 0) {
+            // nur bei initialsuche Sortierung zurücksetzen
+            $_SESSION['UsersortierungVorSuche'] = $_SESSION['Usersortierung'];
+            $_SESSION['Usersortierung']         = SEARCH_SORT_STANDARD;
+        }
+        // custom category attribute
+        if ($category !== null && !empty($category->categoryFunctionAttributes[KAT_ATTRIBUT_ARTIKELSORTIERUNG])) {
+            $mapper = new SortingType();
+            $_SESSION['Usersortierung'] = $mapper->mapUserSorting(
+                $category->categoryFunctionAttributes[KAT_ATTRIBUT_ARTIKELSORTIERUNG]
+            );
+        }
+        if (isset($_SESSION['UsersortierungVorSuche']) && (int)$_SESSION['UsersortierungVorSuche'] > 0) {
+            $_SESSION['Usersortierung'] = (int)$_SESSION['UsersortierungVorSuche'];
+        }
+        // search special sorting
+        if ($this->hasSearchSpecial()) {
+            $oSuchspecialEinstellung_arr = $this->getSearchSpecialConfigMapping();
+            $idx    = $this->getSearchSpecial()->getValue();
+            $ssConf = isset($oSuchspecialEinstellung_arr[$idx]) ?: null;
+            if ($ssConf !== null && $ssConf !== -1 && count($oSuchspecialEinstellung_arr) > 0) {
+                $_SESSION['Usersortierung'] = (int)$oSuchspecialEinstellung_arr[$idx];
+            }
+        }
+        // explicitly set by user
+        if ($gpcSort > 0 && $gpcSort !== SEARCH_SORT_STANDARD) {
+            $_SESSION['Usersortierung']         = $gpcSort;
+            $_SESSION['UsersortierungVorSuche'] = $_SESSION['Usersortierung'];
+            $_SESSION['nUsersortierungWahl']    = 1;
+        }
+        $this->sorting->setActiveSortingType($_SESSION['Usersortierung']);
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSearchSpecialConfigMapping(): array
+    {
+        $config  = $this->conf['suchspecials'];
+        $mapping = [
+            SEARCHSPECIALS_BESTSELLER       => $config['suchspecials_sortierung_bestseller'],
+            SEARCHSPECIALS_SPECIALOFFERS    => $config['suchspecials_sortierung_sonderangebote'],
+            SEARCHSPECIALS_NEWPRODUCTS      => $config['suchspecials_sortierung_neuimsortiment'],
+            SEARCHSPECIALS_TOPOFFERS        => $config['suchspecials_sortierung_topangebote'],
+            SEARCHSPECIALS_UPCOMINGPRODUCTS => $config['suchspecials_sortierung_inkuerzeverfuegbar'],
+            SEARCHSPECIALS_TOPREVIEWS       => $config['suchspecials_sortierung_topbewertet'],
+        ];
+
+        return $mapping;
+    }
+
+    /**
      * get list of product IDs matching the current filter
      *
      * @return Collection
      */
     public function getProductKeys(): Collection
     {
-        $state = $this->getCurrentStateData();
-        $qry   = $this->getFilterSQL()->getBaseQuery(
-            ['tartikel.kArtikel'],
-            $state->getJoins(),
-            $state->getConditions(),
-            $state->getHaving(),
-            null,
-            '',
-            ['tartikel.kArtikel'],
-            'listing'
-        );
+        $sorting = $this->getSorting()->getActiveSorting();
+        $sql     = (new FilterStateSQL())->from($this->getCurrentStateData());
+        $sql->addJoin($sorting->getJoin());
+        $sql->setSelect(['tartikel.kArtikel']);
+        $sql->setOrderBy($sorting->getOrderBy());
+        $sql->setLimit('');
+        $sql->setGroupBy(['tartikel.kArtikel']);
 
-        $productKeys       = collect(array_map(
+        $qry = $this->getFilterSQL()->getBaseQuery($sql, 'listing');
+
+        $productKeys = collect(array_map(
             function ($e) {
                 return (int)$e->kArtikel;
             },
             \Shop::Container()->getDB()->query($qry, ReturnType::ARRAY_OF_OBJECTS)
         ));
-        $order             = $this->getFilterSQL()->getOrder();
+
         $orderData         = new \stdClass();
-        $orderData->cJoin  = $order->join->getSQL();
-        $orderData->cOrder = $order->orderBy;
+        $orderData->cJoin  = $sorting->getJoin()->getSQL();
+        $orderData->cOrder = $sorting->getOrderBy();
 
         executeHook(HOOK_FILTER_INC_GIBARTIKELKEYS, [
             'oArtikelKey_arr' => &$productKeys,
@@ -1665,15 +1752,15 @@ class ProductFilter
     }
 
     /**
-     * @param bool            $forProductListing - if true, return ProductFilterSearchResults instance, otherwise products only
-     * @param \Kategorie|null $currentCategory
-     * @param bool            $fillProducts - if true, return Artikel class instances, otherwise keys only
+     * @param bool            $listing - if true, return ProductFilterSearchResults instance, otherwise products only
+     * @param \Kategorie|null $category
+     * @param bool            $fill - if true, return Artikel class instances, otherwise keys only
      * @param int             $limit
      * @return ProductFilterSearchResultsInterface|\Tightenco\Collect\Support\Collection
      */
-    public function getProducts($forProductListing = true, $currentCategory = null, $fillProducts = true, $limit = null)
+    public function getProducts(bool $listing = true, \Kategorie $category = null, bool $fill = true, int $limit = null)
     {
-        $limitPerPage = $limit ?? $this->metaData->getProductsPerPageLimit();
+        $limitPerPage = $limit ?? $this->limits->getProductsPerPageLimit();
         $nLimitN      = $limitPerPage * ($this->nSeite - 1);
         $max          = (int)$this->conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'];
         $error        = false;
@@ -1698,22 +1785,23 @@ class ProductFilter
             $this->searchResults->setOffsetStart($nLimitN + 1)
                                 ->setOffsetEnd($end > 0 ? $end : $productCount);
 
-            $pages                = new \stdClass();
-            $pages->AktuelleSeite = $this->nSeite;
-            $pages->MaxSeiten     = $limitPerPage > 0 ? ceil($productCount / $limitPerPage) : 1;
-            $pages->minSeite      = min(
-                $pages->AktuelleSeite - $max / 2,
-                0
-            );
-            $pages->maxSeite      = max(
-                $pages->MaxSeiten,
-                $pages->minSeite + $max - 1
-            );
-            if ($pages->maxSeite > $pages->MaxSeiten) {
-                $pages->maxSeite = $pages->MaxSeiten;
+            $total   = $limitPerPage > 0 ? ceil($productCount / $limitPerPage) : 1;
+            $minPage = max($this->nSeite - floor($max / 2), 1);
+            $maxPage = $minPage + $max - 1;
+            if ($maxPage > $total) {
+                $diff    = $total - $maxPage;
+                $maxPage = $total;
+                $minPage += $diff;
+                $minPage = max($minPage, 1);
             }
+            $pages = new Info();
+            $pages->setMinPage($minPage);
+            $pages->setMaxPage($maxPage);
+            $pages->setTotalPages($total);
+            $pages->setCurrentPage($this->nSeite);
+
             $this->searchResults->setPages($pages)
-                                ->setFilterOptions($this, $currentCategory)
+                                ->setFilterOptions($this, $category)
                                 ->setSearchTermWrite($this->metaData->getHeader());
         } else {
             $productList = $this->searchResults->getProducts();
@@ -1728,7 +1816,7 @@ class ProductFilter
                 ->setSearchTerm(strip_tags(trim($this->params['cSuche'])))
                 ->setError($error);
         }
-        if ($fillProducts === true) {
+        if ($fill === true) {
             // @todo: slice list of IDs when not filling?
             $opt                        = new \stdClass();
             $opt->nMerkmale             = 1;
@@ -1754,14 +1842,14 @@ class ProductFilter
 
         $this->searchResults->setProducts($productList);
 
-        if ($forProductListing === true) {
+        if ($listing === true) {
             // Weiterleitung, falls nur 1 Artikel rausgeholt
             $hasSubCategories = ($categoryID = $this->getCategory()->getValue()) > 0
                 ? (new \Kategorie($categoryID, $this->languageID, $this->customerGroupID))
                     ->existierenUnterkategorien()
                 : false;
             if ($productList->count() === 1
-                && $this->getConfig()['navigationsfilter']['allgemein_weiterleitung'] === 'Y'
+                && $this->getConfig('navigationsfilter')['allgemein_weiterleitung'] === 'Y'
                 && ($this->getFilterCount() > 0
                     || ($this->getCategory()->getValue() > 0 && !$hasSubCategories)
                     || !empty($this->EchteSuche->cSuche))
@@ -1776,7 +1864,7 @@ class ProductFilter
             }
         }
 
-        return $forProductListing === true
+        return $listing === true
             ? $this->searchResults
             : $productList;
     }
@@ -1785,7 +1873,7 @@ class ProductFilter
      * @param bool $byType
      * @return array|FilterInterface[]
      */
-    public function getActiveFilters($byType = false): array
+    public function getActiveFilters(bool $byType = false): array
     {
         if ($byType === false) {
             return $this->activeFilters;
@@ -1825,9 +1913,13 @@ class ProductFilter
         $stateCondition = $state->getSQLCondition();
         $stateJoin      = $state->getSQLJoin();
         $data           = new FilterStateSQL();
-        $having         = [];
-        $conditions     = [];
-        $joins          = is_array($stateJoin)
+        $data->setGroupBy([]);
+        $data->setOrderBy('');
+        $data->setLimit('');
+        $data->setSelect([]);
+        $having     = [];
+        $conditions = [];
+        $joins      = is_array($stateJoin)
             ? $stateJoin
             : [$stateJoin];
         if (!empty($stateCondition)) {
@@ -1856,13 +1948,19 @@ class ProductFilter
                     }
                 }
                 if (count($orFilters) > 0) {
-                    // group OR filters by their primary key row
-                    $groupedOrFilters = group($orFilters, function (FilterInterface $f) {
-                        return $f->getPrimaryKeyRow();
-                    });
-                    foreach ($groupedOrFilters as $primaryKeyRow => $orFilters) {
+                    if ($type === 'mf') {
+                        $groupedOrFilters = group($orFilters, function (ItemAttribute $f) {
+                            return $f->getAttributeID();
+                        });
+                    } else {
+                        // group OR filters by their primary key row
+                        $groupedOrFilters = group($orFilters, function (FilterInterface $f) {
+                            return $f->getPrimaryKeyRow();
+                        });
+                    }
+                    foreach ($groupedOrFilters as $idx => $orFilters) {
                         /** @var FilterInterface[] $orFilters */
-                        $values = implode(
+                        $values        = implode(
                             ',',
                             array_map(function ($f) {
                                 /** @var FilterInterface $f */
@@ -1871,13 +1969,15 @@ class ProductFilter
                                 return is_array($val) ? implode(',', $val) : $val;
                             }, $orFilters)
                         );
-                        $table  = first($orFilters)->getTableAlias();
+                        $first         = first($orFilters);
+                        $primaryKeyRow = $first->getPrimaryKeyRow();
+                        $table         = $first->getTableAlias();
                         if (empty($table)) {
                             $table = first($orFilters)->getTableName();
                         }
                         $conditions[] = "\n#combined conditions from OR filter " . $primaryKeyRow . "\n" .
                             $table . '.kArtikel IN ' .
-                            '(SELECT kArtikel FROM ' . first($orFilters)->getTableName() . ' WHERE ' .
+                            '(SELECT kArtikel FROM ' . $first->getTableName() . ' WHERE ' .
                             $primaryKeyRow . ' IN (' . $values . '))';
                     }
                 }
@@ -1916,6 +2016,136 @@ class ProductFilter
         $data->setJoins($joins);
 
         return $data;
+    }
+
+    /**
+     * @param array $nFilter_arr
+     * @return array
+     */
+    public static function initAttributeFilter(array $nFilter_arr = []): array
+    {
+        $filter = [];
+        if (is_array($nFilter_arr) && count($nFilter_arr) > 1) {
+            foreach ($nFilter_arr as $nFilter) {
+                if ((int)$nFilter > 0) {
+                    $filter[] = (int)$nFilter;
+                }
+            }
+        } elseif (isset($_GET['mf'])) {
+            if (is_string($_GET['mf'])) {
+                $filter[] = $_GET['mf'];
+            } else {
+                foreach ($_GET['mf'] as $mf => $value) {
+                    $filter[] = $value;
+                }
+            }
+        } elseif (isset($_POST['mf'])) {
+            if (is_string($_POST['mf'])) {
+                $filter[] = $_POST['mf'];
+            } else {
+                foreach ($_POST['mf'] as $mf => $value) {
+                    $filter[] = $value;
+                }
+            }
+        } elseif (count($_GET) > 0) {
+            foreach ($_GET as $key => $value) {
+                if (preg_match('/mf\d+/i', $key)) {
+                    $filter[] = (int)$value;
+                }
+            }
+        } elseif (count($_POST) > 0) {
+            foreach ($_POST as $key => $value) {
+                if (preg_match('/mf\d+/i', $key)) {
+                    $filter[] = (int)$value;
+                }
+            }
+        }
+
+        return $filter;
+    }
+
+    /**
+     * @param array $nFilter_arr
+     * @return array
+     */
+    public static function initSearchFilter(array $nFilter_arr = []): array
+    {
+        $filter = [];
+        if (is_array($nFilter_arr) && count($nFilter_arr) > 1) {
+            foreach ($nFilter_arr as $nFilter) {
+                if ((int)$nFilter > 0) {
+                    $filter[] = (int)$nFilter;
+                }
+            }
+        } elseif (isset($_GET['sf'])) {
+            if (is_string($_GET['sf'])) {
+                $filter[] = $_GET['sf'];
+            } else {
+                foreach ($_GET['sf'] as $mf => $value) {
+                    $filter[] = $value;
+                }
+            }
+        } elseif (isset($_POST['sf'])) {
+            if (is_string($_POST['sf'])) {
+                $filter[] = $_POST['sf'];
+            } else {
+                foreach ($_POST['sf'] as $mf => $value) {
+                    $filter[] = $value;
+                }
+            }
+        } else {
+            $i = 1;
+            while ($i < 20) {
+                if (\RequestHelper::verifyGPCDataInt('sf' . $i) > 0) {
+                    $filter[] = \RequestHelper::verifyGPCDataInt('sf' . $i);
+                }
+                ++$i;
+            }
+        }
+
+        return $filter;
+    }
+
+    /**
+     * @param array $nFilter_arr
+     * @return array
+     */
+    public static function initTagFilter(array $nFilter_arr = []): array
+    {
+        $filter = [];
+        if (is_array($nFilter_arr) && count($nFilter_arr) > 1) {
+            foreach ($nFilter_arr as $nFilter) {
+                if ((int)$nFilter > 0) {
+                    $filter[] = (int)$nFilter;
+                }
+            }
+        } elseif (isset($_GET['tf'])) {
+            if (is_string($_GET['tf'])) {
+                $filter[] = $_GET['tf'];
+            } else {
+                foreach ($_GET['tf'] as $mf => $value) {
+                    $filter[] = $value;
+                }
+            }
+        } elseif (isset($_POST['tf'])) {
+            if (is_string($_POST['tf'])) {
+                $filter[] = $_POST['tf'];
+            } else {
+                foreach ($_POST['tf'] as $mf => $value) {
+                    $filter[] = $value;
+                }
+            }
+        } else {
+            $i = 1;
+            while ($i < 20) {
+                if (\RequestHelper::verifyGPCDataInt('tf' . $i) > 0) {
+                    $filter[] = \RequestHelper::verifyGPCDataInt('tf' . $i);
+                }
+                ++$i;
+            }
+        }
+
+        return $filter;
     }
 
     /**

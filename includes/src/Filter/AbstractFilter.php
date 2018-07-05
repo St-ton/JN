@@ -55,11 +55,6 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @var int
      */
-    protected $languageID = 0;
-
-    /**
-     * @var int
-     */
     protected $customerGroupID = 0;
 
     /**
@@ -237,8 +232,8 @@ abstract class AbstractFilter implements FilterInterface
                 $instance = $this;
             }
             $this->activeValues[] = (new FilterOption())
-                ->setURL($this->getSeo($this->languageID))
-                ->setFrontendName($instance->getName())
+                ->setURL($this->getSeo($this->getLanguageID()))
+                ->setFrontendName($instance->getName() ?? '')
                 ->setValue($value)
                 ->setName($instance->getFrontendName())
                 ->setType($this->getType());
@@ -286,7 +281,7 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function getFrontendName()
+    public function getFrontendName(): string
     {
         return $this->frontendName;
     }
@@ -453,10 +448,9 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function setBaseData($productFilter): FilterInterface
+    public function setBaseData(ProductFilter $productFilter): FilterInterface
     {
         $this->productFilter      = $productFilter;
-        $this->languageID         = $productFilter->getLanguageID();
         $this->customerGroupID    = $productFilter->getCustomerGroupID();
         $this->availableLanguages = $productFilter->getAvailableLanguages();
 
@@ -466,7 +460,7 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function getUrlParam()
+    public function getUrlParam(): string
     {
         return $this->urlParam;
     }
@@ -484,7 +478,7 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function getUrlParamSEO()
+    public function getUrlParamSEO(): string
     {
         return $this->urlParamSEO;
     }
@@ -522,7 +516,7 @@ abstract class AbstractFilter implements FilterInterface
      */
     public function getLanguageID(): int
     {
-        return $this->languageID;
+        return $this->productFilter->getLanguageID();
     }
 
     /**
@@ -536,15 +530,15 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function getConfig(): array
+    public function getConfig($idx = null)
     {
-        return $this->productFilter->getConfig();
+        return $this->productFilter->getConfig($idx);
     }
 
     /**
      * @inheritdoc
      */
-    public function getClassName()
+    public function getClassName(): string
     {
         return $this->className;
     }
@@ -563,7 +557,7 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function getNiceName()
+    public function getNiceName(): string
     {
         return $this->niceName;
     }
@@ -752,7 +746,7 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function getCount()
+    public function getCount(): int
     {
         return $this->count;
     }
@@ -760,9 +754,9 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function setCount($count)
+    public function setCount(int $count): FilterInterface
     {
-        $this->count = (int)$count;
+        $this->count = $count;
 
         return $this;
     }
@@ -770,7 +764,7 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function getSort()
+    public function getSort(): int
     {
         return $this->sort;
     }
@@ -778,9 +772,9 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function setSort($sort)
+    public function setSort(int $sort): FilterInterface
     {
-        $this->sort = (int)$sort;
+        $this->sort = $sort;
 
         return $this;
     }
@@ -801,9 +795,9 @@ abstract class AbstractFilter implements FilterInterface
      * @param int $value
      * @return $this
      */
-    public function setValueCompat($value)
+    public function setValueCompat(int $value)
     {
-        $this->value = (int)$value;
+        $this->value = $value;
         if ($this->value > 0) {
             $this->productFilter->enableFilter($this);
         }

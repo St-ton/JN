@@ -1,7 +1,7 @@
 {strip}
 {assign var=max_subsub_items value=5}
 
-{block name="megamenu-categories"}
+{block name='megamenu-categories'}
 {if $Einstellungen.template.megamenu.show_categories !== 'N'
     && ($Einstellungen.global.global_sichtbarkeit != 3
         || isset($smarty.session.Kunde->kKunde)
@@ -27,7 +27,7 @@
         {if !isset($activeParents) && ($nSeitenTyp == 1 || $nSeitenTyp == 2)}
             {get_category_parents categoryId=$activeId assign='activeParents'}
         {/if}
-        {foreach name='categories' from=$categories item='category'}
+        {foreach $categories as $category}
             {assign var='isDropdown' value=$category->bUnterKategorien && $category->Unterkategorien|count > 0}
             <li role="presentation" class="nav-item {if $isDropdown}dropdown megamenu-fw{/if}{if $category->kKategorie == $activeId || (isset($activeParents[0]) && $activeParents[0]->kKategorie == $category->kKategorie)} active{/if}">
                 <a href="{$category->cURLFull}"{if $isDropdown} class="dropdown-toggle nav-link" data-target="#" data-toggle="dropdown" data-hover="dropdown" data-delay="300" data-hover-delay="100" data-close-others="true"{/if}>
@@ -74,7 +74,7 @@
                                                 {else}
                                                     {get_category_array categoryId=$category->kKategorie assign='sub_categories'}
                                                 {/if}
-                                                {foreach name=sub_categories from=$sub_categories item='sub'}
+                                                {foreach $sub_categories as $sub}
                                                     <div class="col-xs-12 col-md-6 col-lg-3">
                                                         <div class="dropdown-item category-wrapper top15{if $sub->kKategorie == $activeId || (isset($activeParents[1]) && $activeParents[1]->kKategorie == $sub->kKategorie)} active{/if}">
                                                             {if $Einstellungen.template.megamenu.show_category_images !== 'N'}
@@ -103,15 +103,15 @@
                                                                 {/if}
                                                                 <hr class="hr-sm hidden-xs hidden-sm">
                                                                 <ul class="list-unstyled small subsub">
-                                                                    {foreach name='subsub_categories' from=$subsub_categories item='subsub'}
-                                                                        {if $smarty.foreach.subsub_categories.iteration <= $max_subsub_items}
+                                                                    {foreach $subsub_categories as $subsub}
+                                                                        {if $subsub@iteration <= $max_subsub_items}
                                                                             <li{if $subsub->kKategorie == $activeId || (isset($activeParents[2]) && $activeParents[2]->kKategorie == $subsub->kKategorie)} class="active"{/if}>
                                                                                 <a href="{$subsub->cURLFull}">
                                                                                     {$subsub->cKurzbezeichnung}
                                                                                 </a>
                                                                             </li>
                                                                         {else}
-                                                                            <li class="more"><a href="{$sub->cURLFull}"><i class="fa fa-chevron-circle-right"></i> {lang key="more" section="global"} <span class="remaining">({math equation='total - max' total=$subsub_categories|count max=$max_subsub_items})</span></a></li>
+                                                                            <li class="more"><a href="{$sub->cURLFull}"><i class="fa fa-chevron-circle-right"></i> {lang key='more' section='global'} <span class="remaining">({math equation='total - max' total=$subsub_categories|count max=$max_subsub_items})</span></a></li>
                                                                             {break}
                                                                         {/if}
                                                                     {/foreach}
@@ -119,10 +119,10 @@
                                                             {/if}
                                                         </div>
                                                     </div>
-                                                    {if $smarty.foreach.sub_categories.iteration % 4 == 0}
+                                                    {if $sub@iteration % 4 == 0}
                                                         <div class="clearfix visible-lg-block"></div>
                                                     {/if}
-                                                    {if $smarty.foreach.sub_categories.iteration % 2 == 0}
+                                                    {if $sub@iteration % 2 == 0}
                                                         <div class="clearfix visible-md-block"></div>
                                                     {/if}
                                                 {/foreach}
@@ -140,13 +140,13 @@
 {/if}
 {/block}{* /megamenu-categories*}
 
-{block name="megamenu-pages"}
+{block name='megamenu-pages'}
 {if $Einstellungen.template.megamenu.show_pages !== 'N'}
     {include file='snippets/linkgroup_list.tpl' linkgroupIdentifier='megamenu' dropdownSupport=true tplscope='megamenu'}
 {/if}
 {/block}{* megamenu-pages *}
 
-{block name="megamenu-manufacturers"}
+{block name='megamenu-manufacturers'}
 {if $Einstellungen.template.megamenu.show_manufacturers !== 'N'
     && ($Einstellungen.global.global_sichtbarkeit != 3
         || isset($smarty.session.Kunde->kKunde)
@@ -154,16 +154,16 @@
     {get_manufacturers assign='manufacturers'}
     {if !empty($manufacturers)}
         <li class="dropdown megamenu-fw{if $NaviFilter->hasManufacturer() || $nSeitenTyp == PAGE_HERSTELLER} active{/if}">
-            {assign var="linkKeyHersteller" value=LinkHelper::getInstance()->getSpecialPageLinkKey(LINKTYP_HERSTELLER)}
-            {if !empty($linkKeyHersteller)}{assign var="linkSEOHersteller" value=LinkHelper::getInstance()->getPageLinkLanguage($linkKeyHersteller)}{/if}
-            {if isset($linkSEOHersteller)}
-                <a href="{$linkSEOHersteller->cSeo}" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="300" data-hover-delay="100" data-close-others="true">
-                    {$linkSEOHersteller->cName}
+            {assign var='linkKeyHersteller' value=Shop::Container()->getLinkService()->getSpecialPageID(LINKTYP_HERSTELLER)|default:0}
+            {assign var='linkSEOHersteller' value=Shop::Container()->getLinkService()->getLinkByID($linkKeyHersteller)|default:null}
+            {if $linkSEOHersteller !== null && !empty($linkSEOHersteller->getName())}
+                <a href="{$linkSEOHersteller->getURL()}" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="300" data-hover-delay="100" data-close-others="true">
+                    {$linkSEOHersteller->getName()}
                     <span class="caret"></span>
                 </a>
             {else}
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="300" data-hover-delay="100" data-close-others="true">
-                    {lang key="manufacturers" section="global"}
+                    {lang key='manufacturers'}
                     <span class="caret"></span>
                 </a>
             {/if}
@@ -172,16 +172,16 @@
                     <div class="megamenu-content">
                         <div class="category-title manufacturer text-center hidden-xs hidden-sm">
                             {if isset($linkSEOHersteller)}
-                                <a href="{$linkSEOHersteller->cSeo}">{$linkSEOHersteller->cName}</a>
+                                <a href="{$linkSEOHersteller->getURL()}">{$linkSEOHersteller->getName()}</a>
                             {else}
-                                <span>{lang key="manufacturers" section="global"}</span>
+                                <span>{lang key='manufacturers' section='global'}</span>
                             {/if}
                         </div>
                         <hr class="hr-sm  hidden-xs hidden-sm">
                         <div class="row">
                             <div class="col-xs-12 mega-categories manufacturer">
                                 <div class="row row-eq-height row-eq-img-height">
-                                    {foreach name=hersteller from=$manufacturers item=hst}
+                                    {foreach $manufacturers as $hst}
                                         <div class="col-xs-12 col-md-6 col-lg-3">
                                             <div class="category-wrapper manufacturer top15{if $NaviFilter->hasManufacturer() && $NaviFilter->getManufacturer()->getValue() == $hst->kHersteller} active{/if}">
                                                 {if $Einstellungen.template.megamenu.show_category_images !== 'N'}
@@ -210,7 +210,7 @@
 {/block}{* megamenu-manufacturers *}
 
 
-{block name="megamenu-global-characteristics"}
+{block name='megamenu-global-characteristics'}
 {*
 {if isset($Einstellungen.template.megamenu.show_global_characteristics) && $Einstellungen.template.megamenu.show_global_characteristics !== 'N'}
     {get_global_characteristics assign='characteristics'}

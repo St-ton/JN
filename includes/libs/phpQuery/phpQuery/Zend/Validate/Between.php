@@ -188,12 +188,11 @@ class Zend_Validate_Between extends Zend_Validate_Abstract
                 $this->_error(self::NOT_BETWEEN);
                 return false;
             }
-        } else {
-            if ($this->_min >= $value || $value >= $this->_max) {
-                $this->_error(self::NOT_BETWEEN_STRICT);
-                return false;
-            }
+        } elseif ($this->_min >= $value || $value >= $this->_max) {
+            $this->_error(self::NOT_BETWEEN_STRICT);
+            return false;
         }
+
         return true;
     }
 }

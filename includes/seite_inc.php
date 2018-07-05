@@ -28,22 +28,22 @@ function gibStartBoxen()
         $menge        = null;
         switch ($box->name) {
             case 'TopAngebot':
-                $menge = gibTopAngebote($limit_nr, $kKundengruppe);
+                $menge = SearchSpecialHelper::getTopOffers($limit_nr, $kKundengruppe);
                 $cURL  = SEARCHSPECIALS_TOPOFFERS;
                 break;
 
             case 'Bestseller':
-                $menge = gibBestseller($limit_nr, $kKundengruppe);
+                $menge = SearchSpecialHelper::getBestsellers($limit_nr, $kKundengruppe);
                 $cURL  = SEARCHSPECIALS_BESTSELLER;
                 break;
 
             case 'Sonderangebote':
-                $menge = gibSonderangebote($limit_nr, $kKundengruppe);
+                $menge = SearchSpecialHelper::getSpecialOffers($limit_nr, $kKundengruppe);
                 $cURL  = SEARCHSPECIALS_SPECIALOFFERS;
                 break;
 
             case 'NeuImSortiment':
-                $menge = gibNeuImSortiment($limit_nr, $kKundengruppe);
+                $menge = SearchSpecialHelper::getNewProducts($limit_nr, $kKundengruppe);
                 $cURL  = SEARCHSPECIALS_NEWPRODUCTS;
                 break;
         }
@@ -61,8 +61,7 @@ function gibStartBoxen()
             }
         }
         if (count($kArtikel_arr) > 0) {
-            $box->cURL    = baueSuchSpecialURL($cURL);
-            //hole anzuzeigende Artikel
+            $box->cURL    = SearchSpecialHelper::buildURL($cURL);
             $box->Artikel = new ArtikelListe();
             $box->Artikel->getArtikelByKeys($kArtikel_arr, 0, count($kArtikel_arr));
         }
@@ -82,7 +81,7 @@ function gibAuswahlAssistentFragen($Einstellungen)
         require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'auswahlassistent_inc.php';
 
         if (function_exists('gibAAFrage')) {
-            $oSpracheStd = gibStandardsprache(true);
+            $oSpracheStd = Sprache::getDefaultLanguage(true);
 
             return gibAAFrage($_SESSION['AuswahlAssistent']['nFrage'], Shop::getLanguage(), (int)$oSpracheStd->kSprache);
         }
@@ -113,8 +112,8 @@ function gibNews($conf)
         if ((int)$conf['news']['news_anzahl_content'] > 0) {
             $cSQL = ' LIMIT ' . (int)$conf['news']['news_anzahl_content'];
         }
-        $oNews_arr = Shop::Container()->getDB()->query("
-            SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, 
+        $oNews_arr = Shop::Container()->getDB()->query(
+            "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, 
                 tnews.cVorschauText, tnews.cMetaTitle, tnews.cMetaDescription, tnews.cMetaKeywords, 
                 tnews.nAktiv, tnews.dErstellt, tnews.cPreviewImage, tseo.cSeo,
                 count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl, 
@@ -151,8 +150,8 @@ function gibNews($conf)
             $oNews->cPreviewImageFull = empty($oNews->cPreviewImage)
                 ? ''
                 : $imageBaseURL . $oNews->cPreviewImage;
-            $oNews->cText             = parseNewsText($oNews->cText);
-            $oNews->cURL              = baueURL($oNews, URLART_NEWS);
+            $oNews->cText             = StringHandler::parseNewsText($oNews->cText);
+            $oNews->cURL              = UrlHelper::buildURL($oNews, URLART_NEWS);
             $oNews->cURLFull          = $shopURL . $oNews->cURL;
             $oNews->cMehrURL          = '<a href="' . $oNews->cURL . '">' .
                 Shop::Lang()->get('moreLink', 'news') .
@@ -265,8 +264,8 @@ function gibLivesucheTop($conf)
             $suchwolke->Klasse   = ($prio_step < 1) ?
                 rand(1, 10) :
                 (round(($suchwolke->nAnzahlGesuche - $suchwolke_objs[$count - 1]->nAnzahlGesuche) / $prio_step) + 1);
-            $suchwolke->cURL     = baueURL($suchwolke, URLART_LIVESUCHE);
-            $suchwolke->cURLFull = baueURL($suchwolke, URLART_LIVESUCHE, 0, false, true);
+            $suchwolke->cURL     = UrlHelper::buildURL($suchwolke, URLART_LIVESUCHE);
+            $suchwolke->cURLFull = UrlHelper::buildURL($suchwolke, URLART_LIVESUCHE, true);
             $Suchwolke_arr[]     = $suchwolke;
         }
     }
@@ -311,6 +310,7 @@ function gibLivesucheLast($conf)
                 AND tseo.kSprache = " . Shop::getLanguage() . "
             WHERE tsuchanfrage.kSprache = " . Shop::getLanguage() . "
                 AND tsuchanfrage.nAktiv = 1
+                AND tsuchanfrage.kSuchanfrage > 0
             ORDER BY tsuchanfrage.dZuletztGesucht DESC
             LIMIT " . $limit,
         \DB\ReturnType::ARRAY_OF_OBJECTS
@@ -322,14 +322,12 @@ function gibLivesucheLast($conf)
         (($suchwolke_objs[0]->nAnzahlGesuche - $suchwolke_objs[$count - 1]->nAnzahlGesuche) / 9) :
         0;
     foreach ($suchwolke_objs as $suchwolke) {
-        if ($suchwolke->kSuchanfrage > 0) {
-            $suchwolke->Klasse   = ($prio_step < 1) ?
-                rand(1, 10) :
-                round(($suchwolke->nAnzahlGesuche - $suchwolke_objs[$count - 1]->nAnzahlGesuche) / $prio_step) + 1;
-            $suchwolke->cURL     = baueURL($suchwolke, URLART_LIVESUCHE);
-            $suchwolke->cURLFull = baueURL($suchwolke, URLART_LIVESUCHE, 0, false, true);
-            $Suchwolke_arr[]     = $suchwolke;
-        }
+        $suchwolke->Klasse   = ($prio_step < 1) ?
+            rand(1, 10) :
+            round(($suchwolke->nAnzahlGesuche - $suchwolke_objs[$count - 1]->nAnzahlGesuche) / $prio_step) + 1;
+        $suchwolke->cURL     = UrlHelper::buildURL($suchwolke, URLART_LIVESUCHE);
+        $suchwolke->cURLFull = UrlHelper::buildURL($suchwolke, URLART_LIVESUCHE, true);
+        $Suchwolke_arr[]     = $suchwolke;
     }
 
     return $Suchwolke_arr;
@@ -371,8 +369,8 @@ function gibTagging($conf)
             $tagwolke->Klasse   = ($prio_step < 1) ?
                 rand(1, 10) :
                 (round(($tagwolke->Anzahl - $tagwolke_objs[$count - 1]->Anzahl) / $prio_step) + 1);
-            $tagwolke->cURL     = baueURL($tagwolke, URLART_TAG);
-            $tagwolke->cURLFull = baueURL($tagwolke, URLART_TAG, 0, false, true);
+            $tagwolke->cURL     = UrlHelper::buildURL($tagwolke, URLART_TAG);
+            $tagwolke->cURLFull = UrlHelper::buildURL($tagwolke, URLART_TAG, true);
             $Tagwolke_arr[]     = $tagwolke;
         }
     }
@@ -399,8 +397,8 @@ function gibNewsletterHistory()
     );
     // URLs bauen
     foreach ($oNewsletterHistory_arr as $oNewsletterHistory) {
-        $oNewsletterHistory->cURL     = baueURL($oNewsletterHistory, URLART_NEWS);
-        $oNewsletterHistory->cURLFull = baueURL($oNewsletterHistory, URLART_NEWS, 0, false, true);
+        $oNewsletterHistory->cURL     = UrlHelper::buildURL($oNewsletterHistory, URLART_NEWS);
+        $oNewsletterHistory->cURLFull = UrlHelper::buildURL($oNewsletterHistory, URLART_NEWS, true);
     }
 
     return $oNewsletterHistory_arr;
@@ -423,7 +421,7 @@ function gibSitemapKategorien()
  */
 function gibSitemapGlobaleMerkmale()
 {
-    $isDefaultLanguage = standardspracheAktiv();
+    $isDefaultLanguage = Sprache::isDefaultLanguageActive();
     $cacheID           = 'gsgm_' . (($isDefaultLanguage === true) ? 'd_' : '') . Shop::getLanguage();
     if (($oMerkmal_arr = Shop::Cache()->get($cacheID)) === false) {
         $oMerkmal_arr    = [];
@@ -665,12 +663,12 @@ function gibSitemapNews()
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($entries as $oNews) {
-                $oNews->cURL     = baueURL($oNews, URLART_NEWS);
-                $oNews->cURLFull = baueURL($oNews, URLART_NEWS, 0, false, true);
+                $oNews->cURL     = UrlHelper::buildURL($oNews, URLART_NEWS);
+                $oNews->cURLFull = UrlHelper::buildURL($oNews, URLART_NEWS, true);
             }
             $news->oNews_arr = $entries;
-            $news->cURL      = baueURL($news, URLART_NEWSMONAT);
-            $news->cURLFull  = baueURL($news, URLART_NEWSMONAT, 0, false, true);
+            $news->cURL      = UrlHelper::buildURL($news, URLART_NEWSMONAT);
+            $news->cURLFull  = UrlHelper::buildURL($news, URLART_NEWSMONAT, true);
         }
         Shop::Cache()->set($cacheID, $overview, [CACHING_GROUP_NEWS]);
     }
@@ -714,8 +712,8 @@ function gibNewsKategorie()
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($newsCategories as $newsCategory) {
-            $newsCategory->cURL      = baueURL($newsCategory, URLART_NEWSKATEGORIE);
-            $newsCategory->cURLFull  = baueURL($newsCategory, URLART_NEWSKATEGORIE, 0, false, true);
+            $newsCategory->cURL      = UrlHelper::buildURL($newsCategory, URLART_NEWSKATEGORIE);
+            $newsCategory->cURLFull  = UrlHelper::buildURL($newsCategory, URLART_NEWSKATEGORIE, true);
 
             $entries = Shop::Container()->getDB()->query(
                 "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, tnews.cVorschauText, 
@@ -742,8 +740,8 @@ function gibNewsKategorie()
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($entries as $entry) {
-                $entry->cURL     = baueURL($entry, URLART_NEWS);
-                $entry->cURLFull = baueURL($entry, URLART_NEWS, 0, false, true);
+                $entry->cURL     = UrlHelper::buildURL($entry, URLART_NEWS);
+                $entry->cURLFull = UrlHelper::buildURL($entry, URLART_NEWS, true);
             }
             $newsCategory->oNews_arr = $entries;
         }
@@ -789,7 +787,7 @@ function gibGratisGeschenkArtikel($conf)
     foreach ($oArtikelGeschenkTMP_arr as $oArtikelGeschenkTMP) {
         $oArtikel = new Artikel();
         $oArtikel->fuelleArtikel($oArtikelGeschenkTMP->kArtikel, $defaultOptions);
-        $oArtikel->cBestellwert = gibPreisStringLocalized((float)$oArtikelGeschenkTMP->cWert);
+        $oArtikel->cBestellwert = Preise::getLocalizedPriceString((float)$oArtikelGeschenkTMP->cWert);
 
         if ($oArtikel->kEigenschaftKombi > 0
             || !is_array($oArtikel->Variationen)
@@ -805,17 +803,16 @@ function gibGratisGeschenkArtikel($conf)
 /**
  * @param int $nLinkart
  */
-function pruefeSpezialseite($nLinkart)
+function pruefeSpezialseite(int $nLinkart)
 {
-    if ((int)$nLinkart > 0) {
-        $cacheID = 'special_page_n_' . $nLinkart;
-        if (($oSeite = Shop::Cache()->get($cacheID)) === false) {
-            $oSeite = Shop::Container()->getDB()->select('tspezialseite', 'nLinkart', (int)$nLinkart);
-            Shop::Cache()->set($cacheID, $oSeite, [CACHING_GROUP_CORE]);
-        }
-        if (isset($oSeite->cDateiname) && strlen($oSeite->cDateiname) > 0) {
-            $linkHelper = LinkHelper::getInstance();
-            header('Location: ' . $linkHelper->getStaticRoute($oSeite->cDateiname));
+    $specialPages = Shop::Container()->getLinkService()->getLinkGroupByName('specialpages');
+    if ($nLinkart > 0 && $specialPages !== null) {
+        $res = $specialPages->getLinks()->first(function (\Link\LinkInterface $l) use ($nLinkart) {
+            return $l->getLinkType() === $nLinkart;
+        });
+        /** @var \Link\LinkInterface $res */
+        if ($res !== null && $res->getFileName() !== '') {
+            header('Location: ' . Shop::Container()->getLinkService()->getStaticRoute($res->getFileName()));
             exit();
         }
     }
@@ -828,7 +825,6 @@ function pruefeSpezialseite($nLinkart)
 function gibSeiteSitemap($conf, $smarty)
 {
     Shop::setPageType(PAGE_SITEMAP);
-    $linkGroups = LinkHelper::getInstance()->getLinkGroups();
 
     $smarty->assign('oKategorieliste', $conf['sitemap']['sitemap_kategorien_anzeigen'] === 'Y'
         ? gibSitemapKategorien()
@@ -867,7 +863,7 @@ function gibSitemapHersteller($Einstellungen)
 function holeSeitenLink($kLink)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return LinkHelper::getInstance()->getPageLink($kLink);
+    return Shop::Container()->getLinkService()->getLinkByID($kLink);
 }
 
 /**
@@ -878,7 +874,7 @@ function holeSeitenLink($kLink)
 function holeSeitenLinkSprache($kLink)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return LinkHelper::getInstance()->getPageLinkLanguage($kLink);
+    return Shop::Container()->getLinkService()->getLinkByID($kLink);
 }
 
 /**

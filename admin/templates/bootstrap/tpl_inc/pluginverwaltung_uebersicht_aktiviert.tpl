@@ -44,7 +44,7 @@
                                 </td>
                                 <td class="tcenter plugin-status">
                                     <h4 class="label-wrap text-nowrap">
-                                        <span class="label {if $PluginInstalliert->nStatus == 2}success label-success{elseif $PluginInstalliert->nStatus == 1}success label-info{elseif $PluginInstalliert->nStatus == 3}success label-default{elseif $PluginInstalliert->nStatus == 4 || $PluginInstalliert->nStatus == 5}info label-info{elseif $PluginInstalliert->nStatus == 6}danger label-danger{/if}">
+                                        <span class="label {if $PluginInstalliert->nStatus === Plugin::PLUGIN_ACTIVATED}success label-success{elseif $PluginInstalliert->nStatus == 1}success label-info{elseif $PluginInstalliert->nStatus == 3}success label-default{elseif $PluginInstalliert->nStatus == 4 || $PluginInstalliert->nStatus == 5}info label-info{elseif $PluginInstalliert->nStatus == 6}danger label-danger{/if}">
                                             {$PluginInstalliert->cStatus}
                                         </span>
                                         {if isset($PluginIndex_arr[$PluginInstalliert->cVerzeichnis]->shop4compatible) && $PluginIndex_arr[$PluginInstalliert->cVerzeichnis]->shop4compatible === false}

@@ -11,6 +11,10 @@ use Exceptions\ServiceNotFoundException;
 
 require_once __DIR__ . '/../bootstrap.php';
 
+/**
+ * Class ContainerBaseTest
+ * @package Services
+ */
 class ContainerBaseTest extends \PHPUnit_Framework_TestCase
 {
     public function test_singleton_happyPath()

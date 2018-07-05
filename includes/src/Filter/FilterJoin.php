@@ -134,13 +134,13 @@ class FilterJoin implements FilterJoinInterface
      */
     public function __toString(): string
     {
-        return $this->getSql();
+        return $this->getSQL();
     }
 
     /**
      * @inheritdoc
      */
-    public function getSql(): string
+    public function getSQL(): string
     {
         $on = $this->getOn();
         if ($on !== '') {

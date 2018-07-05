@@ -55,8 +55,8 @@ class Statistik
         $this->nStampBis         = 0;
 
         if (strlen($cDatumVon) > 0 && strlen($cDatumBis) > 0) {
-            $this->cDatumVon_arr = gibDatumTeile($cDatumVon);
-            $this->cDatumBis_arr = gibDatumTeile($cDatumBis);
+            $this->cDatumVon_arr = DateHelper::getDateParts($cDatumVon);
+            $this->cDatumBis_arr = DateHelper::getDateParts($cDatumBis);
         } elseif ((int)$nStampVon > 0 && (int)$nStampBis > 0) {
             $this->nStampVon = (int)$nStampVon;
             $this->nStampBis = (int)$nStampBis;
@@ -556,7 +556,7 @@ class Statistik
      */
     public function setDatumVon($cDatumVon)
     {
-        $this->cDatumVon_arr = gibDatumTeile($cDatumVon);
+        $this->cDatumVon_arr = DateHelper::getDateParts($cDatumVon);
 
         return $this;
     }
@@ -567,7 +567,7 @@ class Statistik
      */
     public function setDatumBis($cDatumBis)
     {
-        $this->cDatumBis_arr = gibDatumTeile($cDatumBis);
+        $this->cDatumBis_arr = DateHelper::getDateParts($cDatumBis);
 
         return $this;
     }

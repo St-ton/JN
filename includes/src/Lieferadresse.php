@@ -32,9 +32,9 @@ class Lieferadresse extends Adresse
     /**
      * Konstruktor
      *
-     * @param int $kLieferadresse - Falls angegeben, wird der Lieferadresse mit angegebenem kLieferadresse aus der DB geholt
+     * @param int $kLieferadresse
      */
-    public function __construct($kLieferadresse = 0)
+    public function __construct(int $kLieferadresse = 0)
     {
         if ($kLieferadresse > 0) {
             $this->loadFromDB($kLieferadresse);
@@ -42,15 +42,12 @@ class Lieferadresse extends Adresse
     }
 
     /**
-     * Setzt Lieferadresse mit Daten aus der DB mit spezifiziertem Primary Key
-     *
      * @param int $kLieferadresse
      * @return Lieferadresse|int
      */
-    public function loadFromDB($kLieferadresse)
+    public function loadFromDB(int $kLieferadresse)
     {
-        $kLieferadresse = (int)$kLieferadresse;
-        $obj            = Shop::Container()->getDB()->select('tlieferadresse', 'kLieferadresse', $kLieferadresse);
+        $obj = Shop::Container()->getDB()->select('tlieferadresse', 'kLieferadresse', $kLieferadresse);
 
         if ($obj === null) {
             return 0;
@@ -58,8 +55,8 @@ class Lieferadresse extends Adresse
 
         $this->fromObject($obj);
         // Anrede mappen
-        $this->cAnredeLocalized = mappeKundenanrede($this->cAnrede, 0, $this->kKunde);
-        $this->angezeigtesLand  = ISO2land($this->cLand);
+        $this->cAnredeLocalized = Kunde::mapSalutation($this->cAnrede, 0, $this->kKunde);
+        $this->angezeigtesLand  = Sprache::getCountryCodeByCountryName($this->cLand);
         if ($this->kLieferadresse > 0) {
             $this->decrypt();
         }
@@ -70,11 +67,9 @@ class Lieferadresse extends Adresse
     }
 
     /**
-     * Fügt Datensatz in DB ein. Primary Key wird in this gesetzt.
-     *
-     * @return int - Key von eingefügter Lieferadresse
+     * @return int
      */
-    public function insertInDB()
+    public function insertInDB(): int
     {
         $this->encrypt();
         $obj = $this->toObject();
@@ -96,7 +91,7 @@ class Lieferadresse extends Adresse
      *
      * @return int
      */
-    public function updateInDB()
+    public function updateInDB(): int
     {
         $this->encrypt();
         $obj = $this->toObject();
@@ -119,7 +114,7 @@ class Lieferadresse extends Adresse
      *
      * @return array
      */
-    public function gibLieferadresseAssoc()
+    public function gibLieferadresseAssoc(): array
     {
         return $this->kLieferadresse > 0
             ? $this->toArray()

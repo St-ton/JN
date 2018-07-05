@@ -11,6 +11,11 @@ use Filter\FilterJoin;
 use Filter\FilterOption;
 use Filter\FilterInterface;
 use Filter\ProductFilter;
+use Filter\SortingOptions\Factory;
+use Filter\SortingOptions\SortDefault;
+use Filter\SortingOptions\SortingOptionInterface;
+use Mapper\SortingType;
+use Tightenco\Collect\Support\Collection;
 
 /**
  * Class ItemSort
@@ -18,6 +23,26 @@ use Filter\ProductFilter;
  */
 class ItemSort extends AbstractFilter
 {
+    /**
+     * @var Factory
+     */
+    private $factory;
+
+    /**
+     * @var Collection
+     */
+    private $sortingOptions = [];
+
+    /**
+     * @var SortingOptionInterface
+     */
+    protected $activeSorting;
+
+    /**
+     * @var int
+     */
+    protected $activeSortingType;
+
     /**
      * ItemSort constructor.
      *
@@ -29,6 +54,85 @@ class ItemSort extends AbstractFilter
         $this->setIsCustom(false)
              ->setUrlParam('Sortierung')
              ->setFrontendName(\Shop::Lang()->get('sorting', 'productOverview'));
+        $this->activeSortingType = (int)$this->getConfig('artikeluebersicht')['artikeluebersicht_artikelsortierung'];
+        if (isset($_SESSION['Usersortierung'])) {
+            $mapper                  = new SortingType();
+            $this->activeSortingType = $mapper->mapUserSorting($_SESSION['Usersortierung']);
+        }
+        $_SESSION['Usersortierung'] = $this->activeSortingType;
+        if ($_SESSION['Usersortierung'] === SEARCH_SORT_STANDARD && $this->productFilter->getSort() > 0) {
+            $this->activeSortingType = $this->productFilter->getSort();
+        }
+    }
+
+    /**
+     * @return SortingOptionInterface
+     */
+    public function getActiveSorting(): SortingOptionInterface
+    {
+        return $this->factory->getSortingOption($this->activeSortingType);
+    }
+
+    /**
+     * @return Factory
+     */
+    public function getFactory(): Factory
+    {
+        return $this->factory;
+    }
+
+    /**
+     * @param Factory $factory
+     */
+    public function setFactory(Factory $factory)
+    {
+        $this->factory = $factory;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getSortingOptions(): Collection
+    {
+        return $this->sortingOptions;
+    }
+
+    /**
+     * @param Collection $sortingOptions
+     */
+    public function setSortingOptions(Collection $sortingOptions)
+    {
+        $this->sortingOptions = $sortingOptions;
+    }
+
+    /**
+     * @return int
+     */
+    public function getActiveSortingType(): int
+    {
+        return $this->activeSortingType;
+    }
+
+    /**
+     * @param int $activeSortingType
+     */
+    public function setActiveSortingType(int $activeSortingType)
+    {
+        $this->activeSortingType = $activeSortingType;
+    }
+
+    /**
+     * @throws \LogicException
+     */
+    public function registerSortingOptions()
+    {
+        if ($this->factory === null) {
+            throw new \LogicException('Factory has to be set first.');
+        }
+        $sortingOptions = $this->factory->getAll();
+        $this->sortingOptions = $sortingOptions->sortByDesc(function (SortingOptionInterface $i) {
+            return $i->getPriority();
+        });
     }
 
     /**
@@ -57,20 +161,23 @@ class ItemSort extends AbstractFilter
         }
         $options          = [];
         $additionalFilter = new self($this->productFilter);
-        foreach ($this->productFilter->getMetaData()->getSortingOptions() as $i => $sortingOption) {
+        $activeSortType   = $_SESSION['Usersortierung'] ?? -1;
+        foreach ($this->sortingOptions as $i => $sortingOption) {
+            if (get_class($sortingOption) === SortDefault::class) {
+                continue;
+            }
+            /** @var SortingOptionInterface $sortingOption */
+            $value     = $sortingOption->getValue();
             $options[] = (new FilterOption())
-                ->setIsActive(isset($_SESSION['Usersortierung'])
-                    && $_SESSION['Usersortierung'] === (int)$sortingOption->value
-                )
+                ->setIsActive($activeSortType === $value)
                 ->setURL($this->productFilter->getFilterURL()->getURL(
-                    $additionalFilter->init((int)$sortingOption->value)
+                    $additionalFilter->init($value)
                 ))
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
                 ->setParam($this->getUrlParam())
-                ->setName($sortingOption->angezeigterName)
-                ->setValue((int)$sortingOption->value)
-                ->setCount(null)
+                ->setName($sortingOption->getName())
+                ->setValue($value)
                 ->setSort($i);
         }
         $this->options = $options;

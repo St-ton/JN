@@ -8,17 +8,16 @@
         {$fehler}
     </div>
 {/if}
-
-{if isset($Einstellungen.global.global_versandermittlung_anzeigen) &&
-    $Einstellungen.global.global_versandermittlung_anzeigen === 'Y' &&
-    isset($smarty.session.Warenkorb->PositionenArr) && $smarty.session.Warenkorb->PositionenArr|@count > 0}
-    <form method="post"
-          action="{if !empty($linkgroups->Link_Versandseite.$lang)}{$ShopURL}/{$linkgroups->Link_Versandseite.$lang}{else}index.php{/if}{if $bExclusive}?exclusive_content=1{/if}"
-          class="form form-inline evo-validate" id="shipping-calculator-form">
-        {$jtl_token}
-        <input type="hidden" name="s" value="{$Link->kLink}" />
-        {include file='snippets/shipping_calculator.tpl' checkout=false}
-    </form>
-{else}
-    {lang key="estimateShippingCostsNote" section="global"}
+{if isset($Einstellungen.global.global_versandermittlung_anzeigen) && $Einstellungen.global.global_versandermittlung_anzeigen === 'Y'}
+    {if isset($smarty.session.Warenkorb->PositionenArr) && $smarty.session.Warenkorb->PositionenArr|@count > 0}
+        <form method="post"
+              action="{if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}{else}index.php{/if}{if $bExclusive}?exclusive_content=1{/if}"
+              class="form form-inline evo-validate" id="shipping-calculator-form">
+            {$jtl_token}
+            <input type="hidden" name="s" value="{$Link->getID()}" />
+            {include file='snippets/shipping_calculator.tpl' checkout=false}
+        </form>
+    {else}
+        {lang key='estimateShippingCostsNote' section='global'}
+    {/if}
 {/if}

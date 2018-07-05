@@ -11,12 +11,12 @@ class AttributeHelper
 {
     /**
      * @param string        $attribute
-     * @param string        $value
+     * @param string|int    $value
      * @param callable|null $callback
      * @return mixed
      * @since 5.0
      */
-    public static function getDataByAttribute($attribute, $value, callable $callback = null)
+    public static function getDataByAttribute(string $attribute, $value, callable $callback = null)
     {
         $res = Shop::Container()->getDB()->select('tmerkmal', $attribute, $value);
 
@@ -26,12 +26,12 @@ class AttributeHelper
     }
     /**
      * @param string        $attribute
-     * @param string        $value
+     * @param string|int    $value
      * @param callable|null $callback
      * @return mixed
      * @since 5.0
      */
-    public static function getAtrributeByAttribute($attribute, $value, callable $callback = null)
+    public static function getAtrributeByAttribute(string $attribute, $value, callable $callback = null)
     {
         $att = ($res = self::getDataByAttribute($attribute, $value)) !== null
             ? new Merkmal($res->kMerkmal)

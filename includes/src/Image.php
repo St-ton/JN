@@ -3,6 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
 use Imanee\Imanee;
 
 /**
@@ -13,12 +14,12 @@ class Image
     /**
      * Image types
      */
-    const TYPE_PRODUCT         = 'product';
-    const TYPE_CATEGORY        = 'category';
-    const TYPE_CONFIGGROUP     = 'configgroup';
-    const TYPE_VARIATION       = 'variation';
-    const TYPE_MANUFACTURER    = 'manufacturer';
-    const TYPE_ATTRIBUTE       = 'attribute';
+    const TYPE_PRODUCT = 'product';
+    const TYPE_CATEGORY = 'category';
+    const TYPE_CONFIGGROUP = 'configgroup';
+    const TYPE_VARIATION = 'variation';
+    const TYPE_MANUFACTURER = 'manufacturer';
+    const TYPE_ATTRIBUTE = 'attribute';
     const TYPE_ATTRIBUTE_VALUE = 'attributevalue';
 
     /**
@@ -89,20 +90,18 @@ class Image
      * @param string $path filepath
      * @param string $type produkt, hersteller, ..
      * @param int    $number
-     * @return int foreign key
+     * @return stdClass|null
      */
-    public static function getByPath($path, $type, $number = 1)
+    public static function getByPath($path, $type, int $number = 1)
     {
-        $number = (int)$number;
-        $path   = Shop::Container()->getDB()->escape($path);
-        $item   = Shop::Container()->getDB()->executeQueryPrepared(
-            "SELECT kArtikel AS id, nNr AS number, cPfad AS path 
+        $item = Shop::Container()->getDB()->queryPrepared(
+            'SELECT kArtikel AS id, nNr AS number, cPfad AS path 
                 FROM tartikelpict 
                 WHERE cPfad = :path 
-                AND nNr = :nr 
-                LIMIT 1",
+                    AND nNr = :nr 
+                LIMIT 1',
             ['path' => $path, 'nr' => $number],
-            1
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         return is_object($item) ? $item : null;
@@ -116,18 +115,17 @@ class Image
      * @param int    $id
      * @param string $type produkt, hersteller, ..
      * @param int    $number
-     * @return int foreign key
+     * @return stdClass|null
      */
-    public static function getById($id, $type, $number = 1)
+    public static function getById(int $id, $type, int $number = 1)
     {
-        $id     = (int)$id;
-        $number = (int)$number;
-        $item   = Shop::Container()->getDB()->query("
-            SELECT kArtikel AS id, nNr AS number, cPfad AS path 
+        $item = Shop::Container()->getDB()->queryPrepared(
+            'SELECT kArtikel AS id, nNr AS number, cPfad AS path 
                 FROM tartikelpict 
-                WHERE kArtikel = '{$id}' 
-                    AND nNr = '{$number}' 
-                ORDER BY nNr LIMIT 1",
+                WHERE kArtikel = :aid 
+                    AND nNr = :num 
+                ORDER BY nNr LIMIT 1',
+            ['aid' => $id, 'num' => $number],
             \DB\ReturnType::SINGLE_OBJECT
         );
 
@@ -171,7 +169,7 @@ class Image
                         'height' => (int)$settings['bilder_artikel_gross_hoehe']
                     ]
                 ],
-                'naming'   => [
+                'naming'     => [
                     self::TYPE_PRODUCT   => (int)$settings['bilder_artikel_namen'],
                     self::TYPE_CATEGORY  => (int)$settings['bilder_kategorie_namen'],
                     self::TYPE_VARIATION => (int)$settings['bilder_variation_namen']
@@ -193,11 +191,8 @@ class Image
     {
         $size   = strtolower($size);
         $mapper = $flip ? array_flip(self::$sizeMapper) : self::$sizeMapper;
-        if (array_key_exists($size, $mapper)) {
-            return $mapper[$size];
-        }
-
-        return null;
+        
+        return $mapper[$size] ?? null;
     }
 
     /**
@@ -211,11 +206,8 @@ class Image
     {
         $type   = strtolower($type);
         $mapper = $flip ? array_flip(self::$typeMapper) : self::$typeMapper;
-        if (array_key_exists($type, $mapper)) {
-            return $mapper[$type];
-        }
-
-        return null;
+        
+        return $mapper[$type] ?? null;
     }
 
     /**
@@ -229,11 +221,8 @@ class Image
     {
         $position = strtolower($position);
         $mapper   = $flip ? array_flip(self::$positionMapper) : self::$positionMapper;
-        if (array_key_exists($position, $mapper)) {
-            return $mapper[$position];
-        }
-
-        return null;
+        
+        return $mapper[$position] ?? null;
     }
 
     /**
@@ -242,17 +231,17 @@ class Image
      * @todo Caching
      * @return array
      */
-    private static function getBranding()
+    private static function getBranding(): array
     {
         $branding    = [];
         $brandingTmp = Shop::Container()->getDB()->query(
-            "SELECT tbranding.cBildKategorie AS type, 
+            'SELECT tbranding.cBildKategorie AS type, 
             tbrandingeinstellung.cPosition AS position, tbrandingeinstellung.cBrandingBild AS path,
             tbrandingeinstellung.dTransparenz AS transparency, tbrandingeinstellung.dGroesse AS size
                 FROM tbrandingeinstellung
                 INNER JOIN tbranding 
                     ON tbrandingeinstellung.kBranding = tbranding.kBranding
-                WHERE tbrandingeinstellung.nAktiv = 1",
+                WHERE tbrandingeinstellung.nAktiv = 1',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
 
@@ -272,7 +261,7 @@ class Image
      * @param string $filepath
      * @return int|string
      */
-    public static function getMimeType($filepath)
+    public static function getMimeType(string $filepath)
     {
         $type = self::getImageType($filepath);
 
@@ -285,18 +274,16 @@ class Image
      * @param string $filepath
      * @return int|null
      */
-    public static function getImageType($filepath)
+    public static function getImageType(string $filepath)
     {
         if (function_exists('exif_imagetype')) {
             return exif_imagetype($filepath);
         }
-
         $info = getimagesize($filepath);
-        if (is_array($info) && isset($info['type'])) {
-            return $info['type'];
-        }
 
-        return null;
+        return is_array($info) && isset($info['type'])
+            ? $info['type']
+            : null;
     }
 
     /**
@@ -304,7 +291,7 @@ class Image
      * @param object $mixed
      * @return string
      */
-    public static function getCustomName($type, $mixed)
+    public static function getCustomName(string $type, $mixed): string
     {
         $result   = '';
         $settings = self::getSettings();
@@ -344,7 +331,7 @@ class Image
      * @param string $filename
      * @return string
      */
-    public static function getCleanFilename($filename)
+    public static function getCleanFilename(string $filename): string
     {
         $filename = strtolower($filename);
 
@@ -357,7 +344,7 @@ class Image
 
     /**
      * @param MediaImageRequest $req
-     * @param Imanee $rawImage
+     * @param Imanee            $rawImage
      * @return string
      * @throws Exception
      * @throws \Imanee\Exception\UnsupportedFormatException
@@ -392,8 +379,7 @@ class Image
                 ->newImage($width, $height, $background)
                 ->setFormat($settings['format'])
                 ->placeImage($imanee, Imanee::IM_POS_MID_CENTER, $width, $height);
-        }
-        else {
+        } else {
             $imanee = (new Imanee())
                 ->newImage($imanee->getWidth(), $imanee->getHeight(), $background)
                 ->setFormat($settings['format'])
@@ -423,7 +409,7 @@ class Image
 
         $req->ext  = $settings['format'];
         $thumbnail = $req->getThumb(null, true);
-        $directory  = pathinfo($thumbnail, PATHINFO_DIRNAME);
+        $directory = pathinfo($thumbnail, PATHINFO_DIRNAME);
 
         if (!is_dir($directory) && !mkdir($directory, 0777, true)) {
             $error = error_get_last();
@@ -447,7 +433,7 @@ class Image
 
     /**
      * @param MediaImageRequest $req
-     * @param null $error
+     * @param null              $error
      * @throws \Imanee\Exception\UnsupportedMethodException
      * @return Imanee
      */

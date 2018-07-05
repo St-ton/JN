@@ -17,7 +17,7 @@ $cFehler       = '';
 
 setzeSprache();
 
-if (isset($_POST['speichern']) && validateToken()) {
+if (isset($_POST['speichern']) && FormHelper::validateToken()) {
     $cHinweis .= saveAdminSectionSettings(CONF_NAVIGATIONSFILTER, $_POST);
     Shop::Cache()->flushTags([CACHING_GROUP_CATEGORY]);
     if (is_array($_POST['nVon'])
@@ -26,7 +26,7 @@ if (isset($_POST['speichern']) && validateToken()) {
         && count($_POST['nBis']) > 0
     ) {
         // Tabelle leeren
-        Shop::Container()->getDB()->query("TRUNCATE TABLE tpreisspannenfilter", 3);
+        Shop::Container()->getDB()->query("TRUNCATE TABLE tpreisspannenfilter", \DB\ReturnType::AFFECTED_ROWS);
 
         foreach ($_POST['nVon'] as $i => $nVon) {
             $nVon = (float)$nVon;
@@ -67,11 +67,14 @@ foreach ($oConfig_arr as $oConfig) {
     $oConfig->gesetzterWert = $oSetValue->cWert ?? null;
 }
 
-$oPreisspannenfilter_arr = Shop::Container()->getDB()->query("SELECT * FROM tpreisspannenfilter", 2);
+$oPreisspannenfilter_arr = Shop::Container()->getDB()->query(
+    'SELECT * FROM tpreisspannenfilter',
+    \DB\ReturnType::ARRAY_OF_OBJECTS
+);
 
 $smarty->assign('oConfig_arr', $oConfig_arr)
        ->assign('oPreisspannenfilter_arr', $oPreisspannenfilter_arr)
-       ->assign('Sprachen', gibAlleSprachen())
+       ->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->display('navigationsfilter.tpl');

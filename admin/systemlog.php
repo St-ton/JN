@@ -14,27 +14,27 @@ $oAccount->permission('SYSTEMLOG_VIEW', true, true);
 $cHinweis    = '';
 $cFehler     = '';
 $minLogLevel = Shop::getConfigValue(CONF_GLOBAL, 'systemlog_flag');
-if (validateToken()) {
-    if (verifyGPDataString('action') === 'clearsyslog') {
+if (FormHelper::validateToken()) {
+    if (RequestHelper::verifyGPDataString('action') === 'clearsyslog') {
         Jtllog::deleteAll();
-        $cHinweis = 'Ihr Systemlog wurde erfolgreich gel&ouml;scht.';
-    } elseif (verifyGPDataString('action') === 'save') {
+        $cHinweis = 'Ihr Systemlog wurde erfolgreich gelöscht.';
+    } elseif (RequestHelper::verifyGPDataString('action') === 'save') {
         $minLogLevel = (int)($_POST['minLogLevel'] ?? 0);
         Shop::Container()->getDB()->update('teinstellungen', 'cName', 'systemlog_flag', (object)['cWert' => $minLogLevel]);
         Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
         $cHinweis = 'Ihre Einstellungen wurden erfolgreich gespeichert.';
         $smarty->assign('cTab', 'config');
-    } elseif (verifyGPDataString('action') === 'delselected') {
+    } elseif (RequestHelper::verifyGPDataString('action') === 'delselected') {
         if (isset($_REQUEST['selected'])) {
             foreach ($_REQUEST['selected'] as $kLog) {
                 $oLog = new Jtllog($kLog);
                 if ($oLog->delete() === -1) {
-                    $cFehler .= 'Log-Eintrag vom ' . $oLog->getErstellt() . ' konnte nicht gel&ouml;scht werden.<br>';
+                    $cFehler .= 'Log-Eintrag vom ' . $oLog->getErstellt() . ' konnte nicht gelöscht werden.<br>';
                 }
             }
 
             if ($cFehler === '') {
-                $cHinweis = 'Alle markierten Log-Eintr&auml;ge wurden gel&ouml;scht.';
+                $cHinweis = 'Alle markierten Log-Einträge wurden gelöscht.';
             }
         }
     }
@@ -42,17 +42,17 @@ if (validateToken()) {
 
 $oFilter      = new Filter('syslog');
 $oLevelSelect = $oFilter->addSelectfield('Loglevel', 'nLevel');
-$oLevelSelect->addSelectOption('alle', '');
-$oLevelSelect->addSelectOption('Fehler', '1', 4);
-$oLevelSelect->addSelectOption('Hinweis', '2', 4);
-$oLevelSelect->addSelectOption('Debug', '4', 4);
+$oLevelSelect->addSelectOption('alle', 0);
+$oLevelSelect->addSelectOption('Debug', \Monolog\Logger::DEBUG, 4);
+$oLevelSelect->addSelectOption('Hinweis', \Monolog\Logger::INFO, 4);
+$oLevelSelect->addSelectOption('Fehler', \Monolog\Logger::ERROR, 8);
 $oFilter->addDaterangefield('Zeitraum', 'dErstellt');
 $oSearchfield = $oFilter->addTextfield('Suchtext', 'cLog', 1);
 $oFilter->assemble();
 
 $cSearchString     = $oSearchfield->getValue();
 $nSelectedLevel    = $oLevelSelect->getSelectedOption()->getValue();
-$nTotalLogCount    = Jtllog::getLogCount('');
+$nTotalLogCount    = Jtllog::getLogCount(0);
 $nFilteredLogCount = Jtllog::getLogCount($cSearchString, $nSelectedLevel);
 
 $oPagination = (new Pagination('syslog'))

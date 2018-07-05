@@ -4,15 +4,29 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+/**
+ * Class FilterSelectOption
+ */
 class FilterSelectOption
 {
-    protected $cTitle  = '';
-    protected $cValue  = '';
+    /**
+     * @var string
+     */
+    protected $cTitle = '';
+
+    /**
+     * @var string
+     */
+    protected $cValue = '';
+
+    /**
+     * @var int
+     */
     protected $nTestOp = 0;
 
     /**
      * FilterSelectOption constructor.
-     * 
+     *
      * @param string $cTitle
      * @param string $cValue
      * @param int    $nTestOp
@@ -27,7 +41,7 @@ class FilterSelectOption
     /**
      * @return string
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->cTitle;
     }
@@ -35,7 +49,7 @@ class FilterSelectOption
     /**
      * @return string
      */
-    public function getValue()
+    public function getValue(): string
     {
         return $this->cValue;
     }
@@ -43,7 +57,7 @@ class FilterSelectOption
     /**
      * @return int
      */
-    public function getTestOp()
+    public function getTestOp(): int
     {
         return (int)$this->nTestOp;
     }

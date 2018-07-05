@@ -89,7 +89,7 @@ class Zend_Validate_File_Upload extends Zend_Validate_Abstract
     /**
      * Returns the array of set files
      *
-     * @param  string $files (Optional) The file to return in detail
+     * @param  string $file (Optional) The file to return in detail
      * @return array
      * @throws Zend_Validate_Exception If file is not found
      */

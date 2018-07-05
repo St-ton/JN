@@ -18,8 +18,8 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
         $cParameter_arr['kArtikel'],
         Session::Customer()->getID(),
         Shop::getLanguage(),
-        verifyGPDataString('cTitel'),
-        verifyGPDataString('cText'),
+        RequestHelper::verifyGPDataString('cTitel'),
+        RequestHelper::verifyGPDataString('cText'),
         $cParameter_arr['nSterne']
     );
 } elseif (isset($_POST['bhjn']) && (int)$_POST['bhjn'] === 1) { // Hilfreich abspeichern
@@ -27,15 +27,15 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
         $cParameter_arr['kArtikel'],
         Session::Customer()->getID(),
         Shop::getLanguage(),
-        verifyGPCDataInteger('btgseite'),
-        verifyGPCDataInteger('btgsterne')
+        RequestHelper::verifyGPCDataInt('btgseite'),
+        RequestHelper::verifyGPCDataInt('btgsterne')
     );
-} elseif (verifyGPCDataInteger('bfa') === 1) {
+} elseif (RequestHelper::verifyGPCDataInt('bfa') === 1) {
     // Prüfe, ob Kunde eingeloggt
     if (empty($_SESSION['Kunde']->kKunde)) {
-        $helper = LinkHelper::getInstance();
+        $helper = Shop::Container()->getLinkService();
         header('Location: ' . $helper->getStaticRoute('jtl.php') .
-                '?a=' . verifyGPCDataInteger('a') .
+                '?a=' . RequestHelper::verifyGPCDataInt('a') .
                 '&bfa=1&r=' . R_LOGIN_BEWERTUNG,
             true,
             303
@@ -51,8 +51,6 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
         exit;
     }
     $AufgeklappteKategorien = new KategorieListe();
-    $startKat               = new Kategorie();
-    $startKat->kKategorie   = 0;
     if ($AktuellerArtikel->Bewertungen === null) {
         $AktuellerArtikel->holeBewertung(
             Shop::getLanguage(),
@@ -74,15 +72,7 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
     Shop::Smarty()->assign('BereitsBewertet', pruefeKundeArtikelBewertet(
         $AktuellerArtikel->kArtikel,
         $_SESSION['Kunde']->kKunde))
-        ->assign('Navigation', createNavigation(
-            $AktuelleSeite,
-            0,
-            0,
-            Shop::Lang()->get('bewertung', 'breadcrumb'),
-            'bewertung.php?a=' . $AktuellerArtikel->kArtikel . '&bfa=1'))
         ->assign('Artikel', $AktuellerArtikel)
-        ->assign('requestURL', $requestURL ?? null)
-        ->assign('sprachURL', $sprachURL ?? null)
         ->assign('oBewertung', Shop::Container()->getDB()->select(
             'tbewertung',
             ['kArtikel', 'kKunde'],

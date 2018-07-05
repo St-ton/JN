@@ -55,9 +55,14 @@ class FilterOption extends AbstractFilter
     private $data = [];
 
     /**
+     * @var int
+     */
+    public $nAktiv = 0;
+
+    /**
      * @var array
      */
-    private static $mapping = [
+    public static $mapping = [
         'cName'          => 'Name',
         'nAnzahl'        => 'Count',
         'nAnzahlArtikel' => 'Count',
@@ -107,7 +112,7 @@ class FilterOption extends AbstractFilter
     /**
      * @return string
      */
-    public function getClass()
+    public function getClass(): string
     {
         return $this->class;
     }
@@ -124,9 +129,9 @@ class FilterOption extends AbstractFilter
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getParam()
+    public function getParam(): string
     {
         return $this->param;
     }
@@ -164,7 +169,7 @@ class FilterOption extends AbstractFilter
     /**
      * @return bool
      */
-    public function getDisableSeoURLs()
+    public function getDisableSeoURLs(): bool
     {
         return $this->disableSeoURLs;
     }

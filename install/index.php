@@ -127,9 +127,9 @@ if ($nCon !== 3 || !$bAnforderungen || !$bVerzeichnisRechte) {
 switch ($step) {
     case 'schritt0':
         $cHinweis = '';
-        if (!(isset($_POST['DBhost'], $_POST['DBuser'], $_POST['installiere']) &&
-            strlen($_POST['DBhost']) > 0 &&
-            strlen($_POST['DBuser']) > 0)
+        if (!(isset($_POST['DBhost'], $_POST['DBuser'], $_POST['installiere'])
+            && strlen($_POST['DBhost']) > 0
+            && strlen($_POST['DBuser']) > 0)
         ) {
             $cHinweis = 'Bitte f&uuml;llen Sie die Datenbankinformationen aus';
         }

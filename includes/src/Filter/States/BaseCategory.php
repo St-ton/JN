@@ -9,7 +9,6 @@ namespace Filter\States;
 use DB\ReturnType;
 use Filter\AbstractFilter;
 use Filter\FilterJoin;
-use Filter\FilterOption;
 use Filter\FilterInterface;
 use Filter\Items\ItemCategory;
 use Filter\ProductFilter;
@@ -25,7 +24,7 @@ class BaseCategory extends AbstractFilter
     /**
      * @var array
      */
-    private static $mapping = [
+    public static $mapping = [
         'kKategorie' => 'ValueCompat',
         'cName'      => 'Name'
     ];

@@ -84,7 +84,7 @@ class PayPal extends PaymentMethod
         }
         $cCountryISO = $oLieferadresse->cLand;
         if (strlen($cCountryISO) > 2) {
-            $cCountryISO = landISO($cCountryISO);
+            $cCountryISO = Sprache::getIsoCodeByCountryName($cCountryISO);
         }
 
         $cancelUrl = Shop::getURL();

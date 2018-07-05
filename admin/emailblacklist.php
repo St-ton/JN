@@ -17,12 +17,12 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $cHinweis .= saveAdminSectionSettings(CONF_EMAILBLACKLIST, $_POST);
 }
 // Kundenfelder
-if (isset($_POST['emailblacklist']) && (int)$_POST['emailblacklist'] === 1 && validateToken()) {
+if (isset($_POST['emailblacklist']) && (int)$_POST['emailblacklist'] === 1 && FormHelper::validateToken()) {
     // Speichern
     $cEmail_arr = explode(';', $_POST['cEmail']);
 
     if (is_array($cEmail_arr) && count($cEmail_arr) > 0) {
-        Shop::Container()->getDB()->query("TRUNCATE temailblacklist", 3);
+        Shop::Container()->getDB()->query("TRUNCATE temailblacklist", \DB\ReturnType::AFFECTED_ROWS);
 
         foreach ($cEmail_arr as $cEmail) {
             $cEmail = strip_tags(trim($cEmail));
@@ -65,16 +65,21 @@ for ($i = 0; $i < $configCount; $i++) {
 }
 
 // Emails auslesen und in Smarty assignen
-$oEmailBlacklist_arr = Shop::Container()->getDB()->query("SELECT * FROM temailblacklist", 2);
+$oEmailBlacklist_arr = Shop::Container()->getDB()->query(
+    "SELECT * 
+        FROM temailblacklist",
+    \DB\ReturnType::ARRAY_OF_OBJECTS
+);
 // Geblockte Emails auslesen und assignen
-$oEmailBlacklistBlock_arr = Shop::Container()->getDB()->query("
-    SELECT *, DATE_FORMAT(dLetzterBlock, '%d.%m.%Y %H:%i') AS Datum
+$oEmailBlacklistBlock_arr = Shop::Container()->getDB()->query(
+    "SELECT *, DATE_FORMAT(dLetzterBlock, '%d.%m.%Y %H:%i') AS Datum
         FROM temailblacklistblock
         ORDER BY dLetzterBlock DESC
-        LIMIT 100", 2
+        LIMIT 100",
+    \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 
-$smarty->assign('Sprachen', gibAlleSprachen())
+$smarty->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('oEmailBlacklist_arr', is_array($oEmailBlacklist_arr) ? $oEmailBlacklist_arr : [])
        ->assign('oEmailBlacklistBlock_arr', is_array($oEmailBlacklistBlock_arr) ? $oEmailBlacklistBlock_arr : [])
        ->assign('oConfig_arr', $oConfig_arr)

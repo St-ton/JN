@@ -8,13 +8,13 @@
  * @param array $cPost_arr
  * @return bool
  */
-function pruefeEingabe($cPost_arr)
+function pruefeEingabe(array $cPost_arr)
 {
     $cVorname  = StringHandler::filterXSS($cPost_arr['cVorname']);
     $cNachname = StringHandler::filterXSS($cPost_arr['cNachname']);
     $cEmail    = StringHandler::filterXSS($cPost_arr['cEmail']);
 
-    return (strlen($cVorname) > 0 && strlen($cNachname) > 0 && valid_email($cEmail));
+    return strlen($cVorname) > 0 && strlen($cNachname) > 0 && StringHandler::filterEmailAddress($cEmail) !== false;
 }
 
 /**
@@ -22,7 +22,7 @@ function pruefeEingabe($cPost_arr)
  * @param array $Einstellungen
  * @return bool
  */
-function setzeKwKinDB($cPost_arr, $Einstellungen)
+function setzeKwKinDB(array $cPost_arr, array $Einstellungen)
 {
     if ($Einstellungen['kundenwerbenkunden']['kwk_nutzen'] !== 'Y') {
         return false;
@@ -59,14 +59,18 @@ function setzeKwKinDB($cPost_arr, $Einstellungen)
  * @param float $fGuthaben
  * @return bool
  */
-function gibBestandskundeGutbaben($kKunde, $fGuthaben)
+function gibBestandskundeGutbaben(int $kKunde, $fGuthaben)
 {
-    $kKunde = (int)$kKunde;
     if ($kKunde > 0) {
-        Shop::Container()->getDB()->query("
-            UPDATE tkunde 
-                SET fGuthaben = fGuthaben + " . (float)$fGuthaben . " 
-                WHERE kKunde = " . $kKunde, 3
+        Shop::Container()->getDB()->queryPrepared(
+            'UPDATE tkunde 
+                SET fGuthaben = fGuthaben + :bal 
+                WHERE kKunde = :cid',
+            [
+                'bal' => (float)$fGuthaben,
+                'cid' => $kKunde
+            ],
+            \DB\ReturnType::AFFECTED_ROWS
         );
 
         return true;

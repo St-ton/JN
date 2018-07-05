@@ -26,7 +26,7 @@
         <select name="cDatum" onchange="this.form.submit();" class="form-control form-group" aria-label="{lang key='newsDateFilter' section='news'}">
             <option value="-1"{if $cDatum == -1} selected{/if}>{lang key='newsDateFilter' section='news'}</option>
             {if !empty($oDatum_arr)}
-                {foreach name="datum" from=$oDatum_arr item=oDatum}
+                {foreach $oDatum_arr as $oDatum}
                     <option value="{$oDatum->cWert}"{if $cDatum == $oDatum->cWert} selected{/if}>{$oDatum->cName}</option>
                 {/foreach}
             {/if}
@@ -36,7 +36,7 @@
         <select name="nNewsKat" onchange="this.form.submit();" class="form-control form-group" aria-label="{lang key='newsCategorie' section='news'}">
             <option value="-1"{if $nNewsKat == -1} selected{/if}>{lang key='newsCategorie' section='news'}</option>
             {if !empty($oNewsKategorie_arr)}
-                {foreach name="newskats" from=$oNewsKategorie_arr item=oNewsKategorie}
+                {foreach $oNewsKategorie_arr as $oNewsKategorie}
                     {if $nNewsKat == $oNewsKategorie->kNewsKategorie}{assign var='oCurNewsCat' value=$oNewsKategorie}{/if}
                     <option value="{$oNewsKategorie->kNewsKategorie}"{if $nNewsKat == $oNewsKategorie->kNewsKategorie} selected{/if}>{$oNewsKategorie->cName}</option>
                 {/foreach}
@@ -76,7 +76,7 @@
             <hr>
             {include file='snippets/pagination.tpl' oPagination=$oPagination cThisUrl='news.php' parts=['label']}
         {/if}
-        {foreach name=uebersicht from=$oNewsUebersicht_arr item=oNewsUebersicht}
+        {foreach $oNewsUebersicht_arr as $oNewsUebersicht}
             {include file='blog/preview.tpl'}
         {/foreach}
     </div>

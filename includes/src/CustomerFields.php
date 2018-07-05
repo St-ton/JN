@@ -30,7 +30,7 @@ class CustomerFields
      * CustomerFields constructor.
      * @param int $langID
      */
-    public function __construct($langID)
+    public function __construct(int $langID)
     {
         $this->langID = $langID;
         $this->loadFields($langID);
@@ -58,7 +58,7 @@ class CustomerFields
     /**
      * @param int $langID
      */
-    protected function loadFields($langID)
+    protected function loadFields(int $langID)
     {
         $this->customerFields = [];
         $customerFields       = Shop::Container()->getDB()->selectAll('tkundenfeld', 'kSprache', $langID, '*', 'nSort ASC');
@@ -89,14 +89,14 @@ class CustomerFields
      */
     public function getCustomerFields()
     {
-        return deepCopy($this->customerFields);
+        return ObjectHelper::deepCopy($this->customerFields);
     }
 
     /**
      * @param int $kCustomerField
      * @return null|object
      */
-    public function getCustomerField($kCustomerField)
+    public function getCustomerField(int $kCustomerField)
     {
         return $this->customerFields[$kCustomerField] ?? null;
     }
@@ -126,10 +126,8 @@ class CustomerFields
      * @param int $kCustomerField
      * @return bool
      */
-    public function delete($kCustomerField)
+    public function delete(int $kCustomerField)
     {
-        $kCustomerField = (int)$kCustomerField;
-
         if ($kCustomerField !== 0) {
             $ret = Shop::Container()->getDB()->delete('tkundenattribut', 'kKundenfeld', $kCustomerField) >= 0
                 && Shop::Container()->getDB()->delete('tkundenfeldwert', 'kKundenfeld', $kCustomerField) >= 0
@@ -198,9 +196,7 @@ class CustomerFields
             $oldType                    = $this->customerFields[$key]->cTyp;
             $this->customerFields[$key] = clone $customerField;
             // this entities are not changeable
-            unset($customerField->kKundenfeld);
-            unset($customerField->kSprache);
-            unset($customerField->cWawi);
+            unset($customerField->kKundenfeld, $customerField->kSprache, $customerField->cWawi);
 
             $ret = Shop::Container()->getDB()->update('tkundenfeld', 'kKundenfeld', $key, $customerField) >= 0;
 

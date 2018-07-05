@@ -6,7 +6,6 @@
 
 namespace Filter\Items;
 
-use Filter\AbstractFilter;
 use Filter\FilterInterface;
 use Filter\Type;
 use Filter\ProductFilter;
@@ -29,9 +28,9 @@ class ItemManufacturer extends BaseManufacturer
         $this->setIsCustom(false)
              ->setUrlParam('hf')
              ->setUrlParamSEO(SEP_HST)
-             ->setVisibility($this->getConfig()['navigationsfilter']['allgemein_herstellerfilter_benutzen'])
+             ->setVisibility($this->getConfig('navigationsfilter')['allgemein_herstellerfilter_benutzen'])
              ->setFrontendName(\Shop::Lang()->get('allManufacturers'))
-             ->setType($this->getConfig()['navigationsfilter']['manufacturer_filter_type'] === 'O'
+             ->setType($this->getConfig('navigationsfilter')['manufacturer_filter_type'] === 'O'
                  ? Type::OR()
                  : Type::AND());
     }
@@ -42,7 +41,7 @@ class ItemManufacturer extends BaseManufacturer
      */
     public function setValue($value): FilterInterface
     {
-        $this->value = is_array($value) ? $value : (int)$value;
+        $this->value = is_array($value) ? array_map('intval', $value) : (int)$value;
 
         return $this;
     }

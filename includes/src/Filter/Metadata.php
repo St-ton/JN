@@ -7,10 +7,12 @@
 namespace Filter;
 
 use DB\ReturnType;
+use Filter\Pagination\Info;
 use function Functional\group;
 use function Functional\map;
 use function Functional\reduce_left;
 use function Functional\reindex;
+use Mapper\SortingType;
 use Tightenco\Collect\Support\Collection;
 
 /**
@@ -31,9 +33,9 @@ class Metadata implements MetadataInterface
     private $conf;
 
     /**
-     * @var string
+     * @var array
      */
-    private $breadCrumb = '';
+    private $breadCrumb = [];
 
     /**
      * @var string
@@ -78,7 +80,7 @@ class Metadata implements MetadataInterface
     /**
      * @var array
      */
-    private static $mapping = [
+    public static $mapping = [
         'cMetaTitle'       => 'MetaTitle',
         'cMetaDescription' => 'MetaDescription',
         'cMetaKeywords'    => 'MetaKeywords',
@@ -103,7 +105,7 @@ class Metadata implements MetadataInterface
     /**
      * @inheritdoc
      */
-    public function getBreadCrumb(): string
+    public function getBreadCrumb(): array
     {
         return $this->breadCrumb;
     }
@@ -320,70 +322,33 @@ class Metadata implements MetadataInterface
     /**
      * @inheritdoc
      */
-    public static function getFilteredString($cString, array $oExcludesKeywords_arr): string
+    public static function getFilteredString($cString, array $excludedKeywords): string
     {
         return str_replace(array_map(
             function ($k) {
                 return ' ' . $k . ' ';
             },
-            $oExcludesKeywords_arr
+            $excludedKeywords
         ), ' ', $cString);
     }
 
     /**
      * @inheritdoc
      */
-    public static function getSearchSpecialConfigMapping(array $config): array
+    public function getNavigationInfo(\Kategorie $category = null, \KategorieListe $openCategories = null): MetadataInterface
     {
-        $mapping = [];
-        foreach ($config as $key => $oSuchspecialEinstellung) {
-            switch ($key) {
-                case 'suchspecials_sortierung_bestseller':
-                    $mapping[SEARCHSPECIALS_BESTSELLER] = $oSuchspecialEinstellung;
-                    break;
-                case 'suchspecials_sortierung_sonderangebote':
-                    $mapping[SEARCHSPECIALS_SPECIALOFFERS] = $oSuchspecialEinstellung;
-                    break;
-                case 'suchspecials_sortierung_neuimsortiment':
-                    $mapping[SEARCHSPECIALS_NEWPRODUCTS] = $oSuchspecialEinstellung;
-                    break;
-                case 'suchspecials_sortierung_topangebote':
-                    $mapping[SEARCHSPECIALS_TOPOFFERS] = $oSuchspecialEinstellung;
-                    break;
-                case 'suchspecials_sortierung_inkuerzeverfuegbar':
-                    $mapping[SEARCHSPECIALS_UPCOMINGPRODUCTS] = $oSuchspecialEinstellung;
-                    break;
-                case 'suchspecials_sortierung_topbewertet':
-                    $mapping[SEARCHSPECIALS_TOPREVIEWS] = $oSuchspecialEinstellung;
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        return $mapping;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getNavigationInfo($currentCategory = null, $openCategories = null): MetadataInterface
-    {
-        if ($currentCategory !== null && $this->productFilter->hasCategory()) {
-            $this->category = $currentCategory;
-
+        if ($category !== null && $this->productFilter->hasCategory()) {
+            $this->category = $category;
             if ($this->conf['navigationsfilter']['kategorie_bild_anzeigen'] === 'Y') {
                 $this->name = $this->category->getName();
             } elseif ($this->conf['navigationsfilter']['kategorie_bild_anzeigen'] === 'BT') {
                 $this->name     = $this->category->getName();
                 $this->imageURL = $this->category->getKategorieBild();
             } elseif ($this->conf['navigationsfilter']['kategorie_bild_anzeigen'] === 'B') {
-                $this->imageURL = $currentCategory->getKategorieBild();
+                $this->imageURL = $category->getKategorieBild();
             }
-            $this->breadCrumb = createNavigation('PRODUKTE', $openCategories);
         } elseif ($this->productFilter->hasManufacturer()) {
             $this->manufacturer = new \Hersteller($this->productFilter->getManufacturer()->getValue());
-
             if ($this->conf['navigationsfilter']['hersteller_bild_anzeigen'] === 'Y') {
                 $this->name = $this->manufacturer->getName();
             } elseif ($this->conf['navigationsfilter']['hersteller_bild_anzeigen'] === 'BT') {
@@ -397,13 +362,6 @@ class Metadata implements MetadataInterface
                      ->setMetaDescription($this->manufacturer->cMetaDescription)
                      ->setMetaKeywords($this->manufacturer->cMetaKeywords);
             }
-            $this->breadCrumb = createNavigation(
-                '',
-                '',
-                0,
-                $this->getBreadCrumbName(),
-                $this->productFilter->getFilterURL()->getURL()
-            );
         } elseif ($this->productFilter->hasAttributeValue()) {
             $this->attributeValue = new \MerkmalWert($this->productFilter->getAttributeValue()->getValue());
             if ($this->conf['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'Y') {
@@ -419,24 +377,6 @@ class Metadata implements MetadataInterface
                      ->setMetaDescription($this->attributeValue->cMetaDescription)
                      ->setMetaKeywords($this->attributeValue->cMetaKeywords);
             }
-            $this->breadCrumb = createNavigation(
-                '',
-                '',
-                0,
-                $this->getBreadCrumbName(),
-                $this->productFilter->getFilterURL()->getURL()
-            );
-        } elseif ($this->productFilter->hasTag()
-            || $this->productFilter->hasSearchSpecial()
-            || $this->productFilter->hasSearch()
-        ) {
-            $this->breadCrumb = createNavigation(
-                '',
-                '',
-                0,
-                $this->getBreadCrumbName(),
-                $this->productFilter->getFilterURL()->getURL()
-            );
         }
 
         return $this;
@@ -455,9 +395,8 @@ class Metadata implements MetadataInterface
         $maxLength = !empty($this->conf['metaangaben']['global_meta_maxlaenge_description'])
             ? (int)$this->conf['metaangaben']['global_meta_maxlaenge_description']
             : 0;
-        // Prüfen ob bereits eingestellte Metas gesetzt sind
         if (!empty($this->metaDescription)) {
-            return prepareMeta(
+            return self::prepareMeta(
                 strip_tags($this->metaDescription),
                 null,
                 $maxLength
@@ -470,7 +409,7 @@ class Metadata implements MetadataInterface
             $category = $category ?? new \Kategorie($this->productFilter->getCategory()->getValue());
             if (!empty($category->cMetaDescription)) {
                 // meta description via new method
-                return prepareMeta(
+                return self::prepareMeta(
                     strip_tags($category->cMetaDescription),
                     null,
                     $maxLength
@@ -478,7 +417,7 @@ class Metadata implements MetadataInterface
             }
             if (!empty($category->categoryAttributes['meta_description']->cWert)) {
                 // Hat die aktuelle Kategorie als Kategorieattribut eine Meta Description gesetzt?
-                return prepareMeta(
+                return self::prepareMeta(
                     strip_tags($category->categoryAttributes['meta_description']->cWert),
                     null,
                     $maxLength
@@ -486,7 +425,7 @@ class Metadata implements MetadataInterface
             }
             if (!empty($category->KategorieAttribute['meta_description'])) {
                 /** @deprecated since 4.05 - this is for compatibilty only! */
-                return prepareMeta(
+                return self::prepareMeta(
                     strip_tags($category->KategorieAttribute['meta_description']),
                     null,
                     $maxLength
@@ -522,15 +461,15 @@ class Metadata implements MetadataInterface
                     )
                     : trim($cKatDescription);
                 // Seitenzahl anhaengen ab Seite 2 (Doppelte Meta-Descriptions vermeiden, #5992)
-                if ($searchResults->getPages()->AktuelleSeite > 1
-                    && $searchResults->getOffsetStart() > 0
+                if ($searchResults->getOffsetStart() > 0
                     && $searchResults->getOffsetEnd() > 0
+                    && $searchResults->getPages()->getCurrentPage() > 1
                 ) {
                     $cMetaDescription .= ', ' . \Shop::Lang()->get('products') .
                         " {$searchResults->getOffsetStart()} - {$searchResults->getOffsetEnd()}";
                 }
 
-                return prepareMeta($cMetaDescription, null, $maxLength);
+                return self::prepareMeta($cMetaDescription, null, $maxLength);
             }
         }
         // Keine eingestellten Metas vorhanden => generiere Standard Metas
@@ -554,25 +493,24 @@ class Metadata implements MetadataInterface
                 ' ' . $cArtikelName
                 : $this->getMetaStart($searchResults) . ': ' . $cArtikelName;
             // Seitenzahl anhaengen ab Seite 2 (Doppelte Meta-Descriptions vermeiden, #5992)
-            if ($searchResults->getPages()->AktuelleSeite > 1
-                && $searchResults->getOffsetStart() > 0
+            if ($searchResults->getOffsetStart() > 0
                 && $searchResults->getOffsetEnd() > 0
+                && $searchResults->getPages()->getCurrentPage() > 1
             ) {
                 $cMetaDescription .= ', ' . \Shop::Lang()->get('products') . ' ' .
                     $searchResults->getOffsetStart() . ' - ' . $searchResults->getOffsetEnd();
             }
         }
 
-        return prepareMeta(strip_tags($cMetaDescription), null, $maxLength);
+        return self::prepareMeta(strip_tags($cMetaDescription), null, $maxLength);
     }
 
     /**
      * @inheritdoc
      */
-    public function generateMetaKeywords($products, $category = null): string
+    public function generateMetaKeywords($products, \Kategorie $category = null): string
     {
         executeHook(HOOK_FILTER_INC_GIBNAVIMETAKEYWORDS);
-        // Prüfen ob bereits eingestellte Metas gesetzt sind
         if (!empty($this->metaKeywords)) {
             return strip_tags($this->metaKeywords);
         }
@@ -598,16 +536,16 @@ class Metadata implements MetadataInterface
         $cMetaKeywords = '';
         if (is_array($products) && count($products) > 0) {
             shuffle($products); // Shuffle alle Artikel
-            $nCount                = min(6, count($products));
-            $cArtikelName          = '';
-            $excludes              = self::getExcludes();
-            $oExcludesKeywords_arr = isset($excludes[$_SESSION['cISOSprache']]->cKeywords)
+            $nCount           = min(6, count($products));
+            $cArtikelName     = '';
+            $excludes         = self::getExcludes();
+            $excludedKeywords = isset($excludes[$_SESSION['cISOSprache']]->cKeywords)
                 ? explode(' ', $excludes[$_SESSION['cISOSprache']]->cKeywords)
                 : [];
             for ($i = 0; $i < $nCount; ++$i) {
                 $cExcArtikelName = self::getFilteredString(
                     $products[$i]->cName,
-                    $oExcludesKeywords_arr
+                    $excludedKeywords
                 ); // Filter nicht erlaubte Keywords
                 if (strpos($cExcArtikelName, ' ') !== false) {
                     // Wenn der Dateiname aus mehreren Wörtern besteht
@@ -671,12 +609,11 @@ class Metadata implements MetadataInterface
     /**
      * @inheritdoc
      */
-    public function generateMetaTitle($searchResults, $globalMeta, $category = null): string
+    public function generateMetaTitle($searchResults, $globalMeta, \Kategorie $category = null): string
     {
         executeHook(HOOK_FILTER_INC_GIBNAVIMETATITLE);
         $languageID = $this->productFilter->getLanguageID();
         $append     = $this->conf['metaangaben']['global_meta_title_anhaengen'] === 'Y';
-        // Pruefen ob bereits eingestellte Metas gesetzt sind
         if (!empty($this->metaTitle)) {
             $metaTitle = strip_tags($this->metaTitle);
             // Globalen Meta Title anhaengen
@@ -714,9 +651,9 @@ class Metadata implements MetadataInterface
             }
         }
         // Seitenzahl anhaengen ab Seite 2 (Doppelte Titles vermeiden, #5992)
-        if ($searchResults->getPages()->AktuelleSeite > 1) {
+        if ($searchResults->getPages()->getCurrentPage() > 1) {
             $cMetaTitle .= ', ' . \Shop::Lang()->get('page') . ' ' .
-                $searchResults->getPages()->AktuelleSeite;
+                $searchResults->getPages()->getCurrentPage();
         }
         // Globalen Meta Title ueberall anhaengen
         if ($append === true && !empty($globalMeta[$languageID]->Title)) {
@@ -876,6 +813,7 @@ class Metadata implements MetadataInterface
 
     /**
      * @inheritdoc
+     * @deprecated since 5.0.0
      */
     public function getBreadCrumbName()
     {
@@ -885,549 +823,179 @@ class Metadata implements MetadataInterface
     /**
      * @inheritdoc
      */
-    public function buildPageNavigation($bSeo, $oSeitenzahlen, $nMaxAnzeige = 7, $cFilterShopURL = ''): array
+    public function getExtendedView(int $viewType = 0): \stdClass
     {
-        if (strlen($cFilterShopURL) > 0) {
-            $bSeo = false;
-        }
-        $cURL        = '';
-        $oSeite_arr  = [];
-        $nVon        = 0; // Die aktuellen Seiten in der Navigation, die angezeigt werden sollen.
-        $nBis        = 0; // Begrenzt durch $nMaxAnzeige.
-        $naviURL     = $this->productFilter->getFilterURL()->getURL();
-        $bSeo        = $bSeo && strpos($naviURL, '?') === false;
-        $nMaxAnzeige = (int)$nMaxAnzeige;
-        if (isset($oSeitenzahlen->MaxSeiten, $oSeitenzahlen->AktuelleSeite)
-            && $oSeitenzahlen->MaxSeiten > 0
-            && $oSeitenzahlen->AktuelleSeite > 0
-        ) {
-            $oSeitenzahlen->AktuelleSeite = (int)$oSeitenzahlen->AktuelleSeite;
-            $nMax                         = (int)floor($nMaxAnzeige / 2);
-            if ($oSeitenzahlen->MaxSeiten > $nMaxAnzeige) {
-                if ($oSeitenzahlen->AktuelleSeite - $nMax >= 1) {
-                    $nDiff = 0;
-                    $nVon  = $oSeitenzahlen->AktuelleSeite - $nMax;
-                } else {
-                    $nVon  = 1;
-                    $nDiff = $nMax - $oSeitenzahlen->AktuelleSeite + 1;
-                }
-                if ($oSeitenzahlen->AktuelleSeite + $nMax + $nDiff <= $oSeitenzahlen->MaxSeiten) {
-                    $nBis = $oSeitenzahlen->AktuelleSeite + $nMax + $nDiff;
-                } else {
-                    $nDiff = $oSeitenzahlen->AktuelleSeite + $nMax - $oSeitenzahlen->MaxSeiten;
-                    if ($nDiff === 0) {
-                        $nVon -= ($nMaxAnzeige - ($nMax + 1));
-                    } elseif ($nDiff > 0) {
-                        $nVon = $oSeitenzahlen->AktuelleSeite - $nMax - $nDiff;
-                    }
-                    $nBis = (int)$oSeitenzahlen->MaxSeiten;
-                }
-                // Laufe alle Seiten durch und baue URLs + Seitenzahl
-                for ($i = $nVon; $i <= $nBis; ++$i) {
-                    $oSeite         = new \stdClass();
-                    $oSeite->nSeite = $i;
-                    if ($i === $oSeitenzahlen->AktuelleSeite) {
-                        $oSeite->cURL = '';
-                    } else {
-                        if ($oSeite->nSeite === 1) {
-                            $oSeite->cURL = $naviURL . $cFilterShopURL;
-                        } else {
-                            if ($bSeo) {
-                                $cURL         = $naviURL;
-                                $oSeite->cURL = strpos(basename($cURL), 'index.php') !== false
-                                    ? $cURL . '&amp;seite=' . $oSeite->nSeite . $cFilterShopURL
-                                    : $cURL . SEP_SEITE . $oSeite->nSeite;
-                            } else {
-                                $oSeite->cURL = $naviURL . '&amp;seite=' . $oSeite->nSeite . $cFilterShopURL;
-                            }
-                        }
-                    }
-                    $oSeite_arr[] = $oSeite;
-                }
-            } else {
-                // Laufe alle Seiten durch und baue URLs + Seitenzahl
-                for ($i = 0; $i < $oSeitenzahlen->MaxSeiten; ++$i) {
-                    $oSeite         = new \stdClass();
-                    $oSeite->nSeite = $i + 1;
-
-                    if ($i + 1 === $oSeitenzahlen->AktuelleSeite) {
-                        $oSeite->cURL = '';
-                    } else {
-                        if ($oSeite->nSeite === 1) {
-                            $oSeite->cURL = $naviURL . $cFilterShopURL;
-                        } else {
-                            if ($bSeo) {
-                                $cURL         = $naviURL;
-                                $oSeite->cURL = strpos(basename($cURL), 'index.php') !== false
-                                    ? $cURL . '&amp;seite=' . $oSeite->nSeite . $cFilterShopURL
-                                    : $cURL . SEP_SEITE . $oSeite->nSeite;
-                            } else {
-                                $oSeite->cURL = $naviURL . '&amp;seite=' . $oSeite->nSeite . $cFilterShopURL;
-                            }
-                        }
-                    }
-                    $oSeite_arr[] = $oSeite;
-                }
-            }
-            // Baue Zurück-URL
-            $oSeite_arr['zurueck']       = new \stdClass();
-            $oSeite_arr['zurueck']->nBTN = 1;
-            if ($oSeitenzahlen->AktuelleSeite > 1) {
-                $oSeite_arr['zurueck']->nSeite = (int)$oSeitenzahlen->AktuelleSeite - 1;
-                if ($oSeite_arr['zurueck']->nSeite === 1) {
-                    $oSeite_arr['zurueck']->cURL = $naviURL . $cFilterShopURL;
-                } else {
-                    if ($bSeo) {
-                        $cURL = $naviURL;
-                        if (strpos(basename($cURL), 'index.php') !== false) {
-                            $oSeite_arr['zurueck']->cURL = $cURL . '&amp;seite=' .
-                                $oSeite_arr['zurueck']->nSeite . $cFilterShopURL;
-                        } else {
-                            $oSeite_arr['zurueck']->cURL = $cURL . SEP_SEITE .
-                                $oSeite_arr['zurueck']->nSeite;
-                        }
-                    } else {
-                        $oSeite_arr['zurueck']->cURL = $naviURL . '&amp;seite=' .
-                            $oSeite_arr['zurueck']->nSeite . $cFilterShopURL;
-                    }
-                }
-            }
-            // Baue Vor-URL
-            $oSeite_arr['vor']       = new \stdClass();
-            $oSeite_arr['vor']->nBTN = 1;
-            if ($oSeitenzahlen->AktuelleSeite < $oSeitenzahlen->maxSeite) {
-                $oSeite_arr['vor']->nSeite = $oSeitenzahlen->AktuelleSeite + 1;
-                if ($bSeo) {
-                    $cURL = $naviURL;
-                    if (strpos(basename($cURL), 'index.php') !== false) {
-                        $oSeite_arr['vor']->cURL = $cURL . '&amp;seite=' . $oSeite_arr['vor']->nSeite . $cFilterShopURL;
-                    } else {
-                        $oSeite_arr['vor']->cURL = $cURL . SEP_SEITE . $oSeite_arr['vor']->nSeite;
-                    }
-                } else {
-                    $oSeite_arr['vor']->cURL = $naviURL . '&amp;seite=' . $oSeite_arr['vor']->nSeite . $cFilterShopURL;
-                }
-            }
-        }
-
-        return $oSeite_arr;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getExtendedView($nDarstellung = 0): \stdClass
-    {
+        $conf = $this->conf['artikeluebersicht'];
         if (!isset($_SESSION['oErweiterteDarstellung'])) {
-            $nStdDarstellung                                    = 0;
-            $_SESSION['oErweiterteDarstellung']                 = new \stdClass();
-            $_SESSION['oErweiterteDarstellung']->cURL_arr       = [];
-            $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
+            $defaultViewType              = 0;
+            $extendedView                 = new \stdClass();
+            $extendedView->cURL_arr       = [];
+            $extendedView->nAnzahlArtikel = ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
 
             if ($this->productFilter->hasCategory()) {
                 $category = new \Kategorie($this->productFilter->getCategory()->getValue());
                 if (!empty($category->categoryFunctionAttributes[KAT_ATTRIBUT_DARSTELLUNG])) {
-                    $nStdDarstellung = (int)$category->categoryFunctionAttributes[KAT_ATTRIBUT_DARSTELLUNG];
+                    $defaultViewType = (int)$category->categoryFunctionAttributes[KAT_ATTRIBUT_DARSTELLUNG];
                 }
             }
-            if ($nDarstellung === 0
-                && isset($this->conf['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'])
-                && (int)$this->conf['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'] > 0
-            ) {
-                $nStdDarstellung = (int)$this->conf['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'];
+            if ($viewType === 0 && (int)$conf['artikeluebersicht_erw_darstellung_stdansicht'] > 0) {
+                $defaultViewType = (int)$conf['artikeluebersicht_erw_darstellung_stdansicht'];
             }
-            if ($nStdDarstellung > 0) {
-                switch ($nStdDarstellung) {
+            if ($defaultViewType > 0) {
+                switch ($defaultViewType) {
                     case ERWDARSTELLUNG_ANSICHT_LISTE:
-                        $_SESSION['oErweiterteDarstellung']->nDarstellung = ERWDARSTELLUNG_ANSICHT_LISTE;
+                        $extendedView->nDarstellung = ERWDARSTELLUNG_ANSICHT_LISTE;
                         if (isset($_SESSION['ArtikelProSeite'])) {
-                            $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
-                        } elseif ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'] !== 0) {
-                            $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel =
-                                (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'];
+                            $extendedView->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
+                        } elseif ((int)$conf['artikeluebersicht_anzahl_darstellung1'] !== 0) {
+                            $extendedView->nAnzahlArtikel = (int)$conf['artikeluebersicht_anzahl_darstellung1'];
                         }
                         break;
                     case ERWDARSTELLUNG_ANSICHT_GALERIE:
-                        $_SESSION['oErweiterteDarstellung']->nDarstellung = ERWDARSTELLUNG_ANSICHT_GALERIE;
+                        $extendedView->nDarstellung = ERWDARSTELLUNG_ANSICHT_GALERIE;
                         if (isset($_SESSION['ArtikelProSeite'])) {
-                            $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
-                        } elseif ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'] !== 0) {
-                            $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel =
-                                (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'];
+                            $extendedView->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
+                        } elseif ((int)$conf['artikeluebersicht_anzahl_darstellung2'] !== 0) {
+                            $extendedView->nAnzahlArtikel = (int)$conf['artikeluebersicht_anzahl_darstellung2'];
                         }
                         break;
                     case ERWDARSTELLUNG_ANSICHT_MOSAIK:
-                        $_SESSION['oErweiterteDarstellung']->nDarstellung = ERWDARSTELLUNG_ANSICHT_MOSAIK;
+                        $extendedView->nDarstellung = ERWDARSTELLUNG_ANSICHT_MOSAIK;
                         if (isset($_SESSION['ArtikelProSeite'])) {
-                            $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
-                        } elseif ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung3'] > 0) {
-                            $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel =
-                                (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung3'];
+                            $extendedView->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
+                        } elseif ((int)$conf['artikeluebersicht_anzahl_darstellung3'] > 0) {
+                            $extendedView->nAnzahlArtikel = (int)$conf['artikeluebersicht_anzahl_darstellung3'];
                         }
                         break;
                     default: // when given invalid option from wawi attribute
-                        $nDarstellung = ERWDARSTELLUNG_ANSICHT_LISTE;
-                        if (isset($this->conf['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht']) &&
-                            (int)$this->conf['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'] > 0
+                        $viewType = ERWDARSTELLUNG_ANSICHT_LISTE;
+                        if (isset($conf['artikeluebersicht_erw_darstellung_stdansicht'])
+                            && (int)$conf['artikeluebersicht_erw_darstellung_stdansicht'] > 0
                         ) { // fallback to configured default
-                            $nDarstellung = (int)$this->conf['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'];
+                            $viewType = (int)$conf['artikeluebersicht_erw_darstellung_stdansicht'];
                         }
-                        $_SESSION['oErweiterteDarstellung']->nDarstellung = $nDarstellung;
+                        $extendedView->nDarstellung = $viewType;
                         if (isset($_SESSION['ArtikelProSeite'])) {
-                            $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
-                        } elseif ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'] > 0) {
-                            $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel =
-                                (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'];
+                            $extendedView->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
+                        } elseif ((int)$conf['artikeluebersicht_anzahl_darstellung1'] > 0) {
+                            $extendedView->nAnzahlArtikel = (int)$conf['artikeluebersicht_anzahl_darstellung1'];
                         }
                         break;
                 }
             } else {
                 // Std ist Listendarstellung
-                $_SESSION['oErweiterteDarstellung']->nDarstellung = ERWDARSTELLUNG_ANSICHT_LISTE;
+                $extendedView->nDarstellung = ERWDARSTELLUNG_ANSICHT_LISTE;
                 if (isset($_SESSION['ArtikelProSeite'])) {
-                    $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
-                } elseif ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'] !== 0) {
-                    $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel =
-                        (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'];
+                    $extendedView->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
+                } elseif ((int)$conf['artikeluebersicht_anzahl_darstellung1'] !== 0) {
+                    $extendedView->nAnzahlArtikel = (int)$conf['artikeluebersicht_anzahl_darstellung1'];
                 }
             }
+            $_SESSION['oErweiterteDarstellung'] = $extendedView;
         }
-        if ($nDarstellung > 0) {
-            $_SESSION['oErweiterteDarstellung']->nDarstellung = $nDarstellung;
-            switch ($_SESSION['oErweiterteDarstellung']->nDarstellung) {
+        $extendedView = $_SESSION['oErweiterteDarstellung'];
+        if ($viewType > 0) {
+            $extendedView->nDarstellung = $viewType;
+            switch ($extendedView->nDarstellung) {
                 case ERWDARSTELLUNG_ANSICHT_LISTE:
-                    $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
-                    if ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'] > 0) {
-                        $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel =
-                            (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'];
+                    $extendedView->nAnzahlArtikel = ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
+                    if ((int)$conf['artikeluebersicht_anzahl_darstellung1'] > 0) {
+                        $extendedView->nAnzahlArtikel = (int)$conf['artikeluebersicht_anzahl_darstellung1'];
                     }
                     break;
                 case ERWDARSTELLUNG_ANSICHT_MOSAIK:
-                    $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
-                    if ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung3'] > 0) {
-                        $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel =
-                            (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung3'];
+                    $extendedView->nAnzahlArtikel = ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
+                    if ((int)$conf['artikeluebersicht_anzahl_darstellung3'] > 0) {
+                        $extendedView->nAnzahlArtikel = (int)$conf['artikeluebersicht_anzahl_darstellung3'];
                     }
                     break;
                 case ERWDARSTELLUNG_ANSICHT_GALERIE:
                 default:
-                    $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
-                    if ((int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'] > 0) {
-                        $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel =
-                            (int)$this->conf['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'];
+                    $extendedView->nAnzahlArtikel = ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
+                    if ((int)$conf['artikeluebersicht_anzahl_darstellung2'] > 0) {
+                        $extendedView->nAnzahlArtikel = (int)$conf['artikeluebersicht_anzahl_darstellung2'];
                     }
                     break;
             }
 
             if (isset($_SESSION['ArtikelProSeite'])) {
-                $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
+                $extendedView->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
             }
         }
-        if (isset($_SESSION['oErweiterteDarstellung'])) {
-            $naviURL = $this->productFilter->getFilterURL()->getURL();
-            $naviURL .= strpos($naviURL, '?') === false ? '?ed=' : '&amp;ed=';
+        $naviURL = $this->productFilter->getFilterURL()->getURL();
+        $naviURL .= strpos($naviURL, '?') === false ? '?ed=' : '&amp;ed=';
 
-            $_SESSION['oErweiterteDarstellung']->cURL_arr[ERWDARSTELLUNG_ANSICHT_LISTE]   = $naviURL .
-                ERWDARSTELLUNG_ANSICHT_LISTE;
-            $_SESSION['oErweiterteDarstellung']->cURL_arr[ERWDARSTELLUNG_ANSICHT_GALERIE] = $naviURL .
-                ERWDARSTELLUNG_ANSICHT_GALERIE;
-            $_SESSION['oErweiterteDarstellung']->cURL_arr[ERWDARSTELLUNG_ANSICHT_MOSAIK]  = $naviURL .
-                ERWDARSTELLUNG_ANSICHT_MOSAIK;
-        }
+        $extendedView->cURL_arr[ERWDARSTELLUNG_ANSICHT_LISTE]   = $naviURL . ERWDARSTELLUNG_ANSICHT_LISTE;
+        $extendedView->cURL_arr[ERWDARSTELLUNG_ANSICHT_GALERIE] = $naviURL . ERWDARSTELLUNG_ANSICHT_GALERIE;
+        $extendedView->cURL_arr[ERWDARSTELLUNG_ANSICHT_MOSAIK]  = $naviURL . ERWDARSTELLUNG_ANSICHT_MOSAIK;
 
-        return $_SESSION['oErweiterteDarstellung'];
+        return $extendedView;
     }
 
     /**
      * @inheritdoc
      */
-    public function getSortingOptions($bExtendedJTLSearch = false): array
+    public function checkNoIndex(): bool
     {
-        $sortingOptions = [];
-        $search         = [];
-        if ($bExtendedJTLSearch !== false) {
-            static $names = [
-                'suche_sortierprio_name',
-                'suche_sortierprio_name_ab',
-                'suche_sortierprio_preis',
-                'suche_sortierprio_preis_ab'
-            ];
-            static $values = [
-                SEARCH_SORT_NAME_ASC,
-                SEARCH_SORT_NAME_DESC,
-                SEARCH_SORT_PRICE_ASC,
-                SEARCH_SORT_PRICE_DESC
-            ];
-            static $languages = ['sortNameAsc', 'sortNameDesc', 'sortPriceAsc', 'sortPriceDesc'];
-            foreach ($names as $i => $name) {
-                $obj                  = new \stdClass();
-                $obj->name            = $name;
-                $obj->value           = $values[$i];
-                $obj->angezeigterName = \Shop::Lang()->get($languages[$i]);
-
-                $sortingOptions[] = $obj;
-            }
-
-            return $sortingOptions;
-        }
-        while (($obj = $this->getNextSearchPriority($search)) !== null) {
-            $search[] = $obj->name;
-            unset($obj->name);
-            $sortingOptions[] = $obj;
-        }
-
-        return $sortingOptions;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getNextSearchPriority(array $search)
-    {
-        $max = 0;
-        $obj = null;
-        if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_name']
-            && !in_array('suche_sortierprio_name', $search, true)
-        ) {
-            $obj                  = new \stdClass();
-            $obj->name            = 'suche_sortierprio_name';
-            $obj->value           = SEARCH_SORT_NAME_ASC;
-            $obj->angezeigterName = \Shop::Lang()->get('sortNameAsc');
-            $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_name'];
-        }
-        if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_name_ab']
-            && !in_array('suche_sortierprio_name_ab', $search, true)
-        ) {
-            $obj                  = new \stdClass();
-            $obj->name            = 'suche_sortierprio_name_ab';
-            $obj->value           = SEARCH_SORT_NAME_DESC;
-            $obj->angezeigterName = \Shop::Lang()->get('sortNameDesc');
-            $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_name_ab'];
-        }
-        if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_preis']
-            && !in_array('suche_sortierprio_preis', $search, true)
-        ) {
-            $obj                  = new \stdClass();
-            $obj->name            = 'suche_sortierprio_preis';
-            $obj->value           = SEARCH_SORT_PRICE_ASC;
-            $obj->angezeigterName = \Shop::Lang()->get('sortPriceAsc');
-            $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_preis'];
-        }
-        if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_preis_ab']
-            && !in_array('suche_sortierprio_preis_ab', $search, true)
-        ) {
-            $obj                  = new \stdClass();
-            $obj->name            = 'suche_sortierprio_preis_ab';
-            $obj->value           = SEARCH_SORT_PRICE_DESC;
-            $obj->angezeigterName = \Shop::Lang()->get('sortPriceDesc');
-            $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_preis_ab'];
-        }
-        if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_ean']
-            && !in_array('suche_sortierprio_ean', $search, true)
-        ) {
-            $obj                  = new \stdClass();
-            $obj->name            = 'suche_sortierprio_ean';
-            $obj->value           = SEARCH_SORT_EAN;
-            $obj->angezeigterName = \Shop::Lang()->get('sortEan');
-            $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_ean'];
-        }
-        if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_erstelldatum']
-            && !in_array('suche_sortierprio_erstelldatum', $search, true)
-        ) {
-            $obj                  = new \stdClass();
-            $obj->name            = 'suche_sortierprio_erstelldatum';
-            $obj->value           = SEARCH_SORT_NEWEST_FIRST;
-            $obj->angezeigterName = \Shop::Lang()->get('sortNewestFirst');
-            $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_erstelldatum'];
-        }
-        if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_artikelnummer']
-            && !in_array('suche_sortierprio_artikelnummer', $search, true)
-        ) {
-            $obj                  = new \stdClass();
-            $obj->name            = 'suche_sortierprio_artikelnummer';
-            $obj->value           = SEARCH_SORT_PRODUCTNO;
-            $obj->angezeigterName = \Shop::Lang()->get('sortProductno');
-            $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_artikelnummer'];
-        }
-        if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_lagerbestand']
-            && !in_array('suche_sortierprio_lagerbestand', $search, true)
-        ) {
-            $obj                  = new \stdClass();
-            $obj->name            = 'suche_sortierprio_lagerbestand';
-            $obj->value           = SEARCH_SORT_AVAILABILITY;
-            $obj->angezeigterName = \Shop::Lang()->get('sortAvailability');
-            $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_lagerbestand'];
-        }
-        if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_gewicht']
-            && !in_array('suche_sortierprio_gewicht', $search, true)
-        ) {
-            $obj                  = new \stdClass();
-            $obj->name            = 'suche_sortierprio_gewicht';
-            $obj->value           = SEARCH_SORT_WEIGHT;
-            $obj->angezeigterName = \Shop::Lang()->get('sortWeight');
-            $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_gewicht'];
-        }
-        if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_erscheinungsdatum']
-            && !in_array('suche_sortierprio_erscheinungsdatum', $search, true)
-        ) {
-            $obj                  = new \stdClass();
-            $obj->name            = 'suche_sortierprio_erscheinungsdatum';
-            $obj->value           = SEARCH_SORT_DATEOFISSUE;
-            $obj->angezeigterName = \Shop::Lang()->get('sortDateofissue');
-            $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_erscheinungsdatum'];
-        }
-        if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_bestseller']
-            && !in_array('suche_sortierprio_bestseller', $search, true)
-        ) {
-            $obj                  = new \stdClass();
-            $obj->name            = 'suche_sortierprio_bestseller';
-            $obj->value           = SEARCH_SORT_BESTSELLER;
-            $obj->angezeigterName = \Shop::Lang()->get('bestseller');
-            $max                  = $this->conf['artikeluebersicht']['suche_sortierprio_bestseller'];
-        }
-        if ($max < $this->conf['artikeluebersicht']['suche_sortierprio_bewertung']
-            && !in_array('suche_sortierprio_bewertung', $search, true)
-        ) {
-            $obj                  = new \stdClass();
-            $obj->name            = 'suche_sortierprio_bewertung';
-            $obj->value           = SEARCH_SORT_RATING;
-            $obj->angezeigterName = \Shop::Lang()->get('rating');
-        }
-
-        return $obj;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setUserSort($currentCategory = null): MetadataInterface
-    {
-        $gpcSort = verifyGPCDataInteger('Sortierung');
-        // Der User möchte die Standardsortierung wiederherstellen
-        if ($gpcSort === 100) {
-            unset($_SESSION['Usersortierung'], $_SESSION['nUsersortierungWahl'], $_SESSION['UsersortierungVorSuche']);
-        }
-        // Wenn noch keine Sortierung gewählt wurde => setze Standard-Sortierung aus Option
-        if (!isset($_SESSION['Usersortierung'])) {
-            unset($_SESSION['nUsersortierungWahl']);
-            $_SESSION['Usersortierung'] = (int)$this->conf['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
-        }
-        if (!isset($_SESSION['nUsersortierungWahl'])) {
-            $_SESSION['Usersortierung'] = (int)$this->conf['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
-        }
-        // Eine Suche wurde ausgeführt und die Suche wird auf die Suchtreffersuche eingestellt
-        if (!isset($_SESSION['nUsersortierungWahl']) && $this->productFilter->getSearch()->getSearchCacheID() > 0) {
-            // nur bei initialsuche Sortierung zurücksetzen
-            $_SESSION['UsersortierungVorSuche'] = $_SESSION['Usersortierung'];
-            $_SESSION['Usersortierung']         = SEARCH_SORT_STANDARD;
-        }
-        // Kategorie Funktionsattribut
-        if (!empty($currentCategory->categoryFunctionAttributes[KAT_ATTRIBUT_ARTIKELSORTIERUNG])) {
-            $_SESSION['Usersortierung'] = static::mapUserSorting(
-                $currentCategory->categoryFunctionAttributes[KAT_ATTRIBUT_ARTIKELSORTIERUNG]
-            );
-        }
-        // Wurde zuvor etwas gesucht? Dann die Einstellung des Users vor der Suche wiederherstellen
-        if (isset($_SESSION['UsersortierungVorSuche']) && (int)$_SESSION['UsersortierungVorSuche'] > 0) {
-            $_SESSION['Usersortierung'] = (int)$_SESSION['UsersortierungVorSuche'];
-        }
-        // Suchspecial sortierung
-        if ($this->productFilter->hasSearchSpecial()) {
-            // Gibt die Suchspecials als Assoc Array zurück, wobei die Keys des Arrays der kKey vom Suchspecial sind.
-            $oSuchspecialEinstellung_arr = self::getSearchSpecialConfigMapping($this->conf['suchspecials']);
-            // -1 = Keine spezielle Sortierung
-            $idx    = $this->productFilter->getSearchSpecial()->getValue();
-            $ssConf = isset($oSuchspecialEinstellung_arr[$idx]) ?: null;
-            if ($ssConf !== null && $ssConf !== -1 && count($oSuchspecialEinstellung_arr) > 0) {
-                $_SESSION['Usersortierung'] = (int)$oSuchspecialEinstellung_arr[$idx];
-            }
-        }
-        // Der User hat expliziet eine Sortierung eingestellt
-        if ($gpcSort > 0 && $gpcSort !== 100) {
-            $_SESSION['Usersortierung']         = $gpcSort;
-            $_SESSION['UsersortierungVorSuche'] = $_SESSION['Usersortierung'];
-            $_SESSION['nUsersortierungWahl']    = 1;
-            setFsession(0, $_SESSION['Usersortierung'], 0);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public static function mapUserSorting($sort): int
-    {
-        // Ist die Usersortierung ein Integer => Return direkt den Integer
-        preg_match('/\d+/', $sort, $cTreffer_arr);
-        if (isset($cTreffer_arr[0]) && strlen($sort) === strlen($cTreffer_arr[0])) {
-            return (int)$sort;
-        }
-        // Usersortierung ist ein String aus einem Kategorieattribut
-        switch (strtolower($sort)) {
-            case SEARCH_SORT_CRITERION_NAME:
-            case SEARCH_SORT_CRITERION_NAME_ASC:
-                return SEARCH_SORT_NAME_ASC;
-
-            case SEARCH_SORT_CRITERION_NAME_DESC:
-                return SEARCH_SORT_NAME_DESC;
-
-            case SEARCH_SORT_CRITERION_PRODUCTNO:
-                return SEARCH_SORT_PRODUCTNO;
-
-            case SEARCH_SORT_CRITERION_AVAILABILITY:
-                return SEARCH_SORT_AVAILABILITY;
-
-            case SEARCH_SORT_CRITERION_WEIGHT:
-                return SEARCH_SORT_WEIGHT;
-
-            case SEARCH_SORT_CRITERION_PRICE_ASC:
-            case SEARCH_SORT_CRITERION_PRICE:
-                return SEARCH_SORT_PRICE_ASC;
-
-            case SEARCH_SORT_CRITERION_PRICE_DESC:
-                return SEARCH_SORT_PRICE_DESC;
-
-            case SEARCH_SORT_CRITERION_EAN:
-                return SEARCH_SORT_EAN;
-
-            case SEARCH_SORT_CRITERION_NEWEST_FIRST:
-                return SEARCH_SORT_NEWEST_FIRST;
-
-            case SEARCH_SORT_CRITERION_DATEOFISSUE:
-                return SEARCH_SORT_DATEOFISSUE;
-
-            case SEARCH_SORT_CRITERION_BESTSELLER:
-                return SEARCH_SORT_BESTSELLER;
-
-            case SEARCH_SORT_CRITERION_RATING:
-                return SEARCH_SORT_RATING;
-
+        $bNoIndex = false;
+        switch (basename($_SERVER['SCRIPT_NAME'])) {
+            case 'wartung.php':
+            case 'navi.php':
+            case 'bestellabschluss.php':
+            case 'bestellvorgang.php':
+            case 'jtl.php':
+            case 'pass.php':
+            case 'registrieren.php':
+            case 'warenkorb.php':
+            case 'wunschliste.php':
+                $bNoIndex = true;
+                break;
             default:
-                return SEARCH_SORT_STANDARD;
+                break;
         }
+        if ($this->productFilter->hasSearch()) {
+            $bNoIndex = true;
+        }
+        if (!$bNoIndex) {
+            $bNoIndex = $this->productFilter->hasAttributeValue()
+                && $this->productFilter->getAttributeValue()->getValue() > 0
+                && $this->conf['global']['global_merkmalwert_url_indexierung'] === 'N';
+        }
+
+        return $bNoIndex;
     }
 
     /**
-     * @inheritdoc
+     * return trimmed description without (double) line breaks
+     *
+     * @param string $cDesc
+     * @return string
      */
-    public function getProductsPerPageLimit(): int
+    public static function truncateMetaDescription(string $cDesc): string
     {
-        if ($this->productFilter->getProductLimit() !== 0) {
-            $limit = (int)$this->productFilter->getProductLimit();
-        } elseif (isset($_SESSION['ArtikelProSeite']) && $_SESSION['ArtikelProSeite'] !== 0) {
-            $limit = (int)$_SESSION['ArtikelProSeite'];
-        } elseif (isset($_SESSION['oErweiterteDarstellung']->nAnzahlArtikel)
-            && $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel !== 0
-        ) {
-            $limit = (int)$_SESSION['oErweiterteDarstellung']->nAnzahlArtikel;
-        } else {
-            $limit = ($max = $this->conf['artikeluebersicht']['artikeluebersicht_artikelproseite']) !== 0
-                ? (int)$max
-                : 20;
+        $conf      = \Shop::getSettings([CONF_METAANGABEN]);
+        $maxLength = !empty($conf['metaangaben']['global_meta_maxlaenge_description'])
+            ? (int)$conf['metaangaben']['global_meta_maxlaenge_description']
+            : 0;
+
+        return self::prepareMeta($cDesc, null, $maxLength);
+    }
+
+    /**
+     * @param string $metaProposal the proposed meta text value.
+     * @param string $metaSuffix append suffix to meta value that wont be shortened
+     * @param int    $maxLength $metaProposal will be truncated to $maxlength - strlen($metaSuffix) characters
+     * @return string truncated meta value with optional suffix (always appended if set)
+     */
+    public static function prepareMeta(string $metaProposal, string $metaSuffix = null, int $maxLength = null): string
+    {
+        $metaProposal = str_replace('"', '', \StringHandler::unhtmlentities($metaProposal));
+        $metaSuffix   = !empty($metaSuffix) ? $metaSuffix : '';
+        if (!empty($maxLength) && $maxLength > 0) {
+            $metaProposal = substr($metaProposal, 0, $maxLength);
         }
 
-        return min($limit, ARTICLES_PER_PAGE_HARD_LIMIT);
+        return \StringHandler::htmlentities(trim(preg_replace('/\s\s+/', ' ', $metaProposal))) . $metaSuffix;
     }
 
     /**

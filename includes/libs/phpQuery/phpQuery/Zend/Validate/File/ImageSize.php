@@ -100,9 +100,11 @@ class Zend_Validate_File_ImageSize extends Zend_Validate_Abstract
      * Min limits the filesize, when used with max=null if is the maximum filesize
      * It also accepts an array with the keys 'min' and 'max'
      *
-     * @param  integer|array $max Maximum filesize
-     * @param  integer       $max Maximum filesize
-     * @return void
+     * @param int  $minwidth
+     * @param int  $minheight
+     * @param null $maxwidth
+     * @param null $maxheight
+     * @throws Zend_Validate_Exception
      */
     public function __construct($minwidth = 0, $minheight = 0, $maxwidth = null, $maxheight = null)
     {
@@ -210,7 +212,7 @@ class Zend_Validate_File_ImageSize extends Zend_Validate_Abstract
      * @param  integer $maxheight      The maximum image height
      * @throws Zend_Validate_Exception When maxwidth is smaller than minwidth
      * @throws Zend_Validate_Exception When maxheight is smaller than minheight
-     * @return Zend_Validate_StringLength Provides a fluent interface
+     * @return $this
      */
     public function setImageMax($maxwidth, $maxheight)
     {

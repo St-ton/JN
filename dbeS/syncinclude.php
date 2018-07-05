@@ -189,7 +189,7 @@ function DBDelInsert($tablename, $object_arr, $del)
 {
     if (is_array($object_arr)) {
         if ($del) {
-            Shop::Container()->getDB()->query("DELETE FROM $tablename", 4);
+            Shop::Container()->getDB()->query("DELETE FROM $tablename", \DB\ReturnType::DEFAULT);
         }
         foreach ($object_arr as $object) {
             //hack? unset arrays/objects that would result in nicedb exceptions
@@ -316,11 +316,9 @@ function buildAttributes(&$arr, $cExclude_arr = [])
         $keys     = array_keys($arr);
         $keyCount = count($keys);
         for ($i = 0; $i < $keyCount; $i++) {
-            if (!in_array($keys[$i], $cExclude_arr)) {
-                if ($keys[$i]{0} === 'k') {
-                    $attr_arr[$keys[$i]] = $arr[$keys[$i]];
-                    unset($arr[$keys[$i]]);
-                }
+            if (!in_array($keys[$i], $cExclude_arr) && $keys[$i]{0} === 'k') {
+                $attr_arr[$keys[$i]] = $arr[$keys[$i]];
+                unset($arr[$keys[$i]]);
             }
         }
     }

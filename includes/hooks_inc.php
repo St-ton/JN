@@ -1695,7 +1695,7 @@ define('HOOK_BACKEND_SHOP_RESET_AFTER', 229);
 /**
  * on removing a cart position that has been deactivated / deleted in the meantime
  *
- * @since 5.0
+ * @since 5.0.0
  * @file classes/class.JTL-Shop.Warenkorb.php
  * @param WarenkorbPos - oPosition
  * @param bool         - &delete
@@ -1705,18 +1705,18 @@ define('HOOK_WARENKORB_CLASS_LOESCHEDEAKTIVIERTEPOS', 230);
 /**
  * in ProductFilter::initBaseStates() after initializing the base filters
  *
- * @since 5.0
- * @file class.JTL-Shop.ProductFilter.php
- * @param ProductFilter productFilter
+ * @since 5.0.0
+ * @file includes/src/Filter/ProductFilter.php
+ * @param \Filter\ProductFilter productFilter
  */
 define('HOOK_PRODUCTFILTER_INIT', 250);
 
 /**
  * in ProductFilter::initStates() after initializing the active filters
  *
- * @since 5.0
- * @file class.JTL-Shop.ProductFilter.php
- * @param ProductFilter productFilter
+ * @since 5.0.0
+ * @file includes/src/Filter/ProductFilter.php
+ * @param \Filter\ProductFilter productFilter
  * @param array params
  */
 define('HOOK_PRODUCTFILTER_INIT_STATES', 251);
@@ -1724,16 +1724,16 @@ define('HOOK_PRODUCTFILTER_INIT_STATES', 251);
 /**
  * in ProductFilter::construct() when creating the instance
  *
- * @since 5.0
- * @file class.JTL-Shop.ProductFilter.php
- * @param ProductFilter productFilter
+ * @since 5.0.0
+ * @file includes/src/Filter/ProductFilter.php
+ * @param \Filter\ProductFilter productFilter
  */
 define('HOOK_PRODUCTFILTER_CREATE', 252);
 
 /**
  * in ProductFilter::construct() when creating the instance
  *
- * @since 5.0
+ * @since 5.0.0
  * @file class.JTL-Shop.ProductFilter.php
  * @param array select
  * @param array joins
@@ -1742,14 +1742,21 @@ define('HOOK_PRODUCTFILTER_CREATE', 252);
  * @param array having
  * @param array order
  * @param array limit
- * @param ProductFilter productFilter
+ * @param \Filter\ProductFilter productFilter
  */
 define('HOOK_PRODUCTFILTER_GET_BASE_QUERY', 253);
 
 /**
+ * @since 5.0.0
+ * @param Filter\SortingOptions\Factory $factory
+ * @param \Filter\ProductFilter $productFilter
+ */
+define('HOOK_PRODUCTFILTER_REGISTER_SEARCH_OPTION', 254);
+
+/**
  * in Preise::__construct()
  *
- * @since 5.0
+ * @since 5.0.0
  * @file class.JTL-Shop.Preise.php
  * @param int customerGroupID
  * @param int customerID
@@ -1762,7 +1769,7 @@ define('HOOK_PRICES_CONSTRUCT', 260);
 /**
  * in WarenkorbHelper::addToCartCheck()
  *
- * @since 5.0
+ * @since 5.0.0
  * @file class.helper.Warenkorb.php
  * @param Artikel product
  * @param int     quantity
@@ -1775,7 +1782,7 @@ define('HOOK_ADD_TO_CART_CHECK', 261);
 /**
  * in CaptchaService::isConfigured
  *
- * @since 5.0
+ * @since 5.0.0
  * @file src/Services/CaptchaService.php
  * @param bool isConfigured
  */
@@ -1784,7 +1791,7 @@ define('HOOK_CAPTCHA_CONFIGURED', 270);
 /**
  * in CaptchaService::getHeadMarkup, CaptchaService::getBodyMarkup
  *
- * @since 5.0
+ * @since 5.0.0
  * @file src/Services/CaptchaService.php
  * @param bool   getBody
  * @param string markup
@@ -1794,7 +1801,7 @@ define('HOOK_CAPTCHA_MARKUP', 271);
 /**
  * in CaptchaService::validate
  *
- * @since 5.0
+ * @since 5.0.0
  * @file src/Services/CaptchaService.php
  * @param array requestData
  * @param bool  isValid

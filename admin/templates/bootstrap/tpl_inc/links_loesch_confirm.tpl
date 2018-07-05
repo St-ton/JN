@@ -7,6 +7,14 @@
 
         <div class="alert alert-danger">
             <p><strong>Vorsicht</strong>: Alle Links innerhalb dieser Linkgruppe werden ebenfalls gel&ouml;scht</p>
+            {if $affectedLinkNames|count > 0}
+                <p>Die folgenden Links werden in anderen Linkgruppen referenziert und werden ebenfalls gelöscht:</p>
+                <ul class="list">
+                    {foreach $affectedLinkNames as $link}
+                        <li>{$link}</li>
+                    {/foreach}
+                </ul>
+            {/if}
             <p>Wollen Sie die Linkgruppe "<strong>{$oLinkgruppe->cName}</strong>" wirklich l&ouml;schen?</p>
         </div>
         <div class="btn-group">

@@ -6,7 +6,12 @@
 
 namespace Filter;
 
+use Boxes\AbstractBox;
+use Filter\Pagination\Info;
 use function Functional\every;
+use function Functional\filter;
+use function Functional\invoke;
+use function Functional\map;
 use Tightenco\Collect\Support\Collection;
 
 /**
@@ -156,7 +161,7 @@ class ProductFilterSearchResults implements ProductFilterSearchResultsInterface
     /**
      * @var array
      */
-    private static $mapping = [
+    public static $mapping = [
         'Artikel'             => 'ProductsCompat',
         'GesamtanzahlArtikel' => 'ProductCount',
         'ArtikelBis'          => 'OffsetEnd',
@@ -186,11 +191,7 @@ class ProductFilterSearchResults implements ProductFilterSearchResultsInterface
     {
         $this->products             = new Collection();
         $this->productKeys          = new Collection();
-        $this->pages                = new \stdClass();
-        $this->pages->AktuelleSeite = 0;
-        $this->pages->MaxSeiten     = 0;
-        $this->pages->minSeite      = 0;
-        $this->pages->maxSeite      = 0;
+        $this->pages                = new Info();
         if ($legacy !== null) {
             $this->convert($legacy);
         }
@@ -343,7 +344,7 @@ class ProductFilterSearchResults implements ProductFilterSearchResultsInterface
     /**
      * @inheritdoc
      */
-    public function getPages(): \stdClass
+    public function getPages(): Info
     {
         return $this->pages;
     }
@@ -351,7 +352,7 @@ class ProductFilterSearchResults implements ProductFilterSearchResultsInterface
     /**
      * @inheritdoc
      */
-    public function setPages($pages): ProductFilterSearchResultsInterface
+    public function setPages(Info $pages): ProductFilterSearchResultsInterface
     {
         $this->pages = $pages;
 
@@ -684,10 +685,55 @@ class ProductFilterSearchResults implements ProductFilterSearchResultsInterface
     }
 
     /**
+     * @param FilterInterface[] $activeFilters
+     * @param FilterInterface[] $availableFilters
+     */
+    private function autoActivateOptions($activeFilters, $availableFilters)
+    {
+        foreach ($activeFilters as $activeFilter) {
+            $class        = $activeFilter->getClassName();
+            $activeValues = $activeFilter->getActiveValues();
+            foreach ($this->getActiveFiltersByClassName($availableFilters, $class, $activeValues) as $filter) {
+                $currentValues = $filter->getActiveValues();
+                $act           = is_array($currentValues)
+                    ? map($currentValues, function ($e) {
+                        return $e->getValue();
+                    })
+                    : [$currentValues->getValue()];
+                $this->updateOptions($filter, $act);
+            }
+        }
+    }
+
+    /**
+     * @param FilterInterface $filter
+     * @param array           $values
+     */
+    private function updateOptions(FilterInterface $filter, $values)
+    {
+        invoke(filter($filter->getOptions(), function (FilterOption $e) use ($values) {
+            return in_array($e->getValue(), $values, true);
+        }), 'setIsActive', [true]);
+    }
+
+    /**
+     * @param FilterInterface[] $filters
+     * @param string $class
+     * @param array $activeValues
+     * @return array
+     */
+    private function getActiveFiltersByClassName($filters, $class, $activeValues): array
+    {
+        return filter($filters, function (FilterInterface $f) use ($class, $activeValues) {
+            return $f->getClassName() === $class && $f->getActiveValues() === $activeValues;
+        });
+    }
+
+    /**
      * @inheritdoc
      */
     public function setFilterOptions(
-        $productFilter,
+        ProductFilter $productFilter,
         $currentCategory = null,
         $selectionWizard = false
     ): ProductFilterSearchResultsInterface {
@@ -701,7 +747,7 @@ class ProductFilterSearchResults implements ProductFilterSearchResultsInterface
         $searchSpecialFilters    = $productFilter->getSearchSpecialFilter()->getOptions();
         $attribtuteFilterOptions = $productFilter->getAttributeFilterCollection()->getOptions([
             'oAktuelleKategorie' => $currentCategory,
-            'bForce'             => $selectionWizard === true && function_exists('starteAuswahlAssistent')
+            'bForce'             => $selectionWizard === true
         ]);
         $searchFilterOptions     = [];
         foreach ($productFilter->getSearchFilter() as $searchFilter) {
@@ -712,6 +758,18 @@ class ProductFilterSearchResults implements ProductFilterSearchResultsInterface
                 }
             }
         }
+        $this->autoActivateOptions($productFilter->getActiveFilters(), $productFilter->getAvailableFilters());
+
+        $customFilterOptions = map(
+            $productFilter->getCustomFilters(),
+            function (FilterInterface $e) {
+                if (count($e->getOptions()) === 0) {
+                    $e->hide();
+                }
+
+                return $e;
+            }
+        );
 
         $this->setManufacturerFilterOptions($manufacturerOptions)
              ->setSortingOptions($productFilter->getSorting()->getOptions())
@@ -723,19 +781,8 @@ class ProductFilterSearchResults implements ProductFilterSearchResultsInterface
              ->setSearchFilterOptions($searchFilterOptions)
              ->setSearchSpecialFilterOptions($searchSpecialFilters)
              ->setAttributeFilterOptions($attribtuteFilterOptions)
-             ->setCustomFilterOptions(array_filter(
-                 $productFilter->getAvailableFilters(),
-                 function ($e) {
-                     /** @var FilterInterface $e */
-                     $isCustom = $e->isCustom();
-                     if ($isCustom && count($e->getOptions()) === 0) {
-                         $e->hide();
-                     }
-
-                     return $isCustom;
-                 }
-             ))
-             ->setSearchFilterJSON(\Boxen::gibJSONString(array_map(
+             ->setCustomFilterOptions($customFilterOptions)
+             ->setSearchFilterJSON(AbstractBox::getJSONString(array_map(
                  function ($e) {
                      $e->cURL = \StringHandler::htmlentitydecode($e->cURL);
 
@@ -744,8 +791,8 @@ class ProductFilterSearchResults implements ProductFilterSearchResultsInterface
                  $searchFilterOptions
              )));
 
-        if ($productFilter->getConfig()['navigationsfilter']['allgemein_tagfilter_benutzen'] === 'Y') {
-            $this->setTagFilterJSON(\Boxen::gibJSONString(array_map(
+        if ($productFilter->getConfig('navigationsfilter')['allgemein_tagfilter_benutzen'] !== 'N') {
+            $this->setTagFilterJSON(AbstractBox::getJSONString(array_map(
                 function ($e) {
                     /** @var FilterOption $e */
                     return $e->setURL(\StringHandler::htmlentitydecode($e->getURL()));
@@ -812,7 +859,6 @@ class ProductFilterSearchResults implements ProductFilterSearchResultsInterface
                 // hide the whole attribute filter collection if every filter consists of only active options
                 $productFilter->getAttributeFilterCollection()->hide();
             }
-
         }
         $productFilter->getAttributeFilterCollection()
                       ->setFilterCollection($attribtuteFilterOptions);

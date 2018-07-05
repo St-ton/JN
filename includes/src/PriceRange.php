@@ -130,10 +130,10 @@ class PriceRange
             $this->loadConfiguratorRange();
         }
 
-        $ust = gibUst($this->articleData->kSteuerklasse);
+        $ust = TaxHelper::getSalesTax($this->articleData->kSteuerklasse);
 
-        $this->minBruttoPrice = berechneBrutto($this->minNettoPrice, $ust);
-        $this->maxBruttoPrice = berechneBrutto($this->maxNettoPrice, $ust);
+        $this->minBruttoPrice = \TaxHelper::getGross($this->minNettoPrice, $ust);
+        $this->maxBruttoPrice = \TaxHelper::getGross($this->maxNettoPrice, $ust);
     }
 
     public function loadConfiguratorRange()
@@ -184,16 +184,16 @@ class PriceRange
                 ];
             }
 
-            $ust = gibUst($configItem->kSteuerklasse);
+            $ust = TaxHelper::getSalesTax($configItem->kSteuerklasse);
 
             if ((int)$configItem->bPreis === 0) {
-                $configGroups[$configItemID]->prices->min[] = (float)$configItem->fMin * berechneBrutto((float)$configItem->fMinPreis, $ust, 4);
-                $configGroups[$configItemID]->prices->max[] = (float)$configItem->fMax * berechneBrutto((float)$configItem->fMaxPreis, $ust, 4);
+                $configGroups[$configItemID]->prices->min[] = (float)$configItem->fMin * \TaxHelper::getGross((float)$configItem->fMinPreis, $ust, 4);
+                $configGroups[$configItemID]->prices->max[] = (float)$configItem->fMax * \TaxHelper::getGross((float)$configItem->fMaxPreis, $ust, 4);
             } else {
                 $priceRange = new PriceRange((int)$configItem->kKindArtikel, $this->customerGroupID, $this->customerID);
                 // Es wird immer maxNettoPrice verwendet, da im Konfigurator keine Staffelpreise berücksichtigt werden
-                $configGroups[$configItemID]->prices->min[] = (float)$configItem->fMin * berechneBrutto($priceRange->maxNettoPrice, $ust, 4);
-                $configGroups[$configItemID]->prices->max[] = (float)$configItem->fMax * berechneBrutto($priceRange->maxNettoPrice, $ust, 4);
+                $configGroups[$configItemID]->prices->min[] = (float)$configItem->fMin * \TaxHelper::getGross($priceRange->maxNettoPrice, $ust, 4);
+                $configGroups[$configItemID]->prices->max[] = (float)$configItem->fMax * \TaxHelper::getGross($priceRange->maxNettoPrice, $ust, 4);
             }
         }
 
@@ -232,11 +232,11 @@ class PriceRange
             $maxPrices[] = $maxPrice;
         }
 
-        $ust = gibUst($this->articleData->kSteuerklasse);
+        $ust = TaxHelper::getSalesTax($this->articleData->kSteuerklasse);
 
         // Die jeweiligen Min- und Maxpreise sind die Summen aus allen Konfig-Gruppen
-        $this->minNettoPrice += berechneNetto(array_sum($minPrices), $ust, 4);
-        $this->maxNettoPrice += berechneNetto(array_sum($maxPrices), $ust, 4);
+        $this->minNettoPrice += TaxHelper::getNet(array_sum($minPrices), $ust, 4);
+        $this->maxNettoPrice += TaxHelper::getNet(array_sum($maxPrices), $ust, 4);
     }
 
     /**
@@ -245,20 +245,20 @@ class PriceRange
      */
     public function setDiscount(float $discount)
     {
-        $discount = $discount / 100;
+        $discount /= 100;
 
         if ($discount !== $this->discount) {
-            $this->minNettoPrice = $this->minNettoPrice / (1 - $this->discount);
-            $this->maxNettoPrice = $this->maxNettoPrice / (1 - $this->discount);
+            $this->minNettoPrice /= (1 - $this->discount);
+            $this->maxNettoPrice /= (1 - $this->discount);
 
             $this->discount = $discount;
 
-            $ust = gibUst($this->articleData->kSteuerklasse);
+            $ust = TaxHelper::getSalesTax($this->articleData->kSteuerklasse);
 
-            $this->minNettoPrice  = $this->minNettoPrice * (1 - $this->discount);
-            $this->maxNettoPrice  = $this->maxNettoPrice * (1 - $this->discount);
-            $this->minBruttoPrice = berechneBrutto($this->minNettoPrice, $ust);
-            $this->maxBruttoPrice = berechneBrutto($this->maxNettoPrice, $ust);
+            $this->minNettoPrice  *= (1 - $this->discount);
+            $this->maxNettoPrice  *= (1 - $this->discount);
+            $this->minBruttoPrice = \TaxHelper::getGross($this->minNettoPrice, $ust);
+            $this->maxBruttoPrice = \TaxHelper::getGross($this->maxNettoPrice, $ust);
         }
     }
 
@@ -279,7 +279,9 @@ class PriceRange
      */
     public function rangeWidth()
     {
-        return 100 / $this->minNettoPrice * $this->maxNettoPrice - 100;
+        return (int)$this->minNettoPrice !== 0
+            ? 100 / $this->minNettoPrice * $this->maxNettoPrice - 100
+            : 0;
     }
 
     /**
@@ -312,13 +314,13 @@ class PriceRange
 
         if ($netto !== null) {
             return $netto === 0
-                ? gibPreisStringLocalized($this->minBruttoPrice, $currency)
-                : gibPreisStringLocalized($this->minNettoPrice, $currency);
+                ? \Preise::getLocalizedPriceString($this->minBruttoPrice, $currency)
+                : \Preise::getLocalizedPriceString($this->minNettoPrice, $currency);
         }
 
         return [
-            gibPreisStringLocalized($this->minBruttoPrice, $currency),
-            gibPreisStringLocalized($this->minNettoPrice, $currency),
+            \Preise::getLocalizedPriceString($this->minBruttoPrice, $currency),
+            \Preise::getLocalizedPriceString($this->minNettoPrice, $currency),
         ];
     }
 
@@ -333,13 +335,13 @@ class PriceRange
 
         if ($netto !== null) {
             return $netto === 0
-                ? gibPreisStringLocalized($this->maxBruttoPrice, $currency)
-                : gibPreisStringLocalized($this->maxNettoPrice, $currency);
+                ? \Preise::getLocalizedPriceString($this->maxBruttoPrice, $currency)
+                : \Preise::getLocalizedPriceString($this->maxNettoPrice, $currency);
         }
 
         return [
-            gibPreisStringLocalized($this->maxBruttoPrice, $currency),
-            gibPreisStringLocalized($this->maxNettoPrice, $currency),
+            \Preise::getLocalizedPriceString($this->maxBruttoPrice, $currency),
+            \Preise::getLocalizedPriceString($this->maxNettoPrice, $currency),
         ];
     }
 }

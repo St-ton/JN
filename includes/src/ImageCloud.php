@@ -141,7 +141,7 @@ final class ImageCloud
     }
 
     /**
-     * @param $hash
+     * @param string $hash
      * @return string
      */
     private function getCloudEndpoint($hash)

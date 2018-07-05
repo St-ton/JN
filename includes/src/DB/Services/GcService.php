@@ -9,10 +9,20 @@ namespace DB\Services;
 
 use DB\DbInterface;
 
+/**
+ * Class GcService
+ * @package DB\Services
+ */
 class GcService implements GcServiceInterface
 {
+    /**
+     * @var DbInterface
+     */
     protected $db;
 
+    /**
+     * @var array
+     */
     protected $definition = [
         'tbesucherarchiv'                  => [
             'cDate'     => 'dZeit',
@@ -76,12 +86,19 @@ class GcService implements GcServiceInterface
         ]
     ];
 
+    /**
+     * GcService constructor.
+     * @param DbInterface $db
+     */
     public function __construct(DbInterface $db)
     {
         $this->db = $db;
     }
 
-    public function run()
+    /**
+     * @return $this
+     */
+    public function run(): GcServiceInterface
     {
         foreach ($this->definition as $cTable => $cMainTable_arr) {
             $cDateField    = $cMainTable_arr['cDate'];
@@ -95,15 +112,17 @@ class GcService implements GcServiceInterface
                     $cFrom .= ", {$cSubTable}";
                     $cJoin .= " LEFT JOIN {$cSubTable} ON {$cSubTable}.{$cKey} = {$cTable}.{$cKey}";
                 }
-                $this->db->query("
-                    DELETE {$cFrom} 
-                    FROM {$cTable} {$cJoin} 
-                    WHERE DATE_SUB(now(), INTERVAL {$cInterval} DAY) >= {$cTable}.{$cDateField}", 3
+                $this->db->query(
+                    "DELETE {$cFrom} 
+                        FROM {$cTable} {$cJoin} 
+                        WHERE DATE_SUB(now(), INTERVAL {$cInterval} DAY) >= {$cTable}.{$cDateField}",
+                    \DB\ReturnType::AFFECTED_ROWS
                 );
             } else {
-                $this->db->query("
-                    DELETE FROM {$cTable} 
-                        WHERE DATE_SUB(now(), INTERVAL {$cInterval} DAY) >= {$cDateField}", 3
+                $this->db->query(
+                    "DELETE FROM {$cTable} 
+                        WHERE DATE_SUB(now(), INTERVAL {$cInterval} DAY) >= {$cDateField}",
+                    \DB\ReturnType::AFFECTED_ROWS
                 );
             }
         }

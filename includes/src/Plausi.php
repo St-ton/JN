@@ -43,7 +43,7 @@ class Plausi
      * @param bool $toEntities
      * @return bool
      */
-    public function setPostVar($xVar_arr, $hasHTML_arr = null, $toEntities = false)
+    public function setPostVar($xVar_arr, $hasHTML_arr = null, bool $toEntities = false)
     {
         if (is_array($xVar_arr) && count($xVar_arr) > 0) {
             if (is_array($hasHTML_arr)) {
@@ -71,7 +71,7 @@ class Plausi
      * @param array $xVar_arr
      * @return bool
      */
-    public function setPlausiVar($xVar_arr)
+    public function setPlausiVar($xVar_arr): bool
     {
         if (is_array($xVar_arr) && count($xVar_arr) > 0) {
             $this->xPlausiVar_arr = $xVar_arr;
@@ -85,8 +85,10 @@ class Plausi
     /**
      * @param null $cTyp
      * @param bool $bUpdate
+     * @return bool
      */
-    public function doPlausi($cTyp = null, $bUpdate = false)
+    public function doPlausi($cTyp = null, bool $bUpdate = false): bool
     {
+        return false;
     }
 }

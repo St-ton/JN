@@ -11,7 +11,7 @@ use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
 use Filter\FilterInterface;
-use Filter\Type;
+use Filter\FilterStateSQL;
 use Filter\ProductFilter;
 
 /**
@@ -25,7 +25,7 @@ class ItemRating extends AbstractFilter
     /**
      * @var array
      */
-    private static $mapping = [
+    public static $mapping = [
         'nSterne' => 'Value'
     ];
 
@@ -39,8 +39,7 @@ class ItemRating extends AbstractFilter
         parent::__construct($productFilter);
         $this->setIsCustom(false)
              ->setUrlParam('bf')
-             ->setUrlParamSEO(null)
-             ->setVisibility($this->getConfig()['navigationsfilter']['bewertungsfilter_benutzen'])
+             ->setVisibility($this->getConfig('navigationsfilter')['bewertungsfilter_benutzen'])
              ->setFrontendName(\Shop::Lang()->get('Votes'));
     }
 
@@ -110,7 +109,7 @@ class ItemRating extends AbstractFilter
         if ($this->options !== null) {
             return $this->options;
         }
-        if ($this->getConfig()['navigationsfilter']['bewertungsfilter_benutzen'] === 'N') {
+        if ($this->getConfig('navigationsfilter')['bewertungsfilter_benutzen'] === 'N') {
             $this->hide();
             $this->options = [];
 
@@ -118,28 +117,23 @@ class ItemRating extends AbstractFilter
         }
         $options = [];
         $state   = $this->productFilter->getCurrentStateData();
-        $state->addJoin($this->getSQLJoin());
-
-        $query            = $this->productFilter->getFilterSQL()->getBaseQuery(
-            [
-                'ROUND(tartikelext.fDurchschnittsBewertung, 0) AS nSterne',
-                'tartikel.kArtikel'
-            ],
-            $state->getJoins(),
-            $state->getConditions(),
-            $state->getHaving()
-        );
+        $sql     = (new FilterStateSQL())->from($state);
+        $sql->setSelect(['ROUND(tartikelext.fDurchschnittsBewertung, 0) AS nSterne', 'tartikel.kArtikel']);
+        $sql->setOrderBy(null);
+        $sql->setLimit('');
+        $sql->setGroupBy(['tartikel.kArtikel']);
+        $sql->addJoin($this->getSQLJoin());
         $res              = \Shop::Container()->getDB()->query(
             'SELECT ssMerkmal.nSterne, COUNT(*) AS nAnzahl
-                FROM (' . $query . ' ) AS ssMerkmal
+                FROM (' . $this->productFilter->getFilterSQL()->getBaseQuery($sql) . ' ) AS ssMerkmal
                 GROUP BY ssMerkmal.nSterne
                 ORDER BY ssMerkmal.nSterne DESC',
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $nSummeSterne     = 0;
+        $stars            = 0;
         $additionalFilter = new self($this->getProductFilter());
         foreach ($res as $row) {
-            $nSummeSterne += (int)$row->nAnzahl;
+            $stars += (int)$row->nAnzahl;
 
             $options[] = (new FilterOption())
                 ->setParam($this->getUrlParam())
@@ -154,7 +148,7 @@ class ItemRating extends AbstractFilter
                     \Shop::Lang()->get($row->nSterne > 1 ? 'starPlural' : 'starSingular')
                 )
                 ->setValue((int)$row->nSterne)
-                ->setCount($nSummeSterne);
+                ->setCount($stars);
         }
         $this->options = $options;
         if (count($options) === 0) {

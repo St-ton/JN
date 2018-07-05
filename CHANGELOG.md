@@ -1,6 +1,12 @@
 # JTL-Shop Changelog
 
-## [4.06.5]
+## [4.06.6]
+
+Dieses Update enthält Fehlerbehebungen. 
+
+Alle für diese Zielversion gelösten Vorgänge finden Sie unter diesem Link: https://jtl-url.de/cl4066
+
+## [4.06.5] - 2018-06-12
 
 Dieses Update enthält Fehlerbehebungen. 
 
@@ -296,6 +302,18 @@ Bitte beachten Sie auch das aktualisierte Handbuch zum PayPal-Plugin: http://jtl
 * [SHOP-1667] - Backend Weiterleitungen nach Aufrufen filtern
 * [SHOP-1674] - Neue Smarty Blocks in snippets/shipping_tax_info.tpl und productdetails/price.tpl
 * [SHOP-1694] - Backstretch-Hintergrundbild verursacht Fehler bei geringer Netzgeschwindigkeit
+
+## [4.05.8]
+
+Dieses Update enthält ausschließlich einen TLS1.2-Fix für das alte PayPal-Classic-Zahlungsmodul. 
+PayPal-Plugin-Zahlarten sind nicht betroffen. 
+
+## [4.05.7] - 2018-06-19
+
+Dieses Update enthält Sicherheitsfixes (CSRF mit XSS oder SQL-Injections im Admin-Backend). 
+
+Wichtig: 
+* [SHOP-2349] - shopinfo.xml-Generator für elektronischer-markt.de wird eingestellt
 
 ## [4.05.6] - 2018-01-29
 

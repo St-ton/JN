@@ -20,24 +20,22 @@ function getAdminSectionSettings($kEinstellungenSektion)
             '*',
             'nSort'
         );
-        if (is_array($oConfig_arr) && count($oConfig_arr) > 0) {
-            foreach ($oConfig_arr as $conf) {
-                if ($conf->cInputTyp === 'selectbox') {
-                    $conf->ConfWerte = Shop::Container()->getDB()->selectAll(
-                        'teinstellungenconfwerte',
-                        'kEinstellungenConf',
-                        $conf->kEinstellungenConf,
-                        '*',
-                        'nSort'
-                    );
-                }
-                $oSetValue = Shop::Container()->getDB()->select(
-                    'teinstellungen',
-                    ['kEinstellungenSektion', 'cName'],
-                    [$kEinstellungenSektion, $conf->cWertName]
+        foreach ($oConfig_arr as $conf) {
+            if ($conf->cInputTyp === 'selectbox') {
+                $conf->ConfWerte = Shop::Container()->getDB()->selectAll(
+                    'teinstellungenconfwerte',
+                    'kEinstellungenConf',
+                    $conf->kEinstellungenConf,
+                    '*',
+                    'nSort'
                 );
-                $conf->gesetzterWert = $oSetValue->cWert ?? null;
             }
+            $oSetValue           = Shop::Container()->getDB()->select(
+                'teinstellungen',
+                ['kEinstellungenSektion', 'cName'],
+                [$kEinstellungenSektion, $conf->cWertName]
+            );
+            $conf->gesetzterWert = $oSetValue->cWert ?? null;
         }
     }
 
@@ -59,56 +57,59 @@ function saveAdminSettings($settingsIDs, &$cPost_arr, $tags = [CACHING_GROUP_OPT
         "SELECT *
             FROM teinstellungenconf
             WHERE kEinstellungenConf IN (" . implode(',', $settingsIDs) . ")
-            ORDER BY nSort", 2
+            ORDER BY nSort",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    if (is_array($oConfig_arr) && count($oConfig_arr) > 0) {
-        foreach ($oConfig_arr as $config) {
-            $aktWert                        = new stdClass();
-            $aktWert->cWert                 = $cPost_arr[$config->cWertName] ?? null;
-            $aktWert->cName                 = $config->cWertName;
-            $aktWert->kEinstellungenSektion = (int)$config->kEinstellungenSektion;
-            switch ($config->cInputTyp) {
-                case 'kommazahl':
-                    $aktWert->cWert = (float)$aktWert->cWert;
-                    break;
-                case 'zahl':
-                case 'number':
-                    $aktWert->cWert = (int)$aktWert->cWert;
-                    break;
-                case 'text':
-                    $aktWert->cWert = substr($aktWert->cWert, 0, 255);
-                    break;
-                case 'listbox':
-                    bearbeiteListBox($aktWert->cWert, $aktWert->cName, $aktWert->kEinstellungenSektion);
-                    break;
-            }
-            if ($config->cInputTyp !== 'listbox') {
-                Shop::Container()->getDB()->delete(
-                    'teinstellungen',
-                    ['kEinstellungenSektion', 'cName'],
-                    [(int)$config->kEinstellungenSektion, $config->cWertName]
-                );
-                Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
-            }
-        }
-        Shop::Cache()->flushTags($tags);
-
-        return 'Ihre Einstellungen wurden erfolgreich &uuml;bernommen.';
+    if (count($oConfig_arr) === 0) {
+        return 'Fehler beim Speichern Ihrer Einstellungen.';
     }
+    foreach ($oConfig_arr as $config) {
+        $aktWert                        = new stdClass();
+        $aktWert->cWert                 = $cPost_arr[$config->cWertName] ?? null;
+        $aktWert->cName                 = $config->cWertName;
+        $aktWert->kEinstellungenSektion = (int)$config->kEinstellungenSektion;
+        switch ($config->cInputTyp) {
+            case 'kommazahl':
+                $aktWert->cWert = (float)$aktWert->cWert;
+                break;
+            case 'zahl':
+            case 'number':
+                $aktWert->cWert = (int)$aktWert->cWert;
+                break;
+            case 'text':
+                $aktWert->cWert = substr($aktWert->cWert, 0, 255);
+                break;
+            case 'listbox':
+                bearbeiteListBox($aktWert->cWert, $aktWert->cName, $aktWert->kEinstellungenSektion);
+                break;
+        }
+        if ($config->cInputTyp !== 'listbox') {
+            Shop::Container()->getDB()->delete(
+                'teinstellungen',
+                ['kEinstellungenSektion', 'cName'],
+                [(int)$config->kEinstellungenSektion, $config->cWertName]
+            );
+            Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
+        }
+    }
+    Shop::Cache()->flushTags($tags);
 
-    return 'Fehler beim Speichern Ihrer Einstellungen.';
+    return 'Ihre Einstellungen wurden erfolgreich übernommen.';
 }
 
 /**
- * @param array $cListBox_arr
+ * @param array  $cListBox_arr
  * @param string $cWertName
- * @param int $kEinstellungenSektion
+ * @param int    $kEinstellungenSektion
  */
-function bearbeiteListBox($cListBox_arr, $cWertName, $kEinstellungenSektion)
+function bearbeiteListBox($cListBox_arr, $cWertName, int $kEinstellungenSektion)
 {
-    $kEinstellungenSektion = (int)$kEinstellungenSektion;
     if (is_array($cListBox_arr) && count($cListBox_arr) > 0) {
-        Shop::Container()->getDB()->delete('teinstellungen', ['kEinstellungenSektion', 'cName'], [$kEinstellungenSektion, $cWertName]);
+        Shop::Container()->getDB()->delete(
+            'teinstellungen',
+            ['kEinstellungenSektion', 'cName'],
+            [$kEinstellungenSektion, $cWertName]
+        );
         foreach ($cListBox_arr as $cListBox) {
             $oAktWert                        = new stdClass();
             $oAktWert->cWert                 = $cListBox;
@@ -117,86 +118,81 @@ function bearbeiteListBox($cListBox_arr, $cWertName, $kEinstellungenSektion)
 
             Shop::Container()->getDB()->insert('teinstellungen', $oAktWert);
         }
-    } else {
+    } elseif ($cWertName === 'bewertungserinnerung_kundengruppen' || $cWertName === 'kwk_kundengruppen') {
         // Leere Kundengruppen Work Around
-        if ($cWertName === 'bewertungserinnerung_kundengruppen' || $cWertName === 'kwk_kundengruppen') {
-            // Standard Kundengruppe aus DB holen
-            $oKundengruppe = Shop::Container()->getDB()->select('tkundengruppe', 'cStandard', 'Y');
-            if ($oKundengruppe->kKundengruppe > 0) {
-                Shop::Container()->getDB()->delete(
-                    'teinstellungen',
-                    ['kEinstellungenSektion', 'cName'],
-                    [$kEinstellungenSektion, $cWertName]
-                );
-                $oAktWert                        = new stdClass();
-                $oAktWert->cWert                 = $oKundengruppe->kKundengruppe;
-                $oAktWert->cName                 = $cWertName;
-                $oAktWert->kEinstellungenSektion = CONF_BEWERTUNG;
+        // Standard Kundengruppe aus DB holen
+        $oKundengruppe = Shop::Container()->getDB()->select('tkundengruppe', 'cStandard', 'Y');
+        if ($oKundengruppe->kKundengruppe > 0) {
+            Shop::Container()->getDB()->delete(
+                'teinstellungen',
+                ['kEinstellungenSektion', 'cName'],
+                [$kEinstellungenSektion, $cWertName]
+            );
+            $oAktWert                        = new stdClass();
+            $oAktWert->cWert                 = $oKundengruppe->kKundengruppe;
+            $oAktWert->cName                 = $cWertName;
+            $oAktWert->kEinstellungenSektion = CONF_BEWERTUNG;
 
-                Shop::Container()->getDB()->insert('teinstellungen', $oAktWert);
-            }
+            Shop::Container()->getDB()->insert('teinstellungen', $oAktWert);
         }
     }
 }
 
 /**
- * @param int $kEinstellungenSektion
+ * @param int   $kEinstellungenSektion
  * @param array $cPost_arr
  * @param array $tags
  * @return string
  */
-function saveAdminSectionSettings($kEinstellungenSektion, &$cPost_arr, $tags = [CACHING_GROUP_OPTION])
+function saveAdminSectionSettings(int $kEinstellungenSektion, &$cPost_arr, $tags = [CACHING_GROUP_OPTION])
 {
-    if (!validateToken()) {
+    if (!FormHelper::validateToken()) {
         return 'Fehler: Cross site request forgery.';
     }
-    $kEinstellungenSektion = (int)$kEinstellungenSektion;
-    $oConfig_arr           = Shop::Container()->getDB()->selectAll(
+    $oConfig_arr = Shop::Container()->getDB()->selectAll(
         'teinstellungenconf',
         ['kEinstellungenSektion', 'cConf'],
         [$kEinstellungenSektion, 'Y'],
         '*',
         'nSort'
     );
-
-    if (is_array($oConfig_arr) && count($oConfig_arr) > 0) {
-        foreach ($oConfig_arr as $config) {
-            $aktWert                        = new stdClass();
-            $aktWert->cWert                 = $cPost_arr[$config->cWertName] ?? null;
-            $aktWert->cName                 = $config->cWertName;
-            $aktWert->kEinstellungenSektion = $kEinstellungenSektion;
-            switch ($config->cInputTyp) {
-                case 'kommazahl':
-                    $aktWert->cWert = (float)str_replace(',', '.', $aktWert->cWert);
-                    break;
-                case 'zahl':
-                case 'number':
-                    $aktWert->cWert = (int)$aktWert->cWert;
-                    break;
-                case 'text':
-                    $aktWert->cWert = substr($aktWert->cWert, 0, 255);
-                    break;
-                case 'listbox':
-                case 'selectkdngrp':
-                    bearbeiteListBox($aktWert->cWert, $config->cWertName, $kEinstellungenSektion);
-                    break;
-            }
-
-            if ($config->cInputTyp !== 'listbox' && $config->cInputTyp !== 'selectkdngrp') {
-                Shop::Container()->getDB()->delete(
-                    'teinstellungen',
-                    ['kEinstellungenSektion', 'cName'],
-                    [$kEinstellungenSektion, $config->cWertName]
-                );
-                Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
-            }
-        }
-        Shop::Cache()->flushTags($tags);
-
-        return 'Ihre Einstellungen wurden erfolgreich &uuml;bernommen.';
+    if (count($oConfig_arr) === 0) {
+        return 'Fehler beim Speichern Ihrer Einstellungen.';
     }
+    foreach ($oConfig_arr as $config) {
+        $aktWert                        = new stdClass();
+        $aktWert->cWert                 = $cPost_arr[$config->cWertName] ?? null;
+        $aktWert->cName                 = $config->cWertName;
+        $aktWert->kEinstellungenSektion = $kEinstellungenSektion;
+        switch ($config->cInputTyp) {
+            case 'kommazahl':
+                $aktWert->cWert = (float)str_replace(',', '.', $aktWert->cWert);
+                break;
+            case 'zahl':
+            case 'number':
+                $aktWert->cWert = (int)$aktWert->cWert;
+                break;
+            case 'text':
+                $aktWert->cWert = substr($aktWert->cWert, 0, 255);
+                break;
+            case 'listbox':
+            case 'selectkdngrp':
+                bearbeiteListBox($aktWert->cWert, $config->cWertName, $kEinstellungenSektion);
+                break;
+        }
 
-    return 'Fehler beim Speichern Ihrer Einstellungen.';
+        if ($config->cInputTyp !== 'listbox' && $config->cInputTyp !== 'selectkdngrp') {
+            Shop::Container()->getDB()->delete(
+                'teinstellungen',
+                ['kEinstellungenSektion', 'cName'],
+                [$kEinstellungenSektion, $config->cWertName]
+            );
+            Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
+        }
+    }
+    Shop::Cache()->flushTags($tags);
+
+    return 'Ihre Einstellungen wurden erfolgreich übernommen.';
 }
 
 /**
@@ -208,7 +204,7 @@ function saveAdminSectionSettings($kEinstellungenSektion, &$cPost_arr, $tags = [
  * @param bool $bAktivAbfragen
  * @return array
  */
-function holeAlleKampagnen($bInterneKampagne = false, $bAktivAbfragen = true)
+function holeAlleKampagnen(bool $bInterneKampagne = false, bool $bAktivAbfragen = true)
 {
     $cAktivSQL  = $bAktivAbfragen ? " WHERE nAktiv = 1" : '';
     $cInternSQL = '';
@@ -223,15 +219,13 @@ function holeAlleKampagnen($bInterneKampagne = false, $bAktivAbfragen = true)
             FROM tkampagne
             " . $cAktivSQL . "
             " . $cInternSQL . "
-            ORDER BY kKampagne", 2
+            ORDER BY kKampagne",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-
-    if (is_array($oKampagneTMP_arr) && count($oKampagneTMP_arr) > 0) {
-        foreach ($oKampagneTMP_arr as $oKampagneTMP) {
-            $oKampagne = new Kampagne($oKampagneTMP->kKampagne);
-            if (isset($oKampagne->kKampagne) && $oKampagne->kKampagne > 0) {
-                $oKampagne_arr[$oKampagne->kKampagne] = $oKampagne;
-            }
+    foreach ($oKampagneTMP_arr as $oKampagneTMP) {
+        $oKampagne = new Kampagne($oKampagneTMP->kKampagne);
+        if (isset($oKampagne->kKampagne) && $oKampagne->kKampagne > 0) {
+            $oKampagne_arr[$oKampagne->kKampagne] = $oKampagne;
         }
     }
 
@@ -243,39 +237,36 @@ function holeAlleKampagnen($bInterneKampagne = false, $bAktivAbfragen = true)
  * @param int   $nLevel
  * @return array
  */
-function getArrangedArray($oXML_arr, $nLevel = 1)
+function getArrangedArray($oXML_arr, int $nLevel = 1)
 {
-    $nLevel = (int)$nLevel;
-    if (is_array($oXML_arr)) {
-        $cArrayKeys = array_keys($oXML_arr);
-        $nCount     = count($oXML_arr);
-        for ($i = 0; $i < $nCount; $i++) {
-            if (strpos($cArrayKeys[$i], ' attr') !== false) {
-                //attribut array -> nicht beachten -> weiter
+    if (!is_array($oXML_arr)) {
+        return $oXML_arr;
+    }
+    $cArrayKeys = array_keys($oXML_arr);
+    $nCount     = count($oXML_arr);
+    for ($i = 0; $i < $nCount; $i++) {
+        if (strpos($cArrayKeys[$i], ' attr') !== false) {
+            //attribut array -> nicht beachten -> weiter
+            continue;
+        }
+        if ($nLevel === 0 || (int)$cArrayKeys[$i] > 0 || $cArrayKeys[$i] == '0') {
+            //int Arrayelement -> in die Tiefe gehen
+            $oXML_arr[$cArrayKeys[$i]] = getArrangedArray($oXML_arr[$cArrayKeys[$i]]);
+        } elseif (isset($oXML_arr[$cArrayKeys[$i]][0])) {
+            $oXML_arr[$cArrayKeys[$i]] = getArrangedArray($oXML_arr[$cArrayKeys[$i]]);
+        } else {
+            if ($oXML_arr[$cArrayKeys[$i]] === '') {
+                //empty node
                 continue;
-            } else {
-                if ($nLevel === 0 || (int)$cArrayKeys[$i] > 0 || $cArrayKeys[$i] == '0') {
-                    //int Arrayelement -> in die Tiefe gehen
-                    $oXML_arr[$cArrayKeys[$i]] = getArrangedArray($oXML_arr[$cArrayKeys[$i]]);
-                } else {
-                    if (isset($oXML_arr[$cArrayKeys[$i]][0])) {
-                        $oXML_arr[$cArrayKeys[$i]] = getArrangedArray($oXML_arr[$cArrayKeys[$i]]);
-                    } else {
-                        if ($oXML_arr[$cArrayKeys[$i]] === '') {
-                            //empty node
-                            continue;
-                        }
-                        //kein Attributzweig, kein numerischer Anfang
-                        $tmp_arr           = [];
-                        $tmp_arr['0 attr'] = $oXML_arr[$cArrayKeys[$i] . ' attr'] ?? null;
-                        $tmp_arr['0']      = $oXML_arr[$cArrayKeys[$i]];
-                        unset($oXML_arr[$cArrayKeys[$i]], $oXML_arr[$cArrayKeys[$i] . ' attr']);
-                        $oXML_arr[$cArrayKeys[$i]] = $tmp_arr;
-                        if (is_array($oXML_arr[$cArrayKeys[$i]]['0'])) {
-                            $oXML_arr[$cArrayKeys[$i]]['0'] = getArrangedArray($oXML_arr[$cArrayKeys[$i]]['0']);
-                        }
-                    }
-                }
+            }
+            //kein Attributzweig, kein numerischer Anfang
+            $tmp_arr           = [];
+            $tmp_arr['0 attr'] = $oXML_arr[$cArrayKeys[$i] . ' attr'] ?? null;
+            $tmp_arr['0']      = $oXML_arr[$cArrayKeys[$i]];
+            unset($oXML_arr[$cArrayKeys[$i]], $oXML_arr[$cArrayKeys[$i] . ' attr']);
+            $oXML_arr[$cArrayKeys[$i]] = $tmp_arr;
+            if (is_array($oXML_arr[$cArrayKeys[$i]]['0'])) {
+                $oXML_arr[$cArrayKeys[$i]]['0'] = getArrangedArray($oXML_arr[$cArrayKeys[$i]]['0']);
             }
         }
     }
@@ -290,25 +281,25 @@ function holeBewertungserinnerungSettings()
 {
     $Einstellungen = [];
     // Einstellungen für die Bewertung holen
-    $oEinstellungen_arr = Shop::Container()->getDB()->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_BEWERTUNG);
-    if (is_array($oEinstellungen_arr) && count($oEinstellungen_arr) > 0) {
-        $Einstellungen['bewertung']                                       = [];
-        $Einstellungen['bewertung']['bewertungserinnerung_kundengruppen'] = [];
+    $oEinstellungen_arr = Shop::Container()->getDB()->selectAll(
+        'teinstellungen',
+        'kEinstellungenSektion',
+        CONF_BEWERTUNG
+    );
+    $Einstellungen['bewertung']                                       = [];
+    $Einstellungen['bewertung']['bewertungserinnerung_kundengruppen'] = [];
 
-        foreach ($oEinstellungen_arr as $oEinstellungen) {
-            if ($oEinstellungen->cName) {
-                if ($oEinstellungen->cName === 'bewertungserinnerung_kundengruppen') {
-                    $Einstellungen['bewertung'][$oEinstellungen->cName][] = $oEinstellungen->cWert;
-                } else {
-                    $Einstellungen['bewertung'][$oEinstellungen->cName] = $oEinstellungen->cWert;
-                }
+    foreach ($oEinstellungen_arr as $oEinstellungen) {
+        if ($oEinstellungen->cName) {
+            if ($oEinstellungen->cName === 'bewertungserinnerung_kundengruppen') {
+                $Einstellungen['bewertung'][$oEinstellungen->cName][] = $oEinstellungen->cWert;
+            } else {
+                $Einstellungen['bewertung'][$oEinstellungen->cName] = $oEinstellungen->cWert;
             }
         }
-
-        return $Einstellungen['bewertung'];
     }
 
-    return $Einstellungen;
+    return $Einstellungen['bewertung'];
 }
 
 /**
@@ -316,7 +307,7 @@ function holeBewertungserinnerungSettings()
  */
 function setzeSprache()
 {
-    if (validateToken() && verifyGPCDataInteger('sprachwechsel') === 1) {
+    if (FormHelper::validateToken() && RequestHelper::verifyGPCDataInt('sprachwechsel') === 1) {
         // Wähle explizit gesetzte Sprache als aktuelle Sprache
         $oSprache = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$_POST['kSprache']);
 
@@ -357,7 +348,7 @@ function setzeSpracheTrustedShops()
         'pl' => 'Polnisch',
         'es' => 'Spanisch'
     ];
-    //setze std Sprache als aktuelle Sprache
+    // setze std Sprache als aktuelle Sprache
     if (!isset($_SESSION['TrustedShops']->oSprache->cISOSprache)) {
         if (!isset($_SESSION['TrustedShops'])) {
             $_SESSION['TrustedShops']           = new stdClass();
@@ -366,15 +357,12 @@ function setzeSpracheTrustedShops()
         $_SESSION['TrustedShops']->oSprache->cISOSprache  = 'de';
         $_SESSION['TrustedShops']->oSprache->cNameSprache = $cISOSprache_arr['de'];
     }
-
-    //setze explizit ausgewählte Sprache
-    if (isset($_POST['sprachwechsel']) && (int)$_POST['sprachwechsel'] === 1) {
-        if (strlen($_POST['cISOSprache']) > 0) {
-            $_SESSION['TrustedShops']->oSprache->cISOSprache  =
-                StringHandler::htmlentities(StringHandler::filterXSS($_POST['cISOSprache']));
-            $_SESSION['TrustedShops']->oSprache->cNameSprache =
-                $cISOSprache_arr[StringHandler::htmlentities(StringHandler::filterXSS($_POST['cISOSprache']))];
-        }
+    // setze explizit ausgewählte Sprache
+    if (isset($_POST['sprachwechsel']) && (int)$_POST['sprachwechsel'] === 1 && strlen($_POST['cISOSprache']) > 0) {
+        $_SESSION['TrustedShops']->oSprache->cISOSprache  =
+            StringHandler::htmlentities(StringHandler::filterXSS($_POST['cISOSprache']));
+        $_SESSION['TrustedShops']->oSprache->cNameSprache =
+            $cISOSprache_arr[StringHandler::htmlentities(StringHandler::filterXSS($_POST['cISOSprache']))];
     }
 }
 
@@ -452,7 +440,7 @@ function ermittleDatumWoche($cDatum)
         // Wochenende ermitteln
         $nTage               = 6;
         $nAnzahlTageProMonat = date('t', mktime(0, 0, 0, $nMonat, 1, $nJahr));
-        $nTag += $nTage;
+        $nTag                += $nTage;
         if ($nTag > $nAnzahlTageProMonat) {
             $nTag -= $nAnzahlTageProMonat;
             ++$nMonat;
@@ -476,10 +464,13 @@ function ermittleDatumWoche($cDatum)
  * @param bool $bDate
  * @return mixed
  */
-function getJTLVersionDB($bDate = false)
+function getJTLVersionDB(bool $bDate = false)
 {
     $nRet     = 0;
-    $nVersion = Shop::Container()->getDB()->query("SELECT nVersion, dAktualisiert FROM tversion", 1);
+    $nVersion = Shop::Container()->getDB()->query(
+        'SELECT nVersion, dAktualisiert FROM tversion',
+        \DB\ReturnType::SINGLE_OBJECT
+    );
     if (isset($nVersion->nVersion) && is_numeric($nVersion->nVersion)) {
         $nRet = (int)$nVersion->nVersion;
     }
@@ -520,7 +511,7 @@ function getMaxFileSize($size_str)
 function getCurrencyConversionIO($fPreisNetto, $fPreisBrutto, $cTargetID)
 {
     $response = new IOResponse();
-    $cString  = getCurrencyConversion($fPreisNetto, $fPreisBrutto);
+    $cString  = Currency::getCurrencyConversion($fPreisNetto, $fPreisBrutto);
     $response->assign($cTargetID, 'innerHTML', $cString);
 
     return $response;
@@ -535,15 +526,16 @@ function getCurrencyConversionIO($fPreisNetto, $fPreisBrutto, $cTargetID)
 function setCurrencyConversionTooltipIO($fPreisNetto, $fPreisBrutto, $cTooltipID)
 {
     $response = new IOResponse();
-    $cString  = getCurrencyConversion($fPreisNetto, $fPreisBrutto);
+    $cString  = Currency::getCurrencyConversion($fPreisNetto, $fPreisBrutto);
     $response->assign($cTooltipID, 'dataset.originalTitle', $cString);
 
     return $response;
 }
 
 /**
- * @param $title
- * @param $utl
+ * @param string $title
+ * @param string $url
+ * @return array|IOError
  */
 function addFav($title, $url)
 {
@@ -571,12 +563,12 @@ function addFav($title, $url)
  */
 function reloadFavs()
 {
-    global $smarty, $oAccount;
+    global $oAccount;
 
-    $smarty->assign('favorites', $oAccount->favorites());
-    $tpl = $smarty->fetch('tpl_inc/favs_drop.tpl');
+    $tpl = Shop::Smarty()->assign('favorites', $oAccount->favorites())
+                         ->fetch('tpl_inc/favs_drop.tpl');
 
-    return [ 'tpl' => $tpl ];
+    return ['tpl' => $tpl];
 }
 
 /**
@@ -585,8 +577,31 @@ function reloadFavs()
 function getNotifyDropIO()
 {
     Shop::Smarty()->assign('notifications', Notification::getInstance());
+
     return [
-        'tpl' => Shop::Smarty()->fetch('tpl_inc/notify_drop.tpl'),
+        'tpl'  => Shop::Smarty()->fetch('tpl_inc/notify_drop.tpl'),
         'type' => 'notify'
     ];
+}
+
+/**
+ * @param string $filename
+ * @return string delimiter guess
+ * @former guessCsvDelimiter()
+ */
+function getCsvDelimiter($filename)
+{
+    $file      = fopen($filename, 'r');
+    $firstLine = fgets($file);
+
+    foreach ([';', ',', '|', '\t'] as $delim) {
+        if (strpos($firstLine, $delim) !== false) {
+            fclose($file);
+
+            return $delim;
+        }
+    }
+    fclose($file);
+
+    return ';';
 }

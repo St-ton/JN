@@ -66,6 +66,7 @@ function bearbeite($xml)
         $Kunde->kSprache      = (int)$xml['tkunde attr']['kSprache'];
     }
     if (is_array($xml['tkunde'])) {
+        $cryptoService = Shop::Container()->getCryptoService();
         mappe($Kunde, $xml['tkunde'], $GLOBALS['mKunde']);
         // Kundenattribute
         if (isset($xml['tkunde']['tkundenattribut']) &&
@@ -116,9 +117,9 @@ function bearbeite($xml)
             
             if ($Kunde->cMail !== $oKundeAlt->cMail) {
                 // E-Mail Adresse geändert - Verwendung prüfen!
-                if (!valid_email($Kunde->cMail) ||
-                    pruefeEmailblacklist($Kunde->cMail) ||
-                    Shop::Container()->getDB()->select('tkunde', 'cMail', $Kunde->cMail, 'nRegistriert', 1) !== null
+                if (StringHandler::filterEmailAddress($Kunde->cMail) === false
+                    || SimpleMail::checkBlacklist($Kunde->cMail)
+                    || Shop::Container()->getDB()->select('tkunde', 'cMail', $Kunde->cMail, 'nRegistriert', 1) !== null
                 ) {
                     // E-Mail ist invalid, blacklisted bzw. wird bereits im Shop verwendet - die Änderung wird zurückgewiesen.
                     $res_obj['keys']['tkunde attr']['kKunde'] = 0;
@@ -189,20 +190,21 @@ function bearbeite($xml)
                         cHerkunft, dErstellt, dVeraendert, cAktiv, cAbgeholt,
                         date_format(dGeburtstag, '%d.%m.%Y') AS dGeburtstag_formatted, nRegistriert
                         FROM tkunde
-                        WHERE kKunde = " . (int)$oKundeAlt->kKunde, 9
+                        WHERE kKunde = " . (int)$oKundeAlt->kKunde,
+                    \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
                 );
                 $xml_obj['kunden attr']['anzahl'] = 1;
 
-                $xml_obj['kunden']['tkunde'][0]['cNachname'] = trim(entschluesselXTEA($xml_obj['kunden']['tkunde'][0]['cNachname']));
-                $xml_obj['kunden']['tkunde'][0]['cFirma']    = trim(entschluesselXTEA($xml_obj['kunden']['tkunde'][0]['cFirma']));
-                $xml_obj['kunden']['tkunde'][0]['cZusatz']   = trim(entschluesselXTEA($xml_obj['kunden']['tkunde'][0]['cZusatz']));
-                $xml_obj['kunden']['tkunde'][0]['cStrasse']  = trim(entschluesselXTEA($xml_obj['kunden']['tkunde'][0]['cStrasse']));
-                $xml_obj['kunden']['tkunde'][0]['cAnrede']   = mappeKundenanrede($xml_obj['kunden']['tkunde'][0]['cAnrede'], $xml_obj['kunden']['tkunde'][0]['kSprache']);
+                $xml_obj['kunden']['tkunde'][0]['cNachname'] = trim($cryptoService->decryptXTEA($xml_obj['kunden']['tkunde'][0]['cNachname']));
+                $xml_obj['kunden']['tkunde'][0]['cFirma']    = trim($cryptoService->decryptXTEA($xml_obj['kunden']['tkunde'][0]['cFirma']));
+                $xml_obj['kunden']['tkunde'][0]['cZusatz']   = trim($cryptoService->decryptXTEA($xml_obj['kunden']['tkunde'][0]['cZusatz']));
+                $xml_obj['kunden']['tkunde'][0]['cStrasse']  = trim($cryptoService->decryptXTEA($xml_obj['kunden']['tkunde'][0]['cStrasse']));
+                $xml_obj['kunden']['tkunde'][0]['cAnrede']   = Kunde::mapSalutation($xml_obj['kunden']['tkunde'][0]['cAnrede'], $xml_obj['kunden']['tkunde'][0]['kSprache']);
                 //Strasse und Hausnummer zusammenführen
                 $xml_obj['kunden']['tkunde'][0]['cStrasse'] .= ' ' . $xml_obj['kunden']['tkunde'][0]['cHausnummer'];
                 unset($xml_obj['kunden']['tkunde'][0]['cHausnummer']);
                 //Land ausgeschrieben der Wawi geben
-                $xml_obj['kunden']['tkunde'][0]['cLand'] = ISO2land($xml_obj['kunden']['tkunde'][0]['cLand']);
+                $xml_obj['kunden']['tkunde'][0]['cLand'] = Sprache::getCountryCodeByCountryName($xml_obj['kunden']['tkunde'][0]['cLand']);
 
                 unset($xml_obj['kunden']['tkunde'][0]['cPasswort']);
                 $xml_obj['kunden']['tkunde']['0 attr']             = buildAttributes($xml_obj['kunden']['tkunde'][0]);
@@ -268,10 +270,10 @@ function bearbeite($xml)
                         // Hausnummer extrahieren
                         extractStreet($Lieferadresse);
                         //verschlüsseln: Nachname, Firma, Strasse
-                        $Lieferadresse->cNachname = verschluesselXTEA(trim($Lieferadresse->cNachname));
-                        $Lieferadresse->cFirma    = verschluesselXTEA(trim($Lieferadresse->cFirma));
-                        $Lieferadresse->cZusatz   = verschluesselXTEA(trim($Lieferadresse->cZusatz));
-                        $Lieferadresse->cStrasse  = verschluesselXTEA(trim($Lieferadresse->cStrasse));
+                        $Lieferadresse->cNachname = $cryptoService->encryptXTEA(trim($Lieferadresse->cNachname));
+                        $Lieferadresse->cFirma    = $cryptoService->encryptXTEA(trim($Lieferadresse->cFirma));
+                        $Lieferadresse->cZusatz   = $cryptoService->encryptXTEA(trim($Lieferadresse->cZusatz));
+                        $Lieferadresse->cStrasse  = $cryptoService->encryptXTEA(trim($Lieferadresse->cStrasse));
                         $Lieferadresse->cAnrede   = mappeWawiAnrede2ShopAnrede($Lieferadresse->cAnrede);
                         DBUpdateInsert('tlieferadresse', [$Lieferadresse], 'kLieferadresse');
                     } else {
@@ -280,10 +282,10 @@ function bearbeite($xml)
                         // Hausnummer extrahieren
                         extractStreet($Lieferadresse);
                         //verschlüsseln: Nachname, Firma, Strasse
-                        $Lieferadresse->cNachname = verschluesselXTEA(trim($Lieferadresse->cNachname));
-                        $Lieferadresse->cFirma    = verschluesselXTEA(trim($Lieferadresse->cFirma));
-                        $Lieferadresse->cZusatz   = verschluesselXTEA(trim($Lieferadresse->cZusatz));
-                        $Lieferadresse->cStrasse  = verschluesselXTEA(trim($Lieferadresse->cStrasse));
+                        $Lieferadresse->cNachname = $cryptoService->encryptXTEA(trim($Lieferadresse->cNachname));
+                        $Lieferadresse->cFirma    = $cryptoService->encryptXTEA(trim($Lieferadresse->cFirma));
+                        $Lieferadresse->cZusatz   = $cryptoService->encryptXTEA(trim($Lieferadresse->cZusatz));
+                        $Lieferadresse->cStrasse  = $cryptoService->encryptXTEA(trim($Lieferadresse->cStrasse));
                         $Lieferadresse->cAnrede   = mappeWawiAnrede2ShopAnrede($Lieferadresse->cAnrede);
                         $kInetLieferadresse       = DBinsert('tlieferadresse', $Lieferadresse);
                         if ($kInetLieferadresse > 0) {
@@ -315,10 +317,10 @@ function bearbeite($xml)
                     // Hausnummer extrahieren
                     extractStreet($Lieferadresse);
                     //verschlüsseln: Nachname, Firma, Strasse
-                    $Lieferadresse->cNachname = verschluesselXTEA(trim($Lieferadresse->cNachname));
-                    $Lieferadresse->cFirma    = verschluesselXTEA(trim($Lieferadresse->cFirma));
-                    $Lieferadresse->cZusatz   = verschluesselXTEA(trim($Lieferadresse->cZusatz));
-                    $Lieferadresse->cStrasse  = verschluesselXTEA(trim($Lieferadresse->cStrasse));
+                    $Lieferadresse->cNachname = $cryptoService->encryptXTEA(trim($Lieferadresse->cNachname));
+                    $Lieferadresse->cFirma    = $cryptoService->encryptXTEA(trim($Lieferadresse->cFirma));
+                    $Lieferadresse->cZusatz   = $cryptoService->encryptXTEA(trim($Lieferadresse->cZusatz));
+                    $Lieferadresse->cStrasse  = $cryptoService->encryptXTEA(trim($Lieferadresse->cStrasse));
                     $Lieferadresse->cAnrede   = mappeWawiAnrede2ShopAnrede($Lieferadresse->cAnrede);
                     DBUpdateInsert('tlieferadresse', [$Lieferadresse], 'kLieferadresse');
                 } else {
@@ -330,10 +332,10 @@ function bearbeite($xml)
                     // Hausnummer extrahieren
                     extractStreet($Lieferadresse);
                     //verschlüsseln: Nachname, Firma, Strasse
-                    $Lieferadresse->cNachname = verschluesselXTEA(trim($Lieferadresse->cNachname));
-                    $Lieferadresse->cFirma    = verschluesselXTEA(trim($Lieferadresse->cFirma));
-                    $Lieferadresse->cZusatz   = verschluesselXTEA(trim($Lieferadresse->cZusatz));
-                    $Lieferadresse->cStrasse  = verschluesselXTEA(trim($Lieferadresse->cStrasse));
+                    $Lieferadresse->cNachname = $cryptoService->encryptXTEA(trim($Lieferadresse->cNachname));
+                    $Lieferadresse->cFirma    = $cryptoService->encryptXTEA(trim($Lieferadresse->cFirma));
+                    $Lieferadresse->cZusatz   = $cryptoService->encryptXTEA(trim($Lieferadresse->cZusatz));
+                    $Lieferadresse->cStrasse  = $cryptoService->encryptXTEA(trim($Lieferadresse->cStrasse));
                     $Lieferadresse->cAnrede   = mappeWawiAnrede2ShopAnrede($Lieferadresse->cAnrede);
                     $kInetLieferadresse       = DBinsert('tlieferadresse', $Lieferadresse);
                     if ($kInetLieferadresse > 0) {
@@ -371,7 +373,8 @@ function speicherKundenattribut($kKunde, $kSprache, $oKundenattribut_arr, $bNeu)
                      LEFT JOIN tkundenfeldwert
                         ON tkundenfeldwert.kKundenfeld = tkundenfeld.kKundenfeld
                      WHERE tkundenfeld.cWawi = '" . $oKundenattribut->cName . "'
-                        AND tkundenfeld.kSprache = " . $kSprache, 1
+                        AND tkundenfeld.kSprache = " . $kSprache,
+                \DB\ReturnType::SINGLE_OBJECT
             );
             if (isset($oKundenfeld->kKundenfeld) && $oKundenfeld->kKundenfeld > 0) {
                 if (strlen($oKundenfeld->cWert) > 0 && $oKundenfeld->cWert != $oKundenattribut->cWert) {

@@ -15,6 +15,8 @@ use Filter\Items\ItemRating;
 use Filter\Items\ItemSearchSpecial;
 use Filter\Items\ItemTag;
 use Filter\States\BaseSearchQuery;
+use function Functional\first;
+use Session\Session;
 
 /**
  * Class ProductFilterURL
@@ -188,28 +190,27 @@ class ProductFilterURL
             foreach ($filters as $f) {
                 if (!empty($f->seo) && !empty($f->sep)) {
                     $seoFilterParams[] = $f;
+                } elseif (!isset($nonSeoFilterParams[$filterID])) {
+                    $nonSeoFilterParams[$filterID] = $f->value;
+                } elseif (!is_array($nonSeoFilterParams[$filterID])) {
+                    $nonSeoFilterParams[$filterID]   = [$nonSeoFilterParams[$filterID]];
+                    $nonSeoFilterParams[$filterID][] = $f->value;
                 } else {
-                    if (!isset($nonSeoFilterParams[$filterID])) {
-                        $nonSeoFilterParams[$filterID] = $f->value;
-                    } elseif (!is_array($nonSeoFilterParams[$filterID])) {
-                        $nonSeoFilterParams[$filterID]   = [$nonSeoFilterParams[$filterID]];
-                        $nonSeoFilterParams[$filterID][] = $f->value;
-                    } else {
-                        $nonSeoFilterParams[$filterID][] = $f->value;
-                    }
+                    $nonSeoFilterParams[$filterID][] = $f->value;
                 }
             }
         }
-        if ($languageID !== \Shop::getLanguageID()) {
-            $languageCode = null;
-            foreach (\Session::Languages() as $language) {
-                if ($language->kSprache === $languageID) {
-                    $languageCode = $language->cISO;
-                }
+        if (empty($seoFilterParams) && $languageID !== \Shop::getLanguageID()) {
+            $language = first(Session::Languages(), function ($l) use ($languageID) {
+                return $l->kSprache === $languageID;
+            });
+            if ($language !== null) {
+                $nonSeoFilterParams['lang'] = $language->cISO;
             }
-            if ($languageCode !== null) {
-                $nonSeoFilterParams['lang'] = $languageCode;
-            }
+        }
+        if ($debug) {
+            \Shop::dbg($seoFilterParams, false, '$seoFilterParams:');
+            \Shop::dbg($nonSeoFilterParams, false, '$nonSeoFilterParams:');
         }
         $url .= $this->buildURLString($seoFilterParams, $nonSeoFilterParams);
         if ($debug) {
@@ -222,9 +223,9 @@ class ProductFilterURL
     /**
      * @param \stdClass[] $seoParts
      * @param array       $nonSeoParts
-     * @return mixed
+     * @return string
      */
-    private function buildURLString($seoParts, $nonSeoParts)
+    private function buildURLString(array $seoParts, array $nonSeoParts): string
     {
         $url = '';
         foreach ($seoParts as $seoData) {
@@ -251,7 +252,7 @@ class ProductFilterURL
     public function createUnsetFilterURLs($url, $searchResults = null): NavigationURLsInterface
     {
         if ($searchResults === null) {
-            $searchResults = $this->productFilter->getSearchResults(false);
+            $searchResults = $this->productFilter->getSearchResults();
         }
         $extraFilter    = (new ItemCategory($this->productFilter))->init(null)->setDoUnset(true);
         $_categoriesURL = $this->getURL($extraFilter);
@@ -276,7 +277,6 @@ class ProductFilterURL
         }
 
         $additionalFilter = (new ItemAttribute($this->productFilter))->setDoUnset(true);
-        $_attributesURLs  = [];
         foreach ($this->productFilter->getAttributeFilter() as $filter) {
             if ($filter->getAttributeID() > 0) {
                 $url->addAttribute($filter->getAttributeID(), $this->getURL(
@@ -373,7 +373,6 @@ class ProductFilterURL
                  ) as $filter
         ) {
             /** @var FilterInterface $filter */
-            $className   = $filter->getClassName();
             $extraFilter = clone $filter;
             $urls        = [];
             $extraFilter->setDoUnset(true);
@@ -390,8 +389,8 @@ class ProductFilterURL
         }
         // Filter reset
         $pages  = $searchResults->getPages();
-        $cSeite = $pages->AktuelleSeite > 1
-            ? SEP_SEITE . $pages->AktuelleSeite
+        $cSeite = $pages->getCurrentPage() > 1
+            ? SEP_SEITE . $pages->getCurrentPage()
             : '';
 
         $url->setUnsetAll($this->getURL(null, true) . $cSeite);

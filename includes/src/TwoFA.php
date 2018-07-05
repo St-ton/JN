@@ -52,7 +52,7 @@ class TwoFA
      *
      * @return bool - true="2FA is active"|false="2FA inactive"
      */
-    public function is2FAauth()
+    public function is2FAauth(): bool
     {
         return (bool)$this->oUserTuple->b2FAauth;
     }
@@ -62,7 +62,7 @@ class TwoFA
      *
      * @return bool - true="secret is there"|false="no secret"
      */
-    public function is2FAauthSecretExist()
+    public function is2FAauthSecretExist(): bool
     {
         return ('' !== $this->oUserTuple->c2FAauthSecret);
     }
@@ -72,7 +72,7 @@ class TwoFA
      *
      * @return $this
      */
-    public function createNewSecret()
+    public function createNewSecret(): self
     {
         // store a google-authenticator-object instance
         // (only if we want a new secret! (something like lazy loading))
@@ -188,7 +188,7 @@ class TwoFA
     /**
      * deliver the account-data, if there are any
      *
-     * @return object  accountdata if there're any, or null
+     * @return object - accountdata if there's any, or null
      */
     public function getUserTuple()
     {
@@ -198,7 +198,7 @@ class TwoFA
     /**
      * find out the global shop-name, if anyone administer more than one shop
      *
-     * @return string  the name of the current shop
+     * @return string - the name of the current shop
      */
     public function getShopName()
     {
@@ -223,7 +223,7 @@ class TwoFA
     }
 
     /**
-     * @param $userName
+     * @param string $userName
      * @return string
      */
     public static function getNewTwoFA($userName)
@@ -239,10 +239,10 @@ class TwoFA
     }
 
     /**
-     * @param $userName
-     * @return string
+     * @param string $userName
+     * @return stdClass
      */
-    public static function genTwoFAEmergencyCodes($userName)
+    public static function genTwoFAEmergencyCodes($userName): stdClass
     {
         $oTwoFA = new TwoFA();
         $oTwoFA->setUserByName($userName);

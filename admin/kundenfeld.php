@@ -18,14 +18,14 @@ setzeSprache();
 
 // Tabs
 $smarty->assign('cTab', $cStep ?? null);
-if (strlen(verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', verifyGPDataString('tab'));
+if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
 
 // Einstellungen
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $cHinweis .= saveAdminSectionSettings(CONF_KUNDENFELD, $_POST);
-} elseif (isset($_POST['kundenfelder']) && (int)$_POST['kundenfelder'] === 1 && validateToken()) { // Kundenfelder
+} elseif (isset($_POST['kundenfelder']) && (int)$_POST['kundenfelder'] === 1 && FormHelper::validateToken()) { // Kundenfelder
     $success = true;
     if (isset($_POST['loeschen'])) {
         $kKundenfeld_arr = $_POST['kKundenfeld'];
@@ -35,14 +35,14 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
                 $success = $success && $customerFields->delete((int)$kKundenfeld);
             }
             if ($success) {
-                $cHinweis .= "Die ausgew&auml;hlten Kundenfelder wurden erfolgreich gel&ouml;scht.<br />";
+                $cHinweis .= "Die ausgewählten Kundenfelder wurden erfolgreich gelöscht.<br />";
             } else {
-                $cFehler .= 'Die ausgew&auml;hlten Kundenfelder konnten nicht gel&ouml;scht werden.<br />';
+                $cFehler .= 'Die ausgewählten Kundenfelder konnten nicht gelöscht werden.<br />';
             }
         } else {
-            $cFehler .= "Fehler: Bitte w&auml;hlen Sie mindestens ein Kundenfeld aus.<br />";
+            $cFehler .= "Fehler: Bitte wählen Sie mindestens ein Kundenfeld aus.<br />";
         }
-    } elseif (isset($_POST['aktualisieren']) && validateToken()) { // Aktualisieren
+    } elseif (isset($_POST['aktualisieren']) && FormHelper::validateToken()) { // Aktualisieren
         // Kundenfelder auslesen und in Smarty assignen
         foreach ($customerFields->getCustomerFields() as $customerField) {
             $customerField->nSort = (int)$_POST['nSort_' . $customerField->kKundenfeld];
@@ -84,15 +84,15 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
             if (isset($vWrongFields['cName']) && 2 === $vWrongFields['cName']) {
                 $cFehler = 'Ein Feld mit diesen Namen existiert bereits!';
             } else {
-                $cFehler = 'Fehler: Bitte f&uuml;llen Sie alle Pflichtangaben aus!';
+                $cFehler = 'Fehler: Bitte füllen Sie alle Pflichtangaben aus!';
             }
             $smarty->assign('xPlausiVar_arr', $oPlausi->getPlausiVar())
                    ->assign('xPostVar_arr', $oPlausi->getPostVar())
                    ->assign('kKundenfeld', $customerField->kKundenfeld);
         }
     }
-} elseif (verifyGPDataString('a') === 'edit') { // Editieren
-    $kKundenfeld = verifyGPCDataInteger('kKundenfeld');
+} elseif (RequestHelper::verifyGPDataString('a') === 'edit') { // Editieren
+    $kKundenfeld = RequestHelper::verifyGPCDataInt('kKundenfeld');
 
     if ($kKundenfeld > 0) {
         $customerField = $customerFields->getCustomerField($kKundenfeld);
@@ -152,7 +152,7 @@ $smarty->assign('oKundenfeld_arr', $oKundenfeld_arr)
        ->assign('nHighestSortValue', $nHighestSortValue)
        ->assign('nHighestSortDiff', $nHighestSortDiff)
        ->assign('oConfig_arr', $oConfig_arr)
-       ->assign('Sprachen', gibAlleSprachen())
+       ->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->assign('step', $step)

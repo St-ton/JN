@@ -6,9 +6,7 @@
 
 namespace Filter\Items;
 
-use Filter\AbstractFilter;
 use Filter\FilterJoin;
-use Filter\FilterOption;
 use Filter\FilterInterface;
 use Filter\Type;
 use Filter\ProductFilter;
@@ -29,7 +27,8 @@ class ItemTag extends BaseTag
     {
         parent::__construct($productFilter);
         $this->setUrlParam('tf')
-             ->setType($this->getConfig()['navigationsfilter']['tag_filter_type'] === 'O'
+             ->setVisibility($this->getConfig('navigationsfilter')['allgemein_tagfilter_benutzen'])
+             ->setType($this->getConfig('navigationsfilter')['tag_filter_type'] === 'O'
                  ? Type::OR()
                  : Type::AND());
     }

@@ -17,7 +17,7 @@ class NavigationURLs implements NavigationURLsInterface
     /**
      * @var array
      */
-    private static $mapping = [
+    public static $mapping = [
         'cAllePreisspannen' => 'PriceRanges',
         'cAlleBewertungen'  => 'Ratings',
         'cAlleTags'         => 'Tags',
@@ -173,7 +173,7 @@ class NavigationURLs implements NavigationURLsInterface
     /**
      * @inheritdoc
      */
-    function getManufacturers(): string
+    public function getManufacturers(): string
     {
         return $this->manufacturers;
     }

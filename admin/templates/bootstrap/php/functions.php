@@ -52,7 +52,8 @@ function getCurrencyConversionSmarty($params, $smarty)
         $params['cClass'] = '';
     }
 
-    return getCurrencyConversion($params['fPreisNetto'], $params['fPreisBrutto'], $params['cClass'], $bForceSteuer);
+    return Currency::getCurrencyConversion($params['fPreisNetto'], $params['fPreisBrutto'], $params['cClass'],
+        $bForceSteuer);
 }
 
 /**
@@ -203,7 +204,7 @@ function formatVersion($params, $smarty)
 /**
  * Get either a Gravatar URL or complete image tag for a specified email address.
  *
- * @param array $params
+ * @param array     $params
  *
  * array['email'] - The email address
  * array['s']     - Size in pixels, defaults to 80px [ 1 - 2048 ]
@@ -246,7 +247,7 @@ function captchaMarkup($params, $smarty)
 {
     if (isset($params['getBody']) && $params['getBody']) {
         return Shop::Container()->getCaptchaService()->getBodyMarkup($smarty);
-    } else {
-        return Shop::Container()->getCaptchaService()->getHeadMarkup($smarty);
     }
+
+    return Shop::Container()->getCaptchaService()->getHeadMarkup($smarty);
 }

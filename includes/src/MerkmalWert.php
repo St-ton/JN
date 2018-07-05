@@ -110,7 +110,7 @@ class MerkmalWert
      * @param int $kMerkmalWert - Falls angegeben, wird der MerkmalWert mit angegebenem kMerkmalWert aus der DB geholt
      * @param int $kSprache
      */
-    public function __construct($kMerkmalWert = 0, $kSprache = 0)
+    public function __construct(int $kMerkmalWert = 0, int $kSprache = 0)
     {
         if ($kMerkmalWert > 0) {
             $this->loadFromDB($kMerkmalWert, $kSprache);
@@ -124,9 +124,9 @@ class MerkmalWert
      * @param int $kSprache
      * @return $this
      */
-    public function loadFromDB($kMerkmalWert, $kSprache = 0)
+    public function loadFromDB(int $kMerkmalWert, int $kSprache = 0)
     {
-        $kSprache     = (int)$kSprache === 0 ? Shop::getLanguageID() : (int)$kSprache;
+        $kSprache     = $kSprache === 0 ? Shop::getLanguageID() : $kSprache;
         $id           = 'mmw_' . $kMerkmalWert . '_' . $kSprache;
         if (Shop::has($id)) {
             foreach (get_object_vars(Shop::get($id)) as $k => $v) {
@@ -135,7 +135,7 @@ class MerkmalWert
 
             return $this;
         }
-        $kStandardSprache = gibStandardsprache()->kSprache;
+        $kStandardSprache = Sprache::getDefaultLanguage()->kSprache;
         if ($kSprache !== $kStandardSprache) {
             $cSelect = "COALESCE(fremdSprache.kSprache, standardSprache.kSprache) AS kSprache, 
                         COALESCE(fremdSprache.cWert, standardSprache.cWert) AS cWert,
@@ -169,8 +169,8 @@ class MerkmalWert
             foreach ($cMember_arr as $cMember) {
                 $this->$cMember = $oMerkmalWert->$cMember;
             }
-            $this->cURL     = baueURL($this, URLART_MERKMAL);
-            $this->cURLFull = baueURL($this, URLART_MERKMAL, 0, false, true);
+            $this->cURL     = UrlHelper::buildURL($this, URLART_MERKMAL);
+            $this->cURLFull = UrlHelper::buildURL($this, URLART_MERKMAL, true);
             executeHook(HOOK_MERKMALWERT_CLASS_LOADFROMDB, ['oMerkmalWert' => &$this]);
         }
         $imageBaseURL = Shop::getImageBaseURL();
@@ -209,15 +209,14 @@ class MerkmalWert
         if ($kMerkmal <= 0) {
             return [];
         }
-        $oMerkmalWert_arr = [];
-        $kSprache         = Shop::getLanguage();
+        $kSprache = Shop::getLanguage();
         if (!$kSprache) {
-            $oSprache = gibStandardsprache();
+            $oSprache = Sprache::getDefaultLanguage();
             if (isset($oSprache->kSprache) && $oSprache->kSprache > 0) {
                 $kSprache = (int)$oSprache->kSprache;
             }
         }
-        $kStandardSprache = (int)gibStandardsprache()->kSprache;
+        $kStandardSprache = (int)Sprache::getDefaultLanguage()->kSprache;
         if ($kSprache !== $kStandardSprache) {
             $cSelect = "COALESCE(fremdSprache.kSprache, standardSprache.kSprache) AS kSprache, 
                         COALESCE(fremdSprache.cWert, standardSprache.cWert) AS cWert,
@@ -249,8 +248,8 @@ class MerkmalWert
         );
         $imageBaseURL = Shop::getImageBaseURL();
         foreach ($oMerkmalWert_arr as $i => $oMerkmalWert) {
-            $oMerkmalWert->cURL     = baueURL($oMerkmalWert, URLART_MERKMAL);
-            $oMerkmalWert->cURLFull = baueURL($oMerkmalWert, URLART_MERKMAL, 0, false, true);
+            $oMerkmalWert->cURL     = UrlHelper::buildURL($oMerkmalWert, URLART_MERKMAL);
+            $oMerkmalWert->cURLFull = UrlHelper::buildURL($oMerkmalWert, URLART_MERKMAL, true);
 
             if (isset($oMerkmalWert->cBildpfad) && strlen($oMerkmalWert->cBildpfad) > 0) {
                 $oMerkmalWert->cBildpfadKlein  = PFAD_MERKMALWERTBILDER_KLEIN . $oMerkmalWert->cBildpfad;

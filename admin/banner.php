@@ -10,9 +10,9 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'banner_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 $cFehler  = '';
 $cHinweis = '';
-$cAction  = (isset($_REQUEST['action']) && validateToken()) ? $_REQUEST['action'] : 'view';
+$cAction  = (isset($_REQUEST['action']) && FormHelper::validateToken()) ? $_REQUEST['action'] : 'view';
 
-if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && validateToken()) {
+if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && FormHelper::validateToken()) {
     $cPlausi_arr = [];
     $oBanner     = new ImageMap();
     $kImageMap   = (isset($_POST['kImageMap']) ? (int)$_POST['kImageMap'] : null);
@@ -109,7 +109,7 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
             $cFehler = 'Banner konnte nicht angelegt werden.';
         }
     } else {
-        $cFehler = 'Bitte f&uuml;llen Sie alle Pflichtfelder die mit einem * marktiert sind aus';
+        $cFehler = 'Bitte füllen Sie alle Pflichtfelder die mit einem * marktiert sind aus';
         $smarty->assign('cPlausi_arr', $cPlausi_arr)
                ->assign('cName', $_POST['cName'] ?? null)
                ->assign('vDatum', $_POST['vDatum'] ?? null)

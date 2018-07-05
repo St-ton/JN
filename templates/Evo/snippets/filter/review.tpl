@@ -1,5 +1,5 @@
 <ul class="{if isset($class)}{$class}{else}nav nav-list{/if}">
-    {foreach name=bewertungen from=$Suchergebnisse->Bewertung item=oBewertung}
+    {foreach $Suchergebnisse->Bewertung as $oBewertung}
         {if $NaviFilter->hasRatingFilter() && $NaviFilter->getRatingFilter()->getValue() == $oBewertung->nStern}
             <li>
                 {* @todo: use getter *}
@@ -48,14 +48,14 @@
                         <i class="fa fa-square-o text-muted"></i>
                         <span class="badge pull-right">{$oBewertung->nAnzahl}</span>
                         <span class="value">
-                            {include file="productdetails/rating.tpl" stars=$oBewertung->nStern}
+                            {include file='productdetails/rating.tpl' stars=$oBewertung->nStern}
                             {if $oBewertung->nStern < 5}
                                 <em>
-                                    ({lang key="from" section="productDetails"} {$oBewertung->nStern}
+                                    ({lang key='from' section='productDetails'} {$oBewertung->nStern}
                                     {if $oBewertung->nStern > 1}
-                                        {lang key="starPlural"}
+                                        {lang key='starPlural'}
                                     {else}
-                                        {lang key="starSingular"}
+                                        {lang key='starSingular'}
                                     {/if})
                                 </em>
                             {/if}

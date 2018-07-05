@@ -13,7 +13,7 @@
 <div class="row">
     <div class="col-xs-12">
         {if !isset($Versandarten)}
-            <div class="alert alert-danger">{lang key="noShippingMethodsAvailable" section="checkout"}</div>
+            <div class="alert alert-danger">{lang key='noShippingMethodsAvailable' section='checkout'}</div>
         {else}
             <form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form evo-validate">
                 {$jtl_token}
@@ -21,11 +21,11 @@
                     <fieldset id="checkout-shipping-payment">
                         <legend>{lang section='global' key='shippingOptions'}</legend>
                         <div class="row bottom15 form-group">
-                            {foreach name=shipment from=$Versandarten item=versandart}
+                            {foreach $Versandarten as $versandart}
                             <div id="shipment_{$versandart->kVersandart}" class="col-xs-12">
                                 <div class="radio">
                                     <label for="del{$versandart->kVersandart}" class="btn-block">
-                                        <input name="Versandart" value="{$versandart->kVersandart}" type="radio" class="radio-checkbox" id="del{$versandart->kVersandart}"{if $Versandarten|@count == 1 || $AktiveVersandart == $versandart->kVersandart} checked{/if}{if $smarty.foreach.shipment.first} required{/if}>
+                                        <input name="Versandart" value="{$versandart->kVersandart}" type="radio" class="radio-checkbox" id="del{$versandart->kVersandart}"{if $Versandarten|@count == 1 || $AktiveVersandart == $versandart->kVersandart} checked{/if}{if $versandart@first} required{/if}>
                                         <span class="control-label label-default">
                                             <span class="content">
                                                 <span class="title">{$versandart->angezeigterName|trans}</span>
@@ -39,7 +39,7 @@
                                             </span>
                                             <span class="badge pull-right">{$versandart->cPreisLocalized}</span>
                                             {if isset($versandart->specificShippingcosts_arr)}
-                                                {foreach name=specificShippingcosts from=$versandart->specificShippingcosts_arr item=specificShippingcosts}
+                                                {foreach $versandart->specificShippingcosts_arr as $specificShippingcosts}
                                                     <div class="row">
                                                         <div class="col-xs-8 col-md-9 col-lg-9">
                                                             <ul>
@@ -65,7 +65,7 @@
                                             {/if}
                                             {if !empty($versandart->cLieferdauer|trans) && $Einstellungen.global.global_versandermittlung_lieferdauer_anzeigen === 'Y'}
                                             <span class="btn-block">
-                                                <small>{lang key="shippingTimeLP" section="global"}
+                                                <small>{lang key='shippingTimeLP' section='global'}
                                                     : {$versandart->cLieferdauer|trans}</small>
                                             </span>
                                             {/if}
@@ -82,7 +82,7 @@
                         {if isset($Verpackungsarten) && $Verpackungsarten|@count > 0}
                         <legend>{lang section='checkout' key='additionalPackaging'}</legend>
                         <div class="row bottom15 form-group">
-                            {foreach name=zusatzverpackungen from=$Verpackungsarten item=oVerpackung}
+                            {foreach $Verpackungsarten as $oVerpackung}
                             <div id="packaging_{$oVerpackung->kVerpackung}" class="col-xs-12">
                                 <div class="checkbox">
                                     <label for="pac{$oVerpackung->kVerpackung}" class="btn-block">
@@ -92,7 +92,7 @@
                                                 <span class="title">{$oVerpackung->cName}</span>
                                             </span>
                                             <span class="badge pull-right">
-                                                {if $oVerpackung->nKostenfrei == 1}{lang key="ExemptFromCharges" section="global"}{else}{$oVerpackung->fBruttoLocalized}{/if}
+                                                {if $oVerpackung->nKostenfrei == 1}{lang key='ExemptFromCharges' section='global'}{else}{$oVerpackung->fBruttoLocalized}{/if}
                                             </span>
                                             <span class="btn-block">
                                                 <small>{$oVerpackung->cBeschreibung}</small>
@@ -116,7 +116,7 @@
                 <div class="text-right">
                     <input type="hidden" name="versandartwahl" value="1" />
                     <input type="hidden" name="zahlungsartwahl" value="1" />
-                    <input type="submit" value="{lang key="continueOrder" section="account data"}" class="submit btn btn-lg submit-once btn-primary hidden" />
+                    <input type="submit" value="{lang key='continueOrder' section='account data'}" class="submit btn btn-lg submit-once btn-primary hidden" />
                 </div>
                 {/if}
             </form>

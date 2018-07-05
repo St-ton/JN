@@ -1,24 +1,24 @@
 <div id="comment{$oBewertung->kBewertung}" class="review-comment {if $Einstellungen.bewertung.bewertung_hilfreich_anzeigen === 'Y' && isset($smarty.session.Kunde->kKunde) && $smarty.session.Kunde->kKunde > 0 && $smarty.session.Kunde->kKunde != $oBewertung->kKunde}use_helpful{/if} {if isset($bMostUseful) && $bMostUseful}most_useful{/if}">
     {if $oBewertung->nHilfreich > 0}
-        {block name="productdetails-review-helpful"}
+        {block name='productdetails-review-helpful'}
         <div class="review-helpful-total">
             <small class="text-muted">
                 {if $oBewertung->nHilfreich > 0}
                     {$oBewertung->nHilfreich}
                 {else}
-                    {lang key="nobody" section="product rating"}
+                    {lang key='nobody' section='product rating'}
                 {/if}
-                {lang key="from" section="product rating"} {$oBewertung->nAnzahlHilfreich}
+                {lang key='from' section='product rating'} {$oBewertung->nAnzahlHilfreich}
                 {if $oBewertung->nAnzahlHilfreich > 1}
-                    {lang key="ratingHelpfulCount" section="product rating"}
+                    {lang key='ratingHelpfulCount' section='product rating'}
                 {else}
-                    {lang key="ratingHelpfulCountExt" section="product rating"}
+                    {lang key='ratingHelpfulCountExt' section='product rating'}
                 {/if}
             </small>
         </div>
         {/block}
     {/if}
-    {block name="productdetails-review-content"}
+    {block name='productdetails-review-content'}
     <div class="top5" itemprop="review" itemscope itemtype="http://schema.org/Review">
         <span itemprop="name" class="hidden">{$oBewertung->cTitel}</span>
 
@@ -26,7 +26,7 @@
             <span class="pull-right">
                 {include file='productdetails/rating.tpl' stars=$oBewertung->nSterne}
                 <small class="hide">
-                    <span itemprop="ratingValue">{$oBewertung->nSterne}</span> {lang key="from" section="global"}
+                    <span itemprop="ratingValue">{$oBewertung->nSterne}</span> {lang key='from' section='global'}
                     <span itemprop="bestRating">5</span>
                     <meta itemprop="worstRating" content="1">
                 </small>
@@ -35,10 +35,10 @@
             {if $Einstellungen.bewertung.bewertung_hilfreich_anzeigen === 'Y'}
                 {if isset($smarty.session.Kunde) && $smarty.session.Kunde->kKunde > 0 && $smarty.session.Kunde->kKunde != $oBewertung->kKunde}
                     <span class="review-helpful vmiddle" id="help{$oBewertung->kBewertung}">
-                        <button class="helpful btn btn-blank btn-xs" title="{lang key="yes"}" name="hilfreich_{$oBewertung->kBewertung}" type="submit">
+                        <button class="helpful btn btn-blank btn-xs" title="{lang key='yes'}" name="hilfreich_{$oBewertung->kBewertung}" type="submit">
                             <i class="fa fa-thumbs-up"></i>
                         </button>
-                        <button class="not_helpful btn btn-blank btn-xs" title="{lang key="no"}" name="nichthilfreich_{$oBewertung->kBewertung}" type="submit">
+                        <button class="not_helpful btn btn-blank btn-xs" title="{lang key='no'}" name="nichthilfreich_{$oBewertung->kBewertung}" type="submit">
                             <i class="fa fa-thumbs-down"></i>
                         </button>
                     </span>

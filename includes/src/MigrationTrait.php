@@ -24,14 +24,14 @@ trait MigrationTrait
     protected function __execute($query, $return, $echo = false, $bExecuteHook = false)
     {
         if (JTL_CHARSET === 'iso-8859-1') {
-            $query = utf8_convert_recursive($query, false);
+            $query = StringHandler::utf8_convert_recursive($query, false);
         }
 
         return Shop::Container()->getDB()->executeQuery($query, $return, $echo, $bExecuteHook);
     }
 
     /**
-     * @param $query
+     * @param string $query
      * @param bool $echo
      * @param bool $bExecuteHook
      * @return array|object|int
@@ -42,7 +42,7 @@ trait MigrationTrait
     }
 
     /**
-     * @param $query
+     * @param string $query
      * @param bool $echo
      * @param bool $bExecuteHook
      * @return array|object|int
@@ -53,7 +53,7 @@ trait MigrationTrait
     }
 
     /**
-     * @param $query
+     * @param string $query
      * @param bool $echo
      * @param bool $bExecuteHook
      * @return array|object|int
@@ -64,7 +64,7 @@ trait MigrationTrait
     }
 
     /**
-     * @param $query
+     * @param string $query
      * @param bool $echo
      * @param bool $bExecuteHook
      * @return array|object|int

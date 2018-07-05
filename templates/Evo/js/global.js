@@ -125,7 +125,7 @@ function regionsToState() {
         });
         return false;
 
-    }).trigger('change');
+    });
 }
 
 function loadContent(url)

@@ -11,7 +11,7 @@ use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterOption;
 use Filter\FilterInterface;
-use Filter\Type;
+use Filter\FilterStateSQL;
 use Filter\ProductFilter;
 use Filter\States\BaseSearchQuery;
 
@@ -48,7 +48,7 @@ class ItemSearch extends AbstractFilter
     /**
      * @var array
      */
-    private static $mapping = [
+    public static $mapping = [
         'kSuchanfrage' => 'Value',
         'cSuche'       => 'Name',
         'Fehler'       => 'Error'
@@ -63,14 +63,13 @@ class ItemSearch extends AbstractFilter
     {
         parent::__construct($productFilter);
         $this->setIsCustom(false)
-             ->setUrlParam('sf')
-             ->setUrlParamSEO(null);
+             ->setUrlParam('sf');
     }
 
     /**
      * @return int
      */
-    public function getSearchCacheID()
+    public function getSearchCacheID(): int
     {
         return $this->searchCacheID;
     }
@@ -79,9 +78,9 @@ class ItemSearch extends AbstractFilter
      * @param int $id
      * @return $this
      */
-    public function setSearchCacheID($id)
+    public function setSearchCacheID(int $id)
     {
-        $this->searchCacheID = (int)$id;
+        $this->searchCacheID = $id;
 
         return $this;
     }
@@ -110,7 +109,7 @@ class ItemSearch extends AbstractFilter
      */
     public function setValue($value) : FilterInterface
     {
-        $this->searchID = (int)$value;
+        $this->searchID = $value;
 
         return $this;
     }
@@ -137,7 +136,7 @@ class ItemSearch extends AbstractFilter
                 WHERE cKey = 'kSuchanfrage' 
                     AND kKey = :kkey",
             ['kkey' => $this->getValue()],
-            1
+            ReturnType::SINGLE_OBJECT
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
@@ -202,7 +201,7 @@ class ItemSearch extends AbstractFilter
      * @return bool
      * @former suchanfragenSpeichern
      */
-    public function saveQuery($hits, $query = '', $real = false, $languageIDExt = 0, $filterSpam = true)
+    public function saveQuery($hits, $query = '', $real = false, $languageIDExt = 0, $filterSpam = true): bool
     {
         if ($query === '') {
             $query = $this->getName();
@@ -225,13 +224,13 @@ class ItemSearch extends AbstractFilter
             return false;
         }
         // Ist MD5(IP) bereits X mal im Cache
-        $max_ip_count = (int)$this->getConfig()['artikeluebersicht']['livesuche_max_ip_count'] * 100;
+        $max_ip_count = (int)$this->getConfig('artikeluebersicht')['livesuche_max_ip_count'] * 100;
         $ip_cache_erg = \Shop::Container()->getDB()->executeQueryPrepared(
             'SELECT count(*) AS anzahl
                 FROM tsuchanfragencache
                 WHERE kSprache = :lang
                 AND cIP = :ip',
-            ['lang' => $languageID, 'ip' => gibIP()],
+            ['lang' => $languageID, 'ip' => \RequestHelper::getIP()],
             ReturnType::SINGLE_OBJECT
         );
         $ipUsed       = \Shop::Container()->getDB()->select(
@@ -241,7 +240,7 @@ class ItemSearch extends AbstractFilter
             'cSuche',
             $Suchausdruck,
             'cIP',
-            gibIP(),
+            \RequestHelper::getIP(),
             false,
             'kSuchanfrageCache'
         );
@@ -252,7 +251,7 @@ class ItemSearch extends AbstractFilter
             // Fülle Suchanfragencache
             $searchQueryCache           = new \stdClass();
             $searchQueryCache->kSprache = $languageID;
-            $searchQueryCache->cIP      = gibIP();
+            $searchQueryCache->cIP      = \RequestHelper::getIP();
             $searchQueryCache->cSuche   = $Suchausdruck;
             $searchQueryCache->dZeit    = 'now()';
             \Shop::Container()->getDB()->insert('tsuchanfragencache', $searchQueryCache);
@@ -413,47 +412,45 @@ class ItemSearch extends AbstractFilter
             return $this->options;
         }
         $options = [];
-        if ($this->getConfig()['navigationsfilter']['suchtrefferfilter_nutzen'] === 'N') {
+        if ($this->getConfig('navigationsfilter')['suchtrefferfilter_nutzen'] === 'N') {
             return $options;
         }
         $this->generateSearchCaches();
-        $nLimit = (isset($this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl'])
-            && ($limit = (int)$this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl']) > 0)
+        $nLimit = ($limit = (int)$this->getConfig('navigationsfilter')['suchtrefferfilter_anzahl']) > 0
             ? ' LIMIT ' . $limit
             : '';
-        $state  = $this->productFilter->getCurrentStateData();
-
-        $state->addJoin((new FilterJoin())
+        $sql    = (new FilterStateSQL())->from($this->productFilter->getCurrentStateData());
+        $sql->setSelect([
+            'tsuchanfrage.kSuchanfrage',
+            'tsuchcache.kSuchCache',
+            'tsuchanfrage.cSuche',
+            'tartikel.kArtikel'
+        ]);
+        $sql->setOrderBy(null);
+        $sql->setLimit('');
+        $sql->setGroupBy(['tsuchanfrage.kSuchanfrage', 'tartikel.kArtikel']);
+        $sql->addJoin((new FilterJoin())
             ->setComment('JOIN1 from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('tsuchcachetreffer')
             ->setOn('tartikel.kArtikel = tsuchcachetreffer.kArtikel')
             ->setOrigin(__CLASS__));
-        $state->addJoin((new FilterJoin())
+        $sql->addJoin((new FilterJoin())
             ->setComment('JOIN2 from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('tsuchcache')
             ->setOn('tsuchcache.kSuchCache = tsuchcachetreffer.kSuchCache')
             ->setOrigin(__CLASS__));
-        $state->addJoin((new FilterJoin())
+        $sql->addJoin((new FilterJoin())
             ->setComment('JOIN3 from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('tsuchanfrage')
             ->setOn('tsuchanfrage.cSuche = tsuchcache.cSuche 
                         AND tsuchanfrage.kSprache = ' . $this->getLanguageID())
             ->setOrigin(__CLASS__));
+        $sql->addCondition('tsuchanfrage.nAktiv = 1');
 
-        $state->addCondition('tsuchanfrage.nAktiv = 1');
-
-        $query         = $this->productFilter->getFilterSQL()->getBaseQuery(
-            ['tsuchanfrage.kSuchanfrage', 'tsuchcache.kSuchCache', 'tsuchanfrage.cSuche', 'tartikel.kArtikel'],
-            $state->getJoins(),
-            $state->getConditions(),
-            $state->getHaving(),
-            null,
-            '',
-            ['tsuchanfrage.kSuchanfrage', 'tartikel.kArtikel']
-        );
+        $query         = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
         $searchFilters = \Shop::Container()->getDB()->query(
             'SELECT ssMerkmal.kSuchanfrage, ssMerkmal.kSuchCache, ssMerkmal.cSuche, COUNT(*) AS nAnzahl
                 FROM (' . $query . ') AS ssMerkmal
@@ -512,7 +509,7 @@ class ItemSearch extends AbstractFilter
                 ->setParam($this->getUrlParam())
                 ->setName($searchFilter->cSuche)
                 ->setValue((int)$searchFilter->kSuchanfrage)
-                ->setCount($searchFilter->nAnzahl);
+                ->setCount((int)$searchFilter->nAnzahl);
         }
         $this->options = $options;
 

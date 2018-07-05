@@ -1,6 +1,6 @@
-<section class="panel panel-default box box-login" id="sidebox{$oBox->kBox}">
+<section class="panel panel-default box box-login" id="sidebox{$oBox->getID()}">
     <div class="panel-heading">
-        <h5 class="panel-title">{if empty($smarty.session.Kunde)}{lang key='login'}{else}{lang key='hello'}, {$smarty.session.Kunde->cVorname} {$smarty.session.Kunde->cNachname}{/if}</h5>
+        <div class="panel-title">{if empty($smarty.session.Kunde)}{lang key='login'}{else}{lang key='hello'}, {$smarty.session.Kunde->cVorname} {$smarty.session.Kunde->cNachname}{/if}</div>
     </div>
     <div class="box-body panel-body">
         {if empty($smarty.session.Kunde->kKunde)}
@@ -24,7 +24,7 @@
 
                 <div class="form-group">
                     {if !empty($oRedirect->cURL)}
-                        {foreach name=parameter from=$oRedirect->oParameter_arr item=oParameter}
+                        {foreach $oRedirect->oParameter_arr as $oParameter}
                             <input type="hidden" name="{$oParameter->Name}" value="{$oParameter->Wert}" />
                         {/foreach}
                         <input type="hidden" name="r" value="{$oRedirect->nRedirect}" />

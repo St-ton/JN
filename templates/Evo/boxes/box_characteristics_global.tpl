@@ -1,21 +1,12 @@
-{if isset($oBox->globaleMerkmale) && $oBox->globaleMerkmale|@count > 0}
-    {assign var=gmma value=$oBox->globaleMerkmale}
-{elseif isset($Boxen.oGlobalMerkmal_arr) && $Boxen.oGlobalMerkmal_arr|@count > 0}
-    {assign var=gmma value=$Boxen.oGlobalMerkmal_arr}
-{else}
-    {assign var=gmma value=""}
-{/if}
-
-{foreach name=globalemerkmale from=$gmma item=oMerkmal}
-    {if !empty($oMerkmal)}
-    <section class="panel panel-default box box-global-characteristics" id="sidebox{$oBox->kBox}">
+{foreach $oBox->getItems() as $oMerkmal}
+    <section class="panel panel-default box box-global-characteristics" id="sidebox{$oBox->getID()}">
         <div class="panel-heading">
-            <h5 class="panel-title">
+            <div class="panel-title">
             {if !empty($oMerkmal->cBildpfadKlein) && $oMerkmal->cBildpfadKlein !== $smarty.const.BILD_KEIN_MERKMALBILD_VORHANDEN}
                 <img src="{$oMerkmal->cBildURLKlein}" alt="" class="vmiddle" />
             {/if}
             {$oMerkmal->cName}
-            </h5>
+            </div>
         </div>
         <div class="box-body">
             {if ($oMerkmal->cTyp === 'SELECTBOX') && $oMerkmal->oMerkmalWert_arr|@count > 1}
@@ -25,11 +16,11 @@
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu" aria-labelledby="dropdown-characteristics-{$oMerkmal->kMerkmal}">
-                        {foreach name=merkmalwertfilter from=$oMerkmal->oMerkmalWert_arr item=oMerkmalWert}
+                        {foreach $oMerkmal->oMerkmalWert_arr as $oMerkmalWert}
                             <li role="presentation">
                                 <a role="menuitem" tabindex="-1" href="{$oMerkmalWert->cSeo}">
                                     {if ($oMerkmal->cTyp === 'BILD' || $oMerkmal->cTyp === 'BILD-TEXT') && $oMerkmalWert->nBildKleinVorhanden === 1}
-                                       <img src="{$oMerkmalWert->cBildURLKlein}" alt="{$oMerkmalWert->cWert|escape:"quotes"}" />
+                                       <img src="{$oMerkmalWert->cBildURLKlein}" alt="{$oMerkmalWert->cWert|escape:'quotes'}" />
                                     {/if}
                                     {if $oMerkmal->cTyp !== 'BILD'}
                                         {$oMerkmalWert->cWert}
@@ -41,11 +32,11 @@
                 </div>
             {else}
                 <ul class="nav nav-list">
-                    {foreach name=globalmerkmalwert from=$oMerkmal->oMerkmalWert_arr item=oMerkmalWert}
+                    {foreach $oMerkmal->oMerkmalWert_arr as $oMerkmalWert}
                         <li>
                             <a href="{$oMerkmalWert->cURL}"{if $NaviFilter->hasAttributeValue() && isset($oMerkmalWert->kMerkmalWert) && $NaviFilter->getAttributeValue()->getValue() == $oMerkmalWert->kMerkmalWert} class="active"{/if}>
                                 {if ($oMerkmal->cTyp === 'BILD' || $oMerkmal->cTyp === 'BILD-TEXT') && $oMerkmalWert->nBildKleinVorhanden === 1}
-                                   <img src="{$oMerkmalWert->cBildURLKlein}" alt="{$oMerkmalWert->cWert|escape:"quotes"}" />
+                                   <img src="{$oMerkmalWert->cBildURLKlein}" alt="{$oMerkmalWert->cWert|escape:'quotes'}" />
                                 {/if}
                                 {if $oMerkmal->cTyp !== 'BILD'}
                                     {$oMerkmalWert->cWert}
@@ -57,5 +48,4 @@
             {/if}
         </div>
     </section>
-    {/if}
 {/foreach}

@@ -7,10 +7,8 @@
 namespace Filter\Items;
 
 use Filter\AbstractFilter;
-use Filter\FilterJoin;
 use Filter\FilterOption;
 use Filter\FilterInterface;
-use Filter\Type;
 use Filter\ProductFilter;
 
 /**
@@ -30,6 +28,28 @@ class ItemLimit extends AbstractFilter
         $this->setIsCustom(false)
              ->setUrlParam('af')
              ->setFrontendName(\Shop::Lang()->get('productsPerPage', 'productOverview'));
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getProductsPerPageLimit(): int
+    {
+        if ($this->productFilter->getProductLimit() !== 0) {
+            $limit = $this->productFilter->getProductLimit();
+        } elseif (isset($_SESSION['ArtikelProSeite']) && $_SESSION['ArtikelProSeite'] !== 0) {
+            $limit = $_SESSION['ArtikelProSeite'];
+        } elseif (isset($_SESSION['oErweiterteDarstellung']->nAnzahlArtikel)
+            && $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel !== 0
+        ) {
+            $limit = $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel;
+        } else {
+            $limit = ($max = $this->getConfig('artikeluebersicht')['artikeluebersicht_artikelproseite']) !== 0
+                ? $max
+                : 20;
+        }
+
+        return min($limit, ARTICLES_PER_PAGE_HARD_LIMIT);
     }
 
     /**
@@ -63,9 +83,8 @@ class ItemLimit extends AbstractFilter
         $optionIdx        = $view === ERWDARSTELLUNG_ANSICHT_LISTE
             ? 'products_per_page_list'
             : 'products_per_page_gallery';
-        $limitOptions     = explode(',', $this->getConfig()['artikeluebersicht'][$optionIdx]);
-        $activeValue      = $_SESSION['ArtikelProSeite']
-            ?? $this->productFilter->getMetaData()->getProductsPerPageLimit();
+        $limitOptions     = explode(',', $this->getConfig('artikeluebersicht')[$optionIdx]);
+        $activeValue      = $_SESSION['ArtikelProSeite'] ?? $this->getProductsPerPageLimit();
         foreach ($limitOptions as $i => $limitOption) {
             $limitOption = (int)trim($limitOption);
             $name        = $limitOption > 0 ? $limitOption : \Shop::Lang()->get('showAll');
@@ -79,7 +98,6 @@ class ItemLimit extends AbstractFilter
                 ->setParam($this->getUrlParam())
                 ->setName($name)
                 ->setValue($limitOption)
-                ->setCount(null)
                 ->setSort($i);
         }
         $this->options = $options;

@@ -300,7 +300,7 @@ class MigrationManager
             Shop::Container()->getDB()->pdoEscape($message),
             (new DateTime('now'))->format('Y-m-d H:i:s')
         );
-        Shop::Container()->getDB()->executeQuery($sql, 3);
+        Shop::Container()->getDB()->executeQuery($sql, \DB\ReturnType::AFFECTED_ROWS);
     }
 
     /**
@@ -316,10 +316,10 @@ class MigrationManager
                 "INSERT INTO tmigration (kMigration, dExecuted) VALUES ('%s', '%s');",
                 $migration->getId(), $executed->format('Y-m-d H:i:s')
             );
-            Shop::Container()->getDB()->executeQuery($sql, 3);
+            Shop::Container()->getDB()->executeQuery($sql, \DB\ReturnType::AFFECTED_ROWS);
         } else {
             $sql = sprintf("DELETE FROM tmigration WHERE kMigration = '%s'", $migration->getId());
-            Shop::Container()->getDB()->executeQuery($sql, 3);
+            Shop::Container()->getDB()->executeQuery($sql, \DB\ReturnType::AFFECTED_ROWS);
         }
 
         return $this;

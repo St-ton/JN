@@ -23,7 +23,7 @@
 function handleCsvExportAction($exporterId, $csvFilename, $source, $fields = [], $excluded = [], $delim = ',',
     $bHead = true)
 {
-    if (validateToken() && verifyGPDataString('exportcsv') === $exporterId) {
+    if (FormHelper::validateToken() && RequestHelper::verifyGPDataString('exportcsv') === $exporterId) {
         if (is_callable($source)) {
             $arr = $source();
         } elseif (is_array($source)) {

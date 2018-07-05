@@ -13,8 +13,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'kundenwerbenkeunden_inc.php';
 
 $AktuelleSeite = 'MEIN KONTO';
-$cBrotNavi     = '';
-$linkHelper    = LinkHelper::getInstance();
+$linkHelper    = Shop::Container()->getLinkService();
 $Einstellungen = Shop::getSettings([
     CONF_GLOBAL,
     CONF_RSS,
@@ -29,29 +28,29 @@ $cHinweis      = '';
 $hinweis       = '';
 $cFehler       = '';
 $ratings       = [];
-if (verifyGPCDataInteger('wlidmsg') > 0) {
-    $cHinweis .= mappeWunschlisteMSG(verifyGPCDataInteger('wlidmsg'));
+if (RequestHelper::verifyGPCDataInt('wlidmsg') > 0) {
+    $cHinweis .= Wunschliste::mapMessage(RequestHelper::verifyGPCDataInt('wlidmsg'));
 }
 //Kunden in session aktualisieren
 if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
     $Kunde = new Kunde($_SESSION['Kunde']->kKunde);
     if ($Kunde->kKunde > 0) {
-        $Kunde->angezeigtesLand = ISO2land($Kunde->cLand);
+        $Kunde->angezeigtesLand = Sprache::getCountryCodeByCountryName($Kunde->cLand);
         $session->setCustomer($Kunde);
     }
 }
 // Redirect - Falls jemand eine Aktion durchführt die ein Kundenkonto beansprucht und der Gast nicht einloggt ist,
 // wird dieser hier her umgeleitet und es werden die passenden Parameter erstellt.
 // Nach dem erfolgreichen einloggen wird die zuvor angestrebte Aktion durchgeführt.
-if (isset($_SESSION['JTL_REDIRECT']) || verifyGPCDataInteger('r') > 0) {
-    Shop::Smarty()->assign('oRedirect', $_SESSION['JTL_REDIRECT'] ?? gibRedirect(verifyGPCDataInteger('r')));
+if (isset($_SESSION['JTL_REDIRECT']) || RequestHelper::verifyGPCDataInt('r') > 0) {
+    Shop::Smarty()->assign('oRedirect', $_SESSION['JTL_REDIRECT'] ?? gibRedirect(RequestHelper::verifyGPCDataInt('r')));
     executeHook(HOOK_JTL_PAGE_REDIRECT_DATEN);
 }
 // Upload zum Download freigeben
 if (isset($_POST['kUpload'])
     && (int)$_POST['kUpload'] > 0
     && !empty($_SESSION['Kunde']->kKunde)
-    && validateToken()
+    && FormHelper::validateToken()
 ) {
     $oUploadDatei = new UploadDatei((int)$_POST['kUpload']);
     UploadDatei::send_file_to_browser(
@@ -71,10 +70,8 @@ if (isset($_POST['login']) && (int)$_POST['login'] === 1 && !empty($_POST['email
     fuehreLoginAus($_POST['email'], $_POST['passwort']);
 }
 $customerID             = Session::Customer()->getID();
-$AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
+$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
-$startKat               = new Kategorie();
-$startKat->kKategorie   = 0;
 $editRechnungsadresse   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 
@@ -135,26 +132,26 @@ if ($customerID > 0) {
         $step = 'account loeschen';
     }
     // Vorhandenen Warenkorb mit persistenten Warenkorb mergen?
-    if (verifyGPCDataInteger('basket2Pers') === 1) {
+    if (RequestHelper::verifyGPCDataInt('basket2Pers') === 1) {
         setzeWarenkorbPersInWarenkorb($customerID);
         header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 303);
         exit();
     }
     // Wunschliste loeschen
-    if (verifyGPCDataInteger('wllo') > 0 && validateToken()) {
+    if (RequestHelper::verifyGPCDataInt('wllo') > 0 && FormHelper::validateToken()) {
         $step      = 'mein Konto';
-        $cHinweis .= wunschlisteLoeschen(verifyGPCDataInteger('wllo'));
+        $cHinweis .= Wunschliste::delete(RequestHelper::verifyGPCDataInt('wllo'));
     }
     // Wunschliste Standard setzen
-    if (isset($_POST['wls']) && (int)$_POST['wls'] > 0 && validateToken()) {
+    if (isset($_POST['wls']) && (int)$_POST['wls'] > 0 && FormHelper::validateToken()) {
         $step      = 'mein Konto';
-        $cHinweis .= wunschlisteStandard(verifyGPCDataInteger('wls'));
+        $cHinweis .= Wunschliste::setDefault(RequestHelper::verifyGPCDataInt('wls'));
     }
     // Kunden werben Kunden
-    if ($Einstellungen['kundenwerbenkunden']['kwk_nutzen'] === 'Y' && verifyGPCDataInteger('KwK') === 1) {
+    if ($Einstellungen['kundenwerbenkunden']['kwk_nutzen'] === 'Y' && RequestHelper::verifyGPCDataInt('KwK') === 1) {
         $step = 'kunden_werben_kunden';
-        if (verifyGPCDataInteger('kunde_werben') === 1) {
-            if (!pruefeEmailblacklist($_POST['cEmail'])) {
+        if (RequestHelper::verifyGPCDataInt('kunde_werben') === 1) {
+            if (!SimpleMail::checkBlacklist($_POST['cEmail'])) {
                 if (pruefeEingabe($_POST)) {
                     if (setzeKwKinDB($_POST, $Einstellungen)) {
                         $cHinweis .= sprintf(
@@ -177,17 +174,17 @@ if ($customerID > 0) {
     }
     // WunschlistePos in den Warenkorb adden
     if (isset($_GET['wlph']) && (int)$_GET['wlph'] > 0 && (int)$_GET['wl'] > 0) {
-        $cURLID          = StringHandler::filterXSS(verifyGPDataString('wlid'));
-        $kWunschlistePos = verifyGPCDataInteger('wlph');
-        $kWunschliste    = verifyGPCDataInteger('wl');
+        $cURLID          = StringHandler::filterXSS(RequestHelper::verifyGPDataString('wlid'));
+        $kWunschlistePos = RequestHelper::verifyGPCDataInt('wlph');
+        $kWunschliste    = RequestHelper::verifyGPCDataInt('wl');
         $step            = 'mein Konto';
-        $oWunschlistePos = giboWunschlistePos($kWunschlistePos);
+        $oWunschlistePos = Wunschliste::getWishListPositionDataByID($kWunschlistePos);
         if (isset($oWunschlistePos->kArtikel) || $oWunschlistePos->kArtikel > 0) {
             $oEigenschaftwerte_arr = ArtikelHelper::isVariChild($oWunschlistePos->kArtikel)
-                ? gibVarKombiEigenschaftsWerte($oWunschlistePos->kArtikel)
-                : gibEigenschaftenZuWunschliste($kWunschliste, $oWunschlistePos->kWunschlistePos);
+                ? ArtikelHelper::getVarCombiAttributeValues($oWunschlistePos->kArtikel)
+                : Wunschliste::getAttributesByID($kWunschliste, $oWunschlistePos->kWunschlistePos);
             if (!$oWunschlistePos->bKonfig) {
-                fuegeEinInWarenkorb($oWunschlistePos->kArtikel, $oWunschlistePos->fAnzahl, $oEigenschaftwerte_arr);
+                WarenkorbHelper::addProductIDToCart($oWunschlistePos->kArtikel, $oWunschlistePos->fAnzahl, $oEigenschaftwerte_arr);
             }
             $cParamWLID = (strlen($cURLID) > 0) ? ('&wlid=' . $cURLID) : '';
             header(
@@ -200,23 +197,23 @@ if ($customerID > 0) {
     }
     // WunschlistePos alle in den Warenkorb adden
     if (isset($_GET['wlpah']) && (int)$_GET['wlpah'] === 1 && (int)$_GET['wl'] > 0) {
-        $cURLID       = StringHandler::filterXSS(verifyGPDataString('wlid'));
-        $kWunschliste = verifyGPCDataInteger('wl');
+        $cURLID       = StringHandler::filterXSS(RequestHelper::verifyGPDataString('wlid'));
+        $kWunschliste = RequestHelper::verifyGPCDataInt('wl');
         $step         = 'mein Konto';
-        $oWunschliste = giboWunschliste($kWunschliste);
+        $oWunschliste = Wunschliste::getWishListDataByID($kWunschliste);
         $oWunschliste = new Wunschliste($oWunschliste->kWunschliste);
 
         if (count($oWunschliste->CWunschlistePos_arr) > 0) {
             foreach ($oWunschliste->CWunschlistePos_arr as $oWunschlistePos) {
                 $oEigenschaftwerte_arr = ArtikelHelper::isVariChild($oWunschlistePos->kArtikel)
-                    ? gibVarKombiEigenschaftsWerte($oWunschlistePos->kArtikel)
-                    : gibEigenschaftenZuWunschliste($kWunschliste, $oWunschlistePos->kWunschlistePos);
-                if (!$oWunschlistePos->Artikel->bHasKonfig &&
-                    !$oWunschlistePos->bKonfig &&
-                    isset($oWunschlistePos->Artikel->inWarenkorbLegbar) &&
-                    $oWunschlistePos->Artikel->inWarenkorbLegbar > 0
+                    ? ArtikelHelper::getVarCombiAttributeValues($oWunschlistePos->kArtikel)
+                    : Wunschliste::getAttributesByID($kWunschliste, $oWunschlistePos->kWunschlistePos);
+                if (!$oWunschlistePos->Artikel->bHasKonfig
+                    && !$oWunschlistePos->bKonfig
+                    && isset($oWunschlistePos->Artikel->inWarenkorbLegbar)
+                    && $oWunschlistePos->Artikel->inWarenkorbLegbar > 0
                 ) {
-                    fuegeEinInWarenkorb($oWunschlistePos->kArtikel, $oWunschlistePos->fAnzahl, $oEigenschaftwerte_arr);
+                    WarenkorbHelper::addProductIDToCart($oWunschlistePos->kArtikel, $oWunschlistePos->fAnzahl, $oEigenschaftwerte_arr);
                 }
             }
             header(
@@ -229,23 +226,16 @@ if ($customerID > 0) {
         }
     }
     // Wunschliste aktualisieren bzw alle Positionen
-    if (verifyGPCDataInteger('wla') > 0 && verifyGPCDataInteger('wl') > 0) {
+    if (RequestHelper::verifyGPCDataInt('wla') > 0 && RequestHelper::verifyGPCDataInt('wl') > 0) {
         $step         = 'mein Konto';
-        $kWunschliste = verifyGPCDataInteger('wl');
+        $kWunschliste = RequestHelper::verifyGPCDataInt('wl');
         if ($kWunschliste) {
             // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
             $oWunschliste = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $kWunschliste);
             if (!empty($oWunschliste->kKunde) && (int)$oWunschliste->kKunde === Session::Customer()->getID()) {
                 $step                    = 'wunschliste anzeigen';
-                $cHinweis               .= wunschlisteAktualisieren($kWunschliste);
+                $cHinweis               .= Wunschliste::update($kWunschliste);
                 $_SESSION['Wunschliste'] = new Wunschliste($_SESSION['Wunschliste']->kWunschliste ?? $kWunschliste);
-                $cBrotNavi               = createNavigation(
-                    '',
-                    0,
-                    0,
-                    $_SESSION['Wunschliste']->cName,
-                    'jtl.php?wl=' . $_SESSION['Wunschliste']->kWunschliste
-                );
             }
         }
     }
@@ -253,11 +243,11 @@ if ($customerID > 0) {
     if (isset($_POST['wlh']) && (int)$_POST['wlh'] > 0) {
         $step             = 'mein Konto';
         $cWunschlisteName = StringHandler::htmlentities(StringHandler::filterXSS($_POST['cWunschlisteName']));
-        $cHinweis        .= wunschlisteSpeichern($cWunschlisteName);
+        $cHinweis        .= Wunschliste::save($cWunschlisteName);
     }
     // Wunschliste via Email
-    if (verifyGPCDataInteger('wlvm') > 0 && verifyGPCDataInteger('wl') > 0) {
-        $kWunschliste = verifyGPCDataInteger('wl');
+    if (RequestHelper::verifyGPCDataInt('wlvm') > 0 && RequestHelper::verifyGPCDataInt('wl') > 0) {
+        $kWunschliste = RequestHelper::verifyGPCDataInt('wl');
         $step         = 'mein Konto';
         // Pruefen, ob der MD5 vorhanden ist
         if ($kWunschliste > 0) {
@@ -281,38 +271,24 @@ if ($customerID > 0) {
                 if (isset($_POST['send']) && (int)$_POST['send'] === 1) {
                     if ($Einstellungen['global']['global_wunschliste_anzeigen'] === 'Y') {
                         $cEmail_arr = explode(' ', StringHandler::htmlentities(StringHandler::filterXSS($_POST['email'])));
-                        $cHinweis  .= wunschlisteSenden($cEmail_arr, $kWunschliste);
+                        $cHinweis  .= Wunschliste::send($cEmail_arr, $kWunschliste);
                         // Wunschliste aufbauen und cPreis setzen (Artikelanzahl mit eingerechnet)
-                        $CWunschliste = bauecPreis(new Wunschliste($kWunschliste));
+                        $CWunschliste = Wunschliste::buildPrice(new Wunschliste($kWunschliste));
                         Shop::Smarty()->assign('CWunschliste', $CWunschliste);
-                        $cBrotNavi = createNavigation(
-                            '',
-                            0,
-                            0,
-                            $CWunschliste->cName,
-                            'jtl.php?wl=' . $CWunschliste->kWunschliste
-                        );
                     }
                 } else {
                     // Maske aufbauen
                     $step = 'wunschliste versenden';
                     // Wunschliste aufbauen und cPreis setzen (Artikelanzahl mit eingerechnet)
-                    $CWunschliste = bauecPreis(new Wunschliste($kWunschliste));
+                    $CWunschliste = Wunschliste::buildPrice(new Wunschliste($kWunschliste));
                     Shop::Smarty()->assign('CWunschliste', $CWunschliste);
-                    $cBrotNavi = createNavigation(
-                        '',
-                        0,
-                        0,
-                        $CWunschliste->cName,
-                        'jtl.php?wl=' . $CWunschliste->kWunschliste
-                    );
                 }
             }
         }
     }
     // Wunschliste alle Positionen loeschen
-    if (verifyGPCDataInteger('wldl') === 1) {
-        $kWunschliste = verifyGPCDataInteger('wl');
+    if (RequestHelper::verifyGPCDataInt('wldl') === 1) {
+        $kWunschliste = RequestHelper::verifyGPCDataInt('wl');
         if ($kWunschliste) {
             $oWunschliste = new Wunschliste($kWunschliste);
 
@@ -321,22 +297,15 @@ if ($customerID > 0) {
                 $oWunschliste->entferneAllePos();
                 if ($_SESSION['Wunschliste']->kWunschliste == $oWunschliste->kWunschliste) {
                     $_SESSION['Wunschliste']->CWunschlistePos_arr = [];
-                    $cBrotNavi                                    = createNavigation(
-                        '',
-                        0,
-                        0,
-                        $_SESSION['Wunschliste']->cName,
-                        'jtl.php?wl=' . $_SESSION['Wunschliste']->kWunschliste
-                    );
                 }
                 $cHinweis .= Shop::Lang()->get('wishlistDelAll', 'messages');
             }
         }
     }
     // Wunschliste Artikelsuche
-    if (verifyGPCDataInteger('wlsearch') === 1) {
-        $cSuche       = StringHandler::filterXSS(verifyGPDataString('cSuche'));
-        $kWunschliste = verifyGPCDataInteger('wl');
+    if (RequestHelper::verifyGPCDataInt('wlsearch') === 1) {
+        $cSuche       = StringHandler::filterXSS(RequestHelper::verifyGPDataString('cSuche'));
+        $kWunschliste = RequestHelper::verifyGPCDataInt('wl');
         if ($kWunschliste) {
             $oWunschliste = new Wunschliste($kWunschliste);
             if ($oWunschliste->kKunde && $oWunschliste->kKunde === Session::Customer()->getID()) {
@@ -345,25 +314,18 @@ if ($customerID > 0) {
                 $oWunschliste->CWunschlistePos_arr = $oWunschlistePosSuche_arr;
                 Shop::Smarty()->assign('wlsearch', $cSuche)
                               ->assign('CWunschliste', $oWunschliste);
-                $cBrotNavi = createNavigation(
-                    '',
-                    0,
-                    0,
-                    $oWunschliste->cName,
-                    'jtl.php?wl=' . $oWunschliste->kWunschliste
-                );
             }
         }
-    } elseif (verifyGPCDataInteger('wl') > 0 && verifyGPCDataInteger('wlvm') === 0) { // Wunschliste anzeigen
+    } elseif (RequestHelper::verifyGPCDataInt('wl') > 0 && RequestHelper::verifyGPCDataInt('wlvm') === 0) { // Wunschliste anzeigen
         $step         = 'mein Konto';
-        $kWunschliste = verifyGPCDataInteger('wl');
+        $kWunschliste = RequestHelper::verifyGPCDataInt('wl');
         if ($kWunschliste > 0) {
             // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
             $oWunschliste = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $kWunschliste);
             if (isset($oWunschliste->kKunde) && (int)$oWunschliste->kKunde === Session::Customer()->getID()) {
                 // Wurde nOeffentlich verändert
-                if (isset($_REQUEST['nstd']) && validateToken()) {
-                    $nOeffentlich = verifyGPCDataInteger('nstd');
+                if (isset($_REQUEST['nstd']) && FormHelper::validateToken()) {
+                    $nOeffentlich = RequestHelper::verifyGPCDataInt('nstd');
                     // Wurde nstd auf 1 oder 0 gesetzt?
                     if ($nOeffentlich === 0) {
                         $upd               = new stdClass();
@@ -388,17 +350,10 @@ if ($customerID > 0) {
                     }
                 }
                 // Wunschliste aufbauen und cPreis setzen (Artikelanzahl mit eingerechnet)
-                $CWunschliste = bauecPreis(new Wunschliste($oWunschliste->kWunschliste));
+                $CWunschliste = Wunschliste::buildPrice(new Wunschliste($oWunschliste->kWunschliste));
 
                 Shop::Smarty()->assign('CWunschliste', $CWunschliste);
                 $step      = 'wunschliste anzeigen';
-                $cBrotNavi = createNavigation(
-                    '',
-                    0,
-                    0,
-                    $CWunschliste->cName,
-                    'jtl.php?wl=' . $CWunschliste->kWunschliste
-                );
             }
         }
     }
@@ -484,7 +439,7 @@ if ($customerID > 0) {
             }
             // $step = 'mein Konto';
             $cHinweis .= Shop::Lang()->get('dataEditSuccessful', 'login');
-            setzeSteuersaetze();
+            TaxHelper::setTaxRates();
             if (isset($_SESSION['Warenkorb']->kWarenkorb)
                 && Session::Cart()->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
             ) {
@@ -494,7 +449,7 @@ if ($customerID > 0) {
             Shop::Smarty()->assign('fehlendeAngaben', $fehlendeAngaben);
         }
     }
-    if (isset($_POST['pass_aendern']) && (int)$_POST['pass_aendern'] && validateToken()) {
+    if (isset($_POST['pass_aendern']) && (int)$_POST['pass_aendern'] && FormHelper::validateToken()) {
         $step = 'passwort aendern';
         if (!isset($_POST['altesPasswort'], $_POST['neuesPasswort1']) ||
             !$_POST['altesPasswort'] ||
@@ -542,18 +497,18 @@ if ($customerID > 0) {
             }
         }
     }
-    if (verifyGPCDataInteger('bestellungen') > 0) {
+    if (RequestHelper::verifyGPCDataInt('bestellungen') > 0) {
         $step = 'bestellungen';
     }
-    if (verifyGPCDataInteger('wllist') > 0) {
+    if (RequestHelper::verifyGPCDataInt('wllist') > 0) {
         $step = 'wunschliste';
     }
-    if (verifyGPCDataInteger('bewertungen') > 0 ) {
+    if (RequestHelper::verifyGPCDataInt('bewertungen') > 0 ) {
         $step = 'bewertungen';
     }
-    if (verifyGPCDataInteger('bestellung') > 0) {
+    if (RequestHelper::verifyGPCDataInt('bestellung') > 0) {
         //bestellung von diesem Kunden?
-        $bestellung = new Bestellung(verifyGPCDataInteger('bestellung'));
+        $bestellung = new Bestellung(RequestHelper::verifyGPCDataInt('bestellung'));
         $bestellung->fuelleBestellung();
 
         if ($bestellung->kKunde !== null
@@ -561,9 +516,9 @@ if ($customerID > 0) {
             && (int)$bestellung->kKunde === Session::Customer()->getID()
         ) {
             // Download wurde angefordert?
-            if (verifyGPCDataInteger('dl') > 0 && class_exists('Download')) {
+            if (RequestHelper::verifyGPCDataInt('dl') > 0 && class_exists('Download')) {
                 $nReturn = Download::getFile(
-                    verifyGPCDataInteger('dl'),
+                    RequestHelper::verifyGPCDataInt('dl'),
                     $customerID,
                     $bestellung->kBestellung
                 );
@@ -572,14 +527,14 @@ if ($customerID > 0) {
                 }
             }
             $step                               = 'bestellung';
-            $_SESSION['Kunde']->angezeigtesLand = ISO2land($_SESSION['Kunde']->cLand);
+            $_SESSION['Kunde']->angezeigtesLand = Sprache::getCountryCodeByCountryName($_SESSION['Kunde']->cLand);
             krsort($_SESSION['Kunde']->cKundenattribut_arr);
             Shop::Smarty()->assign('Bestellung', $bestellung)
                 ->assign('Kunde', $bestellung->oRechnungsadresse)// Work Around Daten von trechnungsadresse
                 ->assign('customerAttribute_arr', $_SESSION['Kunde']->cKundenattribut_arr)
                 ->assign('Lieferadresse', $bestellung->Lieferadresse ?? null);
             if ($Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
-                Shop::Smarty()->assign('oTrustedShopsBewertenButton', gibTrustedShopsBewertenButton(
+                Shop::Smarty()->assign('oTrustedShopsBewertenButton', TrustedShops::getRatingButton(
                     $bestellung->oRechnungsadresse->cMail,
                     $bestellung->cBestellNr
                 ));
@@ -587,9 +542,9 @@ if ($customerID > 0) {
             if (isset($bestellung->oEstimatedDelivery->longestMin, $bestellung->oEstimatedDelivery->longestMax)) {
                 Shop::Smarty()->assign(
                     'cEstimatedDeliveryEx',
-                    dateAddWeekday($bestellung->dErstellt, $bestellung->oEstimatedDelivery->longestMin)->format('d.m.Y')
+                    DateHelper::dateAddWeekday($bestellung->dErstellt, $bestellung->oEstimatedDelivery->longestMin)->format('d.m.Y')
                     . ' - ' .
-                    dateAddWeekday($bestellung->dErstellt, $bestellung->oEstimatedDelivery->longestMax)->format('d.m.Y')
+                    DateHelper::dateAddWeekday($bestellung->dErstellt, $bestellung->oEstimatedDelivery->longestMax)->format('d.m.Y')
                 );
             }
         } else {
@@ -598,7 +553,7 @@ if ($customerID > 0) {
     }
 
     if (isset($_POST['del_acc']) && (int)$_POST['del_acc'] === 1) {
-        $csrfTest = validateToken();
+        $csrfTest = FormHelper::validateToken();
         if ($csrfTest === false) {
             $cHinweis .= Shop::Lang()->get('csrfValidationFailed', 'global');
             Jtllog::writeLog('CSRF-Warnung fuer Account-Loeschung und kKunde ' .
@@ -701,11 +656,11 @@ if ($customerID > 0) {
             Shop::Smarty()->assign('oDownload_arr', $oDownload_arr);
         }
         // Download wurde angefordert?
-        if (verifyGPCDataInteger('dl') > 0 && class_exists('Download')) {
+        if (RequestHelper::verifyGPCDataInt('dl') > 0 && class_exists('Download')) {
             $nReturn = Download::getFile(
-                verifyGPCDataInteger('dl'),
+                RequestHelper::verifyGPCDataInt('dl'),
                 $customerID,
-                verifyGPCDataInteger('kBestellung')
+                RequestHelper::verifyGPCDataInt('kBestellung')
             );
             if ($nReturn !== 1) {
                 $cFehler = Download::mapGetFileErrorCode($nReturn);
@@ -745,7 +700,7 @@ if ($customerID > 0) {
                     $Bestellungen[$i]->Waehrung->fFaktor = $Bestellungen[$i]->fWaehrungsFaktor;
                 }
             }
-            $Bestellungen[$i]->cBestellwertLocalized = gibPreisStringLocalized(
+            $Bestellungen[$i]->cBestellwertLocalized = Preise::getLocalizedPriceString(
                 $Bestellungen[$i]->fGesamtsumme,
                 $Bestellungen[$i]->Waehrung
             );
@@ -808,7 +763,7 @@ if ($customerID > 0) {
         }
         Shop::Smarty()->assign('Kunde', $knd)
             ->assign('cKundenattribut_arr', $cKundenattribut_arr)
-            ->assign('laender', gibBelieferbareLaender($_SESSION['Kunde']->kKundengruppe));
+            ->assign('laender', VersandartHelper::getPossibleShippingCountries($_SESSION['Kunde']->kKundengruppe));
         // selbstdef. Kundenfelder
         $oKundenfeld_arr = Shop::Container()->getDB()->selectAll(
             'tkundenfeld',
@@ -844,13 +799,10 @@ if ($customerID > 0) {
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
-    $_SESSION['Kunde']->cGuthabenLocalized = gibPreisStringLocalized($_SESSION['Kunde']->fGuthaben);
+    $_SESSION['Kunde']->cGuthabenLocalized = Preise::getLocalizedPriceString($_SESSION['Kunde']->fGuthaben);
     krsort($_SESSION['Kunde']->cKundenattribut_arr);
     Shop::Smarty()->assign('Kunde', $_SESSION['Kunde'])
         ->assign('customerAttribute_arr', $_SESSION['Kunde']->cKundenattribut_arr);
-}
-if (empty($cBrotNavi)) {
-    $cBrotNavi = createNavigation($AktuelleSeite);
 }
 // Canonical
 $cCanonicalURL = $linkHelper->getStaticRoute('jtl.php', true);
@@ -865,8 +817,6 @@ Shop::Smarty()
     ->assign('cFehler', $cFehler)
     ->assign('hinweis', $cHinweis)
     ->assign('step', $step)
-    ->assign('Navigation', $cBrotNavi)
-    ->assign('requestURL', $requestURL ?? null)
     ->assign('BESTELLUNG_STATUS_BEZAHLT', BESTELLUNG_STATUS_BEZAHLT)
     ->assign('BESTELLUNG_STATUS_VERSANDT', BESTELLUNG_STATUS_VERSANDT)
     ->assign('BESTELLUNG_STATUS_OFFEN', BESTELLUNG_STATUS_OFFEN)

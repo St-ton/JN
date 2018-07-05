@@ -31,7 +31,7 @@ unset($_SESSION['ajaxcheckout']);
 if (isset($_POST['login']) && (int)$_POST['login'] === 1) {
     fuehreLoginAus($_POST['email'], $_POST['passwort']);
 }
-if (verifyGPCDataInteger('basket2Pers') === 1) {
+if (RequestHelper::verifyGPCDataInt('basket2Pers') === 1) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
 
     setzeWarenkorbPersInWarenkorb($_SESSION['Kunde']->kKunde);
@@ -53,7 +53,7 @@ if (class_exists('Download') && Download::hasDownloads($cart)) {
 }
 // oneClick? Darf nur einmal ausgeführt werden und nur dann, wenn man vom Warenkorb kommt.
 if ($Einstellungen['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO'
-    && verifyGPCDataInteger('wk') === 1
+    && RequestHelper::verifyGPCDataInt('wk') === 1
 ) {
     $kKunde = 0;
     if (isset($_SESSION['Kunde']->kKunde)) {
@@ -68,12 +68,12 @@ if ($Einstellungen['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] ==
         pruefeAjaxEinKlick();
     }
 }
-if (verifyGPCDataInteger('wk') === 1) {
-    resetNeuKundenKupon();
+if (RequestHelper::verifyGPCDataInt('wk') === 1) {
+    Kupon::resetNewCustomerCoupon();
 }
 if (isset($_FILES['vcard'])
     && $Einstellungen['kunden']['kundenregistrierung_vcardupload'] === 'Y'
-    && validateToken()
+    && FormHelper::validateToken()
 ) {
     gibKundeFromVCard($_FILES['vcard']['tmp_name']);
 }
@@ -133,7 +133,7 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
 
         pruefeVersandartWahl(
             $activeVersandart,
-            ['kVerpackung' => array_keys(gibAktiveVerpackung(gibMoeglicheVerpackungen($kKundengruppe)))]
+            ['kVerpackung' => array_keys(gibAktiveVerpackung(VersandartHelper::getPossiblePackagings($kKundengruppe)))]
         );
     }
 }
@@ -224,24 +224,23 @@ if (isset($_SESSION['Zahlungsart'])
     $paymentMethod = PaymentMethod::create('za_billpay_jtl');
     $paymentMethod->handleConfirmation();
 }
-$AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));
+$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
-$startKat               = new Kategorie();
-$startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 WarenkorbHelper::addVariationPictures($cart);
-Shop::Smarty()->assign('Navigation', createNavigation($AktuelleSeite))
-    ->assign('AGB', gibAGBWRB(Shop::getLanguage(), Session::CustomerGroup()->getID()))
+Shop::Smarty()->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
+        Shop::getLanguage(),
+        Session::CustomerGroup()->getID())
+    )
     ->assign('Ueberschrift', Shop::Lang()->get('orderStep0Title', 'checkout'))
     ->assign('UeberschriftKlein', Shop::Lang()->get('orderStep0Title2', 'checkout'))
     ->assign('hinweis', $cHinweis)
     ->assign('step', $step)
-    ->assign('editRechnungsadresse', verifyGPCDataInteger('editRechnungsadresse'))
+    ->assign('editRechnungsadresse', RequestHelper::verifyGPCDataInt('editRechnungsadresse'))
     ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
     ->assign('Warensumme', $cart->gibGesamtsummeWaren())
     ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
     ->assign('bestellschritt', gibBestellschritt($step))
-    ->assign('requestURL', $requestURL ?? null)
     ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
     ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK);
 

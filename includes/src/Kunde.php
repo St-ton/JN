@@ -226,13 +226,11 @@ class Kunde
     public $nLoginversuche = 0;
 
     /**
-     * Konstruktor
-     *
-     * @param int $kKunde - Falls angegeben, wird der Kunde mit angegebenem kKunde aus der DB geholt
+     * @param int $kKunde
      */
-    public function __construct($kKunde = 0)
+    public function __construct(int $kKunde = null)
     {
-        if ((int)$kKunde > 0) {
+        if ($kKunde > 0) {
             $this->loadFromDB($kKunde);
         }
     }
@@ -288,7 +286,7 @@ class Kunde
                 && isset($attempts->nLoginversuche)
                 && (int)$attempts->nLoginversuche >= (int)$conf['kunden']['kundenlogin_max_loginversuche']
             ) {
-                if (validateCaptcha($_POST)) {
+                if (FormHelper::validateCaptcha($_POST)) {
                     return true;
                 }
 
@@ -300,14 +298,12 @@ class Kunde
     }
 
     /**
-     * Setzt Kunde mit Daten aus der DB mit spezifiziertem Primary Key
-     *
      * @param string $cBenutzername
      * @param string $cPasswort
      * @return int 1 = Alles O.K., 2 = Kunde ist gesperrt
      * @throws Exception
      */
-    public function holLoginKunde($cBenutzername, $cPasswort)
+    public function holLoginKunde($cBenutzername, $cPasswort): int
     {
         $passwordService = Shop::Container()->getPasswordService();
         if (strlen($cBenutzername) > 0 && strlen($cPasswort) > 0) {
@@ -325,10 +321,10 @@ class Kunde
                 foreach (get_object_vars($oUser) as $k => $v) {
                     $this->$k = $v;
                 }
-                $this->angezeigtesLand = ISO2land($this->cLand);
+                $this->angezeigtesLand = Sprache::getCountryCodeByCountryName($this->cLand);
                 $this->holeKundenattribute();
                 // check if password has to be updated because of PASSWORD_DEFAULT method changes or using old md5 hash
-                if ((isset($oUser->cPasswort) && $passwordService->needsRehash($oUser->cPasswort))) {
+                if (isset($oUser->cPasswort) && $passwordService->needsRehash($oUser->cPasswort)) {
                     $_upd            = new stdClass();
                     $_upd->cPasswort = $passwordService->hash($cPasswort);
                     Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$oUser->kKunde, $_upd);
@@ -343,7 +339,7 @@ class Kunde
             if ($this->kKunde > 0) {
                 $this->entschluesselKundendaten();
                 // Anrede mappen
-                $this->cAnredeLocalized   = mappeKundenanrede($this->cAnrede, $this->kSprache);
+                $this->cAnredeLocalized   = self::mapSalutation($this->cAnrede, $this->kSprache);
                 $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
 
                 return 1;
@@ -412,20 +408,17 @@ class Kunde
     /**
      * @return string
      */
-    public function gibGuthabenLocalized()
+    public function gibGuthabenLocalized(): string
     {
-        return gibPreisStringLocalized($this->fGuthaben);
+        return Preise::getLocalizedPriceString($this->fGuthaben);
     }
 
     /**
-     * Setzt Kunde mit Daten aus der DB mit spezifiziertem Primary Key
-     *
      * @param int $kKunde
      * @return $this
      */
-    public function loadFromDB($kKunde)
+    public function loadFromDB(int $kKunde)
     {
-        $kKunde = (int)$kKunde;
         if ($kKunde > 0) {
             $obj = Shop::Container()->getDB()->select('tkunde', 'kKunde', $kKunde);
             if ($obj !== null && isset($obj->kKunde) && $obj->kKunde > 0) {
@@ -434,8 +427,8 @@ class Kunde
                     $this->$member = $obj->$member;
                 }
                 // Anrede mappen
-                $this->cAnredeLocalized = mappeKundenanrede($this->cAnrede, $this->kSprache);
-                $this->angezeigtesLand  = ISO2land($this->cLand);
+                $this->cAnredeLocalized = self::mapSalutation($this->cAnrede, $this->kSprache);
+                $this->angezeigtesLand  = Sprache::getCountryCodeByCountryName($this->cLand);
                 //$this->cLand = landISO($this->cLand);
                 $this->holeKundenattribute()->entschluesselKundendaten();
                 $this->kKunde         = (int)$this->kKunde;
@@ -446,7 +439,7 @@ class Kunde
 
                 $this->dGeburtstag_formatted = date_format(date_create($this->dGeburtstag), 'd.m.Y');
                 $this->cGuthabenLocalized    = $this->gibGuthabenLocalized();
-                $cDatum_arr                  = gibDatumTeile($this->dErstellt);
+                $cDatum_arr                  = DateHelper::getDateParts($this->dErstellt);
                 $this->dErstellt_DE          = $cDatum_arr['cTag'] . '.' .
                     $cDatum_arr['cMonat'] . '.' .
                     $cDatum_arr['cJahr'];
@@ -464,10 +457,12 @@ class Kunde
      */
     private function verschluesselKundendaten()
     {
-        $this->cNachname = verschluesselXTEA(trim($this->cNachname));
-        $this->cFirma    = verschluesselXTEA(trim($this->cFirma));
-        $this->cZusatz   = verschluesselXTEA(trim($this->cZusatz));
-        $this->cStrasse  = verschluesselXTEA(trim($this->cStrasse));
+        $cryptoService = Shop::Container()->getCryptoService();
+        
+        $this->cNachname = $cryptoService->encryptXTEA(trim($this->cNachname));
+        $this->cFirma    = $cryptoService->encryptXTEA(trim($this->cFirma));
+        $this->cZusatz   = $cryptoService->encryptXTEA(trim($this->cZusatz));
+        $this->cStrasse  = $cryptoService->encryptXTEA(trim($this->cStrasse));
 
         return $this;
     }
@@ -479,20 +474,20 @@ class Kunde
      */
     private function entschluesselKundendaten()
     {
-        $this->cNachname = trim(entschluesselXTEA($this->cNachname));
-        $this->cFirma    = trim(entschluesselXTEA($this->cFirma));
-        $this->cZusatz   = trim(entschluesselXTEA($this->cZusatz));
-        $this->cStrasse  = trim(entschluesselXTEA($this->cStrasse));
+        $cryptoService = Shop::Container()->getCryptoService();
+        
+        $this->cNachname = trim($cryptoService->decryptXTEA($this->cNachname));
+        $this->cFirma    = trim($cryptoService->decryptXTEA($this->cFirma));
+        $this->cZusatz   = trim($cryptoService->decryptXTEA($this->cZusatz));
+        $this->cStrasse  = trim($cryptoService->decryptXTEA($this->cStrasse));
 
         return $this;
     }
 
     /**
-     * Fügt Datensatz in DB ein. Primary Key wird in this gesetzt.
-     *
-     * @return int - Key vom eingefügten Kunden
+     * @return int
      */
-    public function insertInDB()
+    public function insertInDB(): int
     {
         executeHook(HOOK_KUNDE_DB_INSERT, ['oKunde' => &$this]);
 
@@ -544,27 +539,25 @@ class Kunde
         $this->kKunde = Shop::Container()->getDB()->insert('tkunde', $obj);
         $this->entschluesselKundendaten();
 
-        $this->cAnredeLocalized   = mappeKundenanrede($this->cAnrede, $this->kSprache);
+        $this->cAnredeLocalized   = self::mapSalutation($this->cAnrede, $this->kSprache);
         $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
-        $cDatum_arr               = gibDatumTeile($this->dErstellt);
+        $cDatum_arr               = DateHelper::getDateParts($this->dErstellt);
         $this->dErstellt_DE       = $cDatum_arr['cTag'] . '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'];
 
         return $this->kKunde;
     }
 
     /**
-     * Updatet Daten in der DB. Betroffen ist der Datensatz mit gleichem Primary Key
-     *
-     * @return string
+     * @return int
      */
-    public function updateInDB()
+    public function updateInDB(): int
     {
         if (preg_match('/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/', $this->dGeburtstag, $matches) === 1) {
             $this->dGeburtstag = $matches[3] . '-' . $matches[2] . '-' . $matches[1];
         }
 
         $this->verschluesselKundendaten();
-        $obj = kopiereMembers($this);
+        $obj = ObjectHelper::copyMembers($this);
 
         $cKundenattribut_arr = [];
         if (is_array($obj->cKundenattribut_arr)) {
@@ -594,9 +587,9 @@ class Kunde
         }
         $this->entschluesselKundendaten();
 
-        $this->cAnredeLocalized   = mappeKundenanrede($this->cAnrede, $this->kSprache);
+        $this->cAnredeLocalized   = self::mapSalutation($this->cAnrede, $this->kSprache);
         $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
-        $cDatum_arr               = gibDatumTeile($this->dErstellt);
+        $cDatum_arr               = DateHelper::getDateParts($this->dErstellt);
         $this->dErstellt_DE       = $cDatum_arr['cTag'] . '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'];
 
         return $cReturn;
@@ -633,7 +626,7 @@ class Kunde
     {
         preg_match('/[a-zA-Z]{2}/', $cLandISO, $cTreffer1_arr);
         if (strlen($cTreffer1_arr[0]) !== strlen($cLandISO)) {
-            $cISO = landISO($cLandISO);
+            $cISO = Sprache::getIsoCodeByCountryName($cLandISO);
             if ($cISO !== 'noISO' && strlen($cISO) > 0) {
                 $cLandISO = $cISO;
             }
@@ -650,7 +643,7 @@ class Kunde
         foreach (array_keys(get_object_vars($_SESSION['Kunde'])) as $oElement) {
             $this->$oElement = $_SESSION['Kunde']->$oElement;
         }
-        $this->cAnredeLocalized = mappeKundenanrede($this->cAnrede, $this->kSprache);
+        $this->cAnredeLocalized = self::mapSalutation($this->cAnrede, $this->kSprache);
 
         return $this;
     }
@@ -678,7 +671,7 @@ class Kunde
      * @param Kunde $oKundeTwo
      * @return bool
      */
-    public static function isEqual($oKundeOne, $oKundeTwo)
+    public static function isEqual($oKundeOne, $oKundeTwo): bool
     {
         if (is_object($oKundeOne) && is_object($oKundeTwo)) {
             $cMemberOne_arr = array_keys(get_class_vars(get_class($oKundeOne)));
@@ -743,10 +736,10 @@ class Kunde
     /**
      * @param int $length
      * @return bool|string
-     * @deprecated since 5.0
+     * @deprecated since 5.0.0
      * @throws Exception
      */
-    public function generatePassword($length = 12)
+    public function generatePassword(int $length = 12)
     {
         return Shop::Container()->getPasswordService()->generate($length);
     }
@@ -754,7 +747,7 @@ class Kunde
     /**
      * @param string $password
      * @return false|string
-     * @deprecated since 5.0
+     * @deprecated since 5.0.0
      * @throws Exception
      */
     public function generatePasswordHash($password)
@@ -768,7 +761,7 @@ class Kunde
      * @return bool - true if valid account
      * @throws Exception
      */
-    public function prepareResetPassword()
+    public function prepareResetPassword(): bool
     {
         $cryptoService = Shop::Container()->getCryptoService();
         if (!$this->kKunde) {
@@ -807,7 +800,7 @@ class Kunde
     /**
      * @return int
      */
-    public function getID()
+    public function getID(): int
     {
         return (int)$this->kKunde;
     }
@@ -815,8 +808,61 @@ class Kunde
     /**
      * @return bool
      */
-    public function isLoggedIn()
+    public function isLoggedIn(): bool
     {
         return $this->kKunde > 0;
+    }
+
+    /**
+     * @param string $cAnrede
+     * @param int    $kSprache
+     * @param int    $kKunde
+     * @return mixed
+     * @former mappeKundenanrede()
+     */
+    public static function mapSalutation($cAnrede, int $kSprache, int $kKunde = 0)
+    {
+        if (($kSprache > 0 || $kKunde > 0) && strlen($cAnrede) > 0) {
+            if ($kSprache === 0 && $kKunde > 0) {
+                $oKunde = Shop::Container()->getDB()->queryPrepared(
+                    'SELECT kSprache
+                        FROM tkunde
+                        WHERE kKunde = :cid',
+                    ['cid' => $kKunde],
+                    \DB\ReturnType::SINGLE_OBJECT
+                );
+                if (isset($oKunde->kSprache) && $oKunde->kSprache > 0) {
+                    $kSprache = (int)$oKunde->kSprache;
+                }
+            }
+            $cISOSprache = '';
+            if ($kSprache > 0) { // Kundensprache, falls gesetzt
+                $oSprache = Shop::Container()->getDB()->select('tsprache', 'kSprache', $kSprache);
+                if (isset($oSprache->kSprache) && $oSprache->kSprache > 0) {
+                    $cISOSprache = $oSprache->cISO;
+                }
+            } else { // Ansonsten Standardsprache
+                $oSprache = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
+                if (isset($oSprache->kSprache) && $oSprache->kSprache > 0) {
+                    $cISOSprache = $oSprache->cISO;
+                }
+            }
+            $cName       = $cAnrede === 'm' ? 'salutationM' : 'salutationW';
+            $oSprachWert = Shop::Container()->getDB()->queryPrepared(
+                'SELECT tsprachwerte.cWert
+                    FROM tsprachwerte
+                    JOIN tsprachiso
+                        ON tsprachiso.cISO = :ciso
+                    WHERE tsprachwerte.kSprachISO = tsprachiso.kSprachISO
+                        AND tsprachwerte.cName = :cname',
+                ['ciso' => $cISOSprache, 'cname' => $cName],
+                \DB\ReturnType::SINGLE_OBJECT
+            );
+            if (isset($oSprachWert->cWert) && strlen($oSprachWert->cWert) > 0) {
+                $cAnrede = $oSprachWert->cWert;
+            }
+        }
+
+        return $cAnrede;
     }
 }

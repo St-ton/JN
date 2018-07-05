@@ -46,11 +46,12 @@ function holeHaeufigeGeschenke($cSQL)
     $oHaeufigGeschenkTMP_arr = [];
     if (strlen($cSQL) > 0) {
         $oHaeufigGeschenkTMP_arr = Shop::Container()->getDB()->query(
-            "SELECT kArtikel, count(*) AS nAnzahl
+            "SELECT twarenkorbpos.kArtikel, count(*) AS nAnzahl, max(tbestellung.dErstellt) as lastOrdered
                 FROM twarenkorbpos
-                WHERE nPosTyp = " . C_WARENKORBPOS_TYP_GRATISGESCHENK . "
-                GROUP BY kArtikel
-                ORDER BY nAnzahl DESC, cName" . $cSQL,
+                  LEFT JOIN tbestellung ON tbestellung.kWarenkorb = twarenkorbpos.kWarenkorb
+                WHERE twarenkorbpos.nPosTyp = " . C_WARENKORBPOS_TYP_GRATISGESCHENK . "
+                GROUP BY twarenkorbpos.kArtikel
+                ORDER BY nAnzahl DESC, twarenkorbpos.cName" . $cSQL,
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
@@ -63,7 +64,7 @@ function holeHaeufigeGeschenke($cSQL)
             $oArtikel->fuelleArtikel($oHaeufigGeschenkTMP->kArtikel, $articleOptions, 0, 0, true);
             if ($oArtikel->kArtikel > 0) {
                 $oArtikel->nGGAnzahl = $oHaeufigGeschenkTMP->nAnzahl;
-                $oHaeufigGeschenk_arr[] = $oArtikel;
+                $oHaeufigGeschenk_arr[] = (object)['Artikel' => $oArtikel, 'lastOrdered' => $oHaeufigGeschenkTMP->lastOrdered];
             }
         }
     }
@@ -81,20 +82,15 @@ function holeLetzten100Geschenke($cSQL)
     $oLetzten100GeschenkTMP_arr = [];
     if (strlen($cSQL) > 0) {
         $oLetzten100GeschenkTMP_arr = Shop::Container()->getDB()->query(
-            "SELECT sub1.kArtikel, count(*) AS nAnzahl
-                FROM
-                    (
-                        SELECT kArtikel
-                        FROM twarenkorbpos
-                        WHERE nPosTyp = " . C_WARENKORBPOS_TYP_GRATISGESCHENK . "
-                        ORDER BY kWarenkorbPos DESC
-                        LIMIT 100
-                    ) AS sub1
-                GROUP BY sub1.kArtikel
-                ORDER BY nAnzahl DESC" . $cSQL,
+            "SELECT twarenkorbpos.*, tbestellung.dErstellt as orderCreated
+                FROM twarenkorbpos
+                  LEFT JOIN tbestellung ON tbestellung.kWarenkorb = twarenkorbpos.kWarenkorb
+                WHERE twarenkorbpos.nPosTyp = " . C_WARENKORBPOS_TYP_GRATISGESCHENK . "
+                ORDER BY tbestellung.dErstellt ASC" . $cSQL,
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
+
     if (count($oLetzten100GeschenkTMP_arr) > 0) {
         $articleOptions = Artikel::getDefaultOptions();
         $articleOptions->nKeinLagerbestandBeachten = 1;
@@ -103,7 +99,7 @@ function holeLetzten100Geschenke($cSQL)
             $oArtikel->fuelleArtikel($oLetzten100GeschenkTMP->kArtikel, $articleOptions, 0, 0, true);
             if ($oArtikel->kArtikel > 0) {
                 $oArtikel->nGGAnzahl = $oLetzten100GeschenkTMP->nAnzahl;
-                $oLetzten100Geschenk_arr[] = $oArtikel;
+                $oLetzten100Geschenk_arr[] = (object)['Artikel' => $oArtikel, 'orderCreated' => $oLetzten100GeschenkTMP->orderCreated];
             }
         }
     }
@@ -148,15 +144,9 @@ function gibAnzahlLetzten100Geschenke()
 {
     $nAnzahlGeschenke = Shop::Container()->getDB()->query(
         "SELECT count(*) AS nAnzahl
-            FROM
-                (
-                    SELECT kArtikel
-                    FROM twarenkorbpos
-                    WHERE nPosTyp = " . C_WARENKORBPOS_TYP_GRATISGESCHENK . "
-                    ORDER BY kWarenkorbPos DESC
-                    LIMIT 100
-                ) AS sub1
-            GROUP BY sub1.kArtikel",
+            FROM twarenkorbpos
+            WHERE nPosTyp = " . C_WARENKORBPOS_TYP_GRATISGESCHENK . "
+            LIMIT 100",
         \DB\ReturnType::SINGLE_OBJECT
     );
 

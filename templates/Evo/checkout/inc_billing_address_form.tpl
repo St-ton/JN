@@ -221,15 +221,26 @@
         </div>
     {/if}
     {* country *}
+    {if isset($cPost_var['land'])}
+        {assign var='cIso' value=$cPost_var['land']}
+    {elseif !empty($Kunde->cLand)}
+        {assign var='cIso' value=$Kunde->cLand}
+    {elseif !empty($Einstellungen.kunden.kundenregistrierung_standardland)}
+        {assign var='cIso' value=$Einstellungen.kunden.kundenregistrierung_standardland}
+    {elseif isset($laender[0]->cISO)}
+        {assign var='cIso' value=$laender[0]->cISO}
+    {else}
+        {assign var='cIso' value=''}
+    {/if}
     <div class="row">
         <div class="col-xs-12 col-md-6">
             <div class="form-group float-label-control required{if isset($fehlendeAngaben.land)} has-error{/if}">
                 <label class="control-label" for="country">{lang key='country' section='account data'}</label>
                 <select name="land" id="country" class="country_input form-control" required autocomplete="billing country">
-                <option value="" disabled>{lang key='country' section='account data'}</option>
-                {foreach $laender as $land}
-                    <option value="{$land->cISO}" {if isset($cPost_var['land']) && $cPost_var['land'] === $land->cISO}selected="selected"{elseif ($Einstellungen.kunden.kundenregistrierung_standardland==$land->cISO && empty($Kunde->cLand)) || !empty($Kunde->cLand) && $Kunde->cLand == $land->cISO}selected="selected"{/if}>{$land->cName}</option>
-                {/foreach}
+                    <option value="" disabled>{lang key="country" section="account data"}</option>
+                    {foreach $laender as $land}
+                        <option value="{$land->cISO}" {if $cIso === $land->cISO}selected="selected"{/if}>{$land->cName}</option>
+                    {/foreach}
                 </select>
                 {if isset($fehlendeAngaben.land)}
                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
@@ -243,20 +254,44 @@
     {/if} {* close row if there won't follow another form-group *}
 
     {if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland !== 'N'}
+        {getStates cIso=$cIso assign='oStates'}
+        {if isset($cPost_var['bundesland'])}
+            {assign var='cState' value=$cPost_var['bundesland']}
+        {elseif !empty($Kunde->cBundesland)}
+            {assign var='cState' value=$Kunde->cBundesland}
+        {else}
+            {assign var='cState' value=''}
+        {/if}
         <div class="col-xs-12 col-md-6">
             <div class="form-group float-label-control{if isset($fehlendeAngaben.bundesland)} has-error{/if}{if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y'} required{/if}">
-                <label class="control-label" for="state">{lang key='state' section='account data'}</label>
-                <input
-                type="text"
-                title="{lang key=pleaseChoose}"
-                name="bundesland"
-                value="{if isset($cPost_var['bundesland'])}{$cPost_var['bundesland']}{elseif !empty($Kunde->cBundesland)}{$Kunde->cBundesland}{/if}"
-                id="state"
-                class="form-control"
-                placeholder="{lang key='state' section='account data'}"
-                {if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y'} required{/if}
-                autocomplete="billing address-level1"
-                >
+                <label class="control-label" for="state">{lang key="state" section="account data"}</label>
+                {if !empty($oStates)}
+                    <select
+                    title="{lang key=pleaseChoose}"
+                    name="bundesland"
+                    id="state"
+                    class="form-control"
+                    {if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y'} required{/if}
+                    >
+                        <option value="" selected disabled>{lang key="pleaseChoose" section="global"}</option>
+                        {foreach $oStates as $oState}
+                            <option value="{$oState->cCode}" {if $cState === $oState->cName}selected{/if}>{$oState->cName}</option>
+                        {/foreach}
+                    </select>
+                {else}
+                    <input
+                    type="text"
+                    title="{lang key=pleaseChoose}"
+                    name="bundesland"
+                    value="{$cState}"
+                    id="state"
+                    class="form-control"
+                    placeholder="{lang key='state' section='account data'}"
+                    {if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y'} required{/if}
+                    autocomplete="billing address-level1"
+                    >
+                {/if}
+
                 {if isset($fehlendeAngaben.bundesland)}
                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                         {lang key='fillOut' section='global'}

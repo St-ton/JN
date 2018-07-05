@@ -801,7 +801,6 @@ function captchaMarkup($params, $smarty)
 function getStates($params, $smarty)
 {
     $oStates = Staat::getRegions($params['cIso']);
-    $oStates = StringHandler::utf8_convert_recursive($oStates);
     if (isset($params['assign'])) {
         $smarty->assign($params['assign'], $oStates);
         return;

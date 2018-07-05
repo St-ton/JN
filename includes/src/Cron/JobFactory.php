@@ -24,7 +24,7 @@ class JobFactory
         $mapper = new JobTypeToJob();
         // @todo: catch Exception
         $class = $mapper->map($data->cJobArt);
-        $job = new $class(\Shop::Container()->getDB()); // @todo: inject?
+        $job   = new $class(\Shop::Container()->getDB()); // @todo: inject?
         /** @var JobInterface $job */
         $job->setType($data->cJobArt);
         $job->setTable($data->cTabelle);
@@ -37,39 +37,6 @@ class JobFactory
         if (isset($data->nLimitM)) {
             $job->setLimit((int)$data->nLimitM);
         }
-
-        //@todo: move to job implementations
-//        switch ($job->getType()) {
-//            case Type::NEWSLETTER :
-//                if (JOBQUEUE_LIMIT_M_NEWSLETTER > 0) {
-//                    $job->setLimit(JOBQUEUE_LIMIT_M_NEWSLETTER);
-//                }
-//                break;
-//
-//            case Type::EXPORT :
-//                if (JOBQUEUE_LIMIT_M_EXPORTE > 0) {
-//                    $job->setLimit(JOBQUEUE_LIMIT_M_EXPORTE);
-//                }
-//                break;
-//
-//            case Type::STATUSMAIL :
-//                if (JOBQUEUE_LIMIT_M_STATUSEMAIL > 0) {
-//                    $job->setLimit(JOBQUEUE_LIMIT_M_STATUSEMAIL);
-//                }
-//                break;
-//
-//            case Type::TS_RATING :
-//                $job->setLimit(5);
-//                break;
-//
-//            case Type::CLEAR_CACHE :
-//                $job->setLimit(10);
-//                break;
-//
-//            default:
-//                break;
-//
-//        }
 
         return $job;
     }

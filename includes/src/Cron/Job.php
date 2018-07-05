@@ -68,7 +68,7 @@ abstract class Job implements JobInterface
     /**
      * @var DbInterface
      */
-    private $db;
+    protected $db;
 
     /**
      * @inheritdoc

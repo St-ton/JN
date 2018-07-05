@@ -104,11 +104,9 @@ class Queue
             if ($i >= JOBQUEUE_LIMIT_JOBS) {
                 break;
             }
-//            \Shop::dbg($job, true, 'running job:');
             $queueEntry                 = new QueueEntry($job);
             $queueEntry->nLastArticleID = $job->nLastArticleID ?? 0;
             $queueEntry->nInArbeit      = 1;
-//            $queueEntry->setLastProductID($job->nLastArticleID ?? 0);
             \Jtllog::cronLog('Got job - ' . $job->getID() . ', type = ' . $job->getType() . ')');
             $job->start($queueEntry);
             $queueEntry->nInArbeit        = 0;
@@ -122,36 +120,6 @@ class Queue
             if ($job->isFinished()) {
                 $this->db->delete('tjobqueue', 'kCron', $job->getCronID());
             }
-
-//            switch ($queueEntry->cJobArt) {
-//                case 'newsletter':
-//                    require_once PFAD_ROOT . PFAD_INCLUDES . PFAD_CRON . 'cron_newsletterversand.php';
-//                    bearbeiteNewsletterversand($queueEntry);
-//                    break;
-//
-//                case 'exportformat':
-//                    require_once PFAD_ROOT . PFAD_INCLUDES . PFAD_CRON . 'cron_exportformate.php';
-//                    bearbeiteExportformate($queueEntry);
-//                    break;
-//
-//                case 'statusemail':
-//                    require_once PFAD_ROOT . PFAD_INCLUDES . PFAD_CRON . 'cron_statusemail.php';
-//                    bearbeiteStatusemail($queueEntry);
-//                    break;
-//
-//                case 'tskundenbewertung':
-//                    require_once PFAD_ROOT . PFAD_INCLUDES . PFAD_CRON . 'cron_trustedshopskundenbewertung.php';
-//                    bearbeiteTrustedShopsKundenbewertung($queueEntry);
-//                    break;
-//
-//                case 'clearcache':
-//                    require_once PFAD_ROOT . PFAD_INCLUDES . PFAD_CRON . 'cron_clearcache.php';
-//                    bearbeiteClearCache($queueEntry);
-//                    break;
-//
-//                default:
-//                    break;
-//            }
             executeHook(HOOK_JOBQUEUE_INC_BEHIND_SWITCH, [
                 'oJobQueue' => $queueEntry,
                 'job'       => $job

@@ -62,14 +62,14 @@ class Checker
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (count($cronData) === 0) {
-            $this->logger->log(JTLLOG_LEVEL_NOTICE, 'No cron jobs found');
+            $this->logger->log(JTLLOG_LEVEL_DEBUG, 'No cron jobs found');
 
             return $jobs;
         }
 
         foreach ($cronData as $item) {
             $job = $this->factory->create($item);
-            $this->logger->log(JTLLOG_LEVEL_NOTICE, 'Starting cron ' . $job->getID());
+            $this->logger->log(JTLLOG_LEVEL_DEBUG, 'Starting cron ' . $job->getID());
 
             executeHook(HOOK_CRON_INC_SWITCH, [
                 'job'     => $job,

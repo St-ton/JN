@@ -13,6 +13,7 @@ use Cron\QueueEntry;
 use DB\DbInterface;
 use DB\ReturnType;
 use function Functional\map;
+use Psr\Log\LoggerInterface;
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
@@ -27,9 +28,9 @@ class Statusmail extends Job
     /**
      * @inheritdoc
      */
-    public function __construct(DbInterface $db)
+    public function __construct(DbInterface $db, LoggerInterface $logger)
     {
-        parent::__construct($db);
+        parent::__construct($db, $logger);
         if (JOBQUEUE_LIMIT_M_STATUSEMAIL > 0) {
             $this->setLimit(JOBQUEUE_LIMIT_M_STATUSEMAIL);
         }

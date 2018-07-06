@@ -27,21 +27,14 @@ class Checker
     private $logger;
 
     /**
-     * @var JobFactory
-     */
-    private $factory;
-
-    /**
      * Checker constructor.
      * @param DbInterface     $db
      * @param LoggerInterface $logger
-     * @param JobFactory      $factory
      */
-    public function __construct(DbInterface $db, LoggerInterface $logger, JobFactory $factory)
+    public function __construct(DbInterface $db, LoggerInterface $logger)
     {
         $this->db      = $db;
         $this->logger  = $logger;
-        $this->factory = $factory;
     }
 
     /**
@@ -49,8 +42,7 @@ class Checker
      */
     public function check(): array
     {
-        $jobs     = [];
-        $cronData = $this->db->query(
+        $jobs = $this->db->query(
             "SELECT tcron.*
                 FROM tcron
                 LEFT JOIN tjobqueue 
@@ -61,22 +53,7 @@ class Checker
                     AND tjobqueue.kJobQueue IS NULL",
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        if (count($cronData) === 0) {
-            $this->logger->log(JTLLOG_LEVEL_DEBUG, 'No cron jobs found');
-
-            return $jobs;
-        }
-
-        foreach ($cronData as $item) {
-            $job = $this->factory->create($item);
-            $this->logger->log(JTLLOG_LEVEL_DEBUG, 'Starting cron ' . $job->getID());
-
-            executeHook(HOOK_CRON_INC_SWITCH, [
-                'job'     => $job,
-                'nLimitM' => $job->getLimit()
-            ]);
-            $jobs[] = $job;
-        }
+        $this->logger->log(JTLLOG_LEVEL_DEBUG, 'Found ' . count($jobs) . ' cron jobs.');
 
         return $jobs;
     }

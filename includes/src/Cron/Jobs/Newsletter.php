@@ -12,6 +12,7 @@ use Cron\JobInterface;
 use Cron\QueueEntry;
 use DB\DbInterface;
 use DB\ReturnType;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class Newsletter
@@ -22,9 +23,9 @@ class Newsletter extends Job
     /**
      * @inheritdoc
      */
-    public function __construct(DbInterface $db)
+    public function __construct(DbInterface $db, LoggerInterface $logger)
     {
-        parent::__construct($db);
+        parent::__construct($db, $logger);
         if (JOBQUEUE_LIMIT_M_NEWSLETTER > 0) {
             $this->setLimit(JOBQUEUE_LIMIT_M_NEWSLETTER);
         }

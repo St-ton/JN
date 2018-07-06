@@ -8,6 +8,7 @@ namespace Cron;
 
 
 use DB\DbInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class Queue
@@ -16,9 +17,9 @@ use DB\DbInterface;
 class Queue
 {
     /**
-     * @var JobInterface[]
+     * @var QueueEntry[]
      */
-    private $jobs = [];
+    private $queueEntries = [];
 
     /**
      * @var DbInterface
@@ -26,39 +27,29 @@ class Queue
     private $db;
 
     /**
+     * @var JobFactory
+     */
+    private $factory;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * Queue constructor.
-     * @param DbInterface $db
+     * @param DbInterface     $db
+     * @param JobFactory      $factory
+     * @param LoggerInterface $logger
      */
-    public function __construct(DbInterface $db)
+    public function __construct(DbInterface $db, JobFactory $factory, LoggerInterface $logger)
     {
-        $this->db = $db;
+        $this->db      = $db;
+        $this->factory = $factory;
+        $this->logger  = $logger;
     }
 
-    /**
-     * @return JobInterface[]
-     */
-    public function getJobs(): array
-    {
-        return $this->jobs;
-    }
-
-    /**
-     * @param JobInterface[] $jobs
-     */
-    public function setJobs(array $jobs)
-    {
-        $this->jobs = $jobs;
-    }
-
-    /**
-     * @param JobInterface[] $jobs
-     */
-    public function addJobs(array $jobs)
-    {
-        $this->jobs = array_merge($this->jobs, $jobs);
-    }
-
-    public function loadJobsFromDB()
+    public function loadQueueFromDB()
     {
         $queueData = $this->db->query(
             'SELECT * 
@@ -67,47 +58,42 @@ class Queue
                     AND dStartZeit < now()',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        $factory   = new JobFactory();
         foreach ($queueData as $entry) {
-            $job = $factory->create($entry);
-            // @todo catch Exception
-            $this->jobs[] = $job;
+            $this->queueEntries[] = new QueueEntry($entry);
         }
     }
 
     /**
-     * @return int
+     * @param array $jobs
      */
-    public function saveToDatabase(): int
+    public function enqueueCronJobs(array $jobs)
     {
-        $affected = 0;
-        foreach ($this->jobs as $job) {
+        foreach ($jobs as $job) {
             $queueEntry             = new \stdClass();
-            $queueEntry->kCron      = $job->getID();
-            $queueEntry->kKey       = $job->getForeignKeyID();
-            $queueEntry->cKey       = $job->getForeignKey();
-            $queueEntry->cTabelle   = $job->getTable();
-            $queueEntry->cJobArt    = $job->getType();
-            $queueEntry->dStartZeit = $job->getDateLastStarted()->format('Y-m-d H:i');
+            $queueEntry->kCron      = $job->kCron;
+            $queueEntry->kKey       = $job->kKey;
+            $queueEntry->cKey       = $job->cKey;
+            $queueEntry->cTabelle   = $job->cTabelle;
+            $queueEntry->cJobArt    = $job->cJobArt;
+            $queueEntry->dStartZeit = $job->dStartZeit;
             $queueEntry->nLimitN    = 0;
-            $queueEntry->nLimitM    = $job->getLimit();
+            $queueEntry->nLimitM    = 0;
             $queueEntry->nInArbeit  = 0;
-            $affected               += $this->db->insert('tjobqueue', $queueEntry);
-        }
 
-        return $affected;
+            $this->db->insert('tjobqueue', $queueEntry);
+        }
     }
 
-    public function runJobs()
+    public function run()
     {
-        foreach ($this->jobs as $i => $job) {
+        foreach ($this->queueEntries as $i => $queueEntry) {
             if ($i >= JOBQUEUE_LIMIT_JOBS) {
                 break;
             }
-            $queueEntry                 = new QueueEntry($job);
-            $queueEntry->nLastArticleID = $job->nLastArticleID ?? 0;
-            $queueEntry->nInArbeit      = 1;
-            \Jtllog::cronLog('Got job - ' . $job->getID() . ', type = ' . $job->getType() . ')');
+            $job                   = $this->factory->create($queueEntry);
+            $queueEntry->nLimitM   = $job->getLimit();
+            $queueEntry->nInArbeit = 1;
+            $this->logger->log(JTLLOG_LEVEL_NOTICE, 'Got job - ' . $job->getID() . ', type = ' . $job->getType() . ')');
             $job->start($queueEntry);
             $queueEntry->nInArbeit        = 0;
             $queueEntry->dZuletztGelaufen = new \DateTime();
@@ -119,6 +105,13 @@ class Queue
             );
             if ($job->isFinished()) {
                 $this->db->delete('tjobqueue', 'kCron', $job->getCronID());
+            } else {
+                $update                   = new \stdClass();
+                $update->dZuletztgelaufen = 'now';
+                $update->nLimitN          = $queueEntry->nLimitN;
+                $update->nlimitM          = $queueEntry->nLimitM;
+                $update->nLastArticleID   = $queueEntry->nLastArticleID;
+                $this->db->update('tjobqueue', 'kCron', $job->getCronID(), $update);
             }
             executeHook(HOOK_JOBQUEUE_INC_BEHIND_SWITCH, [
                 'oJobQueue' => $queueEntry,

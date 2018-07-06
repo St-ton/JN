@@ -8,6 +8,7 @@ namespace Cron;
 
 
 use DB\DbInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class Job
@@ -17,9 +18,10 @@ interface JobInterface
 {
     /**
      * JobInterface constructor.
-     * @param DbInterface $db
+     * @param DbInterface     $db
+     * @param LoggerInterface $logger
      */
-    public function __construct(DbInterface $db);
+    public function __construct(DbInterface $db, LoggerInterface $logger);
 
     /**
      * @return string
@@ -126,4 +128,14 @@ interface JobInterface
      * @param bool $finished
      */
     public function setFinished(bool $finished);
+
+    /**
+     * @return int
+     */
+    public function getQueueID(): int;
+
+    /**
+     * @param int $queueID
+     */
+    public function setQueueID(int $queueID);
 }

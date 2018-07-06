@@ -8,6 +8,7 @@ namespace Cron;
 
 
 use DB\DbInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class Job
@@ -43,6 +44,11 @@ abstract class Job implements JobInterface
     /**
      * @var int
      */
+    private $queueID = 0;
+
+    /**
+     * @var int
+     */
     private $foreignKeyID = 0;
 
     /**
@@ -71,11 +77,17 @@ abstract class Job implements JobInterface
     protected $db;
 
     /**
+     * @var
+     */
+    protected $logger;
+
+    /**
      * @inheritdoc
      */
-    public function __construct(DbInterface $db)
+    public function __construct(DbInterface $db, LoggerInterface $logger)
     {
-        $this->db = $db;
+        $this->db     = $db;
+        $this->logger = $logger;
         $this->setDateLastStarted(new \DateTime());
     }
 
@@ -94,7 +106,7 @@ abstract class Job implements JobInterface
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getType(): string
     {
@@ -102,7 +114,7 @@ abstract class Job implements JobInterface
     }
 
     /**
-     * @param string $type
+     * @inheritdoc
      */
     public function setType(string $type)
     {
@@ -110,7 +122,7 @@ abstract class Job implements JobInterface
     }
 
     /**
-     * @return int
+     * @inheritdoc
      */
     public function getLimit(): int
     {
@@ -118,7 +130,7 @@ abstract class Job implements JobInterface
     }
 
     /**
-     * @param int $limit
+     * @inheritdoc
      */
     public function setLimit(int $limit)
     {
@@ -126,7 +138,7 @@ abstract class Job implements JobInterface
     }
 
     /**
-     * @return int
+     * @inheritdoc
      */
     public function getID(): int
     {
@@ -134,7 +146,7 @@ abstract class Job implements JobInterface
     }
 
     /**
-     * @param int $id
+     * @inheritdoc
      */
     public function setID(int $id)
     {
@@ -142,7 +154,7 @@ abstract class Job implements JobInterface
     }
 
     /**
-     * @return \DateTime
+     * @inheritdoc
      */
     public function getDateLastStarted(): \DateTime
     {
@@ -150,7 +162,7 @@ abstract class Job implements JobInterface
     }
 
     /**
-     * @param \DateTime $dateLastStarted
+     * @inheritdoc
      */
     public function setDateLastStarted(\DateTime $dateLastStarted)
     {
@@ -158,7 +170,7 @@ abstract class Job implements JobInterface
     }
 
     /**
-     * @return int
+     * @inheritdoc
      */
     public function getForeignKeyID(): int
     {
@@ -166,7 +178,7 @@ abstract class Job implements JobInterface
     }
 
     /**
-     * @param int $foreignKeyID
+     * @inheritdoc
      */
     public function setForeignKeyID(int $foreignKeyID)
     {
@@ -174,7 +186,7 @@ abstract class Job implements JobInterface
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getForeignKey(): string
     {
@@ -182,7 +194,7 @@ abstract class Job implements JobInterface
     }
 
     /**
-     * @param string $foreignKey
+     * @inheritdoc
      */
     public function setForeignKey(string $foreignKey)
     {
@@ -190,7 +202,7 @@ abstract class Job implements JobInterface
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getTable(): string
     {
@@ -198,7 +210,7 @@ abstract class Job implements JobInterface
     }
 
     /**
-     * @param string $table
+     * @inheritdoc
      */
     public function setTable(string $table)
     {
@@ -216,7 +228,7 @@ abstract class Job implements JobInterface
     }
 
     /**
-     * @return int
+     * @inheritdoc
      */
     public function getExecuted(): int
     {
@@ -224,7 +236,7 @@ abstract class Job implements JobInterface
     }
 
     /**
-     * @param int $executed
+     * @inheritdoc
      */
     public function setExecuted(int $executed)
     {
@@ -261,5 +273,32 @@ abstract class Job implements JobInterface
     public function setFinished(bool $finished)
     {
         $this->finished = $finished;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getQueueID(): int
+    {
+        return $this->queueID;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setQueueID(int $queueID)
+    {
+        $this->queueID = $queueID;
+    }
+
+    /**
+     * @return array
+     */
+    public function __debugInfo()
+    {
+        $res                  = get_object_vars($this);
+        unset($res['db'], $res['logger']);
+
+        return $res;
     }
 }

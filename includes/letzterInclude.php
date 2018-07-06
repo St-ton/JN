@@ -123,7 +123,10 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('Firma', new Firma())
        ->assign('AktuelleKategorie', $AktuelleKategorie)
        ->assign('showLoginCaptcha', isset($_SESSION['showLoginCaptcha']) && $_SESSION['showLoginCaptcha'])
-       ->assign('Suchergebnisse', $oSuchergebnisse ?? new \Filter\SearchResults());
+       ->assign('PFAD_SLIDER', $shopURL . '/' . PFAD_BILDER_SLIDER)
+       ->assign('Suchergebnisse', $oSuchergebnisse ?? new \Filter\SearchResults())
+       ->assign('opc', Shop::Container()->getOPC())
+       ->assign('opcPageService', Shop::Container()->getOPCPageService());
 
 $nav = new \JTL\Navigation(Shop::Lang(), Shop::Container()->getLinkService());
 $nav->setPageType(Shop::getPageType());

@@ -43,7 +43,7 @@ define('PLUGIN_CODE_MISSING_VERSION_DIR', 32);
 define('PLUGIN_CODE_INVALID_CONF', 33);
 define('PLUGIN_CODE_INVALID_CONF_VALUE_NAME', 34);
 define('PLUGIN_CODE_INVALID_XML_VERSION', 35);
-//@tod: 35 vs 9
+//@todo: 35 vs 9
 define('PLUGIN_CODE_INVALID_SHOP_VERSION', 36);
 define('PLUGIN_CODE_SHOP_VERSION_COMPATIBILITY', 37);
 define('PLUGIN_CODE_MISSING_FRONTEND_LINKS', 38);
@@ -141,13 +141,21 @@ define('PLUGIN_CODE_MISSING_OPTIONS_SOURE_FILE', 129);
 define('PLUGIN_CODE_MISSING_BOOTSTRAP_CLASS', 130);
 define('PLUGIN_CODE_INVALID_BOOTSTRAP_IMPLEMENTATION', 131);
 define('PLUGIN_CODE_INVALID_AUTHOR', 132);
+define('PLUGIN_CODE_MISSING_PORTLETS', 200);
+define('PLUGIN_CODE_INVALID_PORTLET_TITLE', 201);
+define('PLUGIN_CODE_INVALID_PORTLET_CLASS', 202);
+define('PLUGIN_CODE_INVALID_PORTLET_CLASS_FILE', 203);
+define('PLUGIN_CODE_INVALID_PORTLET_GROUP', 204);
+define('PLUGIN_CODE_INVALID_PORTLET_ACTIVE', 205);
+define('PLUGIN_CODE_MISSING_BLUEPRINTS', 206);
+define('PLUGIN_CODE_INVALID_BLUEPRINT_NAME', 207);
+define('PLUGIN_CODE_INVALID_BLUEPRINT_FILE', 208);
 
 define('PLUGIN_CODE_SQL_MISSING_DATA', 2);
 define('PLUGIN_CODE_SQL_ERROR', 3);
 define('PLUGIN_CODE_SQL_WRONG_TABLE_NAME_DELETE', 4);
 define('PLUGIN_CODE_SQL_WRONG_TABLE_NAME_CREATE', 5);
 define('PLUGIN_CODE_SQL_INVALID_FILE_CONTENT', 6);
-
 
 /**
  * sanitize names from plugins downloaded via gitlab
@@ -1332,6 +1340,105 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
         }
     }
 
+    // Plausi OPC Portlets (falls vorhanden)
+    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'])
+        && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'])
+    ) {
+        if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet'])
+            && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet'])
+            && count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet']) > 0
+        ) {
+            foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet'] as $u => $Portlet_arr) {
+                preg_match("/[0-9]+\sattr/", $u, $cTreffer1_arr);
+                preg_match("/[0-9]+/", $u, $cTreffer2_arr);
+                if (strlen($cTreffer2_arr[0]) === strlen($u)) {
+                    // Portlet Title prüfen
+                    preg_match(
+                        "/[a-zA-Z0-9\/_\-äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . "\(\) ]+/",
+                        $Portlet_arr['Title'],
+                        $cTreffer1_arr
+                    );
+                    if (strlen($cTreffer1_arr[0]) !== strlen($Portlet_arr['Title'])) {
+                        // Portlet Title entspricht nicht der Konvention
+                        return PLUGIN_CODE_INVALID_PORTLET_TITLE;
+                    }
+                    // Portlet Class prüfen
+                    preg_match("/[a-zA-Z0-9\/_\-.]+/", $Portlet_arr['Class'], $cTreffer1_arr);
+                    if (strlen($cTreffer1_arr[0]) === strlen($Portlet_arr['Class'])) {
+                        if (!file_exists(
+                            $cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
+                            PFAD_PLUGIN_ADMINMENU . PFAD_PLUGIN_PORTLETS . $Portlet_arr['Class'] . '/' .
+                            $Portlet_arr['Class'] . '.php'
+                        )
+                        ) {
+                            // Die Datei für die Klasse des Portlets existiert nicht
+                            return PLUGIN_CODE_INVALID_PORTLET_CLASS_FILE;
+                        }
+                    } else {
+                        // Portlet Class entspricht nicht der Konvention
+                        return PLUGIN_CODE_INVALID_PORTLET_CLASS;
+                    }
+                    // Portlet Group prüfen
+                    preg_match(
+                        "/[a-zA-Z0-9\/_\-äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . "\(\) ]+/",
+                        $Portlet_arr['Group'],
+                        $cTreffer1_arr
+                    );
+                    if (strlen($cTreffer1_arr[0]) !== strlen($Portlet_arr['Group'])) {
+                        // Portlet Group entspricht nicht der Konvention
+                        return PLUGIN_CODE_INVALID_PORTLET_GROUP;
+                    }
+                    // Portlet Active prüfen
+                    preg_match("/[0-1]{1}/", $Portlet_arr['Active'], $cTreffer1_arr);
+                    if (strlen($cTreffer1_arr[0]) !== strlen($Portlet_arr['Active'])) {
+                        // Active im Portlet entspricht nicht der Konvention
+                        return PLUGIN_CODE_INVALID_PORTLET_ACTIVE;
+                    }
+                }
+            }
+        } else {
+            return PLUGIN_CODE_MISSING_PORTLETS;// Keine Portlets vorhanden
+        }
+    }
+
+    // Plausi OPC Blueprints (falls vorhanden)
+    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'])
+        && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'])
+    ) {
+        if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint'])
+            && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint'])
+            && count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint']) > 0
+        ) {
+            foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint'] as $u => $blueprint) {
+                preg_match("/[0-9]+\sattr/", $u, $cTreffer1_arr);
+                preg_match("/[0-9]+/", $u, $cTreffer2_arr);
+
+                if (strlen($cTreffer2_arr[0]) === strlen($u)) {
+                    // Blueprint Name prüfen
+                    preg_match(
+                        "/[a-zA-Z0-9\/_\-\ äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . "\(\) ]+/",
+                        $blueprint['Name'],
+                        $cTreffer1_arr
+                    );
+                    if (strlen($cTreffer1_arr[0]) !== strlen($blueprint['Name'])) {
+                        // Blueprint Name entspricht nicht der Konvention
+                        return PLUGIN_CODE_INVALID_BLUEPRINT_NAME;
+                    }
+                    // Blueprint JSON file prüfen
+                    if (is_file($cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
+                        PFAD_PLUGIN_ADMINMENU . PFAD_PLUGIN_BLUEPRINTS . $blueprint['JSONFile']) === false
+                    ) {
+                        // Blueprint JSON Datei nicht gefunden
+                        return PLUGIN_CODE_INVALID_BLUEPRINT_FILE;
+                    }
+                }
+            }
+        } else {
+            // Keine Blueprints vorhanden
+            return PLUGIN_CODE_MISSING_BLUEPRINTS;
+        }
+    }
+
     // Plausi Boxenvorlagen (falls vorhanden)
     if (isset($installNode['Boxes'])
         && is_array($installNode['Boxes'])
@@ -1795,6 +1902,8 @@ function installierePluginVorbereitung($cVerzeichnis, $oPluginOld = 0)
 // 16 = Ein Exportformat konnte nicht in die Datenbank gespeichert werden
 // 17 = Ein Template konnte nicht in die Datenbank gespeichert werden
 // 18 = Eine Uninstall Datei konnte nicht in die Datenbank gespeichert werden
+// 19 = Ein OPC Portlet konnte nicht in die Datenbank gespeichert werden
+// 20 = Ein OPC Blueprint konnte nicht in die Datenbank gespeichert werden
 
 // ### logikSQLDatei
 // 22 = Plugindaten fehlen
@@ -2029,6 +2138,14 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
     $widgetsNode    = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['AdminWidget'][0]['Widget'])
     && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['AdminWidget'][0]['Widget'])
         ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['AdminWidget'][0]['Widget']
+        : [];
+    $portletsNode   = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet'])
+    && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet'])
+        ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet']
+        : [];
+    $blueprintsNode = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint'])
+    && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint'])
+        ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint']
         : [];
     $exportNode     = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExportFormat'][0]['Format'])
     && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExportFormat'][0]['Format'])
@@ -2965,6 +3082,52 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
             return 15;// Ein AdminWidget konnte nicht in die Datenbank gespeichert werden
         }
     }
+    // OPC-Portlets in topcportlet fuellen
+    foreach ($portletsNode as $u => $Portlet_arr) {
+        preg_match("/[0-9]+/", $u, $cTreffer2_arr);
+
+        if (strlen($cTreffer2_arr[0]) === strlen($u)) {
+            $oPortlet = (object)[
+                'kPlugin' => (int)$kPlugin,
+                'cTitle'  => $Portlet_arr['Title'],
+                'cClass'  => $Portlet_arr['Class'],
+                'cGroup'  => $Portlet_arr['Group'],
+                'bActive' => (int)$Portlet_arr['Active'],
+            ];
+
+            $kPortlet = Shop::Container()->getDB()->insert('topcportlet', $oPortlet);
+
+            if (!$kPortlet) {
+                return 19;// Ein OPC Portlet konnte nicht in die Datenbank gespeichert werden
+            }
+        }
+    }
+    // OPC-Blueprints in topcblueprints fuellen
+    foreach ($blueprintsNode as $u => $blueprint) {
+        preg_match("/[0-9]+/", $u, $cTreffer2_arr);
+        if (strlen($cTreffer2_arr[0]) === strlen($u)) {
+            $blueprintJson = file_get_contents(
+                PFAD_ROOT . PFAD_PLUGIN . $cVerzeichnis . '/' . PFAD_PLUGIN_VERSION
+                . $nVersion . '/' . PFAD_PLUGIN_ADMINMENU . PFAD_PLUGIN_BLUEPRINTS . $blueprint['JSONFile']
+            );
+
+            $blueprintData = json_decode($blueprintJson, true);
+            $instanceJson  = json_encode($blueprintData['instance']);
+
+            $blueprintObj = (object)[
+                'kPlugin' => (int)$kPlugin,
+                'cName'   => $blueprint['Name'],
+                'cJson'   => $instanceJson,
+            ];
+
+            $kBlueprint = Shop::Container()->getDB()->insert('topcblueprint', $blueprintObj);
+
+            if (!$kBlueprint) {
+                // Ein OPC Blueprint konnte nicht in die Datenbank gespeichert werden
+                return 20;
+            }
+        }
+    }
     // ExportFormate in texportformat fuellen
     foreach ($exportNode as $u => $Format_arr) {
         preg_match("/[0-9]+/", $u, $cTreffer2_arr);
@@ -3150,6 +3313,8 @@ function syncPluginUpdate($kPlugin, $oPluginOld, $nXMLVersion)
         Shop::Container()->getDB()->update('tpluginlinkdatei', 'kPlugin', $kPlugin, $upd);
         Shop::Container()->getDB()->update('tpluginemailvorlage', 'kPlugin', $kPlugin, $upd);
         Shop::Container()->getDB()->update('texportformat', 'kPlugin', $kPlugin, $upd);
+        Shop::Container()->getDB()->update('topcportlet', 'kPlugin', $kPlugin, $upd);
+        Shop::Container()->getDB()->update('topcblueprint', 'kPlugin', $kPlugin, $upd);
         // tplugineinstellungen
         $oPluginEinstellung_arr = Shop::Container()->getDB()->query(
             "SELECT *
@@ -3542,6 +3707,8 @@ function doSQLDelete($kPlugin, $bUpdate, $kPluginNew = null)
     Shop::Container()->getDB()->delete('tplugintemplate', 'kPlugin', $kPlugin);
     Shop::Container()->getDB()->delete('tcheckboxfunktion', 'kPlugin', $kPlugin);
     Shop::Container()->getDB()->delete('tadminwidgets', 'kPlugin', $kPlugin);
+    Shop::Container()->getDB()->delete('topcportlet', 'kPlugin', $kPlugin);
+    Shop::Container()->getDB()->delete('topcblueprint', 'kPlugin', $kPlugin);
     Shop::Container()->getDB()->query(
         "DELETE texportformateinstellungen, texportformatqueuebearbeitet, texportformat
             FROM texportformat
@@ -3586,6 +3753,8 @@ function aktivierePlugin($kPlugin)
         );
         Shop::Container()->getDB()->update('tadminwidgets', 'kPlugin', $kPlugin, (object)['bActive' => 1]);
         Shop::Container()->getDB()->update('tlink', 'kPlugin', $kPlugin, (object)['bIsActive' => 1]);
+        Shop::Container()->getDB()->update('topcportlet', 'kPlugin', $kPlugin, (object)['bActive' => 1]);
+        Shop::Container()->getDB()->update('topcblueprint', 'kPlugin', $kPlugin, (object)['bActive' => 1]);
 
         if (($p = Plugin::bootstrapper($kPlugin)) !== null) {
             $p->enabled();
@@ -3617,6 +3786,8 @@ function deaktivierePlugin($kPlugin)
     Shop::Container()->getDB()->update('tplugin', 'kPlugin', $kPlugin, (object)['nStatus' => Plugin::PLUGIN_DISABLED]);
     Shop::Container()->getDB()->update('tadminwidgets', 'kPlugin', $kPlugin, (object)['bActive' => 0]);
     Shop::Container()->getDB()->update('tlink', 'kPlugin', $kPlugin, (object)['bIsActive' => 0]);
+    Shop::Container()->getDB()->update('topcportlet', 'kPlugin', $kPlugin, (object)['bActive' => 0]);
+    Shop::Container()->getDB()->update('topcblueprint', 'kPlugin', $kPlugin, (object)['bActive' => 0]);
 
     Shop::Cache()->flushTags([CACHING_GROUP_PLUGIN . '_' . $kPlugin]);
 
@@ -4300,6 +4471,33 @@ function mappePlausiFehler($nFehlerCode, $oPlugin)
                 break;
             case PLUGIN_CODE_INVALID_AUTHOR:
                 $return .= 'Autor entspricht nicht der Konvention.';
+                break;
+            case PLUGIN_CODE_MISSING_PORTLETS:
+                $return = 'Fehler: Keine Portlets vorhanden';
+                break;
+            case PLUGIN_CODE_INVALID_PORTLET_TITLE:
+                $return = 'Fehler: Portlet Title entspricht nicht der Konvention';
+                break;
+            case PLUGIN_CODE_INVALID_PORTLET_CLASS:
+                $return = 'Fehler: Portlet Class entspricht nicht der Konvention';
+                break;
+            case PLUGIN_CODE_INVALID_PORTLET_CLASS_FILE:
+                $return = 'Fehler: Die Datei für die Klasse des Portlet existiert nicht';
+                break;
+            case PLUGIN_CODE_INVALID_PORTLET_GROUP:
+                $return = 'Fehler: Group im Portlet entspricht nicht der Konvention';
+                break;
+            case PLUGIN_CODE_INVALID_PORTLET_ACTIVE:
+                $return = 'Fehler: Active im Portlet entspricht nicht der Konvention';
+                break;
+            case PLUGIN_CODE_MISSING_BLUEPRINTS:
+                $return = 'Fehler: Keine Blueprints vorhanden';
+                break;
+            case PLUGIN_CODE_INVALID_BLUEPRINT_NAME:
+                $return = 'Fehler: Blueprint Name entspricht nicht der Konvention';
+                break;
+            case PLUGIN_CODE_INVALID_BLUEPRINT_FILE:
+                $return = 'Fehler: Die Datei für das Blueprint existiert nicht';
                 break;
             default:
                 $return = 'Unbekannter Fehler.';

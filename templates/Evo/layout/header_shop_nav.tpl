@@ -20,7 +20,7 @@
     <li class="dropdown hidden-xs">
         {if empty($smarty.session.Kunde->kKunde)}
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="{lang key='login'}">
-                <i class="fa fa-user"></i> <span class="hidden-xs hidden-sm"> {lang key='login'} </span> <i class="caret"></i>
+                <i class="fa fa-user"></i> <span class="hidden-xs hidden-sm">{lang key='login'} </span> <i class="caret"></i>
             </a>
             <ul id="login-dropdown" class="dropdown-menu dropdown-menu-right">
                 <li>

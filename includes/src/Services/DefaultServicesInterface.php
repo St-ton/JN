@@ -60,7 +60,32 @@ interface DefaultServicesInterface extends ContainerInterface
      * @throws ServiceNotFoundException
      * @throws CircularReferenceException
      */
-    public function getBackendLogService(): LoggerInterface;
+    public function getBackendLogService() : LoggerInterface;
+
+    /**
+     * @return \OPC\Service
+     */
+    public function getOPC(): \OPC\Service;
+
+    /**
+     * @return \OPC\PageService
+     */
+    public function getOPCPageService(): \OPC\PageService;
+
+    /**
+     * @return \OPC\DB
+     */
+    public function getOPCDB(): \OPC\DB;
+
+    /**
+     * @return \OPC\PageDB
+     */
+    public function getOPCPageDB(): \OPC\PageDB;
+
+    /**
+     * @return \OPC\Locker
+     */
+    public function getOPCLocker(): \OPC\Locker;
 
     /**
      * @return Logger
@@ -87,5 +112,5 @@ interface DefaultServicesInterface extends ContainerInterface
     /**
      * @return CaptchaServiceInterface
      */
-    public function getCaptchaService(): CaptchaServiceInterface;
+    public function getCaptchaService() : CaptchaServiceInterface;
 }

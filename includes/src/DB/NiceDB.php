@@ -792,7 +792,7 @@ class NiceDB implements DbInterface
         string $select = '*',
         string $orderBy = '',
         string $limit = ''
-    ): array
+    )
     {
         $this->validateEntityName($tableName);
         foreach ((array)$keys as $key) {
@@ -817,7 +817,15 @@ class NiceDB implements DbInterface
             (!empty($orderBy) ? (' ORDER BY ' . $orderBy) : '') .
             (!empty($limit) ? (' LIMIT ' . $limit) : '');
 
-        return $this->executeQueryPrepared($stmt, array_combine($keys, $values), 2);
+        $res = $this->executeQueryPrepared($stmt, array_combine($keys, $values), 2);
+
+        if (is_array($res)) {
+            return $res;
+        }
+
+        throw new \InvalidArgumentException(
+            "The queried table '$tableName' or one of its columns '$select' might not exist."
+        );
     }
 
     /**
@@ -830,7 +838,7 @@ class NiceDB implements DbInterface
         string $select = '*',
         string $orderBy = '',
         string $limit = ''
-    ): array
+    )
     {
         return $this->selectArray($tableName, $keys, $values, $select, $orderBy, $limit);
     }

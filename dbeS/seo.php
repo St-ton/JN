@@ -23,7 +23,7 @@ function checkSeo($cSeo)
         return '';
     }
 
-    Shop::Container()->getDB()->query("SET @IKEY := 0", 10);
+    Shop::Container()->getDB()->query("SET @IKEY := 0", \DB\ReturnType::QUERYSINGLE);
     $obj = Shop::Container()->getDB()->query(
         "SELECT oseo.newSeo
             FROM (
@@ -39,7 +39,8 @@ function checkSeo($cSeo)
 		            AND iseo.cSeo RLIKE '^{$cSeo}_[0-9]+$'
             )
             ORDER BY oseo.nOrder
-            LIMIT 1", 1
+            LIMIT 1",
+        \DB\ReturnType::SINGLE_OBJECT
     );
 
     return $obj->newSeo ?? $cSeo;

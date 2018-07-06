@@ -12,21 +12,11 @@ if (auth()) {
     $return    = 2;
     $unzipPath = PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . basename($zipFile) . '_' . date('dhis') . '/';
     if (($syncFiles = unzipSyncFiles($zipFile, $unzipPath, __FILE__)) === false) {
-        if (Jtllog::doLog()) {
-            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'Kategorien_xml');
-        }
+        Shop::Container()->getLogService()->error('Error: Cannot extract zip file ' . $zipFile . ' to ' . $unzipPath);
         removeTemporaryFiles($zipFile);
     } else {
         $return = 0;
         foreach ($syncFiles as $xmlFile) {
-            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog(
-                    'bearbeite: ' . $xmlFile . ' size: ' . filesize($xmlFile),
-                    JTLLOG_LEVEL_DEBUG,
-                    false,
-                    'Kategorien_xml'
-                );
-            }
             $d   = file_get_contents($xmlFile);
             $xml = XML_unserialize($d);
 
@@ -57,7 +47,10 @@ function bearbeiteDeletes($xml)
 {
     if (isset($xml['del_kategorien']['kKategorie'])) {
         // Alle Shop Kundengruppen holen
-        $oKundengruppe_arr = Shop::Container()->getDB()->query("SELECT kKundengruppe FROM tkundengruppe", 2);
+        $oKundengruppe_arr = Shop::Container()->getDB()->query(
+            'SELECT kKundengruppe FROM tkundengruppe',
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
         if (!is_array($xml['del_kategorien']['kKategorie']) && (int)$xml['del_kategorien']['kKategorie'] > 0) {
             $xml['del_kategorien']['kKategorie'] = [$xml['del_kategorien']['kKategorie']];
         }
@@ -95,18 +88,17 @@ function bearbeiteInsert($xml)
         $Kategorie->kOberKategorie = (int)$xml['tkategorie attr']['kOberKategorie'];
     }
     if (!$Kategorie->kKategorie) {
-        if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('kKategorie fehlt! XML: ' . print_r($xml, true), JTLLOG_LEVEL_ERROR, false, 'Kategorien_xml');
-        }
+        Shop::Container()->getLogService()->error('kKategorie fehlt! XML: ' . print_r($xml, true));
 
         return;
     }
     if (is_array($xml['tkategorie'])) {
         // Altes SEO merken => falls sich es bei der aktualisierten Kategorie ändert => Eintrag in tredirect
         $oDataOld      = Shop::Container()->getDB()->query(
-            "SELECT cSeo, lft, rght, nLevel
+            'SELECT cSeo, lft, rght, nLevel
                 FROM tkategorie
-                WHERE kKategorie = " . $Kategorie->kKategorie, 1
+                WHERE kKategorie = ' . $Kategorie->kKategorie,
+            \DB\ReturnType::SINGLE_OBJECT
         );
         $oSeoAssoc_arr = getSeoFromDB($Kategorie->kKategorie, 'kKategorie', null, 'kSprache');
 
@@ -184,7 +176,10 @@ function bearbeiteInsert($xml)
             }
         }
         // Alle Shop Kundengruppen holen
-        $oKundengruppe_arr = Shop::Container()->getDB()->query("SELECT kKundengruppe FROM tkundengruppe", 2);
+        $oKundengruppe_arr = Shop::Container()->getDB()->query(
+            'SELECT kKundengruppe FROM tkundengruppe',
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
         updateXMLinDB($xml['tkategorie'], 'tkategoriekundengruppe', $GLOBALS['mKategorieKundengruppe'], 'kKundengruppe', 'kKategorie');
         if (is_array($oKundengruppe_arr) && count($oKundengruppe_arr) > 0) {
             //hole alle artikel raus in dieser Kategorie
@@ -238,9 +233,6 @@ function loescheKategorie($kKategorie)
     Shop::Container()->getDB()->delete('tkategoriekundengruppe', 'kKategorie', $kKategorie);
     Shop::Container()->getDB()->delete('tkategoriesichtbarkeit', 'kKategorie', $kKategorie);
     Shop::Container()->getDB()->delete('tkategoriesprache', 'kKategorie', $kKategorie);
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Kategorie geloescht: ' . $kKategorie, JTLLOG_LEVEL_DEBUG, false, 'Kategorien_xml');
-    }
 }
 
 /**
@@ -266,9 +258,6 @@ function saveKategorieAttribut($xmlParent, $oAttribut)
         $oAttribut->kKategorieAttribut = (int)$oAttribut->kAttribut;
         unset($oAttribut->kAttribut);
     }
-
-    Jtllog::writeLog('Speichere Kategorieattribut: ' . var_export($oAttribut, true), JTLLOG_LEVEL_DEBUG);
-
     DBUpdateInsert('tkategorieattribut', [$oAttribut], 'kKategorieAttribut', 'kKategorie');
     $oAttribSprache_arr = mapArray($xmlParent, 'tattributsprache', $GLOBALS['mKategorieAttributSprache']);
 
@@ -280,8 +269,6 @@ function saveKategorieAttribut($xmlParent, $oAttribut)
             'cName'     => $oAttribut->cName,
             'cWert'     => $oAttribut->cWert,
         ]);
-
-        Jtllog::writeLog('Speichere Kategorieattributsprache: ' . var_export($oAttribSprache_arr, true), JTLLOG_LEVEL_DEBUG);
         DBUpdateInsert('tkategorieattributsprache', $oAttribSprache_arr, 'kAttribut', 'kSprache');
     }
 

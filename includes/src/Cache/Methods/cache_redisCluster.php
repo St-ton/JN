@@ -85,7 +85,7 @@ class cache_redisCluster implements ICachingMethod
 
             $this->_redis = $redis;
         } catch (\RedisClusterException $e) {
-            \Jtllog::writeLog('\RedisClusterException: ' . $e->getMessage(), JTLLOG_LEVEL_ERROR, true);
+            \Shop::Container()->getLogService()->critical('\RedisClusterException: ' . $e->getMessage());
         }
 
         return \count($this->masters) > 0;
@@ -101,7 +101,7 @@ class cache_redisCluster implements ICachingMethod
 
             return $this->_redis->set($cacheID, $content, $cacheID !== $this->journalID && $exp > -1 ? $exp : null);
         } catch (\RedisClusterException $e) {
-            \Jtllog::writeLog('\RedisClusterException: ' . $e->getMessage(), JTLLOG_LEVEL_ERROR, true);
+            \Shop::Container()->getLogService()->error('\RedisClusterException: ' . $e->getMessage());
 
             return false;
         }
@@ -122,7 +122,7 @@ class cache_redisCluster implements ICachingMethod
 
             return $res;
         } catch (\RedisClusterException $e) {
-            \Jtllog::writeLog('\RedisClusterException: ' . $e->getMessage(), JTLLOG_LEVEL_ERROR, true);
+            \Shop::Container()->getLogService()->error('\RedisClusterException: ' . $e->getMessage());
 
             return false;
         }
@@ -136,7 +136,7 @@ class cache_redisCluster implements ICachingMethod
         try {
             return $this->_redis->get($cacheID);
         } catch (\RedisClusterException $e) {
-            \Jtllog::writeLog('\RedisClusterException: ' . $e->getMessage(), JTLLOG_LEVEL_ERROR, true);
+            \Shop::Container()->getLogService()->error('\RedisClusterException: ' . $e->getMessage());
 
             return false;
         }
@@ -281,7 +281,7 @@ class cache_redisCluster implements ICachingMethod
                     : [];
             }
         } catch (\RedisClusterException $e) {
-            \Jtllog::writeLog('\RedisClusterException: ' . $e->getMessage(), JTLLOG_LEVEL_ERROR, true);
+            \Shop::Container()->getLogService()->error('\RedisClusterException: ' . $e->getMessage());
 
             return [];
         }

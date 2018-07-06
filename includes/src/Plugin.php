@@ -972,13 +972,10 @@ class Plugin
                 $oPlugin->nStatus = self::PLUGIN_LICENSE_KEY_INVALID;
                 $oPlugin->cFehler = 'Lizenzschl&uuml;ssel ist ung&uuml;ltig';
                 $oPlugin->updateInDB();
-                Jtllog::writeLog(
+                Shop::Container()->getLogService()->withName('kPlugin')->error(
                     'Plugin Lizenzprüfung: Das Plugin "' . $oPlugin->cName .
                     '" hat keinen gültigen Lizenzschlüssel und wurde daher deaktiviert!',
-                    JTLLOG_LEVEL_ERROR,
-                    false,
-                    'kPlugin',
-                    $oPlugin->kPlugin
+                    [$oPlugin->kPlugin]
                 );
                 if (isset($xParam_arr['cModulId']) && strlen($xParam_arr['cModulId']) > 0) {
                     self::updatePaymentMethodState($oPlugin, 0);

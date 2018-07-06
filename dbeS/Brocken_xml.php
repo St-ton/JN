@@ -13,10 +13,11 @@ if (auth()) {
         $cBrocken = StringHandler::filterXSS($_POST['b']);    // Wawi Brocken
         // Schau ob bereits Brocken vorhanden und ob sich Brocken geändert hat
         $oBrocken = Shop::Container()->getDB()->query(
-            "SELECT cBrocken
+            'SELECT cBrocken
                 FROM tbrocken
                 ORDER BY dErstellt DESC
-                LIMIT 1", 1
+                LIMIT 1',
+            \DB\ReturnType::SINGLE_OBJECT
         );
         if (empty($oBrocken->cBrocken)) {
             // Insert

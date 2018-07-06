@@ -19,20 +19,11 @@ if (auth()) {
     LastJob::getInstance()->finishStdJobs();
 
     $oLastJob_arr = getJobs();
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('LastJob Job Array: ' .
-            print_r($oLastJob_arr, true), JTLLOG_LEVEL_DEBUG, false, 'LastJob Job Array');
-    }
-
     if (is_array($oLastJob_arr) && count($oLastJob_arr) > 0) {
         $conf = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_SITEMAP]);
 
         foreach ($oLastJob_arr as $oLastJob) {
             if (isset($oLastJob->nJob) && (int)$oLastJob->nJob > 0) {
-                if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('Lastjobs Job: ' .
-                        print_r($oLastJob, true), JTLLOG_LEVEL_DEBUG, false, 'nJob', $oLastJob->nJob);
-                }
                 switch ((int)$oLastJob->nJob) {
                     // Bewertungserinnerung
                     case LASTJOBS_BEWERTUNGSERINNNERUNG:
@@ -77,9 +68,6 @@ if (auth()) {
         }
     }
     die('0');
-}
-if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-    Jtllog::writeLog('BEENDE: ' . $_FILES['data']['tmp_name'], JTLLOG_LEVEL_DEBUG, false, 'lastjobs');
 }
 die('3');
 

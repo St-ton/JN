@@ -1814,6 +1814,12 @@ final class Shop
 
             return new Logger('auth', $handlers, [new PsrLogMessageProcessor()]);
         });
+        $container->setSingleton('Logger', function (Container $container) {
+            $handler = (new NiceDBHandler($container->getDB(), self::getConfigValue(CONF_GLOBAL, 'systemlog_flag')))
+                ->setFormatter(new LineFormatter('%message%', null, false, true));
+
+            return new Logger('jtllog', [$handler], [new PsrLogMessageProcessor()]);
+        });
         $container->setSingleton(ValidationServiceInterface::class, function () {
             $vs = new ValidationService($_GET, $_POST, $_COOKIE);
             $vs->setRuleSet('identity', (new RuleSet())->integer()->gt(0));

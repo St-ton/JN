@@ -12,17 +12,11 @@ if (auth()) {
     $return  = 2;
     $zipFile = $_FILES['data']['tmp_name'];
     if (($syncFiles = unzipSyncFiles($zipFile, PFAD_SYNC_TMP, __FILE__)) === false) {
-        if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'Data_xml');
-        }
+        Shop::Container()->getLogService()->error('Error: Cannot extract zip file ' . $zipFile);
         removeTemporaryFiles($zipFile);
     } else {
         $return = 0;
         foreach ($syncFiles as $xmlFile) {
-            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog('bearbeite: ' . $xmlFile . ' size: ' .
-                    filesize($xmlFile), JTLLOG_LEVEL_DEBUG, false, 'Data_xml');
-            }
             $d   = file_get_contents($xmlFile);
             $xml = XML_unserialize($d);
             if (strpos($xmlFile, 'ack_verfuegbarkeitsbenachrichtigungen.xml') !== false) {
@@ -59,10 +53,6 @@ function bearbeiteVerfuegbarkeitsbenachrichtigungenAck($xml)
                         $kVerfuegbarkeitsbenachrichtigung,
                         (object)['cAbgeholt' => 'Y']
                     );
-                    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                        Jtllog::writeLog('Verfuegbarkeitsbenachrichtigung erfolgreich abgeholt: ' .
-                            $kVerfuegbarkeitsbenachrichtigung, JTLLOG_LEVEL_DEBUG, false, 'Data_xml');
-                    }
                 }
             }
         }

@@ -9,28 +9,20 @@ require_once __DIR__ . '/syncinclude.php';
 $return  = 3;
 $archive = null;
 $zipFile = $_FILES['data']['tmp_name'];
+$logger  = Shop::Container()->getLogService()->withName('dbeS');
 if (auth()) {
     $articleIDs = [];
     $zipFile    = checkFile();
     $return     = 2;
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Artikel - Entpacke: ' . $zipFile, JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
-    }
-    $unzipPath = PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . basename($zipFile) . '_' . date('dhis') . '/';
+    $unzipPath  = PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . basename($zipFile) . '_' . date('dhis') . '/';
 
     if (($syncFiles = unzipSyncFiles($zipFile, $unzipPath, __FILE__)) === false) {
-        if (Jtllog::doLog()) {
-            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'Artikel_xml');
-        }
+        $logger->error('Error: Cannot extract zip file ' . $zipFile . ' to ' . $unzipPath);
         removeTemporaryFiles($zipFile);
     } else {
         $return = 0;
         $conf   = Shop::getSettings([CONF_GLOBAL]);
         foreach ($syncFiles as $i => $xmlFile) {
-            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog('bearbeite: ' . $xmlFile . ' size: ' .
-                    filesize($xmlFile), JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
-            }
             $d   = file_get_contents($xmlFile);
             $xml = XML_unserialize($d);
 
@@ -57,9 +49,6 @@ if (auth()) {
 }
 
 echo $return;
-if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-    Jtllog::writeLog('BEENDE: ' . $zipFile, JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
-}
 
 /**
  * @param array $xml
@@ -110,8 +99,8 @@ function bearbeiteDeletes($xml, $conf)
  */
 function bearbeiteInsert($xml, array $conf)
 {
-    $res = [];
-
+    $res               = [];
+    $logger            = Shop::Container()->getLogService()->withName('dbeS');
     $Artikel           = new stdClass();
     $Artikel->kArtikel = 0;
 
@@ -119,9 +108,7 @@ function bearbeiteInsert($xml, array $conf)
         $Artikel->kArtikel = (int)$xml['tartikel attr']['kArtikel'];
     }
     if (!$Artikel->kArtikel) {
-        if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('kArtikel fehlt! XML:' . print_r($xml, true), JTLLOG_LEVEL_ERROR, false, 'Artikel_xml');
-        }
+        $logger->error('kArtikel fehlt! XML:' . print_r($xml, true));
 
         return $res;
     }
@@ -332,12 +319,11 @@ function bearbeiteInsert($xml, array $conf)
             if ($delta->totalquantity > 0) {
                 //subtract delta from stocklevel
                 $artikel_arr[0]->fLagerbestand -= $delta->totalquantity;
-                if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog(
+                if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
+                    $logger->debug(
                         "Artikel-Sync: Lagerbestand von kArtikel {$artikel_arr[0]->kArtikel} wurde " .
                         "wegen nicht-abgeholter Bestellungen " .
-                        "um {$delta->totalquantity} auf {$artikel_arr[0]->fLagerbestand} reduziert.",
-                        JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml'
+                        "um {$delta->totalquantity} auf {$artikel_arr[0]->fLagerbestand} reduziert."
                     );
                 }
             }
@@ -532,13 +518,8 @@ function bearbeiteInsert($xml, array $conf)
             unset($oArtikelUpload->kArtikelUpload, $oArtikelUpload->kArtikel);
         }
         unset($oArtikelUpload);
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog(
-                'oArtikelUpload_arr: ' . print_r($oArtikelUpload_arr, true),
-                JTLLOG_LEVEL_DEBUG,
-                false,
-                'Artikel_xml'
-            );
+        if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
+            $logger->debug('oArtikelUpload_arr: ' . print_r($oArtikelUpload_arr, true));
         }
         DBUpdateInsert('tuploadschema', $oArtikelUpload_arr, 'kUploadSchema', 'kCustomID');
 
@@ -549,13 +530,8 @@ function bearbeiteInsert($xml, array $conf)
                 'tartikeluploadsprache',
                 $GLOBALS['mArtikelUploadSprache']
             );
-            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog(
-                    'oArtikelUploadSprache_arr: ' . print_r($oArtikelUploadSprache_arr, true),
-                    JTLLOG_LEVEL_DEBUG,
-                    false,
-                    'Artikel_xml'
-                );
+            if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
+                $logger->debug('oArtikelUploadSprache_arr: ' . print_r($oArtikelUploadSprache_arr, true));
             }
             DBUpdateInsert('tuploadschemasprache', $oArtikelUploadSprache_arr, 'kArtikelUpload', 'kSprache');
         } else {
@@ -566,13 +542,8 @@ function bearbeiteInsert($xml, array $conf)
                     'tartikeluploadsprache',
                     $GLOBALS['mArtikelUploadSprache']
                 );
-                if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog(
-                        'oArtikelUploadSprache_arr: ' . print_r($oArtikelUploadSprache_arr, true),
-                        JTLLOG_LEVEL_DEBUG,
-                        false,
-                        'Artikel_xml'
-                    );
+                if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
+                    $logger->debug('oArtikelUploadSprache_arr: ' . print_r($oArtikelUploadSprache_arr, true));
                 }
                 DBUpdateInsert('tuploadschemasprache', $oArtikelUploadSprache_arr, 'kArtikelUpload', 'kSprache');
             }
@@ -587,13 +558,8 @@ function bearbeiteInsert($xml, array $conf)
     // Konfig
     if (isset($xml['tartikel']['tartikelkonfiggruppe']) && is_array($xml['tartikel']['tartikelkonfiggruppe'])) {
         $oArtikelKonfig_arr = mapArray($xml['tartikel'], 'tartikelkonfiggruppe', $GLOBALS['mArtikelkonfiggruppe']);
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog(
-                'oArtikelKonfig_arr: ' . print_r($oArtikelKonfig_arr, true),
-                JTLLOG_LEVEL_DEBUG,
-                false,
-                'Artikel_xml'
-            );
+        if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
+            $logger->debug('oArtikelKonfig_arr: ' . print_r($oArtikelKonfig_arr, true));
         }
         DBUpdateInsert('tartikelkonfiggruppe', $oArtikelKonfig_arr, 'kArtikel', 'kKonfiggruppe');
     }
@@ -661,8 +627,8 @@ function bearbeiteInsert($xml, array $conf)
     }
     // SQL DEL
     if (isset($xml['tartikel']['SQLDEL']) && strlen($xml['tartikel']['SQLDEL']) > 10) { // teigenschaftkombiwert sqls absetzen
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('SQLDEL: ' . $xml['tartikel']['SQLDEL'], JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
+        if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
+            $logger->debug('SQLDEL: ' . $xml['tartikel']['SQLDEL']);
         }
         $cSQL_arr = explode("\n", $xml['tartikel']['SQLDEL']);
         foreach ($cSQL_arr as $cSQL) {
@@ -673,8 +639,8 @@ function bearbeiteInsert($xml, array $conf)
     }
     // SQL
     if (isset($xml['tartikel']['SQL']) && strlen($xml['tartikel']['SQL']) > 10) { //teigenschaftkombiwert sqls absetzen
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('SQL: ' . $xml['tartikel']['SQL'], JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
+        if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
+            $logger->debug('SQL: ' . $xml['tartikel']['SQL']);
         }
         $cSQL_arr = explode("\n", $xml['tartikel']['SQL']);
         foreach ($cSQL_arr as $cSQL) {
@@ -1034,10 +1000,6 @@ function loescheArtikel($kArtikel, $nIstVater = 0, $bForce = false, $conf = null
             }
         }
     }
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('kArtikel: ' . $kArtikel . ' - nIstVater: ' . $nIstVater, JTLLOG_LEVEL_DEBUG, false,
-            'Artikel_xml loescheArtikel');
-    }
     if ($kArtikel > 0) {
         $manufacturerID = Shop::Container()->getDB()->query(
             "SELECT kHersteller 
@@ -1068,9 +1030,6 @@ function loescheArtikel($kArtikel, $nIstVater = 0, $bForce = false, $conf = null
         }
         loescheArtikelUpload($kArtikel);
         loescheKonfig($kArtikel);
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('Artikel geloescht: ' . $kArtikel, JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
-        }
 
         return [
             'kArtikel'    => $kArtikel,
@@ -1247,10 +1206,6 @@ function loescheDownload($kArtikel, $kDownload = null)
 {
     $kArtikel  = (int)$kArtikel;
     $kDownload = (int)$kDownload;
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('loescheDownload: kArtikel:' . var_export($kArtikel, true) . '- kDownload:' .
-            var_export($kDownload, true), JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
-    }
     if ($kArtikel > 0) {
         if ($kDownload > 0) {
             Shop::Container()->getDB()->delete('tartikeldownload', ['kArtikel', 'kDownload'], [$kArtikel, $kDownload]);
@@ -1472,16 +1427,11 @@ function clearProductCaches($articles)
         $cacheTags   = array_unique($cacheTags);
         // flush article cache, category cache and cache for gibMerkmalFilterOptionen() and mega menu/category boxes
         $totalCount = Shop::Cache()->flushTags($cacheTags);
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            $end = microtime(true);
-            Jtllog::writeLog(
-                'Flushed a total of ' . $totalCount .
-                ' keys for ' . count($cacheTags) .
-                ' tags in ' . ($end - $start) . 's',
-                JTLLOG_LEVEL_DEBUG,
-                false,
-                'Artikel_xml'
-            );
-        }
+        $end        = microtime(true);
+        Shop::Container()->getLogService()->debug(
+            'Flushed a total of ' . $totalCount .
+            ' keys for ' . count($cacheTags) .
+            ' tags in ' . ($end - $start) . 's'
+        );
     }
 }

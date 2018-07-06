@@ -390,13 +390,6 @@ class WarenkorbPers
             foreach ($this->oWarenkorbPersPos_arr as $i => $WarenkorbPersPos) {
                 if (!in_array((int)$WarenkorbPersPos->kArtikel, $kArtikel_arr, true)) {
                     $this->entfernePos($WarenkorbPersPos->kWarenkorbPersPos);
-                    Jtllog::writeLog(
-                        'Der Artikel ' . $WarenkorbPersPos->kArtikel . ' ist vom persistenten Warenkorb gelöscht worden.',
-                        JTLLOG_LEVEL_NOTICE,
-                        false,
-                        'kWarenkorbPersPos',
-                        $WarenkorbPersPos->kWarenkorbPersPos
-                    );
                     unset($this->oWarenkorbPersPos_arr[$i]);
                 }
             }

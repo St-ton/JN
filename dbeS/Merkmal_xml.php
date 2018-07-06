@@ -13,9 +13,7 @@ if (auth()) {
     $return    = 2;
     $unzipPath = PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . basename($zipFile) . '_' . date('dhis') . '/';
     if (($syncFiles = unzipSyncFiles($zipFile, $unzipPath, __FILE__)) === false) {
-        if (Jtllog::doLog()) {
-            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'Merkmal_xml');
-        }
+        Shop::Container()->getLogService()->error('Error: Cannot extract zip file ' . $zipFile . ' to ' . $unzipPath);
         removeTemporaryFiles($zipFile);
     } else {
         $return = 0;
@@ -25,24 +23,8 @@ if (auth()) {
             $fileName = pathinfo($xmlFile)['basename'];
 
             if ($fileName === 'del_merkmal.xml' || $fileName === 'del_merkmalwert.xml') {
-                if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog(
-                        'bearbeite: ' . $xmlFile . ' size: ' . filesize($xmlFile),
-                        JTLLOG_LEVEL_DEBUG,
-                        false,
-                        'Merkmal_xml'
-                    );
-                }
                 bearbeiteDeletes($xml);
             } elseif ($fileName === 'merkmal.xml') {
-                if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog(
-                        'bearbeite: ' . $xmlFile . ' size: ' . filesize($xmlFile),
-                        JTLLOG_LEVEL_DEBUG,
-                        false,
-                        'Merkmal_xml'
-                    );
-                }
                 bearbeiteInsert($xml);
             }
 
@@ -53,9 +35,6 @@ if (auth()) {
 }
 
 echo $return;
-if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-    Jtllog::writeLog('BEENDE: ' . $_FILES['data']['tmp_name'], JTLLOG_LEVEL_DEBUG, false, 'Merkmal_xml');
-}
 
 /**
  * @param array $xml
@@ -412,8 +391,10 @@ function bearbeiteInsert($xml)
 function fuelleFehlendeMMWInSeo($oMM_arr)
 {
     // Hole alle Sprachen vom Shop
-    $oSprache_arr = Shop::Container()->getDB()->query("SELECT kSprache FROM tsprache ORDER BY kSprache", 2);
-
+    $oSprache_arr = Shop::Container()->getDB()->query(
+        'SELECT kSprache FROM tsprache ORDER BY kSprache',
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
     if (is_array($oMM_arr) && count($oMM_arr) > 0) {
         foreach ($oMM_arr as $oMM) {
             foreach ($oMM->oMMW_arr as $oMMW) {
@@ -503,9 +484,6 @@ function loescheMerkmal($kMerkmal, $update = 1)
             }
         }
         Shop::Container()->getDB()->delete('tmerkmalwert', 'kMerkmal', $kMerkmal);
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('Merkmal geloescht: ' . $kMerkmal, JTLLOG_LEVEL_DEBUG, false, 'Merkmal_xml');
-        }
     }
 }
 
@@ -547,29 +525,26 @@ function loescheMerkmalWert($kMerkmalWert, $isInsert = false)
         // Hat das Merkmal vor dem Loeschen noch mehr als einen Wert?
         // Wenn nein => nach dem Loeschen auch das Merkmal loeschen
         $oAnzahl = Shop::Container()->getDB()->query(
-            "SELECT count(*) AS nAnzahl, kMerkmal
+            'SELECT count(*) AS nAnzahl, kMerkmal
                 FROM tmerkmalwert
-                WHERE kMerkmal =
-                    (
-                        SELECT kMerkmal
-                        FROM tmerkmalwert
-                        WHERE kMerkmalWert = " . $kMerkmalWert . "
-                    )", 1
+                WHERE kMerkmal = (
+                    SELECT kMerkmal
+                    FROM tmerkmalwert
+                    WHERE kMerkmalWert = ' . $kMerkmalWert . ')',
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         Shop::Container()->getDB()->query(
-            "DELETE tmerkmalwert, tmerkmalwertsprache
+            'DELETE tmerkmalwert, tmerkmalwertsprache
                 FROM tmerkmalwert
                 JOIN tmerkmalwertsprache
                     ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-                WHERE tmerkmalwert.kMerkmalWert = " . $kMerkmalWert, 3
+                WHERE tmerkmalwert.kMerkmalWert = ' . $kMerkmalWert,
+            \DB\ReturnType::AFFECTED_ROWS
         );
         // Das Merkmal hat keine MerkmalWerte mehr => auch loeschen
         if (!$isInsert && $oAnzahl->nAnzahl == 1) {
             loescheMerkmal($oAnzahl->kMerkmal);
-        }
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('MerkmalWert geloescht: ' . $kMerkmalWert, JTLLOG_LEVEL_DEBUG, false, 'Merkmal_xml');
         }
     }
 }

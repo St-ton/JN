@@ -21,16 +21,15 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Formatter\LineFormatter;
 
 if (PHP_SAPI === 'cli') {
-    $logger  = new Logger('cron');
     $handler = new StreamHandler('php://stdout', Logger::DEBUG);
     $handler->setFormatter(new LineFormatter("[%datetime%] %message% %context%\n", null, false, true));
-    $logger->pushHandler($handler);
+    $logger  = new Logger('cron', [$handler]);
 } else {
     $logger = Shop::Container()->getBackendLogService();
 }
 
 if (flock($lockfile, LOCK_EX | LOCK_NB) === false) {
-    Jtllog::cronLog('Cron currently locked', 2);
+    $logger->log(JTLLOG_LEVEL_NOTICE, 'Cron currently locked');
     exit;
 }
 

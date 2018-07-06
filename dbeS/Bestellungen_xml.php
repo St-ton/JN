@@ -16,17 +16,11 @@ if (auth()) {
     $return  = 2;
     $zipFile = $_FILES['data']['tmp_name'];
     if (($syncFiles = unzipSyncFiles($zipFile, PFAD_SYNC_TMP, __FILE__)) === false) {
-        if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'Bestellungen_xml');
-        }
+        Shop::Container()->getLogService()->error('Error: Cannot extract zip file ' . $zipFile . ' to ' . PFAD_SYNC_TMP);
         removeTemporaryFiles($zipFile);
     } else {
         $return = 0;
         foreach ($syncFiles as $xmlFile) {
-            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog('bearbeite: ' . PFAD_SYNC_TMP . $xmlFile . ' size: ' .
-                    filesize($xmlFile), JTLLOG_LEVEL_DEBUG, false, 'Bestellungen_xml');
-            }
             $d   = file_get_contents($xmlFile);
             $xml = XML_unserialize($d);
 
@@ -91,7 +85,8 @@ function gibZahlungsmodul($kBestellung)
             LEFT JOIN tzahlungsart 
                 ON tbestellung.kZahlungsart = tzahlungsart.kZahlungsart
             WHERE tbestellung.kBestellung = '" . (int)$kBestellung . "'
-            LIMIT 1", 1
+            LIMIT 1",
+        \DB\ReturnType::SINGLE_OBJECT
     );
 
     if ($oBestellung) {
@@ -121,7 +116,10 @@ function bearbeiteDel($xml)
                 //uploads (artikel der bestellung)
                 //todo...
                 //wenn unreg kunde, dann kunden auch löschen
-                $b = Shop::Container()->getDB()->query("SELECT kKunde FROM tbestellung WHERE kBestellung = " . $kBestellung, 1);
+                $b = Shop::Container()->getDB()->query(
+                    'SELECT kKunde FROM tbestellung WHERE kBestellung = ' . $kBestellung, 
+                    \DB\ReturnType::SINGLE_OBJECT
+                );
                 if (isset($b->kKunde) && $b->kKunde > 0) {
                     checkGuestAccount($b->kKunde);
                 }
@@ -136,7 +134,10 @@ function bearbeiteDel($xml)
             }
             deleteOrder($kBestellung);
             //wenn unreg kunde, dann kunden auch löschen
-            $b = Shop::Container()->getDB()->query("SELECT kKunde FROM tbestellung WHERE kBestellung = " . $kBestellung, 1);
+            $b = Shop::Container()->getDB()->query(
+                'SELECT kKunde FROM tbestellung WHERE kBestellung = ' . $kBestellung,
+                \DB\ReturnType::SINGLE_OBJECT
+            );
             if (isset($b->kKunde) && $b->kKunde > 0) {
                 checkGuestAccount($b->kKunde);
             }
@@ -373,14 +374,6 @@ function bearbeiteUpdate($xml)
             ],
             1
         );
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog(
-                'Zahlungsart Matching (' . Sprache::getLanguageDataByType('', (int)$oBestellung->kSprache) . '): ' . $xml['tbestellung']['cZahlungsartName'] . ' matched: ' . $oZahlungsart->cName,
-                JTLLOG_LEVEL_DEBUG,
-                false,
-                'Bestellungen_xml'
-            );
-        }
     }
     $cZAUpdateSQL = '';
     if (isset($oZahlungsart->kZahlungsart) && $oZahlungsart->kZahlungsart > 0) {
@@ -549,9 +542,10 @@ function bearbeiteSet($xml)
                 $cTrackingURL = $oBestellungWawi->cLogistikURL;
                 if ($oBestellungShop->kLieferadresse > 0) {
                     $Lieferadresse = Shop::Container()->getDB()->query(
-                        "SELECT cPLZ
+                        'SELECT cPLZ
                             FROM tlieferadresse 
-                            WHERE kLieferadresse = " . (int)$oBestellungShop->kLieferadresse, 1
+                            WHERE kLieferadresse = ' . (int)$oBestellungShop->kLieferadresse,
+                        \DB\ReturnType::SINGLE_OBJECT
                     );
                     if ($Lieferadresse->cPLZ) {
                         $cTrackingURL = str_replace('#PLZ#', $Lieferadresse->cPLZ, $cTrackingURL);
@@ -613,7 +607,10 @@ function bearbeiteSet($xml)
             if (((!$oBestellungShop->dVersandDatum || $oBestellungShop->dVersandDatum === '0000-00-00') && $oBestellungWawi->dVersandt) ||
                 ((!$oBestellungShop->dBezahltDatum || $oBestellungShop->dBezahltDatum === '0000-00-00') && $oBestellungWawi->dBezahltDatum)
             ) {
-                $b     = Shop::Container()->getDB()->query("SELECT kKunde FROM tbestellung WHERE kBestellung = " . (int)$oBestellungWawi->kBestellung, 1);
+                $b     = Shop::Container()->getDB()->query(
+                            'SELECT kKunde FROM tbestellung WHERE kBestellung = ' . (int)$oBestellungWawi->kBestellung,
+                            \DB\ReturnType::SINGLE_OBJECT
+                        );
                 $kunde = new Kunde((int)$b->kKunde);
             }
 
@@ -726,10 +723,11 @@ function checkGuestAccount($kKunde)
     if (isset($kunde->cPasswort) && strlen($kunde->cPasswort) < 10) {
         // Da Gastkonten auch durch Kundenkontolöschung entstehen können, kann es auch mehrere Bestellungen geben
         $oBestellung = Shop::Container()->getDB()->query(
-            "SELECT COUNT(kBestellung) AS countBestellung
+            'SELECT COUNT(kBestellung) AS countBestellung
                 FROM tbestellung
-                WHERE cStatus NOT IN (" . BESTELLUNG_STATUS_VERSANDT . ", " . BESTELLUNG_STATUS_STORNO . ")
-                    AND kKunde = " . (int)$kunde->kKunde, 1
+                WHERE cStatus NOT IN (' . BESTELLUNG_STATUS_VERSANDT . ', ' . BESTELLUNG_STATUS_STORNO . ')
+                    AND kKunde = ' . (int)$kunde->kKunde,
+            \DB\ReturnType::SINGLE_OBJECT
         );
         if (isset($oBestellung->countBestellung) && $oBestellung->countBestellung == 0) {
             Shop::Container()->getDB()->delete('tlieferadresse', 'kKunde', (int)$kunde->kKunde);
@@ -770,9 +768,10 @@ function bearbeiteBestellattribute($kBestellung, $oBestellattribut_arr)
 
     if (count($keys_updated) > 0) {
         Shop::Container()->getDB()->query(
-            "DELETE FROM tbestellattribut
-                WHERE kBestellung = {$kBestellung}
-                    AND kBestellattribut NOT IN (" . implode(', ', $keys_updated) . ")", 10
+            'DELETE FROM tbestellattribut
+                WHERE kBestellung = ' . $kBestellung . '
+                    AND kBestellattribut NOT IN (' . implode(', ', $keys_updated) . ')',
+            \DB\ReturnType::DEFAULT
         );
     } else {
         Shop::Container()->getDB()->delete('tbestellattribut', 'kBestellung', $kBestellung);

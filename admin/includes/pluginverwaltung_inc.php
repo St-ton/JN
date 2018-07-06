@@ -1926,13 +1926,10 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
         $nReturnValue       = $nSQLFehlerCode_arr[$nReturnValue];
 
         if ($nReturnValue !== PLUGIN_CODE_OK) {
-            Jtllog::writeLog(
+            Shop::Container()->getLogService()->withName('kPlugin')->error(
                 'SQL-Fehler bei der Plugin-Installation von kPlugin ' . $oPlugin->kPlugin . ', Fehlercode: ' .
                 $nReturnValue,
-                JTLLOG_LEVEL_ERROR,
-                false,
-                'kPlugin',
-                $kPlugin
+                [$kPlugin]
             );
             $bSQLFehler = true;
             break;
@@ -3732,13 +3729,10 @@ function logikSQLDatei($cSQLDatei, $nVersion, $oPlugin)
         $nErrno = Shop::Container()->getDB()->getErrorCode();
         // Es gab einen SQL Fehler => fülle tpluginsqlfehler
         if ($nErrno) {
-            Jtllog::writeLog(
+            Shop::Container()->getLogService()->withName('kPlugin')->error(
                 'SQL Fehler beim Installieren des Plugins (' . $oPlugin->cName . '): ' .
                 str_replace("'", '', Shop::Container()->getDB()->getErrorMessage()),
-                JTLLOG_LEVEL_ERROR,
-                false,
-                'kPlugin',
-                $oPlugin->kPlugin
+                [$oPlugin->kPlugin]
             );
 
             return PLUGIN_CODE_SQL_ERROR;

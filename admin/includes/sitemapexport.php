@@ -10,8 +10,8 @@
  */
 function baueSitemap($nDatei, $data)
 {
-    Jtllog::writeLog('Baue "' . PFAD_EXPORT . 'sitemap_' . $nDatei . '.xml", Datenlaenge "' .
-        strlen($data) . '"', JTLLOG_LEVEL_DEBUG
+    Shop::Container()->getLogService()->debug('Baue "' . PFAD_EXPORT . 'sitemap_' .
+        $nDatei . '.xml", Datenlaenge ' . strlen($data)
     );
     $conf = Shop::getSettings([CONF_SITEMAP]);
     if (!empty($data)) {
@@ -169,7 +169,7 @@ function isSitemapBlocked($cUrl)
  */
 function generateSitemapXML()
 {
-    Jtllog::writeLog('Sitemap wird erstellt', JTLLOG_LEVEL_NOTICE);
+    Shop::Container()->getLogService()->debug('Sitemap wird erstellt');
     $nStartzeit = microtime(true);
     $conf       = Shop::getSettings([
         CONF_ARTIKELUEBERSICHT,
@@ -999,10 +999,10 @@ function generateSitemapXML()
         if ($conf['sitemap']['sitemap_google_ping'] === 'Y') {
             $encodedSitemapIndexURL = urlencode(Shop::getURL() . '/sitemap_index.xml');
             if (200 !== ($httpStatus = RequestHelper::http_get_status('http://www.google.com/webmasters/tools/ping?sitemap=' . $encodedSitemapIndexURL))) {
-                Jtllog::writeLog('Sitemap ping to Google failed with status ' . $httpStatus, JTLLOG_LEVEL_NOTICE);
+                Shop::Container()->getLogService()->notice('Sitemap ping to Google failed with status ' . $httpStatus);
             }
             if (200 !== ($httpStatus = RequestHelper::http_get_status('http://www.bing.com/ping?sitemap=' . $encodedSitemapIndexURL))) {
-                Jtllog::writeLog('Sitemap ping to Bing failed with status ' . $httpStatus, JTLLOG_LEVEL_NOTICE);
+                Shop::Container()->getLogService()->notice('Sitemap ping to Bing failed with status ' . $httpStatus);
             }
         }
     }
@@ -1112,7 +1112,7 @@ function baueSitemapReport($nAnzahlURL_arr, $fTotalZeit)
 
         $kSitemapReport = Shop::Container()->getDB()->insert('tsitemapreport', $oSitemapReport);
         $bGZ            = function_exists('gzopen');
-        Jtllog::writeLog('Sitemaps Report: ' . var_export($nAnzahlURL_arr, true), JTLLOG_LEVEL_DEBUG);
+        Shop::Container()->getLogService()->debug('Sitemaps Report: ' . var_export($nAnzahlURL_arr, true));
         foreach ($nAnzahlURL_arr as $i => $nAnzahlURL) {
             if ($nAnzahlURL > 0) {
                 $oSitemapReportFile                 = new stdClass();

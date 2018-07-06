@@ -621,16 +621,21 @@ final class Shop
      */
     public static function dbg($var, bool $die = false, $beforeString = null, int $backtrace = 0)
     {
+        $nl = PHP_SAPI === 'cli' ? PHP_EOL : '<br>';
         if ($beforeString !== null) {
-            echo $beforeString . '<br />';
+            echo $beforeString . $nl;
         }
-        echo '<pre>';
+        if (PHP_SAPI !== 'cli') {
+            echo '<pre>';
+        }
         var_dump($var);
         if ($backtrace > 0) {
-            echo '<br />Backtrace:<br />';
+            echo $nl . 'Backtrace:' . $nl;
             var_dump(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, $backtrace));
         }
-        echo '</pre>';
+        if (PHP_SAPI !== 'cli') {
+            echo '</pre>';
+        }
         if ($die === true) {
             die();
         }

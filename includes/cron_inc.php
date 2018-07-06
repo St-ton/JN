@@ -42,7 +42,6 @@ $checker = new \Cron\Checker($db, $logger);
 $unqueuedJobs = $checker->check();
 $queue->enqueueCronJobs($unqueuedJobs);
 $queue->loadQueueFromDB();
-
 $queue->run();
 
 if (file_exists(JOBQUEUE_LOCKFILE)) {

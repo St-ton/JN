@@ -49,7 +49,10 @@ class Queue
         $this->logger  = $logger;
     }
 
-    public function loadQueueFromDB()
+    /**
+     * @return array
+     */
+    public function loadQueueFromDB(): array
     {
         $queueData = $this->db->query(
             'SELECT * 
@@ -61,6 +64,8 @@ class Queue
         foreach ($queueData as $entry) {
             $this->queueEntries[] = new QueueEntry($entry);
         }
+
+        return $this->queueEntries;
     }
 
     /**
@@ -93,7 +98,7 @@ class Queue
             $job                   = $this->factory->create($queueEntry);
             $queueEntry->nLimitM   = $job->getLimit();
             $queueEntry->nInArbeit = 1;
-            $this->logger->log(JTLLOG_LEVEL_NOTICE, 'Got job - ' . $job->getID() . ', type = ' . $job->getType() . ')');
+            $this->logger->notice('Got job - ' . $job->getID() . ', type = ' . $job->getType() . ')');
             $job->start($queueEntry);
             $queueEntry->nInArbeit        = 0;
             $queueEntry->dZuletztGelaufen = new \DateTime();
@@ -104,6 +109,7 @@ class Queue
                 (object)['dLetzterStart' => $queueEntry->dZuletztGelaufen->format('Y-m-d H:i')]
             );
             if ($job->isFinished()) {
+                $this->logger->notice('Job ' . $job->getID() . ' successfully finished.');
                 $this->db->delete('tjobqueue', 'kCron', $job->getCronID());
             } else {
                 $update                   = new \stdClass();

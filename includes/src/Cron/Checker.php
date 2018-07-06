@@ -53,7 +53,7 @@ class Checker
                     AND tjobqueue.kJobQueue IS NULL",
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        $this->logger->log(JTLLOG_LEVEL_DEBUG, 'Found ' . count($jobs) . ' cron jobs.');
+        $this->logger->debug('Found ' . count($jobs) . ' new cron jobs.');
 
         return $jobs;
     }

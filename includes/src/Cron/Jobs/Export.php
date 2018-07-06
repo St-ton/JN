@@ -66,9 +66,6 @@ class Export extends Job
         $ef->setLogger($this->logger);
         $finished = $ef->startExport($queueEntry, false, false, true);
         $this->updateExportformatQueueBearbeitet($queueEntry);
-//        $this->logger->log(JTLLOG_LEVEL_NOTICE, 'finished?' . print_r($finished, true));
-        \Shop::dbg($finished, false, 'finished?');
-
         $this->setFinished($finished);
 
         return $this;

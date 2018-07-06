@@ -1118,12 +1118,11 @@ class Exportformat
         $categoryFallback                            = (strpos($content, '->oKategorie_arr') !== false);
         $oArtikelOptionen                            = new stdClass();
         $oArtikelOptionen->nMerkmale                 = 1;
-        $oArtikelOptionen->nAttribute                = 0;
-        $oArtikelOptionen->nArtikelAttribute         = 0;
-        $oArtikelOptionen->nKategorie                = 0;
+        $oArtikelOptionen->nAttribute                = 1;
+        $oArtikelOptionen->nArtikelAttribute         = 1;
+        $oArtikelOptionen->nKategorie                = 1;
         $oArtikelOptionen->nKeinLagerbestandBeachten = 1;
-        $oArtikelOptionen->nMedienDatei              = 0;
-        $oArtikelOptionen->nVariationen = 0;
+        $oArtikelOptionen->nMedienDatei              = 1;
 
         $helper       = KategorieHelper::getInstance($this->getSprache(), $this->getKundengruppe());
         $shopURL      = Shop::getURL();
@@ -1291,10 +1290,10 @@ class Exportformat
                 // One or more articles have been exported
                 fclose($datei);
                 Shop::Container()->getDB()->queryPrepared(
-                    "UPDATE texportqueue SET
+                    'UPDATE texportqueue SET
                         nLimit_n       = nLimit_n + :nLimitM,
                         nLastArticleID = :nLastArticleID
-                      WHERE kExportqueue = :kExportqueue",
+                        WHERE kExportqueue = :kExportqueue',
                     [
                         'nLimitM'        => $this->queue->nLimitM,
                         'nLastArticleID' => $this->queue->nLastArticleID,
@@ -1328,9 +1327,9 @@ class Exportformat
             } else {
                 // There are no more articles to export
                 Shop::Container()->getDB()->query(
-                    "UPDATE texportformat 
+                    'UPDATE texportformat 
                         SET dZuletztErstellt = now() 
-                        WHERE kExportformat = " . $this->getExportformat(),
+                        WHERE kExportformat = ' . $this->getExportformat(),
                     \DB\ReturnType::DEFAULT
                 );
                 Shop::Container()->getDB()->delete('texportqueue', 'kExportqueue', (int)$this->queue->kExportqueue);
@@ -1380,7 +1379,7 @@ class Exportformat
                     (object)['dZuletztErstellt' => 'now()']
                 );
                 if (file_exists(PFAD_ROOT . PFAD_EXPORT . $this->cDateiname)) {
-                    $this->log('Deleting final file ' . PFAD_ROOT . PFAD_EXPORT . $this->cDateiname);
+                    $this->log('Deleting old export file ' . PFAD_ROOT . PFAD_EXPORT . $this->cDateiname);
                     unlink(PFAD_ROOT . PFAD_EXPORT . $this->cDateiname);
                 }
                 // Schreibe Fusszeile

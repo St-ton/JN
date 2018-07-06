@@ -4,7 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 defined('JTLCRON') || define('JTLCRON', true);
-
 if (!defined('PFAD_LOGFILES')) {
     require __DIR__ . '/globalinclude.php';
 }
@@ -17,6 +16,19 @@ if (file_exists(JOBQUEUE_LOCKFILE) === false) {
 
 $lockfile = fopen(JOBQUEUE_LOCKFILE, 'rb');
 
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+use Monolog\Formatter\LineFormatter;
+
+if (PHP_SAPI === 'cli') {
+    $logger  = new Logger('cron');
+    $handler = new StreamHandler('php://stdout', Logger::DEBUG);
+    $handler->setFormatter(new LineFormatter("[%datetime%] %message% %context%\n", null, false, true));
+    $logger->pushHandler($handler);
+} else {
+    $logger = Shop::Container()->getBackendLogService();
+}
+
 if (flock($lockfile, LOCK_EX | LOCK_NB) === false) {
     Jtllog::cronLog('Cron currently locked', 2);
     exit;
@@ -24,19 +36,15 @@ if (flock($lockfile, LOCK_EX | LOCK_NB) === false) {
 
 $db = Shop::Container()->getDB();
 
-$queue   = new \Cron\Queue($db);
+$factory = new \Cron\JobFactory($db, $logger);
+$queue   = new \Cron\Queue($db, $factory, $logger);
+$checker = new \Cron\Checker($db, $logger);
 
-//Shop::dbg($queue->getJobs(), false, 'existing jobs:');
-$factory = new \Cron\JobFactory();
-$checker = new \Cron\Checker($db, Shop::Container()->getBackendLogService(), $factory);
+$unqueuedJobs = $checker->check();
+$queue->enqueueCronJobs($unqueuedJobs);
+$queue->loadQueueFromDB();
 
-$newJobs = $checker->check();
-$queue->setJobs($newJobs);
-$saved = $queue->saveToDatabase();
-$queue->loadJobsFromDB();
-$queue->addJobs($newJobs);
-defined('JTLCRON') || define('JTLCRON', true);
-$queue->runJobs();
+$queue->run();
 
 if (file_exists(JOBQUEUE_LOCKFILE)) {
     fclose($lockfile);

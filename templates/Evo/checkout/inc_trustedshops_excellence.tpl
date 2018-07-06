@@ -8,7 +8,7 @@
         <tr>
             <td width="90">
                 <form name="formSiegel" method="post" action="https://www.trustedshops.de/de/tshops/seal_de.php3" target="_blank">
-                    <input type="image" border="0" src="gfx/TrustedShops/trusted_siegel.gif" title="{lang key="ts_signtitle" section="global"}" />
+                    <input type="image" border="0" src="gfx/TrustedShops/trusted_siegel.gif" title="{lang key='ts_signtitle' section='global'}" />
                     <input name="shop_id" type="hidden" value="{*{$Einstellungen.global.trusted_shops_id}*}{$oTrustedShops->tsId}" />
                 </form>
             </td>
@@ -29,8 +29,8 @@
                     <input name="amount" type="hidden" value="{$Bestellung->fGesamtsummeKundenwaehrung}" />
                     <input name="curr" type="hidden" value="{$Bestellung->Waehrung->cISO}" />
                     <input name="ORDERNR" type="hidden" value="{$Bestellung->cBestellNr}" />
-                    <span class="ts-comment">{lang key="ts_comment" section="global"}<br /></span>
-                    <input type="submit" id="btnProtect" name="btnProtect" value="{lang key="ts_register" section="global"}" />
+                    <span class="ts-comment">{lang key='ts_comment'}<br /></span>
+                    <input type="submit" id="btnProtect" name="btnProtect" value="{lang key='ts_register'}" />
                 </form>
             </td>
         </tr>

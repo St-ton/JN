@@ -7,7 +7,7 @@
     </h4>
     {if $nQuestion < $AWA->getCurQuestion()}
         <span class="selection-wizard-answer">
-            {assign var="oWert" value=$AWA->getSelectedValue($nQuestion)}
+            {assign var='oWert' value=$AWA->getSelectedValue($nQuestion)}
             {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['B', 'BT']:true && $oWert->cBildpfadKlein !== ''}
                 <img src="{$imageBaseURL}{$oWert->cBildpfadKlein}" alt="{$oWert->getValue()}" title="{$oWert->getValue()}">
             {/if}
@@ -17,9 +17,9 @@
         </span>
     {elseif $nQuestion === $AWA->getCurQuestion()}
         {if $AWA->getConf('auswahlassistent_anzeigeformat') === 'S'}
-            <label for="kMerkmalWert-{$nQuestion}" class="sr-only">{lang key="pleaseChoose" section="global"}</label>
+            <label for="kMerkmalWert-{$nQuestion}" class="sr-only">{lang key='pleaseChoose' section='global'}</label>
             <select id="kMerkmalWert-{$nQuestion}" onchange="return setSelectionWizardAnswerJS($(this).val());" class="form-control">
-                <option value="-1">{lang key="pleaseChoose" section="global"}</option>
+                <option value="-1">{lang key='pleaseChoose' section='global'}</option>
                 {foreach $oFrage->oWert_arr as $oWert}
                     {if isset($oWert->nAnzahl)}
                         <option value="{$oWert->kMerkmalWert}">
@@ -52,9 +52,9 @@
         {/if}
     {elseif $nQuestion > $AWA->getCurQuestion()}
         {if $AWA->getConf('auswahlassistent_anzeigeformat') === 'S'}
-            <label for="kMerkmalWert-{$nQuestion}" class="sr-only">{lang key="pleaseChoose" section="global"}</label>
+            <label for="kMerkmalWert-{$nQuestion}" class="sr-only">{lang key='pleaseChoose' section='global'}</label>
             <select id="kMerkmalWert-{$nQuestion}" disabled="disabled" class="form-control">
-                <option value="-1">{lang key="pleaseChoose" section="global"}</option>
+                <option value="-1">{lang key='pleaseChoose' section='global'}</option>
             </select>
         {else}
             {foreach $oFrage->oWert_arr as $oWert}

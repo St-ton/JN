@@ -5,9 +5,9 @@
     </tr>
     {if $oKonfig->oKonfig_arr|@count > 0}
         {$isIgnoreMultiplier = false}
-        {foreach from=$oKonfig->oKonfig_arr item=oKonfiggruppe}
+        {foreach $oKonfig->oKonfig_arr as $oKonfiggruppe}
             {if $oKonfiggruppe->bAktiv}
-                {foreach from=$oKonfiggruppe->oItem_arr item=oKonfigitem}
+                {foreach $oKonfiggruppe->oItem_arr as $oKonfigitem}
                     {if $oKonfigitem->bAktiv && !$oKonfigitem->ignoreMultiplier()}
                         <tr>
                             <td class="no-wrap">{$oKonfigitem->fAnzahl} &times;</td>
@@ -22,11 +22,11 @@
         {/foreach}
         {if $isIgnoreMultiplier}
             <tr>
-                <td colspan="3" class="highlighted">{lang key="one-off" section="checkout"}</td>
+                <td colspan="3" class="highlighted">{lang key='one-off' section='checkout'}</td>
             </tr>
-            {foreach from=$oKonfig->oKonfig_arr item=oKonfiggruppe}
+            {foreach $oKonfig->oKonfig_arr as $oKonfiggruppe}
                 {if $oKonfiggruppe->bAktiv}
-                    {foreach from=$oKonfiggruppe->oItem_arr item=oKonfigitem}
+                    {foreach $oKonfiggruppe->oItem_arr as $oKonfigitem}
                         {if $oKonfigitem->bAktiv && $oKonfigitem->ignoreMultiplier()}
                             <tr>
                                 <td class="no-wrap">{$oKonfigitem->fAnzahl} &times;</td>

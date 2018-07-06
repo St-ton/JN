@@ -10,22 +10,22 @@
     {assign var=nImageMaxHeight value=320}
     {assign var=nImagePreviewWidth value=35}
     <div id="uploads">
-        <h3>{lang key="yourUploads" section="global"}</h3>
+        <h3>{lang key='yourUploads' section='global'}</h3>
         <div class="table-responsive">
             <table class="table table-striped table-bordered" id="customerupload">
                 <thead>
                 <tr>
-                    <th class="text-center">{lang key="uploadAdded" section="global"}</th>
-                    <th class="text-center">{lang key="uploadFilesize" section="global"}</th>
-                    <th class="text-center">{lang key="uploadFile" section="global"}</th>
+                    <th class="text-center">{lang key='uploadAdded' section='global'}</th>
+                    <th class="text-center">{lang key='uploadFilesize' section='global'}</th>
+                    <th class="text-center">{lang key='uploadFile' section='global'}</th>
                 </tr>
                 </thead>
                 <tbody>
-                {foreach from=$Bestellung->oUpload_arr item=oUpload}
+                {foreach $Bestellung->oUpload_arr as $oUpload}
                     <tr>
                         <td class="text-center vcenter">
-                            <span class="infocur" title="{$oUpload->dErstellt|date_format:"%d.%m.%Y - %H:%M:%S"}">
-                                {$oUpload->dErstellt|date_format:"%d.%m.%Y"}
+                            <span class="infocur" title="{$oUpload->dErstellt|date_format:'%d.%m.%Y - %H:%M:%S'}">
+                                {$oUpload->dErstellt|date_format:'%d.%m.%Y'}
                             </span>
                         </td>
                         <td class="text-center vcenter">{$oUpload->cGroesse}</td>

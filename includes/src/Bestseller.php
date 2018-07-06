@@ -180,12 +180,12 @@ class Bestseller
     }
 
     /**
-     * @param array $products
-     * @param int   $customergrp
-     * @param bool  $viewallowed
-     * @param bool  $onlykeys
-     * @param int   $limit
-     * @param int   $minsells
+     * @param iterable $products
+     * @param int      $customergrp
+     * @param bool     $viewallowed
+     * @param bool     $onlykeys
+     * @param int      $limit
+     * @param int      $minsells
      * @return array
      */
     public static function buildBestsellers(
@@ -196,7 +196,7 @@ class Bestseller
         int $limit = 3,
         int $minsells = 10
     ): array {
-        if ($viewallowed && is_array($products) && count($products) > 0) {
+        if ($viewallowed && count($products) > 0) {
             $options    = [
                 'Products'      => $products,
                 'Customergroup' => $customergrp,

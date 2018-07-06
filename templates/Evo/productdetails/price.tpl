@@ -4,27 +4,27 @@
  *}
 {if $smarty.session.Kundengruppe->mayViewPrices()}
     <div class="price_wrapper">
-    {block name="price-wrapper"}
+    {block name='price-wrapper'}
     {* --- Preis auf Anfrage? --- *}
     {if $Artikel->getOption('nShowOnlyOnSEORequest', 0) === 1}
-        <span class="price_label price_out_of_stock">{lang key="productOutOfStock" section="productDetails"}</span>
+        <span class="price_label price_out_of_stock">{lang key='productOutOfStock' section='productDetails'}</span>
     {elseif $Artikel->Preise->fVKNetto == 0 && $Artikel->bHasKonfig}
-        <span class="price_label price_as_configured">{lang key="priceAsConfigured" section="productDetails"}</span>
+        <span class="price_label price_as_configured">{lang key='priceAsConfigured' section='productDetails'}</span>
     {elseif $Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
-        <span class="price_label price_on_application">{lang key="priceOnApplication" section="global"}</span>
+        <span class="price_label price_on_application">{lang key='priceOnApplication' section='global'}</span>
     {else}
-        {block name="price-label"}
+        {block name='price-label'}
             {if ($tplscope !== 'detail' && $Artikel->Preise->oPriceRange->isRange() && $Artikel->Preise->oPriceRange->rangeWidth() > $Einstellungen.artikeluebersicht.articleoverview_pricerange_width)
                 || ($tplscope === 'detail' && ($Artikel->nVariationsAufpreisVorhanden == 1 || $Artikel->bHasKonfig) && $Artikel->kVaterArtikel == 0)}
-                <span class="price_label pricestarting">{lang key="priceStarting" section="global"} </span>
+                <span class="price_label pricestarting">{lang key='priceStarting' section='global'} </span>
             {elseif $Artikel->Preise->rabatt > 0}
-                <span class="price_label nowonly">{lang key="nowOnly" section="global"} </span>
+                <span class="price_label nowonly">{lang key='nowOnly' section='global'} </span>
             {else}
-                {*<span class="price_label only">{lang key="only" section="global"} </span>*}
+                {*<span class="price_label only">{lang key='only' section='global'} </span>*}
             {/if}
         {/block}
         <strong class="price text-nowrap{if isset($Artikel->Preise->Sonderpreis_aktiv) && $Artikel->Preise->Sonderpreis_aktiv} special-price{/if}">
-            {block name="price-range"}
+            {block name='price-range'}
                 <span{if $Artikel->Preise->oPriceRange->isRange()} itemprop="priceSpecification" itemscope itemtype="http://schema.org/UnitPriceSpecification"{/if}>
                 {if $tplscope !== 'detail' && $Artikel->Preise->oPriceRange->isRange()}
                     {if $Artikel->Preise->oPriceRange->rangeWidth() <= $Einstellungen.artikeluebersicht.articleoverview_pricerange_width}
@@ -42,7 +42,7 @@
                 {/if}
                 </span>{if $tplscope !== 'detail'} <span class="footnote-reference">*</span>{/if}
             {/block}
-            {block name="price-snippets"}
+            {block name='price-snippets'}
                 <meta itemprop="price" content="{if $Artikel->Preise->oPriceRange->isRange()}{$Artikel->Preise->oPriceRange->minBruttoPrice}{else}{$Artikel->Preise->fVKBrutto}{/if}">
                 <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->getName()}">
                 {if $Artikel->Preise->Sonderpreis_aktiv && $Artikel->dSonderpreisStart_en !== '0000-00-00' && $Artikel->dSonderpreisEnde_en !== '0000-00-00'}
@@ -54,12 +54,12 @@
         {if $tplscope === 'detail'}
             <div class="price-note">
                 {if $Artikel->cEinheit && ($Artikel->fMindestbestellmenge > 1 || $Artikel->fAbnahmeintervall > 1)}
-                    <span class="price_label per_unit"> {lang key="vpePer" section="global"} 1 {$Artikel->cEinheit}</span>
+                    <span class="price_label per_unit"> {lang key='vpePer' section='global'} 1 {$Artikel->cEinheit}</span>
                 {/if}
                 
                 {* Grundpreis *}
                 {if !empty($Artikel->cLocalizedVPE)}
-                    {block name="detail-base-price"}
+                    {block name='detail-base-price'}
                         <div class="base-price text-nowrap" itemprop="priceSpecification" itemscope itemtype="http://schema.org/UnitPriceSpecification">
                             <meta itemprop="price" content="{if $Artikel->Preise->oPriceRange->isRange()}{($Artikel->Preise->oPriceRange->minBruttoPrice/$Artikel->fVPEWert)|string_format:"%.2f"}{else}{($Artikel->Preise->fVKBrutto/$Artikel->fVPEWert)|string_format:"%.2f"}{/if}">
                             <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->getName()}">
@@ -72,7 +72,7 @@
                     {/block}
                 {/if}
                 
-                {block name="detail-vat-info"}
+                {block name='detail-vat-info'}
                     <p class="vat_info text-muted top5">
                         {include file='snippets/shipping_tax_info.tpl' taxdata=$Artikel->taxData}
                     </p>
@@ -80,7 +80,7 @@
 
                 {if $Artikel->oPreisradar}
                     <div class="priceradar">
-                        {lang key="youSave" section="productDetails"} 
+                        {lang key='youSave' section='productDetails'}
                         <span class="value">{$Artikel->oPreisradar->fDiffLocalized[$NettoPreise]}
                             ({$Artikel->oPreisradar->fProzentDiff} %)
                         </span>
@@ -88,17 +88,17 @@
                 {/if}
                 
                 {if $Artikel->Preise->Sonderpreis_aktiv && $Einstellungen.artikeldetails.artikeldetails_sonderpreisanzeige == 2}
-                    <div class="instead_of old_price">{lang key="oldPrice" section="global"}:
+                    <div class="instead_of old_price">{lang key='oldPrice' section='global'}:
                         <del class="value">{$Artikel->Preise->alterVKLocalized[$NettoPreise]}</del>
                     </div>
                 {elseif !$Artikel->Preise->Sonderpreis_aktiv && $Artikel->Preise->rabatt > 0}
                     {if $Einstellungen.artikeldetails.artikeldetails_rabattanzeige == 3 || $Einstellungen.artikeldetails.artikeldetails_rabattanzeige == 4}
-                        <div class="old_price">{lang key="oldPrice" section="global"}:
+                        <div class="old_price">{lang key='oldPrice' section='global'}:
                             <del class="value text-nowrap">{$Artikel->Preise->alterVKLocalized[$NettoPreise]}</del>
                         </div>
                     {/if}
                     {if $Einstellungen.artikeldetails.artikeldetails_rabattanzeige == 2 || $Einstellungen.artikeldetails.artikeldetails_rabattanzeige == 4}
-                        <div class="discount">{lang key="discount" section="global"}:
+                        <div class="discount">{lang key='discount' section='global'}:
                             <span class="value text-nowrap">{$Artikel->Preise->rabatt}%</span>
                         </div>
                     {/if}
@@ -106,13 +106,13 @@
 
                 {if $Einstellungen.artikeldetails.artikeldetails_uvp_anzeigen === 'Y' && $Artikel->fUVP > 0}
                     <div class="suggested-price">
-                        <abbr title="{lang key="suggestedPriceExpl" section="productDetails"}">{lang key="suggestedPrice" section="productDetails"}</abbr>:
+                        <abbr title="{lang key='suggestedPriceExpl' section='productDetails'}">{lang key='suggestedPrice' section='productDetails'}</abbr>:
                         <span class="value text-nowrap">{$Artikel->cUVPLocalized}</span>
                     </div>
                     {* Preisersparnis zur UVP anzeigen? *}
                     {if isset($Artikel->SieSparenX) && $Artikel->SieSparenX->anzeigen == 1 && $Artikel->SieSparenX->nProzent > 0 && !$NettoPreise && $Artikel->taxData['tax'] > 0}
-                        <div class="yousave">({lang key="youSave" section="productDetails"}
-                            <span class="percent">{$Artikel->SieSparenX->nProzent}%</span>, {lang key="thatIs" section="productDetails"}
+                        <div class="yousave">({lang key='youSave' section='productDetails'}
+                            <span class="percent">{$Artikel->SieSparenX->nProzent}%</span>, {lang key='thatIs' section='productDetails'}
                             <span class="value text-nowrap">{$Artikel->SieSparenX->cLocalizedSparbetrag}</span>)
                         </div>
                     {/if}
@@ -121,12 +121,12 @@
                 {* --- Staffelpreise? --- *}
                 {if !empty($Artikel->staffelPreis_arr)}
                     <div class="bulk-price">
-                        {block name="detail-bulk-price"}
+                        {block name='detail-bulk-price'}
                         <table class="table table-condensed table-hover">
                             <thead>
                                 <tr>
-                                    <th class="text-right">{lang key="fromDifferential" section="productOverview"}{if $Artikel->cEinheit} {$Artikel->cEinheit}{/if}</th>
-                                    <th class="text-right">{lang key="pricePerUnit" section="productDetails"}</th>
+                                    <th class="text-right">{lang key='fromDifferential' section='productOverview'}{if $Artikel->cEinheit} {$Artikel->cEinheit}{/if}</th>
+                                    <th class="text-right">{lang key='pricePerUnit' section='productDetails'}</th>
                                     {if !empty($Artikel->cLocalizedVPE)}<th></th>{/if}
                                 </tr>
                             </thead>
@@ -150,7 +150,7 @@
             <div class="price-note">
                 {* Grundpreis *}
                 {if !empty($Artikel->cLocalizedVPE)}
-                {block name="list-base-price"}
+                {block name='list-base-price'}
                     <div class="base_price text-nowrap" itemprop="priceSpecification" itemscope itemtype="http://schema.org/UnitPriceSpecification">
                         <meta itemprop="price" content="{if $Artikel->Preise->oPriceRange->isRange()}{($Artikel->Preise->oPriceRange->minBruttoPrice/$Artikel->fVPEWert)|string_format:"%.2f"}{else}{($Artikel->Preise->fVKBrutto/$Artikel->fVPEWert)|string_format:"%.2f"}{/if}">
                         <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->getName()}">
@@ -166,7 +166,7 @@
                 {if $Artikel->Preise->Sonderpreis_aktiv && isset($Einstellungen.artikeluebersicht) && $Einstellungen.artikeluebersicht.artikeluebersicht_sonderpreisanzeige == 2}
                     <div class="instead-of old-price">
                         <small class="text-muted">
-                            {lang key="oldPrice" section="global"}: 
+                            {lang key='oldPrice' section='global'}:
                             <del class="value">{$Artikel->Preise->alterVKLocalized[$NettoPreise]}</del>
                         </small>
                     </div>
@@ -174,7 +174,7 @@
                     {if $Einstellungen.artikeluebersicht.artikeluebersicht_rabattanzeige == 3 || $Einstellungen.artikeluebersicht.artikeluebersicht_rabattanzeige == 4}
                         <div class="old-price">
                             <small class="text-muted">
-                                {lang key="oldPrice" section="global"}: 
+                                {lang key='oldPrice' section='global'}:
                                 <del class="value text-nowrap">{$Artikel->Preise->alterVKLocalized[$NettoPreise]}</del>
                             </small>
                         </div>
@@ -182,7 +182,7 @@
                     {if $Einstellungen.artikeluebersicht.artikeluebersicht_rabattanzeige == 2 || isset($Einstellungen.artikeluebersicht) && $Einstellungen.artikeluebersicht.artikeluebersicht_rabattanzeige == 4}
                         <div class="discount">
                             <small class="text-muted">
-                                {lang key="discount" section="global"}: 
+                                {lang key='discount' section='global'}:
                                 <span class="value text-nowrap">{$Artikel->Preise->rabatt}%</span>
                             </small>
                         </div>
@@ -194,7 +194,7 @@
     {/block}
     </div>{* /price_wrapper *}
 {else}
-    {block name="price-invisible"}
-        <span class="price_label price_invisible">{lang key="priceHidden" section="global"}</span>
+    {block name='price-invisible'}
+        <span class="price_label price_invisible">{lang key='priceHidden' section='global'}</span>
     {/block}
 {/if}

@@ -8,9 +8,9 @@
     </div>
     <div class="download-body">
         <p>{$oDownload->oDownloadSprache->getBeschreibung()}</p>
-        {assign var="height" value=71}
+        {assign var='height' value=71}
         {if $oDownload->getPreviewType() === 'video'}
-            {assign var="height" value=300}
+            {assign var='height' value=300}
         {/if}
         <object id="mediaplayer" width="100%" height="{$height}" classid="CLSID:6BF52A52-394A-11d3-B153-00C04F79FAA6" codebase="http://activex.microsoft.com/activex/controls/mplayer/en/nsmp2inf.cab#Version=5,1,52,701" standby="Lade Player-Plugins..." type="application/x-oleobject">
             <param name="URL" value="{$oDownload->getPreview()}" />

@@ -2992,3 +2992,11 @@ h2 .btn-group {
 .word-break-all {
     word-break: break-all;
 }
+
+#question-answers, #question-options {
+    padding: 8px;
+}
+
+#question-answers button, #question-options button{
+    margin-bottom: 10px;
+}

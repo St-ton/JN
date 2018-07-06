@@ -15,7 +15,7 @@
                 </div>
                 <div class="box-body panel-body dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                         {lang key="selectFilter" section="global"}&nbsp; <span class="fa fa-caret-down"></span>
+                         {lang key='selectFilter' section='global'}&nbsp; <span class="fa fa-caret-down"></span>
                     </a>
                     {include file='snippets/filter/characteristic.tpl' Merkmal=$Merkmal class="dropdown-menu"}
                 </div>

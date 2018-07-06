@@ -17,7 +17,7 @@ class NavigationURLs implements NavigationURLsInterface
     /**
      * @var array
      */
-    private static $mapping = [
+    public static $mapping = [
         'cAllePreisspannen' => 'PriceRanges',
         'cAlleBewertungen'  => 'Ratings',
         'cAlleTags'         => 'Tags',

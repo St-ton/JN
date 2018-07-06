@@ -26,7 +26,8 @@ $smarty->registerPlugin('function', 'gibPreisStringLocalizedSmarty', 'gibPreisSt
        ->registerPlugin('modifier', 'has_trans', 'has_translation')
        ->registerPlugin('modifier', 'trans', 'get_translation')
        ->registerPlugin('function', 'get_product_list', 'get_product_list')
-       ->registerPlugin('function', 'captchaMarkup', 'captchaMarkup');
+       ->registerPlugin('function', 'captchaMarkup', 'captchaMarkup')
+       ->registerPlugin('function', 'getStates', 'getStates');
 
 /**
  * @param array     $params
@@ -85,7 +86,7 @@ function get_product_list($params, $smarty)
             $oArtikel_arr[] = (new Artikel())->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
         }
     } else {
-        $oArtikel_arr = (new \Filter\ProductFilter())->initStates($params)->getProducts(false, null, true, $nLimit);
+        $oArtikel_arr = (new \Filter\ProductFilter())->initStates($params)->generateSearchResults(null, true, $nLimit)->getProducts();
     }
 
     $smarty->assign($cAssign, $oArtikel_arr);
@@ -268,8 +269,7 @@ function load_boxes($params, $smarty)
 {
     $cTplData     = '';
     $cOldTplDir   = '';
-    $boxes        = Boxen::getInstance();
-    $oBoxen_arr   = $boxes->compatGet();
+    $oBoxen_arr   = Shop::Container()->getBoxService()->compatGet();
     $cTemplateDir = $smarty->getTemplateDir($smarty->context);
     if (is_array($oBoxen_arr) && isset($params['type'])) {
         $cType   = $params['type'];
@@ -790,4 +790,19 @@ function captchaMarkup($params, $smarty)
     }
 
     return Shop::Container()->getCaptchaService()->getHeadMarkup($smarty);
+}
+
+/**
+ * @param array     $params
+ * @param JTLSmarty $smarty
+ * @return object|null
+ */
+function getStates($params, $smarty)
+{
+    $oStates = Staat::getRegions($params['cIso']);
+    if (isset($params['assign'])) {
+        $smarty->assign($params['assign'], $oStates);
+        return;
+    }
+    return $oStates;
 }

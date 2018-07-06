@@ -6,9 +6,9 @@
 <fieldset>
     <legend>
         {if isset($checkout)}
-            {lang key="proceedNewCustomer" section="checkout"}
+            {lang key='proceedNewCustomer' section='checkout'}
         {else}
-            {lang key="address" section="account data"}
+            {lang key='address' section='account data'}
         {/if}
     </legend>
     {* salutation / title *}
@@ -16,15 +16,15 @@
         {if $Einstellungen.kunden.kundenregistrierung_abfragen_anrede !== 'N'}
             <div class="col-xs-12 col-md-6">
                 <div class="form-group float-label-control{if isset($fehlendeAngaben.anrede)} has-error{/if} required">
-                    <label for="salutation" class="control-label">{lang key="salutation" section="account data"}</label>
+                    <label for="salutation" class="control-label">{lang key='salutation' section='account data'}</label>
                     <select name="anrede" id="salutation" class="form-control" required autocomplete="billing sex">
-                        <option value="" selected="selected" disabled>{lang key="salutation" section="account data"}</option>
+                        <option value="" selected="selected" disabled>{lang key='salutation' section='account data'}</option>
                         <option value="w" {if isset($cPost_var['anrede']) && $cPost_var['anrede'] === 'w'}selected="selected"{elseif isset($Kunde->cAnrede) && $Kunde->cAnrede === 'w'}selected="selected"{/if}>{lang key='salutationW'}</option>
                         <option value="m" {if isset($cPost_var['anrede']) && $cPost_var['anrede'] === 'm'}selected="selected"{elseif isset($Kunde->cAnrede) && $Kunde->cAnrede === 'm'}selected="selected"{/if}>{lang key='salutationM'}</option>
                     </select>
                     {if isset($fehlendeAngaben.anrede)}
                         <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
-                            {lang key="fillOut" section="global"}
+                            {lang key='fillOut' section='global'}
                         </div>
                     {/if}
                 </div>
@@ -34,19 +34,19 @@
         {if $Einstellungen.kunden.kundenregistrierung_abfragen_titel !== 'N'}
             <div class="col-xs-12 col-md-6">
                 <div class="form-group float-label-control{if isset($fehlendeAngaben.titel)} has-error{/if}{if $Einstellungen.kunden.kundenregistrierung_abfragen_titel === 'Y'} required{/if}">
-                    <label for="title" class="control-label">{lang key="title" section="account data"}</label>
+                    <label for="title" class="control-label">{lang key='title' section='account data'}</label>
                     <input
                     type="text"
                     name="titel"
                     value="{if isset($cPost_var['titel'])}{$cPost_var['titel']}{elseif isset($Kunde->cTitel)}{$Kunde->cTitel}{/if}"
                     id="title"
                     class="form-control"
-                    placeholder="{lang key="title" section="account data"}"
+                    placeholder="{lang key='title' section='account data'}"
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_titel === 'Y'}required{/if}
                     autocomplete="billing honorific-prefix">
                     {if isset($fehlendeAngaben.titel)}
                         <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
-                            {lang key="fillOut" section="global"}
+                            {lang key='fillOut' section='global'}
                         </div>
                     {/if}
                 </div>
@@ -57,23 +57,23 @@
     <div class="row">
         <div class="col-xs-12 col-md-6">
             <div class="form-group float-label-control{if isset($fehlendeAngaben.vorname)} has-error{/if}{if $Einstellungen.kunden.kundenregistrierung_pflicht_vorname === 'Y'} required{/if}">
-                <label for="firstName" class="control-label">{lang key="firstName" section="account data"}</label>
+                <label for="firstName" class="control-label">{lang key='firstName' section='account data'}</label>
                 <input
                 type="text"
                 name="vorname"
                 value="{if isset($cPost_var['vorname'])}{$cPost_var['vorname']}{elseif isset($Kunde->cVorname)}{$Kunde->cVorname}{/if}"
                 id="firstName"
                 class="form-control"
-                placeholder="{lang key="firstName" section="account data"}"
+                placeholder="{lang key='firstName' section='account data'}"
                 {if $Einstellungen.kunden.kundenregistrierung_pflicht_vorname === 'Y'} required{/if}
                 autocomplete="billing given-name"
                 >
                 {if isset($fehlendeAngaben.vorname)}
                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                         {if $fehlendeAngaben.vorname == 1}
-                            {lang key="fillOut" section="global"}
+                            {lang key='fillOut' section='global'}
                         {elseif $fehlendeAngaben.vorname == 2}
-                            {lang key="firstNameNotNumeric" section="account data"}
+                            {lang key='firstNameNotNumeric' section='account data'}
                         {/if}
                     </div>
                 {/if}
@@ -81,23 +81,23 @@
         </div>
         <div class="col-xs-12 col-md-6">
             <div class="form-group float-label-control{if isset($fehlendeAngaben.nachname)} has-error{/if} required">
-                <label for="lastName" class="control-label">{lang key="lastName" section="account data"}</label>
+                <label for="lastName" class="control-label">{lang key='lastName' section='account data'}</label>
                 <input
                 type="text"
                 name="nachname"
                 value="{if isset($cPost_var['nachname'])}{$cPost_var['nachname']}{elseif isset($Kunde->cNachname)}{$Kunde->cNachname}{/if}"
                 id="lastName"
                 class="form-control"
-                placeholder="{lang key="lastName" section="account data"}"
+                placeholder="{lang key='lastName' section='account data'}"
                 required
                 autocomplete="billing family-name"
                 >
                 {if isset($fehlendeAngaben.nachname)}
                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                         {if $fehlendeAngaben.nachname == 1}
-                             {lang key="fillOut" section="global"}
+                             {lang key='fillOut' section='global'}
                         {elseif $fehlendeAngaben.nachname == 2}
-                            {lang key="lastNameNotNumeric" section="account data"}
+                            {lang key='lastNameNotNumeric' section='account data'}
                         {/if}
                     </div>
                 {/if}
@@ -109,20 +109,20 @@
         {if $Einstellungen.kunden.kundenregistrierung_abfragen_firma !== 'N'}
         <div class="col-xs-12 col-md-6">
             <div class="form-group float-label-control{if isset($fehlendeAngaben.firma)} has-error{/if}{if $Einstellungen.kunden.kundenregistrierung_abfragen_firma === 'Y'} required{/if}">
-                <label for="firm" class="control-label">{lang key="firm" section="account data"}</label>
+                <label for="firm" class="control-label">{lang key='firm' section='account data'}</label>
                 <input
                 type="text"
                 name="firma"
                 value="{if isset($cPost_var['firma'])}{$cPost_var['firma']}{elseif !empty($Kunde->cFirma)}{$Kunde->cFirma}{/if}"
                 id="firm"
                 class="form-control"
-                placeholder="{lang key="firm" section="account data"}"
+                placeholder="{lang key='firm' section='account data'}"
                 {if $Einstellungen.kunden.kundenregistrierung_abfragen_firma === 'Y'} required{/if}
                 autocomplete="billing organization"
                 >
                 {if isset($fehlendeAngaben.firma)}
                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
-                        {lang key="fillOut" section="global"}
+                        {lang key='fillOut' section='global'}
                     </div>
                 {/if}
             </div>
@@ -132,19 +132,19 @@
         {if $Einstellungen.kunden.kundenregistrierung_abfragen_firmazusatz !== 'N'}
         <div class="col-xs-12 col-md-6">
             <div class="form-group float-label-control{if isset($fehlendeAngaben.firmazusatz)} has-error{/if}{if $Einstellungen.kunden.kundenregistrierung_abfragen_firmazusatz === 'Y'} required{/if}">
-                <label for="firmext" class="control-label">{lang key="firmext" section="account data"}</label>
+                <label for="firmext" class="control-label">{lang key='firmext' section='account data'}</label>
                 <input
                 type="text"
                 name="firmazusatz"
                 value="{if isset($cPost_var['firmazusatz'])}{$cPost_var['firmazusatz']}{elseif isset($Kunde->cZusatz)}{$Kunde->cZusatz}{/if}"
                 id="firmext"
                 class="form-control"
-                placeholder="{lang key="firmext" section="account data"}"
+                placeholder="{lang key='firmext' section='account data'}"
                 {if $Einstellungen.kunden.kundenregistrierung_abfragen_firmazusatz === 'Y'} required{/if}
                 />
                 {if isset($fehlendeAngaben.firmazusatz)}
                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
-                        {lang key="fillOut" section="global"}
+                        {lang key='fillOut' section='global'}
                     </div>
                 {/if}
             </div>
@@ -155,20 +155,20 @@
     <div class="row">
         <div class="col-xs-12 col-md-6">
             <div class="form-group float-label-control{if isset($fehlendeAngaben.strasse)} has-error{/if} required">
-                <label class="control-label" for="street">{lang key="street" section="account data"}</label>
+                <label class="control-label" for="street">{lang key='street' section='account data'}</label>
                 <input
                 type="text"
                 name="strasse"
                 value="{if isset($cPost_var['strasse'])}{$cPost_var['strasse']}{elseif isset($Kunde->cStrasse)}{$Kunde->cStrasse}{/if}"
                 id="street"
                 class="form-control"
-                placeholder="{lang key="street" section="account data"}"
+                placeholder="{lang key='street' section='account data'}"
                 required
                 autocomplete="billing address-line1"
                 >
                 {if isset($fehlendeAngaben.strasse)}
                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
-                        {lang key="fillOut" section="global"}
+                        {lang key='fillOut' section='global'}
                     </div>
                 {/if}
             </div>
@@ -176,20 +176,20 @@
 
         <div class="col-xs-12 col-md-3">
             <div class="form-group float-label-control{if isset($fehlendeAngaben.hausnummer)} has-error{/if} required">
-                <label class="control-label" for="streetnumber">{lang key="streetnumber" section="account data"}</label>
+                <label class="control-label" for="streetnumber">{lang key='streetnumber' section='account data'}</label>
                 <input
                 type="text"
                 name="hausnummer"
                 value="{if isset($cPost_var['hausnummer'])}{$cPost_var['hausnummer']}{elseif isset($Kunde->cHausnummer)}{$Kunde->cHausnummer}{/if}"
                 id="streetnumber"
                 class="form-control"
-                placeholder="{lang key="streetnumber" section="account data"}"
+                placeholder="{lang key='streetnumber' section='account data'}"
                 required
                 autocomplete="billing address-line2"
                 >
                 {if isset($fehlendeAngaben.hausnummer)}
                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
-                        {lang key="fillOut" section="global"}
+                        {lang key='fillOut' section='global'}
                     </div>
                 {/if}
             </div>
@@ -200,20 +200,20 @@
         <div class="row">
             <div class="col-xs-12 col-md-6">
                 <div class="form-group float-label-control{if isset($fehlendeAngaben.adresszusatz)} has-error{/if}{if $Einstellungen.kunden.kundenregistrierung_abfragen_adresszusatz === 'Y'} required{/if}">
-                    <label class="control-label" for="street2">{lang key="street2" section="account data"}</label>
+                    <label class="control-label" for="street2">{lang key='street2' section='account data'}</label>
                     <input
                     type="text"
                     name="adresszusatz"
                     value="{if isset($cPost_var['adresszusatz'])}{$cPost_var['adresszusatz']}{elseif isset($Kunde->cAdressZusatz)}{$Kunde->cAdressZusatz}{/if}"
                     id="street2"
                     class="form-control"
-                    placeholder="{lang key="street2" section="account data"}"
+                    placeholder="{lang key='street2' section='account data'}"
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_adresszusatz === 'Y'} required{/if}
                     autocomplete="billing address-line3"
                     />
                     {if isset($fehlendeAngaben.adresszusatz)}
                         <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
-                            {lang key="fillOut" section="global"}
+                            {lang key='fillOut' section='global'}
                         </div>
                     {/if}
                 </div>
@@ -221,19 +221,30 @@
         </div>
     {/if}
     {* country *}
+    {if isset($cPost_var['land'])}
+        {assign var='cIso' value=$cPost_var['land']}
+    {elseif !empty($Kunde->cLand)}
+        {assign var='cIso' value=$Kunde->cLand}
+    {elseif !empty($Einstellungen.kunden.kundenregistrierung_standardland)}
+        {assign var='cIso' value=$Einstellungen.kunden.kundenregistrierung_standardland}
+    {elseif isset($laender[0]->cISO)}
+        {assign var='cIso' value=$laender[0]->cISO}
+    {else}
+        {assign var='cIso' value=''}
+    {/if}
     <div class="row">
         <div class="col-xs-12 col-md-6">
             <div class="form-group float-label-control required{if isset($fehlendeAngaben.land)} has-error{/if}">
-                <label class="control-label" for="country">{lang key="country" section="account data"}</label>
+                <label class="control-label" for="country">{lang key='country' section='account data'}</label>
                 <select name="land" id="country" class="country_input form-control" required autocomplete="billing country">
-                <option value="" disabled>{lang key="country" section="account data"}</option>
-                {foreach name=land from=$laender item=land}
-                    <option value="{$land->cISO}" {if isset($cPost_var['land']) && $cPost_var['land'] === $land->cISO}selected="selected"{elseif ($Einstellungen.kunden.kundenregistrierung_standardland==$land->cISO && empty($Kunde->cLand)) || !empty($Kunde->cLand) && $Kunde->cLand == $land->cISO}selected="selected"{/if}>{$land->cName}</option>
-                {/foreach}
+                    <option value="" disabled>{lang key="country" section="account data"}</option>
+                    {foreach $laender as $land}
+                        <option value="{$land->cISO}" {if $cIso === $land->cISO}selected="selected"{/if}>{$land->cName}</option>
+                    {/foreach}
                 </select>
                 {if isset($fehlendeAngaben.land)}
                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
-                        {lang key="fillOut" section="global"}
+                        {lang key='fillOut' section='global'}
                     </div>
                 {/if}
             </div>
@@ -243,23 +254,47 @@
     {/if} {* close row if there won't follow another form-group *}
 
     {if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland !== 'N'}
+        {getStates cIso=$cIso assign='oStates'}
+        {if isset($cPost_var['bundesland'])}
+            {assign var='cState' value=$cPost_var['bundesland']}
+        {elseif !empty($Kunde->cBundesland)}
+            {assign var='cState' value=$Kunde->cBundesland}
+        {else}
+            {assign var='cState' value=''}
+        {/if}
         <div class="col-xs-12 col-md-6">
             <div class="form-group float-label-control{if isset($fehlendeAngaben.bundesland)} has-error{/if}{if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y'} required{/if}">
                 <label class="control-label" for="state">{lang key="state" section="account data"}</label>
-                <input
-                type="text"
-                title="{lang key=pleaseChoose}"
-                name="bundesland"
-                value="{if isset($cPost_var['bundesland'])}{$cPost_var['bundesland']}{elseif !empty($Kunde->cBundesland)}{$Kunde->cBundesland}{/if}"
-                id="state"
-                class="form-control"
-                placeholder="{lang key="state" section="account data"}"
-                {if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y'} required{/if}
-                autocomplete="billing address-level1"
-                >
+                {if !empty($oStates)}
+                    <select
+                    title="{lang key=pleaseChoose}"
+                    name="bundesland"
+                    id="state"
+                    class="form-control"
+                    {if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y'} required{/if}
+                    >
+                        <option value="" selected disabled>{lang key="pleaseChoose" section="global"}</option>
+                        {foreach $oStates as $oState}
+                            <option value="{$oState->cCode}" {if $cState === $oState->cName}selected{/if}>{$oState->cName}</option>
+                        {/foreach}
+                    </select>
+                {else}
+                    <input
+                    type="text"
+                    title="{lang key=pleaseChoose}"
+                    name="bundesland"
+                    value="{$cState}"
+                    id="state"
+                    class="form-control"
+                    placeholder="{lang key='state' section='account data'}"
+                    {if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y'} required{/if}
+                    autocomplete="billing address-level1"
+                    >
+                {/if}
+
                 {if isset($fehlendeAngaben.bundesland)}
                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
-                        {lang key="fillOut" section="global"}
+                        {lang key='fillOut' section='global'}
                     </div>
                 {/if}
             </div>
@@ -270,23 +305,23 @@
     <div class="row">
         <div class="col-xs-12 col-md-3">
             <div class="form-group float-label-control{if isset($fehlendeAngaben.plz)} has-error{/if} required">
-                <label class="control-label" for="postcode">{lang key="plz" section="account data"}</label>
+                <label class="control-label" for="postcode">{lang key='plz' section='account data'}</label>
                 <input
                 type="text"
                 name="plz"
                 value="{if isset($cPost_var['plz'])}{$cPost_var['plz']}{elseif isset($Kunde->cPLZ)}{$Kunde->cPLZ}{/if}"
                 id="postcode"
                 class="postcode_input form-control"
-                placeholder="{lang key="plz" section="account data"}"
+                placeholder="{lang key='plz' section='account data'}"
                 required
                 autocomplete="billing postal-code"
                 >
                 {if isset($fehlendeAngaben.plz)}
                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                         {if $fehlendeAngaben.plz >= 2}
-                            {lang key="checkPLZCity" section="checkout"}
+                            {lang key='checkPLZCity' section='checkout'}
                         {else}
-                            {lang key="fillOut" section="global"}
+                            {lang key='fillOut' section='global'}
                         {/if}
                     </div>
                 {/if}
@@ -295,23 +330,23 @@
 
         <div class="col-xs-12 col-md-6">
             <div class="form-group float-label-control required{if isset($fehlendeAngaben.ort)} has-error{/if}">
-                <label class="control-label" for="city">{lang key="city" section="account data"}</label>
+                <label class="control-label" for="city">{lang key='city' section='account data'}</label>
                 <input
                 type="text"
                 name="ort"
                 value="{if isset($cPost_var['ort'])}{$cPost_var['ort']}{elseif isset($Kunde->cOrt)}{$Kunde->cOrt}{/if}"
                 id="city"
                 class="city_input form-control typeahead"
-                placeholder="{lang key="city" section="account data"}"
+                placeholder="{lang key='city' section='account data'}"
                 required
                 autocomplete="billing address-level2"
                 >
                 {if isset($fehlendeAngaben.ort)}
                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                         {if $fehlendeAngaben.ort==3}
-                             {lang key="cityNotNumeric" section="account data"}
+                             {lang key='cityNotNumeric' section='account data'}
                         {else}
-                            {lang key="fillOut" section="global"}
+                            {lang key='fillOut' section='global'}
                         {/if}
                     </div>
                 {/if}
@@ -323,31 +358,31 @@
     <div class="row">
         <div class="col-xs-12 col-md-6">
             <div class="form-group float-label-control{if isset($fehlendeAngaben.ustid)} has-error{/if}{if $Einstellungen.kunden.kundenregistrierung_abfragen_ustid === 'Y'} required{/if}">
-                <label class="control-label" for="ustid">{lang key="ustid" section="account data"}</label>
+                <label class="control-label" for="ustid">{lang key='ustid' section='account data'}</label>
                 <input
                 type="text"
                 name="ustid"
                 value="{if isset($cPost_var['ustid'])}{$cPost_var['ustid']}{elseif isset($Kunde->cUSTID)}{$Kunde->cUSTID}{/if}"
                 id="ustid"
                 class="form-control"
-                placeholder="{lang key="ustid" section="account data"}"
+                placeholder="{lang key='ustid' section='account data'}"
                 {if $Einstellungen.kunden.kundenregistrierung_abfragen_ustid === 'Y'} required{/if}
                 >
                 {if isset($fehlendeAngaben.ustid)}
                 <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                     {if $fehlendeAngaben.ustid == 1}
-                        {lang key="fillOut" section="global"}
+                        {lang key='fillOut' section='global'}
                     {elseif $fehlendeAngaben.ustid == 2}
                         {assign var=errorinfo value=","|explode:$fehlendeAngaben.ustid_err}
-                        {if $errorinfo[0] == 100}{lang key="ustIDError100" section="global"}{/if}
-                        {if $errorinfo[0] == 110}{lang key="ustIDError110" section="global"}{/if}
-                        {if $errorinfo[0] == 120}{lang key="ustIDError120" section="global"}{$errorinfo[1]}{/if}
-                        {if $errorinfo[0] == 130}{lang key="ustIDError130" section="global"}{$errorinfo[1]}{/if}
+                        {if $errorinfo[0] == 100}{lang key='ustIDError100' section='global'}{/if}
+                        {if $errorinfo[0] == 110}{lang key='ustIDError110' section='global'}{/if}
+                        {if $errorinfo[0] == 120}{lang key='ustIDError120' section='global'}{$errorinfo[1]}{/if}
+                        {if $errorinfo[0] == 130}{lang key='ustIDError130' section='global'}{$errorinfo[1]}{/if}
                     {elseif $fehlendeAngaben.ustid == 4}
                         {assign var=errorinfo value=","|explode:$fehlendeAngaben.ustid_err}
-                        {lang key="ustIDError200" section="global"}{$errorinfo[1]}
+                        {lang key='ustIDError200' section='global'}{$errorinfo[1]}
                     {elseif $fehlendeAngaben.ustid == 5}
-                        {lang key="ustIDCaseFive" section="global"}
+                        {lang key='ustIDCaseFive' section='global'}
                     {/if}
                 </div>
                 {/if}
@@ -358,34 +393,34 @@
 </fieldset>
 
 <fieldset>
-   <legend>{lang key="contactInformation" section="account data"}</legend>
+   <legend>{lang key='contactInformation' section='account data'}</legend>
     {* E-Mail *}
     <div class="row">
         <div class="col-xs-12 col-md-6">
             <div class="form-group float-label-control required{if isset($fehlendeAngaben.email)} has-error{/if}">
-                <label class="control-label" for="email">{lang key="email" section="account data"}</label>
+                <label class="control-label" for="email">{lang key='email' section='account data'}</label>
                 <input
                 type="email"
                 name="email"
                 value="{if isset($cPost_var['email'])}{$cPost_var['email']}{elseif isset($Kunde->cMail)}{$Kunde->cMail}{/if}"
                 id="email"
                 class="form-control"
-                placeholder="{lang key="email" section="account data"}"
+                placeholder="{lang key='email' section='account data'}"
                 required
                 autocomplete="billing email"
                 >
                 {if isset($fehlendeAngaben.email)}
                 <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                     {if $fehlendeAngaben.email == 1}
-                        {lang key="fillOut" section="global"}
+                        {lang key='fillOut' section='global'}
                     {elseif $fehlendeAngaben.email == 2}
-                        {lang key="invalidEmail" section="global"}
+                        {lang key='invalidEmail' section='global'}
                     {elseif $fehlendeAngaben.email == 3}
-                        {lang key="blockedEmail" section="global"}
+                        {lang key='blockedEmail' section='global'}
                     {elseif $fehlendeAngaben.email == 4}
-                        {lang key="noDnsEmail" section="account data"}
+                        {lang key='noDnsEmail' section='account data'}
                     {elseif $fehlendeAngaben.email == 5}
-                        {lang key="emailNotAvailable" section="account data"}
+                        {lang key='emailNotAvailable' section='account data'}
                     {/if}
                 </div>
                 {/if}
@@ -398,23 +433,23 @@
             {if $Einstellungen.kunden.kundenregistrierung_abfragen_tel !== 'N'}
             <div class="col-xs-12 col-md-6">
                 <div class="form-group float-label-control{if isset($fehlendeAngaben.tel)} has-error{/if}{if $Einstellungen.kunden.kundenregistrierung_abfragen_tel === 'Y'} required{/if}">
-                    <label class="control-label" for="tel">{lang key="tel" section="account data"}</label>
+                    <label class="control-label" for="tel">{lang key='tel' section='account data'}</label>
                     <input
                     type="tel"
                     name="tel"
                     value="{if isset($cPost_var['tel'])}{$cPost_var['tel']}{elseif isset($Kunde->cTel)}{$Kunde->cTel}{/if}"
                     id="tel"
                     class="form-control"
-                    placeholder="{lang key="tel" section="account data"}"
+                    placeholder="{lang key='tel' section='account data'}"
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_tel === 'Y'} required{/if}
                     autocomplete="billing home tel"
                     />
                     {if isset($fehlendeAngaben.tel)}
                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                         {if $fehlendeAngaben.tel == 1}
-                            {lang key="fillOut" section="global"}
+                            {lang key='fillOut' section='global'}
                         {elseif $fehlendeAngaben.tel == 2}
-                            {lang key="invalidTel" section="global"}
+                            {lang key='invalidTel' section='global'}
                         {/if}
                     </div>
                     {/if}
@@ -425,23 +460,23 @@
             {if $Einstellungen.kunden.kundenregistrierung_abfragen_fax !== 'N'}
             <div class="col-xs-12 col-md-6">
                 <div class="form-group float-label-control{if isset($fehlendeAngaben.fax)} has-error{/if}{if $Einstellungen.kunden.kundenregistrierung_abfragen_fax === 'Y'} required{/if}">
-                    <label class="control-label" for="fax">{lang key="fax" section="account data"}</label>
+                    <label class="control-label" for="fax">{lang key='fax' section='account data'}</label>
                     <input
                     type="tel"
                     name="fax"
                     value="{if isset($cPost_var['fax'])}{$cPost_var['fax']}{elseif isset($Kunde->cFax)}{$Kunde->cFax}{/if}"
                     id="fax"
                     class="form-control"
-                    placeholder="{lang key="fax" section="account data"}"
+                    placeholder="{lang key='fax' section='account data'}"
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_fax === 'Y'} required{/if}
                     autocomplete="billing fax tel"
                     />
                     {if isset($fehlendeAngaben.fax)}
                         <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                             {if $fehlendeAngaben.fax == 1}
-                                {lang key="fillOut" section="global"}
+                                {lang key='fillOut' section='global'}
                             {elseif $fehlendeAngaben.fax == 2}
-                                {lang key="invalidTel" section="global"}
+                                {lang key='invalidTel' section='global'}
                             {/if}
                         </div>
                     {/if}
@@ -456,23 +491,23 @@
             {if $Einstellungen.kunden.kundenregistrierung_abfragen_mobil !== 'N'}
                 <div class="col-xs-12 col-md-6">
                     <div class="form-group float-label-control{if isset($fehlendeAngaben.mobil)} has-error{/if}{if $Einstellungen.kunden.kundenregistrierung_abfragen_mobil === 'Y'} required{/if} ">
-                        <label class="control-label" for="mobile">{lang key="mobile" section="account data"}</label>
+                        <label class="control-label" for="mobile">{lang key='mobile' section='account data'}</label>
                         <input
                         type="tel"
                         name="mobil"
                         value="{if isset($cPost_var['mobil'])}{$cPost_var['mobil']}{elseif isset($Kunde->cMobil)}{$Kunde->cMobil}{/if}"
                         id="mobile"
                         class="form-control"
-                        placeholder="{lang key="mobile" section="account data"}"
+                        placeholder="{lang key='mobile' section='account data'}"
                         {if $Einstellungen.kunden.kundenregistrierung_abfragen_mobil === 'Y'} required{/if}
                         autocomplete="billing mobile tel"
                         />
                         {if isset($fehlendeAngaben.mobil)}
                             <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                                 {if $fehlendeAngaben.mobil == 1}
-                                    {lang key="fillOut" section="global"}
+                                    {lang key='fillOut' section='global'}
                                 {elseif $fehlendeAngaben.mobil == 2}
-                                    {lang key="invalidTel" section="global"}
+                                    {lang key='invalidTel' section='global'}
                                 {/if}
                             </div>
                         {/if}
@@ -483,20 +518,20 @@
             {if $Einstellungen.kunden.kundenregistrierung_abfragen_www !== 'N'}
                 <div class="col-xs-12 col-md-6">
                     <div class="form-group float-label-control{if isset($fehlendeAngaben.www)} has-error{/if}{if $Einstellungen.kunden.kundenregistrierung_abfragen_www === 'Y'} required{/if}">
-                        <label class="control-label" for="www">{lang key="www" section="account data"}</label>
+                        <label class="control-label" for="www">{lang key='www' section='account data'}</label>
                         <input
                         type="text"
                         name="www"
                         value="{if isset($cPost_var['www'])}{$cPost_var['www']}{elseif isset($Kunde->cWWW)}{$Kunde->cWWW}{/if}"
                         id="www"
                         class="form-control"
-                        placeholder="{lang key="www" section="account data"}"
+                        placeholder="{lang key='www' section='account data'}"
                         {if $Einstellungen.kunden.kundenregistrierung_abfragen_www === 'Y'} required{/if}
                         autocomplete="billing url"
                         />
                         {if isset($fehlendeAngaben.www)}
                             <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
-                                {lang key="fillOut" section="global"}
+                                {lang key='fillOut' section='global'}
                             </div>
                         {/if}
                     </div>
@@ -509,25 +544,25 @@
         <div class="row">
             <div class="col-xs-12 col-md-6">
                 <div class="form-group float-label-control{if isset($fehlendeAngaben.geburtstag)} has-error{/if}{if $Einstellungen.kunden.kundenregistrierung_abfragen_geburtstag === 'Y'} required{/if}">
-                    <label class="control-label" for="birthday">{lang key="birthday" section="account data"}</label>
+                    <label class="control-label" for="birthday">{lang key='birthday' section='account data'}</label>
                     <input
                     type="text"
                     name="geburtstag"
                     value="{if isset($cPost_var['geburtstag'])}{$cPost_var['geburtstag']}{elseif isset($Kunde->dGeburtstag) && $Kunde->dGeburtstag !== '00.00.0000'}{$Kunde->dGeburtstag|date_format:"%d.%m.%Y"}{/if}"
                     id="birthday"
                     class="birthday form-control"
-                    placeholder="{lang key="birthdayFormat" section="account data"}"
+                    placeholder="{lang key='birthdayFormat' section='account data'}"
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_geburtstag === 'Y'} required{/if}
                     autocomplete="billing bday"
                     >
                     {if isset($fehlendeAngaben.geburtstag)}
                         <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                             {if $fehlendeAngaben.geburtstag == 1}
-                                {lang key="fillOut" section="global"}
+                                {lang key='fillOut' section='global'}
                             {elseif $fehlendeAngaben.geburtstag == 2}
-                                {lang key="invalidDateformat" section="global"}
+                                {lang key='invalidDateformat' section='global'}
                             {elseif $fehlendeAngaben.geburtstag == 3}
-                                {lang key="invalidDate" section="global"}
+                                {lang key='invalidDate' section='global'}
                             {/if}
                         </div>
                     {/if}
@@ -541,7 +576,7 @@
     <div class="row">
         <div class="col-xs-12 col-md-6">
             {if $step === 'formular' || $step === 'edit_customer_address' || $step === 'Lieferadresse' || $step === 'rechnungsdaten'}
-                {foreach name=kundenfeld from=$oKundenfeld_arr item=oKundenfeld}
+                {foreach $oKundenfeld_arr as $oKundenfeld}
                     {assign var=kKundenfeld value=$oKundenfeld->kKundenfeld}
                     <div class="form-group float-label-control{if isset($fehlendeAngaben.custom[$kKundenfeld])} has-error{/if}{if $oKundenfeld->nPflicht == 1} required{/if}">
                         <label class="control-label" for="custom_{$kKundenfeld}">{$oKundenfeld->cName}</label>
@@ -559,8 +594,8 @@
                             {if $oKundenfeld->nEditierbar == 0 && !empty($cKundenattribut_arr[$kKundenfeld]->cWert)}readonly{/if}/>
                         {else}
                             <select name="custom_{$kKundenfeld}" class="form-control{if $oKundenfeld->nPflicht == 1} required{/if}" {if $oKundenfeld->nEditierbar == 0 && !empty($cKundenattribut_arr[$kKundenfeld]->cWert)}disabled{/if}{if $oKundenfeld->nPflicht == 1} required{/if}>
-                                <option value="" selected disabled>{lang key="pleaseChoose" section="global"}</option>
-                                {foreach name=select from=$oKundenfeld->oKundenfeldWert_arr item=oKundenfeldWert}
+                                <option value="" selected disabled>{lang key='pleaseChoose'}</option>
+                                {foreach $oKundenfeld->oKundenfeldWert_arr as $oKundenfeldWert}
                                     <option value="{$oKundenfeldWert->cWert}" {if ($step === 'formular' || $step === 'edit_customer_address') && isset($cKundenattribut_arr[$kKundenfeld]->cWert) && ($oKundenfeldWert->cWert == $cKundenattribut_arr[$kKundenfeld]->cWert)}selected{elseif isset($Kunde->cKundenattribut_arr[$kKundenfeld]->cWert) && ($oKundenfeldWert->cWert == $Kunde->cKundenattribut_arr[$kKundenfeld]->cWert)}selected{/if}>{$oKundenfeldWert->cWert}</option>
                                 {/foreach}
                             </select>
@@ -568,13 +603,13 @@
                         {if isset($fehlendeAngaben.custom[$kKundenfeld])}
                             <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                                 {if $fehlendeAngaben.custom[$kKundenfeld] === 1}
-                                    {lang key="fillOut" section="global"}
+                                    {lang key='fillOut' section='global'}
                                 {elseif $fehlendeAngaben.custom[$kKundenfeld] === 2}
-                                    {lang key="invalidDateformat" section="global"}
+                                    {lang key='invalidDateformat' section='global'}
                                 {elseif $fehlendeAngaben.custom[$kKundenfeld] === 3}
-                                    {lang key="invalidDate" section="global"}
+                                    {lang key='invalidDate' section='global'}
                                 {elseif $fehlendeAngaben.custom[$kKundenfeld] === 4}
-                                    {lang key="invalidInteger" section="global"}
+                                    {lang key='invalidInteger' section='global'}
                                 {/if}
                             </div>
                         {/if}

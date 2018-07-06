@@ -22,8 +22,8 @@ final class BoxFilterSearch extends AbstractBox
     {
         parent::__construct($config);
         $filter = \Shop::getProductFilter()->searchFilterCompat;
-        $show   = !$filter->getVisibility()->equals(Visibility::SHOW_NEVER())
-            && !$filter->getVisibility()->equals(Visibility::SHOW_CONTENT())
+        $show   = $filter->getVisibility() !== Visibility::SHOW_NEVER
+            && $filter->getVisibility() !== Visibility::SHOW_CONTENT
             && count($filter->getOptions()) > 0
             && empty(\Shop::getProductFilter()->getSearch()->getValue());
         $this->setShow($show);

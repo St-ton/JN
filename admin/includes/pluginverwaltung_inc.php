@@ -3538,11 +3538,6 @@ function deinstallierePlugin($kPlugin, $nXMLVersion, $bUpdate = false, $kPluginN
         doSQLDelete($kPlugin, $bUpdate, $kPluginNew);
     }
     Shop::Cache()->flushAll();
-    // Deinstallation für eine höhere XML Version
-    if ($nXMLVersion > 100) {
-        return PLUGIN_CODE_OK;
-    }
-
     if (($p = Plugin::bootstrapper($kPlugin)) !== null) {
         $p->uninstalled();
     }

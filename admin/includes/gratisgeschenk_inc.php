@@ -64,7 +64,10 @@ function holeHaeufigeGeschenke($cSQL)
             $oArtikel->fuelleArtikel($oHaeufigGeschenkTMP->kArtikel, $articleOptions, 0, 0, true);
             if ($oArtikel->kArtikel > 0) {
                 $oArtikel->nGGAnzahl = $oHaeufigGeschenkTMP->nAnzahl;
-                $oHaeufigGeschenk_arr[] = (object)['Artikel' => $oArtikel, 'lastOrdered' => $oHaeufigGeschenkTMP->lastOrdered];
+                $cDatum_arr          = DateHelper::getDateParts($oHaeufigGeschenkTMP->lastOrdered);
+                $lastOrdered         = $cDatum_arr['cTag'] . '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'] . ' ' .
+                    $cDatum_arr['cStunde'] . ':' . $cDatum_arr['cMinute'] . ':' . $cDatum_arr['cSekunde'];
+                $oHaeufigGeschenk_arr[] = (object)['Artikel' => $oArtikel, 'lastOrdered' => $lastOrdered];
             }
         }
     }
@@ -86,7 +89,7 @@ function holeLetzten100Geschenke($cSQL)
                 FROM twarenkorbpos
                   LEFT JOIN tbestellung ON tbestellung.kWarenkorb = twarenkorbpos.kWarenkorb
                 WHERE twarenkorbpos.nPosTyp = " . C_WARENKORBPOS_TYP_GRATISGESCHENK . "
-                ORDER BY tbestellung.dErstellt ASC" . $cSQL,
+                ORDER BY tbestellung.dErstellt DESC" . $cSQL,
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
@@ -99,7 +102,10 @@ function holeLetzten100Geschenke($cSQL)
             $oArtikel->fuelleArtikel($oLetzten100GeschenkTMP->kArtikel, $articleOptions, 0, 0, true);
             if ($oArtikel->kArtikel > 0) {
                 $oArtikel->nGGAnzahl = $oLetzten100GeschenkTMP->nAnzahl;
-                $oLetzten100Geschenk_arr[] = (object)['Artikel' => $oArtikel, 'orderCreated' => $oLetzten100GeschenkTMP->orderCreated];
+                $cDatum_arr          = DateHelper::getDateParts($oLetzten100GeschenkTMP->orderCreated);
+                $orderCreated        = $cDatum_arr['cTag'] . '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'] . ' ' .
+                    $cDatum_arr['cStunde'] . ':' . $cDatum_arr['cMinute'] . ':' . $cDatum_arr['cSekunde'];
+                $oLetzten100Geschenk_arr[] = (object)['Artikel' => $oArtikel, 'orderCreated' => $orderCreated];
             }
         }
     }

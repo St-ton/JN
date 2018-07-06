@@ -31,8 +31,8 @@ class ItemManufacturer extends BaseManufacturer
              ->setVisibility($this->getConfig('navigationsfilter')['allgemein_herstellerfilter_benutzen'])
              ->setFrontendName(\Shop::Lang()->get('allManufacturers'))
              ->setType($this->getConfig('navigationsfilter')['manufacturer_filter_type'] === 'O'
-                 ? Type::OR()
-                 : Type::AND());
+                 ? Type::OR
+                 : Type::AND);
     }
 
     /**

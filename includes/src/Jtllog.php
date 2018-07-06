@@ -230,7 +230,7 @@ class Jtllog
      * @param int    $nLevel
      * @return int
      */
-    public static function getLogCount(string $cFilter, int $nLevel = 0): int
+    public static function getLogCount(string $cFilter = '', int $nLevel = 0): int
     {
         $cSQLWhere = '';
         if ($nLevel > 0) {

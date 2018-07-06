@@ -351,7 +351,7 @@ interface LinkInterface
     public function addChildLink($link);
 
     /**
-     * @return null|string
+     * @return string
      */
     public function getFileName(): string;
 

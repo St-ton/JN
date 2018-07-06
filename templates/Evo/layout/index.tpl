@@ -24,18 +24,22 @@
 
         {if $Link->getLinkType() === $smarty.const.LINKTYP_AGB}
             <div id="tos" class="well well-sm">
-                {if $AGB->cAGBContentHtml}
-                    {$AGB->cAGBContentHtml}
-                {elseif $AGB->cAGBContentText}
-                    {$AGB->cAGBContentText|nl2br}
+                {if $AGB !== false}
+                    {if $AGB->cAGBContentHtml}
+                        {$AGB->cAGBContentHtml}
+                    {elseif $AGB->cAGBContentText}
+                        {$AGB->cAGBContentText|nl2br}
+                    {/if}
                 {/if}
             </div>
         {elseif $Link->getLinkType() === $smarty.const.LINKTYP_WRB}
             <div id="revocation-instruction" class="well well-sm">
-                {if $WRB->cWRBContentHtml}
-                    {$WRB->cWRBContentHtml}
-                {elseif $WRB->cWRBContentText}
-                    {$WRB->cWRBContentText|nl2br}
+                {if $WRB !== false}
+                    {if $WRB->cWRBContentHtml}
+                        {$WRB->cWRBContentHtml}
+                    {elseif $WRB->cWRBContentText}
+                        {$WRB->cWRBContentText|nl2br}
+                    {/if}
                 {/if}
             </div>
         {elseif $Link->getLinkType() === $smarty.const.LINKTYP_STARTSEITE}

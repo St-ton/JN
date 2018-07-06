@@ -143,7 +143,7 @@ class BackendAccountHelper
                         $author->cVitaShort = $author->extAttribs['useVita_' . $_SESSION['cISOSprache']]->cAttribValue;
                         $author->cVitaLong  = $author->extAttribs['useVita_' . $_SESSION['cISOSprache']]->cAttribText;
                     }
-                    foreach (gibAlleSprachen() as $sprache) {
+                    foreach (Sprache::getAllLanguages() as $sprache) {
                         unset($author->extAttribs['useVita_' . $sprache->cISO]);
                     }
 
@@ -192,7 +192,7 @@ class BackendAccountHelper
             $uploadImage   = '';
         }
 
-        $sprachen       = gibAlleSprachen();
+        $sprachen       = Sprache::getAllLanguages();
         $defaultAttribs = [
             'useGravatarEmail' => (object)['cAttribValue' => ''],
             'useAvatar'        => (object)['cAttribValue' => ''],
@@ -277,7 +277,7 @@ class BackendAccountHelper
         }
 
         if ($this->getConfigParam('use_vita', 'N') === 'Y') {
-            foreach (gibAlleSprachen() as $sprache) {
+            foreach (Sprache::getAllLanguages() as $sprache) {
                 $useVita_ISO = 'useVita_' . $sprache->cISO;
 
                 if (!empty($attribs[$useVita_ISO])) {

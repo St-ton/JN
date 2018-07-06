@@ -433,11 +433,11 @@ class ItemPriceRange extends AbstractFilter
             $fKundenrabatt = ($discount = \Session::CustomerGroup()->getDiscount()) > 0
                 ? $discount
                 : 0.0;
-            $sql           = (new FilterStateSQL())->from($this->productFilter->getCurrentStateData());
+            $state           = (new FilterStateSQL())->from($this->productFilter->getCurrentStateData());
             foreach ($this->getSQLJoin() as $join) {
-                $sql->addJoin($join);
+                $state->addJoin($join);
             }
-            $sql->setSelect([
+            $state->setSelect([
                 'ROUND(
                 LEAST(
                     (tpreise.fVKNetto * ' . $currency->getConversionFactor() . ') *
@@ -451,10 +451,10 @@ class ItemPriceRange extends AbstractFilter
                     IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * ' .
                 $currency->getConversionFactor() . '))) * ((100 + ' . $fSteuersatzMin . ') / 100), 2) AS fMin'
             ]);
-            $sql->setOrderBy(null);
-            $sql->setLimit('');
-            $sql->setGroupBy(['tartikel.kArtikel']);
-            $baseQry = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
+            $state->setOrderBy(null);
+            $state->setLimit('');
+            $state->setGroupBy(['tartikel.kArtikel']);
+            $baseQry = $this->productFilter->getFilterSQL()->getBaseQuery($state);
             $minMax  = \Shop::Container()->getDB()->query(
                 'SELECT MAX(ssMerkmal.fMax) AS fMax, MIN(ssMerkmal.fMin) AS fMin 
                     FROM (' . $baseQry . ' ) AS ssMerkmal',
@@ -547,15 +547,15 @@ class ItemPriceRange extends AbstractFilter
                     }
                     $cSelectSQL .= 'SUM(ssMerkmal.anz' . $i . ') AS anz' . $i;
                 }
-                $sql = (new FilterStateSQL())->from($state);
-                $sql->setSelect([$this->getPriceRangeSQL($oPreis, $currency, $ranges)]);
-                $sql->setOrderBy(null);
-                $sql->setLimit('');
-                $sql->setGroupBy(['tartikel.kArtikel']);
+                $state = (new FilterStateSQL())->from($sql);
+                $state->setSelect([$this->getPriceRangeSQL($oPreis, $currency, $ranges)]);
+                $state->setOrderBy(null);
+                $state->setLimit('');
+                $state->setGroupBy(['tartikel.kArtikel']);
                 foreach ($this->getSQLJoin() as $join) {
-                    $sql->addJoin($join);
+                    $state->addJoin($join);
                 }
-                $baseQry = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
+                $baseQry = $this->productFilter->getFilterSQL()->getBaseQuery($state);
                 $dbRes   = \Shop::Container()->getDB()->query(
                     'SELECT ' . $cSelectSQL . ' FROM (' . $baseQry . ' ) AS ssMerkmal',
                     ReturnType::SINGLE_OBJECT

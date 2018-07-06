@@ -332,7 +332,7 @@ class BoxService implements BoxServiceInterface
                 $visiblePositions[] = $position;
             }
         }
-        if (count($visiblePositions) === 0) {
+        if ($active === true && count($visiblePositions) === 0) {
             return [];
         }
         $visiblePositions = \Functional\map($visiblePositions, function ($e) {

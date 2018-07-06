@@ -233,7 +233,7 @@ class Sprache
 
     /**
      * @param string $cISO
-     * @return mixed
+     * @return stdClass|null
      */
     public function _getLangIDFromIso(string $cISO)
     {
@@ -257,7 +257,7 @@ class Sprache
     /**
      * @param int $kSektion
      * @param mixed null|string $default
-     * @return string
+     * @return string|null
      */
     public function getSectionName(int $kSektion, $default = null)
     {
@@ -344,7 +344,7 @@ class Sprache
             if (isset($this->oSprachISO[$cISO]->kSprachISO)) {
                 return (int)$this->oSprachISO[$cISO]->kSprachISO;
             }
-            $oSprachISO              = $this->getLangIDFromIso($cISO);
+            $oSprachISO              = $this->_getLangIDFromIso($cISO);
             $this->oSprachISO[$cISO] = $oSprachISO;
 
             return isset($oSprachISO->kSprachISO) ? (int)$oSprachISO->kSprachISO : false;

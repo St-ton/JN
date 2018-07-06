@@ -14,15 +14,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'kundenwerbenkeunden_inc.php';
 
 $AktuelleSeite = 'MEIN KONTO';
 $linkHelper    = Shop::Container()->getLinkService();
-$Einstellungen = Shop::getSettings([
-    CONF_GLOBAL,
-    CONF_RSS,
-    CONF_KUNDEN,
-    CONF_KAUFABWICKLUNG,
-    CONF_KUNDENFELD,
-    CONF_KUNDENWERBENKUNDEN,
-    CONF_TRUSTEDSHOPS
-]);
+$Einstellungen = Shopsetting::getInstance()->getAll();
 $kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_LOGIN);
 $cHinweis      = '';
 $hinweis       = '';
@@ -152,8 +144,8 @@ if ($customerID > 0) {
         $step = 'kunden_werben_kunden';
         if (RequestHelper::verifyGPCDataInt('kunde_werben') === 1) {
             if (!SimpleMail::checkBlacklist($_POST['cEmail'])) {
-                if (pruefeEingabe($_POST)) {
-                    if (setzeKwKinDB($_POST, $Einstellungen)) {
+                if (KundenwerbenKunden::checkInputData($_POST)) {
+                    if (KundenwerbenKunden::saveToDB($_POST, $Einstellungen)) {
                         $cHinweis .= sprintf(
                             Shop::Lang()->get('kwkAdd', 'messages') . '<br />',
                             StringHandler::filterXSS($_POST['cEmail'])
@@ -186,7 +178,7 @@ if ($customerID > 0) {
             if (!$oWunschlistePos->bKonfig) {
                 WarenkorbHelper::addProductIDToCart($oWunschlistePos->kArtikel, $oWunschlistePos->fAnzahl, $oEigenschaftwerte_arr);
             }
-            $cParamWLID = (strlen($cURLID) > 0) ? ('&wlid=' . $cURLID) : '';
+            $cParamWLID = strlen($cURLID) > 0 ? ('&wlid=' . $cURLID) : '';
             header(
                 'Location: ' . $linkHelper->getStaticRoute('jtl.php') .
                 '?wl=' . $kWunschliste .

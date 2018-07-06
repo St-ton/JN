@@ -29,8 +29,8 @@ class ItemTag extends BaseTag
         $this->setUrlParam('tf')
              ->setVisibility($this->getConfig('navigationsfilter')['allgemein_tagfilter_benutzen'])
              ->setType($this->getConfig('navigationsfilter')['tag_filter_type'] === 'O'
-                 ? Type::OR()
-                 : Type::AND());
+                 ? Type::OR
+                 : Type::AND);
     }
 
     /**

@@ -52,7 +52,7 @@ $oFilter->assemble();
 
 $cSearchString     = $oSearchfield->getValue();
 $nSelectedLevel    = $oLevelSelect->getSelectedOption()->getValue();
-$nTotalLogCount    = Jtllog::getLogCount(0);
+$nTotalLogCount    = Jtllog::getLogCount();
 $nFilteredLogCount = Jtllog::getLogCount($cSearchString, $nSelectedLevel);
 
 $oPagination = (new Pagination('syslog'))

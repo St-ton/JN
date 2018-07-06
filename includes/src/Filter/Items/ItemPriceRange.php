@@ -433,6 +433,7 @@ class ItemPriceRange extends AbstractFilter
             $fKundenrabatt = ($discount = \Session::CustomerGroup()->getDiscount()) > 0
                 ? $discount
                 : 0.0;
+            $sql           = (new FilterStateSQL())->from($this->productFilter->getCurrentStateData());
             foreach ($this->getSQLJoin() as $join) {
                 $sql->addJoin($join);
             }
@@ -546,6 +547,7 @@ class ItemPriceRange extends AbstractFilter
                     }
                     $cSelectSQL .= 'SUM(ssMerkmal.anz' . $i . ') AS anz' . $i;
                 }
+                $sql = (new FilterStateSQL())->from($state);
                 $sql->setSelect([$this->getPriceRangeSQL($oPreis, $currency, $ranges)]);
                 $sql->setOrderBy(null);
                 $sql->setLimit('');

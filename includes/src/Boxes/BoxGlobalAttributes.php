@@ -21,10 +21,23 @@ final class BoxGlobalAttributes extends AbstractBox
         parent::__construct($config);
         parent::addMapping('globaleMerkmale', 'Items');
         $this->setShow(true);
-        require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
         $attributes = \Session::CustomerGroup()->mayViewCategories()
-            ? gibSitemapGlobaleMerkmale()
+            ? $this->getGlobalAttributes()
             : [];
         $this->setItems($attributes);
+    }
+
+    /**
+     * @return array
+     */
+    private function getGlobalAttributes(): array
+    {
+        $attributeIDs = \Shop::Container()->getDB()->selectAll('tmerkmal', 'nGlobal', 1, 'kMerkmal', 'nSort');
+        $attributes   = [];
+        foreach ($attributeIDs as $attributeID) {
+            $attributes[] = new \Merkmal($attributeID->kMerkmal, true);
+        }
+
+        return $attributes;
     }
 }

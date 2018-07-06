@@ -110,7 +110,7 @@ class Container extends ContainerBase implements DefaultServicesInterface
     /**
      * @inheritdoc
      */
-    public function getOPC()
+    public function getOPC(): \OPC\Service
     {
         return $this->get(\OPC\Service::class);
     }
@@ -118,7 +118,7 @@ class Container extends ContainerBase implements DefaultServicesInterface
     /**
      * @inheritdoc
      */
-    public function getOPCPageService()
+    public function getOPCPageService(): \OPC\PageService
     {
         return $this->get(\OPC\PageService::class);
     }
@@ -126,7 +126,7 @@ class Container extends ContainerBase implements DefaultServicesInterface
     /**
      * @inheritdoc
      */
-    public function getOPCDB()
+    public function getOPCDB(): \OPC\DB
     {
         return $this->get(\OPC\DB::class);
     }
@@ -134,7 +134,7 @@ class Container extends ContainerBase implements DefaultServicesInterface
     /**
      * @inheritdoc
      */
-    public function getOPCPageDB()
+    public function getOPCPageDB(): \OPC\PageDB
     {
         return $this->get(\OPC\PageDB::class);
     }
@@ -142,7 +142,7 @@ class Container extends ContainerBase implements DefaultServicesInterface
     /**
      * @inheritdoc
      */
-    public function getOPCLocker()
+    public function getOPCLocker(): \OPC\Locker
     {
         return $this->get(\OPC\Locker::class);
     }

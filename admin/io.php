@@ -8,16 +8,18 @@
 require_once __DIR__ . '/includes/admininclude.php';
 
 if (!$oAccount->getIsAuthenticated()) {
-    header(RequestHelper::makeHTTPHeader(401));
-    exit;
+    AdminIO::getInstance()->respondAndExit(new IOError('Not authenticated as admin.', 401));
 }
 if (!FormHelper::validateToken()) {
-    $io = IO::getInstance();
-    $io->respondAndExit(new IOError('CSRF validation failed.', 500));
+    AdminIO::getInstance()->respondAndExit(new IOError('CSRF validation failed.', 403));
 }
 
-$jsonApi             = JSONAPI::getInstance();
-$io                  = AdminIO::getInstance()->setAccount($oAccount);
+$jsonApi = JSONAPI::getInstance();
+$io      = AdminIO::getInstance()->setAccount($oAccount);
+
+Shop::Container()->getOPC()->registerAdminIOFunctions($io);
+Shop::Container()->getOPCPageService()->registerAdminIOFunctions($io);
+
 $dashboardInc        = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dashboard_inc.php';
 $accountInc          = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
 $bannerInc           = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'banner_inc.php';

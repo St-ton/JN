@@ -1,0 +1,135 @@
+<?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
+
+namespace OPC\Portlets;
+
+use function Functional\unique;
+use OPC\PortletInstance;
+
+/**
+ * Class Container
+ * @package OPC\Portlets
+ */
+class Container extends \OPC\Portlet
+{
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     */
+    public function getPreviewHtml(PortletInstance $instance): string
+    {
+        $instance->setProperty('uid', uniqid('cntr-', false));
+        if (!empty($instance->getProperty('parallax-flag')) && !empty($instance->getProperty('src'))) {
+            $name = explode('/', $instance->getProperty('src'));
+            $name = end($name);
+
+            $instance->setStyle(
+                'background',
+                'url("' . \Shop::getURL() . '/' . PFAD_MEDIAFILES . 'Bilder/.xs/' . $name . '")'
+            );
+
+            $instance->setStyle('background-size', 'cover');
+            $instance->setStyle('min-height', $instance->getProperty('min-height'));
+
+            $instance->getImageAttributes(\Shop::getURL() . '/' . PFAD_MEDIAFILES . 'Bilder/.xs/' . $name);
+        }
+        if (!empty($instance->getProperty("class"))) {
+            $instance->addClass($instance->getProperty("class"));
+        }
+
+        $res = "<div " . $instance->getAttributeString() . $instance->getDataAttributeString() . ">";
+
+        $res .= "<div class='opc-area' data-area-id='cntr-0'>"
+            . $instance->getSubareaPreviewHtml('cntr-0') . "</div></div>";
+
+        return $res;
+    }
+
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     */
+    public function getFinalHtml(PortletInstance $instance): string
+    {
+        if (!empty($instance->getProperty('parallax-flag')) && !empty($instance->getProperty('src'))) {
+            $name = explode('/', $instance->getProperty('src'));
+            $name = end($name);
+            $instance->addClass('parallax-window');
+            $instance->setStyle('min-height', $instance->getProperty('min-height'));
+            $instance->setAttribute('data-parallax', 'scroll');
+            $instance->setAttribute('data-z-index', '1');
+            $instance->setAttribute('data-image-src', \Shop::getURL() . '/' . PFAD_MEDIAFILES . 'Bilder/.lg/' . $name);
+
+            $instance->getImageAttributes(\Shop::getURL() . '/' . PFAD_MEDIAFILES . 'Bilder/.xs/' . $name);
+        }
+        if (!empty($instance->getProperty("class"))) {
+            $instance->addClass($instance->getProperty("class"));
+        }
+
+        $res = "<div " . $instance->getAttributeString() . ">";
+
+        $res .= $instance->getSubareaFinalHtml('cntr-0');
+        $res .= "</div>";
+
+        return $res;
+    }
+
+    /**
+     * @return string
+     */
+    public function getButtonHtml(): string
+    {
+        return '<i class="fa fa-object-group"></i><br/> Container';
+    }
+
+    /**
+     * @return array
+     */
+    public function getPropertyDesc(): array
+    {
+        return [
+            'class'         => [
+                'label'      => 'CSS Klasse',
+                'dspl_width' => 50,
+            ],
+            'parallax-flag' => [
+                'label'   => 'Parallaxeffekt nutzen?',
+                'type'    => 'radio',
+                'options' => [
+                    'true'  => 'mitlaufendes Bild',
+                    'false' => 'einfacher Container',
+                ],
+                'default' => 'false',
+                'inline'  => true,
+            ],
+            'src'           => [
+                'type'                 => 'Bild',
+                'collapseControlStart' => true,
+                'showOnProp'           => 'parallax-flag',
+                'showOnPropValue'      => 'true',
+                'dspl_width'           => 50,
+            ],
+            'min-height'    => [
+                'label'              => 'Mindesthöhe in px',
+                'type'               => 'number',
+                'default'            => 300,
+                'dspl_width'         => 50,
+                'collapseControlEnd' => true,
+            ]
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getPropertyTabs(): array
+    {
+        return [
+            'Styles'    => 'styles',
+            'Animation' => 'animations',
+        ];
+    }
+}

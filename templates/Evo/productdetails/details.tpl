@@ -24,12 +24,12 @@
     </div>
 {/if}
 {if isset($PositiveFeedback) && count($PositiveFeedback) > 0}
-    {foreach name=feedback from=$PositiveFeedback item=Feedback}
-        <div class="alert alert-success">{$Feedback}</div>
+    {foreach $PositiveFeedback as $feedback}
+        <div class="alert alert-success">{$feedback}</div>
     {/foreach}
 {/if}
 {if isset($Artikelhinweise) && count($Artikelhinweise) > 0}
-    {foreach name=hinweise from=$Artikelhinweise item=Artikelhinweis}
+    {foreach $Artikelhinweise as $Artikelhinweis}
         <div class="alert alert-danger">{$Artikelhinweis}</div>
     {/foreach}
 {/if}
@@ -42,14 +42,14 @@
     {$jtl_token}
     <div class="row product-primary" id="product-offer">
         <div class="product-gallery{if $hasLeftBox} col-sm-5{else} col-sm-6{/if}">
-            {include file="productdetails/image.tpl"}
+            {include file='productdetails/image.tpl'}
         </div>
         <div class="product-info{if $hasLeftBox} col-sm-7{else} col-sm-6{/if}">
-            {block name="productdetails-info"}
+            {block name='productdetails-info'}
             <div class="product-info-inner">
-                {block name="productdetails-info-manufacturer-wrapper"}
+                {block name='productdetails-info-manufacturer-wrapper'}
                 {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'N' && isset($Artikel->cHersteller)}
-                    {block name="product-info-manufacturer"}
+                    {block name='product-info-manufacturer'}
                     <div class="manufacturer-row text-right small" itemprop="manufacturer" itemscope itemtype="http://schema.org/Organization">
                         <a href="{$Artikel->cHerstellerSeo}"{if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'B'} data-toggle="tooltip" data-placement="left" title="{$Artikel->cHersteller}"{/if} itemprop="url">
                             {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'Y' && (!empty($Artikel->cBildpfad_thersteller) || $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B') && isset($Artikel->cHerstellerBildKlein)}
@@ -66,20 +66,20 @@
                 {/block}
 
                 <div class="product-headline hidden-xs">
-                    {block name="productdetails-info-product-title"}
+                    {block name='productdetails-info-product-title'}
                     <h1 class="fn product-title" itemprop="name">{$Artikel->cName}</h1>
                     {/block}
                 </div>
 
-                {block name="productdetails-info-essential-wrapper"}
+                {block name='productdetails-info-essential-wrapper'}
                 {if ($Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0) || isset($Artikel->cArtNr)}
                     <div class="info-essential row">
-                        {block name="productdetails-info-essential"}
+                        {block name='productdetails-info-essential'}
                         {if isset($Artikel->cArtNr) || isset($Artikel->dMHD)}
                             <div class="col-xs-8">
-                                <p class="text-muted product-sku">{lang key="sortProductno"}: <span itemprop="sku">{$Artikel->cArtNr}</span></p>
+                                <p class="text-muted product-sku">{lang key='sortProductno'}: <span itemprop="sku">{$Artikel->cArtNr}</span></p>
                                 {if isset($Artikel->dMHD) && isset($Artikel->dMHD_de)}
-                                    <p title="{lang key='productMHDTool'}" class="best-before text-muted">{lang key="productMHD"}: <span itemprop="best-before">{$Artikel->dMHD_de}</span></p>
+                                    <p title="{lang key='productMHDTool'}" class="best-before text-muted">{lang key='productMHD'}: <span itemprop="best-before">{$Artikel->dMHD_de}</span></p>
                                 {/if}
                             </div>
                         {/if}
@@ -87,14 +87,14 @@
                             && ($Einstellungen.artikeldetails.isbn_display === 'D'
                                 || $Einstellungen.artikeldetails.isbn_display === 'DL')}
                             <div class="col-xs-8">
-                                <p class="text-muted">{lang key="isbn"}: <span>{$Artikel->cISBN}</span></p>
+                                <p class="text-muted">{lang key='isbn'}: <span>{$Artikel->cISBN}</span></p>
                             </div>
                         {/if}
                         {if !empty($Artikel->cUNNummer) && !empty($Artikel->cGefahrnr)
                             && ($Einstellungen.artikeldetails.adr_hazard_display === 'D'
                                 || $Einstellungen.artikeldetails.adr_hazard_display === 'DL')}
                             <div class="col-xs-8">
-                                <div class="title text-muted">{lang key="adrHazardSign"}:
+                                <div class="title text-muted">{lang key='adrHazardSign'}:
                                     <table class="adr-table">
                                         <tr>
                                             <td>{$Artikel->cGefahrnr}</td>
@@ -107,7 +107,7 @@
                             </div>
                         {/if}
                         {if ($Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0)}
-                            {block name="productdetails-info-rating-wrapper"}
+                            {block name='productdetails-info-rating-wrapper'}
                             <div class="rating-wrapper col-xs-4 text-right" itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">
                             <span itemprop="ratingValue"
                                   class="hidden">{$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt}</span>
@@ -126,9 +126,9 @@
                 {/if}
                 {/block}
 
-                {block name="productdetails-info-description-wrapper"}
+                {block name='productdetails-info-description-wrapper'}
                 {if $Einstellungen.artikeldetails.artikeldetails_kurzbeschreibung_anzeigen === 'Y' && $Artikel->cKurzBeschreibung}
-                    {block name="productdetails-info-description"}
+                    {block name='productdetails-info-description'}
                     <div class="shortdesc" itemprop="description">
                         {$Artikel->cKurzBeschreibung}
                     </div>
@@ -137,11 +137,11 @@
                 {/if}
                 {/block}
 
-                {block name="productdetails-info-category-wrapper"}
+                {block name='productdetails-info-category-wrapper'}
                 {if $Einstellungen.artikeldetails.artikeldetails_kategorie_anzeigen === 'Y'}
-                    {block name="productdetails-info-category"}
+                    {block name='productdetails-info-category'}
                     <p class="product-category word-break">
-                        <span class="text-muted">{lang key="category"}: </span>
+                        <span class="text-muted">{lang key='category'}: </span>
                         {assign var=i_kat value=$Brotnavi|@count}{assign var=i_kat value=$i_kat-2}
                         <a href="{$Brotnavi[$i_kat]->getURLFull()}" itemprop="category">{$Brotnavi[$i_kat]->getName()}</a>
                     </p>
@@ -151,7 +151,7 @@
 
                 <div class="product-offer" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
                     <link itemprop="businessFunction" href="http://purl.org/goodrelations/v1#Sell" />
-                    {block name="productdetails-info-hidden"}
+                    {block name='productdetails-info-hidden'}
                     {if !($Artikel->nIstVater)}
                         <link itemprop="url" href="{$Artikel->cURLFull}" />
                     {/if}
@@ -171,47 +171,47 @@
                     <input type="hidden" name="kKundengruppe" value="{$smarty.session.Kundengruppe->getID()}" />
                     <input type="hidden" name="kSprache" value="{$smarty.session.kSprache}" />
                     {/block}
-                    {block name="productdetails-info-variation"}
+                    {block name='productdetails-info-variation'}
                     <!-- VARIATIONEN -->
-                    {include file="productdetails/variation.tpl" simple=$Artikel->isSimpleVariation showMatrix=$showMatrix}
+                    {include file='productdetails/variation.tpl' simple=$Artikel->isSimpleVariation showMatrix=$showMatrix}
                     {/block}
                     <hr>
                     <div class="row">
-                        {block name="productdetails-info-price"}
+                        {block name='productdetails-info-price'}
                         <div class="col-xs-7">
-                            {include file="productdetails/price.tpl" Artikel=$Artikel tplscope="detail"}
+                            {include file='productdetails/price.tpl' Artikel=$Artikel tplscope='detail'}
                         </div>
                         {/block}
-                        {block name="productdetails-info-stock"}
+                        {block name='productdetails-info-stock'}
                         <div class="col-xs-5 text-right">
-                            {include file="productdetails/stock.tpl"}
+                            {include file='productdetails/stock.tpl'}
                         </div>
                         {/block}
                     </div>
                     {*WARENKORB anzeigen wenn keine variationen mehr auf lager sind?!*}
-                    {include file="productdetails/basket.tpl"}
+                    {include file='productdetails/basket.tpl'}
                     <hr>
                 </div>
 
                 {if !($Artikel->nIstVater && $Artikel->kVaterArtikel == 0)}
-                    {include file="productdetails/actions.tpl"}
+                    {include file='productdetails/actions.tpl'}
                 {/if}
             </div>{* /product-info-inner *}
             {/block}{* productdetails-info *}
         </div>{* /col *}
         {if $Artikel->bHasKonfig}
-            {block name="productdetails-config"}
+            {block name='productdetails-config'}
             <div id="product-configurator" class="col-sm-12">
                 <div class="product-config top10">
                     {*KONFIGURATOR*}
-                    {include file="productdetails/config.tpl"}
+                    {include file='productdetails/config.tpl'}
                 </div>
             </div>
             {/block}
         {/if}
     </div>{* /row *}
-    {block name="details-matrix"}
-    {include file="productdetails/matrix.tpl"}
+    {block name='details-matrix'}
+    {include file='productdetails/matrix.tpl'}
     {/block}
 </form>
 
@@ -220,8 +220,8 @@
 {if !isset($smarty.get.quickView) || $smarty.get.quickView != 1}
     <div class="clearfix"></div>
 
-    {block name="details-tabs"}
-    {include file="productdetails/tabs.tpl"}
+    {block name='details-tabs'}
+    {include file='productdetails/tabs.tpl'}
     {/block}
 
     <div class="clearfix"></div>
@@ -230,7 +230,7 @@
 
     {*SLIDERS*}
     {if isset($Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen) && $Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen === 'Y' && isset($Artikel->oStueckliste_arr) && $Artikel->oStueckliste_arr|@count > 0
-        || isset($Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen) && $Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen == 'Y' && isset($Artikel->oProduktBundle_arr) && $Artikel->oProduktBundle_arr|@count > 0
+        || isset($Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen) && $Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen === 'Y' && isset($Artikel->oProduktBundle_arr) && $Artikel->oProduktBundle_arr|@count > 0
         || isset($Xselling->Standard->XSellGruppen) && count($Xselling->Standard->XSellGruppen) > 0
         || isset($Xselling->Kauf->Artikel) && count($Xselling->Kauf->Artikel) > 0
         || isset($oAehnlicheArtikel_arr) && count($oAehnlicheArtikel_arr) > 0}
@@ -242,18 +242,18 @@
             </div>
         {/if}
 
-        {if isset($Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen) && $Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen == 'Y' && isset($Artikel->oProduktBundle_arr) && $Artikel->oProduktBundle_arr|@count > 0}
+        {if isset($Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen) && $Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen === 'Y' && isset($Artikel->oProduktBundle_arr) && $Artikel->oProduktBundle_arr|@count > 0}
             <div class="bundle">
-                {include file="productdetails/bundle.tpl" ProductKey=$Artikel->kArtikel Products=$Artikel->oProduktBundle_arr ProduktBundle=$Artikel->oProduktBundlePrice ProductMain=$Artikel->oProduktBundleMain}
+                {include file='productdetails/bundle.tpl' ProductKey=$Artikel->kArtikel Products=$Artikel->oProduktBundle_arr ProduktBundle=$Artikel->oProduktBundlePrice ProductMain=$Artikel->oProduktBundleMain}
             </div>
         {/if}
 
         {if isset($Xselling->Standard) || isset($Xselling->Kauf) || isset($oAehnlicheArtikel_arr)}
             <div class="recommendations hidden-print">
-                {block name="productdetails-recommendations"}
+                {block name='productdetails-recommendations'}
                 {if isset($Xselling->Standard->XSellGruppen) && count($Xselling->Standard->XSellGruppen) > 0}
-                    {foreach name=Xsell_gruppen from=$Xselling->Standard->XSellGruppen item=Gruppe}
-                        {include file='snippets/product_slider.tpl' class='x-supplies' id='slider-xsell-group-'|cat:$smarty.foreach.Xsell_gruppen.iteration productlist=$Gruppe->Artikel title=$Gruppe->Name}
+                    {foreach $Xselling->Standard->XSellGruppen as $Gruppe}
+                        {include file='snippets/product_slider.tpl' class='x-supplies' id='slider-xsell-group-'|cat:$Gruppe@iteration productlist=$Gruppe->Artikel title=$Gruppe->Name}
                     {/foreach}
                 {/if}
 

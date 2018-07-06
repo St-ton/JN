@@ -45,14 +45,6 @@ function holeExportformatCron()
             \DB\ReturnType::SINGLE_OBJECT
         );
         $oExportformatCron->nAnzahlArtikel       = holeMaxExportArtikelAnzahl($oExportformatCron);
-        $oExportformatCron->nAnzahlArtikelYatego = Shop::Container()->getDB()->query(
-            "SELECT count(*) AS nAnzahl 
-                FROM tartikel 
-                JOIN tartikelattribut 
-                    ON tartikelattribut.kArtikel = tartikel.kArtikel 
-                WHERE tartikelattribut.cName = 'yategokat'",
-            \DB\ReturnType::SINGLE_OBJECT
-        );
     }
 
     return $oExportformatCron_arr;
@@ -133,7 +125,7 @@ function holeAlleExportformate()
             'kSprache',
             (int)$oExportformat->kSprache
         );
-        $oExportformat->Waehrung     = new Currency((int)$oExportformat->kSprache);
+        $oExportformat->Waehrung     = new Currency((int)$oExportformat->kWaehrung);
         $oExportformat->Kundengruppe = new Kundengruppe((int)$oExportformat->kKundengruppe);
     }
 

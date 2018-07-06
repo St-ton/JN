@@ -32,12 +32,12 @@ class Preise
     /**
      * @var float
      */
-    public $fVKNetto;
+    public $fVKNetto = 0.0;
 
     /**
      * @var float
      */
-    public $fVKBrutto;
+    public $fVKBrutto = 0.0;
 
     /**
      * @var float

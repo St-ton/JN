@@ -17,7 +17,7 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">{#exportformatQueue#}</h3>
                     </div>
-                    {if $oExportformatCron_arr|@count > 0 && $oExportformatCron_arr}
+                    {if $oExportformatCron_arr && $oExportformatCron_arr|@count > 0}
                         <div id="payment">
                             <div id="tabellenLivesuche" class="table-responsive">
                                 <table class="table">
@@ -42,7 +42,7 @@
                                             <td class="tcenter">{$oExportformatCron->dStart_de}</td>
                                             <td class="tcenter">{$oExportformatCron->cAlleXStdToDays}</td>
                                             <td class="tcenter">{if isset($oExportformatCron->oJobQueue->nLimitN) && $oExportformatCron->oJobQueue->nLimitN > 0}{$oExportformatCron->oJobQueue->nLimitN}{else}0{/if}
-                                                von {if $oExportformatCron->nSpecial == "1"}{$oExportformatCron->nAnzahlArtikelYatego->nAnzahl}{else}{$oExportformatCron->nAnzahlArtikel->nAnzahl}{/if}</td>
+                                                von {$oExportformatCron->nAnzahlArtikel->nAnzahl}</td>
                                             <td class="tcenter">{if $oExportformatCron->dLetzterStart_de === '00.00.0000 00:00'}-{else}{$oExportformatCron->dLetzterStart_de}{/if}</td>
                                             <td class="tcenter">{if $oExportformatCron->dNaechsterStart_de === null}sofort{else}{$oExportformatCron->dNaechsterStart_de}{/if}</td>
                                             <td class="tcenter">
@@ -101,7 +101,7 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">{#exportformatTodaysWork#}</h3>
                 </div>
-                {if $oExportformatQueueBearbeitet_arr|@count > 0}
+                {if $oExportformatQueueBearbeitet_arr && $oExportformatQueueBearbeitet_arr|@count > 0}
                     <div id="payment">
                         <div id="tabellenLivesuche" class="table-responsive">
                             <table class="table">

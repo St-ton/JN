@@ -3,26 +3,26 @@
  * @license http://jtl-url.de/jtlshoplicense
  *}
 {if isset($editRechnungsadresse) && $editRechnungsadresse === 1 && !empty($smarty.session.Kunde->kKunde)}
-    {assign var="unreg_form" value=0}
-    {assign var="unreg_step" value=$step}
+    {assign var='unreg_form' value=0}
+    {assign var='unreg_step' value=$step}
 {else}
-    {assign var="unreg_form" value=1}
-    {assign var="unreg_step" value="formular"}
+    {assign var='unreg_form' value=1}
+    {assign var='unreg_step' value='formular'}
 {/if}
 {if !empty($cFehler)}
     <div class="alert alert-danger">{$cFehler}</div>
 {/if}
 {if !empty($fehlendeAngaben) && !$hinweis}
-    <div class="alert alert-danger">{lang key="yourDataDesc" section="account data"}</div>
+    <div class="alert alert-danger">{lang key='yourDataDesc' section='account data'}</div>
 {/if}
 {if $hinweis}
     <div class="alert alert-info">{$hinweis}</div>
 {/if}
 <div class="row">
     <div class="col-xs-12">
-        {block name="checkout-proceed-as-guest"}
+        {block name='checkout-proceed-as-guest'}
             <div id="order-proceed-as-guest">
-                {block name="checkout-proceed-as-guest-body"}
+                {block name='checkout-proceed-as-guest-body'}
                     <form id="neukunde" method="post" action="{get_static_route id='bestellvorgang.php'}" class="evo-validate">
                         <div class="panel-wrap">
                             {$jtl_token}
@@ -32,7 +32,7 @@
                         <div class="text-right">
                             <input type="hidden" name="unreg_form" value="{$unreg_form}" />
                             <input type="hidden" name="editRechnungsadresse" value="{$editRechnungsadresse}" />
-                            <input type="submit" class="btn btn-primary btn-lg submit submit_once" value="{lang key="sendCustomerData" section="account data"}" />
+                            <input type="submit" class="btn btn-primary btn-lg submit submit_once" value="{lang key='sendCustomerData' section='account data'}" />
                         </div>
                     </form>
                 {/block}

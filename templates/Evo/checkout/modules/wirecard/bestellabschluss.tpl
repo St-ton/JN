@@ -5,11 +5,11 @@
    </div>
    {/strip}
    <div style="margin:10px 0;">
-      {lang key="payWithWirecard"}
+      {lang key='payWithWirecard'}
    </div>
    <div>
       <form method="post" action="{$url}">
-         {foreach from=$fields key="name" item="value"}
+         {foreach $fields as $value}
             <input type="hidden" name="{$name}" value="{$value}">
          {/foreach}
          <input type="submit" value="{$submitCaption}">

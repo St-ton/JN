@@ -8,18 +8,16 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 Shop::setPageType(PAGE_PASSWORTVERGESSEN);
 
-$AktuelleSeite                   = 'PASSWORT VERGESSEN';
-Shop::$AktuelleSeite             = 'PASSWORT VERGESSEN';
-$Einstellungen                   = Shop::getSettings([CONF_GLOBAL, CONF_RSS]);
-$linkHelper                      = Shop::Container()->getLinkService();
-$kLink                           = $linkHelper->getSpecialPageLinkKey(LINKTYP_PASSWORD_VERGESSEN);
-$AktuelleKategorie               = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
-$AufgeklappteKategorien          = new KategorieListe();
-$startKat                        = new Kategorie();
-$startKat->kKategorie            = 0;
-$step                            = 'formular';
-$hinweis                         = '';
-$cFehler                         = '';
+$AktuelleSeite          = 'PASSWORT VERGESSEN';
+Shop::$AktuelleSeite    = 'PASSWORT VERGESSEN';
+$Einstellungen          = Shop::getSettings([CONF_GLOBAL, CONF_RSS]);
+$linkHelper             = Shop::Container()->getLinkService();
+$kLink                  = $linkHelper->getSpecialPageLinkKey(LINKTYP_PASSWORD_VERGESSEN);
+$AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
+$AufgeklappteKategorien = new KategorieListe();
+$step                   = 'formular';
+$hinweis                = '';
+$cFehler                = '';
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 //loginbenutzer?
 if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwort_vergessen'] === 1) {

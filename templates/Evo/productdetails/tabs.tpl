@@ -81,14 +81,14 @@
             {if $useDownloads}
                 <li role="presentation" {if $setActiveClass.downloads} class="active"{/if}>
                     <a href="#tab-downloads" aria-controls="tab-downloads" role="tab" data-toggle="tab">
-                        {lang section="productDownloads" key="downloadSection"}
+                        {lang section='productDownloads' key='downloadSection'}
                     </a>
                 </li>
             {/if}
             {if !empty($separatedTabs)}
-                {foreach from=$separatedTabs item=separatedTab name="separatedTabsHeader"}
+                {foreach $separatedTabs as $separatedTab}
                     <li role="presentation"
-                        {if $setActiveClass.separatedTabs && $smarty.foreach.separatedTabsHeader.first}
+                        {if $setActiveClass.separatedTabs && $separatedTab@first}
                             class="active"
                         {/if}>
                         <a href="#tab-{$separatedTab.id}" aria-controls="tab-{$separatedTab.id}" role="tab" data-toggle="tab">
@@ -100,21 +100,21 @@
             {if $useVotes}
                 <li role="presentation" {if $setActiveClass.votes} class="active"{/if}>
                     <a href="#tab-votes" aria-controls="tab-votes" role="tab" data-toggle="tab">
-                        {lang key="Votes" section="global"}
+                        {lang key='Votes' section='global'}
                     </a>
                 </li>
             {/if}
             {if $useQuestionOnItem}
                 <li role="presentation" {if $setActiveClass.questionOnItem} class="active" {/if}>
                     <a href="#tab-questionOnItem" aria-controls="tab-questionOnItem" role="tab" data-toggle="tab">
-                        {lang key="productQuestion" section="productDetails"}
+                        {lang key='productQuestion' section='productDetails'}
                     </a>
                 </li>
             {/if}
             {if $usePriceFlow}
                 <li role="presentation" {if $setActiveClass.priceFlow} class="active"{/if}>
                     <a href="#tab-priceFlow" aria-controls="tab-priceFlow" role="tab" data-toggle="tab">
-                        {lang key="priceFlow" section="productDetails"}
+                        {lang key='priceFlow' section='productDetails'}
                     </a>
                 </li>
             {/if}
@@ -122,15 +122,15 @@
                 <li role="presentation"
                     {if $setActiveClass.availabilityNotification} class="active"{/if}>
                     <a href="#tab-availabilityNotification" aria-controls="tab-availabilityNotification" role="tab" data-toggle="tab">
-                        {lang key="notifyMeWhenProductAvailableAgain" section="global"}
+                        {lang key='notifyMeWhenProductAvailableAgain' section='global'}
                     </a>
                 </li>
             {/if}
             {if $useMediaGroup}
-                {foreach name="mediendateigruppen" from=$Artikel->cMedienTyp_arr item=cMedienTyp}
+                {foreach $Artikel->cMedienTyp_arr as $cMedienTyp}
                     {$cMedienTypId = $cMedienTyp|regex_replace:"/[\'\"\/ ]/":""}
                     <li role="presentation"
-                        {if $setActiveClass.mediaGroup && $smarty.foreach.mediendateigruppen.first} class="active"{/if}>
+                        {if $setActiveClass.mediaGroup && $cMedienTyp@first} class="active"{/if}>
                         <a href="#tab-{$cMedienTypId}" aria-controls="tab-{$cMedienTypId}" role="tab" data-toggle="tab">
                             {$cMedienTyp}
                         </a>
@@ -140,7 +140,7 @@
             {if $useTags}
                 <li role="presentation" {if $setActiveClass.tags} class="active"{/if}>
                     <a href="#tab-tags" aria-controls="tab-tags" role="tab" data-toggle="tab">
-                        {lang key="productTags" section="productDetails"}
+                        {lang key='productTags' section='productDetails'}
                     </a>
                 </li>
             {/if}
@@ -160,15 +160,15 @@
                     <div class="panel-body" id="tab-description">
             {/if}
             <div class="tab-content-wrapper">
-                {block name="tab-description"}
-                    {block name="tab-description-content"}
+                {block name='tab-description'}
+                    {block name='tab-description-content'}
                         <div class="desc">
                             {$Artikel->cBeschreibung}
                             {if $useDescriptionWithMediaGroup}
                                 {if $Artikel->cBeschreibung|strlen > 0}
                                     <hr>
                                 {/if}
-                                {foreach name="mediendateigruppen" from=$Artikel->cMedienTyp_arr item=cMedienTyp}
+                                {foreach $Artikel->cMedienTyp_arr as $cMedienTyp}
                                     <div class="media">
                                         {include file='productdetails/mediafile.tpl'}
                                     </div>
@@ -176,11 +176,11 @@
                             {/if}
                         </div>
                     {/block}
-                    {block name="tab-description-attributes"}
+                    {block name='tab-description-attributes'}
                         {if (!empty($Artikel->cBeschreibung) || $useDescriptionWithMediaGroup) && $showAttributesTable}
                             <hr>
                         {/if}
-                        {include file="productdetails/attributes.tpl" tplscope="details"
+                        {include file='productdetails/attributes.tpl' tplscope='details'
                             showProductWeight=$showProductWeight showShippingWeight=$showShippingWeight
                             dimension=$dimension showAttributesTable=$showAttributesTable}
                     {/block}
@@ -200,11 +200,11 @@
             {else}
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{lang section="productDownloads" key="downloadSection"}</h3>
+                        <h3 class="panel-title">{lang section='productDownloads' key='downloadSection'}</h3>
                     </div>
                     <div class="panel-body" id="tab-downloads">
             {/if}
-            {include file="productdetails/download.tpl"}
+            {include file='productdetails/download.tpl'}
             {if $tabanzeige}
                 </div>
             {else}
@@ -213,10 +213,10 @@
             {/if}
         {/if}
         {if !empty($separatedTabs)}
-            {foreach from=$separatedTabs item=separatedTab name=separatedTabsBody}
+            {foreach $separatedTabs as $separatedTab}
                 {if $tabanzeige}
                     <div role="tabpanel" class="tab-pane fade
-                        {if $setActiveClass.separatedTabs && $smarty.foreach.separatedTabsBody.first} in active{/if}"
+                        {if $setActiveClass.separatedTabs && $separatedTab@first} in active{/if}"
                         id="tab-{$separatedTab.id}">
                 {else}
                     <div class="panel panel-default">
@@ -240,11 +240,11 @@
             {else}
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{lang section="productDownloads" key="downloadSection"}</h3>
+                        <h3 class="panel-title">{lang section='productDownloads' key='downloadSection'}</h3>
                     </div>
                     <div class="panel-body" id="tab-votes">
             {/if}
-            {include file="productdetails/reviews.tpl" stars=$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt}
+            {include file='productdetails/reviews.tpl' stars=$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt}
             {if $tabanzeige}
                 </div>
             {else}
@@ -259,11 +259,11 @@
             {else}
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{lang key="productQuestion" section="productDetails"}</h3>
+                        <h3 class="panel-title">{lang key='productQuestion' section='productDetails'}</h3>
                     </div>
                     <div class="panel-body" id="tab-questionOnItem">
             {/if}
-            {include file="productdetails/question_on_item.tpl" position="tab"}
+            {include file='productdetails/question_on_item.tpl' position="tab"}
             {if $tabanzeige}
                 </div>
             {else}
@@ -278,11 +278,11 @@
             {else}
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{lang key="priceFlow" section="productDetails"}</h3>
+                        <h3 class="panel-title">{lang key='priceFlow' section='productDetails'}</h3>
                     </div>
                     <div class="panel-body" id="tab-priceFlow">
             {/if}
-            {include file="productdetails/price_history.tpl"}
+            {include file='productdetails/price_history.tpl'}
             {if $tabanzeige}
                 </div>
             {else}
@@ -297,11 +297,11 @@
             {else}
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{lang key="notifyMeWhenProductAvailableAgain" section="global"}</h3>
+                        <h3 class="panel-title">{lang key='notifyMeWhenProductAvailableAgain' section='global'}</h3>
                     </div>
                     <div class="panel-body" id="tab-availabilityNotification">
             {/if}
-            {include file="productdetails/availability_notification_form.tpl" position="tab" tplscope="artikeldetails"}
+            {include file='productdetails/availability_notification_form.tpl' position='tab' tplscope='artikeldetails'}
             {if $tabanzeige}
                 </div>
             {else}
@@ -310,11 +310,11 @@
             {/if}
         {/if}
         {if $useMediaGroup}
-            {foreach name="mediendateigruppen" from=$Artikel->cMedienTyp_arr item=cMedienTyp}
+            {foreach $Artikel->cMedienTyp_arr as $cMedienTyp}
                 {$cMedienTypId = $cMedienTyp|regex_replace:"/[\'\"\/ ]/":""}
                 {if $tabanzeige}
-                    <div role="tabpanel" class="tab-pane fade
-                        {if $setActiveClass.mediaGroup && $smarty.foreach.mediendateigruppen.first} in active{/if}"
+                    <div role="tabpanel"
+                        class="tab-pane fade{if $setActiveClass.mediaGroup && $cMedienTyp@first} in active{/if}"
                         id="tab-{$cMedienTypId}">
                 {else}
                     <div class="panel panel-default">
@@ -323,7 +323,7 @@
                         </div>
                         <div class="panel-body" id="tab-{$cMedienTypId}">
                 {/if}
-                {include file="productdetails/mediafile.tpl"}
+                {include file='productdetails/mediafile.tpl'}
                 {if $tabanzeige}
                     </div>
                 {else}
@@ -338,11 +338,11 @@
             {else}
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{lang key="productTags" section="productDetails"}</h3>
+                        <h3 class="panel-title">{lang key='productTags' section='productDetails'}</h3>
                     </div>
                     <div class="panel-body" id="tab-tags">
             {/if}
-            {include file="productdetails/tags.tpl"}
+            {include file='productdetails/tags.tpl'}
             {if $tabanzeige}
                 </div>
             {else}

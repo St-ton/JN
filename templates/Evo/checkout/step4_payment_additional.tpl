@@ -11,6 +11,6 @@
         <input type="hidden" name="Zahlungsart" value="{$Zahlungsart->kZahlungsart}" />
     </div>
     <div class="text-right">
-        <input type="submit" value="{lang key="continueOrder" section="account data"}" class="submit btn btn-lg submit-once btn-primary" />
+        <input type="submit" value="{lang key='continueOrder' section='account data'}" class="submit btn btn-lg submit-once btn-primary" />
     </div>
 </form>

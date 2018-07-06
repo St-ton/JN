@@ -3,11 +3,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  *}
 
-{block name="header"}
+{block name='header'}
     {include file='layout/header.tpl'}
 {/block}
 
-{block name="content"}
+{block name='content'}
     {if $step === 'news_uebersicht'}
         {include file='blog/overview.tpl'}
     {elseif $step === 'news_monatsuebersicht'}
@@ -23,6 +23,6 @@
     {/if}
 {/block}
 
-{block name="footer"}
+{block name='footer'}
     {include file='layout/footer.tpl'}
 {/block}

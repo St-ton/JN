@@ -125,7 +125,6 @@ ifndef('PFAD_KONFIGURATOR_KLEIN', PFAD_BILDER . 'konfigurator/klein/');
 ifndef('PFAD_LOGFILES', PFAD_ROOT . 'jtllogs/');
 ifndef('PFAD_EXPORT', 'export/');
 ifndef('PFAD_EXPORT_BACKUP', PFAD_EXPORT . 'backup/');
-ifndef('PFAD_EXPORT_YATEGO', PFAD_EXPORT . 'yatego/');
 ifndef('PFAD_UPDATE', 'update/');
 ifndef('PFAD_WIDGETS', 'widgets/');
 ifndef('PFAD_PORTLETS', 'portlets/');

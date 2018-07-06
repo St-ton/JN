@@ -4,7 +4,7 @@
     {lang key='topReviews' assign='moreTitle'}
     {include file='snippets/product_slider.tpl'
         id='boxslider-toprated'
-        productlist=$oBox->oArtikel_arr
+        productlist=$oBox->getProducts()
         title=$slidertitle
         tplscope='box'
         moreLink=$moreLink

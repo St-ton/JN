@@ -27,10 +27,10 @@ class ItemTag extends BaseTag
     {
         parent::__construct($productFilter);
         $this->setUrlParam('tf')
-             ->setVisibility($this->getConfig()['navigationsfilter']['allgemein_tagfilter_benutzen'])
-             ->setType($this->getConfig()['navigationsfilter']['tag_filter_type'] === 'O'
-                 ? Type::OR()
-                 : Type::AND());
+             ->setVisibility($this->getConfig('navigationsfilter')['allgemein_tagfilter_benutzen'])
+             ->setType($this->getConfig('navigationsfilter')['tag_filter_type'] === 'O'
+                 ? Type::OR
+                 : Type::AND);
     }
 
     /**

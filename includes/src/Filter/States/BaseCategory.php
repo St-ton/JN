@@ -24,7 +24,7 @@ class BaseCategory extends AbstractFilter
     /**
      * @var array
      */
-    private static $mapping = [
+    public static $mapping = [
         'kKategorie' => 'ValueCompat',
         'cName'      => 'Name'
     ];

@@ -2,7 +2,11 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  *}
-<h1>{lang key="umfrage" section="umfrage"}</h1>
+{if !empty($oUmfrage->getName())}
+    <h1>{$oUmfrage->getName()}</h1>
+{else}
+    <h1>{lang key='umfrage' section='umfrage'}</h1>
+{/if}
 
 {if !empty($hinweis)}
     <div class="alert alert-info">{$hinweis}</div>
@@ -10,268 +14,187 @@
 {if !empty($fehler)}
     <div class="alert alert-danger">{$fehler}</div>
 {/if}
-
 {include file='snippets/opc_mount_point.tpl' id='opc_poll_content_prepend'}
 
-{if $oUmfrage->oUmfrageFrage_arr|@count > 0 && $oUmfrage->oUmfrageFrage_arr}
-    <form method="post" action="{get_static_route id='umfrage.php'}" class="evo-validate">
+{if $oUmfrage->getQuestionCount() > 0}
+    <form method="post" action="{if empty($oUmfrage->getURL())}{get_static_route id='umfrage.php'}{else}{$ShopURL}/{$oUmfrage->getURL()}{/if}" class="evo-validate">
         {$jtl_token}
-        <input name="u" type="hidden" value="{$oUmfrage->kUmfrage}" />
-        {foreach name=umfragefrage from=$oUmfrage->oUmfrageFrage_arr item=oUmfrageFrage}
-            {assign var=kUmfrageFrage value=$oUmfrageFrage->kUmfrageFrage}
-            {include file='snippets/opc_mount_point.tpl' id='opc_poll_question_'|cat:$oUmfrageFrage->kUmfrageFrage}
-            <input name="kUmfrageFrage[]" type="hidden" value="{$oUmfrageFrage->kUmfrageFrage}">
-            <div {if $oUmfrageFrage->nNotwendig == 1}class="required"{/if}>
+        <input name="u" type="hidden" value="{$oUmfrage->getID()}" />
+        {foreach $oUmfrage->getQuestions() as $question}
+            {assign var=questionID value=$question->getID()}
+            <input name="kUmfrageFrage[]" type="hidden" value="{$questionID}">
+            <div {if $question->isRequired()}class="required"{/if}>
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{$oUmfrageFrage->cName} {if $oUmfrageFrage->nNotwendig == 1} *{/if}</h3>
+                        <h3 class="panel-title">{$question->getName()} {if $question->isRequired()} *{/if}</h3>
                     </div>
-                    <div class="panel-body">
-                        {if $oUmfrageFrage->cBeschreibung}
-                            <p>{$oUmfrageFrage->cBeschreibung}</p>
+                    <div class="panel-body form-group">
+                        {if !empty($question->getDescription())}
+                            <p>{$question->getDescription()}</p>
                             <hr>
                         {/if}
 
-                        {if $oUmfrageFrage->cTyp === 'select_single'}
-                            <tr>
-                            <td valign="top" align="left">
-                            <select name="{$oUmfrageFrage->kUmfrageFrage}[]" class="form-control"{if $oUmfrageFrage->nNotwendig == 1} required{/if}>
-                                <option value="">{lang key="pleaseChoose"}</option>
-                        {/if}
-
-                        {if $oUmfrageFrage->cTyp === 'select_multi'}
-                            <tr>
-                            <td valign="top" align="left">
-                            <select name="{$oUmfrageFrage->kUmfrageFrage}[]" multiple="multiple" class="form-control"{if $oUmfrageFrage->nNotwendig == 1} required{/if}>
-                        {/if}
-
-                        {if $oUmfrageFrage->cTyp === 'text_klein'}
-                            <tr>
-                                <td valign="top" align="left">
-                                    <input name="{$oUmfrageFrage->kUmfrageFrage}[]"
-                                           type="text"
-                                           value="{if !empty($nSessionFragenWerte_arr[$kUmfrageFrage]->cUmfrageFrageAntwort_arr[0])}{$nSessionFragenWerte_arr[$kUmfrageFrage]->cUmfrageFrageAntwort_arr[0]}{/if}"
-                                           class="form-control"{if $oUmfrageFrage->nNotwendig == 1} required{/if}>
-                                </td>
-                            </tr>
+                        {if $question->getType() === \Survey\QuestionType::SELECT_SINGLE}
+                            <select name="{$questionID}[]" class="form-control"{if $question->isRequired()} required{/if}>
+                                <option value="">{lang key='pleaseChoose'}</option>
+                        {elseif $question->getType() === \Survey\QuestionType::SELECT_MULTI}
+                            <select name="{$questionID}[]" multiple="multiple" class="form-control"{if $question->isRequired()} required{/if}>
+                        {elseif $question->getType() === \Survey\QuestionType::TEXT_SMALL}
+                            <input name="{$questionID}[]"
+                                   type="text"
+                                   value="{if $nSessionFragenWerte_arr[$questionID]->getAnswer(0) !== null}{$nSessionFragenWerte_arr[$questionID]->getAnswer(0)}{/if}"
+                                   class="form-control"{if $question->isRequired()} required{/if}>
+                        {elseif $question->getType() === \Survey\QuestionType::TEXT_BIG}
+                            {strip}
+                                <textarea name="{$questionID}[]" rows="7" cols="60" class="form-control"{if $question->isRequired()} required{/if}>
+                                    {if $nSessionFragenWerte_arr[$questionID]->getAnswer(0) !== null}{$nSessionFragenWerte_arr[$questionID]->getAnswer(0)}{/if}
+                                </textarea>
+                            {/strip}
+                        {elseif $question->getType() === \Survey\QuestionType::MATRIX_SINGLE}
+                            <table class="table table-bordered">
+                            <thead>
+                                <td>&nbsp;</td>
+                                {foreach $question->getMatrixOptions() as $matrixOption}
+                                    <td>{$matrixOption->getName()}</td>
+                                {/foreach}
+                            </thead>
+                        {elseif $question->getType() === \Survey\QuestionType::MATRIX_MULTI}
+                            <table class="table table-bordered">
                             <tr>
                                 <td>&nbsp;</td>
+                                {foreach $question->getMatrixOptions() as $matrixOption}
+                                    <td>{$matrixOption->getName()}</td>
+                                {/foreach}
                             </tr>
                         {/if}
+                        {foreach $question->getAnswerOptions() as $answer}
+                            {math equation='x-y' x=$answer@iteration y=1 assign='i'}
 
-                        {if $oUmfrageFrage->cTyp === 'text_gross'}
-                            <tr>
-                                <td valign="top" align="left">
-                                    <textarea name="{$oUmfrageFrage->kUmfrageFrage}[]" rows="7" cols="60" class="form-control"{if $oUmfrageFrage->nNotwendig == 1} required{/if}>
-                                        {if !empty($nSessionFragenWerte_arr[$kUmfrageFrage]->cUmfrageFrageAntwort_arr[0])}{$nSessionFragenWerte_arr[$kUmfrageFrage]->cUmfrageFrageAntwort_arr[0]}{/if}
-                                    </textarea>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>&nbsp;</td>
-                            </tr>
-                        {/if}
-
-                    {if $oUmfrageFrage->cTyp === 'matrix_single'}
-                        <tr>
-                        <td>
-                        <table class="table table-bordered">
-                        <tr>
-                            <td>&nbsp;</td>
-                            {foreach name=umfragematrixoption from=$oUmfrageFrage->oUmfrageMatrixOption_arr item=oUmfrageMatrixOption}
-                                <td>{$oUmfrageMatrixOption->cName}</td>
-                            {/foreach}
-                        </tr>
-                    {/if}
-
-                    {if $oUmfrageFrage->cTyp === 'matrix_multi'}
-                        <tr>
-                        <td>
-                        <table class="table table-bordered">
-                        <tr>
-                            <td>&nbsp;</td>
-                            {foreach name=umfragematrixoption from=$oUmfrageFrage->oUmfrageMatrixOption_arr item=oUmfrageMatrixOption}
-                                <td>{$oUmfrageMatrixOption->cName}</td>
-                            {/foreach}
-                        </tr>
-                    {/if}
-
-                    {foreach name=umfragefrageantwort from=$oUmfrageFrage->oUmfrageFrageAntwort_arr item=oUmfrageFrageAntwort}
-                        {math equation='x-y' x=$smarty.foreach.umfragefrageantwort.iteration y=1 assign='i'}
-
-                        {if $oUmfrageFrage->cTyp === 'multiple_single'}
-                            <tr>
-                                <td valign="top" align="left">
+                            {if $question->getType() === \Survey\QuestionType::MULTI_SINGLE}
+                                <div class="radio">
                                     <label>
-                                        <input name="{$oUmfrageFrage->kUmfrageFrage}[]"
+                                        <input name="{$questionID}[]"
                                                type="radio"
-                                               value="{$oUmfrageFrageAntwort->kUmfrageFrageAntwort}" {if !empty($nSessionFragenWerte_arr[$kUmfrageFrage]->cUmfrageFrageAntwort_arr)}{foreach name="cumfragefrageantwort" from=$nSessionFragenWerte_arr[$kUmfrageFrage]->cUmfrageFrageAntwort_arr item=cUmfrageFrageAntwort}{if $cUmfrageFrageAntwort == $oUmfrageFrageAntwort->kUmfrageFrageAntwort} checked="checked"{/if}{/foreach}{/if} {if $oUmfrageFrage->nNotwendig == 1} required{/if}/>
-                                        {$oUmfrageFrageAntwort->cName}
+                                               value="{$answer->getID()}" {if !empty($nSessionFragenWerte_arr[$questionID]->getAnswer())}{foreach $nSessionFragenWerte_arr[$questionID]->getAnswer() as $cUmfrageFrageAntwort}{if $cUmfrageFrageAntwort == $answer->getID()} checked="checked"{/if}{/foreach}{/if} {if $question->isRequired()} required{/if}/>
+                                        {$answer->getName()}
                                     </label>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                            </tr>
-                        {/if}
+                                </div>
+                            {/if}
 
-                        {if $oUmfrageFrage->cTyp === 'multiple_multi'}
-                            <div class="checkbox">
-                                <label>
-                                    <input name="{$oUmfrageFrage->kUmfrageFrage}[]"
-                                           type="checkbox"
-                                           value="{$oUmfrageFrageAntwort->kUmfrageFrageAntwort}"
-                                           {if !empty($nSessionFragenWerte_arr[$kUmfrageFrage]->cUmfrageFrageAntwort_arr)}{foreach name=cumfragefrageantwort from=$nSessionFragenWerte_arr[$kUmfrageFrage]->cUmfrageFrageAntwort_arr item=cUmfrageFrageAntwort}{if $cUmfrageFrageAntwort == $oUmfrageFrageAntwort->kUmfrageFrageAntwort} checked="checked"{/if}{/foreach}{/if}/> {$oUmfrageFrageAntwort->cName}
-                                </label>
-                            </div>
-                        {/if}
+                            {if $question->getType() === \Survey\QuestionType::MULTI}
+                                <div class="checkbox">
+                                    <label>
+                                        <input name="{$questionID}[]"
+                                               type="checkbox"
+                                               value="{$answer->getID()}"
+                                               {if $nSessionFragenWerte_arr[$questionID]->isActive($answer->getID())} checked="checked"{/if}/> {$answer->getName()}
+                                    </label>
+                                </div>
+                            {/if}
 
-                        {if $oUmfrageFrage->cTyp === 'select_single'}
-                            <option value="{$oUmfrageFrageAntwort->kUmfrageFrageAntwort}"
-                                    {if !empty($nSessionFragenWerte_arr[$kUmfrageFrage]->cUmfrageFrageAntwort_arr)}{foreach name=cumfragefrageantwort from=$nSessionFragenWerte_arr[$kUmfrageFrage]->cUmfrageFrageAntwort_arr item=cUmfrageFrageAntwort}{if $cUmfrageFrageAntwort == $oUmfrageFrageAntwort->kUmfrageFrageAntwort} selected{/if}{/foreach}{/if} > {$oUmfrageFrageAntwort->cName}
-                            </option>
-                        {/if}
+                            {if $question->getType() === \Survey\QuestionType::SELECT_SINGLE}
+                                <option value="{$answer->getID()}"
+                                    {if $nSessionFragenWerte_arr[$questionID]->isActive($answer->getID())} selected{/if}> {$answer->getName()}
+                                </option>
+                            {/if}
 
-                        {if $oUmfrageFrage->cTyp === 'select_multi'}
-                            <option value="{$oUmfrageFrageAntwort->kUmfrageFrageAntwort}"
-                                    {if !empty($nSessionFragenWerte_arr[$kUmfrageFrage]->cUmfrageFrageAntwort_arr)}{foreach name=cumfragefrageantwort from=$nSessionFragenWerte_arr[$kUmfrageFrage]->cUmfrageFrageAntwort_arr item=cUmfrageFrageAntwort}{if $cUmfrageFrageAntwort == $oUmfrageFrageAntwort->kUmfrageFrageAntwort} selected{/if}{/foreach}{/if} > {$oUmfrageFrageAntwort->cName}
-                            </option>
-                        {/if}
+                            {if $question->getType() === \Survey\QuestionType::SELECT_MULTI}
+                                <option value="{$answer->getID()}"
+                                    {if !empty($nSessionFragenWerte_arr[$questionID]->getAnswer())}{foreach $nSessionFragenWerte_arr[$questionID]->getAnswer() as $cUmfrageFrageAntwort}{if $cUmfrageFrageAntwort == $answer->getID()} selected{/if}{/foreach}{/if}> {$answer->getName()}
+                                </option>
+                            {/if}
 
-                        {if $oUmfrageFrage->cTyp === 'matrix_single'}
-                            <tr>
-                                <td>{$oUmfrageFrageAntwort->cName}</td>
-                                {foreach name=umfragematrixoption from=$oUmfrageFrage->oUmfrageMatrixOption_arr item=oUmfrageMatrixOption}
-                                    {math equation='x-y' x=$smarty.foreach.umfragefrageantwort.iteration y=1 assign='i'}
-                                    <td>
-                                        <div class="radio">
-                                            <label><input name="{$oUmfrageFrage->kUmfrageFrage}_{$oUmfrageFrageAntwort->kUmfrageFrageAntwort}"
+                            {if $question->getType() === \Survey\QuestionType::MATRIX_SINGLE}
+                                <tr>
+                                    <td>{$answer->getName()}</td>
+                                    {foreach $question->getMatrixOptions() as $oUmfrageMatrixOption}
+                                        {math equation='x-y' x=$oUmfrageMatrixOption@iteration y=1 assign='i'}
+                                        <td>
+                                            <div class="radio">
+                                                <label>
+                                                    <input name="{$questionID}_{$answer->getID()}"
                                                           type="radio"
-                                                          value="{$oUmfrageFrageAntwort->kUmfrageFrageAntwort}_{$oUmfrageMatrixOption->kUmfrageMatrixOption}"
-                                                          {if !empty($nSessionFragenWerte_arr[$kUmfrageFrage]->cUmfrageFrageAntwort_arr)}{foreach name=cumfragefrageantwort from=$nSessionFragenWerte_arr[$kUmfrageFrage]->cUmfrageFrageAntwort_arr item=oUmfrageFrageAntwortTMP}{if $oUmfrageFrageAntwortTMP->kUmfrageFrageAntwort == $oUmfrageFrageAntwort->kUmfrageFrageAntwort && $oUmfrageMatrixOption->kUmfrageMatrixOption == $oUmfrageFrageAntwortTMP->kUmfrageMatrixOption} checked{/if}{/foreach}{/if} {if $oUmfrageFrage->nNotwendig == 1} required{/if}/>
-                                            </label>
-                                        </div>
-                                    </td>
-                                {/foreach}
-                            </tr>
-                        {/if}
-
-                        {if $oUmfrageFrage->cTyp === 'matrix_multi'}
-                            <tr>
-                                <td>{$oUmfrageFrageAntwort->cName}</td>
-                                {foreach name=umfragematrixoption from=$oUmfrageFrage->oUmfrageMatrixOption_arr item=oUmfrageMatrixOption}
-                                    {math equation='x-y' x=$smarty.foreach.umfragefrageantwort.iteration y=1 assign='i'}
-                                    <td>
-                                        <input name="{$oUmfrageFrage->kUmfrageFrage}[]"
-                                               type="checkbox"
-                                               value="{$oUmfrageFrageAntwort->kUmfrageFrageAntwort}_{$oUmfrageMatrixOption->kUmfrageMatrixOption}"
-                                               {if !empty($nSessionFragenWerte_arr[$kUmfrageFrage]->cUmfrageFrageAntwort_arr)}{foreach name=cumfragefrageantwort from=$nSessionFragenWerte_arr[$kUmfrageFrage]->cUmfrageFrageAntwort_arr item=oUmfrageFrageAntwortTMP}{if $oUmfrageFrageAntwortTMP->kUmfrageFrageAntwort == $oUmfrageFrageAntwort->kUmfrageFrageAntwort && $oUmfrageMatrixOption->kUmfrageMatrixOption == $oUmfrageFrageAntwortTMP->kUmfrageMatrixOption} checked{/if}{/foreach}{/if}/>
-                                    </td>
-                                {/foreach}
-                            </tr>
-                        {/if}
-
-                    {/foreach}
-                    {if $oUmfrageFrage->cTyp === 'select_single'}
-                        </select>
-                        </td>
-                        </tr>
-                        <tr>
-                            <td>&nbsp;</td>
-                        </tr>
-                    {/if}
-
-                    {if $oUmfrageFrage->cTyp === 'select_multi'}
-                        </select>
-                        </td>
-                        </tr>
-                        <tr>
-                            <td>&nbsp;</td>
-                        </tr>
-                    {/if}
-
-                        {if $oUmfrageFrage->cTyp === 'matrix_single'}
-                                                 </table>
-                                              </td>
-                                           <tr>
-                                              <td>&nbsp;</td>
-                                           </tr>
-                                           </tr>
-                                        {/if}
-
-                        {if $oUmfrageFrage->cTyp === 'matrix_multi'}
-                                                 </table>
-                                              </td>
-                                           <tr>
-                                              <td>&nbsp;</td>
-                                           </tr>
-                                           </tr>
-                                        {/if}
-
-                        {if $oUmfrageFrage->nFreifeld == 1}
-                            {if $oUmfrageFrage->cTyp === 'multiple_single'}
-                                <tr>
-                                    <td valign="top" align="left">
-                                        <div class="radio">
-                                            <label><input name="{$oUmfrageFrage->kUmfrageFrage}[]" type="radio" value="-1"
-                                                          {if !empty($nSessionFragenWerte_arr[$kUmfrageFrage]->cUmfrageFrageAntwort_arr)}{foreach name=cumfragefrageantwort from=$nSessionFragenWerte_arr[$kUmfrageFrage]->cUmfrageFrageAntwort_arr item=cUmfrageFrageAntwort}{if $cUmfrageFrageAntwort === '-1'} checked{/if}{/foreach}{/if} {if $oUmfrageFrage->nNotwendig == 1} required{/if}/>
-                                                <input
-                                                    name="{$oUmfrageFrage->kUmfrageFrage}[]"
-                                                    type="text" class="form-control"
-                                                    value="{if !empty($nSessionFragenWerte_arr[$kUmfrageFrage]->cUmfrageFrageAntwort_arr[1])}{$nSessionFragenWerte_arr[$kUmfrageFrage]->cUmfrageFrageAntwort_arr[1]}{/if}"/>
-                                            </label>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td></td>
-                                </tr>
-                            {elseif $oUmfrageFrage->cTyp === 'multiple_multi'}
-                                <tr>
-                                    <td valign="top" align="left">
-                                        <input name="{$oUmfrageFrage->kUmfrageFrage}[]"
-                                               type="checkbox"
-                                               value="-1"
-                                               {if !empty($nSessionFragenWerte_arr[$kUmfrageFrage]->cUmfrageFrageAntwort_arr)}{foreach name=cumfragefrageantwort from=$nSessionFragenWerte_arr[$kUmfrageFrage]->cUmfrageFrageAntwort_arr item=cUmfrageFrageAntwort}{if $cUmfrageFrageAntwort === '-1'} checked{/if}{/foreach}{/if}/>
-                                        <input name="{$oUmfrageFrage->kUmfrageFrage}[]" type="text" class="form-control" value="{if !empty($nSessionFragenWerte_arr[$kUmfrageFrage]->cUmfrageFrageAntwort_arr[1])}{$nSessionFragenWerte_arr[$kUmfrageFrage]->cUmfrageFrageAntwort_arr[1]}{/if}" />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td></td>
-                                </tr>
-                            {else}
-                                <tr>
-                                    <td valign="top" align="left">
-                                        <input name="{$oUmfrageFrage->kUmfrageFrage}[]"
-                                               type="text" class="form-control"
-                                               value="{if !empty($nSessionFragenWerte_arr[$kUmfrageFrage]->cUmfrageFrageAntwort_arr[1])}{$nSessionFragenWerte_arr[$kUmfrageFrage]->cUmfrageFrageAntwort_arr[1]}{/if}"
-                                               {if !empty($nSessionFragenWerte_arr[$kUmfrageFrage]->cUmfrageFrageAntwort_arr)}{foreach name=cumfragefrageantwort from=$nSessionFragenWerte_arr[$kUmfrageFrage]->cUmfrageFrageAntwort_arr item=cUmfrageFrageAntwort}{if $cUmfrageFrageAntwort === '-1'} checked{/if}{/foreach}{/if} />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td></td>
+                                                          value="{$answer->getID()}_{$oUmfrageMatrixOption->getID()}"
+                                                          {if $nSessionFragenWerte_arr[$questionID]->isActive($answer->getID(), $oUmfrageMatrixOption->getID())} checked{/if}{if $question->isRequired()} required{/if}/>
+                                                </label>
+                                            </div>
+                                        </td>
+                                    {/foreach}
                                 </tr>
                             {/if}
+
+                            {if $question->getType() === \Survey\QuestionType::MATRIX_MULTI}
+                                <tr>
+                                    <td>{$answer->getName()}</td>
+                                    {foreach $question->getMatrixOptions() as $oUmfrageMatrixOption}
+                                        {math equation='x-y' x=$oUmfrageMatrixOption@iteration y=1 assign='i'}
+                                        <td>
+                                            <input name="{$questionID}[]"
+                                                   type="checkbox"
+                                                   value="{$answer->getID()}_{$oUmfrageMatrixOption->getID()}"
+                                                   {if !empty($nSessionFragenWerte_arr[$questionID]->getAnswer())}{foreach $nSessionFragenWerte_arr[$questionID]->getAnswer() as $answerTMP}{if $answerTMP->kUmfrageFrageAntwort == $answer->getID() && $oUmfrageMatrixOption->getID() == $answerTMP->kUmfrageMatrixOption} checked{/if}{/foreach}{/if}/>
+                                        </td>
+                                    {/foreach}
+                                </tr>
+                            {/if}
+
+                        {/foreach}
+                        {if $question->getType() === \Survey\QuestionType::SELECT_SINGLE}
+                            </select>
+                        {elseif $question->getType() === \Survey\QuestionType::SELECT_MULTI}
+                            </select>
+                        {elseif $question->getType() === \Survey\QuestionType::MATRIX_SINGLE}
+                             </table>
+                        {elseif $question->getType() === \Survey\QuestionType::MATRIX_MULTI}
+                             </table>
                         {/if}
-                    </div>{* /panel-body *}
-                </div>{* /panel *}
-            </div>{* /well *}
-        {/foreach}
+
+                        {if $question->hasFreeField()}
+                            {if $question->getType() === \Survey\QuestionType::MULTI_SINGLE}
+                                <div class="radio">
+                                    <label>
+                                        <input name="{$questionID}[]"
+                                               type="radio"
+                                               value="-1"
+                                              {if !empty($nSessionFragenWerte_arr[$questionID]->getAnswer())}{foreach $nSessionFragenWerte_arr[$questionID]->getAnswer() as $cUmfrageFrageAntwort}{if $cUmfrageFrageAntwort == -1} checked{/if}{/foreach}{/if} {if $question->isRequired()} required{/if}/>
+                                        <input
+                                            name="{$questionID}[]"
+                                            type="text" class="form-control"
+                                            value="{if $nSessionFragenWerte_arr[$questionID]->getAnswer(1) !== null}{$nSessionFragenWerte_arr[$questionID]->getAnswer(1)}{/if}"/>
+                                    </label>
+                                </div>
+                            {elseif $question->getType() === \Survey\QuestionType::MULTI}
+                                <input name="{$questionID}[]"
+                                       type="checkbox"
+                                       value="-1"
+                                       {if !empty($nSessionFragenWerte_arr[$questionID]->getAnswer())}{foreach $nSessionFragenWerte_arr[$questionID]->getAnswer() as $cUmfrageFrageAntwort}{if $cUmfrageFrageAntwort == -1} checked{/if}{/foreach}{/if}/>
+                                <input name="{$questionID}[]" type="text" class="form-control" value="{if $nSessionFragenWerte_arr[$questionID]->getAnswer(1) !== null}{$nSessionFragenWerte_arr[$questionID]->getAnswer(1)}{/if}" />
+                            {else}
+                                <input name="{$questionID}[]"
+                                       type="text" class="form-control"
+                                       value="{if $nSessionFragenWerte_arr[$questionID]->getAnswer(1) !== null}{$nSessionFragenWerte_arr[$questionID]->getAnswer(1)}{/if}"
+                                       {if !empty($nSessionFragenWerte_arr[$questionID]->getAnswer())}{foreach $nSessionFragenWerte_arr[$questionID]->getAnswer() as $cUmfrageFrageAntwort}{if $cUmfrageFrageAntwort == -1} checked{/if}{/foreach}{/if} />
+                            {/if}
+                        {/if}
+                        </div>{* /panel-body *}
+                    </div>{* /panel *}
+                </div>{* /well *}
+            {/foreach}
         <div class="row">
             <div class="col-xs-4">
                 {if $nAktuelleSeite <= $nAnzahlSeiten && $nAktuelleSeite != 1}
-                    <button class="btn btn-default pull-left" name="back" type="submit" value="back">
-                        <span>&laquo; {lang key="umfrageBack" section="umfrage"}</span>
+                    <button class="btn btn-default pull-left" name="back" type="submit" value="back" formnovalidate>
+                        <span>&laquo; {lang key='umfrageBack' section='umfrage'}</span>
                     </button>
                 {/if}
             </div>
             <div class="col-xs-4 text-center">
-                <b>{lang key="umfrageQPage" section="umfrage"} {$nAktuelleSeite}</b> {lang key="from" section="product rating"} {$nAnzahlSeiten}
+                <b>{lang key='umfrageQPage' section='umfrage'} {$nAktuelleSeite}</b> {lang key='from' section='product rating'} {$nAnzahlSeiten}
             </div>
             <div class="col-xs-4">
                 {if $nAktuelleSeite > 0 && $nAktuelleSeite < $nAnzahlSeiten}
                     <button class="btn btn-default pull-right" name="next" type="submit" value="next">
-                        <span>{lang key="umfrageNext" section="umfrage"}</span>
+                        <span>{lang key='umfrageNext' section='umfrage'}</span>
                     </button>
                 {/if}
             </div>
@@ -279,7 +202,7 @@
 
         <input name="s" type="hidden" value="{$nAktuelleSeite}" />
         {if $nAktuelleSeite == $nAnzahlSeiten}
-            <input name="end" type="submit" value="{lang key="umfrageSubmit" section="umfrage"}" class="btn btn-primary submit top17" />
+            <input name="end" type="submit" value="{lang key='umfrageSubmit' section='umfrage'}" class="btn btn-primary submit top17" />
         {/if}
     </form>
 {/if}

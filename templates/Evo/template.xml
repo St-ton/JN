@@ -335,6 +335,7 @@
             <File Path="js/wow.min.js"/>
             <File Path="js/parallax.min.js"/>
             <File Path="js/Chart.js" DependsOnSettingGroup="CONF_PREISVERLAUF" DependsOnSetting="preisverlauf.preisverlauf_anzeigen" DependsOnSettingValue="Y"/>
+            <File Path="js/jqcloud.js"/>
         </JS>
     </Minify>
     <Boxes>

@@ -226,8 +226,6 @@ if (isset($_SESSION['Zahlungsart'])
 }
 $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
-$startKat               = new Kategorie();
-$startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 WarenkorbHelper::addVariationPictures($cart);
 Shop::Smarty()->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(

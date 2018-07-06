@@ -126,8 +126,8 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && FormHe
         case 'resort':
             $nPage     = (int)$_REQUEST['page'];
             $ePosition = $_REQUEST['position'];
-            $box_arr   = $_REQUEST['box'] ?? null;
-            $sort_arr  = $_REQUEST['sort'] ?? null;
+            $box_arr   = $_REQUEST['box'] ?? [];
+            $sort_arr  = $_REQUEST['sort'] ?? [];
             $aktiv_arr = $_REQUEST['aktiv'] ?? [];
             $boxCount  = count($box_arr);
             $bValue    = $_REQUEST['box_show'] ?? false;

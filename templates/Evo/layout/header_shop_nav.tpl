@@ -1,6 +1,6 @@
 {strip}
 <ul class="header-shop-nav nav navbar-nav force-float horizontal pull-right">
-    {block name="navbar-productsearch"}
+    {block name='navbar-productsearch'}
         <li id="search">
             <form action="index.php" method="get">
                 <div class="input-group">
@@ -15,7 +15,7 @@
         </li>
     {/block}{* /navbar-productsearch *}
 
-    {block name="navbar-top-user"}
+    {block name='navbar-top-user'}
     {*  ACCOUNT *}
     <li class="dropdown hidden-xs">
         {if empty($smarty.session.Kunde->kKunde)}
@@ -41,13 +41,13 @@
                             <div class="form-group">
                                 <input type="hidden" name="login" value="1"/>
                                 {if !empty($oRedirect->cURL)}
-                                    {foreach name=parameter from=$oRedirect->oParameter_arr item=oParameter}
+                                    {foreach $oRedirect->oParameter_arr as $oParameter}
                                         <input type="hidden" name="{$oParameter->Name}" value="{$oParameter->Wert}" />
                                     {/foreach}
                                     <input type="hidden" name="r" value="{$oRedirect->nRedirect} "/>
                                     <input type="hidden" name="cURL" value="{$oRedirect->cURL}" />
                                 {/if}
-                                <button type="submit" id="submit-btn" class="btn btn-primary btn-block">{lang key="login" section="global"}</button>
+                                <button type="submit" id="submit-btn" class="btn btn-primary btn-block">{lang key='login' section='global'}</button>
                             </div>
                         </fieldset>
                     </form>

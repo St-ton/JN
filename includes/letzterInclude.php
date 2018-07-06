@@ -124,7 +124,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('AktuelleKategorie', $AktuelleKategorie)
        ->assign('showLoginCaptcha', isset($_SESSION['showLoginCaptcha']) && $_SESSION['showLoginCaptcha'])
        ->assign('PFAD_SLIDER', $shopURL . '/' . PFAD_BILDER_SLIDER)
-       ->assign('Suchergebnisse', $oSuchergebnisse ?? new \Filter\ProductFilterSearchResults())
+       ->assign('Suchergebnisse', $oSuchergebnisse ?? new \Filter\SearchResults())
        ->assign('opc', Shop::Container()->getOPC())
        ->assign('opcPageService', Shop::Container()->getOPCPageService());
 

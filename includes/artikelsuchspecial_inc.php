@@ -15,15 +15,15 @@ function gibVaterSQL()
 }
 
 /**
- * @param int $nLimit
- * @param int $kKundengruppe
+ * @param int $limit
+ * @param int $customerGroupID
  * @return array
  * @deprecated since 5.0.0
  */
-function gibTopAngebote(int $nLimit = 20, int $kKundengruppe = 0)
+function gibTopAngebote(int $limit = 20, int $customerGroupID = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return SearchSpecialHelper::getTopOffers($nLimit, $kKundengruppe);
+    return SearchSpecialHelper::getTopOffers($limit, $customerGroupID);
 }
 
 /**
@@ -39,37 +39,37 @@ function randomizeAndLimit(array $arr, int $limit = 1)
 }
 
 /**
- * @param int $nLimit
- * @param int $kKundengruppe
+ * @param int $limit
+ * @param int $customerGroupID
  * @return array
  * @deprecated since 5.0.0
  */
-function gibBestseller(int $nLimit = 20, int $kKundengruppe = 0)
+function gibBestseller(int $limit = 20, int $customerGroupID = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return SearchSpecialHelper::getBestsellers($nLimit, $kKundengruppe);
+    return SearchSpecialHelper::getBestsellers($limit, $customerGroupID);
 }
 
 /**
- * @param int $nLimit
- * @param int $kKundengruppe
+ * @param int $limit
+ * @param int $customerGroupID
  * @return array
  * @deprecated since 5.0.0
  */
-function gibSonderangebote(int $nLimit = 20, int $kKundengruppe = 0)
+function gibSonderangebote(int $limit = 20, int $customerGroupID = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return SearchSpecialHelper::getSpecialOffers($nLimit, $kKundengruppe);
+    return SearchSpecialHelper::getSpecialOffers($limit, $customerGroupID);
 }
 
 /**
- * @param int $nLimit
- * @param int $kKundengruppe
+ * @param int $limit
+ * @param int $customerGroupID
  * @return array
  * @deprecated since 5.0.0
  */
-function gibNeuImSortiment(int $nLimit, int $kKundengruppe = 0)
+function gibNeuImSortiment(int $limit, int $customerGroupID = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return SearchSpecialHelper::getNewProducts($nLimit, $kKundengruppe);
+    return SearchSpecialHelper::getNewProducts($limit, $customerGroupID);
 }

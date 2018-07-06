@@ -1,9 +1,9 @@
 <div id="gallery" class="hidden">
-    {block name="product-image"}
+    {block name='product-image'}
     {foreach $Artikel->Bilder as $image}
         {strip}
-            <a href="{$image->cURLGross}" title="{$image->cAltAttribut|escape:"html"}">
-                <img src="{$image->cURLNormal}" alt="{$image->cAltAttribut|escape:"html"}" data-list='{$image->galleryJSON|replace:"'":"&apos;"}' />
+            <a href="{$image->cURLGross}" title="{$image->cAltAttribut|escape:'html'}">
+                <img src="{$image->cURLNormal}" alt="{$image->cAltAttribut|escape:'html'}" data-list='{$image->galleryJSON|replace:"'":"&apos;"}' />
             </a>
         {/strip}
     {/foreach}

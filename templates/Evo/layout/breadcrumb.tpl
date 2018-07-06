@@ -5,8 +5,8 @@
         <div class="row">
             <div class="col-xs-12">
                 <ul id="breadcrumb" class="breadcrumb" itemprop="breadcrumb" itemscope itemtype="http://schema.org/BreadcrumbList">
-                    {foreach name=navi from=$Brotnavi item=oItem}
-                        {if $smarty.foreach.navi.first}
+                    {foreach $Brotnavi as $oItem}
+                        {if $oItem@first}
                             {block name='breadcrumb-first-item'}
                                 <li class="breadcrumb-item first" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
                                     <a itemprop="item" href="{$oItem->getURLFull()}" title="{$oItem->getName()|escape:'html'}">
@@ -14,10 +14,10 @@
                                         <span itemprop="name" class="hidden">{$oItem->getName()|escape:'html'}</span>
                                     </a>
                                     <meta itemprop="url" content="{$oItem->getURLFull()}" />
-                                    <meta itemprop="position" content="{$smarty.foreach.navi.iteration}" />
+                                    <meta itemprop="position" content="{$oItem@iteration}" />
                                 </li>
                             {/block}
-                        {elseif $smarty.foreach.navi.last}
+                        {elseif $oItem@last}
                             {block name='breadcrumb-last-item'}
                                 <li class="breadcrumb-item last" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
                                     <span itemprop="name">
@@ -31,7 +31,7 @@
                                             {$Suchergebnisse->getSearchTermWrite()}
                                         {/if}
                                     </span>
-                                    <meta itemprop="position" content="{$smarty.foreach.navi.iteration}" />
+                                    <meta itemprop="position" content="{$oItem@iteration}" />
                                 </li>
                             {/block}
                         {else}
@@ -41,7 +41,7 @@
                                         <span itemprop="name">{$oItem->getName()}</span>
                                     </a>
                                     <meta itemprop="url" content="{$oItem->getURLFull()}" />
-                                    <meta itemprop="position" content="{$smarty.foreach.navi.iteration}" />
+                                    <meta itemprop="position" content="{$oItem@iteration}" />
                                 </li>
                             {/block}
                         {/if}

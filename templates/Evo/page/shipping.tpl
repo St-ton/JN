@@ -18,6 +18,6 @@
             {include file='snippets/shipping_calculator.tpl' checkout=false}
         </form>
     {else}
-        {lang key="estimateShippingCostsNote" section="global"}
+        {lang key='estimateShippingCostsNote' section='global'}
     {/if}
 {/if}

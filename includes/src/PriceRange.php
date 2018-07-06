@@ -279,7 +279,9 @@ class PriceRange
      */
     public function rangeWidth()
     {
-        return 100 / $this->minNettoPrice * $this->maxNettoPrice - 100;
+        return (int)$this->minNettoPrice !== 0
+            ? 100 / $this->minNettoPrice * $this->maxNettoPrice - 100
+            : 0;
     }
 
     /**

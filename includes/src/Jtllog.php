@@ -230,7 +230,7 @@ class Jtllog
      * @param int    $nLevel
      * @return int
      */
-    public static function getLogCount(string $cFilter, int $nLevel = 0): int
+    public static function getLogCount(string $cFilter = '', int $nLevel = 0): int
     {
         $cSQLWhere = '';
         if ($nLevel > 0) {
@@ -244,7 +244,6 @@ class Jtllog
                 $cSQLWhere .= " AND cLog LIKE '%" . $cFilter . "%'";
             }
         }
-
         $oLog = Shop::Container()->getDB()->query(
             "SELECT count(*) AS nAnzahl 
                 FROM tjtllog" .

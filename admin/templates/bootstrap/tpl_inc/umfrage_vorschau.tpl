@@ -62,7 +62,7 @@
                         <strong>{$oUmfrageFrage->cTypMapped}: </strong>
                         {$oUmfrageFrage->cBeschreibung}
 
-                        {if $oUmfrageFrage->cTyp != "text_statisch" && $oUmfrageFrage->cTyp != "text_statisch_seitenwechsel" && $oUmfrageFrage->cTyp != "text_klein" && $oUmfrageFrage->cTyp != "text_gross"}
+                        {if $oUmfrageFrage->cTyp !== \Survey\QuestionType::TEXT_STATIC && $oUmfrageFrage->cTyp !== \Survey\QuestionType::TEXT_PAGE_CHANGE && $oUmfrageFrage->cTyp !== \Survey\QuestionType::TEXT_SMALL && $oUmfrageFrage->cTyp !== \Survey\QuestionType::TEXT_BIG}
                             <hr/>
                             <div class="row">
                                 <div class="col-md-{if $oUmfrageFrage->oUmfrageMatrixOption_arr|@count > 0}4{else}8{/if} col-md-offset-1">

@@ -64,6 +64,7 @@ class Queue
         foreach ($queueData as $entry) {
             $this->queueEntries[] = new QueueEntry($entry);
         }
+        $this->logger->debug('Loaded ' . count($this->queueEntries) . ' existing jobs.');
 
         return $this->queueEntries;
     }

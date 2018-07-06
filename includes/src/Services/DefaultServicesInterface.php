@@ -64,27 +64,27 @@ interface DefaultServicesInterface extends ContainerInterface
     /**
      * @return \OPC\Service
      */
-    public function getOPC();
+    public function getOPC(): \OPC\Service;
 
     /**
      * @return \OPC\PageService
      */
-    public function getOPCPageService();
+    public function getOPCPageService(): \OPC\PageService;
 
     /**
      * @return \OPC\DB
      */
-    public function getOPCDB();
+    public function getOPCDB(): \OPC\DB;
 
     /**
      * @return \OPC\PageDB
      */
-    public function getOPCPageDB();
+    public function getOPCPageDB(): \OPC\PageDB;
 
     /**
      * @return \OPC\Locker
      */
-    public function getOPCLocker();
+    public function getOPCLocker(): \OPC\Locker;
 
     /**
      * @return LinkServiceInterface

@@ -45,7 +45,6 @@ class JobFactory
     public function create(QueueEntry $data): JobInterface
     {
         $mapper = new JobTypeToJob();
-        // @todo: catch Exception
         $class = $mapper->map($data->cJobArt);
         $job   = new $class($this->db, $this->logger);
         /** @var JobInterface $job */

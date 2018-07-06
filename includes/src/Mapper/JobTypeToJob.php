@@ -33,7 +33,13 @@ class JobTypeToJob
             case Type::NEWSLETTER:
                 return Newsletter::class;
             default:
-                throw new \InvalidArgumentException('Invalid job type: ' . $type);
+                $mapping = null;
+                \Shop::Event()->fire('mapCronJobType', ['type' => $type, 'mapping' => &$mapping]);
+                if ($mapping === null) {
+                    throw new \InvalidArgumentException('Invalid job type: ' . $type);
+                }
+
+                return $mapping;
         }
     }
 }

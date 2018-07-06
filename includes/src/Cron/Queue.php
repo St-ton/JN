@@ -39,14 +39,14 @@ class Queue
     /**
      * Queue constructor.
      * @param DbInterface     $db
-     * @param JobFactory      $factory
      * @param LoggerInterface $logger
+     * @param JobFactory      $factory
      */
-    public function __construct(DbInterface $db, JobFactory $factory, LoggerInterface $logger)
+    public function __construct(DbInterface $db, LoggerInterface $logger, JobFactory $factory)
     {
         $this->db      = $db;
-        $this->factory = $factory;
         $this->logger  = $logger;
+        $this->factory = $factory;
     }
 
     /**
@@ -93,6 +93,7 @@ class Queue
     {
         foreach ($this->queueEntries as $i => $queueEntry) {
             if ($i >= JOBQUEUE_LIMIT_JOBS) {
+                $this->logger->debug('Job limit reached after ' . JOBQUEUE_LIMIT_JOBS . ' jobs.');
                 break;
             }
             $job                   = $this->factory->create($queueEntry);

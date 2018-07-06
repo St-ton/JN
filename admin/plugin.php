@@ -16,15 +16,17 @@ $step               = 'plugin_uebersicht';
 $customPluginTabs   = [];
 $invalidateCache    = false;
 $pluginTemplateFile = 'plugin.tpl';
+$bError             = false;
+$updated            = false;
 if ($step === 'plugin_uebersicht') {
     $kPlugin = RequestHelper::verifyGPCDataInt('kPlugin');
     if ($kPlugin > 0) {
         // Ein Settinglink wurde submitted
         if (RequestHelper::verifyGPCDataInt('Setting') === 1) {
+            $updated = true;
             if (!FormHelper::validateToken()) {
                 $bError = true;
             } else {
-                $bError                     = false;
                 $oPluginEinstellungConf_arr = isset($_POST['kPluginAdminMenu'])
                     ? Shop::Container()->getDB()->queryPrepared(
                         "SELECT *
@@ -93,13 +95,20 @@ if ($step === 'plugin_uebersicht') {
             }
         }
         $smarty->assign('oPlugin', $oPlugin);
-        $i = 0;
-        $j = 0;
+        if ($updated === true) {
+            executeHook(HOOK_PLUGIN_SAVE_OPTIONS, [
+                'hasError' => &$bError,
+                'msg'      => &$cHinweis,
+                'error'    => $cFehler
+            ]);
+        }
+        $i            = 0;
+        $j            = 0;
         $fAddAsDocTab = false;
         $szReadmeFile = PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/README.md';
         if ('' !== $oPlugin->cTextReadmePath) {
             $szReadmeContent = StringHandler::convertUTF8(file_get_contents($szReadmeFile));
-            $fMarkDown = false;
+            $fMarkDown       = false;
             if (class_exists('Parsedown')) {
                 $fMarkDown       = true;
                 $oParseDown      = new Parsedown();
@@ -108,7 +117,7 @@ if ($step === 'plugin_uebersicht') {
             $smarty->assign('fMarkDown', $fMarkDown)
                    ->assign('szReadmeContent', $szReadmeContent);
 
-            $oUnnamedTab = new stdClass();
+            $oUnnamedTab                     = new stdClass();
             $oUnnamedTab->kPluginAdminMenu   = count($oPlugin->oPluginAdminMenu_arr) + 1;
             $oUnnamedTab->kPlugin            = $oPlugin->kPlugin;
             $oUnnamedTab->cName              = 'Dokumentation';
@@ -122,7 +131,7 @@ if ($step === 'plugin_uebersicht') {
         $fAddAsLicenseTab = false;
         if ('' !== $oPlugin->cTextLicensePath) {
             $szLicenseContent = StringHandler::convertUTF8(file_get_contents($oPlugin->cTextLicensePath));
-            $fMarkDown = false;
+            $fMarkDown        = false;
             if (class_exists('Parsedown')) {
                 $fMarkDown        = true;
                 $oParseDown       = new Parsedown();
@@ -131,7 +140,7 @@ if ($step === 'plugin_uebersicht') {
             $smarty->assign('fMarkDown', $fMarkDown)
                    ->assign('szLicenseContent', $szLicenseContent);
 
-            $oUnnamedTab = new stdClass();
+            $oUnnamedTab                     = new stdClass();
             $oUnnamedTab->kPluginAdminMenu   = count($oPlugin->oPluginAdminMenu_arr) + 1;
             $oUnnamedTab->kPlugin            = $oPlugin->kPlugin;
             $oUnnamedTab->cName              = 'Lizenzvereinbarung';

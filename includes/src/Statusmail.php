@@ -71,6 +71,9 @@ class Statusmail
      */
     private function createCronJob(int $id, int $nAlleXStunden): bool
     {
+        $d = new DateTime();
+        $d->modify('+1 days');
+        $d->setTime(0, 0, 0);
         $oCron = new Cron(
             0,
             $id,
@@ -79,8 +82,8 @@ class Statusmail
             'statusemail',
             'tstatusemail',
             'id',
-            date('Y-m-d', time() + 3600 * 24) . ' 00:00:00',
-            '00:00:00',
+            $d->format('Y-m-d H:i:s'),
+            $d->format('H:i:s'),
             '0000-00-00 00:00:00'
         );
 

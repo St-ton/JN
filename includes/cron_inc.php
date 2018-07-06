@@ -25,7 +25,7 @@ if (PHP_SAPI === 'cli') {
     $handler->setFormatter(new LineFormatter("[%datetime%] %message% %context%\n", null, false, true));
     $logger  = new Logger('cron', [$handler]);
 } else {
-    $logger = Shop::Container()->getBackendLogService();
+    $logger = Shop::Container()->getLogService();
 }
 
 if (flock($lockfile, LOCK_EX | LOCK_NB) === false) {
@@ -36,7 +36,7 @@ if (flock($lockfile, LOCK_EX | LOCK_NB) === false) {
 $db = Shop::Container()->getDB();
 
 $factory = new \Cron\JobFactory($db, $logger);
-$queue   = new \Cron\Queue($db, $factory, $logger);
+$queue   = new \Cron\Queue($db, $logger, $factory);
 $checker = new \Cron\Checker($db, $logger);
 
 $unqueuedJobs = $checker->check();

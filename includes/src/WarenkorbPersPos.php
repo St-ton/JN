@@ -120,7 +120,7 @@ class WarenkorbPersPos
             if (isset($oEigenschaftwerte->kEigenschaft)) {
                 $oWarenkorbPersPosEigenschaft = new WarenkorbPersPosEigenschaft(
                     $oEigenschaftwerte->kEigenschaft,
-                    $oEigenschaftwerte->kEigenschaftWert ?? null,
+                    $oEigenschaftwerte->kEigenschaftWert ?? $oEigenschaftwerte->cFreifeldWert ?? null,
                     $oEigenschaftwerte->cFreifeldWert ?? null,
                     $oEigenschaftwerte->cEigenschaftName ?? null,
                     $oEigenschaftwerte->cEigenschaftWertName ?? null,

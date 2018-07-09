@@ -381,16 +381,20 @@ class ArtikelHelper
             if (is_array($oProperties) && count($oProperties) > 0) {
                 foreach ($oProperties as $i => $oEigenschaftwerte) {
                     $oEigenschaftWert                   = new stdClass();
-                    $oEigenschaftWert->kEigenschaftWert = $oEigenschaftwerte->kEigenschaftWert;
-                    $oEigenschaftWert->kEigenschaft     = $oEigenschaftwerte->kEigenschaft;
-                    $oEigenschaftWert->cName            = $oEigenschaftwerte->cEigenschaftWertName;
+                    $oEigenschaftWert->kEigenschaftWert = $oEigenschaftwerte->kEigenschaftWert ?? null;
+                    $oEigenschaftWert->kEigenschaft     = $oEigenschaftwerte->kEigenschaft ?? null;
+                    $oEigenschaftWert->cName            = $oEigenschaftwerte->cEigenschaftWertName ?? null;
+                    if ($oEigenschaftwerte->cTyp === 'PFLICHT-FREIFELD' || $oEigenschaftwerte->cTyp === 'FREIFELD') {
+                        $oEigenschaftWert->cFreifeldWert = $oEigenschaftwerte->cFreifeldWert;
+                        $oEigenschaftWert->kEigenschaftWert  = 0;
+                    }
 
                     $variations[$i]               = new stdClass();
                     $variations[$i]->kEigenschaft = $oEigenschaftwerte->kEigenschaft;
                     $variations[$i]->kArtikel     = $kArtikel;
                     $variations[$i]->cWaehlbar    = 'Y';
                     $variations[$i]->cTyp         = $oEigenschaftwerte->cTyp;
-                    $variations[$i]->cName        = $oEigenschaftwerte->cEigenschaftName;
+                    $variations[$i]->cName        = $oEigenschaftwerte->cEigenschaftName ?? null;
                     $variations[$i]->Werte        = [];
                     $variations[$i]->Werte[]      = $oEigenschaftWert;
                 }

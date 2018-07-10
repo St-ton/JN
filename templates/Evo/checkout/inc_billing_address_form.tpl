@@ -548,7 +548,7 @@
                     <input
                     type="text"
                     name="geburtstag"
-                    value="{if isset($cPost_var['geburtstag'])}{$cPost_var['geburtstag']}{elseif isset($Kunde->dGeburtstag) && $Kunde->dGeburtstag !== '00.00.0000'}{$Kunde->dGeburtstag|date_format:"%d.%m.%Y"}{/if}"
+                    value="{if isset($cPost_var['geburtstag'])}{$cPost_var['geburtstag']}{elseif !empty($Kunde->dGeburtstag_formatted)}{$Kunde->dGeburtstag_formatted}{/if}"
                     id="birthday"
                     class="birthday form-control"
                     placeholder="{lang key='birthdayFormat' section='account data'}"

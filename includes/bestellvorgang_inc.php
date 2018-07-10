@@ -548,10 +548,7 @@ function gibStepUnregistriertBestellen()
             ORDER BY nSort",
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    if (isset($Kunde->dGeburtstag) && preg_match('/^\d{4}\-\d{2}\-(\d{2})$/', $Kunde->dGeburtstag)) {
-        list($jahr, $monat, $tag) = explode('-', $Kunde->dGeburtstag);
-        $Kunde->dGeburtstag       = $tag . '.' . $monat . '.' . $jahr;
-    }
+
     Shop::Smarty()->assign('untertitel', Shop::Lang()->get('fillUnregForm', 'checkout'))
         ->assign('herkunfte', $herkunfte)
         ->assign('Kunde', $Kunde ?? null)
@@ -2557,9 +2554,6 @@ function getKundendaten($post, $kundenaccount, $htmlentities = 1)
         }
     }
 
-    if (preg_match('/^\d{2}\.\d{2}\.(\d{4})$/', $customer->dGeburtstag)) {
-        $customer->dGeburtstag = DateTime::createFromFormat('d.m.Y', $customer->dGeburtstag)->format('Y-m-d');
-    }
     $customer->angezeigtesLand = Sprache::getCountryCodeByCountryName($customer->cLand);
     if (!empty($customer->cBundesland)) {
         $oISO = Staat::getRegionByIso($customer->cBundesland, $customer->cLand);
@@ -3235,10 +3229,6 @@ function setzeSmartyRechnungsadresse($nUnreg, $nCheckout = 0)
         $_SESSION['Kunde']->cKundenattribut_arr = getKundenattribute($_POST);
         Shop::Smarty()->assign('cKundenattribut_arr', $_SESSION['Kunde']->cKundenattribut_arr);
     }
-    if (preg_match('/^\d{4}\-\d{2}\-(\d{2})$/', $_SESSION['Kunde'])) {
-        list($jahr, $monat, $tag)       = explode('-', $_SESSION['Kunde']);
-        $_SESSION['Kunde']->dGeburtstag = $tag . '.' . $monat . '.' . $jahr;
-    }
     Shop::Smarty()->assign('warning_passwortlaenge', lang_passwortlaenge($conf['kunden']['kundenregistrierung_passwortlaenge']));
     if ((int)$nCheckout === 1) {
         Shop::Smarty()->assign('checkout', 1);
@@ -3261,10 +3251,7 @@ function setzeFehlerSmartyRechnungsadresse($cFehlendeEingaben_arr, $nUnreg = 0, 
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     $oKunde_tmp = getKundendaten($cPost_arr, 0);
-    if (preg_match('/^\d{4}\-\d{2}\-(\d{2})$/', $oKunde_tmp->dGeburtstag)) {
-        list($jahr, $monat, $tag) = explode('-', $oKunde_tmp->dGeburtstag);
-        $oKunde_tmp->dGeburtstag  = $tag . '.' . $monat . '.' . $jahr;
-    }
+
     Shop::Smarty()->assign('untertitel', Shop::Lang()->get('fillUnregForm', 'checkout'))
         ->assign('herkunfte', $herkunfte)
         ->assign('Kunde', $oKunde_tmp)

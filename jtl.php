@@ -749,10 +749,7 @@ if ($customerID > 0) {
         } else {
             $cKundenattribut_arr = $knd->cKundenattribut_arr;
         }
-        if (preg_match('/^\d{4}\-\d{2}\-(\d{2})$/', $knd->dGeburtstag)) {
-            list($jahr, $monat, $tag) = explode('-', $knd->dGeburtstag);
-            $knd->dGeburtstag         = $tag . '.' . $monat . '.' . $jahr;
-        }
+
         Shop::Smarty()->assign('Kunde', $knd)
             ->assign('cKundenattribut_arr', $cKundenattribut_arr)
             ->assign('laender', VersandartHelper::getPossibleShippingCountries($_SESSION['Kunde']->kKundengruppe));

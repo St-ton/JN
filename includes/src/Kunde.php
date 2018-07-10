@@ -373,11 +373,12 @@ class Kunde
         if (!$oUser) {
             return false;
         }
-        $oUser->kKunde         = (int)$oUser->kKunde;
-        $oUser->kKundengruppe  = (int)$oUser->kKundengruppe;
-        $oUser->kSprache       = (int)$oUser->kSprache;
-        $oUser->nLoginversuche = (int)$oUser->nLoginversuche;
-        $oUser->nRegistriert   = (int)$oUser->nRegistriert;
+        $oUser->kKunde                = (int)$oUser->kKunde;
+        $oUser->kKundengruppe         = (int)$oUser->kKundengruppe;
+        $oUser->kSprache              = (int)$oUser->kSprache;
+        $oUser->nLoginversuche        = (int)$oUser->nLoginversuche;
+        $oUser->nRegistriert          = (int)$oUser->nRegistriert;
+        $oUser->dGeburtstag_formatted = $oUser->dGeburtstag_formatted !== '00.00.0000' ? $oUser->dGeburtstag_formatted : '';
 
         if (!$passwordService->verify($cPasswort, $oUser->cPasswort)) {
             $tries = ++$oUser->nLoginversuche;
@@ -437,7 +438,8 @@ class Kunde
                 $this->nLoginversuche = (int)$this->nLoginversuche;
                 $this->nRegistriert   = (int)$this->nRegistriert;
 
-                $this->dGeburtstag_formatted = date_format(date_create($this->dGeburtstag), 'd.m.Y');
+                $this->dGeburtstag_formatted = $this->dGeburtstag !== '00.00.0000' ? date_format(date_create($this->dGeburtstag), 'd.m.Y') : '';
+
                 $this->cGuthabenLocalized    = $this->gibGuthabenLocalized();
                 $cDatum_arr                  = DateHelper::getDateParts($this->dErstellt);
                 $this->dErstellt_DE          = $cDatum_arr['cTag'] . '.' .

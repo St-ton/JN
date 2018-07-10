@@ -3,11 +3,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-//unset($_SESSION);
-//echo '<pre>';
-//var_dump($_SESSION);
-//echo '</pre>';
-//die();
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'registrieren_inc.php';

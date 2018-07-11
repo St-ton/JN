@@ -247,7 +247,7 @@ class Vergleichsliste
             && is_array($compareList->oArtikel_arr)
             && count($compareList->oArtikel_arr) > 0
         ) {
-            $nVergleiche = Shop::Container()->getDB()->queryPrepared(
+            $oVergleiche = Shop::Container()->getDB()->queryPrepared(
                 'SELECT count(kVergleichsliste) AS nVergleiche
                     FROM tvergleichsliste
                     WHERE cIP = :ip
@@ -256,7 +256,7 @@ class Vergleichsliste
                 \DB\ReturnType::SINGLE_OBJECT
             );
 
-            if ($nVergleiche->nVergleiche < 3) {
+            if ($oVergleiche->nVergleiche < 3) {
                 $compareListTable        = new stdClass();
                 $compareListTable->cIP   = RequestHelper::getIP();
                 $compareListTable->dDate = date('Y-m-d H:i:s');

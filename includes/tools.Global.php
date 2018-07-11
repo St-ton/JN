@@ -168,7 +168,11 @@ function writeLog($logfile, $entry, $level)
         if (!$logfile) {
             return false;
         }
-        fwrite($logfile, "\n[" . date('m.d.y H:i:s') . "] [" . RequestHelper::getIP() . "]\n" . $entry);
+        fwrite($logfile,
+            "\n[" . date('m.d.y H:i:s') . "] " .
+            "[" . (new IpAnonymizer(RequestHelper::getIP()))->anonymize() . "]\n" .
+            $entry
+        );
         fclose($logfile);
     }
 

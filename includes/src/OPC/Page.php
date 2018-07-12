@@ -25,12 +25,12 @@ class Page implements \JsonSerializable
     /**
      * @var null|string
      */
-    protected $publishFrom;
+    protected $publishFrom = null;
 
     /**
      * @var null|string
      */
-    protected $publishTo;
+    protected $publishTo = null;
 
     /**
      * @var string
@@ -50,7 +50,7 @@ class Page implements \JsonSerializable
     /**
      * @var string
      */
-    protected $lastModified = '0000-00-00 00:00:00';
+    protected $lastModified = null;
 
     /**
      * @var string
@@ -60,7 +60,7 @@ class Page implements \JsonSerializable
     /**
      * @var string
      */
-    protected $lockedAt = '0000-00-00 00:00:00';
+    protected $lockedAt = null;
 
     /**
      * @var bool
@@ -214,20 +214,20 @@ class Page implements \JsonSerializable
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getLastModified(): string
+    public function getLastModified()
     {
         return $this->lastModified;
     }
 
     /**
-     * @param string $lastModified
+     * @param null|string $lastModified
      * @return $this
      */
-    public function setLastModified(string $lastModified): self
+    public function setLastModified($lastModified): self
     {
-        $this->lastModified = $lastModified;
+        $this->lastModified = $lastModified === '0000-00-00 00:00:00' ? null : $lastModified;
 
         return $this;
     }
@@ -252,20 +252,20 @@ class Page implements \JsonSerializable
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getLockedAt(): string
+    public function getLockedAt()
     {
         return $this->lockedAt;
     }
 
     /**
-     * @param string $lockedAt
+     * @param null|string $lockedAt
      * @return $this
      */
-    public function setLockedAt(string $lockedAt): self
+    public function setLockedAt($lockedAt): self
     {
-        $this->lockedAt = $lockedAt;
+        $this->lockedAt = $lockedAt === '0000-00-00 00:00:00' ? null : $lockedAt;
 
         return $this;
     }

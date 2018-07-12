@@ -99,7 +99,8 @@ if ($step === 'plugin_uebersicht') {
             executeHook(HOOK_PLUGIN_SAVE_OPTIONS, [
                 'hasError' => &$bError,
                 'msg'      => &$cHinweis,
-                'error'    => $cFehler
+                'error'    => $cFehler,
+                'options'  => $oPlugin->oPluginEinstellungAssoc_arr
             ]);
         }
         $i            = 0;

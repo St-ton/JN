@@ -1815,5 +1815,6 @@ define('HOOK_CAPTCHA_VALIDATE', 272);
  * @param string msg
  * @param string msg
  * @param string error
+ * @param array  options
  */
 define('HOOK_PLUGIN_SAVE_OPTIONS', 280);

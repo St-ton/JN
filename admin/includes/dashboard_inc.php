@@ -166,7 +166,7 @@ function getRemoteData($cURL, $nTimeout = 15)
 function getRemoteDataIO($cURL, $cDataName, $cTpl, $cWrapperID, $cPost = null, $cCallback = null, $bDecodeUTF8 = false)
 {
     $response         = new IOResponse();
-    $oURLsToCache_arr = ['oNews_arr'];
+    $oURLsToCache_arr = ['oNews_arr', 'oMarketplace_arr', 'oMarketplaceUpdates_arr', 'oPatch_arr', 'oDuk', 'oHelp_arr'];
 
     if (in_array($cDataName, $oURLsToCache_arr, true)) {
         $cacheID = $cDataName . '_' . $cTpl . '_' . md5($cWrapperID . $cURL);

@@ -334,6 +334,11 @@ class Bestellung
     public $cPUIZahlungsdaten;
 
     /**
+     * @var object
+     */
+    public $oKampagne;
+
+    /**
      * Konstruktor
      *
      * @param int  $kBestellung Falls angegeben, wird der Bestellung mit angegebenem kBestellung aus der DB geholt
@@ -836,6 +841,16 @@ class Bestellung
 
         $this->kBestellung = Shop::Container()->getDB()->insert('tbestellung', $obj);
 
+        if (isset($_SESSION['Kampagnenbesucher'])) {
+            $obj              = new stdClass();
+            $obj->kBestellung = $this->kBestellung;
+            $obj->kKampagne   = $_SESSION['Kampagnenbesucher']->kKampagne;
+            $obj->cWert       = $_SESSION['Kampagnenbesucher']->cWert;
+            $obj->cParameter  = $_SESSION['Kampagnenbesucher']->cParameter;
+
+            Shop::Container()->getDB()->insert('tbestellungkampagne', $obj);
+        }
+
         return $this->kBestellung;
     }
 
@@ -1051,5 +1066,19 @@ class Bestellung
         }
 
         return $this->oEstimatedDelivery->localized;
+    }
+
+    /**
+     * set Kampagne from tbestellungkampagne
+     */
+    public function setKampagne()
+    {
+        $this->oKampagne = Shop::Container()->getDB()->query(
+            "SELECT tbestellungkampagne.*, tkampagne.cName
+                FROM tbestellungkampagne
+                  LEFT JOIN tkampagne ON tkampagne.kKampagne = tbestellungkampagne.kKampagne
+                WHERE tbestellungkampagne.kBestellung = " . $this->kBestellung,
+            \DB\ReturnType::SINGLE_OBJECT
+        );
     }
 }

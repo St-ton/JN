@@ -23,7 +23,7 @@ use Monolog\Formatter\LineFormatter;
 if (PHP_SAPI === 'cli') {
     $handler = new StreamHandler('php://stdout', Logger::DEBUG);
     $handler->setFormatter(new LineFormatter("[%datetime%] %message% %context%\n", null, false, true));
-    $logger  = new Logger('cron', [$handler]);
+    $logger = new Logger('cron', [$handler]);
 } else {
     $logger = Shop::Container()->getLogService();
 }

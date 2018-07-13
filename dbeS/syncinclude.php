@@ -301,7 +301,7 @@ function removeTemporaryFiles(string $file, bool $isDir = false)
 {
     return KEEP_SYNC_FILES
         ? false
-        : ($isDir ? rmdir($file) : unlink($file));
+        : ($isDir ? FileSystemHelper::delDirRecursively($file) : unlink($file));
 }
 
 /**
@@ -494,8 +494,8 @@ function XML2DB($xml, $tabelle, $map, $del = 1)
  */
 function updateXMLinDB($xml, $tabelle, $map, $pk1, $pk2 = 0)
 {
-    if ((isset($xml[$tabelle]) && is_array($xml[$tabelle])) ||
-        (isset($xml[$tabelle . ' attr']) && is_array($xml[$tabelle . ' attr']))
+    if ((isset($xml[$tabelle]) && is_array($xml[$tabelle]))
+        || (isset($xml[$tabelle . ' attr']) && is_array($xml[$tabelle . ' attr']))
     ) {
         $obj_arr = mapArray($xml, $tabelle, $map);
 

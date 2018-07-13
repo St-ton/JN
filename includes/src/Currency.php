@@ -342,9 +342,13 @@ class Currency
      */
     public static function getCurrencyConversion($priceNet, $priceGross, $class = '', bool $forceTax = true): string
     {
+        self::setCurrencies();
+
         $res        = '';
         $currencies = \Session\Session::Currencies();
         if (count($currencies) > 0) {
+            $priceNet = (float)str_replace(',', '.', $priceNet ?? 0);
+            $priceGross = (float)str_replace(',', '.', $priceGross ?? 0);
             $oSteuerklasse = Shop::Container()->getDB()->select('tsteuerklasse', 'cStandard', 'Y');
             $taxClassID    = $oSteuerklasse !== null ? (int)$oSteuerklasse->kSteuerklasse : 1;
             if ((float)$priceNet > 0) {
@@ -354,6 +358,7 @@ class Currency
                 $priceNet   = TaxHelper::getNet((float)$priceGross, TaxHelper::getSalesTax($taxClassID));
                 $priceGross = (float)$priceGross;
             }
+
             $res = '<span class="preisstring ' . $class . '">';
             foreach ($currencies as $i => $currency) {
                 $cPreisLocalized       = number_format(
@@ -409,13 +414,8 @@ class Currency
      */
     public static function convertCurrency($price, string $iso = null, $id = null, bool $round = true, int $precision = 2)
     {
-        if (count(Session::Currencies()) === 0) {
-            $_SESSION['Waehrungen'] = [];
-            $allCurrencies          = Shop::Container()->getDB()->selectAll('twaehrung', [], [], 'kWaehrung');
-            foreach ($allCurrencies as $currency) {
-                $_SESSION['Waehrungen'][] = new self($currency->kWaehrung);
-            }
-        }
+        self::setCurrencies();
+
         foreach (Session::Currencies() as $currency) {
             if (($iso !== null && $currency->getCode() === $iso) || ($id !== null && $currency->getID() === (int)$id)) {
                 $newprice = $price * $currency->getConversionFactor();
@@ -425,5 +425,19 @@ class Currency
         }
 
         return false;
+    }
+
+    /**
+     * @param bool  $update
+     * @return void
+     */
+    public static function setCurrencies($update = false) {
+        if ($update || count(Session::Currencies()) === 0) {
+            $_SESSION['Waehrungen'] = [];
+            $allCurrencies          = Shop::Container()->getDB()->selectAll('twaehrung', [], [], 'kWaehrung');
+            foreach ($allCurrencies as $currency) {
+                $_SESSION['Waehrungen'][] = new self($currency->kWaehrung);
+            }
+        }
     }
 }

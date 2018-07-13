@@ -56,11 +56,11 @@ function images_xml($tmpDir, SimpleXMLElement $xml)
                 (object)['cPfad' => $item->cPfad]
             );
         } else {
-            Jtllog::writeLog(sprintf(
+            Shop::Container()->getLogService()->error(sprintf(
                 'Copy "%s" to "%s"',
                 $tmpfile,
                 PFAD_ROOT . PFAD_MEDIA_IMAGE_STORAGE . $item->cPfad
-            ), JTLLOG_LEVEL_ERROR, false, 'img_upload_xml');
+            ));
         }
     }
 }

@@ -19,15 +19,7 @@ if (auth()) {
     $cError = '';
     $jobs   = getJobs();
     $conf   = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_SITEMAP]);
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('LastJob Job Array: ' .
-            print_r($jobs, true), JTLLOG_LEVEL_DEBUG, false, 'LastJob Job Array');
-    }
     foreach ($jobs as $oLastJob) {
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('Lastjobs Job: ' .
-                print_r($oLastJob, true), JTLLOG_LEVEL_DEBUG, false, 'nJob', $oLastJob->nJob);
-        }
         switch ((int)$oLastJob->nJob) {
             case LASTJOBS_BEWERTUNGSERINNNERUNG:
                 require_once PFAD_ROOT . PFAD_ADMIN . 'includes/bewertungserinnerung.php';

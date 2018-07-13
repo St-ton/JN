@@ -97,14 +97,7 @@ function bearbeiteInsert($xml)
         $Kategorie->kOberKategorie = (int)$xml['tkategorie attr']['kOberKategorie'];
     }
     if (!$Kategorie->kKategorie) {
-        if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog(
-                'kKategorie fehlt! XML: ' . print_r($xml, true),
-                JTLLOG_LEVEL_ERROR,
-                false,
-                'Kategorien_xml'
-            );
-        }
+        Shop::Container()->getLogService()->error('kKategorie fehlt! XML: ' . print_r($xml, true));
 
         return;
     }
@@ -294,11 +287,6 @@ function saveKategorieAttribut($xmlParent, $oAttribut)
         'cName'     => $oAttribut->cName,
         'cWert'     => $oAttribut->cWert,
     ]);
-
-    Jtllog::writeLog(
-        'Speichere Kategorieattributsprache: ' . var_export($oAttribSprache_arr, true),
-        JTLLOG_LEVEL_DEBUG
-    );
     DBUpdateInsert('tkategorieattributsprache', $oAttribSprache_arr, 'kAttribut', 'kSprache');
 
     return $oAttribut->kKategorieAttribut;

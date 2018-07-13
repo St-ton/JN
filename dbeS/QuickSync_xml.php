@@ -95,15 +95,6 @@ function bearbeiteInsert($xml)
             );
             if ($delta->totalquantity > 0) {
                 $oArtikel->fLagerbestand -= $delta->totalquantity;
-                if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('Artikel-Quicksync: Lagerbestand von kArtikel ' .
-                        $oArtikel->kArtikel . ' wurde wegen nicht-abgeholter Bestellungen '.
-                        'um ' . $delta->totalquantity . ' auf ' . $oArtikel->fLagerbestand . ' reduziert.',
-                        JTLLOG_LEVEL_DEBUG,
-                        false,
-                        'Artikel_xml'
-                    );
-                }
             }
         }
 

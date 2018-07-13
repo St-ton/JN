@@ -91,9 +91,6 @@ function bearbeiteDeletes($oXml)
  */
 function loescheKonfiggruppe(int $kKonfiggruppe)
 {
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Loesche Konfiggruppe: ' . $kKonfiggruppe, JTLLOG_LEVEL_DEBUG, false, 'Konfig_xml');
-    }
     if ($kKonfiggruppe > 0 && class_exists('Konfiggruppe')) {
         // todo: alle items löschen
         $oKonfig = new Konfiggruppe($kKonfiggruppe);
@@ -107,9 +104,6 @@ function loescheKonfiggruppe(int $kKonfiggruppe)
  */
 function loescheKonfigitem(int $kKonfiggruppe)
 {
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Loesche kKonfigitem (gruppe): ' . $kKonfiggruppe, JTLLOG_LEVEL_DEBUG, false, 'Konfig_xml');
-    }
     if ($kKonfiggruppe > 0) {
         Shop::Container()->getDB()->delete('tkonfigitem', 'kKonfiggruppe', $kKonfiggruppe);
     }
@@ -120,9 +114,6 @@ function loescheKonfigitem(int $kKonfiggruppe)
  */
 function loescheKonfigitempreis(int $kKonfigitem)
 {
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Loesche Konfigitempreis: ' . $kKonfigitem, JTLLOG_LEVEL_DEBUG, false, 'Konfig_xml');
-    }
     if ($kKonfigitem > 0 && class_exists('Konfigitempreis')) {
         $oKonfig = new Konfigitempreis($kKonfigitem);
         $nRows   = $oKonfig->delete();

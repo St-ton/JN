@@ -227,9 +227,11 @@ function DBUpdateInsert($tablename, $object_arr, $pk1, $pk2 = 0)
             Shop::Container()->getDB()->delete($tablename, [$pk1, $pk2], [$object->$pk1, $object->$pk2]);
         }
         $key = Shop::Container()->getDB()->insert($tablename, $object);
-        if (!$key && Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('DBUpdateInsert fehlgeschlagen! Tabelle: ' . $tablename . ', Objekt: ' .
-                print_r($object, true), JTLLOG_LEVEL_ERROR, false, 'syncinclude_xml');
+        if (!$key) {
+            Shop::Container()->getLogService()->error(
+                'DBinsert fehlgeschlagen! Tabelle: ' . $tablename . ', Objekt: ' .
+                print_r($object, true)
+            );
         }
     }
 }

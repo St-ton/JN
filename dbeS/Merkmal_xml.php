@@ -535,9 +535,6 @@ function loescheMerkmal(int $kMerkmal, $update = 1)
         Shop::Container()->getDB()->delete('tmerkmalwertbild', 'kMerkmalWert', (int)$wert->kMerkmalWert);
     }
     Shop::Container()->getDB()->delete('tmerkmalwert', 'kMerkmal', $kMerkmal);
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Merkmal geloescht: ' . $kMerkmal, JTLLOG_LEVEL_DEBUG, false, 'Merkmal_xml');
-    }
 }
 
 /**
@@ -599,9 +596,6 @@ function loescheMerkmalWert(int $kMerkmalWert, $isInsert = false)
     // Das Merkmal hat keine MerkmalWerte mehr => auch loeschen
     if (!$isInsert && (int)$oAnzahl->nAnzahl === 1) {
         loescheMerkmal($oAnzahl->kMerkmal);
-    }
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('MerkmalWert geloescht: ' . $kMerkmalWert, JTLLOG_LEVEL_DEBUG, false, 'Merkmal_xml');
     }
 }
 

@@ -58,8 +58,12 @@ function bearbeiteInsert($xml)
         // 1 Download
         $oDownload_arr = mapArray($xml['tDownloads'], 'tDownload', $GLOBALS['mDownload']);
         if ($oDownload_arr[0]->kDownload > 0) {
-            $oDownloadSprache_arr = mapArray($xml['tDownloads']['tDownload'], 'tDownloadSprache', $GLOBALS['mDownloadSprache']);
-            if (is_array($oDownloadSprache_arr) && count($oDownloadSprache_arr) > 0) {
+            $oDownloadSprache_arr = mapArray(
+                $xml['tDownloads']['tDownload'],
+                'tDownloadSprache',
+                $GLOBALS['mDownloadSprache']
+            );
+            if (count($oDownloadSprache_arr) > 0) {
                 DBUpdateInsert('tdownload', $oDownload_arr, 'kDownload');
                 $lCount = count($oDownloadSprache_arr);
                 for ($i = 0; $i < $lCount; ++$i) {
@@ -73,8 +77,12 @@ function bearbeiteInsert($xml)
         $oDownload_arr = mapArray($xml['tDownloads'], 'tDownload', $GLOBALS['mDownload']);
         foreach ($oDownload_arr as $i => $oDownload) {
             if ($oDownload->kDownload > 0) {
-                $oDownloadSprache_arr = mapArray($xml['tDownloads']['tDownload'][$i], 'tDownloadSprache', $GLOBALS['mDownloadSprache']);
-                if (is_array($oDownloadSprache_arr) && count($oDownloadSprache_arr) > 0) {
+                $oDownloadSprache_arr = mapArray(
+                    $xml['tDownloads']['tDownload'][$i],
+                    'tDownloadSprache',
+                    $GLOBALS['mDownloadSprache']
+                );
+                if (count($oDownloadSprache_arr) > 0) {
                     DBUpdateInsert('tdownload', [$oDownload], 'kDownload');
                     $cdsaCount = count($oDownloadSprache_arr);
                     for ($j = 0; $j < $cdsaCount; ++$j) {

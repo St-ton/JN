@@ -58,9 +58,9 @@ function bearbeite($xml)
         $cryptoService = Shop::Container()->getCryptoService();
         mappe($Kunde, $xml['tkunde'], $GLOBALS['mKunde']);
         // Kundenattribute
-        if (isset($xml['tkunde']['tkundenattribut']) &&
-            is_array($xml['tkunde']['tkundenattribut']) &&
-            count($xml['tkunde']['tkundenattribut']) > 0
+        if (isset($xml['tkunde']['tkundenattribut'])
+            && is_array($xml['tkunde']['tkundenattribut'])
+            && count($xml['tkunde']['tkundenattribut']) > 0
         ) {
             $cMember_arr = array_keys($xml['tkunde']['tkundenattribut']);
 
@@ -94,16 +94,15 @@ function bearbeite($xml)
         if ($kInetKunde > 0) {
             $oKundeAlt = new Kunde($kInetKunde);
         }
-        
         // Kunde existiert mit dieser kInetKunde
         // Kunde wird aktualisiert bzw. seine KdGrp wird geändert
-        if (isset($oKundeAlt->kKunde) && $oKundeAlt->kKunde > 0) { // KUNDENAKTUALSIERUNG
+        if (isset($oKundeAlt->kKunde) && $oKundeAlt->kKunde > 0) {
             //Angaben vom alten Kunden übernehmen
             $Kunde->kKunde      = $kInetKunde;
             $Kunde->cAbgeholt   = 'Y';
             $Kunde->cAktiv      = 'Y';
             $Kunde->dVeraendert = 'now()';
-            
+
             if ($Kunde->cMail !== $oKundeAlt->cMail) {
                 // E-Mail Adresse geändert - Verwendung prüfen!
                 if (StringHandler::filterEmailAddress($Kunde->cMail) === false
@@ -153,7 +152,6 @@ function bearbeite($xml)
             if ($kInetKunde > 0) {
                 $res_obj['keys']['tkunde attr']['kKunde'] = 0;
                 $res_obj['keys']['tkunde']                = '';
-
                 Shop::Container()->getLogService()->error(
                     'Verknuepfter Kunde in Wawi existiert nicht im Shop: ' .
                     XML_serialize($res_obj)
@@ -188,7 +186,10 @@ function bearbeite($xml)
                 $xml_obj['kunden']['tkunde'][0]['cFirma']    = trim($cryptoService->decryptXTEA($xml_obj['kunden']['tkunde'][0]['cFirma']));
                 $xml_obj['kunden']['tkunde'][0]['cZusatz']   = trim($cryptoService->decryptXTEA($xml_obj['kunden']['tkunde'][0]['cZusatz']));
                 $xml_obj['kunden']['tkunde'][0]['cStrasse']  = trim($cryptoService->decryptXTEA($xml_obj['kunden']['tkunde'][0]['cStrasse']));
-                $xml_obj['kunden']['tkunde'][0]['cAnrede']   = Kunde::mapSalutation($xml_obj['kunden']['tkunde'][0]['cAnrede'], $xml_obj['kunden']['tkunde'][0]['kSprache']);
+                $xml_obj['kunden']['tkunde'][0]['cAnrede']   = Kunde::mapSalutation(
+                    $xml_obj['kunden']['tkunde'][0]['cAnrede'],
+                    $xml_obj['kunden']['tkunde'][0]['kSprache']
+                );
                 //Strasse und Hausnummer zusammenführen
                 $xml_obj['kunden']['tkunde'][0]['cStrasse'] .= ' ' . $xml_obj['kunden']['tkunde'][0]['cHausnummer'];
                 unset($xml_obj['kunden']['tkunde'][0]['cHausnummer']);
@@ -200,7 +201,8 @@ function bearbeite($xml)
                 $xml_obj['kunden']['tkunde'][0]['tkundenattribut'] = Shop::Container()->getDB()->query(
                     "SELECT *
                         FROM tkundenattribut
-                         WHERE kKunde = " . (int)$xml_obj['kunden']['tkunde']['0 attr']['kKunde'], 9
+                         WHERE kKunde = " . (int)$xml_obj['kunden']['tkunde']['0 attr']['kKunde'],
+                    \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
                 );
                 $kundenattribute_anz                               = count($xml_obj['kunden']['tkunde'][0]['tkundenattribut']);
                 for ($o = 0; $o < $kundenattribute_anz; $o++) {
@@ -239,12 +241,13 @@ function bearbeite($xml)
 
         if ($kInetKunde > 0) {
             //kunde akt. bzw. neu inserted
-
             //lieferadressen
-            if (isset($xml['tkunde']['tadresse']) && is_array($xml['tkunde']['tadresse']) && count($xml['tkunde']['tadresse']) > 0 &&
-                (!isset($xml['tkunde']['tadresse attr']) || !is_array($xml['tkunde']['tadresse attr']))) {
+            if (isset($xml['tkunde']['tadresse'])
+                && is_array($xml['tkunde']['tadresse'])
+                && count($xml['tkunde']['tadresse']) > 0
+                && (!isset($xml['tkunde']['tadresse attr']) || !is_array($xml['tkunde']['tadresse attr']))
+            ) {
                 //mehrere adressen
-
                 $cntLieferadressen = count($xml['tkunde']['tadresse']) / 2;
                 for ($i = 0; $i < $cntLieferadressen; $i++) {
                     unset($Lieferadresse);
@@ -331,7 +334,7 @@ function bearbeite($xml)
                                 'kAdresse'     => $xml['tkunde']['tadresse attr']['kAdresse'],
                                 'kInetAdresse' => $kInetLieferadresse,
                             ],
-                            'tadresse' => '',
+                            'tadresse'      => '',
                         ];
                     }
                 }
@@ -348,19 +351,18 @@ function bearbeite($xml)
  * @param array $oKundenattribut_arr
  * @param bool  $bNeu
  */
-function speicherKundenattribut($kKunde, $kSprache, $oKundenattribut_arr, $bNeu)
+function speicherKundenattribut(int $kKunde, int $kSprache, $oKundenattribut_arr, $bNeu)
 {
-    $kKunde   = (int)$kKunde;
-    $kSprache = (int)$kSprache;
     if ($kKunde > 0 && $kSprache > 0 && is_array($oKundenattribut_arr) && count($oKundenattribut_arr) > 0) {
         foreach ($oKundenattribut_arr as $oKundenattribut) {
-            $oKundenfeld = Shop::Container()->getDB()->query(
-                "SELECT tkundenfeld.kKundenfeld, tkundenfeldwert.cWert
+            $oKundenfeld = Shop::Container()->getDB()->queryPrepared(
+                'SELECT tkundenfeld.kKundenfeld, tkundenfeldwert.cWert
                      FROM tkundenfeld
                      LEFT JOIN tkundenfeldwert
                         ON tkundenfeldwert.kKundenfeld = tkundenfeld.kKundenfeld
-                     WHERE tkundenfeld.cWawi = '" . $oKundenattribut->cName . "'
-                        AND tkundenfeld.kSprache = " . $kSprache,
+                     WHERE tkundenfeld.cWawi = :nm
+                        AND tkundenfeld.kSprache = :lid',
+                ['nm' => $oKundenattribut->cName, 'lid' => $kSprache],
                 \DB\ReturnType::SINGLE_OBJECT
             );
             if (isset($oKundenfeld->kKundenfeld) && $oKundenfeld->kKundenfeld > 0) {

@@ -10,8 +10,7 @@ $return = 3;
 if (auth()) {
     $return = 2;
     if (isset($_POST['b']) && strlen($_POST['b']) > 0) {
-        $cBrocken = StringHandler::filterXSS($_POST['b']);    // Wawi Brocken
-        // Schau ob bereits Brocken vorhanden und ob sich Brocken geändert hat
+        $cBrocken = StringHandler::filterXSS($_POST['b']);
         $oBrocken = Shop::Container()->getDB()->query(
             'SELECT cBrocken
                 FROM tbrocken
@@ -20,14 +19,11 @@ if (auth()) {
             \DB\ReturnType::SINGLE_OBJECT
         );
         if (empty($oBrocken->cBrocken)) {
-            // Insert
             $oBrocken            = new stdClass();
             $oBrocken->cBrocken  = $cBrocken;
             $oBrocken->dErstellt = 'now()';
-
             Shop::Container()->getDB()->insert('tbrocken', $oBrocken);
         } elseif (isset($oBrocken->cBrocken) && $oBrocken->cBrocken !== $cBrocken && strlen($oBrocken->cBrocken) > 0) {
-            // Update
             Shop::Container()->getDB()->update(
                 'tbrocken',
                 'cBrocken',

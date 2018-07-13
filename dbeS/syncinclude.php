@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 define('DEFINES_PFAD', '../includes/');
-define('FREIDEFINIERBARER_FEHLER', '8');
+define('FREIDEFINIERBARER_FEHLER', 8);
 
 define('FILENAME_XML', 'data.xml');
 define('FILENAME_KUNDENZIP', 'kunden.jtl');
@@ -29,8 +29,11 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_tools.php';
 
 $shop = Shop::getInstance();
 error_reporting(SYNC_LOG_LEVEL);
-if (!is_writable(PFAD_SYNC_TMP)) {
-    syncException('Fehler beim Abgleich: Das Shop-Verzeichnis dbeS/' . PFAD_SYNC_TMP . ' ist nicht durch den Web-User beschreibbar!', 8);
+if (!is_writable(PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP)) {
+    syncException('Fehler beim Abgleich: Das Verzeichnis ' .
+        PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . ' ist nicht beschreibbar!',
+        8
+    );
 }
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
@@ -51,12 +54,9 @@ if (!function_exists('Shop')) {
 $DB    = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 $cache = Shop::Container()->getCache()->setJtlCacheConfig();
 
-$GLOBALS['bSeo'] = true; //compatibility!
-// Liste aller Hooks, die momentan im Shop gebraucht werden könnten
-// An jedem Hook hängt ein Array mit Plugin die diesen Hook benutzen
+$GLOBALS['bSeo']      = true; //compatibility!
 $oPluginHookListe_arr = Plugin::getHookList();
-//globale Sprache
-$oSprache = Sprache::getInstance(true);
+$oSprache             = Sprache::getInstance(true);
 
 /**
  * @param string     $cacheID
@@ -137,14 +137,15 @@ function checkFile()
                 $cFehler = 'Dateiendung nicht akzeptiert, bitte an Hoster werden! [8]';
                 break;
         }
-        syncException($cFehler . "\n" . print_r($_FILES, true), 8);
+        syncException($cFehler . "\n" . print_r($_FILES, true), FREIDEFINIERBARER_FEHLER);
 
         return false;
     }
-    move_uploaded_file($_FILES['data']['tmp_name'], PFAD_SYNC_TMP . basename($_FILES['data']['tmp_name']));
-    $_FILES['data']['tmp_name'] = PFAD_SYNC_TMP . basename($_FILES['data']['tmp_name']);
+    $tmpDir = PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP;
+    move_uploaded_file($_FILES['data']['tmp_name'], $tmpDir . basename($_FILES['data']['tmp_name']));
+    $_FILES['data']['tmp_name'] = $tmpDir . basename($_FILES['data']['tmp_name']);
 
-    return PFAD_SYNC_TMP . basename($_FILES['data']['tmp_name']);
+    return $tmpDir . basename($_FILES['data']['tmp_name']);
 }
 
 /**
@@ -215,27 +216,26 @@ function DBDelInsert($tablename, $object_arr, $del)
  */
 function DBUpdateInsert($tablename, $object_arr, $pk1, $pk2 = 0)
 {
-    if (is_array($object_arr)) {
-        foreach ($object_arr as $object) {
-            if (isset($object->$pk1) && !$pk2 && $pk1 && $object->$pk1) {
-                Shop::Container()->getDB()->delete($tablename, $pk1, $object->$pk1);
-            }
-            if (isset($object->$pk2) && $pk1 && $pk2 && $object->$pk1 && $object->$pk2) {
-                Shop::Container()->getDB()->delete($tablename, [$pk1, $pk2], [$object->$pk1, $object->$pk2]);
-            }
-            $key = Shop::Container()->getDB()->insert($tablename, $object);
-            if (!$key) {
-                Shop::Container()->getLogService()->error(
-                    'DBUpdateInsert fehlgeschlagen! Tabelle: ' . $tablename . ', Objekt: ' .
-                    print_r($object, true)
-                );
-            }
+    if (!is_array($object_arr)) {
+        return;
+    }
+    foreach ($object_arr as $object) {
+        if (isset($object->$pk1) && !$pk2 && $pk1 && $object->$pk1) {
+            Shop::Container()->getDB()->delete($tablename, $pk1, $object->$pk1);
+        }
+        if (isset($object->$pk2) && $pk1 && $pk2 && $object->$pk1 && $object->$pk2) {
+            Shop::Container()->getDB()->delete($tablename, [$pk1, $pk2], [$object->$pk1, $object->$pk2]);
+        }
+        $key = Shop::Container()->getDB()->insert($tablename, $object);
+        if (!$key && Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
+            Jtllog::writeLog('DBUpdateInsert fehlgeschlagen! Tabelle: ' . $tablename . ', Objekt: ' .
+                print_r($object, true), JTLLOG_LEVEL_ERROR, false, 'syncinclude_xml');
         }
     }
 }
 
 /**
- * @param array $elements
+ * @param array  $elements
  * @param string $child
  * @return array
  */
@@ -301,13 +301,11 @@ function getObjectArray($elements, $child)
  * @param bool   $isDir
  * @return bool
  */
-function removeTemporaryFiles($file, $isDir = false)
+function removeTemporaryFiles(string $file, bool $isDir = false)
 {
-    if (!KEEP_SYNC_FILES) {
-        return $isDir ? @rmdir($file) : @unlink($file);
-    }
-
-    return false;
+    return KEEP_SYNC_FILES
+        ? false
+        : ($isDir ? FileSystemHelper::delDirRecursively($file) : unlink($file));
 }
 
 /**
@@ -392,7 +390,7 @@ function mapAttributes(&$obj, $xml)
  * @param array $array
  * @return bool
  */
-function is_assoc(array $array)
+function is_assoc(array $array): bool
 {
     return count(array_filter(array_keys($array), 'is_string')) > 0;
 }
@@ -464,7 +462,7 @@ function mapArray($xml, $name, $map)
  * @param array  $cMapping_arr
  * @return stdClass
  */
-function JTLMapArr($oXmlTree, $cMapping_arr)
+function JTLMapArr($oXmlTree, array $cMapping_arr)
 {
     $oMapped = new stdClass();
     foreach ($oXmlTree->Attributes() as $cKey => $cVal) {
@@ -483,7 +481,7 @@ function JTLMapArr($oXmlTree, $cMapping_arr)
  * @param array  $xml
  * @param string $tabelle
  * @param array  $map
- * @param int $del
+ * @param int    $del
  */
 function XML2DB($xml, $tabelle, $map, $del = 1)
 {
@@ -502,8 +500,8 @@ function XML2DB($xml, $tabelle, $map, $del = 1)
  */
 function updateXMLinDB($xml, $tabelle, $map, $pk1, $pk2 = 0)
 {
-    if ((isset($xml[$tabelle]) && is_array($xml[$tabelle])) ||
-        (isset($xml[$tabelle . ' attr']) && is_array($xml[$tabelle . ' attr']))
+    if ((isset($xml[$tabelle]) && is_array($xml[$tabelle]))
+        || (isset($xml[$tabelle . ' attr']) && is_array($xml[$tabelle . ' attr']))
     ) {
         $obj_arr = mapArray($xml, $tabelle, $map);
 
@@ -512,97 +510,101 @@ function updateXMLinDB($xml, $tabelle, $map, $pk1, $pk2 = 0)
 }
 
 /**
- * @param object $oArtikel
- * @param array  $oKundengruppe_arr
+ * @param object $product
+ * @param array  $customerGroups
+ * @return array
  */
-function fuelleArtikelKategorieRabatt($oArtikel, $oKundengruppe_arr)
+function fuelleArtikelKategorieRabatt($product, $customerGroups): array
 {
-    Shop::Container()->getDB()->delete('tartikelkategorierabatt', 'kArtikel', (int)$oArtikel->kArtikel);
-    if (is_array($oKundengruppe_arr) && count($oKundengruppe_arr) > 0) {
-        foreach ($oKundengruppe_arr as $oKundengruppe) {
-            $oMaxRabatt = Shop::Container()->getDB()->queryPrepared(
-                "SELECT tkategoriekundengruppe.fRabatt, tkategoriekundengruppe.kKategorie
-                    FROM tkategoriekundengruppe
-                    JOIN tkategorieartikel 
-                        ON tkategorieartikel.kKategorie = tkategoriekundengruppe.kKategorie
-                        AND tkategorieartikel.kArtikel = :kArtikel
-                    LEFT JOIN tkategoriesichtbarkeit
-                        ON tkategoriesichtbarkeit.kKategorie = tkategoriekundengruppe.kKategorie
-                        AND tkategoriesichtbarkeit.kKundengruppe = :kKundengruppe
-                    WHERE tkategoriesichtbarkeit.kKategorie IS NULL
-                        AND tkategoriekundengruppe.kKundengruppe = :kKundengruppe
-                    ORDER BY tkategoriekundengruppe.fRabatt DESC
-                    LIMIT 1",
-                [
-                    'kArtikel'      => $oArtikel->kArtikel,
-                    'kKundengruppe' => $oKundengruppe->kKundengruppe,
-                ],
-                \DB\ReturnType::SINGLE_OBJECT
-            );
+    $affectedProductIDs = [];
+    Shop::Container()->getDB()->delete('tartikelkategorierabatt', 'kArtikel', (int)$product->kArtikel);
+    if (!is_array($customerGroups) || count($customerGroups) === 0) {
+        return $affectedProductIDs;
+    }
+    foreach ($customerGroups as $oKundengruppe) {
+        $oMaxRabatt = Shop::Container()->getDB()->queryPrepared(
+            'SELECT tkategoriekundengruppe.fRabatt, tkategoriekundengruppe.kKategorie
+                FROM tkategoriekundengruppe
+                JOIN tkategorieartikel 
+                    ON tkategorieartikel.kKategorie = tkategoriekundengruppe.kKategorie
+                    AND tkategorieartikel.kArtikel = :kArtikel
+                LEFT JOIN tkategoriesichtbarkeit
+                    ON tkategoriesichtbarkeit.kKategorie = tkategoriekundengruppe.kKategorie
+                    AND tkategoriesichtbarkeit.kKundengruppe = :kKundengruppe
+                WHERE tkategoriesichtbarkeit.kKategorie IS NULL
+                    AND tkategoriekundengruppe.kKundengruppe = :kKundengruppe
+                ORDER BY tkategoriekundengruppe.fRabatt DESC
+                LIMIT 1',
+            [
+                'kArtikel'      => $product->kArtikel,
+                'kKundengruppe' => $oKundengruppe->kKundengruppe,
+            ],
+            \DB\ReturnType::SINGLE_OBJECT
+        );
 
-            if (isset($oMaxRabatt->fRabatt) && $oMaxRabatt->fRabatt > 0) {
-                $oArtikelKategorieRabatt                = new stdClass();
-                $oArtikelKategorieRabatt->kArtikel      = $oArtikel->kArtikel;
-                $oArtikelKategorieRabatt->kKundengruppe = $oKundengruppe->kKundengruppe;
-                $oArtikelKategorieRabatt->kKategorie    = $oMaxRabatt->kKategorie;
-                $oArtikelKategorieRabatt->fRabatt       = $oMaxRabatt->fRabatt;
-
-                Shop::Container()->getDB()->insert('tartikelkategorierabatt', $oArtikelKategorieRabatt);
-                // Clear Artikel Cache
-                $cache = Shop::Cache();
-                $cache->flushTags([CACHING_GROUP_ARTICLE . '_' . $oArtikel->kArtikel]);
-            }
+        if (isset($oMaxRabatt->fRabatt) && $oMaxRabatt->fRabatt > 0) {
+            $discount                = new stdClass();
+            $discount->kArtikel      = $product->kArtikel;
+            $discount->kKundengruppe = $oKundengruppe->kKundengruppe;
+            $discount->kKategorie    = $oMaxRabatt->kKategorie;
+            $discount->fRabatt       = $oMaxRabatt->fRabatt;
+            Shop::Container()->getDB()->insert('tartikelkategorierabatt', $discount);
+            $affectedProductIDs[] = $product->kArtikel;
         }
     }
+
+    return $affectedProductIDs;
 }
 
 /**
- * @param object $oArtikel
+ * @param object $product
  */
-function versendeVerfuegbarkeitsbenachrichtigung($oArtikel)
+function versendeVerfuegbarkeitsbenachrichtigung($product)
 {
-    if ($oArtikel->fLagerbestand > 0 && $oArtikel->kArtikel) {
-        $Benachrichtigungen = Shop::Container()->getDB()->selectAll(
+    if (!($product->fLagerbestand > 0 && $product->kArtikel)) {
+        return;
+    }
+    $Benachrichtigungen = Shop::Container()->getDB()->selectAll(
+        'tverfuegbarkeitsbenachrichtigung',
+        ['nStatus', 'kArtikel'],
+        [0, $product->kArtikel]
+    );
+    if (!is_array($Benachrichtigungen) || count($Benachrichtigungen) === 0) {
+        return;
+    }
+    require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
+    require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
+
+    $Artikel = (new Artikel())->fuelleArtikel($product->kArtikel, Artikel::getDefaultOptions());
+    // Kampagne
+    $oKampagne = new Kampagne(KAMPAGNE_INTERN_VERFUEGBARKEIT);
+    if ($oKampagne->kKampagne > 0) {
+        $cSep          = strpos($Artikel->cURL, '.php') === false ? '?' : '&';
+        $Artikel->cURL .= $cSep . $oKampagne->cParameter . '=' . $oKampagne->cWert;
+    }
+    foreach ($Benachrichtigungen as $Benachrichtigung) {
+        $obj                                   = new stdClass();
+        $obj->tverfuegbarkeitsbenachrichtigung = $Benachrichtigung;
+        $obj->tartikel                         = $Artikel;
+        $obj->tartikel->cName                  = StringHandler::htmlentitydecode($obj->tartikel->cName);
+        $mail                                  = new stdClass();
+        $mail->toEmail                         = $Benachrichtigung->cMail;
+        $mail->toName                          = ($Benachrichtigung->cVorname || $Benachrichtigung->cNachname)
+            ? ($Benachrichtigung->cVorname . ' ' . $Benachrichtigung->cNachname)
+            : $Benachrichtigung->cMail;
+        $obj->mail                             = $mail;
+        sendeMail(MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR, $obj);
+
+        $upd                    = new stdClass();
+        $upd->nStatus           = 1;
+        $upd->dBenachrichtigtAm = 'now()';
+        $upd->cAbgeholt         = 'N';
+        Shop::Container()->getDB()->update(
             'tverfuegbarkeitsbenachrichtigung',
-            ['nStatus', 'kArtikel'],
-            [0, $oArtikel->kArtikel]
+            'kVerfuegbarkeitsbenachrichtigung',
+            $Benachrichtigung->kVerfuegbarkeitsbenachrichtigung,
+            $upd
         );
-        if (is_array($Benachrichtigungen) && count($Benachrichtigungen) > 0) {
-            require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
-            require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
-
-            $Artikel = (new Artikel())->fuelleArtikel($oArtikel->kArtikel, Artikel::getDefaultOptions());
-            // Kampagne
-            $oKampagne = new Kampagne(KAMPAGNE_INTERN_VERFUEGBARKEIT);
-            if (isset($oKampagne->kKampagne) && $oKampagne->kKampagne > 0) {
-                $cSep           = (strpos($Artikel->cURL, '.php') === false) ? '?' : '&';
-                $Artikel->cURL .= $cSep . $oKampagne->cParameter . '=' . $oKampagne->cWert;
-            }
-            foreach ($Benachrichtigungen as $Benachrichtigung) {
-                $obj                                   = new stdClass();
-                $obj->tverfuegbarkeitsbenachrichtigung = $Benachrichtigung;
-                $obj->tartikel                         = $Artikel;
-                $obj->tartikel->cName                  = StringHandler::htmlentitydecode($obj->tartikel->cName);
-                $mail                                  = new stdClass();
-                $mail->toEmail                         = $Benachrichtigung->cMail;
-                $mail->toName                          = ($Benachrichtigung->cVorname || $Benachrichtigung->cNachname)
-                    ? ($Benachrichtigung->cVorname . ' ' . $Benachrichtigung->cNachname)
-                    : $Benachrichtigung->cMail;
-                $obj->mail                             = $mail;
-                sendeMail(MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR, $obj);
-
-                $upd                    = new stdClass();
-                $upd->nStatus           = 1;
-                $upd->dBenachrichtigtAm = 'now()';
-                $upd->cAbgeholt         = 'N';
-                Shop::Container()->getDB()->update(
-                    'tverfuegbarkeitsbenachrichtigung',
-                    'kVerfuegbarkeitsbenachrichtigung',
-                    $Benachrichtigung->kVerfuegbarkeitsbenachrichtigung,
-                    $upd
-                );
-            }
-        }
     }
 }
 
@@ -641,9 +643,12 @@ function setzePreisverlauf($kArtikel, $kKundengruppe, $fVKNetto)
             Shop::Container()->getDB()->delete('tpreisverlauf', 'kPreisverlauf', (int)$oPreis_arr[0]->kPreisverlauf);
         } else {
             // update if prices are different
-            Shop::Container()->getDB()->update('tpreisverlauf', 'kPreisverlauf', (int)$oPreis_arr[0]->kPreisverlauf, (object)[
-                'fVKNetto' => $fVKNetto,
-            ]);
+            Shop::Container()->getDB()->update(
+                'tpreisverlauf',
+                'kPreisverlauf',
+                (int)$oPreis_arr[0]->kPreisverlauf,
+                (object)['fVKNetto' => $fVKNetto]
+            );
         }
     } else {
         // no price for today exists
@@ -658,9 +663,6 @@ function setzePreisverlauf($kArtikel, $kKundengruppe, $fVKNetto)
             'dDate'         => 'now()',
         ]);
     }
-
-    // Clear Artikel Cache
-    Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE . '_' . $kArtikel]);
 }
 
 /**
@@ -708,7 +710,7 @@ function handleError($output)
     if (function_exists('error_get_last')) {
         $error = error_get_last();
         if ($error['type'] == 1) {
-            $cError  = translateError($error['message']) . "\n";
+            $cError = translateError($error['message']) . "\n";
             $cError .= 'Datei: ' . $error['file'];
             Shop::Container()->getLogService()->error($cError);
 
@@ -724,9 +726,8 @@ function handleError($output)
  * @param int           $kArtikel
  * @param int           $kArtikelPict
  */
-function deleteArticleImage($oArtikelPict = null, $kArtikel = 0, $kArtikelPict = 0)
+function deleteArticleImage($oArtikelPict = null, int $kArtikel = 0, int $kArtikelPict = 0)
 {
-    $kArtikelPict = (int)$kArtikelPict;
     if ($oArtikelPict === null && $kArtikelPict > 0) {
         $oArtikelPict = Shop::Container()->getDB()->select('tartikelpict', 'kArtikelPict', $kArtikelPict);
         $kArtikel     = isset($oArtikelPict->kArtikel) ? (int)$oArtikelPict->kArtikel : 0;
@@ -735,24 +736,22 @@ function deleteArticleImage($oArtikelPict = null, $kArtikel = 0, $kArtikelPict =
     if (isset($oArtikelPict->kMainArtikelBild) && $oArtikelPict->kMainArtikelBild > 0 && $kArtikel > 0) {
         // Existiert der Artikel vom Mainbild noch?
         $oMainArtikel = Shop::Container()->getDB()->query(
-            "SELECT kArtikel
+            'SELECT kArtikel
                 FROM tartikel
-                WHERE kArtikel =
-                (
+                WHERE kArtikel = (
                     SELECT kArtikel
                         FROM tartikelpict
-                        WHERE kArtikelPict = " . (int)$oArtikelPict->kMainArtikelBild . "
-                )",
+                        WHERE kArtikelPict = ' . (int)$oArtikelPict->kMainArtikelBild . ')',
             \DB\ReturnType::SINGLE_OBJECT
         );
         // Main Artikel existiert nicht mehr
         if (!isset($oMainArtikel->kArtikel) || $oMainArtikel->kArtikel == 0) {
             // Existiert noch eine andere aktive Verknüpfung auf das Mainbild?
             $oArtikelPictPara_arr = Shop::Container()->getDB()->query(
-                "SELECT kArtikelPict
+                'SELECT kArtikelPict
                     FROM tartikelpict
-                    WHERE kMainArtikelBild = " . (int)$oArtikelPict->kMainArtikelBild . "
-                        AND kArtikel != " . (int)$kArtikel,
+                    WHERE kMainArtikelBild = ' . (int)$oArtikelPict->kMainArtikelBild . '
+                        AND kArtikel != ' . (int)$kArtikel,
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             // Lösche das MainArtikelBild
@@ -763,7 +762,8 @@ function deleteArticleImage($oArtikelPict = null, $kArtikel = 0, $kArtikelPict =
                 @unlink(PFAD_ROOT . PFAD_PRODUKTBILDER_NORMAL . $oArtikelPict->cPfad);
                 @unlink(PFAD_ROOT . PFAD_PRODUKTBILDER_GROSS . $oArtikelPict->cPfad);
                 // Bild vom Main aus DB löschen
-                Shop::Container()->getDB()->delete('tartikelpict', 'kArtikelPict', (int)$oArtikelPict->kMainArtikelBild);
+                Shop::Container()->getDB()->delete('tartikelpict', 'kArtikelPict',
+                    (int)$oArtikelPict->kMainArtikelBild);
             }
         }
         // Bildverknüpfung aus DB löschen
@@ -771,10 +771,11 @@ function deleteArticleImage($oArtikelPict = null, $kArtikel = 0, $kArtikelPict =
     } elseif (isset($oArtikelPict->kMainArtikelBild) && $oArtikelPict->kMainArtikelBild == 0) {
         // Das Bild ist ein Hauptbild
         // Gibt es Artikel die auf Bilder des zu löschenden Artikel verknüpfen?
-        $oVerknuepfteArtikel_arr = Shop::Container()->getDB()->query(
+        $oVerknuepfteArtikel_arr = Shop::Container()->getDB()->queryPrepared(
             'SELECT kArtikelPict
                 FROM tartikelpict
-                WHERE kMainArtikelBild = ' . (int)$oArtikelPict->kArtikelPict,
+                WHERE kMainArtikelBild = :img',
+            ['img' => (int)$oArtikelPict->kArtikelPict],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (count($oVerknuepfteArtikel_arr) === 0) {
@@ -782,8 +783,8 @@ function deleteArticleImage($oArtikelPict = null, $kArtikel = 0, $kArtikelPict =
             $oObj = Shop::Container()->getDB()->queryPrepared(
                 'SELECT count(*) AS nCount
                     FROM tartikelpict
-                    WHERE cPfad = :path',
-                ['path' => $oArtikelPict->cPfad],
+                    WHERE cPfad = :pth',
+                ['pth' => $oArtikelPict->cPfad],
                 \DB\ReturnType::SINGLE_OBJECT
             );
             if (isset($oObj->nCount) && $oObj->nCount < 2) {
@@ -865,30 +866,31 @@ function checkDbeSXmlRedirect($cSeoOld, $cSeoNew)
 function getSeoFromDB($kKey, $cKey, $kSprache = null, $cAssoc = null)
 {
     $kKey = (int)$kKey;
-    if ($kKey > 0 && strlen($cKey) > 0) {
-        if ($kSprache !== null && (int)$kSprache > 0) {
-            $kSprache = (int)$kSprache;
-            $oSeo     = Shop::Container()->getDB()->select('tseo', 'kKey', $kKey, 'cKey', $cKey, 'kSprache', $kSprache);
-            if (isset($oSeo->kKey) && (int)$oSeo->kKey > 0) {
-                return $oSeo;
-            }
-        } else {
-            $oSeo_arr = Shop::Container()->getDB()->selectAll('tseo', ['kKey', 'cKey'], [$kKey, $cKey]);
-            if (is_array($oSeo_arr) && count($oSeo_arr) > 0) {
-                if ($cAssoc !== null && strlen($cAssoc) > 0) {
-                    $oAssoc_arr = [];
-                    foreach ($oSeo_arr as $oSeo) {
-                        if (isset($oSeo->{$cAssoc})) {
-                            $oAssoc_arr[$oSeo->{$cAssoc}] = $oSeo;
-                        }
-                    }
-                    if (count($oAssoc_arr) > 0) {
-                        $oSeo_arr = $oAssoc_arr;
+    if (!($kKey > 0 && strlen($cKey) > 0)) {
+        return null;
+    }
+    if ($kSprache !== null && (int)$kSprache > 0) {
+        $kSprache = (int)$kSprache;
+        $oSeo     = Shop::Container()->getDB()->select('tseo', 'kKey', $kKey, 'cKey', $cKey, 'kSprache', $kSprache);
+        if (isset($oSeo->kKey) && (int)$oSeo->kKey > 0) {
+            return $oSeo;
+        }
+    } else {
+        $oSeo_arr = Shop::Container()->getDB()->selectAll('tseo', ['kKey', 'cKey'], [$kKey, $cKey]);
+        if (is_array($oSeo_arr) && count($oSeo_arr) > 0) {
+            if ($cAssoc !== null && strlen($cAssoc) > 0) {
+                $oAssoc_arr = [];
+                foreach ($oSeo_arr as $oSeo) {
+                    if (isset($oSeo->{$cAssoc})) {
+                        $oAssoc_arr[$oSeo->{$cAssoc}] = $oSeo;
                     }
                 }
-
-                return $oSeo_arr;
+                if (count($oAssoc_arr) > 0) {
+                    $oSeo_arr = $oAssoc_arr;
+                }
             }
+
+            return $oSeo_arr;
         }
     }
 
@@ -901,15 +903,13 @@ function getSeoFromDB($kKey, $cKey, $kSprache = null, $cAssoc = null)
  * @param int|null $kKunde
  * @return mixed
  */
-function handlePriceFormat($kArtikel, $kKundengruppe, $kKunde = null)
+function handlePriceFormat(int $kArtikel, int $kKundengruppe, int $kKunde = null)
 {
-    // tpreis
     $o                = new stdClass();
-    $o->kArtikel      = (int)$kArtikel;
-    $o->kKundengruppe = (int)$kKundengruppe;
-
-    if ($kKunde !== null && (int)$kKunde > 0) {
-        $o->kKunde = (int)$kKunde;
+    $o->kArtikel      = $kArtikel;
+    $o->kKundengruppe = $kKundengruppe;
+    if ($kKunde !== null && $kKunde > 0) {
+        $o->kKunde = $kKunde;
         flushCustomerPriceCache($o->kKunde);
     }
 
@@ -955,74 +955,78 @@ function handlePriceFormat($kArtikel, $kKundengruppe, $kKunde = null)
  */
 function handleNewPriceFormat($xml)
 {
-    if (is_array($xml) && isset($xml['tpreis'])) {
-        $preise = mapArray($xml, 'tpreis', $GLOBALS['mPreis']);
-        if (is_array($preise) && count($preise) > 0) {
-            $kArtikel  = (int)$preise[0]->kArtikel;
-            $Kunde_arr = Shop::Container()->getDB()->selectAll('tpreis', ['kArtikel', 'kKundengruppe'], [$kArtikel, 0], 'kKunde');
-            if (!empty($Kunde_arr)) {
-                foreach ($Kunde_arr as $Kunde) {
-                    $kKunde = (int)$Kunde->kKunde;
-                    if ($kKunde > 0) {
-                        flushCustomerPriceCache($kKunde);
-                    }
-                }
+    if (!is_array($xml) || !isset($xml['tpreis'])) {
+        return;
+    }
+    $preise = mapArray($xml, 'tpreis', $GLOBALS['mPreis']);
+    if (count($preise) === 0) {
+        return;
+    }
+    $kArtikel  = (int)$preise[0]->kArtikel;
+    $customers = Shop::Container()->getDB()->selectAll(
+        'tpreis',
+        ['kArtikel', 'kKundengruppe'],
+        [$kArtikel, 0],
+        'kKunde'
+    );
+    foreach ($customers as $customer) {
+        $kKunde = (int)$customer->kKunde;
+        if ($kKunde > 0) {
+            flushCustomerPriceCache($kKunde);
+        }
+    }
+    Shop::Container()->getDB()->query(
+        'DELETE p, d
+            FROM tpreis AS p
+            LEFT JOIN tpreisdetail AS d 
+                ON d.kPreis = p.kPreis
+            WHERE p.kArtikel = ' . $kArtikel,
+        \DB\ReturnType::DEFAULT
+    );
+    $customerGroupHandled = [];
+    foreach ($preise as $i => $preis) {
+        $kPreis = handlePriceFormat($preis->kArtikel, $preis->kKundenGruppe, $preis->kKunde);
+        if (!empty($xml['tpreis'][$i])) {
+            $preisdetails = mapArray($xml['tpreis'][$i], 'tpreisdetail', $GLOBALS['mPreisDetail']);
+        } else {
+            $preisdetails = mapArray($xml['tpreis'], 'tpreisdetail', $GLOBALS['mPreisDetail']);
+        }
+        $hasDefaultPrice = false;
+        foreach ($preisdetails as $preisdetail) {
+            $o = (object)[
+                'kPreis'    => $kPreis,
+                'nAnzahlAb' => $preisdetail->nAnzahlAb,
+                'fVKNetto'  => $preisdetail->fNettoPreis
+            ];
+            Shop::Container()->getDB()->insert('tpreisdetail', $o);
+            if ((int)$o->nAnzahlAb === 0) {
+                $hasDefaultPrice = true;
             }
-            Shop::Container()->getDB()->queryPrepared(
-                'DELETE p, d
-                    FROM tpreis AS p
-                    LEFT JOIN tpreisdetail AS d 
-                        ON d.kPreis = p.kPreis
-                    WHERE p.kArtikel = :pid',
-                ['pid' => $kArtikel],
-                \DB\ReturnType::DEFAULT
-            );
-            $customerGroupHandled = [];
-            foreach ($preise as $i => $preis) {
-                $kPreis = handlePriceFormat($preis->kArtikel, $preis->kKundenGruppe, $preis->kKunde);
-                if (!empty($xml['tpreis'][$i])) {
-                    $preisdetails = mapArray($xml['tpreis'][$i], 'tpreisdetail', $GLOBALS['mPreisDetail']);
-                } else {
-                    $preisdetails = mapArray($xml['tpreis'], 'tpreisdetail', $GLOBALS['mPreisDetail']);
-                }
-                $hasDefaultPrice = false;
-                foreach ($preisdetails as $preisdetail) {
-                    $o = (object)[
-                        'kPreis'    => $kPreis,
-                        'nAnzahlAb' => $preisdetail->nAnzahlAb,
-                        'fVKNetto'  => $preisdetail->fNettoPreis
-                    ];
-                    Shop::Container()->getDB()->insert('tpreisdetail', $o);
-                    if ($o->nAnzahlAb == 0) {
-                        $hasDefaultPrice = true;
-                    }
-                }
-                // default price for customergroup set?
-                if (!$hasDefaultPrice && isset($xml['fStandardpreisNetto'])) {
-                    $o = (object)[
-                        'kPreis'    => $kPreis,
-                        'nAnzahlAb' => 0,
-                        'fVKNetto'  => $xml['fStandardpreisNetto']
-                    ];
-                    Shop::Container()->getDB()->insert('tpreisdetail', $o);
-                }
-                $customerGroupHandled[] = (int)$preis->kKundenGruppe;
-            }
-            //any customergroups with missing tpreis node left?
-            $kKundengruppen_arr = Kundengruppe::getGroups();
-            /** @var Kundengruppe $customergroup */
-            foreach ($kKundengruppen_arr as $customergroup) {
-                $kKundengruppe = $customergroup->getID();
-                if (isset($xml['fStandardpreisNetto']) && !in_array($kKundengruppe, $customerGroupHandled, true)) {
-                    $kPreis = handlePriceFormat($kArtikel, $kKundengruppe);
-                    $o      = (object)[
-                        'kPreis'    => $kPreis,
-                        'nAnzahlAb' => 0,
-                        'fVKNetto'  => $xml['fStandardpreisNetto']
-                    ];
-                    Shop::Container()->getDB()->insert('tpreisdetail', $o);
-                }
-            }
+        }
+        // default price for customergroup set?
+        if (!$hasDefaultPrice && isset($xml['fStandardpreisNetto'])) {
+            $o = (object)[
+                'kPreis'    => $kPreis,
+                'nAnzahlAb' => 0,
+                'fVKNetto'  => $xml['fStandardpreisNetto']
+            ];
+            Shop::Container()->getDB()->insert('tpreisdetail', $o);
+        }
+        $customerGroupHandled[] = (int)$preis->kKundenGruppe;
+    }
+    //any customergroups with missing tpreis node left?
+    $kKundengruppen_arr = Kundengruppe::getGroups();
+    /** @var Kundengruppe $customergroup */
+    foreach ($kKundengruppen_arr as $customergroup) {
+        $kKundengruppe = $customergroup->getID();
+        if (isset($xml['fStandardpreisNetto']) && !in_array($kKundengruppe, $customerGroupHandled, true)) {
+            $kPreis = handlePriceFormat($kArtikel, $kKundengruppe);
+            $o      = (object)[
+                'kPreis'    => $kPreis,
+                'nAnzahlAb' => 0,
+                'fVKNetto'  => $xml['fStandardpreisNetto']
+            ];
+            Shop::Container()->getDB()->insert('tpreisdetail', $o);
         }
     }
 }
@@ -1032,33 +1036,32 @@ function handleNewPriceFormat($xml)
  */
 function handleOldPriceFormat($objs)
 {
-    if (is_array($objs) && count($objs) > 0) {
-        $kArtikel  = (int)$objs[0]->kArtikel;
-        $Kunde_arr = Shop::Container()->getDB()->selectAll('tpreis', ['kArtikel', 'kKundengruppe'], [$kArtikel, 0], 'kKunde');
-        if (!empty($Kunde_arr)) {
-            foreach ($Kunde_arr as $Kunde) {
-                $kKunde = (int)$Kunde->kKunde;
-                if ($kKunde > 0) {
-                    flushCustomerPriceCache($kKunde);
-                }
-            }
-        }
-        Shop::Container()->getDB()->queryPrepared(
-            'DELETE p, d
-                FROM tpreis AS p
-                LEFT JOIN tpreisdetail AS d 
-                    ON d.kPreis = p.kPreis
-                WHERE p.kArtikel = :pid',
-            ['pid' => $kArtikel],
-            \DB\ReturnType::DEFAULT
-        );
-        foreach ($objs as $obj) {
-            $kPreis = handlePriceFormat($obj->kArtikel, $obj->kKundengruppe);
-            // tpreisdetail
-            insertPriceDetail($obj, 0, $kPreis);
-            for ($i = 1; $i <= 5; $i++) {
-                insertPriceDetail($obj, $i, $kPreis);
-            }
+    if (!is_array($objs) || count($objs) === 0) {
+        return;
+    }
+    $kArtikel  = (int)$objs[0]->kArtikel;
+    $customers = Shop::Container()->getDB()->selectAll(
+        'tpreis',
+        ['kArtikel', 'kKundengruppe'],
+        [$kArtikel, 0],
+        'kKunde'
+    );
+    foreach ($customers as $customer) {
+        flushCustomerPriceCache((int)$customer->kKunde);
+    }
+    Shop::Container()->getDB()->query(
+        'DELETE p, d
+            FROM tpreis AS p
+            LEFT JOIN tpreisdetail AS d 
+                ON d.kPreis = p.kPreis
+            WHERE p.kArtikel = ' . $kArtikel,
+        \DB\ReturnType::DEFAULT
+    );
+    foreach ($objs as $obj) {
+        $kPreis = handlePriceFormat((int)$obj->kArtikel, (int)$obj->kKundengruppe);
+        insertPriceDetail($obj, 0, $kPreis);
+        for ($i = 1; $i <= 5; $i++) {
+            insertPriceDetail($obj, $i, $kPreis);
         }
     }
 }
@@ -1066,7 +1069,7 @@ function handleOldPriceFormat($objs)
 /**
  * @param int $kArtikel
  */
-function handlePriceRange($kArtikel)
+function handlePriceRange(int $kArtikel)
 {
     $priceRangeArr = Shop::Container()->getDB()->queryPrepared(
         "SELECT baseprice.kArtikel,
@@ -1145,14 +1148,14 @@ function handlePriceRange($kArtikel)
     $updated = [];
     foreach ($priceRangeArr as $priceRange) {
         Shop::Container()->getDB()->queryPrepared(
-            "INSERT INTO tpricerange (kArtikel, kKundengruppe, kKunde, nRangeType, fVKNettoMin, fVKNettoMax, nLagerAnzahlMax, dStart, dEnde)
+            'INSERT INTO tpricerange (kArtikel, kKundengruppe, kKunde, nRangeType, fVKNettoMin, fVKNettoMax, nLagerAnzahlMax, dStart, dEnde)
                 VALUES (:kArtikel, :kKundengruppe, :kKunde, :nRangeType, :fVKNettoMin, :fVKNettoMax, :nLagerAnzahlMax, :dStart, :dEnde)
                 ON DUPLICATE KEY UPDATE
                     fVKNettoMin = :fVKNettoMin,
                     fVKNettoMax = :fVKNettoMax,
                     nLagerAnzahlMax = :nLagerAnzahlMax,
                     dStart = :dStart,
-                    dEnde = :dEnde",
+                    dEnde = :dEnde',
             $priceRange,
             \DB\ReturnType::AFFECTED_ROWS
         );
@@ -1189,8 +1192,8 @@ function insertPriceDetail($obj, $index, $priceId)
     if ((isset($obj->{$count}) && (int)$obj->{$count} > 0) || $index === 0) {
         $o            = new stdClass();
         $o->kPreis    = $priceId;
-        $o->nAnzahlAb = ($index === 0) ? 0 : $obj->{$count};
-        $o->fVKNetto  = ($index === 0) ? $obj->fVKNetto : $obj->{$price};
+        $o->nAnzahlAb = $index === 0 ? 0 : $obj->{$count};
+        $o->fVKNetto  = $index === 0 ? $obj->fVKNetto : $obj->{$price};
 
         Shop::Container()->getDB()->insert('tpreisdetail', $o);
     }
@@ -1229,9 +1232,9 @@ function mappeWawiAnrede2ShopAnrede($cAnrede)
  * 9: HTTP_EBAYERROR
  *
  * @param string $msg Exception Message
- * @param int $wawiExceptionCode int code (0-9)
+ * @param int    $wawiExceptionCode int code (0-9)
  */
-function syncException($msg, $wawiExceptionCode = null)
+function syncException(string $msg, int $wawiExceptionCode = null)
 {
     $output = '';
     if ($wawiExceptionCode !== null) {
@@ -1256,9 +1259,9 @@ function flushCategoryTreeCache()
  * @param int $kKunde
  * @return bool|int
  */
-function flushCustomerPriceCache($kKunde)
+function flushCustomerPriceCache(int $kKunde)
 {
-    return Shop::Cache()->flush('custprice_' . (int)$kKunde);
+    return Shop::Cache()->flush('custprice_' . $kKunde);
 }
 
 /**

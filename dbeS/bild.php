@@ -5,26 +5,21 @@
  */
 
 require_once __DIR__ . '/syncinclude.php';
-// Einstellungen holen
-$Einstellungen = Shop::getSettings([CONF_BILDER]);
 
+$Einstellungen = Shop::getSettings([CONF_BILDER]);
 if ($Einstellungen['bilder']['bilder_externe_bildschnittstelle'] === 'N') {
-    // Schnittstelle ist deaktiviert
     exit();
 }
 if ($Einstellungen['bilder']['bilder_externe_bildschnittstelle'] === 'W' && !auth()) {
-    // Nur Wawi darf zugreifen
     exit();
 }
 
-// Parameter holen
 $kArtikel    = RequestHelper::verifyGPCDataInt('a'); // Angeforderter Artikel
 $nBildNummer = RequestHelper::verifyGPCDataInt('n'); // Bildnummer
 $nURL        = RequestHelper::verifyGPCDataInt('url'); // Soll die URL zum Bild oder das Bild direkt ausgegeben werden
 $nSize       = RequestHelper::verifyGPCDataInt('s'); // Bildgröße
 
 if ($kArtikel > 0 && $nBildNummer > 0 && $nSize > 0) {
-    // Standardkundengruppe holen
     $oKundengruppe = Shop::Container()->getDB()->select('tkundengruppe', 'cStandard', 'Y');
     if (!isset($oKundengruppe->kKundengruppe)) {
         exit();
@@ -53,7 +48,7 @@ if ($kArtikel > 0 && $nBildNummer > 0 && $nSize > 0) {
             gibPfadGroesse($nSize),
             $oArtikelPict->nNr
         );
-        if (!file_exists($image)){
+        if (!file_exists($image)) {
             $req = MediaImage::toRequest($image);
             MediaImage::cacheImage($req);
         }
@@ -113,7 +108,7 @@ function gibPfadGroesse(int $nSize)
  * @param string $cBildPfad
  * @return bool|string
  */
-function gibBildformat($cBildPfad)
+function gibBildformat(string $cBildPfad)
 {
     $nSize_arr = getimagesize($cBildPfad);
     $nTyp      = $nSize_arr[2];
@@ -150,7 +145,7 @@ function gibBildformat($cBildPfad)
  * @param string $cBildPfad
  * @return bool|resource
  */
-function ladeBild($cBildPfad)
+function ladeBild(string $cBildPfad)
 {
     $nSize_arr = getimagesize($cBildPfad);
     $nTyp      = $nSize_arr[2];

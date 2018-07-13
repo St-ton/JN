@@ -19,10 +19,10 @@ if (auth()) {
         $return = 0;
         foreach ($syncFiles as $xmlFile) {
             $xml = simplexml_load_file($xmlFile);
-            if (strpos($xmlFile, 'bildartikellink.xml') !== false) {
-                bildartikellink_xml($xml);
-            } elseif (strpos($xmlFile, 'del_bildartikellink.xml') !== false) {
+            if (strpos($xmlFile, 'del_bildartikellink.xml') !== false) {
                 del_bildartikellink_xml($xml);
+            } elseif (strpos($xmlFile, 'bildartikellink.xml') !== false) {
+                bildartikellink_xml($xml);
             }
             removeTemporaryFiles($xmlFile);
         }
@@ -40,8 +40,12 @@ function bildartikellink_xml(SimpleXMLElement $xml)
     $articleIDs      = [];
     $cacheArticleIDs = [];
     foreach ($items as $item) {
-        //delete link first. Important because jtl-wawi does not send del_bildartikellink when image is updated.
-        Shop::Container()->getDB()->delete('tartikelpict', ['kArtikel', 'nNr'], [(int)$item->kArtikel, (int)$item->nNr]);
+        // delete link first. Important because jtl-wawi does not send del_bildartikellink when image is updated.
+        Shop::Container()->getDB()->delete(
+            'tartikelpict',
+            ['kArtikel', 'nNr'],
+            [(int)$item->kArtikel, (int)$item->nNr]
+        );
         $articleIDs[] = (int)$item->kArtikel;
         DBUpdateInsert('tartikelpict', [$item], 'kArtikelPict');
     }
@@ -74,7 +78,8 @@ function del_bildartikellink_xml(SimpleXMLElement $xml)
 /**
  * @param stdClass $item
  */
-function del_img_item($item) {
+function del_img_item($item)
+{
     $image = Shop::Container()->getDB()->select('tartikelpict', 'kArtikel', $item->kArtikel, 'nNr', $item->nNr);
     if (is_object($image)) {
         // is last reference
@@ -82,14 +87,18 @@ function del_img_item($item) {
             'SELECT COUNT(*) AS cnt FROM tartikelpict WHERE kBild = ' . (int)$image->kBild,
             \DB\ReturnType::SINGLE_OBJECT
         );
-        if ($res->cnt == 1) {
+        if ((int)$res->cnt === 1) {
             Shop::Container()->getDB()->delete('tbild', 'kBild', (int)$image->kBild);
             $storage = PFAD_ROOT . PFAD_MEDIA_IMAGE_STORAGE . $image->cPfad;
             if (file_exists($storage)) {
                 @unlink($storage);
             }
         }
-        Shop::Container()->getDB()->delete('tartikelpict', ['kArtikel', 'nNr'], [(int)$item->kArtikel, (int)$item->nNr]);
+        Shop::Container()->getDB()->delete(
+            'tartikelpict',
+            ['kArtikel', 'nNr'],
+            [(int)$item->kArtikel, (int)$item->nNr]
+        );
     }
 }
 

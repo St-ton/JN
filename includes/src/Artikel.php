@@ -4134,7 +4134,7 @@ class Artikel
             $this->holehilfreichsteBewertung($kSprache)
                  ->holeBewertung($kSprache, -1, 1, 0, $this->conf['bewertung']['bewertung_freischalten']);
         }
-        if (count($_SESSION['Sprachen']) > 0 && $this->getOption('nLanguageURLs', 0) === 1) {
+        if (isset($_SESSION['Sprachen']) && count($_SESSION['Sprachen']) > 0 && $this->getOption('nLanguageURLs', 0) === 1) {
             $this->baueArtikelSprachURL();
         }
         $this->cKurzbezeichnung = !empty($this->AttributeAssoc[ART_ATTRIBUT_SHORTNAME])

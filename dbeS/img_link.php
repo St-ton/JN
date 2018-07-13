@@ -29,10 +29,10 @@ if (auth()) {
                 );
             }
             $xml = simplexml_load_file($xmlFile);
-            if (strpos($xmlFile, 'bildartikellink.xml') !== false) {
-                bildartikellink_xml($xml);
-            } elseif (strpos($xmlFile, 'del_bildartikellink.xml') !== false) {
+            if (strpos($xmlFile, 'del_bildartikellink.xml') !== false) {
                 del_bildartikellink_xml($xml);
+            } elseif (strpos($xmlFile, 'bildartikellink.xml') !== false) {
+                bildartikellink_xml($xml);
             }
             removeTemporaryFiles($xmlFile);
         }
@@ -50,7 +50,7 @@ function bildartikellink_xml(SimpleXMLElement $xml)
     $articleIDs      = [];
     $cacheArticleIDs = [];
     foreach ($items as $item) {
-        //delete link first. Important because jtl-wawi does not send del_bildartikellink when image is updated.
+        // delete link first. Important because jtl-wawi does not send del_bildartikellink when image is updated.
         Shop::Container()->getDB()->delete(
             'tartikelpict',
             ['kArtikel', 'nNr'],

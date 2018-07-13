@@ -2680,8 +2680,23 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
             'Erst ab diesem Bestellwert kann diese Zahlungsart genutzt werden.',
             'Nur bis zu diesem Bestellwert wird diese Zahlungsart angeboten. (einschliesslich)'];
         $nSort_arr         = [100, 101, 102];
+        $cWertNameExistsInXML_arr  = [];
 
+        //check if standard is declared in plugin
+        if (isset($Method_arr['Setting'])
+            && is_array($Method_arr['Setting'])
+            && count($Method_arr['Setting']) > 0
+        ) {
+            foreach ($Method_arr['Setting'] as $Setting_arr) {
+                if (isset($Setting_arr['ValueName']) && in_array($Setting_arr['ValueName'], $cWertName_arr, true)) {
+                    $cWertNameExistsInXML_arr[] = $Setting_arr['ValueName'];
+                }
+            }
+        }
         for ($z = 0; $z < 3; $z++) {
+            if (in_array($cWertName_arr[$z], $cWertNameExistsInXML_arr, true)) {
+                continue; //skip and write later from xml
+            }
             // tplugineinstellungen füllen
             $oPluginEinstellungen          = new stdClass();
             $oPluginEinstellungen->kPlugin = $kPlugin;

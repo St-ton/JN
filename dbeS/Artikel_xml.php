@@ -84,7 +84,7 @@ function bearbeiteDeletes($xml, array $conf)
         Shop::Container()->getDB()->queryPrepared(
             'DELETE teigenschaftkombiwert
                 FROM teigenschaftkombiwert
-                    JOIN tartikel 
+                JOIN tartikel 
                     ON tartikel.kArtikel = :pid
                     AND tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi',
             ['pid' => $kArtikel],

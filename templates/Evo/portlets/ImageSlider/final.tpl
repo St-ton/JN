@@ -127,7 +127,7 @@
                         }
                     });
                     slider.nivoSlider({
-                        effect:           {if !empty($instance->getProperty('slider-effects-random'))}'random'{else}'{foreach name="effects" from=$instance->getProperty('effects') key=effect item=effectval}{$effect}{if !$smarty.foreach.effects.last},{/if}{/foreach}'{/if},
+                        effect:           {if !empty($instance->getProperty('slider-effects-random')) && $instance->getProperty('slider-effects-random') === 'true'}'random'{else}'{foreach name="effects" from=$instance->getProperty('effects') key=effect item=effectval}{$effectval}{if !$smarty.foreach.effects.last},{/if}{/foreach}'{/if},
                         animSpeed:        {if !empty($instance->getProperty('slider-animation-speed'))}{$instance->getProperty('slider-animation-speed')}{else}500{/if},
                         pauseTime:        {if !empty($instance->getProperty('slider-animation-pause'))}{$instance->getProperty('slider-animation-pause')}{else}3000{/if},
                         directionNav:     {$instance->getProperty('slider-direction-navigation')},

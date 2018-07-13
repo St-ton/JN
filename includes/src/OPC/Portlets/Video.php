@@ -62,10 +62,10 @@ class Video extends \OPC\Portlet
                 'type'    => 'radio',
                 'inline'  => true,
                 'options' => [
-                    '1' => 'ja',
-                    '0' => 'nein',
+                    true  => 'ja',
+                    false => 'nein',
                 ],
-                'default' => '1',
+                'default' => true,
             ],
             'video-width'       => [
                 'label'      => 'Breite',

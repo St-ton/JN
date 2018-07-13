@@ -506,14 +506,15 @@ function updateXMLinDB($xml, $tabelle, $map, $pk1, $pk2 = 0)
 /**
  * @param object $product
  * @param array  $customerGroups
+ * @return array
  */
-function fuelleArtikelKategorieRabatt($product, $customerGroups)
+function fuelleArtikelKategorieRabatt($product, $customerGroups): array
 {
+    $affectedProductIDs = [];
     Shop::Container()->getDB()->delete('tartikelkategorierabatt', 'kArtikel', (int)$product->kArtikel);
     if (!is_array($customerGroups) || count($customerGroups) === 0) {
-        return;
+        return $affectedProductIDs;
     }
-    $affectedProductIDs = [];
     foreach ($customerGroups as $oKundengruppe) {
         $oMaxRabatt = Shop::Container()->getDB()->queryPrepared(
             'SELECT tkategoriekundengruppe.fRabatt, tkategoriekundengruppe.kKategorie
@@ -542,10 +543,11 @@ function fuelleArtikelKategorieRabatt($product, $customerGroups)
             $discount->kKategorie    = $oMaxRabatt->kKategorie;
             $discount->fRabatt       = $oMaxRabatt->fRabatt;
             Shop::Container()->getDB()->insert('tartikelkategorierabatt', $discount);
-            $affectedProductIDs[] = CACHING_GROUP_ARTICLE . '_' . $product->kArtikel;
+            $affectedProductIDs[] = $product->kArtikel;
         }
     }
-    Shop::Container()->getCache()->flushTags(array_unique($affectedProductIDs));
+
+    return $affectedProductIDs;
 }
 
 /**
@@ -956,7 +958,7 @@ function handleNewPriceFormat($xml)
         return;
     }
     $preise = mapArray($xml, 'tpreis', $GLOBALS['mPreis']);
-    if (!is_array($preise) || count($preise) === 0) {
+    if (count($preise) === 0) {
         return;
     }
     $kArtikel  = (int)$preise[0]->kArtikel;

@@ -116,7 +116,7 @@ function bearbeiteInsert($xml)
             if ($mmCount < 2) {
                 $MerkmalWert_arr = mapArray($xml['merkmale']['tmerkmal'], 'tmerkmalwert', $GLOBALS['mMerkmalWert']);
                 //lösche Merkmal --> Update = Delete + Insert
-                if (is_array($MerkmalWert_arr) && count($MerkmalWert_arr) > 0) {
+                if (count($MerkmalWert_arr) > 0) {
                     loescheMerkmal($xml['merkmale']['tmerkmal attr']['kMerkmal'], 0);
                 } else {
                     loescheNurMerkmal($xml['merkmale']['tmerkmal attr']['kMerkmal']);
@@ -222,8 +222,7 @@ function bearbeiteInsert($xml)
                 }
             } else {
                 $MerkmalWert_arr = mapArray($xml['merkmale']['tmerkmal'][$i], 'tmerkmalwert', $GLOBALS['mMerkmalWert']);
-
-                if (is_array($MerkmalWert_arr) && count($MerkmalWert_arr) > 0) {
+                if (count($MerkmalWert_arr) > 0) {
                     loescheMerkmal($xml['merkmale']['tmerkmal'][$i . ' attr']['kMerkmal'], 0);
                 } else {
                     loescheNurMerkmal($xml['merkmale']['tmerkmal'][$i . ' attr']['kMerkmal']);
@@ -333,74 +332,75 @@ function bearbeiteInsert($xml)
     }
 
     // Kommen nur MerkmalWerte?
-    if (isset($xml['merkmale']['tmerkmalwert']) && is_array($xml['merkmale']['tmerkmalwert'])) {
-        $MerkmalWert_arr = mapArray($xml['merkmale'], 'tmerkmalwert', $GLOBALS['mMerkmalWert']);
-        $i               = 0;
-
-        if (!isset($oMM_arr[$i]) || $oMM_arr[$i] === null) {
-            $oMM_arr[$i] = new stdClass();
-        }
-
-        $oMM_arr[$i]->oMMW_arr = [];
-        $mmwCount              = count($MerkmalWert_arr);
-        for ($o = 0; $o < $mmwCount; $o++) {
-            loescheMerkmalWert($MerkmalWert_arr[$o]->kMerkmalWert, true);
-            $oMM_arr[$i]->oMMW_arr[$o]               = new stdClass();
-            $oMM_arr[$i]->oMMW_arr[$o]->kMerkmalWert = $MerkmalWert_arr[$o]->kMerkmalWert;
-            $oMM_arr[$i]->oMMW_arr[$o]->kSprache_arr = [];
-
-            if (count($MerkmalWert_arr) < 2) {
-                $MerkmalWertSprache_arr = mapArray($xml['merkmale']['tmerkmalwert'], 'tmerkmalwertsprache', $GLOBALS['mMerkmalWertSprache']);
-            } else {
-                $MerkmalWertSprache_arr = mapArray($xml['merkmale']['tmerkmalwert'][$o], 'tmerkmalwertsprache', $GLOBALS['mMerkmalWertSprache']);
-            }
-            $mmwsaCount = count($MerkmalWertSprache_arr);
-            for ($j = 0; $j < $mmwsaCount; $j++) {
-                Shop::Container()->getDB()->delete(
-                    'tseo',
-                    ['kKey', 'cKey', 'kSprache'],
-                    [(int)$MerkmalWertSprache_arr[$j]->kMerkmalWert, 'kMerkmalWert', (int)$MerkmalWertSprache_arr[$j]->kSprache]
-                );
-                $cSeo = trim($MerkmalWertSprache_arr[$j]->cSeo)
-                    ? getFlatSeoPath($MerkmalWertSprache_arr[$j]->cSeo)
-                    : getFlatSeoPath($MerkmalWertSprache_arr[$j]->cWert);
-
-                $MerkmalWertSprache_arr[$j]->cSeo = getSeo($cSeo);
-                $MerkmalWertSprache_arr[$j]->cSeo = checkSeo($MerkmalWertSprache_arr[$j]->cSeo);
-                DBUpdateInsert('tmerkmalwertsprache', [$MerkmalWertSprache_arr[$j]], 'kMerkmalWert', 'kSprache');
-                //insert in tseo
-                $oSeo           = new stdClass();
-                $oSeo->cSeo     = $MerkmalWertSprache_arr[$j]->cSeo;
-                $oSeo->cKey     = 'kMerkmalWert';
-                $oSeo->kKey     = $MerkmalWertSprache_arr[$j]->kMerkmalWert;
-                $oSeo->kSprache = $MerkmalWertSprache_arr[$j]->kSprache;
-                Shop::Container()->getDB()->insert('tseo', $oSeo);
-
-                if (!in_array($MerkmalWertSprache_arr[$j]->kSprache, $oMM_arr[$i]->oMMW_arr[$o]->kSprache_arr)) {
-                    $oMM_arr[$i]->oMMW_arr[$o]->kSprache_arr[] = $MerkmalWertSprache_arr[$j]->kSprache;
-                }
-
-                if (isset($MerkmalWertSprache_arr[$j]->kSprache, $oSprachSTD->kSprache)
-                    && $MerkmalWertSprache_arr[$j]->kSprache == $oSprachSTD->kSprache
-                ) {
-                    $oMM_arr[$i]->oMMW_arr[$o]->cNameSTD            = $MerkmalWertSprache_arr[$j]->cWert;
-                    $oMM_arr[$i]->oMMW_arr[$o]->cSeoSTD             = $MerkmalWertSprache_arr[$j]->cSeo;
-                    $oMM_arr[$i]->oMMW_arr[$o]->cMetaTitleSTD       = $MerkmalWertSprache_arr[$j]->cMetaTitle;
-                    $oMM_arr[$i]->oMMW_arr[$o]->cMetaKeywordsSTD    = $MerkmalWertSprache_arr[$j]->cMetaKeywords;
-                    $oMM_arr[$i]->oMMW_arr[$o]->cMetaDescriptionSTD = $MerkmalWertSprache_arr[$j]->cMetaDescription;
-                    $oMM_arr[$i]->oMMW_arr[$o]->cBeschreibungSTD    = $MerkmalWertSprache_arr[$j]->cBeschreibung;
-                }
-            }
-            //alten Bildpfad nehmen
-            // tmerkmalwertbild
-            $kMerkmalWert     = $MerkmalWert_arr[$o]->kMerkmalWert;
-            $oMerkmalWertBild = Shop::Container()->getDB()->select('tmerkmalwertbild', 'kMerkmalWert', (int)$kMerkmalWert);
-
-            $MerkmalWert_arr[$o]->cBildpfad = $oMerkmalWertBild->cBildpfad ?? '';
-            DBUpdateInsert('tmerkmalwert', [$MerkmalWert_arr[$o]], 'kMerkmalWert');
-        }
-        fuelleFehlendeMMWInSeo($oMM_arr); // tseo prüfen und falls Seo einer Sprache leer => nachfüllen
+    if (!isset($xml['merkmale']['tmerkmalwert']) || !is_array($xml['merkmale']['tmerkmalwert'])) {
+        return;
     }
+    $MerkmalWert_arr = mapArray($xml['merkmale'], 'tmerkmalwert', $GLOBALS['mMerkmalWert']);
+    $i               = 0;
+
+    if (!isset($oMM_arr[$i]) || $oMM_arr[$i] === null) {
+        $oMM_arr[$i] = new stdClass();
+    }
+
+    $oMM_arr[$i]->oMMW_arr = [];
+    $mmwCount              = count($MerkmalWert_arr);
+    for ($o = 0; $o < $mmwCount; $o++) {
+        loescheMerkmalWert($MerkmalWert_arr[$o]->kMerkmalWert, true);
+        $oMM_arr[$i]->oMMW_arr[$o]               = new stdClass();
+        $oMM_arr[$i]->oMMW_arr[$o]->kMerkmalWert = $MerkmalWert_arr[$o]->kMerkmalWert;
+        $oMM_arr[$i]->oMMW_arr[$o]->kSprache_arr = [];
+
+        if (count($MerkmalWert_arr) < 2) {
+            $MerkmalWertSprache_arr = mapArray($xml['merkmale']['tmerkmalwert'], 'tmerkmalwertsprache', $GLOBALS['mMerkmalWertSprache']);
+        } else {
+            $MerkmalWertSprache_arr = mapArray($xml['merkmale']['tmerkmalwert'][$o], 'tmerkmalwertsprache', $GLOBALS['mMerkmalWertSprache']);
+        }
+        $mmwsaCount = count($MerkmalWertSprache_arr);
+        for ($j = 0; $j < $mmwsaCount; $j++) {
+            Shop::Container()->getDB()->delete(
+                'tseo',
+                ['kKey', 'cKey', 'kSprache'],
+                [(int)$MerkmalWertSprache_arr[$j]->kMerkmalWert, 'kMerkmalWert', (int)$MerkmalWertSprache_arr[$j]->kSprache]
+            );
+            $cSeo = trim($MerkmalWertSprache_arr[$j]->cSeo)
+                ? getFlatSeoPath($MerkmalWertSprache_arr[$j]->cSeo)
+                : getFlatSeoPath($MerkmalWertSprache_arr[$j]->cWert);
+
+            $MerkmalWertSprache_arr[$j]->cSeo = getSeo($cSeo);
+            $MerkmalWertSprache_arr[$j]->cSeo = checkSeo($MerkmalWertSprache_arr[$j]->cSeo);
+            DBUpdateInsert('tmerkmalwertsprache', [$MerkmalWertSprache_arr[$j]], 'kMerkmalWert', 'kSprache');
+            //insert in tseo
+            $oSeo           = new stdClass();
+            $oSeo->cSeo     = $MerkmalWertSprache_arr[$j]->cSeo;
+            $oSeo->cKey     = 'kMerkmalWert';
+            $oSeo->kKey     = $MerkmalWertSprache_arr[$j]->kMerkmalWert;
+            $oSeo->kSprache = $MerkmalWertSprache_arr[$j]->kSprache;
+            Shop::Container()->getDB()->insert('tseo', $oSeo);
+
+            if (!in_array($MerkmalWertSprache_arr[$j]->kSprache, $oMM_arr[$i]->oMMW_arr[$o]->kSprache_arr)) {
+                $oMM_arr[$i]->oMMW_arr[$o]->kSprache_arr[] = $MerkmalWertSprache_arr[$j]->kSprache;
+            }
+
+            if (isset($MerkmalWertSprache_arr[$j]->kSprache, $oSprachSTD->kSprache)
+                && $MerkmalWertSprache_arr[$j]->kSprache == $oSprachSTD->kSprache
+            ) {
+                $oMM_arr[$i]->oMMW_arr[$o]->cNameSTD            = $MerkmalWertSprache_arr[$j]->cWert;
+                $oMM_arr[$i]->oMMW_arr[$o]->cSeoSTD             = $MerkmalWertSprache_arr[$j]->cSeo;
+                $oMM_arr[$i]->oMMW_arr[$o]->cMetaTitleSTD       = $MerkmalWertSprache_arr[$j]->cMetaTitle;
+                $oMM_arr[$i]->oMMW_arr[$o]->cMetaKeywordsSTD    = $MerkmalWertSprache_arr[$j]->cMetaKeywords;
+                $oMM_arr[$i]->oMMW_arr[$o]->cMetaDescriptionSTD = $MerkmalWertSprache_arr[$j]->cMetaDescription;
+                $oMM_arr[$i]->oMMW_arr[$o]->cBeschreibungSTD    = $MerkmalWertSprache_arr[$j]->cBeschreibung;
+            }
+        }
+        //alten Bildpfad nehmen
+        // tmerkmalwertbild
+        $kMerkmalWert     = $MerkmalWert_arr[$o]->kMerkmalWert;
+        $oMerkmalWertBild = Shop::Container()->getDB()->select('tmerkmalwertbild', 'kMerkmalWert', (int)$kMerkmalWert);
+
+        $MerkmalWert_arr[$o]->cBildpfad = $oMerkmalWertBild->cBildpfad ?? '';
+        DBUpdateInsert('tmerkmalwert', [$MerkmalWert_arr[$o]], 'kMerkmalWert');
+    }
+    fuelleFehlendeMMWInSeo($oMM_arr); // tseo prüfen und falls Seo einer Sprache leer => nachfüllen
 }
 
 /**

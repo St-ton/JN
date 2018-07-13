@@ -75,7 +75,7 @@ function bearbeiteInsert($xml)
             if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
                 Jtllog::writeLog('oDownloadSprache_arr: ' . print_r($oDownloadSprache_arr, true), JTLLOG_LEVEL_DEBUG, false, 'Download_xml');
             }
-            if (is_array($oDownloadSprache_arr) && count($oDownloadSprache_arr) > 0) {
+            if (count($oDownloadSprache_arr) > 0) {
                 DBUpdateInsert('tdownload', $oDownload_arr, 'kDownload');
                 $lCount = count($oDownloadSprache_arr);
                 for ($i = 0; $i < $lCount; ++$i) {
@@ -97,7 +97,7 @@ function bearbeiteInsert($xml)
                 if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
                     Jtllog::writeLog('oDownloadSprache_arr: ' . print_r($oDownloadSprache_arr, true), JTLLOG_LEVEL_DEBUG, false, 'Download_xml');
                 }
-                if (is_array($oDownloadSprache_arr) && count($oDownloadSprache_arr) > 0) {
+                if (count($oDownloadSprache_arr) > 0) {
                     DBUpdateInsert('tdownload', [$oDownload], 'kDownload');
                     $cdsaCount = count($oDownloadSprache_arr);
                     for ($j = 0; $j < $cdsaCount; ++$j) {

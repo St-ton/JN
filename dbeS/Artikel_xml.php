@@ -160,8 +160,11 @@ function bearbeiteInsert($xml, array $conf)
             $currentArticleCategories[] = (int)$obj->kKategorie;
         }
         // get list of all categories the article will be associated with after this update
-        $newArticleCategoriesObject = mapArray($xml['tartikel'], 'tkategorieartikel',
-            $GLOBALS['mKategorieArtikel']);
+        $newArticleCategoriesObject = mapArray(
+            $xml['tartikel'],
+            'tkategorieartikel',
+            $GLOBALS['mKategorieArtikel']
+        );
         foreach ($newArticleCategoriesObject as $newArticleCategory) {
             $newArticleCategories[] = (int)$newArticleCategory->kKategorie;
         }
@@ -343,14 +346,11 @@ function bearbeiteInsert($xml, array $conf)
                 }
             }
         }
-
         DBUpdateInsert('tartikel', $artikel_arr, 'kArtikel');
         executeHook(HOOK_ARTIKEL_XML_BEARBEITEINSERT, ['oArtikel' => $artikel_arr[0]]);
-        // Insert into tredirect weil sich das SEO vom Artikel geändert hat
         if (isset($oSeoOld->cSeo)) {
             checkDbeSXmlRedirect($oSeoOld->cSeo, $artikel_arr[0]->cSeo);
         }
-        //insert in tseo
         Shop::Container()->getDB()->query(
             "INSERT INTO tseo
                 SELECT tartikel.cSeo, 'kArtikel', tartikel.kArtikel, tsprache.kSprache
@@ -361,49 +361,45 @@ function bearbeiteInsert($xml, array $conf)
             \DB\ReturnType::AFFECTED_ROWS
         );
     }
-    //Artikelsprache
-    $artikelsprache_arr = mapArray($xml['tartikel'], 'tartikelsprache', $GLOBALS['mArtikelSprache']);
-    if (is_array($artikelsprache_arr)) {
-        $oShopSpracheAssoc_arr = Sprache::getAllLanguages(1);
-        $langCount             = count($artikelsprache_arr);
-        for ($i = 0; $i < $langCount; ++$i) {
-            // Sprachen die nicht im Shop vorhanden sind überspringen
-            if (!Sprache::isShopLanguage($artikelsprache_arr[$i]->kSprache, $oShopSpracheAssoc_arr)) {
-                continue;
-            }
-            if (!$artikelsprache_arr[$i]->cSeo) {
-                $artikelsprache_arr[$i]->cSeo = getFlatSeoPath($artikelsprache_arr[$i]->cName);
-            }
-            if (!$artikelsprache_arr[$i]->cSeo) {
-                $artikelsprache_arr[$i]->cSeo = $artikel_arr[0]->cSeo;
-            }
-            if (!$artikelsprache_arr[$i]->cSeo) {
-                $artikelsprache_arr[$i]->cSeo = $artikel_arr[0]->cName;
-            }
-            $artikelsprache_arr[$i]->cSeo = getSeo($artikelsprache_arr[$i]->cSeo);
-            $artikelsprache_arr[$i]->cSeo = checkSeo($artikelsprache_arr[$i]->cSeo);
+    $artikelsprache_arr    = mapArray($xml['tartikel'], 'tartikelsprache', $GLOBALS['mArtikelSprache']);
+    $oShopSpracheAssoc_arr = Sprache::getAllLanguages(1);
+    $langCount             = count($artikelsprache_arr);
+    for ($i = 0; $i < $langCount; ++$i) {
+        // Sprachen die nicht im Shop vorhanden sind überspringen
+        if (!Sprache::isShopLanguage($artikelsprache_arr[$i]->kSprache, $oShopSpracheAssoc_arr)) {
+            continue;
+        }
+        if (!$artikelsprache_arr[$i]->cSeo) {
+            $artikelsprache_arr[$i]->cSeo = getFlatSeoPath($artikelsprache_arr[$i]->cName);
+        }
+        if (!$artikelsprache_arr[$i]->cSeo) {
+            $artikelsprache_arr[$i]->cSeo = $artikel_arr[0]->cSeo;
+        }
+        if (!$artikelsprache_arr[$i]->cSeo) {
+            $artikelsprache_arr[$i]->cSeo = $artikel_arr[0]->cName;
+        }
+        $artikelsprache_arr[$i]->cSeo = getSeo($artikelsprache_arr[$i]->cSeo);
+        $artikelsprache_arr[$i]->cSeo = checkSeo($artikelsprache_arr[$i]->cSeo);
 
-            DBUpdateInsert('tartikelsprache', [$artikelsprache_arr[$i]], 'kArtikel', 'kSprache');
-            Shop::Container()->getDB()->delete(
-                'tseo',
-                ['cKey', 'kKey', 'kSprache'],
-                ['kArtikel', (int)$artikelsprache_arr[$i]->kArtikel, (int)$artikelsprache_arr[$i]->kSprache]
-            );
+        DBUpdateInsert('tartikelsprache', [$artikelsprache_arr[$i]], 'kArtikel', 'kSprache');
+        Shop::Container()->getDB()->delete(
+            'tseo',
+            ['cKey', 'kKey', 'kSprache'],
+            ['kArtikel', (int)$artikelsprache_arr[$i]->kArtikel, (int)$artikelsprache_arr[$i]->kSprache]
+        );
 
-            $oSeo           = new stdClass();
-            $oSeo->cSeo     = $artikelsprache_arr[$i]->cSeo;
-            $oSeo->cKey     = 'kArtikel';
-            $oSeo->kKey     = $artikelsprache_arr[$i]->kArtikel;
-            $oSeo->kSprache = $artikelsprache_arr[$i]->kSprache;
-            Shop::Container()->getDB()->insert('tseo', $oSeo);
-            // Insert into tredirect weil sich das SEO vom Artikel geändert hat
-            if (isset($oSeoAssoc_arr[$artikelsprache_arr[$i]->kSprache])) {
-                checkDbeSXmlRedirect($oSeoAssoc_arr[$artikelsprache_arr[$i]->kSprache]->cSeo,
-                    $artikelsprache_arr[$i]->cSeo);
-            }
+        $oSeo           = new stdClass();
+        $oSeo->cSeo     = $artikelsprache_arr[$i]->cSeo;
+        $oSeo->cKey     = 'kArtikel';
+        $oSeo->kKey     = $artikelsprache_arr[$i]->kArtikel;
+        $oSeo->kSprache = $artikelsprache_arr[$i]->kSprache;
+        Shop::Container()->getDB()->insert('tseo', $oSeo);
+        // Insert into tredirect weil sich das SEO vom Artikel geändert hat
+        if (isset($oSeoAssoc_arr[$artikelsprache_arr[$i]->kSprache])) {
+            checkDbeSXmlRedirect($oSeoAssoc_arr[$artikelsprache_arr[$i]->kSprache]->cSeo,
+                $artikelsprache_arr[$i]->cSeo);
         }
     }
-    //Attribute
     if (isset($xml['tartikel']['tattribut']) && is_array($xml['tartikel']['tattribut'])) {
         $Attribut_arr = mapArray($xml['tartikel'], 'tattribut', $GLOBALS['mAttribut']);
         $aArrCount    = count($Attribut_arr);
@@ -731,8 +727,11 @@ function bearbeiteInsert($xml, array $conf)
     }
     $bTesteSonderpreis = false;
     if (isset($xml['tartikel']['tartikelsonderpreis']) && is_array($xml['tartikel']['tartikelsonderpreis'])) {
-        $ArtikelSonderpreis_arr = mapArray($xml['tartikel'], 'tartikelsonderpreis',
-            $GLOBALS['mArtikelSonderpreis']);
+        $ArtikelSonderpreis_arr = mapArray(
+            $xml['tartikel'],
+            'tartikelsonderpreis',
+            $GLOBALS['mArtikelSonderpreis']
+        );
         if ($ArtikelSonderpreis_arr[0]->cAktiv === 'Y') {
             $specialPriceStart = explode('-', $ArtikelSonderpreis_arr[0]->dStart);
             if (count($specialPriceStart) > 2) {
@@ -764,12 +763,12 @@ function bearbeiteInsert($xml, array $conf)
         }
         $spCount = count($ArtikelSonderpreis_arr);
         for ($i = 0; $i < $spCount; ++$i) {
-            $Sonderpreise_arr = mapArray(
-                $xml['tartikel']['tartikelsonderpreis'],
-                'tsonderpreise',
-                $GLOBALS['mSonderpreise']
-            );
             if ($bTesteSonderpreis === true) {
+                $Sonderpreise_arr = mapArray(
+                    $xml['tartikel']['tartikelsonderpreis'],
+                    'tsonderpreise',
+                    $GLOBALS['mSonderpreise']
+                );
                 foreach ($Sonderpreise_arr as $Sonderpreise) {
                     setzePreisverlauf(
                         $ArtikelSonderpreis_arr[0]->kArtikel,

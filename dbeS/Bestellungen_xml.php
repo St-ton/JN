@@ -281,35 +281,32 @@ function bearbeiteUpdate($xml)
     $kunde       = null;
     $oBestellung = new stdClass();
     $orders      = mapArray($xml, 'tbestellung', $GLOBALS['mBestellung']);
-    if (is_array($orders) && count($orders) === 1) {
+    if (count($orders) === 1) {
         $oBestellung = $orders[0];
     }
-    //kommt überhaupt eine kbestellung?
     if (!$oBestellung->kBestellung) {
         unhandledError('Error Bestellung Update. Keine kBestellung in tbestellung! XML:' . print_r($xml, true));
     }
-    //hole bestellung
-    $oBestellungAlt = Shop::Container()->getDB()->select('tbestellung', 'kBestellung', (int)$oBestellung->kBestellung);
-    //mappe rechnungsadresse
+    $oBestellungAlt    = Shop::Container()->getDB()->select(
+        'tbestellung',
+        'kBestellung',
+        (int)$oBestellung->kBestellung
+    );
     $oRechnungsadresse = new Rechnungsadresse($oBestellungAlt->kRechnungsadresse);
     mappe($oRechnungsadresse, $xml['tbestellung']['trechnungsadresse'], $GLOBALS['mRechnungsadresse']);
     if (!empty($oRechnungsadresse->cAnrede)) {
         $oRechnungsadresse->cAnrede = mappeWawiAnrede2ShopAnrede($oRechnungsadresse->cAnrede);
     }
-    // Hausnummer extrahieren
     extractStreet($oRechnungsadresse);
-    //rechnungsadresse gefüllt?
     if (!$oRechnungsadresse->cNachname && !$oRechnungsadresse->cFirma && !$oRechnungsadresse->cStrasse) {
         unhandledError('Error Bestellung Update. Rechnungsadresse enthält keinen Nachnamen, Firma und Strasse! XML:' .
             print_r($xml, true)
         );
     }
-    //existiert eine alte bestellung mit dieser kBestellung?
     if (!$oBestellungAlt->kBestellung || trim($oBestellung->cBestellNr) !== trim($oBestellungAlt->cBestellNr)) {
         unhandledError('Fehler: Zur Bestellung ' . $oBestellung->cBestellNr .
             ' gibt es keine Bestellung im Shop! Bestellung wurde nicht aktualisiert!');
     }
-    // Zahlungsart vorhanden?
     $oZahlungsart = new stdClass();
     if (isset($xml['tbestellung']['cZahlungsartName']) && strlen($xml['tbestellung']['cZahlungsartName']) > 0) {
         // Von Wawi kommt in $xml['tbestellung']['cZahlungsartName'] nur der deutsche Wert,
@@ -351,7 +348,6 @@ function bearbeiteUpdate($xml)
         $cZAUpdateSQL = " , kZahlungsart = " . (int)$oZahlungsart->kZahlungsart .
             ", cZahlungsartName = '" . $oZahlungsart->cName . "' ";
     }
-    //#8544
     $correctionFactor = 1.0;
     if (isset($oBestellung->kWaehrung)) {
         $currentCurrency = Shop::Container()->getDB()->select('twaehrung', 'kWaehrung', $oBestellung->kWaehrung);
@@ -365,8 +361,6 @@ function bearbeiteUpdate($xml)
     // Die Wawi schickt in fGesamtsumme die Rechnungssumme (Summe aller Positionen), der Shop erwartet hier aber tatsächlich
     // eine Gesamtsumme oder auch den Zahlungsbetrag (Rechnungssumme abzgl. evtl. Guthaben)
     $oBestellung->fGesamtsumme -= $oBestellung->fGuthaben;
-
-    //aktualisiere bestellung
     Shop::Container()->getDB()->query(
         "UPDATE tbestellung SET
             fGuthaben = '" . Shop::Container()->getDB()->escape($oBestellung->fGuthaben) . "',
@@ -376,7 +370,6 @@ function bearbeiteUpdate($xml)
             WHERE kBestellung = " . (int)$oBestellungAlt->kBestellung,
         \DB\ReturnType::DEFAULT
     );
-    //aktualisliere lieferadresse
     $oLieferadresse = new Lieferadresse($oBestellungAlt->kLieferadresse);
     mappe($oLieferadresse, $xml['tbestellung']['tlieferadresse'], $GLOBALS['mLieferadresse']);
     if (isset($oLieferadresse->cAnrede)) {
@@ -394,10 +387,8 @@ function bearbeiteUpdate($xml)
         || $oLieferadresse->cLand !== $oRechnungsadresse->cLand
     ) {
         if ($oLieferadresse->kLieferadresse > 0) {
-            //lieferadresse aktualisieren
             $oLieferadresse->updateInDB();
         } else {
-            //lieferadresse erstellen
             $oLieferadresse->kKunde         = $oBestellungAlt->kKunde;
             $oLieferadresse->kLieferadresse = $oLieferadresse->insertInDB();
 
@@ -408,7 +399,7 @@ function bearbeiteUpdate($xml)
                 \DB\ReturnType::DEFAULT
             );
         }
-    } elseif ($oBestellungAlt->kLieferadresse > 0) { //falls lieferadresse vorhanden zurücksetzen
+    } elseif ($oBestellungAlt->kLieferadresse > 0) {
         Shop::Container()->getDB()->update(
             'tbestellung',
             'kBestellung',
@@ -416,13 +407,13 @@ function bearbeiteUpdate($xml)
             (object)['kLieferadresse' => 0]
         );
     }
-
     $oRechnungsadresse->updateInDB();
-    //loesche alte positionen
-    $WarenkorbposAlt_arr = Shop::Container()->getDB()->selectAll('twarenkorbpos', 'kWarenkorb',
-        (int)$oBestellungAlt->kWarenkorb);
+    $WarenkorbposAlt_arr = Shop::Container()->getDB()->selectAll(
+        'twarenkorbpos',
+        'kWarenkorb',
+        (int)$oBestellungAlt->kWarenkorb
+    );
     $WarenkorbposAlt_map = [];
-    //loesche poseigenschaften
     foreach ($WarenkorbposAlt_arr as $key => $WarenkorbposAlt) {
         Shop::Container()->getDB()->delete('twarenkorbposeigenschaft', 'kWarenkorbPos',
             (int)$WarenkorbposAlt->kWarenkorbPos);
@@ -430,13 +421,10 @@ function bearbeiteUpdate($xml)
             $WarenkorbposAlt_map[$WarenkorbposAlt->kArtikel] = $key;
         }
     }
-    //loesche positionen
     Shop::Container()->getDB()->delete('twarenkorbpos', 'kWarenkorb', (int)$oBestellungAlt->kWarenkorb);
-    //erstelle neue posis
     $Warenkorbpos_arr = mapArray($xml['tbestellung'], 'twarenkorbpos', $GLOBALS['mWarenkorbpos']);
     $positionCount    = count($Warenkorbpos_arr);
     for ($i = 0; $i < $positionCount; $i++) {
-        //füge wkpos ein
         $oWarenkorbposAlt = array_key_exists($Warenkorbpos_arr[$i]->kArtikel, $WarenkorbposAlt_map)
             ? $WarenkorbposAlt_arr[$WarenkorbposAlt_map[$Warenkorbpos_arr[$i]->kArtikel]]
             : null;
@@ -454,14 +442,19 @@ function bearbeiteUpdate($xml)
         $Warenkorbpos_arr[$i]->kWarenkorbPos = Shop::Container()->getDB()->insert('twarenkorbpos',
             $Warenkorbpos_arr[$i]);
 
-        if (count($Warenkorbpos_arr) < 2) { // nur eine pos
-            $Warenkorbposeigenschaft_arr = mapArray($xml['tbestellung']['twarenkorbpos'], 'twarenkorbposeigenschaft',
-                $GLOBALS['mWarenkorbposeigenschaft']);
-        } else { //mehrere posis
-            $Warenkorbposeigenschaft_arr = mapArray($xml['tbestellung']['twarenkorbpos'][$i],
-                'twarenkorbposeigenschaft', $GLOBALS['mWarenkorbposeigenschaft']);
+        if (count($Warenkorbpos_arr) < 2) {
+            $Warenkorbposeigenschaft_arr = mapArray(
+                $xml['tbestellung']['twarenkorbpos'],
+                'twarenkorbposeigenschaft',
+                $GLOBALS['mWarenkorbposeigenschaft']
+            );
+        } else {
+            $Warenkorbposeigenschaft_arr = mapArray(
+                $xml['tbestellung']['twarenkorbpos'][$i],
+                'twarenkorbposeigenschaft',
+                $GLOBALS['mWarenkorbposeigenschaft']
+            );
         }
-        //füge warenkorbposeigenschaften ein
         foreach ($Warenkorbposeigenschaft_arr as $Warenkorbposeigenschaft) {
             unset($Warenkorbposeigenschaft->kWarenkorbPosEigenschaft);
             $Warenkorbposeigenschaft->kWarenkorbPos = $Warenkorbpos_arr[$i]->kWarenkorbPos;

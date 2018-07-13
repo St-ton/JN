@@ -81,6 +81,55 @@ class ImageSlider extends \OPC\Portlet
         unset($slide);
         $instance->setProperty('slides', $images);
 
+        //effects
+        $effects = [];
+        if ((bool)$instance->getProperty('effects-sliceDown') === true) {
+            $effects[] = 'sliceDown';
+        }
+        if ((bool)$instance->getProperty('effects-sliceDownLeft') === true) {
+            $effects[] = 'sliceDownLeft';
+        }
+        if ((bool)$instance->getProperty('effects-sliceUp') === true) {
+            $effects[] = 'sliceUp';
+        }
+        if ((bool)$instance->getProperty('effects-sliceUpLeft') === true) {
+            $effects[] = 'sliceUpLeft';
+        }
+        if ((bool)$instance->getProperty('effects-sliceUpDown') === true) {
+            $effects[] = 'sliceUpDown';
+        }
+        if ((bool)$instance->getProperty('effects-sliceUpDownLeft') === true) {
+            $effects[] = 'sliceUpDownLeft';
+        }
+        if ((bool)$instance->getProperty('effects-fold') === true) {
+            $effects[] = 'fold';
+        }
+        if ((bool)$instance->getProperty('effects-fade') === true) {
+            $effects[] = 'fade';
+        }
+        if ((bool)$instance->getProperty('effects-slideInRight') === true) {
+            $effects[] = 'slideInRight';
+        }
+        if ((bool)$instance->getProperty('effects-slideInLeft') === true) {
+            $effects[] = 'slideInLeft';
+        }
+        if ((bool)$instance->getProperty('effects-boxRandom') === true) {
+            $effects[] = 'boxRandom';
+        }
+        if ((bool)$instance->getProperty('effects-boxRain') === true) {
+            $effects[] = 'boxRain';
+        }
+        if ((bool)$instance->getProperty('effects-boxRainReverse') === true) {
+            $effects[] = 'boxRainReverse';
+        }
+        if ((bool)$instance->getProperty('effects-boxRainGrow') === true) {
+            $effects[] = 'boxRainGrow';
+        }
+        if ((bool)$instance->getProperty('effects-boxRainGrowReverse') === true) {
+            $effects[] = 'boxRainGrowReverse';
+        }
+        $instance->setProperty('effects', $effects);
+
         return $this->getFinalHtmlFromTpl($instance);
     }
 
@@ -102,10 +151,10 @@ class ImageSlider extends \OPC\Portlet
                 'label'      => 'Theme',
                 'type'       => 'select',
                 'options'    => [
-                    'default',
-                    'bar',
-                    'light',
-                    'dark'
+                    'default' => 'Standard',
+                    'bar'     => 'Balken',
+                    'light'   => 'Hell',
+                    'dark'    => 'Dunkel',
                 ],
                 'dspl_width' => 50,
             ],
@@ -168,7 +217,6 @@ class ImageSlider extends \OPC\Portlet
                 'dspl_width' => 50,
                 'hint'       => 'overrides other settings',
             ],
-
             'slider-effects-random'       => [
                 'label'   => 'zufällige Effekte?',
                 'type'    => 'radio',
@@ -178,7 +226,7 @@ class ImageSlider extends \OPC\Portlet
                 ],
                 'default' => 'true',
             ],
-            'effects[sliceDown]'          => [
+            'effects-sliceDown'           => [
                 'label'                => 'sliceDown',
                 'type'                 => 'checkbox',
                 'collapseControlStart' => true,
@@ -186,72 +234,72 @@ class ImageSlider extends \OPC\Portlet
                 'showOnPropValue'      => 'false',
                 'dspl_width'           => 25,
             ],
-            'effects[sliceDownLeft]'      => [
+            'effects-sliceDownLeft'       => [
                 'label'      => 'sliceDownLeft',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[sliceUp]'            => [
+            'effects-sliceUp'             => [
                 'label'      => 'sliceUp',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[sliceUpLeft]'        => [
+            'effects-sliceUpLeft'         => [
                 'label'      => 'sliceUpLeft',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[sliceUpDown]'        => [
+            'effects-sliceUpDown'         => [
                 'label'      => 'sliceUpDown',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[sliceUpDownLeft]'    => [
+            'effects-sliceUpDownLeft'     => [
                 'label'      => 'sliceUpDownLeft',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[fold]'               => [
+            'effects-fold'                => [
                 'label'      => 'fold',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[fade]'               => [
+            'effects-fade'                => [
                 'label'      => 'fade',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[slideInRight]'       => [
+            'effects-slideInRight'        => [
                 'label'      => 'sliceInRight',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[slideInLeft]'        => [
+            'effects-slideInLeft'         => [
                 'label'      => 'slideInRight',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[boxRandom]'          => [
+            'effects-boxRandom'           => [
                 'label'      => 'boxRandom',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[boxRain]'            => [
+            'effects-boxRain'             => [
                 'label'      => 'boxRain',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[boxRainReverse]'     => [
+            'effects-boxRainReverse'      => [
                 'label'      => 'boxRainReverse',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[boxRainGrow]'        => [
+            'effects-boxRainGrow'         => [
                 'label'      => 'boxRainGrow',
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
-            'effects[boxRainGrowReverse]' => [
+            'effects-boxRainGrowReverse'  => [
                 'label'              => 'boxRainGrowReverse',
                 'type'               => 'checkbox',
                 'collapseControlEnd' => true,

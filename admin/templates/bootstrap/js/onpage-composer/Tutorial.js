@@ -151,8 +151,33 @@ Tutorial.prototype = {
                     placement: "bottom",
                     title: "Seite Speichern",
                     reflex: true,
-                    content: "Mit einem Klick auf das Speichern Symbol werden deine Änderungen übernommen und sind " +
-                        "ab dann im Shop sichtbar. Das waren die Basics. Wir wünschen dir weiterhin viel Spaß mit dem OnPage Composer!"
+                    content: "Um deine Änderungen zu Sichern klicke bitte auf das Speichern-Symbol. Beachte bitte, dass " +
+                        "man im Shop noch keine Änderungen sieht."
+                },
+                {
+                    element: "#btnPublish",
+                    placement: "bottom",
+                    title: "Seite Veröffentlichen",
+                    reflex: true,
+                    content: "Nur veröffentlichte Seiten sind für deine Kunden sichtbar. " +
+                             "Um die Änderungen im Shop zu veröffentlichen klicke auf das Zeitungsymbol."
+                },
+                {
+                    element: "#publishModal .btn-primary",
+                    placement: "bottom",
+                    title: "Veröffentlichen",
+                    reflex: true,
+                    content: "Für jede Seite kannst du verschiedene Versionen haben. " +
+                             "Z.B. eine allgemeine (nur mit 'veröffentlicht ab') und eine Weihnachtsversion " +
+                             "(gültig während der Weihnachtszeit). Klicke auf 'veröffentlichen ab' und speichere danach."
+                },
+                {
+                    element: "#btnClose",
+                    placement: "bottom",
+                    title: "Beenden",
+                    reflex: true,
+                    content: "Du kannst nun den OPC beenden und deine Seite anschauen oder mit einem Klick auf 'end Tour' diese Hilfe beenden." +
+                             "Das waren die Basics. Wir wünschen dir weiterhin viel Spaß mit dem OnPage Composer!"
                 },
 
             ]

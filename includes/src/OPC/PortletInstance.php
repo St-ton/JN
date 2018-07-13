@@ -16,11 +16,11 @@ class PortletInstance implements \JsonSerializable
      * @var array
      */
     protected static $dirSizes = [
-        '.xs/' => WIDTH_CMS_IMAGE_XS,
-        '.sm/' => WIDTH_CMS_IMAGE_SM,
-        '.md/' => WIDTH_CMS_IMAGE_MD,
-        '.lg/' => WIDTH_CMS_IMAGE_LG,
-        '.xl/' => WIDTH_CMS_IMAGE_XL,
+        '.xs/' => WIDTH_OPC_IMAGE_XS,
+        '.sm/' => WIDTH_OPC_IMAGE_SM,
+        '.md/' => WIDTH_OPC_IMAGE_MD,
+        '.lg/' => WIDTH_OPC_IMAGE_LG,
+        '.xl/' => WIDTH_OPC_IMAGE_XL,
     ];
 
     /**

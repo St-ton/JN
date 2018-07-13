@@ -91,7 +91,10 @@ function generiereNeuePasswoerter($xml)
             if ($oKunde->nRegistriert == 1 && $oKunde->cMail) {
                 $oKunde->prepareResetPassword();
             } else {
-                syncException('Kunde hat entweder keine Emailadresse oder es ist ein unregistrierter Kunde', 8);
+                syncException(
+                    'Kunde hat entweder keine Emailadresse oder es ist ein unregistrierter Kunde',
+                    FREIDEFINIERBARER_FEHLER
+                );
             }
         }
     }

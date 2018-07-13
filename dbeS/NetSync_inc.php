@@ -98,8 +98,16 @@ class SystemFile
      * @param int    $nUploaded
      * @param int    $nBytes
      */
-    public function __construct($kFileID, $cFilepath, $cRelFilepath, $cFilename, $cDirname, $cExtension, $nUploaded, $nBytes)
-    {
+    public function __construct(
+        $kFileID,
+        $cFilepath,
+        $cRelFilepath,
+        $cFilename,
+        $cDirname,
+        $cExtension,
+        $nUploaded,
+        $nBytes
+    ) {
         $this->kFileID      = $kFileID;
         $this->cFilepath    = $cFilepath;
         $this->cRelFilepath = $cRelFilepath;
@@ -194,8 +202,16 @@ class CronjobStatus
      * @param string $cLastStartDate
      * @param string $cNextStartDate
      */
-    public function __construct($kCron, $cExportformat, $cStartDate, $nRepeat, $nDone, $nOverall, $cLastStartDate, $cNextStartDate)
-    {
+    public function __construct(
+        $kCron,
+        $cExportformat,
+        $cStartDate,
+        $nRepeat,
+        $nDone,
+        $nOverall,
+        $cLastStartDate,
+        $cNextStartDate
+    ) {
         $this->kCron          = $kCron;
         $this->cExportformat  = $cExportformat;
         $this->cStartDate     = $cStartDate;
@@ -258,27 +274,6 @@ class NetSyncHandler
     private static $oInstance;
 
     /**
-     *
-     */
-    protected function init()
-    {
-    }
-
-    /**
-     * @param $eRequest
-     */
-    protected function request($eRequest)
-    {
-    }
-
-    /**
-     * @param Exception $oException
-     */
-    public static function exception($oException)
-    {
-    }
-
-    /**
      * @throws Exception
      */
     public function __construct()
@@ -295,14 +290,10 @@ class NetSyncHandler
     }
 
     /**
-     * @param string $cClass
+     *
      */
-    public static function create($cClass)
+    protected function init()
     {
-        if (self::$oInstance === null && class_exists($cClass)) {
-            new $cClass;
-            set_exception_handler([$cClass, 'exception']);
-        }
     }
 
     /**
@@ -347,6 +338,31 @@ class NetSyncHandler
         }
         echo json_encode($oResponse);
         exit;
+    }
+
+    /**
+     * @param $eRequest
+     */
+    protected function request($eRequest)
+    {
+    }
+
+    /**
+     * @param Exception $oException
+     */
+    public static function exception($oException)
+    {
+    }
+
+    /**
+     * @param string $cClass
+     */
+    public static function create($cClass)
+    {
+        if (self::$oInstance === null && class_exists($cClass)) {
+            new $cClass;
+            set_exception_handler([$cClass, 'exception']);
+        }
     }
 
     /**

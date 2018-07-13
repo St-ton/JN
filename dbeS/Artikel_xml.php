@@ -985,7 +985,7 @@ function bearbeiteInsert($xml, array $conf)
     }
     // Alle Shop Kundengruppen holen
     $oKundengruppe_arr = Shop::Container()->getDB()->query(
-        'SELECT kKundengruppe FROM tkundengruppe', 
+        'SELECT kKundengruppe FROM tkundengruppe',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     $res[]             = (int)$Artikel->kArtikel;
@@ -1011,7 +1011,12 @@ function bearbeiteInsert($xml, array $conf)
 function loescheArtikel(int $kArtikel, int $nIstVater = 0, bool $bForce = false, array $conf = null)
 {
     // get list of all categories the article was associated with
-    $articleCategories = Shop::Container()->getDB()->selectAll('tkategorieartikel', 'kArtikel', $kArtikel, 'kKategorie');
+    $articleCategories = Shop::Container()->getDB()->selectAll(
+        'tkategorieartikel',
+        'kArtikel',
+        $kArtikel,
+        'kKategorie'
+    );
     if ($bForce === false
         && isset($conf['global']['kategorien_anzeigefilter'])
         && $conf['global']['kategorien_anzeigefilter'] === '2'
@@ -1035,8 +1040,12 @@ function loescheArtikel(int $kArtikel, int $nIstVater = 0, bool $bForce = false,
         }
     }
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('kArtikel: ' . $kArtikel . ' - nIstVater: ' . $nIstVater, JTLLOG_LEVEL_DEBUG, false,
-            'Artikel_xml loescheArtikel');
+        Jtllog::writeLog(
+            'kArtikel: ' . $kArtikel . ' - nIstVater: ' . $nIstVater,
+            JTLLOG_LEVEL_DEBUG,
+            false,
+            'Artikel_xml loescheArtikel'
+        );
     }
     if ($kArtikel > 0) {
         $manufacturerID = Shop::Container()->getDB()->queryPrepared(

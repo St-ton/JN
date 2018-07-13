@@ -44,7 +44,7 @@ if (auth()) {
     $xml_obj['bestellungen']['tbestellung'] = $oBestellung_arr;
 
     if (is_array($xml_obj['bestellungen']['tbestellung'])) {
-        $cryptoService = Shop::Container()->getCryptoService();
+        $cryptoService                          = Shop::Container()->getCryptoService();
         $xml_obj['bestellungen attr']['anzahl'] = count($xml_obj['bestellungen']['tbestellung']);
         for ($i = 0; $i < $xml_obj['bestellungen attr']['anzahl']; $i++) {
             $xml_obj['bestellungen']['tbestellung'][$i . ' attr'] = buildAttributes($xml_obj['bestellungen']['tbestellung'][$i]);
@@ -98,7 +98,14 @@ if (auth()) {
                 }
             }
             $oLieferadresse        = new Lieferadresse((int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kLieferadresse']);
-            $land                  = Shop::Container()->getDB()->select('tland', 'cISO', $oLieferadresse->cLand, null, null, null, null, false, 'cDeutsch');
+            $land                  = Shop::Container()->getDB()->select(
+                'tland',
+                'cISO', $oLieferadresse->cLand,
+                null, null,
+                null, null,
+                false,
+                'cDeutsch'
+            );
             $cISO                  = $oLieferadresse->cLand;
             $oLieferadresse->cLand = isset($land) ? $land->cDeutsch : $oLieferadresse->angezeigtesLand;
             unset($oLieferadresse->angezeigtesLand);
@@ -121,7 +128,14 @@ if (auth()) {
             unset($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cHausnummer']);
 
             $oRechnungsadresse        = new Rechnungsadresse($xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kRechnungsadresse']);
-            $land                     = Shop::Container()->getDB()->select('tland', 'cISO', $oRechnungsadresse->cLand, null, null, null, null, false, 'cDeutsch');
+            $land                     = Shop::Container()->getDB()->select(
+                'tland',
+                'cISO', $oRechnungsadresse->cLand,
+                null, null,
+                null, null,
+                false,
+                'cDeutsch'
+            );
             $cISO                     = $oRechnungsadresse->cLand;
             $oRechnungsadresse->cLand = isset($land) ? $land->cDeutsch : $oRechnungsadresse->angezeigtesLand;
             unset($oRechnungsadresse->angezeigtesLand);
@@ -175,7 +189,8 @@ if (auth()) {
                 ? trim($cryptoService->decryptXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cCVV']))
                 : null;
             if (strlen($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cCVV']) > 4) {
-                $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cCVV'] = substr($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cCVV'], 0, 4);
+                $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cCVV'] =
+                    substr($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cCVV'], 0, 4);
             }
 
             $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo attr'] = buildAttributes($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']);

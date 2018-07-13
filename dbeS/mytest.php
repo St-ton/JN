@@ -35,7 +35,7 @@ if ($login->checkLogin($cName, $cPass) === true) {
         );
         if ($oStatus->Auto_increment < (int)$_POST['kKunde']) {
             Shop::Container()->getDB()->query(
-                'ALTER TABLE tkunde AUTO_INCREMENT = ' . (int)$_POST['kKunde'], 
+                'ALTER TABLE tkunde AUTO_INCREMENT = ' . (int)$_POST['kKunde'],
                 \DB\ReturnType::DEFAULT
             );
         }
@@ -47,7 +47,7 @@ if ($login->checkLogin($cName, $cPass) === true) {
         );
         if ($oStatus->Auto_increment < (int)$_POST['kBestellung']) {
             Shop::Container()->getDB()->query(
-                'ALTER TABLE tbestellung AUTO_INCREMENT = ' . (int)$_POST['kBestellung'], 
+                'ALTER TABLE tbestellung AUTO_INCREMENT = ' . (int)$_POST['kBestellung'],
                 \DB\ReturnType::DEFAULT
             );
         }
@@ -59,7 +59,7 @@ if ($login->checkLogin($cName, $cPass) === true) {
         );
         if ($oStatus->Auto_increment < (int)$_POST['kLieferadresse']) {
             Shop::Container()->getDB()->query(
-                'ALTER TABLE tlieferadresse AUTO_INCREMENT = ' . (int)$_POST['kLieferadresse'], 
+                'ALTER TABLE tlieferadresse AUTO_INCREMENT = ' . (int)$_POST['kLieferadresse'],
                 \DB\ReturnType::DEFAULT
             );
         }
@@ -71,7 +71,7 @@ if ($login->checkLogin($cName, $cPass) === true) {
         );
         if ($oStatus->Auto_increment < (int)$_POST['kZahlungseingang']) {
             Shop::Container()->getDB()->query(
-                'ALTER TABLE tzahlungseingang AUTO_INCREMENT  = ' . (int)$_POST['kZahlungseingang'], 
+                'ALTER TABLE tzahlungseingang AUTO_INCREMENT  = ' . (int)$_POST['kZahlungseingang'],
                 \DB\ReturnType::DEFAULT
             );
         }

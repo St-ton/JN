@@ -44,11 +44,15 @@ function handleData(int $kBestellung, $dRechnungErstellt, int $kSprache)
                 $oInvoice = $oPaymentMethod->createInvoice($kBestellung, $kSprache);
                 if (is_object($oInvoice)) {
                     // response xml
-                    if ($oInvoice->nType == 0 && strlen($oInvoice->cInfo) === 0) {
+                    if ($oInvoice->nType === 0 && strlen($oInvoice->cInfo) === 0) {
                         $oInvoice->cInfo = 'Funktion in Zahlungsmethode nicht implementiert';
                     }
 
-                    $cResponse = createResponse($oBestellung->kBestellung, ($oInvoice->nType == 0 ? 'FAILURE' : 'SUCCESS'), $oInvoice->cInfo);
+                    $cResponse = createResponse(
+                        $oBestellung->kBestellung,
+                        ($oInvoice->nType === 0 ? 'FAILURE' : 'SUCCESS'),
+                        $oInvoice->cInfo
+                    );
                     zipRedirect(time() . '.jtl', $cResponse);
                     exit;
                 }

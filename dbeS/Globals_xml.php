@@ -114,11 +114,30 @@ function bearbeiteUpdates($xml)
             $cgCount = count($kundengruppen_arr);
             for ($i = 0; $i < $cgCount; $i++) {
                 if (count($kundengruppen_arr) < 2) {
-                    XML2DB($xml['globals']['tkundengruppe'], 'tkundengruppensprache', $GLOBALS['mKundengruppensprache'], 0);
-                    XML2DB($xml['globals']['tkundengruppe'], 'tkundengruppenattribut', $GLOBALS['mKundengruppenattribut'], 0);
+                    XML2DB(
+                        $xml['globals']['tkundengruppe'],
+                        'tkundengruppensprache',
+                        $GLOBALS['mKundengruppensprache'],
+                        0
+                    );
+                    XML2DB(
+                        $xml['globals']['tkundengruppe'],
+                        'tkundengruppenattribut',
+                        $GLOBALS['mKundengruppenattribut'],
+                        0
+                    );
                 } else {
-                    XML2DB($xml['globals']['tkundengruppe'][$i], 'tkundengruppensprache', $GLOBALS['mKundengruppensprache'], 0);
-                    XML2DB($xml['globals']['tkundengruppe'][$i], 'tkundengruppenattribut', $GLOBALS['mKundengruppenattribut'], 0);
+                    XML2DB(
+                        $xml['globals']['tkundengruppe'][$i],
+                        'tkundengruppensprache',
+                        $GLOBALS['mKundengruppensprache'],
+                        0
+                    );
+                    XML2DB($xml['globals']['tkundengruppe'][$i],
+                        'tkundengruppenattribut',
+                        $GLOBALS['mKundengruppenattribut'],
+                        0
+                    );
                 }
             }
             Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE, CACHING_GROUP_CATEGORY]);
@@ -127,7 +146,12 @@ function bearbeiteUpdates($xml)
         if (isset($xml['globals']['twarenlager']) && is_array($xml['globals']['twarenlager'])) {
             $oWarenlager_arr = mapArray($xml['globals'], 'twarenlager', $GLOBALS['mWarenlager']);
             if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog('oWarenlager_arr: ' . print_r($oWarenlager_arr, true), JTLLOG_LEVEL_DEBUG, false, 'Globals_xml');
+                Jtllog::writeLog(
+                    'oWarenlager_arr: ' . print_r($oWarenlager_arr, true),
+                    JTLLOG_LEVEL_DEBUG,
+                    false,
+                    'Globals_xml'
+                );
             }
             //Lagersichtbarkeit für Shop zwischenspeichern
             $lagersichtbarkeit_arr = Shop::Container()->getDB()->query(
@@ -136,7 +160,7 @@ function bearbeiteUpdates($xml)
             );
             //Alle Einträge in twarenlager löschen - Wawi 1.0.1 sendet immer alle Warenlager.
             Shop::Container()->getDB()->query('DELETE FROM twarenlager WHERE 1', \DB\ReturnType::DEFAULT);
-            
+
             DBUpdateInsert('twarenlager', $oWarenlager_arr, 'kWarenlager');
             //Lagersichtbarkeit übertragen
             if (!empty($lagersichtbarkeit_arr)) {
@@ -160,7 +184,11 @@ function bearbeiteUpdates($xml)
                 if (count($oMasseinheit_arr) < 2) {
                     XML2DB($xml['globals']['tmasseinheit'], 'tmasseinheitsprache', $GLOBALS['mMasseinheitsprache'], 0);
                 } else {
-                    XML2DB($xml['globals']['tmasseinheit'][$i], 'tmasseinheitsprache', $GLOBALS['mMasseinheitsprache'], 0);
+                    XML2DB(
+                        $xml['globals']['tmasseinheit'][$i],
+                        'tmasseinheitsprache', $GLOBALS['mMasseinheitsprache'],
+                        0
+                    );
                 }
             }
         }
@@ -169,7 +197,12 @@ function bearbeiteUpdates($xml)
     if (isset($xml['globals_wg']['tWarengruppe']) && is_array($xml['globals_wg']['tWarengruppe'])) {
         $oWarengruppe_arr = mapArray($xml['globals_wg'], 'tWarengruppe', $GLOBALS['mWarengruppe']);
         if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('oWarengruppe_arr: ' . print_r($oWarengruppe_arr, true), JTLLOG_LEVEL_DEBUG, false, 'Globals_xml');
+            Jtllog::writeLog(
+                'oWarengruppe_arr: ' . print_r($oWarengruppe_arr, true),
+                JTLLOG_LEVEL_DEBUG,
+                false,
+                'Globals_xml'
+            );
         }
         DBUpdateInsert('twarengruppe', $oWarengruppe_arr, 'kWarengruppe');
     }

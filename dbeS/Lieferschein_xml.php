@@ -68,7 +68,10 @@ function bearbeiteInsert($oXml)
                 DBUpdateInsert('tlieferscheinpos', [$oLieferscheinpos], 'kLieferscheinPos');
 
                 foreach ($oXmlLieferscheinpos->tlieferscheinposInfo as $oXmlLieferscheinposinfo) {
-                    $oLieferscheinposinfo                   = JTLMapArr($oXmlLieferscheinposinfo, $GLOBALS['mLieferscheinposinfo']);
+                    $oLieferscheinposinfo                   = JTLMapArr(
+                        $oXmlLieferscheinposinfo,
+                        $GLOBALS['mLieferscheinposinfo']
+                    );
                     $oLieferscheinposinfo->kLieferscheinPos = $oLieferscheinpos->kLieferscheinPos;
                     DBUpdateInsert('tlieferscheinposinfo', [$oLieferscheinposinfo], 'kLieferscheinPosInfo');
                 }
@@ -98,10 +101,23 @@ function bearbeiteDelete($oXml)
         Shop::Container()->getDB()->delete('tversand', 'kLieferschein', $kLieferschein);
         Shop::Container()->getDB()->delete('tlieferschein', 'kLieferschein', $kLieferschein);
 
-        $positions = Shop::Container()->getDB()->selectAll('tlieferscheinpos', 'kLieferschein', $kLieferschein, 'kLieferscheinPos');
+        $positions = Shop::Container()->getDB()->selectAll(
+            'tlieferscheinpos',
+            'kLieferschein',
+            $kLieferschein,
+            'kLieferscheinPos'
+        );
         foreach ($positions as $position) {
-            Shop::Container()->getDB()->delete('tlieferscheinpos', 'kLieferscheinPos', (int)$position->kLieferscheinPos);
-            Shop::Container()->getDB()->delete('tlieferscheinposinfo', 'kLieferscheinPos', (int)$position->kLieferscheinPos);
+            Shop::Container()->getDB()->delete(
+                'tlieferscheinpos',
+                'kLieferscheinPos',
+                (int)$position->kLieferscheinPos
+            );
+            Shop::Container()->getDB()->delete(
+                'tlieferscheinposinfo',
+                'kLieferscheinPos',
+                (int)$position->kLieferscheinPos
+            );
         }
     }
 }

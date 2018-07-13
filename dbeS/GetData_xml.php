@@ -18,7 +18,7 @@ if (auth()) {
             LIMIT " . LIMIT_VERFUEGBARKEITSBENACHRICHTIGUNGEN,
         \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
     );
-    $xml_obj['tverfuegbarkeitsbenachrichtigung attr']['anzahl'] =
+    $xml_obj['tverfuegbarkeitsbenachrichtigung attr']['anzahl']                                     =
         count($xml_obj['queueddata']['verfuegbarkeitsbenachrichtigungen']['tverfuegbarkeitsbenachrichtigung']);
     for ($i = 0; $i < $xml_obj['tverfuegbarkeitsbenachrichtigung attr']['anzahl']; $i++) {
         $xml_obj['queueddata']['verfuegbarkeitsbenachrichtigungen']['tverfuegbarkeitsbenachrichtigung'][$i . ' attr'] =

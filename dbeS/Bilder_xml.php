@@ -220,8 +220,13 @@ function bearbeite($xml, string $unzipPath)
             $Bildformat  = gibBildformat($unzipPath . $imgFilename);
             if (!$Bildformat) {
                 if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-                    Jtllog::writeLog('Bildformat des Artikelbildes konnte nicht ermittelt werden. Datei keine Bilddatei?: ' .
-                        $imgFilename, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
+                    Jtllog::writeLog(
+                        'Bildformat des Artikelbildes konnte nicht ermittelt werden. Datei keine Bilddatei?: ' .
+                        $imgFilename,
+                        JTLLOG_LEVEL_ERROR,
+                        false,
+                        'Bilder_xml'
+                    );
                 }
                 continue;
             }
@@ -235,7 +240,11 @@ function bearbeite($xml, string $unzipPath)
             }
 
             if ($img->kMainArtikelBild > 0) {
-                $oMainArtikelBild = Shop::Container()->getDB()->select('tartikelpict', 'kArtikelPict', (int)$img->kMainArtikelBild);
+                $oMainArtikelBild = Shop::Container()->getDB()->select(
+                    'tartikelpict',
+                    'kArtikelPict',
+                    (int)$img->kMainArtikelBild)
+                ;
                 if (isset($oMainArtikelBild->cPfad) && strlen($oMainArtikelBild->cPfad) > 0) {
                     $img->cPfad = neuerDateiname($oMainArtikelBild->cPfad);
                     DBUpdateInsert('tartikelpict', [$img], 'kArtikel', 'kArtikelpict');
@@ -243,8 +252,12 @@ function bearbeite($xml, string $unzipPath)
                     erstelleArtikelBild($img, $Bildformat, $unzipPath, $imgFilename);
                 }
             } else {
-                $oArtikelBild = Shop::Container()->getDB()->select('tartikelpict', 'kArtikelPict', (int)$img->kArtikelPict);
-                //update all references, if img is used by other products
+                $oArtikelBild = Shop::Container()->getDB()->select(
+                    'tartikelpict',
+                    'kArtikelPict',
+                    (int)$img->kArtikelPict
+                );
+                // update all references, if img is used by other products
                 if (isset($oArtikelBild->cPfad) && strlen($oArtikelBild->cPfad) > 0) {
                     Shop::Container()->getDB()->update(
                         'tartikelpict',
@@ -407,8 +420,12 @@ function bearbeite($xml, string $unzipPath)
                 );
             }
             $cacheTags = [];
-            foreach (Shop::Container()->getDB()->selectAll('tartikel', 'kHersteller', (int)$Herstellerbild->kHersteller,
-                'kArtikel') as $article) {
+            foreach (Shop::Container()->getDB()->selectAll(
+                'tartikel',
+                'kHersteller',
+                (int)$Herstellerbild->kHersteller,
+                'kArtikel'
+            ) as $article) {
                 $cacheTags[] = CACHING_GROUP_ARTICLE . '_' . $article->kArtikel;
             }
             Shop::Cache()->flushTags($cacheTags);
@@ -1127,8 +1144,12 @@ function bearbeiteDeletes($xml)
                         (int)$kHersteller,
                         (object)['cBildpfad' => '']
                     );
-                    foreach (Shop::Container()->getDB()->selectAll('tartikel', 'kHersteller', (int)$kHersteller,
-                        'kArtikel') as $article) {
+                    foreach (Shop::Container()->getDB()->selectAll(
+                        'tartikel',
+                        'kHersteller',
+                        (int)$kHersteller,
+                        'kArtikel'
+                    ) as $article) {
                         $cacheTags[] = $article->kArtikel;
                     }
                 }
@@ -1140,8 +1161,12 @@ function bearbeiteDeletes($xml)
                 (int)$xml['del_bilder']['kHersteller'],
                 (object)['cBildpfad' => '']
             );
-            foreach (Shop::Container()->getDB()->selectAll('tartikel', 'kHersteller', (int)$xml['del_bilder']['kHersteller'],
-                'kArtikel') as $article) {
+            foreach (Shop::Container()->getDB()->selectAll(
+                'tartikel',
+                'kHersteller',
+                (int)$xml['del_bilder']['kHersteller'],
+                'kArtikel'
+            ) as $article) {
                 $cacheTags[] = $article->kArtikel;
             }
         }
@@ -1157,7 +1182,8 @@ function bearbeiteDeletes($xml)
         if (is_array($xml['del_bilder']['kMerkmal'])) {
             foreach ($xml['del_bilder']['kMerkmal'] as $kMerkmal) {
                 if ((int)$kMerkmal > 0) {
-                    Shop::Container()->getDB()->update('tmerkmal', 'kMerkmal', (int)$kMerkmal, (object)['cBildpfad' => '']);
+                    Shop::Container()->getDB()->update('tmerkmal', 'kMerkmal', (int)$kMerkmal,
+                        (object)['cBildpfad' => '']);
                 }
             }
         } elseif ((int)$xml['del_bilder']['kMerkmal'] > 0) {
@@ -1170,14 +1196,16 @@ function bearbeiteDeletes($xml)
         if (is_array($xml['del_bilder']['kMerkmalWert'])) {
             foreach ($xml['del_bilder']['kMerkmalWert'] as $kMerkmalWert) {
                 if ((int)$kMerkmalWert > 0) {
-                    Shop::Container()->getDB()->update('tmerkmalwert', 'kMerkmalWert', (int)$kMerkmalWert, (object)['cBildpfad' => '']);
+                    Shop::Container()->getDB()->update('tmerkmalwert', 'kMerkmalWert', (int)$kMerkmalWert,
+                        (object)['cBildpfad' => '']);
                     Shop::Container()->getDB()->delete('tmerkmalwertbild', 'kMerkmalWert', (int)$kMerkmalWert);
                 }
             }
         } elseif ((int)$xml['del_bilder']['kMerkmalWert'] > 0) {
             Shop::Container()->getDB()->update('tmerkmalwert', 'kMerkmalWert', (int)$xml['del_bilder']['kMerkmalWert'],
                 (object)['cBildpfad' => '']);
-            Shop::Container()->getDB()->delete('tmerkmalwertbild', 'kMerkmalWert', (int)$xml['del_bilder']['kMerkmalWert']);
+            Shop::Container()->getDB()->delete('tmerkmalwertbild', 'kMerkmalWert',
+                (int)$xml['del_bilder']['kMerkmalWert']);
         }
     }
 }
@@ -1477,7 +1505,7 @@ function gibBildformat(string $imgFilename)
                 return 'bmp';
             }
             break;
-            
+
         default:
             break;
     }

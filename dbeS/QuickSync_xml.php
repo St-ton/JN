@@ -64,16 +64,19 @@ function bearbeiteInsert($xml)
         } else {
             handleOldPriceFormat(mapArray($xml['quicksync']['tartikel'], 'tpreise', $GLOBALS['mPreise']));
         }
-
-        // Preise für Preisverlauf
         $oPreis_arr = mapArray($xml['quicksync']['tartikel'], 'tpreise', $GLOBALS['mPreise']);
         foreach ($oPreis_arr as $oPreis) {
             setzePreisverlauf($oPreis->kArtikel, $oPreis->kKundengruppe, $oPreis->fVKNetto);
         }
     } else {
         for ($i = 0; $i < $nCount; ++$i) {
-            updateXMLinDB($xml['quicksync']['tartikel'][$i], 'tpreise', $GLOBALS['mPreise'], 'kKundengruppe', 'kArtikel');
-
+            updateXMLinDB(
+                $xml['quicksync']['tartikel'][$i],
+                'tpreise',
+                $GLOBALS['mPreise'],
+                'kKundengruppe',
+                'kArtikel'
+            );
             if (version_compare($_POST['vers'], '099976', '>=')) {
                 handleNewPriceFormat(mapArray($xml['quicksync']['tartikel'][$i], 'tpreise', $GLOBALS['mPreise']));
             }
@@ -93,7 +96,6 @@ function bearbeiteInsert($xml)
     }
     $clearTags = [];
     foreach ($oArtikel_arr as $oArtikel) {
-        //any new orders since last wawi-sync? see https://gitlab.jtl-software.de/jtlshop/jtl-shop/issues/304
         if (isset($oArtikel->fLagerbestand) && $oArtikel->fLagerbestand > 0) {
             $delta = Shop::Container()->getDB()->query(
                 "SELECT SUM(pos.nAnzahl) AS totalquantity
@@ -105,11 +107,15 @@ function bearbeiteInsert($xml)
                 \DB\ReturnType::SINGLE_OBJECT
             );
             if ($delta->totalquantity > 0) {
-                //subtract delta from stocklevel
                 $oArtikel->fLagerbestand -= $delta->totalquantity;
                 if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog("Artikel-Quicksync: Lagerbestand von kArtikel {$oArtikel->kArtikel} wurde wegen nicht-abgeholter Bestellungen "
-                    . "um {$delta->totalquantity} auf {$oArtikel->fLagerbestand} reduziert.", JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
+                    Jtllog::writeLog('Artikel-Quicksync: Lagerbestand von kArtikel ' .
+                        $oArtikel->kArtikel . ' wurde wegen nicht-abgeholter Bestellungen '.
+                        'um ' . $delta->totalquantity . ' auf ' . $oArtikel->fLagerbestand . ' reduziert.',
+                        JTLLOG_LEVEL_DEBUG,
+                        false,
+                        'Artikel_xml'
+                    );
                 }
             }
         }
@@ -140,7 +146,7 @@ function bearbeiteInsert($xml)
         $clearTags[] = (int)$oArtikel->kArtikel;
         versendeVerfuegbarkeitsbenachrichtigung($oArtikel);
     }
-    $clearTags = array_unique($clearTags);
-    array_walk($clearTags, function(&$i) { $i = CACHING_GROUP_ARTICLE . '_' . $i; });
-    Shop::Cache()->flushTags($clearTags);
+    Shop::Cache()->flushTags(\Functional\map(array_unique($clearTags), function ($e) {
+        return CACHING_GROUP_ARTICLE . '_' . $e;
+    }));
 }

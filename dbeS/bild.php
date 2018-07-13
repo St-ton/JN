@@ -48,7 +48,7 @@ if ($kArtikel > 0 && $nBildNummer > 0 && $nSize > 0) {
             gibPfadGroesse($nSize),
             $oArtikelPict->nNr
         );
-        if (!file_exists($image)){
+        if (!file_exists($image)) {
             $req = MediaImage::toRequest($image);
             MediaImage::cacheImage($req);
         }

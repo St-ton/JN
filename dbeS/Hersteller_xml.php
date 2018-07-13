@@ -58,7 +58,12 @@ function bearbeiteHerstellerDeletes($xml)
         foreach ($xml['del_hersteller']['kHersteller'] as $kHersteller) {
             $kHersteller = (int)$kHersteller;
             if ($kHersteller > 0) {
-                $affectedArticles = Shop::Container()->getDB()->selectAll('tartikel', 'kHersteller', $kHersteller, 'kArtikel');
+                $affectedArticles = Shop::Container()->getDB()->selectAll(
+                    'tartikel',
+                    'kHersteller',
+                    $kHersteller,
+                    'kArtikel'
+                );
                 Shop::Container()->getDB()->delete('tseo', ['kKey', 'cKey'], [$kHersteller, 'kHersteller']);
                 Shop::Container()->getDB()->delete('thersteller', 'kHersteller', $kHersteller);
                 Shop::Container()->getDB()->delete('therstellersprache', 'kHersteller', $kHersteller);
@@ -93,12 +98,12 @@ function bearbeiteHersteller($xml)
     for ($i = 0; $i < $mfCount; $i++) {
         $id               = (int)$manufacturers[$i]->kHersteller;
         $affectedArticles = Shop::Container()->getDB()->selectAll('tartikel', 'kHersteller', $id, 'kArtikel');
-        Shop::Container()->getDB()->delete('tseo', ['kKey', 'cKey'], [$id,'kHersteller']);
+        Shop::Container()->getDB()->delete('tseo', ['kKey', 'cKey'], [$id, 'kHersteller']);
         if (!trim($manufacturers[$i]->cSeo)) {
             $manufacturers[$i]->cSeo = getFlatSeoPath($manufacturers[$i]->cName);
         }
         //alten Bildpfad merken
-        $oHerstellerBild               = Shop::Container()->getDB()->query(
+        $oHerstellerBild              = Shop::Container()->getDB()->query(
             'SELECT cBildPfad 
                 FROM thersteller 
                 WHERE kHersteller = ' . $id,

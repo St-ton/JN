@@ -1040,8 +1040,8 @@ function handleOldPriceFormat($objs)
     }
     $kArtikel  = (int)$objs[0]->kArtikel;
     $customers = Shop::Container()->getDB()->selectAll(
-        'tpreis', 
-        ['kArtikel', 'kKundengruppe'], 
+        'tpreis',
+        ['kArtikel', 'kKundengruppe'],
         [$kArtikel, 0],
         'kKunde'
     );

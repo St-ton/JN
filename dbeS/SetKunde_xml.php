@@ -113,7 +113,7 @@ function bearbeite($xml)
             $Kunde->cAbgeholt   = 'Y';
             $Kunde->cAktiv      = 'Y';
             $Kunde->dVeraendert = 'now()';
-            
+
             if ($Kunde->cMail !== $oKundeAlt->cMail) {
                 // E-Mail Adresse geändert - Verwendung prüfen!
                 if (StringHandler::filterEmailAddress($Kunde->cMail) === false
@@ -166,7 +166,11 @@ function bearbeite($xml)
 
                 if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
                     Jtllog::writeLog('Verknuepfter Kunde in Wawi existiert nicht im Shop: ' .
-                        XML_serialize($res_obj), JTLLOG_LEVEL_ERROR, false, 'SetKunde_xml');
+                        XML_serialize($res_obj),
+                        JTLLOG_LEVEL_ERROR,
+                        false,
+                        'SetKunde_xml'
+                    );
                 }
 
                 return $res_obj;
@@ -198,7 +202,10 @@ function bearbeite($xml)
                 $xml_obj['kunden']['tkunde'][0]['cFirma']    = trim($cryptoService->decryptXTEA($xml_obj['kunden']['tkunde'][0]['cFirma']));
                 $xml_obj['kunden']['tkunde'][0]['cZusatz']   = trim($cryptoService->decryptXTEA($xml_obj['kunden']['tkunde'][0]['cZusatz']));
                 $xml_obj['kunden']['tkunde'][0]['cStrasse']  = trim($cryptoService->decryptXTEA($xml_obj['kunden']['tkunde'][0]['cStrasse']));
-                $xml_obj['kunden']['tkunde'][0]['cAnrede']   = Kunde::mapSalutation($xml_obj['kunden']['tkunde'][0]['cAnrede'], $xml_obj['kunden']['tkunde'][0]['kSprache']);
+                $xml_obj['kunden']['tkunde'][0]['cAnrede']   = Kunde::mapSalutation(
+                    $xml_obj['kunden']['tkunde'][0]['cAnrede'],
+                    $xml_obj['kunden']['tkunde'][0]['kSprache']
+                );
                 //Strasse und Hausnummer zusammenführen
                 $xml_obj['kunden']['tkunde'][0]['cStrasse'] .= ' ' . $xml_obj['kunden']['tkunde'][0]['cHausnummer'];
                 unset($xml_obj['kunden']['tkunde'][0]['cHausnummer']);
@@ -219,7 +226,8 @@ function bearbeite($xml)
                         buildAttributes($xml_obj['kunden']['tkunde'][0]['tkundenattribut'][$o]);
                 }
                 if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-                    Jtllog::writeLog('Dieser Kunde existiert: ' . XML_serialize($xml_obj), JTLLOG_LEVEL_ERROR, false, 'SetKunde_xml');
+                    Jtllog::writeLog('Dieser Kunde existiert: ' . XML_serialize($xml_obj), JTLLOG_LEVEL_ERROR, false,
+                        'SetKunde_xml');
                 }
 
                 return $xml_obj;
@@ -345,7 +353,7 @@ function bearbeite($xml)
                                 'kAdresse'     => $xml['tkunde']['tadresse attr']['kAdresse'],
                                 'kInetAdresse' => $kInetLieferadresse,
                             ],
-                            'tadresse' => '',
+                            'tadresse'      => '',
                         ];
                     }
                 }

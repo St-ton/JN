@@ -82,6 +82,10 @@ function bearbeiteUploadQueueAck($xml)
             }
         }
     } elseif ((int)$xml['ack_uploadqueue']['kuploadqueue'] > 0) {
-        Shop::Container()->getDB()->delete('tuploadqueue', 'kUploadqueue', (int)$xml['ack_uploadqueue']['kuploadqueue']);
+        Shop::Container()->getDB()->delete(
+            'tuploadqueue',
+            'kUploadqueue',
+            (int)$xml['ack_uploadqueue']['kuploadqueue']
+        );
     }
 }

@@ -145,14 +145,14 @@ function cloud_download($hash)
     $imageData = download($url);
 
     if ($imageData !== null) {
-        $tmpFile = tempnam(sys_get_temp_dir(), 'jtl');
+        $tmpFile  = tempnam(sys_get_temp_dir(), 'jtl');
         $filename = PFAD_ROOT . PFAD_MEDIA_IMAGE_STORAGE . $hash;
 
         file_put_contents($tmpFile, $imageData, FILE_BINARY);
 
         return rename($tmpFile, $filename);
     }
-    
+
     return false;
 }
 

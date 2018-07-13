@@ -45,8 +45,8 @@ if (auth()) {
                     WHERE kKunde = " . (int)$xml_obj['kunden']['tkunde'][$i . ' attr']['kKunde'],
                 \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
             );
-            $kundenattribute_anz                                =
-                count($xml_obj['kunden']['tkunde'][$i]['tkundenattribut']);
+
+            $kundenattribute_anz = count($xml_obj['kunden']['tkunde'][$i]['tkundenattribut']);
             for ($o = 0; $o < $kundenattribute_anz; $o++) {
                 $xml_obj['kunden']['tkunde'][$i]['tkundenattribut'][$o . ' attr'] =
                     buildAttributes($xml_obj['kunden']['tkunde'][$i]['tkundenattribut'][$o]);

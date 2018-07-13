@@ -704,15 +704,15 @@ function deleteOrder(int $kBestellung)
  */
 function checkGuestAccount(int $kKunde)
 {
-    //Bei komplett versendeten Gastbestellungen, Kundendaten aus dem Shop loeschen
+    // Bei komplett versendeten Gastbestellungen Kundendaten aus dem Shop loeschen
     $kunde = new Kunde($kKunde);
     if ($kunde->cPasswort !== null && strlen($kunde->cPasswort) < 10) {
         // Da Gastkonten auch durch Kundenkontolöschung entstehen können, kann es auch mehrere Bestellungen geben
         $oBestellung = Shop::Container()->getDB()->query(
-            "SELECT COUNT(kBestellung) AS countBestellung
+            'SELECT COUNT(kBestellung) AS countBestellung
                 FROM tbestellung
-                WHERE cStatus NOT IN (" . BESTELLUNG_STATUS_VERSANDT . ", " . BESTELLUNG_STATUS_STORNO . ")
-                    AND kKunde = " . (int)$kunde->kKunde,
+                WHERE cStatus NOT IN (' . BESTELLUNG_STATUS_VERSANDT . ', ' . BESTELLUNG_STATUS_STORNO . ')
+                    AND kKunde = ' . (int)$kunde->kKunde,
             \DB\ReturnType::SINGLE_OBJECT
         );
         if (isset($oBestellung->countBestellung) && (int)$oBestellung->countBestellung === 0) {
@@ -759,9 +759,9 @@ function bearbeiteBestellattribute(int $kBestellung, $orderAttributes)
 
     if (count($updated) > 0) {
         Shop::Container()->getDB()->query(
-            "DELETE FROM tbestellattribut
-                WHERE kBestellung = {$kBestellung}
-                    AND kBestellattribut NOT IN (" . implode(', ', $updated) . ")",
+            'DELETE FROM tbestellattribut
+                WHERE kBestellung = ' . $kBestellung . '
+                    AND kBestellattribut NOT IN (' . implode(', ', $updated) . ')',
             \DB\ReturnType::QUERYSINGLE
         );
     } else {

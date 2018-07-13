@@ -71,8 +71,11 @@ function bearbeiteInsert($xml)
             Jtllog::writeLog('Single download, oDownload_arr: ' . print_r($oDownload_arr, true), JTLLOG_LEVEL_DEBUG);
         }
         if ($oDownload_arr[0]->kDownload > 0) {
-            $oDownloadSprache_arr = mapArray($xml['tDownloads']['tDownload'], 'tDownloadSprache',
-                $GLOBALS['mDownloadSprache']);
+            $oDownloadSprache_arr = mapArray(
+                $xml['tDownloads']['tDownload'],
+                'tDownloadSprache',
+                $GLOBALS['mDownloadSprache']
+            );
             if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
                 Jtllog::writeLog('oDownloadSprache_arr: ' . print_r($oDownloadSprache_arr, true), JTLLOG_LEVEL_DEBUG,
                     false, 'Download_xml');
@@ -96,8 +99,11 @@ function bearbeiteInsert($xml)
 
         foreach ($oDownload_arr as $i => $oDownload) {
             if ($oDownload->kDownload > 0) {
-                $oDownloadSprache_arr = mapArray($xml['tDownloads']['tDownload'][$i], 'tDownloadSprache',
-                    $GLOBALS['mDownloadSprache']);
+                $oDownloadSprache_arr = mapArray(
+                    $xml['tDownloads']['tDownload'][$i],
+                    'tDownloadSprache',
+                    $GLOBALS['mDownloadSprache']
+                );
                 if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
                     Jtllog::writeLog('oDownloadSprache_arr: ' . print_r($oDownloadSprache_arr, true),
                         JTLLOG_LEVEL_DEBUG, false, 'Download_xml');

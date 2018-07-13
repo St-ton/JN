@@ -42,27 +42,28 @@ echo $return;
  */
 function bearbeiteVerfuegbarkeitsbenachrichtigungenAck($xml)
 {
-    if (isset($xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung'])) {
-        if (!is_array($xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung'])
-            && (int)$xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung'] > 0
-        ) {
-            $xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung'] =
-                [$xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung']];
-        }
-        if (is_array($xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung'])) {
-            foreach ($xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung'] as $msg) {
-                $msg = (int)$msg;
-                if ($msg > 0) {
-                    Shop::Container()->getDB()->update(
-                        'tverfuegbarkeitsbenachrichtigung',
-                        'kVerfuegbarkeitsbenachrichtigung',
-                        $msg,
-                        (object)['cAbgeholt' => 'Y']
-                    );
-                    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                        Jtllog::writeLog('Verfuegbarkeitsbenachrichtigung erfolgreich abgeholt: ' .
-                            $msg, JTLLOG_LEVEL_DEBUG, false, 'Data_xml');
-                    }
+    if (!isset($xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung'])) {
+        return;
+    }
+    if (!is_array($xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung'])
+        && (int)$xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung'] > 0
+    ) {
+        $xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung'] =
+            [$xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung']];
+    }
+    if (is_array($xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung'])) {
+        foreach ($xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung'] as $msg) {
+            $msg = (int)$msg;
+            if ($msg > 0) {
+                Shop::Container()->getDB()->update(
+                    'tverfuegbarkeitsbenachrichtigung',
+                    'kVerfuegbarkeitsbenachrichtigung',
+                    $msg,
+                    (object)['cAbgeholt' => 'Y']
+                );
+                if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+                    Jtllog::writeLog('Verfuegbarkeitsbenachrichtigung erfolgreich abgeholt: ' .
+                        $msg, JTLLOG_LEVEL_DEBUG, false, 'Data_xml');
                 }
             }
         }

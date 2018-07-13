@@ -25,12 +25,12 @@ class Page implements \JsonSerializable
     /**
      * @var null|string
      */
-    protected $publishFrom = null;
+    protected $publishFrom;
 
     /**
      * @var null|string
      */
-    protected $publishTo = null;
+    protected $publishTo;
 
     /**
      * @var string
@@ -48,9 +48,9 @@ class Page implements \JsonSerializable
     protected $url = '';
 
     /**
-     * @var string
+     * @var null|string
      */
-    protected $lastModified = null;
+    protected $lastModified;
 
     /**
      * @var string
@@ -58,9 +58,9 @@ class Page implements \JsonSerializable
     protected $lockedBy = '';
 
     /**
-     * @var string
+     * @var null|string
      */
-    protected $lockedAt = null;
+    protected $lockedAt;
 
     /**
      * @var bool
@@ -132,7 +132,7 @@ class Page implements \JsonSerializable
      */
     public function setPublishFrom($publishFrom): self
     {
-        $this->publishFrom = $publishFrom === '0000-00-00 00:00:00' ? null : $publishFrom;
+        $this->publishFrom = $publishFrom;
 
         return $this;
     }
@@ -151,7 +151,7 @@ class Page implements \JsonSerializable
      */
     public function setPublishTo($publishTo): self
     {
-        $this->publishTo = $publishTo === '0000-00-00 00:00:00' ? null : $publishTo;
+        $this->publishTo = $publishTo;
 
         return $this;
     }
@@ -227,7 +227,7 @@ class Page implements \JsonSerializable
      */
     public function setLastModified($lastModified): self
     {
-        $this->lastModified = $lastModified === '0000-00-00 00:00:00' ? null : $lastModified;
+        $this->lastModified = $lastModified;
 
         return $this;
     }
@@ -265,7 +265,7 @@ class Page implements \JsonSerializable
      */
     public function setLockedAt($lockedAt): self
     {
-        $this->lockedAt = $lockedAt === '0000-00-00 00:00:00' ? null : $lockedAt;
+        $this->lockedAt = $lockedAt;
 
         return $this;
     }

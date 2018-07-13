@@ -34,7 +34,6 @@ if (auth()) {
                 }
             }
             if ($i === 0) {
-                // Suchcachetimer setzen.
                 Shop::Container()->getDB()->query(
                     "UPDATE tsuchcache
                         SET dGueltigBis = DATE_ADD(now(), INTERVAL " . SUCHCACHE_LEBENSDAUER . " MINUTE)
@@ -351,7 +350,6 @@ function bearbeiteInsert($xml, array $conf)
     $oShopSpracheAssoc_arr = Sprache::getAllLanguages(1);
     $langCount             = count($artikelsprache_arr);
     for ($i = 0; $i < $langCount; ++$i) {
-        // Sprachen die nicht im Shop vorhanden sind überspringen
         if (!Sprache::isShopLanguage($artikelsprache_arr[$i]->kSprache, $oShopSpracheAssoc_arr)) {
             continue;
         }
@@ -412,7 +410,6 @@ function bearbeiteInsert($xml, array $conf)
         }
         DBUpdateInsert('tattribut', $Attribut_arr, 'kAttribut');
     }
-    //Medienmodul
     if (isset($xml['tartikel']['tmediendatei']) && is_array($xml['tartikel']['tmediendatei'])) {
         $oMediendatei_arr = mapArray($xml['tartikel'], 'tmediendatei', $GLOBALS['mMediendatei']);
         $mediaCount       = count($oMediendatei_arr);
@@ -451,7 +448,6 @@ function bearbeiteInsert($xml, array $conf)
         }
         DBUpdateInsert('tmediendatei', $oMediendatei_arr, 'kMedienDatei');
     }
-    //Downloadmodul
     if (isset($xml['tartikel']['tArtikelDownload']) && is_array($xml['tartikel']['tArtikelDownload'])) {
         $oDownload_arr = [];
         loescheDownload($Artikel->kArtikel);
@@ -482,11 +478,9 @@ function bearbeiteInsert($xml, array $conf)
 
         DBUpdateInsert('tartikeldownload', $oDownload_arr, 'kArtikel', 'kDownload');
     }
-    // Nicht übertragene Downloads löschen
     foreach ($downloadKeys as $kDownload) {
         loescheDownload($Artikel->kArtikel, $kDownload);
     }
-    // Stückliste
     if (isset($xml['tartikel']['tstueckliste']) && is_array($xml['tartikel']['tstueckliste'])) {
         $oStueckliste_arr = mapArray($xml['tartikel'], 'tstueckliste', $GLOBALS['mStueckliste']);
         $cacheIDs         = [];
@@ -503,7 +497,6 @@ function bearbeiteInsert($xml, array $conf)
             Shop::Cache()->flushTags($cacheIDs);
         }
     }
-    // Uploads
     if (isset($xml['tartikel']['tartikelupload']) && is_array($xml['tartikel']['tartikelupload'])) {
         $oArtikelUpload_arr = mapArray($xml['tartikel'], 'tartikelupload', $GLOBALS['mArtikelUpload']);
         foreach ($oArtikelUpload_arr as &$oArtikelUpload) {
@@ -517,8 +510,6 @@ function bearbeiteInsert($xml, array $conf)
             $logger->debug('oArtikelUpload_arr: ' . print_r($oArtikelUpload_arr, true));
         }
         DBUpdateInsert('tuploadschema', $oArtikelUpload_arr, 'kUploadSchema', 'kCustomID');
-
-        // Upload-Sprachen
         if (count($oArtikelUpload_arr) < 2) {
             $oArtikelUploadSprache_arr = mapArray(
                 $xml['tartikel']['tartikelupload'],
@@ -544,13 +535,11 @@ function bearbeiteInsert($xml, array $conf)
             }
         }
     }
-    // abnahmeintervalle
     Shop::Container()->getDB()->delete('tartikelabnahme', 'kArtikel', $artikel_arr[0]->kArtikel);
     if (isset($xml['tartikel']['tartikelabnahme']) && is_array($xml['tartikel']['tartikelabnahme'])) {
         $oArtikelAbnahmeIntervalle_arr = mapArray($xml['tartikel'], 'tartikelabnahme', $GLOBALS['mArtikelAbnahme']);
         DBUpdateInsert('tartikelabnahme', $oArtikelAbnahmeIntervalle_arr, 'kArtikel', 'kKundengruppe');
     }
-    // Konfig
     if (isset($xml['tartikel']['tartikelkonfiggruppe']) && is_array($xml['tartikel']['tartikelkonfiggruppe'])) {
         $oArtikelKonfig_arr = mapArray($xml['tartikel'], 'tartikelkonfiggruppe', $GLOBALS['mArtikelkonfiggruppe']);
         if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
@@ -558,7 +547,6 @@ function bearbeiteInsert($xml, array $conf)
         }
         DBUpdateInsert('tartikelkonfiggruppe', $oArtikelKonfig_arr, 'kArtikel', 'kKonfiggruppe');
     }
-    // Sonderpreise
     if (isset($xml['tartikel']['tartikelsonderpreis'])) {
         updateXMLinDB(
             $xml['tartikel']['tartikelsonderpreis'],
@@ -585,25 +573,22 @@ function bearbeiteInsert($xml, array $conf)
     updateXMLinDB($xml['tartikel'], 'txsell', $GLOBALS['mXSell'], 'kXSell');
     updateXMLinDB($xml['tartikel'], 'tartikelmerkmal', $GLOBALS['mArtikelSichtbarkeit'], 'kMermalWert');
     if ((int)$artikel_arr[0]->nIstVater === 1) {
-        //Lagerbestand-Update: Lagerbestand des Vaterartikels berechnet sich aus der Summe der Kindartikel-Lagerbestände
         Shop::Container()->getDB()->query(
-            "UPDATE tartikel SET fLagerbestand =
+            'UPDATE tartikel SET fLagerbestand =
                 (SELECT * FROM
                     (SELECT SUM(fLagerbestand) 
                         FROM tartikel 
-                        WHERE kVaterartikel = " . (int)$artikel_arr[0]->kArtikel . "
+                        WHERE kVaterartikel = ' . (int)$artikel_arr[0]->kArtikel . '
                      ) AS x
                  )
-                WHERE kArtikel = " . (int)$artikel_arr[0]->kArtikel,
+                WHERE kArtikel = ' . (int)$artikel_arr[0]->kArtikel,
             \DB\ReturnType::AFFECTED_ROWS
         );
-        // Aktualisiere Merkmale in tartikelmerkmal vom Vaterartikel
         Artikel::beachteVarikombiMerkmalLagerbestand(
             $artikel_arr[0]->kArtikel,
             $conf['global']['artikel_artikelanzeigefilter']
         );
     } elseif (isset($artikel_arr[0]->kVaterArtikel) && $artikel_arr[0]->kVaterArtikel > 0) {
-        //Lagerbestand-Update: Lagerbestand des Vaterartikels berechnet sich aus der Summe der Kindartikel-Lagerbestände
         Shop::Container()->getDB()->query(
             "UPDATE tartikel SET fLagerbestand =
                 (SELECT * FROM
@@ -620,8 +605,7 @@ function bearbeiteInsert($xml, array $conf)
             $conf['global']['artikel_artikelanzeigefilter']
         );
     }
-    // SQL DEL
-    if (isset($xml['tartikel']['SQLDEL']) && strlen($xml['tartikel']['SQLDEL']) > 10) { // teigenschaftkombiwert sqls absetzen
+    if (isset($xml['tartikel']['SQLDEL']) && strlen($xml['tartikel']['SQLDEL']) > 10) {
         if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
             $logger->debug('SQLDEL: ' . $xml['tartikel']['SQLDEL']);
         }
@@ -632,8 +616,7 @@ function bearbeiteInsert($xml, array $conf)
             }
         }
     }
-    // SQL
-    if (isset($xml['tartikel']['SQL']) && strlen($xml['tartikel']['SQL']) > 10) { //teigenschaftkombiwert sqls absetzen
+    if (isset($xml['tartikel']['SQL']) && strlen($xml['tartikel']['SQL']) > 10) {
         if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
             $logger->debug('SQL: ' . $xml['tartikel']['SQL']);
         }
@@ -653,9 +636,9 @@ function bearbeiteInsert($xml, array $conf)
                         $kKey_arr[] = (int)substr($cDel, 0, strpos($cDel, ','));
                     }
                     Shop::Container()->getDB()->query(
-                        "DELETE
+                        'DELETE
                             FROM teigenschaftkombiwert 
-                            WHERE kEigenschaftKombi IN (" . implode(',', $kKey_arr) . ")",
+                            WHERE kEigenschaftKombi IN (' . implode(',', $kKey_arr) . ')',
                         \DB\ReturnType::AFFECTED_ROWS
                     );
                 }
@@ -674,12 +657,12 @@ function bearbeiteInsert($xml, array $conf)
             }
             // Prevent SQL-Exception if duplicate datasets will be sent falsely
             Shop::Container()->getDB()->queryPrepared(
-                "INSERT INTO tartikelwarenlager (kArtikel, kWarenlager, fBestand, fZulauf, dZulaufDatum)
+                'INSERT INTO tartikelwarenlager (kArtikel, kWarenlager, fBestand, fZulauf, dZulaufDatum)
                     VALUES (:kArtikel, :kWarenlager, :fBestand, :fZulauf, :dZulaufDatum)
                     ON DUPLICATE KEY UPDATE
                         fBestand = :fBestand,
                         fZulauf = :fZulauf,
-                        dZulaufDatum = :dZulaufDatum",
+                        dZulaufDatum = :dZulaufDatum',
                 [
                     'kArtikel'     => $oArtikelWarenlager->kArtikel,
                     'kWarenlager'  => $oArtikelWarenlager->kWarenlager,
@@ -991,11 +974,11 @@ function loescheArtikel(int $kArtikel, int $nIstVater = 0, bool $bForce = false,
         foreach ($articleCategories as $category) {
             // check if the article was the only one in at least one of these categories
             $categoryCount = Shop::Container()->getDB()->query(
-                "SELECT count(tkategorieartikel.kArtikel) AS count
+                'SELECT count(tkategorieartikel.kArtikel) AS count
                     FROM tkategorieartikel
                     LEFT JOIN tartikel
                         ON tartikel.kArtikel = tkategorieartikel.kArtikel
-                    WHERE tkategorieartikel.kKategorie = " . (int)$category->kKategorie . " " . $stockFilter,
+                    WHERE tkategorieartikel.kKategorie = ' . (int)$category->kKategorie . ' ' . $stockFilter,
                 \DB\ReturnType::SINGLE_OBJECT
             );
             if (!isset($categoryCount->count) || (int)$categoryCount->count === 1) {
@@ -1218,11 +1201,11 @@ function loescheStueckliste($kStueckliste)
 function loescheSonderpreise(int $kArtikel): int
 {
     return Shop::Container()->getDB()->queryPrepared(
-        "DELETE asp, sp
+        'DELETE asp, sp
             FROM tartikelsonderpreis asp
             LEFT JOIN tsonderpreise sp
-            ON sp.kArtikelSonderpreis = asp.kArtikelSonderpreis
-            WHERE asp.kArtikel = :articleID",
+                ON sp.kArtikelSonderpreis = asp.kArtikelSonderpreis
+            WHERE asp.kArtikel = :articleID',
         [
             'articleID' => $kArtikel,
         ],
@@ -1246,7 +1229,6 @@ function checkArtikelBildLoeschung(int $kArtikel)
     foreach ($oArtikelPict_arr as $oArtikelPict) {
         deleteArticleImage($oArtikelPict, $kArtikel);
     }
-    // flush article images cache
     Shop::Cache()->flush('arr_article_images_' . $kArtikel);
 }
 
@@ -1286,7 +1268,7 @@ function getConfigParents(int $kArtikel): array
 
 /**
  * @param  int $kArtikel
- * @return array
+ * @return int[]
  */
 function getDownloadKeys(int $kArtikel): array
 {
@@ -1348,9 +1330,9 @@ function clearProductCaches(array $products)
         }
         // flush cache tags associated with the article's category IDs
         $categories = Shop::Container()->getDB()->query(
-            "SELECT DISTINCT kKategorie
+            'SELECT DISTINCT kKategorie
                 FROM tkategorieartikel
-                WHERE kArtikel IN (" . implode(',', $deps) . ')',
+                WHERE kArtikel IN (' . implode(',', $deps) . ')',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($categories as $category) {
@@ -1358,9 +1340,9 @@ function clearProductCaches(array $products)
         }
         // flush parent article IDs
         $parentArticles = Shop::Container()->getDB()->query(
-            "SELECT DISTINCT kVaterArtikel AS id
+            'SELECT DISTINCT kVaterArtikel AS id
                 FROM tartikel
-                WHERE kArtikel IN (" . implode(',', $deps) . ')
+                WHERE kArtikel IN (' . implode(',', $deps) . ')
                 AND kVaterArtikel > 0',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );

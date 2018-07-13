@@ -29,15 +29,15 @@ if ($kArtikel > 0 && $nBildNummer > 0 && $nSize > 0) {
         ? ''
         : " AND tartikelpict.nNr = " . $nBildNummer;
     $oArtikelPict_arr = Shop::Container()->getDB()->query(
-        "SELECT tartikelpict.cPfad, tartikelpict.kArtikel, tartikel.cSeo, tartikelpict.nNr
+        'SELECT tartikelpict.cPfad, tartikelpict.kArtikel, tartikel.cSeo, tartikelpict.nNr
                 FROM tartikelpict
                 JOIN tartikel
                     ON tartikel.kArtikel = tartikelpict.kArtikel
                 LEFT JOIN tartikelsichtbarkeit
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . (int)$oKundengruppe->kKundengruppe . "
+                    AND tartikelsichtbarkeit.kKundengruppe = ' . (int)$oKundengruppe->kKundengruppe . '
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                    AND tartikel.kArtikel = " . $kArtikel . $qry_bildNr,
+                    AND tartikel.kArtikel = ' . $kArtikel . $qry_bildNr,
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($oArtikelPict_arr as $oArtikelPict) {
@@ -79,29 +79,18 @@ if ($kArtikel > 0 && $nBildNummer > 0 && $nSize > 0) {
  */
 function gibPfadGroesse(int $nSize)
 {
-    if ($nSize > 0) {
-        switch ($nSize) {
-            case 1:
-                return Image::SIZE_LG;
-                break;
-
-            case 2:
-                return Image::SIZE_MD;
-                break;
-
-            case 3:
-                return Image::SIZE_SM;
-                break;
-
-            case 4:
-                return Image::SIZE_XS;
-                break;
-            default:
-                return 0;
-        }
+    switch ($nSize) {
+        case 1:
+            return Image::SIZE_LG;
+        case 2:
+            return Image::SIZE_MD;
+        case 3:
+            return Image::SIZE_SM;
+        case 4:
+            return Image::SIZE_XS;
+        default:
+            return 0;
     }
-
-    return 0;
 }
 
 /**
@@ -115,8 +104,6 @@ function gibBildformat(string $cBildPfad)
     switch ($nTyp) {
         case IMAGETYPE_JPEG:
             return 'jpg';
-            break;
-
         case IMAGETYPE_PNG:
             if (function_exists('imagecreatefrompng')) {
                 return 'png';

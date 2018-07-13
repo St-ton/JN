@@ -688,7 +688,7 @@ function deleteOrder(int $kBestellung)
  */
 function checkGuestAccount(int $kKunde)
 {
-    //Bei komplett versendeten Gastbestellungen, Kundendaten aus dem Shop loeschen
+    // Bei komplett versendeten Gastbestellungen Kundendaten aus dem Shop loeschen
     $kunde = new Kunde($kKunde);
     if ($kunde->cPasswort !== null && strlen($kunde->cPasswort) < 10) {
         // Da Gastkonten auch durch Kundenkontolöschung entstehen können, kann es auch mehrere Bestellungen geben

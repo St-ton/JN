@@ -1505,6 +1505,9 @@ class Warenkorb
             if ($Kupon->fWert > $this->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)) {
                 $maxPreisKupon = $this->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true);
             }
+            if ((int)$Kupon->nGanzenWKRabattieren === 0 && $Kupon->fWert > gibGesamtsummeKuponartikelImWarenkorb($Kupon, $this->PositionenArr)) {
+                $maxPreisKupon = gibGesamtsummeKuponartikelImWarenkorb($Kupon, $this->PositionenArr);
+            }
             $Spezialpos        = new stdClass();
             $Spezialpos->cName = [];
             foreach ($_SESSION['Sprachen'] as $Sprache) {

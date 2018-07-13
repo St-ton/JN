@@ -113,7 +113,7 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && FormHelper::va
             $hinweis .= 'Der Link <strong>' . $link->getName() . '</strong> wurde erfolgreich geändert.';
         }
         $clearCache = true;
-        $kLink      = 0;
+        $kLink      = $link->getID();
         $step       = 'uebersicht';
         $continue   = (isset($_POST['continue']) && (int)$_POST['continue'] === 1);
         if ($continue) {

@@ -100,7 +100,8 @@ function bearbeiteInsert($xml)
                         JOIN twarenkorbpos pos
                         ON pos.kWarenkorb = b.kWarenkorb
                         WHERE b.cAbgeholt = 'N'
-                            AND pos.kArtikel = " . (int)$oArtikel->kArtikel, 1
+                            AND pos.kArtikel = " . (int)$oArtikel->kArtikel,
+                    \DB\ReturnType::SINGLE_OBJECT
                 );
                 if ($delta->totalquantity > 0) {
                     //subtract delta from stocklevel

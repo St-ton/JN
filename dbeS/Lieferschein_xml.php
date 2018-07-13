@@ -98,12 +98,10 @@ function bearbeiteDelete($oXml)
         Shop::Container()->getDB()->delete('tversand', 'kLieferschein', $kLieferschein);
         Shop::Container()->getDB()->delete('tlieferschein', 'kLieferschein', $kLieferschein);
 
-        $oLieferscheinPos_arr = Shop::Container()->getDB()->selectAll('tlieferscheinpos', 'kLieferschein', $kLieferschein, 'kLieferscheinPos');
-        if (is_array($oLieferscheinPos_arr)) {
-            foreach ($oLieferscheinPos_arr as $oLieferscheinPos) {
-                Shop::Container()->getDB()->delete('tlieferscheinpos', 'kLieferscheinPos', (int)$oLieferscheinPos->kLieferscheinPos);
-                Shop::Container()->getDB()->delete('tlieferscheinposinfo', 'kLieferscheinPos', (int)$oLieferscheinPos->kLieferscheinPos);
-            }
+        $positions = Shop::Container()->getDB()->selectAll('tlieferscheinpos', 'kLieferschein', $kLieferschein, 'kLieferscheinPos');
+        foreach ($positions as $position) {
+            Shop::Container()->getDB()->delete('tlieferscheinpos', 'kLieferscheinPos', (int)$position->kLieferscheinPos);
+            Shop::Container()->getDB()->delete('tlieferscheinposinfo', 'kLieferscheinPos', (int)$position->kLieferscheinPos);
         }
     }
 }

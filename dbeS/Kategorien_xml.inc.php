@@ -12,13 +12,12 @@
  * @param int $level
  * @return int
  */
-function rebuildCategoryTree($parent_id, $left, $level = 0)
+function rebuildCategoryTree(int $parent_id, int $left, int $level = 0)
 {
-    $left = (int)$left;
     // the right value of this node is the left value + 1
     $right = $left + 1;
     // get all children of this node
-    $result = Shop::Container()->getDB()->selectAll('tkategorie', 'kOberKategorie', (int)$parent_id, 'kKategorie', 'nSort, cName');
+    $result = Shop::Container()->getDB()->selectAll('tkategorie', 'kOberKategorie', $parent_id, 'kKategorie', 'nSort, cName');
     foreach ($result as $_res) {
         $right = rebuildCategoryTree($_res->kKategorie, $right, $level + 1);
     }

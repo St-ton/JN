@@ -7,13 +7,10 @@
 ob_start();
 
 require_once __DIR__ . '/syncinclude.php';
-// configuration
 require_once __DIR__ . '/../includes/config.JTL-Shop.ini.php';
 require_once __DIR__ . '/../includes/defines.php';
-error_reporting(SYNC_LOG_LEVEL);
-// basic classes
 require_once PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
-// language
+error_reporting(SYNC_LOG_LEVEL);
 $oSprache = Sprache::getInstance(true);
 
 /**

@@ -57,26 +57,30 @@ function bearbeiteDeletes($xml)
 {
     if (isset($xml['del_kategorien']['kKategorie'])) {
         // Alle Shop Kundengruppen holen
-        $oKundengruppe_arr = Shop::Container()->getDB()->query("SELECT kKundengruppe FROM tkundengruppe", 2);
+        $oKundengruppe_arr = Shop::Container()->getDB()->query(
+            'SELECT kKundengruppe FROM tkundengruppe',
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
         if (!is_array($xml['del_kategorien']['kKategorie']) && (int)$xml['del_kategorien']['kKategorie'] > 0) {
             $xml['del_kategorien']['kKategorie'] = [$xml['del_kategorien']['kKategorie']];
         }
-        if (is_array($xml['del_kategorien']['kKategorie'])) {
-            foreach ($xml['del_kategorien']['kKategorie'] as $kKategorie) {
-                $kKategorie = (int)$kKategorie;
-                if ($kKategorie > 0) {
-                    loescheKategorie($kKategorie);
-                    //hole alle artikel raus in dieser Kategorie
-                    $oArtikel_arr = Shop::Container()->getDB()->selectAll('tkategorieartikel', 'kKategorie', $kKategorie, 'kArtikel');
-                    //gehe alle Artikel durch
-                    if (is_array($oArtikel_arr) && count($oArtikel_arr) > 0) {
-                        foreach ($oArtikel_arr as $oArtikel) {
-                            fuelleArtikelKategorieRabatt($oArtikel, $oKundengruppe_arr);
-                        }
+        if (!is_array($xml['del_kategorien']['kKategorie'])) {
+            return;
+        }
+        foreach ($xml['del_kategorien']['kKategorie'] as $kKategorie) {
+            $kKategorie = (int)$kKategorie;
+            if ($kKategorie > 0) {
+                loescheKategorie($kKategorie);
+                //hole alle artikel raus in dieser Kategorie
+                $oArtikel_arr = Shop::Container()->getDB()->selectAll('tkategorieartikel', 'kKategorie', $kKategorie, 'kArtikel');
+                //gehe alle Artikel durch
+                if (is_array($oArtikel_arr) && count($oArtikel_arr) > 0) {
+                    foreach ($oArtikel_arr as $oArtikel) {
+                        fuelleArtikelKategorieRabatt($oArtikel, $oKundengruppe_arr);
                     }
-
-                    executeHook(HOOK_KATEGORIE_XML_BEARBEITEDELETES, ['kKategorie' => $kKategorie]);
                 }
+
+                executeHook(HOOK_KATEGORIE_XML_BEARBEITEDELETES, ['kKategorie' => $kKategorie]);
             }
         }
     }
@@ -101,115 +105,121 @@ function bearbeiteInsert($xml)
 
         return;
     }
-    if (is_array($xml['tkategorie'])) {
-        // Altes SEO merken => falls sich es bei der aktualisierten Kategorie ändert => Eintrag in tredirect
-        $oDataOld      = Shop::Container()->getDB()->query(
-            "SELECT cSeo, lft, rght, nLevel
-                FROM tkategorie
-                WHERE kKategorie = " . $Kategorie->kKategorie, 1
+    if (!is_array($xml['tkategorie'])) {
+        return;
+    }
+    // Altes SEO merken => falls sich es bei der aktualisierten Kategorie ändert => Eintrag in tredirect
+    $oDataOld      = Shop::Container()->getDB()->query(
+        "SELECT cSeo, lft, rght, nLevel
+            FROM tkategorie
+            WHERE kKategorie = " . $Kategorie->kKategorie,
+        \DB\ReturnType::SINGLE_OBJECT
+    );
+    $oSeoAssoc_arr = getSeoFromDB($Kategorie->kKategorie, 'kKategorie', null, 'kSprache');
+
+    loescheKategorie($Kategorie->kKategorie);
+    //Kategorie
+    $kategorie_arr = mapArray($xml, 'tkategorie', $GLOBALS['mKategorie']);
+    if ($kategorie_arr[0]->kKategorie > 0) {
+        if (!$kategorie_arr[0]->cSeo) {
+            $kategorie_arr[0]->cSeo = getFlatSeoPath($kategorie_arr[0]->cName);
+        }
+        $kategorie_arr[0]->cSeo                  = getSeo($kategorie_arr[0]->cSeo);
+        $kategorie_arr[0]->cSeo                  = checkSeo($kategorie_arr[0]->cSeo);
+        $kategorie_arr[0]->dLetzteAktualisierung = 'now()';
+        $kategorie_arr[0]->lft                   = $oDataOld->lft ?? 0;
+        $kategorie_arr[0]->rght                  = $oDataOld->rght ?? 0;
+        $kategorie_arr[0]->nLevel                = $oDataOld->nLevel ?? 0;
+        DBUpdateInsert('tkategorie', $kategorie_arr, 'kKategorie');
+        // Insert into tredirect weil sich das SEO geändert hat
+        if (isset($oDataOld->cSeo)) {
+            checkDbeSXmlRedirect($oDataOld->cSeo, $kategorie_arr[0]->cSeo);
+        }
+        //insert in tseo
+        Shop::Container()->getDB()->query(
+            "INSERT INTO tseo
+                SELECT tkategorie.cSeo, 'kKategorie', tkategorie.kKategorie, tsprache.kSprache
+                    FROM tkategorie, tsprache
+                    WHERE tkategorie.kKategorie = " . (int)$kategorie_arr[0]->kKategorie . "
+                        AND tsprache.cStandard = 'Y'
+                        AND tkategorie.cSeo != ''",
+            \DB\ReturnType::DEFAULT
         );
-        $oSeoAssoc_arr = getSeoFromDB($Kategorie->kKategorie, 'kKategorie', null, 'kSprache');
 
-        loescheKategorie($Kategorie->kKategorie);
-        //Kategorie
-        $kategorie_arr = mapArray($xml, 'tkategorie', $GLOBALS['mKategorie']);
-        if ($kategorie_arr[0]->kKategorie > 0) {
-            if (!$kategorie_arr[0]->cSeo) {
-                $kategorie_arr[0]->cSeo = getFlatSeoPath($kategorie_arr[0]->cName);
+        executeHook(HOOK_KATEGORIE_XML_BEARBEITEINSERT, ['oKategorie' => $kategorie_arr[0]]);
+    }
+
+    //Kategoriesprache
+    $kategoriesprache_arr = mapArray($xml['tkategorie'], 'tkategoriesprache', $GLOBALS['mKategorieSprache']);
+    if (is_array($kategoriesprache_arr)) {
+        $oShopSpracheAssoc_arr = Sprache::getAllLanguages(1);
+        $lCount                = count($kategoriesprache_arr);
+        for ($i = 0; $i < $lCount; ++$i) {
+            // Sprachen die nicht im Shop vorhanden sind überspringen
+            if (!Sprache::isShopLanguage($kategoriesprache_arr[$i]->kSprache, $oShopSpracheAssoc_arr)) {
+                continue;
             }
-            $kategorie_arr[0]->cSeo                  = getSeo($kategorie_arr[0]->cSeo);
-            $kategorie_arr[0]->cSeo                  = checkSeo($kategorie_arr[0]->cSeo);
-            $kategorie_arr[0]->dLetzteAktualisierung = 'now()';
-            $kategorie_arr[0]->lft                   = $oDataOld->lft ?? 0;
-            $kategorie_arr[0]->rght                  = $oDataOld->rght ?? 0;
-            $kategorie_arr[0]->nLevel                = $oDataOld->nLevel ?? 0;
-            DBUpdateInsert('tkategorie', $kategorie_arr, 'kKategorie');
-            // Insert into tredirect weil sich das SEO geändert hat
-            if (isset($oDataOld->cSeo)) {
-                checkDbeSXmlRedirect($oDataOld->cSeo, $kategorie_arr[0]->cSeo);
+            if (!$kategoriesprache_arr[$i]->cSeo) {
+                $kategoriesprache_arr[$i]->cSeo = $kategoriesprache_arr[$i]->cName;
             }
-            //insert in tseo
-            Shop::Container()->getDB()->query(
-                "INSERT INTO tseo
-                    SELECT tkategorie.cSeo, 'kKategorie', tkategorie.kKategorie, tsprache.kSprache
-                        FROM tkategorie, tsprache
-                        WHERE tkategorie.kKategorie = " . (int)$kategorie_arr[0]->kKategorie . "
-                            AND tsprache.cStandard = 'Y'
-                            AND tkategorie.cSeo != ''",
-                \DB\ReturnType::DEFAULT
+            if (!$kategoriesprache_arr[$i]->cSeo) {
+                $kategoriesprache_arr[$i]->cSeo = $kategorie_arr[0]->cSeo;
+            }
+            if (!$kategoriesprache_arr[$i]->cSeo) {
+                $kategoriesprache_arr[$i]->cSeo = $kategorie_arr[0]->cName;
+            }
+            $kategoriesprache_arr[$i]->cSeo = getSeo($kategoriesprache_arr[$i]->cSeo);
+            $kategoriesprache_arr[$i]->cSeo = checkSeo($kategoriesprache_arr[$i]->cSeo);
+            DBUpdateInsert('tkategoriesprache', [$kategoriesprache_arr[$i]], 'kKategorie', 'kSprache');
+
+            Shop::Container()->getDB()->delete(
+                'tseo',
+                ['cKey', 'kKey', 'kSprache'],
+                ['kKategorie', (int)$kategoriesprache_arr[$i]->kKategorie, (int)$kategoriesprache_arr[$i]->kSprache]
             );
-
-            executeHook(HOOK_KATEGORIE_XML_BEARBEITEINSERT, ['oKategorie' => $kategorie_arr[0]]);
-        }
-
-        //Kategoriesprache
-        $kategoriesprache_arr = mapArray($xml['tkategorie'], 'tkategoriesprache', $GLOBALS['mKategorieSprache']);
-        if (is_array($kategoriesprache_arr)) {
-            $oShopSpracheAssoc_arr = Sprache::getAllLanguages(1);
-            $lCount                = count($kategoriesprache_arr);
-            for ($i = 0; $i < $lCount; ++$i) {
-                // Sprachen die nicht im Shop vorhanden sind überspringen
-                if (!Sprache::isShopLanguage($kategoriesprache_arr[$i]->kSprache, $oShopSpracheAssoc_arr)) {
-                    continue;
-                }
-                if (!$kategoriesprache_arr[$i]->cSeo) {
-                    $kategoriesprache_arr[$i]->cSeo = $kategoriesprache_arr[$i]->cName;
-                }
-                if (!$kategoriesprache_arr[$i]->cSeo) {
-                    $kategoriesprache_arr[$i]->cSeo = $kategorie_arr[0]->cSeo;
-                }
-                if (!$kategoriesprache_arr[$i]->cSeo) {
-                    $kategoriesprache_arr[$i]->cSeo = $kategorie_arr[0]->cName;
-                }
-                $kategoriesprache_arr[$i]->cSeo = getSeo($kategoriesprache_arr[$i]->cSeo);
-                $kategoriesprache_arr[$i]->cSeo = checkSeo($kategoriesprache_arr[$i]->cSeo);
-                DBUpdateInsert('tkategoriesprache', [$kategoriesprache_arr[$i]], 'kKategorie', 'kSprache');
-
-                Shop::Container()->getDB()->delete(
-                    'tseo',
-                    ['cKey', 'kKey', 'kSprache'],
-                    ['kKategorie', (int)$kategoriesprache_arr[$i]->kKategorie, (int)$kategoriesprache_arr[$i]->kSprache]
-                );
-                //insert in tseo
-                $oSeo           = new stdClass();
-                $oSeo->cSeo     = $kategoriesprache_arr[$i]->cSeo;
-                $oSeo->cKey     = 'kKategorie';
-                $oSeo->kKey     = $kategoriesprache_arr[$i]->kKategorie;
-                $oSeo->kSprache = $kategoriesprache_arr[$i]->kSprache;
-                Shop::Container()->getDB()->insert('tseo', $oSeo);
-                // Insert into tredirect weil sich das SEO vom geändert hat
-                if (isset($oSeoAssoc_arr[$kategoriesprache_arr[$i]->kSprache])) {
-                    checkDbeSXmlRedirect($oSeoAssoc_arr[$kategoriesprache_arr[$i]->kSprache]->cSeo, $kategoriesprache_arr[$i]->cSeo);
-                }
+            //insert in tseo
+            $oSeo           = new stdClass();
+            $oSeo->cSeo     = $kategoriesprache_arr[$i]->cSeo;
+            $oSeo->cKey     = 'kKategorie';
+            $oSeo->kKey     = $kategoriesprache_arr[$i]->kKategorie;
+            $oSeo->kSprache = $kategoriesprache_arr[$i]->kSprache;
+            Shop::Container()->getDB()->insert('tseo', $oSeo);
+            // Insert into tredirect weil sich das SEO vom geändert hat
+            if (isset($oSeoAssoc_arr[$kategoriesprache_arr[$i]->kSprache])) {
+                checkDbeSXmlRedirect($oSeoAssoc_arr[$kategoriesprache_arr[$i]->kSprache]->cSeo, $kategoriesprache_arr[$i]->cSeo);
             }
         }
-        // Alle Shop Kundengruppen holen
-        $oKundengruppe_arr = Shop::Container()->getDB()->query("SELECT kKundengruppe FROM tkundengruppe", 2);
-        updateXMLinDB($xml['tkategorie'], 'tkategoriekundengruppe', $GLOBALS['mKategorieKundengruppe'], 'kKundengruppe', 'kKategorie');
-        if (is_array($oKundengruppe_arr) && count($oKundengruppe_arr) > 0) {
-            //hole alle artikel raus in dieser Kategorie
-            $oArtikel_arr = Shop::Container()->getDB()->selectAll('tkategorieartikel', 'kKategorie', $kategorie_arr[0]->kKategorie, 'kArtikel');
-            //gehe alle Artikel durch und ermittle max rabatt
-            if (is_array($oArtikel_arr) && count($oArtikel_arr) > 0) {
-                foreach ($oArtikel_arr as $oArtikel) {
-                    fuelleArtikelKategorieRabatt($oArtikel, $oKundengruppe_arr);
-                }
+    }
+    // Alle Shop Kundengruppen holen
+    $oKundengruppe_arr = Shop::Container()->getDB()->query(
+        'SELECT kKundengruppe FROM tkundengruppe',
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
+    updateXMLinDB($xml['tkategorie'], 'tkategoriekundengruppe', $GLOBALS['mKategorieKundengruppe'], 'kKundengruppe', 'kKategorie');
+    if (is_array($oKundengruppe_arr) && count($oKundengruppe_arr) > 0) {
+        //hole alle artikel raus in dieser Kategorie
+        $oArtikel_arr = Shop::Container()->getDB()->selectAll('tkategorieartikel', 'kKategorie', $kategorie_arr[0]->kKategorie, 'kArtikel');
+        //gehe alle Artikel durch und ermittle max rabatt
+        if (is_array($oArtikel_arr) && count($oArtikel_arr) > 0) {
+            foreach ($oArtikel_arr as $oArtikel) {
+                fuelleArtikelKategorieRabatt($oArtikel, $oKundengruppe_arr);
             }
         }
+    }
 
-        updateXMLinDB($xml['tkategorie'], 'tkategorieattribut', $GLOBALS['mKategorieAttribut'], 'kKategorieAttribut');
-        updateXMLinDB($xml['tkategorie'], 'tkategoriesichtbarkeit', $GLOBALS['mKategorieSichtbarkeit'], 'kKundengruppe', 'kKategorie');
+    updateXMLinDB($xml['tkategorie'], 'tkategorieattribut', $GLOBALS['mKategorieAttribut'], 'kKategorieAttribut');
+    updateXMLinDB($xml['tkategorie'], 'tkategoriesichtbarkeit', $GLOBALS['mKategorieSichtbarkeit'], 'kKundengruppe', 'kKategorie');
 
-        $oAttribute_arr = mapArray($xml['tkategorie'], 'tattribut', $GLOBALS['mNormalKategorieAttribut']);
-        if (is_array($oAttribute_arr) && count($oAttribute_arr)) {
-            // Jenachdem ob es ein oder mehrere Attribute gibt, unterscheidet sich die Struktur des XML-Arrays
-            $single = isset($xml['tkategorie']['tattribut attr']) && is_array($xml['tkategorie']['tattribut attr']);
-            $i      = 0;
-            foreach ($oAttribute_arr as $oAttribut) {
-                $parentXML = $single ? $xml['tkategorie']['tattribut'] : $xml['tkategorie']['tattribut'][$i++];
-                saveKategorieAttribut($parentXML, $oAttribut);
-            }
+    $oAttribute_arr = mapArray($xml['tkategorie'], 'tattribut', $GLOBALS['mNormalKategorieAttribut']);
+    if (is_array($oAttribute_arr) && count($oAttribute_arr)) {
+        // Jenachdem ob es ein oder mehrere Attribute gibt, unterscheidet sich die Struktur des XML-Arrays
+        $single = isset($xml['tkategorie']['tattribut attr']) && is_array($xml['tkategorie']['tattribut attr']);
+        $i      = 0;
+        foreach ($oAttribute_arr as $oAttribut) {
+            $parentXML = $single ? $xml['tkategorie']['tattribut'] : $xml['tkategorie']['tattribut'][$i++];
+            saveKategorieAttribut($parentXML, $oAttribut);
         }
+    }
 
 //        $flushArray = [];
 //        $flushArray[] = CACHING_GROUP_CATEGORY . '_' . $Kategorie->kKategorie;
@@ -217,21 +227,17 @@ function bearbeiteInsert($xml)
 //            $flushArray[] = CACHING_GROUP_CATEGORY . '_' . $Kategorie->kOberKategorie;
 //        }
 //        Shop::Cache()->flushTags($flushArray);
-        //@todo: the above does not really work on parent categories when adding/deleting child categories
-    }
+    //@todo: the above does not really work on parent categories when adding/deleting child categories
 }
 
 /**
  * @param int $kKategorie
  */
-function loescheKategorie($kKategorie)
+function loescheKategorie(int $kKategorie)
 {
-    $kKategorie           = (int)$kKategorie;
-    $deleteAttributes_arr = Shop::Container()->getDB()->selectAll('tkategorieattribut', 'kKategorie', $kKategorie, 'kKategorieAttribut');
-    if (is_array($deleteAttributes_arr)) {
-        foreach ($deleteAttributes_arr as $deleteAttribute) {
-            deleteKategorieAttribut($deleteAttribute->kKategorieAttribut);
-        }
+    $attributes = Shop::Container()->getDB()->selectAll('tkategorieattribut', 'kKategorie', $kKategorie, 'kKategorieAttribut');
+    foreach ($attributes as $attribute) {
+        deleteKategorieAttribut((int)$attribute->kKategorieAttribut);
     }
     Shop::Container()->getDB()->delete('tseo', ['kKey', 'cKey'], [$kKategorie, 'kKategorie']);
     Shop::Container()->getDB()->delete('tkategorie', 'kKategorie', $kKategorie);
@@ -246,10 +252,8 @@ function loescheKategorie($kKategorie)
 /**
  * @param int $kKategorieAttribut
  */
-function deleteKategorieAttribut($kKategorieAttribut)
+function deleteKategorieAttribut(int $kKategorieAttribut)
 {
-    $kKategorieAttribut = (int)$kKategorieAttribut;
-
     Shop::Container()->getDB()->delete('tkategorieattributsprache', 'kAttribut', $kKategorieAttribut);
     Shop::Container()->getDB()->delete('tkategorieattribut', 'kKategorieAttribut', $kKategorieAttribut);
 }

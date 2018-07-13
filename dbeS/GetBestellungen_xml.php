@@ -24,12 +24,13 @@ if (auth()) {
                 ON tzahlungsart.kZahlungsart = tbestellung.kZahlungsart
             WHERE cAbgeholt = 'N'
             ORDER BY tbestellung.kBestellung
-            LIMIT " . LIMIT_BESTELLUNGEN, 9
+            LIMIT " . LIMIT_BESTELLUNGEN,
+        \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
     );
 
     foreach ($oBestellung_arr as $i => $oBestellung) {
-        if (strlen($oBestellung['cPUIZahlungsdaten']) > 0 &&
-            preg_match('/^kPlugin_(\d+)_paypalexpress$/', $oBestellung['cModulId'], $matches)
+        if (strlen($oBestellung['cPUIZahlungsdaten']) > 0
+            && preg_match('/^kPlugin_(\d+)_paypalexpress$/', $oBestellung['cModulId'], $matches)
         ) {
             $oBestellung_arr[$i]['cModulId'] = 'za_paypal_pui_jtl';
         }
@@ -57,20 +58,23 @@ if (auth()) {
                     INNER JOIN tkampagnedef ON tkampagnedef.kKampagneDef = tkampagnevorgang.kKampagneDef
                     WHERE tkampagnedef.cKey = 'kBestellung'
                         AND tkampagnevorgang.kKey = " . (int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kBestellung'] . "
-                    ORDER BY tkampagnevorgang.kKampagneDef DESC LIMIT 1", 8
+                    ORDER BY tkampagnevorgang.kKampagneDef DESC LIMIT 1",
+                \DB\ReturnType::SINGLE_ASSOC_ARRAY
             );
 
             $xml_obj['bestellungen']['tbestellung'][$i]['ttrackinginfo'] = Shop::Container()->getDB()->query(
                 "SELECT cUserAgent, cReferer
                     FROM tbesucher
                     WHERE kBestellung = " . (int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kBestellung'] . "
-                    LIMIT 1", 8
+                    LIMIT 1",
+                \DB\ReturnType::SINGLE_ASSOC_ARRAY
             );
 
             $xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos'] = Shop::Container()->getDB()->query(
                 "SELECT *
                     FROM twarenkorbpos
-                    WHERE kWarenkorb = " . (int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kWarenkorb'], 9
+                    WHERE kWarenkorb = " . (int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kWarenkorb'],
+                \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
             );
             $warenkorbpos_anz                                            = count($xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos']);
             for ($o = 0; $o < $warenkorbpos_anz; $o++) {
@@ -82,7 +86,8 @@ if (auth()) {
                 $xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos'][$o]['twarenkorbposeigenschaft'] = Shop::Container()->getDB()->query(
                     "SELECT *
                         FROM twarenkorbposeigenschaft
-                        WHERE kWarenkorbPos = " . (int)$xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos'][$o . ' attr']['kWarenkorbPos'], 9
+                        WHERE kWarenkorbPos = " . (int)$xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos'][$o . ' attr']['kWarenkorbPos'],
+                    \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
                 );
                 unset($xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos'][$o . ' attr']['kWarenkorb']);
                 $warenkorbposeigenschaft_anz = count($xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos'][$o]['twarenkorbposeigenschaft']);
@@ -141,7 +146,8 @@ if (auth()) {
                     FROM tzahlungsinfo
                     WHERE kBestellung = " . (int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kBestellung'] . "
                         AND cAbgeholt = 'N'
-                    ORDER BY kZahlungsInfo DESC LIMIT 1", 8
+                    ORDER BY kZahlungsInfo DESC LIMIT 1",
+                \DB\ReturnType::SINGLE_ASSOC_ARRAY
             );
             // Entschlüsseln
             $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBankName'] = isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBankName'])
@@ -178,7 +184,8 @@ if (auth()) {
             $xml_obj['bestellungen']['tbestellung'][$i]['tbestellattribut'] = Shop::Container()->getDB()->query(
                 "SELECT cName AS 'key', cValue AS 'value'
                     FROM tbestellattribut
-                    WHERE kBestellung = " . (int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kBestellung'], 9
+                    WHERE kBestellung = " . (int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kBestellung'],
+                \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
             );
             if (count($xml_obj['bestellungen']['tbestellung'][$i]['tbestellattribut']) === 0) {
                 unset($xml_obj['bestellungen']['tbestellung'][$i]['tbestellattribut']);

@@ -45,7 +45,7 @@ function bildercheck_xml(SimpleXMLElement $xml)
     }
     $sqlOr  = implode(' || ', $sqls);
     $sql    = "SELECT kBild AS id, cPfad AS hash FROM tbild WHERE {$sqlOr}";
-    $images = Shop::Container()->getDB()->query($sql, 2);
+    $images = Shop::Container()->getDB()->query($sql, \DB\ReturnType::ARRAY_OF_OBJECTS);
     if ($images !== false) {
         foreach ($images as $image) {
             $storage = PFAD_ROOT . PFAD_MEDIA_IMAGE_STORAGE . $image->hash;

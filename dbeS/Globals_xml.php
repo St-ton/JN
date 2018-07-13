@@ -16,7 +16,6 @@ if (auth()) {
         if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
             Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'Globals_xml');
         }
-//        removeTemporaryFiles($zipFile);
     } else {
         $return = 0;
         foreach ($syncFiles as $xmlFile) {
@@ -39,7 +38,10 @@ if (auth()) {
     }
 }
 
-Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = now()', \DB\ReturnType::DEFAULT);
+Shop::Container()->getDB()->query(
+    'UPDATE tglobals SET dLetzteAenderung = now()',
+    \DB\ReturnType::DEFAULT
+);
 echo $return;
 
 /**
@@ -51,11 +53,11 @@ function bearbeiteDeletes($xml)
     if (is_array($xml['del_globals_wg']['kWarengruppe'])) {
         foreach ($xml['del_globals_wg']['kWarengruppe'] as $kWarengruppe) {
             if ((int)$kWarengruppe > 0) {
-                loescheWarengruppe($kWarengruppe);
+                loescheWarengruppe((int)$kWarengruppe);
             }
         }
     } elseif ((int)$xml['del_globals_wg']['kWarengruppe'] > 0) {
-        loescheWarengruppe($xml['del_globals_wg']['kWarengruppe']);
+        loescheWarengruppe((int)$xml['del_globals_wg']['kWarengruppe']);
     }
 }
 
@@ -64,8 +66,9 @@ function bearbeiteDeletes($xml)
  */
 function bearbeiteUpdates($xml)
 {
-    if (isset($xml['globals']['tfirma'], $xml['globals']['tfirma attr']['kFirma']) &&
-        is_array($xml['globals']['tfirma']) && $xml['globals']['tfirma attr']['kFirma'] > 0) {
+    if (isset($xml['globals']['tfirma'], $xml['globals']['tfirma attr']['kFirma'])
+        && is_array($xml['globals']['tfirma']) && $xml['globals']['tfirma attr']['kFirma'] > 0
+    ) {
         mappe($Firma, $xml['globals']['tfirma'], $GLOBALS['mFirma']);
         DBDelInsert('tfirma', [$Firma], 1);
     }
@@ -127,7 +130,10 @@ function bearbeiteUpdates($xml)
                 Jtllog::writeLog('oWarenlager_arr: ' . print_r($oWarenlager_arr, true), JTLLOG_LEVEL_DEBUG, false, 'Globals_xml');
             }
             //Lagersichtbarkeit für Shop zwischenspeichern
-            $lagersichtbarkeit_arr = Shop::Container()->getDB()->query("SELECT kWarenlager, nAktiv FROM twarenlager WHERE nAktiv = 1", 2);
+            $lagersichtbarkeit_arr = Shop::Container()->getDB()->query(
+                'SELECT kWarenlager, nAktiv FROM twarenlager WHERE nAktiv = 1',
+                \DB\ReturnType::ARRAY_OF_OBJECTS
+            );
             //Alle Einträge in twarenlager löschen - Wawi 1.0.1 sendet immer alle Warenlager.
             Shop::Container()->getDB()->query('DELETE FROM twarenlager WHERE 1', \DB\ReturnType::DEFAULT);
             
@@ -172,9 +178,8 @@ function bearbeiteUpdates($xml)
 /**
  * @param int $kWarengruppe
  */
-function loescheWarengruppe($kWarengruppe)
+function loescheWarengruppe(int $kWarengruppe)
 {
-    $kWarengruppe = (int)$kWarengruppe;
     Shop::Container()->getDB()->delete('twarengruppe', 'kWarengruppe', $kWarengruppe);
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
         Jtllog::writeLog('Warengruppe geloescht: ' . $kWarengruppe, JTLLOG_LEVEL_DEBUG, false, 'Globals_xml');

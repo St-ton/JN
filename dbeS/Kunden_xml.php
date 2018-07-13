@@ -55,26 +55,27 @@ function aktiviereKunden($xml)
 {
     $kunden = mapArray($xml['aktiviere_kunden'], 'tkunde', []);
     foreach ($kunden as $kunde) {
-        if ($kunde->kKunde > 0 && $kunde->kKundenGruppe > 0) {
-            $kunde_db = new Kunde($kunde->kKunde);
-
-            if ($kunde_db->kKunde > 0 && $kunde_db->kKundengruppe != $kunde->kKundenGruppe) {
-                Shop::Container()->getDB()->update(
-                    'tkunde',
-                    'kKunde',
-                    (int)$kunde->kKunde,
-                    (object)['kKundengruppe' => (int)$kunde->kKundenGruppe]
-                );
-                //mail
-                $kunde_db->kKundengruppe = (int)$kunde->kKundenGruppe;
-                $obj                     = new stdClass();
-                $obj->tkunde             = $kunde_db;
-                if ($kunde_db->cMail) {
-                    sendeMail(MAILTEMPLATE_KUNDENGRUPPE_ZUWEISEN, $obj);
-                }
-            }
-            Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$kunde->kKunde, (object)['cAktiv' => 'Y']);
+        if (!($kunde->kKunde > 0 && $kunde->kKundenGruppe > 0)) {
+            continue;
         }
+        $kunde_db = new Kunde($kunde->kKunde);
+
+        if ($kunde_db->kKunde > 0 && $kunde_db->kKundengruppe != $kunde->kKundenGruppe) {
+            Shop::Container()->getDB()->update(
+                'tkunde',
+                'kKunde',
+                (int)$kunde->kKunde,
+                (object)['kKundengruppe' => (int)$kunde->kKundenGruppe]
+            );
+            //mail
+            $kunde_db->kKundengruppe = (int)$kunde->kKundenGruppe;
+            $obj                     = new stdClass();
+            $obj->tkunde             = $kunde_db;
+            if ($kunde_db->cMail) {
+                sendeMail(MAILTEMPLATE_KUNDENGRUPPE_ZUWEISEN, $obj);
+            }
+        }
+        Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$kunde->kKunde, (object)['cAktiv' => 'Y']);
     }
 }
 
@@ -158,40 +159,41 @@ function bearbeiteGutscheine($xml)
     if (isset($xml['gutscheine']['gutschein']) && is_array($xml['gutscheine']['gutschein'])) {
         $gutscheine_arr = mapArray($xml['gutscheine'], 'gutschein', $GLOBALS['mGutschein']);
         foreach ($gutscheine_arr as $gutschein) {
-            if ($gutschein->kGutschein > 0 && $gutschein->kKunde > 0) {
-                $gutschein_exists = Shop::Container()->getDB()->select('tgutschein', 'kGutschein', (int)$gutschein->kGutschein);
-                if (!isset($gutschein_exists->kGutschein) || !$gutschein_exists->kGutschein) {
-                    $kGutschein = Shop::Container()->getDB()->insert('tgutschein', $gutschein);
+            if (!($gutschein->kGutschein > 0 && $gutschein->kKunde > 0)) {
+                continue;
+            }
+            $gutschein_exists = Shop::Container()->getDB()->select('tgutschein', 'kGutschein', (int)$gutschein->kGutschein);
+            if (!isset($gutschein_exists->kGutschein) || !$gutschein_exists->kGutschein) {
+                $kGutschein = Shop::Container()->getDB()->insert('tgutschein', $gutschein);
+                if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+                    Jtllog::writeLog('Gutschein fuer kKunde ' . (int)$gutschein->kKunde . ' wurde eingeloest. ' .
+                        print_r($gutschein, true), JTLLOG_LEVEL_DEBUG, 'kGutschein', $kGutschein);
+                }
+                //kundenkto erhöhen
+                Shop::Container()->getDB()->query(
+                    "UPDATE tkunde 
+                      SET fGuthaben = fGuthaben+" . (float)$gutschein->fWert . " 
+                      WHERE kKunde = " . (int)$gutschein->kKunde,
+                    \DB\ReturnType::DEFAULT
+                );
+                Shop::Container()->getDB()->query(
+                    "UPDATE tkunde 
+                      SET fGuthaben = 0 
+                      WHERE kKunde = " . (int)$gutschein->kKunde . " 
+                      AND fGuthaben < 0",
+                    \DB\ReturnType::AFFECTED_ROWS
+                );
+                //mail
+                $kunde           = new Kunde((int)$gutschein->kKunde);
+                $obj             = new stdClass();
+                $obj->tkunde     = $kunde;
+                $obj->tgutschein = $gutschein;
+                if ($kunde->cMail) {
                     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                        Jtllog::writeLog('Gutschein fuer kKunde ' . (int)$gutschein->kKunde . ' wurde eingeloest. ' .
-                            print_r($gutschein, true), JTLLOG_LEVEL_DEBUG, 'kGutschein', $kGutschein);
+                        Jtllog::writeLog('Gutschein Email wurde an ' . $kunde->cMail .
+                            ' versendet.', JTLLOG_LEVEL_DEBUG, 'kGutschein', $kGutschein);
                     }
-                    //kundenkto erhöhen
-                    Shop::Container()->getDB()->query(
-                        "UPDATE tkunde 
-                          SET fGuthaben = fGuthaben+" . (float)$gutschein->fWert . " 
-                          WHERE kKunde = " . (int)$gutschein->kKunde,
-                        \DB\ReturnType::DEFAULT
-                    );
-                    Shop::Container()->getDB()->query(
-                        "UPDATE tkunde 
-                          SET fGuthaben = 0 
-                          WHERE kKunde = " . (int)$gutschein->kKunde . " 
-                          AND fGuthaben < 0",
-                        \DB\ReturnType::AFFECTED_ROWS
-                    );
-                    //mail
-                    $kunde           = new Kunde((int)$gutschein->kKunde);
-                    $obj             = new stdClass();
-                    $obj->tkunde     = $kunde;
-                    $obj->tgutschein = $gutschein;
-                    if ($kunde->cMail) {
-                        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                            Jtllog::writeLog('Gutschein Email wurde an ' . $kunde->cMail .
-                                ' versendet.', JTLLOG_LEVEL_DEBUG, 'kGutschein', $kGutschein);
-                        }
-                        sendeMail(MAILTEMPLATE_GUTSCHEIN, $obj);
-                    }
+                    sendeMail(MAILTEMPLATE_GUTSCHEIN, $obj);
                 }
             }
         }

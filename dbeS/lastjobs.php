@@ -11,7 +11,6 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 if (auth()) {
     Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = now()', \DB\ReturnType::DEFAULT);
     $cError = '';
-    // TMP Verzeichnis leeren
     if (!KEEP_SYNC_FILES) {
         FileSystemHelper::delDirRecursively(PFAD_ROOT . PFAD_DBES_TMP);
     }
@@ -43,8 +42,8 @@ if (auth()) {
 
                     // Sitemap
                     case LASTJOBS_SITEMAP:
-                        if (isset($conf['sitemap']['sitemap_wawiabgleich']) &&
-                            $conf['sitemap']['sitemap_wawiabgleich'] === 'Y'
+                        if (isset($conf['sitemap']['sitemap_wawiabgleich'])
+                            && $conf['sitemap']['sitemap_wawiabgleich'] === 'Y'
                         ) {
                             require_once PFAD_ROOT . PFAD_ADMIN . 'includes/sitemapexport.php';
                             generateSitemapXML();
@@ -54,8 +53,8 @@ if (auth()) {
 
                     // RSS
                     case LASTJOBS_RSS:
-                        if (isset($conf['rss']['rss_wawiabgleich']) &&
-                            $conf['rss']['rss_wawiabgleich'] === 'Y'
+                        if (isset($conf['rss']['rss_wawiabgleich'])
+                            && $conf['rss']['rss_wawiabgleich'] === 'Y'
                         ) {
                             require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'rss_inc.php';
                             generiereRSSXML();
@@ -65,8 +64,8 @@ if (auth()) {
 
                     // GarbageCollector
                     case LASTJOBS_GARBAGECOLLECTOR:
-                        if (isset($conf['global']['garbagecollector_wawiabgleich']) &&
-                            $conf['global']['garbagecollector_wawiabgleich'] === 'Y'
+                        if (isset($conf['global']['garbagecollector_wawiabgleich'])
+                            && $conf['global']['garbagecollector_wawiabgleich'] === 'Y'
                         ) {
                             Shop::Container()->getDBServiceGC()->run();
                             updateJob(LASTJOBS_GARBAGECOLLECTOR);

@@ -138,25 +138,25 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
     }
 }
 // Download-Artikel vorhanden?
-if ($step !== 'accountwahl'
-    && empty($_SESSION['Kunde']->cPasswort)
-    && class_exists('Download')
-    && Download::hasDownloads($cart)
-) {
-    // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
-    $step      = 'accountwahl';
-    $cHinweis  = Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout');
-    $cPost_arr = StringHandler::filterXSS($_POST);
+if (class_exists('Download') && Download::hasDownloads($cart)) {
+    if ($step !== 'accountwahl' && empty($_SESSION['Kunde']->cPasswort)) {
+        // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
+        $step = 'accountwahl';
+        $cHinweis = Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout');
+        $cPost_arr = StringHandler::filterXSS($_POST);
 
-    Shop::Smarty()->assign('cKundenattribut_arr', getKundenattribute($cPost_arr))
-                  ->assign('kLieferadresse', $cPost_arr['kLieferadresse'])
-                  ->assign('cPost_var', $cPost_arr);
+        Shop::Smarty()->assign('cKundenattribut_arr', getKundenattribute($cPost_arr))
+            ->assign('kLieferadresse', $cPost_arr['kLieferadresse'])
+            ->assign('cPost_var', $cPost_arr);
 
-    if ((int)$cPost_arr['shipping_address'] === 1) {
-        Shop::Smarty()->assign('Lieferadresse', mappeLieferadresseKontaktdaten($cPost_arr['register']['shipping_address']));
+        if ((int)$cPost_arr['shipping_address'] === 1) {
+            Shop::Smarty()->assign('Lieferadresse', mappeLieferadresseKontaktdaten($cPost_arr['register']['shipping_address']));
+        }
+
+        unset($_SESSION['Kunde']);
+    } elseif ($step === 'accountwahl') {
+        $cHinweis .= Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout');
     }
-
-    unset($_SESSION['Kunde']);
 }
 // autom. step ermitteln
 pruefeVersandkostenStep();

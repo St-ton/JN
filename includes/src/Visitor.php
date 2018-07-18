@@ -115,7 +115,7 @@ class Visitor
     public static function updateVisitorObject($vis, $visId, $szUserAgent, $kBesucherBot)
     {
         $vis->kBesucher         = (int)$visId;
-        $vis->cIP               = (new IpAnonymizer(RequestHelper::getIP()))->anonymize(); // anonymize immediately
+        $vis->cIP               = (new \GdprAnonymizing\IpAnonymizer(RequestHelper::getIP()))->anonymize(); // anonymize immediately
         $vis->cSessID           = session_id();
         $vis->cID               = md5($szUserAgent . RequestHelper::getIP());
         $vis->kKunde            = isset($_SESSION['Kunde']) ? $_SESSION['Kunde']->kKunde : 0;
@@ -140,7 +140,7 @@ class Visitor
     {
         $vis                    = new stdClass();
         $vis->kBesucher         = 0;
-        $vis->cIP               = (new IpAnonymizer(RequestHelper::getIP()))->anonymize(); // anonymize immediately
+        $vis->cIP               = (new \GdprAnonymizing\IpAnonymizer(RequestHelper::getIP()))->anonymize(); // anonymize immediately
         $vis->cSessID           = session_id();
         $vis->cID               = md5($szUserAgent . RequestHelper::getIP());
         $vis->kKunde            = isset($_SESSION['Kunde']) ? $_SESSION['Kunde']->kKunde : 0;

@@ -96,12 +96,12 @@
                                 <label for="nLink2">{#linkToExternalURL#} (anlegen unter "Suchmaschinenname")</label>
                             </p>
                             <p class="multi_input" style="margin-bottom: 10px;">
-                                <input type="radio" id="nLink3" name="nLinkart" value="3" {if isset($xPostVar_arr.nLinkart) && (int)$xPostVar_arr.nLinkart === 3}checked{elseif $Link->getLinkType() > 3}checked{/if} />
+                                <input type="radio" id="nLink3" name="nLinkart" value="3" {if isset($xPostVar_arr.nLinkart) && (int)$xPostVar_arr.nLinkart === 3}checked{elseif $Link->getLinkType() > 2}checked{/if} />
                                 <label for="nLink3">{#linkToSpecalPage#}</label>
                                 <select id="nLink3" name="nSpezialseite">
                                     <option value="0">{#choose#}</option>
-                                    {foreach name=spezialseiten from=$oSpezialseite_arr item=oSpezialseite}
-                                        <option value="{$oSpezialseite->nLinkart}" {if isset($xPostVar_arr.nSpezialseite) && $xPostVar_arr.nSpezialseite === $oSpezialseite->nLinkart}selected{elseif $Link->getLinkType() == $oSpezialseite->nLinkart}selected{/if}>{$oSpezialseite->cName}</option>
+                                    {foreach $oSpezialseite_arr as $oSpezialseite}
+                                        <option value="{$oSpezialseite->nLinkart}" {if isset($xPostVar_arr.nSpezialseite) && $xPostVar_arr.nSpezialseite === $oSpezialseite->nLinkart}selected{elseif $Link->getLinkType() === (int)$oSpezialseite->nLinkart}selected{/if}>{$oSpezialseite->cName}</option>
                                     {/foreach}
                                 </select>
                                 <span id="nLink3-error" class="hidden-soft error">{#specialSiteExists#}<span id="nSpezialseite-name"></span></span>
@@ -115,8 +115,8 @@
                         </span>
                         <select required name="cKundengruppen[]" class="form-control{if isset($xPlausiVar_arr.cKundengruppen)} fieldfillout{/if}" multiple="multiple" size="6" id="cKundengruppen">
                             <option value="-1"{if isset($Link->getID()) && $Link->getID() > 0 && isset($gesetzteKundengruppen[0]) && $gesetzteKundengruppen[0]} selected{elseif isset($xPostVar_arr.cKundengruppen)}
-                                {foreach name=postkndgrp from=$xPostVar_arr.cKundengruppen item=cPostKndGrp}
-                                    {if $cPostKndGrp|strlen > 0 && $cPostKndGrp == "-1"}selected{/if}
+                                {foreach $xPostVar_arr.cKundengruppen as $cPostKndGrp}
+                                    {if $cPostKndGrp@strlen > 0 && $cPostKndGrp == "-1"}selected{/if}
                                 {/foreach}
                                     {elseif !$Link->getID()}selected{/if}>{#all#}</option>
 
@@ -190,7 +190,7 @@
                         <span class="input-group-addon"><label>{#linkPics#}</label></span>
                         <div class="input-group-wrap">
                         {if isset($cDatei_arr)}
-                            {foreach name=bilder from=$cDatei_arr item=cDatei}
+                            {foreach $cDatei_arr as $cDatei}
                                 <span class="block tcenter vmiddle">
                                     <a href="links.php?kLink={$Link->getID()}&token={$smarty.session.jtl_token}&delpic=1&cName={$cDatei->cNameFull}{if isset($Link->getPluginID()) && $Link->getPluginID() > 0}{$Link->getPluginID()}{/if}"><img src="{$currentTemplateDir}/gfx/layout/remove.png" alt="delete"></a>
                                     $#{$cDatei->cName}#$
@@ -204,7 +204,7 @@
                         <span class="input-group-addon"><label for="lang">Sprache</label></span>
                         <span class="input-group-wrap">
                             <select class="form-control" name="cISO" id="lang">
-                                {foreach name=sprachen from=$sprachen item=sprache}
+                                {foreach $sprachen as $sprache}
                                     <option value="{$sprache->cISO}" {if $sprache->cShopStandard === 'Y'}selected="selected"{/if}>{$sprache->cNameDeutsch} {if $sprache->cShopStandard === 'Y'}(Standard){/if}</option>
                                 {/foreach}
                             </select>
@@ -225,7 +225,7 @@
                 </div>
             </div>
 
-            {foreach name=sprachen from=$sprachen item=sprache}
+            {foreach $sprachen as $sprache}
                 {assign var="cISO" value=$sprache->cISO}
                 {assign var="langID" value=(int)$sprache->kSprache}
                 <div id="iso_{$cISO}" class="iso_wrapper{if $sprache->cShopStandard !== 'Y'} hidden-soft{/if}">

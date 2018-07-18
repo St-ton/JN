@@ -274,9 +274,9 @@ function checkSpecialSite ($nSpecialSite, $kLink)
 {
     return Shop::Container()->getDB()->query(
         'SELECT kLink, cName
-                            FROM tlink
-                            WHERE nLinkart = ' . $nSpecialSite . '
-                                AND kLink != ' . (!empty($kLink) ? $kLink : 0),
+            FROM tlink
+            WHERE nLinkart = ' . $nSpecialSite . '
+                AND kLink != ' . (!empty($kLink) ? $kLink : 0),
         \DB\ReturnType::SINGLE_OBJECT
     );
 }

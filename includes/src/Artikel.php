@@ -4450,7 +4450,7 @@ class Artikel
                 if ($this->conf['artikeldetails']['artikel_lagerbestandsanzeige'] === 'verfuegbarkeit') {
                     $this->Lageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('ampelGruen');
                 }
-            } elseif ($this->cLagerKleinerNull === 'Y') {
+            } elseif ($this->cLagerKleinerNull === 'Y' && $this->conf['global']['artikel_ampel_lagernull_gruen'] === 'Y') {
                 $this->Lageranzeige->cLagerhinweis['genau']          = Shop::Lang()->get('ampelGruen');
                 $this->Lageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('ampelGruen');
             } else {

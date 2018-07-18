@@ -21,6 +21,15 @@ class PlausiCMS extends Plausi
         }
         switch ($cType) {
             case 'lnk':
+                // unique special site
+                if (isset($this->xPostVar_arr['nSpezialseite'], $this->xPostVar_arr['nLinkart'])
+                    && (int)$this->xPostVar_arr['nLinkart'] === 3
+                ) {
+                    $oExistingLink = checkSpecialSite($this->xPostVar_arr['nSpezialseite'], $this->xPostVar_arr['kLink']);
+                    if (!empty($oExistingLink)) {
+                        $this->xPlausiVar_arr['nSpezialseite'] = $oExistingLink;
+                    }
+                }
                 // cName
                 if (!isset($this->xPostVar_arr['cName']) || strlen($this->xPostVar_arr['cName']) === 0) {
                     $this->xPlausiVar_arr['cName'] = 1;

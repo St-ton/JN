@@ -264,3 +264,19 @@ function holeSpezialseiten()
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 }
+
+/**
+ * @param int $nSpecialSite
+ * @param int $kLink
+ * @return false|object
+ */
+function checkSpecialSite ($nSpecialSite, $kLink)
+{
+    return Shop::Container()->getDB()->query(
+        'SELECT kLink, cName
+                            FROM tlink
+                            WHERE nLinkart = ' . $nSpecialSite . '
+                                AND kLink != ' . (!empty($kLink) ? $kLink : 0),
+        \DB\ReturnType::SINGLE_OBJECT
+    );
+}

@@ -151,8 +151,13 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && FormHelper::va
         $link = new \Link\Link($db);
         $link->setLinkGroupID((int)$_POST['kLinkgruppe']);
         $link->setLinkGroups([(int)$_POST['kLinkgruppe']]);
-        $fehler = 'Fehler: Bitte füllen Sie alle Pflichtangaben aus!';
-        $smarty->assign('xPlausiVar_arr', $oPlausiCMS->getPlausiVar())
+        $oPlausiVar_arr = $oPlausiCMS->getPlausiVar();
+        if (isset($oPlausiVar_arr['nSpezialseite'])) {
+            $fehler = sprintf('Fehler: Die gewählte Spezialseite existiert bereits unter dem Namen "%s"!', $oPlausiVar_arr['nSpezialseite']->cName);
+        } else {
+            $fehler = 'Fehler: Bitte füllen Sie alle Pflichtangaben aus!';
+        }
+        $smarty->assign('xPlausiVar_arr', $oPlausiVar_arr)
                ->assign('xPostVar_arr', $oPlausiCMS->getPostVar());
     }
 } elseif (((isset($_POST['neuelinkgruppe']) && (int)$_POST['neuelinkgruppe'] === 1)

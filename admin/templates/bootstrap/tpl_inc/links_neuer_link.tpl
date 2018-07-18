@@ -31,6 +31,20 @@
         }).trigger('change');
     });
 
+    $(window).on('load', function () {
+        $('select[id="nLink3"]').change(function () {
+            var $self = $(this);
+            ioCall('checkSpecialSite', [$self.val(), $('input[name="kLink"]').val()], function (result) {
+                if (result) {
+                    $('#nLink3-error').removeClass('hidden-soft');
+                    $('#nSpezialseite-name').html(result.cName);
+                } else {
+                    $('#nLink3-error').addClass('hidden-soft');
+                    $('#nSpezialseite-name').html();
+                }
+            });
+        }).trigger('change');
+    });
     {/literal}
 </script>
 {if $Link->getID() > 0 && !empty($Link->getName())}
@@ -58,7 +72,7 @@
                         </span>
                         <input required type="text" name="cName" id="cName" class="form-control{if isset($xPlausiVar_arr.cName)} fieldfillout{/if}" value="{if isset($xPostVar_arr.cName) && $xPostVar_arr.cName}{$xPostVar_arr.cName}{elseif !empty($Link->getName())}{$Link->getName()}{/if}" tabindex="1" />
                     </div>
-                    <div class="input-group{if isset($xPlausiVar_arr.nLinkart)} error{/if}">
+                    <div class="input-group{if isset($xPlausiVar_arr.nLinkart) || isset($xPlausiVar_arr.nSpezialseite)} error{/if}">
                         <span class="input-group-addon">
                             <label>{#linkType#}{if isset($xPlausiVar_arr.nLinkart)} <span class="fillout">{#FillOut#}</span>{/if}</label>
                         </span>
@@ -74,22 +88,23 @@
                             </p>
                         {else}
                             <p class="multi_input" style="margin-top: 10px;">
-                                <input type="radio" id="nLink1" name="nLinkart" value="1" tabindex="2" {if $Link->getLinkType() === 1}checked{/if} />
+                                <input type="radio" id="nLink1" name="nLinkart" value="1" tabindex="2" {if isset($xPostVar_arr.nLinkart) && (int)$xPostVar_arr.nLinkart === 1}checked{elseif $Link->getLinkType() === 1}checked{/if} />
                                 <label for="nLink1">{#linkWithOwnContent#}</label>
                             </p>
                             <p class="multi_input">
-                                <input type="radio" id="nLink2" name="nLinkart" value="2" onclick="$('#nLinkInput2').val('http://')" tabindex="3" {if isset($Link->getLinkType()) && $Link->getLinkType() === 2}checked{/if} />
+                                <input type="radio" id="nLink2" name="nLinkart" value="2" onclick="$('#nLinkInput2').val('http://')" tabindex="3" {if isset($xPostVar_arr.nLinkart) && (int)$xPostVar_arr.nLinkart === 2}checked{elseif $Link->getLinkType() === 2}checked{/if} />
                                 <label for="nLink2">{#linkToExternalURL#} (anlegen unter "Suchmaschinenname")</label>
                             </p>
                             <p class="multi_input" style="margin-bottom: 10px;">
-                                <input type="radio" id="nLink3" name="nLinkart" value="3" {if $Link->getLinkType() > 2}checked{/if} />
+                                <input type="radio" id="nLink3" name="nLinkart" value="3" {if isset($xPostVar_arr.nLinkart) && (int)$xPostVar_arr.nLinkart === 3}checked{elseif $Link->getLinkType() > 3}checked{/if} />
                                 <label for="nLink3">{#linkToSpecalPage#}</label>
                                 <select id="nLink3" name="nSpezialseite">
                                     <option value="0">{#choose#}</option>
                                     {foreach name=spezialseiten from=$oSpezialseite_arr item=oSpezialseite}
-                                        <option value="{$oSpezialseite->nLinkart}" {if $Link->getLinkType() == $oSpezialseite->nLinkart}selected{/if}>{$oSpezialseite->cName}</option>
+                                        <option value="{$oSpezialseite->nLinkart}" {if isset($xPostVar_arr.nSpezialseite) && $xPostVar_arr.nSpezialseite === $oSpezialseite->nLinkart}selected{elseif $Link->getLinkType() == $oSpezialseite->nLinkart}selected{/if}>{$oSpezialseite->cName}</option>
                                     {/foreach}
                                 </select>
+                                <span id="nLink3-error" class="hidden-soft error">{#specialSiteExists#}<span id="nSpezialseite-name"></span></span>
                             </p>
                         {/if}
                         </div>

@@ -16,16 +16,8 @@ class GdprRunner
     private $bTimerReset = false; // only after 7 days ...--TODO--
 
 
-    private $oLogger = null;
-
     public function __construct()
     {
-        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --DEBUG--
-        include_once('/var/www/html/shop4_07/includes/vendor/apache/log4php/src/main/php/Logger.php');
-        \Logger::configure('/var/www/html/shop4_07/_logging_conf.xml');
-        $this->oLogger = \Logger::getLogger('default');
-        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --DEBUG--
-
         $oResult = \Shop::Container()->getDB()->queryPrepared(
             'SELECT `dLastRun` FROM `tanonymizer`', []
             , \DB\ReturnType::SINGLE_OBJECT
@@ -33,21 +25,10 @@ class GdprRunner
         $this->szLastRun = (isset($oResult->dLastRun) && false !== $oResult->dLastRun)
             ? (new \DateTime($oResult->dLastRun))->format('Y-m-d H:i:s')
             : null;
-
-        //$this->oLogger->debug('NOW: '. (new \DateTime())->format('Y-m-d H:i:s')); // --DEBUG--
-        //$this->oLogger->debug('szLastRun(1): '.var_export($this->szLastRun,true)); // --DEBUG--
-
         if (null === $this->szLastRun) {
             $this->szLastRun = (new \DateTime())->format('Y-m-d H:i:s');
         }
-        //$this->oLogger->debug('szLastRun(2): '.print_r($this->szLastRun,true )); // --DEBUG--
-
-
-        // --DEVELOPMENT-- fake-date !!! change to now: "DateTime()"
-        //$oTimeDistance = (new \DateTime())->diff(new \DateTime($this->szLastRun));
-        $oTimeDistance = (new \DateTime('2018-07-01 10:10:10'))->diff(new \DateTime($this->szLastRun));
-        $this->oLogger->debug('DateInterval (days): '.print_r($oTimeDistance->d, true ).' days'); // --DEBUG--
-
+        $oTimeDistance = (new \DateTime())->diff(new \DateTime($this->szLastRun));
         // reset the "run-timer" (and release the "run-lock" this way)
         if (\GdprAnonymizing\Intervals::TIMER_RESET <= $oTimeDistance->d) {
             $this->bTimerReset = true;
@@ -114,36 +95,7 @@ class GdprRunner
          *$oMethod->execute(\GdprAnonymizing\Intervals::TC_DAYS_365);
          */
 
-
-/* {{{
-        // last run + 30
-        $szTargetDate = (new \DateTime($this->szLastRun))
-            ->add(new \DateInterval('P'.\GdprAnonymizing\Intervals::TC_DAYS_30.'D'))
-            ->format('Y-m-d H:i:s');
-        $this->oLogger->debug('target (30): '.$szTargetDate); // --DEBUG--
-        //
-        // last run + 90
-        $szTargetDate = (new \DateTime($this->szLastRun))
-            ->add(new \DateInterval('P'.\GdprAnonymizing\Intervals::TC_DAYS_90.'D'))
-            ->format('Y-m-d H:i:s');
-        $this->oLogger->debug('target (90): '.$szTargetDate); // --DEBUG--
-        //
-        // $this->szLastRun + \GdprAnonymizing\Intervals::TC_DELETEGUESTS;
-        // last run + 365
-        $szTargetDate = (new \DateTime($this->szLastRun))
-            ->add(new \DateInterval('P'.\GdprAnonymizing\Intervals::TC_DELETEGUESTS.'D'))
-            ->format('Y-m-d H:i:s');
-        $this->oLogger->debug('target (365): '.$szTargetDate); // --DEBUG--
-        //
-        // anonymize at the end of year which is followed by the year of creation ... --TODO--
-        // (from data/DB)
-        //
-        $iInputDateYear = (int)(new \DateTime())->format('Y');
-        $oInputDate = new \DateTime((string)(++$iInputDateYear).'-12-31 23:59:59');
-        $this->oLogger->debug('end of next year: '.$oInputDate->format('Y-m-d H:i:s')); // --DEBUG--
-}}} */
     }
-
 
 
     public function __destruct()

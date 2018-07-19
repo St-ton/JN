@@ -8,8 +8,6 @@ namespace GdprAnonymizing;
 
 class AnonymizeIps implements MethodInterface
 {
-    private $oLogger = null; // --DEBUG--
-
     private $vTablesUpdate = [
           'tbestellung' => [
               'ColKey'     => 'kBestellung'
@@ -81,11 +79,6 @@ class AnonymizeIps implements MethodInterface
 
     public function __construct()
     {
-        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --DEBUG--
-        include_once('/var/www/html/shop4_07/includes/vendor/apache/log4php/src/main/php/Logger.php');
-        \Logger::configure('/var/www/html/shop4_07/_logging_conf.xml');
-        $this->oLogger = \Logger::getLogger('default');
-        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --DEBUG--
     }
 
     /**
@@ -94,22 +87,12 @@ class AnonymizeIps implements MethodInterface
     public function execute()
     {
         foreach ($this->vTablesUpdate as $szTableName => $vTable) {
-            // --DEBUG--
-            $this->oLogger->debug('table: '.$szTableName
-               .' key: '.$vTable['ColKey']
-               .' IP: '.$vTable['ColIp']
-               .' created: '.$vTable['ColCreated']
-           );
-           // --DEBUG--
-
             // --DEVELOPMENT-- NOTE: here we can do other things beside "look one year forward"
             $voTableData = $this->readOneYearForward($szTableName, $vTable['ColKey'], $vTable['ColIp'], $vTable['ColCreated']);
 
             if (is_array($voTableData) && 0 < count($voTableData)) {
                 foreach ($voTableData as $oRow) {
                     $oRow->cIP = (new \GdprAnonymizing\IpAnonymizer($oRow->cIP))->anonymize();
-
-                    $this->oLogger->debug('updating this: '.print_r($oRow,true )); // --DEBUG--
                     \Shop::Container()->getDB()->update($szTableName, $vTable['ColKey'], (int)$oRow->kBestellung, $oRow);
                 }
             }

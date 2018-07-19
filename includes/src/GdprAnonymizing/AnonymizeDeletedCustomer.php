@@ -8,15 +8,9 @@ namespace GdprAnonymizing;
 
 class AnonymizeDeletedCustomer implements MethodInterface
 {
-    private $oLogger = null;
 
     public function __construct()
     {
-        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --DEBUG--
-        include_once('/var/www/html/shop4_07/includes/vendor/apache/log4php/src/main/php/Logger.php');
-        \Logger::configure('/var/www/html/shop4_07/_logging_conf.xml');
-        $this->oLogger = \Logger::getLogger('default');
-        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --DEBUG--
     }
 
     /**

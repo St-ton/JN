@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace GdprAnonymizing;
+
 /**
  * class IpAnonymizer
  *
@@ -74,13 +76,13 @@ class IpAnonymizer
             return;
         }
         $this->bRawIp    = inet_pton($this->szIP);
-        $this->vShopConf = Shop::getSettings([CONF_GLOBAL]);
+        $this->vShopConf = \Shop::getSettings([CONF_GLOBAL]);
 
         switch (strlen($this->bRawIp)) {
             case 4:
                 $this->szPlaceholderIP = $this->szPlaceholderIPv4;
-                $this->szIP     = $this->rmLeadingZero($szIP); // possible leading zeros produce errors in inet_XtoY()-functions
-                $this->szIpMask = $this->getMaskV4();
+                $this->szIP            = $this->rmLeadingZero($szIP); // possible leading zeros produce errors in inet_XtoY()-functions
+                $this->szIpMask        = $this->getMaskV4();
                 break;
             case 16:
                 if (defined('AF_INET6')) {

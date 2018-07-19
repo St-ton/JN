@@ -53,10 +53,22 @@ class Migration_20180628131539 extends Migration implements IMigration
             ],
             true
         );
+
+        $this->execute('
+            CREATE TABLE IF NOT EXISTS `tanonymizer`(
+                  `kAnonymizer` INT NOT NULL AUTO_INCREMENT
+                , `dLastRun` datetime
+                , PRIMARY KEY `kAnonymizer` (`kAnonymizer`)
+            )
+            ENGINE=InnoDB
+            DEFAULT CHARSET=utf8
+        ');
     }
 
     public function down()
     {
+        $this->execute('drop table `tanonymizer`');
+
         $this->removeConfig('ip_anonymize_mask_v4');
         $this->removeConfig('ip_anonymize_mask_v6');
     }

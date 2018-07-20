@@ -235,7 +235,12 @@
                                         <td class="check">
                                             <input type="checkbox" name="kNewsKategorie[]" value="{$oNewsKategorie->kNewsKategorie}" id="newscat-{$oNewsKategorie->kNewsKategorie}" />
                                         </td>
-                                        <td class="TD2"><label for="newscat-{$oNewsKategorie->kNewsKategorie}">{$oNewsKategorie->cName}</label></td>
+                                        <td class="TD2">
+                                            <label for="newscat-{$oNewsKategorie->kNewsKategorie}">
+                                                {for $i=1 to $oNewsKategorie->nLevel}&nbsp;-&nbsp;{/for}
+                                                {$oNewsKategorie->cName}
+                                            </label>
+                                        </td>
                                         <td class="tcenter">{$oNewsKategorie->nSort}</td>
                                         <td class="tcenter">{if $oNewsKategorie->nAktiv === '1'}ja{else}nein{/if}</td>
                                         <td class="tcenter">{$oNewsKategorie->dLetzteAktualisierung_de}</td>

@@ -513,4 +513,49 @@ class News extends MainModel
 
         return $oNews_arr;
     }
+
+//TODO: comment, umbennen, class NewsCat?
+    public static function getNewsCategories ($kSprache = 1, $flatten = false) {
+        $nodes = Shop::Container()->getDB()->query(
+            "SELECT*, DATE_FORMAT(dLetzteAktualisierung, '%d.%m.%Y %H:%i') AS dLetzteAktualisierung_de
+            FROM tnewskategorie
+            WHERE kSprache = " . $kSprache . "
+            ORDER BY nSort ASC",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
+        $oNewsCategories = self::buildNestedArray($nodes);
+
+        if ($flatten) {
+            $oNewsCategories = self::flattenNestedArray($oNewsCategories);
+        }
+        return $oNewsCategories;
+    }
+
+    public static function buildNestedArray ($elements, $parentId = 0, $i = -1)
+    {
+        $branch = array();
+        $i++;
+        foreach ($elements as $element) {
+            if ((int)$element->kParent === (int)$parentId) {
+                $children = self::buildNestedArray($elements, $element->kNewsKategorie, $i);
+                if ($children) {
+                    $element->children = $children;
+                }
+                $element->nLevel   = $i;
+                $branch[]          = $element;
+            }
+        }
+        return $branch;
+    }
+
+    public static function flattenNestedArray($elements) {
+        $branch = array();
+        foreach ($elements as $element) {
+            $branch[] = $element;
+            if (!empty($element->children)) {
+                $branch = array_merge($branch, self::flattenNestedArray($element->children));
+            }
+        }
+        return $branch;
+    }
 }

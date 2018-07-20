@@ -127,18 +127,14 @@
                             <td><label for="kNewsKategorie">{#newsCat#} *</label></td>
                             <td>
                                 <select id="kNewsKategorie" class="form-control{if !empty($cPlausiValue_arr.kNewsKategorie_arr)} error{/if}" name="kNewsKategorie[]" multiple="multiple">
-                                    {foreach name=newskategorie from=$oNewsKategorie_arr item=oNewsKategorie}
-                                        <option value="{$oNewsKategorie->kNewsKategorie}"
-                                                {if isset($cPostVar_arr.kNewsKategorie)}
-                                            {foreach name=kNewsKategorieNews from=$cPostVar_arr.kNewsKategorie item=kNewsKategorieNews}
-                                                {if $oNewsKategorie->kNewsKategorie == $kNewsKategorieNews}selected{/if}
-                                            {/foreach}
-                                                {elseif isset($oNewsKategorieNews_arr)}
-                                            {foreach name=kNewsKategorieNews from=$oNewsKategorieNews_arr item=oNewsKategorieNews}
-                                                {if $oNewsKategorie->kNewsKategorie == $oNewsKategorieNews->kNewsKategorie}selected{/if}
-                                            {/foreach}
-                                                {/if}>{$oNewsKategorie->cName}</option>
-                                    {/foreach}
+                                    {if isset($oNewsKategorieNews_arr)}
+                                        {assign var='selectedCat' value=$oNewsKategorieNews_arr}
+                                    {elseif isset($cPostVar_arr.kNewsKategorie)}
+                                        {assign var='selectedCat' value=$NewsKategorieNews}
+                                    {else}
+                                        {assign var='selectedCat' value=0}
+                                    {/if}
+                                    {include file='snippets/newscategories_recursive.tpl' i=0 selectedCat=$selectedCat}
                                 </select>
                             </td>
                         </tr>

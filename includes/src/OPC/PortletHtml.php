@@ -49,8 +49,8 @@ trait PortletHtml
      */
     final protected function getPreviewHtmlFromTpl(PortletInstance $instance): string
     {
-        $smarty     = new \JTLSmarty(true);
-        $pathprefix = '';
+        $smarty     = \Shop::Smarty();
+        $pathprefix = PFAD_ROOT . PFAD_TEMPLATES . 'Evo/';
 
         if ($this->getPlugin() !== null) {
             $pathprefix = PFAD_ROOT . PFAD_PLUGIN . $this->getPlugin()->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION
@@ -70,8 +70,8 @@ trait PortletHtml
      */
     final protected function getFinalHtmlFromTpl($instance): string
     {
-        $smarty     = new \JTLSmarty(true);
-        $pathprefix = '';
+        $smarty     = \Shop::Smarty();
+        $pathprefix = PFAD_ROOT . PFAD_TEMPLATES . 'Evo/';
 
         if ($this->getPlugin() !== null) {
             $pathprefix = PFAD_ROOT . PFAD_PLUGIN . $this->getPlugin()->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION
@@ -91,8 +91,8 @@ trait PortletHtml
      */
     final protected function getConfigPanelHtmlFromTpl(PortletInstance $instance): string
     {
-        $smarty     = new \JTLSmarty(true);
-        $pathprefix = '';
+        $smarty     = \Shop::Smarty();
+        $pathprefix = PFAD_ROOT . PFAD_TEMPLATES . 'Evo/';
 
         if ($this->getPlugin() !== null) {
             $pathprefix = PFAD_ROOT . PFAD_PLUGIN . $this->getPlugin()->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION
@@ -113,7 +113,7 @@ trait PortletHtml
      */
     final protected function getConfigPanelSnippet(PortletInstance $instance, $id, $extraAssigns = []): string
     {
-        $smarty = new \JTLSmarty(true);
+        $smarty = \Shop::Smarty();
 
         foreach ($extraAssigns as $name => $val) {
             $smarty->assign($name, $val);
@@ -121,7 +121,7 @@ trait PortletHtml
 
         return $smarty->assign('portlet', $this)
                       ->assign('instance', $instance)
-                      ->fetch("portlets/OPC/config.$id.tpl");
+                      ->fetch(PFAD_ROOT . PFAD_TEMPLATES . "Evo/portlets/OPC/config.$id.tpl");
     }
 
     /**

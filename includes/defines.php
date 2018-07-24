@@ -180,11 +180,11 @@ ifndef('PRODUCT_LIST_SHOW_RATINGS', false);
 ifndef('IMAGE_CLEANUP_LIMIT', 50);
 ifndef('OBJECT_CACHE_DIR', PFAD_ROOT . PFAD_COMPILEDIR . 'filecache/');
 // CMS Image Widths
-ifndef('WIDTH_CMS_IMAGE_XS', '480');
-ifndef('WIDTH_CMS_IMAGE_SM', '720');
-ifndef('WIDTH_CMS_IMAGE_MD', '1080');
-ifndef('WIDTH_CMS_IMAGE_LG', '1440');
-ifndef('WIDTH_CMS_IMAGE_XL', '2040');
+ifndef('WIDTH_OPC_IMAGE_XS', '480');
+ifndef('WIDTH_OPC_IMAGE_SM', '720');
+ifndef('WIDTH_OPC_IMAGE_MD', '1080');
+ifndef('WIDTH_OPC_IMAGE_LG', '1440');
+ifndef('WIDTH_OPC_IMAGE_XL', '2040');
 // show child products in product listings? 0 - never, 1 - only when at least 1 filter is active, 2 - always
 ifndef('SHOW_CHILD_PRODUCTS', 0);
 // redis connect timeout in seconds

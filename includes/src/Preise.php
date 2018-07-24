@@ -183,6 +183,9 @@ class Preise
                                 AND (p1.kKundengruppe = 0 OR p1.kKundengruppe = {$kKundengruppe})
                                 AND (p1.kKunde = {$kKunde} OR p1.kKunde IS NULL))";
         }
+        $this->kArtikel      = $kArtikel;
+        $this->kKundengruppe = $kKundengruppe;
+        $this->kKunde        = $kKunde;
 
         $prices = Shop::Container()->getDB()->query(
             "SELECT *
@@ -193,7 +196,6 @@ class Preise
                 ORDER BY d.nAnzahlAb",
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-
         if (count($prices) > 0) {
             if ($kSteuerklasse === 0) {
                 $tax           =
@@ -207,11 +209,8 @@ class Preise
                     );
                 $kSteuerklasse = (int)$tax->kSteuerklasse;
             }
-            $this->fUst          = TaxHelper::getSalesTax($kSteuerklasse);
-            $this->kArtikel      = $kArtikel;
-            $this->kKundengruppe = $kKundengruppe;
-            $this->kKunde        = $kKunde;
-            $specialPriceValue   = null;
+            $this->fUst        = TaxHelper::getSalesTax($kSteuerklasse);
+            $specialPriceValue = null;
             foreach ($prices as $i => $price) {
                 // Kundenpreis?
                 if ((int)$price->kKunde > 0) {

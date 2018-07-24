@@ -12,9 +12,9 @@
         {assign var="draftTooltip" value="Entwurf"}
     {/if}
 
-    <div class="list-group-item{if $isCurDraft} list-group-item-success{/if}" data-toggle="tooltip"
+    <div class="list-group-item list-group-item-{if $isCurDraft}success{else}default{/if}" data-toggle="tooltip"
          data-placement="right" title="{$draftTooltip}">
-        <a href="admin/onpage-composer.php{$queryDraft}&action=edit" class="btn btn-sm" title="Entwurf bearbeiten">
+        <a href="admin/onpage-composer.php{$queryDraft}&action=edit" role="button" title="Entwurf bearbeiten">
             {if $isCurDraft}
                 <b><i class="fa fa-fw fa-newspaper-o"></i> {$draftName}</b>
             {else}
@@ -23,8 +23,8 @@
         </a>
         <a href="admin/onpage-composer.php{$queryDraft}&action=discard"
            class="btn btn-sm btn-danger opc-draft-item-discard pull-right"
-           title="Entwurf löschen" id="btnDiscard{$draftKey}">
-            <i class="fa fa-times"></i>
+           title="Entwurf löschen" role="button" id="btnDiscard{$draftKey}">
+            <i class="fa fa-trash"></i>
         </a>
         <script>
             (function() {
@@ -53,7 +53,7 @@
 {assign var="curDraftKey" value=$curPage->getKey()}
 
 <div id="opc-switcher">
-    <div class="switcher" id="dashboard-config">
+    <div class="switcher">
         <a href="#" class="parent btn-toggle" aria-expanded="false" onclick="$('.switcher').toggleClass('open')">
             <i class="fa fa-pencil"></i>
         </a>
@@ -95,7 +95,7 @@
                     <p>
                         <a href="admin/onpage-composer.php{$query}&action=restore" class="btn btn-sm btn-danger"
                            title="Verwirft alle vorhandenen Entwürfe!" id="btnDiscardAll">
-                            <i class="fa fa-times"></i>
+                            <i class="fa fa-trash"></i>
                             Alle Entwürfe verwerfen
                         </a>
                         <script>

@@ -14,6 +14,7 @@ use Filter\SortingOptions\DateOfIssue;
 use Filter\SortingOptions\EAN;
 use Filter\SortingOptions\NameASC;
 use Filter\SortingOptions\NameDESC;
+use Filter\SortingOptions\None;
 use Filter\SortingOptions\PriceASC;
 use Filter\SortingOptions\PriceDESC;
 use Filter\SortingOptions\ProductNumber;
@@ -34,6 +35,8 @@ class SortingType
     public function mapSortTypeToClassName(int $type)
     {
         switch ($type) {
+            case SEARCH_SORT_NONE:
+                return None::class;
             case SEARCH_SORT_STANDARD:
                 return SortDefault::class;
             case SEARCH_SORT_NAME_ASC:

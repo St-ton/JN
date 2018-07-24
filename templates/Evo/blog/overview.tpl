@@ -31,15 +31,12 @@
                 {/foreach}
             {/if}
         </select>
-
         {lang key='newsCategorie' section='news' assign='cCurrentKategorie'}
         <select name="nNewsKat" onchange="this.form.submit();" class="form-control form-group" aria-label="{lang key='newsCategorie' section='news'}">
-            <option value="-1"{if $nNewsKat == -1} selected{/if}>{lang key='newsCategorie' section='news'}</option>
+            <option value="-1"{if $oNewsCat->kNewsKategorie == -1} selected{/if}>{lang key='newsCategorie' section='news'}</option>
             {if !empty($oNewsKategorie_arr)}
-                {foreach $oNewsKategorie_arr as $oNewsKategorie}
-                    {if $nNewsKat == $oNewsKategorie->kNewsKategorie}{assign var='oCurNewsCat' value=$oNewsKategorie}{/if}
-                    <option value="{$oNewsKategorie->kNewsKategorie}"{if $nNewsKat == $oNewsKategorie->kNewsKategorie} selected{/if}>{$oNewsKategorie->cName}</option>
-                {/foreach}
+{               {assign var='selectedCat' value=$oNewsCat->kNewsKategorie}
+                {include file='snippets/newscategories_recursive.tpl' i=0 selectedCat=$selectedCat}
             {/if}
         </select>
 
@@ -63,14 +60,14 @@
     <div class="alert alert-info">{lang key='noNewsArchiv' section='news'}.</div>
 {elseif !empty($oNewsUebersicht_arr)}
     <div id="newsContent" itemprop="mainEntity" itemscope itemtype="https://schema.org/Blog">
-        {if !empty($oCurNewsCat)}
-            <h2>{$oCurNewsCat->cName}</h2>
+        {if !empty($oNewsCat)}
+            <h2>{$oNewsCat->cName}</h2>
             <div class="row">
-                {if !empty($oCurNewsCat->cPreviewImage)}
-                    <div class="col-sm-8 col-xs-12">{$oCurNewsCat->cBeschreibung}</div>
-                    <div class="col-sm-4 col-xs-12"><img src="{$oCurNewsCat->cPreviewImage}" class="img-responsive center-block"></div>
+                {if !empty($oNewsCat->cPreviewImage)}
+                    <div class="col-sm-8 col-xs-12">{$oNewsCat->cBeschreibung}</div>
+                    <div class="col-sm-4 col-xs-12"><img src="{$oNewsCat->cPreviewImage}" class="img-responsive center-block"></div>
                 {else}
-                    <div class="col-sm-12">{$oCurNewsCat->cBeschreibung}</div>
+                    <div class="col-sm-12">{$oNewsCat->cBeschreibung}</div>
                 {/if}
             </div>
             <hr>

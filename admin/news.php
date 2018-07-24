@@ -83,8 +83,7 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
     if ((isset($_POST['erstellen'], $_POST['news_erstellen']) && (int)$_POST['erstellen'] === 1)
         || (isset($_POST['news_erstellen']) && (int)$_POST['news_erstellen'] === 1)
     ) {
-//        $oNewsKategorie_arr = holeNewskategorie($_SESSION['kSprache']);
-        $oNewsKategorie_arr = News::getNewsCategories($_SESSION['kSprache']);
+        $oNewsKategorie_arr = News::getAllNewsCategories($_SESSION['kSprache'], true);
         // News erstellen, $oNewsKategorie_arr leer = Fehler ausgeben
         if (count($oNewsKategorie_arr) > 0) {
             $step = 'news_erstellen';
@@ -156,7 +155,7 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
         $cMetaKeywords      = $_POST['cMetaKeywords'];
         $dGueltigVon        = $_POST['dGueltigVon'];
         $cPreviewImage      = $_POST['previewImage'];
-        $kAuthor            = (int)$_POST['kAuthor'];
+        $kAuthor            = isset($_POST['kAuthor']) ? (int)$_POST['kAuthor'] : 0;
         //$dGueltigBis      = $_POST['dGueltigBis'];
 
         $cPlausiValue_arr = pruefeNewsPost($cBetreff, $cText, $kKundengruppe_arr, $kNewsKategorie_arr);
@@ -359,7 +358,7 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
             if (isset($_POST['kNews']) && is_numeric($_POST['kNews'])) {
                 $continueWith = (int)$_POST['kNews'];
             } else {
-                $oNewsKategorie_arr = holeNewskategorie($_SESSION['kSprache']);
+                $oNewsKategorie_arr = News::getAllNewsCategories($_SESSION['kSprache'], true);
                 $smarty->assign('oNewsKategorie_arr', $oNewsKategorie_arr)
                        ->assign('oPossibleAuthors_arr', ContentAuthor::getInstance()->getPossibleAuthors(['CONTENT_NEWS_SYSTEM_VIEW']));
             }
@@ -586,7 +585,7 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
         ($continueWith !== false && $continueWith > 0)) {
         // News editieren
 //        $oNewsKategorie_arr = holeNewskategorie($_SESSION['kSprache']);
-        $oNewsKategorie_arr = News::getNewsCategories($_SESSION['kSprache']);
+        $oNewsKategorie_arr = News::getAllNewsCategories($_SESSION['kSprache'], true);
         $kNews              = ($continueWith !== false && $continueWith > 0)
             ? $continueWith
             : (int)$_GET['kNews'];
@@ -626,12 +625,14 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
                     $smarty->assign('oDatei_arr', holeNewsBilder($oNews->kNews, $cUploadVerzeichnis));
                 }
                 // NewskategorieNews
-                $oNewsKategorieNews_arr = Shop::Container()->getDB()->query(
+                $oNewsKategorieNews_arr = \Functional\map(Shop::Container()->getDB()->query(
                     "SELECT DISTINCT(kNewsKategorie)
                         FROM tnewskategorienews
                         WHERE kNews = " . (int)$oNews->kNews,
                     \DB\ReturnType::ARRAY_OF_OBJECTS
-                );
+                ), function ($e) {
+                    return $e->kNewsKategorie;
+                });
 
                 $smarty->assign('oNewsKategorieNews_arr', $oNewsKategorieNews_arr)
                        ->assign('oNews', $oNews);
@@ -833,9 +834,9 @@ if ($step === 'news_uebersicht') {
     }
     $smarty->assign('oNewsMonatsPraefix_arr', $oNewsMonatsPraefix_arr);
     // Newskategorie
-//    $oNewsKategorie_arr = holeNewskategorie($_SESSION['kSprache']);
-    $oNewsKategorie_arr = News::getNewsCategories($_SESSION['kSprache'], true);
-    $oNewsKatsAnzahl    = Shop::Container()->getDB()->query(
+    $oNewsKategorieFlat_arr = News::getAllNewsCategories($_SESSION['kSprache'], true, true);
+    $oNewsKategorie_arr     = News::getAllNewsCategories($_SESSION['kSprache']);
+    $oNewsKatsAnzahl        = Shop::Container()->getDB()->query(
         'SELECT FOUND_ROWS() AS nAnzahl', 
         \DB\ReturnType::SINGLE_OBJECT
     );
@@ -846,7 +847,6 @@ if ($step === 'news_uebersicht') {
     $oPagiNews = (new Pagination('news'))
         ->setItemArray($oNews_arr)
         ->assemble();
-//    Shop::dbg($oNewsKategorie_arr, true, 'n', 3);
     $oPagiKats = (new Pagination('kats'))
         ->setItemArray($oNewsKategorie_arr)
         ->assemble();
@@ -855,11 +855,12 @@ if ($step === 'news_uebersicht') {
            ->assign('oNewsKommentar_arr', $oPagiKommentar->getPageItems())
            ->assign('oNews_arr', $oPagiNews->getPageItems())
            ->assign('oNewsKategorie_arr', $oPagiKats->getPageItems())
+           ->assign('oNewsKategorieFlat_arr', $oNewsKategorieFlat_arr)
            ->assign('oPagiKommentar', $oPagiKommentar)
            ->assign('oPagiNews', $oPagiNews)
            ->assign('oPagiKats', $oPagiKats);
 } elseif ($step === 'news_kategorie_erstellen') {
-    $oNewsKategorie_arr = News::getNewsCategories();
+    $oNewsKategorie_arr = News::getAllNewsCategories($_SESSION['kSprache'], true);
 //    $oNewsKategorie_arr = holeNewskategorie($_SESSION['kSprache']);
     $smarty->assign('oNewsKategorie_arr', $oNewsKategorie_arr);
 }

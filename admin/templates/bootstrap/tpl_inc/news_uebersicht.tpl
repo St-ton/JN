@@ -1,4 +1,44 @@
 <script type="text/javascript" src="{$URL_SHOP}/{$PFAD_ADMIN}{$currentTemplateDir}js/sorttable.js"></script>
+<script>
+    $(window).on('load', function(){
+        $('#submitDelete').click(function(){
+            $('#' + $(this).data('name') + ' input[data-id="loeschen"]').trigger('click');
+        });
+
+        $('#kategorien button[data-target=".delete-modal"]').click(function(){
+            $('.modal-title').html('{#newsDeleteCat#}');
+            $('#submitDelete').data('name', 'kategorien');
+
+            var itemsToDelete = '';
+            $('input[name="kNewsKategorie[]"]:checked').each(function(i){
+                itemsToDelete += '<li class="list-group-item list-group-item-warning">' + $(this).data('name') + '</li>';
+            });
+            $('.delete-modal .modal-body').html('<ul class="list-group">' + itemsToDelete + '</ul>');
+        });
+        $('#aktiv button[data-target=".delete-modal"]').click(function(){
+            $('.modal-title').html('{#newsDeleteNews#}');
+            $('#submitDelete').data('name', 'aktiv');
+        });
+        $('#inaktiv button[data-target=".delete-modal"]').click(function(){
+            $('.modal-title').html('{#newsDeleteComment#}');
+            $('#submitDelete').data('name', 'inaktiv');
+        });
+
+        $('#category-list td[data-name="category"]').click(function(event) {
+            event.stopPropagation();
+            var currentLevel = parseInt($(this).parent().data('level')),
+                state = $(this).hasClass('hide-toggle-on'),
+                nextEl = $(this).parent().next(),
+                nextLevel = parseInt(nextEl.data('level'));
+            while (currentLevel < nextLevel) {
+                nextEl.toggle(state);
+                nextEl = nextEl.next();
+                nextLevel = parseInt(nextEl.data('level'));
+            }
+            $(this).toggleClass('hide-toggle-on');
+        });
+    });
+</script>
 {include file='tpl_inc/seite_header.tpl' cTitel=#news# cBeschreibung=#newsDesc# cDokuURL=#newsURL#}
 <div id="content" class="container-fluid">
     <div class="block">
@@ -11,7 +51,7 @@
                 </span>
                 <span class="input-group-wrap last">
                     <select id="lang-changer" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
-                        {foreach name=sprachen from=$Sprachen item=sprache}
+                        {foreach $Sprachen as $sprache}
                             <option value="{$sprache->kSprache}" {if $sprache->kSprache==$smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
                         {/foreach}
                     </select>
@@ -62,8 +102,8 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {foreach name=newskommentare from=$oNewsKommentar_arr item=oNewsKommentar}
-                                    <tr class="tab_bg{$smarty.foreach.newskommentare.iteration%2}">
+                                {foreach $oNewsKommentar_arr as $oNewsKommentar}
+                                    <tr class="tab_bg{$oNewsKommentar@iteration%2}">
                                         <td class="check">
                                             <input type="checkbox" name="kNewsKommentar[]" value="{$oNewsKommentar->kNewsKommentar}" id="comment-{$oNewsKommentar->kNewsKommentar}" />
                                         </td>
@@ -99,7 +139,8 @@
                         <div class="panel-footer">
                             <div class="btn-group">
                                 <button name="freischalten" type="submit" value="{#newsActivate#}" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {#newsActivate#}</button>
-                                <button name="kommentareloeschenSubmit" type="submit" value="{#delete#}" class="btn btn-danger"><i class="fa fa-trash"></i> {#delete#}</button>
+                                <input name="kommentareloeschenSubmit" type="submit" data-id="loeschen" value="{#delete#}" class="hidden-soft">
+                                <button name="kommentareloeschenSubmit" type="button" data-toggle="modal" data-target=".delete-modal" value="{#delete#}" class="btn btn-danger"><i class="fa fa-trash"></i> {#delete#}</button>
                             </div>
                         </div>
                     </div>
@@ -137,14 +178,14 @@
                             </thead>
                             <tbody>
                             {if $oNews_arr|@count > 0 && $oNews_arr}
-                                {foreach name=news from=$oNews_arr item=oNews}
-                                    <tr class="tab_bg{$smarty.foreach.news.iteration%2}">
+                                {foreach $oNews_arr as $oNews}
+                                    <tr class="tab_bg{$oNews@iteration%2}">
                                         <td class="check"><input type="checkbox" name="kNews[]" value="{$oNews->kNews}" id="news-cb-{$oNews->kNews}" /></td>
                                         <td class="TD2"><label for="news-cb-{$oNews->kNews}">{$oNews->cBetreff}</label></td>
                                         <td class="TD3">{$oNews->KategorieAusgabe}</td>
                                         <td class="TD4">
-                                            {foreach name=kundengruppen from=$oNews->cKundengruppe_arr item=cKundengruppe}
-                                                {$cKundengruppe}{if !$smarty.foreach.kundengruppen.last},{/if}
+                                            {foreach $oNews->cKundengruppe_arr as $cKundengruppe}
+                                                {$cKundengruppe}{if !$cKundengruppe@last},{/if}
                                             {/foreach}
                                         </td>
                                         <td class="TD5">{$oNews->dGueltigVon_de}</td>
@@ -182,7 +223,7 @@
                             <tfoot>
                             <tr>
                                 <td class="check"><input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);" /></td>
-                                <td colspan="8"><label for="ALLMSGS2">Alle ausw&auml;hlen</label></td>
+                                <td colspan="8"><label for="ALLMSGS2">{#globalSelectAll#}</label></td>
                             </tr>
                             </tfoot>
                         </table>
@@ -193,7 +234,8 @@
                     <div class="panel-footer">
                         <div class="btn-group">
                             <button name="news_erstellen" type="submit" value="{#newAdd#}" class="btn btn-primary"><i class="fa fa-share"></i> {#newAdd#}</button>
-                            <button name="loeschen" type="submit" value="{#delete#}" class="btn btn-danger"><i class="fa fa-trash"></i> {#delete#}</button>
+                            <input name="loeschen" type="submit" data-id="loeschen" value="{#delete#}" class="hidden-soft">
+                            <button name="loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{#delete#}" class="btn btn-danger"><i class="fa fa-trash"></i> {#delete#}</button>
                         </div>
                     </div>
                 </div>
@@ -217,7 +259,7 @@
                         <h3 class="panel-title">{#newsCatOverview#}</h3>
                     </div>
                     <div class="table-responsive">
-                        <table class="list table">
+                        <table id="category-list" class="list table">
                             <thead>
                             <tr>
                                 <th class="check"></th>
@@ -230,19 +272,21 @@
                             </thead>
                             <tbody>
                             {if $oNewsKategorie_arr|@count > 0 && $oNewsKategorie_arr}
-                                {foreach name=newskategorie from=$oNewsKategorie_arr item=oNewsKategorie}
-                                    <tr class="tab_bg{$smarty.foreach.newskategorie.iteration%2}">
+                                {foreach $oNewsKategorieFlat_arr as $oNewsKategorie}
+                                    <tr class="tab_bg{$oNewsKategorie@iteration%2} {if (int)$oNewsKategorie->nLevel > 0}hidden-soft{/if}" data-level="{$oNewsKategorie->nLevel}">
                                         <td class="check">
-                                            <input type="checkbox" name="kNewsKategorie[]" value="{$oNewsKategorie->kNewsKategorie}" id="newscat-{$oNewsKategorie->kNewsKategorie}" />
+                                            <input type="checkbox" name="kNewsKategorie[]" data-name="{$oNewsKategorie->cName}" value="{$oNewsKategorie->kNewsKategorie}" id="newscat-{$oNewsKategorie->kNewsKategorie}" />
                                         </td>
-                                        <td class="TD2">
-                                            <label for="newscat-{$oNewsKategorie->kNewsKategorie}">
-                                                {for $i=1 to $oNewsKategorie->nLevel}&nbsp;-&nbsp;{/for}
+                                        <td class="TD2 {if (int)$oNewsKategorie->nLevel === 0}hide-toggle-on{/if}" data-name="category">
+                                            {for $i=1 to $oNewsKategorie->nLevel}&nbsp;&nbsp;&nbsp;{/for}
+                                            <i class="fa fa-caret-down nav-toggle {if !isset($oNewsKategorie->children)}invisible{/if}"></i>
+                                            <label>
                                                 {$oNewsKategorie->cName}
                                             </label>
+
                                         </td>
                                         <td class="tcenter">{$oNewsKategorie->nSort}</td>
-                                        <td class="tcenter">{if $oNewsKategorie->nAktiv === '1'}ja{else}nein{/if}</td>
+                                        <td class="tcenter">{if $oNewsKategorie->nAktiv === '1'}{#yes#}{else}{#no#}{/if}</td>
                                         <td class="tcenter">{$oNewsKategorie->dLetzteAktualisierung_de}</td>
                                         <td class="tcenter">
                                             <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->kNewsKategorie}&tab=kategorien&token={$smarty.session.jtl_token}"
@@ -274,7 +318,8 @@
                     <div class="panel-footer">
                         <div class="btn-group">
                             <button name="news_kategorie_erstellen" type="submit" value="{#newsCatAdd#}" class="btn btn-primary"><i class="fa fa-share"></i> {#newsCatAdd#}</button>
-                            <button name="loeschen" type="submit" value="{#delete#}" class="btn btn-danger"><i class="fa fa-trash"></i> {#delete#}</button>
+                            <input name="loeschen" type="submit" data-id="loeschen" value="{#delete#}" class="hidden-soft">
+                            <button name="loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{#delete#}" class="btn btn-danger"><i class="fa fa-trash"></i> {#delete#}</button>
                         </div>
                     </div>
                 </div>
@@ -289,7 +334,7 @@
 
                 <div class="panel panel-default settings">
                     <div class="panel-body">
-                        {foreach name=conf from=$oConfig_arr item=oConfig}
+                        {foreach $oConfig_arr as $oConfig}
                             {if $oConfig->cConf === 'Y'}
                                 <div class="input-group">
                                     <span class="input-group-addon">
@@ -298,14 +343,14 @@
                                     <span class="input-group-wrap">
                                         {if $oConfig->cInputTyp === 'selectbox'}
                                             <select name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" class="form-control combo">
-                                                {foreach name=selectfor from=$oConfig->ConfWerte item=wert}
+                                                {foreach $oConfig->ConfWerte as $wert}
                                                     <option value="{$wert->cWert}" {if $oConfig->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
                                                 {/foreach}
                                             </select>
                                         {elseif $oConfig->cInputTyp === 'listbox'}
                                             <select name="{$oConfig->cWertName}[]" id="{$oConfig->cWertName}" multiple="multiple" class="form-control combo">
-                                                {foreach name=selectfor from=$oConfig->ConfWerte item=wert}
-                                                    <option value="{$wert->kKundengruppe}" {foreach name=werte from=$oConfig->gesetzterWert item=gesetzterWert}{if $gesetzterWert->cWert == $wert->kKundengruppe}selected{/if}{/foreach}>{$wert->cName}</option>
+                                                {foreach $oConfig->ConfWerte as $wert}
+                                                    <option value="{$wert->kKundengruppe}" {foreach $oConfig->gesetzterWert as $gesetzterWert}{if $gesetzterWert->cWert == $wert->kKundengruppe}selected{/if}{/foreach}>{$wert->cName}</option>
                                                 {/foreach}
                                             </select>
                                         {elseif $oConfig->cInputTyp === 'number'}
@@ -321,7 +366,7 @@
                             {/if}
                         {/foreach}
 
-                        {foreach name=monatspraefix from=$oNewsMonatsPraefix_arr item=oNewsMonatsPraefix}
+                        {foreach $oNewsMonatsPraefix_arr as $oNewsMonatsPraefix}
                             <div class="input-group">
                                 <span class="input-group-addon">
                                     <label for="praefix_{$oNewsMonatsPraefix->cISOSprache}">{#newsPraefix#} ({$oNewsMonatsPraefix->cNameDeutsch})</label>
@@ -339,4 +384,19 @@
         <!-- #einstellungen -->
     </div>
     <!-- .tab-content -->
+</div>
+<div class="modal delete-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Kommentare löschen?</h4>
+            </div>
+            <div class="modal-body"></div>
+            <div class="modal-footer">
+                <p>{#wantToContinue#}</p>
+                <button type="button" id="submitDelete" data-name="" class="btn btn-danger">{#delete#}</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">{#cancel#}</button>
+            </div>
+        </div>
+    </div>
 </div>

@@ -359,12 +359,15 @@ function loescheNewsKategorie($kNewsKategorie_arr)
         return false;
     }
     foreach ($kNewsKategorie_arr as $kNewsKategorie) {
-        $kNewsKategorie = (int)$kNewsKategorie;
-        Shop::Container()->getDB()->delete('tnewskategorie', 'kNewsKategorie', $kNewsKategorie);
-        // tseo löschen
-        Shop::Container()->getDB()->delete('tseo', ['cKey', 'kKey'], ['kNewsKategorie', $kNewsKategorie]);
-        // tnewskategorienews löschen
-        Shop::Container()->getDB()->delete('tnewskategorienews', 'kNewsKategorie', $kNewsKategorie);
+        $oNewsCatAndSubCats_arr = News::getNewsCatAndSubCats($kNewsKategorie, $_SESSION['kSprache']);
+        foreach ($oNewsCatAndSubCats_arr as $oNewsCat) {
+            $kNewsKategorie = (int)$oNewsCat;
+            Shop::Container()->getDB()->delete('tnewskategorie', 'kNewsKategorie', $kNewsKategorie);
+            // tseo löschen
+            Shop::Container()->getDB()->delete('tseo', ['cKey', 'kKey'], ['kNewsKategorie', $kNewsKategorie]);
+            // tnewskategorienews löschen
+            Shop::Container()->getDB()->delete('tnewskategorienews', 'kNewsKategorie', $kNewsKategorie);
+        }
     }
 
     return true;

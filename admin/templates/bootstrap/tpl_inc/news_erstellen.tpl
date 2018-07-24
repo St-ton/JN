@@ -98,24 +98,24 @@
                                 <select id="kkundengruppe" name="kKundengruppe[]" multiple="multiple" class="form-control{if !empty($cPlausiValue_arr.kKundengruppe_arr)} error{/if}">
                                     <option value="-1"
                                             {if isset($cPostVar_arr.kKundengruppe)}
-                                                {foreach name=kkundengruppe from=$cPostVar_arr.kKundengruppe item=kKundengruppe}
+                                                {foreach $cPostVar_arr.kKundengruppe as $kKundengruppe}
                                                     {if $kKundengruppe == "-1"}selected{/if}
                                                 {/foreach}
                                             {elseif isset($oNews->kKundengruppe_arr)}
-                                                {foreach name=kundengruppen from=$oNews->kKundengruppe_arr item=kKundengruppe}
+                                                {foreach $oNews->kKundengruppe_arr as $kKundengruppe}
                                                     {if $kKundengruppe == "-1"}selected{/if}
                                                 {/foreach}
                                             {/if}>
                                         Alle
                                     </option>
-                                    {foreach name=kundengruppen from=$oKundengruppe_arr item=oKundengruppe}
+                                    {foreach $oKundengruppe_arr as $oKundengruppe}
                                         <option value="{$oKundengruppe->kKundengruppe}"
                                             {if isset($cPostVar_arr.kKundengruppe)}
-                                                {foreach name=kkundengruppe from=$cPostVar_arr.kKundengruppe item=kKundengruppe}
+                                                {foreach $cPostVar_arr.kKundengruppe as $kKundengruppe}
                                                     {if $oKundengruppe->kKundengruppe == $kKundengruppe}selected{/if}
                                                 {/foreach}
                                             {elseif isset($oNews->kKundengruppe_arr)}
-                                                {foreach name=kkundengruppen from=$oNews->kKundengruppe_arr item=kKundengruppe}
+                                                {foreach $oNews->kKundengruppe_arr as $kKundengruppe}
                                                     {if $oKundengruppe->kKundengruppe == $kKundengruppe}selected{/if}
                                                 {/foreach}
                                             {/if}>{$oKundengruppe->cName}</option>
@@ -130,7 +130,7 @@
                                     {if isset($oNewsKategorieNews_arr)}
                                         {assign var='selectedCat' value=$oNewsKategorieNews_arr}
                                     {elseif isset($cPostVar_arr.kNewsKategorie)}
-                                        {assign var='selectedCat' value=$NewsKategorieNews}
+                                        {assign var='selectedCat' value=$cPostVar_arr.kNewsKategorie}
                                     {else}
                                         {assign var='selectedCat' value=0}
                                     {/if}
@@ -178,7 +178,7 @@
                                 <td>
                                     <select class="form-control" id="kAuthor" name="kAuthor">
                                         <option value="0">Autor ausw&auml;hlen</option>
-                                        {foreach name=author from=$oPossibleAuthors_arr item=oPossibleAuthor}
+                                        {foreach $oPossibleAuthors_arr as $oPossibleAuthor}
                                             <option value="{$oPossibleAuthor->kAdminlogin}"{if isset($cPostVar_arr.nAuthor)}{if isset($cPostVar_arr.nAuthor) && $cPostVar_arr.nAuthor == $oPossibleAuthor->kAdminlogin} selected="selected"{/if}{elseif isset($oAuthor->kAdminlogin) && $oAuthor->kAdminlogin == $oPossibleAuthor->kAdminlogin} selected="selected"{/if}>{$oPossibleAuthor->cName}</option>
                                         {/foreach}
                                     </select>

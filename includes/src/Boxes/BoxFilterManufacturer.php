@@ -23,8 +23,8 @@ final class BoxFilterManufacturer extends AbstractBox
         parent::__construct($config);
         $filter        = \Shop::getProductFilter()->getManufacturerFilter();
         $searchResults = \Shop::getProductFilter()->getSearchResults();
-        $show          = !$filter->getVisibility()->equals(Visibility::SHOW_NEVER())
-            && !$filter->getVisibility()->equals(Visibility::SHOW_CONTENT())
+        $show          = $filter->getVisibility() !== Visibility::SHOW_NEVER
+            && $filter->getVisibility() !== Visibility::SHOW_CONTENT
             && (!empty($searchResults->getManufacturerFilterOptions()) || $filter->isInitialized());
         $this->setShow($show);
         $this->setItems($filter);

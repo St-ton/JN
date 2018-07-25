@@ -9,7 +9,7 @@ namespace Services\JTL;
 use Boxes\BoxFactoryInterface;
 use DB\DbInterface;
 use Filter\ProductFilter;
-use Filter\ProductFilterSearchResultsInterface;
+use Filter\SearchResultsInterface;
 
 
 /**
@@ -60,11 +60,11 @@ interface BoxServiceInterface
     public function filterBoxVisibility(int $boxID, int $pageType, $cFilter = ''): int;
 
     /**
-     * @param ProductFilter                       $pf
-     * @param ProductFilterSearchResultsInterface $sr
+     * @param ProductFilter          $pf
+     * @param SearchResultsInterface $sr
      * @return bool
      */
-    public function showBoxes(ProductFilter $pf, ProductFilterSearchResultsInterface $sr): bool;
+    public function showBoxes(ProductFilter $pf, SearchResultsInterface $sr): bool;
 
     /**
      * get raw data from visible boxes

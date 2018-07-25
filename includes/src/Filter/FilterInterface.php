@@ -117,19 +117,15 @@ interface FilterInterface
     public function setName($name): FilterInterface;
 
     /**
-     * get the filter's type - \Filter\Type::AND/\Filter\Type::OR
-     *
-     * @return Type
+     * @return int
      */
-    public function getType(): Type;
+    public function getType(): int;
 
     /**
-     * set a filter's type - \Filter\Type::AND/\Filter\Type::OR
-     *
-     * @param Type $type
+     * @param int $type
      * @return $this
      */
-    public function setType(Type $type): FilterInterface;
+    public function setType(int $type): FilterInterface;
 
     /**
      * the filter's base MySQL table name
@@ -356,9 +352,9 @@ interface FilterInterface
     public function getAvailableLanguages(): array;
 
     /**
-     * @return Visibility
+     * @return int
      */
-    public function getVisibility(): Visibility;
+    public function getVisibility(): int;
 
     /**
      * @param int|string $visibility
@@ -378,15 +374,15 @@ interface FilterInterface
     public function getFrontendName(): string;
 
     /**
-     * @param InputType $type
+     * @param int $type
      * @return $this
      */
-    public function setInputType(InputType $type): FilterInterface;
+    public function setInputType(int $type): FilterInterface;
 
     /**
-     * @return InputType
+     * @return int
      */
-    public function getInputType(): InputType;
+    public function getInputType(): int;
 
     /**
      * @param string|null $icon

@@ -47,11 +47,11 @@ if (RequestHelper::verifyGPCDataInt('zusatzschritt') === 1) {
     $bZusatzangabenDa = false;
     switch ($bestellung->Zahlungsart->cModulId) {
         case 'za_kreditkarte_jtl':
-            if ($_POST['kreditkartennr'] &&
-                $_POST['gueltigkeit'] &&
-                $_POST['cvv'] &&
-                $_POST['kartentyp'] &&
-                $_POST['inhaber']
+            if ($_POST['kreditkartennr']
+                && $_POST['gueltigkeit']
+                && $_POST['cvv']
+                && $_POST['kartentyp']
+                && $_POST['inhaber']
             ) {
                 $_SESSION['Zahlungsart']->ZahlungsInfo->cKartenNr    =
                     StringHandler::htmlentities(stripslashes($_POST['kreditkartennr']), ENT_QUOTES);
@@ -67,15 +67,14 @@ if (RequestHelper::verifyGPCDataInt('zusatzschritt') === 1) {
             }
             break;
         case 'za_lastschrift_jtl':
-            if (($_POST['bankname'] &&
-                    $_POST['blz'] &&
-                    $_POST['kontonr'] &&
-                    $_POST['inhaber'])
-                ||
-                ($_POST['bankname'] &&
-                    $_POST['iban'] &&
-                    $_POST['bic'] &&
-                    $_POST['inhaber'])
+            if (($_POST['bankname']
+                    && $_POST['blz']
+                    && $_POST['kontonr']
+                    && $_POST['inhaber'])
+                || ($_POST['bankname']
+                    && $_POST['iban']
+                    && $_POST['bic']
+                    && $_POST['inhaber'])
             ) {
                 $_SESSION['Zahlungsart']->ZahlungsInfo->cBankName =
                     StringHandler::htmlentities(stripslashes($_POST['bankname']), ENT_QUOTES);
@@ -200,7 +199,6 @@ if ($kPlugin > 0) {
     $paymentMethod->cModulId = $bestellung->Zahlungsart->cModulId;
     $paymentMethod->preparePaymentProcess($bestellung);
 }
-//hole aktuelle Kategorie, falls eine gesetzt
 $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);

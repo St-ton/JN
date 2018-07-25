@@ -59,7 +59,8 @@
 {/if}
 {/block}
 
-{block name='productlist-subcategories'}
+{block name="productlist-subcategories"}
+{include file='snippets/opc_mount_point.tpl' id='opc_productlist_subcats_prepend'}
 {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'N' && $oUnterKategorien_arr|@count > 0}
     <div class="row row-eq-height content-cats-small clearfix">
         {foreach $oUnterKategorien_arr as $Unterkat}
@@ -97,6 +98,7 @@
         {/foreach}
     </div>
 {/if}
+{include file='snippets/opc_mount_point.tpl' id='opc_productlist_subcats_append'}
 {/block}
 
 {include file='productwizard/index.tpl'}

@@ -9,17 +9,25 @@
         {/if}
     {/block}
 
-    {block name='content'}
-        {if !empty($Link->getTitle())}
-            <h1>{$Link->getTitle()}</h1>
-        {elseif isset($bAjaxRequest) && $bAjaxRequest}
-            <h1>{if !empty($Link->getMetaTitle())}{$Link->getMetaTitle()}{else}{$Link->getName()}{/if}</h1>
-        {/if}
+    {block name="content"}
+        {if $opcPageService->getCurPage()->isReplace()}
+            {include file='snippets/opc_mount_point.tpl' id='opc_replace_all'}
+        {else}
+            {if !empty($Link->getTitle())}
+                <h1>{$Link->getTitle()}</h1>
+            {elseif isset($bAjaxRequest) && $bAjaxRequest}
+                <h1>{if !empty($Link->getMetaTitle())}{$Link->getMetaTitle()}{else}{$Link->getName()}{/if}</h1>
+            {/if}
 
-        {include file='snippets/extension.tpl'}
+            {include file="snippets/extension.tpl"}
 
-        {if !empty($Link->getContent())}
-            {$Link->getContent()}
+            {include file='snippets/opc_mount_point.tpl' id='opc_link_content_prepend'}
+
+            {if !empty($Link->getContent())}
+                {$Link->getContent()}
+            {/if}
+
+            {include file='snippets/opc_mount_point.tpl' id='opc_link_content_append'}
         {/if}
 
         {if $Link->getLinkType() === $smarty.const.LINKTYP_AGB}

@@ -586,11 +586,7 @@ class Profiler
                 return false;
             });
             uasort(self::$sqlProfile, function ($a, $b) {
-                if ($a->time === $b->time) {
-                    return 0;
-                }
-
-                return $a->time < $b->time ? -1 : 1;
+                return $b->time <=> $a->time;
             });
         }
         echo '

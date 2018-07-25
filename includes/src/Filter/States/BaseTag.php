@@ -140,7 +140,7 @@ class BaseTag extends AbstractFilter
         if ($this->getConfig('navigationsfilter')['allgemein_tagfilter_benutzen'] === 'N') {
             return $options;
         }
-        $state = $this->productFilter->getCurrentStateData($this->getType()->equals(Type::OR())
+        $state = $this->productFilter->getCurrentStateData($this->getType() === Type::OR
             ? $this->getClassName()
             : null
         );

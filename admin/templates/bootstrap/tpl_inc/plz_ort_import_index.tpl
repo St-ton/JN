@@ -63,8 +63,7 @@
 </div>
 <script type="application/javascript">{literal}
 
-    var jtlToken  = $('#importForm .jtl_token').val(),
-        running   = false,
+    var running   = false,
         notify    = null,
         startTick = null;
 

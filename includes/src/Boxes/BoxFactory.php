@@ -99,6 +99,8 @@ class BoxFactory implements BoxFactoryInterface
                 return new BoxTrustedShopsSeal($this->config);
             case BOX_TRUSTEDSHOPS_KUNDENBEWERTUNGEN:
                 return new BoxTrustedShopsReviews($this->config);
+            case BOX_TOP_BEWERTET:
+                return new BoxTopRatedProducts($this->config);
             case BOX_SUCHWOLKE:
                 return new BoxSearchCloud($this->config);
             default:

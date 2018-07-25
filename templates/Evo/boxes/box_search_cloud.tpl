@@ -1,6 +1,6 @@
 {if $oBox->show()}
     <script>
-        $(document).ready(function () {
+        $(window).on('load', function () {
             var searchItems     = {$oBox->getItems()|json_encode},
                 searchcloudTags = [];
 

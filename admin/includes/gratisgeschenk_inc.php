@@ -17,7 +17,7 @@ function holeAktiveGeschenke($cSQL)
             "SELECT kArtikel
                 FROM tartikelattribut
                 WHERE cName = '" . ART_ATTRIBUT_GRATISGESCHENKAB . "'
-                ORDER BY CAST(cWert AS SIGNED) DESC" . $cSQL,
+                ORDER BY CAST(cWert AS SIGNED) DESC " . $cSQL,
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
@@ -46,12 +46,11 @@ function holeHaeufigeGeschenke($cSQL)
     $oHaeufigGeschenkTMP_arr = [];
     if (strlen($cSQL) > 0) {
         $oHaeufigGeschenkTMP_arr = Shop::Container()->getDB()->query(
-            "SELECT twarenkorbpos.kArtikel, count(*) AS nAnzahl, max(tbestellung.dErstellt) as lastOrdered
-                FROM twarenkorbpos
-                  LEFT JOIN tbestellung ON tbestellung.kWarenkorb = twarenkorbpos.kWarenkorb
-                WHERE twarenkorbpos.nPosTyp = " . C_WARENKORBPOS_TYP_GRATISGESCHENK . "
-                GROUP BY twarenkorbpos.kArtikel
-                ORDER BY nAnzahl DESC, twarenkorbpos.cName" . $cSQL,
+            "SELECT tgratisgeschenk.kArtikel, count(*) AS nAnzahl, max(tbestellung.dErstellt) as lastOrdered
+                FROM tgratisgeschenk
+                  LEFT JOIN tbestellung ON tbestellung.kWarenkorb = tgratisgeschenk.kWarenkorb
+                GROUP BY tgratisgeschenk.kArtikel
+                ORDER BY nAnzahl DESC, lastOrdered DESC " . $cSQL,
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
@@ -85,11 +84,10 @@ function holeLetzten100Geschenke($cSQL)
     $oLetzten100GeschenkTMP_arr = [];
     if (strlen($cSQL) > 0) {
         $oLetzten100GeschenkTMP_arr = Shop::Container()->getDB()->query(
-            "SELECT twarenkorbpos.*, tbestellung.dErstellt as orderCreated
-                FROM twarenkorbpos
-                  LEFT JOIN tbestellung ON tbestellung.kWarenkorb = twarenkorbpos.kWarenkorb
-                WHERE twarenkorbpos.nPosTyp = " . C_WARENKORBPOS_TYP_GRATISGESCHENK . "
-                ORDER BY tbestellung.dErstellt DESC" . $cSQL,
+            "SELECT tgratisgeschenk.*, tbestellung.dErstellt as orderCreated
+                FROM tgratisgeschenk
+                  LEFT JOIN tbestellung ON tbestellung.kWarenkorb = tgratisgeschenk.kWarenkorb
+                ORDER BY tbestellung.dErstellt DESC " . $cSQL,
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }

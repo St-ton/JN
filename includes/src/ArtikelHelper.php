@@ -1236,7 +1236,7 @@ class ArtikelHelper
                     $Benachrichtigung            = self::getAvailabilityFormDefaults();
                     $Benachrichtigung->kSprache  = Shop::getLanguage();
                     $Benachrichtigung->kArtikel  = (int)$_POST['a'];
-                    $Benachrichtigung->cIP       = (new \GdprAnonymizing\IpAnonymizer(RequestHelper::getIP()))->anonymize();
+                    $Benachrichtigung->cIP       = (new \GeneralDataProtection\IpAnonymizer(RequestHelper::getIP()))->anonymize();
                     $Benachrichtigung->dErstellt = 'now()';
                     $Benachrichtigung->nStatus   = 0;
                     $oCheckBox                   = new CheckBox();

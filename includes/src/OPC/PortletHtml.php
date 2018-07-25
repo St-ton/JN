@@ -43,24 +43,30 @@ trait PortletHtml
     }
 
     /**
+     * @return string
+     */
+    final protected function getTemplatePath(): string
+    {
+        if ($this->getPlugin() !== null) {
+            return PFAD_ROOT . PFAD_PLUGIN . $this->getPlugin()->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION
+                . $this->getPlugin()->getCurrentVersion() . '/' . PFAD_PLUGIN_ADMINMENU  . 'portlets/'
+                . $this->getClass() . '/';
+        }
+
+        return PFAD_ROOT . PFAD_TEMPLATES . 'Evo/portlets/' . $this->getClass() . '/';
+    }
+
+    /**
      * @param PortletInstance $instance
      * @return string
      * @throws \Exception
      */
     final protected function getPreviewHtmlFromTpl(PortletInstance $instance): string
     {
-        $smarty     = \Shop::Smarty();
-        $pathprefix = PFAD_ROOT . PFAD_TEMPLATES . 'Evo/';
-
-        if ($this->getPlugin() !== null) {
-            $pathprefix = PFAD_ROOT . PFAD_PLUGIN . $this->getPlugin()->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION
-                . $this->getPlugin()->getCurrentVersion() . '/' . PFAD_PLUGIN_ADMINMENU  . '/';
-        }
-
-        return $smarty
+        return \Shop::Smarty()
             ->assign('portlet', $this)
             ->assign('instance', $instance)
-            ->fetch($pathprefix . 'portlets/' . $this->getClass() . '/preview.tpl');
+            ->fetch($this->getTemplatePath() . 'preview.tpl');
     }
 
     /**
@@ -70,18 +76,10 @@ trait PortletHtml
      */
     final protected function getFinalHtmlFromTpl($instance): string
     {
-        $smarty     = \Shop::Smarty();
-        $pathprefix = PFAD_ROOT . PFAD_TEMPLATES . 'Evo/';
-
-        if ($this->getPlugin() !== null) {
-            $pathprefix = PFAD_ROOT . PFAD_PLUGIN . $this->getPlugin()->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION
-                . $this->getPlugin()->getCurrentVersion() . '/' . PFAD_PLUGIN_ADMINMENU  . '/';
-        }
-
-        return $smarty
+        return \Shop::Smarty()
             ->assign('portlet', $this)
             ->assign('instance', $instance)
-            ->fetch($pathprefix . 'portlets/' . $this->getClass() . '/final.tpl');
+            ->fetch($this->getTemplatePath() . 'final.tpl');
     }
 
     /**
@@ -91,17 +89,10 @@ trait PortletHtml
      */
     final protected function getConfigPanelHtmlFromTpl(PortletInstance $instance): string
     {
-        $smarty     = \Shop::Smarty();
-        $pathprefix = PFAD_ROOT . PFAD_TEMPLATES . 'Evo/';
-
-        if ($this->getPlugin() !== null) {
-            $pathprefix = PFAD_ROOT . PFAD_PLUGIN . $this->getPlugin()->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION
-                . $this->getPlugin()->getCurrentVersion() . '/' . PFAD_PLUGIN_ADMINMENU  . '/';
-        }
-
-        return $smarty->assign('portlet', $this)
-                      ->assign('instance', $instance)
-                      ->fetch($pathprefix . 'portlets/' . $this->getClass() . '/configpanel.tpl');
+        return \Shop::Smarty()
+            ->assign('portlet', $this)
+            ->assign('instance', $instance)
+            ->fetch($this->getTemplatePath() . 'configpanel.tpl');
     }
 
     /**

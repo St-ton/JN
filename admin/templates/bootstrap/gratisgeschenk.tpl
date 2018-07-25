@@ -38,7 +38,7 @@
                                 <td class="TD1">
                                     <a href="{$oAktiveGeschenk->cURLFull}" target="_blank">{$oAktiveGeschenk->cName}</a>
                                 </td>
-                                <td class="tcenter">{$oAktiveGeschenk->FunktionsAttribute[$cFunAttrib]} EUR</td>
+                                <td class="tcenter">{getCurrencyConversionSmarty fPreisBrutto=$oAktiveGeschenk->FunktionsAttribute[$cFunAttrib]}</td>
                                 <td class="tcenter">{$oAktiveGeschenk->dErstellt_de}</td>
                             </tr>
                         {/foreach}
@@ -68,7 +68,7 @@
                                 <td class="TD1">
                                     <a href="{$oAktiveGeschenk->cURLFull}" target="_blank">{$oHaeufigGeschenk->Artikel->cName}</a>
                                 </td>
-                                <td class="tcenter">{$oHaeufigGeschenk->Artikel->FunktionsAttribute[$cFunAttrib]} EUR</td>
+                                <td class="tcenter">{getCurrencyConversionSmarty fPreisBrutto=$oHaeufigGeschenk->Artikel->FunktionsAttribute[$cFunAttrib]}</td>
                                 <td class="tcenter">{$oHaeufigGeschenk->Artikel->nGGAnzahl} x</td>
                                 <td class="tcenter">{$oHaeufigGeschenk->lastOrdered}</td>
                             </tr>
@@ -98,7 +98,7 @@
                                 <td class="TD1">
                                     <a href="{$oAktiveGeschenk->cURLFull}" target="_blank">{$oLetzten100Geschenk->Artikel->cName}</a>
                                 </td>
-                                <td class="tcenter">{$oLetzten100Geschenk->Artikel->FunktionsAttribute[$cFunAttrib]} EUR</td>
+                                <td class="tcenter">{getCurrencyConversionSmarty fPreisBrutto=$oLetzten100Geschenk->Artikel->FunktionsAttribute[$cFunAttrib]}</td>
                                 <td class="tcenter">{$oLetzten100Geschenk->orderCreated}</td>
                             </tr>
                         {/foreach}

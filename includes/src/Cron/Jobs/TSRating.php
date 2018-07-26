@@ -10,9 +10,6 @@ namespace Cron\Jobs;
 use Cron\Job;
 use Cron\JobInterface;
 use Cron\QueueEntry;
-use DB\DbInterface;
-use DB\ReturnType;
-use function Functional\map;
 
 /**
  * Class TSRating

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -15,10 +15,10 @@ use Filter\FilterStateSQL;
 use Filter\ProductFilter;
 
 /**
- * Class ItemPriceRange
+ * Class PriceRange
  * @package Filter\Items
  */
-class ItemPriceRange extends AbstractFilter
+class PriceRange extends AbstractFilter
 {
     use \MagicCompatibilityTrait;
 
@@ -61,7 +61,7 @@ class ItemPriceRange extends AbstractFilter
     ];
 
     /**
-     * ItemPriceRange constructor.
+     * PriceRange constructor.
      *
      * @param ProductFilter $productFilter
      */
@@ -84,9 +84,9 @@ class ItemPriceRange extends AbstractFilter
 
     /**
      * @param float $offsetStart
-     * @return ItemPriceRange
+     * @return PriceRange
      */
-    public function setOffsetStart(float $offsetStart): ItemPriceRange
+    public function setOffsetStart(float $offsetStart): PriceRange
     {
         $this->offsetStart = $offsetStart;
 
@@ -103,9 +103,9 @@ class ItemPriceRange extends AbstractFilter
 
     /**
      * @param float $offsetEnd
-     * @return ItemPriceRange
+     * @return PriceRange
      */
-    public function setOffsetEnd(float $offsetEnd): ItemPriceRange
+    public function setOffsetEnd(float $offsetEnd): PriceRange
     {
         $this->offsetEnd = $offsetEnd;
 
@@ -122,9 +122,9 @@ class ItemPriceRange extends AbstractFilter
 
     /**
      * @param string $offsetStartLocalized
-     * @return ItemPriceRange
+     * @return PriceRange
      */
-    public function setOffsetStartLocalized(string $offsetStartLocalized): ItemPriceRange
+    public function setOffsetStartLocalized(string $offsetStartLocalized): PriceRange
     {
         $this->offsetStartLocalized = $offsetStartLocalized;
 
@@ -141,9 +141,9 @@ class ItemPriceRange extends AbstractFilter
 
     /**
      * @param string $offsetEndLocalized
-     * @return ItemPriceRange
+     * @return PriceRange
      */
-    public function setOffsetEndLocalized(string $offsetEndLocalized): ItemPriceRange
+    public function setOffsetEndLocalized(string $offsetEndLocalized): PriceRange
     {
         $this->offsetEndLocalized = $offsetEndLocalized;
 

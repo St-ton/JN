@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -12,13 +12,13 @@ use Filter\FilterInterface;
 use Filter\ProductFilter;
 
 /**
- * Class ItemLimit
+ * Class Limit
  * @package Filter\Items
  */
-class ItemLimit extends AbstractFilter
+class Limit extends AbstractFilter
 {
     /**
-     * ItemLimit constructor.
+     * Limit constructor.
      *
      * @param ProductFilter $productFilter
      */

@@ -200,7 +200,7 @@ class AuswahlAssistent
         )->getAttributeFilterOptions();
 
         foreach ($attributeFilters as $attributeFilter) {
-            /** @var \Filter\Items\ItemAttribute $attributeFilter */
+            /** @var \Filter\Items\Attribute $attributeFilter */
             if (array_key_exists($attributeFilter->getValue(), $this->oFrage_assoc)) {
                 $oFrage                    = $this->oFrage_assoc[$attributeFilter->getValue()];
                 $oFrage->oWert_arr         = $attributeFilter->getOptions();

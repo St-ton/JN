@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -13,13 +13,13 @@ use Filter\ProductFilter;
 use Filter\States\BaseTag;
 
 /**
- * Class ItemTag
+ * Class Tag
  * @package Filter\Items
  */
-class ItemTag extends BaseTag
+class Tag extends BaseTag
 {
     /**
-     * ItemTag constructor.
+     * Tag constructor.
      *
      * @param ProductFilter $productFilter
      */

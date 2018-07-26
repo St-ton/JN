@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -15,13 +15,13 @@ use Filter\ProductFilter;
 use Filter\States\BaseCategory;
 
 /**
- * Class ItemCategory
+ * Class Category
  * @package Filter\Items
  */
-class ItemCategory extends BaseCategory
+class Category extends BaseCategory
 {
     /**
-     * ItemCategory constructor.
+     * Category constructor.
      *
      * @param ProductFilter $productFilter
      */

@@ -1056,43 +1056,43 @@ class BaseSearchQuery extends AbstractFilter
         if (!\Sprache::isDefaultLanguageActive()) {
             $prefix = 'tartikelsprache.';
         }
-        if (!\in_array($prefix . 'cName', $exclude, true) && $conf['suche_prio_name'] > $max) {
+        if ($conf['suche_prio_name'] > $max && !\in_array($prefix . 'cName', $exclude, true)) {
             $max     = $conf['suche_prio_name'];
             $current = $prefix . 'cName';
         }
-        if (!\in_array($prefix . 'cSeo', $exclude, true) && $conf['suche_prio_name'] > $max) {
+        if ($conf['suche_prio_name'] > $max && !\in_array($prefix . 'cSeo', $exclude, true)) {
             $max     = $conf['suche_prio_name'];
             $current = $prefix . 'cSeo';
         }
-        if (!\in_array('tartikel.cSuchbegriffe', $exclude, true) && $conf['suche_prio_suchbegriffe'] > $max) {
+        if ($conf['suche_prio_suchbegriffe'] > $max && !\in_array('tartikel.cSuchbegriffe', $exclude, true)) {
             $max     = $conf['suche_prio_suchbegriffe'];
             $current = 'tartikel.cSuchbegriffe';
         }
-        if (!\in_array('tartikel.cArtNr', $exclude, true) && $conf['suche_prio_artikelnummer'] > $max) {
+        if ($conf['suche_prio_artikelnummer'] > $max && !\in_array('tartikel.cArtNr', $exclude, true)) {
             $max     = $conf['suche_prio_artikelnummer'];
             $current = 'tartikel.cArtNr';
         }
-        if (!\in_array($prefix . 'cKurzBeschreibung', $exclude, true) && $conf['suche_prio_kurzbeschreibung'] > $max) {
+        if ($conf['suche_prio_kurzbeschreibung'] > $max && !\in_array($prefix . 'cKurzBeschreibung', $exclude, true)) {
             $max     = $conf['suche_prio_kurzbeschreibung'];
             $current = $prefix . 'cKurzBeschreibung';
         }
-        if (!\in_array($prefix . 'cBeschreibung', $exclude, true) && $conf['suche_prio_beschreibung'] > $max) {
+        if ($conf['suche_prio_beschreibung'] > $max && !\in_array($prefix . 'cBeschreibung', $exclude, true)) {
             $max     = $conf['suche_prio_beschreibung'];
             $current = $prefix . 'cBeschreibung';
         }
-        if (!\in_array('tartikel.cBarcode', $exclude, true) && $conf['suche_prio_ean'] > $max) {
+        if ($conf['suche_prio_ean'] > $max && !\in_array('tartikel.cBarcode', $exclude, true)) {
             $max     = $conf['suche_prio_ean'];
             $current = 'tartikel.cBarcode';
         }
-        if (!\in_array('tartikel.cISBN', $exclude, true) && $conf['suche_prio_isbn'] > $max) {
+        if ($conf['suche_prio_isbn'] > $max && !\in_array('tartikel.cISBN', $exclude, true)) {
             $max     = $conf['suche_prio_isbn'];
             $current = 'tartikel.cISBN';
         }
-        if (!\in_array('tartikel.cHAN', $exclude, true) && $conf['suche_prio_han'] > $max) {
+        if ($conf['suche_prio_han'] > $max && !\in_array('tartikel.cHAN', $exclude, true)) {
             $max     = $conf['suche_prio_han'];
             $current = 'tartikel.cHAN';
         }
-        if (!\in_array('tartikel.cAnmerkung', $exclude, true) && $conf['suche_prio_anmerkung'] > $max) {
+        if ($conf['suche_prio_anmerkung'] > $max && !\in_array('tartikel.cAnmerkung', $exclude, true)) {
             $current = 'tartikel.cAnmerkung';
         }
 

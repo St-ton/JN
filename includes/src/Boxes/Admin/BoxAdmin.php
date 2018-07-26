@@ -25,11 +25,6 @@ final class BoxAdmin
     private $db;
 
     /**
-     * @var BoxServiceInterface
-     */
-    private $service;
-
-    /**
      * @var array
      */
     private $visibility;
@@ -78,12 +73,10 @@ final class BoxAdmin
     /**
      * BoxAdmin constructor.
      * @param DbInterface         $db
-     * @param BoxServiceInterface $service
      */
-    public function __construct(DbInterface $db, BoxServiceInterface $service)
+    public function __construct(DbInterface $db)
     {
-        $this->db      = $db;
-        $this->service = $service;
+        $this->db = $db;
     }
 
     /**

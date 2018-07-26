@@ -28,11 +28,6 @@ final class BoxTrustedShopsReviews extends AbstractBox
     private $imageURL = '';
 
     /**
-     * @var string
-     */
-    private $backGroundImageURL = '';
-
-    /**
      * BoxDirectPurchase constructor.
      * @param array $config
      */

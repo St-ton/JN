@@ -2494,6 +2494,9 @@ function kuponAnnehmen($Kupon)
         if ($Kupon->fWert > $_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)) {
             $couponPrice = $_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true);
         }
+        if ($Kupon->nGanzenWKRabattieren === '0' && $Kupon->fWert > gibGesamtsummeKuponartikelImWarenkorb($Kupon, $_SESSION['Warenkorb']->PositionenArr)) {
+            $couponPrice = gibGesamtsummeKuponartikelImWarenkorb($Kupon, $_SESSION['Warenkorb']->PositionenArr);
+        }
     } elseif ($Kupon->cWertTyp === 'prozent') {
         // Alle Positionen prüfen ob der Kupon greift und falls ja, dann Position rabattieren
         if ($Kupon->nGanzenWKRabattieren == 0) {
@@ -2614,9 +2617,11 @@ function gibGesamtsummeKuponartikelImWarenkorb($Kupon, $PositionenArr)
     $gesamtsumme = 0;
     if (is_array($PositionenArr)) {
         foreach ($PositionenArr as $Position) {
-            if ((empty($Kupon->cArtikel) || warenkorbKuponFaehigArtikel($Kupon, [$Position])) ||
-                (empty($Kupon->cHersteller) || warenkorbKuponFaehigHersteller($Kupon, [$Position])) ||
-                warenkorbKuponFaehigKategorien($Kupon, [$Position])) {
+            if ((empty($Kupon->cArtikel) || warenkorbKuponFaehigArtikel($Kupon, [$Position]))
+                && (empty($Kupon->cHersteller) || $Kupon->cHersteller === '-1' || warenkorbKuponFaehigHersteller($Kupon,
+                        [$Position]))
+                && (empty($Kupon->cKategorien) || $Kupon->cKategorien === '-1' || warenkorbKuponFaehigKategorien($Kupon,
+                        [$Position]))) {
                 $gesamtsumme += $Position->fPreis * $Position->nAnzahl * ((100 + gibUst($Position->kSteuerklasse)) / 100);
             }
         }

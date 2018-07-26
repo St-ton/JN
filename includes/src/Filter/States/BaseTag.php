@@ -185,15 +185,15 @@ class BaseTag extends AbstractFilter
         $additionalFilter = new Tag($this->productFilter);
         // Priorität berechnen
         $nPrioStep = 0;
-        $nCount    = count($tags);
+        $nCount    = \count($tags);
         if ($nCount > 0) {
             $nPrioStep = ($tags[0]->nAnzahlTagging - $tags[$nCount - 1]->nAnzahlTagging) / 9;
         }
         foreach ($tags as $tag) {
             $tag->nAnzahlTagging = (int)$tag->nAnzahlTagging;
             $class               = $nPrioStep < 1
-                ? rand(1, 10)
-                : round(
+                ? \rand(1, 10)
+                : \round(
                     ($tag->nAnzahlTagging - $tags[$nCount - 1]->nAnzahlTagging) /
                     $nPrioStep
                 ) + 1;

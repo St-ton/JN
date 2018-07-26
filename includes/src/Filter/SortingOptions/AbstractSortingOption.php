@@ -104,7 +104,7 @@ abstract class AbstractSortingOption extends FilterOption implements SortingOpti
      */
     public function __debugInfo()
     {
-        $res                  = get_object_vars($this);
+        $res                  = \get_object_vars($this);
         $res['productFilter'] = '*truncated*';
 
         return $res;

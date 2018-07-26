@@ -45,10 +45,10 @@ final class BoxTrustedShopsReviews extends AbstractBox
         $this->setShow(false);
         $cValidSprachISO_arr = ['de', 'en', 'fr', 'es', 'pl'];
         $langCode            = \StringHandler::convertISO2ISO639(\Shop::getLanguageCode());
-        if ($config['trustedshops']['trustedshops_nutzen'] === 'Y' && in_array($langCode, $cValidSprachISO_arr, true)) {
+        if ($config['trustedshops']['trustedshops_nutzen'] === 'Y' && \in_array($langCode, $cValidSprachISO_arr, true)) {
             $ts       = new \TrustedShops(-1, $langCode);
             $tsRating = $ts->holeKundenbewertungsstatus($langCode);
-            if (isset($tsRating->cTSID) && (int)$tsRating->nStatus === 1 && strlen($tsRating->cTSID) > 0) {
+            if (isset($tsRating->cTSID) && (int)$tsRating->nStatus === 1 && \strlen($tsRating->cTSID) > 0) {
                 $localizedURLs = [
                     'de' => 'https://www.trustedshops.com/bewertung/info_' . $tsRating->cTSID . '.html',
                     'en' => 'https://www.trustedshops.com/buyerrating/info_' . $tsRating->cTSID . '.html',
@@ -80,8 +80,8 @@ final class BoxTrustedShopsReviews extends AbstractBox
     {
         $filename_cache = PFAD_ROOT . PFAD_GFX_TRUSTEDSHOPS . $filename_cache;
 
-        return file_exists($filename_cache)
-            ? ((time() - filemtime($filename_cache)) < $timeout)
+        return \file_exists($filename_cache)
+            ? ((\time() - \filemtime($filename_cache)) < $timeout)
             : false;
     }
 

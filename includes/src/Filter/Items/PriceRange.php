@@ -166,14 +166,14 @@ class PriceRange extends AbstractFilter
         if ($id === null) {
             $id = '0_0';
         }
-        list($start, $end) = explode('_', $id);
+        list($start, $end) = \explode('_', $id);
         $this->offsetStart = (float)$start;
         $this->offsetEnd   = (float)$end;
         $this->setValue($id === '0_0' ? 0 : ($this->offsetStart . '_' . $this->offsetEnd));
         // localize prices
         $this->offsetStartLocalized = \Preise::getLocalizedPriceWithoutFactor($this->offsetStart);
         $this->offsetEndLocalized   = \Preise::getLocalizedPriceWithoutFactor($this->offsetEnd);
-        $this->setName(html_entity_decode($this->offsetStartLocalized . ' - ' . $this->offsetEndLocalized));
+        $this->setName(\html_entity_decode($this->offsetStartLocalized . ' - ' . $this->offsetEndLocalized));
         $this->isInitialized = true;
         $conversionFactor    = \Session::Currency()->getConversionFactor();
         $customerGroupID     = \Session::CustomerGroup()->getID();
@@ -197,7 +197,7 @@ class PriceRange extends AbstractFilter
         $fKundenrabatt       = (isset($_SESSION['Kunde']->fRabatt) && $_SESSION['Kunde']->fRabatt > 0)
             ? (float)$_SESSION['Kunde']->fRabatt
             : 0.0;
-        $nSteuersatzKeys_arr = array_keys($_SESSION['Steuersatz']);
+        $nSteuersatzKeys_arr = \array_keys($_SESSION['Steuersatz']);
         // bis
         if (\Session::CustomerGroup()->isMerchant()) {
             $oFilter->cWhere .= ' ROUND(LEAST((tpreise.fVKNetto * ' .
@@ -217,7 +217,7 @@ class PriceRange extends AbstractFilter
             }
             $oFilter->cWhere .= '0';
 
-            $count = count($nSteuersatzKeys_arr);
+            $count = \count($nSteuersatzKeys_arr);
             for ($x = 0; $x < $count; ++$x) {
                 $oFilter->cWhere .= ')';
             }
@@ -239,7 +239,7 @@ class PriceRange extends AbstractFilter
                     $conversionFactor . '))) * ((100 + ' . $fSteuersatz . ') / 100), 2),';
             }
             $oFilter->cWhere .= '0';
-            $count           = count($nSteuersatzKeys_arr);
+            $count           = \count($nSteuersatzKeys_arr);
             for ($x = 0; $x < $count; ++$x) {
                 $oFilter->cWhere .= ')';
             }
@@ -322,13 +322,13 @@ class PriceRange extends AbstractFilter
                 $ranges[$i]           = $fakePriceRange;
             }
         }
-        $max = count($ranges) - 1;
+        $max = \count($ranges) - 1;
         foreach ($ranges as $i => $oPreisspannenfilter) {
             $cSQL .= 'COUNT(DISTINCT IF(';
             $nBis = $oPreisspannenfilter->nBis;
             // Finde den höchsten und kleinsten Steuersatz
-            if (is_array($_SESSION['Steuersatz']) && !\Session::CustomerGroup()->isMerchant()) {
-                $nSteuersatzKeys_arr = array_keys($_SESSION['Steuersatz']);
+            if (\is_array($_SESSION['Steuersatz']) && !\Session::CustomerGroup()->isMerchant()) {
+                $nSteuersatzKeys_arr = \array_keys($_SESSION['Steuersatz']);
                 foreach ($nSteuersatzKeys_arr as $nSteuersatzKeys) {
                     $fSteuersatz = (float)$_SESSION['Steuersatz'][$nSteuersatzKeys];
                     $cSQL        .= 'IF(tartikel.kSteuerklasse = ' . $nSteuersatzKeys . ',
@@ -339,7 +339,7 @@ class PriceRange extends AbstractFilter
                         $currency->getConversionFactor() . '))) * ((100 + ' . $fSteuersatz . ') / 100), 2),';
                 }
                 $cSQL  .= '0';
-                $count = count($nSteuersatzKeys_arr);
+                $count = \count($nSteuersatzKeys_arr);
                 for ($x = 0; $x < $count; $x++) {
                     $cSQL .= ')';
                 }
@@ -419,13 +419,13 @@ class PriceRange extends AbstractFilter
         if ($this->getConfig('navigationsfilter')['preisspannenfilter_anzeige_berechnung'] === 'A') {
             $fSteuersatzMax = 0.0;
             $fSteuersatzMin = 0.0;
-            if (is_array($_SESSION['Steuersatz']) && !\Session::CustomerGroup()->isMerchant()) {
+            if (\is_array($_SESSION['Steuersatz']) && !\Session::CustomerGroup()->isMerchant()) {
                 $fSteuersatz_arr = [];
                 foreach ($_SESSION['Steuersatz'] as $fSteuersatz) {
                     $fSteuersatz_arr[] = $fSteuersatz;
                 }
-                $fSteuersatzMax = count($fSteuersatz_arr) ? max($fSteuersatz_arr) : 0;
-                $fSteuersatzMin = count($fSteuersatz_arr) ? min($fSteuersatz_arr) : 0;
+                $fSteuersatzMax = \count($fSteuersatz_arr) ? \max($fSteuersatz_arr) : 0;
+                $fSteuersatzMin = \count($fSteuersatz_arr) ? \min($fSteuersatz_arr) : 0;
             } elseif (\Session::CustomerGroup()->isMerchant()) {
                 $fSteuersatzMax = 0.0;
                 $fSteuersatzMin = 0.0;
@@ -465,7 +465,7 @@ class PriceRange extends AbstractFilter
                     $minMax->fMax * $currency->getConversionFactor(),
                     $minMax->fMin * $currency->getConversionFactor()
                 );
-                $oPreis->nAnzahlSpannen = min(20, (int)$oPreis->nAnzahlSpannen);
+                $oPreis->nAnzahlSpannen = \min(20, (int)$oPreis->nAnzahlSpannen);
                 $cSelectSQL             = '';
                 for ($i = 0; $i < $oPreis->nAnzahlSpannen; ++$i) {
                     if ($i > 0) {
@@ -484,8 +484,8 @@ class PriceRange extends AbstractFilter
                     ReturnType::SINGLE_OBJECT
                 );
                 $priceRanges      = [];
-                $priceRangeCounts = is_object($dbRes)
-                    ? get_object_vars($dbRes)
+                $priceRangeCounts = \is_object($dbRes)
+                    ? \get_object_vars($dbRes)
                     : [];
                 for ($i = 0; $i < $oPreis->nAnzahlSpannen; ++$i) {
                     $sub           = $i === 0
@@ -531,16 +531,16 @@ class PriceRange extends AbstractFilter
                 'SELECT * FROM tpreisspannenfilter',
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            if (count($ranges) > 0) {
+            if (\count($ranges) > 0) {
                 $oPreis = $this->calculateSteps(
-                    $ranges[count($ranges) - 1]->nBis * $currency->getConversionFactor(),
+                    $ranges[\count($ranges) - 1]->nBis * $currency->getConversionFactor(),
                     $ranges[0]->nVon * $currency->getConversionFactor()
                 );
                 if (!$oPreis->nAnzahlSpannen || !$oPreis->fMaxPreis) {
                     return [];
                 }
                 $cSelectSQL = '';
-                $count      = count($ranges);
+                $count      = \count($ranges);
                 for ($i = 0; $i < $count; ++$i) {
                     if ($i > 0) {
                         $cSelectSQL .= ', ';
@@ -562,9 +562,9 @@ class PriceRange extends AbstractFilter
                 );
 
                 $additionalFilter = new self($this->productFilter);
-                $priceRangeCounts = $dbRes !== false ? get_object_vars($dbRes) : [];
+                $priceRangeCounts = $dbRes !== false ? \get_object_vars($dbRes) : [];
                 $priceRanges      = [];
-                $count            = count($priceRangeCounts);
+                $count            = \count($priceRangeCounts);
                 for ($i = 0; $i < $count; ++$i) {
                     $sub           = $i === 0
                         ? 0
@@ -591,10 +591,10 @@ class PriceRange extends AbstractFilter
             }
         }
         // Preisspannen ohne Artikel ausblenden (falls im Backend eingestellt)
-        if (count($options) > 0
+        if (\count($options) > 0
             && $this->getConfig('navigationsfilter')['preisspannenfilter_spannen_ausblenden'] === 'Y'
         ) {
-            $options = array_filter(
+            $options = \array_filter(
                 $options,
                 function ($e) {
                     /** @var FilterOption $e */
@@ -687,10 +687,10 @@ class PriceRange extends AbstractFilter
         $fMax           *= 1000.0;
         $fMin           *= 1000.0;
         $fStepWert      = $fStepWert_arr[$nStep] * 1000;
-        $fMaxPreis      = round(((($fMax * 100) - (($fMax * 100) % ($fStepWert * 100))) + ($fStepWert * 100)) / 100);
-        $fMinPreis      = round((($fMin * 100) - (($fMin * 100) % ($fStepWert * 100))) / 100);
+        $fMaxPreis      = \round(((($fMax * 100) - (($fMax * 100) % ($fStepWert * 100))) + ($fStepWert * 100)) / 100);
+        $fMinPreis      = \round((($fMin * 100) - (($fMin * 100) % ($fStepWert * 100))) / 100);
         $fDiffPreis     = $fMaxPreis - $fMinPreis;
-        $nAnzahlSpannen = round($fDiffPreis / $fStepWert);
+        $nAnzahlSpannen = \round($fDiffPreis / $fStepWert);
 
         $oObject                 = new \stdClass();
         $oObject->fMaxPreis      = $fMaxPreis / 1000;

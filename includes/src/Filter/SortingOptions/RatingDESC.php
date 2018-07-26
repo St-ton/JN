@@ -29,6 +29,6 @@ class RatingDESC extends AbstractSortingOption
                    ->setOn('tbewertung.kArtikel = tartikel.kArtikel');
         $this->setName(\Shop::Lang()->get('rating'));
         $this->setPriority($this->getConfig('artikeluebersicht')['suche_sortierprio_bewertung']);
-        $this->setValue(SEARCH_SORT_RATING);
+        $this->setValue(\SEARCH_SORT_RATING);
     }
 }

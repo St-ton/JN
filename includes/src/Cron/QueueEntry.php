@@ -40,7 +40,7 @@ class QueueEntry
         $this->kKey             = (int)$data->kKey;
         $this->nLimitN          = (int)$data->nLimitN;
         $this->nLimitM          = (int)$data->nLimitM;
-        $this->nLastArticleID   = (int)$data->nLastArticleID;;
+        $this->nLastArticleID   = (int)$data->nLastArticleID;
 
         $this->nInArbeit        = 0;
 

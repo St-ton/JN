@@ -24,7 +24,7 @@ class ContainerBase implements ContainerInterface
      */
     public function setSingleton($id, $factory)
     {
-        if (!is_string($id) || !is_callable($factory)) {
+        if (!\is_string($id) || !\is_callable($factory)) {
             throw new \InvalidArgumentException();
         }
         $this->checkUninitialized($id);
@@ -37,7 +37,7 @@ class ContainerBase implements ContainerInterface
      */
     public function setFactory($id, $factory)
     {
-        if (!is_string($id) || !is_callable($factory)) {
+        if (!\is_string($id) || !\is_callable($factory)) {
             throw new \InvalidArgumentException();
         }
         $this->checkOverrideMatchingType($id, ContainerEntry::TYPE_FACTORY);

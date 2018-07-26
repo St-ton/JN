@@ -59,8 +59,8 @@ class BaseManufacturer extends AbstractFilter
     public function setSeo(array $languages): FilterInterface
     {
         $val = $this->getValue();
-        if ((is_numeric($val) && $val > 0) || (is_array($val) && count($val) > 0)) {
-            if (!is_array($val)) {
+        if ((\is_numeric($val) && $val > 0) || (\is_array($val) && \count($val) > 0)) {
+            if (!\is_array($val)) {
                 $val = [$val];
             }
             $oSeo_arr = \Shop::Container()->getDB()->query(
@@ -69,7 +69,7 @@ class BaseManufacturer extends AbstractFilter
                     JOIN thersteller
                         ON thersteller.kHersteller = tseo.kKey
                     WHERE cKey = 'kHersteller' 
-                        AND kKey IN (" . implode(', ', $val) . ")",
+                        AND kKey IN (" . \implode(', ', $val) . ")",
                 ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($languages as $language) {
@@ -115,13 +115,13 @@ class BaseManufacturer extends AbstractFilter
     public function getSQLCondition(): string
     {
         $val = $this->getValue();
-        if (!is_array($val)) {
+        if (!\is_array($val)) {
             $val = [$val];
         }
 
         return $this->getType() === Type::OR
-            ? 'tartikel.' . $this->getPrimaryKeyRow() . ' IN (' . implode(', ', $val) . ')'
-            : implode(' AND ', array_map(function ($e) {
+            ? 'tartikel.' . $this->getPrimaryKeyRow() . ' IN (' . \implode(', ', $val) . ')'
+            : \implode(' AND ', \array_map(function ($e) {
                 return 'tartikel.' . $this->getPrimaryKeyRow() . ' = ' . $e;
             }, $val));
     }

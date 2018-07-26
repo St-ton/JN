@@ -30,7 +30,7 @@ final class BoxPriceRadar extends AbstractBox
             : 30;
         $oPreisradar_arr = \Preisradar::getProducts(\Session::CustomerGroup()->getID(), $nLimit, $nTage);
         $products        = [];
-        if (count($oPreisradar_arr) > 0) {
+        if (\count($oPreisradar_arr) > 0) {
             $this->setShow(true);
             $defaultOptions = \Artikel::getDefaultOptions();
             foreach ($oPreisradar_arr as $oPreisradar) {

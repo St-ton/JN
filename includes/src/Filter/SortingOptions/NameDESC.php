@@ -25,6 +25,6 @@ class NameDESC extends AbstractSortingOption
         $this->orderBy = 'tartikel.cName DESC';
         $this->setName(\Shop::Lang()->get('sortNameDesc'));
         $this->setPriority($this->getConfig('artikeluebersicht')['suche_sortierprio_name_ab']);
-        $this->setValue(SEARCH_SORT_NAME_DESC);
+        $this->setValue(\SEARCH_SORT_NAME_DESC);
     }
 }

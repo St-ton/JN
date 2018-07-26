@@ -38,7 +38,7 @@ class Tag extends BaseTag
      */
     public function setValue($value): FilterInterface
     {
-        $this->value = is_array($value) ? $value : (int)$value;
+        $this->value = \is_array($value) ? $value : (int)$value;
 
         return $this;
     }

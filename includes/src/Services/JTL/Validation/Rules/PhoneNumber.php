@@ -27,7 +27,7 @@ class PhoneNumber implements RuleInterface
      */
     public function validate($value)
     {
-        return preg_match(self::REGEX, $value)
+        return \preg_match(self::REGEX, $value)
             ? new RuleResult(true, '', $value)
             : new RuleResult(false, 'invalid phone number', $value);
     }

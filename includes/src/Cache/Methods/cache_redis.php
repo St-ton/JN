@@ -121,7 +121,7 @@ class cache_redis implements ICachingMethod
     {
         try {
             $res = $this->_redis->mset($idContent);
-            foreach (array_keys($idContent) as $_cacheID) {
+            foreach (\array_keys($idContent) as $_cacheID) {
                 $this->_redis->setTimeout($_cacheID, $expiration ?? $this->options['lifetime']);
             }
 
@@ -174,7 +174,7 @@ class cache_redis implements ICachingMethod
      */
     public function isAvailable(): bool
     {
-        return class_exists('Redis');
+        return \class_exists('Redis');
     }
 
     /**
@@ -225,7 +225,7 @@ class cache_redis implements ICachingMethod
      */
     public function flushTags($tags): int
     {
-        return $this->flush(array_unique($this->getKeysByTag($tags)));
+        return $this->flush(\array_unique($this->getKeysByTag($tags)));
     }
 
     /**
@@ -243,11 +243,11 @@ class cache_redis implements ICachingMethod
     {
         $matchTags = \is_string($tags)
             ? [self::_keyFromTagName($tags)]
-            : array_map('Cache\Methods\cache_redis::_keyFromTagName', $tags);
+            : \array_map('Cache\Methods\cache_redis::_keyFromTagName', $tags);
         $res       = \count($tags) === 1
             ? $this->_redis->sMembers($matchTags[0])
             : $this->_redis->sUnion($matchTags);
-        if (PHP_SAPI === 'srv' || PHP_SAPI === 'cli') { // for some reason, hhvm does not unserialize values
+        if (\PHP_SAPI === 'srv' || \PHP_SAPI === 'cli') { // for some reason, hhvm does not unserialize values
             foreach ($res as &$_cid) {
                 // phpredis will throw an exception when unserializing unserialized data
                 try {
@@ -286,7 +286,7 @@ class cache_redis implements ICachingMethod
             return [];
         }
         try {
-            $slowLog = method_exists($this->_redis, 'slowlog')
+            $slowLog = \method_exists($this->_redis, 'slowlog')
                 ? $this->_redis->slowlog('get', 25)
                 : [];
         } catch (\RedisException $e) {
@@ -295,17 +295,17 @@ class cache_redis implements ICachingMethod
         $db  = $this->_redis->getDBNum();
         $idx = 'db' . $db;
         if (isset($stats[$idx])) {
-            $dbStats = explode(',', $stats[$idx]);
+            $dbStats = \explode(',', $stats[$idx]);
             foreach ($dbStats as $stat) {
-                if (strpos($stat, 'keys=') !== false) {
-                    $numEntries = str_replace('keys=', '', $stat);
+                if (\strpos($stat, 'keys=') !== false) {
+                    $numEntries = \str_replace('keys=', '', $stat);
                 }
             }
         }
         foreach ($slowLog as $_slow) {
             $slowLogDataEntry = [];
             if (isset($_slow[1])) {
-                $slowLogDataEntry['date'] = date('d.m.Y H:i:s', $_slow[1]);
+                $slowLogDataEntry['date'] = \date('d.m.Y H:i:s', $_slow[1]);
             }
             if (isset($_slow[3][0])) {
                 $slowLogDataEntry['cmd'] = $_slow[3][0];

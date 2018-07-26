@@ -106,25 +106,25 @@ trait JTLCacheTrait
         if (!\is_string($data)) {
             return false;
         }
-        $data = trim($data);
+        $data = \trim($data);
         if ('N;' === $data) {
             return true;
         }
-        if (!preg_match('/^([adObis]):/', $data, $badions)) {
+        if (!\preg_match('/^([adObis]):/', $data, $badions)) {
             return false;
         }
         switch ($badions[1]) {
             case 'a' :
             case 'O' :
             case 's' :
-                if (preg_match("/^{$badions[1]}:[0-9]+:.*[;}]\$/s", $data)) {
+                if (\preg_match("/^{$badions[1]}:[0-9]+:.*[;}]\$/s", $data)) {
                     return true;
                 }
                 break;
             case 'b' :
             case 'i' :
             case 'd' :
-                if (preg_match("/^{$badions[1]}:[0-9.E-]+;\$/", $data)) {
+                if (\preg_match("/^{$badions[1]}:[0-9.E-]+;\$/", $data)) {
                     return true;
                 }
                 break;
@@ -200,7 +200,7 @@ trait JTLCacheTrait
             }
 
             // remove duplicate keys from array and return it
-            return array_unique($res);
+            return \array_unique($res);
         }
 
         return [];
@@ -244,7 +244,7 @@ trait JTLCacheTrait
             $this->clearCacheTags($_id);
             if ($res === true) {
                 ++$deleted;
-            } elseif (is_int($res)) {
+            } elseif (\is_int($res)) {
                 $deleted += $res;
             }
         }
@@ -271,7 +271,7 @@ trait JTLCacheTrait
             //load meta data
             foreach ($this->journal as $tagName => $value) {
                 //search for key in meta values
-                if (($index = array_search($tags, $value, true)) !== false) {
+                if (($index = \array_search($tags, $value, true)) !== false) {
                     unset($this->journal[$tagName][$index]);
                     if (\count($this->journal[$tagName]) === 0) {
                         //remove empty tag nodes
@@ -331,7 +331,7 @@ trait JTLCacheTrait
     {
         $newKeyArray = [];
         foreach ($array as $_key => $_val) {
-            $newKey               = str_replace($this->options['prefix'], '', $_key);
+            $newKey               = \str_replace($this->options['prefix'], '', $_key);
             $newKeyArray[$newKey] = $_val;
         }
 

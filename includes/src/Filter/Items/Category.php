@@ -218,10 +218,10 @@ class Category extends BaseCategory
                 ->setSort((int)$category->nSort);
         }
         if ($categoryFilterType === 'KP') {
-            usort($options, function ($a, $b) {
+            \usort($options, function ($a, $b) {
                 /** @var FilterOption $a */
                 /** @var FilterOption $b */
-                return strcmp($a->getName(), $b->getName());
+                return \strcmp($a->getName(), $b->getName());
             });
         }
         $this->options = $options;

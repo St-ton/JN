@@ -264,7 +264,7 @@ class FilterOption extends AbstractFilter
      */
     public function __isset($name)
     {
-        return property_exists($this, $name) || self::getMapping($name) !== null || isset($this->data[$name]);
+        return \property_exists($this, $name) || self::getMapping($name) !== null || isset($this->data[$name]);
     }
 
     /**

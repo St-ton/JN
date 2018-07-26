@@ -25,6 +25,6 @@ class ProductNumber extends AbstractSortingOption
         $this->orderBy = 'tartikel.cArtNr, tartikel.cName';
         $this->setName(\Shop::Lang()->get('sortProductno'));
         $this->setPriority($this->getConfig('artikeluebersicht')['suche_sortierprio_artikelnummer']);
-        $this->setValue(SEARCH_SORT_PRODUCTNO);
+        $this->setValue(\SEARCH_SORT_PRODUCTNO);
     }
 }

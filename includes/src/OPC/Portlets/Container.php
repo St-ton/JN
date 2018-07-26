@@ -21,12 +21,12 @@ class Container extends \OPC\Portlet
      */
     public function getPreviewHtml(PortletInstance $instance): string
     {
-        $instance->setProperty('uid', uniqid('cntr-', false));
+        $instance->setProperty('uid', \uniqid('cntr-', false));
         $instance->setStyle('min-height', $instance->getProperty('min-height'));
         $instance->setStyle('position', 'relative');
         if ($instance->getProperty('background-flag') === 'image' && !empty($instance->getProperty('src'))) {
-            $name = explode('/', $instance->getProperty('src'));
-            $name = end($name);
+            $name = \explode('/', $instance->getProperty('src'));
+            $name = \end($name);
 
             $instance->setStyle(
                 'background',
@@ -40,8 +40,8 @@ class Container extends \OPC\Portlet
             $instance->setStyle('overflow', 'hidden');
             $instance->setStyle('position', 'relative');
 
-            $name = explode('/', $instance->getProperty('video-poster'));
-            $name = end($name);
+            $name = \explode('/', $instance->getProperty('video-poster'));
+            $name = \end($name);
 
             $instance->setProperty(
                 'video-poster-url',
@@ -65,8 +65,8 @@ class Container extends \OPC\Portlet
         $instance->setStyle('min-height', $instance->getProperty('min-height'));
         $instance->setStyle('position', 'relative');
         if ($instance->getProperty('background-flag') === 'image' && !empty($instance->getProperty('src'))) {
-            $name = explode('/', $instance->getProperty('src'));
-            $name = end($name);
+            $name = \explode('/', $instance->getProperty('src'));
+            $name = \end($name);
             $instance->addClass('parallax-window');
             $instance->setAttribute('data-parallax', 'scroll');
             $instance->setAttribute('data-z-index', '1');
@@ -80,15 +80,15 @@ class Container extends \OPC\Portlet
         if ($instance->getProperty('background-flag') === 'video') {
             $instance->setStyle('overflow', 'hidden');
 
-            $name = explode('/', $instance->getProperty('video-poster'));
-            $name = end($name);
+            $name = \explode('/', $instance->getProperty('video-poster'));
+            $name = \end($name);
 
             $instance->setProperty(
                 'video-poster-url',
                 \Shop::getURL() . '/' . PFAD_MEDIAFILES . 'Bilder/.xs/' . $name);
 
-            $name = explode('/', $instance->getProperty('video-src'));
-            $name = end($name);
+            $name = \explode('/', $instance->getProperty('video-src'));
+            $name = \end($name);
 
             $instance->setProperty(
                 'video-src-url',

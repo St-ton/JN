@@ -28,7 +28,7 @@ class SessionHandlerBot extends SessionHandlerJTL implements \SessionHandlerInte
      */
     public function __construct($doSave = false)
     {
-        $this->sessionID = session_id();
+        $this->sessionID = \session_id();
         $this->doSave    = $doSave;
     }
 

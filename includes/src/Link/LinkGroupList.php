@@ -57,7 +57,7 @@ final class LinkGroupList implements LinkGroupListInterface
      */
     public function __get($name)
     {
-        trigger_error(__CLASS__ . ': getter should be used to get ' . $name, E_USER_DEPRECATED);
+        \trigger_error(__CLASS__ . ': getter should be used to get ' . $name, \E_USER_DEPRECATED);
 
         return $this->getLinkgroupByTemplate($name);
     }
@@ -68,7 +68,7 @@ final class LinkGroupList implements LinkGroupListInterface
      */
     public function __set($name, $value)
     {
-        trigger_error(__CLASS__ . ': setting data like this not supported anymore. ', E_USER_DEPRECATED);
+        \trigger_error(__CLASS__ . ': setting data like this not supported anymore. ', \E_USER_DEPRECATED);
     }
 
     /**

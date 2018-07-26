@@ -59,7 +59,7 @@ class Sort extends AbstractFilter
             $this->activeSortingType = $mapper->mapUserSorting($_SESSION['Usersortierung']);
         }
         $_SESSION['Usersortierung'] = $this->activeSortingType;
-        if ($_SESSION['Usersortierung'] === SEARCH_SORT_STANDARD && $this->productFilter->getSort() > 0) {
+        if ($_SESSION['Usersortierung'] === \SEARCH_SORT_STANDARD && $this->productFilter->getSort() > 0) {
             $this->activeSortingType = $this->productFilter->getSort();
         }
     }
@@ -162,7 +162,7 @@ class Sort extends AbstractFilter
         $additionalFilter = new self($this->productFilter);
         $activeSortType   = $_SESSION['Usersortierung'] ?? -1;
         foreach ($this->sortingOptions as $i => $sortingOption) {
-            if (get_class($sortingOption) === SortDefault::class) {
+            if (\get_class($sortingOption) === SortDefault::class) {
                 continue;
             }
             /** @var SortingOptionInterface $sortingOption */

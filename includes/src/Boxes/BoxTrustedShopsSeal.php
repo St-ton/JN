@@ -48,7 +48,7 @@ final class BoxTrustedShopsSeal extends AbstractBox
             $langISO = \StringHandler::convertISO2ISO639(\Shop::getLanguageCode());
             $shopURL = \Shop::getURL(true) . '/';
             $ts      = new \TrustedShops(-1, $langISO);
-            if ((int)$ts->nAktiv === 1 && !empty($ts->cLogoURL) && strlen($ts->tsId) > 0) {
+            if ((int)$ts->nAktiv === 1 && !empty($ts->cLogoURL) && \strlen($ts->tsId) > 0) {
                 $this->setShow(true);
                 $this->setLogoURL($ts->cLogoURL);
                 $this->setLogoSealURL($ts->cLogoSiegelBoxURL[$langISO]);

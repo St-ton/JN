@@ -26,19 +26,19 @@ class Factory
      * @var array
      */
     private static $defaultSortingOptions = [
-        SEARCH_SORT_STANDARD,
-        SEARCH_SORT_NAME_ASC,
-        SEARCH_SORT_NAME_DESC,
-        SEARCH_SORT_PRICE_ASC,
-        SEARCH_SORT_PRICE_DESC,
-        SEARCH_SORT_EAN,
-        SEARCH_SORT_NEWEST_FIRST,
-        SEARCH_SORT_PRODUCTNO,
-        SEARCH_SORT_AVAILABILITY,
-        SEARCH_SORT_WEIGHT,
-        SEARCH_SORT_DATEOFISSUE,
-        SEARCH_SORT_BESTSELLER,
-        SEARCH_SORT_RATING,
+        \SEARCH_SORT_STANDARD,
+        \SEARCH_SORT_NAME_ASC,
+        \SEARCH_SORT_NAME_DESC,
+        \SEARCH_SORT_PRICE_ASC,
+        \SEARCH_SORT_PRICE_DESC,
+        \SEARCH_SORT_EAN,
+        \SEARCH_SORT_NEWEST_FIRST,
+        \SEARCH_SORT_PRODUCTNO,
+        \SEARCH_SORT_AVAILABILITY,
+        \SEARCH_SORT_WEIGHT,
+        \SEARCH_SORT_DATEOFISSUE,
+        \SEARCH_SORT_BESTSELLER,
+        \SEARCH_SORT_RATING,
     ];
 
     /**
@@ -54,7 +54,7 @@ class Factory
     {
         $this->productFilter = $productFilter;
 
-        executeHook(HOOK_PRODUCTFILTER_REGISTER_SEARCH_OPTION, [
+        \executeHook(HOOK_PRODUCTFILTER_REGISTER_SEARCH_OPTION, [
             'factory'       => $this,
             'productFilter' => $this->productFilter
         ]);

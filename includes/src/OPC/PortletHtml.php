@@ -135,7 +135,7 @@ trait PortletHtml
         $tabs = $this->getPropertyTabs();
 
         foreach ($tabs as $tabname => $propnames) {
-            if (is_string($propnames)) {
+            if (\is_string($propnames)) {
                 if ($propnames === 'styles') {
                     $tabs[$tabname] = $this->getStylesPropertyDesc();
                 } elseif ($propnames === 'animations') {
@@ -149,7 +149,7 @@ trait PortletHtml
             }
         }
 
-        if (count($desc) > 0) {
+        if (\count($desc) > 0) {
             $tabs = ['Allgemein' => $desc] + $tabs;
         }
 
@@ -158,7 +158,7 @@ trait PortletHtml
         $i    = 0;
 
         foreach ($tabs as $tabname => $props) {
-            $tabid  = preg_replace('/[^A-Za-z0-9\-]/', '', $tabname);
+            $tabid  = \preg_replace('/[^A-Za-z0-9\-]/', '', $tabname);
             $active = $i === 0 ? " class='active'" : "";
             $res   .= "<li$active>";
             $res   .= "<a href='#$tabid' data-toggle='tab'>$tabname</a></li>";
@@ -170,14 +170,14 @@ trait PortletHtml
         $i    = 0;
 
         foreach ($tabs as $tabname => $props) {
-            $tabid  = preg_replace('/[^A-Za-z0-9\-]/', '', $tabname);
+            $tabid  = \preg_replace('/[^A-Za-z0-9\-]/', '', $tabname);
             $active = $i === 0 ? " active" : "";
             $res   .= "<div class='tab-pane$active' id='$tabid'>";
             $res   .= "<div class='row'>";
 
             foreach ($props as $propname => $propDesc) {
                 $containerId = !empty($propDesc['layoutCollapse']) ? $propname : null;
-                $cllpsID     = uniqid('', false);
+                $cllpsID     = \uniqid('', false);
 
                 if (!empty($propDesc['collapseControlStart'])) {
                     $res .= "<script>
@@ -255,7 +255,7 @@ trait PortletHtml
 
         $displ = 12;
         if (!empty($propDesc['dspl_width'])) {
-            $displ = round(12 * ($propDesc['dspl_width'] * 0.01));
+            $displ = \round(12 * ($propDesc['dspl_width'] * 0.01));
         }
         $res .= "<div class='col-xs-$displ'>";
         $res .= "<div class='form-group'>";
@@ -344,7 +344,7 @@ trait PortletHtml
                 $res .= $this->getConfigPanelSnippet($instance, 'icon', [
                     'propname' => $propname,
                     'prop'     => $prop,
-                    'uid'      => uniqid('', false)
+                    'uid'      => \uniqid('', false)
                 ]);
                 break;
             case 'hidden':

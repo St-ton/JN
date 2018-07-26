@@ -278,11 +278,11 @@ abstract class AbstractBox implements BoxInterface
 
         foreach ($boxData as $box) {
             if (!empty($box->cFilter)) {
-                $this->filter[(int)$box->kSeite] = array_map('intval', explode(',', $box->cFilter));
+                $this->filter[(int)$box->kSeite] = \array_map('\intval', \explode(',', $box->cFilter));
             } else {
-                $pageIDs          = explode(',', $box->pageIDs);
-                $pageVisibilities = explode(',', $box->pageVisibilities);
-                $filter           = array_combine($pageIDs, $pageVisibilities);
+                $pageIDs          = \explode(',', $box->pageIDs);
+                $pageVisibilities = \explode(',', $box->pageVisibilities);
+                $filter           = \array_combine($pageIDs, $pageVisibilities);
                 foreach ($filter as $pageID => $visibility) {
                     $this->filter[(int)$pageID] = (bool)$visibility;
                 }
@@ -292,12 +292,12 @@ abstract class AbstractBox implements BoxInterface
                 $this->title[(int)$box->kSprache]   = $box->cTitel;
             }
         }
-        ksort($this->filter);
+        \ksort($this->filter);
 
         if (false($this->filter)) {
             $this->setIsActive(false);
         }
-        if (!is_bool($this->show)) {
+        if (!\is_bool($this->show)) {
             // may be overridden in concrete classes' __construct
             $this->setShow($this->isActive());
         }
@@ -322,8 +322,8 @@ abstract class AbstractBox implements BoxInterface
         }
         $visible = empty($this->filter) || (isset($this->filter[$pageType]) && $this->filter[$pageType] === true);
 
-        if ($visible === false && $pageID > 0 && isset($this->filter[$pageType]) && is_array($this->filter[$pageType])) {
-            $visible = in_array($pageID, $this->filter[$pageType], true);
+        if ($visible === false && $pageID > 0 && isset($this->filter[$pageType]) && \is_array($this->filter[$pageType])) {
+            $visible = \in_array($pageID, $this->filter[$pageType], true);
         }
 
         return $visible;
@@ -470,7 +470,7 @@ abstract class AbstractBox implements BoxInterface
      */
     public function getTitle($idx = null): string
     {
-        if (is_string($this->title)) {
+        if (\is_string($this->title)) {
             return $this->title;
         }
         $idx = $idx ?? \Shop::getLanguageID();
@@ -491,7 +491,7 @@ abstract class AbstractBox implements BoxInterface
      */
     public function getContent($idx = null): string
     {
-        if (is_string($this->content)) {
+        if (\is_string($this->content)) {
             return $this->content;
         }
         $idx = $idx ?? \Shop::getLanguageID();
@@ -790,7 +790,7 @@ abstract class AbstractBox implements BoxInterface
     ): string {
         $iCur = 0;
         $iMax = 15;
-        if (!count($oCloud_arr)) {
+        if (!\count($oCloud_arr)) {
             return '';
         }
         $oTags_arr                       = [];
@@ -800,7 +800,7 @@ abstract class AbstractBox implements BoxInterface
             $cColor = '';
             $cCodes = ['00', '33', '66', '99', 'CC', 'FF'];
             for ($i = 0; $i < 3; $i++) {
-                $cColor .= $cCodes[rand(0, count($cCodes) - 1)];
+                $cColor .= $cCodes[\rand(0, \count($cCodes) - 1)];
             }
 
             return '0x' . $cColor;
@@ -812,18 +812,18 @@ abstract class AbstractBox implements BoxInterface
             }
             $cName               = $oCloud->cName ?? $oCloud->cSuche;
             $cRandomColor        = (!$cColor || !$cColorHover) ? $gibTagFarbe() : '';
-            $cName               = urlencode($cName);
-            $cName               = str_replace('+', ' ', $cName); /* fix :) */
+            $cName               = \urlencode($cName);
+            $cName               = \str_replace('+', ' ', $cName); /* fix :) */
             $oTags_arr['tags'][] = [
                 'name'  => $cName,
                 'url'   => $oCloud->cURL,
-                'size'  => (count($oCloud_arr) <= 5) ? '100' : (string)($oCloud->Klasse * 10), /* 10 bis 100 */
+                'size'  => (\count($oCloud_arr) <= 5) ? '100' : (string)($oCloud->Klasse * 10), /* 10 bis 100 */
                 'color' => $cColor ?: $cRandomColor,
                 'hover' => $cColorHover ?: $cRandomColor
             ];
         }
 
-        return urlencode(json_encode($oTags_arr));
+        return \urlencode(\json_encode($oTags_arr));
     }
 
     /**
@@ -839,7 +839,7 @@ abstract class AbstractBox implements BoxInterface
      */
     public function __debugInfo()
     {
-        $res           = get_object_vars($this);
+        $res           = \get_object_vars($this);
         $res['config'] = '*truncated*';
 
         return $res;

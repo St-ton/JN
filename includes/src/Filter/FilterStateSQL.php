@@ -139,7 +139,7 @@ class FilterStateSQL implements FilterStateSQLInterface
 
         return reduce_left($this->joins, function(FilterJoinInterface $value, $d, $c, $reduction) use (&$checked) {
             $key = $value->getTable();
-            if (!in_array($key, $checked, true)) {
+            if (!\in_array($key, $checked, true)) {
                 $checked[]   = $key;
                 $reduction[] = $value;
             }

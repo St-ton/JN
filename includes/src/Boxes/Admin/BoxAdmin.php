@@ -113,17 +113,17 @@ final class BoxAdmin
             return (int)$e->kBox;
         });
 
-        return count($affectedBoxes) > 0
+        return \count($affectedBoxes) > 0
             && $this->db->query(
                 'DELETE 
                     FROM tboxen
-                    WHERE kBox IN (' . implode(',', $affectedBoxes) . ')',
+                    WHERE kBox IN (' . \implode(',', $affectedBoxes) . ')',
                 ReturnType::AFFECTED_ROWS
             ) > 0
             && $this->db->query(
                 'DELETE 
                     FROM tboxensichtbar
-                    WHERE kBox IN (' . implode(',', $affectedBoxes) . ')',
+                    WHERE kBox IN (' . \implode(',', $affectedBoxes) . ')',
                 ReturnType::AFFECTED_ROWS
             ) > 0;
     }
@@ -175,7 +175,7 @@ final class BoxAdmin
     public function getContent(int $boxID, string $isoCode = '')
     {
 
-        return strlen($isoCode) > 0
+        return \strlen($isoCode) > 0
             ? $this->db->select('tboxsprache', 'kBox', $boxID, 'cISO', $isoCode)
             : $this->db->selectAll('tboxsprache', 'kBox', $boxID);
     }
@@ -225,13 +225,13 @@ final class BoxAdmin
         $oBox->kBoxvorlage = $baseID;
         $oBox->ePosition   = $position;
         $oBox->kContainer  = $containerID;
-        $oBox->kCustomID   = (isset($template->kCustomID) && is_numeric($template->kCustomID))
+        $oBox->kCustomID   = (isset($template->kCustomID) && \is_numeric($template->kCustomID))
             ? (int)$template->kCustomID
             : 0;
 
         $boxID = $this->db->insert('tboxen', $oBox);
         if ($boxID) {
-            $cnt                = count($validPageTypes);
+            $cnt                = \count($validPageTypes);
             $oBoxSichtbar       = new \stdClass();
             $oBoxSichtbar->kBox = $boxID;
             for ($i = 0; $i < $cnt; ++$i) {
@@ -303,7 +303,7 @@ final class BoxAdmin
         $validPageTypes = $this->getValidPageTypes();
         if ($pageID === 0) {
             $ok = true;
-            for ($i = 0; $i < count($validPageTypes) && $ok; $i++) {
+            for ($i = 0; $i < \count($validPageTypes) && $ok; $i++) {
                 $ok = $this->db->executeQueryPrepared(
                         "REPLACE INTO tboxenanzeige 
                             SET bAnzeigen = :show,
@@ -345,7 +345,7 @@ final class BoxAdmin
         $validPageTypes = $this->getValidPageTypes();
         if ($pageID === 0) {
             $ok = true;
-            for ($i = 0; $i < count($validPageTypes) && $ok; $i++) {
+            for ($i = 0; $i < \count($validPageTypes) && $ok; $i++) {
                 $oBox = $this->db->select('tboxensichtbar', 'kBox', $boxID);
                 $ok   = !empty($oBox)
                     ? ($this->db->query(
@@ -387,9 +387,9 @@ final class BoxAdmin
      */
     public function filterBoxVisibility(int $boxID, int $kSeite, $cFilter = ''): int
     {
-        if (is_array($cFilter)) {
-            $cFilter = array_unique($cFilter);
-            $cFilter = implode(',', $cFilter);
+        if (\is_array($cFilter)) {
+            $cFilter = \array_unique($cFilter);
+            $cFilter = \implode(',', $cFilter);
         }
         $upd          = new \stdClass();
         $upd->cFilter = $cFilter;
@@ -411,7 +411,7 @@ final class BoxAdmin
         if ($pageID === 0) {
             $ok  = true;
             $upd = new \stdClass();
-            for ($i = 0; $i < count($validPageTypes) && $ok; ++$i) {
+            for ($i = 0; $i < \count($validPageTypes) && $ok; ++$i) {
                 $upd->bAktiv = $active;
                 $ok          = $this->db->update(
                         'tboxensichtbar',
@@ -488,7 +488,7 @@ final class BoxAdmin
         }
         $oBoxAnzeige = [];
         $oBox_arr    = $this->db->selectAll('tboxenanzeige', 'nSeite', $pageID);
-        if (count($oBox_arr) > 0) {
+        if (\count($oBox_arr) > 0) {
             foreach ($oBox_arr as $oBox) {
                 $oBoxAnzeige[$oBox->ePosition] = (bool)$oBox->bAnzeigen;
             }
@@ -535,7 +535,7 @@ final class BoxAdmin
                 FROM tboxen 
                     LEFT JOIN tboxvorlage
                     ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
-                WHERE ePosition IN (' . implode(',', $mapped) . ') 
+                WHERE ePosition IN (' . \implode(',', $mapped) . ') 
                     OR (kContainer > 0  AND kContainer NOT IN (SELECT kBox FROM tboxen))',
             ReturnType::ARRAY_OF_OBJECTS
         );

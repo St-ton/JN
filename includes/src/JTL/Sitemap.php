@@ -97,7 +97,7 @@ class Sitemap
                 tnewskategorie.cBeschreibung, tnewskategorie.cMetaTitle, tnewskategorie.cMetaDescription,
                 tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung, 
                 tnewskategorie.cPreviewImage, tseo.cSeo,
-                count(DISTINCT(tnewskategorienews.kNews)) AS nAnzahlNews
+                COUNT(DISTINCT(tnewskategorienews.kNews)) AS nAnzahlNews
                     FROM tnewskategorie
                     LEFT JOIN tnewskategorienews 
                         ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
@@ -176,7 +176,7 @@ class Sitemap
         if (($overview = $this->cache->get($cacheID)) === false) {
             $overview = $this->db->queryPrepared(
                 "SELECT tseo.cSeo, tnewsmonatsuebersicht.cName, tnewsmonatsuebersicht.kNewsMonatsUebersicht, 
-                month(tnews.dGueltigVon) AS nMonat, year(tnews.dGueltigVon) AS nJahr, count(*) AS nAnzahl
+                month(tnews.dGueltigVon) AS nMonat, year(tnews.dGueltigVon) AS nJahr, COUNT(*) AS nAnzahl
                     FROM tnews
                     JOIN tnewsmonatsuebersicht 
                         ON tnewsmonatsuebersicht.nMonat = month(tnews.dGueltigVon)
@@ -199,7 +199,7 @@ class Sitemap
                     "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, 
                     tnews.cVorschauText, tnews.cMetaTitle, tnews.cMetaDescription, tnews.cMetaKeywords,
                     tnews.nAktiv, tnews.dErstellt, tseo.cSeo,
-                    count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl, 
+                    COUNT(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl, 
                     DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de
                         FROM tnews
                         LEFT JOIN tnewskommentar 

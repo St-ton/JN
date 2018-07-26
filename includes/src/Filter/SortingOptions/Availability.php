@@ -25,6 +25,6 @@ class Availability extends AbstractSortingOption
         $this->orderBy = 'tartikel.fLagerbestand DESC, tartikel.cLagerKleinerNull DESC, tartikel.cName';
         $this->setName(\Shop::Lang()->get('sortAvailability'));
         $this->setPriority($this->getConfig('artikeluebersicht')['suche_sortierprio_lagerbestand']);
-        $this->setValue(SEARCH_SORT_AVAILABILITY);
+        $this->setValue(\SEARCH_SORT_AVAILABILITY);
     }
 }

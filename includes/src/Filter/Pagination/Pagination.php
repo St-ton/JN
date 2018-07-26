@@ -71,7 +71,7 @@ class Pagination
             return $this->pages;
         }
         $naviURL = $this->productFilter->getFilterURL()->getURL();
-        $sep     = strpos($naviURL, '?') === false
+        $sep     = \strpos($naviURL, '?') === false
             ? SEP_SEITE
             : '&amp;seite=';
         $active  = $pages->getCurrentPage();
@@ -167,7 +167,7 @@ class Pagination
      */
     public function __debugInfo()
     {
-        $res                  = get_object_vars($this);
+        $res                  = \get_object_vars($this);
         $res['productFilter'] = '*truncated*';
         $res['factory']       = '*truncated*';
 

@@ -162,7 +162,7 @@ class Search extends AbstractFilter
     public function setQueryID($languageID, $searchTerm)
     {
         $searchQuery = null;
-        if ($languageID > 0 && strlen($searchTerm) > 0) {
+        if ($languageID > 0 && \strlen($searchTerm) > 0) {
             $searchQuery = \Shop::Container()->getDB()->select(
                 'tsuchanfrage',
                 'cSuche', \Shop::Container()->getDB()->escape($searchTerm),
@@ -209,10 +209,10 @@ class Search extends AbstractFilter
         if (empty($query)) {
             return false;
         }
-        $Suchausdruck = str_replace(["'", "\\", "*", "%"], '', $query);
+        $Suchausdruck = \str_replace(["'", "\\", "*", "%"], '', $query);
         $languageID   = (int)$languageIDExt > 0 ? (int)$languageIDExt : $this->getLanguageID();
         // db füllen für auswertugnen / suggest, dabei Blacklist beachten
-        $tempQueries = explode(';', $Suchausdruck);
+        $tempQueries = \explode(';', $Suchausdruck);
         $blacklist   = \Shop::Container()->getDB()->select(
             'tsuchanfrageblacklist',
             'kSprache',
@@ -223,10 +223,10 @@ class Search extends AbstractFilter
         if ($filterSpam && $blacklist !== null && !empty($blacklist->kSuchanfrageBlacklist)) {
             return false;
         }
-        // Ist MD5(IP) bereits X mal im Cache
+        // Ist md5(IP) bereits X mal im Cache
         $max_ip_count = (int)$this->getConfig('artikeluebersicht')['livesuche_max_ip_count'] * 100;
         $ip_cache_erg = \Shop::Container()->getDB()->executeQueryPrepared(
-            'SELECT count(*) AS anzahl
+            'SELECT COUNT(*) AS anzahl
                 FROM tsuchanfragencache
                 WHERE kSprache = :lang
                 AND cIP = :ip',
@@ -270,8 +270,8 @@ class Search extends AbstractFilter
                 $searchQuery->nAnzahlTreffer  = $hits;
                 $searchQuery->nAnzahlGesuche  = 1;
                 $searchQuery->dZuletztGesucht = 'now()';
-                $searchQuery->cSeo            = getSeo($Suchausdruck);
-                $searchQuery->cSeo            = checkSeo($searchQuery->cSeo);
+                $searchQuery->cSeo            = \getSeo($Suchausdruck);
+                $searchQuery->cSeo            = \checkSeo($searchQuery->cSeo);
                 $previuousQuery               = \Shop::Container()->getDB()->select(
                     'tsuchanfrage',
                     'kSprache', (int)$searchQuery->kSprache,
@@ -346,9 +346,9 @@ class Search extends AbstractFilter
         $count        = 0;
         $searchCache  = [];
         $searchFilter = $this->productFilter->getSearchFilter();
-        if (is_array($searchFilter)) {
-            $count       = count($searchFilter);
-            $searchCache = array_map(function ($f) {
+        if (\is_array($searchFilter)) {
+            $count       = \count($searchFilter);
+            $searchCache = \array_map(function ($f) {
                 /** @var Search $f */
                 return $f->getValue();
             }, $searchFilter);
@@ -369,7 +369,7 @@ class Search extends AbstractFilter
                                   ON tsuchcachetreffer.kSuchCache = tsuchcache.kSuchCache
                               JOIN tsuchanfrage
                                   ON tsuchanfrage.cSuche = tsuchcache.cSuche
-                                  AND tsuchanfrage.kSuchanfrage IN (' . implode(',', $searchCache) . ') 
+                                  AND tsuchanfrage.kSuchanfrage IN (' . \implode(',', $searchCache) . ') 
                               GROUP BY tsuchcachetreffer.kArtikel
                               HAVING COUNT(*) = ' . $count . '
                         ) AS jfSuche')
@@ -478,23 +478,23 @@ class Search extends AbstractFilter
                 }
             }
         }
-        if (is_array($searchFilters)) {
-            $searchFilters = array_merge($searchFilters);
+        if (\is_array($searchFilters)) {
+            $searchFilters = \array_merge($searchFilters);
         }
         $additionalFilter = new self($this->productFilter);
-        $nCount           = count($searchFilters);
+        $nCount           = \count($searchFilters);
         $nPrioStep        = $nCount > 0
             ? ($searchFilters[0]->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) / 9
             : 0;
-        $activeValues     = array_map(function($f) { // @todo: create method for this logic
+        $activeValues     = \array_map(function($f) { // @todo: create method for this logic
             /** @var Search $f */
             return $f->getValue();
         }, $this->productFilter->getSearchFilter());
 
         foreach ($searchFilters as $searchFilter) {
-            $class = rand(1, 10);
+            $class = \rand(1, 10);
             if (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0 && $nPrioStep > 0) {
-                $class = round(($searchFilter->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) / $nPrioStep) + 1;
+                $class = \round(($searchFilter->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) / $nPrioStep) + 1;
             }
             $options[] = (new FilterOption())
                 ->setURL($this->productFilter->getFilterURL()->getURL(
@@ -502,7 +502,7 @@ class Search extends AbstractFilter
                 ))
                 ->setData('cSuche', $searchFilter->cSuche)
                 ->setData('kSuchanfrage', $searchFilter->kSuchanfrage)
-                ->setIsActive(in_array((int)$searchFilter->kSuchanfrage, $activeValues, true))
+                ->setIsActive(\in_array((int)$searchFilter->kSuchanfrage, $activeValues, true))
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
                 ->setClass($class)

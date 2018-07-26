@@ -64,7 +64,7 @@ class Queue
         foreach ($queueData as $entry) {
             $this->queueEntries[] = new QueueEntry($entry);
         }
-        $this->logger->debug('Loaded ' . count($this->queueEntries) . ' existing jobs.');
+        $this->logger->debug('Loaded ' . \count($this->queueEntries) . ' existing jobs.');
 
         return $this->queueEntries;
     }
@@ -121,7 +121,7 @@ class Queue
                 $update->nLastArticleID   = $queueEntry->nLastArticleID;
                 $this->db->update('tjobqueue', 'kCron', $job->getCronID(), $update);
             }
-            executeHook(HOOK_JOBQUEUE_INC_BEHIND_SWITCH, [
+            \executeHook(HOOK_JOBQUEUE_INC_BEHIND_SWITCH, [
                 'oJobQueue' => $queueEntry,
                 'job'       => $job
             ]);

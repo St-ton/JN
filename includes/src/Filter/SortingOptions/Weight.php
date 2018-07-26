@@ -25,6 +25,6 @@ class Weight extends AbstractSortingOption
         $this->orderBy = 'tartikel.fGewicht, tartikel.cName';
         $this->setName(\Shop::Lang()->get('sortWeight'));
         $this->setPriority($this->getConfig('artikeluebersicht')['suche_sortierprio_gewicht']);
-        $this->setValue(SEARCH_SORT_WEIGHT);
+        $this->setValue(\SEARCH_SORT_WEIGHT);
     }
 }

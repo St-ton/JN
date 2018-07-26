@@ -142,7 +142,7 @@ class Attribute extends BaseAttribute
     public function init($value): FilterInterface
     {
         $this->isInitialized = true;
-        if (is_object($value)) {
+        if (\is_object($value)) {
             $this->setValue($value->kMerkmalWert)
                  ->setAttributeID($value->kMerkmal)
                  ->setIsMultiSelect($value->nMehrfachauswahl === 1);
@@ -240,7 +240,7 @@ class Attribute extends BaseAttribute
      */
     public function attributeValueIsActive($kMerkmalWert): bool
     {
-        return array_reduce($this->productFilter->getAttributeFilter(),
+        return \array_reduce($this->productFilter->getAttributeFilter(),
             function ($a, $b) use ($kMerkmalWert) {
                 /** @var Attribute $b */
                 return $a || $b->getValue() === $kMerkmalWert;
@@ -328,46 +328,46 @@ class Attribute extends BaseAttribute
             $activeAndFilterIDs = [];
             foreach ($this->productFilter->getAttributeFilter() as $filter) {
                 $values = $filter->getValue();
-                if (is_array($values)) {
+                if (\is_array($values)) {
                     $activeValues = $values;
                 } else {
                     $activeValues[] = $values;
                 }
                 if ($filter->getType() === Type:: OR) {
-                    if (is_array($values)) {
+                    if (\is_array($values)) {
                         $activeOrFilterIDs = $values;
                     } else {
                         $activeOrFilterIDs[] = $values;
                     }
-                } elseif (is_array($values)) {
+                } elseif (\is_array($values)) {
                     $activeAndFilterIDs = $values;
                 } else {
                     $activeAndFilterIDs[] = $values;
                 }
             }
-            if (count($activeAndFilterIDs) > 0) {
+            if (\count($activeAndFilterIDs) > 0) {
                 $state->addJoin((new FilterJoin())
                     ->setComment('join active AND filters from ' . __METHOD__)
                     ->setType('JOIN')
                     ->setTable('(SELECT kArtikel
                                     FROM tartikelmerkmal
-                                        WHERE kMerkmalWert IN (' . implode(', ', $activeAndFilterIDs) . ' )
+                                        WHERE kMerkmalWert IN (' . \implode(', ', $activeAndFilterIDs) . ' )
                                     GROUP BY kArtikel
-                                    HAVING count(*) = ' . count($activeAndFilterIDs) . '
+                                    HAVING COUNT(*) = ' . \count($activeAndFilterIDs) . '
                                 ) AS ssj1')
                     ->setOn('tartikel.kArtikel = ssj1.kArtikel')
                     ->setOrigin(__CLASS__));
             }
-            if (count($activeOrFilterIDs) > 0) {
+            if (\count($activeOrFilterIDs) > 0) {
                 $state->addSelect('IF(tartikel.kArtikel IN (SELECT im1.kArtikel
                              FROM tartikelmerkmal AS im1
-                                WHERE im1.kMerkmalWert IN (' . implode(', ',
-                        array_merge($activeOrFilterIDs, ['tartikelmerkmal.kMerkmalWert'])) . ')
+                                WHERE im1.kMerkmalWert IN (' . \implode(', ',
+                        \array_merge($activeOrFilterIDs, ['tartikelmerkmal.kMerkmalWert'])) . ')
                              GROUP BY im1.kArtikel
                              HAVING COUNT(im1.kArtikel) = (SELECT COUNT(DISTINCT im2.kMerkmal)
                                                            FROM tartikelmerkmal im2
                                                            WHERE im2.kMerkmalWert IN
-                                                                 (' . implode(', ', array_merge($activeOrFilterIDs,
+                                                                 (' . \implode(', ', \array_merge($activeOrFilterIDs,
                         ['tartikelmerkmal.kMerkmalWert'])) . '))), tartikel.kArtikel, NULL) AS kArtikel');
             } else {
                 $state->addSelect('tartikel.kArtikel AS kArtikel');
@@ -387,12 +387,12 @@ class Attribute extends BaseAttribute
             && !empty($category->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER])
             && $this->productFilter->hasCategory()
         ) {
-            $catAttributeFilters = explode(
+            $catAttributeFilters = \explode(
                 ';',
                 $category->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER]
             );
-            if (count($catAttributeFilters) > 0) {
-                $state->addCondition('tmerkmal.cName IN (' . implode(',', map(
+            if (\count($catAttributeFilters) > 0) {
+                $state->addCondition('tmerkmal.cName IN (' . \implode(',', map(
                         $catAttributeFilters,
                         function ($e) {
                             return '"' . $e . '"';
@@ -466,10 +466,10 @@ class Attribute extends BaseAttribute
         $filterURLGenerator = $this->productFilter->getFilterURL();
         $i                  = 0;
         foreach ($attributeFilterCollection as $attributeFilter) {
-            $baseSrcSmall  = strlen($attributeFilter->cMMBildPfad) > 0
+            $baseSrcSmall  = \strlen($attributeFilter->cMMBildPfad) > 0
                 ? PFAD_MERKMALBILDER_KLEIN . $attributeFilter->cMMBildPfad
                 : BILD_KEIN_MERKMALBILD_VORHANDEN;
-            $baseSrcNormal = strlen($attributeFilter->cMMBildPfad) > 0
+            $baseSrcNormal = \strlen($attributeFilter->cMMBildPfad) > 0
                 ? PFAD_MERKMALBILDER_NORMAL . $attributeFilter->cMMBildPfad
                 : BILD_KEIN_MERKMALBILD_VORHANDEN;
 
@@ -500,16 +500,16 @@ class Attribute extends BaseAttribute
                                ->setData('cWert', $filterValue->cWert);
                 $attributeValue->setIsActive($currentAttributeValue === $filterValue->kMerkmalWert
                     || $this->attributeValueIsActive($filterValue->kMerkmalWert));
-                $attributeValue->setData('cBildpfadKlein', strlen($filterValue->cMMWBildPfad) > 0
+                $attributeValue->setData('cBildpfadKlein', \strlen($filterValue->cMMWBildPfad) > 0
                     ? PFAD_MERKMALWERTBILDER_KLEIN . $filterValue->cMMWBildPfad
                     : BILD_KEIN_MERKMALWERTBILD_VORHANDEN)
-                               ->setData('cBildpfadNormal', strlen($filterValue->cMMWBildPfad) > 0
+                               ->setData('cBildpfadNormal', \strlen($filterValue->cMMWBildPfad) > 0
                                    ? PFAD_MERKMALWERTBILDER_NORMAL . $filterValue->cMMWBildPfad
                                    : BILD_KEIN_MERKMALWERTBILD_VORHANDEN);
                 $attributeValue->setType($attributeFilter->nMehrfachauswahl === 1 ? Type:: OR : Type:: AND);
                 $attributeValue->setClassName($this->getClassName());
                 $attributeValue->setParam($this->getUrlParam());
-                $attributeValue->setName(htmlentities($filterValue->cWert));
+                $attributeValue->setName(\htmlentities($filterValue->cWert));
                 $attributeValue->setValue($filterValue->cWert);
                 $attributeValue->setCount((int)$filterValue->nAnzahl);
                 if ($attributeValue->isActive()) {
@@ -521,7 +521,7 @@ class Attribute extends BaseAttribute
             // backwards compatibility
             $attributeOptions = $option->getOptions() ?? [];
             $option->setData('oMerkmalWerte_arr', $attributeOptions);
-            if (($optionsCount = count($attributeOptions)) > 0) {
+            if (($optionsCount = \count($attributeOptions)) > 0) {
                 $attributeFilters[] = $option->setCount($optionsCount);
             }
             if ($attributeLimit > 0 && ++$i >= $attributeLimit) {
@@ -531,7 +531,7 @@ class Attribute extends BaseAttribute
         foreach ($attributeFilters as $af) {
             /** @var FilterOption $af */
             $options = $af->getOptions();
-            if (!is_array($options)) {
+            if (!\is_array($options)) {
                 continue;
             }
             if ($this->isNumeric($af)) {
@@ -551,7 +551,7 @@ class Attribute extends BaseAttribute
     protected function isNumeric(FilterOption $option): bool
     {
         return every($option->getOptions(), function (FilterOption $item) {
-            return is_numeric($item->getValue());
+            return \is_numeric($item->getValue());
         });
     }
 
@@ -561,7 +561,7 @@ class Attribute extends BaseAttribute
     protected function sortNumeric(FilterOption $option)
     {
         $options = $option->getOptions();
-        usort($options, function (FilterOption $a, FilterOption $b) {
+        \usort($options, function (FilterOption $a, FilterOption $b) {
             return $a->getValue() <=> $b->getValue();
         });
         $option->setOptions($options);
@@ -573,7 +573,7 @@ class Attribute extends BaseAttribute
     protected function sortByCountDesc(FilterOption $option)
     {
         $options = $option->getOptions();
-        usort($options, function (FilterOption $a, FilterOption $b) {
+        \usort($options, function (FilterOption $a, FilterOption $b) {
             return -($a->getCount() <=> $b->getCount());
         });
         $option->setOptions($options);
@@ -585,11 +585,11 @@ class Attribute extends BaseAttribute
      */
     protected function applyOptionLimit(FilterOption $option, int $attributeValueLimit)
     {
-        if ($attributeValueLimit <= 0 || $attributeValueLimit >= count($option->getOptions())) {
+        if ($attributeValueLimit <= 0 || $attributeValueLimit >= \count($option->getOptions())) {
             return;
         }
         $this->sortByCountDesc($option);
-        $option->setOptions(array_slice($option->getOptions(), 0, $attributeValueLimit));
+        $option->setOptions(\array_slice($option->getOptions(), 0, $attributeValueLimit));
     }
 
     /**
@@ -598,10 +598,10 @@ class Attribute extends BaseAttribute
      */
     protected function batchGetDataForAttributeValue(array $attributeValues): array
     {
-        if (count($attributeValues) === 0) {
+        if (\count($attributeValues) === 0) {
             return [];
         }
-        $attributeValueIDs = implode(',', array_map(function ($row) {
+        $attributeValueIDs = \implode(',', \array_map(function ($row) {
             return (int)$row->kMerkmalWert;
         }, $attributeValues));
         $queryResult       = \Shop::Container()->getDB()->query(

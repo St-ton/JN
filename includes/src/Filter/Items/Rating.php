@@ -151,7 +151,7 @@ class Rating extends AbstractFilter
                 ->setCount($stars);
         }
         $this->options = $options;
-        if (count($options) === 0) {
+        if (\count($options) === 0) {
             $this->hide();
         }
 

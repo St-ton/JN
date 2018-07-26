@@ -55,7 +55,7 @@ class DB
      */
     public function blueprintExists(Blueprint $blueprint)
     {
-        return is_object($this->shopDB->select('topcblueprint', 'kBlueprint', $blueprint->getId()));
+        return \is_object($this->shopDB->select('topcblueprint', 'kBlueprint', $blueprint->getId()));
     }
 
     /**
@@ -76,11 +76,11 @@ class DB
     {
         $blueprintDB = $this->shopDB->select('topcblueprint', 'kBlueprint', $blueprint->getId());
 
-        if (!is_object($blueprintDB)) {
+        if (!\is_object($blueprintDB)) {
             throw new \Exception("The OPC blueprint with the id '{$blueprint->getId()}' could not be found.");
         }
 
-        $content = json_decode($blueprintDB->cJson, true);
+        $content = \json_decode($blueprintDB->cJson, true);
 
         $blueprint
             ->setId($blueprintDB->kBlueprint)
@@ -102,7 +102,7 @@ class DB
         $blueprintDB = (object)[
             'kBlueprint' => $blueprint->getId(),
             'cName'      => $blueprint->getName(),
-            'cJson'      => json_encode($blueprint->getInstance()),
+            'cJson'      => \json_encode($blueprint->getInstance()),
         ];
 
         if ($this->blueprintExists($blueprint)) {
@@ -191,7 +191,7 @@ class DB
     public function getPortletCount()
     {
         return (int)$this->shopDB->query(
-            'SELECT count(kPortlet) AS count FROM topcportlet',
+            'SELECT COUNT(kPortlet) AS count FROM topcportlet',
             ReturnType::SINGLE_OBJECT
         )->count;
     }
@@ -210,7 +210,7 @@ class DB
 
         $portletDB = $this->shopDB->select('topcportlet', 'cClass', $class);
 
-        if (!is_object($portletDB)) {
+        if (!\is_object($portletDB)) {
             throw new \Exception("The OPC portlet with class name '$class' could not be found.");
         }
 

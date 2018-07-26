@@ -25,6 +25,6 @@ class EAN extends AbstractSortingOption
         $this->orderBy = 'tartikel.cBarcode, tartikel.cName';
         $this->setName(\Shop::Lang()->get('sortEan'));
         $this->setPriority($this->getConfig('artikeluebersicht')['suche_sortierprio_ean']);
-        $this->setValue(SEARCH_SORT_EAN);
+        $this->setValue(\SEARCH_SORT_EAN);
     }
 }

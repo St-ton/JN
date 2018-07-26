@@ -26,7 +26,7 @@ class SortDefault extends AbstractSortingOption
         if ($this->productFilter->getCategory()->getValue() > 0) {
             $this->orderBy = 'tartikel.nSort, tartikel.cName';
         } elseif (isset($_SESSION['Usersortierung'])
-            && $_SESSION['Usersortierung'] === SEARCH_SORT_STANDARD
+            && $_SESSION['Usersortierung'] === \SEARCH_SORT_STANDARD
             && $this->productFilter->getSearch()->getSearchCacheID() > 0
         ) {
             $this->orderBy = 'jSuche.nSort'; // was tsuchcachetreffer in 4.06, but is aliased to jSuche

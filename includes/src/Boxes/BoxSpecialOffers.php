@@ -30,7 +30,7 @@ final class BoxSpecialOffers extends AbstractBox
             $limit          = $config['boxen']['box_sonderangebote_anzahl_anzeige'];
             $cacheTags      = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
             $cacheID        = 'box_special_offer_' . $customerGroupID . '_' .
-                $limit . md5($stockFilterSQL . $parentSQL);
+                $limit . \md5($stockFilterSQL . $parentSQL);
             if (($productIDs = \Shop::Container()->getCache()->get($cacheID)) === false) {
                 $cached     = false;
                 $productIDs = \Shop::Container()->getDB()->queryPrepared(
@@ -56,19 +56,19 @@ final class BoxSpecialOffers extends AbstractBox
                     ['lmt' => $limit, 'cgid' => $customerGroupID],
                     ReturnType::ARRAY_OF_OBJECTS
                 );
-                $productIDs = array_map(function ($e) {
+                $productIDs = \array_map(function ($e) {
                     return (int)$e->kArtikel;
                 }, $productIDs);
 
                 \Shop::Container()->getCache()->set($cacheID, $productIDs, $cacheTags);
             }
-            if (count($productIDs) > 0) {
+            if (\count($productIDs) > 0) {
                 $this->setShow(true);
                 $products = new \ArtikelListe();
-                $products->getArtikelByKeys($productIDs, 0, count($productIDs));
+                $products->getArtikelByKeys($productIDs, 0, \count($productIDs));
                 $this->setProducts($products);
-                $this->setURL(\SearchSpecialHelper::buildURL(SEARCHSPECIALS_SPECIALOFFERS));
-                executeHook(HOOK_BOXEN_INC_SONDERANGEBOTE, [
+                $this->setURL(\SearchSpecialHelper::buildURL(\SEARCHSPECIALS_SPECIALOFFERS));
+                \executeHook(HOOK_BOXEN_INC_SONDERANGEBOTE, [
                     'box'        => &$this,
                     'cache_tags' => &$cacheTags,
                     'cached'     => $cached

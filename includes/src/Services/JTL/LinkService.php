@@ -146,7 +146,7 @@ final class LinkService implements LinkServiceInterface
         $link   = $this->getParentForID($id);
 
         while ($link !== null && $link->getID() > 0) {
-            array_unshift($result, $link->getID());
+            \array_unshift($result, $link->getID());
             $link = $this->getLinkByID($link->getParent());
         }
 
@@ -289,7 +289,7 @@ final class LinkService implements LinkServiceInterface
             }
         }
 
-        return $full && strpos($id, 'http') !== 0
+        return $full && \strpos($id, 'http') !== 0
             ? \Shop::getURL($secure) . '/' . $id
             : $id;
     }
@@ -394,7 +394,7 @@ final class LinkService implements LinkServiceInterface
         }
 //        if ($cISOSprache !== null) {
 //            $shopISO = \Shop::getLanguageCode();
-//            if ($shopISO !== null && strlen($shopISO) > 0) {
+//            if ($shopISO !== null && \strlen($shopISO) > 0) {
 //                $cISOSprache = $shopISO;
 //            } else {
 //                $oSprache    = gibStandardsprache();

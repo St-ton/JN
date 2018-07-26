@@ -201,10 +201,10 @@ class FilterQuery implements FilterQueryInterface
     {
         $where = $this->where;
         foreach ($this->params as $param => $value) {
-            if (is_array($value)) {
-                $value = implode(',', $value);
+            if (\is_array($value)) {
+                $value = \implode(',', $value);
             }
-            $where = str_replace('{' . $param . '}', $value, $where);
+            $where = \str_replace('{' . $param . '}', $value, $where);
         }
 
         return $this->getComment() . $where;

@@ -46,7 +46,7 @@ class Statusmail extends Job
         if ($dateStart === '0000-00-00 00:00:00') {
             return true;
         }
-        $oStartTime = date_create($dateStart);
+        $oStartTime = \date_create($dateStart);
 
         if ($oStartTime === false) {
             return false;
@@ -57,7 +57,7 @@ class Statusmail extends Job
             return false;
         }
 
-        return date_create()->format('YmdHis') >= $oEndTime->format('YmdHis');
+        return \date_create()->format('YmdHis') >= $oEndTime->format('YmdHis');
     }
 
     /**

@@ -30,7 +30,7 @@ final class BoxBestsellingProducts extends AbstractBox
             $stockFilterSQL = \Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $parentSQL      = ' AND tartikel.kVaterArtikel = 0';
             $anzahl         = (int)$this->config['boxen']['box_bestseller_anzahl_anzeige'];
-            $cacheID        = 'bx_bstsl_' . $customerGroupID . '_' . md5($parentSQL . $stockFilterSQL);
+            $cacheID        = 'bx_bstsl_' . $customerGroupID . '_' . \md5($parentSQL . $stockFilterSQL);
             if (($productIDs = \Shop::Container()->getCache()->get($cacheID)) === false) {
                 $cached   = false;
                 $minCount = ((int)$this->config['global']['global_bestseller_minanzahl'] > 0)
@@ -56,30 +56,30 @@ final class BoxBestsellingProducts extends AbstractBox
                 );
                 \Shop::Container()->getCache()->set($cacheID, $productIDs, $cacheTags);
             }
-            if (count($productIDs) > 0) {
-                $rndkeys = array_rand($productIDs, min($anzahl, count($productIDs)));
-                if (is_array($rndkeys)) {
+            if (\count($productIDs) > 0) {
+                $rndkeys = \array_rand($productIDs, \min($anzahl, \count($productIDs)));
+                if (\is_array($rndkeys)) {
                     foreach ($rndkeys as $key) {
                         if (isset($productIDs[$key]->kArtikel) && $productIDs[$key]->kArtikel > 0) {
                             $kArtikel_arr[] = (int)$productIDs[$key]->kArtikel;
                         }
                     }
-                } elseif (is_int($rndkeys)) {
+                } elseif (\is_int($rndkeys)) {
                     if (isset($productIDs[$rndkeys]->kArtikel) && $productIDs[$rndkeys]->kArtikel > 0) {
                         $kArtikel_arr[] = (int)$productIDs[$rndkeys]->kArtikel;
                     }
                 }
             }
 
-            if (count($kArtikel_arr) > 0) {
+            if (\count($kArtikel_arr) > 0) {
                 $this->setShow(true);
                 $products = new \ArtikelListe();
-                $products->getArtikelByKeys($kArtikel_arr, 0, count($kArtikel_arr));
+                $products->getArtikelByKeys($kArtikel_arr, 0, \count($kArtikel_arr));
                 $this->setProducts($products);
-                $this->setURL(\SearchSpecialHelper::buildURL(SEARCHSPECIALS_BESTSELLER));
+                $this->setURL(\SearchSpecialHelper::buildURL(\SEARCHSPECIALS_BESTSELLER));
             }
 
-            executeHook(HOOK_BOXEN_INC_BESTSELLER, [
+            \executeHook(HOOK_BOXEN_INC_BESTSELLER, [
                 'box'        => &$this,
                 'cache_tags' => &$cacheTags,
                 'cached'     => $cached

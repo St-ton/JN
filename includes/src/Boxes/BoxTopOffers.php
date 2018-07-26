@@ -30,7 +30,7 @@ final class BoxTopOffers extends AbstractBox
             $stockFilterSQL = \Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $parentSQL      = ' AND tartikel.kVaterArtikel = 0';
             $cacheID        = 'box_top_offer_' . $customerGroupID . '_' .
-                $limit . md5($stockFilterSQL . $parentSQL);
+                $limit . \md5($stockFilterSQL . $parentSQL);
             if (($productIDs = \Shop::Container()->getCache()->get($cacheID)) === false) {
                 $cached     = false;
                 $productIDs = \Shop::Container()->getDB()->queryPrepared(
@@ -47,18 +47,18 @@ final class BoxTopOffers extends AbstractBox
                     ['cid' => $customerGroupID],
                     ReturnType::ARRAY_OF_OBJECTS
                 );
-                $productIDs = array_map(function ($e) {
+                $productIDs = \array_map(function ($e) {
                     return (int)$e->kArtikel;
                 }, $productIDs);
                 \Shop::Container()->getCache()->set($cacheID, $productIDs, $cacheTags);
             }
-            if (count($productIDs) > 0) {
+            if (\count($productIDs) > 0) {
                 $this->setShow(true);
                 $products = new \ArtikelListe();
-                $products->getArtikelByKeys($productIDs, 0, count($productIDs));
+                $products->getArtikelByKeys($productIDs, 0, \count($productIDs));
                 $this->setProducts($products);
-                $this->setURL(\SearchSpecialHelper::buildURL(SEARCHSPECIALS_TOPOFFERS));
-                executeHook(HOOK_BOXEN_INC_TOPANGEBOTE, [
+                $this->setURL(\SearchSpecialHelper::buildURL(\SEARCHSPECIALS_TOPOFFERS));
+                \executeHook(HOOK_BOXEN_INC_TOPANGEBOTE, [
                     'box'        => &$this,
                     'cache_tags' => &$cacheTags,
                     'cached'     => $cached

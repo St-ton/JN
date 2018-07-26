@@ -47,14 +47,14 @@ final class BoxTagCloud extends AbstractBox
                 ['lid' => $langID],
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            if (($count = count($tags)) > 0) {
+            if (($count = \count($tags)) > 0) {
                 // Priorität berechnen
                 $prio_step = ($tags[0]->Anzahl - $tags[$count - 1]->Anzahl) / 9;
                 foreach ($tags as $tagwolke) {
                     if ($tagwolke->kTag > 0) {
                         $tagwolke->Klasse   = ($prio_step < 1) ?
-                            rand(1, 10) :
-                            (round(($tagwolke->Anzahl - $tags[$count - 1]->Anzahl) / $prio_step) + 1);
+                            \rand(1, 10) :
+                            (\round(($tagwolke->Anzahl - $tags[$count - 1]->Anzahl) / $prio_step) + 1);
                         $tagwolke->cURL     = \UrlHelper::buildURL($tagwolke, URLART_TAG);
                         $tagwolke->cURLFull = \UrlHelper::buildURL($tagwolke, URLART_TAG, true);
                         $tagCloud[]         = $tagwolke;
@@ -64,12 +64,12 @@ final class BoxTagCloud extends AbstractBox
             \Shop::Container()->getCache()->set($cacheID, $tagCloud, $cacheTags);
         }
 
-        if (count($tagCloud) > 0) {
+        if (\count($tagCloud) > 0) {
             $this->setShow(true);
-            shuffle($tagCloud);
+            \shuffle($tagCloud);
             $this->setItems($tagCloud);
             $this->setJSON(AbstractBox::getJSONString($tagCloud));
-            executeHook(HOOK_BOXEN_INC_TAGWOLKE, [
+            \executeHook(HOOK_BOXEN_INC_TAGWOLKE, [
                 'box'        => &$this,
                 'cache_tags' => &$cacheTags,
                 'cached'     => $cached

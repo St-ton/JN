@@ -26,7 +26,7 @@ final class BoxNewsCategories extends AbstractBox
             ? " LIMIT " . (int)$config['news']['news_anzahl_box']
             : '';
         $langID    = \Shop::getLanguageID();
-        $cacheID   = 'bnk_' . $langID . '_' . \Session::CustomerGroup()->getID() . '_' . md5($cSQL);
+        $cacheID   = 'bnk_' . $langID . '_' . \Session::CustomerGroup()->getID() . '_' . \md5($cSQL);
         $cached    = true;
         $cacheTags = [CACHING_GROUP_BOX, CACHING_GROUP_NEWS];
         if (($newsCategories = \Shop::Container()->getCache()->get($cacheID)) === false) {
@@ -36,7 +36,7 @@ final class BoxNewsCategories extends AbstractBox
                     tnewskategorie.cBeschreibung, tnewskategorie.cMetaTitle, tnewskategorie.cMetaDescription,
                     tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung,
                     tnewskategorie.cPreviewImage, tseo.cSeo,
-                    count(DISTINCT(tnewskategorienews.kNews)) AS nAnzahlNews
+                    COUNT(DISTINCT(tnewskategorienews.kNews)) AS nAnzahlNews
                     FROM tnewskategorie
                     LEFT JOIN tnewskategorienews 
                         ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
@@ -64,9 +64,9 @@ final class BoxNewsCategories extends AbstractBox
             $newsCategory->cURL     = \UrlHelper::buildURL($newsCategory, URLART_NEWSKATEGORIE);
             $newsCategory->cURLFull = \UrlHelper::buildURL($newsCategory, URLART_NEWSKATEGORIE, true);
         }
-        $this->setShow(count($newsCategories) > 0);
+        $this->setShow(\count($newsCategories) > 0);
         $this->setItems($newsCategories);
-        executeHook(HOOK_BOXEN_INC_NEWSKATEGORIE, [
+        \executeHook(HOOK_BOXEN_INC_NEWSKATEGORIE, [
             'box'        => &$this,
             'cache_tags' => &$cacheTags,
             'cached'     => $cached

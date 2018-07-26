@@ -26,7 +26,7 @@ final class BoxPoll extends AbstractBox
             ? ' LIMIT ' . (int)$conf
             : '';
         $langID    = \Shop::getLanguageID();
-        $cacheID   = 'bu_' . $langID . '_' . \Session::CustomerGroup()->getID() . md5($cSQL);
+        $cacheID   = 'bu_' . $langID . '_' . \Session::CustomerGroup()->getID() . \md5($cSQL);
         $cacheTags = [CACHING_GROUP_BOX, CACHING_GROUP_CORE];
         $cached    = true;
         if (($polls = \Shop::Container()->getCache()->get($cacheID)) === false) {
@@ -37,7 +37,7 @@ final class BoxPoll extends AbstractBox
                 tumfrage.nAktiv, tumfrage.dGueltigVon, tumfrage.dGueltigBis, tumfrage.dErstellt, tseo.cSeo,
                 DATE_FORMAT(tumfrage.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de,
                 DATE_FORMAT(tumfrage.dGueltigBis, '%d.%m.%Y  %H:%i') AS dGueltigBis_de, 
-                count(tumfragefrage.kUmfrageFrage) AS nAnzahlFragen
+                COUNT(tumfragefrage.kUmfrageFrage) AS nAnzahlFragen
                     FROM tumfrage
                     JOIN tumfragefrage 
                         ON tumfragefrage.kUmfrage = tumfrage.kUmfrage
@@ -64,8 +64,8 @@ final class BoxPoll extends AbstractBox
             $poll->cURLFull = \UrlHelper::buildURL($poll, URLART_UMFRAGE, true);
         }
         $this->setItems($polls);
-        $this->setShow(count($polls) > 0);
-        executeHook(HOOK_BOXEN_INC_UMFRAGE, [
+        $this->setShow(\count($polls) > 0);
+        \executeHook(HOOK_BOXEN_INC_UMFRAGE, [
             'box'        => $this,
             'cache_tags' => &$cacheTags,
             'cached'     => $cached

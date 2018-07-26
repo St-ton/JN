@@ -267,10 +267,10 @@ class Navigation
                 break;
 
             case PAGE_ARTIKEL:
-                if ($this->categoryList === null || $this->product === null || count($this->categoryList->elemente) === 0) {
+                if ($this->categoryList === null || $this->product === null || \count($this->categoryList->elemente) === 0) {
                     break;
                 }
-                $elemCount = count($this->categoryList->elemente) - 1;
+                $elemCount = \count($this->categoryList->elemente) - 1;
                 for ($i = $elemCount; $i >= 0; $i--) {
                     if (isset($this->categoryList->elemente[$i]->cKurzbezeichnung, $this->categoryList->elemente[$i]->cURL)) {
                         $ele = new NavigationEntry();
@@ -298,7 +298,7 @@ class Navigation
                 break;
 
             case PAGE_ARTIKELLISTE:
-                $elemCount = count($this->categoryList->elemente ?? []);
+                $elemCount = \count($this->categoryList->elemente ?? []);
                 for ($i = $elemCount - 1; $i >= 0; $i--) {
                     $ele = new NavigationEntry();
                     $ele->setName($this->categoryList->elemente[$i]->cKurzbezeichnung);
@@ -498,7 +498,7 @@ class Navigation
                             return $res;
                         })->reverse()->all();
 
-                    $breadCrumb = array_merge($breadCrumb, $elems);
+                    $breadCrumb = \array_merge($breadCrumb, $elems);
                     $ele->setName($this->link->getName());
                     $ele->setURL($this->link->getURL());
                     $ele->setURLFull($this->link->getURL());
@@ -509,7 +509,7 @@ class Navigation
         if ($this->customNavigationEntry !== null) {
             $breadCrumb[] = $this->customNavigationEntry;
         }
-        executeHook(HOOK_TOOLSGLOBAL_INC_SWITCH_CREATENAVIGATION, ['navigation' => &$breadCrumb]);
+        \executeHook(HOOK_TOOLSGLOBAL_INC_SWITCH_CREATENAVIGATION, ['navigation' => &$breadCrumb]);
 
         return $breadCrumb;
     }

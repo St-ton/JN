@@ -53,8 +53,8 @@ trait PortletHtml
         $pathprefix = '';
 
         if ($this->getPlugin() !== null) {
-            $pathprefix = PFAD_ROOT . PFAD_PLUGIN . $this->getPlugin()->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION
-                . $this->getPlugin()->getCurrentVersion() . '/' . PFAD_PLUGIN_ADMINMENU  . '/';
+            $pathprefix = PFAD_ROOT . \PFAD_PLUGIN . $this->getPlugin()->cVerzeichnis . '/' . \PFAD_PLUGIN_VERSION
+                . $this->getPlugin()->getCurrentVersion() . '/' . \PFAD_PLUGIN_ADMINMENU  . '/';
         }
 
         return $smarty
@@ -74,8 +74,8 @@ trait PortletHtml
         $pathprefix = '';
 
         if ($this->getPlugin() !== null) {
-            $pathprefix = PFAD_ROOT . PFAD_PLUGIN . $this->getPlugin()->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION
-                . $this->getPlugin()->getCurrentVersion() . '/' . PFAD_PLUGIN_ADMINMENU  . '/';
+            $pathprefix = PFAD_ROOT . \PFAD_PLUGIN . $this->getPlugin()->cVerzeichnis . '/' . \PFAD_PLUGIN_VERSION
+                . $this->getPlugin()->getCurrentVersion() . '/' . \PFAD_PLUGIN_ADMINMENU  . '/';
         }
 
         return $smarty
@@ -95,8 +95,8 @@ trait PortletHtml
         $pathprefix = '';
 
         if ($this->getPlugin() !== null) {
-            $pathprefix = PFAD_ROOT . PFAD_PLUGIN . $this->getPlugin()->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION
-                . $this->getPlugin()->getCurrentVersion() . '/' . PFAD_PLUGIN_ADMINMENU  . '/';
+            $pathprefix = PFAD_ROOT . \PFAD_PLUGIN . $this->getPlugin()->cVerzeichnis . '/' . \PFAD_PLUGIN_VERSION
+                . $this->getPlugin()->getCurrentVersion() . '/' . \PFAD_PLUGIN_ADMINMENU  . '/';
         }
 
         return $smarty->assign('portlet', $this)
@@ -414,6 +414,6 @@ trait PortletHtml
      */
     final protected function getDefaultIconSvgUrl(): string
     {
-        return \Shop::getURL() . '/' . PFAD_TEMPLATES . 'Evo/portlets/' . $this->getClass() . '/icon.svg';
+        return \Shop::getURL() . '/' . \PFAD_TEMPLATES . 'Evo/portlets/' . $this->getClass() . '/icon.svg';
     }
 }

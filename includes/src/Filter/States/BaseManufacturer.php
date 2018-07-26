@@ -41,7 +41,7 @@ class BaseManufacturer extends AbstractFilter
         parent::__construct($productFilter);
         $this->setIsCustom(false)
              ->setUrlParam('h')
-             ->setUrlParamSEO(SEP_HST);
+             ->setUrlParamSEO(\SEP_HST);
     }
 
     /**
@@ -76,7 +76,7 @@ class BaseManufacturer extends AbstractFilter
                 $this->cSeo[$language->kSprache] = '';
                 foreach ($oSeo_arr as $oSeo) {
                     if ($language->kSprache === (int)$oSeo->kSprache) {
-                        $sep                             = $this->cSeo[$language->kSprache] === '' ? '' : SEP_HST;
+                        $sep                             = $this->cSeo[$language->kSprache] === '' ? '' : \SEP_HST;
                         $this->cSeo[$language->kSprache] .= $sep . $oSeo->cSeo;
                     }
                 }

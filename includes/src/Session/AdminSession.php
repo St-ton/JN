@@ -52,10 +52,10 @@ class AdminSession
         self::$_instance = $this;
         \session_name('eSIdAdm');
 
-        self::$handler = ES_SESSIONS === 1
+        self::$handler = \ES_SESSIONS === 1
             ? new SessionHandlerDB(\Shop::Container()->getDB(), 'tadminsession')
             : new SessionHandlerJTL();
-        $conf           = \Shop::getSettings([CONF_GLOBAL])['global'];
+        $conf           = \Shop::getSettings([\CONF_GLOBAL])['global'];
         $cookieDefaults = \session_get_cookie_params();
         $set            = false;
         $lifetime       = $cookieDefaults['lifetime'] ?? 0;

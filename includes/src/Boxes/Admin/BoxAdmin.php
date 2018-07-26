@@ -38,41 +38,41 @@ final class BoxAdmin
      * @var array
      */
     private static $validPageTypes = [
-        PAGE_UNBEKANNT,
-        PAGE_ARTIKEL,
-        PAGE_ARTIKELLISTE,
-        PAGE_WARENKORB,
-        PAGE_MEINKONTO,
-        PAGE_KONTAKT,
-        PAGE_UMFRAGE,
-        PAGE_NEWS,
-        PAGE_NEWSLETTER,
-        PAGE_LOGIN,
-        PAGE_REGISTRIERUNG,
-        PAGE_BESTELLVORGANG,
-        PAGE_BEWERTUNG,
-        PAGE_DRUCKANSICHT,
-        PAGE_PASSWORTVERGESSEN,
-        PAGE_WARTUNG,
-        PAGE_WUNSCHLISTE,
-        PAGE_VERGLEICHSLISTE,
-        PAGE_STARTSEITE,
-        PAGE_VERSAND,
-        PAGE_AGB,
-        PAGE_DATENSCHUTZ,
-        PAGE_TAGGING,
-        PAGE_LIVESUCHE,
-        PAGE_HERSTELLER,
-        PAGE_SITEMAP,
-        PAGE_GRATISGESCHENK,
-        PAGE_WRB,
-        PAGE_PLUGIN,
-        PAGE_NEWSLETTERARCHIV,
-        PAGE_NEWSARCHIV,
-        PAGE_EIGENE,
-        PAGE_AUSWAHLASSISTENT,
-        PAGE_BESTELLABSCHLUSS,
-        PAGE_RMA
+        \PAGE_UNBEKANNT,
+        \PAGE_ARTIKEL,
+        \PAGE_ARTIKELLISTE,
+        \PAGE_WARENKORB,
+        \PAGE_MEINKONTO,
+        \PAGE_KONTAKT,
+        \PAGE_UMFRAGE,
+        \PAGE_NEWS,
+        \PAGE_NEWSLETTER,
+        \PAGE_LOGIN,
+        \PAGE_REGISTRIERUNG,
+        \PAGE_BESTELLVORGANG,
+        \PAGE_BEWERTUNG,
+        \PAGE_DRUCKANSICHT,
+        \PAGE_PASSWORTVERGESSEN,
+        \PAGE_WARTUNG,
+        \PAGE_WUNSCHLISTE,
+        \PAGE_VERGLEICHSLISTE,
+        \PAGE_STARTSEITE,
+        \PAGE_VERSAND,
+        \PAGE_AGB,
+        \PAGE_DATENSCHUTZ,
+        \PAGE_TAGGING,
+        \PAGE_LIVESUCHE,
+        \PAGE_HERSTELLER,
+        \PAGE_SITEMAP,
+        \PAGE_GRATISGESCHENK,
+        \PAGE_WRB,
+        \PAGE_PLUGIN,
+        \PAGE_NEWSLETTERARCHIV,
+        \PAGE_NEWSARCHIV,
+        \PAGE_EIGENE,
+        \PAGE_AUSWAHLASSISTENT,
+        \PAGE_BESTELLABSCHLUSS,
+        \PAGE_RMA
     ];
 
     /**
@@ -202,7 +202,8 @@ final class BoxAdmin
             : [];
         $oBox->kBox              = (int)$oBox->kBox;
         $oBox->kBoxvorlage       = (int)$oBox->kBoxvorlage;
-        $oBox->supportsRevisions = $oBox->kBoxvorlage === BOX_EIGENE_BOX_OHNE_RAHMEN || $oBox->kBoxvorlage === BOX_EIGENE_BOX_MIT_RAHMEN;
+        $oBox->supportsRevisions = $oBox->kBoxvorlage === \BOX_EIGENE_BOX_OHNE_RAHMEN
+            || $oBox->kBoxvorlage === \BOX_EIGENE_BOX_MIT_RAHMEN;
 
         return $oBox;
     }
@@ -512,7 +513,7 @@ final class BoxAdmin
         return $this->db->selectAll(
             'tboxen',
             ['kBoxvorlage', 'ePosition'],
-            [BOX_CONTAINER, $position],
+            [\BOX_CONTAINER, $position],
             'kBox',
             'kBox ASC'
         );

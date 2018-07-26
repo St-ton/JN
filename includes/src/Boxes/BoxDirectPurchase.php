@@ -20,6 +20,6 @@ final class BoxDirectPurchase extends AbstractBox
     {
         parent::__construct($config);
         $this->setShow(true);
-        \executeHook(HOOK_BOXEN_INC_SCHNELLKAUF);
+        \executeHook(\HOOK_BOXEN_INC_SCHNELLKAUF);
     }
 }

@@ -26,7 +26,7 @@ final class BoxBestsellingProducts extends AbstractBox
         if ($customerGroupID && \Session::CustomerGroup()->mayViewCategories()) {
             $kArtikel_arr   = [];
             $cached         = true;
-            $cacheTags      = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
+            $cacheTags      = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
             $stockFilterSQL = \Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $parentSQL      = ' AND tartikel.kVaterArtikel = 0';
             $anzahl         = (int)$this->config['boxen']['box_bestseller_anzahl_anzeige'];
@@ -79,7 +79,7 @@ final class BoxBestsellingProducts extends AbstractBox
                 $this->setURL(\SearchSpecialHelper::buildURL(\SEARCHSPECIALS_BESTSELLER));
             }
 
-            \executeHook(HOOK_BOXEN_INC_BESTSELLER, [
+            \executeHook(\HOOK_BOXEN_INC_BESTSELLER, [
                 'box'        => &$this,
                 'cache_tags' => &$cacheTags,
                 'cached'     => $cached

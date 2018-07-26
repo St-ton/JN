@@ -27,7 +27,7 @@ final class BoxPoll extends AbstractBox
             : '';
         $langID    = \Shop::getLanguageID();
         $cacheID   = 'bu_' . $langID . '_' . \Session::CustomerGroup()->getID() . \md5($cSQL);
-        $cacheTags = [CACHING_GROUP_BOX, CACHING_GROUP_CORE];
+        $cacheTags = [\CACHING_GROUP_BOX, \CACHING_GROUP_CORE];
         $cached    = true;
         if (($polls = \Shop::Container()->getCache()->get($cacheID)) === false) {
             $cached = false;
@@ -60,12 +60,12 @@ final class BoxPoll extends AbstractBox
             \Shop::Container()->getCache()->set($cacheID, $polls, $cacheTags);
         }
         foreach ($polls as $poll) {
-            $poll->cURL     = \UrlHelper::buildURL($poll, URLART_UMFRAGE);
-            $poll->cURLFull = \UrlHelper::buildURL($poll, URLART_UMFRAGE, true);
+            $poll->cURL     = \UrlHelper::buildURL($poll, \URLART_UMFRAGE);
+            $poll->cURLFull = \UrlHelper::buildURL($poll, \URLART_UMFRAGE, true);
         }
         $this->setItems($polls);
         $this->setShow(\count($polls) > 0);
-        \executeHook(HOOK_BOXEN_INC_UMFRAGE, [
+        \executeHook(\HOOK_BOXEN_INC_UMFRAGE, [
             'box'        => $this,
             'cache_tags' => &$cacheTags,
             'cached'     => $cached

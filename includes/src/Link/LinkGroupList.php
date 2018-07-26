@@ -97,7 +97,7 @@ final class LinkGroupList implements LinkGroupListInterface
             $this->linkGroups->push($this->loadStaticRoutes());
             $this->linkGroups->push($this->loadUnassignedGroups());
 
-            $this->cache->set('linkgroups', $this->linkGroups, [CACHING_GROUP_CORE]);
+            $this->cache->set('linkgroups', $this->linkGroups, [\CACHING_GROUP_CORE]);
         }
         $this->applyVisibilityFilter(\Session::CustomerGroup()->getID(), \Session::Customer()->getID());
 
@@ -148,17 +148,17 @@ final class LinkGroupList implements LinkGroupListInterface
         foreach ($grouped as $linkID => $linkData) {
             $link = new Link($this->db);
             $link->map($linkData);
-            if ($link->getLinkType() === LINKTYP_DATENSCHUTZ) {
+            if ($link->getLinkType() === \LINKTYP_DATENSCHUTZ) {
                 $this->linkGroups->Link_Datenschutz = [];
                 foreach ($link->getURLs() as $langID => $url) {
                     $this->linkGroups->Link_Datenschutz[$link->getLanguageCode($langID)] = $url;
                 }
-            } elseif ($link->getLinkType() === LINKTYP_AGB) {
+            } elseif ($link->getLinkType() === \LINKTYP_AGB) {
                 $this->linkGroups->Link_AGB = [];
                 foreach ($link->getURLs() as $langID => $url) {
                     $this->linkGroups->Link_AGB[$link->getLanguageCode($langID)] = $url;
                 }
-            } elseif ($link->getLinkType() === LINKTYP_VERSAND) {
+            } elseif ($link->getLinkType() === \LINKTYP_VERSAND) {
                 $this->linkGroups->Link_Versandseite = [];
                 foreach ($link->getURLs() as $langID => $url) {
                     $this->linkGroups->Link_Versandseite[$link->getLanguageCode($langID)] = $url;
@@ -249,17 +249,17 @@ final class LinkGroupList implements LinkGroupListInterface
         foreach ($grouped as $linkID => $linkData) {
             $link = new Link($this->db);
             $link->map($linkData);
-            if ($link->getLinkType() === LINKTYP_DATENSCHUTZ) {
+            if ($link->getLinkType() === \LINKTYP_DATENSCHUTZ) {
                 $this->linkGroups->Link_Datenschutz = [];
                 foreach ($link->getURLs() as $langID => $url) {
                     $this->linkGroups->Link_Datenschutz[$link->getLanguageCode($langID)] = $url;
                 }
-            } elseif ($link->getLinkType() === LINKTYP_AGB) {
+            } elseif ($link->getLinkType() === \LINKTYP_AGB) {
                 $this->linkGroups->Link_AGB = [];
                 foreach ($link->getURLs() as $langID => $url) {
                     $this->linkGroups->Link_AGB[$link->getLanguageCode($langID)] = $url;
                 }
-            } elseif ($link->getLinkType() === LINKTYP_VERSAND) {
+            } elseif ($link->getLinkType() === \LINKTYP_VERSAND) {
                 $this->linkGroups->Link_Versandseite = [];
                 foreach ($link->getURLs() as $langID => $url) {
                     $this->linkGroups->Link_Versandseite[$link->getLanguageCode($langID)] = $url;

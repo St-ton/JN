@@ -24,7 +24,7 @@ final class BoxTagCloud extends AbstractBox
         parent::addMapping('Tagbegriffe', 'Items');
         $limit     = (int)$config['boxen']['boxen_tagging_count'];
         $limitSQL  = ($limit > 0) ? ' LIMIT ' . $limit : '';
-        $cacheTags = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
+        $cacheTags = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
         $cached    = true;
         $langID    = \Shop::getLanguageID();
         $cacheID   = 'bx_tgcld_' . $langID . '_' . $limit;
@@ -55,8 +55,8 @@ final class BoxTagCloud extends AbstractBox
                         $tagwolke->Klasse   = ($prio_step < 1) ?
                             \rand(1, 10) :
                             (\round(($tagwolke->Anzahl - $tags[$count - 1]->Anzahl) / $prio_step) + 1);
-                        $tagwolke->cURL     = \UrlHelper::buildURL($tagwolke, URLART_TAG);
-                        $tagwolke->cURLFull = \UrlHelper::buildURL($tagwolke, URLART_TAG, true);
+                        $tagwolke->cURL     = \UrlHelper::buildURL($tagwolke, \URLART_TAG);
+                        $tagwolke->cURLFull = \UrlHelper::buildURL($tagwolke, \URLART_TAG, true);
                         $tagCloud[]         = $tagwolke;
                     }
                 }
@@ -69,7 +69,7 @@ final class BoxTagCloud extends AbstractBox
             \shuffle($tagCloud);
             $this->setItems($tagCloud);
             $this->setJSON(AbstractBox::getJSONString($tagCloud));
-            \executeHook(HOOK_BOXEN_INC_TAGWOLKE, [
+            \executeHook(\HOOK_BOXEN_INC_TAGWOLKE, [
                 'box'        => &$this,
                 'cache_tags' => &$cacheTags,
                 'cached'     => $cached

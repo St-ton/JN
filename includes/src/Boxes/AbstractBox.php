@@ -47,41 +47,41 @@ abstract class AbstractBox implements BoxInterface
      * @var array
      */
     private static $validPageTypes = [
-        PAGE_UNBEKANNT,
-        PAGE_ARTIKEL,
-        PAGE_ARTIKELLISTE,
-        PAGE_WARENKORB,
-        PAGE_MEINKONTO,
-        PAGE_KONTAKT,
-        PAGE_UMFRAGE,
-        PAGE_NEWS,
-        PAGE_NEWSLETTER,
-        PAGE_LOGIN,
-        PAGE_REGISTRIERUNG,
-        PAGE_BESTELLVORGANG,
-        PAGE_BEWERTUNG,
-        PAGE_DRUCKANSICHT,
-        PAGE_PASSWORTVERGESSEN,
-        PAGE_WARTUNG,
-        PAGE_WUNSCHLISTE,
-        PAGE_VERGLEICHSLISTE,
-        PAGE_STARTSEITE,
-        PAGE_VERSAND,
-        PAGE_AGB,
-        PAGE_DATENSCHUTZ,
-        PAGE_TAGGING,
-        PAGE_LIVESUCHE,
-        PAGE_HERSTELLER,
-        PAGE_SITEMAP,
-        PAGE_GRATISGESCHENK,
-        PAGE_WRB,
-        PAGE_PLUGIN,
-        PAGE_NEWSLETTERARCHIV,
-        PAGE_NEWSARCHIV,
-        PAGE_EIGENE,
-        PAGE_AUSWAHLASSISTENT,
-        PAGE_BESTELLABSCHLUSS,
-        PAGE_RMA
+        \PAGE_UNBEKANNT,
+        \PAGE_ARTIKEL,
+        \PAGE_ARTIKELLISTE,
+        \PAGE_WARENKORB,
+        \PAGE_MEINKONTO,
+        \PAGE_KONTAKT,
+        \PAGE_UMFRAGE,
+        \PAGE_NEWS,
+        \PAGE_NEWSLETTER,
+        \PAGE_LOGIN,
+        \PAGE_REGISTRIERUNG,
+        \PAGE_BESTELLVORGANG,
+        \PAGE_BEWERTUNG,
+        \PAGE_DRUCKANSICHT,
+        \PAGE_PASSWORTVERGESSEN,
+        \PAGE_WARTUNG,
+        \PAGE_WUNSCHLISTE,
+        \PAGE_VERGLEICHSLISTE,
+        \PAGE_STARTSEITE,
+        \PAGE_VERSAND,
+        \PAGE_AGB,
+        \PAGE_DATENSCHUTZ,
+        \PAGE_TAGGING,
+        \PAGE_LIVESUCHE,
+        \PAGE_HERSTELLER,
+        \PAGE_SITEMAP,
+        \PAGE_GRATISGESCHENK,
+        \PAGE_WRB,
+        \PAGE_PLUGIN,
+        \PAGE_NEWSLETTERARCHIV,
+        \PAGE_NEWSARCHIV,
+        \PAGE_EIGENE,
+        \PAGE_AUSWAHLASSISTENT,
+        \PAGE_BESTELLABSCHLUSS,
+        \PAGE_RMA
     ];
 
     /**
@@ -831,7 +831,7 @@ abstract class AbstractBox implements BoxInterface
      */
     public function getContainerCheckCompat(): int
     {
-        return $this->getBaseType() === BOX_CONTAINER ? 1 : 0;
+        return $this->getBaseType() === \BOX_CONTAINER ? 1 : 0;
     }
 
     /**

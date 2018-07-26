@@ -93,8 +93,8 @@ class Queue
     public function run()
     {
         foreach ($this->queueEntries as $i => $queueEntry) {
-            if ($i >= JOBQUEUE_LIMIT_JOBS) {
-                $this->logger->debug('Job limit reached after ' . JOBQUEUE_LIMIT_JOBS . ' jobs.');
+            if ($i >= \JOBQUEUE_LIMIT_JOBS) {
+                $this->logger->debug('Job limit reached after ' . \JOBQUEUE_LIMIT_JOBS . ' jobs.');
                 break;
             }
             $job                   = $this->factory->create($queueEntry);
@@ -121,7 +121,7 @@ class Queue
                 $update->nLastArticleID   = $queueEntry->nLastArticleID;
                 $this->db->update('tjobqueue', 'kCron', $job->getCronID(), $update);
             }
-            \executeHook(HOOK_JOBQUEUE_INC_BEHIND_SWITCH, [
+            \executeHook(\HOOK_JOBQUEUE_INC_BEHIND_SWITCH, [
                 'oJobQueue' => $queueEntry,
                 'job'       => $job
             ]);

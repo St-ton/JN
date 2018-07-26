@@ -387,22 +387,22 @@ class PortletInstance implements \JsonSerializable
         $name            = \end($name);
 
         foreach (static::$dirSizes as $size => $width) {
-            $sizedImgPath = PFAD_ROOT . PFAD_MEDIAFILES . 'Bilder/' . $size . $name;
+            $sizedImgPath = PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $size . $name;
 
             if (!\file_exists($sizedImgPath) === true) {
-                $image     = new \Imanee\Imanee(PFAD_ROOT . PFAD_MEDIAFILES . 'Bilder/' . $name);
+                $image     = new \Imanee\Imanee(PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $name);
                 $imageSize = $image->getSize();
                 $factor    = $width / $imageSize['width'];
 
                 $image
                     ->resize((int)$width, (int)($imageSize['height'] * $factor))
                     ->write(
-                        PFAD_ROOT . PFAD_MEDIAFILES . 'Bilder/' . $size . $name,
+                        PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $size . $name,
                         $settings['bilder']['bilder_jpg_quali']
                     );
             }
 
-            $srcset .= PFAD_MEDIAFILES . 'Bilder/' . $size . $name . ' ' . $width . 'w,';
+            $srcset .= \PFAD_MEDIAFILES . 'Bilder/' . $size . $name . ' ' . $width . 'w,';
         }
 
         $srcset = \substr($srcset, 0, -1); // remove trailing comma
@@ -446,7 +446,7 @@ class PortletInstance implements \JsonSerializable
         }
 
         $srcsizes .= '100vw';
-        $src      = PFAD_MEDIAFILES . 'Bilder/.md/' . $name;
+        $src      = \PFAD_MEDIAFILES . 'Bilder/.md/' . $name;
 
         return [
             'srcset'   => $srcset,

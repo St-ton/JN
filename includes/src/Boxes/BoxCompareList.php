@@ -78,7 +78,7 @@ final class BoxCompareList extends AbstractBox
             $this->setItemCount((int)$this->config['vergleichsliste']['vergleichsliste_anzahl']);
             $this->setProducts($products);
 
-            \executeHook(HOOK_BOXEN_INC_VERGLEICHSLISTE, ['box' => $this]);
+            \executeHook(\HOOK_BOXEN_INC_VERGLEICHSLISTE, ['box' => $this]);
         } else {
             $this->setShow(false);
         }

@@ -52,8 +52,8 @@ final class BoxTrustedShopsSeal extends AbstractBox
                 $this->setShow(true);
                 $this->setLogoURL($ts->cLogoURL);
                 $this->setLogoSealURL($ts->cLogoSiegelBoxURL[$langISO]);
-                $this->setImageURL($shopURL . PFAD_GFX_TRUSTEDSHOPS . 'trustedshops_m.png');
-                $this->setBackGroundImageURL($shopURL . PFAD_GFX_TRUSTEDSHOPS . 'bg_yellow.jpg');
+                $this->setImageURL($shopURL . \PFAD_GFX_TRUSTEDSHOPS . 'trustedshops_m.png');
+                $this->setBackGroundImageURL($shopURL . \PFAD_GFX_TRUSTEDSHOPS . 'bg_yellow.jpg');
             }
         }
     }

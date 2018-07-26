@@ -9,8 +9,7 @@ namespace Services\JTL\Validation;
 
 use Eloquent\Pathogen\Exception\InvalidPathStateException;
 use Eloquent\Pathogen\Path;
-use Services\JTL\Validation\Rules as Rules;
-use Services\JTL\Validation\Filter as Filter;
+use Services\JTL\Validation\Rules;
 
 /**
  * Class RuleSet

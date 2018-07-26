@@ -30,7 +30,7 @@ class Category extends BaseCategory
         parent::__construct($productFilter);
         $this->setIsCustom(false)
              ->setUrlParam('kf')
-             ->setUrlParamSEO(SEP_KAT)
+             ->setUrlParamSEO(\SEP_KAT)
              ->setVisibility($this->getConfig('navigationsfilter')['allgemein_kategoriefilter_benutzen'])
              ->setFrontendName(\Shop::Lang()->get('allCategories'));
     }

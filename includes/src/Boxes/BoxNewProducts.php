@@ -24,7 +24,7 @@ final class BoxNewProducts extends AbstractBox
         $this->setShow(false);
         $customerGroupID = \Session::CustomerGroup()->getID();
         if ($customerGroupID && \Session::CustomerGroup()->mayViewCategories()) {
-            $cacheTags      = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
+            $cacheTags      = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
             $cached         = true;
             $stockFilterSQL = \Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $parentSQL      = ' AND tartikel.kVaterArtikel = 0';
@@ -63,7 +63,7 @@ final class BoxNewProducts extends AbstractBox
                 $products->getArtikelByKeys($productIDs, 0, \count($productIDs));
                 $this->setProducts($products);
                 $this->setURL(\SearchSpecialHelper::buildURL(\SEARCHSPECIALS_NEWPRODUCTS));
-                \executeHook(HOOK_BOXEN_INC_NEUIMSORTIMENT, [
+                \executeHook(\HOOK_BOXEN_INC_NEUIMSORTIMENT, [
                     'box'        => &$this,
                     'cache_tags' => &$cacheTags,
                     'cached'     => $cached

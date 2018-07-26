@@ -263,7 +263,7 @@ class Search extends AbstractFilter
                 ReturnType::AFFECTED_ROWS
             );
             if ($hits > 0) {
-                require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
+                require_once PFAD_ROOT . \PFAD_DBES . 'seo.php';
                 $searchQuery = new \stdClass();
                 $searchQuery->kSprache        = $languageID;
                 $searchQuery->cSuche          = $Suchausdruck;

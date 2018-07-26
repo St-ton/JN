@@ -28,7 +28,7 @@ final class BoxSpecialOffers extends AbstractBox
             $stockFilterSQL = \Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $parentSQL      = ' AND tartikel.kVaterArtikel = 0';
             $limit          = $config['boxen']['box_sonderangebote_anzahl_anzeige'];
-            $cacheTags      = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
+            $cacheTags      = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
             $cacheID        = 'box_special_offer_' . $customerGroupID . '_' .
                 $limit . \md5($stockFilterSQL . $parentSQL);
             if (($productIDs = \Shop::Container()->getCache()->get($cacheID)) === false) {
@@ -68,7 +68,7 @@ final class BoxSpecialOffers extends AbstractBox
                 $products->getArtikelByKeys($productIDs, 0, \count($productIDs));
                 $this->setProducts($products);
                 $this->setURL(\SearchSpecialHelper::buildURL(\SEARCHSPECIALS_SPECIALOFFERS));
-                \executeHook(HOOK_BOXEN_INC_SONDERANGEBOTE, [
+                \executeHook(\HOOK_BOXEN_INC_SONDERANGEBOTE, [
                     'box'        => &$this,
                     'cache_tags' => &$cacheTags,
                     'cached'     => $cached

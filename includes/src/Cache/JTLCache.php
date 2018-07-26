@@ -9,7 +9,7 @@ namespace Cache;
 use Cache\Methods\cache_null;
 
 \define('CACHING_ROOT_DIR', __DIR__ . 'JTLCache.php/');
-\define('CACHING_METHODS_DIR', CACHING_ROOT_DIR . 'CachingMethods/');
+\define('CACHING_METHODS_DIR', \CACHING_ROOT_DIR . 'CachingMethods/');
 \define('CACHING_GROUP_ARTICLE', 'art');
 \define('CACHING_GROUP_CATEGORY', 'cat');
 \define('CACHING_GROUP_LANGUAGE', 'lang');
@@ -130,79 +130,79 @@ final class JTLCache implements JTLCacheInterface
             [
                 'name'        => 'CACHING_GROUP_ARTICLE',
                 'nicename'    => 'cg_article_nicename',
-                'value'       => CACHING_GROUP_ARTICLE,
+                'value'       => \CACHING_GROUP_ARTICLE,
                 'description' => 'cg_article_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_CATEGORY',
                 'nicename'    => 'cg_category_nicename',
-                'value'       => CACHING_GROUP_CATEGORY,
+                'value'       => \CACHING_GROUP_CATEGORY,
                 'description' => 'cg_category_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_LANGUAGE',
                 'nicename'    => 'cg_language_nicename',
-                'value'       => CACHING_GROUP_LANGUAGE,
+                'value'       => \CACHING_GROUP_LANGUAGE,
                 'description' => 'cg_language_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_TEMPLATE',
                 'nicename'    => 'cg_template_nicename',
-                'value'       => CACHING_GROUP_TEMPLATE,
+                'value'       => \CACHING_GROUP_TEMPLATE,
                 'description' => 'cg_template_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_OPTION',
                 'nicename'    => 'cg_option_nicename',
-                'value'       => CACHING_GROUP_OPTION,
+                'value'       => \CACHING_GROUP_OPTION,
                 'description' => 'cg_option_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_PLUGIN',
                 'nicename'    => 'cg_plugin_nicename',
-                'value'       => CACHING_GROUP_PLUGIN,
+                'value'       => \CACHING_GROUP_PLUGIN,
                 'description' => 'cg_plugin_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_CORE',
                 'nicename'    => 'cg_core_nicename',
-                'value'       => CACHING_GROUP_CORE,
+                'value'       => \CACHING_GROUP_CORE,
                 'description' => 'cg_core_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_OBJECT',
                 'nicename'    => 'cg_object_nicename',
-                'value'       => CACHING_GROUP_OBJECT,
+                'value'       => \CACHING_GROUP_OBJECT,
                 'description' => 'cg_object_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_BOX',
                 'nicename'    => 'cg_box_nicename',
-                'value'       => CACHING_GROUP_BOX,
+                'value'       => \CACHING_GROUP_BOX,
                 'description' => 'cg_box_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_NEWS',
                 'nicename'    => 'cg_news_nicename',
-                'value'       => CACHING_GROUP_NEWS,
+                'value'       => \CACHING_GROUP_NEWS,
                 'description' => 'cg_news_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_ATTRIBUTE',
                 'nicename'    => 'cg_attribute_nicename',
-                'value'       => CACHING_GROUP_ATTRIBUTE,
+                'value'       => \CACHING_GROUP_ATTRIBUTE,
                 'description' => 'cg_attribute_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_MANUFACTURER',
                 'nicename'    => 'cg_manufacturer_nicename',
-                'value'       => CACHING_GROUP_MANUFACTURER,
+                'value'       => \CACHING_GROUP_MANUFACTURER,
                 'description' => 'cg_manufacturer_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_FILTER',
                 'nicename'    => 'cg_filter_nicename',
-                'value'       => CACHING_GROUP_FILTER,
+                'value'       => \CACHING_GROUP_FILTER,
                 'description' => 'cg_filter_description'
             ],
         ];
@@ -254,7 +254,7 @@ final class JTLCache implements JTLCacheInterface
             // enable or disable collecting of debug data
             'debug_method'     => 'echo',
             // 'ssd'/'jtld' for SmarterSmartyDebug/JTLDebug, 'echo' for direct echo
-            'cache_dir'        => OBJECT_CACHE_DIR,
+            'cache_dir'        => \OBJECT_CACHE_DIR,
             //file cache directory
             'file_extension'   => '.fc',
             // file extension for file cache
@@ -328,7 +328,7 @@ final class JTLCache implements JTLCacheInterface
         if (!\class_exists('Shop')) {
             return [];
         }
-        $cacheConfig = \Shop::Container()->getDB()->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING);
+        $cacheConfig = \Shop::Container()->getDB()->selectAll('teinstellungen', 'kEinstellungenSektion', \CONF_CACHING);
         $cacheInit   = [];
         if (!empty($cacheConfig)) {
             foreach ($cacheConfig as $_conf) {
@@ -616,7 +616,7 @@ final class JTLCache implements JTLCacheInterface
             }
         }
         if ($hookInfo !== null && \defined('HOOK_CACHE_FLUSH_AFTER') && \function_exists('executeHook')) {
-            \executeHook(HOOK_CACHE_FLUSH_AFTER, $hookInfo);
+            \executeHook(\HOOK_CACHE_FLUSH_AFTER, $hookInfo);
         }
         $this->resultCode = \is_int($res) ? self::RES_FAIL : self::RES_SUCCESS;
 
@@ -630,7 +630,7 @@ final class JTLCache implements JTLCacheInterface
     {
         $deleted = $this->_method->flushTags($tags);
         if ($hookInfo !== null && \defined('HOOK_CACHE_FLUSH_AFTER') && \function_exists('executeHook')) {
-            \executeHook(HOOK_CACHE_FLUSH_AFTER, $hookInfo);
+            \executeHook(\HOOK_CACHE_FLUSH_AFTER, $hookInfo);
         }
 
         return $deleted;

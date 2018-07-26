@@ -122,8 +122,8 @@ class Sitemap
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($newsCategories as $newsCategory) {
-                $newsCategory->cURL     = \UrlHelper::buildURL($newsCategory, URLART_NEWSKATEGORIE);
-                $newsCategory->cURLFull = \UrlHelper::buildURL($newsCategory, URLART_NEWSKATEGORIE, true);
+                $newsCategory->cURL     = \UrlHelper::buildURL($newsCategory, \URLART_NEWSKATEGORIE);
+                $newsCategory->cURLFull = \UrlHelper::buildURL($newsCategory, \URLART_NEWSKATEGORIE, true);
 
                 $entries = $this->db->queryPrepared(
                     "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, 
@@ -153,12 +153,12 @@ class Sitemap
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 foreach ($entries as $entry) {
-                    $entry->cURL     = \UrlHelper::buildURL($entry, URLART_NEWS);
-                    $entry->cURLFull = \UrlHelper::buildURL($entry, URLART_NEWS, true);
+                    $entry->cURL     = \UrlHelper::buildURL($entry, \URLART_NEWS);
+                    $entry->cURLFull = \UrlHelper::buildURL($entry, \URLART_NEWS, true);
                 }
                 $newsCategory->oNews_arr = $entries;
             }
-            $this->cache->set($cacheID, $newsCategories, [CACHING_GROUP_NEWS]);
+            $this->cache->set($cacheID, $newsCategories, [\CACHING_GROUP_NEWS]);
         }
 
         return $newsCategories;
@@ -227,14 +227,14 @@ class Sitemap
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 foreach ($entries as $oNews) {
-                    $oNews->cURL     = \UrlHelper::buildURL($oNews, URLART_NEWS);
-                    $oNews->cURLFull = \UrlHelper::buildURL($oNews, URLART_NEWS, true);
+                    $oNews->cURL     = \UrlHelper::buildURL($oNews, \URLART_NEWS);
+                    $oNews->cURLFull = \UrlHelper::buildURL($oNews, \URLART_NEWS, true);
                 }
                 $news->oNews_arr = $entries;
-                $news->cURL      = \UrlHelper::buildURL($news, URLART_NEWSMONAT);
-                $news->cURLFull  = \UrlHelper::buildURL($news, URLART_NEWSMONAT, true);
+                $news->cURL      = \UrlHelper::buildURL($news, \URLART_NEWSMONAT);
+                $news->cURLFull  = \UrlHelper::buildURL($news, \URLART_NEWSMONAT, true);
             }
-            $this->cache->set($cacheID, $overview, [CACHING_GROUP_NEWS]);
+            $this->cache->set($cacheID, $overview, [\CACHING_GROUP_NEWS]);
         }
 
         return $overview;

@@ -54,7 +54,7 @@ class Factory
     {
         $this->productFilter = $productFilter;
 
-        \executeHook(HOOK_PRODUCTFILTER_REGISTER_SEARCH_OPTION, [
+        \executeHook(\HOOK_PRODUCTFILTER_REGISTER_SEARCH_OPTION, [
             'factory'       => $this,
             'productFilter' => $this->productFilter
         ]);

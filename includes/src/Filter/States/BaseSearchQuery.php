@@ -416,7 +416,7 @@ class BaseSearchQuery extends AbstractFilter
      */
     public function editSearchCache($kSpracheExt = 0): int
     {
-        require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
+        require_once PFAD_ROOT . \PFAD_INCLUDES . 'suche_inc.php';
         // Mapping beachten
         $cSuche = $this->getQueryMapping($this->getName(), $kSpracheExt);
         $this->setName($cSuche);
@@ -456,7 +456,7 @@ class BaseSearchQuery extends AbstractFilter
             ? $min
             : 3;
         if (\strlen($cSuche) < $nMindestzeichen) {
-            require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
+            require_once PFAD_ROOT . \PFAD_INCLUDES . 'sprachfunktionen.php';
             $this->error = \lang_suche_mindestanzahl($cSuche, $nMindestzeichen);
 
             return 0;
@@ -1031,7 +1031,7 @@ class BaseSearchQuery extends AbstractFilter
     public static function getSearchRows(array $config = null): array
     {
         $searchRows = [];
-        $config     = $config ?? \Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
+        $config     = $config ?? \Shop::getSettings([\CONF_ARTIKELUEBERSICHT]);
         for ($i = 0; $i < 10; ++$i) {
             $searchRows[] = self::getPrioritizedRows($searchRows, $config);
         }
@@ -1052,7 +1052,7 @@ class BaseSearchQuery extends AbstractFilter
         $max     = 0;
         $current = '';
         $prefix  = 'tartikel.';
-        $conf    = $conf['artikeluebersicht'] ?? \Shop::getSettings([CONF_ARTIKELUEBERSICHT])['artikeluebersicht'];
+        $conf    = $conf['artikeluebersicht'] ?? \Shop::getSettings([\CONF_ARTIKELUEBERSICHT])['artikeluebersicht'];
         if (!\Sprache::isDefaultLanguageActive()) {
             $prefix = 'tartikelsprache.';
         }

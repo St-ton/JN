@@ -24,7 +24,7 @@ final class BoxTopOffers extends AbstractBox
         $this->setShow(false);
         $customerGroupID = \Session::CustomerGroup()->getID();
         if ($customerGroupID > 0 && \Session::CustomerGroup()->mayViewCategories()) {
-            $cacheTags      = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
+            $cacheTags      = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
             $cached         = true;
             $limit          = $config['boxen']['box_topangebot_anzahl_anzeige'];
             $stockFilterSQL = \Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
@@ -58,7 +58,7 @@ final class BoxTopOffers extends AbstractBox
                 $products->getArtikelByKeys($productIDs, 0, \count($productIDs));
                 $this->setProducts($products);
                 $this->setURL(\SearchSpecialHelper::buildURL(\SEARCHSPECIALS_TOPOFFERS));
-                \executeHook(HOOK_BOXEN_INC_TOPANGEBOTE, [
+                \executeHook(\HOOK_BOXEN_INC_TOPANGEBOTE, [
                     'box'        => &$this,
                     'cache_tags' => &$cacheTags,
                     'cached'     => $cached

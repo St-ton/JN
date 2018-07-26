@@ -68,7 +68,7 @@ class Attribute extends BaseAttribute
         parent::__construct($productFilter);
         $this->setIsCustom(false)
              ->setUrlParam('mf')
-             ->setUrlParamSEO(SEP_MERKMAL)
+             ->setUrlParamSEO(\SEP_MERKMAL)
              ->setVisibility($this->getConfig('navigationsfilter')['merkmalfilter_verwenden']);
     }
 
@@ -384,12 +384,12 @@ class Attribute extends BaseAttribute
         $state->addSelect('tmerkmal.nMehrfachauswahl');
         $state->addSelect('tmerkmal.cBildPfad AS cMMBildPfad');
         if ($category !== null
-            && !empty($category->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER])
+            && !empty($category->categoryFunctionAttributes[\KAT_ATTRIBUT_MERKMALFILTER])
             && $this->productFilter->hasCategory()
         ) {
             $catAttributeFilters = \explode(
                 ';',
-                $category->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER]
+                $category->categoryFunctionAttributes[\KAT_ATTRIBUT_MERKMALFILTER]
             );
             if (\count($catAttributeFilters) > 0) {
                 $state->addCondition('tmerkmal.cName IN (' . \implode(',', map(
@@ -467,11 +467,11 @@ class Attribute extends BaseAttribute
         $i                  = 0;
         foreach ($attributeFilterCollection as $attributeFilter) {
             $baseSrcSmall  = \strlen($attributeFilter->cMMBildPfad) > 0
-                ? PFAD_MERKMALBILDER_KLEIN . $attributeFilter->cMMBildPfad
-                : BILD_KEIN_MERKMALBILD_VORHANDEN;
+                ? \PFAD_MERKMALBILDER_KLEIN . $attributeFilter->cMMBildPfad
+                : \BILD_KEIN_MERKMALBILD_VORHANDEN;
             $baseSrcNormal = \strlen($attributeFilter->cMMBildPfad) > 0
-                ? PFAD_MERKMALBILDER_NORMAL . $attributeFilter->cMMBildPfad
-                : BILD_KEIN_MERKMALBILD_VORHANDEN;
+                ? \PFAD_MERKMALBILDER_NORMAL . $attributeFilter->cMMBildPfad
+                : \BILD_KEIN_MERKMALBILD_VORHANDEN;
 
             $option = new FilterOption();
             $option->setURL('');
@@ -501,11 +501,11 @@ class Attribute extends BaseAttribute
                 $attributeValue->setIsActive($currentAttributeValue === $filterValue->kMerkmalWert
                     || $this->attributeValueIsActive($filterValue->kMerkmalWert));
                 $attributeValue->setData('cBildpfadKlein', \strlen($filterValue->cMMWBildPfad) > 0
-                    ? PFAD_MERKMALWERTBILDER_KLEIN . $filterValue->cMMWBildPfad
-                    : BILD_KEIN_MERKMALWERTBILD_VORHANDEN)
+                    ? \PFAD_MERKMALWERTBILDER_KLEIN . $filterValue->cMMWBildPfad
+                    : \BILD_KEIN_MERKMALWERTBILD_VORHANDEN)
                                ->setData('cBildpfadNormal', \strlen($filterValue->cMMWBildPfad) > 0
-                                   ? PFAD_MERKMALWERTBILDER_NORMAL . $filterValue->cMMWBildPfad
-                                   : BILD_KEIN_MERKMALWERTBILD_VORHANDEN);
+                                   ? \PFAD_MERKMALWERTBILDER_NORMAL . $filterValue->cMMWBildPfad
+                                   : \BILD_KEIN_MERKMALWERTBILD_VORHANDEN);
                 $attributeValue->setType($attributeFilter->nMehrfachauswahl === 1 ? Type:: OR : Type:: AND);
                 $attributeValue->setClassName($this->getClassName());
                 $attributeValue->setParam($this->getUrlParam());

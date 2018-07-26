@@ -69,7 +69,7 @@ class cache_redis implements ICachingMethod
         $connect = $persist === false ? 'connect' : 'pconnect';
         if ($host !== null) {
             $res = ($port !== null && $host[0] !== '/')
-                ? $redis->$connect($host, (int)$port, REDIS_CONNECT_TIMEOUT)
+                ? $redis->$connect($host, (int)$port, \REDIS_CONNECT_TIMEOUT)
                 : $redis->$connect($host); //for connecting to socket
             if ($res !== false && $pass !== null && $pass !== '') {
                 $res = $redis->auth($pass);

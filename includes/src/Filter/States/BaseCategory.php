@@ -44,7 +44,7 @@ class BaseCategory extends AbstractFilter
         parent::__construct($productFilter);
         $this->setIsCustom(false)
              ->setUrlParam('k')
-             ->setUrlParamSEO(SEP_KAT);
+             ->setUrlParamSEO(\SEP_KAT);
     }
 
     /**

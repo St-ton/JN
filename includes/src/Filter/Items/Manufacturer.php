@@ -27,7 +27,7 @@ class Manufacturer extends BaseManufacturer
         parent::__construct($productFilter);
         $this->setIsCustom(false)
              ->setUrlParam('hf')
-             ->setUrlParamSEO(SEP_HST)
+             ->setUrlParamSEO(\SEP_HST)
              ->setVisibility($this->getConfig('navigationsfilter')['allgemein_herstellerfilter_benutzen'])
              ->setFrontendName(\Shop::Lang()->get('allManufacturers'))
              ->setType($this->getConfig('navigationsfilter')['manufacturer_filter_type'] === 'O'

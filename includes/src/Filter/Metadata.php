@@ -73,7 +73,7 @@ class Metadata implements MetadataInterface
     /**
      * @var string
      */
-    private $imageURL = BILD_KEIN_KATEGORIEBILD_VORHANDEN;
+    private $imageURL = \BILD_KEIN_KATEGORIEBILD_VORHANDEN;
 
     /**
      * @var array
@@ -290,7 +290,7 @@ class Metadata implements MetadataInterface
                     return $reduction;
                 }, new \stdClass());
             });
-            $tags      = [CACHING_GROUP_CORE];
+            $tags      = [\CACHING_GROUP_CORE];
 
             return true;
         });
@@ -311,7 +311,7 @@ class Metadata implements MetadataInterface
             $content  = reindex($keyWords, function ($e) {
                 return $e->cISOSprache;
             });
-            $tags     = [CACHING_GROUP_OPTION];
+            $tags     = [\CACHING_GROUP_OPTION];
 
             return true;
         });
@@ -389,7 +389,7 @@ class Metadata implements MetadataInterface
         array $globalMeta,
         $category = null
     ): string {
-        \executeHook(HOOK_FILTER_INC_GIBNAVIMETADESCRIPTION);
+        \executeHook(\HOOK_FILTER_INC_GIBNAVIMETADESCRIPTION);
         $maxLength = !empty($this->conf['metaangaben']['global_meta_maxlaenge_description'])
             ? (int)$this->conf['metaangaben']['global_meta_maxlaenge_description']
             : 0;
@@ -508,7 +508,7 @@ class Metadata implements MetadataInterface
      */
     public function generateMetaKeywords($products, \Kategorie $category = null): string
     {
-        \executeHook(HOOK_FILTER_INC_GIBNAVIMETAKEYWORDS);
+        \executeHook(\HOOK_FILTER_INC_GIBNAVIMETAKEYWORDS);
         if (!empty($this->metaKeywords)) {
             return \strip_tags($this->metaKeywords);
         }
@@ -601,7 +601,7 @@ class Metadata implements MetadataInterface
             return \strip_tags($cMetaKeywords);
         }
 
-        return \strip_tags(\StringHandler::htmlentitydecode(\str_replace('"', '', $cMetaKeywords), ENT_NOQUOTES));
+        return \strip_tags(\StringHandler::htmlentitydecode(\str_replace('"', '', $cMetaKeywords), \ENT_NOQUOTES));
     }
 
     /**
@@ -609,7 +609,7 @@ class Metadata implements MetadataInterface
      */
     public function generateMetaTitle($searchResults, $globalMeta, \Kategorie $category = null): string
     {
-        \executeHook(HOOK_FILTER_INC_GIBNAVIMETATITLE);
+        \executeHook(\HOOK_FILTER_INC_GIBNAVIMETATITLE);
         $languageID = $this->productFilter->getLanguageID();
         $append     = $this->conf['metaangaben']['global_meta_title_anhaengen'] === 'Y';
         if (!empty($this->metaTitle)) {
@@ -703,8 +703,8 @@ class Metadata implements MetadataInterface
             $parts->push($name);
         }
         // Suchbegrifffilter
-        $parts = $parts->merge(collect($this->productFilter->getSearchFilter())
-            ->map(function (FilterInterface $filter, $key) {
+        $parts = $parts->merge(\collect($this->productFilter->getSearchFilter())
+            ->map(function (FilterInterface $filter) {
                 return $filter->getName();
             })
             ->reject(function ($name) {
@@ -743,7 +743,7 @@ class Metadata implements MetadataInterface
             }
         }
         // MerkmalWertfilter
-        $parts = $parts->merge(collect($this->productFilter->getAttributeFilter())
+        $parts = $parts->merge(\collect($this->productFilter->getAttributeFilter())
             ->map(function (FilterInterface $filter) {
                 return $filter->getName();
             })
@@ -832,8 +832,8 @@ class Metadata implements MetadataInterface
 
             if ($this->productFilter->hasCategory()) {
                 $category = new \Kategorie($this->productFilter->getCategory()->getValue());
-                if (!empty($category->categoryFunctionAttributes[KAT_ATTRIBUT_DARSTELLUNG])) {
-                    $defaultViewType = (int)$category->categoryFunctionAttributes[KAT_ATTRIBUT_DARSTELLUNG];
+                if (!empty($category->categoryFunctionAttributes[\KAT_ATTRIBUT_DARSTELLUNG])) {
+                    $defaultViewType = (int)$category->categoryFunctionAttributes[\KAT_ATTRIBUT_DARSTELLUNG];
                 }
             }
             if ($viewType === 0 && (int)$conf['artikeluebersicht_erw_darstellung_stdansicht'] > 0) {
@@ -971,7 +971,7 @@ class Metadata implements MetadataInterface
      */
     public static function truncateMetaDescription(string $cDesc): string
     {
-        $conf      = \Shop::getSettings([CONF_METAANGABEN]);
+        $conf      = \Shop::getSettings([\CONF_METAANGABEN]);
         $maxLength = !empty($conf['metaangaben']['global_meta_maxlaenge_description'])
             ? (int)$conf['metaangaben']['global_meta_maxlaenge_description']
             : 0;

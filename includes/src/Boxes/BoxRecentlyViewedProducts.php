@@ -37,7 +37,7 @@ final class BoxRecentlyViewedProducts extends AbstractBox
             $this->setProducts(\array_reverse($products));
             $this->setShow(true);
 
-            \executeHook(HOOK_BOXEN_INC_ZULETZTANGESEHEN, ['box' => $this]);
+            \executeHook(\HOOK_BOXEN_INC_ZULETZTANGESEHEN, ['box' => $this]);
         }
     }
 }

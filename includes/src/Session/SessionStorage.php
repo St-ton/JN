@@ -52,7 +52,7 @@ class SessionStorage
         if ($res !== true) {
             throw new \RuntimeException('Failed to start session');
         }
-        $conf           = \Shop::getSettings([CONF_GLOBAL])['global'];
+        $conf           = \Shop::getSettings([\CONF_GLOBAL])['global'];
         $cookieDefaults = \session_get_cookie_params();
         $set            = false;
         $lifetime       = $cookieDefaults['lifetime'] ?? 0;

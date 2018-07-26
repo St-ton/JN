@@ -14,7 +14,6 @@ use Boxes\Renderer\DefaultRenderer;
 use DB\DbInterface;
 use DB\ReturnType;
 use Filter\ProductFilter;
-use Filter\SearchResults;
 use Filter\SearchResultsInterface;
 use Filter\Visibility;
 
@@ -128,7 +127,7 @@ class BoxService implements BoxServiceInterface
         } else {
             $_SESSION['ZuletztBesuchteArtikel'][] = $oArtikel;
         }
-        \executeHook(HOOK_ARTIKEL_INC_ZULETZTANGESEHEN);
+        \executeHook(\HOOK_ARTIKEL_INC_ZULETZTANGESEHEN);
     }
 
     /**
@@ -253,13 +252,13 @@ class BoxService implements BoxServiceInterface
         $smarty   = \Shop::Smarty();
         $pageType = \Shop::getPageType();
         $pageID   = 0;
-        if ($pageType === PAGE_ARTIKELLISTE) {
+        if ($pageType === \PAGE_ARTIKELLISTE) {
             $pageID = (int)\Shop::$kKategorie;
-        } elseif ($pageType === PAGE_ARTIKEL) {
+        } elseif ($pageType === \PAGE_ARTIKEL) {
             $pageID = (int)\Shop::$kArtikel;
-        } elseif ($pageType === PAGE_EIGENE) {
+        } elseif ($pageType === \PAGE_EIGENE) {
             $pageID = (int)\Shop::$kLink;
-        } elseif ($pageType === PAGE_HERSTELLER) {
+        } elseif ($pageType === \PAGE_HERSTELLER) {
             $pageID = (int)\Shop::$kHersteller;
         }
         $originalArticle = $smarty->getTemplateVars('Artikel');
@@ -338,7 +337,7 @@ class BoxService implements BoxServiceInterface
         $visiblePositions = \Functional\map($visiblePositions, function ($e) {
             return "'" . $e . "'";
         });
-        $cacheTags        = [CACHING_GROUP_OBJECT, CACHING_GROUP_BOX, 'boxes'];
+        $cacheTags        = [\CACHING_GROUP_OBJECT, \CACHING_GROUP_BOX, 'boxes'];
         $cSQLAktiv        = $active
             ? ' AND tboxen.ePosition IN (' . \implode(',', $visiblePositions) . ')'
             : '';
@@ -402,7 +401,7 @@ class BoxService implements BoxServiceInterface
             $boxInstance->map($boxes);
             if (\get_class($boxInstance) === BoxPlugin::class) {
                 $plugin = new \Plugin($boxInstance->getCustomID());
-                $boxInstance->setTemplateFile($plugin->cFrontendPfad . PFAD_PLUGIN_BOXEN . $boxInstance->getTemplateFile());
+                $boxInstance->setTemplateFile($plugin->cFrontendPfad . \PFAD_PLUGIN_BOXEN . $boxInstance->getTemplateFile());
                 $boxInstance->setPlugin($plugin);
             }
             if ($boxInstance->getType() === BoxType::CONTAINER) {

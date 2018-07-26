@@ -306,7 +306,7 @@ class ProductFilterURL
         ) {
             // the url should be <shop>/<merkmalwert-url>__<merkmalfilter>[__<merkmalfilter>]
             $_mmwSeo = \str_replace(
-                $this->productFilter->getAttributeValue()->getSeo($this->productFilter->getLanguageID()) . SEP_MERKMAL,
+                $this->productFilter->getAttributeValue()->getSeo($this->productFilter->getLanguageID()) . \SEP_MERKMAL,
                 '',
                 $url->getCategories()
             );
@@ -390,7 +390,7 @@ class ProductFilterURL
         // Filter reset
         $pages  = $searchResults->getPages();
         $cSeite = $pages->getCurrentPage() > 1
-            ? SEP_SEITE . $pages->getCurrentPage()
+            ? \SEP_SEITE . $pages->getCurrentPage()
             : '';
 
         $url->setUnsetAll($this->getURL(null, true) . $cSeite);

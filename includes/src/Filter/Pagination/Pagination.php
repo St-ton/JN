@@ -72,7 +72,7 @@ class Pagination
         }
         $naviURL = $this->productFilter->getFilterURL()->getURL();
         $sep     = \strpos($naviURL, '?') === false
-            ? SEP_SEITE
+            ? \SEP_SEITE
             : '&amp;seite=';
         $active  = $pages->getCurrentPage();
         $from    = $pages->getMinPage();

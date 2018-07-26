@@ -288,7 +288,7 @@ class ProductFilter
             ? SHOW_CHILD_PRODUCTS
             : 0;
         $this->initBaseStates();
-        \executeHook(HOOK_PRODUCTFILTER_CREATE, ['productFilter' => $this]);
+        \executeHook(\HOOK_PRODUCTFILTER_CREATE, ['productFilter' => $this]);
     }
 
     /**
@@ -715,7 +715,7 @@ class ProductFilter
 
         $this->baseState = new DummyState($this);
 
-        \executeHook(HOOK_PRODUCTFILTER_INIT, ['productFilter' => $this]);
+        \executeHook(\HOOK_PRODUCTFILTER_INIT, ['productFilter' => $this]);
 
         $this->filters[] = $this->categoryFilter;
         $this->filters[] = $this->manufacturerFilter;
@@ -837,7 +837,7 @@ class ProductFilter
             $oExtendedJTLSearchResponse = null;
             $this->bExtendedJTLSearch   = false;
 
-            \executeHook(HOOK_NAVI_PRESUCHE, [
+            \executeHook(\HOOK_NAVI_PRESUCHE, [
                 'cValue'             => &$this->EchteSuche->cSuche,
                 'bExtendedJTLSearch' => &$this->bExtendedJTLSearch
             ]);
@@ -846,7 +846,7 @@ class ProductFilter
             }
             $this->search->bExtendedJTLSearch = $this->bExtendedJTLSearch;
 
-            \executeHook(HOOK_NAVI_SUCHE, [
+            \executeHook(\HOOK_NAVI_SUCHE, [
                 'bExtendedJTLSearch'         => $this->bExtendedJTLSearch,
                 'oExtendedJTLSearchResponse' => &$oExtendedJTLSearchResponse,
                 'cValue'                     => &$this->EchteSuche->cSuche,
@@ -854,7 +854,7 @@ class ProductFilter
                 'nSeite'                     => &$this->nSeite,
                 'nSortierung'                => $_SESSION['Usersortierung'] ?? null,
                 'bLagerbeachten'             => (int)$this->getConfig('global')['artikel_artikelanzeigefilter'] ===
-                    EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
+                    \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
             ]);
         }
         $this->nSeite = \max(1, \RequestHelper::verifyGPCDataInt('seite'));
@@ -886,7 +886,7 @@ class ProductFilter
                 }
             }
         }
-        \executeHook(HOOK_PRODUCTFILTER_INIT_STATES, [
+        \executeHook(\HOOK_PRODUCTFILTER_INIT_STATES, [
             'productFilter' => $this,
             'params'        => $params
         ]);
@@ -1635,10 +1635,10 @@ class ProductFilter
             $_SESSION['Usersortierung']         = \SEARCH_SORT_STANDARD;
         }
         // custom category attribute
-        if ($category !== null && !empty($category->categoryFunctionAttributes[KAT_ATTRIBUT_ARTIKELSORTIERUNG])) {
+        if ($category !== null && !empty($category->categoryFunctionAttributes[\KAT_ATTRIBUT_ARTIKELSORTIERUNG])) {
             $mapper = new SortingType();
             $_SESSION['Usersortierung'] = $mapper->mapUserSorting(
-                $category->categoryFunctionAttributes[KAT_ATTRIBUT_ARTIKELSORTIERUNG]
+                $category->categoryFunctionAttributes[\KAT_ATTRIBUT_ARTIKELSORTIERUNG]
             );
         }
         if (isset($_SESSION['UsersortierungVorSuche']) && (int)$_SESSION['UsersortierungVorSuche'] > 0) {
@@ -1709,7 +1709,7 @@ class ProductFilter
         $orderData->cJoin  = $sorting->getJoin()->getSQL();
         $orderData->cOrder = $sorting->getOrderBy();
 
-        \executeHook(HOOK_FILTER_INC_GIBARTIKELKEYS, [
+        \executeHook(\HOOK_FILTER_INC_GIBARTIKELKEYS, [
             'oArtikelKey_arr' => &$productKeys,
             'FilterSQL'       => new \stdClass(),
             'NaviFilter'      => $this,
@@ -1822,7 +1822,7 @@ class ProductFilter
             $opt->nArtikelAttribute     = 1;
             $opt->nVariationKombiKinder = 1;
             $opt->nWarenlager           = 1;
-            $opt->nRatings              = PRODUCT_LIST_SHOW_RATINGS === true ? 1 : 0;
+            $opt->nRatings              = \PRODUCT_LIST_SHOW_RATINGS === true ? 1 : 0;
             $opt->nVariationDetailPreis = (int)$this->conf['artikeldetails']['artikel_variationspreisanzeige'] !== 0
                 ? 1
                 : 0;

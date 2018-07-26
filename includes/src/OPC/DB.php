@@ -220,8 +220,8 @@ class DB
 
         if ($portletDB->kPlugin > 0) {
             $plugin  = new \Plugin($portletDB->kPlugin);
-            $include = PFAD_ROOT . PFAD_PLUGIN . $plugin->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION
-                . $plugin->getCurrentVersion() . '/' . PFAD_PLUGIN_ADMINMENU . PFAD_PLUGIN_PORTLETS
+            $include = PFAD_ROOT . \PFAD_PLUGIN . $plugin->cVerzeichnis . '/' . \PFAD_PLUGIN_VERSION
+                . $plugin->getCurrentVersion() . '/' . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_PORTLETS
                 . $portletDB->cClass . '/' . $portletDB->cClass . '.php';
             require_once $include;
         }

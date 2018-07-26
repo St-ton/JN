@@ -85,7 +85,7 @@ class ProductFilterSQL implements ProductFilterSQLInterface
         $conditions[] = $this->getStockFilterSQL(false);
         // remove empty conditions
         $conditions = \array_filter($conditions);
-        \executeHook(HOOK_PRODUCTFILTER_GET_BASE_QUERY, [
+        \executeHook(\HOOK_PRODUCTFILTER_GET_BASE_QUERY, [
             'select'        => &$select,
             'joins'         => &$joins,
             'conditions'    => &$conditions,
@@ -147,10 +147,10 @@ class ProductFilterSQL implements ProductFilterSQLInterface
     {
         $filterSQL  = '';
         $filterType = (int)$this->conf['global']['artikel_artikelanzeigefilter'];
-        if ($filterType === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
-            || $filterType === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
+        if ($filterType === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
+            || $filterType === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
         ) {
-            $or = $filterType === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
+            $or = $filterType === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
                 ? " OR tartikel.cLagerKleinerNull = 'Y'"
                 : '';
             $filterSQL = ($withAnd === true ? ' AND ' : ' ') .
@@ -166,7 +166,7 @@ class ProductFilterSQL implements ProductFilterSQLInterface
                     )" . $or .
                 ")";
         }
-        \executeHook(HOOK_STOCK_FILTER, [
+        \executeHook(\HOOK_STOCK_FILTER, [
             'conf'      => $filterType,
             'filterSQL' => &$filterSQL
         ]);

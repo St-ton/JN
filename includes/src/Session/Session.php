@@ -114,7 +114,7 @@ class Session
         $this->setStandardSessionVars();
         \Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
 
-        \executeHook(HOOK_CORE_SESSION_CONSTRUCTOR);
+        \executeHook(\HOOK_CORE_SESSION_CONSTRUCTOR);
     }
 
     /**
@@ -343,7 +343,7 @@ class Session
         if (!$_SESSION['Kundengruppe']->hasAttributes()) {
             $_SESSION['Kundengruppe']->initAttributes();
         }
-        if (\Shop::Cache()->isCacheGroupActive(CACHING_GROUP_CORE) === false) {
+        if (\Shop::Cache()->isCacheGroupActive(\CACHING_GROUP_CORE) === false) {
             $_SESSION['Linkgruppen'] = \Shop::Container()->getLinkService()->getLinkGroups();
             $_SESSION['Hersteller']  = \HerstellerHelper::getInstance()->getManufacturers();
         }
@@ -773,7 +773,7 @@ class Session
                 }
                 unset($_SESSION['TrustedShops']);
                 if ($cart !== null) {
-                    $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
+                    $cart->loescheSpezialPos(\C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
                     if (\count($cart->PositionenArr) > 0) {
                         $cart->setzePositionsPreise();
                     }

@@ -23,7 +23,7 @@ final class BoxTopRatedProducts extends AbstractBox
         parent::__construct($config);
         $this->products = [];
         $parentSQL      = ' AND tartikel.kVaterArtikel = 0';
-        $cacheTags      = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
+        $cacheTags      = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
         $cacheID        = 'bx_tprtd_' . $config['boxen']['boxen_topbewertet_minsterne'] . '_' .
             $config['boxen']['boxen_topbewertet_basisanzahl'] . \md5($parentSQL);
         $cached         = true;
@@ -68,7 +68,7 @@ final class BoxTopRatedProducts extends AbstractBox
             $this->setProducts($this->products);
             $this->setURL(\SearchSpecialHelper::buildURL(\SEARCHSPECIALS_TOPREVIEWS));
 
-            \executeHook(HOOK_BOXEN_INC_TOPBEWERTET, [
+            \executeHook(\HOOK_BOXEN_INC_TOPBEWERTET, [
                 'box'        => &$this,
                 'cache_tags' => &$cacheTags,
                 'cached'     => $cached

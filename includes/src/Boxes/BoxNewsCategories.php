@@ -28,7 +28,7 @@ final class BoxNewsCategories extends AbstractBox
         $langID    = \Shop::getLanguageID();
         $cacheID   = 'bnk_' . $langID . '_' . \Session::CustomerGroup()->getID() . '_' . \md5($cSQL);
         $cached    = true;
-        $cacheTags = [CACHING_GROUP_BOX, CACHING_GROUP_NEWS];
+        $cacheTags = [\CACHING_GROUP_BOX, \CACHING_GROUP_NEWS];
         if (($newsCategories = \Shop::Container()->getCache()->get($cacheID)) === false) {
             $cached         = false;
             $newsCategories = \Shop::Container()->getDB()->queryPrepared(
@@ -61,12 +61,12 @@ final class BoxNewsCategories extends AbstractBox
             \Shop::Container()->getCache()->set($cacheID, $newsCategories, $cacheTags);
         }
         foreach ($newsCategories as $i => $newsCategory) {
-            $newsCategory->cURL     = \UrlHelper::buildURL($newsCategory, URLART_NEWSKATEGORIE);
-            $newsCategory->cURLFull = \UrlHelper::buildURL($newsCategory, URLART_NEWSKATEGORIE, true);
+            $newsCategory->cURL     = \UrlHelper::buildURL($newsCategory, \URLART_NEWSKATEGORIE);
+            $newsCategory->cURLFull = \UrlHelper::buildURL($newsCategory, \URLART_NEWSKATEGORIE, true);
         }
         $this->setShow(\count($newsCategories) > 0);
         $this->setItems($newsCategories);
-        \executeHook(HOOK_BOXEN_INC_NEWSKATEGORIE, [
+        \executeHook(\HOOK_BOXEN_INC_NEWSKATEGORIE, [
             'box'        => &$this,
             'cache_tags' => &$cacheTags,
             'cached'     => $cached

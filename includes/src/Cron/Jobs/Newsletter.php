@@ -26,8 +26,8 @@ class Newsletter extends Job
     public function __construct(DbInterface $db, LoggerInterface $logger)
     {
         parent::__construct($db, $logger);
-        if (JOBQUEUE_LIMIT_M_NEWSLETTER > 0) {
-            $this->setLimit(JOBQUEUE_LIMIT_M_NEWSLETTER);
+        if (\JOBQUEUE_LIMIT_M_NEWSLETTER > 0) {
+            $this->setLimit(\JOBQUEUE_LIMIT_M_NEWSLETTER);
         }
     }
 
@@ -41,7 +41,7 @@ class Newsletter extends Job
         if ($oNewsletter === null) {
             return $this;
         }
-        $Einstellungen     = \Shop::getSettings([CONF_NEWSLETTER]);
+        $Einstellungen     = \Shop::getSettings([\CONF_NEWSLETTER]);
         $mailSmarty        = \bereiteNewsletterVor($Einstellungen);
         $kArtikel_arr      = \gibAHKKeys($oNewsletter->cArtikel, true);
         $kHersteller_arr   = \gibAHKKeys($oNewsletter->cHersteller);

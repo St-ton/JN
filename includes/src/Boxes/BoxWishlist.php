@@ -82,7 +82,7 @@ final class BoxWishlist extends AbstractBox
             $this->setItemCount((int)$this->config['boxen']['boxen_wunschzettel_anzahl']);
             $this->setItems(\array_reverse($wishlistItems));
 
-            \executeHook(HOOK_BOXEN_INC_WUNSCHZETTEL, ['box' => $this]);
+            \executeHook(\HOOK_BOXEN_INC_WUNSCHZETTEL, ['box' => $this]);
         }
     }
 

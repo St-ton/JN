@@ -64,7 +64,7 @@ final class BoxTrustedShopsReviews extends AbstractBox
                     // Prüft alle X Stunden ob ein Zertifikat noch gültig ist
                     $ts->pruefeZertifikat($langCode);
                 }
-                $this->setImagePath(\Shop::getImageBaseURL() . PFAD_GFX_TRUSTEDSHOPS . $filename);
+                $this->setImagePath(\Shop::getImageBaseURL() . \PFAD_GFX_TRUSTEDSHOPS . $filename);
                 $this->setImageURL($localizedURLs[$langCode]);
                 $this->setStats($ts->gibKundenbewertungsStatistik());
             }
@@ -78,7 +78,7 @@ final class BoxTrustedShopsReviews extends AbstractBox
      */
     private function cachecheck(string $filename_cache, int $timeout = 10800): bool
     {
-        $filename_cache = PFAD_ROOT . PFAD_GFX_TRUSTEDSHOPS . $filename_cache;
+        $filename_cache = PFAD_ROOT . \PFAD_GFX_TRUSTEDSHOPS . $filename_cache;
 
         return \file_exists($filename_cache)
             ? ((\time() - \filemtime($filename_cache)) < $timeout)

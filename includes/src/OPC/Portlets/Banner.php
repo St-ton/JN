@@ -112,7 +112,7 @@ class Banner extends \OPC\Portlet
         return [
             'src'   => [
                 'label'      => 'Bild',
-                'default'    => \Shop::getURL() . '/' . PFAD_TEMPLATES . 'Evo/portlets/Banner/preview.banner.png',
+                'default'    => \Shop::getURL() . '/' . \PFAD_TEMPLATES . 'Evo/portlets/Banner/preview.banner.png',
                 'type'       => 'image',
                 'dspl_width' => 50,
                 'required'   => true,

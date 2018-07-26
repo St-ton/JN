@@ -25,7 +25,7 @@ final class BoxUpcomingProducts extends AbstractBox
         $customerGroupID = \Session::CustomerGroup()->getID();
         if ($customerGroupID > 0 && \Session::CustomerGroup()->mayViewCategories()) {
             $cached         = true;
-            $cacheTags      = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
+            $cacheTags      = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
             $stockFilterSQL = \Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $parentSQL      = ' AND tartikel.kVaterArtikel = 0';
             $limit          = (int)$config['boxen']['box_erscheinende_anzahl_anzeige'];
@@ -56,7 +56,7 @@ final class BoxUpcomingProducts extends AbstractBox
                 $products->getArtikelByKeys($productIDs, 0, \count($productIDs));
                 $this->setProducts($products);
                 $this->setURL(\SearchSpecialHelper::buildURL(\SEARCHSPECIALS_UPCOMINGPRODUCTS));
-                \executeHook(HOOK_BOXEN_INC_ERSCHEINENDEPRODUKTE, [
+                \executeHook(\HOOK_BOXEN_INC_ERSCHEINENDEPRODUKTE, [
                     'box'        => &$this,
                     'cache_tags' => &$cacheTags,
                     'cached'     => $cached

@@ -7,8 +7,6 @@
 namespace Filter;
 
 
-use Filter\Pagination\Info;
-
 /**
  * Class Metadata
  */

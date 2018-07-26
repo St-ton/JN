@@ -62,7 +62,7 @@ class SearchSpecial extends AbstractFilter
      * @param array|int|string $value
      * @return $this
      */
-    public function setValueCompat(int $value)
+    public function setValueCompat($value): FilterInterface
     {
         $this->value = [$value];
 
@@ -163,7 +163,7 @@ class SearchSpecial extends AbstractFilter
 
                 case SEARCHSPECIALS_SPECIALOFFERS:
                     if ($this->productFilter->hasSearchSpecial()) {
-                        continue;
+                        break;
                     }
                     $tasp = 'tartikelsonderpreis';
                     $tsp  = 'tsonderpreise';

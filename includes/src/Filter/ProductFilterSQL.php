@@ -7,7 +7,6 @@
 namespace Filter;
 
 use function Functional\reduce_left;
-use Mapper\SortingType;
 
 /**
  * Class ProductFilterSQL

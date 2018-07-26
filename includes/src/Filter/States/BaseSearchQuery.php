@@ -75,7 +75,7 @@ class BaseSearchQuery extends AbstractFilter
      * @param int $id
      * @return $this
      */
-    public function setSearchCacheID($id)
+    public function setSearchCacheID($id): FilterInterface
     {
         $this->searchCacheID = (int)$id;
 
@@ -357,7 +357,7 @@ class BaseSearchQuery extends AbstractFilter
                 ->setValue((int)$searchFilter->kSuchanfrage)
                 ->setCount((int)$searchFilter->nAnzahl);
             if (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0 && $nPrioStep > 0) {
-                $fo->setClass(round(
+                $fo->setClass((string)round(
                         ($searchFilter->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) /
                         $nPrioStep
                     ) + 1

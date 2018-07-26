@@ -7,12 +7,10 @@
 namespace Filter;
 
 use DB\ReturnType;
-use Filter\Pagination\Info;
 use function Functional\group;
 use function Functional\map;
 use function Functional\reduce_left;
 use function Functional\reindex;
-use Mapper\SortingType;
 use Tightenco\Collect\Support\Collection;
 
 /**

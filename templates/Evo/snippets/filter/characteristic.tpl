@@ -8,7 +8,7 @@
         {assign var=kMerkmalWert value=$MerkmalWert->kMerkmalWert}
         {if $MerkmalWert->nAktiv}
             <li class="active">
-                <a rel="nofollow" href="{if !empty($MerkmalWert->cURL)}{$MerkmalWert->cURL}{else}#{/if}"{if $Merkmal->cTyp === 'BILD'} title="{$MerkmalWert->cWert}"{/if}>
+                <a rel="nofollow" href="{$NaviFilter->URL->cAlleMerkmalWerte[$MerkmalWert->kMerkmalWert]}"{if $Merkmal->cTyp === 'BILD'} title="{$MerkmalWert->cWert}"{/if}>
                     <span class="badge pull-right">{$MerkmalWert->nAnzahl}</span>
                         <span class="value">
                         <i class="fa fa-check-square-o text-muted"></i>

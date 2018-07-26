@@ -6,7 +6,9 @@
     {foreach $filter->getOptions() as $filterOption}
         {assign var=filterIsActive value=$filterOption->isActive() || $NaviFilter->getFilterValue($filter->getClassName()) === $filterOption->getValue()}
         <li class="filter-item{if $filterIsActive === true} active{/if}">
-            <a rel="nofollow" href="{$filterOption->getURL()}" class="{$itemClass}{if $filterOption->isActive()} active{/if}">
+            <a rel="nofollow"
+               href="{if $filterOption->isActive()}{$filter->getUnsetFilterURL($filterOption->getValue())}{else}{$filterOption->getURL()}{/if}"
+               class="{$itemClass}{if $filterOption->isActive()} active{/if}">
                 <span class="badge pull-right">{$filterOption->getCount()}</span>
                 <span class="value">
                     {if $filter->getIcon() !== null}

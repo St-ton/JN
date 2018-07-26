@@ -306,7 +306,8 @@ function generateSitemapXML()
     $modification = $conf['sitemap']['sitemap_insert_lastmod'] === 'Y'
         ? ', tartikel.dLetzteAktualisierung'
         : '';
-    $strSQL = "SELECT tartikel.kArtikel, tartikel.cName, tseo.cSeo, tartikel.cArtNr" .
+    $res          = Shop::Container()->getDB()->queryPrepared(
+        "SELECT tartikel.kArtikel, tartikel.cName, tseo.cSeo, tartikel.cArtNr" .
             $modification . "
             FROM tartikel
                 LEFT JOIN tartikelsichtbarkeit 
@@ -316,9 +317,7 @@ function generateSitemapXML()
                     ON tseo.cKey = 'kArtikel'
                     AND tseo.kKey = tartikel.kArtikel
                     AND tseo.kSprache = :langID
-            WHERE tartikelsichtbarkeit.kArtikel IS NULL" . $andWhere;
-    $res = Shop::Container()->getDB()->queryPrepared(
-        $strSQL, 
+            WHERE tartikelsichtbarkeit.kArtikel IS NULL" . $andWhere,
         [
             'kGrpID' => $defaultCustomerGroupID,
             'langID' => $defaultLangID
@@ -376,19 +375,19 @@ function generateSitemapXML()
         }
         $res = Shop::Container()->getDB()->queryPrepared(
             "SELECT tartikel.kArtikel, tartikel.dLetzteAktualisierung, tseo.cSeo
-               FROM tartikelsprache, tartikel
-               JOIN tseo 
-                  ON tseo.cKey = 'kArtikel'
-                  AND tseo.kKey = tartikel.kArtikel
-                  AND tseo.kSprache = :langID
-               LEFT JOIN tartikelsichtbarkeit 
-                  ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
-                  AND tartikelsichtbarkeit.kKundengruppe = :kGrpID
-               WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                  AND tartikel.kArtikel = tartikelsprache.kArtikel
-                  AND tartikel.kVaterArtikel = 0 
-                  AND tartikelsprache.kSprache = :langID
-               ORDER BY tartikel.kArtikel",
+                FROM tartikelsprache, tartikel
+                JOIN tseo 
+                    ON tseo.cKey = 'kArtikel'
+                    AND tseo.kKey = tartikel.kArtikel
+                    AND tseo.kSprache = :langID
+                LEFT JOIN tartikelsichtbarkeit 
+                    ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
+                    AND tartikelsichtbarkeit.kKundengruppe = :kGrpID
+                WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                    AND tartikel.kArtikel = tartikelsprache.kArtikel
+                    AND tartikel.kVaterArtikel = 0 
+                    AND tartikelsprache.kSprache = :langID
+                ORDER BY tartikel.kArtikel",
             [
                 'kGrpID' => $defaultCustomerGroupID,
                 'langID' => $SpracheTMP->kSprache
@@ -422,19 +421,21 @@ function generateSitemapXML()
         // Links alle sprachen
         $res = Shop::Container()->getDB()->queryPrepared(
             "SELECT tlink.nLinkart, tlinksprache.kLink, tlinksprache.cISOSprache, tlink.bSSL
-                     FROM tlink
-                     JOIN tlinkgruppe 
-                        ON tlink.kLinkgruppe = tlinkgruppe.kLinkgruppe
-                     JOIN tlinksprache 
-                        ON tlinksprache.kLink = tlink.kLink
-                     WHERE tlink.cSichtbarNachLogin = 'N'
-                        AND tlink.cNoFollow = 'N'
-                        AND tlinkgruppe.cName != 'hidden'
-                        AND tlinkgruppe.cTemplatename != 'hidden'
-                        AND (tlink.cKundengruppen IS NULL
-                          OR tlink.cKundengruppen = 'NULL'
-                          OR FIND_IN_SET(:cGrpID, REPLACE(tlink.cKundengruppen, ';', ',')) > 0)
-                     ORDER BY tlinksprache.kLink",
+                FROM tlink
+                JOIN tlinkgroupassociations
+                    ON tlinkgroupassociations.linkID = tlink.kLink
+                JOIN tlinkgruppe 
+                    ON tlinkgroupassociations.linkGroupID = tlinkgruppe.kLinkgruppe
+                JOIN tlinksprache
+                    ON tlinksprache.kLink = tlink.kLink
+                WHERE tlink.cSichtbarNachLogin = 'N'
+                    AND tlink.cNoFollow = 'N'
+                    AND tlinkgruppe.cName != 'hidden'
+                    AND tlinkgruppe.cTemplatename != 'hidden'
+                    AND (tlink.cKundengruppen IS NULL
+                    OR tlink.cKundengruppen = 'NULL'
+                    OR FIND_IN_SET(:cGrpID, REPLACE(tlink.cKundengruppen, ';', ',')) > 0)
+                ORDER BY tlinksprache.kLink",
             ['cGrpID' => $defaultCustomerGroupID],
             \DB\ReturnType::QUERYSINGLE
         );
@@ -487,16 +488,16 @@ function generateSitemapXML()
         // Kategorien STD Sprache
         $res = Shop::Container()->getDB()->queryPrepared(
             "SELECT tkategorie.kKategorie, tseo.cSeo, tkategorie.dLetzteAktualisierung
-                 FROM tkategorie
-                 JOIN tseo 
+                FROM tkategorie
+                JOIN tseo 
                     ON tseo.cKey = 'kKategorie'
                     AND tseo.kKey = tkategorie.kKategorie
                     AND tseo.kSprache = :langID
-                 LEFT JOIN tkategoriesichtbarkeit 
+                LEFT JOIN tkategoriesichtbarkeit 
                     ON tkategorie.kKategorie = tkategoriesichtbarkeit.kKategorie
                     AND tkategoriesichtbarkeit.kKundengruppe = :cGrpID
-                 WHERE tkategoriesichtbarkeit.kKategorie IS NULL
-                 ORDER BY tkategorie.kKategorie",
+                WHERE tkategoriesichtbarkeit.kKategorie IS NULL
+                ORDER BY tkategorie.kKategorie",
             [
                 'langID' => $defaultLangID,
                 'cGrpID' => $defaultCustomerGroupID
@@ -537,21 +538,20 @@ function generateSitemapXML()
         }
         // Kategorien sonstige Sprachen
         foreach ($Sprachen as $SpracheTMP) {
-            $strSQL = "SELECT tkategorie.kKategorie, tkategorie.dLetzteAktualisierung, tseo.cSeo
-                      FROM tkategoriesprache, tkategorie
-                      JOIN tseo 
-                          ON tseo.cKey = 'kKategorie'
-                          AND tseo.kKey = tkategorie.kKategorie
-                          AND tseo.kSprache = :langID
-                      LEFT JOIN tkategoriesichtbarkeit 
-                          ON tkategorie.kKategorie = tkategoriesichtbarkeit.kKategorie
-                          AND tkategoriesichtbarkeit.kKundengruppe = :cGrpID 
-                      WHERE tkategoriesichtbarkeit.kKategorie IS NULL
-                          AND tkategorie.kKategorie = tkategoriesprache.kKategorie
-                          AND tkategoriesprache.kSprache = :langID
-                      ORDER BY tkategorie.kKategorie";
             $res = Shop::Container()->getDB()->queryPrepared(
-                $strSQL,
+                "SELECT tkategorie.kKategorie, tkategorie.dLetzteAktualisierung, tseo.cSeo
+                    FROM tkategoriesprache, tkategorie
+                    JOIN tseo 
+                        ON tseo.cKey = 'kKategorie'
+                        AND tseo.kKey = tkategorie.kKategorie
+                        AND tseo.kSprache = :langID
+                    LEFT JOIN tkategoriesichtbarkeit 
+                        ON tkategorie.kKategorie = tkategoriesichtbarkeit.kKategorie
+                        AND tkategoriesichtbarkeit.kKundengruppe = :cGrpID 
+                    WHERE tkategoriesichtbarkeit.kKategorie IS NULL
+                        AND tkategorie.kKategorie = tkategoriesprache.kKategorie
+                        AND tkategoriesprache.kSprache = :langID
+                    ORDER BY tkategorie.kKategorie",
                 [
                     'langID' => $SpracheTMP->kSprache,
                     'cGrpID' => $defaultCustomerGroupID
@@ -596,14 +596,14 @@ function generateSitemapXML()
         // Tags
         $res = Shop::Container()->getDB()->queryPrepared(
             "SELECT ttag.kTag, ttag.cName, tseo.cSeo
-               FROM ttag               
-               JOIN tseo 
-                  ON tseo.cKey = 'kTag'
-                  AND tseo.kKey = ttag.kTag
-                  AND tseo.kSprache = :langID
-               WHERE ttag.kSprache = :langID
-                  AND ttag.nAktiv = 1
-               ORDER BY ttag.kTag",
+                FROM ttag               
+                JOIN tseo 
+                    ON tseo.cKey = 'kTag'
+                    AND tseo.kKey = ttag.kTag
+                    AND tseo.kSprache = :langID
+                WHERE ttag.kSprache = :langID
+                    AND ttag.nAktiv = 1
+                ORDER BY ttag.kTag",
             ['langID' => $defaultLangID],
             \DB\ReturnType::QUERYSINGLE
         );
@@ -639,15 +639,15 @@ function generateSitemapXML()
                 continue;
             }
             $res = Shop::Container()->getDB()->queryPrepared(
-                  "SELECT ttag.kTag, ttag.cName, tseo.cSeo
-                      FROM ttag
-                      JOIN tseo 
-                          ON tseo.cKey = 'kTag'
-                          AND tseo.kKey = ttag.kTag
-                          AND tseo.kSprache = :langID
-                      WHERE ttag.kSprache = :langID
-                          AND ttag.nAktiv = 1
-                      ORDER BY ttag.kTag",
+                "SELECT ttag.kTag, ttag.cName, tseo.cSeo
+                    FROM ttag
+                    JOIN tseo 
+                        ON tseo.cKey = 'kTag'
+                        AND tseo.kKey = ttag.kTag
+                        AND tseo.kSprache = :langID
+                    WHERE ttag.kSprache = :langID
+                        AND ttag.nAktiv = 1
+                    ORDER BY ttag.kTag",
                 ['langID' => $SpracheTMP->kSprache],
                 \DB\ReturnType::QUERYSINGLE
             );
@@ -684,12 +684,12 @@ function generateSitemapXML()
         // Hersteller
         $res = Shop::Container()->getDB()->queryPrepared(
             "SELECT thersteller.kHersteller, thersteller.cName, tseo.cSeo
-                 FROM thersteller
-                 JOIN tseo 
+                FROM thersteller
+                JOIN tseo 
                     ON tseo.cKey = 'kHersteller'
                     AND tseo.kKey = thersteller.kHersteller
                     AND tseo.kSprache = :langID
-                 ORDER BY thersteller.kHersteller",
+                ORDER BY thersteller.kHersteller",
             ['langID' => $defaultLangID],
             \DB\ReturnType::QUERYSINGLE
         );
@@ -724,14 +724,14 @@ function generateSitemapXML()
         // Livesuche STD Sprache
         $res = Shop::Container()->getDB()->queryPrepared(
             "SELECT tsuchanfrage.kSuchanfrage, tseo.cSeo, tsuchanfrage.dZuletztGesucht
-                 FROM tsuchanfrage
-                 JOIN tseo 
+                FROM tsuchanfrage
+                JOIN tseo 
                     ON tseo.cKey = 'kSuchanfrage'
                     AND tseo.kKey = tsuchanfrage.kSuchanfrage
                     AND tseo.kSprache = :langID
-                 WHERE tsuchanfrage.kSprache = :langID
+                WHERE tsuchanfrage.kSprache = :langID
                     AND tsuchanfrage.nAktiv = 1
-                 ORDER BY tsuchanfrage.kSuchanfrage",
+                ORDER BY tsuchanfrage.kSuchanfrage",
             ['langID' => $defaultLangID],
             \DB\ReturnType::QUERYSINGLE
         );
@@ -768,14 +768,14 @@ function generateSitemapXML()
             }
             $res = Shop::Container()->getDB()->queryPrepared(
                 "SELECT tsuchanfrage.kSuchanfrage, tseo.cSeo, tsuchanfrage.dZuletztGesucht
-                     FROM tsuchanfrage
-                     JOIN tseo 
+                    FROM tsuchanfrage
+                    JOIN tseo 
                         ON tseo.cKey = 'kSuchanfrage'
                         AND tseo.kKey = tsuchanfrage.kSuchanfrage
                         AND tseo.kSprache = :langID
-                     WHERE tsuchanfrage.kSprache = :langID
+                    WHERE tsuchanfrage.kSprache = :langID
                         AND tsuchanfrage.nAktiv = 1
-                     ORDER BY tsuchanfrage.kSuchanfrage",
+                    ORDER BY tsuchanfrage.kSuchanfrage",
                 ['langID' => $SpracheTMP->kSprache],
                 \DB\ReturnType::QUERYSINGLE
             );
@@ -859,26 +859,26 @@ function generateSitemapXML()
                 continue;
             }
             $res = Shop::Container()->getDB()->queryPrepared(
-                    "SELECT tmerkmalsprache.cName, tmerkmalsprache.kMerkmal, tmerkmalwertsprache.cWert, 
-                        tseo.cSeo, tmerkmalwert.kMerkmalWert
-                        FROM tmerkmalsprache
-                        JOIN tmerkmal 
-                            ON tmerkmal.kMerkmal = tmerkmalsprache.kMerkmal
-                        JOIN tmerkmalwert 
-                            ON tmerkmalwert.kMerkmal = tmerkmalsprache.kMerkmal
-                        JOIN tmerkmalwertsprache 
-                            ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-                            AND tmerkmalwertsprache.kSprache = tmerkmalsprache.kSprache
-                        JOIN tartikelmerkmal 
-                            ON tartikelmerkmal.kMerkmalWert = tmerkmalwert.kMerkmalWert
-                        JOIN tseo 
-                            ON tseo.cKey = 'kMerkmalWert'
-                            AND tseo.kKey = tmerkmalwert.kMerkmalWert
-                            AND tseo.kSprache = tmerkmalsprache.kSprache
-                        WHERE tmerkmal.nGlobal = 1
-                            AND tmerkmalsprache.kSprache = :langID
-                        GROUP BY tmerkmalwert.kMerkmalWert
-                        ORDER BY tmerkmal.kMerkmal, tmerkmal.cName",
+                "SELECT tmerkmalsprache.cName, tmerkmalsprache.kMerkmal, tmerkmalwertsprache.cWert, 
+                    tseo.cSeo, tmerkmalwert.kMerkmalWert
+                    FROM tmerkmalsprache
+                    JOIN tmerkmal 
+                        ON tmerkmal.kMerkmal = tmerkmalsprache.kMerkmal
+                    JOIN tmerkmalwert 
+                        ON tmerkmalwert.kMerkmal = tmerkmalsprache.kMerkmal
+                    JOIN tmerkmalwertsprache 
+                        ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
+                        AND tmerkmalwertsprache.kSprache = tmerkmalsprache.kSprache
+                    JOIN tartikelmerkmal 
+                        ON tartikelmerkmal.kMerkmalWert = tmerkmalwert.kMerkmalWert
+                    JOIN tseo 
+                        ON tseo.cKey = 'kMerkmalWert'
+                        AND tseo.kKey = tmerkmalwert.kMerkmalWert
+                        AND tseo.kSprache = tmerkmalsprache.kSprache
+                    WHERE tmerkmal.nGlobal = 1
+                        AND tmerkmalsprache.kSprache = :langID
+                    GROUP BY tmerkmalwert.kMerkmalWert
+                    ORDER BY tmerkmal.kMerkmal, tmerkmal.cName",
                 ['langID' => $SpracheTMP->kSprache],
                 \DB\ReturnType::QUERYSINGLE
             );

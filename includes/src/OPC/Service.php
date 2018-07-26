@@ -240,7 +240,7 @@ class Service
         foreach ($enabledFilters as $enabledFilter) {
             /** @var AbstractFilter $newFilter **/
             $newFilter = new $enabledFilter['class']($productFilter);
-            $newFilter->setType(Type::AND());
+            $newFilter->setType(Type::AND);
             $productFilter->addActiveFilter($newFilter, $enabledFilter['value']);
             $enabledMap[$enabledFilter['class'] . ':' . $enabledFilter['value']] = true;
         }

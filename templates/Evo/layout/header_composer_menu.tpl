@@ -13,7 +13,7 @@
     {/if}
 
     <div class="list-group-item list-group-item-{if $isCurDraft}success{else}default{/if}" data-toggle="tooltip"
-         data-placement="right" title="{$draftTooltip}">
+         data-placement="right" data-draft-key="{$draftKey}" title="{$draftTooltip}">
         <a href="admin/onpage-composer.php{$queryDraft}&action=edit" role="button" title="Entwurf bearbeiten">
             {if $isCurDraft}
                 <b><i class="fa fa-fw fa-newspaper-o"></i> {$draftName}</b>
@@ -37,6 +37,7 @@
                             success: function(jqxhr, textStatus) {
                                 if(jqxhr === 'ok') {
                                     btnDiscard.closest('.list-group-item').remove();
+                                    window.localStorage.removeItem('opcpage.{$draftKey}');
                                 }
                             }
                         });
@@ -103,12 +104,17 @@
                                 var btnDiscardAll = $('#btnDiscardAll');
                                 btnDiscardAll.click(function(e) {
                                     e.preventDefault();
+                                    var keys = $('#opc-switcher .list-group .list-group-item')
+                                        .map(function() { return $(this).data('draft-key'); });
                                     if(confirm('Wollen Sie wirklich alle Entwürfe für die Seite löschen?')) {
                                         var href = btnDiscardAll.attr('href');
                                         $.ajax(href + '&async=yes', {
                                             success: function(jqxhr, textStatus) {
                                                 if(jqxhr === 'ok') {
                                                     btnDiscardAll.closest('p').remove();
+                                                    keys.each(function(i, key) {
+                                                        window.localStorage.removeItem('opcpage.' + key);
+                                                    });
                                                     $('#opc-switcher .list-group').remove();
                                                 }
                                             }

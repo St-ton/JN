@@ -172,7 +172,7 @@ class Revision
 
             $latestRevision = $this->getLatestRevision($type, $key);
 
-            if (!empty($latestRevision) && $latestRevision->content !== $revision->content) {
+            if (empty($latestRevision) || $latestRevision->content !== $revision->content) {
                 $this->storeRevision($revision);
                 $this->housekeeping($type, $key);
             }

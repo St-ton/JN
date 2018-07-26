@@ -25,7 +25,7 @@ class PlausiCMS extends Plausi
                 if (isset($this->xPostVar_arr['nSpezialseite'], $this->xPostVar_arr['nLinkart'])
                     && (int)$this->xPostVar_arr['nLinkart'] === 3
                 ) {
-                    $oExistingLink = checkSpecialSite($this->xPostVar_arr['nSpezialseite'], $this->xPostVar_arr['kLink']);
+                    $oExistingLink = checkSpecialLink((int)$this->xPostVar_arr['nSpezialseite'], (int)$this->xPostVar_arr['kLink']);
                     if (!empty($oExistingLink)) {
                         $this->xPlausiVar_arr['nSpezialseite'] = $oExistingLink;
                     }

@@ -266,17 +266,17 @@ function holeSpezialseiten()
 }
 
 /**
- * @param int $nSpecialSite
+ * @param int $nSpecialLink
  * @param int $kLink
  * @return false|object
  */
-function checkSpecialSite ($nSpecialSite, $kLink)
+function checkSpecialLink (int $nSpecialLink, int $kLink)
 {
     return Shop::Container()->getDB()->query(
         'SELECT kLink, cName
             FROM tlink
-            WHERE nLinkart = ' . $nSpecialSite . '
-                AND kLink != ' . (!empty($kLink) ? $kLink : 0),
+            WHERE nLinkart = ' . $nSpecialLink . '
+                AND kLink != ' . $kLink,
         \DB\ReturnType::SINGLE_OBJECT
     );
 }

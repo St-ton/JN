@@ -34,7 +34,7 @@
     $(window).on('load', function () {
         $('select[id="nLink3"]').change(function () {
             var $self = $(this);
-            ioCall('checkSpecialSite', [$self.val(), $('input[name="kLink"]').val()], function (result) {
+            ioCall('checkSpecialLink', [parseInt($self.val()), parseInt($('input[name="kLink"]').val()) || 0], function (result) {
                 if (result) {
                     $('#nLink3-error').removeClass('hidden-soft');
                     $('#nSpezialseite-name').html(result.cName);
@@ -114,11 +114,14 @@
                             <label for="cKundengruppen">{#restrictedToCustomerGroups#}{if isset($xPlausiVar_arr.cKundengruppen)} <span class="fillout">{#FillOut#}</span>{/if}</label>
                         </span>
                         <select required name="cKundengruppen[]" class="form-control{if isset($xPlausiVar_arr.cKundengruppen)} fieldfillout{/if}" multiple="multiple" size="6" id="cKundengruppen">
-                            <option value="-1"{if isset($Link->getID()) && $Link->getID() > 0 && isset($gesetzteKundengruppen[0]) && $gesetzteKundengruppen[0]} selected{elseif isset($xPostVar_arr.cKundengruppen)}
-                                {foreach $xPostVar_arr.cKundengruppen as $cPostKndGrp}
-                                    {if $cPostKndGrp@strlen > 0 && $cPostKndGrp == "-1"}selected{/if}
-                                {/foreach}
-                                    {elseif !$Link->getID()}selected{/if}>{#all#}</option>
+                            <option value="-1"
+                                    {if isset($Link->getID()) && $Link->getID() > 0 && isset($gesetzteKundengruppen[0]) && $gesetzteKundengruppen[0]}selected
+                                    {elseif isset($xPostVar_arr.cKundengruppen)}
+                                        {foreach $xPostVar_arr.cKundengruppen as $cPostKndGrp}
+                                            {if (int)$cPostKndGrp === -1}selected{/if}
+                                        {/foreach}
+                                    {elseif !$Link->getID() > 0}selected{/if}
+                            >{#all#}</option>
 
                             {foreach $kundengruppen as $kundengruppe}
                                 {assign var='kKundengruppe' value=$kundengruppe->kKundengruppe}

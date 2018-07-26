@@ -104,7 +104,7 @@ class Newsletter extends Job
             ReturnType::ARRAY_OF_OBJECTS
         );
 
-        if (is_array($oNewsletterEmpfaenger_arr) && count($oNewsletterEmpfaenger_arr) > 0) {
+        if (count($oNewsletterEmpfaenger_arr) > 0) {
             $shopURL = \Shop::getURL();
             foreach ($oNewsletterEmpfaenger_arr as $oNewsletterEmpfaenger) {
                 unset($oKunde);
@@ -128,12 +128,13 @@ class Newsletter extends Job
                     $oKampagne,
                     $oKunde ?? null
                 );
-                // Newsletterempfaenger updaten
-                $this->db->query(
-                    "UPDATE tnewsletterempfaenger
-                        SET dLetzterNewsletter = '" . date('Y-m-d H:m:s') . "'
-                        WHERE kNewsletterEmpfaenger = " . (int)$oNewsletterEmpfaenger->kNewsletterEmpfaenger,
-                    ReturnType::DEFAULT
+                $upd                     = new \stdClass();
+                $upd->dLetzterNewsletter = date('Y-m-d H:m:s');
+                $this->db->update(
+                    'tnewsletterempfaenger',
+                    'kNewsletterEmpfaenger',
+                    (int)$oNewsletterEmpfaenger->kNewsletterEmpfaenger,
+                    $upd
                 );
                 ++$queueEntry->nLimitN;
             }

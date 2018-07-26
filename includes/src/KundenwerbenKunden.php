@@ -210,7 +210,6 @@ class KundenwerbenKunden
      */
     public function sendeEmailanNeukunde(): self
     {
-        // Versende Email an Neukunden
         $oMail                       = new stdClass();
         $oMail->oBestandskunde       = new Kunde($this->kKunde);
         $oMail->oNeukunde            = $this;
@@ -222,5 +221,54 @@ class KundenwerbenKunden
         sendeMail(MAILTEMPLATE_KUNDENWERBENKUNDEN, $oMail);
 
         return $this;
+    }
+
+    /**
+     * @param array $post
+     * @return bool
+     */
+    public static function checkInputData(array $post): bool
+    {
+        $cVorname  = StringHandler::filterXSS($post['cVorname']);
+        $cNachname = StringHandler::filterXSS($post['cNachname']);
+        $cEmail    = StringHandler::filterXSS($post['cEmail']);
+
+        return strlen($cVorname) > 0 && strlen($cNachname) > 0 && StringHandler::filterEmailAddress($cEmail) !== false;
+    }
+
+    /**
+     * @param array $post
+     * @param array $conf
+     * @return bool
+     */
+    public static function saveToDB(array $post, array $conf): bool
+    {
+        if ($conf['kundenwerbenkunden']['kwk_nutzen'] !== 'Y') {
+            return false;
+        }
+        $cVorname  = StringHandler::filterXSS($post['cVorname']);
+        $cNachname = StringHandler::filterXSS($post['cNachname']);
+        $cEmail    = StringHandler::filterXSS($post['cEmail']);
+        $oKunde = Shop::Container()->getDB()->select('tkunde', 'cMail', $cEmail);
+
+        if (isset($oKunde->kKunde) && $oKunde->kKunde > 0) {
+            return false;
+        }
+        $oKwK = new KundenwerbenKunden($cEmail);
+        if ((int)$oKwK->kKundenWerbenKunden > 0) {
+            return false;
+        }
+        // Setze in tkundenwerbenkunden
+        $oKwK->kKunde       = $_SESSION['Kunde']->kKunde;
+        $oKwK->cVorname     = $cVorname;
+        $oKwK->cNachname    = $cNachname;
+        $oKwK->cEmail       = $cEmail;
+        $oKwK->nRegistriert = 0;
+        $oKwK->fGuthaben    = (float)$conf['kundenwerbenkunden']['kwk_neukundenguthaben'];
+        $oKwK->dErstellt    = 'now()';
+        $oKwK->insertDB();
+        $oKwK->sendeEmailanNeukunde();
+
+        return true;
     }
 }

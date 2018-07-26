@@ -31,7 +31,7 @@ class DateHelper
                 $resDate = new DateTime();
             }
         } catch (Exception $e) {
-            Jtllog::writeLog($e->getMessage());
+            Shop::Container()->getLogService()->error($e->getMessage());
             $resDate = new DateTime();
         }
 

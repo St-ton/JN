@@ -1,7 +1,7 @@
 {if isset($nFullscreenTemplate) && $nFullscreenTemplate == 1}
     {include file=$cPluginTemplate}
 {else}
-    {block name="header"}
+    {block name='header'}
         {if !isset($bAjaxRequest) || !$bAjaxRequest}
             {include file='layout/header.tpl'}
         {else}
@@ -10,32 +10,44 @@
     {/block}
 
     {block name="content"}
-        {if !empty($Link->getTitle())}
-            <h1>{$Link->getTitle()}</h1>
-        {elseif isset($bAjaxRequest) && $bAjaxRequest}
-            <h1>{if !empty($Link->getMetaTitle())}{$Link->getMetaTitle()}{else}{$Link->getName()}{/if}</h1>
+        {if $opcPageService->getCurPage()->isReplace()}
+            {include file='snippets/opc_mount_point.tpl' id='opc_replace_all'}
+        {else}
+            {if !empty($Link->getTitle())}
+                <h1>{$Link->getTitle()}</h1>
+            {elseif isset($bAjaxRequest) && $bAjaxRequest}
+                <h1>{if !empty($Link->getMetaTitle())}{$Link->getMetaTitle()}{else}{$Link->getName()}{/if}</h1>
+            {/if}
+
+            {include file="snippets/extension.tpl"}
+
+            {include file='snippets/opc_mount_point.tpl' id='opc_link_content_prepend'}
+
+            {if !empty($Link->getContent())}
+                {$Link->getContent()}
+            {/if}
+
+            {include file='snippets/opc_mount_point.tpl' id='opc_link_content_append'}
         {/if}
-    
-        {include file="snippets/extension.tpl"}
-    
-        {if !empty($Link->getContent())}
-            {$Link->getContent()}
-        {/if}
-    
+
         {if $Link->getLinkType() === $smarty.const.LINKTYP_AGB}
             <div id="tos" class="well well-sm">
-                {if $AGB->cAGBContentHtml}
-                    {$AGB->cAGBContentHtml}
-                {elseif $AGB->cAGBContentText}
-                    {$AGB->cAGBContentText|nl2br}
+                {if $AGB !== false}
+                    {if $AGB->cAGBContentHtml}
+                        {$AGB->cAGBContentHtml}
+                    {elseif $AGB->cAGBContentText}
+                        {$AGB->cAGBContentText|nl2br}
+                    {/if}
                 {/if}
             </div>
         {elseif $Link->getLinkType() === $smarty.const.LINKTYP_WRB}
             <div id="revocation-instruction" class="well well-sm">
-                {if $WRB->cWRBContentHtml}
-                    {$WRB->cWRBContentHtml}
-                {elseif $WRB->cWRBContentText}
-                    {$WRB->cWRBContentText|nl2br}
+                {if $WRB !== false}
+                    {if $WRB->cWRBContentHtml}
+                        {$WRB->cWRBContentHtml}
+                    {elseif $WRB->cWRBContentText}
+                        {$WRB->cWRBContentText|nl2br}
+                    {/if}
                 {/if}
             </div>
         {elseif $Link->getLinkType() === $smarty.const.LINKTYP_STARTSEITE}
@@ -55,15 +67,15 @@
         {elseif $Link->getLinkType() === $smarty.const.LINKTYP_GRATISGESCHENK}
             {include file='page/free_gift.tpl'}
         {elseif $Link->getLinkType() === $smarty.const.LINKTYP_PLUGIN && empty($nFullscreenTemplate)}
-            {include file="$cPluginTemplate"}
+            {include file=$cPluginTemplate}
         {elseif $Link->getLinkType() === $smarty.const.LINKTYP_AUSWAHLASSISTENT}
             {include file='productwizard/index.tpl'}
         {elseif $Link->getLinkType() === $smarty.const.LINKTYP_404}
             {include file='page/404.tpl'}
         {/if}
     {/block}
-    
-    {block name="footer"}
+
+    {block name='footer'}
         {if !isset($bAjaxRequest) || !$bAjaxRequest}
             {include file='layout/footer.tpl'}
         {else}

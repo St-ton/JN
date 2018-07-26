@@ -126,15 +126,15 @@ interface MetadataInterface
     public function getNavigationInfo(\Kategorie $category = null, \KategorieListe $openCategories = null): MetadataInterface;
 
     /**
-     * @param array                               $products
-     * @param ProductFilterSearchResultsInterface $searchResults
-     * @param array                               $globalMeta
-     * @param \Kategorie|null                     $category
+     * @param array                  $products
+     * @param SearchResultsInterface $searchResults
+     * @param array                  $globalMeta
+     * @param \Kategorie|null        $category
      * @return string
      */
     public function generateMetaDescription(
         array $products,
-        ProductFilterSearchResultsInterface $searchResults,
+        SearchResultsInterface $searchResults,
         array $globalMeta,
         $category = null
     ): string;
@@ -147,9 +147,9 @@ interface MetadataInterface
     public function generateMetaKeywords($products, \Kategorie $category = null): string;
 
     /**
-     * @param ProductFilterSearchResultsInterface $searchResults
-     * @param array                               $globalMeta
-     * @param \Kategorie|null                     $category
+     * @param SearchResultsInterface $searchResults
+     * @param array                  $globalMeta
+     * @param \Kategorie|null        $category
      * @return string
      */
     public function generateMetaTitle($searchResults, $globalMeta, \Kategorie $category = null): string;
@@ -157,7 +157,7 @@ interface MetadataInterface
     /**
      * Erstellt für die NaviMetas die gesetzten Mainwords + Filter und stellt diese vor jedem Meta an.
      *
-     * @param ProductFilterSearchResultsInterface $searchResults
+     * @param SearchResultsInterface $searchResults
      * @return string
      */
     public function getMetaStart($searchResults): string;

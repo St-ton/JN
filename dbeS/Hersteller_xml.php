@@ -11,26 +11,13 @@ $zipFile = $_FILES['data']['tmp_name'];
 if (auth()) {
     $zipFile = checkFile();
     $return  = 2;
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Hersteller - Entpacke: ' . $zipFile, JTLLOG_LEVEL_DEBUG, false, 'Hersteller_xml');
-    }
     if (($syncFiles = unzipSyncFiles($zipFile, PFAD_SYNC_TMP, __FILE__)) === false) {
-        if (Jtllog::doLog()) {
-            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'Hersteller_xml');
-        }
+        Shop::Container()->getLogService()->error('Error: Cannot extract zip file ' . $zipFile);
         // @todo cleanup?? master didn't do it..
 //        removeTemporaryFiles($zipFile);
     } else {
         $return = 0;
         foreach ($syncFiles as $xmlFile) {
-            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog(
-                    'bearbeite: ' . $xmlFile . ' size: ' . filesize($xmlFile),
-                    JTLLOG_LEVEL_DEBUG,
-                    false,
-                    'Hersteller_xml'
-                );
-            }
             $d   = file_get_contents($xmlFile);
             $xml = XML_unserialize($d);
 
@@ -97,9 +84,10 @@ function bearbeiteHersteller($xml)
                 }
                 //alten Bildpfad merken
                 $oHerstellerBild               = Shop::Container()->getDB()->query(
-                    "SELECT cBildPfad 
+                    'SELECT cBildPfad 
                         FROM thersteller 
-                        WHERE kHersteller = " . (int)$hersteller_arr[$i]->kHersteller, 1
+                        WHERE kHersteller = ' . (int)$hersteller_arr[$i]->kHersteller,
+                    \DB\ReturnType::SINGLE_OBJECT
                 );
                 $hersteller_arr[$i]->cBildPfad = $oHerstellerBild->cBildPfad ?? '';
                 $hersteller_arr[$i]->cSeo      = getSeo($hersteller_arr[$i]->cSeo);

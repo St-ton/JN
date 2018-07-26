@@ -4,7 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 defined('JTLCRON') || define('JTLCRON', true);
-
 if (!defined('PFAD_LOGFILES')) {
     require __DIR__ . '/globalinclude.php';
 }
@@ -17,81 +16,33 @@ if (file_exists(JOBQUEUE_LOCKFILE) === false) {
 
 $lockfile = fopen(JOBQUEUE_LOCKFILE, 'rb');
 
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+use Monolog\Formatter\LineFormatter;
+
+if (PHP_SAPI === 'cli') {
+    $handler = new StreamHandler('php://stdout', Logger::DEBUG);
+    $handler->setFormatter(new LineFormatter("[%datetime%] %message% %context%\n", null, false, true));
+    $logger  = new Logger('cron', [$handler]);
+} else {
+    $logger = Shop::Container()->getLogService();
+}
+
 if (flock($lockfile, LOCK_EX | LOCK_NB) === false) {
-    Jtllog::cronLog('Cron currently locked', 2);
+    $logger->log(JTLLOG_LEVEL_NOTICE, 'Cron currently locked');
     exit;
 }
 
-$oCron_arr = Shop::Container()->getDB()->query(
-    "SELECT tcron.*
-        FROM tcron
-        LEFT JOIN tjobqueue ON tjobqueue.kCron = tcron.kCron
-        WHERE (tcron.dLetzterStart = '0000-00-00 00:00:00' 
-            OR (UNIX_TIMESTAMP(now()) > (UNIX_TIMESTAMP(tcron.dLetzterStart) + (3600 * tcron.nAlleXStd))))
-            AND tcron.dStart < now()
-            AND tjobqueue.kJobQueue IS NULL",
-    \DB\ReturnType::ARRAY_OF_OBJECTS
-);
-if (is_array($oCron_arr) && count($oCron_arr) > 0) {
-    foreach ($oCron_arr as $oCronTMP) {
-        $oCron = new Cron(
-            $oCronTMP->kCron,
-            $oCronTMP->kKey,
-            $oCronTMP->nAlleXStd,
-            $oCronTMP->cName,
-            $oCronTMP->cJobArt,
-            $oCronTMP->cTabelle,
-            $oCronTMP->cKey,
-            $oCronTMP->dStart,
-            $oCronTMP->dStartZeit,
-            $oCronTMP->dLetzterStart
-        );
-        if (Jtllog::doLog(JTLLOG_LEVEL_NOTICE)) {
-            Jtllog::writeLog(print_r($oCron, true), JTLLOG_LEVEL_NOTICE, false, 'kCron', $oCronTMP->kCron);
-        }
-        $nLimitM = 100;
-        switch ($oCron->cJobArt) {
-            case 'newsletter' :
-                if (JOBQUEUE_LIMIT_M_NEWSLETTER > 0) {
-                    $nLimitM = JOBQUEUE_LIMIT_M_NEWSLETTER;
-                }
-                break;
+$db = Shop::Container()->getDB();
 
-            case 'exportformat' :
-                if (JOBQUEUE_LIMIT_M_EXPORTE > 0) {
-                    $nLimitM = JOBQUEUE_LIMIT_M_EXPORTE;
-                }
-                break;
+$factory = new \Cron\JobFactory($db, $logger);
+$queue   = new \Cron\Queue($db, $logger, $factory);
+$checker = new \Cron\Checker($db, $logger);
 
-            case 'statusemail' :
-                if (JOBQUEUE_LIMIT_M_STATUSEMAIL > 0) {
-                    $nLimitM = JOBQUEUE_LIMIT_M_STATUSEMAIL;
-                }
-                break;
-
-            case 'tskundenbewertung' :
-                $nLimitM = 5;
-                break;
-
-            case 'clearcache' :
-                $nLimitM = 10;
-                break;
-
-            default:
-                break;
-
-        }
-        executeHook(HOOK_CRON_INC_SWITCH, ['nLimitM' => &$nLimitM]);
-
-        $oCron->dLetzterStart = date('Y-m-d H:i');
-        $oCron->speicherInJobQueue($oCron->cJobArt, $oCron->dStart, $nLimitM);
-        $oCron->updateCronDB();
-    }
-} else {
-    Jtllog::cronLog('No cron jobs found', 2);
-}
-// JobQueue include
-require_once PFAD_ROOT . PFAD_INCLUDES . 'jobqueue_inc.php';
+$unqueuedJobs = $checker->check();
+$queue->enqueueCronJobs($unqueuedJobs);
+$queue->loadQueueFromDB();
+$queue->run();
 
 if (file_exists(JOBQUEUE_LOCKFILE)) {
     fclose($lockfile);

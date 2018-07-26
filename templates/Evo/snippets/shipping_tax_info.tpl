@@ -1,4 +1,4 @@
-{block name="vat-info"}
+{block name='vat-info'}
     {strip}
     {if !empty($taxdata.text)}
         {$taxdata.text}
@@ -42,7 +42,7 @@
     {/if}
 {/block}
 
-{block name="shipping-class"}
+{block name='shipping-class'}
     {if !empty($taxdata.shippingClass) && $taxdata.shippingClass !== 'standard' && $Einstellungen.global.global_versandklasse_anzeigen === 'Y'}
         ({$taxdata.shippingClass})
     {/if}

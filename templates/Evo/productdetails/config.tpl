@@ -2,7 +2,7 @@
     <div class="product-configuration top10 row">
         <div class="col-sm-12 col-lg-8">
             <div id="cfg-container">
-                {foreach from=$Artikel->oKonfig_arr item=oGruppe}
+                {foreach $Artikel->oKonfig_arr as $oGruppe}
                     {if $oGruppe->getItemCount() > 0}
                         {assign var=oSprache value=$oGruppe->getSprache()}
                         {assign var=cBildPfad value=$oGruppe->getBildPfad()}
@@ -30,7 +30,7 @@
                                     {/if}
                                     <div class="col-md-{if empty($cBildPfad)}12{else}10{/if} group-items">
                                         <ul class="list-group">
-                                            {foreach from=$oGruppe->oItem_arr item=oItem name=konfigitem}
+                                            {foreach $oGruppe->oItem_arr as $oItem}
                                                 {if $oItem->isInStock()}
                                                     {assign var=bSelectable value=1}
                                                 {else}
@@ -44,13 +44,13 @@
                                                     {else}
                                                         {assign var=cBeschreibung value=$oItem->getBeschreibung()}
                                                     {/if}
-                                                    {if $smarty.foreach.konfigitem.first}
+                                                    {if $oItem@first}
                                                         {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN || $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}
                                                         <div class="item clearfix{if isset($aKonfigitemerror_arr[$kKonfigitem]) && $aKonfigitemerror_arr[$kKonfigitem]} error{/if}">
                                                             <select class="form-control" name="item[{$kKonfiggruppe}][]"
                                                                 {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI} multiple="multiple" size="4"{/if} ref="{$kKonfiggruppe}"{if $oGruppe->getMin() > 0} required{/if}>
                                                                 {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN}
-                                                                    <option value="">{lang key="pleaseChoose"}</option>
+                                                                    <option value="">{lang key='pleaseChoose'}</option>
                                                                 {/if}
                                                         {/if}
                                                     {/if}
@@ -65,16 +65,16 @@
                                                                        {if isset($nKonfigitem_arr)} data-selected="{if in_array($oItem->getKonfigitem(), $nKonfigitem_arr)}true{else}false{/if}"{else}
                                                                        {if (!empty($aKonfigerror_arr) && isset($smarty.post.item) && isset($smarty.post.item[$kKonfiggruppe]) && $oItem->getKonfigitem()|in_array:$smarty.post.item[$kKonfiggruppe]) || ($oItem->getSelektiert() && (!isset($aKonfigerror_arr) || !$aKonfigerror_arr))} checked="checked"{/if}{/if} />
                                                                 {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_CHECKBOX}{$oItem->getInitial()}x {/if}
-                                                                {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
+                                                                {$oItem->getName()}{if empty($bSelectable)} - {lang section='productDetails' key='productOutOfStock'}{/if}
                                                                 {if $smarty.session.Kundengruppe->mayViewPrices()}
                                                                     <span class="badge pull-right">{if $oItem->hasRabatt() && $oItem->showRabatt()}
-                                                                    <span class="discount">{$oItem->getRabattLocalized()} {lang key="discount"}</span>{elseif $oItem->hasZuschlag() && $oItem->showZuschlag()}
-                                                                    <span class="additional">{$oItem->getZuschlagLocalized()} {lang key="additionalCharge"}</span>{/if}{$oItem->getPreisLocalized()}</span>
+                                                                    <span class="discount">{$oItem->getRabattLocalized()} {lang key='discount'}</span>{elseif $oItem->hasZuschlag() && $oItem->showZuschlag()}
+                                                                    <span class="additional">{$oItem->getZuschlagLocalized()} {lang key='additionalCharge'}</span>{/if}{$oItem->getPreisLocalized()}</span>
                                                                 {/if}
                                                                 {if !empty($cBeschreibung)}
                                                                     <br>
                                                                     <a class="small filter-collapsible-control" data-toggle="collapse" href="#filter-collapsible_checkdio_{$oItem->getKonfigitem()}" aria-expanded="false" aria-controls="filter-collapsible">
-                                                                        {lang key="showDescription"} <i class="caret"></i>
+                                                                        {lang key='showDescription'} <i class="caret"></i>
                                                                     </a>
                                                                 {/if}
                                                             </label>
@@ -86,20 +86,20 @@
                                                                 {if isset($nKonfigitem_arr)} data-selected="{if in_array($oItem->getKonfigitem(), $nKonfigitem_arr)}true{else}false{/if}"
                                                                 {else}{if $oItem->getSelektiert() && (!isset($aKonfigerror_arr) || !$aKonfigerror_arr)}selected="selected"{/if}{/if}>
                                                             {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}{$oItem->getInitial()} &times; {/if}
-                                                            {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
+                                                            {$oItem->getName()}{if empty($bSelectable)} - {lang section='productDetails' key='productOutOfStock'}{/if}
                                                             {if $smarty.session.Kundengruppe->mayViewPrices()}
                                                                 &nbsp;&nbsp;&nbsp;&nbsp;
-                                                                {if $oItem->hasRabatt() && $oItem->showRabatt()}({$oItem->getRabattLocalized()} {lang key="discount"})&nbsp;{elseif $oItem->hasZuschlag() && $oItem->showZuschlag()}({$oItem->getZuschlagLocalized()} {lang key="additionalCharge"})&nbsp;{/if}
+                                                                {if $oItem->hasRabatt() && $oItem->showRabatt()}({$oItem->getRabattLocalized()} {lang key='discount'})&nbsp;{elseif $oItem->hasZuschlag() && $oItem->showZuschlag()}({$oItem->getZuschlagLocalized()} {lang key='additionalCharge'})&nbsp;{/if}
                                                                 {$oItem->getPreisLocalized()}
                                                             {/if}
                                                         </option>
                                                     {/if}
-                                                    {if $smarty.foreach.konfigitem.last}
+                                                    {if $oItem@last}
                                                         {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN || $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}
                                                             </select>
                                                             {if !empty($cBeschreibung) && $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN}
                                                                 <a class="small filter-collapsible-control{if empty($cBeschreibung)} hidden{/if}" data-toggle="collapse" href="#filter-collapsible_dropdown_{$kKonfiggruppe}" aria-expanded="false" aria-controls="filter-collapsible">
-                                                                    {lang key="showDescription"} <i class="caret"></i>
+                                                                    {lang key='showDescription'} <i class="caret"></i>
                                                                 </a>
                                                             {/if}
                                                         </div>
@@ -133,7 +133,7 @@
 
                                             {if !$oGruppe->quantityEquals()}
                                                 <div class="quantity form-inline" data-id="{$kKonfiggruppe}" style="display:none">
-                                                    <label for="quantity{$kKonfiggruppe}">{lang key="quantity" section="global"}:</label>
+                                                    <label for="quantity{$kKonfiggruppe}">{lang key='quantity' section='global'}:</label>
 
                                                     <div class="input-group">
                                                         <input class="form-control" size="2" type="number"
@@ -163,7 +163,7 @@
             <div id="product-configuration-sidebar">
                 <div class="panel panel-primary no-margin">
                     <div class="panel-heading">
-                        <h5 class="panel-title">{lang key="yourConfiguration" section="global"}</h5>
+                        <h5 class="panel-title">{lang key='yourConfiguration' section='global'}</h5>
                     </div>
                     <table class="table table-striped">
                         <tbody class="summary"></tbody>
@@ -182,12 +182,12 @@
                                        class="quantity form-control text-right" name="anzahl"
                                        value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{elseif isset($fAnzahl)}{$fAnzahl}{else}1{/if}" />
                                 <span class="input-group-btn">
-                                    <button name="inWarenkorb" type="submit" value="{lang key="addToCart" section="global"}"
+                                    <button name="inWarenkorb" type="submit" value="{lang key='addToCart' section='global'}"
                                             class="submit btn btn-primary">
                                         {if isset($kEditKonfig)}
-                                            {lang key="applyChanges" section="global"}
+                                            {lang key='applyChanges' section='global'}
                                         {else}
-                                            {lang key="addToCart" section="global"}
+                                            {lang key='addToCart' section='global'}
                                         {/if}
                                     </button>
                                 </span>

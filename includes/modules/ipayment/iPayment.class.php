@@ -85,9 +85,6 @@ class iPayment extends PaymentMethod
     {
         $this->doLog(print_r($args, true));
         if ($this->verifyNotification($order, $paymentHash, $args)) {
-            if (IP_D_MODE === 1) {
-                writeLog(IP_D_PFAD, 'Verified!', 1);
-            }
             $this->setOrderStatusToPaid($order);
             $incomingPayment          = new stdClass();
             $incomingPayment->fBetrag = (float)($args['trx_amount'] / 100);

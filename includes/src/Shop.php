@@ -621,16 +621,21 @@ final class Shop
      */
     public static function dbg($var, bool $die = false, $beforeString = null, int $backtrace = 0)
     {
+        $nl = PHP_SAPI === 'cli' ? PHP_EOL : '<br>';
         if ($beforeString !== null) {
-            echo $beforeString . '<br />';
+            echo $beforeString . $nl;
         }
-        echo '<pre>';
+        if (PHP_SAPI !== 'cli') {
+            echo '<pre>';
+        }
         var_dump($var);
         if ($backtrace > 0) {
-            echo '<br />Backtrace:<br />';
+            echo $nl . 'Backtrace:' . $nl;
             var_dump(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, $backtrace));
         }
-        echo '</pre>';
+        if (PHP_SAPI !== 'cli') {
+            echo '</pre>';
+        }
         if ($die === true) {
             die();
         }
@@ -1809,6 +1814,12 @@ final class Shop
 
             return new Logger('auth', $handlers, [new PsrLogMessageProcessor()]);
         });
+        $container->setSingleton('Logger', function (Container $container) {
+            $handler = (new NiceDBHandler($container->getDB(), self::getConfigValue(CONF_GLOBAL, 'systemlog_flag')))
+                ->setFormatter(new LineFormatter('%message%', null, false, true));
+
+            return new Logger('jtllog', [$handler], [new PsrLogMessageProcessor()]);
+        });
         $container->setSingleton(ValidationServiceInterface::class, function () {
             $vs = new ValidationService($_GET, $_POST, $_COOKIE);
             $vs->setRuleSet('identity', (new RuleSet())->integer()->gt(0));
@@ -1823,6 +1834,32 @@ final class Shop
         $container->setSingleton(DbService\GcServiceInterface::class, function (Container $container) {
             return new DbService\GcService($container->getDB());
         });
+
+        // ONPAGE COMPOSER
+        $container->setSingleton(OPC\Service::class, function (Container $container) {
+            return new OPC\Service($container->getOPCDB());
+        });
+
+        // ONPAGE COMPOSER PAGE SERVICE
+        $container->setSingleton(OPC\PageService::class, function (Container $container) {
+            return new OPC\PageService($container->getOPC(), $container->getOPCPageDB(), $container->getOPCLocker());
+        });
+
+        // ONPAGE COMPOSER DATABASE
+        $container->setSingleton(OPC\DB::class, function (Container $container) {
+            return new OPC\DB($container->getDB());
+        });
+
+        // ONPAGE COMPOSER PAGE DATABASE
+        $container->setSingleton(OPC\PageDB::class, function (Container $container) {
+            return new OPC\PageDB($container->getDB());
+        });
+
+        // ONPAGE COMPOSER LOCKER
+        $container->setSingleton(OPC\Locker::class, function (Container $container) {
+            return new OPC\Locker($container->getOPCPageDB());
+        });
+
         $container->setFactory(\Boxes\BoxFactoryInterface::class, function () {
             return new \Boxes\BoxFactory(Shopsetting::getInstance()->getAll());
         });

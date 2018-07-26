@@ -2,15 +2,15 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  *}
-{block name="header"}
+{block name='header'}
     {include file='layout/header.tpl'}
 {/block}
 
-{block name="content"}
+{block name='content'}
     {if isset($smarty.get.reg)}
-        <div class="alert alert-success">{lang key="accountCreated" section="global"}</div>
+        <div class="alert alert-success">{lang key='accountCreated' section='global'}</div>
     {elseif !isset($hinweis)}
-        <div class="alert alert-info">{lang key="myAccountDesc" section="login"}</div>
+        <div class="alert alert-info">{lang key='myAccountDesc' section='login'}</div>
     {elseif !empty($hinweis)}
         <div class="alert alert-info">{$hinweis}</div>
     {/if}
@@ -19,11 +19,11 @@
         <script type="text/javascript">
             $(function() {
                 eModal.confirm({ldelim}
-                        message: '{lang key="basket2PersMerge" section="login"}',
-                        label1: '{lang key="no" section="global"}',
-                        label2: '{lang key="yes" section="global"}'
+                        message: '{lang key='basket2PersMerge' section='login'}',
+                        label1: '{lang key='no' section='global'}',
+                        label2: '{lang key='yes' section='global'}'
                     {rdelim},
-                    '{lang key="basket" section="global"}',
+                    '{lang key='basket' section='global'}',
                     function(res) {
                     if (res) {
                         window.location = "{get_static_route id='jtl.php'}?basket2Pers=1"
@@ -43,17 +43,17 @@
             <div class="col-xs-12 col-md-3">
                 <div class="list-group">
                     <a href="{get_static_route id='jtl.php'}" class="list-group-item{if $step === 'mein Konto'} active{/if}">
-                        {lang key="accountOverview" section="account data"}
+                        {lang key='accountOverview' section='account data'}
                     </a>
                     <a href="{get_static_route id='jtl.php' params=['bestellungen' => 1]}" class="list-group-item{if $step === 'bestellung' || $step === 'bestellungen'} active{/if}">
-                        {lang key="orders" section="account data"}
+                        {lang key='orders' section='account data'}
                     </a>
                     <a href="{get_static_route id='jtl.php' params=['editRechnungsadresse' => 1]}" class="list-group-item{if $step === 'rechnungsdaten'} active{/if}">
-                        {lang key="address" section="account data"}
+                        {lang key='address' section='account data'}
                     </a>
                     {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
                         <a href="{get_static_route id='jtl.php' params=['wllist' => 1]}" class="list-group-item{if $step|substr:0:11 === 'wunschliste'} active{/if}">
-                            {lang key="wishlists" section="account data"}
+                            {lang key='wishlists' section='account data'}
                         </a>
                     {/if}
                     <a href="{get_static_route id='jtl.php' params=['bewertungen' => 1]}" class="list-group-item{if $step === 'bewertungen'} active{/if}">
@@ -93,6 +93,6 @@
     </div>
 {/block}
 
-{block name="footer"}
+{block name='footer'}
     {include file='layout/footer.tpl'}
 {/block}

@@ -320,7 +320,7 @@ function fuehreLoginAus($userLogin, $passLogin)
     $csrfTest = FormHelper::validateToken();
     if ($csrfTest === false) {
         $cHinweis .= Shop::Lang()->get('csrfValidationFailed');
-        Jtllog::writeLog('CSRF-Warnung fuer Login: ' . $_POST['login']);
+        Shop::Container()->getLogService()->warning('CSRF-Warnung für Login: ' . $_POST['login']);
     } else {
         $cart           = Session::Cart();
         $Einstellungen  = Shop::getSettings([CONF_GLOBAL, CONF_KAUFABWICKLUNG, CONF_KUNDEN]);

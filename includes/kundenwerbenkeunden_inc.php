@@ -5,62 +5,37 @@
  */
 
 /**
- * @param array $cPost_arr
+ * @param array $post
  * @return bool
+ * @deprecated since 5.0.0
  */
-function pruefeEingabe(array $cPost_arr)
+function pruefeEingabe(array $post)
 {
-    $cVorname  = StringHandler::filterXSS($cPost_arr['cVorname']);
-    $cNachname = StringHandler::filterXSS($cPost_arr['cNachname']);
-    $cEmail    = StringHandler::filterXSS($cPost_arr['cEmail']);
-
-    return strlen($cVorname) > 0 && strlen($cNachname) > 0 && StringHandler::filterEmailAddress($cEmail) !== false;
+    trigger_error(__FUNCTION__ . ' is deprecated. Use KundenwerbenKunden::checkInputData() instead.', E_USER_DEPRECATED);
+    return KundenwerbenKunden::checkInputData($post);
 }
 
 /**
- * @param array $cPost_arr
- * @param array $Einstellungen
+ * @param array $post
+ * @param array $conf
  * @return bool
+ * @deprecated since 5.0.0
  */
-function setzeKwKinDB(array $cPost_arr, array $Einstellungen)
+function setzeKwKinDB(array $post, array $conf)
 {
-    if ($Einstellungen['kundenwerbenkunden']['kwk_nutzen'] !== 'Y') {
-        return false;
-    }
-    $cVorname  = StringHandler::filterXSS($cPost_arr['cVorname']);
-    $cNachname = StringHandler::filterXSS($cPost_arr['cNachname']);
-    $cEmail    = StringHandler::filterXSS($cPost_arr['cEmail']);
-    // Prüfe ob Email nicht schon bei einem Kunden vorhanden ist
-    $oKunde = Shop::Container()->getDB()->select('tkunde', 'cMail', $cEmail);
-
-    if (isset($oKunde->kKunde) && $oKunde->kKunde > 0) {
-        return false;
-    }
-    $oKwK = new KundenwerbenKunden($cEmail);
-    if ((int)$oKwK->kKundenWerbenKunden > 0) {
-        return false;
-    }
-    // Setze in tkundenwerbenkunden
-    $oKwK->kKunde       = $_SESSION['Kunde']->kKunde;
-    $oKwK->cVorname     = $cVorname;
-    $oKwK->cNachname    = $cNachname;
-    $oKwK->cEmail       = $cEmail;
-    $oKwK->nRegistriert = 0;
-    $oKwK->fGuthaben    = (float)$Einstellungen['kundenwerbenkunden']['kwk_neukundenguthaben'];
-    $oKwK->dErstellt    = 'now()';
-    $oKwK->insertDB();
-    $oKwK->sendeEmailanNeukunde();
-
-    return true;
+    trigger_error(__FUNCTION__ . ' is deprecated. Use KundenwerbenKunden::saveToDB() instead.', E_USER_DEPRECATED);
+    return KundenwerbenKunden::saveToDB($post, $conf);
 }
 
 /**
  * @param int   $kKunde
  * @param float $fGuthaben
  * @return bool
+ * @deprecated since 5.0.0 - not use in core anymore
  */
 function gibBestandskundeGutbaben(int $kKunde, $fGuthaben)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if ($kKunde > 0) {
         Shop::Container()->getDB()->queryPrepared(
             'UPDATE tkunde 

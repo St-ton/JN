@@ -68,12 +68,14 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
                     $source = $vl->cContentText;
                 } else {
                     $source = '';
-                    Jtllog::writeLog('Ungueltiger Emailvorlagen-Typ: ' . $pcs[0], JTLLOG_LEVEL_NOTICE);
+                    Shop::Container()->getLogService()->notice('Ungueltiger Emailvorlagen-Typ: ' . $pcs[0]);
                 }
             } else {
                 $source = '';
-                Jtllog::writeLog('Emailvorlage mit der ID ' . (int)$pcs[1] .
-                    ' in der Sprache ' . (int)$pcs[2] . ' wurde nicht gefunden', JTLLOG_LEVEL_NOTICE);
+                Shop::Container()->getLogService()->notice(
+                    'Emailvorlage mit der ID ' . (int)$pcs[1] .
+                    ' in der Sprache ' . (int)$pcs[2] . ' wurde nicht gefunden'
+                );
             }
         } elseif ($this->type === 'newsletter') {
             $cTeile_arr = explode('_', $name);
@@ -92,7 +94,7 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
             }
         } else {
             $source = '';
-            Jtllog::writeLog('Template-Typ ' . $this->type . ' wurde nicht gefunden', JTLLOG_LEVEL_NOTICE);
+            Shop::Container()->getLogService()->notice('Template-Typ ' . $this->type . ' wurde nicht gefunden');
         }
     }
 

@@ -9,7 +9,7 @@
 {getCheckBoxForLocation nAnzeigeOrt=$nAnzeigeOrt cPlausi_arr=$cPlausi_arr cPost_arr=$cPost_arr assign='checkboxes'}
 
 {if !empty($checkboxes)}
-    {foreach name="checkboxes" from=$checkboxes item='cb'}
+    {foreach $checkboxes as $cb}
         <div class="form-group{if !empty($cb->cErrormsg)} has-error{/if}{if $cb->nPflicht == 1} required{/if}">
             <div class="checkbox">
                 <label class="control-label" for="{if isset($cIDPrefix)}{$cIDPrefix}_{/if}{$cb->cID}">
@@ -25,7 +25,7 @@
                             >
                     {$cb->cName}
                     {if !empty($cb->cLinkURL)}
-                        <span class="moreinfo">(<a href="{$cb->cLinkURL}" class="popup checkbox-popup">{lang key="read" section="account data"}</a>)</span>
+                        <span class="moreinfo">(<a href="{$cb->cLinkURL}" class="popup checkbox-popup">{lang key='read' section='account data'}</a>)</span>
                     {/if}
                 </label>
             </div>

@@ -22,11 +22,7 @@ function baueBewertungsErinnerung()
     }
     $nVersandTage = (int)$conf['bewertungserinnerung_versandtage'];
     if ($nVersandTage <= 0) {
-        Jtllog::writeLog(
-            'Einstellung bewertungserinnerung_versandtage ist 0 oder nicht gesetzt.',
-            JTLLOG_LEVEL_ERROR,
-            true
-        );
+        Shop::Container()->getLogService()->error('Einstellung bewertungserinnerung_versandtage ist 0');
         return;
     }
     // Baue SQL mit allen erlaubten Kundengruppen
@@ -71,12 +67,7 @@ function baueBewertungsErinnerung()
                     )";
     $oBestellungen_arr = Shop::Container()->getDB()->query($cQuery, \DB\ReturnType::ARRAY_OF_OBJECTS);
     if (count($oBestellungen_arr) === 0) {
-        Jtllog::writeLog(
-            'Es wurden keine Bestellungen für Bewertungserinnerungen gefunden. ',
-            JTLLOG_LEVEL_DEBUG,
-            false,
-            'Bewertungserinnerung'
-        );
+        Shop::Container()->getLogService()->debug('Keine Bestellungen für Bewertungserinnerungen gefunden.');
         return;
     }
     foreach ($oBestellungen_arr as $oBestellungen) {
@@ -115,16 +106,13 @@ function baueBewertungsErinnerung()
                 WHERE kBestellung = " . (int)$oBestellungen->kBestellung,
             \DB\ReturnType::AFFECTED_ROWS
         );
-
-        if (Jtllog::doLog(JTLLOG_LEVEL_NOTICE)) {
-            Jtllog::writeLog(
+        $logger = Shop::Container()->getLogService();
+        if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
+            $logger->withName('Bewertungserinnerung')->debug(
                 'Kunde und Bestellung aus baueBewertungsErinnerung (Mail versendet): <pre>' .
                 print_r($obj, true) .
                 '</pre>',
-                JTLLOG_LEVEL_NOTICE,
-                true,
-                'Bewertungserinnerung',
-                $oBestellungen->kBestellung
+                [$oBestellungen->kBestellung]
             );
         }
 

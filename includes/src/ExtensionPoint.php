@@ -72,7 +72,7 @@ class ExtensionPoint
                 $oHandle = new $cClass();
                 $oHandle->init($oExtension->kInitial);
             } else {
-                Jtllog::writeLog("Extension '{$cClass}' not found");
+                Shop::Container()->getLogService()->error('Extension "' . $cClass . '" not found');
             }
         }
 

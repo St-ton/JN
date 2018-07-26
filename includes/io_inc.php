@@ -721,7 +721,7 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
         if (count($kGesetzteEigeschaftWert_arr) >= $oArtikel->nVariationOhneFreifeldAnzahl) {
             $oArtikelTMP = getArticleByVariations($kVaterArtikel, $kGesetzteEigeschaftWert_arr);
 
-            if ($kArtikelKind !== (int)$oArtikelTMP->kArtikel) {
+            if ($oArtikelTMP !== null && $kArtikelKind !== (int)$oArtikelTMP->kArtikel) {
                 $oGesetzteEigeschaftWerte_arr = [];
                 foreach ($kFreifeldEigeschaftWert_arr as $cKey => $cValue) {
                     $oGesetzteEigeschaftWerte_arr[] = (object)[
@@ -764,12 +764,10 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
             $objResponse->jsfunc('$.evo.article().variationActive', $key, $escaped, null, $wrapper);
         }
 
-        $notAvailableInSelection = [];
         foreach ($nInvalidVariations as $k => $values) {
             foreach ($values as $v) {
                 $text = utf8_encode(Shop::Lang()->get('notAvailableInSelection'));
                 $objResponse->jsfunc('$.evo.article().variationInfo', $v, -1, $text);
-                $notAvailableInSelection[] = $v;
             }
         }
 
@@ -787,22 +785,25 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
 
                 foreach ($kVerfuegbareEigenschaftWert_arr as $kVerfuegbareEigenschaftWert) {
                     //nur für noch verfügbare Varkombis Lagerbestand holen und Infos setzen
-                    if (!in_array($kVerfuegbareEigenschaftWert, $notAvailableInSelection) || $kZuletztGesetzteEigenschaft === 0) {
+                    if (in_array($kEigenschaft, $kNichtGesetzteEigenschaft_arr)
+                        || $kZuletztGesetzteEigenschaft === 0
+                    ) {
                         $kMoeglicheEigeschaftWert_arr[$kEigenschaft] = $kVerfuegbareEigenschaftWert;
                         $oKindArtikel                                = getArticleStockInfo(
                             $kVaterArtikel,
                             $kMoeglicheEigeschaftWert_arr
                         );
 
-                        if ($oKindArtikel !== null && $oKindArtikel->status == 0) {
-                            if (!in_array($kVerfuegbareEigenschaftWert, $kGesetzteEigeschaftWert_arr)) {
-                                $objResponse->jsfunc(
-                                    '$.evo.article().variationInfo',
-                                    $kVerfuegbareEigenschaftWert,
-                                    $oKindArtikel->status,
-                                    $oKindArtikel->text
-                                );
-                            }
+                        if ($oKindArtikel !== null
+                            && $oKindArtikel->status == 0
+                            && !in_array($kVerfuegbareEigenschaftWert, $kGesetzteEigeschaftWert_arr)
+                        ) {
+                            $objResponse->jsfunc(
+                                '$.evo.article().variationInfo',
+                                $kVerfuegbareEigenschaftWert,
+                                $oKindArtikel->status,
+                                $oKindArtikel->text
+                            );
                         }
                     }
                 }

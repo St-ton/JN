@@ -11,8 +11,6 @@ use Cron\Job;
 use Cron\JobInterface;
 use Cron\QueueEntry;
 use DB\DbInterface;
-use DB\ReturnType;
-use function Functional\map;
 use Psr\Log\LoggerInterface;
 
 require_once PFAD_ROOT . \PFAD_INCLUDES . 'mailTools.php';

@@ -123,7 +123,7 @@
             <input type="hidden" name="qf" value="{$NaviFilter->SuchspecialFilter->kKey}" />{/if}
         {if isset($NaviFilter->BewertungFilter->nSterne) && $NaviFilter->BewertungFilter->nSterne > 0}
             <input type="hidden" name="bf" value="{$NaviFilter->BewertungFilter->nSterne}" />{/if}
-        {if isset($NaviFilter->PreisspannenFilter->cWert) && $NaviFilter->PreisspannenFilter->cWert|count > 0}
+        {if !empty($NaviFilter->PreisspannenFilter->cWert)}
             <input type="hidden" name="pf" value="{$NaviFilter->PreisspannenFilter->cWert}" />{/if}
         {if isset($NaviFilter->MerkmalFilter) && is_array($NaviFilter->MerkmalFilter)}
             {foreach name=merkmalfilter from=$NaviFilter->MerkmalFilter item=mmfilter}

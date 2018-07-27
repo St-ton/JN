@@ -29,7 +29,7 @@
  * @method bool isValid()
  * @method array|mixed|null getLangArray()
  * @method static bool|string getIsoFromLangID(int $kSprache)
- * @method static bool|int getLangIDFromIso(string $cISO)
+ * @method static stdClass|null getLangIDFromIso(string $cISO)
  * @method static bool|int|string getLanguageDataByType(string $cISO = '', int $kSprache = 0)
  */
 class Sprache

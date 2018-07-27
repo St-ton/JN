@@ -1651,7 +1651,7 @@ class Warenkorb
         foreach ($this->PositionenArr as $Position) {
             $totalWeight      += $Position->fGesamtgewicht;
             $shippingClasses[] = $Position->kVersandklasse;
-            $maxPrices        += $Position->Artikel->Preise->fVKNetto;
+            $maxPrices        += $Position->Artikel->Preise->fVKNetto ?? 0;
         }
 
         // cheapest shipping except shippings that offer cash payment

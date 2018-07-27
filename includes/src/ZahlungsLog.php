@@ -38,12 +38,11 @@ class ZahlungsLog
     }
 
     /**
-     * @param int $nStart
-     * @param int $nLimit
+     * @param string $limit
      * @param int $nLevel
      * @return array
      */
-    public function holeLog(int $nStart = 0, int $nLimit = 100, int $nLevel = -1): array
+    public function holeLog(string $limit, int $nLevel = -1): array
     {
         $cSQLLevel = $nLevel >= 0 ? ('AND nLevel = ' . $nLevel) : '';
 
@@ -51,7 +50,7 @@ class ZahlungsLog
             "SELECT * FROM tzahlungslog
                 WHERE cModulId = '" . $this->cModulId . "' " . $cSQLLevel . "
                 ORDER BY dDatum DESC, kZahlunglog DESC 
-                LIMIT " . $nStart . ", " . $nLimit,
+                LIMIT " . $limit,
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }

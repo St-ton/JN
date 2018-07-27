@@ -1,9 +1,8 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=#paymentmethods# cBeschreibung=#log# cDokuURL=#paymentmethodsURL#}
 <div id="content">
     {if !empty($oLog_arr)}
-        <div>
-            <a href="zahlungsarten.php?a=logreset&kZahlungsart={$kZahlungsart}&token={$smarty.session.jtl_token}" class="btn btn-danger reset"><i class="fa fa-trash"></i> {#logReset#}</a>
-        </div>
+        {include file='tpl_inc/pagination.tpl' oPagination=$paginationPaymentLog cParam_arr=['a'=>'log',
+        'token'=>$smarty.session.jtl_token, 'kZahlungsart'=>$kZahlungsart]}
         <div class="table-responsive">
             <table class="table table-striped">
                 <thead>
@@ -30,7 +29,10 @@
                 {/foreach}
             </table>
         </div>
-        <a href="zahlungsarten.php" class="btn btn-default"><i class="fa fa-angle-double-left"></i> {#pageBack#}</a>
+        <div>
+            <a href="zahlungsarten.php" class="btn btn-default"><i class="fa fa-angle-double-left"></i> {#pageBack#}</a>
+            <a href="zahlungsarten.php?a=logreset&kZahlungsart={$kZahlungsart}&token={$smarty.session.jtl_token}" class="btn btn-danger reset"><i class="fa fa-trash"></i> {#logReset#}</a>
+        </div>
     {else}
         <div class="alert alert-info">
             <p>Keine Logs vorhanden.</p>

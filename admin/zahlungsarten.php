@@ -269,8 +269,12 @@ if ($step === 'einstellen') {
     $oZahlungsart = Shop::Container()->getDB()->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
 
     if (isset($oZahlungsart->cModulId) && strlen($oZahlungsart->cModulId) > 0) {
-        $smarty->assign('oLog_arr', (new ZahlungsLog($oZahlungsart->cModulId))->holeLog())
-               ->assign('kZahlungsart', $kZahlungsart);
+        $paginationPaymentLog = (new Pagination())
+            ->setItemCount(ZahlungsLog::count($oZahlungsart->cModulId))
+            ->assemble();
+        $smarty->assign('oLog_arr', (new ZahlungsLog($oZahlungsart->cModulId))->holeLog($paginationPaymentLog->getLimitSQL()))
+               ->assign('kZahlungsart', $kZahlungsart)
+               ->assign('paginationPaymentLog', $paginationPaymentLog);
     }
 } elseif ($step === 'payments') {
     if (isset($_POST['action'], $_POST['kEingang_arr'])

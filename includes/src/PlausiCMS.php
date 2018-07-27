@@ -21,7 +21,7 @@ class PlausiCMS extends Plausi
         }
         switch ($cType) {
             case 'lnk':
-                // unique special site
+                // unique special page
                 if (isset($this->xPostVar_arr['nSpezialseite'], $this->xPostVar_arr['nLinkart'])
                     && (int)$this->xPostVar_arr['nLinkart'] === 3
                 ) {

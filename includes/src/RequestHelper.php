@@ -266,7 +266,7 @@ class RequestHelper
      * @param null   $post
      * @return mixed
      */
-    public static function http_get_contents($url, int $timeout = 15, $post = null)
+    public static function http_get_contents($url, int $timeout = 5, $post = null)
     {
         return self::make_http_request($url, $timeout, $post, false);
     }
@@ -277,7 +277,7 @@ class RequestHelper
      * @param null   $post
      * @return mixed
      */
-    public static function http_get_status($url, int $timeout = 15, $post = null)
+    public static function http_get_status($url, int $timeout = 5, $post = null)
     {
         return self::make_http_request($url, $timeout, $post, true);
     }
@@ -290,7 +290,7 @@ class RequestHelper
      * @param bool   $skipStatusCheck
      * @return mixed
      */
-    public static function make_http_request($url, int $timeout = 15, $post = null, $state = false, $skipStatusCheck = false)
+    public static function make_http_request($url, int $timeout = 5, $post = null, $state = false, $skipStatusCheck = false)
     {
         $nCode = 0;
         $cData = '';
@@ -299,6 +299,7 @@ class RequestHelper
             $curl = curl_init();
 
             curl_setopt($curl, CURLOPT_URL, $url);
+            curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $timeout);
             curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, DEFAULT_CURL_OPT_VERIFYPEER);

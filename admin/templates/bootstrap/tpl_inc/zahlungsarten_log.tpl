@@ -29,9 +29,10 @@
                 {/foreach}
             </table>
         </div>
-        <div>
+        <div class="btn-group">
             <a href="zahlungsarten.php" class="btn btn-default"><i class="fa fa-angle-double-left"></i> {#pageBack#}</a>
-            <a href="zahlungsarten.php?a=logreset&kZahlungsart={$kZahlungsart}&token={$smarty.session.jtl_token}" class="btn btn-danger reset"><i class="fa fa-trash"></i> {#logReset#}</a>
+            <button class="btn btn-danger reset" data-toggle="modal" data-target="#reset-payment-modal" data-href="zahlungsarten.php?a=logreset&kZahlungsart={$kZahlungsart}&token={$smarty.session.jtl_token}">
+            <i class="fa fa-trash"></i> {#logReset#}</button>
         </div>
     {else}
         <div class="alert alert-info">
@@ -40,3 +41,5 @@
         <a href="zahlungsarten.php" class="btn btn-default"><i class="fa fa-angle-double-left"></i> {#pageBack#}</a>
     {/if}
 </div>
+{include file='tpl_inc/modal_confirm.tpl' modalTitle='Log zurücksetzen' modalID='reset-payment'}
+

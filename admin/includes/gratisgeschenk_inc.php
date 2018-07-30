@@ -46,11 +46,11 @@ function holeHaeufigeGeschenke($cSQL)
     $oHaeufigGeschenkTMP_arr = [];
     if (strlen($cSQL) > 0) {
         $oHaeufigGeschenkTMP_arr = Shop::Container()->getDB()->query(
-            "SELECT tgratisgeschenk.kArtikel, count(*) AS nAnzahl, max(tbestellung.dErstellt) as lastOrdered
+            'SELECT tgratisgeschenk.kArtikel, count(*) AS nAnzahl, MAX(tbestellung.dErstellt) AS lastOrdered, AVG(tbestellung.fGesamtsumme) AS avgOrderValue
                 FROM tgratisgeschenk
                   LEFT JOIN tbestellung ON tbestellung.kWarenkorb = tgratisgeschenk.kWarenkorb
                 GROUP BY tgratisgeschenk.kArtikel
-                ORDER BY nAnzahl DESC, lastOrdered DESC " . $cSQL,
+                ORDER BY nAnzahl DESC, lastOrdered DESC ' . $cSQL,
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
@@ -66,7 +66,10 @@ function holeHaeufigeGeschenke($cSQL)
                 $cDatum_arr          = DateHelper::getDateParts($oHaeufigGeschenkTMP->lastOrdered);
                 $lastOrdered         = $cDatum_arr['cTag'] . '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'] . ' ' .
                     $cDatum_arr['cStunde'] . ':' . $cDatum_arr['cMinute'] . ':' . $cDatum_arr['cSekunde'];
-                $oHaeufigGeschenk_arr[] = (object)['Artikel' => $oArtikel, 'lastOrdered' => $lastOrdered];
+                $oHaeufigGeschenk_arr[] = (object)[
+                    'Artikel' => $oArtikel,
+                    'lastOrdered' => $lastOrdered,
+                    'avgOrderValue' => $oHaeufigGeschenkTMP->avgOrderValue];
             }
         }
     }
@@ -84,10 +87,10 @@ function holeLetzten100Geschenke($cSQL)
     $oLetzten100GeschenkTMP_arr = [];
     if (strlen($cSQL) > 0) {
         $oLetzten100GeschenkTMP_arr = Shop::Container()->getDB()->query(
-            "SELECT tgratisgeschenk.*, tbestellung.dErstellt as orderCreated
+            'SELECT tgratisgeschenk.*, tbestellung.dErstellt AS orderCreated, tbestellung.fGesamtsumme
                 FROM tgratisgeschenk
                   LEFT JOIN tbestellung ON tbestellung.kWarenkorb = tgratisgeschenk.kWarenkorb
-                ORDER BY tbestellung.dErstellt DESC " . $cSQL,
+                ORDER BY tbestellung.dErstellt DESC ' . $cSQL,
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
@@ -103,7 +106,11 @@ function holeLetzten100Geschenke($cSQL)
                 $cDatum_arr          = DateHelper::getDateParts($oLetzten100GeschenkTMP->orderCreated);
                 $orderCreated        = $cDatum_arr['cTag'] . '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'] . ' ' .
                     $cDatum_arr['cStunde'] . ':' . $cDatum_arr['cMinute'] . ':' . $cDatum_arr['cSekunde'];
-                $oLetzten100Geschenk_arr[] = (object)['Artikel' => $oArtikel, 'orderCreated' => $orderCreated];
+                $oLetzten100Geschenk_arr[] =(object)[
+                    'Artikel' => $oArtikel,
+                    'orderCreated' => $orderCreated,
+                    'orderValue' => $oLetzten100GeschenkTMP->fGesamtsumme
+                ];
             }
         }
     }

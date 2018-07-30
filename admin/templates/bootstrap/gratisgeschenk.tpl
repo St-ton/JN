@@ -28,7 +28,7 @@
                         <thead>
                         <tr>
                             <th class="tleft">{#ggProductName#}</th>
-                            <th class="th-2">{#ggOrderValue#}</th>
+                            <th class="th-2">{#ggOrderValueMin#}</th>
                             <th class="th-3">{#ggDate#}</th>
                         </tr>
                         </thead>
@@ -57,8 +57,9 @@
                         <thead>
                         <tr>
                             <th class="tleft">{#ggProductName#}</th>
-                            <th class="th-2">{#ggOrderValue#}</th>
+                            <th class="th-2">{#ggOrderValueMin#}</th>
                             <th class="th-3">{#ggCount#}</th>
+                            <th class="th-3">{#ggOrderValueAverage#}</th>
                             <th class="th-4">{#gglastOrdered#}</th>
                         </tr>
                         </thead>
@@ -70,6 +71,7 @@
                                 </td>
                                 <td class="tcenter">{getCurrencyConversionSmarty fPreisBrutto=$oHaeufigGeschenk->Artikel->FunktionsAttribute[$cFunAttrib]}</td>
                                 <td class="tcenter">{$oHaeufigGeschenk->Artikel->nGGAnzahl} x</td>
+                                <td class="tcenter">{getCurrencyConversionSmarty fPreisBrutto=$oHaeufigGeschenk->avgOrderValue}</td>
                                 <td class="tcenter">{$oHaeufigGeschenk->lastOrdered}</td>
                             </tr>
                         {/foreach}
@@ -88,7 +90,8 @@
                         <thead>
                         <tr>
                             <th class="tleft">{#ggProductName#}</th>
-                            <th class="th-2">{#ggOrderValue#}</th>
+                            <th class="th-2">{#ggOrderValueMin#}</th>
+                            <th class="th-4">{#ggOrderValue#}</th>
                             <th class="th-4">{#ggOrdered#}</th>
                         </tr>
                         </thead>
@@ -99,6 +102,7 @@
                                     <a href="{$oAktiveGeschenk->cURLFull}" target="_blank">{$oLetzten100Geschenk->Artikel->cName}</a>
                                 </td>
                                 <td class="tcenter">{getCurrencyConversionSmarty fPreisBrutto=$oLetzten100Geschenk->Artikel->FunktionsAttribute[$cFunAttrib]}</td>
+                                <td class="tcenter">{getCurrencyConversionSmarty fPreisBrutto=$oLetzten100Geschenk->orderValue}</td>
                                 <td class="tcenter">{$oLetzten100Geschenk->orderCreated}</td>
                             </tr>
                         {/foreach}

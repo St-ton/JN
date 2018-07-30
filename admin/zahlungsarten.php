@@ -272,8 +272,8 @@ if ($step === 'einstellen') {
         $paginationPaymentLog = (new Pagination())
             ->setItemCount(ZahlungsLog::count($oZahlungsart->cModulId))
             ->assemble();
-        $smarty->assign('oLog_arr', (new ZahlungsLog($oZahlungsart->cModulId))->holeLog($paginationPaymentLog->getLimitSQL()))
-               ->assign('kZahlungsart', $kZahlungsart)
+        $smarty->assign('paymentLogs', (new ZahlungsLog($oZahlungsart->cModulId))->holeLog($paginationPaymentLog->getLimitSQL()))
+               ->assign('paymentData', $oZahlungsart)
                ->assign('paginationPaymentLog', $paginationPaymentLog);
     }
 } elseif ($step === 'payments') {

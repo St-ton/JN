@@ -372,7 +372,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                 $oWunschliste->kKunde == $_SESSION['Kunde']->kKunde
             ) {
                 // Wurde nOeffentlich verändert
-                if (isset($_REQUEST['nstd']) && validateToken()) {
+                if (isset($_REQUEST['wlAction']) && validateToken()) {
                     $nOeffentlich = verifyGPDataString('wlAction');
                     // Wurde nstd auf 1 oder 0 gesetzt?
                     if ($nOeffentlich === 'setPrivate') {

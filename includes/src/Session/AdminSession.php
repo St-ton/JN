@@ -94,7 +94,7 @@ class AdminSession
         if ($set === true) {
             \session_set_cookie_params($lifetime, $path, $domain, $secure, $httpOnly);
         }
-        self::$storage = new SessionStorage(self::$handler, []);
+        self::$storage = new SessionStorage(self::$handler);
 
         if ($set === true) {
             $exp = ($lifetime === 0) ? 0 : \time() + $lifetime;

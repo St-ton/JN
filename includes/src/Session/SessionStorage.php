@@ -25,13 +25,11 @@ class SessionStorage
 
     /**
      * @param \SessionHandlerInterface $handler
-     * @param array                    $options
      * @param bool                     $start - call session_start()?
      */
-    public function __construct(\SessionHandlerInterface $handler, array $options = [], bool $start = true)
+    public function __construct(\SessionHandlerInterface $handler, bool $start = true)
     {
-        \ini_set('session.use_cookies', 1);
-        session_register_shutdown();
+        \session_register_shutdown();
         $this->setHandler($handler, $start);
     }
 
@@ -40,7 +38,7 @@ class SessionStorage
      * @param bool                     $start - call session_start()?
      * @return $this
      */
-    public function setHandler(\SessionHandlerInterface $handler, bool $start = true)
+    public function setHandler(\SessionHandlerInterface $handler, bool $start = true): self
     {
         $this->_handler = $handler;
         if (\get_class($this->_handler) === SessionHandlerJTL::class) {
@@ -50,7 +48,7 @@ class SessionStorage
             $res = session_set_save_handler($this->_handler, true);
         }
         if ($res !== true) {
-            throw new \RuntimeException('Failed to start session');
+            throw new \RuntimeException('Failed to set session handler');
         }
         $conf           = \Shop::getSettings([\CONF_GLOBAL])['global'];
         $cookieDefaults = \session_get_cookie_params();
@@ -104,15 +102,19 @@ class SessionStorage
             $secure = $secure
                 && ($conf['kaufabwicklung_ssl_nutzen'] === 'P' || \strpos(URL_SHOP, 'https://') === 0);
         }
-        if ($set === true) {
-            \session_set_cookie_params($lifetime, $path, $domain, $secure, $httpOnly);
-        }
         if ($start) {
-            \session_start();
-        }
-        if ($set === true) {
-            $exp = ($lifetime === 0) ? 0 : \time() + $lifetime;
-            \setcookie(\session_name(), \session_id(), $exp, $path, $domain, $secure, $httpOnly);
+            \session_start([
+                'use_cookies'     => '1',
+                'cookie_domain'   => $domain,
+                'cookie_secure'   => $secure,
+                'cookie_lifetime' => $lifetime,
+                'cookie_path'     => $path,
+                'cookie_httponly' => $httpOnly
+            ]);
+//        } elseif ($set === true) {
+//            \session_set_cookie_params($lifetime, $path, $domain, $secure, $httpOnly);
+//            $exp = ($lifetime === 0) ? 0 : \time() + $lifetime;
+//            \setcookie(\session_name(), \session_id(), $exp, $path, $domain, $secure, $httpOnly);
         }
 
         $this->_handler->sessionData = &$_SESSION;

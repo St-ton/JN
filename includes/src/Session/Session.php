@@ -110,7 +110,7 @@ class Session
                 self::$handler = new SessionHandlerJTL();
             }
         }
-        self::$storage = new SessionStorage(self::$handler, [], $start);
+        self::$storage = new SessionStorage(self::$handler, $start);
         $this->setStandardSessionVars();
         \Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
 

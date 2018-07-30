@@ -372,17 +372,17 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                 $oWunschliste->kKunde == $_SESSION['Kunde']->kKunde
             ) {
                 // Wurde nOeffentlich verändert
-                if (isset($_REQUEST['nstd']) && validateToken()) {
-                    $nOeffentlich = verifyGPCDataInteger('nstd');
+                if (isset($_REQUEST['wlAction']) && validateToken()) {
+                    $nOeffentlich = verifyGPDataString('wlAction');
                     // Wurde nstd auf 1 oder 0 gesetzt?
-                    if ($nOeffentlich === 0) {
+                    if ($nOeffentlich === 'setPrivate') {
                         $upd               = new stdClass();
                         $upd->nOeffentlich = 0;
                         $upd->cURLID       = '';
                         // nOeffentlich der Wunschliste updaten zu Privat
                         Shop::DB()->update('twunschliste', 'kWunschliste', $kWunschliste, $upd);
                         $cHinweis .= Shop::Lang()->get('wishlistSetPrivate', 'messages');
-                    } elseif ($nOeffentlich === 1) {
+                    } elseif ($nOeffentlich === 'setPublic') {
                         $cURLID = gibUID(32, substr(md5($kWunschliste), 0, 16) . time());
                         // Kampagne
                         $oKampagne = new Kampagne(KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);

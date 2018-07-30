@@ -49,7 +49,7 @@ class Limit extends AbstractFilter
                 : 20;
         }
 
-        return \min($limit, ARTICLES_PER_PAGE_HARD_LIMIT);
+        return \min((int)$limit, ARTICLES_PER_PAGE_HARD_LIMIT);
     }
 
     /**

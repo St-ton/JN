@@ -195,25 +195,27 @@
         },
         
         renderCaptcha: function(parameters) {
-            if (typeof parameters !== 'undefined') {
-                this.options.captcha = 
-                    $.extend({}, this.options.captcha, parameters);
-            }
+            if ($('.g-recaptcha').length > 0) {
+                if (typeof parameters !== 'undefined') {
+                    this.options.captcha =
+                        $.extend({}, this.options.captcha, parameters);
+                }
 
-            if (typeof grecaptcha === 'undefined' && !this.options.captcha.loaded) {
-                this.options.captcha.loaded = true;
-                var lang                    = document.documentElement.lang;
-                $.getScript("https://www.google.com/recaptcha/api.js?render=explicit&onload=g_recaptcha_callback&hl=" + lang);
-            } else {
-                $('.g-recaptcha').each(function(index, item) {
-                    parameters = $.extend({}, $(item).data(), parameters);
-                    try {
-                        grecaptcha.render(item, parameters);
-                    }
-                    catch(e) { }
-                });
+                if (typeof grecaptcha === 'undefined' && !this.options.captcha.loaded) {
+                    this.options.captcha.loaded = true;
+                    var lang                    = document.documentElement.lang;
+                    $.getScript("https://www.google.com/recaptcha/api.js?render=explicit&onload=g_recaptcha_callback&hl=" + lang);
+                } else {
+                    $('.g-recaptcha').each(function(index, item) {
+                        parameters = $.extend({}, $(item).data(), parameters);
+                        try {
+                            grecaptcha.render(item, parameters);
+                        }
+                        catch(e) { }
+                    });
+                }
+                $('.g-recaptcha-response').attr('required', true);
             }
-            $('.g-recaptcha-response').attr('required', true);
         },
         
         popupDep: function() {

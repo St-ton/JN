@@ -1,10 +1,10 @@
-<div {$instance->getAttributeString()}>
+<div id="{$instance->getProperty('uid')}" {$instance->getAttributeString()}>
     {if !empty($instance->getProperty('video-title'))}
         <label>{$instance->getProperty('video-title')}</label>
     {/if}
     {if $instance->getProperty('video-vendor') === 'youtube'}
         <div{if $instance->getProperty('video-responsive')} class="embed-responsive embed-responsive-16by9"{/if}>
-            <iframe {strip}src="https://www.youtube.com/embed/{$instance->getProperty('video-yt-id')}
+            <iframe {strip}src="https://www.youtube-nocookie.com/embed/{$instance->getProperty('video-yt-id')}
                 ?controls={$instance->getProperty('video-yt-controls')}
                 &loop={$instance->getProperty('video-yt-loop')}
                 &rel={$instance->getProperty('video-yt-rel')}

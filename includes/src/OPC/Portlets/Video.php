@@ -21,6 +21,8 @@ class Video extends \OPC\Portlet
      */
     public function getPreviewHtml(PortletInstance $instance): string
     {
+        $instance->setProperty('uid', uniqid('vd-', false));
+
         return $this->getPreviewHtmlFromTpl($instance);
     }
 
@@ -31,6 +33,8 @@ class Video extends \OPC\Portlet
      */
     public function getFinalHtml(PortletInstance $instance): string
     {
+        $instance->setProperty('uid', uniqid('vd-', false));
+
         return $this->getFinalHtmlFromTpl($instance);
     }
 
@@ -89,13 +93,19 @@ class Video extends \OPC\Portlet
                 ],
                 'default' => 'youtube',
             ],
-            'video-yt-id'       => [
-                'label'                => 'Video ID',
-                'default'              => 'xITQHgJ3RRo',
-                'help'                 => 'Bitte nur die ID des Videos eingeben. Bsp.: xITQHgJ3RRo',
+            'video-yt-hint'     => [
+                'label'                => 'Hinweis',
+                'type'                 => 'hint',
+                'class'                => 'danger',
+                'text'                 => 'In ihren Datenschutzerklärungen sollten sie darauf hinweisen, dass YouTube-Videos im „erweiterten Datenschutzmodus“ in ihren Seiten eingebettet sind. Die Nutzer sollten erfahren, dass der Aufruf der Seiten zu einer Verbindungsaufnahme mit YouTube und dem DoubleClick-Netzwerk führt. Man sollte ihnen auch nicht verschweigen, dass schon ein Klick auf das Video weitere Datenverarbeitungsvorgänge auslösen kann, auf die der Website-Betreiber keinen Einfluss mehr hat.',
                 'collapseControlStart' => true,
                 'showOnProp'           => 'video-vendor',
                 'showOnPropValue'      => 'youtube',
+            ],
+            'video-yt-id'       => [
+                'label'   => 'Video ID',
+                'default' => 'xITQHgJ3RRo',
+                'help'    => 'Bitte nur die ID des Videos eingeben. Bsp.: xITQHgJ3RRo',
             ],
             'video-yt-start'    => [
                 'label'      => 'Start',
@@ -145,8 +155,7 @@ class Video extends \OPC\Portlet
                 'help'               => 'Geben Sie die Video-IDs durch Komma getrennt ein . Bsp.: xITQHgJ3RRo,sNYv0JgrUlw',
                 'collapseControlEnd' => true,
             ],
-
-            'video-vim-id'     => [
+            'video-vim-id'      => [
                 'label'                => 'Video ID',
                 'default'              => '141374353',
                 'nonempty'             => true,
@@ -155,7 +164,7 @@ class Video extends \OPC\Portlet
                 'showOnProp'           => 'video-vendor',
                 'showOnPropValue'      => 'vimeo',
             ],
-            'video-vim-loop'   => [
+            'video-vim-loop'    => [
                 'label'      => 'Video nach Ablauf wiederholen?',
                 'type'       => 'radio',
                 'inline'     => true,
@@ -166,7 +175,7 @@ class Video extends \OPC\Portlet
                 'default'    => '0',
                 'dspl_width' => 50,
             ],
-            'video-vim-img'    => [
+            'video-vim-img'     => [
                 'label'      => 'Bild anzeigen?',
                 'type'       => 'radio',
                 'inline'     => true,
@@ -177,7 +186,7 @@ class Video extends \OPC\Portlet
                 'default'    => '0',
                 'dspl_width' => 50,
             ],
-            'video-vim-title'  => [
+            'video-vim-title'   => [
                 'label'      => 'Titel anzeigen?',
                 'type'       => 'radio',
                 'inline'     => true,
@@ -188,7 +197,7 @@ class Video extends \OPC\Portlet
                 'default'    => '1',
                 'dspl_width' => 50,
             ],
-            'video-vim-byline' => [
+            'video-vim-byline'  => [
                 'label'      => 'Verfasserangabe anzeigen?',
                 'type'       => 'radio',
                 'inline'     => true,
@@ -199,14 +208,14 @@ class Video extends \OPC\Portlet
                 'default'    => '0',
                 'dspl_width' => 50,
             ],
-            'video-vim-color'  => [
+            'video-vim-color'   => [
                 'label'              => 'Farbe',
                 'type'               => 'color',
                 'default'            => '#ffffff',
                 'dspl_width'         => 50,
                 'collapseControlEnd' => true,
             ],
-            'video-local-url'  => [
+            'video-local-url'   => [
                 'label'                => 'Video URL',
                 'type'                 => 'video',
                 'collapseControlStart' => true,

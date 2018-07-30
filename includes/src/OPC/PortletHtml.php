@@ -279,8 +279,8 @@ trait PortletHtml
                 break;
             case 'textlist':
                 $res .= $this->getConfigPanelSnippet($instance, 'textlist', [
-                    'propname'   => $propname,
-                    'prop'       => $prop
+                    'propname' => $propname,
+                    'prop'     => $prop
                 ]);
                 break;
             case 'radio':
@@ -359,6 +359,9 @@ trait PortletHtml
                     'prop'          => $prop,
                     'propname'      => $propname,
                 ]);
+                break;
+            case 'hint':
+                $res .= "<div class='alert alert-" . $propDesc["class"] . "' role='alert'>" . $propDesc["text"] . "</div>";
                 break;
             case 'text':
             default:

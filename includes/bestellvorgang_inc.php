@@ -668,7 +668,7 @@ function gibStepZahlung()
     );
     $oVerpackung_arr = VersandartHelper::getPossiblePackagings(Session::CustomerGroup()->getID());
 
-    if (!empty($oVerpackung_arr) && $cart->enthaltenSpezialPos(C_WARENKORBPOS_TYP_VERPACKUNG)) {
+    if (!empty($oVerpackung_arr) && $cart->posTypEnthalten(C_WARENKORBPOS_TYP_VERPACKUNG)) {
         foreach ($cart->PositionenArr as $oPos) {
             if ($oPos->nPosTyp === C_WARENKORBPOS_TYP_VERPACKUNG) {
                 foreach ($oVerpackung_arr as $oPack) {
@@ -870,7 +870,7 @@ function gibStepVersand()
         }
     }
     $oVerpackung_arr = VersandartHelper::getPossiblePackagings(Session::CustomerGroup()->getID());
-    if ($cart->enthaltenSpezialPos(C_WARENKORBPOS_TYP_VERPACKUNG) && !empty($oVerpackung_arr)) {
+    if ($cart->posTypEnthalten(C_WARENKORBPOS_TYP_VERPACKUNG) && !empty($oVerpackung_arr)) {
         foreach ($cart->PositionenArr as $oPos) {
             if ($oPos->nPosTyp === C_WARENKORBPOS_TYP_VERPACKUNG) {
                 foreach ($oVerpackung_arr as $oPack) {

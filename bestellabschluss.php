@@ -62,7 +62,7 @@ if (isset($_GET['i'])) {
         if (!empty($cart->cChecksumme)
             && $wkChecksum !== $cart->cChecksumme
         ) {
-            if (!$cart->enthaltenSpezialPos(C_WARENKORBPOS_TYP_ARTIKEL)) {
+            if (!$cart->posTypEnthalten(C_WARENKORBPOS_TYP_ARTIKEL)) {
                 WarenkorbHelper::deleteAllSpecialPositions();
             }
             $_SESSION['Warenkorbhinweise'][] = Shop::Lang()->get('yourbasketismutating', 'checkout');

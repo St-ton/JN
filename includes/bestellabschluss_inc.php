@@ -264,7 +264,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     $Bestellung->kVersandart       = $_SESSION['Versandart']->kVersandart;
     $Bestellung->kSprache          = Shop::getLanguage();
     $Bestellung->kWaehrung         = Session::Currency()->getID();
-    $Bestellung->fGesamtsumme      = Session::Cart()->gibGesamtsummeWaren(1);
+    $Bestellung->fGesamtsumme      = Session::Cart()->gibGesamtsummeWaren(true);
     $Bestellung->cVersandartName   = $_SESSION['Versandart']->angezeigterName[$_SESSION['cISOSprache']];
     $Bestellung->cZahlungsartName  = $_SESSION['Zahlungsart']->angezeigterName[$_SESSION['cISOSprache']];
     $Bestellung->cSession          = session_id();
@@ -1093,7 +1093,7 @@ function fakeBestellung()
     $bestellung->kVersandart      = $_SESSION['Versandart']->kVersandart;
     $bestellung->kSprache         = Shop::getLanguage();
     $bestellung->kWaehrung        = Session::Currency()->getID();
-    $bestellung->fGesamtsumme     = Session::Cart()->gibGesamtsummeWaren(1);
+    $bestellung->fGesamtsumme     = Session::Cart()->gibGesamtsummeWaren(true);
     $bestellung->fWarensumme      = $bestellung->fGesamtsumme;
     $bestellung->cVersandartName  = $_SESSION['Versandart']->angezeigterName[$_SESSION['cISOSprache']];
     $bestellung->cZahlungsartName = $_SESSION['Zahlungsart']->angezeigterName[$_SESSION['cISOSprache']];

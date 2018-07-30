@@ -117,7 +117,7 @@
                         {if $cBannerFile_arr|@count > 0}
                             <select id="cPath" name="cPath" class="form-control">
                                 <option value="">Banner w&auml;hlen</option>
-                                {foreach from=$cBannerFile_arr item=cBannerFile}
+                                {foreach $cBannerFile_arr as $cBannerFile}
                                     <option value="{$cBannerFile}" {if (isset($oBanner->cBildPfad) && $cBannerFile == $oBanner->cBildPfad) || (isset($oBanner->cBild) && $cBannerFile == $oBanner->cBild)}selected="selected"{/if}>{$cBannerFile}</option>
                                 {/foreach}
                             </select>
@@ -149,7 +149,7 @@
                         <span class="input-group-wrap">
                             <select class="form-control" id="kSprache" name="kSprache">
                                 <option value="0">Alle</option>
-                                {foreach from=$oSprachen_arr item=oSprache}
+                                {foreach $oSprachen_arr as $oSprache}
                                     <option value="{$oSprache->kSprache}" {if isset($kSprache) && $kSprache == $oSprache->kSprache}selected="selected" {elseif isset($oExtension->kSprache) && $oExtension->kSprache == $oSprache->kSprache}selected="selected"{/if}>{$oSprache->cNameDeutsch}</option>
                                 {/foreach}
                             </select>
@@ -160,8 +160,11 @@
                         <span class="input-group-wrap">
                             <select class="form-control" id="kKundengruppe" name="kKundengruppe">
                                 <option value="0">Alle</option>
-                                {foreach from=$oKundengruppe_arr item=oKundengruppe}
-                                    <option value="{$oKundengruppe->getKundengruppe()}" {if isset($kKundengruppe) && $kKundengruppe == $oKundengruppe->getKundengruppe()}selected="selected" {elseif isset($oExtension->kKundengruppe) && $oExtension->kKundengruppe == $oKundengruppe->getKundengruppe()}selected="selected"{/if}>{$oKundengruppe->getName()}</option>
+                                {foreach $oKundengruppe_arr as $oKundengruppe}
+                                    <option value="{$oKundengruppe->getID()}"
+                                            {if isset($kKundengruppe) && $kKundengruppe == $oKundengruppe->getID()}selected="selected"
+                                            {elseif isset($oExtension->kKundengruppe) && $oExtension->kKundengruppe == $oKundengruppe->getID()}selected="selected"{/if}
+                                    >{$oKundengruppe->getName()}</option>
                                 {/foreach}
                             </select>
                         </span>
@@ -427,21 +430,29 @@
                 <table class="list table">
                     <thead>
                     <tr>
-                        <th class="tleft" width="50%">Name</th>
+                        <th class="tleft" width="25%">Name</th>
                         <th width="20%">Status</th>
+                        <th class="tleft" width="25%">Laufzeit</th>
                         <th width="30%">Aktionen</th>
                     </tr>
                     </thead>
                     <tbody>
-                    {foreach name="banner" from=$oBanner_arr item=oBanner}
+                    {foreach $oBanner_arr as $oBanner}
                         <tr>
                             <td class="tleft">
                                 {$oBanner->cTitel}
                             </td>
                             <td class="tcenter">
                                 <h4 class="label-wrap">
-                                    <span class="label success label-success">aktiv</span>
+                                    {if (int)$oBanner->active === 1}
+                                        <span class="label success label-success">aktiv</span>
+                                    {else}
+                                        <span class="label success label-{if $oBanner->vDatum|date_format:'%d.%m.%Y' > {$smarty.now|date_format:'%d.%m.%Y'}}warning{else}danger{/if}">inaktiv</span>
+                                    {/if}
                                 </h4>
+                            </td>
+                            <td>
+                                {$oBanner->vDatum|date_format:'%d.%m.%Y'} - {$oBanner->bDatum|date_format:'%d.%m.%Y'}
                             </td>
                             <td class="tcenter">
                                 <form action="banner.php" method="post">

@@ -23,7 +23,6 @@
             <input type="submit" class="hidden" />
         </div>
     </div>
-
     {if !empty($CWunschliste->CWunschlistePos_arr)}
         <table class="table table-striped">
             <thead>
@@ -118,13 +117,13 @@
                                        <i class="fa fa-envelope"></i>
                                    </button>
                                 {/if}
-                                <button type="submit" name="nstd" value="0" class="btn btn-default" title="{lang key='wishlistSetPrivate' section='login'}">
+                                <button type="submit" name="wlAction" value="setPrivate" class="btn btn-default" title="{lang key='wishlistSetPrivate' section='login'}">
                                     <i class="fa fa-eye-slash"></i> <span class="hidden-xs">{lang key='wishlistSetPrivate' section='login'}</span>
                                 </button>
                             </span>
                         </div>
                     {else}
-                        <button type="submit" name="nstd" value="1" class="btn btn-default">
+                        <button type="submit" name="wlAction" value="setPublic" class="btn btn-default">
                             <i class="fa fa-eye"></i> <span class="hidden-xs">{lang key='wishlistSetPublic' section='login'}</span>
                         </button>
                     {/if}

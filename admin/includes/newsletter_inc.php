@@ -1170,7 +1170,7 @@ function gibAbonnent($cPost_arr)
             JOIN tkundengruppe 
                 ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
             WHERE " . $cSQL . "
-            ORDER BY Datum DESC",
+            ORDER BY tnewsletterempfaenger.dEingetragen DESC",
         \DB\ReturnType::SINGLE_OBJECT
     );
     if (isset($oAbonnent->kNewsletterEmpfaenger) && $oAbonnent->kNewsletterEmpfaenger > 0) {

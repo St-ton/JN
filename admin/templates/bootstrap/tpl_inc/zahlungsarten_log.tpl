@@ -1,5 +1,7 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=#paymentmethods# cBeschreibung=$paymentData->cName cDokuURL=#paymentmethodsURL#}
 <div id="content">
+    {include file='tpl_inc/filtertools.tpl' oFilter=$filterStandard cParam_arr=['a'=>'log',
+    'token'=>$smarty.session.jtl_token, 'kZahlungsart'=>$paymentData->kZahlungsart]}
     {if !empty($paymentLogs)}
         {include file='tpl_inc/pagination.tpl' oPagination=$paginationPaymentLog cParam_arr=['a'=>'log',
         'token'=>$smarty.session.jtl_token, 'kZahlungsart'=>$paymentData->kZahlungsart]}

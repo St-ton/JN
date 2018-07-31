@@ -52,7 +52,7 @@ function XML_serialize(&$data, $level = 0, $prior_key = null)
                 $tag = $prior_key ?: $key;
                 echo str_repeat("\t", $level), '<', $tag;
                 if (array_key_exists("$key attr", $data)) { // if there's an attribute for this element
-                    foreach($data["$key attr"] as $attr_name => $attr_value) {
+                    foreach ($data["$key attr"] as $attr_name => $attr_value) {
                         echo ' ', $attr_name, '="', StringHandler::htmlspecialchars($attr_value), '"';
                     }
                     reset($data["$key attr"]);
@@ -166,7 +166,7 @@ class XML
 
     /**
      * @param resource $parser
-     * @param string $data
+     * @param string   $data
      */
     public function data(&$parser, $data)
     {
@@ -178,7 +178,7 @@ class XML
 
     /**
      * @param resource $parser
-     * @param string $tag
+     * @param string   $tag
      */
     public function close(&$parser, $tag)
     {

@@ -178,7 +178,7 @@ echo $return;
  * @param array  $xml
  * @param string $unzipPath
  */
-function bearbeite($xml, $unzipPath)
+function bearbeite($xml, string $unzipPath)
 {
     $img_arr                 = mapArray($xml['bilder'], 'tartikelpict', $GLOBALS['mArtikelPict']);
     $kategoriebild_arr       = mapArray($xml['bilder'], 'tkategoriepict', $GLOBALS['mKategoriePict']);
@@ -221,7 +221,11 @@ function bearbeite($xml, $unzipPath)
             }
 
             if ($img->kMainArtikelBild > 0) {
-                $oMainArtikelBild = Shop::Container()->getDB()->select('tartikelpict', 'kArtikelPict', (int)$img->kMainArtikelBild);
+                $oMainArtikelBild = Shop::Container()->getDB()->select(
+                    'tartikelpict',
+                    'kArtikelPict',
+                    (int)$img->kMainArtikelBild)
+                ;
                 if (isset($oMainArtikelBild->cPfad) && strlen($oMainArtikelBild->cPfad) > 0) {
                     $img->cPfad = neuerDateiname($oMainArtikelBild->cPfad);
                     DBUpdateInsert('tartikelpict', [$img], 'kArtikel', 'kArtikelpict');
@@ -229,8 +233,12 @@ function bearbeite($xml, $unzipPath)
                     erstelleArtikelBild($img, $Bildformat, $unzipPath, $imgFilename);
                 }
             } else {
-                $oArtikelBild = Shop::Container()->getDB()->select('tartikelpict', 'kArtikelPict', (int)$img->kArtikelPict);
-                //update all references, if img is used by other products
+                $oArtikelBild = Shop::Container()->getDB()->select(
+                    'tartikelpict',
+                    'kArtikelPict',
+                    (int)$img->kArtikelPict
+                );
+                // update all references, if img is used by other products
                 if (isset($oArtikelBild->cPfad) && strlen($oArtikelBild->cPfad) > 0) {
                     Shop::Container()->getDB()->update(
                         'tartikelpict',
@@ -388,8 +396,12 @@ function bearbeite($xml, $unzipPath)
                 );
             }
             $cacheTags = [];
-            foreach (Shop::Container()->getDB()->selectAll('tartikel', 'kHersteller', (int)$Herstellerbild->kHersteller,
-                'kArtikel') as $article) {
+            foreach (Shop::Container()->getDB()->selectAll(
+                'tartikel',
+                'kHersteller',
+                (int)$Herstellerbild->kHersteller,
+                'kArtikel'
+            ) as $article) {
                 $cacheTags[] = CACHING_GROUP_ARTICLE . '_' . $article->kArtikel;
             }
             Shop::Cache()->flushTags($cacheTags);
@@ -637,7 +649,7 @@ function gibEigenschaftwertbildname($Eigenschaftwertbild, $Bildformat)
                             ON tseo.cKey = 'kArtikel'
                             AND tseo.kKey = tartikel.kArtikel
                             " . $cSQL . "
-                        WHERE teigenschaftwert.kEigenschaft=teigenschaft.kEigenschaft
+                        WHERE teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
                             AND teigenschaft.kArtikel = tartikel.kArtikel
                             AND teigenschaftwert.kEigenschaftWert = " . (int)$Eigenschaftwertbild->kEigenschaftWert,
                     \DB\ReturnType::SINGLE_OBJECT
@@ -661,9 +673,14 @@ function gibEigenschaftwertbildname($Eigenschaftwertbild, $Bildformat)
                     \DB\ReturnType::SINGLE_OBJECT
                 );
 
-                $Eigenschaft = Shop::Container()->getDB()->query("SELECT cName FROM teigenschaft WHERE kEigenschaft = " . $Eigenschaftwert->kEigenschaft,
-                    1);
-                if ((!empty($Artikel->cSeo) || !empty($Artikel->cName)) && !empty($Eigenschaft->cName) && !empty($Eigenschaftwert->cName)) {
+                $Eigenschaft = Shop::Container()->getDB()->query(
+                    'SELECT cName FROM teigenschaft WHERE kEigenschaft = ' . $Eigenschaftwert->kEigenschaft,
+                    \DB\ReturnType::SINGLE_OBJECT
+                );
+                if ((!empty($Artikel->cSeo) || !empty($Artikel->cName))
+                    && !empty($Eigenschaft->cName)
+                    && !empty($Eigenschaftwert->cName)
+                ) {
                     if ($Artikel->cSeo) {
                         $Bildname = $Artikel->cSeo . '_' .
                             gibAusgeschriebeneUmlaute($Eigenschaft->cName) . '_' .
@@ -868,7 +885,7 @@ function streicheSonderzeichen($str)
  * @param string $container
  * @return int
  */
-function erstelleThumbnailBranded($imgFilename, $zielbild, $breite, $hoehe, $quality = 80, $container = 'N')
+function erstelleThumbnailBranded($imgFilename, $zielbild, $breite, $hoehe, int $quality = 80, $container = 'N')
 {
     $vergroessern = 0;
     if ($GLOBALS['Einstellungen']['bilder']['bilder_skalieren'] === 'Y') {
@@ -1074,18 +1091,35 @@ function bearbeiteDeletes($xml)
         if (is_array($xml['del_bilder']['kHersteller'])) {
             foreach ($xml['del_bilder']['kHersteller'] as $kHersteller) {
                 if ((int)$kHersteller > 0) {
-                    Shop::Container()->getDB()->update('thersteller', 'kHersteller', (int)$kHersteller, (object)['cBildpfad' => '']);
-                    foreach (Shop::Container()->getDB()->selectAll('tartikel', 'kHersteller', (int)$kHersteller,
-                        'kArtikel') as $article) {
+                    Shop::Container()->getDB()->update(
+                        'thersteller',
+                        'kHersteller',
+                        (int)$kHersteller,
+                        (object)['cBildpfad' => '']
+                    );
+                    foreach (Shop::Container()->getDB()->selectAll(
+                        'tartikel',
+                        'kHersteller',
+                        (int)$kHersteller,
+                        'kArtikel'
+                    ) as $article) {
                         $cacheTags[] = $article->kArtikel;
                     }
                 }
             }
         } elseif ((int)$xml['del_bilder']['kHersteller'] > 0) {
-            Shop::Container()->getDB()->update('thersteller', 'kHersteller', (int)$xml['del_bilder']['kHersteller'],
-                (object)['cBildpfad' => '']);
-            foreach (Shop::Container()->getDB()->selectAll('tartikel', 'kHersteller', (int)$xml['del_bilder']['kHersteller'],
-                'kArtikel') as $article) {
+            Shop::Container()->getDB()->update(
+                'thersteller',
+                'kHersteller',
+                (int)$xml['del_bilder']['kHersteller'],
+                (object)['cBildpfad' => '']
+            );
+            foreach (Shop::Container()->getDB()->selectAll(
+                'tartikel',
+                'kHersteller',
+                (int)$xml['del_bilder']['kHersteller'],
+                'kArtikel'
+            ) as $article) {
                 $cacheTags[] = $article->kArtikel;
             }
         }
@@ -1101,7 +1135,8 @@ function bearbeiteDeletes($xml)
         if (is_array($xml['del_bilder']['kMerkmal'])) {
             foreach ($xml['del_bilder']['kMerkmal'] as $kMerkmal) {
                 if ((int)$kMerkmal > 0) {
-                    Shop::Container()->getDB()->update('tmerkmal', 'kMerkmal', (int)$kMerkmal, (object)['cBildpfad' => '']);
+                    Shop::Container()->getDB()->update('tmerkmal', 'kMerkmal', (int)$kMerkmal,
+                        (object)['cBildpfad' => '']);
                 }
             }
         } elseif ((int)$xml['del_bilder']['kMerkmal'] > 0) {
@@ -1114,14 +1149,16 @@ function bearbeiteDeletes($xml)
         if (is_array($xml['del_bilder']['kMerkmalWert'])) {
             foreach ($xml['del_bilder']['kMerkmalWert'] as $kMerkmalWert) {
                 if ((int)$kMerkmalWert > 0) {
-                    Shop::Container()->getDB()->update('tmerkmalwert', 'kMerkmalWert', (int)$kMerkmalWert, (object)['cBildpfad' => '']);
+                    Shop::Container()->getDB()->update('tmerkmalwert', 'kMerkmalWert', (int)$kMerkmalWert,
+                        (object)['cBildpfad' => '']);
                     Shop::Container()->getDB()->delete('tmerkmalwertbild', 'kMerkmalWert', (int)$kMerkmalWert);
                 }
             }
         } elseif ((int)$xml['del_bilder']['kMerkmalWert'] > 0) {
             Shop::Container()->getDB()->update('tmerkmalwert', 'kMerkmalWert', (int)$xml['del_bilder']['kMerkmalWert'],
                 (object)['cBildpfad' => '']);
-            Shop::Container()->getDB()->delete('tmerkmalwertbild', 'kMerkmalWert', (int)$xml['del_bilder']['kMerkmalWert']);
+            Shop::Container()->getDB()->delete('tmerkmalwertbild', 'kMerkmalWert',
+                (int)$xml['del_bilder']['kMerkmalWert']);
         }
     }
 }
@@ -1130,13 +1167,12 @@ function bearbeiteDeletes($xml)
  * @param int      $kArtikelPict
  * @param int|null $nNr
  */
-function loescheArtikelPict($kArtikelPict, $nNr = null)
+function loescheArtikelPict(int $kArtikelPict, int $nNr = null)
 {
-    $kArtikelPict = (int)$kArtikelPict;
     if ($kArtikelPict > 0) {
         $oArtikelPict = null;
-        if ((int)$nNr > 0) {
-            $oArtikelPict = Shop::Container()->getDB()->select('tartikelpict', 'kArtikel', $kArtikelPict, 'nNr', (int)$nNr);
+        if ($nNr !== null && $nNr > 0) {
+            $oArtikelPict = Shop::Container()->getDB()->select('tartikelpict', 'kArtikel', $kArtikelPict, 'nNr', $nNr);
             $kArtikelPict = $oArtikelPict->kArtikelPict ?? 0;
         }
         deleteArticleImage(null, 0, $kArtikelPict);
@@ -1144,37 +1180,29 @@ function loescheArtikelPict($kArtikelPict, $nNr = null)
 }
 
 /**
- * @param int      $kKategoriePict
+ * @param int|null $kKategoriePict
  * @param int|null $kKategorie
  */
-function loescheKategoriePict($kKategoriePict, $kKategorie = null)
+function loescheKategoriePict(int $kKategoriePict = null, int $kKategorie = null)
 {
-    if ($kKategoriePict !== null) {
-        $kKategoriePict = (int)$kKategoriePict;
-        if ($kKategoriePict > 0) {
-            Shop::Container()->getDB()->delete('tkategoriepict', 'kKategoriePict', $kKategoriePict);
-        }
-    } else {
-        $kKategorie = (int)$kKategorie;
-        if ($kKategorie > 0) {
-            Shop::Container()->getDB()->delete('tkategoriepict', 'kKategorie', $kKategorie);
-        }
+    if ($kKategoriePict !== null && $kKategoriePict > 0) {
+        Shop::Container()->getDB()->delete('tkategoriepict', 'kKategoriePict', $kKategoriePict);
+    } elseif ($kKategorie !== null && $kKategorie > 0) {
+        Shop::Container()->getDB()->delete('tkategoriepict', 'kKategorie', $kKategorie);
     }
 }
 
 /**
- * @param int $kEigenschaftwertPict
- * @param int $kEigenschaftwert
+ * @param int|null $kEigenschaftwertPict
+ * @param int|null $kEigenschaftwert
  */
-function loescheEigenschaftwertPict($kEigenschaftwertPict, $kEigenschaftwert = null)
+function loescheEigenschaftwertPict(int $kEigenschaftwertPict = null, int $kEigenschaftwert = null)
 {
-    $kEigenschaftwert     = (int)$kEigenschaftwert;
-    $kEigenschaftwertPict = (int)$kEigenschaftwertPict;
-    if ($kEigenschaftwert > 0) {
+    if ($kEigenschaftwert !== null && $kEigenschaftwert > 0) {
         Shop::Container()->getDB()->delete('teigenschaftwertpict', 'kEigenschaftWert', $kEigenschaftwert);
     }
 
-    if ($kEigenschaftwertPict > 0) {
+    if ($kEigenschaftwertPict !== null && $kEigenschaftwertPict > 0) {
         Shop::Container()->getDB()->delete('teigenschaftwertpict', 'kEigenschaftwertPict', $kEigenschaftwertPict);
     }
 }
@@ -1383,35 +1411,38 @@ function imagecopymerge_alpha_fast($dst_im, $src_im, $dst_x, $dst_y, $src_x, $sr
  * @param string $imgFilename
  * @return bool|string
  */
-function gibBildformat($imgFilename)
+function gibBildformat(string $imgFilename)
 {
-    if (file_exists($imgFilename)) {
-        $size = getimagesize($imgFilename);
-        $type = $size[2];
-        switch ($type) {
-            case IMAGETYPE_JPEG:
-                return 'jpg';
-                break;
+    if (!file_exists($imgFilename)) {
+        return false;
+    }
+    $size = getimagesize($imgFilename);
+    $type = $size[2];
+    switch ($type) {
+        case IMAGETYPE_JPEG:
+            return 'jpg';
+            break;
 
-            case IMAGETYPE_PNG:
-                if (function_exists('imagecreatefrompng')) {
-                    return 'png';
-                }
-                break;
+        case IMAGETYPE_PNG:
+            if (function_exists('imagecreatefrompng')) {
+                return 'png';
+            }
+            break;
 
-            case IMAGETYPE_GIF:
-                if (function_exists('imagecreatefromgif')) {
-                    return 'gif';
-                }
-                break;
+        case IMAGETYPE_GIF:
+            if (function_exists('imagecreatefromgif')) {
+                return 'gif';
+            }
+            break;
 
-            case IMAGETYPE_BMP:
-                if (function_exists('imagecreatefromwbmp')) {
-                    return 'bmp';
-                }
-                break;
+        case IMAGETYPE_BMP:
+            if (function_exists('imagecreatefromwbmp')) {
+                return 'bmp';
+            }
+            break;
 
-        }
+        default:
+            break;
     }
 
     return false;
@@ -1425,29 +1456,26 @@ function gibBildformat($imgFilename)
  * @param int    $nContainerHeight
  * @return resource
  */
-function imageload_container($img, $nWidth, $nHeight, $nContainerWidth, $nContainerHeight)
+function imageload_container($img, int $nWidth, int $nHeight, $nContainerWidth, $nContainerHeight)
 {
     $imgInfo = getimagesize($img);
     switch ($imgInfo[2]) {
         case 1:
             $im = imagecreatefromgif($img);
             break;
-
         case 2:
             $im = imagecreatefromjpeg($img);
             break;
-
         case 3:
             $im = imagecreatefrompng($img);
             break;
-
         default:
             $im = imagecreatefromjpeg($img);
             break;
 
     }
 
-    if ($nWidth == 0 && $nHeight == 0) {
+    if ($nWidth === 0 && $nHeight === 0) {
         $nHeight = $imgInfo[1];
         $nWidth  = $imgInfo[0];
     }
@@ -1482,7 +1510,7 @@ function imageload_container($img, $nWidth, $nHeight, $nContainerWidth, $nContai
  * @param bool   $branding
  * @return resource
  */
-function imageload_alpha($img, $nWidth = 0, $nHeight = 0, $branding = false)
+function imageload_alpha($img, int $nWidth = 0, int $nHeight = 0, bool $branding = false)
 {
     $imgInfo = getimagesize($img);
     switch ($imgInfo[2]) {
@@ -1500,7 +1528,7 @@ function imageload_alpha($img, $nWidth = 0, $nHeight = 0, $branding = false)
 
     }
 
-    if ($nWidth == 0 && $nHeight == 0) {
+    if ($nWidth === 0 && $nHeight === 0) {
         $nHeight = $imgInfo[1];
         $nWidth  = $imgInfo[0];
     }
@@ -1543,7 +1571,7 @@ function imageload_alpha($img, $nWidth = 0, $nHeight = 0, $branding = false)
  * @param string $pfad
  * @return string
  */
-function neuerDateiname($pfad)
+function neuerDateiname(string $pfad)
 {
     $format = strtolower($GLOBALS['Einstellungen']['bilder']['bilder_dateiformat']);
     $pfad   = substr($pfad, 0, -3);
@@ -1555,51 +1583,27 @@ function neuerDateiname($pfad)
 /**
  * @param resource $im
  * @param string   $format
- * @param string   $pfad
+ * @param string   $path
  * @param int      $quality
  * @return bool
  */
-function speichereBild($im, $format, $pfad, $quality = 80)
+function speichereBild($im, $format, $path, int $quality = 80)
 {
     if (!$format || !$im) {
         return false;
     }
 
-    $pfad = neuerDateiname($pfad);
+    $path = neuerDateiname($path);
 
     switch (strtolower($format)) {
         case 'jpg':
-            if (!function_exists('imagejpeg')) {
-                return false;
-            }
-
-            return imagejpeg($im, $pfad, $quality);
-            break;
-
+            return function_exists('imagejpeg') ? imagejpeg($im, $path, $quality) : false;
         case 'png':
-            if (!function_exists('imagepng')) {
-                return false;
-            }
-
-            return imagepng($im, $pfad);
-            break;
-
+            return function_exists('imagepng') ? imagepng($im, $path) : false;
         case 'gif':
-            if (!function_exists('imagegif')) {
-                return false;
-            }
-
-            return imagegif($im, $pfad);
-            break;
-
+            return function_exists('imagegif') ? imagegif($im, $path) : false;
         case 'bmp':
-            if (!function_exists('imagewbmp')) {
-                return false;
-            }
-
-            return imagewbmp($im, $pfad);
-            break;
-
+            return function_exists('imagewbmp') ? imagewbmp($im, $path) : false;
     }
 
     return false;
@@ -1608,22 +1612,22 @@ function speichereBild($im, $format, $pfad, $quality = 80)
 /**
  * @return array
  */
-function holeBilderEinstellungen()
+function holeBilderEinstellungen(): array
 {
     $oBranding_arr    = [];
-    $oBrandingTMP_arr = Shop::Container()->getDB()->query('SELECT * FROM tbranding', \DB\ReturnType::ARRAY_OF_OBJECTS);
-
-    if (is_array($oBrandingTMP_arr) && count($oBrandingTMP_arr) > 0) {
-        foreach ($oBrandingTMP_arr as $oBrandingTMP) {
-            $oBranding_arr[$oBrandingTMP->cBildKategorie] = $oBrandingTMP;
-        }
-        foreach ($oBranding_arr as $i => $oBranding) {
-            $oBranding_arr[$i]->oBrandingEinstellung = Shop::Container()->getDB()->select(
-                'tbrandingeinstellung',
-                'kBranding',
-                (int)$oBranding->kBranding
-            );
-        }
+    $oBrandingTMP_arr = Shop::Container()->getDB()->query(
+        'SELECT * FROM tbranding',
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
+    foreach ($oBrandingTMP_arr as $oBrandingTMP) {
+        $oBranding_arr[$oBrandingTMP->cBildKategorie] = $oBrandingTMP;
+    }
+    foreach ($oBranding_arr as $i => $oBranding) {
+        $oBranding_arr[$i]->oBrandingEinstellung = Shop::Container()->getDB()->select(
+            'tbrandingeinstellung',
+            'kBranding',
+            (int)$oBranding->kBranding
+        );
     }
 
     return $oBranding_arr;

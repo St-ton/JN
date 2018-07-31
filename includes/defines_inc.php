@@ -476,7 +476,6 @@ define('JTLURL_HP', 'https://www.jtl-software.de/');
 define('JTLURL_GET_DUK', JTLURL_BASE . 'json_duk.php');
 define('JTLURL_GET_SHOPNEWS', 'https://feed.jtl-software.de/websitenews');
 define('JTLURL_GET_SHOPPATCH', JTLURL_BASE . 'json_patch.php');
-define('JTLURL_GET_SHOPMARKETPLACE', JTLURL_BASE . 'json_marketplace.php');
 define('JTLURL_GET_SHOPHELP', JTLURL_BASE . 'jtlhelp.php');
 define('JTLURL_GET_SHOPVERSION', JTLURL_BASE . 'json_version.php');
 // Log-Levels

@@ -145,9 +145,9 @@ class Link extends MainModel
      * @param int $kSpezialSeite
      * @return $this
      */
-    public function setSpezialSeite($kSpezialSeite)
+    public function setSpezialSeite(int $kSpezialSeite): self
     {
-        $this->kSpezialSeite = (int)$kSpezialSeite;
+        $this->kSpezialSeite = $kSpezialSeite;
 
         return $this;
     }
@@ -155,13 +155,13 @@ class Link extends MainModel
     /**
      * @return int
      */
-    public function getSpezialSeite()
+    public function getSpezialSeite(): int
     {
         return (int)$this->kSpezialSeite;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getURLFullSSL()
     {
@@ -172,7 +172,7 @@ class Link extends MainModel
      * @param string $cURLFullSSL
      * @return $this
      */
-    public function setURLFullSSL($cURLFullSSL)
+    public function setURLFullSSL($cURLFullSSL): self
     {
         $this->cURLFullSSL = $cURLFullSSL;
 
@@ -180,7 +180,7 @@ class Link extends MainModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getURLFull()
     {
@@ -191,7 +191,7 @@ class Link extends MainModel
      * @param string $cURLFull
      * @return $this
      */
-    public function setURLFull($cURLFull)
+    public function setURLFull($cURLFull): self
     {
         $this->cURLFull = $cURLFull;
 
@@ -202,9 +202,9 @@ class Link extends MainModel
      * @param int $nPluginStatus
      * @return $this
      */
-    public function setPluginStatus($nPluginStatus)
+    public function setPluginStatus(int $nPluginStatus): self
     {
-        $this->nPluginStatus = (int)$nPluginStatus;
+        $this->nPluginStatus = $nPluginStatus;
 
         return $this;
     }
@@ -212,7 +212,7 @@ class Link extends MainModel
     /**
      * @return int
      */
-    public function getPluginStatus()
+    public function getPluginStatus(): int
     {
         return (int)$this->nPluginStatus;
     }
@@ -221,7 +221,7 @@ class Link extends MainModel
      * @param string $cISO
      * @return $this
      */
-    public function setISO($cISO)
+    public function setISO($cISO): self
     {
         $this->cISO = $cISO;
 
@@ -229,7 +229,7 @@ class Link extends MainModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getISO()
     {
@@ -240,9 +240,9 @@ class Link extends MainModel
      * @param int $kSprache
      * @return $this
      */
-    public function setSprache($kSprache)
+    public function setSprache(int $kSprache): self
     {
-        $this->kSprache = (int)$kSprache;
+        $this->kSprache = $kSprache;
 
         return $this;
     }
@@ -250,7 +250,7 @@ class Link extends MainModel
     /**
      * @return int
      */
-    public function getSprache()
+    public function getSprache(): int
     {
         return (int)$this->kSprache;
     }
@@ -259,7 +259,7 @@ class Link extends MainModel
      * @param string $cSeo
      * @return $this
      */
-    public function setSeo($cSeo)
+    public function setSeo($cSeo): self
     {
         $this->cSeo = $cSeo;
 
@@ -267,7 +267,7 @@ class Link extends MainModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getSeo()
     {
@@ -277,7 +277,7 @@ class Link extends MainModel
     /**
      * @return int
      */
-    public function getLink()
+    public function getLink(): int
     {
         return (int)$this->kLink;
     }
@@ -286,9 +286,9 @@ class Link extends MainModel
      * @param int $kLink
      * @return $this
      */
-    public function setLink($kLink)
+    public function setLink(int $kLink): self
     {
-        $this->kLink = (int)$kLink;
+        $this->kLink = $kLink;
 
         return $this;
     }
@@ -296,7 +296,7 @@ class Link extends MainModel
     /**
      * @return int
      */
-    public function getVaterLink()
+    public function getVaterLink(): int
     {
         return (int)$this->kVaterLink;
     }
@@ -305,9 +305,9 @@ class Link extends MainModel
      * @param int $kVaterLink
      * @return $this
      */
-    public function setVaterLink($kVaterLink)
+    public function setVaterLink(int $kVaterLink): self
     {
-        $this->kVaterLink = (int)$kVaterLink;
+        $this->kVaterLink = $kVaterLink;
 
         return $this;
     }
@@ -315,7 +315,7 @@ class Link extends MainModel
     /**
      * @return int
      */
-    public function getLinkgruppe()
+    public function getLinkgruppe(): int
     {
         return (int)$this->kLinkgruppe;
     }
@@ -324,9 +324,9 @@ class Link extends MainModel
      * @param int $kLinkgruppe
      * @return $this
      */
-    public function setLinkgruppe($kLinkgruppe)
+    public function setLinkgruppe(int $kLinkgruppe): self
     {
-        $this->kLinkgruppe = (int)$kLinkgruppe;
+        $this->kLinkgruppe = $kLinkgruppe;
 
         return $this;
     }
@@ -334,7 +334,7 @@ class Link extends MainModel
     /**
      * @return int
      */
-    public function getPlugin()
+    public function getPlugin(): int
     {
         return (int)$this->kPlugin;
     }
@@ -343,15 +343,15 @@ class Link extends MainModel
      * @param int $kPlugin
      * @return $this
      */
-    public function setPlugin($kPlugin)
+    public function setPlugin(int $kPlugin): self
     {
-        $this->kPlugin = (int)$kPlugin;
+        $this->kPlugin = $kPlugin;
 
         return $this;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getName()
     {
@@ -362,7 +362,7 @@ class Link extends MainModel
      * @param string $cName
      * @return $this
      */
-    public function setName($cName)
+    public function setName($cName): self
     {
         $this->cName = $cName;
 
@@ -372,7 +372,7 @@ class Link extends MainModel
     /**
      * @return int
      */
-    public function getLinkart()
+    public function getLinkart(): int
     {
         return (int)$this->nLinkart;
     }
@@ -381,15 +381,15 @@ class Link extends MainModel
      * @param int $nLinkart
      * @return $this
      */
-    public function setLinkart($nLinkart)
+    public function setLinkart(int $nLinkart): self
     {
-        $this->nLinkart = (int)$nLinkart;
+        $this->nLinkart = $nLinkart;
 
         return $this;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getNoFollow()
     {
@@ -400,7 +400,7 @@ class Link extends MainModel
      * @param string $cNoFollow
      * @return $this
      */
-    public function setNoFollow($cNoFollow)
+    public function setNoFollow($cNoFollow): self
     {
         $this->cNoFollow = $cNoFollow;
 
@@ -408,7 +408,7 @@ class Link extends MainModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getURL()
     {
@@ -419,7 +419,7 @@ class Link extends MainModel
      * @param string $cURL
      * @return $this
      */
-    public function setURL($cURL)
+    public function setURL($cURL): self
     {
         $this->cURL = $cURL;
 
@@ -427,7 +427,7 @@ class Link extends MainModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getKundengruppen()
     {
@@ -438,7 +438,7 @@ class Link extends MainModel
      * @param string $cKundengruppen
      * @return $this
      */
-    public function setKundengruppen($cKundengruppen)
+    public function setKundengruppen($cKundengruppen): self
     {
         $this->cKundengruppen = $cKundengruppen;
 
@@ -446,7 +446,7 @@ class Link extends MainModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getSichtbarNachLogin()
     {
@@ -457,7 +457,7 @@ class Link extends MainModel
      * @param string $cSichtbarNachLogin
      * @return $this
      */
-    public function setSichtbarNachLogin($cSichtbarNachLogin)
+    public function setSichtbarNachLogin($cSichtbarNachLogin): self
     {
         $this->cSichtbarNachLogin = $cSichtbarNachLogin;
 
@@ -465,9 +465,8 @@ class Link extends MainModel
     }
 
     /**
-     * deprecated
-     *
-     * @return string
+     * @deprecated since 4.0
+     * @return string|null
      */
     public function getDruckButton()
     {
@@ -480,7 +479,7 @@ class Link extends MainModel
      * @param string $cDruckButton
      * @return $this
      */
-    public function setDruckButton($cDruckButton)
+    public function setDruckButton($cDruckButton): self
     {
         $this->cDruckButton = $cDruckButton;
 
@@ -490,7 +489,7 @@ class Link extends MainModel
     /**
      * @return string
      */
-    public function getSort()
+    public function getSort(): int
     {
         return (int)$this->nSort;
     }
@@ -499,9 +498,9 @@ class Link extends MainModel
      * @param int $nSort
      * @return $this
      */
-    public function setSort($nSort)
+    public function setSort(int $nSort): self
     {
-        $this->nSort = (int)$nSort;
+        $this->nSort = $nSort;
 
         return $this;
     }
@@ -510,17 +509,17 @@ class Link extends MainModel
      * @param int $mode
      * @return $this
      */
-    public function setSSL($mode)
+    public function setSSL(int $mode): self
     {
-        $this->bSSL = (int)$mode;
+        $this->bSSL = $mode;
 
         return $this;
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function getSSL()
+    public function getSSL(): int
     {
         return (int)$this->bSSL;
     }
@@ -529,9 +528,9 @@ class Link extends MainModel
      * @param int $mode
      * @return $this
      */
-    public function setIsFluid($mode)
+    public function setIsFluid(int $mode): self
     {
-        $this->bIsFluid = (int)$mode;
+        $this->bIsFluid = $mode;
 
         return $this;
     }
@@ -539,7 +538,7 @@ class Link extends MainModel
     /**
      * @return int
      */
-    public function getIsFluid()
+    public function getIsFluid(): int
     {
         return (int)$this->bIsFluid;
     }
@@ -548,7 +547,7 @@ class Link extends MainModel
      * @param string $ident
      * @return $this
      */
-    public function setIdentifier($ident)
+    public function setIdentifier($ident): self
     {
         $this->cIdentifier = $ident;
 
@@ -558,7 +557,7 @@ class Link extends MainModel
     /**
      * @return string
      */
-    public function getIdentifier()
+    public function getIdentifier(): string
     {
         return $this->cIdentifier;
     }
@@ -569,12 +568,12 @@ class Link extends MainModel
      * @param null|mixed  $xOption
      * @param null|int   $kLinkgruppe
      */
-    public function __construct($kKey = null, $oObj = null, $xOption = null, $kLinkgruppe = null)
+    public function __construct($kKey = null, $oObj = null, $xOption = null, int $kLinkgruppe = null)
     {
         if (is_object($oObj)) {
             $this->loadObject($oObj);
         } elseif ($kKey !== null) {
-            $this->load($kKey, $oObj, $xOption, $kLinkgruppe);
+            $this->load((int)$kKey, $oObj, $xOption, $kLinkgruppe);
         }
     }
 
@@ -585,10 +584,19 @@ class Link extends MainModel
      * @param int         $kLinkgruppe
      * @return $this
      */
-    public function load($kKey, $oObj = null, $xOption = null, $kLinkgruppe = null)
+    public function load($kKey, $oObj = null, $xOption = null, int $kLinkgruppe = null): self
     {
-        if (!empty($kLinkgruppe)) {
-            $oObj = Shop::Container()->getDB()->select('tlink', ['kLink', 'kLinkgruppe'], [(int)$kKey, (int)$kLinkgruppe]);
+        if ($kLinkgruppe > 0) {
+            $oObj = Shop::Container()->getDB()->queryPrepared(
+                'SELECT tlink.* 
+                    FROM tlink 
+                    JOIN tlinkgroupassociations t 
+                        ON tlink.kLink = t.linkID
+                    WHERE tlink.kLink = :lid
+                    AND t.linkGroupID = :lgid',
+                ['lid' => (int)$kKey, 'lgid' => $kLinkgruppe],
+                \DB\ReturnType::SINGLE_OBJECT
+            );
         } else {
             $oObj = Shop::Container()->getDB()->select('tlink', 'kLink', (int)$kKey);
         }
@@ -608,10 +616,8 @@ class Link extends MainModel
      * @param int $kVaterLinkgruppe
      * @return null|array
      */
-    public static function getSub($kVaterLink, $kVaterLinkgruppe = null)
+    public static function getSub(int $kVaterLink, int $kVaterLinkgruppe = null)
     {
-        $kVaterLink       = (int)$kVaterLink;
-        $kVaterLinkgruppe = (int)$kVaterLinkgruppe;
         if ($kVaterLink > 0) {
             if (!empty($kVaterLinkgruppe)) {
                 $oLink_arr = Shop::Container()->getDB()->selectAll(
@@ -622,11 +628,8 @@ class Link extends MainModel
             } else {
                 $oLink_arr = Shop::Container()->getDB()->selectAll('tlink', 'kVaterLink', $kVaterLink);
             }
-
-            if (is_array($oLink_arr) && count($oLink_arr) > 0) {
-                foreach ($oLink_arr as &$oLink) {
-                    $oLink = new self($oLink->kLink, null, true, $kVaterLinkgruppe);
-                }
+            foreach ($oLink_arr as &$oLink) {
+                $oLink = new self($oLink->kLink, null, true, $kVaterLinkgruppe);
             }
 
             return $oLink_arr;
@@ -639,7 +642,7 @@ class Link extends MainModel
      * @param bool $bPrim
      * @return bool|int
      */
-    public function save($bPrim = true)
+    public function save(bool $bPrim = true)
     {
         $oObj        = new stdClass();
         $cMember_arr = array_keys(get_object_vars($this));
@@ -675,9 +678,9 @@ class Link extends MainModel
      * @throws Exception
      * @return int
      */
-    public function update()
+    public function update(): int
     {
-        $cQuery   = "UPDATE tlink SET ";
+        $cQuery   = 'UPDATE tlink SET ';
         $cSet_arr = [];
 
         $cMember_arr = array_keys(get_object_vars($this));
@@ -698,7 +701,7 @@ class Link extends MainModel
 
             return Shop::Container()->getDB()->query($cQuery, \DB\ReturnType::AFFECTED_ROWS);
         }
-        throw new Exception("ERROR: Object has no members!");
+        throw new Exception('ERROR: Object has no members!');
     }
 
     /**
@@ -706,7 +709,7 @@ class Link extends MainModel
      * @param int  $kLinkgruppe
      * @return int
      */
-    public function delete($bSub = true, $kLinkgruppe = null)
+    public function delete(bool $bSub = true, int $kLinkgruppe = null): int
     {
         $nRows = 0;
         if ($this->kLink > 0) {

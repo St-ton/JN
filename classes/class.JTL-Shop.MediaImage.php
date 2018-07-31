@@ -497,25 +497,25 @@ class MediaImage implements IMedia
         $id = (int) $id;
         switch ($type) {
             case Image::TYPE_PRODUCT:
-                $res = ['stmt' => 'SELECT kArtikel, nNr as number FROM tartikelpict WHERE kArtikel = :kArtikel GROUP BY cPfad ORDER BY nNr ASC', 'bind' => ['kArtikel' => $id]];
+                $res = ['stmt' => 'SELECT kArtikel, nNr AS number FROM tartikelpict WHERE kArtikel = :kArtikel GROUP BY cPfad ORDER BY nNr ASC', 'bind' => ['kArtikel' => $id]];
                 break;
             case Image::TYPE_CATEGORY:
-                $res = ['stmt' => 'SELECT kKategorie, 0 as number FROM tkategoriepict WHERE kKategorie = :kKategorie', 'bind' => ['kKategorie' => $id]];
+                $res = ['stmt' => 'SELECT kKategorie, 0 AS number FROM tkategoriepict WHERE kKategorie = :kKategorie', 'bind' => ['kKategorie' => $id]];
                 break;
             case Image::TYPE_CONFIGGROUP:
-                $res = ['stmt' => 'SELECT cBildpfad, 0 as number FROM tkonfiggruppe WHERE kKonfiggruppe = :kKonfiggruppe ORDER BY nSort ASC', 'bind' => ['kKonfiggruppe' => $id]];
+                $res = ['stmt' => 'SELECT cBildpfad, 0 AS number FROM tkonfiggruppe WHERE kKonfiggruppe = :kKonfiggruppe ORDER BY nSort ASC', 'bind' => ['kKonfiggruppe' => $id]];
                 break;
             case Image::TYPE_VARIATION:
-                $res = ['stmt' => 'SELECT kEigenschaftWert, 0 as number FROM teigenschaftwertpict WHERE kEigenschaftWert = :kEigenschaftWert', 'bind' => ['kEigenschaftWert' => $id]];
+                $res = ['stmt' => 'SELECT kEigenschaftWert, 0 AS number FROM teigenschaftwertpict WHERE kEigenschaftWert = :kEigenschaftWert', 'bind' => ['kEigenschaftWert' => $id]];
                 break;
             case Image::TYPE_MANUFACTURER:
-                $res = ['stmt' => 'SELECT cBildpfad FROM thersteller, 0 as number WHERE kHersteller = :kHersteller', 'bind' => ['kHersteller' => $id]];
+                $res = ['stmt' => 'SELECT cBildpfad, 0 AS number FROM thersteller WHERE kHersteller = :kHersteller', 'bind' => ['kHersteller' => $id]];
                 break;
             case Image::TYPE_ATTRIBUTE:
-                $res = ['stmt' => 'SELECT cBildpfad FROM tmerkmal, 0 as number WHERE kMerkmal = :kMerkmal ORDER BY nSort ASC', 'bind' => ['kMerkmal' => $id]];
+                $res = ['stmt' => 'SELECT cBildpfad, 0 AS number FROM tmerkmal WHERE kMerkmal = :kMerkmal ORDER BY nSort ASC', 'bind' => ['kMerkmal' => $id]];
                 break;
             case Image::TYPE_ATTRIBUTE_VALUE:
-                $res = ['stmt' => 'SELECT cBildpfad FROM tmerkmalwert, 0 as number WHERE kMerkmalWert = :kMerkmalWert ORDER BY nSort ASC', 'bind' => ['kMerkmalWert' => $id]];
+                $res = ['stmt' => 'SELECT cBildpfad, 0 AS number FROM tmerkmalwert WHERE kMerkmalWert = :kMerkmalWert ORDER BY nSort ASC', 'bind' => ['kMerkmalWert' => $id]];
                 break;
             default:
                 return;

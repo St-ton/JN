@@ -194,7 +194,7 @@ class cache_redis implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function setCacheTag($tags = [], $cacheID): bool
+    public function setCacheTag($tags, $cacheID): bool
     {
         $res   = false;
         $redis = $this->_redis->multi();
@@ -225,7 +225,15 @@ class cache_redis implements ICachingMethod
      */
     public function flushTags($tags): int
     {
-        return $this->flush(\array_unique($this->getKeysByTag($tags)));
+        $keys = \array_unique($this->getKeysByTag($tags));
+        if (!\is_array($tags)) {
+            $tags = [$tags];
+        }
+        foreach ($tags as $tag) {
+            $keys[] = self::_keyFromTagName($tag);
+        }
+
+        return $this->flush($keys);
     }
 
     /**
@@ -244,7 +252,7 @@ class cache_redis implements ICachingMethod
         $matchTags = \is_string($tags)
             ? [self::_keyFromTagName($tags)]
             : \array_map('Cache\Methods\cache_redis::_keyFromTagName', $tags);
-        $res       = \count($tags) === 1
+        $res       = \count($matchTags) === 1
             ? $this->_redis->sMembers($matchTags[0])
             : $this->_redis->sUnion($matchTags);
         if (\PHP_SAPI === 'srv' || \PHP_SAPI === 'cli') { // for some reason, hhvm does not unserialize values

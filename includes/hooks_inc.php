@@ -16,6 +16,7 @@ define('HOOK_ARTIKEL_PAGE', 1);
  * Falls nicht wahrend Bestellung bezahlt wird
  *
  * @file bestellabschluss.php
+ * @param Bestellung - oBestellung
  */
 define('HOOK_BESTELLABSCHLUSS_PAGE', 2);
 
@@ -23,6 +24,7 @@ define('HOOK_BESTELLABSCHLUSS_PAGE', 2);
  * Falls während Bestellung bezahlt wird
  *
  * @file bestellabschluss.php
+ * @param Bestellung - oBestellung
  */
 define('HOOK_BESTELLABSCHLUSS_PAGE_ZAHLUNGSVORGANG', 3);
 

@@ -177,7 +177,7 @@ class cache_redisCluster implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function setCacheTag($tags = [], $cacheID): bool
+    public function setCacheTag($tags, $cacheID): bool
     {
         $res = false;
         if (\is_string($tags)) {

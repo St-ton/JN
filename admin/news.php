@@ -419,14 +419,14 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
         //Newskategorie speichern
         $step             = 'news_uebersicht';
         $cName            = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-        $cSeo             = $_POST['cSeo'];
-        $nSort            = (int)$_POST['nSort'];
-        $nAktiv           = (int)$_POST['nAktiv'];
+        $cSeo             = RequestHelper::verifyGPDataString('cSeo');
+        $nSort            = RequestHelper::verifyGPCDataInt('nSort');
+        $nAktiv           = RequestHelper::verifyGPCDataInt('nAktiv');
         $cMetaTitle       = htmlspecialchars($_POST['cMetaTitle'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
         $cMetaDescription = htmlspecialchars($_POST['cMetaDescription'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-        $cBeschreibung    = $_POST['cBeschreibung'];
-        $cPreviewImage    = $_POST['previewImage'];
-        $kParent          = $_POST['kParent'] ?? 0;
+        $cBeschreibung    = RequestHelper::verifyGPDataString('cBeschreibung');
+        $cPreviewImage    = RequestHelper::verifyGPDataString('previewImage');
+        $kParent          = RequestHelper::verifyGPCDataInt('kParent');
         $cPlausiValue_arr = pruefeNewsKategorie($_POST['cName'], isset($_POST['newskategorie_edit_speichern'])
             ? (int)$_POST['newskategorie_edit_speichern']
             : 0
@@ -463,6 +463,14 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
             } else {
                 $kNewsKategorie = Shop::Container()->getDB()->insert('tnewskategorie', $oNewsKategorie);
             }
+            //set same activity status for all subcategories
+            $oNewsCatAndSubCats_arr = News::getNewsCatAndSubCats($kNewsKategorie, $_SESSION['kSprache']);
+            $upd         = new stdClass();
+            $upd->nAktiv = $oNewsKategorie->nAktiv ;
+            foreach ($oNewsCatAndSubCats_arr as $newsSubCat) {
+                Shop::Container()->getDB()->update('tnewskategorie', 'kNewsKategorie', $newsSubCat, $upd);
+            }
+
             Shop::Container()->getDB()->delete(
                 'tseo',
                 ['cKey', 'kKey', 'kSprache'],

@@ -518,9 +518,10 @@ class News extends MainModel
      * @param int $kSprache
      * @param bool $noCache
      * @param bool $flatten
+     * @param bool $showOnlyActive
      * @return array
      */
-    public static function getAllNewsCategories($kSprache = 1, $noCache = false, $flatten = false): array
+    public static function getAllNewsCategories(int $kSprache = 1, bool $noCache = false, bool $flatten = false, bool $showOnlyActive = false): array
     {
         $cacheID = 'newsCategories_Lang_' .$kSprache;
         if($noCache || ($oNewsCategories_arr = Shop::Container()->getCache()->get($cacheID)) === false)
@@ -528,10 +529,11 @@ class News extends MainModel
             $oNewsCategories = Shop::Container()->getDB()->query(
                 "SELECT *, DATE_FORMAT(dLetzteAktualisierung, '%d.%m.%Y %H:%i') AS dLetzteAktualisierung_de
             FROM tnewskategorie
-            WHERE kSprache = " . $kSprache . "
+            WHERE kSprache = " . $kSprache . ($showOnlyActive ? ' AND nAktiv = 1 ' : '') . "
             ORDER BY nSort ASC",
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
+            $oNewsCategories     = is_array($oNewsCategories) ? $oNewsCategories : [];
             $oNewsCategories_arr = self::buildNewsCategoryTree($oNewsCategories);
             Shop::Cache()->set($cacheID, $oNewsCategories_arr, [CACHING_GROUP_OBJECT], 3600);
         }
@@ -543,81 +545,82 @@ class News extends MainModel
     }
 
     /**
-     * @param object $oNewsCats_arr
+     * @param array $newsCats
      * @param int $parentId
-     * @param int $nLevel
+     * @param int $level
      * @return array
      */
-    public static function buildNewsCategoryTree($oNewsCats_arr, $parentId = 0, $nLevel = -1): array
+    public static function buildNewsCategoryTree(array $newsCats, int $parentId = 0, int $level = -1): array
     {
-        $oNewsCatTree_arr = array();
-        $nLevel++;
-        foreach ($oNewsCats_arr as $oNewsCat) {
-            if ((int)$oNewsCat->kParent === (int)$parentId) {
-                $children = self::buildNewsCategoryTree($oNewsCats_arr, $oNewsCat->kNewsKategorie, $nLevel);
+        $newsCatTree = [];
+        $level++;
+        foreach ($newsCats as $newsCat) {
+            if ((int)$newsCat->kParent === $parentId) {
+                $children = self::buildNewsCategoryTree($newsCats, $newsCat->kNewsKategorie, $level);
                 if ($children) {
-                    $oNewsCat->children = $children;
+                    $newsCat->children = $children;
                 }
-                $oNewsCat->nLevel = $nLevel;
-                $oNewsCatTree_arr[]        = $oNewsCat;
+                $newsCat->nLevel = $level;
+                $newsCatTree[]   = $newsCat;
             }
         }
-        return $oNewsCatTree_arr;
+        return $newsCatTree;
     }
 
     /**
-     * @param object $oNewsCats_arr
+     * @param array $newsCats
      * @return array
      */
-    public static function flattenNewsCategoryTree($oNewsCats_arr): array
+    public static function flattenNewsCategoryTree(array $newsCats): array
     {
-        $oFlattendNewsCats_arr = array();
-        foreach ($oNewsCats_arr as $oNewsCat) {
-            $oFlattendNewsCats_arr[] = $oNewsCat;
-            if (!empty($oNewsCat->children)) {
-                $oFlattendNewsCats_arr = array_merge($oFlattendNewsCats_arr, self::flattenNewsCategoryTree($oNewsCat->children));
+        $flattendNewsCats = [];
+        foreach ($newsCats as $newsCat) {
+            $flattendNewsCats[] = $newsCat;
+            if (!empty($newsCat->children)) {
+                $flattendNewsCats = array_merge($flattendNewsCats, self::flattenNewsCategoryTree($newsCat->children));
             }
         }
-        return $oFlattendNewsCats_arr;
+        return $flattendNewsCats;
     }
 
     /**
-     * @param int $kNewsCat
-     * @return object
+     * @param int $newsCatID
+     * @return object|null
      */
-    public static function getNewsCategory($kNewsCat)
+    public static function getNewsCategory(int $newsCatID)
     {
-        return Shop::Container()->getDB()->select('tnewskategorie', 'kNewsKategorie', $kNewsCat);
+        return Shop::Container()->getDB()->select('tnewskategorie', 'kNewsKategorie', $newsCatID);
     }
 
     /**
-     * @param int $kNewsCat
-     * @param object $oNewsCats
+     * @param int $newsCatID
+     * @param array $newsCats
      * @return array
      */
-    public static function getNewsSubCategories($kNewsCat, $oNewsCats): array
+    public static function getNewsSubCategories(int $newsCatID, array $newsCats): array
     {
-        $oSubCat_arr = [];
-        foreach ($oNewsCats as $oNewsCat) {
-            if (isset($oNewsCat->children) && (int)$oNewsCat->kNewsKategorie === (int)$kNewsCat) {
-                foreach ($oNewsCat->children as $oChild) {
-                    $oSubCat_arr[] = $oChild->kNewsKategorie;
-                    $oSubCat_arr   = array_merge($oSubCat_arr, self::getNewsSubCategories($oChild->kNewsKategorie, $oNewsCat->children));
+        $subCats = [];
+        foreach ($newsCats as $newsCat) {
+            if (isset($newsCat->children) && (int)$newsCat->kNewsKategorie === $newsCatID) {
+                foreach ($newsCat->children as $child) {
+                    $subCats[] = $child->kNewsKategorie;
+                    $subCats   = array_merge($subCats, self::getNewsSubCategories($child->kNewsKategorie, $newsCat->children));
                 }
             }
         }
-        return $oSubCat_arr;
+        return $subCats;
     }
 
     /**
-     * @param int $kNewsCat
+     * @param int $newsCatID
      * @param int $kSprache
      * @param bool $noCache
+     * @param bool $showOnlyActive
      * @return array
      */
-    public static function getNewsCatAndSubCats($kNewsCat, $kSprache, $noCache = false): array
+    public static function getNewsCatAndSubCats(int $newsCatID, int $kSprache, bool $noCache = false, bool $showOnlyActive = false): array
     {
-        $oNewsCats = self::getAllNewsCategories($kSprache, $noCache, true);
-        return array_merge([$kNewsCat], self::getNewsSubCategories($kNewsCat, $oNewsCats));
+        $newsCats = self::getAllNewsCategories($kSprache, $noCache, true, $showOnlyActive);
+        return array_merge([$newsCatID], self::getNewsSubCategories($newsCatID, $newsCats));
     }
 }

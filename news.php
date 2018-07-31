@@ -336,7 +336,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
             ? baueNewsMetaKeywords($_SESSION['NewsNaviFilter'], $oNewsUebersicht_arr)
             : $cMetaKeywords;
         Shop::Smarty()->assign('oNewsUebersicht_arr', $oNewsUebersicht_arr)
-            ->assign('oNewsKategorie_arr', News::getAllNewsCategories($_SESSION['kSprache']))
+            ->assign('oNewsKategorie_arr', News::getAllNewsCategories($_SESSION['kSprache'], false, false, true))
             ->assign('oDatum_arr', baueDatum($oDatum_arr))
             ->assign('nSort', $_SESSION['NewsNaviFilter']->nSort)
             ->assign('cDatum', $_SESSION['NewsNaviFilter']->cDatum)

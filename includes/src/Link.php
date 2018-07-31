@@ -620,10 +620,18 @@ class Link extends MainModel
     {
         if ($kVaterLink > 0) {
             if (!empty($kVaterLinkgruppe)) {
-                $oLink_arr = Shop::Container()->getDB()->selectAll(
-                    'tlink',
-                    ['kVaterLink', 'kLinkgruppe'],
-                    [$kVaterLink, $kVaterLinkgruppe]
+                $oLink_arr = Shop::Container()->getDB()->queryPrepared(
+                    'SELECT tlink.* 
+                        FROM tlink 
+                        JOIN tlinkgroupassociations t 
+                            ON tlink.kLink = t.linkID
+                        WHERE tlink.kVaterLink = :parentID
+                            AND t.linkGroupID = :lgid',
+                    [
+                        'parentID' => $kVaterLink,
+                        'lgid'     => $kVaterLinkgruppe
+                    ],
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
             } else {
                 $oLink_arr = Shop::Container()->getDB()->selectAll('tlink', 'kVaterLink', $kVaterLink);

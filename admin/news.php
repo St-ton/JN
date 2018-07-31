@@ -364,7 +364,7 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
             }
         }
     } elseif (isset($_POST['news_loeschen']) && (int)$_POST['news_loeschen'] === 1) { // News loeschen
-        if (is_array($_POST['kNews']) && count($_POST['kNews']) > 0) {
+        if (isset($_POST['kNews']) && is_array($_POST['kNews']) && count($_POST['kNews']) > 0) {
             foreach ($_POST['kNews'] as $kNews) {
                 $kNews = (int)$kNews;
 
@@ -519,7 +519,7 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
     } elseif (isset($_POST['news_kategorie_loeschen']) && (int)$_POST['news_kategorie_loeschen'] === 1) {
         // Newskategorie loeschen
         $step = 'news_uebersicht';
-        if (loescheNewsKategorie($_POST['kNewsKategorie'])) {
+        if (isset($_POST['kNewsKategorie']) && loescheNewsKategorie($_POST['kNewsKategorie'])) {
             $cHinweis .= 'Ihre markierten Newskategorien wurden erfolgreich gelöscht.<br />';
             newsRedirect('kategorien', $cHinweis);
         } else {
@@ -717,60 +717,8 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
 }
 // Hole News aus DB
 if ($step === 'news_uebersicht') {
-    $oNews_arr = Shop::Container()->getDB()->query(
-        "SELECT SQL_CALC_FOUND_ROWS tnews.*, 
-            count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl,
-            DATE_FORMAT(tnews.dErstellt, '%d.%m.%Y %H:%i') AS Datum, 
-            DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y %H:%i') AS dGueltigVon_de
-            FROM tnews
-            LEFT JOIN tnewskommentar 
-                ON tnewskommentar.kNews = tnews.kNews
-            WHERE tnews.kSprache = " . (int)$_SESSION['kSprache'] . "
-            GROUP BY tnews.kNews
-            ORDER BY tnews.dGueltigVon DESC",
-        \DB\ReturnType::ARRAY_OF_OBJECTS
-    );
-    foreach ($oNews_arr as $i => $oNews) {
-        $oNews_arr[$i]->cKundengruppe_arr = [];
-        $kKundengruppe_arr                = StringHandler::parseSSK($oNews->cKundengruppe);
-        foreach ($kKundengruppe_arr as $kKundengruppe) {
-            if ($kKundengruppe == -1) {
-                $oNews_arr[$i]->cKundengruppe_arr[] = 'Alle';
-            } else {
-                $oKundengruppe = Shop::Container()->getDB()->select('tkundengruppe', 'kKundengruppe', (int)$kKundengruppe);
-                if (!empty($oKundengruppe->cName)) {
-                    $oNews_arr[$i]->cKundengruppe_arr[] = $oKundengruppe->cName;
-                }
-            }
-        }
-        //add row "Kategorie" to news
-        $oCategorytoNews_arr = Shop::Container()->getDB()->query(
-            "SELECT tnewskategorie.cName
-                FROM tnewskategorie
-                LEFT JOIN tnewskategorienews 
-                    ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
-                WHERE tnewskategorienews.kNews = " . (int)$oNews->kNews ." 
-                ORDER BY tnewskategorie.nSort",
-            \DB\ReturnType::ARRAY_OF_OBJECTS
-        );
-        $Kategoriearray = [];
-        foreach ($oCategorytoNews_arr as $j => $KategorieAusgabe) {
-            $Kategoriearray[] = $KategorieAusgabe->cName;
-        }
-        $oNews_arr[$i]->KategorieAusgabe = implode(',<br />', $Kategoriearray);
-        // Limit News comments on aktiv comments
-        $oNewsKommentarAktiv = Shop::Container()->getDB()->query(
-            "SELECT count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahlAktiv
-                FROM tnews
-                LEFT JOIN tnewskommentar 
-                    ON tnewskommentar.kNews = tnews.kNews
-                WHERE tnewskommentar.nAktiv = 1 
-                    AND tnews.kNews = " . (int)$oNews->kNews . "
-                    AND tnews.kSprache = " . (int)$_SESSION['kSprache'],
-            \DB\ReturnType::SINGLE_OBJECT
-        );
-        $oNews_arr[$i]->nNewsKommentarAnzahl = $oNewsKommentarAktiv->nNewsKommentarAnzahlAktiv;
-    }
+    $oNews_arr = getAllNews();
+
     // Newskommentare die auf eine Freischaltung warten
     $oNewsKommentar_arr = Shop::Container()->getDB()->query(
         "SELECT SQL_CALC_FOUND_ROWS tnewskommentar.*, 

@@ -32,14 +32,18 @@
             {/if}
         </select>
         {lang key='newsCategorie' section='news' assign='cCurrentKategorie'}
+        {if isset($oNewsCat->kNewsKategorie)}
+            {assign var='kNewsKategorie' value=(int)$oNewsCat->kNewsKategorie}
+        {else}
+            {assign var='kNewsKategorie' value=0}
+        {/if}
         <select name="nNewsKat" onchange="this.form.submit();" class="form-control form-group" aria-label="{lang key='newsCategorie' section='news'}">
-            <option value="-1"{if $oNewsCat->kNewsKategorie == -1} selected{/if}>{lang key='newsCategorie' section='news'}</option>
+            <option value="-1"{if $kNewsKategorie === -1} selected{/if}>{lang key='newsCategorie' section='news'}</option>
             {if !empty($oNewsKategorie_arr)}
-{               {assign var='selectedCat' value=$oNewsCat->kNewsKategorie}
+{               {assign var='selectedCat' value=$kNewsKategorie}
                 {include file='snippets/newscategories_recursive.tpl' i=0 selectedCat=$selectedCat}
             {/if}
         </select>
-
         <select class="form-control form-group" name="{$oPagination->getId()}_nItemsPerPage" id="{$oPagination->getId()}_nItemsPerPage"
                 onchange="this.form.submit();" aria-label="{lang key='newsPerSite' section='news'}">
             <option value="0" {if $oPagination->getItemsPerPage() == 0} selected{/if}>

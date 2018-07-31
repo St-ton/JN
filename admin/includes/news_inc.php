@@ -350,23 +350,24 @@ function loescheNewsBilderDir($kNews, $cUploadVerzeichnis)
 }
 
 /**
- * @param array $kNewsKategorie_arr
+ * @param array $newsCats
  * @return bool
  */
-function loescheNewsKategorie($kNewsKategorie_arr)
+function loescheNewsKategorie(array $newsCats): bool
 {
-    if (!is_array($kNewsKategorie_arr) || count($kNewsKategorie_arr) === 0) {
+    if (!is_array($newsCats) || count($newsCats) === 0) {
         return false;
     }
-    foreach ($kNewsKategorie_arr as $kNewsKategorie) {
-        $oNewsCatAndSubCats_arr = News::getNewsCatAndSubCats($kNewsKategorie, $_SESSION['kSprache']);
-        foreach ($oNewsCatAndSubCats_arr as $oNewsCat) {
-            $kNewsKategorie = (int)$oNewsCat;
-            Shop::Container()->getDB()->delete('tnewskategorie', 'kNewsKategorie', $kNewsKategorie);
+    foreach ($newsCats as $newsCat) {
+        $oNewsCatAndSubCats_arr = News::getNewsCatAndSubCats($newsCat, $_SESSION['kSprache']);
+        foreach ($oNewsCatAndSubCats_arr as $newsSubCat) {
+            Shop::Container()->getDB()->delete('tnewskategorie', 'kNewsKategorie', $newsSubCat);
             // tseo löschen
-            Shop::Container()->getDB()->delete('tseo', ['cKey', 'kKey'], ['kNewsKategorie', $kNewsKategorie]);
+            Shop::Container()->getDB()->delete('tseo', ['cKey', 'kKey'], ['kNewsKategorie', $newsSubCat]);
             // tnewskategorienews löschen
-            Shop::Container()->getDB()->delete('tnewskategorienews', 'kNewsKategorie', $kNewsKategorie);
+            Shop::Container()->getDB()->delete('tnewskategorienews', 'kNewsKategorie', $newsSubCat);
+
+            deactivateNews();
         }
     }
 
@@ -507,4 +508,80 @@ function newsRedirect($cTab = '', $cHinweis = '', $urlParams = null)
             ? '?' . http_build_query($urlParams, '', '&') 
             : ''));
     exit;
+}
+
+function getAllNews()
+{
+    $oNews_arr = Shop::Container()->getDB()->query(
+        "SELECT SQL_CALC_FOUND_ROWS tnews.*, 
+            count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl,
+            DATE_FORMAT(tnews.dErstellt, '%d.%m.%Y %H:%i') AS Datum, 
+            DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y %H:%i') AS dGueltigVon_de
+            FROM tnews
+            LEFT JOIN tnewskommentar 
+                ON tnewskommentar.kNews = tnews.kNews
+            WHERE tnews.kSprache = " . (int)$_SESSION['kSprache'] . "
+            GROUP BY tnews.kNews
+            ORDER BY tnews.dGueltigVon DESC",
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
+
+    foreach ($oNews_arr as $i => $oNews) {
+        $oNews_arr[$i]->cKundengruppe_arr = [];
+        $kKundengruppe_arr                = StringHandler::parseSSK($oNews->cKundengruppe);
+        foreach ($kKundengruppe_arr as $kKundengruppe) {
+            if ($kKundengruppe == -1) {
+                $oNews_arr[$i]->cKundengruppe_arr[] = 'Alle';
+            } else {
+                $oKundengruppe = Shop::Container()->getDB()->select('tkundengruppe', 'kKundengruppe', (int)$kKundengruppe);
+                if (!empty($oKundengruppe->cName)) {
+                    $oNews_arr[$i]->cKundengruppe_arr[] = $oKundengruppe->cName;
+                }
+            }
+        }
+        //add row "Kategorie" to news
+        $oCategorytoNews_arr = Shop::Container()->getDB()->query(
+            "SELECT tnewskategorie.cName
+                FROM tnewskategorie
+                LEFT JOIN tnewskategorienews 
+                    ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
+                WHERE tnewskategorienews.kNews = " . (int)$oNews->kNews ." 
+                ORDER BY tnewskategorie.nSort",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
+        $Kategoriearray = [];
+        foreach ($oCategorytoNews_arr as $j => $KategorieAusgabe) {
+            $Kategoriearray[] = $KategorieAusgabe->cName;
+        }
+        $oNews_arr[$i]->KategorieAusgabe = implode(',<br />', $Kategoriearray);
+        // Limit News comments on aktiv comments
+        $oNewsKommentarAktiv = Shop::Container()->getDB()->query(
+            "SELECT count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahlAktiv
+                FROM tnews
+                LEFT JOIN tnewskommentar 
+                    ON tnewskommentar.kNews = tnews.kNews
+                WHERE tnewskommentar.nAktiv = 1 
+                    AND tnews.kNews = " . (int)$oNews->kNews . "
+                    AND tnews.kSprache = " . (int)$_SESSION['kSprache'],
+            \DB\ReturnType::SINGLE_OBJECT
+        );
+        $oNews_arr[$i]->nNewsKommentarAnzahl = $oNewsKommentarAktiv->nNewsKommentarAnzahlAktiv;
+    }
+    return $oNews_arr;
+}
+
+/**
+ * deactivate all news without a category
+ */
+function deactivateNews()
+{
+    $newsAll = getAllNews();
+
+    foreach ($newsAll as $news) {
+        if ($news->KategorieAusgabe === '') {
+            $upd         = new stdClass();
+            $upd->nAktiv = 0;
+            Shop::Container()->getDB()->update('tnews', 'kNews', $news->kNews, $upd);
+        }
+    }
 }

@@ -49,7 +49,7 @@ switch ($action) {
                     $okCount = 0;
                     foreach ($_POST['cache-types'] as $cacheType) {
                         $hookInfo = ['type' => $cacheType, 'key' => null, 'isTag' => true];
-                        $flush    = $cache->flushTags([$cacheType, CACHING_GROUP_FILTER], $hookInfo);
+                        $flush    = $cache->flushTags([$cacheType], $hookInfo);
                         if ($flush === false) {
                             $error .= '<br />Konnte Cache "' . $cacheType . '" nicht löschen (evtl. bereits leer).';
                         } else {

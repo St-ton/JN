@@ -39,12 +39,12 @@ class Currency
     /**
      * @var bool
      */
-    private $isDefault;
+    private $isDefault = false;
 
     /**
      * @var bool
      */
-    private $forcePlacementBeforeNumber;
+    private $forcePlacementBeforeNumber = false;
 
     /**
      * @var string
@@ -95,7 +95,7 @@ class Currency
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getID()
     {
@@ -114,7 +114,7 @@ class Currency
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getCode()
     {
@@ -133,7 +133,7 @@ class Currency
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getName()
     {
@@ -152,7 +152,7 @@ class Currency
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getHtmlEntity()
     {
@@ -171,7 +171,7 @@ class Currency
     }
 
     /**
-     * @return float
+     * @return float|null
      */
     public function getConversionFactor()
     {
@@ -192,7 +192,7 @@ class Currency
     /**
      * @return bool
      */
-    public function isDefault()
+    public function isDefault(): bool
     {
         return $this->isDefault;
     }
@@ -214,7 +214,7 @@ class Currency
     /**
      * @return bool
      */
-    public function getForcePlacementBeforeNumber()
+    public function getForcePlacementBeforeNumber(): bool
     {
         return $this->forcePlacementBeforeNumber;
     }
@@ -234,7 +234,7 @@ class Currency
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getDecimalSeparator()
     {
@@ -253,7 +253,7 @@ class Currency
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getThousandsSeparator()
     {

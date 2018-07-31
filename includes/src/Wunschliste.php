@@ -995,8 +995,8 @@ class Wunschliste
         if ($id > 0) {
             $oWunschliste = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $id);
         } elseif ($cURLID !== '') {
-            $oWunschliste = Shop::Container()->getDB()->executeQueryPrepared(
-                "SELECT * FROM twunschliste WHERE cURLID LIKE :id",
+            $oWunschliste = Shop::Container()->getDB()->queryPrepared(
+                'SELECT * FROM twunschliste WHERE cURLID LIKE :id',
                 ['id' => $cURLID],
                 \DB\ReturnType::SINGLE_OBJECT
             );

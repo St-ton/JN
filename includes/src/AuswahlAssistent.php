@@ -161,7 +161,7 @@ class AuswahlAssistent
      * @param int $kWert
      * @return $this
      */
-    public function setNextSelection(int $kWert)
+    public function setNextSelection(int $kWert): self
     {
         if ($this->nCurQuestion < count($this->oFrage_arr)) {
             $this->kSelection_arr[] = $kWert;
@@ -222,7 +222,7 @@ class AuswahlAssistent
      * @param JTLSmarty $smarty
      * @return string
      */
-    public function fetchForm($smarty)
+    public function fetchForm($smarty): string
     {
         return $smarty->assign('AWA', $this)->fetch('selectionwizard/form.tpl');
     }
@@ -285,11 +285,11 @@ class AuswahlAssistent
 
     /**
      * @param int $nFrage
-     * @return AuswahlAssistentFrage
+     * @return AuswahlAssistentFrage|null
      */
     public function getQuestion(int $nFrage)
     {
-        return $this->oFrage_arr[$nFrage];
+        return $this->oFrage_arr[$nFrage] ?? null;
     }
 
     /**
@@ -326,7 +326,7 @@ class AuswahlAssistent
 
     /**
      * @param int $nFrage
-     * @return array
+     * @return array|null
      */
     public function getSelectedValue(int $nFrage)
     {
@@ -339,7 +339,7 @@ class AuswahlAssistent
     /**
      * @return \Filter\ProductFilter
      */
-    public function getNaviFilter()
+    public function getNaviFilter(): \Filter\ProductFilter
     {
         return $this->oNaviFilter;
     }

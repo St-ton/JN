@@ -493,9 +493,9 @@ class AdminAccount
             Shop::Container()->getDB()->update('tadminlogin', 'cLogin', $cLogin, (object)['nLoginVersuch' => 0]);
         } else {
             Shop::Container()->getDB()->queryPrepared(
-                "UPDATE tadminlogin
+                'UPDATE tadminlogin
                     SET nLoginVersuch = nLoginVersuch+1
-                    WHERE cLogin = :login",
+                    WHERE cLogin = :login',
                 ['login' => $cLogin],
                 \DB\ReturnType::AFFECTED_ROWS
             );

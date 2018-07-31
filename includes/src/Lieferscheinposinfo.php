@@ -36,28 +36,30 @@ class Lieferscheinposinfo
 
     /**
      * Lieferscheinposinfo constructor.
-     * @param int $kLieferscheinPosInfo
+     * @param int $id
      */
-    public function __construct(int $kLieferscheinPosInfo = 0)
+    public function __construct(int $id = 0)
     {
-        if ($kLieferscheinPosInfo > 0) {
-            $this->loadFromDB($kLieferscheinPosInfo);
+        if ($id > 0) {
+            $this->loadFromDB($id);
         }
     }
 
     /**
-     * @param int $kLieferscheinPosInfo
+     * @param int $id
      * @return $this
      */
-    private function loadFromDB(int $kLieferscheinPosInfo = 0)
+    private function loadFromDB(int $id = 0): self
     {
-        $oObj = Shop::Container()->getDB()->select('tlieferscheinposinfo', 'kLieferscheinPosInfo', $kLieferscheinPosInfo);
+        $oObj = Shop::Container()->getDB()->select('tlieferscheinposinfo', 'kLieferscheinPosInfo', $id);
 
         if ($oObj !== null && $oObj->kLieferscheinPosInfo > 0) {
             $cMember_arr = array_keys(get_object_vars($oObj));
             foreach ($cMember_arr as $cMember) {
                 $this->$cMember = $oObj->$cMember;
             }
+            $this->kLieferscheinPos     = (int)$this->kLieferscheinPos;
+            $this->kLieferscheinPosInfo = (int)$this->kLieferscheinPosInfo;
         }
 
         return $this;
@@ -99,7 +101,12 @@ class Lieferscheinposinfo
         $_upd->cChargeNr        = $this->getChargeNr();
         $_upd->dMHD             = $this->getMHD();
 
-        return Shop::Container()->getDB()->update('tlieferscheinposinfo', 'kLieferscheinPosInfo', $this->getLieferscheinPosInfo(), $_upd);
+        return Shop::Container()->getDB()->update(
+            'tlieferscheinposinfo',
+            'kLieferscheinPosInfo',
+            $this->getLieferscheinPosInfo(),
+            $_upd
+        );
     }
 
     /**
@@ -107,14 +114,18 @@ class Lieferscheinposinfo
      */
     public function delete(): int
     {
-        return Shop::Container()->getDB()->delete('tlieferscheinposinfo', 'kLieferscheinPosInfo', $this->getLieferscheinPosInfo());
+        return Shop::Container()->getDB()->delete(
+            'tlieferscheinposinfo',
+            'kLieferscheinPosInfo',
+            $this->getLieferscheinPosInfo()
+        );
     }
 
     /**
      * @param int $kLieferscheinPosInfo
      * @return $this
      */
-    public function setLieferscheinPosInfo(int $kLieferscheinPosInfo)
+    public function setLieferscheinPosInfo(int $kLieferscheinPosInfo): self
     {
         $this->kLieferscheinPosInfo = $kLieferscheinPosInfo;
 
@@ -125,7 +136,7 @@ class Lieferscheinposinfo
      * @param int $kLieferscheinPos
      * @return $this
      */
-    public function setLieferscheinPos(int $kLieferscheinPos)
+    public function setLieferscheinPos(int $kLieferscheinPos): self
     {
         $this->kLieferscheinPos = $kLieferscheinPos;
 
@@ -136,7 +147,7 @@ class Lieferscheinposinfo
      * @param string $cSeriennummer
      * @return $this
      */
-    public function setSeriennummer($cSeriennummer)
+    public function setSeriennummer($cSeriennummer): self
     {
         $this->cSeriennummer = Shop::Container()->getDB()->escape($cSeriennummer);
 
@@ -147,7 +158,7 @@ class Lieferscheinposinfo
      * @param string
      * @return $this
      */
-    public function setChargeNr($cChargeNr)
+    public function setChargeNr($cChargeNr): self
     {
         $this->cChargeNr = Shop::Container()->getDB()->escape($cChargeNr);
 
@@ -158,7 +169,7 @@ class Lieferscheinposinfo
      * @param string $dMHD
      * @return $this
      */
-    public function setMHD($dMHD)
+    public function setMHD($dMHD): self
     {
         $this->dMHD = Shop::Container()->getDB()->escape($dMHD);
 
@@ -168,7 +179,7 @@ class Lieferscheinposinfo
     /**
      * @return int
      */
-    public function getLieferscheinPosInfo()
+    public function getLieferscheinPosInfo(): int
     {
         return (int)$this->kLieferscheinPosInfo;
     }
@@ -176,13 +187,13 @@ class Lieferscheinposinfo
     /**
      * @return int
      */
-    public function getLieferscheinPos()
+    public function getLieferscheinPos(): int
     {
         return (int)$this->kLieferscheinPos;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getSeriennummer()
     {
@@ -190,7 +201,7 @@ class Lieferscheinposinfo
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getChargeNr()
     {
@@ -198,7 +209,7 @@ class Lieferscheinposinfo
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getMHD()
     {

@@ -9,22 +9,20 @@
  */
 class Plausi
 {
-    protected $xPostVar_arr;
-    protected $xPlausiVar_arr;
+    /**
+     * @var array
+     */
+    protected $xPostVar_arr = [];
 
     /**
-     *
+     * @var array
      */
-    public function __construct()
-    {
-        $this->xPostVar_arr   = [];
-        $this->xPlausiVar_arr = [];
-    }
+    protected $xPlausiVar_arr = [];
 
     /**
      * @return array
      */
-    public function getPostVar()
+    public function getPostVar(): array
     {
         return $this->xPostVar_arr;
     }
@@ -32,18 +30,18 @@ class Plausi
     /**
      * @return array
      */
-    public function getPlausiVar()
+    public function getPlausiVar(): array
     {
         return $this->xPlausiVar_arr;
     }
 
     /**
-     * @param array $xVar_arr
+     * @param array      $xVar_arr
      * @param array|null $hasHTML_arr
-     * @param bool $toEntities
+     * @param bool       $toEntities
      * @return bool
      */
-    public function setPostVar($xVar_arr, $hasHTML_arr = null, bool $toEntities = false)
+    public function setPostVar($xVar_arr, $hasHTML_arr = null, bool $toEntities = false): bool
     {
         if (is_array($xVar_arr) && count($xVar_arr) > 0) {
             if (is_array($hasHTML_arr)) {

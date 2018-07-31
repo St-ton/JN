@@ -72,8 +72,13 @@ class Filter
      */
     public function addTextfield($cTitle, $cColumn, $nTestOp = 0, $nDataType = 0): FilterTextField
     {
-        $oField                                       = new FilterTextField($this, $cTitle, $cColumn, $nTestOp,
-            $nDataType);
+        $oField                                       = new FilterTextField(
+            $this,
+            $cTitle,
+            $cColumn,
+            $nTestOp,
+            $nDataType
+        );
         $this->oField_arr[]                           = $oField;
         $this->cSession_arr[$oField->getId()]         = $oField->getValue();
         $this->cSession_arr[$oField->getId() . '_op'] = $oField->getTestOp();
@@ -141,7 +146,7 @@ class Filter
 
     /**
      * @param int $i
-     * @return array
+     * @return mixed
      */
     public function getField($i)
     {
@@ -151,7 +156,7 @@ class Filter
     /**
      * @return string
      */
-    public function getAction()
+    public function getAction(): string
     {
         return $this->cAction;
     }
@@ -201,7 +206,7 @@ class Filter
     /**
      * @return string
      */
-    public function getId()
+    public function getId(): string
     {
         return $this->cId;
     }

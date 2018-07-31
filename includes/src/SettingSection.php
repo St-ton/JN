@@ -28,7 +28,7 @@ class SettingSection
      * @param int $kSektion
      * @return static
      */
-    public static function getInstance($kSektion)
+    public static function getInstance(int $kSektion)
     {
         if (!isset(self::$instances[$kSektion])) {
             $oSektion = Shop::Container()->getDB()->select('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
@@ -52,7 +52,7 @@ class SettingSection
      * @param object $confValue
      * @return bool
      */
-    public function validate($conf, &$confValue)
+    public function validate($conf, &$confValue): bool
     {
         return true;
     }
@@ -62,7 +62,7 @@ class SettingSection
      * @param mixed $value
      * @return static
      */
-    public function setValue(&$conf, $value)
+    public function setValue(&$conf, $value): self
     {
         return $this;
     }
@@ -70,7 +70,7 @@ class SettingSection
     /**
      * @return string
      */
-    public function getSectionMarkup()
+    public function getSectionMarkup(): string
     {
         return '';
     }
@@ -79,7 +79,7 @@ class SettingSection
      * @param object $conf
      * @return string
      */
-    public function getValueMarkup($conf)
+    public function getValueMarkup($conf): string
     {
         return '';
     }

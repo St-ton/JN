@@ -623,7 +623,7 @@ class StringHandler
                     $cSpracheSQL       = '';
                     if (Shop::getLanguageID() > 0 && !Sprache::isDefaultLanguageActive()) {
                         $cTabellenname = 'tartikelsprache';
-                        $cSpracheSQL   = " AND tartikelsprache.kSprache = " . Shop::getLanguageID();
+                        $cSpracheSQL   = ' AND tartikelsprache.kSprache = ' . Shop::getLanguageID();
                     }
                     $oArtikel = Shop::Container()->getDB()->query(
                         "SELECT {$cTabellenname}.kArtikel, {$cTabellenname}.cName, tseo.cSeo
@@ -649,8 +649,8 @@ class StringHandler
                     $cTabellenname       = 'tkategorie';
                     $cSpracheSQL         = '';
                     if ($kSprache > 0 && !Sprache::isDefaultLanguageActive()) {
-                        $cTabellenname = "tkategoriesprache";
-                        $cSpracheSQL   = " AND tkategoriesprache.kSprache = " . $kSprache;
+                        $cTabellenname = 'tkategoriesprache';
+                        $cSpracheSQL   = ' AND tkategoriesprache.kSprache = ' . $kSprache;
                     }
                     $oKategorie = Shop::Container()->getDB()->query(
                         "SELECT {$cTabellenname}.kKategorie, {$cTabellenname}.cName, tseo.cSeo

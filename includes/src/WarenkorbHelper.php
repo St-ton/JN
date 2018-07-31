@@ -14,9 +14,9 @@ class WarenkorbHelper
 
     /**
      * @param int $decimals
-     * @return object
+     * @return stdClass
      */
-    public function getTotal($decimals = 0)
+    public function getTotal(int $decimals = 0): stdClass
     {
         $info            = new stdClass();
         $info->type      = Session::CustomerGroup()->isMerchant() ? self::NET : self::GROSS;

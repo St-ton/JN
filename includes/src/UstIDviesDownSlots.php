@@ -166,7 +166,7 @@ class UstIDviesDownSlots
      *
      * @return string
      */
-    public function getDownInfo()
+    public function getDownInfo(): string
     {
         return $this->szDownInfo;
     }
@@ -178,7 +178,7 @@ class UstIDviesDownSlots
      * @param string $szCountryCode
      * @return bool
      */
-    public function isDown($szCountryCode)
+    public function isDown($szCountryCode): bool
     {
         if (! isset($this->vDownTimeSlots[$szCountryCode])) {
             // at the moment, we skip unknown countries (use string-parsing only)

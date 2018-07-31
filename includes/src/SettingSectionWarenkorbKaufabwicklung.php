@@ -20,7 +20,7 @@ class SettingSectionWarenkorbKaufabwicklung extends SettingSection
     /**
      * @return string
      */
-    public function getSectionMarkup()
+    public function getSectionMarkup(): string
     {
         return Shop::Smarty()->fetch('tpl_inc/settingsection_warenkorb.tpl');
     }

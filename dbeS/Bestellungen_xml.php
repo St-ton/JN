@@ -746,7 +746,7 @@ function bearbeiteBestellattribute(int $kBestellung, $orderAttributes)
             'DELETE FROM tbestellattribut
                 WHERE kBestellung = ' . $kBestellung . '
                     AND kBestellattribut NOT IN (' . implode(', ', $updated) . ')',
-            \DB\ReturnType::QUERYSINGLE
+            \DB\ReturnType::DEFAULT
         );
     } else {
         Shop::Container()->getDB()->delete('tbestellattribut', 'kBestellung', $kBestellung);

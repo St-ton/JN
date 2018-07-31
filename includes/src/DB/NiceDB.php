@@ -408,7 +408,7 @@ class NiceDB implements DbInterface
                 $assigns[':' . $_key] = $_val;
             }
         }
-        $stmt = "INSERT INTO " . $tableName . " (" . \implode(', ', $keys) . ") VALUES (" . \implode(', ', $values) . ")";
+        $stmt = 'INSERT INTO ' . $tableName . ' (' . \implode(', ', $keys) . ') VALUES (' . \implode(', ', $values) . ')';
         if ($echo) {
             echo $stmt;
         }

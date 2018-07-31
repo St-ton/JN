@@ -197,7 +197,7 @@ function bearbeiteInsert($xml, array $conf)
             }
         }
         if ($flush === false
-            && $conf['global']['artikel_artikelanzeigefilter'] != EINSTELLUNGEN_ARTIKELANZEIGEFILTER_ALLE
+            && (int)$conf['global']['artikel_artikelanzeigefilter'] !== EINSTELLUNGEN_ARTIKELANZEIGEFILTER_ALLE
         ) {
             $check         = false;
             $currentStatus = Shop::Container()->getDB()->select(
@@ -225,13 +225,13 @@ function bearbeiteInsert($xml, array $conf)
                     if (is_array($newArticleCategories) && !empty($newArticleCategories)) {
                         // get count of visible articles in the article's futre categories
                         $articleCount = Shop::Container()->getDB()->query(
-                            "SELECT tkategorieartikel.kKategorie, count(tkategorieartikel.kArtikel) AS count
-                            FROM tkategorieartikel
-                            LEFT JOIN tartikel
-                                ON tartikel.kArtikel = tkategorieartikel.kArtikel
-                            WHERE tkategorieartikel.kKategorie IN (" . implode(',', $newArticleCategories) . ") " .
-                            $stockFilter .
-                            " GROUP BY tkategorieartikel.kKategorie",
+                            'SELECT tkategorieartikel.kKategorie, count(tkategorieartikel.kArtikel) AS count
+                                FROM tkategorieartikel
+                                LEFT JOIN tartikel
+                                    ON tartikel.kArtikel = tkategorieartikel.kArtikel
+                                WHERE tkategorieartikel.kKategorie IN (' . implode(',', $newArticleCategories) . ') ' .
+                                $stockFilter .
+                                ' GROUP BY tkategorieartikel.kKategorie',
                             \DB\ReturnType::ARRAY_OF_OBJECTS
                         );
                         foreach ($newArticleCategories as $nac) {
@@ -1316,7 +1316,7 @@ function getDownloadKeys(int $kArtikel): array
  *
  * @param array $products
  */
-function clearProductCaches(array $products)
+function clearProductCaches($products)
 {
     $start     = microtime(true);
     $cacheTags = [];
@@ -1366,15 +1366,15 @@ function clearProductCaches(array $products)
             $cacheTags[] = CACHING_GROUP_CATEGORY . '_' . (int)$category->kKategorie;
         }
         // flush parent article IDs
-        $parentArticles = Shop::Container()->getDB()->query(
+        $parentProducts = Shop::Container()->getDB()->query(
             'SELECT DISTINCT kVaterArtikel AS id
                 FROM tartikel
                 WHERE kArtikel IN (' . implode(',', $deps) . ')
                 AND kVaterArtikel > 0',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        foreach ($parentArticles as $parentArticle) {
-            $cacheTags[] = CACHING_GROUP_ARTICLE . '_' . (int)$parentArticle->id;
+        foreach ($parentProducts as $parentProduct) {
+            $cacheTags[] = CACHING_GROUP_ARTICLE . '_' . (int)$parentProduct->id;
         }
     }
 

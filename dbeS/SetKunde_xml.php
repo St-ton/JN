@@ -199,9 +199,9 @@ function bearbeite($xml)
                 unset($xml_obj['kunden']['tkunde'][0]['cPasswort']);
                 $xml_obj['kunden']['tkunde']['0 attr']             = buildAttributes($xml_obj['kunden']['tkunde'][0]);
                 $xml_obj['kunden']['tkunde'][0]['tkundenattribut'] = Shop::Container()->getDB()->query(
-                    "SELECT *
+                    'SELECT *
                         FROM tkundenattribut
-                         WHERE kKunde = " . (int)$xml_obj['kunden']['tkunde']['0 attr']['kKunde'],
+                         WHERE kKunde = ' . (int)$xml_obj['kunden']['tkunde']['0 attr']['kKunde'],
                     \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
                 );
                 $kundenattribute_anz                               = count($xml_obj['kunden']['tkunde'][0]['tkundenattribut']);

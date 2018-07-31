@@ -106,9 +106,9 @@ function bearbeiteInsert($xml)
     }
     // Altes SEO merken => falls sich es bei der aktualisierten Kategorie ändert => Eintrag in tredirect
     $oDataOld      = Shop::Container()->getDB()->query(
-        "SELECT cSeo, lft, rght, nLevel
+        'SELECT cSeo, lft, rght, nLevel
             FROM tkategorie
-            WHERE kKategorie = " . $Kategorie->kKategorie,
+            WHERE kKategorie = ' . $Kategorie->kKategorie,
         \DB\ReturnType::SINGLE_OBJECT
     );
     $oSeoAssoc_arr = getSeoFromDB($Kategorie->kKategorie, 'kKategorie', null, 'kSprache');

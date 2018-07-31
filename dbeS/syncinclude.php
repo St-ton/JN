@@ -32,7 +32,7 @@ error_reporting(SYNC_LOG_LEVEL);
 if (!is_writable(PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP)) {
     syncException('Fehler beim Abgleich: Das Verzeichnis ' .
         PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . ' ist nicht beschreibbar!',
-        8
+        FREIDEFINIERBARER_FEHLER
     );
 }
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
@@ -105,7 +105,7 @@ function html2rgb($color)
  */
 function checkFile()
 {
-    if ($_FILES['data']['error'] || (isset($_FILES['data']['size']) && $_FILES['data']['size'] == 0)) {
+    if ($_FILES['data']['error'] || (isset($_FILES['data']['size']) && $_FILES['data']['size'] === 0)) {
         Shop::Container()->getLogService()->error(
             'ERROR: incoming: ' . $_FILES['data']['name'] . ' size:' . $_FILES['data']['size'] .
             ' err:' . $_FILES['data']['error']
@@ -247,18 +247,16 @@ function getObjectArray($elements, $child)
     if (is_array($elements) && (is_array($elements[$child]) || is_array($elements[$child . ' attr']))) {
         $cnt = count($elements[$child]);
         if (is_array($elements[$child . ' attr'])) {
-            $obj = new stdClass();
-            if (is_array($elements[$child . ' attr'])) {
-                $keys = array_keys($elements[$child . ' attr']);
-                foreach ($keys as $key) {
-                    if (!$elements[$child . ' attr'][$key]) {
-                        Shop::Container()->getLogService()->error(
-                            $child . '->' . $key . ' fehlt! XML:' .
-                            $elements[$child]
-                        );
-                    }
-                    $obj->$key = $elements[$child . ' attr'][$key];
+            $obj  = new stdClass();
+            $keys = array_keys($elements[$child . ' attr']);
+            foreach ($keys as $key) {
+                if (!$elements[$child . ' attr'][$key]) {
+                    Shop::Container()->getLogService()->error(
+                        $child . '->' . $key . ' fehlt! XML:' .
+                        $elements[$child]
+                    );
                 }
+                $obj->$key = $elements[$child . ' attr'][$key];
             }
             if (is_array($elements[$child])) {
                 $keys = array_keys($elements[$child]);
@@ -578,7 +576,9 @@ function versendeVerfuegbarkeitsbenachrichtigung($product)
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 
     $Artikel = (new Artikel())->fuelleArtikel($product->kArtikel, Artikel::getDefaultOptions());
-    // Kampagne
+    if ($Artikel === null) {
+        return;
+    }
     $oKampagne = new Kampagne(KAMPAGNE_INTERN_VERFUEGBARKEIT);
     if ($oKampagne->kKampagne > 0) {
         $cSep          = strpos($Artikel->cURL, '.php') === false ? '?' : '&';
@@ -615,18 +615,14 @@ function versendeVerfuegbarkeitsbenachrichtigung($product)
  * @param int   $kKundengruppe
  * @param float $fVKNetto
  */
-function setzePreisverlauf($kArtikel, $kKundengruppe, $fVKNetto)
+function setzePreisverlauf(int $kArtikel, int $kKundengruppe, float $fVKNetto)
 {
-    $kArtikel      = (int)$kArtikel;
-    $kKundengruppe = (int)$kKundengruppe;
-    $fVKNetto      = (float)$fVKNetto;
-
     $oPreis_arr = Shop::Container()->getDB()->queryPrepared(
-        "SELECT kPreisverlauf, fVKNetto, dDate, IF(dDate = CURDATE(), 1, 0) bToday
+        'SELECT kPreisverlauf, fVKNetto, dDate, IF(dDate = CURDATE(), 1, 0) bToday
             FROM tpreisverlauf
             WHERE kArtikel = :kArtikel
 	            AND kKundengruppe = :kKundengruppe
-            ORDER BY dDate DESC LIMIT 2",
+            ORDER BY dDate DESC LIMIT 2',
         [
             'kArtikel'      => $kArtikel,
             'kKundengruppe' => $kKundengruppe,
@@ -709,15 +705,13 @@ function translateError($cMessage)
  */
 function handleError($output)
 {
-    if (function_exists('error_get_last')) {
-        $error = error_get_last();
-        if ($error['type'] == 1) {
-            $cError = translateError($error['message']) . "\n";
-            $cError .= 'Datei: ' . $error['file'];
-            Shop::Container()->getLogService()->error($cError);
+    $error = error_get_last();
+    if ($error['type'] === 1) {
+        $cError = translateError($error['message']) . "\n";
+        $cError .= 'Datei: ' . $error['file'];
+        Shop::Container()->getLogService()->error($cError);
 
-            return $cError;
-        }
+        return $cError;
     }
 
     return $output;
@@ -747,13 +741,13 @@ function deleteArticleImage($oArtikelPict = null, int $kArtikel = 0, int $kArtik
             \DB\ReturnType::SINGLE_OBJECT
         );
         // Main Artikel existiert nicht mehr
-        if (!isset($oMainArtikel->kArtikel) || $oMainArtikel->kArtikel == 0) {
+        if (!isset($oMainArtikel->kArtikel) || (int)$oMainArtikel->kArtikel === 0) {
             // Existiert noch eine andere aktive Verknüpfung auf das Mainbild?
             $oArtikelPictPara_arr = Shop::Container()->getDB()->query(
                 'SELECT kArtikelPict
                     FROM tartikelpict
                     WHERE kMainArtikelBild = ' . (int)$oArtikelPict->kMainArtikelBild . '
-                        AND kArtikel != ' . (int)$kArtikel,
+                        AND kArtikel != ' . $kArtikel,
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             // Lösche das MainArtikelBild
@@ -819,7 +813,7 @@ function deleteArticleImage($oArtikelPict = null, int $kArtikel = 0, int $kArtik
     }
     // Clear Artikel Cache
     $cache = Shop::Cache();
-    $cache->flushTags([CACHING_GROUP_ARTICLE . '_' . (int)$kArtikel]);
+    $cache->flushTags([CACHING_GROUP_ARTICLE . '_' . $kArtikel]);
 }
 
 /**

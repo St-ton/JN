@@ -19,10 +19,10 @@ if (auth()) {
         $return = 0;
         foreach ($syncFiles as $xmlFile) {
             $xml = simplexml_load_file($xmlFile);
-            if (strpos($xmlFile, 'bildartikellink.xml') !== false) {
-                bildartikellink_xml($xml);
-            } elseif (strpos($xmlFile, 'del_bildartikellink.xml') !== false) {
+            if (strpos($xmlFile, 'del_bildartikellink.xml') !== false) {
                 del_bildartikellink_xml($xml);
+            } elseif (strpos($xmlFile, 'bildartikellink.xml') !== false) {
+                bildartikellink_xml($xml);
             }
             removeTemporaryFiles($xmlFile);
         }

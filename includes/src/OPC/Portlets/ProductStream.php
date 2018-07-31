@@ -8,6 +8,7 @@ namespace OPC\Portlets;
 
 use Filter\Type;
 use OPC\PortletInstance;
+use Tightenco\Collect\Support\Collection;
 
 /**
  * Class ProductStream
@@ -103,9 +104,9 @@ class ProductStream extends \OPC\Portlet
 
     /**
      * @param PortletInstance $instance
-     * @return \Tightenco\Collect\Support\Collection
+     * @return Collection
      */
-    public function getFilteredProductIds(PortletInstance $instance)
+    public function getFilteredProductIds(PortletInstance $instance): Collection
     {
         $enabledFilters = $instance->getProperty('filters');
         $productFilter  = new \Filter\ProductFilter();
@@ -113,7 +114,7 @@ class ProductStream extends \OPC\Portlet
         foreach ($enabledFilters as $enabledFilter) {
             /** @var \Filter\AbstractFilter $newFilter * */
             $newFilter = new $enabledFilter['class']($productFilter);
-            $newFilter->setType(Type::AND());
+            $newFilter->setType(Type::AND);
             $productFilter->addActiveFilter($newFilter, $enabledFilter['value']);
         }
 

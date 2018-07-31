@@ -616,7 +616,7 @@ if ($step === 'uebersicht') {
             JOIN tnewsletter 
                 ON tnewsletterqueue.kNewsletter = tnewsletter.kNewsletter
             WHERE tnewsletter.kSprache = " . (int)$_SESSION['kSprache'] . "
-            ORDER BY Datum DESC 
+            ORDER BY tnewsletterqueue.dStart DESC 
             LIMIT " . $oPagiWarteschlange->getLimitSQL(),
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
@@ -687,7 +687,7 @@ if ($step === 'uebersicht') {
                 ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
             WHERE tnewsletterempfaenger.nAktiv = 0
             " . $cInaktiveSucheSQL->cWHERE . "
-            ORDER BY Datum DESC 
+            ORDER BY tnewsletterempfaenger.dEingetragen DESC 
             LIMIT " . $oPagiInaktiveAbos->getLimitSQL(),
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );

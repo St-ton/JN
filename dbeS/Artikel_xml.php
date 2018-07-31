@@ -78,6 +78,7 @@ function bearbeiteDeletes($xml, $conf)
                     AND tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi",
             \DB\ReturnType::AFFECTED_ROWS
         );
+        removeProductIdfromCoupons($kArtikel);
         $res[] = loescheArtikel($kArtikel, $nIstVater, false, $conf);
         // Lösche Artikel aus tartikelkategorierabatt
         Shop::Container()->getDB()->delete('tartikelkategorierabatt', 'kArtikel', $kArtikel);
@@ -964,6 +965,32 @@ function bearbeiteInsert($xml, array $conf)
     versendeVerfuegbarkeitsbenachrichtigung($artikel_arr[0]);
 
     return $res;
+}
+
+/**
+ * @param int $kArtikel
+ */
+function removeProductIdfromCoupons(int $kArtikel)
+{
+    $product = Shop::Container()->getDB()->select(
+        'tartikel', 'kArtikel', $kArtikel, null, null, null, null, false, 'cArtNr'
+    );
+
+    if (isset($product->cArtNr) && is_string($product->cArtNr) && strlen($product->cArtNr) > 0) {
+        $cArtNr = Shop::Container()->getDB()->select(
+            'tartikel', 'kArtikel', $kArtikel, null, null, null, null, false, 'cArtNr'
+        )->cArtNr;
+
+        Shop::Container()->getDB()->query(
+            "UPDATE tkupon SET cArtikel = REPLACE(cArtikel, ';$cArtNr;', ';') WHERE cArtikel LIKE '%;$cArtNr;%'",
+            \DB\ReturnType::DEFAULT
+        );
+
+        Shop::Container()->getDB()->query(
+            "UPDATE tkupon SET cArtikel = '' WHERE cArtikel = ';'",
+            \DB\ReturnType::DEFAULT
+        );
+    }
 }
 
 /**

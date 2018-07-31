@@ -460,6 +460,14 @@ class WarenkorbPos
 
         $this->kWarenkorbPos = Shop::Container()->getDB()->insert('twarenkorbpos', $obj);
 
+        if ($this->nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
+            $oGift               = new stdClass();
+            $oGift->kWarenkorb   = $this->kWarenkorb;
+            $oGift->kArtikel     = $this->kArtikel;
+            $oGift->nAnzahl      = $this->nAnzahl;
+            $this->kWarenkorbPos = Shop::Container()->getDB()->insert('tgratisgeschenk', $oGift);
+        }
+
         return $this->kWarenkorbPos;
     }
 

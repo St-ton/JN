@@ -206,7 +206,7 @@ class cache_advancedfile implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function setCacheTag($tags = [], $cacheID): bool
+    public function setCacheTag($tags, $cacheID): bool
     {
         $fileName = $this->getFileName($cacheID);
         if ($fileName === false || !\file_exists($fileName) || \is_link($fileName)) {

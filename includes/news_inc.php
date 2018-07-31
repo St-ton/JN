@@ -54,9 +54,11 @@ function baueFilterSQL($bActiveOnly = false)
     }
     // NewsKat Filter
     $oSQL->cNewsKatSQL = ' JOIN tnewskategorienews ON tnewskategorienews.kNews = tnews.kNews';
+    $cNewsCats         = implode(',', News::getNewsCatAndSubCats($_SESSION['NewsNaviFilter']->nNewsKat, Shop::getLanguageID(), false, true));
+
     if ($_SESSION['NewsNaviFilter']->nNewsKat > 0) {
         $oSQL->cNewsKatSQL = " JOIN tnewskategorienews ON tnewskategorienews.kNews = tnews.kNews
-                               AND tnewskategorienews.kNewsKategorie = " . (int)$_SESSION['NewsNaviFilter']->nNewsKat;
+                               AND tnewskategorienews.kNewsKategorie IN (" . $cNewsCats . ")";
     }
 
     if ($bActiveOnly) {

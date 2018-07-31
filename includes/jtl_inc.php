@@ -196,7 +196,7 @@ function setzeWarenkorbPersInWarenkorb(int $kKunde)
                     1,
                     [],
                     null,
-                    null,
+                    0,
                     C_WARENKORBPOS_TYP_GRATISGESCHENK
                 );
             }

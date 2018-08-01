@@ -23,13 +23,7 @@ $cMetaTitle             = '';
 $cMetaDescription       = '';
 $cMetaKeywords          = '';
 $AktuelleSeite          = 'NEWS';
-$Einstellungen          = Shop::getSettings([
-    CONF_GLOBAL,
-    CONF_RSS,
-    CONF_NEWS,
-    CONF_KONTAKTFORMULAR,
-    CONF_METAANGABEN
-]);
+$Einstellungen          = Shopsetting::getInstance()->getAll();
 $nAktuelleSeite         = (Shop::$kSeite !== null && Shop::$kSeite > 0) ? Shop::$kSeite : 1;
 $oNewsUebersicht_arr    = [];
 $linkHelper             = Shop::Container()->getLinkService();

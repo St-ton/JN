@@ -14,9 +14,7 @@ if (auth()) {
     $return    = 2;
     $newTmpDir = PFAD_SYNC_TMP . uniqid('images_') . '/';
     if (($syncFiles = unzipSyncFiles($zipFile, $newTmpDir, __FILE__)) === false) {
-        if (Jtllog::doLog()) {
-            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'img_upload_xml');
-        }
+        Shop::Container()->getLogService()->error('Error: Cannot extract zip file ' . $zipFile . ' to ' . $newTmpDir);
         removeTemporaryFiles($zipFile);
     } else {
         $return = 0;
@@ -25,24 +23,11 @@ if (auth()) {
         foreach ($syncFiles as $xmlFile) {
             if (strpos($xmlFile, 'images.xml') !== false) {
                 $found = true;
-            } elseif (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog(
-                    'Received image: ' . $xmlFile . ' size: ' . filesize($xmlFile),
-                    JTLLOG_LEVEL_DEBUG,
-                    false,
-                    'img_upload_xml'
-                );
             }
         }
 
         if ($found) {
             images_xml($newTmpDir, simplexml_load_file($newTmpDir . 'images.xml'));
-
-            if ($count <= 1 && Jtllog::doLog()) {
-                Jtllog::writeLog('Zip-File contains no images', JTLLOG_LEVEL_DEBUG, false, 'img_upload_xml');
-            }
-        } elseif (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('Missing images.xml', JTLLOG_LEVEL_DEBUG, false, 'img_upload_xml');
         }
         removeTemporaryFiles($newTmpDir);
     }
@@ -71,11 +56,11 @@ function images_xml($tmpDir, SimpleXMLElement $xml)
                 (object)['cPfad' => $item->cPfad]
             );
         } else {
-            Jtllog::writeLog(sprintf(
+            Shop::Container()->getLogService()->error(sprintf(
                 'Copy "%s" to "%s"',
                 $tmpfile,
                 PFAD_ROOT . PFAD_MEDIA_IMAGE_STORAGE . $item->cPfad
-            ), JTLLOG_LEVEL_ERROR, false, 'img_upload_xml');
+            ));
         }
     }
 }

@@ -181,12 +181,7 @@ function sendeMail($ModulId, $Object, $mail = null)
     );
     // Email aktiv?
     if (isset($Emailvorlage->cAktiv) && $Emailvorlage->cAktiv === 'N') {
-        Jtllog::writeLog(
-            'Emailvorlage mit der ModulId ' . $ModulId . ' ist deaktiviert!',
-            JTLLOG_LEVEL_NOTICE,
-            false,
-            'kEmailvorlage'
-        );
+        Shop::Container()->getLogService()->notice('Emailvorlage mit der ModulId ' . $ModulId . ' ist deaktiviert!');
 
         return false;
     }
@@ -207,11 +202,9 @@ function sendeMail($ModulId, $Object, $mail = null)
     }
 
     if (!isset($Emailvorlage->kEmailvorlage) || (int)$Emailvorlage->kEmailvorlage === 0) {
-        Jtllog::writeLog(
-            'Keine Emailvorlage mit der ModulId ' . $ModulId . ' vorhanden oder diese Emailvorlage ist nicht aktiv!',
-            JTLLOG_LEVEL_ERROR,
-            false,
-            'kEmailvorlage'
+        Shop::Container()->getLogService()->error(
+            'Keine Emailvorlage mit der ModulId ' . $ModulId .
+            ' vorhanden oder diese Emailvorlage ist nicht aktiv!'
         );
 
         return false;
@@ -792,12 +785,7 @@ function verschickeMail($mail)
                       ->setSent('now()')
                       ->save();
     } else {
-        Jtllog::writeLog(
-            'Email konnte nicht versendet werden! Fehler: ' . $mail->cFehler,
-            JTLLOG_LEVEL_ERROR,
-            false,
-            'kEmailvorlage'
-        );
+        Shop::Container()->getLogService()->error('Email konnte nicht versendet werden! Fehler: ' . $mail->cFehler);
     }
 
     executeHook(HOOK_MAILTOOLS_VERSCHICKEMAIL_GESENDET);

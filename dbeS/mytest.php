@@ -81,8 +81,6 @@ if ($login->checkLogin($cName, $cPass) === true) {
         \DB\ReturnType::SINGLE_OBJECT
     );
 } else {
-    Jtllog::writeLog("Result: {$return}", JTLLOG_LEVEL_DEBUG, false, 'Sync_xml');
     syncException("{$return}");
 }
 echo $return . ';JTL4;' . $oVersion->nVersion . ';';
-Jtllog::writeLog("Result: {$return}", JTLLOG_LEVEL_DEBUG, false, 'Sync_xml');

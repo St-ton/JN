@@ -532,8 +532,7 @@ if ($customerID > 0) {
         $csrfTest = FormHelper::validateToken();
         if ($csrfTest === false) {
             $cHinweis .= Shop::Lang()->get('csrfValidationFailed', 'global');
-            Jtllog::writeLog('CSRF-Warnung fuer Account-Loeschung und kKunde ' .
-                $customerID, JTLLOG_LEVEL_ERROR);
+            Shop::Container()->getLogService()->error('CSRF-Warnung fuer Account-Loeschung und kKunde ' . $customerID);
         } else {
             $oBestellung = Shop::Container()->getDB()->query(
                 "SELECT COUNT(kBestellung) AS countBestellung
@@ -567,7 +566,7 @@ if ($customerID > 0) {
                 ]);
             }
 
-            Jtllog::writeLog(PFAD_LOGFILES . 'geloeschteKundenkontos.log', $cText, 1);
+            Shop::Container()->getLogService()->notice($cText);
             // Newsletter
             Shop::Container()->getDB()->delete('tnewsletterempfaenger', 'cEmail', $_SESSION['Kunde']->cMail);
             Shop::Container()->getDB()->insert('tnewsletterempfaengerhistory', (object)[
@@ -584,7 +583,6 @@ if ($customerID > 0) {
                 'dEingetragen' => '',
                 'dOptCode'     => '',
             ]);
-
             // Wunschliste
             Shop::Container()->getDB()->query(
                 "DELETE twunschliste, twunschlistepos, twunschlisteposeigenschaft, twunschlisteversand
@@ -598,9 +596,6 @@ if ($customerID > 0) {
                         WHERE twunschliste.kKunde = " . $customerID,
                 \DB\ReturnType::DEFAULT
             );
-
-
-
             // Pers. Warenkorb
             Shop::Container()->getDB()->query(
                 "DELETE twarenkorbpers, twarenkorbperspos, twarenkorbpersposeigenschaft

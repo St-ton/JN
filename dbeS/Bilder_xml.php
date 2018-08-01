@@ -134,9 +134,7 @@ if (auth()) {
         basename($_FILES['data']['tmp_name']) . '_' .
         date('dhis') . '/';
     if (($syncFiles = unzipSyncFiles($zipFile, $unzipPath, __FILE__)) === false) {
-        if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
-        }
+        Shop::Container()->getLogService()->error('Error: Cannot extract zip file ' . $zipFile . ' to ' . $unzipPath);
         removeTemporaryFiles($zipFile);
     } else {
         $return = 0;
@@ -149,10 +147,6 @@ if (auth()) {
                 case 'bilder_m.xml':
                 case 'bilder_mw.xml':
                 case 'bilder_h.xml':
-                    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                        Jtllog::writeLog('bearbeite: ' . $xmlFile . ' size: ' .
-                            filesize($xmlFile), JTLLOG_LEVEL_DEBUG, false, 'Bilder_xml');
-                    }
                     $d   = file_get_contents($xmlFile);
                     $xml = XML_unserialize($d);
                     bearbeite($xml, $unzipPath);
@@ -166,10 +160,6 @@ if (auth()) {
                 case 'del_bilder_m.xml':
                 case 'del_bilder_mw.xml':
                 case 'del_bilder_h.xml':
-                    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                        Jtllog::writeLog('bearbeite: ' . $xmlFile . ' size: ' .
-                            filesize($xmlFile), JTLLOG_LEVEL_DEBUG, false, 'Bilder_xml');
-                    }
                     $d   = file_get_contents($xmlFile);
                     $xml = XML_unserialize($d);
                     bearbeiteDeletes($xml);
@@ -183,10 +173,6 @@ if (auth()) {
 }
 
 echo $return;
-
-if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-    Jtllog::writeLog('BEENDE: ' . $zipFile, JTLLOG_LEVEL_DEBUG, false, 'Bilder_xml');
-}
 
 /**
  * @param array  $xml
@@ -219,15 +205,10 @@ function bearbeite($xml, string $unzipPath)
             $imgFilename = $img->cPfad;
             $Bildformat  = gibBildformat($unzipPath . $imgFilename);
             if (!$Bildformat) {
-                if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-                    Jtllog::writeLog(
-                        'Bildformat des Artikelbildes konnte nicht ermittelt werden. Datei keine Bilddatei?: ' .
-                        $imgFilename,
-                        JTLLOG_LEVEL_ERROR,
-                        false,
-                        'Bilder_xml'
-                    );
-                }
+                Shop::Container()->getLogService()->error(
+                    'Bildformat des Artikelbildes konnte nicht ermittelt werden. Datei ' .
+                    $imgFilename . ' keine Bilddatei?'
+                );
                 continue;
             }
 
@@ -275,13 +256,8 @@ function bearbeite($xml, string $unzipPath)
         $dir_handle = @opendir($unzipPath);
         while (false !== ($file = readdir($dir_handle))) {
             if ($file !== '.' && $file !== '..' && $file !== 'bilder_a.xml' && file_exists($unzipPath . $file)) {
-                if (unlink($unzipPath . $file)) {
-                    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                        Jtllog::writeLog('Artikelbild wurde geloescht: ' . $file, JTLLOG_LEVEL_DEBUG);
-                    }
-                } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-                    Jtllog::writeLog('Artikelbild konnte nicht geloescht werden: ' . $file, JTLLOG_LEVEL_ERROR, false,
-                        'Bilder_xml');
+                if (!unlink($unzipPath . $file)) {
+                    Shop::Container()->getLogService()->error('Artikelbild konnte nicht geloescht werden: ' . $file);
                 }
             }
         }
@@ -293,10 +269,10 @@ function bearbeite($xml, string $unzipPath)
             $imgFilename = $Kategoriebild->cPfad;
             $Bildformat  = gibBildformat($unzipPath . $imgFilename);
             if (!$Bildformat) {
-                if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-                    Jtllog::writeLog('Bildformat des Kategoriebildes konnte nicht ermittelt werden. Datei keine Bilddatei?: ' .
-                        $imgFilename, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
-                }
+                Shop::Container()->getLogService()->error(
+                    'Bildformat des Kategoriebildes konnte nicht ermittelt werden. Datei ' .
+                    $imgFilename . ' keine Bilddatei?'
+                );
                 continue;
             }
 
@@ -326,10 +302,10 @@ function bearbeite($xml, string $unzipPath)
             $imgFilename = $Eigenschaftwertbild->cPfad;
             $Bildformat  = gibBildformat($unzipPath . $imgFilename);
             if (!$Bildformat) {
-                if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-                    Jtllog::writeLog('Bildformat des Eigenschaftwertbildes konnte nicht ermittelt werden. Datei keine Bilddatei?: ' .
-                        $imgFilename, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
-                }
+                Shop::Container()->getLogService()->error(
+                    'Bildformat des Eigenschaftwertbildes konnte nicht ermittelt werden. Datei ' .
+                    $imgFilename . ' keine Bilddatei?'
+                );
                 continue;
             }
             $Bildname                   = gibEigenschaftwertbildname($Eigenschaftwertbild, $Bildformat);
@@ -374,10 +350,10 @@ function bearbeite($xml, string $unzipPath)
             $imgFilename = $Herstellerbild->cPfad;
             $Bildformat  = gibBildformat($unzipPath . $imgFilename);
             if (!$Bildformat) {
-                if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-                    Jtllog::writeLog('Bildformat des Herstellerbildes konnte nicht ermittelt werden. Datei keine Bilddatei?: ' .
-                        $imgFilename, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
-                }
+                Shop::Container()->getLogService()->error(
+                    'Bildformat des Herstellerbildes konnte nicht ermittelt werden. Datei ' .
+                    $imgFilename . ' keine Bilddatei?'
+                );
                 continue;
             }
             $Hersteller = Shop::Container()->getDB()->query(
@@ -439,10 +415,10 @@ function bearbeite($xml, string $unzipPath)
             $imgFilename = $Merkmalbild->cPfad;
             $Bildformat  = gibBildformat($unzipPath . $imgFilename);
             if (!$Bildformat) {
-                if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-                    Jtllog::writeLog('Bildformat des Merkmalbildes konnte nicht ermittelt werden. Datei keine Bilddatei?: ' .
-                        $imgFilename, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
-                }
+                Shop::Container()->getLogService()->error(
+                    'Bildformat des Merkmalbildes konnte nicht ermittelt werden. Datei ' .
+                    $imgFilename . ' keine Bilddatei?'
+                );
                 continue;
             }
             $Merkmalbild->cPfad .= '.' . $Bildformat;
@@ -484,10 +460,10 @@ function bearbeite($xml, string $unzipPath)
             $imgFilename = $Merkmalwertbild->cPfad;
             $Bildformat  = gibBildformat($unzipPath . $imgFilename);
             if (!$Bildformat) {
-                if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-                    Jtllog::writeLog('Bildformat des Merkmalwertbildes konnte nicht ermittelt werden. Datei keine Bilddatei?: ' .
-                        $imgFilename, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
-                }
+                Shop::Container()->getLogService()->error(
+                    'Bildformat des Merkmalwertbildes konnte nicht ermittelt werden. Datei ' .
+                    $imgFilename . ' keine Bilddatei?'
+                );
                 continue;
             }
             $Merkmalwertbild->cPfad .= '.' . $Bildformat;
@@ -537,10 +513,10 @@ function bearbeite($xml, string $unzipPath)
             $imgFilename = $oKonfig->cBildPfad;
             $Bildformat  = gibBildformat($unzipPath . $imgFilename);
             if (!$Bildformat) {
-                if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-                    Jtllog::writeLog('Bildformat des Konfiggruppenbildes konnte nicht ermittelt werden. Datei keine Bilddatei?: ' .
-                        $imgFilename, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
-                }
+                Shop::Container()->getLogService()->error(
+                    'Bildformat des Konfiggruppenbildes konnte nicht ermittelt werden. Datei ' .
+                    $imgFilename . ' keine Bilddatei?'
+                );
                 continue;
             }
             $Bildname = $oKonfig->kKonfiggruppe . '.' . $Bildformat;
@@ -633,10 +609,6 @@ function erstelleArtikelBild($img, $Bildformat, $unzipPath, $imgFilename)
         $conf['bilder']['container_verwenden']
     )) {
         DBUpdateInsert('tartikelpict', [$img], 'kArtikel', 'kArtikelPict');
-    }
-
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Artikelbild wurde erstellt: ' . print_r($img, true), JTLLOG_LEVEL_DEBUG);
     }
 }
 
@@ -931,11 +903,6 @@ function erstelleThumbnailBranded($imgFilename, $zielbild, $breite, $hoehe, int 
             }
             speichereBild($im, $Bildformat, PFAD_ROOT . $zielbild, $quality);
             @chmod(PFAD_ROOT . $zielbild, 0644);
-            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog('Bild erfolgreich erstellt: ' . $zielbild, JTLLOG_LEVEL_DEBUG, false, 'Bilder_xml');
-                Jtllog::writeLog('Reservierter Speicher: ' . convert(memory_get_usage()) . ' / ' .
-                    convert(memory_get_usage(true)), JTLLOG_LEVEL_DEBUG, false, 'Bilder_xml');
-            }
 
             return 1;
         }
@@ -954,13 +921,11 @@ function erstelleThumbnailBranded($imgFilename, $zielbild, $breite, $hoehe, int 
         if (speichereBild($im, $Bildformat, PFAD_ROOT . $zielbild, $quality)) {
             $ret = 1;
             @chmod(PFAD_ROOT . $zielbild, 0644);
-        } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('Bild konnte nicht erstellt werden. Fehler beim Speichern des Bildes: ' .
-                $zielbild, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
+        } else {
+            Shop::Container()->getLogService()->error('Fehler beim Speichern des Bildes: ' . $zielbild);
         }
-    } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-        Jtllog::writeLog('Bild konnte nicht erstellt werden. Fehler beim Speichern des Bildes: ' .
-            $imgFilename, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
+    } else {
+        Shop::Container()->getLogService()->error('Fehler beim Speichern des Bildes: ' . $imgFilename);
     }
 
     return $ret;
@@ -1008,11 +973,6 @@ function erstelleThumbnail(
             }
             speichereBild(brandImage($im, $brand, $oBranding), $Bildformat, PFAD_ROOT . $zielbild, $quality);
             @chmod(PFAD_ROOT . $zielbild, 0644);
-            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog('Bild erfolgreich erstellt: ' . $zielbild, JTLLOG_LEVEL_DEBUG, false, 'Bilder_xml');
-                Jtllog::writeLog('Reservierter Speicher: ' . convert(memory_get_usage()) . ' / ' .
-                    convert(memory_get_usage(true)), JTLLOG_LEVEL_DEBUG, false, 'Bilder_xml');
-            }
 
             return 1;
         }
@@ -1031,18 +991,11 @@ function erstelleThumbnail(
         if (speichereBild(brandImage($image_p, $brand, $oBranding), $Bildformat, PFAD_ROOT . $zielbild, $quality)) {
             $ret = 1;
             @chmod(PFAD_ROOT . $zielbild, 0644);
-            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog('Bild erfolgreich erstellt: ' . $zielbild, JTLLOG_LEVEL_DEBUG, false, 'Bilder_xml');
-                Jtllog::writeLog('Reservierter Speicher: ' . convert(memory_get_usage()) . ' / ' .
-                    convert(memory_get_usage(true)), JTLLOG_LEVEL_DEBUG, false, 'Bilder_xml');
-            }
-        } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('Bild konnte nicht erstellt werden. Fehler beim Speichern des Bildes: ' .
-                $zielbild, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
+        } else {
+            Shop::Container()->getLogService()->error('Fehler beim Speichern des Bildes: ' . $zielbild);
         }
-    } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-        Jtllog::writeLog('Bild konnte nicht erstellt werden. Datei kein Bild?: ' .
-            $imgFilename, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
+    } else {
+        Shop::Container()->getLogService()->error('Bild konnte nicht erstellt werden. Datei kein Bild?: ' . $imgFilename);
     }
 
     return $ret;
@@ -1223,9 +1176,6 @@ function loescheArtikelPict(int $kArtikelPict, int $nNr = null)
             $kArtikelPict = $oArtikelPict->kArtikelPict ?? 0;
         }
         deleteArticleImage(null, 0, $kArtikelPict);
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('kArtikelPict gelöscht: ' . $kArtikelPict, JTLLOG_LEVEL_DEBUG, false, 'Bilder_xml');
-        }
     }
 }
 
@@ -1237,15 +1187,8 @@ function loescheKategoriePict(int $kKategoriePict = null, int $kKategorie = null
 {
     if ($kKategoriePict !== null && $kKategoriePict > 0) {
         Shop::Container()->getDB()->delete('tkategoriepict', 'kKategoriePict', $kKategoriePict);
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('kKategoriePict geloescht: ' . $kKategoriePict, JTLLOG_LEVEL_DEBUG, false,
-                'Bilder_xml');
-        }
     } elseif ($kKategorie !== null && $kKategorie > 0) {
         Shop::Container()->getDB()->delete('tkategoriepict', 'kKategorie', $kKategorie);
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('kKategoriePict geloescht: ' . $kKategorie, JTLLOG_LEVEL_DEBUG, false, 'Bilder_xml');
-        }
     }
 }
 
@@ -1257,18 +1200,10 @@ function loescheEigenschaftwertPict(int $kEigenschaftwertPict = null, int $kEige
 {
     if ($kEigenschaftwert !== null && $kEigenschaftwert > 0) {
         Shop::Container()->getDB()->delete('teigenschaftwertpict', 'kEigenschaftWert', $kEigenschaftwert);
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('kEigenschaftWert geloescht: ' . $kEigenschaftwert, JTLLOG_LEVEL_DEBUG, false,
-                'Bilder_xml');
-        }
     }
 
     if ($kEigenschaftwertPict !== null && $kEigenschaftwertPict > 0) {
         Shop::Container()->getDB()->delete('teigenschaftwertpict', 'kEigenschaftwertPict', $kEigenschaftwertPict);
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('kEigenschaftwertPict geloescht: ' . $kEigenschaftwertPict, JTLLOG_LEVEL_DEBUG, false,
-                'Bilder_xml');
-        }
     }
 }
 

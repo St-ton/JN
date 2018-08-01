@@ -14,7 +14,7 @@
 {/function}
 
 <h1>{$oMailObjekt->cIntervall}</h1>
-<h2>Zeitraum: {$oMailObjekt->dVon|date_format:"d.m.Y - H:i"} bis {$oMailObjekt->dBis|date_format:"d.m.Y - H:i"}</h2>
+<h2>Zeitraum: {$oMailObjekt->dVon|date_format:'d.m.Y - H:i'} bis {$oMailObjekt->dBis|date_format:'d.m.Y - H:i'}</h2>
 
 <div style="display:table">
     {if is_array($oMailObjekt->oAnzahlArtikelProKundengruppe)}

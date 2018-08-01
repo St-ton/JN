@@ -705,8 +705,8 @@ function gibStepZahlung()
                     gibStepZahlung();
                 }
             }
-        } elseif ((!is_array($oZahlungsart_arr) || count($oZahlungsart_arr) === 0) && Jtllog::doLog()) {
-            Jtllog::writeLog(
+        } elseif (!is_array($oZahlungsart_arr) || count($oZahlungsart_arr) === 0) {
+            Shop::Container()->getLogService()->error(
                 'Es konnte keine Zahlungsart für folgende Daten gefunden werden: Versandart: ' .
                 $_SESSION['Versandart']->kVersandart . ', Kundengruppe: ' . Session::CustomerGroup()->getID()
             );
@@ -892,13 +892,11 @@ function gibStepVersand()
     ) {
         pruefeVersandartWahl($oVersandart_arr[0]->kVersandart);
     } elseif (!is_array($oVersandart_arr) || count($oVersandart_arr) === 0) {
-        if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog(
-                'Es konnte keine Versandart für folgende Daten gefunden werden: Lieferland: ' . $lieferland .
-                ', PLZ: ' . $plz . ', Versandklasse: ' . VersandartHelper::getShippingClasses(Session::Cart()) .
-                ', Kundengruppe: ' . $kKundengruppe
-            );
-        }
+        Shop::Container()->getLogService()->error(
+            'Es konnte keine Versandart für folgende Daten gefunden werden: Lieferland: ' . $lieferland .
+            ', PLZ: ' . $plz . ', Versandklasse: ' . VersandartHelper::getShippingClasses(Session::Cart()) .
+            ', Kundengruppe: ' . $kKundengruppe
+        );
     }
     Shop::Smarty()->assign('Kunde', $_SESSION['Kunde'])
         ->assign('Lieferadresse', $_SESSION['Lieferadresse']);
@@ -1702,12 +1700,10 @@ function zahlungsartGueltig($Zahlungsart)
                 return false;
             }
             if ($oZahlungsart && !$oZahlungsart->isValidIntern()) {
-                Jtllog::writeLog(
-                    'Die Zahlungsartprüfung (' . $Zahlungsart->cModulId . ') wurde nicht erfolgreich validiert (isValidIntern).',
-                    JTLLOG_LEVEL_DEBUG,
-                    false,
-                    'cModulId',
-                    $Zahlungsart->cModulId
+                Shop::Container()->getLogService()->withName('cModulId')->debug(
+                    'Die Zahlungsartprüfung (' . $Zahlungsart->cModulId .
+                    ') wurde nicht erfolgreich validiert (isValidIntern).',
+                    [$Zahlungsart->cModulId]
                 );
 
                 return false;
@@ -1727,13 +1723,10 @@ function zahlungsartGueltig($Zahlungsart)
             return false;
         }
         if ($oZahlungsart && !$oZahlungsart->isValidIntern()) {
-            Jtllog::writeLog(
+            Shop::Container()->getLogService()->withName('cModulId')->debug(
                 'Die Zahlungsartprüfung (' .
                     $Zahlungsart->cModulId . ') wurde nicht erfolgreich validiert (isValidIntern).',
-                JTLLOG_LEVEL_DEBUG,
-                false,
-                'cModulId',
-                $Zahlungsart->cModulId
+                [$Zahlungsart->cModulId]
             );
 
             return false;
@@ -1762,13 +1755,15 @@ function pruefeZahlungsartMinBestellungen($nMinBestellungen)
                 \DB\ReturnType::SINGLE_OBJECT
             );
             if ($anzahl_obj->anz < $nMinBestellungen) {
-                Jtllog::writeLog('pruefeZahlungsartMinBestellungen Bestellanzahl zu niedrig: Anzahl ' .
-                    $anzahl_obj->anz . ' < ' . $nMinBestellungen, JTLLOG_LEVEL_DEBUG);
+                Shop::Container()->getLogService()->debug(
+                    'pruefeZahlungsartMinBestellungen Bestellanzahl zu niedrig: Anzahl ' .
+                    $anzahl_obj->anz . ' < ' . $nMinBestellungen
+                );
 
                 return false;
             }
         } else {
-            Jtllog::writeLog('pruefeZahlungsartMinBestellungen erhielt keinen kKunden', JTLLOG_LEVEL_DEBUG);
+            Shop::Container()->getLogService()->debug('pruefeZahlungsartMinBestellungen erhielt keinen kKunden');
 
             return false;
         }
@@ -1786,13 +1781,10 @@ function pruefeZahlungsartMinBestellwert($fMinBestellwert)
     if ($fMinBestellwert > 0
         && Session::Cart()->gibGesamtsummeWarenOhne([C_WARENKORBPOS_TYP_VERSANDPOS], true) < $fMinBestellwert
     ) {
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog(
-                'pruefeZahlungsartMinBestellwert Bestellwert zu niedrig: Wert ' .
-                Session::Cart()->gibGesamtsummeWaren(true) . ' < ' . $fMinBestellwert,
-                JTLLOG_LEVEL_DEBUG
-            );
-        }
+        Shop::Container()->getLogService()->debug(
+            'pruefeZahlungsartMinBestellwert Bestellwert zu niedrig: Wert ' .
+            Session::Cart()->gibGesamtsummeWaren(true) . ' < ' . $fMinBestellwert
+        );
 
         return false;
     }
@@ -1809,13 +1801,10 @@ function pruefeZahlungsartMaxBestellwert($fMaxBestellwert)
     if ($fMaxBestellwert > 0
         && Session::Cart()->gibGesamtsummeWarenOhne([C_WARENKORBPOS_TYP_VERSANDPOS], true) >= $fMaxBestellwert
     ) {
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog(
-                'pruefeZahlungsartMaxBestellwert Bestellwert zu hoch: Wert ' .
-                Session::Cart()->gibGesamtsummeWaren(true) . ' > ' . $fMaxBestellwert,
-                JTLLOG_LEVEL_DEBUG
-            );
-        }
+        Shop::Container()->getLogService()->debug(
+            'pruefeZahlungsartMaxBestellwert Bestellwert zu hoch: Wert ' .
+            Session::Cart()->gibGesamtsummeWaren(true) . ' > ' . $fMaxBestellwert
+        );
 
         return false;
     }

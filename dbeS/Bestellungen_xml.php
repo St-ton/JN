@@ -16,17 +16,11 @@ if (auth()) {
     $return  = 2;
     $zipFile = $_FILES['data']['tmp_name'];
     if (($syncFiles = unzipSyncFiles($zipFile, PFAD_SYNC_TMP, __FILE__)) === false) {
-        if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'Bestellungen_xml');
-        }
+        Shop::Container()->getLogService()->error('Error: Cannot extract zip file ' . $zipFile . ' to ' . PFAD_SYNC_TMP);
         removeTemporaryFiles($zipFile);
     } else {
         $return = 0;
         foreach ($syncFiles as $xmlFile) {
-            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog('bearbeite: ' . PFAD_SYNC_TMP . $xmlFile . ' size: ' .
-                    filesize($xmlFile), JTLLOG_LEVEL_DEBUG, false, 'Bestellungen_xml');
-            }
             $d   = file_get_contents($xmlFile);
             $xml = XML_unserialize($d);
 
@@ -333,15 +327,6 @@ function bearbeiteUpdate($xml)
             ],
             \DB\ReturnType::SINGLE_OBJECT
         );
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog(
-                'Zahlungsart Matching (' . Sprache::getLanguageDataByType('', (int)$oBestellung->kSprache) . '): ' .
-                $xml['tbestellung']['cZahlungsartName'] . ' matched: ' . ($oZahlungsart->cName ?? ''),
-                JTLLOG_LEVEL_DEBUG,
-                false,
-                'Bestellungen_xml'
-            );
-        }
     }
     $cZAUpdateSQL = '';
     if (isset($oZahlungsart->kZahlungsart) && $oZahlungsart->kZahlungsart > 0) {
@@ -762,7 +747,7 @@ function bearbeiteBestellattribute(int $kBestellung, $orderAttributes)
             'DELETE FROM tbestellattribut
                 WHERE kBestellung = ' . $kBestellung . '
                     AND kBestellattribut NOT IN (' . implode(', ', $updated) . ')',
-            \DB\ReturnType::QUERYSINGLE
+            \DB\ReturnType::DEFAULT
         );
     } else {
         Shop::Container()->getDB()->delete('tbestellattribut', 'kBestellung', $kBestellung);

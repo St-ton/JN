@@ -13,20 +13,11 @@ if (auth()) {
     $return  = 2;
 
     if (($syncFiles = unzipSyncFiles($zipFile, PFAD_SYNC_TMP, __FILE__)) === false) {
-        if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'Globals_xml');
-        }
+        Shop::Container()->getLogService()->error('Error: Cannot extract zip file ' . $zipFile);
+//        removeTemporaryFiles($zipFile);
     } else {
         $return = 0;
         foreach ($syncFiles as $xmlFile) {
-            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog(
-                    'bearbeite: ' . $xmlFile . ' size: ' . filesize($xmlFile),
-                    JTLLOG_LEVEL_DEBUG,
-                    false,
-                    'Globals_xml'
-                );
-            }
             $d   = file_get_contents($xmlFile);
             $xml = XML_unserialize($d);
             if (strpos($xmlFile, 'del_globals.xml') !== false) {
@@ -145,14 +136,6 @@ function bearbeiteUpdates($xml)
         // Warenlager
         if (isset($xml['globals']['twarenlager']) && is_array($xml['globals']['twarenlager'])) {
             $oWarenlager_arr = mapArray($xml['globals'], 'twarenlager', $GLOBALS['mWarenlager']);
-            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog(
-                    'oWarenlager_arr: ' . print_r($oWarenlager_arr, true),
-                    JTLLOG_LEVEL_DEBUG,
-                    false,
-                    'Globals_xml'
-                );
-            }
             //Lagersichtbarkeit für Shop zwischenspeichern
             $lagersichtbarkeit_arr = Shop::Container()->getDB()->query(
                 'SELECT kWarenlager, nAktiv FROM twarenlager WHERE nAktiv = 1',
@@ -196,14 +179,6 @@ function bearbeiteUpdates($xml)
     // Warengruppe
     if (isset($xml['globals_wg']['tWarengruppe']) && is_array($xml['globals_wg']['tWarengruppe'])) {
         $oWarengruppe_arr = mapArray($xml['globals_wg'], 'tWarengruppe', $GLOBALS['mWarengruppe']);
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog(
-                'oWarengruppe_arr: ' . print_r($oWarengruppe_arr, true),
-                JTLLOG_LEVEL_DEBUG,
-                false,
-                'Globals_xml'
-            );
-        }
         DBUpdateInsert('twarengruppe', $oWarengruppe_arr, 'kWarengruppe');
     }
 }
@@ -214,7 +189,5 @@ function bearbeiteUpdates($xml)
 function loescheWarengruppe(int $kWarengruppe)
 {
     Shop::Container()->getDB()->delete('twarengruppe', 'kWarengruppe', $kWarengruppe);
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Warengruppe geloescht: ' . $kWarengruppe, JTLLOG_LEVEL_DEBUG, false, 'Globals_xml');
-    }
+    Shop::Container()->getLogService()->debug('Warengruppe geloescht: ' . $kWarengruppe);
 }

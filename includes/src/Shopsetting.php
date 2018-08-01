@@ -172,7 +172,7 @@ final class Shopsetting implements ArrayAccess
                         return $this->_container[$offset];
                     }
                 } catch (Exception $exc) {
-                    Jtllog::writeLog('Setting Caching Exception: ' . $exc->getMessage());
+                    Shop::Container()->getLogService()->error('Setting Caching Exception: ' . $exc->getMessage());
                 }
                 if ($section === CONF_PLUGINZAHLUNGSARTEN) {
                     $settings = Shop::Container()->getDB()->query(

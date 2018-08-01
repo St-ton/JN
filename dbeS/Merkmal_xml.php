@@ -13,9 +13,7 @@ if (auth()) {
     $return    = 2;
     $unzipPath = PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . basename($zipFile) . '_' . date('dhis') . '/';
     if (($syncFiles = unzipSyncFiles($zipFile, $unzipPath, __FILE__)) === false) {
-        if (Jtllog::doLog()) {
-            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'Merkmal_xml');
-        }
+        Shop::Container()->getLogService()->error('Error: Cannot extract zip file ' . $zipFile . ' to ' . $unzipPath);
         removeTemporaryFiles($zipFile);
     } else {
         $return = 0;
@@ -25,24 +23,8 @@ if (auth()) {
             $fileName = pathinfo($xmlFile)['basename'];
 
             if ($fileName === 'del_merkmal.xml' || $fileName === 'del_merkmalwert.xml') {
-                if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog(
-                        'bearbeite: ' . $xmlFile . ' size: ' . filesize($xmlFile),
-                        JTLLOG_LEVEL_DEBUG,
-                        false,
-                        'Merkmal_xml'
-                    );
-                }
                 bearbeiteDeletes($xml);
             } elseif ($fileName === 'merkmal.xml') {
-                if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog(
-                        'bearbeite: ' . $xmlFile . ' size: ' . filesize($xmlFile),
-                        JTLLOG_LEVEL_DEBUG,
-                        false,
-                        'Merkmal_xml'
-                    );
-                }
                 bearbeiteInsert($xml);
             }
 
@@ -53,9 +35,6 @@ if (auth()) {
 }
 
 echo $return;
-if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-    Jtllog::writeLog('BEENDE: ' . $_FILES['data']['tmp_name'], JTLLOG_LEVEL_DEBUG, false, 'Merkmal_xml');
-}
 
 /**
  * @param array $xml
@@ -556,9 +535,6 @@ function loescheMerkmal(int $kMerkmal, $update = 1)
         Shop::Container()->getDB()->delete('tmerkmalwertbild', 'kMerkmalWert', (int)$wert->kMerkmalWert);
     }
     Shop::Container()->getDB()->delete('tmerkmalwert', 'kMerkmal', $kMerkmal);
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Merkmal geloescht: ' . $kMerkmal, JTLLOG_LEVEL_DEBUG, false, 'Merkmal_xml');
-    }
 }
 
 /**
@@ -620,9 +596,6 @@ function loescheMerkmalWert(int $kMerkmalWert, $isInsert = false)
     // Das Merkmal hat keine MerkmalWerte mehr => auch loeschen
     if (!$isInsert && (int)$oAnzahl->nAnzahl === 1) {
         loescheMerkmal($oAnzahl->kMerkmal);
-    }
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('MerkmalWert geloescht: ' . $kMerkmalWert, JTLLOG_LEVEL_DEBUG, false, 'Merkmal_xml');
     }
 }
 

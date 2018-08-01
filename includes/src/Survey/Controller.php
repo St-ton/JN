@@ -278,7 +278,7 @@ class Controller
                 if ($oKupon->kKupon > 0) {
                     $msg = sprintf(\Shop::Lang()->get('pollCoupon', 'messages'), $oKupon->cCode);
                 } else {
-                    \Jtllog::writeLog(sprintf(
+                    \Shop::Container()->getLogService()->error(sprintf(
                         'Fehlerhafter Kupon in Umfragebelohnung. Kunde: %s  Kupon: %s',
                         Session::Customer()->getID(),
                         $this->survey->getCouponID()
@@ -292,7 +292,7 @@ class Controller
                 );
                 // Kunde Guthaben gutschreiben
                 if (!$this->updateCustomerCredits($this->survey->getCredits(), $_SESSION['Kunde']->kKunde)) {
-                    \Jtllog::writeLog(sprintf(
+                    \Shop::Container()->getLogService()->error(sprintf(
                         'Umfragebelohnung: Guthaben konnte nicht verrechnet werden. Kunde: %s',
                         Session::Customer()->getID()
                     ));

@@ -1328,10 +1328,9 @@ function gibArtikelObjekte($kArtikel_arr, $oKampagne = '', int $kKundengruppe = 
             $oArtikel->fuelleArtikel($kArtikel, $defaultOptions, $kKundengruppe, $kSprache);
 
             if (!($oArtikel->kArtikel > 0)) {
-                Jtllog::writeLog(
+                Shop::Container()->getLogService()->notice(
                     "Newsletter Cron konnte den Artikel ({$kArtikel}) für Kundengruppe " .
-                    "({$kKundengruppe}) und Sprache ({$kSprache}) nicht laden (Sichtbarkeit?)",
-                    JTLLOG_LEVEL_NOTICE, false, 'Newsletter Artikel', $kArtikel
+                    "({$kKundengruppe}) und Sprache ({$kSprache}) nicht laden (Sichtbarkeit?)"
                 );
 
                 continue;

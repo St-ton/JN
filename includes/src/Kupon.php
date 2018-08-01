@@ -1001,6 +1001,7 @@ class Kupon
     public static function acceptCoupon($Kupon)
     {
         $cart                        = Session::Cart();
+        $logger                      = Shop::Container()->getLogService();
         $Kupon->nGanzenWKRabattieren = (int)$Kupon->nGanzenWKRabattieren;
         if ((!empty($_SESSION['oVersandfreiKupon']) || !empty($_SESSION['VersandKupon']) || !empty($_SESSION['Kupon']))
             && isset($_POST['Kuponcode']) && $_POST['Kuponcode']
@@ -1068,14 +1069,8 @@ class Kupon
         $postyp = C_WARENKORBPOS_TYP_KUPON;
         if ($Kupon->cKuponTyp === 'standard') {
             $_SESSION['Kupon'] = $Kupon;
-            if (Jtllog::doLog(JTLLOG_LEVEL_NOTICE)) {
-                Jtllog::writeLog(
-                    'Der Standardkupon' . print_r($Kupon, true) . ' wurde genutzt.',
-                    JTLLOG_LEVEL_NOTICE,
-                    false,
-                    'kKupon',
-                    $Kupon->kKupon
-                );
+            if ($logger->isHandling(JTLLOG_LEVEL_NOTICE)) {
+                $logger->notice('Der Standardkupon' . print_r($Kupon, true) . ' wurde genutzt.');
             }
         } elseif ($Kupon->cKuponTyp === 'neukundenkupon') {
             $postyp = C_WARENKORBPOS_TYP_NEUKUNDENKUPON;
@@ -1083,14 +1078,8 @@ class Kupon
             $_SESSION['NeukundenKupon']           = $Kupon;
             $_SESSION['NeukundenKuponAngenommen'] = true;
             //@todo: erst loggen wenn wirklich bestellt wird. hier kann noch abgebrochen werden
-            if (Jtllog::doLog(JTLLOG_LEVEL_NOTICE)) {
-                Jtllog::writeLog(
-                    'Der Neukundenkupon' . print_r($Kupon, true) . ' wurde genutzt.',
-                    JTLLOG_LEVEL_NOTICE,
-                    false,
-                    'kKupon',
-                    $Kupon->kKupon
-                );
+            if ($logger->isHandling(JTLLOG_LEVEL_NOTICE)) {
+                $logger->notice('Der Neukundenkupon' . print_r($Kupon, true) . ' wurde genutzt.');
             }
         } elseif ($Kupon->cKuponTyp === 'versandkupon') {
             // Darf nicht gelöscht werden sondern den Preis nur auf 0 setzen!
@@ -1107,14 +1096,8 @@ class Kupon
                 $Kupon->kSteuerklasse,
                 $postyp
             );
-            if (Jtllog::doLog(JTLLOG_LEVEL_NOTICE)) {
-                Jtllog::writeLog(
-                    'Der Versandkupon ' . print_r($Kupon, true) . ' wurde genutzt.',
-                    JTLLOG_LEVEL_NOTICE,
-                    false,
-                    'kKupon',
-                    $Kupon->kKupon
-                );
+            if ($logger->isHandling(JTLLOG_LEVEL_NOTICE)) {
+                $logger->notice('Der Versandkupon ' . print_r($Kupon, true) . ' wurde genutzt.');
             }
         }
         if ($Kupon->cWertTyp === 'prozent' || $Kupon->cWertTyp === 'festpreis') {

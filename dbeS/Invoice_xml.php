@@ -96,9 +96,7 @@ function createResponse(int $kBestellung, $cTyp, $cComment)
  */
 function pushError($cMessage)
 {
-    if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-        Jtllog::writeLog($cMessage, JTLLOG_LEVEL_ERROR, false, 'Invoice_xml');
-    }
+    Shop::Container()->getLogService()->error('Error @ invoice_xml: ' . $cMessage);
     $aResponse = createResponse(0, 'FAILURE', $cMessage);
     zipRedirect(time() . '.jtl', $aResponse);
     exit;

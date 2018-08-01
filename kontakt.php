@@ -99,8 +99,8 @@ if (FormHelper::checkSubject()) {
         ->assign('fehlendeAngaben', $fehlendeAngaben)
         ->assign('nAnzeigeOrt', CHECKBOX_ORT_KONTAKT);
 } else {
-    Jtllog::writeLog('Kein Kontaktbetreff vorhanden! Bitte im Backend unter ' .
-        'Einstellungen -> Kontaktformular -> Betreffs einen Betreff hinzuf&uuml;gen.', JTLLOG_LEVEL_ERROR);
+    Shop::Container()->getLogService()->error('Kein Kontaktbetreff vorhanden! Bitte im Backend unter ' .
+        'Einstellungen -> Kontaktformular -> Betreffs einen Betreff hinzuf&uuml;gen.');
     Shop::Smarty()->assign('hinweis', Shop::Lang()->get('noSubjectAvailable', 'contact'));
     $SpezialContent = new stdClass();
 }

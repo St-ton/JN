@@ -43,7 +43,6 @@ function rebuildCategoryTree(int $parentID, int $left, int $level = 0)
  */
 function Kategorien_xml_Finish()
 {
-    Jtllog::writeLog('Finish Kategorien_xml: updateKategorieLevel, rebuildCategoryTree', JTLLOG_LEVEL_DEBUG);
     rebuildCategoryTree(0, 1);
     Shop::Cache()->flushTags([CACHING_GROUP_CATEGORY]);
 }

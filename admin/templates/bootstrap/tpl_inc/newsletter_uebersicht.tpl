@@ -162,6 +162,8 @@
                                         <th class="tleft">{#newslettersubscriberemail#}</th>
                                         <th class="tcenter">{#newslettersubscriberdate#}</th>
                                         <th class="tcenter">{#newslettersubscriberLastNewsletter#}</th>
+                                        <th class="tleft">{#newsletterOptInIp#}</th>
+                                        <th class="tcenter">{#newsletterOptInDate#}</th>
                                     </tr>
                                     {foreach name=newsletterabonnenten from=$oAbonnenten_arr item=oAbonnenten}
                                         <tr class="tab_bg{$smarty.foreach.newsletterabonnenten.iteration%2}">
@@ -173,13 +175,15 @@
                                             <td class="tleft">{$oAbonnenten->cEmail}</td>
                                             <td class="tcenter">{$oAbonnenten->dEingetragen_de}</td>
                                             <td class="tcenter">{$oAbonnenten->dLetzterNewsletter_de}</td>
+                                            <td class="tleft">{$oAbonnenten->cOptIp}</td>
+                                            <td class="tcenter">{$oAbonnenten->optInDate}</td>
                                         </tr>
                                     {/foreach}
                                     <tr>
                                         <td class="TD1">
                                             <input name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);">
                                         </td>
-                                        <td colspan="6" class="TD7"><label for="ALLMSGS3">{#globalSelectAll#}</label></td>
+                                        <td colspan="7" class="TD7"><label for="ALLMSGS3">{#globalSelectAll#}</label></td>
                                     </tr>
                                 </table>
                             </div>

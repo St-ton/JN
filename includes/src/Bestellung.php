@@ -841,16 +841,6 @@ class Bestellung
 
         $this->kBestellung = Shop::Container()->getDB()->insert('tbestellung', $obj);
 
-        if (isset($_SESSION['Kampagnenbesucher'])) {
-            $obj              = new stdClass();
-            $obj->kBestellung = $this->kBestellung;
-            $obj->kKampagne   = $_SESSION['Kampagnenbesucher']->kKampagne;
-            $obj->cWert       = $_SESSION['Kampagnenbesucher']->cWert;
-            $obj->cParameter  = $_SESSION['Kampagnenbesucher']->cParameter;
-
-            Shop::Container()->getDB()->insert('tbestellungkampagne', $obj);
-        }
-
         return $this->kBestellung;
     }
 
@@ -1069,15 +1059,17 @@ class Bestellung
     }
 
     /**
-     * set Kampagne from tbestellungkampagne
+     * set Kampagne
      */
     public function setKampagne()
     {
         $this->oKampagne = Shop::Container()->getDB()->query(
-            "SELECT tbestellungkampagne.*, tkampagne.cName
-                FROM tbestellungkampagne
-                  LEFT JOIN tkampagne ON tkampagne.kKampagne = tbestellungkampagne.kKampagne
-                WHERE tbestellungkampagne.kBestellung = " . $this->kBestellung,
+            'SELECT tkampagne.kKampagne, tkampagne.cName, tkampagne.cParameter, tkampagnevorgang.dErstellt,
+                    tkampagnevorgang.kKey AS kBestellung, tkampagnevorgang.cParamWert AS cWert
+                FROM tkampagnevorgang
+                  LEFT JOIN tkampagne ON tkampagne.kKampagne = tkampagnevorgang.kKampagne
+                WHERE tkampagnevorgang.kKampagneDef = '. KAMPAGNE_DEF_VERKAUF . '
+                    AND tkampagnevorgang.kKey = ' . $this->kBestellung,
             \DB\ReturnType::SINGLE_OBJECT
         );
     }

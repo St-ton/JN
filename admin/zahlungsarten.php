@@ -269,9 +269,23 @@ if ($step === 'einstellen') {
     $kZahlungsart = RequestHelper::verifyGPCDataInt('kZahlungsart');
     $oZahlungsart = Shop::Container()->getDB()->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
 
+    $filterStandard = new Filter('standard');
+    $filterStandard->addDaterangefield('Zeitraum', 'dDatum');
+    $filterStandard->assemble();
+
     if (isset($oZahlungsart->cModulId) && strlen($oZahlungsart->cModulId) > 0) {
-        $smarty->assign('oLog_arr', (new ZahlungsLog($oZahlungsart->cModulId))->holeLog())
-               ->assign('kZahlungsart', $kZahlungsart);
+        $paginationPaymentLog = (new Pagination('standard'))
+            ->setItemCount(ZahlungsLog::count($oZahlungsart->cModulId, -1, $filterStandard->getWhereSQL()))
+            ->assemble();
+        $paymentLogs = (new ZahlungsLog($oZahlungsart->cModulId))->holeLog(
+            $paginationPaymentLog->getLimitSQL(),
+            -1,
+            $filterStandard->getWhereSQL());
+
+        $smarty->assign('paymentLogs', $paymentLogs)
+               ->assign('paymentData', $oZahlungsart)
+               ->assign('filterStandard', $filterStandard)
+               ->assign('paginationPaymentLog', $paginationPaymentLog);
     }
 } elseif ($step === 'payments') {
     if (isset($_POST['action'], $_POST['kEingang_arr'])

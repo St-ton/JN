@@ -6,13 +6,13 @@
 
 /**
  * @param int   $hookID
- * @param array $args
+ * @param array $args_arr
  */
-function executeHook(int $hookID, $args = [])
+function executeHook(int $hookID, $args_arr = [])
 {
     global $smarty;
 
-    EventDispatcher::getInstance()->fire("shop.hook.{$hookID}", array_merge((array)$hookID, $args));
+    EventDispatcher::getInstance()->fire("shop.hook.{$hookID}", array_merge((array)$hookID, $args_arr));
 
     $hookList = Plugin::getHookList();
     if (empty($hookList[$hookID]) || !is_array($hookList[$hookID])) {
@@ -45,7 +45,7 @@ function executeHook(int $hookID, $args = [])
             include PFAD_ROOT . PFAD_INCLUDES . PLUGIN_SEITENHANDLER;
         } elseif ($hookID === HOOK_CHECKBOX_CLASS_TRIGGERSPECIALFUNCTION) {
             // Work Around, falls der Hook auf geht => CheckBox Trigger Special Function
-            if ((int)$oPlugin->kPlugin === (int)$args['oCheckBox']->oCheckBoxFunktion->kPlugin) {
+            if ((int)$oPlugin->kPlugin === (int)$args_arr['oCheckBox']->oCheckBoxFunktion->kPlugin) {
                 include $oPlugin->cFrontendPfad . $cDateiname;
             }
         } elseif (is_file($oPlugin->cFrontendPfad . $cDateiname)) {

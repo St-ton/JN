@@ -57,6 +57,7 @@
                             </th>
                             <th class="tleft"><label style="margin-bottom:0;" for="massaction-main-switch">{#type#}</label></th>
                             <th class="tleft">{#description#}</th>
+                            <th class="tleft">{#entries#}</th>
                             <th class="tleft">{#status#}</th>
                         </tr>
                         </thead>
@@ -74,6 +75,7 @@
                                     {assign var=description value=$cg.description}
                                     {$smarty.config.$description}
                                 </td>
+                                <td>{$cg.key_count}</td>
                                 <td>
                                     <h4 class="label-wrap">
                                         {if $cache_enabled === false || $cg.value|in_array:$disabled_caches}

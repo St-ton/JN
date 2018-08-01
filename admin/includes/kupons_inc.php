@@ -446,7 +446,10 @@ function validateCoupon($oKupon)
             $cFehler_arr[] = 'Der zu generiende Code ist kürzer als 2 Zeichen. Bitte vergrößern Sie die Menge ' .
                 'der Zeichen in Präfix, Suffix oder geben eine größere Zahl bei der Länge des Zufallcodes an.';
         }
-        if (!$oKupon->massCreationCoupon->lowerCase && !$oKupon->massCreationCoupon->upperCase && !$oKupon->massCreationCoupon->numbersHash) {
+        if (!$oKupon->massCreationCoupon->lowerCase
+            && !$oKupon->massCreationCoupon->upperCase
+            && !$oKupon->massCreationCoupon->numbersHash
+        ) {
             $cFehler_arr[] = 'Bitte wählen Sie für &quot;Zufallscode mit ...&quot; mindestens eine Option aus!';
         }
     } elseif (strlen($oKupon->cCode) > 32) {
@@ -470,13 +473,19 @@ function validateCoupon($oKupon)
         }
     }
 
-    $cArtNr_arr = StringHandler::parseSSK($oKupon->cArtikel);
+    $cArtNr_arr  = StringHandler::parseSSK($oKupon->cArtikel);
+    $validArtNrs = [];
+
     foreach ($cArtNr_arr as $cArtNr) {
         $res = Shop::Container()->getDB()->select('tartikel', 'cArtNr', $cArtNr);
         if ($res === null) {
-            $cFehler_arr[] = 'Die Artikelnummer "' . $cArtNr . '" gehört zu keinem gültigen Artikel.';
+            $cFehler_arr[] = 'Die Artikelnummer "' . $cArtNr . '" gehört zu keinem gültigen Artikel und wird entfernt.';
+        } else {
+            $validArtNrs[] = $cArtNr;
         }
     }
+
+    $oKupon->cArtikel = StringHandler::createSSK($validArtNrs);
 
     if ($oKupon->cKuponTyp === 'versandkupon') {
         $cLandISO_arr = StringHandler::parseSSK($oKupon->cLieferlaender);

@@ -28,12 +28,12 @@
                         <thead>
                         <tr>
                             <th class="tleft">{#ggProductName#}</th>
-                            <th class="th-2">{#ggOrderValue#}</th>
+                            <th class="th-2">{#ggOrderValueMin#}</th>
                             <th class="th-3">{#ggDate#}</th>
                         </tr>
                         </thead>
                         <tbody>
-                        {foreach name=aktivegeschenke from=$oAktiveGeschenk_arr item=oAktiveGeschenk}
+                        {foreach $oAktiveGeschenk_arr as $oAktiveGeschenk}
                             <tr class="tab_bg{$smarty.foreach.aktivegeschenke.iteration%2}">
                                 <td class="TD1">
                                     <a href="{$oAktiveGeschenk->cURLFull}" target="_blank">{$oAktiveGeschenk->cName}</a>
@@ -57,20 +57,22 @@
                         <thead>
                         <tr>
                             <th class="tleft">{#ggProductName#}</th>
-                            <th class="th-2">{#ggOrderValue#}</th>
+                            <th class="th-2">{#ggOrderValueMin#}</th>
                             <th class="th-3">{#ggCount#}</th>
-                            <th class="th-4">{#ggDate#}</th>
+                            <th class="th-3">{#ggOrderValueAverage#}</th>
+                            <th class="th-4">{#gglastOrdered#}</th>
                         </tr>
                         </thead>
                         <tbody>
-                        {foreach name=haeufigegeschenke from=$oHaeufigGeschenk_arr item=oHaeufigGeschenk}
+                        {foreach $oHaeufigGeschenk_arr as $oHaeufigGeschenk}
                             <tr class="tab_bg{$smarty.foreach.haeufigegeschenke.iteration%2}">
                                 <td class="TD1">
-                                    <a href="{$oAktiveGeschenk->cURLFull}" target="_blank">{$oHaeufigGeschenk->cName}</a>
+                                    <a href="{$oAktiveGeschenk->cURLFull}" target="_blank">{$oHaeufigGeschenk->Artikel->cName}</a>
                                 </td>
-                                <td class="tcenter">{$oHaeufigGeschenk->FunktionsAttribute[$cFunAttrib]}</td>
-                                <td class="tcenter">{$oHaeufigGeschenk->nGGAnzahl} mal</td>
-                                <td class="tcenter">{$oHaeufigGeschenk->dErstellt_de}</td>
+                                <td class="tcenter">{getCurrencyConversionSmarty fPreisBrutto=$oHaeufigGeschenk->Artikel->FunktionsAttribute[$cFunAttrib]}</td>
+                                <td class="tcenter">{$oHaeufigGeschenk->Artikel->nGGAnzahl} x</td>
+                                <td class="tcenter">{getCurrencyConversionSmarty fPreisBrutto=$oHaeufigGeschenk->avgOrderValue}</td>
+                                <td class="tcenter">{$oHaeufigGeschenk->lastOrdered}</td>
                             </tr>
                         {/foreach}
                         </tbody>
@@ -88,20 +90,20 @@
                         <thead>
                         <tr>
                             <th class="tleft">{#ggProductName#}</th>
-                            <th class="th-2">{#ggOrderValue#}</th>
-                            <th class="th-3">{#ggCount#}</th>
-                            <th class="th-4">{#ggDate#}</th>
+                            <th class="th-2">{#ggOrderValueMin#}</th>
+                            <th class="th-4">{#ggOrderValue#}</th>
+                            <th class="th-4">{#ggOrdered#}</th>
                         </tr>
                         </thead>
                         <tbody>
-                        {foreach name=letzten100geschenke from=$oLetzten100Geschenk_arr item=oLetzten100Geschenk}
+                        {foreach $oLetzten100Geschenk_arr as $oLetzten100Geschenk}
                             <tr class="tab_bg{$smarty.foreach.letzten100geschenke.iteration%2}">
                                 <td class="TD1">
-                                    <a href="{$oAktiveGeschenk->cURLFull}" target="_blank">{$oLetzten100Geschenk->cName}</a>
+                                    <a href="{$oAktiveGeschenk->cURLFull}" target="_blank">{$oLetzten100Geschenk->Artikel->cName}</a>
                                 </td>
-                                <td class="tcenter">{$oLetzten100Geschenk->FunktionsAttribute[$cFunAttrib]}</td>
-                                <td class="tcenter">{$oLetzten100Geschenk->nGGAnzahl} mal</td>
-                                <td class="tcenter">{$oLetzten100Geschenk->dErstellt_de}</td>
+                                <td class="tcenter">{getCurrencyConversionSmarty fPreisBrutto=$oLetzten100Geschenk->Artikel->FunktionsAttribute[$cFunAttrib]}</td>
+                                <td class="tcenter">{getCurrencyConversionSmarty fPreisBrutto=$oLetzten100Geschenk->orderValue}</td>
+                                <td class="tcenter">{$oLetzten100Geschenk->orderCreated}</td>
                             </tr>
                         {/foreach}
                         </tbody>

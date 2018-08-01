@@ -50,7 +50,7 @@
                 </div>
             {/if}
 
-            {foreach from=$oEinstellungenXML item=oSection}
+            {foreach from=$oEinstellungenXML item=oSection name="sections"}
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">{$oSection->cName}</h3>
@@ -155,14 +155,14 @@
                                                     </div>
                                                 {elseif $oSetting->cType === 'upload' && isset($oSetting->rawAttributes.target)}
                                                     <div class="template-favicon-upload">
-                                                        <input name="upload-{$smarty.foreach.tplOptions.index}"
-                                                               id="tpl-upload-{$smarty.foreach.tplOptions.index}" type="file"
+                                                        <input name="upload-{$smarty.foreach.sections.index}"
+                                                               id="tpl-upload-{$smarty.foreach.sections.index}" type="file"
                                                                class="file"
                                                                accept="{if !empty($oSetting->rawAttributes.accept)}{$oSetting->rawAttributes.accept}{else}image/*{/if}">
                                                     </div>
-                                                    <input type="hidden" name="cWert[]" value="upload-{$smarty.foreach.tplOptions.index}" />
+                                                    <input type="hidden" name="cWert[]" value="upload-{$smarty.foreach.sections.index}" />
                                                     <script>
-                                                        $('#tpl-upload-{$smarty.foreach.tplOptions.index}').fileinput({ldelim}
+                                                        $('#tpl-upload-{$smarty.foreach.sections.index}').fileinput({ldelim}
                                                             uploadAsync: false,
                                                             uploadExtraData: {ldelim}id:1{rdelim},
                                                             uploadUrl: '{$shopURL}/{$PFAD_ADMIN}shoptemplate.php?token={$smarty.session.jtl_token}',
@@ -179,7 +179,7 @@
                                                             initialPreviewConfig: [
                                                                 {ldelim}
                                                                     url: '{$shopURL}/{$PFAD_ADMIN}shoptemplate.php',
-                                                                    extra: {ldelim}upload: '{$oTemplate->cOrdner}/{$oSetting->cValue}', id: 'upload-{$smarty.foreach.tplOptions.index}', token : '{$smarty.session.jtl_token}'{rdelim}
+                                                                    extra: {ldelim}upload: '{$oTemplate->cOrdner}/{$oSetting->cValue}', id: 'upload-{$smarty.foreach.sections.index}', token : '{$smarty.session.jtl_token}'{rdelim}
                                                                     {rdelim}
                                                             ]
                                                         {rdelim}).on('fileuploaded', function(event, data) {ldelim}

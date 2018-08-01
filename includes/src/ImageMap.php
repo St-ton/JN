@@ -53,7 +53,10 @@ class ImageMap implements IExtensionPoint
      */
     public function fetchAll()
     {
-        return Shop::Container()->getDB()->query("SELECT * FROM timagemap", \DB\ReturnType::ARRAY_OF_OBJECTS);
+        return Shop::Container()->getDB()->query(
+            'SELECT *, IF((CURDATE() >= DATE(vDatum)) AND (CURDATE() <= DATE(bDatum) OR bDatum = 0), 1, 0) AS active 
+                FROM timagemap
+                ORDER BY bDatum DESC', \DB\ReturnType::ARRAY_OF_OBJECTS);
     }
 
     /**
@@ -65,12 +68,12 @@ class ImageMap implements IExtensionPoint
     public function fetch($kImageMap, $fetch_all = false, $fill = true)
     {
         $kImageMap = (int)$kImageMap;
-        $cSQL      = "SELECT *
+        $cSQL      = 'SELECT *
                 FROM timagemap
-                WHERE kImageMap = " . $kImageMap;
+                WHERE kImageMap = ' . $kImageMap;
         if (!$fetch_all) {
             // vDate und bDate sollten immer '0000-00-00 00:00:00' statt NULL enthalten
-            $cSQL .= " AND (CURDATE() >= DATE(vDatum)) AND (CURDATE() <= DATE(bDatum) OR bDatum = 0)";
+            $cSQL .= ' AND (CURDATE() >= DATE(vDatum)) AND (CURDATE() <= DATE(bDatum) OR bDatum = 0)';
         }
         $oImageMap = Shop::Container()->getDB()->query($cSQL, \DB\ReturnType::SINGLE_OBJECT);
         if (!is_object($oImageMap)) {

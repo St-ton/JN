@@ -747,7 +747,7 @@ class Kupon
         $numbersString = $numbers ? '0123456789' : null;
         $cCode         = '';
         $count         = (int)Shop::Container()->getDB()->query(
-            "COUNT(*) AS cnt 
+            "SELECT COUNT(*) AS cnt 
                 FROM tkupon",
             \DB\ReturnType::SINGLE_OBJECT
         )->cnt;
@@ -1000,7 +1000,8 @@ class Kupon
      */
     public static function acceptCoupon($Kupon)
     {
-        $cart = Session::Cart();
+        $cart                        = Session::Cart();
+        $Kupon->nGanzenWKRabattieren = (int)$Kupon->nGanzenWKRabattieren;
         if ((!empty($_SESSION['oVersandfreiKupon']) || !empty($_SESSION['VersandKupon']) || !empty($_SESSION['Kupon']))
             && isset($_POST['Kuponcode']) && $_POST['Kuponcode']
         ) {
@@ -1012,9 +1013,12 @@ class Kupon
             if ($Kupon->fWert > $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)) {
                 $couponPrice = $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true);
             }
+            if ($Kupon->nGanzenWKRabattieren === 0 && $Kupon->fWert > gibGesamtsummeKuponartikelImWarenkorb($Kupon, $cart->PositionenArr)) {
+                $couponPrice = gibGesamtsummeKuponartikelImWarenkorb($Kupon, $cart->PositionenArr);
+            }
         } elseif ($Kupon->cWertTyp === 'prozent') {
             // Alle Positionen prüfen ob der Kupon greift und falls ja, dann Position rabattieren
-            if ($Kupon->nGanzenWKRabattieren == 0) {
+            if ($Kupon->nGanzenWKRabattieren === 0) {
                 $articleName_arr = [];
                 if (is_array($cart->PositionenArr) && count($cart->PositionenArr) > 0) {
                     $articlePrice = 0;
@@ -1036,7 +1040,7 @@ class Kupon
         $Spezialpos->cName = $Kupon->translationList;
         foreach ($_SESSION['Sprachen'] as $Sprache) {
             if ($Kupon->cWertTyp === 'prozent'
-                && $Kupon->nGanzenWKRabattieren == 0
+                && $Kupon->nGanzenWKRabattieren === 0
                 && $Kupon->cKuponTyp !== 'neukundenkupon'
             ) {
                 $Spezialpos->cName[$Sprache->cISO] .= ' ' . $Kupon->fWert . '% ';

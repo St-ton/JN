@@ -397,6 +397,21 @@ class browser extends uploader
         if (file_exists($thumbFile)) {
             @rename($thumbFile, "$thumbDir/" . basename($newName));
         }
+
+        $size_arr = [
+            '.xs/',
+            '.sm/',
+            '.md/',
+            '.lg/',
+            '.xl/'
+        ];
+        foreach ($size_arr as $size){
+            $scaledFile = "$dir/$size{$this->post['file']}";
+            if (file_exists($scaledFile)){
+                @rename($scaledFile, "$dir/$size" . $this->normalizeFilename(trim($this->post['newName'])));
+            }
+        }
+
         return true;
     }
 
@@ -417,6 +432,21 @@ class browser extends uploader
         if (file_exists($thumb)) {
             @unlink($thumb);
         }
+
+        $size_arr = [
+            '.xs/',
+            '.sm/',
+            '.md/',
+            '.lg/',
+            '.xl/'
+        ];
+        foreach ($size_arr as $size){
+            $scaledFile = "$dir/$size{$this->post['file']}";
+            if (file_exists($scaledFile)){
+                @unlink($scaledFile);
+            }
+        }
+
         return true;
     }
 

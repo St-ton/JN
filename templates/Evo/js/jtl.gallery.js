@@ -22,7 +22,7 @@
                     '<div class="thumbs-box">' +
                         '<ul class="image-thumbs carousel vertical"></ul>' +
                     '</div>' +
-                    '<button  name="btnGalleryNext" type="button" class="btnGalleryNext stick-down"></button>' +
+                    '<button  name="btnGalleryNext" type="button" class="btnGalleryNext slick-down"></button>' +
                 '</div>' +
             '</div>',
             fullscreen: '<div class="fullscreen image-gallery has-thumbs">' +

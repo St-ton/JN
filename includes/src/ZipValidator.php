@@ -228,8 +228,10 @@ class ZipValidator
         if (array_key_exists($this->cISO, self::$vPatternHashList)) {
             if (!preg_match("/^" . self::$vPatternHashList[$this->cISO] . "$/", $szZipCode)) {
                 $this->szErrorString = $this->beautifyErrorString($szZipCode, self::$vPatternHashList[$this->cISO]);
-                Jtllog::writeLog('Postleitzahl stimmt nicht mit Landesvorgabe überein! ' . $szZipCode .
-                    ' (' . $this->cISO . ', "' . self::$vPatternHashList[$this->cISO] . '")', JTLLOG_LEVEL_ERROR);
+                Shop::Container()->getLogService()->error(
+                    'Postleitzahl stimmt nicht mit Landesvorgabe überein! ' . $szZipCode .
+                    ' (' . $this->cISO . ', "' . self::$vPatternHashList[$this->cISO] . '")'
+                );
 
                 return '';
             }
@@ -237,7 +239,7 @@ class ZipValidator
             return $szZipCode;
         }
         // country not in pattern-list
-        Jtllog::writeLog('Land nicht in Zip-Code-Pattern-Liste!' . $this->cISO . ')', JTLLOG_LEVEL_NOTICE);
+        Shop::Container()->getLogService()->notice('Land nicht in Zip-Code-Pattern-Liste!' . $this->cISO . ')');
 
         return $szZipCode;
     }

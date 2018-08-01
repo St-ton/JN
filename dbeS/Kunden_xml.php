@@ -13,21 +13,11 @@ if (auth()) {
     $zipFile = checkFile();
     $return  = 2;
     if (($syncFiles = unzipSyncFiles($zipFile, PFAD_SYNC_TMP, __FILE__)) === false) {
-        if (Jtllog::doLog()) {
-            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'Kunden_xml');
-        }
+        Shop::Container()->getLogService()->error('Error: Cannot extract zip file ' . $zipFile);
         removeTemporaryFiles($zipFile);
     } else {
         $return = 0;
         foreach ($syncFiles as $xmlFile) {
-            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog(
-                    'bearbeite: ' . $xmlFile . ' size: ' . filesize($xmlFile),
-                    JTLLOG_LEVEL_DEBUG,
-                    false,
-                    'Kunden_xml'
-                );
-            }
             $d        = file_get_contents($xmlFile);
             $xml      = XML_unserialize($d);
             $fileName = pathinfo($xmlFile)['basename'];
@@ -116,9 +106,6 @@ function bearbeiteDeletes($xml)
             Shop::Container()->getDB()->delete('tkunde', 'kKunde', $kKunde);
             Shop::Container()->getDB()->delete('tlieferadresse', 'kKunde', $kKunde);
             Shop::Container()->getDB()->delete('tkundenattribut', 'kKunde', $kKunde);
-            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog('Kunde geloescht: ' . $kKunde, JTLLOG_LEVEL_DEBUG, false, 'Kunden_xml');
-            }
         }
     }
 }
@@ -139,10 +126,6 @@ function bearbeiteAck($xml)
             $kKunde = (int)$kKunde;
             if ($kKunde > 0) {
                 Shop::Container()->getDB()->update('tkunde', 'kKunde', $kKunde, (object)['cAbgeholt' => 'Y']);
-                if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('Kunde erfolgreich abgeholt: ' .
-                        $kKunde, JTLLOG_LEVEL_DEBUG, false, 'Kunden_xml');
-                }
             }
         }
     }
@@ -188,10 +171,6 @@ function bearbeiteGutscheine($xml)
             $obj->tkunde     = $kunde;
             $obj->tgutschein = $gutschein;
             if ($kunde->cMail) {
-                if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('Gutschein Email wurde an ' . $kunde->cMail .
-                        ' versendet.', JTLLOG_LEVEL_DEBUG, 'kGutschein', $kGutschein);
-                }
                 sendeMail(MAILTEMPLATE_GUTSCHEIN, $obj);
             }
         }

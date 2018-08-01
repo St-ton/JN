@@ -140,6 +140,11 @@ class Exportformat
     private $tempFileName;
 
     /**
+     * @var \Psr\Log\LoggerInterface|null
+     */
+    private $logger;
+
+    /**
      * Exportformat constructor.
      *
      * @param int $kExportformat
@@ -148,6 +153,25 @@ class Exportformat
     {
         if ($kExportformat > 0) {
             $this->loadFromDB($kExportformat);
+        }
+    }
+
+    /**
+     * @param \Psr\Log\LoggerInterface $logger
+     */
+    public function setLogger(\Psr\Log\LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * @param string     $msg
+     * @param null|array $context
+     */
+    private function log($msg, array $context = [])
+    {
+        if ($this->logger !== null) {
+            $this->logger->log(JTLLOG_LEVEL_NOTICE, $msg, $context);
         }
     }
 
@@ -172,7 +196,8 @@ class Exportformat
             foreach (get_object_vars($oObj) as $k => $v) {
                 $this->$k = $v;
             }
-            $confObj = Shop::Container()->getDB()->selectAll('texportformateinstellungen', 'kExportformat', $kExportformat);
+            $confObj = Shop::Container()->getDB()->selectAll('texportformateinstellungen', 'kExportformat',
+                $kExportformat);
             foreach ($confObj as $conf) {
                 $this->config[$conf->cName] = $conf->cWert;
             }
@@ -794,8 +819,8 @@ class Exportformat
         if ($countOnly === true) {
             $select = 'count(*) AS nAnzahl';
         } else {
-            $select     = 'tartikel.kArtikel';
-            $limit      = ' ORDER BY tartikel.kArtikel LIMIT ' . $this->getQueue()->nLimitM;
+            $select    = 'tartikel.kArtikel';
+            $limit     = ' ORDER BY tartikel.kArtikel LIMIT ' . $this->getQueue()->nLimitM;
             $condition .= ' AND tartikel.kArtikel > ' . $this->getQueue()->nLastArticleID;
         }
 
@@ -1001,16 +1026,22 @@ class Exportformat
      * @param int|null        $max
      * @return bool
      */
-    public function startExport($queueObject, bool $isAsync = false, bool $back = false, bool $isCron = false, int $max = null): bool
-    {
+    public function startExport(
+        $queueObject,
+        bool $isAsync = false,
+        bool $back = false,
+        bool $isCron = false,
+        int $max = null
+    ): bool {
         if (!$this->isOK()) {
-            Jtllog::cronLog('Export is not ok.');
+            $this->log('Export is not ok.');
+
             return false;
         }
         $started = false;
         $this->setQueue($queueObject)->initSession()->initSmarty();
         if ($this->getPlugin() > 0 && strpos($this->getContent(), PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
-            Jtllog::cronLog('Starting plugin exportformat "' . $this->getName() .
+            $this->log('Starting plugin exportformat "' . $this->getName() .
                 '" for language ' . $this->getSprache() . ' and customer group ' . $this->getKundengruppe() .
                 ' with caching ' . ((Shop::Cache()->isActive() && $this->useCache()) ? 'enabled' : 'disabled'));
             $oPlugin = new Plugin($this->getPlugin());
@@ -1056,7 +1087,7 @@ class Exportformat
                     $_SESSION['jtl_token'] . '&kExportformat=' . (int)$this->queue->kExportformat);
                 exit;
             }
-            Jtllog::cronLog('Finished export');
+            $this->log('Finished export');
 
             return true;
         }
@@ -1070,11 +1101,12 @@ class Exportformat
         }
         $datei = fopen(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName, 'a');
         if ($max === null) {
-            $maxObj = Shop::Container()->getDB()->executeQuery($this->getExportSQL(true), \DB\ReturnType::SINGLE_OBJECT);
+            $maxObj = Shop::Container()->getDB()->executeQuery($this->getExportSQL(true),
+                \DB\ReturnType::SINGLE_OBJECT);
             $max    = (int)$maxObj->nAnzahl;
         }
 
-        Jtllog::cronLog('Starting exportformat "' . StringHandler::convertUTF8($this->getName()) .
+        $this->log('Starting exportformat "' . StringHandler::convertUTF8($this->getName()) .
             '" for language ' . $this->getSprache() . ' and customer group ' . $this->getKundengruppe() .
             ' with caching ' . ((Shop::Cache()->isActive() && $this->useCache()) ? 'enabled' : 'disabled') .
             ' - ' . $queueObject->nLimitN . '/' . $max . ' products exported');
@@ -1122,7 +1154,8 @@ class Exportformat
             $findTwo[]    = ';';
             $replaceTwo[] = $this->config['exportformate_semikolon'];
         }
-        foreach (Shop::Container()->getDB()->query($this->getExportSQL(), \DB\ReturnType::QUERYSINGLE) as $iterArticle) {
+        foreach (Shop::Container()->getDB()->query($this->getExportSQL(),
+            \DB\ReturnType::QUERYSINGLE) as $iterArticle) {
             $Artikel = new Artikel();
             $Artikel->fuelleArtikel(
                 $iterArticle['kArtikel'],
@@ -1242,7 +1275,7 @@ class Exportformat
                 executeHook(HOOK_DO_EXPORT_OUTPUT_FETCHED);
                 if (!$isAsync && ($queueObject->nLimitN % max(round($queueObject->nLimitM / 10), 10)) === 0) {
                     //max. 10 status updates per run
-                    Jtllog::cronLog($queueObject->nLimitN . '/' . $max . ' products exported', 2);
+                    $this->log($queueObject->nLimitN . '/' . $max . ' products exported');
                 }
             }
         }
@@ -1257,10 +1290,10 @@ class Exportformat
                 // One or more articles have been exported
                 fclose($datei);
                 Shop::Container()->getDB()->queryPrepared(
-                    "UPDATE texportqueue SET
+                    'UPDATE texportqueue SET
                         nLimit_n       = nLimit_n + :nLimitM,
                         nLastArticleID = :nLastArticleID
-                      WHERE kExportqueue = :kExportqueue",
+                        WHERE kExportqueue = :kExportqueue',
                     [
                         'nLimitM'        => $this->queue->nLimitM,
                         'nLastArticleID' => $this->queue->nLastArticleID,
@@ -1294,9 +1327,9 @@ class Exportformat
             } else {
                 // There are no more articles to export
                 Shop::Container()->getDB()->query(
-                    "UPDATE texportformat 
+                    'UPDATE texportformat 
                         SET dZuletztErstellt = now() 
-                        WHERE kExportformat = " . $this->getExportformat(),
+                        WHERE kExportformat = ' . $this->getExportformat(),
                     \DB\ReturnType::DEFAULT
                 );
                 Shop::Container()->getDB()->delete('texportqueue', 'kExportqueue', (int)$this->queue->kExportqueue);
@@ -1336,21 +1369,17 @@ class Exportformat
                 }
             }
         } else {
-            $queueObject->updateExportformatQueueBearbeitet();
-            $queueObject->setDZuletztGelaufen(date('Y-m-d H:i'))->setNInArbeit(0)->updateJobInDB();
             //finalize job when there are no more articles to export
             if ($started === false) {
-                Jtllog::cronLog('Finalizing job.', 2);
+                $this->log('Finalizing job...');
                 Shop::Container()->getDB()->update(
                     'texportformat',
                     'kExportformat',
                     (int)$queueObject->kKey,
                     (object)['dZuletztErstellt' => 'now()']
                 );
-                $queueObject->deleteJobInDB();
-
                 if (file_exists(PFAD_ROOT . PFAD_EXPORT . $this->cDateiname)) {
-                    Jtllog::cronLog('Deleting final file ' . PFAD_ROOT . PFAD_EXPORT . $this->cDateiname);
+                    $this->log('Deleting old export file ' . PFAD_ROOT . PFAD_EXPORT . $this->cDateiname);
                     unlink(PFAD_ROOT . PFAD_EXPORT . $this->cDateiname);
                 }
                 // Schreibe Fusszeile
@@ -1362,7 +1391,7 @@ class Exportformat
                 // Versucht (falls so eingestellt) die erstellte Exportdatei in mehrere Dateien zu splitten
                 $this->splitFile();
             }
-            Jtllog::cronLog('Finished after ' . round(microtime(true) - $start, 4) .
+            $this->log('Finished after ' . round(microtime(true) - $start, 4) .
                 's. Article cache hits: ' . $cacheHits . ', misses: ' . $cacheMisses);
         }
         $this->restoreSession();
@@ -1371,7 +1400,7 @@ class Exportformat
             exit();
         }
 
-        return true;
+        return !$started;
     }
 
     /**

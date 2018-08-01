@@ -13,21 +13,11 @@ if (auth()) {
     $zipFile = checkFile();
     $return  = 2;
     if (($syncFiles = unzipSyncFiles($zipFile, PFAD_SYNC_TMP, __FILE__)) === false) {
-        if (Jtllog::doLog()) {
-            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'img_link');
-        }
+        Shop::Container()->getLogService()->error('Error: Cannot extract zip file ' . $zipFile);
         removeTemporaryFiles($zipFile);
     } else {
         $return = 0;
         foreach ($syncFiles as $xmlFile) {
-            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog(
-                    'bearbeite: ' . $xmlFile . ' size: ' . filesize($xmlFile),
-                    JTLLOG_LEVEL_DEBUG,
-                    false,
-                    'img_link_xml'
-                );
-            }
             $xml = simplexml_load_file($xmlFile);
             if (strpos($xmlFile, 'del_bildartikellink.xml') !== false) {
                 del_bildartikellink_xml($xml);
@@ -103,12 +93,6 @@ function del_img_item($item)
             if (file_exists($storage)) {
                 @unlink($storage);
             }
-            Jtllog::writeLog(
-                'Removed last image link: ' . (int)$image->kBild,
-                JTLLOG_LEVEL_NOTICE,
-                false,
-                'img_link_xml'
-            );
         }
         Shop::Container()->getDB()->delete(
             'tartikelpict',
@@ -157,13 +141,8 @@ function get_array(SimpleXMLElement $xml)
         if (is_object($image)) {
             $item->cPfad = $image->cPfad;
             $items[]     = $item;
-        } elseif (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog(
-                'Missing reference in tbild (Key: ' . $imageId . ')',
-                JTLLOG_LEVEL_DEBUG,
-                false,
-                'img_link_xml'
-            );
+        } else {
+            Shop::Container()->getLogService()->debug('Missing reference in tbild (Key: ' . $imageId . ')');
         }
     }
 

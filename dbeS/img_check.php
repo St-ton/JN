@@ -14,9 +14,7 @@ if (auth()) {
     $unzipPath = PFAD_SYNC_TMP . uniqid('check_') . '/';
     $return    = 2;
     if (($syncFiles = unzipSyncFiles($zipFile, $unzipPath, __FILE__)) === false) {
-        if (Jtllog::doLog()) {
-            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'img_upload_xml');
-        }
+        Shop::Container()->getLogService()->error('Error: Cannot extract zip file ' . $zipFile . ' to ' . $unzipPath);
         removeTemporaryFiles($zipFile);
     } else {
         $return = 0;
@@ -50,10 +48,7 @@ function bildercheck_xml(SimpleXMLElement $xml)
         foreach ($images as $image) {
             $storage = PFAD_ROOT . PFAD_MEDIA_IMAGE_STORAGE . $image->hash;
             if (!file_exists($storage)) {
-                if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog("Dropping orphan {$image->id} -> {$image->hash}: no such file",
-                        JTLLOG_LEVEL_DEBUG, false, 'img_check_xml');
-                }
+                Shop::Container()->getLogService()->debug("Dropping orphan {$image->id} -> {$image->hash}: no such file");
                 Shop::Container()->getDB()->delete('tbild', 'kBild', $image->id);
                 Shop::Container()->getDB()->delete('tartikelpict', 'kBild', $image->id);
             }
@@ -75,16 +70,6 @@ function bildercheck_xml(SimpleXMLElement $xml)
             }
         }
     }
-
-    if (!empty($found) && Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        $checkids = array_map(function ($item) {
-            return $item->id;
-        }, $object->items);
-
-        $checklist = implode(';', $checkids);
-        Jtllog::writeLog('Checking: ' . $checklist, JTLLOG_LEVEL_DEBUG, false, 'img_check_xml');
-    }
-
     $missing = array_filter($object->items, function ($item) use ($found) {
         return !in_array($item->id, $found);
     });
@@ -102,10 +87,6 @@ function bildercheck_xml(SimpleXMLElement $xml)
  */
 function push_response($content)
 {
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Image check response: ' . htmlentities($content), JTLLOG_LEVEL_DEBUG, false, 'img_check_xml');
-    }
-
     ob_clean();
     echo $content;
     exit;

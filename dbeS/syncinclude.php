@@ -105,15 +105,11 @@ function html2rgb($color)
  */
 function checkFile()
 {
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('incoming: ' . $_FILES['data']['name'] .
-            ' size:' . $_FILES['data']['size'], JTLLOG_LEVEL_DEBUG, false, 'syncinclude_xml');
-    }
     if ($_FILES['data']['error'] || (isset($_FILES['data']['size']) && $_FILES['data']['size'] === 0)) {
-        if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('ERROR: incoming: ' . $_FILES['data']['name'] . ' size:' . $_FILES['data']['size'] .
-                ' err:' . $_FILES['data']['error'], JTLLOG_LEVEL_ERROR, false, 'syncinclude_xml');
-        }
+        Shop::Container()->getLogService()->error(
+            'ERROR: incoming: ' . $_FILES['data']['name'] . ' size:' . $_FILES['data']['size'] .
+            ' err:' . $_FILES['data']['error']
+        );
         $cFehler = 'Fehler beim Datenaustausch - Datei kam nicht an oder Größe 0!';
         switch ($_FILES['data']['error']) {
             case 0:
@@ -173,9 +169,11 @@ function auth()
 function DBinsert($tablename, $object)
 {
     $key = Shop::Container()->getDB()->insert($tablename, $object);
-    if (!$key && Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-        Jtllog::writeLog('DBinsert fehlgeschlagen! Tabelle: ' . $tablename . ', Objekt: ' .
-            print_r($object, true), JTLLOG_LEVEL_ERROR, false, 'syncinclude_xml');
+    if (!$key) {
+        Shop::Container()->getLogService()->error(
+            'DBinsert fehlgeschlagen! Tabelle: ' . $tablename . ', Objekt: ' .
+            print_r($object, true)
+        );
     }
 
     return $key;
@@ -200,9 +198,11 @@ function DBDelInsert($tablename, $object_arr, $del)
                 }
             }
             $key = Shop::Container()->getDB()->insert($tablename, $object);
-            if (!$key && Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-                Jtllog::writeLog('DBDelInsert fehlgeschlagen! Tabelle: ' . $tablename . ', Objekt: ' .
-                    print_r($object, true), JTLLOG_LEVEL_ERROR, false, 'syncinclude_xml');
+            if (!$key) {
+                Shop::Container()->getLogService()->error(
+                    'DBDelInsert fehlgeschlagen! Tabelle: ' . $tablename . ', Objekt: ' .
+                    print_r($object, true)
+                );
             }
         }
     }
@@ -228,8 +228,10 @@ function DBUpdateInsert($tablename, $object_arr, $pk1, $pk2 = 0)
         }
         $key = Shop::Container()->getDB()->insert($tablename, $object);
         if (!$key && Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('DBUpdateInsert fehlgeschlagen! Tabelle: ' . $tablename . ', Objekt: ' .
-                print_r($object, true), JTLLOG_LEVEL_ERROR, false, 'syncinclude_xml');
+            Shop::Container()->getLogService()->error(
+                'DBUpdateInsert fehlgeschlagen! Tabelle: ' . $tablename . ', Objekt: ' .
+                print_r($object, true)
+            );
         }
     }
 }
@@ -248,9 +250,11 @@ function getObjectArray($elements, $child)
             $obj  = new stdClass();
             $keys = array_keys($elements[$child . ' attr']);
             foreach ($keys as $key) {
-                if (!$elements[$child . ' attr'][$key] && Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-                    Jtllog::writeLog($child . '->' . $key . ' fehlt! XML:' .
-                        $elements[$child], JTLLOG_LEVEL_ERROR, false, 'syncinclude');
+                if (!$elements[$child . ' attr'][$key]) {
+                    Shop::Container()->getLogService()->error(
+                        $child . '->' . $key . ' fehlt! XML:' .
+                        $elements[$child]
+                    );
                 }
                 $obj->$key = $elements[$child . ' attr'][$key];
             }
@@ -268,9 +272,11 @@ function getObjectArray($elements, $child)
                 if (is_array($elements[$child][$i . ' attr'])) {
                     $keys = array_keys($elements[$child][$i . ' attr']);
                     foreach ($keys as $key) {
-                        if (!$elements[$child][$i . ' attr'][$key] && Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-                            Jtllog::writeLog($child . '[' . $i . ']->' . $key .
-                                ' fehlt! XML:' . $elements[$child], JTLLOG_LEVEL_ERROR, false, 'syncinclude');
+                        if (!$elements[$child][$i . ' attr'][$key]) {
+                            Shop::Container()->getLogService()->error(
+                                $child . '[' . $i . ']->' . $key .
+                                ' fehlt! XML:' . $elements[$child]
+                            );
                         }
 
                         $obj->$key = $elements[$child][$i . ' attr'][$key];
@@ -372,9 +378,11 @@ function mapAttributes(&$obj, $xml)
                 $obj->$key = $xml[$key];
             }
         }
-    } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-        Jtllog::writeLog('mapAttributes kein Array: XML:' .
-            print_r($xml, true), JTLLOG_LEVEL_ERROR, false, 'syncinclude');
+    } else {
+        Shop::Container()->getLogService()->error(
+            'mapAttributes kein Array: XML:' .
+            print_r($xml, true)
+        );
     }
 }
 
@@ -660,9 +668,6 @@ function setzePreisverlauf(int $kArtikel, int $kKundengruppe, float $fVKNetto)
  */
 function unhandledError($cFehler)
 {
-    if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-        Jtllog::writeLog($cFehler, JTLLOG_LEVEL_ERROR);
-    }
     syncException($cFehler, FREIDEFINIERBARER_FEHLER);
 }
 
@@ -704,9 +709,7 @@ function handleError($output)
     if ($error['type'] === 1) {
         $cError = translateError($error['message']) . "\n";
         $cError .= 'Datei: ' . $error['file'];
-        if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog($cError, JTLLOG_LEVEL_ERROR);
-        }
+        Shop::Container()->getLogService()->error($cError);
 
         return $cError;
     }
@@ -1234,6 +1237,7 @@ function syncException(string $msg, int $wawiExceptionCode = null)
         $output .= $wawiExceptionCode . "\n";
     }
     $output .= $msg;
+    Shop::Container()->getLogService()->error('SyncException: ' . $output);
     die(mb_convert_encoding($output, 'ISO-8859-1', 'auto'));
 }
 
@@ -1267,31 +1271,15 @@ function unzipSyncFiles($zipFile, $targetPath, $source = '')
     if ($zipFile === false) {
         return false;
     }
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Entpacke: ' . $zipFile, JTLLOG_LEVEL_DEBUG, false, 'syncinclude');
-    }
     if (class_exists('ZipArchive')) {
         $archive = new ZipArchive();
         $open    = $archive->open($zipFile);
         if (!$open) {
-            Jtllog::writeLog(
-                'unzipSyncFiles: Kann Datei nicht öffnen: ' . $zipFile,
-                JTLLOG_LEVEL_ERROR,
-                false,
-                'syncinclude'
-            );
+            Shop::Container()->getLogService()->error('unzipSyncFiles: Kann Datei nicht öffnen: ' . $zipFile);
 
             return false;
         }
         $filenames = [];
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog(
-                'unzipSyncFiles: Anzahl Dateien im Zip: ' . $archive->numFiles,
-                JTLLOG_LEVEL_DEBUG,
-                false,
-                'syncinclude'
-            );
-        }
         if (is_dir($targetPath) || (mkdir($targetPath) && is_dir($targetPath))) {
             for ($i = 0; $i < $archive->numFiles; ++$i) {
                 $filenames[] = $targetPath . $archive->getNameIndex($i);
@@ -1300,14 +1288,6 @@ function unzipSyncFiles($zipFile, $targetPath, $source = '')
                 return false;
             }
             $archive->close();
-            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog(
-                    'unzipSyncFiles: Zip entpackt in ' . $targetPath,
-                    JTLLOG_LEVEL_DEBUG,
-                    false,
-                    'syncinclude'
-                );
-            }
 
             return array_filter(array_map(function ($e) {
                 return file_exists($e)
@@ -1316,14 +1296,7 @@ function unzipSyncFiles($zipFile, $targetPath, $source = '')
             }, $filenames));
         }
     } else {
-        if (Jtllog::doLog(JTLLOG_LEVEL_NOTICE)) {
-            Jtllog::writeLog(
-                'Achtung: Klasse ZipArchive wurde nicht gefunden, bitte PHP-Konfiguration überprüfen.',
-                JTLLOG_LEVEL_NOTICE,
-                false,
-                'syncinclude'
-            );
-        }
+        Shop::Container()->getLogService()->notice('Achtung: Klasse ZipArchive wurde nicht gefunden, bitte PHP-Konfiguration überprüfen.');
         $archive = new PclZip($zipFile);
         if (($list = $archive->listContent()) !== 0 && $archive->extract(PCLZIP_OPT_PATH, $targetPath)) {
             $filenames = [];

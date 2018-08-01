@@ -301,8 +301,9 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
 
     $kBestellung = $Bestellung->insertInDB();
 
-    if (Jtllog::doLog(JTLLOG_LEVEL_NOTICE)) {
-        Jtllog::writeLog('Bestellung gespeichert: ' . print_r($Bestellung, true), JTLLOG_LEVEL_NOTICE, false, 'kBestellung', $kBestellung);
+    $logger = Shop::Container()->getLogService();
+    if ($logger->isHandling(JTLLOG_LEVEL_NOTICE)) {
+        $logger->withName('kBestellung')->notice('Bestellung gespeichert: ' . print_r($Bestellung, true), [$kBestellung]);
     }
     // TrustedShops buchen
     if (isset($_SESSION['TrustedShops']->cKaeuferschutzProdukt) 
@@ -968,14 +969,12 @@ function speicherUploads($oBestellung)
 function setzeSmartyWeiterleitung(Bestellung $bestellung)
 {
     speicherUploads($bestellung);
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog(
+    $logger = Shop::Container()->getLogService();
+    if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
+        $logger->withName('cModulId')->debug(
             'setzeSmartyWeiterleitung wurde mit folgender Zahlungsart ausgefuehrt: ' .
             print_r($_SESSION['Zahlungsart'], true),
-            JTLLOG_LEVEL_DEBUG,
-            false,
-            'cModulId',
-            $_SESSION['Zahlungsart']->cModulId
+            [$_SESSION['Zahlungsart']->cModulId]
         );
     }
     // Zahlungsart als Plugin

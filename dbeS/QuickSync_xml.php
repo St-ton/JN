@@ -13,21 +13,11 @@ if (auth()) {
     $return    = 2;
     $unzipPath = PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . basename($zipFile) . '_' . date('dhis') . '/';
     if (($syncFiles = unzipSyncFiles($zipFile, $unzipPath, __FILE__)) === false) {
-        if (Jtllog::doLog()) {
-            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'QuickSync_xml');
-        }
+        Shop::Container()->getLogService()->error('Error: Cannot extract zip file ' . $zipFile . ' to ' . $unzipPath);
         removeTemporaryFiles($zipFile);
     } else {
         $return = 0;
         foreach ($syncFiles as $i => $xmlFile) {
-            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog(
-                    'bearbeite: ' . $xmlFile . ' size: ' . filesize($xmlFile),
-                    JTLLOG_LEVEL_DEBUG,
-                    false,
-                    'QuickSync_xml'
-                );
-            }
             $d   = file_get_contents($xmlFile);
             $xml = XML_unserialize($d);
 
@@ -42,9 +32,6 @@ if (auth()) {
 }
 
 echo $return;
-if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-    Jtllog::writeLog('BEENDE: ' . $zipFile, JTLLOG_LEVEL_DEBUG, false, 'QuickSync_xml');
-}
 
 /**
  * @param array $xml
@@ -108,15 +95,6 @@ function bearbeiteInsert($xml)
             );
             if ($delta->totalquantity > 0) {
                 $oArtikel->fLagerbestand -= $delta->totalquantity;
-                if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('Artikel-Quicksync: Lagerbestand von kArtikel ' .
-                        $oArtikel->kArtikel . ' wurde wegen nicht-abgeholter Bestellungen '.
-                        'um ' . $delta->totalquantity . ' auf ' . $oArtikel->fLagerbestand . ' reduziert.',
-                        JTLLOG_LEVEL_DEBUG,
-                        false,
-                        'Artikel_xml'
-                    );
-                }
             }
         }
 

@@ -1809,3 +1809,14 @@ define('HOOK_CAPTCHA_MARKUP', 271);
  * @param bool  isValid
  */
 define('HOOK_CAPTCHA_VALIDATE', 272);
+
+/**
+ * @since 5.0.0
+ * @file admin/plugin.php.php
+ * @param bool hasError
+ * @param string msg
+ * @param string msg
+ * @param string error
+ * @param array  options
+ */
+define('HOOK_PLUGIN_SAVE_OPTIONS', 280);

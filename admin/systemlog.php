@@ -26,16 +26,7 @@ if (FormHelper::validateToken()) {
         $smarty->assign('cTab', 'config');
     } elseif (RequestHelper::verifyGPDataString('action') === 'delselected') {
         if (isset($_REQUEST['selected'])) {
-            foreach ($_REQUEST['selected'] as $kLog) {
-                $oLog = new Jtllog($kLog);
-                if ($oLog->delete() === -1) {
-                    $cFehler .= 'Log-Eintrag vom ' . $oLog->getErstellt() . ' konnte nicht gelöscht werden.<br>';
-                }
-            }
-
-            if ($cFehler === '') {
-                $cHinweis = 'Alle markierten Log-Einträge wurden gelöscht.';
-            }
+            $cHinweis = Jtllog::deleteIDs($_REQUEST['selected']) . ' markierte Log-Einträge wurden gelöscht.';
         }
     }
 }
@@ -54,7 +45,6 @@ $cSearchString     = $oSearchfield->getValue();
 $nSelectedLevel    = $oLevelSelect->getSelectedOption()->getValue();
 $nTotalLogCount    = Jtllog::getLogCount();
 $nFilteredLogCount = Jtllog::getLogCount($cSearchString, $nSelectedLevel);
-
 $oPagination = (new Pagination('syslog'))
     ->setItemsPerPageOptions([10, 20, 50, 100, -1])
     ->setItemCount($nFilteredLogCount)

@@ -121,10 +121,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                     }
 
                     if ($bDeleted) {
-                        // $Warenkorbhinweise
                         $cISO = $_SESSION['cISOSprache'];
-                        Jtllog::writeLog('Validierung der Konfiguration fehlgeschlagen - Warenkorbposition wurde entfernt: ' .
-                            $oPosition->cName[$cISO] . '(' . $oPosition->kArtikel . ')');
+                        Shop::Container()->getLogService()->error(
+                            'Validierung der Konfiguration fehlgeschlagen - Warenkorbposition wurde entfernt: ' .
+                            $oPosition->cName[$cISO] . '(' . $oPosition->kArtikel . ')'
+                        );
                     }
                 }
             }
@@ -139,7 +140,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         public static function validateBasket(int $kArtikel, $oKonfigitem_arr)
         {
             if ($kArtikel === 0 || !is_array($oKonfigitem_arr)) {
-                Jtllog::writeLog('Validierung der Konfiguration fehlgeschlagen - Ungültige Daten');
+                Shop::Container()->getLogService()->error('Validierung der Konfiguration fehlgeschlagen - Ungültige Daten');
 
                 return false;
             }
@@ -198,7 +199,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                     "Negative Konfigurationssumme für Artikel '%s' (Art.Nr.: %s, Netto: %s) - Vorgang wurde abgebrochen",
                     $oArtikel->cName, $oArtikel->cArtNr, Preise::getLocalizedPriceString($fFinalPrice)
                 );
-                Jtllog::writeLog($cError);
+                Shop::Container()->getLogService()->error($cError);
 
                 return false;
             }

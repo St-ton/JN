@@ -18,27 +18,16 @@ if (auth()) {
     $return  = 2;
 
     if (($syncFiles = unzipSyncFiles($zipFile, PFAD_SYNC_TMP, __FILE__)) === false) {
-        if (Jtllog::doLog()) {
-            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'SetKunde_xml');
-        }
+        Shop::Container()->getLogService()->error('Error: Cannot extract zip file ' . $zipFile);
         removeTemporaryFiles($zipFile);
     } else {
         $return = 0;
         if (count($syncFiles) === 1) {
             $xmlFile = array_shift($syncFiles);
-            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog(
-                    'bearbeite: ' . $xmlFile . ' size: ' . filesize($xmlFile),
-                    JTLLOG_LEVEL_DEBUG,
-                    false,
-                    'SetKunde_xml'
-                );
-            }
             $d   = file_get_contents($xmlFile);
             $res = bearbeite(XML_unserialize($d));
         } else {
             $errMsg = 'Error : Es kann nur ein Kunde pro Aufruf verarbeitet werden!';
-            Jtllog::writeLog($errMsg, JTLLOG_LEVEL_ERROR, false, 'SetKunde_xml');
             syncException($errMsg);
         }
     }
@@ -163,15 +152,10 @@ function bearbeite($xml)
             if ($kInetKunde > 0) {
                 $res_obj['keys']['tkunde attr']['kKunde'] = 0;
                 $res_obj['keys']['tkunde']                = '';
-
-                if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-                    Jtllog::writeLog('Verknuepfter Kunde in Wawi existiert nicht im Shop: ' .
-                        XML_serialize($res_obj),
-                        JTLLOG_LEVEL_ERROR,
-                        false,
-                        'SetKunde_xml'
-                    );
-                }
+                Shop::Container()->getLogService()->error(
+                    'Verknuepfter Kunde in Wawi existiert nicht im Shop: ' .
+                    XML_serialize($res_obj)
+                );
 
                 return $res_obj;
             }
@@ -215,9 +199,9 @@ function bearbeite($xml)
                 unset($xml_obj['kunden']['tkunde'][0]['cPasswort']);
                 $xml_obj['kunden']['tkunde']['0 attr']             = buildAttributes($xml_obj['kunden']['tkunde'][0]);
                 $xml_obj['kunden']['tkunde'][0]['tkundenattribut'] = Shop::Container()->getDB()->query(
-                    "SELECT *
+                    'SELECT *
                         FROM tkundenattribut
-                         WHERE kKunde = " . (int)$xml_obj['kunden']['tkunde']['0 attr']['kKunde'],
+                         WHERE kKunde = ' . (int)$xml_obj['kunden']['tkunde']['0 attr']['kKunde'],
                     \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
                 );
                 $kundenattribute_anz                               = count($xml_obj['kunden']['tkunde'][0]['tkundenattribut']);
@@ -225,10 +209,7 @@ function bearbeite($xml)
                     $xml_obj['kunden']['tkunde'][0]['tkundenattribut'][$o . ' attr'] =
                         buildAttributes($xml_obj['kunden']['tkunde'][0]['tkundenattribut'][$o]);
                 }
-                if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-                    Jtllog::writeLog('Dieser Kunde existiert: ' . XML_serialize($xml_obj), JTLLOG_LEVEL_ERROR, false,
-                        'SetKunde_xml');
-                }
+                Shop::Container()->getLogService()->error('Dieser Kunde existiert: ' . XML_serialize($xml_obj));
 
                 return $xml_obj;
             }

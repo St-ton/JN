@@ -621,16 +621,21 @@ final class Shop
      */
     public static function dbg($var, bool $die = false, $beforeString = null, int $backtrace = 0)
     {
+        $nl = PHP_SAPI === 'cli' ? PHP_EOL : '<br>';
         if ($beforeString !== null) {
-            echo $beforeString . '<br />';
+            echo $beforeString . $nl;
         }
-        echo '<pre>';
+        if (PHP_SAPI !== 'cli') {
+            echo '<pre>';
+        }
         var_dump($var);
         if ($backtrace > 0) {
-            echo '<br />Backtrace:<br />';
+            echo $nl . 'Backtrace:' . $nl;
             var_dump(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, $backtrace));
         }
-        echo '</pre>';
+        if (PHP_SAPI !== 'cli') {
+            echo '</pre>';
+        }
         if ($die === true) {
             die();
         }
@@ -1808,6 +1813,12 @@ final class Shop
             }
 
             return new Logger('auth', $handlers, [new PsrLogMessageProcessor()]);
+        });
+        $container->setSingleton('Logger', function (Container $container) {
+            $handler = (new NiceDBHandler($container->getDB(), self::getConfigValue(CONF_GLOBAL, 'systemlog_flag')))
+                ->setFormatter(new LineFormatter('%message%', null, false, true));
+
+            return new Logger('jtllog', [$handler], [new PsrLogMessageProcessor()]);
         });
         $container->setSingleton(ValidationServiceInterface::class, function () {
             $vs = new ValidationService($_GET, $_POST, $_COOKIE);

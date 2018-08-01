@@ -389,7 +389,7 @@ class NiceDB implements DbInterface
 
         if (!is_array($arr)) {
             if ($this->logErrors && $this->logfileName) {
-                $this->writeLog('insertRow: Objekt enthaelt nichts! - Tablename:' . $tableName);
+                Shop::Container()->getLogService()->error('insertRow: keine Daten - Tablename:' . $tableName);
             }
 
             return 0;
@@ -436,11 +436,11 @@ class NiceDB implements DbInterface
         }
 
         if (!$res) {
-            if ($this->logErrors && $this->logfileName) {
-                $this->writeLog(
+            if ($this->logErrors) {
+                Shop::Container()->getLogService()->error(
                     $stmt . "\n" .
                     $this->getErrorCode() . ': ' . $this->getErrorMessage() .
-                    "\n\nBacktrace:" . print_r(debug_backtrace(), 1)
+                    "\n\nBacktrace:" . print_r(debug_backtrace(), true)
                 );
             }
 
@@ -455,8 +455,8 @@ class NiceDB implements DbInterface
             }
             $arr = get_object_vars($object);
             if (!is_array($arr)) {
-                if ($this->logErrors && $this->logfileName) {
-                    $this->writeLog('insertRow: Objekt enthaelt nichts! - Tablename:' . $tableName);
+                if ($this->logErrors) {
+                    Shop::Container()->getLogService()->error('insertRow: Objekt leer - Tablename:' . $tableName);
                 }
 
                 return 0;
@@ -519,15 +519,15 @@ class NiceDB implements DbInterface
         $updates = []; //list of "<column name>=?" or "<column name>=now()" strings
         $assigns = []; //list of values to insert as param for ->prepare()
         if (!is_array($arr)) {
-            if ($this->logErrors && $this->logfileName) {
-                $this->writeLog('updateRow: Objekt enthaelt nichts! - Tablename:' . $tableName);
+            if ($this->logErrors) {
+                Shop::Container()->getLogService()->error('updateRow: Objekt leer - Tablename:' . $tableName);
             }
 
             return -1;
         }
         if (!$keyname || !$keyvalue) {
-            if ($this->logErrors && $this->logfileName) {
-                $this->writeLog(
+            if ($this->logErrors) {
+                Shop::Container()->getLogService()->error(
                     'updateRow: Kein keyname oder keyvalue! - ' .
                     'Tablename:' . $tableName .
                     ' Keyname: ' . $keyname .
@@ -552,8 +552,8 @@ class NiceDB implements DbInterface
         }
         if (is_array($keyname) && is_array($keyvalue)) {
             if (count($keyname) !== count($keyvalue)) {
-                if ($this->logErrors && $this->logfileName) {
-                    $this->writeLog(
+                if ($this->logErrors) {
+                    Shop::Container()->getLogService()->error(
                         'updateRow: ' .
                         'Anzahl an Schluesseln passt nicht zu Anzahl an Werten - ' .
                         'Tablename:' . $tableName
@@ -594,8 +594,11 @@ class NiceDB implements DbInterface
             return -1;
         }
         if (!$res) {
-            if ($this->logErrors && $this->logfileName) {
-                $this->writeLog($stmt . "\n" . $this->getErrorCode() . ': ' . $this->getErrorMessage());
+            if ($this->logErrors) {
+                Shop::Container()->getLogService()->error(
+                    $stmt . "\n" .
+                    $this->getErrorCode() . ': ' . $this->getErrorMessage()
+                );
             }
             $ret = -1;
         } else {
@@ -709,8 +712,11 @@ class NiceDB implements DbInterface
             return null;
         }
         if (!$res) {
-            if ($this->logErrors && $this->logfileName) {
-                $this->writeLog($stmt . "\n" . $this->getErrorCode() . ': ' . $this->getErrorMessage());
+            if ($this->logErrors) {
+                Shop::Container()->getLogService()->error(
+                    $stmt . "\n" .
+                    $this->getErrorCode() . ': ' . $this->getErrorMessage()
+                );
             }
 
             return null;
@@ -1002,8 +1008,8 @@ class NiceDB implements DbInterface
         }
 
         if (!$res) {
-            if ($this->logErrors && $this->logfileName) {
-                $this->writeLog(
+            if ($this->logErrors) {
+                Shop::Container()->getLogService()->error(
                     $stmt . "\n" .
                     $this->getErrorCode() . ': ' . $this->getErrorMessage() .
                     "\n\nBacktrace: " . print_r(debug_backtrace(), true)
@@ -1083,8 +1089,8 @@ class NiceDB implements DbInterface
         $assigns = [];
         if (is_array($keyname) && is_array($keyvalue)) {
             if (count($keyname) !== count($keyvalue)) {
-                if ($this->logErrors && $this->logfileName) {
-                    $this->writeLog(
+                if ($this->logErrors) {
+                    Shop::Container()->getLogService()->error(
                         'deleteRow: ' .
                         'Anzahl an Schluesseln passt nicht zu Anzahl an Werten - ' .
                         'Tablename:' . $tableName
@@ -1125,8 +1131,11 @@ class NiceDB implements DbInterface
             return -1;
         }
         if (!$res) {
-            if ($this->logErrors && $this->logfileName) {
-                $this->writeLog($stmt . "\n" . $this->getErrorCode() . ': ' . $this->getErrorMessage());
+            if ($this->logErrors) {
+                Shop::Container()->getLogService()->error(
+                    $stmt . "\n" .
+                    $this->getErrorCode() . ': ' . $this->getErrorMessage()
+                );
             }
 
             return -1;
@@ -1175,8 +1184,11 @@ class NiceDB implements DbInterface
             return 0;
         }
         if (!$res) {
-            if ($this->logErrors && $this->logfileName) {
-                $this->writeLog($stmt . "\n" . $this->getErrorCode() . ': ' . $this->getErrorMessage());
+            if ($this->logErrors) {
+                Shop::Container()->getLogService()->error(
+                    $stmt . "\n" .
+                    $this->getErrorCode() . ': ' . $this->getErrorMessage()
+                );
             }
 
             return 0;
@@ -1255,13 +1267,7 @@ class NiceDB implements DbInterface
      */
     public function writeLog(string $entry): DbInterface
     {
-        $logfile = fopen($this->logfileName, 'a');
-        fwrite(
-            $logfile,
-            "\n[" . date('m.d.y H:i:s') . ' ' . microtime() . '] ' .
-            $_SERVER['SCRIPT_NAME'] . "\n" . $entry
-        );
-        fclose($logfile);
+        Shop::Container()->getLogService()->error($entry);
 
         return $this;
     }
@@ -1273,7 +1279,7 @@ class NiceDB implements DbInterface
     {
         $errorCode = $this->pdo->errorCode();
 
-        return ($errorCode !== '00000') ? $errorCode : 0;
+        return $errorCode !== '00000' ? $errorCode : 0;
     }
 
     /**

@@ -414,7 +414,7 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
                     $cache->flushAll();
                 }
             } catch (Exception $e) {
-                Jtllog::writeLog('Leeren des Objektcache fehlgeschlagen! (' . $e->getMessage() . ')', JTLLOG_LEVEL_ERROR);
+                Shop::Container()->getLogService()->error('Leeren des Objektcache fehlgeschlagen! (' . $e->getMessage() . ')');
             }
 
             // Templatecache leeren

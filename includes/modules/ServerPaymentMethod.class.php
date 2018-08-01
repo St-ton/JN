@@ -79,11 +79,6 @@ class ServerPaymentMethod extends PaymentMethod
         foreach ($fields as $key => $value) {
             $request .= "&$key=$value";
         }
-
-        if ($bLogging && strlen($cLogPfad) > 0) {
-            writeLog($cLogPfad, "postRequest POST: " . $request, 1);
-        }
-
         // Send
         $header = "POST {$this->path} HTTP/1.1\r\n"
             . "Host: {$this->host}\r\n"
@@ -92,11 +87,6 @@ class ServerPaymentMethod extends PaymentMethod
             . "Connection: close\r\n\r\n";
         fwrite($socket, $header);
         fwrite($socket, $request);
-
-        if ($bLogging && strlen($cLogPfad) > 0) {
-            writeLog($cLogPfad, 'postRequest header: ' . $header, 1);
-        }
-
         // Recieve
         $reponseHeader = '';
         $reponseBody   = '';

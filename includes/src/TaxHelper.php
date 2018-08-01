@@ -103,7 +103,7 @@ class TaxHelper
             $urlHelper = new UrlHelper(Shop::getURL() . $_SERVER['REQUEST_URI']);
             $country   = Sprache::getCountryCodeByCountryName($deliveryCountryCode);
 
-            Jtllog::writeLog('Keine Steuerzone f&uuml;r "' . $country . '" hinterlegt!', JTLLOG_LEVEL_ERROR);
+            Shop::Container()->getLogService()->error('Keine Steuerzone f+r "' . $country . '" hinterlegt!');
 
             if (RequestHelper::isAjaxRequest()) {
                 $link = new \Link\Link(Shop::Container()->getDB());

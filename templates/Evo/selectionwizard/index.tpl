@@ -23,6 +23,6 @@
         }
     </script>
     <div id="selectionwizard">
-        {include file="selectionwizard/form.tpl" AWA=$AWA}
+        {include file='selectionwizard/form.tpl' AWA=$AWA}
     </div>
 {/if}

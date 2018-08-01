@@ -47,9 +47,9 @@ function checkAbhaengigkeiten(givenElement,givenSelectedIndex)
             arAbhaengigkeiten_{$Wert} = new Array(
                {assign var=arCount value=$arZiel|@count}
                {assign var=arCounter value=0}
-               {foreach name=NichtErlaubteEigenschaftswerte_array from=$arZiel key=Ziel item=lalala}
+               {foreach $arZiel as $item}
                   {assign var=arCounter value=$arCounter+1}
-                  'kEigenschaftWert_{$lalala->EigenschaftWert}'{if $arCount==$arCounter}{else},{/if}
+                  'kEigenschaftWert_{$item->EigenschaftWert}'{if $arCount == $arCounter}{else},{/if}
                {/foreach});
             for (var k=0; k<arAbhaengigkeiten_{$Wert}.length; k++)
             {ldelim}

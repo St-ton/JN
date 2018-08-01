@@ -70,6 +70,11 @@
 !/media/image/.gitkeep
 !/media/image/product/.gitkeep
 !/media/image/storage/.gitkeep
+!/mediafiles/Bilder/.xs/.gitkeep
+!/mediafiles/Bilder/.sm/.gitkeep
+!/mediafiles/Bilder/.md/.gitkeep
+!/mediafiles/Bilder/.lg/.gitkeep
+!/mediafiles/Bilder/.xl/.gitkeep
 bootstrap/*
 includes/vendor/*
 node_modules/

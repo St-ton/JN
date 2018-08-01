@@ -14,15 +14,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'kundenwerbenkeunden_inc.php';
 
 $AktuelleSeite = 'MEIN KONTO';
 $linkHelper    = Shop::Container()->getLinkService();
-$Einstellungen = Shop::getSettings([
-    CONF_GLOBAL,
-    CONF_RSS,
-    CONF_KUNDEN,
-    CONF_KAUFABWICKLUNG,
-    CONF_KUNDENFELD,
-    CONF_KUNDENWERBENKUNDEN,
-    CONF_TRUSTEDSHOPS
-]);
+$Einstellungen = Shopsetting::getInstance()->getAll();
 $kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_LOGIN);
 $cHinweis      = '';
 $hinweis       = '';
@@ -152,8 +144,8 @@ if ($customerID > 0) {
         $step = 'kunden_werben_kunden';
         if (RequestHelper::verifyGPCDataInt('kunde_werben') === 1) {
             if (!SimpleMail::checkBlacklist($_POST['cEmail'])) {
-                if (pruefeEingabe($_POST)) {
-                    if (setzeKwKinDB($_POST, $Einstellungen)) {
+                if (KundenwerbenKunden::checkInputData($_POST)) {
+                    if (KundenwerbenKunden::saveToDB($_POST, $Einstellungen)) {
                         $cHinweis .= sprintf(
                             Shop::Lang()->get('kwkAdd', 'messages') . '<br />',
                             StringHandler::filterXSS($_POST['cEmail'])
@@ -186,7 +178,7 @@ if ($customerID > 0) {
             if (!$oWunschlistePos->bKonfig) {
                 WarenkorbHelper::addProductIDToCart($oWunschlistePos->kArtikel, $oWunschlistePos->fAnzahl, $oEigenschaftwerte_arr);
             }
-            $cParamWLID = (strlen($cURLID) > 0) ? ('&wlid=' . $cURLID) : '';
+            $cParamWLID = strlen($cURLID) > 0 ? ('&wlid=' . $cURLID) : '';
             header(
                 'Location: ' . $linkHelper->getStaticRoute('jtl.php') .
                 '?wl=' . $kWunschliste .
@@ -323,29 +315,13 @@ if ($customerID > 0) {
             // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
             $oWunschliste = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $kWunschliste);
             if (isset($oWunschliste->kKunde) && (int)$oWunschliste->kKunde === Session::Customer()->getID()) {
-                // Wurde nOeffentlich verändert
-                if (isset($_REQUEST['nstd']) && FormHelper::validateToken()) {
-                    $nOeffentlich = RequestHelper::verifyGPCDataInt('nstd');
-                    // Wurde nstd auf 1 oder 0 gesetzt?
-                    if ($nOeffentlich === 0) {
-                        $upd               = new stdClass();
-                        $upd->nOeffentlich = 0;
-                        $upd->cURLID       = '';
-                        // nOeffentlich der Wunschliste updaten zu Privat
-                        Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', $kWunschliste, $upd);
+                if (isset($_REQUEST['wlAction']) && FormHelper::validateToken()) {
+                    $wlAction = RequestHelper::verifyGPDataString('wlAction');
+                    if ($wlAction === 'setPrivate') {
+                        Wunschliste::setPrivate($kWunschliste);
                         $cHinweis .= Shop::Lang()->get('wishlistSetPrivate', 'messages');
-                    } elseif ($nOeffentlich === 1) {
-                        $cURLID = uniqid('', true);
-                        // Kampagne
-                        $oKampagne = new Kampagne(KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
-                        if ($oKampagne->kKampagne > 0) {
-                            $cURLID .= '&' . $oKampagne->cParameter . '=' . $oKampagne->cWert;
-                        }
-                        // nOeffentlich der Wunschliste updaten zu öffentlich
-                        $upd               = new stdClass();
-                        $upd->nOeffentlich = 1;
-                        $upd->cURLID       = $cURLID;
-                        Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', $kWunschliste, $upd);
+                    } elseif ($wlAction === 'setPublic') {
+                        Wunschliste::setPublic($kWunschliste);
                         $cHinweis .= Shop::Lang()->get('wishlistSetPublic', 'messages');
                     }
                 }

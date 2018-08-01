@@ -8,11 +8,11 @@
         || $Artikel->fLagerbestand > 0
         || $Artikel->fZulauf > 0)}
     {if $tplscope === 'detail'}
-        <a class="btn-store-availability" data-toggle="popover" data-placement="left" data-ref="#popover-warehouse" data-trigger="click hover"><i class="fa fa-map-marker" title="{lang key="availability" section="productDetails"}"></i></a>
+        <a class="btn-store-availability" data-toggle="popover" data-placement="left" data-ref="#popover-warehouse" data-trigger="click hover"><i class="fa fa-map-marker" title="{lang key='availability' section='productDetails'}"></i></a>
     {/if}
     <div class="hidden" id="popover-warehouse">
         <table class="table warehouse-table">
-        {foreach name=warenlager from=$Artikel->oWarenlager_arr item=oWarenlager}
+        {foreach $Artikel->oWarenlager_arr as $oWarenlager}
             <tr>
                 <td class="name"><strong>{$oWarenlager->getName()}</strong></td>
                 <td class="delivery-status">
@@ -24,7 +24,7 @@
                     && $oWarenlager->getBackorder() > 0
                     && $oWarenlager->getBackorderDate() !== null}
                     {assign var=cZulauf value=$oWarenlager->getBackorder()|cat:':::'|cat:$oWarenlager->getBackorderDateDE()}
-                    <span class="signal_image status-1"><span>{lang key="productInflowing" section="productDetails" printf=$cZulauf}</span></span>
+                    <span class="signal_image status-1"><span>{lang key='productInflowing' section='productDetails' printf=$cZulauf}</span></span>
                 {elseif $anzeige === 'verfuegbarkeit' || $anzeige === 'genau'}
                     <span class="signal_image status-{$oWarenlager->oLageranzeige->nStatus}">{$oWarenlager->oLageranzeige->cLagerhinweis[$anzeige]}</span>
                 {elseif $anzeige === 'ampel'}

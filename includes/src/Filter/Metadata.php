@@ -387,7 +387,7 @@ class Metadata implements MetadataInterface
      */
     public function generateMetaDescription(
         array $products,
-        ProductFilterSearchResultsInterface $searchResults,
+        SearchResultsInterface $searchResults,
         array $globalMeta,
         $category = null
     ): string {
@@ -668,7 +668,7 @@ class Metadata implements MetadataInterface
     /**
      * Erstellt für die NaviMetas die gesetzten Mainwords + Filter und stellt diese vor jedem Meta an.
      *
-     * @param ProductFilterSearchResultsInterface $searchResults
+     * @param SearchResultsInterface $searchResults
      * @return string
      */
     public function getMetaStart($searchResults): string

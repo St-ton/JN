@@ -1,7 +1,7 @@
 {if empty($conversion_tracked)}
-    {assign var="conversion_tracked" value=1}
+    {$conversion_tracked = 1}
     <div id="conversiontracking">
-        {block name="checkout-conversion-tracking"}
+        {block name='checkout-conversion-tracking'}
         {* Google Analytics E-Commerce Tracking *}
         {if !empty($Einstellungen.global.global_google_analytics_id)}
             <script type="text/javascript">
@@ -31,7 +31,7 @@
                     '{$smarty.session.Kunde->cLand}'
                 ]);
 
-                {foreach name=Bestell item=order from=$Bestellung->Positionen}
+                {foreach $Bestellung->Positionen as $order}
                 {if $order->nPosTyp == 1}
                 _gaq.push(['_addItem',
                     '{$Bestellung->cBestellNr}',

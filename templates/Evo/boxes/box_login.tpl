@@ -24,7 +24,7 @@
 
                 <div class="form-group">
                     {if !empty($oRedirect->cURL)}
-                        {foreach name=parameter from=$oRedirect->oParameter_arr item=oParameter}
+                        {foreach $oRedirect->oParameter_arr as $oParameter}
                             <input type="hidden" name="{$oParameter->Name}" value="{$oParameter->Wert}" />
                         {/foreach}
                         <input type="hidden" name="r" value="{$oRedirect->nRedirect}" />

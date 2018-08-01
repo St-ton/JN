@@ -1064,7 +1064,6 @@ class IOMethods
 
         if (strlen($country) === 2) {
             $regions = Staat::getRegions($country);
-            $regions = StringHandler::utf8_convert_recursive($regions);
             $response->script("this.response = " . json_encode($regions) . ";");
         }
 

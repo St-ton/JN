@@ -26,6 +26,14 @@ class AdminIO extends IO
     }
 
     /**
+     * @return AdminAccount
+     */
+    public function getAccount()
+    {
+        return $this->oAccount;
+    }
+
+    /**
      * @param string $name
      * @param null $function
      * @param null $include

@@ -106,4 +106,45 @@ class Container extends ContainerBase implements DefaultServicesInterface
     {
         return $this->get(CaptchaServiceInterface::class);
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getOPC(): \OPC\Service
+    {
+        return $this->get(\OPC\Service::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getOPCPageService(): \OPC\PageService
+    {
+        return $this->get(\OPC\PageService::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getOPCDB(): \OPC\DB
+    {
+        return $this->get(\OPC\DB::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getOPCPageDB(): \OPC\PageDB
+    {
+        return $this->get(\OPC\PageDB::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getOPCLocker(): \OPC\Locker
+    {
+        return $this->get(\OPC\Locker::class);
+    }
+
 }

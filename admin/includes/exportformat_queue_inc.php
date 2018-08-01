@@ -125,7 +125,7 @@ function holeAlleExportformate()
             'kSprache',
             (int)$oExportformat->kSprache
         );
-        $oExportformat->Waehrung     = new Currency((int)$oExportformat->kSprache);
+        $oExportformat->Waehrung     = new Currency((int)$oExportformat->kWaehrung);
         $oExportformat->Kundengruppe = new Kundengruppe((int)$oExportformat->kKundengruppe);
     }
 

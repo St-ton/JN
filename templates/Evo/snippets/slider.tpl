@@ -1,10 +1,10 @@
 {if isset($oSlider) && count($oSlider->oSlide_arr) > 0}
     <div class="slider-wrapper theme-{$oSlider->cTheme}{if $oSlider->bControlNav} control-nav{/if}{if $oSlider->bDirectionNav} direction-nav{/if}{if $oSlider->bThumbnail} thumbnail-nav{/if}">
         <div id="slider-{$oSlider->kSlider}" class="nivoSlider">
-            {foreach from=$oSlider->oSlide_arr item=oSlide}
-                {assign var="slideTitle" value=$oSlide->cTitel}
+            {foreach $oSlider->oSlide_arr as $oSlide}
+                {assign var='slideTitle' value=$oSlide->cTitel}
                 {if !empty($oSlide->cText)}
-                    {assign var="slideTitle" value="#slide_caption_{$oSlide->kSlide}"}
+                    {assign var='slideTitle' value="#slide_caption_{$oSlide->kSlide}"}
                 {/if}
                 {if !empty($oSlide->cLink)}
                     <a href="{$oSlide->cLink}"{if !empty($oSlide->cText)} title="{$oSlide->cText|strip_tags}"{/if} class="slide">
@@ -22,7 +22,7 @@
             {/foreach}
         </div>
         {* slide captions outside of .nivoSlider *}
-        {foreach from=$oSlider->oSlide_arr item=oSlide}
+        {foreach $oSlider->oSlide_arr as $oSlide}
             {if !empty($oSlide->cText)}
                 <div id="slide_caption_{$oSlide->kSlide}" class="htmlcaption hidden">
                     {if isset($oSlide->cTitel)}<strong class="title">{$oSlide->cTitel}</strong>{/if}
@@ -48,8 +48,8 @@
                     controlNav: {$oSlider->bControlNav},
                     controlNavThumbs: {$oSlider->bThumbnail},
                     pauseOnHover: {$oSlider->bPauseOnHover},
-                    prevText: '{lang key="sliderPrev" section="media"}',
-                    nextText: '{lang key="sliderNext" section="media"}',
+                    prevText: '{lang key='sliderPrev' section='media'}',
+                    nextText: '{lang key='sliderNext' section='media'}',
                     randomStart: {$oSlider->bRandomStart},
                     afterLoad: function () {ldelim}
                         slider.addClass('loaded');
@@ -114,8 +114,8 @@
                     controlNav: false,
                     controlNavThumbs: false,
                     pauseOnHover: false,
-                    prevText: '{lang key="sliderPrev" section="media"}',
-                    nextText: '{lang key="sliderNext" section="media"}',
+                    prevText: '{lang key='sliderPrev' section='media'}',
+                    nextText: '{lang key='sliderNext' section='media'}',
                     manualAdvance: false,
                     randomStart: false,
                     startSlide: endSlide,

@@ -238,6 +238,16 @@ class Plugin
     public $oPluginAdminWidgetAssoc_arr = [];
 
     /**
+     * @var array
+     */
+    public $oPluginEditorPortlet_arr = [];
+
+    /**
+     * @var array
+     */
+    public $oPluginEditorPortletAssoc_arr = [];
+
+    /**
      * @var stdClass
      */
     public $oPluginUninstall;
@@ -593,6 +603,24 @@ class Plugin
                 $this->cAdminmenuPfad . PFAD_PLUGIN_WIDGET . 'class.Widget' . $oPluginAdminWidget->cClass . '.php';
             $this->oPluginAdminWidgetAssoc_arr[$oPluginAdminWidget->kWidget] =
                 $this->oPluginAdminWidget_arr[$i];
+        }
+        // OPC-Portlets
+        try {
+            $this->oPluginEditorPortlet_arr = Shop::Container()->getDB()->selectAll(
+                'topcportlet',
+                'kPlugin',
+                (int)$this->kPlugin
+            );
+        } catch (\InvalidArgumentException $e) {
+            $this->oPluginEditorPortlet_arr = [];
+        }
+        foreach ($this->oPluginEditorPortlet_arr as $i => $oPluginEditorPortlet) {
+            $this->oPluginEditorPortlet_arr[$i]->cClassAbs =
+                $this->cAdminmenuPfad . PFAD_PLUGIN_PORTLETS . $oPluginEditorPortlet->cClass . '/'
+                . $oPluginEditorPortlet->cClass . '.php';
+
+            $this->oPluginEditorPortletAssoc_arr[$oPluginEditorPortlet->kPortlet] =
+                $this->oPluginEditorPortlet_arr[$i];
         }
         // Uninstall
         $this->oPluginUninstall = Shop::Container()->getDB()->select('tpluginuninstall', 'kPlugin', (int)$this->kPlugin);

@@ -193,7 +193,7 @@ class AuswahlAssistent
         $AktuelleKategorie  = isset($cParameter_arr['kKategorie'])
             ? new Kategorie($cParameter_arr['kKategorie'])
             : null;
-        $attributeFilters = (new \Filter\ProductFilterSearchResults())->setFilterOptions(
+        $attributeFilters = (new \Filter\SearchResults())->setFilterOptions(
             $NaviFilter,
             $AktuelleKategorie,
             true

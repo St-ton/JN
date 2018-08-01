@@ -1,0 +1,315 @@
+<?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license       http://jtl-url.de/jtlshoplicense
+ */
+
+namespace Filter;
+
+use Filter\Pagination\Info;
+use Tightenco\Collect\Support\Collection;
+
+
+/**
+ * Class SearchResults
+ * @package Filter
+ */
+interface SearchResultsInterface
+{
+    /**
+     * @param \stdClass|SearchResultsInterface $legacy
+     * @return $this
+     */
+    public function convert($legacy): SearchResultsInterface;
+
+    /**
+     * @return \stdClass
+     */
+    public function getProductsCompat(): \stdClass;
+
+    /**
+     * @return $this
+     */
+    public function setProductsCompat(): SearchResultsInterface;
+
+    /**
+     * @return Collection
+     */
+    public function getProductKeys(): Collection;
+
+    /**
+     * @param Collection $keys
+     * @return $this
+     */
+    public function setProductKeys(Collection $keys): SearchResultsInterface;
+
+    /**
+     * @return \Tightenco\Collect\Support\Collection()
+     */
+    public function getProducts(): Collection;
+
+    /**
+     * @param \Tightenco\Collect\Support\Collection() $products
+     * @return $this
+     */
+    public function setProducts($products): SearchResultsInterface;
+
+    /**
+     * @return int
+     */
+    public function getProductCount(): int;
+
+    /**
+     * @param int $productCount
+     * @return $this
+     */
+    public function setProductCount($productCount): SearchResultsInterface;
+
+    /**
+     * @return int
+     */
+    public function getVisibleProductCount(): int;
+
+    /**
+     * @param int $count
+     * @return $this
+     */
+    public function setVisibleProductCount(int $count): SearchResultsInterface;
+
+    /**
+     * @return int
+     */
+    public function getOffsetStart(): int;
+
+    /**
+     * @param int $offsetStart
+     * @return $this
+     */
+    public function setOffsetStart($offsetStart): SearchResultsInterface;
+
+    /**
+     * @return int
+     */
+    public function getOffsetEnd(): int;
+
+    /**
+     * @param int $offsetEnd
+     * @return $this
+     */
+    public function setOffsetEnd($offsetEnd): SearchResultsInterface;
+
+    /**
+     * @return Info
+     */
+    public function getPages(): Info;
+
+    /**
+     * @param Info $pages
+     * @return $this
+     */
+    public function setPages(Info $pages): SearchResultsInterface;
+
+    /**
+     * @return string|null
+     */
+    public function getSearchTerm();
+
+    /**
+     * @param string $searchTerm
+     * @return $this
+     */
+    public function setSearchTerm($searchTerm): SearchResultsInterface;
+
+    /**
+     * @return string
+     */
+    public function getSearchTermWrite();
+
+    /**
+     * @param string $searchTerm
+     * @return $this
+     */
+    public function setSearchTermWrite($searchTerm): SearchResultsInterface;
+
+    /**
+     * @return bool
+     */
+    public function getSearchUnsuccessful(): bool;
+
+    /**
+     * @param bool $searchUnsuccessful
+     * @return $this
+     */
+    public function setSearchUnsuccessful($searchUnsuccessful): SearchResultsInterface;
+
+    /**
+     * @return FilterOption[]
+     */
+    public function getManufacturerFilterOptions(): array;
+
+    /**
+     * @param FilterOption[] $options
+     * @return $this
+     */
+    public function setManufacturerFilterOptions($options): SearchResultsInterface;
+
+    /**
+     * @return FilterOption[]
+     */
+    public function getRatingFilterOptions(): array;
+
+    /**
+     * @param FilterOption[] $options
+     * @return $this
+     */
+    public function setRatingFilterOptions($options): SearchResultsInterface;
+
+    /**
+     * @return FilterOption[]
+     */
+    public function getTagFilterOptions(): array;
+
+    /**
+     * @param FilterOption[] $options
+     * @return $this
+     */
+    public function setTagFilterOptions($options): SearchResultsInterface;
+
+    /**
+     * @return FilterOption[]
+     */
+    public function getAttributeFilterOptions(): array;
+
+    /**
+     * @param FilterOption[] $options
+     * @return $this
+     */
+    public function setAttributeFilterOptions($options): SearchResultsInterface;
+
+    /**
+     * @return FilterOption[]
+     */
+    public function getPriceRangeFilterOptions(): array;
+
+    /**
+     * @param FilterOption[] $options
+     * @return $this
+     */
+    public function setPriceRangeFilterOptions($options): SearchResultsInterface;
+
+    /**
+     * @return FilterOption[]
+     */
+    public function getCategoryFilterOptions(): array;
+
+    /**
+     * @param FilterOption[] $options
+     * @return $this
+     */
+    public function setCategoryFilterOptions($options): SearchResultsInterface;
+
+    /**
+     * @return FilterOption[]
+     */
+    public function getSearchFilterOptions(): array;
+
+    /**
+     * @param FilterOption[] $options
+     * @return $this
+     */
+    public function setSearchFilterOptions($options): SearchResultsInterface;
+
+    /**
+     * @return FilterOption[]
+     */
+    public function getSearchSpecialFilterOptions(): array;
+
+    /**
+     * @param FilterOption[] $options
+     * @return $this
+     */
+    public function setSearchSpecialFilterOptions($options): SearchResultsInterface;
+
+    /**
+     * @return FilterOption[]
+     */
+    public function getCustomFilterOptions(): array;
+
+    /**
+     * @param FilterOption[] $options
+     * @return $this
+     */
+    public function setCustomFilterOptions($options): SearchResultsInterface;
+
+    /**
+     * @return string|null
+     */
+    public function getTagFilterJSON();
+
+    /**
+     * @param string $json
+     * @return $this
+     */
+    public function setTagFilterJSON($json): SearchResultsInterface;
+
+    /**
+     * @return string|null
+     */
+    public function getSearchFilterJSON();
+
+    /**
+     * @param string $json
+     * @return $this
+     */
+    public function setSearchFilterJSON($json): SearchResultsInterface;
+
+    /**
+     * @return string|null
+     */
+    public function getError();
+
+    /**
+     * @param string $error
+     * @return $this
+     */
+    public function setError($error): SearchResultsInterface;
+
+    /**
+     * @return array
+     */
+    public function getSortingOptions(): array;
+
+    /**
+     * @param array $options
+     * @return $this
+     */
+    public function setSortingOptions($options): SearchResultsInterface;
+
+    /**
+     * @return array
+     */
+    public function getLimitOptions(): array;
+
+    /**
+     * @param array $options
+     * @return $this
+     */
+    public function setLimitOptions($options): SearchResultsInterface;
+
+    /**
+     * @return array
+     */
+    public function getAllFilterOptions(): array;
+
+    /**
+     * @param ProductFilter   $productFilter
+     * @param null|\Kategorie $currentCategory
+     * @param bool            $selectionWizard
+     * @return $this
+     */
+    public function setFilterOptions(
+        ProductFilter $productFilter,
+        $currentCategory = null,
+        $selectionWizard = false
+    ): SearchResultsInterface;
+}

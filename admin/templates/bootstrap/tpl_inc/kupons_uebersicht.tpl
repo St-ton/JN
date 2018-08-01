@@ -119,7 +119,9 @@
                             <i class="fa fa-share"></i> {$cKuponTypName} {#create#}
                         </a>
                         {if $oKupon_arr|@count > 0}
-                            <button type="submit" class="btn btn-danger" name="action" value="loeschen"><i class="fa fa-trash"></i> {#delete#}</button>
+                            <button type="submit" class="btn btn-danger" name="action" value="loeschen">
+                                <i class="fa fa-trash"></i> {#delete#}
+                            </button>
                             {include file='tpl_inc/csv_export_btn.tpl' exporterId=$cKuponTyp}
                         {/if}
                         {include file='tpl_inc/csv_import_btn.tpl' importerId="kupon"}

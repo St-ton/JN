@@ -26,7 +26,7 @@ var bpyReq = {},
 
 {if isset($cMissing_arr) && $cMissing_arr|@count > 0}
     <div class="alert alert-danger">
-        <p>{lang key="fillOut"}</p>
+        <p>{lang key='fillOut'}</p>
     </div>
 {/if}
 

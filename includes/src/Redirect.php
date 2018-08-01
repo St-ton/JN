@@ -773,15 +773,15 @@ class Redirect
         $kSprache = Shop::getLanguageID();
         if ($count === 0 && Shop::getProductFilter()->getFilterCount() > 0) {
             foreach ($cMainword_arr as $function => $cInfo_arr) {
-                $cKey   = $cInfo_arr['cKey'];
                 $cParam = $cInfo_arr['cParam'];
                 $data   = method_exists($productFilter, $function)
                     ? $productFilter->$function()
                     : null;
-                if ($data !== null && isset($data->$cKey) && (int)$data->$cKey > 0) {
-                    $cUrl = '?' . $cParam . '=' . $data->$cKey;
-                    if ($bSeo && isset($data->cSeo) && is_array($data->cSeo)) {
-                        $cUrl = $data->cSeo[$kSprache];
+                if ($data !== null && method_exists($data, 'getValue') && $data->getValue() > 0) {
+                    /** @var \Filter\FilterInterface $data */
+                    $cUrl = '?' . $cParam . '=' . $data->getValue();
+                    if ($bSeo &&  !empty($data->getSeo($kSprache))) {
+                        $cUrl = $data->getSeo($kSprache);
                     }
                     if (strlen($cUrl) > 0) {
                         header('Location: ' . $cUrl, true, 301);

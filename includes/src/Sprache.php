@@ -233,7 +233,7 @@ class Sprache
 
     /**
      * @param string $cISO
-     * @return mixed
+     * @return stdClass|null
      */
     public function _getLangIDFromIso(string $cISO)
     {
@@ -257,7 +257,7 @@ class Sprache
     /**
      * @param int $kSektion
      * @param mixed null|string $default
-     * @return string
+     * @return string|null
      */
     public function getSectionName(int $kSektion, $default = null)
     {
@@ -344,7 +344,7 @@ class Sprache
             if (isset($this->oSprachISO[$cISO]->kSprachISO)) {
                 return (int)$this->oSprachISO[$cISO]->kSprachISO;
             }
-            $oSprachISO              = $this->getLangIDFromIso($cISO);
+            $oSprachISO              = $this->_getLangIDFromIso($cISO);
             $this->oSprachISO[$cISO] = $oSprachISO;
 
             return isset($oSprachISO->kSprachISO) ? (int)$oSprachISO->kSprachISO : false;
@@ -1063,7 +1063,7 @@ class Sprache
                 } elseif ($specialPage !== null) {
                     if (Shop::getPageType() === PAGE_STARTSEITE) {
                         $url = '?lang=' . $lang->cISO;
-                    } elseif ($specialPage->getFileName() !== null) {
+                    } elseif ($specialPage->getFileName() !== '') {
                         $url = $helper->getStaticRoute($specialPage->getFileName(), false, false, $lang->cISO);
                         // check if there is a SEO link for the given file
                         if ($url === $specialPage->getFileName()) { //no SEO link - fall back to php file with GET param
@@ -1078,8 +1078,13 @@ class Sprache
                     $lang->cURLFull = $url;
                     executeHook(HOOK_TOOLSGLOBAL_INC_SWITCH_SETZESPRACHEUNDWAEHRUNG_SPRACHE);
                 } elseif ($page !== null) {
-                    $lang->cURL     = $page->getURL($lang->kSprache);
-                    $lang->cURLFull = $lang->cURL;
+                    $lang->cURL = $page->getURL($lang->kSprache);
+                    if (strpos($lang->cURL, '/?s=') !== false) {
+                        $lang->cURL     .= '&amp;lang=' . $lang->cISO;
+                        $lang->cURLFull = rtrim($shopURL, '/') . $lang->cURL;
+                    } else {
+                        $lang->cURLFull = $lang->cURL;
+                    }
                 } else {
                     $originalLanguage = $productFilter->getLanguageID();
                     $productFilter->setLanguageID($lang->kSprache);

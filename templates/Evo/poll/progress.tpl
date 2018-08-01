@@ -14,6 +14,8 @@
 {if !empty($fehler)}
     <div class="alert alert-danger">{$fehler}</div>
 {/if}
+{include file='snippets/opc_mount_point.tpl' id='opc_poll_content_prepend'}
+
 {if $oUmfrage->getQuestionCount() > 0}
     <form method="post" action="{if empty($oUmfrage->getURL())}{get_static_route id='umfrage.php'}{else}{$ShopURL}/{$oUmfrage->getURL()}{/if}" class="evo-validate">
         {$jtl_token}

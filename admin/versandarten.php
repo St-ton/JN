@@ -20,7 +20,7 @@ $Versandart         = null;
 $nSteuersatzKey_arr = array_keys($_SESSION['Steuersatz']);
 
 $missingShippingClassCombis = getMissingShippingClassCombi();
-$smarty->assign('missingShippingClassCombis', $getMissingShippingClassCombi);
+$smarty->assign('missingShippingClassCombis', $missingShippingClassCombis);
 
 if (isset($_POST['neu'], $_POST['kVersandberechnung']) &&
     (int)$_POST['neu'] === 1 &&

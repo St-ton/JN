@@ -14,6 +14,7 @@ $kWunschliste     = (RequestHelper::verifyGPCDataInt('wl') > 0 && RequestHelper:
     ? RequestHelper::verifyGPCDataInt('wl') //one of multiple customer wishlists
     : ($cParameter_arr['kWunschliste'] //default wishlist from Shop class
         ?? $cURLID); //public link
+$wishlistTargetID = RequestHelper::verifyGPCDataInt('kWunschlisteTarget');
 $AktuelleSeite    = 'WUNSCHLISTE';
 $cHinweis         = '';
 $cFehler          = '';
@@ -151,27 +152,15 @@ if ($action !== null && isset($_POST['kWunschliste']) && FormHelper::validateTok
             break;
 
         case 'setPublic':
-            if ($userOK === true && isset($_POST['kWunschlisteTarget'])) {
-                $cURLID = uniqid('', true);
-                // Kampagne
-                $oKampagne = new Kampagne(KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
-                if ($oKampagne->kKampagne > 0) {
-                    $cURLID .= '&' . $oKampagne->cParameter . '=' . $oKampagne->cWert;
-                }
-                $upd               = new stdClass();
-                $upd->nOeffentlich = 1;
-                $upd->cURLID       = $cURLID;
-                Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', (int)$_POST['kWunschlisteTarget'], $upd);
+            if ($userOK === true && $wishlistTargetID !== 0) {
+                Wunschliste::setPublic($wishlistTargetID);
                 $cHinweis .= Shop::Lang()->get('wishlistSetPublic', 'messages');
             }
             break;
 
         case 'setPrivate':
-            if ($userOK === true && isset($_POST['kWunschlisteTarget'])) {
-                $upd               = new stdClass();
-                $upd->nOeffentlich = 0;
-                $upd->cURLID       = '';
-                Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', (int)$_POST['kWunschlisteTarget'], $upd);
+            if ($userOK === true && $wishlistTargetID !== 0) {
+                Wunschliste::setPrivate($wishlistTargetID);
                 $cHinweis .= Shop::Lang()->get('wishlistSetPrivate', 'messages');
             }
             break;
@@ -182,9 +171,9 @@ if ($action !== null && isset($_POST['kWunschliste']) && FormHelper::validateTok
             break;
 
         case 'delete':
-            if ($userOK === true && isset($_POST['kWunschlisteTarget'])) {
-                $cHinweis .= Wunschliste::delete((int)$_POST['kWunschlisteTarget']);
-                if ((int)$_POST['kWunschlisteTarget'] === $kWunschliste) {
+            if ($userOK === true && $wishlistTargetID !== 0) {
+                $cHinweis .= Wunschliste::delete($wishlistTargetID);
+                if ($wishlistTargetID === $kWunschliste) {
                     // the currently active one was deleted, search for a new one
                     $newWishlist = Shop::Container()->getDB()->select('twunschliste', 'kKunde', Session\Session::Customer()->getID());
                     if (isset($newWishlist->kWunschliste)) {
@@ -202,9 +191,9 @@ if ($action !== null && isset($_POST['kWunschliste']) && FormHelper::validateTok
             break;
 
         case 'setAsDefault':
-            if ($userOK === true && isset($_POST['kWunschlisteTarget'])) {
-                $cHinweis .= Wunschliste::setDefault((int)$_POST['kWunschlisteTarget']);
-                $kWunschliste = (int)$_POST['kWunschlisteTarget'];
+            if ($userOK === true && $wishlistTargetID !== 0) {
+                $cHinweis .= Wunschliste::setDefault($wishlistTargetID);
+                $kWunschliste = $wishlistTargetID;
             }
             break;
 

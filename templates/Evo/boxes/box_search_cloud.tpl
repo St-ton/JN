@@ -8,7 +8,7 @@
                 searchcloudTags.push( { text: value.cSuche, weight: value.nAnzahlGesuche, link: 'index.php?qs=' + value.cSuche } );
             } );
 
-            $('.searchcloud').jQCloud(searchcloudTags, {
+            $('#sidebox{$oBox->getID()} .searchcloud').jQCloud(searchcloudTags, {
                 autoResize: true,
                 steps: 7
             } );

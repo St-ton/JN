@@ -21,8 +21,6 @@ $cUploadVerzeichnisKat = PFAD_ROOT . PFAD_NEWSKATEGORIEBILDER;
 $oNewsKategorie_arr    = [];
 $continueWith          = false;
 setzeSprache();
-
-// Tabs
 if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
     $backTab  = RequestHelper::verifyGPDataString('tab');
     $smarty->assign('cTab', $backTab);
@@ -58,7 +56,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0 && FormHe
     $cHinweis .= saveAdminSectionSettings(CONF_NEWS, $_POST, [CACHING_GROUP_OPTION, CACHING_GROUP_NEWS]);
     if (count($Sprachen) > 0) {
         // tnewsmonatspraefix loeschen
-        Shop::Container()->getDB()->query("TRUNCATE tnewsmonatspraefix", \DB\ReturnType::AFFECTED_ROWS);
+        Shop::Container()->getDB()->query('TRUNCATE tnewsmonatspraefix', \DB\ReturnType::AFFECTED_ROWS);
 
         foreach ($Sprachen as $oSpracheTMP) {
             $oNewsMonatsPraefix           = new stdClass();
@@ -367,7 +365,6 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
         if (isset($_POST['kNews']) && is_array($_POST['kNews']) && count($_POST['kNews']) > 0) {
             foreach ($_POST['kNews'] as $kNews) {
                 $kNews = (int)$kNews;
-
                 if ($kNews > 0) {
                     ContentAuthor::getInstance()->clearAuthor('NEWS', $kNews);
                     $oNewsTMP = Shop::Container()->getDB()->select('tnews', 'kNews', $kNews);
@@ -387,11 +384,11 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
                     $dJahr = (int)$oDatum->format('Y');
                     $kSpracheTMP  = (int)$oNewsTMP->kSprache;
                     $oNewsTMP_arr = Shop::Container()->getDB()->query(
-                        "SELECT kNews
+                        'SELECT kNews
                             FROM tnews
-                            WHERE month(dGueltigVon) = " . $dMonat . "
-                                AND year(dGueltigVon) = " . $dJahr . "
-                                AND kSprache = " . $kSpracheTMP,
+                            WHERE month(dGueltigVon) = ' . $dMonat . '
+                                AND year(dGueltigVon) = ' . $dJahr . '
+                                AND kSprache = ' . $kSpracheTMP,
                         \DB\ReturnType::ARRAY_OF_OBJECTS
                     );
                     if (is_array($oNewsTMP_arr) && count($oNewsTMP_arr) === 0) {
@@ -559,9 +556,9 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
                     '" konnte nicht gefunden werden.<br />';
             }
         }
-    } elseif (isset($_POST['newskommentar_freischalten']) &&
-        (int)$_POST['newskommentar_freischalten'] &&
-        !isset($_POST['kommentareloeschenSubmit'])
+    } elseif (isset($_POST['newskommentar_freischalten'])
+        && (int)$_POST['newskommentar_freischalten']
+        && !isset($_POST['kommentareloeschenSubmit'])
     ) { // Kommentare freischalten
         if (is_array($_POST['kNewsKommentar']) && count($_POST['kNewsKommentar']) > 0) {
             foreach ($_POST['kNewsKommentar'] as $kNewsKommentar) {
@@ -591,8 +588,6 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
     }
     if ((isset($_GET['news_editieren']) && (int)$_GET['news_editieren'] === 1) ||
         ($continueWith !== false && $continueWith > 0)) {
-        // News editieren
-//        $oNewsKategorie_arr = holeNewskategorie($_SESSION['kSprache']);
         $oNewsKategorie_arr = News::getAllNewsCategories($_SESSION['kSprache'], true);
         $kNews              = ($continueWith !== false && $continueWith > 0)
             ? $continueWith
@@ -634,9 +629,9 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
                 }
                 // NewskategorieNews
                 $oNewsKategorieNews_arr = \Functional\map(Shop::Container()->getDB()->query(
-                    "SELECT DISTINCT(kNewsKategorie)
+                    'SELECT DISTINCT(kNewsKategorie)
                         FROM tnewskategorienews
-                        WHERE kNews = " . (int)$oNews->kNews,
+                        WHERE kNews = ' . (int)$oNews->kNews,
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 ), function ($e) {
                     return $e->kNewsKategorie;
@@ -686,7 +681,7 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
                             Shop::Container()->getDB()->delete('tnewskommentar', 'kNewsKommentar', (int)$kNewsKommentar);
                         }
 
-                        $cHinweis .= "Ihre markierten Kommentare wurden erfolgreich gelöscht.<br />";
+                        $cHinweis .= 'Ihre markierten Kommentare wurden erfolgreich gelöscht.<br />';
                         $tab = RequestHelper::verifyGPDataString('tab');
                         newsRedirect(empty($tab) ? 'inaktiv' : $tab, $cHinweis, [
                             'news'  => '1',
@@ -695,7 +690,7 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
                             'token' => $_SESSION['jtl_token'],
                         ]);
                     } else {
-                        $cFehler .= "Fehler: Sie müssen mindestens einen Kommentar markieren.<br />";
+                        $cFehler .= 'Fehler: Sie müssen mindestens einen Kommentar markieren.<br />';
                     }
                 }
                 // Newskommentare
@@ -750,7 +745,6 @@ if ($step === 'news_uebersicht') {
 
         $oNewsKommentar_arr[$i]->cNachname = $oKunde->cNachname;
     }
-    // Einstellungen
     $oConfig_arr = Shop::Container()->getDB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_NEWS, '*', 'nSort');
     $configCount = count($oConfig_arr);
     for ($i = 0; $i < $configCount; $i++) {
@@ -817,11 +811,10 @@ if ($step === 'news_uebersicht') {
            ->assign('oPagiKats', $oPagiKats);
 } elseif ($step === 'news_kategorie_erstellen') {
     $oNewsKategorie_arr = News::getAllNewsCategories($_SESSION['kSprache'], true);
-//    $oNewsKategorie_arr = holeNewskategorie($_SESSION['kSprache']);
     $smarty->assign('oNewsKategorie_arr', $oNewsKategorie_arr);
 }
 function flatten(array $array) {
-    $return = array();
+    $return = [];
     array_walk_recursive($array, function($a) use (&$return) { $return[] = $a; });
     return $return;
 }

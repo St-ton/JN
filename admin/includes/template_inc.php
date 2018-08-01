@@ -7,9 +7,9 @@
 /**
  * @param string $cOrdner
  * @param string $eTyp
- * @return mixed
+ * @return bool
  */
-function __switchTemplate($cOrdner, $eTyp = 'standard')
+function __switchTemplate(string $cOrdner, string $eTyp = 'standard')
 {
     $cOrdner   = Shop::Container()->getDB()->escape($cOrdner);
     $oTemplate = Template::getInstance();

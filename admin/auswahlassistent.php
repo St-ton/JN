@@ -118,15 +118,15 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         $cSQLSelect = 'tmerkmal.*';
         $cSQLJoin   = '';
         if ((int)$StdSprache->kSprache !== (int)$_SESSION['kSprache']) {
-            $cSQLSelect = "tmerkmalsprache.*";
-            $cSQLJoin   = " JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
-                            AND tmerkmalsprache.kSprache = " . (int)$_SESSION['kSprache'];
+            $cSQLSelect = 'tmerkmalsprache.*';
+            $cSQLJoin   = ' JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
+                            AND tmerkmalsprache.kSprache = ' . (int)$_SESSION['kSprache'];
         }
         $oMerkmal_arr = Shop::Container()->getDB()->query(
-            "SELECT " . $cSQLSelect . "
+            'SELECT ' . $cSQLSelect . '
                 FROM tmerkmal
-                " . $cSQLJoin . "
-                ORDER BY tmerkmal.nSort",
+                ' . $cSQLJoin . '
+                ORDER BY tmerkmal.nSort',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         $smarty->assign('oMerkmal_arr', $oMerkmal_arr)

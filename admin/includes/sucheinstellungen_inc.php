@@ -69,7 +69,7 @@ function createSearchIndex($index, $create)
 
         try {
             Shop::Container()->getDB()->executeQuery(
-                "UPDATE tsuchcache SET dGueltigBis = DATE_ADD(NOW(), INTERVAL 10 MINUTE)",
+                'UPDATE tsuchcache SET dGueltigBis = DATE_ADD(NOW(), INTERVAL 10 MINUTE)',
                 \DB\ReturnType::QUERYSINGLE
             );
             $res = Shop::Container()->getDB()->executeQuery(

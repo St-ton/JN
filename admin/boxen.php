@@ -74,7 +74,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && FormHe
             $smarty->assign('oEditBox', $oBox)
                    ->assign('revisionData', $revisionData)
                    ->assign('oLink_arr',
-                       Shop::Container()->getDB()->query("SELECT * FROM tlinkgruppe", \DB\ReturnType::ARRAY_OF_OBJECTS)
+                       Shop::Container()->getDB()->query('SELECT * FROM tlinkgruppe', \DB\ReturnType::ARRAY_OF_OBJECTS)
                    );
             break;
 

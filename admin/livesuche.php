@@ -416,24 +416,24 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
 $Sprachen = Sprache::getAllLanguages();
 // Anzahl Suchanfragen
 $nAnzahlSuchanfragen = Shop::Container()->getDB()->query(
-    "SELECT count(*) AS nAnzahl
+    'SELECT count(*) AS nAnzahl
         FROM tsuchanfrage
-        WHERE kSprache = " . (int)$_SESSION['kSprache'] . $cLivesucheSQL->cWhere,
+        WHERE kSprache = ' . (int)$_SESSION['kSprache'] . $cLivesucheSQL->cWhere,
     \DB\ReturnType::SINGLE_OBJECT
 );
 // Anzahl Suchanfrageerfolglos
 $nAnzahlSuchanfrageerfolglos = Shop::Container()->getDB()->query(
-    "SELECT count(*) AS nAnzahl
+    'SELECT count(*) AS nAnzahl
         FROM tsuchanfrageerfolglos
-        WHERE kSprache = " . (int)$_SESSION['kSprache'],
+        WHERE kSprache = ' . (int)$_SESSION['kSprache'],
     \DB\ReturnType::SINGLE_OBJECT
 );
 
 // Anzahl SuchanfragenMapping
 $nAnzahlSuchanfragenMapping = Shop::Container()->getDB()->query(
-    "SELECT count(*) AS nAnzahl
+    'SELECT count(*) AS nAnzahl
         FROM tsuchanfragemapping
-        WHERE kSprache = " . (int)$_SESSION['kSprache'],
+        WHERE kSprache = ' . (int)$_SESSION['kSprache'],
     \DB\ReturnType::SINGLE_OBJECT
 );
 
@@ -468,43 +468,43 @@ if (isset($Suchanfragen->tcSeo) && strlen($Suchanfragen->tcSeo) > 0) {
 unset($Suchanfragen->tcSeo);
 
 $Suchanfragenerfolglos = Shop::Container()->getDB()->query(
-    "SELECT *
+    'SELECT *
         FROM tsuchanfrageerfolglos
-        WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
+        WHERE kSprache = ' . (int)$_SESSION['kSprache'] . '
         ORDER BY nAnzahlGesuche DESC
-        LIMIT " . $oPagiErfolglos->getLimitSQL(),
+        LIMIT ' . $oPagiErfolglos->getLimitSQL(),
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 $Suchanfragenblacklist = Shop::Container()->getDB()->query(
-    "SELECT *
+    'SELECT *
         FROM tsuchanfrageblacklist
-        WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
-        ORDER BY kSuchanfrageBlacklist",
+        WHERE kSprache = ' . (int)$_SESSION['kSprache'] . '
+        ORDER BY kSuchanfrageBlacklist',
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 $Suchanfragenmapping = Shop::Container()->getDB()->query(
-    "SELECT *
+    'SELECT *
         FROM tsuchanfragemapping
-        WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
-        LIMIT " . $oPagiMapping->getLimitSQL(),
+        WHERE kSprache = ' . (int)$_SESSION['kSprache'] . '
+        LIMIT ' . $oPagiMapping->getLimitSQL(),
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 
 // Config holen
 $oConfig_arr = Shop::Container()->getDB()->query(
-    "SELECT *
+    'SELECT *
         FROM teinstellungenconf
-        WHERE kEinstellungenConf IN (" . implode(',', $settingsIDs) . ")
-        ORDER BY nSort",
+        WHERE kEinstellungenConf IN (' . implode(',', $settingsIDs) . ')
+        ORDER BY nSort',
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 $configCount = count($oConfig_arr);
 for ($i = 0; $i < $configCount; $i++) {
     $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->query(
-        "SELECT *
+        'SELECT *
             FROM teinstellungenconfwerte
-            WHERE kEinstellungenConf = " . (int)$oConfig_arr[$i]->kEinstellungenConf . "
-            ORDER BY nSort",
+            WHERE kEinstellungenConf = ' . (int)$oConfig_arr[$i]->kEinstellungenConf . '
+            ORDER BY nSort',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     $oSetValue = Shop::Container()->getDB()->query(

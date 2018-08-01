@@ -53,7 +53,7 @@ class Filter
      * Add a text field to a filter object
      *
      * @param string|array $cTitle - either title-string for this field or a pair of short title and long title
-     * @param string       $cColumn - the column name to be compared
+     * @param string|array $cColumn - the column name to be compared
      * @param int          $nTestOp
      *  0 = custom
      *  1 = contains

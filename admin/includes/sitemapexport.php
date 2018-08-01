@@ -1045,14 +1045,14 @@ function holeGoogleImage($artikel)
     ) {
         $cArtNr = StringHandler::filterXSS($oArtikel->FunktionsAttribute[ART_ATTRIBUT_BILDLINK]);
         $oBild  = Shop::Container()->getDB()->queryPrepared(
-            "SELECT tartikelpict.cPfad
+            'SELECT tartikelpict.cPfad
                 FROM tartikelpict
                 JOIN tartikel 
                     ON tartikel.cArtNr = :artNr
                 WHERE tartikelpict.kArtikel = tartikel.kArtikel
                 GROUP BY tartikelpict.cPfad
                 ORDER BY tartikelpict.nNr
-                LIMIT 1",
+                LIMIT 1',
             ['artNr' => $cArtNr],
             \DB\ReturnType::SINGLE_OBJECT
         );
@@ -1134,32 +1134,30 @@ function baueSitemapReport($nAnzahlURL_arr, $fTotalZeit)
 /**
  * @param int        $kKey
  * @param string     $cKey
- * @param string     $dLetzteAktualisierung
- * @param array      $oSprach_arr
- * @param int        $kSprache
- * @param int        $nArtikelProSeite
+ * @param string     $lastUpdate
+ * @param array      $languages
+ * @param int        $langID
+ * @param int        $productsPerPage
  * @param array|null $config
  * @return array
  */
-function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSprache, $nArtikelProSeite, $config = null)
+function baueExportURL(int $kKey, $cKey, $lastUpdate, $languages, $langID, $productsPerPage, $config = null)
 {
-    $cURL_arr       = [];
-    $params         = [];
-    $kKey           = (int)$kKey;
-
-    Shop::setLanguage($kSprache);
-    $naviFilter = new \Filter\ProductFilter($oSprach_arr, $kSprache, $config);
+    $cURL_arr = [];
+    $params   = [];
+    Shop::setLanguage($langID);
+    $naviFilter = new \Filter\ProductFilter($languages, $langID, $config);
     switch ($cKey) {
         case 'kKategorie':
             $params['kKategorie'] = $kKey;
             $naviFilter->initStates($params);
-            $filterSeo = $naviFilter->getCategory()->getSeo($kSprache);
+            $filterSeo = $naviFilter->getCategory()->getSeo($langID);
             break;
 
         case 'kHersteller':
             $params['kHersteller'] = $kKey;
             $naviFilter->initStates($params);
-            $filterSeo = $naviFilter->getManufacturer()->getSeo($kSprache);
+            $filterSeo = $naviFilter->getManufacturer()->getSeo($langID);
             break;
 
         case 'kSuchanfrage':
@@ -1167,10 +1165,10 @@ function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSpr
             $naviFilter->initStates($params);
             if ($kKey > 0) {
                 $oSuchanfrage = Shop::Container()->getDB()->queryPrepared(
-                    "SELECT cSuche
+                    'SELECT cSuche
                         FROM tsuchanfrage
                         WHERE kSuchanfrage = :ks
-                        ORDER BY kSuchanfrage",
+                        ORDER BY kSuchanfrage',
                     ['ks' => $kKey],
                     \DB\ReturnType::SINGLE_OBJECT
                 );
@@ -1178,31 +1176,31 @@ function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSpr
                     $naviFilter->getSearchQuery()->setID($kKey)->setName($oSuchanfrage->cSuche);
                 }
             }
-            $filterSeo = $naviFilter->getSearchQuery()->getSeo($kSprache);
+            $filterSeo = $naviFilter->getSearchQuery()->getSeo($langID);
             break;
 
         case 'kMerkmalWert':
             $params['kMerkmalWert'] = $kKey;
             $naviFilter->initStates($params);
-            $filterSeo = $naviFilter->getAttributeValue()->getSeo($kSprache);
+            $filterSeo = $naviFilter->getAttributeValue()->getSeo($langID);
             break;
 
         case 'kTag':
             $params['kTag'] = $kKey;
             $naviFilter->initStates($params);
-            $filterSeo = $naviFilter->getTag()->getSeo($kSprache);
+            $filterSeo = $naviFilter->getTag()->getSeo($langID);
             break;
 
         case 'kSuchspecial':
             $params['kSuchspecial'] = $kKey;
             $naviFilter->initStates($params);
-            $filterSeo = $naviFilter->getSearchSpecial()->getSeo($kSprache);
+            $filterSeo = $naviFilter->getSearchSpecial()->getSeo($langID);
             break;
 
         default :
             return $cURL_arr;
     }
-    $oSuchergebnisse = $naviFilter->generateSearchResults(null, false, (int)$nArtikelProSeite);
+    $oSuchergebnisse = $naviFilter->generateSearchResults(null, false, (int)$productsPerPage);
     $shopURL         = Shop::getURL();
     $shopURLSSL      = Shop::getURL(true);
     $search          = [$shopURL . '/', $shopURLSSL . '/'];
@@ -1210,7 +1208,7 @@ function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSpr
     if (($cKey === 'kKategorie' && $kKey > 0) || $oSuchergebnisse->getProductCount() > 0) {
         $cURL_arr[] = makeURL(
             str_replace($search, $replace, $naviFilter->getFilterURL()->getURL()),
-            $dLetzteAktualisierung,
+            $lastUpdate,
             FREQ_WEEKLY,
             PRIO_NORMAL
         );

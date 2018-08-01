@@ -21,8 +21,7 @@ if (isset($_POST['speichern']) && FormHelper::validateToken()) {
         && is_array($_POST['nBis'])
         && count($_POST['nBis']) > 0
     ) {
-        // Tabelle leeren
-        Shop::Container()->getDB()->query("TRUNCATE TABLE tpreisspannenfilter", \DB\ReturnType::AFFECTED_ROWS);
+        Shop::Container()->getDB()->query('TRUNCATE TABLE tpreisspannenfilter', \DB\ReturnType::AFFECTED_ROWS);
         for ($i = 0; $i < 10; $i++) {
             // Neue Werte in die DB einfuegen
             if ((int)$_POST['nVon'][$i] >= 0 && (int)$_POST['nBis'][$i] > 0) {

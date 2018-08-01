@@ -67,26 +67,26 @@ if (isset($_POST['resetEmailvorlage'])
             Shop::Container()->getDB()->delete('tpluginemailvorlagesprache', 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
         } else {
             Shop::Container()->getDB()->query(
-                "DELETE temailvorlage, temailvorlagesprache
+                'DELETE temailvorlage, temailvorlagesprache
                     FROM temailvorlage
                     LEFT JOIN temailvorlagesprache
                         ON temailvorlagesprache.kEmailvorlage = temailvorlage.kEmailvorlage
-                    WHERE temailvorlage.kEmailvorlage = " . (int)$_POST['kEmailvorlage'],
+                    WHERE temailvorlage.kEmailvorlage = ' . (int)$_POST['kEmailvorlage'],
                 \DB\ReturnType::DEFAULT
             );
             Shop::Container()->getDB()->query(
-                "INSERT INTO temailvorlage
+                'INSERT INTO temailvorlage
                     SELECT *
                     FROM temailvorlageoriginal
-                    WHERE temailvorlageoriginal.kEmailvorlage = " . (int)$_POST['kEmailvorlage'],
+                    WHERE temailvorlageoriginal.kEmailvorlage = ' . (int)$_POST['kEmailvorlage'],
                 \DB\ReturnType::DEFAULT
             );
         }
         Shop::Container()->getDB()->query(
-            "INSERT INTO " . $cTableSprache . "
+            'INSERT INTO ' . $cTableSprache . '
                 SELECT *
-                FROM " . $cTableSpracheOriginal . "
-                WHERE " . $cTableSpracheOriginal . ".kEmailvorlage = " . (int)$_POST['kEmailvorlage'],
+                FROM ' . $cTableSpracheOriginal . '
+                WHERE ' . $cTableSpracheOriginal . '.kEmailvorlage = ' . (int)$_POST['kEmailvorlage'],
             \DB\ReturnType::DEFAULT
         );
         $languages = Sprache::getAllLanguages();
@@ -129,9 +129,9 @@ if (isset($_POST['resetEmailvorlage'])
 }
 if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
     $Sprachen                     = Shop::Container()->getDB()->query(
-        "SELECT * 
+        'SELECT * 
             FROM tsprache 
-            ORDER BY cShopStandard DESC, cNameDeutsch",
+            ORDER BY cShopStandard DESC, cNameDeutsch',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     $Emailvorlage                 = Shop::Container()->getDB()->select($cTable, 'kEmailvorlage', (int)$_POST['preview']);
@@ -591,9 +591,9 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
         $oEmailvorlageSprache_arr[$oEmailvorlageSpracheTMP->kSprache] = $oEmailvorlageSpracheTMP;
     }
     $Sprachen = Shop::Container()->getDB()->query(
-        "SELECT * 
+        'SELECT * 
             FROM tsprache 
-            ORDER BY cShopStandard DESC, cNameDeutsch",
+            ORDER BY cShopStandard DESC, cNameDeutsch',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     if (!isset($Emailvorlagesprache) || is_array($Emailvorlagesprache)) {
@@ -692,7 +692,7 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
                 $j = $i + 1;
                 if (strlen($_POST['dateiname_' . $j . '_' . $Sprache->kSprache]) > 0 && strlen($cPDFS_arr[$j - 1]) > 0) {
                     $regs = [];
-                    preg_match("/[A-Za-z0-9_-]+/", $_POST['dateiname_' . $j . '_' . $Sprache->kSprache], $regs);
+                    preg_match('/[A-Za-z0-9_-]+/', $_POST['dateiname_' . $j . '_' . $Sprache->kSprache], $regs);
                     if (strlen($regs[0]) === strlen($_POST['dateiname_' . $j . '_' . $Sprache->kSprache])) {
                         $cDateiname_arr[] = $_POST['dateiname_' . $j . '_' . $Sprache->kSprache];
                     } else {

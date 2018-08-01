@@ -24,7 +24,6 @@ function getWidgets(bool $bActive = true)
             $cClassPath                = PFAD_ROOT . PFAD_ADMIN . 'includes/widgets/' . $cClassFile;
             $oWidget->cNiceTitle       = str_replace(['--', ' '], '-', $oWidget->cTitle);
             $oWidget->cNiceTitle       = strtolower(preg_replace('/[äüöß\(\)\/\\\]/iu', '', $oWidget->cNiceTitle));
-            // Plugin?
             $oPlugin = null;
             if (isset($oWidget->kPlugin) && $oWidget->kPlugin > 0) {
                 $oPlugin    = new Plugin($oWidget->kPlugin);

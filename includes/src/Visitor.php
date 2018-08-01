@@ -112,9 +112,9 @@ class Visitor
      * @return object
      * @since 5.0.0
      */
-    public static function updateVisitorObject($vis, $visId, $szUserAgent, $kBesucherBot)
+    public static function updateVisitorObject($vis, int $visId, $szUserAgent, int $kBesucherBot)
     {
-        $vis->kBesucher         = (int)$visId;
+        $vis->kBesucher         = $visId;
         $vis->cIP               = RequestHelper::getIP();
         $vis->cSessID           = session_id();
         $vis->cID               = md5($szUserAgent . RequestHelper::getIP());
@@ -187,7 +187,7 @@ class Visitor
      * @return int
      * @since 5.0.0
      */
-    public static function refreshCustomerOrderId(int $nCustomerId)
+    public static function refreshCustomerOrderId(int $nCustomerId): int
     {
         $oOrder = Shop::Container()->getDB()->queryPrepared(
             'SELECT `kBestellung` 

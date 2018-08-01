@@ -12,19 +12,15 @@
 function holeTagDetailAnzahl($kTag, $kSprache)
 {
     if ((int)$kTag > 0 && (int)$kSprache > 0) {
-        $oTagArtikel = Shop::Container()->getDB()->query(
-            "SELECT count(*) AS nAnzahl
+        return (int)Shop::Container()->getDB()->query(
+            'SELECT COUNT(*) AS nAnzahl
                 FROM ttagartikel
                 JOIN ttag 
                     ON ttag.kTag = ttagartikel.kTag
-                    AND ttag.kSprache = " . (int)$kSprache . "
-                WHERE ttagartikel.kTag = " . (int)$kTag,
+                    AND ttag.kSprache = ' . (int)$kSprache . '
+                WHERE ttagartikel.kTag = ' . (int)$kTag,
             \DB\ReturnType::SINGLE_OBJECT
-        );
-
-        return isset($oTagArtikel->nAnzahl)
-            ? (int)$oTagArtikel->nAnzahl
-            : 0;
+        )->nAnzahl;
     }
 
     return 0;
@@ -110,11 +106,11 @@ function loescheTagsVomArtikel($kArtikel_arr, int $kTag)
  */
 function flushAffectedArticleCache(array $tagIDs)
 {
-    //get tagged article IDs to invalidate their cache
+    // get tagged article IDs to invalidate their cache
     $_affectedArticles = Shop::Container()->getDB()->query(
-        "SELECT DISTINCT kArtikel
+        'SELECT DISTINCT kArtikel
             FROM ttagartikel
-            WHERE kTag IN (" . implode(', ', $tagIDs) . ")",
+            WHERE kTag IN (' . implode(', ', $tagIDs) . ')',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     if (count($_affectedArticles) > 0) {

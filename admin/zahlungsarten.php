@@ -21,8 +21,9 @@ if (RequestHelper::verifyGPCDataInt('checkNutzbar') === 1) {
 }
 // reset log
 if (($action = RequestHelper::verifyGPDataString('a')) !== ''
+    && $action === 'logreset'
     && ($kZahlungsart = RequestHelper::verifyGPCDataInt('kZahlungsart')) > 0
-    && $action === 'logreset' && FormHelper::validateToken()
+    && FormHelper::validateToken()
 ) {
     $oZahlungsart = Shop::Container()->getDB()->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
 
@@ -31,7 +32,7 @@ if (($action = RequestHelper::verifyGPDataString('a')) !== ''
         $hinweis = 'Der Fehlerlog von ' . $oZahlungsart->cName . ' wurde erfolgreich zurückgesetzt.';
     }
 }
-if (RequestHelper::verifyGPCDataInt('kZahlungsart') > 0 && $action !== 'logreset' && FormHelper::validateToken()) {
+if ($action !== 'logreset' && RequestHelper::verifyGPCDataInt('kZahlungsart') > 0 && FormHelper::validateToken()) {
     $step = 'einstellen';
     if ($action === 'payments') {
         // Zahlungseingaenge
@@ -247,9 +248,9 @@ if ($step === 'einstellen') {
         }
 
         $kundengruppen = Shop::Container()->getDB()->query(
-            "SELECT * 
+            'SELECT * 
                 FROM tkundengruppe 
-                ORDER BY cName",
+                ORDER BY cName',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         $smarty->assign('Conf', $Conf)
@@ -281,8 +282,8 @@ if ($step === 'einstellen') {
         array_walk($kEingang_arr, function (&$i) {
             $i = (int)$i;
         });
-        Shop::Container()->getDB()->query("
-            UPDATE tzahlungseingang
+        Shop::Container()->getDB()->query(
+            "UPDATE tzahlungseingang
                 SET cAbgeholt = 'N'
                 WHERE kZahlungseingang IN (" . implode(',', $kEingang_arr) . ")",
             \DB\ReturnType::QUERYSINGLE
@@ -300,16 +301,16 @@ if ($step === 'einstellen') {
     $oFilter->assemble();
 
     $oZahlungsart        = Shop::Container()->getDB()->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
-    $oZahlunseingang_arr = Shop::Container()->getDB()->query("
-        SELECT ze.*, b.kZahlungsart, b.cBestellNr, k.kKunde, k.cVorname, k.cNachname, k.cMail
+    $oZahlunseingang_arr = Shop::Container()->getDB()->query(
+        'SELECT ze.*, b.kZahlungsart, b.cBestellNr, k.kKunde, k.cVorname, k.cNachname, k.cMail
             FROM tzahlungseingang AS ze
                 JOIN tbestellung AS b
                     ON ze.kBestellung = b.kBestellung
                 JOIN tkunde AS k
                     ON b.kKunde = k.kKunde
-            WHERE b.kZahlungsart = " . $kZahlungsart . "
-                " . ($oFilter->getWhereSQL() !== '' ? " AND " . $oFilter->getWhereSQL() : "") . "
-            ORDER BY dZeit DESC",
+            WHERE b.kZahlungsart = ' . $kZahlungsart . ' ' . 
+        ($oFilter->getWhereSQL() !== '' ? 'AND ' . $oFilter->getWhereSQL() : '') . '
+            ORDER BY dZeit DESC',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     $oPagination         = (new Pagination('payments' . $kZahlungsart))
@@ -337,11 +338,11 @@ if ($step === 'uebersicht') {
     );
     foreach ($oZahlungsart_arr as $oZahlungsart) {
         $oZahlungsart->nEingangAnzahl = (int)Shop::Container()->getDB()->query(
-            "SELECT count(*) AS nAnzahl
+            'SELECT count(*) AS nAnzahl
                 FROM tzahlungseingang AS ze
                     JOIN tbestellung AS b
                         ON ze.kBestellung = b.kBestellung
-                WHERE b.kZahlungsart = " . $oZahlungsart->kZahlungsart,
+                WHERE b.kZahlungsart = ' . $oZahlungsart->kZahlungsart,
             \DB\ReturnType::SINGLE_OBJECT
         )->nAnzahl;
         $oZahlungsart->nLogCount = ZahlungsLog::count($oZahlungsart->cModulId);

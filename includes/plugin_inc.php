@@ -5,20 +5,20 @@
  */
 
 /**
- * @param int   $nHook
- * @param array $args_arr
+ * @param int   $hookID
+ * @param array $args
  */
-function executeHook(int $nHook, $args_arr = [])
+function executeHook(int $hookID, $args = [])
 {
     global $smarty;
 
-    EventDispatcher::getInstance()->fire("shop.hook.{$nHook}", array_merge((array)$nHook, $args_arr));
+    EventDispatcher::getInstance()->fire("shop.hook.{$hookID}", array_merge((array)$hookID, $args));
 
     $hookList = Plugin::getHookList();
-    if (empty($hookList[$nHook]) || !is_array($hookList[$nHook])) {
+    if (empty($hookList[$hookID]) || !is_array($hookList[$hookID])) {
         return;
     }
-    foreach ($hookList[$nHook] as $oPluginTmp) {
+    foreach ($hookList[$hookID] as $oPluginTmp) {
         //try to get plugin instance from registry
         $oPlugin = Shop::get('oplugin_' . $oPluginTmp->kPlugin);
         //not found in registry - create new
@@ -39,13 +39,13 @@ function executeHook(int $nHook, $args_arr = [])
         }
         $cDateiname = $oPluginTmp->cDateiname;
         // Welcher Hook wurde aufgerufen?
-        $oPlugin->nCalledHook = $nHook;
-        if ($nHook === HOOK_SEITE_PAGE_IF_LINKART && $cDateiname === PLUGIN_SEITENHANDLER) {
+        $oPlugin->nCalledHook = $hookID;
+        if ($hookID === HOOK_SEITE_PAGE_IF_LINKART && $cDateiname === PLUGIN_SEITENHANDLER) {
             // Work Around, falls der Hook auf geht => Frontend Link
             include PFAD_ROOT . PFAD_INCLUDES . PLUGIN_SEITENHANDLER;
-        } elseif ($nHook === HOOK_CHECKBOX_CLASS_TRIGGERSPECIALFUNCTION) {
+        } elseif ($hookID === HOOK_CHECKBOX_CLASS_TRIGGERSPECIALFUNCTION) {
             // Work Around, falls der Hook auf geht => CheckBox Trigger Special Function
-            if ((int)$oPlugin->kPlugin === (int)$args_arr['oCheckBox']->oCheckBoxFunktion->kPlugin) {
+            if ((int)$oPlugin->kPlugin === (int)$args['oCheckBox']->oCheckBoxFunktion->kPlugin) {
                 include $oPlugin->cFrontendPfad . $cDateiname;
             }
         } elseif (is_file($oPlugin->cFrontendPfad . $cDateiname)) {
@@ -55,7 +55,7 @@ function executeHook(int $nHook, $args_arr = [])
                 $runData = [
                     'runtime'   => microtime(true) - $start,
                     'timestamp' => microtime(true),
-                    'hookID'    => $nHook,
+                    'hookID'    => $hookID,
                     'runcount'  => 1,
                     'file'      => $oPlugin->cFrontendPfad . $cDateiname
                 ];

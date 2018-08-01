@@ -10,7 +10,7 @@
                 </span>
                 <span class="input-group-wrap last">
                     <select id="{#changeLanguage#}" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
-                        {foreach name=sprachen from=$Sprachen item=sprache}
+                        {foreach $Sprachen as $sprache}
                             <option value="{$sprache->kSprache}" {if $sprache->kSprache==$smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
                         {/foreach}
                     </select>
@@ -86,8 +86,8 @@
                                         <th class="tleft">{#newslettersubscriberemail#}</th>
                                         <th class="tcenter">{#newslettersubscriberdate#}</th>
                                     </tr>
-                                    {foreach name=newsletterletztenempfaenger from=$oNewsletterEmpfaenger_arr item=oNewsletterEmpfaenger}
-                                        <tr class="tab_bg{$smarty.foreach.newsletterletztenempfaenger.iteration%2}">
+                                    {foreach $oNewsletterEmpfaenger_arr as $oNewsletterEmpfaenger}
+                                        <tr class="tab_bg{$oNewsletterEmpfaenger@iteration%2}">
                                             <td class="tleft">
                                                 <input name="kNewsletterEmpfaenger[]" type="checkbox" value="{$oNewsletterEmpfaenger->kNewsletterEmpfaenger}">
                                             </td>
@@ -165,8 +165,8 @@
                                         <th class="tleft">{#newsletterOptInIp#}</th>
                                         <th class="tcenter">{#newsletterOptInDate#}</th>
                                     </tr>
-                                    {foreach name=newsletterabonnenten from=$oAbonnenten_arr item=oAbonnenten}
-                                        <tr class="tab_bg{$smarty.foreach.newsletterabonnenten.iteration%2}">
+                                    {foreach $oAbonnenten_arr as $oAbonnenten}
+                                        <tr class="tab_bg{$oAbonnenten@iteration%2}">
                                             <td class="tleft">
                                                 <input name="kNewsletterEmpfaenger[]" type="checkbox" value="{$oAbonnenten->kNewsletterEmpfaenger}" />
                                             </td>
@@ -252,7 +252,7 @@
                             </span>
                             <span class="input-group-wrap">
                                 <select class="form-control" name="kSprache" id="kSprache">
-                                    {foreach from=$Sprachen item=oSprache}
+                                    {foreach $Sprachen as $oSprache}
                                         <option value="{$oSprache->kSprache}">{$oSprache->cNameDeutsch}</option>
                                     {/foreach}
                                 </select>
@@ -287,9 +287,9 @@
                                         <th class="th-5" style="width: 26%;">{#newsletterqueuecount#}</th>
                                         <th class="th-6" style="width: 26%;">{#newsletterqueuecustomergrp#}</th>
                                     </tr>
-                                    {foreach name=newsletterqueue from=$oNewsletterQueue_arr item=oNewsletterQueue}
+                                    {foreach $oNewsletterQueue_arr as $oNewsletterQueue}
                                         {if isset($oNewsletterQueue->nAnzahlEmpfaenger) && $oNewsletterQueue->nAnzahlEmpfaenger > 0}
-                                            <tr class="tab_bg{$smarty.foreach.newsletterqueue.iteration%2}">
+                                            <tr class="tab_bg{$oNewsletterQueue@iteration%2}">
                                                 <td class="TD1">
                                                     <input name="kNewsletterQueue[]" type="checkbox" value="{$oNewsletterQueue->kNewsletterQueue}">
                                                 </td>
@@ -298,10 +298,10 @@
                                                 <td class="TD4">{$oNewsletterQueue->nLimitN}</td>
                                                 <td class="TD5">{$oNewsletterQueue->nAnzahlEmpfaenger}</td>
                                                 <td class="TD6">
-                                                    {foreach name=kundengruppen from=$oNewsletterQueue->cKundengruppe_arr item=cKundengruppe}
-                                                        {if $cKundengruppe == "0"}Newsletterempf&auml;nger ohne Kundenkonto{if !$smarty.foreach.kundengruppen.last}, {/if}{/if}
-                                                        {foreach name=kundengruppe from=$oKundengruppe_arr item=oKundengruppe}
-                                                            {if $cKundengruppe == $oKundengruppe->kKundengruppe}{$oKundengruppe->cName}{if !$smarty.foreach.kundengruppen.last}, {/if}{/if}
+                                                    {foreach $oNewsletterQueue->cKundengruppe_arr as $cKundengruppe}
+                                                        {if $cKundengruppe == "0"}Newsletterempf&auml;nger ohne Kundenkonto{if !$cKundengruppe@last}, {/if}{/if}
+                                                        {foreach $oKundengruppe_arr as $oKundengruppe}
+                                                            {if $cKundengruppe == $oKundengruppe->kKundengruppe}{$oKundengruppe->cName}{if !$oKundengruppe@last}, {/if}{/if}
                                                         {/foreach}
                                                     {/foreach}
                                                 </td>
@@ -347,8 +347,8 @@
                                         <th class="th-4">{#newsletterdraftStdShort#}</th>
                                         <th class="th-5" style="width: 385px;">{#newsletterdraftoptions#}</th>
                                     </tr>
-                                    {foreach name=newslettervorlage from=$oNewsletterVorlage_arr item=oNewsletterVorlage}
-                                        <tr class="tab_bg{$smarty.foreach.newslettervorlage.iteration%2}">
+                                    {foreach $oNewsletterVorlage_arr as $oNewsletterVorlage}
+                                        <tr class="tab_bg{$oNewsletterVorlage@iteration%2}">
                                             <td class="TD1">
                                                 <input name="kNewsletterVorlage[]" type="checkbox" value="{$oNewsletterVorlage->kNewsletterVorlage}">
                                             </td>
@@ -435,10 +435,10 @@
                                         <th class="th-1">{#newsletterdraftname#}</th>
                                         <th class="th-2">{#newsletterdraftStdPicture#}</th>
                                     </tr>
-                                    {foreach name=newslettervorlagestsd from=$oNewslettervorlageStd_arr item=oNewslettervorlageStd}
-                                        <tr class="tab_bg{$smarty.foreach.newslettervorlagestsd.iteration%2}">
+                                    {foreach $oNewslettervorlageStd_arr as $oNewslettervorlageStd}
+                                        <tr class="tab_bg{$oNewslettervorlageStd@iteration%2}">
                                             <td class="TD1">
-                                                <input name="kNewsletterVorlageStd" id="knvls-{$smarty.foreach.newslettervorlagestsd.iteration}" type="radio" value="{$oNewslettervorlageStd->kNewslettervorlageStd}" /> <label for="knvls-{$smarty.foreach.newslettervorlagestsd.iteration}">{$oNewslettervorlageStd->cName}</label>
+                                                <input name="kNewsletterVorlageStd" id="knvls-{$oNewslettervorlageStd@iteration}" type="radio" value="{$oNewslettervorlageStd->kNewslettervorlageStd}" /> <label for="knvls-{$oNewslettervorlageStd@iteration}">{$oNewslettervorlageStd->cName}</label>
                                             </td>
                                             <td class="TD2" valign="top">{$oNewslettervorlageStd->cBild}</td>
                                         </tr>
@@ -476,8 +476,8 @@
                                         <th class="tleft">{#newsletterqueuecustomergrp#}</th>
                                         <th class="tcenter">{#newsletterhistorydate#}</th>
                                     </tr>
-                                    {foreach name=newsletterhistory from=$oNewsletterHistory_arr item=oNewsletterHistory}
-                                        <tr class="tab_bg{$smarty.foreach.newsletterhistory.iteration%2}">
+                                    {foreach $oNewsletterHistory_arr as $oNewsletterHistory}
+                                        <tr class="tab_bg{$oNewsletterHistory@iteration%2}">
                                             <td class="tleft">
                                                 <input name="kNewsletterHistory[]" type="checkbox" value="{$oNewsletterHistory->kNewsletterHistory}">
                                             </td>

@@ -14,7 +14,7 @@
     <div class="collapse" id="collapseShippingClasses">
         <div class="row">
             {foreach $missingShippingClassCombis as $mscc}
-                <div class="col-xs-12 col-sm-6">{$mscc}</div>
+                <div class="col-xs-12 col-sm-6">[{$mscc}]</div>
             {/foreach}
         </div>
     </div>

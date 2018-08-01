@@ -1265,7 +1265,7 @@ class Warenkorb
 
         if ($bRedirect) {
             $this->setzePositionsPreise();
-            $linkHelper = LinkHelper::getInstance();
+            $linkHelper = Shop::Container()->getLinkService();
             header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php') . '?fillOut=10', true, 303);
             exit;
         }
@@ -1420,7 +1420,7 @@ class Warenkorb
             && !isset($_SESSION['variBoxAnzahl_arr'])
             && $this->config['global']['global_warenkorb_weiterleitung'] === 'Y'
         ) {
-            $linkHelper = LinkHelper::getInstance();
+            $linkHelper = Shop::Container()->getLinkService();
             header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php'), true, 303);
             exit;
         }

@@ -84,11 +84,13 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
 }
 $cCanonicalURL    = $linkHelper->getStaticRoute('pass.php');
 $oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_PASSWORD_VERGESSEN);
+$link             = $linkHelper->getPageLink($kLink);
 $cMetaTitle       = $oMeta->cTitle;
 $cMetaDescription = $oMeta->cDesc;
 $cMetaKeywords    = $oMeta->cKeywords;
 Shop::Smarty()->assign('step', $step)
     ->assign('hinweis', $hinweis)
+    ->assign('Link', $link)
     ->assign('cFehler', $cFehler);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';

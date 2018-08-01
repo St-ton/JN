@@ -5,7 +5,7 @@
  \__ \ | | (__|   < _ | \__ \
  |___/_|_|\___|_|\_(_)/ |___/
  |__/
- Version: 1.8.1
+ Version: 1.9.0
  Author: Ken Wheeler
  Website: http://kenwheeler.github.io
  Docs: http://kenwheeler.github.io/slick
@@ -1015,23 +1015,37 @@
 
         var _ = this;
 
+        // If any child element receives focus within the slider we need to pause the autoplay
         _.$slider
             .off('focus.slick blur.slick')
-            .on('focus.slick blur.slick', '*', function(event) {
+            .on(
+                'focus.slick',
+                '*',
+                function(event) {
+                    var $sf = $(this);
 
-                event.stopImmediatePropagation();
+                    setTimeout(function() {
+                        if( _.options.pauseOnFocus ) {
+                            if ($sf.is(':focus')) {
+                                _.focussed = true;
+                                _.autoPlay();
+                            }
+                        }
+                    }, 0);
+                }
+            ).on(
+            'blur.slick',
+            '*',
+            function(event) {
                 var $sf = $(this);
 
-                setTimeout(function() {
-
-                    if( _.options.pauseOnFocus ) {
-                        _.focussed = $sf.is(':focus');
-                        _.autoPlay();
-                    }
-
-                }, 0);
-
-            });
+                // When a blur occurs on any elements within the slider we become unfocused
+                if( _.options.pauseOnFocus ) {
+                    _.focussed = false;
+                    _.autoPlay();
+                }
+            }
+        );
     };
 
     Slick.prototype.getCurrent = Slick.prototype.slickCurrentSlide = function() {
@@ -1225,13 +1239,25 @@
     Slick.prototype.getSlideCount = function() {
 
         var _ = this,
-            slidesTraversed, swipedSlide, centerOffset;
+            slidesTraversed, swipedSlide, swipeTarget, centerOffset;
 
-        centerOffset = _.options.centerMode === true ? _.slideWidth * Math.floor(_.options.slidesToShow / 2) : 0;
+        centerOffset = _.options.centerMode === true ? Math.floor(_.$list.width() / 2) : 0;
+        swipeTarget = (_.swipeLeft * -1) + centerOffset;
 
         if (_.options.swipeToSlide === true) {
+
             _.$slideTrack.find('.slick-slide').each(function(index, slide) {
-                if (slide.offsetLeft - centerOffset + ($(slide).outerWidth() / 2) > (_.swipeLeft * -1)) {
+
+                var slideOuterWidth, slideOffset, slideRightBoundary;
+                slideOuterWidth = $(slide).outerWidth();
+                slideOffset = slide.offsetLeft;
+                if (_.options.centerMode !== true) {
+                    slideOffset += (slideOuterWidth / 2);
+                }
+
+                slideRightBoundary = slideOffset + (slideOuterWidth);
+
+                if (swipeTarget < slideRightBoundary) {
                     swipedSlide = slide;
                     return false;
                 }
@@ -1326,7 +1352,7 @@
                 if (slideControlIndex !== -1) {
                     var ariaButtonControl = 'slick-slide-control' + _.instanceUid + slideControlIndex
                     if ($('#' + ariaButtonControl).length) {
-                        slide.attr({
+                        $(this).attr({
                             'aria-describedby': ariaButtonControl
                         });
                     }

@@ -1,0 +1,69 @@
+<?xml version='1.0' encoding="ISO-8859-1"?>
+<jtlshop3plugin>
+    <Name>JTL Portlets</Name>
+    <Description>Fügt dem OnPage Composer verschiedene Portlets hinzu.</Description>
+    <Author>JTL-Software-GmbH</Author>
+    <URL>http://www.jtl-software.de</URL>
+    <XMLVersion>100</XMLVersion>
+    <Shop4Version>400</Shop4Version>
+    <PluginID>jtl_portlets</PluginID>
+    <Install>
+        <Version nr="100">
+            <CreateDate>2017-17-10</CreateDate>
+        </Version>
+        <Portlets>
+            <Portlet>
+                <Title>Alert</Title>
+                <Class>Alert</Class>
+                <Group>content</Group>
+                <Active>1</Active>
+            </Portlet>
+        </Portlets>
+        <Blueprints>
+            <Blueprint>
+                <Name>Bild links Text rechts</Name>
+                <JSONFile>image_4_text_8.json</JSONFile>
+            </Blueprint>
+            <Blueprint>
+                <Name>Text links Bild rechts</Name>
+                <JSONFile>text_8_image_4.json</JSONFile>
+            </Blueprint>
+            <Blueprint>
+                <Name>Team mehrspaltig mit Bild</Name>
+                <JSONFile>team_section.json</JSONFile>
+            </Blueprint>
+            <Blueprint>
+                <Name>Person Bild Position Beschr</Name>
+                <JSONFile>team_single.json</JSONFile>
+            </Blueprint>
+            <Blueprint>
+                <Name>Product teaser 2-spaltig</Name>
+                <JSONFile>product_teaser.json</JSONFile>
+            </Blueprint>
+            <Blueprint>
+                <Name>Text Video 2-spaltig</Name>
+                <JSONFile>text_6_video_6.json</JSONFile>
+            </Blueprint>
+            <Blueprint>
+                <Name>Icon Text 4-spaltig</Name>
+                <JSONFile>icon_text_4_cols.json</JSONFile>
+            </Blueprint>
+            <Blueprint>
+                <Name>Price Item</Name>
+                <JSONFile>price_item.json</JSONFile>
+            </Blueprint>
+            <Blueprint>
+                <Name>Price Table</Name>
+                <JSONFile>price_table.json</JSONFile>
+            </Blueprint>
+            <Blueprint>
+                <Name>Flip Cards 4-spaltig</Name>
+                <JSONFile>flip_cards_4_cols.json</JSONFile>
+            </Blueprint>
+            <Blueprint>
+                <Name>FAQ</Name>
+                <JSONFile>faq.json</JSONFile>
+            </Blueprint>
+        </Blueprints>
+    </Install>
+</jtlshop3plugin>

@@ -120,11 +120,11 @@ if (empty($_SESSION['Zahlungsart']->nWaehrendBestellung) || isset($_GET['i'])) {
     }
     $session->cleanUp();
     require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
-    executeHook(HOOK_BESTELLABSCHLUSS_PAGE);
+    executeHook(HOOK_BESTELLABSCHLUSS_PAGE, ['oBestellung' => $bestellung]);
     $smarty->display('checkout/order_completed.tpl');
 } else {
     require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
-    executeHook(HOOK_BESTELLABSCHLUSS_PAGE_ZAHLUNGSVORGANG);
+    executeHook(HOOK_BESTELLABSCHLUSS_PAGE_ZAHLUNGSVORGANG, ['oBestellung' => $bestellung]);
     $smarty->display('checkout/step6_init_payment.tpl');
 }
 

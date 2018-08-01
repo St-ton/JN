@@ -258,13 +258,9 @@ class Session
         $_SESSION['oKategorie_arr']                   = [];
         $_SESSION['kKategorieVonUnterkategorien_arr'] = [];
         $_SESSION['ks']                               = [];
-        $_SESSION['Waehrungen']                       = [];
         $_SESSION['Sprachen']                         = \Sprache::getInstance(false)->gibInstallierteSprachen();
-        $allCurrencies                                = \Shop::Container()->getDB()->selectAll('twaehrung', [], [],
-            'kWaehrung');
-        foreach ($allCurrencies as $currency) {
-            $_SESSION['Waehrungen'][] = new \Currency($currency->kWaehrung);
-        }
+        \Currency::setCurrencies(true);
+
         if (!isset($_SESSION['jtl_token'])) {
             $_SESSION['jtl_token'] = \Shop::Container()->getCryptoService()->randomString(32);
         }

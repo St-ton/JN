@@ -315,29 +315,13 @@ if ($customerID > 0) {
             // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
             $oWunschliste = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $kWunschliste);
             if (isset($oWunschliste->kKunde) && (int)$oWunschliste->kKunde === Session::Customer()->getID()) {
-                // Wurde nOeffentlich verändert
-                if (isset($_REQUEST['nstd']) && FormHelper::validateToken()) {
-                    $nOeffentlich = RequestHelper::verifyGPCDataInt('nstd');
-                    // Wurde nstd auf 1 oder 0 gesetzt?
-                    if ($nOeffentlich === 0) {
-                        $upd               = new stdClass();
-                        $upd->nOeffentlich = 0;
-                        $upd->cURLID       = '';
-                        // nOeffentlich der Wunschliste updaten zu Privat
-                        Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', $kWunschliste, $upd);
+                if (isset($_REQUEST['wlAction']) && FormHelper::validateToken()) {
+                    $wlAction = RequestHelper::verifyGPDataString('wlAction');
+                    if ($wlAction === 'setPrivate') {
+                        Wunschliste::setPrivate($kWunschliste);
                         $cHinweis .= Shop::Lang()->get('wishlistSetPrivate', 'messages');
-                    } elseif ($nOeffentlich === 1) {
-                        $cURLID = uniqid('', true);
-                        // Kampagne
-                        $oKampagne = new Kampagne(KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
-                        if ($oKampagne->kKampagne > 0) {
-                            $cURLID .= '&' . $oKampagne->cParameter . '=' . $oKampagne->cWert;
-                        }
-                        // nOeffentlich der Wunschliste updaten zu öffentlich
-                        $upd               = new stdClass();
-                        $upd->nOeffentlich = 1;
-                        $upd->cURLID       = $cURLID;
-                        Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', $kWunschliste, $upd);
+                    } elseif ($wlAction === 'setPublic') {
+                        Wunschliste::setPublic($kWunschliste);
                         $cHinweis .= Shop::Lang()->get('wishlistSetPublic', 'messages');
                     }
                 }

@@ -34,6 +34,7 @@ $nAktuelleSeite         = (Shop::$kSeite !== null && Shop::$kSeite > 0) ? Shop::
 $oNewsUebersicht_arr    = [];
 $linkHelper             = Shop::Container()->getLinkService();
 $kLink                  = $linkHelper->getSpecialPageLinkKey(LINKTYP_NEWS);
+$link                   = $linkHelper->getPageLink($kLink);
 $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $cUploadVerzeichnis     = PFAD_ROOT . PFAD_NEWSBILDER;
@@ -364,6 +365,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
     Shop::Smarty()->assign('meta_title', $cMetaTitle)
         ->assign('meta_description', $cMetaDescription)
         ->assign('meta_keywords', $cMetaKeywords)
+        ->assign('Link', $link)
         ->display('blog/index.tpl');
     require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';
 } else {

@@ -15,6 +15,7 @@ use Services\JTL\BoxServiceInterface;
 use Services\JTL\CaptchaServiceInterface;
 use Services\JTL\CryptoServiceInterface;
 use Services\JTL\LinkServiceInterface;
+use Services\JTL\NewsServiceInterface;
 use Services\JTL\PasswordServiceInterface;
 use Psr\Log\LoggerInterface;
 
@@ -156,4 +157,11 @@ class Container extends ContainerBase implements DefaultServicesInterface
         return $this->get(\OPC\Locker::class);
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function getNewsService(): NewsServiceInterface
+    {
+        return $this->get(NewsServiceInterface::class);
+    }
 }

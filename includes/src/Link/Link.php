@@ -125,6 +125,7 @@ final class Link extends AbstractLink
      * @var bool
      */
     protected $isActive = false;
+
     /**
      * @var bool
      */

@@ -314,9 +314,10 @@ class UrlHelper
                         : $prefix . '?m=' . $obj->kMerkmalWert . $lang;
 
                 case URLART_NEWS:
-                    return !empty($obj->cSeo)
-                        ? $prefix . $obj->cSeo
-                        : $prefix . '?n=' . $obj->kNews . $lang;
+                    /** @var \News\Item $obj */
+                    return !empty($obj->getSEO())
+                        ? $obj->getURL()
+                        : $prefix . '?n=' . $obj->getID() . $lang;
 
                 case URLART_NEWSMONAT:
                     return !empty($obj->cSeo)

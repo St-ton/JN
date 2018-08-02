@@ -259,14 +259,12 @@ class Controller
                         WHERE tkupon.kKupon = :cid
                             AND tkuponsprache.cISOSprache = :liso
                             AND tkupon.cAktiv = 'Y'
-                            AND (
-                                    tkupon.dGueltigAb <= now() 
-                                    AND (tkupon.dGueltigBis >= now() 
+                            AND (tkupon.dGueltigAb <= now() 
+                                AND (tkupon.dGueltigBis >= now() 
                                     OR tkupon.dGueltigBis = '0000-00-00 00:00:00')
-                                )
-                            AND (
-                                    tkupon.kKundengruppe = -1 
-                                    OR tkupon.kKundengruppe = :cgid)",
+                            )
+                            AND (tkupon.kKundengruppe = -1 
+                                OR tkupon.kKundengruppe = :cgid)",
                     [
                         'cgid' => Session::Customer()->kKundengruppe,
                         'cid'  => $this->survey->getCouponID(),
@@ -274,7 +272,6 @@ class Controller
                     ],
                     ReturnType::SINGLE_OBJECT
                 );
-                // Gültig
                 if ($oKupon->kKupon > 0) {
                     $msg = \sprintf(\Shop::Lang()->get('pollCoupon', 'messages'), $oKupon->cCode);
                 } else {
@@ -290,7 +287,6 @@ class Controller
                     \Shop::Lang()->get('pollCredit', 'messages'),
                     \Preise::getLocalizedPriceString($this->survey->getCredits())
                 );
-                // Kunde Guthaben gutschreiben
                 if (!$this->updateCustomerCredits($this->survey->getCredits(), $_SESSION['Kunde']->kKunde)) {
                     \Shop::Container()->getLogService()->error(\sprintf(
                         'Umfragebelohnung: Guthaben konnte nicht verrechnet werden. Kunde: %s',

@@ -81,90 +81,31 @@ function baueFilterSQL($bActiveOnly = false)
  * @param int    $kNews
  * @param array  $Einstellungen
  * @return array
+ * @deprecated since 5.0.0
  */
 function pruefeKundenKommentar($cKommentar, $cName = '', $cEmail = '', $kNews, $Einstellungen)
 {
-    $nPlausiValue_arr = [];
-    $conf             = Shop::getSettings([CONF_NEWS]);
-    // Kommentar prüfen
-    if (strlen($cKommentar) === 0) {
-        $nPlausiValue_arr['cKommentar'] = 1;
+    trigger_error(__METHOD__ . ' is deprecated. Use \News\Controller::checkComment() instead.', E_USER_DEPRECATED);
+    if (!isset($_POST['cEmail'])) {
+        $_POST['cEmail'] = $cEmail;
     }
-    if (strlen($cKommentar) > 1000) {
-        $nPlausiValue_arr['cKommentar'] = 2;
+    if (!isset($_POST['cName'])) {
+        $_POST['cName'] = $cEmail;
     }
-    if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0 && $kNews > 0) {
-        // Kunde ist eingeloggt
-        $oNewsKommentar = Shop::Container()->getDB()->query(
-            'SELECT COUNT(*) AS nAnzahl
-                FROM tnewskommentar
-                WHERE kNews = ' . (int)$kNews . '
-                    AND kKunde = ' . (int)$_SESSION['Kunde']->kKunde,
-            \DB\ReturnType::SINGLE_OBJECT
-        );
+    $_POST['cKommentar'] = $cKommentar;
 
-        if ($oNewsKommentar->nAnzahl > (int)$Einstellungen['news']['news_kommentare_anzahlprobesucher']
-            && (int)$Einstellungen['news']['news_kommentare_anzahlprobesucher'] !== 0
-        ) {
-            $nPlausiValue_arr['nAnzahl'] = 1;
-        }
-
-        $cEmail = $_SESSION['Kunde']->cMail;
-    } else {
-        // Kunde ist nicht eingeloggt - Name prüfen
-        if (strlen($cName) === 0) {
-            $nPlausiValue_arr['cName'] = 1;
-        }
-        // Email prüfen
-        if (StringHandler::filterEmailAddress($cEmail) === false) {
-            $nPlausiValue_arr['cEmail'] = 1;
-        }
-        if (isset($conf['news']['news_sicherheitscode'])
-            && $conf['news']['news_sicherheitscode'] !== 'N'
-            && !FormHelper::validateCaptcha($_POST)
-        ) {
-            $nPlausiValue_arr['captcha'] = 2;
-        }
-    }
-    if ((!isset($nPlausiValue_arr['cName']) || !$nPlausiValue_arr['cName']) && SimpleMail::checkBlacklist($cEmail)) {
-        $nPlausiValue_arr['cEmail'] = 2;
-    }
-
-    return $nPlausiValue_arr;
+    return \News\Controller::checkComment($_POST, (int)$kNews, $Einstellungen);
 }
 
 /**
  * @param array $nPlausiValue_arr
  * @return string
+ * @deprecated since 5.0.0
  */
 function gibNewskommentarFehler($nPlausiValue_arr)
 {
-    $cFehler = '';
-    if (isset($nPlausiValue_arr['cKommentar'])) {
-        // Kommentarfeld ist leer
-        if ($nPlausiValue_arr['cKommentar'] == 1) {
-            $cFehler .= Shop::Lang()->get('newscommentMissingtext', 'errorMessages') . '<br />';
-        } elseif ($nPlausiValue_arr['cKommentar'] == 2) {
-            // Kommentar ist länger als 1000 Zeichen
-            $cFehler .= Shop::Lang()->get('newscommentLongtext', 'errorMessages') . '<br />';
-        }
-    }
-    // Kunde hat bereits einen Newskommentar zu der aktuellen News geschrieben
-    if (isset($nPlausiValue_arr['nAnzahl']) && $nPlausiValue_arr['nAnzahl'] == 1) {
-        $cFehler .= Shop::Lang()->get('newscommentAlreadywritten', 'errorMessages') . '<br />';
-    }
-    // Kunde ist nicht eingeloggt und das Feld Name oder Email ist leer
-    if ((isset($nPlausiValue_arr['cName']) && $nPlausiValue_arr['cName'] == 1) ||
-        (isset($nPlausiValue_arr['cEmail']) && $nPlausiValue_arr['cEmail'] == 1)
-    ) {
-        $cFehler .= Shop::Lang()->get('newscommentMissingnameemail', 'errorMessages') . '<br />';
-    }
-    // Emailadresse ist auf der Blacklist
-    if (isset($nPlausiValue_arr['cEmail']) && $nPlausiValue_arr['cEmail'] == 2) {
-        $cFehler .= Shop::Lang()->get('kwkEmailblocked', 'errorMessages') . '<br />';
-    }
-
-    return $cFehler;
+    trigger_error(__METHOD__ . ' is deprecated. Use \News\Controller::getCommentErrors() instead.', E_USER_DEPRECATED);
+    return \News\Controller::getCommentErrors($nPlausiValue_arr);
 }
 
 /**
@@ -340,6 +281,7 @@ function baueNewsMetaDescription($oNewsNaviFilter, $oNewsUebersicht_arr)
  * @param object $oNewsNaviFilter
  * @param array  $oNewsUebersicht_arr
  * @return string
+ * @deprecated since 5.0.0
  */
 function baueNewsMetaKeywords($oNewsNaviFilter, $oNewsUebersicht_arr)
 {

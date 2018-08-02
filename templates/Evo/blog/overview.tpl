@@ -12,15 +12,14 @@
 <div class="well well-sm">
     <form id="frm_filter" name="frm_filter" action="{get_static_route id='news.php'}" method="post" class="form-inline text-center">
         {$jtl_token}
-
         <select name="nSort" onchange="this.form.submit();" class="form-control form-group" aria-label="{lang key='newsSort' section='news'}">
-            <option value="-1"{if $nSort == -1} selected{/if}>{lang key='newsSort' section='news'}</option>
-            <option value="1"{if $nSort == 1} selected{/if}>{lang key='newsSortDateDESC' section='news'}</option>
-            <option value="2"{if $nSort == 2} selected{/if}>{lang key='newsSortDateASC' section='news'}</option>
-            <option value="3"{if $nSort == 3} selected{/if}>{lang key='newsSortHeadlineASC' section='news'}</option>
-            <option value="4"{if $nSort == 4} selected{/if}>{lang key='newsSortHeadlineDESC' section='news'}</option>
-            <option value="5"{if $nSort == 5} selected{/if}>{lang key='newsSortCommentsDESC' section='news'}</option>
-            <option value="6"{if $nSort == 6} selected{/if}>{lang key='newsSortCommentsASC' section='news'}</option>
+            <option value="-1"{if $nSort === -1} selected{/if}>{lang key='newsSort' section='news'}</option>
+            <option value="1"{if $nSort === 1} selected{/if}>{lang key='newsSortDateDESC' section='news'}</option>
+            <option value="2"{if $nSort === 2} selected{/if}>{lang key='newsSortDateASC' section='news'}</option>
+            <option value="3"{if $nSort === 3} selected{/if}>{lang key='newsSortHeadlineASC' section='news'}</option>
+            <option value="4"{if $nSort === 4} selected{/if}>{lang key='newsSortHeadlineDESC' section='news'}</option>
+            <option value="5"{if $nSort === 5} selected{/if}>{lang key='newsSortCommentsDESC' section='news'}</option>
+            <option value="6"{if $nSort === 6} selected{/if}>{lang key='newsSortCommentsASC' section='news'}</option>
         </select>
 
         <select name="cDatum" onchange="this.form.submit();" class="form-control form-group" aria-label="{lang key='newsDateFilter' section='news'}">

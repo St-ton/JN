@@ -11,23 +11,28 @@
 {else}
     {include file='snippets/opc_mount_point.tpl' id='opc_news_article_prepend'}
     <article itemprop="mainEntity" itemscope itemtype="https://schema.org/BlogPosting">
-        <meta itemprop="mainEntityOfPage" content="{$ShopURL}/{$oNewsArchiv->cSeo}">
+        <meta itemprop="mainEntityOfPage" content="{$oNewsArchiv->getURL()}">
         <h1 itemprop="headline">
-            {$oNewsArchiv->cBetreff}
+            {$oNewsArchiv->getTitle()}
         </h1>
-        {if isset({$oNewsArchiv->cPreviewImage})}
-            <meta itemprop="image" content="{$imageBaseURL}{$oNewsArchiv->cPreviewImage}">
+        {if $oNewsArchiv->getPreviewImage() !== ''}
+            <meta itemprop="image" content="{$imageBaseURL}{$oNewsArchiv->getPreviewImage()}">
         {/if}
         <div class="author-meta text-muted bottom10">
-            {if empty($oNewsArchiv->dGueltigVon)}{assign var=dDate value=$oNewsArchiv->dErstellt}{else}{assign var=dDate value=$oNewsArchiv->dGueltigVon}{/if}
+            {if empty($oNewsArchiv->getDateValidFrom())}
+                {assign var=dDate value=$oNewsArchiv->getDateCreated()->format('Y-m-d H:i:s')}
+            {else}
+                {assign var=dDate value=$oNewsArchiv->getDateValidFrom()->format('Y-m-d H:i:s')}
+
+                {/if}
             {if !empty($oNewsArchiv->oAuthor)}
-                {include file='snippets/author.tpl' oAuthor=$oNewsArchiv->oAuthor dDate=$dDate cDate=$oNewsArchiv->dGueltigVon_de}
+                {include file='snippets/author.tpl' oAuthor=$oNewsArchiv->oAuthor dDate=$dDate cDate=$oNewsArchiv->getDateValidFrom()->format('Y-m-d H:i:s')}
             {else}
                 <div itemprop="author publisher" itemscope itemtype="http://schema.org/Organization" class="hidden">
                     <span itemprop="name">{$meta_publisher}</span>
                     <meta itemprop="logo" content="{$imageBaseURL}{$ShopLogoURL}" />
                 </div>
-                <time itemprop="datePublished" datetime="{$dDate}" class="hidden">{$dDate}</time><span class="creation-date">{$oNewsArchiv->dGueltigVon_de}</span>
+                <time itemprop="datePublished" datetime="{$dDate}" class="hidden">{$dDate}</time><span class="creation-date">{$oNewsArchiv->getDateValidFrom()->format('Y-m-d H:i:s')}</span>
             {/if}
             <time itemprop="datePublished" datetime="{$dDate}" class="hidden">{$dDate}</time>
             {if isset($oNewsArchiv->dErstellt)}<time itemprop="dateModified" class="hidden">{$oNewsArchiv->dErstellt}</time>{/if}
@@ -36,7 +41,7 @@
         {include file='snippets/opc_mount_point.tpl' id='opc_news_content_prepend'}
         <div itemprop="articleBody" class="row">
             <div class="col-xs-12">
-                {$oNewsArchiv->cText}
+                {$oNewsArchiv->getContent()}
             </div>
         </div>
         {include file='snippets/opc_mount_point.tpl' id='opc_news_content_append'}
@@ -51,12 +56,12 @@
 
         {if isset($Einstellungen.news.news_kommentare_nutzen) && $Einstellungen.news.news_kommentare_nutzen === 'Y'}
             {if $oNewsKommentar_arr|@count > 0}
-                {if !empty($oNewsArchiv->cSeo)}
-                    {assign var=articleURL value=$ShopURL|cat:'/'|cat:$oNewsArchiv->cSeo}
+                {if $oNewsArchiv->getURL() !== ''}
+                    {assign var=articleURL value=$oNewsArchiv->getURL()}
                     {assign var=cParam_arr value=[]}
                 {else}
                     {assign var=articleURL value='news.php'}
-                    {assign var=cParam_arr value=['kNews'=>$oNewsArchiv->kNews,'n'=>$oNewsArchiv->kNews]}
+                    {assign var=cParam_arr value=['kNews'=>$oNewsArchiv->getID(),'n'=>$oNewsArchiv->getID()]}
                 {/if}
                 <hr>
                 <div class="top10" id="comments">
@@ -64,19 +69,20 @@
                     {foreach $oNewsKommentar_arr as $oNewsKommentar}
                         <blockquote class="news-comment">
                             <p itemprop="comment">
-                                {$oNewsKommentar->cKommentar}
+                                {$oNewsKommentar->getText()}
                             </p>
                             <small>
-                                {if !empty($oNewsKommentar->cVorname)}
-                                    {$oNewsKommentar->cVorname} {$oNewsKommentar->cNachname|truncate:1:''}.,
-                                {else}
-                                    {$oNewsKommentar->cName},
-                                {/if}
-                                {if $smarty.session.cISOSprache === 'ger'}
-                                    {$oNewsKommentar->dErstellt_de}
-                                {else}
-                                    {$oNewsKommentar->dErstellt}
-                                {/if}
+                                {*{if !empty($oNewsKommentar->cVorname)}*}
+                                    {*{$oNewsKommentar->cVorname} {$oNewsKommentar->cNachname|truncate:1:''}.,*}
+                                {*{else}*}
+                                    {$oNewsKommentar->getName()},
+                                {*{/if}*}
+                                {*{if $smarty.session.cISOSprache === 'ger'}*}
+                                    {*{$oNewsKommentar->dErstellt_de}*}
+                                {*{else}*}
+                                    {*{$oNewsKommentar->dErstellt}*}
+                                {*{/if}*}
+                                {$oNewsKommentar->getDateCreated()->format('d.m.y H:i')}
                             </small>
                         </blockquote>
                     {/foreach}
@@ -92,11 +98,11 @@
                             <div class="panel panel-default">
                                 <div class="panel-heading"><h4 class="panel-title">{lang key='newsCommentAdd' section='news'}</h4></div>
                                 <div class="panel-body">
-                                    <form method="post" action="{if !empty($oNewsArchiv->cSeo)}{$ShopURL}/{$oNewsArchiv->cSeo}{else}{get_static_route id='news.php'}{/if}" class="form evo-validate" id="news-addcomment">
+                                    <form method="post" action="{if !empty($oNewsArchiv->getSEO())}{$oNewsArchiv->getURL()}{else}{get_static_route id='news.php'}{/if}" class="form evo-validate" id="news-addcomment">
                                         {$jtl_token}
-                                        <input type="hidden" name="kNews" value="{$oNewsArchiv->kNews}" />
+                                        <input type="hidden" name="kNews" value="{$oNewsArchiv->getID()}" />
                                         <input type="hidden" name="kommentar_einfuegen" value="1" />
-                                        <input type="hidden" name="n" value="{$oNewsArchiv->kNews}" />
+                                        <input type="hidden" name="n" value="{$oNewsArchiv->getID()}" />
 
                                         <fieldset>
                                             {if $Einstellungen.news.news_kommentare_eingeloggt === 'N'}

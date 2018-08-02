@@ -528,9 +528,9 @@ class News extends MainModel
         {
             $oNewsCategories = Shop::Container()->getDB()->query(
                 "SELECT *, DATE_FORMAT(dLetzteAktualisierung, '%d.%m.%Y %H:%i') AS dLetzteAktualisierung_de
-            FROM tnewskategorie
-            WHERE kSprache = " . $kSprache . ($showOnlyActive ? ' AND nAktiv = 1 ' : '') . "
-            ORDER BY nSort ASC",
+                    FROM tnewskategorie
+                    WHERE kSprache = " . $kSprache . ($showOnlyActive ? ' AND nAktiv = 1 ' : '') . "
+                    ORDER BY nSort ASC",
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             $oNewsCategories     = is_array($oNewsCategories) ? $oNewsCategories : [];

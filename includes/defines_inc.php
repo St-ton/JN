@@ -42,7 +42,6 @@ define('CONF_TRUSTEDSHOPS', 117);
 define('CONF_SUCHSPECIAL', 119);
 define('CONF_CHECKBOX', 120);
 define('CONF_AUSWAHLASSISTENT', 121);
-define('CONF_RMA', 122);
 define('CONF_CACHING', 124);
 define('CONF_LOGO', 125);
 define('CONF_PLUGINZAHLUNGSARTEN', 126);
@@ -123,7 +122,6 @@ define('MAILTEMPLATE_KUNDENWERBENKUNDEN', 'core_jtl_kundenwerbenkunden');
 define('MAILTEMPLATE_KUNDENWERBENKUNDENBONI', 'core_jtl_kundenwerbenkundenboni');
 define('MAILTEMPLATE_STATUSEMAIL', 'core_jtl_statusemail');
 define('MAILTEMPLATE_CHECKBOX_SHOPBETREIBER', 'core_jtl_checkbox_shopbetreiber');
-define('MAILTEMPLATE_RMA_ABGESENDET', 'core_jtl_rma_submitted');
 define('MAILTEMPLATE_BEWERTUNG_GUTHABEN', 'core_jtl_bewertung_guthaben');
 define('MAILTEMPLATE_BESTELLUNG_TEILVERSANDT', 'core_jtl_bestellung_teilversandt');
 define('MAILTEMPLATE_ANBIETERKENNZEICHNUNG', 'core_jtl_anbieterkennzeichnung');
@@ -189,7 +187,6 @@ define('LINKTYP_WRB', 24);
 define('LINKTYP_PLUGIN', 25);
 define('LINKTYP_AUSWAHLASSISTENT', 26);
 define('LINKTYP_IMPRESSUM', 27);
-define('LINKTYP_RMA', 28);
 define('LINKTYP_404', 29);
 define('LINKTYP_BATTERIEGESETZ_HINWEISE', 30);
 define('LINKTYP_WRB_FORMULAR', 31);
@@ -293,7 +290,6 @@ define('R_UNVERKAEUFLICH', 15);
 define('R_AUFANFRAGE', 16);
 define('R_EMPTY_TAG', 17);
 define('R_EMPTY_VARIBOX', 18);
-define('R_LOGIN_RMA', 19);
 // Kategorietiefe
 // 0 = Aus
 // 1 = Tiefe 0 (Hauptkategorien)
@@ -368,7 +364,6 @@ define('PAGE_NEWSARCHIV', 30); // Newsarchiv
 define('PAGE_EIGENE', 31); // Eigene Seite
 define('PAGE_AUSWAHLASSISTENT', 32); // Auswahlassistent
 define('PAGE_BESTELLABSCHLUSS', 33); // Bestellabschluss
-define('PAGE_RMA', 34); // Warenruecksendung
 define('PAGE_404', 36);
 define('PAGE_IO', 37);
 define('PAGE_BESTELLSTATUS', 38);
@@ -465,9 +460,6 @@ define('JTLSEPARATER_AMOUNT', 3);
 define('JTL_SEPARATOR_WEIGHT', 1);
 define('JTL_SEPARATOR_LENGTH', 2);
 define('JTL_SEPARATOR_AMOUNT', 3);
-// Globale Arten von generierte Nummern (z.b. Bestellnummer)
-define('JTL_GENNUMBER_ORDERNUMBER', 1);
-define('JTL_GENNUMBER_RMANUMBER', 2);
 // JTL Support Email
 define('JTLSUPPORT_EMAIL', 'support@jtl-software.de');
 // JTL URLS

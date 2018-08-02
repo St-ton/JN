@@ -71,8 +71,7 @@ final class BoxAdmin
         PAGE_NEWSARCHIV,
         PAGE_EIGENE,
         PAGE_AUSWAHLASSISTENT,
-        PAGE_BESTELLABSCHLUSS,
-        PAGE_RMA
+        PAGE_BESTELLABSCHLUSS
     ];
 
     /**

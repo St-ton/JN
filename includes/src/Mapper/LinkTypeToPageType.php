@@ -70,8 +70,6 @@ class LinkTypeToPageType
             case LINKTYP_IMPRESSUM:
             case LINKTYP_BATTERIEGESETZ_HINWEISE:
                 return PAGE_EIGENE;
-            case LINKTYP_RMA:
-                return PAGE_RMA;
             case LINKTYP_404:
                 return PAGE_404;
             case LINKTYP_WRB_FORMULAR:

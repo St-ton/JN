@@ -80,8 +80,7 @@ abstract class AbstractBox implements BoxInterface
         PAGE_NEWSARCHIV,
         PAGE_EIGENE,
         PAGE_AUSWAHLASSISTENT,
-        PAGE_BESTELLABSCHLUSS,
-        PAGE_RMA
+        PAGE_BESTELLABSCHLUSS
     ];
 
     /**

@@ -4,7 +4,7 @@
  */
 
 var log = console.log;
-var debugging = true;
+var debugging = false;
 var localDateFormat = 'DD.MM.YYYY HH:mm';
 var internalDateFormat = 'YYYY-MM-DD HH:mm:ss';
 

@@ -130,15 +130,16 @@ class Video extends \OPC\Portlet
                 'dspl_width' => 50,
             ],
             'video-yt-color'    => [
-                'label'      => 'Farbe',
-                'type'       => 'radio',
-                'inline'     => true,
-                'options'    => [
+                'label'        => 'Farbe',
+                'type'         => 'radio',
+                'inline'       => true,
+                'options'      => [
                     'white' => 'weiß',
                     'red'   => 'rot',
                 ],
-                'default'    => 'white',
-                'dspl_width' => 50,
+                'default'      => 'white',
+                'dspl_width'   => 50,
+                'color-format' => '#',
             ],
             'video-yt-playlist' => [
                 'label'              => 'Playlist',

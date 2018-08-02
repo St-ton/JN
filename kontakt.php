@@ -13,6 +13,7 @@ $AktuelleSeite = 'KONTAKT';
 $Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_KONTAKTFORMULAR]);
 $linkHelper    = Shop::Container()->getLinkService();
 $kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_KONTAKT);
+$link          = $linkHelper->getPageLink($kLink);
 //hole alle OberKategorien
 $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
@@ -104,7 +105,8 @@ if (FormHelper::checkSubject()) {
     $SpezialContent = new stdClass();
 }
 
-Shop::Smarty()->assign('Spezialcontent', $SpezialContent);
+Shop::Smarty()->assign('Link', $link)
+              ->assign('Spezialcontent', $SpezialContent);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_KONTAKT_PAGE);

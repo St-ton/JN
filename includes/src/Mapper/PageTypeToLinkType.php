@@ -65,8 +65,6 @@ class PageTypeToLinkType
                 return \LINKTYP_PLUGIN;
             case \PAGE_AUSWAHLASSISTENT:
                 return \LINKTYP_AUSWAHLASSISTENT;
-            case \PAGE_RMA:
-                return \LINKTYP_RMA;
             case \PAGE_404:
                 return \LINKTYP_404;
             case \PAGE_BESTELLVORGANG:

@@ -40,6 +40,7 @@ $nAktuelleSeite         = (Shop::$kSeite !== null && Shop::$kSeite > 0) ? Shop::
 $oNewsUebersicht_arr    = [];
 $linkHelper             = Shop::Container()->getLinkService();
 $kLink                  = $linkHelper->getSpecialPageLinkKey(LINKTYP_NEWS);
+$link                   = $linkHelper->getPageLink($kLink);
 $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $cUploadVerzeichnis     = PFAD_ROOT . PFAD_NEWSBILDER;

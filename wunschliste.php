@@ -277,6 +277,7 @@ if (Session\Session::Customer()->getID() > 0) {
 Shop::Smarty()->assign('CWunschliste', $CWunschliste)
     ->assign('oWunschliste_arr', $oWunschliste_arr)
     ->assign('wlsearch', $cSuche)
+    ->assign('Link', $link)
     ->assign('hasItems', !empty($CWunschliste->CWunschlistePos_arr))
     ->assign('isCurrenctCustomer', isset($CWunschliste->kKunde)
         && (int)$CWunschliste->kKunde === Session\Session::Customer()->getID())

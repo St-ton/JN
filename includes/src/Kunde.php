@@ -769,7 +769,7 @@ class Kunde
             return false;
         }
         $key        = $cryptoService->randomString(32);
-        $linkHelper = LinkHelper::getInstance();
+        $linkHelper = Shop::Container()->getLinkService();
         $expires    = new DateTime();
         $interval   = new DateInterval('P1D');
         $expires->add($interval);

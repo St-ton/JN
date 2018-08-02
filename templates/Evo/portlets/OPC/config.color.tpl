@@ -4,7 +4,7 @@
 </div>
 <script>
     $('#{$propname}').colorpicker({
-        format: 'rgba',
+        format: '{$colorFormat}',
         colorSelectors: {
             '#ffffff': '#ffffff',
             '#777777': '#777777',

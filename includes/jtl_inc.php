@@ -83,16 +83,6 @@ function gibRedirect(int $code)
             $redirect->cURL             = '?u=' . RequestHelper::verifyGPCDataInt('u');
             $redirect->cName            = Shop::Lang()->get('poll', 'redirect');
             break;
-        case R_LOGIN_RMA:
-            $redirect->oParameter_arr   = [];
-            $oTMP                       = new stdClass();
-            $oTMP->Name                 = 's';
-            $oTMP->Wert                 = RequestHelper::verifyGPCDataInt('s');
-            $redirect->oParameter_arr[] = $oTMP;
-            $redirect->nRedirect        = R_LOGIN_RMA;
-            $redirect->cURL             = '?s=' . RequestHelper::verifyGPCDataInt('s');
-            $redirect->cName            = Shop::Lang()->get('rma', 'redirect');
-            break;
         default:
             break;
     }

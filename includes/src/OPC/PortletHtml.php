@@ -76,6 +76,7 @@ trait PortletHtml
      */
     final protected function getFinalHtmlFromTpl($instance): string
     {
+
         return \Shop::Smarty()
                     ->assign('portlet', $this)
                     ->assign('instance', $instance)
@@ -319,10 +320,11 @@ trait PortletHtml
                 break;
             case 'color':
                 $res .= $this->getConfigPanelSnippet($instance, 'color', [
-                    'prop'     => $prop,
-                    'propname' => $propname,
-                    'required' => $propDesc['required'],
-                    'class'    => $class,
+                    'prop'        => $prop,
+                    'propname'    => $propname,
+                    'required'    => $propDesc['required'],
+                    'class'       => $class,
+                    'colorFormat' => $propDesc['color-format'] ?? 'rgba',
                 ]);
                 break;
             case 'filter':

@@ -782,12 +782,14 @@ $oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_LOGIN);
 $cMetaTitle       = $oMeta->cTitle;
 $cMetaDescription = $oMeta->cDesc;
 $cMetaKeywords    = $oMeta->cKeywords;
+$link             = $linkHelper->getPageLink($kLink);
 Shop::Smarty()
     ->assign('bewertungen', $ratings)
     ->assign('cHinweis', $cHinweis)
     ->assign('cFehler', $cFehler)
     ->assign('hinweis', $cHinweis)
     ->assign('step', $step)
+    ->assign('Link', $link)
     ->assign('BESTELLUNG_STATUS_BEZAHLT', BESTELLUNG_STATUS_BEZAHLT)
     ->assign('BESTELLUNG_STATUS_VERSANDT', BESTELLUNG_STATUS_VERSANDT)
     ->assign('BESTELLUNG_STATUS_OFFEN', BESTELLUNG_STATUS_OFFEN)

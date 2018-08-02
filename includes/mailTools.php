@@ -459,13 +459,6 @@ function sendeMail($ModulId, $Object, $mail = null)
             $Emailvorlage->cBetreff = $Object->oCheckBox->cName .
                 ' - ' . $subjectLineCustomer;
             break;
-
-        case MAILTEMPLATE_RMA_ABGESENDET:
-            if (method_exists($Object->oRMA, 'getRMANumber')) {
-                $Emailvorlage->cBetreff = $Object->tfirma->cName . ' ' . $Object->oRMA->getRMANumber();
-            }
-            $mailSmarty->assign('oRMA', $Object->oRMA);
-            break;
         case MAILTEMPLATE_BEWERTUNG_GUTHABEN:
             $waehrung = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
 

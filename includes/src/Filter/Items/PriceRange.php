@@ -163,7 +163,7 @@ class PriceRange extends AbstractFilter
      */
     public function init($id): FilterInterface
     {
-        if ($id === null) {
+        if (empty($id)) {
             $id = '0_0';
         }
         list($start, $end) = \explode('_', $id);

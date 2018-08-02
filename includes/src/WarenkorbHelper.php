@@ -627,7 +627,7 @@ class WarenkorbHelper
      */
     private static function checkWishlist(int $productID, $qty, $redirect)
     {
-        $linkHelper = LinkHelper::getInstance();
+        $linkHelper = Shop::Container()->getLinkService();
         // Prüfe ob Kunde eingeloggt
         if (!isset($_SESSION['Kunde']->kKunde) && !isset($_POST['login'])) {
             //redirekt zum artikel, um variation/en zu wählen / MBM beachten

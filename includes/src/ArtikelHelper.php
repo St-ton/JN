@@ -366,13 +366,16 @@ class ArtikelHelper
                 $oEigenschaftWert->kEigenschaftWert = $propValue->kEigenschaftWert;
                 $oEigenschaftWert->kEigenschaft     = $propValue->kEigenschaft;
                 $oEigenschaftWert->cName            = $propValue->cEigenschaftWertName;
-
+                if ($oEigenschaftwerte->cTyp === 'PFLICHT-FREIFELD' || $oEigenschaftwerte->cTyp === 'FREIFELD') {
+                    $oEigenschaftWert->cFreifeldWert = $oEigenschaftwerte->cFreifeldWert;
+                    $oEigenschaftWert->kEigenschaftWert  = 0;
+                }
                 $variations[$i]               = new stdClass();
                 $variations[$i]->kEigenschaft = $propValue->kEigenschaft;
                 $variations[$i]->kArtikel     = $productID;
                 $variations[$i]->cWaehlbar    = 'Y';
                 $variations[$i]->cTyp         = $propValue->cTyp;
-                $variations[$i]->cName        = $propValue->cEigenschaftName;
+                $variations[$i]->cName        = $propValue->cEigenschaftName ?? null;
                 $variations[$i]->Werte        = [];
                 $variations[$i]->Werte[]      = $oEigenschaftWert;
             }

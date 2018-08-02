@@ -118,7 +118,7 @@ Tutorial.prototype = {
                     }.bind(this),
                 },
                 {
-                    element: ".portletButton:first-child",
+                    element: "#portlets",
                     placement: "bottom",
                     title: "Portlets",
                     reflex: 'dragend',
@@ -235,7 +235,7 @@ Tutorial.prototype = {
                 },
                 {
                     title: "Animationen",
-                    content: "Die Einstellung 'animation-style' enthält viele verschiedene Type." +
+                    content: "Die Einstellung 'animation-style' enthält viele verschiedene Typen." +
                              " Bitte wähle einen Animationsstil aus und speichere die Einstellungen.",
                     onShown: function (tour) {
                         confModal.off('hide.bs.modal.tour').on('hide.bs.modal.tour', function () {
@@ -518,7 +518,7 @@ Tutorial.prototype = {
                                tour.next();
                            });
                        }.bind(this),
-                       content: "<p>Wechsel zu den Style-einstellungen.</p>",
+                       content: "<p>Wechsel in den Reiter 'Styles'.</p>",
                    },
                    {
                        title: "Settings",

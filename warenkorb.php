@@ -25,6 +25,7 @@ $KuponcodeUngueltig       = false;
 $nVersandfreiKuponGueltig = false;
 $cart                     = Session::Cart();
 $kLink                    = $linkHelper->getSpecialPageLinkKey(LINKTYP_WARENKORB);
+$link                     = $linkHelper->getPageLink($kLink);
 // Warenkorbaktualisierung?
 WarenkorbHelper::applyCartChanges();
 // validiere Konfigurationen
@@ -160,6 +161,7 @@ if (!empty($_SESSION['Warenkorbhinweise'])) {
 
 WarenkorbHelper::addVariationPictures($cart);
 $smarty->assign('MsgWarning', $MsgWarning)
+       ->assign('Link', $link)
        ->assign('Schnellkaufhinweis', $Schnellkaufhinweis)
        ->assign('laender', VersandartHelper::getPossibleShippingCountries($kKundengruppe))
        ->assign('KuponMoeglich', Kupon::couponsAvailable())

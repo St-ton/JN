@@ -296,7 +296,7 @@ abstract class Job implements JobInterface
      */
     public function __debugInfo()
     {
-        $res                  = \get_object_vars($this);
+        $res = \get_object_vars($this);
         unset($res['db'], $res['logger']);
 
         return $res;

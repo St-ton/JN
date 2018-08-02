@@ -76,9 +76,7 @@
                         $("#gllry_popup_{$instance->getProperty('uid')} .gllry-slider").slick("slickGoTo",current);
 
                         $("#gllry_popup_{$instance->getProperty('uid')} .gllry-slider").off("afterChange.gllry").on("afterChange.gllry", function(event, slick, direction) {
-                            console.log('change');
                             var newdesc = $("#gllry_popup_{$instance->getProperty('uid')} .gllry-slider .slick-current img").data('desc');
-                            console.log(newdesc);
                             $("#gllry_popup_desc_{$instance->getProperty('uid')}").text(newdesc);
                         });
                     });

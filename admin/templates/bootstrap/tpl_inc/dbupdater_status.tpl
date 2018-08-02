@@ -70,11 +70,10 @@
         <h4>Ereignisprotokoll</h4>
         <pre id="debug"><div>{#currentShopVersion#}</div><div>     System: {formatVersion value=$currentFileVersion}</div><div>     Datenbank: {formatVersion value=$currentDatabaseVersion}</div>{if $currentTemplateFileVersion != $currentTemplateDatabaseVersion}<div>{#currentTemplateVersion#}</div><div>     System: {formatVersion value=$currentTemplateFileVersion}</div><div>     Datenbank: {formatVersion value=$currentTemplateDatabaseVersion}</div>{/if}</pre>
     {else}
-        <div class="alert alert-success">
-            <ul class="hlist">
-                <li class="p50 text-x2 text-center"><i class="fa fa-check"></i> Ihr System ist auf dem neuesten Stand.</li>
-                <li class="p50 text-x2 text-center">JTL-Shop {formatVersion value=$currentDatabaseVersion}</li>
-            </ul>
+        <div class="alert alert-success h4">
+            <p class="text-center">
+                Ihre Datenbank ist auf dem aktuellen Stand des Systems (Version {formatVersion value=$currentDatabaseVersion}).
+            </p>
         </div>
     {/if}
 </form>

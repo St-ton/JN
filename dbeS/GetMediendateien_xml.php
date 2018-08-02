@@ -8,14 +8,12 @@ require_once __DIR__ . '/syncinclude.php';
 $return  = 3;
 $xml_obj = [];
 if (auth()) {
-    $return = 0;
-
-    $cXML = '<?xml version="1.0" ?>' . "\n";
-    $cXML .= '<mediafiles url="' . Shop::getURL() . '/' . PFAD_MEDIAFILES . '">' . "\n";
-    $cXML .= gibDirInhaltXML(PFAD_ROOT . PFAD_MEDIAFILES, 0);
-    $cXML .= gibDirInhaltXML(PFAD_ROOT . PFAD_MEDIAFILES, 1);
-    $cXML .= '</mediafiles>' . "\n";
-    //zippen und streamen
+    $return  = 0;
+    $cXML    = '<?xml version="1.0" ?>' . "\n";
+    $cXML    .= '<mediafiles url="' . Shop::getURL() . '/' . PFAD_MEDIAFILES . '">' . "\n";
+    $cXML    .= gibDirInhaltXML(PFAD_ROOT . PFAD_MEDIAFILES, 0);
+    $cXML    .= gibDirInhaltXML(PFAD_ROOT . PFAD_MEDIAFILES, 1);
+    $cXML    .= '</mediafiles>' . "\n";
     $zip     = time() . '.jtl';
     $xmlfile = fopen(PFAD_SYNC_TMP . FILENAME_XML, 'w');
     fwrite($xmlfile, $cXML);
@@ -48,7 +46,7 @@ if (auth()) {
  * @param int|bool $nNurFiles
  * @return string
  */
-function gibDirInhaltXML($dir, $nNurFiles)
+function gibDirInhaltXML(string $dir, $nNurFiles)
 {
     $cXML = '';
     if (($handle = opendir($dir)) !== false) {

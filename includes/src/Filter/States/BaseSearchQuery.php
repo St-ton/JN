@@ -371,57 +371,57 @@ class BaseSearchQuery extends AbstractFilter
     }
 
     /**
-     * @param string $Suchausdruck
-     * @param int    $kSpracheExt
+     * @param string $query
+     * @param int    $langIDExt
      * @return string
      * @former mappingBeachten
      */
-    private function getQueryMapping($Suchausdruck, $kSpracheExt = 0): string
+    private function getQueryMapping(string $query, int $langIDExt = 0): string
     {
-        $kSprache = $kSpracheExt > 0
-            ? (int)$kSpracheExt
+        $langID = $langIDExt > 0
+            ? $langIDExt
             : $this->getLanguageID();
-        if (strlen($Suchausdruck) > 0) {
-            $SuchausdruckmappingTMP = \Shop::Container()->getDB()->select(
+        if (strlen($query) > 0) {
+            $querymappingTMP = \Shop::Container()->getDB()->select(
                 'tsuchanfragemapping',
                 'kSprache',
-                $kSprache,
+                $langID,
                 'cSuche',
-                $Suchausdruck
+                $query
             );
-            $Suchausdruckmapping    = $SuchausdruckmappingTMP;
-            while (!empty($SuchausdruckmappingTMP->cSucheNeu)) {
-                $SuchausdruckmappingTMP = \Shop::Container()->getDB()->select(
+            $querymapping    = $querymappingTMP;
+            while (!empty($querymappingTMP->cSucheNeu)) {
+                $querymappingTMP = \Shop::Container()->getDB()->select(
                     'tsuchanfragemapping',
                     'kSprache',
-                    $kSprache,
+                    $langID,
                     'cSuche',
-                    $SuchausdruckmappingTMP->cSucheNeu
+                    $querymappingTMP->cSucheNeu
                 );
-                if (!empty($SuchausdruckmappingTMP->cSucheNeu)) {
-                    $Suchausdruckmapping = $SuchausdruckmappingTMP;
+                if (!empty($querymappingTMP->cSucheNeu)) {
+                    $querymapping = $querymappingTMP;
                 }
             }
-            if (!empty($Suchausdruckmapping->cSucheNeu)) {
-                $Suchausdruck = $Suchausdruckmapping->cSucheNeu;
+            if (!empty($querymapping->cSucheNeu)) {
+                $query = $querymapping->cSucheNeu;
             }
         }
 
-        return $Suchausdruck;
+        return $query ?? '';
     }
 
     /**
-     * @param int $kSpracheExt
+     * @param int $langIDExt
      * @return int
      */
-    public function editSearchCache($kSpracheExt = 0): int
+    public function editSearchCache($langIDExt = 0): int
     {
         require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
         // Mapping beachten
-        $cSuche = $this->getQueryMapping($this->getName(), $kSpracheExt);
+        $cSuche = $this->getQueryMapping($this->getName() ?? '', $langIDExt);
         $this->setName($cSuche);
-        $kSprache = $kSpracheExt > 0
-            ? (int)$kSpracheExt
+        $langID = $langIDExt > 0
+            ? (int)$langIDExt
             : $this->getLanguageID();
         // Suchcache wurde zwar gefunden, ist jedoch nicht mehr gültig
         \Shop::Container()->getDB()->query(
@@ -442,7 +442,7 @@ class BaseSearchQuery extends AbstractFilter
                     AND cSuche = :search
                     AND (dGueltigBis > now() OR dGueltigBis IS NULL)',
             [
-                'lang'   => $kSprache,
+                'lang'   => $langID,
                 'search' => $cSuche
             ],
             ReturnType::SINGLE_OBJECT
@@ -472,7 +472,7 @@ class BaseSearchQuery extends AbstractFilter
         $searchColumnn_arr     = self::getSearchRows($this->getConfig());
         $searchColumns         = $this->getSearchColumnClasses($searchColumnn_arr);
         $oSuchCache            = new \stdClass();
-        $oSuchCache->kSprache  = $kSprache;
+        $oSuchCache->kSprache  = $langID;
         $oSuchCache->cSuche    = $cSuche;
         $oSuchCache->dErstellt = 'now()';
         $kSuchCache            = \Shop::Container()->getDB()->insert('tsuchcache', $oSuchCache);

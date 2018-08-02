@@ -5,26 +5,21 @@
  */
 
 require_once __DIR__ . '/syncinclude.php';
-// Einstellungen holen
-$Einstellungen = Shop::getSettings([CONF_BILDER]);
 
+$Einstellungen = Shop::getSettings([CONF_BILDER]);
 if ($Einstellungen['bilder']['bilder_externe_bildschnittstelle'] === 'N') {
-    // Schnittstelle ist deaktiviert
     exit();
 }
 if ($Einstellungen['bilder']['bilder_externe_bildschnittstelle'] === 'W' && !auth()) {
-    // Nur Wawi darf zugreifen
     exit();
 }
 
-// Parameter holen
 $kArtikel    = RequestHelper::verifyGPCDataInt('a'); // Angeforderter Artikel
 $nBildNummer = RequestHelper::verifyGPCDataInt('n'); // Bildnummer
 $nURL        = RequestHelper::verifyGPCDataInt('url'); // Soll die URL zum Bild oder das Bild direkt ausgegeben werden
 $nSize       = RequestHelper::verifyGPCDataInt('s'); // Bildgröße
 
 if ($kArtikel > 0 && $nBildNummer > 0 && $nSize > 0) {
-    // Standardkundengruppe holen
     $oKundengruppe = Shop::Container()->getDB()->select('tkundengruppe', 'cStandard', 'Y');
     if (!isset($oKundengruppe->kKundengruppe)) {
         exit();
@@ -34,15 +29,15 @@ if ($kArtikel > 0 && $nBildNummer > 0 && $nSize > 0) {
         ? ''
         : " AND tartikelpict.nNr = " . $nBildNummer;
     $oArtikelPict_arr = Shop::Container()->getDB()->query(
-        "SELECT tartikelpict.cPfad, tartikelpict.kArtikel, tartikel.cSeo, tartikelpict.nNr
+        'SELECT tartikelpict.cPfad, tartikelpict.kArtikel, tartikel.cSeo, tartikelpict.nNr
                 FROM tartikelpict
                 JOIN tartikel
                     ON tartikel.kArtikel = tartikelpict.kArtikel
                 LEFT JOIN tartikelsichtbarkeit
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . (int)$oKundengruppe->kKundengruppe . "
+                    AND tartikelsichtbarkeit.kKundengruppe = ' . (int)$oKundengruppe->kKundengruppe . '
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                    AND tartikel.kArtikel = " . $kArtikel . $qry_bildNr,
+                    AND tartikel.kArtikel = ' . $kArtikel . $qry_bildNr,
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($oArtikelPict_arr as $oArtikelPict) {
@@ -53,7 +48,7 @@ if ($kArtikel > 0 && $nBildNummer > 0 && $nSize > 0) {
             gibPfadGroesse($nSize),
             $oArtikelPict->nNr
         );
-        if (!file_exists($image)){
+        if (!file_exists($image)) {
             $req = MediaImage::toRequest($image);
             MediaImage::cacheImage($req);
         }
@@ -84,44 +79,31 @@ if ($kArtikel > 0 && $nBildNummer > 0 && $nSize > 0) {
  */
 function gibPfadGroesse(int $nSize)
 {
-    if ($nSize > 0) {
-        switch ($nSize) {
-            case 1:
-                return Image::SIZE_LG;
-                break;
-
-            case 2:
-                return Image::SIZE_MD;
-                break;
-
-            case 3:
-                return Image::SIZE_SM;
-                break;
-
-            case 4:
-                return Image::SIZE_XS;
-                break;
-            default:
-                return 0;
-        }
+    switch ($nSize) {
+        case 1:
+            return Image::SIZE_LG;
+        case 2:
+            return Image::SIZE_MD;
+        case 3:
+            return Image::SIZE_SM;
+        case 4:
+            return Image::SIZE_XS;
+        default:
+            return 0;
     }
-
-    return 0;
 }
 
 /**
  * @param string $cBildPfad
  * @return bool|string
  */
-function gibBildformat($cBildPfad)
+function gibBildformat(string $cBildPfad)
 {
     $nSize_arr = getimagesize($cBildPfad);
     $nTyp      = $nSize_arr[2];
     switch ($nTyp) {
         case IMAGETYPE_JPEG:
             return 'jpg';
-            break;
-
         case IMAGETYPE_PNG:
             if (function_exists('imagecreatefrompng')) {
                 return 'png';
@@ -150,7 +132,7 @@ function gibBildformat($cBildPfad)
  * @param string $cBildPfad
  * @return bool|resource
  */
-function ladeBild($cBildPfad)
+function ladeBild(string $cBildPfad)
 {
     $nSize_arr = getimagesize($cBildPfad);
     $nTyp      = $nSize_arr[2];

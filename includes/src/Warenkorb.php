@@ -1265,7 +1265,7 @@ class Warenkorb
 
         if ($bRedirect) {
             $this->setzePositionsPreise();
-            $linkHelper = LinkHelper::getInstance();
+            $linkHelper = Shop::Container()->getLinkService();
             header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php') . '?fillOut=10', true, 303);
             exit;
         }
@@ -1420,7 +1420,7 @@ class Warenkorb
             && !isset($_SESSION['variBoxAnzahl_arr'])
             && $this->config['global']['global_warenkorb_weiterleitung'] === 'Y'
         ) {
-            $linkHelper = LinkHelper::getInstance();
+            $linkHelper = Shop::Container()->getLinkService();
             header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php'), true, 303);
             exit;
         }
@@ -1504,6 +1504,9 @@ class Warenkorb
             $maxPreisKupon = $Kupon->fWert;
             if ($Kupon->fWert > $this->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)) {
                 $maxPreisKupon = $this->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true);
+            }
+            if ((int)$Kupon->nGanzenWKRabattieren === 0 && $Kupon->fWert > gibGesamtsummeKuponartikelImWarenkorb($Kupon, $this->PositionenArr)) {
+                $maxPreisKupon = gibGesamtsummeKuponartikelImWarenkorb($Kupon, $this->PositionenArr);
             }
             $Spezialpos        = new stdClass();
             $Spezialpos->cName = [];

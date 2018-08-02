@@ -4134,7 +4134,7 @@ class Artikel
             $this->holehilfreichsteBewertung($kSprache)
                  ->holeBewertung($kSprache, -1, 1, 0, $this->conf['bewertung']['bewertung_freischalten']);
         }
-        if (count($_SESSION['Sprachen']) > 0 && $this->getOption('nLanguageURLs', 0) === 1) {
+        if (isset($_SESSION['Sprachen']) && count($_SESSION['Sprachen']) > 0 && $this->getOption('nLanguageURLs', 0) === 1) {
             $this->baueArtikelSprachURL();
         }
         $this->cKurzbezeichnung = !empty($this->AttributeAssoc[ART_ATTRIBUT_SHORTNAME])
@@ -4276,7 +4276,8 @@ class Artikel
                 $bSuchspecial_arr[SEARCHSPECIALS_NEWPRODUCTS] = $now < $dateCreated;
             }
             // In kürze Verfügbar
-            $bSuchspecial_arr[SEARCHSPECIALS_UPCOMINGPRODUCTS] = $now < new DateTime($this->dErscheinungsdatum);
+            $bSuchspecial_arr[SEARCHSPECIALS_UPCOMINGPRODUCTS] = $this->dErscheinungsdatum !== null
+                && $now < new DateTime($this->dErscheinungsdatum);
             // Top bewertet
             // No need to check with custom function.. this value is set in fuelleArtikel()?
             $bSuchspecial_arr[SEARCHSPECIALS_TOPREVIEWS] = $this->bIsTopBewertet === '1';
@@ -4413,10 +4414,10 @@ class Artikel
      * @param array $oGlobalEinstellung_arr
      * @return bool
      */
-    public function istBestseller($oGlobalEinstellung_arr = null)
+    public function istBestseller(array $oGlobalEinstellung_arr = null): bool
     {
         if ($this->bIsBestseller !== null) {
-            return $this->bIsBestseller;
+            return (bool)$this->bIsBestseller;
         }
         if ($this->kArtikel <= 0) {
             return false;
@@ -4432,7 +4433,7 @@ class Artikel
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return $oBestseller->bIsBestseller ?? false;
+        return $oBestseller === false ? false : (bool)$oBestseller->bIsBestseller;
     }
 
     /**

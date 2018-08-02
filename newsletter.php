@@ -254,6 +254,7 @@ $cMetaKeywords    = $oMeta->cKeywords;
 Shop::Smarty()->assign('hinweis', $cHinweis)
     ->assign('fehler', $cFehler)
     ->assign('cOption', $cOption)
+    ->assign('Link', $link)
     ->assign('nAnzeigeOrt', CHECKBOX_ORT_NEWSLETTERANMELDUNG)
     ->assign('code_newsletter', false);
 

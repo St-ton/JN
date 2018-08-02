@@ -32,7 +32,7 @@ $_CONFIG = array(
 
     'types' => array(
         'Sonstiges' => '',
-        'Videos' => 'swf flv avi mpg mpeg qt mov wmv asf rm',
+        'Videos' => 'avi mpg mpeg mov wmv ogg mp4',
         'misc' => '! pdf doc docx xls xlsx',
         'Bilder' => '*img',
         'mimages' => '*mime image/gif image/png image/jpeg',
@@ -42,8 +42,8 @@ $_CONFIG = array(
 
 // IMAGE SETTINGS
 
-    'imageDriversPriority' => 'imagick gmagick gd',
-    'jpegQuality' => 90,
+    'imageDriversPriority' => 'gd imagick gmagick ',
+    'jpegQuality' => 80,
     'thumbsDir' => '.thumbs',
 
     'maxImageWidth' => 0,

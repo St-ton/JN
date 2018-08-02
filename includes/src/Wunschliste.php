@@ -1056,4 +1056,32 @@ class Wunschliste
         return $cMSG;
     }
 
+    /**
+     * @param int $wishlistID
+     */
+    public static function setPrivate(int $wishlistID)
+    {
+        $upd               = new stdClass();
+        $upd->nOeffentlich = 0;
+        $upd->cURLID       = '';
+        Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', $wishlistID, $upd);
+    }
+
+    /**
+     * @param int $wishlistID
+     */
+    public static function setPublic(int $wishlistID)
+    {
+        $URLID = uniqid('', true);
+
+        $campaign = new Kampagne(KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
+        if ($campaign->kKampagne > 0) {
+            $URLID .= '&' . $campaign->cParameter . '=' . $campaign->cWert;
+        }
+        $upd               = new stdClass();
+        $upd->nOeffentlich = 1;
+        $upd->cURLID       = $URLID;
+        Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', $wishlistID, $upd);
+    }
+
 }

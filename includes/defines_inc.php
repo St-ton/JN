@@ -128,6 +128,7 @@ define('MAILTEMPLATE_BEWERTUNG_GUTHABEN', 'core_jtl_bewertung_guthaben');
 define('MAILTEMPLATE_BESTELLUNG_TEILVERSANDT', 'core_jtl_bestellung_teilversandt');
 define('MAILTEMPLATE_ANBIETERKENNZEICHNUNG', 'core_jtl_anbieterkennzeichnung');
 // Suche
+define('SEARCH_SORT_NONE', -1);
 define('SEARCH_SORT_STANDARD', 100);
 define('SEARCH_SORT_NAME_ASC', 1);
 define('SEARCH_SORT_NAME_DESC', 2);
@@ -264,6 +265,8 @@ define('PFAD_PLUGIN_PAYMENTMETHOD', 'paymentmethod/');
 define('PFAD_PLUGIN_TEMPLATE', 'template/');
 define('PFAD_PLUGIN_BOXEN', 'boxen/');
 define('PFAD_PLUGIN_WIDGET', 'widget/');
+define('PFAD_PLUGIN_PORTLETS', 'portlets/');
+define('PFAD_PLUGIN_BLUEPRINTS', 'blueprints/');
 define('PFAD_PLUGIN_EXPORTFORMAT', 'exportformat/');
 define('PFAD_PLUGIN_UNINSTALL', 'uninstall/');
 define('PLUGIN_INFO_FILE', 'info.xml');
@@ -473,7 +476,6 @@ define('JTLURL_HP', 'https://www.jtl-software.de/');
 define('JTLURL_GET_DUK', JTLURL_BASE . 'json_duk.php');
 define('JTLURL_GET_SHOPNEWS', 'https://feed.jtl-software.de/websitenews');
 define('JTLURL_GET_SHOPPATCH', JTLURL_BASE . 'json_patch.php');
-define('JTLURL_GET_SHOPMARKETPLACE', JTLURL_BASE . 'json_marketplace.php');
 define('JTLURL_GET_SHOPHELP', JTLURL_BASE . 'jtlhelp.php');
 define('JTLURL_GET_SHOPVERSION', JTLURL_BASE . 'json_version.php');
 // Log-Levels

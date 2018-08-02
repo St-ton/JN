@@ -15,6 +15,7 @@ Shop::setPageType(PAGE_BESTELLABSCHLUSS);
 $linkHelper    = Shop::Container()->getLinkService();
 $AktuelleSeite = 'BESTELLVORGANG';
 $kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_BESTELLABSCHLUSS);
+$link          = $linkHelper->getPageLink($kLink);
 $cart          = Session::Cart();
 $smarty        = Shop::Smarty();
 $bestellung    = null;
@@ -99,6 +100,7 @@ if ($Einstellungen['trustedshops']['trustedshops_nutzen'] === 'Y') {
 
 $smarty->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
        ->assign('Bestellung', $bestellung)
+       ->assign('Link', $link)
        ->assign('Kunde', $_SESSION['Kunde'] ?? null)
        ->assign('bOrderConf', true)
        ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
@@ -120,11 +122,11 @@ if (empty($_SESSION['Zahlungsart']->nWaehrendBestellung) || isset($_GET['i'])) {
     }
     $session->cleanUp();
     require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
-    executeHook(HOOK_BESTELLABSCHLUSS_PAGE);
+    executeHook(HOOK_BESTELLABSCHLUSS_PAGE, ['oBestellung' => $bestellung]);
     $smarty->display('checkout/order_completed.tpl');
 } else {
     require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
-    executeHook(HOOK_BESTELLABSCHLUSS_PAGE_ZAHLUNGSVORGANG);
+    executeHook(HOOK_BESTELLABSCHLUSS_PAGE_ZAHLUNGSVORGANG, ['oBestellung' => $bestellung]);
     $smarty->display('checkout/step6_init_payment.tpl');
 }
 

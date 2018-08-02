@@ -68,7 +68,7 @@ function bearbeiteInsert($oXml)
             DBUpdateInsert('tkonfiggruppesprache', [$oKonfiggruppesprache], 'kKonfiggruppe', 'kSprache');
         }
         // Konfiggruppeitem
-        loescheKonfigitem($oKonfiggruppe->kKonfiggruppe);
+        loescheKonfigitem((int)$oKonfiggruppe->kKonfiggruppe);
 
         foreach ($oXmlKonfiggruppe->tkonfigitem as $oXmlKonfigitem) {
             $oKonfigitem = JTLMapArr($oXmlKonfigitem, $GLOBALS['mKonfigItem']);
@@ -92,7 +92,6 @@ function bearbeiteInsert($oXml)
  */
 function bearbeiteDeletes($oXml)
 {
-    // Konfiggruppe
     foreach ($oXml->kKonfiggruppe as $oXmlKonfiggruppe) {
         $kKonfiggruppe = (int)$oXmlKonfiggruppe;
         if ($kKonfiggruppe > 0) {
@@ -104,9 +103,8 @@ function bearbeiteDeletes($oXml)
 /**
  * @param int $kKonfiggruppe
  */
-function loescheKonfiggruppe($kKonfiggruppe)
+function loescheKonfiggruppe(int $kKonfiggruppe)
 {
-    $kKonfiggruppe = (int)$kKonfiggruppe;
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
         Jtllog::writeLog('Loesche Konfiggruppe: ' . $kKonfiggruppe, JTLLOG_LEVEL_DEBUG, false, 'Konfig_xml');
     }
@@ -123,9 +121,8 @@ function loescheKonfiggruppe($kKonfiggruppe)
 /**
  * @param int $kKonfiggruppe
  */
-function loescheKonfigitem($kKonfiggruppe)
+function loescheKonfigitem(int $kKonfiggruppe)
 {
-    $kKonfiggruppe = (int)$kKonfiggruppe;
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
         Jtllog::writeLog('Loesche kKonfigitem (gruppe): ' . $kKonfiggruppe, JTLLOG_LEVEL_DEBUG, false, 'Konfig_xml');
     }
@@ -137,9 +134,8 @@ function loescheKonfigitem($kKonfiggruppe)
 /**
  * @param int $kKonfigitem
  */
-function loescheKonfigitempreis($kKonfigitem)
+function loescheKonfigitempreis(int $kKonfigitem)
 {
-    $kKonfigitem = (int)$kKonfigitem;
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
         Jtllog::writeLog('Loesche Konfigitempreis: ' . $kKonfigitem, JTLLOG_LEVEL_DEBUG, false, 'Konfig_xml');
     }

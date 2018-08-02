@@ -315,29 +315,13 @@ if ($customerID > 0) {
             // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
             $oWunschliste = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $kWunschliste);
             if (isset($oWunschliste->kKunde) && (int)$oWunschliste->kKunde === Session::Customer()->getID()) {
-                // Wurde nOeffentlich verändert
-                if (isset($_REQUEST['nstd']) && FormHelper::validateToken()) {
-                    $nOeffentlich = RequestHelper::verifyGPCDataInt('nstd');
-                    // Wurde nstd auf 1 oder 0 gesetzt?
-                    if ($nOeffentlich === 0) {
-                        $upd               = new stdClass();
-                        $upd->nOeffentlich = 0;
-                        $upd->cURLID       = '';
-                        // nOeffentlich der Wunschliste updaten zu Privat
-                        Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', $kWunschliste, $upd);
+                if (isset($_REQUEST['wlAction']) && FormHelper::validateToken()) {
+                    $wlAction = RequestHelper::verifyGPDataString('wlAction');
+                    if ($wlAction === 'setPrivate') {
+                        Wunschliste::setPrivate($kWunschliste);
                         $cHinweis .= Shop::Lang()->get('wishlistSetPrivate', 'messages');
-                    } elseif ($nOeffentlich === 1) {
-                        $cURLID = uniqid('', true);
-                        // Kampagne
-                        $oKampagne = new Kampagne(KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
-                        if ($oKampagne->kKampagne > 0) {
-                            $cURLID .= '&' . $oKampagne->cParameter . '=' . $oKampagne->cWert;
-                        }
-                        // nOeffentlich der Wunschliste updaten zu öffentlich
-                        $upd               = new stdClass();
-                        $upd->nOeffentlich = 1;
-                        $upd->cURLID       = $cURLID;
-                        Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', $kWunschliste, $upd);
+                    } elseif ($wlAction === 'setPublic') {
+                        Wunschliste::setPublic($kWunschliste);
                         $cHinweis .= Shop::Lang()->get('wishlistSetPublic', 'messages');
                     }
                 }
@@ -803,12 +787,14 @@ $oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_LOGIN);
 $cMetaTitle       = $oMeta->cTitle;
 $cMetaDescription = $oMeta->cDesc;
 $cMetaKeywords    = $oMeta->cKeywords;
+$link             = $linkHelper->getPageLink($kLink);
 Shop::Smarty()
     ->assign('bewertungen', $ratings)
     ->assign('cHinweis', $cHinweis)
     ->assign('cFehler', $cFehler)
     ->assign('hinweis', $cHinweis)
     ->assign('step', $step)
+    ->assign('Link', $link)
     ->assign('BESTELLUNG_STATUS_BEZAHLT', BESTELLUNG_STATUS_BEZAHLT)
     ->assign('BESTELLUNG_STATUS_VERSANDT', BESTELLUNG_STATUS_VERSANDT)
     ->assign('BESTELLUNG_STATUS_OFFEN', BESTELLUNG_STATUS_OFFEN)

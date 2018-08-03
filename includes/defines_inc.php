@@ -462,6 +462,8 @@ define('JTL_SEPARATOR_LENGTH', 2);
 define('JTL_SEPARATOR_AMOUNT', 3);
 // JTL Support Email
 define('JTLSUPPORT_EMAIL', 'support@jtl-software.de');
+// Globale Arten von generierte Nummern (z.b. Bestellnummer)
+define('JTL_GENNUMBER_ORDERNUMBER', 1);
 // JTL URLS
 define('JTLURL_BASE', 'https://ext.jtl-software.de/');
 define('JTLURL_HP', 'https://www.jtl-software.de/');

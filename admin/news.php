@@ -24,6 +24,7 @@ $db                    = Shop::Container()->getDB();
 $author                = ContentAuthor::getInstance();
 $controller            = new \News\Admin\Controller($db, $smarty);
 $languages             = Sprache::getAllLanguages();
+$oSpracheNews = Shop::Lang()->getIsoFromLangID($_SESSION['kSprache']);
 setzeSprache();
 if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
     $backTab = RequestHelper::verifyGPDataString('tab');
@@ -50,19 +51,11 @@ if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
             break;
     }
 }
-$Sprachen     = Sprache::getAllLanguages();
-$oSpracheNews = Shop::Lang()->getIsoFromLangID($_SESSION['kSprache']);
-if (!$oSpracheNews) {
-    $oSpracheNews = $db->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
-}
-// News
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0 && FormHelper::validateToken()) {
     $cHinweis .= saveAdminSectionSettings(CONF_NEWS, $_POST, [CACHING_GROUP_OPTION, CACHING_GROUP_NEWS]);
-    if (count($Sprachen) > 0) {
-        // tnewsmonatspraefix loeschen
+    if (count($languages) > 0) {
         $db->query('TRUNCATE tnewsmonatspraefix', \DB\ReturnType::AFFECTED_ROWS);
-
-        foreach ($Sprachen as $oSpracheTMP) {
+        foreach ($languages as $oSpracheTMP) {
             $oNewsMonatsPraefix           = new stdClass();
             $oNewsMonatsPraefix->kSprache = $oSpracheTMP->kSprache;
             if (strlen($_POST['praefix_' . $oSpracheTMP->cISO]) > 0) {
@@ -352,7 +345,7 @@ if ($step === 'news_uebersicht') {
 
     // Praefix
     $oNewsMonatsPraefix_arr = [];
-    foreach ($Sprachen as $i => $oSprache) {
+    foreach ($languages as $i => $oSprache) {
         $oNewsMonatsPraefix_arr[$i]                = new stdClass();
         $oNewsMonatsPraefix_arr[$i]->kSprache      = $oSprache->kSprache;
         $oNewsMonatsPraefix_arr[$i]->cNameEnglisch = $oSprache->cNameEnglisch;
@@ -397,8 +390,8 @@ if (!empty($_SESSION['news.cHinweis'])) {
     unset($_SESSION['news.cHinweis']);
 }
 
-$nMaxFileSize      = getMaxFileSize(ini_get('upload_max_filesize'));
-$oKundengruppe_arr = \Functional\map($db->query(
+$maxFileSize   = getMaxFileSize(ini_get('upload_max_filesize'));
+$customerGroups = \Functional\map($db->query(
     'SELECT kKundengruppe, cName
         FROM tkundengruppe
         ORDER BY cStandard DESC',
@@ -409,12 +402,11 @@ $oKundengruppe_arr = \Functional\map($db->query(
     return $e;
 });
 
-$smarty->assign('oKundengruppe_arr', $oKundengruppe_arr)
+$smarty->assign('oKundengruppe_arr', $customerGroups)
        ->assign('hinweis', $cHinweis)
        ->assign('sprachen', $languages)
        ->assign('fehler', $cFehler)
        ->assign('step', $step)
-       ->assign('Sprachen', $Sprachen)
-       ->assign('nMaxFileSize', $nMaxFileSize)
+       ->assign('nMaxFileSize', $maxFileSize)
        ->assign('kSprache', (int)$_SESSION['kSprache'])
        ->display('news.tpl');

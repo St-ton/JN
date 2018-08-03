@@ -81,7 +81,7 @@ class Controller
             $_SESSION['NewsNaviFilter']->cDatum = -1;
         } elseif (\strlen($params['cDatum']) > 0) {
             $_date                              = \explode('-', $params['cDatum']);
-            $_SESSION['NewsNaviFilter']->cDatum = (\count($_date) > 1)
+            $_SESSION['NewsNaviFilter']->cDatum = \count($_date) > 1
                 ? \StringHandler::filterXSS($params['cDatum'])
                 : -1;
         }
@@ -125,27 +125,22 @@ class Controller
             $category->cURLFull = \UrlHelper::buildURL($category, \URLART_NEWSKATEGORIE, true);
         }
 
-        if ((int)$this->config['news']['news_kommentare_anzahlproseite'] > 0) {
-            $nCountPerPagePref   = (int)$this->config['news']['news_kommentare_anzahlproseite'];
-            $itemsPerPageOptions = [$nCountPerPagePref, $nCountPerPagePref * 2, $nCountPerPagePref * 5];
-        } else {
-            $itemsPerPageOptions = [10, 20, 50];
-        }
-        $oPagiComments = $pagination
-            ->setItemsPerPageOptions($itemsPerPageOptions)
-            ->setItemCount($newsItem->getComments()->getItems()->count())
-            ->assemble();
-
-        $comments = $newsItem->getComments()->getItems();
+        $comments            = $newsItem->getComments()->getItems();
+        $itemsPerPageOptions = ($perPage = (int)$this->config['news']['news_kommentare_anzahlproseite']) > 0
+            ? [$perPage, $perPage * 2, $perPage * 5]
+            : [10, 20, 50];
+        $pagination->setItemsPerPageOptions($itemsPerPageOptions)
+                   ->setItemCount($comments->count())
+                   ->assemble();
         if ($pagination->getItemsPerPage() > 0) {
             $comments = $comments->forPage(
-                $oPagiComments->getPage() + 1,
-                $oPagiComments->getItemsPerPage()
+                $pagination->getPage() + 1,
+                $pagination->getItemsPerPage()
             );
         }
 
         $this->smarty->assign('oNewsKommentar_arr', $comments)
-                     ->assign('oPagiComments', $oPagiComments)
+                     ->assign('oPagiComments', $pagination)
                      ->assign('R_LOGIN_NEWSCOMMENT', \R_LOGIN_NEWSCOMMENT)
                      ->assign('oNewsKategorie_arr', $newsCategories)
                      ->assign('oNewsArchiv', $newsItem)
@@ -174,11 +169,10 @@ class Controller
         $newsCountShow = ($conf = (int)$this->config['news']['news_anzahl_uebersicht']) > 0
             ? $conf
             : 10;
-        $pagination
-            ->setItemsPerPageOptions([$newsCountShow, $newsCountShow * 2, $newsCountShow * 5])
-            ->setDefaultItemsPerPage(0)
-            ->setItemCount($category->getItems()->count())
-            ->assemble();
+        $pagination->setItemsPerPageOptions([$newsCountShow, $newsCountShow * 2, $newsCountShow * 5])
+                   ->setDefaultItemsPerPage(0)
+                   ->setItemCount($category->getItems()->count())
+                   ->assemble();
 
         $items = $category->filterAndSortItems();
         if ($pagination->getItemsPerPage() > 0) {
@@ -187,20 +181,22 @@ class Controller
                 $pagination->getItemsPerPage()
             );
         }
-        $cMetaTitle       = $category->getMetaTitle();
-        $cMetaDescription = $category->getMetaDescription();
-        $cMetaKeywords    = $category->getMetaKeyword();
+        $metaTitle       = $category->getMetaTitle();
+        $metaDescription = $category->getMetaDescription();
+        $metaKeywords    = $category->getMetaKeyword();
 
-        $cMetaTitle       = \strlen($cMetaDescription) < 1
-            ? \Shop::Lang()->get('news', 'news') . ' ' . \Shop::Lang()->get('from',
-                'global') . ' ' . $this->config['global']['global_shopname']
-            : $cMetaTitle;
-        $cMetaDescription = \strlen($cMetaDescription) < 1
+        $metaTitle       = \strlen($metaDescription) < 1
+            ? \Shop::Lang()->get('news', 'news') . ' ' .
+            \Shop::Lang()->get('from', 'global') . ' ' .
+            $this->config['global']['global_shopname']
+            : $metaTitle;
+        $metaDescription = \strlen($metaDescription) < 1
             ? \Shop::Lang()->get('newsMetaDesc', 'news')
-            : $cMetaDescription;
-        $cMetaKeywords    = \strlen($cMetaKeywords) < 1
+            : $metaDescription;
+        $metaKeywords    = \strlen($metaKeywords) < 1
             ? $category->buildMetaKeywords()
-            : $cMetaKeywords;
+            : $metaKeywords;
+
         $this->smarty->assign('oNewsUebersicht_arr', $items)
                      ->assign('oNewsKategorie_arr',
                          \News::getAllNewsCategories(\Shop::getLanguageID(), false, false, true))
@@ -208,9 +204,9 @@ class Controller
                      ->assign('cDatum', $_SESSION['NewsNaviFilter']->cDatum)
                      ->assign('oNewsCat', \News::getNewsCategory($_SESSION['NewsNaviFilter']->nNewsKat))
                      ->assign('oPagination', $pagination)
-                     ->assign('meta_title', $cMetaTitle)
-                     ->assign('meta_description', $cMetaDescription)
-                     ->assign('meta_keywords', $cMetaKeywords);
+                     ->assign('meta_title', $metaTitle)
+                     ->assign('meta_description', $metaDescription)
+                     ->assign('meta_keywords', $metaKeywords);
 
         if ($items->count() === 0) {
             $this->smarty->assign('noarchiv', 1);
@@ -243,16 +239,14 @@ class Controller
         if ($this->config['news']['news_kommentare_eingeloggt'] === 'Y' && Session::Customer()->getID() > 0) {
             if ($checkedOK) {
                 $comment             = new \stdClass();
-                $comment->kNews      = (int)$_POST['kNews'];
+                $comment->kNews      = (int)$data['kNews'];
                 $comment->kKunde     = (int)$_SESSION['Kunde']->kKunde;
                 $comment->nAktiv     = $this->config['news']['news_kommentare_freischalten'] === 'Y'
                     ? 0
                     : 1;
                 $comment->cName      = $_SESSION['Kunde']->cVorname . ' ' . $_SESSION['Kunde']->cNachname[0] . '.';
                 $comment->cEmail     = $_SESSION['Kunde']->cMail;
-                $comment->cKommentar = \StringHandler::htmlentities(
-                    \StringHandler::filterXSS($_POST['cKommentar'])
-                );
+                $comment->cKommentar = \StringHandler::htmlentities(\StringHandler::filterXSS($data['cKommentar']));
                 $comment->dErstellt  = 'now()';
 
                 \executeHook(\HOOK_NEWS_PAGE_NEWSKOMMENTAR_EINTRAGEN, ['comment' => &$comment]);
@@ -267,7 +261,7 @@ class Controller
             } else {
                 $this->errorMsg .= self::getCommentErrors($checks);
                 $this->smarty->assign('nPlausiValue_arr', $checks)
-                             ->assign('cPostVar_arr', \StringHandler::filterXSS($_POST));
+                             ->assign('cPostVar_arr', \StringHandler::filterXSS($data));
             }
         } elseif ($this->config['news']['news_kommentare_eingeloggt'] === 'N') {
             if ($checkedOK) {
@@ -279,20 +273,18 @@ class Controller
                     $cEmail = \StringHandler::filterXSS($data['cEmail'] ?? '');
                 }
                 $comment         = new \stdClass();
-                $comment->kNews  = (int)$_POST['kNews'];
-                $comment->kKunde = $_SESSION['Kunde']->kKunde ?? 0;
+                $comment->kNews  = (int)$data['kNews'];
+                $comment->kKunde = Session::Customer()->getID();
                 $comment->nAktiv = $this->config['news']['news_kommentare_freischalten'] === 'Y'
                     ? 0
                     : 1;
 
                 $comment->cName      = $cName;
                 $comment->cEmail     = $cEmail;
-                $comment->cKommentar = \StringHandler::htmlentities(
-                    \StringHandler::filterXSS($_POST['cKommentar'])
-                );
+                $comment->cKommentar = \StringHandler::htmlentities(\StringHandler::filterXSS($data['cKommentar']));
                 $comment->dErstellt  = 'now()';
 
-                \executeHook(\HOOK_NEWS_PAGE_NEWSKOMMENTAR_EINTRAGEN, ['comment' => &$comment]);
+                \executeHook(\HOOK_NEWS_PAGE_NEWSKOMMENTAR_EINTRAGEN, ['comment' => $comment]);
 
                 $this->db->insert('tnewskommentar', $comment);
 
@@ -304,7 +296,7 @@ class Controller
             } else {
                 $this->errorMsg .= self::getCommentErrors($checks);
                 $this->smarty->assign('nPlausiValue_arr', $checks)
-                             ->assign('cPostVar_arr', \StringHandler::filterXSS($_POST));
+                             ->assign('cPostVar_arr', \StringHandler::filterXSS($data));
             }
         }
 
@@ -409,34 +401,30 @@ class Controller
         $oSQL->cSortSQL    = '';
         $oSQL->cDatumSQL   = '';
         $oSQL->cNewsKatSQL = '';
-        // Sortierung Filter
-        if ($_SESSION['NewsNaviFilter']->nSort > 0) {
-            switch ($_SESSION['NewsNaviFilter']->nSort) {
-                case 1: // Datum absteigend
-                    $oSQL->cSortSQL = ' ORDER BY tnews.dGueltigVon DESC, tnews.dErstellt DESC';
-                    break;
-                case 2: // Datum aufsteigend
-                    $oSQL->cSortSQL = ' ORDER BY tnews.dGueltigVon';
-                    break;
-                case 3: // Name a ... z
-                    $oSQL->cSortSQL = ' ORDER BY tnews.cBetreff';
-                    break;
-                case 4: // Name z ... a
-                    $oSQL->cSortSQL = ' ORDER BY tnews.cBetreff DESC';
-                    break;
-                case 5: // Anzahl Kommentare absteigend
-                    $oSQL->cSortSQL = ' ORDER BY nNewsKommentarAnzahl DESC';
-                    break;
-                case 6: // Anzahl Kommentare aufsteigend
-                    $oSQL->cSortSQL = ' ORDER BY nNewsKommentarAnzahl';
-                    break;
-            }
-        } elseif ($_SESSION['NewsNaviFilter']->nSort === -1) {
-            // Standard
-            $oSQL->cSortSQL = ' ORDER BY tnews.dGueltigVon DESC, tnews.dErstellt DESC';
+        switch ($_SESSION['NewsNaviFilter']->nSort) {
+            case -1:
+            default:
+                $oSQL->cSortSQL = ' ORDER BY tnews.dGueltigVon DESC, tnews.dErstellt DESC';
+                break;
+            case 1: // Datum absteigend
+                $oSQL->cSortSQL = ' ORDER BY tnews.dGueltigVon DESC, tnews.dErstellt DESC';
+                break;
+            case 2: // Datum aufsteigend
+                $oSQL->cSortSQL = ' ORDER BY tnews.dGueltigVon';
+                break;
+            case 3: // Name a ... z
+                $oSQL->cSortSQL = ' ORDER BY tnews.cBetreff';
+                break;
+            case 4: // Name z ... a
+                $oSQL->cSortSQL = ' ORDER BY tnews.cBetreff DESC';
+                break;
+            case 5: // Anzahl Kommentare absteigend
+                $oSQL->cSortSQL = ' ORDER BY nNewsKommentarAnzahl DESC';
+                break;
+            case 6: // Anzahl Kommentare aufsteigend
+                $oSQL->cSortSQL = ' ORDER BY nNewsKommentarAnzahl';
+                break;
         }
-        // Datum Filter
-        $oSQL->cDatumSQL = '';
         if ($_SESSION['NewsNaviFilter']->cDatum !== -1 && \strlen($_SESSION['NewsNaviFilter']->cDatum) > 0) {
             $_date = \explode('-', $_SESSION['NewsNaviFilter']->cDatum);
             if (\count($_date) > 1) {
@@ -557,7 +545,6 @@ class Controller
                 return (int)$e;
             }
         );
-
 
         return \count($newsCategories) > 0
             ? $this->db->query(

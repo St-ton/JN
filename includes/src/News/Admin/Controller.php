@@ -76,7 +76,7 @@ class Controller
         $active          = (int)$post['nAktiv'];
         $dateValidFrom   = $post['dGueltigVon'];
         $previewImage    = $post['previewImage'];
-        $authorID        = isset($post['kAuthor']) ? (int)$post['kAuthor'] : 0;
+        $authorID        = (int)($post['kAuthor'] ?? 0);
 
         $validation = [];//$this->pruefeNewsPost($cBetreff, $cText, $customerGroups, $newsCategoryIDs);
 
@@ -304,13 +304,13 @@ class Controller
      */
     public function createOrUpdateCategory(array $post, array $languages)
     {
-        $flag         = \ENT_COMPAT | \ENT_HTML401;
         $this->step   = 'news_uebersicht';
         $categoryID   = (int)($post['kNewsKategorie'] ?? 0);
         $sort         = (int)$post['nSort'];
         $active       = (int)$post['nAktiv'];
-        $previewImage = $post['previewImage'];
         $parentID     = (int)$post['kParent'];
+        $previewImage = $post['previewImage'];
+        $flag         = \ENT_COMPAT | \ENT_HTML401;
 //        $validation = pruefeNewsKategorie($post['cName'], isset($post['newskategorie_edit_speichern'])
 //            ? (int)$post['newskategorie_edit_speichern']
 //            : 0);
@@ -445,25 +445,25 @@ class Controller
 
     /**
      * @param array $oldImages
-     * @param int   $kNews
+     * @param int   $newsItemID
      * @return int
      */
-    private function addImages(array $oldImages, int $kNews): int
+    private function addImages(array $oldImages, int $newsItemID): int
     {
         if (empty($_FILES['Bilder']['name']) || \count($_FILES['Bilder']['name']) === 0) {
             return 0;
         }
-        $nLetztesBild = \gibLetzteBildNummer($kNews);
-        $nZaehler     = 0;
-        if ($nLetztesBild > 0) {
-            $nZaehler = $nLetztesBild;
+        $lastImage = \gibLetzteBildNummer($newsItemID);
+        $counter     = 0;
+        if ($lastImage > 0) {
+            $counter = $lastImage;
         }
-        $imageCount = \count($_FILES['Bilder']['name']) + $nZaehler;
-        for ($i = $nZaehler; $i < $imageCount; ++$i) {
-            if (!empty($_FILES['Bilder']['size'][$i - $nZaehler])
-                && $_FILES['Bilder']['error'][$i - $nZaehler] === \UPLOAD_ERR_OK
+        $imageCount = \count($_FILES['Bilder']['name']) + $counter;
+        for ($i = $counter; $i < $imageCount; ++$i) {
+            if (!empty($_FILES['Bilder']['size'][$i - $counter])
+                && $_FILES['Bilder']['error'][$i - $counter] === \UPLOAD_ERR_OK
             ) {
-                $type      = $_FILES['Bilder']['type'][$i - $nZaehler];
+                $type      = $_FILES['Bilder']['type'][$i - $counter];
                 $extension = \substr(
                     $type,
                     \strpos($type, '/') + 1,
@@ -476,13 +476,13 @@ class Controller
                 //check if image exists and delete
                 foreach ($oldImages as $image) {
                     if (\strpos($image->cDatei, 'Bild' . ($i + 1) . '.') !== false
-                        && $_FILES['Bilder']['name'][$i - $nZaehler] !== ''
+                        && $_FILES['Bilder']['name'][$i - $counter] !== ''
                     ) {
-                        \loescheNewsBild($image->cName, $kNews, self::UPLOAD_DIR);
+                        \loescheNewsBild($image->cName, $newsItemID, self::UPLOAD_DIR);
                     }
                 }
-                $uploadFile = self::UPLOAD_DIR . $kNews . '/Bild' . ($i + 1) . '.' . $extension;
-                \move_uploaded_file($_FILES['Bilder']['tmp_name'][$i - $nZaehler], $uploadFile);
+                $uploadFile = self::UPLOAD_DIR . $newsItemID . '/Bild' . ($i + 1) . '.' . $extension;
+                \move_uploaded_file($_FILES['Bilder']['tmp_name'][$i - $counter], $uploadFile);
             }
         }
 

@@ -210,13 +210,16 @@ class Category implements CategoryInterface
     {
         $this->setID($id);;
         $overview = $this->db->queryPrepared(
-            "SELECT tnewsmonatsuebersicht.*, tseo.cSeo
+            'SELECT tnewsmonatsuebersicht.*, tseo.cSeo
                 FROM tnewsmonatsuebersicht
                 LEFT JOIN tseo
-                    ON tseo.cKey = 'kNewsMonatsUebersicht'
+                    ON tseo.cKey = :cky
                     AND tseo.kKey = :oid
-                WHERE tnewsmonatsuebersicht.kNewsMonatsUebersicht = :oid",
-            ['oid' => $id],
+                WHERE tnewsmonatsuebersicht.kNewsMonatsUebersicht = :oid',
+            [
+                'cky' => 'kNewsMonatsUebersicht',
+                'oid' => $id
+            ],
             ReturnType::SINGLE_OBJECT
         );
         if ($overview === null) {

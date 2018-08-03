@@ -106,9 +106,9 @@ class News extends MainModel
      * @param int $kNews
      * @return $this
      */
-    public function setNews($kNews)
+    public function setNews(int $kNews): self
     {
-        $this->kNews = (int)$kNews;
+        $this->kNews = $kNews;
 
         return $this;
     }
@@ -125,9 +125,9 @@ class News extends MainModel
      * @param int $kSprache
      * @return $this
      */
-    public function setSprache($kSprache)
+    public function setSprache(int $kSprache): self
     {
-        $this->kSprache = (int)$kSprache;
+        $this->kSprache = $kSprache;
 
         return $this;
     }
@@ -144,7 +144,7 @@ class News extends MainModel
      * @param string $cSeo
      * @return $this
      */
-    public function setSeo($cSeo)
+    public function setSeo($cSeo): self
     {
         $this->cSeo = $cSeo;
 
@@ -163,7 +163,7 @@ class News extends MainModel
      * @param string $cUrl
      * @return $this
      */
-    public function setUrl($cUrl)
+    public function setUrl($cUrl): self
     {
         $this->cUrl = $cUrl;
 
@@ -182,7 +182,7 @@ class News extends MainModel
      * @param string $cUrlExt
      * @return $this
      */
-    public function setUrlExt($cUrlExt)
+    public function setUrlExt($cUrlExt): self
     {
         $this->cUrlExt = $cUrlExt;
 
@@ -201,7 +201,7 @@ class News extends MainModel
      * @param string $cKundengruppe
      * @return $this
      */
-    public function setKundengruppe($cKundengruppe)
+    public function setKundengruppe($cKundengruppe): self
     {
         $this->cKundengruppe = $cKundengruppe;
 
@@ -220,7 +220,7 @@ class News extends MainModel
      * @param string $cBetreff
      * @return $this
      */
-    public function setBetreff($cBetreff)
+    public function setBetreff($cBetreff): self
     {
         $this->cBetreff = $cBetreff;
 
@@ -239,7 +239,7 @@ class News extends MainModel
      * @param string $cText
      * @return $this
      */
-    public function setText($cText)
+    public function setText($cText): self
     {
         $this->cText = $cText;
 
@@ -258,7 +258,7 @@ class News extends MainModel
      * @param string $cVorschauText
      * @return $this
      */
-    public function setVorschauText($cVorschauText)
+    public function setVorschauText($cVorschauText): self
     {
         $this->cVorschauText = $cVorschauText;
 
@@ -277,7 +277,7 @@ class News extends MainModel
      * @param string $cMetaTitle
      * @return $this
      */
-    public function setMetaTitle($cMetaTitle)
+    public function setMetaTitle($cMetaTitle): self
     {
         $this->cMetaTitle = $cMetaTitle;
 
@@ -296,7 +296,7 @@ class News extends MainModel
      * @param string $cMetaDescription
      * @return $this
      */
-    public function setMetaDescription($cMetaDescription)
+    public function setMetaDescription($cMetaDescription): self
     {
         $this->cMetaDescription = $cMetaDescription;
 
@@ -315,7 +315,7 @@ class News extends MainModel
      * @param string $cMetaKeywords
      * @return $this
      */
-    public function setMetaKeywords($cMetaKeywords)
+    public function setMetaKeywords($cMetaKeywords): self
     {
         $this->cMetaKeywords = $cMetaKeywords;
 
@@ -334,9 +334,9 @@ class News extends MainModel
      * @param int $nAktiv
      * @return $this
      */
-    public function setAktiv($nAktiv)
+    public function setAktiv(INT $nAktiv): self
     {
-        $this->nAktiv = (int)$nAktiv;
+        $this->nAktiv = $nAktiv;
 
         return $this;
     }
@@ -353,7 +353,7 @@ class News extends MainModel
      * @param string $dErstellt
      * @return $this
      */
-    public function setErstellt($dErstellt)
+    public function setErstellt($dErstellt): self
     {
         $this->dErstellt = ($dErstellt === 'now()')
             ? date('Y-m-d H:i:s')
@@ -374,7 +374,7 @@ class News extends MainModel
      * @param string $dGueltigVon
      * @return $this
      */
-    public function setGueltigVon($dGueltigVon)
+    public function setGueltigVon($dGueltigVon): self
     {
         $this->dGueltigVon = ($dGueltigVon === 'now()')
             ? date('Y-m-d H:i:s')
@@ -395,7 +395,7 @@ class News extends MainModel
      * @param string $dGueltigVonJS
      * @return $this
      */
-    public function setGueltigVonJS($dGueltigVonJS)
+    public function setGueltigVonJS($dGueltigVonJS): self
     {
         $this->dGueltigVonJS = ($dGueltigVonJS === 'now()')
             ? date('Y-m-d H:i:s')
@@ -419,7 +419,7 @@ class News extends MainModel
                 $kSprache = (int)$oSprache->kSprache;
             }
 
-            $oObj = Shop::Container()->getDB()->query(
+            $oObj       = Shop::Container()->getDB()->query(
                 "SELECT tseo.cSeo, tnews.*, DATE_FORMAT(tnews.dGueltigVon, '%Y,%m,%d') AS dGueltigVonJS, 
                     COUNT(DISTINCT(tnewskommentar.kNewsKommentar)) AS nNewsKommentarAnzahl
                     FROM tnews
@@ -449,8 +449,13 @@ class News extends MainModel
      * @param null|int    $kExcludeCategory
      * @return array
      */
-    public static function loadAll($bActive = true, $cOrder = null, $nCount = null, $nOffset = null, $kExcludeCategory = null)
-    {
+    public static function loadAll(
+        $bActive = true,
+        $cOrder = null,
+        $nCount = null,
+        $nOffset = null,
+        $kExcludeCategory = null
+    ): array {
         $cSqlActive = '';
         if ($bActive) {
             $cSqlActive = ' AND tnews.nAktiv = 1';
@@ -515,21 +520,26 @@ class News extends MainModel
     }
 
     /**
-     * @param int $kSprache
+     * @param int  $kSprache
      * @param bool $noCache
      * @param bool $flatten
      * @param bool $showOnlyActive
      * @return array
      */
-    public static function getAllNewsCategories(int $kSprache = 1, bool $noCache = false, bool $flatten = false, bool $showOnlyActive = false): array
-    {
-        $cacheID = 'newsCategories_Lang_' .$kSprache;
-        if($noCache || ($oNewsCategories_arr = Shop::Container()->getCache()->get($cacheID)) === false)
-        {
-            $oNewsCategories = Shop::Container()->getDB()->query(
+    public static function getAllNewsCategories(
+        int $kSprache = 1,
+        bool $noCache = false,
+        bool $flatten = false,
+        bool $showOnlyActive = false
+    ): array {
+        $cacheID = 'newsCategories_Lang_' . $kSprache;
+        if ($noCache || ($oNewsCategories_arr = Shop::Container()->getCache()->get($cacheID)) === false) {
+            $oNewsCategories     = Shop::Container()->getDB()->query(
                 "SELECT *, DATE_FORMAT(dLetzteAktualisierung, '%d.%m.%Y %H:%i') AS dLetzteAktualisierung_de
                     FROM tnewskategorie
-                    WHERE kSprache = " . $kSprache . ($showOnlyActive ? ' AND nAktiv = 1 ' : '') . "
+                    JOIN tnewskategoriesprache t 
+                        ON tnewskategorie.kNewsKategorie = t.kNewsKategorie
+                    WHERE t.languageID = " . $kSprache . ($showOnlyActive ? ' AND nAktiv = 1 ' : '') . "
                     ORDER BY nSort ASC",
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
@@ -538,17 +548,13 @@ class News extends MainModel
             Shop::Cache()->set($cacheID, $oNewsCategories_arr, [CACHING_GROUP_OBJECT], 3600);
         }
 
-        if ($flatten) {
-            $oNewsCategories_arr = self::flattenNewsCategoryTree($oNewsCategories_arr);
-        }
-
-        return $oNewsCategories_arr;
+        return $flatten ? self::flattenNewsCategoryTree($oNewsCategories_arr) : $oNewsCategories_arr;
     }
 
     /**
      * @param array $newsCats
-     * @param int $parentId
-     * @param int $level
+     * @param int   $parentId
+     * @param int   $level
      * @return array
      */
     public static function buildNewsCategoryTree(array $newsCats, int $parentId = 0, int $level = -1): array
@@ -565,6 +571,7 @@ class News extends MainModel
                 $newsCatTree[]   = $newsCat;
             }
         }
+
         return $newsCatTree;
     }
 
@@ -581,6 +588,7 @@ class News extends MainModel
                 $flattendNewsCats = array_merge($flattendNewsCats, self::flattenNewsCategoryTree($newsCat->children));
             }
         }
+
         return $flattendNewsCats;
     }
 
@@ -594,7 +602,7 @@ class News extends MainModel
     }
 
     /**
-     * @param int $newsCatID
+     * @param int   $newsCatID
      * @param array $newsCats
      * @return array
      */
@@ -605,23 +613,32 @@ class News extends MainModel
             if (isset($newsCat->children) && (int)$newsCat->kNewsKategorie === $newsCatID) {
                 foreach ($newsCat->children as $child) {
                     $subCats[] = $child->kNewsKategorie;
-                    $subCats   = array_merge($subCats, self::getNewsSubCategories($child->kNewsKategorie, $newsCat->children));
+                    $subCats   = array_merge(
+                        $subCats,
+                        self::getNewsSubCategories($child->kNewsKategorie, $newsCat->children)
+                    );
                 }
             }
         }
+
         return $subCats;
     }
 
     /**
-     * @param int $newsCatID
-     * @param int $kSprache
+     * @param int  $newsCatID
+     * @param int  $kSprache
      * @param bool $noCache
      * @param bool $showOnlyActive
      * @return array
      */
-    public static function getNewsCatAndSubCats(int $newsCatID, int $kSprache, bool $noCache = false, bool $showOnlyActive = false): array
-    {
+    public static function getNewsCatAndSubCats(
+        int $newsCatID,
+        int $kSprache,
+        bool $noCache = false,
+        bool $showOnlyActive = false
+    ): array {
         $newsCats = self::getAllNewsCategories($kSprache, $noCache, true, $showOnlyActive);
+
         return array_merge([$newsCatID], self::getNewsSubCategories($newsCatID, $newsCats));
     }
 }

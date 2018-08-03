@@ -12,19 +12,17 @@ $oAccount->permission('CONTENT_NEWS_SYSTEM_VIEW', true, true);
 /** @global JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'news_inc.php';
 
-$Einstellungen         = Shop::getSettings([CONF_NEWS]);
-$cHinweis              = '';
-$cFehler               = '';
-$step                  = 'news_uebersicht';
-$cUploadVerzeichnis    = PFAD_ROOT . PFAD_NEWSBILDER;
-$cUploadVerzeichnisKat = PFAD_ROOT . PFAD_NEWSKATEGORIEBILDER;
-$newsCategory_arr      = [];
-$continueWith          = false;
-$db                    = Shop::Container()->getDB();
-$author                = ContentAuthor::getInstance();
-$controller            = new \News\Admin\Controller($db, $smarty);
-$languages             = Sprache::getAllLanguages();
-$oSpracheNews = Shop::Lang()->getIsoFromLangID($_SESSION['kSprache']);
+$cHinweis       = '';
+$cFehler        = '';
+$step           = 'news_uebersicht';
+$uploadDir      = PFAD_ROOT . PFAD_NEWSBILDER;
+$uploadDirCat   = PFAD_ROOT . PFAD_NEWSKATEGORIEBILDER;
+$newsCategories = [];
+$continueWith   = false;
+$db             = Shop::Container()->getDB();
+$author         = ContentAuthor::getInstance();
+$controller     = new \News\Admin\Controller($db, $smarty);
+$languages      = Sprache::getAllLanguages();
 setzeSprache();
 if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
     $backTab = RequestHelper::verifyGPDataString('tab');
@@ -56,19 +54,19 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0 && FormHe
     if (count($languages) > 0) {
         $db->query('TRUNCATE tnewsmonatspraefix', \DB\ReturnType::AFFECTED_ROWS);
         foreach ($languages as $oSpracheTMP) {
-            $oNewsMonatsPraefix           = new stdClass();
-            $oNewsMonatsPraefix->kSprache = $oSpracheTMP->kSprache;
+            $monthPrefix           = new stdClass();
+            $monthPrefix->kSprache = $oSpracheTMP->kSprache;
             if (strlen($_POST['praefix_' . $oSpracheTMP->cISO]) > 0) {
-                $oNewsMonatsPraefix->cPraefix = htmlspecialchars(
+                $monthPrefix->cPraefix = htmlspecialchars(
                     $_POST['praefix_' . $oSpracheTMP->cISO],
                     ENT_COMPAT | ENT_HTML401, JTL_CHARSET
                 );
             } else {
-                $oNewsMonatsPraefix->cPraefix = $oSpracheTMP->cISO === 'ger'
+                $monthPrefix->cPraefix = $oSpracheTMP->cISO === 'ger'
                     ? 'Newsuebersicht'
                     : 'Newsoverview';
             }
-            $db->insert('tnewsmonatspraefix', $oNewsMonatsPraefix);
+            $db->insert('tnewsmonatspraefix', $monthPrefix);
         }
     }
 }
@@ -78,11 +76,10 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
     if ((isset($_POST['erstellen'], $_POST['news_erstellen']) && (int)$_POST['erstellen'] === 1)
         || (isset($_POST['news_erstellen']) && (int)$_POST['news_erstellen'] === 1)
     ) {
-        $newsCategory_arr = $controller->getAllNewsCategories(false);
-        // News erstellen, $newsCategory_arr leer = Fehler ausgeben
-        if (count($newsCategory_arr) > 0) {
+        $newsCategories = $controller->getAllNewsCategories(false);
+        if (count($newsCategories) > 0) {
             $step = 'news_erstellen';
-            $smarty->assign('oNewsKategorie_arr', $newsCategory_arr)
+            $smarty->assign('oNewsKategorie_arr', $newsCategories)
                    ->assign('oPossibleAuthors_arr',
                        $author->getPossibleAuthors(['CONTENT_NEWS_SYSTEM_VIEW']));
         } else {
@@ -117,14 +114,14 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
                         newsRedirect(empty($tab) ? 'inaktiv' : $tab, $cHinweis);
                     }
                 } else {
-                    $step                           = 'news_kommentar_editieren';
-                    $cFehler                        .= 'Fehler: Bitte überprüfen Sie Ihre Eingaben.<br />';
-                    $oNewsKommentar                 = new stdClass();
-                    $oNewsKommentar->kNewsKommentar = $_POST['kNewsKommentar'];
-                    $oNewsKommentar->kNews          = $_POST['kNews'];
-                    $oNewsKommentar->cName          = $_POST['cName'];
-                    $oNewsKommentar->cKommentar     = $_POST['cKommentar'];
-                    $smarty->assign('oNewsKommentar', $oNewsKommentar);
+                    $step                    = 'news_kommentar_editieren';
+                    $cFehler                 .= 'Fehler: Bitte überprüfen Sie Ihre Eingaben.<br />';
+                    $comment                 = new stdClass();
+                    $comment->kNewsKommentar = $_POST['kNewsKommentar'];
+                    $comment->kNews          = $_POST['kNews'];
+                    $comment->cName          = $_POST['cName'];
+                    $comment->cKommentar     = $_POST['cKommentar'];
+                    $smarty->assign('oNewsKommentar', $comment);
                 }
             } else {
                 $step = 'news_kommentar_editieren';
@@ -164,10 +161,9 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
         }
     } elseif (isset($_GET['newskategorie_editieren']) && (int)$_GET['newskategorie_editieren'] === 1) {
         // Newskategorie editieren
-        // Soll Preview geloescht werden?
-        $kNewsKategorie = (int)$_GET['kNewsKategorie'];
+        $categoryID = (int)$_GET['kNewsKategorie'];
         if (strlen(RequestHelper::verifyGPDataString('delpic')) > 0) {
-            if (loescheNewsBild(RequestHelper::verifyGPDataString('delpic'), $kNewsKategorie, $cUploadVerzeichnisKat)) {
+            if (loescheNewsBild(RequestHelper::verifyGPDataString('delpic'), $categoryID, $uploadDirCat)) {
                 $cHinweis .= 'Ihr ausgewähltes Newsbild wurde erfolgreich gelöscht.';
             } else {
                 $cFehler .= 'Fehler: Ihr ausgewähltes Newsbild konnte nicht gelöscht werden.';
@@ -179,10 +175,8 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
             $newsCategory->load((int)$_GET['kNewsKategorie'], false);
             if ($newsCategory->getID() > 0) {
                 $smarty->assign('oNewsKategorie', $newsCategory);
-                // Hole Bilder
-                if (is_dir($cUploadVerzeichnisKat . $newsCategory->getID())) {
-                    $smarty->assign('oDatei_arr',
-                        holeNewsKategorieBilder($newsCategory->getID(), $cUploadVerzeichnisKat));
+                if (is_dir($uploadDirCat . $newsCategory->getID())) {
+                    $smarty->assign('oDatei_arr', holeNewsKategorieBilder($newsCategory->getID(), $uploadDirCat));
                 }
             } else {
                 $step    = 'news_uebersicht';
@@ -222,46 +216,32 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
     }
     if ((isset($_GET['news_editieren']) && (int)$_GET['news_editieren'] === 1) ||
         ($continueWith !== false && $continueWith > 0)) {
-        $newsCategory_arr = News::getAllNewsCategories($_SESSION['kSprache'], true);
-        $kNews            = ($continueWith !== false && $continueWith > 0)
+        $newsCategories = News::getAllNewsCategories($_SESSION['kSprache'], true);
+        $newsItemID     = ($continueWith !== false && $continueWith > 0)
             ? $continueWith
             : (int)$_GET['kNews'];
-        // Sollen einzelne Newsbilder geloescht werden?
         if (strlen(RequestHelper::verifyGPDataString('delpic')) > 0) {
-            if (loescheNewsBild(RequestHelper::verifyGPDataString('delpic'), $kNews, $cUploadVerzeichnis)) {
+            if (loescheNewsBild(RequestHelper::verifyGPDataString('delpic'), $newsItemID, $uploadDir)) {
                 $cHinweis .= 'Ihr ausgewähltes Newsbild wurde erfolgreich gelöscht.';
             } else {
                 $cFehler .= 'Fehler: Ihr ausgewähltes Newsbild konnte nicht gelöscht werden.';
             }
         }
 
-        if ($kNews > 0 && count($newsCategory_arr) > 0) {
+        if ($newsItemID > 0 && count($newsCategories) > 0) {
             $smarty->assign('oNewsKategorie_arr', $controller->getAllNewsCategories(false))
-                   ->assign('oAuthor', $author->getAuthor('NEWS', $kNews))
-                   ->assign('oPossibleAuthors_arr',
-                       $author->getPossibleAuthors(['CONTENT_NEWS_SYSTEM_VIEW']));
-            $step  = 'news_editieren';
-            $oNews = new \News\Item($db);
-            $oNews->load($kNews);
+                   ->assign('oAuthor', $author->getAuthor('NEWS', $newsItemID))
+                   ->assign('oPossibleAuthors_arr', $author->getPossibleAuthors(['CONTENT_NEWS_SYSTEM_VIEW']));
+            $step     = 'news_editieren';
+            $newsItem = new \News\Item($db);
+            $newsItem->load($newsItemID);
 
-            if ($oNews->getID() > 0) {
-//                $oNews->kKundengruppe_arr = StringHandler::parseSSK($oNews->cKundengruppe);
-                // Hole Bilder
-                if (is_dir($cUploadVerzeichnis . $oNews->getID())) {
-                    $smarty->assign('oDatei_arr', holeNewsBilder($oNews->getID(), $cUploadVerzeichnis));
+            if ($newsItem->getID() > 0) {
+                if (is_dir($uploadDir . $newsItem->getID())) {
+                    $smarty->assign('oDatei_arr', holeNewsBilder($newsItem->getID(), $uploadDir));
                 }
-                // NewskategorieNews
-                $newsCategoryNews_arr = \Functional\map($db->query(
-                    'SELECT DISTINCT(kNewsKategorie)
-                        FROM tnewskategorienews
-                        WHERE kNews = ' . $oNews->getID(),
-                    \DB\ReturnType::ARRAY_OF_OBJECTS
-                ), function ($e) {
-                    return $e->kNewsKategorie;
-                });
-
                 $smarty->assign('oNewsKategorie_arr', $controller->getAllNewsCategories())
-                       ->assign('oNews', $oNews);
+                       ->assign('oNews', $newsItem);
             }
         } else {
             $cFehler .= 'Fehler: Bitte legen Sie zuerst eine Newskategorie an.<br />';
@@ -269,19 +249,18 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
         }
     }
 
-    // News Vorschau
     if ($step === 'news_vorschau' || RequestHelper::verifyGPCDataInt('nd') === 1) {
         if (RequestHelper::verifyGPCDataInt('kNews')) {
-            $step  = 'news_vorschau';
-            $kNews = RequestHelper::verifyGPCDataInt('kNews');
-            $oNews = new \News\Item($db);
-            $oNews->load($kNews);
+            $step       = 'news_vorschau';
+            $newsItemID = RequestHelper::verifyGPCDataInt('kNews');
+            $newsItem   = new \News\Item($db);
+            $newsItem->load($newsItemID);
 
-            if ($oNews->getID() > 0) {
-                if (is_dir($cUploadVerzeichnis . $oNews->getID())) {
-                    $smarty->assign('oDatei_arr', holeNewsBilder($oNews->getID(), $cUploadVerzeichnis));
+            if ($newsItem->getID() > 0) {
+                if (is_dir($uploadDir . $newsItem->getID())) {
+                    $smarty->assign('oDatei_arr', holeNewsBilder($newsItem->getID(), $uploadDir));
                 }
-                $smarty->assign('oNews', $oNews);
+                $smarty->assign('oNews', $newsItem);
                 if ((isset($_POST['kommentare_loeschen']) && (int)$_POST['kommentare_loeschen'] === 1)
                     || isset($_POST['kommentareloeschenSubmit'])
                 ) {
@@ -295,7 +274,7 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
                         newsRedirect(empty($tab) ? 'inaktiv' : $tab, $cHinweis, [
                             'news'  => '1',
                             'nd'    => '1',
-                            'kNews' => $oNews->getID(),
+                            'kNews' => $newsItem->getID(),
                             'token' => $_SESSION['jtl_token'],
                         ]);
                     } else {
@@ -303,7 +282,7 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
                     }
                 }
 
-                $smarty->assign('oNewsKommentar_arr', $oNews->getComments()->getItems());
+                $smarty->assign('oNewsKommentar_arr', $newsItem->getComments()->getItems());
             }
         }
     }
@@ -311,71 +290,71 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
 }
 // Hole News aus DB
 if ($step === 'news_uebersicht') {
-    $oNews_arr = $controller->getAllNews();//getAllNews();
+    $newsItems = $controller->getAllNews();//getAllNews();
 
     // Newskommentare die auf eine Freischaltung warten
-    $oNewsKommentar_arr = $controller->getNonActivatedComments($_SESSION['kSprache']);
-    $oConfig_arr        = $db->selectAll(
+    $comments    = $controller->getNonActivatedComments($_SESSION['kSprache']);
+    $config      = $db->selectAll(
         'teinstellungenconf',
         'kEinstellungenSektion',
         CONF_NEWS,
         '*',
         'nSort'
     );
-    $configCount        = count($oConfig_arr);
+    $configCount = count($config);
     for ($i = 0; $i < $configCount; $i++) {
-        if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-            $oConfig_arr[$i]->ConfWerte = $db->selectAll(
+        if ($config[$i]->cInputTyp === 'selectbox') {
+            $config[$i]->ConfWerte = $db->selectAll(
                 'teinstellungenconfwerte',
                 'kEinstellungenConf',
-                (int)$oConfig_arr[$i]->kEinstellungenConf,
+                (int)$config[$i]->kEinstellungenConf,
                 '*',
                 'nSort'
             );
         }
-        $oSetValue                      = $db->select(
+        $oSetValue                 = $db->select(
             'teinstellungen',
             'kEinstellungenSektion',
             CONF_NEWS,
             'cName',
-            $oConfig_arr[$i]->cWertName
+            $config[$i]->cWertName
         );
-        $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
+        $config[$i]->gesetzterWert = $oSetValue->cWert ?? null;
     }
 
     // Praefix
-    $oNewsMonatsPraefix_arr = [];
-    foreach ($languages as $i => $oSprache) {
-        $oNewsMonatsPraefix_arr[$i]                = new stdClass();
-        $oNewsMonatsPraefix_arr[$i]->kSprache      = $oSprache->kSprache;
-        $oNewsMonatsPraefix_arr[$i]->cNameEnglisch = $oSprache->cNameEnglisch;
-        $oNewsMonatsPraefix_arr[$i]->cNameDeutsch  = $oSprache->cNameDeutsch;
-        $oNewsMonatsPraefix_arr[$i]->cISOSprache   = $oSprache->cISO;
-        $oNewsMonatsPraefix                        = $db->select(
+    $prefixes = [];
+    foreach ($languages as $i => $lang) {
+        $prefixes[$i]                = new stdClass();
+        $prefixes[$i]->kSprache      = $lang->kSprache;
+        $prefixes[$i]->cNameEnglisch = $lang->cNameEnglisch;
+        $prefixes[$i]->cNameDeutsch  = $lang->cNameDeutsch;
+        $prefixes[$i]->cISOSprache   = $lang->cISO;
+        $monthPrefix                 = $db->select(
             'tnewsmonatspraefix',
             'kSprache',
-            (int)$oSprache->kSprache
+            (int)$lang->kSprache
         );
-        $oNewsMonatsPraefix_arr[$i]->cPraefix      = $oNewsMonatsPraefix->cPraefix ?? null;
+        $prefixes[$i]->cPraefix      = $monthPrefix->cPraefix ?? null;
     }
-    $newsCategory_arr = $controller->getAllNewsCategories();
-    $oPagiKommentar   = (new Pagination('kommentar'))
-        ->setItemArray($oNewsKommentar_arr)
+    $newsCategories     = $controller->getAllNewsCategories();
+    $commentPagination  = (new Pagination('kommentar'))
+        ->setItemArray($comments)
         ->assemble();
-    $oPagiNews        = (new Pagination('news'))
-        ->setItemArray($oNews_arr)
+    $itemPagination     = (new Pagination('news'))
+        ->setItemArray($newsItems)
         ->assemble();
-    $oPagiKats        = (new Pagination('kats'))
-        ->setItemArray($newsCategory_arr)
+    $categoryPagination = (new Pagination('kats'))
+        ->setItemArray($newsCategories)
         ->assemble();
-    $smarty->assign('oConfig_arr', $oConfig_arr)
-           ->assign('oNewsKommentar_arr', $oPagiKommentar->getPageItems())
-           ->assign('oNews_arr', $oPagiNews->getPageItems())
-           ->assign('oNewsKategorie_arr', $oPagiKats->getPageItems())
-           ->assign('oNewsMonatsPraefix_arr', $oNewsMonatsPraefix_arr)
-           ->assign('oPagiKommentar', $oPagiKommentar)
-           ->assign('oPagiNews', $oPagiNews)
-           ->assign('oPagiKats', $oPagiKats);
+    $smarty->assign('oConfig_arr', $config)
+           ->assign('oNewsKommentar_arr', $commentPagination->getPageItems())
+           ->assign('oNews_arr', $itemPagination->getPageItems())
+           ->assign('oNewsKategorie_arr', $categoryPagination->getPageItems())
+           ->assign('oNewsMonatsPraefix_arr', $prefixes)
+           ->assign('oPagiKommentar', $commentPagination)
+           ->assign('oPagiNews', $itemPagination)
+           ->assign('oPagiKats', $categoryPagination);
 } elseif ($step === 'news_kategorie_erstellen') {
     $newsCategory = new \News\Category($db);
     foreach ($languages as $language) {
@@ -390,7 +369,7 @@ if (!empty($_SESSION['news.cHinweis'])) {
     unset($_SESSION['news.cHinweis']);
 }
 
-$maxFileSize   = getMaxFileSize(ini_get('upload_max_filesize'));
+$maxFileSize    = getMaxFileSize(ini_get('upload_max_filesize'));
 $customerGroups = \Functional\map($db->query(
     'SELECT kKundengruppe, cName
         FROM tkundengruppe

@@ -82,31 +82,43 @@ function compatibility() {
 function regionsToState() {
     var state = $('#state');
     if (state.length === 0) {
+
         return;
     }
-    var title = state.attr('title');
+    var title           = state.attr('title');
     var stateIsRequired = state.attr('required') === 'required';
 
-    $('#country').change(function() {
+    $('#country').change(function () {
         var result = {};
-        var io = $.evo.io();
-        var val = $(this).find(':selected').val();
+        var io     = $.evo.io();
+        var val    = $(this).find(':selected').val();
 
         io.call('getRegionsByCountry', [val], result, function (error, data) {
             if (error) {
                 console.error(data);
             } else {
                 var data = result.response;
-                var def = $('#state').val();
+                var def  = $('#state').val();
                 if (data !== null && data.length > 0) {
-                    if (stateIsRequired){
-                        var state = $('<select />').attr({ id: 'state', name: 'bundesland', class: 'required form-control', required: 'required'});
+                    if (stateIsRequired) {
+                        var state = $('<select />').attr({
+                            id:           'state',
+                            name:         'bundesland',
+                            class:        'required form-control',
+                            autocomplete: 'billing address-level1',
+                            required:     'required'
+                        });
                     } else {
-                        var state = $('<select />').attr({ id: 'state', name: 'bundesland', class: 'form-control'});
+                        var state = $('<select />').attr({
+                            id:           'state',
+                            name:         'bundesland',
+                            autocomplete: 'billing address-level1',
+                            class:        'form-control'
+                        });
                     }
 
                     state.append('<option value="">' + title + '</option>');
-                    $(data).each(function(idx, item) {
+                    $(data).each(function (idx, item) {
                         state.append(
                             $('<option></option>').val(item.cCode).html(item.cName)
                                 .attr('selected', item.cCode == def || item.cName == def ? 'selected' : false)
@@ -115,16 +127,105 @@ function regionsToState() {
                     $('#state').replaceWith(state);
                 } else {
                     if (stateIsRequired) {
-                        var state = $('<input />').attr({ type: 'text', id: 'state', name: 'bundesland', class: 'required form-control', placeholder: title, required: 'required' });
+                        var state = $('<input />').attr({
+                            type:         'text',
+                            id:           'state',
+                            name:         'bundesland',
+                            class:        'required form-control',
+                            placeholder:  title,
+                            autocomplete: 'billing address-level1',
+                            required:     'required'
+                        });
                     } else {
-                        var state = $('<input />').attr({ type: 'text', id: 'state', name: 'bundesland', class: 'form-control', placeholder: title });
+                        var state = $('<input />').attr({
+                            type:         'text',
+                            id:           'state',
+                            name:         'bundesland',
+                            class:        'form-control',
+                            placeholder:  title,
+                            autocomplete: 'billing address-level1',
+                        });
                     }
                     $('#state').replaceWith(state);
                 }
             }
         });
-        return false;
 
+        return false;
+    });
+
+    var state2 = $('#register-shipping_address-state');
+    if (state2.length === 0) {
+
+        return;
+    }
+    var title2           = state2.attr('title');
+    var stateIsRequired2 = state2.attr('required') === 'required';
+
+    $('#register-shipping_address-country').change(function () {
+        var result = {};
+        var io     = $.evo.io();
+        var val    = $(this).find(':selected').val();
+
+        io.call('getRegionsByCountry', [val], result, function (error, data) {
+            if (error) {
+                console.error(data);
+            } else {
+                var data = result.response;
+                var def  = $('#register-shipping_address-state').val();
+                if (data !== null && data.length > 0) {
+                    if (stateIsRequired2) {
+                        var state2 = $('<select />').attr({
+                            id:           'register-shipping_address-state',
+                            name:         'register[shipping_address][bundesland]',
+                            class:        'required form-control',
+                            autocomplete: 'shipping address-level1',
+                            required:     'required'
+                        });
+                    } else {
+                        var state2 = $('<select />').attr({
+                            id:           'register-shipping_address-state',
+                            name:         'register[shipping_address][bundesland]',
+                            autocomplete: 'shipping address-level1',
+                            class:        'form-control'
+                        });
+                    }
+
+                    state2.append('<option value="">' + title2 + '</option>');
+                    $(data).each(function (idx, item) {
+                        state2.append(
+                            $('<option></option>').val(item.cCode).html(item.cName)
+                                .attr('selected', item.cCode == def || item.cName == def ? 'selected' : false)
+                        );
+                    });
+                    $('#register-shipping_address-state').replaceWith(state2);
+                } else {
+                    if (stateIsRequired2) {
+                        var state2 = $('<input />').attr({
+                            type:         'text',
+                            id:           'register-shipping_address-state',
+                            name:         'register[shipping_address][bundesland]',
+                            class:        'required form-control',
+                            placeholder:  title2,
+                            autocomplete: 'shipping address-level1',
+                            required:     'required'
+                        });
+                    } else {
+                        var state2 = $('<input />').attr({
+                            type:         'text',
+                            id:           'register-shipping_address-state',
+                            name:         'register[shipping_address][bundesland]',
+                            class:        'form-control',
+                            autocomplete: 'shipping address-level1',
+                            placeholder:  title2
+                        });
+                    }
+                    $('#register-shipping_address-state').replaceWith(state2);
+                }
+            }
+        });
+
+        return false;
     });
 }
 
@@ -376,18 +477,18 @@ $(document).ready(function () {
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace('keyword'),
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         remote:         {
-            url:      'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country_input').val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}',
+            url:      'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country-input').val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}',
             wildcard: '%QUERY'
         },
         dataType: "json"
     });
     $('.city_input').focusin(function () {
-        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country_input').val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}';
+        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country-input').val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}';
     });
     $('.postcode_input').change(function () {
-        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country_input').val() + '", "' + $(this).val() + '"]}';
+        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country-input').val() + '", "' + $(this).val() + '"]}';
     });
-    $('.country_input').change(function () {
+    $('.country-input').change(function () {
         citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}';
     });
 

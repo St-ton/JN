@@ -14,10 +14,10 @@ use function Functional\group;
 use function Functional\map;
 
 /**
- * Class ItemList
+ * Class CategoryList
  * @package News
  */
-final class ItemList implements ItemListInterface
+final class CategoryList implements ItemListInterface
 {
     /**
      * @var DbInterface
@@ -54,39 +54,19 @@ final class ItemList implements ItemListInterface
             return $this->items;
         }
         $itemLanguages = $this->db->query(
-            "SELECT tnewssprache.languageID,
-            tnewssprache.languageCode,
-            tnews.cKundengruppe, 
-            tnews.kNews, 
-            tnewssprache.title AS localizedTitle, 
-            tnewssprache.content, 
-            tnewssprache.preview, 
-            tnewssprache.previewImage, 
-            tnewssprache.metaTitle, 
-            tnewssprache.metaKeywords, 
-            tnewssprache.metaDescription, 
-            tnews.nAktiv AS isActive, 
-            tnews.dErstellt AS dateCreated, 
-            tnews.dGueltigVon AS dateValidFrom, 
-            tseo.cSeo AS localizedURL
-                FROM tnews
-                JOIN tnewssprache
-                    ON tnews.kNews = tnewssprache.kNews
-                JOIN tseo 
-                    ON tseo.cKey = 'kNews'
-                    AND tseo.kKey = tnews.kNews
-                WHERE tnews.kNews  IN (" . \implode(',', $this->itemIDs) . ")
-                GROUP BY tnews.kNews, tnewssprache.languageID",
+            'SELECT *
+                FROM tnewskategorie
+                WHERE kNewsKategorie  IN (' . \implode(',', $this->itemIDs) . ')',
             ReturnType::ARRAY_OF_OBJECTS
         );
         $items         = map(group($itemLanguages, function ($e) {
-            return (int)$e->kNews;
+            return (int)$e->kNewsKategorie;
         }), function ($e, $newsID) {
-            $l = new Item($this->db);
-            $l->setID($newsID);
-            $l->map($e);
+            $c = new Category($this->db);
+            $c->setID($newsID);
+            $c->map($e);
 
-            return $l;
+            return $c;
         });
         foreach ($items as $item) {
             $this->items->push($item);

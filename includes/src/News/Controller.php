@@ -10,6 +10,7 @@ namespace News;
 use DB\DbInterface;
 use DB\ReturnType;
 use Session\Session;
+use function Functional\every;
 
 /**
  * Class Controller
@@ -36,6 +37,11 @@ class Controller
      * @var string
      */
     private $errorMsg = '';
+
+    /**
+     * @var string
+     */
+    private $noticeMsg = '';
 
     /**
      * @var int
@@ -68,7 +74,7 @@ class Controller
             $_SESSION['NewsNaviFilter']->nSort = \RequestHelper::verifyGPCDataInt('nSort');
         } elseif (\RequestHelper::verifyGPCDataInt('nSort') === -1) {
             $_SESSION['NewsNaviFilter']->nSort = -1;
-        } else {
+        } elseif (!isset($_SESSION['NewsNaviFilter']->nSort)) {
             $_SESSION['NewsNaviFilter']->nSort = 1;
         }
         if ((int)$params['cDatum'] === -1) {
@@ -95,7 +101,14 @@ class Controller
         } elseif ($params['kNewsMonatsUebersicht'] > 0) {
             $this->currentNewsType = ViewType::NEWS_MONTH_OVERVIEW;
         }
-        $this->smarty->assign('oDatum_arr', $this->getNewsDates($this->getFilterSQL(true)));
+        $this->smarty->assign('oDatum_arr', $this->getNewsDates($this->getFilterSQL(true)))
+                     ->assign('nPlausiValue_arr', [
+                         'cKommentar' => 0,
+                         'nAnzahl'    => 0,
+                         'cEmail'     => 0,
+                         'cName'      => 0,
+                         'captcha'    => 0
+                     ]);
 
         return $this->currentNewsType;
     }
@@ -145,8 +158,9 @@ class Controller
      * @param \Pagination $pagination
      * @param int         $categoryID
      * @param int         $monthOverviewID
+     * @return Category
      */
-    public function displayOverview(\Pagination $pagination, int $categoryID = 0, int $monthOverviewID = 0)
+    public function displayOverview(\Pagination $pagination, int $categoryID = 0, int $monthOverviewID = 0): Category
     {
         $category = new Category($this->db);
         if ($categoryID > 0) {
@@ -205,6 +219,8 @@ class Controller
         }
 
         \executeHook(\HOOK_NEWS_PAGE_NEWSUEBERSICHT);
+
+        return $category;
     }
 
     /**
@@ -217,22 +233,22 @@ class Controller
         if ($this->config['news']['news_kommentare_nutzen'] !== 'Y') {
             return false;
         }
-        $cHinweis = '';
-        $cFehler  = '';
-        $checks   = self::checkComment($data, $id, $this->config);
+        $checks    = self::checkComment($data, $id, $this->config);
+        $checkedOK = every($checks, function ($e) {
+            return $e === 0;
+        });
 
         \executeHook(\HOOK_NEWS_PAGE_NEWSKOMMENTAR_PLAUSI);
 
-        if ($this->config['news']['news_kommentare_eingeloggt'] === 'Y' && !empty($_SESSION['Kunde']->kKunde)) {
-            if (\count($checks) === 0) {
+        if ($this->config['news']['news_kommentare_eingeloggt'] === 'Y' && Session::Customer()->getID() > 0) {
+            if ($checkedOK) {
                 $comment             = new \stdClass();
                 $comment->kNews      = (int)$_POST['kNews'];
                 $comment->kKunde     = (int)$_SESSION['Kunde']->kKunde;
-                $comment->nAktiv     = ($Einstellungen['news']['news_kommentare_freischalten'] === 'Y')
+                $comment->nAktiv     = $this->config['news']['news_kommentare_freischalten'] === 'Y'
                     ? 0
                     : 1;
-                $comment->cName      = $_SESSION['Kunde']->cVorname . ' ' .
-                    \substr($_SESSION['Kunde']->cNachname, 0, 1) . '.';
+                $comment->cName      = $_SESSION['Kunde']->cVorname . ' ' . $_SESSION['Kunde']->cNachname[0] . '.';
                 $comment->cEmail     = $_SESSION['Kunde']->cMail;
                 $comment->cKommentar = \StringHandler::htmlentities(
                     \StringHandler::filterXSS($_POST['cKommentar'])
@@ -243,18 +259,18 @@ class Controller
 
                 $this->db->insert('tnewskommentar', $comment);
 
-                if ($Einstellungen['news']['news_kommentare_freischalten'] === 'Y') {
-                    $cHinweis .= \Shop::Lang()->get('newscommentAddactivate', 'messages') . '<br>';
+                if ($this->config['news']['news_kommentare_freischalten'] === 'Y') {
+                    $this->noticeMsg .= \Shop::Lang()->get('newscommentAddactivate', 'messages') . '<br>';
                 } else {
-                    $cHinweis .= \Shop::Lang()->get('newscommentAdd', 'messages') . '<br>';
+                    $this->noticeMsg .= \Shop::Lang()->get('newscommentAdd', 'messages') . '<br>';
                 }
             } else {
-                $cFehler .= self::getCommentErrors($checks);
+                $this->errorMsg .= self::getCommentErrors($checks);
                 $this->smarty->assign('nPlausiValue_arr', $checks)
                              ->assign('cPostVar_arr', \StringHandler::filterXSS($_POST));
             }
         } elseif ($this->config['news']['news_kommentare_eingeloggt'] === 'N') {
-            if (\count($checks) === 0) {
+            if ($checkedOK) {
                 if (Session::Customer()->getID() > 0) {
                     $cName  = Session::Customer()->cVorname . ' ' . Session::Customer()->cNachname[0] . '.';
                     $cEmail = Session::Customer()->cMail;
@@ -281,12 +297,12 @@ class Controller
                 $this->db->insert('tnewskommentar', $comment);
 
                 if ($this->config['news']['news_kommentare_freischalten'] === 'Y') {
-                    $cHinweis .= \Shop::Lang()->get('newscommentAddactivate', 'messages') . '<br />';
+                    $this->noticeMsg .= \Shop::Lang()->get('newscommentAddactivate', 'messages') . '<br />';
                 } else {
-                    $cHinweis .= \Shop::Lang()->get('newscommentAdd', 'messages') . '<br />';
+                    $this->noticeMsg .= \Shop::Lang()->get('newscommentAdd', 'messages') . '<br />';
                 }
             } else {
-                $cFehler .= self::getCommentErrors($checks);
+                $this->errorMsg .= self::getCommentErrors($checks);
                 $this->smarty->assign('nPlausiValue_arr', $checks)
                              ->assign('cPostVar_arr', \StringHandler::filterXSS($_POST));
             }
@@ -307,6 +323,7 @@ class Controller
             'cKommentar' => 0,
             'nAnzahl'    => 0,
             'cEmail'     => 0,
+            'cName'      => 0,
             'captcha'    => 0
         ];
         if (empty($post['cKommentar'])) {
@@ -315,12 +332,12 @@ class Controller
             $checks['cKommentar'] = 2;
         }
         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0 && $newsID > 0) {
-            // Kunde ist eingeloggt
-            $oNewsKommentar = \Shop::Container()->getDB()->query(
+            $oNewsKommentar = \Shop::Container()->getDB()->queryPrepared(
                 'SELECT COUNT(*) AS nAnzahl
                     FROM tnewskommentar
-                    WHERE kNews = ' . (int)$newsID . '
-                        AND kKunde = ' . (int)$_SESSION['Kunde']->kKunde,
+                    WHERE kNews = :nid
+                        AND kKunde = :cid',
+                ['nid' => $newsID, 'cid' => Session::Customer()->getID()],
                 ReturnType::SINGLE_OBJECT
             );
 
@@ -329,7 +346,6 @@ class Controller
             ) {
                 $checks['nAnzahl'] = 1;
             }
-
             $post['cEmail'] = $_SESSION['Kunde']->cMail;
         } else {
             // Kunde ist nicht eingeloggt - Name prüfen
@@ -562,5 +578,37 @@ class Controller
                 ORDER BY tnewskategorie.nSort DESC',
             ReturnType::ARRAY_OF_OBJECTS
         );
+    }
+
+    /**
+     * @return string
+     */
+    public function getErrorMsg(): string
+    {
+        return $this->errorMsg;
+    }
+
+    /**
+     * @param string $errorMsg
+     */
+    public function setErrorMsg(string $errorMsg)
+    {
+        $this->errorMsg = $errorMsg;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNoticeMsg(): string
+    {
+        return $this->noticeMsg;
+    }
+
+    /**
+     * @param string $noticeMsg
+     */
+    public function setNoticeMsg(string $noticeMsg)
+    {
+        $this->noticeMsg = $noticeMsg;
     }
 }

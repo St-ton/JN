@@ -105,22 +105,22 @@
                                 {foreach $oNewsKommentar_arr as $oNewsKommentar}
                                     <tr class="tab_bg{$oNewsKommentar@iteration%2}">
                                         <td class="check">
-                                            <input type="checkbox" name="kNewsKommentar[]" value="{$oNewsKommentar->kNewsKommentar}" id="comment-{$oNewsKommentar->kNewsKommentar}" />
+                                            <input type="checkbox" name="kNewsKommentar[]" value="{$oNewsKommentar->getID()}" id="comment-{$oNewsKommentar->getID()}" />
                                         </td>
                                         <td class="TD2">
-                                            <label for="comment-{$oNewsKommentar->kNewsKommentar}">
-                                            {if $oNewsKommentar->cVorname|strlen > 0}
-                                                {$oNewsKommentar->cVorname} {$oNewsKommentar->cNachname}
-                                            {else}
-                                                {$oNewsKommentar->cName}
-                                            {/if}
+                                            <label for="comment-{$oNewsKommentar->getID()}">
+                                            {*{if $oNewsKommentar->cVorname|strlen > 0}*}
+                                                {*{$oNewsKommentar->cVorname} {$oNewsKommentar->cNachname}*}
+                                            {*{else}*}
+                                                {$oNewsKommentar->getName()}
+                                            {*{/if}*}
                                             </label>
                                         </td>
-                                        <td class="TD3">{$oNewsKommentar->cBetreff|truncate:50:"..."}</td>
-                                        <td class="TD4">{$oNewsKommentar->cKommentar|truncate:150:"..."}</td>
-                                        <td class="tcenter">{$oNewsKommentar->dErstellt_de}</td>
+                                        <td class="TD3">{$oNewsKommentar->getNewsTitle()|truncate:50:'...'}</td>
+                                        <td class="TD4">{$oNewsKommentar->getText()|truncate:150:'...'}</td>
+                                        <td class="tcenter">{$oNewsKommentar->getDateCreatedCompat()}</td>
                                         <td class="tcenter">
-                                            <a href="news.php?news=1&kNews={$oNewsKommentar->kNews}&kNewsKommentar={$oNewsKommentar->kNewsKommentar}&nkedit=1&tab=inaktiv&token={$smarty.session.jtl_token}"
+                                            <a href="news.php?news=1&kNews={$oNewsKommentar->getNewsID()}&kNewsKommentar={$oNewsKommentar->getID()}&nkedit=1&tab=inaktiv&token={$smarty.session.jtl_token}"
                                                class="btn btn-primary" title="{#modify#}">
                                                 <i class="fa fa-edit"></i>
                                             </a>
@@ -167,7 +167,7 @@
                             <tr>
                                 <th class="check"></th>
                                 <th class="tleft">{#newsHeadline#}</th>
-                                <th class="tleft">{#newsCategory#}</th>
+                                {*<th class="tleft">{#newsCategory#}</th>*}
                                 <th class="tleft">{#newsCustomerGrp#}</th>
                                 <th class="tleft">{#newsValidation#}</th>
                                 <th>{#newsActive#}</th>
@@ -180,31 +180,31 @@
                             {if $oNews_arr|@count > 0 && $oNews_arr}
                                 {foreach $oNews_arr as $oNews}
                                     <tr class="tab_bg{$oNews@iteration%2}">
-                                        <td class="check"><input type="checkbox" name="kNews[]" value="{$oNews->kNews}" id="news-cb-{$oNews->kNews}" /></td>
-                                        <td class="TD2"><label for="news-cb-{$oNews->kNews}">{$oNews->cBetreff}</label></td>
-                                        <td class="TD3">{$oNews->KategorieAusgabe}</td>
+                                        <td class="check"><input type="checkbox" name="kNews[]" value="{$oNews->getID()}" id="news-cb-{$oNews->getID()}" /></td>
+                                        <td class="TD2"><label for="news-cb-{$oNews->getID()}">{$oNews->getTitle()}</label></td>
+                                        {*<td class="TD3">{$oNews->KategorieAusgabe}</td>*}
                                         <td class="TD4">
-                                            {foreach $oNews->cKundengruppe_arr as $cKundengruppe}
-                                                {$cKundengruppe}{if !$cKundengruppe@last},{/if}
+                                            {foreach $oNews->getCustomerGroups() as $customerGroupID}
+                                                {if $customerGroupID === -1}Alle{else}{Kundengruppe::getNameByID($customerGroupID)}{/if}{if !$customerGroupID@last},{/if}
                                             {/foreach}
                                         </td>
-                                        <td class="TD5">{$oNews->dGueltigVon_de}</td>
-                                        <td class="tcenter"><i class="fa fa-{if $oNews->nAktiv == 1}check{else}close{/if}"></i></td>
+                                        <td class="TD5">{$oNews->getDateValidFromLocalizedCompat()}</td>
+                                        <td class="tcenter"><i class="fa fa-{if $oNews->getIsActive()}check{else}close{/if}"></i></td>
                                         <td class="tcenter">
-                                            {if $oNews->nNewsKommentarAnzahl > 0}
-                                                <a href="news.php?news=1&nd=1&kNews={$oNews->kNews}&tab=aktiv&token={$smarty.session.jtl_token}">{$oNews->nNewsKommentarAnzahl}</a>
+                                            {if $oNews->getCommentCount() > 0}
+                                                <a href="news.php?news=1&nd=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}">{$oNews->getCommentCount()}</a>
                                             {else}
-                                                {$oNews->nNewsKommentarAnzahl}
+                                                {$oNews->getCommentCount()}
                                             {/if}
                                         </td>
-                                        <td class="tcenter">{$oNews->Datum}</td>
+                                        <td class="tcenter">{$oNews->getDateCompat()}</td>
                                         <td class="tcenter">
                                             <div class="btn-group">
-                                                <a href="news.php?news=1&news_editieren=1&kNews={$oNews->kNews}&tab=aktiv&token={$smarty.session.jtl_token}"
+                                                <a href="news.php?news=1&news_editieren=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
                                                    class="btn btn-primary" title="{#modify#}">
                                                     <i class="fa fa-edit"></i>
                                                 </a>
-                                                <a href="news.php?news=1&nd=1&kNews={$oNews->kNews}&tab=aktiv&token={$smarty.session.jtl_token}"
+                                                <a href="news.php?news=1&nd=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
                                                    class="btn btn-default" title="{#newsPreview#}">
                                                     <i class="fa fa-eye"></i>
                                                 </a>
@@ -271,25 +271,24 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {if $oNewsKategorie_arr|@count > 0 && $oNewsKategorie_arr}
-                                {foreach $oNewsKategorieFlat_arr as $oNewsKategorie}
-                                    <tr class="tab_bg{$oNewsKategorie@iteration%2} {if (int)$oNewsKategorie->nLevel > 0}hidden-soft{/if}" data-level="{$oNewsKategorie->nLevel}">
+                            {if $oNewsKategorie_arr|@count}
+                                {foreach $oNewsKategorie_arr as $oNewsKategorie}
+                                    <tr class="tab_bg{$oNewsKategorie@iteration % 2}{if $oNewsKategorie->getLevel() > 0} hidden-soft{/if}" data-level="{$oNewsKategorie->getLevel()}">
                                         <td class="check">
-                                            <input type="checkbox" name="kNewsKategorie[]" data-name="{$oNewsKategorie->cName}" value="{$oNewsKategorie->kNewsKategorie}" id="newscat-{$oNewsKategorie->kNewsKategorie}" />
+                                            <input type="checkbox" name="kNewsKategorie[]" data-name="{$oNewsKategorie->getName()}" value="{$oNewsKategorie->getID()}" id="newscat-{$oNewsKategorie->getID()}" />
                                         </td>
-                                        <td class="TD2 {if (int)$oNewsKategorie->nLevel === 0}hide-toggle-on{/if}" data-name="category">
-                                            {for $i=1 to $oNewsKategorie->nLevel}&nbsp;&nbsp;&nbsp;{/for}
-                                            <i class="fa fa-caret-down nav-toggle {if !isset($oNewsKategorie->children)}invisible{/if}"></i>
-                                            <label>
-                                                {$oNewsKategorie->cName}
+                                        <td class="TD2{if $oNewsKategorie->getLevel() === 0} hide-toggle-on{/if}" data-name="category">
+                                            {for $i=1 to $oNewsKategorie->getLevel()}&nbsp;&nbsp;&nbsp;{/for}
+                                            <i class="fa fa-caret-down nav-toggle{if count($oNewsKategorie->getChildren()) === 0} invisible{/if}"></i>
+                                            <label for="newscat-{$oNewsKategorie->getID()}">
+                                                {$oNewsKategorie->getName()}
                                             </label>
-
                                         </td>
-                                        <td class="tcenter">{$oNewsKategorie->nSort}</td>
-                                        <td class="tcenter">{if $oNewsKategorie->nAktiv === '1'}{#yes#}{else}{#no#}{/if}</td>
-                                        <td class="tcenter">{$oNewsKategorie->dLetzteAktualisierung_de}</td>
+                                        <td class="tcenter">{$oNewsKategorie->getSort()}</td>
+                                        <td class="tcenter"><i class="fa fa-{if $oNewsKategorie->getIsActive()}check{else}close{/if}"></i></td>
+                                        <td class="tcenter">{$oNewsKategorie->getDateLastModified()->format('d.m.Y H:i')}</td>
                                         <td class="tcenter">
-                                            <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->kNewsKategorie}&tab=kategorien&token={$smarty.session.jtl_token}"
+                                            <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->getID()}&tab=kategorien&token={$smarty.session.jtl_token}"
                                                class="btn btn-primary" title="{#modify#}">
                                                 <i class="fa fa-edit"></i>
                                             </a>
@@ -381,9 +380,7 @@
                 </div>
             </form>
         </div>
-        <!-- #einstellungen -->
     </div>
-    <!-- .tab-content -->
 </div>
 <div class="modal delete-modal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">

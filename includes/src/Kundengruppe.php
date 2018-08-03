@@ -645,4 +645,16 @@ class Kundengruppe
 
         return $attributes;
     }
+
+    /**
+     * @param int $id
+     * @return null|string
+     */
+    public static function getNameByID(int $id)
+    {
+        $cgroup = new self();
+        $cgroup->loadFromDB($id);
+
+        return $cgroup->getName();
+    }
 }

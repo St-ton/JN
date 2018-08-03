@@ -32,7 +32,7 @@ interface ItemListInterface
     public function setItems(Collection $items);
 
     /**
-     * @param ItemInterFace $item
+     * @param mixed $item
      */
-    public function addItem(ItemInterFace $item);
+    public function addItem($item);
 }

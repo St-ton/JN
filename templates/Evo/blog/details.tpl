@@ -109,10 +109,10 @@
                                                 {if empty($smarty.session.Kunde->kKunde)}
                                                     <div class="row">
                                                         <div class="col-xs-12 col-md-6">
-                                                            <div id="commentName" class="form-group float-label-control{if isset($nPlausiValue_arr.cName)} has-error{/if} required">
+                                                            <div id="commentName" class="form-group float-label-control{if $nPlausiValue_arr.cName > 0} has-error{/if} required">
                                                                 <label class="control-label commentForm" for="comment-name">{lang key='newsName' section='news'}</label>
                                                                 <input class="form-control" required id="comment-name" name="cName" type="text" value="{if !empty($cPostVar_arr.cName)}{$cPostVar_arr.cName}{/if}" />
-                                                                {if isset($nPlausiValue_arr.cName)}
+                                                                {if $nPlausiValue_arr.cName > 0}
                                                                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                                                                         {lang key='fillOut' section='global'}
                                                                     </div>
@@ -120,10 +120,10 @@
                                                             </div>
                                                         </div>
                                                         <div class="col-xs-12 col-md-6">
-                                                            <div id="commentEmail" class="form-group float-label-control{if isset($nPlausiValue_arr.cEmail)} has-error{/if} required">
+                                                            <div id="commentEmail" class="form-group float-label-control{if $nPlausiValue_arr.cEmail > 0} has-error{/if} required">
                                                                 <label class="control-label commentForm" for="comment-email">{lang key='newsEmail' section='news'}</label>
                                                                 <input class="form-control" required id="comment-email" name="cEmail" type="email" value="{if !empty($cPostVar_arr.cEmail)}{$cPostVar_arr.cEmail}{/if}" />
-                                                                {if isset($nPlausiValue_arr.cEmail)}
+                                                                {if $nPlausiValue_arr.cEmail > 0}
                                                                     <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                                                                         {lang key='fillOut' section='global'}
                                                                     </div>
@@ -133,10 +133,10 @@
                                                     </div>
                                                 {/if}
 
-                                                <div id="commentText" class="form-group float-label-control{if isset($nPlausiValue_arr.cKommentar)} has-error{/if} required">
+                                                <div id="commentText" class="form-group float-label-control{if $nPlausiValue_arr.cKommentar > 0} has-error{/if} required">
                                                     <label class="control-label commentForm" for="comment-text">{lang key='newsComment' section='news'}</label>
                                                     <textarea id="comment-text" required class="form-control" name="cKommentar">{if !empty($cPostVar_arr.cKommentar)}{$cPostVar_arr.cKommentar}{/if}</textarea>
-                                                    {if isset($nPlausiValue_arr.cKommentar)}
+                                                    {if $nPlausiValue_arr.cKommentar > 0}
                                                         <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                                                             {lang key='fillOut' section='global'}
                                                         </div>
@@ -152,10 +152,10 @@
 
                                                 <input class="btn btn-primary" name="speichern" type="submit" value="{lang key='newsCommentSave' section='news'}" />
                                             {elseif $Einstellungen.news.news_kommentare_eingeloggt === 'Y' && !empty($smarty.session.Kunde->kKunde)}
-                                                <div class="form-group float-label-control{if isset($nPlausiValue_arr.cKommentar)} has-error{/if} required">
+                                                <div class="form-group float-label-control{if $nPlausiValue_arr.cKommentar > 0} has-error{/if} required">
                                                     <label class="control-label" for="comment-text"><strong>{lang key='newsComment' section='news'}</strong></label>
                                                     <textarea id="comment-text" class="form-control" name="cKommentar" required></textarea>
-                                                    {if isset($nPlausiValue_arr.cKommentar)}
+                                                    {if $nPlausiValue_arr.cKommentar > 0}
                                                         <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
                                                             {lang key='fillOut' section='global'}
                                                         </div>

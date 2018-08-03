@@ -201,10 +201,10 @@ class Pagination
     }
 
     /**
-     * @param array $oItem_arr - item array to be paginated and sorted
+     * @param array|\Tightenco\Collect\Support\Collection $oItem_arr - item array to be paginated and sorted
      * @return $this
      */
-    public function setItemArray(array $oItem_arr): self
+    public function setItemArray($oItem_arr): self
     {
         $this->oItem_arr = $oItem_arr;
         $this->setItemCount(count($oItem_arr));
@@ -334,6 +334,8 @@ class Pagination
         // Slice array if exists
         if (is_array($this->oItem_arr)) {
             $this->oPageItem_arr = array_slice($this->oItem_arr, $this->nFirstPageItem, $this->nPageItemCount);
+        } elseif ($this->oItem_arr instanceof \Tightenco\Collect\Support\Collection) {
+            $this->oPageItem_arr = $this->oItem_arr->slice($this->nFirstPageItem, $this->nPageItemCount);
         }
 
         return $this;

@@ -92,6 +92,12 @@ interface ItemInterFace
     public function getTitle(int $idx = null): string;
 
     /**
+     * @param int|null $idx
+     * @return string
+     */
+    public function getTitleUppercase(int $idx = null): string;
+
+    /**
      * @return string[]
      */
     public function getTitles(): array;

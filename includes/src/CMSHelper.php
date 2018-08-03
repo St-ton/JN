@@ -79,8 +79,8 @@ class CMSHelper
                 $cSQL = ' LIMIT ' . (int)$conf['news']['news_anzahl_content'];
             }
             $oNews_arr    = Shop::Container()->getDB()->query(
-                "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, 
-                tnews.cVorschauText, tnews.cMetaTitle, tnews.cMetaDescription, tnews.cMetaKeywords, 
+                "SELECT tnews.kNews, t.languageID AS kSprache, tnews.cKundengruppe, t.title AS cBetreff, t.content AS cText, 
+                t.preview AS cVorschauText, t.metaTitle AS cMetaTitle, t.metaDescription AS cMetaDescription, t.metaKeywords AS cMetaKeywords, 
                 tnews.nAktiv, tnews.dErstellt, tnews.cPreviewImage, tseo.cSeo,
                 count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl, 
                 DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dErstellt_de,
@@ -88,6 +88,8 @@ class CMSHelper
                     FROM tnews
                     JOIN tnewskategorienews 
                         ON tnewskategorienews.kNews = tnews.kNews
+                    JOIN tnewssprache t 
+                        ON tnews.kNews = t.kNews
                     JOIN tnewskategorie 
                         ON tnewskategorie.kNewsKategorie = tnewskategorienews.kNewsKategorie
                          AND tnewskategorie.nAktiv = 1
@@ -98,7 +100,7 @@ class CMSHelper
                         ON tseo.cKey = 'kNews'
                         AND tseo.kKey = tnews.kNews
                         AND tseo.kSprache = " . Shop::getLanguage() . "
-                    WHERE tnews.kSprache = " . Shop::getLanguage() . "
+                    WHERE t.languageID = " . Shop::getLanguage() . "
                         AND tnews.nAktiv = 1
                         AND tnews.dGueltigVon <= now()
                         AND (tnews.cKundengruppe LIKE '%;-1;%' 

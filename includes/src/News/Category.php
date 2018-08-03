@@ -19,10 +19,30 @@ use function Functional\map;
  */
 class Category implements CategoryInterface
 {
+    use \MagicCompatibilityTrait;
+
+    /**
+     * @var array
+     */
+    protected static $mapping = [
+        'dLetzteAktualisierung_de' => 'DateLastModified',
+        'nSort'                    => 'Sort',
+        'nAktiv'                   => 'IsActive',
+        'kNewsKategorie'           => 'ID',
+        'cName'                    => 'Name',
+        'nLevel'                   => 'Level',
+        'children'                 => 'Children'
+    ];
+
     /**
      * @var int
      */
-    protected $id;
+    protected $id = -1;
+
+    /**
+     * @var int
+     */
+    protected $parentID = 0;
 
     /**
      * @var int[]
@@ -38,6 +58,11 @@ class Category implements CategoryInterface
      * @var string[]
      */
     protected $names = [];
+
+    /**
+     * @var array
+     */
+    protected $seo = [];
 
     /**
      * @var string[]
@@ -65,6 +90,11 @@ class Category implements CategoryInterface
     protected $previewImages = [];
 
     /**
+     * @var string[]
+     */
+    protected $urls = [];
+
+    /**
      * @var int
      */
     protected $sort = 0;
@@ -78,6 +108,16 @@ class Category implements CategoryInterface
      * @var \DateTime
      */
     protected $dateLastModified;
+
+    /**
+     * @var int
+     */
+    protected $level = 0;
+
+    /**
+     * @var array
+     */
+    protected $children = [];
 
     /**
      * @var Collection|ItemListInterface
@@ -120,6 +160,8 @@ class Category implements CategoryInterface
             ReturnType::ARRAY_OF_OBJECTS
         );
         if (\count($categoryLanguages) === 0) {
+            $this->setID(-1);
+
             return $this;
         }
 
@@ -136,6 +178,7 @@ class Category implements CategoryInterface
             $this->languageIDs[]  = $langID;
             $this->names[$langID] = $groupLanguage->cName;
 //            $this->languageCodes[$langID]    = $groupLanguage->cISOSprache;
+
             $this->metaDescriptions[$langID] = $groupLanguage->cMetaDescription;
             $this->metaTitles[$langID]       = $groupLanguage->cMetaTitle;
             $this->descriptions[$langID]     = $groupLanguage->cBeschreibung;
@@ -143,6 +186,8 @@ class Category implements CategoryInterface
             $this->previewImages[$langID]    = $groupLanguage->cPreviewImage;
             $this->isActive                  = (bool)$groupLanguage->nAktiv;
             $this->dateLastModified          = \date_create($groupLanguage->dLetzteAktualisierung);
+            $this->parentID                  = (int)$groupLanguage->kParent;
+            $this->seo[$langID]              = $groupLanguage->cSeo;
         }
         $this->items = (new ItemList($this->db))->createItems(map(flatten($this->db->queryPrepared(
             'SELECT kNews
@@ -157,14 +202,19 @@ class Category implements CategoryInterface
         return $this;
     }
 
-    public function getMonthOverview($id)
+    /**
+     * @param int $id
+     * @return $this
+     */
+    public function getMonthOverview(int $id): Category
     {
+        $this->setID($id);;
         $overview = $this->db->queryPrepared(
             "SELECT tnewsmonatsuebersicht.*, tseo.cSeo
                 FROM tnewsmonatsuebersicht
                 LEFT JOIN tseo
                     ON tseo.cKey = 'kNewsMonatsUebersicht'
-                    AND tseo.kKey = 1
+                    AND tseo.kKey = :oid
                 WHERE tnewsmonatsuebersicht.kNewsMonatsUebersicht = :oid",
             ['oid' => $id],
             ReturnType::SINGLE_OBJECT
@@ -172,6 +222,8 @@ class Category implements CategoryInterface
         if ($overview === null) {
             return $this;
         }
+        $this->urls[\Shop::getLanguageID()] = \Shop::getURL() . '/' . $overview->cSeo;
+
         $this->items = (new ItemList($this->db))->createItems(map(flatten($this->db->queryPrepared(
             'SELECT tnews.kNews
                 FROM tnews
@@ -198,9 +250,10 @@ class Category implements CategoryInterface
      * @param \stdClass|null $filterSQL
      * @return $this
      */
-    public function getOverview(\stdClass $filterSQL = null)
+    public function getOverview(\stdClass $filterSQL = null): Category
     {
-        $filter = $filterSQL->cDatumSQL ?? '';
+        $this->setID(0);
+        $filter      = $filterSQL->cDatumSQL ?? '';
         $this->items = (new ItemList($this->db))->createItems(map(flatten($this->db->queryPrepared(
             'SELECT tnews.kNews
                 FROM tnews
@@ -224,7 +277,7 @@ class Category implements CategoryInterface
     public function buildMetaKeywords(): string
     {
         $keywords = '';
-        $max        = 6;
+        $max      = 6;
         if ($this->items->count() < $max) {
             $max = \count($this->items);
         }
@@ -259,11 +312,11 @@ class Category implements CategoryInterface
                 $dir   = 'asc';
                 break;
             case 3: // Name a ... z
-                $order = 'getTitle';
+                $order = 'getTitleUppercase';
                 $dir   = 'asc';
                 break;
             case 4: // Name z ... a
-                $order = 'getTitle';
+                $order = 'getTitleUppercase';
                 $dir   = 'desc';
                 break;
             case 5: // Anzahl Kommentare absteigend
@@ -308,7 +361,7 @@ class Category implements CategoryInterface
     {
         $idx = $idx ?? \Shop::getLanguageID();
 
-        return $this->names[$idx] ?? '';
+        return $this->names[$idx] ?? '-NO TRANSLATION AVAILABLE-';
     }
 
     /**
@@ -435,6 +488,268 @@ class Category implements CategoryInterface
     public function setMetaDescriptions(array $metaDescriptions)
     {
         $this->metaDescriptions = $metaDescriptions;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getURL(int $idx = null): string
+    {
+        $idx = $idx ?? \Shop::getLanguageID();
+
+        // @todo: category or month overview?
+//        return $this->urls[$idx] ?? '/?nm=' . $this->getID();
+        return $this->urls[$idx] ?? '/?nk=' . $this->getID();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getURLs(): array
+    {
+        return $this->urls;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSEO(int $idx = null): string
+    {
+        $idx = $idx ?? \Shop::getLanguageID();
+
+        return $this->seo[$idx] ?? '';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSEOs(): array
+    {
+        return $this->seo;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getID(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setID(int $id)
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getParentID(): int
+    {
+        return $this->parentID;
+    }
+
+    /**
+     * @param int $parentID
+     */
+    public function setParentID(int $parentID)
+    {
+        $this->parentID = $parentID;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getLanguageID(int $idx = null): string
+    {
+        $idx = $idx ?? \Shop::getLanguageID();
+
+        return $this->languageIDs[$idx] ?? '';
+    }
+
+    /**
+     * @return int[]
+     */
+    public function getLanguageIDs(): array
+    {
+        return $this->languageIDs;
+    }
+
+    /**
+     * @param int[] $languageIDs
+     */
+    public function setLanguageIDs(array $languageIDs)
+    {
+        $this->languageIDs = $languageIDs;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getLanguageCode(int $idx = null): string
+    {
+        $idx = $idx ?? \Shop::getLanguageID();
+
+        return $this->languageCodes[$idx] ?? '';
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getLanguageCodes(): array
+    {
+        return $this->languageCodes;
+    }
+
+    /**
+     * @param string[] $languageCodes
+     */
+    public function setLanguageCodes(array $languageCodes)
+    {
+        $this->languageCodes = $languageCodes;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getDescription(int $idx = null): string
+    {
+        $idx = $idx ?? \Shop::getLanguageID();
+
+        return $this->descriptions[$idx] ?? '';
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getDescriptions(): array
+    {
+        return $this->descriptions;
+    }
+
+    /**
+     * @param string[] $descriptions
+     */
+    public function setDescriptions(array $descriptions)
+    {
+        $this->descriptions = $descriptions;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getPreviewImage(int $idx = null): string
+    {
+        $idx = $idx ?? \Shop::getLanguageID();
+
+        return $this->previewImages[$idx] ?? '';
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getPreviewImages(): array
+    {
+        return $this->previewImages;
+    }
+
+    /**
+     * @param string[] $previewImages
+     */
+    public function setPreviewImages(array $previewImages)
+    {
+        $this->previewImages = $previewImages;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSort(): int
+    {
+        return $this->sort;
+    }
+
+    /**
+     * @param int $sort
+     */
+    public function setSort(int $sort)
+    {
+        $this->sort = $sort;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    /**
+     * @param bool $isActive
+     */
+    public function setIsActive(bool $isActive)
+    {
+        $this->isActive = $isActive;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getDateLastModified(): \DateTime
+    {
+        return $this->dateLastModified;
+    }
+
+    /**
+     * @param \DateTime $dateLastModified
+     */
+    public function setDateLastModified(\DateTime $dateLastModified)
+    {
+        $this->dateLastModified = $dateLastModified;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLevel(): int
+    {
+        return $this->level;
+    }
+
+    /**
+     * @param int $level
+     */
+    public function setLevel(int $level)
+    {
+        $this->level = $level;
+    }
+
+    /**
+     * @return array
+     */
+    public function getChildren(): array
+    {
+        return $this->children;
+    }
+
+    /**
+     * @param array $children
+     */
+    public function setChildren(array $children)
+    {
+        $this->children = $children;
     }
 
     /**

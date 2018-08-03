@@ -19,12 +19,20 @@ class Comment
 
     use \MagicCompatibilityTrait;
 
+    /**
+     * @var array
+     */
     protected static $mapping = [
-        'cKommentar' => 'Text',
-        'cName' => 'Name',
-        'dErstellt' => 'DateCreatedCompat',
+        'cKommentar'   => 'Text',
+        'cName'        => 'Name',
+        'dErstellt'    => 'DateCreatedCompat',
         'dErstellt_de' => 'DateCreatedCompat',
     ];
+
+    /**
+     * @var string
+     */
+    private $newsTitle = '';
 
     /**
      * @var int
@@ -169,6 +177,14 @@ class Comment
     /**
      * @return bool
      */
+    public function getIsActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    /**
+     * @return bool
+     */
     public function isActive(): bool
     {
         return $this->isActive;
@@ -217,6 +233,14 @@ class Comment
     /**
      * @return string
      */
+    public function getContent(): string
+    {
+        return $this->text;
+    }
+
+    /**
+     * @return string
+     */
     public function getText(): string
     {
         return $this->text;
@@ -252,6 +276,22 @@ class Comment
     public function getDateCreatedCompat(): string
     {
         return $this->dateCreated->format('Y-m-d H:i');
+    }
+
+    /**
+     * @return string
+     */
+    public function getNewsTitle(): string
+    {
+        return $this->newsTitle;
+    }
+
+    /**
+     * @param string $newsTitle
+     */
+    public function setNewsTitle(string $newsTitle)
+    {
+        $this->newsTitle = $newsTitle;
     }
 
     /**

@@ -541,6 +541,7 @@ class News extends MainModel
         if ($flatten) {
             $oNewsCategories_arr = self::flattenNewsCategoryTree($oNewsCategories_arr);
         }
+
         return $oNewsCategories_arr;
     }
 

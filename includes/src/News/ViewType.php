@@ -6,6 +6,7 @@
 
 namespace News;
 
+
 use MyCLabs\Enum\Enum;
 
 /**
@@ -25,5 +26,4 @@ class ViewType extends Enum
     const NEWS_MONTH_OVERVIEW = 3;
 
     const NEWS_OVERVIEW = 4;
-
 }

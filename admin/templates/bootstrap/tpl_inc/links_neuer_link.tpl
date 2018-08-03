@@ -186,16 +186,6 @@
                         </div>
                     </div>
                     <div class="input-group">
-                        <span class="input-group-addon"><label for="lang">Sprache</label></span>
-                        <span class="input-group-wrap">
-                            <select class="form-control" name="cISO" id="lang">
-                                {foreach name=sprachen from=$sprachen item=sprache}
-                                    <option value="{$sprache->cISO}" {if $sprache->cShopStandard === 'Y'}selected="selected"{/if}>{$sprache->cNameDeutsch} {if $sprache->cShopStandard === 'Y'}(Standard){/if}</option>
-                                {/foreach}
-                            </select>
-                        </span>
-                    </div>
-                    <div class="input-group">
                         <span class="input-group-addon"><label for="bIsFluid">{#bIsFluidText#}</label></span>
                         <div class="input-group-wrap">
                             <input class="form-control2" type="checkbox" name="bIsFluid" id="bIsFluid" value="1" {if $Link->getIsFluid() === true || (isset($xPostVar_arr.bIsFluid) && $xPostVar_arr.bIsFluid === '1')}checked{/if} />
@@ -206,6 +196,16 @@
                         <div class="input-group-wrap">
                             <input class="form-control" type="text" name="cIdentifier" id="cIdentifier" value="{if $Link->getIdentifier()}{$Link->getIdentifier()}{elseif isset($xPostVar_arr.bIsFluid)}$xPostVar_arr.bIsFluid{/if}" />
                         </div>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon"><label for="lang">Sprache</label></span>
+                        <span class="input-group-wrap">
+                            <select class="form-control" name="cISO" id="lang">
+                                {foreach name=sprachen from=$sprachen item=sprache}
+                                    <option value="{$sprache->cISO}" {if $sprache->cShopStandard === 'Y'}selected="selected"{/if}>{$sprache->cNameDeutsch} {if $sprache->cShopStandard === 'Y'}(Standard){/if}</option>
+                                {/foreach}
+                            </select>
+                        </span>
                     </div>
                 </div>
             </div>

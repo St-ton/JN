@@ -10,6 +10,7 @@
  * @param array  $kKundengruppe_arr
  * @param array  $kNewsKategorie_arr
  * @return array
+ * @deprecated since 5.0.0
  */
 function pruefeNewsPost($cBetreff, $cText, $kKundengruppe_arr, $kNewsKategorie_arr)
 {
@@ -47,7 +48,7 @@ function pruefeNewsKategorie($cName, $nNewskategorieEditSpeichern = 0)
         $cPlausiValue_arr['cName'] = 1;
     }
     // Prüfen ob Name schon vergeben
-    if ($nNewskategorieEditSpeichern == 0) {
+    if ($nNewskategorieEditSpeichern === 0) {
         $oNewsKategorieTMP = Shop::Container()->getDB()->select('tnewskategorie', 'cName', $cName);
         if (isset($oNewsKategorieTMP->kNewsKategorie) && $oNewsKategorieTMP->kNewsKategorie > 0) {
             $cPlausiValue_arr['cName'] = 2;
@@ -515,13 +516,16 @@ function getAllNews()
 {
     $oNews_arr = Shop::Container()->getDB()->query(
         "SELECT SQL_CALC_FOUND_ROWS tnews.*, 
-            count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl,
+            COUNT(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl,
             DATE_FORMAT(tnews.dErstellt, '%d.%m.%Y %H:%i') AS Datum, 
-            DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y %H:%i') AS dGueltigVon_de
+            DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y %H:%i') AS dGueltigVon_de,
+            t.*
             FROM tnews
             LEFT JOIN tnewskommentar 
                 ON tnewskommentar.kNews = tnews.kNews
-            WHERE tnews.kSprache = " . (int)$_SESSION['kSprache'] . "
+            JOIN tnewssprache t
+                ON tnews.kNews = t.kNews
+            #WHERE tnews.kSprache = " . (int)$_SESSION['kSprache'] . "
             GROUP BY tnews.kNews
             ORDER BY tnews.dGueltigVon DESC",
         \DB\ReturnType::ARRAY_OF_OBJECTS
@@ -563,7 +567,7 @@ function getAllNews()
                     ON tnewskommentar.kNews = tnews.kNews
                 WHERE tnewskommentar.nAktiv = 1 
                     AND tnews.kNews = ' . (int)$oNews->kNews . '
-                    AND tnews.kSprache = ' . (int)$_SESSION['kSprache'],
+                    #AND tnews.kSprache = ' . (int)$_SESSION['kSprache'],
             \DB\ReturnType::SINGLE_OBJECT
         );
         $oNews_arr[$i]->nNewsKommentarAnzahl = $oNewsKommentarAktiv->nNewsKommentarAnzahlAktiv;

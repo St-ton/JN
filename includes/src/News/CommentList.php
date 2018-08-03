@@ -9,6 +9,7 @@ namespace News;
 
 use DB\DbInterface;
 use DB\ReturnType;
+use function Functional\first;
 use Tightenco\Collect\Support\Collection;
 use function Functional\group;
 use function Functional\map;
@@ -17,7 +18,7 @@ use function Functional\map;
  * Class CommentList
  * @package News
  */
-final class CommentList
+final class CommentList implements ItemListInterface
 {
     /**
      * @var DbInterface
@@ -28,6 +29,11 @@ final class CommentList
      * @var int
      */
     private $newsID;
+
+    /**
+     * @var array
+     */
+    private $itemIDs = [];
 
     /**
      * @var Collection
@@ -45,19 +51,51 @@ final class CommentList
     }
 
     /**
-     * @param int $newsID
-     * @return Collection
+     * @inheritdoc
      */
-    public function getComments(int $newsID): Collection
+    public function createItems(array $itemIDs): Collection
+    {
+        $this->itemIDs = \array_map('\intval', $itemIDs);
+        $data          = $this->db->queryPrepared(
+            'SELECT tnewskommentar.*, t.title
+                FROM tnewskommentar
+                JOIN tnewssprache t 
+                    ON t.kNews = tnewskommentar.kNews
+                WHERE kNewsKommentar IN (' . implode(',', $this->itemIDs) . ')
+                GROUP BY tnewskommentar.kNewsKommentar
+                ORDER BY tnewskommentar.dErstellt DESC',
+            ['nid' => $this->newsID],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        $items         = map(group($data, function ($e) {
+            return (int)$e->kNewsKommentar;
+        }), function ($e, $commentID) {
+            $l = new Comment($this->db);
+            $l->setID($commentID);
+            $l->map($e);
+            $l->setNewsTitle(first($e)->title);
+
+            return $l;
+        });
+        foreach ($items as $item) {
+            $this->items->push($item);
+        }
+
+        return $this->items;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function createItemsByNewsItem(int $newsID): Collection
     {
         $this->newsID = $newsID;
         $data         = $this->db->queryPrepared(
             'SELECT *
                 FROM tnewskommentar
                 WHERE kNews = :nid
-                    AND nAktiv = 1
                 ORDER BY tnewskommentar.dErstellt DESC',
-            ['nid' => $newsID],
+            ['nid' => $this->newsID],
             ReturnType::ARRAY_OF_OBJECTS
         );
         $items        = map(group($data, function ($e) {
@@ -74,6 +112,17 @@ final class CommentList
         }
 
         return $this->items;
+    }
+
+    /**
+     * @param bool $active
+     * @return Collection
+     */
+    public function filter(bool $active): Collection
+    {
+        return $this->items->filter(function (Comment $e) use ($active) {
+            return $e->isActive() === $active;
+        });
     }
 
     /**
@@ -95,7 +144,7 @@ final class CommentList
     /**
      * @param Comment $item
      */
-    public function addItem(Comment $item)
+    public function addItem($item)
     {
         $this->items->push($item);
     }

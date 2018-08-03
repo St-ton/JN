@@ -33,7 +33,7 @@ trait MagicCompatibilityTrait
      */
     public function __get($name)
     {
-//        Shop::dbg($name, false, 'n', 3);
+        Shop::dbg($name, false, 'n', 3);
         trigger_error(__CLASS__ . ': getter should be used to get ' . $name, E_USER_DEPRECATED);
         if (property_exists($this, $name)) {
 
@@ -55,7 +55,7 @@ trait MagicCompatibilityTrait
      */
     public function __set($name, $value)
     {
-        trigger_error(__CLASS__ . ': setter should be used to set ' . $name, E_USER_DEPRECATED);
+//        trigger_error(__CLASS__ . ': setter should be used to set ' . $name, E_USER_DEPRECATED);
         if (property_exists($this, $name)) {
             $this->$name = $value;
 
@@ -66,6 +66,7 @@ trait MagicCompatibilityTrait
 
             return $this->$method($value);
         }
+//        Shop::dbg($value, false, $name, 3);
         trigger_error(__CLASS__ . ': setter could not find property ' . $name, E_USER_DEPRECATED);
         $this->data[$name] = $value;
 

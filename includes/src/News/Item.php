@@ -9,6 +9,7 @@ namespace News;
 
 use DB\DbInterface;
 use DB\ReturnType;
+use function Functional\map;
 
 /**
  * Class Item
@@ -143,27 +144,27 @@ class Item extends AbstractItem
         $this->id = $id;
         $item     = $this->db->queryPrepared(
             "SELECT tnewssprache.languageID,
-            tnewssprache.languageCode,
-            tnews.cKundengruppe, 
-            tnewssprache.title AS localizedTitle, 
-            tnewssprache.content, 
-            tnewssprache.preview, 
-            tnewssprache.previewImage, 
-            tnewssprache.metaTitle, 
-            tnewssprache.metaKeywords, 
-            tnewssprache.metaDescription, 
-            tnews.nAktiv AS isActive, 
-            tnews.dErstellt AS dateCreated, 
-            tnews.dGueltigVon AS dateValidFrom, 
-            tseo.cSeo AS localizedURL
-            FROM tnews
-            JOIN tnewssprache
-                ON tnews.kNews = tnewssprache.kNews
-            JOIN tseo 
-                ON tseo.cKey = 'kNews'
-                AND tseo.kKey = tnews.kNews
-            WHERE tnews.kNews = :nid
-            GROUP BY tnewssprache.languageID",
+                tnewssprache.languageCode,
+                tnews.cKundengruppe, 
+                tnewssprache.title AS localizedTitle, 
+                tnewssprache.content, 
+                tnewssprache.preview, 
+                tnewssprache.previewImage, 
+                tnewssprache.metaTitle, 
+                tnewssprache.metaKeywords, 
+                tnewssprache.metaDescription, 
+                tnews.nAktiv AS isActive, 
+                tnews.dErstellt AS dateCreated, 
+                tnews.dGueltigVon AS dateValidFrom, 
+                tseo.cSeo AS localizedURL
+                FROM tnews
+                JOIN tnewssprache
+                    ON tnews.kNews = tnewssprache.kNews
+                JOIN tseo 
+                    ON tseo.cKey = 'kNews'
+                    AND tseo.kKey = tnews.kNews
+                WHERE tnews.kNews = :nid
+                GROUP BY tnewssprache.languageID",
             ['nid' => $this->id],
             ReturnType::ARRAY_OF_OBJECTS
         );
@@ -203,10 +204,46 @@ class Item extends AbstractItem
             $this->setDate(\date_create($item->dateCreated));
             $this->setDateValidFrom(\date_create($item->dateValidFrom));
         }
-        $this->comments->getComments($this->id);
+        $this->comments->createItemsByNewsItem($this->id);
         $this->commentCount = $this->comments->getItems()->count();
 
         return $this;
+    }
+
+    /**
+     * @return int[]
+     */
+    public function getCategoryIDs(): array
+    {
+        return map($this->db->queryPrepared(
+            'SELECT DISTINCT(tnewskategorie.kNewsKategorie)
+                FROM tnewskategorie 
+                JOIN tnewskategorienews
+                    ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
+                WHERE tnewskategorienews.kNews = :nid',
+            ['nid' => $this->id],
+            ReturnType::ARRAY_OF_OBJECTS
+        ), function ($e) {
+            return (int)$e->kNewsKategorie;
+        });
+    }
+
+    /**
+     * @return array
+     */
+    public function getCategories(): array
+    {
+        return $this->db->queryPrepared(
+            'SELECT t.*
+                FROM tnewskategorie 
+                JOIN tnewskategorienews
+                    ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
+                JOIN tnewskategoriesprache t 
+                    ON tnewskategorie.kNewsKategorie = t.kNewsKategorie
+                WHERE tnewskategorienews.kNews = :nid',
+            ['nid' => $this->id],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
     }
 
     /**
@@ -278,7 +315,7 @@ class Item extends AbstractItem
     {
         $idx = $idx ?? \Shop::getLanguageID();
 
-        return $this->urls[$idx] ?? '/?s=' . $this->getID();
+        return $this->urls[$idx] ?? '/?n=' . $this->getID();
     }
 
     /**
@@ -313,6 +350,16 @@ class Item extends AbstractItem
         $idx = $idx ?? \Shop::getLanguageID();
 
         return $this->titles[$idx] ?? '';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getTitleUppercase(int $idx = null): string
+    {
+        $idx = $idx ?? \Shop::getLanguageID();
+
+        return \strtoupper($this->titles[$idx] ?? '');
     }
 
     /**

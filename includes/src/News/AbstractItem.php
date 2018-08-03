@@ -6,6 +6,7 @@
 
 namespace News;
 
+
 /**
  * Class AbstractItem
  * @package News
@@ -21,6 +22,7 @@ abstract class AbstractItem implements ItemInterFace
         'kNews'                => 'ID',
         'kSprache'             => 'LanguageID',
         'cKundengruppe'        => 'CustomerGroupsCompat',
+        'cKundengruppe_arr'    => 'CustomerGroups',
         'cBetreff'             => 'Title',
         'cText'                => 'Content',
         'cVorschauText'        => 'Preview',

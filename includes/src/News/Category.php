@@ -174,14 +174,14 @@ class Category implements CategoryInterface
     public function map(array $categoryLanguages): CategoryInterface
     {
         foreach ($categoryLanguages as $groupLanguage) {
-            $langID               = (int)$groupLanguage->kSprache;
+            $langID               = (int)$groupLanguage->languageID;
             $this->languageIDs[]  = $langID;
-            $this->names[$langID] = $groupLanguage->cName;
+            $this->names[$langID] = $groupLanguage->name;
 //            $this->languageCodes[$langID]    = $groupLanguage->cISOSprache;
 
-            $this->metaDescriptions[$langID] = $groupLanguage->cMetaDescription;
-            $this->metaTitles[$langID]       = $groupLanguage->cMetaTitle;
-            $this->descriptions[$langID]     = $groupLanguage->cBeschreibung;
+            $this->metaDescriptions[$langID] = $groupLanguage->metaDescription;
+            $this->metaTitles[$langID]       = $groupLanguage->metaTitle;
+            $this->descriptions[$langID]     = $groupLanguage->description;
             $this->sort                      = (int)$groupLanguage->nSort;
             $this->previewImages[$langID]    = $groupLanguage->cPreviewImage;
             $this->isActive                  = (bool)$groupLanguage->nAktiv;

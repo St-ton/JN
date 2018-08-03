@@ -55,8 +55,13 @@ final class CategoryList implements ItemListInterface
         }
         $itemLanguages = $this->db->query(
             'SELECT *
-                FROM tnewskategorie
-                WHERE kNewsKategorie  IN (' . \implode(',', $this->itemIDs) . ')',
+                FROM tnewskategoriesprache
+                JOIN tnewskategorie
+                    ON tnewskategoriesprache.kNewsKategorie = tnewskategorie.kNewsKategorie
+                JOIN tseo
+                    ON tseo.cKey = \'kNewsKategorie\'
+                    AND tseo.kKey = tnewskategorie.kNewsKategorie
+                WHERE tnewskategorie.kNewsKategorie  IN (' . \implode(',', $this->itemIDs) . ')',
             ReturnType::ARRAY_OF_OBJECTS
         );
         $items         = map(group($itemLanguages, function ($e) {

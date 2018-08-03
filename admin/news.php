@@ -20,11 +20,10 @@ $cUploadVerzeichnis    = PFAD_ROOT . PFAD_NEWSBILDER;
 $cUploadVerzeichnisKat = PFAD_ROOT . PFAD_NEWSKATEGORIEBILDER;
 $newsCategory_arr      = [];
 $continueWith          = false;
-
-$db         = Shop::Container()->getDB();
-$author     = ContentAuthor::getInstance();
-$controller = new \News\Admin\Controller($db, $smarty);
-$languages  = Sprache::getAllLanguages();
+$db                    = Shop::Container()->getDB();
+$author                = ContentAuthor::getInstance();
+$controller            = new \News\Admin\Controller($db, $smarty);
+$languages             = Sprache::getAllLanguages();
 setzeSprache();
 if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
     $backTab = RequestHelper::verifyGPDataString('tab');

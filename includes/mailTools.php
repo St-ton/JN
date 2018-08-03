@@ -472,7 +472,14 @@ function sendeMail($ModulId, $Object, $mail = null)
             break;
     }
 
-    executeHook(HOOK_MAILTOOLS_INC_SWITCH);
+    executeHook(HOOK_MAILTOOLS_INC_SWITCH, [
+        'mailsmarty'    => &$mailSmarty,
+        'mail'          => &$mail,
+        'kEmailvorlage' => $Emailvorlage->kEmailvorlage,
+        'kSprache'      => $Sprache->kSprache,
+        'cPluginBody'   => $cPluginBody,
+        'Emailvorlage'  => $Emailvorlage
+    ]);
 
     $mailSmarty->assign('Einstellungen', $Einstellungen);
 

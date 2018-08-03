@@ -54,7 +54,7 @@ final class ItemList implements ItemListInterface
             return $this->items;
         }
         $itemLanguages = $this->db->query(
-            "SELECT tnewssprache.languageID,
+            'SELECT tnewssprache.languageID,
             tnewssprache.languageCode,
             tnews.cKundengruppe, 
             tnews.kNews, 
@@ -73,10 +73,10 @@ final class ItemList implements ItemListInterface
                 JOIN tnewssprache
                     ON tnews.kNews = tnewssprache.kNews
                 JOIN tseo 
-                    ON tseo.cKey = 'kNews'
+                    ON tseo.cKey = \'kNews\'
                     AND tseo.kKey = tnews.kNews
-                WHERE tnews.kNews  IN (" . \implode(',', $this->itemIDs) . ")
-                GROUP BY tnews.kNews, tnewssprache.languageID",
+                WHERE tnews.kNews  IN (' . \implode(',', $this->itemIDs) . ')
+                GROUP BY tnews.kNews, tnewssprache.languageID',
             ReturnType::ARRAY_OF_OBJECTS
         );
         $items         = map(group($itemLanguages, function ($e) {

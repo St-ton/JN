@@ -21,9 +21,9 @@ use function Functional\map;
  */
 class Controller
 {
-    const UPLOAD_DIR = PFAD_ROOT . \PFAD_NEWSBILDER;
+    const UPLOAD_DIR = \PFAD_ROOT . \PFAD_NEWSBILDER;
 
-    const UPLOAD_DIR_CATEGORY = PFAD_ROOT . \PFAD_NEWSKATEGORIEBILDER;
+    const UPLOAD_DIR_CATEGORY = \PFAD_ROOT . \PFAD_NEWSKATEGORIEBILDER;
 
     /**
      * @var DbInterface
@@ -65,11 +65,10 @@ class Controller
      * @param array          $post
      * @param array          $languages
      * @param \ContentAuthor $contentAuthor
+     * @throws \Exception
      */
     public function createOrUpdateNewsItem(array $post, array $languages, \ContentAuthor $contentAuthor)
     {
-//        \Shop::dbg($post, true, 'POST@controller:');
-
         $newsItemID      = (int)($post['kNews'] ?? 0);
         $update          = $newsItemID > 0;
         $customerGroups  = $post['kKundengruppe'] ?? null;
@@ -104,29 +103,86 @@ class Controller
             $flags = \ENT_COMPAT | \ENT_HTML401;
             foreach ($languages as $language) {
                 $iso                  = $language->cISO;
+                $langID               = (int)$post['lang_' . $iso];
                 $loc                  = new \stdClass();
                 $loc->kNews           = $newsItemID;
-                $loc->languageID      = $post['lang_' . $iso];
+                $loc->languageID      = $langID;
                 $loc->languageCode    = $iso;
                 $loc->title           = \htmlspecialchars($post['betreff_' . $iso], $flags,
                     \JTL_CHARSET);
                 $loc->content         = parseText($post['text_' . $iso], $newsItemID);
                 $loc->preview         = parseText($post['cVorschauText_' . $iso], $newsItemID);
                 $loc->previewImage    = $previewImage; //@todo!
-                $loc->metaTitle       = \htmlspecialchars($post['cMetaTitle_' . $iso], $flags,
-                    \JTL_CHARSET);
-                $loc->metaDescription = \htmlspecialchars($post['cMetaDescription_' . $iso], $flags,
-                    \JTL_CHARSET);
-                $loc->metaKeywords    = \htmlspecialchars($post['cMetaKeywords_' . $iso], $flags,
-                    \JTL_CHARSET);
+                $loc->metaTitle       = \htmlspecialchars($post['cMetaTitle_' . $iso], $flags, \JTL_CHARSET);
+                $loc->metaDescription = \htmlspecialchars($post['cMetaDescription_' . $iso], $flags, \JTL_CHARSET);
+                $loc->metaKeywords    = \htmlspecialchars($post['cMetaKeywords_' . $iso], $flags, \JTL_CHARSET);
 
                 $seoData           = new \stdClass();
                 $seoData->cKey     = 'kNews';
                 $seoData->kKey     = $newsItemID;
-                $seoData->kSprache = $loc->languageID;
+                $seoData->kSprache = $langID;
                 $seoData->cSeo     = \checkSeo(\getSeo(\strlen($post['seo_' . $iso]) > 0 ? $post['seo_' . $iso] : $post['betreff_' . $iso]));
                 $this->db->insert('tnewssprache', $loc);
                 $this->db->insert('tseo', $seoData);
+
+                if ($active === 0) {
+                    continue;
+                }
+                $date  = \DateTime::createFromFormat('Y-m-d H:i:s', $newsItem->dGueltigVon);
+                $month = (int)$date->format('m');
+                $year  = (int)$date->format('Y');
+
+                $monthOverview = $this->db->select(
+                    'tnewsmonatsuebersicht',
+                    'kSprache',
+                    $langID,
+                    'nMonat',
+                    $month,
+                    'nJahr',
+                    $year
+                );
+                // Falls dies die erste News des Monats ist, neuen Eintrag in tnewsmonatsuebersicht, ansonsten updaten
+                if (isset($monthOverview->kNewsMonatsUebersicht) && $monthOverview->kNewsMonatsUebersicht > 0) {
+                    $prefix = $this->db->select('tnewsmonatspraefix', 'kSprache',
+                            $langID)->cPraefix ?? 'Newsuebersicht';
+                    $this->db->delete(
+                        'tseo',
+                        ['cKey', 'kKey', 'kSprache'],
+                        [
+                            'kNewsMonatsUebersicht',
+                            (int)$monthOverview->kNewsMonatsUebersicht,
+                            $langID
+                        ]
+                    );
+                    $oSeo           = new \stdClass();
+                    $oSeo->cSeo     = \checkSeo(\getSeo($prefix . '-' . $month . '-' . $year));
+                    $oSeo->cKey     = 'kNewsMonatsUebersicht';
+                    $oSeo->kKey     = $monthOverview->kNewsMonatsUebersicht;
+                    $oSeo->kSprache = $langID;
+                    $this->db->insert('tseo', $oSeo);
+                } else {
+                    $prefix                  = $this->db->select('tnewsmonatspraefix', 'kSprache',
+                            $langID)->cPraefix ?? 'Newsuebersicht';
+                    $monthOverview           = new \stdClass();
+                    $monthOverview->kSprache = $langID;
+                    $monthOverview->cName    = \mappeDatumName((string)$month, $year, $iso);
+                    $monthOverview->nMonat   = $month;
+                    $monthOverview->nJahr    = $year;
+
+                    $kNewsMonatsUebersicht = $this->db->insert('tnewsmonatsuebersicht', $monthOverview);
+
+                    $this->db->delete(
+                        'tseo',
+                        ['cKey', 'kKey', 'kSprache'],
+                        ['kNewsMonatsUebersicht', $kNewsMonatsUebersicht, $langID]
+                    );
+                    $oSeo           = new \stdClass();
+                    $oSeo->cSeo     = \checkSeo(\getSeo($prefix . '-' . $month . '-' . $year));
+                    $oSeo->cKey     = 'kNewsMonatsUebersicht';
+                    $oSeo->kKey     = $kNewsMonatsUebersicht;
+                    $oSeo->kSprache = $langID;
+                    $this->db->insert('tseo', $oSeo);
+                }
             }
 
 //            if ($update === true) {
@@ -136,92 +192,23 @@ class Controller
 //                $this->db->delete('tseo', ['cKey', 'kKey'], ['kNews', $kNews]);
 //            }
 
-
-            $oldImages = [];
-            // Bilder hochladen
-            if (!\is_dir(self::UPLOAD_DIR . $newsItemID)) {
-                \mkdir(self::UPLOAD_DIR . $newsItemID);
-            } else {
-                $oldImages = \holeNewsBilder($newsItem->kNews, self::UPLOAD_DIR);
+            $dir = self::UPLOAD_DIR . $newsItemID;
+            if (!\is_dir($dir) && !\mkdir(self::UPLOAD_DIR . $newsItemID) && !\is_dir($dir)) {
+                throw new \Exception('Cannot create upload dir: ' . $dir);
             }
+            $oldImages = \holeNewsBilder($newsItemID, self::UPLOAD_DIR);
+
             $newsItem->cPreviewImage = $this->addPreviewImage($oldImages, $newsItemID);
             $this->addImages($oldImages, $newsItemID);
             $upd                = new \stdClass();
             $upd->cPreviewImage = $newsItem->cPreviewImage;
             $this->db->update('tnews', 'kNews', $newsItemID, $upd);
-
-            // tnewskategorienews fuer aktuelle news loeschen
             $this->db->delete('tnewskategorienews', 'kNews', $newsItemID);
-            // tnewskategorienews eintragen
             foreach ($newsCategoryIDs as $categoryID) {
                 $ins                 = new \stdClass();
                 $ins->kNews          = $newsItemID;
                 $ins->kNewsKategorie = (int)$categoryID;
                 $this->db->insert('tnewskategorienews', $ins);
-            }
-            if ($active === 1) {
-                $oDatum = \DateTime::createFromFormat('Y-m-d H:i:s', $newsItem->dGueltigVon);
-                $month  = (int)$oDatum->format('m');
-                $year   = (int)$oDatum->format('Y');
-
-                $monthOverview = $this->db->select(
-                    'tnewsmonatsuebersicht',
-                    'kSprache',
-                    (int)$_SESSION['kSprache'], //@todo!
-                    'nMonat',
-                    $month,
-                    'nJahr',
-                    $year
-                );
-                // Falls dies die erste News des Monats ist, neuen Eintrag in tnewsmonatsuebersicht, ansonsten updaten
-                if (isset($monthOverview->kNewsMonatsUebersicht) && $monthOverview->kNewsMonatsUebersicht > 0) {
-                    unset($monthOverviewPrefix);
-                    $monthOverviewPrefix = $this->db->select('tnewsmonatspraefix', 'kSprache',
-                        (int)$_SESSION['kSprache']);
-                    if (empty($monthOverviewPrefix->cPraefix)) {
-                        $monthOverviewPrefix->cPraefix = 'Newsuebersicht';
-                    }
-                    $this->db->delete(
-                        'tseo',
-                        ['cKey', 'kKey', 'kSprache'],
-                        [
-                            'kNewsMonatsUebersicht',
-                            (int)$monthOverview->kNewsMonatsUebersicht,
-                            (int)$_SESSION['kSprache']//@todo!
-                        ]
-                    );
-                    $oSeo           = new \stdClass();
-                    $oSeo->cSeo     = \checkSeo(\getSeo($monthOverviewPrefix->cPraefix . '-' . $month . '-' . $year));
-                    $oSeo->cKey     = 'kNewsMonatsUebersicht';
-                    $oSeo->kKey     = $monthOverview->kNewsMonatsUebersicht;
-                    $oSeo->kSprache = $_SESSION['kSprache'];//@todo!
-                    $this->db->insert('tseo', $oSeo);
-                } else {
-                    $monthOverviewPrefix = $this->db->select('tnewsmonatspraefix', 'kSprache',
-                        (int)$_SESSION['kSprache']);
-                    if (empty($monthOverviewPrefix->cPraefix)) {
-                        $monthOverviewPrefix->cPraefix = 'Newsuebersicht';
-                    }
-                    $monthOverview           = new \stdClass();
-                    $monthOverview->kSprache = (int)$_SESSION['kSprache'];//@todo!
-                    $monthOverview->cName    = \mappeDatumName((string)$month, $year, $oSpracheNews->cISO);
-                    $monthOverview->nMonat   = $month;
-                    $monthOverview->nJahr    = $year;
-
-                    $kNewsMonatsUebersicht = $this->db->insert('tnewsmonatsuebersicht', $monthOverview);
-
-                    $this->db->delete(
-                        'tseo',
-                        ['cKey', 'kKey', 'kSprache'],
-                        ['kNewsMonatsUebersicht', $kNewsMonatsUebersicht, (int)$_SESSION['kSprache']]
-                    );
-                    $oSeo           = new \stdClass();
-                    $oSeo->cSeo     = \checkSeo(\getSeo($monthOverviewPrefix->cPraefix . '-' . $month . '-' . $year));
-                    $oSeo->cKey     = 'kNewsMonatsUebersicht';
-                    $oSeo->kKey     = $kNewsMonatsUebersicht;
-                    $oSeo->kSprache = (int)$_SESSION['kSprache'];//@todo!
-                    $this->db->insert('tseo', $oSeo);
-                }
             }
             $this->msg .= 'Ihre News wurde erfolgreich gespeichert.<br />';
             if (isset($post['continue']) && $post['continue'] === '1') {
@@ -240,6 +227,7 @@ class Controller
             if (isset($post['kNews']) && \is_numeric($post['kNews'])) {
                 $continueWith = $newsItemID;
             } else {
+                // @todo
                 $oNewsKategorie_arr = \News::getAllNewsCategories($_SESSION['kSprache'], true);
                 $this->smarty->assign('oNewsKategorie_arr', $oNewsKategorie_arr)
                              ->assign('oPossibleAuthors_arr',
@@ -276,7 +264,7 @@ class Controller
             $newsIDs = $this->db->queryPrepared(
                 'SELECT kNews
                     FROM tnews
-                    WHERE MONTH(dGueltigVon) = :mnth1
+                    WHERE MONTH(dGueltigVon) = :mnth
                         AND YEAR(dGueltigVon) = :yr
                         AND kSprache = :lid',
                 [
@@ -330,7 +318,7 @@ class Controller
         if (\count($validation) === 0) {
             $this->errorMsg .= 'Fehler: Bitte überprüfen Sie Ihre Eingaben.<br />';
             $this->step     = 'news_kategorie_erstellen';
-
+            // @todo
             $newsCategory = \editiereNewskategorie(\RequestHelper::verifyGPCDataInt('kNewsKategorie'),
                 $_SESSION['kSprache']);
 
@@ -441,11 +429,9 @@ class Controller
             \strpos($_FILES['previewImage']['type'], '/') + 1,
             \strlen($_FILES['previewImage']['type'] - \strpos($_FILES['previewImage']['type'], '/')) + 1
         );
-        //not elegant, but since it's 99% jpg..
         if ($extension === 'jpe') {
             $extension = 'jpg';
         }
-        //check if preview exists and delete
         foreach ($oldImages as $image) {
             if (\strpos($image->cDatei, 'preview') !== false) {
                 \loescheNewsBild($image->cName, $newsItemID, self::UPLOAD_DIR);

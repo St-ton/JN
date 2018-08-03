@@ -9,8 +9,8 @@ namespace News;
 
 use DB\DbInterface;
 use DB\ReturnType;
-use function Functional\first;
 use Tightenco\Collect\Support\Collection;
+use function Functional\first;
 use function Functional\group;
 use function Functional\map;
 
@@ -56,18 +56,21 @@ final class CommentList implements ItemListInterface
     public function createItems(array $itemIDs): Collection
     {
         $this->itemIDs = \array_map('\intval', $itemIDs);
-        $data          = $this->db->queryPrepared(
+        if (\count($this->itemIDs) === 0) {
+            return $this->items;
+        }
+        $data  = $this->db->queryPrepared(
             'SELECT tnewskommentar.*, t.title
                 FROM tnewskommentar
                 JOIN tnewssprache t 
                     ON t.kNews = tnewskommentar.kNews
-                WHERE kNewsKommentar IN (' . implode(',', $this->itemIDs) . ')
+                WHERE kNewsKommentar IN (' . \implode(',', $this->itemIDs) . ')
                 GROUP BY tnewskommentar.kNewsKommentar
                 ORDER BY tnewskommentar.dErstellt DESC',
             ['nid' => $this->newsID],
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $items         = map(group($data, function ($e) {
+        $items = map(group($data, function ($e) {
             return (int)$e->kNewsKommentar;
         }), function ($e, $commentID) {
             $l = new Comment($this->db);

@@ -558,26 +558,29 @@ class Controller
             }
         );
 
-        return $this->db->query(
-            'SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,
-            tnewskategorie.cBeschreibung, tnewskategorie.cMetaTitle, tnewskategorie.cMetaDescription,
-            tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung,
-            tnewskategorie.cPreviewImage, tseo.cSeo,
-            DATE_FORMAT(tnewskategorie.dLetzteAktualisierung, \'%d.%m.%Y %H:%i\') AS dLetzteAktualisierung_de
-                FROM tnewskategorie
-                LEFT JOIN tnewskategorienews 
-                    ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
-                LEFT JOIN tseo 
-                    ON tseo.cKey = \'kNewsKategorie\'
-                    AND tseo.kKey = tnewskategorie.kNewsKategorie
-                    AND tseo.kSprache = ' . \Shop::getLanguageID() . '
-                WHERE tnewskategorie.kSprache = ' . \Shop::getLanguageID() . '
-                    AND tnewskategorienews.kNewsKategorie IN (' . \implode(',', $newsCategories) . ')
-                    AND tnewskategorie.nAktiv = 1
-                GROUP BY tnewskategorie.kNewsKategorie
-                ORDER BY tnewskategorie.nSort DESC',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
+
+        return \count($newsCategories) > 0
+            ? $this->db->query(
+                'SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,
+                tnewskategorie.cBeschreibung, tnewskategorie.cMetaTitle, tnewskategorie.cMetaDescription,
+                tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung,
+                tnewskategorie.cPreviewImage, tseo.cSeo,
+                DATE_FORMAT(tnewskategorie.dLetzteAktualisierung, \'%d.%m.%Y %H:%i\') AS dLetzteAktualisierung_de
+                    FROM tnewskategorie
+                    LEFT JOIN tnewskategorienews 
+                        ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
+                    LEFT JOIN tseo 
+                        ON tseo.cKey = \'kNewsKategorie\'
+                        AND tseo.kKey = tnewskategorie.kNewsKategorie
+                        AND tseo.kSprache = ' . \Shop::getLanguageID() . '
+                    WHERE tnewskategorie.kSprache = ' . \Shop::getLanguageID() . '
+                        AND tnewskategorienews.kNewsKategorie IN (' . \implode(',', $newsCategories) . ')
+                        AND tnewskategorie.nAktiv = 1
+                    GROUP BY tnewskategorie.kNewsKategorie
+                    ORDER BY tnewskategorie.nSort DESC',
+                ReturnType::ARRAY_OF_OBJECTS
+            )
+            : [];
     }
 
     /**

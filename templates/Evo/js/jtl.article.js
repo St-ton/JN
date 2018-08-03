@@ -441,7 +441,8 @@
                 .done(function(data) {
                     var $html      = $('<div />').html(data);
                     var $headerCSS = $html.find('link[type="text/css"]');
-                    var $headerJS  = $html.find('script[src][src!=""]');
+                    var $headerJS  = $html.find('head script[src][src!=""]');
+                    var $bodyJS    = $html.find('body script[src][src!=""]');
                     var content    = $html.find(that.options.modal.wrapper).html();
 
                     $headerCSS.each(function (pos, item) {
@@ -456,6 +457,15 @@
                             var $jsLink = $('head script[src="' + item.src + '"]');
                             if ($jsLink.length === 0) {
                                 $('head').append('<script type="text/javascript" src="' + item.src + '" >');
+                            }
+                        }
+                    });
+
+                    $bodyJS.each(function (pos, item) {
+                        if (typeof item.src !== 'undefined' && item.src.length > 0) {
+                            var $jsLink = $('body script[src="' + item.src + '"]');
+                            if ($jsLink.length === 0) {
+                                $('body').append('<script type="text/javascript" src="' + item.src + '" >');
                             }
                         }
                     });

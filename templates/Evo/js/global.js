@@ -102,13 +102,19 @@ function regionsToState() {
                 if (data !== null && data.length > 0) {
                     if (stateIsRequired) {
                         var state = $('<select />').attr({
-                            id:       'state',
-                            name:     'bundesland',
-                            class:    'required form-control',
-                            required: 'required'
+                            id:           'state',
+                            name:         'bundesland',
+                            class:        'required form-control',
+                            autocomplete: 'billing address-level1',
+                            required:     'required'
                         });
                     } else {
-                        var state = $('<select />').attr({id: 'state', name: 'bundesland', class: 'form-control'});
+                        var state = $('<select />').attr({
+                            id:           'state',
+                            name:         'bundesland',
+                            autocomplete: 'billing address-level1',
+                            class:        'form-control'
+                        });
                     }
 
                     state.append('<option value="">' + title + '</option>');
@@ -122,20 +128,22 @@ function regionsToState() {
                 } else {
                     if (stateIsRequired) {
                         var state = $('<input />').attr({
-                            type:        'text',
-                            id:          'state',
-                            name:        'bundesland',
-                            class:       'required form-control',
-                            placeholder: title,
-                            required:    'required'
+                            type:         'text',
+                            id:           'state',
+                            name:         'bundesland',
+                            class:        'required form-control',
+                            placeholder:  title,
+                            autocomplete: 'billing address-level1',
+                            required:     'required'
                         });
                     } else {
                         var state = $('<input />').attr({
-                            type:        'text',
-                            id:          'state',
-                            name:        'bundesland',
-                            class:       'form-control',
-                            placeholder: title
+                            type:         'text',
+                            id:           'state',
+                            name:         'bundesland',
+                            class:        'form-control',
+                            placeholder:  title,
+                            autocomplete: 'billing address-level1',
                         });
                     }
                     $('#state').replaceWith(state);
@@ -168,16 +176,18 @@ function regionsToState() {
                 if (data !== null && data.length > 0) {
                     if (stateIsRequired2) {
                         var state2 = $('<select />').attr({
-                            id:       'register-shipping_address-state',
-                            name:     'register[shipping_address][bundesland]',
-                            class:    'required form-control',
-                            required: 'required'
+                            id:           'register-shipping_address-state',
+                            name:         'register[shipping_address][bundesland]',
+                            class:        'required form-control',
+                            autocomplete: 'shipping address-level1',
+                            required:     'required'
                         });
                     } else {
                         var state2 = $('<select />').attr({
-                            id:    'register-shipping_address-state',
-                            name:  'register[shipping_address][bundesland]',
-                            class: 'form-control'
+                            id:           'register-shipping_address-state',
+                            name:         'register[shipping_address][bundesland]',
+                            autocomplete: 'shipping address-level1',
+                            class:        'form-control'
                         });
                     }
 
@@ -192,20 +202,22 @@ function regionsToState() {
                 } else {
                     if (stateIsRequired2) {
                         var state2 = $('<input />').attr({
-                            type:        'text',
-                            id:          'register-shipping_address-state',
-                            name:        'register[shipping_address][bundesland]',
-                            class:       'required form-control',
-                            placeholder: title2,
-                            required:    'required'
+                            type:         'text',
+                            id:           'register-shipping_address-state',
+                            name:         'register[shipping_address][bundesland]',
+                            class:        'required form-control',
+                            placeholder:  title2,
+                            autocomplete: 'shipping address-level1',
+                            required:     'required'
                         });
                     } else {
                         var state2 = $('<input />').attr({
-                            type:        'text',
-                            id:          'register-shipping_address-state',
-                            name:        'register[shipping_address][bundesland]',
-                            class:       'form-control',
-                            placeholder: title2
+                            type:         'text',
+                            id:           'register-shipping_address-state',
+                            name:         'register[shipping_address][bundesland]',
+                            class:        'form-control',
+                            autocomplete: 'shipping address-level1',
+                            placeholder:  title2
                         });
                     }
                     $('#register-shipping_address-state').replaceWith(state2);

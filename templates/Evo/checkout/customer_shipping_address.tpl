@@ -200,6 +200,7 @@
                             name="{$prefix}[{$name}][bundesland]"
                             id="{$prefix}-{$name}-state"
                             class="form-control state-input"
+                            autocomplete="shipping address-level1"
                             {if $Einstellungen.kunden.lieferadresse_abfragen_bundesland === 'Y'} required{/if}
                     >
                         <option value="" selected disabled>{lang key="pleaseChoose" section="global"}</option>

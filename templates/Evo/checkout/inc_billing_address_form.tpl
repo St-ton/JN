@@ -271,6 +271,7 @@
                     name="bundesland"
                     id="state"
                     class="form-control state-input"
+                    autocomplete="billing address-level1"
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y'} required{/if}
                     >
                         <option value="" selected disabled>{lang key="pleaseChoose" section="global"}</option>
@@ -287,8 +288,8 @@
                     id="state"
                     class="form-control"
                     placeholder="{lang key='state' section='account data'}"
-                    {if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y'} required{/if}
                     autocomplete="billing address-level1"
+                    {if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y'} required{/if}
                     >
                 {/if}
 

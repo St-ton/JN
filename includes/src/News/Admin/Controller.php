@@ -242,7 +242,6 @@ class Controller
      */
     public function deleteNewsItems(array $newsItems, \ContentAuthor $author)
     {
-        \Shop::dbg($_POST['kNews'], true, 'DELETE:');
         foreach ($newsItems as $newsItemID) {
             $newsItemID = (int)$newsItemID;
             if ($newsItemID <= 0) {

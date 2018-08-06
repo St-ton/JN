@@ -150,9 +150,11 @@ class Category implements CategoryInterface
         $this->id          = $id;
         $activeFilter      = $bActiveOnly ? ' AND tnewskategorie.nAktiv = 1 ' : '';
         $categoryLanguages = $this->db->queryPrepared(
-            "SELECT tnewskategorie.*, tseo.kSprache, tseo.cSeo
+            "SELECT tnewskategorie.*, t.*, tseo.cSeo
                 FROM tnewskategorie
-                LEFT JOIN tseo 
+                JOIN tnewskategoriesprache t 
+                    ON tnewskategorie.kNewsKategorie = t.kNewsKategorie
+                JOIN tseo 
                     ON tseo.cKey = 'kNewsKategorie'
                     AND tseo.kKey = :cid
                 WHERE tnewskategorie.kNewsKategorie = :cid" . $activeFilter,
@@ -198,6 +200,7 @@ class Category implements CategoryInterface
         )), function ($e) {
             return (int)$e;
         }));
+//        \Shop::dbg($this->items, true);
 
         return $this;
     }
@@ -208,7 +211,7 @@ class Category implements CategoryInterface
      */
     public function getMonthOverview(int $id): Category
     {
-        $this->setID($id);;
+        $this->setID($id);
         $overview = $this->db->queryPrepared(
             'SELECT tnewsmonatsuebersicht.*, tseo.cSeo
                 FROM tnewsmonatsuebersicht

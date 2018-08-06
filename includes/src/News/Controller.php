@@ -84,10 +84,12 @@ class Controller
             $_SESSION['NewsNaviFilter']->cDatum = \count($_date) > 1
                 ? \StringHandler::filterXSS($params['cDatum'])
                 : -1;
+        } elseif (!isset($_SESSION['NewsNaviFilter']->cDatum)) {
+            $_SESSION['NewsNaviFilter']->cDatum = -1;
         }
         if ($params['nNewsKat'] > 0) {
             $_SESSION['NewsNaviFilter']->nNewsKat = $params['nNewsKat'];
-        } elseif ($params['nNewsKat'] === -1) {
+        } elseif ($params['nNewsKat'] === -1 || !isset($_SESSION['NewsNaviFilter']->nNewsKat)) {
             $_SESSION['NewsNaviFilter']->nNewsKat = -1;
         }
         if ($this->config['news']['news_benutzen'] !== 'Y') {
@@ -100,6 +102,11 @@ class Controller
             $this->currentNewsType = ViewType::NEWS_CATEGORY;
         } elseif ($params['kNewsMonatsUebersicht'] > 0) {
             $this->currentNewsType = ViewType::NEWS_MONTH_OVERVIEW;
+            if (($data = $this->getMonthOverview($params['kNewsMonatsUebersicht'])) !== null) {
+                $_SESSION['NewsNaviFilter']->cDatum   = (int)$data->nMonat . '-' . (int)$data->nJahr;
+                $_SESSION['NewsNaviFilter']->nNewsKat = -1;
+            }
+
         }
         $this->smarty->assign('oDatum_arr', $this->getNewsDates($this->getFilterSQL(true)))
                      ->assign('nPlausiValue_arr', [
@@ -111,6 +118,28 @@ class Controller
                      ]);
 
         return $this->currentNewsType;
+    }
+
+    /**
+     * @param int $kNewsMonatsUebersicht
+     * @return \stdClass|null
+     */
+    private function getMonthOverview(int $kNewsMonatsUebersicht)
+    {
+        return $this->db->queryPrepared(
+            "SELECT tnewsmonatsuebersicht.*, tseo.cSeo
+                FROM tnewsmonatsuebersicht
+                LEFT JOIN tseo 
+                    ON tseo.cKey = 'kNewsMonatsUebersicht'
+                    AND tseo.kKey = :nmi
+                    AND tseo.kSprache = :lid
+                WHERE tnewsmonatsuebersicht.kNewsMonatsUebersicht = :nmi",
+            [
+                'nmi' => $kNewsMonatsUebersicht,
+                'lid' => \Shop::getLanguageID()
+            ],
+            ReturnType::SINGLE_OBJECT
+        );
     }
 
     /**
@@ -460,12 +489,14 @@ class Controller
         $dateData = $this->db->query(
             "SELECT MONTH(tnews.dGueltigVon) AS nMonat, YEAR(tnews.dGueltigVon) AS nJahr
                 FROM tnews " . $oSQL->cNewsKatSQL . "
+                JOIN tnewssprache
+                    ON tnewssprache.kNews = tnews.kNews
                 WHERE tnews.nAktiv = 1
                     AND tnews.dGueltigVon <= now()
                     AND (tnews.cKundengruppe LIKE '%;-1;%' 
                         OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
             . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
-                    AND tnews.kSprache = " . \Shop::getLanguageID() . "
+                    AND tnewssprache.languageID = " . \Shop::getLanguageID() . "
                 GROUP BY nJahr, nMonat
                 ORDER BY dGueltigVon DESC",
             ReturnType::ARRAY_OF_OBJECTS
@@ -534,6 +565,7 @@ class Controller
      */
     public function getNewsCategories(int $newsItemID): array
     {
+        $langID         = \Shop::getLanguageID();
         $newsCategories = \Functional\map(
             \Functional\pluck($this->db->selectAll(
                 'tnewskategorienews',
@@ -548,19 +580,21 @@ class Controller
 
         return \count($newsCategories) > 0
             ? $this->db->query(
-                'SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,
-                tnewskategorie.cBeschreibung, tnewskategorie.cMetaTitle, tnewskategorie.cMetaDescription,
+                'SELECT tnewskategorie.kNewsKategorie, t.languageID AS kSprache, t.name AS cName,
+                t.description AS cBeschreibung, t.metaTitle AS cMetaTitle, t.metaDescription AS cMetaDescription,
                 tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung,
                 tnewskategorie.cPreviewImage, tseo.cSeo,
                 DATE_FORMAT(tnewskategorie.dLetzteAktualisierung, \'%d.%m.%Y %H:%i\') AS dLetzteAktualisierung_de
                     FROM tnewskategorie
+                    JOIN tnewskategoriesprache t 
+                        ON tnewskategorie.kNewsKategorie = t.kNewsKategorie
                     LEFT JOIN tnewskategorienews 
                         ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
                     LEFT JOIN tseo 
                         ON tseo.cKey = \'kNewsKategorie\'
                         AND tseo.kKey = tnewskategorie.kNewsKategorie
-                        AND tseo.kSprache = ' . \Shop::getLanguageID() . '
-                    WHERE tnewskategorie.kSprache = ' . \Shop::getLanguageID() . '
+                        AND tseo.kSprache = ' . $langID . '
+                    WHERE t.languageID = ' . $langID . '
                         AND tnewskategorienews.kNewsKategorie IN (' . \implode(',', $newsCategories) . ')
                         AND tnewskategorie.nAktiv = 1
                     GROUP BY tnewskategorie.kNewsKategorie

@@ -186,7 +186,6 @@ class Item extends AbstractItem
             if ($languageID === 0) {
                 $languageID = \Shop::getLanguageID();
             }
-//            \Shop::dbg($item, false, 'mapping item:');
             $this->setCustomerGroups(self::parseSSKAdvanced($item->cKundengruppe));
             $this->setLanguageCode($item->languageCode ?? \Shop::getLanguageCode(), $languageID);
             $this->setContent(\StringHandler::parseNewsText($item->content ?? ''), $languageID);

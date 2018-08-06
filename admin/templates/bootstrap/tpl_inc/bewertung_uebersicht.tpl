@@ -45,7 +45,7 @@
                             <h3 class="panel-title">{#ratingsInaktive#}</h3>
                         </div>
                         <div class="table-responsive">
-                            <table  class="table">
+                            <table  class="table table-striped">
                                 <thead>
                                 <tr>
                                     <th class="check">&nbsp;</th>
@@ -59,7 +59,7 @@
                                 </thead>
                                 <tbody>
                                     {foreach name=bewertung from=$oBewertung_arr item=oBewertung key=kKey}
-                                        <tr class="tab_bg{$smarty.foreach.bewertung.iteration%2}">
+                                        <tr>
                                             <td class="check">
                                                 <input type="hidden" name="kArtikel[{$kKey}]" value="{$oBewertung->kArtikel}" />
                                                 <input name="kBewertung[{$kKey}]" type="checkbox" value="{$oBewertung->kBewertung}" />
@@ -110,7 +110,7 @@
                             <h3 class="panel-title">{#ratingLast50#}</h3>
                         </div>
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="table table-striped">
                                 <thead>
                                 <tr>
                                     <th class="check">&nbsp;</th>
@@ -124,7 +124,7 @@
                                 </thead>
                                 <tbody>
                                 {foreach name=bewertungletzten50 from=$oBewertungLetzten50_arr item=oBewertungLetzten50}
-                                    <tr class="tab_bg{$smarty.foreach.bewertungletzten50.iteration%2}">
+                                    <t>
                                         <td class="check"><input name="kBewertung[]" type="checkbox" value="{$oBewertungLetzten50->kBewertung}"><input type="hidden" name="kArtikel[]" value="{$oBewertungLetzten50->kArtikel}"></td>
                                         <td class="TD2"><a href="../index.php?a={$oBewertungLetzten50->kArtikel}" target="_blank">{$oBewertungLetzten50->ArtikelName}</a></td>
                                         <td class="TD3">{$oBewertungLetzten50->cName}.</td>
@@ -154,7 +154,7 @@
                                                 </a>
                                             </div>
                                         </td>
-                                    </tr>
+                                    </t>
                                 {/foreach}
                                 </tbody>
                                 <tfoot>
@@ -198,7 +198,7 @@
                             <h3 class="panel-title">{#ratingsInaktive#}</h3>
                         </div>
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="table table-striped">
                                 <thead>
                                 <tr>
                                     <th class="th-1">&nbsp;</th>
@@ -212,7 +212,7 @@
                                 </thead>
                                 <tbody>
                                 {foreach name=bewertungaktiv from=$oBewertungAktiv_arr item=oBewertungAktiv}
-                                    <tr class="tab_bg{$smarty.foreach.bewertungaktiv.iteration%2}">
+                                    <tr>
                                         <td class="TD1"><input name="kBewertung[]" type="checkbox" value="{$oBewertungAktiv->kBewertung}"><input type="hidden" name="kArtikel[]" value="{$oBewertungAktiv->kArtikel}"></td>
                                         <td class="TD2"><a href="../index.php?a={$oBewertungAktiv->kArtikel}" target="_blank">{$oBewertungAktiv->ArtikelName}</a></td>
                                         <td class="TD3">{$oBewertungAktiv->cName}.</td>

@@ -7,7 +7,7 @@
     {if isset($oVerpackung_arr) && $oVerpackung_arr|@count > 0}
     <div class="panel panel-default">
         <div class="table-responsive">
-            <table class="list table">
+            <table class="list table table-striped">
                 <thead>
                 <tr>
                     <th class="th-1"></th>
@@ -22,7 +22,7 @@
                 </thead>
                 <tbody>
                 {foreach $oVerpackung_arr as $oVerpackung}
-                    <tr class="tab_bg{$oVerpackung@iteration%2}">
+                    <tr>
                         <td class="TD1">
                             <input id="kVerpackung-{$oVerpackung->kVerpackung}" type="checkbox" name="kVerpackung[]" value="{$oVerpackung->kVerpackung}">
                         </td>

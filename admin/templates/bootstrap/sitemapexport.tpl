@@ -92,7 +92,7 @@
                         <input type="hidden" name="nYear_downloads" value="{$nSitemapDownloadYear}" />
                         <div id="payment">
                             <div id="tabellenBewertung" class="table-responsive">
-                                <table class="table">
+                                <table class="table table-striped">
                                     <tr>
                                         <th>&nbsp;</th>
                                         <th>{#sitemapName#}</th>
@@ -100,7 +100,7 @@
                                         <th class="text-right">{#sitemapDate#}</th>
                                     </tr>
                                     {foreach name=sitemapdownloads from=$oSitemapDownload_arr item=oSitemapDownload}
-                                        <tr class="tab_bg{$smarty.foreach.sitemapdownloads.iteration%2}">
+                                        <tr>
                                             <td width="20">
                                                 <input name="kSitemapTracker[]" type="checkbox" value="{$oSitemapDownload->kSitemapTracker}">
                                             </td>
@@ -169,7 +169,7 @@
                         <input type="hidden" name="tab" value="report">
                         <input type="hidden" name="nYear_reports" value="{$nSitemapReportYear}" />
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="table table-striped">
                                 <tr>
                                     <th class="check"></th>
                                     <th class="th-1"></th>
@@ -178,7 +178,7 @@
                                     <th class="th-5">{#sitemapDate#}</th>
                                 </tr>
                                 {foreach name=sitemapreports from=$oSitemapReport_arr item=oSitemapReport}
-                                    <tr class="tab_bg{$smarty.foreach.sitemapreports.iteration%2}">
+                                    <tr>
                                         <td class="check">
                                             <input name="kSitemapReport[]" type="checkbox" value="{$oSitemapReport->kSitemapReport}">
                                         </td>
@@ -198,7 +198,7 @@
                                             <td>&nbsp;</td>
                                             <td colspan="4">
 
-                                                <table border="0" cellspacing="1" cellpadding="0" width="100%">
+                                                <table class="table-striped" border="0" cellspacing="1" cellpadding="0" width="100%">
                                                     <tr>
                                                         <th class="tleft">{#sitemapName#}</th>
                                                         <th class="th-2">{#sitemapCountURL#}</th>
@@ -206,7 +206,7 @@
                                                     </tr>
 
                                                     {foreach name=sitemapreportfiles from=$oSitemapReport->oSitemapReportFile_arr item=oSitemapReportFile}
-                                                        <tr class="tab_bg{$smarty.foreach.sitemapreports.iteration%2}">
+                                                        <tr>
                                                             <td class="TD1">{$oSitemapReportFile->cDatei}</td>
                                                             <td class="tcenter">{$oSitemapReportFile->nAnzahlURL}</td>
                                                             <td class="tcenter">{$oSitemapReportFile->fGroesse} KB</td>

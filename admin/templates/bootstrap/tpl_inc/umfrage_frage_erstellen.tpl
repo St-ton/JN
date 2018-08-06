@@ -565,14 +565,14 @@ function checkSelect(selectBox) {ldelim}
         {if isset($oUmfrageFrage_arr) && $oUmfrageFrage_arr|@count > 0}
         <div id="payment">
             <div id="tabellenLivesuche">
-            <table class="table">
+            <table class="table table-striped">
                 <tr>
                     <th class="th-1">{#umfrageQ#}</th>
                     <th class="th-2">{#umfrageQType#}</th>
                     <th class="th-3">{#umfrageSort#}</th>
                 </tr>
             {foreach name=umfragefrage from=$oUmfrageFrage_arr item=oUmfrageFrageTMP}
-                <tr class="tab_bg{$smarty.foreach.umfragefrage.iteration%2}">
+                <tr>
                     <td class="TD1">{$oUmfrageFrageTMP->cName}</td>
                     <td class="TD2">{$oUmfrageFrageTMP->cTyp}</td>
                     <td class="TD3">{$oUmfrageFrageTMP->nSort}</td>

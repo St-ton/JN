@@ -297,7 +297,7 @@
                         <input name="kundenfelder" type="hidden" value="1">
                         <input name="tab" type="hidden" value="uebersicht">
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="table table-striped">
                                 <thead>
                                 <tr>
                                     <th class="check"></th>
@@ -312,7 +312,7 @@
                                 </thead>
                                 <tbody>
                                 {foreach name=kundenfeld from=$oKundenfeld_arr item=oKundenfeld}
-                                    <tr class="tab_bg{$smarty.foreach.kundenfeld.iteration%2}">
+                                    <tr>
                                         <td class="check">
                                             <input name="kKundenfeld[]" type="checkbox" value="{$oKundenfeld->kKundenfeld}" id="check-{$oKundenfeld->kKundenfeld}" />
                                         </td>

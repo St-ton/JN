@@ -21,7 +21,7 @@
                 <div class="panel-heading"><h3 class="panel-title">{#kampagneIntern#}</h3></div>
                 {if $oKampagne_arr|count > 0}
                     <div class="table-responsive">
-                        <table class="table">
+                        <table class="table table-striped">
                             <tr>
                                 <th class="tleft">{#kampagneName#}</th>
                                 <th class="tleft">{#kampagneParam#}</th>
@@ -33,7 +33,7 @@
 
                             {foreach name="kampagnen" from=$oKampagne_arr item=oKampagne}
                                 {if isset($oKampagne->kKampagne) && $oKampagne->kKampagne < 1000}
-                                    <tr class="tab_bg{$smarty.foreach.kampagnen.iteration%2}">
+                                    <tr>
                                         <td class="TD2">
                                             <strong><a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&detail=1&token={$smarty.session.jtl_token}">{$oKampagne->cName}</a></strong>
                                         </td>
@@ -70,7 +70,7 @@
                         <input type="hidden" name="tab" value="uebersicht" />
                         <input type="hidden" name="delete" value="1" />
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="table table-striped">
                                 <tr>
                                     <th class="check"></th>
                                     <th class="tleft">{#kampagneName#}</th>
@@ -83,7 +83,7 @@
 
                                 {foreach name="kampagnen" from=$oKampagne_arr item=oKampagne}
                                     {if $oKampagne->kKampagne >= 1000}
-                                        <tr class="tab_bg{$smarty.foreach.kampagnen.iteration%2}">
+                                        <tr>
                                             <td class="check">
                                                 <input name="kKampagne[]" type="checkbox" value="{$oKampagne->kKampagne}">
                                             </td>
@@ -154,7 +154,7 @@
             <div class="panel panel-default">
                 {if isset($oKampagne_arr) && $oKampagne_arr|@count > 0 && isset($oKampagneDef_arr) && $oKampagneDef_arr|@count > 0}
                     <div class="table-responsive">
-                        <table class="table">
+                        <table class="table table-striped">
                             <thead>
                                 <tr>
                                     <th class="th-1"></th>
@@ -176,7 +176,7 @@
 
                             {foreach name="kampagnenstats" from=$oKampagneStat_arr key=kKampagne item=oKampagneStatDef_arr}
                                 {if $kKampagne != "Gesamt"}
-                                    <tr class="tab_bg{$smarty.foreach.kampagnenstats.iteration%2}">
+                                    <tr>
                                         <td class="TD1">
                                             <a href="kampagne.php?detail=1&kKampagne={$oKampagne_arr[$kKampagne]->kKampagne}&cZeitParam={$cZeitraumParam}&token={$smarty.session.jtl_token}">{$oKampagne_arr[$kKampagne]->cName}</a>
                                         </td>

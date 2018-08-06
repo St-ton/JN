@@ -55,7 +55,7 @@
                                 <h3 class="panel-title">Vorhandene Checkboxen</h3>
                             </div>
                             <div class="table-responsive">
-                                <table class="table">
+                                <table class="table table-striped">
                                     <tr>
                                         <th class="th-1">&nbsp;</th>
                                         <th class="th-1">{#checkboxName#}</th>
@@ -70,7 +70,7 @@
                                         <th class="th-8" colspan="2">{#checkboxDate#}</th>
                                     </tr>
                                     {foreach name=checkboxen from=$oCheckBox_arr item=oCheckBoxUebersicht}
-                                        <tr class="tab_bg{$smarty.foreach.checkboxen.iteration%2}">
+                                        <tr>
                                             <td class="TD1">
                                                 <input name="kCheckBox[]" type="checkbox" value="{$oCheckBoxUebersicht->kCheckBox}" />
                                             </td>

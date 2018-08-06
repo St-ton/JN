@@ -90,7 +90,7 @@
                             <h3 class="panel-title">{#newsCommentActivate#}</h3>
                         </div>
                         <div class="table-responsive">
-                            <table class="list table">
+                            <table class="list table table-striped">
                                 <thead>
                                 <tr>
                                     <th class="check">&nbsp;</th>
@@ -103,7 +103,7 @@
                                 </thead>
                                 <tbody>
                                 {foreach $oNewsKommentar_arr as $oNewsKommentar}
-                                    <tr class="tab_bg{$oNewsKommentar@iteration%2}">
+                                    <tr>
                                         <td class="check">
                                             <input type="checkbox" name="kNewsKommentar[]" value="{$oNewsKommentar->kNewsKommentar}" id="comment-{$oNewsKommentar->kNewsKommentar}" />
                                         </td>
@@ -162,7 +162,7 @@
                         <h3 class="panel-title">{#newsOverview#}</h3>
                     </div>
                     <div class="table-responsive">
-                        <table class="sortable list table">
+                        <table class="sortable list table table-striped">
                             <thead>
                             <tr>
                                 <th class="check"></th>
@@ -179,7 +179,7 @@
                             <tbody>
                             {if $oNews_arr|@count > 0 && $oNews_arr}
                                 {foreach $oNews_arr as $oNews}
-                                    <tr class="tab_bg{$oNews@iteration%2}">
+                                    <tr>
                                         <td class="check"><input type="checkbox" name="kNews[]" value="{$oNews->kNews}" id="news-cb-{$oNews->kNews}" /></td>
                                         <td class="TD2"><label for="news-cb-{$oNews->kNews}">{$oNews->cBetreff}</label></td>
                                         <td class="TD3">{$oNews->KategorieAusgabe}</td>
@@ -259,7 +259,7 @@
                         <h3 class="panel-title">{#newsCatOverview#}</h3>
                     </div>
                     <div class="table-responsive">
-                        <table id="category-list" class="list table">
+                        <table id="category-list" class="list table table-striped">
                             <thead>
                             <tr>
                                 <th class="check"></th>
@@ -273,7 +273,7 @@
                             <tbody>
                             {if $oNewsKategorie_arr|@count > 0 && $oNewsKategorie_arr}
                                 {foreach $oNewsKategorieFlat_arr as $oNewsKategorie}
-                                    <tr class="tab_bg{$oNewsKategorie@iteration%2} {if (int)$oNewsKategorie->nLevel > 0}hidden-soft{/if}" data-level="{$oNewsKategorie->nLevel}">
+                                    <tr class="{if (int)$oNewsKategorie->nLevel > 0}hidden-soft{/if}" data-level="{$oNewsKategorie->nLevel}">
                                         <td class="check">
                                             <input type="checkbox" name="kNewsKategorie[]" data-name="{$oNewsKategorie->cName}" value="{$oNewsKategorie->kNewsKategorie}" id="newscat-{$oNewsKategorie->kNewsKategorie}" />
                                         </td>

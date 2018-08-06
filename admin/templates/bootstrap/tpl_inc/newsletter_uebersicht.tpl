@@ -77,7 +77,7 @@
                         {/if}
                         <div class="panel panel-default">
                             <div class="table-responsive">
-                                <table class="table">
+                                <table class="table table-striped">
                                     <tr>
                                         <th class="th-1">&nbsp;</th>
                                         <th class="tleft">{#newslettersubscriberfirstname#}</th>
@@ -87,7 +87,7 @@
                                         <th class="tcenter">{#newslettersubscriberdate#}</th>
                                     </tr>
                                     {foreach $oNewsletterEmpfaenger_arr as $oNewsletterEmpfaenger}
-                                        <tr class="tab_bg{$oNewsletterEmpfaenger@iteration%2}">
+                                        <tr>
                                             <td class="tleft">
                                                 <input name="kNewsletterEmpfaenger[]" type="checkbox" value="{$oNewsletterEmpfaenger->kNewsletterEmpfaenger}">
                                             </td>
@@ -154,7 +154,7 @@
                                 <h3 class="panel-title">{#newsletterAllSubscriber#}</h3>
                             </div>
                             <div class="table-responsive">
-                                <table class="table">
+                                <table class="table table-striped">
                                     <tr>
                                         <th class="th-1">&nbsp;</th>
                                         <th class="tleft">{#newslettersubscribername#}</th>
@@ -166,7 +166,7 @@
                                         <th class="tcenter">{#newsletterOptInDate#}</th>
                                     </tr>
                                     {foreach $oAbonnenten_arr as $oAbonnenten}
-                                        <tr class="tab_bg{$oAbonnenten@iteration%2}">
+                                        <tr>
                                             <td class="tleft">
                                                 <input name="kNewsletterEmpfaenger[]" type="checkbox" value="{$oAbonnenten->kNewsletterEmpfaenger}" />
                                             </td>
@@ -278,7 +278,7 @@
                                 <h3 class="panel-title">{#newsletterqueue#}</h3>
                             </div>
                             <div class="table-responsive">
-                                <table class="table">
+                                <table class="table table-striped">
                                     <tr>
                                         <th class="th-1" style="width: 4%;">&nbsp;</th>
                                         <th class="th-2" style="width: 40%;">{#newsletterqueuesubject#}</th>
@@ -289,7 +289,7 @@
                                     </tr>
                                     {foreach $oNewsletterQueue_arr as $oNewsletterQueue}
                                         {if isset($oNewsletterQueue->nAnzahlEmpfaenger) && $oNewsletterQueue->nAnzahlEmpfaenger > 0}
-                                            <tr class="tab_bg{$oNewsletterQueue@iteration%2}">
+                                            <tr>
                                                 <td class="TD1">
                                                     <input name="kNewsletterQueue[]" type="checkbox" value="{$oNewsletterQueue->kNewsletterQueue}">
                                                 </td>
@@ -339,7 +339,7 @@
                                 <h3 class="panel-title">Vorhandene Vorlagen</h3>
                             </div>
                             <div class="table-responsive">
-                                <table class="table">
+                                <table class="table table-striped">
                                     <tr>
                                         <th class="th-1">&nbsp;</th>
                                         <th class="th-2">{#newsletterdraftname#}</th>
@@ -348,7 +348,7 @@
                                         <th class="th-5" style="width: 385px;">{#newsletterdraftoptions#}</th>
                                     </tr>
                                     {foreach $oNewsletterVorlage_arr as $oNewsletterVorlage}
-                                        <tr class="tab_bg{$oNewsletterVorlage@iteration%2}">
+                                        <tr>
                                             <td class="TD1">
                                                 <input name="kNewsletterVorlage[]" type="checkbox" value="{$oNewsletterVorlage->kNewsletterVorlage}">
                                             </td>
@@ -430,13 +430,13 @@
                                 <h3 class="panel-title">{#newsletterdraftStd#}</h3>
                             </div>
                             <div class="table-responsive">
-                                <table class="table">
+                                <table class="table table-striped">
                                     <tr>
                                         <th class="th-1">{#newsletterdraftname#}</th>
                                         <th class="th-2">{#newsletterdraftStdPicture#}</th>
                                     </tr>
                                     {foreach $oNewslettervorlageStd_arr as $oNewslettervorlageStd}
-                                        <tr class="tab_bg{$oNewslettervorlageStd@iteration%2}">
+                                        <tr>
                                             <td class="TD1">
                                                 <input name="kNewsletterVorlageStd" id="knvls-{$oNewslettervorlageStd@iteration}" type="radio" value="{$oNewslettervorlageStd->kNewslettervorlageStd}" /> <label for="knvls-{$oNewslettervorlageStd@iteration}">{$oNewslettervorlageStd->cName}</label>
                                             </td>
@@ -468,7 +468,7 @@
                                 <h3 class="panel-title">{#newsletterhistory#}</h3>
                             </div>
                             <div class="table-responsive">
-                                <table class="table">
+                                <table class="table table-striped">
                                     <tr>
                                         <th class="th-1">&nbsp;</th>
                                         <th class="tleft">{#newsletterhistorysubject#}</th>
@@ -477,7 +477,7 @@
                                         <th class="tcenter">{#newsletterhistorydate#}</th>
                                     </tr>
                                     {foreach $oNewsletterHistory_arr as $oNewsletterHistory}
-                                        <tr class="tab_bg{$oNewsletterHistory@iteration%2}">
+                                        <tr>
                                             <td class="tleft">
                                                 <input name="kNewsletterHistory[]" type="checkbox" value="{$oNewsletterHistory->kNewsletterHistory}">
                                             </td>

@@ -51,7 +51,7 @@
                                         <h3 class="panel-title">Aktive Umfragen</h3>
                                     </div>
                                     <div class="table-responsive">
-                                        <table class="table">
+                                        <table class="table table-striped">
                                             <tr>
                                                 <th class="th-1"></th>
                                                 <th class="th-2">{#umfrageName#}</th>
@@ -63,7 +63,7 @@
                                                 <th class="th-8">Aktionen</th>
                                             </tr>
                                             {foreach name=umfrage from=$oUmfrage_arr item=oUmfrage}
-                                                <tr class="tab_bg{$smarty.foreach.umfrage.iteration%2}">
+                                                <tr>
                                                     <td class="TD1"><input type="checkbox" name="kUmfrage[]" value="{$oUmfrage->kUmfrage}" /></td>
                                                     <td class="TD2">
                                                         <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&ud=1&kUmfrage={$oUmfrage->kUmfrage}&tab=umfrage">{$oUmfrage->cName}</a>

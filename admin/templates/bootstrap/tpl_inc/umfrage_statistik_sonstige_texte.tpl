@@ -18,7 +18,7 @@
                 <div id="payment">
                     <div id="tabellenLivesuche" class="table-responsive">
                         <b>{$oUmfrageFrage->cName}</b><br /><br />
-                        <table class="table">
+                        <table class="table table-striped">
                             <tr>
                                 <th class="th-1" style="width: 20%;">{#umfrageQASing#}</th>
                                 <th class="th-2" style="width: 60%;"></th>
@@ -26,7 +26,7 @@
                                 <th class="th-4" style="width: 10%;">{#umfrageQResCount#}</th>
                             </tr>
                         {foreach name=umfragefrageantwort from=$oUmfrageFrage->oUmfrageFrageAntwort_arr item=oUmfrageFrageAntwort}
-                            <tr class="tab_bg{$smarty.foreach.umfragefrageantwort.iteration%2}">
+                            <tr>
                                 <td class="TD1" style="width: 20%;">{$oUmfrageFrageAntwort->cName}</td>
                                 <td class="TD2" style="width: 60%;"><div class="freqbar" style="width: {$oUmfrageFrageAntwort->nProzent}%; height: 10px;"></div></td>
                                 <td class="TD3" style="width: 10%;">

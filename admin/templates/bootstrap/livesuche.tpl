@@ -82,7 +82,7 @@
                             <h3 class="panel-title">{#searchrequest#}</h3>
                         </div>
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="table table-striped">
                                 <tr>
                                     <th class="th-1"></th>
                                     <th class="tleft">
@@ -99,7 +99,7 @@
 
                                 {foreach name=suchanfragen from=$Suchanfragen item=suchanfrage}
                                     <input name="kSuchanfrageAll[]" type="hidden" value="{$suchanfrage->kSuchanfrage}" />
-                                    <tr class="tab_bg{$smarty.foreach.suchanfragen.iteration%2}">
+                                    <tr>
                                         <td class="TD1">
                                             <input type="checkbox" name="kSuchanfrage[]" value="{$suchanfrage->kSuchanfrage}" />
                                         </td>
@@ -157,7 +157,7 @@
                             <h3 class="panel-title">{#searchmiss#}</h3>
                         </div>
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="table table-striped">
                                 <tr>
                                     <th class="th-1" style="width: 40px;">&nbsp;</th>
                                     <th class="th-1" align="left">{#search#}</th>
@@ -166,7 +166,7 @@
                                     <th class="th-4" align="left">{#mapping#}</th>
                                 </tr>
                                 {foreach name=suchanfragenerfolglos from=$Suchanfragenerfolglos item=Suchanfrageerfolglos}
-                                    <tr class="tab_bg{$smarty.foreach.suchanfragenerfolglos.iteration%2}">
+                                    <tr>
                                         <td class="TD1">
                                             <input name="kSuchanfrageErfolglos[]" type="checkbox" value="{$Suchanfrageerfolglos->kSuchanfrageErfolglos}" />
                                         </td>
@@ -219,7 +219,7 @@
                             <h3 class="panel-title">{#mapping#}</h3>
                         </div>
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="table table-striped">
                                 <tr>
                                     <th class="th-1"></th>
                                     <th class="th-2">{#search#}</th>
@@ -227,7 +227,7 @@
                                     <th class="th-4">{#searchcount#}</th>
                                 </tr>
                                 {foreach name=suchanfragenmapping from=$Suchanfragenmapping item=sfm}
-                                    <tr class="tab_bg{$smarty.foreach.suchanfragenmapping.iteration%2}">
+                                    <tr>
                                         <td class="TD1">
                                             <input name="kSuchanfrageMapping[]" type="checkbox" value="{$sfm->kSuchanfrageMapping}">
                                         </td>

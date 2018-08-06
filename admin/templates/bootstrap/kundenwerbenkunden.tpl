@@ -29,7 +29,7 @@
                     <input type="hidden" name="tab" value="einladungen" />
                     <div id="payment">
                         <div id="tabellenLivesuche" class="table-responsive">
-                            <table class="table">
+                            <table class="table table-striped">
                                 <tr>
                                     <th class="check"></th>
                                     <th class="tleft">{#kundenwerbenkundenName#}</th>
@@ -38,7 +38,7 @@
                                     <th class="th-5">{#kundenwerbenkundenDateInvite#}</th>
                                 </tr>
                                 {foreach name=nichtregkunden from=$oKwKNichtReg_arr item=oKwKNichtReg}
-                                    <tr class="tab_bg{$smarty.foreach.nichtregkunden.iteration%2}">
+                                    <tr>
                                         <td class="check">
                                             <input type="checkbox" name="kKundenWerbenKunden[]" value="{$oKwKNichtReg->kKundenWerbenKunden}">
                                         </td>
@@ -68,7 +68,7 @@
                 {include file='tpl_inc/pagination.tpl' oPagination=$oPagiReg cAnchor='registrierung'}
                 <div id="payment">
                     <div id="tabellenLivesuche" class="table-responsive">
-                        <table class="table">
+                        <table class="table table-striped">
                             <tr>
                                 <th class="tleft">{#kundenwerbenkundenRegName#}</th>
                                 <th class="tleft">{#kundenwerbenkundenFromReg#}</th>
@@ -77,7 +77,7 @@
                                 <th class="th-5">{#kundenwerbenkundenDateErstellt#}</th>
                             </tr>
                             {foreach name=regkunden from=$oKwKReg_arr item=oKwKReg}
-                                <tr class="tab_bg{$smarty.foreach.regkunden.iteration%2}">
+                                <tr>
                                     <td class="TD2"><b>{$oKwKReg->cVorname} {$oKwKReg->cNachname}</b><br />{$oKwKReg->cEmail}</td>
                                     <td class="TD2">
                                         <b>{$oKwKReg->cBestandVorname} {$oKwKReg->cBestandNachname}</b><br />{$oKwKReg->cMail}
@@ -99,7 +99,7 @@
                 {include file='tpl_inc/pagination.tpl' oPagination=$oPagiPraemie cAnchor='praemie'}
                 <div id="payment">
                     <div id="tabellenLivesuche" class="table-responsive">
-                        <table class="table">
+                        <table class="table table-striped">
                             <tr>
                                 <th class="tleft">{#kundenwerbenkundenFromReg#}</th>
                                 <th class="tleft">{#kundenwerbenkundenCredit#}</th>
@@ -107,7 +107,7 @@
                                 <th class="th-4">{#kundenwerbenkundenDateBoni#}</th>
                             </tr>
                             {foreach name=letzte100bonis from=$oKwKBestandBonus_arr item=oKwKBestandBonus}
-                                <tr class="tab_bg{$smarty.foreach.letzte100bonis.iteration%2}">
+                                <tr>
                                     <td class="TD2">
                                         <b>{$oKwKBestandBonus->cBestandVorname} {$oKwKBestandBonus->cBestandNachname}</b><br />{$oKwKBestandBonus->cMail}
                                     </td>

@@ -40,7 +40,7 @@
                             <h3 class="panel-title">{#tags#}</h3>
                         </div>
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="table table-striped">
                                 <tr>
                                     <th class="th-1"></th>
                                     <th class="tleft">{#tag#}</th>
@@ -49,7 +49,7 @@
                                     <th class="th-5">{#mapping#}</th>
                                 </tr>
                                 {foreach name=tags from=$Tags item=tag}
-                                    <tr class="tab_bg{$smarty.foreach.tags.iteration%2}">
+                                    <tr>
                                         <td class="TD1">
                                             <input type="checkbox" name="kTag[]" value="{$tag->kTag}" />
                                             <input name="kTagAll[]" type="hidden" value="{$tag->kTag}" />
@@ -92,14 +92,14 @@
                             <h3 class="panel-title">{#mapping#}</h3>
                         </div>
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="table table-striped">
                                 <tr>
                                     <th class="th-1"></th>
                                     <th class="th-2">{#tag#}</th>
                                     <th class="th-3">{#tagnew#}</th>
                                 </tr>
                                 {foreach name=tagsmapping from=$Tagmapping item=tagmapping}
-                                    <tr class="tab_bg{$smarty.foreach.tagsmapping.iteration%2}">
+                                    <tr>
                                         <td class="TD1">
                                             <input name="kTagMapping[]" type="checkbox" value="{$tagmapping->kTagMapping}" />
                                         </td>

@@ -73,7 +73,7 @@
                                                 {assign var=audiosrc value=$PFAD_MEDIAFILES|cat:$oMedienDatei->cPfad}
                                             {/if}
                                             {if $audiosrc|strlen > 1}
-                                                <audio controls>
+                                                <audio controls controlsList="nodownload">
                                                     <source src="{$audiosrc}" type="audio/mpeg">
                                                     Your browser does not support the audio element.
                                                 </audio>

@@ -9,57 +9,41 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
 
 $NaviFilter     = Shop::run();
 $cParameter_arr = Shop::getParameters();
+$db             = Shop::Container()->getDB();
+$service        = Shop::Container()->getNewsService();
+$pagination     = new Pagination();
 Shop::setPageType(PAGE_NEWS);
-$db         = Shop::Container()->getDB();
-$service    = Shop::Container()->getNewsService();
-$pagination = new Pagination();
 
 $breadCrumbName   = null;
 $breadCrumbURL    = null;
-$cHinweis         = '';
-$cFehler          = '';
 $cMetaTitle       = '';
 $cMetaDescription = '';
 $cMetaKeywords    = '';
 $AktuelleSeite    = 'NEWS';
 $Einstellungen    = Shopsetting::getInstance()->getAll();
-$nAktuelleSeite   = (Shop::$kSeite !== null && Shop::$kSeite > 0) ? Shop::$kSeite : 1;
 $linkService      = Shop::Container()->getLinkService();
 $kLink            = $linkService->getSpecialPageLinkKey(LINKTYP_NEWS);
 $link             = $linkService->getPageLink($kLink);
-
 
 $controller = new \News\Controller($db, $Einstellungen, $smarty);
 $pageType   = $controller->getPageType($cParameter_arr);
 
 switch ($pageType) {
-    case \News\ViewType::NEWS_DISABLED:
-        Shop::$is404 = true;
-        Shop::$kLink = 0;
-        Shop::$kNews = 0;
-
-        return;
     case \News\ViewType::NEWS_DETAIL:
         Shop::setPageType(PAGE_NEWSDETAIL);
         Shop::$AktuelleSeite = 'NEWSDETAIL';
         $AktuelleSeite       = 'NEWSDETAIL';
-
-        $newsItemID = $cParameter_arr['kNews'];
+        $pagination          = new Pagination('comments');
+        $newsItemID          = $cParameter_arr['kNews'];
 
         $newsItem = new \News\Item($db);
         $newsItem->load($newsItemID);
 
-        $pagination = new Pagination('comments');
-
         $cMetaTitle       = $newsItem->getMetaTitle();
         $cMetaDescription = $newsItem->getMetaDescription();
         $cMetaKeywords    = $newsItem->getMetaKeyword();
-
-
-        if (isset($_POST['kommentar_einfuegen']) && (int)$_POST['kommentar_einfuegen'] > 0) {
-            $result   = $controller->addComment($newsItemID, $_POST);
-            $cFehler  = $controller->getErrorMsg();
-            $cHinweis = $controller->getNoticeMsg();
+        if ((int)($_POST['kommentar_einfuegen'] ?? 0)> 0) {
+            $result = $controller->addComment($newsItemID, $_POST);
         }
 
         $controller->displayItem($newsItem, $pagination);
@@ -70,71 +54,50 @@ switch ($pageType) {
         executeHook(HOOK_NEWS_PAGE_DETAILANSICHT);
         break;
     case \News\ViewType::NEWS_CATEGORY:
+        Shop::setPageType(PAGE_NEWSKATEGORIE);
+        Shop::$AktuelleSeite = 'NEWSKATEGORIE';
+        $AktuelleSeite       = 'NEWSKATEGORIE';
+        $kNewsKategorie      = (int)$cParameter_arr['kNewsKategorie'];
+        $overview            = $controller->displayOverview($pagination, $kNewsKategorie);
+        $cCanonicalURL       = $overview->getURL();
+        $breadCrumbURL       = $cCanonicalURL;
+        $breadCrumbName      = $overview->getName();
+        break;
     case \News\ViewType::NEWS_OVERVIEW:
-        if ($pageType === \News\ViewType::NEWS_OVERVIEW) {
-            Shop::$AktuelleSeite = 'NEWS';
-            $AktuelleSeite       = 'NEWS';
-            Shop::setPageType(PAGE_NEWS);
-            $kNewsKategorie = 0;
-        } else {
-            Shop::setPageType(PAGE_NEWSKATEGORIE);
-            Shop::$AktuelleSeite = 'NEWSKATEGORIE';
-            $AktuelleSeite       = 'NEWSKATEGORIE';
-            $kNewsKategorie      = (int)$cParameter_arr['kNewsKategorie'];
-        }
-//        if (!isset($oNewsKategorie) || !is_object($oNewsKategorie)) {
-//            Shop::setPageType(PAGE_NEWS);
-//            Shop::$AktuelleSeite                  = 'NEWS';
-//            $cFehler                              .= Shop::Lang()->get('newsRestricted', 'news');
-//            $_SESSION['NewsNaviFilter']->nNewsKat = -1;
-//            baueNewsKruemel(Shop::Smarty(), Shop::$AktuelleSeite, $cCanonicalURL);
-//        }
-        // Canonical
-
-
-        $overview = $controller->displayOverview($pagination, $kNewsKategorie);
-        Shop::dbg($overview->getURL());
-//        if (isset($oNewsKategorie->cSeo)) {
-//            $cCanonicalURL  = Shop::getURL() . '/' . $oNewsKategorie->cSeo;
-//            $breadCrumbURL  = $cCanonicalURL;
-//            $breadCrumbName = $oNewsKategorie->cName;
-//        }
-
+        Shop::$AktuelleSeite = 'NEWS';
+        $AktuelleSeite       = 'NEWS';
+        Shop::setPageType(PAGE_NEWS);
+        $kNewsKategorie = 0;
+        $overview       = $controller->displayOverview($pagination, $kNewsKategorie);
         break;
     case \News\ViewType::NEWS_MONTH_OVERVIEW:
         Shop::setPageType(PAGE_NEWSMONAT);
-        Shop::$AktuelleSeite   = 'NEWSMONAT';
-        $AktuelleSeite         = 'NEWSMONAT';
-        $kNewsMonatsUebersicht = (int)$cParameter_arr['kNewsMonatsUebersicht'];
-        $oNewsMonatsUebersicht = getMonthOverview($kNewsMonatsUebersicht);
-
-        if (isset($oNewsMonatsUebersicht->cSeo)) {
-            $cCanonicalURL  = Shop::getURL() . '/' . $oNewsMonatsUebersicht->cSeo;
-            $breadCrumbURL  = $cCanonicalURL;
-            $breadCrumbName = $oNewsMonatsUebersicht->cName;
-        }
-        if (!isset($_SESSION['NewsNaviFilter'])) {
-            $_SESSION['NewsNaviFilter'] = new stdClass();
-        }
-        $_SESSION['NewsNaviFilter']->cDatum   = (int)$oNewsMonatsUebersicht->nMonat . '-' .
-            (int)$oNewsMonatsUebersicht->nJahr;
-        $_SESSION['NewsNaviFilter']->nNewsKat = -1;
-        $overview                             = $controller->displayOverview($pagination, 0, $kNewsMonatsUebersicht);
-        $cCanonicalURL                        = $overview->getURL();
-        $breadCrumbURL                        = $cCanonicalURL;
-        $breadCrumbName                       = $overview->getName();
+        Shop::$AktuelleSeite = 'NEWSMONAT';
+        $AktuelleSeite       = 'NEWSMONAT';
+        $id                  = (int)$cParameter_arr['kNewsMonatsUebersicht'];
+        $overview            = $controller->displayOverview($pagination, 0, $id);
+        $cCanonicalURL       = $overview->getURL();
+        $breadCrumbURL       = $cCanonicalURL;
+        $breadCrumbName      = $overview->getName();
 
         break;
+    case \News\ViewType::NEWS_DISABLED:
     default:
-        die('default???');
+        Shop::$is404 = true;
+        Shop::$kLink = 0;
+        Shop::$kNews = 0;
+
+        return;
 }
 
+$cMetaTitle = \Filter\Metadata::prepareMeta(
+    $cMetaTitle,
+    null,
+    (int)$Einstellungen['metaangaben']['global_meta_maxlaenge_title']
+);
 
-$cMetaTitle = \Filter\Metadata::prepareMeta($cMetaTitle, null,
-    (int)$Einstellungen['metaangaben']['global_meta_maxlaenge_title']);
-
-Shop::Smarty()->assign('hinweis', $cHinweis)
-    ->assign('fehler', $cFehler)
+Shop::Smarty()->assign('hinweis', $controller->getNoticeMsg())
+    ->assign('fehler', $controller->getErrorMsg())
     ->assign('oPagination', $pagination)
     ->assign('code_news', false);
 

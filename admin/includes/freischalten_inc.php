@@ -87,25 +87,27 @@ function gibNewskommentarFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = tr
     $cond = $checkLanguage === true
         ? ' AND tnews.kSprache = ' . (int)$_SESSION['kSprache'] . ' '
         : '';
-    $oNewsKommentar_arr = Shop::Container()->getDB()->query(
+    $newsComments = Shop::Container()->getDB()->query(
         "SELECT tnewskommentar.*, DATE_FORMAT(tnewskommentar.dErstellt, '%d.%m.%Y  %H:%i') AS dErstellt_de, 
-            tkunde.kKunde, tkunde.cVorname, tkunde.cNachname, tnews.cBetreff
+            tkunde.kKunde, tkunde.cVorname, tkunde.cNachname, t.title AS cBetreff
             FROM tnewskommentar
             JOIN tnews 
                 ON tnews.kNews = tnewskommentar.kNews
+            JOIN tnewssprache t 
+                ON tnews.kNews = t.kNews
             LEFT JOIN tkunde 
                 ON tkunde.kKunde = tnewskommentar.kKunde
             WHERE tnewskommentar.nAktiv = 0" .
             $cSuchSQL->cWhere . $cond . $cSQL,
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    foreach ($oNewsKommentar_arr as $i => $oNewsKommentar) {
-        $oKunde = new Kunde($oNewsKommentar->kKunde ?? 0);
+    foreach ($newsComments as $comment) {
+        $oKunde = new Kunde($comment->kKunde ?? 0);
 
-        $oNewsKommentar_arr[$i]->cNachname = $oKunde->cNachname;
+        $comment->cNachname = $oKunde->cNachname;
     }
 
-    return $oNewsKommentar_arr;
+    return $newsComments;
 }
 
 /**

@@ -678,9 +678,7 @@ class Warenlager extends MainModel
             }
         } else {
             $this->oLageranzeige->nStatus = (int)$conf['global']['artikel_lagerampel_keinlager'];
-            if ($this->oLageranzeige->nStatus < 0 || $this->oLageranzeige->nStatus > 2) {
-                $this->oLageranzeige->nStatus = 2;
-            }
+
             switch ($this->oLageranzeige->nStatus) {
                 case 1:
                     $this->oLageranzeige->AmpelText = $xOption_arr['attribut_ampeltext_gelb'];
@@ -688,7 +686,8 @@ class Warenlager extends MainModel
                 case 0:
                     $this->oLageranzeige->AmpelText = $xOption_arr['attribut_ampeltext_rot'];
                     break;
-                case 2:
+                default:
+                    $this->oLageranzeige->nStatus = 2;
                     $this->oLageranzeige->AmpelText = $xOption_arr['attribut_ampeltext_gruen'];
                     break;
             }

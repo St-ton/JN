@@ -4,7 +4,7 @@
             <a itemprop="url" href="{$oNewsUebersicht->getURL()}">
                 <strong><span itemprop="headline">{$oNewsUebersicht->getTitle()}</span></strong>
             </a>
-            <meta itemprop="mainEntityOfPage" content="{$ShopURL}/{$oNewsUebersicht->cURL}">
+            <meta itemprop="mainEntityOfPage" content="{$ShopURL}/{$oNewsUebersicht->getURL()}">
             <div class="text-muted pull-right v-box">
                 {assign var='dDate' value=$oNewsUebersicht->getDateValidFrom()->format('Y-m-d H:i:s')}
                 {if (isset($oNewsUebersicht->oAuthor))}

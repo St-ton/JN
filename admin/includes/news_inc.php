@@ -39,23 +39,11 @@ function pruefeNewsPost($cBetreff, $cText, $kKundengruppe_arr, $kNewsKategorie_a
  * @param string $cName
  * @param int    $nNewskategorieEditSpeichern
  * @return array
+ * @deprecated since 5.0.0
  */
 function pruefeNewsKategorie($cName, $nNewskategorieEditSpeichern = 0)
 {
-    $cPlausiValue_arr = [];
-    // Name prüfen
-    if (strlen($cName) === 0) {
-        $cPlausiValue_arr['cName'] = 1;
-    }
-    // Prüfen ob Name schon vergeben
-    if ($nNewskategorieEditSpeichern === 0) {
-        $oNewsKategorieTMP = Shop::Container()->getDB()->select('tnewskategorie', 'cName', $cName);
-        if (isset($oNewsKategorieTMP->kNewsKategorie) && $oNewsKategorieTMP->kNewsKategorie > 0) {
-            $cPlausiValue_arr['cName'] = 2;
-        }
-    }
-
-    return $cPlausiValue_arr;
+    return [];
 }
 
 /**
@@ -186,13 +174,13 @@ function mappeDatumName($cMonat, $nJahr, $cISOSprache)
 }
 
 /**
- * @deprecated since 4.06
- *
  * @param string $cDateTimeStr
  * @return stdClass
+ * @deprecated since 4.06
  */
 function gibJahrMonatVonDateTime($cDateTimeStr)
 {
+    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
     list($dDatum, $dUhrzeit)     = explode(' ', $cDateTimeStr);
     list($dJahr, $dMonat, $dTag) = explode('-', $dDatum);
     $oDatum                      = new stdClass();
@@ -207,125 +195,48 @@ function gibJahrMonatVonDateTime($cDateTimeStr)
  * @param int   $kNewsKommentar
  * @param array $cPost_arr
  * @return bool
+ * @deprecated since 5.0.0
  */
-function speicherNewsKommentar($kNewsKommentar, $cPost_arr)
+function speicherNewsKommentar(int $kNewsKommentar, array $cPost_arr)
 {
-    if ($kNewsKommentar > 0) {
-        $upd             = new stdClass();
-        $upd->cName      = $cPost_arr['cName'];
-        $upd->cKommentar = $cPost_arr['cKommentar'];
-
-        return Shop::Container()->getDB()->update('tnewskommentar', 'kNewsKommentar', (int)$kNewsKommentar, $upd) >= 0;
-    }
-
+    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
     return false;
-}
-
-/**
- * Gibt eine neue Breite und Höhe als Array zurück
- *
- * @param string $cDatei
- * @param int    $nMaxBreite
- * @param int    $nMaxHoehe
- * @return array
- */
-function calcRatio($cDatei, $nMaxBreite, $nMaxHoehe)
-{
-    $path = str_replace(Shop::getURL(), PFAD_ROOT, $cDatei);
-    if (file_exists($path)) {
-        $cDatei = $path;
-    }
-    list($ImageBreite, $ImageHoehe) = getimagesize($cDatei);
-    if ($ImageBreite === null || $ImageBreite === 0) {
-        $ImageBreite = 1;
-    }
-    if ($ImageHoehe === null || $ImageHoehe === 0) {
-        $ImageHoehe = 1;
-    }
-    $f = min($nMaxBreite / $ImageBreite, $nMaxHoehe / $ImageHoehe, 1);
-
-    return [round($f * $nMaxBreite), round($f * $nMaxHoehe)];
 }
 
 /**
  * @param  int    $kSprache
  * @param  string $cLimitSQL
- * @return mixed
+ * @return array
+ * @deprecated since 5.0.0
  */
 function holeNewskategorie($kSprache = null, $cLimitSQL = '')
 {
-    if ($kSprache === null) {
-        $kSprache = $_SESSION['kSprache'];
-    }
-    $kSprache = (int)$kSprache;
-
-    return Shop::Container()->getDB()->query(
-        "SELECT" . (!empty($cLimitSQL) ? " SQL_CALC_FOUND_ROWS" : '') . 
-            " *, DATE_FORMAT(dLetzteAktualisierung, '%d.%m.%Y %H:%i') AS dLetzteAktualisierung_de
-            FROM tnewskategorie
-            WHERE kSprache = " . $kSprache . "
-            ORDER BY nSort DESC" . (!empty($cLimitSQL) ? " " . $cLimitSQL : ''),
-        \DB\ReturnType::ARRAY_OF_OBJECTS
-    );
+    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+    return [];
 }
 
 /**
  * @param int    $kNews
  * @param string $cUploadVerzeichnis
  * @return array
+ * @deprecated since 5.0.0
  */
 function holeNewsBilder($kNews, $cUploadVerzeichnis)
 {
-    $oDatei_arr = [];
-    $kNews      = (int)$kNews;
-    if ($kNews > 0 && is_dir($cUploadVerzeichnis . $kNews)) {
-        $DirHandle = opendir($cUploadVerzeichnis . $kNews);
-        $shopURL   = Shop::getURL() . '/';
-        while (false !== ($Datei = readdir($DirHandle))) {
-            if ($Datei !== '.' && $Datei !== '..') {
-                $oDatei         = new stdClass();
-                $oDatei->cName  = substr($Datei, 0, strpos($Datei, '.'));
-                $oDatei->cURL   = '<img src="' . $shopURL . PFAD_NEWSBILDER . $kNews . '/' . $Datei . '" />';
-                $oDatei->cDatei = $Datei;
-
-                $oDatei_arr[] = $oDatei;
-            }
-        }
-
-        usort($oDatei_arr, 'cmp_obj');
-    }
-
-    return $oDatei_arr;
+    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+    return [];
 }
 
 /**
  * @param int    $kNewsKategorie
  * @param string $cUploadVerzeichnis
  * @return array
+ * @deprecated since 5.0.0
  */
 function holeNewsKategorieBilder($kNewsKategorie, $cUploadVerzeichnis)
 {
-    $oDatei_arr = [];
-    $kNewsKategorie      = (int)$kNewsKategorie;
-    if ($kNewsKategorie > 0 && is_dir($cUploadVerzeichnis . $kNewsKategorie)) {
-        $DirHandle = opendir($cUploadVerzeichnis . $kNewsKategorie);
-        $shopURL   = Shop::getURL() . '/';
-        while (false !== ($Datei = readdir($DirHandle))) {
-            if ($Datei !== '.' && $Datei !== '..') {
-                $oDatei         = new stdClass();
-                $oDatei->cName  = substr($Datei, 0, strpos($Datei, '.'));
-                $oDatei->cURL   = '<img src="' . $shopURL .
-                    PFAD_NEWSKATEGORIEBILDER . $kNewsKategorie . '/' . $Datei . '" />';
-                $oDatei->cDatei = $Datei;
-
-                $oDatei_arr[] = $oDatei;
-            }
-        }
-
-        usort($oDatei_arr, 'cmp_obj');
-    }
-
-    return $oDatei_arr;
+    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+    return [];
 }
 
 /**
@@ -353,91 +264,36 @@ function loescheNewsBilderDir($kNews, $cUploadVerzeichnis)
 /**
  * @param array $newsCats
  * @return bool
+ * @deprecated since 5.0.0
  */
 function loescheNewsKategorie(array $newsCats): bool
 {
-    if (!is_array($newsCats) || count($newsCats) === 0) {
-        return false;
-    }
-    foreach ($newsCats as $newsCat) {
-        $oNewsCatAndSubCats_arr = News::getNewsCatAndSubCats($newsCat, $_SESSION['kSprache']);
-        foreach ($oNewsCatAndSubCats_arr as $newsSubCat) {
-            Shop::Container()->getDB()->delete('tnewskategorie', 'kNewsKategorie', $newsSubCat);
-            // tseo löschen
-            Shop::Container()->getDB()->delete('tseo', ['cKey', 'kKey'], ['kNewsKategorie', $newsSubCat]);
-            // tnewskategorienews löschen
-            Shop::Container()->getDB()->delete('tnewskategorienews', 'kNewsKategorie', $newsSubCat);
-
-            deactivateNews();
-        }
-    }
-
-    return true;
+    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+    return false;
 }
 
 /**
  * @param int $kNewsKategorie
  * @param int $kSprache
  * @return stdClass
+ * @deprecated since 5.0.0
  */
 function editiereNewskategorie(int $kNewsKategorie, int $kSprache)
 {
-    $oNewsKategorie = new stdClass();
-    if ($kNewsKategorie > 0 && $kSprache > 0) {
-        $oNewsKategorie = Shop::Container()->getDB()->query(
-            "SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,
-                tnewskategorie.cBeschreibung, tnewskategorie.cMetaTitle, tnewskategorie.cMetaDescription,
-                tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung,
-                tnewskategorie.cPreviewImage, tnewskategorie.kParent, tseo.cSeo,
-                DATE_FORMAT(tnewskategorie.dLetzteAktualisierung, '%d.%m.%Y %H:%i') AS dLetzteAktualisierung_de
-                FROM tnewskategorie
-                LEFT JOIN tseo 
-                    ON tseo.cKey = 'kNewsKategorie'
-                    AND tseo.kKey = tnewskategorie.kNewsKategorie
-                    AND tseo.kSprache = " . $kSprache . "
-                WHERE kNewsKategorie = " . $kNewsKategorie,
-            \DB\ReturnType::SINGLE_OBJECT
-        );
-    }
-
-    return $oNewsKategorie;
+    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+    return new stdClass();
 }
 
 /**
  * @param string $cText
  * @param int    $kNews
- * @return mixed
+ * @return string
+ * @deprecated since 5.0.0
  */
 function parseText($cText, $kNews)
 {
-    $cUploadVerzeichnis = PFAD_ROOT . PFAD_NEWSBILDER;
-    $cBild_arr          = [];
-    if (is_dir($cUploadVerzeichnis . $kNews)) {
-        $DirHandle = opendir($cUploadVerzeichnis . $kNews);
-        while (false !== ($Datei = readdir($DirHandle))) {
-            if ($Datei !== '.' && $Datei !== '..') {
-                $cBild_arr[] = $Datei;
-            }
-        }
-
-        closedir($DirHandle);
-    }
-    usort($cBild_arr, 'cmp');
-
-    $shopURL = Shop::getURL() . '/';
-    $count   = count($cBild_arr);
-    for ($i = 1; $i <= $count; $i++) {
-        $cText = str_replace("$#Bild" . $i . "#$", '<img alt="" src="' . 
-            $shopURL . PFAD_NEWSBILDER . $kNews . '/' . $cBild_arr[$i - 1] . 
-            '" />', $cText);
-    }
-    if (strpos(end($cBild_arr), 'preview') !== false) {
-        $cText = str_replace("$#preview#$", '<img alt="" src="' . 
-            $shopURL . PFAD_NEWSBILDER . $kNews . '/' . $cBild_arr[count($cBild_arr) - 1] . 
-            '" />', $cText);
-    }
-
-    return $cText;
+    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+    return '';
 }
 
 /**
@@ -445,33 +301,11 @@ function parseText($cText, $kNews)
  * @param int    $kNews
  * @param string $cUploadVerzeichnis
  * @return bool
+ * @deprecated since 5.0.0
  */
 function loescheNewsBild($cBildname, $kNews, $cUploadVerzeichnis)
 {
-    if ((int)$kNews > 0 && strlen($cBildname) > 0
-        && is_dir($cUploadVerzeichnis)
-        && is_dir($cUploadVerzeichnis . $kNews)
-    ) {
-        $DirHandle = opendir($cUploadVerzeichnis . $kNews);
-        while (false !== ($Datei = readdir($DirHandle))) {
-            if ($Datei !== '.' && $Datei !== '..' && substr($Datei, 0, strpos($Datei, '.')) === $cBildname) {
-                unlink($cUploadVerzeichnis . $kNews . '/' . $Datei);
-                closedir($DirHandle);
-                if ($cBildname === 'preview') {
-                    $upd                = new stdClass();
-                    $upd->cPreviewImage = '';
-                    if (strpos($cUploadVerzeichnis, PFAD_NEWSKATEGORIEBILDER) === false){
-                        Shop::Container()->getDB()->update('tnews', 'kNews', $kNews, $upd);
-                    } else {
-                        Shop::Container()->getDB()->update('tnewskategorie', 'kNewsKategorie', $kNews, $upd);
-                    }
-                }
-
-                return true;
-            }
-        }
-    }
-
+    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
     return false;
 }
 
@@ -479,114 +313,9 @@ function loescheNewsBild($cBildname, $kNews, $cUploadVerzeichnis)
  * @param string $cTab
  * @param string $cHinweis
  * @param array  $urlParams
+ * @deprecated since 5.0.0
  */
 function newsRedirect($cTab = '', $cHinweis = '', $urlParams = null)
 {
-    $tabPageMapping = [
-        'inaktiv'    => 's1',
-        'aktiv'      => 's2',
-        'kategorien' => 's3',
-    ];
-    if (empty($cHinweis)) {
-        unset($_SESSION['news.cHinweis']);
-    } else {
-        $_SESSION['news.cHinweis'] = $cHinweis;
-    }
-
-    if (!empty($cTab)) {
-        if (!is_array($urlParams)) {
-            $urlParams = [];
-        }
-        $urlParams['tab'] = $cTab;
-        if (isset($tabPageMapping[$cTab])
-            && RequestHelper::verifyGPCDataInt($tabPageMapping[$cTab]) > 1
-            && !array_key_exists($tabPageMapping[$cTab], $urlParams)
-        ) {
-            $urlParams[$tabPageMapping[$cTab]] = RequestHelper::verifyGPCDataInt($tabPageMapping[$cTab]);
-        }
-    }
-
-    header('Location: news.php' . (is_array($urlParams) 
-            ? '?' . http_build_query($urlParams, '', '&') 
-            : ''));
-    exit;
-}
-
-function getAllNews()
-{
-    $oNews_arr = Shop::Container()->getDB()->query(
-        "SELECT SQL_CALC_FOUND_ROWS tnews.*, 
-            COUNT(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl,
-            DATE_FORMAT(tnews.dErstellt, '%d.%m.%Y %H:%i') AS Datum, 
-            DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y %H:%i') AS dGueltigVon_de,
-            t.*
-            FROM tnews
-            LEFT JOIN tnewskommentar 
-                ON tnewskommentar.kNews = tnews.kNews
-            JOIN tnewssprache t
-                ON tnews.kNews = t.kNews
-            #WHERE tnews.kSprache = " . (int)$_SESSION['kSprache'] . "
-            GROUP BY tnews.kNews
-            ORDER BY tnews.dGueltigVon DESC",
-        \DB\ReturnType::ARRAY_OF_OBJECTS
-    );
-
-    foreach ($oNews_arr as $i => $oNews) {
-        $oNews_arr[$i]->cKundengruppe_arr = [];
-        $kKundengruppe_arr                = StringHandler::parseSSK($oNews->cKundengruppe);
-        foreach ($kKundengruppe_arr as $kKundengruppe) {
-            if ($kKundengruppe == -1) {
-                $oNews_arr[$i]->cKundengruppe_arr[] = 'Alle';
-            } else {
-                $oKundengruppe = Shop::Container()->getDB()->select('tkundengruppe', 'kKundengruppe', (int)$kKundengruppe);
-                if (!empty($oKundengruppe->cName)) {
-                    $oNews_arr[$i]->cKundengruppe_arr[] = $oKundengruppe->cName;
-                }
-            }
-        }
-        //add row "Kategorie" to news
-        $oCategorytoNews_arr = Shop::Container()->getDB()->query(
-            'SELECT tnewskategorie.cName
-                FROM tnewskategorie
-                LEFT JOIN tnewskategorienews 
-                    ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
-                WHERE tnewskategorienews.kNews = ' . (int)$oNews->kNews .' 
-                ORDER BY tnewskategorie.nSort',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
-        );
-        $Kategoriearray = [];
-        foreach ($oCategorytoNews_arr as $j => $KategorieAusgabe) {
-            $Kategoriearray[] = $KategorieAusgabe->cName;
-        }
-        $oNews_arr[$i]->KategorieAusgabe = implode(',<br />', $Kategoriearray);
-        // Limit News comments on aktiv comments
-        $oNewsKommentarAktiv = Shop::Container()->getDB()->query(
-            'SELECT count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahlAktiv
-                FROM tnews
-                LEFT JOIN tnewskommentar 
-                    ON tnewskommentar.kNews = tnews.kNews
-                WHERE tnewskommentar.nAktiv = 1 
-                    AND tnews.kNews = ' . (int)$oNews->kNews . '
-                    #AND tnews.kSprache = ' . (int)$_SESSION['kSprache'],
-            \DB\ReturnType::SINGLE_OBJECT
-        );
-        $oNews_arr[$i]->nNewsKommentarAnzahl = $oNewsKommentarAktiv->nNewsKommentarAnzahlAktiv;
-    }
-    return $oNews_arr;
-}
-
-/**
- * deactivate all news without a category
- */
-function deactivateNews()
-{
-    $newsAll = getAllNews();
-
-    foreach ($newsAll as $news) {
-        if ($news->KategorieAusgabe === '') {
-            $upd         = new stdClass();
-            $upd->nAktiv = 0;
-            Shop::Container()->getDB()->update('tnews', 'kNews', $news->kNews, $upd);
-        }
-    }
+    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
 }

@@ -246,6 +246,36 @@ class Item extends AbstractItem
     }
 
     /**
+     * @param string $uploadDirName
+     * @return array
+     */
+    public function getImages(string $uploadDirName): array
+    {
+        $images = [];
+        if ($this->id > 0 && \is_dir($uploadDirName . $this->id)) {
+            $handle       = \opendir($uploadDirName . $this->id);
+            $imageBaseURL = \Shop::getURL() . '/';
+            while (false !== ($file = \readdir($handle))) {
+                if ($file !== '.' && $file !== '..') {
+                    $image           = new \stdClass();
+                    $image->cName    = \substr($file, 0, \strpos($file, '.'));
+                    $image->cURL     = \PFAD_NEWSBILDER . $this->id . '/' . $file;
+                    $image->cURLFull = $imageBaseURL . \PFAD_NEWSBILDER . $this->id . '/' . $file;
+                    $image->cDatei   = $file;
+
+                    $images[] = $image;
+                }
+            }
+
+            \usort($images, function ($a, $b) {
+                return \strcmp($a->cName, $b->cName);
+            });
+        }
+
+        return $images;
+    }
+
+    /**
      * @inheritdoc
      */
     public function checkVisibility(int $customerGroupID): bool

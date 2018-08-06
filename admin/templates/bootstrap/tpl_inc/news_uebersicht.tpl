@@ -259,7 +259,7 @@
                         <h3 class="panel-title">{#newsCatOverview#}</h3>
                     </div>
                     <div class="table-responsive">
-                        <table id="category-list" class="list table">
+                        <table id="category-list" class="table">
                             <thead>
                             <tr>
                                 <th class="check"></th>
@@ -273,16 +273,13 @@
                             <tbody>
                             {if $oNewsKategorie_arr|@count}
                                 {foreach $oNewsKategorie_arr as $oNewsKategorie}
-                                    <tr class="tab_bg{$oNewsKategorie@iteration % 2}{if $oNewsKategorie->getLevel() > 0} hidden-soft{/if}" data-level="{$oNewsKategorie->getLevel()}">
-                                        <td class="check">
+                                    <tr scope="row" class="tab_bg{$oNewsKategorie@iteration % 2}{if $oNewsKategorie->getLevel() > 1} hidden-soft{/if}" data-level="{$oNewsKategorie->getLevel()}">
+                                        <th class="check">
                                             <input type="checkbox" name="kNewsKategorie[]" data-name="{$oNewsKategorie->getName()}" value="{$oNewsKategorie->getID()}" id="newscat-{$oNewsKategorie->getID()}" />
-                                        </td>
-                                        <td class="TD2{if $oNewsKategorie->getLevel() === 0} hide-toggle-on{/if}" data-name="category">
-                                            {for $i=1 to $oNewsKategorie->getLevel()}&nbsp;&nbsp;&nbsp;{/for}
-                                            <i class="fa fa-caret-down nav-toggle{if count($oNewsKategorie->getChildren()) === 0} invisible{/if}"></i>
-                                            <label for="newscat-{$oNewsKategorie->getID()}">
-                                                {$oNewsKategorie->getName()}
-                                            </label>
+                                        </th>
+                                        <td class="TD2{if $oNewsKategorie->getLevel() === 1} hide-toggle-on{/if}" data-name="category">
+                                            <i class="fa fa-caret-down nav-toggle{if $oNewsKategorie->getChildren()->count() === 0} hidden{/if}"></i>
+                                            <label for="newscat-{$oNewsKategorie->getID()}">{$oNewsKategorie->getName()|default:'???'}</label>
                                         </td>
                                         <td class="tcenter">{$oNewsKategorie->getSort()}</td>
                                         <td class="tcenter"><i class="fa fa-{if $oNewsKategorie->getIsActive()}check{else}close{/if}"></i></td>
@@ -294,6 +291,7 @@
                                             </a>
                                         </td>
                                     </tr>
+                                    {include 'tpl_inc/newscategories_recursive.tpl' children=$oNewsKategorie->getChildren() level=$oNewsKategorie->getLevel()}
                                 {/foreach}
                             {else}
                                 <tr>

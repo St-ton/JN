@@ -535,7 +535,8 @@ class News extends MainModel
         $cacheID = 'newsCategories_Lang_' . $kSprache;
         if ($noCache || ($oNewsCategories_arr = Shop::Container()->getCache()->get($cacheID)) === false) {
             $oNewsCategories     = Shop::Container()->getDB()->query(
-                "SELECT *, DATE_FORMAT(dLetzteAktualisierung, '%d.%m.%Y %H:%i') AS dLetzteAktualisierung_de
+                "SELECT *, DATE_FORMAT(dLetzteAktualisierung, '%d.%m.%Y %H:%i') AS dLetzteAktualisierung_de,
+                t.name AS cName
                     FROM tnewskategorie
                     JOIN tnewskategoriesprache t 
                         ON tnewskategorie.kNewsKategorie = t.kNewsKategorie

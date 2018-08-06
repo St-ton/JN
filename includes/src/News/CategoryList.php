@@ -61,7 +61,9 @@ final class CategoryList implements ItemListInterface
                 JOIN tseo
                     ON tseo.cKey = \'kNewsKategorie\'
                     AND tseo.kKey = tnewskategorie.kNewsKategorie
-                WHERE tnewskategorie.kNewsKategorie  IN (' . \implode(',', $this->itemIDs) . ')',
+                WHERE tnewskategorie.kNewsKategorie  IN (' . \implode(',', $this->itemIDs) . ')
+                GROUP BY tnewskategoriesprache.kNewsKategorie,tnewskategoriesprache.languageID
+                ORDER BY tnewskategorie.lft',
             ReturnType::ARRAY_OF_OBJECTS
         );
         $items         = map(group($itemLanguages, function ($e) {
@@ -78,6 +80,56 @@ final class CategoryList implements ItemListInterface
         }
 
         return $this->items;
+    }
+
+    /**
+     * @param Collection $tree
+     * @param int        $id
+     * @return Category|null
+     */
+    private function findParentCategory(Collection $tree, int $id)
+    {
+        $found = $tree->first(function (Category $e) use ($id) {
+            return $e->getID() === $id;
+        });
+        if ($found !== null) {
+            return $found;
+        }
+        foreach ($tree as $item) {
+            $found = $this->findParentCategory($item->getChildren(), $id);
+
+            if ($found !== null) {
+                return $found;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function generateTree(): Collection
+    {
+        $tree = new Collection();
+        foreach ($this->items as $item) {
+            /** @var Category $item */
+            if ($item->getParentID() === 0) {
+                $tree->push($item);
+                continue;
+            }
+            $parentID = $item->getParentID();
+            $found    = $this->findParentCategory($tree, $parentID);
+
+            if ($found !== null) {
+                $found->addChild($item);
+            } else {
+                echo '<br>nothing found for ' . $parentID;
+                \Shop::dbg($tree, true, 'Tree:');
+            }
+        }
+
+        return $tree;
     }
 
     /**

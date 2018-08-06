@@ -32,8 +32,8 @@
             {/if}
         </select>
         {lang key='newsCategorie' section='news' assign='cCurrentKategorie'}
-        {if isset($oNewsCat->kNewsKategorie)}
-            {assign var='kNewsKategorie' value=(int)$oNewsCat->kNewsKategorie}
+        {if $oNewsCat->getID() > 0}
+            {assign var='kNewsKategorie' value=$oNewsCat->getID()}
         {else}
             {assign var='kNewsKategorie' value=0}
         {/if}
@@ -60,18 +60,18 @@
     </form>
 </div>
 {include file='snippets/opc_mount_point.tpl' id='opc_news_overview_filter_append'}
-{if isset($noarchiv) && $noarchiv}
+{if $noarchiv === 1}
     <div class="alert alert-info">{lang key='noNewsArchiv' section='news'}.</div>
 {elseif !empty($oNewsUebersicht_arr)}
     <div id="newsContent" itemprop="mainEntity" itemscope itemtype="https://schema.org/Blog">
-        {if !empty($oNewsCat)}
-            <h2>{$oNewsCat->cName}</h2>
+        {if $oNewsCat->getID() > 0}
+            <h2>{$oNewsCat->getName()}</h2>
             <div class="row">
-                {if !empty($oNewsCat->cPreviewImage)}
-                    <div class="col-sm-8 col-xs-12">{$oNewsCat->cBeschreibung}</div>
-                    <div class="col-sm-4 col-xs-12"><img src="{$oNewsCat->cPreviewImage}" class="img-responsive center-block"></div>
+                {if !empty($oNewsCat->getPreviewImage())}
+                    <div class="col-sm-8 col-xs-12">{$oNewsCat->getDescription()}</div>
+                    <div class="col-sm-4 col-xs-12"><img src="{$oNewsCat->getPreviewImage()}" class="img-responsive center-block"></div>
                 {else}
-                    <div class="col-sm-12">{$oNewsCat->cBeschreibung}</div>
+                    <div class="col-sm-12">{$oNewsCat->getDescription()}</div>
                 {/if}
             </div>
             <hr>

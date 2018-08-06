@@ -45,6 +45,21 @@ class Category implements CategoryInterface
     protected $parentID = 0;
 
     /**
+     * @var int
+     */
+    protected $lft = 0;
+
+    /**
+     * @var int
+     */
+    private $rght = 0;
+
+    /**
+     * @var int
+     */
+    protected $level = 1;
+
+    /**
      * @var int[]
      */
     protected $languageIDs = [];
@@ -110,14 +125,9 @@ class Category implements CategoryInterface
     protected $dateLastModified;
 
     /**
-     * @var int
+     * @var Collection
      */
-    protected $level = 0;
-
-    /**
-     * @var array
-     */
-    protected $children = [];
+    protected $children;
 
     /**
      * @var Collection|ItemListInterface
@@ -137,6 +147,7 @@ class Category implements CategoryInterface
     {
         $this->db               = $db;
         $this->items            = new Collection();
+        $this->children = new Collection();
         $this->dateLastModified = \date_create();
     }
 
@@ -176,11 +187,9 @@ class Category implements CategoryInterface
     public function map(array $categoryLanguages): CategoryInterface
     {
         foreach ($categoryLanguages as $groupLanguage) {
-            $langID               = (int)$groupLanguage->languageID;
-            $this->languageIDs[]  = $langID;
-            $this->names[$langID] = $groupLanguage->name;
-//            $this->languageCodes[$langID]    = $groupLanguage->cISOSprache;
-
+            $langID                          = (int)$groupLanguage->languageID;
+            $this->languageIDs[]             = $langID;
+            $this->names[$langID]            = $groupLanguage->name;
             $this->metaDescriptions[$langID] = $groupLanguage->metaDescription;
             $this->metaTitles[$langID]       = $groupLanguage->metaTitle;
             $this->descriptions[$langID]     = $groupLanguage->description;
@@ -189,7 +198,11 @@ class Category implements CategoryInterface
             $this->isActive                  = (bool)$groupLanguage->nAktiv;
             $this->dateLastModified          = \date_create($groupLanguage->dLetzteAktualisierung);
             $this->parentID                  = (int)$groupLanguage->kParent;
-            $this->seo[$langID]              = $groupLanguage->cSeo;
+            $this->level                     = (int)$groupLanguage->lvl;
+            $this->lft                       = (int)$groupLanguage->lft;
+            $this->rght                      = (int)$groupLanguage->rght;
+
+            $this->seo[$langID] = $groupLanguage->cSeo;
         }
         $this->items = (new ItemList($this->db))->createItems(map(flatten($this->db->queryPrepared(
             'SELECT kNews
@@ -200,7 +213,6 @@ class Category implements CategoryInterface
         )), function ($e) {
             return (int)$e;
         }));
-//        \Shop::dbg($this->items, true);
 
         return $this;
     }
@@ -282,23 +294,12 @@ class Category implements CategoryInterface
      */
     public function buildMetaKeywords(): string
     {
-        $keywords = '';
-        $max      = 6;
-        if ($this->items->count() < $max) {
-            $max = \count($this->items);
-        }
-        for ($i = 0; $i < $max; $i++) {
-            /** @var Item $item */
-            $item = $this->items[$i];
-            if ($i > 0) {
-                $keywords .= ', ' . $item->getMetaKeyword();
-            } else {
-                $keywords .= $item->getMetaKeyword();
-            }
-        }
-        $this->metaKeywords = $keywords;
-
-        return $keywords;
+        return \implode(
+            ',',
+            \array_filter($this->items->slice(0, \min($this->items->count(), 6))->map(function (Item $i) {
+                return $i->getMetaKeyword();
+            })->all())
+        );
     }
 
     /**
@@ -367,7 +368,7 @@ class Category implements CategoryInterface
     {
         $idx = $idx ?? \Shop::getLanguageID();
 
-        return $this->names[$idx] ?? '-NO TRANSLATION AVAILABLE-';
+        return $this->names[$idx] ?? '';
     }
 
     /**
@@ -743,17 +744,25 @@ class Category implements CategoryInterface
     }
 
     /**
-     * @return array
+     * @return Collection
      */
-    public function getChildren(): array
+    public function getChildren(): Collection
     {
         return $this->children;
     }
 
     /**
-     * @param array $children
+     * @param Category $child
      */
-    public function setChildren(array $children)
+    public function addChild(Category $child)
+    {
+        $this->children->push($child);
+    }
+
+    /**
+     * @param Collection $children
+     */
+    public function setChildren(Collection $children)
     {
         $this->children = $children;
     }

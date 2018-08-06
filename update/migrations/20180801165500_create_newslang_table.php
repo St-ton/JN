@@ -92,6 +92,12 @@ class Migration_20180801165500 extends Migration implements IMigration
             DROP COLUMN cMetaTitle, 
             DROP COLUMN cMetaDescription'
         );
+        $this->execute('ALTER TABLE tnewskategorie
+            ADD COLUMN lft INT NOT NULL DEFAULT 0,
+            ADD COLUMN rght INT NOT NULL DEFAULT 0,
+            ADD COLUMN lvl INT NOT NULL DEFAULT 0,
+            ADD INDEX lft_rght (`lft`, `rght`)'
+        );
     }
 
     public function down()

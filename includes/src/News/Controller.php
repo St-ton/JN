@@ -108,7 +108,7 @@ class Controller
             }
 
         }
-        $this->smarty->assign('oDatum_arr', $this->getNewsDates($this->getFilterSQL(true)))
+        $this->smarty->assign('oDatum_arr', $this->getNewsDates(self::getFilterSQL(true)))
                      ->assign('nPlausiValue_arr', [
                          'cKommentar' => 0,
                          'nAnzahl'    => 0,
@@ -192,7 +192,7 @@ class Controller
         } elseif ($monthOverviewID > 0) {
             $category->getMonthOverview($monthOverviewID);
         } else {
-            $category->getOverview($this->getFilterSQL());
+            $category->getOverview(self::getFilterSQL());
         }
 
         $newsCountShow = ($conf = (int)$this->config['news']['news_anzahl_uebersicht']) > 0
@@ -227,11 +227,12 @@ class Controller
             : $metaKeywords;
 
         $this->smarty->assign('oNewsUebersicht_arr', $items)
-                     ->assign('oNewsKategorie_arr',
+                     ->assign('noarchiv', 0)
+                     ->assign('oNewsKategorie_arr', // @todo:
                          \News::getAllNewsCategories(\Shop::getLanguageID(), false, false, true))
                      ->assign('nSort', $_SESSION['NewsNaviFilter']->nSort)
                      ->assign('cDatum', $_SESSION['NewsNaviFilter']->cDatum)
-                     ->assign('oNewsCat', \News::getNewsCategory($_SESSION['NewsNaviFilter']->nNewsKat))
+                     ->assign('oNewsCat', $category)
                      ->assign('oPagination', $pagination)
                      ->assign('meta_title', $metaTitle)
                      ->assign('meta_description', $metaDescription)
@@ -419,12 +420,11 @@ class Controller
         return $msg;
     }
 
-
     /**
      * @param bool $bActiveOnly
      * @return \stdClass
      */
-    private function getFilterSQL(bool $bActiveOnly = false): \stdClass
+    public static function getFilterSQL(bool $bActiveOnly = false): \stdClass
     {
         $oSQL              = new \stdClass();
         $oSQL->cSortSQL    = '';
@@ -464,7 +464,6 @@ class Controller
                 $_SESSION['NewsNaviFilter']->cDatum = -1;
             }
         }
-        // NewsKat Filter
         $oSQL->cNewsKatSQL = ' JOIN tnewskategorienews ON tnewskategorienews.kNews = tnews.kNews';
         if ($_SESSION['NewsNaviFilter']->nNewsKat > 0) {
             $oSQL->cNewsKatSQL = ' JOIN tnewskategorienews ON tnewskategorienews.kNews = tnews.kNews
@@ -518,7 +517,7 @@ class Controller
      * @param string $langCode
      * @return string
      */
-    private function mapDateName($month, $year, $langCode): string
+    public static function mapDateName($month, $year, $langCode): string
     {
         // @todo: i18n!
 //        $monthNum  = 3;

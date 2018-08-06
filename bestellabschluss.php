@@ -23,7 +23,6 @@ if (isset($_GET['i'])) {
     if (isset($bestellid->kBestellung) && $bestellid->kBestellung > 0) {
         $bestellung = new Bestellung($bestellid->kBestellung);
         $bestellung->fuelleBestellung(0);
-        $bestellung->setKampagne();
         speicherUploads($bestellung);
         Shop::Container()->getDB()->delete('tbestellid', 'kBestellung', (int)$bestellid->kBestellung);
     }
@@ -71,7 +70,6 @@ if (isset($_GET['i'])) {
             exit;
         }
         $bestellung = finalisiereBestellung();
-        $bestellung->setKampagne();
         $bestellid  = $bestellung->kBestellung > 0
             ? Shop::Container()->getDB()->select('tbestellid', 'kBestellung', $bestellung->kBestellung)
             : false;

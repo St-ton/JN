@@ -766,6 +766,8 @@ class Bestellung
             $this->berechneEstimatedDelivery();
         }
 
+        $this->setKampagne();
+
         executeHook(HOOK_BESTELLUNG_CLASS_FUELLEBESTELLUNG, [
             'oBestellung' => $this
         ]);
@@ -1063,14 +1065,16 @@ class Bestellung
      */
     public function setKampagne()
     {
-        $this->oKampagne = Shop::Container()->getDB()->query(
+        $this->oKampagne = Shop::Container()->getDB()->queryPrepared(
             'SELECT tkampagne.kKampagne, tkampagne.cName, tkampagne.cParameter, tkampagnevorgang.dErstellt,
                     tkampagnevorgang.kKey AS kBestellung, tkampagnevorgang.cParamWert AS cWert
                 FROM tkampagnevorgang
                   LEFT JOIN tkampagne ON tkampagne.kKampagne = tkampagnevorgang.kKampagne
-                WHERE tkampagnevorgang.kKampagneDef = '. KAMPAGNE_DEF_VERKAUF . '
-                    AND tkampagnevorgang.kKey = ' . $this->kBestellung,
-            \DB\ReturnType::SINGLE_OBJECT
+                WHERE tkampagnevorgang.kKampagneDef = :kampagneDef
+                    AND tkampagnevorgang.kKey = :orderID', [
+                'orderID' => $this->kBestellung,
+                'kampagneDef' => KAMPAGNE_DEF_VERKAUF
+            ], \DB\ReturnType::SINGLE_OBJECT
         );
     }
 }

@@ -97,10 +97,7 @@ function sendeMail($ModulId, $Object, $mail = null)
         'kKundengruppe',
         (int)$Object->tkunde->kKundengruppe
     );
-    // set Kampagne for all mails with Bestellung
-    if (isset($Object->tbestellung->kBestellung) && $Object->tbestellung->kBestellung > 0 && is_a($Object->tbestellung, 'Bestellung')) {
-        $Object->tbestellung->setKampagne();
-    }
+
     if (isset($Object->tkunde->kSprache) && $Object->tkunde->kSprache > 0) {
         $kundengruppensprache = Shop::Container()->getDB()->select(
             'tkundengruppensprache',

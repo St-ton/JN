@@ -56,8 +56,8 @@
                                 <tbody>
                                 {foreach name=warenkorbkunden from=$oKunde_arr item=oKunde}
                                     <tr>
-                                        <td class="TD1">{$oKunde->cFirma}</td>
-                                        <td class="TD2">{$oKunde->cVorname} {$oKunde->cNachname}</td>
+                                        <td>{$oKunde->cFirma}</td>
+                                        <td>{$oKunde->cVorname} {$oKunde->cNachname}</td>
                                         <td class="tcenter">{$oKunde->nAnzahl}</td>
                                         <td class="tcenter">{$oKunde->Datum}</td>
                                         <td class="tcenter">

@@ -104,7 +104,7 @@
                         </tr>
                         {foreach name=top from=$TopVergleiche item=oVergleichslistePosTop}
                             <tr>
-                                <td class="TD1">
+                                <td>
                                     <a href="{$shopURL}/index.php?a={$oVergleichslistePosTop->kArtikel}" target="_blank">{$oVergleichslistePosTop->cArtikelName}</a>
                                 </td>
                                 <td class="tcenter">{$oVergleichslistePosTop->nAnzahl}</td>

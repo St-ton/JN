@@ -27,9 +27,9 @@
                             </tr>
                         {foreach name=umfragefrageantwort from=$oUmfrageFrage->oUmfrageFrageAntwort_arr item=oUmfrageFrageAntwort}
                             <tr>
-                                <td class="TD1" style="width: 20%;">{$oUmfrageFrageAntwort->cName}</td>
-                                <td class="TD2" style="width: 60%;"><div class="freqbar" style="width: {$oUmfrageFrageAntwort->nProzent}%; height: 10px;"></div></td>
-                                <td class="TD3" style="width: 10%;">
+                                <td style="width: 20%;">{$oUmfrageFrageAntwort->cName}</td>
+                                <td style="width: 60%;"><div class="freqbar" style="width: {$oUmfrageFrageAntwort->nProzent}%; height: 10px;"></div></td>
+                                <td style="width: 10%;">
                                 {if $smarty.foreach.umfragefrageantwort.first}
                                     <b>{$oUmfrageFrageAntwort->nProzent} %</b>
                                 {elseif $oUmfrageFrageAntwort->nAnzahlAntwort == $oUmfrageFrage->oUmfrageFrageAntwort_arr[0]->nAnzahlAntwort}
@@ -38,7 +38,7 @@
                                     {$oUmfrageFrageAntwort->nProzent} %
                                 {/if}
                                 </td>
-                                <td class="TD4" style="width: 10%;">{$oUmfrageFrageAntwort->nAnzahlAntwort}</td>
+                                <td style="width: 10%;">{$oUmfrageFrageAntwort->nAnzahlAntwort}</td>
                             </tr>
                             {if $smarty.foreach.umfragefrageantwort.last}
                             <tr>

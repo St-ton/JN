@@ -573,9 +573,9 @@ function checkSelect(selectBox) {ldelim}
                 </tr>
             {foreach name=umfragefrage from=$oUmfrageFrage_arr item=oUmfrageFrageTMP}
                 <tr>
-                    <td class="TD1">{$oUmfrageFrageTMP->cName}</td>
-                    <td class="TD2">{$oUmfrageFrageTMP->cTyp}</td>
-                    <td class="TD3">{$oUmfrageFrageTMP->nSort}</td>
+                    <td>{$oUmfrageFrageTMP->cName}</td>
+                    <td>{$oUmfrageFrageTMP->cTyp}</td>
+                    <td>{$oUmfrageFrageTMP->nSort}</td>
                 </tr>
             {/foreach}
             </table>

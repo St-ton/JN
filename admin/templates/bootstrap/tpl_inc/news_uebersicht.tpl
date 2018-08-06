@@ -107,7 +107,7 @@
                                         <td class="check">
                                             <input type="checkbox" name="kNewsKommentar[]" value="{$oNewsKommentar->kNewsKommentar}" id="comment-{$oNewsKommentar->kNewsKommentar}" />
                                         </td>
-                                        <td class="TD2">
+                                        <td>
                                             <label for="comment-{$oNewsKommentar->kNewsKommentar}">
                                             {if $oNewsKommentar->cVorname|strlen > 0}
                                                 {$oNewsKommentar->cVorname} {$oNewsKommentar->cNachname}
@@ -116,8 +116,8 @@
                                             {/if}
                                             </label>
                                         </td>
-                                        <td class="TD3">{$oNewsKommentar->cBetreff|truncate:50:"..."}</td>
-                                        <td class="TD4">{$oNewsKommentar->cKommentar|truncate:150:"..."}</td>
+                                        <td>{$oNewsKommentar->cBetreff|truncate:50:"..."}</td>
+                                        <td>{$oNewsKommentar->cKommentar|truncate:150:"..."}</td>
                                         <td class="tcenter">{$oNewsKommentar->dErstellt_de}</td>
                                         <td class="tcenter">
                                             <a href="news.php?news=1&kNews={$oNewsKommentar->kNews}&kNewsKommentar={$oNewsKommentar->kNewsKommentar}&nkedit=1&tab=inaktiv&token={$smarty.session.jtl_token}"
@@ -181,14 +181,14 @@
                                 {foreach $oNews_arr as $oNews}
                                     <tr>
                                         <td class="check"><input type="checkbox" name="kNews[]" value="{$oNews->kNews}" id="news-cb-{$oNews->kNews}" /></td>
-                                        <td class="TD2"><label for="news-cb-{$oNews->kNews}">{$oNews->cBetreff}</label></td>
-                                        <td class="TD3">{$oNews->KategorieAusgabe}</td>
-                                        <td class="TD4">
+                                        <td><label for="news-cb-{$oNews->kNews}">{$oNews->cBetreff}</label></td>
+                                        <td>{$oNews->KategorieAusgabe}</td>
+                                        <td>
                                             {foreach $oNews->cKundengruppe_arr as $cKundengruppe}
                                                 {$cKundengruppe}{if !$cKundengruppe@last},{/if}
                                             {/foreach}
                                         </td>
-                                        <td class="TD5">{$oNews->dGueltigVon_de}</td>
+                                        <td>{$oNews->dGueltigVon_de}</td>
                                         <td class="tcenter"><i class="fa fa-{if $oNews->nAktiv == 1}check{else}close{/if}"></i></td>
                                         <td class="tcenter">
                                             {if $oNews->nNewsKommentarAnzahl > 0}
@@ -277,7 +277,7 @@
                                         <td class="check">
                                             <input type="checkbox" name="kNewsKategorie[]" data-name="{$oNewsKategorie->cName}" value="{$oNewsKategorie->kNewsKategorie}" id="newscat-{$oNewsKategorie->kNewsKategorie}" />
                                         </td>
-                                        <td class="TD2 {if (int)$oNewsKategorie->nLevel === 0}hide-toggle-on{/if}" data-name="category">
+                                        <td class="{if (int)$oNewsKategorie->nLevel === 0}hide-toggle-on{/if}" data-name="category">
                                             {for $i=1 to $oNewsKategorie->nLevel}&nbsp;&nbsp;&nbsp;{/for}
                                             <i class="fa fa-caret-down nav-toggle {if !isset($oNewsKategorie->children)}invisible{/if}"></i>
                                             <label>

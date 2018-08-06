@@ -30,14 +30,14 @@
                         </tr>
                         {foreach name=wunschliste from=$CWunschliste_arr item=CWunschliste}
                             <tr>
-                                <td class="TD1">
+                                <td>
                                     {if $CWunschliste->nOeffentlich == 1}
                                         <a href="{$shopURL}/index.php?wlid={$CWunschliste->cURLID}" rel="external">{$CWunschliste->cName}</a>
                                     {else}
                                         <span>{$CWunschliste->cName}</span>
                                     {/if}
                                 </td>
-                                <td class="TD2">{$CWunschliste->cVorname} {$CWunschliste->cNachname}</td>
+                                <td>{$CWunschliste->cVorname} {$CWunschliste->cNachname}</td>
                                 <td class="tcenter">{$CWunschliste->Anzahl}</td>
                                 <td class="tcenter">{$CWunschliste->Datum}</td>
                             </tr>
@@ -60,7 +60,7 @@
                         </tr>
                         {foreach name=wunschlistepos from=$CWunschlistePos_arr item=CWunschlistePos}
                             <tr>
-                                <td class="TD1">
+                                <td>
                                     <a href="{$shopURL}/index.php?a={$CWunschlistePos->kArtikel}&" rel="external">{$CWunschlistePos->cArtikelName}</a>
                                 </td>
                                 <td class="tcenter">{$CWunschlistePos->Anzahl}</td>
@@ -87,10 +87,10 @@
                         </tr>
                         {foreach name=wunschlisteversand from=$CWunschlisteVersand_arr item=CWunschlisteVersand}
                             <tr>
-                                <td class="TD1">
+                                <td>
                                     <a href="{$shopURL}/index.php?wlid={$CWunschlisteVersand->cURLID}" rel="external">{$CWunschlisteVersand->cName}</a>
                                 </td>
-                                <td class="TD2">{$CWunschlisteVersand->cVorname} {$CWunschlisteVersand->cNachname}</td>
+                                <td>{$CWunschlisteVersand->cVorname} {$CWunschlisteVersand->cNachname}</td>
                                 <td class="tcenter">{$CWunschlisteVersand->nAnzahlEmpfaenger}</td>
                                 <td class="tcenter">{$CWunschlisteVersand->nAnzahlArtikel}</td>
                                 <td class="tcenter">{$CWunschlisteVersand->Datum}</td>

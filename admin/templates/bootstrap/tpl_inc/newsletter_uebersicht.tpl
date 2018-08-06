@@ -99,10 +99,10 @@
                                         </tr>
                                     {/foreach}
                                     <tr>
-                                        <td class="TD1">
+                                        <td>
                                             <input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);">
                                         </td>
-                                        <td colspan="6" class="TD7"><label for="ALLMSGS2">{#globalSelectAll#}</label></td>
+                                        <td colspan="6"><label for="ALLMSGS2">{#globalSelectAll#}</label></td>
                                     </tr>
                                 </table>
                             </div>
@@ -180,10 +180,10 @@
                                         </tr>
                                     {/foreach}
                                     <tr>
-                                        <td class="TD1">
+                                        <td>
                                             <input name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);">
                                         </td>
-                                        <td colspan="7" class="TD7"><label for="ALLMSGS3">{#globalSelectAll#}</label></td>
+                                        <td colspan="7"><label for="ALLMSGS3">{#globalSelectAll#}</label></td>
                                     </tr>
                                 </table>
                             </div>
@@ -290,14 +290,14 @@
                                     {foreach $oNewsletterQueue_arr as $oNewsletterQueue}
                                         {if isset($oNewsletterQueue->nAnzahlEmpfaenger) && $oNewsletterQueue->nAnzahlEmpfaenger > 0}
                                             <tr>
-                                                <td class="TD1">
+                                                <td>
                                                     <input name="kNewsletterQueue[]" type="checkbox" value="{$oNewsletterQueue->kNewsletterQueue}">
                                                 </td>
-                                                <td class="TD2">{$oNewsletterQueue->cBetreff}</td>
-                                                <td class="TD3">{$oNewsletterQueue->Datum}</td>
-                                                <td class="TD4">{$oNewsletterQueue->nLimitN}</td>
-                                                <td class="TD5">{$oNewsletterQueue->nAnzahlEmpfaenger}</td>
-                                                <td class="TD6">
+                                                <td>{$oNewsletterQueue->cBetreff}</td>
+                                                <td>{$oNewsletterQueue->Datum}</td>
+                                                <td>{$oNewsletterQueue->nLimitN}</td>
+                                                <td>{$oNewsletterQueue->nAnzahlEmpfaenger}</td>
+                                                <td>
                                                     {foreach $oNewsletterQueue->cKundengruppe_arr as $cKundengruppe}
                                                         {if $cKundengruppe == "0"}Newsletterempf&auml;nger ohne Kundenkonto{if !$cKundengruppe@last}, {/if}{/if}
                                                         {foreach $oKundengruppe_arr as $oKundengruppe}
@@ -309,10 +309,10 @@
                                         {/if}
                                     {/foreach}
                                     <tr>
-                                        <td class="TD1">
+                                        <td>
                                             <input name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessages(this.form);">
                                         </td>
-                                        <td colspan="6" class="TD7"><label for="ALLMSGS4">{#globalSelectAll#}</label></td>
+                                        <td colspan="6"><label for="ALLMSGS4">{#globalSelectAll#}</label></td>
                                     </tr>
                                 </table>
                             </div>
@@ -349,19 +349,19 @@
                                     </tr>
                                     {foreach $oNewsletterVorlage_arr as $oNewsletterVorlage}
                                         <tr>
-                                            <td class="TD1">
+                                            <td>
                                                 <input name="kNewsletterVorlage[]" type="checkbox" value="{$oNewsletterVorlage->kNewsletterVorlage}">
                                             </td>
-                                            <td class="TD2">{$oNewsletterVorlage->cName}</td>
-                                            <td class="TD3">{$oNewsletterVorlage->cBetreff}</td>
-                                            <td class="TD4">
+                                            <td>{$oNewsletterVorlage->cName}</td>
+                                            <td>{$oNewsletterVorlage->cBetreff}</td>
+                                            <td>
                                                 {if $oNewsletterVorlage->kNewslettervorlageStd > 0}
                                                     {#yes#}
                                                 {else}
                                                     {#no#}
                                                 {/if}
                                             </td>
-                                            <td class="TD5">
+                                            <td>
                                                 <div class="btn-group">
                                                     <a class="btn btn-default"
                                                        href="newsletter.php?&vorschau={$oNewsletterVorlage->kNewsletterVorlage}&iframe=1&tab=newslettervorlagen&token={$smarty.session.jtl_token}"
@@ -383,10 +383,10 @@
                                         </tr>
                                     {/foreach}
                                     <tr>
-                                        <td class="TD1">
+                                        <td>
                                             <input name="ALLMSGS" id="ALLMSGS5" type="checkbox" onclick="AllMessages(this.form);">
                                         </td>
-                                        <td colspan="6" class="TD7"><label for="ALLMSGS5">{#globalSelectAll#}</label></td>
+                                        <td colspan="6"><label for="ALLMSGS5">{#globalSelectAll#}</label></td>
                                     </tr>
                                 </table>
                             </div>
@@ -437,10 +437,10 @@
                                     </tr>
                                     {foreach $oNewslettervorlageStd_arr as $oNewslettervorlageStd}
                                         <tr>
-                                            <td class="TD1">
+                                            <td>
                                                 <input name="kNewsletterVorlageStd" id="knvls-{$oNewslettervorlageStd@iteration}" type="radio" value="{$oNewslettervorlageStd->kNewslettervorlageStd}" /> <label for="knvls-{$oNewslettervorlageStd@iteration}">{$oNewslettervorlageStd->cName}</label>
                                             </td>
-                                            <td class="TD2" valign="top">{$oNewslettervorlageStd->cBild}</td>
+                                            <td valign="top">{$oNewslettervorlageStd->cBild}</td>
                                         </tr>
                                     {/foreach}
                                 </table>
@@ -490,10 +490,10 @@
                                         </tr>
                                     {/foreach}
                                     <tr>
-                                        <td class="TD1">
+                                        <td>
                                             <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
                                         </td>
-                                        <td colspan="6" class="TD7"><label for="ALLMSGS">{#globalSelectAll#}</label></td>
+                                        <td colspan="6"><label for="ALLMSGS">{#globalSelectAll#}</label></td>
                                     </tr>
                                 </table>
                             </div>

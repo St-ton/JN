@@ -23,23 +23,23 @@
                 <tbody>
                 {foreach $oVerpackung_arr as $oVerpackung}
                     <tr>
-                        <td class="TD1">
+                        <td>
                             <input id="kVerpackung-{$oVerpackung->kVerpackung}" type="checkbox" name="kVerpackung[]" value="{$oVerpackung->kVerpackung}">
                         </td>
-                        <td class="TD2"><label for="kVerpackung-{$oVerpackung->kVerpackung}">{$oVerpackung->cName}</label></td>
-                        <td class="TD3">{getCurrencyConversionSmarty fPreisBrutto=$oVerpackung->fBrutto}</td>
-                        <td class="TD4">{getCurrencyConversionSmarty fPreisBrutto=$oVerpackung->fMindestbestellwert}</td>
-                        <td class="TD5">{getCurrencyConversionSmarty fPreisBrutto=$oVerpackung->fKostenfrei}</td>
-                        <td class="TD6">
+                        <td><label for="kVerpackung-{$oVerpackung->kVerpackung}">{$oVerpackung->cName}</label></td>
+                        <td>{getCurrencyConversionSmarty fPreisBrutto=$oVerpackung->fBrutto}</td>
+                        <td>{getCurrencyConversionSmarty fPreisBrutto=$oVerpackung->fMindestbestellwert}</td>
+                        <td>{getCurrencyConversionSmarty fPreisBrutto=$oVerpackung->fKostenfrei}</td>
+                        <td>
                             {foreach $oVerpackung->cKundengruppe_arr as $cKundengruppe}
                                 {$cKundengruppe}{if !$cKundengruppe@last},{/if}
                             {/foreach}
                         </td>
-                        <td class="TD7">
+                        <td>
                             <input name="nAktivTMP[]" type="hidden" value="{$oVerpackung->kVerpackung}" checked>
                             <input name="nAktiv[]" type="checkbox" value="{$oVerpackung->kVerpackung}"{if $oVerpackung->nAktiv == 1} checked{/if}>
                         </td>
-                        <td class="TD8">
+                        <td>
                             <a href="zusatzverpackung.php?kVerpackung={$oVerpackung->kVerpackung}&token={$smarty.session.jtl_token}"
                                class="btn btn-default" title="{#modify#}"><i class="fa fa-edit"></i></a>
                         </td>

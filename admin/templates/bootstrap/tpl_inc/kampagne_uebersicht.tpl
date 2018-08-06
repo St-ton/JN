@@ -34,11 +34,11 @@
                             {foreach name="kampagnen" from=$oKampagne_arr item=oKampagne}
                                 {if isset($oKampagne->kKampagne) && $oKampagne->kKampagne < 1000}
                                     <tr>
-                                        <td class="TD2">
+                                        <td>
                                             <strong><a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&detail=1&token={$smarty.session.jtl_token}">{$oKampagne->cName}</a></strong>
                                         </td>
-                                        <td class="TD3">{$oKampagne->cParameter}</td>
-                                        <td class="TD3">
+                                        <td>{$oKampagne->cParameter}</td>
+                                        <td>
                                             {if isset($oKampagne->nDynamisch) && $oKampagne->nDynamisch == 1}
                                                 {#kampagneDynamic#}
                                             {else}
@@ -87,11 +87,11 @@
                                             <td class="check">
                                                 <input name="kKampagne[]" type="checkbox" value="{$oKampagne->kKampagne}">
                                             </td>
-                                            <td class="TD2">
+                                            <td>
                                                 <strong><a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&detail=1&token={$smarty.session.jtl_token}">{$oKampagne->cName}</a></strong>
                                             </td>
-                                            <td class="TD3">{$oKampagne->cParameter}</td>
-                                            <td class="TD3">
+                                            <td>{$oKampagne->cParameter}</td>
+                                            <td>
                                                 {if isset($oKampagne->nDynamisch) && $oKampagne->nDynamisch == 1}
                                                     {#kampagneDynamic#}
                                                 {else}
@@ -177,11 +177,11 @@
                             {foreach name="kampagnenstats" from=$oKampagneStat_arr key=kKampagne item=oKampagneStatDef_arr}
                                 {if $kKampagne != "Gesamt"}
                                     <tr>
-                                        <td class="TD1">
+                                        <td>
                                             <a href="kampagne.php?detail=1&kKampagne={$oKampagne_arr[$kKampagne]->kKampagne}&cZeitParam={$cZeitraumParam}&token={$smarty.session.jtl_token}">{$oKampagne_arr[$kKampagne]->cName}</a>
                                         </td>
                                         {foreach name="kampagnendefs" from=$oKampagneStatDef_arr key=kKampagneDef item=oKampagneStatDef}
-                                            <td class="TD1">
+                                            <td>
                                                 <a href="kampagne.php?kKampagne={$kKampagne}&defdetail=1&kKampagneDef={$kKampagneDef}&cZeitParam={$cZeitraumParam}&token={$smarty.session.jtl_token}">{$oKampagneStat_arr[$kKampagne][$kKampagneDef]}</a>
                                             </td>
                                         {/foreach}
@@ -190,9 +190,9 @@
                             {/foreach}
                             <tfoot>
                                 <tr>
-                                    <td class="TD1">{#kampagneOverall#}</td>
+                                    <td>{#kampagneOverall#}</td>
                                     {foreach name="kampagnendefs" from=$oKampagneDef_arr key=kKampagneDef item=oKampagneDef}
-                                        <td class="TD1">
+                                        <td>
                                             {$oKampagneStat_arr.Gesamt[$kKampagneDef]}
                                         </td>
                                     {/foreach}

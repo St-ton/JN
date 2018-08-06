@@ -117,10 +117,10 @@
                                         </tr
                                     {/foreach}
                                     <tr>
-                                        <td class="TD1">
+                                        <td>
                                             <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
                                         </td>
-                                        <td colspan="6" class="TD7"><label for="ALLMSGS">{#sitemapSelectAll#}</label></td>
+                                        <td colspan="6"><label for="ALLMSGS">{#sitemapSelectAll#}</label></td>
                                     </tr>
                                 </table>
                             </div>
@@ -187,7 +187,7 @@
                                                 <a href="#" onclick="$('#info_{$oSitemapReport->kSitemapReport}').toggle();return false;"><i class="fa fa-plus-circle"></i></a>
                                             </td>
                                         {else}
-                                            <td class="TD1">&nbsp;</td>
+                                            <td>&nbsp;</td>
                                         {/if}
                                         <td class="tcenter">{$oSitemapReport->fVerarbeitungszeit}s</td>
                                         <td class="tcenter">{$oSitemapReport->nTotalURL}</td>
@@ -207,7 +207,7 @@
 
                                                     {foreach name=sitemapreportfiles from=$oSitemapReport->oSitemapReportFile_arr item=oSitemapReportFile}
                                                         <tr>
-                                                            <td class="TD1">{$oSitemapReportFile->cDatei}</td>
+                                                            <td>{$oSitemapReportFile->cDatei}</td>
                                                             <td class="tcenter">{$oSitemapReportFile->nAnzahlURL}</td>
                                                             <td class="tcenter">{$oSitemapReportFile->fGroesse} KB</td>
                                                         </tr>
@@ -222,7 +222,7 @@
                                     <td class="check">
                                         <input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);">
                                     </td>
-                                    <td colspan="4" class="TD5"><label for="ALLMSGS2">{#sitemapSelectAll#}</label></td>
+                                    <td colspan="4"><label for="ALLMSGS2">{#sitemapSelectAll#}</label></td>
                                 </tr>
                             </table>
                         </div>

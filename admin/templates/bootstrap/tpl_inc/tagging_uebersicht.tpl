@@ -50,7 +50,7 @@
                                 </tr>
                                 {foreach name=tags from=$Tags item=tag}
                                     <tr>
-                                        <td class="TD1">
+                                        <td>
                                             <input type="checkbox" name="kTag[]" value="{$tag->kTag}" />
                                             <input name="kTagAll[]" type="hidden" value="{$tag->kTag}" />
                                         </td>
@@ -100,7 +100,7 @@
                                 </tr>
                                 {foreach name=tagsmapping from=$Tagmapping item=tagmapping}
                                     <tr>
-                                        <td class="TD1">
+                                        <td>
                                             <input name="kTagMapping[]" type="checkbox" value="{$tagmapping->kTagMapping}" />
                                         </td>
                                         <td class="tcenter">{$tagmapping->cName}</td>
@@ -111,7 +111,7 @@
                                     <td class="check">
                                         <input name="ALLMSGS" id="ALLMSGS1" type="checkbox" onclick="AllMessages(this.form);" />
                                     </td>
-                                    <td colspan="2" class="TD7"><label for="ALLMSGS1">{#globalSelectAll#}</label></td>
+                                    <td colspan="2"><label for="ALLMSGS1">{#globalSelectAll#}</label></td>
                                 </tr>
                             </table>
                         </div>

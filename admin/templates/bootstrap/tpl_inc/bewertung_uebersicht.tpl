@@ -64,9 +64,9 @@
                                                 <input type="hidden" name="kArtikel[{$kKey}]" value="{$oBewertung->kArtikel}" />
                                                 <input name="kBewertung[{$kKey}]" type="checkbox" value="{$oBewertung->kBewertung}" />
                                             </td>
-                                            <td class="TD2"><a href="../index.php?a={$oBewertung->kArtikel}" target="_blank">{$oBewertung->ArtikelName}</a></td>
-                                            <td class="TD3">{$oBewertung->cName}.</td>
-                                            <td class="TD4"><b>{$oBewertung->cTitel}</b><br />{$oBewertung->cText}</td>
+                                            <td><a href="../index.php?a={$oBewertung->kArtikel}" target="_blank">{$oBewertung->ArtikelName}</a></td>
+                                            <td>{$oBewertung->cName}.</td>
+                                            <td><b>{$oBewertung->cTitel}</b><br />{$oBewertung->cText}</td>
                                             <td class="tcenter">{$oBewertung->nSterne}</td>
                                             <td class="tcenter">{$oBewertung->Datum}</td>
                                             <td class="tcenter">
@@ -81,7 +81,7 @@
                                 <tfoot>
                                     <tr>
                                         <td class="check"><input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);"></td>
-                                        <td colspan="6" class="TD7"><label for="ALLMSGS">{#ratingSelectAll#}</label></td>
+                                        <td colspan="6"><label for="ALLMSGS">{#ratingSelectAll#}</label></td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -126,9 +126,9 @@
                                 {foreach name=bewertungletzten50 from=$oBewertungLetzten50_arr item=oBewertungLetzten50}
                                     <t>
                                         <td class="check"><input name="kBewertung[]" type="checkbox" value="{$oBewertungLetzten50->kBewertung}"><input type="hidden" name="kArtikel[]" value="{$oBewertungLetzten50->kArtikel}"></td>
-                                        <td class="TD2"><a href="../index.php?a={$oBewertungLetzten50->kArtikel}" target="_blank">{$oBewertungLetzten50->ArtikelName}</a></td>
-                                        <td class="TD3">{$oBewertungLetzten50->cName}.</td>
-                                        <td class="TD4">
+                                        <td><a href="../index.php?a={$oBewertungLetzten50->kArtikel}" target="_blank">{$oBewertungLetzten50->ArtikelName}</a></td>
+                                        <td>{$oBewertungLetzten50->cName}.</td>
+                                        <td>
                                             <strong>{$oBewertungLetzten50->cTitel}</strong><br>
                                             {$oBewertungLetzten50->cText}
                                             {if !empty($oBewertungLetzten50->cAntwort)}
@@ -160,7 +160,7 @@
                                 <tfoot>
                                 <tr>
                                     <td class="check"><input name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);"></td>
-                                    <td colspan="6" class="TD7"><label for="ALLMSGS3">{#ratingSelectAll#}</label></td>
+                                    <td colspan="6"><label for="ALLMSGS3">{#ratingSelectAll#}</label></td>
                                 </tr>
                                 </tfoot>
                             </table>
@@ -213,10 +213,10 @@
                                 <tbody>
                                 {foreach name=bewertungaktiv from=$oBewertungAktiv_arr item=oBewertungAktiv}
                                     <tr>
-                                        <td class="TD1"><input name="kBewertung[]" type="checkbox" value="{$oBewertungAktiv->kBewertung}"><input type="hidden" name="kArtikel[]" value="{$oBewertungAktiv->kArtikel}"></td>
-                                        <td class="TD2"><a href="../index.php?a={$oBewertungAktiv->kArtikel}" target="_blank">{$oBewertungAktiv->ArtikelName}</a></td>
-                                        <td class="TD3">{$oBewertungAktiv->cName}.</td>
-                                        <td class="TD4"><b>{$oBewertungAktiv->cTitel}</b><br />{$oBewertungAktiv->cText}</td>
+                                        <td><input name="kBewertung[]" type="checkbox" value="{$oBewertungAktiv->kBewertung}"><input type="hidden" name="kArtikel[]" value="{$oBewertungAktiv->kArtikel}"></td>
+                                        <td><a href="../index.php?a={$oBewertungAktiv->kArtikel}" target="_blank">{$oBewertungAktiv->ArtikelName}</a></td>
+                                        <td>{$oBewertungAktiv->cName}.</td>
+                                        <td><b>{$oBewertungAktiv->cTitel}</b><br />{$oBewertungAktiv->cText}</td>
                                         <td class="tcenter">{$oBewertungAktiv->nSterne}</td>
                                         <td class="tcenter">{$oBewertungAktiv->Datum}</td>
                                         <td class="tcenter">
@@ -230,8 +230,8 @@
                                 </tbody>
                                 <tfoot>
                                 <tr>
-                                    <td class="TD1"><input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);"></td>
-                                    <td colspan="6" class="TD7"><label for="ALLMSGS2">{#ratingSelectAll#}</label></td>
+                                    <td><input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);"></td>
+                                    <td colspan="6"><label for="ALLMSGS2">{#ratingSelectAll#}</label></td>
                                 </tr>
                                 </tfoot>
                             </table>

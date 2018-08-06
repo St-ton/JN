@@ -6,7 +6,7 @@
                 <th class="tleft"><strong>{$oKampagneDef->cName}</strong></th>
             </tr>
             <tr>
-                <td class="TD1">
+                <td>
                     {#kampagnePeriod#}: {$cStampText}<br />
                     {#kampagneOverall#}: {$nGesamtAnzahlDefDetail}
                 </td>
@@ -31,7 +31,7 @@
                     {foreach name="kampagnenstats" from=$oKampagneStat_arr item=oKampagneStat}
                         <tr>
                             {foreach name="kampagnendefs" from=$cMember_arr key=cMember item=cMemberAnzeige}
-                                <td class="TD1" style="text-align: center;">{$oKampagneStat->$cMember|wordwrap:40:"<br />":true}</td>
+                                <td style="text-align: center;">{$oKampagneStat->$cMember|wordwrap:40:"<br />":true}</td>
                             {/foreach}
                         </tr>
                     {/foreach}

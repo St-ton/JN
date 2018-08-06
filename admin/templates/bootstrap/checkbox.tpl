@@ -71,29 +71,29 @@
                                     </tr>
                                     {foreach name=checkboxen from=$oCheckBox_arr item=oCheckBoxUebersicht}
                                         <tr>
-                                            <td class="TD1">
+                                            <td>
                                                 <input name="kCheckBox[]" type="checkbox" value="{$oCheckBoxUebersicht->kCheckBox}" />
                                             </td>
-                                            <td class="TD1">{$oCheckBoxUebersicht->cName}</td>
-                                            <td class="TD2">{if isset($oCheckBoxUebersicht->oLink->cName)}{$oCheckBoxUebersicht->oLink->cName}{/if}</td>
-                                            <td class="TD3">
+                                            <td>{$oCheckBoxUebersicht->cName}</td>
+                                            <td>{if isset($oCheckBoxUebersicht->oLink->cName)}{$oCheckBoxUebersicht->oLink->cName}{/if}</td>
+                                            <td>
                                                 {foreach name="anzeigeortAusgabe" from=$oCheckBoxUebersicht->kAnzeigeOrt_arr item=kAnzeigeOrt}
                                                     {$cAnzeigeOrt_arr[$kAnzeigeOrt]}{if !$smarty.foreach.anzeigeortAusgabe.last}, {/if}
                                                 {/foreach}
                                             </td>
-                                            <td class="TD4">{if isset($oCheckBoxUebersicht->oCheckBoxFunktion->cName)}{$oCheckBoxUebersicht->oCheckBoxFunktion->cName}{/if}</td>
+                                            <td>{if isset($oCheckBoxUebersicht->oCheckBoxFunktion->cName)}{$oCheckBoxUebersicht->oCheckBoxFunktion->cName}{/if}</td>
 
-                                            <td class="TD4">{if $oCheckBoxUebersicht->nPflicht}{#yes#}{else}{#no#}{/if}</td>
-                                            <td class="TD5">{if $oCheckBoxUebersicht->nAktiv}{#yes#}{else}{#no#}{/if}</td>
-                                            <td class="TD5">{if $oCheckBoxUebersicht->nLogging}{#yes#}{else}{#no#}{/if}</td>
-                                            <td class="TD6">{$oCheckBoxUebersicht->nSort}</td>
-                                            <td class="TD7">
+                                            <td>{if $oCheckBoxUebersicht->nPflicht}{#yes#}{else}{#no#}{/if}</td>
+                                            <td>{if $oCheckBoxUebersicht->nAktiv}{#yes#}{else}{#no#}{/if}</td>
+                                            <td>{if $oCheckBoxUebersicht->nLogging}{#yes#}{else}{#no#}{/if}</td>
+                                            <td>{$oCheckBoxUebersicht->nSort}</td>
+                                            <td>
                                                 {foreach name="kundengruppe" from=$oCheckBoxUebersicht->cKundengruppeAssoc_arr item=cKundengruppeAssoc}
                                                     {$cKundengruppeAssoc}{if !$smarty.foreach.kundengruppe.last}, {/if}
                                                 {/foreach}
                                             </td>
-                                            <td class="TD8">{$oCheckBoxUebersicht->dErstellt_DE}</td>
-                                            <td class="TD9">
+                                            <td>{$oCheckBoxUebersicht->dErstellt_DE}</td>
+                                            <td>
                                                 <a href="checkbox.php?edit={$oCheckBoxUebersicht->kCheckBox}&token={$smarty.session.jtl_token}"
                                                    class="btn btn-default" title="{#modify#}">
                                                     <i class="fa fa-edit"></i>
@@ -102,10 +102,10 @@
                                         </tr>
                                     {/foreach}
                                     <tr>
-                                        <td class="TD1">
+                                        <td>
                                             <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
                                         </td>
-                                        <td colspan="11" class="TD7"><label for="ALLMSGS">{#globalSelectAll#}</label></td>
+                                        <td colspan="11"><label for="ALLMSGS">{#globalSelectAll#}</label></td>
                                     </tr>
                                 </table>
                             </div>

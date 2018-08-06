@@ -53,10 +53,10 @@
                                         </tr>
                                     {/foreach}
                                     <tr>
-                                        <td class="TD1">
+                                        <td>
                                             <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
                                         </td>
-                                        <td colspan="8" class="TD7"><label for="ALLMSGS">{#globalSelectAll#}</label></td>
+                                        <td colspan="8"><label for="ALLMSGS">{#globalSelectAll#}</label></td>
                                     </tr>
                                 </table>
                             </div>
@@ -114,13 +114,13 @@
                                 </tr>
                                 {foreach name=exportformatqueue from=$oExportformatQueueBearbeitet_arr item=oExportformatQueueBearbeitet}
                                     <tr>
-                                        <td class="TD1">{$oExportformatQueueBearbeitet->cName}</td>
-                                        <td class="TD2">{$oExportformatQueueBearbeitet->cDateiname}</td>
-                                        <td class="TD3">
+                                        <td>{$oExportformatQueueBearbeitet->cName}</td>
+                                        <td>{$oExportformatQueueBearbeitet->cDateiname}</td>
+                                        <td>
                                             {$oExportformatQueueBearbeitet->cNameSprache}/{$oExportformatQueueBearbeitet->cNameWaehrung}/{$oExportformatQueueBearbeitet->cNameKundengruppe}
                                         </td>
-                                        <td class="TD4">{$oExportformatQueueBearbeitet->nLimitN}</td>
-                                        <td class="TD5">{$oExportformatQueueBearbeitet->dZuletztGelaufen_DE}</td>
+                                        <td>{$oExportformatQueueBearbeitet->nLimitN}</td>
+                                        <td>{$oExportformatQueueBearbeitet->dZuletztGelaufen_DE}</td>
                                     </tr>
                                 {/foreach}
                             </table>

@@ -78,11 +78,11 @@
                             </tr>
                             {foreach name=regkunden from=$oKwKReg_arr item=oKwKReg}
                                 <tr>
-                                    <td class="TD2"><b>{$oKwKReg->cVorname} {$oKwKReg->cNachname}</b><br />{$oKwKReg->cEmail}</td>
-                                    <td class="TD2">
+                                    <td><b>{$oKwKReg->cVorname} {$oKwKReg->cNachname}</b><br />{$oKwKReg->cEmail}</td>
+                                    <td>
                                         <b>{$oKwKReg->cBestandVorname} {$oKwKReg->cBestandNachname}</b><br />{$oKwKReg->cMail}
                                     </td>
-                                    <td class="TD3">{getCurrencyConversionSmarty fPreisBrutto=$oKwKReg->fGuthaben}</td>
+                                    <td>{getCurrencyConversionSmarty fPreisBrutto=$oKwKReg->fGuthaben}</td>
                                     <td class="tcenter">{$oKwKReg->dErstellt_de}</td>
                                     <td class="tcenter">{$oKwKReg->dBestandErstellt_de}</td>
                                 </tr>
@@ -108,10 +108,10 @@
                             </tr>
                             {foreach name=letzte100bonis from=$oKwKBestandBonus_arr item=oKwKBestandBonus}
                                 <tr>
-                                    <td class="TD2">
+                                    <td>
                                         <b>{$oKwKBestandBonus->cBestandVorname} {$oKwKBestandBonus->cBestandNachname}</b><br />{$oKwKBestandBonus->cMail}
                                     </td>
-                                    <td class="TD2">{getCurrencyConversionSmarty fPreisBrutto=$oKwKBestandBonus->fGuthaben}</td>
+                                    <td>{getCurrencyConversionSmarty fPreisBrutto=$oKwKBestandBonus->fGuthaben}</td>
                                     <td class="tcenter">{$oKwKBestandBonus->nBonuspunkte}</td>
                                     <td class="tcenter">{$oKwKBestandBonus->dErhalten_de}</td>
                                 </tr>

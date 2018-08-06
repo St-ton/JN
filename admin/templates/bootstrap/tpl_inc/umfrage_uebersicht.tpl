@@ -64,20 +64,20 @@
                                             </tr>
                                             {foreach name=umfrage from=$oUmfrage_arr item=oUmfrage}
                                                 <tr>
-                                                    <td class="TD1"><input type="checkbox" name="kUmfrage[]" value="{$oUmfrage->kUmfrage}" /></td>
-                                                    <td class="TD2">
+                                                    <td><input type="checkbox" name="kUmfrage[]" value="{$oUmfrage->kUmfrage}" /></td>
+                                                    <td>
                                                         <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&ud=1&kUmfrage={$oUmfrage->kUmfrage}&tab=umfrage">{$oUmfrage->cName}</a>
                                                     </td>
-                                                    <td class="TD3">
+                                                    <td>
                                                         {foreach name=kundengruppen from=$oUmfrage->cKundengruppe_arr item=cKundengruppe}
                                                             {$cKundengruppe}{if !$smarty.foreach.kundengruppen.last},{/if}
                                                         {/foreach}
                                                     </td>
-                                                    <td class="TD4">{$oUmfrage->dGueltigVon_de}-{if $oUmfrage->dGueltigBis|truncate:10:"" === '0000-00-00'}{#umfrageInfinite#}{else}{$oUmfrage->dGueltigBis_de}{/if}</td>
-                                                    <td class="TD5">{$oUmfrage->nAktiv}</td>
-                                                    <td class="TD6">{$oUmfrage->nAnzahlFragen}</td>
-                                                    <td class="TD7">{$oUmfrage->dErstellt_de}</td>
-                                                    <td class="TD8">
+                                                    <td>{$oUmfrage->dGueltigVon_de}-{if $oUmfrage->dGueltigBis|truncate:10:"" === '0000-00-00'}{#umfrageInfinite#}{else}{$oUmfrage->dGueltigBis_de}{/if}</td>
+                                                    <td>{$oUmfrage->nAktiv}</td>
+                                                    <td>{$oUmfrage->nAnzahlFragen}</td>
+                                                    <td>{$oUmfrage->dErstellt_de}</td>
+                                                    <td>
                                                         <div class="btn-group">
                                                             <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&umfrage_editieren=1&kUmfrage={$oUmfrage->kUmfrage}&tab=umfrage" class="btn btn-default" title="{#modify#}">
                                                                 <i class="fa fa-edit"></i>

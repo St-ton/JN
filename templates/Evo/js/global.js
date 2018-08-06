@@ -586,6 +586,13 @@ $(document).ready(function () {
     });
 
     /*
+     * account download collapse
+     */
+    $('#account a[data-toggle="collapse"]').click(function() {
+        $('i', this).toggleClass("fa-chevron-up fa-chevron-down");
+    });
+
+    /*
      * set bootstrap viewport
      */
     (function($, document, window, viewport){

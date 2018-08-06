@@ -31,7 +31,7 @@
                                 </video>
                             {elseif $oDownload->getPreviewType() === 'image'}
                                 <img src="{PFAD_DOWNLOADS_PREVIEW_REL}{$oDownload->cPfadVorschau}"
-                                     class="img-responsive" alt="{$oDownload->oDownloadSprache->getBeschreibung()}">
+                                     class="img-responsive" alt="{$oDownload->oDownloadSprache->getBeschreibung()|strip_tags}">
                             {else}
                                 <a href="{PFAD_DOWNLOADS_PREVIEW_REL}{$oDownload->cPfadVorschau}"
                                    title="{$oDownload->oDownloadSprache->getName()}" target="_blank">

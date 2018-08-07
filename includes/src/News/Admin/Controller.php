@@ -7,12 +7,14 @@
 namespace News\Admin;
 
 
+use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\ReturnType;
 use News\Category;
 use News\CategoryInterface;
 use News\CategoryList;
 use News\CommentList;
+use News\Item;
 use News\ItemList;
 use Tightenco\Collect\Support\Collection;
 use function Functional\map;
@@ -38,6 +40,11 @@ class Controller
     private $smarty;
 
     /**
+     * @var JTLCacheInterface
+     */
+    private $cache;
+
+    /**
      * @var string
      */
     private $step = 'news_uebersicht';
@@ -54,13 +61,15 @@ class Controller
 
     /**
      * Controller constructor.
-     * @param DbInterface $db
-     * @param \JTLSmarty  $smarty
+     * @param DbInterface       $db
+     * @param \JTLSmarty        $smarty
+     * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db, \JTLSmarty $smarty)
+    public function __construct(DbInterface $db, \JTLSmarty $smarty, JTLCacheInterface $cache)
     {
         $this->db     = $db;
         $this->smarty = $smarty;
+        $this->cache  = $cache;
 
 //        $test = $this->db->query('
 //            SELECT node.*
@@ -70,6 +79,14 @@ class Controller
 //            ORDER BY node.lft
 //', ReturnType::ARRAY_OF_OBJECTS);
 //        \Shop::dbg($test, true);
+    }
+
+    /**
+     * @return int
+     */
+    private function flushCache(): int
+    {
+        return $this->cache->flushTags([\CACHING_GROUP_NEWS]);
     }
 
     /**
@@ -235,6 +252,7 @@ class Controller
                 $tab = \RequestHelper::verifyGPDataString('tab');
                 $this->newsRedirect(empty($tab) ? 'aktiv' : $tab, $this->msg);
             }
+            $this->flushCache();
         } else {
             $this->step = 'news_editieren';
             $this->smarty->assign('cPostVar_arr', $post)
@@ -263,6 +281,7 @@ class Controller
         $upd             = new \stdClass();
         $upd->cName      = $post['cName'];
         $upd->cKommentar = $post['cKommentar'];
+        $this->flushCache();
 
         return $this->db->update('tnewskommentar', 'kNewsKommentar', $id, $upd) >= 0;
     }
@@ -325,6 +344,7 @@ class Controller
                 );
             }
         }
+        $this->flushCache();
     }
 
     /**
@@ -342,6 +362,7 @@ class Controller
             }
         }
         $this->deactivateUnassociatedNewsItems();
+        $this->flushCache();
 
         return true;
     }
@@ -506,6 +527,7 @@ class Controller
         $this->msg .= 'Ihre Newskategorie wurde erfolgreich eingetragen.<br />';
         $this->newsRedirect('kategorien', $this->msg);
         $newsCategory = new Category($this->db);
+        $this->flushCache();
 
         return $newsCategory->load($categoryID);
     }
@@ -688,8 +710,8 @@ class Controller
             'SELECT node.kNewsKategorie AS id
                 FROM tnewskategorie AS node INNER JOIN tnewskategorie AS parent
                 WHERE node.lvl > 0 
-                    AND parent.lvl > 0 ' . ($showOnlyActive ? ' WHERE node.nAktiv = 1 ' : '') .
-                ' GROUP BY node.kNewsKategorie
+                    AND parent.lvl > 0 ' . ($showOnlyActive ? ' AND node.nAktiv = 1 ' : '') .
+            ' GROUP BY node.kNewsKategorie
                 ORDER BY node.lft, node.nSort ASC',
             ReturnType::ARRAY_OF_OBJECTS
         ), function ($e) {
@@ -698,9 +720,6 @@ class Controller
         $itemList->createItems($ids);
 
         return $itemList->generateTree();
-        \Shop::dbg($test, true, 'tree:');
-
-        return $itemList->getItems();
     }
 
     /**
@@ -764,6 +783,33 @@ class Controller
         }
 
         return $images;
+    }
+
+    /**
+     * @param array     $items
+     * @param Item|null $newsItem
+     */
+    public function deleteComments(array $items, Item $newsItem = null)
+    {
+        if (\count($items) > 0) {
+            foreach ($items as $id) {
+                $this->db->delete('tnewskommentar', 'kNewsKommentar', (int)$id);
+            }
+            $this->flushCache();
+            $this->setMsg('Ihre markierten Kommentare wurden erfolgreich gelöscht.');
+            $tab    = \RequestHelper::verifyGPDataString('tab');
+            $params = [
+                'news'  => '1',
+                'nd'    => '1',
+                'token' => $_SESSION['jtl_token'],
+            ];
+            if ($newsItem !== null) {
+                $params['kNews'] = $newsItem->getID();
+            }
+            $this->newsRedirect(empty($tab) ? 'inaktiv' : $tab, $this->getMsg(), $params);
+        } else {
+            $this->setErrorMsg('Fehler: Sie müssen mindestens einen Kommentar markieren.');
+        }
     }
 
     /**
@@ -893,7 +939,8 @@ class Controller
         // the right value of this node is the left value + 1
         $right = $left + 1;
         // get all children of this node
-        $result = $this->db->selectAll('tnewskategorie', 'kParent', $parent_id, 'kNewsKategorie', 'nSort, kNewsKategorie');
+        $result = $this->db->selectAll('tnewskategorie', 'kParent', $parent_id, 'kNewsKategorie',
+            'nSort, kNewsKategorie');
         foreach ($result as $_res) {
             $right = $this->rebuildCategoryTree($_res->kNewsKategorie, $right, $level + 1);
         }

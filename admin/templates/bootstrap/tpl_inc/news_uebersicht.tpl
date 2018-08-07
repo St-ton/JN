@@ -36,6 +36,7 @@
                 nextLevel = parseInt(nextEl.data('level'));
             }
             $(this).toggleClass('hide-toggle-on');
+            $(this).find('i.fa').toggleClass('fa-caret-right fa-caret-down');
         });
     });
 </script>
@@ -131,7 +132,7 @@
                                 <tfoot>
                                     <tr>
                                         <td class="check"><input name="ALLMSGS" id="ALLMSGS1" type="checkbox" onclick="AllMessages(this.form);" /></td>
-                                        <td colspan="5"><label for="ALLMSGS1">Alle ausw&auml;hlen</label></td>
+                                        <td colspan="5"><label for="ALLMSGS1">Alle auswählen</label></td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -278,7 +279,7 @@
                                             <input type="checkbox" name="kNewsKategorie[]" data-name="{$oNewsKategorie->getName()}" value="{$oNewsKategorie->getID()}" id="newscat-{$oNewsKategorie->getID()}" />
                                         </th>
                                         <td class="TD2{if $oNewsKategorie->getLevel() === 1} hide-toggle-on{/if}" data-name="category">
-                                            <i class="fa fa-caret-down nav-toggle{if $oNewsKategorie->getChildren()->count() === 0} hidden{/if}"></i>
+                                            <i class="fa fa-caret-right nav-toggle{if $oNewsKategorie->getChildren()->count() === 0} hidden{/if}"></i>
                                             <label for="newscat-{$oNewsKategorie->getID()}">{$oNewsKategorie->getName()|default:'???'}</label>
                                         </td>
                                         <td class="tcenter">{$oNewsKategorie->getSort()}</td>

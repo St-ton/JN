@@ -18,13 +18,10 @@ $newsCategories = [];
 $continueWith   = false;
 $db             = Shop::Container()->getDB();
 $author         = ContentAuthor::getInstance();
-$controller     = new \News\Admin\Controller($db, $smarty);
+$controller     = new \News\Admin\Controller($db, $smarty, Shop::Container()->getCache());
 $newsCategory   = new \News\Category($db);
 $languages      = Sprache::getAllLanguages();
 setzeSprache();
-if (!empty($_POST)) {
-    Shop::dbg($_POST);
-}
 if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
     $backTab = RequestHelper::verifyGPDataString('tab');
     $smarty->assign('cTab', $backTab);
@@ -54,16 +51,16 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0 && FormHe
     $controller->setMsg(saveAdminSectionSettings(CONF_NEWS, $_POST, [CACHING_GROUP_OPTION, CACHING_GROUP_NEWS]));
     if (count($languages) > 0) {
         $db->query('TRUNCATE tnewsmonatspraefix', \DB\ReturnType::AFFECTED_ROWS);
-        foreach ($languages as $oSpracheTMP) {
+        foreach ($languages as $lang) {
             $monthPrefix           = new stdClass();
-            $monthPrefix->kSprache = $oSpracheTMP->kSprache;
-            if (strlen($_POST['praefix_' . $oSpracheTMP->cISO]) > 0) {
+            $monthPrefix->kSprache = $lang->kSprache;
+            if (strlen($_POST['praefix_' . $lang->cISO]) > 0) {
                 $monthPrefix->cPraefix = htmlspecialchars(
-                    $_POST['praefix_' . $oSpracheTMP->cISO],
+                    $_POST['praefix_' . $lang->cISO],
                     ENT_COMPAT | ENT_HTML401, JTL_CHARSET
                 );
             } else {
-                $monthPrefix->cPraefix = $oSpracheTMP->cISO === 'ger'
+                $monthPrefix->cPraefix = $lang->cISO === 'ger'
                     ? 'Newsuebersicht'
                     : 'Newsoverview';
             }
@@ -73,7 +70,6 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0 && FormHe
 }
 
 if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()) {
-    // Neue News erstellen
     if ((isset($_POST['erstellen'], $_POST['news_erstellen']) && (int)$_POST['erstellen'] === 1)
         || (isset($_POST['news_erstellen']) && (int)$_POST['news_erstellen'] === 1)
     ) {
@@ -81,8 +77,7 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
         if (count($newsCategories) > 0) {
             $controller->setStep('news_erstellen');
             $smarty->assign('oNewsKategorie_arr', $newsCategories)
-                   ->assign('oPossibleAuthors_arr',
-                       $author->getPossibleAuthors(['CONTENT_NEWS_SYSTEM_VIEW']));
+                   ->assign('oPossibleAuthors_arr', $author->getPossibleAuthors(['CONTENT_NEWS_SYSTEM_VIEW']));
         } else {
             $controller->setErrorMsg('Fehler: Bitte legen Sie zuerst eine Newskategorie an.');
             $controller->setStep('news_uebersicht');
@@ -91,67 +86,59 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
         || (isset($_POST['news_kategorie_erstellen']) && (int)$_POST['news_kategorie_erstellen'] === 1)
     ) {
         $controller->setStep('news_kategorie_erstellen');
-    } elseif (RequestHelper::verifyGPCDataInt('nkedit') === 1) { // Newskommentar editieren
-        if (RequestHelper::verifyGPCDataInt('kNews') > 0) {
-            if (isset($_POST['newskommentarsavesubmit'])) {
-                if ($controller->saveComment(RequestHelper::verifyGPCDataInt('kNewsKommentar'), $_POST)) {
-                    $controller->setStep('news_vorschau');
-                    $$controller->setMsg('Der Newskommentar wurde erfolgreich editiert.');
+    } elseif (RequestHelper::verifyGPCDataInt('nkedit') === 1 && RequestHelper::verifyGPCDataInt('kNews') > 0) {
+        if (isset($_POST['newskommentarsavesubmit'])) {
+            if ($controller->saveComment(RequestHelper::verifyGPCDataInt('kNewsKommentar'), $_POST)) {
+                $controller->setStep('news_vorschau');
+                $controller->setMsg('Der Newskommentar wurde erfolgreich editiert.');
 
-                    if (RequestHelper::verifyGPCDataInt('nFZ') === 1) {
-                        header('Location: freischalten.php');
-                        exit();
-                    }
-                    $tab = RequestHelper::verifyGPDataString('tab');
-                    if ($tab === 'aktiv') {
-                        $controller->newsRedirect(empty($tab) ? 'inaktiv' : $tab, $controller->getMsg(), [
-                            'news'  => '1',
-                            'nd'    => '1',
-                            'kNews' => RequestHelper::verifyGPCDataInt('kNews'),
-                            'token' => $_SESSION['jtl_token'],
-                        ]);
-                    } else {
-                        $controller->newsRedirect(empty($tab) ? 'inaktiv' : $tab, $controller->getMsg());
-                    }
+                if (RequestHelper::verifyGPCDataInt('nFZ') === 1) {
+                    header('Location: freischalten.php');
+                    exit();
+                }
+                $tab = RequestHelper::verifyGPDataString('tab');
+                if ($tab === 'aktiv') {
+                    $controller->newsRedirect(empty($tab) ? 'inaktiv' : $tab, $controller->getMsg(), [
+                        'news'  => '1',
+                        'nd'    => '1',
+                        'kNews' => RequestHelper::verifyGPCDataInt('kNews'),
+                        'token' => $_SESSION['jtl_token'],
+                    ]);
                 } else {
-                    $controller->setStep('news_kommentar_editieren');
-                    $controller->setErrorMsg('Fehler: Bitte überprüfen Sie Ihre Eingaben.');
-                    $comment                 = new stdClass();
-                    $comment->kNewsKommentar = $_POST['kNewsKommentar'];
-                    $comment->kNews          = $_POST['kNews'];
-                    $comment->cName          = $_POST['cName'];
-                    $comment->cKommentar     = $_POST['cKommentar'];
-                    $smarty->assign('oNewsKommentar', $comment);
+                    $controller->newsRedirect(empty($tab) ? 'inaktiv' : $tab, $controller->getMsg());
                 }
             } else {
                 $controller->setStep('news_kommentar_editieren');
-                $smarty->assign('oNewsKommentar', $db->select(
-                    'tnewskommentar',
-                    'kNewsKommentar',
-                    RequestHelper::verifyGPCDataInt('kNewsKommentar'))
-                );
-                if (RequestHelper::verifyGPCDataInt('nFZ') === 1) {
-                    $smarty->assign('nFZ', 1);
-                }
+                $controller->setErrorMsg('Fehler: Bitte überprüfen Sie Ihre Eingaben.');
+                $comment                 = new stdClass();
+                $comment->kNewsKommentar = $_POST['kNewsKommentar'];
+                $comment->kNews          = $_POST['kNews'];
+                $comment->cName          = $_POST['cName'];
+                $comment->cKommentar     = $_POST['cKommentar'];
+                $smarty->assign('oNewsKommentar', $comment);
+            }
+        } else {
+            $controller->setStep('news_kommentar_editieren');
+            $comment = new \News\Comment($db);
+            $comment->load(RequestHelper::verifyGPCDataInt('kNewsKommentar'));
+            $smarty->assign('oNewsKommentar', $comment);
+            if (RequestHelper::verifyGPCDataInt('nFZ') === 1) {
+                $smarty->assign('nFZ', 1);
             }
         }
-    } elseif (isset($_POST['news_speichern']) && (int)$_POST['news_speichern'] === 1) { // News speichern
+    } elseif (isset($_POST['news_speichern']) && (int)$_POST['news_speichern'] === 1) {
         $controller->createOrUpdateNewsItem($_POST, $languages, $author);
-    } elseif (isset($_POST['news_loeschen']) && (int)$_POST['news_loeschen'] === 1) { // News loeschen
+    } elseif (isset($_POST['news_loeschen']) && (int)$_POST['news_loeschen'] === 1) {
         if (isset($_POST['kNews']) && is_array($_POST['kNews']) && count($_POST['kNews']) > 0) {
             $controller->deleteNewsItems($_POST['kNews'], $author);
-
             $controller->setMsg('Ihre markierten News wurden erfolgreich gelöscht.');
             $controller->newsRedirect('aktiv', $controller->getMsg());
         } else {
             $controller->setErrorMsg('Fehler: Sie müssen mindestens eine News ausgewählt haben.');
         }
     } elseif (isset($_POST['news_kategorie_speichern']) && (int)$_POST['news_kategorie_speichern'] === 1) {
-        //Newskategorie speichern
         $newsCategory = $controller->createOrUpdateCategory($_POST, $languages);
-        Shop::dbg($newsCategory, false, 'NC:');
     } elseif (isset($_POST['news_kategorie_loeschen']) && (int)$_POST['news_kategorie_loeschen'] === 1) {
-        // Newskategorie loeschen
         $controller->setStep('news_uebersicht');
         if (isset($_POST['kNewsKategorie'])) {
             $controller->deleteCategories($_POST['kNewsKategorie']);
@@ -161,10 +148,12 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
             $controller->setErrorMsg('Fehler: Bitte markieren Sie mindestens eine Newskategorie.');
         }
     } elseif (isset($_GET['newskategorie_editieren']) && (int)$_GET['newskategorie_editieren'] === 1) {
-        // Newskategorie editieren
-        $categoryID = (int)$_GET['kNewsKategorie'];
         if (strlen(RequestHelper::verifyGPDataString('delpic')) > 0) {
-            if ($controller->deleteNewsImage(RequestHelper::verifyGPDataString('delpic'), $categoryID, $uploadDirCat)) {
+            if ($controller->deleteNewsImage(
+                RequestHelper::verifyGPDataString('delpic'),
+                (int)$_GET['kNewsKategorie'],
+                $uploadDirCat)
+            ) {
                 $controller->setMsg('Ihr ausgewähltes Newsbild wurde erfolgreich gelöscht.');
             } else {
                 $controller->setErrorMsg('Fehler: Ihr ausgewähltes Newsbild konnte nicht gelöscht werden.');
@@ -187,13 +176,10 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
     } elseif (isset($_POST['newskommentar_freischalten'])
         && (int)$_POST['newskommentar_freischalten']
         && !isset($_POST['kommentareloeschenSubmit'])
-    ) { // Kommentare freischalten
+    ) {
         if (is_array($_POST['kNewsKommentar']) && count($_POST['kNewsKommentar']) > 0) {
-            foreach ($_POST['kNewsKommentar'] as $kNewsKommentar) {
-                $kNewsKommentar = (int)$kNewsKommentar;
-                $upd            = new stdClass();
-                $upd->nAktiv    = 1;
-                $db->update('tnewskommentar', 'kNewsKommentar', $kNewsKommentar, $upd);
+            foreach ($_POST['kNewsKommentar'] as $id) {
+                $db->update('tnewskommentar', 'kNewsKommentar',  (int)$id, (object)['nAktiv' => 1]);
             }
             $controller->setMsg('Ihre markierten Newskommentare wurden erfolgreich freigeschaltet.');
             $tab = RequestHelper::verifyGPDataString('tab');
@@ -201,21 +187,10 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
         } else {
             $controller->setErrorMsg('Fehler: Bitte markieren Sie mindestens einen Newskommentar.');
         }
-    } elseif (isset($_POST['newskommentar_freischalten'], $_POST['kommentareloeschenSubmit'])) {
-        if (is_array($_POST['kNewsKommentar']) && count($_POST['kNewsKommentar']) > 0) {
-            foreach ($_POST['kNewsKommentar'] as $kNewsKommentar) {
-                $db->delete('tnewskommentar', 'kNewsKommentar', (int)$kNewsKommentar);
-            }
-
-            $controller->setMsg('Ihre markierten Kommentare wurden erfolgreich gelöscht.');
-            $tab = RequestHelper::verifyGPDataString('tab');
-            $controller->newsRedirect(empty($tab) ? 'inaktiv' : $tab, $controller->getMsg());
-        } else {
-            $controller->setErrorMsg('Fehler: Sie müssen mindestens einen Kommentar markieren.');
-        }
+    } elseif (isset($_POST['newskommentar_freischalten'], $_POST['kNewsKommentar'], $_POST['kommentareloeschenSubmit'])) {
+        $controller->deleteComments($_POST['kNewsKommentar']);
     }
-    if ((isset($_GET['news_editieren']) && (int)$_GET['news_editieren'] === 1) ||
-        ($continueWith !== false && $continueWith > 0)) {
+    if ((isset($_GET['news_editieren']) && (int)$_GET['news_editieren'] === 1) || ($continueWith !== false && $continueWith > 0)) {
         $newsCategories = News::getAllNewsCategories($_SESSION['kSprache'], true);
         $newsItemID     = ($continueWith !== false && $continueWith > 0)
             ? $continueWith
@@ -247,46 +222,26 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
             $controller->setErrorMsg('Fehler: Bitte legen Sie zuerst eine Newskategorie an.');
             $controller->setStep('news_uebersicht');
         }
-    }
+    } elseif ($controller->getStep() === 'news_vorschau' || RequestHelper::verifyGPCDataInt('nd') === 1) {
+        $controller->setStep('news_vorschau');
+        $newsItemID = RequestHelper::verifyGPCDataInt('kNews');
+        $newsItem   = new \News\Item($db);
+        $newsItem->load($newsItemID);
 
-    if ($controller->getStep() === 'news_vorschau' || RequestHelper::verifyGPCDataInt('nd') === 1) {
-        if (RequestHelper::verifyGPCDataInt('kNews')) {
-            $controller->setStep('news_vorschau');
-            $newsItemID = RequestHelper::verifyGPCDataInt('kNews');
-            $newsItem   = new \News\Item($db);
-            $newsItem->load($newsItemID);
-
-            if ($newsItem->getID() > 0) {
-                if (is_dir($uploadDir . $newsItem->getID())) {
-                    $smarty->assign('oDatei_arr', $controller->getNewsImages($newsItem->getID(), $uploadDir));
-                }
-                $smarty->assign('oNews', $newsItem);
-                if ((isset($_POST['kommentare_loeschen']) && (int)$_POST['kommentare_loeschen'] === 1)
-                    || isset($_POST['kommentareloeschenSubmit'])
-                ) {
-                    if (is_array($_POST['kNewsKommentar']) && count($_POST['kNewsKommentar']) > 0) {
-                        foreach ($_POST['kNewsKommentar'] as $kNewsKommentar) {
-                            $db->delete('tnewskommentar', 'kNewsKommentar', (int)$kNewsKommentar);
-                        }
-
-                        $controller->setMsg('Ihre markierten Kommentare wurden erfolgreich gelöscht.');
-                        $tab = RequestHelper::verifyGPDataString('tab');
-                        $controller->newsRedirect(empty($tab) ? 'inaktiv' : $tab, $controller->getMsg(), [
-                            'news'  => '1',
-                            'nd'    => '1',
-                            'kNews' => $newsItem->getID(),
-                            'token' => $_SESSION['jtl_token'],
-                        ]);
-                    } else {
-                        $controller->setErrorMsg('Fehler: Sie müssen mindestens einen Kommentar markieren.');
-                    }
-                }
-
-                $smarty->assign('oNewsKommentar_arr', $newsItem->getComments()->getItems());
+        if ($newsItem->getID() > 0) {
+            if (is_dir($uploadDir . $newsItem->getID())) {
+                $smarty->assign('oDatei_arr', $controller->getNewsImages($newsItem->getID(), $uploadDir));
             }
+            $smarty->assign('oNews', $newsItem);
+            if ((isset($_POST['kommentare_loeschen']) && (int)$_POST['kommentare_loeschen'] === 1)
+                || isset($_POST['kommentareloeschenSubmit'])
+            ) {
+                $controller->deleteComments($_POST['kNewsKommentar'], $newsItem);
+            }
+
+            $smarty->assign('oNewsKommentar_arr', $newsItem->getComments()->getItems());
         }
     }
-    Shop::Cache()->flushTags([CACHING_GROUP_NEWS]);
 }
 if ($controller->getStep() === 'news_uebersicht') {
     $newsItems   = $controller->getAllNews();

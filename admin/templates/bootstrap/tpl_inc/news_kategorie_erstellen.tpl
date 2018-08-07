@@ -74,17 +74,17 @@
                             <span class="input-group-addon">
                                 <label for="nSort">{#newsCatSort#}</label>
                             </span>
-                            <input class="form-control{if !empty($cPlausiValue_arr.nSort)} error{/if}" id="nSort" name="nSort" type="text" value="{if isset($cPostVar_arr.nSort)}{$cPostVar_arr.nSort}{else}{$oNewsKategorie->getSort()}{/if}" />
+                            <input class="form-control{if !empty($cPlausiValue_arr.nSort)} error{/if}" id="nSort" name="nSort" type="text" value="{$oNewsKategorie->getSort()}" />
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
                                 <label for="nAktiv">{#newsActive#}</label>
                             </span>
                             <select class="form-control" id="nAktiv" name="nAktiv">
-                                <option value="1"{if (isset($cPostVar_arr.nAktiv) && $cPostVar_arr.nAktiv == "1") || ($oNewsKategorie->getIsActive() === true)} selected{/if}>
+                                <option value="1"{if $oNewsKategorie->getIsActive() === true} selected{/if}>
                                     Ja
                                 </option>
-                                <option value="0"{if (isset($cPostVar_arr.nAktiv) && $cPostVar_arr.nAktiv == "0") || ($oNewsKategorie->getIsActive() === false)} selected{/if}>
+                                <option value="0"{if $oNewsKategorie->getIsActive() === false} selected{/if}>
                                     Nein
                                 </option>
                             </select>
@@ -152,25 +152,25 @@
                                     <span class="input-group-addon">
                                         <label for="cName_{$cISO}">{#newsCatName#}</label>
                                     </span>
-                                    <input class="form-control{if !empty($cPlausiValue_arr.cName)} error{/if}" id="cName_{$cISO}" name="cName_{$cISO}" type="text" value="{if isset($cPostVar_arr.cName)}{$cPostVar_arr.cName}{elseif $oNewsKategorie->getName($langID) !== ''}{$oNewsKategorie->getName($langID)}{/if}" />{if isset($cPlausiValue_arr.cName) && $cPlausiValue_arr.cName == 2} {#newsAlreadyExists#}{/if}
+                                    <input class="form-control{if !empty($cPlausiValue_arr.cName)} error{/if}" id="cName_{$cISO}" name="cName_{$cISO}" type="text" value="{if $oNewsKategorie->getName($langID) !== ''}{$oNewsKategorie->getName($langID)}{/if}" />{if isset($cPlausiValue_arr.cName) && $cPlausiValue_arr.cName == 2} {#newsAlreadyExists#}{/if}
                                 </div>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <label for="cSeo_{$cISO}">{#newsSeo#}</label>
                                     </span>
-                                    <input class="form-control{if !empty($cPlausiValue_arr.cSeo)} error{/if}" id="cSeo_{$cISO}" name="cSeo_{$cISO}" type="text" value="{if isset($cPostVar_arr.cSeo)}{$cPostVar_arr.cSeo}{elseif $oNewsKategorie->getSEO($langID) !== ''}{$oNewsKategorie->getSEO($langID)}{/if}" />
+                                    <input class="form-control{if !empty($cPlausiValue_arr.cSeo)} error{/if}" id="cSeo_{$cISO}" name="cSeo_{$cISO}" type="text" value="{if $oNewsKategorie->getSEO($langID) !== ''}{$oNewsKategorie->getSEO($langID)}{/if}" />
                                 </div>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <label for="cMetaTitle_{$cISO}">{#newsMetaTitle#}</label>
                                     </span>
-                                    <input class="form-control{if !empty($cPlausiValue_arr.cMetaTitle)} error{/if}" id="cMetaTitle_{$cISO}" name="cMetaTitle_{$cISO}" type="text" value="{if isset($cPostVar_arr.cMetaTitle)}{$cPostVar_arr.cMetaTitle}{else}{$oNewsKategorie->getMetaTitle($langID)}{/if}" />
+                                    <input class="form-control{if !empty($cPlausiValue_arr.cMetaTitle)} error{/if}" id="cMetaTitle_{$cISO}" name="cMetaTitle_{$cISO}" type="text" value="{$oNewsKategorie->getMetaTitle($langID)}" />
                                 </div>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <label for="cMetaDescription_{$cISO}">{#newsMetaDescription#}</label>
                                     </span>
-                                    <input class="form-control{if !empty($cPlausiValue_arr.cMetaDescription)} error{/if}" id="cMetaDescription_{$cISO}" name="cMetaDescription_{$cISO}" type="text" value="{if isset($cPostVar_arr.cMetaDescription)}{$cPostVar_arr.cMetaDescription}{else}{$oNewsKategorie->getMetaDescription($langID)}{/if}" />
+                                    <input class="form-control{if !empty($cPlausiValue_arr.cMetaDescription)} error{/if}" id="cMetaDescription_{$cISO}" name="cMetaDescription_{$cISO}" type="text" value="{$oNewsKategorie->getMetaDescription($langID)}" />
                                 </div>
                                 <div class="input-group">
                                     <span class="input-group-addon">
@@ -186,7 +186,7 @@
                                     <span class="input-group-addon">
                                         <label for="cBeschreibung_{$cISO}">{#newsCatDesc#}</label>
                                     </span>
-                                    <textarea id="cBeschreibung_{$cISO}" class="ckeditor" name="cBeschreibung_{$cISO}" rows="15" cols="60">{if isset($cPostVar_arr.cBeschreibung)}{$cPostVar_arr.cBeschreibung}{else}{$oNewsKategorie->getDescription($langID)}{/if}</textarea>
+                                    <textarea id="cBeschreibung_{$cISO}" class="ckeditor" name="cBeschreibung_{$cISO}" rows="15" cols="60">{$oNewsKategorie->getDescription($langID)}</textarea>
                                 </div>
                             </div>
                         </div>

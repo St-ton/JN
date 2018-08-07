@@ -9,8 +9,10 @@ namespace News;
 
 use DB\DbInterface;
 use DB\ReturnType;
+use function Functional\map;
 use Session\Session;
 use function Functional\every;
+use Tightenco\Collect\Support\Collection;
 
 /**
  * Class Controller
@@ -225,11 +227,9 @@ class Controller
         $metaKeywords    = \strlen($metaKeywords) < 1
             ? $category->buildMetaKeywords()
             : $metaKeywords;
-
         $this->smarty->assign('oNewsUebersicht_arr', $items)
                      ->assign('noarchiv', 0)
-                     ->assign('oNewsKategorie_arr', // @todo:
-                         \News::getAllNewsCategories(\Shop::getLanguageID(), false, false, true))
+                     ->assign('oNewsKategorie_arr', $this->getAllNewsCategories(true))
                      ->assign('nSort', $_SESSION['NewsNaviFilter']->nSort)
                      ->assign('cDatum', $_SESSION['NewsNaviFilter']->cDatum)
                      ->assign('oNewsCat', $category)
@@ -247,6 +247,29 @@ class Controller
         \executeHook(\HOOK_NEWS_PAGE_NEWSUEBERSICHT);
 
         return $category;
+    }
+
+    /**
+     * @param bool $showOnlyActive
+     * @return Collection
+     */
+    public function getAllNewsCategories(bool $showOnlyActive = false): Collection
+    {
+        $itemList = new CategoryList($this->db);
+        $ids      = map($this->db->query(
+            'SELECT node.kNewsKategorie AS id
+                FROM tnewskategorie AS node INNER JOIN tnewskategorie AS parent
+                WHERE node.lvl > 0 
+                    AND parent.lvl > 0 ' . ($showOnlyActive ? ' AND node.nAktiv = 1 ' : '') .
+            ' GROUP BY node.kNewsKategorie
+                ORDER BY node.lft, node.nSort ASC',
+            ReturnType::ARRAY_OF_OBJECTS
+        ), function ($e) {
+            return (int)$e->id;
+        });
+        $itemList->createItems($ids);
+
+        return $itemList->generateTree();
     }
 
     /**

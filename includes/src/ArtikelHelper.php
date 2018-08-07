@@ -2320,4 +2320,29 @@ class ArtikelHelper
             }
         }
     }
+
+    /**
+     * @param int $kArtikel
+     * @param int $kVaterArtikel
+     * @return bool
+     */
+    public static function getRatedByCurrentCustomer(int $productID, int $parentProductID = 0)
+    {
+        $rated = false;
+
+        $customerID = Session::Customer()->getID();
+        $productID  = !empty($parentProductID) ? $parentProductID : $productID;
+
+        if ($customerID > 0) {
+            $ratings = Shop::Container()->getDB()->select(
+                'tbewertung',
+                ['kKunde', 'kArtikel', 'kSprache'],
+                [$customerID, $productID, Shop::getLanguageID()]
+            );
+
+            $rated = !empty($ratings->kBewertung);
+        }
+
+        return $rated;
+    }
 }

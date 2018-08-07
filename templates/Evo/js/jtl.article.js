@@ -440,22 +440,24 @@
             $.ajax(url, {data: {'isAjax':1, 'quickView':1}})
                 .done(function(data) {
                     var $html      = $('<div />').html(data);
-                    var $headerCSS = $html.find('link[type="text/css"]');
-                    var $headerJS  = $html.find('script[src][src!=""]');
+                    var $inlineCSS = $html.find('link[type="text/css"]');
+                    var $inlineJS  = $html.find('script[src][src!=""]');
                     var content    = $html.find(that.options.modal.wrapper).html();
 
-                    $headerCSS.each(function (pos, item) {
-                        var $cssLink = $('head link[href="' + item.href + '"]');
+                    $inlineCSS.each(function (pos, item) {
+                        var $cssLink = $('link[href="' + item.href + '"]');
                         if ($cssLink.length === 0) {
                             $('head').append('<link rel="stylesheet" type="text/css" href="' + item.href + '" >');
                         }
                     });
 
-                    $headerJS.each(function (pos, item) {
+                    $inlineJS.each(function (pos, item) {
                         if (typeof item.src !== 'undefined' && item.src.length > 0) {
-                            var $jsLink = $('head script[src="' + item.src + '"]');
-                            if ($jsLink.length === 0) {
-                                $('head').append('<script type="text/javascript" src="' + item.src + '" >');
+                            if ($(item).closest(that.options.modal.wrapper).length === 0) {
+                                var $jsLink = $('script[src="' + item.src + '"]');
+                                if ($jsLink.length === 0) {
+                                    $('head').append('<script type="text/javascript" src="' + item.src + '" >');
+                                }
                             }
                         }
                     });

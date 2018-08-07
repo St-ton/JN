@@ -62,29 +62,24 @@ class CMSHelper
 
     /**
      * @param array $conf
-     * @return array
+     * @return \Tightenco\Collect\Support\Collection
      * @since 5.0.0
      * @former gibNews()
      */
-    public static function getHomeNews(array $conf): array
+    public static function getHomeNews(array $conf): \Tightenco\Collect\Support\Collection
     {
         $cSQL      = '';
-        $oNews_arr = [];
+        $items = new \Tightenco\Collect\Support\Collection();
         if (!isset($conf['news']['news_anzahl_content']) || (int)$conf['news']['news_anzahl_content'] === 0) {
-            return $oNews_arr;
+            return $items;
         }
         $cacheID = 'news_' . md5(json_encode($conf['news']) . '_' . Shop::getLanguage());
-        if (($oNews_arr = Shop::Cache()->get($cacheID)) === false) {
+        if (true||($items = Shop::Cache()->get($cacheID)) === false) {
             if ((int)$conf['news']['news_anzahl_content'] > 0) {
                 $cSQL = ' LIMIT ' . (int)$conf['news']['news_anzahl_content'];
             }
-            $oNews_arr    = Shop::Container()->getDB()->query(
-                "SELECT tnews.kNews, t.languageID AS kSprache, tnews.cKundengruppe, t.title AS cBetreff, t.content AS cText, 
-                t.preview AS cVorschauText, t.metaTitle AS cMetaTitle, t.metaDescription AS cMetaDescription, t.metaKeywords AS cMetaKeywords, 
-                tnews.nAktiv, tnews.dErstellt, tnews.cPreviewImage, tseo.cSeo,
-                count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl, 
-                DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dErstellt_de,
-                DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de
+            $newsIDs    = Shop::Container()->getDB()->query(
+                "SELECT tnews.kNews
                     FROM tnews
                     JOIN tnewskategorienews 
                         ON tnewskategorienews.kNews = tnews.kNews
@@ -93,9 +88,6 @@ class CMSHelper
                     JOIN tnewskategorie 
                         ON tnewskategorie.kNewsKategorie = tnewskategorienews.kNewsKategorie
                          AND tnewskategorie.nAktiv = 1
-                    LEFT JOIN tnewskommentar 
-                        ON tnewskommentar.kNews = tnews.kNews
-                        AND tnewskommentar.nAktiv = 1
                     LEFT JOIN tseo 
                         ON tseo.cKey = 'kNews'
                         AND tseo.kKey = tnews.kNews
@@ -110,39 +102,28 @@ class CMSHelper
                     ORDER BY tnews.dGueltigVon DESC" . $cSQL,
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-            $shopURL      = Shop::getURL() . '/';
-            $imageBaseURL = Shop::getImageBaseURL();
-            foreach ($oNews_arr as $oNews) {
-                $oNews->cPreviewImageFull = empty($oNews->cPreviewImage)
-                    ? ''
-                    : $imageBaseURL . $oNews->cPreviewImage;
-                $oNews->cText             = StringHandler::parseNewsText($oNews->cText);
-                $oNews->cURL              = UrlHelper::buildURL($oNews, URLART_NEWS);
-                $oNews->cURLFull          = $shopURL . $oNews->cURL;
-                $oNews->cMehrURL          = '<a href="' . $oNews->cURL . '">' .
-                    Shop::Lang()->get('moreLink', 'news') .
-                    '</a>';
-                $oNews->cMehrURLFull      = '<a href="' . $oNews->cURLFull . '">' .
-                    Shop::Lang()->get('moreLink', 'news') .
-                    '</a>';
-            }
+            $items = new \News\ItemList(Shop::Container()->getDB());
+            $items->createItems(\Functional\map($newsIDs, function ($e) {
+                return (int)$e->kNews;
+            }));
+            $items = $items->getItems();
             $cacheTags = [CACHING_GROUP_NEWS, CACHING_GROUP_OPTION];
             executeHook(HOOK_GET_NEWS, [
                 'cached'    => false,
                 'cacheTags' => &$cacheTags,
-                'oNews_arr' => &$oNews_arr
+                'oNews_arr' => $items
             ]);
-            Shop::Cache()->set($cacheID, $oNews_arr, $cacheTags);
+            Shop::Cache()->set($cacheID, $items, $cacheTags);
 
-            return $oNews_arr;
+            return $items;
         }
         executeHook(HOOK_GET_NEWS, [
             'cached'    => true,
             'cacheTags' => [],
-            'oNews_arr' => &$oNews_arr
+            'oNews_arr' => &$items
         ]);
 
-        return $oNews_arr;
+        return $items;
     }
 
     /**

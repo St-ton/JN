@@ -2680,23 +2680,8 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
             'Erst ab diesem Bestellwert kann diese Zahlungsart genutzt werden.',
             'Nur bis zu diesem Bestellwert wird diese Zahlungsart angeboten. (einschliesslich)'];
         $nSort_arr         = [100, 101, 102];
-        $cWertNameExistsInXML_arr  = [];
 
-        //check if standard is declared in plugin
-        if (isset($Method_arr['Setting'])
-            && is_array($Method_arr['Setting'])
-            && count($Method_arr['Setting']) > 0
-        ) {
-            foreach ($Method_arr['Setting'] as $Setting_arr) {
-                if (isset($Setting_arr['ValueName']) && in_array($Setting_arr['ValueName'], $cWertName_arr, true)) {
-                    $cWertNameExistsInXML_arr[] = $Setting_arr['ValueName'];
-                }
-            }
-        }
         for ($z = 0; $z < 3; $z++) {
-            if (in_array($cWertName_arr[$z], $cWertNameExistsInXML_arr, true)) {
-                continue; //skip and write later from xml
-            }
             // tplugineinstellungen füllen
             $oPluginEinstellungen          = new stdClass();
             $oPluginEinstellungen->kPlugin = $kPlugin;
@@ -2745,8 +2730,11 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
                     $oPluginEinstellungen->kPlugin = $kPlugin;
                     $oPluginEinstellungen->cName   = $cModulId . '_' . $Setting_arr['ValueName'];
                     $oPluginEinstellungen->cWert   = $cInitialValue;
-
-                    Shop::Container()->getDB()->insert('tplugineinstellungen', $oPluginEinstellungen);
+                    if (Shop::Container()->getDB()->select('tplugineinstellungen', 'cName', $oPluginEinstellungen->cName)) {
+                        Shop::Container()->getDB()->update('tplugineinstellungen', 'cName', $oPluginEinstellungen->cName, $oPluginEinstellungen);
+                    } else {
+                        Shop::Container()->getDB()->insert('tplugineinstellungen', $oPluginEinstellungen);
+                    }
 
                     // tplugineinstellungenconf füllen
                     $oPluginEinstellungenConf                   = new stdClass();
@@ -2763,7 +2751,17 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
                         ? 'M'
                         : $cConf;
 
-                    $kPluginEinstellungenConf = Shop::Container()->getDB()->insert('tplugineinstellungenconf', $oPluginEinstellungenConf);
+                    if ($kPluginEinstellungenConfTMP = Shop::Container()->getDB()->select('tplugineinstellungenconf', 'cWertName', $oPluginEinstellungenConf->cWertName)) {
+                        Shop::Container()->getDB()->update(
+                            'tplugineinstellungenconf',
+                            'cWertName',
+                            $oPluginEinstellungenConf->cWertName,
+                            $oPluginEinstellungenConf
+                        );
+                        $kPluginEinstellungenConf = $kPluginEinstellungenConfTMP->kPluginEinstellungenConf;
+                    } else {
+                        $kPluginEinstellungenConf = Shop::Container()->getDB()->insert('tplugineinstellungenconf', $oPluginEinstellungenConf);
+                    }
                     // tplugineinstellungenconfwerte füllen
                     if ($kPluginEinstellungenConf <= 0) {
                         return 11; // Eine Einstellung der Zahlungsmethode konnte nicht in die Datenbank gespeichert werden

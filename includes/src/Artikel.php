@@ -4454,7 +4454,7 @@ class Artikel
                 if ($this->conf['artikeldetails']['artikel_lagerbestandsanzeige'] === 'verfuegbarkeit') {
                     $this->Lageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('ampelGruen');
                 }
-            } elseif ($this->cLagerKleinerNull === 'Y') {
+            } elseif ($this->cLagerKleinerNull === 'Y' && $this->conf['global']['artikel_ampel_lagernull_gruen'] === 'Y') {
                 $this->Lageranzeige->cLagerhinweis['genau']          = Shop::Lang()->get('ampelGruen');
                 $this->Lageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('ampelGruen');
             } else {
@@ -4478,11 +4478,8 @@ class Artikel
                     ? $this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_ROT]
                     : Shop::Lang()->get('ampelRot');
             }
-            if ($this->cLagerBeachten !== 'Y'
-                || $this->fLagerbestand >= (int)$this->conf['global']['artikel_lagerampel_gruen']
-                || ($this->cLagerBeachten === 'Y'
-                    && $this->cLagerKleinerNull === 'Y'
-                    && $this->conf['global']['artikel_ampel_lagernull_gruen'] === 'Y')
+            if ($this->fLagerbestand >= (int)$this->conf['global']['artikel_lagerampel_gruen']
+                || ($this->cLagerKleinerNull === 'Y' && $this->conf['global']['artikel_ampel_lagernull_gruen'] === 'Y')
             ) {
                 $this->Lageranzeige->nStatus   = 2;
                 $this->Lageranzeige->AmpelText = !empty($this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_GRUEN])
@@ -4491,9 +4488,6 @@ class Artikel
             }
         } else {
             $this->Lageranzeige->nStatus = (int)$this->conf['global']['artikel_lagerampel_keinlager'];
-            if ($this->Lageranzeige->nStatus < 0 || $this->Lageranzeige->nStatus > 2) {
-                $this->Lageranzeige->nStatus = 2;
-            }
 
             switch ($this->Lageranzeige->nStatus) {
                 case 1:
@@ -4506,7 +4500,8 @@ class Artikel
                         ? $this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_ROT]
                         : Shop::Lang()->get('ampelRot');
                     break;
-                case 2:
+                default:
+                    $this->Lageranzeige->nStatus = 2;
                     $this->Lageranzeige->AmpelText = !empty($this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_GRUEN])
                         ? $this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_GRUEN]
                         : Shop::Lang()->get('ampelGruen');

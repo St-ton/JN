@@ -719,6 +719,12 @@ define('HOOK_LETZTERINCLUDE_INC', 99);
  * after template switch in sendeMail()
  *
  * @file mailTools.php
+ * @param JTLSmarty  - mailsmarty
+ * @param mail
+ * @param kEmailvorlage
+ * @param kSprache
+ * @param cPluginBody
+ * @param Emailvorlage
  */
 define('HOOK_MAILTOOLS_INC_SWITCH', 100);
 

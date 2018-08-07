@@ -1,5 +1,5 @@
 {if ($Artikel->inWarenkorbLegbar == 1 || $Artikel->nErscheinendesProdukt == 1) || $Artikel->Variationen}
-    <div id="add-to-cart" class="hidden-print product-buy{if $Artikel->nErscheinendesProdukt} coming_soon{/if}">
+    <div id="add-to-cart" class="hidden-print product-buy text-right{if $Artikel->nErscheinendesProdukt} coming_soon{/if}">
     {block name='add-to-cart'}
         {if $Artikel->nErscheinendesProdukt}
             <div class="{if $Einstellungen.global.global_erscheinende_kaeuflich === 'Y'}alert alert-warning coming_soon{/if} text-center">

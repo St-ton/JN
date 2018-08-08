@@ -190,11 +190,6 @@ if ($continue
         $shopURL   = Shop::getURL() . '/';
         while (false !== ($Datei = readdir($DirHandle))) {
             if ($Datei !== '.' && $Datei !== '..') {
-                $nImageGroesse_arr = calcRatio(
-                    PFAD_ROOT . '/' . PFAD_BILDER . PFAD_LINKBILDER . $link->getID() . '/' . $Datei,
-                    160,
-                    120
-                );
                 $oDatei            = new stdClass();
                 $oDatei->cName     = substr($Datei, 0, strpos($Datei, '.'));
                 $oDatei->cNameFull = $Datei;

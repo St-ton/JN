@@ -6,87 +6,89 @@
 
 /**
  * @param \Link\LinkGroupInterface $linkGroup
- * @param int                      $kVaterLink
+ * @param int                      $parentID
  * @return \Tightenco\Collect\Support\Collection
  */
-function build_navigation_subs_admin($linkGroup, $kVaterLink = 0)
+function build_navigation_subs_admin($linkGroup, int $parentID = 0)
 {
-    $kVaterLink = (int)$kVaterLink;
-    $oNew_arr   = new \Tightenco\Collect\Support\Collection();
-    $lh         = Shop::Container()->getLinkService();
+    $news = new \Tightenco\Collect\Support\Collection();
+    $lh   = Shop::Container()->getLinkService();
     foreach ($linkGroup->getLinks() as $link) {
         $link->setLevel(count($lh->getParentIDs($link->getID())));
         /** @var \Link\Link $link */
-        if ($link->getParent() !== $kVaterLink) {
+        if ($link->getParent() !== $parentID) {
             continue;
         }
         $link->setChildLinks(build_navigation_subs_admin($linkGroup, $link->getID()));
-        $oNew_arr->push($link);
+        $news->push($link);
     }
 
-    return $oNew_arr;
+    return $news;
 }
 
 /**
- * @param int $kLink
+ * @param int $linkID
  * @return int|string
  */
-function gibLetzteBildNummer($kLink)
+function gibLetzteBildNummer($linkID)
 {
-    $cUploadVerzeichnis = PFAD_ROOT . PFAD_BILDER . PFAD_LINKBILDER;
-    $cBild_arr          = [];
-    if (is_dir($cUploadVerzeichnis . $kLink)) {
-        $DirHandle = opendir($cUploadVerzeichnis . $kLink);
-        while (false !== ($Datei = readdir($DirHandle))) {
+    $uploadDir = PFAD_ROOT . PFAD_BILDER . PFAD_LINKBILDER;
+    $images    = [];
+    if (is_dir($uploadDir . $linkID)) {
+        $handle = opendir($uploadDir . $linkID);
+        while (false !== ($Datei = readdir($handle))) {
             if ($Datei !== '.' && $Datei !== '..') {
-                $cBild_arr[] = $Datei;
+                $images[] = $Datei;
             }
         }
     }
-    $nMax = 0;
-    foreach ($cBild_arr as $image) {
-        $cNummer = substr($image, 4, (strlen($image) - strpos($image, '.')) - 3);
-        if ($cNummer > $nMax) {
-            $nMax = $cNummer;
+    $max = 0;
+    foreach ($images as $image) {
+        $num = substr($image, 4, (strlen($image) - strpos($image, '.')) - 3);
+        if ($num > $max) {
+            $max = $num;
         }
     }
 
-    return $nMax;
+    return $max;
 }
 
 /**
- * @param string $cText
- * @param int    $kLink
+ * @param string $text
+ * @param int    $linkID
  * @return mixed
  */
-function parseText($cText, $kLink)
+function parseText($text, int $linkID)
 {
-    $cUploadVerzeichnis = PFAD_ROOT . PFAD_BILDER . PFAD_LINKBILDER;
-    $cBild_arr          = [];
-    $nSort_arr          = [];
-    if (is_dir($cUploadVerzeichnis . $kLink)) {
-        $DirHandle = opendir($cUploadVerzeichnis . $kLink);
-        while (false !== ($Datei = readdir($DirHandle))) {
-            if ($Datei !== '.' && $Datei !== '..') {
-                $nBild             = (int)substr(
-                    str_replace('Bild', '', $Datei),
+    $uploadDir = PFAD_ROOT . PFAD_BILDER . PFAD_LINKBILDER;
+    $images    = [];
+    $sort      = [];
+    if (is_dir($uploadDir . $linkID)) {
+        $handle = opendir($uploadDir . $linkID);
+        while (false !== ($file = readdir($handle))) {
+            if ($file !== '.' && $file !== '..') {
+                $imageID          = (int)substr(
+                    str_replace('Bild', '', $file),
                     0,
-                    strpos(str_replace('Bild', '', $Datei), '.')
+                    strpos(str_replace('Bild', '', $file), '.')
                 );
-                $cBild_arr[$nBild] = $Datei;
-                $nSort_arr[]       = $nBild;
+                $images[$imageID] = $file;
+                $sort[]           = $imageID;
             }
         }
     }
-    usort($nSort_arr, 'cmp');
-
-    foreach ($nSort_arr as $nSort) {
-        $cText = str_replace('$#Bild' . $nSort . '#$', '<img src="' .
-            Shop::getURL() . '/' . PFAD_BILDER . PFAD_LINKBILDER . $kLink . '/' . $cBild_arr[$nSort] .
-            '" />', $cText);
+    usort($sort, 'cmp');
+    $basePath = Shop::getURL() . '/' . PFAD_BILDER . PFAD_LINKBILDER;
+    foreach ($sort as $sortID) {
+        $text = str_replace(
+            '$#Bild' . $sortID . '#$', '<img src="' .
+            $basePath . $linkID . '/' . $images[$sortID] .
+            '" />',
+            $text
+        );
     }
 
-    return $cText;
+    return $text;
 }
 
 /**
@@ -120,24 +122,24 @@ function cmp_obj($a, $b)
 /**
  * Gibt eine neue Breite und Hoehe als Array zurueck
  *
- * @param string $cDatei
+ * @param string $file
  * @param int    $nMaxBreite
  * @param int    $nMaxHoehe
  * @return array
  */
-function calcRatio($cDatei, $nMaxBreite, $nMaxHoehe)
+function calcRatio($file, $nMaxBreite = 0, $nMaxHoehe = 0)
 {
-    list($ImageBreite, $ImageHoehe) = getimagesize($cDatei);
+    list($width, $height) = getimagesize($file);
 
-    return [$ImageBreite, $ImageHoehe];
+    return [$width, $height];
 }
 
 /**
  * @param int $kLink
- * @param int $kLinkgruppe
+ * @param int $linkGroupID
  * @return int
  */
-function removeLink($kLink, $kLinkgruppe = 0)
+function removeLink($kLink, $linkGroupID = 0)
 {
     return Shop::Container()->getDB()->executeQueryPrepared(
         "DELETE tlink, tlinksprache, tseo, tlinkgroupassociations
@@ -156,19 +158,16 @@ function removeLink($kLink, $kLinkgruppe = 0)
 }
 
 /**
- * @param int    $kLink
+ * @param int    $linkID
  * @param string $var
  * @return array
  */
-function getLinkVar($kLink, $var)
+function getLinkVar(int $linkID, $var)
 {
     $namen = [];
-
-    if (!$kLink) {
+    if (!$linkID) {
         return $namen;
     }
-    $kLink = (int)$kLink;
-    // tseo work around
     if ($var === 'cSeo') {
         $links = Shop::Container()->getDB()->query(
             "SELECT tlinksprache.cISOSprache, tseo.cSeo
@@ -179,11 +178,11 @@ function getLinkVar($kLink, $var)
                     ON tseo.cKey = 'kLink'
                     AND tseo.kKey = tlinksprache.kLink
                     AND tseo.kSprache = tsprache.kSprache
-                WHERE tlinksprache.kLink = " . $kLink,
+                WHERE tlinksprache.kLink = " . $linkID,
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     } else {
-        $links = Shop::Container()->getDB()->selectAll('tlinksprache', 'kLink', $kLink);
+        $links = Shop::Container()->getDB()->selectAll('tlinksprache', 'kLink', $linkID);
     }
     foreach ($links as $link) {
         $namen[$link->cISOSprache] = $link->$var;
@@ -226,16 +225,16 @@ function getGesetzteKundengruppen($link)
 }
 
 /**
- * @param int $kLinkgruppe
+ * @param int $linkGroupID
  * @return array
  */
-function getLinkgruppeNames($kLinkgruppe)
+function getLinkgruppeNames(int $linkGroupID)
 {
     $namen = [];
-    if (!$kLinkgruppe) {
+    if (!$linkGroupID) {
         return $namen;
     }
-    $links = Shop::Container()->getDB()->selectAll('tlinkgruppesprache', 'kLinkgruppe', (int)$kLinkgruppe);
+    $links = Shop::Container()->getDB()->selectAll('tlinkgruppesprache', 'kLinkgruppe', $linkGroupID);
     foreach ($links as $link) {
         $namen[$link->cISOSprache] = $link->cName;
     }
@@ -244,16 +243,16 @@ function getLinkgruppeNames($kLinkgruppe)
 }
 
 /**
- * @param int $kLinkgruppe
+ * @param int $linkGroupID
  * @return mixed
  */
-function holeLinkgruppe($kLinkgruppe)
+function holeLinkgruppe(int $linkGroupID)
 {
-    return Shop::Container()->getDB()->select('tlinkgruppe', 'kLinkgruppe', (int)$kLinkgruppe);
+    return Shop::Container()->getDB()->select('tlinkgruppe', 'kLinkgruppe', $linkGroupID);
 }
 
 /**
- * @return mixed
+ * @return array
  */
 function holeSpezialseiten()
 {
@@ -277,9 +276,9 @@ function isDuplicateSpecialLink (int $linkType, int $linkID, array $customerGrou
     $specialLinks             = Shop::Container()->getDB()->queryPrepared(
         'SELECT kLink, cName, cKundengruppen
             FROM tlink
-            WHERE nLinkart = :linkType
+            WHERE nLinkart = :lnktype
                 AND kLink != :linkID',
-        ['linkType' => $linkType, 'linkID' => $linkID],
+        ['lnktype' => $linkType, 'linkID' => $linkID],
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     if (!empty($specialLinks) && in_array('-1', $customerGroups)) {

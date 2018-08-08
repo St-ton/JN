@@ -124,7 +124,7 @@ if ($step === 'plugin_uebersicht') {
             $oUnnamedTab->cName              = 'Dokumentation';
             $oUnnamedTab->cDateiname         = '';
             $oUnnamedTab->nSort              = count($oPlugin->oPluginAdminMenu_arr) + 1;
-            $oUnnamedTab->nConf              = 1;
+            $oUnnamedTab->nConf              = 0;
             $oPlugin->oPluginAdminMenu_arr[] = $oUnnamedTab;
 
             $fAddAsDocTab = true;
@@ -147,7 +147,7 @@ if ($step === 'plugin_uebersicht') {
             $oUnnamedTab->cName              = 'Lizenzvereinbarung';
             $oUnnamedTab->cDateiname         = '';
             $oUnnamedTab->nSort              = count($oPlugin->oPluginAdminMenu_arr) + 1;
-            $oUnnamedTab->nConf              = 1;
+            $oUnnamedTab->nConf              = 0;
             $oPlugin->oPluginAdminMenu_arr[] = $oUnnamedTab;
 
             $fAddAsLicenseTab = true;

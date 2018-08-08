@@ -13,21 +13,11 @@ if (auth()) {
     $return    = 2;
     $unzipPath = PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . basename($zipFile) . '_' . date('dhis') . '/';
     if (($syncFiles = unzipSyncFiles($zipFile, $unzipPath, __FILE__)) === false) {
-        if (Jtllog::doLog()) {
-            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'Konfig_xml');
-        }
+        Shop::Container()->getLogService()->error('Error: Cannot extract zip file ' . $zipFile . ' to ' . $unzipPath);
         removeTemporaryFiles($zipFile);
     } else {
         $return = 0;
         foreach ($syncFiles as $i => $xmlFile) {
-            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog(
-                    'bearbeite: ' . $xmlFile . ' size: ' . filesize($xmlFile),
-                    JTLLOG_LEVEL_DEBUG,
-                    false,
-                    'Konfig_xml'
-                );
-            }
             $cData = file_get_contents($xmlFile);
             $oXml  = simplexml_load_string($cData);
 
@@ -49,10 +39,6 @@ if (auth()) {
 
 echo $return;
 
-if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-    Jtllog::writeLog('BEENDE: ' . $zipFile, JTLLOG_LEVEL_DEBUG, false, 'Konfig_xml');
-}
-
 /**
  * @param object $oXml
  */
@@ -68,7 +54,7 @@ function bearbeiteInsert($oXml)
             DBUpdateInsert('tkonfiggruppesprache', [$oKonfiggruppesprache], 'kKonfiggruppe', 'kSprache');
         }
         // Konfiggruppeitem
-        loescheKonfigitem($oKonfiggruppe->kKonfiggruppe);
+        loescheKonfigitem((int)$oKonfiggruppe->kKonfiggruppe);
 
         foreach ($oXmlKonfiggruppe->tkonfigitem as $oXmlKonfigitem) {
             $oKonfigitem = JTLMapArr($oXmlKonfigitem, $GLOBALS['mKonfigItem']);
@@ -92,7 +78,6 @@ function bearbeiteInsert($oXml)
  */
 function bearbeiteDeletes($oXml)
 {
-    // Konfiggruppe
     foreach ($oXml->kKonfiggruppe as $oXmlKonfiggruppe) {
         $kKonfiggruppe = (int)$oXmlKonfiggruppe;
         if ($kKonfiggruppe > 0) {
@@ -104,31 +89,21 @@ function bearbeiteDeletes($oXml)
 /**
  * @param int $kKonfiggruppe
  */
-function loescheKonfiggruppe($kKonfiggruppe)
+function loescheKonfiggruppe(int $kKonfiggruppe)
 {
-    $kKonfiggruppe = (int)$kKonfiggruppe;
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Loesche Konfiggruppe: ' . $kKonfiggruppe, JTLLOG_LEVEL_DEBUG, false, 'Konfig_xml');
-    }
     if ($kKonfiggruppe > 0 && class_exists('Konfiggruppe')) {
         // todo: alle items löschen
         $oKonfig = new Konfiggruppe($kKonfiggruppe);
         $nRows   = $oKonfig->delete();
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('Rows: ' . $nRows . ' geloescht', JTLLOG_LEVEL_DEBUG, false, 'Konfig_xml');
-        }
+        Shop::Container()->getLogService()->debug($nRows . ' Konfiggruppen gelöscht');
     }
 }
 
 /**
  * @param int $kKonfiggruppe
  */
-function loescheKonfigitem($kKonfiggruppe)
+function loescheKonfigitem(int $kKonfiggruppe)
 {
-    $kKonfiggruppe = (int)$kKonfiggruppe;
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Loesche kKonfigitem (gruppe): ' . $kKonfiggruppe, JTLLOG_LEVEL_DEBUG, false, 'Konfig_xml');
-    }
     if ($kKonfiggruppe > 0) {
         Shop::Container()->getDB()->delete('tkonfigitem', 'kKonfiggruppe', $kKonfiggruppe);
     }
@@ -137,17 +112,11 @@ function loescheKonfigitem($kKonfiggruppe)
 /**
  * @param int $kKonfigitem
  */
-function loescheKonfigitempreis($kKonfigitem)
+function loescheKonfigitempreis(int $kKonfigitem)
 {
-    $kKonfigitem = (int)$kKonfigitem;
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Loesche Konfigitempreis: ' . $kKonfigitem, JTLLOG_LEVEL_DEBUG, false, 'Konfig_xml');
-    }
     if ($kKonfigitem > 0 && class_exists('Konfigitempreis')) {
         $oKonfig = new Konfigitempreis($kKonfigitem);
         $nRows   = $oKonfig->delete();
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('Rows: ' . $nRows . ' geloescht', JTLLOG_LEVEL_DEBUG, false, 'Konfig_xml');
-        }
+        Shop::Container()->getLogService()->debug($nRows . ' Konfigitempreise gelöscht');
     }
 }

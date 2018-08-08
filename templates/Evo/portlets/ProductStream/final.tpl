@@ -26,7 +26,7 @@
             <div class="evo-box-vertical text-center">
                 {foreach name="sliderproducts" from=$productlist item='product'}
                     <div class="product-wrapper{if isset($style)} {$style}{/if}"
-                            {if isset($Link) && $Link->nLinkart == $smarty.const.LINKTYP_STARTSEITE}
+                            {if isset($Link) && $Link->getLinkType() == $smarty.const.LINKTYP_STARTSEITE}
                                 itemprop="about"
                             {else}
                                 itemprop="isRelatedTo"

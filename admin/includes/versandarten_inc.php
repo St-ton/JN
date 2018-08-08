@@ -111,10 +111,10 @@ function gibGesetzteVersandklassen($cVersandklassen)
         }
     }
     $PVersandklassen = P(Shop::Container()->getDB()->query(
-        "SELECT * 
+        'SELECT * 
             FROM tversandklasse
-            WHERE kVersandklasse IN (" . implode(',', $uniqueIDs) . ")  
-            ORDER BY kVersandklasse",
+            WHERE kVersandklasse IN (' . implode(',', $uniqueIDs) . ')  
+            ORDER BY kVersandklasse',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     ));
     foreach ($PVersandklassen as $vk) {
@@ -144,10 +144,10 @@ function gibGesetzteVersandklassenUebersicht($cVersandklassen)
         }
     }
     $PVersandklassen = P(Shop::Container()->getDB()->query(
-        "SELECT * 
+        'SELECT * 
             FROM tversandklasse 
-            WHERE kVersandklasse IN (" . implode(',', $uniqueIDs) . ")
-            ORDER BY kVersandklasse",
+            WHERE kVersandklasse IN (' . implode(',', $uniqueIDs) . ')
+            ORDER BY kVersandklasse',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     ));
     foreach ($PVersandklassen as $vk) {
@@ -168,9 +168,9 @@ function gibGesetzteKundengruppen($cKundengruppen)
     $bGesetzteKG_arr   = [];
     $cKG_arr           = explode(';', trim($cKundengruppen));
     $oKundengruppe_arr = Shop::Container()->getDB()->query(
-        "SELECT kKundengruppe
+        'SELECT kKundengruppe
             FROM tkundengruppe
-            ORDER BY kKundengruppe",
+            ORDER BY kKundengruppe',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($oKundengruppe_arr as $oKundengruppe) {
@@ -188,7 +188,7 @@ function gibGesetzteKundengruppen($cKundengruppen)
  * @param array $oSprache_arr
  * @return array
  */
-function getShippingLanguage(int $kVersandart = 0, $oSprache_arr)
+function getShippingLanguage(int $kVersandart, $oSprache_arr)
 {
     $oVersandartSpracheAssoc_arr = [];
     $oVersandartSprache_arr      = Shop::Container()->getDB()->selectAll(
@@ -238,20 +238,19 @@ function getZuschlagNames(int $kVersandzuschlag)
  */
 function getShippingByName($cSearch)
 {
-    // Einstellungen Kommagetrennt?
     $cSearch_arr        = explode(',', $cSearch);
     $allShippingsByName = [];
     foreach ($cSearch_arr as $cSearchPos) {
         trim($cSearchPos);
         if (strlen($cSearchPos) > 2) {
             $shippingByName_arr = Shop::Container()->getDB()->queryPrepared(
-                "SELECT va.kVersandart, va.cName
+                'SELECT va.kVersandart, va.cName
                     FROM tversandart AS va
                     LEFT JOIN tversandartsprache AS vs 
                         ON vs.kVersandart = va.kVersandart
                         AND vs.cName LIKE :search
                     WHERE va.cName LIKE :search
-                    OR vs.cName LIKE :search",
+                    OR vs.cName LIKE :search',
                 ['search' => '%' . $cSearchPos . '%'],
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );

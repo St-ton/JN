@@ -34,7 +34,7 @@ class InArrayStrict implements RuleInterface
      */
     public function validate($value)
     {
-        return in_array($value, $this->whitelist, true)
+        return \in_array($value, $this->whitelist, true)
             ? new RuleResult(true, '', $value)
             : new RuleResult(false, 'value not in whitelist', $value);
     }

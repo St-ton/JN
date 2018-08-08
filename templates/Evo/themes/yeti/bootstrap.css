@@ -8257,7 +8257,6 @@ button.close {
 .slick-slider {
   position: relative;
   display: block;
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -8437,6 +8436,9 @@ button.close {
 /* Dots */
 .slick-slider {
   /*margin-bottom: 30px;*/
+}
+.slick-dotted {
+  margin-bottom: 30px;
 }
 .slick-dots {
   position: absolute;
@@ -11581,8 +11583,49 @@ header.fixed-navbar .visible-affix .cart-dropdown {
 #product-configuration-sidebar #quantity-grp .submit.btn {
   width: 100%;
 }
+#opc-switcher h1,
+#opc-switcher h2,
+#opc-switcher h3,
+#opc-switcher label {
+  color: #435A6B;
+}
 #opc-switcher .list-group-item {
-  padding: 4px;
+  padding: 12px;
+  border: 0;
+}
+#opc-switcher .list-group-item .btn,
+#opc-switcher .list-group-item .btn:hover {
+  padding: 0px 8px;
+  color: #fff;
+}
+#opc-switcher .list-group-item a,
+#opc-switcher .list-group-item a:hover {
+  color: #435A6B;
+}
+#opc-switcher .btn {
+  background-image: none;
+  border-radius: 5px;
+  padding: 8px 16px;
+}
+#opc-switcher .btn-default {
+  background-color: #bbb;
+}
+#opc-switcher .btn-danger {
+  background-color: #d9534f;
+}
+#opc-switcher .btn-primary {
+  background-color: #5cbcf6;
+}
+#opc-switcher .btn-group > .btn:first-child:not(:last-child):not(.dropdown-toggle) {
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+  border: 1px solid #fff;
+}
+#opc-switcher .btn-group > .btn:last-child:not(:first-child),
+#opc-switcher .btn-group > .dropdown-toggle:not(:first-child) {
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+  border: 1px solid #fff;
 }
 .parallax-window > * {
   z-index: 2;

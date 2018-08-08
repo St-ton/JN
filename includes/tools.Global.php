@@ -1503,40 +1503,40 @@ function curl_exec_follow($ch, int $maxredirect = 5)
 }
 
 /**
- * @param string $cURL
- * @param int    $nTimeout
- * @param null   $cPost
+ * @param string $url
+ * @param int    $timeout
+ * @param null   $post
  * @return mixed|string
  * @deprecated since 5.0.0
  */
-function http_get_contents($cURL, $nTimeout = 15, $cPost = null)
+function http_get_contents($url, $timeout = 15, $post = null)
 {
-    return RequestHelper::make_http_request($cURL, $nTimeout, $cPost, false);
+    return RequestHelper::make_http_request($url, $timeout, $post, false);
 }
 
 /**
- * @param string $cURL
- * @param int    $nTimeout
- * @param null   $cPost
+ * @param string $url
+ * @param int    $timeout
+ * @param null   $post
  * @return int
  * @deprecated since 5.0.0
  */
-function http_get_status($cURL, $nTimeout = 15, $cPost = null)
+function http_get_status($url, $timeout = 15, $post = null)
 {
-    return RequestHelper::make_http_request($cURL, $nTimeout, $cPost, true);
+    return RequestHelper::make_http_request($url, $timeout, $post, true);
 }
 
 /**
- * @param string $cURL
- * @param int    $nTimeout
- * @param null   $cPost
- * @param bool   $bReturnStatus - false = return content on success / true = return status code instead of content
+ * @param string $url
+ * @param int    $timeout
+ * @param null   $post
+ * @param bool   $returnState - false = return content on success / true = return status code instead of content
  * @return mixed|string
  * @deprecated since 5.0.0
  */
-function make_http_request($cURL, $nTimeout = 15, $cPost = null, $bReturnStatus = false)
+function make_http_request($url, $timeout = 15, $post = null, $returnState = false)
 {
-    return RequestHelper::make_http_request($cURL, $nTimeout, $cPost, $bReturnStatus);
+    return RequestHelper::make_http_request($url, $timeout, $post, $returnState);
 }
 
 /**
@@ -1977,25 +1977,25 @@ function setzeLinks()
     return Session\Session::setSpecialLinks();
 }
 /**
- * @param string $cURL
+ * @param string $url
  * @return bool
  * @deprecated since 5.0.0
  */
-function pruefeSOAP($cURL = '')
+function pruefeSOAP($url = '')
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use PHPSettingsHelper::checkSOAP() instead.', E_USER_DEPRECATED);
-    return PHPSettingsHelper::checkSOAP($cURL);
+    return PHPSettingsHelper::checkSOAP($url);
 }
 
 /**
- * @param string $cURL
+ * @param string $url
  * @return bool
  * @deprecated since 5.0.0
  */
-function pruefeCURL($cURL = '')
+function pruefeCURL($url = '')
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use PHPSettingsHelper::checkCURL() instead.', E_USER_DEPRECATED);
-    return PHPSettingsHelper::checkCURL($cURL);
+    return PHPSettingsHelper::checkCURL($url);
 }
 
 /**

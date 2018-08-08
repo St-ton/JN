@@ -95,7 +95,7 @@ final class LinkGroup implements LinkGroupInterface
             ['lgid' => $this->id],
             ReturnType::ARRAY_OF_OBJECTS
         );
-        if (count($groupLanguages) === 0) {
+        if (\count($groupLanguages) === 0) {
             return $this;
         }
 
@@ -268,7 +268,7 @@ final class LinkGroup implements LinkGroupInterface
      */
     public function isAvailableInLanguage(int $langID): bool
     {
-        return in_array($langID, $this->languageID, true);
+        return \in_array($langID, $this->languageID, true);
     }
 
     /**
@@ -276,7 +276,7 @@ final class LinkGroup implements LinkGroupInterface
      */
     public function __debugInfo()
     {
-        $res       = get_object_vars($this);
+        $res       = \get_object_vars($this);
         $res['db'] = '*truncated*';
 
         return $res;

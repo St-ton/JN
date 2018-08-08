@@ -24,33 +24,23 @@ function holeAlleKampagnenDefinitionen()
  * @param int $kKampagne
  * @return mixed
  */
-function holeKampagne($kKampagne)
+function holeKampagne(int $kKampagne)
 {
-    $kKampagne = (int)$kKampagne;
-    if ($kKampagne > 0) {
-        return Shop::Container()->getDB()->query(
-            "SELECT *, DATE_FORMAT(dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE
-                FROM tkampagne
-                WHERE kKampagne = " . $kKampagne,
-            \DB\ReturnType::SINGLE_OBJECT
-        );
-    }
-
-    return new stdClass();
+    return Shop::Container()->getDB()->query(
+        "SELECT *, DATE_FORMAT(dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE
+            FROM tkampagne
+            WHERE kKampagne = " . $kKampagne,
+        \DB\ReturnType::SINGLE_OBJECT
+    );
 }
 
 /**
  * @param int $kKampagneDef
  * @return mixed
  */
-function holeKampagneDef($kKampagneDef)
+function holeKampagneDef(int $kKampagneDef)
 {
-    $kKampagneDef = (int)$kKampagneDef;
-    if ($kKampagneDef > 0) {
-        return Shop::Container()->getDB()->select('tkampagnedef', 'kKampagneDef', $kKampagneDef);
-    }
-
-    return new stdClass();
+    return Shop::Container()->getDB()->select('tkampagnedef', 'kKampagneDef', $kKampagneDef);
 }
 
 /**
@@ -96,10 +86,10 @@ function holeKampagneGesamtStats($oKampagne_arr, $oKampagneDef_arr)
     }
 
     $oStats_arr = Shop::Container()->getDB()->query(
-        "SELECT kKampagne, kKampagneDef, SUM(fWert) AS fAnzahl
+        'SELECT kKampagne, kKampagneDef, SUM(fWert) AS fAnzahl
             FROM tkampagnevorgang
-            " . $cSQL . "
-            GROUP BY kKampagne, kKampagneDef",
+            ' . $cSQL . '
+            GROUP BY kKampagne, kKampagneDef',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($oStats_arr as $oStats) {
@@ -251,11 +241,11 @@ function holeKampagneDetailStats($kKampagne, $oKampagneDef_arr)
     $cZeitraum_arr = gibDetailDatumZeitraum();
 
     $oStats_arr = Shop::Container()->getDB()->query(
-        "SELECT kKampagne, kKampagneDef, SUM(fWert) AS fAnzahl, " . $cSQLSELECT . "
+        'SELECT kKampagne, kKampagneDef, SUM(fWert) AS fAnzahl, ' . $cSQLSELECT . '
             FROM tkampagnevorgang
-            " . $cSQLWHERE . "
-                AND kKampagne = " . $kKampagne . "
-            " . $cSQLGROUPBY . ", kKampagneDef",
+            ' . $cSQLWHERE . '
+                AND kKampagne = ' . $kKampagne . '
+            ' . $cSQLGROUPBY . ', kKampagneDef',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     // Vorbelegen
@@ -353,11 +343,11 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
         baueDefDetailSELECTWHERE($cSQLSELECT, $cSQLWHERE, $cStamp);
 
         $oStats_arr = Shop::Container()->getDB()->query(
-            "SELECT kKampagne, kKampagneDef, kKey " . $cSQLSELECT . "
+            'SELECT kKampagne, kKampagneDef, kKey ' . $cSQLSELECT . '
                 FROM tkampagnevorgang
-                " . $cSQLWHERE . "
-                    AND kKampagne = " . (int)$kKampagne . "
-                    AND kKampagneDef = " . (int)$oKampagneDef->kKampagneDef . $cBlaetterSQL1,
+                ' . $cSQLWHERE . '
+                    AND kKampagne = ' . (int)$kKampagne . '
+                    AND kKampagneDef = ' . (int)$oKampagneDef->kKampagneDef . $cBlaetterSQL1,
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         // Stamp Text
@@ -1060,9 +1050,9 @@ function speicherKampagne($oKampagne)
     // Standardkampagnen (Interne) Werte herstellen
     if (isset($oKampagne->kKampagne) && ($oKampagne->kKampagne < 1000 && $oKampagne->kKampagne > 0)) {
         $oKampagneTMP = Shop::Container()->getDB()->query(
-            "SELECT *
+            'SELECT *
                 FROM tkampagne
-                WHERE kKampagne = " . (int)$oKampagne->kKampagne,
+                WHERE kKampagne = ' . (int)$oKampagne->kKampagne,
             \DB\ReturnType::SINGLE_OBJECT
         );
 
@@ -1085,9 +1075,9 @@ function speicherKampagne($oKampagne)
     }
     // Name schon vorhanden?
     $oKampagneTMP = Shop::Container()->getDB()->queryPrepared(
-        "SELECT kKampagne
+        'SELECT kKampagne
             FROM tkampagne
-            WHERE cName = :cName", ['cName' => $oKampagne->cName],
+            WHERE cName = :cName', ['cName' => $oKampagne->cName],
         \DB\ReturnType::SINGLE_OBJECT
     );
 
@@ -1097,9 +1087,9 @@ function speicherKampagne($oKampagne)
     // Parameter schon vorhanden?
     if (isset($oKampagne->nDynamisch) && $oKampagne->nDynamisch == 1) {
         $oKampagneTMP = Shop::Container()->getDB()->queryPrepared(
-            "SELECT kKampagne
+            'SELECT kKampagne
                 FROM tkampagne
-                WHERE cParameter = :param", ['param' => $oKampagne->cParameter],
+                WHERE cParameter = :param', ['param' => $oKampagne->cParameter],
             \DB\ReturnType::SINGLE_OBJECT
         );
 

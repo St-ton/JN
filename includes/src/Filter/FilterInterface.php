@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -29,13 +29,13 @@ interface FilterInterface
      * @param bool $active
      * @return $this
      */
-    public function setIsActive($active): FilterInterface;
+    public function setIsActive(bool $active): FilterInterface;
 
     /**
      * @param bool $value
      * @return $this
      */
-    public function setIsInitialized($value): FilterInterface;
+    public function setIsInitialized(bool $value): FilterInterface;
 
     /**
      * @return $this
@@ -49,9 +49,10 @@ interface FilterInterface
     public function setFilterCollection(array $collection): FilterInterface;
 
     /**
+     * @param bool $onlyVisible
      * @return array
      */
-    public function getFilterCollection(): array;
+    public function getFilterCollection(bool $onlyVisible = true): array;
 
     /**
      * @return ProductFilter
@@ -256,9 +257,9 @@ interface FilterInterface
      * get shop settings, derived from Navigationsfilter class
      *
      * @param string|null $idx
-     * @return array|string|int
+     * @return array
      */
-    public function getConfig($idx = null);
+    public function getConfig($idx = null): array;
 
     /**
      * get the filter's class name

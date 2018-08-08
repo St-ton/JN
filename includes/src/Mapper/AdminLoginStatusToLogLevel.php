@@ -46,7 +46,7 @@ class AdminLoginStatusToLogLevel
         switch ($code) {
             case \AdminLoginStatus::LOGIN_OK:
             case Logger::INFO:
-                return JTLLOG_LEVEL_NOTICE;
+                return \JTLLOG_LEVEL_NOTICE;
             case \AdminLoginStatus::ERROR_INVALID_PASSWORD_LOCKED:
             case Logger::ALERT:
             case \AdminLoginStatus::ERROR_NOT_AUTHORIZED:
@@ -58,7 +58,7 @@ class AdminLoginStatusToLogLevel
             case \AdminLoginStatus::ERROR_UNKNOWN:
             case Logger::WARNING:
             default:
-                return JTLLOG_LEVEL_ERROR;
+                return \JTLLOG_LEVEL_ERROR;
         }
     }
 }

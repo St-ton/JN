@@ -27,7 +27,7 @@ final class BoxSearchCloud extends AbstractBox
         $langID    = \Shop::getLanguageID();
         $limit     = (int)$config['boxen']['boxen_livesuche_count'];
         $cacheID   = 'bx_stgs_' . $langID . '_' . $limit;
-        $cacheTags = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
+        $cacheTags = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
         $cached    = true;
         if (($searchCloudEntries = \Shop::Container()->getCache()->get($cacheID)) === false) {
             $cached             = false;
@@ -51,22 +51,22 @@ final class BoxSearchCloud extends AbstractBox
             );
             \Shop::Container()->getCache()->set($cacheID, $searchCloudEntries, $cacheTags);
         }
-        if (($count = count($searchCloudEntries)) > 0) {
+        if (($count = \count($searchCloudEntries)) > 0) {
             // Priorität berechnen
             $prio_step = ($searchCloudEntries[0]->nAnzahlGesuche - $searchCloudEntries[$count - 1]->nAnzahlGesuche) / 9;
             foreach ($searchCloudEntries as $cloudEntry) {
                 $cloudEntry->Klasse   = ($prio_step < 1) ?
-                    rand(1, 10) :
-                    (round(($cloudEntry->nAnzahlGesuche - $searchCloudEntries[$count - 1]->nAnzahlGesuche) / $prio_step) + 1);
-                $cloudEntry->cURL     = \UrlHelper::buildURL($cloudEntry, URLART_LIVESUCHE);
-                $cloudEntry->cURLFull = \UrlHelper::buildURL($cloudEntry, URLART_LIVESUCHE, true);
+                    \rand(1, 10) :
+                    (\round(($cloudEntry->nAnzahlGesuche - $searchCloudEntries[$count - 1]->nAnzahlGesuche) / $prio_step) + 1);
+                $cloudEntry->cURL     = \UrlHelper::buildURL($cloudEntry, \URLART_LIVESUCHE);
+                $cloudEntry->cURLFull = \UrlHelper::buildURL($cloudEntry, \URLART_LIVESUCHE, true);
             }
             $this->setShow(true);
             //hole anzuzeigende Suchwolke
-            shuffle($searchCloudEntries);
+            \shuffle($searchCloudEntries);
             $this->setItems($searchCloudEntries);
             $this->setJSON(AbstractBox::getJSONString($searchCloudEntries));
-            executeHook(HOOK_BOXEN_INC_SUCHWOLKE, [
+            \executeHook(\HOOK_BOXEN_INC_SUCHWOLKE, [
                 'box'        => &$this,
                 'cache_tags' => &$cacheTags,
                 'cached'     => $cached

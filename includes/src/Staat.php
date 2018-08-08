@@ -43,7 +43,7 @@ class Staat
      * @param array $options
      * @return $this
      */
-    public function setOptions(array $options)
+    public function setOptions(array $options): self
     {
         $methods = get_class_methods($this);
         foreach ($options as $key => $value) {
@@ -57,7 +57,7 @@ class Staat
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getStaat()
     {
@@ -65,7 +65,7 @@ class Staat
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getLandIso()
     {
@@ -73,7 +73,7 @@ class Staat
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getName()
     {
@@ -81,7 +81,7 @@ class Staat
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getCode()
     {
@@ -92,9 +92,9 @@ class Staat
      * @param int $kStaat
      * @return $this
      */
-    public function setStaat($kStaat)
+    public function setStaat(int $kStaat)
     {
-        $this->kStaat = (int)$kStaat;
+        $this->kStaat = $kStaat;
 
         return $this;
     }
@@ -103,7 +103,7 @@ class Staat
      * @param string $cLandIso
      * @return $this
      */
-    public function setLandIso($cLandIso)
+    public function setLandIso(string $cLandIso): self
     {
         $this->cLandIso = $cLandIso;
 
@@ -114,7 +114,7 @@ class Staat
      * @param string $cName
      * @return $this
      */
-    public function setName($cName)
+    public function setName(string $cName): self
     {
         $this->cName = $cName;
 
@@ -125,7 +125,7 @@ class Staat
      * @param string $cCode
      * @return $this
      */
-    public function setCode($cCode)
+    public function setCode(string $cCode): self
     {
         $this->cCode = $cCode;
 
@@ -136,7 +136,7 @@ class Staat
      * @param string $cLandIso
      * @return array|null
      */
-    public static function getRegions($cLandIso)
+    public static function getRegions(string $cLandIso)
     {
         if (strlen($cLandIso) === 2) {
             $oObj_arr = Shop::Container()->getDB()->selectAll('tstaat', 'cLandIso', $cLandIso, '*', 'cName');
@@ -194,7 +194,7 @@ class Staat
      * @param string $cName
      * @return null|Staat
      */
-    public static function getRegionByName($cName)
+    public static function getRegionByName(string $cName)
     {
         if (strlen($cName) > 0) {
             $oObj = Shop::Container()->getDB()->select('tstaat', 'cName', $cName);

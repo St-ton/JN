@@ -15,14 +15,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          * @param bool|array $eigenschaftenArr
          * @return array
          */
-        public static function gibArtikelUploads($kArtikel, $eigenschaftenArr = false)
+        public static function gibArtikelUploads(int $kArtikel, $eigenschaftenArr = false): array
         {
-            $kArtikel     = (int)$kArtikel;
             $uploadSchema = new UploadSchema();
             $uploads      = $uploadSchema::fetchAll($kArtikel, UPLOAD_TYP_WARENKORBPOS);
-            if (!is_array($uploads) || count($uploads) === 0) {
-                return [];
-            }
             foreach ($uploads as &$upload) {
                 $upload->nEigenschaften_arr = $eigenschaftenArr;
                 $upload->cUnique            = self::uniqueDateiname($upload);
@@ -45,7 +41,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          * @param  int $kArtikel
          * @return int
          */
-        public static function deleteArtikelUploads($kArtikel)
+        public static function deleteArtikelUploads(int $kArtikel): int
         {
             $count   = 0;
             $uploads = self::gibArtikelUploads($kArtikel);
@@ -62,9 +58,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
 
         /**
          * @param Warenkorb $oWarenkorb
-         * @return array
+         * @return stdClass[]
          */
-        public static function gibWarenkorbUploads($oWarenkorb)
+        public static function gibWarenkorbUploads(Warenkorb $oWarenkorb): array
         {
             $uploads = [];
             foreach ($oWarenkorb->PositionenArr as &$oPosition) {
@@ -95,9 +91,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
 
         /**
          * @param int $kBestellung
-         * @return mixed
+         * @return array
          */
-        public static function gibBestellungUploads($kBestellung)
+        public static function gibBestellungUploads(int $kBestellung): array
         {
             $oUploadDatei = new UploadDatei();
 
@@ -108,7 +104,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          * @param Warenkorb $oWarenkorb
          * @return bool
          */
-        public static function pruefeWarenkorbUploads($oWarenkorb)
+        public static function pruefeWarenkorbUploads(Warenkorb $oWarenkorb): bool
         {
             foreach (self::gibWarenkorbUploads($oWarenkorb) as &$oUploadSchema) {
                 foreach ($oUploadSchema->oUpload_arr as &$oUpload) {
@@ -124,7 +120,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         /**
          * @param int $nErrorCode
          */
-        public static function redirectWarenkorb($nErrorCode)
+        public static function redirectWarenkorb(int $nErrorCode)
         {
             header('Location: ' .
                 LinkHelper::getInstance()->getStaticRoute('warenkorb.php') .
@@ -135,11 +131,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          * @param Warenkorb $oWarenkorb
          * @param int       $kBestellung
          */
-        public static function speicherUploadDateien($oWarenkorb, $kBestellung)
+        public static function speicherUploadDateien(Warenkorb $oWarenkorb, int $kBestellung)
         {
-            $kBestellung = (int)$kBestellung;
-            foreach (self::gibWarenkorbUploads($oWarenkorb) as &$oUploadSchema) {
-                foreach ($oUploadSchema->oUpload_arr as &$oUploadDatei) {
+            foreach (self::gibWarenkorbUploads($oWarenkorb) as $oUploadSchema) {
+                foreach ($oUploadSchema->oUpload_arr as $oUploadDatei) {
                     $oUploadInfo = $_SESSION['Uploader'][$oUploadDatei->cUnique] ?? null;
                     if ($oUploadInfo !== null && is_object($oUploadInfo)) {
                         self::setzeUploadQueue($kBestellung, $oUploadDatei->kCustomID);
@@ -165,7 +160,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          * @param string $cPfad
          * @param int    $nBytes
          */
-        public static function setzeUploadDatei($kCustomID, $nTyp, $cName, $cPfad, $nBytes)
+        public static function setzeUploadDatei(int $kCustomID, int $nTyp, $cName, $cPfad, int $nBytes)
         {
             $oUploadDatei            = new stdClass();
             $oUploadDatei->kCustomID = $kCustomID;
@@ -182,7 +177,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          * @param int $kBestellung
          * @param int $kCustomID
          */
-        public static function setzeUploadQueue($kBestellung, $kCustomID)
+        public static function setzeUploadQueue(int $kBestellung, int $kCustomID)
         {
             $oUploadQueue              = new stdClass();
             $oUploadQueue->kBestellung = $kBestellung;
@@ -207,29 +202,28 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          * @param int $nFileSize
          * @return string
          */
-        public static function formatGroesse($nFileSize)
+        public static function formatGroesse($nFileSize): string
         {
-            if (is_numeric($nFileSize)) {
-                $nStep       = 0;
-                $nDecr       = 1024;
-                $cPrefix_arr = ['Byte', 'KB', 'MB', 'GB', 'TB', 'PB'];
+            if (!is_numeric($nFileSize)) {
+                return '---';
+            }
+            $nStep       = 0;
+            $nDecr       = 1024;
+            $cPrefix_arr = ['Byte', 'KB', 'MB', 'GB', 'TB', 'PB'];
 
-                while (($nFileSize / $nDecr) > 0.9) {
-                    $nFileSize /= $nDecr;
-                    ++$nStep;
-                }
-
-                return round($nFileSize, 2) . ' ' . $cPrefix_arr[$nStep];
+            while (($nFileSize / $nDecr) > 0.9) {
+                $nFileSize /= $nDecr;
+                ++$nStep;
             }
 
-            return '---';
+            return round($nFileSize, 2) . ' ' . $cPrefix_arr[$nStep];
         }
 
         /**
          * @param object $oUpload
          * @return string
          */
-        public static function uniqueDateiname($oUpload)
+        public static function uniqueDateiname($oUpload): string
         {
             $unique = $oUpload->kUploadSchema . $oUpload->kCustomID . $oUpload->nTyp . self::getSessionKey();
             if (!empty($oUpload->nEigenschaften_arr)) {
@@ -246,7 +240,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         /**
          * @return string
          */
-        private static function getSessionKey()
+        private static function getSessionKey(): string
         {
             if (!isset($_SESSION['Uploader']['sessionKey'])) {
                 $_SESSION['Uploader']['sessionKey'] = uniqid('sk', true);
@@ -256,24 +250,24 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         }
 
         /**
-         * @param string $cDateiTyp
+         * @param string $type
          * @return array
          */
-        public static function formatTypen($cDateiTyp)
+        public static function formatTypen(string $type): array
         {
-            $cDateiTyp_arr = explode(',', $cDateiTyp);
-            foreach ($cDateiTyp_arr as &$cTyp) {
+            $fileTypes = explode(',', $type);
+            foreach ($fileTypes as &$cTyp) {
                 $cTyp = '*' . $cTyp;
             }
 
-            return $cDateiTyp_arr;
+            return $fileTypes;
         }
 
         /**
          * @param string $cName
          * @return bool
          */
-        public static function vorschauTyp($cName)
+        public static function vorschauTyp(string $cName): bool
         {
             $cPath_arr = pathinfo($cName);
 

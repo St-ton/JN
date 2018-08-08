@@ -24,7 +24,7 @@ final class BoxNewProducts extends AbstractBox
         $this->setShow(false);
         $customerGroupID = \Session::CustomerGroup()->getID();
         if ($customerGroupID && \Session::CustomerGroup()->mayViewCategories()) {
-            $cacheTags      = [CACHING_GROUP_BOX, CACHING_GROUP_ARTICLE];
+            $cacheTags      = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
             $cached         = true;
             $stockFilterSQL = \Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $parentSQL      = ' AND tartikel.kVaterArtikel = 0';
@@ -34,7 +34,7 @@ final class BoxNewProducts extends AbstractBox
                 : 30;
             $cacheID        = 'bx_nw_' . $customerGroupID .
                 '_' . $alter_tage . '_' .
-                $limit . md5($stockFilterSQL . $parentSQL);
+                $limit . \md5($stockFilterSQL . $parentSQL);
             if (($productIDs = \Shop::Container()->getCache()->get($cacheID)) === false) {
                 $cached     = false;
                 $productIDs = \Shop::Container()->getDB()->query(
@@ -52,18 +52,18 @@ final class BoxNewProducts extends AbstractBox
                     ORDER BY rand() LIMIT " . $limit,
                     ReturnType::ARRAY_OF_OBJECTS
                 );
-                $productIDs = array_map(function ($e) {
+                $productIDs = \array_map(function ($e) {
                     return (int)$e->kArtikel;
                 }, $productIDs);
                 \Shop::Container()->getCache()->set($cacheID, $productIDs, $cacheTags);
             }
-            if (count($productIDs) > 0) {
+            if (\count($productIDs) > 0) {
                 $this->setShow(true);
                 $products = new \ArtikelListe();
-                $products->getArtikelByKeys($productIDs, 0, count($productIDs));
+                $products->getArtikelByKeys($productIDs, 0, \count($productIDs));
                 $this->setProducts($products);
-                $this->setURL(\SearchSpecialHelper::buildURL(SEARCHSPECIALS_NEWPRODUCTS));
-                executeHook(HOOK_BOXEN_INC_NEUIMSORTIMENT, [
+                $this->setURL(\SearchSpecialHelper::buildURL(\SEARCHSPECIALS_NEWPRODUCTS));
+                \executeHook(\HOOK_BOXEN_INC_NEUIMSORTIMENT, [
                     'box'        => &$this,
                     'cache_tags' => &$cacheTags,
                     'cached'     => $cached

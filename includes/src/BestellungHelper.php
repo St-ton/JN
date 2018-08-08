@@ -24,9 +24,9 @@ class BestellungHelper extends WarenkorbHelper
 
     /**
      * @param int $decimals
-     * @return object
+     * @return stdClass
      */
-    public function getTotal($decimals = 0)
+    public function getTotal(int $decimals = 0): stdClass
     {
         $order = $this->getObject();
 
@@ -151,7 +151,7 @@ class BestellungHelper extends WarenkorbHelper
     }
 
     /**
-     * @return Bestellung
+     * @return Bestellung|null
      */
     public function getObject()
     {
@@ -171,7 +171,7 @@ class BestellungHelper extends WarenkorbHelper
     }
 
     /**
-     * @return Rechnungsadresse
+     * @return Rechnungsadresse|null
      */
     public function getBillingAddress()
     {
@@ -197,7 +197,7 @@ class BestellungHelper extends WarenkorbHelper
     /**
      * @return string iso
      */
-    public function getLanguage()
+    public function getLanguage(): string
     {
         return Shop::Lang()->getIsoFromLangID($this->object->kSprache);
     }
@@ -213,7 +213,7 @@ class BestellungHelper extends WarenkorbHelper
     /**
      * @return int
      */
-    public function getIdentifier()
+    public function getIdentifier(): int
     {
         return (int)$this->object->kBestellung;
     }

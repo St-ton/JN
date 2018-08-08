@@ -38,19 +38,16 @@
           </div>
         {/if}
         {if $Einstellungen.navigationsfilter.kategorie_beschreibung_anzeigen === 'Y'
-            && $Einstellungen.navigationsfilter.kategorie_bild_anzeigen !== 'B'
             && $oNavigationsinfo->getCategory() !== null
             && $oNavigationsinfo->getCategory()->cBeschreibung|strlen > 0}
             <div class="item_desc custom_content">{$oNavigationsinfo->getCategory()->cBeschreibung}</div>
         {/if}
         {if $Einstellungen.navigationsfilter.hersteller_beschreibung_anzeigen === 'Y'
-            && $Einstellungen.navigationsfilter.hersteller_bild_anzeigen !== 'B'
             && $oNavigationsinfo->getManufacturer() !== null
             && $oNavigationsinfo->getManufacturer()->cBeschreibung|strlen > 0}
             <div class="item_desc custom_content">{$oNavigationsinfo->getManufacturer()->cBeschreibung}</div>
         {/if}
         {if $Einstellungen.navigationsfilter.merkmalwert_beschreibung_anzeigen === 'Y'
-            && $Einstellungen.navigationsfilter.merkmalwert_bild_anzeigen !== 'B'
             && $oNavigationsinfo->getAttributeValue() !== null
             && $oNavigationsinfo->getAttributeValue()->cBeschreibung|strlen > 0}
             <div class="item_desc custom_content">{$oNavigationsinfo->getAttributeValue()->cBeschreibung}</div>

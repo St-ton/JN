@@ -32,7 +32,7 @@ class NewsJson
         if (count($oNews_arr) > 0) {
             $shopURL = Shop::getURL() . '/';
             foreach ($oNews_arr as $oNews) {
-                $oNewsItem = new NewsItem($oNews->cBetreff, $oNews->cText, $oNews->dGueltigVonJS, $shopURL . "{$oNews->cUrl}");
+                $oNewsItem = new NewsItem($oNews->cBetreff, $oNews->cText, $oNews->dGueltigVonJS, $shopURL . $oNews->cUrl);
 
                 if ($this->checkMedia($oNews->cVorschauText)) {
                     $oNewsItemAsset = new NewsItemAsset($oNews->cVorschauText);
@@ -49,7 +49,7 @@ class NewsJson
     /**
      * @return string
      */
-    public function toJson()
+    public function toJson(): string
     {
         return json_encode(StringHandler::utf8_convert_recursive($this));
     }
@@ -58,7 +58,7 @@ class NewsJson
      * @param string $cMediaLink
      * @return bool
      */
-    protected function checkMedia($cMediaLink)
+    protected function checkMedia($cMediaLink): bool
     {
         $cMedia_arr = [
             'youtube.com/watch?v=',

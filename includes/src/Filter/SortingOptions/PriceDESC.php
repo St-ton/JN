@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -25,6 +25,6 @@ class PriceDESC extends PriceASC
         $this->orderBy = 'tpreise.fVKNetto DESC, tartikel.cName';
         $this->setName(\Shop::Lang()->get('sortPriceDesc'));
         $this->setPriority($this->getConfig('artikeluebersicht')['suche_sortierprio_preis_ab']);
-        $this->setValue(SEARCH_SORT_PRICE_DESC);
+        $this->setValue(\SEARCH_SORT_PRICE_DESC);
     }
 }

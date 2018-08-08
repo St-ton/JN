@@ -7,6 +7,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'statistik_inc.php';
 
 $nStatsType = RequestHelper::verifyGPCDataInt('s');
+
 switch ($nStatsType) {
     case 1:
         $oAccount->permission('STATS_VISITOR_VIEW', true, true);
@@ -32,46 +33,29 @@ $cHinweis          = '';
 $cFehler           = '';
 $nAnzeigeIntervall = 0;
 
-if (!isset($_SESSION['Statistik'])) {
-    $_SESSION['Statistik']       = new stdClass();
-    $_SESSION['Statistik']->nTyp = STATS_ADMIN_TYPE_BESUCHER;
-}
-// Stat Typ
-if (RequestHelper::verifyGPCDataInt('s') > 0) {
-    $_SESSION['Statistik']->nTyp = RequestHelper::verifyGPCDataInt('s');
-}
-
 $oFilter    = new Filter('statistics');
 $oDateRange = $oFilter->addDaterangefield(
-    'Zeitraum', '',
-    date_create()->modify('-1 year')->modify('+1 day')->format('d.m.Y') . ' - ' .
-    date('d.m.Y')
+    'Zeitraum', '', date_create()->modify('-1 year')->modify('+1 day')->format('d.m.Y') . ' - ' . date('d.m.Y')
 );
 $oFilter->assemble();
 $nDateStampVon = strtotime($oDateRange->getStart());
 $nDateStampBis = strtotime($oDateRange->getEnd());
 
-$oStat_arr = gibBackendStatistik($_SESSION['Statistik']->nTyp, $nDateStampVon, $nDateStampBis, $nAnzeigeIntervall);
-// Highchart
-if ($_SESSION['Statistik']->nTyp == STATS_ADMIN_TYPE_KUNDENHERKUNFT
-    || $_SESSION['Statistik']->nTyp == STATS_ADMIN_TYPE_SUCHMASCHINE
-    || $_SESSION['Statistik']->nTyp == STATS_ADMIN_TYPE_EINSTIEGSSEITEN
+$oStat_arr = gibBackendStatistik($nStatsType, $nDateStampVon, $nDateStampBis, $nAnzeigeIntervall);
+
+$statsTypeName = GetTypeNameStats($nStatsType);
+$axisNames     = getAxisNames($nStatsType);
+
+if ($nStatsType === STATS_ADMIN_TYPE_KUNDENHERKUNFT
+    || $nStatsType === STATS_ADMIN_TYPE_SUCHMASCHINE
+    || $nStatsType === STATS_ADMIN_TYPE_EINSTIEGSSEITEN
 ) {
-    $smarty->assign('piechart', preparePieChartStats(
-        $oStat_arr,
-        GetTypeNameStats($_SESSION['Statistik']->nTyp),
-        getAxisNames($_SESSION['Statistik']->nTyp))
-    );
+    $smarty->assign('piechart', preparePieChartStats($oStat_arr, $statsTypeName, $axisNames));
 } else {
-    $smarty->assign('linechart', prepareLineChartStats(
-        $oStat_arr,
-        GetTypeNameStats($_SESSION['Statistik']->nTyp),
-        getAxisNames($_SESSION['Statistik']->nTyp))
-    );
-    $member_arr = gibMappingDaten($_SESSION['Statistik']->nTyp);
+    $smarty->assign('linechart', prepareLineChartStats($oStat_arr, $statsTypeName, $axisNames));
+    $member_arr = gibMappingDaten($nStatsType);
     $smarty->assign('ylabel', $member_arr['nCount']);
 }
-// Table
 $cMember_arr = [];
 foreach ($oStat_arr as $oStat) {
     $cMember_arr[] = array_keys(get_object_vars($oStat));
@@ -81,13 +65,13 @@ $oPagination = (new Pagination())
     ->setItemCount(count($oStat_arr))
     ->assemble();
 
-$smarty->assign('headline', GetTypeNameStats($_SESSION['Statistik']->nTyp))
+$smarty->assign('headline', $statsTypeName)
        ->assign('cHinweis', $cHinweis)
        ->assign('cFehler', $cFehler)
-       ->assign('nTyp', $_SESSION['Statistik']->nTyp)
+       ->assign('nTyp', $nStatsType)
        ->assign('oStat_arr', $oStat_arr)
-       ->assign('oStatJSON', getJSON($oStat_arr, $nAnzeigeIntervall, $_SESSION['Statistik']->nTyp))
-       ->assign('cMember_arr', mappeDatenMember($cMember_arr, gibMappingDaten($_SESSION['Statistik']->nTyp)))
+       ->assign('oStatJSON', getJSON($oStat_arr, $nAnzeigeIntervall, $nStatsType))
+       ->assign('cMember_arr', mappeDatenMember($cMember_arr, gibMappingDaten($nStatsType)))
        ->assign('STATS_ADMIN_TYPE_BESUCHER', STATS_ADMIN_TYPE_BESUCHER)
        ->assign('STATS_ADMIN_TYPE_KUNDENHERKUNFT', STATS_ADMIN_TYPE_KUNDENHERKUNFT)
        ->assign('STATS_ADMIN_TYPE_SUCHMASCHINE', STATS_ADMIN_TYPE_SUCHMASCHINE)

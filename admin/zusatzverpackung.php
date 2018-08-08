@@ -57,11 +57,11 @@ if ($action === 'save') {
         // Update?
         if ($kVerpackung > 0) {
             Shop::Container()->getDB()->query(
-                "DELETE tverpackung, tverpackungsprache
-                FROM tverpackung
-                LEFT JOIN tverpackungsprache 
-                    ON tverpackungsprache.kVerpackung = tverpackung.kVerpackung
-                WHERE tverpackung.kVerpackung = " . $kVerpackung,
+                'DELETE tverpackung, tverpackungsprache
+                    FROM tverpackung
+                    LEFT JOIN tverpackungsprache 
+                        ON tverpackungsprache.kVerpackung = tverpackung.kVerpackung
+                    WHERE tverpackung.kVerpackung = ' . $kVerpackung,
                 \DB\ReturnType::AFFECTED_ROWS
             );
             $oVerpackung->kVerpackung = $kVerpackung;

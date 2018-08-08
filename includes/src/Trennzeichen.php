@@ -197,30 +197,28 @@ class Trennzeichen
      * @param int $kSprache
      * @return array
      */
-    public static function getAll(int $kSprache)
+    public static function getAll(int $kSprache): array
     {
         $cacheID  = 'units_all_' . $kSprache;
-        if (($oObjAssoc_arr = Shop::Cache()->get($cacheID)) === false) {
-            $oObjAssoc_arr = [];
+        if (($all = Shop::Cache()->get($cacheID)) === false) {
+            $all = [];
             if ($kSprache > 0) {
-                $oObjTMP_arr = Shop::Container()->getDB()->selectAll(
+                $data = Shop::Container()->getDB()->selectAll(
                     'ttrennzeichen',
                     'kSprache',
                     $kSprache,
                     'kTrennzeichen',
                     'nEinheit'
                 );
-                foreach ($oObjTMP_arr as $oObjTMP) {
-                    if (isset($oObjTMP->kTrennzeichen) && $oObjTMP->kTrennzeichen > 0) {
-                        $oTrennzeichen                               = new self($oObjTMP->kTrennzeichen);
-                        $oObjAssoc_arr[$oTrennzeichen->getEinheit()] = $oTrennzeichen;
-                    }
+                foreach ($data as $item) {
+                    $oTrennzeichen                     = new self($item->kTrennzeichen);
+                    $all[$oTrennzeichen->getEinheit()] = $oTrennzeichen;
                 }
             }
-            Shop::Cache()->set($cacheID, $oObjAssoc_arr, [CACHING_GROUP_CORE]);
+            Shop::Cache()->set($cacheID, $all, [CACHING_GROUP_CORE]);
         }
 
-        return $oObjAssoc_arr;
+        return $all;
     }
 
     /**
@@ -337,7 +335,7 @@ class Trennzeichen
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getTrennzeichen()
     {
@@ -345,7 +343,7 @@ class Trennzeichen
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getSprache()
     {
@@ -353,7 +351,7 @@ class Trennzeichen
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getEinheit()
     {
@@ -361,7 +359,7 @@ class Trennzeichen
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getDezimalstellen()
     {
@@ -371,7 +369,7 @@ class Trennzeichen
     /**
      * @return string
      */
-    public function getDezimalZeichen()
+    public function getDezimalZeichen(): string
     {
         return htmlentities($this->cDezimalZeichen);
     }
@@ -379,7 +377,7 @@ class Trennzeichen
     /**
      * @return string
      */
-    public function getTausenderZeichen()
+    public function getTausenderZeichen(): string
     {
         return htmlentities($this->cTausenderZeichen);
     }
@@ -424,11 +422,11 @@ class Trennzeichen
             Shop::Cache()->flushTags([CACHING_GROUP_CORE]);
 
             return Shop::Container()->getDB()->query(
-                "DELETE teinstellungen, teinstellungenconf
+                'DELETE teinstellungen, teinstellungenconf
                     FROM teinstellungenconf
                     LEFT JOIN teinstellungen 
                         ON teinstellungen.cName = teinstellungenconf.cWertName
-                    WHERE teinstellungenconf.kEinstellungenConf IN (1458, 1459, 495, 497, 499, 501)",
+                    WHERE teinstellungenconf.kEinstellungenConf IN (1458, 1459, 495, 497, 499, 501)',
                 \DB\ReturnType::AFFECTED_ROWS
             );
         }

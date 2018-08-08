@@ -28,7 +28,7 @@ class SessionHandlerBot extends SessionHandlerJTL implements \SessionHandlerInte
      */
     public function __construct($doSave = false)
     {
-        $this->sessionID = session_id();
+        $this->sessionID = \session_id();
         $this->doSave    = $doSave;
     }
 
@@ -75,7 +75,7 @@ class SessionHandlerBot extends SessionHandlerJTL implements \SessionHandlerInte
     public function write($sessID, $sessData)
     {
         if ($this->doSave === true) {
-            \Shop::Cache()->set($this->sessionID, $sessData, [CACHING_GROUP_CORE]);
+            \Shop::Cache()->set($this->sessionID, $sessData, [\CACHING_GROUP_CORE]);
         }
 
         return true;

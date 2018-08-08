@@ -457,4 +457,41 @@ class Status
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
+
+    /**
+     * @return bool
+     */
+    public function hasDuplicateSpecialLinkTypes(): bool
+    {
+        $linksTMP = [];
+        $links    = Shop::Container()->getDB()->query(
+            'SELECT * FROM tlink
+                LEFT JOIN tspezialseite ON tspezialseite.nLinkart = tlink.nLinkart
+                WHERE tspezialseite.nLinkart IS NOT NULL
+                ORDER BY tlink.nLinkart',
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
+
+        foreach ($links as $link) {
+            if ($link->cKundengruppen === null || $link->cKundengruppen === 'NULL') {
+                $customerGroups = [0];
+            } else {
+                $customerGroups = StringHandler::parseSSK($link->cKundengruppen);
+            }
+            if (!isset($linksTMP[$link->nLinkart])) {
+                $linksTMP[$link->nLinkart] = [];
+            }
+
+            if (!empty(array_intersect($linksTMP[$link->nLinkart], $customerGroups))) {
+                return true;
+            } else {
+                $linksTMP[$link->nLinkart] = array_merge($linksTMP[$link->nLinkart], $customerGroups);
+                if (count($linksTMP[$link->nLinkart]) > 1 && in_array(0, $linksTMP[$link->nLinkart], true)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 }

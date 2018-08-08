@@ -153,7 +153,7 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && FormHelper::va
         $link->setLinkGroups([(int)$_POST['kLinkgruppe']]);
         $oPlausiVar_arr = $oPlausiCMS->getPlausiVar();
         if (isset($oPlausiVar_arr['nSpezialseite'])) {
-            $fehler = sprintf('Fehler: Die gewählte Spezialseite existiert bereits unter dem Namen "%s"!', $oPlausiVar_arr['nSpezialseite']->cName);
+            $fehler = 'Fehler: Die gewählte Spezialseite existiert bereits für die gewählten Kundengruppen!';
         } else {
             $fehler = 'Fehler: Bitte füllen Sie alle Pflichtangaben aus!';
         }
@@ -310,6 +310,12 @@ if ($clearCache === true) {
     $linkAdmin->clearCache();
 }
 if ($step === 'uebersicht') {
+    $duplicateSpecialLinks = getDuplicateSpecialLinkTypes();
+    if (!empty($duplicateSpecialLinks)) {
+        foreach ($duplicateSpecialLinks as $specialLink) {
+            $fehler .= sprintf('Spezialseite "%s" ist mehrfach für gleiche Kundengruppen belegt.<br />', $specialLink->linkName);
+        }
+    }
     $smarty->assign('kPlugin', RequestHelper::verifyGPCDataInt('kPlugin'))
            ->assign('linkGroupCountByLinkID', $linkAdmin->getLinkGroupCountForLinkIDs())
            ->assign('linkgruppen', $linkAdmin->getLinkGroups());

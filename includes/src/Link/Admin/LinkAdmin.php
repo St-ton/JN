@@ -545,4 +545,47 @@ final class LinkAdmin
 
         return true;
     }
+
+    /**
+     * @param int $linkID
+     * @return bool
+     */
+    public function hasDuplicateSpecialLink(int $linkID): bool
+    {
+        $linkData = \Shop::Container()->getDB()->queryPrepared(
+            'SELECT * FROM tlink
+                LEFT JOIN tspezialseite ON tspezialseite.nLinkart = tlink.nLinkart
+                WHERE tspezialseite.nLinkart IS NOT NULL
+                  AND tlink.kLink=:linkID', ['linkID' => $linkID],
+            ReturnType::SINGLE_OBJECT
+        );
+
+        if (!empty($linkData)) {
+            $linksTMP               = [];
+            $possibleDuplicateLinks = \Shop::Container()->getDB()->queryPrepared(
+                'SELECT * FROM tlink
+                    WHERE nLinkart=:linkType
+                      AND kLink!=:linkID', [
+                    'linkType' => $linkData->nLinkart,
+                    'linkID' => $linkID
+                ], ReturnType::ARRAY_OF_OBJECTS
+            );
+
+            foreach ($possibleDuplicateLinks as $link) {
+                if ($link->cKundengruppen === null || $link->cKundengruppen === 'NULL') {
+                    $customerGroups = [0];
+                } else {
+                    $customerGroups = \StringHandler::parseSSK($link->cKundengruppen);
+                }
+                $linksTMP = array_merge($linksTMP, $customerGroups);
+            }
+
+            if ((($linkData->cKundengruppen === null || $linkData->cKundengruppen === 'NULL') && \count($linksTMP) > 0)
+                || !empty(array_intersect($linksTMP, \StringHandler::parseSSK($linkData->cKundengruppen)))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

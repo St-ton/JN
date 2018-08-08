@@ -266,17 +266,69 @@ function holeSpezialseiten()
 }
 
 /**
- * @param int $nSpecialLink
- * @param int $kLink
- * @return false|object
+ * @param int $linkType
+ * @param int $linkID
+ * @param array $customerGroups
+ * @return bool
  */
-function checkSpecialLink (int $nSpecialLink, int $kLink)
+function isDuplicateSpecialLink (int $linkType, int $linkID, array $customerGroups): bool
 {
-    return Shop::Container()->getDB()->query(
-        'SELECT kLink, cName
+    $currentSetCustomerGroups = [];
+    $specialLinks             = Shop::Container()->getDB()->queryPrepared(
+        'SELECT kLink, cName, cKundengruppen
             FROM tlink
-            WHERE nLinkart = ' . $nSpecialLink . '
-                AND kLink != ' . $kLink,
-        \DB\ReturnType::SINGLE_OBJECT
+            WHERE nLinkart = :linkType
+                AND kLink != :linkID',
+        ['linkType' => $linkType, 'linkID' => $linkID],
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
+    if (!empty($specialLinks) && in_array('-1', $customerGroups)) {
+        return true;
+    }
+    foreach ($specialLinks as $specialLink) {
+        if ($specialLink->cKundengruppen === null || $specialLink->cKundengruppen === 'NULL') {
+            //NULL means it is set for all customer groups
+            return true;
+        }
+        $currentSetCustomerGroups = array_merge($currentSetCustomerGroups, StringHandler::parseSSK($specialLink->cKundengruppen));
+    }
+    return !empty(array_intersect($currentSetCustomerGroups, $customerGroups));
+}
+
+/**
+ * @return array
+ */
+function getDuplicateSpecialLinkTypes(): array
+{
+    $linksTMP       = [];
+    $duplicateLinkTypes = [];
+    $links          = Shop::Container()->getDB()->query(
+        'SELECT tlink.*, tspezialseite.cName as linkName FROM tlink
+                LEFT JOIN tspezialseite ON tspezialseite.nLinkart = tlink.nLinkart
+                WHERE tspezialseite.nLinkart IS NOT NULL
+                ORDER BY tlink.nLinkart',
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
+
+    foreach ($links as $link) {
+        if ($link->cKundengruppen === null || $link->cKundengruppen === 'NULL') {
+            $customerGroups = [0];
+        } else {
+            $customerGroups = StringHandler::parseSSK($link->cKundengruppen);
+        }
+        if (!isset($linksTMP[$link->nLinkart])) {
+            $linksTMP[$link->nLinkart] = [];
+        }
+
+        if (!empty(array_intersect($linksTMP[$link->nLinkart], $customerGroups))) {
+            $duplicateLinkTypes[$link->nLinkart] = $link;
+        } else {
+            $linksTMP[$link->nLinkart] = array_merge($linksTMP[$link->nLinkart], $customerGroups);
+            if (count($linksTMP[$link->nLinkart]) > 1 && in_array(0, $linksTMP[$link->nLinkart], true)) {
+                $duplicateLinkTypes[$link->nLinkart] = $link;
+            }
+        }
+    }
+
+    return $duplicateLinkTypes;
 }

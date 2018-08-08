@@ -242,6 +242,15 @@ class Notification implements IteratorAggregate, Countable
             );
         }
 
+        if ($status->hasDuplicateSpecialLinkTypes()) {
+           $this->add(
+               NotificationEntry::TYPE_DANGER,
+               'Spezialseite mehrfach belegt',
+               'Eine oder mehrere Spezialseiten sind mehrfach für die gleiche(n) Kundengruppe(n) angelegt',
+               'links.php'
+           );
+        }
+
         return $this;
     }
 }

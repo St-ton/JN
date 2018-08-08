@@ -30,17 +30,18 @@
             }
         }).trigger('change');
     });
-
     $(window).on('load', function () {
-        $('select[id="nLink3"]').change(function () {
-            var $self = $(this);
-            ioCall('checkSpecialLink', [parseInt($self.val()), parseInt($('input[name="kLink"]').val()) || 0], function (result) {
+        $('select[id="nLink3"], #cKundengruppen').change(function () {
+            ioCall('isDuplicateSpecialLink', [
+                    parseInt($('select[id="nLink3"]').val()),
+                    parseInt($('input[name="kLink"]').val()) || 0,
+                    $('select[name="cKundengruppen[]"').val()
+                ],
+                function (result) {
                 if (result) {
                     $('#nLink3-error').removeClass('hidden-soft');
-                    $('#nSpezialseite-name').html(result.cName);
                 } else {
                     $('#nLink3-error').addClass('hidden-soft');
-                    $('#nSpezialseite-name').html();
                 }
             });
         }).trigger('change');
@@ -104,7 +105,7 @@
                                         <option value="{$oSpezialseite->nLinkart}" {if isset($xPostVar_arr.nSpezialseite) && $xPostVar_arr.nSpezialseite === $oSpezialseite->nLinkart}selected{elseif $Link->getLinkType() === (int)$oSpezialseite->nLinkart}selected{/if}>{$oSpezialseite->cName}</option>
                                     {/foreach}
                                 </select>
-                                <span id="nLink3-error" class="hidden-soft error">{#specialSiteExists#}<span id="nSpezialseite-name"></span></span>
+                                <span id="nLink3-error" class="hidden-soft error"> <i title="{#specialSiteExists#}" class="fa fa-warning error"></i></span>
                             </p>
                         {/if}
                         </div>
@@ -131,7 +132,13 @@
                                         {if $cPostKndGrp == $kKundengruppe}{assign var=postkndgrp value='1'}{/if}
                                     {/foreach}
                                 {/if}
-                                <option value="{$kundengruppe->kKundengruppe}" {if (isset($gesetzteKundengruppen[$kKundengruppe]) && $gesetzteKundengruppen[$kKundengruppe]) || (isset($postkndgrp) && $postkndgrp == 1)}selected{/if}>{$kundengruppe->cName}</option>
+                                <option value="{$kundengruppe->kKundengruppe}" {$kundengruppe->kKundengruppe}
+                                        {if isset($xPostVar_arr)}
+                                            {if isset($postkndgrp) && $postkndgrp == 1}selected{/if}
+                                        {else}
+                                            {if isset($gesetzteKundengruppen[$kKundengruppe]) && $gesetzteKundengruppen[$kKundengruppe]}selected{/if}
+                                        {/if}
+                                >{$kundengruppe->cName}</option>
                             {/foreach}
                         </select>
                         <span class="input-group-addon">{getHelpDesc cDesc=#multipleChoice#}</span>

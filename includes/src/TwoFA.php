@@ -104,7 +104,7 @@ class TwoFA
      * @param string $szCode - numerical code from the login screen (the code, which the user has found on his mobile)
      * @return bool - true="code ist valid" | false="code is invalid"
      */
-    public function isCodeValid($szCode)
+    public function isCodeValid($szCode): bool
     {
         // store a google-authenticator-object instance
         // (only if we check any credential! (something like lazy loading))
@@ -126,7 +126,7 @@ class TwoFA
      *
      * @return string - generated QR-code
      */
-    public function getQRcode()
+    public function getQRcode(): string
     {
         if ('' !== $this->oUserTuple->c2FAauthSecret) {
             $szTotpUrl = rawurlencode('JTL-Shop ' . $this->oUserTuple->cLogin . '@' . $this->getShopName());
@@ -163,9 +163,9 @@ class TwoFA
      *
      * @param int - the (DB-)id of this user-account
      */
-    public function setUserByID($iID)
+    public function setUserByID(int $iID)
     {
-        $this->oUserTuple = Shop::Container()->getDB()->select('tadminlogin', 'kAdminlogin', (int)$iID);
+        $this->oUserTuple = Shop::Container()->getDB()->select('tadminlogin', 'kAdminlogin', $iID);
     }
 
     /**
@@ -175,7 +175,7 @@ class TwoFA
      *
      * @param string - the users login-name
      */
-    public function setUserByName($szUserName)
+    public function setUserByName(string $szUserName)
     {
         // write at least the user's name we get via e.g. ajax
         $this->oUserTuple->cLogin = $szUserName;
@@ -188,7 +188,7 @@ class TwoFA
     /**
      * deliver the account-data, if there are any
      *
-     * @return object - accountdata if there's any, or null
+     * @return object|null - accountdata if there's any, or null
      */
     public function getUserTuple()
     {
@@ -200,7 +200,7 @@ class TwoFA
      *
      * @return string - the name of the current shop
      */
-    public function getShopName()
+    public function getShopName(): string
     {
         if ('' === $this->szShopName) {
             $oResult          = Shop::Container()->getDB()->select('teinstellungen', 'cName', 'global_shopname');
@@ -242,7 +242,7 @@ class TwoFA
      * @param string $userName
      * @return stdClass
      */
-    public static function genTwoFAEmergencyCodes($userName): stdClass
+    public static function genTwoFAEmergencyCodes(string $userName): stdClass
     {
         $oTwoFA = new TwoFA();
         $oTwoFA->setUserByName($userName);

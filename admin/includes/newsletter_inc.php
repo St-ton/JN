@@ -18,8 +18,7 @@ function bereiteNewsletterVor($Einstellungen)
                ->setCompileDir(PFAD_ROOT . PFAD_COMPILEDIR)
                ->registerResource('db', new SmartyResourceNiceDB('newsletter'))
                ->assign('Firma', Shop::Container()->getDB()->query(
-                   "SELECT * 
-                        FROM tfirma",
+                   'SELECT *  FROM tfirma',
                    \DB\ReturnType::SINGLE_OBJECT
                ))
                ->assign('URL_SHOP', Shop::getURL())
@@ -70,11 +69,11 @@ function versendeNewsletter(
     $bodyHtml    = '';
     if (isset($oKunde->kKunde) && $oKunde->kKunde > 0) {
         $oKundengruppe = Shop::Container()->getDB()->query(
-            "SELECT tkundengruppe.nNettoPreise
+            'SELECT tkundengruppe.nNettoPreise
                 FROM tkunde
                 JOIN tkundengruppe 
                     ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
-                WHERE tkunde.kKunde = " . (int)$oKunde->kKunde,
+                WHERE tkunde.kKunde = ' . (int)$oKunde->kKunde,
             \DB\ReturnType::SINGLE_OBJECT
         );
         if (isset($oKundengruppe->nNettoPreise)) {
@@ -403,8 +402,8 @@ function speicherVorlageStd($oNewslettervorlageStd, $kNewslettervorlageStd, $cPo
                         mkdir($cUploadVerzeichnis . $kNewslettervorlage);
                     }
 
-                    if (isset($_FILES['kNewslettervorlageStdVar_' . $nlTplStdVar->kNewslettervorlageStdVar]['name']) &&
-                        strlen($_FILES['kNewslettervorlageStdVar_' . $nlTplStdVar->kNewslettervorlageStdVar]['name']) > 0
+                    if (isset($_FILES['kNewslettervorlageStdVar_' . $nlTplStdVar->kNewslettervorlageStdVar]['name']) 
+                        && strlen($_FILES['kNewslettervorlageStdVar_' . $nlTplStdVar->kNewslettervorlageStdVar]['name']) > 0
                     ) {
                         $cUploadDatei = $cUploadVerzeichnis . $kNewslettervorlage .
                             '/kNewslettervorlageStdVar_' . $nlTplStdVar->kNewslettervorlageStdVar .
@@ -675,10 +674,8 @@ function pruefeVorlage($cName, $kKundengruppe_arr, $cBetreff, $cArt, $cHtml, $cT
  * @param int $kNewsletterVorlage
  * @return null
  */
-function holeNewslettervorlageStd($kNewsletterVorlageStd, $kNewsletterVorlage = 0)
+function holeNewslettervorlageStd(int $kNewsletterVorlageStd, int $kNewsletterVorlage = 0)
 {
-    $kNewsletterVorlageStd = (int)$kNewsletterVorlageStd;
-    $kNewsletterVorlage    = (int)$kNewsletterVorlage;
     if ($kNewsletterVorlageStd === 0 && $kNewsletterVorlage === 0) {
         return null;
     }
@@ -734,15 +731,15 @@ function holeNewslettervorlageStd($kNewsletterVorlageStd, $kNewsletterVorlage = 
         foreach ($oNewslettervorlageStd->oNewslettervorlageStdVar_arr as $j => $nlTplStdVar) {
             $nlTplContent = new stdClass();
             if (isset($nlTplStdVar->kNewslettervorlageStdVar) && $nlTplStdVar->kNewslettervorlageStdVar > 0) {
-                $cSQL = " AND kNewslettervorlage IS NULL";
+                $cSQL = ' AND kNewslettervorlage IS NULL';
                 if (isset($kNewsletterVorlage) && (int)$kNewsletterVorlage > 0) {
-                    $cSQL = " AND kNewslettervorlage = " . $kNewsletterVorlage;
+                    $cSQL = ' AND kNewslettervorlage = ' . $kNewsletterVorlage;
                 }
 
                 $nlTplContent = Shop::Container()->getDB()->query(
-                    "SELECT *
+                    'SELECT *
                         FROM tnewslettervorlagestdvarinhalt
-                        WHERE kNewslettervorlageStdVar = " . (int)$nlTplStdVar->kNewslettervorlageStdVar .
+                        WHERE kNewslettervorlageStdVar = ' . (int)$nlTplStdVar->kNewslettervorlageStdVar .
                         $cSQL,
                     \DB\ReturnType::SINGLE_OBJECT
                 );
@@ -826,46 +823,47 @@ function holeArtikel($cArtNr_arr)
 {
     // Artikel holen
     $oArtikel_arr = [];
-    if (is_array($cArtNr_arr) && count($cArtNr_arr) > 0) {
-        $defaultOptions = Artikel::getDefaultOptions();
-        foreach ($cArtNr_arr as $cArtNr) {
-            if ($cArtNr !== '') {
-                $oArtikel_tmp = Shop::Container()->getDB()->select('tartikel', 'cArtNr', $cArtNr);
-                // Artikel mit cArtNr vorhanden?
-                if (isset($oArtikel_tmp->kArtikel) && $oArtikel_tmp->kArtikel > 0) {
-                    // Artikelsichtbarkeit pruefen
+    if (!is_array($cArtNr_arr) || count($cArtNr_arr) === 0) {
+        return $oArtikel_arr;
+    }
+    $defaultOptions = Artikel::getDefaultOptions();
+    foreach ($cArtNr_arr as $cArtNr) {
+        if ($cArtNr !== '') {
+            $oArtikel_tmp = Shop::Container()->getDB()->select('tartikel', 'cArtNr', $cArtNr);
+            // Artikel mit cArtNr vorhanden?
+            if (isset($oArtikel_tmp->kArtikel) && $oArtikel_tmp->kArtikel > 0) {
+                // Artikelsichtbarkeit pruefen
 //                    $oSichtbarkeit_arr = Shop::Container()->getDB()->query(
 //                        "SELECT *
 //                            FROM tartikelsichtbarkeit
 //                            WHERE kArtikel=" . $oArtikel_tmp->kArtikel, 2
 //                    );
-                    $nSichtbar = 1;
+                $nSichtbar = 1;
 //                    if (is_array($oSichtbarkeit_arr) && count($oSichtbarkeit_arr) > 0) {
 //                        foreach ($oSichtbarkeit_arr as $oSichtbarkeit) {
-                            //@todo: $kKundengruppe_arr undefined
+                        //@todo: $kKundengruppe_arr undefined
 //                            if (in_array($oSichtbarkeit->kKundengruppe, $kKundengruppe_arr)) {
 //                                $nSichtbar = 0;
 //                                break;
 //                            }
 //                        }
 //                    }
-                    // Wenn der Artikel fuer diese Kundengruppen sichtbar ist
-                    if ($nSichtbar) {
-                        $_SESSION['Kundengruppe']->setMayViewPrices(1);
-                        $oArtikel = new Artikel();
-                        $oArtikel->fuelleArtikel($oArtikel_tmp->kArtikel, $defaultOptions);
+                // Wenn der Artikel fuer diese Kundengruppen sichtbar ist
+                if ($nSichtbar) {
+                    $_SESSION['Kundengruppe']->setMayViewPrices(1);
+                    $oArtikel = new Artikel();
+                    $oArtikel->fuelleArtikel($oArtikel_tmp->kArtikel, $defaultOptions);
 
-                        $oArtikel_arr[] = $oArtikel;
-                    } else {
-                        $GLOBALS['step'] = 'versand_vorbereiten';
-                        $GLOBALS['cFehler'] .= 'Fehler, der Artikel ' . $cArtNr .
-                            ' ist für einige Kundengruppen nicht sichtbar.<br>';
-                    }
+                    $oArtikel_arr[] = $oArtikel;
                 } else {
                     $GLOBALS['step'] = 'versand_vorbereiten';
                     $GLOBALS['cFehler'] .= 'Fehler, der Artikel ' . $cArtNr .
-                        ' konnte nicht in der Datenbank gefunden werden.<br>';
+                        ' ist für einige Kundengruppen nicht sichtbar.<br>';
                 }
+            } else {
+                $GLOBALS['step'] = 'versand_vorbereiten';
+                $GLOBALS['cFehler'] .= 'Fehler, der Artikel ' . $cArtNr .
+                    ' konnte nicht in der Datenbank gefunden werden.<br>';
             }
         }
     }
@@ -877,13 +875,13 @@ function holeArtikel($cArtNr_arr)
  * @param int $kArtikel
  * @return string
  */
-function holeArtikelnummer($kArtikel)
+function holeArtikelnummer(int $kArtikel)
 {
     $cArtNr   = '';
     $oArtikel = null;
 
     if ((int)$kArtikel > 0) {
-        $oArtikel = Shop::Container()->getDB()->select('tartikel', 'kArtikel', (int)$kArtikel);
+        $oArtikel = Shop::Container()->getDB()->select('tartikel', 'kArtikel', $kArtikel);
     }
 
     return $oArtikel->cArtNr ?? $cArtNr;
@@ -893,63 +891,62 @@ function holeArtikelnummer($kArtikel)
  * @param int $kNewsletter
  * @return stdClass
  */
-function getNewsletterEmpfaenger($kNewsletter)
+function getNewsletterEmpfaenger(int $kNewsletter)
 {
-    $kNewsletter           = (int)$kNewsletter;
-    $oNewsletterEmpfaenger = new stdClass();
-    if ($kNewsletter > 0) {
-        // Kundengruppen holen um spaeter die maximal Anzahl Empfaenger gefiltert werden kann
-        $oNewsletter = Shop::Container()->getDB()->select('tnewsletter', 'kNewsletter', $kNewsletter);
-        // Kundengruppe pruefen und spaeter in den Empfaenger SELECT einbauen
-        $cKundengruppenTMP_arr = explode(';', $oNewsletter->cKundengruppe);
-        $kKundengruppe_arr     = [];
-        $cKundengruppe_arr     = [];
-        $cSQL                  = '';
-        if (is_array($cKundengruppenTMP_arr) && count($cKundengruppenTMP_arr) > 0) {
-            foreach ($cKundengruppenTMP_arr as $cKundengruppe) {
-                $kKundengruppe = (int)$cKundengruppe;
-                if ($kKundengruppe > 0) {
-                    $kKundengruppe_arr[] = $kKundengruppe;
-                }
-                if (strlen($cKundengruppe) > 0) {
-                    $cKundengruppe_arr[] = $cKundengruppe;
-                }
+    if ($kNewsletter <= 0) {
+        return new stdClass();
+    }
+    // Kundengruppen holen um spaeter die maximal Anzahl Empfaenger gefiltert werden kann
+    $oNewsletter = Shop::Container()->getDB()->select('tnewsletter', 'kNewsletter', $kNewsletter);
+    // Kundengruppe pruefen und spaeter in den Empfaenger SELECT einbauen
+    $cKundengruppenTMP_arr = explode(';', $oNewsletter->cKundengruppe);
+    $kKundengruppe_arr     = [];
+    $cKundengruppe_arr     = [];
+    $cSQL                  = '';
+    if (is_array($cKundengruppenTMP_arr) && count($cKundengruppenTMP_arr) > 0) {
+        foreach ($cKundengruppenTMP_arr as $cKundengruppe) {
+            $kKundengruppe = (int)$cKundengruppe;
+            if ($kKundengruppe > 0) {
+                $kKundengruppe_arr[] = $kKundengruppe;
             }
-
-            $cSQL = "AND (";
-            foreach ($kKundengruppe_arr as $i => $kKundengruppe) {
-                if ($i > 0) {
-                    $cSQL .= " OR tkunde.kKundengruppe = " . (int)$kKundengruppe;
-                } else {
-                    $cSQL .= "tkunde.kKundengruppe = " . (int)$kKundengruppe;
-                }
+            if (strlen($cKundengruppe) > 0) {
+                $cKundengruppe_arr[] = $cKundengruppe;
             }
-
-            if (in_array('0', $cKundengruppenTMP_arr)) {
-                if (is_array($kKundengruppe_arr) && count($kKundengruppe_arr) > 0) {
-                    $cSQL .= " OR tkunde.kKundengruppe IS NULL";
-                } else {
-                    $cSQL .= "tkunde.kKundengruppe IS NULL";
-                }
-            }
-
-            $cSQL .= ")";
         }
 
-        $oNewsletterEmpfaenger = Shop::Container()->getDB()->query(
-            "SELECT count(*) AS nAnzahl
-                FROM tnewsletterempfaenger
-                LEFT JOIN tsprache 
-                    ON tsprache.kSprache = tnewsletterempfaenger.kSprache
-                LEFT JOIN tkunde 
-                    ON tkunde.kKunde = tnewsletterempfaenger.kKunde
-                WHERE tnewsletterempfaenger.kSprache = " . (int)$oNewsletter->kSprache . "
-                    AND tnewsletterempfaenger.nAktiv = 1 " . $cSQL,
-            \DB\ReturnType::SINGLE_OBJECT
-        );
+        $cSQL = 'AND (';
+        foreach ($kKundengruppe_arr as $i => $kKundengruppe) {
+            if ($i > 0) {
+                $cSQL .= ' OR tkunde.kKundengruppe = ' . (int)$kKundengruppe;
+            } else {
+                $cSQL .= 'tkunde.kKundengruppe = ' . (int)$kKundengruppe;
+            }
+        }
 
-        $oNewsletterEmpfaenger->cKundengruppe_arr = $cKundengruppe_arr;
+        if (in_array('0', $cKundengruppenTMP_arr)) {
+            if (is_array($kKundengruppe_arr) && count($kKundengruppe_arr) > 0) {
+                $cSQL .= ' OR tkunde.kKundengruppe IS NULL';
+            } else {
+                $cSQL .= 'tkunde.kKundengruppe IS NULL';
+            }
+        }
+
+        $cSQL .= ')';
     }
+
+    $oNewsletterEmpfaenger = Shop::Container()->getDB()->query(
+        'SELECT count(*) AS nAnzahl
+            FROM tnewsletterempfaenger
+            LEFT JOIN tsprache 
+                ON tsprache.kSprache = tnewsletterempfaenger.kSprache
+            LEFT JOIN tkunde 
+                ON tkunde.kKunde = tnewsletterempfaenger.kKunde
+            WHERE tnewsletterempfaenger.kSprache = ' . (int)$oNewsletter->kSprache . '
+                AND tnewsletterempfaenger.nAktiv = 1 ' . $cSQL,
+        \DB\ReturnType::SINGLE_OBJECT
+    );
+
+    $oNewsletterEmpfaenger->cKundengruppe_arr = $cKundengruppe_arr;
 
     return $oNewsletterEmpfaenger;
 }
@@ -980,14 +977,12 @@ function baueZeitAusDB($dZeitDB)
  */
 function holeAbonnentenAnzahl($cAktiveSucheSQL)
 {
-    $oAbonnentenMaxAnzahl = Shop::Container()->getDB()->query(
-        "SELECT count(*) AS nAnzahl
+    return (int)Shop::Container()->getDB()->query(
+        'SELECT count(*) AS nAnzahl
             FROM tnewsletterempfaenger
-            WHERE kSprache = " . (int)$_SESSION['kSprache'] . $cAktiveSucheSQL->cWHERE,
+            WHERE kSprache = ' . (int)$_SESSION['kSprache'] . $cAktiveSucheSQL->cWHERE,
         \DB\ReturnType::SINGLE_OBJECT
-    );
-
-    return (int)$oAbonnentenMaxAnzahl->nAnzahl;
+    )->nAnzahl;
 }
 
 /**
@@ -1020,56 +1015,56 @@ function holeAbonnenten($cSQL, $cAktiveSucheSQL)
  */
 function loescheAbonnenten($kNewsletterEmpfaenger_arr)
 {
-    if (is_array($kNewsletterEmpfaenger_arr) && count($kNewsletterEmpfaenger_arr) > 0) {
-        $cSQL = " IN (";
-        foreach ($kNewsletterEmpfaenger_arr as $i => $kNewsletterEmpfaenger) {
-            $kNewsletterEmpfaenger = (int)$kNewsletterEmpfaenger;
-            if ($i > 0) {
-                $cSQL .= ", " . $kNewsletterEmpfaenger;
-            } else {
-                $cSQL .= $kNewsletterEmpfaenger;
-            }
-        }
-        $cSQL .= ")";
-
-        $oNewsletterEmpfaenger_arr = Shop::Container()->getDB()->query(
-            "SELECT *
-                FROM tnewsletterempfaenger
-                WHERE kNewsletterEmpfaenger" .
-                $cSQL,
-            \DB\ReturnType::ARRAY_OF_OBJECTS
-        );
-
-        if (count($oNewsletterEmpfaenger_arr) > 0) {
-            Shop::Container()->getDB()->query(
-                "DELETE FROM tnewsletterempfaenger
-                    WHERE kNewsletterEmpfaenger" . $cSQL,
-                \DB\ReturnType::AFFECTED_ROWS
-            );
-            // Protokollieren
-            foreach ($oNewsletterEmpfaenger_arr as $oNewsletterEmpfaenger) {
-                $oNewsletterEmpfaengerHistory               = new stdClass();
-                $oNewsletterEmpfaengerHistory->kSprache     = $oNewsletterEmpfaenger->kSprache;
-                $oNewsletterEmpfaengerHistory->kKunde       = $oNewsletterEmpfaenger->kKunde;
-                $oNewsletterEmpfaengerHistory->cAnrede      = $oNewsletterEmpfaenger->cAnrede;
-                $oNewsletterEmpfaengerHistory->cVorname     = $oNewsletterEmpfaenger->cVorname;
-                $oNewsletterEmpfaengerHistory->cNachname    = $oNewsletterEmpfaenger->cNachname;
-                $oNewsletterEmpfaengerHistory->cEmail       = $oNewsletterEmpfaenger->cEmail;
-                $oNewsletterEmpfaengerHistory->cOptCode     = $oNewsletterEmpfaenger->cOptCode;
-                $oNewsletterEmpfaengerHistory->cLoeschCode  = $oNewsletterEmpfaenger->cLoeschCode;
-                $oNewsletterEmpfaengerHistory->cAktion      = 'Geloescht';
-                $oNewsletterEmpfaengerHistory->dEingetragen = $oNewsletterEmpfaenger->dEingetragen;
-                $oNewsletterEmpfaengerHistory->dAusgetragen = 'now()';
-                $oNewsletterEmpfaengerHistory->dOptCode     = '0000-00-00';
-
-                Shop::Container()->getDB()->insert('tnewsletterempfaengerhistory', $oNewsletterEmpfaengerHistory);
-            }
-
-            return true;
+    if (!is_array($kNewsletterEmpfaenger_arr) || count($kNewsletterEmpfaenger_arr) === 0) {
+        return false;
+    }
+    $cSQL = ' IN (';
+    foreach ($kNewsletterEmpfaenger_arr as $i => $kNewsletterEmpfaenger) {
+        $kNewsletterEmpfaenger = (int)$kNewsletterEmpfaenger;
+        if ($i > 0) {
+            $cSQL .= ', ' . $kNewsletterEmpfaenger;
+        } else {
+            $cSQL .= $kNewsletterEmpfaenger;
         }
     }
+    $cSQL .= ')';
 
-    return false;
+    $oNewsletterEmpfaenger_arr = Shop::Container()->getDB()->query(
+        'SELECT *
+            FROM tnewsletterempfaenger
+            WHERE kNewsletterEmpfaenger' .
+            $cSQL,
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
+
+    if (count($oNewsletterEmpfaenger_arr) === 0) {
+        return false;
+    }
+    Shop::Container()->getDB()->query(
+        'DELETE FROM tnewsletterempfaenger
+            WHERE kNewsletterEmpfaenger' . $cSQL,
+        \DB\ReturnType::AFFECTED_ROWS
+    );
+    // Protokollieren
+    foreach ($oNewsletterEmpfaenger_arr as $oNewsletterEmpfaenger) {
+        $oNewsletterEmpfaengerHistory               = new stdClass();
+        $oNewsletterEmpfaengerHistory->kSprache     = $oNewsletterEmpfaenger->kSprache;
+        $oNewsletterEmpfaengerHistory->kKunde       = $oNewsletterEmpfaenger->kKunde;
+        $oNewsletterEmpfaengerHistory->cAnrede      = $oNewsletterEmpfaenger->cAnrede;
+        $oNewsletterEmpfaengerHistory->cVorname     = $oNewsletterEmpfaenger->cVorname;
+        $oNewsletterEmpfaengerHistory->cNachname    = $oNewsletterEmpfaenger->cNachname;
+        $oNewsletterEmpfaengerHistory->cEmail       = $oNewsletterEmpfaenger->cEmail;
+        $oNewsletterEmpfaengerHistory->cOptCode     = $oNewsletterEmpfaenger->cOptCode;
+        $oNewsletterEmpfaengerHistory->cLoeschCode  = $oNewsletterEmpfaenger->cLoeschCode;
+        $oNewsletterEmpfaengerHistory->cAktion      = 'Geloescht';
+        $oNewsletterEmpfaengerHistory->dEingetragen = $oNewsletterEmpfaenger->dEingetragen;
+        $oNewsletterEmpfaengerHistory->dAusgetragen = 'now()';
+        $oNewsletterEmpfaengerHistory->dOptCode     = '0000-00-00';
+
+        Shop::Container()->getDB()->insert('tnewsletterempfaengerhistory', $oNewsletterEmpfaengerHistory);
+    }
+
+    return true;
 }
 
 /**
@@ -1078,57 +1073,57 @@ function loescheAbonnenten($kNewsletterEmpfaenger_arr)
  */
 function aktiviereAbonnenten($kNewsletterEmpfaenger_arr)
 {
-    if (is_array($kNewsletterEmpfaenger_arr) && count($kNewsletterEmpfaenger_arr) > 0) {
-        $cSQL = " IN (";
-        foreach ($kNewsletterEmpfaenger_arr as $i => $kNewsletterEmpfaenger) {
-            $kNewsletterEmpfaenger = (int)$kNewsletterEmpfaenger;
-            if ($i > 0) {
-                $cSQL .= ", " . $kNewsletterEmpfaenger;
-            } else {
-                $cSQL .= $kNewsletterEmpfaenger;
-            }
-        }
-        $cSQL .= ")";
-
-        $oNewsletterEmpfaenger_arr = Shop::Container()->getDB()->query(
-            "SELECT *
-                FROM tnewsletterempfaenger
-                WHERE kNewsletterEmpfaenger" .
-                $cSQL,
-            \DB\ReturnType::ARRAY_OF_OBJECTS
-        );
-
-        if (count($oNewsletterEmpfaenger_arr) > 0) {
-            Shop::Container()->getDB()->query(
-                "UPDATE tnewsletterempfaenger
-                    SET nAktiv = 1
-                    WHERE kNewsletterEmpfaenger" . $cSQL,
-                \DB\ReturnType::AFFECTED_ROWS
-            );
-            // Protokollieren
-            foreach ($oNewsletterEmpfaenger_arr as $oNewsletterEmpfaenger) {
-                $oNewsletterEmpfaengerHistory               = new stdClass();
-                $oNewsletterEmpfaengerHistory->kSprache     = $oNewsletterEmpfaenger->kSprache;
-                $oNewsletterEmpfaengerHistory->kKunde       = $oNewsletterEmpfaenger->kKunde;
-                $oNewsletterEmpfaengerHistory->cAnrede      = $oNewsletterEmpfaenger->cAnrede;
-                $oNewsletterEmpfaengerHistory->cVorname     = $oNewsletterEmpfaenger->cVorname;
-                $oNewsletterEmpfaengerHistory->cNachname    = $oNewsletterEmpfaenger->cNachname;
-                $oNewsletterEmpfaengerHistory->cEmail       = $oNewsletterEmpfaenger->cEmail;
-                $oNewsletterEmpfaengerHistory->cOptCode     = $oNewsletterEmpfaenger->cOptCode;
-                $oNewsletterEmpfaengerHistory->cLoeschCode  = $oNewsletterEmpfaenger->cLoeschCode;
-                $oNewsletterEmpfaengerHistory->cAktion      = 'Aktiviert';
-                $oNewsletterEmpfaengerHistory->dEingetragen = $oNewsletterEmpfaenger->dEingetragen;
-                $oNewsletterEmpfaengerHistory->dAusgetragen = 'now()';
-                $oNewsletterEmpfaengerHistory->dOptCode     = '0000-00-00';
-
-                Shop::Container()->getDB()->insert('tnewsletterempfaengerhistory', $oNewsletterEmpfaengerHistory);
-            }
-
-            return true;
+    if (!is_array($kNewsletterEmpfaenger_arr) || count($kNewsletterEmpfaenger_arr) === 0) {
+        return false;
+    }
+    $cSQL = ' IN (';
+    foreach ($kNewsletterEmpfaenger_arr as $i => $kNewsletterEmpfaenger) {
+        $kNewsletterEmpfaenger = (int)$kNewsletterEmpfaenger;
+        if ($i > 0) {
+            $cSQL .= ', ' . $kNewsletterEmpfaenger;
+        } else {
+            $cSQL .= $kNewsletterEmpfaenger;
         }
     }
+    $cSQL .= ')';
 
-    return false;
+    $oNewsletterEmpfaenger_arr = Shop::Container()->getDB()->query(
+        'SELECT *
+            FROM tnewsletterempfaenger
+            WHERE kNewsletterEmpfaenger' .
+            $cSQL,
+        \DB\ReturnType::ARRAY_OF_OBJECTS
+    );
+
+    if (count($oNewsletterEmpfaenger_arr) === 0) {
+        return false;
+    }
+    Shop::Container()->getDB()->query(
+        'UPDATE tnewsletterempfaenger
+            SET nAktiv = 1
+            WHERE kNewsletterEmpfaenger' . $cSQL,
+        \DB\ReturnType::AFFECTED_ROWS
+    );
+    // Protokollieren
+    foreach ($oNewsletterEmpfaenger_arr as $oNewsletterEmpfaenger) {
+        $hist               = new stdClass();
+        $hist->kSprache     = $oNewsletterEmpfaenger->kSprache;
+        $hist->kKunde       = $oNewsletterEmpfaenger->kKunde;
+        $hist->cAnrede      = $oNewsletterEmpfaenger->cAnrede;
+        $hist->cVorname     = $oNewsletterEmpfaenger->cVorname;
+        $hist->cNachname    = $oNewsletterEmpfaenger->cNachname;
+        $hist->cEmail       = $oNewsletterEmpfaenger->cEmail;
+        $hist->cOptCode     = $oNewsletterEmpfaenger->cOptCode;
+        $hist->cLoeschCode  = $oNewsletterEmpfaenger->cLoeschCode;
+        $hist->cAktion      = 'Aktiviert';
+        $hist->dEingetragen = $oNewsletterEmpfaenger->dEingetragen;
+        $hist->dAusgetragen = 'now()';
+        $hist->dOptCode     = '0000-00-00';
+
+        Shop::Container()->getDB()->insert('tnewsletterempfaengerhistory', $hist);
+    }
+
+    return true;
 }
 
 /**
@@ -1187,9 +1182,8 @@ function gibAbonnent($cPost_arr)
  * @param int $kNewsletterEmpfaenger
  * @return bool
  */
-function loescheAbonnent($kNewsletterEmpfaenger)
+function loescheAbonnent(int $kNewsletterEmpfaenger)
 {
-    $kNewsletterEmpfaenger = (int)$kNewsletterEmpfaenger;
     if ($kNewsletterEmpfaenger > 0) {
         Shop::Container()->getDB()->delete('tnewsletterempfaenger', 'kNewsletterEmpfaenger', $kNewsletterEmpfaenger);
 
@@ -1279,23 +1273,21 @@ function gibAHKKeys($cKey, $bArtikelnummer = false)
         if ($bArtikelnummer && count($kKey_arr) > 0) {
             $kArtikel_arr       = [];
             $oArtikelNummer_arr = Shop::Container()->getDB()->query(
-                "SELECT kArtikel
+                'SELECT kArtikel
                     FROM tartikel
-                    WHERE cArtNr IN (" . implode(',', $kKey_arr) . ")
-                        AND kEigenschaftKombi = 0",
+                    WHERE cArtNr IN (' . implode(',', $kKey_arr) . ')
+                        AND kEigenschaftKombi = 0',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             // Existieren Artikel zu den entsprechenden Artikelnummern?
-            if (is_array($oArtikelNummer_arr) && count($oArtikelNummer_arr) > 0) {
-                foreach ($oArtikelNummer_arr as $oArtikelNummer) {
-                    if (isset($oArtikelNummer->kArtikel) && (int)$oArtikelNummer->kArtikel) {
-                        $kArtikel_arr[] = $oArtikelNummer->kArtikel;
-                    }
+            foreach ($oArtikelNummer_arr as $oArtikelNummer) {
+                if (isset($oArtikelNummer->kArtikel) && (int)$oArtikelNummer->kArtikel) {
+                    $kArtikel_arr[] = $oArtikelNummer->kArtikel;
                 }
+            }
 
-                if (count($kArtikel_arr) > 0) {
-                    $kKey_arr = $kArtikel_arr;
-                }
+            if (count($kArtikel_arr) > 0) {
+                $kKey_arr = $kArtikel_arr;
             }
         }
     }

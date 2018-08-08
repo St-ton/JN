@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -15,13 +15,13 @@ use Filter\ProductFilter;
 use Filter\States\BaseCategory;
 
 /**
- * Class ItemCategory
+ * Class Category
  * @package Filter\Items
  */
-class ItemCategory extends BaseCategory
+class Category extends BaseCategory
 {
     /**
-     * ItemCategory constructor.
+     * Category constructor.
      *
      * @param ProductFilter $productFilter
      */
@@ -30,7 +30,7 @@ class ItemCategory extends BaseCategory
         parent::__construct($productFilter);
         $this->setIsCustom(false)
              ->setUrlParam('kf')
-             ->setUrlParamSEO(SEP_KAT)
+             ->setUrlParamSEO(\SEP_KAT)
              ->setVisibility($this->getConfig('navigationsfilter')['allgemein_kategoriefilter_benutzen'])
              ->setFrontendName(\Shop::Lang()->get('allCategories'));
     }
@@ -218,10 +218,10 @@ class ItemCategory extends BaseCategory
                 ->setSort((int)$category->nSort);
         }
         if ($categoryFilterType === 'KP') {
-            usort($options, function ($a, $b) {
+            \usort($options, function ($a, $b) {
                 /** @var FilterOption $a */
                 /** @var FilterOption $b */
-                return strcmp($a->getName(), $b->getName());
+                return \strcmp($a->getName(), $b->getName());
             });
         }
         $this->options = $options;

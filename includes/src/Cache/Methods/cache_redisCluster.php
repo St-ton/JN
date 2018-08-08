@@ -61,7 +61,7 @@ class cache_redisCluster implements ICachingMethod
     private function setRedisCluster($hosts = null, $persist = false, $strategy = 0): bool
     {
         try {
-            $redis = new \RedisCluster(null, explode(',', $hosts), 1.5, 1.5, $persist);
+            $redis = new \RedisCluster(null, \explode(',', $hosts), 1.5, 1.5, $persist);
             $redis->setOption(\Redis::OPT_PREFIX, $this->options['prefix']);
             // set php serializer for objects and arrays
             $redis->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
@@ -116,7 +116,7 @@ class cache_redisCluster implements ICachingMethod
             $res = $this->_redis->mset($idContent);
             $exp = $expiration ?? $this->options['lifetime'];
             $exp = $exp > -1 ? $exp : null;
-            foreach (array_keys($idContent) as $_cacheID) {
+            foreach (\array_keys($idContent) as $_cacheID) {
                 $this->_redis->expire($_cacheID, $exp);
             }
 
@@ -163,7 +163,7 @@ class cache_redisCluster implements ICachingMethod
      */
     public function isAvailable(): bool
     {
-        return class_exists('Redis');
+        return \class_exists('Redis');
     }
 
     /**
@@ -177,7 +177,7 @@ class cache_redisCluster implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function setCacheTag($tags = [], $cacheID): bool
+    public function setCacheTag($tags, $cacheID): bool
     {
         $res = false;
         if (\is_string($tags)) {
@@ -209,7 +209,7 @@ class cache_redisCluster implements ICachingMethod
      */
     public function flushTags($tags): int
     {
-        return $this->flush(array_unique($this->getKeysByTag($tags)));
+        return $this->flush(\array_unique($this->getKeysByTag($tags)));
     }
 
     /**
@@ -231,11 +231,11 @@ class cache_redisCluster implements ICachingMethod
     {
         $matchTags = \is_string($tags)
             ? [self::_keyFromTagName($tags)]
-            : array_map('Cache\Methods\cache_redisCluster::_keyFromTagName', $tags);
+            : \array_map('Cache\Methods\cache_redisCluster::_keyFromTagName', $tags);
         $res       = \count($tags) === 1
             ? $this->_redis->sMembers($matchTags[0])
             : $this->_redis->sUnion($matchTags);
-        if (PHP_SAPI === 'srv' || PHP_SAPI === 'cli') { // for some reason, hhvm does not unserialize values
+        if (\PHP_SAPI === 'srv' || \PHP_SAPI === 'cli') { // for some reason, hhvm does not unserialize values
             foreach ($res as &$_cid) {
                 // phpredis will throw an exception when unserializing unserialized data
                 try {
@@ -276,7 +276,7 @@ class cache_redisCluster implements ICachingMethod
         try {
             foreach ($this->masters as $master) {
                 $stats[]    = $this->_redis->info($master);
-                $slowLogs[] = method_exists($this->_redis, 'slowlog')
+                $slowLogs[] = \method_exists($this->_redis, 'slowlog')
                     ? $this->_redis->slowlog($master, 'get', 25)
                     : [];
             }
@@ -294,10 +294,10 @@ class cache_redisCluster implements ICachingMethod
             $hps[]     = $stat['uptime_in_seconds'] > 0 ? $stat['keyspace_hits'] / $stat['uptime_in_seconds'] : 0;
             $mps[]     = $stat['uptime_in_seconds'] > 0 ? $stat['keyspace_misses'] / $stat['uptime_in_seconds'] : 0;
             if (isset($stat[$idx])) {
-                $dbStats = explode(',', $stat[$idx]);
+                $dbStats = \explode(',', $stat[$idx]);
                 foreach ($dbStats as $dbStat) {
-                    if (strpos($dbStat, 'keys=') !== false) {
-                        $numEntries[] = str_replace('keys=', '', $dbStat);
+                    if (\strpos($dbStat, 'keys=') !== false) {
+                        $numEntries[] = \str_replace('keys=', '', $dbStat);
                     }
                 }
             }
@@ -306,7 +306,7 @@ class cache_redisCluster implements ICachingMethod
             foreach ($slowLog as $_slow) {
                 $slowLogDataEntry = [];
                 if (isset($_slow[1])) {
-                    $slowLogDataEntry['date'] = date('d.m.Y H:i:s', $_slow[1]);
+                    $slowLogDataEntry['date'] = \date('d.m.Y H:i:s', $_slow[1]);
                 }
                 if (isset($_slow[3][0])) {
                     $slowLogDataEntry['cmd'] = $_slow[3][0];
@@ -319,14 +319,14 @@ class cache_redisCluster implements ICachingMethod
         }
 
         return [
-            'entries'  => implode('/', $numEntries),
-            'uptime'   => implode('/', $uptimes), //uptime in seconds
-            'uptime_h' => implode('/', array_map([$this, 'secondsToTime'], $uptimes)), //human readable
-            'hits'     => implode('/', $hits), //cache hits
-            'misses'   => implode('/', $misses), //cache misses
-            'hps'      => implode('/', $hps), //hits per second
-            'mps'      => implode('/', $mps), //misses per second
-            'mem'      => implode('/', $mem), //used memory in bytes
+            'entries'  => \implode('/', $numEntries),
+            'uptime'   => \implode('/', $uptimes), //uptime in seconds
+            'uptime_h' => \implode('/', \array_map([$this, 'secondsToTime'], $uptimes)), //human readable
+            'hits'     => \implode('/', $hits), //cache hits
+            'misses'   => \implode('/', $misses), //cache misses
+            'hps'      => \implode('/', $hps), //hits per second
+            'mps'      => \implode('/', $mps), //misses per second
+            'mem'      => \implode('/', $mem), //used memory in bytes
             'slow'     => $slowLogData //redis slow log
         ];
     }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -12,13 +12,13 @@ use Filter\ProductFilter;
 use Filter\States\BaseManufacturer;
 
 /**
- * Class ItemManufacturer
+ * Class Manufacturer
  * @package Filter\Items
  */
-class ItemManufacturer extends BaseManufacturer
+class Manufacturer extends BaseManufacturer
 {
     /**
-     * ItemManufacturer constructor.
+     * Manufacturer constructor.
      *
      * @param ProductFilter $productFilter
      */
@@ -27,7 +27,7 @@ class ItemManufacturer extends BaseManufacturer
         parent::__construct($productFilter);
         $this->setIsCustom(false)
              ->setUrlParam('hf')
-             ->setUrlParamSEO(SEP_HST)
+             ->setUrlParamSEO(\SEP_HST)
              ->setVisibility($this->getConfig('navigationsfilter')['allgemein_herstellerfilter_benutzen'])
              ->setFrontendName(\Shop::Lang()->get('allManufacturers'))
              ->setType($this->getConfig('navigationsfilter')['manufacturer_filter_type'] === 'O'
@@ -41,7 +41,7 @@ class ItemManufacturer extends BaseManufacturer
      */
     public function setValue($value): FilterInterface
     {
-        $this->value = is_array($value) ? array_map('intval', $value) : (int)$value;
+        $this->value = \is_array($value) ? \array_map('\intval', $value) : (int)$value;
 
         return $this;
     }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -98,12 +98,12 @@ class FilterOption extends AbstractFilter
     }
 
     /**
-     * @param bool|int $isActive
+     * @param bool $isActive
      * @return $this
      */
-    public function setIsActive($isActive): FilterInterface
+    public function setIsActive(bool $isActive): FilterInterface
     {
-        $this->isActive = (bool)$isActive;
+        $this->isActive = $isActive;
         $this->nAktiv   = (int)$isActive;
 
         return $this;
@@ -121,7 +121,7 @@ class FilterOption extends AbstractFilter
      * @param string $class
      * @return $this
      */
-    public function setClass($class): FilterInterface
+    public function setClass(string $class): FilterInterface
     {
         $this->class = $class;
 
@@ -264,7 +264,7 @@ class FilterOption extends AbstractFilter
      */
     public function __isset($name)
     {
-        return property_exists($this, $name) || self::getMapping($name) !== null || isset($this->data[$name]);
+        return \property_exists($this, $name) || self::getMapping($name) !== null || isset($this->data[$name]);
     }
 
     /**

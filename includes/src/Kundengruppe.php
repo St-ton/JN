@@ -356,7 +356,7 @@ class Kundengruppe
     /**
      * @return int
      */
-    public function getMayViewPrices()
+    public function getMayViewPrices(): int
     {
         return $this->mayViewPrices;
     }
@@ -375,7 +375,7 @@ class Kundengruppe
     /**
      * @return int
      */
-    public function getMayViewCategories()
+    public function getMayViewCategories(): int
     {
         return $this->mayViewCategories;
     }
@@ -400,7 +400,7 @@ class Kundengruppe
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getName()
     {
@@ -411,7 +411,7 @@ class Kundengruppe
      * @return float
      * @deprecated since 4.06
      */
-    public function getRabatt()
+    public function getRabatt(): float
     {
         trigger_error('Kundengruppe::getRabatt() is deprecated - use getDiscount() instead', E_USER_DEPRECATED);
 
@@ -419,7 +419,7 @@ class Kundengruppe
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getStandard()
     {
@@ -429,7 +429,7 @@ class Kundengruppe
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getIsDefault()
     {
@@ -445,7 +445,7 @@ class Kundengruppe
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getShopLogin()
     {
@@ -455,7 +455,7 @@ class Kundengruppe
     /**
      * @return int
      */
-    public function getIsMerchant()
+    public function getIsMerchant(): int
     {
         return $this->isMerchant;
     }
@@ -471,7 +471,7 @@ class Kundengruppe
     /**
      * @return int
      */
-    public function getNettoPreise()
+    public function getNettoPreise(): int
     {
         trigger_error('Kundengruppe::getNettoPreise() is deprecated - use getIsMerchant() instead', E_USER_DEPRECATED);
 
@@ -487,8 +487,8 @@ class Kundengruppe
     {
         $oKdngrp_arr = [];
         $oObj_arr    = Shop::Container()->getDB()->query(
-            "SELECT kKundengruppe 
-                FROM tkundengruppe",
+            'SELECT kKundengruppe 
+                FROM tkundengruppe',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oObj_arr as $oObj) {

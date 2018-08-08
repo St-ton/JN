@@ -14,7 +14,6 @@ if (auth()) {
 
     if (($syncFiles = unzipSyncFiles($zipFile, PFAD_SYNC_TMP, __FILE__)) === false) {
         Shop::Container()->getLogService()->error('Error: Cannot extract zip file ' . $zipFile);
-//        removeTemporaryFiles($zipFile);
     } else {
         $return = 0;
         foreach ($syncFiles as $xmlFile) {

@@ -46,7 +46,7 @@ class cache_xcache implements ICachingMethod
         return xcache_set(
             $this->options['prefix'] . $cacheID,
             ($this->must_be_serialized($content)
-                ? serialize($content)
+                ? \serialize($content)
                 : $content),
             $expiration ?? $this->options['lifetime']
         );
@@ -73,7 +73,7 @@ class cache_xcache implements ICachingMethod
         if (xcache_isset($this->options['prefix'] . $cacheID) === true) {
             $data = xcache_get($this->options['prefix'] . $cacheID);
 
-            return $this->is_serialized($data) ? unserialize($data) : $data;
+            return $this->is_serialized($data) ? \unserialize($data) : $data;
         }
 
         return false;

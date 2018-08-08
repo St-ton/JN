@@ -147,10 +147,10 @@ function bearbeiteGutscheine($xml)
         $gutschein_exists = Shop::Container()->getDB()->select('tgutschein', 'kGutschein', (int)$gutschein->kGutschein);
         if (!isset($gutschein_exists->kGutschein) || !$gutschein_exists->kGutschein) {
             $kGutschein = Shop::Container()->getDB()->insert('tgutschein', $gutschein);
-            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog('Gutschein fuer kKunde ' . (int)$gutschein->kKunde . ' wurde eingeloest. ' .
-                    print_r($gutschein, true), JTLLOG_LEVEL_DEBUG, 'kGutschein', $kGutschein);
-            }
+            Shop::Container()->getLogService()->debug('Gutschein fuer kKunde ' .
+                (int)$gutschein->kKunde . ' wurde eingeloest. ' .
+                print_r($gutschein, true)
+            );
             //kundenkto erhöhen
             Shop::Container()->getDB()->query(
                 'UPDATE tkunde 

@@ -524,7 +524,6 @@ function bearbeiteSet($xml)
             if (isset($order->cBezahlt) && $order->cBezahlt === 'Y') {
                 $status = BESTELLUNG_STATUS_BEZAHLT;
             }
-
             if (isset($order->dVersandt) && strlen($order->dVersandt) > 0) {
                 $status = BESTELLUNG_STATUS_VERSANDT;
             }

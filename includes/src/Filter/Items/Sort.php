@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -7,7 +7,6 @@
 namespace Filter\Items;
 
 use Filter\AbstractFilter;
-use Filter\FilterJoin;
 use Filter\FilterOption;
 use Filter\FilterInterface;
 use Filter\ProductFilter;
@@ -18,10 +17,10 @@ use Mapper\SortingType;
 use Tightenco\Collect\Support\Collection;
 
 /**
- * Class ItemSort
+ * Class Sort
  * @package Filter\Items
  */
-class ItemSort extends AbstractFilter
+class Sort extends AbstractFilter
 {
     /**
      * @var Factory
@@ -44,7 +43,7 @@ class ItemSort extends AbstractFilter
     protected $activeSortingType;
 
     /**
-     * ItemSort constructor.
+     * Sort constructor.
      *
      * @param ProductFilter $productFilter
      */
@@ -60,7 +59,7 @@ class ItemSort extends AbstractFilter
             $this->activeSortingType = $mapper->mapUserSorting($_SESSION['Usersortierung']);
         }
         $_SESSION['Usersortierung'] = $this->activeSortingType;
-        if ($_SESSION['Usersortierung'] === SEARCH_SORT_STANDARD && $this->productFilter->getSort() > 0) {
+        if ($_SESSION['Usersortierung'] === \SEARCH_SORT_STANDARD && $this->productFilter->getSort() > 0) {
             $this->activeSortingType = $this->productFilter->getSort();
         }
     }
@@ -163,7 +162,7 @@ class ItemSort extends AbstractFilter
         $additionalFilter = new self($this->productFilter);
         $activeSortType   = $_SESSION['Usersortierung'] ?? -1;
         foreach ($this->sortingOptions as $i => $sortingOption) {
-            if (get_class($sortingOption) === SortDefault::class) {
+            if (\get_class($sortingOption) === SortDefault::class) {
                 continue;
             }
             /** @var SortingOptionInterface $sortingOption */

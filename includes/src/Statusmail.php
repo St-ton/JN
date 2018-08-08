@@ -167,14 +167,14 @@ class Statusmail
      */
     private function getProductCountPerCustomerGroup(): array
     {
-        $oArtikelProKundengruppe_arr = [];
+        $products = [];
         // Hole alle Kundengruppen im Shop
-        $oKundengruppe_arr = $this->db->query(
+        $customerGroups = $this->db->query(
             'SELECT kKundengruppe, cName FROM tkundengruppe',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        foreach ($oKundengruppe_arr as $oKundengruppe) {
-            $oArtikel            = $this->db->queryPrepared(
+        foreach ($customerGroups as $oKundengruppe) {
+            $productData            = $this->db->queryPrepared(
                 'SELECT count(*) AS nAnzahl
                     FROM tartikel
                     LEFT JOIN tartikelsichtbarkeit 
@@ -184,15 +184,15 @@ class Statusmail
                 ['cgid' => (int)$oKundengruppe->kKundengruppe],
                 \DB\ReturnType::SINGLE_OBJECT
             );
-            $oTMP                = new stdClass();
-            $oTMP->nAnzahl       = (int)$oArtikel->nAnzahl;
-            $oTMP->kKundengruppe = (int)$oKundengruppe->kKundengruppe;
-            $oTMP->cName         = $oKundengruppe->cName;
+            $product                = new stdClass();
+            $product->nAnzahl       = (int)$productData->nAnzahl;
+            $product->kKundengruppe = (int)$oKundengruppe->kKundengruppe;
+            $product->cName         = $oKundengruppe->cName;
 
-            $oArtikelProKundengruppe_arr[] = $oTMP;
+            $products[] = $product;
         }
 
-        return $oArtikelProKundengruppe_arr;
+        return $products;
     }
 
     /**
@@ -221,7 +221,7 @@ class Statusmail
      */
     private function getNewCustomerSalesCount(): int
     {
-        $oKunde = $this->db->queryPrepared(
+        $customerData = $this->db->queryPrepared(
             'SELECT count(DISTINCT(tkunde.kKunde)) AS nAnzahl
                 FROM tkunde
                 JOIN tbestellung 
@@ -238,7 +238,7 @@ class Statusmail
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (int)$oKunde->nAnzahl;
+        return (int)$customerData->nAnzahl;
     }
 
     /**
@@ -248,7 +248,7 @@ class Statusmail
      */
     private function getOrderCount(): int
     {
-        $oBestellung = $this->db->queryPrepared(
+        $orderData = $this->db->queryPrepared(
             'SELECT count(*) AS nAnzahl
                 FROM tbestellung
                 WHERE dErstellt >= :from
@@ -260,7 +260,7 @@ class Statusmail
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (int)$oBestellung->nAnzahl;
+        return (int)$orderData->nAnzahl;
     }
 
     /**
@@ -270,7 +270,7 @@ class Statusmail
      */
     private function getOrderCountForNewCustomers(): int
     {
-        $oBestellung = $this->db->queryPrepared(
+        $orderData = $this->db->queryPrepared(
             'SELECT count(*) AS nAnzahl
                 FROM tbestellung
                 JOIN tkunde 
@@ -285,7 +285,7 @@ class Statusmail
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (int)$oBestellung->nAnzahl;
+        return (int)$orderData->nAnzahl;
     }
 
     /**
@@ -295,7 +295,7 @@ class Statusmail
      */
     private function getIncomingPaymentsCount(): int
     {
-        $oBestellung = $this->db->queryPrepared(
+        $orderData = $this->db->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tbestellung
                 WHERE tbestellung.dErstellt >= :from
@@ -308,7 +308,7 @@ class Statusmail
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (int)$oBestellung->nAnzahl;
+        return (int)$orderData->nAnzahl;
     }
 
     /**
@@ -318,7 +318,7 @@ class Statusmail
      */
     private function getShippedOrdersCount(): int
     {
-        $oBestellung = $this->db->queryPrepared(
+        $orderData = $this->db->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tbestellung
                 WHERE tbestellung.dErstellt >= :from
@@ -331,7 +331,7 @@ class Statusmail
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (int)$oBestellung->nAnzahl;
+        return (int)$orderData->nAnzahl;
     }
 
     /**
@@ -341,7 +341,7 @@ class Statusmail
      */
     private function getVisitorCount(): int
     {
-        $oBesucher = $this->db->queryPrepared(
+        $visitorData = $this->db->queryPrepared(
             'SELECT count(*) AS nAnzahl
                 FROM tbesucherarchiv
                 WHERE dZeit >= :from
@@ -354,7 +354,7 @@ class Statusmail
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (int)$oBesucher->nAnzahl;
+        return (int)$visitorData->nAnzahl;
     }
 
     /**
@@ -364,7 +364,7 @@ class Statusmail
      */
     private function getBotVisitCount(): int
     {
-        $oBesucher = $this->db->queryPrepared(
+        $visitorData = $this->db->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tbesucherarchiv
                 WHERE dZeit >= :from
@@ -377,7 +377,7 @@ class Statusmail
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (int)$oBesucher->nAnzahl;
+        return (int)$visitorData->nAnzahl;
     }
 
     /**
@@ -387,7 +387,7 @@ class Statusmail
      */
     private function getRatingsCount(): int
     {
-        $oBewertung = $this->db->queryPrepared(
+        $ratingData = $this->db->queryPrepared(
             'SELECT count(*) AS nAnzahl
                 FROM tbewertung
                 WHERE dDatum >= :from
@@ -400,7 +400,7 @@ class Statusmail
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (int)$oBewertung->nAnzahl;
+        return (int)$ratingData->nAnzahl;
     }
 
     /**
@@ -410,7 +410,7 @@ class Statusmail
      */
     private function getNonApprovedRatingsCount(): int
     {
-        $oBewertung = $this->db->queryPrepared(
+        $ratingData = $this->db->queryPrepared(
             'SELECT count(*) AS nAnzahl
                 FROM tbewertung
                 WHERE dDatum >= :from
@@ -423,7 +423,7 @@ class Statusmail
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (int)$oBewertung->nAnzahl;
+        return (int)$ratingData->nAnzahl;
     }
 
     /**
@@ -465,7 +465,7 @@ class Statusmail
      */
     private function getTagCount(): int
     {
-        $oTag = $this->db->queryPrepared(
+        $tagData = $this->db->queryPrepared(
             'SELECT count(*) AS nAnzahl
                 FROM ttagkunde
                 JOIN ttag 
@@ -480,7 +480,7 @@ class Statusmail
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (int)$oTag->nAnzahl;
+        return (int)$tagData->nAnzahl;
     }
 
     /**
@@ -490,7 +490,7 @@ class Statusmail
      */
     private function getNonApprovedTagsCounts(): int
     {
-        $oTag = $this->db->queryPrepared(
+        $tagData = $this->db->queryPrepared(
             'SELECT count(*) AS nAnzahl
                 FROM ttagkunde
                 JOIN ttag 
@@ -505,7 +505,7 @@ class Statusmail
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (int)$oTag->nAnzahl;
+        return (int)$tagData->nAnzahl;
     }
 
     /**
@@ -561,7 +561,7 @@ class Statusmail
      */
     private function getSentWishlistCount(): int
     {
-        $oWunschliste = $this->db->queryPrepared(
+        $wishlistData = $this->db->queryPrepared(
             'SELECT count(*) AS nAnzahl
                     FROM twunschlisteversand
                     WHERE dZeit >= :from
@@ -573,7 +573,7 @@ class Statusmail
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (int)$oWunschliste->nAnzahl;
+        return (int)$wishlistData->nAnzahl;
     }
 
     /**
@@ -583,7 +583,7 @@ class Statusmail
      */
     private function getSurveyParticipationsCount(): int
     {
-        $oUmfrage = $this->db->queryPrepared(
+        $surveyData = $this->db->queryPrepared(
             'SELECT count(*) AS nAnzahl
                 FROM tumfragedurchfuehrung
                 WHERE dDurchgefuehrt >= :from
@@ -595,7 +595,7 @@ class Statusmail
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (int)$oUmfrage->nAnzahl;
+        return (int)$surveyData->nAnzahl;
     }
 
     /**
@@ -605,7 +605,7 @@ class Statusmail
      */
     private function getNewsCommentsCount(): int
     {
-        $oNewskommentar = $this->db->queryPrepared(
+        $newsCommentData = $this->db->queryPrepared(
             'SELECT count(*) AS nAnzahl
                 FROM tnewskommentar
                 WHERE dErstellt >= :from
@@ -618,7 +618,7 @@ class Statusmail
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (int)$oNewskommentar->nAnzahl;
+        return (int)$newsCommentData->nAnzahl;
     }
 
     /**
@@ -628,7 +628,7 @@ class Statusmail
      */
     private function getNonApprovedCommentsCount(): int
     {
-        $oNewskommentar = $this->db->queryPrepared(
+        $newsCommentData = $this->db->queryPrepared(
             'SELECT count(*) AS nAnzahl
                 FROM tnewskommentar
                 WHERE dErstellt >= :from
@@ -641,7 +641,7 @@ class Statusmail
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (int)$oNewskommentar->nAnzahl;
+        return (int)$newsCommentData->nAnzahl;
     }
 
     /**
@@ -651,7 +651,7 @@ class Statusmail
      */
     private function getAvailabilityNotificationsCount(): int
     {
-        $oVerfuegbarkeit = $this->db->queryPrepared(
+        $availabilityData = $this->db->queryPrepared(
             'SELECT count(*) AS nAnzahl
                 FROM tverfuegbarkeitsbenachrichtigung
                 WHERE dErstellt >= :from
@@ -663,7 +663,7 @@ class Statusmail
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (int)$oVerfuegbarkeit->nAnzahl;
+        return (int)$availabilityData->nAnzahl;
     }
 
     /**
@@ -673,7 +673,7 @@ class Statusmail
      */
     private function getProductInquriesCount(): int
     {
-        $oFrageProdukt = $this->db->queryPrepared(
+        $inquiryData = $this->db->queryPrepared(
             'SELECT count(*) AS nAnzahl
                 FROM tproduktanfragehistory
                 WHERE dErstellt >= :from
@@ -685,7 +685,7 @@ class Statusmail
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (int)$oFrageProdukt->nAnzahl;
+        return (int)$inquiryData->nAnzahl;
     }
 
     /**
@@ -695,7 +695,7 @@ class Statusmail
      */
     private function getComparisonsCount(): int
     {
-        $oVergleich = $this->db->queryPrepared(
+        $comparisonData = $this->db->queryPrepared(
             'SELECT count(*) AS nAnzahl
                 FROM tvergleichsliste
                 WHERE dDate >= :from
@@ -707,7 +707,7 @@ class Statusmail
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (int)$oVergleich->nAnzahl;
+        return (int)$comparisonData->nAnzahl;
     }
 
     /**
@@ -717,7 +717,7 @@ class Statusmail
      */
     private function getCouponUsageCount(): int
     {
-        $oKupon = $this->db->queryPrepared(
+        $couponData = $this->db->queryPrepared(
             'SELECT count(*) AS nAnzahl
                 FROM tkuponkunde
                 WHERE dErstellt >= :from
@@ -729,7 +729,7 @@ class Statusmail
             \DB\ReturnType::SINGLE_OBJECT
         );
 
-        return (int)$oKupon->nAnzahl;
+        return (int)$couponData->nAnzahl;
     }
 
     /**

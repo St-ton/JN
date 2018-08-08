@@ -184,12 +184,12 @@ class Exportformat
     private function loadFromDB(int $kExportformat = 0): self
     {
         $oObj = Shop::Container()->getDB()->query(
-            "SELECT texportformat.*, tkampagne.cParameter AS campaignParameter, tkampagne.cWert AS campaignValue
+            'SELECT texportformat.*, tkampagne.cParameter AS campaignParameter, tkampagne.cWert AS campaignValue
                FROM texportformat
                LEFT JOIN tkampagne 
                   ON tkampagne.kKampagne = texportformat.kKampagne
                   AND tkampagne.nAktiv = 1
-               WHERE texportformat.kExportformat = " . $kExportformat,
+               WHERE texportformat.kExportformat = ' . $kExportformat,
             \DB\ReturnType::SINGLE_OBJECT
         );
         if (isset($oObj->kExportformat) && $oObj->kExportformat > 0) {
@@ -406,7 +406,7 @@ class Exportformat
      * @param string $cKopfzeile
      * @return $this
      */
-    public function setKopfzeile($cKopfzeile)
+    public function setKopfzeile($cKopfzeile): self
     {
         $this->cKopfzeile = $cKopfzeile;
 
@@ -417,7 +417,7 @@ class Exportformat
      * @param string $cContent
      * @return $this
      */
-    public function setContent($cContent)
+    public function setContent($cContent): self
     {
         $this->cContent = $cContent;
 
@@ -428,7 +428,7 @@ class Exportformat
      * @param string $cFusszeile
      * @return $this
      */
-    public function setFusszeile($cFusszeile)
+    public function setFusszeile($cFusszeile): self
     {
         $this->cFusszeile = $cFusszeile;
 
@@ -439,7 +439,7 @@ class Exportformat
      * @param string $cKodierung
      * @return $this
      */
-    public function setKodierung($cKodierung)
+    public function setKodierung($cKodierung): self
     {
         $this->cKodierung = $cKodierung;
 
@@ -450,9 +450,9 @@ class Exportformat
      * @param int $nSpecial
      * @return $this
      */
-    public function setSpecial($nSpecial)
+    public function setSpecial(int $nSpecial): self
     {
-        $this->nSpecial = (int)$nSpecial;
+        $this->nSpecial = $nSpecial;
 
         return $this;
     }
@@ -461,9 +461,9 @@ class Exportformat
      * @param int $nVarKombiOption
      * @return $this
      */
-    public function setVarKombiOption($nVarKombiOption)
+    public function setVarKombiOption(int $nVarKombiOption): self
     {
-        $this->nVarKombiOption = (int)$nVarKombiOption;
+        $this->nVarKombiOption = $nVarKombiOption;
 
         return $this;
     }
@@ -472,9 +472,9 @@ class Exportformat
      * @param int $nSplitgroesse
      * @return $this
      */
-    public function setSplitgroesse($nSplitgroesse)
+    public function setSplitgroesse(int $nSplitgroesse): self
     {
-        $this->nSplitgroesse = (int)$nSplitgroesse;
+        $this->nSplitgroesse = $nSplitgroesse;
 
         return $this;
     }
@@ -483,7 +483,7 @@ class Exportformat
      * @param string $dZuletztErstellt
      * @return $this
      */
-    public function setZuletztErstellt($dZuletztErstellt)
+    public function setZuletztErstellt($dZuletztErstellt): self
     {
         $this->dZuletztErstellt = $dZuletztErstellt;
 
@@ -539,7 +539,7 @@ class Exportformat
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getName()
     {
@@ -547,7 +547,7 @@ class Exportformat
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getDateiname()
     {
@@ -555,7 +555,7 @@ class Exportformat
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getKopfzeile()
     {
@@ -563,7 +563,7 @@ class Exportformat
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getContent()
     {
@@ -571,7 +571,7 @@ class Exportformat
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getFusszeile()
     {
@@ -579,7 +579,7 @@ class Exportformat
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getKodierung()
     {
@@ -587,7 +587,7 @@ class Exportformat
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getSpecial()
     {
@@ -595,7 +595,7 @@ class Exportformat
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getVarKombiOption()
     {
@@ -603,7 +603,7 @@ class Exportformat
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getSplitgroesse()
     {
@@ -611,7 +611,7 @@ class Exportformat
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getZuletztErstellt()
     {
@@ -621,7 +621,7 @@ class Exportformat
     /**
      * @return array
      */
-    public function getConfig()
+    public function getConfig(): array
     {
         return $this->config;
     }
@@ -631,52 +631,46 @@ class Exportformat
      * @return bool
      * @deprecated since 5.0.0
      */
-    public function insertEinstellungen($einstellungenAssoc_arr)
+    public function insertEinstellungen(array $einstellungenAssoc_arr): bool
     {
-        $ok = false;
-        if (is_array($einstellungenAssoc_arr)) {
-            $ok = true;
-            foreach ($einstellungenAssoc_arr as $einstellungAssoc_arr) {
-                $oObj = new stdClass();
-                if (is_array($einstellungAssoc_arr) && count($einstellungAssoc_arr) > 0) {
-                    foreach (array_keys($einstellungAssoc_arr) as $cMember) {
-                        $oObj->$cMember = $einstellungAssoc_arr[$cMember];
-                    }
-                    $oObj->kExportformat = $this->getExportformat();
+        $ok = true;
+        foreach ($einstellungenAssoc_arr as $einstellungAssoc_arr) {
+            $oObj = new stdClass();
+            if (is_array($einstellungAssoc_arr) && count($einstellungAssoc_arr) > 0) {
+                foreach (array_keys($einstellungAssoc_arr) as $cMember) {
+                    $oObj->$cMember = $einstellungAssoc_arr[$cMember];
                 }
-                $ok = $ok && (Shop::Container()->getDB()->insert('texportformateinstellungen', $oObj) > 0);
+                $oObj->kExportformat = $this->getExportformat();
             }
+            $ok = $ok && (Shop::Container()->getDB()->insert('texportformateinstellungen', $oObj) > 0);
         }
 
         return $ok;
     }
 
     /**
-     * @param array $einstellungenAssoc_arr
+     * @param array $config
      * @return bool
      * @deprecated since 5.0.0
      */
-    public function updateEinstellungen($einstellungenAssoc_arr)
+    public function updateEinstellungen(array $config): bool
     {
-        $ok = false;
-        if (is_array($einstellungenAssoc_arr)) {
-            $ok = true;
-            foreach ($einstellungenAssoc_arr as $einstellungAssoc_arr) {
-                $cExportEinstellungenToImport_arr = [
-                    'exportformate_semikolon',
-                    'exportformate_equot',
-                    'exportformate_quot'
-                ];
-                if (in_array($einstellungAssoc_arr['cName'], $cExportEinstellungenToImport_arr, true)) {
-                    $_upd        = new stdClass();
-                    $_upd->cWert = $einstellungAssoc_arr['cWert'];
-                    $ok          = $ok && (Shop::Container()->getDB()->update(
-                                'tboxensichtbar',
-                                ['kExportformat', 'cName'],
-                                [$this->getExportformat(), $einstellungAssoc_arr['cName']],
-                                $_upd
-                            ) >= 0);
-                }
+        $ok = true;
+        foreach ($config as $conf) {
+            $import = [
+                'exportformate_semikolon',
+                'exportformate_equot',
+                'exportformate_quot'
+            ];
+            if (in_array($conf['cName'], $import, true)) {
+                $_upd        = new stdClass();
+                $_upd->cWert = $conf['cWert'];
+                $ok          = $ok && (Shop::Container()->getDB()->update(
+                            'tboxensichtbar',
+                            ['kExportformat', 'cName'],
+                            [$this->getExportformat(), $conf['cName']],
+                            $_upd
+                        ) >= 0);
             }
         }
 
@@ -723,8 +717,7 @@ class Exportformat
         TaxHelper::setTaxRates();
         $net       = Shop::Container()->getDB()->select('tkundengruppe', 'kKundengruppe', $this->getKundengruppe());
         $languages = \Functional\map(Shop::Container()->getDB()->query(
-            "SELECT * 
-                FROM tsprache",
+            'SELECT *  FROM tsprache',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         ), function ($lang) {
             $lang->kSprache = (int)$lang->kSprache;
@@ -776,10 +769,10 @@ class Exportformat
 
         switch ($this->getVarKombiOption()) {
             case 2:
-                $where = " AND kVaterArtikel = 0";
+                $where = ' AND kVaterArtikel = 0';
                 break;
             case 3:
-                $where = " AND (tartikel.nIstVater != 1 OR tartikel.kEigenschaftKombi > 0)";
+                $where = ' AND (tartikel.nIstVater != 1 OR tartikel.kEigenschaftKombi > 0)';
                 break;
             default:
                 break;
@@ -792,9 +785,9 @@ class Exportformat
         }
 
         if ($this->config['exportformate_preis_ueber_null'] === 'Y') {
-            $join .= " JOIN tpreise ON tpreise.kArtikel = tartikel.kArtikel
-                            AND tpreise.kKundengruppe = " . $this->getKundengruppe() . "
-                            AND tpreise.fVKNetto > 0";
+            $join .= ' JOIN tpreise ON tpreise.kArtikel = tartikel.kArtikel
+                            AND tpreise.kKundengruppe = ' . $this->getKundengruppe() . '
+                            AND tpreise.fVKNetto > 0';
         }
 
         if ($this->config['exportformate_beschreibung'] === 'Y') {

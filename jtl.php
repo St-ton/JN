@@ -384,8 +384,8 @@ if ($customerID > 0) {
                     $cSQL = ' AND ' . implode(' AND ', $nonEditableCustomerfields_arr);
                 }
                 Shop::Container()->getDB()->query(
-                    "DELETE FROM tkundenattribut
-                        WHERE kKunde = " . $customerID . $cSQL,
+                    'DELETE FROM tkundenattribut
+                        WHERE kKunde = ' . $customerID . $cSQL,
                     \DB\ReturnType::AFFECTED_ROWS
                 );
                 $nKundenattributKey_arr             = array_keys($cKundenattribut_arr);

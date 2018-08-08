@@ -146,7 +146,7 @@ final class LinkService implements LinkServiceInterface
         $link   = $this->getParentForID($id);
 
         while ($link !== null && $link->getID() > 0) {
-            array_unshift($result, $link->getID());
+            \array_unshift($result, $link->getID());
             $link = $this->getLinkByID($link->getParent());
         }
 
@@ -289,7 +289,7 @@ final class LinkService implements LinkServiceInterface
             }
         }
 
-        return $full && strpos($id, 'http') !== 0
+        return $full && \strpos($id, 'http') !== 0
             ? \Shop::getURL($secure) . '/' . $id
             : $id;
     }
@@ -394,7 +394,7 @@ final class LinkService implements LinkServiceInterface
         }
 //        if ($cISOSprache !== null) {
 //            $shopISO = \Shop::getLanguageCode();
-//            if ($shopISO !== null && strlen($shopISO) > 0) {
+//            if ($shopISO !== null && \strlen($shopISO) > 0) {
 //                $cISOSprache = $shopISO;
 //            } else {
 //                $oSprache    = gibStandardsprache();
@@ -437,16 +437,16 @@ final class LinkService implements LinkServiceInterface
                 $linkType = $link->getLinkType();
                 $linkID   = $link->getID();
                 switch ($pageType) {
-                    case PAGE_STARTSEITE:
-                        if ($linkType === LINKTYP_STARTSEITE) {
+                    case \PAGE_STARTSEITE:
+                        if ($linkType === \LINKTYP_STARTSEITE) {
                             $link->setIsActive(true);
                         }
                         break;
-                    case PAGE_ARTIKEL:
-                    case PAGE_ARTIKELLISTE:
-                    case PAGE_BESTELLVORGANG:
+                    case \PAGE_ARTIKEL:
+                    case \PAGE_ARTIKELLISTE:
+                    case \PAGE_BESTELLVORGANG:
                         break;
-                    case PAGE_EIGENE:
+                    case \PAGE_EIGENE:
                         $parent = $link->getParent();
                         if ($parent === 0 && $this->isChildActive($linkID, \Shop::$kLink)) {
                             $link->setIsActive(true);
@@ -463,44 +463,44 @@ final class LinkService implements LinkServiceInterface
                             });
                         }
                         break;
-                    case PAGE_WARENKORB:
-                        if ($linkType === LINKTYP_WARENKORB) {
+                    case \PAGE_WARENKORB:
+                        if ($linkType === \LINKTYP_WARENKORB) {
                             $link->setIsActive(true);
                         }
                         break;
-                    case PAGE_LOGIN:
-                    case PAGE_MEINKONTO:
-                        if ($linkType === LINKTYP_LOGIN) {
+                    case \PAGE_LOGIN:
+                    case \PAGE_MEINKONTO:
+                        if ($linkType === \LINKTYP_LOGIN) {
                             $link->setIsActive(true);
                         }
                         break;
-                    case PAGE_REGISTRIERUNG:
-                        if ($linkType === LINKTYP_REGISTRIEREN) {
+                    case \PAGE_REGISTRIERUNG:
+                        if ($linkType === \LINKTYP_REGISTRIEREN) {
                             $link->setIsActive(true);
                         }
                         break;
-                    case PAGE_PASSWORTVERGESSEN:
-                        if ($linkType === LINKTYP_PASSWORD_VERGESSEN) {
+                    case \PAGE_PASSWORTVERGESSEN:
+                        if ($linkType === \LINKTYP_PASSWORD_VERGESSEN) {
                             $link->setIsActive(true);
                         }
                         break;
-                    case PAGE_KONTAKT:
-                        if ($linkType === LINKTYP_KONTAKT) {
+                    case \PAGE_KONTAKT:
+                        if ($linkType === \LINKTYP_KONTAKT) {
                             $link->setIsActive(true);
                         }
                         break;
-                    case PAGE_NEWSLETTER:
-                        if ($linkType === LINKTYP_NEWSLETTER) {
+                    case \PAGE_NEWSLETTER:
+                        if ($linkType === \LINKTYP_NEWSLETTER) {
                             $link->setIsActive(true);
                         }
                         break;
-                    case PAGE_UMFRAGE:
-                        if ($linkType === LINKTYP_UMFRAGE) {
+                    case \PAGE_UMFRAGE:
+                        if ($linkType === \LINKTYP_UMFRAGE) {
                             $link->setIsActive(true);
                         }
                         break;
-                    case PAGE_NEWS:
-                        if ($linkType === LINKTYP_NEWS) {
+                    case \PAGE_NEWS:
+                        if ($linkType === \LINKTYP_NEWS) {
                             $link->setIsActive(true);
                         }
                         break;
@@ -526,9 +526,9 @@ final class LinkService implements LinkServiceInterface
         // kLink für AGB und WRB suchen
         foreach ($this->getSpecialPages() as $sp) {
             /** @var \Link\LinkInterface $sp */
-            if ($sp->getLinkType() === LINKTYP_AGB) {
+            if ($sp->getLinkType() === \LINKTYP_AGB) {
                 $oLinkAGB = $sp;
-            } elseif ($sp->getLinkType() === LINKTYP_WRB) {
+            } elseif ($sp->getLinkType() === \LINKTYP_WRB) {
                 $oLinkWRB = $sp;
             }
         }

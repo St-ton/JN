@@ -102,13 +102,13 @@ class IOMethods
     {
         $results = [];
         if (!empty($country) && !empty($zip)) {
-            $cityQuery = "%" . StringHandler::filterXSS($cityQuery) . "%";
+            $cityQuery = '%' . StringHandler::filterXSS($cityQuery) . '%';
             $cities    = Shop::Container()->getDB()->queryPrepared(
-                "SELECT cOrt
+                'SELECT cOrt
                     FROM tplz
                     WHERE cLandISO = :country
                         AND cPLZ = :zip
-                        AND cOrt LIKE :cityQuery",
+                        AND cOrt LIKE :cityQuery',
                 ['country' => $country, 'zip' => $zip, 'cityQuery' => $cityQuery],
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
@@ -1063,7 +1063,7 @@ class IOMethods
 
         if (strlen($country) === 2) {
             $regions = Staat::getRegions($country);
-            $response->script("this.response = " . json_encode($regions) . ";");
+            $response->script('this.response = ' . json_encode($regions) . ';');
         }
 
         return $response;

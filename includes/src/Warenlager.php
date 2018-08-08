@@ -448,9 +448,10 @@ class Warenlager extends MainModel
                 $cSqlJoin   = '';
                 if ($xOption !== null && (int)$xOption > 0) {
                     $xOption    = (int)$xOption;
-                    $cSqlSelect = ", IF (twarenlagersprache.cName IS NOT NULL, twarenlagersprache.cName, twarenlager.cName) AS cName";
-                    $cSqlJoin   = "LEFT JOIN twarenlagersprache ON twarenlagersprache.kWarenlager = twarenlager.kWarenlager
-                                    AND twarenlagersprache.kSprache = {$xOption}";
+                    $cSqlSelect = ', IF (twarenlagersprache.cName IS NOT NULL, twarenlagersprache.cName, twarenlager.cName) AS cName';
+                    $cSqlJoin   = 'LEFT JOIN twarenlagersprache 
+                                        ON twarenlagersprache.kWarenlager = twarenlager.kWarenlager
+                                        AND twarenlagersprache.kSprache = ' . $xOption;
                 }
 
                 $oObj = Shop::Container()->getDB()->query(
@@ -499,7 +500,7 @@ class Warenlager extends MainModel
      */
     public function update(): int
     {
-        $cQuery      = "UPDATE twarenlager SET ";
+        $cQuery      = 'UPDATE twarenlager SET ';
         $cSet_arr    = [];
         $cMember_arr = array_keys(get_object_vars($this));
         if (is_array($cMember_arr) && count($cMember_arr) > 0) {
@@ -544,10 +545,10 @@ class Warenlager extends MainModel
     public function loadLanguages(): bool
     {
         if ($this->getWarenlager() > 0) {
-            $oObj_arr = Shop::Container()->getDB()->selectAll('twarenlagersprache', 'kWarenlager', $this->getWarenlager());
-            if (count($oObj_arr) > 0) {
+            $data = Shop::Container()->getDB()->selectAll('twarenlagersprache', 'kWarenlager', $this->getWarenlager());
+            if (count($data) > 0) {
                 $this->cSpracheAssoc_arr = [];
-                foreach ($oObj_arr as $oObj) {
+                foreach ($data as $oObj) {
                     $this->cSpracheAssoc_arr[(int)$oObj->kSprache] = $oObj->cName;
                 }
 
@@ -566,7 +567,7 @@ class Warenlager extends MainModel
     public static function getAll(bool $bActive = true, bool $bLoadLanguages = false): array
     {
         $oWarenlager_arr = [];
-        $cSql            = $bActive ? " WHERE nAktiv = 1" : '';
+        $cSql            = $bActive ? ' WHERE nAktiv = 1' : '';
         $oObj_arr = Shop::Container()->getDB()->query(
             "SELECT *
                FROM twarenlager
@@ -595,7 +596,7 @@ class Warenlager extends MainModel
     {
         $oWarenlager_arr = [];
         if ($kArtikel > 0) {
-            $cSql     = $bActive ? " AND twarenlager.nAktiv = 1" : '';
+            $cSql     = $bActive ? ' AND twarenlager.nAktiv = 1' : '';
             $oObj_arr = Shop::Container()->getDB()->queryPrepared(
                 "SELECT tartikelwarenlager.*
                     FROM tartikelwarenlager

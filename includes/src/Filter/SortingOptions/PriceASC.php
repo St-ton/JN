@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -30,6 +30,6 @@ class PriceASC extends AbstractSortingOption
                                 AND tpreise.kKundengruppe = ' . $productFilter->getCustomerGroupID());
         $this->setName(\Shop::Lang()->get('sortPriceAsc'));
         $this->setPriority($this->getConfig('artikeluebersicht')['suche_sortierprio_preis']);
-        $this->setValue(SEARCH_SORT_PRICE_ASC);
+        $this->setValue(\SEARCH_SORT_PRICE_ASC);
     }
 }

@@ -20,11 +20,11 @@ class ImageSlider extends \OPC\Portlet
      */
     public function getPreviewHtml(PortletInstance $instance): string
     {
-        $instance->setProperty('uid', uniqid('sldr-', false));
+        $instance->setProperty('uid', \uniqid('sldr-', false));
         $images = $instance->getProperty('slides');
         unset($images['NEU']);
         if (!empty($images)) {
-            usort(
+            \usort(
                 $images,
                 function ($a, $b) {
                     return $a['nSort'] > $b['nSort'];
@@ -56,7 +56,7 @@ class ImageSlider extends \OPC\Portlet
         $images = $instance->getProperty('slides');
         unset($images['NEU']);
         if (!empty($images)) {
-            usort(
+            \usort(
                 $images,
                 function ($a, $b) {
                     return $a['nSort'] > $b['nSort'];

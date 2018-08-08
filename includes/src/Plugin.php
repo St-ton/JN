@@ -448,12 +448,12 @@ class Plugin
         }
         // Plugin Einstellungen holen
         $this->oPluginEinstellung_arr = Shop::Container()->getDB()->query(
-            "SELECT tplugineinstellungen.*, tplugineinstellungenconf.cConf
+            'SELECT tplugineinstellungen.*, tplugineinstellungenconf.cConf
                 FROM tplugineinstellungen
                 LEFT JOIN tplugineinstellungenconf
                     ON tplugineinstellungenconf.kPlugin = tplugineinstellungen.kPlugin
                     AND tplugineinstellungen.cName = tplugineinstellungenconf.cWertName
-                WHERE tplugineinstellungen.kPlugin = " . $kPlugin,
+                WHERE tplugineinstellungen.kPlugin = ' . $kPlugin,
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($this->oPluginEinstellung_arr as $conf) {
@@ -728,8 +728,8 @@ class Plugin
             $cacheID = 'plugin_id_list';
             if (($plugins = Shop::Cache()->get($cacheID)) === false) {
                 $plugins = Shop::Container()->getDB()->query(
-                    "SELECT kPlugin, cPluginID 
-                        FROM tplugin",
+                    'SELECT kPlugin, cPluginID 
+                        FROM tplugin',
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 Shop::Cache()->set($cacheID, $plugins, [CACHING_GROUP_PLUGIN]);
@@ -814,12 +814,12 @@ class Plugin
         $oPluginHook          = null;
         $oPluginHookListe_arr = [];
         $oPluginHook_arr      = Shop::Container()->getDB()->queryPrepared(
-            "SELECT tpluginhook.nHook, tplugin.kPlugin, tplugin.cVerzeichnis, tplugin.nVersion, tpluginhook.cDateiname
+            'SELECT tpluginhook.nHook, tplugin.kPlugin, tplugin.cVerzeichnis, tplugin.nVersion, tpluginhook.cDateiname
                 FROM tplugin
                 JOIN tpluginhook
                     ON tpluginhook.kPlugin = tplugin.kPlugin
                 WHERE tplugin.nStatus = :state
-                ORDER BY tpluginhook.nPriority, tplugin.kPlugin",
+                ORDER BY tpluginhook.nPriority, tplugin.kPlugin',
             ['state' => self::PLUGIN_ACTIVATED],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
@@ -1049,14 +1049,14 @@ class Plugin
     {
         $oPluginEinstellungen_arr    = [];
         $oPluginEinstellungenTMP_arr = Shop::Container()->getDB()->queryPrepared(
-            "SELECT tplugineinstellungen.*, tplugineinstellungenconf.cConf
+            'SELECT tplugineinstellungen.*, tplugineinstellungenconf.cConf
                 FROM tplugin
                 JOIN tplugineinstellungen 
                     ON tplugineinstellungen.kPlugin = tplugin.kPlugin
                 LEFT JOIN tplugineinstellungenconf 
                     ON tplugineinstellungenconf.kPlugin = tplugin.kPlugin 
                     AND tplugineinstellungen.cName = tplugineinstellungenconf.cWertName
-                WHERE tplugin.kPlugin = :pid",
+                WHERE tplugin.kPlugin = :pid',
                 ['pid' => $id],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
@@ -1084,7 +1084,7 @@ class Plugin
             $cSQL = " AND tpluginsprachvariablesprache.cISO = '" . strtoupper($cISO) . "'";
         }
         $oPluginSprachvariablen = Shop::Container()->getDB()->query(
-            "SELECT tpluginsprachvariable.kPluginSprachvariable,
+            'SELECT tpluginsprachvariable.kPluginSprachvariable,
                 tpluginsprachvariable.kPlugin,
                 tpluginsprachvariable.cName,
                 tpluginsprachvariable.cBeschreibung,
@@ -1098,7 +1098,7 @@ class Plugin
                     ON tpluginsprachvariablecustomsprache.kPlugin = tpluginsprachvariable.kPlugin
                     AND tpluginsprachvariablecustomsprache.kPluginSprachvariable = tpluginsprachvariable.kPluginSprachvariable
                     AND tpluginsprachvariablesprache.cISO = tpluginsprachvariablecustomsprache.cISO
-                WHERE tpluginsprachvariable.kPlugin = " . $id . $cSQL,
+                WHERE tpluginsprachvariable.kPlugin = ' . $id . $cSQL,
             \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
         );
         if (!is_array($oPluginSprachvariablen) || count($oPluginSprachvariablen) < 1) {

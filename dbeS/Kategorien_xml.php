@@ -287,7 +287,6 @@ function saveKategorieAttribut($xmlParent, $oAttribut)
         'cName'     => $oAttribut->cName,
         'cWert'     => $oAttribut->cWert,
     ]);
-
     DBUpdateInsert('tkategorieattributsprache', $oAttribSprache_arr, 'kAttribut', 'kSprache');
 
     return $oAttribut->kKategorieAttribut;

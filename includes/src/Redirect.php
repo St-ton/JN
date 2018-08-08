@@ -48,7 +48,7 @@ class Redirect
      * @param int $kRedirect
      * @return $this
      */
-    public function loadFromDB(int $kRedirect)
+    public function loadFromDB(int $kRedirect): self
     {
         $obj = Shop::Container()->getDB()->select('tredirect', 'kRedirect', $kRedirect);
         if ($obj !== null && $obj->kRedirect > 0) {
@@ -66,7 +66,7 @@ class Redirect
      * @return $this
      * @deprecated since 4.06 - use Redirect::deleteRedirect() instead
      */
-    public function delete(int $kRedirect)
+    public function delete(int $kRedirect): self
     {
         self::deleteRedirect($kRedirect);
 
@@ -218,7 +218,7 @@ class Redirect
      * @param object  $oSprache
      * @return $this
      */
-    protected function import($csv, $nRow, &$cError_arr, $cMapping_arr, $oSprache)
+    protected function import($csv, $nRow, &$cError_arr, $cMapping_arr, $oSprache): self
     {
         $xParse_arr = parse_url($csv[$cMapping_arr['sourceurl']]);
         $cFromUrl   = $xParse_arr['path'];
@@ -501,7 +501,7 @@ class Redirect
             $qry .= ' AND ';
         }
         if (!empty($cSuchbegriff)) {
-            $qry  .= "cFromUrl LIKE :search";
+            $qry  .= 'cFromUrl LIKE :search';
             $prep = ['search' => '%' . $cSuchbegriff . '%'];
         }
         $oCount = Shop::Container()->getDB()->executeQueryPrepared($qry, $prep, \DB\ReturnType::SINGLE_OBJECT);
@@ -563,11 +563,11 @@ class Redirect
     public static function getRedirects($cWhereSQL = '', $cOrderSQL = '', $cLimitSQL = ''): array
     {
         $oRedirect_arr = Shop::Container()->getDB()->query(
-            "SELECT *
-                FROM tredirect" .
-                ($cWhereSQL !== '' ? " WHERE " . $cWhereSQL : "") .
-                ($cOrderSQL !== '' ? " ORDER BY " . $cOrderSQL : "") .
-                ($cLimitSQL !== '' ? " LIMIT " . $cLimitSQL : ""),
+            'SELECT *
+                FROM tredirect' .
+                ($cWhereSQL !== '' ? ' WHERE ' . $cWhereSQL : '') .
+                ($cOrderSQL !== '' ? ' ORDER BY ' . $cOrderSQL : '') .
+                ($cLimitSQL !== '' ? ' LIMIT ' . $cLimitSQL : ''),
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oRedirect_arr as $oRedirect) {
@@ -584,10 +584,10 @@ class Redirect
     public static function getRedirectCount($cWhereSQL = ''): int
     {
         return (int)Shop::Container()->getDB()->query(
-            "SELECT COUNT(kRedirect) AS nCount
-                FROM tredirect" .
-                ($cWhereSQL !== '' ? " WHERE " . $cWhereSQL : ""),
-            1
+            'SELECT COUNT(kRedirect) AS nCount
+                FROM tredirect' .
+                ($cWhereSQL !== '' ? ' WHERE ' . $cWhereSQL : ''),
+            \DB\ReturnType::SINGLE_OBJECT
         )->nCount;
     }
 
@@ -705,7 +705,7 @@ class Redirect
      * @param bool  $forceExit
      * @return array
      */
-    public static function urlNotFoundRedirect(array $hookInfos = null, bool $forceExit = false)
+    public static function urlNotFoundRedirect(array $hookInfos = null, bool $forceExit = false): array
     {
         $url         = $_SERVER['REQUEST_URI'];
         $redirect    = new self;

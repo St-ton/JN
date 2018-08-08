@@ -25,7 +25,7 @@ final class BoxCart extends AbstractBox
             foreach ($_SESSION['Warenkorb']->PositionenArr as $position) {
                 $products[] = $position;
             }
-            $this->setItems(array_reverse($products));
+            $this->setItems(\array_reverse($products));
         }
         $this->setShow(true);
     }

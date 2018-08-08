@@ -15,7 +15,7 @@ class MediaImageCompatibility implements IMedia
      * @param string $request
      * @return bool
      */
-    public function isValid($request)
+    public function isValid($request): bool
     {
         return in_array(IMAGE_COMPATIBILITY_LEVEL, [1, 2], true) && $this->parse($request) !== null;
     }
@@ -29,13 +29,13 @@ class MediaImageCompatibility implements IMedia
         $req      = $this->parse($request);
         $path     = strtolower($req['path']);
         $fallback = Shop::Container()->getDB()->executeQueryPrepared(
-            "SELECT h.kArtikel, h.nNr, a.cSeo, a.cName, a.cArtNr, a.cBarcode 
+            'SELECT h.kArtikel, h.nNr, a.cSeo, a.cName, a.cArtNr, a.cBarcode 
                 FROM tartikelpicthistory h 
                 INNER JOIN tartikel a 
                   ON h.kArtikel = a.kArtikel 
-                  WHERE LOWER(h.cPfad) = :path",
+                  WHERE LOWER(h.cPfad) = :path',
             ['path' => $path],
-            1
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         if (is_object($fallback)) {
@@ -67,12 +67,12 @@ class MediaImageCompatibility implements IMedia
 
             $fallback = Shop::Container()->getDB()->query(
               "SELECT a.kArtikel, a.cSeo, a.cName, a.cArtNr, a.cBarcode 
-              FROM tartikel a 
-              WHERE 
-                  LOWER(a.cName) = '{$name}' 
-                  OR LOWER(a.cSeo) = '{$seo}' 
-                  OR LOWER(a.cBarcode) = '{$barcode}' 
-                  OR LOWER(a.cArtNr) = '{$articleNumber}'",
+                  FROM tartikel a 
+                  WHERE 
+                      LOWER(a.cName) = '{$name}' 
+                      OR LOWER(a.cSeo) = '{$seo}' 
+                      OR LOWER(a.cBarcode) = '{$barcode}' 
+                      OR LOWER(a.cArtNr) = '{$articleNumber}'",
                 \DB\ReturnType::SINGLE_OBJECT
             );
         }
@@ -100,7 +100,7 @@ class MediaImageCompatibility implements IMedia
      * @param string $str
      * @return string
      */
-    private function replaceVowelMutation($str)
+    private function replaceVowelMutation($str): string
     {
         $src = ['ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü'];
         $rpl = ['ae', 'oe', 'ue', 'ss', 'AE', 'OE', 'UE'];
@@ -122,10 +122,8 @@ class MediaImageCompatibility implements IMedia
             $request = substr($request, 1);
         }
 
-        if (preg_match(self::REGEX, $request, $matches)) {
-            return array_intersect_key($matches, array_flip(array_filter(array_keys($matches), 'is_string')));
-        }
-
-        return null;
+        return preg_match(self::REGEX, $request, $matches)
+            ? array_intersect_key($matches, array_flip(array_filter(array_keys($matches), 'is_string')))
+            : null;
     }
 }

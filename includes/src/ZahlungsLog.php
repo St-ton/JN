@@ -56,15 +56,16 @@ class ZahlungsLog
         );
     }
 
+
     /**
      * @return int
      */
     public function logCount(): int
     {
         $oCount = Shop::Container()->getDB()->queryPrepared(
-            "SELECT COUNT(*) AS nCount 
+            'SELECT COUNT(*) AS nCount 
                 FROM tzahlungslog 
-                WHERE cModulId = :module",
+                WHERE cModulId = :module',
             ['module' => $this->cModulId],
             \DB\ReturnType::SINGLE_OBJECT
         );
@@ -86,7 +87,7 @@ class ZahlungsLog
      * @param int    $nLevel
      * @return int
      */
-    public function log($cLog, $cLogData = '', $nLevel = LOGLEVEL_ERROR): int
+    public function log($cLog, $cLogData = '', int $nLevel = LOGLEVEL_ERROR): int
     {
         return self::add($this->cModulId, $cLog);
     }
@@ -133,10 +134,10 @@ class ZahlungsLog
         $cSQLLevel   = ($nLevel >= 0) ? ('AND nLevel = ' . $nLevel) : '';
 
         return Shop::Container()->getDB()->query(
-            "SELECT * FROM tzahlungslog
-                WHERE cModulId IN(" . $cSQLModulId . ") " . $cSQLLevel . "
+            'SELECT * FROM tzahlungslog
+                WHERE cModulId IN(' . $cSQLModulId . ') ' . $cSQLLevel . '
                 ORDER BY dDatum DESC, kZahlunglog DESC 
-                LIMIT " . $nStart . ", " . $nLimit,
+                LIMIT ' . $nStart . ', ' . $nLimit,
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }

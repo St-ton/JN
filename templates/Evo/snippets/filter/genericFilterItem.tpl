@@ -16,7 +16,7 @@
                     {else}
                         <i class="fa fa-{if $filterIsActive === true}check-{/if}square-o text-muted"></i>
                     {/if}
-                    {if $filter->getNiceName() === 'ItemRating'}
+                    {if $filter->getNiceName() === 'Rating'}
                         {include file='productdetails/rating.tpl' stars=$filterOption->getValue()}
                     {/if}
                     <span class="word-break">{$filterOption->getName()}</span>

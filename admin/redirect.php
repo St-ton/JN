@@ -32,8 +32,8 @@ if (FormHelper::validateToken()) {
                         Shop::Container()->getDB()->update('tredirect', 'kRedirect', $oRedirect->kRedirect, $oRedirect);
                     } else {
                         $cFehler .=
-                            "Änderungen konnten nicht gespeichert werden, da die weiterzuleitende URL " .
-                            "'" . $redirect['cToUrl'] . "' nicht erreichbar ist.<br>";
+                            'Änderungen konnten nicht gespeichert werden, da die weiterzuleitende URL "' .
+                            $redirect['cToUrl'] . '" nicht erreichbar ist.<br>';
                     }
                 }
             }
@@ -70,8 +70,8 @@ if (FormHelper::validateToken()) {
                         $cHinweis = 'Der Import wurde erfolgreich durchgeführt';
                     } else {
                         @unlink($cFile);
-                        $cFehler = 'Fehler: Der Import konnte nicht durchgeführt werden." .
-                            "Bitte prüfen Sie die CSV-Datei<br><br>' . implode('<br>', $cError_arr);
+                        $cFehler = 'Fehler: Der Import konnte nicht durchgeführt werden.' .
+                            'Bitte prüfen Sie die CSV-Datei<br><br>' . implode('<br>', $cError_arr);
                     }
                 }
             }
@@ -116,12 +116,12 @@ handleCsvExportAction(
 
         for ($i = 0; $i < $nRedirectCount; $i += 1000) {
             $oRedirectIter = Shop::Container()->getDB()->query(
-                "SELECT cFromUrl, cToUrl
-                    FROM tredirect" .
-                    ($cWhereSQL !== '' ? " WHERE " . $cWhereSQL : "") .
-                    ($cOrderSQL !== '' ? " ORDER BY " . $cOrderSQL : "") .
+                'SELECT cFromUrl, cToUrl
+                    FROM tredirect' .
+                    ($cWhereSQL !== '' ? ' WHERE ' . $cWhereSQL : '') .
+                    ($cOrderSQL !== '' ? ' ORDER BY ' . $cOrderSQL : '') .
                     " LIMIT $i, 1000",
-                10
+                \DB\ReturnType::QUERYSINGLE
             );
 
             foreach ($oRedirectIter as $oRedirect) {

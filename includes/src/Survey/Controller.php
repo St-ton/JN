@@ -103,7 +103,7 @@ class Controller
     public function init($survey, int $currentPage = 1): int
     {
         $questions   = $survey->getQuestions();
-        $currentPage = max($currentPage, 1);
+        $currentPage = \max($currentPage, 1);
         if (\RequestHelper::verifyGPCDataInt('s') === 0) {
             unset($_SESSION['Umfrage']);
             $_SESSION['Umfrage']                    = new \stdClass();
@@ -159,7 +159,7 @@ class Controller
             }
         });
 
-        return array_reverse($indices);
+        return \array_reverse($indices);
     }
 
     /**
@@ -176,8 +176,8 @@ class Controller
         foreach ($slices as $i => $index) {
             $chunks[] = $questions->splice($index);
         }
-        $slices = array_reverse($slices);
-        foreach (array_reverse($chunks) as $i => $chunk) {
+        $slices = \array_reverse($slices);
+        foreach (\array_reverse($chunks) as $i => $chunk) {
             $navItem              = new \stdClass();
             $navItem->page        = $i + 1;
             $navItem->offsetStart = $slices[$i] ?? 0;
@@ -195,7 +195,7 @@ class Controller
      */
     public function saveAnswers(array $post): bool
     {
-        if (!is_array($post['kUmfrageFrage']) || count($post['kUmfrageFrage']) === 0) {
+        if (!\is_array($post['kUmfrageFrage']) || \count($post['kUmfrageFrage']) === 0) {
             return false;
         }
         foreach ($post['kUmfrageFrage'] as $questionID) {
@@ -276,9 +276,9 @@ class Controller
                 );
                 // Gültig
                 if ($oKupon->kKupon > 0) {
-                    $msg = sprintf(\Shop::Lang()->get('pollCoupon', 'messages'), $oKupon->cCode);
+                    $msg = \sprintf(\Shop::Lang()->get('pollCoupon', 'messages'), $oKupon->cCode);
                 } else {
-                    \Shop::Container()->getLogService()->error(sprintf(
+                    \Shop::Container()->getLogService()->error(\sprintf(
                         'Fehlerhafter Kupon in Umfragebelohnung. Kunde: %s  Kupon: %s',
                         Session::Customer()->getID(),
                         $this->survey->getCouponID()
@@ -286,20 +286,20 @@ class Controller
                     $this->errorMsg = \Shop::Lang()->get('pollError', 'messages');
                 }
             } elseif ($this->survey->getCredits() > 0) {
-                $msg = sprintf(
+                $msg = \sprintf(
                     \Shop::Lang()->get('pollCredit', 'messages'),
                     \Preise::getLocalizedPriceString($this->survey->getCredits())
                 );
                 // Kunde Guthaben gutschreiben
                 if (!$this->updateCustomerCredits($this->survey->getCredits(), $_SESSION['Kunde']->kKunde)) {
-                    \Shop::Container()->getLogService()->error(sprintf(
+                    \Shop::Container()->getLogService()->error(\sprintf(
                         'Umfragebelohnung: Guthaben konnte nicht verrechnet werden. Kunde: %s',
                         Session::Customer()->getID()
                     ));
                     $this->errorMsg = \Shop::Lang()->get('pollError', 'messages');
                 }
             } elseif ($this->survey->getBonusCredits() > 0) {
-                $msg = sprintf(\Shop::Lang()->get('pollExtrapoint', 'messages'), $this->survey->getBonusCredits());
+                $msg = \sprintf(\Shop::Lang()->get('pollExtrapoint', 'messages'), $this->survey->getBonusCredits());
                 // ToDo: Bonuspunkte dem Kunden gutschreiben
             }
         }
@@ -354,7 +354,7 @@ class Controller
     {
         if ($customerID > 0) {
             return $this->db->queryPrepared(
-                    'UPDATE tkunde
+                'UPDATE tkunde
                     SET fGuthaben = fGuthaben + :crdt
                     WHERE kKunde = :cid',
                     ['crdt' => (float)$credits, 'cid' => $customerID],
@@ -392,8 +392,8 @@ class Controller
             $type = $answer->getQuestionType();
             if ($type === QuestionType::TEXT_STATIC
                 || $type === QuestionType::TEXT_PAGE_CHANGE
-                || !is_array($answer->getAnswer())
-                || count($answer->getAnswer()) === 0
+                || !\is_array($answer->getAnswer())
+                || \count($answer->getAnswer()) === 0
             ) {
                 continue;
             }
@@ -412,10 +412,10 @@ class Controller
                     $data->kUmfrageFrageAntwort = 0;
                     $data->kUmfrageMatrixOption = 0;
                     $data->cText                = !empty($given)
-                        ? \StringHandler::htmlentities(\StringHandler::filterXSS(ltrim($given)))
+                        ? \StringHandler::htmlentities(\StringHandler::filterXSS(\ltrim($given)))
                         : '';
                 } elseif ($type === QuestionType::MATRIX_SINGLE || $type === QuestionType::MATRIX_MULTI) {
-                    list($kUmfrageFrageAntwort, $kUmfrageMatrixOption) = explode('_', $given);
+                    list($kUmfrageFrageAntwort, $kUmfrageMatrixOption) = \explode('_', $given);
                     $data->kUmfrageFrageAntwort = $kUmfrageFrageAntwort;
                     $data->kUmfrageMatrixOption = $kUmfrageMatrixOption;
                     $data->cText                = '';
@@ -425,7 +425,7 @@ class Controller
                     $data->cText                = !empty($answer->getAnswer($i + 1))
                         ? \StringHandler::htmlentities(\StringHandler::filterXSS($answer->getAnswer($i + 1)))
                         : '';
-                    array_pop($_SESSION['Umfrage']->oUmfrageFrage_arr[$j]->oUmfrageFrageAntwort_arr);
+                    \array_pop($_SESSION['Umfrage']->oUmfrageFrage_arr[$j]->oUmfrageFrageAntwort_arr);
                 } else {
                     $data->kUmfrageFrageAntwort = $given;
                     $data->kUmfrageMatrixOption = 0;
@@ -448,7 +448,7 @@ class Controller
      */
     public function checkInputData(array $cPost_arr): int
     {
-        if (!is_array($cPost_arr['kUmfrageFrage']) || count($cPost_arr['kUmfrageFrage']) === 0) {
+        if (!\is_array($cPost_arr['kUmfrageFrage']) || \count($cPost_arr['kUmfrageFrage']) === 0) {
             return 0;
         }
         foreach ($cPost_arr['kUmfrageFrage'] as $i => $questionID) {
@@ -468,10 +468,10 @@ class Controller
                                 return $questionID;
                             }
                         } elseif ($type === QuestionType::MATRIX_MULTI) {
-                            if (is_array($cPost_arr[$questionID]) && count($cPost_arr[$questionID]) > 0) {
+                            if (\is_array($cPost_arr[$questionID]) && \count($cPost_arr[$questionID]) > 0) {
                                 $exists = false;
                                 foreach ($cPost_arr[$questionID] as $givenMatrix) {
-                                    list($questionIDAntwortTMP, $kUmfrageMatrixOption) = explode('_', $givenMatrix);
+                                    list($questionIDAntwortTMP, $kUmfrageMatrixOption) = \explode('_', $givenMatrix);
                                     if ((int)$questionIDAntwortTMP === $answerOption->getID()) {
                                         $exists = true;
                                         break;
@@ -488,7 +488,7 @@ class Controller
                     }
                 }
             } elseif ($type === QuestionType::TEXT_SMALL || $type === QuestionType::TEXT_BIG) {
-                if (!isset($cPost_arr[$questionID]) || trim($cPost_arr[$questionID][0]) === '') {
+                if (!isset($cPost_arr[$questionID]) || \trim($cPost_arr[$questionID][0]) === '') {
                     return $questionID;
                 }
             } elseif (!isset($cPost_arr[$questionID]) && $answerOptions->count() > 0) {

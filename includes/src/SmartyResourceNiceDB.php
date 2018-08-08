@@ -18,9 +18,9 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
      * SmartyResourceNiceDB constructor.
      * @param string $type
      */
-    public function __construct($type = 'export')
+    public function __construct(string $type = 'export')
     {
-        $this->type  = $type;
+        $this->type = $type;
     }
 
     /**
@@ -102,7 +102,7 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
      * @param string $name
      * @return int
      */
-    protected function fetchTimestamp($name)
+    protected function fetchTimestamp($name): int
     {
         return time();
     }

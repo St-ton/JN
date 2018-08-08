@@ -25,11 +25,6 @@ final class BoxAdmin
     private $db;
 
     /**
-     * @var BoxServiceInterface
-     */
-    private $service;
-
-    /**
      * @var array
      */
     private $visibility;
@@ -38,51 +33,49 @@ final class BoxAdmin
      * @var array
      */
     private static $validPageTypes = [
-        PAGE_UNBEKANNT,
-        PAGE_ARTIKEL,
-        PAGE_ARTIKELLISTE,
-        PAGE_WARENKORB,
-        PAGE_MEINKONTO,
-        PAGE_KONTAKT,
-        PAGE_UMFRAGE,
-        PAGE_NEWS,
-        PAGE_NEWSLETTER,
-        PAGE_LOGIN,
-        PAGE_REGISTRIERUNG,
-        PAGE_BESTELLVORGANG,
-        PAGE_BEWERTUNG,
-        PAGE_DRUCKANSICHT,
-        PAGE_PASSWORTVERGESSEN,
-        PAGE_WARTUNG,
-        PAGE_WUNSCHLISTE,
-        PAGE_VERGLEICHSLISTE,
-        PAGE_STARTSEITE,
-        PAGE_VERSAND,
-        PAGE_AGB,
-        PAGE_DATENSCHUTZ,
-        PAGE_TAGGING,
-        PAGE_LIVESUCHE,
-        PAGE_HERSTELLER,
-        PAGE_SITEMAP,
-        PAGE_GRATISGESCHENK,
-        PAGE_WRB,
-        PAGE_PLUGIN,
-        PAGE_NEWSLETTERARCHIV,
-        PAGE_NEWSARCHIV,
-        PAGE_EIGENE,
-        PAGE_AUSWAHLASSISTENT,
-        PAGE_BESTELLABSCHLUSS
+        \PAGE_UNBEKANNT,
+        \PAGE_ARTIKEL,
+        \PAGE_ARTIKELLISTE,
+        \PAGE_WARENKORB,
+        \PAGE_MEINKONTO,
+        \PAGE_KONTAKT,
+        \PAGE_UMFRAGE,
+        \PAGE_NEWS,
+        \PAGE_NEWSLETTER,
+        \PAGE_LOGIN,
+        \PAGE_REGISTRIERUNG,
+        \PAGE_BESTELLVORGANG,
+        \PAGE_BEWERTUNG,
+        \PAGE_DRUCKANSICHT,
+        \PAGE_PASSWORTVERGESSEN,
+        \PAGE_WARTUNG,
+        \PAGE_WUNSCHLISTE,
+        \PAGE_VERGLEICHSLISTE,
+        \PAGE_STARTSEITE,
+        \PAGE_VERSAND,
+        \PAGE_AGB,
+        \PAGE_DATENSCHUTZ,
+        \PAGE_TAGGING,
+        \PAGE_LIVESUCHE,
+        \PAGE_HERSTELLER,
+        \PAGE_SITEMAP,
+        \PAGE_GRATISGESCHENK,
+        \PAGE_WRB,
+        \PAGE_PLUGIN,
+        \PAGE_NEWSLETTERARCHIV,
+        \PAGE_NEWSARCHIV,
+        \PAGE_EIGENE,
+        \PAGE_AUSWAHLASSISTENT,
+        \PAGE_BESTELLABSCHLUSS
     ];
 
     /**
      * BoxAdmin constructor.
      * @param DbInterface         $db
-     * @param BoxServiceInterface $service
      */
-    public function __construct(DbInterface $db, BoxServiceInterface $service)
+    public function __construct(DbInterface $db)
     {
-        $this->db      = $db;
-        $this->service = $service;
+        $this->db = $db;
     }
 
     /**
@@ -112,17 +105,17 @@ final class BoxAdmin
             return (int)$e->kBox;
         });
 
-        return count($affectedBoxes) > 0
+        return \count($affectedBoxes) > 0
             && $this->db->query(
                 'DELETE 
                     FROM tboxen
-                    WHERE kBox IN (' . implode(',', $affectedBoxes) . ')',
+                    WHERE kBox IN (' . \implode(',', $affectedBoxes) . ')',
                 ReturnType::AFFECTED_ROWS
             ) > 0
             && $this->db->query(
                 'DELETE 
                     FROM tboxensichtbar
-                    WHERE kBox IN (' . implode(',', $affectedBoxes) . ')',
+                    WHERE kBox IN (' . \implode(',', $affectedBoxes) . ')',
                 ReturnType::AFFECTED_ROWS
             ) > 0;
     }
@@ -174,7 +167,7 @@ final class BoxAdmin
     public function getContent(int $boxID, string $isoCode = '')
     {
 
-        return strlen($isoCode) > 0
+        return \strlen($isoCode) > 0
             ? $this->db->select('tboxsprache', 'kBox', $boxID, 'cISO', $isoCode)
             : $this->db->selectAll('tboxsprache', 'kBox', $boxID);
     }
@@ -201,7 +194,8 @@ final class BoxAdmin
             : [];
         $oBox->kBox              = (int)$oBox->kBox;
         $oBox->kBoxvorlage       = (int)$oBox->kBoxvorlage;
-        $oBox->supportsRevisions = $oBox->kBoxvorlage === BOX_EIGENE_BOX_OHNE_RAHMEN || $oBox->kBoxvorlage === BOX_EIGENE_BOX_MIT_RAHMEN;
+        $oBox->supportsRevisions = $oBox->kBoxvorlage === \BOX_EIGENE_BOX_OHNE_RAHMEN
+            || $oBox->kBoxvorlage === \BOX_EIGENE_BOX_MIT_RAHMEN;
 
         return $oBox;
     }
@@ -224,13 +218,13 @@ final class BoxAdmin
         $oBox->kBoxvorlage = $baseID;
         $oBox->ePosition   = $position;
         $oBox->kContainer  = $containerID;
-        $oBox->kCustomID   = (isset($template->kCustomID) && is_numeric($template->kCustomID))
+        $oBox->kCustomID   = (isset($template->kCustomID) && \is_numeric($template->kCustomID))
             ? (int)$template->kCustomID
             : 0;
 
         $boxID = $this->db->insert('tboxen', $oBox);
         if ($boxID) {
-            $cnt                = count($validPageTypes);
+            $cnt                = \count($validPageTypes);
             $oBoxSichtbar       = new \stdClass();
             $oBoxSichtbar->kBox = $boxID;
             for ($i = 0; $i < $cnt; ++$i) {
@@ -302,7 +296,7 @@ final class BoxAdmin
         $validPageTypes = $this->getValidPageTypes();
         if ($pageID === 0) {
             $ok = true;
-            for ($i = 0; $i < count($validPageTypes) && $ok; $i++) {
+            for ($i = 0; $i < \count($validPageTypes) && $ok; $i++) {
                 $ok = $this->db->executeQueryPrepared(
                         "REPLACE INTO tboxenanzeige 
                             SET bAnzeigen = :show,
@@ -344,7 +338,7 @@ final class BoxAdmin
         $validPageTypes = $this->getValidPageTypes();
         if ($pageID === 0) {
             $ok = true;
-            for ($i = 0; $i < count($validPageTypes) && $ok; $i++) {
+            for ($i = 0; $i < \count($validPageTypes) && $ok; $i++) {
                 $oBox = $this->db->select('tboxensichtbar', 'kBox', $boxID);
                 $ok   = !empty($oBox)
                     ? ($this->db->query(
@@ -386,9 +380,9 @@ final class BoxAdmin
      */
     public function filterBoxVisibility(int $boxID, int $kSeite, $cFilter = ''): int
     {
-        if (is_array($cFilter)) {
-            $cFilter = array_unique($cFilter);
-            $cFilter = implode(',', $cFilter);
+        if (\is_array($cFilter)) {
+            $cFilter = \array_unique($cFilter);
+            $cFilter = \implode(',', $cFilter);
         }
         $upd          = new \stdClass();
         $upd->cFilter = $cFilter;
@@ -410,7 +404,7 @@ final class BoxAdmin
         if ($pageID === 0) {
             $ok  = true;
             $upd = new \stdClass();
-            for ($i = 0; $i < count($validPageTypes) && $ok; ++$i) {
+            for ($i = 0; $i < \count($validPageTypes) && $ok; ++$i) {
                 $upd->bAktiv = $active;
                 $ok          = $this->db->update(
                         'tboxensichtbar',
@@ -487,7 +481,7 @@ final class BoxAdmin
         }
         $oBoxAnzeige = [];
         $oBox_arr    = $this->db->selectAll('tboxenanzeige', 'nSeite', $pageID);
-        if (count($oBox_arr) > 0) {
+        if (\count($oBox_arr) > 0) {
             foreach ($oBox_arr as $oBox) {
                 $oBoxAnzeige[$oBox->ePosition] = (bool)$oBox->bAnzeigen;
             }
@@ -511,7 +505,7 @@ final class BoxAdmin
         return $this->db->selectAll(
             'tboxen',
             ['kBoxvorlage', 'ePosition'],
-            [BOX_CONTAINER, $position],
+            [\BOX_CONTAINER, $position],
             'kBox',
             'kBox ASC'
         );
@@ -534,7 +528,7 @@ final class BoxAdmin
                 FROM tboxen 
                     LEFT JOIN tboxvorlage
                     ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
-                WHERE ePosition IN (' . implode(',', $mapped) . ') 
+                WHERE ePosition IN (' . \implode(',', $mapped) . ') 
                     OR (kContainer > 0  AND kContainer NOT IN (SELECT kBox FROM tboxen))',
             ReturnType::ARRAY_OF_OBJECTS
         );

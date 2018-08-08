@@ -90,31 +90,31 @@ class WarenkorbPersPos
      * @param string     $cResponsibility
      */
     public function __construct(
-        $kArtikel,
+        int $kArtikel,
         $cArtikelName,
         $fAnzahl,
-        $kWarenkorbPers,
+        int $kWarenkorbPers,
         $cUnique = '',
-        $kKonfigitem = 0,
-        $nPosTyp = C_WARENKORBPOS_TYP_ARTIKEL,
-        $cResponsibility = 'core'
+        int $kKonfigitem = 0,
+        int $nPosTyp = C_WARENKORBPOS_TYP_ARTIKEL,
+        string $cResponsibility = 'core'
     ) {
-        $this->kArtikel        = (int)$kArtikel;
+        $this->kArtikel        = $kArtikel;
         $this->cArtikelName    = $cArtikelName;
         $this->fAnzahl         = $fAnzahl;
         $this->dHinzugefuegt   = 'now()';
-        $this->kWarenkorbPers  = (int)$kWarenkorbPers;
+        $this->kWarenkorbPers  = $kWarenkorbPers;
         $this->cUnique         = $cUnique;
         $this->cResponsibility = !empty($cResponsibility) ? $cResponsibility : 'core';
-        $this->kKonfigitem     = (int)$kKonfigitem;
-        $this->nPosTyp         = (int)$nPosTyp;
+        $this->kKonfigitem     = $kKonfigitem;
+        $this->nPosTyp         = $nPosTyp;
     }
 
     /**
      * @param array $oEigenschaftwerte_arr
      * @return $this
      */
-    public function erstellePosEigenschaften($oEigenschaftwerte_arr)
+    public function erstellePosEigenschaften(array $oEigenschaftwerte_arr): self
     {
         foreach ($oEigenschaftwerte_arr as $oEigenschaftwerte) {
             if (isset($oEigenschaftwerte->kEigenschaft)) {
@@ -180,10 +180,10 @@ class WarenkorbPersPos
      * @param string $cFreifeldWert
      * @return bool
      */
-    public function istEigenschaftEnthalten($kEigenschaft, $kEigenschaftWert, $cFreifeldWert = '')
+    public function istEigenschaftEnthalten(int $kEigenschaft, int $kEigenschaftWert, string $cFreifeldWert = '')
     {
         foreach ($this->oWarenkorbPersPosEigenschaft_arr as $oWarenkorbPersPosEigenschaft) {
-            if ($oWarenkorbPersPosEigenschaft->kEigenschaft == $kEigenschaft
+            if ((int)$oWarenkorbPersPosEigenschaft->kEigenschaft === $kEigenschaft
                 && ((!empty($oWarenkorbPersPosEigenschaft->kEigenschaftWert)
                         && $oWarenkorbPersPosEigenschaft->kEigenschaftWert === $kEigenschaftWert)
                     || ($oWarenkorbPersPosEigenschaft->kEigenschaftWert === 0

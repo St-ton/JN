@@ -82,7 +82,7 @@ final class Shopsetting implements ArrayAccess
     /**
      * @return Shopsetting
      */
-    public static function getInstance()
+    public static function getInstance(): self
     {
         return self::$_instance ?? new self();
     }
@@ -220,7 +220,7 @@ final class Shopsetting implements ArrayAccess
      * @param array|int $sektionen_arr
      * @return array
      */
-    public function getSettings($sektionen_arr)
+    public function getSettings($sektionen_arr): array
     {
         $ret = [];
         if (!is_array($sektionen_arr)) {
@@ -272,19 +272,19 @@ final class Shopsetting implements ArrayAccess
     /**
      * @return array
      */
-    public function getAll()
+    public function getAll(): array
     {
         if ($this->allSettings !== null) {
             return $this->allSettings;
         }
         $settings = Shop::Container()->getDB()->query(
-            "SELECT teinstellungen.kEinstellungenSektion, teinstellungen.cName, teinstellungen.cWert,
+            'SELECT teinstellungen.kEinstellungenSektion, teinstellungen.cName, teinstellungen.cWert,
                 teinstellungenconf.cInputTyp AS type
                 FROM teinstellungen
                 LEFT JOIN teinstellungenconf
                     ON teinstellungenconf.cWertName = teinstellungen.cName
                     AND teinstellungenconf.kEinstellungenSektion = teinstellungen.kEinstellungenSektion
-                ORDER BY kEinstellungenSektion",
+                ORDER BY kEinstellungenSektion',
             \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
         );
         $result = [];
@@ -321,7 +321,7 @@ final class Shopsetting implements ArrayAccess
      *
      * @return array
      */
-    public function preLoad()
+    public function preLoad(): array
     {
         $cacheID = 'settings_all_preload';
         if (($result = Shop::Cache()->get($cacheID)) === false) {
@@ -337,7 +337,7 @@ final class Shopsetting implements ArrayAccess
     /**
      * @return string[]
      */
-    private static function getMappings()
+    private static function getMappings(): array
     {
         return self::$mapping;
     }

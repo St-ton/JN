@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -12,13 +12,13 @@ use Filter\FilterInterface;
 use Filter\ProductFilter;
 
 /**
- * Class ItemLimit
+ * Class Limit
  * @package Filter\Items
  */
-class ItemLimit extends AbstractFilter
+class Limit extends AbstractFilter
 {
     /**
-     * ItemLimit constructor.
+     * Limit constructor.
      *
      * @param ProductFilter $productFilter
      */
@@ -49,7 +49,7 @@ class ItemLimit extends AbstractFilter
                 : 20;
         }
 
-        return min($limit, ARTICLES_PER_PAGE_HARD_LIMIT);
+        return \min((int)$limit, ARTICLES_PER_PAGE_HARD_LIMIT);
     }
 
     /**
@@ -80,13 +80,13 @@ class ItemLimit extends AbstractFilter
         $additionalFilter = new self($this->productFilter);
         $params           = $this->productFilter->getParams();
         $view             = $this->productFilter->getMetaData()->getExtendedView($params['nDarstellung'])->nDarstellung;
-        $optionIdx        = $view === ERWDARSTELLUNG_ANSICHT_LISTE
+        $optionIdx        = $view === \ERWDARSTELLUNG_ANSICHT_LISTE
             ? 'products_per_page_list'
             : 'products_per_page_gallery';
-        $limitOptions     = explode(',', $this->getConfig('artikeluebersicht')[$optionIdx]);
+        $limitOptions     = \explode(',', $this->getConfig('artikeluebersicht')[$optionIdx]);
         $activeValue      = $_SESSION['ArtikelProSeite'] ?? $this->getProductsPerPageLimit();
         foreach ($limitOptions as $i => $limitOption) {
-            $limitOption = (int)trim($limitOption);
+            $limitOption = (int)\trim($limitOption);
             $name        = $limitOption > 0 ? $limitOption : \Shop::Lang()->get('showAll');
             $options[]   = (new FilterOption())
                 ->setIsActive($activeValue === $limitOption)

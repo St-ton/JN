@@ -54,10 +54,10 @@ function saveAdminSettings($settingsIDs, &$cPost_arr, $tags = [CACHING_GROUP_OPT
         $i = (int)$i;
     });
     $oConfig_arr = Shop::Container()->getDB()->query(
-        "SELECT *
+        'SELECT *
             FROM teinstellungenconf
-            WHERE kEinstellungenConf IN (" . implode(',', $settingsIDs) . ")
-            ORDER BY nSort",
+            WHERE kEinstellungenConf IN (' . implode(',', $settingsIDs) . ')
+            ORDER BY nSort',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     if (count($oConfig_arr) === 0) {
@@ -206,20 +206,20 @@ function saveAdminSectionSettings(int $kEinstellungenSektion, &$cPost_arr, $tags
  */
 function holeAlleKampagnen(bool $bInterneKampagne = false, bool $bAktivAbfragen = true)
 {
-    $cAktivSQL  = $bAktivAbfragen ? " WHERE nAktiv = 1" : '';
+    $cAktivSQL  = $bAktivAbfragen ? ' WHERE nAktiv = 1' : '';
     $cInternSQL = '';
     if (!$bInterneKampagne && $bAktivAbfragen) {
-        $cInternSQL = " AND kKampagne >= 1000";
+        $cInternSQL = ' AND kKampagne >= 1000';
     } elseif (!$bInterneKampagne) {
-        $cInternSQL = " WHERE kKampagne >= 1000";
+        $cInternSQL = ' WHERE kKampagne >= 1000';
     }
     $oKampagne_arr    = [];
     $oKampagneTMP_arr = Shop::Container()->getDB()->query(
-        "SELECT kKampagne
+        'SELECT kKampagne
             FROM tkampagne
-            " . $cAktivSQL . "
-            " . $cInternSQL . "
-            ORDER BY kKampagne",
+            ' . $cAktivSQL . '
+            ' . $cInternSQL . '
+            ORDER BY kKampagne',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($oKampagneTMP_arr as $oKampagneTMP) {

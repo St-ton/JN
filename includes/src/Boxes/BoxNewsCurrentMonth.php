@@ -28,7 +28,7 @@ final class BoxNewsCurrentMonth extends AbstractBox
             : '';
         $newsOverview = \Shop::Container()->getDB()->queryPrepared(
             "SELECT tseo.cSeo, tnewsmonatsuebersicht.cName, tnewsmonatsuebersicht.kNewsMonatsUebersicht, 
-                month(tnews.dGueltigVon) AS nMonat, year( tnews.dGueltigVon ) AS nJahr, count(*) AS nAnzahl
+                month(tnews.dGueltigVon) AS nMonat, year( tnews.dGueltigVon ) AS nJahr, COUNT(*) AS nAnzahl
                 FROM tnews
                 JOIN tnewsmonatsuebersicht 
                     ON tnewsmonatsuebersicht.nMonat = month(tnews.dGueltigVon)
@@ -47,12 +47,12 @@ final class BoxNewsCurrentMonth extends AbstractBox
             ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($newsOverview as $item) {
-            $item->cURL     = \UrlHelper::buildURL($item, URLART_NEWSMONAT);
-            $item->cURLFull = \UrlHelper::buildURL($item, URLART_NEWSMONAT, true);
+            $item->cURL     = \UrlHelper::buildURL($item, \URLART_NEWSMONAT);
+            $item->cURLFull = \UrlHelper::buildURL($item, \URLART_NEWSMONAT, true);
         }
-        $this->setShow(count($newsOverview) > 0);
+        $this->setShow(\count($newsOverview) > 0);
         $this->setItems($newsOverview);
 
-        executeHook(HOOK_BOXEN_INC_NEWS);
+        \executeHook(\HOOK_BOXEN_INC_NEWS);
     }
 }

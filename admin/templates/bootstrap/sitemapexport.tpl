@@ -114,7 +114,7 @@
                                                 {/if}
                                             </td>
                                             <td class="text-right" width="130">{$oSitemapDownload->dErstellt_DE}</td>
-                                        </tr
+                                        </tr>
                                     {/foreach}
                                     <tr>
                                         <td>

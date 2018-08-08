@@ -124,7 +124,7 @@
                                 </thead>
                                 <tbody>
                                 {foreach name=bewertungletzten50 from=$oBewertungLetzten50_arr item=oBewertungLetzten50}
-                                    <t>
+                                    <tr>
                                         <td class="check"><input name="kBewertung[]" type="checkbox" value="{$oBewertungLetzten50->kBewertung}"><input type="hidden" name="kArtikel[]" value="{$oBewertungLetzten50->kArtikel}"></td>
                                         <td><a href="../index.php?a={$oBewertungLetzten50->kArtikel}" target="_blank">{$oBewertungLetzten50->ArtikelName}</a></td>
                                         <td>{$oBewertungLetzten50->cName}.</td>
@@ -154,7 +154,7 @@
                                                 </a>
                                             </div>
                                         </td>
-                                    </t>
+                                    </tr>
                                 {/foreach}
                                 </tbody>
                                 <tfoot>

@@ -33,7 +33,13 @@ for ($i = 0; $i < $count; $i++) {
             'nSort'
         );
     }
-    $oSetValue = Shop::Container()->getDB()->select('teinstellungen', 'kEinstellungenSektion', CONF_RSS, 'cName', $oConfig_arr[$i]->cWertName);
+    $oSetValue = Shop::Container()->getDB()->select(
+        'teinstellungen',
+        'kEinstellungenSektion',
+        CONF_RSS,
+        'cName',
+        $oConfig_arr[$i]->cWertName
+    );
     $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
 }
 

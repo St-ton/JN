@@ -115,7 +115,7 @@ class PremiumPlugin
      * @param string $id
      * @return $this
      */
-    public function setPluginID($id)
+    public function setPluginID($id): self
     {
         $this->pluginID = $id;
 
@@ -126,7 +126,7 @@ class PremiumPlugin
      * @param string $link
      * @return $this
      */
-    public function setDownloadLink($link)
+    public function setDownloadLink($link): self
     {
         $this->downloadLink = $link;
 
@@ -448,7 +448,7 @@ class PremiumPlugin
      * @param bool        $external
      * @return $this
      */
-    public function addButton($caption, $link, $class = 'btn btn-default', $fa = null, bool $external = false)
+    public function addButton($caption, $link, $class = 'btn btn-default', $fa = null, bool $external = false): self
     {
         $btn           = new stdClass();
         $btn->link     = $link;

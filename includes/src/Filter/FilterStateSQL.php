@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -139,7 +139,7 @@ class FilterStateSQL implements FilterStateSQLInterface
 
         return reduce_left($this->joins, function(FilterJoinInterface $value, $d, $c, $reduction) use (&$checked) {
             $key = $value->getTable();
-            if (!in_array($key, $checked, true)) {
+            if (!\in_array($key, $checked, true)) {
                 $checked[]   = $key;
                 $reduction[] = $value;
             }

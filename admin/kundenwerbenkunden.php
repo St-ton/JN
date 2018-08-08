@@ -63,9 +63,9 @@ if ($step === 'kwk_uebersicht') {
             );
         } elseif ($oConfig_arr[$i]->cInputTyp === 'selectkdngrp') {
             $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->query(
-                "SELECT kKundengruppe, cName
+                'SELECT kKundengruppe, cName
                     FROM tkundengruppe
-                    ORDER BY cStandard DESC",
+                    ORDER BY cStandard DESC',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         }

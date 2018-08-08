@@ -25,9 +25,8 @@ class WidgetVisitorsOnline extends WidgetBase
     {
         // clause 'ANY_VALUE' is needed by servers, who has the 'sql_mode'-setting 'only_full_group_by' enabled.
         // this is the default since mysql version >= 5.7.x
-        $oVisitors_arr = Shop::Container()->getDB()->query(
-            "SELECT
-                `otab`.*,
+        $visitors = Shop::Container()->getDB()->query(
+            'SELECT `otab`.*,
                 `tbestellung`.`fGesamtsumme` AS fGesamtsumme, `tbestellung`.`dErstellt` as dErstellt,
                 `tkunde`.`cVorname` as cVorname, `tkunde`.`cNachname` AS cNachname,
                 `tkunde`.`cNewsletter` AS cNewsletter
@@ -44,40 +43,40 @@ class WidgetVisitorsOnline extends WidgetBase
             UNION
             SELECT
                 `tbesucher`.*,
-                `tbestellung`.`fGesamtsumme` as fGesamtsumme, `tbestellung`.`dErstellt` as dErstellt,
-                `tkunde`.`cVorname` as cVorname, `tkunde`.`cNachname` as cNachname,
-                `tkunde`.`cNewsletter` as cNewsletter
-            FROM
-                `tbesucher`
-                    LEFT JOIN `tbestellung` ON `tbesucher`.`kBestellung` = `tbestellung`.`kBestellung`
-                    LEFT JOIN `tkunde` ON `tbesucher`.`kKunde` = `tkunde`.`kKunde`
-            WHERE
-                `tbesucher`.`kBesucherBot` = 0
-                AND `tbesucher`.`kKunde` = 0",
+                `tbestellung`.`fGesamtsumme` AS fGesamtsumme, `tbestellung`.`dErstellt` as dErstellt,
+                `tkunde`.`cVorname` AS cVorname, `tkunde`.`cNachname` AS cNachname,
+                `tkunde`.`cNewsletter` AS cNewsletter
+            FROM `tbesucher`
+                LEFT JOIN `tbestellung` 
+                    ON `tbesucher`.`kBestellung` = `tbestellung`.`kBestellung`
+                LEFT JOIN `tkunde` 
+                    ON `tbesucher`.`kKunde` = `tkunde`.`kKunde`
+            WHERE `tbesucher`.`kBesucherBot` = 0
+                AND `tbesucher`.`kKunde` = 0',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         $cryptoService = Shop::Container()->getCryptoService();
-        foreach ($oVisitors_arr as $i => $oVisitor) {
-            $oVisitors_arr[$i]->cNachname = trim($cryptoService->decryptXTEA($oVisitor->cNachname ?? ''));
+        foreach ($visitors as $i => $oVisitor) {
+            $visitors[$i]->cNachname = trim($cryptoService->decryptXTEA($oVisitor->cNachname ?? ''));
             if ($oVisitor->kBestellung > 0) {
-                $oVisitors_arr[$i]->fGesamtsumme = Preise::getLocalizedPriceString($oVisitor->fGesamtsumme);
+                $visitors[$i]->fGesamtsumme = Preise::getLocalizedPriceString($oVisitor->fGesamtsumme);
             }
         }
 
-        return $oVisitors_arr;
+        return $visitors;
     }
 
     /**
-     * @param array $oVisitors_arr
+     * @param array $visitors
      * @return stdClass
      */
-    public function getVisitorsInfo(array $oVisitors_arr): stdClass
+    public function getVisitorsInfo(array $visitors): stdClass
     {
         $oInfo            = new stdClass();
         $oInfo->nCustomer = 0;
-        $oInfo->nAll      = count($oVisitors_arr);
+        $oInfo->nAll      = count($visitors);
         if ($oInfo->nAll > 0) {
-            foreach ($oVisitors_arr as $i => $oVisitor) {
+            foreach ($visitors as $i => $oVisitor) {
                 if ($oVisitor->kKunde > 0) {
                     $oInfo->nCustomer++;
                 }

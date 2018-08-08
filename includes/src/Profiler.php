@@ -126,7 +126,7 @@ class Profiler
      * @param string $dir
      * @return Profiler
      */
-    public static function getInstance(int $flags = -1, array $options = [], string $dir = '/tmp')
+    public static function getInstance(int $flags = -1, array $options = [], string $dir = '/tmp'): self
     {
         return self::$_instance ?? new self($flags, $options, $dir);
     }
@@ -420,12 +420,12 @@ class Profiler
     {
         if ($combined === true) {
             return Shop::Container()->getDB()->queryPrepared(
-                "SELECT *
+                'SELECT *
                     FROM tprofiler
                     JOIN tprofiler_runs 
                         ON tprofiler.runID = tprofiler_runs.runID
                     WHERE ptype = :type
-                    ORDER BY tprofiler.runID DESC",
+                    ORDER BY tprofiler.runID DESC',
                 ['type' => $type],
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );

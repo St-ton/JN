@@ -186,8 +186,8 @@ function processImport($fmt, $data)
 
     $old_mail = Shop::Container()->getDB()->select('tnewsletterempfaenger', 'cEmail', $newsletterempfaenger->cEmail);
     if (isset($old_mail->kNewsletterEmpfaenger) && $old_mail->kNewsletterEmpfaenger > 0) {
-        return "Newsletterempfänger mit dieser Emailadresse bereits vorhanden: (" .
-            $newsletterempfaenger->cEmail . ")! Übergehe Datensatz.";
+        return 'Newsletterempfänger mit dieser Emailadresse bereits vorhanden: (' .
+            $newsletterempfaenger->cEmail . ')! Übergehe Datensatz.';
     }
 
     if ($newsletterempfaenger->cAnrede === 'f') {

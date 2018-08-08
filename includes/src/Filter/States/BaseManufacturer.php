@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -13,7 +13,7 @@ use Filter\FilterOption;
 use Filter\FilterInterface;
 use Filter\FilterStateSQL;
 use Filter\Type;
-use Filter\Items\ItemManufacturer;
+use Filter\Items\Manufacturer;
 use Filter\ProductFilter;
 
 /**
@@ -41,7 +41,7 @@ class BaseManufacturer extends AbstractFilter
         parent::__construct($productFilter);
         $this->setIsCustom(false)
              ->setUrlParam('h')
-             ->setUrlParamSEO(SEP_HST);
+             ->setUrlParamSEO(\SEP_HST);
     }
 
     /**
@@ -59,8 +59,8 @@ class BaseManufacturer extends AbstractFilter
     public function setSeo(array $languages): FilterInterface
     {
         $val = $this->getValue();
-        if ((is_numeric($val) && $val > 0) || (is_array($val) && count($val) > 0)) {
-            if (!is_array($val)) {
+        if ((\is_numeric($val) && $val > 0) || (\is_array($val) && \count($val) > 0)) {
+            if (!\is_array($val)) {
                 $val = [$val];
             }
             $oSeo_arr = \Shop::Container()->getDB()->query(
@@ -69,14 +69,14 @@ class BaseManufacturer extends AbstractFilter
                     JOIN thersteller
                         ON thersteller.kHersteller = tseo.kKey
                     WHERE cKey = 'kHersteller' 
-                        AND kKey IN (" . implode(', ', $val) . ")",
+                        AND kKey IN (" . \implode(', ', $val) . ")",
                 ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($languages as $language) {
                 $this->cSeo[$language->kSprache] = '';
                 foreach ($oSeo_arr as $oSeo) {
                     if ($language->kSprache === (int)$oSeo->kSprache) {
-                        $sep                             = $this->cSeo[$language->kSprache] === '' ? '' : SEP_HST;
+                        $sep                             = $this->cSeo[$language->kSprache] === '' ? '' : \SEP_HST;
                         $this->cSeo[$language->kSprache] .= $sep . $oSeo->cSeo;
                     }
                 }
@@ -115,13 +115,13 @@ class BaseManufacturer extends AbstractFilter
     public function getSQLCondition(): string
     {
         $val = $this->getValue();
-        if (!is_array($val)) {
+        if (!\is_array($val)) {
             $val = [$val];
         }
 
         return $this->getType() === Type::OR
-            ? 'tartikel.' . $this->getPrimaryKeyRow() . ' IN (' . implode(', ', $val) . ')'
-            : implode(' AND ', array_map(function ($e) {
+            ? 'tartikel.' . $this->getPrimaryKeyRow() . ' IN (' . \implode(', ', $val) . ')'
+            : \implode(' AND ', \array_map(function ($e) {
                 return 'tartikel.' . $this->getPrimaryKeyRow() . ' = ' . $e;
             }, $val));
     }
@@ -179,7 +179,7 @@ class BaseManufacturer extends AbstractFilter
                     ORDER BY ssMerkmal.nSortNr, ssMerkmal.cName",
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $additionalFilter = new ItemManufacturer($this->productFilter);
+        $additionalFilter = new Manufacturer($this->productFilter);
         foreach ($manufacturers as $manufacturer) {
             // attributes for old filter templates
             $manufacturer->kHersteller = (int)$manufacturer->kHersteller;

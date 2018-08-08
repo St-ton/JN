@@ -10,8 +10,8 @@
                     {/if}
                     {assign var="slideTitle" value="#{$instance->getProperty('uid')}_slide_caption_{$slide.nSort}"}
                     {if !empty($slide.url)}
-                        {if !empty($slide.cLink)}
-                            <a href="{$slide.cLink}"{if !empty($slide.cTitle)} title="{$slide.cTitle}"{/if} class="slide">
+                        {if !empty($slide['target-url'])}
+                            <a href="{$slide['target-url']}"{if !empty($slide.cTitle)} title="{$slide.cTitle}"{/if} class="slide">
                         {else}
                             <div class="slide">
                         {/if}
@@ -21,7 +21,7 @@
                                  data-desc="{$slide['desc']}"
                                  alt="{$slide['img_attr']['alt']}"
                                  title="{$slideTitle}">
-                        {if !empty($slide.cLink)}
+                        {if !empty($slide['target-url'])}
                             </a>
                         {else}
                             </div>

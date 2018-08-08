@@ -33,23 +33,23 @@ final class BoxWishlist extends AbstractBox
             $wishlistItems    = \Session::WishList()->CWunschlistePos_arr;
             $validPostVars    = ['a', 'k', 's', 'h', 'l', 'm', 't', 'hf', 'kf', 'show', 'suche'];
             $additionalParams = '';
-            $postMembers      = array_keys($_REQUEST);
+            $postMembers      = \array_keys($_REQUEST);
             foreach ($postMembers as $postMember) {
-                if ((int)$_REQUEST[$postMember] > 0 && in_array($postMember, $validPostVars, true)) {
+                if ((int)$_REQUEST[$postMember] > 0 && \in_array($postMember, $validPostVars, true)) {
                     $additionalParams .= '&' . $postMember . '=' . $_REQUEST[$postMember];
                 }
             }
             $additionalParams = \StringHandler::filterXSS($additionalParams);
             foreach ($wishlistItems as $wishlistItem) {
                 $cRequestURI  = $_SERVER['REQUEST_URI'] ?? $_SERVER['SCRIPT_NAME'];
-                $nPosAnd      = strrpos($cRequestURI, '&');
-                $nPosQuest    = strrpos($cRequestURI, '?');
-                $nPosWD       = strpos($cRequestURI, 'wlplo=');
+                $nPosAnd      = \strrpos($cRequestURI, '&');
+                $nPosQuest    = \strrpos($cRequestURI, '?');
+                $nPosWD       = \strpos($cRequestURI, 'wlplo=');
                 $cDeleteParam = '?wlplo='; // z.b. index.php
                 if ($nPosWD) {
-                    $cRequestURI = substr($cRequestURI, 0, $nPosWD);
+                    $cRequestURI = \substr($cRequestURI, 0, $nPosWD);
                 }
-                if ($nPosAnd === strlen($cRequestURI) - 1) {
+                if ($nPosAnd === \strlen($cRequestURI) - 1) {
                     // z.b. index.php?a=4&
                     $cDeleteParam = 'wlplo=';
                 } elseif ($nPosAnd) {
@@ -58,7 +58,7 @@ final class BoxWishlist extends AbstractBox
                 } elseif ($nPosQuest) {
                     // z.b. index.php?a=4
                     $cDeleteParam = '&wlplo=';
-                } elseif ($nPosQuest === strlen($cRequestURI) - 1) {
+                } elseif ($nPosQuest === \strlen($cRequestURI) - 1) {
                     // z.b. index.php?
                     $cDeleteParam = 'wlplo=';
                 }
@@ -80,9 +80,9 @@ final class BoxWishlist extends AbstractBox
             }
             $this->setShow(true);
             $this->setItemCount((int)$this->config['boxen']['boxen_wunschzettel_anzahl']);
-            $this->setItems(array_reverse($wishlistItems));
+            $this->setItems(\array_reverse($wishlistItems));
 
-            executeHook(HOOK_BOXEN_INC_WUNSCHZETTEL, ['box' => $this]);
+            \executeHook(\HOOK_BOXEN_INC_WUNSCHZETTEL, ['box' => $this]);
         }
     }
 

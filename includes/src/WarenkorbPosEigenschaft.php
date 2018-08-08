@@ -88,7 +88,7 @@ class WarenkorbPosEigenschaft
      *
      * @return string - EigenschaftWertName
      */
-    public function gibEigenschaftWertName()
+    public function gibEigenschaftWertName(): string
     {
         $obj = Shop::Container()->getDB()->select('teigenschaftwert', 'kEigenschaftWert', $this->kEigenschaftWert);
 

@@ -12,6 +12,7 @@ use DB\DbInterface;
 use DB\Services\GcServiceInterface;
 use Exceptions\CircularReferenceException;
 use Exceptions\ServiceNotFoundException;
+use Monolog\Logger;
 use Services\JTL\BoxServiceInterface;
 use Services\JTL\CaptchaServiceInterface;
 use Services\JTL\CryptoServiceInterface;
@@ -85,6 +86,13 @@ interface DefaultServicesInterface extends ContainerInterface
      * @return \OPC\Locker
      */
     public function getOPCLocker(): \OPC\Locker;
+
+    /**
+     * @return Logger
+     * @throws ServiceNotFoundException
+     * @throws CircularReferenceException
+     */
+    public function getLogService(): Logger;
 
     /**
      * @return LinkServiceInterface

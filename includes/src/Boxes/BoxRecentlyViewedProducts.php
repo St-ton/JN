@@ -21,8 +21,8 @@ final class BoxRecentlyViewedProducts extends AbstractBox
         parent::__construct($config);
         $this->setShow(false);
         if (isset($_SESSION['ZuletztBesuchteArtikel'])
-            && is_array($_SESSION['ZuletztBesuchteArtikel'])
-            && count($_SESSION['ZuletztBesuchteArtikel']) > 0
+            && \is_array($_SESSION['ZuletztBesuchteArtikel'])
+            && \count($_SESSION['ZuletztBesuchteArtikel']) > 0
             && \Session::CustomerGroup()->mayViewCategories()
         ) {
             $products       = [];
@@ -34,10 +34,10 @@ final class BoxRecentlyViewedProducts extends AbstractBox
                     $products[$i] = $product;
                 }
             }
-            $this->setProducts(array_reverse($products));
+            $this->setProducts(\array_reverse($products));
             $this->setShow(true);
 
-            executeHook(HOOK_BOXEN_INC_ZULETZTANGESEHEN, ['box' => $this]);
+            \executeHook(\HOOK_BOXEN_INC_ZULETZTANGESEHEN, ['box' => $this]);
         }
     }
 }

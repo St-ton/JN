@@ -22,11 +22,7 @@ function baueBewertungsErinnerung()
     }
     $nVersandTage = (int)$conf['bewertungserinnerung_versandtage'];
     if ($nVersandTage <= 0) {
-        Jtllog::writeLog(
-            'Einstellung bewertungserinnerung_versandtage ist 0 oder nicht gesetzt.',
-            JTLLOG_LEVEL_ERROR,
-            true
-        );
+        Shop::Container()->getLogService()->error('Einstellung bewertungserinnerung_versandtage ist 0');
         return;
     }
     // Baue SQL mit allen erlaubten Kundengruppen
@@ -35,9 +31,9 @@ function baueBewertungsErinnerung()
         foreach ($kKundengruppen_arr as $i => $kKundengruppen) {
             if (is_numeric($kKundengruppen)) {
                 if ($i > 0) {
-                    $cSQL .= " OR tkunde.kKundengruppe=" . $kKundengruppen;
+                    $cSQL .= ' OR tkunde.kKundengruppe = ' . $kKundengruppen;
                 } else {
-                    $cSQL .= " tkunde.kKundengruppe=" . $kKundengruppen;
+                    $cSQL .= ' tkunde.kKundengruppe = ' . $kKundengruppen;
                 }
             }
         }
@@ -45,7 +41,7 @@ function baueBewertungsErinnerung()
         // Hole standard Kundengruppe
         $oKundengruppe = Shop::Container()->getDB()->select('tkundengruppe', 'cStandard', 'Y');
         if ($oKundengruppe->kKundengruppe > 0) {
-            $cSQL = " tkunde.kKundengruppe = " . $oKundengruppe->kKundengruppe;
+            $cSQL = ' tkunde.kKundengruppe = ' . $oKundengruppe->kKundengruppe;
         }
     }
     if (empty($cSQL)) {
@@ -71,12 +67,7 @@ function baueBewertungsErinnerung()
                     )";
     $oBestellungen_arr = Shop::Container()->getDB()->query($cQuery, \DB\ReturnType::ARRAY_OF_OBJECTS);
     if (count($oBestellungen_arr) === 0) {
-        Jtllog::writeLog(
-            'Es wurden keine Bestellungen für Bewertungserinnerungen gefunden. ',
-            JTLLOG_LEVEL_DEBUG,
-            false,
-            'Bewertungserinnerung'
-        );
+        Shop::Container()->getLogService()->debug('Keine Bestellungen für Bewertungserinnerungen gefunden.');
         return;
     }
     foreach ($oBestellungen_arr as $oBestellungen) {
@@ -91,10 +82,10 @@ function baueBewertungsErinnerung()
         foreach ($oBestellung->Positionen as $Pos) {
             if ($Pos->kArtikel > 0) {
                 $res = Shop::Container()->getDB()->query(
-                    "SELECT kBewertung
+                    'SELECT kBewertung
                         FROM tbewertung
-                        WHERE kArtikel = " . (int)$Pos->kArtikel . "
-                            AND kKunde = " . (int)$oBestellung->kKunde,
+                        WHERE kArtikel = ' . (int)$Pos->kArtikel . '
+                            AND kKunde = ' . (int)$oBestellung->kKunde,
                     \DB\ReturnType::SINGLE_OBJECT
                 );
                 if ($res === false) {
@@ -110,21 +101,18 @@ function baueBewertungsErinnerung()
         $oBestellung->Positionen = $openReviewPos_arr;
 
         Shop::Container()->getDB()->query(
-            "UPDATE tbestellung
+            'UPDATE tbestellung
                 SET dBewertungErinnerung = now()
-                WHERE kBestellung = " . (int)$oBestellungen->kBestellung,
+                WHERE kBestellung = ' . (int)$oBestellungen->kBestellung,
             \DB\ReturnType::AFFECTED_ROWS
         );
-
-        if (Jtllog::doLog(JTLLOG_LEVEL_NOTICE)) {
-            Jtllog::writeLog(
+        $logger = Shop::Container()->getLogService();
+        if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
+            $logger->withName('Bewertungserinnerung')->debug(
                 'Kunde und Bestellung aus baueBewertungsErinnerung (Mail versendet): <pre>' .
                 print_r($obj, true) .
                 '</pre>',
-                JTLLOG_LEVEL_NOTICE,
-                true,
-                'Bewertungserinnerung',
-                $oBestellungen->kBestellung
+                [$oBestellungen->kBestellung]
             );
         }
 

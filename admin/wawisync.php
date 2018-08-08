@@ -20,11 +20,11 @@ if (isset($_POST['wawi-pass'], $_POST['wawi-user']) && FormHelper::validateToken
         : $passwordService->hash($_POST['wawi-pass']); // new clear text password was given
 
     Shop::Container()->getDB()->queryPrepared(
-        "INSERT INTO `tsynclogin` (kSynclogin, cName, cPass)
+        'INSERT INTO `tsynclogin` (kSynclogin, cName, cPass)
             VALUES (1, :cName, :cPass)
             ON DUPLICATE KEY UPDATE
             cName = :cName,
-            cPass = :cPass",
+            cPass = :cPass',
         ['cName' => $upd->cName, 'cPass' => $upd->cPass],
         \DB\ReturnType::AFFECTED_ROWS
     );

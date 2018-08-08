@@ -8,7 +8,7 @@
  * @param int $kSlider
  * @return mixed
  */
-function holeExtension($kSlider)
+function holeExtension(int $kSlider)
 {
-    return Shop::Container()->getDB()->select('textensionpoint', 'cClass', 'Slider', 'kInitial', (int)$kSlider);
+    return Shop::Container()->getDB()->select('textensionpoint', 'cClass', 'Slider', 'kInitial', $kSlider);
 }

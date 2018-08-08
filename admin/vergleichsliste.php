@@ -72,13 +72,13 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && Form
 }
 
 $oConfig_arr = Shop::Container()->getDB()->query(
-    "SELECT *
+    'SELECT *
         FROM teinstellungenconf
         WHERE (
-                kEinstellungenConf IN " . $cSetting . " 
-                OR kEinstellungenSektion = " . CONF_VERGLEICHSLISTE . "
+                kEinstellungenConf IN ' . $cSetting . ' 
+                OR kEinstellungenSektion = ' . CONF_VERGLEICHSLISTE . '
                )
-        ORDER BY nSort",
+        ORDER BY nSort',
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 $configCount = count($oConfig_arr);
@@ -136,15 +136,15 @@ if (is_array($oLetzten20Vergleichsliste_arr) && count($oLetzten20Vergleichsliste
 }
 // Top Vergleiche
 $oTopVergleichsliste_arr = Shop::Container()->getDB()->query(
-    "SELECT tvergleichsliste.dDate, tvergleichslistepos.kArtikel, 
+    'SELECT tvergleichsliste.dDate, tvergleichslistepos.kArtikel, 
         tvergleichslistepos.cArtikelName, count(tvergleichslistepos.kArtikel) AS nAnzahl
         FROM tvergleichsliste
         JOIN tvergleichslistepos 
             ON tvergleichsliste.kVergleichsliste = tvergleichslistepos.kVergleichsliste
-        WHERE DATE_SUB(now(), INTERVAL " . (int)$_SESSION['Vergleichsliste']->nZeitFilter . " DAY) < tvergleichsliste.dDate
+        WHERE DATE_SUB(now(), INTERVAL ' . (int)$_SESSION['Vergleichsliste']->nZeitFilter . ' DAY) < tvergleichsliste.dDate
         GROUP BY tvergleichslistepos.kArtikel
         ORDER BY nAnzahl DESC
-        LIMIT " . (int)$_SESSION['Vergleichsliste']->nAnzahl,
+        LIMIT ' . (int)$_SESSION['Vergleichsliste']->nAnzahl,
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 // Top Vergleiche Graph

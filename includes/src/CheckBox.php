@@ -302,26 +302,27 @@ class CheckBox
     ): self {
         $oCheckBox_arr = $this->getCheckBoxFrontend($nAnzeigeOrt, $kKundengruppe, $bAktiv, true, true);
         foreach ($oCheckBox_arr as $oCheckBox) {
-            if (isset($cPost_arr[$oCheckBox->cID])) {
-                if ($oCheckBox->oCheckBoxFunktion->kPlugin > 0) {
-                    $xParamas_arr['oCheckBox'] = $oCheckBox;
-                    executeHook(HOOK_CHECKBOX_CLASS_TRIGGERSPECIALFUNCTION, $xParamas_arr);
-                } else {
-                    // Festdefinierte Shopfunktionen
-                    switch ($oCheckBox->oCheckBoxFunktion->cID) {
-                        case 'jtl_newsletter': // Newsletteranmeldung
-                            $xParamas_arr['oKunde'] = ObjectHelper::copyMembers($xParamas_arr['oKunde']);
-                            $this->sfCheckBoxNewsletter($xParamas_arr['oKunde']);
-                            break;
+            if (!isset($cPost_arr[$oCheckBox->cID])) {
+                continue;
+            }
+            if ($oCheckBox->oCheckBoxFunktion->kPlugin > 0) {
+                $xParamas_arr['oCheckBox'] = $oCheckBox;
+                executeHook(HOOK_CHECKBOX_CLASS_TRIGGERSPECIALFUNCTION, $xParamas_arr);
+            } else {
+                // Festdefinierte Shopfunktionen
+                switch ($oCheckBox->oCheckBoxFunktion->cID) {
+                    case 'jtl_newsletter': // Newsletteranmeldung
+                        $xParamas_arr['oKunde'] = ObjectHelper::copyMembers($xParamas_arr['oKunde']);
+                        $this->sfCheckBoxNewsletter($xParamas_arr['oKunde']);
+                        break;
 
-                        case 'jtl_adminmail': // CheckBoxMail
-                            $xParamas_arr['oKunde'] = ObjectHelper::copyMembers($xParamas_arr['oKunde']);
-                            $this->sfCheckBoxMailToAdmin($xParamas_arr['oKunde'], $oCheckBox, $nAnzeigeOrt);
-                            break;
+                    case 'jtl_adminmail': // CheckBoxMail
+                        $xParamas_arr['oKunde'] = ObjectHelper::copyMembers($xParamas_arr['oKunde']);
+                        $this->sfCheckBoxMailToAdmin($xParamas_arr['oKunde'], $oCheckBox, $nAnzeigeOrt);
+                        break;
 
-                        default:
-                            break;
-                    }
+                    default:
+                        break;
                 }
             }
         }
@@ -375,9 +376,9 @@ class CheckBox
             $cSQL = ' WHERE nAktiv = 1';
         }
         $oCheckBoxTMP_arr = Shop::Container()->getDB()->query(
-            "SELECT kCheckBox 
-                FROM tcheckbox" . $cSQL . " 
-                ORDER BY nSort " . $cLimitSQL,
+            'SELECT kCheckBox 
+                FROM tcheckbox' . $cSQL . ' 
+                ORDER BY nSort ' . $cLimitSQL,
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oCheckBoxTMP_arr as $i => $oCheckBoxTMP) {
@@ -398,8 +399,8 @@ class CheckBox
             $cSQL = ' WHERE nAktiv = 1';
         }
         $oCheckBoxCount = Shop::Container()->getDB()->query(
-            "SELECT count(*) AS nAnzahl 
-                FROM tcheckbox" . $cSQL,
+            'SELECT count(*) AS nAnzahl 
+                FROM tcheckbox' . $cSQL,
             \DB\ReturnType::SINGLE_OBJECT
         );
 
@@ -449,11 +450,11 @@ class CheckBox
         }
         foreach ($kCheckBox_arr as $kCheckBox) {
             Shop::Container()->getDB()->query(
-                "DELETE tcheckbox, tcheckboxsprache
+                'DELETE tcheckbox, tcheckboxsprache
                     FROM tcheckbox
                     LEFT JOIN tcheckboxsprache 
                         ON tcheckboxsprache.kCheckBox = tcheckbox.kCheckBox
-                    WHERE tcheckbox.kCheckBox = " . (int)$kCheckBox,
+                    WHERE tcheckbox.kCheckBox = ' . (int)$kCheckBox,
                 \DB\ReturnType::AFFECTED_ROWS
             );
         }
@@ -467,9 +468,9 @@ class CheckBox
     public function getCheckBoxFunctions(): array
     {
         return Shop::Container()->getDB()->query(
-            "SELECT * 
+            'SELECT * 
                 FROM tcheckboxfunktion 
-                ORDER BY cName",
+                ORDER BY cName',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
@@ -602,7 +603,7 @@ class CheckBox
      * @param int $nAnzeigeOrt
      * @return string
      */
-    public function mappeCheckBoxOrte(int $nAnzeigeOrt)
+    public function mappeCheckBoxOrte(int $nAnzeigeOrt): string
     {
         $cAnzeigeOrt_arr = self::gibCheckBoxAnzeigeOrte();
 

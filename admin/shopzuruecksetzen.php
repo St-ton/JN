@@ -77,6 +77,12 @@ if (isset($_POST['zuruecksetzen']) && (int)$_POST['zuruecksetzen'] === 1 && Form
                     Shop::Container()->getDB()->query('TRUNCATE twarenlagersprache', \DB\ReturnType::DEFAULT);
                     Shop::Container()->getDB()->query('TRUNCATE tuploadschema', \DB\ReturnType::DEFAULT);
                     Shop::Container()->getDB()->query('TRUNCATE tuploadschemasprache', \DB\ReturnType::DEFAULT);
+                    Shop::Container()->getDB()->query('TRUNCATE tmasseinheit', \DB\ReturnType::DEFAULT);
+                    Shop::Container()->getDB()->query('TRUNCATE tmasseinheitsprache', \DB\ReturnType::DEFAULT);
+                    Shop::Container()->getDB()->query('TRUNCATE tsteuerklasse', \DB\ReturnType::DEFAULT);
+                    Shop::Container()->getDB()->query('TRUNCATE tsteuersatz', \DB\ReturnType::DEFAULT);
+                    Shop::Container()->getDB()->query('TRUNCATE tsteuerzone', \DB\ReturnType::DEFAULT);
+                    Shop::Container()->getDB()->query('TRUNCATE tsteuerzoneland', \DB\ReturnType::DEFAULT);
 
                     Shop::Container()->getDB()->query(
                         "DELETE FROM tseo
@@ -143,7 +149,7 @@ if (isset($_POST['zuruecksetzen']) && (int)$_POST['zuruecksetzen'] === 1 && Form
                     break;
 
                 case 'verfuegbarkeitsbenachrichtigungen':
-                    Shop::Container()->getDB()->query("TRUNCATE tverfuegbarkeitsbenachrichtigung", \DB\ReturnType::DEFAULT);
+                    Shop::Container()->getDB()->query('TRUNCATE tverfuegbarkeitsbenachrichtigung', \DB\ReturnType::DEFAULT);
                     break;
 
                 // Benutzergenerierte Inhalte

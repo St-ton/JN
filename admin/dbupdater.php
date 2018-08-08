@@ -14,12 +14,8 @@ $oAccount->permission('SHOP_UPDATE_VIEW', true, true);
 
 $updater  = new Updater();
 $template = Template::getInstance();
-
-// clear template cache
-$_smarty = new JTLSmarty(true, true);
+$_smarty  = new JTLSmarty(true, true);
 $_smarty->clearCompiledTemplate();
-
-// clear data cache
 Shop::Cache()->flushAll();
 
 $currentFileVersion     = $updater->getCurrentFileVersion();

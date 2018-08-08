@@ -196,60 +196,60 @@ class WarenkorbPos
      */
     public function setzeVariationsWert(int $kEigenschaft, int $kEigenschaftWert, $freifeld = '')
     {
-        $EigenschaftWert                                 = new EigenschaftWert($kEigenschaftWert);
-        $Eigenschaft                                     = new Eigenschaft($kEigenschaft);
-        $NeueWarenkorbPosEigenschaft                     = new WarenkorbPosEigenschaft();
-        $NeueWarenkorbPosEigenschaft->kEigenschaft       = $kEigenschaft;
-        $NeueWarenkorbPosEigenschaft->kEigenschaftWert   = $kEigenschaftWert;
-        $NeueWarenkorbPosEigenschaft->fGewichtsdifferenz = $EigenschaftWert->fGewichtDiff;
-        $NeueWarenkorbPosEigenschaft->fAufpreis          = $EigenschaftWert->fAufpreisNetto;
-        $Aufpreis_obj                                    = Shop::Container()->getDB()->select(
+        $attributeValue                    = new EigenschaftWert($kEigenschaftWert);
+        $attribute                         = new Eigenschaft($kEigenschaft);
+        $newAttributes                     = new WarenkorbPosEigenschaft();
+        $newAttributes->kEigenschaft       = $kEigenschaft;
+        $newAttributes->kEigenschaftWert   = $kEigenschaftWert;
+        $newAttributes->fGewichtsdifferenz = $attributeValue->fGewichtDiff;
+        $newAttributes->fAufpreis          = $attributeValue->fAufpreisNetto;
+        $Aufpreis_obj                      = Shop::Container()->getDB()->select(
             'teigenschaftwertaufpreis',
-            'kEigenschaftWert', (int)$NeueWarenkorbPosEigenschaft->kEigenschaftWert,
+            'kEigenschaftWert', (int)$newAttributes->kEigenschaftWert,
             'kKundengruppe', Session::CustomerGroup()->getID()
         );
         if (!empty($Aufpreis_obj->fAufpreisNetto)) {
             if ($this->Artikel->Preise->rabatt > 0) {
-                $NeueWarenkorbPosEigenschaft->fAufpreis = $Aufpreis_obj->fAufpreisNetto -
+                $newAttributes->fAufpreis     = $Aufpreis_obj->fAufpreisNetto -
                     (($this->Artikel->Preise->rabatt / 100) * $Aufpreis_obj->fAufpreisNetto);
-                $Aufpreis_obj->fAufpreisNetto           = $NeueWarenkorbPosEigenschaft->fAufpreis;
+                $Aufpreis_obj->fAufpreisNetto = $newAttributes->fAufpreis;
             } else {
-                $NeueWarenkorbPosEigenschaft->fAufpreis = $Aufpreis_obj->fAufpreisNetto;
+                $newAttributes->fAufpreis = $Aufpreis_obj->fAufpreisNetto;
             }
         }
-        $NeueWarenkorbPosEigenschaft->cTyp               = $Eigenschaft->cTyp;
-        $NeueWarenkorbPosEigenschaft->cAufpreisLocalized = Preise::getLocalizedPriceString($NeueWarenkorbPosEigenschaft->fAufpreis);
+        $newAttributes->cTyp               = $attribute->cTyp;
+        $newAttributes->cAufpreisLocalized = Preise::getLocalizedPriceString($newAttributes->fAufpreis);
         //posname lokalisiert ablegen
-        $NeueWarenkorbPosEigenschaft->cEigenschaftName     = [];
-        $NeueWarenkorbPosEigenschaft->cEigenschaftWertName = [];
+        $newAttributes->cEigenschaftName     = [];
+        $newAttributes->cEigenschaftWertName = [];
         foreach ($_SESSION['Sprachen'] as $Sprache) {
-            $NeueWarenkorbPosEigenschaft->cEigenschaftName[$Sprache->cISO]     = $Eigenschaft->cName;
-            $NeueWarenkorbPosEigenschaft->cEigenschaftWertName[$Sprache->cISO] = $EigenschaftWert->cName;
+            $newAttributes->cEigenschaftName[$Sprache->cISO]     = $attribute->cName;
+            $newAttributes->cEigenschaftWertName[$Sprache->cISO] = $attributeValue->cName;
 
             if ($Sprache->cStandard !== 'Y') {
                 $eigenschaft_spr = Shop::Container()->getDB()->select(
                     'teigenschaftsprache',
-                    'kEigenschaft', (int)$NeueWarenkorbPosEigenschaft->kEigenschaft,
+                    'kEigenschaft', (int)$newAttributes->kEigenschaft,
                     'kSprache', (int)$Sprache->kSprache
                 );
                 if (!empty($eigenschaft_spr->cName)) {
-                    $NeueWarenkorbPosEigenschaft->cEigenschaftName[$Sprache->cISO] = $eigenschaft_spr->cName;
+                    $newAttributes->cEigenschaftName[$Sprache->cISO] = $eigenschaft_spr->cName;
                 }
                 $eigenschaftwert_spr = Shop::Container()->getDB()->select(
                     'teigenschaftwertsprache',
-                    'kEigenschaftWert', (int)$NeueWarenkorbPosEigenschaft->kEigenschaftWert,
+                    'kEigenschaftWert', (int)$newAttributes->kEigenschaftWert,
                     'kSprache', (int)$Sprache->kSprache
                 );
                 if (!empty($eigenschaftwert_spr->cName)) {
-                    $NeueWarenkorbPosEigenschaft->cEigenschaftWertName[$Sprache->cISO] = $eigenschaftwert_spr->cName;
+                    $newAttributes->cEigenschaftWertName[$Sprache->cISO] = $eigenschaftwert_spr->cName;
                 }
             }
 
             if ($freifeld || strlen(trim($freifeld)) > 0) {
-                $NeueWarenkorbPosEigenschaft->cEigenschaftWertName[$Sprache->cISO] = Shop::Container()->getDB()->escape($freifeld);
+                $newAttributes->cEigenschaftWertName[$Sprache->cISO] = Shop::Container()->getDB()->escape($freifeld);
             }
         }
-        $this->WarenkorbPosEigenschaftArr[] = $NeueWarenkorbPosEigenschaft;
+        $this->WarenkorbPosEigenschaftArr[] = $newAttributes;
         $this->fGesamtgewicht               = $this->gibGesamtgewicht();
 
         return true;
@@ -261,12 +261,12 @@ class WarenkorbPos
      * @param int $kEigenschaft - Key der Eigenschaft
      * @return int - gesetzter Wert. Falls nicht gesetzt, wird 0 zurückgegeben
      */
-    public function gibGesetztenEigenschaftsWert(int $kEigenschaft)
+    public function gibGesetztenEigenschaftsWert(int $kEigenschaft): int
     {
         foreach ($this->WarenkorbPosEigenschaftArr as $WKPosEigenschaft) {
             $WKPosEigenschaft->kEigenschaft = (int)$WKPosEigenschaft->kEigenschaft;
             if ($WKPosEigenschaft->kEigenschaft === $kEigenschaft) {
-                return $WKPosEigenschaft->kEigenschaftWert;
+                return (int)$WKPosEigenschaft->kEigenschaftWert;
             }
         }
 
@@ -315,7 +315,7 @@ class WarenkorbPos
      * @deprecated since 4.05
      * @return $this
      */
-    public function setzeGesamtpreisLoacalized()
+    public function setzeGesamtpreisLoacalized(): self
     {
         return $this->setzeGesamtpreisLocalized();
     }
@@ -325,7 +325,7 @@ class WarenkorbPos
      *
      * @return $this
      */
-    public function setzeGesamtpreisLocalized()
+    public function setzeGesamtpreisLocalized(): self
     {
         /** @var array('Warenkorb' => Warenkorb) $_SESSION */
         if (!is_array($_SESSION['Waehrungen'])) {
@@ -334,9 +334,12 @@ class WarenkorbPos
         foreach (Session::Currencies() as $currency) {
             $currencyName = $currency->getName();
             // Standardartikel
-            $this->cGesamtpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(TaxHelper::getGross($this->fPreis * $this->nAnzahl, TaxHelper::getSalesTax($this->kSteuerklasse), 4), $currency);
-            $this->cGesamtpreisLocalized[1][$currencyName] = Preise::getLocalizedPriceString($this->fPreis * $this->nAnzahl, $currency);
-            $this->cEinzelpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(TaxHelper::getGross($this->fPreis, TaxHelper::getSalesTax($this->kSteuerklasse), 4), $currency);
+            $this->cGesamtpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(TaxHelper::getGross($this->fPreis * $this->nAnzahl,
+                TaxHelper::getSalesTax($this->kSteuerklasse), 4), $currency);
+            $this->cGesamtpreisLocalized[1][$currencyName] = Preise::getLocalizedPriceString($this->fPreis * $this->nAnzahl,
+                $currency);
+            $this->cEinzelpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(TaxHelper::getGross($this->fPreis,
+                TaxHelper::getSalesTax($this->kSteuerklasse), 4), $currency);
             $this->cEinzelpreisLocalized[1][$currencyName] = Preise::getLocalizedPriceString($this->fPreis, $currency);
 
             if (!empty($this->Artikel->cVPEEinheit) && isset($this->Artikel->cVPE) && $this->Artikel->cVPE === 'Y' && $this->Artikel->fVPEWert > 0) {
@@ -344,10 +347,14 @@ class WarenkorbPos
             }
 
             if ($this->istKonfigVater()) {
-                $this->cKonfigpreisLocalized[0][$currencyName]       = Preise::getLocalizedPriceString(TaxHelper::getGross($this->fPreis * $this->nAnzahl, TaxHelper::getSalesTax($this->kSteuerklasse), 4), $currency);
-                $this->cKonfigpreisLocalized[1][$currencyName]       = Preise::getLocalizedPriceString($this->fPreis * $this->nAnzahl, $currency);
-                $this->cKonfigeinzelpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(TaxHelper::getGross($this->fPreis, TaxHelper::getSalesTax($this->kSteuerklasse), 4), $currency);
-                $this->cKonfigeinzelpreisLocalized[1][$currencyName] = Preise::getLocalizedPriceString($this->fPreis, $currency);
+                $this->cKonfigpreisLocalized[0][$currencyName]       = Preise::getLocalizedPriceString(TaxHelper::getGross($this->fPreis * $this->nAnzahl,
+                    TaxHelper::getSalesTax($this->kSteuerklasse), 4), $currency);
+                $this->cKonfigpreisLocalized[1][$currencyName]       = Preise::getLocalizedPriceString($this->fPreis * $this->nAnzahl,
+                    $currency);
+                $this->cKonfigeinzelpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(TaxHelper::getGross($this->fPreis,
+                    TaxHelper::getSalesTax($this->kSteuerklasse), 4), $currency);
+                $this->cKonfigeinzelpreisLocalized[1][$currencyName] = Preise::getLocalizedPriceString($this->fPreis,
+                    $currency);
             }
 
             // Konfigurationsartikel
@@ -359,7 +366,8 @@ class WarenkorbPos
                 foreach (Session::Cart()->PositionenArr as $nPos => $oPosition) {
                     if ($this->cUnique === $oPosition->cUnique) {
                         $fPreisNetto  += $oPosition->fPreis * $oPosition->nAnzahl;
-                        $fPreisBrutto += TaxHelper::getGross($oPosition->fPreis * $oPosition->nAnzahl, TaxHelper::getSalesTax($oPosition->kSteuerklasse), 4);
+                        $fPreisBrutto += TaxHelper::getGross($oPosition->fPreis * $oPosition->nAnzahl,
+                            TaxHelper::getSalesTax($oPosition->kSteuerklasse), 4);
 
                         if ($oPosition->istKonfigVater()) {
                             $nVaterPos = $nPos;
@@ -374,10 +382,22 @@ class WarenkorbPos
                         } else {
                             $this->nAnzahlEinzel = $this->nAnzahl;
                         }
-                        $oVaterPos->cKonfigpreisLocalized[0][$currencyName]       = Preise::getLocalizedPriceString($fPreisBrutto, $currency);
-                        $oVaterPos->cKonfigpreisLocalized[1][$currencyName]       = Preise::getLocalizedPriceString($fPreisNetto, $currency);
-                        $oVaterPos->cKonfigeinzelpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString($fPreisBrutto / $oVaterPos->nAnzahl, $currency);
-                        $oVaterPos->cKonfigeinzelpreisLocalized[1][$currencyName] = Preise::getLocalizedPriceString($fPreisNetto / $oVaterPos->nAnzahl, $currency);
+                        $oVaterPos->cKonfigpreisLocalized[0][$currencyName]       = Preise::getLocalizedPriceString(
+                            $fPreisBrutto,
+                            $currency
+                        );
+                        $oVaterPos->cKonfigpreisLocalized[1][$currencyName]       = Preise::getLocalizedPriceString(
+                            $fPreisNetto,
+                            $currency
+                        );
+                        $oVaterPos->cKonfigeinzelpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(
+                            $fPreisBrutto / $oVaterPos->nAnzahl,
+                            $currency
+                        );
+                        $oVaterPos->cKonfigeinzelpreisLocalized[1][$currencyName] = Preise::getLocalizedPriceString(
+                            $fPreisNetto / $oVaterPos->nAnzahl,
+                            $currency
+                        );
                     }
                 }
             }
@@ -387,8 +407,6 @@ class WarenkorbPos
     }
 
     /**
-     * Setzt WarenkorbPos mit Daten aus der DB mit spezifiziertem Primary Key
-     *
      * @param int $kWarenkorbPos
      * @return $this
      */
@@ -410,9 +428,7 @@ class WarenkorbPos
     }
 
     /**
-     * Fügt Datensatz in DB ein. Primary Key wird in this gesetzt.
-     *
-     * @return int - Key von eingefügter WarenkorbPos
+     * @return int
      */
     public function insertInDB(): int
     {

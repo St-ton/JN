@@ -393,7 +393,7 @@
             </div>
             <div class="modal-body"></div>
             <div class="modal-footer">
-                <p>{#wantToContinue#}</p>
+                <p>{#wantToConfirm#}</p>
                 <button type="button" id="submitDelete" data-name="" class="btn btn-danger">{#delete#}</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal">{#cancel#}</button>
             </div>

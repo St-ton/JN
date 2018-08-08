@@ -83,9 +83,9 @@ class AuswahlAssistentGruppe
         if ($groupID > 0) {
             $cAktivSQL = $bAktiv ? ' AND nAktiv = 1' : '';
             $oGruppe   = Shop::Container()->getDB()->queryPrepared(
-                "SELECT *
+                'SELECT *
                     FROM tauswahlassistentgruppe
-                    WHERE kAuswahlAssistentGruppe = :groupID" .
+                    WHERE kAuswahlAssistentGruppe = :groupID' .
                     $cAktivSQL,
                 ['groupID' => $groupID],
                 \DB\ReturnType::SINGLE_OBJECT

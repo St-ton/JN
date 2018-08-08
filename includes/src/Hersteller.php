@@ -165,11 +165,10 @@ class Hersteller
         }
         if ($cached === true) {
             executeHook(HOOK_HERSTELLER_CLASS_LOADFROMDB, [
-                    'oHersteller' => &$oHersteller,
-                    'cached'      => true,
-                    'cacheTags'   => &$cacheTags
-                ]
-            );
+                'oHersteller' => &$oHersteller,
+                'cached'      => true,
+                'cacheTags'   => &$cacheTags
+            ]);
         }
         if ($oHersteller !== false) {
             $this->loadFromObject($oHersteller);
@@ -215,17 +214,17 @@ class Hersteller
         $sqlWhere = '';
         $kSprache = Shop::getLanguageID();
         if ($productLookup) {
-            $sqlWhere = "WHERE EXISTS (
+            $sqlWhere = 'WHERE EXISTS (
                             SELECT 1
                             FROM tartikel
                             WHERE tartikel.kHersteller = thersteller.kHersteller
-                                " . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . "
+                                ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . '
                                 AND NOT EXISTS (
                                 SELECT 1 FROM tartikelsichtbarkeit
                                 WHERE tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
-                                    AND tartikelsichtbarkeit.kKundengruppe = ". Session::CustomerGroup()->getID() .
-                            ")
-                        )";
+                                    AND tartikelsichtbarkeit.kKundengruppe = '. Session::CustomerGroup()->getID() .
+                            ')
+                        )';
         }
         $objs = Shop::Container()->getDB()->query(
             "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
@@ -254,7 +253,7 @@ class Hersteller
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getName()
     {

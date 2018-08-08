@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -29,6 +29,6 @@ class Bestseller extends AbstractSortingOption
                    ->setOn('tartikel.kArtikel = tbestseller.kArtikel');
         $this->setName(\Shop::Lang()->get('bestseller'));
         $this->setPriority($this->getConfig('artikeluebersicht')['suche_sortierprio_bestseller']);
-        $this->setValue(SEARCH_SORT_BESTSELLER);
+        $this->setValue(\SEARCH_SORT_BESTSELLER);
     }
 }

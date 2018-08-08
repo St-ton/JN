@@ -72,17 +72,17 @@ class SimpleCaptchaService implements CaptchaServiceInterface
         try {
             $token = $cryptoService->randomString(8);
             $code  = $cryptoService->randomString(12);
-            $code  = $code . ':' . time();
+            $code  = $code . ':' . \time();
         } catch (Exception $e) {
             $token = 'token';
-            $code  = rand() . ':' . time();
+            $code  = \rand() . ':' . \time();
         }
 
         Session::set('simplecaptcha.token', $token);
         Session::set('simplecaptcha.code', $code);
 
         return $smarty->assign('captchaToken', $token)
-                      ->assign('captchaCode', sha1($code))
+                      ->assign('captchaCode', \sha1($code))
                       ->fetch('snippets/simple_captcha.tpl');
     }
 
@@ -106,12 +106,12 @@ class SimpleCaptchaService implements CaptchaServiceInterface
         Session::set('simplecaptcha.token', null);
         Session::set('simplecaptcha.code', null);
 
-        $time = substr($code, strpos($code, ':') + 1);
+        $time = \substr($code, \strpos($code, ':') + 1);
 
         // if form is filled out during lower than 5 seconds it must be a bot...
-        return time() > $time + 5
+        return \time() > $time + 5
             && isset($requestData[$token])
-            && ($requestData[$token] === sha1($code));
+            && ($requestData[$token] === \sha1($code));
     }
 
 
@@ -121,18 +121,18 @@ class SimpleCaptchaService implements CaptchaServiceInterface
      */
     public static function encodeCode(string $plain): string
     {
-        if (strlen($plain) !== 4) {
+        if (\strlen($plain) !== 4) {
             return '0';
         }
         $cryptoService = Shop::Container()->getCryptoService();
         $key           = BLOWFISH_KEY;
-        $mod1          = (ord($key[0]) + ord($key[1]) + ord($key[2])) % 9 + 1;
-        $mod2          = strlen($_SERVER['DOCUMENT_ROOT']) % 9 + 1;
+        $mod1          = (\ord($key[0]) + \ord($key[1]) + \ord($key[2])) % 9 + 1;
+        $mod2          = \strlen($_SERVER['DOCUMENT_ROOT']) % 9 + 1;
 
-        $s1 = ord($plain{0}) - $mod2 + $mod1 + 123;
-        $s2 = ord($plain{1}) - $mod1 + $mod2 + 234;
-        $s3 = ord($plain{2}) + $mod1 + 345;
-        $s4 = ord($plain{3}) + $mod2 + 456;
+        $s1 = \ord($plain{0}) - $mod2 + $mod1 + 123;
+        $s2 = \ord($plain{1}) - $mod1 + $mod2 + 234;
+        $s3 = \ord($plain{2}) + $mod1 + 345;
+        $s4 = \ord($plain{3}) + $mod2 + 456;
 
         $r1 = $cryptoService->randomInt(100, 999);
         $r2 = $cryptoService->randomInt(0, 9);

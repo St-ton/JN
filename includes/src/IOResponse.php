@@ -108,8 +108,8 @@ class IOResponse implements JsonSerializable
                 $this->script("console.log('%c TRACE %c', '$grey', '$reset', " . json_encode($trace) . ");");
             }
 
-            $this->script("console.groupEnd();");
-            $this->script("console.groupEnd();");
+            $this->script('console.groupEnd();');
+            $this->script('console.groupEnd();');
         }
 
         return $this;

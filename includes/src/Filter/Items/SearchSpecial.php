@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -16,10 +16,10 @@ use Filter\Type;
 use Filter\ProductFilter;
 
 /**
- * Class ItemSearchSpecial
+ * Class SearchSpecial
  * @package Filter\Items
  */
-class ItemSearchSpecial extends AbstractFilter
+class SearchSpecial extends AbstractFilter
 {
     use \MagicCompatibilityTrait;
 
@@ -32,7 +32,7 @@ class ItemSearchSpecial extends AbstractFilter
     ];
 
     /**
-     * ItemSearchSpecial constructor.
+     * SearchSpecial constructor.
      *
      * @param ProductFilter $productFilter
      */
@@ -53,7 +53,7 @@ class ItemSearchSpecial extends AbstractFilter
      */
     public function setValue($value): FilterInterface
     {
-        $this->value = is_array($value) ? $value : [(int)$value];
+        $this->value = \is_array($value) ? $value : [(int)$value];
 
         return $this;
     }
@@ -62,7 +62,7 @@ class ItemSearchSpecial extends AbstractFilter
      * @param array|int|string $value
      * @return $this
      */
-    public function setValueCompat(int $value)
+    public function setValueCompat($value): FilterInterface
     {
         $this->value = [$value];
 
@@ -74,7 +74,7 @@ class ItemSearchSpecial extends AbstractFilter
      */
     public function getValueCompat()
     {
-        return is_array($this->value) ? $this->value[0] : $this->value;
+        return \is_array($this->value) ? $this->value[0] : $this->value;
     }
 
 
@@ -84,15 +84,15 @@ class ItemSearchSpecial extends AbstractFilter
     public function setSeo(array $languages): FilterInterface
     {
         $val = $this->getValue();
-        if ((is_numeric($val) && $val > 0) || (is_array($val) && count($val) > 0)) {
-            if (!is_array($val)) {
+        if ((\is_numeric($val) && $val > 0) || (\is_array($val) && \count($val) > 0)) {
+            if (!\is_array($val)) {
                 $val = [$val];
             }
             $oSeo_arr = \Shop::Container()->getDB()->query(
                 "SELECT tseo.cSeo, tseo.kSprache
                     FROM tseo
                     WHERE cKey = 'suchspecial' 
-                        AND kKey IN (" . implode(', ', $val) . ")
+                        AND kKey IN (" . \implode(', ', $val) . ")
                     ORDER BY kSprache",
                 ReturnType::ARRAY_OF_OBJECTS
             );
@@ -106,22 +106,22 @@ class ItemSearchSpecial extends AbstractFilter
                 }
             }
             switch ($val[0]) {
-                case SEARCHSPECIALS_BESTSELLER:
+                case \SEARCHSPECIALS_BESTSELLER:
                     $this->setName(\Shop::Lang()->get('bestsellers'));
                     break;
-                case SEARCHSPECIALS_SPECIALOFFERS:
+                case \SEARCHSPECIALS_SPECIALOFFERS:
                     $this->setName(\Shop::Lang()->get('specialOffers'));
                     break;
-                case SEARCHSPECIALS_NEWPRODUCTS:
+                case \SEARCHSPECIALS_NEWPRODUCTS:
                     $this->setName(\Shop::Lang()->get('newProducts'));
                     break;
-                case SEARCHSPECIALS_TOPOFFERS:
+                case \SEARCHSPECIALS_TOPOFFERS:
                     $this->setName(\Shop::Lang()->get('topOffers'));
                     break;
-                case SEARCHSPECIALS_UPCOMINGPRODUCTS:
+                case \SEARCHSPECIALS_UPCOMINGPRODUCTS:
                     $this->setName(\Shop::Lang()->get('upcomingProducts'));
                     break;
-                case SEARCHSPECIALS_TOPREVIEWS:
+                case \SEARCHSPECIALS_TOPREVIEWS:
                     $this->setName(\Shop::Lang()->get('topReviews'));
                     break;
                 default:
@@ -153,7 +153,7 @@ class ItemSearchSpecial extends AbstractFilter
         $conditions = [];
         foreach ($this->getValue() as $value) {
             switch ($value) {
-                case SEARCHSPECIALS_BESTSELLER:
+                case \SEARCHSPECIALS_BESTSELLER:
                     $nAnzahl = ($min = (int)$conf['global']['global_bestseller_minanzahl']) > 0
                         ? $min
                         : 100;
@@ -161,9 +161,9 @@ class ItemSearchSpecial extends AbstractFilter
                     $conditions[] = 'ROUND(tbestseller.fAnzahl) >= ' . $nAnzahl;
                     break;
 
-                case SEARCHSPECIALS_SPECIALOFFERS:
+                case \SEARCHSPECIALS_SPECIALOFFERS:
                     if ($this->productFilter->hasSearchSpecial()) {
-                        continue;
+                        break;
                     }
                     $tasp = 'tartikelsonderpreis';
                     $tsp  = 'tsonderpreise';
@@ -179,7 +179,7 @@ class ItemSearchSpecial extends AbstractFilter
                                         AND " . $tsp . " .kKundengruppe = " . \Session::CustomerGroup()->getID();
                     break;
 
-                case SEARCHSPECIALS_NEWPRODUCTS:
+                case \SEARCHSPECIALS_NEWPRODUCTS:
                     $days = ($d = $conf['boxen']['box_neuimsortiment_alter_tage']) > 0
                         ? (int)$d
                         : 30;
@@ -189,15 +189,15 @@ class ItemSearchSpecial extends AbstractFilter
                                 AND tartikel.cNeu = 'Y'";
                     break;
 
-                case SEARCHSPECIALS_TOPOFFERS:
+                case \SEARCHSPECIALS_TOPOFFERS:
                     $conditions[] = "tartikel.cTopArtikel = 'Y'";
                     break;
 
-                case SEARCHSPECIALS_UPCOMINGPRODUCTS:
+                case \SEARCHSPECIALS_UPCOMINGPRODUCTS:
                     $conditions[] = 'NOW() < tartikel.dErscheinungsdatum';
                     break;
 
-                case SEARCHSPECIALS_TOPREVIEWS:
+                case \SEARCHSPECIALS_TOPREVIEWS:
                     if (!$this->productFilter->hasRatingFilter()) {
                         $minStars     = ($m = $conf['boxen']['boxen_topbewertet_minsterne']) > 0
                             ? (int)$m
@@ -210,12 +210,12 @@ class ItemSearchSpecial extends AbstractFilter
                     break;
             }
         }
-        $conditions = array_map(function ($e) {
+        $conditions = \array_map(function ($e) {
             return '(' . $e . ')';
         }, $conditions);
 
-        return count($conditions) > 0
-            ? '(' . implode($or === true ? ' OR ' : ' AND ', $conditions) . ')'
+        return \count($conditions) > 0
+            ? '(' . \implode($or === true ? ' OR ' : ' AND ', $conditions) . ')'
             : '';
     }
 
@@ -232,7 +232,7 @@ class ItemSearchSpecial extends AbstractFilter
         $baseValue = $this->productFilter->getSearchSpecial()->getValue();
         foreach ($values as $value) {
             switch ($value) {
-                case SEARCHSPECIALS_BESTSELLER:
+                case \SEARCHSPECIALS_BESTSELLER:
                     if ($baseValue === $value) {
                         break;
                     }
@@ -244,7 +244,7 @@ class ItemSearchSpecial extends AbstractFilter
                         ->setOrigin(__CLASS__);
                     break;
 
-                case SEARCHSPECIALS_SPECIALOFFERS:
+                case \SEARCHSPECIALS_SPECIALOFFERS:
                     if ($baseValue === $value) {
                         break;
                     }
@@ -264,7 +264,7 @@ class ItemSearchSpecial extends AbstractFilter
                     }
                     break;
 
-                case SEARCHSPECIALS_TOPREVIEWS:
+                case \SEARCHSPECIALS_TOPREVIEWS:
                     if ($baseValue === $value) {
                         break;
                     }
@@ -278,9 +278,9 @@ class ItemSearchSpecial extends AbstractFilter
                     }
                     break;
 
-                case SEARCHSPECIALS_NEWPRODUCTS:
-                case SEARCHSPECIALS_TOPOFFERS:
-                case SEARCHSPECIALS_UPCOMINGPRODUCTS:
+                case \SEARCHSPECIALS_NEWPRODUCTS:
+                case \SEARCHSPECIALS_TOPOFFERS:
+                case \SEARCHSPECIALS_UPCOMINGPRODUCTS:
                 default:
                     break;
             }
@@ -314,7 +314,7 @@ class ItemSearchSpecial extends AbstractFilter
             $sql->setLimit('');
             $sql->setGroupBy(['tartikel.kArtikel']);
             switch ($i) {
-                case SEARCHSPECIALS_BESTSELLER:
+                case \SEARCHSPECIALS_BESTSELLER:
                     $name    = \Shop::Lang()->get('bestsellers');
                     $nAnzahl = (($min = $this->getConfig('global')['global_bestseller_minanzahl']) > 0)
                         ? (int)$min
@@ -328,7 +328,7 @@ class ItemSearchSpecial extends AbstractFilter
                         ->setOrigin(__CLASS__));
                     $sql->addCondition('ROUND(tbestseller.fAnzahl) >= ' . $nAnzahl);
                     break;
-                case SEARCHSPECIALS_SPECIALOFFERS:
+                case \SEARCHSPECIALS_SPECIALOFFERS:
                     $name = \Shop::Lang()->get('specialOffer');
                     if (true || !$this->isInitialized()) {
                         $sql->addJoin((new FilterJoin())
@@ -353,7 +353,7 @@ class ItemSearchSpecial extends AbstractFilter
                         OR tartikelsonderpreis.dEnde = '0000-00-00')");
                     $sql->addCondition($tsonderpreise . '.kKundengruppe = ' . $this->getCustomerGroupID());
                     break;
-                case SEARCHSPECIALS_NEWPRODUCTS:
+                case \SEARCHSPECIALS_NEWPRODUCTS:
                     $name       = \Shop::Lang()->get('newProducts');
                     $alter_tage = (($age = $this->getConfig('boxen')['box_neuimsortiment_alter_tage']) > 0)
                         ? (int)$age
@@ -361,15 +361,15 @@ class ItemSearchSpecial extends AbstractFilter
                     $sql->addCondition("tartikel.cNeu = 'Y' 
                         AND DATE_SUB(now(), INTERVAL $alter_tage DAY) < tartikel.dErstellt");
                     break;
-                case SEARCHSPECIALS_TOPOFFERS:
+                case \SEARCHSPECIALS_TOPOFFERS:
                     $name = \Shop::Lang()->get('topOffer');
                     $sql->addCondition("tartikel.cTopArtikel = 'Y'");
                     break;
-                case SEARCHSPECIALS_UPCOMINGPRODUCTS:
+                case \SEARCHSPECIALS_UPCOMINGPRODUCTS:
                     $name = \Shop::Lang()->get('upcomingProducts');
                     $sql->addCondition('now() < tartikel.dErscheinungsdatum');
                     break;
-                case SEARCHSPECIALS_TOPREVIEWS:
+                case \SEARCHSPECIALS_TOPREVIEWS:
                     $name = \Shop::Lang()->get('topReviews');
                     if (!$this->productFilter->hasRatingFilter()) {
                         $sql->addJoin((new FilterJoin())
@@ -387,7 +387,7 @@ class ItemSearchSpecial extends AbstractFilter
             }
             $qry    = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
             $qryRes = \Shop::Container()->getDB()->query($qry, ReturnType::ARRAY_OF_OBJECTS);
-            if (($count = count($qryRes)) > 0) {
+            if (($count = \count($qryRes)) > 0) {
                 if ($baseValue === $i) {
                     continue;
                 }

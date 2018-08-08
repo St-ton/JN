@@ -1,4 +1,8 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
 
 /**
  * Class Versand
@@ -129,7 +133,7 @@ class Versand
      * @param int $kVersand
      * @return $this
      */
-    public function setVersand(int $kVersand)
+    public function setVersand(int $kVersand): self
     {
         $this->kVersand = $kVersand;
 
@@ -140,7 +144,7 @@ class Versand
      * @param int $kLieferschein
      * @return $this
      */
-    public function setLieferschein(int $kLieferschein)
+    public function setLieferschein(int $kLieferschein): self
     {
         $this->kLieferschein = $kLieferschein;
 
@@ -151,7 +155,7 @@ class Versand
      * @param string $cLogistik
      * @return $this
      */
-    public function setLogistik($cLogistik)
+    public function setLogistik($cLogistik): self
     {
         $this->cLogistik = Shop::Container()->getDB()->escape($cLogistik);
 
@@ -162,7 +166,7 @@ class Versand
      * @param string $cLogistikURL
      * @return $this
      */
-    public function setLogistikURL($cLogistikURL)
+    public function setLogistikURL($cLogistikURL): self
     {
         $this->cLogistikURL = Shop::Container()->getDB()->escape($cLogistikURL);
 
@@ -173,7 +177,7 @@ class Versand
      * @param string $cIdentCode
      * @return $this
      */
-    public function setIdentCode($cIdentCode)
+    public function setIdentCode($cIdentCode): self
     {
         $this->cIdentCode = Shop::Container()->getDB()->escape($cIdentCode);
 
@@ -184,7 +188,7 @@ class Versand
      * @param string $cHinweis
      * @return $this
      */
-    public function setHinweis($cHinweis)
+    public function setHinweis($cHinweis): self
     {
         $this->cHinweis = Shop::Container()->getDB()->escape($cHinweis);
 
@@ -195,7 +199,7 @@ class Versand
      * @param string $dErstellt
      * @return $this
      */
-    public function setErstellt($dErstellt)
+    public function setErstellt($dErstellt): self
     {
         $this->dErstellt = Shop::Container()->getDB()->escape($dErstellt);
 
@@ -203,7 +207,7 @@ class Versand
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getVersand()
     {
@@ -211,7 +215,7 @@ class Versand
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getLieferschein()
     {
@@ -219,7 +223,7 @@ class Versand
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getLogistik()
     {
@@ -227,7 +231,7 @@ class Versand
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getLogistikURL()
     {
@@ -235,7 +239,7 @@ class Versand
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getIdentCode()
     {
@@ -243,7 +247,7 @@ class Versand
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getHinweis()
     {
@@ -251,7 +255,7 @@ class Versand
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getErstellt()
     {
@@ -259,7 +263,7 @@ class Versand
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getLogistikVarUrl()
     {

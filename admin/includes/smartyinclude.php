@@ -171,6 +171,5 @@ $smarty->assign('URL_SHOP', $shopURL)
        ->assign('Einstellungen', $config)
        ->assign('oLinkOberGruppe_arr', $mainGroups)
        ->assign('SektionenEinstellungen', $configSections)
-       ->assign('kAdminmenuEinstellungen', KADMINMENU_EINSTELLUNGEN)
        ->assign('notifications', Notification::getInstance())
        ->assign('favorites', $oAccount->favorites());

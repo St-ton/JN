@@ -26,7 +26,7 @@ class Navigation
     /**
      * @var int
      */
-    private $pageType = PAGE_UNBEKANNT;
+    private $pageType = \PAGE_UNBEKANNT;
 
     /**
      * @var LinkServiceInterface
@@ -42,11 +42,6 @@ class Navigation
      * @var string
      */
     private $baseURL;
-
-    /**
-     * @var \JTLSmarty
-     */
-    private $smarty;
 
     /**
      * @var \Artikel|null
@@ -263,14 +258,14 @@ class Navigation
         $ele          = new NavigationEntry();
         $ele->setHasChild(false);
         switch ($this->pageType) {
-            case PAGE_STARTSEITE:
+            case \PAGE_STARTSEITE:
                 break;
 
-            case PAGE_ARTIKEL:
-                if ($this->categoryList === null || $this->product === null || count($this->categoryList->elemente) === 0) {
+            case \PAGE_ARTIKEL:
+                if ($this->categoryList === null || $this->product === null || \count($this->categoryList->elemente) === 0) {
                     break;
                 }
-                $elemCount = count($this->categoryList->elemente) - 1;
+                $elemCount = \count($this->categoryList->elemente) - 1;
                 for ($i = $elemCount; $i >= 0; $i--) {
                     if (isset($this->categoryList->elemente[$i]->cKurzbezeichnung, $this->categoryList->elemente[$i]->cURL)) {
                         $ele = new NavigationEntry();
@@ -297,8 +292,8 @@ class Navigation
                 $breadCrumb[] = $ele;
                 break;
 
-            case PAGE_ARTIKELLISTE:
-                $elemCount = count($this->categoryList->elemente ?? []);
+            case \PAGE_ARTIKELLISTE:
+                $elemCount = \count($this->categoryList->elemente ?? []);
                 for ($i = $elemCount - 1; $i >= 0; $i--) {
                     $ele = new NavigationEntry();
                     $ele->setName($this->categoryList->elemente[$i]->cKurzbezeichnung);
@@ -316,7 +311,7 @@ class Navigation
 
                 break;
 
-            case PAGE_WARENKORB:
+            case \PAGE_WARENKORB:
                 $url     = $this->linkService->getStaticRoute('warenkorb.php', false);
                 $urlFull = $this->linkService->getStaticRoute('warenkorb.php');
                 $ele->setName($this->language->get('basket', 'breadcrumb'));
@@ -325,7 +320,7 @@ class Navigation
                 $breadCrumb[] = $ele;
                 break;
 
-            case PAGE_PASSWORTVERGESSEN:
+            case \PAGE_PASSWORTVERGESSEN:
                 $url     = $this->linkService->getStaticRoute('pass.php', false);
                 $urlFull = $this->linkService->getStaticRoute('pass.php');
                 $ele->setName($this->language->get('forgotpassword', 'breadcrumb'));
@@ -334,8 +329,8 @@ class Navigation
                 $breadCrumb[] = $ele;
                 break;
 
-            case PAGE_LOGIN:
-            case PAGE_MEINKONTO:
+            case \PAGE_LOGIN:
+            case \PAGE_MEINKONTO:
                 $cText   = \Session::Customer()->getID() > 0
                     ? $this->language->get('account', 'breadcrumb')
                     : $this->language->get('login', 'breadcrumb');
@@ -347,7 +342,7 @@ class Navigation
                 $breadCrumb[] = $ele;
                 break;
 
-            case PAGE_BESTELLVORGANG:
+            case \PAGE_BESTELLVORGANG:
                 $url     = $this->linkService->getStaticRoute('jtl.php', false);
                 $urlFull = $this->linkService->getStaticRoute('jtl.php');
                 $ele->setName($this->language->get('checkout', 'breadcrumb'));
@@ -356,7 +351,7 @@ class Navigation
                 $breadCrumb[] = $ele;
                 break;
 
-            case PAGE_REGISTRIERUNG:
+            case \PAGE_REGISTRIERUNG:
                 $url     = $this->linkService->getStaticRoute('registrieren.php', false);
                 $urlFull = $this->linkService->getStaticRoute('registrieren.php');
                 $ele->setName($this->language->get('register', 'breadcrumb'));
@@ -365,7 +360,7 @@ class Navigation
                 $breadCrumb[] = $ele;
                 break;
 
-            case PAGE_KONTAKT:
+            case \PAGE_KONTAKT:
                 $url     = $this->linkService->getStaticRoute('kontakt.php', false);
                 $urlFull = $this->linkService->getStaticRoute('kontakt.php');
                 $ele->setName($this->language->get('contact', 'breadcrumb'));
@@ -374,7 +369,7 @@ class Navigation
                 $breadCrumb[] = $ele;
                 break;
 
-            case PAGE_WARTUNG:
+            case \PAGE_WARTUNG:
                 $url     = $this->linkService->getStaticRoute('wartung.php', false);
                 $urlFull = $this->linkService->getStaticRoute('wartung.php');
                 $ele->setName($this->language->get('maintainance', 'breadcrumb'));
@@ -383,7 +378,7 @@ class Navigation
                 $breadCrumb[] = $ele;
                 break;
 
-            case PAGE_NEWSLETTER:
+            case \PAGE_NEWSLETTER:
                 if ($this->link !== null) {
                     $ele->setName($this->link->getName());
                     $ele->setURL($this->link->getURL());
@@ -392,7 +387,7 @@ class Navigation
                 }
                 break;
 
-            case PAGE_UMFRAGE:
+            case \PAGE_UMFRAGE:
                 if ($this->link !== null) {
                     $ele->setName($this->link->getName());
                     $ele->setURL($this->link->getURL());
@@ -401,7 +396,7 @@ class Navigation
                 }
                 break;
 
-            case PAGE_NEWSDETAIL:
+            case \PAGE_NEWSDETAIL:
                 $url     = $this->linkService->getStaticRoute('news.php', false);
                 $urlFull = $this->linkService->getStaticRoute('news.php');
                 $ele->setName($this->language->get('news', 'breadcrumb'));
@@ -410,7 +405,7 @@ class Navigation
                 $breadCrumb[] = $ele;
                 break;
 
-            case PAGE_NEWS:
+            case \PAGE_NEWS:
                 $url     = $this->linkService->getStaticRoute('news.php', false);
                 $urlFull = $this->linkService->getStaticRoute('news.php');
                 $ele->setName($this->language->get('news', 'breadcrumb'));
@@ -419,7 +414,7 @@ class Navigation
                 $breadCrumb[] = $ele;
                 break;
 
-            case PAGE_NEWSKATEGORIE:
+            case \PAGE_NEWSKATEGORIE:
                 $url     = $this->linkService->getStaticRoute('news.php', false);
                 $urlFull = $this->linkService->getStaticRoute('news.php');
                 $ele->setName($this->language->get('newskat', 'breadcrumb'));
@@ -428,7 +423,7 @@ class Navigation
                 $breadCrumb[] = $ele;
                 break;
 
-            case PAGE_NEWSMONAT:
+            case \PAGE_NEWSMONAT:
                 $url     = $this->linkService->getStaticRoute('news.php', false);
                 $urlFull = $this->linkService->getStaticRoute('news.php');
                 $ele->setName($this->language->get('newsmonat', 'breadcrumb'));
@@ -438,7 +433,7 @@ class Navigation
 
                 break;
 
-            case PAGE_VERGLEICHSLISTE:
+            case \PAGE_VERGLEICHSLISTE:
                 $url     = $this->linkService->getStaticRoute('vergleichsliste.php', false);
                 $urlFull = $this->linkService->getStaticRoute('vergleichsliste.php');
                 $ele->setName($this->language->get('compare'));
@@ -447,7 +442,7 @@ class Navigation
                 $breadCrumb[] = $ele;
                 break;
 
-            case PAGE_WUNSCHLISTE:
+            case \PAGE_WUNSCHLISTE:
                 $url     = $this->linkService->getStaticRoute('wunschliste.php', false);
                 $urlFull = $this->linkService->getStaticRoute('wunschliste.php');
                 $ele->setName($this->language->get('wishlist'));
@@ -456,7 +451,7 @@ class Navigation
                 $breadCrumb[] = $ele;
                 break;
 
-            case PAGE_BEWERTUNG:
+            case \PAGE_BEWERTUNG:
                 if ($this->product !== null) {
                     $ele = new NavigationEntry();
                     $ele->setName($this->product->cKurzbezeichnung);
@@ -498,7 +493,7 @@ class Navigation
                             return $res;
                         })->reverse()->all();
 
-                    $breadCrumb = array_merge($breadCrumb, $elems);
+                    $breadCrumb = \array_merge($breadCrumb, $elems);
                     $ele->setName($this->link->getName());
                     $ele->setURL($this->link->getURL());
                     $ele->setURLFull($this->link->getURL());
@@ -509,7 +504,7 @@ class Navigation
         if ($this->customNavigationEntry !== null) {
             $breadCrumb[] = $this->customNavigationEntry;
         }
-        executeHook(HOOK_TOOLSGLOBAL_INC_SWITCH_CREATENAVIGATION, ['navigation' => &$breadCrumb]);
+        \executeHook(\HOOK_TOOLSGLOBAL_INC_SWITCH_CREATENAVIGATION, ['navigation' => &$breadCrumb]);
 
         return $breadCrumb;
     }

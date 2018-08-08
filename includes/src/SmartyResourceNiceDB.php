@@ -18,9 +18,9 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
      * SmartyResourceNiceDB constructor.
      * @param string $type
      */
-    public function __construct($type = 'export')
+    public function __construct(string $type = 'export')
     {
-        $this->type  = $type;
+        $this->type = $type;
     }
 
     /**
@@ -68,12 +68,14 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
                     $source = $vl->cContentText;
                 } else {
                     $source = '';
-                    Jtllog::writeLog('Ungueltiger Emailvorlagen-Typ: ' . $pcs[0], JTLLOG_LEVEL_NOTICE);
+                    Shop::Container()->getLogService()->notice('Ungueltiger Emailvorlagen-Typ: ' . $pcs[0]);
                 }
             } else {
                 $source = '';
-                Jtllog::writeLog('Emailvorlage mit der ID ' . (int)$pcs[1] .
-                    ' in der Sprache ' . (int)$pcs[2] . ' wurde nicht gefunden', JTLLOG_LEVEL_NOTICE);
+                Shop::Container()->getLogService()->notice(
+                    'Emailvorlage mit der ID ' . (int)$pcs[1] .
+                    ' in der Sprache ' . (int)$pcs[2] . ' wurde nicht gefunden'
+                );
             }
         } elseif ($this->type === 'newsletter') {
             $cTeile_arr = explode('_', $name);
@@ -92,7 +94,7 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
             }
         } else {
             $source = '';
-            Jtllog::writeLog('Template-Typ ' . $this->type . ' wurde nicht gefunden', JTLLOG_LEVEL_NOTICE);
+            Shop::Container()->getLogService()->notice('Template-Typ ' . $this->type . ' wurde nicht gefunden');
         }
     }
 
@@ -100,7 +102,7 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
      * @param string $name
      * @return int
      */
-    protected function fetchTimestamp($name)
+    protected function fetchTimestamp($name): int
     {
         return time();
     }

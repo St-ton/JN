@@ -8,7 +8,7 @@
  * @param array $cPost_arr
  * @return array|int
  */
-function kundeSpeichern($cPost_arr)
+function kundeSpeichern(array $cPost_arr)
 {
     global $Kunde,
            $step,
@@ -31,13 +31,12 @@ function kundeSpeichern($cPost_arr)
     $knd                 = getKundendaten($cPost_arr, 1, 0);
     $cKundenattribut_arr = getKundenattribute($cPost_arr);
     $kKundengruppe       = Session::CustomerGroup()->getID();
-    // CheckBox Plausi
-    $oCheckBox       = new CheckBox();
-    $fehlendeAngaben = array_merge(
+    $oCheckBox           = new CheckBox();
+    $fehlendeAngaben     = array_merge(
         $fehlendeAngaben,
         $oCheckBox->validateCheckBox(CHECKBOX_ORT_REGISTRIERUNG, $kKundengruppe, $cPost_arr, true)
     );
-    $nReturnValue    = angabenKorrekt($fehlendeAngaben);
+    $nReturnValue        = angabenKorrekt($fehlendeAngaben);
 
     executeHook(HOOK_REGISTRIEREN_PAGE_REGISTRIEREN_PLAUSI, [
         'nReturnValue'    => &$nReturnValue,
@@ -118,7 +117,7 @@ function kundeSpeichern($cPost_arr)
             $knd->cAbgeholt     = 'N';
             $knd->cSperre       = 'N';
             //konto sofort aktiv?
-            $knd->cAktiv = $conf['global']['global_kundenkonto_aktiv'] === 'A'
+            $knd->cAktiv          = $conf['global']['global_kundenkonto_aktiv'] === 'A'
                 ? 'N'
                 : 'Y';
             $cPasswortKlartext    = $knd->cPasswort;
@@ -200,7 +199,7 @@ function kundeSpeichern($cPost_arr)
         if ((int)$cPost_arr['checkout'] === 1) {
             //weiterleitung zum chekout
             header('Location: ' . Shop::Container()->getLinkService()
-                                                   ->getStaticRoute('bestellvorgang.php', true) . '?reg=1', true, 303);
+                                      ->getStaticRoute('bestellvorgang.php', true) . '?reg=1', true, 303);
             exit;
         }
         if (isset($cPost_arr['ajaxcheckout_return']) && (int)$cPost_arr['ajaxcheckout_return'] === 1) {
@@ -209,7 +208,7 @@ function kundeSpeichern($cPost_arr)
         if ($conf['global']['global_kundenkonto_aktiv'] !== 'A') {
             //weiterleitung zu mein Konto
             header('Location: ' . Shop::Container()->getLinkService()
-                                                   ->getStaticRoute('jtl.php', true) . '?reg=1', true, 303);
+                                      ->getStaticRoute('jtl.php', true) . '?reg=1', true, 303);
             exit;
         }
     } else {
@@ -220,7 +219,7 @@ function kundeSpeichern($cPost_arr)
             $_SESSION['checkout.cPost_arr']       = $cPost_arr;
 
             header('Location: ' . Shop::Container()->getLinkService()
-                                                   ->getStaticRoute('bestellvorgang.php', true) . '?reg=1', true, 303);
+                                      ->getStaticRoute('bestellvorgang.php', true) . '?reg=1', true, 303);
             exit;
         }
         Shop::Smarty()->assign('fehlendeAngaben', $fehlendeAngaben);
@@ -245,7 +244,7 @@ function gibFormularDaten(int $nCheckout = 0)
 
     if (isset($Kunde->dGeburtstag) && preg_match('/^\d{4}\-\d{2}\-(\d{2})$/', $Kunde->dGeburtstag)) {
         list($jahr, $monat, $tag) = explode('-', $Kunde->dGeburtstag);
-        $Kunde->dGeburtstag       = $tag . '.' . $monat . '.' . $jahr;
+        $Kunde->dGeburtstag = $tag . '.' . $monat . '.' . $jahr;
     }
     $herkunfte = Shop::Container()->getDB()->query(
         'SELECT * 
@@ -279,7 +278,7 @@ function gibKunde()
 
     if (preg_match('/^\d{4}\-\d{2}\-(\d{2})$/', $Kunde->dGeburtstag)) {
         list($jahr, $monat, $tag) = explode('-', $Kunde->dGeburtstag);
-        $Kunde->dGeburtstag       = $tag . '.' . $monat . '.' . $jahr;
+        $Kunde->dGeburtstag = $tag . '.' . $monat . '.' . $jahr;
     }
     $titel = Shop::Lang()->get('editData', 'login');
 }

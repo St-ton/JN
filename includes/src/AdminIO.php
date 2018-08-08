@@ -26,7 +26,7 @@ class AdminIO extends IO
     }
 
     /**
-     * @return AdminAccount
+     * @return AdminAccount|null
      */
     public function getAccount()
     {
@@ -58,13 +58,13 @@ class AdminIO extends IO
     public function execute($name, $params)
     {
         if (!$this->exists($name)) {
-            return new IOError("Function not registered");
+            return new IOError('Function not registered');
         }
 
         $permission = $this->functions[$name][2];
 
         if ($permission !== null && !$this->oAccount->permission($permission)) {
-            return new IOError("User has not the required permission to execute this function", 401);
+            return new IOError('User has not the required permission to execute this function', 401);
         }
 
         return parent::execute($name, $params);

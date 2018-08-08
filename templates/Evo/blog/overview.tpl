@@ -9,6 +9,7 @@
 
 {include file='snippets/extension.tpl'}
 
+{include file='snippets/opc_mount_point.tpl' id='opc_news_overview_filter_prepend'}
 <div class="well well-sm">
     <form id="frm_filter" name="frm_filter" action="{get_static_route id='news.php'}" method="post" class="form-inline text-center">
         {$jtl_token}
@@ -59,7 +60,7 @@
         <button name="submitGo" type="submit" value="{lang key='filterGo'}" class="btn btn-default">{lang key='filterGo'}</button>
     </form>
 </div>
-
+{include file='snippets/opc_mount_point.tpl' id='opc_news_overview_filter_append'}
 {if isset($noarchiv) && $noarchiv}
     <div class="alert alert-info">{lang key='noNewsArchiv' section='news'}.</div>
 {elseif !empty($oNewsUebersicht_arr)}
@@ -79,7 +80,9 @@
         {/if}
         {foreach $oNewsUebersicht_arr as $oNewsUebersicht}
             {include file='blog/preview.tpl'}
+            {include file='snippets/opc_mount_point.tpl' id='opc_news_overview_preview_append'|cat:$oNewsUebersicht@iteration}
         {/foreach}
     </div>
     {include file='snippets/pagination.tpl' oPagination=$oPagination cThisUrl='news.php' parts=['pagi']}
 {/if}
+{include file='snippets/opc_mount_point.tpl' id='opc_news_overview_preview_append'}

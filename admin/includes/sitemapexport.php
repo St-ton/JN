@@ -912,12 +912,14 @@ function generateSitemapXML()
     }
     if ($conf['sitemap']['sitemap_news_anzeigen'] === 'Y') {
         $res = Shop::Container()->getDB()->query(
-            "SELECT tnews.*, tseo.cSeo
+            "SELECT tnews.*, tseo.cSeo, tseo.kSprache
                 FROM tnews
+                JOIN tnewssprache t 
+                    ON tnews.kNews = t.kNews
                 JOIN tseo 
                     ON tseo.cKey = 'kNews'
                     AND tseo.kKey = tnews.kNews
-                    AND tseo.kSprache = tnews.kSprache
+                    AND tseo.kSprache = t.languageID
                 WHERE tnews.nAktiv = 1
                     AND tnews.dGueltigVon <= now()
                     AND (tnews.cKundengruppe LIKE '%;-1;%'
@@ -949,12 +951,14 @@ function generateSitemapXML()
     }
     if ($conf['sitemap']['sitemap_newskategorien_anzeigen'] === 'Y') {
         $res = Shop::Container()->getDB()->query(
-            "SELECT tnewskategorie.*, tseo.cSeo
+            "SELECT tnewskategorie.*, tseo.cSeo, tseo.kSprache
                  FROM tnewskategorie
+                 JOIN tnewskategoriesprache t 
+                    ON tnewskategorie.kNewsKategorie = t.kNewsKategorie
                  JOIN tseo 
                     ON tseo.cKey = 'kNewsKategorie'
                     AND tseo.kKey = tnewskategorie.kNewsKategorie
-                    AND tseo.kSprache = tnewskategorie.kSprache
+                    AND tseo.kSprache = t.languageID
                  WHERE tnewskategorie.nAktiv = 1",
             \DB\ReturnType::QUERYSINGLE
         );

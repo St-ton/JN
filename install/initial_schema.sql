@@ -80,7 +80,7 @@ CREATE TABLE `tadminlogingruppe` (
   `cBeschreibung` text COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`kAdminlogingruppe`),
   UNIQUE KEY `cGruppe` (`cGruppe`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tadminlogingruppe` DISABLE KEYS */;
@@ -97,7 +97,7 @@ CREATE TABLE `tadminmenu` (
   `cRecht` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `nSort` int(10) unsigned DEFAULT NULL,
   PRIMARY KEY (`kAdminmenu`)
-) ENGINE=InnoDB AUTO_INCREMENT=88 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tadminmenu` DISABLE KEYS */;
@@ -113,7 +113,7 @@ CREATE TABLE `tadminmenugruppe` (
   `nSort` int(10) unsigned NOT NULL,
   PRIMARY KEY (`kAdminmenueGruppe`),
   KEY `kAdminmenueOberGruppe` (`kAdminmenueOberGruppe`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tadminmenugruppe` DISABLE KEYS */;
@@ -151,7 +151,7 @@ CREATE TABLE `tadminrechtemodul` (
   `cName` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `nSort` int(10) unsigned NOT NULL,
   PRIMARY KEY (`kAdminrechtemodul`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tadminrechtemodul` DISABLE KEYS */;
@@ -183,7 +183,7 @@ CREATE TABLE `tadminwidgets` (
   `bActive` tinyint(1) NOT NULL DEFAULT 1,
   PRIMARY KEY (`kWidget`),
   KEY `kPlugin` (`kPlugin`)
-) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tadminwidgets` DISABLE KEYS */;
@@ -700,7 +700,7 @@ CREATE TABLE `tbesucherbot` (
   `dZeit` datetime DEFAULT NULL,
   PRIMARY KEY (`kBesucherBot`),
   KEY `cName` (`cName`)
-) ENGINE=InnoDB AUTO_INCREMENT=500 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tbesucherbot` DISABLE KEYS */;
@@ -825,7 +825,7 @@ CREATE TABLE `tboxen` (
   `cTitel` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `ePosition` enum('left','right','top','bottom') COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`kBox`)
-) ENGINE=InnoDB AUTO_INCREMENT=125 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tboxen` DISABLE KEYS */;
@@ -883,7 +883,7 @@ CREATE TABLE `tboxvorlage` (
   `cVerfuegbar` text COLLATE utf8_unicode_ci NOT NULL,
   `cTemplate` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`kBoxvorlage`)
-) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tboxvorlage` DISABLE KEYS */;
@@ -896,7 +896,7 @@ CREATE TABLE `tbranding` (
   `cBildKategorie` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`kBranding`),
   KEY `cBildKategorie` (`cBildKategorie`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tbranding` DISABLE KEYS */;
@@ -949,7 +949,7 @@ CREATE TABLE `tcheckbox` (
   `dErstellt` datetime NOT NULL,
   PRIMARY KEY (`kCheckBox`),
   KEY `cAnzeigeOrt` (`cAnzeigeOrt`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tcheckbox` DISABLE KEYS */;
@@ -964,7 +964,7 @@ CREATE TABLE `tcheckboxfunktion` (
   PRIMARY KEY (`kCheckBoxFunktion`),
   KEY `kPlugin` (`kPlugin`),
   KEY `cID` (`cID`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tcheckboxfunktion` DISABLE KEYS */;
@@ -997,7 +997,7 @@ CREATE TABLE `tcheckboxsprache` (
   `cBeschreibung` text COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`kCheckBoxSprache`),
   KEY `kCheckBox` (`kCheckBox`,`kSprache`)
-) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tcheckboxsprache` DISABLE KEYS */;
@@ -1256,7 +1256,7 @@ CREATE TABLE `teinstellungenconf` (
   PRIMARY KEY (`kEinstellungenConf`),
   KEY `kEinstellungenSektion` (`kEinstellungenSektion`),
   KEY `cModulId` (`cModulId`)
-) ENGINE=InnoDB AUTO_INCREMENT=1675 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `teinstellungenconf` DISABLE KEYS */;
@@ -1349,7 +1349,7 @@ CREATE TABLE `temailvorlage` (
   `nWRBForm` tinyint(3) unsigned NOT NULL DEFAULT 0,
   `nDSE` tinyint(3) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`kEmailvorlage`)
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `temailvorlage` DISABLE KEYS */;
@@ -1395,7 +1395,7 @@ CREATE TABLE `temailvorlageoriginal` (
   `nWRBForm` tinyint(3) unsigned NOT NULL DEFAULT 0,
   `nDSE` tinyint(3) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`kEmailvorlage`)
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `temailvorlageoriginal` DISABLE KEYS */;
@@ -1493,7 +1493,7 @@ CREATE TABLE `texportformat` (
   `nUseCache` tinyint(3) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`kExportformat`),
   KEY `nSpecial` (`nSpecial`)
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `texportformat` DISABLE KEYS */;
@@ -1541,7 +1541,7 @@ CREATE TABLE `texportqueue` (
   `dZuBearbeiten` datetime DEFAULT NULL,
   PRIMARY KEY (`kExportqueue`),
   KEY `kExportformat` (`kExportformat`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `texportqueue` DISABLE KEYS */;
@@ -2033,7 +2033,7 @@ CREATE TABLE `tkontaktbetreff` (
   `cMail` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `nSort` tinyint(3) unsigned DEFAULT 0,
   PRIMARY KEY (`kKontaktBetreff`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tkontaktbetreff` DISABLE KEYS */;
@@ -2417,7 +2417,7 @@ CREATE TABLE `tlastjob` (
   `nFinished` int(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`kJob`),
   UNIQUE KEY `idx_uq_nJob` (`nJob`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tlastjob` DISABLE KEYS */;
@@ -2527,7 +2527,7 @@ CREATE TABLE `tlink` (
   `cIdentifier` varchar(255) COLLATE utf8_unicode_ci DEFAULT '',
   `bIsActive` tinyint(1) NOT NULL DEFAULT 1,
   PRIMARY KEY (`kLink`)
-) ENGINE=InnoDB AUTO_INCREMENT=83 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tlink` DISABLE KEYS */;
@@ -2544,7 +2544,7 @@ CREATE TABLE `tlinkgroupassociations` (
   KEY `fk_tlinkGroupID` (`linkGroupID`),
   CONSTRAINT `fk_tlinkGroupID` FOREIGN KEY (`linkGroupID`) REFERENCES `tlinkgruppe` (`kLinkgruppe`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_tlinkID` FOREIGN KEY (`linkID`) REFERENCES `tlink` (`kLink`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tlinkgroupassociations` DISABLE KEYS */;
@@ -2557,7 +2557,7 @@ CREATE TABLE `tlinkgruppe` (
   `cName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `cTemplatename` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`kLinkgruppe`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tlinkgruppe` DISABLE KEYS */;
@@ -3024,7 +3024,7 @@ CREATE TABLE `tnewslettervorlagestd` (
   `cInhaltText` text COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`kNewslettervorlageStd`),
   KEY `kSprache` (`kSprache`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tnewslettervorlagestd` DISABLE KEYS */;
@@ -3039,7 +3039,7 @@ CREATE TABLE `tnewslettervorlagestdvar` (
   `cTyp` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`kNewslettervorlageStdVar`),
   KEY `kNewslettervorlageStd` (`kNewslettervorlageStd`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tnewslettervorlagestdvar` DISABLE KEYS */;
@@ -3055,7 +3055,7 @@ CREATE TABLE `tnewslettervorlagestdvarinhalt` (
   `cLinkURL` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `cAltTag` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`kNewslettervorlageStdVarInhalt`)
-) ENGINE=InnoDB AUTO_INCREMENT=329 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tnewslettervorlagestdvarinhalt` DISABLE KEYS */;
@@ -3146,7 +3146,7 @@ CREATE TABLE `topcportlet` (
   `cGroup` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `bActive` tinyint(4) NOT NULL DEFAULT 1,
   PRIMARY KEY (`kPortlet`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `topcportlet` DISABLE KEYS */;
@@ -3287,7 +3287,7 @@ CREATE TABLE `tpluginemailvorlage` (
   `nWRBForm` tinyint(3) unsigned NOT NULL DEFAULT 0,
   `nDSE` tinyint(3) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`kEmailvorlage`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tpluginemailvorlage` DISABLE KEYS */;
@@ -3487,7 +3487,7 @@ CREATE TABLE `tplz` (
   PRIMARY KEY (`kPLZ`),
   KEY `cPLZ` (`cPLZ`),
   KEY `PLZ_ORT_UNIQUE` (`cLandISO`,`cPLZ`,`cOrt`)
-) ENGINE=InnoDB AUTO_INCREMENT=21451 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tplz` DISABLE KEYS */;
@@ -3963,7 +3963,7 @@ CREATE TABLE `tspezialseite` (
   `nSort` int(10) unsigned NOT NULL,
   PRIMARY KEY (`kSpezialseite`),
   KEY `nLinkart` (`nLinkart`)
-) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tspezialseite` DISABLE KEYS */;
@@ -3991,7 +3991,7 @@ CREATE TABLE `tsprachiso` (
   `kSprachISO` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
   `cISO` varchar(5) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`kSprachISO`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tsprachiso` DISABLE KEYS */;
@@ -4015,7 +4015,7 @@ CREATE TABLE `tsprachsektion` (
   `kSprachsektion` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `cName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`kSprachsektion`)
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tsprachsektion` DISABLE KEYS */;
@@ -4048,7 +4048,7 @@ CREATE TABLE `tstaat` (
   KEY `cLandIso` (`cLandIso`),
   KEY `cName` (`cName`),
   KEY `cCode` (`cCode`)
-) ENGINE=InnoDB AUTO_INCREMENT=998 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tstaat` DISABLE KEYS */;
@@ -4229,7 +4229,7 @@ CREATE TABLE `tsuchcache` (
   PRIMARY KEY (`kSuchCache`),
   KEY `cSuche` (`cSuche`,`kSprache`),
   KEY `dGueltigBis` (`dGueltigBis`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tsuchcache` DISABLE KEYS */;
@@ -4254,7 +4254,7 @@ CREATE TABLE `tsuchspecialoverlay` (
   `kSuchspecialOverlay` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `cSuchspecial` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`kSuchspecialOverlay`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tsuchspecialoverlay` DISABLE KEYS */;
@@ -4400,7 +4400,7 @@ CREATE TABLE `ttext` (
   `cDSEContentText` text COLLATE utf8_unicode_ci DEFAULT '',
   `cDSEContentHtml` text COLLATE utf8_unicode_ci DEFAULT '',
   PRIMARY KEY (`kText`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `ttext` DISABLE KEYS */;
@@ -4418,7 +4418,7 @@ CREATE TABLE `ttrennzeichen` (
   PRIMARY KEY (`kTrennzeichen`),
   UNIQUE KEY `unique_lang_unit` (`kSprache`,`nEinheit`),
   KEY `kSprache` (`kSprache`,`nEinheit`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `ttrennzeichen` DISABLE KEYS */;
@@ -4784,7 +4784,7 @@ CREATE TABLE `tversandart` (
   PRIMARY KEY (`kVersandart`),
   KEY `cVersandklassen` (`cVersandklassen`),
   KEY `cKundengruppen` (`cKundengruppen`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tversandart` DISABLE KEYS */;
@@ -4831,7 +4831,7 @@ CREATE TABLE `tversandartzahlungsart` (
   PRIMARY KEY (`kVersandartZahlungsart`),
   KEY `kVersandart` (`kVersandart`),
   KEY `kZahlungsart` (`kZahlungsart`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tversandartzahlungsart` DISABLE KEYS */;
@@ -4844,7 +4844,7 @@ CREATE TABLE `tversandberechnung` (
   `cName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `cModulId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`kVersandberechnung`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tversandberechnung` DISABLE KEYS */;
@@ -5244,7 +5244,7 @@ CREATE TABLE `tzahlungsart` (
   `nSOCKETS` tinyint(3) unsigned NOT NULL DEFAULT 0,
   `nNutzbar` tinyint(3) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`kZahlungsart`)
-) ENGINE=InnoDB AUTO_INCREMENT=72 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tzahlungsart` DISABLE KEYS */;

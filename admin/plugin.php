@@ -108,17 +108,20 @@ if ($step === 'plugin_uebersicht') {
         $fAddAsDocTab       = false;
         $fAddAsLicenseTab   = false;
         $fAddAsChangelogTab = false;
+        $fMarkDown          = false;
+
+        if (class_exists('Parsedown')) {
+            $fMarkDown  = true;
+            $oParseDown = new Parsedown();
+        }
+        $smarty->assign('fMarkDown', $fMarkDown);
 
         if ('' !== $oPlugin->cTextReadmePath) {
             $szReadmeContent = StringHandler::convertUTF8(file_get_contents($oPlugin->cTextReadmePath));
-            $fMarkDown       = false;
             if (class_exists('Parsedown')) {
-                $fMarkDown       = true;
-                $oParseDown      = new Parsedown();
                 $szReadmeContent = $oParseDown->text($szReadmeContent);
             }
-            $smarty->assign('fMarkDown', $fMarkDown)
-                   ->assign('szReadmeContent', $szReadmeContent);
+            $smarty->assign('szReadmeContent', $szReadmeContent);
 
             $oUnnamedTab                     = new stdClass();
             $oUnnamedTab->kPluginAdminMenu   = count($oPlugin->oPluginAdminMenu_arr) + 1;
@@ -133,14 +136,10 @@ if ($step === 'plugin_uebersicht') {
         }
         if ('' !== $oPlugin->cTextLicensePath) {
             $szLicenseContent = StringHandler::convertUTF8(file_get_contents($oPlugin->cTextLicensePath));
-            $fMarkDown        = false;
             if (class_exists('Parsedown')) {
-                $fMarkDown        = true;
-                $oParseDown       = new Parsedown();
                 $szLicenseContent = $oParseDown->text($szLicenseContent);
             }
-            $smarty->assign('fMarkDown', $fMarkDown)
-                   ->assign('szLicenseContent', $szLicenseContent);
+            $smarty->assign('szLicenseContent', $szLicenseContent);
 
             $oUnnamedTab                     = new stdClass();
             $oUnnamedTab->kPluginAdminMenu   = count($oPlugin->oPluginAdminMenu_arr) + 1;
@@ -155,14 +154,10 @@ if ($step === 'plugin_uebersicht') {
         }
         if ('' !== $oPlugin->changelogPath) {
             $szChangelogContent = StringHandler::convertUTF8(file_get_contents($oPlugin->changelogPath));
-            $fMarkDown       = false;
             if (class_exists('Parsedown')) {
-                $fMarkDown       = true;
-                $oParseDown      = new Parsedown();
                 $szChangelogContent = $oParseDown->text($szChangelogContent);
             }
-            $smarty->assign('fMarkDown', $fMarkDown)
-                   ->assign('szChangelogContent', $szChangelogContent);
+            $smarty->assign('szChangelogContent', $szChangelogContent);
 
             $oUnnamedTab                     = new stdClass();
             $oUnnamedTab->kPluginAdminMenu   = count($oPlugin->oPluginAdminMenu_arr) + 1;

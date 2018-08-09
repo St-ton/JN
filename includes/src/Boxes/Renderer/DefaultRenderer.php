@@ -6,7 +6,8 @@
 
 namespace Boxes\Renderer;
 
-use Boxes\BoxInterface;
+use Boxes\Items\BoxInterface;
+
 
 /**
  * Class BoxRenderer

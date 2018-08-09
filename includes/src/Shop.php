@@ -1860,8 +1860,8 @@ final class Shop
             return new OPC\Locker($container->getOPCPageDB());
         });
 
-        $container->setFactory(\Boxes\BoxFactoryInterface::class, function () {
-            return new \Boxes\BoxFactory(Shopsetting::getInstance()->getAll());
+        $container->setFactory(\Boxes\FactoryInterface::class, function () {
+            return new \Boxes\Factory(Shopsetting::getInstance()->getAll());
         });
         $container->setSingleton(\Services\JTL\BoxServiceInterface::class, function (Container $container) {
             return new \Services\JTL\BoxService(Shopsetting::getInstance()->getAll(), $container->getBoxFactory(),

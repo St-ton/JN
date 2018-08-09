@@ -2300,7 +2300,11 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
                                 : $Setting_arr['ValueName'];
                             $oPluginEinstellungen->cWert   = $cInitialValue;
 
-                            Shop::Container()->getDB()->insert('tplugineinstellungen', $oPluginEinstellungen);
+                            if (Shop::Container()->getDB()->select('tplugineinstellungen', 'cName', $oPluginEinstellungen->cName) !== null) {
+                                Shop::Container()->getDB()->update('tplugineinstellungen', 'cName', $oPluginEinstellungen->cName, $oPluginEinstellungen);
+                            } else {
+                                Shop::Container()->getDB()->insert('tplugineinstellungen', $oPluginEinstellungen);
+                            }
                             // tplugineinstellungenconf füllen
                             $oPluginEinstellungenConf                   = new stdClass();
                             $oPluginEinstellungenConf->kPlugin          = $kPlugin;
@@ -2324,7 +2328,17 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
                                     $oPluginEinstellungenConf->cConf = 'M';
                                 }
                             }
-                            $kPluginEinstellungenConf = Shop::Container()->getDB()->insert('tplugineinstellungenconf', $oPluginEinstellungenConf);
+                            if (($kPluginEinstellungenConfTMP = Shop::Container()->getDB()->select('tplugineinstellungenconf', 'cWertName', $oPluginEinstellungenConf->cWertName)) !== null) {
+                                Shop::Container()->getDB()->update(
+                                    'tplugineinstellungenconf',
+                                    'cWertName',
+                                    $oPluginEinstellungenConf->cWertName,
+                                    $oPluginEinstellungenConf
+                                );
+                                $kPluginEinstellungenConf = $kPluginEinstellungenConfTMP->kPluginEinstellungenConf;
+                            } else {
+                                $kPluginEinstellungenConf = Shop::Container()->getDB()->insert('tplugineinstellungenconf', $oPluginEinstellungenConf);
+                            }
                             // tplugineinstellungenconfwerte füllen
                             if ($kPluginEinstellungenConf > 0) {
                                 $nSort = 0;
@@ -2730,7 +2744,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
                     $oPluginEinstellungen->kPlugin = $kPlugin;
                     $oPluginEinstellungen->cName   = $cModulId . '_' . $Setting_arr['ValueName'];
                     $oPluginEinstellungen->cWert   = $cInitialValue;
-                    if (Shop::Container()->getDB()->select('tplugineinstellungen', 'cName', $oPluginEinstellungen->cName)) {
+                    if (Shop::Container()->getDB()->select('tplugineinstellungen', 'cName', $oPluginEinstellungen->cName) !== null) {
                         Shop::Container()->getDB()->update('tplugineinstellungen', 'cName', $oPluginEinstellungen->cName, $oPluginEinstellungen);
                     } else {
                         Shop::Container()->getDB()->insert('tplugineinstellungen', $oPluginEinstellungen);
@@ -2751,7 +2765,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
                         ? 'M'
                         : $cConf;
 
-                    if ($kPluginEinstellungenConfTMP = Shop::Container()->getDB()->select('tplugineinstellungenconf', 'cWertName', $oPluginEinstellungenConf->cWertName)) {
+                    if (($kPluginEinstellungenConfTMP = Shop::Container()->getDB()->select('tplugineinstellungenconf', 'cWertName', $oPluginEinstellungenConf->cWertName)) !== null) {
                         Shop::Container()->getDB()->update(
                             'tplugineinstellungenconf',
                             'cWertName',

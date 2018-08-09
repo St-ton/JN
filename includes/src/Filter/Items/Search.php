@@ -505,7 +505,7 @@ class Search extends AbstractFilter
                 ->setIsActive(\in_array((int)$searchFilter->kSuchanfrage, $activeValues, true))
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
-                ->setClass((String)$class)
+                ->setClass((string)$class)
                 ->setParam($this->getUrlParam())
                 ->setName($searchFilter->cSuche)
                 ->setValue((int)$searchFilter->kSuchanfrage)

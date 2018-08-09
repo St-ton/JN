@@ -13,7 +13,7 @@ if (defined('PFAD_ROOT')) {
     require_once PFAD_ROOT . 'includes/defines.php';
 } else {
     die('Die Konfigurationsdatei des Shops konnte nicht geladen werden! ' .
-        'Bei einer Neuinstallation bitte <a href="install/index.php">hier</a> klicken.');
+        'Bei einer Neuinstallation bitte <a href="install/">hier</a> klicken.');
 }
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'error_handler.php';

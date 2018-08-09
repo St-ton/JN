@@ -103,12 +103,14 @@ if ($step === 'plugin_uebersicht') {
                 'options'  => $oPlugin->oPluginEinstellungAssoc_arr
             ]);
         }
-        $i            = 0;
-        $j            = 0;
-        $fAddAsDocTab = false;
-        $szReadmeFile = PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/README.md';
+        $i                  = 0;
+        $j                  = 0;
+        $fAddAsDocTab       = false;
+        $fAddAsLicenseTab   = false;
+        $fAddAsChangelogTab = false;
+
         if ('' !== $oPlugin->cTextReadmePath) {
-            $szReadmeContent = StringHandler::convertUTF8(file_get_contents($szReadmeFile));
+            $szReadmeContent = StringHandler::convertUTF8(file_get_contents($oPlugin->cTextReadmePath));
             $fMarkDown       = false;
             if (class_exists('Parsedown')) {
                 $fMarkDown       = true;
@@ -129,7 +131,6 @@ if ($step === 'plugin_uebersicht') {
 
             $fAddAsDocTab = true;
         }
-        $fAddAsLicenseTab = false;
         if ('' !== $oPlugin->cTextLicensePath) {
             $szLicenseContent = StringHandler::convertUTF8(file_get_contents($oPlugin->cTextLicensePath));
             $fMarkDown        = false;
@@ -152,7 +153,29 @@ if ($step === 'plugin_uebersicht') {
 
             $fAddAsLicenseTab = true;
         }
-        // build the the tabs
+        if ('' !== $oPlugin->changelogPath) {
+            $szChangelogContent = StringHandler::convertUTF8(file_get_contents($oPlugin->changelogPath));
+            $fMarkDown       = false;
+            if (class_exists('Parsedown')) {
+                $fMarkDown       = true;
+                $oParseDown      = new Parsedown();
+                $szChangelogContent = $oParseDown->text($szChangelogContent);
+            }
+            $smarty->assign('fMarkDown', $fMarkDown)
+                   ->assign('szChangelogContent', $szChangelogContent);
+
+            $oUnnamedTab                     = new stdClass();
+            $oUnnamedTab->kPluginAdminMenu   = count($oPlugin->oPluginAdminMenu_arr) + 1;
+            $oUnnamedTab->kPlugin            = $oPlugin->kPlugin;
+            $oUnnamedTab->cName              = 'Changelog';
+            $oUnnamedTab->cDateiname         = '';
+            $oUnnamedTab->nSort              = count($oPlugin->oPluginAdminMenu_arr) + 1;
+            $oUnnamedTab->nConf              = 0;
+            $oPlugin->oPluginAdminMenu_arr[] = $oUnnamedTab;
+
+            $fAddAsChangelogTab = true;
+        }
+        // build the tabs
         foreach ($oPlugin->oPluginAdminMenu_arr as $_adminMenu) {
             if ((int)$_adminMenu->nConf === 0 && $_adminMenu->cDateiname !== ''
                 && file_exists($oPlugin->cAdminmenuPfad . $_adminMenu->cDateiname)
@@ -203,6 +226,17 @@ if ($step === 'plugin_uebersicht') {
                 $customPluginTabs[]    = $tab;
                 ++$j;
                 $fAddAsLicenseTab = false; // prevent another appending!
+            } elseif (true === $fAddAsChangelogTab) {
+                $tab                   = new stdClass();
+                $tab->file             = '';
+                $tab->idx              = $i;
+                $tab->id               = 'addon-' . $j;
+                $tab->kPluginAdminMenu = $_adminMenu->kPluginAdminMenu;
+                $tab->cName            = $_adminMenu->cName;
+                $tab->html             = $smarty->fetch('tpl_inc/plugin_changelog.tpl');
+                $customPluginTabs[]    = $tab;
+                ++$j;
+                $fAddAsChangelogTab = false; // prevent another appending!
             }
         }
     }

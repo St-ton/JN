@@ -71,7 +71,7 @@ class Service
         $this->adminName = $io->getAccount()->account()->cLogin;
 
         foreach ($this->getIOFunctionNames() as $functionName) {
-            $publicFunctionName = 'opc' . ucfirst($functionName);
+            $publicFunctionName = 'opc' . \ucfirst($functionName);
             $io->register($publicFunctionName, [$this, $functionName], null, 'CONTENT_PAGE_VIEW');
         }
     }
@@ -240,7 +240,7 @@ class Service
         foreach ($enabledFilters as $enabledFilter) {
             /** @var AbstractFilter $newFilter **/
             $newFilter = new $enabledFilter['class']($productFilter);
-            $newFilter->setType(Type::AND());
+            $newFilter->setType(Type::AND);
             $productFilter->addActiveFilter($newFilter, $enabledFilter['value']);
             $enabledMap[$enabledFilter['class'] . ':' . $enabledFilter['value']] = true;
         }
@@ -285,7 +285,7 @@ class Service
                 }
             }
 
-            if (count($options) > 0) {
+            if (\count($options) > 0) {
                 $results[] = [
                     'name'    => $name,
                     'class'   => $class,

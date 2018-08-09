@@ -16,6 +16,7 @@ define('HOOK_ARTIKEL_PAGE', 1);
  * Falls nicht wahrend Bestellung bezahlt wird
  *
  * @file bestellabschluss.php
+ * @param Bestellung - oBestellung
  */
 define('HOOK_BESTELLABSCHLUSS_PAGE', 2);
 
@@ -23,6 +24,7 @@ define('HOOK_BESTELLABSCHLUSS_PAGE', 2);
  * Falls während Bestellung bezahlt wird
  *
  * @file bestellabschluss.php
+ * @param Bestellung - oBestellung
  */
 define('HOOK_BESTELLABSCHLUSS_PAGE_ZAHLUNGSVORGANG', 3);
 
@@ -717,6 +719,12 @@ define('HOOK_LETZTERINCLUDE_INC', 99);
  * after template switch in sendeMail()
  *
  * @file mailTools.php
+ * @param JTLSmarty  - mailsmarty
+ * @param mail
+ * @param kEmailvorlage
+ * @param kSprache
+ * @param cPluginBody
+ * @param Emailvorlage
  */
 define('HOOK_MAILTOOLS_INC_SWITCH', 100);
 
@@ -1807,3 +1815,14 @@ define('HOOK_CAPTCHA_MARKUP', 271);
  * @param bool  isValid
  */
 define('HOOK_CAPTCHA_VALIDATE', 272);
+
+/**
+ * @since 5.0.0
+ * @file admin/plugin.php.php
+ * @param bool hasError
+ * @param string msg
+ * @param string msg
+ * @param string error
+ * @param array  options
+ */
+define('HOOK_PLUGIN_SAVE_OPTIONS', 280);

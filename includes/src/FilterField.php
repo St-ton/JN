@@ -70,7 +70,7 @@ abstract class FilterField
     }
 
     /**
-     * @return string
+     * @return mixed
      */
     public function getValue()
     {
@@ -80,7 +80,7 @@ abstract class FilterField
     /**
      * @return string
      */
-    public function getType()
+    public function getType(): string
     {
         return $this->cType;
     }
@@ -88,13 +88,13 @@ abstract class FilterField
     /**
      * @return string
      */
-    public function getColumn()
+    public function getColumn(): string
     {
         return $this->cColumn;
     }
 
     /**
-     * @return string
+     * @return mixed
      */
     public function getTitle()
     {
@@ -102,7 +102,7 @@ abstract class FilterField
     }
 
     /**
-     * @return string
+     * @return mixed
      */
     public function getTitleLong()
     {
@@ -110,7 +110,7 @@ abstract class FilterField
     }
 
     /**
-     * @return string
+     * @return mixed
      */
     public function getId()
     {

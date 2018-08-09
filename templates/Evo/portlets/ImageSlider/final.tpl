@@ -10,8 +10,8 @@
                     {/if}
                     {assign var="slideTitle" value="#{$instance->getProperty('uid')}_slide_caption_{$slide.nSort}"}
                     {if !empty($slide.url)}
-                        {if !empty($slide.cLink)}
-                            <a href="{$slide.cLink}"{if !empty($slide.cTitle)} title="{$slide.cTitle}"{/if} class="slide">
+                        {if !empty($slide['target-url'])}
+                            <a href="{$slide['target-url']}"{if !empty($slide.cTitle)} title="{$slide.cTitle}"{/if} class="slide">
                         {else}
                             <div class="slide">
                         {/if}
@@ -21,7 +21,7 @@
                                  data-desc="{$slide['desc']}"
                                  alt="{$slide['img_attr']['alt']}"
                                  title="{$slideTitle}">
-                        {if !empty($slide.cLink)}
+                        {if !empty($slide['target-url'])}
                             </a>
                         {else}
                             </div>
@@ -127,7 +127,7 @@
                         }
                     });
                     slider.nivoSlider({
-                        effect:           {if !empty($instance->getProperty('slider-effects-random'))}'random'{else}'{foreach name="effects" from=$instance->getProperty('effects') key=effect item=effectval}{$effect}{if !$smarty.foreach.effects.last},{/if}{/foreach}'{/if},
+                        effect:           {if !empty($instance->getProperty('slider-effects-random')) && $instance->getProperty('slider-effects-random') === 'true'}'random'{else}'{foreach name="effects" from=$instance->getProperty('effects') key=effect item=effectval}{$effectval}{if !$smarty.foreach.effects.last},{/if}{/foreach}'{/if},
                         animSpeed:        {if !empty($instance->getProperty('slider-animation-speed'))}{$instance->getProperty('slider-animation-speed')}{else}500{/if},
                         pauseTime:        {if !empty($instance->getProperty('slider-animation-pause'))}{$instance->getProperty('slider-animation-pause')}{else}3000{/if},
                         directionNav:     {$instance->getProperty('slider-direction-navigation')},

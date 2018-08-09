@@ -23,25 +23,26 @@
                             <td>{if $Wunschliste->nStandard == 1}{lang key='active' section='global'}{/if} {if $Wunschliste->nStandard == 0}{lang key='inactive' section='global'}{/if}</td>
                             <td class="text-right">
                                 <form method="post" action="{get_static_route id='jtl.php'}?wllist=1">
+                                    <input type="hidden" name="wl" value="{$Wunschliste->kWunschliste}"/>
                                     {$jtl_token}
                                     <span class="btn-group btn-group-sm">
                                         {if $Wunschliste->nStandard != 1}
                                             <button class="btn btn-default" name="wls" value="{$Wunschliste->kWunschliste}" title="{lang key='wishlistStandard' section='login'}">
-                                                <span class="fa fa-ok"></span> {lang key='wishlistStandard' section='login'}
+                                                <i class="fa fa-ok"></i> {lang key='wishlistStandard' section='login'}
                                             </button>
                                         {/if}
                                         {if $Wunschliste->nOeffentlich == 1}
-                                            <button type="submit" class="btn btn-default" name="wl" value="{$Wunschliste->kWunschliste}" title="{lang key='wishlistPrivat' section='login'}">
-                                                <span class="fa fa-eye-close"></span><span class="hidden-xs"> {lang key='wishlistSetPrivate' section='login'}</span>
+                                            <button type="submit" class="btn btn-default" name="wlAction" value="setPrivate" title="{lang key='wishlistPrivat' section='login'}">
+                                                <i class="fa fa-eye-slash"></i> <span class="hidden-xs">{lang key='wishlistSetPrivate' section='login'}</span>
                                             </button>
                                         {/if}
                                         {if $Wunschliste->nOeffentlich == 0}
-                                            <button type="submit" class="btn btn-default" name="wl" value="{$Wunschliste->kWunschliste}" title="{lang key='wishlistNotPrivat' section='login'}">
-                                                <span class="fa fa-eye-slash"></span><span class="hidden-xs"> {lang key='wishlistNotPrivat' section='login'}</span>
+                                            <button type="submit" class="btn btn-default" name="wlAction" value="setPublic" title="{lang key='wishlistNotPrivat' section='login'}">
+                                                <i class="fa fa-eye"></i> <span class="hidden-xs"> {lang key='wishlistNotPrivat' section='login'}</span>
                                             </button>
                                         {/if}
                                         <button type="submit" class="btn btn-danger" name="wllo" value="{$Wunschliste->kWunschliste}" title="{lang key='wishlisteDelete' section='login'}">
-                                            <span class="fa fa-trash-o"></span>
+                                            <i class="fa fa-trash-o"></i>
                                         </button>
                                     </span>
                                 </form>

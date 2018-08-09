@@ -476,9 +476,9 @@ class PaymentMethod
             }
         }
 
-        if ($this->getSetting('min') > 0 && $cart->gibGesamtsummeWaren(1) <= $this->getSetting('min')) {
+        if ($this->getSetting('min') > 0 && $cart->gibGesamtsummeWaren(true) <= $this->getSetting('min')) {
             ZahlungsLog::add($this->moduleID,
-                'Bestellwert ' . $cart->gibGesamtsummeWaren(1) .
+                'Bestellwert ' . $cart->gibGesamtsummeWaren(true) .
                     ' ist kleiner als der Mindestbestellwert von ' . $this->getSetting('min'),
                 null,
                 LOGLEVEL_NOTICE
@@ -487,9 +487,9 @@ class PaymentMethod
             return false;
         }
 
-        if ($this->getSetting('max') > 0 && $cart->gibGesamtsummeWaren(1) >= $this->getSetting('max')) {
+        if ($this->getSetting('max') > 0 && $cart->gibGesamtsummeWaren(true) >= $this->getSetting('max')) {
             ZahlungsLog::add($this->moduleID,
-                'Bestellwert ' . $cart->gibGesamtsummeWaren(1) .
+                'Bestellwert ' . $cart->gibGesamtsummeWaren(true) .
                     ' ist groesser als der maximale Bestellwert von ' . $this->getSetting('max'),
                 null,
                 LOGLEVEL_NOTICE

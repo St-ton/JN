@@ -72,7 +72,7 @@ class ExtensionPoint
                 $oHandle = new $cClass();
                 $oHandle->init($oExtension->kInitial);
             } else {
-                Jtllog::writeLog("Extension '{$cClass}' not found");
+                Shop::Container()->getLogService()->error('Extension "' . $cClass . '" not found');
             }
         }
 
@@ -164,7 +164,6 @@ class ExtensionPoint
             case PAGE_WRB:
             case PAGE_AUSWAHLASSISTENT:
             case PAGE_BESTELLABSCHLUSS:
-            case PAGE_RMA:
             case PAGE_WARENKORB:
             case PAGE_MEINKONTO:
             case PAGE_KONTAKT:

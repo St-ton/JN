@@ -9,7 +9,7 @@
  */
 function generiereRSSXML()
 {
-    Jtllog::writeLog('RSS wird erstellt', JTLLOG_LEVEL_NOTICE);
+    Shop::Container()->getLogService()->debug('RSS wird erstellt');
     $shopURL = Shop::getURL();
     if (is_writable(PFAD_ROOT . FILE_RSS_FEED)) {
         $Einstellungen = Shop::getSettings([CONF_RSS]);
@@ -134,7 +134,7 @@ function generiereRSSXML()
         fwrite($file, $xml);
         fclose($file);
     } else {
-        Jtllog::writeLog('RSS Verzeichnis nicht beschreibbar!', JTLLOG_LEVEL_ERROR);
+        Shop::Container()->getLogService()->error('RSS Verzeichnis ' . PFAD_ROOT . FILE_RSS_FEED . 'nicht beschreibbar!');
 
         return false;
     }

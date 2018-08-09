@@ -438,14 +438,14 @@ class Wunschliste
                 if (strlen($wlPositionAttribute->cFreifeldWert) > 0) {
                     if (empty($wlPositionAttribute->cName)) {
                         $_cName                     = Shop::Container()->getDB()->queryPrepared(
-                            "SELECT IF(LENGTH(teigenschaftsprache.cName) > 0, 
+                            'SELECT IF(LENGTH(teigenschaftsprache.cName) > 0, 
                                 teigenschaftsprache.cName, 
                                 teigenschaft.cName) AS cName
                                 FROM teigenschaft
                                 LEFT JOIN teigenschaftsprache 
                                     ON teigenschaftsprache.kEigenschaft = teigenschaft.kEigenschaft
                                     AND teigenschaftsprache.kSprache = :langID
-                                WHERE teigenschaft.kEigenschaft = :attrID",
+                                WHERE teigenschaft.kEigenschaft = :attrID',
                             [
                                 'langID' => $langID,
                                 'attrID' => (int)$wlPositionAttribute->kEigenschaft
@@ -995,8 +995,8 @@ class Wunschliste
         if ($id > 0) {
             $oWunschliste = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $id);
         } elseif ($cURLID !== '') {
-            $oWunschliste = Shop::Container()->getDB()->executeQueryPrepared(
-                "SELECT * FROM twunschliste WHERE cURLID LIKE :id",
+            $oWunschliste = Shop::Container()->getDB()->queryPrepared(
+                'SELECT * FROM twunschliste WHERE cURLID LIKE :id',
                 ['id' => $cURLID],
                 \DB\ReturnType::SINGLE_OBJECT
             );
@@ -1054,6 +1054,34 @@ class Wunschliste
         }
 
         return $cMSG;
+    }
+
+    /**
+     * @param int $wishlistID
+     */
+    public static function setPrivate(int $wishlistID)
+    {
+        $upd               = new stdClass();
+        $upd->nOeffentlich = 0;
+        $upd->cURLID       = '';
+        Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', $wishlistID, $upd);
+    }
+
+    /**
+     * @param int $wishlistID
+     */
+    public static function setPublic(int $wishlistID)
+    {
+        $URLID = uniqid('', true);
+
+        $campaign = new Kampagne(KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
+        if ($campaign->kKampagne > 0) {
+            $URLID .= '&' . $campaign->cParameter . '=' . $campaign->cWert;
+        }
+        $upd               = new stdClass();
+        $upd->nOeffentlich = 1;
+        $upd->cURLID       = $URLID;
+        Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', $wishlistID, $upd);
     }
 
 }

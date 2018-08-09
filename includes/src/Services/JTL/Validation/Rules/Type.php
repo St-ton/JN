@@ -36,7 +36,7 @@ class Type implements RuleInterface
      */
     public function validate($value)
     {
-        return $this->expected === gettype($value)
+        return $this->expected === \gettype($value)
             ? new RuleResult(true, '', $value)
             : new RuleResult(false, 'invalid type', $value);
     }

@@ -236,7 +236,7 @@
         <div class="col-xs-12 col-md-6">
             <div class="form-group float-label-control required{if isset($fehlendeAngaben.land)} has-error{/if}">
                 <label class="control-label" for="country">{lang key='country' section='account data'}</label>
-                <select name="land" id="country" class="country_input form-control" required autocomplete="billing country">
+                <select name="land" id="country" class="country-input form-control" required autocomplete="billing country">
                     <option value="" disabled>{lang key="country" section="account data"}</option>
                     {foreach $laender as $land}
                         <option value="{$land->cISO}" {if $cIso === $land->cISO}selected="selected"{/if}>{$land->cName}</option>
@@ -270,7 +270,8 @@
                     title="{lang key=pleaseChoose}"
                     name="bundesland"
                     id="state"
-                    class="form-control"
+                    class="form-control state-input"
+                    autocomplete="billing address-level1"
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y'} required{/if}
                     >
                         <option value="" selected disabled>{lang key="pleaseChoose" section="global"}</option>
@@ -287,8 +288,8 @@
                     id="state"
                     class="form-control"
                     placeholder="{lang key='state' section='account data'}"
-                    {if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y'} required{/if}
                     autocomplete="billing address-level1"
+                    {if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y'} required{/if}
                     >
                 {/if}
 

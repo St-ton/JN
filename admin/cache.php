@@ -265,9 +265,8 @@ switch ($action) {
             'error'  => &$error
         ];
         $template    = Template::getInstance();
-        $templateDir = $template->getDir();
         $dirMan      = new DirManager();
-        $dirMan->getData(PFAD_ROOT . PFAD_COMPILEDIR . $templateDir, $callback, $cbParameters);
+        $dirMan->getData(PFAD_ROOT . PFAD_COMPILEDIR . $template->getDir(), $callback, $cbParameters);
         $dirMan->getData(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR, $callback, $cbParameters);
         $notice .= 'Es wurden <strong>' .
             number_format($cbParameters['count']) .
@@ -311,11 +310,11 @@ foreach ($settings as $i => $setting) {
     $setting->gesetzterWert = $oSetValue->cWert ?? null;
 }
 $advancedSettings = Shop::Container()->getDB()->query(
-    "SELECT * 
+    'SELECT * 
         FROM teinstellungenconf 
         WHERE (nStandardAnzeigen = 0 OR nStandardAnzeigen = 2)
-            AND kEinstellungenSektion = " . CONF_CACHING . "
-        ORDER BY nSort",
+            AND kEinstellungenSektion = ' . CONF_CACHING . '
+        ORDER BY nSort',
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 $settingsCount    = count($advancedSettings);
@@ -373,9 +372,8 @@ $callback = function (array $pParameters) {
     }
 };
 
-$template    = Template::getInstance();
-$templateDir = $template->getDir();
-$dirMan      = new DirManager();
+$template = Template::getInstance();
+$dirMan   = new DirManager();
 $dirMan->getData(PFAD_ROOT . PFAD_COMPILEDIR . $template->getDir(), $callback, ['files' => &$tplcacheStats->frontend])
        ->getData(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR, $callback, ['files' => &$tplcacheStats->backend]);
 
@@ -392,8 +390,17 @@ foreach ($allMethods as $_name => $_status) {
         $nonAvailableMethods[] = $_name;
     }
 }
+$cachingGroups = [];
+if ($cache !== null) {
+    $cachingGroups = $cache->getCachingGroups();
+    foreach ($cachingGroups as &$cachingGroup) {
+        $cachingGroup['key_count'] = count($cache->getKeysByTag([constant($cachingGroup['name'])]));
+    }
+    unset($cachingGroup);
+}
+
 $smarty->assign('settings', $settings)
-       ->assign('caching_groups', (($cache !== null) ? $cache->getCachingGroups() : []))
+       ->assign('caching_groups', $cachingGroups)
        ->assign('cache_enabled', isset($options['activated']) && $options['activated'] === true)
        ->assign('show_page_cache', $settings)
        ->assign('options', $options)

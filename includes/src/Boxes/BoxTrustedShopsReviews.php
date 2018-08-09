@@ -28,11 +28,6 @@ final class BoxTrustedShopsReviews extends AbstractBox
     private $imageURL = '';
 
     /**
-     * @var string
-     */
-    private $backGroundImageURL = '';
-
-    /**
      * BoxDirectPurchase constructor.
      * @param array $config
      */
@@ -45,10 +40,10 @@ final class BoxTrustedShopsReviews extends AbstractBox
         $this->setShow(false);
         $cValidSprachISO_arr = ['de', 'en', 'fr', 'es', 'pl'];
         $langCode            = \StringHandler::convertISO2ISO639(\Shop::getLanguageCode());
-        if ($config['trustedshops']['trustedshops_nutzen'] === 'Y' && in_array($langCode, $cValidSprachISO_arr, true)) {
+        if ($config['trustedshops']['trustedshops_nutzen'] === 'Y' && \in_array($langCode, $cValidSprachISO_arr, true)) {
             $ts       = new \TrustedShops(-1, $langCode);
             $tsRating = $ts->holeKundenbewertungsstatus($langCode);
-            if (isset($tsRating->cTSID) && (int)$tsRating->nStatus === 1 && strlen($tsRating->cTSID) > 0) {
+            if (isset($tsRating->cTSID) && (int)$tsRating->nStatus === 1 && \strlen($tsRating->cTSID) > 0) {
                 $localizedURLs = [
                     'de' => 'https://www.trustedshops.com/bewertung/info_' . $tsRating->cTSID . '.html',
                     'en' => 'https://www.trustedshops.com/buyerrating/info_' . $tsRating->cTSID . '.html',
@@ -64,7 +59,7 @@ final class BoxTrustedShopsReviews extends AbstractBox
                     // Prüft alle X Stunden ob ein Zertifikat noch gültig ist
                     $ts->pruefeZertifikat($langCode);
                 }
-                $this->setImagePath(\Shop::getImageBaseURL() . PFAD_GFX_TRUSTEDSHOPS . $filename);
+                $this->setImagePath(\Shop::getImageBaseURL() . \PFAD_GFX_TRUSTEDSHOPS . $filename);
                 $this->setImageURL($localizedURLs[$langCode]);
                 $this->setStats($ts->gibKundenbewertungsStatistik());
             }
@@ -78,10 +73,10 @@ final class BoxTrustedShopsReviews extends AbstractBox
      */
     private function cachecheck(string $filename_cache, int $timeout = 10800): bool
     {
-        $filename_cache = PFAD_ROOT . PFAD_GFX_TRUSTEDSHOPS . $filename_cache;
+        $filename_cache = PFAD_ROOT . \PFAD_GFX_TRUSTEDSHOPS . $filename_cache;
 
-        return file_exists($filename_cache)
-            ? ((time() - filemtime($filename_cache)) < $timeout)
+        return \file_exists($filename_cache)
+            ? ((\time() - \filemtime($filename_cache)) < $timeout)
             : false;
     }
 

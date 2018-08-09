@@ -67,19 +67,19 @@ class Visitor
     {
         $iInterval = 3;
         Shop::Container()->getDB()->queryPrepared(
-            "INSERT INTO tbesucherarchiv
+            'INSERT INTO tbesucherarchiv
             (kBesucher, cIP, kKunde, kBestellung, cReferer, cEinstiegsseite, cBrowser,
               cAusstiegsseite, nBesuchsdauer, kBesucherBot, dZeit)
             SELECT kBesucher, cIP, kKunde, kBestellung, cReferer, cEinstiegsseite, cBrowser, cAusstiegsseite,
             (UNIX_TIMESTAMP(dLetzteAktivitaet) - UNIX_TIMESTAMP(dZeit)) AS nBesuchsdauer, kBesucherBot, dZeit
               FROM tbesucher
-              WHERE dLetzteAktivitaet <= date_sub(now(), INTERVAL :interval HOUR)",
+              WHERE dLetzteAktivitaet <= date_sub(now(), INTERVAL :interval HOUR)',
             ['interval' => $iInterval],
             \DB\ReturnType::AFFECTED_ROWS
         );
         Shop::Container()->getDB()->queryPrepared(
-            "DELETE FROM tbesucher
-            WHERE dLetzteAktivitaet <= date_sub(now(), INTERVAL :interval HOUR)",
+            'DELETE FROM tbesucher
+                WHERE dLetzteAktivitaet <= date_sub(now(), INTERVAL :interval HOUR)',
             ['interval' => $iInterval],
             \DB\ReturnType::AFFECTED_ROWS
         );
@@ -112,9 +112,9 @@ class Visitor
      * @return object
      * @since 5.0.0
      */
-    public static function updateVisitorObject($vis, $visId, $szUserAgent, $kBesucherBot)
+    public static function updateVisitorObject($vis, int $visId, $szUserAgent, int $kBesucherBot)
     {
-        $vis->kBesucher         = (int)$visId;
+        $vis->kBesucher         = $visId;
         $vis->cIP               = RequestHelper::getIP();
         $vis->cSessID           = session_id();
         $vis->cID               = md5($szUserAgent . RequestHelper::getIP());
@@ -187,10 +187,12 @@ class Visitor
      * @return int
      * @since 5.0.0
      */
-    public static function refreshCustomerOrderId(int $nCustomerId)
+    public static function refreshCustomerOrderId(int $nCustomerId): int
     {
         $oOrder = Shop::Container()->getDB()->queryPrepared(
-            'SELECT `kBestellung` FROM `tbestellung` WHERE `kKunde` = :_nCustomerId
+            'SELECT `kBestellung` 
+                FROM `tbestellung` 
+                WHERE `kKunde` = :_nCustomerId
                 ORDER BY `dErstellt` DESC LIMIT 1',
             ['_nCustomerId' => $nCustomerId],
             \DB\ReturnType::SINGLE_OBJECT
@@ -253,13 +255,12 @@ class Visitor
      */
     public static function getReferer(): string
     {
-        if (isset($_SERVER['HTTP_REFERER'])) {
-            $teile = explode('/', $_SERVER['HTTP_REFERER']);
-
-            return StringHandler::filterXSS(strtolower($teile[2]));
+        if (!isset($_SERVER['HTTP_REFERER'])) {
+            return '';
         }
+        $teile = explode('/', $_SERVER['HTTP_REFERER']);
 
-        return '';
+        return StringHandler::filterXSS(strtolower($teile[2]));
     }
 
     /**
@@ -389,7 +390,6 @@ class Visitor
         foreach ($cBotUserAgent_arr as $cBotUserAgent) {
             if (strpos($userAgent, $cBotUserAgent) !== false) {
                 $oBesucherBot = Shop::Container()->getDB()->select('tbesucherbot', 'cUserAgent', $cBotUserAgent);
-
                 break;
             }
         }

@@ -10,6 +10,7 @@ use Boxes\BoxFactoryInterface;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\Services\GcServiceInterface;
+use Monolog\Logger;
 use Services\JTL\BoxServiceInterface;
 use Services\JTL\CaptchaServiceInterface;
 use Services\JTL\CryptoServiceInterface;
@@ -57,6 +58,14 @@ class Container extends ContainerBase implements DefaultServicesInterface
     public function getBackendLogService(): LoggerInterface
     {
         return $this->get('BackendAuthLogger');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getLogService(): Logger
+    {
+        return $this->get('Logger');
     }
 
     /**

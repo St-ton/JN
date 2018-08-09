@@ -70,7 +70,7 @@ class NotificationEntry
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getPluginId()
     {
@@ -81,7 +81,7 @@ class NotificationEntry
      * @param string $pluginId
      * @return $this
      */
-    public function setPluginId($pluginId)
+    public function setPluginId($pluginId): self
     {
         $this->pluginId = $pluginId;
 
@@ -89,7 +89,7 @@ class NotificationEntry
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getType()
     {
@@ -100,7 +100,7 @@ class NotificationEntry
      * @param int $type
      * @return $this
      */
-    public function setType($type)
+    public function setType($type): self
     {
         $this->type = $type;
 
@@ -108,7 +108,7 @@ class NotificationEntry
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getTitle()
     {
@@ -119,7 +119,7 @@ class NotificationEntry
      * @param string $title
      * @return $this
      */
-    public function setTitle($title)
+    public function setTitle($title): self
     {
         $this->title = $title;
 
@@ -127,7 +127,7 @@ class NotificationEntry
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getDescription()
     {
@@ -138,7 +138,7 @@ class NotificationEntry
      * @param string $description
      * @return $this
      */
-    public function setDescription($description)
+    public function setDescription($description): self
     {
         $this->description = $description;
 
@@ -148,13 +148,13 @@ class NotificationEntry
     /**
      * @return boolean
      */
-    public function hasDescription()
+    public function hasDescription(): bool
     {
         return $this->description !== null && strlen($this->description) > 0;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getUrl()
     {
@@ -165,7 +165,7 @@ class NotificationEntry
      * @param string $url
      * @return $this
      */
-    public function setUrl($url)
+    public function setUrl($url): self
     {
         $this->url = $url;
 
@@ -173,9 +173,9 @@ class NotificationEntry
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
-    public function hasUrl()
+    public function hasUrl(): bool
     {
         return $this->url !== null && strlen($this->url) > 0;
     }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -13,7 +13,7 @@ use Filter\FilterOption;
 use Filter\FilterInterface;
 use Filter\FilterStateSQL;
 use Filter\Type;
-use Filter\Items\ItemTag;
+use Filter\Items\Tag;
 use Filter\ProductFilter;
 
 /**
@@ -182,23 +182,23 @@ class BaseTag extends AbstractFilter
             (int)$this->getConfig('navigationsfilter')['tagfilter_max_anzeige'],
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $additionalFilter = new ItemTag($this->productFilter);
+        $additionalFilter = new Tag($this->productFilter);
         // Priorität berechnen
         $nPrioStep = 0;
-        $nCount    = count($tags);
+        $nCount    = \count($tags);
         if ($nCount > 0) {
             $nPrioStep = ($tags[0]->nAnzahlTagging - $tags[$nCount - 1]->nAnzahlTagging) / 9;
         }
         foreach ($tags as $tag) {
             $tag->nAnzahlTagging = (int)$tag->nAnzahlTagging;
             $class               = $nPrioStep < 1
-                ? rand(1, 10)
-                : round(
+                ? \rand(1, 10)
+                : \round(
                     ($tag->nAnzahlTagging - $tags[$nCount - 1]->nAnzahlTagging) /
                     $nPrioStep
                 ) + 1;
             $options[]           = (new FilterOption())
-                ->setClass($class)
+                ->setClass((string)$class)
                 ->setURL($this->productFilter->getFilterURL()->getURL(
                     $additionalFilter->init((int)$tag->kTag)
                 ))

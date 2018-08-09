@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -104,7 +104,7 @@ abstract class AbstractSortingOption extends FilterOption implements SortingOpti
      */
     public function __debugInfo()
     {
-        $res                  = get_object_vars($this);
+        $res                  = \get_object_vars($this);
         $res['productFilter'] = '*truncated*';
 
         return $res;

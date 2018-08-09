@@ -44,8 +44,7 @@ class TaxHelper
         $billingCountryCode     = null;
         $merchantCountryCode    = 'DE';
         $Firma                  = Shop::Container()->getDB()->query(
-            "SELECT cLand
-            FROM tfirma",
+            'SELECT cLand FROM tfirma',
             \DB\ReturnType::SINGLE_OBJECT
         );
         if (!empty($Firma->cLand)) {
@@ -76,12 +75,12 @@ class TaxHelper
         // Kunde hat eine zum Rechnungland passende, gueltige USt-ID gesetzt &&
         // Firmen-Land != Kunden-Rechnungsland && Firmen-Land != Kunden-Lieferland
         $UstBefreiungIGL = false;
-        if (!empty(Session\Session::Customer()->cUSTID)
-            && $merchantCountryCode !== $deliveryCountryCode
+        if ($merchantCountryCode !== $deliveryCountryCode
             && $merchantCountryCode !== $billingCountryCode
+            && !empty(Session\Session::Customer()->cUSTID)
             && (strcasecmp($billingCountryCode, substr(Session\Session::Customer()->cUSTID, 0, 2)) === 0
-                || (strcasecmp($billingCountryCode, 'GR') === 0 && strcasecmp(substr(Session\Session::Customer()->cUSTID, 0, 2),
-                        'EL') === 0))
+                || (strcasecmp($billingCountryCode, 'GR') === 0
+                    && strcasecmp(substr(Session\Session::Customer()->cUSTID, 0, 2), 'EL') === 0))
         ) {
             $deliveryCountry = Shop::Container()->getDB()->select('tland', 'cISO', $deliveryCountryCode);
             $shopCountry     = Shop::Container()->getDB()->select('tland', 'cISO', $merchantCountryCode);
@@ -103,7 +102,7 @@ class TaxHelper
             $urlHelper = new UrlHelper(Shop::getURL() . $_SERVER['REQUEST_URI']);
             $country   = Sprache::getCountryCodeByCountryName($deliveryCountryCode);
 
-            Jtllog::writeLog('Keine Steuerzone f&uuml;r "' . $country . '" hinterlegt!', JTLLOG_LEVEL_ERROR);
+            Shop::Container()->getLogService()->error('Keine Steuerzone für "' . $country . '" hinterlegt!');
 
             if (RequestHelper::isAjaxRequest()) {
                 $link = new \Link\Link(Shop::Container()->getDB());
@@ -131,23 +130,24 @@ class TaxHelper
             header('Location: ' . $redirURL);
             exit;
         }
-        $steuerklassen = Shop::Container()->getDB()->query("SELECT * FROM tsteuerklasse",
-            \DB\ReturnType::ARRAY_OF_OBJECTS);
-        $qry           = '';
-        foreach ($steuerzonen as $i => $steuerzone) {
-            if ($i === 0) {
-                $qry .= " kSteuerzone = " . (int)$steuerzone->kSteuerzone;
-            } else {
-                $qry .= " OR kSteuerzone = " . (int)$steuerzone->kSteuerzone;
-            }
-        }
-        if (strlen($qry) > 5) {
+        $steuerklassen = Shop::Container()->getDB()->query(
+            'SELECT * FROM tsteuerklasse',
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
+        $zones         = \Functional\map($steuerzonen, function ($e) {
+            return (int)$e->kSteuerzone;
+        });
+        $qry           = count($zones) > 0
+            ? 'kSteuerzone IN (' . implode(',', $zones) . ')'
+            : '';
+
+        if ($qry !== '') {
             foreach ($steuerklassen as $steuerklasse) {
                 $steuersatz = Shop::Container()->getDB()->query(
-                    "SELECT fSteuersatz
+                    'SELECT fSteuersatz
                         FROM tsteuersatz
-                        WHERE kSteuerklasse = " . (int)$steuerklasse->kSteuerklasse . "
-                        AND (" . $qry . ") ORDER BY nPrio DESC",
+                        WHERE kSteuerklasse = ' . (int)$steuerklasse->kSteuerklasse . '
+                        AND (' . $qry . ') ORDER BY nPrio DESC',
                     \DB\ReturnType::SINGLE_OBJECT
                 );
                 if (isset($steuersatz->fSteuersatz)) {
@@ -166,18 +166,18 @@ class TaxHelper
     }
 
     /**
-     * @param array $positions
-     * @param int   $net
-     * @param true  $html
+     * @param array    $positions
+     * @param int|bool $net
+     * @param true     $html
      * @param mixed int|object $currency
      * @return array
      * @former gibAlteSteuerpositionen()
      * @since since 5.0.0
      */
-    public static function getOldTaxPositions(array $positions, int $net = -1, $html = true, $currency = 0): array
+    public static function getOldTaxPositions(array $positions, $net = -1, $html = true, $currency = 0): array
     {
         if ($net === -1) {
-            $net = $_SESSION['NettoPreise'];
+            $net = Session\Session::CustomerGroup()->isMerchant();
         }
         $taxRates = [];
         $taxPos   = [];
@@ -195,19 +195,16 @@ class TaxHelper
             if ($position->fMwSt <= 0) {
                 continue;
             }
-            $i = array_search($position->fMwSt, $taxRates);
-
+            $i = array_search($position->fMwSt, $taxRates, true);
             if (!isset($taxPos[$i]->fBetrag) || !$taxPos[$i]->fBetrag) {
                 $taxPos[$i]                  = new stdClass();
                 $taxPos[$i]->cName           = lang_steuerposition($position->fMwSt, $net);
                 $taxPos[$i]->fUst            = $position->fMwSt;
                 $taxPos[$i]->fBetrag         = ($position->fPreis * $position->nAnzahl * $position->fMwSt) / 100.0;
-                $taxPos[$i]->cPreisLocalized = Preise::getLocalizedPriceString($taxPos[$i]->fBetrag, $currency,
-                    $html);
+                $taxPos[$i]->cPreisLocalized = Preise::getLocalizedPriceString($taxPos[$i]->fBetrag, $currency, $html);
             } else {
                 $taxPos[$i]->fBetrag         += ($position->fPreis * $position->nAnzahl * $position->fMwSt) / 100.0;
-                $taxPos[$i]->cPreisLocalized = Preise::getLocalizedPriceString($taxPos[$i]->fBetrag, $currency,
-                    $html);
+                $taxPos[$i]->cPreisLocalized = Preise::getLocalizedPriceString($taxPos[$i]->fBetrag, $currency, $html);
             }
         }
 

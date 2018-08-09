@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -10,7 +10,7 @@ use DB\ReturnType;
 use Filter\AbstractFilter;
 use Filter\FilterJoin;
 use Filter\FilterInterface;
-use Filter\Items\ItemCategory;
+use Filter\Items\Category;
 use Filter\ProductFilter;
 
 /**
@@ -44,7 +44,7 @@ class BaseCategory extends AbstractFilter
         parent::__construct($productFilter);
         $this->setIsCustom(false)
              ->setUrlParam('k')
-             ->setUrlParamSEO(SEP_KAT);
+             ->setUrlParamSEO(\SEP_KAT);
     }
 
     /**
@@ -57,7 +57,7 @@ class BaseCategory extends AbstractFilter
 
     /**
      * @param bool $includeSubCategories
-     * @return ItemCategory
+     * @return Category
      */
     public function setIncludeSubCategories($includeSubCategories): self
     {

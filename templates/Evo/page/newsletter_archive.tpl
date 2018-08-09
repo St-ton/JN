@@ -3,7 +3,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  *}
 
+{include file='snippets/opc_mount_point.tpl' id='opc_nl_archive_toptags_prepend'}
 <div id="toptags">{lang key='newsletterhistory' section='global'}</div>
+{include file='snippets/opc_mount_point.tpl' id='opc_nl_archive_toptags_append'}
 
 <table class="newsletter">
     <tr class="head">
@@ -19,3 +21,4 @@
     </tr>
     {/foreach}
 </table>
+{include file='snippets/opc_mount_point.tpl' id='opc_nl_archive_append'}

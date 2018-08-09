@@ -418,35 +418,36 @@ class Kunde
      * @param int $kKunde
      * @return $this
      */
-    public function loadFromDB(int $kKunde)
+    public function loadFromDB(int $kKunde): self
     {
-        if ($kKunde > 0) {
-            $obj = Shop::Container()->getDB()->select('tkunde', 'kKunde', $kKunde);
-            if ($obj !== null && isset($obj->kKunde) && $obj->kKunde > 0) {
-                $members = array_keys(get_object_vars($obj));
-                foreach ($members as $member) {
-                    $this->$member = $obj->$member;
-                }
-                // Anrede mappen
-                $this->cAnredeLocalized = self::mapSalutation($this->cAnrede, $this->kSprache);
-                $this->angezeigtesLand  = Sprache::getCountryCodeByCountryName($this->cLand);
-                //$this->cLand = landISO($this->cLand);
-                $this->holeKundenattribute()->entschluesselKundendaten();
-                $this->kKunde         = (int)$this->kKunde;
-                $this->kKundengruppe  = (int)$this->kKundengruppe;
-                $this->kSprache       = (int)$this->kSprache;
-                $this->nLoginversuche = (int)$this->nLoginversuche;
-                $this->nRegistriert   = (int)$this->nRegistriert;
-
-                $this->dGeburtstag_formatted = $this->dGeburtstag !== '00.00.0000' ? date_format(date_create($this->dGeburtstag), 'd.m.Y') : '';
-
-                $this->cGuthabenLocalized    = $this->gibGuthabenLocalized();
-                $cDatum_arr                  = DateHelper::getDateParts($this->dErstellt);
-                $this->dErstellt_DE          = $cDatum_arr['cTag'] . '.' .
-                    $cDatum_arr['cMonat'] . '.' .
-                    $cDatum_arr['cJahr'];
-                executeHook(HOOK_KUNDE_CLASS_LOADFROMDB);
+        if ($kKunde <= 0) {
+            return $this;
+        }
+        $obj = Shop::Container()->getDB()->select('tkunde', 'kKunde', $kKunde);
+        if ($obj !== null && isset($obj->kKunde) && $obj->kKunde > 0) {
+            $members = array_keys(get_object_vars($obj));
+            foreach ($members as $member) {
+                $this->$member = $obj->$member;
             }
+            // Anrede mappen
+            $this->cAnredeLocalized = self::mapSalutation($this->cAnrede, $this->kSprache);
+            $this->angezeigtesLand = Sprache::getCountryCodeByCountryName($this->cLand);
+            //$this->cLand = landISO($this->cLand);
+            $this->holeKundenattribute()->entschluesselKundendaten();
+            $this->kKunde = (int)$this->kKunde;
+            $this->kKundengruppe = (int)$this->kKundengruppe;
+            $this->kSprache = (int)$this->kSprache;
+            $this->nLoginversuche = (int)$this->nLoginversuche;
+            $this->nRegistriert = (int)$this->nRegistriert;
+
+            $this->dGeburtstag_formatted = $this->dGeburtstag !== '00.00.0000' ? date_format(date_create($this->dGeburtstag), 'd.m.Y') : '';
+
+            $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
+            $cDatum_arr = DateHelper::getDateParts($this->dErstellt);
+            $this->dErstellt_DE = $cDatum_arr['cTag'] . '.' .
+                $cDatum_arr['cMonat'] . '.' .
+                $cDatum_arr['cJahr'];
+            executeHook(HOOK_KUNDE_CLASS_LOADFROMDB);
         }
 
         return $this;
@@ -457,7 +458,7 @@ class Kunde
      *
      * @return $this
      */
-    private function verschluesselKundendaten()
+    private function verschluesselKundendaten(): self
     {
         $cryptoService = Shop::Container()->getCryptoService();
         
@@ -474,7 +475,7 @@ class Kunde
      *
      * @return $this
      */
-    private function entschluesselKundendaten()
+    private function entschluesselKundendaten(): self
     {
         $cryptoService = Shop::Container()->getCryptoService();
         
@@ -602,7 +603,7 @@ class Kunde
      *
      * @return $this
      */
-    public function holeKundenattribute()
+    public function holeKundenattribute(): self
     {
         $this->cKundenattribut_arr = [];
         $oKundenattribut_arr       = Shop::Container()->getDB()->selectAll(
@@ -624,7 +625,7 @@ class Kunde
      * @param string $cLandISO
      * @return string
      */
-    public function pruefeLandISO($cLandISO)
+    public function pruefeLandISO(string $cLandISO): string
     {
         preg_match('/[a-zA-Z]{2}/', $cLandISO, $cTreffer1_arr);
         if (strlen($cTreffer1_arr[0]) !== strlen($cLandISO)) {
@@ -640,7 +641,7 @@ class Kunde
     /**
      * @return $this
      */
-    public function kopiereSession()
+    public function kopiereSession(): self
     {
         foreach (array_keys(get_object_vars($_SESSION['Kunde'])) as $oElement) {
             $this->$oElement = $_SESSION['Kunde']->$oElement;
@@ -655,9 +656,9 @@ class Kunde
      *
      * @return $this
      */
-    public function verschluesselAlleKunden()
+    public function verschluesselAlleKunden(): self
     {
-        foreach (Shop::Container()->getDB()->query("SELECT * FROM tkunde", \DB\ReturnType::ARRAY_OF_OBJECTS) as $oKunden) {
+        foreach (Shop::Container()->getDB()->query('SELECT * FROM tkunde', \DB\ReturnType::ARRAY_OF_OBJECTS) as $oKunden) {
             if ($oKunden->kKunde > 0) {
                 unset($oKundeTMP);
                 $oKundeTMP = new self($oKunden->kKunde);
@@ -707,7 +708,7 @@ class Kunde
      * @return $this
      * @throws Exception
      */
-    public function updatePassword($password = null)
+    public function updatePassword($password = null): self
     {
         $passwordService = Shop::Container()->getPasswordService();
         if ($password === null) {
@@ -770,14 +771,14 @@ class Kunde
             return false;
         }
         $key        = $cryptoService->randomString(32);
-        $linkHelper = LinkHelper::getInstance();
+        $linkHelper = Shop::Container()->getLinkService();
         $expires    = new DateTime();
         $interval   = new DateInterval('P1D');
         $expires->add($interval);
-        Shop::Container()->getDB()->executeQueryPrepared(
-            "INSERT INTO tpasswordreset(kKunde, cKey, dExpires)
-            VALUES (:kKunde, :cKey, :dExpires)
-            ON DUPLICATE KEY UPDATE cKey = :cKey, dExpires = :dExpires",
+        Shop::Container()->getDB()->queryPrepared(
+            'INSERT INTO tpasswordreset(kKunde, cKey, dExpires)
+                VALUES (:kKunde, :cKey, :dExpires)
+                ON DUPLICATE KEY UPDATE cKey = :cKey, dExpires = :dExpires',
             [
                 'kKunde'   => $this->kKunde,
                 'cKey'     => $key,

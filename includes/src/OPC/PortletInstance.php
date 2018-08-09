@@ -16,11 +16,11 @@ class PortletInstance implements \JsonSerializable
      * @var array
      */
     protected static $dirSizes = [
-        '.xs/' => WIDTH_CMS_IMAGE_XS,
-        '.sm/' => WIDTH_CMS_IMAGE_SM,
-        '.md/' => WIDTH_CMS_IMAGE_MD,
-        '.lg/' => WIDTH_CMS_IMAGE_LG,
-        '.xl/' => WIDTH_CMS_IMAGE_XL,
+        '.xs/' => WIDTH_OPC_IMAGE_XS,
+        '.sm/' => WIDTH_OPC_IMAGE_SM,
+        '.md/' => WIDTH_OPC_IMAGE_MD,
+        '.lg/' => WIDTH_OPC_IMAGE_LG,
+        '.xl/' => WIDTH_OPC_IMAGE_XL,
     ];
 
     /**
@@ -155,7 +155,7 @@ class PortletInstance implements \JsonSerializable
      */
     public function hasProperty($name): bool
     {
-        return array_key_exists($name, $this->properties);
+        return \array_key_exists($name, $this->properties);
     }
 
     /**
@@ -222,13 +222,13 @@ class PortletInstance implements \JsonSerializable
      */
     public function addClass(string $className): self
     {
-        $classes = explode(' ', $this->getAttribute('class'));
+        $classes = \explode(' ', $this->getAttribute('class'));
 
-        if (!in_array($className, $classes, true)) {
+        if (!\in_array($className, $classes, true)) {
             $classes[] = $className;
         }
 
-        $this->setAttribute('class', implode(' ', $classes));
+        $this->setAttribute('class', \implode(' ', $classes));
 
         return $this;
     }
@@ -294,17 +294,17 @@ class PortletInstance implements \JsonSerializable
 
         foreach ($this->getStyles() as $styleName => $styleValue) {
             if (!empty($styleValue)) {
-                if (strpos($styleName, 'hidden-') !== false && !empty($styleValue)) {
+                if (\strpos($styleName, 'hidden-') !== false && !empty($styleValue)) {
                     $this->addClass($styleName);
-                } elseif (stripos($styleName, 'margin-') !== false
-                    || stripos($styleName, 'padding-') !== false
-                    || stripos($styleName, 'border-width') !== false
-                    || stripos($styleName, '-width') !== false
-                    || stripos($styleName, '-height') !== false
+                } elseif (\stripos($styleName, 'margin-') !== false
+                    || \stripos($styleName, 'padding-') !== false
+                    || \stripos($styleName, 'border-width') !== false
+                    || \stripos($styleName, '-width') !== false
+                    || \stripos($styleName, '-height') !== false
                 ) {
-                    $styleString .= "$styleName:" . htmlspecialchars($styleValue, ENT_QUOTES) . "px; ";
+                    $styleString .= "$styleName:" . \htmlspecialchars($styleValue, \ENT_QUOTES) . "px; ";
                 } else {
-                    $styleString .= "$styleName:" . htmlspecialchars($styleValue, ENT_QUOTES) . "; ";
+                    $styleString .= "$styleName:" . \htmlspecialchars($styleValue, \ENT_QUOTES) . "; ";
                 }
             }
         }
@@ -351,13 +351,14 @@ class PortletInstance implements \JsonSerializable
      */
     public function getDataAttributeString(): string
     {
-        return 'data-portlet="' . htmlspecialchars(json_encode($this->jsonSerializeShort()), ENT_QUOTES) . '"';
+        return 'data-portlet="' . \htmlspecialchars(\json_encode($this->jsonSerializeShort()), \ENT_QUOTES) . '"';
     }
 
     /**
      * @param string $src
      * @param string $alt
      * @param string $title
+     * @param int    $divisor
      * @return array
      */
     public function getImageAttributes($src = null, $alt = null, $title = null, $divisor = 1): array
@@ -382,37 +383,37 @@ class PortletInstance implements \JsonSerializable
 
         $widthHeuristics = $this->widthHeuristics;
         $settings        = \Shop::getSettings([CONF_BILDER]);
-        $name            = explode('/', $src);
-        $name            = end($name);
+        $name            = \explode('/', $src);
+        $name            = \end($name);
 
         foreach (static::$dirSizes as $size => $width) {
-            $sizedImgPath = PFAD_ROOT . PFAD_MEDIAFILES . 'Bilder/' . $size . $name;
+            $sizedImgPath = PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $size . $name;
 
-            if (!file_exists($sizedImgPath) === true) {
-                $image     = new \Imanee\Imanee(PFAD_ROOT . PFAD_MEDIAFILES . 'Bilder/' . $name);
+            if (!\file_exists($sizedImgPath) === true) {
+                $image     = new \Imanee\Imanee(PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $name);
                 $imageSize = $image->getSize();
                 $factor    = $width / $imageSize['width'];
 
                 $image
                     ->resize((int)$width, (int)($imageSize['height'] * $factor))
                     ->write(
-                        PFAD_ROOT . PFAD_MEDIAFILES . 'Bilder/' . $size . $name,
+                        PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $size . $name,
                         $settings['bilder']['bilder_jpg_quali']
                     );
             }
 
-            $srcset .= PFAD_MEDIAFILES . 'Bilder/' . $size . $name . ' ' . $width . 'w,';
+            $srcset .= \PFAD_MEDIAFILES . 'Bilder/' . $size . $name . ' ' . $width . 'w,';
         }
 
-        $srcset = substr($srcset, 0, -1); // remove trailing comma
+        $srcset = \substr($srcset, 0, -1); // remove trailing comma
 
-        if (is_array($widthHeuristics)) {
+        if (\is_array($widthHeuristics)) {
 
             foreach ($widthHeuristics as $breakpoint => $col) {
                 if (!empty($col)) {
                     $factor = 1;
 
-                    if (is_array($divisor) && !empty($divisor[$breakpoint])) {
+                    if (\is_array($divisor) && !empty($divisor[$breakpoint])) {
                         $factor = (float)($divisor[$breakpoint] / 12);
                     }
 
@@ -445,7 +446,7 @@ class PortletInstance implements \JsonSerializable
         }
 
         $srcsizes .= '100vw';
-        $src      = PFAD_MEDIAFILES . 'Bilder/.md/' . $name;
+        $src      = \PFAD_MEDIAFILES . 'Bilder/.md/' . $name;
 
         return [
             'srcset'   => $srcset,
@@ -482,13 +483,13 @@ class PortletInstance implements \JsonSerializable
      */
     public function deserialize($data)
     {
-        if (isset($data['properties']) && is_array($data['properties'])) {
+        if (isset($data['properties']) && \is_array($data['properties'])) {
             foreach ($data['properties'] as $name => $value) {
                 $this->setProperty($name, $value);
             }
         }
 
-        if (isset($data['subareas']) && is_array($data['subareas'])) {
+        if (isset($data['subareas']) && \is_array($data['subareas'])) {
             foreach ($data['subareas'] as $areaData) {
                 $area = new Area();
                 $area->deserialize($areaData);
@@ -496,7 +497,7 @@ class PortletInstance implements \JsonSerializable
             }
         }
 
-        if (isset($data['widthHeuristics']) && is_array($data['widthHeuristics'])) {
+        if (isset($data['widthHeuristics']) && \is_array($data['widthHeuristics'])) {
             $this->widthHeuristics = $data['widthHeuristics'];
         }
 

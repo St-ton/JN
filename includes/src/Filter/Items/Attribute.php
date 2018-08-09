@@ -495,17 +495,21 @@ class Attribute extends BaseAttribute
             foreach ($attributeFilter->attributeValues as $filterValue) {
                 $filterValue->kMerkmalWert = (int)$filterValue->kMerkmalWert;
                 $attributeValue            = new FilterOption();
+                $baseSrcSmall              = \strlen($filterValue->cMMWBildPfad) > 0
+                    ? \PFAD_MERKMALWERTBILDER_KLEIN . $filterValue->cMMWBildPfad
+                    : \BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
+                $baseSrcNormal             = \strlen($filterValue->cMMWBildPfad) > 0
+                    ? \PFAD_MERKMALWERTBILDER_NORMAL . $filterValue->cMMWBildPfad
+                    : \BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
                 $attributeValue->setData('kMerkmalWert', $filterValue->kMerkmalWert)
                                ->setData('kMerkmal', (int)$attributeFilter->kMerkmal)
                                ->setData('cWert', $filterValue->cWert);
                 $attributeValue->setIsActive($currentAttributeValue === $filterValue->kMerkmalWert
                     || $this->attributeValueIsActive($filterValue->kMerkmalWert));
-                $attributeValue->setData('cBildpfadKlein', \strlen($filterValue->cMMWBildPfad) > 0
-                    ? \PFAD_MERKMALWERTBILDER_KLEIN . $filterValue->cMMWBildPfad
-                    : \BILD_KEIN_MERKMALWERTBILD_VORHANDEN)
-                               ->setData('cBildpfadNormal', \strlen($filterValue->cMMWBildPfad) > 0
-                                   ? \PFAD_MERKMALWERTBILDER_NORMAL . $filterValue->cMMWBildPfad
-                                   : \BILD_KEIN_MERKMALWERTBILD_VORHANDEN);
+                $attributeValue->setData('cBildpfadKlein', $baseSrcSmall)
+                               ->setData('cBildpfadNormal', $baseSrcNormal)
+                               ->setData('cBildURLKlein', $imageBaseURL . $baseSrcSmall)
+                               ->setData('cBildURLNormal', $imageBaseURL . $baseSrcNormal);
                 $attributeValue->setType($attributeFilter->nMehrfachauswahl === 1 ? Type:: OR : Type:: AND);
                 $attributeValue->setClassName($this->getClassName());
                 $attributeValue->setParam($this->getUrlParam());

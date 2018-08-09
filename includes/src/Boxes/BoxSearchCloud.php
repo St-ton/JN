@@ -52,7 +52,6 @@ final class BoxSearchCloud extends AbstractBox
             \Shop::Container()->getCache()->set($cacheID, $searchCloudEntries, $cacheTags);
         }
         if (($count = \count($searchCloudEntries)) > 0) {
-            // Priorität berechnen
             $prio_step = ($searchCloudEntries[0]->nAnzahlGesuche - $searchCloudEntries[$count - 1]->nAnzahlGesuche) / 9;
             foreach ($searchCloudEntries as $cloudEntry) {
                 $cloudEntry->Klasse   = ($prio_step < 1) ?
@@ -62,7 +61,6 @@ final class BoxSearchCloud extends AbstractBox
                 $cloudEntry->cURLFull = \UrlHelper::buildURL($cloudEntry, \URLART_LIVESUCHE, true);
             }
             $this->setShow(true);
-            //hole anzuzeigende Suchwolke
             \shuffle($searchCloudEntries);
             $this->setItems($searchCloudEntries);
             $this->setJSON(AbstractBox::getJSONString($searchCloudEntries));

@@ -23,16 +23,16 @@ final class BoxNewsCurrentMonth extends AbstractBox
         parent::__construct($config);
         parent::addMapping('oNewsMonatsUebersicht_arr', 'Items');
         $langID       = \Shop::getLanguageID();
-        $cSQL         = (int)$config['news']['news_anzahl_box'] > 0
+        $sql          = (int)$config['news']['news_anzahl_box'] > 0
             ? ' LIMIT ' . (int)$config['news']['news_anzahl_box']
             : '';
         $newsOverview = \Shop::Container()->getDB()->queryPrepared(
             "SELECT tseo.cSeo, tnewsmonatsuebersicht.cName, tnewsmonatsuebersicht.kNewsMonatsUebersicht, 
-                month(tnews.dGueltigVon) AS nMonat, year( tnews.dGueltigVon ) AS nJahr, COUNT(*) AS nAnzahl
+                MONTH(tnews.dGueltigVon) AS nMonat, YEAR( tnews.dGueltigVon ) AS nJahr, COUNT(*) AS nAnzahl
                 FROM tnews
                 JOIN tnewsmonatsuebersicht 
-                    ON tnewsmonatsuebersicht.nMonat = month(tnews.dGueltigVon)
-                    AND tnewsmonatsuebersicht.nJahr = year(tnews.dGueltigVon)
+                    ON tnewsmonatsuebersicht.nMonat = MONTH(tnews.dGueltigVon)
+                    AND tnewsmonatsuebersicht.nJahr = YEAR(tnews.dGueltigVon)
                     AND tnewsmonatsuebersicht.kSprache = :lid
                 LEFT JOIN tseo 
                     ON cKey = 'kNewsMonatsUebersicht'
@@ -42,7 +42,7 @@ final class BoxNewsCurrentMonth extends AbstractBox
                     AND tnews.nAktiv = 1
                     AND tnews.kSprache = :lid
                 GROUP BY year(tnews.dGueltigVon) , month(tnews.dGueltigVon)
-                ORDER BY tnews.dGueltigVon DESC" . $cSQL,
+                ORDER BY tnews.dGueltigVon DESC" . $sql,
             ['lid' => $langID],
             ReturnType::ARRAY_OF_OBJECTS
         );

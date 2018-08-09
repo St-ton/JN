@@ -29,27 +29,27 @@ final class BoxNewProducts extends AbstractBox
             $stockFilterSQL = \Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $parentSQL      = ' AND tartikel.kVaterArtikel = 0';
             $limit          = $config['boxen']['box_neuimsortiment_anzahl_anzeige'];
-            $alter_tage     = $config['boxen']['box_neuimsortiment_alter_tage'] > 0
+            $days           = $config['boxen']['box_neuimsortiment_alter_tage'] > 0
                 ? (int)$config['boxen']['box_neuimsortiment_alter_tage']
                 : 30;
             $cacheID        = 'bx_nw_' . $customerGroupID .
-                '_' . $alter_tage . '_' .
+                '_' . $days . '_' .
                 $limit . \md5($stockFilterSQL . $parentSQL);
             if (($productIDs = \Shop::Container()->getCache()->get($cacheID)) === false) {
                 $cached     = false;
                 $productIDs = \Shop::Container()->getDB()->query(
                     "SELECT tartikel.kArtikel
-                    FROM tartikel
-                    LEFT JOIN tartikelsichtbarkeit 
-                        ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = $customerGroupID
-                    WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                        AND tartikel.cNeu = 'Y'
-                        $stockFilterSQL
-                        $parentSQL
-                        AND cNeu = 'Y' 
-                        AND DATE_SUB(now(),INTERVAL $alter_tage DAY) < dErstellt
-                    ORDER BY rand() LIMIT " . $limit,
+                        FROM tartikel
+                        LEFT JOIN tartikelsichtbarkeit 
+                            ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
+                            AND tartikelsichtbarkeit.kKundengruppe = $customerGroupID
+                        WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                            AND tartikel.cNeu = 'Y'
+                            $stockFilterSQL
+                            $parentSQL
+                            AND cNeu = 'Y' 
+                            AND DATE_SUB(now(),INTERVAL $days DAY) < dErstellt
+                        ORDER BY rand() LIMIT " . $limit,
                     ReturnType::ARRAY_OF_OBJECTS
                 );
                 $productIDs = \array_map(function ($e) {

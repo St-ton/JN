@@ -24,12 +24,12 @@ final class BoxBestsellingProducts extends AbstractBox
         $this->setShow(false);
         $customerGroupID = \Session::CustomerGroup()->getID();
         if ($customerGroupID && \Session::CustomerGroup()->mayViewCategories()) {
-            $kArtikel_arr   = [];
+            $res            = [];
             $cached         = true;
             $cacheTags      = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
             $stockFilterSQL = \Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $parentSQL      = ' AND tartikel.kVaterArtikel = 0';
-            $anzahl         = (int)$this->config['boxen']['box_bestseller_anzahl_anzeige'];
+            $count          = (int)$this->config['boxen']['box_bestseller_anzahl_anzeige'];
             $cacheID        = 'bx_bstsl_' . $customerGroupID . '_' . \md5($parentSQL . $stockFilterSQL);
             if (($productIDs = \Shop::Container()->getCache()->get($cacheID)) === false) {
                 $cached   = false;
@@ -57,24 +57,24 @@ final class BoxBestsellingProducts extends AbstractBox
                 \Shop::Container()->getCache()->set($cacheID, $productIDs, $cacheTags);
             }
             if (\count($productIDs) > 0) {
-                $rndkeys = \array_rand($productIDs, \min($anzahl, \count($productIDs)));
+                $rndkeys = \array_rand($productIDs, \min($count, \count($productIDs)));
                 if (\is_array($rndkeys)) {
                     foreach ($rndkeys as $key) {
                         if (isset($productIDs[$key]->kArtikel) && $productIDs[$key]->kArtikel > 0) {
-                            $kArtikel_arr[] = (int)$productIDs[$key]->kArtikel;
+                            $res[] = (int)$productIDs[$key]->kArtikel;
                         }
                     }
                 } elseif (\is_int($rndkeys)) {
                     if (isset($productIDs[$rndkeys]->kArtikel) && $productIDs[$rndkeys]->kArtikel > 0) {
-                        $kArtikel_arr[] = (int)$productIDs[$rndkeys]->kArtikel;
+                        $res[] = (int)$productIDs[$rndkeys]->kArtikel;
                     }
                 }
             }
 
-            if (\count($kArtikel_arr) > 0) {
+            if (\count($res) > 0) {
                 $this->setShow(true);
                 $products = new \ArtikelListe();
-                $products->getArtikelByKeys($kArtikel_arr, 0, \count($kArtikel_arr));
+                $products->getArtikelByKeys($res, 0, \count($res));
                 $this->setProducts($products);
                 $this->setURL(\SearchSpecialHelper::buildURL(\SEARCHSPECIALS_BESTSELLER));
             }

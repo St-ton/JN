@@ -20,43 +20,43 @@ final class BoxPriceRadar extends AbstractBox
     {
         parent::__construct($config);
         $this->setShow(false);
-        $nLimit          = (isset($config['boxen']['boxen_preisradar_anzahl'])
+        $limit    = (isset($config['boxen']['boxen_preisradar_anzahl'])
             && (int)$config['boxen']['boxen_preisradar_anzahl'] > 0)
             ? (int)$config['boxen']['boxen_preisradar_anzahl']
             : 3;
-        $nTage           = (isset($config['boxen']['boxen_preisradar_anzahltage'])
+        $days     = (isset($config['boxen']['boxen_preisradar_anzahltage'])
             && (int)$config['boxen']['boxen_preisradar_anzahltage'] > 0)
             ? (int)$config['boxen']['boxen_preisradar_anzahltage']
             : 30;
-        $oPreisradar_arr = \Preisradar::getProducts(\Session::CustomerGroup()->getID(), $nLimit, $nTage);
-        $products        = [];
-        if (\count($oPreisradar_arr) > 0) {
+        $data     = \Preisradar::getProducts(\Session::CustomerGroup()->getID(), $limit, $days);
+        $products = [];
+        if (\count($data) > 0) {
             $this->setShow(true);
             $defaultOptions = \Artikel::getDefaultOptions();
-            foreach ($oPreisradar_arr as $oPreisradar) {
-                $oArtikel = new \Artikel();
-                $oArtikel->fuelleArtikel($oPreisradar->kArtikel, $defaultOptions);
-                $oArtikel->oPreisradar                     = new \stdClass();
-                $oArtikel->oPreisradar->fDiff              = $oPreisradar->fDiff * -1;
-                $oArtikel->oPreisradar->fDiffLocalized[0]  = \Preise::getLocalizedPriceString(
-                    \TaxHelper::getGross($oArtikel->oPreisradar->fDiff, $oArtikel->Preise->fUst)
+            foreach ($data as $oPreisradar) {
+                $product = new \Artikel();
+                $product->fuelleArtikel($oPreisradar->kArtikel, $defaultOptions);
+                $product->oPreisradar                     = new \stdClass();
+                $product->oPreisradar->fDiff              = $oPreisradar->fDiff * -1;
+                $product->oPreisradar->fDiffLocalized[0]  = \Preise::getLocalizedPriceString(
+                    \TaxHelper::getGross($product->oPreisradar->fDiff, $product->Preise->fUst)
                 );
-                $oArtikel->oPreisradar->fDiffLocalized[1]  = \Preise::getLocalizedPriceString(
-                    $oArtikel->oPreisradar->fDiff
+                $product->oPreisradar->fDiffLocalized[1]  = \Preise::getLocalizedPriceString(
+                    $product->oPreisradar->fDiff
                 );
-                $oArtikel->oPreisradar->fOldVKLocalized[0] = \Preise::getLocalizedPriceString(
+                $product->oPreisradar->fOldVKLocalized[0] = \Preise::getLocalizedPriceString(
                     \TaxHelper::getGross(
-                        $oArtikel->Preise->fVKNetto + $oArtikel->oPreisradar->fDiff,
-                        $oArtikel->Preise->fUst
+                        $product->Preise->fVKNetto + $product->oPreisradar->fDiff,
+                        $product->Preise->fUst
                     )
                 );
-                $oArtikel->oPreisradar->fOldVKLocalized[1] = \Preise::getLocalizedPriceString(
-                    $oArtikel->Preise->fVKNetto + $oArtikel->oPreisradar->fDiff
+                $product->oPreisradar->fOldVKLocalized[1] = \Preise::getLocalizedPriceString(
+                    $product->Preise->fVKNetto + $product->oPreisradar->fDiff
                 );
-                $oArtikel->oPreisradar->fProzentDiff       = $oPreisradar->fProzentDiff;
+                $product->oPreisradar->fProzentDiff       = $oPreisradar->fProzentDiff;
 
-                if ((int)$oArtikel->kArtikel > 0) {
-                    $products[] = $oArtikel;
+                if ((int)$product->kArtikel > 0) {
+                    $products[] = $product;
                 }
             }
             $this->setProducts($products);

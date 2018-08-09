@@ -32,7 +32,8 @@ final class BoxTopRatedProducts extends AbstractBox
             $topRated = \Shop::Container()->getDB()->query(
                 "SELECT tartikel.kArtikel, tartikelext.fDurchschnittsBewertung
                     FROM tartikel
-                    JOIN tartikelext ON tartikel.kArtikel = tartikelext.kArtikel
+                    JOIN tartikelext 
+                        ON tartikel.kArtikel = tartikelext.kArtikel
                     WHERE round(fDurchschnittsBewertung) >= " . (int)$config['boxen']['boxen_topbewertet_minsterne'] . "
                     $parentSQL
                     ORDER BY tartikelext.fDurchschnittsBewertung DESC
@@ -43,9 +44,9 @@ final class BoxTopRatedProducts extends AbstractBox
         }
         if (\count($topRated) > 0) {
             $productIDs = [];
-            foreach ($topRated as $oTopBewertet) {
-                $oTopBewertet->kArtikel = (int)$oTopBewertet->kArtikel;
-                $productIDs[]           = (int)$oTopBewertet->kArtikel;
+            foreach ($topRated as $product) {
+                $product->kArtikel = (int)$product->kArtikel;
+                $productIDs[]      = (int)$product->kArtikel;
             }
             if (\count($productIDs) > 0) {
                 $max = (int)$config['boxen']['boxen_topbewertet_anzahl'];
@@ -56,10 +57,10 @@ final class BoxTopRatedProducts extends AbstractBox
                 foreach (\array_rand($productIDs, $max) as $i => $id) {
                     $this->products[] = (new \Artikel())->fuelleArtikel($productIDs[$id], $defaultOptions);
                 }
-                foreach ($topRated as $oTopBewertet) {
+                foreach ($topRated as $product) {
                     foreach ($this->products as $j => $oArtikel) {
-                        if ($oTopBewertet->kArtikel === $oArtikel->kArtikel) {
-                            $this->products[$j]->fDurchschnittsBewertung = \round($oTopBewertet->fDurchschnittsBewertung * 2) / 2;
+                        if ($product->kArtikel === $oArtikel->kArtikel) {
+                            $this->products[$j]->fDurchschnittsBewertung = \round($product->fDurchschnittsBewertung * 2) / 2;
                         }
                     }
                 }

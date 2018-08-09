@@ -38,9 +38,9 @@ final class BoxTrustedShopsReviews extends AbstractBox
         parent::addMapping('cBildPfadURL', 'ImageURL');
         parent::addMapping('cBildPfad', 'ImagePath');
         $this->setShow(false);
-        $cValidSprachISO_arr = ['de', 'en', 'fr', 'es', 'pl'];
+        $validISOCodes = ['de', 'en', 'fr', 'es', 'pl'];
         $langCode            = \StringHandler::convertISO2ISO639(\Shop::getLanguageCode());
-        if ($config['trustedshops']['trustedshops_nutzen'] === 'Y' && \in_array($langCode, $cValidSprachISO_arr, true)) {
+        if ($config['trustedshops']['trustedshops_nutzen'] === 'Y' && \in_array($langCode, $validISOCodes, true)) {
             $ts       = new \TrustedShops(-1, $langCode);
             $tsRating = $ts->holeKundenbewertungsstatus($langCode);
             if (isset($tsRating->cTSID) && (int)$tsRating->nStatus === 1 && \strlen($tsRating->cTSID) > 0) {

@@ -23,7 +23,7 @@ final class BoxNewsCategories extends AbstractBox
         parent::__construct($config);
         parent::addMapping('oNewsKategorie_arr', 'Items');
         $cSQL      = (int)$config['news']['news_anzahl_box'] > 0
-            ? " LIMIT " . (int)$config['news']['news_anzahl_box']
+            ? ' LIMIT ' . (int)$config['news']['news_anzahl_box']
             : '';
         $langID    = \Shop::getLanguageID();
         $cacheID   = 'bnk_' . $langID . '_' . \Session::CustomerGroup()->getID() . '_' . \md5($cSQL);

@@ -26,32 +26,31 @@ final class BoxCompareList extends AbstractBox
         }
         if (\count($oArtikel_arr) > 0) {
             $cGueltigePostVars_arr = ['a', 'k', 's', 'h', 'l', 'm', 't', 'hf', 'kf', 'show', 'suche'];
-            $cZusatzParams         = '';
+            $extra                 = '';
             $cPostMembers_arr      = \array_keys($_REQUEST);
             foreach ($cPostMembers_arr as $cPostMember) {
                 if ((int)$_REQUEST[$cPostMember] > 0 && \in_array($cPostMember, $cGueltigePostVars_arr, true)) {
-                    $cZusatzParams .= '&' . $cPostMember . '=' . $_REQUEST[$cPostMember];
+                    $extra .= '&' . $cPostMember . '=' . $_REQUEST[$cPostMember];
                 }
             }
-            $cZusatzParams  = \StringHandler::filterXSS($cZusatzParams);
+            $extra          = \StringHandler::filterXSS($extra);
             $products       = [];
-            $cRequestURI    = \Shop::getRequestUri();
+            $requestURI     = \Shop::getRequestUri();
             $defaultOptions = \Artikel::getDefaultOptions();
-            if ($cRequestURI === 'io.php') {
+            if ($requestURI === 'io.php') {
                 // Box wird von einem Ajax-Call gerendert
-                $cRequestURI = \LinkHelper::getInstance()->getStaticRoute('vergleichsliste.php');
+                $requestURI = \LinkHelper::getInstance()->getStaticRoute('vergleichsliste.php');
             }
             foreach ($oArtikel_arr as $oArtikel) {
-                $nPosAnd   = \strrpos($cRequestURI, '&');
-                $nPosQuest = \strrpos($cRequestURI, '?');
-                $nPosWD    = \strpos($cRequestURI, 'vlplo=');
+                $nPosAnd   = \strrpos($requestURI, '&');
+                $nPosQuest = \strrpos($requestURI, '?');
+                $nPosWD    = \strpos($requestURI, 'vlplo=');
 
                 if ($nPosWD) {
-                    $cRequestURI = \substr($cRequestURI, 0, $nPosWD);
+                    $requestURI = \substr($requestURI, 0, $nPosWD);
                 }
-                // z.b. index.php
                 $cDeleteParam = '?vlplo=';
-                if ($nPosAnd === \strlen($cRequestURI) - 1) {
+                if ($nPosAnd === \strlen($requestURI) - 1) {
                     // z.b. index.php?a=4&
                     $cDeleteParam = 'vlplo=';
                 } elseif ($nPosAnd) {
@@ -60,18 +59,18 @@ final class BoxCompareList extends AbstractBox
                 } elseif ($nPosQuest) {
                     // z.b. index.php?a=4
                     $cDeleteParam = '&vlplo=';
-                } elseif ($nPosQuest === \strlen($cRequestURI) - 1) {
+                } elseif ($nPosQuest === \strlen($requestURI) - 1) {
                     // z.b. index.php?
                     $cDeleteParam = 'vlplo=';
                 }
-                $artikel = new \Artikel();
-                $artikel->fuelleArtikel($oArtikel->kArtikel, $defaultOptions);
-                $artikel->cURLDEL = $cRequestURI . $cDeleteParam . $oArtikel->kArtikel . $cZusatzParams;
+                $product = new \Artikel();
+                $product->fuelleArtikel($oArtikel->kArtikel, $defaultOptions);
+                $product->cURLDEL = $requestURI . $cDeleteParam . $oArtikel->kArtikel . $extra;
                 if (isset($oArtikel->oVariationen_arr) && \count($oArtikel->oVariationen_arr) > 0) {
-                    $artikel->Variationen = $oArtikel->oVariationen_arr;
+                    $product->Variationen = $oArtikel->oVariationen_arr;
                 }
-                if ($artikel->kArtikel > 0) {
-                    $products[] = $artikel;
+                if ($product->kArtikel > 0) {
+                    $products[] = $product;
                 }
             }
             $this->setShow(true);

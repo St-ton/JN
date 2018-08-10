@@ -8,7 +8,7 @@
                 <marquee behavior="scroll" direction="{if $BoxenEinstellungen.boxen.boxen_preisradar_scrollbar == 1}down{else}up{/if}" onmouseover="this.stop()" onmouseout="this.start()" scrollamount="2" scrolldelay="70">
             {/if}
             <ul class="list-unstyled">
-                {foreach $oBox->getProducts()->elemente as $oArtikel}
+                {foreach $oBox->getProducts() as $oArtikel}
                     <li>
                         <div class="text-center clearall">
                             <p><a href="{$oArtikel->cURLFull}"><img src="{$oArtikel->cVorschaubild}" alt="{$oArtikel->cName|strip_tags|escape:'quotes'|truncate:60}" class="image" /></a></p>

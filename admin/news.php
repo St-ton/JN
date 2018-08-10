@@ -47,36 +47,36 @@ if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
             break;
     }
 }
-if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0 && FormHelper::validateToken()) {
-    $controller->setMsg(saveAdminSectionSettings(CONF_NEWS, $_POST, [CACHING_GROUP_OPTION, CACHING_GROUP_NEWS]));
-    if (count($languages) > 0) {
-        $db->query('TRUNCATE tnewsmonatspraefix', \DB\ReturnType::AFFECTED_ROWS);
-        foreach ($languages as $lang) {
-            $monthPrefix           = new stdClass();
-            $monthPrefix->kSprache = $lang->kSprache;
-            if (strlen($_POST['praefix_' . $lang->cISO]) > 0) {
-                $monthPrefix->cPraefix = htmlspecialchars(
-                    $_POST['praefix_' . $lang->cISO],
-                    ENT_COMPAT | ENT_HTML401, JTL_CHARSET
-                );
-            } else {
-                $monthPrefix->cPraefix = $lang->cISO === 'ger'
-                    ? 'Newsuebersicht'
-                    : 'Newsoverview';
-            }
-            $db->insert('tnewsmonatspraefix', $monthPrefix);
-        }
-    }
-}
-
 if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()) {
-    if ((isset($_POST['erstellen'], $_POST['news_erstellen']) && (int)$_POST['erstellen'] === 1)
+    if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
+        $controller->setMsg(saveAdminSectionSettings(CONF_NEWS, $_POST, [CACHING_GROUP_OPTION, CACHING_GROUP_NEWS]));
+        if (count($languages) > 0) {
+            $db->query('TRUNCATE tnewsmonatspraefix', \DB\ReturnType::AFFECTED_ROWS);
+            foreach ($languages as $lang) {
+                $monthPrefix           = new stdClass();
+                $monthPrefix->kSprache = $lang->kSprache;
+                if (strlen($_POST['praefix_' . $lang->cISO]) > 0) {
+                    $monthPrefix->cPraefix = htmlspecialchars(
+                        $_POST['praefix_' . $lang->cISO],
+                        ENT_COMPAT | ENT_HTML401, JTL_CHARSET
+                    );
+                } else {
+                    $monthPrefix->cPraefix = $lang->cISO === 'ger'
+                        ? 'Newsuebersicht'
+                        : 'Newsoverview';
+                }
+                $db->insert('tnewsmonatspraefix', $monthPrefix);
+            }
+        }
+    } elseif ((isset($_POST['erstellen'], $_POST['news_erstellen']) && (int)$_POST['erstellen'] === 1)
         || (isset($_POST['news_erstellen']) && (int)$_POST['news_erstellen'] === 1)
     ) {
         $newsCategories = $controller->getAllNewsCategories(false);
         if (count($newsCategories) > 0) {
+            $newsItem = new \News\Item($db);
             $controller->setStep('news_erstellen');
             $smarty->assign('oNewsKategorie_arr', $newsCategories)
+                   ->assign('oNews', $newsItem)
                    ->assign('oPossibleAuthors_arr', $author->getPossibleAuthors(['CONTENT_NEWS_SYSTEM_VIEW']));
         } else {
             $controller->setErrorMsg('Fehler: Bitte legen Sie zuerst eine Newskategorie an.');

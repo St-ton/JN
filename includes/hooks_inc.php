@@ -1569,7 +1569,8 @@ define('HOOK_IO_HANDLE_REQUEST', 213);
  *
  * @since 4.0
  * @file class.core.Shop.php
- * @param int - pageType
+ * @param int    pageType
+ * @param string pageName
  */
 define('HOOK_SHOP_SET_PAGE_TYPE', 214);
 

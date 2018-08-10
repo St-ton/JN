@@ -15,7 +15,6 @@ $kWunschliste     = (RequestHelper::verifyGPCDataInt('wl') > 0 && RequestHelper:
     : ($cParameter_arr['kWunschliste'] //default wishlist from Shop class
         ?? $cURLID); //public link
 $wishlistTargetID = RequestHelper::verifyGPCDataInt('kWunschlisteTarget');
-$AktuelleSeite    = 'WUNSCHLISTE';
 $cHinweis         = '';
 $cFehler          = '';
 $cSuche           = null;

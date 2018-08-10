@@ -19,7 +19,6 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'newsletter_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'registrieren_inc.php';
 
 Shop::setPageType(PAGE_REGISTRIERUNG);
-$AktuelleSeite        = 'REGISTRIEREN';
 $Einstellungen        = Shop::getSettings([
     CONF_GLOBAL,
     CONF_RSS,

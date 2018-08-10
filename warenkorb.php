@@ -7,7 +7,6 @@ require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'warenkorb_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
 
-$AktuelleSeite = 'WARENKORB';
 $MsgWarning    = '';
 $smarty        = Shop::Smarty();
 $Einstellungen = Shop::getSettings([

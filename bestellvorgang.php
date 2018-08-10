@@ -12,7 +12,6 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
 
 Shop::setPageType(PAGE_BESTELLVORGANG);
-$AktuelleSeite = 'BESTELLVORGANG';
 $Einstellungen = Shop::getSettings([
     CONF_GLOBAL,
     CONF_RSS,
@@ -22,9 +21,9 @@ $Einstellungen = Shop::getSettings([
     CONF_TRUSTEDSHOPS,
     CONF_ARTIKELDETAILS
 ]);
-$step     = 'accountwahl';
-$cHinweis = '';
-$cart     = Session::Cart();
+$step          = 'accountwahl';
+$cHinweis      = '';
+$cart          = Session::Cart();
 // Kill Ajaxcheckout falls vorhanden
 unset($_SESSION['ajaxcheckout']);
 // Loginbenutzer?
@@ -141,8 +140,8 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
 if (class_exists('Download') && Download::hasDownloads($cart)) {
     if ($step !== 'accountwahl' && empty($_SESSION['Kunde']->cPasswort)) {
         // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
-        $step = 'accountwahl';
-        $cHinweis = Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout');
+        $step      = 'accountwahl';
+        $cHinweis  = Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout');
         $cPost_arr = StringHandler::filterXSS($_POST);
 
         Shop::Smarty()->assign('cKundenattribut_arr', getKundenattribute($cPost_arr))
@@ -150,7 +149,8 @@ if (class_exists('Download') && Download::hasDownloads($cart)) {
             ->assign('cPost_var', $cPost_arr);
 
         if ((int)$cPost_arr['shipping_address'] === 1) {
-            Shop::Smarty()->assign('Lieferadresse', mappeLieferadresseKontaktdaten($cPost_arr['register']['shipping_address']));
+            Shop::Smarty()->assign('Lieferadresse',
+                mappeLieferadresseKontaktdaten($cPost_arr['register']['shipping_address']));
         }
 
         unset($_SESSION['Kunde']);
@@ -227,14 +227,14 @@ if (isset($_SESSION['Zahlungsart'])
 $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-$linkHelper    = Shop::Container()->getLinkService();
-$kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_BESTELLVORGANG);
-$link          = $linkHelper->getPageLink($kLink);
+$linkHelper = Shop::Container()->getLinkService();
+$kLink      = $linkHelper->getSpecialPageLinkKey(LINKTYP_BESTELLVORGANG);
+$link       = $linkHelper->getPageLink($kLink);
 WarenkorbHelper::addVariationPictures($cart);
 Shop::Smarty()->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
-        Shop::getLanguage(),
-        Session::CustomerGroup()->getID())
-    )
+    Shop::getLanguage(),
+    Session::CustomerGroup()->getID())
+)
     ->assign('Ueberschrift', Shop::Lang()->get('orderStep0Title', 'checkout'))
     ->assign('UeberschriftKlein', Shop::Lang()->get('orderStep0Title2', 'checkout'))
     ->assign('Link', $link)

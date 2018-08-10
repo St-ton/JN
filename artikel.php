@@ -9,7 +9,6 @@ if (!defined('PFAD_ROOT')) {
 }
 require_once PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 /** @global JTLSmarty $smarty */
-$AktuelleSeite    = 'ARTIKEL';
 $oPreisverlauf    = null;
 $bPreisverlauf    = false;
 $bereitsBewertet  = false;
@@ -83,7 +82,7 @@ if (isset($AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigeformat'])
 if (empty($AktuellerArtikel->kArtikel)) {
     // #6317 - send 301 redirect when filtered
     if ((((int)$Einstellungen['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER)
-        || ((int)$Einstellungen['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL))
+            || ((int)$Einstellungen['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL))
         && (int)$Einstellungen['global']['artikel_artikelanzeigefilter_seo'] === 301
     ) {
         http_response_code(301);
@@ -101,15 +100,18 @@ $similarArticles = (int)$Einstellungen['artikeldetails']['artikeldetails_aehnlic
     ? $AktuellerArtikel->holeAehnlicheArtikel()
     : [];
 if (Shop::$kVariKindArtikel > 0) {
-    $oArtikelOptionen                            = Artikel::getDetailOptions();
-    $oArtikelOptionen->nKeinLagerbestandBeachten = 1;
-    $oVariKindArtikel = (new Artikel())->fuelleArtikel(Shop::$kVariKindArtikel, $oArtikelOptionen);
+    $oArtikelOptionen                                  = Artikel::getDetailOptions();
+    $oArtikelOptionen->nKeinLagerbestandBeachten       = 1;
+    $oVariKindArtikel                                  = (new Artikel())->fuelleArtikel(Shop::$kVariKindArtikel,
+        $oArtikelOptionen);
     $oVariKindArtikel->verfuegbarkeitsBenachrichtigung = ArtikelHelper::showAvailabilityForm(
         $oVariKindArtikel,
         $Einstellungen['artikeldetails']['benachrichtigung_nutzen']);
-    $AktuellerArtikel = ArtikelHelper::combineParentAndChild($AktuellerArtikel, $oVariKindArtikel);
-    $bCanonicalURL    = $Einstellungen['artikeldetails']['artikeldetails_canonicalurl_varkombikind'] !== 'N';
-    $cCanonicalURL    = $AktuellerArtikel->baueVariKombiKindCanonicalURL(SHOP_SEO, $AktuellerArtikel, $bCanonicalURL);
+    $AktuellerArtikel                                  = ArtikelHelper::combineParentAndChild($AktuellerArtikel,
+        $oVariKindArtikel);
+    $bCanonicalURL                                     = $Einstellungen['artikeldetails']['artikeldetails_canonicalurl_varkombikind'] !== 'N';
+    $cCanonicalURL                                     = $AktuellerArtikel->baueVariKombiKindCanonicalURL(SHOP_SEO,
+        $AktuellerArtikel, $bCanonicalURL);
 }
 if ($Einstellungen['preisverlauf']['preisverlauf_anzeigen'] === 'Y' && Session::CustomerGroup()->mayViewPrices()) {
     Shop::$kArtikel = Shop::$kVariKindArtikel > 0

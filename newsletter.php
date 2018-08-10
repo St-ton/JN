@@ -8,10 +8,9 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'newsletter_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
 
 Shop::setPageType(PAGE_NEWSLETTER);
-$AktuelleSeite = 'NEWSLETTER';
-$links         = Shop::Container()->getDB()->selectAll('tlink', 'nLinkart', LINKTYP_NEWSLETTER);
-$oLink         = new stdClass();
-$oLink->kLink  = 0;
+$links        = Shop::Container()->getDB()->selectAll('tlink', 'nLinkart', LINKTYP_NEWSLETTER);
+$oLink        = new stdClass();
+$oLink->kLink = 0;
 foreach ($links as $l) {
     $customerGroupIDs = StringHandler::parseSSK($l->cKundengruppen);
     $ok               = array_reduce($customerGroupIDs, function ($c, $p) {
@@ -32,6 +31,7 @@ if (isset($oLink->kLink) && $oLink->kLink > 0) {
     Shop::$bFileNotFound     = true;
     Shop::$is404             = true;
     $cParameter_arr['is404'] = true;
+
     return;
 }
 
@@ -158,7 +158,7 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
     Shop::Smarty()->assign('cPost_arr', StringHandler::filterXSS($_POST));
 } elseif (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 2) {
     // weiterleitung vom Footer zu newsletter.php
-    $oPlausi = new stdClass();
+    $oPlausi                      = new stdClass();
     $oPlausi->cPost_arr['cEmail'] = isset($_POST['cEmail'])
         ? StringHandler::filterXSS(Shop::Container()->getDB()->escape(strip_tags($_POST['cEmail'])))
         : null;

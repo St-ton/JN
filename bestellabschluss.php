@@ -10,10 +10,9 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'warenkorb_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'trustedshops_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
-$Einstellungen = Shopsetting::getInstance()->getAll();
 Shop::setPageType(PAGE_BESTELLABSCHLUSS);
+$Einstellungen = Shopsetting::getInstance()->getAll();
 $linkHelper    = Shop::Container()->getLinkService();
-$AktuelleSeite = 'BESTELLVORGANG';
 $kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_BESTELLABSCHLUSS);
 $link          = $linkHelper->getPageLink($kLink);
 $cart          = Session::Cart();

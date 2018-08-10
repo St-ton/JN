@@ -92,19 +92,19 @@ if ($step === 'kwk_uebersicht') {
 
     // Anzahl
     $oAnzahlReg = Shop::Container()->getDB()->query(
-        'SELECT count(*) AS nAnzahl
+        'SELECT COUNT(*) AS nAnzahl
             FROM tkundenwerbenkunden
             WHERE nRegistriert = 0',
         \DB\ReturnType::SINGLE_OBJECT
     );
     $oAnzahlNichtReg = Shop::Container()->getDB()->query(
-        'SELECT count(*) AS nAnzahl
+        'SELECT COUNT(*) AS nAnzahl
             FROM tkundenwerbenkunden
             WHERE nRegistriert = 1',
         \DB\ReturnType::SINGLE_OBJECT
     );
     $oAnzahlPraemie = Shop::Container()->getDB()->query(
-        'SELECT count(*) AS nAnzahl
+        'SELECT COUNT(*) AS nAnzahl
             FROM tkundenwerbenkundenbonus',
         \DB\ReturnType::SINGLE_OBJECT
     );

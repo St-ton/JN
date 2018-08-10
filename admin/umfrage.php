@@ -499,7 +499,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
     // Hole Umfrage aus DB
     if ($step === 'umfrage_uebersicht') {
         $oUmfrageAnzahl = Shop::Container()->getDB()->query(
-            'SELECT count(*) AS nAnzahl
+            'SELECT COUNT(*) AS nAnzahl
                 FROM tumfrage
                 WHERE kSprache = ' . (int)$_SESSION['kSprache'],
             \DB\ReturnType::SINGLE_OBJECT

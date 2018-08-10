@@ -46,10 +46,11 @@ function holeHaeufigeGeschenke($cSQL): array
     $oHaeufigGeschenkTMP_arr = [];
     if (strlen($cSQL) > 0) {
         $oHaeufigGeschenkTMP_arr = Shop::Container()->getDB()->query(
-            'SELECT tgratisgeschenk.kArtikel, count(*) AS nAnzahl, 
+            'SELECT tgratisgeschenk.kArtikel, COUNT(*) AS nAnzahl, 
                 MAX(tbestellung.dErstellt) AS lastOrdered, AVG(tbestellung.fGesamtsumme) AS avgOrderValue
                 FROM tgratisgeschenk
-                  LEFT JOIN tbestellung ON tbestellung.kWarenkorb = tgratisgeschenk.kWarenkorb
+                  LEFT JOIN tbestellung 
+                      ON tbestellung.kWarenkorb = tgratisgeschenk.kWarenkorb
                 GROUP BY tgratisgeschenk.kArtikel
                 ORDER BY nAnzahl DESC, lastOrdered DESC ' . $cSQL,
             \DB\ReturnType::ARRAY_OF_OBJECTS
@@ -125,7 +126,7 @@ function holeLetzten100Geschenke($cSQL): array
 function gibAnzahlAktiverGeschenke(): int
 {
     return (int)Shop::Container()->getDB()->query(
-        "SELECT count(*) AS nAnzahl
+        "SELECT COUNT(*) AS nAnzahl
             FROM tartikelattribut
             WHERE cName = '" . ART_ATTRIBUT_GRATISGESCHENKAB . "'",
         \DB\ReturnType::SINGLE_OBJECT
@@ -151,7 +152,7 @@ function gibAnzahlHaeufigGekaufteGeschenke(): int
 function gibAnzahlLetzten100Geschenke(): int
 {
     return (int)Shop::Container()->getDB()->query(
-        'SELECT count(*) AS nAnzahl
+        'SELECT COUNT(*) AS nAnzahl
             FROM twarenkorbpos
             WHERE nPosTyp = ' . C_WARENKORBPOS_TYP_GRATISGESCHENK . '
             LIMIT 100',

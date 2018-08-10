@@ -30,12 +30,12 @@ $oWunschlistePos = Shop::Container()->getDB()->query(
     \DB\ReturnType::SINGLE_OBJECT
 );
 $oWunschlisteArtikel = Shop::Container()->getDB()->query(
-    'SELECT count(*) AS nAnzahl
+    'SELECT COUNT(*) AS nAnzahl
         FROM twunschlistepos',
     \DB\ReturnType::SINGLE_OBJECT
 );
 $oWunschlisteFreunde = Shop::Container()->getDB()->query(
-    'SELECT count(*) AS nAnzahl
+    'SELECT COUNT(*) AS nAnzahl
         FROM twunschliste
         JOIN twunschlisteversand 
             ON twunschliste.kWunschliste = twunschlisteversand.kWunschliste',

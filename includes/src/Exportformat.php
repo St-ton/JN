@@ -810,7 +810,7 @@ class Exportformat
         }
 
         if ($countOnly === true) {
-            $select = 'count(*) AS nAnzahl';
+            $select = 'COUNT(*) AS nAnzahl';
         } else {
             $select    = 'tartikel.kArtikel';
             $limit     = ' ORDER BY tartikel.kArtikel LIMIT ' . $this->getQueue()->nLimitM;

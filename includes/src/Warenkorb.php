@@ -637,7 +637,7 @@ class Warenkorb
             && ($ip = RequestHelper::getIP(true))
         ) {
             $cnt = Shop::Container()->getDB()->executeQueryPrepared(
-                'SELECT count(*) AS anz 
+                'SELECT COUNT(*) AS anz 
                     FROM tbestellung 
                     WHERE cIP = :ip 
                         AND dErstellt > now()-INTERVAL 1 DAY',

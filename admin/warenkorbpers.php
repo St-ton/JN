@@ -108,7 +108,7 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
     $kKunde = (int)$_GET['a'];
 
     $oWarenkorbPers = Shop::Container()->getDB()->query(
-        'SELECT count(*) AS nAnzahl
+        'SELECT COUNT(*) AS nAnzahl
             FROM twarenkorbperspos
             JOIN twarenkorbpers 
                 ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers

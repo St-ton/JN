@@ -935,7 +935,7 @@ function getNewsletterEmpfaenger(int $kNewsletter)
     }
 
     $oNewsletterEmpfaenger = Shop::Container()->getDB()->query(
-        'SELECT count(*) AS nAnzahl
+        'SELECT COUNT(*) AS nAnzahl
             FROM tnewsletterempfaenger
             LEFT JOIN tsprache 
                 ON tsprache.kSprache = tnewsletterempfaenger.kSprache
@@ -978,7 +978,7 @@ function baueZeitAusDB($dZeitDB)
 function holeAbonnentenAnzahl($cAktiveSucheSQL)
 {
     return (int)Shop::Container()->getDB()->query(
-        'SELECT count(*) AS nAnzahl
+        'SELECT COUNT(*) AS nAnzahl
             FROM tnewsletterempfaenger
             WHERE kSprache = ' . (int)$_SESSION['kSprache'] . $cAktiveSucheSQL->cWHERE,
         \DB\ReturnType::SINGLE_OBJECT

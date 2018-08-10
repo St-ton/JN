@@ -1014,7 +1014,7 @@ class IOMethods
                 AND tartikelsichtbarkeit.kArtikel IS NULL
                 AND a.kVaterArtikel = " . $kArtikel . "
             GROUP BY a.kArtikel
-            HAVING count(*) = " . count($kVariationKombi_arr),
+            HAVING COUNT(*) = " . count($kVariationKombi_arr),
             \DB\ReturnType::SINGLE_OBJECT
         );
     }

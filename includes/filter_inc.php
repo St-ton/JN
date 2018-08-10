@@ -1002,7 +1002,7 @@ function baueArtikelAnzahl($FilterSQL, &$oSuchergebnisse, $nArtikelProSeite = 20
 {
     trigger_error('filter_inc.php: calling baueArtikelAnzahl() is deprecated and will have no effect', E_USER_DEPRECATED);
     $oAnzahl = Shop::Container()->getDB()->query(
-        'SELECT count(*) AS nGesamtAnzahl
+        'SELECT COUNT(*) AS nGesamtAnzahl
             FROM(
                 SELECT tartikel.kArtikel
                 FROM tartikel ' . 

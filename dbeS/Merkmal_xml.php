@@ -576,7 +576,7 @@ function loescheMerkmalWert(int $kMerkmalWert, $isInsert = false)
     // Hat das Merkmal vor dem Loeschen noch mehr als einen Wert?
     // Wenn nein => nach dem Loeschen auch das Merkmal loeschen
     $oAnzahl = Shop::Container()->getDB()->query(
-        'SELECT count(*) AS nAnzahl, kMerkmal
+        'SELECT COUNT(*) AS nAnzahl, kMerkmal
             FROM tmerkmalwert
             WHERE kMerkmal = (
                 SELECT kMerkmal

@@ -177,12 +177,10 @@ class Emailhistory
      */
     public function getCount(): int
     {
-        $oObj = Shop::Container()->getDB()->query(
-            'SELECT count(*) AS nCount FROM temailhistory',
+        return (int)Shop::Container()->getDB()->query(
+            'SELECT COUNT(*) AS nCount FROM temailhistory',
             \DB\ReturnType::SINGLE_OBJECT
-        );
-
-        return (int)$oObj->nCount;
+        )->nCount;
     }
 
     /**

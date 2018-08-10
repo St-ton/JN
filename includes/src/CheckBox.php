@@ -399,7 +399,7 @@ class CheckBox
             $cSQL = ' WHERE nAktiv = 1';
         }
         $oCheckBoxCount = Shop::Container()->getDB()->query(
-            'SELECT count(*) AS nAnzahl 
+            'SELECT COUNT(*) AS nAnzahl 
                 FROM tcheckbox' . $cSQL,
             \DB\ReturnType::SINGLE_OBJECT
         );

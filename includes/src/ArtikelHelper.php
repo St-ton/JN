@@ -100,7 +100,7 @@ class ArtikelHelper
                             AND tartikelsichtbarkeit.kArtikel IS NULL
                             AND tartikel.kVaterArtikel = ' . $productID . '
                         GROUP BY tartikel.kArtikel
-                        HAVING count(*) = ' . count($combinations),
+                        HAVING COUNT(*) = ' . count($combinations),
                     \DB\ReturnType::SINGLE_OBJECT
                 );
                 if (isset($product->kArtikel) && $product->kArtikel > 0) {

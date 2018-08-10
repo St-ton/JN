@@ -294,7 +294,7 @@ function holeMaxExportArtikelAnzahl(&$oExportformat)
     }
 
     $count = Shop::Container()->getDB()->query(
-        "SELECT count(*) AS nAnzahl
+        "SELECT COUNT(*) AS nAnzahl
             FROM tartikel
             LEFT JOIN tartikelattribut 
                 ON tartikelattribut.kArtikel = tartikel.kArtikel

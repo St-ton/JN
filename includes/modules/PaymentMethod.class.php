@@ -395,7 +395,7 @@ class PaymentMethod
     {
         if ((int)$kKunde > 0) {
             $oBestellung = Shop::Container()->getDB()->query(
-                "SELECT count(*) AS nAnzahl
+                "SELECT COUNT(*) AS nAnzahl
                     FROM tbestellung
                     WHERE (cStatus = '2' || cStatus = '3' || cStatus = '4')
                         AND kKunde = " . (int)$kKunde, 1
@@ -450,7 +450,7 @@ class PaymentMethod
         if ($this->getSetting('min_bestellungen') > 0) {
             if (isset($customer->kKunde) && $customer->kKunde > 0) {
                 $res = Shop::Container()->getDB()->query("
-                  SELECT count(*) AS cnt 
+                  SELECT COUNT(*) AS cnt 
                       FROM tbestellung 
                       WHERE kKunde = " . (int) $customer->kKunde . " 
                           AND (

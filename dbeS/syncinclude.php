@@ -777,7 +777,7 @@ function deleteArticleImage($oArtikelPict = null, int $kArtikel = 0, int $kArtik
         if (count($oVerknuepfteArtikel_arr) === 0) {
             // Gibt ein neue Artikel die noch auf den physikalischen Pfad zeigen?
             $oObj = Shop::Container()->getDB()->queryPrepared(
-                'SELECT count(*) AS nCount
+                'SELECT COUNT(*) AS nCount
                     FROM tartikelpict
                     WHERE cPfad = :pth',
                 ['pth' => $oArtikelPict->cPfad],

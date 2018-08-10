@@ -482,7 +482,7 @@ function mappeLiveSuche($kSuchanfrage_arr, $cMapping): int
 function gibMaxBewertungen(): int
 {
     return (int)Shop::Container()->getDB()->query(
-        'SELECT count(*) AS nAnzahl
+        'SELECT COUNT(*) AS nAnzahl
             FROM tbewertung
             WHERE nAktiv = 0
                 AND kSprache = ' . (int)$_SESSION['kSprache'],
@@ -496,7 +496,7 @@ function gibMaxBewertungen(): int
 function gibMaxSuchanfragen(): int
 {
     return (int)Shop::Container()->getDB()->query(
-        'SELECT count(*) AS nAnzahl
+        'SELECT COUNT(*) AS nAnzahl
             FROM tsuchanfrage
             WHERE nAktiv = 0
                 AND kSprache = ' . (int)$_SESSION['kSprache'],

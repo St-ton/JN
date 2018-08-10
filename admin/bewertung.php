@@ -173,7 +173,7 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
 
     // Bewertungen Anzahl holen
     $nBewertungen = (int)Shop::Container()->getDB()->query(
-        'SELECT count(*) AS nAnzahl
+        'SELECT COUNT(*) AS nAnzahl
             FROM tbewertung
             WHERE kSprache = ' . (int)$_SESSION['kSprache'] . '
                 AND nAktiv = 0',
@@ -181,7 +181,7 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
     )->nAnzahl;
     // Aktive Bewertungen Anzahl holen
     $nBewertungenAktiv = (int)Shop::Container()->getDB()->query(
-        'SELECT count(*) AS nAnzahl
+        'SELECT COUNT(*) AS nAnzahl
             FROM tbewertung
             WHERE kSprache = ' . (int)$_SESSION['kSprache'] . '
                 AND nAktiv = 1',

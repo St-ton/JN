@@ -105,7 +105,7 @@ for ($i = 0; $i < $configCount; $i++) {
 $smarty->assign('oConfig_arr', $oConfig_arr);
 // Max Anzahl Vergleiche
 $oVergleichAnzahl = Shop::Container()->getDB()->query(
-    'SELECT count(*) AS nAnzahl
+    'SELECT COUNT(*) AS nAnzahl
         FROM tvergleichsliste',
     \DB\ReturnType::SINGLE_OBJECT
 );

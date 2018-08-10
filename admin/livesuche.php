@@ -416,14 +416,14 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
 $Sprachen = Sprache::getAllLanguages();
 // Anzahl Suchanfragen
 $nAnzahlSuchanfragen = Shop::Container()->getDB()->query(
-    'SELECT count(*) AS nAnzahl
+    'SELECT COUNT(*) AS nAnzahl
         FROM tsuchanfrage
         WHERE kSprache = ' . (int)$_SESSION['kSprache'] . $cLivesucheSQL->cWhere,
     \DB\ReturnType::SINGLE_OBJECT
 );
 // Anzahl Suchanfrageerfolglos
 $nAnzahlSuchanfrageerfolglos = Shop::Container()->getDB()->query(
-    'SELECT count(*) AS nAnzahl
+    'SELECT COUNT(*) AS nAnzahl
         FROM tsuchanfrageerfolglos
         WHERE kSprache = ' . (int)$_SESSION['kSprache'],
     \DB\ReturnType::SINGLE_OBJECT
@@ -431,7 +431,7 @@ $nAnzahlSuchanfrageerfolglos = Shop::Container()->getDB()->query(
 
 // Anzahl SuchanfragenMapping
 $nAnzahlSuchanfragenMapping = Shop::Container()->getDB()->query(
-    'SELECT count(*) AS nAnzahl
+    'SELECT COUNT(*) AS nAnzahl
         FROM tsuchanfragemapping
         WHERE kSprache = ' . (int)$_SESSION['kSprache'],
     \DB\ReturnType::SINGLE_OBJECT

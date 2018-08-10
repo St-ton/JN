@@ -352,7 +352,7 @@ if ($step === 'uebersicht') {
     );
     foreach ($oZahlungsart_arr as $oZahlungsart) {
         $oZahlungsart->nEingangAnzahl = (int)Shop::Container()->getDB()->query(
-            'SELECT count(*) AS nAnzahl
+            'SELECT COUNT(*) AS nAnzahl
                 FROM tzahlungseingang AS ze
                     JOIN tbestellung AS b
                         ON ze.kBestellung = b.kBestellung

@@ -24,7 +24,7 @@ class Preisradar
                 WHERE DATE_SUB(now(), INTERVAL {$nTage} DAY) < dDate
                     AND kKundengruppe = {$kKundengruppe}
                 GROUP BY kArtikel
-                HAVING count(*) >= 2
+                HAVING COUNT(*) >= 2
                 ORDER BY dDate DESC
                 LIMIT {$nLimit}",
             \DB\ReturnType::ARRAY_OF_OBJECTS

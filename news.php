@@ -46,7 +46,10 @@ switch ($controller->getPageType($cParameter_arr)) {
         $breadCrumbName = $newsItem->getTitle() ?? Shop::Lang()->get('news', 'breadcrumb');
         $breadCrumbURL  = UrlHelper::buildURL($newsItem, URLART_NEWS);
 
-        executeHook(HOOK_NEWS_PAGE_DETAILANSICHT);
+        executeHook(HOOK_NEWS_PAGE_DETAILANSICHT, [
+            'newsItem'   => $newsItem,
+            'pagination' => $pagination
+        ]);
         break;
     case \News\ViewType::NEWS_CATEGORY:
         Shop::setPageType(PAGE_NEWSKATEGORIE);

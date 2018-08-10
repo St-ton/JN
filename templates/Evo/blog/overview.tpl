@@ -11,7 +11,8 @@
 
 {include file='snippets/opc_mount_point.tpl' id='opc_news_overview_filter_prepend'}
 <div class="well well-sm">
-    <form id="frm_filter" name="frm_filter" action="{get_static_route id='news.php'}" method="post" class="form-inline text-center">
+    {get_static_route id='news.php' assign=routeURL}
+    <form id="frm_filter" name="frm_filter" action="{$cCanonicalURL|default:$routeURL}" method="post" class="form-inline text-center">
         {$jtl_token}
         <select name="nSort" onchange="this.form.submit();" class="form-control form-group" aria-label="{lang key='newsSort' section='news'}">
             <option value="-1"{if $nSort === -1} selected{/if}>{lang key='newsSort' section='news'}</option>

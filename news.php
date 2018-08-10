@@ -21,6 +21,7 @@ $cMetaDescription = '';
 $cMetaKeywords    = '';
 $AktuelleSeite    = 'NEWS';
 $Einstellungen    = Shopsetting::getInstance()->getAll();
+$customerGroupID  = \Session\Session::CustomerGroup()->getID();
 $linkService      = Shop::Container()->getLinkService();
 $kLink            = $linkService->getSpecialPageLinkKey(LINKTYP_NEWS);
 $link             = $linkService->getPageLink($kLink);
@@ -58,7 +59,7 @@ switch ($pageType) {
         Shop::$AktuelleSeite = 'NEWSKATEGORIE';
         $AktuelleSeite       = 'NEWSKATEGORIE';
         $kNewsKategorie      = (int)$cParameter_arr['kNewsKategorie'];
-        $overview            = $controller->displayOverview($pagination, $kNewsKategorie);
+        $overview            = $controller->displayOverview($pagination, $kNewsKategorie, 0, $customerGroupID);
         $cCanonicalURL       = $overview->getURL();
         $breadCrumbURL       = $cCanonicalURL;
         $breadCrumbName      = $overview->getName();
@@ -68,14 +69,14 @@ switch ($pageType) {
         $AktuelleSeite       = 'NEWS';
         Shop::setPageType(PAGE_NEWS);
         $kNewsKategorie = 0;
-        $overview       = $controller->displayOverview($pagination, $kNewsKategorie);
+        $overview       = $controller->displayOverview($pagination, $kNewsKategorie, 0, $customerGroupID);
         break;
     case \News\ViewType::NEWS_MONTH_OVERVIEW:
         Shop::setPageType(PAGE_NEWSMONAT);
         Shop::$AktuelleSeite = 'NEWSMONAT';
         $AktuelleSeite       = 'NEWSMONAT';
         $id                  = (int)$cParameter_arr['kNewsMonatsUebersicht'];
-        $overview            = $controller->displayOverview($pagination, 0, $id);
+        $overview            = $controller->displayOverview($pagination, 0, $id, $customerGroupID);
         $cCanonicalURL       = $overview->getURL();
         $breadCrumbURL       = $cCanonicalURL;
         $breadCrumbName      = $overview->getName();

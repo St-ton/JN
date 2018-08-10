@@ -26,6 +26,7 @@ class PageTypeToLinkType
             case \PAGE_VERSAND:
                 return \LINKTYP_VERSAND;
             case \PAGE_LOGIN:
+            case \PAGE_MEINKONTO:
                 return \LINKTYP_LOGIN;
             case \PAGE_REGISTRIERUNG:
                 return \LINKTYP_REGISTRIEREN;
@@ -50,6 +51,9 @@ class PageTypeToLinkType
             case \PAGE_NEWSLETTERARCHIV:
                 return \LINKTYP_NEWSLETTERARCHIV;
             case \PAGE_NEWS:
+            case \PAGE_NEWSDETAIL:
+            case \PAGE_NEWSKATEGORIE:
+            case \PAGE_NEWSMONAT:
                 return \LINKTYP_NEWS;
             case \PAGE_NEWSARCHIV:
                 return \LINKTYP_NEWSARCHIV;

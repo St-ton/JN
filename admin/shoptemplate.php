@@ -88,7 +88,7 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && FormHelper::valida
     }
     $tplConfXML   = $oTemplate->leseEinstellungenXML($cOrdner, $parentFolder);
     $sectionCount = count($_POST['cSektion']);
-    $uploadError = '';
+    $uploadError  = '';
     for ($i = 0; $i < $sectionCount; $i++) {
         $cSektion = Shop::Container()->getDB()->escape($_POST['cSektion'][$i]);
         $cName    = Shop::Container()->getDB()->escape($_POST['cName'][$i]);

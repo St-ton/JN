@@ -123,10 +123,10 @@ class Controller
     }
 
     /**
-     * @param int $kNewsMonatsUebersicht
+     * @param int $id
      * @return \stdClass|null
      */
-    private function getMonthOverview(int $kNewsMonatsUebersicht)
+    private function getMonthOverview(int $id)
     {
         return $this->db->queryPrepared(
             "SELECT tnewsmonatsuebersicht.*, tseo.cSeo
@@ -137,7 +137,7 @@ class Controller
                     AND tseo.kSprache = :lid
                 WHERE tnewsmonatsuebersicht.kNewsMonatsUebersicht = :nmi",
             [
-                'nmi' => $kNewsMonatsUebersicht,
+                'nmi' => $id,
                 'lid' => \Shop::getLanguageID()
             ],
             ReturnType::SINGLE_OBJECT
@@ -155,7 +155,6 @@ class Controller
             $category->cURL     = \UrlHelper::buildURL($category, \URLART_NEWSKATEGORIE);
             $category->cURLFull = \UrlHelper::buildURL($category, \URLART_NEWSKATEGORIE, true);
         }
-
         $comments            = $newsItem->getComments()->getItems();
         $itemsPerPageOptions = ($perPage = (int)$this->config['news']['news_kommentare_anzahlproseite']) > 0
             ? [$perPage, $perPage * 2, $perPage * 5]
@@ -184,9 +183,10 @@ class Controller
      * @param \Pagination $pagination
      * @param int         $categoryID
      * @param int         $monthOverviewID
+     * @param int         $customerGroupID
      * @return Category
      */
-    public function displayOverview(\Pagination $pagination, int $categoryID = 0, int $monthOverviewID = 0): Category
+    public function displayOverview(\Pagination $pagination, int $categoryID = 0, int $monthOverviewID = 0, $customerGroupID = 0): Category
     {
         $category = new Category($this->db);
         if ($categoryID > 0) {
@@ -205,7 +205,7 @@ class Controller
                    ->setItemCount($category->getItems()->count())
                    ->assemble();
 
-        $items = $category->filterAndSortItems();
+        $items = $category->filterAndSortItems($customerGroupID);
         if ($pagination->getItemsPerPage() > 0) {
             $items = $items->forPage(
                 $pagination->getPage() + 1,
@@ -527,7 +527,7 @@ class Controller
         foreach ($dateData as $date) {
             $oTMP        = new \stdClass();
             $oTMP->cWert = $date->nMonat . '-' . $date->nJahr;
-            $oTMP->cName = $this->mapDateName((string)$date->nMonat, (int)$date->nJahr, \Shop::getLanguageCode());
+            $oTMP->cName = self::mapDateName((string)$date->nMonat, (int)$date->nJahr, \Shop::getLanguageCode());
             $dates[]     = $oTMP;
         }
 

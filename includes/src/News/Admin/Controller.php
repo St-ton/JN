@@ -50,6 +50,11 @@ class Controller
     private $step = 'news_uebersicht';
 
     /**
+     * @var int
+     */
+    private $continueWith = 0;
+
+    /**
      * @var string
      */
     private $msg = '';
@@ -237,8 +242,8 @@ class Controller
             }
             $this->msg .= 'Ihre News wurde erfolgreich gespeichert.<br />';
             if (isset($post['continue']) && $post['continue'] === '1') {
-                $this->step   = 'news_editieren';
-                $continueWith = $newsItemID;
+                $this->step         = 'news_editieren';
+                $this->continueWith = $newsItemID;
             } else {
                 $tab = \RequestHelper::verifyGPDataString('tab');
                 $this->newsRedirect(empty($tab) ? 'aktiv' : $tab, $this->msg);
@@ -251,7 +256,7 @@ class Controller
             $this->errorMsg .= 'Fehler: Bitte füllen Sie alle Pflichtfelder aus.<br />';
 
             if (isset($post['kNews']) && \is_numeric($post['kNews'])) {
-                $continueWith = $newsItemID;
+                $this->continueWith = $newsItemID;
             } else {
                 // @todo
                 $oNewsKategorie_arr = \News::getAllNewsCategories($_SESSION['kSprache'], true);
@@ -992,5 +997,21 @@ class Controller
     public function setErrorMsg(string $errorMsg)
     {
         $this->errorMsg = $errorMsg;
+    }
+
+    /**
+     * @return int
+     */
+    public function getContinueWith(): int
+    {
+        return $this->continueWith;
+    }
+
+    /**
+     * @param int $continueWith
+     */
+    public function setContinueWith(int $continueWith)
+    {
+        $this->continueWith = $continueWith;
     }
 }

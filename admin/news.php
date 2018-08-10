@@ -15,7 +15,6 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'news_inc.php';
 $uploadDir      = PFAD_ROOT . PFAD_NEWSBILDER;
 $uploadDirCat   = PFAD_ROOT . PFAD_NEWSKATEGORIEBILDER;
 $newsCategories = [];
-$continueWith   = false;
 $db             = Shop::Container()->getDB();
 $author         = ContentAuthor::getInstance();
 $controller     = new \News\Admin\Controller($db, $smarty, Shop::Container()->getCache());
@@ -165,7 +164,8 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
             if ($newsCategory->getID() > 0) {
                 $smarty->assign('oNewsKategorie', $newsCategory);
                 if (is_dir($uploadDirCat . $newsCategory->getID())) {
-                    $smarty->assign('oDatei_arr', $controller->getCategoryImages($newsCategory->getID(), $uploadDirCat));
+                    $smarty->assign('oDatei_arr',
+                        $controller->getCategoryImages($newsCategory->getID(), $uploadDirCat));
                 }
             } else {
                 $controller->setStep('news_uebersicht');
@@ -179,7 +179,7 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
     ) {
         if (is_array($_POST['kNewsKommentar']) && count($_POST['kNewsKommentar']) > 0) {
             foreach ($_POST['kNewsKommentar'] as $id) {
-                $db->update('tnewskommentar', 'kNewsKommentar',  (int)$id, (object)['nAktiv' => 1]);
+                $db->update('tnewskommentar', 'kNewsKommentar', (int)$id, (object)['nAktiv' => 1]);
             }
             $controller->setMsg('Ihre markierten Newskommentare wurden erfolgreich freigeschaltet.');
             $tab = RequestHelper::verifyGPDataString('tab');
@@ -190,10 +190,10 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
     } elseif (isset($_POST['newskommentar_freischalten'], $_POST['kNewsKommentar'], $_POST['kommentareloeschenSubmit'])) {
         $controller->deleteComments($_POST['kNewsKommentar']);
     }
-    if ((isset($_GET['news_editieren']) && (int)$_GET['news_editieren'] === 1) || ($continueWith !== false && $continueWith > 0)) {
+    if ((isset($_GET['news_editieren']) && (int)$_GET['news_editieren'] === 1) || $controller->getContinueWith() > 0) {
         $newsCategories = News::getAllNewsCategories($_SESSION['kSprache'], true);
-        $newsItemID     = ($continueWith !== false && $continueWith > 0)
-            ? $continueWith
+        $newsItemID     = $controller->getContinueWith() > 0
+            ? $controller->getContinueWith()
             : (int)$_GET['kNews'];
         if (strlen(RequestHelper::verifyGPDataString('delpic')) > 0) {
             if ($controller->deleteNewsImage(RequestHelper::verifyGPDataString('delpic'), $newsItemID, $uploadDir)) {

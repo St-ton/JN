@@ -40,8 +40,8 @@ class SessionHandlerJTL extends \SessionHandler implements \SessionHandlerInterf
         if (isset($array[$key])) {
             return $array[$key];
         }
-        foreach (explode('.', $key) as $segment) {
-            if (!is_array($array) || !array_key_exists($segment, $array)) {
+        foreach (\explode('.', $key) as $segment) {
+            if (!\is_array($array) || !\array_key_exists($segment, $array)) {
                 return $default;
             }
             $array = $array[$segment];
@@ -73,15 +73,15 @@ class SessionHandlerJTL extends \SessionHandler implements \SessionHandlerInterf
 
             return $array;
         }
-        $keys = explode('.', $key);
-        while (count($keys) > 1) {
-            $key = array_shift($keys);
-            if (!isset($array[$key]) || !is_array($array[$key])) {
+        $keys = \explode('.', $key);
+        while (\count($keys) > 1) {
+            $key = \array_shift($keys);
+            if (!isset($array[$key]) || !\is_array($array[$key])) {
                 $array[$key] = [];
             }
             $array = &$array[$key];
         }
-        $array[array_shift($keys)] = $value;
+        $array[\array_shift($keys)] = $value;
 
         return $array;
     }
@@ -94,7 +94,7 @@ class SessionHandlerJTL extends \SessionHandler implements \SessionHandlerInterf
      */
     public function put($key, $value = null)
     {
-        if (!is_array($key)) {
+        if (!\is_array($key)) {
             $key = [$key => $value];
         }
         foreach ($key as $arrayKey => $arrayValue) {

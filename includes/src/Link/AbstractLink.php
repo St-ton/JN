@@ -22,7 +22,7 @@ abstract class AbstractLink implements LinkInterface
         'cURL'               => 'URL',
         'cURLFull'           => 'URL',
         'cURLFullSSL'        => 'URL',
-        'cLocalizedName'     => 'Name',
+        'cLocalizedName'     => 'NamesCompat',
         'cLocalizedTitle'    => 'Title',
         'kLink'              => 'ID',
         'kSprache'           => 'LanguageID',
@@ -60,8 +60,8 @@ abstract class AbstractLink implements LinkInterface
      */
     protected static function parseSSKAdvanced($ssk): array
     {
-        return is_string($ssk) && strtolower($ssk) !== 'null'
-            ? array_map('intval', array_map('trim', array_filter(explode(';', $ssk))))
+        return \is_string($ssk) && \strtolower($ssk) !== 'null'
+            ? \array_map('\intval', \array_map('\trim', \array_filter(\explode(';', $ssk))))
             : [];
     }
 
@@ -80,8 +80,8 @@ abstract class AbstractLink implements LinkInterface
     {
         $groups = $this->getCustomerGroups();
 
-        return is_array($groups) && count($groups) > 0
-            ? implode(';', $groups) . ';'
+        return \is_array($groups) && \count($groups) > 0
+            ? \implode(';', $groups) . ';'
             : null;
     }
 
@@ -90,7 +90,7 @@ abstract class AbstractLink implements LinkInterface
      */
     public function setCustomerGroupsCompat($value)
     {
-        $this->setCustomerGroups(!is_array($value) ? self::parseSSKAdvanced($value) : $value);
+        $this->setCustomerGroups(!\is_array($value) ? self::parseSSKAdvanced($value) : $value);
     }
 
     /**
@@ -139,5 +139,19 @@ abstract class AbstractLink implements LinkInterface
     public function setVisibleLoggedInOnlyCompat($value)
     {
         $this->setVisibleLoggedInOnly($value === 'Y' || $value === true);
+    }
+
+    /**
+     * @return array
+     */
+    public function getNamesCompat(): array
+    {
+        $byCode = [];
+        $languages = \Sprache::getAllLanguages(1);
+        foreach ($this->getNames() as $langID => $name) {
+            $byCode[$languages[$langID]->cISO] = $name;
+        }
+
+        return $byCode;
     }
 }

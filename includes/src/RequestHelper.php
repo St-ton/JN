@@ -63,10 +63,10 @@ class RequestHelper
 
     /**
      * @param string $var
-     * @return string
+     * @return string|array
      * @since 5.0.0
      */
-    public static function verifyGPDataString($var): string
+    public static function verifyGPDataString($var)
     {
         if (isset($_POST[$var])) {
             return $_POST[$var];
@@ -247,8 +247,6 @@ class RequestHelper
                     if ($maxredirect === null) {
                         trigger_error('Too many redirects. When following redirects, ' .
                             'libcurl hit the maximum amount.', E_USER_WARNING);
-                    } else {
-                        $maxredirect = 0;
                     }
 
                     return false;
@@ -261,35 +259,36 @@ class RequestHelper
     }
 
     /**
-     * @param string $cURL
-     * @param int    $nTimeout
-     * @param null   $cPost
+     * @param string $url
+     * @param int    $timeout
+     * @param null   $post
      * @return mixed
      */
-    public static function http_get_contents($cURL, int $nTimeout = 15, $cPost = null)
+    public static function http_get_contents($url, int $timeout = 5, $post = null)
     {
-        return self::make_http_request($cURL, $nTimeout, $cPost, false);
+        return self::make_http_request($url, $timeout, $post, false);
     }
 
     /**
-     * @param string $cURL
-     * @param int    $nTimeout
-     * @param null   $cPost
+     * @param string $url
+     * @param int    $timeout
+     * @param null   $post
      * @return mixed
      */
-    public static function http_get_status($cURL, int $nTimeout = 15, $cPost = null)
+    public static function http_get_status($url, int $timeout = 5, $post = null)
     {
-        return self::make_http_request($cURL, $nTimeout, $cPost, true);
+        return self::make_http_request($url, $timeout, $post, true);
     }
 
     /**
-     * @param string $cURL
-     * @param int    $nTimeout
-     * @param null   $cPost
-     * @param bool   $bReturnStatus - false = return content on success / true = return status code instead of content
+     * @param string $url
+     * @param int    $timeout
+     * @param null   $post
+     * @param bool   $state - false = return content on success / true = return status code instead of content
+     * @param bool   $skipStatusCheck
      * @return mixed
      */
-    public static function make_http_request($cURL, int $nTimeout = 15, $cPost = null, $bReturnStatus = false)
+    public static function make_http_request($url, int $timeout = 5, $post = null, $state = false, $skipStatusCheck = false)
     {
         $nCode = 0;
         $cData = '';
@@ -297,16 +296,17 @@ class RequestHelper
         if (function_exists('curl_init')) {
             $curl = curl_init();
 
-            curl_setopt($curl, CURLOPT_URL, $cURL);
-            curl_setopt($curl, CURLOPT_TIMEOUT, $nTimeout);
+            curl_setopt($curl, CURLOPT_URL, $url);
+            curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $timeout);
+            curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, DEFAULT_CURL_OPT_VERIFYPEER);
             curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, DEFAULT_CURL_OPT_VERIFYHOST);
             curl_setopt($curl, CURLOPT_REFERER, Shop::getURL());
 
-            if ($cPost !== null) {
+            if ($post !== null) {
                 curl_setopt($curl, CURLOPT_POST, true);
-                curl_setopt($curl, CURLOPT_POSTFIELDS, $cPost);
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $post);
             }
 
             $cData     = self::curl_exec_follow($curl);
@@ -315,10 +315,10 @@ class RequestHelper
 
             curl_close($curl);
         } elseif (ini_get('allow_url_fopen')) {
-            @ini_set('default_socket_timeout', $nTimeout);
-            $fileHandle = @fopen($cURL, 'r');
+            @ini_set('default_socket_timeout', $timeout);
+            $fileHandle = @fopen($url, 'r');
             if ($fileHandle) {
-                @stream_set_timeout($fileHandle, $nTimeout);
+                @stream_set_timeout($fileHandle, $timeout);
 
                 $cData = '';
                 while (($buffer = fgets($fileHandle)) !== false) {
@@ -330,11 +330,11 @@ class RequestHelper
                 fclose($fileHandle);
             }
         }
-        if (!($nCode >= 200 && $nCode < 300)) {
+        if ($skipStatusCheck === false && !($nCode >= 200 && $nCode < 300)) {
             $cData = '';
         }
 
-        return $bReturnStatus ? $nCode : $cData;
+        return $state ? $nCode : $cData;
     }
 
     /**

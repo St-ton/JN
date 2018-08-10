@@ -43,7 +43,7 @@ define('PLUGIN_CODE_MISSING_VERSION_DIR', 32);
 define('PLUGIN_CODE_INVALID_CONF', 33);
 define('PLUGIN_CODE_INVALID_CONF_VALUE_NAME', 34);
 define('PLUGIN_CODE_INVALID_XML_VERSION', 35);
-//@tod: 35 vs 9
+//@todo: 35 vs 9
 define('PLUGIN_CODE_INVALID_SHOP_VERSION', 36);
 define('PLUGIN_CODE_SHOP_VERSION_COMPATIBILITY', 37);
 define('PLUGIN_CODE_MISSING_FRONTEND_LINKS', 38);
@@ -141,13 +141,21 @@ define('PLUGIN_CODE_MISSING_OPTIONS_SOURE_FILE', 129);
 define('PLUGIN_CODE_MISSING_BOOTSTRAP_CLASS', 130);
 define('PLUGIN_CODE_INVALID_BOOTSTRAP_IMPLEMENTATION', 131);
 define('PLUGIN_CODE_INVALID_AUTHOR', 132);
+define('PLUGIN_CODE_MISSING_PORTLETS', 200);
+define('PLUGIN_CODE_INVALID_PORTLET_TITLE', 201);
+define('PLUGIN_CODE_INVALID_PORTLET_CLASS', 202);
+define('PLUGIN_CODE_INVALID_PORTLET_CLASS_FILE', 203);
+define('PLUGIN_CODE_INVALID_PORTLET_GROUP', 204);
+define('PLUGIN_CODE_INVALID_PORTLET_ACTIVE', 205);
+define('PLUGIN_CODE_MISSING_BLUEPRINTS', 206);
+define('PLUGIN_CODE_INVALID_BLUEPRINT_NAME', 207);
+define('PLUGIN_CODE_INVALID_BLUEPRINT_FILE', 208);
 
 define('PLUGIN_CODE_SQL_MISSING_DATA', 2);
 define('PLUGIN_CODE_SQL_ERROR', 3);
 define('PLUGIN_CODE_SQL_WRONG_TABLE_NAME_DELETE', 4);
 define('PLUGIN_CODE_SQL_WRONG_TABLE_NAME_CREATE', 5);
 define('PLUGIN_CODE_SQL_INVALID_FILE_CONTENT', 6);
-
 
 /**
  * sanitize names from plugins downloaded via gitlab
@@ -237,7 +245,6 @@ function extractPlugin($zipFile)
     return $response;
 }
 
-
 /**
  * @return array
  */
@@ -257,17 +264,17 @@ function gibInstalliertePlugins()
 /**
  * @see gibAllePlugins
  *
- * @param array $PluginInstalliert_arr
+ * @param array $installed
  * @param bool  $bFehlerhaft - Falls bFehlerhaft = true => gib nur fehlerhafte Plugins zurück
  * @return array - array von Plugins
  * @deprecated since 4.06 - use gibAllePlugins instead
  */
-function gibVerfuegbarePlugins($PluginInstalliert_arr, $bFehlerhaft = false)
+function gibVerfuegbarePlugins(array $installed, bool $bFehlerhaft = false)
 {
     static $allPlugins = null;
 
-    if (!isset($allPlugins)) {
-        $allPlugins = gibAllePlugins($PluginInstalliert_arr);
+    if ($allPlugins === null) {
+        $allPlugins = gibAllePlugins($installed);
     }
 
     return $bFehlerhaft ? $allPlugins->fehlerhaft : $allPlugins->verfuegbar;
@@ -276,70 +283,71 @@ function gibVerfuegbarePlugins($PluginInstalliert_arr, $bFehlerhaft = false)
 /**
  * Läuft im Ordner PFAD_ROOT/includes/plugins/ alle Verzeichnisse durch und gibt korrekte Plugins zurück
  *
- * @param array $PluginInstalliert_arr
+ * @param array $installed
  * @return object - {installiert[], verfuegbar[], fehlerhaft[]}
  */
-function gibAllePlugins($PluginInstalliert_arr)
+function gibAllePlugins(array $installed)
 {
-    $cPfad   = PFAD_ROOT . PFAD_PLUGIN;
-    $Plugins = (object)[
+    $path   = PFAD_ROOT . PFAD_PLUGIN;
+    $plugins = (object)[
         'index'       => [],
         'installiert' => [],
         'verfuegbar'  => [],
         'fehlerhaft'  => [],
     ];
 
-    if (is_dir($cPfad)) {
-        $Dir               = opendir($cPfad);
-        $cInstalledPlugins = array_map(function ($item) {
-            return $item->cVerzeichnis;
-        }, $PluginInstalliert_arr);
+    if (!is_dir($path)) {
+        return $plugins;
+    }
+    $handle            = opendir($path);
+    $cInstalledPlugins = array_map(function ($item) {
+        return $item->cVerzeichnis;
+    }, $installed);
 
-        while (($cVerzeichnis = readdir($Dir)) !== false) {
-            if ($cVerzeichnis !== '.' && $cVerzeichnis !== '..') {
-                $cXML = $cPfad . $cVerzeichnis . '/' . PLUGIN_INFO_FILE;
-                // Ist eine info.xml Datei vorhanden? Wenn nicht, ist das Plugin fehlerhaft und wird nicht angezeigt
-                if (file_exists($cXML)) {
-                    $xml          = file_get_contents($cXML);
-                    $XML_arr      = XML_unserialize($xml);
-                    $XML_arr      = getArrangedArray($XML_arr);
-                    $nReturnValue = pluginPlausi(0, $cPfad . $cVerzeichnis);
-                    if ($nReturnValue === PLUGIN_CODE_DUPLICATE_PLUGIN_ID && in_array($cVerzeichnis, $cInstalledPlugins, true)) {
-                        $XML_arr['cVerzeichnis']       = $cVerzeichnis;
-                        $XML_arr['shop4compatible']    = isset($XML_arr['jtlshop3plugin'][0]['Shop4Version']);
-                        $Plugins->index[$cVerzeichnis] = makeXMLToObj($XML_arr);
-                        $Plugins->installiert[]        =& $Plugins->index[$cVerzeichnis];
-                    } elseif ($nReturnValue === PLUGIN_CODE_OK_BUT_NOT_SHOP4_COMPATIBLE
-                        || $nReturnValue === PLUGIN_CODE_OK
-                    ) {
-                        $XML_arr['cVerzeichnis']       = $cVerzeichnis;
-                        $XML_arr['shop4compatible']    = ($nReturnValue === 1);
-                        $Plugins->index[$cVerzeichnis] = makeXMLToObj($XML_arr);
-                        $Plugins->verfuegbar[]         =& $Plugins->index[$cVerzeichnis];
-                    } elseif ($nReturnValue !== PLUGIN_CODE_OK
-                        && $nReturnValue !== PLUGIN_CODE_OK_BUT_NOT_SHOP4_COMPATIBLE
-                    ) {
-                        $XML_arr['cVerzeichnis']       = $cVerzeichnis;
-                        $XML_arr['cFehlercode']        = $nReturnValue;
-                        $Plugins->index[$cVerzeichnis] = makeXMLToObj($XML_arr);
-                        $Plugins->fehlerhaft[]         = & $Plugins->index[$cVerzeichnis];
-                    }
+    while (($dir = readdir($handle)) !== false) {
+        if ($dir !== '.' && $dir !== '..') {
+            $cXML = $path . $dir . '/' . PLUGIN_INFO_FILE;
+            // Ist eine info.xml Datei vorhanden? Wenn nicht, ist das Plugin fehlerhaft und wird nicht angezeigt
+            if (file_exists($cXML)) {
+                $xml          = file_get_contents($cXML);
+                $xmlData      = XML_unserialize($xml);
+                $xmlData      = getArrangedArray($xmlData);
+                $nReturnValue = pluginPlausi(0, $path . $dir);
+                if ($nReturnValue === PLUGIN_CODE_DUPLICATE_PLUGIN_ID && in_array($dir, $cInstalledPlugins, true)) {
+                    $xmlData['cVerzeichnis']    = $dir;
+                    $xmlData['shop4compatible'] = isset($xmlData['jtlshop3plugin'][0]['Shop4Version']);
+                    $plugins->index[$dir]       = makeXMLToObj($xmlData);
+                    $plugins->installiert[]     =& $plugins->index[$dir];
+                } elseif ($nReturnValue === PLUGIN_CODE_OK_BUT_NOT_SHOP4_COMPATIBLE
+                    || $nReturnValue === PLUGIN_CODE_OK
+                ) {
+                    $xmlData['cVerzeichnis']    = $dir;
+                    $xmlData['shop4compatible'] = ($nReturnValue === 1);
+                    $plugins->index[$dir]       = makeXMLToObj($xmlData);
+                    $plugins->verfuegbar[]      =& $plugins->index[$dir];
+                } elseif ($nReturnValue !== PLUGIN_CODE_OK
+                    && $nReturnValue !== PLUGIN_CODE_OK_BUT_NOT_SHOP4_COMPATIBLE
+                ) {
+                    $xmlData['cVerzeichnis'] = $dir;
+                    $xmlData['cFehlercode']  = $nReturnValue;
+                    $plugins->index[$dir]    = makeXMLToObj($xmlData);
+                    $plugins->fehlerhaft[]   = &$plugins->index[$dir];
                 }
             }
         }
-        // Pluginsortierung nach Name
-        usort($Plugins->installiert, function ($left, $right) {
-            return strcasecmp($left->cName, $right->cName);
-        });
-        usort($Plugins->verfuegbar, function ($left, $right) {
-            return strcasecmp($left->cName, $right->cName);
-        });
-        usort($Plugins->fehlerhaft, function ($left, $right) {
-            return strcasecmp($left->cName, $right->cName);
-        });
     }
+    // Pluginsortierung nach Name
+    usort($plugins->installiert, function ($left, $right) {
+        return strcasecmp($left->cName, $right->cName);
+    });
+    usort($plugins->verfuegbar, function ($left, $right) {
+        return strcasecmp($left->cName, $right->cName);
+    });
+    usort($plugins->fehlerhaft, function ($left, $right) {
+        return strcasecmp($left->cName, $right->cName);
+    });
 
-    return $Plugins;
+    return $plugins;
 }
 
 /**
@@ -347,10 +355,8 @@ function gibAllePlugins($PluginInstalliert_arr)
  * @param string $cVerzeichnis
  * @return int
  */
-function pluginPlausi($kPlugin, $cVerzeichnis = '')
+function pluginPlausi(int $kPlugin, $cVerzeichnis = '')
 {
-    // Plugin kommt aus der Datenbank
-    $kPlugin = (int)$kPlugin;
     if ($kPlugin > 0) {
         // Plugin aus der DB holen
         $oPlugin = Shop::Container()->getDB()->select('tplugin', 'kPlugin', $kPlugin);
@@ -366,10 +372,10 @@ function pluginPlausi($kPlugin, $cVerzeichnis = '')
             return PLUGIN_CODE_INFO_XML_MISSING;
         }
         $xml     = file_get_contents($cInfofile);
-        $XML_arr = XML_unserialize($xml);
-        $XML_arr = getArrangedArray($XML_arr);
+        $xmlData = XML_unserialize($xml);
+        $xmlData = getArrangedArray($xmlData);
         // Interne Plugin Plausi
-        return pluginPlausiIntern($XML_arr, $basePath);
+        return pluginPlausiIntern($xmlData, $basePath);
     }
     if (empty($cVerzeichnis)) {
         return PLUGIN_CODE_WRONG_PARAM;
@@ -383,10 +389,10 @@ function pluginPlausi($kPlugin, $cVerzeichnis = '')
         return PLUGIN_CODE_INFO_XML_MISSING;
     }
     $xml     = file_get_contents($cInfofile);
-    $XML_arr = XML_unserialize($xml);
-    $XML_arr = getArrangedArray($XML_arr);
-    // Interne Plugin Plausi
-    return pluginPlausiIntern($XML_arr, $cVerzeichnis);
+    $xmlData = XML_unserialize($xml);
+    $xmlData = getArrangedArray($xmlData);
+
+    return pluginPlausiIntern($xmlData, $cVerzeichnis);
 }
 
 /**
@@ -403,7 +409,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
     $nShopVersion           = 0; // Aktuelle Shop-Version
     $baseNode               = $XML_arr['jtlshop3plugin'][0];
     // Shopversion holen
-    $oVersion = Shop::Container()->getDB()->query("SELECT nVersion FROM tversion LIMIT 1", \DB\ReturnType::SINGLE_OBJECT);
+    $oVersion = Shop::Container()->getDB()->query('SELECT nVersion FROM tversion LIMIT 1', \DB\ReturnType::SINGLE_OBJECT);
 
     if ($oVersion->nVersion > 0) {
         $nShopVersion = (int)$oVersion->nVersion;
@@ -469,7 +475,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
     if (!isset($baseNode['Name'])) {
         return PLUGIN_CODE_INVALID_NAME;
     }
-    preg_match("/[a-zA-Z0-9äÄüÜöÖß" . "\(\)_ -]+/",
+    preg_match('/[a-zA-Z0-9äÄüÜöÖß' . '\(\)_ -]+/',
         $baseNode['Name'],
         $cTreffer_arr
     );
@@ -477,7 +483,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
         return PLUGIN_CODE_INVALID_NAME;
     }
     // Prüfe PluginID
-    preg_match("/[a-zA-Z0-9_]+/", $baseNode['PluginID'], $cTreffer_arr);
+    preg_match('/[a-zA-Z0-9_]+/', $baseNode['PluginID'], $cTreffer_arr);
     if (empty($baseNode['PluginID']) || strlen($cTreffer_arr[0]) !== strlen($baseNode['PluginID'])) {
         return PLUGIN_CODE_INVALID_PLUGIN_ID;
     }
@@ -566,11 +572,11 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
         //Laufe alle Versionen durch
         foreach ($installNode['Version'] as $i => $Version) {
             preg_match("/[0-9]+\sattr/", $i, $cTreffer1_arr);
-            preg_match("/[0-9]+/", $i, $cTreffer2_arr);
+            preg_match('/[0-9]+/', $i, $cTreffer2_arr);
             if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($i)) {
                 $cVersionsnummer = $Version['nr'];
                 // Entpricht die Versionsnummer
-                preg_match("/[0-9]+/", $Version['nr'], $cTreffer_arr);
+                preg_match('/[0-9]+/', $Version['nr'], $cTreffer_arr);
                 if (strlen($cTreffer_arr[0]) !== strlen($Version['nr'])) {
                     return PLUGIN_CODE_INVALID_VERSION_NUMBER;
                 }
@@ -605,7 +611,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
             //Es gibt mehr als einen Hook
             foreach ($installNode['Hooks'][0]['Hook'] as $i => $Hook_arr) {
                 preg_match("/[0-9]+\sattr/", $i, $cTreffer1_arr);
-                preg_match("/[0-9]+/", $i, $cTreffer2_arr);
+                preg_match('/[0-9]+/', $i, $cTreffer2_arr);
                 if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($i)) {
                     if (strlen($Hook_arr['id']) === 0) {
                         return PLUGIN_CODE_INVALID_HOOK;
@@ -651,12 +657,12 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
             $nSort = 0;
             foreach ($installNode['Adminmenu'][0]['Customlink'] as $i => $Customlink_arr) {
                 preg_match("/[0-9]+\sattr/", $i, $cTreffer1_arr);
-                preg_match("/[0-9]+/", $i, $cTreffer2_arr);
+                preg_match('/[0-9]+/', $i, $cTreffer2_arr);
                 if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($i)) {
                     $nSort = (int)$Customlink_arr['sort'];
                 } elseif (strlen($cTreffer2_arr[0]) === strlen($i)) {
                     // Name prüfen
-                    preg_match("/[a-zA-Z0-9äÄüÜöÖß" . "\_\- ]+/",
+                    preg_match('/[a-zA-Z0-9äÄüÜöÖß' . "\_\- ]+/",
                         $Customlink_arr['Name'],
                         $cTreffer_arr
                     );
@@ -683,7 +689,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
             $nSort = 0;
             foreach ($installNode['Adminmenu'][0]['Settingslink'] as $i => $Settingslink_arr) {
                 preg_match("/[0-9]+\sattr/", $i, $cTreffer1_arr);
-                preg_match("/[0-9]+/", $i, $cTreffer2_arr);
+                preg_match('/[0-9]+/', $i, $cTreffer2_arr);
 
                 if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($i)) {
                     $nSort = (int)$Settingslink_arr['sort'];
@@ -702,7 +708,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                     }
                     foreach ($Settingslink_arr['Setting'] as $j => $Setting_arr) {
                         preg_match("/[0-9]+\sattr/", $j, $cTreffer3_arr);
-                        preg_match("/[0-9]+/", $j, $cTreffer4_arr);
+                        preg_match('/[0-9]+/', $j, $cTreffer4_arr);
 
                         if (isset($cTreffer3_arr[0]) && strlen($cTreffer3_arr[0]) === strlen($j)) {
                             $cTyp = $Setting_arr['type'];
@@ -759,7 +765,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                                     if (count($Setting_arr['SelectboxOptions'][0]) === 1) {
                                         foreach ($Setting_arr['SelectboxOptions'][0]['Option'] as $y => $Option_arr) {
                                             preg_match("/[0-9]+\sattr/", $y, $cTreffer6_arr);
-                                            preg_match("/[0-9]+/", $y, $cTreffer7_arr);
+                                            preg_match('/[0-9]+/', $y, $cTreffer7_arr);
 
                                             if (isset($cTreffer6_arr[0]) && strlen($cTreffer6_arr[0]) === strlen($y)) {
                                                 if (strlen($Option_arr['value']) === 0) {
@@ -805,7 +811,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                                     if (count($Setting_arr['RadioOptions'][0]) === 1) {
                                         foreach ($Setting_arr['RadioOptions'][0]['Option'] as $y => $Option_arr) {
                                             preg_match("/[0-9]+\sattr/", $y, $cTreffer6_arr);
-                                            preg_match("/[0-9]+/", $y, $cTreffer7_arr);
+                                            preg_match('/[0-9]+/', $y, $cTreffer7_arr);
                                             if (isset($cTreffer6_arr[0]) && strlen($cTreffer6_arr[0]) === strlen($y)) {
                                                 if (strlen($Option_arr['value']) === 0) {
                                                     return PLUGIN_CODE_INVALID_CONFIG_OPTION;
@@ -854,7 +860,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
         }
         foreach ($installNode['FrontendLink'][0]['Link'] as $u => $Link_arr) {
             preg_match("/[0-9]+\sattr/", $u, $cTreffer1_arr);
-            preg_match("/[0-9]+/", $u, $cTreffer2_arr);
+            preg_match('/[0-9]+/', $u, $cTreffer2_arr);
 
             if (strlen($cTreffer2_arr[0]) !== strlen($u)) {
                 continue;
@@ -944,7 +950,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
             }
             foreach ($Link_arr['LinkLanguage'] as $l => $LinkLanguage_arr) {
                 preg_match("/[0-9]+\sattr/", $l, $cTreffer1_arr);
-                preg_match("/[0-9]+/", $l, $cTreffer2_arr);
+                preg_match('/[0-9]+/', $l, $cTreffer2_arr);
                 if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($l)) {
                     // ISO prüfen
                     preg_match("/[A-Z]{3}/", $LinkLanguage_arr['iso'], $cTreffer_arr);
@@ -1024,7 +1030,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
     ) {
         foreach ($installNode['PaymentMethod'][0]['Method'] as $u => $Method_arr) {
             preg_match("/[0-9]+\sattr/", $u, $cTreffer1_arr);
-            preg_match("/[0-9]+/", $u, $cTreffer2_arr);
+            preg_match('/[0-9]+/', $u, $cTreffer2_arr);
             if (strlen($cTreffer2_arr[0]) === strlen($u)) {
                 // Name prüfen
                 preg_match("/[a-zA-Z0-9äÄöÖüÜß" . "\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\] ]+/",
@@ -1035,7 +1041,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                     return PLUGIN_CODE_INVALID_PAYMENT_METHOD_NAME;
                 }
                 // Sort prüfen
-                preg_match("/[0-9]+/", $Method_arr['Sort'], $cTreffer1_arr);
+                preg_match('/[0-9]+/', $Method_arr['Sort'], $cTreffer1_arr);
                 if (strlen($cTreffer1_arr[0]) !== strlen($Method_arr['Sort'])) {
                     return PLUGIN_CODE_INVALID_PAYMENT_METHOD_SORT;
                 }
@@ -1293,7 +1299,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                                 if (count($Setting_arr['RadioOptions'][0]) === 1) {
                                     foreach ($Setting_arr['RadioOptions'][0]['Option'] as $y => $Option_arr) {
                                         preg_match("/[0-9]+\sattr/", $y, $cTreffer6_arr);
-                                        preg_match("/[0-9]+/", $y, $cTreffer7_arr);
+                                        preg_match('/[0-9]+/', $y, $cTreffer7_arr);
                                         if (isset($cTreffer6_arr[0]) && strlen($cTreffer6_arr[0]) === strlen($y)) {
                                             // Value prüfen
                                             if (strlen($Option_arr['value']) === 0) {
@@ -1332,6 +1338,105 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
         }
     }
 
+    // Plausi OPC Portlets (falls vorhanden)
+    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'])
+        && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'])
+    ) {
+        if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet'])
+            && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet'])
+            && count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet']) > 0
+        ) {
+            foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet'] as $u => $Portlet_arr) {
+                preg_match("/[0-9]+\sattr/", $u, $cTreffer1_arr);
+                preg_match('/[0-9]+/', $u, $cTreffer2_arr);
+                if (strlen($cTreffer2_arr[0]) === strlen($u)) {
+                    // Portlet Title prüfen
+                    preg_match(
+                        "/[a-zA-Z0-9\/_\-äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . "\(\) ]+/",
+                        $Portlet_arr['Title'],
+                        $cTreffer1_arr
+                    );
+                    if (strlen($cTreffer1_arr[0]) !== strlen($Portlet_arr['Title'])) {
+                        // Portlet Title entspricht nicht der Konvention
+                        return PLUGIN_CODE_INVALID_PORTLET_TITLE;
+                    }
+                    // Portlet Class prüfen
+                    preg_match("/[a-zA-Z0-9\/_\-.]+/", $Portlet_arr['Class'], $cTreffer1_arr);
+                    if (strlen($cTreffer1_arr[0]) === strlen($Portlet_arr['Class'])) {
+                        if (!file_exists(
+                            $cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
+                            PFAD_PLUGIN_ADMINMENU . PFAD_PLUGIN_PORTLETS . $Portlet_arr['Class'] . '/' .
+                            $Portlet_arr['Class'] . '.php'
+                        )
+                        ) {
+                            // Die Datei für die Klasse des Portlets existiert nicht
+                            return PLUGIN_CODE_INVALID_PORTLET_CLASS_FILE;
+                        }
+                    } else {
+                        // Portlet Class entspricht nicht der Konvention
+                        return PLUGIN_CODE_INVALID_PORTLET_CLASS;
+                    }
+                    // Portlet Group prüfen
+                    preg_match(
+                        "/[a-zA-Z0-9\/_\-äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . "\(\) ]+/",
+                        $Portlet_arr['Group'],
+                        $cTreffer1_arr
+                    );
+                    if (strlen($cTreffer1_arr[0]) !== strlen($Portlet_arr['Group'])) {
+                        // Portlet Group entspricht nicht der Konvention
+                        return PLUGIN_CODE_INVALID_PORTLET_GROUP;
+                    }
+                    // Portlet Active prüfen
+                    preg_match("/[0-1]{1}/", $Portlet_arr['Active'], $cTreffer1_arr);
+                    if (strlen($cTreffer1_arr[0]) !== strlen($Portlet_arr['Active'])) {
+                        // Active im Portlet entspricht nicht der Konvention
+                        return PLUGIN_CODE_INVALID_PORTLET_ACTIVE;
+                    }
+                }
+            }
+        } else {
+            return PLUGIN_CODE_MISSING_PORTLETS;// Keine Portlets vorhanden
+        }
+    }
+
+    // Plausi OPC Blueprints (falls vorhanden)
+    if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'])
+        && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'])
+    ) {
+        if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint'])
+            && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint'])
+            && count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint']) > 0
+        ) {
+            foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint'] as $u => $blueprint) {
+                preg_match("/[0-9]+\sattr/", $u, $cTreffer1_arr);
+                preg_match('/[0-9]+/', $u, $cTreffer2_arr);
+
+                if (strlen($cTreffer2_arr[0]) === strlen($u)) {
+                    // Blueprint Name prüfen
+                    preg_match(
+                        "/[a-zA-Z0-9\/_\-\ äÄüÜöÖß" . utf8_decode('äÄüÜöÖß') . "\(\) ]+/",
+                        $blueprint['Name'],
+                        $cTreffer1_arr
+                    );
+                    if (strlen($cTreffer1_arr[0]) !== strlen($blueprint['Name'])) {
+                        // Blueprint Name entspricht nicht der Konvention
+                        return PLUGIN_CODE_INVALID_BLUEPRINT_NAME;
+                    }
+                    // Blueprint JSON file prüfen
+                    if (is_file($cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
+                        PFAD_PLUGIN_ADMINMENU . PFAD_PLUGIN_BLUEPRINTS . $blueprint['JSONFile']) === false
+                    ) {
+                        // Blueprint JSON Datei nicht gefunden
+                        return PLUGIN_CODE_INVALID_BLUEPRINT_FILE;
+                    }
+                }
+            }
+        } else {
+            // Keine Blueprints vorhanden
+            return PLUGIN_CODE_MISSING_BLUEPRINTS;
+        }
+    }
+
     // Plausi Boxenvorlagen (falls vorhanden)
     if (isset($installNode['Boxes'])
         && is_array($installNode['Boxes'])
@@ -1344,7 +1449,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
             return PLUGIN_CODE_MISSING_BOX;
         }
         foreach ($installNode['Boxes'][0]['Box'] as $h => $Box_arr) {
-            preg_match("/[0-9]+/", $h, $cTreffer3_arr);
+            preg_match('/[0-9]+/', $h, $cTreffer3_arr);
             if (strlen($cTreffer3_arr[0]) !== strlen($h)) {
                 continue;
             }
@@ -1378,7 +1483,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
         }
         foreach ($installNode['Emailtemplate'][0]['Template'] as $u => $Template_arr) {
             preg_match("/[0-9]+\sattr/", $u, $cTreffer1_arr);
-            preg_match("/[0-9]+/", $u, $cTreffer2_arr);
+            preg_match('/[0-9]+/', $u, $cTreffer2_arr);
             if (strlen($cTreffer2_arr[0]) !== strlen($u)) {
                 continue;
             }
@@ -1423,7 +1528,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
             }
             foreach ($Template_arr['TemplateLanguage'] as $l => $TemplateLanguage_arr) {
                 preg_match("/[0-9]+\sattr/", $l, $cTreffer1_arr);
-                preg_match("/[0-9]+/", $l, $cTreffer2_arr);
+                preg_match('/[0-9]+/', $l, $cTreffer2_arr);
                 if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($l)) {
                     // ISO prüfen
                     preg_match("/[A-Z]{3}/", $TemplateLanguage_arr['iso'], $cTreffer_arr);
@@ -1456,7 +1561,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
             return PLUGIN_CODE_MISSING_LANG_VARS;
         }
         foreach ($installNode['Locales'][0]['Variable'] as $t => $Variable_arr) {
-            preg_match("/[0-9]+/", $t, $cTreffer2_arr);
+            preg_match('/[0-9]+/', $t, $cTreffer2_arr);
             if (strlen($cTreffer2_arr[0]) !== strlen($t)) {
                 continue;
             }
@@ -1489,7 +1594,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                 // Mehr als eine Sprache vorhanden
                 foreach ($Variable_arr['VariableLocalized'] as $i => $VariableLocalized_arr) {
                     preg_match("/[0-9]+\sattr/", $i, $cTreffer1_arr);
-                    preg_match("/[0-9]+/", $i, $cTreffer2_arr);
+                    preg_match('/[0-9]+/', $i, $cTreffer2_arr);
                     if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($i)) {
                         // ISO prüfen
                         preg_match("/[A-Z]{3}/", $VariableLocalized_arr['iso'], $cTreffer_arr);
@@ -1518,7 +1623,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
         && count($installNode['CheckBoxFunction'][0]['Function']) > 0
     ) {
         foreach ($installNode['CheckBoxFunction'][0]['Function'] as $t => $Function_arr) {
-            preg_match("/[0-9]+/", $t, $cTreffer2_arr);
+            preg_match('/[0-9]+/', $t, $cTreffer2_arr);
             if (strlen($cTreffer2_arr[0]) === strlen($t)) {
                 // Function Name prüfen
                 if (strlen($Function_arr['Name']) === 0) {
@@ -1543,7 +1648,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
         }
         foreach ($installNode['AdminWidget'][0]['Widget'] as $u => $Widget_arr) {
             preg_match("/[0-9]+\sattr/", $u, $cTreffer1_arr);
-            preg_match("/[0-9]+/", $u, $cTreffer2_arr);
+            preg_match('/[0-9]+/', $u, $cTreffer2_arr);
             if (strlen($cTreffer2_arr[0]) !== strlen($u)) {
                 continue;
             }
@@ -1576,7 +1681,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                 return PLUGIN_CODE_INVALID_WIDGET_CONTAINER;
             }
             // Widget Pos prüfen
-            preg_match("/[0-9]+/", $Widget_arr['Pos'], $cTreffer1_arr);
+            preg_match('/[0-9]+/', $Widget_arr['Pos'], $cTreffer1_arr);
             if (strlen($cTreffer1_arr[0]) !== strlen($Widget_arr['Pos'])) {
                 return PLUGIN_CODE_INVALID_WIDGET_POS;
             }
@@ -1606,7 +1711,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
         }
         foreach ($installNode['ExportFormat'][0]['Format'] as $h => $Format_arr) {
             preg_match("/[0-9]+\sattr/", $h, $cTreffer1_arr);
-            preg_match("/[0-9]+/", $h, $cTreffer2_arr);
+            preg_match('/[0-9]+/', $h, $cTreffer2_arr);
             if (strlen($cTreffer2_arr[0]) !== strlen($h)) {
                 continue;
             }
@@ -1687,9 +1792,8 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
  * @param int $kPlugin
  * @return int
  */
-function updatePlugin($kPlugin)
+function updatePlugin(int $kPlugin)
 {
-    $kPlugin = (int)$kPlugin;
     if ($kPlugin <= 0) {
         return PLUGIN_CODE_WRONG_PARAM;
     }
@@ -1795,6 +1899,8 @@ function installierePluginVorbereitung($cVerzeichnis, $oPluginOld = 0)
 // 16 = Ein Exportformat konnte nicht in die Datenbank gespeichert werden
 // 17 = Ein Template konnte nicht in die Datenbank gespeichert werden
 // 18 = Eine Uninstall Datei konnte nicht in die Datenbank gespeichert werden
+// 19 = Ein OPC Portlet konnte nicht in die Datenbank gespeichert werden
+// 20 = Ein OPC Blueprint konnte nicht in die Datenbank gespeichert werden
 
 // ### logikSQLDatei
 // 22 = Plugindaten fehlen
@@ -1926,13 +2032,10 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
         $nReturnValue       = $nSQLFehlerCode_arr[$nReturnValue];
 
         if ($nReturnValue !== PLUGIN_CODE_OK) {
-            Jtllog::writeLog(
+            Shop::Container()->getLogService()->withName('kPlugin')->error(
                 'SQL-Fehler bei der Plugin-Installation von kPlugin ' . $oPlugin->kPlugin . ', Fehlercode: ' .
                 $nReturnValue,
-                JTLLOG_LEVEL_ERROR,
-                false,
-                'kPlugin',
-                $kPlugin
+                [$kPlugin]
             );
             $bSQLFehler = true;
             break;
@@ -2033,6 +2136,14 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
     && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['AdminWidget'][0]['Widget'])
         ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['AdminWidget'][0]['Widget']
         : [];
+    $portletsNode   = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet'])
+    && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet'])
+        ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet']
+        : [];
+    $blueprintsNode = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint'])
+    && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint'])
+        ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint']
+        : [];
     $exportNode     = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExportFormat'][0]['Format'])
     && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExportFormat'][0]['Format'])
         ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['ExportFormat'][0]['Format']
@@ -2053,7 +2164,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
             $nPriority = 5;
             foreach ($hooksNode[0]['Hook'] as $i => $hook) {
                 preg_match("/[0-9]+\sattr/", $i, $cTreffer1_arr);
-                preg_match("/[0-9]+/", $i, $cTreffer2_arr);
+                preg_match('/[0-9]+/', $i, $cTreffer2_arr);
                 if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($i)) {
                     $nHookID   = (int)$hook['id'];
                     $nPriority = isset($hook['priority']) ? (int)$hook['priority'] : 5;
@@ -2112,7 +2223,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
             $nSort = 0;
             foreach ($adminNode[0]['Customlink'] as $i => $customLink) {
                 preg_match("/[0-9]+\sattr/", $i, $cTreffer1_arr);
-                preg_match("/[0-9]+/", $i, $cTreffer2_arr);
+                preg_match('/[0-9]+/', $i, $cTreffer2_arr);
 
                 if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($i)) {
                     $nSort = (int)$customLink['sort'];
@@ -2140,7 +2251,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
             $nSort = 0;
             foreach ($adminNode[0]['Settingslink'] as $i => $Settingslink_arr) {
                 preg_match("/[0-9]+\sattr/", $i, $cTreffer1_arr);
-                preg_match("/[0-9]+/", $i, $cTreffer2_arr);
+                preg_match('/[0-9]+/', $i, $cTreffer2_arr);
                 if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($i)) {
                     $nSort = (int)$Settingslink_arr['sort'];
                 } elseif (strlen($cTreffer2_arr[0]) === strlen($i)) {
@@ -2164,7 +2275,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
                     $multiple      = false;
                     foreach ($Settingslink_arr['Setting'] as $j => $Setting_arr) {
                         preg_match("/[0-9]+\sattr/", $j, $cTreffer3_arr);
-                        preg_match("/[0-9]+/", $j, $cTreffer4_arr);
+                        preg_match('/[0-9]+/', $j, $cTreffer4_arr);
 
                         if (isset($cTreffer3_arr[0]) && strlen($cTreffer3_arr[0]) === strlen($j)) {
                             $cTyp          = $Setting_arr['type'];
@@ -2288,7 +2399,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
     // FrontendLinks (falls vorhanden)
     foreach ($frontendNode as $u => $Link_arr) {
         preg_match("/[0-9]+\sattr/", $u, $cTreffer1_arr);
-        preg_match("/[0-9]+/", $u, $cTreffer2_arr);
+        preg_match('/[0-9]+/', $u, $cTreffer2_arr);
         $oLink = new stdClass();
         if (empty($Link_arr['LinkGroup'])) {
             // linkgroup not set? default to 'hidden'
@@ -2343,7 +2454,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
 
             foreach ($Link_arr['LinkLanguage'] as $l => $LinkLanguage_arr) {
                 preg_match("/[0-9]+\sattr/", $l, $cTreffer1_arr);
-                preg_match("/[0-9]+/", $l, $cTreffer2_arr);
+                preg_match('/[0-9]+/', $l, $cTreffer2_arr);
                 if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($l)) {
                     $oLinkSprache->cISOSprache = strtolower($LinkLanguage_arr['iso']);
                 } elseif (strlen($cTreffer2_arr[0]) === strlen($l)) {
@@ -2442,7 +2553,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
     $shopURL = Shop::getURL(true) . '/';
     foreach ($paymentNode as $u => $Method_arr) {
         preg_match("/[0-9]+\sattr/", $u, $cTreffer1_arr);
-        preg_match("/[0-9]+/", $u, $cTreffer2_arr);
+        preg_match('/[0-9]+/', $u, $cTreffer2_arr);
         if (strlen($cTreffer2_arr[0]) !== strlen($u)) {
             continue;
         }
@@ -2516,7 +2627,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
 
         foreach ($Method_arr['MethodLanguage'] as $l => $MethodLanguage_arr) {
             preg_match("/[0-9]+\sattr/", $l, $cTreffer1_arr);
-            preg_match("/[0-9]+/", $l, $cTreffer2_arr);
+            preg_match('/[0-9]+/', $l, $cTreffer2_arr);
             if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($l)) {
                 $cISOSprache = strtolower($MethodLanguage_arr['iso']);
             } elseif (strlen($cTreffer2_arr[0]) === strlen($l)) {
@@ -2713,7 +2824,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
     }
     // tboxvorlage füllen
     foreach ($boxesNode as $h => $Box_arr) {
-        preg_match("/[0-9]+/", $h, $cTreffer3_arr);
+        preg_match('/[0-9]+/', $h, $cTreffer3_arr);
         if (strlen($cTreffer3_arr[0]) === strlen($h)) {
             $oBoxvorlage              = new stdClass();
             $oBoxvorlage->kCustomID   = $kPlugin;
@@ -2747,7 +2858,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
     // Emailtemplates (falls vorhanden)
     foreach ($mailNode as $u => $Template_arr) {
         preg_match("/[0-9]+\sattr/", $u, $cTreffer1_arr);
-        preg_match("/[0-9]+/", $u, $cTreffer2_arr);
+        preg_match('/[0-9]+/', $u, $cTreffer2_arr);
 
         $oTemplate = new stdClass();
         if (strlen($cTreffer2_arr[0]) !== strlen($u)) {
@@ -2786,7 +2897,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
         $oTemplateSpracheStd = new stdClass();
         foreach ($Template_arr['TemplateLanguage'] as $l => $TemplateLanguage_arr) {
             preg_match("/[0-9]+\sattr/", $l, $cTreffer1_arr);
-            preg_match("/[0-9]+/", $l, $cTreffer2_arr);
+            preg_match('/[0-9]+/', $l, $cTreffer2_arr);
             if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($l)) {
                 $cISOSprache = strtolower($TemplateLanguage_arr['iso']);
             } elseif (isset($cTreffer2_arr[0]) && strlen($cTreffer2_arr[0]) === strlen($l)) {
@@ -2838,7 +2949,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
     $oSprachStandardAssoc_arr = Sprache::getAllLanguages(2);
     foreach ($localeNode as $t => $Variable_arr) {
         $oSprachAssoc_arr = $oSprachStandardAssoc_arr;
-        preg_match("/[0-9]+/", $t, $cTreffer1_arr);
+        preg_match('/[0-9]+/', $t, $cTreffer1_arr);
         if (strlen($cTreffer1_arr[0]) !== strlen($t)) {
             continue;
         }
@@ -2934,7 +3045,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
     }
     // CheckBox tcheckboxfunktion fuellen
     foreach ($checkboxesNode as $t => $Function_arr) {
-        preg_match("/[0-9]+/", $t, $cTreffer2_arr);
+        preg_match('/[0-9]+/', $t, $cTreffer2_arr);
         if (strlen($cTreffer2_arr[0]) === strlen($t)) {
             $oCheckBoxFunktion          = new stdClass();
             $oCheckBoxFunktion->kPlugin = $kPlugin;
@@ -2945,7 +3056,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
     }
     // AdminWidgets tadminwidgets fuellen
     foreach ($widgetsNode as $u => $Widget_arr) {
-        preg_match("/[0-9]+/", $u, $cTreffer2_arr);
+        preg_match('/[0-9]+/', $u, $cTreffer2_arr);
         if (strlen($cTreffer2_arr[0]) !== strlen($u)) {
             continue;
         }
@@ -2968,9 +3079,55 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
             return 15;// Ein AdminWidget konnte nicht in die Datenbank gespeichert werden
         }
     }
+    // OPC-Portlets in topcportlet fuellen
+    foreach ($portletsNode as $u => $Portlet_arr) {
+        preg_match('/[0-9]+/', $u, $cTreffer2_arr);
+
+        if (strlen($cTreffer2_arr[0]) === strlen($u)) {
+            $oPortlet = (object)[
+                'kPlugin' => (int)$kPlugin,
+                'cTitle'  => $Portlet_arr['Title'],
+                'cClass'  => $Portlet_arr['Class'],
+                'cGroup'  => $Portlet_arr['Group'],
+                'bActive' => (int)$Portlet_arr['Active'],
+            ];
+
+            $kPortlet = Shop::Container()->getDB()->insert('topcportlet', $oPortlet);
+
+            if (!$kPortlet) {
+                return 19;// Ein OPC Portlet konnte nicht in die Datenbank gespeichert werden
+            }
+        }
+    }
+    // OPC-Blueprints in topcblueprints fuellen
+    foreach ($blueprintsNode as $u => $blueprint) {
+        preg_match('/[0-9]+/', $u, $cTreffer2_arr);
+        if (strlen($cTreffer2_arr[0]) === strlen($u)) {
+            $blueprintJson = file_get_contents(
+                PFAD_ROOT . PFAD_PLUGIN . $cVerzeichnis . '/' . PFAD_PLUGIN_VERSION
+                . $nVersion . '/' . PFAD_PLUGIN_ADMINMENU . PFAD_PLUGIN_BLUEPRINTS . $blueprint['JSONFile']
+            );
+
+            $blueprintData = json_decode($blueprintJson, true);
+            $instanceJson  = json_encode($blueprintData['instance']);
+
+            $blueprintObj = (object)[
+                'kPlugin' => (int)$kPlugin,
+                'cName'   => $blueprint['Name'],
+                'cJson'   => $instanceJson,
+            ];
+
+            $kBlueprint = Shop::Container()->getDB()->insert('topcblueprint', $blueprintObj);
+
+            if (!$kBlueprint) {
+                // Ein OPC Blueprint konnte nicht in die Datenbank gespeichert werden
+                return 20;
+            }
+        }
+    }
     // ExportFormate in texportformat fuellen
     foreach ($exportNode as $u => $Format_arr) {
-        preg_match("/[0-9]+/", $u, $cTreffer2_arr);
+        preg_match('/[0-9]+/', $u, $cTreffer2_arr);
         if (strlen($cTreffer2_arr[0]) !== strlen($u)) {
             continue;
         }
@@ -3130,9 +3287,8 @@ function reloadPlugin($oPlugin, $forceReload = false)
  * 2 = Übergabeparameter nicht korrekt
  * 3 = Update konnte nicht installiert werden
  */
-function syncPluginUpdate($kPlugin, $oPluginOld, $nXMLVersion)
+function syncPluginUpdate(int $kPlugin, $oPluginOld, $nXMLVersion)
 {
-    $kPlugin    = (int)$kPlugin;
     $kPluginOld = (int)$oPluginOld->kPlugin;
     // Altes Plugin deinstallieren
     $nReturnValue = deinstallierePlugin($kPluginOld, $nXMLVersion, true, $kPlugin);
@@ -3153,17 +3309,18 @@ function syncPluginUpdate($kPlugin, $oPluginOld, $nXMLVersion)
         Shop::Container()->getDB()->update('tpluginlinkdatei', 'kPlugin', $kPlugin, $upd);
         Shop::Container()->getDB()->update('tpluginemailvorlage', 'kPlugin', $kPlugin, $upd);
         Shop::Container()->getDB()->update('texportformat', 'kPlugin', $kPlugin, $upd);
-        // tplugineinstellungen
-        $oPluginEinstellung_arr = Shop::Container()->getDB()->query(
-            "SELECT *
+        Shop::Container()->getDB()->update('topcportlet', 'kPlugin', $kPlugin, $upd);
+        Shop::Container()->getDB()->update('topcblueprint', 'kPlugin', $kPlugin, $upd);
+        $pluginConf = Shop::Container()->getDB()->query(
+            'SELECT *
                 FROM tplugineinstellungen
-                WHERE kPlugin IN (" . $kPluginOld . ", " . $kPlugin . ")
-                ORDER BY kPlugin",
+                WHERE kPlugin IN (' . $kPluginOld . ', ' . $kPlugin . ')
+                ORDER BY kPlugin',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        if (is_array($oPluginEinstellung_arr) && count($oPluginEinstellung_arr) > 0) {
+        if (is_array($pluginConf) && count($pluginConf) > 0) {
             $oEinstellung_arr = [];
-            foreach ($oPluginEinstellung_arr as $oPluginEinstellung) {
+            foreach ($pluginConf as $oPluginEinstellung) {
                 $cName = str_replace(
                     ['kPlugin_' . $kPluginOld . '_', 'kPlugin_' . $kPlugin . '_'],
                     '',
@@ -3182,8 +3339,8 @@ function syncPluginUpdate($kPlugin, $oPluginOld, $nXMLVersion)
                 }
             }
             Shop::Container()->getDB()->query(
-                "DELETE FROM tplugineinstellungen
-                    WHERE kPlugin IN (" . $kPluginOld . ", " . $kPlugin . ")",
+                'DELETE FROM tplugineinstellungen
+                    WHERE kPlugin IN (' . $kPluginOld . ', ' . $kPlugin . ')',
                 \DB\ReturnType::AFFECTED_ROWS
             );
 
@@ -3303,15 +3460,15 @@ function syncPluginUpdate($kPlugin, $oPluginOld, $nXMLVersion)
             $cNewSetSQL      = '';
             if (isset($oZahlungsartOld->kZahlungsart, $oZahlungsartNew->kZahlungsart)) {
                 Shop::Container()->getDB()->query(
-                    "DELETE tzahlungsart, tzahlungsartsprache
+                    'DELETE tzahlungsart, tzahlungsartsprache
                         FROM tzahlungsart
                         JOIN tzahlungsartsprache
                             ON tzahlungsartsprache.kZahlungsart = tzahlungsart.kZahlungsart
-                        WHERE tzahlungsart.kZahlungsart = " . $oZahlungsartOld->kZahlungsart,
+                        WHERE tzahlungsart.kZahlungsart = ' . $oZahlungsartOld->kZahlungsart,
                     \DB\ReturnType::AFFECTED_ROWS
                 );
 
-                $cNewSetSQL = " , kZahlungsart = " . $oZahlungsartOld->kZahlungsart;
+                $cNewSetSQL = ' , kZahlungsart = ' . $oZahlungsartOld->kZahlungsart;
                 $upd = new stdClass();
                 $upd->kZahlungsart = $oZahlungsartOld->kZahlungsart;
                 Shop::Container()->getDB()->update('tzahlungsartsprache', 'kZahlungsart', $oZahlungsartNew->kZahlungsart, $upd);
@@ -3345,9 +3502,8 @@ function syncPluginUpdate($kPlugin, $oPluginOld, $nXMLVersion)
  * 2 = $kPlugin wurde nicht übergeben
  * 3 = SQL-Fehler
  */
-function deinstallierePlugin($kPlugin, $nXMLVersion, $bUpdate = false, $kPluginNew = null)
+function deinstallierePlugin(int $kPlugin, $nXMLVersion, bool $bUpdate = false, int $kPluginNew = null)
 {
-    $kPlugin = (int)$kPlugin;
     if ($kPlugin <= 0) {
         return PLUGIN_CODE_WRONG_PARAM; // $kPlugin wurde nicht übergeben
     }
@@ -3366,9 +3522,9 @@ function deinstallierePlugin($kPlugin, $nXMLVersion, $bUpdate = false, $kPluginN
             }
         }
         // Custom Tables löschen
-        $oCustomTabelle_arr = Shop::Container()->getDB()->selectAll('tplugincustomtabelle', 'kPlugin', $kPlugin);
-        foreach ($oCustomTabelle_arr as $oCustomTabelle) {
-            Shop::Container()->getDB()->query("DROP TABLE IF EXISTS " . $oCustomTabelle->cTabelle, \DB\ReturnType::DEFAULT);
+        $customTables = Shop::Container()->getDB()->selectAll('tplugincustomtabelle', 'kPlugin', $kPlugin);
+        foreach ($customTables as $table) {
+            Shop::Container()->getDB()->query('DROP TABLE IF EXISTS ' . $table->cTabelle, \DB\ReturnType::DEFAULT);
         }
         doSQLDelete($kPlugin, $bUpdate, $kPluginNew);
     } else {
@@ -3376,11 +3532,6 @@ function deinstallierePlugin($kPlugin, $nXMLVersion, $bUpdate = false, $kPluginN
         doSQLDelete($kPlugin, $bUpdate, $kPluginNew);
     }
     Shop::Cache()->flushAll();
-    // Deinstallation für eine höhere XML Version
-    if ($nXMLVersion > 100) {
-        return PLUGIN_CODE_OK;
-    }
-
     if (($p = Plugin::bootstrapper($kPlugin)) !== null) {
         $p->uninstalled();
     }
@@ -3393,20 +3544,19 @@ function deinstallierePlugin($kPlugin, $nXMLVersion, $bUpdate = false, $kPluginN
  * @param bool     $bUpdate
  * @param null|int $kPluginNew
  */
-function doSQLDelete($kPlugin, $bUpdate, $kPluginNew = null)
+function doSQLDelete(int $kPlugin, bool $bUpdate, int $kPluginNew = null)
 {
-    $kPlugin = (int)$kPlugin;
     // Kein Update => alles deinstallieren
     if (!$bUpdate) {
         Shop::Container()->getDB()->query(
-            "DELETE tpluginsprachvariablesprache, tpluginsprachvariablecustomsprache, tpluginsprachvariable
+            'DELETE tpluginsprachvariablesprache, tpluginsprachvariablecustomsprache, tpluginsprachvariable
                 FROM tpluginsprachvariable
                 LEFT JOIN tpluginsprachvariablesprache
                     ON tpluginsprachvariablesprache.kPluginSprachvariable = tpluginsprachvariable.kPluginSprachvariable
                 LEFT JOIN tpluginsprachvariablecustomsprache
                     ON tpluginsprachvariablecustomsprache.cSprachvariable = tpluginsprachvariable.cName
                     AND tpluginsprachvariablecustomsprache.kPlugin = tpluginsprachvariable.kPlugin
-                WHERE tpluginsprachvariable.kPlugin = " . $kPlugin,
+                WHERE tpluginsprachvariable.kPlugin = ' . $kPlugin,
             \DB\ReturnType::AFFECTED_ROWS
         );
 
@@ -3433,7 +3583,7 @@ function doSQLDelete($kPlugin, $bUpdate, $kPluginNew = null)
         );
 
         Shop::Container()->getDB()->query(
-            "DELETE tpluginemailvorlageeinstellungen, tpluginemailvorlagespracheoriginal,
+            'DELETE tpluginemailvorlageeinstellungen, tpluginemailvorlagespracheoriginal,
                 tpluginemailvorlage, tpluginemailvorlagesprache
                 FROM tpluginemailvorlage
                 LEFT JOIN tpluginemailvorlagespracheoriginal
@@ -3442,45 +3592,45 @@ function doSQLDelete($kPlugin, $bUpdate, $kPluginNew = null)
                     ON tpluginemailvorlageeinstellungen.kEmailvorlage = tpluginemailvorlage.kEmailvorlage
                 LEFT JOIN tpluginemailvorlagesprache
                     ON tpluginemailvorlagesprache.kEmailvorlage = tpluginemailvorlage.kEmailvorlage
-                WHERE tpluginemailvorlage.kPlugin = " . $kPlugin,
+                WHERE tpluginemailvorlage.kPlugin = ' . $kPlugin,
             \DB\ReturnType::AFFECTED_ROWS
         );
     } else { // Update => nur teilweise deinstallieren
         Shop::Container()->getDB()->query(
-            "DELETE tpluginsprachvariablesprache, tpluginsprachvariable
+            'DELETE tpluginsprachvariablesprache, tpluginsprachvariable
                 FROM tpluginsprachvariable
                 LEFT JOIN tpluginsprachvariablesprache
                     ON tpluginsprachvariablesprache.kPluginSprachvariable = tpluginsprachvariable.kPluginSprachvariable
-                WHERE tpluginsprachvariable.kPlugin = " . $kPlugin,
+                WHERE tpluginsprachvariable.kPlugin = ' . $kPlugin,
             \DB\ReturnType::AFFECTED_ROWS
         );
 
         Shop::Container()->getDB()->delete('tboxvorlage', ['kCustomID', 'eTyp'], [$kPlugin, 'plugin']);
         Shop::Container()->getDB()->delete('tpluginlinkdatei', 'kPlugin', $kPlugin);
         Shop::Container()->getDB()->query(
-            "DELETE tpluginemailvorlage, tpluginemailvorlagespracheoriginal
+            'DELETE tpluginemailvorlage, tpluginemailvorlagespracheoriginal
                 FROM tpluginemailvorlage
                 LEFT JOIN tpluginemailvorlagespracheoriginal
                     ON tpluginemailvorlagespracheoriginal.kEmailvorlage = tpluginemailvorlage.kEmailvorlage
-                WHERE tpluginemailvorlage.kPlugin = " . $kPlugin,
+                WHERE tpluginemailvorlage.kPlugin = ' . $kPlugin,
             \DB\ReturnType::AFFECTED_ROWS
         );
     }
     Shop::Container()->getDB()->query(
-        "DELETE tpluginsqlfehler, tpluginhook
+        'DELETE tpluginsqlfehler, tpluginhook
             FROM tpluginhook
             LEFT JOIN tpluginsqlfehler
                 ON tpluginsqlfehler.kPluginHook = tpluginhook.kPluginHook
-            WHERE tpluginhook.kPlugin = " . $kPlugin,
+            WHERE tpluginhook.kPlugin = ' . $kPlugin,
         \DB\ReturnType::AFFECTED_ROWS
     );
     Shop::Container()->getDB()->delete('tpluginadminmenu', 'kPlugin', $kPlugin);
     Shop::Container()->getDB()->query(
-        "DELETE tplugineinstellungenconfwerte, tplugineinstellungenconf
+        'DELETE tplugineinstellungenconfwerte, tplugineinstellungenconf
             FROM tplugineinstellungenconf
             LEFT JOIN tplugineinstellungenconfwerte
                 ON tplugineinstellungenconfwerte.kPluginEinstellungenConf = tplugineinstellungenconf.kPluginEinstellungenConf
-            WHERE tplugineinstellungenconf.kPlugin = " . $kPlugin,
+            WHERE tplugineinstellungenconf.kPlugin = ' . $kPlugin,
         \DB\ReturnType::AFFECTED_ROWS
     );
 
@@ -3545,14 +3695,16 @@ function doSQLDelete($kPlugin, $bUpdate, $kPluginNew = null)
     Shop::Container()->getDB()->delete('tplugintemplate', 'kPlugin', $kPlugin);
     Shop::Container()->getDB()->delete('tcheckboxfunktion', 'kPlugin', $kPlugin);
     Shop::Container()->getDB()->delete('tadminwidgets', 'kPlugin', $kPlugin);
+    Shop::Container()->getDB()->delete('topcportlet', 'kPlugin', $kPlugin);
+    Shop::Container()->getDB()->delete('topcblueprint', 'kPlugin', $kPlugin);
     Shop::Container()->getDB()->query(
-        "DELETE texportformateinstellungen, texportformatqueuebearbeitet, texportformat
+        'DELETE texportformateinstellungen, texportformatqueuebearbeitet, texportformat
             FROM texportformat
             LEFT JOIN texportformateinstellungen
                 ON texportformateinstellungen.kExportformat = texportformat.kExportformat
             LEFT JOIN texportformatqueuebearbeitet
                 ON texportformatqueuebearbeitet.kExportformat = texportformat.kExportformat
-            WHERE texportformat.kPlugin = " . $kPlugin,
+            WHERE texportformat.kPlugin = ' . $kPlugin,
         \DB\ReturnType::AFFECTED_ROWS
     );
     Shop::Container()->getDB()->delete('tplugin', 'kPlugin', $kPlugin);
@@ -3564,9 +3716,8 @@ function doSQLDelete($kPlugin, $bUpdate, $kPluginNew = null)
  * @param int $kPlugin
  * @return int
  */
-function aktivierePlugin($kPlugin)
+function aktivierePlugin(int $kPlugin): int
 {
-    $kPlugin = (int)$kPlugin;
     if ($kPlugin <= 0) {
         return PLUGIN_CODE_WRONG_PARAM;
     }
@@ -3589,6 +3740,8 @@ function aktivierePlugin($kPlugin)
         );
         Shop::Container()->getDB()->update('tadminwidgets', 'kPlugin', $kPlugin, (object)['bActive' => 1]);
         Shop::Container()->getDB()->update('tlink', 'kPlugin', $kPlugin, (object)['bIsActive' => 1]);
+        Shop::Container()->getDB()->update('topcportlet', 'kPlugin', $kPlugin, (object)['bActive' => 1]);
+        Shop::Container()->getDB()->update('topcblueprint', 'kPlugin', $kPlugin, (object)['bActive' => 1]);
 
         if (($p = Plugin::bootstrapper($kPlugin)) !== null) {
             $p->enabled();
@@ -3608,9 +3761,8 @@ function aktivierePlugin($kPlugin)
  * @param int $kPlugin
  * @return int
  */
-function deaktivierePlugin($kPlugin)
+function deaktivierePlugin(int $kPlugin): int
 {
-    $kPlugin = (int)$kPlugin;
     if ($kPlugin <= 0) {
         return PLUGIN_CODE_WRONG_PARAM;
     }
@@ -3620,6 +3772,8 @@ function deaktivierePlugin($kPlugin)
     Shop::Container()->getDB()->update('tplugin', 'kPlugin', $kPlugin, (object)['nStatus' => Plugin::PLUGIN_DISABLED]);
     Shop::Container()->getDB()->update('tadminwidgets', 'kPlugin', $kPlugin, (object)['bActive' => 0]);
     Shop::Container()->getDB()->update('tlink', 'kPlugin', $kPlugin, (object)['bIsActive' => 0]);
+    Shop::Container()->getDB()->update('topcportlet', 'kPlugin', $kPlugin, (object)['bActive' => 0]);
+    Shop::Container()->getDB()->update('topcblueprint', 'kPlugin', $kPlugin, (object)['bActive' => 0]);
 
     Shop::Cache()->flushTags([CACHING_GROUP_PLUGIN . '_' . $kPlugin]);
 
@@ -3692,7 +3846,7 @@ function logikSQLDatei($cSQLDatei, $nVersion, $oPlugin)
     if (!is_array($cSQL_arr) || count($cSQL_arr) === 0) {
         return PLUGIN_CODE_SQL_INVALID_FILE_CONTENT;
     }
-    $sqlRegEx = "/xplugin[_]{1}" . $oPlugin->cPluginID . "[_]{1}[a-zA-Z0-9_]+/";
+    $sqlRegEx = '/xplugin[_]{1}' . $oPlugin->cPluginID . '[_]{1}[a-zA-Z0-9_]+/';
     foreach ($cSQL_arr as $cSQL) {
         $cSQL = removeNumerousWhitespaces($cSQL);
         // SQL legt eine neue Tabelle an => fülle tplugincustomtabelle
@@ -3732,13 +3886,10 @@ function logikSQLDatei($cSQLDatei, $nVersion, $oPlugin)
         $nErrno = Shop::Container()->getDB()->getErrorCode();
         // Es gab einen SQL Fehler => fülle tpluginsqlfehler
         if ($nErrno) {
-            Jtllog::writeLog(
+            Shop::Container()->getLogService()->withName('kPlugin')->error(
                 'SQL Fehler beim Installieren des Plugins (' . $oPlugin->cName . '): ' .
                 str_replace("'", '', Shop::Container()->getDB()->getErrorMessage()),
-                JTLLOG_LEVEL_ERROR,
-                false,
-                'kPlugin',
-                $oPlugin->kPlugin
+                [$oPlugin->kPlugin]
             );
 
             return PLUGIN_CODE_SQL_ERROR;
@@ -3782,10 +3933,10 @@ function parseSQLDatei($cSQLDatei, $cVerzeichnis, $nVersion)
     if (!file_exists($cSQLDateiPfad . $cSQLDatei)) {
         return [];// SQL Datei existiert nicht
     }
-    $file_handle = fopen($cSQLDateiPfad . $cSQLDatei, 'r');
-    $cSQL_arr    = [];
-    $cLine       = '';
-    while (($cData = fgets($file_handle)) !== false) {
+    $handle   = fopen($cSQLDateiPfad . $cSQLDatei, 'r');
+    $cSQL_arr = [];
+    $cLine    = '';
+    while (($cData = fgets($handle)) !== false) {
         $cData = trim($cData);
         if ($cData !== '' && strpos($cData, '--') !== 0) {
             if (strpos($cData, 'CREATE TABLE') !== false) {
@@ -3802,7 +3953,7 @@ function parseSQLDatei($cSQLDatei, $cVerzeichnis, $nVersion)
             }
         }
     }
-    fclose($file_handle);
+    fclose($handle);
 
     return $cSQL_arr;
 }
@@ -3817,25 +3968,26 @@ function parseSQLDatei($cSQLDatei, $cVerzeichnis, $nVersion)
 function gibHoehereSQLVersionen($cPluginVerzeichnis, $nVersion)
 {
     $cSQLVerzeichnis = PFAD_ROOT . PFAD_PLUGIN . $cPluginVerzeichnis . '/' . PFAD_PLUGIN_VERSION;
-    if (is_dir($cSQLVerzeichnis)) {
-        $nVerzeichnis_arr = [];
-        $Dir              = opendir($cSQLVerzeichnis);
-        while (($cVerzeichnis = readdir($Dir)) !== false) {
-            if ($cVerzeichnis !== '.' && $cVerzeichnis !== '..' && is_dir($cSQLVerzeichnis . $cVerzeichnis)) {
-                $nVerzeichnis_arr[] = (int)$cVerzeichnis;
+    if (!is_dir($cSQLVerzeichnis)) {
+        return false;
+    }
+    $nVerzeichnis_arr = [];
+    $handle           = opendir($cSQLVerzeichnis);
+    while (($cVerzeichnis = readdir($handle)) !== false) {
+        if ($cVerzeichnis !== '.' && $cVerzeichnis !== '..' && is_dir($cSQLVerzeichnis . $cVerzeichnis)) {
+            $nVerzeichnis_arr[] = (int)$cVerzeichnis;
+        }
+    }
+    closedir($handle);
+    if (count($nVerzeichnis_arr) > 0) {
+        usort($nVerzeichnis_arr, 'pluginverwaltungcmp');
+        foreach ($nVerzeichnis_arr as $i => $nVerzeichnis) {
+            if ($nVersion > $nVerzeichnis) {
+                unset($nVerzeichnis_arr[$i]);
             }
         }
-        closedir($Dir);
-        if (count($nVerzeichnis_arr) > 0) {
-            usort($nVerzeichnis_arr, 'pluginverwaltungcmp');
-            foreach ($nVerzeichnis_arr as $i => $nVerzeichnis) {
-                if ($nVersion > $nVerzeichnis) {
-                    unset($nVerzeichnis_arr[$i]);
-                }
-            }
 
-            return array_merge($nVerzeichnis_arr);
-        }
+        return array_merge($nVerzeichnis_arr);
     }
 
     return false;
@@ -3863,12 +4015,11 @@ function pluginverwaltungcmp($a, $b)
  * @param int $kPlugin
  * @return array
  */
-function gibSprachVariablen($kPlugin)
+function gibSprachVariablen(int $kPlugin): array
 {
     $return                 = [];
-    $kPlugin                = (int)$kPlugin;
-    $oPluginSprachvariablen = Shop::Container()->getDB()->query(
-        "SELECT
+    $langVars = Shop::Container()->getDB()->query(
+        'SELECT
             tpluginsprachvariable.kPluginSprachvariable,
             tpluginsprachvariable.kPlugin,
             tpluginsprachvariable.cName,
@@ -3881,13 +4032,13 @@ function gibSprachVariablen($kPlugin)
                 LEFT JOIN tpluginsprachvariablesprache
                     ON tpluginsprachvariablesprache.kPluginSprachvariable = tpluginsprachvariable.kPluginSprachvariable
                     AND tpluginsprachvariablesprache.cISO = COALESCE(tpluginsprachvariablecustomsprache.cISO, tpluginsprachvariablesprache.cISO)
-            WHERE tpluginsprachvariable.kPlugin = " . $kPlugin . "
-            ORDER BY tpluginsprachvariable.kPluginSprachvariable",
+            WHERE tpluginsprachvariable.kPlugin = ' . $kPlugin . '
+            ORDER BY tpluginsprachvariable.kPluginSprachvariable',
         \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
     );
-    if (is_array($oPluginSprachvariablen) && count($oPluginSprachvariablen) > 0) {
+    if (is_array($langVars) && count($langVars) > 0) {
         $new = [];
-        foreach ($oPluginSprachvariablen as $_sv) {
+        foreach ($langVars as $_sv) {
             if (!isset($new[$_sv['kPluginSprachvariable']])) {
                 $var                                   = new stdClass();
                 $var->kPluginSprachvariable            = $_sv['kPluginSprachvariable'];
@@ -4306,6 +4457,33 @@ function mappePlausiFehler($nFehlerCode, $oPlugin)
                 break;
             case PLUGIN_CODE_INVALID_AUTHOR:
                 $return .= 'Autor entspricht nicht der Konvention.';
+                break;
+            case PLUGIN_CODE_MISSING_PORTLETS:
+                $return = 'Fehler: Keine Portlets vorhanden';
+                break;
+            case PLUGIN_CODE_INVALID_PORTLET_TITLE:
+                $return = 'Fehler: Portlet Title entspricht nicht der Konvention';
+                break;
+            case PLUGIN_CODE_INVALID_PORTLET_CLASS:
+                $return = 'Fehler: Portlet Class entspricht nicht der Konvention';
+                break;
+            case PLUGIN_CODE_INVALID_PORTLET_CLASS_FILE:
+                $return = 'Fehler: Die Datei für die Klasse des Portlet existiert nicht';
+                break;
+            case PLUGIN_CODE_INVALID_PORTLET_GROUP:
+                $return = 'Fehler: Group im Portlet entspricht nicht der Konvention';
+                break;
+            case PLUGIN_CODE_INVALID_PORTLET_ACTIVE:
+                $return = 'Fehler: Active im Portlet entspricht nicht der Konvention';
+                break;
+            case PLUGIN_CODE_MISSING_BLUEPRINTS:
+                $return = 'Fehler: Keine Blueprints vorhanden';
+                break;
+            case PLUGIN_CODE_INVALID_BLUEPRINT_NAME:
+                $return = 'Fehler: Blueprint Name entspricht nicht der Konvention';
+                break;
+            case PLUGIN_CODE_INVALID_BLUEPRINT_FILE:
+                $return = 'Fehler: Die Datei für das Blueprint existiert nicht';
                 break;
             default:
                 $return = 'Unbekannter Fehler.';

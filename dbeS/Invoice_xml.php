@@ -29,12 +29,12 @@ function handleData(int $kBestellung, $dRechnungErstellt, int $kSprache)
 {
     if ($kBestellung > 0 && $kSprache > 0) {
         $oBestellung = Shop::Container()->getDB()->query(
-            "SELECT tbestellung.kBestellung, tbestellung.fGesamtsumme, tzahlungsart.cModulId
+            'SELECT tbestellung.kBestellung, tbestellung.fGesamtsumme, tzahlungsart.cModulId
                 FROM tbestellung
                 LEFT JOIN tzahlungsart
                   ON tbestellung.kZahlungsart = tzahlungsart.kZahlungsart
-                WHERE tbestellung.kBestellung = " . $kBestellung . " 
-                LIMIT 1",
+                WHERE tbestellung.kBestellung = ' . $kBestellung . ' 
+                LIMIT 1',
             \DB\ReturnType::SINGLE_OBJECT
         );
 
@@ -44,11 +44,15 @@ function handleData(int $kBestellung, $dRechnungErstellt, int $kSprache)
                 $oInvoice = $oPaymentMethod->createInvoice($kBestellung, $kSprache);
                 if (is_object($oInvoice)) {
                     // response xml
-                    if ($oInvoice->nType == 0 && strlen($oInvoice->cInfo) === 0) {
+                    if ($oInvoice->nType === 0 && strlen($oInvoice->cInfo) === 0) {
                         $oInvoice->cInfo = 'Funktion in Zahlungsmethode nicht implementiert';
                     }
 
-                    $cResponse = createResponse($oBestellung->kBestellung, ($oInvoice->nType == 0 ? 'FAILURE' : 'SUCCESS'), $oInvoice->cInfo);
+                    $cResponse = createResponse(
+                        $oBestellung->kBestellung,
+                        ($oInvoice->nType === 0 ? 'FAILURE' : 'SUCCESS'),
+                        $oInvoice->cInfo
+                    );
                     zipRedirect(time() . '.jtl', $cResponse);
                     exit;
                 }
@@ -73,7 +77,7 @@ function handleData(int $kBestellung, $dRechnungErstellt, int $kSprache)
  * @param string $cComment
  * @return array
  */
-function createResponse($kBestellung, $cTyp, $cComment)
+function createResponse(int $kBestellung, $cTyp, $cComment)
 {
     $aResponse                               = ['tbestellung' => []];
     $aResponse['tbestellung']['kBestellung'] = $kBestellung;
@@ -92,9 +96,7 @@ function createResponse($kBestellung, $cTyp, $cComment)
  */
 function pushError($cMessage)
 {
-    if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-        Jtllog::writeLog($cMessage, JTLLOG_LEVEL_ERROR, false, 'Invoice_xml');
-    }
+    Shop::Container()->getLogService()->error('Error @ invoice_xml: ' . $cMessage);
     $aResponse = createResponse(0, 'FAILURE', $cMessage);
     zipRedirect(time() . '.jtl', $aResponse);
     exit;

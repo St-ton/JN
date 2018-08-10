@@ -11,7 +11,7 @@ $cHinweis   = '';
 $cFehler    = '';
 $nPage      = isset($_REQUEST['page']) ? (int)$_REQUEST['page'] : 0;
 $boxService = Shop::Container()->getBoxService();
-$boxAdmin   = new \Boxes\Admin\BoxAdmin(Shop::Container()->getDB(), $boxService);
+$boxAdmin   = new \Boxes\Admin\BoxAdmin(Shop::Container()->getDB());
 $bOk        = false;
 if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && FormHelper::validateToken()) {
     switch ($_REQUEST['action']) {
@@ -74,7 +74,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && FormHe
             $smarty->assign('oEditBox', $oBox)
                    ->assign('revisionData', $revisionData)
                    ->assign('oLink_arr',
-                       Shop::Container()->getDB()->query("SELECT * FROM tlinkgruppe", \DB\ReturnType::ARRAY_OF_OBJECTS)
+                       Shop::Container()->getDB()->query('SELECT * FROM tlinkgruppe', \DB\ReturnType::ARRAY_OF_OBJECTS)
                    );
             break;
 
@@ -126,8 +126,8 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && FormHe
         case 'resort':
             $nPage     = (int)$_REQUEST['page'];
             $ePosition = $_REQUEST['position'];
-            $box_arr   = $_REQUEST['box'] ?? null;
-            $sort_arr  = $_REQUEST['sort'] ?? null;
+            $box_arr   = $_REQUEST['box'] ?? [];
+            $sort_arr  = $_REQUEST['sort'] ?? [];
             $aktiv_arr = $_REQUEST['aktiv'] ?? [];
             $boxCount  = count($box_arr);
             $bValue    = $_REQUEST['box_show'] ?? false;

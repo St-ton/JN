@@ -24,7 +24,7 @@ if (isset($_GET['kExportformat']) && (int)$_GET['kExportformat'] > 0 && !isset($
 
     if (isset($_GET['err'])) {
         $smarty->assign('oSmartyError', $oSmartyError);
-        $fehler = "<b>Smarty-Syntax Fehler.</b><br />";
+        $fehler = '<b>Smarty-Syntax Fehler.</b><br />';
         if (is_array($_SESSION['last_error'])) {
             $fehler .= $_SESSION['last_error']['message'];
             unset($_SESSION['last_error']);
@@ -179,9 +179,9 @@ if ($cAction !== null && $kExportformat !== null && FormHelper::validateToken())
 
 if ($step === 'uebersicht') {
     $exportformate = Shop::Container()->getDB()->query(
-        "SELECT * 
+        'SELECT * 
             FROM texportformat 
-            ORDER BY cName",
+            ORDER BY cName',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     $eCount        = count($exportformate);
@@ -214,15 +214,15 @@ if ($step === 'uebersicht') {
 if ($step === 'neuer Export') {
     $smarty->assign('sprachen', Sprache::getAllLanguages())
            ->assign('kundengruppen', Shop::Container()->getDB()->query(
-               "SELECT * 
+               'SELECT * 
                     FROM tkundengruppe 
-                    ORDER BY cName",
+                    ORDER BY cName',
                \DB\ReturnType::ARRAY_OF_OBJECTS
            ))
            ->assign('waehrungen', Shop::Container()->getDB()->query(
-               "SELECT * 
+               'SELECT * 
                     FROM twaehrung 
-                    ORDER BY cStandard DESC",
+                    ORDER BY cStandard DESC',
                \DB\ReturnType::ARRAY_OF_OBJECTS
            ))
            ->assign('oKampagne_arr', holeAlleKampagnen(false, true));

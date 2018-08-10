@@ -14,7 +14,7 @@ use Boxes\Renderer\DefaultRenderer;
 use DB\DbInterface;
 use DB\ReturnType;
 use Filter\ProductFilter;
-use Filter\ProductFilterSearchResults;
+use Filter\SearchResultsInterface;
 use Filter\Visibility;
 
 /**
@@ -100,12 +100,12 @@ class BoxService implements BoxServiceInterface
         if ($limit === null) {
             $limit = (int)$this->config['boxen']['box_zuletztangesehen_anzahl'];
         }
-        if (!isset($_SESSION['ZuletztBesuchteArtikel']) || !is_array($_SESSION['ZuletztBesuchteArtikel'])) {
+        if (!isset($_SESSION['ZuletztBesuchteArtikel']) || !\is_array($_SESSION['ZuletztBesuchteArtikel'])) {
             $_SESSION['ZuletztBesuchteArtikel'] = [];
         }
         $oArtikel           = new \stdClass();
         $oArtikel->kArtikel = $productID;
-        if (isset($_SESSION['ZuletztBesuchteArtikel']) && count($_SESSION['ZuletztBesuchteArtikel']) > 0) {
+        if (isset($_SESSION['ZuletztBesuchteArtikel']) && \count($_SESSION['ZuletztBesuchteArtikel']) > 0) {
             $alreadyPresent = false;
             foreach ($_SESSION['ZuletztBesuchteArtikel'] as $product) {
                 if (isset($product->kArtikel) && $product->kArtikel === $oArtikel->kArtikel) {
@@ -114,12 +114,12 @@ class BoxService implements BoxServiceInterface
                 }
             }
             if ($alreadyPresent === false) {
-                if (count($_SESSION['ZuletztBesuchteArtikel']) < $limit) {
+                if (\count($_SESSION['ZuletztBesuchteArtikel']) < $limit) {
                     $_SESSION['ZuletztBesuchteArtikel'][] = $oArtikel;
                 } else {
-                    $oTMP_arr = array_reverse($_SESSION['ZuletztBesuchteArtikel']);
-                    array_pop($oTMP_arr);
-                    $oTMP_arr                           = array_reverse($oTMP_arr);
+                    $oTMP_arr = \array_reverse($_SESSION['ZuletztBesuchteArtikel']);
+                    \array_pop($oTMP_arr);
+                    $oTMP_arr                           = \array_reverse($oTMP_arr);
                     $oTMP_arr[]                         = $oArtikel;
                     $_SESSION['ZuletztBesuchteArtikel'] = $oTMP_arr;
                 }
@@ -127,7 +127,7 @@ class BoxService implements BoxServiceInterface
         } else {
             $_SESSION['ZuletztBesuchteArtikel'][] = $oArtikel;
         }
-        executeHook(HOOK_ARTIKEL_INC_ZULETZTANGESEHEN);
+        \executeHook(\HOOK_ARTIKEL_INC_ZULETZTANGESEHEN);
     }
 
     /**
@@ -142,7 +142,7 @@ class BoxService implements BoxServiceInterface
         }
         $visibility = [];
         $boxes      = $this->db->selectAll('tboxenanzeige', 'nSeite', $pageType);
-        if (is_array($boxes) && count($boxes)) {
+        if (\is_array($boxes) && \count($boxes)) {
             foreach ($boxes as $box) {
                 $visibility[$box->ePosition] = (boolean)$box->bAnzeigen;
             }
@@ -164,9 +164,9 @@ class BoxService implements BoxServiceInterface
      */
     public function filterBoxVisibility(int $boxID, int $pageType, $cFilter = ''): int
     {
-        if (is_array($cFilter)) {
-            $cFilter = array_unique($cFilter);
-            $cFilter = implode(',', $cFilter);
+        if (\is_array($cFilter)) {
+            $cFilter = \array_unique($cFilter);
+            $cFilter = \implode(',', $cFilter);
         }
         $upd          = new \stdClass();
         $upd->cFilter = $cFilter;
@@ -175,11 +175,11 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * @param ProductFilter              $pf
-     * @param ProductFilterSearchResults $sr
+     * @param ProductFilter          $pf
+     * @param SearchResultsInterface $sr
      * @return bool
      */
-    public function gibBoxenFilterNach(ProductFilter $pf, ProductFilterSearchResults $sr): bool
+    public function showBoxes(ProductFilter $pf, SearchResultsInterface $sr): bool
     {
         $cf  = $pf->getCategoryFilter();
         $mf  = $pf->getManufacturerFilter();
@@ -190,17 +190,17 @@ class BoxService implements BoxServiceInterface
         $ssf = $pf->getSearchSpecialFilter();
         $sf  = $pf->searchFilterCompat;
 
-        $invis      = Visibility::SHOW_NEVER();
-        $visContent = Visibility::SHOW_CONTENT();
+        $invis      = Visibility::SHOW_NEVER;
+        $visContent = Visibility::SHOW_CONTENT;
 
-        return ((!$cf->getVisibility()->equals($invis) && !$cf->getVisibility()->equals($visContent))
-            || (!$mf->getVisibility()->equals($invis) && !$mf->getVisibility()->equals($visContent))
-            || (!$prf->getVisibility()->equals($invis) && !$prf->getVisibility()->equals($visContent))
-            || (!$rf->getVisibility()->equals($invis) && !$rf->getVisibility()->equals($visContent))
-            || (!$tf->getVisibility()->equals($invis) && !$tf->getVisibility()->equals($visContent))
-            || (!$afc->getVisibility()->equals($invis) && !$afc->getVisibility()->equals($visContent))
-            || (!$ssf->getVisibility()->equals($invis) && !$ssf->getVisibility()->equals($visContent))
-            || (!$sf->getVisibility()->equals($invis) && !$sf->getVisibility()->equals($visContent))
+        return (($cf->getVisibility() !== $invis && $cf->getVisibility() !== $visContent)
+            || ($mf->getVisibility() !== $invis && $mf->getVisibility() !== $visContent)
+            || ($prf->getVisibility() !== $invis && $prf->getVisibility() !== $visContent)
+            || ($rf->getVisibility() !== $invis && $rf->getVisibility() !== $visContent)
+            || ($tf->getVisibility() !== $invis && $tf->getVisibility() !== $visContent)
+            || ($afc->getVisibility() !== $invis && $afc->getVisibility() !== $visContent)
+            || ($ssf->getVisibility() !== $invis && $ssf->getVisibility() !== $visContent)
+            || ($sf->getVisibility() !== $invis && $sf->getVisibility() !== $visContent)
         );
     }
 
@@ -252,19 +252,19 @@ class BoxService implements BoxServiceInterface
         $smarty   = \Shop::Smarty();
         $pageType = \Shop::getPageType();
         $pageID   = 0;
-        if ($pageType === PAGE_ARTIKELLISTE) {
+        if ($pageType === \PAGE_ARTIKELLISTE) {
             $pageID = (int)\Shop::$kKategorie;
-        } elseif ($pageType === PAGE_ARTIKEL) {
+        } elseif ($pageType === \PAGE_ARTIKEL) {
             $pageID = (int)\Shop::$kArtikel;
-        } elseif ($pageType === PAGE_EIGENE) {
+        } elseif ($pageType === \PAGE_EIGENE) {
             $pageID = (int)\Shop::$kLink;
-        } elseif ($pageType === PAGE_HERSTELLER) {
+        } elseif ($pageType === \PAGE_HERSTELLER) {
             $pageID = (int)\Shop::$kHersteller;
         }
         $originalArticle = $smarty->getTemplateVars('Artikel');
         $productFilter   = \Shop::getProductFilter();
-        $filterAfter     = !empty($this->config)
-            ? $this->gibBoxenFilterNach($productFilter, $productFilter->getSearchResults(false))
+        $showBoxes       = !empty($this->config)
+            ? $this->showBoxes($productFilter, $productFilter->getSearchResults())
             : 0;
         $htmlArray       = [
             'top'    => null,
@@ -273,12 +273,12 @@ class BoxService implements BoxServiceInterface
             'left'   => null
         ];
         $smarty->assign('BoxenEinstellungen', $this->config)
-               ->assign('bBoxenFilterNach', $filterAfter)
+               ->assign('bBoxenFilterNach', $showBoxes)
                ->assign('NettoPreise', \Session::CustomerGroup()->getIsMerchant());
 
         $boxRenderer = new DefaultRenderer($smarty);
         foreach ($positionedBoxes as $_position => $boxes) {
-            if (!is_array($boxes)) {
+            if (!\is_array($boxes)) {
                 $boxes = [];
             }
             $htmlArray[$_position]     = '';
@@ -286,11 +286,11 @@ class BoxService implements BoxServiceInterface
             foreach ($boxes as $box) {
                 /** @var BoxInterface $box */
                 $renderClass = $box->getRenderer();
-                if ($renderClass !== get_class($boxRenderer)) {
+                if ($renderClass !== \get_class($boxRenderer)) {
                     $boxRenderer = new $renderClass($smarty);
                 }
                 $boxRenderer->setBox($box);
-                $html = trim($boxRenderer->render($pageType, $pageID));
+                $html = \trim($boxRenderer->render($pageType, $pageID));
                 $box->setRenderedContent($html);
                 $htmlArray[$_position]       .= $html;
                 $this->rawData[$_position][] = [
@@ -331,21 +331,25 @@ class BoxService implements BoxServiceInterface
                 $visiblePositions[] = $position;
             }
         }
+        if ($active === true && \count($visiblePositions) === 0) {
+            return [];
+        }
         $visiblePositions = \Functional\map($visiblePositions, function ($e) {
             return "'" . $e . "'";
         });
-        $cacheTags        = [CACHING_GROUP_OBJECT, CACHING_GROUP_BOX, 'boxes'];
+        $cacheTags        = [\CACHING_GROUP_OBJECT, \CACHING_GROUP_BOX, 'boxes'];
         $cSQLAktiv        = $active
-            ? ' AND tboxen.ePosition IN (' . implode(',', $visiblePositions) . ')'
+            ? ' AND tboxen.ePosition IN (' . \implode(',', $visiblePositions) . ')'
             : '';
         $cPluginAktiv     = $active
             ? " AND (tplugin.nStatus IS NULL OR tplugin.nStatus = " .
             \Plugin::PLUGIN_ACTIVATED . "  OR tboxvorlage.eTyp != 'plugin')"
             : '';
         if (($grouped = \Shop::Cache()->get($cacheID)) === false) {
-            $sql     = 'SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, 
+            $boxData = $this->db->query(
+                'SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, 
                        tboxen.cTitel, tboxen.ePosition, tboxensichtbar.kSeite, tboxensichtbar.nSort, 
-                       tboxensichtbar.bAktiv, tboxensichtbar.cFilter, tboxvorlage.eTyp, 
+                       tboxensichtbar.cFilter, tboxvorlage.eTyp, 
                        tboxvorlage.cName, tboxvorlage.cTemplate, tplugin.nStatus AS pluginStatus,
                        GROUP_CONCAT(tboxensichtbar.kSeite) AS pageIDs,
                        GROUP_CONCAT(tboxensichtbar.bAktiv) AS pageVisibilities,                       
@@ -361,21 +365,19 @@ class BoxService implements BoxServiceInterface
                         ON tboxsprache.kBox = tboxen.kBox
                     LEFT JOIN tsprache
                         ON tsprache.cISO = tboxsprache.cISO
-                    WHERE tboxen.kContainer > -1 ' . $cSQLAktiv . $cPluginAktiv .
-                ' GROUP BY tboxsprache.kBoxSprache, tboxen.kBox, tboxensichtbar.cFilter
-                    ORDER BY tboxensichtbar.nSort, tboxen.kBox ASC';
-            $boxData = $this->db->query(
-                $sql,
+                    WHERE tboxen.kContainer > -1 ' . $cSQLAktiv . $cPluginAktiv . ' 
+                    GROUP BY tboxsprache.kBoxSprache, tboxen.kBox, tboxensichtbar.cFilter
+                    ORDER BY tboxensichtbar.nSort, tboxen.kBox ASC',
                 ReturnType::ARRAY_OF_OBJECTS
             );
             $grouped = \Functional\group($boxData, function ($e) {
                 return $e->kBox;
             });
-            \Shop::Cache()->set($cacheID, $grouped, array_unique($cacheTags));
+            \Shop::Cache()->set($cacheID, $grouped, \array_unique($cacheTags));
         }
         $children = [];
         foreach ($grouped as $i => $boxes) {
-            if (!is_array($boxes)) {
+            if (!\is_array($boxes)) {
                 continue;
             }
             $first = \Functional\first($boxes);
@@ -391,15 +393,15 @@ class BoxService implements BoxServiceInterface
         }
         $result = [];
         foreach ($grouped as $boxes) {
-            if (!is_array($boxes)) {
+            if (!\is_array($boxes)) {
                 continue;
             }
             $first       = \Functional\first($boxes);
             $boxInstance = $this->factory->getBoxByBaseType($first->kBoxvorlage, $first->eTyp === BoxType::PLUGIN);
             $boxInstance->map($boxes);
-            if (get_class($boxInstance) === BoxPlugin::class) {
+            if (\get_class($boxInstance) === BoxPlugin::class) {
                 $plugin = new \Plugin($boxInstance->getCustomID());
-                $boxInstance->setTemplateFile($plugin->cFrontendPfad . PFAD_PLUGIN_BOXEN . $boxInstance->getTemplateFile());
+                $boxInstance->setTemplateFile($plugin->cFrontendPfad . \PFAD_PLUGIN_BOXEN . $boxInstance->getTemplateFile());
                 $boxInstance->setPlugin($plugin);
             }
             if ($boxInstance->getType() === BoxType::CONTAINER) {

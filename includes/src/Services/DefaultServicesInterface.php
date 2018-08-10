@@ -12,6 +12,7 @@ use DB\DbInterface;
 use DB\Services\GcServiceInterface;
 use Exceptions\CircularReferenceException;
 use Exceptions\ServiceNotFoundException;
+use Monolog\Logger;
 use Services\JTL\BoxServiceInterface;
 use Services\JTL\CaptchaServiceInterface;
 use Services\JTL\CryptoServiceInterface;
@@ -59,7 +60,39 @@ interface DefaultServicesInterface extends ContainerInterface
      * @throws ServiceNotFoundException
      * @throws CircularReferenceException
      */
-    public function getBackendLogService(): LoggerInterface;
+    public function getBackendLogService() : LoggerInterface;
+
+    /**
+     * @return \OPC\Service
+     */
+    public function getOPC(): \OPC\Service;
+
+    /**
+     * @return \OPC\PageService
+     */
+    public function getOPCPageService(): \OPC\PageService;
+
+    /**
+     * @return \OPC\DB
+     */
+    public function getOPCDB(): \OPC\DB;
+
+    /**
+     * @return \OPC\PageDB
+     */
+    public function getOPCPageDB(): \OPC\PageDB;
+
+    /**
+     * @return \OPC\Locker
+     */
+    public function getOPCLocker(): \OPC\Locker;
+
+    /**
+     * @return Logger
+     * @throws ServiceNotFoundException
+     * @throws CircularReferenceException
+     */
+    public function getLogService(): Logger;
 
     /**
      * @return LinkServiceInterface
@@ -79,5 +112,5 @@ interface DefaultServicesInterface extends ContainerInterface
     /**
      * @return CaptchaServiceInterface
      */
-    public function getCaptchaService(): CaptchaServiceInterface;
+    public function getCaptchaService() : CaptchaServiceInterface;
 }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -29,13 +29,13 @@ interface FilterInterface
      * @param bool $active
      * @return $this
      */
-    public function setIsActive($active): FilterInterface;
+    public function setIsActive(bool $active): FilterInterface;
 
     /**
      * @param bool $value
      * @return $this
      */
-    public function setIsInitialized($value): FilterInterface;
+    public function setIsInitialized(bool $value): FilterInterface;
 
     /**
      * @return $this
@@ -49,9 +49,10 @@ interface FilterInterface
     public function setFilterCollection(array $collection): FilterInterface;
 
     /**
+     * @param bool $onlyVisible
      * @return array
      */
-    public function getFilterCollection(): array;
+    public function getFilterCollection(bool $onlyVisible = true): array;
 
     /**
      * @return ProductFilter
@@ -117,19 +118,15 @@ interface FilterInterface
     public function setName($name): FilterInterface;
 
     /**
-     * get the filter's type - \Filter\Type::AND/\Filter\Type::OR
-     *
-     * @return Type
+     * @return int
      */
-    public function getType(): Type;
+    public function getType(): int;
 
     /**
-     * set a filter's type - \Filter\Type::AND/\Filter\Type::OR
-     *
-     * @param Type $type
+     * @param int $type
      * @return $this
      */
-    public function setType(Type $type): FilterInterface;
+    public function setType(int $type): FilterInterface;
 
     /**
      * the filter's base MySQL table name
@@ -259,9 +256,10 @@ interface FilterInterface
     /**
      * get shop settings, derived from Navigationsfilter class
      *
+     * @param string|null $idx
      * @return array
      */
-    public function getConfig(): array;
+    public function getConfig($idx = null): array;
 
     /**
      * get the filter's class name
@@ -355,9 +353,9 @@ interface FilterInterface
     public function getAvailableLanguages(): array;
 
     /**
-     * @return Visibility
+     * @return int
      */
-    public function getVisibility(): Visibility;
+    public function getVisibility(): int;
 
     /**
      * @param int|string $visibility
@@ -377,15 +375,15 @@ interface FilterInterface
     public function getFrontendName(): string;
 
     /**
-     * @param InputType $type
+     * @param int $type
      * @return $this
      */
-    public function setInputType(InputType $type): FilterInterface;
+    public function setInputType(int $type): FilterInterface;
 
     /**
-     * @return InputType
+     * @return int
      */
-    public function getInputType(): InputType;
+    public function getInputType(): int;
 
     /**
      * @param string|null $icon

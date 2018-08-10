@@ -10,24 +10,17 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'warenkorb_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'trustedshops_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
-$Einstellungen = Shop::getSettings([
-    CONF_GLOBAL,
-    CONF_RSS,
-    CONF_KUNDEN,
-    CONF_KAUFABWICKLUNG,
-    CONF_ZAHLUNGSARTEN,
-    CONF_EMAILS,
-    CONF_TRUSTEDSHOPS
-]);
+$Einstellungen = Shopsetting::getInstance()->getAll();
 Shop::setPageType(PAGE_BESTELLABSCHLUSS);
 $linkHelper    = Shop::Container()->getLinkService();
 $AktuelleSeite = 'BESTELLVORGANG';
 $kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_BESTELLABSCHLUSS);
+$link          = $linkHelper->getPageLink($kLink);
 $cart          = Session::Cart();
 $smarty        = Shop::Smarty();
+$bestellung    = null;
 if (isset($_GET['i'])) {
-    $bestellung = null;
-    $bestellid  = Shop::Container()->getDB()->select('tbestellid', 'cId', Shop::Container()->getDB()->escape($_GET['i']));
+    $bestellid = Shop::Container()->getDB()->select('tbestellid', 'cId', $_GET['i']);
     if (isset($bestellid->kBestellung) && $bestellid->kBestellung > 0) {
         $bestellung = new Bestellung($bestellid->kBestellung);
         $bestellung->fuelleBestellung(0);
@@ -70,7 +63,7 @@ if (isset($_GET['i'])) {
         if (!empty($cart->cChecksumme)
             && $wkChecksum !== $cart->cChecksumme
         ) {
-            if (!$cart->enthaltenSpezialPos(C_WARENKORBPOS_TYP_ARTIKEL)) {
+            if (!$cart->posTypEnthalten(C_WARENKORBPOS_TYP_ARTIKEL)) {
                 WarenkorbHelper::deleteAllSpecialPositions();
             }
             $_SESSION['Warenkorbhinweise'][] = Shop::Lang()->get('yourbasketismutating', 'checkout');
@@ -78,13 +71,10 @@ if (isset($_GET['i'])) {
             exit;
         }
         $bestellung = finalisiereBestellung();
-        $bestellid  = (isset($bestellung->kBestellung) && $bestellung->kBestellung > 0)
+        $bestellid  = $bestellung->kBestellung > 0
             ? Shop::Container()->getDB()->select('tbestellid', 'kBestellung', $bestellung->kBestellung)
             : false;
-        if ($bestellung->Lieferadresse === null
-            && isset($_SESSION['Lieferadresse'])
-            && strlen($_SESSION['Lieferadresse']->cVorname) > 0
-        ) {
+        if ($bestellung->Lieferadresse === null && !empty($_SESSION['Lieferadresse']->cVorname)) {
             $bestellung->Lieferadresse = gibLieferadresseAusSession();
         }
         $orderCompleteURL  = $linkHelper->getStaticRoute('bestellabschluss.php');
@@ -99,13 +89,10 @@ if (isset($_GET['i'])) {
 }
 $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
-$startKat               = new Kategorie();
-$startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 // Trusted Shops Kaeuferschutz Classic
-if (isset($Einstellungen['trustedshops']['trustedshops_nutzen']) && $Einstellungen['trustedshops']['trustedshops_nutzen'] === 'Y') {
+if ($Einstellungen['trustedshops']['trustedshops_nutzen'] === 'Y') {
     $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
-
     if ((int)$oTrustedShops->nAktiv === 1 && strlen($oTrustedShops->tsId) > 0) {
         $smarty->assign('oTrustedShops', $oTrustedShops);
     }
@@ -113,6 +100,7 @@ if (isset($Einstellungen['trustedshops']['trustedshops_nutzen']) && $Einstellung
 
 $smarty->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
        ->assign('Bestellung', $bestellung)
+       ->assign('Link', $link)
        ->assign('Kunde', $_SESSION['Kunde'] ?? null)
        ->assign('bOrderConf', true)
        ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
@@ -134,11 +122,11 @@ if (empty($_SESSION['Zahlungsart']->nWaehrendBestellung) || isset($_GET['i'])) {
     }
     $session->cleanUp();
     require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
-    executeHook(HOOK_BESTELLABSCHLUSS_PAGE);
+    executeHook(HOOK_BESTELLABSCHLUSS_PAGE, ['oBestellung' => $bestellung]);
     $smarty->display('checkout/order_completed.tpl');
 } else {
     require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
-    executeHook(HOOK_BESTELLABSCHLUSS_PAGE_ZAHLUNGSVORGANG);
+    executeHook(HOOK_BESTELLABSCHLUSS_PAGE_ZAHLUNGSVORGANG, ['oBestellung' => $bestellung]);
     $smarty->display('checkout/step6_init_payment.tpl');
 }
 

@@ -5,9 +5,9 @@
         && $Suchergebnisse->getTagFilterOptions()|@count > 0 && $Suchergebnisse->getTagFilterJSON()}
         <hr>
         <div class="panel panel-default tags">
-            <div class="panel-heading">{lang key="productsTaggedAs" section="productOverview"}</div>
+            <div class="panel-heading">{lang key='productsTaggedAs' section='productOverview'}</div>
             <div class="panel-body">
-                {foreach name=tagfilter from=$Suchergebnisse->getTagFilterOptions() item=oTag}
+                {foreach $Suchergebnisse->getTagFilterOptions() as $oTag}
                     <a href="{$oTag->getURL()}" class="label label-primary tag{$oTag->getClass()}">{$oTag->getName()}</a>
                 {/foreach}
             </div>
@@ -19,9 +19,9 @@
         && !$NaviFilter->hasSearchFilter()}
         <hr>
         <div class="panel panel-default tags search-terms">
-            <div class="panel-heading">{lang key="productsSearchTerm" section="productOverview"}</div>
+            <div class="panel-heading">{lang key='productsSearchTerm' section='productOverview'}</div>
             <div class="panel-body">
-                {foreach name=suchfilter from=$Suchergebnisse->getSearchFilterOptions() item=oSuchFilter}
+                {foreach $Suchergebnisse->getSearchFilterOptions() as $oSuchFilter}
                     <a href="{$oSuchFilter->getURL()}" class="label label-primary tag{$oSuchFilter->getClass()}">{$oSuchFilter->getName()}</a>
                 {/foreach}
             </div>
@@ -29,31 +29,25 @@
     {/if}
 {/if}
 
-{if $Suchergebnisse->getPages()->maxSeite > 1 && !empty($oNaviSeite_arr) && $oNaviSeite_arr|@count > 0}
+{if $Suchergebnisse->getPages()->getMaxPage() > 1}
     <div class="row">
         <div class="col-xs-6 col-md-8 col-lg-9">
             <ul class="pagination pagination-ajax">
-                {if $Suchergebnisse->getPages()->AktuelleSeite > 1}
+                {if $filterPagination->getPrev()->getPageNumber() > 0}
                     <li class="prev">
-                        <a href="{$oNaviSeite_arr.zurueck->cURL}">&laquo; {lang key="previous" section="productOverview"}</a>
+                        <a href="{$filterPagination->getPrev()->getURL()}">&laquo; {lang key='previous' section='productOverview'}</a>
                     </li>
                 {/if}
 
-                {foreach name=seite from=$oNaviSeite_arr item=oNaviSeite}
-                    {if !isset($oNaviSeite->nBTN)}
-                        <li class="page{if !isset($oNaviSeite->cURL) || $oNaviSeite->cURL|strlen === 0} active{/if}">
-                            {if !empty($oNaviSeite->cURL)}
-                                <a href="{$oNaviSeite->cURL}">{$oNaviSeite->nSeite}</a>
-                            {else}
-                                <a href="#" onclick="return false;">{$oNaviSeite->nSeite}</a>
-                            {/if}
-                        </li>
-                    {/if}
+                {foreach $filterPagination->getPages() as $page}
+                    <li class="page{if $page->isActive()} active{/if}">
+                        <a href="{$page->getURL()}">{$page->getPageNumber()}</a>
+                    </li>
                 {/foreach}
 
-                {if $Suchergebnisse->getPages()->AktuelleSeite < $Suchergebnisse->getPages()->maxSeite}
+                {if $filterPagination->getNext()->getPageNumber() > 0}
                     <li class="next">
-                        <a href="{$oNaviSeite_arr.vor->cURL}">{lang key="next" section="productOverview"} &raquo;</a>
+                        <a href="{$filterPagination->getNext()->getURL()}">{lang key='next' section='productOverview'} &raquo;</a>
                     </li>
                 {/if}
             </ul>
@@ -93,37 +87,35 @@
                             <input type="hidden" name="hf" value="{$val}" />
                         {/foreach}
                     {else}
-                        <input type="hidden" name="hf" value="{$mvf}" />
+                        <input type="hidden" name="hf" value="{$mfv}" />
                     {/if}
                 {/if}
                 {if $NaviFilter->hasAttributeFilter()}
-                    {foreach name=merkmalfilter from=$NaviFilter->getAttributeFilter() item=attributeFilter}
-                        <input type="hidden" name="mf{$smarty.foreach.merkmalfilter.iteration}" value="{$attributeFilter->getValue()}" />
+                    {foreach $NaviFilter->getAttributeFilter() as $attributeFilter}
+                        <input type="hidden" name="mf{$attributeFilter@iteration}" value="{$attributeFilter->getValue()}" />
                     {/foreach}
                 {/if}
                 {if $NaviFilter->hasTagFilter()}
-                    {foreach name=tagfilter from=$NaviFilter->getTagFilter() item=tagFilter}
-                        <input type="hidden" name="tf{$smarty.foreach.tagfilter.iteration}" value="{$tagFilter->getValue()}" />
+                    {foreach $NaviFilter->getTagFilter() as $tagFilter}
+                        <input type="hidden" name="tf{$tagFilter@iteration}" value="{$tagFilter->getValue()}" />
                     {/foreach}
                 {/if}
 
                 <div class="dropdown">
                     <button class="btn btn-default dropdown-toggle" type="button" id="pagination-dropdown" data-toggle="dropdown" aria-expanded="true">
-                        {lang key="goToPage" section="productOverview"}
+                        {lang key='goToPage' section='productOverview'}
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu pagination-ajax" role="menu" aria-labelledby="pagination-dropdown">
-                        {foreach name=seite from=$oNaviSeite_arr item=oNaviSeite}
-                            {if !isset($oNaviSeite->nBTN)}
-                                {if $oNaviSeite->nSeite == $Suchergebnisse->getPages()->AktuelleSeite}
-                                    <li class="active">
-                                        <a role="menuitem" class="disabled" href="{$oNaviSeite->cURL}">{$oNaviSeite->nSeite}</a>
-                                    </li>
-                                {else}
-                                    <li>
-                                        <a role="menuitem" tabindex="-1" href="{$oNaviSeite->cURL}">{$oNaviSeite->nSeite}</a>
-                                    </li>
-                                {/if}
+                        {foreach $filterPagination->getPages() as $page}
+                            {if $page->isActive()}
+                                <li class="active">
+                                    <a role="menuitem" class="disabled" href="{$page->getURL()}">{$page->getPageNumber()}</a>
+                                </li>
+                            {else}
+                                <li>
+                                    <a role="menuitem" tabindex="-1" href="{$page->getURL()}">{$page->getPageNumber()}</a>
+                                </li>
                             {/if}
                         {/foreach}
                     </ul>

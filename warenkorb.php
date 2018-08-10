@@ -25,6 +25,7 @@ $KuponcodeUngueltig       = false;
 $nVersandfreiKuponGueltig = false;
 $cart                     = Session::Cart();
 $kLink                    = $linkHelper->getSpecialPageLinkKey(LINKTYP_WARENKORB);
+$link                     = $linkHelper->getPageLink($kLink);
 // Warenkorbaktualisierung?
 WarenkorbHelper::applyCartChanges();
 // validiere Konfigurationen
@@ -113,12 +114,10 @@ if (isset($_POST['gratis_geschenk'], $_POST['gratishinzufuegen']) && (int)$_POST
 // hole aktuelle Kategorie, falls eine gesetzt
 $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
-$startKat               = new Kategorie();
-$startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 if (isset($_GET['fillOut'])) {
     $mbw = Session::CustomerGroup()->getAttribute(KNDGRP_ATTRIBUT_MINDESTBESTELLWERT);
-    if ((int)$_GET['fillOut'] === 9 && $mbw > 0 && $cart->gibGesamtsummeWaren(1, 0) < $mbw) {
+    if ((int)$_GET['fillOut'] === 9 && $mbw > 0 && $cart->gibGesamtsummeWaren(true, false) < $mbw) {
         $MsgWarning = Shop::Lang()->get('minordernotreached', 'checkout') . ' ' .
             Preise::getLocalizedPriceString($mbw);
     } elseif ((int)$_GET['fillOut'] === 8) {
@@ -162,6 +161,7 @@ if (!empty($_SESSION['Warenkorbhinweise'])) {
 
 WarenkorbHelper::addVariationPictures($cart);
 $smarty->assign('MsgWarning', $MsgWarning)
+       ->assign('Link', $link)
        ->assign('Schnellkaufhinweis', $Schnellkaufhinweis)
        ->assign('laender', VersandartHelper::getPossibleShippingCountries($kKundengruppe))
        ->assign('KuponMoeglich', Kupon::couponsAvailable())

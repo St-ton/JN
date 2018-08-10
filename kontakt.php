@@ -13,11 +13,10 @@ $AktuelleSeite = 'KONTAKT';
 $Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_KONTAKTFORMULAR]);
 $linkHelper    = Shop::Container()->getLinkService();
 $kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_KONTAKT);
+$link          = $linkHelper->getPageLink($kLink);
 //hole alle OberKategorien
 $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
-$startKat               = new Kategorie();
-$startKat->kKategorie   = 0;
 $cCanonicalURL          = '';
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 if (FormHelper::checkSubject()) {
@@ -100,13 +99,14 @@ if (FormHelper::checkSubject()) {
         ->assign('fehlendeAngaben', $fehlendeAngaben)
         ->assign('nAnzeigeOrt', CHECKBOX_ORT_KONTAKT);
 } else {
-    Jtllog::writeLog('Kein Kontaktbetreff vorhanden! Bitte im Backend unter ' .
-        'Einstellungen -> Kontaktformular -> Betreffs einen Betreff hinzuf&uuml;gen.', JTLLOG_LEVEL_ERROR);
+    Shop::Container()->getLogService()->error('Kein Kontaktbetreff vorhanden! Bitte im Backend unter ' .
+        'Einstellungen -> Kontaktformular -> Betreffs einen Betreff hinzuf&uuml;gen.');
     Shop::Smarty()->assign('hinweis', Shop::Lang()->get('noSubjectAvailable', 'contact'));
     $SpezialContent = new stdClass();
 }
 
-Shop::Smarty()->assign('Spezialcontent', $SpezialContent);
+Shop::Smarty()->assign('Link', $link)
+              ->assign('Spezialcontent', $SpezialContent);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_KONTAKT_PAGE);

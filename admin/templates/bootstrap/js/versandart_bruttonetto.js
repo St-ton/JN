@@ -22,7 +22,7 @@ function setzeBruttoAjax(cTargetID, elem, targetElemID, fSteuersatz)
       $('#' + cTargetID).fadeIn('fast');
 
    setzeBrutto(elem, targetElemID, fSteuersatz);
-   ioCall('getCurrencyConversion', [parseFloat(elem.value), 0, cTargetID]);
+   ioCall('getCurrencyConversion', [lem.value, 0, cTargetID]);
 
    $('#' + cTargetID).css({
       position: 'absolute',
@@ -50,7 +50,7 @@ function setzeNettoAjax(cTargetID, elem, targetElemID, fSteuersatz)
       $('#' + cTargetID).fadeIn('fast');
 
     setzeNetto(elem, targetElemID, fSteuersatz);
-    ioCall('getCurrencyConversion', [0, parseFloat(elem.value), cTargetID]);
+    ioCall('getCurrencyConversion', [0, elem.value, cTargetID]);
    
    $('#' + cTargetID).css({
       position: 'absolute',
@@ -67,9 +67,9 @@ function setzeNettoAjax(cTargetID, elem, targetElemID, fSteuersatz)
 function setzePreisAjax(bNetto, cTargetID, elem)
 {
     if (bNetto) {
-        ioCall('getCurrencyConversion', [parseFloat(elem.value), 0, cTargetID]);
+        ioCall('getCurrencyConversion', [elem.value, 0, cTargetID]);
     } else {
-        ioCall('getCurrencyConversion', [0, parseFloat(elem.value), cTargetID]);
+        ioCall('getCurrencyConversion', [0, elem.value, cTargetID]);
     }
 }
 

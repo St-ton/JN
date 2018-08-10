@@ -21,7 +21,7 @@ class Revision
     public function __construct()
     {
         $this->mapping = [
-            'link'       => [
+            'link'    => [
                 'table'         => 'tlink',
                 'id'            => 'kLink',
                 'reference'     => 'tlinksprache',
@@ -39,11 +39,15 @@ class Revision
                 'reference_id'  => 'kEmailvorlage',
                 'reference_key' => 'kSprache'
             ],
-            'news'       => [
+            'opcpage'       => [
+                'table' => 'topcpage',
+                'id'    => 'kPage'
+            ],
+            'news'          => [
                 'table' => 'tnews',
                 'id'    => 'kNews'
             ],
-            'box'        => [
+            'box'           => [
                 'table'         => 'tboxen',
                 'id'            => 'kBox',
                 'reference'     => 'tboxsprache',
@@ -57,9 +61,9 @@ class Revision
                 'reference_id'  => 'kNewslettervorlage',
                 'reference_key' => 'kNewslettervorlageStdVar'
             ],
-            'newsletter' => [
-                'table'         => 'tnewslettervorlage',
-                'id'            => 'kNewsletterVorlage'
+            'newsletter'    => [
+                'table' => 'tnewslettervorlage',
+                'id'    => 'kNewsletterVorlage'
             ]
         ];
     }
@@ -68,7 +72,7 @@ class Revision
      * @param string $type
      * @return string|null
      */
-    private function getMapping($type)
+    private function getMapping(string $type)
     {
         return $this->mapping[$type] ?? null;
     }
@@ -78,7 +82,7 @@ class Revision
      * @param array  $mapping
      * @return $this
      */
-    public function addMapping($name, $mapping)
+    public function addMapping(string $name, array $mapping): self
     {
         $this->mapping[$name] = $mapping;
 
@@ -95,15 +99,39 @@ class Revision
     }
 
     /**
+     * @param string $type
+     * @param int $key
+     * @return stdClass|null
+     */
+    public function getLatestRevision($type, int $key)
+    {
+        $mapping = $this->getMapping($type);
+        if ($key === 0 || $mapping === null) {
+            throw new InvalidArgumentException("Invalid revision type $type");
+        }
+
+        $latestRevision = Shop::Container()->getDB()->queryPrepared(
+            'SELECT *
+                FROM trevisions
+                WHERE type = :tp
+                    AND reference_primary = :ref
+                ORDER BY timestamp DESC',
+            ['tp' => $type, 'ref' => $key],
+            \DB\ReturnType::SINGLE_OBJECT
+        );
+
+        return is_object($latestRevision) ? $latestRevision : null;
+    }
+
+    /**
      * @param string      $type
      * @param int         $key
      * @param bool        $secondary
      * @param null|string $author
-     * @param bool        $utf8 - @deprecated since 5.0
      * @return bool
      * @throws InvalidArgumentException
      */
-    public function addRevision($type, $key, bool $secondary = false, $author = null, $utf8 = true): bool
+    public function addRevision($type, $key, bool $secondary = false, $author = null): bool
     {
         if (MAX_REVISIONS <= 0) {
             return false;
@@ -139,6 +167,16 @@ class Revision
             foreach ($referencedRevisions as $referencedRevision) {
                 $revision->content->references[$referencedRevision->$field] = $referencedRevision;
             }
+            $revision->content = json_encode($revision->content);
+
+            $latestRevision = $this->getLatestRevision($type, $key);
+
+            if (empty($latestRevision) || $latestRevision->content !== $revision->content) {
+                $this->storeRevision($revision);
+                $this->housekeeping($type, $key);
+            }
+
+            return true;
         }
         $revision->content = json_encode($revision->content);
         $this->storeRevision($revision);
@@ -190,14 +228,17 @@ class Revision
      * @param string $type
      * @param int    $id
      * @param bool   $secondary
-     * @param bool   $utf8 - @deprecated since 5.0
      * @return bool
      */
-    public function restoreRevision($type, $id, $secondary = false, $utf8 = true): bool
+    public function restoreRevision($type, $id, $secondary = false): bool
     {
         $revision = $this->getRevision($id);
         $mapping  = $this->getMapping($type); // get static mapping from build in content types
-        if ($revision !== null && $mapping === null && !empty($revision->custom_table) && !empty($revision->custom_primary_key)) {
+        if ($revision !== null
+            && $mapping === null
+            && !empty($revision->custom_table)
+            && !empty($revision->custom_primary_key)
+        ) {
             // load dynamic mapping from DB
             $mapping = ['table' => $revision->custom_table, 'id' => $revision->custom_primary_key];
         }

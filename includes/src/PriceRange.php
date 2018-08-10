@@ -139,7 +139,7 @@ class PriceRange
     public function loadConfiguratorRange()
     {
         $configItems = Shop::Container()->getDB()->queryPrepared(
-            "SELECT tartikel.kArtikel,
+            'SELECT tartikel.kArtikel,
 	                tkonfiggruppe.kKonfiggruppe,
                     MIN(tkonfiggruppe.nMin) nMin,
                     MAX(tkonfiggruppe.nMax) nMax,
@@ -162,7 +162,7 @@ class PriceRange
 	                tkonfiggruppe.kKonfiggruppe,
 	                tkonfigitem.kArtikel,
 	                tkonfigitem.bPreis,
-                    IF(tkonfigitem.bPreis = 0, tkonfigitempreis.kSteuerklasse, tartikel.kSteuerklasse)",
+                    IF(tkonfigitem.bPreis = 0, tkonfigitempreis.kSteuerklasse, tartikel.kSteuerklasse)',
             [
                 'articleID'     => $this->articleData->kArtikel,
                 'customerGroup' => $this->customerGroupID,
@@ -268,7 +268,7 @@ class PriceRange
      *      else - otherwise
      * @return bool
      */
-    public function isRange()
+    public function isRange(): bool
     {
         return round($this->minNettoPrice, 2) < round($this->maxNettoPrice, 2);
     }
@@ -279,7 +279,9 @@ class PriceRange
      */
     public function rangeWidth()
     {
-        return 100 / $this->minNettoPrice * $this->maxNettoPrice - 100;
+        return (int)$this->minNettoPrice !== 0
+            ? 100 / $this->minNettoPrice * $this->maxNettoPrice - 100
+            : 0;
     }
 
     /**

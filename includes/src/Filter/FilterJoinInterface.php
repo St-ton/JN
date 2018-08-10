@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -71,5 +71,5 @@ interface FilterJoinInterface
     /**
      * @return string
      */
-    public function getSql(): string;
+    public function getSQL(): string;
 }

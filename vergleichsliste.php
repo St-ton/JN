@@ -15,8 +15,6 @@ $oMerkVaria_arr   = [[], []];
 //hole aktuelle Kategorie, falls eine gesetzt
 $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
-$startKat               = new Kategorie();
-$startKat->kKategorie   = -1;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 // VergleichslistePos in den Warenkorb adden
 if (isset($_GET['vlph']) && (int)$_GET['vlph'] === 1) {
@@ -43,6 +41,8 @@ if ($oVergleichsliste !== null) {
     $oArtikel_arr     = [];
     $defaultOptions   = Artikel::getDefaultOptions();
     $linkHelper       = Shop::Container()->getLinkService();
+    $kLink            = $linkHelper->getSpecialPageLinkKey(LINKTYP_VERGLEICHSLISTE);
+    $link             = $linkHelper->getPageLink($kLink);
     $baseURL          = $linkHelper->getStaticRoute('vergleichsliste.php');
     foreach ($oVergleichsliste->oArtikel_arr as $oArtikel) {
         $artikel = (new Artikel())->fuelleArtikel($oArtikel->kArtikel, $defaultOptions);
@@ -64,6 +64,7 @@ $nBreiteArtikel = ($conf['vergleichsliste']['vergleichsliste_spaltengroesse'] > 
     : 200;
 Shop::Smarty()->assign('nBreiteTabelle', $nBreiteArtikel * count($oVergleichsliste->oArtikel_arr) + $nBreiteAttribut)
     ->assign('cPrioSpalten_arr', $cExclude)
+    ->assign('Link', $link)
     ->assign('oMerkmale_arr', $oMerkVaria_arr[0])
     ->assign('oVariationen_arr', $oMerkVaria_arr[1])
     ->assign('print', (isset($_GET['print']) && (int)$_GET['print'] === 1) ? 1 : 0)

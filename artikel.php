@@ -138,8 +138,6 @@ if (isset($_POST['fragezumprodukt']) && (int)$_POST['fragezumprodukt'] === 1) {
 $kKategorie             = $AktuellerArtikel->gibKategorie();
 $AktuelleKategorie      = new Kategorie($kKategorie);
 $AufgeklappteKategorien = new KategorieListe();
-$startKat               = new Kategorie();
-$startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 $nAnzahlBewertungen    = 0;
 $bewertung_seite       = RequestHelper::verifyGPCDataInt('btgseite');
@@ -177,13 +175,9 @@ if (isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreic
 } else {
     $oBewertung_arr = $AktuellerArtikel->Bewertungen->oBewertung_arr;
 }
-if (isset($_SESSION['Kunde']) && !empty($oBewertung_arr)) {
-    foreach ($oBewertung_arr as $Bewertung) {
-        if ((int)$Bewertung->kKunde === Session::Customer()->getID()) {
-            $bereitsBewertet = true;
-            break;
-        }
-    }
+if (Session::Customer()->getID() > 0) {
+    $bereitsBewertet = ArtikelHelper::getRatedByCurrentCustomer((int)$AktuellerArtikel->kArtikel,
+        (int)$AktuellerArtikel->kVaterArtikel);
 }
 
 $pagination = (new Pagination('ratings'))
@@ -223,7 +217,7 @@ if ($AktuellerArtikel->Variationen) {
     }
 }
 $nav = $Einstellungen['artikeldetails']['artikeldetails_navi_blaettern'] === 'Y'
-    ? ArtikelHelper::getProductNavigation($AktuellerArtikel->kArtikel, $AktuelleKategorie->kKategorie)
+    ? ArtikelHelper::getProductNavigation($AktuellerArtikel->kArtikel ?? 0, $AktuelleKategorie->kKategorie ?? 0)
     : null;
 
 $smarty->assign('showMatrix', $AktuellerArtikel->showMatrix())
@@ -240,8 +234,6 @@ $smarty->assign('showMatrix', $AktuellerArtikel->showMatrix())
        ->assign('verfuegbarkeitsBenachrichtigung', ArtikelHelper::showAvailabilityForm(
            $AktuellerArtikel,
            $Einstellungen['artikeldetails']['benachrichtigung_nutzen']))
-       ->assign('code_fragezumprodukt', false)
-       ->assign('code_benachrichtigung_verfuegbarkeit', false)
        ->assign('ProdukttagHinweis', ArtikelHelper::editProductTags($AktuellerArtikel))
        ->assign('ProduktTagging', $AktuellerArtikel->tags)
        ->assign('BlaetterNavi', $oBlaetterNavi)

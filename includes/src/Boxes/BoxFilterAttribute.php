@@ -22,9 +22,9 @@ final class BoxFilterAttribute extends AbstractBox
     {
         parent::__construct($config);
         $filter        = \Shop::getProductFilter()->getAttributeFilterCollection();
-        $searchResults = \Shop::getProductFilter()->getSearchResults(false);
-        $show          = !$filter->getVisibility()->equals(Visibility::SHOW_NEVER())
-            && !$filter->getVisibility()->equals(Visibility::SHOW_CONTENT())
+        $searchResults = \Shop::getProductFilter()->getSearchResults();
+        $show          = $filter->getVisibility() !== Visibility::SHOW_NEVER
+            && $filter->getVisibility() !== Visibility::SHOW_CONTENT
             && (!empty($searchResults->getAttributeFilterOptions()) || $filter->isInitialized());
         $this->setShow($show);
         $this->setItems($searchResults->getAttributeFilterOptions());

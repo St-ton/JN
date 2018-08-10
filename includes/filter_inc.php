@@ -8,13 +8,13 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
 /**
  * @param object $FilterSQL
  * @param object $NaviFilter
- * @return stdClass
+ * @return \Filter\SearchResultsInterface
  * @deprecated since 5.0.0
  */
 function buildSearchResults($FilterSQL, $NaviFilter)
 {
     trigger_error('filter_inc.php: calling buildSearchResults() is deprecated.', E_USER_DEPRECATED);
-    return updateNaviFilter($NaviFilter)->getProducts();
+    return updateNaviFilter($NaviFilter)->generateSearchResults();
 }
 
 /**
@@ -37,13 +37,13 @@ function buildSearchResultPage(&$oSearchResult, $nProductCount, $nLimitN, $nPage
  * @param object   $NaviFilter
  * @param bool     $bExtern
  * @param stdClass $oSuchergebnisse
- * @return \Filter\ProductFilter
+ * @return \Filter\SearchResultsInterface
  * @deprecated since 5.0.0
  */
 function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $oSuchergebnisse)
 {
     trigger_error('filter_inc.php: calling gibArtikelKeys() is deprecated.', E_USER_DEPRECATED);
-    return updateNaviFilter($NaviFilter)->getProducts(false, null, true, (int)$nArtikelProSeite);
+    return updateNaviFilter($NaviFilter)->generateSearchResults(null, true, (int)$nArtikelProSeite);
 }
 
 /**
@@ -423,7 +423,8 @@ function gibArtikelsortierung($NaviFilter)
 function mappeUsersortierung($nUsersortierung)
 {
     trigger_error('filter_inc.php: calling mappeUsersortierung() is deprecated.', E_USER_DEPRECATED);
-    return updateNaviFilter($NaviFilter)->getMetaData()->mapUserSorting($nUsersortierung);
+    $mapper = new \Mapper\SortingType();
+    return $mapper->mapUserSorting($nUsersortierung);
 }
 
 /**
@@ -496,9 +497,11 @@ function gibHeaderAnzeige()
 function erstelleFilterLoesenURLs($bSeo, $oSuchergebnisse)
 {
     trigger_error('filter_inc.php: calling erstelleFilterLoesenURLs() is deprecated.', E_USER_DEPRECATED);
+    $sr = new \Filter\SearchResults();
+    $sr->convert($oSuchergebnisse);
     Shop::getProductFilter()->getFilterURL()->createUnsetFilterURLs(
         new stdClass(),
-        new \Filter\ProductFilterSearchResults($oSuchergebnisse)
+        $sr
     );
 }
 
@@ -524,9 +527,11 @@ function truncateMetaTitle($cTitle)
 function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $globalMeta)
 {
     trigger_error('filter_inc.php: calling gibNaviMetaTitle() is deprecated.', E_USER_DEPRECATED);
+    $sr = new \Filter\SearchResults();
+    $sr->convert($oSuchergebnisse);
 
     return (new \Filter\Metadata(updateNaviFilter($NaviFilter)))->generateMetaTitle(
-        new \Filter\ProductFilterSearchResults($oSuchergebnisse),
+        $sr,
         $globalMeta
     );
 }
@@ -542,10 +547,12 @@ function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $globalMeta)
 function gibNaviMetaDescription($articles, $NaviFilter, $oSuchergebnisse, $globalMeta)
 {
     trigger_error('filter_inc.php: calling gibNaviMetaDescription() is deprecated.', E_USER_DEPRECATED);
+    $sr = new \Filter\SearchResults();
+    $sr->convert($oSuchergebnisse);
 
     return (new \Filter\Metadata(updateNaviFilter($NaviFilter)))->generateMetaDescription(
         $articles,
-        new \Filter\ProductFilterSearchResults($oSuchergebnisse),
+        $sr,
         $globalMeta
     );
 }
@@ -574,7 +581,10 @@ function gibNaviMetaKeywords($articles, $NaviFilter, $excludeKeywords = [])
 function gibMetaStart($NaviFilter, $oSuchergebnisse)
 {
     trigger_error('filter_inc.php: calling gibMetaStart() is deprecated.', E_USER_DEPRECATED);
-    return (new \Filter\Metadata(updateNaviFilter($NaviFilter)))->getMetaStart(new \Filter\ProductFilterSearchResults($oSuchergebnisse));
+    $pf = updateNaviFilter($NaviFilter);
+    $sr = new \Filter\SearchResults();
+    $sr->convert($oSuchergebnisse);
+    return (new \Filter\Metadata($pf))->getMetaStart($sr);
 }
 
 /**
@@ -597,7 +607,7 @@ function setzeUsersortierung($NaviFilter)
 {
     trigger_error('filter_inc.php: calling setzeUsersortierung() is deprecated.', E_USER_DEPRECATED);
     global $AktuelleKategorie;
-    updateNaviFilter($NaviFilter)->getMetaData()->setUserSort($AktuelleKategorie);
+    updateNaviFilter($NaviFilter)->setUserSort($AktuelleKategorie);
 }
 
 /**
@@ -617,17 +627,131 @@ function gibErweiterteDarstellung($Einstellungen, $NaviFilter, $nDarstellung = 0
 
 /**
  * @deprecated since 5.0.0
- * @param object $NaviFilter
- * @param bool   $bSeo
- * @param object $oSeitenzahlen
- * @param int    $nMaxAnzeige
- * @param string $cFilterShopURL
+ * @param object productFilter
+ * @param bool   $seo
+ * @param object $pages
+ * @param int    $maxPages
+ * @param string $filterURL
  * @return array
  */
-function baueSeitenNaviURL($NaviFilter, $bSeo, $oSeitenzahlen, $nMaxAnzeige = 7, $cFilterShopURL = '')
+function baueSeitenNaviURL($NaviFilter, $seo, $pages, $maxPages = 7, $filterURL = '')
 {
     trigger_error('filter_inc.php: calling baueSeitenNaviURL() is deprecated.', E_USER_DEPRECATED);
-    return updateNaviFilter($NaviFilter)->getMetaData()->buildPageNavigation($bSeo, $oSeitenzahlen, $nMaxAnzeige, $cFilterShopURL);
+    $productFilter = updateNaviFilter($NaviFilter);
+    if (is_a($pages, 'stdClass')) {
+        $p = new \Filter\Pagination\Info();
+        $p->setMaxPage($pages->maxSeite);
+        $p->setMinPage($pages->minSeite);
+        $p->setTotalPages($pages->maxSeiten);
+        $p->setCurrentPage($pages->AktuelleSeite);
+        $pages = $p;
+    }
+    if (strlen($filterURL) > 0) {
+        $seo = false;
+    }
+    $oSeite_arr = [];
+    $naviURL    = $productFilter->getFilterURL()->getURL();
+    $seo        = $seo && strpos($naviURL, '?') === false;
+    if ($pages->getTotalPages() > 0 && $pages->getCurrentPage()> 0) {
+        $nMax = (int)floor($maxPages / 2);
+        if ($pages->getTotalPages() > $maxPages) {
+            if ($pages->getCurrentPage() - $nMax >= 1) {
+                $nDiff = 0;
+                $nVon  = $pages->getCurrentPage() - $nMax;
+            } else {
+                $nVon  = 1;
+                $nDiff = $nMax - $pages->getCurrentPage() + 1;
+            }
+            if ($pages->getCurrentPage() + $nMax + $nDiff <= $pages->getTotalPages()) {
+                $nBis = $pages->getCurrentPage() + $nMax + $nDiff;
+            } else {
+                $nDiff = $pages->getCurrentPage() + $nMax - $pages->getTotalPages();
+                if ($nDiff === 0) {
+                    $nVon -= ($maxPages - ($nMax + 1));
+                } elseif ($nDiff > 0) {
+                    $nVon = $pages->getCurrentPage() - $nMax - $nDiff;
+                }
+                $nBis = $pages->getTotalPages();
+            }
+            // Laufe alle Seiten durch und baue URLs + Seitenzahl
+            for ($i = $nVon; $i <= $nBis; ++$i) {
+                $oSeite         = new stdClass();
+                $oSeite->nSeite = $i;
+                if ($i === $pages->getCurrentPage()) {
+                    $oSeite->cURL = '';
+                } elseif ($oSeite->nSeite === 1) {
+                    $oSeite->cURL = $naviURL . $filterURL;
+                } elseif ($seo) {
+                    $cURL         = $naviURL;
+                    $oSeite->cURL = strpos(basename($cURL), 'index.php') !== false
+                        ? $cURL . '&amp;seite=' . $oSeite->nSeite . $filterURL
+                        : $cURL . SEP_SEITE . $oSeite->nSeite;
+                } else {
+                    $oSeite->cURL = $naviURL . '&amp;seite=' . $oSeite->nSeite . $filterURL;
+                }
+                $oSeite_arr[] = $oSeite;
+            }
+        } else {
+            // Laufe alle Seiten durch und baue URLs + Seitenzahl
+            for ($i = 0; $i < $pages->getTotalPages(); ++$i) {
+                $oSeite         = new stdClass();
+                $oSeite->nSeite = $i + 1;
+
+                if ($i + 1 === $pages->getCurrentPage()) {
+                    $oSeite->cURL = '';
+                } elseif ($oSeite->nSeite === 1) {
+                    $oSeite->cURL = $naviURL . $filterURL;
+                } elseif ($seo) {
+                    $cURL         = $naviURL;
+                    $oSeite->cURL = strpos(basename($cURL), 'index.php') !== false
+                        ? $cURL . '&amp;seite=' . $oSeite->nSeite . $filterURL
+                        : $cURL . SEP_SEITE . $oSeite->nSeite;
+                } else {
+                    $oSeite->cURL = $naviURL . '&amp;seite=' . $oSeite->nSeite . $filterURL;
+                }
+                $oSeite_arr[] = $oSeite;
+            }
+        }
+        // Baue Zurück-URL
+        $oSeite_arr['zurueck']       = new stdClass();
+        $oSeite_arr['zurueck']->nBTN = 1;
+        if ($pages->getCurrentPage() > 1) {
+            $oSeite_arr['zurueck']->nSeite = $pages->getCurrentPage() - 1;
+            if ($oSeite_arr['zurueck']->nSeite === 1) {
+                $oSeite_arr['zurueck']->cURL = $naviURL . $filterURL;
+            } elseif ($seo) {
+                $cURL = $naviURL;
+                if (strpos(basename($cURL), 'index.php') !== false) {
+                    $oSeite_arr['zurueck']->cURL = $cURL . '&amp;seite=' .
+                        $oSeite_arr['zurueck']->nSeite . $filterURL;
+                } else {
+                    $oSeite_arr['zurueck']->cURL = $cURL . SEP_SEITE .
+                        $oSeite_arr['zurueck']->nSeite;
+                }
+            } else {
+                $oSeite_arr['zurueck']->cURL = $naviURL . '&amp;seite=' .
+                    $oSeite_arr['zurueck']->nSeite . $filterURL;
+            }
+        }
+        // Baue Vor-URL
+        $oSeite_arr['vor']       = new stdClass();
+        $oSeite_arr['vor']->nBTN = 1;
+        if ($pages->getCurrentPage() < $pages->getMaxPage()) {
+            $oSeite_arr['vor']->nSeite = $pages->getCurrentPage() + 1;
+            if ($seo) {
+                $cURL = $naviURL;
+                if (strpos(basename($cURL), 'index.php') !== false) {
+                    $oSeite_arr['vor']->cURL = $cURL . '&amp;seite=' . $oSeite_arr['vor']->nSeite . $filterURL;
+                } else {
+                    $oSeite_arr['vor']->cURL = $cURL . SEP_SEITE . $oSeite_arr['vor']->nSeite;
+                }
+            } else {
+                $oSeite_arr['vor']->cURL = $naviURL . '&amp;seite=' . $oSeite_arr['vor']->nSeite . $filterURL;
+            }
+        }
+    }
+
+    return $oSeite_arr;
 }
 
 /**
@@ -665,27 +789,172 @@ function sortierKategoriepfade($a, $b)
 }
 
 /**
- * @param null|array $Einstellungen
+ * @param null|array $conf
  * @param bool $bExtendedJTLSearch
  * @return array
  * @deprecated since 5.0.0
  */
-function gibSortierliste($Einstellungen = null, $bExtendedJTLSearch = false)
+function gibSortierliste($conf = null, $bExtendedJTLSearch = false)
 {
     trigger_error('filter_inc.php: calling gibSortierliste() is deprecated.', E_USER_DEPRECATED);
-    return Shop::getProductFilter()->getMetaData()->getSortingOptions($bExtendedJTLSearch);
+    $conf           = $conf ?? Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
+    $sortingOptions = [];
+    $search         = [];
+    if ($bExtendedJTLSearch !== false) {
+        static $names = [
+            'suche_sortierprio_name',
+            'suche_sortierprio_name_ab',
+            'suche_sortierprio_preis',
+            'suche_sortierprio_preis_ab'
+        ];
+        static $values = [
+            SEARCH_SORT_NAME_ASC,
+            SEARCH_SORT_NAME_DESC,
+            SEARCH_SORT_PRICE_ASC,
+            SEARCH_SORT_PRICE_DESC
+        ];
+        static $languages = ['sortNameAsc', 'sortNameDesc', 'sortPriceAsc', 'sortPriceDesc'];
+        foreach ($names as $i => $name) {
+            $obj                  = new stdClass();
+            $obj->name            = $name;
+            $obj->value           = $values[$i];
+            $obj->angezeigterName = Shop::Lang()->get($languages[$i]);
+
+            $sortingOptions[] = $obj;
+        }
+
+        return $sortingOptions;
+    }
+    while (($obj = gibNextSortPrio($search, $conf)) !== null) {
+        $search[] = $obj->name;
+        unset($obj->name);
+        $sortingOptions[] = $obj;
+    }
+
+    return $sortingOptions;
 }
 
 /**
  * @deprecated since 5.0.0
  * @param array $search
- * @param null|array $Einstellungen
+ * @param null|array $conf
  * @return null|stdClass
  */
-function gibNextSortPrio($search, $Einstellungen = null)
+function gibNextSortPrio($search, $conf = null)
 {
     trigger_error('filter_inc.php: calling gibNextSortPrio() is deprecated.', E_USER_DEPRECATED);
-    return Shop::getProductFilter()->getMetaData()->getNextSearchPriority($search);
+    $conf = $conf ?? Shop::getConfig([CONF_ARTIKELUEBERSICHT]);
+    $max  = 0;
+    $obj  = null;
+    if ($max < $conf['artikeluebersicht']['suche_sortierprio_name']
+        && !in_array('suche_sortierprio_name', $search, true)
+    ) {
+        $obj                  = new stdClass();
+        $obj->name            = 'suche_sortierprio_name';
+        $obj->value           = SEARCH_SORT_NAME_ASC;
+        $obj->angezeigterName = \Shop::Lang()->get('sortNameAsc');
+        $max                  = $conf['artikeluebersicht']['suche_sortierprio_name'];
+    }
+    if ($max < $conf['artikeluebersicht']['suche_sortierprio_name_ab']
+        && !in_array('suche_sortierprio_name_ab', $search, true)
+    ) {
+        $obj                  = new stdClass();
+        $obj->name            = 'suche_sortierprio_name_ab';
+        $obj->value           = SEARCH_SORT_NAME_DESC;
+        $obj->angezeigterName = \Shop::Lang()->get('sortNameDesc');
+        $max                  = $conf['artikeluebersicht']['suche_sortierprio_name_ab'];
+    }
+    if ($max < $conf['artikeluebersicht']['suche_sortierprio_preis']
+        && !in_array('suche_sortierprio_preis', $search, true)
+    ) {
+        $obj                  = new stdClass();
+        $obj->name            = 'suche_sortierprio_preis';
+        $obj->value           = SEARCH_SORT_PRICE_ASC;
+        $obj->angezeigterName = \Shop::Lang()->get('sortPriceAsc');
+        $max                  = $conf['artikeluebersicht']['suche_sortierprio_preis'];
+    }
+    if ($max < $conf['artikeluebersicht']['suche_sortierprio_preis_ab']
+        && !in_array('suche_sortierprio_preis_ab', $search, true)
+    ) {
+        $obj                  = new stdClass();
+        $obj->name            = 'suche_sortierprio_preis_ab';
+        $obj->value           = SEARCH_SORT_PRICE_DESC;
+        $obj->angezeigterName = \Shop::Lang()->get('sortPriceDesc');
+        $max                  = $conf['artikeluebersicht']['suche_sortierprio_preis_ab'];
+    }
+    if ($max < $conf['artikeluebersicht']['suche_sortierprio_ean']
+        && !in_array('suche_sortierprio_ean', $search, true)
+    ) {
+        $obj                  = new stdClass();
+        $obj->name            = 'suche_sortierprio_ean';
+        $obj->value           = SEARCH_SORT_EAN;
+        $obj->angezeigterName = \Shop::Lang()->get('sortEan');
+        $max                  = $conf['artikeluebersicht']['suche_sortierprio_ean'];
+    }
+    if ($max < $conf['artikeluebersicht']['suche_sortierprio_erstelldatum']
+        && !in_array('suche_sortierprio_erstelldatum', $search, true)
+    ) {
+        $obj                  = new stdClass();
+        $obj->name            = 'suche_sortierprio_erstelldatum';
+        $obj->value           = SEARCH_SORT_NEWEST_FIRST;
+        $obj->angezeigterName = \Shop::Lang()->get('sortNewestFirst');
+        $max                  = $conf['artikeluebersicht']['suche_sortierprio_erstelldatum'];
+    }
+    if ($max < $conf['artikeluebersicht']['suche_sortierprio_artikelnummer']
+        && !in_array('suche_sortierprio_artikelnummer', $search, true)
+    ) {
+        $obj                  = new stdClass();
+        $obj->name            = 'suche_sortierprio_artikelnummer';
+        $obj->value           = SEARCH_SORT_PRODUCTNO;
+        $obj->angezeigterName = \Shop::Lang()->get('sortProductno');
+        $max                  = $conf['artikeluebersicht']['suche_sortierprio_artikelnummer'];
+    }
+    if ($max < $conf['artikeluebersicht']['suche_sortierprio_lagerbestand']
+        && !in_array('suche_sortierprio_lagerbestand', $search, true)
+    ) {
+        $obj                  = new stdClass();
+        $obj->name            = 'suche_sortierprio_lagerbestand';
+        $obj->value           = SEARCH_SORT_AVAILABILITY;
+        $obj->angezeigterName = \Shop::Lang()->get('sortAvailability');
+        $max                  = $conf['artikeluebersicht']['suche_sortierprio_lagerbestand'];
+    }
+    if ($max < $conf['artikeluebersicht']['suche_sortierprio_gewicht']
+        && !in_array('suche_sortierprio_gewicht', $search, true)
+    ) {
+        $obj                  = new stdClass();
+        $obj->name            = 'suche_sortierprio_gewicht';
+        $obj->value           = SEARCH_SORT_WEIGHT;
+        $obj->angezeigterName = \Shop::Lang()->get('sortWeight');
+        $max                  = $conf['artikeluebersicht']['suche_sortierprio_gewicht'];
+    }
+    if ($max < $conf['artikeluebersicht']['suche_sortierprio_erscheinungsdatum']
+        && !in_array('suche_sortierprio_erscheinungsdatum', $search, true)
+    ) {
+        $obj                  = new stdClass();
+        $obj->name            = 'suche_sortierprio_erscheinungsdatum';
+        $obj->value           = SEARCH_SORT_DATEOFISSUE;
+        $obj->angezeigterName = \Shop::Lang()->get('sortDateofissue');
+        $max                  = $conf['artikeluebersicht']['suche_sortierprio_erscheinungsdatum'];
+    }
+    if ($max < $conf['artikeluebersicht']['suche_sortierprio_bestseller']
+        && !in_array('suche_sortierprio_bestseller', $search, true)
+    ) {
+        $obj                  = new stdClass();
+        $obj->name            = 'suche_sortierprio_bestseller';
+        $obj->value           = SEARCH_SORT_BESTSELLER;
+        $obj->angezeigterName = \Shop::Lang()->get('bestseller');
+        $max                  = $conf['artikeluebersicht']['suche_sortierprio_bestseller'];
+    }
+    if ($max < $conf['artikeluebersicht']['suche_sortierprio_bewertung']
+        && !in_array('suche_sortierprio_bewertung', $search, true)
+    ) {
+        $obj                  = new stdClass();
+        $obj->name            = 'suche_sortierprio_bewertung';
+        $obj->value           = SEARCH_SORT_RATING;
+        $obj->angezeigterName = \Shop::Lang()->get('rating');
+    }
+
+    return $obj;
 }
 
 /**
@@ -796,5 +1065,6 @@ function baueArtikelAnzahl($FilterSQL, &$oSuchergebnisse, $nArtikelProSeite = 20
     if ($oSuchergebnisse->Seitenzahlen->maxSeite > $oSuchergebnisse->Seitenzahlen->MaxSeiten) {
         $oSuchergebnisse->Seitenzahlen->maxSeite = $oSuchergebnisse->Seitenzahlen->MaxSeiten;
     }
-    $oSuchergebnisse = new \Filter\ProductFilterSearchResults($oSuchergebnisse);
+    $sr = new \Filter\SearchResults();
+    $oSuchergebnisse = $sr->convert($oSuchergebnisse);
 }

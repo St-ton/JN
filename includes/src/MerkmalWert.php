@@ -124,7 +124,7 @@ class MerkmalWert
      * @param int $kSprache
      * @return $this
      */
-    public function loadFromDB(int $kMerkmalWert, int $kSprache = 0)
+    public function loadFromDB(int $kMerkmalWert, int $kSprache = 0): self
     {
         $kSprache     = $kSprache === 0 ? Shop::getLanguageID() : $kSprache;
         $id           = 'mmw_' . $kMerkmalWert . '_' . $kSprache;
@@ -137,25 +137,25 @@ class MerkmalWert
         }
         $kStandardSprache = Sprache::getDefaultLanguage()->kSprache;
         if ($kSprache !== $kStandardSprache) {
-            $cSelect = "COALESCE(fremdSprache.kSprache, standardSprache.kSprache) AS kSprache, 
+            $cSelect = 'COALESCE(fremdSprache.kSprache, standardSprache.kSprache) AS kSprache, 
                         COALESCE(fremdSprache.cWert, standardSprache.cWert) AS cWert,
                         COALESCE(fremdSprache.cMetaTitle, standardSprache.cMetaTitle) AS cMetaTitle, 
                         COALESCE(fremdSprache.cMetaKeywords, standardSprache.cMetaKeywords) AS cMetaKeywords,
                         COALESCE(fremdSprache.cMetaDescription, standardSprache.cMetaDescription) AS cMetaDescription, 
                         COALESCE(fremdSprache.cBeschreibung, standardSprache.cBeschreibung) AS cBeschreibung,
-                        COALESCE(fremdSprache.cSeo, standardSprache.cSeo) AS cSeo";
-            $cJoin   = "INNER JOIN tmerkmalwertsprache AS standardSprache 
+                        COALESCE(fremdSprache.cSeo, standardSprache.cSeo) AS cSeo';
+            $cJoin   = 'INNER JOIN tmerkmalwertsprache AS standardSprache 
                             ON standardSprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-                            AND standardSprache.kSprache = " . $kStandardSprache . "
+                            AND standardSprache.kSprache = ' . $kStandardSprache . '
                         LEFT JOIN tmerkmalwertsprache AS fremdSprache 
                             ON fremdSprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-                            AND fremdSprache.kSprache = " . $kSprache . "";
+                            AND fremdSprache.kSprache = ' . $kSprache;
         } else {
-            $cSelect = "tmerkmalwertsprache.kSprache, tmerkmalwertsprache.cWert, tmerkmalwertsprache.cMetaTitle,
+            $cSelect = 'tmerkmalwertsprache.kSprache, tmerkmalwertsprache.cWert, tmerkmalwertsprache.cMetaTitle,
                         tmerkmalwertsprache.cMetaKeywords, tmerkmalwertsprache.cMetaDescription,
-                        tmerkmalwertsprache.cBeschreibung, tmerkmalwertsprache.cSeo";
-            $cJoin   = "INNER JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-                            AND tmerkmalwertsprache.kSprache = " . $kSprache;
+                        tmerkmalwertsprache.cBeschreibung, tmerkmalwertsprache.cSeo';
+            $cJoin   = 'INNER JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
+                            AND tmerkmalwertsprache.kSprache = ' . $kSprache;
         }
         $oMerkmalWert = Shop::Container()->getDB()->query(
             "SELECT tmerkmalwert.*, {$cSelect}
@@ -204,7 +204,7 @@ class MerkmalWert
      * @param int $kMerkmal
      * @return array
      */
-    public function holeAlleMerkmalWerte($kMerkmal)
+    public function holeAlleMerkmalWerte(int $kMerkmal): array
     {
         if ($kMerkmal <= 0) {
             return [];
@@ -218,25 +218,25 @@ class MerkmalWert
         }
         $kStandardSprache = (int)Sprache::getDefaultLanguage()->kSprache;
         if ($kSprache !== $kStandardSprache) {
-            $cSelect = "COALESCE(fremdSprache.kSprache, standardSprache.kSprache) AS kSprache, 
+            $cSelect = 'COALESCE(fremdSprache.kSprache, standardSprache.kSprache) AS kSprache, 
                         COALESCE(fremdSprache.cWert, standardSprache.cWert) AS cWert,
                         COALESCE(fremdSprache.cMetaTitle, standardSprache.cMetaTitle) AS cMetaTitle, 
                         COALESCE(fremdSprache.cMetaKeywords, standardSprache.cMetaKeywords) AS cMetaKeywords,
                         COALESCE(fremdSprache.cMetaDescription, standardSprache.cMetaDescription) AS cMetaDescription, 
                         COALESCE(fremdSprache.cBeschreibung, standardSprache.cBeschreibung) AS cBeschreibung,
-                        COALESCE(fremdSprache.cSeo, standardSprache.cSeo) AS cSeo";
-            $cJoin   = "INNER JOIN tmerkmalwertsprache AS standardSprache 
+                        COALESCE(fremdSprache.cSeo, standardSprache.cSeo) AS cSeo';
+            $cJoin   = 'INNER JOIN tmerkmalwertsprache AS standardSprache 
                             ON standardSprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-                            AND standardSprache.kSprache = " . $kStandardSprache . "
+                            AND standardSprache.kSprache = ' . $kStandardSprache . '
                     LEFT JOIN tmerkmalwertsprache AS fremdSprache 
                         ON fremdSprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-                        AND fremdSprache.kSprache = " . $kSprache . "";
+                        AND fremdSprache.kSprache = ' . $kSprache;
         } else {
-            $cSelect = "tmerkmalwertsprache.kSprache, tmerkmalwertsprache.cWert, tmerkmalwertsprache.cMetaTitle,
+            $cSelect = 'tmerkmalwertsprache.kSprache, tmerkmalwertsprache.cWert, tmerkmalwertsprache.cMetaTitle,
                     tmerkmalwertsprache.cMetaKeywords, tmerkmalwertsprache.cMetaDescription,
-                    tmerkmalwertsprache.cBeschreibung, tmerkmalwertsprache.cSeo";
-            $cJoin   = "INNER JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-                            AND tmerkmalwertsprache.kSprache = " . $kSprache;
+                    tmerkmalwertsprache.cBeschreibung, tmerkmalwertsprache.cSeo';
+            $cJoin   = 'INNER JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
+                            AND tmerkmalwertsprache.kSprache = ' . $kSprache;
         }
         $oMerkmalWert_arr = Shop::Container()->getDB()->query(
             "SELECT tmerkmalwert.*, {$cSelect}

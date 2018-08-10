@@ -66,7 +66,7 @@ class AuswahlAssistentOrt
                 $kAuswahlAssistentGruppe
             );
             foreach ($oOrtTMP_arr as $oOrtTMP) {
-                $this->oOrt_arr[] = new self($oOrtTMP->kAuswahlAssistentOrt, 0, $bBackend);
+                $this->oOrt_arr[] = new self((int)$oOrtTMP->kAuswahlAssistentOrt, 0, $bBackend);
             }
         } elseif ($kAuswahlAssistentOrt > 0) {
             $oOrt = Shop::Container()->getDB()->select(
@@ -292,16 +292,16 @@ class AuswahlAssistentOrt
             return false;
         }
         $cOrtSQL = $kAuswahlAssistentGruppe > 0
-            ? " AND tauswahlassistentort.kAuswahlAssistentGruppe != " . $kAuswahlAssistentGruppe
+            ? ' AND tauswahlassistentort.kAuswahlAssistentGruppe != ' . $kAuswahlAssistentGruppe
             : '';
         $oOrt    = Shop::Container()->getDB()->queryPrepared(
-            "SELECT kAuswahlAssistentOrt
+            'SELECT kAuswahlAssistentOrt
                 FROM tauswahlassistentort
                 JOIN tauswahlassistentgruppe 
                     ON tauswahlassistentgruppe.kAuswahlAssistentGruppe = tauswahlassistentort.kAuswahlAssistentGruppe
                     AND tauswahlassistentgruppe.kSprache = :langID
-                WHERE tauswahlassistentort.cKey = :keyID" . $cOrtSQL . "
-                    AND tauswahlassistentort.kKey = :catID",
+                WHERE tauswahlassistentort.cKey = :keyID' . $cOrtSQL . '
+                    AND tauswahlassistentort.kKey = :catID',
             [
                 'keyID'  => AUSWAHLASSISTENT_ORT_KATEGORIE,
                 'catID'  => $kKategorie,
@@ -325,16 +325,16 @@ class AuswahlAssistentOrt
             return false;
         }
         $cOrtSQL = $kAuswahlAssistentGruppe > 0
-            ? " AND tauswahlassistentort.kAuswahlAssistentGruppe != " . $kAuswahlAssistentGruppe
+            ? ' AND tauswahlassistentort.kAuswahlAssistentGruppe != ' . $kAuswahlAssistentGruppe
             : '';
         $oOrt    = Shop::Container()->getDB()->queryPrepared(
-            "SELECT kAuswahlAssistentOrt
+            'SELECT kAuswahlAssistentOrt
                 FROM tauswahlassistentort
                 JOIN tauswahlassistentgruppe 
                     ON tauswahlassistentgruppe.kAuswahlAssistentGruppe = tauswahlassistentort.kAuswahlAssistentGruppe
                     AND tauswahlassistentgruppe.kSprache = :langID
-                WHERE tauswahlassistentort.cKey = :keyID" . $cOrtSQL . "
-                    AND tauswahlassistentort.kKey = :linkID",
+                WHERE tauswahlassistentort.cKey = :keyID' . $cOrtSQL . '
+                    AND tauswahlassistentort.kKey = :linkID',
             [
                 'langID' => $kSprache,
                 'keyID'  => AUSWAHLASSISTENT_ORT_LINK,
@@ -357,16 +357,16 @@ class AuswahlAssistentOrt
             return false;
         }
         $cOrtSQL = $kAuswahlAssistentGruppe > 0
-            ? " AND tauswahlassistentort.kAuswahlAssistentGruppe != " . $kAuswahlAssistentGruppe
+            ? ' AND tauswahlassistentort.kAuswahlAssistentGruppe != ' . $kAuswahlAssistentGruppe
             : '';
         $oOrt    = Shop::Container()->getDB()->queryPrepared(
-            "SELECT kAuswahlAssistentOrt
+            'SELECT kAuswahlAssistentOrt
                 FROM tauswahlassistentort
                 JOIN tauswahlassistentgruppe 
                     ON tauswahlassistentgruppe.kAuswahlAssistentGruppe = tauswahlassistentort.kAuswahlAssistentGruppe
                     AND tauswahlassistentgruppe.kSprache = :langID
-                WHERE tauswahlassistentort.cKey = :keyID" . $cOrtSQL . "
-                    AND tauswahlassistentort.kKey = 1",
+                WHERE tauswahlassistentort.cKey = :keyID' . $cOrtSQL . '
+                    AND tauswahlassistentort.kKey = 1',
             ['langID' => $kSprache, 'keyID'  => AUSWAHLASSISTENT_ORT_STARTSEITE],
             \DB\ReturnType::SINGLE_OBJECT
         );
@@ -385,13 +385,13 @@ class AuswahlAssistentOrt
     {
         if ($kKey > 0 && $kSprache > 0 && strlen($cKey) > 0) {
             $oOrt = Shop::Container()->getDB()->executeQueryPrepared(
-                "SELECT kAuswahlAssistentOrt
-                        FROM tauswahlassistentort
-                        JOIN tauswahlassistentgruppe 
-                            ON tauswahlassistentgruppe.kAuswahlAssistentGruppe = tauswahlassistentort.kAuswahlAssistentGruppe
-                            AND tauswahlassistentgruppe.kSprache = :langID
-                        WHERE tauswahlassistentort.cKey = :keyID
-                            AND tauswahlassistentort.kKey = :kkey",
+                'SELECT kAuswahlAssistentOrt
+                    FROM tauswahlassistentort
+                    JOIN tauswahlassistentgruppe 
+                        ON tauswahlassistentgruppe.kAuswahlAssistentGruppe = tauswahlassistentort.kAuswahlAssistentGruppe
+                        AND tauswahlassistentgruppe.kSprache = :langID
+                    WHERE tauswahlassistentort.cKey = :keyID
+                        AND tauswahlassistentort.kKey = :kkey',
                 [
                     'langID' => $kSprache,
                     'keyID'  => $cKey,
@@ -401,7 +401,7 @@ class AuswahlAssistentOrt
             );
 
             if (isset($oOrt->kAuswahlAssistentOrt) && $oOrt->kAuswahlAssistentOrt > 0) {
-                return new self($oOrt->kAuswahlAssistentOrt, 0, $bBackend);
+                return new self((int)$oOrt->kAuswahlAssistentOrt, 0, $bBackend);
             }
         }
 

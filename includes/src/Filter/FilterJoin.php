@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -134,13 +134,13 @@ class FilterJoin implements FilterJoinInterface
      */
     public function __toString(): string
     {
-        return $this->getSql();
+        return $this->getSQL();
     }
 
     /**
      * @inheritdoc
      */
-    public function getSql(): string
+    public function getSQL(): string
     {
         $on = $this->getOn();
         if ($on !== '') {

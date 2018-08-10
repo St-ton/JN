@@ -18,18 +18,18 @@
     {assign var=mp3List value=false}
     {assign var=titles value=false}
     <div class="row">
-    {foreach name="mediendateien" from=$Artikel->oMedienDatei_arr item=oMedienDatei}
+    {foreach $Artikel->oMedienDatei_arr as $oMedienDatei}
         {if ($cMedienTyp == $oMedienDatei->cMedienTyp && $oMedienDatei->cAttributTab|count_characters == 0) || ($oMedienDatei->cAttributTab|count_characters > 0 && $cMedienTyp == $oMedienDatei->cAttributTab)}
             {if $oMedienDatei->nErreichbar == 0}
                 <div class="col-xs-12">
                     <p class="box_error">
-                        {lang key="noMediaFile" section="errorMessages"}
+                        {lang key='noMediaFile' section='errorMessages'}
                     </p>
                 </div>
             {else}
                 {assign var=cName value=$oMedienDatei->cName}
                 {assign var=titles value=$titles|cat:$cName}
-                {if !$smarty.foreach.mediendateien.last}
+                {if !$oMedienDatei@last}
                     {assign var=titles value=$titles|cat:'|'}
                 {/if}
 
@@ -42,8 +42,8 @@
                                 <div class="panel-body">
                                     <p>{$oMedienDatei->cBeschreibung}</p>
                                     {if isset($oMedienDatei->oMedienDateiAttribut_arr) && $oMedienDatei->oMedienDateiAttribut_arr|@count > 0}
-                                        {foreach name="mediendateiattribute" from=$oMedienDatei->oMedienDateiAttribut_arr item=oAttribut}
-                                            {if $oAttribut->cName == "img_alt"}
+                                        {foreach $oMedienDatei->oMedienDateiAttribut_arr as $oAttribut}
+                                            {if $oAttribut->cName === 'img_alt'}
                                                 {assign var=cMediaAltAttr value=$oAttribut->cWert}
                                             {/if}
                                         {/foreach}
@@ -73,7 +73,7 @@
                                                 {assign var=audiosrc value=$PFAD_MEDIAFILES|cat:$oMedienDatei->cPfad}
                                             {/if}
                                             {if $audiosrc|strlen > 1}
-                                                <audio controls>
+                                                <audio controls controlsList="nodownload">
                                                     <source src="{$audiosrc}" type="audio/mpeg">
                                                     Your browser does not support the audio element.
                                                 </audio>

@@ -7,19 +7,19 @@
     <p><a href="{$Position->Artikel->cURLFull}">{$Position->cName}</a></p>
     {* Seriennummer *}
     {if !empty($Position->cSeriennummer)}
-        <p>{lang key="serialnumber"}: {$Position->cSeriennummer}</p>
+        <p>{lang key='serialnumber'}: {$Position->cSeriennummer}</p>
     {/if}
     {* MHD *}
     {if !empty($Position->dMHD)}
-        <p>{lang key="mdh"}: {$Position->dMHD_de}</p>
+        <p>{lang key='mdh'}: {$Position->dMHD_de}</p>
     {/if}
     {* Charge *}
     {if !empty($Position->cChargeNr)}
-        <p>{lang key="charge"}: {$Position->cChargeNr}</p>
+        <p>{lang key='charge'}: {$Position->cChargeNr}</p>
     {/if}
     {if !empty($Position->cUnique) && $Position->kKonfigitem == 0 && $bKonfig}
         <ul class="children_ex">
-            {foreach from=$Bestellung->Positionen item=KonfigPos}
+            {foreach $Bestellung->Positionen as $KonfigPos}
                 {if $Position->cUnique == $KonfigPos->cUnique}
                     <li>{if !($KonfigPos->cUnique|strlen > 0 && $KonfigPos->kKonfigitem == 0)}{$KonfigPos->nAnzahlEinzel}x {/if}{$KonfigPos->cName} {if $bPreis}
                         <span class="price">{$KonfigPos->cEinzelpreisLocalized[$NettoPreise]}{/if}</span>
@@ -30,11 +30,11 @@
     {/if}
 
     {if $Position->Artikel->cLocalizedVPE}
-        <small><b>{lang key="basePrice" section="global"}:</b> {$Position->Artikel->cLocalizedVPE[$NettoPreise]}</small>
+        <small><b>{lang key='basePrice' section='global'}:</b> {$Position->Artikel->cLocalizedVPE[$NettoPreise]}</small>
         <br />
     {/if}
 
-    {foreach name=variationen from=$Position->WarenkorbPosEigenschaftArr item=WKPosEigenschaft}
+    {foreach $Position->WarenkorbPosEigenschaftArr as $WKPosEigenschaft}
         <br />
         <span>{$WKPosEigenschaft->cEigenschaftName}: {$WKPosEigenschaft->cEigenschaftWertName}
             {if $WKPosEigenschaft->fAufpreis && $bPreis}

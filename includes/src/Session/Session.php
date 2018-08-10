@@ -87,16 +87,16 @@ class Session
         $bot               = SAVE_BOT_SESSION !== 0 && isset($_SERVER['HTTP_USER_AGENT'])
             ? self::getIsCrawler($_SERVER['HTTP_USER_AGENT'])
             : false;
-        session_name(self::$sessionName);
+        \session_name(self::$sessionName);
         if ($bot === false || SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_NORMAL) {
-            self::$handler = ES_SESSIONS === 1
+            self::$handler = \ES_SESSIONS === 1
                 ? new SessionHandlerDB(\Shop::Container()->getDB())
                 : new SessionHandlerJTL();
         } else {
             if (SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_COMBINED
                 || SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_CACHE
             ) {
-                session_id('jtl-bot');
+                \session_id('jtl-bot');
             }
             if (SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_CACHE
                 || SAVE_BOT_SESSION === self::SAVE_BOT_SESSIONS_NEVER
@@ -110,11 +110,11 @@ class Session
                 self::$handler = new SessionHandlerJTL();
             }
         }
-        self::$storage = new SessionStorage(self::$handler, [], $start);
+        self::$storage = new SessionStorage(self::$handler, $start);
         $this->setStandardSessionVars();
         \Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
 
-        executeHook(HOOK_CORE_SESSION_CONSTRUCTOR);
+        \executeHook(\HOOK_CORE_SESSION_CONSTRUCTOR);
     }
 
     /**
@@ -123,7 +123,7 @@ class Session
      */
     public static function getIsCrawler(string $userAgent): bool
     {
-        return preg_match(
+        return \preg_match(
                 '/Google|ApacheBench|sqlmap|loader.io|bot|Rambler|Yahoo|AbachoBOT|accoona' .
                 '|spider|AcioRobot|ASPSeek|CocoCrawler|Dumbot|FAST-WebCrawler|GeonaBot' .
                 '|Gigabot|Lycos|alexa|AltaVista|IDBot|Scrubby/', $userAgent
@@ -191,8 +191,8 @@ class Session
             $updateLanguage = true;
         }
         if (!$updateGlobals
-            && ((isset($_SESSION['Kundengruppe']) && get_class($_SESSION['Kundengruppe']) === 'stdClass')
-                || (isset($_SESSION['Waehrung']) && get_class($_SESSION['Waehrung']) === 'stdClass'))
+            && ((isset($_SESSION['Kundengruppe']) && \get_class($_SESSION['Kundengruppe']) === 'stdClass')
+                || (isset($_SESSION['Waehrung']) && \get_class($_SESSION['Waehrung']) === 'stdClass'))
         ) {
             // session upgrade from 4.05 -> 4.06 - update with class instance
             $updateGlobals = true;
@@ -219,7 +219,7 @@ class Session
         // Kampagnen in die Session laden
         \Kampagne::getAvailable();
         if (!isset($_SESSION['cISOSprache'])) {
-            session_destroy();
+            \session_destroy();
             die('<h1>Ihr Shop wurde installiert. Lesen Sie in unserem Guide ' .
                 '<a href="https://jtl-url.de/3dw4f">' .
                 'mehr zu ersten Schritten mit JTL-Shop, der Grundkonfiguration und dem erstem Abgleich mit JTL-Wawi</a>.</h1>');
@@ -258,17 +258,13 @@ class Session
         $_SESSION['oKategorie_arr']                   = [];
         $_SESSION['kKategorieVonUnterkategorien_arr'] = [];
         $_SESSION['ks']                               = [];
-        $_SESSION['Waehrungen']                       = [];
         $_SESSION['Sprachen']                         = \Sprache::getInstance(false)->gibInstallierteSprachen();
-        $allCurrencies                                = \Shop::Container()->getDB()->selectAll('twaehrung', [], [],
-            'kWaehrung');
-        foreach ($allCurrencies as $currency) {
-            $_SESSION['Waehrungen'][] = new \Currency($currency->kWaehrung);
-        }
+        \Currency::setCurrencies(true);
+
         if (!isset($_SESSION['jtl_token'])) {
             $_SESSION['jtl_token'] = \Shop::Container()->getCryptoService()->randomString(32);
         }
-        array_map(function ($lang) {
+        \array_map(function ($lang) {
             $lang->kSprache = (int)$lang->kSprache;
 
             return $lang;
@@ -292,7 +288,7 @@ class Session
                     || (empty($cDefaultLanguage) && $Sprache->cShopStandard === 'Y')
                 ) {
                     $_SESSION['kSprache']    = $Sprache->kSprache;
-                    $_SESSION['cISOSprache'] = trim($Sprache->cISO);
+                    $_SESSION['cISOSprache'] = \trim($Sprache->cISO);
                     \Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
                     $_SESSION['currentLanguage'] = clone $Sprache;
                     break;
@@ -308,7 +304,7 @@ class Session
                 }
             }
         } else {
-            if (get_class($_SESSION['Waehrung']) === 'stdClass') {
+            if (\get_class($_SESSION['Waehrung']) === 'stdClass') {
                 $_SESSION['Waehrung'] = new \Currency($_SESSION['Waehrung']->kWaehrung);
             }
             foreach ($_SESSION['Waehrungen'] as $currency) {
@@ -321,11 +317,11 @@ class Session
         }
         // EXPERIMENTAL_MULTILANG_SHOP
         foreach ($_SESSION['Sprachen'] as $Sprache) {
-            if (defined('URL_SHOP_' . strtoupper($Sprache->cISO))) {
-                $shopLangURL = constant('URL_SHOP_' . strtoupper($Sprache->cISO));
-                if (strpos($shopLangURL, $_SERVER['HTTP_HOST']) !== false) {
+            if (\defined('URL_SHOP_' . \strtoupper($Sprache->cISO))) {
+                $shopLangURL = \constant('URL_SHOP_' . \strtoupper($Sprache->cISO));
+                if (\strpos($shopLangURL, $_SERVER['HTTP_HOST']) !== false) {
                     $_SESSION['kSprache']    = $Sprache->kSprache;
-                    $_SESSION['cISOSprache'] = trim($Sprache->cISO);
+                    $_SESSION['cISOSprache'] = \trim($Sprache->cISO);
                     \Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
                     break;
                 }
@@ -334,7 +330,7 @@ class Session
         // EXPERIMENTAL_MULTILANG_SHOP END
 
         if (!isset($_SESSION['Kunde']->kKunde, $_SESSION['Kundengruppe']->kKundengruppe)
-            || get_class($_SESSION['Kundengruppe']) === 'stdClass'
+            || \get_class($_SESSION['Kundengruppe']) === 'stdClass'
         ) {
             $_SESSION['Kundengruppe'] = (new \Kundengruppe())
                 ->setLanguageID((int)$_SESSION['kSprache'])
@@ -343,7 +339,7 @@ class Session
         if (!$_SESSION['Kundengruppe']->hasAttributes()) {
             $_SESSION['Kundengruppe']->initAttributes();
         }
-        if (\Shop::Cache()->isCacheGroupActive(CACHING_GROUP_CORE) === false) {
+        if (\Shop::Cache()->isCacheGroupActive(\CACHING_GROUP_CORE) === false) {
             $_SESSION['Linkgruppen'] = \Shop::Container()->getLinkService()->getLinkGroups();
             $_SESSION['Hersteller']  = \HerstellerHelper::getInstance()->getManufacturers();
         }
@@ -375,8 +371,8 @@ class Session
         $kVergleichlistePos = \RequestHelper::verifyGPCDataInt('vlplo');
         if ($kVergleichlistePos !== 0
             && isset($_SESSION['Vergleichsliste']->oArtikel_arr)
-            && is_array($_SESSION['Vergleichsliste']->oArtikel_arr)
-            && count($_SESSION['Vergleichsliste']->oArtikel_arr) > 0
+            && \is_array($_SESSION['Vergleichsliste']->oArtikel_arr)
+            && \count($_SESSION['Vergleichsliste']->oArtikel_arr) > 0
         ) {
             // Wunschliste Position aus der Session löschen
             foreach ($_SESSION['Vergleichsliste']->oArtikel_arr as $i => $oArtikel) {
@@ -385,15 +381,15 @@ class Session
                 }
             }
             // Ist nach dem Löschen des Artikels aus der Vergleichslite kein weiterer Artikel vorhanden?
-            if (count($_SESSION['Vergleichsliste']->oArtikel_arr) === 0) {
+            if (\count($_SESSION['Vergleichsliste']->oArtikel_arr) === 0) {
                 unset($_SESSION['Vergleichsliste']);
             } else {
                 // Positionen Array in der Wunschliste neu nummerieren
-                $_SESSION['Vergleichsliste']->oArtikel_arr = array_merge($_SESSION['Vergleichsliste']->oArtikel_arr);
+                $_SESSION['Vergleichsliste']->oArtikel_arr = \array_merge($_SESSION['Vergleichsliste']->oArtikel_arr);
             }
-            if (!isset($_SERVER['REQUEST_URI']) || strpos($_SERVER['REQUEST_URI'], 'index.php') !== false) {
-                http_response_code(301);
-                header('Location: ' . \Shop::getURL() . '/');
+            if (!isset($_SERVER['REQUEST_URI']) || \strpos($_SERVER['REQUEST_URI'], 'index.php') !== false) {
+                \http_response_code(301);
+                \header('Location: ' . \Shop::getURL() . '/');
                 exit;
             }
         }
@@ -414,31 +410,31 @@ class Session
             return $cDefault;
         }
 
-        $cAccepted_arr   = preg_split('/,\s*/', $cLanguage);
+        $cAccepted_arr   = \preg_split('/,\s*/', $cLanguage);
         $cCurrentLang    = $cDefault;
         $nCurrentQuality = 0;
 
         foreach ($cAccepted_arr as $cAccepted) {
-            $res = preg_match(
+            $res = \preg_match(
                 '/^([a-z]{1,8}(?:-[a-z]{1,8})*)' .
                 '(?:;\s*q=(0(?:\.[0-9]{1,3})?|1(?:\.0{1,3})?))?$/i', $cAccepted, $cMatch_arr
             );
             if (!$res) {
                 continue;
             }
-            $cLangeCode   = explode('-', $cMatch_arr[1]);
+            $cLangeCode   = \explode('-', $cMatch_arr[1]);
             $nLangQuality = isset($cMatch_arr[2])
                 ? (float)$cMatch_arr[2]
                 : 1.0;
-            while (count($cLangeCode)) {
+            while (\count($cLangeCode)) {
                 if ($nLangQuality > $nCurrentQuality
-                    && in_array(strtolower(implode('-', $cLangeCode)), $cAllowed_arr, true)
+                    && \in_array(\strtolower(\implode('-', $cLangeCode)), $cAllowed_arr, true)
                 ) {
-                    $cCurrentLang    = strtolower(implode('-', $cLangeCode));
+                    $cCurrentLang    = \strtolower(\implode('-', $cLangeCode));
                     $nCurrentQuality = $nLangQuality;
                     break;
                 }
-                array_pop($cLangeCode);
+                \array_pop($cLangeCode);
             }
         }
 
@@ -605,7 +601,7 @@ class Session
      */
     public static function checkReset($langISO = '')
     {
-        if (strlen($langISO) > 0) {
+        if (\strlen($langISO) > 0) {
             //Kategorien zurücksetzen, da sie lokalisiert abgelegt wurden
             if ($langISO !== \Shop::getLanguageCode()) {
                 $_SESSION['oKategorie_arr']     = [];
@@ -645,7 +641,7 @@ class Session
                 $kUmfrage              = \RequestHelper::verifyGPCDataInt('u');
                 $cSeo                  = '';
                 //redirect per 301
-                http_response_code(301);
+                \http_response_code(301);
                 if ($kArtikel > 0) {
                     $dbRes = \Shop::Container()->getDB()->select(
                         'tseo',
@@ -751,7 +747,7 @@ class Session
                     );
                     $cSeo  = $dbRes->cSeo;
                 }
-                header('Location: ' . \Shop::getURL() . '/' . $cSeo, true, 301);
+                \header('Location: ' . \Shop::getURL() . '/' . $cSeo, true, 301);
                 exit;
             }
         }
@@ -773,8 +769,8 @@ class Session
                 }
                 unset($_SESSION['TrustedShops']);
                 if ($cart !== null) {
-                    $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
-                    if (count($cart->PositionenArr) > 0) {
+                    $cart->loescheSpezialPos(\C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
+                    if (\count($cart->PositionenArr) > 0) {
                         $cart->setzePositionsPreise();
                     }
                 }

@@ -1,5 +1,5 @@
 <ul class="filter_search nav nav-list">
-    {foreach name=suchfilter from=$NaviFilter->searchFilterCompat->getOptions() item=searchFilter}
+    {foreach $NaviFilter->searchFilterCompat->getOptions() as $searchFilter}
         <li>
             <a rel="nofollow" href="{$searchFilter->getURL()}" class="{if $searchFilter->isActive()}active{/if}">
                 <span class="badge pull-right">{$searchFilter->getCount()}</span>

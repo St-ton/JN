@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -36,109 +36,19 @@ class ProductFilterSQL implements ProductFilterSQLInterface
     /**
      * @inheritdoc
      */
-    public function getOrder(): \stdClass
-    {
-        $Artikelsortierung = (int)$this->conf['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
-        $sort              = new \stdClass();
-        $sort->join        = (new FilterJoin())->setOrigin(__CLASS__);
-        if (isset($_SESSION['Usersortierung'])) {
-            $Artikelsortierung = Metadata::mapUserSorting($_SESSION['Usersortierung']);
-        }
-        $_SESSION['Usersortierung'] = $Artikelsortierung;
-        if ($_SESSION['Usersortierung'] === SEARCH_SORT_STANDARD && $this->productFilter->getSort() > 0) {
-            $Artikelsortierung = $this->productFilter->getSort();
-        }
-        $sort->orderBy = 'tartikel.nSort, tartikel.cName';
-        switch ($Artikelsortierung) {
-            case SEARCH_SORT_STANDARD:
-                $sort->orderBy = 'tartikel.nSort, tartikel.cName';
-                if ($this->productFilter->getCategory()->getValue() > 0) {
-                    $sort->orderBy = 'tartikel.nSort, tartikel.cName';
-                } elseif (isset($_SESSION['Usersortierung'])
-                    && $_SESSION['Usersortierung'] === SEARCH_SORT_STANDARD
-                    && $this->productFilter->getSearch()->getSearchCacheID() > 0
-                ) {
-                    $sort->orderBy = 'jSuche.nSort'; // was tsuchcachetreffer in 4.06, but is aliased to jSuche
-                }
-                break;
-            case SEARCH_SORT_NAME_ASC:
-                $sort->orderBy = 'tartikel.cName';
-                break;
-            case SEARCH_SORT_NAME_DESC:
-                $sort->orderBy = 'tartikel.cName DESC';
-                break;
-            case SEARCH_SORT_PRICE_ASC:
-                $sort->orderBy = 'tpreise.fVKNetto, tartikel.cName';
-                $sort->join->setComment('join from SORT by price ASC')
-                           ->setType('JOIN')
-                           ->setTable('tpreise')
-                           ->setOn('tartikel.kArtikel = tpreise.kArtikel 
-                                        AND tpreise.kKundengruppe = ' . $this->productFilter->getCustomerGroupID());
-                break;
-            case SEARCH_SORT_PRICE_DESC:
-                $sort->orderBy = 'tpreise.fVKNetto DESC, tartikel.cName';
-                $sort->join->setComment('join from SORT by price DESC')
-                           ->setType('JOIN')
-                           ->setTable('tpreise')
-                           ->setOn('tartikel.kArtikel = tpreise.kArtikel 
-                                        AND tpreise.kKundengruppe = ' . $this->productFilter->getCustomerGroupID());
-                break;
-            case SEARCH_SORT_EAN:
-                $sort->orderBy = 'tartikel.cBarcode, tartikel.cName';
-                break;
-            case SEARCH_SORT_NEWEST_FIRST:
-                $sort->orderBy = 'tartikel.dErstellt DESC, tartikel.cName';
-                break;
-            case SEARCH_SORT_PRODUCTNO:
-                $sort->orderBy = 'tartikel.cArtNr, tartikel.cName';
-                break;
-            case SEARCH_SORT_AVAILABILITY:
-                $sort->orderBy = 'tartikel.fLagerbestand DESC, tartikel.cLagerKleinerNull DESC, tartikel.cName';
-                break;
-            case SEARCH_SORT_WEIGHT:
-                $sort->orderBy = 'tartikel.fGewicht, tartikel.cName';
-                break;
-            case SEARCH_SORT_DATEOFISSUE:
-                $sort->orderBy = 'tartikel.dErscheinungsdatum DESC, tartikel.cName';
-                break;
-            case SEARCH_SORT_BESTSELLER:
-                $sort->orderBy = 'tbestseller.fAnzahl DESC, tartikel.cName';
-                $sort->join->setComment('join from SORT by bestseller')
-                           ->setType('LEFT JOIN')
-                           ->setTable('tbestseller')
-                           ->setOn('tartikel.kArtikel = tbestseller.kArtikel');
-                break;
-            case SEARCH_SORT_RATING:
-                $sort->orderBy = 'tbewertung.nSterne DESC, tartikel.cName';
-                $sort->join->setComment('join from SORT by rating')
-                           ->setType('LEFT JOIN')
-                           ->setTable('tbewertung')
-                           ->setOn('tbewertung.kArtikel = tartikel.kArtikel');
-                break;
-            default:
-                break;
-        }
+    public function getBaseQuery(FilterStateSQLInterface $state, string $type = 'filter'): string {
+        $select     = $state->getSelect();
+        $joins      = $state->getJoins();
+        $conditions = $state->getConditions();
+        $having     = $state->getHaving();
+        $sort       = $state->getOrderBy();
+        $limit      = $state->getLimit();
+        $groupBy    = $state->getGroupBy();
 
-        return $sort;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getBaseQuery(
-        array $select = ['tartikel.kArtikel'],
-        array $joins,
-        array $conditions,
-        array $having = [],
-        $order = null,
-        $limit = '',
-        array $groupBy = ['tartikel.kArtikel'],
-        $type = 'filter'
-    ): string {
-        if ($order === null) {
-            $orderData = $this->getOrder();
-            $joins[]   = $orderData->join;
-            $order     = $orderData->orderBy;
+        if ($sort === null) {
+            $sort    = $this->productFilter->getSorting()->getActiveSorting();
+            $joins[] = $sort->getJoin();
+            $sort    = $sort->getOrderBy();
         }
         $joins[] = (new FilterJoin())
             ->setComment('product visiblity join from getBaseQuery')
@@ -151,7 +61,7 @@ class ProductFilterSQL implements ProductFilterSQLInterface
         $checked = [];
         $joins   = reduce_left($joins, function(FilterJoinInterface $value, $i, $c, $reduction) use (&$checked) {
             $key = $value->getTable();
-            if (!in_array($key, $checked, true)) {
+            if (!\in_array($key, $checked, true)) {
                 $checked[]   = $key;
                 $reduction[] = $value;
             }
@@ -174,25 +84,25 @@ class ProductFilterSQL implements ProductFilterSQLInterface
         }
         $conditions[] = $this->getStockFilterSQL(false);
         // remove empty conditions
-        $conditions = array_filter($conditions);
-        executeHook(HOOK_PRODUCTFILTER_GET_BASE_QUERY, [
+        $conditions = \array_filter($conditions);
+        \executeHook(\HOOK_PRODUCTFILTER_GET_BASE_QUERY, [
             'select'        => &$select,
             'joins'         => &$joins,
             'conditions'    => &$conditions,
             'groupBy'       => &$groupBy,
             'having'        => &$having,
-            'order'         => &$order,
+            'order'         => &$sort,
             'limit'         => &$limit,
             'productFilter' => $this
         ]);
         // merge FilterQuery-Conditions
         $filterQueryIndices = [];
-        $filterQueries      = array_filter($conditions, function ($f) {
-            return is_object($f) && get_class($f) === FilterQuery::class;
+        $filterQueries      = \array_filter($conditions, function ($f) {
+            return \is_object($f) && \get_class($f) === FilterQuery::class;
         });
         foreach ($filterQueries as $idx => $condition) {
             /** @var FilterQueryInterface $condition */
-            if (count($filterQueryIndices) === 0) {
+            if (\count($filterQueryIndices) === 0) {
                 $filterQueryIndices[] = $idx;
                 continue;
             }
@@ -203,7 +113,7 @@ class ProductFilterSQL implements ProductFilterSQLInterface
                 /** @var FilterQueryInterface $check */
                 if ($currentWhere === $check->getWhere()) {
                     $found = true;
-                    $check->setParams(array_merge_recursive($check->getParams(), $condition->getParams()));
+                    $check->setParams(\array_merge_recursive($check->getParams(), $condition->getParams()));
                     unset($conditions[$idx]);
                     break;
                 }
@@ -213,20 +123,20 @@ class ProductFilterSQL implements ProductFilterSQLInterface
             }
         }
         // build sql string
-        $cond = implode(' AND ', array_map(function ($a) {
-            if (is_string($a) || (is_object($a) && get_class($a) === FilterQuery::class)) {
+        $cond = \implode(' AND ', \array_map(function ($a) {
+            if (\is_string($a) || (\is_object($a) && \get_class($a) === FilterQuery::class)) {
                 return $a;
             }
 
-            return '(' . implode(' AND ', $a) . ')';
+            return '(' . \implode(' AND ', $a) . ')';
         }, $conditions));
 
-        return 'SELECT ' . implode(', ', $select) . '
-            FROM tartikel ' . implode("\n", $joins) . "\n" .
+        return 'SELECT ' . \implode(', ', $select) . '
+            FROM tartikel ' . \implode("\n", $joins) . "\n" .
             (empty($cond) ? '' : (' WHERE ' . $cond . "\n")) .
-            (empty($groupBy) ? '' : ('#default group by' . "\n" . 'GROUP BY ' . implode(', ', $groupBy) . "\n")) .
-            (implode(' AND ', $having) . "\n") .
-            (empty($order) ? '' : ('#limit sql' . "\n" . 'ORDER BY ' . $order)) .
+            (empty($groupBy) ? '' : ('#default group by' . "\n" . 'GROUP BY ' . \implode(', ', $groupBy) . "\n")) .
+            (\implode(' AND ', $having) . "\n") .
+            (empty($sort) ? '' : ('#limit sql' . "\n" . 'ORDER BY ' . $sort)) .
             (empty($limit) ? '' : ('#order by sql' . "\n" . 'LIMIT ' . $limit));
     }
 
@@ -237,10 +147,10 @@ class ProductFilterSQL implements ProductFilterSQLInterface
     {
         $filterSQL  = '';
         $filterType = (int)$this->conf['global']['artikel_artikelanzeigefilter'];
-        if ($filterType === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
-            || $filterType === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
+        if ($filterType === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
+            || $filterType === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
         ) {
-            $or = $filterType === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
+            $or = $filterType === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
                 ? " OR tartikel.cLagerKleinerNull = 'Y'"
                 : '';
             $filterSQL = ($withAnd === true ? ' AND ' : ' ') .
@@ -256,7 +166,7 @@ class ProductFilterSQL implements ProductFilterSQLInterface
                     )" . $or .
                 ")";
         }
-        executeHook(HOOK_STOCK_FILTER, [
+        \executeHook(\HOOK_STOCK_FILTER, [
             'conf'      => $filterType,
             'filterSQL' => &$filterSQL
         ]);

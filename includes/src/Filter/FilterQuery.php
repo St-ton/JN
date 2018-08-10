@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -161,7 +161,7 @@ class FilterQuery implements FilterQueryInterface
      */
     public function __toString(): string
     {
-        return $this->getSql();
+        return $this->getSQL();
     }
 
     /**
@@ -197,16 +197,14 @@ class FilterQuery implements FilterQueryInterface
     /**
      * @inheritdoc
      */
-    public function getSql(): string
+    public function getSQL(): string
     {
         $where = $this->where;
-        if (count($this->params) > 0) {
-            foreach ($this->params as $param => $value) {
-                if (is_array($value)) {
-                    $value = implode(',', $value);
-                }
-                $where = str_replace('{' . $param . '}', $value, $where);
+        foreach ($this->params as $param => $value) {
+            if (\is_array($value)) {
+                $value = \implode(',', $value);
             }
+            $where = \str_replace('{' . $param . '}', $value, $where);
         }
 
         return $this->getComment() . $where;

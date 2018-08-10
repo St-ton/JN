@@ -19,11 +19,11 @@ $hinweis       = '';
 $linkHelper    = Shop::Container()->getLinkService();
 
 if (strlen($_GET['uid']) === 40) {
-    $status = Shop::Container()->getDB()->queryPrepared("
-        SELECT kBestellung 
+    $status = Shop::Container()->getDB()->queryPrepared(
+        'SELECT kBestellung 
             FROM tbestellstatus 
             WHERE dDatum >= date_sub(now(), INTERVAL 30 DAY) 
-            AND cUID = :uid",
+            AND cUID = :uid',
         ['uid' => $_GET['uid']],
         \DB\ReturnType::SINGLE_OBJECT
     );
@@ -43,8 +43,6 @@ if (strlen($_GET['uid']) === 40) {
 $step                   = 'bestellung';
 $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
-$startKat               = new Kategorie();
-$startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 
 $smarty->assign('step', $step)

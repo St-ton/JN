@@ -157,9 +157,9 @@ if (isset($_POST['einstellungen_bearbeiten'])
 
 if ($step === 'uebersicht') {
     $sections     = Shop::Container()->getDB()->query(
-        "SELECT * 
+        'SELECT * 
             FROM teinstellungensektion 
-            ORDER BY kEinstellungenSektion",
+            ORDER BY kEinstellungenSektion',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     $sectionCount = count($sections);
@@ -216,9 +216,9 @@ if ($step === 'einstellungen bearbeiten') {
         //But In special case of setting 492 values come from kKundengruppe instead of teinstellungenconfwerte
         if ($config->cInputTyp === 'listbox' && $config->kEinstellungenConf === 492) {
             $config->ConfWerte = Shop::Container()->getDB()->query(
-                "SELECT kKundengruppe AS cWert, cName
+                'SELECT kKundengruppe AS cWert, cName
                     FROM tkundengruppe
-                    ORDER BY cStandard DESC",
+                    ORDER BY cStandard DESC',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         } elseif (in_array($config->cInputTyp, ['selectbox', 'listbox'], true)) {

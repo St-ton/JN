@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -22,7 +22,7 @@ class BaseSearchSpecial extends AbstractFilter
     /**
      * @var array
      */
-    private static $mapping = [
+    public static $mapping = [
         'kKey' => 'ValueCompat'
     ];
 
@@ -72,22 +72,22 @@ class BaseSearchSpecial extends AbstractFilter
             }
         }
         switch ($this->getValue()) {
-            case SEARCHSPECIALS_BESTSELLER:
+            case \SEARCHSPECIALS_BESTSELLER:
                 $this->setName(\Shop::Lang()->get('bestsellers'));
                 break;
-            case SEARCHSPECIALS_SPECIALOFFERS:
+            case \SEARCHSPECIALS_SPECIALOFFERS:
                 $this->setName(\Shop::Lang()->get('specialOffers'));
                 break;
-            case SEARCHSPECIALS_NEWPRODUCTS:
+            case \SEARCHSPECIALS_NEWPRODUCTS:
                 $this->setName(\Shop::Lang()->get('newProducts'));
                 break;
-            case SEARCHSPECIALS_TOPOFFERS:
+            case \SEARCHSPECIALS_TOPOFFERS:
                 $this->setName(\Shop::Lang()->get('topOffers'));
                 break;
-            case SEARCHSPECIALS_UPCOMINGPRODUCTS:
+            case \SEARCHSPECIALS_UPCOMINGPRODUCTS:
                 $this->setName(\Shop::Lang()->get('upcomingProducts'));
                 break;
-            case SEARCHSPECIALS_TOPREVIEWS:
+            case \SEARCHSPECIALS_TOPREVIEWS:
                 $this->setName(\Shop::Lang()->get('topReviews'));
                 break;
             default:
@@ -114,14 +114,14 @@ class BaseSearchSpecial extends AbstractFilter
     public function getSQLCondition(): string
     {
         switch ($this->value) {
-            case SEARCHSPECIALS_BESTSELLER:
-                $nAnzahl = (($min = $this->getConfig()['global']['global_bestseller_minanzahl']) > 0)
+            case \SEARCHSPECIALS_BESTSELLER:
+                $nAnzahl = (($min = $this->getConfig('global')['global_bestseller_minanzahl']) > 0)
                     ? (int)$min
                     : 100;
 
                 return "ROUND(tbestseller.fAnzahl) >= " . $nAnzahl;
 
-            case SEARCHSPECIALS_SPECIALOFFERS:
+            case \SEARCHSPECIALS_SPECIALOFFERS:
                 $tasp = 'tartikelsonderpreis';
                 $tsp  = 'tsonderpreise';
                 if (!$this->productFilter->hasPriceRangeFilter()) {
@@ -134,22 +134,24 @@ class BaseSearchSpecial extends AbstractFilter
                                     AND (" . $tasp . ".dEnde >= curdate() OR " . $tasp . ".dEnde = '0000-00-00')
                                     AND " . $tsp . " .kKundengruppe = " . \Session::CustomerGroup()->getID();
 
-            case SEARCHSPECIALS_NEWPRODUCTS:
-                $alter_tage = (($age = $this->getConfig()['boxen']['box_neuimsortiment_alter_tage']) > 0)
+            case \SEARCHSPECIALS_NEWPRODUCTS:
+                $alter_tage = (($age = $this->getConfig('boxen')['box_neuimsortiment_alter_tage']) > 0)
                     ? (int)$age
                     : 30;
 
-                return "tartikel.cNeu = 'Y' AND DATE_SUB(now(),INTERVAL $alter_tage DAY) < tartikel.dErstellt AND tartikel.cNeu = 'Y'";
+                return "tartikel.cNeu = 'Y' 
+                    AND DATE_SUB(now(), INTERVAL $alter_tage DAY) < tartikel.dErstellt 
+                    AND tartikel.cNeu = 'Y'";
 
-            case SEARCHSPECIALS_TOPOFFERS:
+            case \SEARCHSPECIALS_TOPOFFERS:
                 return "tartikel.cTopArtikel = 'Y'";
 
-            case SEARCHSPECIALS_UPCOMINGPRODUCTS:
+            case \SEARCHSPECIALS_UPCOMINGPRODUCTS:
                 return 'now() < tartikel.dErscheinungsdatum';
 
-            case SEARCHSPECIALS_TOPREVIEWS:
+            case \SEARCHSPECIALS_TOPREVIEWS:
                 if (!$this->productFilter->hasRatingFilter()) {
-                    $nMindestSterne = ($min = $this->getConfig()['boxen']['boxen_topbewertet_minsterne']) > 0
+                    $nMindestSterne = ($min = $this->getConfig('boxen')['boxen_topbewertet_minsterne']) > 0
                         ? (int)$min
                         : 4;
 
@@ -170,7 +172,7 @@ class BaseSearchSpecial extends AbstractFilter
     public function getSQLJoin()
     {
         switch ($this->value) {
-            case SEARCHSPECIALS_BESTSELLER:
+            case \SEARCHSPECIALS_BESTSELLER:
                 return (new FilterJoin())
                     ->setType('JOIN')
                     ->setTable('tbestseller')
@@ -178,7 +180,7 @@ class BaseSearchSpecial extends AbstractFilter
                     ->setComment('bestseller JOIN from ' . __METHOD__)
                     ->setOrigin(__CLASS__);
 
-            case SEARCHSPECIALS_SPECIALOFFERS:
+            case \SEARCHSPECIALS_SPECIALOFFERS:
                 return $this->productFilter->hasPriceRangeFilter()
                     ? []
                     : (new FilterJoin())
@@ -189,12 +191,12 @@ class BaseSearchSpecial extends AbstractFilter
                         ->setComment('special offers JOIN from ' . __METHOD__)
                         ->setOrigin(__CLASS__);
 
-            case SEARCHSPECIALS_NEWPRODUCTS:
-            case SEARCHSPECIALS_TOPOFFERS:
-            case SEARCHSPECIALS_UPCOMINGPRODUCTS:
+            case \SEARCHSPECIALS_NEWPRODUCTS:
+            case \SEARCHSPECIALS_TOPOFFERS:
+            case \SEARCHSPECIALS_UPCOMINGPRODUCTS:
                 return [];
 
-            case SEARCHSPECIALS_TOPREVIEWS:
+            case \SEARCHSPECIALS_TOPREVIEWS:
                 return $this->productFilter->hasRatingFilter()
                     ? []
                     : (new FilterJoin())

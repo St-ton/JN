@@ -29,6 +29,7 @@ $Einstellungen        = Shop::getSettings([
     CONF_NEWSLETTER
 ]);
 $kLink                = $linkHelper->getSpecialPageLinkKey(LINKTYP_REGISTRIEREN);
+$link                 = $linkHelper->getPageLink($kLink);
 $step                 = 'formular';
 $hinweis              = '';
 $titel                = Shop::Lang()->get('newAccount', 'login');
@@ -58,11 +59,10 @@ if (isset($_FILES['vcard'])
 // hole aktuelle Kategorie, falls eine gesetzt
 $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
-$startKat               = new Kategorie();
-$startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 Shop::Smarty()->assign('editRechnungsadresse', $editRechnungsadresse)
     ->assign('Ueberschrift', $titel)
+    ->assign('Link', $link)
     ->assign('hinweis', $hinweis)
     ->assign('step', $step)
     ->assign('nAnzeigeOrt', CHECKBOX_ORT_REGISTRIERUNG)

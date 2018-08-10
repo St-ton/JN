@@ -43,8 +43,6 @@ $Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_NEWSLETTER]);
 //hole alle OberKategorien
 $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
-$startKat               = new Kategorie();
-$startKat->kKategorie   = 0;
 $cOption                = 'eintragen';
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 // Freischaltcode wurde übergeben
@@ -256,6 +254,7 @@ $cMetaKeywords    = $oMeta->cKeywords;
 Shop::Smarty()->assign('hinweis', $cHinweis)
     ->assign('fehler', $cFehler)
     ->assign('cOption', $cOption)
+    ->assign('Link', $link)
     ->assign('nAnzeigeOrt', CHECKBOX_ORT_NEWSLETTERANMELDUNG)
     ->assign('code_newsletter', false);
 

@@ -21,7 +21,7 @@
                 </a>
                 {if $li->getChildLinks()->count() > 0}
                     <ul class="{if isset($dropdownSupport)}{if $tplscope !== 'megamenu'}inline {/if}dropdown-menu keepopen{else}submenu list-unstyled{/if}">
-                        {foreach name='subs' from=$li->getChildLinks() item='subli'}
+                        {foreach $li->getChildLinks() as $subli}
                             {if !empty($subli->getName())}
                                 <li{if $subli->getIsActive() || ($checkLinkParents === true && isset($activeParents) && in_array($subli->getID(), $activeParents))} class="active"{/if}>
                                     <a href="{$subli->getURL()}"{if $subli->getNoFollow()} rel="nofollow"{/if}{if !empty($subli->getTitle())} title="{$subli->getTitle()}"{/if}>

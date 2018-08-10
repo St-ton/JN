@@ -28,7 +28,7 @@
 
 {include file='snippets/extension.tpl'}
 
-{block name="productlist-header"}
+{block name='productlist-header'}
 {if $oNavigationsinfo->hasData()}
     <div class="title">{if $oNavigationsinfo->getName()}<h1>{$oNavigationsinfo->getName()}</h1>{/if}</div>
     <div class="desc clearfix">
@@ -38,19 +38,16 @@
           </div>
         {/if}
         {if $Einstellungen.navigationsfilter.kategorie_beschreibung_anzeigen === 'Y'
-            && $Einstellungen.navigationsfilter.kategorie_bild_anzeigen !== 'B'
             && $oNavigationsinfo->getCategory() !== null
             && $oNavigationsinfo->getCategory()->cBeschreibung|strlen > 0}
             <div class="item_desc custom_content">{$oNavigationsinfo->getCategory()->cBeschreibung}</div>
         {/if}
         {if $Einstellungen.navigationsfilter.hersteller_beschreibung_anzeigen === 'Y'
-            && $Einstellungen.navigationsfilter.hersteller_bild_anzeigen !== 'B'
             && $oNavigationsinfo->getManufacturer() !== null
             && $oNavigationsinfo->getManufacturer()->cBeschreibung|strlen > 0}
             <div class="item_desc custom_content">{$oNavigationsinfo->getManufacturer()->cBeschreibung}</div>
         {/if}
         {if $Einstellungen.navigationsfilter.merkmalwert_beschreibung_anzeigen === 'Y'
-            && $Einstellungen.navigationsfilter.merkmalwert_bild_anzeigen !== 'B'
             && $oNavigationsinfo->getAttributeValue() !== null
             && $oNavigationsinfo->getAttributeValue()->cBeschreibung|strlen > 0}
             <div class="item_desc custom_content">{$oNavigationsinfo->getAttributeValue()->cBeschreibung}</div>
@@ -60,9 +57,10 @@
 {/block}
 
 {block name="productlist-subcategories"}
+{include file='snippets/opc_mount_point.tpl' id='opc_productlist_subcats_prepend'}
 {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'N' && $oUnterKategorien_arr|@count > 0}
     <div class="row row-eq-height content-cats-small clearfix">
-        {foreach name=unterkats from=$oUnterKategorien_arr item=Unterkat}
+        {foreach $oUnterKategorien_arr as $Unterkat}
             <div class="col-xs-6 col-md-4 col-lg-3">
                 <div class="thumbnail">
                     {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}
@@ -84,7 +82,7 @@
                         {if isset($Unterkat->Unterkategorien) && $Unterkat->Unterkategorien|@count > 0}
                             <hr class="hr-sm">
                             <ul class="list-unstyled small subsub">
-                                {foreach from=$Unterkat->Unterkategorien item=UnterUnterKat}
+                                {foreach $Unterkat->Unterkategorien as $UnterUnterKat}
                                     <li>
                                         <a href="{$UnterUnterKat->cURLFull}" title="{$UnterUnterKat->cName}">{$UnterUnterKat->cName}</a>
                                     </li>
@@ -97,6 +95,7 @@
         {/foreach}
     </div>
 {/if}
+{include file='snippets/opc_mount_point.tpl' id='opc_productlist_subcats_append'}
 {/block}
 
 {include file='productwizard/index.tpl'}
@@ -140,8 +139,8 @@
             {*<input type="hidden" name="pf" value="{$NaviFilter->getPriceRangeFilter()->getValue()}" />*}
         {*{/if}*}
         {*{if $NaviFilter->hasAttributeFilter()}*}
-            {*{foreach name=merkmalfilter from=$NaviFilter->getAttributeFilter() item=attributeFilter}*}
-                {*<input type="hidden" name="mf{$smarty.foreach.merkmalfilter.iteration}" value="{$attributeFilter->getValue()}" />*}
+            {*{foreach $NaviFilter->getAttributeFilter() as $attributeFilter}*}
+                {*<input type="hidden" name="mf{$attributeFilter@iteration}" value="{$attributeFilter->getValue()}" />*}
             {*{/foreach}*}
         {*{/if}*}
         {*{if isset($cJTLSearchStatedFilter_arr) && is_array($cJTLSearchStatedFilter_arr)}*}
@@ -150,13 +149,13 @@
             {*{/foreach}*}
         {*{/if}*}
         {*{if $NaviFilter->hasTagFilter()}*}
-            {*{foreach name=tagfilter from=$NaviFilter->getTagFilter() item=tagFilter}*}
-                {*<input type="hidden" name="tf{$smarty.foreach.tagfilter.iteration}" value="{$tagFilter->getValue()}" />*}
+            {*{foreach $NaviFilter->getTagFilter() as $tagFilter}*}
+                {*<input type="hidden" name="tf{$$tagFilter@iteration}" value="{$tagFilter->getValue()}" />*}
             {*{/foreach}*}
         {*{/if}*}
         {*{if $NaviFilter->hasSearchFilter()}*}
-            {*{foreach name=suchfilter from=$NaviFilter->getSearchFilter() item=searchFilter}*}
-                {*<input type="hidden" name="sf{$smarty.foreach.suchfilter.iteration}" value="{$searchFilter->getValue()}" />*}
+            {*{foreach $NaviFilter->getSearchFilter() as $searchFilter}*}
+                {*<input type="hidden" name="sf{$searchFilter@iteration}" value="{$searchFilter->getValue()}" />*}
             {*{/foreach}*}
         {*{/if}*}
         {*{include file='productlist/result_options.tpl'}*}
@@ -181,7 +180,7 @@
 {if $Suchergebnisse->getProductCount() > 0}
     <div class="row list-pageinfo top10">
         <div class="col-xs-4 page-current">
-            <strong>{lang key='page' section='productOverview'} {$Suchergebnisse->getPages()->AktuelleSeite}</strong> {lang key='of' section='productOverview'} {$Suchergebnisse->getPages()->MaxSeiten}
+            <strong>{lang key='page' section='productOverview'} {$Suchergebnisse->getPages()->getCurrentPage()}</strong> {lang key='of' section='productOverview'} {$Suchergebnisse->getPages()->getTotalPages()}
         </div>
         <div class="col-xs-8 page-total text-right">
             {lang key='products'} {$Suchergebnisse->getOffsetStart()} - {$Suchergebnisse->getOffsetEnd()} {lang key='of' section='productOverview'} {$Suchergebnisse->getProductCount()}

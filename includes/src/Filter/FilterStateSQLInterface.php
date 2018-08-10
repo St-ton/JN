@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -13,6 +13,12 @@ namespace Filter;
  */
 interface FilterStateSQLInterface
 {
+    /**
+     * @param FilterStateSQLInterface $source
+     * @return FilterStateSQLInterface
+     */
+    public function from(FilterStateSQLInterface $source): FilterStateSQLInterface;
+
     /**
      * @return array
      */
@@ -67,18 +73,54 @@ interface FilterStateSQLInterface
     public function addJoin(FilterJoinInterface $join): array;
 
     /**
-     * @return string
+     * @return array
      */
-    public function getSelect(): string;
+    public function getSelect(): array;
+
+    /**
+     * @param array $select
+     */
+    public function setSelect(array $select);
 
     /**
      * @param string $select
+     * @return array
      */
-    public function setSelect(string $select);
+    public function addSelect(string $select): array;
 
     /**
-     * @param string $select
+     * @return string|null
+     */
+    public function getOrderBy();
+
+    /**
+     * @param string|null $orderBy
+     */
+    public function setOrderBy($orderBy);
+
+    /**
      * @return string
      */
-    public function addSelect(string $select): string;
+    public function getLimit(): string;
+
+    /**
+     * @param string $limit
+     */
+    public function setLimit(string $limit);
+
+    /**
+     * @return array
+     */
+    public function getGroupBy(): array;
+
+    /**
+     * @param string $groupBy
+     * @return array
+     */
+    public function addGroupBy(string $groupBy): array;
+
+    /**
+     * @param array $groupBy
+     */
+    public function setGroupBy(array $groupBy);
 }

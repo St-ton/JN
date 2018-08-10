@@ -36,12 +36,10 @@ class Nummern
     }
 
     /**
-     * Loads database member into class member
-     *
      * @param int $nArt
      * @return $this
      */
-    private function loadFromDB(int $nArt = 0)
+    private function loadFromDB(int $nArt = 0): self
     {
         $oObj = Shop::Container()->getDB()->select('tnummern', 'nArt', $nArt);
         if ($oObj !== null && $oObj->nArt > 0) {
@@ -103,7 +101,7 @@ class Nummern
      * @param int $nNummer
      * @return $this
      */
-    public function setNummer(int $nNummer)
+    public function setNummer(int $nNummer): self
     {
         $this->nNummer = $nNummer;
 
@@ -114,7 +112,7 @@ class Nummern
      * @param int $nArt
      * @return $this
      */
-    public function setArt(int $nArt)
+    public function setArt(int $nArt): self
     {
         $this->nArt = $nArt;
 
@@ -125,7 +123,7 @@ class Nummern
      * @param string $dAktualisiert
      * @return $this
      */
-    public function setAktualisiert($dAktualisiert)
+    public function setAktualisiert($dAktualisiert): self
     {
         $this->dAktualisiert = $dAktualisiert === 'now()'
             ? date('Y-m-d H:i:s')
@@ -135,7 +133,7 @@ class Nummern
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getNummer()
     {
@@ -143,7 +141,7 @@ class Nummern
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getArt()
     {
@@ -151,7 +149,7 @@ class Nummern
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getAktualisiert()
     {

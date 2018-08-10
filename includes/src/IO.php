@@ -41,7 +41,7 @@ class IO
      * Registers a PHP function or method.
      * This makes the function available for XMLHTTPRequest requests.
      *
-     * @param string        $name - name udner which this function is callable
+     * @param string        $name - name under which this function is callable
      * @param null|callable $function - target function name, method-tuple or closure
      * @param null|string   $include - file where this function is defined in
      * @return $this
@@ -50,7 +50,7 @@ class IO
     public function register($name, $function = null, $include = null)
     {
         if ($this->exists($name)) {
-            throw new Exception("Function already registered");
+            throw new Exception('Function already registered');
         }
 
         if ($function === null) {
@@ -76,7 +76,7 @@ class IO
         }
 
         if (!isset($request['name'], $request['params'])) {
-            return new IOError("Missing request property");
+            return new IOError('Missing request property');
         }
 
         ob_start();
@@ -137,7 +137,7 @@ class IO
     public function execute($name, $params)
     {
         if (!$this->exists($name)) {
-            return new IOError("Function not registered");
+            return new IOError('Function not registered');
         }
 
         $function = $this->functions[$name][0];
@@ -154,10 +154,14 @@ class IO
         }
 
         if ($ref->getNumberOfRequiredParameters() > count($params)) {
-            return new IOError("Wrong required parameter count");
+            return new IOError('Wrong required parameter count');
         }
 
-        return call_user_func_array($function, $params);
+        try {
+            return call_user_func_array($function, $params);
+        } catch (Exception $e) {
+            return new IOError($e->getMessage(), $e->getCode());
+        }
     }
 
     /**

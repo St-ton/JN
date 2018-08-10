@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -17,7 +17,7 @@ class NavigationURLs implements NavigationURLsInterface
     /**
      * @var array
      */
-    private static $mapping = [
+    public static $mapping = [
         'cAllePreisspannen' => 'PriceRanges',
         'cAlleBewertungen'  => 'Ratings',
         'cAlleTags'         => 'Tags',

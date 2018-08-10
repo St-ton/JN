@@ -1034,7 +1034,7 @@ class Sprache
      */
     public static function generateLanguageAndCurrencyLinks()
     {
-        global $oZusatzFilter, $AktuellerArtikel, $AktuelleSeite;
+        global $oZusatzFilter, $AktuellerArtikel;
         $kLink         = Shop::$kLink;
         $kSeite        = Shop::$kSeite;
         $shopURL       = Shop::getURL() . '/';
@@ -1149,7 +1149,7 @@ class Sprache
             'oAktuellerArtikel' => &$AktuellerArtikel,
             'kSeite'            => &$kSeite,
             'kLink'             => &$kLink,
-            'AktuelleSeite'     => &$AktuelleSeite
+            'AktuelleSeite'     => &Shop::$AktuelleSeite
         ]);
     }
     /**

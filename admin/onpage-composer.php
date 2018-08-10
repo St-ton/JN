@@ -43,6 +43,12 @@ if ($opc->isOPCInstalled() === false) {
                             );
             $opcPageDB->saveDraft($page);
             $pageKey = $page->getKey();
+
+            header(
+                'Location: ' . $shopUrl . '/' . PFAD_ADMIN. 'onpage-composer.php?token='
+                . RequestHelper::verifyGPDataString('token') . '&pageKey=' . $pageKey . '&action=edit'
+            );
+            exit();
         } elseif ($action === 'discard') {
             $opcPage->deleteDraft($pageKey);
 

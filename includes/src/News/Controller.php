@@ -9,10 +9,10 @@ namespace News;
 
 use DB\DbInterface;
 use DB\ReturnType;
-use function Functional\map;
 use Session\Session;
-use function Functional\every;
 use Tightenco\Collect\Support\Collection;
+use function Functional\every;
+use function Functional\map;
 
 /**
  * Class Controller
@@ -186,8 +186,12 @@ class Controller
      * @param int         $customerGroupID
      * @return Category
      */
-    public function displayOverview(\Pagination $pagination, int $categoryID = 0, int $monthOverviewID = 0, $customerGroupID = 0): Category
-    {
+    public function displayOverview(
+        \Pagination $pagination,
+        int $categoryID = 0,
+        int $monthOverviewID = 0,
+        $customerGroupID = 0
+    ): Category {
         $category = new Category($this->db);
         if ($categoryID > 0) {
             $category->load($categoryID);
@@ -196,7 +200,7 @@ class Controller
         } else {
             $category->getOverview(self::getFilterSQL());
         }
-
+        $items         = $category->filterAndSortItems($customerGroupID);
         $newsCountShow = ($conf = (int)$this->config['news']['news_anzahl_uebersicht']) > 0
             ? $conf
             : 10;
@@ -204,8 +208,6 @@ class Controller
                    ->setDefaultItemsPerPage(0)
                    ->setItemCount($category->getItems()->count())
                    ->assemble();
-
-        $items = $category->filterAndSortItems($customerGroupID);
         if ($pagination->getItemsPerPage() > 0) {
             $items = $items->forPage(
                 $pagination->getPage() + 1,

@@ -20,7 +20,7 @@ class Item extends AbstractItem
     /**
      * @var int
      */
-    protected $id;
+    protected $id = -1;
 
     /**
      * @var int[]
@@ -85,7 +85,7 @@ class Item extends AbstractItem
     /**
      * @var bool
      */
-    protected $isActive = false;
+    protected $isActive = true;
 
     /**
      * @var \DateTime
@@ -105,7 +105,7 @@ class Item extends AbstractItem
     /**
      * @var bool
      */
-    protected $isVisible = false;
+    protected $isVisible = true;
 
     /**
      * @var CommentList
@@ -280,7 +280,9 @@ class Item extends AbstractItem
      */
     public function checkVisibility(int $customerGroupID): bool
     {
-        $cgVisi = \count($this->customerGroups) === 0 || \in_array($customerGroupID, $this->customerGroups, true);
+        $cgVisi = \count($this->customerGroups) === 0
+            || \in_array(-1, $this->customerGroups, true)
+            || \in_array($customerGroupID, $this->customerGroups, true);
 
         $this->isVisible = $cgVisi && $this->isActive === true;
 

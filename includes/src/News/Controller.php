@@ -218,7 +218,7 @@ class Controller
         $metaDescription = $category->getMetaDescription();
         $metaKeywords    = $category->getMetaKeyword();
 
-        $metaTitle       = \strlen($metaDescription) < 1
+        $metaTitle       = \strlen($metaTitle) < 1
             ? \Shop::Lang()->get('news', 'news') . ' ' .
             \Shop::Lang()->get('from', 'global') . ' ' .
             $this->config['global']['global_shopname']

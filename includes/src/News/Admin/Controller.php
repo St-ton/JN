@@ -70,15 +70,6 @@ class Controller
         $this->db     = $db;
         $this->smarty = $smarty;
         $this->cache  = $cache;
-
-//        $test = $this->db->query('
-//            SELECT node.*
-//                FROM tnewskategorie AS node INNER JOIN tnewskategorie AS parent
-//                WHERE node.lvl > 0 AND parent.lvl > 0
-//            GROUP BY node.kNewsKategorie
-//            ORDER BY node.lft
-//', ReturnType::ARRAY_OF_OBJECTS);
-//        \Shop::dbg($test, true);
     }
 
     /**

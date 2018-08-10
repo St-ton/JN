@@ -31,18 +31,7 @@
     {block name='head-base'}{/block}
 
     {block name='head-icons'}
-        {if !empty($Einstellungen.template.theme.favicon)}
-            {if file_exists("{$currentTemplateDir}{$Einstellungen.template.theme.favicon}")}
-                <link type="image/x-icon" href="{$ShopURL}/{$currentTemplateDir}{$Einstellungen.template.theme.favicon}"
-                    rel="shortcut icon">
-            {else}
-                <link type="image/x-icon"
-                    href="{$ShopURL}/{$currentTemplateDir}themes/base/images/{$Einstellungen.template.theme.favicon}"
-                        rel="shortcut icon">
-            {/if}
-        {else}
-            <link type="image/x-icon" href="{$ShopURL}/favicon-default.ico" rel="shortcut icon">
-        {/if}
+            <link type="image/x-icon" href="{$shopFaviconURL}" rel="shortcut icon">
         {if $nSeitenTyp === 1 && !empty($Artikel->Bilder)}
             <link rel="image_src" href="{$Artikel->Bilder[0]->cURLGross}">
             <meta property="og:image" content="{$Artikel->Bilder[0]->cURLGross}">

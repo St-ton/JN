@@ -1876,4 +1876,12 @@ final class Shop
             ));
         });
     }
+
+    /**
+     * @return string
+     */
+    public static function getFaviconURL(): string
+    {
+        return self::getURL().(file_exists(PFAD_ROOT.'favicon.ico') ? '/favicon.ico' : '/favicon-default.ico');
+    }
 }

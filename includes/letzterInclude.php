@@ -126,7 +126,8 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('PFAD_SLIDER', $shopURL . '/' . PFAD_BILDER_SLIDER)
        ->assign('Suchergebnisse', $oSuchergebnisse ?? new \Filter\SearchResults())
        ->assign('opc', Shop::Container()->getOPC())
-       ->assign('opcPageService', Shop::Container()->getOPCPageService());
+       ->assign('opcPageService', Shop::Container()->getOPCPageService())
+       ->assign('shopFaviconURL', Shop::getFaviconURL());
 
 $nav = new \JTL\Navigation(Shop::Lang(), Shop::Container()->getLinkService());
 $nav->setPageType(Shop::getPageType());

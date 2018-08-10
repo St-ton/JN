@@ -27,11 +27,9 @@ $controller       = new \News\Controller($db, $Einstellungen, $smarty);
 switch ($controller->getPageType($cParameter_arr)) {
     case \News\ViewType::NEWS_DETAIL:
         Shop::setPageType(PAGE_NEWSDETAIL);
-        Shop::$AktuelleSeite = 'NEWSDETAIL';
-        $pagination          = new Pagination('comments');
-        $newsItemID          = $cParameter_arr['kNews'];
-
-        $newsItem = new \News\Item($db);
+        $pagination = new Pagination('comments');
+        $newsItemID = $cParameter_arr['kNews'];
+        $newsItem   = new \News\Item($db);
         $newsItem->load($newsItemID);
 
         $cMetaTitle       = $newsItem->getMetaTitle();
@@ -53,27 +51,24 @@ switch ($controller->getPageType($cParameter_arr)) {
         break;
     case \News\ViewType::NEWS_CATEGORY:
         Shop::setPageType(PAGE_NEWSKATEGORIE);
-        Shop::$AktuelleSeite = 'NEWSKATEGORIE';
-        $kNewsKategorie      = (int)$cParameter_arr['kNewsKategorie'];
-        $overview            = $controller->displayOverview($pagination, $kNewsKategorie, 0, $customerGroupID);
-        $cCanonicalURL       = $overview->getURL();
-        $breadCrumbURL       = $cCanonicalURL;
-        $breadCrumbName      = $overview->getName();
+        $kNewsKategorie = (int)$cParameter_arr['kNewsKategorie'];
+        $overview       = $controller->displayOverview($pagination, $kNewsKategorie, 0, $customerGroupID);
+        $cCanonicalURL  = $overview->getURL();
+        $breadCrumbURL  = $cCanonicalURL;
+        $breadCrumbName = $overview->getName();
         break;
     case \News\ViewType::NEWS_OVERVIEW:
-        Shop::$AktuelleSeite = 'NEWS';
         Shop::setPageType(PAGE_NEWS);
         $kNewsKategorie = 0;
         $overview       = $controller->displayOverview($pagination, $kNewsKategorie, 0, $customerGroupID);
         break;
     case \News\ViewType::NEWS_MONTH_OVERVIEW:
         Shop::setPageType(PAGE_NEWSMONAT);
-        Shop::$AktuelleSeite = 'NEWSMONAT';
-        $id                  = (int)$cParameter_arr['kNewsMonatsUebersicht'];
-        $overview            = $controller->displayOverview($pagination, 0, $id, $customerGroupID);
-        $cCanonicalURL       = $overview->getURL();
-        $breadCrumbURL       = $cCanonicalURL;
-        $breadCrumbName      = $overview->getName();
+        $id             = (int)$cParameter_arr['kNewsMonatsUebersicht'];
+        $overview       = $controller->displayOverview($pagination, 0, $id, $customerGroupID);
+        $cCanonicalURL  = $overview->getURL();
+        $breadCrumbURL  = $cCanonicalURL;
+        $breadCrumbName = $overview->getName();
 
         break;
     case \News\ViewType::NEWS_DISABLED:

@@ -4,18 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Services\Container;
 use DB\Services as DbService;
-
+use Filter\ProductFilter;
 use JTL\ProcessingHandler\NiceDBHandler;
-use Monolog\Handler\StreamHandler;
 use Monolog\Formatter\LineFormatter;
+use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
-use \Services\JTL\Validation\ValidationServiceInterface;
-use \Services\JTL\Validation\ValidationService;
+use Services\Container;
 use Services\JTL\Validation\RuleSet;
-use Filter\ProductFilter;
+use Services\JTL\Validation\ValidationService;
+use Services\JTL\Validation\ValidationServiceInterface;
 
 /**
  * Class Shop
@@ -1326,28 +1325,22 @@ final class Shop
                 || (self::$cPreisspannenFilter !== null && self::$cPreisspannenFilter > 0))
             && (self::$productFilter->getFilterCount() === 0 || !self::$bSeo)
         ) {
-            self::$fileName      = 'filter.php';
-            self::$AktuelleSeite = 'ARTIKEL';
+            self::$fileName = 'filter.php';
             self::setPageType(PAGE_ARTIKELLISTE);
         } elseif (self::$kWunschliste > 0) {
             self::$fileName      = 'wunschliste.php';
-            self::$AktuelleSeite = 'WUNSCHLISTE';
             self::setPageType(PAGE_WUNSCHLISTE);
         } elseif (self::$vergleichsliste > 0) {
-            self::$fileName      = 'vergleichsliste.php';
-            self::$AktuelleSeite = 'VERGLEICHSLISTE';
+            self::$fileName = 'vergleichsliste.php';
             self::setPageType(PAGE_VERGLEICHSLISTE);
         } elseif (self::$kNews > 0 || self::$kNewsMonatsUebersicht > 0 || self::$kNewsKategorie > 0) {
-            self::$fileName      = 'news.php';
-            self::$AktuelleSeite = 'NEWS';
+            self::$fileName = 'news.php';
             self::setPageType(PAGE_NEWS);
         } elseif (self::$kUmfrage > 0) {
-            self::$fileName      = 'umfrage.php';
-            self::$AktuelleSeite = 'UMFRAGE';
+            self::$fileName = 'umfrage.php';
             self::setPageType(PAGE_UMFRAGE);
         } elseif (!empty(self::$cSuche)) {
-            self::$fileName      = 'filter.php';
-            self::$AktuelleSeite = 'ARTIKEL';
+            self::$fileName = 'filter.php';
             self::setPageType(PAGE_ARTIKELLISTE);
         } elseif (!self::$kLink) {
             //check path
@@ -1382,9 +1375,8 @@ final class Shop
             } elseif (self::Media()->isValidRequest($cPath)) {
                 self::Media()->handleRequest($cPath);
             } else {
-                self::$is404         = true;
-                self::$fileName      = null;
-                self::$AktuelleSeite = '404';
+                self::$is404    = true;
+                self::$fileName = null;
                 self::setPageType(PAGE_404);
             }
         } elseif (!empty(self::$kLink)) {
@@ -1428,39 +1420,30 @@ final class Shop
                 self::$fileName = $link->getFileName();
                 switch (self::$fileName) {
                     case 'news.php' :
-                        self::$AktuelleSeite = 'NEWS';
                         self::setPageType(PAGE_NEWS);
                         break;
                     case 'jtl.php' :
-                        self::$AktuelleSeite = 'MEIN KONTO';
                         self::setPageType(PAGE_MEINKONTO);
                         break;
                     case 'kontakt.php' :
-                        self::$AktuelleSeite = 'KONTAKT';
                         self::setPageType(PAGE_KONTAKT);
                         break;
                     case 'newsletter.php' :
-                        self::$AktuelleSeite = 'NEWSLETTER';
                         self::setPageType(PAGE_NEWSLETTER);
                         break;
                     case 'pass.php' :
-                        self::$AktuelleSeite = 'PASSWORT VERGESSEN';
                         self::setPageType(PAGE_PASSWORTVERGESSEN);
                         break;
                     case 'registrieren.php' :
-                        self::$AktuelleSeite = 'REGISTRIEREN';
                         self::setPageType(PAGE_REGISTRIERUNG);
                         break;
                     case 'umfrage.php' :
-                        self::$AktuelleSeite = 'UMFRAGE';
                         self::setPageType(PAGE_UMFRAGE);
                         break;
                     case 'warenkorb.php' :
-                        self::$AktuelleSeite = 'WARENKORB';
                         self::setPageType(PAGE_WARENKORB);
                         break;
                     case 'wunschliste.php' :
-                        self::$AktuelleSeite = 'WUNSCHLISTE';
                         self::setPageType(PAGE_WUNSCHLISTE);
                         break;
                     default :
@@ -1468,8 +1451,7 @@ final class Shop
                 }
             }
         } elseif (self::$fileName === null) {
-            self::$fileName      = 'seite.php';
-            self::$AktuelleSeite = 'SEITE';
+            self::$fileName = 'seite.php';
             self::setPageType(PAGE_EIGENE);
         }
         self::check404();
@@ -1681,8 +1663,13 @@ final class Shop
      */
     public static function setPageType(int $pageType)
     {
-        self::$pageType = $pageType;
-        executeHook(HOOK_SHOP_SET_PAGE_TYPE, ['pageType' => $pageType]);
+        $mapper              = new \Mapper\PageTypeToPageName();
+        self::$pageType      = $pageType;
+        self::$AktuelleSeite = $mapper->map($pageType);
+        executeHook(HOOK_SHOP_SET_PAGE_TYPE, [
+            'pageType' => self::$pageType,
+            'pageName' => self::$AktuelleSeite
+        ]);
     }
 
     /**

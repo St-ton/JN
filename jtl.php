@@ -12,7 +12,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'kundenwerbenkeunden_inc.php';
 
-$AktuelleSeite = 'MEIN KONTO';
+Shop::setPageType(PAGE_MEINKONTO);
 $linkHelper    = Shop::Container()->getLinkService();
 $Einstellungen = Shopsetting::getInstance()->getAll();
 $kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_LOGIN);

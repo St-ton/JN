@@ -227,7 +227,7 @@ function getNewsArchive(int $kNews, bool $bActiveOnly = false)
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
                     OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
                         . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
-                AND tnews.kSprache = " . Shop::getLanguageID()
+                AND t.languageID = " . Shop::getLanguageID()
                 . $activeFilter,
         \DB\ReturnType::SINGLE_OBJECT
     );
@@ -375,6 +375,8 @@ function getNewsOverview($oSQL, $cLimitSQL)
         "SELECT tseo.cSeo, tnews.*, DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y %H:%i') AS dErstellt_de, 
             COUNT(*) AS nAnzahl, COUNT(DISTINCT(tnewskommentar.kNewsKommentar)) AS nNewsKommentarAnzahl
             FROM tnews
+            JOIN tnewssprache t 
+                ON tnews.kNews = t.kNews
             LEFT JOIN tseo 
                 ON tseo.cKey = 'kNews'
                 AND tseo.kKey = tnews.kNews
@@ -388,7 +390,7 @@ function getNewsOverview($oSQL, $cLimitSQL)
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
                     OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
                         . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
-                AND tnews.kSprache = " . Shop::getLanguageID() . "
+                AND t.languageID = " . Shop::getLanguageID() . "
                 " . $oSQL->cDatumSQL . "
             GROUP BY tnews.kNews
             " . $oSQL->cSortSQL . "
@@ -408,6 +410,8 @@ function getFullNewsOverview($oSQL)
     return Shop::Container()->getDB()->query(
         "SELECT COUNT(DISTINCT(tnews.kNews)) AS nAnzahl
             FROM tnews
+            JOIN tnewssprache t
+                ON t.kNews = tnews.kNews
             " . $oSQL->cNewsKatSQL . "
             WHERE tnews.nAktiv = 1
                 AND tnews.dGueltigVon <= now()
@@ -415,7 +419,7 @@ function getFullNewsOverview($oSQL)
                     OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
                         . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                 " . $oSQL->cDatumSQL . "
-                AND tnews.kSprache = " . Shop::getLanguageID(),
+                AND t.languageID = " . Shop::getLanguageID(),
         \DB\ReturnType::SINGLE_OBJECT
     );
 }

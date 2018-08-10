@@ -28,20 +28,22 @@ final class BoxNewsCurrentMonth extends AbstractBox
             : '';
         $newsOverview = \Shop::Container()->getDB()->queryPrepared(
             "SELECT tseo.cSeo, tnewsmonatsuebersicht.cName, tnewsmonatsuebersicht.kNewsMonatsUebersicht, 
-                month(tnews.dGueltigVon) AS nMonat, year( tnews.dGueltigVon ) AS nJahr, COUNT(*) AS nAnzahl
+                MONTH(tnews.dGueltigVon) AS nMonat, YEAR( tnews.dGueltigVon ) AS nJahr, COUNT(*) AS nAnzahl
                 FROM tnews
                 JOIN tnewsmonatsuebersicht 
                     ON tnewsmonatsuebersicht.nMonat = month(tnews.dGueltigVon)
                     AND tnewsmonatsuebersicht.nJahr = year(tnews.dGueltigVon)
                     AND tnewsmonatsuebersicht.kSprache = :lid
+                JOIN tnewssprache t 
+                    ON tnews.kNews = t.kNews
                 LEFT JOIN tseo 
                     ON cKey = 'kNewsMonatsUebersicht'
                     AND kKey = tnewsmonatsuebersicht.kNewsMonatsUebersicht
                     AND tseo.kSprache = :lid
-                WHERE tnews.dGueltigVon < now()
+                WHERE tnews.dGueltigVon < NOW()
                     AND tnews.nAktiv = 1
-                    AND tnews.kSprache = :lid
-                GROUP BY year(tnews.dGueltigVon) , month(tnews.dGueltigVon)
+                    AND t.languageID = :lid
+                GROUP BY YEAR(tnews.dGueltigVon) , MONTH(tnews.dGueltigVon)
                 ORDER BY tnews.dGueltigVon DESC" . $cSQL,
             ['lid' => $langID],
             ReturnType::ARRAY_OF_OBJECTS

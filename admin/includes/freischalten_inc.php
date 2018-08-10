@@ -85,7 +85,7 @@ function gibTagFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = true): array
 function gibNewskommentarFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = true): array
 {
     $cond = $checkLanguage === true
-        ? ' AND tnews.kSprache = ' . (int)$_SESSION['kSprache'] . ' '
+        ? ' AND t.languageID = ' . (int)$_SESSION['kSprache'] . ' '
         : '';
     $newsComments = Shop::Container()->getDB()->query(
         "SELECT tnewskommentar.*, DATE_FORMAT(tnewskommentar.dErstellt, '%d.%m.%Y  %H:%i') AS dErstellt_de, 
@@ -528,8 +528,10 @@ function gibMaxNewskommentare(): int
             FROM tnewskommentar
             JOIN tnews 
                 ON tnews.kNews = tnewskommentar.kNews
+            JOIN tnewssprache t 
+                ON tnews.kNews = t.kNews
             WHERE tnewskommentar.nAktiv = 0
-                AND tnews.kSprache = ' . (int)$_SESSION['kSprache'],
+                AND t.languageID = ' . (int)$_SESSION['kSprache'],
         \DB\ReturnType::SINGLE_OBJECT
     )->nAnzahl;
 }

@@ -381,30 +381,6 @@ class Controller
         });
     }
 
-//    /**
-//     * @param Collection $categories
-//     * @param int        $find
-//     * @return Category|null
-//     */
-//    private function findCategoryByID(Collection $categories, int $find)
-//    {
-//        return $categories->first(function (Category $i) use ($find) {
-//            return ($id = $i->getID()) > 0 && $id === $find;
-//        });
-//    }
-
-//    /**
-//     * @param Collection $categories
-//     * @param array      $parentIDs
-//     * @return Collection
-//     */
-//    private function findChildCategories(Collection $categories, array $parentIDs): Collection
-//    {
-//        return $categories->filter(function (Category $i) use ($parentIDs) {
-//            return \in_array($i->getParentID(), $parentIDs, true);
-//        });
-//    }
-
     /**
      * deactivate all news items without a category
      * @return int
@@ -414,9 +390,8 @@ class Controller
         return $this->db->query(
             'UPDATE tnews 
                 SET nAktiv = 0
-                WHERE kNews > 0 AND kNews NOT IN (
-                    SELECT kNews FROM tnewskategorienews
-                )',
+                WHERE kNews > 0 
+                    AND kNews NOT IN (SELECT kNews FROM tnewskategorienews)',
             ReturnType::AFFECTED_ROWS
         );
     }
@@ -436,22 +411,6 @@ class Controller
         $parentID     = (int)$post['kParent'];
         $previewImage = $post['previewImage'];
         $flag         = \ENT_COMPAT | \ENT_HTML401;
-//        $validation = $this->pruefeNewsKategorie($post);
-//        if (\count($validation) > 0) {
-//            $this->errorMsg .= 'Fehler: Bitte überprüfen Sie Ihre Eingaben.<br />';
-//            $this->step     = 'news_kategorie_erstellen';
-//            $newsCategory   = new Category($this->db);
-//            $newsCategory->load($categoryID);
-//
-//            if ($newsCategory->getID() > 0) {
-//                $this->smarty->assign('oNewsKategorie', $newsCategory);
-//            }
-//
-//            $this->smarty->assign('cPlausiValue_arr', $validation)
-//                         ->assign('cPostVar_arr', $post);
-//
-//            return $newsCategory;
-//        }
         $this->db->delete('tseo', ['cKey', 'kKey'], ['kNewsKategorie', $categoryID]);
         $newsCategory                        = new \stdClass();
         $newsCategory->kParent               = $parentID;
@@ -604,30 +563,6 @@ class Controller
     }
 
     /**
-     * @param string $cName
-     * @param int    $nNewskategorieEditSpeichern
-     * @return array
-     */
-    private function pruefeNewsKategorie($cName, $nNewskategorieEditSpeichern = 0)
-    {
-        return [];
-//        $cPlausiValue_arr = [];
-//        // Name prüfen
-//        if (strlen($cName) === 0) {
-//            $cPlausiValue_arr['cName'] = 1;
-//        }
-//        // Prüfen ob Name schon vergeben
-//        if ($nNewskategorieEditSpeichern === 0) {
-//            $oNewsKategorieTMP = Shop::Container()->getDB()->select('tnewskategorie', 'cName', $cName);
-//            if (isset($oNewsKategorieTMP->kNewsKategorie) && $oNewsKategorieTMP->kNewsKategorie > 0) {
-//                $cPlausiValue_arr['cName'] = 2;
-//            }
-//        }
-//
-//        return $cPlausiValue_arr;
-    }
-
-    /**
      * @param array $customerGroups
      * @param array $categories
      * @return array
@@ -635,12 +570,6 @@ class Controller
     private function pruefeNewsPost($customerGroups, $categories): array
     {
         $validation = [];
-//        if (\strlen($cBetreff) === 0) {
-//            $validation['cBetreff'] = 1;
-//        }
-//        if (\strlen($cText) === 0) {
-//            $validation['cText'] = 1;
-//        }
         if (!\is_array($customerGroups) || \count($customerGroups) === 0) {
             $validation['kKundengruppe_arr'] = 1;
         }
@@ -932,22 +861,23 @@ class Controller
      */
     private function rebuildCategoryTree(int $parent_id, int $left, int $level = 0): int
     {
-        // the right value of this node is the left value + 1
-        $right = $left + 1;
-        // get all children of this node
-        $result = $this->db->selectAll('tnewskategorie', 'kParent', $parent_id, 'kNewsKategorie',
-            'nSort, kNewsKategorie');
+        $right  = $left + 1;
+        $result = $this->db->selectAll(
+            'tnewskategorie',
+            'kParent',
+            $parent_id,
+            'kNewsKategorie',
+            'nSort, kNewsKategorie'
+        );
         foreach ($result as $_res) {
             $right = $this->rebuildCategoryTree($_res->kNewsKategorie, $right, $level + 1);
         }
-        // we've got the left value, and now that we've processed the children of this node we also know the right value
         $this->db->update('tnewskategorie', 'kNewsKategorie', $parent_id, (object)[
             'lft'  => $left,
             'rght' => $right,
             'lvl'  => $level,
         ]);
 
-        // return the right value of this node + 1
         return $right + 1;
     }
 

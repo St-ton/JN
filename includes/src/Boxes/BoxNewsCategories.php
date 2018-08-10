@@ -54,7 +54,7 @@ final class BoxNewsCategories extends AbstractBox
                         AND tnews.dGueltigVon <= now()
                         AND (tnews.cKundengruppe LIKE '%;-1;%' 
                             OR FIND_IN_SET(':cid', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
-                        AND tnews.kSprache = :lid
+                        AND t.languageID = :lid
                     GROUP BY tnewskategorienews.kNewsKategorie
                     ORDER BY tnewskategorie.nSort DESC" . $cSQL,
                 ['lid' => $langID, 'cid' => \Session::CustomerGroup()->getID()],

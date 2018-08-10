@@ -492,17 +492,20 @@ class News extends MainModel
             "SELECT tseo.cSeo, tnews.*, DATE_FORMAT(tnews.dGueltigVon, '%Y,%m,%d') AS dGueltigVonJS, 
                 COUNT(DISTINCT(tnewskommentar.kNewsKommentar)) AS nNewsKommentarAnzahl
                 FROM tnews
+                JOIN tnewssprache t 
+                    ON tnews.kNews = t.kNews
                 LEFT JOIN tseo 
                     ON tseo.cKey = 'kNews'
                     AND tseo.kKey = tnews.kNews
                     AND tseo.kSprache = {$kSprache}
-                LEFT JOIN tnewskommentar ON tnewskommentar.kNews = tnews.kNews
+                LEFT JOIN tnewskommentar 
+                    ON tnewskommentar.kNews = tnews.kNews
                     AND tnewskommentar.nAktiv = 1
                 {$cSqlExcludeCategory}
                 WHERE tnews.dGueltigVon <= now()
                     AND (tnews.cKundengruppe LIKE '%;-1;%' 
                         OR FIND_IN_SET('{$kKundengruppe}', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
-                    AND tnews.kSprache = {$kSprache}
+                    AND t.languageID = {$kSprache}
                 {$cSqlActive}
                 GROUP BY tnews.kNews
                 {$cSqlOrder}

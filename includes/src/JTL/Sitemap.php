@@ -110,7 +110,7 @@ class Sitemap
                     WHERE tnewskategorie.kSprache = :lid
                         AND tnewskategorie.nAktiv = 1
                         AND tnews.nAktiv = 1
-                        AND tnews.dGueltigVon <= now()
+                        AND tnews.dGueltigVon <= NOW()
                         AND (tnews.cKundengruppe LIKE '%;-1;%' 
                             OR FIND_IN_SET(:cgid, REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                     GROUP BY tnewskategorienews.kNewsKategorie
@@ -126,21 +126,24 @@ class Sitemap
                 $newsCategory->cURLFull = \UrlHelper::buildURL($newsCategory, \URLART_NEWSKATEGORIE, true);
 
                 $entries = $this->db->queryPrepared(
-                    "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, 
-                    tnews.cText, tnews.cVorschauText, tnews.cMetaTitle, tnews.cMetaDescription, 
-                    tnews.cMetaKeywords, tnews.nAktiv, tnews.dErstellt, 
-                    tseo.cSeo, DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de
+                    "SELECT tnews.kNews, t.languageID AS kSprache, tnews.cKundengruppe, t.title AS cBetreff, 
+                    t.content AS cText, t.preview AS cVorschauText, t.metaTitle AS cMetaTitle, 
+                    t.metaDescription AS cMetaDescription, t.metaKeywords AS cMetaKeywords, 
+                    tnews.nAktiv, tnews.dErstellt, tseo.cSeo, 
+                    DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de
                         FROM tnews
+                        JOIN tnewssprache t 
+                            ON tnews.kNews = t.kNews
                         JOIN tnewskategorienews 
                             ON tnewskategorienews.kNews = tnews.kNews
                         LEFT JOIN tseo 
                             ON tseo.cKey = 'kNews'
                             AND tseo.kKey = tnews.kNews
                             AND tseo.kSprache = :lid
-                        WHERE tnews.kSprache = :lid
+                        WHERE t.languageID = :lid
                             AND tnewskategorienews.kNewsKategorie = :cid
                             AND tnews.nAktiv = 1
-                            AND tnews.dGueltigVon <= now()
+                            AND tnews.dGueltigVon <= NOW()
                             AND (tnews.cKundengruppe LIKE '%;-1;%' 
                                 OR FIND_IN_SET(:cgid, REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                         GROUP BY tnews.kNews
@@ -176,46 +179,51 @@ class Sitemap
         if (($overview = $this->cache->get($cacheID)) === false) {
             $overview = $this->db->queryPrepared(
                 "SELECT tseo.cSeo, tnewsmonatsuebersicht.cName, tnewsmonatsuebersicht.kNewsMonatsUebersicht, 
-                month(tnews.dGueltigVon) AS nMonat, year(tnews.dGueltigVon) AS nJahr, COUNT(*) AS nAnzahl
+                MONTH(tnews.dGueltigVon) AS nMonat, YEAR(tnews.dGueltigVon) AS nJahr, COUNT(*) AS nAnzahl
                     FROM tnews
+                    JOIN tnewssprache t 
+                        ON tnews.kNews = t.kNews
                     JOIN tnewsmonatsuebersicht 
-                        ON tnewsmonatsuebersicht.nMonat = month(tnews.dGueltigVon)
-                        AND tnewsmonatsuebersicht.nJahr = year(tnews.dGueltigVon)
+                        ON tnewsmonatsuebersicht.nMonat = MONTH(tnews.dGueltigVon)
+                        AND tnewsmonatsuebersicht.nJahr = YEAR(tnews.dGueltigVon)
                         AND tnewsmonatsuebersicht.kSprache = :lid
                     LEFT JOIN tseo 
                         ON cKey = 'kNewsMonatsUebersicht'
                         AND kKey = tnewsmonatsuebersicht.kNewsMonatsUebersicht
                         AND tseo.kSprache = :lid
-                    WHERE tnews.dGueltigVon < now()
+                    WHERE tnews.dGueltigVon < NOW()
                         AND tnews.nAktiv = 1
-                        AND tnews.kSprache = :lid
-                    GROUP BY year(tnews.dGueltigVon) , month(tnews.dGueltigVon)
+                        AND t.languageID = :lid
+                    GROUP BY YEAR(tnews.dGueltigVon), MONTH(tnews.dGueltigVon)
                     ORDER BY tnews.dGueltigVon DESC",
                 ['lid' => $this->langID],
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($overview as $news) {
                 $entries = $this->db->queryPrepared(
-                    "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, 
-                    tnews.cVorschauText, tnews.cMetaTitle, tnews.cMetaDescription, tnews.cMetaKeywords,
+                    "SELECT tnews.kNews, t.languageID AS kSprache, tnews.cKundengruppe, 
+                    t.title AS cBetreff, t.content AS cText, t.preview AS cVorschauText, 
+                    t.metaTitle AS cMetaTitle, t.metaDescription AS cMetaDescription, t.metaKeywords AS cMetaKeywords,
                     tnews.nAktiv, tnews.dErstellt, tseo.cSeo,
                     COUNT(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl, 
                     DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de
                         FROM tnews
+                        JOIN tnewssprache t 
+                            ON tnews.kNews = t.kNews
                         LEFT JOIN tnewskommentar 
                             ON tnews.kNews = tnewskommentar.kNews
                         LEFT JOIN tseo 
                             ON tseo.cKey = 'kNews'
                             AND tseo.kKey = tnews.kNews
                             AND tseo.kSprache = :lid
-                        WHERE tnews.kSprache = :lid
+                        WHERE t.languageID = :lid
                             AND tnews.nAktiv = 1
                             AND (tnews.cKundengruppe LIKE '%;-1;%' 
                                 OR FIND_IN_SET(:cgid, REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                             AND (MONTH(tnews.dGueltigVon) = :mnth)  
-                            AND (tnews.dGueltigVon <= now())
+                            AND (tnews.dGueltigVon <= NOW())
                             AND (YEAR(tnews.dGueltigVon) = :yr) 
-                            AND (tnews.dGueltigVon <= now())
+                            AND (tnews.dGueltigVon <= NOW())
                         GROUP BY tnews.kNews
                         ORDER BY dGueltigVon DESC",
                     [

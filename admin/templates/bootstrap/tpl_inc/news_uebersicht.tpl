@@ -329,6 +329,7 @@
                 {$jtl_token}
                 <input type="hidden" name="einstellungen" value="1" />
                 <input type="hidden" name="tab" value="einstellungen" />
+                <input type="hidden" name="news" value="1" />
 
                 <div class="panel panel-default settings">
                     <div class="panel-body">

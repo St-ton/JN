@@ -154,7 +154,7 @@
                                                         <input type="{$oSetting->cType}" size="32" name="cWert[]" value="{$oSetting->cValue}" id="pf_first" class="form-control">
                                                     </div>
                                                 {elseif $oSetting->cType === 'upload' && isset($oSetting->rawAttributes.target)}
-                                                    <div class="template-favicon-upload">
+                                                    <div class="template-upload">
                                                         <input name="upload-{$smarty.foreach.sections.index}"
                                                                id="tpl-upload-{$smarty.foreach.sections.index}" type="file"
                                                                class="file"

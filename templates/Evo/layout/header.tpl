@@ -31,7 +31,7 @@
     {block name='head-base'}{/block}
 
     {block name='head-icons'}
-            <link type="image/x-icon" href="{$shopFaviconURL}" rel="shortcut icon">
+            <link type="image/x-icon" href="{$shopFaviconURL}" rel="icon">
         {if $nSeitenTyp === 1 && !empty($Artikel->Bilder)}
             <link rel="image_src" href="{$Artikel->Bilder[0]->cURLGross}">
             <meta property="og:image" content="{$Artikel->Bilder[0]->cURLGross}">

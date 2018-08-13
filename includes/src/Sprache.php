@@ -1086,10 +1086,10 @@ class Sprache
                         $lang->cURLFull = $lang->cURL;
                     }
                 } else {
-                    $originalLanguage = $productFilter->getLanguageID();
-                    $productFilter->setLanguageID($lang->kSprache);
+                    $originalLanguage = $productFilter->getFilterConfig()->getLanguageID();
+                    $productFilter->getFilterConfig()->setLanguageID($lang->kSprache);
                     $url = $productFilter->getFilterURL()->getURL($oZusatzFilter);
-                    $productFilter->setLanguageID($originalLanguage);
+                    $productFilter->getFilterConfig()->setLanguageID($originalLanguage);
                     if ($productFilter->getPage() > 1) {
                         if (strpos($url, 'navi.php') !== false) {
                             $url .= '&amp;seite=' . $productFilter->getPage();

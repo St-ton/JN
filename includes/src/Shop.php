@@ -856,7 +856,7 @@ final class Shop
             exit;
         }
         $conf = new \Filter\Config();
-        $conf->setLangID(self::$kSprache);
+        $conf->setLanguageID(self::$kSprache);
         $conf->setLanguages(self::Lang()->getLangArray());
         $conf->setCustomerGroupID(\Session::CustomerGroup()->getID());
         $conf->setConfig(self::$_settings->getAll());
@@ -1281,8 +1281,8 @@ final class Shop
             Session\Session::checkReset($cLang);
             TaxHelper::setTaxRates();
         }
-        if (self::$productFilter->getLanguageID() !== $languageID) {
-            self::$productFilter->setLanguageID($languageID);
+        if (self::$productFilter->getFilterConfig()->getLanguageID() !== $languageID) {
+            self::$productFilter->getFilterConfig()->setLanguageID($languageID);
             self::$productFilter->initBaseStates();
         }
     }

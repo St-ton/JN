@@ -46,7 +46,7 @@ class Config implements ConfigInterface
     public static function getDefault(): ConfigInterface
     {
         $config = new self();
-        $config->setLangID(\Shop::getLanguageID());
+        $config->setLanguageID(\Shop::getLanguageID());
         $config->setLanguages(\Sprache::getInstance()->getLangArray());
         $config->setConfig(\Shopsetting::getInstance()->getAll());
         $config->setCustomerGroupID(Session::CustomerGroup()->getID());
@@ -58,7 +58,7 @@ class Config implements ConfigInterface
     /**
      * @inheritdoc
      */
-    public function getLangID(): int
+    public function getLanguageID(): int
     {
         return $this->langID;
     }
@@ -66,7 +66,7 @@ class Config implements ConfigInterface
     /**
      * @inheritdoc
      */
-    public function setLangID(int $langID)
+    public function setLanguageID(int $langID)
     {
         $this->langID = $langID;
     }
@@ -90,9 +90,9 @@ class Config implements ConfigInterface
     /**
      * @inheritdoc
      */
-    public function getConfig(): array
+    public function getConfig($section = null)
     {
-        return $this->config;
+        return $section === null ? $this->config : $this->config[$section];
     }
 
     /**

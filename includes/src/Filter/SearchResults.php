@@ -783,7 +783,7 @@ class SearchResults implements SearchResultsInterface
                  $searchFilterOptions
              )));
 
-        if ($productFilter->getConfig('navigationsfilter')['allgemein_tagfilter_benutzen'] !== 'N') {
+        if ($productFilter->getFilterConfig()->getConfig('navigationsfilter')['allgemein_tagfilter_benutzen'] !== 'N') {
             $this->setTagFilterJSON(AbstractBox::getJSONString(\array_map(
                 function ($e) {
                     /** @var FilterOption $e */

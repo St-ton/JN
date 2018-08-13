@@ -150,16 +150,6 @@ class ProductFilter
     private $nSortierung = 0;
 
     /**
-     * @var int
-     */
-    private $languageID;
-
-    /**
-     * @var int
-     */
-    private $customerGroupID;
-
-    /**
      * @var array
      */
     private $params = [];
@@ -198,11 +188,6 @@ class ProductFilter
      * @var Search
      */
     public $searchFilterCompat;
-
-    /**
-     * @var string
-     */
-    private $baseURL;
 
     /**
      * @var SearchResultsInterface
@@ -255,6 +240,11 @@ class ProductFilter
     private $cache;
 
     /**
+     * @var Config
+     */
+    private $filterConfig;
+
+    /**
      * @var array
      */
     public static $mapping = [
@@ -288,11 +278,7 @@ class ProductFilter
      */
     public function __construct(ConfigInterface $config, DbInterface $db, JTLCacheInterface $cache)
     {
-        $this->languages         = $config->getLanguages();
-        $this->conf              = $config->getConfig();
-        $this->languageID        = $config->getLangID();
-        $this->customerGroupID   = $config->getCustomerGroupID();
-        $this->baseURL           = $config->getBaseURL();
+        $this->filterConfig = $config;
         $this->db                = $db;
         $this->cache             = $cache;
         $this->showChildProducts = \defined('SHOW_CHILD_PRODUCTS')
@@ -369,10 +355,11 @@ class ProductFilter
      * for compatibility reasons only - called when oSprache_arr is directly read from ProductFilter instance
      *
      * @return array
+     * @deprecated since 5.0.0
      */
     public function getLanguages(): array
     {
-        return $this->languages;
+        return $this->filterConfig->getLanguages();
     }
 
     /**
@@ -380,10 +367,11 @@ class ProductFilter
      *
      * @param array $languages
      * @return array
+     * @deprecated since 5.0.0
      */
     public function setLanguages(array $languages): array
     {
-        $this->languages = $languages;
+        $this->filterConfig->setLanguages($languages);
 
         return $languages;
     }
@@ -478,14 +466,6 @@ class ProductFilter
     }
 
     /**
-     * @return array|null
-     */
-    public function getAvailableLanguages(): array
-    {
-        return $this->languages;
-    }
-
-    /**
      * @return FilterInterface
      */
     public function getBaseState(): FilterInterface
@@ -500,83 +480,6 @@ class ProductFilter
     public function setBaseState(FilterInterface $filter): self
     {
         $this->baseState = $filter;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBaseURL(): string
-    {
-        return $this->baseURL;
-    }
-
-    /**
-     * @param string $baseURL
-     * @return ProductFilter
-     */
-    public function setBaseURL(string $baseURL): self
-    {
-        $this->baseURL = $baseURL;
-
-        return $this;
-    }
-
-    /**
-     * @param string|null $section
-     * @return array|string|int
-     */
-    public function getConfig($section = null)
-    {
-        return $section === null ? $this->conf : $this->conf[$section];
-    }
-
-    /**
-     * @param array $config
-     * @return $this
-     */
-    public function setConfig(array $config): self
-    {
-        $this->conf = $config;
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getCustomerGroupID(): int
-    {
-        return $this->customerGroupID;
-    }
-
-    /**
-     * @param int $id
-     * @return $this
-     */
-    public function setCustomerGroupID(int $id): self
-    {
-        $this->customerGroupID = $id;
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getLanguageID(): int
-    {
-        return $this->languageID;
-    }
-
-    /**
-     * @param int $id
-     * @return $this
-     */
-    public function setLanguageID(int $id): self
-    {
-        $this->languageID = $id;
 
         return $this;
     }
@@ -832,7 +735,7 @@ class ProductFilter
             $oSuchanfrage = $this->db->select(
                 'tsuchanfrage',
                 'cSuche', $params['cSuche'],
-                'kSprache', $this->getLanguageID(),
+                'kSprache', $this->getFilterConfig()->getLanguageID(),
                 'nAktiv', 1,
                 false,
                 'kSuchanfrage'
@@ -870,7 +773,7 @@ class ProductFilter
                 'nArtikelProSeite'           => &$limit,
                 'nSeite'                     => &$this->nSeite,
                 'nSortierung'                => $_SESSION['Usersortierung'] ?? null,
-                'bLagerbeachten'             => (int)$this->getConfig('global')['artikel_artikelanzeigefilter'] ===
+                'bLagerbeachten'             => (int)$this->getFilterConfig()->getConfig('global')['artikel_artikelanzeigefilter'] ===
                     \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
             ]);
         }
@@ -1585,7 +1488,8 @@ class ProductFilter
         if ($this->getFilterCount() === 0) {
             return $this;
         }
-        $location = 'Location: ' . $this->baseURL;
+        $languageID = $this->getFilterConfig()->getLanguageID();
+        $location   = 'Location: ' . $this->getFilterConfig()->getBaseURL();
         if (empty($this->search->getName())
             && !$this->hasManufacturer()
             && !$this->hasCategory()
@@ -1595,32 +1499,32 @@ class ProductFilter
             && !$this->hasSearchSpecial()
         ) {
             // we have a manufacturer filter that doesn't filter anything
-            if ($this->manufacturerFilter->getSeo($this->getLanguageID()) !== null) {
+            if ($this->manufacturerFilter->getSeo($languageID) !== null) {
                 \http_response_code(301);
-                \header($location . $this->manufacturerFilter->getSeo($this->getLanguageID()));
+                \header($location . $this->manufacturerFilter->getSeo($languageID));
                 exit();
             }
             // we have a category filter that doesn't filter anything
-            if ($this->categoryFilter->getSeo($this->getLanguageID()) !== null) {
+            if ($this->categoryFilter->getSeo($languageID) !== null) {
                 \http_response_code(301);
-                \header($location . $this->categoryFilter->getSeo($this->getLanguageID()));
+                \header($location . $this->categoryFilter->getSeo($languageID));
                 exit();
             }
         } elseif ($this->hasManufacturer()
             && $this->hasManufacturerFilter()
-            && $this->manufacturer->getSeo($this->getLanguageID()) !== null
+            && $this->manufacturer->getSeo($languageID) !== null
         ) {
             // we have a manufacturer page with some manufacturer filter
             \http_response_code(301);
-            \header($location . $this->manufacturer->getSeo($this->getLanguageID()));
+            \header($location . $this->manufacturer->getSeo($languageID));
             exit();
         } elseif ($this->hasCategory()
             && $this->hasCategoryFilter()
-            && $this->category->getSeo($this->getLanguageID()) !== null
+            && $this->category->getSeo($languageID) !== null
         ) {
             // we have a category page with some category filter
             \http_response_code(301);
-            \header($location . $this->category->getSeo($this->getLanguageID()));
+            \header($location . $this->category->getSeo($languageID));
             exit();
         }
 
@@ -1790,8 +1694,8 @@ class ProductFilter
             if (!empty($this->search->getName())) {
                 if ($this->searchQuery->getError() === null) {
                     $this->search->saveQuery($productCount, $this->search->getName(), !$this->bExtendedJTLSearch);
-                    $this->search->setQueryID($this->search->getName(), $this->getLanguageID());
-                    $this->searchQuery->setValue($this->search->getValue())->setSeo($this->languages);
+                    $this->search->setQueryID($this->search->getName(), $this->getFilterConfig()->getLanguageID());
+                    $this->searchQuery->setValue($this->search->getValue())->setSeo($this->getFilterConfig()->getLanguages());
                 } else {
                     $error = $this->searchQuery->getError();
                 }
@@ -1800,13 +1704,13 @@ class ProductFilter
             $this->searchResults->setOffsetStart($nLimitN + 1)
                                 ->setOffsetEnd($end > 0 ? $end : $productCount);
             $total   = $productsPerPage > 0 ? (int)\ceil($productCount / $productsPerPage) : 1;
-            $minPage = \max($this->nSeite - \floor($maxPaginationPageCount / 2), 1);
+            $minPage = (int)\max($this->nSeite - \floor($maxPaginationPageCount / 2), 1);
             $maxPage = $minPage + $maxPaginationPageCount - 1;
             if ($maxPage > $total) {
                 $diff    = $total - $maxPage;
                 $maxPage = $total;
                 $minPage += $diff;
-                $minPage = \max($minPage, 1);
+                $minPage = (int)\max($minPage, 1);
             }
             $pages = new Info();
             $pages->setMinPage($minPage);
@@ -2118,17 +2022,17 @@ class ProductFilter
     }
 
     /**
-     * @return \DB\DbInterface
+     * @return DbInterface
      */
-    public function getDB(): \DB\DbInterface
+    public function getDB(): DbInterface
     {
         return $this->db;
     }
 
     /**
-     * @param \DB\DbInterface $db
+     * @param DbInterface $db
      */
-    public function setDB(\DB\DbInterface $db)
+    public function setDB(DbInterface $db)
     {
         $this->db = $db;
     }
@@ -2136,7 +2040,7 @@ class ProductFilter
     /**
      * @return \Cache\JTLCacheInterface
      */
-    public function getCache(): \Cache\JTLCacheInterface
+    public function getCache(): JTLCacheInterface
     {
         return $this->cache;
     }
@@ -2144,9 +2048,25 @@ class ProductFilter
     /**
      * @param \Cache\JTLCacheInterface $cache
      */
-    public function setCache(\Cache\JTLCacheInterface $cache)
+    public function setCache(JTLCacheInterface $cache)
     {
         $this->cache = $cache;
+    }
+
+    /**
+     * @return Config
+     */
+    public function getFilterConfig(): Config
+    {
+        return $this->filterConfig;
+    }
+
+    /**
+     * @param Config $filterConfig
+     */
+    public function setFilterConfig(Config $filterConfig)
+    {
+        $this->filterConfig = $filterConfig;
     }
 
     /**

@@ -172,7 +172,7 @@ class Attribute extends BaseAttribute
                 ['val' => $value],
                 ReturnType::ARRAY_OF_OBJECTS
             );
-        $currentLangID = $this->productFilter->getLanguageID();
+        $currentLangID = $this->productFilter->getFilterConfig()->getLanguageID();
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
             foreach ($oSeo_arr as $oSeo) {

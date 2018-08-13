@@ -21,12 +21,12 @@ interface ConfigInterface
     /**
      * @return int
      */
-    public function getLangID(): int;
+    public function getLanguageID(): int;
 
     /**
      * @param int $langID
      */
-    public function setLangID(int $langID);
+    public function setLanguageID(int $langID);
 
     /**
      * @return array
@@ -39,9 +39,10 @@ interface ConfigInterface
     public function setLanguages(array $languages);
 
     /**
-     * @return array
+     * @param string|null $section
+     * @return array|string|int
      */
-    public function getConfig(): array;
+    public function getConfig($section = null);
 
     /**
      * @param array $config

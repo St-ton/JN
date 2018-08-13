@@ -30,7 +30,7 @@ class ProductFilterSQL implements ProductFilterSQLInterface
     public function __construct(ProductFilter $productFilter)
     {
         $this->productFilter = $productFilter;
-        $this->conf          = $productFilter->getConfig();
+        $this->conf          = $productFilter->getFilterConfig()->getConfig();
     }
 
     /**
@@ -56,7 +56,7 @@ class ProductFilterSQL implements ProductFilterSQLInterface
             ->setTable('tartikelsichtbarkeit')
             ->setOrigin(__CLASS__)
             ->setOn('tartikel.kArtikel = tartikelsichtbarkeit.kArtikel 
-                        AND tartikelsichtbarkeit.kKundengruppe = ' . $this->productFilter->getCustomerGroupID());
+                        AND tartikelsichtbarkeit.kKundengruppe = ' . $this->productFilter->getFilterConfig()->getCustomerGroupID());
         // remove duplicate joins
         $checked = [];
         $joins   = reduce_left($joins, function(FilterJoinInterface $value, $i, $c, $reduction) use (&$checked) {

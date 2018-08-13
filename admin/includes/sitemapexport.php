@@ -1147,7 +1147,7 @@ function baueExportURL(int $kKey, $cKey, $lastUpdate, $languages, $langID, $prod
     $params   = [];
     Shop::setLanguage($langID);
     $filterConfig = new \Filter\Config();
-    $filterConfig->setLangID($langID);
+    $filterConfig->setLanguageID($langID);
     $filterConfig->setLanguages($languages);
     $filterConfig->setConfig($config);
     $filterConfig->setCustomerGroupID(\Session\Session::CustomerGroup()->getID());

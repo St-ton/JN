@@ -451,8 +451,8 @@ abstract class AbstractFilter implements FilterInterface
     public function setBaseData(ProductFilter $productFilter): FilterInterface
     {
         $this->productFilter      = $productFilter;
-        $this->customerGroupID    = $productFilter->getCustomerGroupID();
-        $this->availableLanguages = $productFilter->getAvailableLanguages();
+        $this->customerGroupID    = $productFilter->getFilterConfig()->getCustomerGroupID();
+        $this->availableLanguages = $productFilter->getFilterConfig()->getLanguages();
 
         return $this;
     }
@@ -516,7 +516,7 @@ abstract class AbstractFilter implements FilterInterface
      */
     public function getLanguageID(): int
     {
-        return $this->productFilter->getLanguageID();
+        return $this->productFilter->getFilterConfig()->getLanguageID();
     }
 
     /**
@@ -532,7 +532,7 @@ abstract class AbstractFilter implements FilterInterface
      */
     public function getConfig($idx = null): array
     {
-        return $this->productFilter->getConfig($idx);
+        return $this->productFilter->getFilterConfig()->getConfig($idx);
     }
 
     /**

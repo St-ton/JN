@@ -6,6 +6,7 @@
 
 namespace Filter\Items;
 
+
 use Filter\AbstractFilter;
 use Filter\Option;
 use Filter\FilterInterface;

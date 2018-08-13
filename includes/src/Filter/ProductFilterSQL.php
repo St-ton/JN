@@ -6,6 +6,7 @@
 
 namespace Filter;
 
+
 use function Functional\reduce_left;
 
 /**

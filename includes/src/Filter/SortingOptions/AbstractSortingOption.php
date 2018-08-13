@@ -6,6 +6,7 @@
 
 namespace Filter\SortingOptions;
 
+
 use Filter\Join;
 use Filter\Option;
 use Filter\ProductFilter;

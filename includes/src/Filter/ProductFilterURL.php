@@ -6,6 +6,7 @@
 
 namespace Filter;
 
+
 use Filter\Items\Search;
 use Filter\Items\Attribute;
 use Filter\Items\Category;

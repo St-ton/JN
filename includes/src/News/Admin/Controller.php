@@ -104,7 +104,7 @@ class Controller
 
         $validation = $this->pruefeNewsPost($customerGroups, $newsCategoryIDs);
 
-        if (false && \is_array($validation) && \count($validation) === 0) {
+        if (\is_array($validation) && \count($validation) === 0) {
             $newsItem                = new \stdClass();
             $newsItem->cKundengruppe = ';' . \implode(';', $customerGroups) . ';';
             $newsItem->nAktiv        = $active;
@@ -836,14 +836,14 @@ class Controller
         $count   = \count($images);
         for ($i = 1; $i <= $count; $i++) {
             $text = \str_replace(
-                "$#Bild" . $i . "#$",
+                '$#Bild' . $i . '#$',
                 '<img alt="" src="' . $shopURL . \PFAD_NEWSBILDER . $id . '/' . $images[$i - 1] . '" />',
                 $text
             );
         }
         if (\strpos(\end($images), 'preview') !== false) {
             $text = \str_replace(
-                "$#preview#$",
+                '$#preview#$',
                 '<img alt="" src="' . $shopURL . \PFAD_NEWSBILDER . $id . '/' . $images[\count($images) - 1] . '" />',
                 $text
             );

@@ -278,7 +278,7 @@ class ProductFilter
      */
     public function __construct(ConfigInterface $config, DbInterface $db, JTLCacheInterface $cache)
     {
-        $this->filterConfig = $config;
+        $this->filterConfig      = $config;
         $this->db                = $db;
         $this->cache             = $cache;
         $this->showChildProducts = \defined('SHOW_CHILD_PRODUCTS')
@@ -783,12 +783,12 @@ class ProductFilter
             $filterClass = $filter->getClassName();
             if (isset($_GET[$filterParam])) {
                 // OR filters should always get an array as input - even if there is just one value active
-                if (!\is_array($_GET[$filterParam]) && $filter->getType() === Type::OR) {
+                if (!\is_array($_GET[$filterParam]) && $filter->getType() === Type:: OR) {
                     $_GET[$filterParam] = [$_GET[$filterParam]];
                 }
                 // escape all input values
-                if (($filter->getType() === Type::OR && \is_array($_GET[$filterParam]))
-                    || ($filter->getType() === Type::AND
+                if (($filter->getType() === Type:: OR && \is_array($_GET[$filterParam]))
+                    || ($filter->getType() === Type:: AND
                         && (\RequestHelper::verifyGPCDataInt($filterParam) > 0 || \RequestHelper::verifyGPDataString($filterParam) !== ''))
                 ) {
                     $filterValue = \is_array($_GET[$filterParam])
@@ -1557,7 +1557,7 @@ class ProductFilter
         }
         // custom category attribute
         if ($category !== null && !empty($category->categoryFunctionAttributes[\KAT_ATTRIBUT_ARTIKELSORTIERUNG])) {
-            $mapper = new SortingType();
+            $mapper                     = new SortingType();
             $_SESSION['Usersortierung'] = $mapper->mapUserSorting(
                 $category->categoryFunctionAttributes[\KAT_ATTRIBUT_ARTIKELSORTIERUNG]
             );
@@ -1825,7 +1825,7 @@ class ProductFilter
         foreach ($this->getActiveFilters(true, $ignore) as $type => $active) {
             if ($type !== 'misc' && $type !== 'custom' && \count($active) > 1) {
                 $orFilters = select($active, function (FilterInterface $f) {
-                    return $f->getType() === Type::OR;
+                    return $f->getType() === Type:: OR;
                 });
                 /** @var AbstractFilter $filter */
                 foreach ($active as $filter) {

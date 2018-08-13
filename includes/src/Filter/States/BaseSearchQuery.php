@@ -181,7 +181,7 @@ class BaseSearchQuery extends AbstractFilter
      */
     public function setSeo(array $languages): FilterInterface
     {
-        $oSeo_obj = \Shop::Container()->getDB()->executeQueryPrepared(
+        $oSeo_obj = $this->productFilter->getDB()->executeQueryPrepared(
             "SELECT tseo.cSeo, tseo.kSprache, tsuchanfrage.cSuche
                 FROM tseo
                 LEFT JOIN tsuchanfrage
@@ -306,7 +306,7 @@ class BaseSearchQuery extends AbstractFilter
             ->setOrigin(__CLASS__));
         $sql->addCondition('tsuchanfrage.nAktiv = 1');
         $query          = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
-        $searchFilters  = \Shop::Container()->getDB()->query(
+        $searchFilters  = $this->productFilter->getDB()->query(
             'SELECT ssMerkmal.kSuchanfrage, ssMerkmal.cSuche, COUNT(*) AS nAnzahl
                 FROM (' . $query . ') AS ssMerkmal
                     GROUP BY ssMerkmal.kSuchanfrage
@@ -382,7 +382,7 @@ class BaseSearchQuery extends AbstractFilter
             ? $langIDExt
             : $this->getLanguageID();
         if (\strlen($query) > 0) {
-            $querymappingTMP = \Shop::Container()->getDB()->select(
+            $querymappingTMP = $this->productFilter->getDB()->select(
                 'tsuchanfragemapping',
                 'kSprache',
                 $langID,
@@ -391,7 +391,7 @@ class BaseSearchQuery extends AbstractFilter
             );
             $querymapping    = $querymappingTMP;
             while (!empty($querymappingTMP->cSucheNeu)) {
-                $querymappingTMP = \Shop::Container()->getDB()->select(
+                $querymappingTMP = $this->productFilter->getDB()->select(
                     'tsuchanfragemapping',
                     'kSprache',
                     $langID,
@@ -424,7 +424,7 @@ class BaseSearchQuery extends AbstractFilter
             ? (int)$langIDExt
             : $this->getLanguageID();
         // Suchcache wurde zwar gefunden, ist jedoch nicht mehr gültig
-        \Shop::Container()->getDB()->query(
+        $this->productFilter->getDB()->query(
             'DELETE tsuchcache, tsuchcachetreffer
                 FROM tsuchcache
                 LEFT JOIN tsuchcachetreffer 
@@ -435,7 +435,7 @@ class BaseSearchQuery extends AbstractFilter
         );
 
         // Suchcache checken, ob bereits vorhanden
-        $oSuchCache = \Shop::Container()->getDB()->executeQueryPrepared(
+        $oSuchCache = $this->productFilter->getDB()->executeQueryPrepared(
             'SELECT kSuchCache
                 FROM tsuchcache
                 WHERE kSprache = :lang
@@ -475,7 +475,7 @@ class BaseSearchQuery extends AbstractFilter
         $oSuchCache->kSprache  = $langID;
         $oSuchCache->cSuche    = $cSuche;
         $oSuchCache->dErstellt = 'now()';
-        $kSuchCache            = \Shop::Container()->getDB()->insert('tsuchcache', $oSuchCache);
+        $kSuchCache            = $this->productFilter->getDB()->insert('tsuchcache', $oSuchCache);
 
         if ($this->getConfig('artikeluebersicht')['suche_fulltext'] !== 'N' && $this->isFulltextIndexActive()) {
             $oSuchCache->kSuchCache = $kSuchCache;
@@ -816,7 +816,7 @@ class BaseSearchQuery extends AbstractFilter
                 $cSQL .= ')';
             }
         }
-        \Shop::Container()->getDB()->query(
+        $this->productFilter->getDB()->query(
             'INSERT INTO tsuchcachetreffer ' .
             $cSQL .
             ' GROUP BY kArtikelTMP
@@ -930,7 +930,7 @@ class BaseSearchQuery extends AbstractFilter
                         WHERE tartikelsichtbarkeit.kKundengruppe IS NULL
                         GROUP BY kSuchCache, kArtikelTMP" . ($nLimit > 0 ? " LIMIT $nLimit" : '');
 
-            \Shop::Container()->getDB()->query($cISQL, ReturnType::AFFECTED_ROWS);
+            $this->productFilter->getDB()->query($cISQL, ReturnType::AFFECTED_ROWS);
         }
 
         return $oSuchCache->kSuchCache;
@@ -1009,11 +1009,11 @@ class BaseSearchQuery extends AbstractFilter
         static $active = null;
 
         if ($active === null) {
-            $active = \Shop::Container()->getDB()->query(
+            $active = $this->productFilter->getDB()->query(
                     "SHOW INDEX FROM tartikel 
                     WHERE KEY_NAME = 'idx_tartikel_fulltext'",
                     ReturnType::SINGLE_OBJECT)
-                && \Shop::Container()->getDB()->query(
+                && $this->productFilter->getDB()->query(
                     "SHOW INDEX 
                     FROM tartikelsprache 
                     WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'",

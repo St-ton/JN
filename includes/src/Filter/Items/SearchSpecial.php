@@ -88,7 +88,7 @@ class SearchSpecial extends AbstractFilter
             if (!\is_array($val)) {
                 $val = [$val];
             }
-            $oSeo_arr = \Shop::Container()->getDB()->query(
+            $oSeo_arr = $this->productFilter->getDB()->query(
                 "SELECT tseo.cSeo, tseo.kSprache
                     FROM tseo
                     WHERE cKey = 'suchspecial' 
@@ -386,7 +386,7 @@ class SearchSpecial extends AbstractFilter
                     break;
             }
             $qry    = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
-            $qryRes = \Shop::Container()->getDB()->query($qry, ReturnType::ARRAY_OF_OBJECTS);
+            $qryRes = $this->productFilter->getDB()->query($qry, ReturnType::ARRAY_OF_OBJECTS);
             if (($count = \count($qryRes)) > 0) {
                 if ($baseValue === $i) {
                     continue;

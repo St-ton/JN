@@ -63,7 +63,7 @@ class BaseManufacturer extends AbstractFilter
             if (!\is_array($val)) {
                 $val = [$val];
             }
-            $oSeo_arr = \Shop::Container()->getDB()->query(
+            $oSeo_arr = $this->productFilter->getDB()->query(
                 "SELECT tseo.cSeo, tseo.kSprache, thersteller.cName
                     FROM tseo
                     JOIN thersteller
@@ -168,7 +168,7 @@ class BaseManufacturer extends AbstractFilter
             ->setOn('tartikel.kHersteller = thersteller.kHersteller')
             ->setOrigin(__CLASS__));
         $query            = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
-        $manufacturers    = \Shop::Container()->getDB()->query(
+        $manufacturers    = $this->productFilter->getDB()->query(
             "SELECT tseo.cSeo, ssMerkmal.kHersteller, ssMerkmal.cName, ssMerkmal.nSortNr, COUNT(*) AS nAnzahl
                 FROM (" . $query . ") AS ssMerkmal
                     LEFT JOIN tseo 

@@ -7,33 +7,35 @@
 
 namespace Filter;
 
+use Cache\JTLCacheInterface;
+use DB\DbInterface;
 use DB\ReturnType;
-use Filter\Items\Search;
 use Filter\Items\Attribute;
 use Filter\Items\Category;
 use Filter\Items\Limit;
 use Filter\Items\Manufacturer;
 use Filter\Items\PriceRange;
 use Filter\Items\Rating;
+use Filter\Items\Search;
 use Filter\Items\SearchSpecial;
 use Filter\Items\Sort;
 use Filter\Items\Tag;
 use Filter\Pagination\Info;
 use Filter\SortingOptions\Factory;
-use Filter\States\DummyState;
 use Filter\States\BaseAttribute;
 use Filter\States\BaseCategory;
 use Filter\States\BaseManufacturer;
 use Filter\States\BaseSearchQuery;
 use Filter\States\BaseSearchSpecial;
 use Filter\States\BaseTag;
+use Filter\States\DummyState;
+use Mapper\SortingType;
+use Tightenco\Collect\Support\Collection;
 use function Functional\first;
 use function Functional\flatten;
 use function Functional\group;
 use function Functional\map;
 use function Functional\select;
-use Mapper\SortingType;
-use Tightenco\Collect\Support\Collection;
 
 /**
  * Class ProductFilter
@@ -243,6 +245,16 @@ class ProductFilter
     private $limits;
 
     /**
+     * @var \DB\DbInterface
+     */
+    private $db;
+
+    /**
+     * @var \Cache\JTLCacheInterface
+     */
+    private $cache;
+
+    /**
      * @var array
      */
     public static $mapping = [
@@ -269,24 +281,29 @@ class ProductFilter
     ];
 
     /**
-     * @param array $languages
-     * @param int   $currentLanguageID
-     * @param array $config
+     * ProductFilter constructor.
+     * @param ConfigInterface   $config
+     * @param DbInterface       $db
+     * @param JTLCacheInterface $cache
      */
-    public function __construct(array $languages = null, int $currentLanguageID = null, array $config = null)
+    public function __construct(ConfigInterface $config, DbInterface $db, JTLCacheInterface $cache)
     {
-        $this->url               = new NavigationURLs();
-        $this->languages         = $languages ?? \Sprache::getInstance()->getLangArray();
-        $this->conf              = $config ?? \Shopsetting::getInstance()->getAll();
-        $this->languageID        = $currentLanguageID ?? \Shop::getLanguageID();
-        $this->customerGroupID   = \Session::CustomerGroup()->getID();
-        $this->baseURL           = \Shop::getURL() . '/';
-        $this->metaData          = new Metadata($this);
-        $this->filterSQL         = new ProductFilterSQL($this);
-        $this->filterURL         = new ProductFilterURL($this);
+        $this->languages         = $config->getLanguages();
+        $this->conf              = $config->getConfig();
+        $this->languageID        = $config->getLangID();
+        $this->customerGroupID   = $config->getCustomerGroupID();
+        $this->baseURL           = $config->getBaseURL();
+        $this->db                = $db;
+        $this->cache             = $cache;
         $this->showChildProducts = \defined('SHOW_CHILD_PRODUCTS')
             ? SHOW_CHILD_PRODUCTS
             : 0;
+
+        $this->url       = new NavigationURLs();
+        $this->metaData  = new Metadata($this);
+        $this->filterSQL = new ProductFilterSQL($this);
+        $this->filterURL = new ProductFilterURL($this);
+
         $this->initBaseStates();
         \executeHook(\HOOK_PRODUCTFILTER_CREATE, ['productFilter' => $this]);
     }
@@ -792,7 +809,7 @@ class ProductFilter
         }
         // @todo: how to handle \strlen($params['cSuche']) === 0?
         if ($params['kSuchanfrage'] > 0) {
-            $oSuchanfrage = \Shop::Container()->getDB()->select('tsuchanfrage', 'kSuchanfrage',
+            $oSuchanfrage = $this->db->select('tsuchanfrage', 'kSuchanfrage',
                 $params['kSuchanfrage']);
             if (isset($oSuchanfrage->cSuche) && \strlen($oSuchanfrage->cSuche) > 0) {
                 $this->search->setName($oSuchanfrage->cSuche);
@@ -812,7 +829,7 @@ class ProductFilter
             $params['cSuche'] = \StringHandler::filterXSS($params['cSuche']);
             $this->search->setName($params['cSuche']);
             $this->searchQuery->setName($params['cSuche']);
-            $oSuchanfrage = \Shop::Container()->getDB()->select(
+            $oSuchanfrage = $this->db->select(
                 'tsuchanfrage',
                 'cSuche', $params['cSuche'],
                 'kSprache', $this->getLanguageID(),
@@ -872,8 +889,8 @@ class ProductFilter
                         && (\RequestHelper::verifyGPCDataInt($filterParam) > 0 || \RequestHelper::verifyGPDataString($filterParam) !== ''))
                 ) {
                     $filterValue = \is_array($_GET[$filterParam])
-                        ? \array_map([\Shop::Container()->getDB(), 'realEscape'], $_GET[$filterParam])
-                        : \Shop::Container()->getDB()->realEscape($_GET[$filterParam]);
+                        ? \array_map([$this->db, 'realEscape'], $_GET[$filterParam])
+                        : $this->db->realEscape($_GET[$filterParam]);
                     $this->addActiveFilter($filter, $filterValue);
                     $params[$filterParam] = $filterValue;
                 }
@@ -904,7 +921,7 @@ class ProductFilter
         if (\count($values) === 0) {
             return $this;
         }
-        $attributes = \Shop::Container()->getDB()->query(
+        $attributes = $this->db->query(
             'SELECT tmerkmalwert.kMerkmal, tmerkmalwert.kMerkmalWert, tmerkmal.nMehrfachauswahl
                 FROM tmerkmalwert
                 JOIN tmerkmal 
@@ -1702,7 +1719,7 @@ class ProductFilter
             function ($e) {
                 return (int)$e->kArtikel;
             },
-            \Shop::Container()->getDB()->query($qry, ReturnType::ARRAY_OF_OBJECTS)
+            $this->db->query($qry, ReturnType::ARRAY_OF_OBJECTS)
         ));
 
         $orderData         = new \stdClass();
@@ -2098,6 +2115,38 @@ class ProductFilter
         }
 
         return $filter;
+    }
+
+    /**
+     * @return \DB\DbInterface
+     */
+    public function getDB(): \DB\DbInterface
+    {
+        return $this->db;
+    }
+
+    /**
+     * @param \DB\DbInterface $db
+     */
+    public function setDB(\DB\DbInterface $db)
+    {
+        $this->db = $db;
+    }
+
+    /**
+     * @return \Cache\JTLCacheInterface
+     */
+    public function getCache(): \Cache\JTLCacheInterface
+    {
+        return $this->cache;
+    }
+
+    /**
+     * @param \Cache\JTLCacheInterface $cache
+     */
+    public function setCache(\Cache\JTLCacheInterface $cache)
+    {
+        $this->cache = $cache;
     }
 
     /**

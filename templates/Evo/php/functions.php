@@ -86,7 +86,14 @@ function get_product_list($params, $smarty)
             $oArtikel_arr[] = (new Artikel())->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
         }
     } else {
-        $oArtikel_arr = (new \Filter\ProductFilter())->initStates($params)->generateSearchResults(null, true, $nLimit)->getProducts();
+        $oArtikel_arr = (new \Filter\ProductFilter(
+            \Filter\Config::getDefault(),
+            Shop::Container()->getDB(),
+            Shop::Container()->getCache()
+        ))
+            ->initStates($params)
+            ->generateSearchResults(null, true, $nLimit)
+            ->getProducts();
     }
 
     $smarty->assign($cAssign, $oArtikel_arr);

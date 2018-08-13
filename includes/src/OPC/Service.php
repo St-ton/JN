@@ -7,7 +7,9 @@
 namespace OPC;
 
 use Filter\AbstractFilter;
+use Filter\Config;
 use Filter\FilterOption;
+use Filter\Items\Attribute;
 use Filter\Items\ItemAttribute;
 use Filter\Type;
 
@@ -232,7 +234,11 @@ class Service
      */
     public function getFilterOptions(array $enabledFilters = []): array
     {
-        $productFilter    = new \Filter\ProductFilter();
+        $productFilter    = new \Filter\ProductFilter(
+            Config::getDefault(),
+            \Shop::Container()->getDB(),
+            \Shop::Container()->getCache()
+        );
         $availableFilters = $productFilter->getAvailableFilters();
         $results          = [];
         $enabledMap       = [];
@@ -250,7 +256,7 @@ class Service
             $name    = $availableFilter->getFrontendName();
             $options = [];
 
-            if ($class === ItemAttribute::class) {
+            if ($class === Attribute::class) {
                 $name = 'Merkmale';
 
                 foreach ($availableFilter->getOptions() as $option) {

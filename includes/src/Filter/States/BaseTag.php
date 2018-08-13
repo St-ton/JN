@@ -59,7 +59,7 @@ class BaseTag extends AbstractFilter
      */
     public function setSeo(array $languages): FilterInterface
     {
-        $oSeo_obj = \Shop::Container()->getDB()->queryPrepared(
+        $oSeo_obj = $this->productFilter->getDB()->queryPrepared(
             "SELECT tseo.cSeo, tseo.kSprache, ttag.cName
                 FROM tseo
                 LEFT JOIN ttag
@@ -170,7 +170,7 @@ class BaseTag extends AbstractFilter
         $sql->addCondition('ttag.nAktiv = 1');
         $sql->addCondition('ttag.kSprache = ' . $this->getLanguageID());
         $query            = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
-        $tags             = \Shop::Container()->getDB()->query(
+        $tags             = $this->productFilter->getDB()->query(
             "SELECT tseo.cSeo, ssMerkmal.kTag, ssMerkmal.cName, 
                 COUNT(*) AS nAnzahl, SUM(ssMerkmal.nAnzahlTagging) AS nAnzahlTagging
                     FROM (" . $query . ") AS ssMerkmal

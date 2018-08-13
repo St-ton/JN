@@ -855,7 +855,13 @@ final class Shop
             header('Location: ' . LinkHelper::getInstance()->getStaticRoute('jtl.php') . '?li=1', true, 303);
             exit;
         }
-        self::$productFilter = new ProductFilter(self::Lang()->getLangArray(), self::$kSprache);
+        $conf = new \Filter\Config();
+        $conf->setLangID(self::$kSprache);
+        $conf->setLanguages(self::Lang()->getLangArray());
+        $conf->setCustomerGroupID(\Session::CustomerGroup()->getID());
+        $conf->setConfig(self::$_settings->getAll());
+        $conf->setBaseURL(self::getURL() . '/');
+        self::$productFilter = new ProductFilter($conf, self::Container()->getDB(), self::Container()->getCache());
         self::seoCheck();
         self::setImageBaseURL(defined('IMAGE_BASE_URL') ? IMAGE_BASE_URL : self::getURL());
         self::Event()->fire('shop.run');
@@ -1524,7 +1530,7 @@ final class Shop
      */
     public static function buildProductFilter(array $cParameter_arr, $productFilter = null): ProductFilter
     {
-        $pf = new ProductFilter(self::Lang()->getLangArray(), self::getLanguageID());
+        $pf = new ProductFilter(\Filter\Config::getDefault(), self::Container()->getDB(), self::Container()->getCache());
         if ($productFilter !== null) {
             foreach (get_object_vars($productFilter) as $k => $v) {
                 $pf->$k = $v;

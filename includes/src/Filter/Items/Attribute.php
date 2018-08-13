@@ -162,7 +162,7 @@ class Attribute extends BaseAttribute
     {
         $value         = $this->getValue();
         $oSeo_arr      = $this->batchAttributeData[$value]
-            ?? \Shop::Container()->getDB()->queryPrepared(
+            ?? $this->productFilter->getDB()->queryPrepared(
                 'SELECT tmerkmalwertsprache.cWert, tmerkmalwert.kMerkmal, 
                     tmerkmalwertsprache.cSeo, tmerkmalwertsprache.kSprache
                     FROM tmerkmalwertsprache
@@ -172,7 +172,7 @@ class Attribute extends BaseAttribute
                 ['val' => $value],
                 ReturnType::ARRAY_OF_OBJECTS
             );
-        $currentLangID = \Shop::getLanguageID();
+        $currentLangID = $this->productFilter->getLanguageID();
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
             foreach ($oSeo_arr as $oSeo) {
@@ -428,7 +428,7 @@ class Attribute extends BaseAttribute
         }
         $state                     = $this->getState($data['oAktuelleKategorie'] ?? null);
         $baseQry                   = $this->productFilter->getFilterSQL()->getBaseQuery($state);
-        $qryRes                    = \Shop::Container()->getDB()->executeQuery(
+        $qryRes                    = $this->productFilter->getDB()->executeQuery(
             "SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
             ssMerkmal.nMehrfachauswahl, ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, 
             ssMerkmal.cMMBildPfad, COUNT(DISTINCT ssMerkmal.kArtikel) AS nAnzahl
@@ -608,7 +608,7 @@ class Attribute extends BaseAttribute
         $attributeValueIDs = \implode(',', \array_map(function ($row) {
             return (int)$row->kMerkmalWert;
         }, $attributeValues));
-        $queryResult       = \Shop::Container()->getDB()->query(
+        $queryResult       = $this->productFilter->getDB()->query(
             "SELECT tmerkmalwertsprache.cWert, tmerkmalwertsprache.kMerkmalWert, 
             tmerkmalwertsprache.cSeo, tmerkmalwert.kMerkmal, tmerkmalwertsprache.kSprache
                 FROM tmerkmalwertsprache

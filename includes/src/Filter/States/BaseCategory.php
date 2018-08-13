@@ -83,7 +83,7 @@ class BaseCategory extends AbstractFilter
     public function setSeo(array $languages): FilterInterface
     {
         if ($this->getValue() > 0) {
-            $oSeo_arr = \Shop::Container()->getDB()->queryPrepared(
+            $oSeo_arr = $this->productFilter->getDB()->queryPrepared(
                 "SELECT tseo.cSeo, tseo.kSprache, tkategorie.cName AS cKatName, tkategoriesprache.cName
                     FROM tseo
                         LEFT JOIN tkategorie

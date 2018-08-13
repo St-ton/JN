@@ -455,7 +455,7 @@ class PriceRange extends AbstractFilter
             $state->setLimit('');
             $state->setGroupBy(['tartikel.kArtikel']);
             $baseQry = $this->productFilter->getFilterSQL()->getBaseQuery($state);
-            $minMax  = \Shop::Container()->getDB()->query(
+            $minMax  = $this->productFilter->getDB()->query(
                 'SELECT MAX(ssMerkmal.fMax) AS fMax, MIN(ssMerkmal.fMin) AS fMin 
                     FROM (' . $baseQry . ' ) AS ssMerkmal',
                 ReturnType::SINGLE_OBJECT
@@ -478,7 +478,7 @@ class PriceRange extends AbstractFilter
                 $sql->setOrderBy(null);
                 $sql->setLimit('');
                 $sql->setGroupBy(['tartikel.kArtikel']);
-                $dbRes            = \Shop::Container()->getDB()->query(
+                $dbRes            = $this->productFilter->getDB()->query(
                     'SELECT ' . $cSelectSQL . ' FROM (' .
                     $this->productFilter->getFilterSQL()->getBaseQuery($sql) . ' ) AS ssMerkmal',
                     ReturnType::SINGLE_OBJECT
@@ -527,7 +527,7 @@ class PriceRange extends AbstractFilter
                 }
             }
         } else {
-            $ranges = \Shop::Container()->getDB()->query(
+            $ranges = $this->productFilter->getDB()->query(
                 'SELECT * FROM tpreisspannenfilter',
                 ReturnType::ARRAY_OF_OBJECTS
             );
@@ -556,7 +556,7 @@ class PriceRange extends AbstractFilter
                     $state->addJoin($join);
                 }
                 $baseQry = $this->productFilter->getFilterSQL()->getBaseQuery($state);
-                $dbRes   = \Shop::Container()->getDB()->query(
+                $dbRes   = $this->productFilter->getDB()->query(
                     'SELECT ' . $cSelectSQL . ' FROM (' . $baseQry . ' ) AS ssMerkmal',
                     ReturnType::SINGLE_OBJECT
                 );

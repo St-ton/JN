@@ -148,7 +148,7 @@ class Category extends BaseCategory
         if (!\Shop::has('checkCategoryVisibility')) {
             \Shop::set(
                 'checkCategoryVisibility',
-                \Shop::Container()->getDB()->query(
+                $this->productFilter->getDB()->query(
                     'SELECT kKategorie FROM tkategoriesichtbarkeit',
                     ReturnType::AFFECTED_ROWS
                 ) > 0
@@ -185,7 +185,7 @@ class Category extends BaseCategory
         $sql->setGroupBy(['tkategorie.kKategorie', 'tartikel.kArtikel']);
 
         $query            = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
-        $categories       = \Shop::Container()->getDB()->executeQuery(
+        $categories       = $this->productFilter->getDB()->executeQuery(
             "SELECT tseo.cSeo, ssMerkmal.kKategorie, ssMerkmal.cName, 
                 ssMerkmal.nSort, COUNT(*) AS nAnzahl
                 FROM (" . $query . " ) AS ssMerkmal

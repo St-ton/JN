@@ -123,7 +123,7 @@ class Rating extends AbstractFilter
         $sql->setLimit('');
         $sql->setGroupBy(['tartikel.kArtikel']);
         $sql->addJoin($this->getSQLJoin());
-        $res              = \Shop::Container()->getDB()->query(
+        $res              = $this->productFilter->getDB()->query(
             'SELECT ssMerkmal.nSterne, COUNT(*) AS nAnzahl
                 FROM (' . $this->productFilter->getFilterSQL()->getBaseQuery($sql) . ' ) AS ssMerkmal
                 GROUP BY ssMerkmal.nSterne

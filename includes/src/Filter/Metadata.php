@@ -276,7 +276,7 @@ class Metadata implements MetadataInterface
     public static function getGlobalMetaData(): array
     {
         return \Shop::Container()->getCache()->get('jtl_glob_meta', function ($cache, $id, &$content, &$tags) {
-            $globalTmp = \Shop::Container()->getDB()->query(
+            $globalTmp = $this->productFilter->getDB()->query(
                 'SELECT cName, kSprache, cWertName 
                     FROM tglobalemetaangaben ORDER BY kSprache',
                 ReturnType::ARRAY_OF_OBJECTS
@@ -302,7 +302,7 @@ class Metadata implements MetadataInterface
     public static function getExcludes(): array
     {
         return \Shop::Container()->getCache()->get('jtl_glob_excl', function ($cache, $id, &$content, &$tags) {
-            $keyWords = \Shop::Container()->getDB()->query(
+            $keyWords = $this->productFilter->getDB()->query(
                 'SELECT * 
                     FROM texcludekeywords 
                     ORDER BY cISOSprache',

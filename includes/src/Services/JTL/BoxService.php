@@ -6,10 +6,10 @@
 
 namespace Services\JTL;
 
-use Boxes\BoxFactoryInterface;
-use Boxes\BoxInterface;
-use Boxes\BoxPlugin;
-use Boxes\BoxType;
+use Boxes\FactoryInterface;
+use Boxes\Items\BoxInterface;
+use Boxes\Items\Plugin;
+use Boxes\Type;
 use Boxes\Renderer\DefaultRenderer;
 use DB\DbInterface;
 use DB\ReturnType;
@@ -45,7 +45,7 @@ class BoxService implements BoxServiceInterface
     public $visibility;
 
     /**
-     * @var \Boxes\BoxFactory
+     * @var \Boxes\Factory
      */
     private $factory;
 
@@ -60,14 +60,14 @@ class BoxService implements BoxServiceInterface
     private static $_instance;
 
     /**
-     * @param array               $config
-     * @param BoxFactoryInterface $factory
-     * @param DbInterface         $db
+     * @param array            $config
+     * @param FactoryInterface $factory
+     * @param DbInterface      $db
      * @return BoxServiceInterface
      */
     public static function getInstance(
         array $config,
-        BoxFactoryInterface $factory,
+        FactoryInterface $factory,
         DbInterface $db
     ): BoxServiceInterface {
         return self::$_instance ?? new self($config, $factory, $db);
@@ -76,11 +76,11 @@ class BoxService implements BoxServiceInterface
     /**
      * BoxService constructor.
      *
-     * @param array               $config
-     * @param BoxFactoryInterface $factory
-     * @param DbInterface         $db
+     * @param array            $config
+     * @param FactoryInterface $factory
+     * @param DbInterface      $db
      */
-    public function __construct(array $config, BoxFactoryInterface $factory, DbInterface $db)
+    public function __construct(array $config, FactoryInterface $factory, DbInterface $db)
     {
         $this->config    = $config;
         $this->factory   = $factory;
@@ -342,7 +342,7 @@ class BoxService implements BoxServiceInterface
             ? ' AND tboxen.ePosition IN (' . \implode(',', $visiblePositions) . ')'
             : '';
         $cPluginAktiv     = $active
-            ? " AND (tplugin.nStatus IS NULL OR tplugin.nStatus = " .
+            ? ' AND (tplugin.nStatus IS NULL OR tplugin.nStatus = ' .
             \Plugin::PLUGIN_ACTIVATED . "  OR tboxvorlage.eTyp != 'plugin')"
             : '';
         if (($grouped = \Shop::Cache()->get($cacheID)) === false) {
@@ -382,7 +382,7 @@ class BoxService implements BoxServiceInterface
             }
             $first = \Functional\first($boxes);
             if ((int)$first->kContainer > 0) {
-                $boxInstance = $this->factory->getBoxByBaseType($first->kBoxvorlage, $first->eTyp === BoxType::PLUGIN);
+                $boxInstance = $this->factory->getBoxByBaseType($first->kBoxvorlage, $first->eTyp === Type::PLUGIN);
                 $boxInstance->map($boxes);
                 if (!isset($children[(int)$first->kContainer])) {
                     $children[(int)$first->kContainer] = [];
@@ -397,14 +397,14 @@ class BoxService implements BoxServiceInterface
                 continue;
             }
             $first       = \Functional\first($boxes);
-            $boxInstance = $this->factory->getBoxByBaseType($first->kBoxvorlage, $first->eTyp === BoxType::PLUGIN);
+            $boxInstance = $this->factory->getBoxByBaseType($first->kBoxvorlage, $first->eTyp === Type::PLUGIN);
             $boxInstance->map($boxes);
-            if (\get_class($boxInstance) === BoxPlugin::class) {
+            if (\get_class($boxInstance) === Plugin::class) {
                 $plugin = new \Plugin($boxInstance->getCustomID());
                 $boxInstance->setTemplateFile($plugin->cFrontendPfad . \PFAD_PLUGIN_BOXEN . $boxInstance->getTemplateFile());
                 $boxInstance->setPlugin($plugin);
             }
-            if ($boxInstance->getType() === BoxType::CONTAINER) {
+            if ($boxInstance->getType() === Type::CONTAINER) {
                 $boxInstance->setChildren($children);
             }
             $result[] = $boxInstance;

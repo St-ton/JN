@@ -6,7 +6,7 @@
 
 namespace Filter;
 
-use Boxes\AbstractBox;
+use Boxes\Items\AbstractBox;
 use Filter\Pagination\Info;
 use function Functional\every;
 use function Functional\filter;

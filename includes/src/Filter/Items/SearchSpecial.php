@@ -227,7 +227,7 @@ class SearchSpecial extends AbstractFilter
     {
         $joins     = [];
         $values    = $this->getValue();
-        $joinType  = $this->getType() === Type:: AND
+        $joinType  = $this->getType() === Type::AND
             ? 'JOIN'
             : 'LEFT JOIN';
         $baseValue = $this->productFilter->getSearchSpecial()->getValue();

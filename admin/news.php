@@ -20,7 +20,9 @@ $author         = ContentAuthor::getInstance();
 $controller     = new \News\Admin\Controller($db, $smarty, Shop::Container()->getCache());
 $newsCategory   = new \News\Category($db);
 $languages      = Sprache::getAllLanguages();
-setzeSprache();
+$defaultLang    = Sprache::getDefaultLanguage();
+
+$_SESSION['kSprache'] = $defaultLang->kSprache;
 if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
     $backTab = RequestHelper::verifyGPDataString('tab');
     $smarty->assign('cTab', $backTab);
@@ -245,7 +247,7 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
 }
 if ($controller->getStep() === 'news_uebersicht') {
     $newsItems   = $controller->getAllNews();
-    $comments    = $controller->getNonActivatedComments($_SESSION['kSprache']);
+    $comments    = $controller->getNonActivatedComments();
     $config      = $db->selectAll(
         'teinstellungenconf',
         'kEinstellungenSektion',
@@ -314,6 +316,7 @@ if (!empty($_SESSION['news.cHinweis'])) {
     $controller->setMsg($controller->getMsg() . $_SESSION['news.cHinweis']);
     unset($_SESSION['news.cHinweis']);
 }
+
 $maxFileSize    = getMaxFileSize(ini_get('upload_max_filesize'));
 $customerGroups = \Functional\map($db->query(
     'SELECT kKundengruppe, cName

@@ -104,7 +104,7 @@ class Controller
 
         $validation = $this->pruefeNewsPost($customerGroups, $newsCategoryIDs);
 
-        if (\is_array($validation) && \count($validation) === 0) {
+        if (false && \is_array($validation) && \count($validation) === 0) {
             $newsItem                = new \stdClass();
             $newsItem->cKundengruppe = ';' . \implode(';', $customerGroups) . ';';
             $newsItem->nAktiv        = $active;
@@ -250,19 +250,21 @@ class Controller
             }
             $this->flushCache();
         } else {
-            $this->step = 'news_editieren';
+            $newsCategories = $this->getAllNewsCategories(false);
+            $newsItem       = new Item($this->db);
+            $this->step     = 'news_editieren';
             $this->smarty->assign('cPostVar_arr', $post)
-                         ->assign('cPlausiValue_arr', $validation);
+                         ->assign('cPlausiValue_arr', $validation)
+                         ->assign('oNewsKategorie_arr', $newsCategories)
+                         ->assign('oNews', $newsItem);
             $this->errorMsg .= 'Fehler: Bitte füllen Sie alle Pflichtfelder aus.<br />';
 
             if (isset($post['kNews']) && \is_numeric($post['kNews'])) {
                 $this->continueWith = $newsItemID;
             } else {
-                // @todo
-                $oNewsKategorie_arr = \News::getAllNewsCategories($_SESSION['kSprache'], true);
-                $this->smarty->assign('oNewsKategorie_arr', $oNewsKategorie_arr)
-                             ->assign('oPossibleAuthors_arr',
-                                 $contentAuthor->getPossibleAuthors(['CONTENT_NEWS_SYSTEM_VIEW']));
+                echo '<br>else!';
+                $this->smarty->assign('oPossibleAuthors_arr',
+                    $contentAuthor->getPossibleAuthors(['CONTENT_NEWS_SYSTEM_VIEW']));
             }
         }
     }
@@ -587,7 +589,8 @@ class Controller
     {
         $itemList = new ItemList($this->db);
         $ids      = map($this->db->query(
-            'SELECT kNews FROM tnews
+            'SELECT kNews 
+                FROM tnews
                 ORDER BY tnews.dGueltigVon DESC',
             ReturnType::ARRAY_OF_OBJECTS
         ), function ($e) {
@@ -599,22 +602,19 @@ class Controller
     }
 
     /**
-     * @param int $currentLanguageID
      * @return Collection
      */
-    public function getNonActivatedComments(int $currentLanguageID): Collection
+    public function getNonActivatedComments(): Collection
     {
         $itemList = new CommentList($this->db);
-        $ids      = map($this->db->queryPrepared(
+        $ids      = map($this->db->query(
             'SELECT tnewskommentar.kNewsKommentar AS id
                 FROM tnewskommentar
                 JOIN tnews 
                     ON tnews.kNews = tnewskommentar.kNews
                 JOIN tnewssprache t 
                     ON tnews.kNews = t.kNews
-                WHERE tnewskommentar.nAktiv = 0 
-                    AND t.languageID = :lid',
-            ['lid' => $currentLanguageID],
+                WHERE tnewskommentar.nAktiv = 0',
             ReturnType::ARRAY_OF_OBJECTS
         ), function ($e) {
             return (int)$e->id;
@@ -633,7 +633,8 @@ class Controller
         $itemList = new CategoryList($this->db);
         $ids      = map($this->db->query(
             'SELECT node.kNewsKategorie AS id
-                FROM tnewskategorie AS node INNER JOIN tnewskategorie AS parent
+                FROM tnewskategorie AS node 
+                INNER JOIN tnewskategorie AS parent
                 WHERE node.lvl > 0 
                     AND parent.lvl > 0 ' . ($showOnlyActive ? ' AND node.nAktiv = 1 ' : '') .
             ' GROUP BY node.kNewsKategorie

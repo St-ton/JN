@@ -7,7 +7,7 @@
 namespace Filter\Items;
 
 use Filter\AbstractFilter;
-use Filter\FilterOption;
+use Filter\Option;
 use Filter\FilterInterface;
 use Filter\ProductFilter;
 use Filter\SortingOptions\Factory;
@@ -167,7 +167,7 @@ class Sort extends AbstractFilter
             }
             /** @var SortingOptionInterface $sortingOption */
             $value     = $sortingOption->getValue();
-            $options[] = (new FilterOption())
+            $options[] = (new Option())
                 ->setIsActive($activeSortType === $value)
                 ->setURL($this->productFilter->getFilterURL()->getURL(
                     $additionalFilter->init($value)

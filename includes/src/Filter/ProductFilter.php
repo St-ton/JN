@@ -1612,7 +1612,7 @@ class ProductFilter
     public function getProductKeys(): Collection
     {
         $sorting = $this->getSorting()->getActiveSorting();
-        $sql     = (new FilterStateSQL())->from($this->getCurrentStateData());
+        $sql     = (new StateSQL())->from($this->getCurrentStateData());
         $sql->addJoin($sorting->getJoin());
         $sql->setSelect(['tartikel.kArtikel']);
         $sql->setOrderBy($sorting->getOrderBy());
@@ -1803,14 +1803,14 @@ class ProductFilter
 
     /**
      * @param null|string $ignore - filter class to ignore
-     * @return FilterStateSQLInterface
+     * @return StateSQLInterface
      */
-    public function getCurrentStateData(string $ignore = null): FilterStateSQLInterface
+    public function getCurrentStateData(string $ignore = null): StateSQLInterface
     {
         $state          = $this->getBaseState();
         $stateCondition = $state->getSQLCondition();
         $stateJoin      = $state->getSQLJoin();
-        $data           = new FilterStateSQL();
+        $data           = new StateSQL();
         $data->setGroupBy([]);
         $data->setOrderBy('');
         $data->setLimit('');

@@ -8,10 +8,10 @@ namespace Filter\Items;
 
 use DB\ReturnType;
 use Filter\AbstractFilter;
-use Filter\FilterJoin;
-use Filter\FilterOption;
+use Filter\Join;
+use Filter\Option;
 use Filter\FilterInterface;
-use Filter\FilterStateSQL;
+use Filter\StateSQL;
 use Filter\ProductFilter;
 use Filter\States\BaseSearchQuery;
 
@@ -360,7 +360,7 @@ class Search extends AbstractFilter
             $count       = 1;
         }
 
-        return (new FilterJoin())
+        return (new Join())
             ->setType('JOIN')
             ->setTable('(SELECT tsuchcachetreffer.kArtikel, tsuchcachetreffer.kSuchCache, 
                             MIN(tsuchcachetreffer.nSort) AS nSort
@@ -404,7 +404,7 @@ class Search extends AbstractFilter
 
     /**
      * @param null $data
-     * @return FilterOption[]
+     * @return Option[]
      */
     public function getOptions($data = null): array
     {
@@ -419,7 +419,7 @@ class Search extends AbstractFilter
         $nLimit = ($limit = (int)$this->getConfig('navigationsfilter')['suchtrefferfilter_anzahl']) > 0
             ? ' LIMIT ' . $limit
             : '';
-        $sql    = (new FilterStateSQL())->from($this->productFilter->getCurrentStateData());
+        $sql    = (new StateSQL())->from($this->productFilter->getCurrentStateData());
         $sql->setSelect([
             'tsuchanfrage.kSuchanfrage',
             'tsuchcache.kSuchCache',
@@ -429,19 +429,19 @@ class Search extends AbstractFilter
         $sql->setOrderBy(null);
         $sql->setLimit('');
         $sql->setGroupBy(['tsuchanfrage.kSuchanfrage', 'tartikel.kArtikel']);
-        $sql->addJoin((new FilterJoin())
+        $sql->addJoin((new Join())
             ->setComment('JOIN1 from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('tsuchcachetreffer')
             ->setOn('tartikel.kArtikel = tsuchcachetreffer.kArtikel')
             ->setOrigin(__CLASS__));
-        $sql->addJoin((new FilterJoin())
+        $sql->addJoin((new Join())
             ->setComment('JOIN2 from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('tsuchcache')
             ->setOn('tsuchcache.kSuchCache = tsuchcachetreffer.kSuchCache')
             ->setOrigin(__CLASS__));
-        $sql->addJoin((new FilterJoin())
+        $sql->addJoin((new Join())
             ->setComment('JOIN3 from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('tsuchanfrage')
@@ -496,7 +496,7 @@ class Search extends AbstractFilter
             if (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0 && $nPrioStep > 0) {
                 $class = \round(($searchFilter->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) / $nPrioStep) + 1;
             }
-            $options[] = (new FilterOption())
+            $options[] = (new Option())
                 ->setURL($this->productFilter->getFilterURL()->getURL(
                     $additionalFilter->init((int)$searchFilter->kSuchanfrage)
                 ))

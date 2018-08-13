@@ -7,11 +7,11 @@
 namespace Filter\Items;
 
 use DB\ReturnType;
-use Filter\FilterJoin;
-use Filter\FilterOption;
+use Filter\Join;
+use Filter\Option;
 use Filter\FilterInterface;
-use Filter\FilterStateSQL;
-use Filter\FilterStateSQLInterface;
+use Filter\StateSQL;
+use Filter\StateSQLInterface;
 use Filter\Type;
 use Filter\ProductFilter;
 use Filter\States\BaseAttribute;
@@ -226,7 +226,7 @@ class Attribute extends BaseAttribute
      */
     public function getSQLJoin()
     {
-        return (new FilterJoin())
+        return (new Join())
             ->setType('JOIN')
             ->setTable('tartikelmerkmal')
             ->setOn('tartikel.kArtikel = tartikelmerkmal.kArtikel')
@@ -251,32 +251,32 @@ class Attribute extends BaseAttribute
 
     /**
      * @param \Kategorie|null $category
-     * @return FilterStateSQLInterface
+     * @return StateSQLInterface
      */
-    protected function getState(\Kategorie $category = null): FilterStateSQLInterface
+    protected function getState(\Kategorie $category = null): StateSQLInterface
     {
         $base  = $this->productFilter->getCurrentStateData(self::class);
-        $state = (new FilterStateSQL())->from($base);
+        $state = (new StateSQL())->from($base);
         $state->setOrderBy('');
         $state->setLimit('');
         $state->setGroupBy([]);
         $state->setSelect(['tmerkmal.cName']);
         // @todo?
         if (true || (!$this->productFilter->hasAttributeValue() && !$this->productFilter->hasAttributeFilter())) {
-            $state->addJoin((new FilterJoin())
+            $state->addJoin((new Join())
                 ->setComment('join1 from ' . __METHOD__)
                 ->setType('JOIN')
                 ->setTable('tartikelmerkmal')
                 ->setOn('tartikel.kArtikel = tartikelmerkmal.kArtikel')
                 ->setOrigin(__CLASS__));
         }
-        $state->addJoin((new FilterJoin())
+        $state->addJoin((new Join())
             ->setComment('join2 from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('tmerkmalwert')
             ->setOn('tmerkmalwert.kMerkmalWert = tartikelmerkmal.kMerkmalWert')
             ->setOrigin(__CLASS__));
-        $state->addJoin((new FilterJoin())
+        $state->addJoin((new Join())
             ->setComment('join4 from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('tmerkmal')
@@ -291,21 +291,21 @@ class Attribute extends BaseAttribute
                 'COALESCE(fremdSprache.cSeo, standardSprache.cSeo) AS cSeo',
                 'COALESCE(fremdSprache.cWert, standardSprache.cWert) AS cWert'
             ]);
-            $state->addJoin((new FilterJoin())
+            $state->addJoin((new Join())
                 ->setComment('non default lang join1 from ' . __METHOD__)
                 ->setType('LEFT JOIN')
                 ->setTable('tmerkmalsprache')
                 ->setOn('tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal 
                             AND tmerkmalsprache.kSprache = ' . $langID)
                 ->setOrigin(__CLASS__));
-            $state->addJoin((new FilterJoin())
+            $state->addJoin((new Join())
                 ->setComment('non default lang join2 from ' . __METHOD__)
                 ->setType('INNER JOIN')
                 ->setTable('tmerkmalwertsprache AS standardSprache')
                 ->setOn('standardSprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert
                             AND standardSprache.kSprache = ' . $kStandardSprache)
                 ->setOrigin(__CLASS__));
-            $state->addJoin((new FilterJoin())
+            $state->addJoin((new Join())
                 ->setComment('non default lang join3 from ' . __METHOD__)
                 ->setType('LEFT JOIN')
                 ->setTable('tmerkmalwertsprache AS fremdSprache')
@@ -314,7 +314,7 @@ class Attribute extends BaseAttribute
                 ->setOrigin(__CLASS__));
         } else {
             $state->setSelect(['tmerkmalwertsprache.cWert', 'tmerkmalwertsprache.cSeo', 'tmerkmal.cName']);
-            $state->addJoin((new FilterJoin())
+            $state->addJoin((new Join())
                 ->setComment('join default lang from ' . __METHOD__)
                 ->setType('INNER JOIN')
                 ->setTable('tmerkmalwertsprache')
@@ -346,7 +346,7 @@ class Attribute extends BaseAttribute
                 }
             }
             if (\count($activeAndFilterIDs) > 0) {
-                $state->addJoin((new FilterJoin())
+                $state->addJoin((new Join())
                     ->setComment('join active AND filters from ' . __METHOD__)
                     ->setType('JOIN')
                     ->setTable('(SELECT kArtikel
@@ -406,7 +406,7 @@ class Attribute extends BaseAttribute
 
     /**
      * @param null|array $data
-     * @return FilterOption[]
+     * @return Option[]
      */
     public function getOptions($data = null): array
     {
@@ -473,7 +473,7 @@ class Attribute extends BaseAttribute
                 ? \PFAD_MERKMALBILDER_NORMAL . $attributeFilter->cMMBildPfad
                 : \BILD_KEIN_MERKMALBILD_VORHANDEN;
 
-            $option = new FilterOption();
+            $option = new Option();
             $option->setURL('');
             $option->setData('cTyp', $attributeFilter->cTyp)
                    ->setData('kMerkmal', $attributeFilter->kMerkmal)
@@ -494,7 +494,7 @@ class Attribute extends BaseAttribute
             );
             foreach ($attributeFilter->attributeValues as $filterValue) {
                 $filterValue->kMerkmalWert = (int)$filterValue->kMerkmalWert;
-                $attributeValue            = new FilterOption();
+                $attributeValue            = new Option();
                 $baseSrcSmall              = \strlen($filterValue->cMMWBildPfad) > 0
                     ? \PFAD_MERKMALWERTBILDER_KLEIN . $filterValue->cMMWBildPfad
                     : \BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
@@ -533,7 +533,7 @@ class Attribute extends BaseAttribute
             }
         }
         foreach ($attributeFilters as $af) {
-            /** @var FilterOption $af */
+            /** @var Option $af */
             $options = $af->getOptions();
             if (!\is_array($options)) {
                 continue;
@@ -549,45 +549,45 @@ class Attribute extends BaseAttribute
     }
 
     /**
-     * @param FilterOption $option
+     * @param Option $option
      * @return bool
      */
-    protected function isNumeric(FilterOption $option): bool
+    protected function isNumeric(Option $option): bool
     {
-        return every($option->getOptions(), function (FilterOption $item) {
+        return every($option->getOptions(), function (Option $item) {
             return \is_numeric($item->getValue());
         });
     }
 
     /**
-     * @param FilterOption $option
+     * @param Option $option
      */
-    protected function sortNumeric(FilterOption $option)
+    protected function sortNumeric(Option $option)
     {
         $options = $option->getOptions();
-        \usort($options, function (FilterOption $a, FilterOption $b) {
+        \usort($options, function (Option $a, Option $b) {
             return $a->getValue() <=> $b->getValue();
         });
         $option->setOptions($options);
     }
 
     /**
-     * @param FilterOption $option
+     * @param Option $option
      */
-    protected function sortByCountDesc(FilterOption $option)
+    protected function sortByCountDesc(Option $option)
     {
         $options = $option->getOptions();
-        \usort($options, function (FilterOption $a, FilterOption $b) {
+        \usort($options, function (Option $a, Option $b) {
             return -($a->getCount() <=> $b->getCount());
         });
         $option->setOptions($options);
     }
 
     /**
-     * @param FilterOption $option
-     * @param int          $attributeValueLimit
+     * @param Option $option
+     * @param int    $attributeValueLimit
      */
-    protected function applyOptionLimit(FilterOption $option, int $attributeValueLimit)
+    protected function applyOptionLimit(Option $option, int $attributeValueLimit)
     {
         if ($attributeValueLimit <= 0 || $attributeValueLimit >= \count($option->getOptions())) {
             return;

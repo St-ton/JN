@@ -76,55 +76,55 @@ class SearchResults implements SearchResultsInterface
     private $searchUnsuccessful = false;
 
     /**
-     * @var FilterOption[]
+     * @var Option[]
      * @former Herstellerauswahl
      */
     private $manufacturerFilterOptions = [];
 
     /**
-     * @var FilterOption[]
+     * @var Option[]
      * @former Bewertung
      */
     private $ratingFilterOptions = [];
 
     /**
-     * @var FilterOption[]
+     * @var Option[]
      * @former Tags
      */
     private $tagFilterOptions = [];
 
     /**
-     * @var FilterOption[]
+     * @var Option[]
      * @former MerkmalFilter
      */
     private $attributeFilterOptions = [];
 
     /**
-     * @var FilterOption[]
+     * @var Option[]
      * @former Preisspanne
      */
     private $priceRangeFilterOptions = [];
 
     /**
-     * @var FilterOption[]
+     * @var Option[]
      * @former Kategorieauswahl
      */
     private $categoryFilterOptions = [];
 
     /**
-     * @var FilterOption[]
+     * @var Option[]
      * @former SuchFilter
      */
     private $searchFilterOptions = [];
 
     /**
-     * @var FilterOption[]
+     * @var Option[]
      * @former Suchspecialauswahl
      */
     private $searchSpecialFilterOptions = [];
 
     /**
-     * @var FilterOption[]
+     * @var Option[]
      */
     private $customFilterOptions = [];
 
@@ -703,7 +703,7 @@ class SearchResults implements SearchResultsInterface
      */
     private function updateOptions(FilterInterface $filter, $values)
     {
-        invoke(filter($filter->getOptions(), function (FilterOption $e) use ($values) {
+        invoke(filter($filter->getOptions(), function (Option $e) use ($values) {
             return \in_array($e->getValue(), $values, true);
         }), 'setIsActive', [true]);
     }
@@ -786,7 +786,7 @@ class SearchResults implements SearchResultsInterface
         if ($productFilter->getFilterConfig()->getConfig('navigationsfilter')['allgemein_tagfilter_benutzen'] !== 'N') {
             $this->setTagFilterJSON(AbstractBox::getJSONString(\array_map(
                 function ($e) {
-                    /** @var FilterOption $e */
+                    /** @var Option $e */
                     return $e->setURL(\StringHandler::htmlentitydecode($e->getURL()));
                 },
                 $tagOptions
@@ -829,14 +829,14 @@ class SearchResults implements SearchResultsInterface
             $productFilter->getAttributeFilterCollection()->hide();
         } elseif ($hideActiveOnly === true) {
             foreach ($attribtuteFilterOptions as $af) {
-                /** @var FilterOption $af */
+                /** @var Option $af */
                 $options = $af->getOptions();
                 if (\is_array($options)
                     && $af->getVisibility() !== Visibility::SHOW_NEVER
                     && \array_reduce(
                         $options,
                         function ($carry, $option) {
-                            /** @var FilterOption $option */
+                            /** @var Option $option */
                             return $carry && $option->isActive();
                         },
                         true
@@ -845,7 +845,7 @@ class SearchResults implements SearchResultsInterface
                     $af->hide();
                 }
             }
-            if (every($attribtuteFilterOptions, function (FilterOption $item) {
+            if (every($attribtuteFilterOptions, function (Option $item) {
                 return $item->getVisibility() === Visibility::SHOW_NEVER;
             })) {
                 // hide the whole attribute filter collection if every filter consists of only active options

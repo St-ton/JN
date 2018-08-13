@@ -8,10 +8,10 @@ namespace Filter\Items;
 
 use DB\ReturnType;
 use Filter\AbstractFilter;
-use Filter\FilterJoin;
-use Filter\FilterOption;
+use Filter\Join;
+use Filter\Option;
 use Filter\FilterInterface;
-use Filter\FilterStateSQL;
+use Filter\StateSQL;
 use Filter\ProductFilter;
 
 /**
@@ -266,21 +266,21 @@ class PriceRange extends AbstractFilter
     public function getSQLJoin()
     {
         return [
-            (new FilterJoin())
+            (new Join())
                 ->setComment('join1 from ' . __METHOD__)
                 ->setType('JOIN')
                 ->setTable('tpreise')
                 ->setOn('tartikel.kArtikel = tpreise.kArtikel 
                         AND tpreise.kKundengruppe = ' . $this->getCustomerGroupID())
                 ->setOrigin(__CLASS__),
-            (new FilterJoin())
+            (new Join())
                 ->setComment('join2 from ' . __METHOD__)
                 ->setType('LEFT JOIN')
                 ->setTable('tartikelkategorierabatt')
                 ->setOn('tartikelkategorierabatt.kKundengruppe = ' . $this->getCustomerGroupID() .
                     ' AND tartikelkategorierabatt.kArtikel = tartikel.kArtikel')
                 ->setOrigin(__CLASS__),
-            (new FilterJoin())
+            (new Join())
                 ->setComment('join3 from ' . __METHOD__)
                 ->setType('LEFT JOIN')
                 ->setTable('tartikelsonderpreis')
@@ -289,7 +289,7 @@ class PriceRange extends AbstractFilter
                          AND tartikelsonderpreis.dStart <= now()
                          AND (tartikelsonderpreis.dEnde >= curDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')")
                 ->setOrigin(__CLASS__),
-            (new FilterJoin())
+            (new Join())
                 ->setComment('join4 from ' . __METHOD__)
                 ->setType('LEFT JOIN')
                 ->setTable('tsonderpreise')
@@ -379,15 +379,15 @@ class PriceRange extends AbstractFilter
             return $options;
         }
         $currency = \Session::Currency();
-        $sql      = (new FilterStateSQL())->from($this->productFilter->getCurrentStateData());
+        $sql      = (new StateSQL())->from($this->productFilter->getCurrentStateData());
 
-        $sql->addJoin((new FilterJoin())
+        $sql->addJoin((new Join())
             ->setType('LEFT JOIN')
             ->setTable('tartikelkategorierabatt')
             ->setOn('tartikelkategorierabatt.kKundengruppe = ' . $this->getCustomerGroupID() .
                 ' AND tartikelkategorierabatt.kArtikel = tartikel.kArtikel')
             ->setOrigin(__CLASS__));
-        $sql->addJoin((new FilterJoin())
+        $sql->addJoin((new Join())
             ->setType('LEFT JOIN')
             ->setTable('tartikelsonderpreis')
             ->setOn("tartikelsonderpreis.kArtikel = tartikel.kArtikel
@@ -396,20 +396,20 @@ class PriceRange extends AbstractFilter
                         AND (tartikelsonderpreis.dEnde >= CURDATE() 
                             OR tartikelsonderpreis.dEnde = '0000-00-00')")
             ->setOrigin(__CLASS__));
-        $sql->addJoin((new FilterJoin())
+        $sql->addJoin((new Join())
             ->setType('LEFT JOIN')
             ->setTable('tsonderpreise')
             ->setOn('tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis 
                         AND tsonderpreise.kKundengruppe = ' . $this->getCustomerGroupID())
             ->setOrigin(__CLASS__));
-        $sql->addJoin((new FilterJoin())
+        $sql->addJoin((new Join())
             ->setComment('join1 from ' . __METHOD__)
             ->setTable('tpreise')
             ->setType('JOIN')
             ->setOn('tpreise.kArtikel = tartikel.kArtikel 
                         AND tpreise.kKundengruppe = ' . $this->getCustomerGroupID())
             ->setOrigin(__CLASS__));
-        $sql->addJoin((new FilterJoin())
+        $sql->addJoin((new Join())
             ->setComment('join2 from ' . __METHOD__)
             ->setTable('tartikelsichtbarkeit')
             ->setType('LEFT JOIN')
@@ -433,7 +433,7 @@ class PriceRange extends AbstractFilter
             $fKundenrabatt = ($discount = \Session::CustomerGroup()->getDiscount()) > 0
                 ? $discount
                 : 0.0;
-            $state           = (new FilterStateSQL())->from($this->productFilter->getCurrentStateData());
+            $state           = (new StateSQL())->from($this->productFilter->getCurrentStateData());
             foreach ($this->getSQLJoin() as $join) {
                 $state->addJoin($join);
             }
@@ -498,7 +498,7 @@ class PriceRange extends AbstractFilter
                 $nStep            = $oPreis->fStep;
                 $additionalFilter = new self($this->productFilter);
                 foreach ($priceRanges as $i => $count) {
-                    $fo   = new FilterOption();
+                    $fo   = new Option();
                     $nVon = $nPreisMin + $i * $nStep;
                     $nBis = $nPreisMin + ($i + 1) * $nStep;
                     if ($nBis > $nPreisMax) {
@@ -547,7 +547,7 @@ class PriceRange extends AbstractFilter
                     }
                     $cSelectSQL .= 'SUM(ssMerkmal.anz' . $i . ') AS anz' . $i;
                 }
-                $state = (new FilterStateSQL())->from($sql);
+                $state = (new StateSQL())->from($sql);
                 $state->setSelect([$this->getPriceRangeSQL($oPreis, $currency, $ranges)]);
                 $state->setOrderBy(null);
                 $state->setLimit('');
@@ -572,7 +572,7 @@ class PriceRange extends AbstractFilter
                     $priceRanges[] = $priceRangeCounts['anz' . $i] - $sub;
                 }
                 foreach ($ranges as $i => $range) {
-                    $fo                = new FilterOption();
+                    $fo                = new Option();
                     $fo->nVon          = $range->nVon;
                     $fo->nBis          = $range->nBis;
                     $fo->cVonLocalized = \Preise::getLocalizedPriceWithoutFactor($fo->nVon, $currency);
@@ -597,7 +597,7 @@ class PriceRange extends AbstractFilter
             $options = \array_filter(
                 $options,
                 function ($e) {
-                    /** @var FilterOption $e */
+                    /** @var Option $e */
                     return $e->getCount() > 0;
                 }
             );

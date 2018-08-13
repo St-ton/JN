@@ -8,19 +8,30 @@ namespace Filter;
 
 
 /**
- * Class FilterJoin
+ * Class Query
  * @package Filter
  */
-interface FilterJoinInterface
+interface QueryInterface
 {
+    /**
+     * @param string $where
+     * @return $this
+     */
+    public function setWhere(string $where): QueryInterface;
+
+    /**
+     * @return string
+     */
+    public function getWhere(): string;
+
     /**
      * @param string $origin
      * @return $this
      */
-    public function setOrigin(string $origin): FilterJoinInterface;
+    public function setOrigin(string $origin): QueryInterface;
 
     /**
-     * @return string|null
+     * @return string
      */
     public function getOrigin(): string;
 
@@ -28,7 +39,7 @@ interface FilterJoinInterface
      * @param string $type
      * @return $this
      */
-    public function setType($type): FilterJoinInterface;
+    public function setType(string $type): QueryInterface;
 
     /**
      * @return string
@@ -36,7 +47,7 @@ interface FilterJoinInterface
     public function getType(): string;
 
     /**
-     * @return string
+     * @return mixed
      */
     public function getTable(): string;
 
@@ -44,7 +55,7 @@ interface FilterJoinInterface
      * @param string $table
      * @return $this
      */
-    public function setTable(string $table): FilterJoinInterface;
+    public function setTable(string $table): QueryInterface;
 
     /**
      * @return string
@@ -55,7 +66,7 @@ interface FilterJoinInterface
      * @param string $comment
      * @return $this
      */
-    public function setComment(string $comment): FilterJoinInterface;
+    public function setComment(string $comment): QueryInterface;
 
     /**
      * @return string
@@ -66,7 +77,24 @@ interface FilterJoinInterface
      * @param string $on
      * @return $this
      */
-    public function setOn(string $on): FilterJoinInterface;
+    public function setOn(string $on): QueryInterface;
+
+    /**
+     * @param array $params
+     * @return $this
+     */
+    public function setParams(array $params): QueryInterface;
+
+    /**
+     * @param array $params
+     * @return $this
+     */
+    public function addParams(array $params): QueryInterface;
+
+    /**
+     * @return array
+     */
+    public function getParams(): array;
 
     /**
      * @return string

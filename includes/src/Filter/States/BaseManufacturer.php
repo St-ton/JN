@@ -8,10 +8,10 @@ namespace Filter\States;
 
 use DB\ReturnType;
 use Filter\AbstractFilter;
-use Filter\FilterJoin;
-use Filter\FilterOption;
+use Filter\Join;
+use Filter\Option;
 use Filter\FilterInterface;
-use Filter\FilterStateSQL;
+use Filter\StateSQL;
 use Filter\Type;
 use Filter\Items\Manufacturer;
 use Filter\ProductFilter;
@@ -136,7 +136,7 @@ class BaseManufacturer extends AbstractFilter
 
     /**
      * @param null $data
-     * @return FilterOption[]
+     * @return Option[]
      */
     public function getOptions($data = null): array
     {
@@ -151,7 +151,7 @@ class BaseManufacturer extends AbstractFilter
             ? $this->getClassName()
             : null
         );
-        $sql   = (new FilterStateSQL())->from($state);
+        $sql   = (new StateSQL())->from($state);
         $sql->setSelect([
             'thersteller.kHersteller',
             'thersteller.cName',
@@ -161,7 +161,7 @@ class BaseManufacturer extends AbstractFilter
         $sql->setOrderBy(null);
         $sql->setLimit('');
         $sql->setGroupBy(['tartikel.kArtikel']);
-        $sql->addJoin((new FilterJoin())
+        $sql->addJoin((new Join())
             ->setComment('JOIN from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('thersteller')
@@ -189,7 +189,7 @@ class BaseManufacturer extends AbstractFilter
                 $additionalFilter->init($manufacturer->kHersteller)
             );
 
-            $options[] = (new FilterOption())
+            $options[] = (new Option())
                 ->setURL($manufacturer->cURL)
                 ->setIsActive($this->productFilter->filterOptionIsActive(
                     $this->getClassName(),

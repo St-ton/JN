@@ -6,18 +6,18 @@
 
 namespace Filter\SortingOptions;
 
-use Filter\FilterJoin;
-use Filter\FilterOption;
+use Filter\Join;
+use Filter\Option;
 use Filter\ProductFilter;
 
 /**
  * Class AbstractSortingOption
  * @package Filter\SortingOptions
  */
-abstract class AbstractSortingOption extends FilterOption implements SortingOptionInterface
+abstract class AbstractSortingOption extends Option implements SortingOptionInterface
 {
     /**
-     * @var FilterJoin
+     * @var Join
      */
     protected $join;
 
@@ -47,14 +47,14 @@ abstract class AbstractSortingOption extends FilterOption implements SortingOpti
     {
         parent::__construct($productFilter);
         $this->productFilter = $productFilter;
-        $this->join          = new FilterJoin();
+        $this->join          = new Join();
         $this->isCustom      = false;
     }
 
     /**
      * @inheritdoc
      */
-    public function getJoin(): FilterJoin
+    public function getJoin(): Join
     {
         return $this->join;
     }
@@ -62,7 +62,7 @@ abstract class AbstractSortingOption extends FilterOption implements SortingOpti
     /**
      * @inheritdoc
      */
-    public function setJoin(FilterJoin $join)
+    public function setJoin(Join $join)
     {
         $this->join = $join;
     }

@@ -8,7 +8,7 @@ namespace OPC;
 
 use Filter\AbstractFilter;
 use Filter\Config;
-use Filter\FilterOption;
+use Filter\Option;
 use Filter\Items\Attribute;
 use Filter\Items\ItemAttribute;
 use Filter\Type;
@@ -261,7 +261,7 @@ class Service
 
                 foreach ($availableFilter->getOptions() as $option) {
                     foreach ($option->getOptions() as $suboption) {
-                        /** @var FilterOption $suboption */
+                        /** @var Option $suboption */
                         $value    = $suboption->kMerkmalWert;
                         $mapindex = $class . ':' . $value;
 

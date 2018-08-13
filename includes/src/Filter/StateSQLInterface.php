@@ -8,16 +8,16 @@ namespace Filter;
 
 
 /**
- * Class FilterStateSQL
+ * Class StateSQLInterface
  * @package Filter
  */
-interface FilterStateSQLInterface
+interface StateSQLInterface
 {
     /**
-     * @param FilterStateSQLInterface $source
-     * @return FilterStateSQLInterface
+     * @param StateSQLInterface $source
+     * @return StateSQLInterface
      */
-    public function from(FilterStateSQLInterface $source): FilterStateSQLInterface;
+    public function from(StateSQLInterface $source): StateSQLInterface;
 
     /**
      * @return array
@@ -52,25 +52,25 @@ interface FilterStateSQLInterface
     public function addCondition(string $condition): array;
 
     /**
-     * @return FilterJoinInterface[]
+     * @return JoinInterface[]
      */
     public function getJoins(): array;
 
     /**
-     * @return FilterJoinInterface[]
+     * @return JoinInterface[]
      */
     public function getDeduplicatedJoins(): array;
 
     /**
-     * @param FilterJoinInterface[] $joins
+     * @param JoinInterface[] $joins
      */
     public function setJoins(array $joins);
 
     /**
-     * @param FilterJoinInterface $join
+     * @param JoinInterface $join
      * @return array
      */
-    public function addJoin(FilterJoinInterface $join): array;
+    public function addJoin(JoinInterface $join): array;
 
     /**
      * @return array

@@ -83,7 +83,7 @@ abstract class AbstractFilter implements FilterInterface
     protected $inputType;
 
     /**
-     * @var FilterOption[]
+     * @var Option[]
      */
     protected $activeValues;
 
@@ -231,7 +231,7 @@ abstract class AbstractFilter implements FilterInterface
             } else {
                 $instance = $this;
             }
-            $this->activeValues[] = (new FilterOption())
+            $this->activeValues[] = (new Option())
                 ->setURL($this->getSeo($this->getLanguageID()))
                 ->setFrontendName($instance->getName() ?? '')
                 ->setValue($value)
@@ -722,7 +722,7 @@ abstract class AbstractFilter implements FilterInterface
      */
     public function getSQLJoin()
     {
-        return new FilterJoin();
+        return new Join();
     }
 
     /**

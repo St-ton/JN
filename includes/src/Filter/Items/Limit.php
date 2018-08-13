@@ -7,7 +7,7 @@
 namespace Filter\Items;
 
 use Filter\AbstractFilter;
-use Filter\FilterOption;
+use Filter\Option;
 use Filter\FilterInterface;
 use Filter\ProductFilter;
 
@@ -88,7 +88,7 @@ class Limit extends AbstractFilter
         foreach ($limitOptions as $i => $limitOption) {
             $limitOption = (int)\trim($limitOption);
             $name        = $limitOption > 0 ? $limitOption : \Shop::Lang()->get('showAll');
-            $options[]   = (new FilterOption())
+            $options[]   = (new Option())
                 ->setIsActive($activeValue === $limitOption)
                 ->setURL($this->productFilter->getFilterURL()->getURL(
                     $additionalFilter->init($limitOption)

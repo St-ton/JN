@@ -8,7 +8,7 @@ namespace Filter\States;
 
 use DB\ReturnType;
 use Filter\AbstractFilter;
-use Filter\FilterJoin;
+use Filter\Join;
 use Filter\FilterInterface;
 use Filter\ProductFilter;
 
@@ -143,7 +143,7 @@ class BaseAttribute extends AbstractFilter
      */
     public function getSQLJoin()
     {
-        return (new FilterJoin())
+        return (new Join())
             ->setType('JOIN')
             ->setComment('JOIN from ' . __METHOD__)
             ->setTable('(SELECT kArtikel

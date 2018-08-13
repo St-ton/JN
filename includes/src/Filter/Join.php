@@ -7,15 +7,15 @@
 namespace Filter;
 
 /**
- * Class FilterQuery
+ * Class Join
  * @package Filter
  */
-class FilterQuery implements FilterQueryInterface
+class Join implements JoinInterface
 {
     /**
      * @var string
      */
-    private $type = '=';
+    private $type = 'JOIN';
 
     /**
      * @var string
@@ -31,43 +31,16 @@ class FilterQuery implements FilterQueryInterface
      * @var string
      */
     private $on = '';
+
     /**
      * @var string
      */
     private $origin = '';
 
     /**
-     * @var string
-     */
-    private $where = '';
-
-    /**
-     * @var array
-     */
-    private $params = [];
-
-    /**
      * @inheritdoc
      */
-    public function setWhere(string $where): FilterQueryInterface
-    {
-        $this->where = $where;
-
-        return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getWhere(): string
-    {
-        return $this->where;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setOrigin(string $origin): FilterQueryInterface
+    public function setOrigin(string $origin): JoinInterface
     {
         $this->origin = $origin;
 
@@ -85,7 +58,7 @@ class FilterQuery implements FilterQueryInterface
     /**
      * @inheritdoc
      */
-    public function setType(string $type): FilterQueryInterface
+    public function setType($type): JoinInterface
     {
         $this->type = $type;
 
@@ -111,7 +84,7 @@ class FilterQuery implements FilterQueryInterface
     /**
      * @inheritdoc
      */
-    public function setTable(string $table): FilterQueryInterface
+    public function setTable(string $table): JoinInterface
     {
         $this->table = $table;
 
@@ -131,7 +104,7 @@ class FilterQuery implements FilterQueryInterface
     /**
      * @inheritdoc
      */
-    public function setComment(string $comment): FilterQueryInterface
+    public function setComment(string $comment): JoinInterface
     {
         $this->comment = $comment;
 
@@ -149,7 +122,7 @@ class FilterQuery implements FilterQueryInterface
     /**
      * @inheritdoc
      */
-    public function setOn(string $on): FilterQueryInterface
+    public function setOn(string $on): JoinInterface
     {
         $this->on = $on;
 
@@ -157,7 +130,7 @@ class FilterQuery implements FilterQueryInterface
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function __toString(): string
     {
@@ -167,46 +140,14 @@ class FilterQuery implements FilterQueryInterface
     /**
      * @inheritdoc
      */
-    public function setParams(array $params): FilterQueryInterface
-    {
-        $this->params = $params;
-
-        return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function addParams(array $params): FilterQueryInterface
-    {
-        foreach ($params as $param) {
-            $this->params[] = $param;
-        }
-
-        return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getParams(): array
-    {
-        return $this->params;
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function getSQL(): string
     {
-        $where = $this->where;
-        foreach ($this->params as $param => $value) {
-            if (\is_array($value)) {
-                $value = \implode(',', $value);
-            }
-            $where = \str_replace('{' . $param . '}', $value, $where);
+        $on = $this->getOn();
+        if ($on !== '') {
+            $on = ' ON ' . $on;
         }
-
-        return $this->getComment() . $where;
+        return $this->getTable() !== ''
+            ? $this->getComment() . $this->getType() . ' ' . $this->getTable() . $on
+            : '';
     }
 }

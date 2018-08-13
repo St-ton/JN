@@ -8,10 +8,10 @@ namespace Filter\States;
 
 use DB\ReturnType;
 use Filter\AbstractFilter;
-use Filter\FilterJoin;
-use Filter\FilterOption;
+use Filter\Join;
+use Filter\Option;
 use Filter\FilterInterface;
-use Filter\FilterStateSQL;
+use Filter\StateSQL;
 use Filter\Type;
 use Filter\Items\Tag;
 use Filter\ProductFilter;
@@ -112,13 +112,13 @@ class BaseTag extends AbstractFilter
     public function getSQLJoin()
     {
         return [
-            (new FilterJoin())
+            (new Join())
                 ->setType('JOIN')
                 ->setTable('ttagartikel')
                 ->setOn('tartikel.kArtikel = ttagartikel.kArtikel')
                 ->setComment('JOIN1 from ' . __METHOD__)
                 ->setOrigin(__CLASS__),
-            (new FilterJoin())
+            (new Join())
                 ->setType('JOIN')
                 ->setTable('ttag')
                 ->setOn('ttagartikel.kTag = ttag.kTag')
@@ -129,7 +129,7 @@ class BaseTag extends AbstractFilter
 
     /**
      * @param null $data
-     * @return FilterOption[]
+     * @return Option[]
      */
     public function getOptions($data = null): array
     {
@@ -144,7 +144,7 @@ class BaseTag extends AbstractFilter
             ? $this->getClassName()
             : null
         );
-        $sql   = (new FilterStateSQL())->from($state);
+        $sql   = (new StateSQL())->from($state);
         $sql->setSelect([
             'ttag.kTag',
             'ttag.cName',
@@ -155,13 +155,13 @@ class BaseTag extends AbstractFilter
         $sql->setLimit('');
         $sql->setGroupBy(['ttag.kTag', 'tartikel.kArtikel']);
 
-        $sql->addJoin((new FilterJoin())
+        $sql->addJoin((new Join())
             ->setComment('join1 from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('ttagartikel')
             ->setOn('ttagartikel.kArtikel = tartikel.kArtikel')
             ->setOrigin(__CLASS__));
-        $sql->addJoin((new FilterJoin())
+        $sql->addJoin((new Join())
             ->setComment('join2 from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('ttag')
@@ -197,7 +197,7 @@ class BaseTag extends AbstractFilter
                     ($tag->nAnzahlTagging - $tags[$nCount - 1]->nAnzahlTagging) /
                     $nPrioStep
                 ) + 1;
-            $options[]           = (new FilterOption())
+            $options[]           = (new Option())
                 ->setClass((string)$class)
                 ->setURL($this->productFilter->getFilterURL()->getURL(
                     $additionalFilter->init((int)$tag->kTag)

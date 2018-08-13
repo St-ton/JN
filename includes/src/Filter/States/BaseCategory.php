@@ -8,7 +8,7 @@ namespace Filter\States;
 
 use DB\ReturnType;
 use Filter\AbstractFilter;
-use Filter\FilterJoin;
+use Filter\Join;
 use Filter\FilterInterface;
 use Filter\Items\Category;
 use Filter\ProductFilter;
@@ -155,7 +155,7 @@ class BaseCategory extends AbstractFilter
      */
     public function getSQLJoin()
     {
-        return (new FilterJoin())
+        return (new Join())
             ->setType('JOIN')
             ->setOrigin(__CLASS__)
             ->setTable('tkategorieartikel')

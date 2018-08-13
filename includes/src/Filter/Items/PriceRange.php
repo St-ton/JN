@@ -197,7 +197,7 @@ class PriceRange extends AbstractFilter
         $fKundenrabatt       = (isset($_SESSION['Kunde']->fRabatt) && $_SESSION['Kunde']->fRabatt > 0)
             ? (float)$_SESSION['Kunde']->fRabatt
             : 0.0;
-        $nSteuersatzKeys_arr = \array_keys($_SESSION['Steuersatz']);
+        $nSteuersatzKeys_arr = \array_keys($_SESSION['Steuersatz'] ?? []);
         // bis
         if (\Session::CustomerGroup()->isMerchant()) {
             $oFilter->cWhere .= ' ROUND(LEAST((tpreise.fVKNetto * ' .

@@ -1,8 +1,8 @@
-<h2>Verfügbare Filter</h2>
-<div id="filters-available"></div>
-
 <h2>Aktive Filter</h2>
 <div id="filters-enabled"></div>
+
+<h2>Verfügbare Filter</h2>
+<div id="filters-available"></div>
 
 <input type="hidden" name="{$propname}" value="{$prop|json_encode|htmlentities}" data-prop-type="filter">
 
@@ -71,12 +71,35 @@
         if(filters.length === 0) {
             $filtersAvailable.html('No more filters available');
         } else {
-            filters.forEach(function(filter) {
+            filters.forEach(function(filter, index) {
                 if (filter.options.length > 0) {
-                    var $filterSubCat = $('<div>').append('<h3>' + filter.name + '</h3>').appendTo($filtersAvailable);
+                    // var $filterSubCat = $('<div>').append('<h3>' + filter.name + '</h3>').appendTo($filtersAvailable);
+                    var fil_name = filter.name,
+                        panel_open = '';
+
+                    if (fil_name.length == 0) {
+                        fil_name = '<i class="fa fa-chevron-right"></i>';
+                    }
+                    if (index == 0) {
+                        panel_open = ' in';
+                    } else {
+                        panel_open = '';
+                    }
+
+                    var $filterSubCat = $('<div class="panel panel-default">')
+                        .append('<div class="panel-heading" role="tab" id="heading' + index + '"><h4 class="panel-title"><a role="button" data-toggle="collapse" href="#collapse' + index + '" aria-expanded="true" aria-controls="collapseOne">' + fil_name + '</a></h4></div>')
+                        .append('<div id="collapse' + index + '" class="panel-collapse collapse' + panel_open + '" role="tabpanel" aria-labelledby="heading' + index + '"><div class="panel-body">')
+                        .appendTo($filtersAvailable);
 
                     filter.options.forEach(function(option) {
-                        addFilterAvailableButton(option, $filterSubCat);
+                        if (option.options != undefined && option.options.length > 0) {
+                            $('<div>').html(option.name).appendTo($filterSubCat.find('.panel-body'));
+                            option.options.forEach(function(option) {
+                                addFilterAvailableButton(option, $filterSubCat.find('.panel-body'))
+                            });
+                        } else {
+                            addFilterAvailableButton(option, $filterSubCat.find('.panel-body'));
+                        }
                     });
                 }
             });

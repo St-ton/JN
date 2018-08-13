@@ -240,6 +240,7 @@ body {
   padding: 1px 5px;
   font-size: 12px;
   border-radius: 0;
+  margin: 3px 5px;
 }
 #tourForm .tour-label {
   padding-left: 0;

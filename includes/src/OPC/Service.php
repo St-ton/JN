@@ -8,7 +8,7 @@ namespace OPC;
 
 use Filter\AbstractFilter;
 use Filter\FilterOption;
-use Filter\Items\ItemAttribute;
+use Filter\Items\Attribute;
 use Filter\Type;
 
 /**
@@ -250,10 +250,10 @@ class Service
             $name    = $availableFilter->getFrontendName();
             $options = [];
 
-            if ($class === ItemAttribute::class) {
-                $name = 'Merkmale';
-
+            if ($class === Attribute::class) {
                 foreach ($availableFilter->getOptions() as $option) {
+                    $name = $option->getFrontendName();
+                    $options  = [];
                     foreach ($option->getOptions() as $suboption) {
                         /** @var FilterOption $suboption */
                         $value    = $suboption->kMerkmalWert;
@@ -268,6 +268,20 @@ class Service
                             ];
                         }
                     }
+                    if (\count($options) > 0) {
+                        $subresults[] = [
+                            'name'    => $name,
+                            'class'   => $class,
+                            'options' => $options,
+                        ];
+                    }
+                }
+                if (\count($options) > 0) {
+                    $results[] = [
+                        'name'    => 'Merkmale',
+                        'class'   => $class,
+                        'options' => $subresults,
+                    ];
                 }
             } else {
                 foreach ($availableFilter->getOptions() as $option) {
@@ -283,14 +297,13 @@ class Service
                         ];
                     }
                 }
-            }
-
-            if (\count($options) > 0) {
-                $results[] = [
-                    'name'    => $name,
-                    'class'   => $class,
-                    'options' => $options,
-                ];
+                if (\count($options) > 0) {
+                    $results[] = [
+                        'name'    => $name,
+                        'class'   => $class,
+                        'options' => $options,
+                    ];
+                }
             }
         }
 

@@ -6,7 +6,7 @@
 
 namespace Services;
 
-use Boxes\BoxFactoryInterface;
+use Boxes\FactoryInterface;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\Services\GcServiceInterface;
@@ -100,9 +100,9 @@ interface DefaultServicesInterface extends ContainerInterface
     public function getLinkService(): LinkServiceInterface;
 
     /**
-     * @return BoxFactoryInterface
+     * @return FactoryInterface
      */
-    public function getBoxFactory(): BoxFactoryInterface;
+    public function getBoxFactory(): FactoryInterface;
 
     /**
      * @return BoxServiceInterface

@@ -29,7 +29,7 @@
  * @method bool isValid()
  * @method array|mixed|null getLangArray()
  * @method static bool|string getIsoFromLangID(int $kSprache)
- * @method static bool|int getLangIDFromIso(string $cISO)
+ * @method static stdClass|null getLangIDFromIso(string $cISO)
  * @method static bool|int|string getLanguageDataByType(string $cISO = '', int $kSprache = 0)
  */
 class Sprache
@@ -359,7 +359,7 @@ class Sprache
      * @param mixed [$arg1, ...]
      * @return string
      */
-    public function gibWert($cName, $cSektion = 'global')
+    public function gibWert($cName, $cSektion = 'global'): string
     {
         if ($this->kSprachISO === 0) {
             return '';
@@ -563,7 +563,7 @@ class Sprache
     /**
      * @return string
      */
-    public function gibISO()
+    public function gibISO(): string
     {
         return $this->cISOSprache;
     }
@@ -584,10 +584,10 @@ class Sprache
      * @param string $cWert
      * @return bool
      */
-    public function setzeWert($kSprachsektion, $cName, $cWert): bool
+    public function setzeWert(int $kSprachsektion, $cName, $cWert): bool
     {
         $_keys       = ['kSprachISO', 'kSprachsektion', 'cName'];
-        $_values     = [(int)$this->kSprachISO, (int)$kSprachsektion, $cName];
+        $_values     = [(int)$this->kSprachISO, $kSprachsektion, $cName];
         $_upd        = new stdClass();
         $_upd->cWert = $cWert;
 
@@ -601,13 +601,13 @@ class Sprache
      * @param string $cWert
      * @return bool
      */
-    public function fuegeEin($cSprachISO, $kSprachsektion, $cName, $cWert): bool
+    public function fuegeEin($cSprachISO, int $kSprachsektion, $cName, $cWert): bool
     {
         $kSprachISO = $this->mappekISO($cSprachISO);
         if ($kSprachISO > 0) {
             $oWert                 = new stdClass();
             $oWert->kSprachISO     = (int)$kSprachISO;
-            $oWert->kSprachsektion = (int)$kSprachsektion;
+            $oWert->kSprachsektion = $kSprachsektion;
             $oWert->cName          = $cName;
             $oWert->cWert          = $cWert;
             $oWert->cStandard      = $cWert;
@@ -624,12 +624,12 @@ class Sprache
      * @param string $cName
      * @return int
      */
-    public function loesche($kSprachsektion, $cName): int
+    public function loesche(int $kSprachsektion, $cName): int
     {
         return Shop::Container()->getDB()->delete(
             'tsprachwerte',
             ['kSprachsektion', 'cName'],
-            [(int)$kSprachsektion, $cName]
+            [$kSprachsektion, $cName]
         );
     }
 
@@ -662,7 +662,7 @@ class Sprache
      * @param int $nTyp
      * @return string
      */
-    public function _export(int $nTyp = 0)
+    public function _export(int $nTyp = 0): string
     {
         $cCSVData_arr = [];
         switch ($nTyp) {

@@ -62,21 +62,23 @@ if (isset($_POST['clone']) && (int)$_POST['clone'] > 0 && FormHelper::validateTo
     }
 }
 
-if (isset($_GET['cISO'], $_GET['zuschlag'], $_GET['kVersandart']) &&
-    (int)$_GET['zuschlag'] === 1 && (int)$_GET['kVersandart'] > 0 && FormHelper::validateToken()) {
+if (isset($_GET['cISO'], $_GET['zuschlag'], $_GET['kVersandart'])
+    && (int)$_GET['zuschlag'] === 1
+    && (int)$_GET['kVersandart'] > 0 && FormHelper::validateToken()
+) {
     $step = 'Zuschlagsliste';
 }
 
 if (isset($_GET['delzus']) && (int)$_GET['delzus'] > 0 && FormHelper::validateToken()) {
     $step = 'Zuschlagsliste';
     Shop::Container()->getDB()->queryPrepared(
-        "DELETE tversandzuschlag, tversandzuschlagsprache
+        'DELETE tversandzuschlag, tversandzuschlagsprache
             FROM tversandzuschlag
             LEFT JOIN tversandzuschlagsprache
               ON tversandzuschlagsprache.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
-            WHERE tversandzuschlag.kVersandzuschlag = :kVersandzuschlag",
+            WHERE tversandzuschlag.kVersandzuschlag = :kVersandzuschlag',
         ['kVersandzuschlag' => $_GET['delzus']],
-        4
+        \DB\ReturnType::DEFAULT
     );
     Shop::Container()->getDB()->delete('tversandzuschlagplz', 'kVersandzuschlag', (int)$_GET['delzus']);
     Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
@@ -139,13 +141,13 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
         //schaue, ob sich PLZ ueberschneiden
         if (!empty($ZuschlagPLZ->cPLZ)) {
             $plz_x = Shop::Container()->getDB()->queryPrepared(
-                "SELECT tversandzuschlagplz.*
+                'SELECT tversandzuschlagplz.*
                     FROM tversandzuschlagplz, tversandzuschlag
                     WHERE (tversandzuschlagplz.cPLZ = :surchargeZip
                         OR :surchargeZip BETWEEN tversandzuschlagplz.cPLZAb AND tversandzuschlagplz.cPLZBis)
                         AND tversandzuschlagplz.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
                         AND tversandzuschlag.cISO = :surchargeISO
-                        AND tversandzuschlag.kVersandart = :surchargeShipmentMode",
+                        AND tversandzuschlag.kVersandart = :surchargeShipmentMode',
                 [
                     'surchargeZip'          => $ZuschlagPLZ->cPLZ,
                     'surchargeISO'          => $versandzuschlag->cISO,
@@ -155,13 +157,13 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
             );
         } else {
             $plz_x = Shop::Container()->getDB()->queryPrepared(
-                "SELECT tversandzuschlagplz.*
+                'SELECT tversandzuschlagplz.*
                     FROM tversandzuschlagplz, tversandzuschlag
                     WHERE (tversandzuschlagplz.cPLZ BETWEEN :surchargeZipFrom AND :surchargeZipTo
                         OR :surchargeZipTo >= tversandzuschlagplz.cPLZAb AND tversandzuschlagplz.cPLZBis >= :surchargeZipFrom)
                         AND tversandzuschlagplz.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
                         AND tversandzuschlag.cISO = :surchargeISO
-                        AND tversandzuschlag.kVersandart = :surchargeShipmentMode",
+                        AND tversandzuschlag.kVersandart = :surchargeShipmentMode',
                 [
                     'surchargeZipTo'        => $ZuschlagPLZ->cPLZBis,
                     'surchargeZipFrom'      => $ZuschlagPLZ->cPLZAb,
@@ -201,7 +203,7 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
             }
             $cFehler .= " überschneidet sich mit $szOverlap.<br>Bitte geben Sie eine andere PLZ / PLZ Bereich an.";
         } elseif (Shop::Container()->getDB()->insert('tversandzuschlagplz', $ZuschlagPLZ)) {
-            $cHinweis .= "PLZ wurde erfolgreich hinzugefügt.";
+            $cHinweis .= 'PLZ wurde erfolgreich hinzugefügt.';
         }
         Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
     } else {
@@ -209,7 +211,7 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
         if ('' !== $szErrorString) {
             $cFehler .= $szErrorString;
         } else {
-            $cFehler .= "Sie müssen eine PLZ oder einen PLZ-Bereich angeben!";
+            $cFehler .= 'Sie müssen eine PLZ oder einen PLZ-Bereich angeben!';
         }
     }
 }
@@ -257,10 +259,10 @@ if (isset($_POST['neuerZuschlag']) && (int)$_POST['neuerZuschlag'] === 1 && Form
         Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
     } else {
         if (!$Zuschlag->cName) {
-            $cFehler .= "Bitte geben Sie der Zuschlagsliste einen Namen! ";
+            $cFehler .= 'Bitte geben Sie der Zuschlagsliste einen Namen! ';
         }
         if (!$Zuschlag->fZuschlag) {
-            $cFehler .= "Bitte geben Sie einen Preis für den Zuschlag ein! ";
+            $cFehler .= 'Bitte geben Sie einen Preis für den Zuschlag ein! ';
         }
     }
 }
@@ -364,10 +366,13 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && Form
         }
     }
     //Versandklassen
-    $Versandart->cVersandklassen = ((!empty($_POST['kVersandklasse']) && $_POST['kVersandklasse'] !== '-1') ? ' ' . $_POST['kVersandklasse'] . ' ' : '-1');
+    $Versandart->cVersandklassen = ((!empty($_POST['kVersandklasse']) && $_POST['kVersandklasse'] !== '-1')
+        ? ' ' . $_POST['kVersandklasse'] . ' '
+        : '-1');
 
-    if (count($_POST['land']) >= 1 && count($_POST['kZahlungsart']) >= 1 &&
-        $Versandart->cName && $staffelDa && $bVersandkostenfreiGueltig) {
+    if (count($_POST['land']) >= 1 && count($_POST['kZahlungsart']) >= 1
+        && $Versandart->cName && $staffelDa && $bVersandkostenfreiGueltig
+    ) {
         $kVersandart = 0;
         if ((int)$_POST['kVersandart'] === 0) {
             $kVersandart = Shop::Container()->getDB()->insert('tversandart', $Versandart);
@@ -504,11 +509,12 @@ if ($step === 'uebersicht') {
     $vCount              = count($versandarten);
     for ($i = 0; $i < $vCount; $i++) {
         $versandarten[$i]->versandartzahlungsarten = Shop::Container()->getDB()->query(
-            "SELECT tversandartzahlungsart.*
+            'SELECT tversandartzahlungsart.*
                 FROM tversandartzahlungsart
-                JOIN tzahlungsart ON tzahlungsart.kZahlungsart = tversandartzahlungsart.kZahlungsart
-                WHERE tversandartzahlungsart.kVersandart = " . (int)$versandarten[$i]->kVersandart . "
-                ORDER BY tzahlungsart.cAnbieter, tzahlungsart.nSort, tzahlungsart.cName",
+                JOIN tzahlungsart 
+                    ON tzahlungsart.kZahlungsart = tversandartzahlungsart.kZahlungsart
+                WHERE tversandartzahlungsart.kVersandart = ' . (int)$versandarten[$i]->kVersandart . '
+                ORDER BY tzahlungsart.cAnbieter, tzahlungsart.nSort, tzahlungsart.cName',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
 

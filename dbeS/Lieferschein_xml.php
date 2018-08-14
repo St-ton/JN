@@ -13,21 +13,11 @@ if (auth()) {
     $return    = 2;
     $unzipPath = PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . basename($zipFile) . '_' . date('dhis') . '/';
     if (($syncFiles = unzipSyncFiles($zipFile, $unzipPath, __FILE__)) === false) {
-        if (Jtllog::doLog()) {
-            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'Lieferschein_xml');
-        }
+        Shop::Container()->getLogService()->error('Error: Cannot extract zip file ' . $zipFile . ' to ' . $unzipPath);
         removeTemporaryFiles($zipFile);
     } else {
         $return = 0;
         foreach ($syncFiles as $i => $xmlFile) {
-            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog(
-                    'bearbeite: ' . $xmlFile . ' size: ' . filesize($xmlFile),
-                    JTLLOG_LEVEL_DEBUG,
-                    false,
-                    'Lieferschein_xml'
-                );
-            }
             $cData = file_get_contents($xmlFile);
             $oXml  = simplexml_load_string($cData);
             switch (pathinfo($xmlFile)['basename']) {
@@ -47,9 +37,6 @@ if (auth()) {
 }
 
 echo $return;
-if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-    Jtllog::writeLog('BEENDE: ' . $_FILES['data']['tmp_name'], JTLLOG_LEVEL_DEBUG, false, 'Lieferschein_xml');
-}
 
 /**
  * @param object $oXml
@@ -68,7 +55,10 @@ function bearbeiteInsert($oXml)
                 DBUpdateInsert('tlieferscheinpos', [$oLieferscheinpos], 'kLieferscheinPos');
 
                 foreach ($oXmlLieferscheinpos->tlieferscheinposInfo as $oXmlLieferscheinposinfo) {
-                    $oLieferscheinposinfo                   = JTLMapArr($oXmlLieferscheinposinfo, $GLOBALS['mLieferscheinposinfo']);
+                    $oLieferscheinposinfo                   = JTLMapArr(
+                        $oXmlLieferscheinposinfo,
+                        $GLOBALS['mLieferscheinposinfo']
+                    );
                     $oLieferscheinposinfo->kLieferscheinPos = $oLieferscheinpos->kLieferscheinPos;
                     DBUpdateInsert('tlieferscheinposinfo', [$oLieferscheinposinfo], 'kLieferscheinPosInfo');
                 }
@@ -98,12 +88,23 @@ function bearbeiteDelete($oXml)
         Shop::Container()->getDB()->delete('tversand', 'kLieferschein', $kLieferschein);
         Shop::Container()->getDB()->delete('tlieferschein', 'kLieferschein', $kLieferschein);
 
-        $oLieferscheinPos_arr = Shop::Container()->getDB()->selectAll('tlieferscheinpos', 'kLieferschein', $kLieferschein, 'kLieferscheinPos');
-        if (is_array($oLieferscheinPos_arr)) {
-            foreach ($oLieferscheinPos_arr as $oLieferscheinPos) {
-                Shop::Container()->getDB()->delete('tlieferscheinpos', 'kLieferscheinPos', (int)$oLieferscheinPos->kLieferscheinPos);
-                Shop::Container()->getDB()->delete('tlieferscheinposinfo', 'kLieferscheinPos', (int)$oLieferscheinPos->kLieferscheinPos);
-            }
+        $positions = Shop::Container()->getDB()->selectAll(
+            'tlieferscheinpos',
+            'kLieferschein',
+            $kLieferschein,
+            'kLieferscheinPos'
+        );
+        foreach ($positions as $position) {
+            Shop::Container()->getDB()->delete(
+                'tlieferscheinpos',
+                'kLieferscheinPos',
+                (int)$position->kLieferscheinPos
+            );
+            Shop::Container()->getDB()->delete(
+                'tlieferscheinposinfo',
+                'kLieferscheinPos',
+                (int)$position->kLieferscheinPos
+            );
         }
     }
 }

@@ -285,7 +285,7 @@ class Emailvorlage
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getName()
     {
@@ -293,7 +293,7 @@ class Emailvorlage
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getBeschreibung()
     {
@@ -301,7 +301,7 @@ class Emailvorlage
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getMailTyp()
     {
@@ -309,7 +309,7 @@ class Emailvorlage
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getModulId()
     {
@@ -317,7 +317,7 @@ class Emailvorlage
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getDateiname()
     {
@@ -325,7 +325,7 @@ class Emailvorlage
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getAktiv()
     {
@@ -333,7 +333,7 @@ class Emailvorlage
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getAKZ()
     {
@@ -341,7 +341,7 @@ class Emailvorlage
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getAGB()
     {
@@ -349,7 +349,7 @@ class Emailvorlage
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getWRB()
     {
@@ -357,7 +357,7 @@ class Emailvorlage
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getWRBForm()
     {
@@ -365,7 +365,7 @@ class Emailvorlage
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getDSE()
     {
@@ -373,7 +373,7 @@ class Emailvorlage
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getFehlerhaft()
     {

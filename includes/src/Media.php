@@ -22,7 +22,7 @@ class Media
     /**
      * @return Media
      */
-    public static function getInstance()
+    public static function getInstance(): self
     {
         return self::$_instance ?? new self();
     }
@@ -41,7 +41,7 @@ class Media
      * @param MediaImage|MediaImageCompatibility $media
      * @return $this
      */
-    public function register($media)
+    public function register($media): self
     {
         $this->types[] = $media;
 
@@ -65,7 +65,7 @@ class Media
 
     /**
      * @param string $requestUri
-     * @return bool
+     * @return bool|mixed
      */
     public function handleRequest($requestUri)
     {

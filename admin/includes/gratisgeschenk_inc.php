@@ -8,7 +8,7 @@
  * @param string $cSQL
  * @return array
  */
-function holeAktiveGeschenke($cSQL)
+function holeAktiveGeschenke($cSQL): array
 {
     $oAktiveGeschenkTMP_arr = [];
     $oAktiveGeschenk_arr    = [];
@@ -40,13 +40,14 @@ function holeAktiveGeschenke($cSQL)
  * @param string $cSQL
  * @return array
  */
-function holeHaeufigeGeschenke($cSQL)
+function holeHaeufigeGeschenke($cSQL): array
 {
     $oHaeufigGeschenk_arr    = [];
     $oHaeufigGeschenkTMP_arr = [];
     if (strlen($cSQL) > 0) {
         $oHaeufigGeschenkTMP_arr = Shop::Container()->getDB()->query(
-            'SELECT tgratisgeschenk.kArtikel, count(*) AS nAnzahl, MAX(tbestellung.dErstellt) AS lastOrdered, AVG(tbestellung.fGesamtsumme) AS avgOrderValue
+            'SELECT tgratisgeschenk.kArtikel, count(*) AS nAnzahl, 
+                MAX(tbestellung.dErstellt) AS lastOrdered, AVG(tbestellung.fGesamtsumme) AS avgOrderValue
                 FROM tgratisgeschenk
                   LEFT JOIN tbestellung ON tbestellung.kWarenkorb = tgratisgeschenk.kWarenkorb
                 GROUP BY tgratisgeschenk.kArtikel
@@ -81,7 +82,7 @@ function holeHaeufigeGeschenke($cSQL)
  * @param string $cSQL
  * @return array
  */
-function holeLetzten100Geschenke($cSQL)
+function holeLetzten100Geschenke($cSQL): array
 {
     $oLetzten100Geschenk_arr    = [];
     $oLetzten100GeschenkTMP_arr = [];
@@ -121,45 +122,39 @@ function holeLetzten100Geschenke($cSQL)
 /**
  * @return int
  */
-function gibAnzahlAktiverGeschenke()
+function gibAnzahlAktiverGeschenke(): int
 {
-    $nAnzahlGeschenke = Shop::Container()->getDB()->query(
+    return (int)Shop::Container()->getDB()->query(
         "SELECT count(*) AS nAnzahl
             FROM tartikelattribut
             WHERE cName = '" . ART_ATTRIBUT_GRATISGESCHENKAB . "'",
         \DB\ReturnType::SINGLE_OBJECT
-    );
-
-    return (int)$nAnzahlGeschenke->nAnzahl;
+    )->nAnzahl;
 }
 
 /**
  * @return int
  */
-function gibAnzahlHaeufigGekaufteGeschenke()
+function gibAnzahlHaeufigGekaufteGeschenke(): int
 {
-    $nAnzahlGeschenke = Shop::Container()->getDB()->query(
-        "SELECT count(DISTINCT(kArtikel)) AS nAnzahl
+    return (int)Shop::Container()->getDB()->query(
+        'SELECT count(DISTINCT(kArtikel)) AS nAnzahl
             FROM twarenkorbpos
-            WHERE nPosTyp = " . C_WARENKORBPOS_TYP_GRATISGESCHENK,
+            WHERE nPosTyp = ' . C_WARENKORBPOS_TYP_GRATISGESCHENK,
         \DB\ReturnType::SINGLE_OBJECT
-    );
-
-    return (int)$nAnzahlGeschenke->nAnzahl;
+    )->nAnzahl;
 }
 
 /**
  * @return int
  */
-function gibAnzahlLetzten100Geschenke()
+function gibAnzahlLetzten100Geschenke(): int
 {
-    $nAnzahlGeschenke = Shop::Container()->getDB()->query(
-        "SELECT count(*) AS nAnzahl
+    return (int)Shop::Container()->getDB()->query(
+        'SELECT count(*) AS nAnzahl
             FROM twarenkorbpos
-            WHERE nPosTyp = " . C_WARENKORBPOS_TYP_GRATISGESCHENK . "
-            LIMIT 100",
+            WHERE nPosTyp = ' . C_WARENKORBPOS_TYP_GRATISGESCHENK . '
+            LIMIT 100',
         \DB\ReturnType::SINGLE_OBJECT
-    );
-
-    return (int)$nAnzahlGeschenke->nAnzahl;
+    )->nAnzahl;
 }

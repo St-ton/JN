@@ -727,8 +727,8 @@ class Template
         $tplObject->author      = (string)$tplConfig->Author;
         $tplObject->url         = (string)$tplConfig->URL;
         $tplObject->version     = empty($tplConfig->Version) && $parentConfig
-            ? (float)$parentConfig->Version
-            : (float)$tplConfig->Version;
+            ? $parentConfig->Version
+            : $tplConfig->Version;
         $tplObject->shopversion = empty($tplConfig->ShopVersion) && $parentConfig
             ? (int)$parentConfig->ShopVersion
             : (int)$tplConfig->ShopVersion;
@@ -834,11 +834,11 @@ class Template
     }
 
     /**
-     * @return float
+     * @return string
      */
-    public function getVersion(): float
+    public function getVersion(): string
     {
-        return (float)$this->version;
+        return $this->version;
     }
 
     /**

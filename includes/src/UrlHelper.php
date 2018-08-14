@@ -81,7 +81,7 @@ class UrlHelper
      * @param string $url
      * @return bool
      */
-    public function setUrl($url)
+    public function setUrl(string $url): bool
     {
         $this->url = $url;
         // parse URL into respective parts
@@ -102,7 +102,7 @@ class UrlHelper
     /**
      * @return string
      */
-    public function getScheme()
+    public function getScheme(): string
     {
         return $this->scheme;
     }
@@ -110,7 +110,7 @@ class UrlHelper
     /**
      * @return string
      */
-    public function normalize()
+    public function normalize(): string
     {
         if ($this->path) {
             // case normalization
@@ -168,7 +168,7 @@ class UrlHelper
      * @param string $string
      * @return mixed
      */
-    public function urlDecodeUnreservedChars($string)
+    public function urlDecodeUnreservedChars(string $string)
     {
         $unreserved = [];
         for ($octet = 65; $octet <= 90; $octet++) {
@@ -201,9 +201,9 @@ class UrlHelper
      *
      * @see http://www.apps.ietf.org/rfc/rfc3986.html#sec-5.2.4
      * @param string $path
-     * @return mixed|string
+     * @return string
      */
-    public function removeDotSegments($path)
+    public function removeDotSegments($path): string
     {
         $new_path = '';
         while (!empty($path)) {
@@ -241,7 +241,7 @@ class UrlHelper
     /**
      * @return $this;
      */
-    private function schemeBasedNormalization()
+    private function schemeBasedNormalization(): self
     {
         if (isset($this->default_scheme_ports[$this->scheme]) && $this->default_scheme_ports[$this->scheme] == $this->port) {
             $this->port = '';
@@ -249,6 +249,7 @@ class UrlHelper
 
         return $this;
     }
+
     /**
      * @param object $obj
      * @param int    $type

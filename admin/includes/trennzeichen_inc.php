@@ -8,7 +8,7 @@
  * @param array $cPostAssoc_arr
  * @return bool
  */
-function speicherTrennzeichen($cPostAssoc_arr)
+function speicherTrennzeichen(array $cPostAssoc_arr): bool
 {
     foreach ([JTL_SEPARATOR_WEIGHT, JTL_SEPARATOR_AMOUNT, JTL_SEPARATOR_LENGTH] as $nEinheit) {
         if (isset($cPostAssoc_arr['nDezimal_' . $nEinheit],
@@ -21,7 +21,6 @@ function speicherTrennzeichen($cPostAssoc_arr)
                           ->setDezimalstellen($cPostAssoc_arr['nDezimal_' . $nEinheit])
                           ->setDezimalZeichen($cPostAssoc_arr['cDezZeichen_' . $nEinheit])
                           ->setTausenderZeichen($cPostAssoc_arr['cTausenderZeichen_' . $nEinheit]);
-            // Update
             $idx = 'kTrennzeichen_' . $nEinheit;
             if (isset($cPostAssoc_arr[$idx])) {
                 $oTrennzeichen->setTrennzeichen($cPostAssoc_arr[$idx])

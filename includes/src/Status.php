@@ -35,7 +35,7 @@ class Status
     /**
      * @return \Cache\JTLCacheInterface
      */
-    protected function getObjectCache()
+    protected function getObjectCache(): \Cache\JTLCacheInterface
     {
         return Shop::Container()->getCache()->setJtlCacheConfig();
     }
@@ -44,7 +44,7 @@ class Status
      * @return stdClass
      * @throws Exception
      */
-    protected function getImageCache()
+    protected function getImageCache(): stdClass
     {
         return MediaImage::getStats(Image::TYPE_PRODUCT, false);
     }
@@ -52,7 +52,7 @@ class Status
     /**
      * @return stdClass
      */
-    protected function getSystemLogInfo()
+    protected function getSystemLogInfo(): stdClass
     {
         $conf = Shop::getConfigValue(CONF_GLOBAL, 'systemlog_flag');
 
@@ -172,7 +172,7 @@ class Status
      */
     protected function hasDifferentTemplateVersion(): bool
     {
-        return JTL_VERSION != Template::getInstance()->getShopVersion();
+        return JTL_VERSION !== Template::getInstance()->getShopVersion();
     }
 
     /**
@@ -223,7 +223,7 @@ class Status
     /**
      * @return array
      */
-    protected function getEnvironmentTests()
+    protected function getEnvironmentTests(): array
     {
         return (new Systemcheck_Environment())->executeTestGroup('Shop4');
     }
@@ -231,7 +231,7 @@ class Status
     /**
      * @return Systemcheck_Platform_Hosting
      */
-    protected function getPlatform()
+    protected function getPlatform(): Systemcheck_Platform_Hosting
     {
         return new Systemcheck_Platform_Hosting();
     }
@@ -312,10 +312,10 @@ class Status
     protected function getOrphanedCategories(bool $has = true)
     {
         $categories = Shop::Container()->getDB()->query(
-            "SELECT kKategorie, cName
+            'SELECT kKategorie, cName
                 FROM tkategorie
                 WHERE kOberkategorie > 0
-                    AND kOberkategorie NOT IN (SELECT DISTINCT kKategorie FROM tkategorie)",
+                    AND kOberkategorie NOT IN (SELECT DISTINCT kKategorie FROM tkategorie)',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
 
@@ -433,10 +433,10 @@ class Status
     protected function needPasswordRehash2FA(): bool
     {
         $passwordService = Shop::Container()->getPasswordService();
-        $hashes          = Shop::Container()->getDB()->query("
-            SELECT *
+        $hashes          = Shop::Container()->getDB()->query(
+            'SELECT *
                 FROM tadmin2facodes
-                GROUP BY kAdminlogin",
+                GROUP BY kAdminlogin',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
 

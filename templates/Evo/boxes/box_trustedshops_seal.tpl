@@ -1,6 +1,6 @@
 {if $oBox->show()}
     <section class="panel panel-default box box-trustedshops-seal" id="sidebox{$oBox->getID()}">
-        {if $oBox->getPosition() !== \Boxes\BoxPosition::BOTTOM}
+        {if $oBox->getPosition() !== \Boxes\Position::BOTTOM}
             <div class="panel-heading">
                 <div class="panel-title">{lang key='safety'}</div>
             </div>

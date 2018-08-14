@@ -85,7 +85,7 @@ class Chartdata
      * @param array $options
      * @return $this
      */
-    public function setOptions(array $options)
+    public function setOptions(array $options): self
     {
         $methods = get_class_methods($this);
         foreach ($options as $key => $value) {
@@ -101,7 +101,7 @@ class Chartdata
     /**
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         $array   = [];
         $members = array_keys(get_object_vars($this));
@@ -116,7 +116,7 @@ class Chartdata
      * @param bool $active
      * @return $this
      */
-    public function setActive($active)
+    public function setActive($active): self
     {
         $this->_bActive = (bool)$active;
 
@@ -127,7 +127,7 @@ class Chartdata
      * @param object $axis
      * @return $this
      */
-    public function setAxis($axis)
+    public function setAxis($axis): self
     {
         $this->_xAxis = $axis;
 
@@ -138,7 +138,7 @@ class Chartdata
      * @param array $series
      * @return $this
      */
-    public function setSeries($series)
+    public function setSeries($series): self
     {
         $this->_series = $series;
 
@@ -149,7 +149,7 @@ class Chartdata
      * @param string $url
      * @return $this
      */
-    public function setUrl($url)
+    public function setUrl($url): self
     {
         $this->_url = $url;
 
@@ -157,7 +157,7 @@ class Chartdata
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getUrl()
     {
@@ -165,7 +165,7 @@ class Chartdata
     }
 
     /**
-     * @return bool
+     * @return bool|null
      */
     public function getActive()
     {
@@ -189,7 +189,7 @@ class Chartdata
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getAxisJSON()
     {
@@ -197,7 +197,7 @@ class Chartdata
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getSeriesJSON()
     {
@@ -207,7 +207,7 @@ class Chartdata
     /**
      * @return $this
      */
-    public function memberToJSON()
+    public function memberToJSON(): self
     {
         $this->_seriesJSON = json_encode($this->_series);
         $this->_xAxisJSON  = json_encode($this->_xAxis);

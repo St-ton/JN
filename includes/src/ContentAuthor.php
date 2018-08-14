@@ -60,23 +60,23 @@ class ContentAuthor
                     AND COALESCE(tadminlogin.dGueltigBis, NOW()) >= NOW()'
             : '';
         $author = Shop::Container()->getDB()->queryPrepared(
-            "SELECT tcontentauthor.kContentAuthor, tcontentauthor.cRealm, 
+            'SELECT tcontentauthor.kContentAuthor, tcontentauthor.cRealm, 
                 tcontentauthor.kAdminlogin, tcontentauthor.kContentId,
                 tadminlogin.cName, tadminlogin.cMail
                 FROM tcontentauthor
                 INNER JOIN tadminlogin 
                     ON tadminlogin.kAdminlogin = tcontentauthor.kAdminlogin
                 WHERE tcontentauthor.cRealm = :realm
-                    AND tcontentauthor.kContentId = :contentid " . $filter,
+                    AND tcontentauthor.kContentId = :contentid ' . $filter,
             ['realm' => $realm, 'contentid' => $contentID],
             \DB\ReturnType::SINGLE_OBJECT
         );
         if (isset($author->kAdminlogin) && (int)$author->kAdminlogin > 0) {
             $attribs            = Shop::Container()->getDB()->query(
-                "SELECT tadminloginattribut.kAttribut, tadminloginattribut.cName, 
+                'SELECT tadminloginattribut.kAttribut, tadminloginattribut.cName, 
                     tadminloginattribut.cAttribValue, tadminloginattribut.cAttribText
                     FROM tadminloginattribut
-                    WHERE tadminloginattribut.kAdminlogin = " . (int)$author->kAdminlogin,
+                    WHERE tadminloginattribut.kAdminlogin = ' . (int)$author->kAdminlogin,
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             $author->extAttribs = [];

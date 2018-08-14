@@ -334,14 +334,18 @@ class Bestellung
     public $cPUIZahlungsdaten;
 
     /**
+     * @var object
+     */
+    public $oKampagne;
+
+    /**
      * Konstruktor
      *
      * @param int  $kBestellung Falls angegeben, wird der Bestellung mit angegebenem kBestellung aus der DB geholt
      * @param bool $bFill
      */
-    public function __construct($kBestellung = 0, $bFill = false)
+    public function __construct(int $kBestellung = 0, bool $bFill = false)
     {
-        $kBestellung = (int)$kBestellung;
         if ($kBestellung > 0) {
             $this->loadFromDB($kBestellung);
             if ($bFill) {
@@ -354,7 +358,7 @@ class Bestellung
      * @param int $kBestellung
      * @return $this
      */
-    public function loadFromDB(int $kBestellung)
+    public function loadFromDB(int $kBestellung): self
     {
         $obj = Shop::Container()->getDB()->select('tbestellung', 'kBestellung', $kBestellung);
         if ($obj !== null && $obj->kBestellung > 0) {
@@ -388,7 +392,7 @@ class Bestellung
      * @param bool $disableFactor - @see #8544, hack to avoid applying currency factor twice
      * @return $this
      */
-    public function fuelleBestellung($htmlWaehrung = 1, $nZahlungExtern = 0, $bArtikel = true, $disableFactor = false)
+    public function fuelleBestellung($htmlWaehrung = 1, $nZahlungExtern = 0, $bArtikel = true, $disableFactor = false): self
     {
         if (!($this->kWarenkorb > 0 || $nZahlungExtern > 0)) {
             return $this;
@@ -433,9 +437,9 @@ class Bestellung
         $bestellstatus          = Shop::Container()->getDB()->select('tbestellstatus', 'kBestellung', (int)$this->kBestellung);
         $this->BestellstatusURL = Shop::getURL() . '/status.php?uid=' . $bestellstatus->cUID;
         $warenwert              = Shop::Container()->getDB()->query(
-            "SELECT sum(((fPreis*fMwSt)/100+fPreis)*nAnzahl) AS wert
+            'SELECT sum(((fPreis*fMwSt)/100+fPreis)*nAnzahl) AS wert
                 FROM twarenkorbpos
-                WHERE kWarenkorb = " . (int)$this->kWarenkorb,
+                WHERE kWarenkorb = ' . (int)$this->kWarenkorb,
             \DB\ReturnType::SINGLE_OBJECT
         );
         $date = Shop::Container()->getDB()->query(
@@ -460,13 +464,13 @@ class Bestellung
         $nNettoPreis = 0;
         if ($this->kBestellung > 0) {
             $oKundengruppeBestellung = Shop::Container()->getDB()->query(
-                "SELECT tkundengruppe.nNettoPreise
+                'SELECT tkundengruppe.nNettoPreise
                     FROM tkundengruppe
                     JOIN tbestellung 
-                        ON tbestellung.kBestellung = " . (int)$this->kBestellung . "
+                        ON tbestellung.kBestellung = ' . (int)$this->kBestellung . '
                     JOIN tkunde 
                         ON tkunde.kKunde = tbestellung.kKunde
-                    WHERE tkunde.kKundengruppe = tkundengruppe.kKundengruppe",
+                    WHERE tkunde.kKundengruppe = tkundengruppe.kKundengruppe',
                 \DB\ReturnType::SINGLE_OBJECT
             );
             if (isset($oKundengruppeBestellung->nNettoPreise) && $oKundengruppeBestellung->nNettoPreise > 0) {
@@ -761,6 +765,8 @@ class Bestellung
             $this->berechneEstimatedDelivery();
         }
 
+        $this->setKampagne();
+
         executeHook(HOOK_BESTELLUNG_CLASS_FUELLEBESTELLUNG, [
             'oBestellung' => $this
         ]);
@@ -892,12 +898,12 @@ class Bestellung
         $oPosition_arr = [];
         if ($kBestellung > 0) {
             $oObj_arr = Shop::Container()->getDB()->query(
-                "SELECT twarenkorbpos.kWarenkorbPos, twarenkorbpos.kArtikel
+                'SELECT twarenkorbpos.kWarenkorbPos, twarenkorbpos.kArtikel
                       FROM tbestellung
                       JOIN twarenkorbpos
                         ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
-                          AND nPosTyp = " . (int)$nPosTyp . "
-                      WHERE tbestellung.kBestellung = " . $kBestellung,
+                          AND nPosTyp = ' . $nPosTyp . '
+                      WHERE tbestellung.kBestellung = ' . $kBestellung,
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($oObj_arr as $oObj) {
@@ -949,12 +955,12 @@ class Bestellung
     {
         if ($kBestellung > 0 && $kArtikel > 0) {
             $oObj = Shop::Container()->getDB()->query(
-                "SELECT twarenkorbpos.nAnzahl
+                'SELECT twarenkorbpos.nAnzahl
                     FROM tbestellung
                     JOIN twarenkorbpos
                         ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
-                    WHERE tbestellung.kBestellung = " . $kBestellung . "
-                        AND twarenkorbpos.kArtikel = " . $kArtikel,
+                    WHERE tbestellung.kBestellung = ' . $kBestellung . '
+                        AND twarenkorbpos.kArtikel = ' . $kArtikel,
                 \DB\ReturnType::SINGLE_OBJECT
             );
             if (isset($oObj->nAnzahl) && $oObj->nAnzahl > 0) {
@@ -1051,5 +1057,23 @@ class Bestellung
         }
 
         return $this->oEstimatedDelivery->localized;
+    }
+
+    /**
+     * set Kampagne
+     */
+    public function setKampagne()
+    {
+        $this->oKampagne = Shop::Container()->getDB()->queryPrepared(
+            'SELECT tkampagne.kKampagne, tkampagne.cName, tkampagne.cParameter, tkampagnevorgang.dErstellt,
+                    tkampagnevorgang.kKey AS kBestellung, tkampagnevorgang.cParamWert AS cWert
+                FROM tkampagnevorgang
+                  LEFT JOIN tkampagne ON tkampagne.kKampagne = tkampagnevorgang.kKampagne
+                WHERE tkampagnevorgang.kKampagneDef = :kampagneDef
+                    AND tkampagnevorgang.kKey = :orderID', [
+                'orderID' => $this->kBestellung,
+                'kampagneDef' => KAMPAGNE_DEF_VERKAUF
+            ], \DB\ReturnType::SINGLE_OBJECT
+        );
     }
 }

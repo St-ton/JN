@@ -6,10 +6,10 @@
 class ZahlungsartHelper
 {
     /**
-     * @param Zahlungsart $paymentMethod
+     * @param PaymentMethod|Zahlungsart $paymentMethod
      * @return bool
      */
-    public static function shippingMethodWithValidPaymentMethod($paymentMethod)
+    public static function shippingMethodWithValidPaymentMethod($paymentMethod): bool
     {
         if (!isset($paymentMethod->cModulId)) {
             return false;
@@ -124,7 +124,7 @@ class ZahlungsartHelper
     /**
      * Bei SOAP oder CURL => versuche die Zahlungsart auf nNutzbar = 1 zu stellen, falls nicht schon geschehen
      *
-     * @param Zahlungsart|object $paymentMethod
+     * @param Zahlungsart|PaymentMethod|object $paymentMethod
      * @return bool
      * @former aktiviereZahlungsart()
      */

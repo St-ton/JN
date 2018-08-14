@@ -47,7 +47,7 @@ class SessionHandlerDB extends SessionHandlerJTL implements \SessionHandlerInter
      */
     public function open($savePath, $sessName)
     {
-        $this->lifeTime = get_cfg_var('session.gc_maxlifetime');
+        $this->lifeTime = \get_cfg_var('session.gc_maxlifetime');
 
         return $this->db->isConnected();
     }
@@ -72,7 +72,7 @@ class SessionHandlerDB extends SessionHandlerJTL implements \SessionHandlerInter
                 AND nSessionExpires > :time',
             [
                 'id'   => $sessID,
-                'time' => time()
+                'time' => \time()
             ],
             ReturnType::SINGLE_OBJECT
         );
@@ -88,7 +88,7 @@ class SessionHandlerDB extends SessionHandlerJTL implements \SessionHandlerInter
     public function write($sessID, $sessData)
     {
         // set new session expiration
-        $newExp = time() + $this->lifeTime;
+        $newExp = \time() + $this->lifeTime;
         // is a session with this id already in the database?
         $res = $this->db->select($this->tableName, 'cSessionId', $sessID);
         // if yes,
@@ -136,7 +136,7 @@ class SessionHandlerDB extends SessionHandlerJTL implements \SessionHandlerInter
     {
         // return affected rows
         return $this->db->query(
-            'DELETE FROM ' . $this->tableName . ' WHERE nSessionExpires < ' . time(),
+            'DELETE FROM ' . $this->tableName . ' WHERE nSessionExpires < ' . \time(),
             ReturnType::AFFECTED_ROWS
         );
     }

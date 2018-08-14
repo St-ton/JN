@@ -174,9 +174,9 @@ class TrustedShops
      */
     public function __construct($tsId = '', $cISOSprache = '')
     {
-        if ($tsId != -1 && strlen($tsId) > 0 && strlen($cISOSprache) > 0) {
+        if ($tsId !== -1 && strlen($tsId) > 0 && strlen($cISOSprache) > 0) {
             $this->fuelleTrustedShops($tsId, $cISOSprache);
-        } elseif ($tsId != -1 && strlen($tsId) > 0) {
+        } elseif ($tsId !== -1 && strlen($tsId) > 0) {
             $this->fuelleTrustedShops($tsId);
         } elseif (strlen($cISOSprache) > 0) {
             $this->fuelleTrustedShops($tsId, $cISOSprache);
@@ -191,7 +191,7 @@ class TrustedShops
      * @param string $cISOSprache
      * @return $this
      */
-    public function fuelleTrustedShops($tsId, $cISOSprache = '')
+    public function fuelleTrustedShops($tsId, $cISOSprache = ''): self
     {
         $conf    = Shop::getSettings([CONF_GLOBAL]);
         $cacheID = 'jtl_ts_' . $tsId . '_' . $cISOSprache;
@@ -277,10 +277,10 @@ class TrustedShops
      *
      * @return bool
      */
-    public function sendeBuchung()
+    public function sendeBuchung(): bool
     {
         if ($this->pruefeZertifikat(StringHandler::convertISO2ISO639(Shop::getLanguageCode())) !== 1) {
-            writeLog(PFAD_LOGFILES . 'tskaeuferschutz.log', 'TS certificate is invalid.', 1);
+            Shop::Container()->getLogService()->error('TS certificate is invalid.');
 
             return false;
         }
@@ -306,26 +306,24 @@ class TrustedShops
             );
             if (is_soap_fault($returnValue)) {
                 $errorText = "SOAP Fault: (faultcode: {$returnValue->faultcode}, faultstring: {$returnValue->faultstring})";
-                writeLog(PFAD_LOGFILES . 'trustedshops.log', $errorText, 1);
+                Shop::Container()->getLogService()->error('TS Soap error: ' . $errorText);
             }
         } else {
-            writeLog(PFAD_LOGFILES . 'trustedshops.log', 'SOAP could not be loaded.', 1);
+            Shop::Container()->getLogService()->error('TS: SOAP could not be loaded.');
         }
         //check return value
         //negative return value is an error code, positive value is the protection number
         if ($returnValue == SOAP_ERROR) {
-            writeLog(PFAD_LOGFILES . 'trustedshops.log', SOAP_ERROR, 1);
+            Shop::Container()->getLogService()->error('TS Soap error');
         } elseif ($returnValue < 0) {
             switch ($returnValue) {
                 case -10001 :
                     break;
             }
         } else {
-            writeLog(
-                PFAD_LOGFILES . 'tskaeuferschutz.log',
+            Shop::Container()->getLogService()->debug(
                 'TS Web Service has successfully protected transaction, protectioner is ' .
-                    $returnValue . ' - Amount: ' . (float)$this->amount,
-                1
+                    $returnValue . ' - Amount: ' . (float)$this->amount
             );
         }
 
@@ -336,7 +334,7 @@ class TrustedShops
      * @return bool
      * @todo: $cISOSprache???
      */
-    public function holeStatus()
+    public function holeStatus(): bool
     {
         $returnValue = null;
         $wsdlUrl     = TS_SERVER;
@@ -348,10 +346,10 @@ class TrustedShops
             $returnValue = $client->getRequestState($this->tsId);
             if (is_soap_fault($returnValue)) {
                 $errorText = "SOAP Fault: (faultcode: {$returnValue->faultcode}, faultstring: {$returnValue->faultstring})";
-                writeLog(PFAD_LOGFILES . 'trustedshops.log', $errorText, 1);
+                Shop::Container()->getLogService()->error($errorText);
             }
         } else {
-            writeLog(PFAD_LOGFILES . 'trustedshops.log', 'SOAP could not be loaded.', 1);
+            Shop::Container()->getLogService()->error('SOAP could not be loaded.');
         }
         // Geaendert aufgrund Mail von Herrn van der Wielen
         // Quote: 'Tatsächlich jedoch sollten Zertifikate mit den Status 'PRODUCTION', 'INTEGRATION' (und 'TEST') akzeptiert werden.'
@@ -366,10 +364,10 @@ class TrustedShops
      * Lädt anhand der tsID von der TrustedShops API, die Käuferschutzprodukte und
      * speichert diese direkt in die DB
      *
-     * @param int $kTrustedShopsZertifikat
+     * @param int $certID
      * @return $this
      */
-    public function holeKaeuferschutzProdukte($kTrustedShopsZertifikat)
+    public function holeKaeuferschutzProdukte(int $certID): self
     {
         $returnValue = null;
         //call TS protection web service
@@ -380,10 +378,10 @@ class TrustedShops
             $returnValue = $client->getProtectionItems($this->tsId);
             if (is_soap_fault($returnValue)) {
                 $errorText = "SOAP Fault: (faultcode: {$returnValue->faultcode}, faultstring: {$returnValue->faultstring})";
-                writeLog(PFAD_LOGFILES . 'trustedshops.log', $errorText, 1);
+                Shop::Container()->getLogService()->error($errorText);
             }
         } else {
-            writeLog(PFAD_LOGFILES . 'trustedshops.log', 'SOAP could not be loaded.', 1);
+            Shop::Container()->getLogService()->error('SOAP could not be loaded.');
         }
 
         if (isset($returnValue->item) && is_object($returnValue->item)) {
@@ -434,7 +432,7 @@ class TrustedShops
                 $this->oKaeuferschutzProdukteDB->item[$i]->fBrutto    = $oItem->grossFee;
                 $this->oKaeuferschutzProdukteDB->item[$i]->dDatum     = date('Y-m-d H:i:s');
             }
-            $this->speicherKaeuferschutzProdukteDB($kTrustedShopsZertifikat);
+            $this->speicherKaeuferschutzProdukteDB($certID);
         }
 
         return $this;
@@ -447,11 +445,10 @@ class TrustedShops
      * @param bool   $bWaehrendBestellung
      * @return $this
      */
-    public function holeKaeuferschutzProdukteDB($cISOSprache, $bWaehrendBestellung = false)
+    public function holeKaeuferschutzProdukteDB($cISOSprache, $bWaehrendBestellung = false): self
     {
         $oZertifikat = $this->gibTrustedShopsZertifikatISO($cISOSprache);
-
-        $cSQL = '';
+        $cSQL        = '';
         if ($bWaehrendBestellung) {
             $cISOWaehrung = 'EUR';
             if (strlen($_SESSION['cWaehrungName']) > 0) {
@@ -467,10 +464,10 @@ class TrustedShops
             }
 
             $this->oKaeuferschutzProdukteDB->item = Shop::Container()->getDB()->query(
-                "SELECT *
+                'SELECT *
                     FROM ttrustedeshopsprodukt
-                    WHERE kTrustedShopsZertifikat = " . $oZertifikat->kTrustedShopsZertifikat . $cSQL . "
-                    ORDER BY cWaehrung, nWert",
+                    WHERE kTrustedShopsZertifikat = ' . $oZertifikat->kTrustedShopsZertifikat . $cSQL . '
+                    ORDER BY cWaehrung, nWert',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         }
@@ -537,18 +534,18 @@ class TrustedShops
     /**
      * Speichert Käuferschutzprodukte in die Datenbank
      *
-     * @param int $kTrustedShopsZertifikat
+     * @param int $certID
      * @return bool
      */
-    public function speicherKaeuferschutzProdukteDB($kTrustedShopsZertifikat)
+    public function speicherKaeuferschutzProdukteDB($certID): bool
     {
-        if ($kTrustedShopsZertifikat > 0
+        if ($certID > 0
             && is_array($this->oKaeuferschutzProdukteDB->item)
             && count($this->oKaeuferschutzProdukteDB->item) > 0
         ) {
-            Shop::Container()->getDB()->delete('ttrustedeshopsprodukt', 'kTrustedShopsZertifikat', (int)$kTrustedShopsZertifikat);
+            Shop::Container()->getDB()->delete('ttrustedeshopsprodukt', 'kTrustedShopsZertifikat', (int)$certID);
             foreach ($this->oKaeuferschutzProdukteDB->item as $oKaeuferschutzProdukt) {
-                $oKaeuferschutzProdukt->kTrustedShopsZertifikat = $kTrustedShopsZertifikat;
+                $oKaeuferschutzProdukt->kTrustedShopsZertifikat = $certID;
                 if (!isset($oKaeuferschutzProdukt->kSprache)) {
                     $oKaeuferschutzProdukt->kSprache = 0;
                 }
@@ -569,7 +566,7 @@ class TrustedShops
      * @param bool   $bSaved
      * @return int
      */
-    public function pruefeZertifikat($cISOSprache, $bSaved = false)
+    public function pruefeZertifikat($cISOSprache, $bSaved = false): int
     {
         //@todo: $cTSClassicID is undefined?
         //$cTSClassicID = filterXSS($cTSClassicID);
@@ -584,8 +581,6 @@ class TrustedShops
         }
 
         if ($this->dChecked === null || $this->dChecked === '0000-00-00 00:00:00' || $bForce) {
-            Jtllog::writeLog('Die Zertifikatsprüfung von TrustedShops wurde eingeleitet!', JTLLOG_LEVEL_NOTICE);
-            //call TS protection web service
             ini_set('soap.wsdl_cache_enabled', 1);
 
             $wsdlUrl = TS_SERVER;
@@ -596,14 +591,17 @@ class TrustedShops
                 $returnValue = $client->checkCertificate($cTSID);
                 if (is_soap_fault($returnValue)) {
                     $errorText = "SOAP Fault: (faultcode: {$returnValue->faultcode}, faultstring: {$returnValue->faultstring})";
-                    writeLog(PFAD_LOGFILES . 'trustedshops.log', $errorText, 1);
-                    Jtllog::writeLog('Bei der Zertifikatsprüfung von TrustedShops ist ein Fehler aufgetreten! Error: ' . $errorText);
+                    Shop::Container()->getLogService()->error(
+                        'Bei der Zertifikatsprüfung von TrustedShops ist ein Fehler aufgetreten! Error: ' .
+                        $errorText
+                    );
 
                     return 11; // SOAP Fehler
                 }
-                writeLog(PFAD_LOGFILES . 'trustedshops.log', print_r($returnValue, true), 1);
-                Jtllog::writeLog('Die Zertifikatsprüfung von TrustedShops ergab folgendes Ergebnis: ' .
-                    print_r($returnValue, true), JTLLOG_LEVEL_NOTICE);
+                Shop::Container()->getLogService()->error(
+                    'Die Zertifikatsprüfung von TrustedShops ergab folgendes Ergebnis: ' .
+                    print_r($returnValue, true)
+                );
 
                 $this->dChecked = date('Y-m-d H:i:s');
                 if (!$bSaved) {
@@ -615,8 +613,7 @@ class TrustedShops
                     );
                 }
             } else {
-                writeLog(PFAD_LOGFILES . 'trustedshops.log', 'SOAP could not be loaded.', 1);
-                Jtllog::writeLog('Es ist kein SOAP möglich um eine Zertifikatsprüfung von TrustedShops durchzuführen!');
+                Shop::Container()->getLogService()->error('Es ist kein SOAP möglich um eine Zertifikatsprüfung von TrustedShops durchzuführen!');
 
                 return 11; // SOAP Fehler
             }
@@ -635,19 +632,19 @@ class TrustedShops
             return 1;
         } // Alles O.K.
         if ($returnValue->stateEnum === 'INVALID_TS_ID') {
-            Jtllog::writeLog("TrustedShops Zertifikat {$cTSID} existiert nicht!");
+            Shop::Container()->getLogService()->error("TrustedShops Zertifikat {$cTSID} existiert nicht!");
             $this->deaktiviereZertifikat($cTSID, $cISOSprache);
 
             return 2; // Das Zertifikat existiert nicht
         }
         if ($returnValue->stateEnum === 'CANCELLED') {
-            Jtllog::writeLog("TrustedShops Zertifikat {$cTSID} ist abgelaufen!");
+            Shop::Container()->getLogService()->error("TrustedShops Zertifikat {$cTSID} ist abgelaufen!");
             $this->deaktiviereZertifikat($cTSID, $cISOSprache);
 
             return 3; // Das Zertifikat ist abgelaufen
         }
         if ($returnValue->stateEnum === 'DISABLED') {
-            Jtllog::writeLog("TrustedShops Zertifikat {$cTSID} ist gesperrt!");
+            Shop::Container()->getLogService()->error("TrustedShops Zertifikat {$cTSID} ist gesperrt!");
             $this->deaktiviereZertifikat($cTSID, $cISOSprache);
 
             return 4; // Das Zertifikat ist gesperrt
@@ -655,13 +652,16 @@ class TrustedShops
         if (strlen($returnValue->certificationLanguage) > 0 
             && strtolower($returnValue->certificationLanguage) !== strtolower($cISOSprache)
         ) {
-            Jtllog::writeLog("TrustedShops Zertifikat {$cTSID} wurde aufgrund falscher Sprache {$cISOSprache} deaktiviert (erwartet: {$returnValue->certificationLanguage})!");
+            Shop::Container()->getLogService()->error(
+                "TrustedShops Zertifikat {$cTSID} wurde aufgrund falscher " .
+                "Sprache {$cISOSprache} deaktiviert (erwartet: {$returnValue->certificationLanguage})!"
+            );
             $this->deaktiviereZertifikat($cTSID, $cISOSprache);
 
             return 7; // Falsche Sprache
         }
         if ($returnValue->typeEnum !== $this->eType) {
-            Jtllog::writeLog("TrustedShops Zertifikat {$cTSID} deaktiviert. (falsche TS-Variante)!");
+            Shop::Container()->getLogService()->error("TrustedShops Zertifikat {$cTSID} deaktiviert. (falsche TS-Variante)!");
             $this->deaktiviereZertifikat($cTSID, $cISOSprache);
 
             return 10; // Falsche Variante
@@ -675,7 +675,7 @@ class TrustedShops
      *
      * @return bool
      */
-    public function pruefeLogin()
+    public function pruefeLogin(): bool
     {
         $returnValue = null;
         $wsdlUrl     = TS_SERVER;
@@ -689,16 +689,19 @@ class TrustedShops
 
             if (is_soap_fault($returnValue)) {
                 $errorText = "SOAP Fault: (faultcode: {$returnValue->faultcode}, faultstring: {$returnValue->faultstring})";
-                writeLog(PFAD_LOGFILES . 'trustedshops.log', $errorText, 1);
+                Shop::Container()->getLogService()->error($errorText);
             }
         } else {
-            writeLog(PFAD_LOGFILES . 'trustedshops.log', 'SOAP could not be loaded.', 1);
+            Shop::Container()->getLogService()->error('SOAP could not be loaded.');
         }
 
         if ($returnValue == 1) {
             return true;
         }
-        Jtllog::writeLog("TrustedShops Fehler {$returnValue} bei Client Authentifizierung mit tsId={$this->tsId}, wsUser={$this->wsUser}, wsPasswort={$this->wsPassword}");
+        Shop::Container()->getLogService()->error(
+            "TrustedShops Fehler {$returnValue} bei Client Authentifizierung mit tsId={$this->tsId}, " .
+            "wsUser={$this->wsUser}, wsPasswort={$this->wsPassword}"
+        );
 
         return false;
     }
@@ -710,7 +713,7 @@ class TrustedShops
      * @param string $cISOSprache
      * @return bool
      */
-    public function deaktiviereZertifikat($cTSID, $cISOSprache)
+    public function deaktiviereZertifikat($cTSID, $cISOSprache): bool
     {
         if (strlen($cTSID) > 0) {
             $this->nAktiv = 0;
@@ -724,13 +727,16 @@ class TrustedShops
             );
             if (isset($oZertifikat->kTrustedShopsZertifikat) && $oZertifikat->kTrustedShopsZertifikat > 0) {
                 $nRow = Shop::Container()->getDB()->query(
-                    "UPDATE ttrustedshopszertifikat
+                    'UPDATE ttrustedshopszertifikat
                         SET nAktiv = 0
-                        WHERE kTrustedShopsZertifikat = " . (int)$oZertifikat->kTrustedShopsZertifikat,
+                        WHERE kTrustedShopsZertifikat = ' . (int)$oZertifikat->kTrustedShopsZertifikat,
                     \DB\ReturnType::AFFECTED_ROWS
                 );
                 if ($nRow > 0) {
-                    Jtllog::writeLog('Das TrustedShops Zertifikat mit der ID ' . $cTSID . ' wurde deaktiviert!', JTLLOG_LEVEL_NOTICE);
+                    Shop::Container()->getLogService()->error(
+                        'Das TrustedShops Zertifikat mit der ID ' .
+                        $cTSID . ' wurde deaktiviert!'
+                    );
 
                     return true;
                 }
@@ -751,7 +757,11 @@ class TrustedShops
     {
         $oZertifikat = null;
         if (strlen($cISOSprache) > 0 && strlen($tsId) > 0) {
-            $oZertifikat = Shop::Container()->getDB()->select('ttrustedshopszertifikat', 'cISOSprache', $cISOSprache, 'cTSID', $tsId);
+            $oZertifikat = Shop::Container()->getDB()->select(
+                'ttrustedshopszertifikat', 
+                'cISOSprache', $cISOSprache, 
+                'cTSID', $tsId
+            );
             $oZertifikat = $this->entschluesselTSDaten($oZertifikat);
         } elseif (strlen($cISOSprache) > 0) {
             $oZertifikat = Shop::Container()->getDB()->select('ttrustedshopszertifikat', 'cISOSprache', $cISOSprache);
@@ -832,12 +842,13 @@ class TrustedShops
                 }
             }
             $oZertifikat = $this->verschluesselTSDaten($oZertifikat);
-            Shop::Container()->getDB()->query(
-                "DELETE ttrustedshopszertifikat, ttrustedeshopsprodukt 
+            Shop::Container()->getDB()->queryPrepared(
+                'DELETE ttrustedshopszertifikat, ttrustedeshopsprodukt 
                     FROM ttrustedshopszertifikat
                     LEFT JOIN ttrustedeshopsprodukt 
                         ON ttrustedeshopsprodukt.kTrustedShopsZertifikat = ttrustedshopszertifikat.kTrustedShopsZertifikat
-                        WHERE ttrustedshopszertifikat.cISOSprache = '" . $oZertifikat->cISOSprache . "'",
+                        WHERE ttrustedshopszertifikat.cISOSprache = :lng',
+                ['lng' => $oZertifikat->cISOSprache],
                 \DB\ReturnType::DEFAULT
             );
 
@@ -893,7 +904,7 @@ class TrustedShops
      * @param int $kTrustedShopsZertifikat
      * @return bool
      */
-    public function loescheTrustedShopsZertifikat($kTrustedShopsZertifikat)
+    public function loescheTrustedShopsZertifikat($kTrustedShopsZertifikat): bool
     {
         if ((int)$kTrustedShopsZertifikat > 0) {
             $nRows = Shop::Container()->getDB()->delete(
@@ -920,7 +931,7 @@ class TrustedShops
             $rating = Shop::Container()->getDB()->select(
                 'ttrustedshopskundenbewertung', 
                 'cISOSprache', 
-                Shop::Container()->getDB()->escape($cISOSprache)
+                $cISOSprache
             );
             
             return isset($rating->kTrustedshopsKundenbewertung) && $rating->kTrustedshopsKundenbewertung > 0
@@ -938,17 +949,17 @@ class TrustedShops
      * @param string $cISOSprache
      * @return bool
      */
-    public function pruefeKundenbewertungsstatusAndereSprache($cTSID, $cISOSprache)
+    public function pruefeKundenbewertungsstatusAndereSprache($cTSID, $cISOSprache): bool
     {
         $ratings = [];
         if (strlen($cTSID) > 0 && strlen($cISOSprache) > 0) {
-            $ratings = Shop::Container()->getDB()->executeQueryPrepared(
-                "SELECT *
+            $ratings = Shop::Container()->getDB()->queryPrepared(
+                'SELECT *
                     FROM ttrustedshopskundenbewertung
                     WHERE cTSID = :id
-                        AND cISOSprache != :iso",
+                        AND cISOSprache != :iso',
                 ['id' => $cTSID, 'iso' => $cISOSprache],
-                2
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         }
 
@@ -960,7 +971,7 @@ class TrustedShops
      * @param string $cISOSprache
      * @return $this
      */
-    public function aenderKundenbewertungsstatusDB($nStatus = 0, $cISOSprache)
+    public function aenderKundenbewertungsstatusDB($nStatus = 0, $cISOSprache): self
     {
         if (strlen($cISOSprache) > 0) {
             $rating = $this->holeKundenbewertungsstatus($cISOSprache);
@@ -995,7 +1006,7 @@ class TrustedShops
      * @param string $cISOSprache
      * @return $this
      */
-    public function aenderKundenbewertungtsIDDB($cTSID, $cISOSprache)
+    public function aenderKundenbewertungtsIDDB($cTSID, $cISOSprache): self
     {
         if (strlen($cISOSprache) > 0 && strlen($cTSID) > 0) {
             $rating = $this->holeKundenbewertungsstatus($cISOSprache);
@@ -1030,7 +1041,7 @@ class TrustedShops
      * @param string $cISOSprache
      * @return int
      */
-    public function aenderKundenbewertungsstatus($cTSID, $nStatus = 0, $cISOSprache = 'de')
+    public function aenderKundenbewertungsstatus($cTSID, $nStatus = 0, $cISOSprache = 'de'): int
     {
         $returnValue = null;
         //call TS protection web service
@@ -1045,13 +1056,15 @@ class TrustedShops
             $returnValue = $client->updateRatingWidgetState($cTSID, $nStatus, 'jtl-software', 'eKgxL2vm', 'JTL');
             if (is_soap_fault($returnValue)) {
                 $errorText = "SOAP Fault: (faultcode: {$returnValue->faultcode}, faultstring: {$returnValue->faultstring})";
-                writeLog(PFAD_LOGFILES . 'trustedshops.log', $errorText, 1);
+                Shop::Container()->getLogService()->error($errorText);
             } else {
-                writeLog(PFAD_LOGFILES . 'trustedshops.log', "Der Kundenbewertungsstatus ('TSID: " . $cTSID .
-                    "') wurde versucht zu ändern, ReturnCode: " . $returnValue, 1);
+                Shop::Container()->getLogService()->error(
+                    "Der Kundenbewertungsstatus ('TSID: " . $cTSID .
+                    "') wurde versucht zu ändern, ReturnCode: " . $returnValue
+                );
             }
         } else {
-            writeLog(PFAD_LOGFILES . 'trustedshops.log', 'SOAP could not be loaded.', 1);
+            Shop::Container()->getLogService()->error('SOAP could not be loaded.');
         }
         if ($returnValue === 'OK') {
             $this->aenderKundenbewertungsstatusDB($nStatus, $cISOSprache);
@@ -1185,7 +1198,7 @@ class TrustedShops
         $content = null;
 
         $url = sprintf(
-            "http://www.trustedshops.com/api/ratings/v1/%s.xml",
+            'http://www.trustedshops.com/api/ratings/v1/%s.xml',
             trim($this->tsId)
         );
 
@@ -1227,7 +1240,7 @@ class TrustedShops
     /**
      * @return stdClass
      */
-    public function gibKundenbewertungsStatistik()
+    public function gibKundenbewertungsStatistik(): stdClass
     {
         $arrStatistik = Shop::Container()->getDB()->selectAll('ttrustedshopsstatistik', 'cTSID', trim($this->tsId));
 
@@ -1254,7 +1267,12 @@ class TrustedShops
                 $oStatistikDB->nAnzahl       = $oData->nAnzahl;
                 $oStatistikDB->dDurchschnitt = $oData->dDurchschnitt;
                 $oStatistikDB->dUpdated      = 'now()';
-                Shop::Container()->getDB()->update('ttrustedshopsstatistik', 'kStatistik', $oStatistikDB->kStatistik, $oStatistikDB);
+                Shop::Container()->getDB()->update(
+                    'ttrustedshopsstatistik',
+                    'kStatistik',
+                    $oStatistikDB->kStatistik,
+                    $oStatistikDB
+                );
             }
 
             $oStatistik                = new stdClass();
@@ -1317,7 +1335,7 @@ class TrustedShops
      * @return stdClass
      * @since 5.0.0
      */
-    public static function getTrustedShops()
+    public static function getTrustedShops(): stdClass
     {
         unset($_SESSION['TrustedShops'], $oTrustedShops);
         $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639(Shop::getLanguageCode()));
@@ -1356,12 +1374,11 @@ class TrustedShops
                 )
                 : '';
         }
-
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog(
-                "Der TrustedShops Käuferschutz im Bestellvorgang wurde mit folgendem Ergebnis geladen: " .
-                print_r($ts, true),
-                JTLLOG_LEVEL_DEBUG
+        $logger = Shop::Container()->getLogService();
+        if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
+            $logger->debug(
+                'Der TrustedShops Käuferschutz im Bestellvorgang wurde mit folgendem Ergebnis geladen: ' .
+                print_r($ts, true)
             );
         }
 
@@ -1371,43 +1388,43 @@ class TrustedShops
     /**
      * Filter alle Käuferschutzprodukte aus den Produkten in der DB, die für die Warensumme keinen Sinn machen
      *
-     * @param array $oKaeuferschutzProdukte_arr
+     * @param array $products
      * @param float $fGesamtSumme
      * @return array
      * @since 5.0.0
      */
-    public static function filterNichtGebrauchteKaeuferschutzProdukte($oKaeuferschutzProdukte_arr, $fGesamtSumme)
+    public static function filterNichtGebrauchteKaeuferschutzProdukte($products, $fGesamtSumme): array
     {
-        $oKaeuferschutzProdukteFilter_arr = [];
-        if (is_array($oKaeuferschutzProdukte_arr) && count($oKaeuferschutzProdukte_arr) > 0) {
-            foreach ($oKaeuferschutzProdukte_arr as $oKaeuferschutzProdukte) {
-                $oKaeuferschutzProdukteFilter_arr[] = $oKaeuferschutzProdukte;
+        $filtered = [];
+        if (is_array($products) && count($products) > 0) {
+            foreach ($products as $oKaeuferschutzProdukte) {
+                $filtered[] = $oKaeuferschutzProdukte;
                 if ((float)$fGesamtSumme < (float)$oKaeuferschutzProdukte->protectedAmountDecimal) {
                     break;
                 }
             }
         }
 
-        return $oKaeuferschutzProdukteFilter_arr;
+        return $filtered;
     }
 
     /**
      * Liefer ein Assoc Array mit tsProductID als Keys + Preisen als Werte
      *
-     * @param array $oKaeuferschutzProdukte_arr
+     * @param array $products
      * @return array
      * @since 5.0.0
      */
-    public static function gibKaeuferschutzProdukteAssocID($oKaeuferschutzProdukte_arr)
+    public static function gibKaeuferschutzProdukteAssocID($products): array
     {
-        $oKaeuferschutzProdukteAssocID_arr = [];
-        if (is_array($oKaeuferschutzProdukte_arr) && count($oKaeuferschutzProdukte_arr) > 0) {
-            foreach ($oKaeuferschutzProdukte_arr as $oKaeuferschutzProdukte) {
-                $oKaeuferschutzProdukteAssocID_arr[$oKaeuferschutzProdukte->tsProductID] = $oKaeuferschutzProdukte->netFee;
+        $assoc = [];
+        if (is_array($products) && count($products) > 0) {
+            foreach ($products as $oKaeuferschutzProdukte) {
+                $assoc[$oKaeuferschutzProdukte->tsProductID] = $oKaeuferschutzProdukte->netFee;
             }
         }
 
-        return $oKaeuferschutzProdukteAssocID_arr;
+        return $assoc;
     }
 
     /**
@@ -1421,15 +1438,15 @@ class TrustedShops
      */
     public static function getPreSelectedProduct($products, $totalSum): string
     {
-        $tsProductID  = '';
-        $lastValue = 0.0;
+        $tsProductID = '';
+        $lastValue   = 0.0;
         if (is_array($products) && count($products) > 0) {
             foreach ($products as $product) {
                 if ((float)$totalSum <= (float)$product->protectedAmountDecimal
                     && ((float)$product->protectedAmountDecimal < $lastValue || $lastValue === 0.0)
                 ) {
-                    $tsProductID  = $product->tsProductID;
-                    $lastValue = (float)$product->protectedAmountDecimal;
+                    $tsProductID = $product->tsProductID;
+                    $lastValue   = (float)$product->protectedAmountDecimal;
                 }
             }
         }

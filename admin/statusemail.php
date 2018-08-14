@@ -13,13 +13,14 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 $cHinweis = '';
 $cFehler  = '';
 $step     = 'statusemail_uebersicht';
+$statusMail = new Statusmail(Shop::Container()->getDB());
 
 if (FormHelper::validateToken()) {
     if (isset($_POST['action']) && $_POST['action'] === 'sendnow') {
-        sendStatusMail();
+        $statusMail->sendAllActiveStatusMails();
     }
     elseif (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
-        if (speicherStatusemailEinstellungen()) {
+        if ($statusMail->updateConfig()) {
             $cHinweis .= 'Ihre Einstellungen wurden übernommen.<br>';
         } else {
             $cFehler .= 'Fehler: Ihre Einstellungen konnte nicht gespeichert werden. Bitte prüfen Sie Ihre Eingaben.<br>';
@@ -28,7 +29,7 @@ if (FormHelper::validateToken()) {
     }
 }
 if ($step === 'statusemail_uebersicht') {
-    $smarty->assign('oStatusemailEinstellungen', ladeStatusemailEinstellungen());
+    $smarty->assign('oStatusemailEinstellungen', $statusMail->loadConfig());
 }
 
 $smarty->assign('hinweis', $cHinweis)

@@ -17,7 +17,6 @@ $cAction         = (isset($_POST['a']) && FormHelper::validateToken()) ? $_POST[
 if ($cAction === 'delete') {
     if (isset($_POST['remove_all'])) {
         if (true !== $oEmailhistory->deleteAll()) {
-            // 'true' signalizes 'something went wrong during DB-query'
             $cFehler = 'Fehler: eMail-History konnte nicht gelöscht werden!';
         }
     } elseif (isset($_POST['kEmailhistory']) && is_array($_POST['kEmailhistory']) && count($_POST['kEmailhistory']) > 0) {

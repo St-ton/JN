@@ -227,6 +227,9 @@ if (isset($_SESSION['Zahlungsart'])
 $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
+$linkHelper    = Shop::Container()->getLinkService();
+$kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_BESTELLVORGANG);
+$link          = $linkHelper->getPageLink($kLink);
 WarenkorbHelper::addVariationPictures($cart);
 Shop::Smarty()->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
         Shop::getLanguage(),
@@ -234,6 +237,7 @@ Shop::Smarty()->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
     )
     ->assign('Ueberschrift', Shop::Lang()->get('orderStep0Title', 'checkout'))
     ->assign('UeberschriftKlein', Shop::Lang()->get('orderStep0Title2', 'checkout'))
+    ->assign('Link', $link)
     ->assign('hinweis', $cHinweis)
     ->assign('step', $step)
     ->assign('editRechnungsadresse', RequestHelper::verifyGPCDataInt('editRechnungsadresse'))

@@ -390,7 +390,8 @@ function editiereNewskategorie(int $kNewsKategorie, int $kSprache)
                 tnewskategorie.cPreviewImage, tnewskategorie.kParent, tseo.cSeo,
                 DATE_FORMAT(tnewskategorie.dLetzteAktualisierung, '%d.%m.%Y %H:%i') AS dLetzteAktualisierung_de
                 FROM tnewskategorie
-                LEFT JOIN tseo ON tseo.cKey = 'kNewsKategorie'
+                LEFT JOIN tseo 
+                    ON tseo.cKey = 'kNewsKategorie'
                     AND tseo.kKey = tnewskategorie.kNewsKategorie
                     AND tseo.kSprache = " . $kSprache . "
                 WHERE kNewsKategorie = " . $kNewsKategorie,
@@ -541,12 +542,12 @@ function getAllNews()
         }
         //add row "Kategorie" to news
         $oCategorytoNews_arr = Shop::Container()->getDB()->query(
-            "SELECT tnewskategorie.cName
+            'SELECT tnewskategorie.cName
                 FROM tnewskategorie
                 LEFT JOIN tnewskategorienews 
                     ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
-                WHERE tnewskategorienews.kNews = " . (int)$oNews->kNews ." 
-                ORDER BY tnewskategorie.nSort",
+                WHERE tnewskategorienews.kNews = ' . (int)$oNews->kNews .' 
+                ORDER BY tnewskategorie.nSort',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         $Kategoriearray = [];
@@ -556,13 +557,13 @@ function getAllNews()
         $oNews_arr[$i]->KategorieAusgabe = implode(',<br />', $Kategoriearray);
         // Limit News comments on aktiv comments
         $oNewsKommentarAktiv = Shop::Container()->getDB()->query(
-            "SELECT count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahlAktiv
+            'SELECT count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahlAktiv
                 FROM tnews
                 LEFT JOIN tnewskommentar 
                     ON tnewskommentar.kNews = tnews.kNews
                 WHERE tnewskommentar.nAktiv = 1 
-                    AND tnews.kNews = " . (int)$oNews->kNews . "
-                    AND tnews.kSprache = " . (int)$_SESSION['kSprache'],
+                    AND tnews.kNews = ' . (int)$oNews->kNews . '
+                    AND tnews.kSprache = ' . (int)$_SESSION['kSprache'],
             \DB\ReturnType::SINGLE_OBJECT
         );
         $oNews_arr[$i]->nNewsKommentarAnzahl = $oNewsKommentarAktiv->nNewsKommentarAnzahlAktiv;

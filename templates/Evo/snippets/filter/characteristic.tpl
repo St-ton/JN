@@ -16,7 +16,7 @@
                     <span class="badge pull-right">{$attributeValue->getCount()}</span>
                     <span class="value">
                         <i class="fa fa-check-square-o text-muted"></i>
-                        {if !empty($aattributeImageURL)}
+                        {if !empty($attributeImageURL)}
                             <img src="{$attributeImageURL}" alt="{$attributeValue->getValue()|escape:'html'}" class="vmiddle" />
                         {/if}
                         {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'B'}

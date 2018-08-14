@@ -9,7 +9,7 @@ namespace Cache;
 use Cache\Methods\cache_null;
 
 \define('CACHING_ROOT_DIR', __DIR__ . 'JTLCache.php/');
-\define('CACHING_METHODS_DIR', CACHING_ROOT_DIR . 'CachingMethods/');
+\define('CACHING_METHODS_DIR', \CACHING_ROOT_DIR . 'CachingMethods/');
 \define('CACHING_GROUP_ARTICLE', 'art');
 \define('CACHING_GROUP_CATEGORY', 'cat');
 \define('CACHING_GROUP_LANGUAGE', 'lang');
@@ -130,79 +130,79 @@ final class JTLCache implements JTLCacheInterface
             [
                 'name'        => 'CACHING_GROUP_ARTICLE',
                 'nicename'    => 'cg_article_nicename',
-                'value'       => CACHING_GROUP_ARTICLE,
+                'value'       => \CACHING_GROUP_ARTICLE,
                 'description' => 'cg_article_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_CATEGORY',
                 'nicename'    => 'cg_category_nicename',
-                'value'       => CACHING_GROUP_CATEGORY,
+                'value'       => \CACHING_GROUP_CATEGORY,
                 'description' => 'cg_category_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_LANGUAGE',
                 'nicename'    => 'cg_language_nicename',
-                'value'       => CACHING_GROUP_LANGUAGE,
+                'value'       => \CACHING_GROUP_LANGUAGE,
                 'description' => 'cg_language_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_TEMPLATE',
                 'nicename'    => 'cg_template_nicename',
-                'value'       => CACHING_GROUP_TEMPLATE,
+                'value'       => \CACHING_GROUP_TEMPLATE,
                 'description' => 'cg_template_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_OPTION',
                 'nicename'    => 'cg_option_nicename',
-                'value'       => CACHING_GROUP_OPTION,
+                'value'       => \CACHING_GROUP_OPTION,
                 'description' => 'cg_option_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_PLUGIN',
                 'nicename'    => 'cg_plugin_nicename',
-                'value'       => CACHING_GROUP_PLUGIN,
+                'value'       => \CACHING_GROUP_PLUGIN,
                 'description' => 'cg_plugin_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_CORE',
                 'nicename'    => 'cg_core_nicename',
-                'value'       => CACHING_GROUP_CORE,
+                'value'       => \CACHING_GROUP_CORE,
                 'description' => 'cg_core_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_OBJECT',
                 'nicename'    => 'cg_object_nicename',
-                'value'       => CACHING_GROUP_OBJECT,
+                'value'       => \CACHING_GROUP_OBJECT,
                 'description' => 'cg_object_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_BOX',
                 'nicename'    => 'cg_box_nicename',
-                'value'       => CACHING_GROUP_BOX,
+                'value'       => \CACHING_GROUP_BOX,
                 'description' => 'cg_box_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_NEWS',
                 'nicename'    => 'cg_news_nicename',
-                'value'       => CACHING_GROUP_NEWS,
+                'value'       => \CACHING_GROUP_NEWS,
                 'description' => 'cg_news_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_ATTRIBUTE',
                 'nicename'    => 'cg_attribute_nicename',
-                'value'       => CACHING_GROUP_ATTRIBUTE,
+                'value'       => \CACHING_GROUP_ATTRIBUTE,
                 'description' => 'cg_attribute_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_MANUFACTURER',
                 'nicename'    => 'cg_manufacturer_nicename',
-                'value'       => CACHING_GROUP_MANUFACTURER,
+                'value'       => \CACHING_GROUP_MANUFACTURER,
                 'description' => 'cg_manufacturer_description'
             ],
             [
                 'name'        => 'CACHING_GROUP_FILTER',
                 'nicename'    => 'cg_filter_nicename',
-                'value'       => CACHING_GROUP_FILTER,
+                'value'       => \CACHING_GROUP_FILTER,
                 'description' => 'cg_filter_description'
             ],
         ];
@@ -254,7 +254,7 @@ final class JTLCache implements JTLCacheInterface
             // enable or disable collecting of debug data
             'debug_method'     => 'echo',
             // 'ssd'/'jtld' for SmarterSmartyDebug/JTLDebug, 'echo' for direct echo
-            'cache_dir'        => OBJECT_CACHE_DIR,
+            'cache_dir'        => \OBJECT_CACHE_DIR,
             //file cache directory
             'file_extension'   => '.fc',
             // file extension for file cache
@@ -264,9 +264,9 @@ final class JTLCache implements JTLCacheInterface
             // disabled cache groups
         ];
         // merge defaults with assigned options and set them
-        $this->options = array_merge($defaults, $options);
+        $this->options = \array_merge($defaults, $options);
         // always add trailing slash
-        if (substr($this->options['cache_dir'], \strlen($this->options['cache_dir']) - 1) !== '/') {
+        if (\substr($this->options['cache_dir'], \strlen($this->options['cache_dir']) - 1) !== '/') {
             $this->options['cache_dir'] .= '/';
         }
         if ($this->options['method'] !== 'redis' && (int)$this->options['lifetime'] < 0) {
@@ -325,10 +325,10 @@ final class JTLCache implements JTLCacheInterface
     public function getJtlCacheConfig(): array
     {
         // the DB class is needed for this
-        if (!class_exists('Shop')) {
+        if (!\class_exists('Shop')) {
             return [];
         }
-        $cacheConfig = \Shop::Container()->getDB()->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING);
+        $cacheConfig = \Shop::Container()->getDB()->selectAll('teinstellungen', 'kEinstellungenSektion', \CONF_CACHING);
         $cacheInit   = [];
         if (!empty($cacheConfig)) {
             foreach ($cacheConfig as $_conf) {
@@ -338,13 +338,13 @@ final class JTLCache implements JTLCacheInterface
                     $value = false;
                 } elseif ($_conf->cWert === '') {
                     $value = null;
-                } elseif (is_numeric($_conf->cWert)) {
+                } elseif (\is_numeric($_conf->cWert)) {
                     $value = (int)$_conf->cWert;
                 } else {
                     $value = $_conf->cWert;
                 }
                 // naming convention is 'caching_'<var-name> for options saved in database
-                $cacheInit[str_replace('caching_', '', $_conf->cName)] = $value;
+                $cacheInit[\str_replace('caching_', '', $_conf->cName)] = $value;
             }
         }
         // disabled cache types are saved as serialized string in db
@@ -498,7 +498,7 @@ final class JTLCache implements JTLCacheInterface
         if ($this->options['activated'] === true && $this->isCacheGroupActive($tags) === true) {
             $res = $this->_method->storeMulti($keyValue, $expiration);
             if ($res === true && $tags !== null) {
-                foreach (array_keys($keyValue) as $_cacheID) {
+                foreach (\array_keys($keyValue) as $_cacheID) {
                     $this->setCacheTag($tags, $_cacheID);
                 }
             }
@@ -616,7 +616,7 @@ final class JTLCache implements JTLCacheInterface
             }
         }
         if ($hookInfo !== null && \defined('HOOK_CACHE_FLUSH_AFTER') && \function_exists('executeHook')) {
-            executeHook(HOOK_CACHE_FLUSH_AFTER, $hookInfo);
+            \executeHook(\HOOK_CACHE_FLUSH_AFTER, $hookInfo);
         }
         $this->resultCode = \is_int($res) ? self::RES_FAIL : self::RES_SUCCESS;
 
@@ -630,7 +630,7 @@ final class JTLCache implements JTLCacheInterface
     {
         $deleted = $this->_method->flushTags($tags);
         if ($hookInfo !== null && \defined('HOOK_CACHE_FLUSH_AFTER') && \function_exists('executeHook')) {
-            executeHook(HOOK_CACHE_FLUSH_AFTER, $hookInfo);
+            \executeHook(\HOOK_CACHE_FLUSH_AFTER, $hookInfo);
         }
 
         return $deleted;
@@ -711,14 +711,14 @@ final class JTLCache implements JTLCacheInterface
             'xcache'
         ];
 //        $files = scandir(CACHING_METHODS_DIR, SCANDIR_SORT_ASCENDING);
-//        if (!is_array($files)) {
+//        if (!\is_array($files)) {
 //            return [];
 //        }
 //
-//        return array_filter(array_map(
+//        return \array_filter(\array_map(
 //            function ($m) {
-//                return strpos($m, 'class.cachingMethod') !== false
-//                    ? str_replace(['class.cachingMethod.', '.php'], '', $m)
+//                return \strpos($m, 'class.cachingMethod') !== false
+//                    ? \str_replace(['class.cachingMethod.', '.php'], '', $m)
 //                    : false;
 //            },
 //            $files
@@ -764,7 +764,7 @@ final class JTLCache implements JTLCacheInterface
         // add customer group
         if ($customerGroup === true) {
             $baseID .= '_cgid' . \Session::CustomerGroup()->getID();
-        } elseif (is_numeric($customerGroup)) {
+        } elseif (\is_numeric($customerGroup)) {
             $baseID .= '_cgid' . (int)$customerGroup;
         }
         // add language ID
@@ -778,13 +778,13 @@ final class JTLCache implements JTLCacheInterface
             } else {
                 $baseID .= '0';
             }
-        } elseif (is_numeric($languageID)) {
+        } elseif (\is_numeric($languageID)) {
             $baseID .= '_lid' . (int)$languageID;
         }
         // add currency ID
         if ($currencyID === true) {
             $baseID .= '_curid' . \Session::Currency()->getID();
-        } elseif (is_numeric($currencyID)) {
+        } elseif (\is_numeric($currencyID)) {
             $baseID .= '_curid' . (int)$currencyID;
         }
         // add current SSL status
@@ -796,7 +796,7 @@ final class JTLCache implements JTLCacheInterface
             echo '<br>generated $baseID ' . $baseID;
         }
 
-        return $hash === true ? md5($baseID) : $baseID;
+        return $hash === true ? \md5($baseID) : $baseID;
     }
 
     /**
@@ -845,16 +845,16 @@ final class JTLCache implements JTLCacheInterface
             if ($cacheSetRes !== false) {
                 for ($i = 0; $i < $repeat; ++$i) {
                     // set testing
-                    $start = microtime(true);
+                    $start = \microtime(true);
                     for ($j = 0; $j < $runCount; ++$j) {
                         $cacheID = 'c_' . $j;
                         $this->set($cacheID, $testData);
                     }
-                    $end          = microtime(true);
+                    $end          = \microtime(true);
                     $runTimingSet = ($end - $start);
                     $timesSet     += $runTimingSet;
                     // get testing
-                    $start = microtime(true);
+                    $start = \microtime(true);
                     for ($j = 0; $j < $runCount; ++$j) {
                         $cacheID = 'c_' . $j;
                         $res     = $this->get($cacheID);
@@ -862,7 +862,7 @@ final class JTLCache implements JTLCacheInterface
                             $validResults = false;
                         }
                     }
-                    $end          = microtime(true);
+                    $end          = \microtime(true);
                     $runTimingGet = ($end - $start);
                     $timesGet     += $runTimingGet;
                 }
@@ -881,10 +881,10 @@ final class JTLCache implements JTLCacheInterface
                 $timesSet /= $repeat;
                 $timesGet /= $repeat;
                 if ($format === true) {
-                    $timesSet = number_format($timesSet, 4, ',', '.');
-                    $timesGet = number_format($timesGet, 4, ',', '.');
-                    $rpsSet   = number_format($rpsSet, 2, ',', '.');
-                    $rpsGet   = number_format($rpsGet, 2, ',', '.');
+                    $timesSet = \number_format($timesSet, 4, ',', '.');
+                    $timesGet = \number_format($timesGet, 4, ',', '.');
+                    $rpsSet   = \number_format($rpsSet, 2, ',', '.');
+                    $rpsGet   = \number_format($rpsGet, 2, ',', '.');
                 }
                 // output averages
                 if ($echo === true) {

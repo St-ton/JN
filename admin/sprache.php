@@ -20,7 +20,10 @@ setzeSprache();
 $kSprache    = (int)$_SESSION['kSprache'];
 $cISOSprache = $_SESSION['cISOSprache'];
 
-if (FormHelper::validateToken() && RequestHelper::verifyGPDataString('importcsv') === 'langvars' && isset($_FILES['csvfile']['tmp_name'])) {
+if (isset($_FILES['csvfile']['tmp_name'])
+    && FormHelper::validateToken()
+    && RequestHelper::verifyGPDataString('importcsv') === 'langvars'
+) {
     $csvFilename = $_FILES['csvfile']['tmp_name'];
     $importType  = RequestHelper::verifyGPCDataInt('importType');
     $res         = Shop::Lang()->import($csvFilename, $cISOSprache, $importType);
@@ -87,16 +90,16 @@ if (isset($_REQUEST['action']) && FormHelper::validateToken()) {
                 ->cName;
 
             $oWertDB_arr = Shop::Container()->getDB()->queryPrepared(
-                "SELECT s.cNameDeutsch AS cSpracheName, sw.cWert, si.cISO
+                'SELECT s.cNameDeutsch AS cSpracheName, sw.cWert, si.cISO
                     FROM tsprachwerte AS sw
                         JOIN tsprachiso AS si
                             ON si.kSprachISO = sw.kSprachISO
                         JOIN tsprache AS s
                             ON s.cISO = si.cISO 
                     WHERE sw.cName = :cName
-                        AND sw.kSprachsektion = :kSprachsektion",
+                        AND sw.kSprachsektion = :kSprachsektion',
                 ['cName' => $oVariable->cName, 'kSprachsektion' => $oVariable->kSprachsektion],
-                2
+                \DB\ReturnType::ARRAY_OF_OBJECTS
             );
 
             foreach ($oWertDB_arr as $oWertDB) {
@@ -201,13 +204,13 @@ if ($step === 'newvar') {
     $cFilterSQL = $oFilter->getWhereSQL();
 
     $oWert_arr = Shop::Container()->getDB()->query(
-        "SELECT sw.cName, sw.cWert, sw.cStandard, sw.bSystem, ss.kSprachsektion, ss.cName AS cSektionName
+        'SELECT sw.cName, sw.cWert, sw.cStandard, sw.bSystem, ss.kSprachsektion, ss.cName AS cSektionName
             FROM tsprachwerte AS sw
                 JOIN tsprachsektion AS ss
                     ON ss.kSprachsektion = sw.kSprachsektion
-            WHERE sw.kSprachISO = " . (int)$kSprachISO . "
-                " . ($cFilterSQL !== '' ? "AND " . $cFilterSQL : ""),
-        2
+            WHERE sw.kSprachISO = ' . (int)$kSprachISO . '
+                ' . ($cFilterSQL !== '' ? 'AND ' . $cFilterSQL : ''),
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 
     handleCsvExportAction('langvars', $cISOSprache . '_' . date('YmdHis') . '.slf', $oWert_arr,
@@ -219,12 +222,12 @@ if ($step === 'newvar') {
         ->assemble();
 
     $oNotFound_arr = Shop::Container()->getDB()->query(
-        "SELECT sl.*, ss.kSprachsektion
+        'SELECT sl.*, ss.kSprachsektion
             FROM tsprachlog AS sl
                 LEFT JOIN tsprachsektion AS ss
                     ON ss.cName = sl.cSektion
-            WHERE kSprachISO = " . (int)Shop::Lang()->kSprachISO,
-        2
+            WHERE kSprachISO = ' . (int)Shop::Lang()->kSprachISO,
+        \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 
     $smarty

@@ -13,21 +13,10 @@ if (auth()) {
     $return  = 2;
 
     if (($syncFiles = unzipSyncFiles($zipFile, PFAD_SYNC_TMP, __FILE__)) === false) {
-        if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('Error: Cannot extract zip file.', JTLLOG_LEVEL_ERROR, false, 'Globals_xml');
-        }
-//        removeTemporaryFiles($zipFile);
+        Shop::Container()->getLogService()->error('Error: Cannot extract zip file ' . $zipFile);
     } else {
         $return = 0;
         foreach ($syncFiles as $xmlFile) {
-            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog(
-                    'bearbeite: ' . $xmlFile . ' size: ' . filesize($xmlFile),
-                    JTLLOG_LEVEL_DEBUG,
-                    false,
-                    'Globals_xml'
-                );
-            }
             $d   = file_get_contents($xmlFile);
             $xml = XML_unserialize($d);
             if (strpos($xmlFile, 'del_globals.xml') !== false) {
@@ -39,7 +28,10 @@ if (auth()) {
     }
 }
 
-Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = now()', \DB\ReturnType::DEFAULT);
+Shop::Container()->getDB()->query(
+    'UPDATE tglobals SET dLetzteAenderung = now()',
+    \DB\ReturnType::DEFAULT
+);
 echo $return;
 
 /**
@@ -51,11 +43,11 @@ function bearbeiteDeletes($xml)
     if (is_array($xml['del_globals_wg']['kWarengruppe'])) {
         foreach ($xml['del_globals_wg']['kWarengruppe'] as $kWarengruppe) {
             if ((int)$kWarengruppe > 0) {
-                loescheWarengruppe($kWarengruppe);
+                loescheWarengruppe((int)$kWarengruppe);
             }
         }
     } elseif ((int)$xml['del_globals_wg']['kWarengruppe'] > 0) {
-        loescheWarengruppe($xml['del_globals_wg']['kWarengruppe']);
+        loescheWarengruppe((int)$xml['del_globals_wg']['kWarengruppe']);
     }
 }
 
@@ -64,8 +56,9 @@ function bearbeiteDeletes($xml)
  */
 function bearbeiteUpdates($xml)
 {
-    if (isset($xml['globals']['tfirma'], $xml['globals']['tfirma attr']['kFirma']) &&
-        is_array($xml['globals']['tfirma']) && $xml['globals']['tfirma attr']['kFirma'] > 0) {
+    if (isset($xml['globals']['tfirma'], $xml['globals']['tfirma attr']['kFirma'])
+        && is_array($xml['globals']['tfirma']) && $xml['globals']['tfirma attr']['kFirma'] > 0
+    ) {
         mappe($Firma, $xml['globals']['tfirma'], $GLOBALS['mFirma']);
         DBDelInsert('tfirma', [$Firma], 1);
     }
@@ -111,11 +104,30 @@ function bearbeiteUpdates($xml)
             $cgCount = count($kundengruppen_arr);
             for ($i = 0; $i < $cgCount; $i++) {
                 if (count($kundengruppen_arr) < 2) {
-                    XML2DB($xml['globals']['tkundengruppe'], 'tkundengruppensprache', $GLOBALS['mKundengruppensprache'], 0);
-                    XML2DB($xml['globals']['tkundengruppe'], 'tkundengruppenattribut', $GLOBALS['mKundengruppenattribut'], 0);
+                    XML2DB(
+                        $xml['globals']['tkundengruppe'],
+                        'tkundengruppensprache',
+                        $GLOBALS['mKundengruppensprache'],
+                        0
+                    );
+                    XML2DB(
+                        $xml['globals']['tkundengruppe'],
+                        'tkundengruppenattribut',
+                        $GLOBALS['mKundengruppenattribut'],
+                        0
+                    );
                 } else {
-                    XML2DB($xml['globals']['tkundengruppe'][$i], 'tkundengruppensprache', $GLOBALS['mKundengruppensprache'], 0);
-                    XML2DB($xml['globals']['tkundengruppe'][$i], 'tkundengruppenattribut', $GLOBALS['mKundengruppenattribut'], 0);
+                    XML2DB(
+                        $xml['globals']['tkundengruppe'][$i],
+                        'tkundengruppensprache',
+                        $GLOBALS['mKundengruppensprache'],
+                        0
+                    );
+                    XML2DB($xml['globals']['tkundengruppe'][$i],
+                        'tkundengruppenattribut',
+                        $GLOBALS['mKundengruppenattribut'],
+                        0
+                    );
                 }
             }
             Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE, CACHING_GROUP_CATEGORY]);
@@ -123,14 +135,14 @@ function bearbeiteUpdates($xml)
         // Warenlager
         if (isset($xml['globals']['twarenlager']) && is_array($xml['globals']['twarenlager'])) {
             $oWarenlager_arr = mapArray($xml['globals'], 'twarenlager', $GLOBALS['mWarenlager']);
-            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog('oWarenlager_arr: ' . print_r($oWarenlager_arr, true), JTLLOG_LEVEL_DEBUG, false, 'Globals_xml');
-            }
             //Lagersichtbarkeit für Shop zwischenspeichern
-            $lagersichtbarkeit_arr = Shop::Container()->getDB()->query("SELECT kWarenlager, nAktiv FROM twarenlager WHERE nAktiv = 1", 2);
+            $lagersichtbarkeit_arr = Shop::Container()->getDB()->query(
+                'SELECT kWarenlager, nAktiv FROM twarenlager WHERE nAktiv = 1',
+                \DB\ReturnType::ARRAY_OF_OBJECTS
+            );
             //Alle Einträge in twarenlager löschen - Wawi 1.0.1 sendet immer alle Warenlager.
             Shop::Container()->getDB()->query('DELETE FROM twarenlager WHERE 1', \DB\ReturnType::DEFAULT);
-            
+
             DBUpdateInsert('twarenlager', $oWarenlager_arr, 'kWarenlager');
             //Lagersichtbarkeit übertragen
             if (!empty($lagersichtbarkeit_arr)) {
@@ -154,7 +166,11 @@ function bearbeiteUpdates($xml)
                 if (count($oMasseinheit_arr) < 2) {
                     XML2DB($xml['globals']['tmasseinheit'], 'tmasseinheitsprache', $GLOBALS['mMasseinheitsprache'], 0);
                 } else {
-                    XML2DB($xml['globals']['tmasseinheit'][$i], 'tmasseinheitsprache', $GLOBALS['mMasseinheitsprache'], 0);
+                    XML2DB(
+                        $xml['globals']['tmasseinheit'][$i],
+                        'tmasseinheitsprache', $GLOBALS['mMasseinheitsprache'],
+                        0
+                    );
                 }
             }
         }
@@ -162,9 +178,6 @@ function bearbeiteUpdates($xml)
     // Warengruppe
     if (isset($xml['globals_wg']['tWarengruppe']) && is_array($xml['globals_wg']['tWarengruppe'])) {
         $oWarengruppe_arr = mapArray($xml['globals_wg'], 'tWarengruppe', $GLOBALS['mWarengruppe']);
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog('oWarengruppe_arr: ' . print_r($oWarengruppe_arr, true), JTLLOG_LEVEL_DEBUG, false, 'Globals_xml');
-        }
         DBUpdateInsert('twarengruppe', $oWarengruppe_arr, 'kWarengruppe');
     }
 }
@@ -172,11 +185,8 @@ function bearbeiteUpdates($xml)
 /**
  * @param int $kWarengruppe
  */
-function loescheWarengruppe($kWarengruppe)
+function loescheWarengruppe(int $kWarengruppe)
 {
-    $kWarengruppe = (int)$kWarengruppe;
     Shop::Container()->getDB()->delete('twarengruppe', 'kWarengruppe', $kWarengruppe);
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Warengruppe geloescht: ' . $kWarengruppe, JTLLOG_LEVEL_DEBUG, false, 'Globals_xml');
-    }
+    Shop::Container()->getLogService()->debug('Warengruppe geloescht: ' . $kWarengruppe);
 }

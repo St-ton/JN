@@ -6,10 +6,11 @@
 
 namespace Services;
 
-use Boxes\BoxFactoryInterface;
+use Boxes\FactoryInterface;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\Services\GcServiceInterface;
+use Monolog\Logger;
 use Services\JTL\BoxServiceInterface;
 use Services\JTL\CaptchaServiceInterface;
 use Services\JTL\CryptoServiceInterface;
@@ -62,6 +63,14 @@ class Container extends ContainerBase implements DefaultServicesInterface
     /**
      * @inheritdoc
      */
+    public function getLogService(): Logger
+    {
+        return $this->get('Logger');
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getDBServiceGC(): GcServiceInterface
     {
         return $this->get(GcServiceInterface::class);
@@ -86,9 +95,9 @@ class Container extends ContainerBase implements DefaultServicesInterface
     /**
      * @inheritdoc
      */
-    public function getBoxFactory(): BoxFactoryInterface
+    public function getBoxFactory(): FactoryInterface
     {
-        return $this->get(BoxFactoryInterface::class);
+        return $this->get(FactoryInterface::class);
     }
 
     /**

@@ -55,7 +55,7 @@ if (isset($_GET['l']) && (int)$_GET['l'] > 0 && FormHelper::validateToken()) {
 
 // Anzahl Kunden mit Warenkorb
 $oKundeAnzahl = Shop::Container()->getDB()->query(
-    "SELECT count(*) AS nAnzahl
+    'SELECT COUNT(*) AS nAnzahl
         FROM
         (
             SELECT tkunde.kKunde
@@ -64,9 +64,9 @@ $oKundeAnzahl = Shop::Container()->getDB()->query(
                 ON tkunde.kKunde = twarenkorbpers.kKunde
             JOIN twarenkorbperspos 
                 ON twarenkorbperspos.kWarenkorbPers = twarenkorbpers.kWarenkorbPers
-            " . $cSucheSQL->cWHERE . "
+            ' . $cSucheSQL->cWHERE . '
             GROUP BY tkunde.kKunde
-        ) AS tAnzahl",
+        ) AS tAnzahl',
     \DB\ReturnType::SINGLE_OBJECT
 );
 
@@ -108,11 +108,11 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
     $kKunde = (int)$_GET['a'];
 
     $oWarenkorbPers = Shop::Container()->getDB()->query(
-        "SELECT count(*) AS nAnzahl
+        'SELECT count(*) AS nAnzahl
             FROM twarenkorbperspos
             JOIN twarenkorbpers 
                 ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers
-            WHERE twarenkorbpers.kKunde = " . $kKunde,
+            WHERE twarenkorbpers.kKunde = ' . $kKunde,
         \DB\ReturnType::SINGLE_OBJECT
     );
 
@@ -144,13 +144,11 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
            ->assign('kKunde', $kKunde)
            ->assign('oPagiWarenkorb', $oPagiWarenkorb);
 } else {
-    // uebersicht
-    // Config holen
     $oConfig_arr = Shop::Container()->getDB()->query(
-        "SELECT *
+        'SELECT *
             FROM teinstellungenconf
-            WHERE kEinstellungenConf IN (" . implode(',', $settingsIDs) . ")
-            ORDER BY nSort",
+            WHERE kEinstellungenConf IN (' . implode(',', $settingsIDs) . ')
+            ORDER BY nSort',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     $configCount = count($oConfig_arr);

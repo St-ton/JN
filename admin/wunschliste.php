@@ -13,13 +13,12 @@ $settingsIDs       = [442, 443, 440, 439, 445, 446, 1460];
 if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
-// Einstellungen
 if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
     $cHinweis .= saveAdminSettings($settingsIDs, $_POST);
 }
 // Anzahl Wunschzettel, gewünschte Artikel, versendete Wunschzettel
 $oWunschlistePos = Shop::Container()->getDB()->query(
-    "SELECT count(tWunsch.kWunschliste) AS nAnzahl
+    'SELECT count(tWunsch.kWunschliste) AS nAnzahl
         FROM
         (
             SELECT twunschliste.kWunschliste
@@ -27,19 +26,19 @@ $oWunschlistePos = Shop::Container()->getDB()->query(
             JOIN twunschlistepos 
                 ON twunschliste.kWunschliste = twunschlistepos.kWunschliste
             GROUP BY twunschliste.kWunschliste
-        ) AS tWunsch",
+        ) AS tWunsch',
     \DB\ReturnType::SINGLE_OBJECT
 );
 $oWunschlisteArtikel = Shop::Container()->getDB()->query(
-    "SELECT count(*) AS nAnzahl
-        FROM twunschlistepos",
+    'SELECT count(*) AS nAnzahl
+        FROM twunschlistepos',
     \DB\ReturnType::SINGLE_OBJECT
 );
 $oWunschlisteFreunde = Shop::Container()->getDB()->query(
-    "SELECT count(*) AS nAnzahl
+    'SELECT count(*) AS nAnzahl
         FROM twunschliste
         JOIN twunschlisteversand 
-            ON twunschliste.kWunschliste = twunschlisteversand.kWunschliste",
+            ON twunschliste.kWunschliste = twunschlisteversand.kWunschliste',
     \DB\ReturnType::SINGLE_OBJECT
 );
 // Paginationen
@@ -103,10 +102,10 @@ $CWunschlistePos_arr = Shop::Container()->getDB()->query(
     \DB\ReturnType::ARRAY_OF_OBJECTS);
 // Config holen
 $oConfig_arr = Shop::Container()->getDB()->query(
-    "SELECT *
+    'SELECT *
         FROM teinstellungenconf
-        WHERE kEinstellungenConf IN (" . implode(',', $settingsIDs) . ")
-        ORDER BY nSort",
+        WHERE kEinstellungenConf IN (' . implode(',', $settingsIDs) . ')
+        ORDER BY nSort',
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 $configCount = count($oConfig_arr);

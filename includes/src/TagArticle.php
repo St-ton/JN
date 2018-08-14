@@ -37,8 +37,6 @@ class TagArticle
     }
 
     /**
-     * Setzt Tag mit Daten aus der DB mit spezifiziertem Primary Key
-     *
      * @param int $kTag
      * @param int $kArtikel
      * @return $this
@@ -56,8 +54,6 @@ class TagArticle
     }
 
     /**
-     * Fügt Datensatz in DB ein. Primary Key wird in this gesetzt.
-     *
      * @return int
      */
     public function insertInDB(): int
@@ -68,8 +64,6 @@ class TagArticle
     }
 
     /**
-     * Updatet Daten in der DB. Betroffen ist der Datensatz mit gleichem Primary Key
-     *
      * @return int
      */
     public function updateInDB(): int

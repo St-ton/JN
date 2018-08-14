@@ -153,6 +153,10 @@ class VueInstaller
                 if (!empty($credentials['socket'])) {
                     define('DB_SOCKET', $credentials['socket']);
                 }
+                ifndef('DB_HOST', $credentials['host']);
+                ifndef('DB_USER', $credentials['user']);
+                ifndef('DB_PASS', $credentials['pass']);
+                ifndef('DB_NAME', $credentials['name']);
                 $this->db = new NiceDB(
                     $credentials['host'],
                     $credentials['user'],

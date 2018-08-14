@@ -135,6 +135,7 @@ class DemoDataInstaller
     public function run($callback = null): self
     {
         $this->cleanup()
+             ->addCompanyData()
              ->createManufacturers($callback)
              ->createCategories($callback)
              ->createArticles($callback)
@@ -320,13 +321,42 @@ class DemoDataInstaller
             'TRUNCATE TABLE tkategorie; TRUNCATE TABLE tartikel; TRUNCATE TABLE tartikelpict; ' .
             'TRUNCATE TABLE tkategorieartikel; TRUNCATE TABLE tbewertung; TRUNCATE TABLE tartikelext; ' .
             'TRUNCATE TABLE tkategoriepict; TRUNCATE TABLE thersteller; TRUNCATE TABLE tpreise; ' .
-            'TRUNCATE TABLE tpreis; TRUNCATE TABLE tpreisdetail; TRUNCATE TABLE teinheit; TRUNCATE TABLE tkunde;', 1
+            'TRUNCATE TABLE tpreis; TRUNCATE TABLE tpreisdetail; TRUNCATE TABLE teinheit; TRUNCATE TABLE tkunde;',
+            \DB\ReturnType::DEFAULT
         );
         $this->pdo->query('DELETE FROM tlink WHERE kLink > 99;', \DB\ReturnType::DEFAULT);
         $this->pdo->query('DELETE FROM tlinksprache WHERE kLink > 99;', \DB\ReturnType::DEFAULT);
         $this->pdo->query("DELETE FROM tseo WHERE cKey = 'kLink' AND kKey > 99;", \DB\ReturnType::DEFAULT);
         $this->pdo->query("DELETE FROM tseo WHERE cKey = 'kArtikel' OR cKey = 'kKategorie' OR cKey = 'kHersteller'",
             \DB\ReturnType::DEFAULT);
+
+        return $this;
+    }
+
+    /**
+     * @return DemoDataInstaller
+     */
+    public function addCompanyData(): self
+    {
+        $ins                = new stdClass();
+        $ins->cName         = 'Beispiel GmbH';
+        $ins->cUnternehmer  = 'Max Mustermann';
+        $ins->cStrasse      = 'Zufallsstraße';
+        $ins->cHausnummer   = 42;
+        $ins->cPLZ          = '12345';
+        $ins->cOrt          = 'Beispielshausen';
+        $ins->cLand         = 'Deutschland';
+        $ins->cTel          = '01234 123456789';
+        $ins->cFax          = '01234 123456788';
+        $ins->cEMail        = 'info@example.com';
+        $ins->cWWW          = 'www.example.com';
+        $ins->cKontoinhaber = 'Beispiel GmbH';
+        $ins->cBLZ          = '1112250000';
+        $ins->cKontoNr      = '1337133713';
+        $ins->cBank         = 'Sparkasse Entenhausen';
+        $ins->cIBAN         = 'DE257864472';
+        $ins->cBIC          = 'FOOOBAR';
+        $this->pdo->insert('tfirma', $ins);
 
         return $this;
     }

@@ -62,6 +62,7 @@ function bearbeiteDeletes($xml)
     } elseif (isset($xml['del_merkmalwerte']['kMerkmalWert']) && (int)$xml['del_merkmalwerte']['kMerkmalWert'] > 0) {
         loescheMerkmalWert((int)$xml['del_merkmalwerte']['kMerkmalWert']);
     }
+    Shop::Container()->getCache()->flushTags([CACHING_GROUP_ATTRIBUTE]);
 }
 
 /**

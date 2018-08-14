@@ -22,7 +22,7 @@
         <div class="panel-heading">
             <h3 class="panel-title">Vorhandene {#agbwrb#}</h3>
         </div>
-        <table class="table">
+        <table class="table table-striped">
             <thead>
             <tr>
                 <th class="tleft">{#agbwrbCustomerGrp#}</th>
@@ -32,7 +32,7 @@
             <tbody>
             {foreach name=kundengruppe from=$oKundengruppe_arr item=oKundengruppe}
                 {assign var=kKundengruppe value=$oKundengruppe->kKundengruppe}
-                <tr class="tab_bg{$smarty.foreach.kundengruppe.iteration%2}">
+                <tr>
                     <td class="">{$oKundengruppe->cName}</td>
                     <td class="tcenter">
                         <a href="agbwrb.php?agbwrb=1&agbwrb_edit=1&kKundengruppe={$oKundengruppe->kKundengruppe}&token={$smarty.session.jtl_token}"

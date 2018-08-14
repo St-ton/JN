@@ -21,7 +21,7 @@
             {if isset($CWunschliste_arr) && $CWunschliste_arr|@count > 0}
                 {include file='tpl_inc/pagination.tpl' oPagination=$oPagiPos cAnchor='wunschlistepos'}
                 <div class="panel panel-default table-responsive">
-                    <table class="table">
+                    <table class="table table-striped">
                         <tr>
                             <th class="tleft">{#wishlistName#}</th>
                             <th class="tleft">{#wishlistAccount#}</th>
@@ -29,15 +29,15 @@
                             <th class="th-4">{#wishlistDate#}</th>
                         </tr>
                         {foreach name=wunschliste from=$CWunschliste_arr item=CWunschliste}
-                            <tr class="tab_bg{$smarty.foreach.wunschliste.iteration%2}">
-                                <td class="TD1">
+                            <tr>
+                                <td>
                                     {if $CWunschliste->nOeffentlich == 1}
                                         <a href="{$shopURL}/index.php?wlid={$CWunschliste->cURLID}" rel="external">{$CWunschliste->cName}</a>
                                     {else}
                                         <span>{$CWunschliste->cName}</span>
                                     {/if}
                                 </td>
-                                <td class="TD2">{$CWunschliste->cVorname} {$CWunschliste->cNachname}</td>
+                                <td>{$CWunschliste->cVorname} {$CWunschliste->cNachname}</td>
                                 <td class="tcenter">{$CWunschliste->Anzahl}</td>
                                 <td class="tcenter">{$CWunschliste->Datum}</td>
                             </tr>
@@ -52,15 +52,15 @@
             {if isset($CWunschlistePos_arr) && $CWunschlistePos_arr|@count > 0}
                 {include file='tpl_inc/pagination.tpl' oPagination=$oPagiArtikel cAnchor='wunschlisteartikel'}
                 <div class="panel panel-default table-responsive">
-                    <table class="table">
+                    <table class="table table-striped">
                         <tr>
                             <th class="tleft">{#wishlistPosName#}</th>
                             <th class="th-2">{#wishlistPosCount#}</th>
                             <th class="th-3">{#wishlistLastAdded#}</th>
                         </tr>
                         {foreach name=wunschlistepos from=$CWunschlistePos_arr item=CWunschlistePos}
-                            <tr class="tab_bg{$smarty.foreach.wunschlistepos.iteration%2}">
-                                <td class="TD1">
+                            <tr>
+                                <td>
                                     <a href="{$shopURL}/index.php?a={$CWunschlistePos->kArtikel}&" rel="external">{$CWunschlistePos->cArtikelName}</a>
                                 </td>
                                 <td class="tcenter">{$CWunschlistePos->Anzahl}</td>
@@ -77,7 +77,7 @@
             {if $CWunschlisteVersand_arr && $CWunschlisteVersand_arr|@count > 0}
                 {include file='tpl_inc/pagination.tpl' oPagination=$oPagiFreunde cAnchor='wunschlistefreunde'}
                 <div class="panel panel-default table-responsive">
-                    <table class="table">
+                    <table class="table table-striped">
                         <tr>
                             <th class="tleft">{#wishlistName#}</th>
                             <th class="tleft">{#wishlistAccount#}</th>
@@ -86,11 +86,11 @@
                             <th class="th-5">{#wishlistDate#}</th>
                         </tr>
                         {foreach name=wunschlisteversand from=$CWunschlisteVersand_arr item=CWunschlisteVersand}
-                            <tr class="tab_bg{$smarty.foreach.wunschlisteversand.iteration%2}">
-                                <td class="TD1">
+                            <tr>
+                                <td>
                                     <a href="{$shopURL}/index.php?wlid={$CWunschlisteVersand->cURLID}" rel="external">{$CWunschlisteVersand->cName}</a>
                                 </td>
-                                <td class="TD2">{$CWunschlisteVersand->cVorname} {$CWunschlisteVersand->cNachname}</td>
+                                <td>{$CWunschlisteVersand->cVorname} {$CWunschlisteVersand->cNachname}</td>
                                 <td class="tcenter">{$CWunschlisteVersand->nAnzahlEmpfaenger}</td>
                                 <td class="tcenter">{$CWunschlisteVersand->nAnzahlArtikel}</td>
                                 <td class="tcenter">{$CWunschlisteVersand->Datum}</td>

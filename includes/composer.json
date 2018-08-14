@@ -42,11 +42,11 @@
             "type": "package",
             "package": {
                 "name": "jtlshop/shop4-systemcheck",
-                "version": "1.1.0",
+                "version": "1.1.2",
                 "source": {
                     "url": "https://gitlab.jtl-software.de/jtlshop/shop4-systemcheck.git",
                     "type": "git",
-                    "reference": "1.1.0"
+                    "reference": "1.1.2"
                 }
             }
         },

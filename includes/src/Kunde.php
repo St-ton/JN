@@ -431,20 +431,20 @@ class Kunde
             }
             // Anrede mappen
             $this->cAnredeLocalized = self::mapSalutation($this->cAnrede, $this->kSprache);
-            $this->angezeigtesLand = Sprache::getCountryCodeByCountryName($this->cLand);
+            $this->angezeigtesLand  = Sprache::getCountryCodeByCountryName($this->cLand);
             //$this->cLand = landISO($this->cLand);
             $this->holeKundenattribute()->entschluesselKundendaten();
-            $this->kKunde = (int)$this->kKunde;
-            $this->kKundengruppe = (int)$this->kKundengruppe;
-            $this->kSprache = (int)$this->kSprache;
+            $this->kKunde         = (int)$this->kKunde;
+            $this->kKundengruppe  = (int)$this->kKundengruppe;
+            $this->kSprache       = (int)$this->kSprache;
             $this->nLoginversuche = (int)$this->nLoginversuche;
-            $this->nRegistriert = (int)$this->nRegistriert;
+            $this->nRegistriert   = (int)$this->nRegistriert;
 
             $this->dGeburtstag_formatted = $this->dGeburtstag !== '0000-00-00' ? date_format(date_create($this->dGeburtstag), 'd.m.Y') : '';
 
             $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
-            $cDatum_arr = DateHelper::getDateParts($this->dErstellt);
-            $this->dErstellt_DE = $cDatum_arr['cTag'] . '.' .
+            $cDatum_arr               = DateHelper::getDateParts($this->dErstellt);
+            $this->dErstellt_DE       = $cDatum_arr['cTag'] . '.' .
                 $cDatum_arr['cMonat'] . '.' .
                 $cDatum_arr['cJahr'];
             executeHook(HOOK_KUNDE_CLASS_LOADFROMDB);

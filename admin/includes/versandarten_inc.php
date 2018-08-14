@@ -236,12 +236,12 @@ function getZuschlagNames(int $kVersandzuschlag)
  * @param string $cSearch
  * @return array
  */
-function getShippingByName($cSearch)
+function getShippingByName(string $cSearch)
 {
     $cSearch_arr        = explode(',', $cSearch);
     $allShippingsByName = [];
     foreach ($cSearch_arr as $cSearchPos) {
-        trim($cSearchPos);
+        $cSearchPos = trim($cSearchPos);
         if (strlen($cSearchPos) > 2) {
             $shippingByName_arr = Shop::Container()->getDB()->queryPrepared(
                 'SELECT va.kVersandart, va.cName
@@ -274,43 +274,43 @@ function getShippingByName($cSearch)
  * @param int   $length
  * @return array
  */
-function getCombinations($base, $n)
+function getCombinations(array $shipClasses, int $length)
 {
-    $baselen = count($base);
+    $baselen = count($shipClasses);
     if ($baselen === 0) {
 
         return [];
     }
-    if ($n === 1) {
+    if ($length === 1) {
         $return = [];
-        foreach ($base as $b) {
-            $return[] = array($b);
+        foreach ($shipClasses as $b) {
+            $return[] = [$b];
         }
 
         return $return;
     }
 
-    //get one level lower combinations
-    $oneLevelLower = getCombinations($base, $n - 1);
-    //for every one level lower combinations add one element to them that the last element of a combination is preceeded by the element which follows it in base array if there is none, does not add
+    // get one level lower combinations
+    $oneLevelLower = getCombinations($shipClasses, $length - 1);
+    // for every one level lower combinations add one element to them
+    // that the last element of a combination is preceeded by the element
+    // which follows it in base array if there is none, does not add
     $newCombs = [];
     foreach ($oneLevelLower as $oll) {
-        $lastEl = $oll[$n - 2];
+        $lastEl = $oll[$length - 2];
         $found  = false;
-        foreach ($base as $key => $b) {
+        foreach ($shipClasses as $key => $b) {
             if ($b === $lastEl) {
                 $found = true;
                 continue;
-                //last element found
+                // last element found
             }
-            if ($found === true) {
-                //add to combinations with last element
-                if ($key < $baselen) {
-                    $tmp              = $oll;
-                    $newCombination   = array_slice($tmp, 0);
-                    $newCombination[] = $b;
-                    $newCombs[]       = array_slice($newCombination, 0);
-                }
+            if ($found === true && $key < $baselen) {
+                // add to combinations with last element
+                $tmp              = $oll;
+                $newCombination   = array_slice($tmp, 0);
+                $newCombination[] = $b;
+                $newCombs[]       = array_slice($newCombination, 0);
             }
         }
     }

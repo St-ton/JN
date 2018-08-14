@@ -355,6 +355,7 @@ function bearbeiteInsert($xml)
         }
         DBUpdateInsert('tmerkmal', $merkmal_arr, 'kMerkmal');
         fuelleFehlendeMMWInSeo($oMM_arr);
+        Shop::Container()->getCache()->flushTags([CACHING_GROUP_ATTRIBUTE]);
     }
     // Kommen nur MerkmalWerte?
     if (!isset($xml['merkmale']['tmerkmalwert']) || !is_array($xml['merkmale']['tmerkmalwert'])) {

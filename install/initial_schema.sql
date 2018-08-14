@@ -12,8 +12,6 @@
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 
-SET FOREIGN_KEY_CHECKS=0;
-
 CREATE TABLE `tadmin2facodes` (
   `kAdminlogin` int(11) NOT NULL DEFAULT 0,
   `cEmergencyCode` varchar(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
@@ -5364,8 +5362,6 @@ CREATE TABLE `tzahlungslog` (
 /*!40000 ALTER TABLE `tzahlungslog` DISABLE KEYS */;
 /*!40000 ALTER TABLE `tzahlungslog` ENABLE KEYS */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
-
-SET FOREIGN_KEY_CHECKS=1;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

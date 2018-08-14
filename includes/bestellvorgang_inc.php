@@ -2535,6 +2535,7 @@ function getKundendaten($post, $kundenaccount, $htmlentities = 1)
         }
     }
 
+    $customer->dGeburtstag     = DateHelper::convertDateToMysqlStandard($customer->dGeburtstag);
     $customer->angezeigtesLand = Sprache::getCountryCodeByCountryName($customer->cLand);
     if (!empty($customer->cBundesland)) {
         $oISO = Staat::getRegionByIso($customer->cBundesland, $customer->cLand);

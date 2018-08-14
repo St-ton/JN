@@ -440,7 +440,7 @@ class Kunde
             $this->nLoginversuche = (int)$this->nLoginversuche;
             $this->nRegistriert = (int)$this->nRegistriert;
 
-            $this->dGeburtstag_formatted = $this->dGeburtstag !== '00.00.0000' ? date_format(date_create($this->dGeburtstag), 'd.m.Y') : '';
+            $this->dGeburtstag_formatted = $this->dGeburtstag !== '0000-00-00' ? date_format(date_create($this->dGeburtstag), 'd.m.Y') : '';
 
             $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
             $cDatum_arr = DateHelper::getDateParts($this->dErstellt);
@@ -522,7 +522,6 @@ class Kunde
         $obj->cSperre        = $this->cSperre;
         $obj->fGuthaben      = $this->fGuthaben;
         $obj->cNewsletter    = $this->cNewsletter;
-        $obj->dGeburtstag    = $this->dGeburtstag;
         $obj->fRabatt        = $this->fRabatt;
         $obj->cHerkunft      = $this->cHerkunft;
         $obj->dErstellt      = $this->dErstellt;
@@ -531,10 +530,8 @@ class Kunde
         $obj->cAbgeholt      = $this->cAbgeholt;
         $obj->nRegistriert   = $this->nRegistriert;
         $obj->nLoginversuche = $this->nLoginversuche;
+        $obj->dGeburtstag    = DateHelper::convertDateToMysqlStandard($this->dGeburtstag);
 
-        if (empty($obj->dGeburtstag)) {
-            $obj->dGeburtstag = '0000-00-00';
-        }
         if (empty($obj->dVeraendert)) {
             $obj->dVeraendert = 'now()';
         }
@@ -555,9 +552,8 @@ class Kunde
      */
     public function updateInDB(): int
     {
-        if (preg_match('/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/', $this->dGeburtstag, $matches) === 1) {
-            $this->dGeburtstag = $matches[3] . '-' . $matches[2] . '-' . $matches[1];
-        }
+        $this->dGeburtstag           = DateHelper::convertDateToMysqlStandard($this->dGeburtstag);
+        $this->dGeburtstag_formatted = ($this->dGeburtstag === '0000-00-00') ? '' : DateTime::createFromFormat('Y-m-d', $this->dGeburtstag)->format('d.m.Y');
 
         $this->verschluesselKundendaten();
         $obj = ObjectHelper::copyMembers($this);

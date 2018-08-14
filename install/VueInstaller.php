@@ -178,11 +178,13 @@ class VueInstaller
     private function doInstall() : VueInstaller
     {
         if ($this->initNiceDB($this->post['db'])) {
+            $this->db->query('SET FOREIGN_KEY_CHECKS=0', \DB\ReturnType::DEFAULT);
             $this->parse_mysql_dump(__DIR__ . '/initial_schema.sql');
             $this->insertUsers();
             $blowfishKey = $this->getUID(30);
             $this->writeConfigFile($this->post['db'], $blowfishKey);
             $this->payload['secretKey'] = $blowfishKey;
+            $this->db->query('SET FOREIGN_KEY_CHECKS=1', \DB\ReturnType::DEFAULT);
         }
         $this->sendResponse();
 
@@ -274,7 +276,7 @@ ini_set('display_errors', 0);" . "\n";
             ) {
                 $query .= $sql_line;
                 if (preg_match('/;\s*$/', $sql_line)) {
-                    $result = $this->db->executeQuery($query, 10);
+                    $result = $this->db->executeQuery($query, \DB\ReturnType::QUERYSINGLE);
                     if (!$result) {
                         $this->responseStatus    = false;
                         $this->responseMessage[] = $this->db->getErrorMessage() .

@@ -23,9 +23,7 @@ $templateHelper->disableCaching();
 $admin          = (isset($_GET['admin']) && $_GET['admin'] === 'true');
 /** @global JTLSmarty $smarty */
 if (isset($_POST['key'], $_POST['upload'])) {
-    $file   = PFAD_ROOT . PFAD_TEMPLATES . $_POST['upload'];
-    $upload = explode('/', $_POST['upload']);
-
+    $file     = PFAD_ROOT . PFAD_TEMPLATES . $_POST['upload'];
     $response = new stdClass();
     if (file_exists($file) && is_file($file)) {
         $delete           = unlink($file);

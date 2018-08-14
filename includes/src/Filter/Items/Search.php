@@ -383,7 +383,7 @@ class Search extends AbstractFilter
      *
      * @return $this
      */
-    private function generateSearchCaches()
+    private function generateSearchCaches(): self
     {
         $allQueries = $this->productFilter->getDB()->query(
             'SELECT tsuchanfrage.cSuche FROM tsuchanfrage 
@@ -451,10 +451,16 @@ class Search extends AbstractFilter
             ->setOrigin(__CLASS__));
         $sql->addCondition('tsuchanfrage.nAktiv = 1');
 
-        $query         = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
+        $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
+        $cacheID   = 'fltr_' . __CLASS__ . \md5($baseQuery);
+        if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
+            $this->options = $cached;
+
+            return $this->options;
+        }
         $searchFilters = $this->productFilter->getDB()->query(
             'SELECT ssMerkmal.kSuchanfrage, ssMerkmal.kSuchCache, ssMerkmal.cSuche, COUNT(*) AS nAnzahl
-                FROM (' . $query . ') AS ssMerkmal
+                FROM (' . $baseQuery . ') AS ssMerkmal
                     GROUP BY ssMerkmal.kSuchanfrage
                     ORDER BY ssMerkmal.cSuche' . $nLimit,
             ReturnType::ARRAY_OF_OBJECTS
@@ -513,6 +519,7 @@ class Search extends AbstractFilter
                 ->setCount((int)$searchFilter->nAnzahl);
         }
         $this->options = $options;
+        $this->productFilter->getCache()->set($cacheID, $options, [CACHING_GROUP_FILTER]);
 
         return $options;
     }

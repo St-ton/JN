@@ -9,11 +9,11 @@ namespace Filter\States;
 
 use DB\ReturnType;
 use Filter\AbstractFilter;
+use Filter\FilterInterface;
 use Filter\Join;
 use Filter\Option;
-use Filter\FilterInterface;
-use Filter\StateSQL;
 use Filter\ProductFilter;
+use Filter\StateSQL;
 use function Functional\filter;
 
 /**
@@ -306,10 +306,17 @@ class BaseSearchQuery extends AbstractFilter
                         AND tsuchanfrage.kSprache = ' . $this->getLanguageID())
             ->setOrigin(__CLASS__));
         $sql->addCondition('tsuchanfrage.nAktiv = 1');
-        $query          = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
+
+        $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
+        $cacheID   = 'fltr_' . __CLASS__ . \md5($baseQuery);
+        if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
+            $this->options = $cached;
+
+            return $this->options;
+        }
         $searchFilters  = $this->productFilter->getDB()->query(
             'SELECT ssMerkmal.kSuchanfrage, ssMerkmal.cSuche, COUNT(*) AS nAnzahl
-                FROM (' . $query . ') AS ssMerkmal
+                FROM (' . $baseQuery . ') AS ssMerkmal
                     GROUP BY ssMerkmal.kSuchanfrage
                     ORDER BY ssMerkmal.cSuche' . $limit,
             ReturnType::ARRAY_OF_OBJECTS
@@ -367,6 +374,7 @@ class BaseSearchQuery extends AbstractFilter
             $options[] = $fo;
         }
         $this->options = $options;
+        $this->productFilter->getCache()->set($cacheID, $options, [CACHING_GROUP_FILTER]);
 
         return $options;
     }

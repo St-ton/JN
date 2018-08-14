@@ -8,14 +8,14 @@ namespace Filter\Items;
 
 
 use DB\ReturnType;
+use Filter\FilterInterface;
 use Filter\Join;
 use Filter\Option;
-use Filter\FilterInterface;
+use Filter\ProductFilter;
+use Filter\States\BaseAttribute;
 use Filter\StateSQL;
 use Filter\StateSQLInterface;
 use Filter\Type;
-use Filter\ProductFilter;
-use Filter\States\BaseAttribute;
 use function Functional\every;
 use function Functional\first;
 use function Functional\group;
@@ -148,7 +148,7 @@ class Attribute extends BaseAttribute
                  ->setAttributeID($value->kMerkmal)
                  ->setIsMultiSelect($value->nMehrfachauswahl === 1);
 
-            return $this->setType($this->isMultiSelect() ? Type::OR : Type::AND)
+            return $this->setType($this->isMultiSelect() ? Type:: OR : Type:: AND)
                         ->setSeo($this->getAvailableLanguages());
 
         }
@@ -284,7 +284,7 @@ class Attribute extends BaseAttribute
             ->setOn('tmerkmal.kMerkmal = tartikelmerkmal.kMerkmal')
             ->setOrigin(__CLASS__));
 
-        $langID         = $this->getLanguageID();
+        $langID           = $this->getLanguageID();
         $kStandardSprache = \Sprache::getDefaultLanguage()->kSprache;
         if ($langID !== $kStandardSprache) {
             $state->setSelect([
@@ -334,7 +334,7 @@ class Attribute extends BaseAttribute
                 } else {
                     $activeValues[] = $values;
                 }
-                if ($filter->getType() === Type::OR) {
+                if ($filter->getType() === Type:: OR) {
                     if (\is_array($values)) {
                         $activeOrFilterIDs = $values;
                     } else {
@@ -427,8 +427,14 @@ class Attribute extends BaseAttribute
         if (!$force && !$useAttributeFilter) {
             return $attributeFilters;
         }
-        $state                     = $this->getState($data['oAktuelleKategorie'] ?? null);
-        $baseQry                   = $this->productFilter->getFilterSQL()->getBaseQuery($state);
+        $state   = $this->getState($data['oAktuelleKategorie'] ?? null);
+        $baseQry = $this->productFilter->getFilterSQL()->getBaseQuery($state);
+        $cacheID = 'fltr_' . __CLASS__ . \md5($baseQry);
+        if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
+            $this->options = $cached;
+
+            return $this->options;
+        }
         $qryRes                    = $this->productFilter->getDB()->executeQuery(
             "SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
             ssMerkmal.nMehrfachauswahl, ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, 
@@ -483,7 +489,7 @@ class Attribute extends BaseAttribute
                    ->setData('cBildURLKlein', $imageBaseURL . $baseSrcSmall)
                    ->setData('cBildURLNormal', $imageBaseURL . $baseSrcNormal);
             $option->setParam($this->getUrlParam());
-            $option->setType($attributeFilter->nMehrfachauswahl === 1 ? Type::OR : Type::AND);
+            $option->setType($attributeFilter->nMehrfachauswahl === 1 ? Type:: OR : Type:: AND);
             $option->setType($this->getType());
             $option->setClassName($this->getClassName());
             $option->setName($attributeFilter->cName);
@@ -511,7 +517,7 @@ class Attribute extends BaseAttribute
                                ->setData('cBildpfadNormal', $baseSrcNormal)
                                ->setData('cBildURLKlein', $imageBaseURL . $baseSrcSmall)
                                ->setData('cBildURLNormal', $imageBaseURL . $baseSrcNormal);
-                $attributeValue->setType($attributeFilter->nMehrfachauswahl === 1 ? Type::OR : Type::AND);
+                $attributeValue->setType($attributeFilter->nMehrfachauswahl === 1 ? Type:: OR : Type:: AND);
                 $attributeValue->setClassName($this->getClassName());
                 $attributeValue->setParam($this->getUrlParam());
                 $attributeValue->setName(\htmlentities($filterValue->cWert));
@@ -545,6 +551,7 @@ class Attribute extends BaseAttribute
             $this->applyOptionLimit($af, $attributeValueLimit);
         }
         $this->options = $attributeFilters;
+        $this->productFilter->getCache()->set($cacheID, $attributeFilters, [CACHING_GROUP_FILTER]);
 
         return $attributeFilters;
     }

@@ -124,9 +124,19 @@ class Rating extends AbstractFilter
         $sql->setLimit('');
         $sql->setGroupBy(['tartikel.kArtikel']);
         $sql->addJoin($this->getSQLJoin());
+
+        $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
+
+        $cacheID          = 'fltr_' . __CLASS__ . \md5($baseQuery);
+        if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
+            $this->options = $cached;
+
+            return $this->options;
+        }
+
         $res              = $this->productFilter->getDB()->query(
             'SELECT ssMerkmal.nSterne, COUNT(*) AS nAnzahl
-                FROM (' . $this->productFilter->getFilterSQL()->getBaseQuery($sql) . ' ) AS ssMerkmal
+                FROM (' . $baseQuery . ' ) AS ssMerkmal
                 GROUP BY ssMerkmal.nSterne
                 ORDER BY ssMerkmal.nSterne DESC',
             ReturnType::ARRAY_OF_OBJECTS
@@ -155,6 +165,7 @@ class Rating extends AbstractFilter
         if (\count($options) === 0) {
             $this->hide();
         }
+        $this->productFilter->getCache()->set($cacheID, $options, [CACHING_GROUP_FILTER]);
 
         return $options;
     }

@@ -9,13 +9,13 @@ namespace Filter\States;
 
 use DB\ReturnType;
 use Filter\AbstractFilter;
+use Filter\FilterInterface;
+use Filter\Items\Manufacturer;
 use Filter\Join;
 use Filter\Option;
-use Filter\FilterInterface;
+use Filter\ProductFilter;
 use Filter\StateSQL;
 use Filter\Type;
-use Filter\Items\Manufacturer;
-use Filter\ProductFilter;
 
 /**
  * Class BaseManufacturer
@@ -120,7 +120,7 @@ class BaseManufacturer extends AbstractFilter
             $val = [$val];
         }
 
-        return $this->getType() === Type::OR
+        return $this->getType() === Type:: OR
             ? 'tartikel.' . $this->getPrimaryKeyRow() . ' IN (' . \implode(', ', $val) . ')'
             : \implode(' AND ', \array_map(function ($e) {
                 return 'tartikel.' . $this->getPrimaryKeyRow() . ' = ' . $e;
@@ -148,7 +148,7 @@ class BaseManufacturer extends AbstractFilter
         if ($this->getConfig('navigationsfilter')['allgemein_herstellerfilter_benutzen'] === 'N') {
             return $options;
         }
-        $state = $this->productFilter->getCurrentStateData($this->getType() === Type::OR
+        $state = $this->productFilter->getCurrentStateData($this->getType() === Type:: OR
             ? $this->getClassName()
             : null
         );
@@ -168,10 +168,16 @@ class BaseManufacturer extends AbstractFilter
             ->setTable('thersteller')
             ->setOn('tartikel.kHersteller = thersteller.kHersteller')
             ->setOrigin(__CLASS__));
-        $query            = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
+        $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
+        $cacheID   = 'fltr_' . __CLASS__ . \md5($baseQuery);
+        if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
+            $this->options = $cached;
+
+            return $this->options;
+        }
         $manufacturers    = $this->productFilter->getDB()->query(
             "SELECT tseo.cSeo, ssMerkmal.kHersteller, ssMerkmal.cName, ssMerkmal.nSortNr, COUNT(*) AS nAnzahl
-                FROM (" . $query . ") AS ssMerkmal
+                FROM (" . $baseQuery . ") AS ssMerkmal
                     LEFT JOIN tseo 
                         ON tseo.kKey = ssMerkmal.kHersteller
                         AND tseo.cKey = 'kHersteller'
@@ -206,6 +212,7 @@ class BaseManufacturer extends AbstractFilter
                 ->setSort($manufacturer->nSortNr);
         }
         $this->options = $options;
+        $this->productFilter->getCache()->set($cacheID, $options, [CACHING_GROUP_FILTER]);
 
         return $options;
     }

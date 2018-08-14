@@ -181,10 +181,10 @@ interface FilterInterface
     /**
      * set the list of available options
      *
-     * @param mixed $mixed
+     * @param mixed $options
      * @return $this
      */
-    public function setOptions($mixed): FilterInterface;
+    public function setOptions($options): FilterInterface;
 
     /**
      * get a nice name

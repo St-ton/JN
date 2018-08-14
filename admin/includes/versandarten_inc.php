@@ -345,7 +345,7 @@ function getMissingShippingClassCombi()
     }
 
     // if a shipping method is valid for all classes return
-    if (in_array('-1', $combinationInUse)) {
+    if (in_array('-1', $combinationInUse, false)) {
 
         return [];
     }
@@ -360,7 +360,7 @@ function getMissingShippingClassCombi()
     for ($i = 1; $i <= $len; $i++) {
         $result = getCombinations($shipClasses, $i);
         foreach ($result as $c) {
-            $possibleShippingClassCombinations[] = implode("-", $c);
+            $possibleShippingClassCombinations[] = implode('-', $c);
         }
     }
 

@@ -618,6 +618,7 @@ if ($step === 'uebersicht') {
         }
     }
 
+    $missingShippingClassCombis = getMissingShippingClassCombi();
     if (!empty($missingShippingClassCombis)) {
         $cFehler .= $smarty->assign('missingShippingClassCombis', $missingShippingClassCombis)
                            ->fetch('tpl_inc/versandarten_fehlende_kombis.tpl');

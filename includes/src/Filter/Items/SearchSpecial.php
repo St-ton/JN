@@ -6,12 +6,13 @@
 
 namespace Filter\Items;
 
+
 use DB\ReturnType;
 use Filter\AbstractFilter;
-use Filter\FilterJoin;
-use Filter\FilterOption;
+use Filter\Join;
+use Filter\Option;
 use Filter\FilterInterface;
-use Filter\FilterStateSQL;
+use Filter\StateSQL;
 use Filter\Type;
 use Filter\ProductFilter;
 
@@ -88,7 +89,7 @@ class SearchSpecial extends AbstractFilter
             if (!\is_array($val)) {
                 $val = [$val];
             }
-            $oSeo_arr = \Shop::Container()->getDB()->query(
+            $oSeo_arr = $this->productFilter->getDB()->query(
                 "SELECT tseo.cSeo, tseo.kSprache
                     FROM tseo
                     WHERE cKey = 'suchspecial' 
@@ -226,7 +227,7 @@ class SearchSpecial extends AbstractFilter
     {
         $joins     = [];
         $values    = $this->getValue();
-        $joinType  = $this->getType() === Type:: AND
+        $joinType  = $this->getType() === Type::AND
             ? 'JOIN'
             : 'LEFT JOIN';
         $baseValue = $this->productFilter->getSearchSpecial()->getValue();
@@ -236,7 +237,7 @@ class SearchSpecial extends AbstractFilter
                     if ($baseValue === $value) {
                         break;
                     }
-                    $joins[] = (new FilterJoin())
+                    $joins[] = (new Join())
                         ->setType($joinType)
                         ->setTable('tbestseller')
                         ->setOn('tbestseller.kArtikel = tartikel.kArtikel')
@@ -249,13 +250,13 @@ class SearchSpecial extends AbstractFilter
                         break;
                     }
                     if (!$this->productFilter->hasPriceRangeFilter()) {
-                        $joins[] = (new FilterJoin())
+                        $joins[] = (new Join())
                             ->setType($joinType)
                             ->setTable('tartikelsonderpreis AS tasp')
                             ->setOn('tasp.kArtikel = tartikel.kArtikel')
                             ->setComment('special offers JOIN from ' . __METHOD__)
                             ->setOrigin(__CLASS__);
-                        $joins[] = (new FilterJoin())
+                        $joins[] = (new Join())
                             ->setType($joinType)
                             ->setTable('tsonderpreise AS tsp')
                             ->setOn('tsp.kArtikelSonderpreis = tasp.kArtikelSonderpreis')
@@ -269,7 +270,7 @@ class SearchSpecial extends AbstractFilter
                         break;
                     }
                     if (!$this->productFilter->hasRatingFilter()) {
-                        $joins[] = (new FilterJoin())
+                        $joins[] = (new Join())
                             ->setType($joinType)
                             ->setTable('tartikelext AS taex ')
                             ->setOn('taex.kArtikel = tartikel.kArtikel')
@@ -308,7 +309,7 @@ class SearchSpecial extends AbstractFilter
             ? $this->getClassName()
             : null;
         for ($i = 1; $i < 7; ++$i) {
-            $sql = (new FilterStateSQL())->from($this->productFilter->getCurrentStateData($ignore));
+            $sql = (new StateSQL())->from($this->productFilter->getCurrentStateData($ignore));
             $sql->setSelect(['tartikel.kArtikel']);
             $sql->setOrderBy(null);
             $sql->setLimit('');
@@ -320,7 +321,7 @@ class SearchSpecial extends AbstractFilter
                         ? (int)$min
                         : 100;
 
-                    $sql->addJoin((new FilterJoin())
+                    $sql->addJoin((new Join())
                         ->setComment('bestseller JOIN from ' . __METHOD__)
                         ->setType('JOIN')
                         ->setTable('tbestseller')
@@ -331,13 +332,13 @@ class SearchSpecial extends AbstractFilter
                 case \SEARCHSPECIALS_SPECIALOFFERS:
                     $name = \Shop::Lang()->get('specialOffer');
                     if (true || !$this->isInitialized()) {
-                        $sql->addJoin((new FilterJoin())
+                        $sql->addJoin((new Join())
                             ->setComment('special offer JOIN1 from ' . __METHOD__)
                             ->setType('JOIN')
                             ->setTable('tartikelsonderpreis')
                             ->setOn('tartikelsonderpreis.kArtikel = tartikel.kArtikel')
                             ->setOrigin(__CLASS__));
-                        $sql->addJoin((new FilterJoin())
+                        $sql->addJoin((new Join())
                             ->setComment('special offer JOIN2 from ' . __METHOD__)
                             ->setType('JOIN')
                             ->setTable('tsonderpreise')
@@ -372,7 +373,7 @@ class SearchSpecial extends AbstractFilter
                 case \SEARCHSPECIALS_TOPREVIEWS:
                     $name = \Shop::Lang()->get('topReviews');
                     if (!$this->productFilter->hasRatingFilter()) {
-                        $sql->addJoin((new FilterJoin())
+                        $sql->addJoin((new Join())
                             ->setComment('top reviews JOIN from ' . __METHOD__)
                             ->setType('JOIN')
                             ->setTable('tartikelext')
@@ -386,12 +387,12 @@ class SearchSpecial extends AbstractFilter
                     break;
             }
             $qry    = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
-            $qryRes = \Shop::Container()->getDB()->query($qry, ReturnType::ARRAY_OF_OBJECTS);
+            $qryRes = $this->productFilter->getDB()->query($qry, ReturnType::ARRAY_OF_OBJECTS);
             if (($count = \count($qryRes)) > 0) {
                 if ($baseValue === $i) {
                     continue;
                 }
-                $options[$i] = (new FilterOption())
+                $options[$i] = (new Option())
                     ->setIsActive($this->productFilter->filterOptionIsActive($this->getClassName(), $i))
                     ->setURL($this->productFilter->getFilterURL()->getURL($additionalFilter->init($i)))
                     ->setType($this->getType())

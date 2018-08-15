@@ -6,6 +6,7 @@
 
 namespace Filter\Pagination;
 
+
 /**
  * Class Info
  * @package Filter\Pagination

@@ -6,13 +6,14 @@
 
 namespace Filter;
 
+
 use function Functional\reduce_left;
 
 /**
- * Class FilterStateSQL
+ * Class StateSQL
  * @package Filter
  */
-class FilterStateSQL implements FilterStateSQLInterface
+class StateSQL implements StateSQLInterface
 {
     /**
      * @var array
@@ -50,17 +51,17 @@ class FilterStateSQL implements FilterStateSQLInterface
     private $groupBy = ['tartikel.kArtikel'];
 
     /**
-     * FilterStateSQL constructor.
+     * StateSQL constructor.
      */
     public function __construct()
     {
     }
 
     /**
-     * @param FilterStateSQLInterface $source
+     * @param StateSQLInterface $source
      * @return $this
      */
-    public function from(FilterStateSQLInterface $source): FilterStateSQLInterface
+    public function from(StateSQLInterface $source): StateSQLInterface
     {
         $this->setJoins($source->getJoins());
         $this->setSelect($source->getSelect());
@@ -137,7 +138,7 @@ class FilterStateSQL implements FilterStateSQLInterface
     {
         $checked = [];
 
-        return reduce_left($this->joins, function(FilterJoinInterface $value, $d, $c, $reduction) use (&$checked) {
+        return reduce_left($this->joins, function (JoinInterface $value, $d, $c, $reduction) use (&$checked) {
             $key = $value->getTable();
             if (!\in_array($key, $checked, true)) {
                 $checked[]   = $key;
@@ -159,7 +160,7 @@ class FilterStateSQL implements FilterStateSQLInterface
     /**
      * @inheritdoc
      */
-    public function addJoin(FilterJoinInterface $join): array
+    public function addJoin(JoinInterface $join): array
     {
         $this->joins[] = $join;
 

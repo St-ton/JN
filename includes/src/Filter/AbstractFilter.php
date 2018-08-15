@@ -6,6 +6,7 @@
 
 namespace Filter;
 
+
 /**
  * Class AbstractFilter
  * @package Filter
@@ -83,7 +84,7 @@ abstract class AbstractFilter implements FilterInterface
     protected $inputType;
 
     /**
-     * @var FilterOption[]
+     * @var Option[]
      */
     protected $activeValues;
 
@@ -231,7 +232,7 @@ abstract class AbstractFilter implements FilterInterface
             } else {
                 $instance = $this;
             }
-            $this->activeValues[] = (new FilterOption())
+            $this->activeValues[] = (new Option())
                 ->setURL($this->getSeo($this->getLanguageID()))
                 ->setFrontendName($instance->getName() ?? '')
                 ->setValue($value)
@@ -451,8 +452,8 @@ abstract class AbstractFilter implements FilterInterface
     public function setBaseData(ProductFilter $productFilter): FilterInterface
     {
         $this->productFilter      = $productFilter;
-        $this->customerGroupID    = $productFilter->getCustomerGroupID();
-        $this->availableLanguages = $productFilter->getAvailableLanguages();
+        $this->customerGroupID    = $productFilter->getFilterConfig()->getCustomerGroupID();
+        $this->availableLanguages = $productFilter->getFilterConfig()->getLanguages();
 
         return $this;
     }
@@ -516,7 +517,7 @@ abstract class AbstractFilter implements FilterInterface
      */
     public function getLanguageID(): int
     {
-        return $this->productFilter->getLanguageID();
+        return $this->productFilter->getFilterConfig()->getLanguageID();
     }
 
     /**
@@ -532,7 +533,7 @@ abstract class AbstractFilter implements FilterInterface
      */
     public function getConfig($idx = null): array
     {
-        return $this->productFilter->getConfig($idx);
+        return $this->productFilter->getFilterConfig()->getConfig($idx);
     }
 
     /**
@@ -722,7 +723,7 @@ abstract class AbstractFilter implements FilterInterface
      */
     public function getSQLJoin()
     {
-        return new FilterJoin();
+        return new Join();
     }
 
     /**

@@ -6,8 +6,9 @@
 
 namespace Filter;
 
+
 /**
- * Class FilterOption
+ * Class Option
  *
  * @package Filter
  *
@@ -25,7 +26,7 @@ namespace Filter;
  * @property $cSuche
  * @property $kSuchanfrage
  */
-class FilterOption extends AbstractFilter
+class Option extends AbstractFilter
 {
     /**
      * @var string
@@ -78,7 +79,7 @@ class FilterOption extends AbstractFilter
     ];
 
     /**
-     * FilterOption constructor.
+     * Option constructor.
      * @param null $productFilter
      */
     public function __construct($productFilter = null)
@@ -194,7 +195,7 @@ class FilterOption extends AbstractFilter
     }
 
     /**
-     * @param FilterOption $option
+     * @param Option $option
      * @return $this
      */
     public function addOption($option): FilterInterface

@@ -43,7 +43,11 @@ $oSuchergebnisse = $NaviFilter->generateSearchResults($AktuelleKategorie);
 $pages           = $oSuchergebnisse->getPages();
 if ($conf['navigationsfilter']['allgemein_weiterleitung'] === 'Y' && $oSuchergebnisse->getVisibleProductCount() === 1) {
     $hasSubCategories = ($categoryID = $NaviFilter->getCategory()->getValue()) > 0
-        ? (new \Kategorie($categoryID, $NaviFilter->getLanguageID(), $NaviFilter->getCustomerGroupID()))
+        ? (new \Kategorie(
+            $categoryID,
+            $NaviFilter->getFilterConfig()->getLanguageID(),
+            $NaviFilter->getFilterConfig()->getCustomerGroupID())
+        )
             ->existierenUnterkategorien()
         : false;
     if ($NaviFilter->getFilterCount() > 0

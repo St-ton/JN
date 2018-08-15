@@ -303,7 +303,7 @@ class Page implements \JsonSerializable
      */
     public function fromJson($json)
     {
-        $this->deserialize(json_decode($json, true));
+        $this->deserialize(\json_decode($json, true));
 
         return $this;
     }
@@ -322,7 +322,7 @@ class Page implements \JsonSerializable
         $this->setUrl($data['url'] ?? $this->getUrl());
         $this->setRevId($data['revId'] ?? $this->getRevId());
 
-        if (isset($data['areas']) && is_array($data['areas'])) {
+        if (isset($data['areas']) && \is_array($data['areas'])) {
             $this->getAreaList()->deserialize($data['areas']);
         }
 

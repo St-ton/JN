@@ -349,10 +349,10 @@ class FormHelper
         }
         $min     = (int)$min;
         $history = Shop::Container()->getDB()->executeQueryPrepared(
-            "SELECT kKontaktHistory 
+            'SELECT kKontaktHistory 
                 FROM tkontakthistory 
                 WHERE cIP = :ip 
-                    AND date_sub(now(), INTERVAL :min MINUTE) < dErstellt",
+                    AND date_sub(now(), INTERVAL :min MINUTE) < dErstellt',
             ['ip' => Shop::Container()->getDB()->escape(RequestHelper::getIP()), 'min' => $min],
             \DB\ReturnType::SINGLE_OBJECT
         );
@@ -364,7 +364,7 @@ class FormHelper
      * @return stdClass
      * @since 5.0.0
      */
-    public static function baueFormularVorgaben()
+    public static function baueFormularVorgaben(): stdClass
     {
         return self::baueKontaktFormularVorgaben();
     }

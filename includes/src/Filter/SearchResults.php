@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -6,7 +6,8 @@
 
 namespace Filter;
 
-use Boxes\AbstractBox;
+
+use Boxes\Items\AbstractBox;
 use Filter\Pagination\Info;
 use function Functional\every;
 use function Functional\filter;
@@ -76,55 +77,55 @@ class SearchResults implements SearchResultsInterface
     private $searchUnsuccessful = false;
 
     /**
-     * @var FilterOption[]
+     * @var Option[]
      * @former Herstellerauswahl
      */
     private $manufacturerFilterOptions = [];
 
     /**
-     * @var FilterOption[]
+     * @var Option[]
      * @former Bewertung
      */
     private $ratingFilterOptions = [];
 
     /**
-     * @var FilterOption[]
+     * @var Option[]
      * @former Tags
      */
     private $tagFilterOptions = [];
 
     /**
-     * @var FilterOption[]
+     * @var Option[]
      * @former MerkmalFilter
      */
     private $attributeFilterOptions = [];
 
     /**
-     * @var FilterOption[]
+     * @var Option[]
      * @former Preisspanne
      */
     private $priceRangeFilterOptions = [];
 
     /**
-     * @var FilterOption[]
+     * @var Option[]
      * @former Kategorieauswahl
      */
     private $categoryFilterOptions = [];
 
     /**
-     * @var FilterOption[]
+     * @var Option[]
      * @former SuchFilter
      */
     private $searchFilterOptions = [];
 
     /**
-     * @var FilterOption[]
+     * @var Option[]
      * @former Suchspecialauswahl
      */
     private $searchSpecialFilterOptions = [];
 
     /**
-     * @var FilterOption[]
+     * @var Option[]
      */
     private $customFilterOptions = [];
 
@@ -195,11 +196,11 @@ class SearchResults implements SearchResultsInterface
      */
     public function convert($legacy): SearchResultsInterface
     {
-        if (get_class($legacy) === __CLASS__) {
+        if (\get_class($legacy) === __CLASS__) {
             return $legacy;
         }
-        trigger_error('Using a stdClass object for search results is deprecated.', E_USER_DEPRECATED);
-        foreach (get_object_vars($legacy) as $var => $value) {
+        \trigger_error('Using a stdClass object for search results is deprecated.', \E_USER_DEPRECATED);
+        foreach (\get_object_vars($legacy) as $var => $value) {
             $this->$var = $value;
         }
 
@@ -687,7 +688,7 @@ class SearchResults implements SearchResultsInterface
             $activeValues = $activeFilter->getActiveValues();
             foreach ($this->getActiveFiltersByClassName($availableFilters, $class, $activeValues) as $filter) {
                 $currentValues = $filter->getActiveValues();
-                $act           = is_array($currentValues)
+                $act           = \is_array($currentValues)
                     ? map($currentValues, function ($e) {
                         return $e->getValue();
                     })
@@ -703,8 +704,8 @@ class SearchResults implements SearchResultsInterface
      */
     private function updateOptions(FilterInterface $filter, $values)
     {
-        invoke(filter($filter->getOptions(), function (FilterOption $e) use ($values) {
-            return in_array($e->getValue(), $values, true);
+        invoke(filter($filter->getOptions(), function (Option $e) use ($values) {
+            return \in_array($e->getValue(), $values, true);
         }), 'setIsActive', [true]);
     }
 
@@ -744,7 +745,7 @@ class SearchResults implements SearchResultsInterface
         $searchFilterOptions     = [];
         foreach ($productFilter->getSearchFilter() as $searchFilter) {
             $opt = $searchFilter->getOptions();
-            if (is_array($opt)) {
+            if (\is_array($opt)) {
                 foreach ($opt as $_o) {
                     $searchFilterOptions[] = $_o;
                 }
@@ -755,7 +756,7 @@ class SearchResults implements SearchResultsInterface
         $customFilterOptions = map(
             $productFilter->getCustomFilters(),
             function (FilterInterface $e) {
-                if (count($e->getOptions()) === 0) {
+                if (\count($e->getOptions()) === 0) {
                     $e->hide();
                 }
 
@@ -774,7 +775,7 @@ class SearchResults implements SearchResultsInterface
              ->setSearchSpecialFilterOptions($searchSpecialFilters)
              ->setAttributeFilterOptions($attribtuteFilterOptions)
              ->setCustomFilterOptions($customFilterOptions)
-             ->setSearchFilterJSON(AbstractBox::getJSONString(array_map(
+             ->setSearchFilterJSON(AbstractBox::getJSONString(\array_map(
                  function ($e) {
                      $e->cURL = \StringHandler::htmlentitydecode($e->cURL);
 
@@ -783,10 +784,10 @@ class SearchResults implements SearchResultsInterface
                  $searchFilterOptions
              )));
 
-        if ($productFilter->getConfig('navigationsfilter')['allgemein_tagfilter_benutzen'] !== 'N') {
-            $this->setTagFilterJSON(AbstractBox::getJSONString(array_map(
+        if ($productFilter->getFilterConfig()->getConfig('navigationsfilter')['allgemein_tagfilter_benutzen'] !== 'N') {
+            $this->setTagFilterJSON(AbstractBox::getJSONString(\array_map(
                 function ($e) {
-                    /** @var FilterOption $e */
+                    /** @var Option $e */
                     return $e->setURL(\StringHandler::htmlentitydecode($e->getURL()));
                 },
                 $tagOptions
@@ -798,7 +799,7 @@ class SearchResults implements SearchResultsInterface
             $productFilter->getSearchSpecialFilter()->hide();
         }
         if (empty($categoryOptions)
-            || count($categoryOptions) === 0
+            || \count($categoryOptions) === 0
             || ($productFilter->getCategory()->isInitialized()
                 && $productFilter->getCategory()->getValue() !== null)
         ) {
@@ -806,17 +807,17 @@ class SearchResults implements SearchResultsInterface
             $productFilter->getCategoryFilter()->hide();
         }
         if (empty($priceRangeOptions)
-            || count($priceRangeOptions) === 0
+            || \count($priceRangeOptions) === 0
             || ($productFilter->getPriceRangeFilter()->isInitialized()
                 && $productFilter->getPriceRangeFilter()->getValue() !== null)
         ) {
             // hide empty price ranges
             $productFilter->getPriceRangeFilter()->hide();
         }
-        if (empty($manufacturerOptions) || count($manufacturerOptions) === 0
+        if (empty($manufacturerOptions) || \count($manufacturerOptions) === 0
             || $productFilter->getManufacturer()->isInitialized()
             || ($productFilter->getManufacturerFilter()->isInitialized()
-                && count($manufacturerOptions) === 1
+                && \count($manufacturerOptions) === 1
                 && $hideActiveOnly)
         ) {
             // hide manufacturer filter when browsing manufacturer products
@@ -825,18 +826,18 @@ class SearchResults implements SearchResultsInterface
         if (empty($ratingOptions)) {
             $productFilter->getRatingFilter()->hide();
         }
-        if (count($attribtuteFilterOptions) < 1) {
+        if (\count($attribtuteFilterOptions) < 1) {
             $productFilter->getAttributeFilterCollection()->hide();
         } elseif ($hideActiveOnly === true) {
             foreach ($attribtuteFilterOptions as $af) {
-                /** @var FilterOption $af */
+                /** @var Option $af */
                 $options = $af->getOptions();
-                if (is_array($options)
+                if (\is_array($options)
                     && $af->getVisibility() !== Visibility::SHOW_NEVER
-                    && array_reduce(
+                    && \array_reduce(
                         $options,
                         function ($carry, $option) {
-                            /** @var FilterOption $option */
+                            /** @var Option $option */
                             return $carry && $option->isActive();
                         },
                         true
@@ -845,7 +846,7 @@ class SearchResults implements SearchResultsInterface
                     $af->hide();
                 }
             }
-            if (every($attribtuteFilterOptions, function (FilterOption $item) {
+            if (every($attribtuteFilterOptions, function (Option $item) {
                 return $item->getVisibility() === Visibility::SHOW_NEVER;
             })) {
                 // hide the whole attribute filter collection if every filter consists of only active options

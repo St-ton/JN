@@ -6,12 +6,13 @@
 
 namespace Services;
 
-use Boxes\BoxFactoryInterface;
+use Boxes\FactoryInterface;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\Services\GcServiceInterface;
 use Exceptions\CircularReferenceException;
 use Exceptions\ServiceNotFoundException;
+use Monolog\Logger;
 use Services\JTL\BoxServiceInterface;
 use Services\JTL\CaptchaServiceInterface;
 use Services\JTL\CryptoServiceInterface;
@@ -87,14 +88,21 @@ interface DefaultServicesInterface extends ContainerInterface
     public function getOPCLocker(): \OPC\Locker;
 
     /**
+     * @return Logger
+     * @throws ServiceNotFoundException
+     * @throws CircularReferenceException
+     */
+    public function getLogService(): Logger;
+
+    /**
      * @return LinkServiceInterface
      */
     public function getLinkService(): LinkServiceInterface;
 
     /**
-     * @return BoxFactoryInterface
+     * @return FactoryInterface
      */
-    public function getBoxFactory(): BoxFactoryInterface;
+    public function getBoxFactory(): FactoryInterface;
 
     /**
      * @return BoxServiceInterface

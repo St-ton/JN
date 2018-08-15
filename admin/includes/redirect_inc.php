@@ -10,9 +10,9 @@
  * @param int $kRedirect
  * @return bool
  */
-function updateRedirectState($kRedirect)
+function updateRedirectState(int $kRedirect): bool
 {
-    $url        = Shop::Container()->getDB()->select('tredirect', 'kRedirect', $kRedirect, null, null, null, null, false, 'cToUrl')->cToUrl;
+    $url        = Shop::Container()->getDB()->select('tredirect', 'kRedirect', $kRedirect)->cToUrl;
     $cAvailable = $url !== '' && Redirect::checkAvailability($url) ? 'y' : 'n';
 
     Shop::Container()->getDB()->update('tredirect', 'kRedirect', $kRedirect, (object)['cAvailable' => $cAvailable]);

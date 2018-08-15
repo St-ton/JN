@@ -40,7 +40,7 @@ class cache_memcached implements ICachingMethod
             $this->isInitialized = true;
             $this->journalID     = 'memcached_journal';
             //@see http://php.net/manual/de/memcached.expiration.php
-            $options['lifetime'] = min(60 * 60 * 24 * 30, $options['lifetime']);
+            $options['lifetime'] = \min(60 * 60 * 24 * 30, $options['lifetime']);
             $this->options       = $options;
             self::$instance      = $this;
         }
@@ -105,7 +105,7 @@ class cache_memcached implements ICachingMethod
         $res = $this->dePrefixArray($this->_memcached->getMulti($prefixedKeys));
 
         // fill up result
-        return array_merge(array_fill_keys($cacheIDs, false), $res);
+        return \array_merge(\array_fill_keys($cacheIDs, false), $res);
     }
 
     /**
@@ -113,7 +113,7 @@ class cache_memcached implements ICachingMethod
      */
     public function isAvailable(): bool
     {
-        return class_exists('Memcached');
+        return \class_exists('Memcached');
     }
 
     /**
@@ -148,7 +148,7 @@ class cache_memcached implements ICachingMethod
      */
     public function getStats(): array
     {
-        if (method_exists($this->_memcached, 'getStats')) {
+        if (\method_exists($this->_memcached, 'getStats')) {
             $stats = $this->_memcached->getStats();
             if (\is_array($stats)) {
                 foreach ($stats as $key => $_stat) {

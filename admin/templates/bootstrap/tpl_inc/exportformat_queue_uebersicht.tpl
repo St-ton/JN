@@ -20,7 +20,7 @@
                     {if $oExportformatCron_arr && $oExportformatCron_arr|@count > 0}
                         <div id="payment">
                             <div id="tabellenLivesuche" class="table-responsive">
-                                <table class="table">
+                                <table class="table table-striped">
                                     <tr>
                                         <th class="tleft" style="width: 10px;">&nbsp;</th>
                                         <th class="tleft">{#exportformatFormatSingle#}</th>
@@ -33,7 +33,7 @@
                                         <th class="tcenter">&nbsp;</th>
                                     </tr>
                                     {foreach name=exportformatqueue from=$oExportformatCron_arr item=oExportformatCron}
-                                        <tr class="tab_bg{$smarty.foreach.exportformatqueue.iteration%2}">
+                                        <tr>
                                             <td class="tleft">
                                                 <input name="kCron[]" type="checkbox" value="{$oExportformatCron->kCron}" id="kCron-{$oExportformatCron->kCron}" />
                                             </td>
@@ -53,10 +53,10 @@
                                         </tr>
                                     {/foreach}
                                     <tr>
-                                        <td class="TD1">
+                                        <td>
                                             <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
                                         </td>
-                                        <td colspan="8" class="TD7"><label for="ALLMSGS">{#globalSelectAll#}</label></td>
+                                        <td colspan="8"><label for="ALLMSGS">{#globalSelectAll#}</label></td>
                                     </tr>
                                 </table>
                             </div>
@@ -104,7 +104,7 @@
                 {if $oExportformatQueueBearbeitet_arr && $oExportformatQueueBearbeitet_arr|@count > 0}
                     <div id="payment">
                         <div id="tabellenLivesuche" class="table-responsive">
-                            <table class="table">
+                            <table class="table table-striped">
                                 <tr>
                                     <th class="th-1">{#exportformatFormatSingle#}</th>
                                     <th class="th-2">{#exportformatFilename#}</th>
@@ -113,14 +113,14 @@
                                     <th class="th-5">{#exportformatLastStart#}</th>
                                 </tr>
                                 {foreach name=exportformatqueue from=$oExportformatQueueBearbeitet_arr item=oExportformatQueueBearbeitet}
-                                    <tr class="tab_bg{$smarty.foreach.exportformatqueue.iteration%2}">
-                                        <td class="TD1">{$oExportformatQueueBearbeitet->cName}</td>
-                                        <td class="TD2">{$oExportformatQueueBearbeitet->cDateiname}</td>
-                                        <td class="TD3">
+                                    <tr>
+                                        <td>{$oExportformatQueueBearbeitet->cName}</td>
+                                        <td>{$oExportformatQueueBearbeitet->cDateiname}</td>
+                                        <td>
                                             {$oExportformatQueueBearbeitet->cNameSprache}/{$oExportformatQueueBearbeitet->cNameWaehrung}/{$oExportformatQueueBearbeitet->cNameKundengruppe}
                                         </td>
-                                        <td class="TD4">{$oExportformatQueueBearbeitet->nLimitN}</td>
-                                        <td class="TD5">{$oExportformatQueueBearbeitet->dZuletztGelaufen_DE}</td>
+                                        <td>{$oExportformatQueueBearbeitet->nLimitN}</td>
+                                        <td>{$oExportformatQueueBearbeitet->dZuletztGelaufen_DE}</td>
                                     </tr>
                                 {/foreach}
                             </table>

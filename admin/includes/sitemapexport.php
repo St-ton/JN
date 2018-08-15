@@ -10,8 +10,8 @@
  */
 function baueSitemap($nDatei, $data)
 {
-    Jtllog::writeLog('Baue "' . PFAD_EXPORT . 'sitemap_' . $nDatei . '.xml", Datenlaenge "' .
-        strlen($data) . '"', JTLLOG_LEVEL_DEBUG
+    Shop::Container()->getLogService()->debug('Baue "' . PFAD_EXPORT . 'sitemap_' .
+        $nDatei . '.xml", Datenlaenge ' . strlen($data)
     );
     $conf = Shop::getSettings([CONF_SITEMAP]);
     if (!empty($data)) {
@@ -169,7 +169,7 @@ function isSitemapBlocked($cUrl)
  */
 function generateSitemapXML()
 {
-    Jtllog::writeLog('Sitemap wird erstellt', JTLLOG_LEVEL_NOTICE);
+    Shop::Container()->getLogService()->debug('Sitemap wird erstellt');
     $nStartzeit = microtime(true);
     $conf       = Shop::getSettings([
         CONF_ARTIKELUEBERSICHT,
@@ -999,10 +999,10 @@ function generateSitemapXML()
         if ($conf['sitemap']['sitemap_google_ping'] === 'Y') {
             $encodedSitemapIndexURL = urlencode(Shop::getURL() . '/sitemap_index.xml');
             if (200 !== ($httpStatus = RequestHelper::http_get_status('http://www.google.com/webmasters/tools/ping?sitemap=' . $encodedSitemapIndexURL))) {
-                Jtllog::writeLog('Sitemap ping to Google failed with status ' . $httpStatus, JTLLOG_LEVEL_NOTICE);
+                Shop::Container()->getLogService()->notice('Sitemap ping to Google failed with status ' . $httpStatus);
             }
             if (200 !== ($httpStatus = RequestHelper::http_get_status('http://www.bing.com/ping?sitemap=' . $encodedSitemapIndexURL))) {
-                Jtllog::writeLog('Sitemap ping to Bing failed with status ' . $httpStatus, JTLLOG_LEVEL_NOTICE);
+                Shop::Container()->getLogService()->notice('Sitemap ping to Bing failed with status ' . $httpStatus);
             }
         }
     }
@@ -1045,14 +1045,14 @@ function holeGoogleImage($artikel)
     ) {
         $cArtNr = StringHandler::filterXSS($oArtikel->FunktionsAttribute[ART_ATTRIBUT_BILDLINK]);
         $oBild  = Shop::Container()->getDB()->queryPrepared(
-            "SELECT tartikelpict.cPfad
+            'SELECT tartikelpict.cPfad
                 FROM tartikelpict
                 JOIN tartikel 
                     ON tartikel.cArtNr = :artNr
                 WHERE tartikelpict.kArtikel = tartikel.kArtikel
                 GROUP BY tartikelpict.cPfad
                 ORDER BY tartikelpict.nNr
-                LIMIT 1",
+                LIMIT 1',
             ['artNr' => $cArtNr],
             \DB\ReturnType::SINGLE_OBJECT
         );
@@ -1112,7 +1112,7 @@ function baueSitemapReport($nAnzahlURL_arr, $fTotalZeit)
 
         $kSitemapReport = Shop::Container()->getDB()->insert('tsitemapreport', $oSitemapReport);
         $bGZ            = function_exists('gzopen');
-        Jtllog::writeLog('Sitemaps Report: ' . var_export($nAnzahlURL_arr, true), JTLLOG_LEVEL_DEBUG);
+        Shop::Container()->getLogService()->debug('Sitemaps Report: ' . var_export($nAnzahlURL_arr, true));
         foreach ($nAnzahlURL_arr as $i => $nAnzahlURL) {
             if ($nAnzahlURL > 0) {
                 $oSitemapReportFile                 = new stdClass();
@@ -1134,32 +1134,36 @@ function baueSitemapReport($nAnzahlURL_arr, $fTotalZeit)
 /**
  * @param int        $kKey
  * @param string     $cKey
- * @param string     $dLetzteAktualisierung
- * @param array      $oSprach_arr
- * @param int        $kSprache
- * @param int        $nArtikelProSeite
+ * @param string     $lastUpdate
+ * @param array      $languages
+ * @param int        $langID
+ * @param int        $productsPerPage
  * @param array|null $config
  * @return array
  */
-function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSprache, $nArtikelProSeite, $config = null)
+function baueExportURL(int $kKey, $cKey, $lastUpdate, $languages, $langID, $productsPerPage, $config = null)
 {
-    $cURL_arr       = [];
-    $params         = [];
-    $kKey           = (int)$kKey;
-
-    Shop::setLanguage($kSprache);
-    $naviFilter = new \Filter\ProductFilter($oSprach_arr, $kSprache, $config);
+    $cURL_arr = [];
+    $params   = [];
+    Shop::setLanguage($langID);
+    $filterConfig = new \Filter\Config();
+    $filterConfig->setLanguageID($langID);
+    $filterConfig->setLanguages($languages);
+    $filterConfig->setConfig($config);
+    $filterConfig->setCustomerGroupID(\Session\Session::CustomerGroup()->getID());
+    $filterConfig->setBaseURL(Shop::getURL() . '/');
+    $naviFilter = new \Filter\ProductFilter($filterConfig, Shop::Container()->getDB(), Shop::Container()->getCache());
     switch ($cKey) {
         case 'kKategorie':
             $params['kKategorie'] = $kKey;
             $naviFilter->initStates($params);
-            $filterSeo = $naviFilter->getCategory()->getSeo($kSprache);
+            $filterSeo = $naviFilter->getCategory()->getSeo($langID);
             break;
 
         case 'kHersteller':
             $params['kHersteller'] = $kKey;
             $naviFilter->initStates($params);
-            $filterSeo = $naviFilter->getManufacturer()->getSeo($kSprache);
+            $filterSeo = $naviFilter->getManufacturer()->getSeo($langID);
             break;
 
         case 'kSuchanfrage':
@@ -1167,10 +1171,10 @@ function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSpr
             $naviFilter->initStates($params);
             if ($kKey > 0) {
                 $oSuchanfrage = Shop::Container()->getDB()->queryPrepared(
-                    "SELECT cSuche
+                    'SELECT cSuche
                         FROM tsuchanfrage
                         WHERE kSuchanfrage = :ks
-                        ORDER BY kSuchanfrage",
+                        ORDER BY kSuchanfrage',
                     ['ks' => $kKey],
                     \DB\ReturnType::SINGLE_OBJECT
                 );
@@ -1178,31 +1182,31 @@ function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSpr
                     $naviFilter->getSearchQuery()->setID($kKey)->setName($oSuchanfrage->cSuche);
                 }
             }
-            $filterSeo = $naviFilter->getSearchQuery()->getSeo($kSprache);
+            $filterSeo = $naviFilter->getSearchQuery()->getSeo($langID);
             break;
 
         case 'kMerkmalWert':
             $params['kMerkmalWert'] = $kKey;
             $naviFilter->initStates($params);
-            $filterSeo = $naviFilter->getAttributeValue()->getSeo($kSprache);
+            $filterSeo = $naviFilter->getAttributeValue()->getSeo($langID);
             break;
 
         case 'kTag':
             $params['kTag'] = $kKey;
             $naviFilter->initStates($params);
-            $filterSeo = $naviFilter->getTag()->getSeo($kSprache);
+            $filterSeo = $naviFilter->getTag()->getSeo($langID);
             break;
 
         case 'kSuchspecial':
             $params['kSuchspecial'] = $kKey;
             $naviFilter->initStates($params);
-            $filterSeo = $naviFilter->getSearchSpecial()->getSeo($kSprache);
+            $filterSeo = $naviFilter->getSearchSpecial()->getSeo($langID);
             break;
 
         default :
             return $cURL_arr;
     }
-    $oSuchergebnisse = $naviFilter->generateSearchResults(null, false, (int)$nArtikelProSeite);
+    $oSuchergebnisse = $naviFilter->generateSearchResults(null, false, (int)$productsPerPage);
     $shopURL         = Shop::getURL();
     $shopURLSSL      = Shop::getURL(true);
     $search          = [$shopURL . '/', $shopURLSSL . '/'];
@@ -1210,7 +1214,7 @@ function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSpr
     if (($cKey === 'kKategorie' && $kKey > 0) || $oSuchergebnisse->getProductCount() > 0) {
         $cURL_arr[] = makeURL(
             str_replace($search, $replace, $naviFilter->getFilterURL()->getURL()),
-            $dLetzteAktualisierung,
+            $lastUpdate,
             FREQ_WEEKLY,
             PRIO_NORMAL
         );

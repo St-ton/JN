@@ -130,13 +130,12 @@ class Kupon
     public $translationList;
 
     /**
-     * Constructor
-     *
-     * @param int $kKupon - primarykey
+     * Kupon constructor.
+     * @param int $kKupon
      */
-    public function __construct($kKupon = 0)
+    public function __construct(int $kKupon = 0)
     {
-        if ((int)$kKupon > 0) {
+        if ($kKupon > 0) {
             $this->loadFromDB($kKupon);
         }
     }
@@ -231,7 +230,7 @@ class Kupon
      * @param int $kKupon
      * @return $this
      */
-    public function setKupon(int $kKupon)
+    public function setKupon(int $kKupon): self
     {
         $this->kKupon = $kKupon;
 
@@ -242,7 +241,7 @@ class Kupon
      * @param int $kKundengruppe
      * @return $this
      */
-    public function setKundengruppe(int $kKundengruppe)
+    public function setKundengruppe(int $kKundengruppe): self
     {
         $this->kKundengruppe = $kKundengruppe;
 
@@ -253,7 +252,7 @@ class Kupon
      * @param int $kSteuerklasse
      * @return $this
      */
-    public function setSteuerklasse(int $kSteuerklasse)
+    public function setSteuerklasse(int $kSteuerklasse): self
     {
         $this->kSteuerklasse = $kSteuerklasse;
 
@@ -262,25 +261,31 @@ class Kupon
 
     /**
      * @param string $cName
+     * @return $this
      */
-    public function setName($cName)
+    public function setName($cName): self
     {
         $this->cName = Shop::Container()->getDB()->escape($cName);
+
+        return $this;
     }
 
     /**
      * @param float $fWert
+     * @return $this
      */
-    public function setWert($fWert)
+    public function setWert($fWert): self
     {
         $this->fWert = (float)$fWert;
+
+        return $this;
     }
 
     /**
      * @param string $cWertTyp
      * @return $this
      */
-    public function setWertTyp($cWertTyp)
+    public function setWertTyp($cWertTyp): self
     {
         $this->cWertTyp = Shop::Container()->getDB()->escape($cWertTyp);
 
@@ -291,7 +296,7 @@ class Kupon
      * @param string $dGueltigAb
      * @return $this
      */
-    public function setGueltigAb($dGueltigAb)
+    public function setGueltigAb($dGueltigAb): self
     {
         $this->dGueltigAb = Shop::Container()->getDB()->escape($dGueltigAb);
 
@@ -302,7 +307,7 @@ class Kupon
      * @param string $dGueltigBis
      * @return $this
      */
-    public function setGueltigBis($dGueltigBis)
+    public function setGueltigBis($dGueltigBis): self
     {
         $this->dGueltigBis = Shop::Container()->getDB()->escape($dGueltigBis);
 
@@ -313,7 +318,7 @@ class Kupon
      * @param float $fMindestbestellwert
      * @return $this
      */
-    public function setMindestbestellwert($fMindestbestellwert)
+    public function setMindestbestellwert($fMindestbestellwert): self
     {
         $this->fMindestbestellwert = (float)$fMindestbestellwert;
 
@@ -324,7 +329,7 @@ class Kupon
      * @param string $cCode
      * @return $this
      */
-    public function setCode($cCode)
+    public function setCode($cCode): self
     {
         $this->cCode = Shop::Container()->getDB()->escape($cCode);
 
@@ -335,7 +340,7 @@ class Kupon
      * @param int $nVerwendungen
      * @return $this
      */
-    public function setVerwendungen(int $nVerwendungen)
+    public function setVerwendungen(int $nVerwendungen): self
     {
         $this->nVerwendungen = $nVerwendungen;
 
@@ -346,7 +351,7 @@ class Kupon
      * @param int $nVerwendungenBisher
      * @return $this
      */
-    public function setVerwendungenBisher(int $nVerwendungenBisher)
+    public function setVerwendungenBisher(int $nVerwendungenBisher): self
     {
         $this->nVerwendungenBisher = $nVerwendungenBisher;
 
@@ -357,7 +362,7 @@ class Kupon
      * @param int $nVerwendungenProKunde
      * @return $this
      */
-    public function setVerwendungenProKunde(int $nVerwendungenProKunde)
+    public function setVerwendungenProKunde(int $nVerwendungenProKunde): self
     {
         $this->nVerwendungenProKunde = $nVerwendungenProKunde;
 
@@ -368,7 +373,7 @@ class Kupon
      * @param string $cArtikel
      * @return $this
      */
-    public function setArtikel($cArtikel)
+    public function setArtikel($cArtikel): self
     {
         $this->cArtikel = Shop::Container()->getDB()->escape($cArtikel);
 
@@ -379,7 +384,7 @@ class Kupon
      * @param string $cHersteller
      * @return $this
      */
-    public function setHersteller($cHersteller)
+    public function setHersteller($cHersteller): self
     {
         $this->cHersteller = Shop::Container()->getDB()->escape($cHersteller);
 
@@ -390,7 +395,7 @@ class Kupon
      * @param string $cKategorien
      * @return $this
      */
-    public function setKategorien($cKategorien)
+    public function setKategorien($cKategorien): self
     {
         $this->cKategorien = Shop::Container()->getDB()->escape($cKategorien);
 
@@ -401,7 +406,7 @@ class Kupon
      * @param string $cKunden
      * @return $this
      */
-    public function setKunden($cKunden)
+    public function setKunden($cKunden): self
     {
         $this->cKunden = Shop::Container()->getDB()->escape($cKunden);
 
@@ -412,7 +417,7 @@ class Kupon
      * @param string $cKuponTyp
      * @return $this
      */
-    public function setKuponTyp($cKuponTyp)
+    public function setKuponTyp($cKuponTyp): self
     {
         $this->cKuponTyp = Shop::Container()->getDB()->escape($cKuponTyp);
 
@@ -423,7 +428,7 @@ class Kupon
      * @param string $cLieferlaender
      * @return $this
      */
-    public function setLieferlaender($cLieferlaender)
+    public function setLieferlaender($cLieferlaender): self
     {
         $this->cLieferlaender = Shop::Container()->getDB()->escape($cLieferlaender);
 
@@ -434,7 +439,7 @@ class Kupon
      * @param string $cZusatzgebuehren
      * @return $this
      */
-    public function setZusatzgebuehren($cZusatzgebuehren)
+    public function setZusatzgebuehren($cZusatzgebuehren): self
     {
         $this->cZusatzgebuehren = Shop::Container()->getDB()->escape($cZusatzgebuehren);
 
@@ -445,7 +450,7 @@ class Kupon
      * @param string $cAktiv
      * @return $this
      */
-    public function setAktiv($cAktiv)
+    public function setAktiv($cAktiv): self
     {
         $this->cAktiv = Shop::Container()->getDB()->escape($cAktiv);
 
@@ -456,7 +461,7 @@ class Kupon
      * @param string $dErstellt
      * @return $this
      */
-    public function setErstellt($dErstellt)
+    public function setErstellt($dErstellt): self
     {
         $this->dErstellt = Shop::Container()->getDB()->escape($dErstellt);
 
@@ -467,15 +472,15 @@ class Kupon
      * @param int $nGanzenWKRabattieren
      * @return $this
      */
-    public function setGanzenWKRabattieren($nGanzenWKRabattieren)
+    public function setGanzenWKRabattieren(int $nGanzenWKRabattieren): self
     {
-        $this->nGanzenWKRabattieren = (int)$nGanzenWKRabattieren;
+        $this->nGanzenWKRabattieren = $nGanzenWKRabattieren;
 
         return $this;
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getKupon()
     {
@@ -483,7 +488,7 @@ class Kupon
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getKundengruppe()
     {
@@ -491,7 +496,7 @@ class Kupon
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getSteuerklasse()
     {
@@ -499,7 +504,7 @@ class Kupon
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getName()
     {
@@ -507,7 +512,7 @@ class Kupon
     }
 
     /**
-     * @return float
+     * @return float|null
      */
     public function getWert()
     {
@@ -515,7 +520,7 @@ class Kupon
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getWertTyp()
     {
@@ -523,7 +528,7 @@ class Kupon
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getGueltigAb()
     {
@@ -531,7 +536,7 @@ class Kupon
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getGueltigBis()
     {
@@ -539,7 +544,7 @@ class Kupon
     }
 
     /**
-     * @return float
+     * @return float|null
      */
     public function getMindestbestellwert()
     {
@@ -547,7 +552,7 @@ class Kupon
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getCode()
     {
@@ -555,7 +560,7 @@ class Kupon
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getVerwendungen()
     {
@@ -563,7 +568,7 @@ class Kupon
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getVerwendungenBisher()
     {
@@ -571,7 +576,7 @@ class Kupon
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getVerwendungenProKunde()
     {
@@ -579,7 +584,7 @@ class Kupon
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getArtikel()
     {
@@ -587,7 +592,7 @@ class Kupon
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getHersteller()
     {
@@ -595,7 +600,7 @@ class Kupon
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getKategorien()
     {
@@ -603,7 +608,7 @@ class Kupon
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getKunden()
     {
@@ -611,7 +616,7 @@ class Kupon
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getKuponTyp()
     {
@@ -619,7 +624,7 @@ class Kupon
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getLieferlaender()
     {
@@ -627,7 +632,7 @@ class Kupon
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getZusatzgebuehren()
     {
@@ -635,7 +640,7 @@ class Kupon
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getAktiv()
     {
@@ -643,7 +648,7 @@ class Kupon
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getErstellt()
     {
@@ -651,7 +656,7 @@ class Kupon
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getGanzenWKRabattieren()
     {
@@ -747,8 +752,8 @@ class Kupon
         $numbersString = $numbers ? '0123456789' : null;
         $cCode         = '';
         $count         = (int)Shop::Container()->getDB()->query(
-            "SELECT COUNT(*) AS cnt 
-                FROM tkupon",
+            'SELECT COUNT(*) AS cnt 
+                FROM tkupon',
             \DB\ReturnType::SINGLE_OBJECT
         )->cnt;
         while (empty($cCode) || ($count === 0
@@ -914,9 +919,9 @@ class Kupon
         ) {
             $ret['ungueltig'] = 9;
         }
-        if ($Kupon->cKuponTyp === 'versandkupon' &&
-            isset($_SESSION['Lieferadresse']) &&
-            strpos($Kupon->cLieferlaender, $_SESSION['Lieferadresse']->cLand) === false
+        if ($Kupon->cKuponTyp === 'versandkupon' 
+            && isset($_SESSION['Lieferadresse']) 
+            && strpos($Kupon->cLieferlaender, $_SESSION['Lieferadresse']->cLand) === false
         ) {
             $ret['ungueltig'] = 10;
         }
@@ -947,29 +952,29 @@ class Kupon
         $alreadyUsedSQL = '';
         $bindings       = [];
         if (!empty($_SESSION['Kunde']->kKunde) && !empty($_SESSION['Kunde']->cMail)) {
-            $alreadyUsedSQL = "SELECT SUM(nVerwendungen) AS nVerwendungen
+            $alreadyUsedSQL = 'SELECT SUM(nVerwendungen) AS nVerwendungen
                                   FROM tkuponkunde
                                   WHERE (kKunde = :customer OR cMail = :mail)
-                                      AND kKupon = :coupon";
+                                      AND kKupon = :coupon';
             $bindings       = [
                 'customer' => (int)$_SESSION['Kunde']->kKunde,
                 'mail'     => $_SESSION['Kunde']->cMail,
                 'coupon'   => (int)$Kupon->kKupon
             ];
         } elseif (!empty($_SESSION['Kunde']->cMail)) {
-            $alreadyUsedSQL = "SELECT SUM(nVerwendungen) AS nVerwendungen
+            $alreadyUsedSQL = 'SELECT SUM(nVerwendungen) AS nVerwendungen
                                   FROM tkuponkunde
                                   WHERE cMail = :mail
-                                      AND kKupon = :coupon";
+                                      AND kKupon = :coupon';
             $bindings       = [
                 'mail'   => $_SESSION['Kunde']->cMail,
                 'coupon' => (int)$Kupon->kKupon
             ];
         } elseif (!empty($_SESSION['Kunde']->kKunde)) {
-            $alreadyUsedSQL = "SELECT SUM(nVerwendungen) AS nVerwendungen
+            $alreadyUsedSQL = 'SELECT SUM(nVerwendungen) AS nVerwendungen
                                   FROM tkuponkunde
                                   WHERE kKunde = :customer
-                                      AND kKupon = :coupon";
+                                      AND kKupon = :coupon';
             $bindings       = [
                 'customer' => (int)$_SESSION['Kunde']->kKunde,
                 'coupon'   => (int)$Kupon->kKupon
@@ -1001,6 +1006,7 @@ class Kupon
     public static function acceptCoupon($Kupon)
     {
         $cart                        = Session::Cart();
+        $logger                      = Shop::Container()->getLogService();
         $Kupon->nGanzenWKRabattieren = (int)$Kupon->nGanzenWKRabattieren;
         if ((!empty($_SESSION['oVersandfreiKupon']) || !empty($_SESSION['VersandKupon']) || !empty($_SESSION['Kupon']))
             && isset($_POST['Kuponcode']) && $_POST['Kuponcode']
@@ -1068,14 +1074,8 @@ class Kupon
         $postyp = C_WARENKORBPOS_TYP_KUPON;
         if ($Kupon->cKuponTyp === 'standard') {
             $_SESSION['Kupon'] = $Kupon;
-            if (Jtllog::doLog(JTLLOG_LEVEL_NOTICE)) {
-                Jtllog::writeLog(
-                    'Der Standardkupon' . print_r($Kupon, true) . ' wurde genutzt.',
-                    JTLLOG_LEVEL_NOTICE,
-                    false,
-                    'kKupon',
-                    $Kupon->kKupon
-                );
+            if ($logger->isHandling(JTLLOG_LEVEL_NOTICE)) {
+                $logger->notice('Der Standardkupon' . print_r($Kupon, true) . ' wurde genutzt.');
             }
         } elseif ($Kupon->cKuponTyp === 'neukundenkupon') {
             $postyp = C_WARENKORBPOS_TYP_NEUKUNDENKUPON;
@@ -1083,14 +1083,8 @@ class Kupon
             $_SESSION['NeukundenKupon']           = $Kupon;
             $_SESSION['NeukundenKuponAngenommen'] = true;
             //@todo: erst loggen wenn wirklich bestellt wird. hier kann noch abgebrochen werden
-            if (Jtllog::doLog(JTLLOG_LEVEL_NOTICE)) {
-                Jtllog::writeLog(
-                    'Der Neukundenkupon' . print_r($Kupon, true) . ' wurde genutzt.',
-                    JTLLOG_LEVEL_NOTICE,
-                    false,
-                    'kKupon',
-                    $Kupon->kKupon
-                );
+            if ($logger->isHandling(JTLLOG_LEVEL_NOTICE)) {
+                $logger->notice('Der Neukundenkupon' . print_r($Kupon, true) . ' wurde genutzt.');
             }
         } elseif ($Kupon->cKuponTyp === 'versandkupon') {
             // Darf nicht gelöscht werden sondern den Preis nur auf 0 setzen!
@@ -1107,14 +1101,8 @@ class Kupon
                 $Kupon->kSteuerklasse,
                 $postyp
             );
-            if (Jtllog::doLog(JTLLOG_LEVEL_NOTICE)) {
-                Jtllog::writeLog(
-                    'Der Versandkupon ' . print_r($Kupon, true) . ' wurde genutzt.',
-                    JTLLOG_LEVEL_NOTICE,
-                    false,
-                    'kKupon',
-                    $Kupon->kKupon
-                );
+            if ($logger->isHandling(JTLLOG_LEVEL_NOTICE)) {
+                $logger->notice('Der Versandkupon ' . print_r($Kupon, true) . ' wurde genutzt.');
             }
         }
         if ($Kupon->cWertTyp === 'prozent' || $Kupon->cWertTyp === 'festpreis') {

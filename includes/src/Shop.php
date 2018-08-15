@@ -621,16 +621,21 @@ final class Shop
      */
     public static function dbg($var, bool $die = false, $beforeString = null, int $backtrace = 0)
     {
+        $nl = PHP_SAPI === 'cli' ? PHP_EOL : '<br>';
         if ($beforeString !== null) {
-            echo $beforeString . '<br />';
+            echo $beforeString . $nl;
         }
-        echo '<pre>';
+        if (PHP_SAPI !== 'cli') {
+            echo '<pre>';
+        }
         var_dump($var);
         if ($backtrace > 0) {
-            echo '<br />Backtrace:<br />';
+            echo $nl . 'Backtrace:' . $nl;
             var_dump(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, $backtrace));
         }
-        echo '</pre>';
+        if (PHP_SAPI !== 'cli') {
+            echo '</pre>';
+        }
         if ($die === true) {
             die();
         }
@@ -850,7 +855,13 @@ final class Shop
             header('Location: ' . LinkHelper::getInstance()->getStaticRoute('jtl.php') . '?li=1', true, 303);
             exit;
         }
-        self::$productFilter = new ProductFilter(self::Lang()->getLangArray(), self::$kSprache);
+        $conf = new \Filter\Config();
+        $conf->setLanguageID(self::$kSprache);
+        $conf->setLanguages(self::Lang()->getLangArray());
+        $conf->setCustomerGroupID(\Session::CustomerGroup()->getID());
+        $conf->setConfig(self::$_settings->getAll());
+        $conf->setBaseURL(self::getURL() . '/');
+        self::$productFilter = new ProductFilter($conf, self::Container()->getDB(), self::Container()->getCache());
         self::seoCheck();
         self::setImageBaseURL(defined('IMAGE_BASE_URL') ? IMAGE_BASE_URL : self::getURL());
         self::Event()->fire('shop.run');
@@ -1270,8 +1281,8 @@ final class Shop
             Session\Session::checkReset($cLang);
             TaxHelper::setTaxRates();
         }
-        if (self::$productFilter->getLanguageID() !== $languageID) {
-            self::$productFilter->setLanguageID($languageID);
+        if (self::$productFilter->getFilterConfig()->getLanguageID() !== $languageID) {
+            self::$productFilter->getFilterConfig()->setLanguageID($languageID);
             self::$productFilter->initBaseStates();
         }
     }
@@ -1519,7 +1530,7 @@ final class Shop
      */
     public static function buildProductFilter(array $cParameter_arr, $productFilter = null): ProductFilter
     {
-        $pf = new ProductFilter(self::Lang()->getLangArray(), self::getLanguageID());
+        $pf = new ProductFilter(\Filter\Config::getDefault(), self::Container()->getDB(), self::Container()->getCache());
         if ($productFilter !== null) {
             foreach (get_object_vars($productFilter) as $k => $v) {
                 $pf->$k = $v;
@@ -1809,6 +1820,12 @@ final class Shop
 
             return new Logger('auth', $handlers, [new PsrLogMessageProcessor()]);
         });
+        $container->setSingleton('Logger', function (Container $container) {
+            $handler = (new NiceDBHandler($container->getDB(), self::getConfigValue(CONF_GLOBAL, 'systemlog_flag')))
+                ->setFormatter(new LineFormatter('%message%', null, false, true));
+
+            return new Logger('jtllog', [$handler], [new PsrLogMessageProcessor()]);
+        });
         $container->setSingleton(ValidationServiceInterface::class, function () {
             $vs = new ValidationService($_GET, $_POST, $_COOKIE);
             $vs->setRuleSet('identity', (new RuleSet())->integer()->gt(0));
@@ -1849,8 +1866,8 @@ final class Shop
             return new OPC\Locker($container->getOPCPageDB());
         });
 
-        $container->setFactory(\Boxes\BoxFactoryInterface::class, function () {
-            return new \Boxes\BoxFactory(Shopsetting::getInstance()->getAll());
+        $container->setFactory(\Boxes\FactoryInterface::class, function () {
+            return new \Boxes\Factory(Shopsetting::getInstance()->getAll());
         });
         $container->setSingleton(\Services\JTL\BoxServiceInterface::class, function (Container $container) {
             return new \Services\JTL\BoxService(Shopsetting::getInstance()->getAll(), $container->getBoxFactory(),

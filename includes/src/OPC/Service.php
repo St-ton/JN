@@ -7,7 +7,9 @@
 namespace OPC;
 
 use Filter\AbstractFilter;
-use Filter\FilterOption;
+use Filter\Config;
+use Filter\Option;
+use Filter\Items\Attribute;
 use Filter\Items\ItemAttribute;
 use Filter\Type;
 
@@ -71,7 +73,7 @@ class Service
         $this->adminName = $io->getAccount()->account()->cLogin;
 
         foreach ($this->getIOFunctionNames() as $functionName) {
-            $publicFunctionName = 'opc' . ucfirst($functionName);
+            $publicFunctionName = 'opc' . \ucfirst($functionName);
             $io->register($publicFunctionName, [$this, $functionName], null, 'CONTENT_PAGE_VIEW');
         }
     }
@@ -232,7 +234,11 @@ class Service
      */
     public function getFilterOptions(array $enabledFilters = []): array
     {
-        $productFilter    = new \Filter\ProductFilter();
+        $productFilter    = new \Filter\ProductFilter(
+            Config::getDefault(),
+            \Shop::Container()->getDB(),
+            \Shop::Container()->getCache()
+        );
         $availableFilters = $productFilter->getAvailableFilters();
         $results          = [];
         $enabledMap       = [];
@@ -250,12 +256,12 @@ class Service
             $name    = $availableFilter->getFrontendName();
             $options = [];
 
-            if ($class === ItemAttribute::class) {
+            if ($class === Attribute::class) {
                 $name = 'Merkmale';
 
                 foreach ($availableFilter->getOptions() as $option) {
                     foreach ($option->getOptions() as $suboption) {
-                        /** @var FilterOption $suboption */
+                        /** @var Option $suboption */
                         $value    = $suboption->kMerkmalWert;
                         $mapindex = $class . ':' . $value;
 
@@ -285,7 +291,7 @@ class Service
                 }
             }
 
-            if (count($options) > 0) {
+            if (\count($options) > 0) {
                 $results[] = [
                     'name'    => $name,
                     'class'   => $class,

@@ -37,7 +37,7 @@ class Synclogin
                 $this->$member = $obj->$member;
             }
         } else {
-            Jtllog::writeLog('Kein Sync-Login gefunden.');
+            Shop::Container()->getLogService()->error('Kein Sync-Login gefunden.');
         }
     }
 

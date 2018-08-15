@@ -305,7 +305,7 @@ class Preise
     /**
      * @return bool
      */
-    public function isDiscountable()
+    public function isDiscountable(): bool
     {
         return !($this->Kundenpreis_aktiv || $this->Sonderpreis_aktiv);
     }
@@ -330,9 +330,9 @@ class Preise
                 $this->$member = $obj->$member;
             }
             $ust_obj    = Shop::Container()->getDB()->query(
-                "SELECT kSteuerklasse 
+                'SELECT kSteuerklasse 
                     FROM tartikel 
-                    WHERE kArtikel = " . $kArtikel,
+                    WHERE kArtikel = ' . $kArtikel,
                 \DB\ReturnType::SINGLE_OBJECT
             );
             $this->fUst = TaxHelper::getSalesTax($ust_obj->kSteuerklasse);

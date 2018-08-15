@@ -52,7 +52,7 @@ class Updater
 
             if ($dbVersion < 404) {
                 Shop::Container()->getDB()->query(
-                    "ALTER TABLE `tversion` CHANGE `nTyp` `nTyp` INT(4) UNSIGNED NOT NULL",
+                    'ALTER TABLE `tversion` CHANGE `nTyp` `nTyp` INT(4) UNSIGNED NOT NULL',
                     \DB\ReturnType::AFFECTED_ROWS
                 );
             }
@@ -118,7 +118,7 @@ class Updater
      * @param bool $compress
      * @return string
      */
-    public function createSqlDumpFile(bool $compress = true)
+    public function createSqlDumpFile(bool $compress = true): string
     {
         $file = PFAD_ROOT . PFAD_EXPORT_BACKUP . date('YmdHis') . '_backup.sql';
         if ($compress) {
@@ -134,7 +134,7 @@ class Updater
      */
     public function getVersion()
     {
-        $v = Shop::Container()->getDB()->query("SELECT * FROM tversion", \DB\ReturnType::SINGLE_OBJECT);
+        $v = Shop::Container()->getDB()->query('SELECT * FROM tversion', \DB\ReturnType::SINGLE_OBJECT);
         if ($v === null) {
             throw new \Exception('Unable to identify application version');
         }
@@ -201,7 +201,7 @@ class Updater
      * @param int $targetVersion
      * @return string
      */
-    protected function getUpdateDir(int $targetVersion)
+    protected function getUpdateDir(int $targetVersion): string
     {
         return sprintf('%s%d', PFAD_ROOT . PFAD_UPDATE, $targetVersion);
     }
@@ -210,14 +210,14 @@ class Updater
      * @param int $targetVersion
      * @return string
      */
-    protected function getSqlUpdatePath(int $targetVersion)
+    protected function getSqlUpdatePath(int $targetVersion): string
     {
         return sprintf('%s/update1.sql', $this->getUpdateDir($targetVersion));
     }
 
     /**
      * @param int $targetVersion
-     * @return array
+     * @return array|bool
      * @throws Exception
      */
     protected function getSqlUpdates(int $targetVersion)

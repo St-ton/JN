@@ -102,13 +102,13 @@ class IOMethods
     {
         $results = [];
         if (!empty($country) && !empty($zip)) {
-            $cityQuery = "%" . StringHandler::filterXSS($cityQuery) . "%";
+            $cityQuery = '%' . StringHandler::filterXSS($cityQuery) . '%';
             $cities    = Shop::Container()->getDB()->queryPrepared(
-                "SELECT cOrt
+                'SELECT cOrt
                     FROM tplz
                     WHERE cLandISO = :country
                         AND cPLZ = :zip
-                        AND cOrt LIKE :cityQuery",
+                        AND cOrt LIKE :cityQuery',
                 ['country' => $country, 'zip' => $zip, 'cityQuery' => $cityQuery],
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
@@ -297,20 +297,20 @@ class IOMethods
                                        ->fetch('layout/header_shop_nav_compare.tpl');
 
         foreach (Shop::Container()->getBoxService()->buildList() as $_position => $boxes) {
-            /** @var \Boxes\BoxInterface[] $boxes */
+            /** @var \Boxes\Items\BoxInterface[] $boxes */
             if (!is_array($boxes)) {
                 continue;
             }
             foreach ($boxes as $box) {
-                if ($box->getType() === \Boxes\BoxType::CONTAINER) {
+                if ($box->getType() === \Boxes\Type::CONTAINER) {
                     foreach ($box->getChildren() as $childBox) {
-                        if (get_class($childBox) === \Boxes\BoxCompareList::class) {
+                        if (get_class($childBox) === \Boxes\Items\CompareList::class) {
                             $renderer = new \Boxes\Renderer\DefaultRenderer($smarty, $childBox);
                             $oResponse->cBoxContainer[$childBox->getID()] = $renderer->render();
                         }
                     }
                 }
-                if (get_class($box) === \Boxes\BoxCompareList::class) {
+                if (get_class($box) === \Boxes\Items\CompareList::class) {
                     $renderer = new \Boxes\Renderer\DefaultRenderer($smarty, $box);
                     $oResponse->cBoxContainer[$box->getID()] = $renderer->render();
                 }
@@ -348,18 +348,18 @@ class IOMethods
             if (!is_array($boxes)) {
                 continue;
             }
-            /** @var \Boxes\BoxInterface[] $boxes */
+            /** @var \Boxes\Items\BoxInterface[] $boxes */
             foreach ($boxes as $box) {
-                if ($box->getType() === \Boxes\BoxType::CONTAINER) {
+                if ($box->getType() === \Boxes\Type::CONTAINER) {
                     foreach ($box->getChildren() as $childBox) {
-                        if (get_class($childBox) === \Boxes\BoxCompareList::class) {
+                        if (get_class($childBox) === \Boxes\Items\CompareList::class) {
                             $smarty->assign('Einstellungen', $conf);
                             $renderer = new \Boxes\Renderer\DefaultRenderer($smarty, $childBox);
 
                             $oResponse->cBoxContainer[$childBox->getID()] = $renderer->render();
                         }
                     }
-                } elseif (get_class($box) === \Boxes\BoxCompareList::class) {
+                } elseif (get_class($box) === \Boxes\Items\CompareList::class) {
                     $renderer = new \Boxes\Renderer\DefaultRenderer($smarty, $box);
                     $oResponse->cBoxContainer[$box->getID()] = $renderer->render();
                 }
@@ -445,16 +445,16 @@ class IOMethods
             if (!is_array($boxes)) {
                 continue;
             }
-            /** @var \Boxes\BoxInterface[] $boxes */
+            /** @var \Boxes\Items\BoxInterface[] $boxes */
             foreach ($boxes as $box) {
-                if ($box->getType() === \Boxes\BoxType::CONTAINER) {
+                if ($box->getType() === \Boxes\Type::CONTAINER) {
                     foreach ($box->getChildren() as $childBox) {
-                        if (get_class($childBox) === \Boxes\BoxWishlist::class) {
+                        if (get_class($childBox) === \Boxes\Items\Wishlist::class) {
                             $renderer = new \Boxes\Renderer\DefaultRenderer($smarty, $childBox);
                             $oResponse->cBoxContainer[$childBox->getID()] = $renderer->render();
                         }
                     }
-                } elseif (get_class($box) === \Boxes\BoxWishlist::class) {
+                } elseif (get_class($box) === \Boxes\Items\Wishlist::class) {
                     $renderer = new \Boxes\Renderer\DefaultRenderer($smarty, $box);
                     $oResponse->cBoxContainer[$box->getID()] = $renderer->render();
                 }
@@ -493,16 +493,16 @@ class IOMethods
             if (!is_array($boxes)) {
                 continue;
             }
-            /** @var \Boxes\BoxInterface[] $boxes */
+            /** @var \Boxes\Items\BoxInterface[] $boxes */
             foreach ($boxes as $box) {
-                if ($box->getType() === \Boxes\BoxType::CONTAINER) {
+                if ($box->getType() === \Boxes\Type::CONTAINER) {
                     foreach ($box->getChildren() as $childBox) {
-                        if ($childBox->getType() === \Boxes\BoxWishlist::class) {
+                        if ($childBox->getType() === \Boxes\Items\Wishlist::class) {
                             $renderer = new \Boxes\Renderer\DefaultRenderer($smarty, $childBox);
                             $oResponse->cBoxContainer[$childBox->getID()] = $renderer->render();
                         }
                     }
-                } elseif (get_class($box) === \Boxes\BoxWishlist::class) {
+                } elseif (get_class($box) === \Boxes\Items\Wishlist::class) {
                     $renderer = new \Boxes\Renderer\DefaultRenderer($smarty, $box);
                     $oResponse->cBoxContainer[$box->getID()] = $renderer->render();
                 }
@@ -1063,7 +1063,7 @@ class IOMethods
 
         if (strlen($country) === 2) {
             $regions = Staat::getRegions($country);
-            $response->script("this.response = " . json_encode($regions) . ";");
+            $response->script('this.response = ' . json_encode($regions) . ';');
         }
 
         return $response;

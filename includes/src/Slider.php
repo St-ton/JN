@@ -119,7 +119,7 @@ class Slider implements IExtensionPoint
      * @param array $cData_arr
      * @return $this
      */
-    public function set(array $cData_arr)
+    public function set(array $cData_arr): self
     {
         $cObjectFields_arr = get_class_vars('Slider');
         unset($cObjectFields_arr['oSlide_arr']);
@@ -139,14 +139,12 @@ class Slider implements IExtensionPoint
      * @param int $limit
      * @return bool
      */
-    public function load($kSlider = 0, $filter = '', $limit = 1)
+    public function load(int $kSlider = 0, $filter = '', int $limit = 1): bool
     {
-        if ((int)$kSlider > 0 || (!empty($this->kSlider) && (int)$this->kSlider > 0)) {
-            if (empty($kSlider) || (int)$kSlider === 0) {
+        if ($kSlider > 0 || (!empty($this->kSlider) && (int)$this->kSlider > 0)) {
+            if (empty($kSlider) || $kSlider === 0) {
                 $kSlider = $this->kSlider;
             }
-            $kSlider     = (int)$kSlider;
-            $limit       = (int)$limit;
             $cSlider_arr = Shop::Container()->getDB()->query(
                 "SELECT *
                     FROM tslider
@@ -191,7 +189,7 @@ class Slider implements IExtensionPoint
     /**
      * @return bool
      */
-    private function append()
+    private function append(): bool
     {
         $oSlider = clone $this;
         unset($oSlider->oSlide_arr, $oSlider->kSlider);
@@ -208,9 +206,9 @@ class Slider implements IExtensionPoint
     }
 
     /**
-     * @return int
+     * @return bool
      */
-    private function update()
+    private function update(): bool
     {
         $oSlider = clone $this;
 
@@ -223,12 +221,11 @@ class Slider implements IExtensionPoint
      * @param int $kSlider
      * @return bool
      */
-    public function delete($kSlider = 0)
+    public function delete(int $kSlider = 0): bool
     {
-        if ((int)$this->kSlider !== 0 && (int)$kSlider !== 0) {
+        if ((int)$this->kSlider !== 0 && $kSlider !== 0) {
             $kSlider = $this->kSlider;
         }
-        $kSlider = (int)$kSlider;
         if ($kSlider !== 0) {
             $affected = Shop::Container()->getDB()->delete('tslider', 'kSlider', $kSlider);
             Shop::Container()->getDB()->delete('textensionpoint', ['cClass', 'kInitial'], ['Slider', $kSlider]);

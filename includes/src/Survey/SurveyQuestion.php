@@ -113,7 +113,7 @@ class SurveyQuestion
      */
     public function map(\stdClass $data): self
     {
-        foreach (get_object_vars($data) as $var => $value) {
+        foreach (\get_object_vars($data) as $var => $value) {
             if (($mapping = self::getMapping($var)) !== null) {
                 $method = 'set' . $mapping;
                 $this->$method($value);
@@ -408,7 +408,7 @@ class SurveyQuestion
      */
     public function __debugInfo(): array
     {
-        $res       = get_object_vars($this);
+        $res       = \get_object_vars($this);
         $res['db'] = '*truncated*';
 
         return $res;

@@ -148,10 +148,11 @@ function erstelleExportformatCron($kExportformat, $dStart, $nAlleXStunden, $kCro
         if ($kCron > 0) {
             // Editieren
             Shop::Container()->getDB()->query(
-                "DELETE tcron, tjobqueue
+                'DELETE tcron, tjobqueue
                     FROM tcron
-                    LEFT JOIN tjobqueue ON tjobqueue.kCron = tcron.kCron
-                    WHERE tcron.kCron = " . $kCron,
+                    LEFT JOIN tjobqueue 
+                        ON tjobqueue.kCron = tcron.kCron
+                    WHERE tcron.kCron = ' . $kCron,
                 \DB\ReturnType::DEFAULT
             );
             $oCron = new Cron(

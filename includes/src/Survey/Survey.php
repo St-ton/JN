@@ -152,13 +152,13 @@ class Survey
      */
     public function load(int $id): self
     {
-        if (!$id || !$this->nice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
+        if (!$id || !$this->nice->checkErweiterung(\SHOP_ERWEITERUNG_UMFRAGE)) {
             return $this;
         }
         $survey = $this->db->queryPrepared(
             "SELECT tumfrage.kUmfrage, tumfrage.kSprache, tumfrage.kKupon, tumfrage.cKundengruppe, tumfrage.cName, 
                 tumfrage.cBeschreibung, tumfrage.fGuthaben, tumfrage.nBonuspunkte, tumfrage.nAktiv, tumfrage.dGueltigVon, 
-                tumfrage.dGueltigBis, tumfrage.dErstellt, tseo.cSeo, count(tumfragefrage.kUmfrageFrage) AS nAnzahlFragen
+                tumfrage.dGueltigBis, tumfrage.dErstellt, tseo.cSeo, COUNT(tumfragefrage.kUmfrageFrage) AS nAnzahlFragen
                 FROM tumfrage
                 JOIN tumfragefrage 
                     ON tumfragefrage.kUmfrage = tumfrage.kUmfrage
@@ -174,7 +174,7 @@ class Survey
             ReturnType::SINGLE_OBJECT
         );
         if ($survey !== false) {
-            foreach (get_object_vars($survey) as $var => $value) {
+            foreach (\get_object_vars($survey) as $var => $value) {
                 if (($mapping = self::getMapping($var)) !== null) {
                     $method = 'set' . $mapping;
                     $this->$method($value);
@@ -271,7 +271,7 @@ class Survey
      */
     public function setCustomerGroups($customerGroups)
     {
-        if (!is_array($customerGroups)) {
+        if (!\is_array($customerGroups)) {
             $customerGroups = \StringHandler::parseSSK($customerGroups);
         }
         $this->customerGroups = $customerGroups;
@@ -370,7 +370,7 @@ class Survey
      */
     public function setValidFrom($validFrom)
     {
-        if (is_string($validFrom)) {
+        if (\is_string($validFrom)) {
             $validFrom = new \DateTime($validFrom);
         }
         $this->validFrom = $validFrom;
@@ -389,7 +389,7 @@ class Survey
      */
     public function setValidUntil($validUntil)
     {
-        if (is_string($validUntil)) {
+        if (\is_string($validUntil)) {
             $validUntil = new \DateTime($validUntil);
         }
         $this->validUntil = $validUntil;
@@ -408,7 +408,7 @@ class Survey
      */
     public function setCreated($created)
     {
-        if (is_string($created)) {
+        if (\is_string($created)) {
             $created = new \DateTime($created);
         }
         $this->created = $created;
@@ -503,7 +503,7 @@ class Survey
      */
     public function __debugInfo(): array
     {
-        $res            = get_object_vars($this);
+        $res            = \get_object_vars($this);
         $res['db']      = '*truncated*';
         $res['nice']    = '*truncated*';
         $res['factory'] = '*truncated*';

@@ -175,13 +175,9 @@ if (isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreic
 } else {
     $oBewertung_arr = $AktuellerArtikel->Bewertungen->oBewertung_arr;
 }
-if (isset($_SESSION['Kunde']) && !empty($oBewertung_arr)) {
-    foreach ($oBewertung_arr as $Bewertung) {
-        if ((int)$Bewertung->kKunde === Session::Customer()->getID()) {
-            $bereitsBewertet = true;
-            break;
-        }
-    }
+if (Session::Customer()->getID() > 0) {
+    $bereitsBewertet = ArtikelHelper::getRatedByCurrentCustomer((int)$AktuellerArtikel->kArtikel,
+        (int)$AktuellerArtikel->kVaterArtikel);
 }
 
 $pagination = (new Pagination('ratings'))

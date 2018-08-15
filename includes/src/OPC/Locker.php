@@ -44,13 +44,13 @@ class Locker
         $lockedBy = $page->getLockedBy();
         $lockedAt = $page->getLockedAt();
 
-        if ($lockedBy !== '' && $lockedBy !== $userName && strtotime($lockedAt) + 60 > time()) {
+        if ($lockedBy !== '' && $lockedBy !== $userName && \strtotime($lockedAt) + 60 > \time()) {
             return false;
         }
 
         $page
             ->setLockedBy($userName)
-            ->setLockedAt(date('Y-m-d H:i:s'));
+            ->setLockedAt(\date('Y-m-d H:i:s'));
 
         $this->pageDB->saveDraftLockStatus($page);
 

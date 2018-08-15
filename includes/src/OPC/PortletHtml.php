@@ -48,12 +48,12 @@ trait PortletHtml
     final protected function getTemplatePath(): string
     {
         if ($this->getPlugin() !== null) {
-            return PFAD_ROOT . PFAD_PLUGIN . $this->getPlugin()->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION
-                . $this->getPlugin()->getCurrentVersion() . '/' . PFAD_PLUGIN_ADMINMENU  . 'portlets/'
+            return PFAD_ROOT . \PFAD_PLUGIN . $this->getPlugin()->cVerzeichnis . '/' . \PFAD_PLUGIN_VERSION
+                . $this->getPlugin()->getCurrentVersion() . '/' . \PFAD_PLUGIN_ADMINMENU  . 'portlets/'
                 . $this->getClass() . '/';
         }
 
-        return PFAD_ROOT . PFAD_TEMPLATES . 'Evo/portlets/' . $this->getClass() . '/';
+        return PFAD_ROOT . \PFAD_TEMPLATES . 'Evo/portlets/' . $this->getClass() . '/';
     }
 
     /**
@@ -64,9 +64,9 @@ trait PortletHtml
     final protected function getPreviewHtmlFromTpl(PortletInstance $instance): string
     {
         return \Shop::Smarty()
-            ->assign('portlet', $this)
-            ->assign('instance', $instance)
-            ->fetch($this->getTemplatePath() . 'preview.tpl');
+                    ->assign('portlet', $this)
+                    ->assign('instance', $instance)
+                    ->fetch($this->getTemplatePath() . 'preview.tpl');
     }
 
     /**
@@ -76,10 +76,11 @@ trait PortletHtml
      */
     final protected function getFinalHtmlFromTpl($instance): string
     {
+
         return \Shop::Smarty()
-            ->assign('portlet', $this)
-            ->assign('instance', $instance)
-            ->fetch($this->getTemplatePath() . 'final.tpl');
+                    ->assign('portlet', $this)
+                    ->assign('instance', $instance)
+                    ->fetch($this->getTemplatePath() . 'final.tpl');
     }
 
     /**
@@ -90,9 +91,9 @@ trait PortletHtml
     final protected function getConfigPanelHtmlFromTpl(PortletInstance $instance): string
     {
         return \Shop::Smarty()
-            ->assign('portlet', $this)
-            ->assign('instance', $instance)
-            ->fetch($this->getTemplatePath() . 'configpanel.tpl');
+                    ->assign('portlet', $this)
+                    ->assign('instance', $instance)
+                    ->fetch($this->getTemplatePath() . 'configpanel.tpl');
     }
 
     /**
@@ -112,7 +113,7 @@ trait PortletHtml
 
         return $smarty->assign('portlet', $this)
                       ->assign('instance', $instance)
-                      ->fetch(PFAD_ROOT . PFAD_TEMPLATES . "Evo/portlets/OPC/config.$id.tpl");
+                      ->fetch(PFAD_ROOT . \PFAD_TEMPLATES . "Evo/portlets/OPC/config.$id.tpl");
     }
 
     /**
@@ -126,7 +127,7 @@ trait PortletHtml
         $tabs = $this->getPropertyTabs();
 
         foreach ($tabs as $tabname => $propnames) {
-            if (is_string($propnames)) {
+            if (\is_string($propnames)) {
                 if ($propnames === 'styles') {
                     $tabs[$tabname] = $this->getStylesPropertyDesc();
                 } elseif ($propnames === 'animations') {
@@ -140,7 +141,7 @@ trait PortletHtml
             }
         }
 
-        if (count($desc) > 0) {
+        if (\count($desc) > 0) {
             $tabs = ['Allgemein' => $desc] + $tabs;
         }
 
@@ -149,7 +150,7 @@ trait PortletHtml
         $i    = 0;
 
         foreach ($tabs as $tabname => $props) {
-            $tabid  = preg_replace('/[^A-Za-z0-9\-]/', '', $tabname);
+            $tabid  = \preg_replace('/[^A-Za-z0-9\-]/', '', $tabname);
             $active = $i === 0 ? " class='active'" : "";
             $res   .= "<li$active>";
             $res   .= "<a href='#$tabid' data-toggle='tab'>$tabname</a></li>";
@@ -161,14 +162,14 @@ trait PortletHtml
         $i    = 0;
 
         foreach ($tabs as $tabname => $props) {
-            $tabid  = preg_replace('/[^A-Za-z0-9\-]/', '', $tabname);
+            $tabid  = \preg_replace('/[^A-Za-z0-9\-]/', '', $tabname);
             $active = $i === 0 ? " active" : "";
             $res   .= "<div class='tab-pane$active' id='$tabid'>";
             $res   .= "<div class='row'>";
 
             foreach ($props as $propname => $propDesc) {
                 $containerId = !empty($propDesc['layoutCollapse']) ? $propname : null;
-                $cllpsID     = uniqid('', false);
+                $cllpsID     = \uniqid('', false);
 
                 if (!empty($propDesc['collapseControlStart'])) {
                     $res .= "<script>
@@ -246,7 +247,7 @@ trait PortletHtml
 
         $displ = 12;
         if (!empty($propDesc['dspl_width'])) {
-            $displ = round(12 * ($propDesc['dspl_width'] * 0.01));
+            $displ = \round(12 * ($propDesc['dspl_width'] * 0.01));
         }
         $res .= "<div class='col-xs-$displ'>";
         $res .= "<div class='form-group'>";
@@ -279,8 +280,8 @@ trait PortletHtml
                 break;
             case 'textlist':
                 $res .= $this->getConfigPanelSnippet($instance, 'textlist', [
-                    'propname'   => $propname,
-                    'prop'       => $prop
+                    'propname' => $propname,
+                    'prop'     => $prop
                 ]);
                 break;
             case 'radio':
@@ -319,10 +320,11 @@ trait PortletHtml
                 break;
             case 'color':
                 $res .= $this->getConfigPanelSnippet($instance, 'color', [
-                    'prop'     => $prop,
-                    'propname' => $propname,
-                    'required' => $propDesc['required'],
-                    'class'    => $class,
+                    'prop'        => $prop,
+                    'propname'    => $propname,
+                    'required'    => $propDesc['required'],
+                    'class'       => $class,
+                    'colorFormat' => $propDesc['color-format'] ?? 'rgba',
                 ]);
                 break;
             case 'filter':
@@ -335,7 +337,7 @@ trait PortletHtml
                 $res .= $this->getConfigPanelSnippet($instance, 'icon', [
                     'propname' => $propname,
                     'prop'     => $prop,
-                    'uid'      => uniqid('', false)
+                    'uid'      => \uniqid('', false)
                 ]);
                 break;
             case 'hidden':
@@ -359,6 +361,9 @@ trait PortletHtml
                     'prop'          => $prop,
                     'propname'      => $propname,
                 ]);
+                break;
+            case 'hint':
+                $res .= "<div class='alert alert-" . $propDesc["class"] . "' role='alert'>" . $propDesc["text"] . "</div>";
                 break;
             case 'text':
             default:
@@ -405,6 +410,6 @@ trait PortletHtml
      */
     final protected function getDefaultIconSvgUrl(): string
     {
-        return \Shop::getURL() . '/' . PFAD_TEMPLATES . 'Evo/portlets/' . $this->getClass() . '/icon.svg';
+        return \Shop::getURL() . '/' . \PFAD_TEMPLATES . 'Evo/portlets/' . $this->getClass() . '/icon.svg';
     }
 }

@@ -46,10 +46,9 @@ $oStat_arr = gibBackendStatistik($nStatsType, $nDateStampVon, $nDateStampBis, $n
 $statsTypeName = GetTypeNameStats($nStatsType);
 $axisNames     = getAxisNames($nStatsType);
 
-// Highchart
-if ($nStatsType == STATS_ADMIN_TYPE_KUNDENHERKUNFT
-    || $nStatsType == STATS_ADMIN_TYPE_SUCHMASCHINE
-    || $nStatsType == STATS_ADMIN_TYPE_EINSTIEGSSEITEN
+if ($nStatsType === STATS_ADMIN_TYPE_KUNDENHERKUNFT
+    || $nStatsType === STATS_ADMIN_TYPE_SUCHMASCHINE
+    || $nStatsType === STATS_ADMIN_TYPE_EINSTIEGSSEITEN
 ) {
     $smarty->assign('piechart', preparePieChartStats($oStat_arr, $statsTypeName, $axisNames));
 } else {
@@ -57,7 +56,6 @@ if ($nStatsType == STATS_ADMIN_TYPE_KUNDENHERKUNFT
     $member_arr = gibMappingDaten($nStatsType);
     $smarty->assign('ylabel', $member_arr['nCount']);
 }
-// Table
 $cMember_arr = [];
 foreach ($oStat_arr as $oStat) {
     $cMember_arr[] = array_keys(get_object_vars($oStat));

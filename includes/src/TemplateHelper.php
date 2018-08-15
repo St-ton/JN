@@ -169,7 +169,6 @@ class TemplateHelper
     public function getFolders(string $path, int $depth = 0): array
     {
         $result = [];
-
         if (!is_dir($path)) {
             return $result;
         }
@@ -266,17 +265,17 @@ class TemplateHelper
      */
     public function getConfig(string $cOrdner)
     {
-        $oSetting_arr = Shop::Container()->getDB()->selectAll('ttemplateeinstellungen', 'cTemplate', $cOrdner);
-        if (is_array($oSetting_arr) && count($oSetting_arr) > 0) {
-            $oFMTSettings_arr = [];
-            foreach ($oSetting_arr as $oSetting) {
-                if (isset($oFMTSettings_arr[$oSetting->cSektion]) && !is_array($oFMTSettings_arr[$oSetting->cSektion])) {
-                    $oFMTSettings_arr[$oSetting->cSektion] = [];
+        $settingsData = Shop::Container()->getDB()->selectAll('ttemplateeinstellungen', 'cTemplate', $cOrdner);
+        if (is_array($settingsData) && count($settingsData) > 0) {
+            $settings = [];
+            foreach ($settingsData as $oSetting) {
+                if (isset($settings[$oSetting->cSektion]) && !is_array($settings[$oSetting->cSektion])) {
+                    $settings[$oSetting->cSektion] = [];
                 }
-                $oFMTSettings_arr[$oSetting->cSektion][$oSetting->cName] = $oSetting->cWert;
+                $settings[$oSetting->cSektion][$oSetting->cName] = $oSetting->cWert;
             }
 
-            return $oFMTSettings_arr;
+            return $settings;
         }
 
         return false;

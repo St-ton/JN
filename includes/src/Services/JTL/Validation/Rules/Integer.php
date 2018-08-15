@@ -25,7 +25,7 @@ class Integer implements RuleInterface
      */
     public function validate($value)
     {
-        $result = filter_var($value, FILTER_VALIDATE_INT);
+        $result = \filter_var($value, \FILTER_VALIDATE_INT);
 
         return $result !== false
             ? new RuleResult(true, '', $result)

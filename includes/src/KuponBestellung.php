@@ -66,7 +66,7 @@ class KuponBestellung
      * @param int $kBestellung
      * @return $this
      */
-    private function loadFromDB(int $kKupon = 0, int $kBestellung = 0)
+    private function loadFromDB(int $kKupon = 0, int $kBestellung = 0): self
     {
         $oObj = Shop::Container()->getDB()->select(
             'tkuponbestelllung',
@@ -142,7 +142,7 @@ class KuponBestellung
      * @param int $kKupon
      * @return $this
      */
-    public function setKupon(int $kKupon)
+    public function setKupon(int $kKupon): self
     {
         $this->kKupon = $kKupon;
 
@@ -153,7 +153,7 @@ class KuponBestellung
      * @param int $kBestellung
      * @return $this
      */
-    public function setBestellung(int $kBestellung)
+    public function setBestellung(int $kBestellung): self
     {
         $this->kBestellung = $kBestellung;
 
@@ -164,7 +164,7 @@ class KuponBestellung
      * @param int $kKunde
      * @return $this
      */
-    public function setKunden(int $kKunde)
+    public function setKunden(int $kKunde): self
     {
         $this->kKunde = $kKunde;
 
@@ -175,7 +175,7 @@ class KuponBestellung
      * @param string $cBestellNr
      * @return $this
      */
-    public function setBestellNr($cBestellNr)
+    public function setBestellNr($cBestellNr): self
     {
         $this->cBestellNr = Shop::Container()->getDB()->escape($cBestellNr);
 
@@ -186,7 +186,7 @@ class KuponBestellung
      * @param float $fGesamtsummeBrutto
      * @return $this
      */
-    public function setGesamtsummeBrutto($fGesamtsummeBrutto)
+    public function setGesamtsummeBrutto($fGesamtsummeBrutto): self
     {
         $this->fGesamtsummeBrutto = (float)$fGesamtsummeBrutto;
 
@@ -197,7 +197,7 @@ class KuponBestellung
      * @param float $fKuponwertBrutto
      * @return $this
      */
-    public function setKuponwertBrutto($fKuponwertBrutto)
+    public function setKuponwertBrutto($fKuponwertBrutto): self
     {
         $this->fKuponwertBrutto = (float)$fKuponwertBrutto;
 
@@ -208,7 +208,7 @@ class KuponBestellung
      * @param string $cKuponTyp
      * @return $this
      */
-    public function setKuponTyp($cKuponTyp)
+    public function setKuponTyp($cKuponTyp): self
     {
         $this->cKuponTyp = Shop::Container()->getDB()->escape($cKuponTyp);
 
@@ -219,7 +219,7 @@ class KuponBestellung
      * @param string $dErstellt
      * @return $this
      */
-    public function setErstellt($dErstellt)
+    public function setErstellt($dErstellt): self
     {
         $this->dErstellt = Shop::Container()->getDB()->escape($dErstellt);
 
@@ -227,7 +227,7 @@ class KuponBestellung
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getKupon()
     {
@@ -235,7 +235,7 @@ class KuponBestellung
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getBestellung()
     {
@@ -243,7 +243,7 @@ class KuponBestellung
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getKunde()
     {
@@ -251,7 +251,7 @@ class KuponBestellung
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getBestellNr()
     {
@@ -259,7 +259,7 @@ class KuponBestellung
     }
 
     /**
-     * @return float
+     * @return float|null
      */
     public function getGesamtsummeBrutto()
     {
@@ -267,7 +267,7 @@ class KuponBestellung
     }
 
     /**
-     * @return float
+     * @return float|null
      */
     public function getKuponwertBrutto()
     {
@@ -275,7 +275,7 @@ class KuponBestellung
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getKuponTyp()
     {
@@ -283,7 +283,7 @@ class KuponBestellung
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getErstellt()
     {
@@ -298,7 +298,7 @@ class KuponBestellung
      * @param int    $kKupon
      * @return array
      */
-    public static function getOrdersWithUsedCoupons($dStart, $dEnd, int $kKupon = 0)
+    public static function getOrdersWithUsedCoupons($dStart, $dEnd, int $kKupon = 0): array
     {
         return Shop::Container()->getDB()->query(
             "SELECT kbs.*, wkp.cName, kp.kKupon

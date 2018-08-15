@@ -146,6 +146,7 @@
                                 parseInt($('#image_wrapper').css('paddingBottom')) +
                                 parseInt($('#gallery').css('marginBottom')) +
                                 $('#image_fullscreen_close').outerHeight() +
+                                parseInt($('#image_fullscreen_close').css('marginBottom')) +
                                 $('#gallery_preview img').height();
                     if (fullscreenHeight > maxHeight) {
                         var newWidth = parseInt(maxHeight-otherElemHeight);

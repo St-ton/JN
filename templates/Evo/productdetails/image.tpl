@@ -1,7 +1,7 @@
 <div id="image_wrapper">
     <div class="row">
         <div class="col-xs-12">
-            <button id="image_fullscreen_close" type="button" class="btn btn-primary pull-right"><span
+            <button id="image_fullscreen_close" type="button" class="btn btn-primary pull-right bottom17"><span
                         aria-hidden="true">&times;</span></button>
         </div>
     </div>
@@ -13,15 +13,15 @@
                         <div>
                             {*<a href="{$image->cURLGross}" title="{$image->cAltAttribut|escape:"html"}">*}
                             {*sizes based on Evo template*}
-                            <img src="{$image->cURLMini}" data-lazy="{$image->cURLMini}"
-                                 data-srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                            <img data-srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
                                      {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
                                      {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
                                      {$image->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
                                  sizes="(min-width: 1200px) 1080px,
-                                        95vw"
+                                        90vw"
                                  alt="{$image->cAltAttribut|escape:"html"}"
-                                 data-list='{$image->galleryJSON|replace:"'":"&apos;"}'/>
+                                 data-list='{$image->galleryJSON|replace:"'":"&apos;"}'
+                                 src="{$image->cURLMini}" data-lazy="{$image->cURLMini}"/>
                             {*</a>*}
                         </div>
                     {/strip}
@@ -29,7 +29,7 @@
             {/block}
         </div>
     </div>
-    <div id="gallery__preview_wrapper">
+    <div id="gallery_preview_wrapper">
         <div id="gallery_preview">
             {block name="product-image"}
                 {if $Artikel->Bilder|@count > 1}

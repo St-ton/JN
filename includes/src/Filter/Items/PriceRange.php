@@ -9,11 +9,11 @@ namespace Filter\Items;
 
 use DB\ReturnType;
 use Filter\AbstractFilter;
+use Filter\FilterInterface;
 use Filter\Join;
 use Filter\Option;
-use Filter\FilterInterface;
-use Filter\StateSQL;
 use Filter\ProductFilter;
+use Filter\StateSQL;
 
 /**
  * Class PriceRange
@@ -379,6 +379,7 @@ class PriceRange extends AbstractFilter
         ) {
             return $options;
         }
+        $cacheID  = null;
         $currency = \Session::Currency();
         $sql      = (new StateSQL())->from($this->productFilter->getCurrentStateData());
 
@@ -434,7 +435,7 @@ class PriceRange extends AbstractFilter
             $fKundenrabatt = ($discount = \Session::CustomerGroup()->getDiscount()) > 0
                 ? $discount
                 : 0.0;
-            $state           = (new StateSQL())->from($this->productFilter->getCurrentStateData());
+            $state         = (new StateSQL())->from($this->productFilter->getCurrentStateData());
             foreach ($this->getSQLJoin() as $join) {
                 $state->addJoin($join);
             }
@@ -455,10 +456,16 @@ class PriceRange extends AbstractFilter
             $state->setOrderBy(null);
             $state->setLimit('');
             $state->setGroupBy(['tartikel.kArtikel']);
-            $baseQry = $this->productFilter->getFilterSQL()->getBaseQuery($state);
-            $minMax  = $this->productFilter->getDB()->query(
+            $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($state);
+            $cacheID   = 'fltr_' . __CLASS__ . \md5($baseQuery);
+            if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
+                $this->options = $cached;
+
+                return $this->options;
+            }
+            $minMax = $this->productFilter->getDB()->query(
                 'SELECT MAX(ssMerkmal.fMax) AS fMax, MIN(ssMerkmal.fMin) AS fMin 
-                    FROM (' . $baseQry . ' ) AS ssMerkmal',
+                    FROM (' . $baseQuery . ' ) AS ssMerkmal',
                 ReturnType::SINGLE_OBJECT
             );
             if (isset($minMax->fMax) && $minMax->fMax > 0) {
@@ -479,9 +486,11 @@ class PriceRange extends AbstractFilter
                 $sql->setOrderBy(null);
                 $sql->setLimit('');
                 $sql->setGroupBy(['tartikel.kArtikel']);
+
+                $baseQuery        = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
                 $dbRes            = $this->productFilter->getDB()->query(
                     'SELECT ' . $cSelectSQL . ' FROM (' .
-                    $this->productFilter->getFilterSQL()->getBaseQuery($sql) . ' ) AS ssMerkmal',
+                    $baseQuery . ' ) AS ssMerkmal',
                     ReturnType::SINGLE_OBJECT
                 );
                 $priceRanges      = [];
@@ -556,9 +565,15 @@ class PriceRange extends AbstractFilter
                 foreach ($this->getSQLJoin() as $join) {
                     $state->addJoin($join);
                 }
-                $baseQry = $this->productFilter->getFilterSQL()->getBaseQuery($state);
-                $dbRes   = $this->productFilter->getDB()->query(
-                    'SELECT ' . $cSelectSQL . ' FROM (' . $baseQry . ' ) AS ssMerkmal',
+                $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($state);
+                $cacheID   = 'fltr_' . __CLASS__ . \md5($baseQuery);
+                if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
+                    $this->options = $cached;
+
+                    return $this->options;
+                }
+                $dbRes = $this->productFilter->getDB()->query(
+                    'SELECT ' . $cSelectSQL . ' FROM (' . $baseQuery . ' ) AS ssMerkmal',
                     ReturnType::SINGLE_OBJECT
                 );
 
@@ -604,6 +619,9 @@ class PriceRange extends AbstractFilter
             );
         }
         $this->options = $options;
+        if ($cacheID !== null) {
+            $this->productFilter->getCache()->set($cacheID, $options, [CACHING_GROUP_FILTER]);
+        }
 
         return $options;
     }

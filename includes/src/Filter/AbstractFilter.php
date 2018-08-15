@@ -421,9 +421,9 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function setOptions($data): FilterInterface
+    public function setOptions($options): FilterInterface
     {
-        $this->options = $data;
+        $this->options = $options;
 
         return $this;
     }

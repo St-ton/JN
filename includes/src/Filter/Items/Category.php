@@ -10,10 +10,10 @@ namespace Filter\Items;
 use DB\ReturnType;
 use Filter\Join;
 use Filter\Option;
-use Filter\StateSQL;
-use Filter\Type;
 use Filter\ProductFilter;
 use Filter\States\BaseCategory;
+use Filter\StateSQL;
+use Filter\Type;
 
 /**
  * Class Category
@@ -185,11 +185,17 @@ class Category extends BaseCategory
         $sql->setLimit('');
         $sql->setGroupBy(['tkategorie.kKategorie', 'tartikel.kArtikel']);
 
-        $query            = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
+        $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
+        $cacheID   = 'fltr_' . __CLASS__ . \md5($baseQuery);
+        if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
+            $this->options = $cached;
+
+            return $this->options;
+        }
         $categories       = $this->productFilter->getDB()->executeQuery(
             "SELECT tseo.cSeo, ssMerkmal.kKategorie, ssMerkmal.cName, 
                 ssMerkmal.nSort, COUNT(*) AS nAnzahl
-                FROM (" . $query . " ) AS ssMerkmal
+                FROM (" . $baseQuery . " ) AS ssMerkmal
                     LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kKategorie
                         AND tseo.cKey = 'kKategorie'
                         AND tseo.kSprache = " . $this->getLanguageID() . "
@@ -226,6 +232,7 @@ class Category extends BaseCategory
             });
         }
         $this->options = $options;
+        $this->productFilter->getCache()->set($cacheID, $options, [CACHING_GROUP_FILTER]);
 
         return $options;
     }

@@ -9,13 +9,13 @@ namespace Filter\States;
 
 use DB\ReturnType;
 use Filter\AbstractFilter;
+use Filter\FilterInterface;
+use Filter\Items\Tag;
 use Filter\Join;
 use Filter\Option;
-use Filter\FilterInterface;
+use Filter\ProductFilter;
 use Filter\StateSQL;
 use Filter\Type;
-use Filter\Items\Tag;
-use Filter\ProductFilter;
 
 /**
  * Class BaseTag
@@ -170,11 +170,17 @@ class BaseTag extends AbstractFilter
             ->setOrigin(__CLASS__));
         $sql->addCondition('ttag.nAktiv = 1');
         $sql->addCondition('ttag.kSprache = ' . $this->getLanguageID());
-        $query            = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
+        $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
+        $cacheID   = 'fltr_' . __CLASS__ . \md5($baseQuery);
+        if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
+            $this->options = $cached;
+
+            return $this->options;
+        }
         $tags             = $this->productFilter->getDB()->query(
             "SELECT tseo.cSeo, ssMerkmal.kTag, ssMerkmal.cName, 
                 COUNT(*) AS nAnzahl, SUM(ssMerkmal.nAnzahlTagging) AS nAnzahlTagging
-                    FROM (" . $query . ") AS ssMerkmal
+                    FROM (" . $baseQuery . ") AS ssMerkmal
                 LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kTag
                     AND tseo.cKey = 'kTag'
                     AND tseo.kSprache = " . $this->getLanguageID() . "
@@ -212,6 +218,7 @@ class BaseTag extends AbstractFilter
                 ->setCount((int)$tag->nAnzahl);
         }
         $this->options = $options;
+        $this->productFilter->getCache()->set($cacheID, $options, [CACHING_GROUP_FILTER]);
 
         return $options;
     }

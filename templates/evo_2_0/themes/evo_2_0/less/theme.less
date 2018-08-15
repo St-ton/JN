@@ -1,0 +1,135 @@
+//
+// Platz für eigene Style Angaben in LESS-Notation
+//
+// Alle Änderungen hier müssen anschließend mit einem Less-Compiler
+// (z.B. dem Evo Theme-Editor Plugin) nach bootstrap.css kompiliert werden
+// --------------------------------------------------
+
+// Lädt Core-Variablen und Mixins
+@import "../../base/less/base";
+@import "variables";
+
+// my-evo Theme
+// Hier können alle Style-Angaben notiert werden, die nur Auswirkungen auf dieses Theme haben
+// -----------------------------------------------------
+
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Open Sans'), local('OpenSans-Regular'), url('@{icon-font-path}/opensans/OpenSans-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 700;
+    src: local('Open Sans Bold'), local('OpenSans-Bold'), url('@{icon-font-path}/opensans/OpenSans-Bold.ttf') format('truetype');
+}
+
+
+
+//
+// Sidepanels
+// --------------------------------------------------
+
+aside {
+    .panel {
+        border-right: none;
+        border-left: none;
+        border-top: none;
+        border-bottom: none;
+        border: none;
+        box-shadow: none;
+        background-color: transparent;
+
+        &.panel-default{
+            .panel-heading {
+                border-bottom: none;
+                padding-left: 0;
+                padding-right: 0;
+            }
+
+            > .panel-heading > .panel-title{
+                color: @text-color;
+                font-weight: @font-weight-semibold;
+                font-size: @font-size-h2;
+                border-bottom: 7px solid @brand-primary;
+                padding: 15px 0;
+            }
+        }
+    }
+}
+
+.button-variant(@color; @background; @border) {
+    color: @color;
+    background-color: @background;
+    border-color: @border;
+
+    &:hover,
+    &:focus,
+    &.focus,
+    &:active,
+    &.active,
+    .open > .dropdown-toggle& {
+        color: @color;
+        background-color: @background;
+        border-color: @border;
+        .box-shadow(0px 4px 8px 2px rgba(155,155,155,0.5));
+    }
+    &:active,
+    &.active,
+    .open > .dropdown-toggle& {
+        background-image: none;
+    }
+    &.disabled,
+    &[disabled],
+    fieldset[disabled] & {
+        &,
+        &:hover,
+        &:focus,
+        &.focus,
+        &:active,
+        &.active {
+            background-color: @background;
+            border-color: @border;
+        }
+    }
+
+    .badge {
+        color: @background;
+        background-color: @color;
+    }
+}
+
+//breadcrumb
+.breadcrumb {
+    padding: @breadcrumb-padding-vertical @breadcrumb-padding-horizontal;
+    margin-bottom: @line-height-computed;
+    list-style: none;
+    background-color: transparent;
+
+    > li {
+        display: inline-block;
+
+        + li:before {
+            font-family: fontawesome;
+            font-weight: normal;
+            content: "@{breadcrumb-separator}\00a0"; // Unicode space added since inline-block means non-collapsing white-space
+            padding: 0 5px;
+            color: @breadcrumb-color;
+        }
+    }
+
+    > .active {
+        color: @breadcrumb-active-color;
+    }
+}
+
+//footer
+#footer {
+    color: @gray;
+    .panel a{
+        color: @gray;
+    }
+}

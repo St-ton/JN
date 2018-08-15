@@ -3,3 +3,75 @@
  * Die hier gemachten Änderungen überschreiben ggfs. andere Styles, da diese Datei als letzte geladen wird.
  */
 
+.megamenu {
+    text-align: center;
+}
+.megamenu .nav {
+    position: relative;
+    width: 100%;
+    font-size: 0; /* wipe out any unwanted whitespace betweeen inline elements */
+}
+
+.megamenu .nav li{
+    display: inline-block;
+    text-decoration: none;
+    font-size: 12px;
+    line-height: calc(11px * 4);
+    color: #fff;
+    text-transform: uppercase;
+}
+
+.megamenu .nav li a {
+    font-size: inherit;
+    line-height: inherit;
+    letter-spacing: 1px;
+}
+
+.megamenu .nav .TabNav_Indicator {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100px;
+    height: 5px;
+    background-color: #ffc400;
+    transition-property: left, background-color, -webkit-transform;
+    transition-property: transform, left, background-color;
+    transition-property: transform, left, background-color, -webkit-transform;
+    transition-duration: .2s;
+    -webkit-transform-origin: 0;
+    transform-origin: 0;
+    -webkit-transform: translate3d(0, 0, 0) scaleX(0);
+    transform: translate3d(0, 0, 0) scaleX(0);
+    opacity: 0;
+    -webkit-animation: fadeMeIn .2s forwards;
+    animation: fadeMeIn .2s forwards;
+    -webkit-animation-delay: .2s;
+    animation-delay: .2s;
+}
+
+
+@-webkit-keyframes fadeMeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeMeIn {
+    to {
+        opacity: 1;
+    }
+}
+/* prettify */
+
+
+.ns-ScrollWrapper {
+    overflow-x: scroll;
+    overflow-y: hidden;
+    white-space: nowrap;
+}
+
+.ns-ScrollWrapper::-webkit-scrollbar {
+    display: none;
+    height: 0;
+    background-color: transparent;
+}

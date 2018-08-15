@@ -45,8 +45,8 @@ class SearchSpecial extends AbstractFilter
              ->setFrontendName(\Shop::Lang()->get('specificProducts'))
              ->setVisibility($this->getConfig('navigationsfilter')['allgemein_suchspecialfilter_benutzen'])
              ->setType($this->getConfig('navigationsfilter')['search_special_filter_type'] === 'O'
-                 ? Type:: OR
-                 : Type:: AND);
+                 ? Type::OR
+                 : Type::AND);
     }
 
     /**
@@ -149,7 +149,7 @@ class SearchSpecial extends AbstractFilter
      */
     public function getSQLCondition(): string
     {
-        $or         = $this->getType() === Type:: OR;
+        $or         = $this->getType() === Type::OR;
         $conf       = $this->getConfig();
         $conditions = [];
         foreach ($this->getValue() as $value) {
@@ -227,7 +227,7 @@ class SearchSpecial extends AbstractFilter
     {
         $joins     = [];
         $values    = $this->getValue();
-        $joinType  = $this->getType() === Type:: AND
+        $joinType  = $this->getType() === Type::AND
             ? 'JOIN'
             : 'LEFT JOIN';
         $baseValue = $this->productFilter->getSearchSpecial()->getValue();
@@ -305,7 +305,7 @@ class SearchSpecial extends AbstractFilter
         $name             = '';
         $options          = [];
         $additionalFilter = new self($this->productFilter);
-        $ignore           = $this->getType() === Type:: OR
+        $ignore           = $this->getType() === Type::OR
             ? $this->getClassName()
             : null;
         $state            = (new StateSQL())->from($this->productFilter->getCurrentStateData($ignore));

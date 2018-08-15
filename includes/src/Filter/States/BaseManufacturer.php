@@ -120,7 +120,7 @@ class BaseManufacturer extends AbstractFilter
             $val = [$val];
         }
 
-        return $this->getType() === Type:: OR
+        return $this->getType() === Type::OR
             ? 'tartikel.' . $this->getPrimaryKeyRow() . ' IN (' . \implode(', ', $val) . ')'
             : \implode(' AND ', \array_map(function ($e) {
                 return 'tartikel.' . $this->getPrimaryKeyRow() . ' = ' . $e;
@@ -148,7 +148,7 @@ class BaseManufacturer extends AbstractFilter
         if ($this->getConfig('navigationsfilter')['allgemein_herstellerfilter_benutzen'] === 'N') {
             return $options;
         }
-        $state = $this->productFilter->getCurrentStateData($this->getType() === Type:: OR
+        $state = $this->productFilter->getCurrentStateData($this->getType() === Type::OR
             ? $this->getClassName()
             : null
         );

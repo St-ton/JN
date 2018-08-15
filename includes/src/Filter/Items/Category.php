@@ -96,7 +96,7 @@ class Category extends BaseCategory
         }
         $categoryFilterType = $this->getConfig('navigationsfilter')['kategoriefilter_anzeigen_als'];
         $state              = $this->productFilter->getCurrentStateData(
-            $this->getType() === Type:: OR
+            $this->getType() === Type::OR
                 ? $this->getClassName()
                 : null
         );

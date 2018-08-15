@@ -148,7 +148,7 @@ class Attribute extends BaseAttribute
                  ->setAttributeID($value->kMerkmal)
                  ->setIsMultiSelect($value->nMehrfachauswahl === 1);
 
-            return $this->setType($this->isMultiSelect() ? Type:: OR : Type:: AND)
+            return $this->setType($this->isMultiSelect() ? Type::OR : Type::AND)
                         ->setSeo($this->getAvailableLanguages());
 
         }
@@ -334,7 +334,7 @@ class Attribute extends BaseAttribute
                 } else {
                     $activeValues[] = $values;
                 }
-                if ($filter->getType() === Type:: OR) {
+                if ($filter->getType() === Type::OR) {
                     if (\is_array($values)) {
                         $activeOrFilterIDs = $values;
                     } else {
@@ -489,7 +489,7 @@ class Attribute extends BaseAttribute
                    ->setData('cBildURLKlein', $imageBaseURL . $baseSrcSmall)
                    ->setData('cBildURLNormal', $imageBaseURL . $baseSrcNormal);
             $option->setParam($this->getUrlParam());
-            $option->setType($attributeFilter->nMehrfachauswahl === 1 ? Type:: OR : Type:: AND);
+            $option->setType($attributeFilter->nMehrfachauswahl === 1 ? Type::OR : Type::AND);
             $option->setType($this->getType());
             $option->setClassName($this->getClassName());
             $option->setName($attributeFilter->cName);
@@ -517,7 +517,7 @@ class Attribute extends BaseAttribute
                                ->setData('cBildpfadNormal', $baseSrcNormal)
                                ->setData('cBildURLKlein', $imageBaseURL . $baseSrcSmall)
                                ->setData('cBildURLNormal', $imageBaseURL . $baseSrcNormal);
-                $attributeValue->setType($attributeFilter->nMehrfachauswahl === 1 ? Type:: OR : Type:: AND);
+                $attributeValue->setType($attributeFilter->nMehrfachauswahl === 1 ? Type::OR : Type::AND);
                 $attributeValue->setClassName($this->getClassName());
                 $attributeValue->setParam($this->getUrlParam());
                 $attributeValue->setName(\htmlentities($filterValue->cWert));

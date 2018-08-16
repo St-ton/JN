@@ -37,6 +37,11 @@ trait JTLCacheTrait
     public $journalHasChanged = false;
 
     /**
+     * @var string
+     */
+    private $error = '';
+
+    /**
      * @param array $options
      * @return JTLCacheTrait
      */
@@ -358,5 +363,21 @@ trait JTLCacheTrait
     public function isInitialized(): bool
     {
         return $this->isInitialized;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getError(): string
+    {
+        return $this->error;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setError(string $error)
+    {
+        $this->error = $error;
     }
 }

@@ -398,6 +398,9 @@ if ($cache !== null) {
     }
     unset($cachingGroup);
 }
+if (!empty($cache->getError())) {
+    $error .= $cache->getError();
+}
 
 $smarty->assign('settings', $settings)
        ->assign('caching_groups', $cachingGroups)

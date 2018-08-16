@@ -52,7 +52,6 @@
 !/jtllogs/.htaccess
 /dbeS/logs/*
 /dbeS/tmp/*
-/includes/composer.lock
 /includes/vendor/*
 .DS_Store
 .project

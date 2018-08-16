@@ -766,9 +766,6 @@ class PaymentMethod
         } elseif ($moduleId === 'za_paymentpartner_jtl') {
             require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'paymentpartner/PaymentPartner.class.php';
             $paymentMethod = new PaymentPartner($moduleId);
-        } elseif (strpos($moduleId, 'za_mbqc_') === 0) {
-            require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'moneybookers_qc/MoneyBookersQC.class.php';
-            $paymentMethod = new MoneyBookersQC($moduleId);
         } elseif ($moduleId === 'za_ut_stand_jtl') {
             // United Transfer
             require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ut/UT.class.php';

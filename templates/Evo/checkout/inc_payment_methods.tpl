@@ -1,6 +1,6 @@
 {**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license https://jtl-url.de/jtlshoplicense
  *}
 {foreach $Zahlungsarten as $zahlungsart}
     <div id="{$zahlungsart->cModulId}" class="col-xs-12">

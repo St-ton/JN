@@ -6,6 +6,7 @@
 
 namespace Filter;
 
+
 use DB\ReturnType;
 use function Functional\group;
 use function Functional\map;
@@ -97,7 +98,7 @@ class Metadata implements MetadataInterface
     public function __construct(ProductFilter $navigationsfilter)
     {
         $this->productFilter = $navigationsfilter;
-        $this->conf          = $navigationsfilter->getConfig();
+        $this->conf          = $navigationsfilter->getFilterConfig()->getConfig();
     }
 
     /**
@@ -402,7 +403,7 @@ class Metadata implements MetadataInterface
         }
         // Kategorieattribut?
         $cKatDescription = '';
-        $languageID      = $this->productFilter->getLanguageID();
+        $languageID      = $this->productFilter->getFilterConfig()->getLanguageID();
         if ($this->productFilter->hasCategory()) {
             $category = $category ?? new \Kategorie($this->productFilter->getCategory()->getValue());
             if (!empty($category->cMetaDescription)) {
@@ -610,7 +611,7 @@ class Metadata implements MetadataInterface
     public function generateMetaTitle($searchResults, $globalMeta, \Kategorie $category = null): string
     {
         \executeHook(\HOOK_FILTER_INC_GIBNAVIMETATITLE);
-        $languageID = $this->productFilter->getLanguageID();
+        $languageID = $this->productFilter->getFilterConfig()->getLanguageID();
         $append     = $this->conf['metaangaben']['global_meta_title_anhaengen'] === 'Y';
         if (!empty($this->metaTitle)) {
             $metaTitle = \strip_tags($this->metaTitle);

@@ -6,15 +6,16 @@
 
 namespace Filter\States;
 
+
 use DB\ReturnType;
 use Filter\AbstractFilter;
-use Filter\FilterJoin;
-use Filter\FilterOption;
 use Filter\FilterInterface;
-use Filter\FilterStateSQL;
-use Filter\Type;
 use Filter\Items\Manufacturer;
+use Filter\Join;
+use Filter\Option;
 use Filter\ProductFilter;
+use Filter\StateSQL;
+use Filter\Type;
 
 /**
  * Class BaseManufacturer
@@ -63,7 +64,7 @@ class BaseManufacturer extends AbstractFilter
             if (!\is_array($val)) {
                 $val = [$val];
             }
-            $oSeo_arr = \Shop::Container()->getDB()->query(
+            $oSeo_arr = $this->productFilter->getDB()->query(
                 "SELECT tseo.cSeo, tseo.kSprache, thersteller.cName
                     FROM tseo
                     JOIN thersteller
@@ -136,7 +137,7 @@ class BaseManufacturer extends AbstractFilter
 
     /**
      * @param null $data
-     * @return FilterOption[]
+     * @return Option[]
      */
     public function getOptions($data = null): array
     {
@@ -151,7 +152,7 @@ class BaseManufacturer extends AbstractFilter
             ? $this->getClassName()
             : null
         );
-        $sql   = (new FilterStateSQL())->from($state);
+        $sql   = (new StateSQL())->from($state);
         $sql->setSelect([
             'thersteller.kHersteller',
             'thersteller.cName',
@@ -161,16 +162,22 @@ class BaseManufacturer extends AbstractFilter
         $sql->setOrderBy(null);
         $sql->setLimit('');
         $sql->setGroupBy(['tartikel.kArtikel']);
-        $sql->addJoin((new FilterJoin())
+        $sql->addJoin((new Join())
             ->setComment('JOIN from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('thersteller')
             ->setOn('tartikel.kHersteller = thersteller.kHersteller')
             ->setOrigin(__CLASS__));
-        $query            = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
-        $manufacturers    = \Shop::Container()->getDB()->query(
+        $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
+        $cacheID   = 'fltr_' . __CLASS__ . \md5($baseQuery);
+        if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
+            $this->options = $cached;
+
+            return $this->options;
+        }
+        $manufacturers    = $this->productFilter->getDB()->query(
             "SELECT tseo.cSeo, ssMerkmal.kHersteller, ssMerkmal.cName, ssMerkmal.nSortNr, COUNT(*) AS nAnzahl
-                FROM (" . $query . ") AS ssMerkmal
+                FROM (" . $baseQuery . ") AS ssMerkmal
                     LEFT JOIN tseo 
                         ON tseo.kKey = ssMerkmal.kHersteller
                         AND tseo.cKey = 'kHersteller'
@@ -189,7 +196,7 @@ class BaseManufacturer extends AbstractFilter
                 $additionalFilter->init($manufacturer->kHersteller)
             );
 
-            $options[] = (new FilterOption())
+            $options[] = (new Option())
                 ->setURL($manufacturer->cURL)
                 ->setIsActive($this->productFilter->filterOptionIsActive(
                     $this->getClassName(),
@@ -205,6 +212,7 @@ class BaseManufacturer extends AbstractFilter
                 ->setSort($manufacturer->nSortNr);
         }
         $this->options = $options;
+        $this->productFilter->getCache()->set($cacheID, $options, [CACHING_GROUP_FILTER]);
 
         return $options;
     }

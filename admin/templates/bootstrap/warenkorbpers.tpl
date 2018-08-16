@@ -43,7 +43,7 @@
                             <h3 class="panel-title">{#warenkorbpers#}</h3>
                         </div>
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="table table-striped">
                                 <thead>
                                 <tr>
                                     <th class="tleft">{#warenkorbpersCompany#}</th>
@@ -55,9 +55,9 @@
                                 </thead>
                                 <tbody>
                                 {foreach name=warenkorbkunden from=$oKunde_arr item=oKunde}
-                                    <tr class="tab_bg{$smarty.foreach.warenkorbkunden.iteration%2}">
-                                        <td class="TD1">{$oKunde->cFirma}</td>
-                                        <td class="TD2">{$oKunde->cVorname} {$oKunde->cNachname}</td>
+                                    <tr>
+                                        <td>{$oKunde->cFirma}</td>
+                                        <td>{$oKunde->cVorname} {$oKunde->cNachname}</td>
                                         <td class="tcenter">{$oKunde->nAnzahl}</td>
                                         <td class="tcenter">{$oKunde->Datum}</td>
                                         <td class="tcenter">
@@ -88,7 +88,7 @@
                 <h3 class="panel-title">{#warenkorbpersClient#} {$oWarenkorbPersPos_arr[0]->cVorname} {$oWarenkorbPersPos_arr[0]->cNachname}</h3>
             </div>
             <div class="table-responsive">
-                <table class="table">
+                <table class="table table-striped">
                     <thead>
                     <tr>
                         <th class="tleft">{#warenkorbpersProduct#}</th>
@@ -98,7 +98,7 @@
                     </thead>
                     <tbody>
                     {foreach name=warenkorbpers from=$oWarenkorbPersPos_arr item=oWarenkorbPersPos}
-                        <tr class="tab_bg{$smarty.foreach.warenkorbpers.iteration%2}">
+                        <tr>
                             <td class="tleft">
                                 <a href="{$shopURL}/index.php?a={$oWarenkorbPersPos->kArtikel}" target="_blank">{$oWarenkorbPersPos->cArtikelName}</a>
                             </td>

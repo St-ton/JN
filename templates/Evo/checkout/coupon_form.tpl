@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {if !empty($cKuponfehler_arr.ungueltig)}
     {if $cKuponfehler_arr.ungueltig == 1}
         <div class="alert alert-danger">{lang key='couponErr1' section='global'}</div>{/if}

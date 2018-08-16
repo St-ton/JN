@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {strip}
 {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1 || isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
     {block name='top-bar-user-settings'}
@@ -47,20 +51,19 @@
                 {/foreach}
             </ul>
         </li>
-        {* /language-dropdown *}
         {/if}
         {/block}
-    </ul>{* user-settings *}
+    </ul>
     {/block}
 {/if}
 {if $linkgroups->getLinkGroupByTemplate('Kopf') !== null}
     <ul class="cms-pages list-inline pull-right">
         {block name='top-bar-cms-pages'}
-            {foreach $linkgroups->getLinkGroupByTemplate('Kopf')->getLinks() as $Link}
-                <li class="{if $Link->getIsActive()}active{/if}">
-                    <a href="{$Link->getURL()}"{if $Link->getNoFollow()} rel="nofollow"{/if} title="{$Link->getTitle()}">{$Link->getName()}</a>
-                </li>
-            {/foreach}
+        {foreach $linkgroups->getLinkGroupByTemplate('Kopf')->getLinks() as $Link}
+            <li class="{if $Link->getIsActive()}active{/if}">
+                <a href="{$Link->getURL()}"{if $Link->getNoFollow()} rel="nofollow"{/if} title="{$Link->getTitle()}">{$Link->getName()}</a>
+            </li>
+        {/foreach}
         {/block}
     </ul>
 {/if}

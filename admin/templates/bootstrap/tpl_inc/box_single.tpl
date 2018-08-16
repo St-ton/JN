@@ -54,7 +54,7 @@
             </a>
             <a href="boxen.php?action=edit_mode&page={$nPage}&position={$position}&item={$oBox->getID()}&token={$smarty.session.jtl_token}"
                title="{#edit#}"
-               class="btn btn-default{if empty($oBox->getType()) || ($oBox->getType() !== \Boxes\BoxType::TEXT && $oBox->getType() !== \Boxes\BoxType::LINK && $oBox->getType() !== \Boxes\BoxType::CATBOX)} disabled{/if}">
+               class="btn btn-default{if empty($oBox->getType()) || ($oBox->getType() !== \Boxes\Type::TEXT && $oBox->getType() !== \Boxes\Type::LINK && $oBox->getType() !== \Boxes\Type::CATBOX)} disabled{/if}">
                 <i class="fa fa-edit"></i>
             </a>
             {if $oBox->getContainerID() === 0}

@@ -6,7 +6,7 @@
                 <th class="tleft"><strong>{$oKampagneDef->cName}</strong></th>
             </tr>
             <tr>
-                <td class="TD1">
+                <td>
                     {#kampagnePeriod#}: {$cStampText}<br />
                     {#kampagneOverall#}: {$nGesamtAnzahlDefDetail}
                 </td>
@@ -21,7 +21,7 @@
                                  'kKampagneDef'=>$oKampagneDef->kKampagneDef, 'cZeitParam'=>$cZeitraumParam,
                                  'token'=>$smarty.session.jtl_token]}
             <div id="tabellenLivesuche" class="table-responsive">
-                <table class="table">
+                <table class="table table-striped">
                     <tr>
                         {foreach name="kampagnendefs" from=$cMember_arr key=cMember item=cMemberAnzeige}
                             <th class="th-2">{$cMemberAnzeige|truncate:50:"..."}</th>
@@ -29,9 +29,9 @@
                     </tr>
 
                     {foreach name="kampagnenstats" from=$oKampagneStat_arr item=oKampagneStat}
-                        <tr class="tab_bg{$smarty.foreach.kampagnenstats.iteration%2}">
+                        <tr>
                             {foreach name="kampagnendefs" from=$cMember_arr key=cMember item=cMemberAnzeige}
-                                <td class="TD1" style="text-align: center;">{$oKampagneStat->$cMember|wordwrap:40:"<br />":true}</td>
+                                <td style="text-align: center;">{$oKampagneStat->$cMember|wordwrap:40:"<br />":true}</td>
                             {/foreach}
                         </tr>
                     {/foreach}

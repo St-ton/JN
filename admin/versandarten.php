@@ -18,6 +18,10 @@ $cFehler            = '';
 $step               = 'uebersicht';
 $Versandart         = null;
 $nSteuersatzKey_arr = array_keys($_SESSION['Steuersatz']);
+
+$missingShippingClassCombis = getMissingShippingClassCombi();
+$smarty->assign('missingShippingClassCombis', $missingShippingClassCombis);
+
 if (isset($_POST['neu'], $_POST['kVersandberechnung']) &&
     (int)$_POST['neu'] === 1 &&
     (int)$_POST['kVersandberechnung'] > 0 &&
@@ -612,6 +616,12 @@ if ($step === 'uebersicht') {
                 }
             }
         }
+    }
+
+    $missingShippingClassCombis = getMissingShippingClassCombi();
+    if (!empty($missingShippingClassCombis)) {
+        $cFehler .= $smarty->assign('missingShippingClassCombis', $missingShippingClassCombis)
+                           ->fetch('tpl_inc/versandarten_fehlende_kombis.tpl');
     }
 
     $smarty->assign('versandberechnungen', $versandberechnungen)

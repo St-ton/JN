@@ -1,6 +1,6 @@
 {**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='account-orders'}
     <h1 class="menu-title">{block name='account-orders-title'}{lang key='yourOrders' section='login'}{/block}</h1>
@@ -14,7 +14,7 @@
                 {/if}
             {/foreach}
 
-            {include file='snippets/pagination.tpl' oPagination=$orderPagination cThisUrl='jtl.php' cParam_arr=['bestellungen'=>1] parts=['pagi', 'label']}
+            {include file='snippets/pagination.tpl' oPagination=$orderPagination cThisUrl='jtl.php' cParam_arr=['bestellungen' => 1] parts=['pagi', 'label']}
 
             <table class="table table-striped">
                 <thead class="hidden-xs">

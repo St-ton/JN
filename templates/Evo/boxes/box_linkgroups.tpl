@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {if $oBox->show()}
     <section class="panel panel-default box box-linkgroup" id="box{$oBox->getID()}">
         <div class="panel-heading">

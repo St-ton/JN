@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 <section class="panel panel-default box box-basket" id="sidebox{$oBox->getID()}">
     <div class="panel-heading">
         <div class="panel-title">{lang key='yourBasket'}<span id="basket_loader"></span></div>

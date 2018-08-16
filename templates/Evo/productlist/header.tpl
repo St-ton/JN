@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {if !isset($oNavigationsinfo) || isset($Suchergebnisse) && isset($oNavigationsinfo) && empty($oNavigationsinfo->getName())}
     <h1>{$Suchergebnisse->getSearchTermWrite()}</h1>
 {/if}
@@ -56,7 +60,7 @@
 {/if}
 {/block}
 
-{block name="productlist-subcategories"}
+{block name='productlist-subcategories'}
 {include file='snippets/opc_mount_point.tpl' id='opc_productlist_subcats_prepend'}
 {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'N' && $oUnterKategorien_arr|@count > 0}
     <div class="row row-eq-height content-cats-small clearfix">
@@ -101,65 +105,6 @@
 {include file='productwizard/index.tpl'}
 
 {if count($Suchergebnisse->getProducts()) > 0}
-    {*<form id="improve_search" action="{$ShopURL}" method="get" class="form-inline clearfix">*}
-        {*{if $NaviFilter->hasCategory()}*}
-            {*<input type="hidden" name="k" value="{$NaviFilter->getCategory()->getValue()}" />*}
-        {*{/if}*}
-        {*{if $NaviFilter->hasManufacturer()}*}
-            {*<input type="hidden" name="h" value="{$NaviFilter->getManufacturer()->getValue()}" />*}
-        {*{/if}*}
-        {*{if $NaviFilter->hasSearchQuery() && $NaviFilter->getSearchQuery()->getValue() > 0}*}
-            {*<input type="hidden" name="l" value="{$NaviFilter->getSearchQuery()->getValue()}" />*}
-        {*{/if}*}
-        {*{if $NaviFilter->hasAttributeValue()}*}
-            {*<input type="hidden" name="m" value="{$NaviFilter->getAttributeValue()->getValue()}" />*}
-        {*{/if}*}
-        {*{if $NaviFilter->hasSearchSpecial()}*}
-            {*<input type="hidden" name="q" value="{$NaviFilter->getSearchSpecial()->getValue()}" />*}
-        {*{/if}*}
-        {*{if $NaviFilter->hasSearch()}*}
-            {*<input type="hidden" name="suche" value="{$NaviFilter->getSearch()->getName()|escape:'htmlall'}" />*}
-        {*{/if}*}
-        {*{if $NaviFilter->hasTag()}*}
-            {*<input type="hidden" name="t" value="{$NaviFilter->getTag()->getValue()}" />*}
-        {*{/if}*}
-        {*{if $NaviFilter->hasCategoryFilter()}*}
-            {*<input type="hidden" name="kf" value="{$NaviFilter->getCategoryFilter()->getValue()}" />*}
-        {*{/if}*}
-        {*{if $NaviFilter->hasManufacturerFilter()}*}
-            {*<input type="hidden" name="hf" value="{$NaviFilter->getManufacturerFilter()->getValue()}" />*}
-        {*{/if}*}
-        {*{if $NaviFilter->hasSearchSpecialFilter()}*}
-            {*<input type="hidden" name="qf" value="{$NaviFilter->getSearchSpecialFilter()->getValueCompat()}" />*}
-        {*{/if}*}
-        {*{if $NaviFilter->hasRatingFilter()}*}
-            {*<input type="hidden" name="bf" value="{$NaviFilter->getRatingFilter()->getValue()}" />*}
-        {*{/if}*}
-        {*{if $NaviFilter->hasPriceRangeFilter()}*}
-            {*<input type="hidden" name="pf" value="{$NaviFilter->getPriceRangeFilter()->getValue()}" />*}
-        {*{/if}*}
-        {*{if $NaviFilter->hasAttributeFilter()}*}
-            {*{foreach $NaviFilter->getAttributeFilter() as $attributeFilter}*}
-                {*<input type="hidden" name="mf{$attributeFilter@iteration}" value="{$attributeFilter->getValue()}" />*}
-            {*{/foreach}*}
-        {*{/if}*}
-        {*{if isset($cJTLSearchStatedFilter_arr) && is_array($cJTLSearchStatedFilter_arr)}*}
-            {*{foreach name=jtlsearchstatedfilter from=$cJTLSearchStatedFilter_arr key=key item=cJTLSearchStatedFilter}*}
-                {*<input name="fq{$key}" type="hidden" value="{$cJTLSearchStatedFilter}" />*}
-            {*{/foreach}*}
-        {*{/if}*}
-        {*{if $NaviFilter->hasTagFilter()}*}
-            {*{foreach $NaviFilter->getTagFilter() as $tagFilter}*}
-                {*<input type="hidden" name="tf{$$tagFilter@iteration}" value="{$tagFilter->getValue()}" />*}
-            {*{/foreach}*}
-        {*{/if}*}
-        {*{if $NaviFilter->hasSearchFilter()}*}
-            {*{foreach $NaviFilter->getSearchFilter() as $searchFilter}*}
-                {*<input type="hidden" name="sf{$searchFilter@iteration}" value="{$searchFilter->getValue()}" />*}
-            {*{/foreach}*}
-        {*{/if}*}
-        {*{include file='productlist/result_options.tpl'}*}
-    {*</form>*}
     <div id="improve_search" class="form-inline clearfix">
         {include file='productlist/result_options.tpl'}
     </div>

@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {assign var='modal' value=isset($smarty.get.quickView) && $smarty.get.quickView == 1}
 {if isset($Artikel->Variationen) && $Artikel->Variationen|@count > 0 && !$showMatrix}
     {assign var="VariationsSource" value="Variationen"}
@@ -16,7 +20,7 @@
                 {if !isset($smallView) || !$smallView}
                 <dt>{$Variation->cName}{if $Variation->cTyp === 'IMGSWATCHES'} <span class="swatches-selected text-muted" data-id="{$Variation->kEigenschaft}"></span>{/if}</dt>
                 {/if}
-                <dd class="form-group{if $Variation->cTyp !== 'FREIFELD' && !$showMatrix} required{/if}">
+                <dd class="form-group">
                     {if $Variation->cTyp === 'SELECTBOX'}
                         {block name='productdetails-info-variation-select'}
                         <select class="form-control" title="{if isset($smallView) && $smallView}{$Variation->cName} - {/if}{lang key='pleaseChooseVariation' section='productDetails'}" name="eigenschaftwert[{$Variation->kEigenschaft}]"{if !$showMatrix} required{/if}>

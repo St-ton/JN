@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 <li>
     {if $smarty.session.Warenkorb->PositionenArr|@count > 0}
         <table class="table table-striped dropdown-cart-items hyphens">

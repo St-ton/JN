@@ -6,6 +6,7 @@
 
 namespace Filter;
 
+
 use Filter\Items\Search;
 use Filter\Items\Attribute;
 use Filter\Items\Category;
@@ -45,7 +46,7 @@ class ProductFilterURL
      */
     public function getURL($extraFilter = null, $bCanonical = false, $debug = false): string
     {
-        $languageID         = $this->productFilter->getLanguageID();
+        $languageID         = $this->productFilter->getFilterConfig()->getLanguageID();
         $extraFilter        = $this->convertExtraFilter($extraFilter);
         $base               = $this->productFilter->getBaseState();
         $nonSeoFilterParams = [];
@@ -78,9 +79,9 @@ class ProductFilterURL
             }
         }
         if ($bCanonical === true) {
-            return $this->productFilter->getBaseURL() . $this->buildURLString($seoFilterParams, $nonSeoFilterParams);
+            return $this->productFilter->getFilterConfig()->getBaseURL() . $this->buildURLString($seoFilterParams, $nonSeoFilterParams);
         }
-        $url    = $this->productFilter->getBaseURL();
+        $url    = $this->productFilter->getFilterConfig()->getBaseURL();
         $active = $this->productFilter->getActiveFilters();
         // we need the base state + all active filters + optionally the additional filter to generate the correct url
         if ($extraFilter !== null && !$extraFilter->getDoUnset()) {
@@ -280,7 +281,7 @@ class ProductFilterURL
         foreach ($this->productFilter->getAttributeFilter() as $filter) {
             if ($filter->getAttributeID() > 0) {
                 $url->addAttribute($filter->getAttributeID(), $this->getURL(
-                    $additionalFilter->init($filter->getAttributeID())->setSeo($this->productFilter->getLanguages())
+                    $additionalFilter->init($filter->getAttributeID())->setSeo($this->productFilter->getFilterConfig()->getLanguages())
                 ));
                 $filter->setUnsetFilterURL($url->getAttributes());
             }
@@ -306,7 +307,7 @@ class ProductFilterURL
         ) {
             // the url should be <shop>/<merkmalwert-url>__<merkmalfilter>[__<merkmalfilter>]
             $_mmwSeo = \str_replace(
-                $this->productFilter->getAttributeValue()->getSeo($this->productFilter->getLanguageID()) . \SEP_MERKMAL,
+                $this->productFilter->getAttributeValue()->getSeo($this->productFilter->getFilterConfig()->getLanguageID()) . \SEP_MERKMAL,
                 '',
                 $url->getCategories()
             );
@@ -356,7 +357,7 @@ class ProductFilterURL
 
         $extraFilter = (new Search($this->productFilter))->init(null)->setDoUnset(true);
         foreach ($this->productFilter->getSearchFilter() as $searchFilter) {
-            /** @var FilterOption $option */
+            /** @var Option $option */
             if (($value = $searchFilter->getValue()) > 0) {
                 $_url = $this->getURL($extraFilter);
                 $url->addSearchFilter($value, $_url);

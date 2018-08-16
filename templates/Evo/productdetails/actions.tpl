@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {if !isset($smarty.get.quickView) || $smarty.get.quickView != 1}
     <div class="btn-toolbar text-right bottom15" role="toolbar">
         <div id="product-actions" class="btn-group btn-group-md product-actions hidden-print pull-right" role="group">

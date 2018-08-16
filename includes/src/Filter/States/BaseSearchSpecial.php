@@ -6,8 +6,9 @@
 
 namespace Filter\States;
 
+
 use Filter\AbstractFilter;
-use Filter\FilterJoin;
+use Filter\Join;
 use Filter\FilterInterface;
 use Filter\ProductFilter;
 
@@ -55,7 +56,7 @@ class BaseSearchSpecial extends AbstractFilter
      */
     public function setSeo(array $languages): FilterInterface
     {
-        $oSeo_arr = \Shop::Container()->getDB()->selectAll(
+        $oSeo_arr = $this->productFilter->getDB()->selectAll(
             'tseo',
             ['cKey', 'kKey'],
             ['suchspecial', $this->getValue()],
@@ -173,7 +174,7 @@ class BaseSearchSpecial extends AbstractFilter
     {
         switch ($this->value) {
             case \SEARCHSPECIALS_BESTSELLER:
-                return (new FilterJoin())
+                return (new Join())
                     ->setType('JOIN')
                     ->setTable('tbestseller')
                     ->setOn('tbestseller.kArtikel = tartikel.kArtikel')
@@ -183,7 +184,7 @@ class BaseSearchSpecial extends AbstractFilter
             case \SEARCHSPECIALS_SPECIALOFFERS:
                 return $this->productFilter->hasPriceRangeFilter()
                     ? []
-                    : (new FilterJoin())
+                    : (new Join())
                         ->setType('JOIN')
                         ->setTable('tartikelsonderpreis AS tasp')
                         ->setOn('tasp.kArtikel = tartikel.kArtikel JOIN tsonderpreise AS tsp 
@@ -199,7 +200,7 @@ class BaseSearchSpecial extends AbstractFilter
             case \SEARCHSPECIALS_TOPREVIEWS:
                 return $this->productFilter->hasRatingFilter()
                     ? []
-                    : (new FilterJoin())
+                    : (new Join())
                         ->setType('JOIN')
                         ->setTable('tartikelext AS taex ')
                         ->setOn('taex.kArtikel = tartikel.kArtikel')

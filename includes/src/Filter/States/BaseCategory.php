@@ -6,9 +6,10 @@
 
 namespace Filter\States;
 
+
 use DB\ReturnType;
 use Filter\AbstractFilter;
-use Filter\FilterJoin;
+use Filter\Join;
 use Filter\FilterInterface;
 use Filter\Items\Category;
 use Filter\ProductFilter;
@@ -83,7 +84,7 @@ class BaseCategory extends AbstractFilter
     public function setSeo(array $languages): FilterInterface
     {
         if ($this->getValue() > 0) {
-            $oSeo_arr = \Shop::Container()->getDB()->queryPrepared(
+            $oSeo_arr = $this->productFilter->getDB()->queryPrepared(
                 "SELECT tseo.cSeo, tseo.kSprache, tkategorie.cName AS cKatName, tkategoriesprache.cName
                     FROM tseo
                         LEFT JOIN tkategorie
@@ -155,7 +156,7 @@ class BaseCategory extends AbstractFilter
      */
     public function getSQLJoin()
     {
-        return (new FilterJoin())
+        return (new Join())
             ->setType('JOIN')
             ->setOrigin(__CLASS__)
             ->setTable('tkategorieartikel')

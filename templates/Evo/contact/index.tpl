@@ -1,6 +1,6 @@
 {**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='header'}
     {include file='layout/header.tpl'}
@@ -92,7 +92,7 @@
                                         {elseif $fehlendeAngaben.email == 4}{lang assign='invalidReason' key='noDnsEmail' section='account data'}
                                         {elseif $fehlendeAngaben.email == 5}{lang assign='invalidReason' key='emailNotAvailable' section='account data'}{/if}
                                     {/if}
-                                    {include file='snippets/form_group_simple.tpl' options=[ "email" , "email", "email", {$Vorgaben->cMail}, {lang key='email' section='account data'}, true, {$invalidReason}]}
+                                    {include file='snippets/form_group_simple.tpl' options=['email' , 'email', 'email', {$Vorgaben->cMail}, {lang key='email' section='account data'}, true, {$invalidReason}]}
                                 </div>
                             </div>
                             {if $Einstellungen.kontakt.kontakt_abfragen_tel !== 'N' || $Einstellungen.kontakt.kontakt_abfragen_mobil !== 'N'}
@@ -140,8 +140,8 @@
                                 {/if}
                                 <div class="row">
                                     <div class="col-xs-12 col-md-6">
-                                        <div class="form-group float-label-control{if isset($fehlendeAngaben.subject)} has-error{/if} required">
-                                            <label for="subject" class="control-label">{lang key='subject' section='contact'}{* <span class="fa fa-asterisk required"></span>*}</label>
+                                        <div class="form-group float-label-control{if isset($fehlendeAngaben.subject)} has-error{/if}">
+                                            <label for="subject" class="control-label">{lang key='subject' section='contact'}</label>
                                             <select class="form-control" name="subject" id="subject" required>
                                                 <option value="" selected disabled>{lang key='subject' section='contact'}</option>
                                                 {foreach $betreffs as $betreff}
@@ -159,8 +159,8 @@
                             {/if}
                             <div class="row">
                                 <div class="col-xs-12 col-md-12">
-                                    <div class="form-group float-label-control{if isset($fehlendeAngaben.nachricht)} has-error{/if} required">
-                                        <label for="message" class="control-label">{lang key='message' section='contact'}{* <span class="fa fa-asterisk required"></span>*}</label>
+                                    <div class="form-group float-label-control{if isset($fehlendeAngaben.nachricht)} has-error{/if}">
+                                        <label for="message" class="control-label">{lang key='message' section='contact'}</label>
                                         <textarea name="nachricht" class="form-control" rows="10" id="message" required>{if isset($Vorgaben->cNachricht)}{$Vorgaben->cNachricht}{/if}</textarea>
                                         {if !empty($fehlendeAngaben.nachricht)}
                                             <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
@@ -175,7 +175,7 @@
                             isset($Einstellungen.kontakt.kontakt_abfragen_captcha) && $Einstellungen.kontakt.kontakt_abfragen_captcha !== 'N' && empty($smarty.session.Kunde->kKunde)}
                             <hr>
                             <div class="row">
-                                <div class="col-xs-12 col-md-12{if !empty($fehlendeAngaben.captcha)} has-error{/if} required">
+                                <div class="col-xs-12 col-md-12{if !empty($fehlendeAngaben.captcha)} has-error{/if}">
                                     {captchaMarkup getBody=true}
                                     <hr>
                                 </div>

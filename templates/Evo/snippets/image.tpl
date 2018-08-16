@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {counter assign=imgcounter print=0}
 <div class="image-box loading">
     <div class="image-content">

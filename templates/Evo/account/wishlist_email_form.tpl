@@ -1,8 +1,7 @@
 {**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license https://jtl-url.de/jtlshoplicense
  *}
-
 {if $Einstellungen.global.global_wunschliste_freunde_aktiv === 'Y'}
     <h1>{lang key='wishlistViaEmail' section='login'}</h1>
     {if !empty($hinweis)}

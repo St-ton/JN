@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {if empty($Versandarten)}
     {block name='shipping-estimate-form'}
         <div class="panel panel-default" id="shipping-estimate-form">
@@ -36,7 +40,7 @@
             </div>
             <div class="panel-body">
                 {block name='shipping-estimated-body'}
-                    {if count($ArtikelabhaengigeVersandarten)>0}
+                    {if count($ArtikelabhaengigeVersandarten) > 0}
                         <table class="table table-striped">
                             <caption>{lang key='productShippingDesc' section='checkout'}:</caption>
                             <tbody>

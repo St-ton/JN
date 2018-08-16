@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {if isset($abschlussseite) && $abschlussseite == 1}
     {include file='checkout/inc_trustedshops_excellence.tpl'}
 {else}
@@ -100,5 +104,4 @@
         {include file='checkout/inc_trustedshops_excellence.tpl'}
     </div>
 {/if}
-
 {include file='checkout/inc_conversion_tracking.tpl'}

@@ -1,8 +1,7 @@
 {**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license https://jtl-url.de/jtlshoplicense
  *}
-
 <form method="post" action="{get_static_route id='jtl.php'}" name="Wunschliste">
     {$jtl_token}
     {block name='wishlist'}

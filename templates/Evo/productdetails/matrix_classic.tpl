@@ -1,4 +1,8 @@
-{capture name='outofstock' assign='outofstockInfo'}<span class="delivery-status"><small class="status-0">{lang key='soldout' section='global'}</small></span>{/capture}
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
+{capture name='outofstock' assign='outofstockInfo'}<span class="delivery-status"><small class="status-0">{lang key='soldout'}</small></span>{/capture}
 <div class="table-responsive">
     <table class="table table-striped variation-matrix">
         {* ****** 2-dimensional ****** *}
@@ -53,24 +57,24 @@
                                 <td class="form-inline vcenter">
                                     {if $Einstellungen.global.global_erscheinende_kaeuflich === 'N' && isset($child->nErscheinendesProdukt) && $child->nErscheinendesProdukt == 1}
                                         <small>
-                                            {lang key='productAvailableFrom' section='global'}: <strong>{$child->Erscheinungsdatum_de}</strong>
+                                            {lang key='productAvailableFrom'}: <strong>{$child->Erscheinungsdatum_de}</strong>
                                         </small>
                                     {elseif isset($child->nNichtLieferbar) && $child->nNichtLieferbar == 1}
                                         {if isset($child->nErscheinendesProdukt) && $child->nErscheinendesProdukt == 1}
                                             <small>
-                                                {lang key='productAvailableFrom' section='global'}: <strong>{$child->Erscheinungsdatum_de}</strong>
+                                                {lang key='productAvailableFrom'}: <strong>{$child->Erscheinungsdatum_de}</strong>
                                             </small>
                                         {else}
                                             {$outofstockInfo}
                                         {/if}
                                     {elseif (isset($child->bHasKonfig) && $child->bHasKonfig == true) || (isset($child->nVariationAnzahl) && isset($child->nVariationOhneFreifeldAnzahl) && $child->nVariationAnzahl > $child->nVariationOhneFreifeldAnzahl)}
                                         <div class="center-sm">
-                                            <a class="btn btn-default configurepos" href="{$ShopURL}/?a={$child->kArtikel}"><i class="fa fa-cogs"></i><span class="hidden-xs"> {lang key='configure' section='global'}</span></a>
+                                            <a class="btn btn-default configurepos" href="{$ShopURL}/?a={$child->kArtikel}"><i class="fa fa-cogs"></i><span class="hidden-xs"> {lang key='configure'}</span></a>
                                         </div>
                                         {if isset($child->nErscheinendesProdukt) && $child->nErscheinendesProdukt == 1}
                                             <div>
                                                 <small>
-                                                    {lang key='productAvailableFrom' section='global'}: <strong>{$child->Erscheinungsdatum_de}</strong>
+                                                    {lang key='productAvailableFrom'}: <strong>{$child->Erscheinungsdatum_de}</strong>
                                                 </small>
                                             </div>
                                         {/if}
@@ -85,7 +89,7 @@
                                                     {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige !== 'nichts' && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen !== 'N' && $child->cLagerBeachten === 'Y' &&
                                                     $child->fLagerbestand <= 0 && $child->fLieferantenlagerbestand > 0 && $child->fLieferzeit > 0 &&
                                                     ($child->cLagerKleinerNull === 'N' || $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U')}
-                                                        <span class="status status-1"><i class="fa fa-truck"></i> {lang key='supplierStockNotice' section='global' printf=$child->fLieferzeit}</span>
+                                                        <span class="status status-1"><i class="fa fa-truck"></i> {lang key='supplierStockNotice' printf=$child->fLieferzeit}</span>
                                                     {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'verfuegbarkeit' || $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'genau'}
                                                         <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->cLagerhinweis[$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige]}</span>
                                                     {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'ampel'}
@@ -157,7 +161,7 @@
                                         {if isset($child->nErscheinendesProdukt) && $child->nErscheinendesProdukt == 1}
                                             <div>
                                                 <small>
-                                                    {lang key='productAvailableFrom' section='global'}: <strong>{$child->Erscheinungsdatum_de}</strong>
+                                                    {lang key='productAvailableFrom'}: <strong>{$child->Erscheinungsdatum_de}</strong>
                                                 </small>
                                             </div>
                                         {/if}
@@ -173,7 +177,7 @@
                                                         {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige !== 'nichts' && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen !== 'N' && $child->cLagerBeachten === 'Y' &&
                                                         $child->fLagerbestand <= 0 && $child->fLieferantenlagerbestand > 0 && $child->fLieferzeit > 0 &&
                                                         ($child->cLagerKleinerNull === 'N' || $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U')}
-                                                            <span class="status status-1"><i class="fa fa-truck"></i> {lang key='supplierStockNotice' section='global' printf=$child->fLieferzeit}</span>
+                                                            <span class="status status-1"><i class="fa fa-truck"></i> {lang key='supplierStockNotice' printf=$child->fLieferzeit}</span>
                                                         {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'verfuegbarkeit' || $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'genau'}
                                                             <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->cLagerhinweis[$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige]}</span>
                                                         {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'ampel'}
@@ -238,24 +242,24 @@
                             <td class="vcenter text-center">
                                 {if $Einstellungen.global.global_erscheinende_kaeuflich === 'N' && isset($child->nErscheinendesProdukt) && $child->nErscheinendesProdukt == 1}
                                     <small>
-                                        {lang key='productAvailableFrom' section='global'}: <strong>{$child->Erscheinungsdatum_de}</strong>
+                                        {lang key='productAvailableFrom'}: <strong>{$child->Erscheinungsdatum_de}</strong>
                                     </small>
                                 {elseif isset($oVariationWertHead->nNichtLieferbar) && $oVariationWertHead->nNichtLieferbar == 1}
                                     {if isset($child->nErscheinendesProdukt) && $child->nErscheinendesProdukt == 1}
                                         <small>
-                                            {lang key='productAvailableFrom' section='global'}: <strong>{$child->Erscheinungsdatum_de}</strong>
+                                            {lang key='productAvailableFrom'}: <strong>{$child->Erscheinungsdatum_de}</strong>
                                         </small>
                                     {else}
                                         {$outofstockInfo}
                                     {/if}
                                 {elseif (isset($child->bHasKonfig) && $child->bHasKonfig == true) || (isset($child->nVariationAnzahl) && isset($child->nVariationOhneFreifeldAnzahl) && $child->nVariationAnzahl > $child->nVariationOhneFreifeldAnzahl)}
                                     <div class="center-sm">
-                                        <a class="btn btn-default configurepos" href="{$ShopURL}/?a={$child->kArtikel}"><i class="fa fa-cogs"></i><span class="hidden-xs"> {lang key='configure' section='global'}</span></a>
+                                        <a class="btn btn-default configurepos" href="{$ShopURL}/?a={$child->kArtikel}"><i class="fa fa-cogs"></i><span class="hidden-xs"> {lang key='configure'}</span></a>
                                     </div>
                                     {if isset($child->nErscheinendesProdukt) && $child->nErscheinendesProdukt == 1}
                                         <div>
                                             <small>
-                                                {lang key='productAvailableFrom' section='global'}: <strong>{$child->Erscheinungsdatum_de}</strong>
+                                                {lang key='productAvailableFrom'}: <strong>{$child->Erscheinungsdatum_de}</strong>
                                             </small>
                                         </div>
                                     {/if}
@@ -270,7 +274,7 @@
                                                 {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige !== 'nichts' && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen !== 'N' && $child->cLagerBeachten === 'Y' &&
                                                 $child->fLagerbestand <= 0 && $child->fLieferantenlagerbestand > 0 && $child->fLieferzeit > 0 &&
                                                 ($child->cLagerKleinerNull === 'N' || $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U')}
-                                                    <span class="status status-1"><i class="fa fa-truck"></i> {lang key='supplierStockNotice' section='global' printf=$child->fLieferzeit}</span>
+                                                    <span class="status status-1"><i class="fa fa-truck"></i> {lang key='supplierStockNotice' printf=$child->fLieferzeit}</span>
                                                 {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'verfuegbarkeit' || $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'genau'}
                                                     <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->cLagerhinweis[$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige]}</span>
                                                 {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'ampel'}
@@ -304,7 +308,7 @@
                                     {if isset($child->nErscheinendesProdukt) && $child->nErscheinendesProdukt == 1}
                                         <div>
                                             <small>
-                                                {lang key='productAvailableFrom' section='global'}: <strong>{$child->Erscheinungsdatum_de}</strong>
+                                                {lang key='productAvailableFrom'}: <strong>{$child->Erscheinungsdatum_de}</strong>
                                             </small>
                                         </div>
                                     {/if}
@@ -320,7 +324,7 @@
                                                     {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige !== 'nichts' && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen !== 'N' && $child->cLagerBeachten === 'Y' &&
                                                     $child->fLagerbestand <= 0 && $child->fLieferantenlagerbestand > 0 && $child->fLieferzeit > 0 &&
                                                     ($child->cLagerKleinerNull === 'N' || $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U')}
-                                                        <span class="status status-1"><i class="fa fa-truck"></i> {lang key='supplierStockNotice' section='global' printf=$child->fLieferzeit}</span>
+                                                        <span class="status status-1"><i class="fa fa-truck"></i> {lang key='supplierStockNotice' printf=$child->fLieferzeit}</span>
                                                     {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'verfuegbarkeit' || $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'genau'}
                                                         <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->cLagerhinweis[$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige]}</span>
                                                     {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'ampel'}
@@ -366,37 +370,38 @@
                             <td class="form-inline">
                                 {if $Einstellungen.global.global_erscheinende_kaeuflich === 'N' && isset($child->nErscheinendesProdukt) && $child->nErscheinendesProdukt == 1}
                                     <small>
-                                        {lang key='productAvailableFrom' section='global'}: <strong>{$child->Erscheinungsdatum_de}</strong>
+                                        {lang key='productAvailableFrom'}: <strong>{$child->Erscheinungsdatum_de}</strong>
                                     </small>
                                 {elseif isset($oVariationWertHead->nNichtLieferbar) && $oVariationWertHead->nNichtLieferbar == 1}
                                     {if isset($child->nErscheinendesProdukt) && $child->nErscheinendesProdukt == 1}
                                         <small>
-                                            {lang key='productAvailableFrom' section='global'}: <strong>{$child->Erscheinungsdatum_de}</strong>
+                                            {lang key='productAvailableFrom'}: <strong>{$child->Erscheinungsdatum_de}</strong>
                                         </small>
                                     {else}
                                         {$outofstockInfo}
                                     {/if}
                                 {elseif (isset($child->bHasKonfig) && $child->bHasKonfig == true) || (isset($child->nVariationAnzahl) && isset($child->nVariationOhneFreifeldAnzahl) && $child->nVariationAnzahl > $child->nVariationOhneFreifeldAnzahl)}
-                                    <a class="btn btn-default configurepos" href="{$ShopURL}/?a={$child->kArtikel}"><i class="fa fa-cogs"></i><span class="hidden-xs"> {lang key='configure' section='global'}</span></a>
+                                    <a class="btn btn-default configurepos" href="{$ShopURL}/?a={$child->kArtikel}"><i class="fa fa-cogs"></i><span class="hidden-xs"> {lang key='configure'}</span></a>
                                     {if isset($child->nErscheinendesProdukt) && $child->nErscheinendesProdukt == 1}
                                         <div>
                                             <small>
-                                                {lang key='productAvailableFrom' section='global'}: <strong>{$child->Erscheinungsdatum_de}</strong>
+                                                {lang key='productAvailableFrom'}: <strong>{$child->Erscheinungsdatum_de}</strong>
                                             </small>
                                         </div>
                                     {/if}
                                     <div class="delivery-status">
                                         <small>
                                             {if !$child->nErscheinendesProdukt}
-                                                {if $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige !== 'nichts' && $child->cLagerBeachten === 'Y' &&
-                                                ($child->cLagerKleinerNull === 'N' || $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U') &&
-                                                $child->fLagerbestand <= 0 && $child->fZulauf > 0 && isset($child->dZulaufDatum_de)}
+                                                {if $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige !== 'nichts'
+                                                && $child->cLagerBeachten === 'Y'
+                                                && ($child->cLagerKleinerNull === 'N' || $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U')
+                                                && $child->fLagerbestand <= 0 && $child->fZulauf > 0 && isset($child->dZulaufDatum_de)}
                                                     {assign var=cZulauf value=$child->fZulauf|cat:':::'|cat:$child->dZulaufDatum_de}
                                                     <span class="status status-1"><i class="fa fa-truck"></i> {lang key='productInflowing' section='productDetails' printf=$cZulauf}</span>
                                                 {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige !== 'nichts' && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen !== 'N' && $child->cLagerBeachten === 'Y' &&
                                                 $child->fLagerbestand <= 0 && $child->fLieferantenlagerbestand > 0 && $child->fLieferzeit > 0 &&
                                                 ($child->cLagerKleinerNull === 'N' || $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U')}
-                                                    <span class="status status-1"><i class="fa fa-truck"></i> {lang key='supplierStockNotice' section='global' printf=$child->fLieferzeit}</span>
+                                                    <span class="status status-1"><i class="fa fa-truck"></i> {lang key='supplierStockNotice' printf=$child->fLieferzeit}</span>
                                                 {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'verfuegbarkeit' || $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'genau'}
                                                     <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->cLagerhinweis[$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige]}</span>
                                                 {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'ampel'}
@@ -436,7 +441,7 @@
                                     {if isset($child->nErscheinendesProdukt) && $child->nErscheinendesProdukt == 1}
                                         <div>
                                             <small>
-                                                {lang key='productAvailableFrom' section='global'}: <strong>{$child->Erscheinungsdatum_de}</strong>
+                                                {lang key='productAvailableFrom'}: <strong>{$child->Erscheinungsdatum_de}</strong>
                                             </small>
                                         </div>
                                     {/if}
@@ -444,15 +449,17 @@
                                         <small>
                                             {if $Artikel->nIstVater == 1}
                                                 {if isset($child->nErscheinendesProdukt) && !$child->nErscheinendesProdukt}
-                                                    {if $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige !== 'nichts' && $child->cLagerBeachten === 'Y' &&
-                                                    ($child->cLagerKleinerNull === 'N' || $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U') &&
-                                                    $child->fLagerbestand <= 0 && $child->fZulauf > 0 && isset($child->dZulaufDatum_de)}
+                                                    {if $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige !== 'nichts'
+                                                    && $child->cLagerBeachten === 'Y'
+                                                    && ($child->cLagerKleinerNull === 'N' || $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U')
+                                                    && $child->fLagerbestand <= 0 && $child->fZulauf > 0 && isset($child->dZulaufDatum_de)}
                                                         {assign var=cZulauf value=$child->fZulauf|cat:':::'|cat:$child->dZulaufDatum_de}
                                                         <span class="status status-1"><i class="fa fa-truck"></i> {lang key='productInflowing' section='productDetails' printf=$cZulauf}</span>
-                                                    {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige !== 'nichts' && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen !== 'N' && $child->cLagerBeachten === 'Y' &&
-                                                    $child->fLagerbestand <= 0 && $child->fLieferantenlagerbestand > 0 && $child->fLieferzeit > 0 &&
-                                                    ($child->cLagerKleinerNull === 'N' || $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U')}
-                                                        <span class="status status-1"><i class="fa fa-truck"></i> {lang key='supplierStockNotice' section='global' printf=$child->fLieferzeit}</span>
+                                                    {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige !== 'nichts' && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen !== 'N'
+                                                    && $child->cLagerBeachten === 'Y'
+                                                    && $child->fLagerbestand <= 0 && $child->fLieferantenlagerbestand > 0 && $child->fLieferzeit > 0
+                                                    && ($child->cLagerKleinerNull === 'N' || $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U')}
+                                                        <span class="status status-1"><i class="fa fa-truck"></i> {lang key='supplierStockNotice' printf=$child->fLieferzeit}</span>
                                                     {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'verfuegbarkeit' || $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'genau'}
                                                         <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->cLagerhinweis[$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige]}</span>
                                                     {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'ampel'}
@@ -480,4 +487,4 @@
     </table>
 </div>
 <input type="hidden" name="variBox" value="1" />
-<button name="inWarenkorb" type="submit" value="{lang key='addToCart' section='global'}" class="submit btn btn-primary pull-right">{lang key='addToCart' section='global'}</button>
+<button name="inWarenkorb" type="submit" value="{lang key='addToCart'}" class="submit btn btn-primary pull-right">{lang key='addToCart'}</button>

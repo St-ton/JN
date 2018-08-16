@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {if $oBox->show()}
     {foreach $oBox->getItems() as $Merkmal}
         {assign var=kMerkmal value=$Merkmal->kMerkmal}

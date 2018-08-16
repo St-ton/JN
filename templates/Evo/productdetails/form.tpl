@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {if $Artikel->kArtikelVariKombi > 0}
     <input type="hidden" name="aK" value="{$Artikel->kArtikelVariKombi}" />
 {/if}

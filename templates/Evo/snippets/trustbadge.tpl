@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {if $Einstellungen.template.trustedshops.show_trustbadge === 'Y'}
     {ts_data assign=tsData}
     {if $tsData.tsId !== '' && $tsData.nAktiv == true}

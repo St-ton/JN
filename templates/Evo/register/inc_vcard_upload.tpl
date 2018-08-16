@@ -1,8 +1,7 @@
 {**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license https://jtl-url.de/jtlshoplicense
  *}
-
 {if $Einstellungen.kunden.kundenregistrierung_vcardupload === 'Y'}
     <div id="vcard-upload" class="clearfix">
         <div class="dropdown pull-right">

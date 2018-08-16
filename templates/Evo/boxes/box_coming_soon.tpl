@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {if $oBox->show()}
     {lang key='upcomingProducts' assign='slidertitle'}
     {assign var='moreLink' value=$oBox->getURL()}

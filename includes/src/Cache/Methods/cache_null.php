@@ -6,6 +6,7 @@
 
 namespace Cache\Methods;
 
+
 use Cache\ICachingMethod;
 use Cache\JTLCacheTrait;
 

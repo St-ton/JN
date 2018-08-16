@@ -6,6 +6,7 @@
 
 namespace Cache;
 
+
 use Cache\Methods\cache_null;
 
 \define('CACHING_ROOT_DIR', __DIR__ . 'JTLCache.php/');

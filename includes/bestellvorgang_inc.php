@@ -2147,11 +2147,10 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
         }
 
     }
-    if (isset($data['geburtstag']) && StringHandler::checkDate(StringHandler::filterXSS($data['geburtstag'])) > 0) {
-        $ret['geburtstag'] = StringHandler::checkDate(
-            StringHandler::filterXSS($data['geburtstag']),
-            $conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y'
-        );
+    if ($conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y'
+        && StringHandler::checkDate(StringHandler::filterXSS($data['geburtstag'])) > 0
+    ) {
+        $ret['geburtstag'] = StringHandler::checkDate(StringHandler::filterXSS($data['geburtstag']));
     }
     if ($conf['kunden']['kundenregistrierung_abfragen_www'] === 'Y' && empty($data['www'])) {
         $ret['www'] = 1;

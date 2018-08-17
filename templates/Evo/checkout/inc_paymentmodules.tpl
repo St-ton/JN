@@ -36,8 +36,6 @@
             {include file='account/retrospective_payment.tpl'}
         {elseif $Bestellung->Zahlungsart->cModulId === 'za_ut_stand_jtl'}
             {include file='checkout/modules/ut/bestellabschluss.tpl'}
-        {elseif (substr($Bestellung->Zahlungsart->cModulId, 0, 8) === 'za_mbqc_')}
-            {include file='checkout/modules/moneybookers_qc/bestellabschluss.tpl'}
         {elseif $Bestellung->Zahlungsart->cModulId === 'za_wirecard_jtl'}
             {include file='checkout/modules/wirecard/bestellabschluss.tpl'}
         {elseif $Bestellung->Zahlungsart->cModulId === 'za_postfinance_jtl'}

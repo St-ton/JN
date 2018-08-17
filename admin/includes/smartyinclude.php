@@ -172,4 +172,5 @@ $smarty->assign('URL_SHOP', $shopURL)
        ->assign('oLinkOberGruppe_arr', $mainGroups)
        ->assign('SektionenEinstellungen', $configSections)
        ->assign('notifications', Notification::getInstance())
-       ->assign('favorites', $oAccount->favorites());
+       ->assign('favorites', $oAccount->favorites())
+       ->assign('faviconAdminURL', Shop::getFaviconURL(true));

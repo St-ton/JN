@@ -8,8 +8,7 @@
     <meta name="robots" content="noindex,nofollow" />
     <title>JTL Shop Administration</title>
     {assign var=urlPostfix value='?v='|cat:$shopVersion}
-    <link type="image/x-icon" href="favicon.ico" rel="icon" />
-    <link type="image/x-icon" href="favicon.ico" rel="shortcut icon" />
+    <link type="image/x-icon" href="{$faviconAdminURL}" rel="icon" />
     {$admin_css}
     <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}lib/codemirror.css{$urlPostfix}" />
     <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}addon/hint/show-hint.css{$urlPostfix}" />

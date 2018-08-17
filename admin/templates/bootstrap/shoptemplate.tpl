@@ -50,14 +50,14 @@
                 </div>
             {/if}
 
-            {foreach from=$oEinstellungenXML item=oSection name="sections"}
+            {foreach $oEinstellungenXML as $oSection}
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">{$oSection->cName}</h3>
                     </div>
                     <div class="panel-body">
                         <div class="row">
-                            {foreach name="tplOptions" from=$oSection->oSettings_arr item=oSetting}
+                            {foreach $oSection->oSettings_arr as $oSetting}
                                 {if $oSetting->cKey === 'theme_default' && isset($themePreviews) && $themePreviews !== null}
                                     <div class="col-xs-12">
                                         <div class="item input-group" id="theme-preview-wrap" style="display: none;">
@@ -99,15 +99,15 @@
                                             <span class="input-group-wrap">
                                                 {if $oSetting->cType === 'select'}
                                                     <select class="form-control" name="cWert[]" id="{$oSection->cKey}-{$oSetting->cKey}">
-                                                        {foreach from=$oSetting->oOptions_arr item=oOption}
+                                                        {foreach $oSetting->oOptions_arr as $oOption}
                                                             <option value="{$oOption->cValue}" {if $oOption->cValue == $oSetting->cValue}selected="selected"{/if}>{$oOption->cName}</option>
                                                         {/foreach}
                                                     </select>
                                                 {elseif $oSetting->cType === 'optgroup'}
                                                     <select class="form-control" name="cWert[]" id="{$oSection->cKey}-{$oSetting->cKey}">
-                                                        {foreach from=$oSetting->oOptgroup_arr item=oOptgroup}
+                                                        {foreach $oSetting->oOptgroup_arr as $oOptgroup}
                                                             <optgroup label="{$oOptgroup->cName}">
-                                                            {foreach from=$oOptgroup->oValues_arr item=oOption}
+                                                            {foreach $oOptgroup->oValues_arr as $oOption}
                                                                 <option value="{$oOption->cValue}" {if $oOption->cValue == $oSetting->cValue}selected="selected"{/if}>{$oOption->cName}</option>
                                                             {/foreach}
                                                             </optgroup>
@@ -155,14 +155,14 @@
                                                     </div>
                                                 {elseif $oSetting->cType === 'upload' && isset($oSetting->rawAttributes.target)}
                                                     <div class="template-upload">
-                                                        <input name="upload-{$smarty.foreach.sections.index}"
-                                                               id="tpl-upload-{$smarty.foreach.sections.index}" type="file"
+                                                        <input name="upload-{$oSetting@iteration}"
+                                                               id="tpl-upload-{$oSetting@iteration}" type="file"
                                                                class="file"
                                                                accept="{if !empty($oSetting->rawAttributes.accept)}{$oSetting->rawAttributes.accept}{else}image/*{/if}">
                                                     </div>
-                                                    <input type="hidden" name="cWert[]" value="upload-{$smarty.foreach.sections.index}" />
+                                                    <input type="hidden" name="cWert[]" value="upload-{$oSetting@iteration}" />
                                                     <script>
-                                                        $('#tpl-upload-{$smarty.foreach.sections.index}').fileinput({ldelim}
+                                                        $('#tpl-upload-{$oSetting@iteration}').fileinput({ldelim}
                                                             uploadAsync: false,
                                                             uploadExtraData: {ldelim}id:1{rdelim},
                                                             uploadUrl: '{$shopURL}/{$PFAD_ADMIN}shoptemplate.php?token={$smarty.session.jtl_token}',
@@ -174,12 +174,12 @@
                                                             language: 'de',
                                                             maxFileSize: {if !empty($oSetting->rawAttributes.maxFileSize)}{$oSetting->rawAttributes.maxFileSize}{else}1000{/if},
                                                             maxFilesNum: 1{if !empty($oSetting->cValue)}, initialPreview: [
-                                                                '<img src="{$shopURL}/templates/{$oTemplate->cOrdner}/{$oSetting->cValue}?v={$smarty.now}" class="file-preview-image" alt="" title="" />'
+                                                                '<img src="{$shopURL}/templates/{$oTemplate->cOrdner}/{$oSetting->rawAttributes.target}{$oSetting->cValue}?v={$smarty.now}" class="file-preview-image" alt="" title="" />'
                                                             ]{/if},
                                                             initialPreviewConfig: [
                                                                 {ldelim}
                                                                     url: '{$shopURL}/{$PFAD_ADMIN}shoptemplate.php',
-                                                                    extra: {ldelim}upload: '{$oTemplate->cOrdner}/{$oSetting->cValue}', id: 'upload-{$smarty.foreach.sections.index}', token : '{$smarty.session.jtl_token}'{rdelim}
+                                                                    extra: {ldelim}upload: '{$oTemplate->cOrdner}/{$oSetting->rawAttributes.target}{$oSetting->cValue}', id: 'upload-{$oSetting@iteration}', token : '{$smarty.session.jtl_token}'{rdelim}
                                                                     {rdelim}
                                                             ]
                                                         {rdelim}).on('fileuploaded', function(event, data) {ldelim}
@@ -225,7 +225,7 @@
             </tr>
             </thead>
             <tbody>
-            {foreach name="template" from=$oTemplate_arr item=oTemplate}
+            {foreach $oTemplate_arr as $oTemplate}
                 <tr>
                     <td class="text-vcenter text-center" width="140">
                         <div class="thumb-box thumb-sm">

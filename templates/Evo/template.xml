@@ -87,6 +87,8 @@
                 <Option Value="Y">Ja</Option>
             </Setting>
             <Setting Description="Hintergrundfarbe" Key="backgroundcolor" Type="colorpicker" Value="#eee"/>
+            <Setting Description="Favicon" Key="favicon" Type="upload" Value="favicon.ico" maxFileSize="123456" showPreview="false" allowedFileExtensions="['ico','png']" accept="image/*" target="themes/base/images/" targetFileName="favicon.ico">
+            </Setting>
             <Setting Description="Warenkorb-Mengen-Optionen in Dropdown anzeigen?" Key="qty_modify_dropdown" Type="select" Value="Y">
                 <Option Value="N">Nein</Option>
                 <Option Value="Y">Ja</Option>

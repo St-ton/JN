@@ -106,7 +106,7 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && FormHelper::valida
                                 && $_setting->cKey === $cName
                             ) {
                                 //target folder
-                                $base = PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/';
+                                $base = PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/' . $_setting->rawAttributes['target'];
                                 //optional target file name + extension
                                 if (isset($_setting->rawAttributes['targetFileName'])) {
                                     $cWert = $_setting->rawAttributes['targetFileName'];
@@ -177,7 +177,7 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && FormHelper::val
             foreach ($_conf->oSettings_arr as $_setting) {
                 if ($_setting->cType === 'upload'
                     && isset($_setting->rawAttributes['target'], $_setting->rawAttributes['targetFileName'])
-                    && !file_exists(PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/'
+                    && !file_exists(PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/' . $_setting->rawAttributes['target']
                         . $_setting->rawAttributes['targetFileName'])
                 ) {
 

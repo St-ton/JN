@@ -1878,23 +1878,33 @@ final class Shop
     }
 
     /**
+     * @param bool $admin
      * @return string
      */
-    public static function getFaviconURL(): string
+    public static function getFaviconURL(bool $admin = false): string
     {
-        $smarty           = JTLSmarty::getInstance(false, true);
-        $templateDir      = $smarty->getTemplateDir($smarty->context);
-        $shopTemplatePath = str_replace(PFAD_ROOT, '', $templateDir);
-        $faviconUrl       = self::getURL();
-
-        if (file_exists(PFAD_ROOT . 'favicon.ico')) {
-            $faviconUrl .= '/favicon.ico';
-        } elseif (file_exists($templateDir . 'favicon.ico')) {
-            $faviconUrl .= '/' . $shopTemplatePath . 'favicon.ico';
-        } elseif (file_exists($templateDir . 'themes/base/images/favicon.ico')) {
-            $faviconUrl .= '/' . $shopTemplatePath . 'themes/base/images/favicon.ico';
+        if ($admin) {
+            $faviconUrl = self::getAdminURL();
+            if (file_exists(PFAD_ROOT . PFAD_ADMIN . 'favicon.ico')) {
+                $faviconUrl .= '/favicon.ico';
+            } else {
+                $faviconUrl .= '/favicon-default.ico';
+            }
         } else {
-            $faviconUrl .= '/favicon-default.ico';
+            $smarty           = JTLSmarty::getInstance(false, true);
+            $templateDir      = $smarty->getTemplateDir($smarty->context);
+            $shopTemplatePath = str_replace(PFAD_ROOT, '', $templateDir);
+            $faviconUrl       = self::getURL();
+
+            if (file_exists($templateDir . 'themes/base/images/favicon.ico')) {
+                $faviconUrl .= '/' . $shopTemplatePath . 'themes/base/images/favicon.ico';
+            } elseif (file_exists($templateDir . 'favicon.ico')) {
+                $faviconUrl .= '/' . $shopTemplatePath . 'favicon.ico';
+            } elseif (file_exists(PFAD_ROOT . 'favicon.ico')) {
+                $faviconUrl .= '/favicon.ico';
+            } else {
+                $faviconUrl .= '/favicon-default.ico';
+            }
         }
 
         return $faviconUrl;

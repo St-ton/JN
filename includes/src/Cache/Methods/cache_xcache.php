@@ -21,4 +21,19 @@ use Cache\JTLCacheTrait;
  */
 class cache_xcache extends cache_null
 {
+    /**
+     * @inheritdoc
+     */
+    public function isAvailable(): bool
+    {
+        return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function test(): bool
+    {
+        return false;
+    }
 }

@@ -93,12 +93,14 @@ class Sitemap
         $cacheID = 'news_category_' . $this->langID . '_' . $this->customerGroupID;
         if (($newsCategories = $this->cache->get($cacheID)) === false) {
             $newsCategories = $this->db->queryPrepared(
-                "SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,
-                tnewskategorie.cBeschreibung, tnewskategorie.cMetaTitle, tnewskategorie.cMetaDescription,
+                "SELECT tnewskategorie.kNewsKategorie, t.languageID AS kSprache, t.name AS cName,
+                t.description AS cBeschreibung, t.metaTitle AS cMetaTitle, t.metaDescription AS cMetaDescription,
                 tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung, 
                 tnewskategorie.cPreviewImage, tseo.cSeo,
                 COUNT(DISTINCT(tnewskategorienews.kNews)) AS nAnzahlNews
                     FROM tnewskategorie
+                    JOIN tnewskategoriesprache t 
+                        ON tnewskategorie.kNewsKategorie = t.kNewsKategorie
                     LEFT JOIN tnewskategorienews 
                         ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
                     LEFT JOIN tnews 
@@ -107,7 +109,7 @@ class Sitemap
                         ON tseo.cKey = 'kNewsKategorie'
                         AND tseo.kKey = tnewskategorie.kNewsKategorie
                         AND tseo.kSprache = :lid
-                    WHERE tnewskategorie.kSprache = :lid
+                    WHERE t.languageID = :lid
                         AND tnewskategorie.nAktiv = 1
                         AND tnews.nAktiv = 1
                         AND tnews.dGueltigVon <= NOW()

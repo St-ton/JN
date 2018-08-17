@@ -541,16 +541,12 @@ class StringHandler
 
     /**
      * @param string $data
-     * @param bool $required
      * @return int
      */
-    public static function checkDate($data, $required = true): int
+    public static function checkDate($data): int
     {
         if (!$data) {
-            if ($required) {
-                return 1;
-            }
-            return 0;
+            return 1;
         }
         if (!preg_match('/^\d{1,2}\.\d{1,2}\.(\d{4})$/', $data)) {
             return 2;

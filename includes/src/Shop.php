@@ -956,8 +956,7 @@ final class Shop
                 ? (strlen($xShopurl_arr['path']) + 1)
                 : 1)
             : false;
-        // Fremdparameter
-        $seo = RequestHelper::extractExternalParams($seo);
+        $seo          = RequestHelper::extractExternalParams($seo);
         if ($seo) {
             foreach (self::$productFilter->getCustomFilters() as $customFilter) {
                 $seoParam = $customFilter->getUrlParamSEO();
@@ -975,9 +974,9 @@ final class Shop
                     if (($idx = strpos($customFilterSeo, SEP_KAT)) !== false
                         && $idx !== strpos($customFilterSeo, SEP_HST)
                     ) {
-                        $oHersteller_arr = explode(SEP_KAT, $customFilterSeo);
-                        $customFilterSeo = $oHersteller_arr[0];
-                        $seo             .= SEP_KAT . $oHersteller_arr[1];
+                        $manufacturers   = explode(SEP_KAT, $customFilterSeo);
+                        $customFilterSeo = $manufacturers[0];
+                        $seo             .= SEP_KAT . $manufacturers[1];
                     }
                     if (strpos($customFilterSeo, SEP_MERKMAL) !== false) {
                         $arr             = explode(SEP_MERKMAL, $customFilterSeo);
@@ -1016,9 +1015,9 @@ final class Shop
                 header('Location: ' . self::getURL() . '/' . $seo);
                 exit();
             }
-            $cSEOMerkmal_arr = explode(SEP_MERKMAL, $seo);
-            $seo             = $cSEOMerkmal_arr[0];
-            foreach ($cSEOMerkmal_arr as $i => &$merkmal) {
+            $seoAttributes = explode(SEP_MERKMAL, $seo);
+            $seo           = $seoAttributes[0];
+            foreach ($seoAttributes as $i => &$merkmal) {
                 if ($i === 0) {
                     continue;
                 }
@@ -1044,9 +1043,9 @@ final class Shop
                 }
             }
             unset($merkmal);
-            $oHersteller_arr = explode(SEP_HST, $seo);
-            if (is_array($oHersteller_arr) && count($oHersteller_arr) > 1) {
-                foreach ($oHersteller_arr as $i => $manufacturer) {
+            $manufacturers = explode(SEP_HST, $seo);
+            if (is_array($manufacturers) && count($manufacturers) > 1) {
+                foreach ($manufacturers as $i => $manufacturer) {
                     if ($i === 0) {
                         $seo = $manufacturer;
                     } else {
@@ -1055,9 +1054,9 @@ final class Shop
                 }
                 foreach ($manufSeo as $i => $hstseo) {
                     if (($idx = strpos($hstseo, SEP_KAT)) !== false && $idx !== strpos($hstseo, SEP_HST)) {
-                        $oHersteller_arr[] = explode(SEP_KAT, $hstseo);
-                        $manufSeo[$i]      = $oHersteller_arr[0];
-                        $seo               .= SEP_KAT . $oHersteller_arr[1];
+                        $manufacturers[] = explode(SEP_KAT, $hstseo);
+                        $manufSeo[$i]    = $manufacturers[0];
+                        $seo             .= SEP_KAT . $manufacturers[1];
                     }
                     if (strpos($hstseo, SEP_MERKMAL) !== false) {
                         $arr          = explode(SEP_MERKMAL, $hstseo);
@@ -1076,11 +1075,11 @@ final class Shop
                     }
                 }
             } else {
-                $seo = $oHersteller_arr[0];
+                $seo = $manufacturers[0];
             }
-            $oKategorie_arr = explode(SEP_KAT, $seo);
-            if (is_array($oKategorie_arr) && count($oKategorie_arr) > 1) {
-                list($seo, $katseo) = $oKategorie_arr;
+            $categories = explode(SEP_KAT, $seo);
+            if (is_array($categories) && count($categories) > 1) {
+                list($seo, $katseo) = $categories;
                 if (strpos($katseo, SEP_HST) !== false) {
                     $arr    = explode(SEP_HST, $katseo);
                     $katseo = $arr[0];
@@ -1102,16 +1101,16 @@ final class Shop
                     $seo    .= SEP_SEITE . $arr[1];
                 }
             } else {
-                $seo = $oKategorie_arr[0];
+                $seo = $categories[0];
             }
             if ($seite > 0) {
                 $_GET['seite'] = $seite;
                 self::$kSeite  = $seite;
             }
             // split attribute/attribute value
-            $oMerkmal_arr = explode(SEP_MM_MMW, $seo);
-            if (is_array($oMerkmal_arr) && count($oMerkmal_arr) > 1) {
-                $seo = $oMerkmal_arr[1];
+            $attributes = explode(SEP_MM_MMW, $seo);
+            if (is_array($attributes) && count($attributes) > 1) {
+                $seo = $attributes[1];
                 //$mmseo = $oMerkmal_arr[0];
             }
             // custom filter
@@ -1166,14 +1165,14 @@ final class Shop
                 }
             }
             // attribute filter
-            if (count($cSEOMerkmal_arr) > 1) {
+            if (count($seoAttributes) > 1) {
                 if (!isset($_GET['mf'])) {
                     $_GET['mf'] = [];
                 } elseif (!is_array($_GET['mf'])) {
                     $_GET['mf'] = [(int)$_GET['mf']];
                 }
                 self::$bSEOMerkmalNotFound = false;
-                foreach ($cSEOMerkmal_arr as $i => $cSEOMerkmal) {
+                foreach ($seoAttributes as $i => $cSEOMerkmal) {
                     if ($i > 0 && strlen($cSEOMerkmal) > 0) {
                         $oSeo = self::Container()->getDB()->select('tseo', 'cKey', 'kMerkmalWert', 'cSeo',
                             $cSEOMerkmal);
@@ -1334,7 +1333,7 @@ final class Shop
             self::$fileName = 'filter.php';
             self::setPageType(PAGE_ARTIKELLISTE);
         } elseif (self::$kWunschliste > 0) {
-            self::$fileName      = 'wunschliste.php';
+            self::$fileName = 'wunschliste.php';
             self::setPageType(PAGE_WUNSCHLISTE);
         } elseif (self::$vergleichsliste > 0) {
             self::$fileName = 'vergleichsliste.php';
@@ -1359,7 +1358,7 @@ final class Shop
             }
             if ($cRequestFile === '/') {
                 // special case: home page is accessible without seo url
-                $link       = null;
+                $link = null;
                 self::setPageType(PAGE_STARTSEITE);
                 self::$fileName = 'seite.php';
                 if (Session::CustomerGroup()->getID() > 0) {
@@ -1386,7 +1385,7 @@ final class Shop
                 self::setPageType(PAGE_404);
             }
         } elseif (!empty(self::$kLink)) {
-            $link       = self::Container()->getLinkService()->getLinkByID(self::$kLink);
+            $link = self::Container()->getLinkService()->getLinkByID(self::$kLink);
             if ($link !== null && ($linkType = $link->getLinkType()) > 0) {
                 if ($linkType === LINKTYP_EXTERNE_URL) {
                     header('Location: ' . $link->getURL(), true, 303);
@@ -1512,7 +1511,8 @@ final class Shop
      */
     public static function buildProductFilter(array $cParameter_arr, $productFilter = null): ProductFilter
     {
-        $pf = new ProductFilter(\Filter\Config::getDefault(), self::Container()->getDB(), self::Container()->getCache());
+        $pf = new ProductFilter(\Filter\Config::getDefault(), self::Container()->getDB(),
+            self::Container()->getCache());
         if ($productFilter !== null) {
             foreach (get_object_vars($productFilter) as $k => $v) {
                 $pf->$k = $v;
@@ -1866,8 +1866,8 @@ final class Shop
         // Captcha
         $container->setSingleton(\Services\JTL\CaptchaServiceInterface::class, function (Container $container) {
             return new \Services\JTL\CaptchaService(new \Services\JTL\SimpleCaptchaService(
-                // Captcha Prüfung ist bei eingeloggtem Kunden, bei bereits erfolgter Prüfung
-                // oder ausgeschaltetem Captcha nicht notwendig
+            // Captcha Prüfung ist bei eingeloggtem Kunden, bei bereits erfolgter Prüfung
+            // oder ausgeschaltetem Captcha nicht notwendig
                 !(Session::get('bAnti_spam_already_checked', false) || Session::Customer()->isLoggedIn())
             ));
         });

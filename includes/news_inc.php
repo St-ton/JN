@@ -74,19 +74,21 @@ function holeNewsKategorien($cDatumSQL, $bActiveOnly = false)
     }
 
     return Shop::Container()->getDB()->query(
-        "SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,
-            tnewskategorie.cBeschreibung, tnewskategorie.cMetaTitle, tnewskategorie.cMetaDescription,
+        "SELECT tnewskategorie.kNewsKategorie, t.languageID AS kSprache, t.name AS cName,
+            t.description AS cBeschreibung, t.metaTitle AS cMetaTitle, t.metaDescription AS cMetaDescription,
             tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung, 
             tnewskategorie.cPreviewImage, tseo.cSeo,
             DATE_FORMAT(tnewskategorie.dLetzteAktualisierung, '%d.%m.%Y  %H:%i') AS dLetzteAktualisierung_de
             FROM tnewskategorie
+            JOIN tnewskategoriesprache t 
+                ON t.kNewsKategorie = tnewskategorie.kNewsKategorie
             " . $cSQL . "
             LEFT JOIN tseo 
                 ON tseo.cKey = 'kNewsKategorie'
                 AND tseo.kKey = tnewskategorie.kNewsKategorie
                 AND tseo.kSprache = " . $kSprache . "
                 AND tnewskategorie.kSprache = " . $kSprache . "
-            WHERE tnewskategorie.kSprache = " . $kSprache
+            WHERE t.languageID = " . $kSprache
             . $activeFilter . "
             GROUP BY tnewskategorie.kNewsKategorie
             ORDER BY tnewskategorie.nSort",

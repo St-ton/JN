@@ -160,7 +160,7 @@ class JTLSmarty extends \SmartyBC
      * @param array|null $config
      * @return $this
      */
-    public function setCachingParams(array $config = null)
+    public function setCachingParams(array $config = null): self
     {
         // instantiate new cache - we use different options here
         if ($config === null) {
@@ -175,9 +175,9 @@ class JTLSmarty extends \SmartyBC
     /**
      * @param bool $fast_init
      * @param bool $isAdmin
-     * @return JTLSmarty|null
+     * @return JTLSmarty
      */
-    public static function getInstance($fast_init = false, $isAdmin = false)
+    public static function getInstance(bool $fast_init = false, bool $isAdmin = false): self
     {
         return self::$_instance ?? new self($fast_init, $isAdmin);
     }
@@ -198,7 +198,7 @@ class JTLSmarty extends \SmartyBC
      * @param string $tplOutput
      * @return string
      */
-    public function outputFilter($tplOutput)
+    public function outputFilter(string $tplOutput): string
     {
         $hookList = \Plugin::getHookList();
         if ((isset($hookList[\HOOK_SMARTY_OUTPUTFILTER])
@@ -226,12 +226,12 @@ class JTLSmarty extends \SmartyBC
 
     /**
      * @param null|string $template
-     * @param null|string $cache_id
-     * @param null|string $compile_id
+     * @param null|string $cacheID
+     * @param null|string $compileID
      * @param null $parent
      * @return bool
      */
-    public function isCached($template = null, $cache_id = null, $compile_id = null, $parent = null)
+    public function isCached($template = null, $cacheID = null, $compileID = null, $parent = null): bool
     {
         return false;
     }
@@ -240,7 +240,7 @@ class JTLSmarty extends \SmartyBC
      * @param bool $mode
      * @return $this
      */
-    public function setCaching($mode)
+    public function setCaching($mode): self
     {
         $this->caching = $mode;
 
@@ -251,7 +251,7 @@ class JTLSmarty extends \SmartyBC
      * @param bool $mode
      * @return $this
      */
-    public function setDebugging($mode)
+    public function setDebugging($mode): self
     {
         $this->debugging = $mode;
 
@@ -266,7 +266,7 @@ class JTLSmarty extends \SmartyBC
      * @param bool   $minifyJS
      * @return string
      */
-    private function minify_html(string $html, bool $minifyCSS = false, bool $minifyJS = false)
+    private function minify_html(string $html, bool $minifyCSS = false, bool $minifyJS = false): string
     {
         $options = [];
         if ($minifyCSS === true) {
@@ -292,7 +292,7 @@ class JTLSmarty extends \SmartyBC
      * @param \Smarty_Internal_Template $template
      * @return void|string
      */
-    public function translate($params, \Smarty_Internal_Template $template)
+    public function translate(array $params, \Smarty_Internal_Template $template)
     {
         $cValue = '';
         if (!isset($params['section'])) {
@@ -319,7 +319,7 @@ class JTLSmarty extends \SmartyBC
      * @param string $text
      * @return int
      */
-    public function countCharacters($text)
+    public function countCharacters(string $text): int
     {
         return \strlen($text);
     }
@@ -329,7 +329,7 @@ class JTLSmarty extends \SmartyBC
      * @param string $format
      * @return string
      */
-    public function stringFormat($string, $format)
+    public function stringFormat(string $string, string $format): string
     {
         return \sprintf($format, $string);
     }
@@ -340,7 +340,7 @@ class JTLSmarty extends \SmartyBC
      * @param string $default_date
      * @return string
      */
-    public function dateFormat($string, $format = '%b %e, %Y', $default_date = '')
+    public function dateFormat(string $string, string $format = '%b %e, %Y', string $default_date = ''): string
     {
         if ($string !== '') {
             $timestamp = \smarty_make_timestamp($string);
@@ -370,18 +370,18 @@ class JTLSmarty extends \SmartyBC
      * @param string $string
      * @param int    $length
      * @param string $etc
-     * @param bool   $break_words
+     * @param bool   $break
      * @param bool   $middle
-     * @return mixed|string
+     * @return string
      */
-    public function truncate($string, int $length = 80, $etc = '...', bool $break_words = false, bool $middle = false)
+    public function truncate(string $string, int $length = 80, string $etc = '...', bool $break = false, bool $middle = false): string
     {
         if ($length === 0) {
             return '';
         }
         if (\strlen($string) > $length) {
             $length -= \min($length, \strlen($etc));
-            if (!$break_words && !$middle) {
+            if (!$break && !$middle) {
                 $string = \preg_replace('/\s+?(\S+)?$/', '', \substr($string, 0, $length + 1));
             }
 
@@ -394,71 +394,71 @@ class JTLSmarty extends \SmartyBC
     }
 
     /**
-     * @param string $cText
+     * @param string $string
      * @return string
      */
-    public function replaceDelimiters($cText)
+    public function replaceDelimiters(string $string): string
     {
-        $cReplace = $this->config['global']['global_dezimaltrennzeichen_sonstigeangaben'];
-        if ($cReplace !== ',' || $cReplace !== '.' || $cReplace === '') {
-            $cReplace = ',';
+        $replace = $this->config['global']['global_dezimaltrennzeichen_sonstigeangaben'];
+        if ($replace !== ',' || $replace !== '.' || $replace === '') {
+            $replace = ',';
         }
 
-        return \str_replace('.', $cReplace, $cText);
+        return \str_replace('.', $replace, $string);
     }
 
     /**
-     * @param string $cFilename
+     * @param string $filename
      * @return string
      */
-    public function getCustomFile($cFilename)
+    public function getCustomFile(string $filename): string
     {
         if (self::$isChildTemplate === true
             || !isset($this->config['template']['general']['use_customtpl'])
             || $this->config['template']['general']['use_customtpl'] !== 'Y'
         ) {
             // disabled on child templates for now
-            return $cFilename;
+            return $filename;
         }
-        $cFile       = \basename($cFilename, '.tpl');
-        $cSubPath    = \dirname($cFilename);
+        $cFile       = \basename($filename, '.tpl');
+        $cSubPath    = \dirname($filename);
         $cCustomFile = \strpos($cSubPath, PFAD_ROOT) === false
             ? $this->getTemplateDir($this->context) . (($cSubPath === '.')
                 ? ''
                 : ($cSubPath . '/')) . $cFile . '_custom.tpl'
             : ($cSubPath . '/' . $cFile . '_custom.tpl');
 
-        return \file_exists($cCustomFile) ? $cCustomFile : $cFilename;
+        return \file_exists($cCustomFile) ? $cCustomFile : $filename;
     }
 
     /**
-     * @param string $cFilename
+     * @param string $filename
      * @return string
      * @deprecated since 5.0.0
      */
-    public function getFallbackFile($cFilename)
+    public function getFallbackFile(string $filename): string
     {
-        return $cFilename;
+        return $filename;
     }
 
     /**
      * fetches a rendered Smarty template
      *
      * @param  string $template   the resource handle of the template file or template object
-     * @param  mixed  $cache_id   cache id to be used with this template
-     * @param  mixed  $compile_id compile id to be used with this template
+     * @param  mixed  $cacheID   cache id to be used with this template
+     * @param  mixed  $compileID compile id to be used with this template
      * @param  object $parent     next higher level of Smarty variables
      *
      * @throws \Exception
      * @throws \SmartyException
      * @return string rendered template output
      */
-    public function fetch($template = null, $cache_id = null, $compile_id = null, $parent = null)
+    public function fetch($template = null, $cacheID = null, $compileID = null, $parent = null): string
     {
         $_debug = !empty($this->_debug->template_data)
             ? $this->_debug->template_data
             : null;
-        $res    = parent::fetch($this->getResourceName($template), $cache_id, $compile_id, $parent);
+        $res    = parent::fetch($this->getResourceName($template), $cacheID, $compileID, $parent);
         if ($_debug !== null) {
             // fetch overwrites the old debug data so we have to merge it with our previously saved data
             $this->_debug->template_data = \array_merge($_debug, $this->_debug->template_data);
@@ -471,51 +471,52 @@ class JTLSmarty extends \SmartyBC
      * displays a Smarty template
      *
      * @param string $template   the resource handle of the template file or template object
-     * @param mixed  $cache_id   cache id to be used with this template
-     * @param mixed  $compile_id compile id to be used with this template
+     * @param mixed  $cacheID   cache id to be used with this template
+     * @param mixed  $compileID compile id to be used with this template
      * @param object $parent     next higher level of Smarty variables
+     * @throws \SmartyException
      */
-    public function display($template = null, $cache_id = null, $compile_id = null, $parent = null)
+    public function display($template = null, $cacheID = null, $compileID = null, $parent = null)
     {
         if ($this->context === 'frontend') {
             $this->registerFilter('output', [$this, 'outputFilter']);
         }
 
-        return parent::display($this->getResourceName($template), $cache_id, $compile_id, $parent);
+        return parent::display($this->getResourceName($template), $cacheID, $compileID, $parent);
     }
 
     /**
      * generates a unique cache id for every given resource
      *
-     * @param string      $resource_name
+     * @param string      $resourceName
      * @param array       $conditions
-     * @param string|null $cache_id
+     * @param string|null $cacheID
      * @return null|string
      */
-    public function getCacheID($resource_name, $conditions, $cache_id = null)
+    public function getCacheID($resourceName, $conditions, $cacheID = null)
     {
         return null;
     }
 
     /**
-     * @param string $resource_name
+     * @param string $resourceName
      * @return string
      */
-    public function getResourceName($resource_name)
+    public function getResourceName(string $resourceName): string
     {
         $transform = false;
-        if (\strpos($resource_name, 'string:') === 0) {
-            return $resource_name;
+        if (\strpos($resourceName, 'string:') === 0) {
+            return $resourceName;
         }
-        if (\strpos($resource_name, 'file:') === 0) {
-            $resource_name = \str_replace('file:', '', $resource_name);
+        if (\strpos($resourceName, 'file:') === 0) {
+            $resourceName = \str_replace('file:', '', $resourceName);
             $transform     = true;
         }
-        $resource_custom_name = $this->getCustomFile($resource_name);
+        $resource_custom_name = $this->getCustomFile($resourceName);
         $resource_cfb_name    = $resource_custom_name;
 
         \executeHook(\HOOK_SMARTY_FETCH_TEMPLATE, [
-            'original'  => &$resource_name,
+            'original'  => &$resourceName,
             'custom'    => &$resource_custom_name,
             'fallback'  => &$resource_custom_name,
             'out'       => &$resource_cfb_name,
@@ -523,7 +524,7 @@ class JTLSmarty extends \SmartyBC
         ]);
 
         if ($this->context === 'frontend'
-            && $resource_name === $resource_cfb_name
+            && $resourceName === $resource_cfb_name
             && \file_exists($this->getTemplateDir('frontend') . $resource_cfb_name)
         ) {
             $pluginTemplateExtends = [];
@@ -557,45 +558,45 @@ class JTLSmarty extends \SmartyBC
     }
 
     /**
-     * @param bool $use_sub_dirs
+     * @param bool $useSubDirs
      * @return $this
      */
-    public function setUseSubDirs($use_sub_dirs)
+    public function setUseSubDirs($useSubDirs): self
     {
-        parent::setUseSubDirs($use_sub_dirs);
+        parent::setUseSubDirs($useSubDirs);
 
         return $this;
     }
 
     /**
-     * @param bool $force_compile
+     * @param bool $force
      * @return $this
      */
-    public function setForceCompile($force_compile)
+    public function setForceCompile($force): self
     {
-        parent::setForceCompile($force_compile);
+        parent::setForceCompile($force);
 
         return $this;
     }
 
     /**
-     * @param bool $compile_check
+     * @param bool $check
      * @return $this
      */
-    public function setCompileCheck($compile_check)
+    public function setCompileCheck($check): self
     {
-        parent::setCompileCheck($compile_check);
+        parent::setCompileCheck($check);
 
         return $this;
     }
 
     /**
-     * @param int $error_reporting
+     * @param int $reporting
      * @return $this
      */
-    public function setErrorReporting($error_reporting)
+    public function setErrorReporting($reporting): self
     {
-        parent::setErrorReporting($error_reporting);
+        parent::setErrorReporting($reporting);
 
         return $this;
     }
@@ -603,7 +604,7 @@ class JTLSmarty extends \SmartyBC
     /**
      * @return bool
      */
-    public static function getIsChildTemplate()
+    public static function getIsChildTemplate(): bool
     {
         return self::$isChildTemplate;
     }
@@ -618,11 +619,10 @@ class JTLSmarty extends \SmartyBC
      * @return $this
      * @throws \SmartyException
      */
-    public function activateBackendSecurityMode()
+    public function activateBackendSecurityMode(): self
     {
         $sec                = new \Smarty_Security($this);
         $sec->php_handling  = \Smarty::PHP_REMOVE;
-        $sec->allow_php_tag = false;
         $jtlModifier        = [
             'replace_delim',
             'count_characters',
@@ -648,7 +648,7 @@ class JTLSmarty extends \SmartyBC
      *
      * @return string[]
      */
-    private function getSecurePhpFunctions()
+    private function getSecurePhpFunctions(): array
     {
         static $functions;
         if ($functions === null) {

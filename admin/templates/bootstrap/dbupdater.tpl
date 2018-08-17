@@ -187,6 +187,9 @@
 
             if (!error) {
                 updateStatusTpl();
+                if (dir === 'up') {
+                    pushEvent('     Update auf ' + formatVersion(result.result) + ' erfolgreich');
+                }
             }
 
             if (dir === 'down') {

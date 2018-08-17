@@ -5,9 +5,17 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=#dbupdater# cBeschreibung=#dbupdaterDesc# cDokuURL=#dbupdaterURL#}
 <div id="content" class="container-fluid">
     <div class="container-fluid2">
-        <div id="resultLog" style="display: none;">
+        <div id="resultLog" {if !$updatesAvailable}style="display: none;"{/if}>
             <h4>Ereignisprotokoll</h4>
-            <pre id="debug"><div>{#currentShopVersion#}</div><div>     System: {formatVersion value=$currentFileVersion}</div><div>     Datenbank: {formatVersion value=$currentDatabaseVersion}</div>{if $currentTemplateFileVersion != $currentTemplateDatabaseVersion}<div>{#currentTemplateVersion#}</div><div>     System: {formatVersion value=$currentTemplateFileVersion}</div><div>     Datenbank: {formatVersion value=$currentTemplateDatabaseVersion}</div>{/if}</pre>
+            <pre id="debug">
+{#currentShopVersion#}
+     System: {formatVersion value=$currentFileVersion}
+     Datenbank: {formatVersion value=$currentDatabaseVersion}
+{if $currentTemplateFileVersion != $currentTemplateDatabaseVersion}
+    {#currentTemplateVersion#}
+         System: {formatVersion value=$currentTemplateFileVersion}
+         Datenbank: {formatVersion value=$currentTemplateDatabaseVersion}
+{/if}</pre>
             <br /><br />
         </div>
         <div id="update-status">

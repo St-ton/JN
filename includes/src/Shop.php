@@ -867,6 +867,9 @@ final class Shop
         self::Event()->fire('shop.run');
 
         self::$productFilter->initStates(self::getParameters());
+        $cronStarter = new \Cron\Starter\Curl();
+        $cronStarter->setURL(self::getURL() . '/includes/cron_inc.php');
+        $cronStarter->start();
 
         return self::$productFilter;
     }

@@ -8,7 +8,7 @@ defined('JTLCRON') || define('JTLCRON', true);
 if (!defined('PFAD_LOGFILES')) {
     require __DIR__ . '/globalinclude.php';
 }
-if (PHP_SAPI !== 'cli') {
+if (PHP_SAPI !== 'cli' && isset($_POST['runCron'])) {
     while (ob_get_level()) {
         ob_end_clean();
     }

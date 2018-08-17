@@ -10,7 +10,7 @@ namespace Smarty;
 /**
  * Class JTLSmartyTemplateHints
  */
-class JTLSmartyTemplateHints extends \Smarty_Internal_Template
+class JTLSmartyTemplateHints extends JTLSmartyTemplateClass
 {
     /**
      * Runtime function to render sub-template
@@ -150,19 +150,4 @@ class JTLSmartyTemplateHints extends \Smarty_Internal_Template
             }
         }
     }
-
-    /**
-     * @param bool     $no_output_filter
-     * @param null|int $display
-     * @return string
-     */
-    public function render($no_output_filter = true, $display = null)
-    {
-        if ($no_output_filter === false && $display !== 1) {
-            $no_output_filter = true;
-        }
-
-        return parent::render($no_output_filter, $display);
-    }
-
 }

@@ -140,7 +140,7 @@ class MigrationManager
             $this->migrated($migration, $direction, $start);
         } catch (Exception $e) {
             Shop::Container()->getDB()->rollback();
-            throw $e;
+            throw new \Exception($migration->getName().' '.$migration->getDescription().' | '.$e->getMessage(),$e->getCode());
         }
     }
 

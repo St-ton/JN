@@ -575,11 +575,11 @@ final class Shop
      *
      * @param bool $fast_init
      * @param bool $isAdmin
-     * @return JTLSmarty
+     * @return \Smarty\JTLSmarty
      */
     public function _Smarty(bool $fast_init = false, bool $isAdmin = false): JTLSmarty
     {
-        return JTLSmarty::getInstance($fast_init, $isAdmin);
+        return \Smarty\JTLSmarty::getInstance($fast_init, $isAdmin);
     }
 
     /**

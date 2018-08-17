@@ -4,16 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Smarty;
+
+
 /**
  * Class JTLSmartyTemplateClass
  */
-class JTLSmartyTemplateClass extends Smarty_Internal_Template
+class JTLSmartyTemplateClass extends \Smarty_Internal_Template
 {
-    /**
-     * @var JTLSmarty
-     */
-    public $smarty;
-
     /**
      * Runtime function to render sub-template
      *

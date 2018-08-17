@@ -14,7 +14,7 @@ $oAccount->permission('SHOP_UPDATE_VIEW', true, true);
 
 $updater  = new Updater();
 $template = Template::getInstance();
-$_smarty  = new JTLSmarty(true, true);
+$_smarty  = new \Smarty\JTLSmarty(true, true);
 $_smarty->clearCompiledTemplate();
 Shop::Cache()->flushAll();
 

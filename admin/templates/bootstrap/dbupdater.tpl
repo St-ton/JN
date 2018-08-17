@@ -5,6 +5,11 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=#dbupdater# cBeschreibung=#dbupdaterDesc# cDokuURL=#dbupdaterURL#}
 <div id="content" class="container-fluid">
     <div class="container-fluid2">
+        <div id="resultLog" style="display: none;">
+            <h4>Ereignisprotokoll</h4>
+            <pre id="debug"><div>{#currentShopVersion#}</div><div>     System: {formatVersion value=$currentFileVersion}</div><div>     Datenbank: {formatVersion value=$currentDatabaseVersion}</div>{if $currentTemplateFileVersion != $currentTemplateDatabaseVersion}<div>{#currentTemplateVersion#}</div><div>     System: {formatVersion value=$currentTemplateFileVersion}</div><div>     Datenbank: {formatVersion value=$currentTemplateDatabaseVersion}</div>{/if}</pre>
+            <br /><br />
+        </div>
         <div id="update-status">
             {include file='tpl_inc/dbupdater_status.tpl'}
         </div>
@@ -175,6 +180,10 @@
             if (!error) {
                 updateStatusTpl();
             }
+
+            if (dir === 'down') {
+                $('#resultLog').show();
+            }
         });
     }
 
@@ -222,11 +231,13 @@
     {
         var $container = $('#btn-update-group'),
             $buttons = $('#btn-update-group a.btn'),
-            $ladda = Ladda.create($('#backup-button')[0]);
+            $ladda = Ladda.create($('#backup-button')[0]),
+            $resultLog = $('#resultLog');
 
         if (!!disable) {
             $ladda.start();
             $buttons.attr('disabled', true);
+            $resultLog.show();
         } else {
             $ladda.stop();
             $buttons.attr('disabled', false);

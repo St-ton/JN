@@ -44,7 +44,7 @@
                                 <div class="panel-body">
                                     <div id="payment">
                                         <div id="tabellenLivesuche" class="table-responsive">
-                                            <table class="table">
+                                            <table class="table table-striped">
                                                 <tr>
                                                     <th class="th-1" style="width: 5%;">{#umfrageQASing#}</th>
                                                     {foreach name=umfragematrixoption from=$oUmfrageFrage->oUmfrageMatrixOption_arr item=oUmfrageMatrixOption}
@@ -57,8 +57,8 @@
 
                                                 {foreach name=umfragefrageantwort from=$oUmfrageFrage->oUmfrageFrageAntwort_arr item=oUmfrageFrageAntwort}
                                                     {assign var=kUmfrageFrageAntwort value=$oUmfrageFrageAntwort->kUmfrageFrageAntwort}
-                                                    <tr class="tab_bg{$smarty.foreach.umfragefrageantwort.iteration%2}">
-                                                        <td class="TD1">{$oUmfrageFrageAntwort->cName}</td>
+                                                    <tr>
+                                                        <td>{$oUmfrageFrageAntwort->cName}</td>
                                                         {foreach name=umfragematrixoption from=$oUmfrageFrage->oUmfrageMatrixOption_arr item=oUmfrageMatrixOption}
                                                             {assign var=kUmfrageMatrixOption value=$oUmfrageMatrixOption->kUmfrageMatrixOption}
                                                             <td align="center">
@@ -86,7 +86,7 @@
                                 <div class="panel-body">
                                     <div id="payment">
                                         <div id="tabellenLivesuche">
-                                            <table class="table table-responsive">
+                                            <table class="table table-responsive table-striped">
                                                 <tr>
                                                     <th class="th-1" style="width: 20%;">{#umfrageQASing#}</th>
                                                     <th class="th-2" style="width: 60%;"></th>
@@ -94,12 +94,12 @@
                                                     <th class="th-4" style="width: 10%;">{#umfrageQResCount#}</th>
                                                 </tr>
                                                 {foreach name=umfragefrageantwort from=$oUmfrageFrage->oUmfrageFrageAntwort_arr item=oUmfrageFrageAntwort}
-                                                    <tr class="tab_bg{$smarty.foreach.umfragefrageantwort.iteration%2}">
-                                                        <td class="TD1" style="width: 20%;">{$oUmfrageFrageAntwort->cName}</td>
-                                                        <td class="TD2" style="width: 60%;">
+                                                    <tr>
+                                                        <td style="width: 20%;">{$oUmfrageFrageAntwort->cName}</td>
+                                                        <td style="width: 60%;">
                                                             <div class="freqbar" style="width: {$oUmfrageFrageAntwort->fProzent}%; height: 10px;"></div>
                                                         </td>
-                                                        <td class="TD3" style="width: 10%;">
+                                                        <td style="width: 10%;">
                                                             {if $smarty.foreach.umfragefrageantwort.first}
                                                                 <strong>{$oUmfrageFrageAntwort->fProzent} %</strong>
                                                             {elseif $oUmfrageFrageAntwort->nAnzahlAntwort == $oUmfrageFrage->oUmfrageFrageAntwort_arr[0]->nAnzahlAntwort}
@@ -108,7 +108,7 @@
                                                                 {$oUmfrageFrageAntwort->fProzent} %
                                                             {/if}
                                                         </td>
-                                                        <td class="TD4" style="width: 10%;">{$oUmfrageFrageAntwort->nAnzahlAntwort}</td>
+                                                        <td style="width: 10%;">{$oUmfrageFrageAntwort->nAnzahlAntwort}</td>
                                                     </tr>
                                                     {if $smarty.foreach.umfragefrageantwort.last}
                                                         <tr>

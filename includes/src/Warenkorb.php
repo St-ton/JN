@@ -793,6 +793,10 @@ class Warenkorb
                 $Position->fPreisEinzelNetto = $oArtikel->gibPreis($anz, []);
                 $Position->fPreis            = $oArtikel->gibPreis($anz, $Position->WarenkorbPosEigenschaftArr);
                 $Position->fGesamtgewicht    = $Position->gibGesamtgewicht();
+                executeHook(HOOK_SETZTE_POSITIONSPREISE, [
+                    'position'    => $Position,
+                    'oldPosition' => $_oldPosition
+                ]);
                 $Position->setzeGesamtpreisLocalized();
                 //notify about price changes when the price difference is greater then .01
                 if ($_oldPosition->cGesamtpreisLocalized !== $Position->cGesamtpreisLocalized

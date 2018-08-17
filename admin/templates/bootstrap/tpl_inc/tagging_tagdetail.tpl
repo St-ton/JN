@@ -16,24 +16,24 @@
 
             <div id="payment">
                 <div id="tabellenLivesuche" class="table-responsive">
-                    <table class="table">
+                    <table class="table table-striped">
                         <tr>
                             <th class="check">&nbsp;</th>
                             <th class="th-2">{#taggingProduct#}</th>
                         </tr>
                         {foreach name=tagdetail from=$oTagArtikel_arr item=oTagArtikel}
-                            <tr class="tab_bg{$smarty.foreach.tagdetail.iteration%2}">
+                            <tr>
                                 <td class="check">
                                     <input name="kArtikel_arr[]" type="checkbox" value="{$oTagArtikel->kArtikel}" />
                                 </td>
-                                <td class="TD2"><a href="{$oTagArtikel->cURL}">{$oTagArtikel->acName}</a></td>
+                                <td><a href="{$oTagArtikel->cURL}">{$oTagArtikel->acName}</a></td>
                             </tr>
                         {/foreach}
                         <tr>
                             <td class="check">
                                 <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);" />
                             </td>
-                            <td colspan="5" class="TD7"><label for="ALLMSGS">{#taggingSelectAll#}</label></td>
+                            <td colspan="5"><label for="ALLMSGS">{#taggingSelectAll#}</label></td>
                         </tr>
                     </table>
                 </div>

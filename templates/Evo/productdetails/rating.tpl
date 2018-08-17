@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {if $stars > 0}
     {assign var=filename1 value='rate'}
     {assign var=filename3 value='.png'}

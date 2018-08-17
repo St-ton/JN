@@ -996,14 +996,18 @@ function holeAbonnenten($cSQL, $cAktiveSucheSQL)
         "SELECT tnewsletterempfaenger.*, 
             DATE_FORMAT(tnewsletterempfaenger.dEingetragen, '%d.%m.%Y %H:%i') AS dEingetragen_de,
             DATE_FORMAT(tnewsletterempfaenger.dLetzterNewsletter, '%d.%m.%Y %H:%i') AS dLetzterNewsletter_de, 
-            tkunde.kKundengruppe, tkundengruppe.cName
+            tkunde.kKundengruppe, tkundengruppe.cName, tnewsletterempfaengerhistory.cOptIp, 
+             DATE_FORMAT(tnewsletterempfaengerhistory.dOptCode, '%d.%m.%Y %H:%i') AS optInDate
             FROM tnewsletterempfaenger
             LEFT JOIN tkunde 
                 ON tkunde.kKunde = tnewsletterempfaenger.kKunde
             LEFT JOIN tkundengruppe 
                 ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
+            LEFT JOIN tnewsletterempfaengerhistory
+                ON tnewsletterempfaengerhistory.cEmail = tnewsletterempfaenger.cEmail
+                  AND tnewsletterempfaengerhistory.cAktion = 'Eingetragen'
             WHERE tnewsletterempfaenger.kSprache = " . (int)$_SESSION['kSprache'] .
-                $cAktiveSucheSQL->cWHERE . "
+        $cAktiveSucheSQL->cWHERE . "
             ORDER BY tnewsletterempfaenger.dEingetragen DESC" . $cSQL,
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );

@@ -1150,7 +1150,13 @@ function baueExportURL(int $kKey, $cKey, $lastUpdate, $languages, $langID, $prod
     $cURL_arr = [];
     $params   = [];
     Shop::setLanguage($langID);
-    $naviFilter = new \Filter\ProductFilter($languages, $langID, $config);
+    $filterConfig = new \Filter\Config();
+    $filterConfig->setLanguageID($langID);
+    $filterConfig->setLanguages($languages);
+    $filterConfig->setConfig($config);
+    $filterConfig->setCustomerGroupID(\Session\Session::CustomerGroup()->getID());
+    $filterConfig->setBaseURL(Shop::getURL() . '/');
+    $naviFilter = new \Filter\ProductFilter($filterConfig, Shop::Container()->getDB(), Shop::Container()->getCache());
     switch ($cKey) {
         case 'kKategorie':
             $params['kKategorie'] = $kKey;

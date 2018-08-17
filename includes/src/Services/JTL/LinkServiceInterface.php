@@ -6,11 +6,11 @@
 
 namespace Services\JTL;
 
+
 use Link\LinkGroupCollection;
 use Link\LinkGroupInterface;
 use Link\LinkInterface;
 use Tightenco\Collect\Support\Collection;
-
 
 /**
  * Class LinkService
@@ -106,7 +106,7 @@ interface LinkServiceInterface
 
     /**
      * @param string $name
-     * @param bool $filtered
+     * @param bool   $filtered
      * @return LinkGroupInterface|null
      */
     public function getLinkGroupByName(string $name, bool $filtered);

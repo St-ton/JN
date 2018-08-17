@@ -179,7 +179,7 @@
             <div id="detailansicht" class="tab-pane fade {if !isset($cTab) || $cTab === 'detailansicht'} active in{/if}">
                 {if isset($oKampagneStat_arr) && $oKampagneStat_arr|@count > 0 && isset($oKampagneDef_arr) && $oKampagneDef_arr|@count > 0}
                     <div class="table-responsive">
-                        <table class="table">
+                        <table class="table table-striped">
                             <tr>
                                 <th class="th-1"></th>
                                 {foreach name="kampagnendefs" from=$oKampagneDef_arr item=oKampagneDef}
@@ -189,13 +189,13 @@
 
                             {foreach name="kampagnenstats" from=$oKampagneStat_arr key=kKey item=oKampagneStatDef_arr}
                                 {if $kKey != "Gesamt"}
-                                    <tr class="tab_bg{$smarty.foreach.kampagnenstats.iteration%2}">
+                                    <tr>
                                         {if isset($oKampagneStat_arr[$kKey].cDatum)}
-                                            <td class="TD1">{$oKampagneStat_arr[$kKey].cDatum}</td>
+                                            <td>{$oKampagneStat_arr[$kKey].cDatum}</td>
                                         {/if}
                                         {foreach name="kampagnendefs" from=$oKampagneStatDef_arr key=kKampagneDef item=oKampagneStatDef_arrItem}
                                             {if $kKampagneDef != "cDatum"}
-                                                <td class="TD1" style="text-align: center;">
+                                                <td style="text-align: center;">
                                                     <a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&defdetail=1&kKampagneDef={$kKampagneDef}&cStamp={$kKey}&token={$smarty.session.jtl_token}">
                                                         {$oKampagneStat_arr[$kKey][$kKampagneDef]}
                                                     </a>
@@ -206,9 +206,9 @@
                                 {/if}
                             {/foreach}
                             <tr>
-                                <td class="TD1">{#kampagneOverall#}</td>
+                                <td>{#kampagneOverall#}</td>
                                 {foreach name="kampagnendefs" from=$oKampagneStatDef_arr key=kKampagneDef item=oKampagneStatDef_arrItem}
-                                    <td class="TD1" style="text-align: center;">
+                                    <td style="text-align: center;">
                                         {$oKampagneStat_arr.Gesamt[$kKampagneDef]}
                                     </td>
                                 {/foreach}

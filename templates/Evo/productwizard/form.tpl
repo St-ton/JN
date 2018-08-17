@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {if isset($oAuswahlAssistent->oAuswahlAssistentFrage_arr) && $oAuswahlAssistent->oAuswahlAssistentFrage_arr|@count > 0}
     <hr />
     <script type="text/javascript">

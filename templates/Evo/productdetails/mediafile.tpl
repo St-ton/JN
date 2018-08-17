@@ -1,8 +1,7 @@
 {**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license https://jtl-url.de/jtlshoplicense
  *}
-
 {if !empty($hinweis)}
     <div class="alert alert-info">
         {$hinweis}
@@ -138,5 +137,5 @@
             {/if}
         {/if}
     {/foreach}
-    </div>{* /row *}
+    </div>
 {/if}

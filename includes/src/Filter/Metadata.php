@@ -6,12 +6,13 @@
 
 namespace Filter;
 
+
 use DB\ReturnType;
+use Tightenco\Collect\Support\Collection;
 use function Functional\group;
 use function Functional\map;
 use function Functional\reduce_left;
 use function Functional\reindex;
-use Tightenco\Collect\Support\Collection;
 
 /**
  * Class Metadata
@@ -97,7 +98,7 @@ class Metadata implements MetadataInterface
     public function __construct(ProductFilter $navigationsfilter)
     {
         $this->productFilter = $navigationsfilter;
-        $this->conf          = $navigationsfilter->getConfig();
+        $this->conf          = $navigationsfilter->getFilterConfig()->getConfig();
     }
 
     /**
@@ -402,7 +403,7 @@ class Metadata implements MetadataInterface
         }
         // Kategorieattribut?
         $cKatDescription = '';
-        $languageID      = $this->productFilter->getLanguageID();
+        $languageID      = $this->productFilter->getFilterConfig()->getLanguageID();
         if ($this->productFilter->hasCategory()) {
             $category = $category ?? new \Kategorie($this->productFilter->getCategory()->getValue());
             if (!empty($category->cMetaDescription)) {
@@ -610,7 +611,7 @@ class Metadata implements MetadataInterface
     public function generateMetaTitle($searchResults, $globalMeta, \Kategorie $category = null): string
     {
         \executeHook(\HOOK_FILTER_INC_GIBNAVIMETATITLE);
-        $languageID = $this->productFilter->getLanguageID();
+        $languageID = $this->productFilter->getFilterConfig()->getLanguageID();
         $append     = $this->conf['metaangaben']['global_meta_title_anhaengen'] === 'Y';
         if (!empty($this->metaTitle)) {
             $metaTitle = \strip_tags($this->metaTitle);
@@ -935,7 +936,7 @@ class Metadata implements MetadataInterface
      */
     public function checkNoIndex(): bool
     {
-        $bNoIndex = false;
+        $noIndex = false;
         switch (\basename($_SERVER['SCRIPT_NAME'])) {
             case 'wartung.php':
             case 'navi.php':
@@ -946,21 +947,22 @@ class Metadata implements MetadataInterface
             case 'registrieren.php':
             case 'warenkorb.php':
             case 'wunschliste.php':
-                $bNoIndex = true;
+                $noIndex = true;
                 break;
             default:
                 break;
         }
         if ($this->productFilter->hasSearch()) {
-            $bNoIndex = true;
+            $noIndex = true;
         }
-        if (!$bNoIndex) {
-            $bNoIndex = $this->productFilter->hasAttributeValue()
-                && $this->productFilter->getAttributeValue()->getValue() > 0
-                && $this->conf['global']['global_merkmalwert_url_indexierung'] === 'N';
+        if (!$noIndex) {
+            $noIndex = $this->productFilter->getFilterCount() > 1
+                || ($this->conf['global']['global_merkmalwert_url_indexierung'] === 'N'
+                    && $this->productFilter->hasAttributeValue()
+                    && $this->productFilter->getAttributeValue()->getValue() > 0);
         }
 
-        return $bNoIndex;
+        return $noIndex;
     }
 
     /**

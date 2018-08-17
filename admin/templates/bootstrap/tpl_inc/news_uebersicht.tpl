@@ -72,7 +72,7 @@
                             <h3 class="panel-title">{#newsCommentActivate#}</h3>
                         </div>
                         <div class="table-responsive">
-                            <table class="list table">
+                            <table class="list table table-striped">
                                 <thead>
                                 <tr>
                                     <th class="check">&nbsp;</th>
@@ -85,7 +85,7 @@
                                 </thead>
                                 <tbody>
                                 {foreach $oNewsKommentar_arr as $oNewsKommentar}
-                                    <tr class="tab_bg{$oNewsKommentar@iteration%2}">
+                                    <tr>
                                         <td class="check">
                                             <input type="checkbox" name="kNewsKommentar[]" value="{$oNewsKommentar->getID()}" id="comment-{$oNewsKommentar->getID()}" />
                                         </td>
@@ -144,7 +144,7 @@
                         <h3 class="panel-title">{#newsOverview#}</h3>
                     </div>
                     <div class="table-responsive">
-                        <table class="sortable list table">
+                        <table class="sortable list table table-striped">
                             <thead>
                             <tr>
                                 <th class="check"></th>
@@ -241,7 +241,7 @@
                         <h3 class="panel-title">{#newsCatOverview#}</h3>
                     </div>
                     <div class="table-responsive">
-                        <table id="category-list" class="table">
+                        <table id="category-list" class="list table table-striped">
                             <thead>
                             <tr>
                                 <th class="check"></th>

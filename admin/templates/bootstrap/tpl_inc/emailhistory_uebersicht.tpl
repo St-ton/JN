@@ -45,7 +45,7 @@
                     <h3 class="panel-title">{#emailhistory#}</h3>
                 </div>
                 <div class="table-responsive">
-                    <table class="list table">
+                    <table class="list table table-striped">
                         <thead>
                         <tr>
                             <th></th>
@@ -59,7 +59,7 @@
                         </thead>
                         <tbody>
                         {foreach name=emailhistory from=$oEmailhistory_arr item=oEmailhistory}
-                            <tr class="tab_bg{$smarty.foreach.emailhistory.iteration%2}">
+                            <tr>
                                 <td class="check">
                                     <input type="checkbox" name="kEmailhistory[]" value="{$oEmailhistory->getEmailhistory()}" />
                                 </td>

@@ -1,6 +1,6 @@
 {**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license https://jtl-url.de/jtlshoplicense
  *}
 {if !empty($oUmfrage->getName())}
     <h1>{$oUmfrage->getName()}</h1>
@@ -23,10 +23,10 @@
         {foreach $oUmfrage->getQuestions() as $question}
             {assign var=questionID value=$question->getID()}
             <input name="kUmfrageFrage[]" type="hidden" value="{$questionID}">
-            <div {if $question->isRequired()}class="required"{/if}>
+            <div>
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{$question->getName()} {if $question->isRequired()} *{/if}</h3>
+                        <h3 class="panel-title">{$question->getName()} {if !$question->isRequired()}<span class="optional"> - {lang key='conditionalFillOut' section='checkout'}</span>{/if}</h3>
                     </div>
                     <div class="panel-body form-group">
                         {if !empty($question->getDescription())}
@@ -199,7 +199,6 @@
                 {/if}
             </div>
         </div>
-
         <input name="s" type="hidden" value="{$nAktuelleSeite}" />
         {if $nAktuelleSeite == $nAnzahlSeiten}
             <input name="end" type="submit" value="{lang key='umfrageSubmit' section='umfrage'}" class="btn btn-primary submit top17" />

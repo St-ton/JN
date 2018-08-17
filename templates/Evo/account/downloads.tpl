@@ -1,10 +1,9 @@
 {**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license https://jtl-url.de/jtlshoplicense
  *}
-
 {if !empty($Bestellung->oDownload_arr)}
-    <h2>{lang key='yourDownloads' section='global'}</h2>
+    <h2>{lang key='yourDownloads'}</h2>
     <div class="panel-group" role="tablist">
         {foreach $Bestellung->oDownload_arr as $oDownload}
             <div class="panel panel-default">
@@ -23,11 +22,11 @@
                      aria-labelledby="download-{$oDownload@iteration}">
                     <div class="panel-body">
                         <dl>
-                            <dt>{lang key='downloadLimit' section='global'}</dt>
-                            <dd class="bottom17">{if isset($oDownload->cLimit)}{$oDownload->cLimit}{else}{lang key='unlimited' section='global'}{/if}</dd>
-                            <dt>{lang key='validUntil' section='global'}</dt>
-                            <dd class="bottom17">{if isset($oDownload->dGueltigBis)}{$oDownload->dGueltigBis}{else}{lang key='unlimited' section='global'}{/if}</dd>
-                            <dt>{lang key='download' section='global'}</dt>
+                            <dt>{lang key='downloadLimit'}</dt>
+                            <dd class="bottom17">{if isset($oDownload->cLimit)}{$oDownload->cLimit}{else}{lang key='unlimited'}{/if}</dd>
+                            <dt>{lang key='validUntil'}</dt>
+                            <dd class="bottom17">{if isset($oDownload->dGueltigBis)}{$oDownload->dGueltigBis}{else}{lang key='unlimited'}{/if}</dd>
+                            <dt>{lang key='download'}</dt>
                             <dd class="bottom17">
                                 {if $Bestellung->cStatus == $BESTELLUNG_STATUS_BEZAHLT || $Bestellung->cStatus == $BESTELLUNG_STATUS_VERSANDT}
                                     <form method="post" action="{get_static_route id='jtl.php'}">
@@ -50,7 +49,7 @@
         {/foreach}
     </div>
 {elseif !empty($oDownload_arr)}
-    <h2>{lang key='yourDownloads' section='global'}</h2>
+    <h2>{lang key='yourDownloads'}</h2>
     <div class="panel-group" role="tablist">
         {foreach $oDownload_arr as $oDownload}
             <div class="panel panel-default">
@@ -69,11 +68,11 @@
                      aria-labelledby="download-{$oDownload@iteration}">
                     <div class="panel-body">
                         <dl>
-                            <dt>{lang key='downloadLimit' section='global'}</dt>
-                            <dd class="bottom17">{if isset($oDownload->cLimit)}{$oDownload->cLimit}{else}{lang key='unlimited' section='global'}{/if}</dd>
-                            <dt>{lang key='validUntil' section='global'}</dt>
-                            <dd class="bottom17">{if isset($oDownload->dGueltigBis)}{$oDownload->dGueltigBis}{else}{lang key='unlimited' section='global'}{/if}</dd>
-                            <dt>{lang key='download' section='global'}</dt>
+                            <dt>{lang key='downloadLimit'}</dt>
+                            <dd class="bottom17">{if isset($oDownload->cLimit)}{$oDownload->cLimit}{else}{lang key='unlimited'}{/if}</dd>
+                            <dt>{lang key='validUntil'}</dt>
+                            <dd class="bottom17">{if isset($oDownload->dGueltigBis)}{$oDownload->dGueltigBis}{else}{lang key='unlimited'}{/if}</dd>
+                            <dt>{lang key='download'}</dt>
                             <dd class="bottom17">
                                 <form method="post" action="{get_static_route id='jtl.php'}">
                                     {$jtl_token}

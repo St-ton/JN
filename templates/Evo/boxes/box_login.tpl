@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 <section class="panel panel-default box box-login" id="sidebox{$oBox->getID()}">
     <div class="panel-heading">
         <div class="panel-title">{if empty($smarty.session.Kunde)}{lang key='login'}{else}{lang key='hello'}, {$smarty.session.Kunde->cVorname} {$smarty.session.Kunde->cNachname}{/if}</div>
@@ -7,17 +11,18 @@
             <form action="{get_static_route id='jtl.php' secure=true}" method="post" class="form box_login evo-validate">
                 <input type="hidden" name="login" value="1" />
                 {$jtl_token}
-                <div class="form-group required">
-                    <label for="email-box-login" class="control-label">{lang key='emailadress'}</label>
-                    <input type="email" name="email" id="email-box-login" class="form-control" placeholder="{lang key='emailadress'}" required />
-                </div>
-                <div class="form-group required">
-                    <label for="password-box-login" class="control-label">{lang key='password' section='account data'}</label>
-                    <input type="password" name="passwort" id="password-box-login" class="form-control" placeholder="{lang key='password' section='account data'}" required />
-                </div>
-
+                {include file='snippets/form_group_simple.tpl'
+                    options=[
+                        'email', 'email-box-login', 'email', null,{lang key='emailadress'}, true
+                    ]
+                }
+                {include file='snippets/form_group_simple.tpl'
+                    options=[
+                        'password', 'password-box-login', 'passwort', null,{lang key='password' section='account data'}, true
+                    ]
+                }
                 {if isset($showLoginCaptcha) && $showLoginCaptcha}
-                    <div class="form-group text-center float-label-control required">
+                    <div class="form-group text-center float-label-control">
                         {captchaMarkup getBody=true}
                     </div>
                 {/if}

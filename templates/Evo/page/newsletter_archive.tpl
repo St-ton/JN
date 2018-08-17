@@ -1,12 +1,10 @@
 {**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license https://jtl-url.de/jtlshoplicense
  *}
-
 {include file='snippets/opc_mount_point.tpl' id='opc_nl_archive_toptags_prepend'}
 <div id="toptags">{lang key='newsletterhistory' section='global'}</div>
 {include file='snippets/opc_mount_point.tpl' id='opc_nl_archive_toptags_append'}
-
 <table class="newsletter">
     <tr class="head">
         <th>{lang key='newsletterhistorysubject' section='global'}</th>

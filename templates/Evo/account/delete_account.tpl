@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 <h1>{lang key='deleteAccount' section='login'}</h1>
 
 {if empty($hinweis)}

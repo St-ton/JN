@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 <div class="reviews row">
     <div class="col-xs-12">
         {block name='productdetails-review-overview'}
@@ -73,13 +77,11 @@
                         </div>
                     </form>
                 </div>
-            </div>{* /panel *}
-        </div>{* /reviews-overview *}
+            </div>
+        </div>
         {/block}
 
-        {if isset($Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich) &&
-            $Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0
-        }
+        {if isset($Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich) && $Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0}
             <div class="review-wrapper reviews-mosthelpful panel">
                 <form method="post" action="{get_static_route id='bewertung.php'}#tab-votes">
                     {$jtl_token}
@@ -124,5 +126,5 @@
             </form>
             {include file='snippets/pagination.tpl' oPagination=$ratingPagination cThisUrl=$Artikel->cURLFull cAnchor='tab-votes' showFilter=false}
         {/if}
-    </div>{* /col *}
-</div>{* /row *}
+    </div>
+</div>

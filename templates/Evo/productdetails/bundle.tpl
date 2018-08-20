@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {if !empty($Products)}
     <form action="{if !empty($ProductMain->cURLFull)}{$ProductMain->cURLFull}{else}index.php{/if}" method="post" id="form_bundles" class="evo-validate">
         <div class="panel panel-default">
@@ -37,12 +41,12 @@
                                 <span class="label label-warning">{lang key='youSave' section='productDetails'}: {$ProduktBundle->cPriceDiffLocalized[$NettoPreise]}</span>
                             {/if}
                             {if $ProductMain->cLocalizedVPE}
-                                <b class="label">{lang key='basePrice' section='global'}: </b>
+                                <b class="label">{lang key='basePrice'}: </b>
                                 <span class="value">{$ProductMain->cLocalizedVPE[$NettoPreise]}</span>
                             {/if}
                         </p>
                         <p>
-                            <button name="inWarenkorb" type="submit" value="{lang key='addAllToCart' section='global'}" class="submit btn btn-default">{lang key='addAllToCart' section='global'}</button>
+                            <button name="inWarenkorb" type="submit" value="{lang key='addAllToCart'}" class="submit btn btn-default">{lang key='addAllToCart'}</button>
                         </p>
                     {/if}
                 </div>

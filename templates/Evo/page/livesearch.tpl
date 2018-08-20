@@ -1,8 +1,7 @@
 {**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license https://jtl-url.de/jtlshoplicense
  *}
-
 {if count($LivesucheTop) === 0 && count($LivesucheLast) === 0}
     <div class="alert alert-warning">
         {lang key='noDataAvailable' section='global'}
@@ -13,7 +12,7 @@
         <div class="col-xs-6">
             <div class="panel panel-default">
                 <div class="panel-heading"><h4
-                            class="panel-title">{lang key='topsearch' section='global'}{$Einstellungen.sonstiges.sonstiges_livesuche_all_top_count}</h4>
+                            class="panel-title">{lang key='topsearch'}{$Einstellungen.sonstiges.sonstiges_livesuche_all_top_count}</h4>
                 </div>
                 <div class="panel-body">
                     <ul class=list-unstyled>
@@ -25,7 +24,7 @@
                                 </li>
                             {/foreach}
                         {else}
-                            <li>{lang key='noDataAvailable' section='global'}</li>
+                            <li>{lang key='noDataAvailable'}</li>
                         {/if}
                     </ul>
                 </div>
@@ -34,7 +33,7 @@
 
         <div class="col-xs-6">
             <div class="panel panel-default">
-                <div class="panel-heading"><h4 class="panel-title">{lang key='lastsearch' section='global'}</h4></div>
+                <div class="panel-heading"><h4 class="panel-title">{lang key='lastsearch'}</h4></div>
                 <div class="panel-body">
                     <ul class="list-unstyled">
                         {if count($LivesucheLast) > 0}
@@ -45,7 +44,7 @@
                                 </li>
                             {/foreach}
                         {else}
-                            <li>{lang key='noDataAvailable' section='global'}</li>
+                            <li>{lang key='noDataAvailable'}</li>
                         {/if}
                     </ul>
                 </div>

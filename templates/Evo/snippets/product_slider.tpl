@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {strip}
 {if $productlist|@count > 0}
     {if !isset($tplscope)}
@@ -25,6 +29,6 @@
                 {/foreach}
             </div>
         </div>
-    </section>{* /panel *}
+    </section>
 {/if}
 {/strip}

@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 <div id="pushed-success" class="notification-alert bg-info panel-wrap{if isset($inline)} no-margin{/if}">
     {if isset($zuletztInWarenkorbGelegterArtikel)}
         {assign var=pushedArtikel value=$zuletztInWarenkorbGelegterArtikel}
@@ -24,9 +28,9 @@
                                 <div class="caption">
                                     <span class="title">{$pushedArtikel->cName}</span>
                                 </div>
-                            </div>{* /caption *}
+                            </div>
                         </div>
-                    </div>{* /product-cell *}
+                    </div>
                     {/block}
                     <hr>
                     <p class="btn-group btn-group-justified btn-group-full" role="group">

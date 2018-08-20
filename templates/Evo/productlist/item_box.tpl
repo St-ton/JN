@@ -1,5 +1,7 @@
-{* template to display products in boxes and product-lists *}
-
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {if $Einstellungen.template.productlist.variation_select_productlist === 'N' || $Einstellungen.template.productlist.hover_productlist !== 'Y'}
     {assign var='hasOnlyListableVariations' value=0}
 {else}
@@ -184,4 +186,4 @@
             {/block}
         </div>
     </form>
-</div>{* /product-cell *}
+</div>

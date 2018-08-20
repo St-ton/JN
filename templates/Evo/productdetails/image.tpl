@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 <div id="image_wrapper">
     <div class="row">
         <div class="col-xs-12">
@@ -11,7 +15,6 @@
                 {foreach $Artikel->Bilder as $image}
                     {strip}
                         <div>
-                            {*<a href="{$image->cURLGross}" title="{$image->cAltAttribut|escape:"html"}">*}
                             {*sizes based on Evo template*}
                             <img data-srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
                                      {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
@@ -22,7 +25,6 @@
                                  alt="{$image->cAltAttribut|escape:"html"}"
                                  data-list='{$image->galleryJSON|replace:"'":"&apos;"}'
                                  src="{$image->cURLMini}" data-lazy="{$image->cURLMini}"/>
-                            {*</a>*}
                         </div>
                     {/strip}
                 {/foreach}
@@ -43,6 +45,7 @@
                 {/foreach}
                 {/if}
             {/block}
+
         </div>
     </div>
 </div>

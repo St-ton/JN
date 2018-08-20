@@ -285,7 +285,7 @@ class Search extends AbstractFilter
                     $this->productFilter->getDB()->query(
                         'UPDATE tsuchanfrage
                             SET nAnzahlTreffer = ' . (int)$searchQuery->nAnzahlTreffer . ',
-                                nAnzahlGesuche = nAnzahlGesuche+1, 
+                                nAnzahlGesuche = nAnzahlGesuche + 1, 
                                 dZuletztGesucht = now()
                             WHERE kSuchanfrage = ' . (int)$previuousQuery->kSuchanfrage,
                         ReturnType::AFFECTED_ROWS
@@ -297,7 +297,7 @@ class Search extends AbstractFilter
                         [(int)$searchQuery->kSprache, $this->productFilter->getDB()->realEscape($Suchausdruck)]
                     );
 
-                    return $this->productFilter->getDB()->insert('tsuchanfrage', $searchQuery);
+                    return $this->productFilter->getDB()->insert('tsuchanfrage', $searchQuery) > 0;
                 }
             } else {
                 $queryMiss                  = new \stdClass();

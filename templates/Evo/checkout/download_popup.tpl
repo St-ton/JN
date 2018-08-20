@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {assign var=bExclusive value=true}
 {include file='layout/header.tpl'}
 
@@ -14,7 +18,6 @@
     });
     {/literal}
 </script>
-
 <div id="popup_wrapper">
     <div id="popup">
         {if $bNoData}

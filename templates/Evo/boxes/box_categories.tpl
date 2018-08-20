@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {if $oBox->show()}
     {assign var='nID' value=$oBox->getCustomID()}
     {get_category_array categoryId=0 categoryBoxNumber=$nID assign='categories'}

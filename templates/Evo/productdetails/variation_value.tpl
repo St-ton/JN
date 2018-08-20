@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {strip}
     {if !isset($hideVariationValue) || !$hideVariationValue}
         <span class="label-variation">{$Variationswert->cName}</span>

@@ -33,9 +33,9 @@ function positionIndicator() {
     //prefix me for live
     tabNavCurrentLinkindicator.style.transform =
         "translate3d(" +
-        (tabNavCurrentLinkTextPosition.left - tabNavListLeftPosition) +
+        (tabNavCurrentLinkTextPosition.left - tabNavListLeftPosition +15) +
         "px,0,0) scaleX(" +
-        tabNavCurrentLinkTextPosition.width * 0.01 +
+        (tabNavCurrentLinkTextPosition.width-30) * 0.01 +
         ")";
 }
 /**
@@ -46,13 +46,13 @@ positionIndicator();
 /**
  * hide all tab panels function
  */
-function hideAllTabPanels() {
+/*function hideAllTabPanels() {
     //loop through all tab panel elements
     for (i = 0; i < tabPanels.length; i++) {
         //remove style attribute from each tab panel element to hide them
         tabPanels[i].removeAttribute("style");
     }
-};
+};*/
 
 /**
  * tab nav link function

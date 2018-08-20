@@ -37,6 +37,10 @@
 
 //header
 #main-wrapper.fluid {
+    #header-branding{
+        padding: @padding-base-vertical @grid-gutter-width/2;
+    }
+
     .navbar, #footer {
         margin-bottom: 0;
     }
@@ -56,8 +60,8 @@
         }
 
         #content-wrapper .container {
-            margin-top: @margin-base;
-            margin-bottom: @margin-base * 2;
+            margin-top: 40px;
+            margin-bottom: 0;
         }
     }
 
@@ -152,6 +156,16 @@ aside {
     .nav > li > a {
         padding: 10px 0;
     }
+
+    //badges
+    .badge {
+        background-color: transparent;
+        border: 1px solid @gray;
+        color: @text-color;
+        font-weight: normal;
+        border-radius: 2px;
+    }
+
 }
 
 .button-variant(@color; @background; @border) {
@@ -219,15 +233,10 @@ aside {
     }
 }
 
-//badges
+//bagdes
 .badge {
-    background-color: transparent;
-    border: 1px solid @gray;
-    color: @text-color;
-    font-weight: normal;
-    border-radius: 2px;
+    background-color: @brand-primary;
 }
-
 
 //productdetails
 

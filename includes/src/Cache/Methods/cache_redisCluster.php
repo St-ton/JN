@@ -6,6 +6,7 @@
 
 namespace Cache\Methods;
 
+
 use Cache\ICachingMethod;
 use Cache\JTLCacheTrait;
 
@@ -85,6 +86,7 @@ class cache_redisCluster implements ICachingMethod
 
             $this->_redis = $redis;
         } catch (\RedisClusterException $e) {
+            $this->setError($e->getMessage());
             \Shop::Container()->getLogService()->critical('\RedisClusterException: ' . $e->getMessage());
         }
 

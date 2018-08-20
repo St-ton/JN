@@ -104,7 +104,7 @@ class JTLSmartyTemplateHints extends JTLSmartyTemplateClass
                         .bounding-box{border:1px dashed black;pointer-events:none;}
                     </style>';
                 echo "<script type=\"text/javascript\">
-                function getBoudingBoxes() {
+                function getBoundingBoxes() {
                     $('.bounding-box').remove();
                     $('.tpl-debug-start').each(function(){
                         var elem = $(this),
@@ -143,8 +143,8 @@ class JTLSmartyTemplateHints extends JTLSmartyTemplateClass
                     });
                 }
                 $(document).ready(function () {
-                    getBoudingBoxes();                
-                    $(window).scroll(getBoudingBoxes).resize(getBoudingBoxes);
+                    getBoundingBoxes();                
+                    $(window).scroll(getBoundingBoxes).resize(getBoundingBoxes);
                 });
                 </script>";
             }

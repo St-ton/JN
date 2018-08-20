@@ -46,12 +46,12 @@
     }
 
     #content-wrapper > .container > .container-block {
-        padding-top: @padding-large / 2;
+        padding-top: @grid-gutter-width / 2;
     }
 
     @media (min-width: @screen-sm-min) {
         #content-wrapper > .container > .container-block {
-            padding: @padding-large / 2;
+            padding: @grid-gutter-width / 2;
         }
 
         header, #content-wrapper .container-block.beveled {
@@ -148,7 +148,7 @@ aside {
                 font-weight: @font-weight-semibold;
                 font-size: @font-size-h2;
                 border-bottom: 6px solid @brand-primary;
-                padding: 15px 0;
+                padding: 10px 0;
             }
         }
     }
@@ -258,5 +258,11 @@ aside {
         a {
             color: @gray;
         }
+    }
+
+    #copyright .container-block,
+    #copyright.container-block {
+        background-color: @gray-dark;
+        color: @gray-light;
     }
 }

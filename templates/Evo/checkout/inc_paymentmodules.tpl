@@ -34,32 +34,6 @@
             {include file='checkout/modules/paypal/bestellabschluss.tpl'}
         {elseif $Bestellung->Zahlungsart->cModulId === 'za_kreditkarte_jtl'}
             {include file='account/retrospective_payment.tpl'}
-        {elseif $Bestellung->Zahlungsart->cModulId === 'za_ut_stand_jtl'}
-            {include file='checkout/modules/ut/bestellabschluss.tpl'}
-        {elseif $Bestellung->Zahlungsart->cModulId === 'za_wirecard_jtl'}
-            {include file='checkout/modules/wirecard/bestellabschluss.tpl'}
-        {elseif $Bestellung->Zahlungsart->cModulId === 'za_postfinance_jtl'}
-            {include file='checkout/modules/postfinance/bestellabschluss.tpl'}
-        {elseif $Bestellung->Zahlungsart->cModulId === 'za_paymentpartner_jtl'}
-            {include file='checkout/modules/paymentpartner/bestellabschluss.tpl'}
-        {elseif $Bestellung->Zahlungsart->cModulId === 'za_uos_cc_jtl'}
-            {include file='checkout/modules/uos/bestellabschluss.tpl'}
-        {elseif $Bestellung->Zahlungsart->cModulId === 'za_uos_dd_jtl'}
-            {include file='checkout/modules/uos/bestellabschluss.tpl'}
-        {elseif $Bestellung->Zahlungsart->cModulId === 'za_uos_gi_jtl'}
-            {include file='checkout/modules/uos/bestellabschluss.tpl'}
-        {elseif $Bestellung->Zahlungsart->cModulId === 'za_uos_gi_self_jtl'}
-            {include file='checkout/modules/uos/bestellabschluss.tpl'}
-        {elseif $Bestellung->Zahlungsart->cModulId === 'za_uos_invoice_jtl'}
-            {include file='checkout/modules/uos/bestellabschluss.tpl'}
-        {elseif $Bestellung->Zahlungsart->cModulId === 'za_uos_prepaid_jtl'}
-            {include file='checkout/modules/uos/bestellabschluss.tpl'}
-        {elseif $Bestellung->Zahlungsart->cModulId === 'za_uos_dd_self_jtl'}
-            {include file='checkout/modules/uos/bestellabschluss.tpl'}
-        {elseif $Bestellung->Zahlungsart->cModulId === 'za_uos_ebank_jtl'}
-            {include file='checkout/modules/uos/bestellabschluss.tpl'}
-        {elseif $Bestellung->Zahlungsart->cModulId === 'za_uos_ebank_direct_jtl'}
-            {include file='checkout/modules/uos/bestellabschluss.tpl'}
         {elseif $Bestellung->Zahlungsart->cModulId === 'za_billpay_jtl'}
             {include file='checkout/modules/billpay/bestellabschluss.tpl'}
         {elseif $Bestellung->Zahlungsart->cModulId === 'za_billpay_invoice_jtl'}
@@ -70,30 +44,10 @@
             {include file='checkout/modules/billpay/bestellabschluss.tpl'}
         {elseif $Bestellung->Zahlungsart->cModulId === 'za_billpay_paylater_jtl'}
             {include file='checkout/modules/billpay/bestellabschluss.tpl'}
-        {elseif $Bestellung->Zahlungsart->cModulId === 'za_worldpay_jtl'}
-            {lang key='worldpayDesc' section='checkout'}
-            <br />
-            {$worldpayform}
-            <br />
-        {elseif $Bestellung->Zahlungsart->cModulId === 'za_moneybookers_jtl'}
-            {lang key='moneybookersDesc' section='checkout'}
-            <br />
-            {$moneybookersform}
-            <br />
-        {elseif $Bestellung->Zahlungsart->cModulId === 'za_ipayment_jtl'}
-            {lang key='ipaymentDesc' section='checkout'}
-            <br />
-            {$ipaymentform}
-            <br />
         {elseif $Bestellung->Zahlungsart->cModulId === 'za_sofortueberweisung_jtl'}
             {lang key='sofortueberweisungDesc' section='checkout'}
             <br />
             {$sofortueberweisungform}
-            <br />
-        {elseif $Bestellung->Zahlungsart->cModulId === 'za_safetypay'}
-            {lang key='safetypayDesc' section='checkout'}
-            <br />
-            {$safetypay_form}
             <br />
         {elseif !empty($oPlugin->oPluginZahlungsmethodeAssoc_arr[$cModulId]->cModulId) && $Bestellung->Zahlungsart->cModulId == $oPlugin->oPluginZahlungsmethodeAssoc_arr[$cModulId]->cModulId}
             {include file=$oPlugin->oPluginZahlungsmethodeAssoc_arr[$cModulId]->cTemplateFileURL}

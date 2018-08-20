@@ -106,7 +106,10 @@ class PaymentMethod
     public function getOrderHash($order)
     {
         $orderId = isset($order->kBestellung)
-            ? Shop::Container()->getDB()->query("SELECT cId FROM tbestellid WHERE kBestellung = " . (int)$order->kBestellung, 1)
+            ? Shop::Container()->getDB()->query(
+                "SELECT cId FROM tbestellid WHERE kBestellung = " . (int)$order->kBestellung,
+                \DB\ReturnType::SINGLE_OBJECT
+            )
             : null;
 
         return $orderId->cId ?? null;
@@ -120,24 +123,24 @@ class PaymentMethod
      */
     public function getReturnURL($order)
     {
-        if (!isset($_SESSION['Zahlungsart']->nWaehrendBestellung) || $_SESSION['Zahlungsart']->nWaehrendBestellung == 0) {
-            global $Einstellungen;
-            if ($Einstellungen['kaufabwicklung']['bestellabschluss_abschlussseite'] === 'A') {
-                // Abschlussseite
-                $oZahlungsID = Shop::Container()->getDB()->query("
-                    SELECT cId 
-                        FROM tbestellid 
-                        WHERE kBestellung = " . (int)$order->kBestellung, 1
-                );
-                if (is_object($oZahlungsID)) {
-                    return Shop::getURL() . '/bestellabschluss.php?i=' . $oZahlungsID->cId;
-                }
+        if (!isset($_SESSION['Zahlungsart']->nWaehrendBestellung) && (int)$_SESSION['Zahlungsart']->nWaehrendBestellung > 0) {
+            return Shop::getURL() . '/bestellvorgang.php';
+        }
+        global $Einstellungen;
+        if ($Einstellungen['kaufabwicklung']['bestellabschluss_abschlussseite'] === 'A') {
+            // Abschlussseite
+            $oZahlungsID = Shop::Container()->getDB()->query(
+                'SELECT cId 
+                    FROM tbestellid 
+                    WHERE kBestellung = ' . (int)$order->kBestellung,
+                \DB\ReturnType::SINGLE_OBJECT
+            );
+            if (is_object($oZahlungsID)) {
+                return Shop::getURL() . '/bestellabschluss.php?i=' . $oZahlungsID->cId;
             }
-
-            return $order->BestellstatusURL;
         }
 
-        return Shop::getURL() . '/bestellvorgang.php';
+        return $order->BestellstatusURL;
     }
 
     /**
@@ -174,9 +177,7 @@ class PaymentMethod
      */
     public function getShopTitle()
     {
-        global $Einstellungen;
-
-        return $Einstellungen['global']['global_shopname'];
+        return Shop::getConfigValue(CONF_GLOBAL, 'global_shopname');
     }
 
     /**
@@ -395,10 +396,11 @@ class PaymentMethod
     {
         if ((int)$kKunde > 0) {
             $oBestellung = Shop::Container()->getDB()->query(
-                "SELECT count(*) AS nAnzahl
+                "SELECT COUNT(*) AS nAnzahl
                     FROM tbestellung
                     WHERE (cStatus = '2' || cStatus = '3' || cStatus = '4')
-                        AND kKunde = " . (int)$kKunde, 1
+                        AND kKunde = " . (int)$kKunde,
+                \DB\ReturnType::SINGLE_OBJECT
             );
 
             if (isset($oBestellung->nAnzahl) && count($oBestellung->nAnzahl) > 0) {
@@ -456,7 +458,8 @@ class PaymentMethod
                           AND (
                                 cStatus = '" . BESTELLUNG_STATUS_BEZAHLT . "' 
                                 OR cStatus = '" . BESTELLUNG_STATUS_VERSANDT .
-                            "')", 1
+                            "')",
+                    \DB\ReturnType::SINGLE_OBJECT
                 );
                 $count = (int)$res->cnt;
                 if ($count < $this->getSetting('min_bestellungen')) {
@@ -745,52 +748,9 @@ class PaymentMethod
                     $paymentMethod->cModulId = $moduleId;
                 }
             }
-        } elseif ($moduleId === 'za_paypal_jtl') {
-            require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'paypal/PayPal.class.php';
-            $paymentMethod = new PayPal($moduleId);
-        } elseif ($moduleId === 'za_ipayment_jtl') {
-            require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ipayment/iPayment.class.php';
-            $paymentMethod = new iPayment($moduleId);
-        } elseif ($moduleId === 'za_worldpay_jtl') {
-            require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'worldpay/WorldPay.class.php';
-            $paymentMethod = new WorldPay($moduleId);
         } elseif ($moduleId === 'za_sofortueberweisung_jtl') {
             require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'sofortueberweisung/SofortUeberweisung.class.php';
             $paymentMethod = new SofortUeberweisung($moduleId);
-        } elseif ($moduleId === 'za_wirecard_jtl') {
-            require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'wirecard/Wirecard.class.php';
-            $paymentMethod = new Wirecard($moduleId);
-        } elseif ($moduleId === 'za_postfinance_jtl') {
-            require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'postfinance/PostFinance.class.php';
-            $paymentMethod = new PostFinance($moduleId);
-        } elseif ($moduleId === 'za_paymentpartner_jtl') {
-            require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'paymentpartner/PaymentPartner.class.php';
-            $paymentMethod = new PaymentPartner($moduleId);
-        } elseif ($moduleId === 'za_ut_stand_jtl') {
-            // United Transfer
-            require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ut/UT.class.php';
-            $paymentMethod           = new UT($moduleId);
-            $paymentMethod->cModulId = $moduleId;
-        } elseif ($moduleId === 'za_ut_dd_jtl') {
-            require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ut/UT.class.php';
-            $paymentMethod           = new UT($moduleId);
-            $paymentMethod->cModulId = $moduleId;
-        } elseif ($moduleId === 'za_ut_cc_jtl') {
-            require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ut/UT.class.php';
-            $paymentMethod           = new UT($moduleId);
-            $paymentMethod->cModulId = $moduleId;
-        } elseif ($moduleId === 'za_ut_prepaid_jtl') {
-            require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ut/UT.class.php';
-            $paymentMethod           = new UT($moduleId);
-            $paymentMethod->cModulId = $moduleId;
-        } elseif ($moduleId === 'za_ut_gi_jtl') {
-            require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ut/UT.class.php';
-            $paymentMethod           = new UT($moduleId);
-            $paymentMethod->cModulId = $moduleId;
-        } elseif ($moduleId === 'za_ut_ebank_jtl') {
-            require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ut/UT.class.php';
-            $paymentMethod           = new UT($moduleId);
-            $paymentMethod->cModulId = $moduleId;
         } elseif ($moduleId === 'za_billpay_jtl') {
             require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'billpay/Billpay.class.php';
             $paymentMethod           = new Billpay($moduleId);

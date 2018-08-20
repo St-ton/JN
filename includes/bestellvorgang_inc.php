@@ -3569,12 +3569,6 @@ function setzeSmartyBestaetigung()
         ))
         ->assign('WarensummeLocalized', Session::Cart()->gibGesamtsummeWarenLocalized())
         ->assign('Warensumme', Session::Cart()->gibGesamtsummeWaren());
-    // SafetyPay Work Around
-    if ($_SESSION['Zahlungsart']->cModulId === 'za_safetypay') {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'safetypay/safetypay.php';
-        $conf = Shop::getSettings([CONF_ZAHLUNGSARTEN]);
-        Shop::Smarty()->assign('safetypay_form', gib_safetypay_form($_SESSION['Kunde'], Session::Cart(), $conf['zahlungsarten']));
-    }
 }
 
 /**

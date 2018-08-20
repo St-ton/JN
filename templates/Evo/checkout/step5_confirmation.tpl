@@ -144,11 +144,7 @@
                 {/block}
             </div>
         {/if}
-    </div>{* /row *}
-
-    {if isset($safetypay_form)}
-        <div class="alert alert-info">{$safetypay_form}</div>
-    {/if}
+    </div>
     <form method="post" name="agbform" id="complete_order" action="{get_static_route id='bestellabschluss.php'}" class="evo-validate">
         {$jtl_token}
         {if $Einstellungen.kaufabwicklung.bestellvorgang_wrb_anzeigen == 1}

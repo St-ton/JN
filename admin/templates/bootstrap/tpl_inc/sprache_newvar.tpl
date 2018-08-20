@@ -43,7 +43,7 @@
                             </span>
                             <span class="input-group-wrap">
                                 <input type="text" class="form-control" name="cWert_arr[{$oSprache->cISO}]"
-                                       id="cWert_{$oSprache->cISO}" value="{$oVariable->cWert_arr[$oSprache->cISO]}">
+                                       id="cWert_{$oSprache->cISO}" value="{if !empty($oVariable->cWert_arr[$oSprache->cISO])}{$oVariable->cWert_arr[$oSprache->cISO]}{/if}">
                             </span>
                         </div>
                         <div class="input-group">
@@ -57,7 +57,7 @@
                                 <span class="input-group-wrap">
                                 <input type="text" class="form-control" name="cWertAlt_arr[{$oSprache->cISO}]" disabled
                                        id="cWertAlt_{$oSprache->cISO}"
-                                       value="{$oVariable->cWertAlt_arr[$oSprache->cISO]}">
+                                       value="{if !empty($oVariable->cWertAlt_arr[$oSprache->cISO])}{$oVariable->cWertAlt_arr[$oSprache->cISO]}{/if}">
                             </span>
                         </div>
                     {else}

@@ -6,6 +6,7 @@
 
 namespace Cache;
 
+
 use Cache\Methods\cache_null;
 
 \define('CACHING_ROOT_DIR', __DIR__ . 'JTLCache.php/');
@@ -102,6 +103,11 @@ final class JTLCache implements JTLCacheInterface
      * @var array
      */
     private $cachingGroups = [];
+
+    /**
+     * @var string
+     */
+    private $error = '';
 
     /**
      * init cache and set default method
@@ -211,13 +217,29 @@ final class JTLCache implements JTLCacheInterface
     }
 
     /**
-     * get list of all caching groups
-     *
-     * @return array
+     * @inheritdoc
      */
     public function getCachingGroups(): array
     {
         return $this->cachingGroups;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getError(): string
+    {
+        return $this->error;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setError(string $error): JTLCacheInterface
+    {
+        $this->error = $error;
+
+        return $this;
     }
 
     /**
@@ -294,12 +316,14 @@ final class JTLCache implements JTLCacheInterface
         $cache = null;
         /** @var ICachingMethod $className */
         $className = '\Cache\Methods\cache_' . $methodName;
-        $cache     = $className::getInstance($this->options);
-        // check method's health
-        if (!empty($cache) && $cache instanceof ICachingMethod && $cache->isInitialized() && $cache->isAvailable()) {
-            $this->setMethod($cache);
+        $cache     = new $className($this->options);
+        if (!empty($cache) && $cache instanceof ICachingMethod) {
+            $this->setError($cache->getError());
+            if ($cache->isInitialized() && $cache->isAvailable()) {
+                $this->setMethod($cache);
 
-            return true;
+                return true;
+            }
         }
         $this->setMethod(cache_null::getInstance($this->options));
 

@@ -6,6 +6,7 @@
 
 namespace Cache\Methods;
 
+
 use Cache\ICachingMethod;
 use Cache\JTLCacheTrait;
 
@@ -37,9 +38,12 @@ class cache_memcached implements ICachingMethod
     {
         if (!empty($options['memcache_host']) && !empty($options['memcache_port']) && $this->isAvailable()) {
             $this->setMemcached($options['memcache_host'], $options['memcache_port']);
+            $this->_memcached->setOption(\Memcached::OPT_PREFIX_KEY, $options['prefix']);
             $this->isInitialized = true;
-            $this->journalID     = 'memcached_journal';
-            //@see http://php.net/manual/de/memcached.expiration.php
+            $test                = $this->test();
+            $this->setError($test === true ? '' : $this->_memcached->getResultMessage());
+            $this->journalID = 'memcached_journal';
+            // @see http://php.net/manual/de/memcached.expiration.php
             $options['lifetime'] = \min(60 * 60 * 24 * 30, $options['lifetime']);
             $this->options       = $options;
             self::$instance      = $this;
@@ -68,7 +72,7 @@ class cache_memcached implements ICachingMethod
     public function store($cacheID, $content, $expiration = null): bool
     {
         return $this->_memcached->set(
-            $this->options['prefix'] . $cacheID,
+            $cacheID,
             $content,
             $expiration ?? $this->options['lifetime']
         );
@@ -79,7 +83,7 @@ class cache_memcached implements ICachingMethod
      */
     public function storeMulti($keyValue, $expiration = null): bool
     {
-        return $this->_memcached->setMulti($this->prefixArray($keyValue), $expiration ?? $this->options['lifetime']);
+        return $this->_memcached->setMulti($keyValue, $expiration ?? $this->options['lifetime']);
     }
 
     /**
@@ -87,7 +91,7 @@ class cache_memcached implements ICachingMethod
      */
     public function load($cacheID)
     {
-        return $this->_memcached->get($this->options['prefix'] . $cacheID);
+        return $this->_memcached->get($cacheID);
     }
 
     /**
@@ -98,14 +102,8 @@ class cache_memcached implements ICachingMethod
         if (!\is_array($cacheIDs)) {
             return [];
         }
-        $prefixedKeys = [];
-        foreach ($cacheIDs as $_cid) {
-            $prefixedKeys[] = $this->options['prefix'] . $_cid;
-        }
-        $res = $this->dePrefixArray($this->_memcached->getMulti($prefixedKeys));
 
-        // fill up result
-        return \array_merge(\array_fill_keys($cacheIDs, false), $res);
+        return \array_merge(\array_fill_keys($cacheIDs, false), $this->_memcached->getMulti($cacheIDs));
     }
 
     /**
@@ -121,7 +119,7 @@ class cache_memcached implements ICachingMethod
      */
     public function flush($cacheID): bool
     {
-        return $this->_memcached->delete($this->options['prefix'] . $cacheID);
+        return $this->_memcached->delete($cacheID);
     }
 
     /**
@@ -137,7 +135,7 @@ class cache_memcached implements ICachingMethod
      */
     public function keyExists($cacheID): bool
     {
-        $res = $this->_memcached->get($this->options['prefix'] . $cacheID);
+        $res = $this->_memcached->get($cacheID);
 
         return ($res !== false || $this->_memcached->getResultCode() === \Memcached::RES_SUCCESS);
     }

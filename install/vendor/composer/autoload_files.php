@@ -6,7 +6,6 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    '6bbf7da7eebb30af5aebdc527298fdde' => $vendorDir . '/www.php-einfach.de/xtea/xtea.class.php',
     'd98f8828ad2737a97e6d55807bfb00f0' => $baseDir . '/VueInstaller.php',
     'cf034427c5533d3c51f561a49895fce9' => $baseDir . '/DemoDataInstaller.php',
     '7abf59bfe20c0efa13ed41071683a3b6' => $baseDir . '/Faker/Commerce.php',

@@ -4,10 +4,9 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitb35784a05b4c4de165636b5db7c94f30
+class ComposerStaticInit067d9061e585c7644c4b866ebf1ce7c7
 {
     public static $files = array (
-        '6bbf7da7eebb30af5aebdc527298fdde' => __DIR__ . '/..' . '/www.php-einfach.de/xtea/xtea.class.php',
         'd98f8828ad2737a97e6d55807bfb00f0' => __DIR__ . '/../..' . '/VueInstaller.php',
         'cf034427c5533d3c51f561a49895fce9' => __DIR__ . '/../..' . '/DemoDataInstaller.php',
         '7abf59bfe20c0efa13ed41071683a3b6' => __DIR__ . '/../..' . '/Faker/Commerce.php',
@@ -63,8 +62,8 @@ class ComposerStaticInitb35784a05b4c4de165636b5db7c94f30
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitb35784a05b4c4de165636b5db7c94f30::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitb35784a05b4c4de165636b5db7c94f30::$prefixDirsPsr4;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit067d9061e585c7644c4b866ebf1ce7c7::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit067d9061e585c7644c4b866ebf1ce7c7::$prefixDirsPsr4;
 
         }, null, ClassLoader::class);
     }

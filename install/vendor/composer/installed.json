@@ -237,12 +237,12 @@
         "source": {
             "type": "git",
             "url": "git@gitlab.jtl-software.de:f.moche/wizard.git",
-            "reference": "98e9acdf76777741def8578561dd97c6b9fc2d84"
+            "reference": "057f0271aa01749ce4dd4c921e9b2eadd6b4500a"
         },
         "require": {
             "php": ">=5.4"
         },
-        "time": "2018-02-12T17:43:00+00:00",
+        "time": "2018-08-14T14:55:01+00:00",
         "type": "library",
         "installation-source": "source",
         "autoload": {
@@ -266,23 +266,5 @@
             "jtl",
             "jtl-shop"
         ]
-    },
-    {
-        "name": "www.php-einfach.de/xtea",
-        "version": "master",
-        "version_normalized": "9999999-dev",
-        "dist": {
-            "type": "zip",
-            "url": "https://www.php-einfach.de/wp-content/uploads/scripts/xtea.zip",
-            "reference": "dev-master",
-            "shasum": null
-        },
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "files": [
-                "xtea.class.php"
-            ]
-        }
     }
 ]

@@ -58,7 +58,7 @@ class SyncStatusStep extends Step implements IStep, \JsonSerializable
     {
         $this->wizard  = $wizard;
         $this->company = \Shop::DB()->query('SELECT * FROM tfirma', 1);
-        $this->sync    = \Shop::DB()->query('SELECT COUNT(*) AS cnt FROM tbrocken', 1)->cnt > 0;
+        $this->sync    = \Shop::DB()->query('SELECT COUNT(*) AS cnt FROM tbrocken', 1)->cnt > 0;;
 
         if ($this->sync) {
             // Kundengruppen

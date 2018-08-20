@@ -238,7 +238,7 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
             if ((isset($_POST['kommentare_loeschen']) && (int)$_POST['kommentare_loeschen'] === 1)
                 || isset($_POST['kommentareloeschenSubmit'])
             ) {
-                $controller->deleteComments($_POST['kNewsKommentar'], $newsItem);
+                $controller->deleteComments($_POST['kNewsKommentar'] ?? [], $newsItem);
             }
 
             $smarty->assign('oNewsKommentar_arr', $newsItem->getComments()->getItems());

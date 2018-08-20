@@ -63,8 +63,6 @@
                 infinite: true,
                 initialSlide: 0,
                 lazyLoad: 'ondemand',
-                lazyLoadSrcAttr: 'data-lazy',
-                lazyLoadSrcsetAttr: 'data-srcset',
                 mobileFirst: false,
                 pauseOnHover: true,
                 pauseOnFocus: true,
@@ -533,7 +531,7 @@
             _.options.slidesToScroll = 1;
         }
 
-        $('img['+ _.options.lazyLoadSrcAttr +']', _.$slider).not('[src]').addClass('slick-loading');
+        $('img[data-lazy]', _.$slider).not('[src]').addClass('slick-loading');
 
         _.setupInfinite();
 
@@ -889,8 +887,7 @@
                 .removeAttr('aria-hidden')
                 .removeAttr('data-slick-index')
                 .each(function(){
-                    var slide = $(this);
-                    slide.attr('style', slide.data('originalStyling'));
+                    $(this).attr('style', $(this).data('originalStyling'));
                 });
 
             _.$slideTrack.children(this.options.slide).detach();
@@ -1340,10 +1337,9 @@
 
         if (_.$dots !== null) {
             _.$slides.not(_.$slideTrack.find('.slick-cloned')).each(function(i) {
-                var slide = $(this);
                 var slideControlIndex = tabControlIndexes.indexOf(i);
 
-                slide.attr({
+                $(this).attr({
                     'role': 'tabpanel',
                     'id': 'slick-slide' + _.instanceUid + i,
                     'tabindex': -1
@@ -1360,14 +1356,13 @@
             });
 
             _.$dots.attr('role', 'tablist').find('li').each(function(i) {
-                var dot = $(this);
                 var mappedSlideIndex = tabControlIndexes[i];
 
-                dot.attr({
+                $(this).attr({
                     'role': 'presentation'
                 });
 
-                dot.find('button').first().attr({
+                $(this).find('button').first().attr({
                     'role': 'tab',
                     'id': 'slick-slide-control' + _.instanceUid + i,
                     'aria-controls': 'slick-slide' + _.instanceUid + mappedSlideIndex,
@@ -1548,12 +1543,12 @@
 
         function loadImages(imagesScope) {
 
-            $('img['+ _.options.lazyLoadSrcAttr +']', imagesScope).each(function() {
+            $('img[data-lazy]', imagesScope).each(function() {
 
                 var image = $(this),
-                    imageSource = image.attr(_.options.lazyLoadSrcAttr),
-                    imageSrcSet = image.attr(_.options.lazyLoadSrcsetAttr),
-                    imageSizes  = image.attr('data-sizes') || _.$slider.attr('data-sizes'),
+                    imageSource = $(this).attr('data-lazy'),
+                    imageSrcSet = $(this).attr('data-srcset'),
+                    imageSizes  = $(this).attr('data-sizes') || _.$slider.attr('data-sizes'),
                     imageToLoad = document.createElement('img');
 
                 imageToLoad.onload = function() {
@@ -1575,7 +1570,7 @@
                                 .attr('src', imageSource)
                                 .animate({ opacity: 1 }, 200, function() {
                                     image
-                                        .removeAttr(_.options.lazyLoadSrcAttr +' '+ _.options.lazyLoadSrcsetAttr +' data-sizes')
+                                        .removeAttr('data-lazy data-srcset data-sizes')
                                         .removeClass('slick-loading');
                                 });
                             _.$slider.trigger('lazyLoaded', [_, image, imageSource]);
@@ -1586,9 +1581,9 @@
                 imageToLoad.onerror = function() {
 
                     image
-                        .removeAttr(_.options.lazyLoadSrcAttr)
-                        .removeClass('slick-loading')
-                        .addClass('slick-lazyload-error');
+                        .removeAttr( 'data-lazy' )
+                        .removeClass( 'slick-loading' )
+                        .addClass( 'slick-lazyload-error' );
 
                     _.$slider.trigger('lazyLoadError', [ _, image, imageSource ]);
 
@@ -1767,7 +1762,7 @@
         tryCount = tryCount || 1;
 
         var _ = this,
-            $imgsToLoad = $( 'img['+ _.options.lazyLoadSrcAttr +']', _.$slider ),
+            $imgsToLoad = $( 'img[data-lazy]', _.$slider ),
             image,
             imageSource,
             imageSrcSet,
@@ -1777,8 +1772,8 @@
         if ( $imgsToLoad.length ) {
 
             image = $imgsToLoad.first();
-            imageSource = image.attr(_.options.lazyLoadSrcAttr);
-            imageSrcSet = image.attr(_.options.lazyLoadSrcsetAttr);
+            imageSource = image.attr('data-lazy');
+            imageSrcSet = image.attr('data-srcset');
             imageSizes  = image.attr('data-sizes') || _.$slider.attr('data-sizes');
             imageToLoad = document.createElement('img');
 
@@ -1796,7 +1791,7 @@
 
                 image
                     .attr( 'src', imageSource )
-                    .removeAttr(_.options.lazyLoadSrcAttr +' '+ _.options.lazyLoadSrcsetAttr +' data-sizes')
+                    .removeAttr('data-lazy data-srcset data-sizes')
                     .removeClass('slick-loading');
 
                 if ( _.options.adaptiveHeight === true ) {
@@ -1824,9 +1819,9 @@
                 } else {
 
                     image
-                        .removeAttr(_.options.lazyLoadSrcAttr)
-                        .removeClass('slick-loading')
-                        .addClass('slick-lazyload-error');
+                        .removeAttr( 'data-lazy' )
+                        .removeClass( 'slick-loading' )
+                        .addClass( 'slick-lazyload-error' );
 
                     _.$slider.trigger('lazyLoadError', [ _, image, imageSource ]);
 

@@ -92,6 +92,7 @@
             var $wrapper = this.getWrapper(wrapper);
 
             if (this.isSingleArticle()) {
+                this.registerGallery();
                 this.registerConfig();
             }
 
@@ -237,59 +238,129 @@
                 imgSwitch,
                 gallery  = this.gallery;
 
-            imgSwitch = function (context) {
-                var $context = $(context),
-                    id       = $context.attr('data-key'),
-                    value    = $context.attr('data-value'),
-                    data     = $context.data('list'),
-                    title    = $context.attr('data-title');
+            if (gallery !== null) {
+                imgSwitch = function (context, temporary, force) {
+                    var $context = $(context),
+                        id       = $context.attr('data-key'),
+                        value    = $context.attr('data-value'),
+                        data     = $context.data('list'),
+                        title    = $context.attr('data-title');
 
-                if (data != undefined){
-                    var slick = $('#gallery').slick('getSlick'),
-                        index = slick.slideCount,
-                        exists = $('#gallery img[src="'+data.md.src+'"]').length !== 0;
-
-                    if (!exists) {
-                        $('#gallery').slick('slickAdd', '<div><img src="'+data.md.src+'">');
-                        $('#gallery_preview').slick('slickAdd', '<div><img src="'+data.xs.src+'">');
-                    } else {
-                        index = $('#gallery div.slick-slide').not('.slick-cloned').find('img[src="'+data.md.src+'"]').parent().data('slick-index');
+                    if (typeof temporary === 'undefined') {
+                        temporary = true;
                     }
 
-                    $('#gallery').slick('slickGoTo', index);
-                    $('#gallery_preview').slick('slickGoTo', index);
+                    if ((!$context.hasClass('active') || force) && !!data) {
+                        gallery.setItems([data], value);
+
+                        if (!temporary) {
+                            var items  = [data],
+                                stacks = gallery.getStacks();
+                            for (var s in stacks) {
+                                if (stacks.hasOwnProperty(s) && s.match(/^_[0-9a-zA-Z]*$/) && s !== '_' + id) {
+                                    items = $.merge(items, stacks[s]);
+                                }
+                            }
+
+                            gallery.setItems([data], '_' + id);
+                            gallery.setItems(items, '__');
+                            gallery.render('__');
+
+                            that.galleryIndex     = gallery.index;
+                            that.galleryLastIdent = gallery.ident;
+                        } else {
+                            gallery.render(value);
+                        }
+                    }
                 }
+            } else {
+                imgSwitch = function (context, temporary) {
+                    var $context = $(context),
+                        value    = $context.attr('data-value'),
+                        data     = $context.data('list'),
+                        title    = $context.attr('data-title');
+
+                    if (typeof temporary === 'undefined') {
+                        temporary = true;
+                    }
+
+                    if (!!data) {
+                        var $wrapper = $(context).closest('.product-wrapper'),
+                            $img     = $('.image-box img', $wrapper);
+                        if ($img.length === 1) {
+                            $img.attr('src', data.md.src);
+                            if (!temporary) {
+                                $img.data('src', data.md.src);
+                            }
+                        }
+                    }
+                };
             }
 
-            if (!isTouchCapable() || ResponsiveBootstrapToolkit.current() !== 'xs') {
-                $('.variations .variation', $wrapper).hover(function () {
-                    imgSwitch(this);
+            $('.variations .bootstrap-select select', $wrapper)
+                .change(function() {
+                    var sel  = $(this).find('[value=' + this.value + ']'),
+                        cont = $(this).closest('.variations');
+
+                    if (cont.hasClass('simple-variations')) {
+                        imgSwitch(sel, false, false);
+                    } else {
+                        imgSwitch(sel, true, false);
+                    }
                 });
+
+            if (!isTouchCapable() || ResponsiveBootstrapToolkit.current() !== 'xs') {
+                $('.variations .bootstrap-select .dropdown-menu li', $wrapper)
+                    .hover(function () {
+                        var tmp_idx = parseInt($(this).attr('data-original-index')) + 1,
+                            rule    = 'select option:nth-child(' + tmp_idx + ')',
+                            sel     = $(this).closest('.bootstrap-select').find(rule);
+                        imgSwitch(sel);
+                    }, function () {
+                        var tmp_idx = parseInt($(this).attr('data-original-index')) + 1,
+                            rule    = 'select option:nth-child(' + tmp_idx + ')',
+                            sel     = $(this).closest('.bootstrap-select').find(rule),
+                            gallery = that.gallery,
+                            active;
+
+                        if (gallery !== null) {
+                            active = $(sel).find('.variation.active');
+                            gallery.render(that.galleryLastIdent);
+                            gallery.activate(that.galleryIndex);
+                        } else {
+                            var $wrapper = $(sel).closest('.product-wrapper'),
+                                $img     = $('.image-box img', $wrapper);
+                            if ($img.length === 1) {
+                                $img.attr('src', $img.data('src'));
+                            }
+                        }
+                    });
             }
 
-            $('.variations .bootstrap-select select', $wrapper).change(function() {
-                var sel  = $(this).find('[value=' + this.value + ']'),
-                    cont = $(this).closest('.variations');
-
-                if (cont.hasClass('simple-variations')) {
-                    imgSwitch(sel, false, false);
-                } else {
-                    imgSwitch(sel, true, false);
-                }
-            });
-
-            $('.variations.simple-variations .variation', $wrapper).click(function () {
-                imgSwitch(this, false);
-            });
+            $('.variations.simple-variations .variation', $wrapper)
+                .click(function () {
+                    imgSwitch(this, false);
+                });
 
             if (!isTouchCapable() || ResponsiveBootstrapToolkit.current() !== 'xs') {
-                $('.variations .bootstrap-select .dropdown-menu li', $wrapper).hover(function () {
-                    var tmp_idx = parseInt($(this).attr('data-original-index')) + 1,
-                        rule    = 'select option:nth-child(' + tmp_idx + ')',
-                        sel     = $(this).closest('.bootstrap-select').find(rule);
+                $('.variations .variation', $wrapper)
+                    .hover(function () {
+                        imgSwitch(this);
+                    }, function () {
+                        var sel     = $(this).closest('.variation'),
+                            gallery = that.gallery;
 
-                    imgSwitch(sel, false, false);
-                });
+                        if (gallery !== null) {
+                            gallery.render(that.galleryLastIdent);
+                            gallery.activate(that.galleryIndex);
+                        } else {
+                            var $wrapper = $(sel).closest('.product-wrapper'),
+                                $img     = $('.image-box img', $wrapper);
+                            if ($img.length === 1) {
+                                $img.attr('src', $img.data('src'));
+                            }
+                        }
+                    });
             }
         },
 

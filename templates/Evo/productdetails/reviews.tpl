@@ -81,7 +81,15 @@
         </div>
         {/block}
 
-        {if isset($Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich) && $Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0}
+        {if $ratingPagination->getPageItemCount() > 0 || isset($Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich) &&
+        $Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0}
+            <p>{lang key='reviewsInCurrLang' section='product rating'}</p>
+        {else}
+            <p>{lang key='noReviewsInCurrLang' section='product rating'}</p>
+        {/if}
+        {if isset($Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich) &&
+            $Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0
+        }
             <div class="review-wrapper reviews-mosthelpful panel">
                 <form method="post" action="{get_static_route id='bewertung.php'}#tab-votes">
                     {$jtl_token}

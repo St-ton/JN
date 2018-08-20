@@ -735,12 +735,15 @@ class PaymentMethod
             $GLOBALS['oPlugin'] = $oPlugin;
 
             if ($oPlugin->kPlugin > 0) {
-                require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' .
+                $classFile = PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' .
                     PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' .
                     PFAD_PLUGIN_PAYMENTMETHOD . $oPlugin->oPluginZahlungsKlasseAssoc_arr[$moduleId]->cClassPfad;
-                $className               = $oPlugin->oPluginZahlungsKlasseAssoc_arr[$moduleId]->cClassName;
-                $paymentMethod           = new $className($moduleId);
-                $paymentMethod->cModulId = $moduleId;
+                if (file_exists($classFile)) {
+                    require_once $classFile;
+                    $className               = $oPlugin->oPluginZahlungsKlasseAssoc_arr[$moduleId]->cClassName;
+                    $paymentMethod           = new $className($moduleId);
+                    $paymentMethod->cModulId = $moduleId;
+                }
             }
         } elseif ($moduleId === 'za_paypal_jtl') {
             require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'paypal/PayPal.class.php';
@@ -763,9 +766,6 @@ class PaymentMethod
         } elseif ($moduleId === 'za_paymentpartner_jtl') {
             require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'paymentpartner/PaymentPartner.class.php';
             $paymentMethod = new PaymentPartner($moduleId);
-        } elseif (strpos($moduleId, 'za_mbqc_') === 0) {
-            require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'moneybookers_qc/MoneyBookersQC.class.php';
-            $paymentMethod = new MoneyBookersQC($moduleId);
         } elseif ($moduleId === 'za_ut_stand_jtl') {
             // United Transfer
             require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ut/UT.class.php';

@@ -161,6 +161,7 @@ class Bewertung
                 $cSprachSQL = '';
             }
             // Anzahl Bewertungen für jeden Stern
+            // unabhängig von Sprache SHOP-2313
             if ($nSterne !== -1) {
                 if ($nSterne > 0) {
                     $cSQL = ' AND nSterne = ' . $nSterne;
@@ -168,7 +169,7 @@ class Bewertung
                 $oBewertungAnzahl_arr = Shop::Container()->getDB()->query(
                     'SELECT COUNT(*) AS nAnzahl, nSterne
                         FROM tbewertung
-                        WHERE kArtikel = ' . $kArtikel . $cSprachSQL . $cSQLFreischalten . '
+                        WHERE kArtikel = ' . $kArtikel . $cSQLFreischalten . '
                         GROUP BY nSterne
                         ORDER BY nSterne DESC',
                     \DB\ReturnType::ARRAY_OF_OBJECTS
@@ -223,13 +224,13 @@ class Bewertung
                 foreach ($this->oBewertung_arr as $i => $oBewertung) {
                     $this->oBewertung_arr[$i]->nAnzahlHilfreich = $oBewertung->nHilfreich + $oBewertung->nNichtHilfreich;
                 }
-                $nSterne_arr = [0, 0, 0, 0, 0];
-                foreach ($oBewertungAnzahl_arr as $oBewertungAnzahl) {
-                    $nSterne_arr[5 - $oBewertungAnzahl->nSterne] = $oBewertungAnzahl->nAnzahl;
-                }
-
-                $this->nSterne_arr = $nSterne_arr;
             }
+            $nSterne_arr = [0, 0, 0, 0, 0];
+            foreach ($oBewertungAnzahl_arr as $oBewertungAnzahl) {
+                $nSterne_arr[5 - $oBewertungAnzahl->nSterne] = $oBewertungAnzahl->nAnzahl;
+            }
+            $this->nSterne_arr = $nSterne_arr;
+
             executeHook(HOOK_BEWERTUNG_CLASS_BEWERTUNG, ['oBewertung' => &$this]);
         }
 

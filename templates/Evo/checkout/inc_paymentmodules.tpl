@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {if isset($abschlussseite) && $abschlussseite == 1}
     {include file='checkout/inc_trustedshops_excellence.tpl'}
 {else}
@@ -32,8 +36,6 @@
             {include file='account/retrospective_payment.tpl'}
         {elseif $Bestellung->Zahlungsart->cModulId === 'za_ut_stand_jtl'}
             {include file='checkout/modules/ut/bestellabschluss.tpl'}
-        {elseif (substr($Bestellung->Zahlungsart->cModulId, 0, 8) === 'za_mbqc_')}
-            {include file='checkout/modules/moneybookers_qc/bestellabschluss.tpl'}
         {elseif $Bestellung->Zahlungsart->cModulId === 'za_wirecard_jtl'}
             {include file='checkout/modules/wirecard/bestellabschluss.tpl'}
         {elseif $Bestellung->Zahlungsart->cModulId === 'za_postfinance_jtl'}
@@ -100,5 +102,4 @@
         {include file='checkout/inc_trustedshops_excellence.tpl'}
     </div>
 {/if}
-
 {include file='checkout/inc_conversion_tracking.tpl'}

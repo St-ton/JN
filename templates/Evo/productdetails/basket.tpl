@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {if ($Artikel->inWarenkorbLegbar == 1 || $Artikel->nErscheinendesProdukt == 1) || $Artikel->Variationen}
     <div id="add-to-cart" class="hidden-print product-buy text-right{if $Artikel->nErscheinendesProdukt} coming_soon{/if}">
     {block name='add-to-cart'}

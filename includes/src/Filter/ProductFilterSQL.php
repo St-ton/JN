@@ -6,6 +6,7 @@
 
 namespace Filter;
 
+
 use function Functional\reduce_left;
 
 /**
@@ -30,13 +31,13 @@ class ProductFilterSQL implements ProductFilterSQLInterface
     public function __construct(ProductFilter $productFilter)
     {
         $this->productFilter = $productFilter;
-        $this->conf          = $productFilter->getConfig();
+        $this->conf          = $productFilter->getFilterConfig()->getConfig();
     }
 
     /**
      * @inheritdoc
      */
-    public function getBaseQuery(FilterStateSQLInterface $state, string $type = 'filter'): string {
+    public function getBaseQuery(StateSQLInterface $state, string $type = 'filter'): string {
         $select     = $state->getSelect();
         $joins      = $state->getJoins();
         $conditions = $state->getConditions();
@@ -50,16 +51,16 @@ class ProductFilterSQL implements ProductFilterSQLInterface
             $joins[] = $sort->getJoin();
             $sort    = $sort->getOrderBy();
         }
-        $joins[] = (new FilterJoin())
+        $joins[] = (new Join())
             ->setComment('product visiblity join from getBaseQuery')
             ->setType('LEFT JOIN')
             ->setTable('tartikelsichtbarkeit')
             ->setOrigin(__CLASS__)
             ->setOn('tartikel.kArtikel = tartikelsichtbarkeit.kArtikel 
-                        AND tartikelsichtbarkeit.kKundengruppe = ' . $this->productFilter->getCustomerGroupID());
+                        AND tartikelsichtbarkeit.kKundengruppe = ' . $this->productFilter->getFilterConfig()->getCustomerGroupID());
         // remove duplicate joins
         $checked = [];
-        $joins   = reduce_left($joins, function(FilterJoinInterface $value, $i, $c, $reduction) use (&$checked) {
+        $joins   = reduce_left($joins, function(JoinInterface $value, $i, $c, $reduction) use (&$checked) {
             $key = $value->getTable();
             if (!\in_array($key, $checked, true)) {
                 $checked[]   = $key;
@@ -95,13 +96,13 @@ class ProductFilterSQL implements ProductFilterSQLInterface
             'limit'         => &$limit,
             'productFilter' => $this
         ]);
-        // merge FilterQuery-Conditions
+        // merge Query-Conditions
         $filterQueryIndices = [];
         $filterQueries      = \array_filter($conditions, function ($f) {
-            return \is_object($f) && \get_class($f) === FilterQuery::class;
+            return \is_object($f) && \get_class($f) === Query::class;
         });
         foreach ($filterQueries as $idx => $condition) {
-            /** @var FilterQueryInterface $condition */
+            /** @var QueryInterface $condition */
             if (\count($filterQueryIndices) === 0) {
                 $filterQueryIndices[] = $idx;
                 continue;
@@ -110,7 +111,7 @@ class ProductFilterSQL implements ProductFilterSQLInterface
             $currentWhere = $condition->getWhere();
             foreach ($filterQueryIndices as $i) {
                 $check = $conditions[$i];
-                /** @var FilterQueryInterface $check */
+                /** @var QueryInterface $check */
                 if ($currentWhere === $check->getWhere()) {
                     $found = true;
                     $check->setParams(\array_merge_recursive($check->getParams(), $condition->getParams()));
@@ -124,7 +125,7 @@ class ProductFilterSQL implements ProductFilterSQLInterface
         }
         // build sql string
         $cond = \implode(' AND ', \array_map(function ($a) {
-            if (\is_string($a) || (\is_object($a) && \get_class($a) === FilterQuery::class)) {
+            if (\is_string($a) || (\is_object($a) && \get_class($a) === Query::class)) {
                 return $a;
             }
 

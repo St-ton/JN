@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {if isset($Artikel->oKonfig_arr) && $Artikel->oKonfig_arr|@count > 0}
     <div class="product-configuration top10 row">
         <div class="col-sm-12 col-lg-8">
@@ -7,9 +11,9 @@
                         {assign var=oSprache value=$oGruppe->getSprache()}
                         {assign var=cBildPfad value=$oGruppe->getBildPfad()}
                         {assign var=kKonfiggruppe value=$oGruppe->getKonfiggruppe()}
-                        <div class="cfg-group panel panel-default{if $oGruppe->getMin() > 0} required{/if}" data-id="{$kKonfiggruppe}">
+                        <div class="cfg-group panel panel-default" data-id="{$kKonfiggruppe}">
                             <div class="panel-heading">
-                                <h5 class="panel-title">{$oSprache->getName()}</h5>
+                                <h5 class="panel-title">{$oSprache->getName()}{if $oGruppe->getMin() == 0}<span class="optional"> - {lang key='conditionalFillOut' section='checkout'}</span>{/if}</h5>
                             </div>
                             <div class="group panel-body">
                                 <div class="group-description">
@@ -133,7 +137,7 @@
 
                                             {if !$oGruppe->quantityEquals()}
                                                 <div class="quantity form-inline" data-id="{$kKonfiggruppe}" style="display:none">
-                                                    <label for="quantity{$kKonfiggruppe}">{lang key='quantity' section='global'}:</label>
+                                                    <label for="quantity{$kKonfiggruppe}">{lang key='quantity'}:</label>
 
                                                     <div class="input-group">
                                                         <input class="form-control" size="2" type="number"
@@ -163,7 +167,7 @@
             <div id="product-configuration-sidebar">
                 <div class="panel panel-primary no-margin">
                     <div class="panel-heading">
-                        <h5 class="panel-title">{lang key='yourConfiguration' section='global'}</h5>
+                        <h5 class="panel-title">{lang key='yourConfiguration'}</h5>
                     </div>
                     <table class="table table-striped">
                         <tbody class="summary"></tbody>
@@ -182,12 +186,12 @@
                                        class="quantity form-control text-right" name="anzahl"
                                        value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{elseif isset($fAnzahl)}{$fAnzahl}{else}1{/if}" />
                                 <span class="input-group-btn">
-                                    <button name="inWarenkorb" type="submit" value="{lang key='addToCart' section='global'}"
+                                    <button name="inWarenkorb" type="submit" value="{lang key='addToCart'}"
                                             class="submit btn btn-primary">
                                         {if isset($kEditKonfig)}
-                                            {lang key='applyChanges' section='global'}
+                                            {lang key='applyChanges'}
                                         {else}
-                                            {lang key='addToCart' section='global'}
+                                            {lang key='addToCart'}
                                         {/if}
                                     </button>
                                 </span>

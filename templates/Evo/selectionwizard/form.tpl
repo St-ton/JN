@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {if isset($AWA)}
     <h3 class="selection-wizard-desc">
         {$AWA->getDescription()}

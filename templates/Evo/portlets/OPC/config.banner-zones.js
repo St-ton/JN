@@ -89,7 +89,6 @@ $.clickareas = function(options)
 
         function loadImage()
         {
-            console.log('loadImage');
             width = areaWrapper.find('img').attr('width');
             height = areaWrapper.find('img').attr('height');
 
@@ -107,7 +106,6 @@ $.clickareas = function(options)
 
         function releaseAreas()
         {
-            console.log('releaseAreas');
             areaWrapper.find('.area').each(function(idx, area) {
                 $(area).removeClass('selected');
                 saveEditor();
@@ -136,7 +134,6 @@ $.clickareas = function(options)
 
         function saveEditor()
         {
-            console.log('saveEditor');
             var id = parseInt($('#area_id').val() || 0);
 
             for (var i=0; i<options.oArea_arr.length; i++) {
@@ -161,7 +158,6 @@ $.clickareas = function(options)
 
         function selectArea(area)
         {
-            console.log('selectArea');
             var id = $(area).data('ref');
             var data = getData(id);
 
@@ -182,7 +178,6 @@ $.clickareas = function(options)
 
         function addAreaItem(item, select)
         {
-            console.log('addAreaItem');
             factor = (clickarea.prop("naturalWidth") / clickarea.prop("width")).toFixed(2);
             item.uid = ++unique;
 

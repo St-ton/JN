@@ -19,30 +19,30 @@
                 <div class="category first panel-heading">
                     <h3 class="panel-title">Einstellungen</h3>
                 </div>
-                <div id="settings" class="panel-body">
+                <div class="panel-body">
                     <div class="input-group form-group">
                         <span class="input-group-addon">
                             <label for="title">Titel</label>
                         </span>
-                        <input class="form-control" type="text" id="title" name="title">
+                        <input class="form-control" type="text" id="area_title" name="title">
                     </div>
                     <div class="input-group form-group">
                         <span class="input-group-addon">
                             <label for="desc">Beschreibung</label>
                         </span>
-                        <textarea class="form-control" id="desc" name="desc"></textarea>
+                        <textarea class="form-control" id="area_desc" name="desc"></textarea>
                     </div>
                     <div class="input-group form-group">
                         <span class="input-group-addon">
                             <label for="url">Url</label>
                         </span>
-                        <input class="form-control" type="text" id="url" name="url">
+                        <input class="form-control" type="text" id="area_url" name="url">
                     </div>
                     <div class="input-group form-group">
                         <span class="input-group-addon">
                             <label for="style">CSS-Klasse</label>
                         </span>
-                        <input class="form-control" type="text" id="style" name="style">
+                        <input class="form-control" type="text" id="area_style" name="style">
                     </div>
                     <div class="input-group form-group">
                         <span class="input-group-addon">
@@ -53,10 +53,10 @@
                         <input type="text" name="article_name" id="article_name" value="" class="form-control">
                         <input type="hidden" name="article_id" id="article_id" value="">
                     </div>
-                    <input type="hidden" name="id" id="id" />
+                    <input type="hidden" name="id" id="area_id">
                     <div class="save_wrapper btn-group btn-group-sm" role="group">
                         <a href="#" class="btn btn-default" id="article_unlink">Artikel L&ouml;sen</a>
-                        <button type="button" class="btn btn-danger" id="remove">
+                        <button type="button" class="btn btn-danger" id="area_remove">
                             <i class="fa fa-trash"></i> Zone l&ouml;schen
                         </button>
                         <a class="btn btn-primary" href="#" id="area_save">
@@ -126,6 +126,7 @@
                 'editor': '#area_editor',
                 'save': '#area_save',
                 'add': '#area_new',
+                'remove': '#area_remove',
                 'info': '#area_info',
                 'oArea_arr': {if !empty($instance->getProperty('zones'))}{$instance->getProperty('zones')}{else}[]{/if},
                 'kImageMap': '{$instance->getProperty('kImageMap')}',

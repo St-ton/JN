@@ -22,7 +22,9 @@
                     {assign var="oArtikel" value=$oImageMapArea->oArtikel}
                     <div class="area-desc">
                         {if $oImageMapArea->oArtikel}
-                            <img src="{$oArtikel->cVorschaubild}" alt="{$oArtikel->cName|strip_tags|escape:"quotes"|truncate:60}" class="img-responsive center-block" />
+                            <img src="{$oArtikel->cVorschaubild}"
+                                 alt="{$oArtikel->cName|strip_tags|escape:"quotes"|truncate:60}"
+                                 class="img-responsive center-block">
                         {/if}
                         {if $oImageMapArea->oArtikel}
                             {include file="productdetails/price.tpl" Artikel=$oArtikel tplscope="box"}

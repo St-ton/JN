@@ -1,8 +1,7 @@
 {**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license https://jtl-url.de/jtlshoplicense
  *}
-
 <p class="box_info">{lang key='freeGiftFromOrderValue'}</p>
 {if !empty($oArtikelGeschenk_arr)}
     {include file='snippets/opc_mount_point.tpl' id='opc_free_gift_prepend'}

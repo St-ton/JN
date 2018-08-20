@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {if $oBox->show()}
     {assign var=from value=$oBox->getProducts()}
     {assign var=nAnzahl value=$oBox->getItemCount()}

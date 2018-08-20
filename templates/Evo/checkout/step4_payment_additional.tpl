@@ -1,6 +1,6 @@
 {**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license https://jtl-url.de/jtlshoplicense
  *}
 <form id="form_payment_extra" class="form payment_extra" method="post" action="{get_static_route id='bestellvorgang.php'}">
     <div id="order-additional-payment" class="bottom15 form-group">

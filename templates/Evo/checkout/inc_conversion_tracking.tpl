@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {if empty($conversion_tracked)}
     {$conversion_tracked = 1}
     <div id="conversiontracking">

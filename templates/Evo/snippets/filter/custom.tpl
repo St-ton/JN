@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 <ul class="{if isset($class)}{$class}{else}nav nav-list{/if}">
     {foreach $filter->getOptions() as $filterOption}
         <li>

@@ -17,17 +17,17 @@
                    height:{math equation="100/bHeight*aHeight"
                         bHeight=$oBanner->fHeight
                         aHeight=$oImageMapArea->oCoords->h}%"
-               title="{$oImageMapArea->cTitel|strip_tags|escape:"html"|escape:"quotes"}">
+               title="{$oImageMapArea->cTitel|strip_tags|escape:'html'|escape:'quotes'}">
                 {if $oImageMapArea->oArtikel || $oImageMapArea->cBeschreibung|@strlen > 0}
                     {assign var="oArtikel" value=$oImageMapArea->oArtikel}
                     <div class="area-desc">
                         {if $oImageMapArea->oArtikel}
                             <img src="{$oArtikel->cVorschaubild}"
-                                 alt="{$oArtikel->cName|strip_tags|escape:"quotes"|truncate:60}"
+                                 alt="{$oArtikel->cName|strip_tags|escape:'quotes'|truncate:60}"
                                  class="img-responsive center-block">
                         {/if}
                         {if $oImageMapArea->oArtikel}
-                            {include file="productdetails/price.tpl" Artikel=$oArtikel tplscope="box"}
+                            {include file='productdetails/price.tpl' Artikel=$oArtikel tplscope="box"}
                         {/if}
                         {if $oImageMapArea->cBeschreibung|@strlen > 0}
                             <p>

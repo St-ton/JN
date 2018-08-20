@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {assign var=Suchergebnisse value=$NaviFilter->getSearchResults(false)}
 {if $Suchergebnisse->getProducts()|@count > 0}
     {if $Einstellungen.navigationsfilter.allgemein_tagfilter_benutzen !== 'N'

@@ -45,11 +45,10 @@ body.no-bg {
     white-space: nowrap;
 }
 
-.form-group.required input, .form-group.required select, .form-group.required input, .form-group.required textarea, .form-group.required .bootstrap-select .btn {
-    background-image: url("../images/asterisk.png");
-    background-repeat: no-repeat;
-    background-position: top right;
-    background-size: 32px 32px;
+.form-group .optional,
+.panel-title .optional {
+    font-weight: normal;
+    font-style: italic;
 }
 
 .form-group label {
@@ -57,12 +56,6 @@ body.no-bg {
     > .indication {
         font-weight: normal;
         opacity: .5;
-    }
-}
-
-.form-group.required .control-label {
-    .required {
-        color: @brand-info;
     }
 }
 

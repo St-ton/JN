@@ -1135,8 +1135,12 @@ function bearbeiteDeletes($xml)
         if (is_array($xml['del_bilder']['kMerkmal'])) {
             foreach ($xml['del_bilder']['kMerkmal'] as $kMerkmal) {
                 if ((int)$kMerkmal > 0) {
-                    Shop::Container()->getDB()->update('tmerkmal', 'kMerkmal', (int)$kMerkmal,
-                        (object)['cBildpfad' => '']);
+                    Shop::Container()->getDB()->update(
+                        'tmerkmal',
+                        'kMerkmal',
+                        (int)$kMerkmal,
+                        (object)['cBildpfad' => '']
+                    );
                 }
             }
         } elseif ((int)$xml['del_bilder']['kMerkmal'] > 0) {

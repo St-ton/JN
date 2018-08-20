@@ -45,7 +45,7 @@
                             <h3 class="panel-title">{#ratingsInaktive#}</h3>
                         </div>
                         <div class="table-responsive">
-                            <table  class="table">
+                            <table  class="table table-striped">
                                 <thead>
                                 <tr>
                                     <th class="check">&nbsp;</th>
@@ -59,14 +59,14 @@
                                 </thead>
                                 <tbody>
                                     {foreach name=bewertung from=$oBewertung_arr item=oBewertung key=kKey}
-                                        <tr class="tab_bg{$smarty.foreach.bewertung.iteration%2}">
+                                        <tr>
                                             <td class="check">
                                                 <input type="hidden" name="kArtikel[{$kKey}]" value="{$oBewertung->kArtikel}" />
                                                 <input name="kBewertung[{$kKey}]" type="checkbox" value="{$oBewertung->kBewertung}" />
                                             </td>
-                                            <td class="TD2"><a href="../index.php?a={$oBewertung->kArtikel}" target="_blank">{$oBewertung->ArtikelName}</a></td>
-                                            <td class="TD3">{$oBewertung->cName}.</td>
-                                            <td class="TD4"><b>{$oBewertung->cTitel}</b><br />{$oBewertung->cText}</td>
+                                            <td><a href="../index.php?a={$oBewertung->kArtikel}" target="_blank">{$oBewertung->ArtikelName}</a></td>
+                                            <td>{$oBewertung->cName}.</td>
+                                            <td><b>{$oBewertung->cTitel}</b><br />{$oBewertung->cText}</td>
                                             <td class="tcenter">{$oBewertung->nSterne}</td>
                                             <td class="tcenter">{$oBewertung->Datum}</td>
                                             <td class="tcenter">
@@ -81,7 +81,7 @@
                                 <tfoot>
                                     <tr>
                                         <td class="check"><input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);"></td>
-                                        <td colspan="6" class="TD7"><label for="ALLMSGS">{#ratingSelectAll#}</label></td>
+                                        <td colspan="6"><label for="ALLMSGS">{#ratingSelectAll#}</label></td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -110,7 +110,7 @@
                             <h3 class="panel-title">{#ratingLast50#}</h3>
                         </div>
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="table table-striped">
                                 <thead>
                                 <tr>
                                     <th class="check">&nbsp;</th>
@@ -124,11 +124,11 @@
                                 </thead>
                                 <tbody>
                                 {foreach name=bewertungletzten50 from=$oBewertungLetzten50_arr item=oBewertungLetzten50}
-                                    <tr class="tab_bg{$smarty.foreach.bewertungletzten50.iteration%2}">
+                                    <tr>
                                         <td class="check"><input name="kBewertung[]" type="checkbox" value="{$oBewertungLetzten50->kBewertung}"><input type="hidden" name="kArtikel[]" value="{$oBewertungLetzten50->kArtikel}"></td>
-                                        <td class="TD2"><a href="../index.php?a={$oBewertungLetzten50->kArtikel}" target="_blank">{$oBewertungLetzten50->ArtikelName}</a></td>
-                                        <td class="TD3">{$oBewertungLetzten50->cName}.</td>
-                                        <td class="TD4">
+                                        <td><a href="../index.php?a={$oBewertungLetzten50->kArtikel}" target="_blank">{$oBewertungLetzten50->ArtikelName}</a></td>
+                                        <td>{$oBewertungLetzten50->cName}.</td>
+                                        <td>
                                             <strong>{$oBewertungLetzten50->cTitel}</strong><br>
                                             {$oBewertungLetzten50->cText}
                                             {if !empty($oBewertungLetzten50->cAntwort)}
@@ -160,7 +160,7 @@
                                 <tfoot>
                                 <tr>
                                     <td class="check"><input name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);"></td>
-                                    <td colspan="6" class="TD7"><label for="ALLMSGS3">{#ratingSelectAll#}</label></td>
+                                    <td colspan="6"><label for="ALLMSGS3">{#ratingSelectAll#}</label></td>
                                 </tr>
                                 </tfoot>
                             </table>
@@ -198,7 +198,7 @@
                             <h3 class="panel-title">{#ratingsInaktive#}</h3>
                         </div>
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="table table-striped">
                                 <thead>
                                 <tr>
                                     <th class="th-1">&nbsp;</th>
@@ -212,11 +212,11 @@
                                 </thead>
                                 <tbody>
                                 {foreach name=bewertungaktiv from=$oBewertungAktiv_arr item=oBewertungAktiv}
-                                    <tr class="tab_bg{$smarty.foreach.bewertungaktiv.iteration%2}">
-                                        <td class="TD1"><input name="kBewertung[]" type="checkbox" value="{$oBewertungAktiv->kBewertung}"><input type="hidden" name="kArtikel[]" value="{$oBewertungAktiv->kArtikel}"></td>
-                                        <td class="TD2"><a href="../index.php?a={$oBewertungAktiv->kArtikel}" target="_blank">{$oBewertungAktiv->ArtikelName}</a></td>
-                                        <td class="TD3">{$oBewertungAktiv->cName}.</td>
-                                        <td class="TD4"><b>{$oBewertungAktiv->cTitel}</b><br />{$oBewertungAktiv->cText}</td>
+                                    <tr>
+                                        <td><input name="kBewertung[]" type="checkbox" value="{$oBewertungAktiv->kBewertung}"><input type="hidden" name="kArtikel[]" value="{$oBewertungAktiv->kArtikel}"></td>
+                                        <td><a href="../index.php?a={$oBewertungAktiv->kArtikel}" target="_blank">{$oBewertungAktiv->ArtikelName}</a></td>
+                                        <td>{$oBewertungAktiv->cName}.</td>
+                                        <td><b>{$oBewertungAktiv->cTitel}</b><br />{$oBewertungAktiv->cText}</td>
                                         <td class="tcenter">{$oBewertungAktiv->nSterne}</td>
                                         <td class="tcenter">{$oBewertungAktiv->Datum}</td>
                                         <td class="tcenter">
@@ -230,8 +230,8 @@
                                 </tbody>
                                 <tfoot>
                                 <tr>
-                                    <td class="TD1"><input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);"></td>
-                                    <td colspan="6" class="TD7"><label for="ALLMSGS2">{#ratingSelectAll#}</label></td>
+                                    <td><input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);"></td>
+                                    <td colspan="6"><label for="ALLMSGS2">{#ratingSelectAll#}</label></td>
                                 </tr>
                                 </tfoot>
                             </table>

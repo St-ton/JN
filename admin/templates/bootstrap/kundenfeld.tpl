@@ -297,7 +297,7 @@
                         <input name="kundenfelder" type="hidden" value="1">
                         <input name="tab" type="hidden" value="uebersicht">
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="table table-striped">
                                 <thead>
                                 <tr>
                                     <th class="check"></th>
@@ -312,14 +312,14 @@
                                 </thead>
                                 <tbody>
                                 {foreach name=kundenfeld from=$oKundenfeld_arr item=oKundenfeld}
-                                    <tr class="tab_bg{$smarty.foreach.kundenfeld.iteration%2}">
+                                    <tr>
                                         <td class="check">
                                             <input name="kKundenfeld[]" type="checkbox" value="{$oKundenfeld->kKundenfeld}" id="check-{$oKundenfeld->kKundenfeld}" />
                                         </td>
-                                        <td class="TD2"><label for="check-{$oKundenfeld->kKundenfeld}">{$oKundenfeld->cName}{if $oKundenfeld->nPflicht == 1} *{/if}</label></td>
-                                        <td class="TD3">{$oKundenfeld->cWawi}</td>
-                                        <td class="TD4">{$oKundenfeld->cTyp}</td>
-                                        <td class="TD5">
+                                        <td><label for="check-{$oKundenfeld->kKundenfeld}">{$oKundenfeld->cName}{if $oKundenfeld->nPflicht == 1} *{/if}</label></td>
+                                        <td>{$oKundenfeld->cWawi}</td>
+                                        <td>{$oKundenfeld->cTyp}</td>
+                                        <td>
                                             {if isset($oKundenfeld->oKundenfeldWert_arr)}
                                                 {foreach name=kundenfeldwert from=$oKundenfeld->oKundenfeldWert_arr item=oKundenfeldWert}
                                                     {$oKundenfeldWert->cWert}{if !$smarty.foreach.kundenfeldwert.last}, {/if}

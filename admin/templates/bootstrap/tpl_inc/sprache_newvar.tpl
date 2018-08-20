@@ -69,7 +69,7 @@
                             </span>
                             <span class="input-group-wrap">
                                 <input type="text" class="form-control" name="cWert_arr[{$oSprache->cISO}]"
-                                       id="cWert_{$oSprache->cISO}" value="{$oVariable->cWert_arr[$oSprache->cISO]}">
+                                       id="cWert_{$oSprache->cISO}" value="{$oVariable->cWert_arr[$oSprache->cISO]|default:''}">
                             </span>
                         </div>
                     {/if}

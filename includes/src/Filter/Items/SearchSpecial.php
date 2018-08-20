@@ -6,14 +6,15 @@
 
 namespace Filter\Items;
 
+
 use DB\ReturnType;
 use Filter\AbstractFilter;
-use Filter\FilterJoin;
-use Filter\FilterOption;
 use Filter\FilterInterface;
-use Filter\FilterStateSQL;
-use Filter\Type;
+use Filter\Join;
+use Filter\Option;
 use Filter\ProductFilter;
+use Filter\StateSQL;
+use Filter\Type;
 
 /**
  * Class SearchSpecial
@@ -88,7 +89,7 @@ class SearchSpecial extends AbstractFilter
             if (!\is_array($val)) {
                 $val = [$val];
             }
-            $oSeo_arr = \Shop::Container()->getDB()->query(
+            $oSeo_arr = $this->productFilter->getDB()->query(
                 "SELECT tseo.cSeo, tseo.kSprache
                     FROM tseo
                     WHERE cKey = 'suchspecial' 
@@ -226,7 +227,7 @@ class SearchSpecial extends AbstractFilter
     {
         $joins     = [];
         $values    = $this->getValue();
-        $joinType  = $this->getType() === Type:: AND
+        $joinType  = $this->getType() === Type::AND
             ? 'JOIN'
             : 'LEFT JOIN';
         $baseValue = $this->productFilter->getSearchSpecial()->getValue();
@@ -236,7 +237,7 @@ class SearchSpecial extends AbstractFilter
                     if ($baseValue === $value) {
                         break;
                     }
-                    $joins[] = (new FilterJoin())
+                    $joins[] = (new Join())
                         ->setType($joinType)
                         ->setTable('tbestseller')
                         ->setOn('tbestseller.kArtikel = tartikel.kArtikel')
@@ -249,13 +250,13 @@ class SearchSpecial extends AbstractFilter
                         break;
                     }
                     if (!$this->productFilter->hasPriceRangeFilter()) {
-                        $joins[] = (new FilterJoin())
+                        $joins[] = (new Join())
                             ->setType($joinType)
                             ->setTable('tartikelsonderpreis AS tasp')
                             ->setOn('tasp.kArtikel = tartikel.kArtikel')
                             ->setComment('special offers JOIN from ' . __METHOD__)
                             ->setOrigin(__CLASS__);
-                        $joins[] = (new FilterJoin())
+                        $joins[] = (new Join())
                             ->setType($joinType)
                             ->setTable('tsonderpreise AS tsp')
                             ->setOn('tsp.kArtikelSonderpreis = tasp.kArtikelSonderpreis')
@@ -269,7 +270,7 @@ class SearchSpecial extends AbstractFilter
                         break;
                     }
                     if (!$this->productFilter->hasRatingFilter()) {
-                        $joins[] = (new FilterJoin())
+                        $joins[] = (new Join())
                             ->setType($joinType)
                             ->setTable('tartikelext AS taex ')
                             ->setOn('taex.kArtikel = tartikel.kArtikel')
@@ -307,12 +308,19 @@ class SearchSpecial extends AbstractFilter
         $ignore           = $this->getType() === Type::OR
             ? $this->getClassName()
             : null;
+        $state            = (new StateSQL())->from($this->productFilter->getCurrentStateData($ignore));
+        $cacheID          = 'fltr_' . __CLASS__ . \md5($this->productFilter->getFilterSQL()->getBaseQuery($state));
+        if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
+            $this->options = $cached;
+
+            return $this->options;
+        }
         for ($i = 1; $i < 7; ++$i) {
-            $sql = (new FilterStateSQL())->from($this->productFilter->getCurrentStateData($ignore));
-            $sql->setSelect(['tartikel.kArtikel']);
-            $sql->setOrderBy(null);
-            $sql->setLimit('');
-            $sql->setGroupBy(['tartikel.kArtikel']);
+            $state = (new StateSQL())->from($this->productFilter->getCurrentStateData($ignore));
+            $state->setSelect(['tartikel.kArtikel']);
+            $state->setOrderBy(null);
+            $state->setLimit('');
+            $state->setGroupBy(['tartikel.kArtikel']);
             switch ($i) {
                 case \SEARCHSPECIALS_BESTSELLER:
                     $name    = \Shop::Lang()->get('bestsellers');
@@ -320,24 +328,24 @@ class SearchSpecial extends AbstractFilter
                         ? (int)$min
                         : 100;
 
-                    $sql->addJoin((new FilterJoin())
+                    $state->addJoin((new Join())
                         ->setComment('bestseller JOIN from ' . __METHOD__)
                         ->setType('JOIN')
                         ->setTable('tbestseller')
                         ->setOn('tbestseller.kArtikel = tartikel.kArtikel')
                         ->setOrigin(__CLASS__));
-                    $sql->addCondition('ROUND(tbestseller.fAnzahl) >= ' . $nAnzahl);
+                    $state->addCondition('ROUND(tbestseller.fAnzahl) >= ' . $nAnzahl);
                     break;
                 case \SEARCHSPECIALS_SPECIALOFFERS:
                     $name = \Shop::Lang()->get('specialOffer');
                     if (true || !$this->isInitialized()) {
-                        $sql->addJoin((new FilterJoin())
+                        $state->addJoin((new Join())
                             ->setComment('special offer JOIN1 from ' . __METHOD__)
                             ->setType('JOIN')
                             ->setTable('tartikelsonderpreis')
                             ->setOn('tartikelsonderpreis.kArtikel = tartikel.kArtikel')
                             ->setOrigin(__CLASS__));
-                        $sql->addJoin((new FilterJoin())
+                        $state->addJoin((new Join())
                             ->setComment('special offer JOIN2 from ' . __METHOD__)
                             ->setType('JOIN')
                             ->setTable('tsonderpreise')
@@ -347,51 +355,51 @@ class SearchSpecial extends AbstractFilter
                     } else {
                         $tsonderpreise = 'tsonderpreise';
                     }
-                    $sql->addCondition("tartikelsonderpreis.cAktiv = 'Y' 
+                    $state->addCondition("tartikelsonderpreis.cAktiv = 'Y' 
                         AND tartikelsonderpreis.dStart <= now()");
-                    $sql->addCondition("(tartikelsonderpreis.dEnde >= CURDATE() 
+                    $state->addCondition("(tartikelsonderpreis.dEnde >= CURDATE() 
                         OR tartikelsonderpreis.dEnde = '0000-00-00')");
-                    $sql->addCondition($tsonderpreise . '.kKundengruppe = ' . $this->getCustomerGroupID());
+                    $state->addCondition($tsonderpreise . '.kKundengruppe = ' . $this->getCustomerGroupID());
                     break;
                 case \SEARCHSPECIALS_NEWPRODUCTS:
                     $name       = \Shop::Lang()->get('newProducts');
                     $alter_tage = (($age = $this->getConfig('boxen')['box_neuimsortiment_alter_tage']) > 0)
                         ? (int)$age
                         : 30;
-                    $sql->addCondition("tartikel.cNeu = 'Y' 
+                    $state->addCondition("tartikel.cNeu = 'Y' 
                         AND DATE_SUB(now(), INTERVAL $alter_tage DAY) < tartikel.dErstellt");
                     break;
                 case \SEARCHSPECIALS_TOPOFFERS:
                     $name = \Shop::Lang()->get('topOffer');
-                    $sql->addCondition("tartikel.cTopArtikel = 'Y'");
+                    $state->addCondition("tartikel.cTopArtikel = 'Y'");
                     break;
                 case \SEARCHSPECIALS_UPCOMINGPRODUCTS:
                     $name = \Shop::Lang()->get('upcomingProducts');
-                    $sql->addCondition('now() < tartikel.dErscheinungsdatum');
+                    $state->addCondition('now() < tartikel.dErscheinungsdatum');
                     break;
                 case \SEARCHSPECIALS_TOPREVIEWS:
                     $name = \Shop::Lang()->get('topReviews');
                     if (!$this->productFilter->hasRatingFilter()) {
-                        $sql->addJoin((new FilterJoin())
+                        $state->addJoin((new Join())
                             ->setComment('top reviews JOIN from ' . __METHOD__)
                             ->setType('JOIN')
                             ->setTable('tartikelext')
                             ->setOn('tartikelext.kArtikel = tartikel.kArtikel')
                             ->setOrigin(__CLASS__));
                     }
-                    $sql->addCondition('ROUND(tartikelext.fDurchschnittsBewertung) >= ' .
+                    $state->addCondition('ROUND(tartikelext.fDurchschnittsBewertung) >= ' .
                         (int)$this->getConfig('boxen')['boxen_topbewertet_minsterne']);
                     break;
                 default:
                     break;
             }
-            $qry    = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
-            $qryRes = \Shop::Container()->getDB()->query($qry, ReturnType::ARRAY_OF_OBJECTS);
+            $qry    = $this->productFilter->getFilterSQL()->getBaseQuery($state);
+            $qryRes = $this->productFilter->getDB()->query($qry, ReturnType::ARRAY_OF_OBJECTS);
             if (($count = \count($qryRes)) > 0) {
                 if ($baseValue === $i) {
                     continue;
                 }
-                $options[$i] = (new FilterOption())
+                $options[$i] = (new Option())
                     ->setIsActive($this->productFilter->filterOptionIsActive($this->getClassName(), $i))
                     ->setURL($this->productFilter->getFilterURL()->getURL($additionalFilter->init($i)))
                     ->setType($this->getType())
@@ -404,6 +412,7 @@ class SearchSpecial extends AbstractFilter
             }
         }
         $this->options = $options;
+        $this->productFilter->getCache()->set($cacheID, $options, [CACHING_GROUP_FILTER]);
 
         return $options;
     }

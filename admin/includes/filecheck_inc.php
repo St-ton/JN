@@ -29,7 +29,7 @@ function getAllFiles(&$oDatei_arr, &$nStat_arr)
                         continue;
                     }
 
-                    list($cDatei, $cDateiMD5) = explode(';', $cShopFile);
+                    list($cDateiMD5, $cDatei) = explode(';', $cShopFile);
 
                     $cMD5Akt   = '';
                     $bFehler   = true;

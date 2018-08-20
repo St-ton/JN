@@ -143,10 +143,14 @@ aside {
                 color: @text-color;
                 font-weight: @font-weight-semibold;
                 font-size: @font-size-h2;
-                border-bottom: 7px solid @brand-primary;
+                border-bottom: 6px solid @brand-primary;
                 padding: 15px 0;
             }
         }
+    }
+
+    .nav > li > a {
+        padding: 10px 0;
     }
 }
 
@@ -214,6 +218,26 @@ aside {
         color: @breadcrumb-active-color;
     }
 }
+
+//badges
+.badge {
+    background-color: transparent;
+    border: 1px solid @gray;
+    color: @text-color;
+    font-weight: normal;
+    border-radius: 2px;
+}
+
+
+//productdetails
+
+//price
+.price {
+    font-size: @font-size-xl;
+    font-weight: bold;
+    color: @brand-primary;
+}
+
 
 //footer
 #footer {

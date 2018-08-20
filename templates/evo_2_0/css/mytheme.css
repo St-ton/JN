@@ -32,7 +32,7 @@
     bottom: 0;
     left: 0;
     width: 100px;
-    height: 5px;
+    height: 6px;
     background-color: #ffc400;
     transition-property: left, background-color, -webkit-transform;
     transition-property: transform, left, background-color;

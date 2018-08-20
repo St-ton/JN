@@ -31,7 +31,7 @@
                 <li role="presentation" data-tab="{$category@iteration}" class="nav-item {if $isDropdown}dropdown megamenu-fw{/if}{if $category->kKategorie == $activeId || (isset($activeParents[0]) && $activeParents[0]->kKategorie == $category->kKategorie)} active{/if}">
                     <a href="{$category->cURLFull}"{if $isDropdown} class="dropdown-toggle nav-link" data-target="#" data-toggle="dropdown" data-hover="dropdown" data-delay="300" data-hover-delay="100" data-close-others="true"{/if}>
                         {$category->cKurzbezeichnung}
-                        {if $isDropdown}<span class="caret"></span>{/if}
+                        {*{if $isDropdown}<span class="caret"></span>{/if}*}
                     </a>
                     {if $isDropdown}
                         <ul class="dropdown-menu">
@@ -154,12 +154,12 @@
                 {if $linkSEOHersteller !== null && !empty($linkSEOHersteller->getName())}
                     <a href="{$linkSEOHersteller->getURL()}" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="300" data-hover-delay="100" data-close-others="true">
                         {$linkSEOHersteller->getName()}
-                        <span class="caret"></span>
+                        {*<span class="caret"></span>*}
                     </a>
                 {else}
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="300" data-hover-delay="100" data-close-others="true">
                         {lang key='manufacturers'}
-                        <span class="caret"></span>
+                        {*<span class="caret"></span>*}
                     </a>
                 {/if}
                 <ul class="dropdown-menu keepopen">

@@ -6,6 +6,7 @@
 
 namespace Cache;
 
+
 /**
  * Interface JTLCacheInterface
  * @package Cache
@@ -291,4 +292,15 @@ interface JTLCacheInterface
         $echo = true,
         $format = false
     ): array;
+
+    /**
+     * @return string
+     */
+    public function getError(): string;
+
+    /**
+     * @param string $error
+     * @return JTLCacheInterface
+     */
+    public function setError(string $error): JTLCacheInterface;
 }

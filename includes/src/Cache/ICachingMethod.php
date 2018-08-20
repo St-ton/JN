@@ -6,6 +6,7 @@
 
 namespace Cache;
 
+
 /**
  * Interface ICachingMethod
  * @package Cache
@@ -147,4 +148,14 @@ interface ICachingMethod
      * @param string $id
      */
     public function setJournalID($id);
+
+    /**
+     * @return string
+     */
+    public function getError(): string;
+
+    /**
+     * @param string $error
+     */
+    public function setError(string $error);
 }

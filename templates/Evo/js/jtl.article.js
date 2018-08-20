@@ -367,15 +367,6 @@
                             }
                         }
                     })
-                    .on('mouseenter', function (event) {
-                        var $this = $(this),
-                            wrapper = '#' + $this.attr('id');
-
-                        if (!$this.data('varLoaded') && $('.switch-variations .form-group', $this).length === 1) {
-                            that.variationSwitch($('.switch-variations', $this), false, wrapper);
-                        }
-                        $this.data('varLoaded', true);
-                    });
             }
 
             this.registerProductActions($wrapper);

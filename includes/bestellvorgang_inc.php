@@ -2037,17 +2037,19 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
     } elseif (SimpleMail::checkBlacklist($data['email'])) {
         $ret['email'] = 3;
     }
-    if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-        if (isset($ret['email'])
-            && $ret['email'] !== 1
-            && $data['email'] !== $_SESSION['Kunde']->cMail
-            && !isEmailAvailable($data['email'])
-        ) {
-            $ret['email'] = 5;
-        }
-    } elseif (isset($ret['email']) && $ret['email'] !== 1 && !isEmailAvailable($data['email'])) {
+    if (((isset($ret['email']) && $ret['email'] !== 1) || !isset($ret['email']))
+        && !isEmailAvailable($data['email'], $_SESSION['Kunde']->kKunde ?? 0)
+    ) {
         $ret['email'] = 5;
     }
+    if (isset($conf['kunden']['kundenregistrierung_pruefen_email'], $data['email'])
+        && $conf['kunden']['kundenregistrierung_pruefen_email'] === 'Y'
+        && strlen($data['email']) > 0
+        && !checkdnsrr(substr($data['email'], strpos($data['email'], '@') + 1))
+    ) {
+        $ret['email'] = 4;
+    }
+
     if (empty($_SESSION['check_plzort'])
         && $data['plz']
         && $data['ort']
@@ -2177,19 +2179,8 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
             }
         }
         //existiert diese email bereits?
-        $obj = Shop::Container()->getDB()->selectAll('tkunde', 'cMail', $data['email']);
-        foreach ($obj as $customer) {
-            if (!empty($customer->cPasswort) && !empty($customer->kKunde)) {
-                $ret['email_vorhanden'] = 1;
-                break;
-            }
-        }
-        if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-            //emailadresse anders und existiert dennoch?
-            $mail = Shop::Container()->getDB()->select('tkunde', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
-            if (isset($mail->cMail) && $data['email'] === $mail->cMail) {
-                unset($ret['email_vorhanden']);
-            }
+        if (!isEmailAvailable($data['email'], $_SESSION['Kunde']->kKunde ?? 0)) {
+            $ret['email_vorhanden'] = 1;
         }
     }
     // Selbstdef. Kundenfelder
@@ -2277,13 +2268,6 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
         if (!($dRegZeit + 5 < time())) {
             $ret['formular_zeit'] = 1;
         }
-    }
-    if (isset($conf['kunden']['kundenregistrierung_pruefen_email'], $data['email'])
-        && $conf['kunden']['kundenregistrierung_pruefen_email'] === 'Y'
-        && strlen($data['email']) > 0
-        && !checkdnsrr(substr($data['email'], strpos($data['email'], '@') + 1))
-    ) {
-        $ret['email'] = 4;
     }
 
     if (isset($conf['kunden']['registrieren_captcha'])
@@ -3747,12 +3731,19 @@ function mappeBestellvorgangZahlungshinweis(int $nHinweisCode)
 
 /**
  * @param string $email
+ * @param int $customerID
  * @return bool
  */
-function isEmailAvailable($email): bool
+function isEmailAvailable(string $email, int $customerID = 0): bool
 {
-    return strlen($email) > 0
-        && (Shop::Container()->getDB()->select('tkunde', 'cMail', $email, 'nRegistriert', 1) === null);
+    return Shop::Container()->getDB()->queryPrepared('
+              SELECT * 
+                FROM tkunde 
+                WHERE cmail = :email 
+                  AND nRegistriert = 1 
+                  AND kKunde != :customerID',
+                ['email' => $email, 'customerID' => $customerID],
+                \DB\ReturnType::SINGLE_OBJECT) === false;
 }
 
 /**

@@ -589,16 +589,16 @@ class Controller
     {
         $itemList = new ItemList($this->db);
         $ids      = map($this->db->query(
-            'SELECT kNews 
-                FROM tnews
-                ORDER BY tnews.dGueltigVon DESC',
+            'SELECT kNews  FROM tnews',
             ReturnType::ARRAY_OF_OBJECTS
         ), function ($e) {
             return (int)$e->kNews;
         });
         $itemList->createItems($ids);
 
-        return $itemList->getItems();
+        return $itemList->getItems()->sortByDesc(function (Item $e) {
+            return $e->getDateCreated();
+        });
     }
 
     /**

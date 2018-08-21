@@ -75,7 +75,6 @@
     }
     {/literal}
 </script>
-
 {include file='tpl_inc/seite_header.tpl' cTitel=#news# cBeschreibung=#newsDesc#}
 <div id="content" class="container-fluid">
     <form name="news" method="post" action="news.php" enctype="multipart/form-data">
@@ -93,7 +92,7 @@
         <div class="settings">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{if $oNews->getID() > 0}{#newsEdit#}{else}{#newAdd#}{/if}</h3>
+                    <h3 class="panel-title">{if $oNews->getID() > 0}{#newsEdit#} (ID {$oNews->getID()}){else}{#newAdd#}{/if}</h3>
                 </div>
                 <div class="table-responsive">
                     <div id="formtable" class="panel-body">
@@ -204,7 +203,7 @@
                             {if isset($oDatei_arr) && $oDatei_arr|@count > 0}
                                 {foreach name=bilder from=$oDatei_arr item=oDatei}
                                     <div class="well col-xs-3">
-                                        <div class="thumbnail">{$oDatei->cURL}</div>
+                                        <div class="thumbnail"><img src="{$oDatei->cURLFull}" alt=""></div>
                                         <label>Link: </label>
                                         <div class="input-group">
                                             <input class="form-control" type="text" disabled="disabled" value="$#{$oDatei->cName}#$">

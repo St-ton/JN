@@ -6,8 +6,8 @@
 
 namespace News;
 
-use Tightenco\Collect\Support\Collection;
 
+use Tightenco\Collect\Support\Collection;
 
 /**
  * Interface NewsListInterface

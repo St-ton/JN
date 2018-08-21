@@ -147,7 +147,7 @@ class Category implements CategoryInterface
     {
         $this->db               = $db;
         $this->items            = new Collection();
-        $this->children = new Collection();
+        $this->children         = new Collection();
         $this->dateLastModified = \date_create();
     }
 
@@ -345,11 +345,9 @@ class Category implements CategoryInterface
             });
         }
 
-        if ($dir === 'asc') {
-            return $this->items->sortBy($cb);
-        }
-
-        return $this->items->sortByDesc($cb);
+        return $dir === 'asc'
+            ? $this->items->sortBy($cb)
+            : $this->items->sortByDesc($cb);
     }
 
     /**

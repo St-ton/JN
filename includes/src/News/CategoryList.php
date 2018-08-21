@@ -123,9 +123,6 @@ final class CategoryList implements ItemListInterface
 
             if ($found !== null) {
                 $found->addChild($item);
-            } else {
-                echo '<br>nothing found for ' . $parentID;
-                \Shop::dbg($tree, true, 'Tree:');
             }
         }
 

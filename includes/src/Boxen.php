@@ -552,7 +552,6 @@ class Boxen
             PAGE_WRB,
             PAGE_PLUGIN,
             PAGE_NEWSLETTERARCHIV,
-            PAGE_NEWSARCHIV,
             PAGE_EIGENE,
             PAGE_AUSWAHLASSISTENT,
             PAGE_BESTELLABSCHLUSS

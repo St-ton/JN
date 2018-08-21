@@ -55,8 +55,6 @@ class PageTypeToLinkType
             case \PAGE_NEWSKATEGORIE:
             case \PAGE_NEWSMONAT:
                 return \LINKTYP_NEWS;
-            case \PAGE_NEWSARCHIV:
-                return \LINKTYP_NEWSARCHIV;
             case \PAGE_SITEMAP:
                 return \LINKTYP_SITEMAP;
             case \PAGE_UMFRAGE:

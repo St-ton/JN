@@ -86,7 +86,7 @@
                                 <label for="nLink3">{#linkToSpecalPage#}</label>
                                 <select id="nLink3" name="nSpezialseite">
                                     <option value="0">{#choose#}</option>
-                                    {foreach name=spezialseiten from=$oSpezialseite_arr item=oSpezialseite}
+                                    {foreach $oSpezialseite_arr as $oSpezialseite}
                                         <option value="{$oSpezialseite->nLinkart}" {if $Link->getLinkType() == $oSpezialseite->nLinkart}selected{/if}>{$oSpezialseite->cName}</option>
                                     {/foreach}
                                 </select>

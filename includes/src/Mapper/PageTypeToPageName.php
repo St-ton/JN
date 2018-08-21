@@ -47,7 +47,6 @@ class PageTypeToPageName
             case \PAGE_NEWSLETTERARCHIV:
                 return 'NEWSLETTER';
             case \PAGE_NEWS:
-            case \PAGE_NEWSARCHIV:
                 return 'NEWS';
             case \PAGE_NEWSMONAT:
                 return 'NEWSMONAT';

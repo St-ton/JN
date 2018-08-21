@@ -98,10 +98,16 @@ class Migration_20180801165500 extends Migration implements IMigration
             ADD COLUMN lvl INT NOT NULL DEFAULT 0,
             ADD INDEX lft_rght (`lft`, `rght`)'
         );
+        $this->execute('DELETE FROM tspezialseite WHERE nLinkart = 20');
     }
 
     public function down()
     {
         $this->execute('DROP TABLE tnewssprache');
+        $this->execute(
+            "INSERT INTO tspezialseite (kSpezialseite, kPlugin, cName, cDateiname, nLinkart, nSort)
+                VALUES (16, 0, 'Newsarchiv', NULL, 20, 20)"
+        );
+
     }
 }

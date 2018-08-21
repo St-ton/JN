@@ -79,7 +79,6 @@ abstract class AbstractBox implements BoxInterface
         \PAGE_WRB,
         \PAGE_PLUGIN,
         \PAGE_NEWSLETTERARCHIV,
-        \PAGE_NEWSARCHIV,
         \PAGE_EIGENE,
         \PAGE_AUSWAHLASSISTENT,
         \PAGE_BESTELLABSCHLUSS

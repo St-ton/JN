@@ -20,7 +20,6 @@ $continue           = true;
 $db                 = Shop::Container()->getDB();
 $cache              = Shop::Container()->getCache();
 $linkAdmin          = new \Link\Admin\LinkAdmin($db, $cache);
-
 if (isset($_POST['addlink']) && (int)$_POST['addlink'] > 0) {
     $step = 'neuer Link';
     $link = new \Link\Link($db);
@@ -117,8 +116,8 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && FormHelper::va
         $step       = 'uebersicht';
         $continue   = (isset($_POST['continue']) && (int)$_POST['continue'] === 1);
         if ($continue) {
-            $step          = 'neuer link';
-            $post['kLink'] = $kLink;
+            $step           = 'neuer Link';
+            $_POST['kLink'] = $kLink;
         }
         // Bilder hochladen
         if (!is_dir($cUploadVerzeichnis . $kLink)) {
@@ -166,7 +165,6 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && FormHelper::va
                ->assign('Linkgruppenname', getLinkgruppeNames($linkgruppe->kLinkgruppe));
     }
 }
-
 if ($continue
     && ((isset($_POST['kLink']) && (int)$_POST['kLink'] > 0)
         || (isset($_GET['kLink'], $_GET['delpic']) && (int)$_GET['kLink']))

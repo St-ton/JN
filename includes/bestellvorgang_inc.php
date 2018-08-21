@@ -2068,11 +2068,11 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
     if (empty($data['adresszusatz']) && $conf['kunden']['kundenregistrierung_abfragen_adresszusatz'] === 'Y') {
         $ret['adresszusatz'] = 1;
     }
-    if ($conf['kunden']['kundenregistrierung_abfragen_mobil'] === 'Y' && StringHandler::checkPhoneNumber($data['mobil']) > 0) {
-        $ret['mobil'] = StringHandler::checkPhoneNumber($data['mobil']);
+    if (isset($data['mobil']) && StringHandler::checkPhoneNumber($data['mobil'], $conf['kunden']['kundenregistrierung_abfragen_mobil'] === 'Y') > 0) {
+        $ret['mobil'] = StringHandler::checkPhoneNumber($data['mobil'], $conf['kunden']['kundenregistrierung_abfragen_mobil'] === 'Y');
     }
-    if ($conf['kunden']['kundenregistrierung_abfragen_fax'] === 'Y' && StringHandler::checkPhoneNumber($data['fax']) > 0) {
-        $ret['fax'] = StringHandler::checkPhoneNumber($data['fax']);
+    if (isset($data['fax']) && StringHandler::checkPhoneNumber($data['fax'], $conf['kunden']['kundenregistrierung_abfragen_fax'] === 'Y') > 0) {
+        $ret['fax'] = StringHandler::checkPhoneNumber($data['fax'], $conf['kunden']['kundenregistrierung_abfragen_fax'] === 'Y');
     }
     $deliveryCountry = ($conf['kunden']['kundenregistrierung_abfragen_ustid'] !== 'N')
         ? Shop::Container()->getDB()->select('tland', 'cISO', $data['land'])
@@ -2150,16 +2150,19 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
         }
 
     }
-    if ($conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y'
-        && StringHandler::checkDate(StringHandler::filterXSS($data['geburtstag'])) > 0
+    if (isset($data['geburtstag'])
+        && StringHandler::checkDate(StringHandler::filterXSS($data['geburtstag']), $conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y') > 0
     ) {
-        $ret['geburtstag'] = StringHandler::checkDate(StringHandler::filterXSS($data['geburtstag']));
+        $ret['geburtstag'] = StringHandler::checkDate(
+            StringHandler::filterXSS($data['geburtstag']),
+            $conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y'
+        );
     }
     if ($conf['kunden']['kundenregistrierung_abfragen_www'] === 'Y' && empty($data['www'])) {
         $ret['www'] = 1;
     }
-    if ($conf['kunden']['kundenregistrierung_abfragen_tel'] === 'Y' && StringHandler::checkPhoneNumber($data['tel']) > 0) {
-        $ret['tel'] = StringHandler::checkPhoneNumber($data['tel']);
+    if (isset($data['tel']) && StringHandler::checkPhoneNumber($data['tel'], $conf['kunden']['kundenregistrierung_abfragen_tel'] === 'Y') > 0) {
+        $ret['tel'] = StringHandler::checkPhoneNumber($data['tel'], $conf['kunden']['kundenregistrierung_abfragen_tel'] === 'Y');
     }
     if ($conf['kunden']['kundenregistrierung_abfragen_bundesland'] === 'Y' && empty($data['bundesland'])) {
         $ret['bundesland'] = 1;

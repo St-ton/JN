@@ -179,7 +179,6 @@ define('LINKTYP_HERSTELLER', 16);
 define('LINKTYP_NEWSLETTER', 17);
 define('LINKTYP_NEWSLETTERARCHIV', 18);
 define('LINKTYP_NEWS', 19);
-define('LINKTYP_NEWSARCHIV', 20);
 define('LINKTYP_SITEMAP', 21);
 define('LINKTYP_UMFRAGE', 22);
 define('LINKTYP_GRATISGESCHENK', 23);
@@ -360,7 +359,6 @@ define('PAGE_GRATISGESCHENK', 26); // Gratis Geschenk
 define('PAGE_WRB', 27); // WRB
 define('PAGE_PLUGIN', 28); // Plugin
 define('PAGE_NEWSLETTERARCHIV', 29); // Newsletterarchiv
-define('PAGE_NEWSARCHIV', 30); // Newsarchiv
 define('PAGE_EIGENE', 31); // Eigene Seite
 define('PAGE_AUSWAHLASSISTENT', 32); // Auswahlassistent
 define('PAGE_BESTELLABSCHLUSS', 33); // Bestellabschluss

@@ -14,7 +14,7 @@ use DB\ReturnType;
  * Class Comment
  * @package News
  */
-class Comment
+class Comment implements CommentInterface
 {
 
     use \MagicCompatibilityTrait;
@@ -89,10 +89,9 @@ class Comment
     }
 
     /**
-     * @param int $id
-     * @return Comment
+     * @inheritdoc
      */
-    public function load(int $id): Comment
+    public function load(int $id): CommentInterface
     {
         $this->id = $id;
         $comment  = $this->db->queryPrepared(
@@ -112,7 +111,7 @@ class Comment
     /**
      * @inheritdoc
      */
-    public function map(array $comments): Comment
+    public function map(array $comments): CommentInterface
     {
         foreach ($comments as $comment) {
             $this->setNewsID((int)$comment->kNews);
@@ -127,7 +126,7 @@ class Comment
     }
 
     /**
-     * @return int
+     * @inheritdoc
      */
     public function getID(): int
     {
@@ -135,7 +134,7 @@ class Comment
     }
 
     /**
-     * @param int $id
+     * @inheritdoc
      */
     public function setID(int $id)
     {
@@ -143,7 +142,7 @@ class Comment
     }
 
     /**
-     * @return int
+     * @inheritdoc
      */
     public function getNewsID(): int
     {
@@ -151,7 +150,7 @@ class Comment
     }
 
     /**
-     * @param int $newsID
+     * @inheritdoc
      */
     public function setNewsID(int $newsID)
     {
@@ -159,7 +158,7 @@ class Comment
     }
 
     /**
-     * @return int
+     * @inheritdoc
      */
     public function getCustomerID(): int
     {
@@ -167,7 +166,7 @@ class Comment
     }
 
     /**
-     * @param int $customerID
+     * @inheritdoc
      */
     public function setCustomerID(int $customerID)
     {
@@ -175,7 +174,7 @@ class Comment
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
     public function getIsActive(): bool
     {
@@ -183,7 +182,7 @@ class Comment
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
     public function isActive(): bool
     {
@@ -191,7 +190,7 @@ class Comment
     }
 
     /**
-     * @param bool $isActive
+     * @inheritdoc
      */
     public function setIsActive(bool $isActive)
     {
@@ -199,7 +198,7 @@ class Comment
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getName(): string
     {
@@ -207,7 +206,7 @@ class Comment
     }
 
     /**
-     * @param string $name
+     * @inheritdoc
      */
     public function setName(string $name)
     {
@@ -223,7 +222,7 @@ class Comment
     }
 
     /**
-     * @param string $mail
+     * @inheritdoc
      */
     public function setMail(string $mail)
     {
@@ -231,7 +230,7 @@ class Comment
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getContent(): string
     {
@@ -239,7 +238,7 @@ class Comment
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getText(): string
     {
@@ -247,7 +246,7 @@ class Comment
     }
 
     /**
-     * @param string $text
+     * @inheritdoc
      */
     public function setText(string $text)
     {
@@ -255,7 +254,7 @@ class Comment
     }
 
     /**
-     * @return \DateTime
+     * @inheritdoc
      */
     public function getDateCreated(): \DateTime
     {
@@ -263,7 +262,7 @@ class Comment
     }
 
     /**
-     * @param string $dateCreated
+     * @inheritdoc
      */
     public function setDateCreated(string $dateCreated)
     {
@@ -271,7 +270,7 @@ class Comment
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getDateCreatedCompat(): string
     {
@@ -279,7 +278,7 @@ class Comment
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getNewsTitle(): string
     {
@@ -287,7 +286,7 @@ class Comment
     }
 
     /**
-     * @param string $newsTitle
+     * @inheritdoc
      */
     public function setNewsTitle(string $newsTitle)
     {

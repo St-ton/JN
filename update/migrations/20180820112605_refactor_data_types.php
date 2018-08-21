@@ -37,7 +37,7 @@ class Migration_20180820112605 extends Migration implements IMigration
         );
         foreach ($columns as $column) {
             $alterSQL = /** @lang text */
-                'ALTER TABLE ' . DB_NAME . '.`' . $column->TABLE_NAME . '` CHANGE `kKundengruppe` `kKundengruppe` INT'
+                'ALTER TABLE `' . DB_NAME . '`.`' . $column->TABLE_NAME . '` CHANGE `kKundengruppe` `kKundengruppe` INT'
                 .(strpos($column->COLUMN_TYPE, 'unsigned') !== false ? ' UNSIGNED' : '')
                 .($column->IS_NULLABLE === 'YES' ? ' NULL' : ' NOT NULL')
                 .($column->COLUMN_DEFAULT === null || $column->COLUMN_DEFAULT === 'NULL' ? ($column->IS_NULLABLE === 'YES' ? ' DEFAULT NULL' : '') : ' DEFAULT \'' . $column->COLUMN_DEFAULT . '\'');

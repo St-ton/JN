@@ -1,26 +1,23 @@
 {**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license https://jtl-url.de/jtlshoplicense
  *}
 {if $smarty.session.Kundengruppe->mayViewPrices()}
     <div class="price_wrapper">
     {block name='price-wrapper'}
-    {* --- Preis auf Anfrage? --- *}
     {if $Artikel->getOption('nShowOnlyOnSEORequest', 0) === 1}
         <span class="price_label price_out_of_stock">{lang key='productOutOfStock' section='productDetails'}</span>
     {elseif $Artikel->Preise->fVKNetto == 0 && $Artikel->bHasKonfig}
         <span class="price_label price_as_configured">{lang key='priceAsConfigured' section='productDetails'}</span>
     {elseif $Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
-        <span class="price_label price_on_application">{lang key='priceOnApplication' section='global'}</span>
+        <span class="price_label price_on_application">{lang key='priceOnApplication'}</span>
     {else}
         {block name='price-label'}
             {if ($tplscope !== 'detail' && $Artikel->Preise->oPriceRange->isRange() && $Artikel->Preise->oPriceRange->rangeWidth() > $Einstellungen.artikeluebersicht.articleoverview_pricerange_width)
                 || ($tplscope === 'detail' && ($Artikel->nVariationsAufpreisVorhanden == 1 || $Artikel->bHasKonfig) && $Artikel->kVaterArtikel == 0)}
-                <span class="price_label pricestarting">{lang key='priceStarting' section='global'} </span>
+                <span class="price_label pricestarting">{lang key='priceStarting'} </span>
             {elseif $Artikel->Preise->rabatt > 0}
-                <span class="price_label nowonly">{lang key='nowOnly' section='global'} </span>
-            {else}
-                {*<span class="price_label only">{lang key='only' section='global'} </span>*}
+                <span class="price_label nowonly">{lang key='nowOnly'} </span>
             {/if}
         {/block}
         <strong class="price text-nowrap{if isset($Artikel->Preise->Sonderpreis_aktiv) && $Artikel->Preise->Sonderpreis_aktiv} special-price{/if}">
@@ -54,7 +51,7 @@
         {if $tplscope === 'detail'}
             <div class="price-note">
                 {if $Artikel->cEinheit && ($Artikel->fMindestbestellmenge > 1 || $Artikel->fAbnahmeintervall > 1)}
-                    <span class="price_label per_unit"> {lang key='vpePer' section='global'} 1 {$Artikel->cEinheit}</span>
+                    <span class="price_label per_unit"> {lang key='vpePer'} 1 {$Artikel->cEinheit}</span>
                 {/if}
                 
                 {* Grundpreis *}
@@ -88,17 +85,17 @@
                 {/if}
                 
                 {if $Artikel->Preise->Sonderpreis_aktiv && $Einstellungen.artikeldetails.artikeldetails_sonderpreisanzeige == 2}
-                    <div class="instead_of old_price">{lang key='oldPrice' section='global'}:
+                    <div class="instead_of old_price">{lang key='oldPrice'}:
                         <del class="value">{$Artikel->Preise->alterVKLocalized[$NettoPreise]}</del>
                     </div>
                 {elseif !$Artikel->Preise->Sonderpreis_aktiv && $Artikel->Preise->rabatt > 0}
                     {if $Einstellungen.artikeldetails.artikeldetails_rabattanzeige == 3 || $Einstellungen.artikeldetails.artikeldetails_rabattanzeige == 4}
-                        <div class="old_price">{lang key='oldPrice' section='global'}:
+                        <div class="old_price">{lang key='oldPrice'}:
                             <del class="value text-nowrap">{$Artikel->Preise->alterVKLocalized[$NettoPreise]}</del>
                         </div>
                     {/if}
                     {if $Einstellungen.artikeldetails.artikeldetails_rabattanzeige == 2 || $Einstellungen.artikeldetails.artikeldetails_rabattanzeige == 4}
-                        <div class="discount">{lang key='discount' section='global'}:
+                        <div class="discount">{lang key='discount'}:
                             <span class="value text-nowrap">{$Artikel->Preise->rabatt}%</span>
                         </div>
                     {/if}
@@ -166,7 +163,7 @@
                 {if $Artikel->Preise->Sonderpreis_aktiv && isset($Einstellungen.artikeluebersicht) && $Einstellungen.artikeluebersicht.artikeluebersicht_sonderpreisanzeige == 2}
                     <div class="instead-of old-price">
                         <small class="text-muted">
-                            {lang key='oldPrice' section='global'}:
+                            {lang key='oldPrice'}:
                             <del class="value">{$Artikel->Preise->alterVKLocalized[$NettoPreise]}</del>
                         </small>
                     </div>
@@ -174,7 +171,7 @@
                     {if $Einstellungen.artikeluebersicht.artikeluebersicht_rabattanzeige == 3 || $Einstellungen.artikeluebersicht.artikeluebersicht_rabattanzeige == 4}
                         <div class="old-price">
                             <small class="text-muted">
-                                {lang key='oldPrice' section='global'}:
+                                {lang key='oldPrice'}:
                                 <del class="value text-nowrap">{$Artikel->Preise->alterVKLocalized[$NettoPreise]}</del>
                             </small>
                         </div>
@@ -182,19 +179,19 @@
                     {if $Einstellungen.artikeluebersicht.artikeluebersicht_rabattanzeige == 2 || isset($Einstellungen.artikeluebersicht) && $Einstellungen.artikeluebersicht.artikeluebersicht_rabattanzeige == 4}
                         <div class="discount">
                             <small class="text-muted">
-                                {lang key='discount' section='global'}:
+                                {lang key='discount'}:
                                 <span class="value text-nowrap">{$Artikel->Preise->rabatt}%</span>
                             </small>
                         </div>
                     {/if}
                 {/if}
-            </div>{* /price-note *}
+            </div>
         {/if}
     {/if}
     {/block}
-    </div>{* /price_wrapper *}
+    </div>
 {else}
     {block name='price-invisible'}
-        <span class="price_label price_invisible">{lang key='priceHidden' section='global'}</span>
+        <span class="price_label price_invisible">{lang key='priceHidden'}</span>
     {/block}
 {/if}

@@ -21,7 +21,7 @@
                 <div class="radio">
                     <label for="billpay_b2b_no">
                         <input type="radio" name="billpay_b2b" id="billpay_b2b_no" value="0" {if $cData_arr.billpay_b2b == 0}checked="checked"{/if} />
-                        Privatkunde
+                        Privatkunde<span class="optional"> - {lang key='conditionalFillOut' section='checkout'}</span>
                     </label>
                 </div>
                 {*/if*}
@@ -30,7 +30,7 @@
                 <div class="radio">
                     <label for="billpay_b2b_yes">
                         <input type="radio" name="billpay_b2b" id="billpay_b2b_yes" value="1" {if $cData_arr.billpay_b2b == 1}checked="checked"{/if} />
-                        Gesch&auml;ftskunde
+                        Gesch&auml;ftskunde<span class="optional"> - {lang key='conditionalFillOut' section='checkout'}</span>
                     </label>
                 </div>
                 {*/if*}
@@ -38,7 +38,7 @@
 
             <div class="{if $cData_arr.billpay_b2b == 1}closed{/if}" id="invoicebusiness_b2c">
                 {if $cAdditionalCustomer_arr.cAnrede}
-                    <div class="form-group{if $cMissing_arr.cAnrede>0} has-error{/if} required">
+                    <div class="form-group{if $cMissing_arr.cAnrede > 0} has-error{/if}">
                         <label class="control-label col-xs-4" for="salutation">{lang key='salutation' section='account data'}</label>
                         <div class="col-xs-8">
                             <select class="form-control" name="cAnrede" id="salutation" {if $cData_arr.billpay_b2b == 1}disabled{/if}>
@@ -46,18 +46,18 @@
                                 <option value="m" {if $cData_arr.cAnrede === 'm'}selected="selected"{/if}>{lang key='salutationM'}</option>
                                 <option value="w" {if $cData_arr.cAnrede === 'w'}selected="selected"{/if}>{lang key='salutationW'}</option>
                             </select>
-                            {if $cMissing_arr.cAnrede>0}
+                            {if $cMissing_arr.cAnrede > 0}
                                 <div class="alert alert-danger">{lang key='fillOut' section='global'}</div>{/if}
                         </div>
                     </div>
                 {/if}
 
                 {if $cAdditionalCustomer_arr.dGeburtstag}
-                    <div class="form-group{if $cMissing_arr.dGeburtstag>0} has-error{/if}">
-                        <label class="control-label col-xs-4" for="dGeburtstag">{lang key='birthday' section='account data'}</label>
+                    <div class="form-group{if $cMissing_arr.dGeburtstag > 0} has-error{/if}">
+                        <label class="control-label col-xs-4" for="dGeburtstag">{lang key='birthday' section='account data'}<span class="optional"> - {lang key='conditionalFillOut' section='checkout'}</span></label>
                         <div class="col-xs-8">
                             <input type="text" name="dGeburtstag" value="{$cData_arr.dGeburtstag}" id="dGeburtstag" class="form-control birthday" />
-                            {if $cMissing_arr.dGeburtstag>0}
+                            {if $cMissing_arr.dGeburtstag > 0}
                                 <div class="alert alert-danger">
                                     {if $cMissing_arr.dGeburtstag == 1}
                                         {lang key='fillOut' section='global'}
@@ -73,13 +73,13 @@
                 {/if}
 
                 {if $cAdditionalCustomer_arr.cTel}
-                    <div class="form-group{if $cMissing_arr.cTel>0} has-error_block{/if} required" id="tel" {*if (($nPaymentTypes_arr[1] || $nPaymentTypes_arr[2]) && $cData_arr.billpay_paymenttype != 3)}style="display:none"{/if*}>
+                    <div class="form-group{if $cMissing_arr.cTel > 0} has-error_block{/if}" id="tel" {*if (($nPaymentTypes_arr[1] || $nPaymentTypes_arr[2]) && $cData_arr.billpay_paymenttype != 3)}style="display:none"{/if*}>
                         <label class="control-label col-xs-4" for="cTel">{lang key='tel' section='account data'}
                             </label>
 
                         <div class="col-xs-8">
                             <input class="form-control" type="text" name="cTel" value="{$cData_arr.cTel}" id="cTel" />
-                            {if $cMissing_arr.cTel>0}
+                            {if $cMissing_arr.cTel > 0}
                                 <div class="alert alert-danger">{lang key='fillOut' section='global'}</div>
                             {/if}
                         </div>
@@ -97,7 +97,7 @@
                                 <option value="m" {if $cData_arr.cAnrede === 'm'}selected="selected"{/if}>{lang key='salutationM'}</option>
                                 <option value="w" {if $cData_arr.cAnrede === 'w'}selected="selected"{/if}>{lang key='salutationW'}</option>
                             </select>
-                            <label for="firstName" class="control-label">{lang key='salutation' section='account data'}</label></div>
+                            <label for="firstName" class="control-label">{lang key='salutation' section='account data'}<span class="optional"> - {lang key='conditionalFillOut' section='checkout'}</span></label></div>
                     </div>
                     <div class="col-xs-12 col-md-6">
                         <div class="form-group float-label-control">
@@ -107,25 +107,25 @@
                 </div>
 
                 {*
-            <div class="form-group{if $cMissing_arr.cAnrede>0} has-error{/if} required>
+            <div class="form-group{if $cMissing_arr.cAnrede > 0} has-error{/if} required>
                <label class="control-label col-xs-4" for="salutation">{lang key='salutation' section='account data'}</label>
                   <select class="form-control" name="cAnrede" id="salutation" {if $cData_arr.billpay_b2b == 0}disabled{/if}>
                      <option value="" selected="selected">{lang key='pleaseChoose' section='global'}</option>
                      <option value="m" {if $cData_arr.cAnrede === 'm'}selected="selected"{/if}>{lang key='salutationM'}</option>
                      <option value="w" {if $cData_arr.cAnrede === 'w'}selected="selected"{/if}>{lang key='salutationW'}</option>
                   </select>
-                  {if $cMissing_arr.cAnrede>0}<div class="alert alert-danger">{lang key='fillOut' section='global'}</div>{/if}
+                  {if $cMissing_arr.cAnrede > 0}<div class="alert alert-danger">{lang key='fillOut' section='global'}</div>{/if}
             </div>
 
-            <div class="form-group{if $cMissing_arr.cInhaber>0} has-error{/if}">
+            <div class="form-group{if $cMissing_arr.cInhaber > 0} has-error{/if}">
                <label class="control-label col-xs-4" for="cInhaber">Inhaber</label>
                   <input class="form-control" type="text" name="cInhaber" value="{$cData_arr.cInhaber}" id="cInhaber" />
-                  {if $cMissing_arr.cInhaber>0}
+                  {if $cMissing_arr.cInhaber > 0}
                      <div class="alert alert-danger">{lang key='fillOut' section='global'}</div>
                   {/if}
             </div>
             *}
-                <div class="form-group{if $cMissing_arr.cRechtsform>0} has-error{/if} required">
+                <div class="form-group{if $cMissing_arr.cRechtsform > 0} has-error{/if}">
                     <label class="control-label col-xs-4" for="salutation">Rechtsform</label>
                         <select class="form-control" name="cRechtsform" id="salutation">
                             <optgroup label="{lang key='pleaseChoose' section='global'}">
@@ -204,30 +204,30 @@
                                 </option>
                             </optgroup>
                         </select>
-                        {if $cMissing_arr.cRechtsform>0}
+                        {if $cMissing_arr.cRechtsform > 0}
                             <div class="alert alert-danger">{lang key='fillOut' section='global'}</div>{/if}
                 </div>
 
-                <div class="form-group{if $cMissing_arr.cFirma>0} has-error{/if} required">
+                <div class="form-group{if $cMissing_arr.cFirma > 0} has-error{/if}">
                     <label class="control-label" for="cFirma">Firmenname</label>
                     <input class="form-control" type="text" name="cFirma" value="{$cData_arr.cFirma}" id="cFirma">
-                    {if $cMissing_arr.cFirma>0}
+                    {if $cMissing_arr.cFirma > 0}
                         <div class="alert alert-danger">{lang key='fillOut' section='global'}</div>
                     {/if}
                 </div>
 
-                <div class="form-group{if $cMissing_arr.cUSTID>0} has-error{/if}">
-                    <label class="control-label" for="cUSTID">USt-IdNr.</label>
+                <div class="form-group{if $cMissing_arr.cUSTID > 0} has-error{/if}">
+                    <label class="control-label" for="cUSTID">USt-IdNr.<span class="optional"> - {lang key='conditionalFillOut' section='checkout'}</span></label>
                     <input class="form-control" type="text" name="cUSTID" value="{$cData_arr.cUSTID}" id="cUSTID">
-                    {if $cMissing_arr.cUSTID>0}
+                    {if $cMissing_arr.cUSTID > 0}
                         <div class="alert alert-danger">{lang key='fillOut' section='global'}</div>
                     {/if}
                 </div>
 
-                <div class="form-group{if $cMissing_arr.cHrn>0} has-error{/if}">
-                    <label class="control-label" for="cHrn">Handelsregisternummer</label>
+                <div class="form-group{if $cMissing_arr.cHrn > 0} has-error{/if}">
+                    <label class="control-label" for="cHrn">Handelsregisternummer<span class="optional"> - {lang key='conditionalFillOut' section='checkout'}</span></label>
                     <input class="form-control" type="text" name="cHrn" value="{$cData_arr.cHrn}" id="cHrn">
-                    {if $cMissing_arr.cHrn>0}
+                    {if $cMissing_arr.cHrn > 0}
                         <div class="alert alert-danger">{lang key='fillOut' section='global'}</div>
                     {/if}
                 </div>

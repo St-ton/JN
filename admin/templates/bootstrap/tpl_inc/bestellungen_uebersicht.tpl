@@ -30,7 +30,7 @@
                     <h3 class="panel-title">{#order#}</h3>
                 </div>
                 <div class="table-responsive">
-                    <table class="list table">
+                    <table class="list table table-striped">
                         <thead>
                         <tr>
                             <th></th>
@@ -47,7 +47,7 @@
                         </thead>
                         <tbody>
                         {foreach name=bestellungen from=$oBestellung_arr item=oBestellung}
-                            <tr class="tab_bg{$smarty.foreach.bestellungen.iteration%2}">
+                            <tr>
                                 <td class="check">{if $oBestellung->cAbgeholt === 'Y' && $oBestellung->cZahlungsartName !== 'Amazon Payment' && $oBestellung->oKunde !== null}
                                     <input type="checkbox" name="kBestellung[]" value="{$oBestellung->kBestellung}" />{/if}
                                 </td>

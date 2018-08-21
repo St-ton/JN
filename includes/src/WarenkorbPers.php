@@ -88,7 +88,7 @@ class WarenkorbPers
                     if (!$oWarenkorbPersPos->istEigenschaftEnthalten(
                         $oEigenschaftwerte->kEigenschaft,
                         $oEigenschaftwerte->kEigenschaftWert ?? null,
-                        $oEigenschaftwerte->cFreifeldWert ?? null
+                        $oEigenschaftwerte->cFreifeldWert ?? ''
                     )) {
                         $bBereitsEnthalten = false;
                         break;

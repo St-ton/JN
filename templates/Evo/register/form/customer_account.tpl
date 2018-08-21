@@ -1,6 +1,6 @@
 {**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='billing-address-form'}
     {include file='checkout/inc_billing_address_form.tpl'}
@@ -25,7 +25,7 @@
         {/if}
         <div id="create_account_data" class="row collapse in collapse-non-validate" aria-expanded="true">
             <div class="col-xs-6">
-                <div class="form-group float-label-control{if isset($fehlendeAngaben.pass_zu_kurz) || isset($fehlendeAngaben.pass_ungleich)} has-error{/if} required">
+                <div class="form-group float-label-control{if isset($fehlendeAngaben.pass_zu_kurz) || isset($fehlendeAngaben.pass_ungleich)} has-error{/if}">
                     <label for="password" class="control-label">{lang key='password' section='account data'}</label>
                     <input type="password" name="pass" maxlength="20" id="password" class="form-control" placeholder="{lang key='password' section='account data'}" required autocomplete="off" aria-autocomplete="none">
                     {if isset($fehlendeAngaben.pass_zu_kurz)}
@@ -34,7 +34,7 @@
                 </div>
             </div>
             <div class="col-xs-6">
-                <div class="form-group float-label-control{if isset($fehlendeAngaben.pass_ungleich)} has-error{/if} required">
+                <div class="form-group float-label-control{if isset($fehlendeAngaben.pass_ungleich)} has-error{/if}">
                     <label for="password2" class="control-label">{lang key='passwordRepeat' section='account data'}</label>
                     <input type="password" name="pass2" maxlength="20" id="password2" class="form-control" placeholder="{lang key='passwordRepeat' section='account data'}" required data-must-equal-to="#create_account_data input[name='pass']" data-custom-message="{lang key='passwordsMustBeEqual' section='account data'}" autocomplete="off" aria-autocomplete="none">
                     {if isset($fehlendeAngaben.pass_ungleich)}

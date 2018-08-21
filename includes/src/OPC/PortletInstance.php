@@ -361,7 +361,7 @@ class PortletInstance implements \JsonSerializable
      * @param int    $divisor
      * @return array
      */
-    public function getImageAttributes($src = null, $alt = null, $title = null, $divisor = 1): array
+    public function getImageAttributes($src = null, $alt = null, $title = null, $divisor = 1, $default = null): array
     {
         $src      = $src ?? $this->getProperty('src');
         $alt      = $alt ?? $this->getProperty('alt');
@@ -370,7 +370,7 @@ class PortletInstance implements \JsonSerializable
         $srcsizes = '';
 
         if (empty($src)) {
-            $src = \Shop::getURL() . '/gfx/keinBild.gif';
+            $src = $default ?? \Shop::getURL() . '/gfx/keinBild.gif';
 
             return [
                 'srcset'   => $srcset,
@@ -383,11 +383,10 @@ class PortletInstance implements \JsonSerializable
 
         $widthHeuristics = $this->widthHeuristics;
         $settings        = \Shop::getSettings([CONF_BILDER]);
-        $name            = \explode('/', $src);
-        $name            = \end($name);
+        $name            = basename($src);
 
         foreach (static::$dirSizes as $size => $width) {
-            $sizedImgPath = PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $size . $name;
+            $sizedImgPath = PFAD_ROOT . PFAD_MEDIAFILES . 'Bilder/' . $size . $name;
 
             if (!\file_exists($sizedImgPath) === true) {
                 $image     = new \Imanee\Imanee(PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $name);
@@ -420,22 +419,22 @@ class PortletInstance implements \JsonSerializable
                     switch ($breakpoint) {
                         case 'xs':
                             $breakpoint = 767;
-                            $srcsizes   .= '(max-width: ' . $breakpoint . 'px) '
+                            $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
                                 . (int)($col * 100 * $factor) . 'vw, ';
                             break;
                         case 'sm':
                             $breakpoint = 991;
-                            $srcsizes   .= '(max-width: ' . $breakpoint . 'px) '
+                            $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
                                 . (int)($col * $breakpoint * $factor) . 'px, ';
                             break;
                         case 'md':
                             $breakpoint = 1199;
-                            $srcsizes   .= '(max-width: ' . $breakpoint . 'px) '
+                            $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
                                 . (int)($col * $breakpoint * $factor) . 'px, ';
                             break;
                         case 'lg':
                             $breakpoint = 1200;
-                            $srcsizes   .= '(min-width: ' . $breakpoint . 'px) '
+                            $srcsizes  .= '(min-width: ' . $breakpoint . 'px) '
                                 . (int)($col * $breakpoint * $factor) . 'px, ';
                             break;
                         default:
@@ -446,7 +445,7 @@ class PortletInstance implements \JsonSerializable
         }
 
         $srcsizes .= '100vw';
-        $src      = \PFAD_MEDIAFILES . 'Bilder/.md/' . $name;
+        $src       = \PFAD_MEDIAFILES . 'Bilder/.md/' . $name;
 
         return [
             'srcset'   => $srcset,
@@ -458,15 +457,26 @@ class PortletInstance implements \JsonSerializable
     }
 
     /**
+     * @return string
+     */
+    public function getImageAttributeString($src = null, $alt = null, $title = null, $divisor = 1, $default = null)
+    {
+        $imgAttribs = $this->getImageAttributes($src, $alt, $title, $divisor, $default);
+
+        return "srcset='{$imgAttribs['srcset']}' srcsizes='{$imgAttribs['srcsizes']}' src='{$imgAttribs['src']}'
+            alt='{$imgAttribs['alt']}' title='{$imgAttribs['title']}'";
+    }
+
+    /**
      * @param string $src
      * @param string $alt
      * @param string $title
      * @param int    $divisor
      * @return $this
      */
-    public function setImageAttributes($src = null, $alt = null, $title = null, $divisor = 1)
+    public function setImageAttributes($src = null, $alt = null, $title = null, $divisor = 1, $default = null)
     {
-        $imageAttributes = $this->getImageAttributes($src, $alt, $title);
+        $imageAttributes = $this->getImageAttributes($src, $alt, $title, $divisor, $default);
 
         $this->setAttribute('srcset', $imageAttributes['srcset']);
         $this->setAttribute('srcsizes', $imageAttributes['srcsizes']);

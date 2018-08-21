@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {if isset($nFullscreenTemplate) && $nFullscreenTemplate == 1}
     {include file=$cPluginTemplate}
 {else}
@@ -9,7 +13,7 @@
         {/if}
     {/block}
 
-    {block name="content"}
+    {block name='content'}
         {if $opcPageService->getCurPage()->isReplace()}
             {include file='snippets/opc_mount_point.tpl' id='opc_replace_all'}
         {else}
@@ -19,7 +23,7 @@
                 <h1>{if !empty($Link->getMetaTitle())}{$Link->getMetaTitle()}{else}{$Link->getName()}{/if}</h1>
             {/if}
 
-            {include file="snippets/extension.tpl"}
+            {include file='snippets/extension.tpl'}
 
             {include file='snippets/opc_mount_point.tpl' id='opc_link_content_prepend'}
 

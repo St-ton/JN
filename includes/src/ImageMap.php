@@ -107,7 +107,7 @@ class ImageMap implements IExtensionPoint
                     $oArea->oArtikel->fuelleArtikel(
                         $oArea->kArtikel,
                         $defaultOptions,
-                        $this->kKundengruppe,
+                        $this->kKundengruppe ?? 0,
                         $this->kSprache
                     );
                 } else {

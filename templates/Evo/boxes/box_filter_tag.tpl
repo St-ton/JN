@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {assign var=tf value=$NaviFilter->tagFilterCompat}
 {if $oBox->show()}
     <section class="panel panel-default box box-filter-tag" id="sidebox{$oBox->getID()}">

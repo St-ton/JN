@@ -177,6 +177,16 @@ class JTLSmarty extends SmartyBC
     }
 
     /**
+     * Backslashes on Windows systems should be replaced by forward slashes in paths.
+     *
+     * @inheritdoc
+     */
+    public function getTemplateDir($index = null, $isConfig = false)
+    {
+        return str_replace('\\', '/', parent::getTemplateDir($index, $isConfig));
+    }
+
+    /**
      * phpquery output filter
      *
      * @param string $tplOutput

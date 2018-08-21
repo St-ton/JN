@@ -32,29 +32,25 @@ $smarty->registerPlugin('function', 'gibPreisStringLocalizedSmarty', 'gibPreisSt
 /**
  * @param array     $params
  * @param JTLSmarty $smarty
- * @return array
+ * @return array|void
  */
 function get_product_list($params, $smarty)
 {
-    $nLimit             = isset($params['nLimit'])
-        ? (int)$params['nLimit']
-        : 10;
-    $nSortierung        = isset($params['nSortierung'])
-        ? (int)$params['nSortierung']
-        : 0;
-    $cAssign            = (isset($params['cAssign']) && strlen($params['cAssign']) > 0)
+    $limit            = (int)($params['nLimit'] ?? 10);
+    $sort             = (int)($params['nSortierung'] ?? 0);
+    $cAssign          = (isset($params['cAssign']) && strlen($params['cAssign']) > 0)
         ? $params['cAssign']
         : 'oCustomArtikel_arr';
-    $cMerkmalFilter_arr = isset($params['cMerkmalFilter'])
+    $attributeFilters = isset($params['cMerkmalFilter'])
         ? \Filter\ProductFilter::initAttributeFilter(explode(';', $params['cMerkmalFilter']))
         : null;
-    $cSuchFilter_arr    = isset($params['cSuchFilter'])
+    $searchFilters    = isset($params['cSuchFilter'])
         ? \Filter\ProductFilter::initSearchFilter(explode(';', $params['cSuchFilter']))
         : null;
-    $cTagFilter_arr     = isset($params['cTagFilter'])
+    $tagFilters       = isset($params['cTagFilter'])
         ? \Filter\ProductFilter::initTagFilter(explode(';', $params['cTagFilter']))
         : null;
-    $cParameter_arr     = [
+    $params           = [
         'kKategorie'             => $params['kKategorie'] ?? null,
         'kHersteller'            => $params['kHersteller'] ?? null,
         'kArtikel'               => $params['kArtikel'] ?? null,
@@ -69,30 +65,39 @@ function get_product_list($params, $smarty)
         'nBewertungSterneFilter' => $params['nBewertungSterneFilter'] ?? null,
         'cPreisspannenFilter'    => $params['cPreisspannenFilter'] ?? null,
         'kSuchspecialFilter'     => $params['kSuchspecialFilter'] ?? null,
-        'nSortierung'            => $nSortierung,
-        'MerkmalFilter_arr'      => $cMerkmalFilter_arr,
-        'TagFilter_arr'          => $cTagFilter_arr,
-        'SuchFilter_arr'         => $cSuchFilter_arr,
+        'nSortierung'            => $sort,
+        'MerkmalFilter_arr'      => $attributeFilters,
+        'TagFilter_arr'          => $tagFilters,
+        'SuchFilter_arr'         => $searchFilters,
         'nArtikelProSeite'       => $params['nArtikelProSeite'] ?? null,
         'cSuche'                 => $params['cSuche'] ?? null,
         'seite'                  => $params['seite'] ?? null
     ];
-    if ($cParameter_arr['kArtikel'] !== null) {
-        $oArtikel_arr = [];
-        if (!is_array($cParameter_arr['kArtikel'])) {
-            $cParameter_arr['kArtikel'] = [$cParameter_arr['kArtikel']];
+    if ($params['kArtikel'] !== null) {
+        $products = [];
+        if (!is_array($params['kArtikel'])) {
+            $params['kArtikel'] = [$params['kArtikel']];
         }
-        foreach ($cParameter_arr['kArtikel'] as $kArtikel) {
-            $oArtikel_arr[] = (new Artikel())->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
+        foreach ($params['kArtikel'] as $kArtikel) {
+            $product    = new Artikel();
+            $products[] = $product->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
         }
     } else {
-        $oArtikel_arr = (new \Filter\ProductFilter())->initStates($params)->generateSearchResults(null, true, $nLimit)->getProducts();
+        $products = (new \Filter\ProductFilter(
+            \Filter\Config::getDefault(),
+            Shop::Container()->getDB(),
+            Shop::Container()->getCache()
+        ))
+            ->initStates($params)
+            ->generateSearchResults(null, true, $limit)
+            ->getProducts()
+            ->all();
     }
 
-    $smarty->assign($cAssign, $oArtikel_arr);
+    $smarty->assign($cAssign, $products);
 
     if (isset($params['bReturn'])) {
-        return $oArtikel_arr;
+        return $products;
     }
 }
 
@@ -502,9 +507,9 @@ function aaURLEncode($params, $smarty)
 {
     $bReset         = (isset($params['nReset']) && (int)$params['nReset'] === 1);
     $cURL           = $_SERVER['REQUEST_URI'];
-    $cParameter_arr = ['&aaParams', '?aaParams', '&aaReset', '?aaReset'];
+    $params = ['&aaParams', '?aaParams', '&aaReset', '?aaReset'];
     $aaEnthalten    = false;
-    foreach ($cParameter_arr as $cParameter) {
+    foreach ($params as $cParameter) {
         $aaEnthalten = strpos($cURL, $cParameter);
         if ($aaEnthalten !== false) {
             $cURL = substr($cURL, 0, $aaEnthalten);

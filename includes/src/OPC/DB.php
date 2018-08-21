@@ -6,6 +6,7 @@
 
 namespace OPC;
 
+use DB\DbInterface;
 use DB\ReturnType;
 
 /**
@@ -15,14 +16,15 @@ use DB\ReturnType;
 class DB
 {
     /**
-     * @var null|\DB\DbInterface
+     * @var null|DbInterface
      */
-    protected $shopDB = null;
+    protected $shopDB;
 
     /**
      * DB constructor.
+     * @param \DB\DbInterface $shopDB
      */
-    public function __construct(\DB\DbInterface $shopDB)
+    public function __construct(DbInterface $shopDB)
     {
         $this->shopDB = $shopDB;
     }
@@ -31,7 +33,7 @@ class DB
      * @param bool $withInactive
      * @return int[]
      */
-    public function getAllBlueprintIds($withInactive = false)
+    public function getAllBlueprintIds(bool $withInactive = false): array
     {
         $blueprintsDB = $this->shopDB->selectAll(
             'topcblueprint',
@@ -53,15 +55,16 @@ class DB
      * @param Blueprint $blueprint
      * @return bool
      */
-    public function blueprintExists(Blueprint $blueprint)
+    public function blueprintExists(Blueprint $blueprint): bool
     {
         return \is_object($this->shopDB->select('topcblueprint', 'kBlueprint', $blueprint->getId()));
     }
 
     /**
+     * @param Blueprint $blueprint
      * @return $this
      */
-    public function deleteBlueprint(Blueprint $blueprint)
+    public function deleteBlueprint(Blueprint $blueprint): self
     {
         $this->shopDB->delete('topcblueprint', 'kBlueprint', $blueprint->getId());
 
@@ -93,7 +96,7 @@ class DB
      * @return $this
      * @throws \Exception
      */
-    public function saveBlueprint(Blueprint $blueprint)
+    public function saveBlueprint(Blueprint $blueprint): self
     {
         if ($blueprint->getName() === '') {
             throw new \Exception('The OPC blueprint data to be saved is incomplete or invalid.');
@@ -188,7 +191,7 @@ class DB
     /**
      * @return int
      */
-    public function getPortletCount()
+    public function getPortletCount(): int
     {
         return (int)$this->shopDB->query(
             'SELECT COUNT(kPortlet) AS count FROM topcportlet',
@@ -248,6 +251,7 @@ class DB
             $this->shopDB->selectAll('topcportlet', [], []);
             $this->shopDB->selectAll('topcblueprint', [], []);
             $this->shopDB->selectAll('topcpage', [], []);
+
             return true;
         } catch (\InvalidArgumentException $e) {
             return false;

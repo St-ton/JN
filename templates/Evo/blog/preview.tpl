@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 <div itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting" class="panel panel-default panel-blog-post">
     <div class="panel-heading hide-overflow">
         <div class="panel-title">

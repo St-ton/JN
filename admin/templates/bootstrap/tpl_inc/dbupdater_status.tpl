@@ -65,10 +65,6 @@
                 </ul>
             </div>
         </div>
-
-        <br /><br />
-        <h4>Ereignisprotokoll</h4>
-        <pre id="debug"><div>{#currentShopVersion#}</div><div>     System: {formatVersion value=$currentFileVersion}</div><div>     Datenbank: {formatVersion value=$currentDatabaseVersion}</div>{if $currentTemplateFileVersion != $currentTemplateDatabaseVersion}<div>{#currentTemplateVersion#}</div><div>     System: {formatVersion value=$currentTemplateFileVersion}</div><div>     Datenbank: {formatVersion value=$currentTemplateDatabaseVersion}</div>{/if}</pre>
     {else}
         <div class="alert alert-success h4">
             <p class="text-center">

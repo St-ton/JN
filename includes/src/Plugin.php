@@ -328,6 +328,11 @@ class Plugin
     public $cTextLicensePath = '';
 
     /**
+     * @var string  holds the path to a CHANGELOG.md
+     */
+    public $changelogPath = '';
+
+    /**
      * Konstruktor
      *
      * @param int  $kPlugin
@@ -429,6 +434,9 @@ class Plugin
         $szPluginMainPath = PFAD_ROOT . PFAD_PLUGIN . $this->cVerzeichnis . '/';
         if ('' === $this->cTextReadmePath && $this->checkFileExistence($szPluginMainPath . 'README.md')) {
             $this->cTextReadmePath = $szPluginMainPath . 'README.md';
+        }
+        if ('' === $this->changelogPath && $this->checkFileExistence($szPluginMainPath . 'CHANGELOG.md')) {
+            $this->changelogPath = $szPluginMainPath . 'CHANGELOG.md';
         }
         if ('' === $this->cTextLicensePath) {
             // we're only searching for multiple license-files, if we did not done this before yet!

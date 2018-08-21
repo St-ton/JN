@@ -1,6 +1,6 @@
 {**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license https://jtl-url.de/jtlshoplicense
  *}
 {if isset($fehlendeAngaben.shipping_address)}
     {assign var='fehlendeAngabenShipping' value=$fehlendeAngaben.shipping_address}
@@ -24,7 +24,7 @@
             <legend>{lang key='deviatingDeliveryAddress' section='account data'}</legend>
             <ul class="list-group form-group">
             {foreach $Lieferadressen as $adresse}
-                {if $adresse->kLieferadresse>0}
+                {if $adresse->kLieferadresse > 0}
                     <li class="list-group-item">
                         <div class="radio">
                             <label class="btn-block" for="delivery{$adresse->kLieferadresse}" data-toggle="collapse" data-target="#register_shipping_address.in">

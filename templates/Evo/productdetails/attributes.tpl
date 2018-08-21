@@ -1,5 +1,9 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {if $showAttributesTable}
-<div class="product-attributes">
+    <div class="product-attributes">
     {block name='productdetails-attributes'}
         <div class="list-group list-group-striped">
             {if $Einstellungen.artikeldetails.merkmale_anzeigen === 'Y'}
@@ -94,8 +98,7 @@
                     {/foreach}
                 {/block}
             {/if}
-            </tbody> {* /attr-group *}
         </div>
     {/block}
-</div>
+    </div>
 {/if}

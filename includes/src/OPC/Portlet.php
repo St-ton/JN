@@ -59,6 +59,7 @@ abstract class Portlet implements \JsonSerializable
     final public function getDefaultProps(): array
     {
         $defProps = [];
+
         foreach ($this->getPropertyDesc() as $name => $propDesc) {
             $defProps[$name] = $propDesc['default'] ?? '';
         }

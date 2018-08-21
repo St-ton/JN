@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 <div class="notification-alert bg-{if isset($type)}{$type}{else}info{/if} panel-wrap{if isset($inline)} no-margin{/if}">
     <div class="panel panel-default clearfix">
         {if isset($title)}<div class="panel-heading">{$title}</div>{/if}

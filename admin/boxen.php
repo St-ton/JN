@@ -98,12 +98,12 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && FormHe
                         }
                     }
                 }
-            } elseif ($eTyp === \Boxes\BoxType::LINK) {
+            } elseif ($eTyp === \Boxes\Type::LINK) {
                 $linkID = (int)$_REQUEST['linkID'];
                 if ($linkID > 0) {
                     $bOk = $boxAdmin->update($kBox, $cTitel, $linkID);
                 }
-            } elseif ($eTyp === \Boxes\BoxType::CATBOX) {
+            } elseif ($eTyp === \Boxes\Type::CATBOX) {
                 $linkID = (int)$_REQUEST['linkID'];
                 $bOk    = $boxAdmin->update($kBox, $cTitel, $linkID);
                 if ($bOk) {

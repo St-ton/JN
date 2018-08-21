@@ -6,6 +6,7 @@
 
 namespace Filter;
 
+
 /**
  * Interface FilterInterface
  * @package Filter
@@ -165,7 +166,7 @@ interface FilterInterface
     /**
      * list of necessary joins
      *
-     * @return FilterJoinInterface|FilterJoinInterface[]
+     * @return JoinInterface|JoinInterface[]
      */
     public function getSQLJoin();
 
@@ -173,17 +174,17 @@ interface FilterInterface
      * get list of available filter options in the current view
      *
      * @param mixed|null $mixed - additional data that might be needed
-     * @return FilterOption[]
+     * @return Option[]
      */
     public function getOptions($mixed = null): array;
 
     /**
      * set the list of available options
      *
-     * @param mixed $mixed
+     * @param mixed $options
      * @return $this
      */
-    public function setOptions($mixed): FilterInterface;
+    public function setOptions($options): FilterInterface;
 
     /**
      * get a nice name
@@ -397,7 +398,7 @@ interface FilterInterface
     public function getIcon();
 
     /**
-     * @return FilterOption|FilterOption[]
+     * @return Option|Option[]
      */
     public function getActiveValues();
 

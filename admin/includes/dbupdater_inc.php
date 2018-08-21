@@ -376,12 +376,15 @@ function dbupdaterStatusTpl()
 function dbupdaterMigration($id = null, $version = null, $dir = null)
 {
     try {
-        $migration = new MigrationManager();
+        $manager = new MigrationManager();
 
         if ($id !== null && in_array($dir, [IMigration::UP, IMigration::DOWN], true)) {
-            $migration->executeMigrationById($id, $dir);
+            $manager->executeMigrationById($id, $dir);
         }
-        $result = ['id' => $id, 'type' => 'migration'];
+
+        $migration    = $manager->getMigrationById($id);
+        $updateResult = sprintf('Migration: %s', $migration->getDescription());
+        $result       = ['id' => $id, 'type' => 'migration', 'result' => $updateResult];
     } catch (Exception $e) {
         $result = new IOError($e->getMessage());
     }

@@ -24,7 +24,7 @@
             {if isset($oAktiveGeschenk_arr) && $oAktiveGeschenk_arr|@count > 0}
                 {include file='tpl_inc/pagination.tpl' oPagination=$oPagiAktiv cAnchor='aktivegeschenke'}
                 <div class="settings panel panel-default table-responsive">
-                    <table class="table">
+                    <table class="table table-striped">
                         <thead>
                         <tr>
                             <th class="tleft">{#ggProductName#}</th>
@@ -34,8 +34,8 @@
                         </thead>
                         <tbody>
                         {foreach $oAktiveGeschenk_arr as $oAktiveGeschenk}
-                            <tr class="tab_bg{$smarty.foreach.aktivegeschenke.iteration%2}">
-                                <td class="TD1">
+                            <tr>
+                                <td>
                                     <a href="{$oAktiveGeschenk->cURLFull}" target="_blank">{$oAktiveGeschenk->cName}</a>
                                 </td>
                                 <td class="tcenter">{getCurrencyConversionSmarty fPreisBrutto=$oAktiveGeschenk->FunktionsAttribute[$cFunAttrib]}</td>
@@ -53,7 +53,7 @@
             {if isset($oHaeufigGeschenk_arr) && $oHaeufigGeschenk_arr|@count > 0}
                 {include file='tpl_inc/pagination.tpl' oPagination=$oPagiHaeufig cAnchor='haeufigegeschenke'}
                 <div class="settings panel panel-default table-responsive">
-                    <table class="table">
+                    <table class="table table-striped">
                         <thead>
                         <tr>
                             <th class="tleft">{#ggProductName#}</th>
@@ -65,8 +65,8 @@
                         </thead>
                         <tbody>
                         {foreach $oHaeufigGeschenk_arr as $oHaeufigGeschenk}
-                            <tr class="tab_bg{$smarty.foreach.haeufigegeschenke.iteration%2}">
-                                <td class="TD1">
+                            <tr>
+                                <td>
                                     <a href="{$oAktiveGeschenk->cURLFull}" target="_blank">{$oHaeufigGeschenk->Artikel->cName}</a>
                                 </td>
                                 <td class="tcenter">{getCurrencyConversionSmarty fPreisBrutto=$oHaeufigGeschenk->Artikel->FunktionsAttribute[$cFunAttrib]}</td>
@@ -86,7 +86,7 @@
             {if isset($oLetzten100Geschenk_arr) && $oLetzten100Geschenk_arr|@count > 0}
                 {include file='tpl_inc/pagination.tpl' oPagination=$oPagiLetzte100 cAnchor='letzten100geschenke'}
                 <div class="settings panel panel-default table-responsive">
-                    <table class="table">
+                    <table class="table table-striped">
                         <thead>
                         <tr>
                             <th class="tleft">{#ggProductName#}</th>
@@ -97,8 +97,8 @@
                         </thead>
                         <tbody>
                         {foreach $oLetzten100Geschenk_arr as $oLetzten100Geschenk}
-                            <tr class="tab_bg{$smarty.foreach.letzten100geschenke.iteration%2}">
-                                <td class="TD1">
+                            <tr>
+                                <td>
                                     <a href="{$oAktiveGeschenk->cURLFull}" target="_blank">{$oLetzten100Geschenk->Artikel->cName}</a>
                                 </td>
                                 <td class="tcenter">{getCurrencyConversionSmarty fPreisBrutto=$oLetzten100Geschenk->Artikel->FunktionsAttribute[$cFunAttrib]}</td>

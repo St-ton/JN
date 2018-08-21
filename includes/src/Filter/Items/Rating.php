@@ -6,12 +6,13 @@
 
 namespace Filter\Items;
 
+
 use DB\ReturnType;
 use Filter\AbstractFilter;
-use Filter\FilterJoin;
-use Filter\FilterOption;
+use Filter\Join;
+use Filter\Option;
 use Filter\FilterInterface;
-use Filter\FilterStateSQL;
+use Filter\StateSQL;
 use Filter\ProductFilter;
 
 /**
@@ -93,7 +94,7 @@ class Rating extends AbstractFilter
      */
     public function getSQLJoin()
     {
-        return (new FilterJoin())
+        return (new Join())
             ->setType('JOIN')
             ->setTable('tartikelext')
             ->setOn('tartikel.kArtikel = tartikelext.kArtikel')
@@ -117,15 +118,25 @@ class Rating extends AbstractFilter
         }
         $options = [];
         $state   = $this->productFilter->getCurrentStateData();
-        $sql     = (new FilterStateSQL())->from($state);
+        $sql     = (new StateSQL())->from($state);
         $sql->setSelect(['ROUND(tartikelext.fDurchschnittsBewertung, 0) AS nSterne', 'tartikel.kArtikel']);
         $sql->setOrderBy(null);
         $sql->setLimit('');
         $sql->setGroupBy(['tartikel.kArtikel']);
         $sql->addJoin($this->getSQLJoin());
-        $res              = \Shop::Container()->getDB()->query(
+
+        $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
+
+        $cacheID          = 'fltr_' . __CLASS__ . \md5($baseQuery);
+        if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
+            $this->options = $cached;
+
+            return $this->options;
+        }
+
+        $res              = $this->productFilter->getDB()->query(
             'SELECT ssMerkmal.nSterne, COUNT(*) AS nAnzahl
-                FROM (' . $this->productFilter->getFilterSQL()->getBaseQuery($sql) . ' ) AS ssMerkmal
+                FROM (' . $baseQuery . ' ) AS ssMerkmal
                 GROUP BY ssMerkmal.nSterne
                 ORDER BY ssMerkmal.nSterne DESC',
             ReturnType::ARRAY_OF_OBJECTS
@@ -135,7 +146,7 @@ class Rating extends AbstractFilter
         foreach ($res as $row) {
             $stars += (int)$row->nAnzahl;
 
-            $options[] = (new FilterOption())
+            $options[] = (new Option())
                 ->setParam($this->getUrlParam())
                 ->setURL($this->productFilter->getFilterURL()->getURL(
                     $additionalFilter->init((int)$row->nSterne)
@@ -154,6 +165,7 @@ class Rating extends AbstractFilter
         if (\count($options) === 0) {
             $this->hide();
         }
+        $this->productFilter->getCache()->set($cacheID, $options, [CACHING_GROUP_FILTER]);
 
         return $options;
     }

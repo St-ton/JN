@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {strip}
 <ul class="header-shop-nav nav navbar-nav force-float horizontal pull-right">
     {block name='navbar-productsearch'}
@@ -13,10 +17,9 @@
                 </div>
             </form>
         </li>
-    {/block}{* /navbar-productsearch *}
+    {/block}
 
     {block name='navbar-top-user'}
-    {*  ACCOUNT *}
     <li class="dropdown hidden-xs">
         {if empty($smarty.session.Kunde->kKunde)}
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="{lang key='login'}">
@@ -28,13 +31,17 @@
                         {$jtl_token}
                         <fieldset id="quick-login">
                             <div class="form-group">
-                                <input type="email" name="email" id="email_quick" class="form-control" placeholder="{lang key='emailadress'}" required autocomplete="quick-login-email"/>
+                                <input type="email" name="email" id="email_quick" class="form-control"
+                                       placeholder="{lang key='emailadress'}" required
+                                       autocomplete="quick-login-email"/>
                             </div>
                             <div class="form-group">
-                                <input type="password" name="passwort" id="password_quick" class="form-control" placeholder="{lang key='password'}" required autocomplete="quick-login-password"/>
+                                <input type="password" name="passwort" id="password_quick" class="form-control"
+                                       placeholder="{lang key='password'}" required
+                                       autocomplete="quick-login-password"/>
                             </div>
                             {if isset($showLoginCaptcha) && $showLoginCaptcha}
-                                <div class="form-group text-center float-label-control required">
+                                <div class="form-group text-center float-label-control">
                                     {captchaMarkup getBody=true}
                                 </div>
                             {/if}
@@ -75,21 +82,11 @@
             </ul>
         {/if}
     </li>
-    {*  ACCOUNT END *}
-
-    {*  COMPARE LIST *}
     {include file='layout/header_shop_nav_compare.tpl'}
-    {*  COMPARE LIST *}
-
-    {*  WISH LIST *}
     {include file='layout/header_shop_nav_wish.tpl'}
-    {*  WISH LIST *}
-
-    {*  CART *}
     <li class="hidden-xs cart-menu dropdown{if $WarenkorbArtikelanzahl >= 1} items{/if}{if $nSeitenTyp == 3} current{/if}" data-toggle="basket-items">
         {include file='basket/cart_dropdown_label.tpl'}
     </li>
-    {*  CART END *}
-    {/block}{* /navbar-top-user *}
-</ul>{* /shop-nav *}
+    {/block}
+</ul>
 {/strip}

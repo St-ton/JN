@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {if $oBox->show()}
     {lang key='showAllBestsellers' section='global' assign='moreTitle'}
     {lang key='bestsellers' section='global' assign='slidertitle'}

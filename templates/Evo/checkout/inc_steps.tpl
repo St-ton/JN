@@ -1,6 +1,6 @@
 {**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license https://jtl-url.de/jtlshoplicense
  *}
 {assign var='step1_active' value=($bestellschritt[1] == 1 || $bestellschritt[2] == 1)}
 {assign var='step2_active' value=($bestellschritt[3] == 1 || $bestellschritt[4] == 1)}

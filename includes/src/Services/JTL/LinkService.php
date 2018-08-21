@@ -253,9 +253,9 @@ final class LinkService implements LinkServiceInterface
     /**
      * @inheritdoc
      */
-    public function getLinkGroupByName(string $name)
+    public function getLinkGroupByName(string $name, bool $filtered = true)
     {
-        return $this->linkGroupList->getLinkgroupByTemplate($name);
+        return $this->linkGroupList->getLinkgroupByTemplate($name, $filtered);
     }
 
     /**

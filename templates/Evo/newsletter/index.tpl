@@ -1,8 +1,7 @@
 {**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license https://jtl-url.de/jtlshoplicense
  *}
-
 {block name='header'}
     {include file='layout/header.tpl'}
 {/block}
@@ -18,7 +17,6 @@
             {$fehler}
         </div>
     {/if}
-    
     {include file='snippets/extension.tpl'}
     {if !isset($cPost_arr)}
         {assign var=cPost_arr value=array()}
@@ -44,39 +42,42 @@
                                         <option value="m"{if (isset($oKunde->cAnrede) && $oKunde->cAnrede === 'm')} selected="selected"{/if}>{lang key='salutationM'}</option>
                                     </select>
                                 </div>
-                                <div class="form-group float-label-control">
-                                    <label for="newsletterfirstname" class="control-label">{lang key='newsletterfirstname' section='newsletter'}</label>
-                                    <input type="text" name="cVorname" class="form-control"
-                                           value="{if !empty($oPlausi->cPost_arr.cVorname)}{$oPlausi->cPost_arr.cVorname}{elseif !empty($oKunde->cVorname)}{$oKunde->cVorname}{/if}"
-                                           id="newsletterfirstname"
-                                           autocomplete="given-name"
-                                    />
-                                    {if !empty($oPlausi->nPlausi_arr.cVorname)}
-                                        <div class="form-error-msg text-danger"><i class="fa fa-warning"></i> {lang key='fillOut' section='global'}</div>
-                                    {/if}
-                                </div>
-                                <div class="form-group float-label-control">
-                                    <label for="lastName" class="control-label">{lang key='newsletterlastname' section='newsletter'}</label>
-                                    <input type="text" name="cNachname" class="form-control"
-                                           value="{if !empty($oPlausi->cPost_arr.cNachname)}{$oPlausi->cPost_arr.cNachname}{elseif !empty($oKunde->cNachname)}{$oKunde->cNachname}{/if}"
-                                           id="lastName"
-                                           autocomplete="family-name"
-                                    />
-                                    {if !empty($oPlausi->nPlausi_arr.cNachname)}
-                                        <div class="form-error-msg text-danger"><i class="fa fa-warning"></i> {lang key='fillOut' section='global'}</div>
-                                    {/if}
-                                </div>
-                                <div class="form-group float-label-control{if !empty($oPlausi->nPlausi_arr.cEmail)} has-error{/if} required">
-                                    <label for="email" class="control-label">{lang key='newsletteremail' section='newsletter'}</label>
-                                    <input type="email" name="cEmail" class="form-control" required
-                                           value="{if !empty($oPlausi->cPost_arr.cEmail)}{$oPlausi->cPost_arr.cEmail}{elseif !empty($oKunde->cMail)}{$oKunde->cMail}{/if}"
-                                           id="email"
-                                           autocomplete="email"
-                                    />
-                                    {if !empty($oPlausi->nPlausi_arr.cEmail)}
-                                        <div class="form-error-msg text-danger"><i class="fa fa-warning"></i> {lang key='fillOut' section='global'}</div>
-                                    {/if}
-                                </div>
+                                {if !empty($oPlausi->cPost_arr.cVorname)}
+                                    {assign var='inputVal_firstname' value=$oPlausi->cPost_arr.cVorname}
+                                {elseif !empty($oKunde->cVorname)}
+                                    {assign var='inputVal_firstname' value=$Kunde->cVorname}
+                                {/if}
+                                {include file='snippets/form_group_simple.tpl'
+                                    options=[
+                                        'text', 'newsletterfirstname', 'cVorname',
+                                        {$inputVal_firstname|default:null}, {lang key='newsletterfirstname' section='newsletter'},
+                                        false, null, 'given-name'
+                                    ]
+                                }
+                                {if !empty($oPlausi->cPost_arr.cNachname)}
+                                    {assign var='inputVal_lastName' value=$oPlausi->cPost_arr.cNachname}
+                                {elseif !empty($oKunde->cNachname)}
+                                    {assign var='inputVal_lastName' value=$Kunde->cNachname}
+                                {/if}
+                                {include file='snippets/form_group_simple.tpl'
+                                    options=[
+                                        'text', 'lastName', 'cNachname',
+                                        {$inputVal_lastName|default:null}, {lang key='newsletterlastname' section='newsletter'},
+                                        false, null, 'family-name'
+                                    ]
+                                }
+                                {if !empty($oPlausi->cPost_arr.cEmail)}
+                                    {assign var='inputVal_email' value=$oPlausi->cPost_arr.cEmail}
+                                {elseif !empty($oKunde->cMail)}
+                                    {assign var='inputVal_email' value=$Kunde->cMail}
+                                {/if}
+                                {include file='snippets/form_group_simple.tpl'
+                                    options=[
+                                        'email', 'email', 'cEmail',
+                                        {$inputVal_email|default:null}, {lang key='newsletteremail' section='newsletter'},
+                                        true, null, 'email'
+                                    ]
+                                }
                                 {if isset($oPlausi->nPlausi_arr)}
                                     {assign var=plausiArr value=$oPlausi->nPlausi_arr}
                                 {else}
@@ -85,7 +86,7 @@
                                 {if (!isset($smarty.session.bAnti_spam_already_checked) || $smarty.session.bAnti_spam_already_checked !== true) &&
                                     isset($Einstellungen.newsletter.newsletter_sicherheitscode) && $Einstellungen.newsletter.newsletter_sicherheitscode !== 'N' && empty($smarty.session.Kunde->kKunde)}
                                     <hr>
-                                    <div class="form-group float-label-control{if !empty($plausiArr.captcha) && $plausiArr.captcha === true}} has-error{/if} required">
+                                    <div class="form-group float-label-control{if !empty($plausiArr.captcha) && $plausiArr.captcha === true}} has-error{/if}">
                                     {captchaMarkup getBody=true}
                                     </div>
                                 {/if}
@@ -126,16 +127,13 @@
     
                     <form method="post" action="{get_static_route id='newsletter.php'}" name="newsletterabmelden" class="evo-validate">
                         <fieldset>
-                            <div class="form-group float-label-control required{if !empty($oFehlendeAngaben->cUnsubscribeEmail)} has-error{/if}">
-                                <label for="checkOut" class="control-label">{lang key='newsletteremail' section='newsletter'}</label>
-                                <input type="email" class="form-control" required name="cEmail"
-                                       value="{if !empty($oKunde->cMail)}{$oKunde->cMail}{/if}" id="checkOut"
-                                       autocomplete="email"
-                                />
-                                {if !empty($oFehlendeAngaben->cUnsubscribeEmail)}
-                                    <div class="form-error-msg text-danger"><i class="fa fa-warning"></i> {lang key='fillOut' section='global'}</div>
-                                {/if}
-                            </div>
+                            {include file='snippets/form_group_simple.tpl'
+                                options=[
+                                    'email', 'checkOut', 'cEmail',
+                                    {$oKunde->cMail|default:null}, {lang key='newsletteremail' section='newsletter'},
+                                    true, $oFehlendeAngaben->cUnsubscribeEmail|default:null, 'email'
+                                ]
+                            }
                             {$jtl_token}
                             <input type="hidden" name="abmelden" value="1" />
                             <button type="submit" class="submit btn btn-default">

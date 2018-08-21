@@ -1,15 +1,19 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {function draftItem}
-    {assign var="queryDraft" value=$query|cat:"&pageKey="|cat:$draftKey}
+    {assign var='queryDraft' value=$query|cat:'&pageKey='|cat:$draftKey}
 
     {if $isCurDraft}
-        {assign var="draftTooltip" value="Momentan öffentlich"}
+        {assign var='draftTooltip' value='Momentan öffentlich'}
         {if $draftPublishTo !== null}
-            {assign var="draftTooltip" value=$draftTooltip|cat:" bis "|cat:($draftPublishTo|date_format:"d.m.Y")}
+            {assign var='draftTooltip' value=$draftTooltip|cat:' bis '|cat:($draftPublishTo|date_format:'d.m.Y')}
         {/if}
     {elseif $draftPublishFrom !== null}
-        {assign var="draftTooltip" value="Öffentlich ab "|cat:($draftPublishFrom|date_format:"d.m.Y")}
+        {assign var='draftTooltip' value='Öffentlich ab '|cat:($draftPublishFrom|date_format:'d.m.Y')}
     {else}
-        {assign var="draftTooltip" value="Entwurf"}
+        {assign var='draftTooltip' value='Entwurf'}
     {/if}
 
     <div class="list-group-item list-group-item-{if $isCurDraft}success{else}default{/if}" data-toggle="tooltip"

@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {if isset($oNewsKategorie_arr)}
     {foreach $oNewsKategorie_arr as $oNewsKategorie}
         {if $selectedCat === (int)$oNewsKategorie->kNewsKategorie}{assign var='oCurNewsCat' value=$oNewsKategorie}{/if}

@@ -109,7 +109,7 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && FormHelper::va
         if ((int)$_POST['kLink'] === 0) {
             $hinweis .= 'Link wurde erfolgreich hinzugefügt.';
         } else {
-            $hinweis .= 'Der Link <strong>' . $link->getName() . '</strong> wurde erfolgreich geändert.';
+            $hinweis .= 'Der Link <strong>' . $link->getDisplayName() . '</strong> wurde erfolgreich geändert.';
         }
         $clearCache = true;
         $kLink      = $link->getID();
@@ -255,7 +255,7 @@ if (isset($_POST['aender_linkgruppe']) && (int)$_POST['aender_linkgruppe'] === 1
         } elseif ($res === \Link\Admin\LinkAdmin::ERROR_LINK_GROUP_NOT_FOUND) {
             $fehler .= 'Fehler: Es konnte keine Linkgruppe mit Ihrem Key gefunden werden.';
         } elseif ($res instanceof \Link\LinkInterface) {
-            $hinweis    .= 'Sie haben den Link "' . $link->getName() . '" erfolgreich verschoben.';
+            $hinweis    .= 'Sie haben den Link "' . $link->getDisplayName() . '" erfolgreich verschoben.';
             $step       = 'uebersicht';
             $clearCache = true;
         } else {
@@ -278,7 +278,7 @@ if (isset($_POST['kopiere_in_linkgruppe'])
     } elseif ($res === \Link\Admin\LinkAdmin::ERROR_LINK_GROUP_NOT_FOUND) {
         $fehler .= 'Fehler: Es konnte keine Linkgruppe mit Ihrem Key gefunden werden.';
     } elseif ($res instanceof \Link\LinkInterface) {
-        $hinweis    .= 'Sie haben den Link "' . $link->getName() . '" erfolgreich kopiert.';
+        $hinweis    .= 'Sie haben den Link "' . $link->getDisplayName() . '" erfolgreich kopiert.';
         $step       = 'uebersicht';
         $clearCache = true;
     } else {

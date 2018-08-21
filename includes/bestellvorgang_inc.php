@@ -2153,12 +2153,9 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
 
     }
     if (isset($data['geburtstag'])
-        && StringHandler::checkDate(StringHandler::filterXSS($data['geburtstag']), $conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y') > 0
+        && StringHandler::checkDate($data['geburtstag'], $conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y') > 0
     ) {
-        $ret['geburtstag'] = StringHandler::checkDate(
-            StringHandler::filterXSS($data['geburtstag']),
-            $conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y'
-        );
+        $ret['geburtstag'] = StringHandler::checkDate($data['geburtstag'], $conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y');
     }
     if ($conf['kunden']['kundenregistrierung_abfragen_www'] === 'Y' && empty($data['www'])) {
         $ret['www'] = 1;
@@ -2337,7 +2334,7 @@ function checkLieferFormularArray($data)
 
     foreach (['tel', 'mobil', 'fax'] as $telType) {
         if ($conf['kunden']["lieferadresse_abfragen_$telType"] !== 'N') {
-            $result = StringHandler::checkPhoneNumber(StringHandler::filterXSS($data[$telType]));
+            $result = StringHandler::checkPhoneNumber($data[$telType]);
             if ($result === 1 && $conf['kunden']["lieferadresse_abfragen_$telType"] === 'Y') {
                 $ret[$telType] = 1;
             } elseif ($result > 1) {

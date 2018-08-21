@@ -172,6 +172,11 @@ final class Link extends AbstractLink
     protected $fileName = '';
 
     /**
+     * @var string
+     */
+    protected $displayName = '';
+
+    /**
      * @var Collection
      */
     protected $childLinks;
@@ -199,6 +204,7 @@ final class Link extends AbstractLink
         $this->id = $id;
         $link     = $this->db->queryPrepared(
             "SELECT tlink.*, tlinksprache.cISOSprache, 
+                tlink.cName AS displayName,
                 tlinksprache.cName AS localizedName, 
                 tlinksprache.cTitle AS localizedTitle, 
                 tlinksprache.cContent AS content,
@@ -274,6 +280,7 @@ final class Link extends AbstractLink
             $this->setMetaDescription($link->metaDescription ?? '', $languageID);
             $this->setMetaTitle($link->metaTitle ?? '', $languageID);
             $this->setMetaKeyword($link->metaKeywords ?? '', $languageID);
+            $this->setDisplayName($link->displayName ?? '');
             $this->setName($link->localizedName ?? $link->cName, $languageID);
             $this->setTitle($link->localizedTitle ?? $link->cName, $languageID);
             $this->setLanguageID($languageID, $languageID);
@@ -1010,6 +1017,22 @@ final class Link extends AbstractLink
     public function setLevel(int $level)
     {
         $this->level = $level;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getDisplayName(): string
+    {
+        return $this->displayName;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setDisplayName(string $displayName)
+    {
+        $this->displayName = $displayName;
     }
 
     /**

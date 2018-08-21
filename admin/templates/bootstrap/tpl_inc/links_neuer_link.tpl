@@ -56,7 +56,7 @@
                         <span class="input-group-addon">
                             <label for="cName">Name{if isset($xPlausiVar_arr.cName)} <span class="fillout">{#FillOut#}</span>{/if}</label>
                         </span>
-                        <input required type="text" name="cName" id="cName" class="form-control{if isset($xPlausiVar_arr.cName)} fieldfillout{/if}" value="{if isset($xPostVar_arr.cName) && $xPostVar_arr.cName}{$xPostVar_arr.cName}{elseif !empty($Link->getName())}{$Link->getName()}{/if}" tabindex="1" />
+                        <input required type="text" name="cName" id="cName" class="form-control{if isset($xPlausiVar_arr.cName)} fieldfillout{/if}" value="{if isset($xPostVar_arr.cName) && $xPostVar_arr.cName}{$xPostVar_arr.cName}{elseif !empty($Link->getDisplayName())}{$Link->getDisplayName()}{/if}" tabindex="1" />
                     </div>
                     <div class="input-group{if isset($xPlausiVar_arr.nLinkart)} error{/if}">
                         <span class="input-group-addon">
@@ -275,7 +275,7 @@
             {/foreach}
             <div class="panel{if isset($Link->getID())} btn-group{/if}">
                 <button type="submit" value="{#newLinksSave#}" class="btn btn-primary"><i class="fa fa-save"></i> {#newLinksSave#}</button>
-                {if isset($Link->getID())}<button type="submit" name="continue" value="1" class="btn btn-default" id="save-and-continue">{#newLinksSave#} und weiter bearbeiten</button>{/if}
+                <button type="submit" name="continue" value="1" class="btn btn-default" id="save-and-continue">{#newLinksSave#} und weiter bearbeiten</button>
             </div>
         </form>
         {if isset($Link->getID())}

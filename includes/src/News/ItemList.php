@@ -61,7 +61,7 @@ final class ItemList implements ItemListInterface
             tnewssprache.title AS localizedTitle, 
             tnewssprache.content, 
             tnewssprache.preview, 
-            tnewssprache.previewImage, 
+            tnews.cPreviewImage AS previewImage, 
             tnewssprache.metaTitle, 
             tnewssprache.metaKeywords, 
             tnewssprache.metaDescription, 

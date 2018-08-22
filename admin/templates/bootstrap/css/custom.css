@@ -53,7 +53,7 @@
 .backend-menu li a {
     display: block;
     padding: 0.5em 1em;
-    border-left: 4px solid transparent;
+    border-left: 6px solid transparent;
 }
 
 .backend-menu li > a:before {
@@ -62,11 +62,11 @@
     padding: 0 1em 0 0;
 }
 
-.backend-menu li.root > .backend-root-label {
+.backend-menu li > .backend-root-label {
     padding: 0 1em;
 }
 
-.backend-menu li.root > .backend-root-label > a {
+.backend-menu li > .backend-root-label > a {
     color: #7dcdfe;
     font-weight: bold;
     padding: 0.75em 0;
@@ -74,8 +74,32 @@
     text-transform: uppercase;
 }
 
+.backend-menu li > .backend-root-label .fa {
+    font-size: 1.5em;
+}
+
+.backend-root-menu-icon-system:before {
+    content: "\f013";
+}
+
+.backend-root-menu-icon-storefront:before {
+    content: "\f07a";
+}
+
+.backend-root-menu-icon-template:before {
+    content: "\f03e";
+}
+
+.backend-root-menu-icon-inhalte:before {
+    content: "\f03e";
+}
+
+.backend-root-menu-icon-plugins:before {
+    content: "\f1e6";
+}
+
 .backend-menu li.second > a {
-    border-left: 4px solid transparent;
+    border-left: 6px solid transparent;
 }
 
 .backend-menu li.second > a:after {
@@ -89,12 +113,12 @@
 
 .backend-menu li.second > a:not(.collapsed):after {
     content: "\f077";
-    color: #3098d6;
+    color: #0b6aa2;
 }
 
 .backend-menu li.second > a:not(.collapsed) {
     background-color: #5cbcf6;
-    border-left: 4px solid #0b6aa2;
+    border-left: 6px solid #0b6aa2;
 }
 
 .backend-menu li.second > .backend-menu {
@@ -189,76 +213,6 @@
     padding-left: 15px;
     padding-right: 15px;
 }
-
-/* System */
-#dropdown-header-globale-einstellungen > a:before {
-    content: "\f0ac";
-}
-
-#dropdown-header-e-mails > a:before {
-    content: "\f003";
-}
-
-#dropdown-header-statistiken > a:before {
-    content: "\f080";
-}
-
-#dropdown-header-wartung > a:before {
-    content: "\f0ad";
-}
-
-#dropdown-header-export > a:before {
-    content: "\f0c7";
-}
-
-#dropdown-header-benutzer---kundenverwaltung > a:before {
-    content: "\f0c0";
-}
-
-/* Storefront */
-#dropdown-header-artikel > a:before {
-    content: "\f187";
-}
-
-#dropdown-header-bilder > a:before {
-    content: "\f03e";
-}
-
-#dropdown-header-formulare > a:before {
-    content: "\f0c9";
-}
-
-#dropdown-header-kaufabwicklung > a:before {
-    content: "\f07a";
-}
-
-#dropdown-header-suche > a:before {
-    content: "\f002";
-}
-
-#dropdown-header-zahlungsarten > a:before {
-    content: "\f0d6";
-}
-
-/* Templates */
-#dropdown-header-template > a:before {
-    content: "\f108";
-}
-
-/* Plugins */
-#dropdown-header-plugins > a:before {
-    content: "\f1e6";
-}
-
-/*.dropdown-header:before {*/
-    /*font-family: FontAwesome;*/
-    /*font-style: normal;*/
-    /*font-weight: 400;*/
-    /*margin-right: 5px;*/
-    /*text-decoration: inherit;*/
-    /*width: 15px;*/
-    /*display: inline-block;*/
-/*}*/
 
 /*
 * Brand-Primary: #5cbcf6;

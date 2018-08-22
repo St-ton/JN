@@ -132,17 +132,22 @@
             <div class="backend-navigation">
                 <ul class="backend-menu">
                     {foreach $oLinkOberGruppe_arr as $oLinkOberGruppe}
+                        {assign var='rootEntryName' value=$oLinkOberGruppe->cName|replace:' ':'-'|replace:'&':''|lower}
                         {if $oLinkOberGruppe->oLinkGruppe_arr|@count === 0
                                 && $oLinkOberGruppe->oLink_arr|@count === 1}
                             <li {if isset($oLinkOberGruppe->class)}class="{$oLinkOberGruppe->class}"{/if}>
-                                <a href="{$oLinkOberGruppe->oLink_arr[0]->cURL}" class="parent">
-                                    {$oLinkOberGruppe->oLink_arr[0]->cLinkname}
-                                </a>
+                                <div class="backend-root-label">
+                                    <a href="{$oLinkOberGruppe->oLink_arr[0]->cURL}" class="parent">
+                                        <i class="fa fa-2x backend-root-menu-icon-{$rootEntryName}"></i>
+                                        {$oLinkOberGruppe->oLink_arr[0]->cLinkname}
+                                    </a>
+                                </div>
                             </li>
                         {else}
                             <li class="{if isset($oLinkOberGruppe->class)}{$oLinkOberGruppe->class}{/if} root">
                                 <div class="backend-root-label">
                                     <a href="#" class="parent">
+                                        <i class="fa fa-2x backend-root-menu-icon-{$rootEntryName}"></i>
                                         {$oLinkOberGruppe->cName}
                                     </a>
                                 </div>
@@ -189,32 +194,30 @@
                     </li>
                 </ul>
                 <ul>
-                    <li class="dropdown" id="notify-drop">{include file="tpl_inc/notify_drop.tpl"}</li>
-                    <li class="dropdown" id="favs-drop">{include file="tpl_inc/favs_drop.tpl"}</li>
                     {if permission('DASHBOARD_VIEW')}
                         <li>
                             <a class="link-dashboard" href="index.php" title="Dashboard"><i class="fa fa-home"></i></a>
                         </li>
                     {/if}
                     {if permission('SETTINGS_SEARCH_VIEW')}
-                        <li>
-                            <a class="link-search" data-toggle="modal" href="#main-search" title="Suche">
-                                <i class="fa fa-search"></i>
-                            </a>
-                        </li>
+                        {*<li>*}
+                            {*<a class="link-search" data-toggle="modal" href="#main-search" title="Suche">*}
+                                {*<i class="fa fa-search"></i>*}
+                            {*</a>*}
+                        {*</li>*}
                     {/if}
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle parent" data-toggle="dropdown" title="Hilfe">
                             <i class="fa fa-medkit"></i>
                         </a>
-                        <ul class="dropdown-menu" role="main">
+                        <ul class="dropdown-menu dropdown-menu-right" role="main">
                             <li>
                                 <a href="https://jtl-url.de/shopschritte" target="_blank" rel="noopener">
                                     Erste Schritte
                                 </a>
                                 <a href="https://jtl-url.de/shopguide" target="_blank" rel="noopener">
                                     JTL Guide
-                                    /a>
+                                </a>
                                 <a href="https://forum.jtl-software.de" target="_blank" rel="noopener">
                                     JTL Forum
                                 </a>
@@ -227,11 +230,28 @@
                             </li>
                         </ul>
                     </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle parent btn-toggle" data-toggle="dropdown">
+                            <i class="fa fa-gear"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="switcher-header">
+                                <h2>Widgets</h2>
+                            </div>
+                            <div class="switcher-content">
+                                <div id="settings">
+                                    {include file='tpl_inc/widget_selector.tpl' oAvailableWidget_arr=$oAvailableWidget_arr}
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="dropdown" id="notify-drop">{include file="tpl_inc/notify_drop.tpl"}</li>
+                    <li class="dropdown" id="favs-drop">{include file="tpl_inc/favs_drop.tpl"}</li>
                     <li class="dropdown avatar">
                         <a href="#" class="dropdown-toggle parent" data-toggle="dropdown">
                             <img src="{gravatarImage email=$account->cMail}" title="{$account->cMail}" class="img-circle" />
                         </a>
-                        <ul class="dropdown-menu" role="main">
+                        <ul class="dropdown-menu dropdown-menu-right" role="main">
                             <li>
                                 <a class="link-shop" href="{$URL_SHOP}" title="Zum Shop">
                                     <i class="fa fa-shopping-cart"></i> Zum Shop

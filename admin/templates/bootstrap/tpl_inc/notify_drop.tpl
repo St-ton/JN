@@ -5,7 +5,7 @@
         Mitteilungen
         <span class="caret"></span>
     </a>
-    <ul class="dropdown-menu" role="main">
+    <ul class="dropdown-menu dropdown-menu-right" role="main">
         {foreach $notifications as $notify}
             <li class="nag">
                 <div class="nag-split btn-{$notifyTypes[$notify->getType()]}"><i class="fa fa-angle-right" aria-hidden="true"></i></div>

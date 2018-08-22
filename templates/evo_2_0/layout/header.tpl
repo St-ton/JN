@@ -33,7 +33,7 @@
                                         </a>
                                     {/block}
                                 </div>
-                                <div class="col-xs-8" id="shop-nav">
+                                <div class="col-xs-8" id="shop-nav" data-active-tab="sn1">
                                     {block name='header-branding-shop-nav'}
                                         {include file='layout/header_shop_nav.tpl'}
                                     {/block}

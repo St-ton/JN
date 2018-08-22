@@ -29,11 +29,11 @@
 @white:                 #f8f8f8;
 
 @brand-primary:         #ffc400; // Marsala
-@brand-secondary:       #ff00f6; // Dark Gray
-@brand-success:         #ff00f6;
-@brand-info:            #ff00f6;
-@brand-warning:         #ff00f6;
-@brand-danger:          #ff00f6;
+@brand-secondary:       #ffffff; // Dark Gray
+@brand-success:         #CDE1D6;
+@brand-info:            #f5f7fa;
+@brand-warning:         #F9F2DC;
+@brand-danger:          #E8CCD2;
 
 
 //== Scaffolding
@@ -75,8 +75,8 @@
 
 @font-weight-light:       300;
 @font-weight-normal:      400;
-@font-weight-semibold:    700;
-@font-weight-bold:        800;
+@font-weight-semibold:    600;
+@font-weight-bold:        700;
 
 //** Unit-less `line-height` for use in components like buttons.
 @line-height-base:        1.428571429; // 20/14
@@ -85,7 +85,7 @@
 
 //** By default, this inherits from the `<body>`.
 @headings-font-family:    @font-family-sans-serif;
-@headings-font-weight:    bold;
+@headings-font-weight:    @font-weight-bold;
 @headings-line-height:    1.1;
 @headings-color:          @gray-dark;
 
@@ -109,9 +109,9 @@
 @line-height-small:         1.5;
 
 @border-radius-none:        0;
-@border-radius-base:        4px;
-@border-radius-large:       6px;
-@border-radius-small:       3px;
+@border-radius-base:        2px;
+@border-radius-large:       2px;
+@border-radius-small:       2px;
 
 //** Global color for active items (e.g., navs or dropdowns).
 @component-active-color:    #525252;
@@ -151,9 +151,9 @@
 
 @btn-font-weight:                normal;
 
-@btn-default-color:              @brand-primary;
+@btn-default-color:              @text-color;
 @btn-default-bg:                 #fff;
-@btn-default-border:             @brand-primary;
+@btn-default-border:             @gray;
 @btn-default-margin:             0;
 
 @btn-primary-color:              @text-color;
@@ -161,21 +161,26 @@
 @btn-primary-border:             @brand-primary;
 @btn-primary-margin:             15px 0;
 
-@btn-success-color:              #fff;
+@btn-secondary-color:            @brand-primary;
+@btn-secondary-bg:                 @brand-secondary;
+@btn-secondary-border:             @brand-primary;
+@btn-secondary-margin:             15px 0;
+
+@btn-success-color:              #098b1b;
 @btn-success-bg:                 @brand-success;
-@btn-success-border:             darken(@btn-success-bg, 5%);
+@btn-success-border:             @brand-success;
 
-@btn-info-color:                 #fff;
+@btn-info-color:                 #525252;
 @btn-info-bg:                    @brand-info;
-@btn-info-border:                darken(@btn-info-bg, 5%);
+@btn-info-border:                @brand-info;
 
-@btn-warning-color:              #fff;
+@btn-warning-color:              #d4a815;
 @btn-warning-bg:                 @brand-warning;
-@btn-warning-border:             darken(@btn-warning-bg, 5%);
+@btn-warning-border:             @btn-warning-bg;
 
-@btn-danger-color:               #fff;
+@btn-danger-color:               #b90000;
 @btn-danger-bg:                  @brand-danger;
-@btn-danger-border:              darken(@btn-danger-bg, 5%);
+@btn-danger-border:              @btn-danger-bg;
 
 @btn-link-disabled-color:        @gray-light;
 
@@ -244,14 +249,14 @@
 //** Dropdown link text color.
 @dropdown-link-color:            @gray-dark;
 //** Hover color for dropdown links.
-@dropdown-link-hover-color:      darken(@gray-dark, 5%);
+@dropdown-link-hover-color:      @gray-dark;
 //** Hover background for dropdown links.
-@dropdown-link-hover-bg:         #f5f5f5;
+@dropdown-link-hover-bg:         transparent;
 
 //** Active dropdown menu item text color.
-@dropdown-link-active-color:     @component-active-color;
+@dropdown-link-active-color:     @gray-dark;
 //** Active dropdown menu item background color.
-@dropdown-link-active-bg:        @component-active-bg;
+@dropdown-link-active-bg:        transparent;
 
 //** Disabled dropdown menu item background color.
 @dropdown-link-disabled-color:   @gray-light;
@@ -423,7 +428,7 @@
 
 //=== Shared nav styles
 @nav-link-padding:                          10px 15px;
-@nav-link-hover-bg:                         @gray-lighter;
+@nav-link-hover-bg:                         transparent;
 
 @nav-disabled-link-color:                   @gray-light;
 @nav-disabled-link-hover-color:             @gray-light;
@@ -451,20 +456,20 @@
 //##
 
 @pagination-color:                     @link-color;
-@pagination-bg:                        #fff;
+@pagination-bg:                        transparent;
 @pagination-border:                    #ddd;
 
 @pagination-hover-color:               @link-hover-color;
 @pagination-hover-bg:                  @gray-lighter;
 @pagination-hover-border:              #ddd;
 
-@pagination-active-color:              #fff;
-@pagination-active-bg:                 @brand-primary;
-@pagination-active-border:             @brand-primary;
+@pagination-active-color:              @link-hover-color;
+@pagination-active-bg:                 transparent;
+@pagination-active-border:             transparent;
 
 @pagination-disabled-color:            @gray-light;
-@pagination-disabled-bg:               #fff;
-@pagination-disabled-border:           #ddd;
+@pagination-disabled-bg:               transparent;
+@pagination-disabled-border:           transparent;
 
 
 //== Pager
@@ -624,7 +629,7 @@
 
 @alert-padding:               15px;
 @alert-border-radius:         @border-radius-base;
-@alert-link-font-weight:      bold;
+@alert-link-font-weight:      @font-weight-bold;
 
 @alert-success-bg:            @state-success-bg;
 @alert-success-text:          @state-success-text;
@@ -781,7 +786,7 @@
 //** Badge background color in active nav link
 @badge-active-bg:             #fff;
 
-@badge-font-weight:           bold;
+@badge-font-weight:           @font-weight-bold;
 @badge-line-height:           1;
 @badge-border-radius:         10px;
 
@@ -791,13 +796,13 @@
 //##
 
 @breadcrumb-padding-vertical:   8px;
-@breadcrumb-padding-horizontal: 15px;
+@breadcrumb-padding-horizontal: 0px;
 //** Breadcrumb background color
 @breadcrumb-bg:                 #f5f5f5;
 //** Breadcrumb text color
 @breadcrumb-color:              @gray;
 //** Text color of current page in the breadcrumb
-@breadcrumb-active-color:       @gray-light;
+@breadcrumb-active-color:       @gray-dark;
 //** Textual separator for between breadcrumb elements
 @breadcrumb-separator:          "\f054";
 
@@ -823,7 +828,7 @@
 //
 //##
 
-@close-font-weight:           bold;
+@close-font-weight:           @font-weight-bold;
 @close-color:                 #000;
 @close-text-shadow:           0 1px 0 #fff;
 
@@ -872,6 +877,14 @@
 //footer
 @footer-bg:             @sand;
 
-
-
 //end evo stuff
+
+
+//mixins evo 2.0
+.gray-badge {
+    background-color: transparent;
+    border: 1px solid @gray;
+    color: @text-color;
+    font-weight: normal;
+    border-radius: 2px;
+}

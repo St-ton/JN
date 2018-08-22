@@ -35,6 +35,13 @@
     .form-control-focus(@brand-primary);
 }
 
+.content-wrapper a {
+    text-decoration: underline;
+    &:hover {
+        text-decoration: none;
+    }
+}
+
 //header
 #main-wrapper.fluid {
     #header-branding{
@@ -70,9 +77,40 @@
         border-bottom: 0;
         .nav >li >a {
             color: @link-color;
+            padding-bottom: 20px;
         }
         .navbar-header {
             color: @btn-default-color;
+        }
+    }
+    #login-dropdown a {
+        text-decoration: underline;
+        &:hover,
+        &:focus{
+            text-decoration: none;
+        }
+    }
+}
+
+//nav
+.header-shop-nav {
+    > li {
+        > a {
+            padding-top: 10px;
+            border-bottom: 6px solid transparent;
+        }
+        &.open > a {
+            border-bottom: 6px solid @brand-primary;
+        }
+    }
+
+    .shop-nav-reg {
+        margin: 10px -15px -15px;
+        padding: 15px 35px 18px;
+        background: @sand;
+        &:hover,
+        &:focus {
+            background: @sand;
         }
     }
 }
@@ -119,6 +157,9 @@
     .input-group-addon {
         border-left: none;
         background: transparent;
+        button {
+            color: @text-color;
+        }
     }
 }
 
@@ -159,11 +200,7 @@ aside {
 
     //badges
     .badge {
-        background-color: transparent;
-        border: 1px solid @gray;
-        color: @text-color;
-        font-weight: normal;
-        border-radius: 2px;
+        .gray-badge();
     }
 
 }
@@ -182,7 +219,7 @@ aside {
         color: @color;
         background-color: @background;
         border-color: @border;
-        .box-shadow(0px 4px 8px 2px rgba(155, 155, 155, 0.5));
+        .box-shadow(0px 3px 6px 0px rgba(0, 0, 0, 0.16));
     }
     &:active,
     &.active,
@@ -226,6 +263,14 @@ aside {
             padding: 0 5px;
             color: @breadcrumb-color;
         }
+
+        &.last {
+            color: @breadcrumb-active-color;
+        }
+
+        a {
+            color: @breadcrumb-color;
+        }
     }
 
     > .active {
@@ -238,10 +283,104 @@ aside {
     background-color: @brand-primary;
 }
 
+//productlist
+#result-wrapper .desc .title {
+    margin: @margin-base 0;
+}
+
+#navbar-filter {
+    padding: 0 0 15px;
+}
+.list-pageinfo {
+    margin: 20px 0px;
+    border-top: 1px solid @sand;
+    border-bottom: 1px solid @sand;
+    padding: 15px 0;
+
+    .page-total{
+        padding-left: 0;
+    }
+
+    .page-current {
+        padding-right: 0;
+    }
+    .pagination {
+        margin: 0;
+
+        > li > a {
+            float: none;
+            background: transparent;
+            border: none;
+        }
+
+        > .active > a,
+        > .active > span {
+            &,
+            &:hover,
+            &:focus {
+                font-weight: bold;
+                text-decoration: underline;
+            }
+        }
+    }
+}
+.row.gallery .product-wrapper {
+    border-bottom: none;
+    border-right: none;
+}
+
+#result-options {
+    .filter-collapsible-control a {
+        padding: 5px 0;
+        margin: 0 10px;
+        border-bottom: 6px solid transparent;
+        &[aria-expanded="true"] {
+            border-bottom: 6px solid @brand-primary;
+        }
+    }
+    .form-group {
+        margin-right: 25px;
+        &.open {
+            > a {
+                background: @sand;
+                font-weight: @font-weight-semibold;
+            }
+            .dropdown-menu {
+                padding: 10px 0;
+                a {
+                    padding: 10px 20px;
+                }
+                .filter-item .badge {
+                    .gray-badge();
+                }
+            }
+        }
+    }
+}
+
+.product-cell {
+    h4.title {
+        font-weight: @font-weight-normal;
+        a {
+            text-decoration: underline;
+            &:active,
+            &:hover {
+                text-decoration: none;
+            }
+        }
+    }
+    &.thumbnail {
+        border: none;
+        box-shadow: none;
+    }
+}
+
+
+
 //productdetails
 
 //price
-.price {
+#product-offer .price {
     font-size: @font-size-xl;
     font-weight: bold;
     color: @brand-primary;

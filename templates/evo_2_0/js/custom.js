@@ -8,12 +8,17 @@
 
 //get tabs module parent
 var tabsModule = document.body.querySelector(".megamenu");
+var tabsModule2 = document.body.querySelector("#shop-nav");
+
 //get tab nav
 var tabNavList = document.body.querySelector(".megamenu .nav");
+var tabNavList2 = document.body.querySelector("#shop-nav .header-shop-nav");
 //get all tab nav links
 var tabNavLinks = document.querySelectorAll(".megamenu .nav>li");
+var tabNavLinks2 = document.querySelectorAll("#shop-nav .header-shop-nav>li:not(#search)");
 //get tab nav current link indicator
 var tabNavCurrentLinkindicator = tabNavList.querySelector(".TabNav_Indicator");
+var tabNavCurrentLinkindicator2 = tabNavList2.querySelector(".TabNav_Indicator2");
 
 
 /**
@@ -22,12 +27,16 @@ var tabNavCurrentLinkindicator = tabNavList.querySelector(".TabNav_Indicator");
 function positionIndicator() {
     //get left position of tab nav ul
     var tabNavListLeftPosition = tabNavList.getBoundingClientRect().left;
+    var tabNavListLeftPosition2 = tabNavList2.getBoundingClientRect().left;
     //get tab module parent current data value
     var tabsModuleSectionDataValue = tabsModule.getAttribute("data-active-tab") || "1";
+    var tabsModuleSectionDataValue2 = tabsModule2.getAttribute("data-active-tab") || "1";
     //get nav link span with data value that matches current tab module parent data value
     var tabNavCurrentLinkText = tabNavList.querySelector("[data-tab='" + tabsModuleSectionDataValue + "'] a");
+    var tabNavCurrentLinkText2 = tabNavList2.querySelector("[data-tab='" + tabsModuleSectionDataValue2 + "']");
     //get dimensions of current nav link span
     var tabNavCurrentLinkTextPosition = tabNavCurrentLinkText.getBoundingClientRect();
+    var tabNavCurrentLinkTextPosition2 = tabNavCurrentLinkText2.getBoundingClientRect();
     //set indicator left position via CSS transform
     //current nav link span left position - tab nav ul left position
     //prefix me for live
@@ -36,6 +45,13 @@ function positionIndicator() {
         (tabNavCurrentLinkTextPosition.left - tabNavListLeftPosition +15) +
         "px,0,0) scaleX(" +
         (tabNavCurrentLinkTextPosition.width-30) * 0.01 +
+        ")";
+
+    tabNavCurrentLinkindicator2.style.transform =
+        "translate3d(" +
+        (tabNavCurrentLinkTextPosition2.left - tabNavListLeftPosition2 +15) +
+        "px,0,0) scaleX(" +
+        (tabNavCurrentLinkTextPosition2.width - 30) * 0.01 +
         ")";
 }
 /**
@@ -75,6 +91,23 @@ var tabNavLinkEvent = function() {
     positionIndicator();
 };
 
+var tabNavLinkEvent2 = function() {
+    //get this link data value
+    var thisLink2 = this.getAttribute("data-tab");
+    //get this link href value
+    var thisHref2 = this.getAttribute("href");
+    //get tab panel element with ID that matches this link href value
+    var thisTabPanel = document.querySelector(thisHref2);
+    //set tab module parent data to this link data value
+    tabsModule2.setAttribute("data-active-tab", thisLink2);
+    //fire hide all tab panels function
+    //hideAllTabPanels();
+    //get tab panel element with ID that matches this link href value and set its style to show it
+    //thisTabPanel.style.display = "block";
+    //fire the position indicator function
+    positionIndicator();
+};
+
 /**
  * loop through all nav links and add event
  * need to change to parent element and use e.target maybe
@@ -83,7 +116,10 @@ for (var i = 0; i < tabNavLinks.length; i++) {
     //for each nav link, add click event that fires tab nav link click event function
     tabNavLinks[i].addEventListener("mouseover", tabNavLinkEvent, false);
 }
-
+for (var i = 0; i < tabNavLinks2.length; i++) {
+    //for each nav link, add click event that fires tab nav link click event function
+    tabNavLinks2[i].addEventListener("mouseover", tabNavLinkEvent2, false);
+}
 /**
  * should really position indicator from parent left edge rather than body,
  * to keep indicator in position on resize. meh

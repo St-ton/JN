@@ -122,6 +122,7 @@
     {/if}
 {/if}
 
+{block name='productlist-pageinfo'}
 {if $Suchergebnisse->getProductCount() > 0}
     <div class="row list-pageinfo top10">
         <div class="col-xs-4 page-current">
@@ -132,5 +133,5 @@
         </div>
     </div>
 {/if}
-
 <hr>
+{/block}

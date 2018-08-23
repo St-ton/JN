@@ -130,40 +130,41 @@
                 </button>
             </div>
             <div class="backend-navigation">
-                <ul class="backend-menu">
+                <ul class="backend-menu toplevel">
                     {foreach $oLinkOberGruppe_arr as $oLinkOberGruppe}
                         {assign var='rootEntryName' value=$oLinkOberGruppe->cName|replace:' ':'-'|replace:'&':''|lower}
                         {if $oLinkOberGruppe->oLinkGruppe_arr|@count === 0
                                 && $oLinkOberGruppe->oLink_arr|@count === 1}
-                            <li {if isset($oLinkOberGruppe->class)}class="{$oLinkOberGruppe->class}"{/if}>
+                            <li class="{if isset($oLinkOberGruppe->class)}{$oLinkOberGruppe->class}{/if} single">
                                 <div class="backend-root-label">
                                     <a href="{$oLinkOberGruppe->oLink_arr[0]->cURL}" class="parent">
-                                        <i class="fa fa-2x backend-root-menu-icon-{$rootEntryName}"></i>
-                                        {$oLinkOberGruppe->oLink_arr[0]->cLinkname}
+                                        <i class="fa fa-2x fa-fw backend-root-menu-icon-{$rootEntryName}"></i>
+                                        <span>{$oLinkOberGruppe->oLink_arr[0]->cLinkname}</span>
                                     </a>
                                 </div>
                             </li>
                         {else}
-                            <li class="{if isset($oLinkOberGruppe->class)}{$oLinkOberGruppe->class}{/if} root">
+                            <li {if isset($oLinkOberGruppe->class)}class="{$oLinkOberGruppe->class}"{/if}>
                                 <div class="backend-root-label">
                                     <a href="#" class="parent">
-                                        <i class="fa fa-2x backend-root-menu-icon-{$rootEntryName}"></i>
-                                        {$oLinkOberGruppe->cName}
+                                        <i class="fa fa-2x fa-fw backend-root-menu-icon-{$rootEntryName}"></i>
+                                        <span>{$oLinkOberGruppe->cName}</span>
                                     </a>
                                 </div>
-                                <ul class="backend-menu">
+                                <ul class="backend-menu secondlevel">
                                     {foreach $oLinkOberGruppe->oLinkGruppe_arr as $oLinkGruppe}
                                         {if $oLinkGruppe->oLink_arr|@count > 0}
                                             {assign var='entryName'
                                                 value=$oLinkGruppe->cName|replace:' ':'-'|replace:'&':''|lower}
-                                            <li id="dropdown-header-{$entryName}" class="second">
+                                            <li id="dropdown-header-{$entryName}">
                                                 <a href="#collapse-{$entryName}" data-toggle="collapse"
                                                    class="collapsed">
-                                                    {$oLinkGruppe->cName}
+                                                    <span>{$oLinkGruppe->cName}</span>
+                                                    <i class="fa"></i>
                                                 </a>
-                                                <ul class="collapse backend-menu" id="collapse-{$entryName}">
+                                                <ul class="collapse backend-menu thirdlevel" id="collapse-{$entryName}">
                                                     {foreach $oLinkGruppe->oLink_arr as $oLink}
-                                                        <li class="third {if !$oLink->cRecht|permission}noperm{/if}">
+                                                        <li {if !$oLink->cRecht|permission}class="noperm"{/if}>
                                                             <a href="{$oLink->cURL}">{$oLink->cLinkname}</a>
                                                         </li>
                                                     {/foreach}
@@ -172,8 +173,8 @@
                                         {/if}
                                     {/foreach}
                                     {foreach $oLinkOberGruppe->oLink_arr as $oLink}
-                                        <li class="{if !$oLink->cRecht|permission}noperm{/if}">
-                                            <a href="{$oLink->cURL}">{$oLink->cLinkname}</a>
+                                        <li {if !$oLink->cRecht|permission}class="noperm"{/if}>
+                                            <a href="{$oLink->cURL}" class="collapsed">{$oLink->cLinkname}</a>
                                         </li>
                                     {/foreach}
                                 </ul>

@@ -29,7 +29,7 @@
 @white:                 #f8f8f8;
 
 @brand-primary:         #ffc400; // Marsala
-@brand-secondary:       #ffffff; // Dark Gray
+@brand-secondary:       transparent; // Dark Gray
 @brand-success:         #CDE1D6;
 @brand-info:            #f5f7fa;
 @brand-warning:         #F9F2DC;
@@ -162,9 +162,9 @@
 @btn-primary-margin:             15px 0;
 
 @btn-secondary-color:            @brand-primary;
-@btn-secondary-bg:                 @brand-secondary;
-@btn-secondary-border:             @brand-primary;
-@btn-secondary-margin:             15px 0;
+@btn-secondary-bg:               @brand-secondary;
+@btn-secondary-border:           @brand-primary;
+@btn-secondary-margin:           15px 0;
 
 @btn-success-color:              #098b1b;
 @btn-success-bg:                 @brand-success;
@@ -527,10 +527,10 @@
 //** Tooltip max width
 @tooltip-max-width:           200px;
 //** Tooltip text color
-@tooltip-color:               #fff;
+@tooltip-color:               @gray;
 //** Tooltip background color
-@tooltip-bg:                  #000;
-@tooltip-opacity:             .9;
+@tooltip-bg:                  @sand;
+@tooltip-opacity:             1;
 
 //** Tooltip arrow width
 @tooltip-arrow-width:         5px;
@@ -768,8 +768,8 @@
 //
 //##
 
-@well-bg:                     @gray-base;
-@well-border:                 darken(@well-bg, 7%);
+@well-bg:                     @sand;
+@well-border:                 @gray;
 
 
 //== Badges
@@ -875,7 +875,7 @@
 @hr-border:                   @gray-base;
 
 //footer
-@footer-bg:             @sand;
+@footer-bg:             @white;
 
 //end evo stuff
 

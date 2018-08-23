@@ -4,11 +4,51 @@
     {if !$bExclusive}
         <div class="clearfix"></div>
         <footer id="footer"{if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid'} class="container-block"{/if}>
-            <div class="container">
+            <div class="">
                 <div class="hidden-print container{if $Einstellungen.template.theme.pagelayout === 'full-width'}-fluid{/if}">
                     {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'fluid'}
                     <div class="container-block clearfix">
                         {/if}
+                        {block name='footer-additional'}
+                            {if $Einstellungen.template.footer.socialmedia_footer === 'Y' || $Einstellungen.template.footer.newsletter_footer === 'Y'}
+                                <div class="row footer-additional">
+                                {if $Einstellungen.template.footer.newsletter_footer === 'Y'}
+                                    <div class="{block name='footer-newsletter-class'}col-xs-12 text-center newsletter-footer{/block}">
+                                        <div class="row">
+                                            {block name='footer-newsletter'}
+                                                <div class="col-xs-12 col-sm-4">
+                                                    <h5>{lang key='newsletter' section='newsletter'} {lang key='newsletterSendSubscribe' section='newsletter'}
+                                                    </h5>
+                                                    <p class="info small">
+                                                        {lang key='unsubscribeAnytime' section='newsletter'}
+                                                    </p>
+                                                </div>
+                                                <form method="post" action="{get_static_route id='newsletter.php'}" class="form col-xs-12 col-sm-6">
+                                                    <fieldset>
+                                                        {$jtl_token}
+                                                        <input type="hidden" name="abonnieren" value="2"/>
+                                                        <div class="form-group">
+                                                            <label class="control-label sr-only" for="newsletter_email">{lang key='emailadress'}</label>
+                                                            <div class="input-group">
+                                                                <input type="email" size="20" name="cEmail" id="newsletter_email" class="form-control" placeholder="{lang key='emailadress'}">
+                                                                <span class="input-group-btn">
+                                                        <button type="submit" class="btn btn-secondary submit">
+                                                            <span>{lang key='newsletterSendSubscribe' section='newsletter'}</span>
+                                                        </button>
+                                                    </span>
+                                                            </div>
+                                                        </div>
+                                                    </fieldset>
+                                                </form>
+                                            {/block}
+                                        </div>
+                                    </div>
+                                {/if}
+                                </div>{* /row footer-additional *}
+                                <hr>
+                            {/if}
+                        {/block}{* /footer-additional *}
+
                         {block name='footer-boxes'}
                             {getBoxesByPosition position='bottom' assign='footerBoxes'}
                             {if isset($footerBoxes) && count($footerBoxes) > 0}
@@ -38,83 +78,46 @@
                             {*{/if}*}
                         {/block}
 
-                        {block name='footer-additional'}
-                            {if $Einstellungen.template.footer.socialmedia_footer === 'Y' || $Einstellungen.template.footer.newsletter_footer === 'Y'}
-                                <div class="row footer-additional">
-                                {if $Einstellungen.template.footer.newsletter_footer === 'Y'}
-                                    <div class="{block name='footer-newsletter-class'}col-xs-12 col-md-7 newsletter-footer{/block}">
-                                        <div class="row">
-                                            {block name='footer-newsletter'}
-                                                <div class="col-xs-12 col-sm-4">
-                                                    <h5>{lang key='newsletter' section='newsletter'} {lang key='newsletterSendSubscribe' section='newsletter'}
-                                                    </h5>
-                                                    <p class="info small">
-                                                        {lang key='unsubscribeAnytime' section='newsletter'}
-                                                    </p>
-                                                </div>
-                                                <form method="post" action="{get_static_route id='newsletter.php'}" class="form col-xs-12 col-sm-6">
-                                                    <fieldset>
-                                                        {$jtl_token}
-                                                        <input type="hidden" name="abonnieren" value="2"/>
-                                                        <div class="form-group">
-                                                            <label class="control-label sr-only" for="newsletter_email">{lang key='emailadress'}</label>
-                                                            <div class="input-group">
-                                                                <input type="email" size="20" name="cEmail" id="newsletter_email" class="form-control" placeholder="{lang key='emailadress'}">
-                                                                <span class="input-group-btn">
-                                                        <button type="submit" class="btn btn-primary submit">
-                                                            <span>{lang key='newsletterSendSubscribe' section='newsletter'}</span>
-                                                        </button>
-                                                    </span>
-                                                            </div>
-                                                        </div>
-                                                    </fieldset>
-                                                </form>
-                                            {/block}
-                                        </div>
-                                    </div>
-                                {/if}
-
-                                {if $Einstellungen.template.footer.socialmedia_footer === 'Y'}
-                                    <div class="{block name='footer-socialmedia-class'}col-xs-12 col-md-5 pull-right{/block}">
-                                        <div class="footer-additional-wrapper pull-right">
-                                            {block name='footer-socialmedia'}
-                                                {if !empty($Einstellungen.template.footer.facebook)}
-                                                    <a href="{if $Einstellungen.template.footer.facebook|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.facebook}" class="btn-social btn-facebook" title="Facebook" target="_blank" rel="noopener"><i class="fa fa-facebook-square"></i></a>
-                                                {/if}
-                                                {if !empty($Einstellungen.template.footer.twitter)}
-                                                    <a href="{if $Einstellungen.template.footer.twitter|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.twitter}" class="btn-social btn-twitter" title="Twitter" target="_blank" rel="noopener"><i class="fa fa-twitter-square"></i></a>
-                                                {/if}
-                                                {if !empty($Einstellungen.template.footer.googleplus)}
-                                                    <a href="{if $Einstellungen.template.footer.googleplus|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.googleplus}" class="btn-social btn-googleplus" title="Google+" target="_blank" rel="noopener"><i class="fa fa-google-plus-square"></i></a>
-                                                {/if}
-                                                {if !empty($Einstellungen.template.footer.youtube)}
-                                                    <a href="{if $Einstellungen.template.footer.youtube|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.youtube}" class="btn-social btn-youtube" title="YouTube" target="_blank" rel="noopener"><i class="fa fa-youtube-square"></i></a>
-                                                {/if}
-                                                {if !empty($Einstellungen.template.footer.vimeo)}
-                                                    <a href="{if $Einstellungen.template.footer.vimeo|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.vimeo}" class="btn-social btn-vimeo" title="Vimeo" target="_blank" rel="noopener"><i class="fa fa-vimeo-square"></i></a>
-                                                {/if}
-                                                {if !empty($Einstellungen.template.footer.pinterest)}
-                                                    <a href="{if $Einstellungen.template.footer.pinterest|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.pinterest}" class="btn-social btn-pinterest" title="PInterest" target="_blank" rel="noopener"><i class="fa fa-pinterest-square"></i></a>
-                                                {/if}
-                                                {if !empty($Einstellungen.template.footer.instagram)}
-                                                    <a href="{if $Einstellungen.template.footer.instagram|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.instagram}" class="btn-social btn-instagram" title="Instagram" target="_blank" rel="noopener"><i class="fa fa-instagram"></i></a>
-                                                {/if}
-                                                {if !empty($Einstellungen.template.footer.skype)}
-                                                    <a href="{if $Einstellungen.template.footer.skype|strpos:'skype:' !== 0}skype:{$Einstellungen.template.footer.skype}?add{else}{$Einstellungen.template.footer.skype}{/if}" class="btn-social btn-skype" title="Skype" target="_blank" rel="noopener"><i class="fa fa-skype"></i></a>
-                                                {/if}
-                                                {if !empty($Einstellungen.template.footer.xing)}
-                                                    <a href="{if $Einstellungen.template.footer.xing|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.xing}" class="btn-social btn-xing" title="Xing" target="_blank" rel="noopener"><i class="fa fa-xing-square"></i></a>
-                                                {/if}
-                                                {if !empty($Einstellungen.template.footer.linkedin)}
-                                                    <a href="{if $Einstellungen.template.footer.linkedin|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.linkedin}" class="btn-social btn-linkedin" title="Linkedin" target="_blank" rel="noopener"><i class="fa fa-linkedin-square"></i></a>
-                                                {/if}
-                                            {/block}
-                                        </div>
-                                    </div>
-                                {/if}
-                                </div>{* /row footer-additional *}
-                            {/if}
-                        {/block}{* /footer-additional *}
+                        <div class="row footer-socialmedia">
+                        {if $Einstellungen.template.footer.socialmedia_footer === 'Y'}
+                            <div class="{block name='footer-socialmedia-class'}col-xs-12{/block}">
+                                <div class="footer-additional-wrapper">
+                                    {block name='footer-socialmedia'}
+                                        {if !empty($Einstellungen.template.footer.facebook)}
+                                            <a href="{if $Einstellungen.template.footer.facebook|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.facebook}" class="btn-social btn-facebook" title="Facebook" target="_blank" rel="noopener"><i class="fa fa-facebook-square"></i></a>
+                                        {/if}
+                                        {if !empty($Einstellungen.template.footer.twitter)}
+                                            <a href="{if $Einstellungen.template.footer.twitter|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.twitter}" class="btn-social btn-twitter" title="Twitter" target="_blank" rel="noopener"><i class="fa fa-twitter-square"></i></a>
+                                        {/if}
+                                        {if !empty($Einstellungen.template.footer.googleplus)}
+                                            <a href="{if $Einstellungen.template.footer.googleplus|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.googleplus}" class="btn-social btn-googleplus" title="Google+" target="_blank" rel="noopener"><i class="fa fa-google-plus-square"></i></a>
+                                        {/if}
+                                        {if !empty($Einstellungen.template.footer.youtube)}
+                                            <a href="{if $Einstellungen.template.footer.youtube|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.youtube}" class="btn-social btn-youtube" title="YouTube" target="_blank" rel="noopener"><i class="fa fa-youtube-square"></i></a>
+                                        {/if}
+                                        {if !empty($Einstellungen.template.footer.vimeo)}
+                                            <a href="{if $Einstellungen.template.footer.vimeo|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.vimeo}" class="btn-social btn-vimeo" title="Vimeo" target="_blank" rel="noopener"><i class="fa fa-vimeo-square"></i></a>
+                                        {/if}
+                                        {if !empty($Einstellungen.template.footer.pinterest)}
+                                            <a href="{if $Einstellungen.template.footer.pinterest|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.pinterest}" class="btn-social btn-pinterest" title="PInterest" target="_blank" rel="noopener"><i class="fa fa-pinterest-square"></i></a>
+                                        {/if}
+                                        {if !empty($Einstellungen.template.footer.instagram)}
+                                            <a href="{if $Einstellungen.template.footer.instagram|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.instagram}" class="btn-social btn-instagram" title="Instagram" target="_blank" rel="noopener"><i class="fa fa-instagram"></i></a>
+                                        {/if}
+                                        {if !empty($Einstellungen.template.footer.skype)}
+                                            <a href="{if $Einstellungen.template.footer.skype|strpos:'skype:' !== 0}skype:{$Einstellungen.template.footer.skype}?add{else}{$Einstellungen.template.footer.skype}{/if}" class="btn-social btn-skype" title="Skype" target="_blank" rel="noopener"><i class="fa fa-skype"></i></a>
+                                        {/if}
+                                        {if !empty($Einstellungen.template.footer.xing)}
+                                            <a href="{if $Einstellungen.template.footer.xing|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.xing}" class="btn-social btn-xing" title="Xing" target="_blank" rel="noopener"><i class="fa fa-xing-square"></i></a>
+                                        {/if}
+                                        {if !empty($Einstellungen.template.footer.linkedin)}
+                                            <a href="{if $Einstellungen.template.footer.linkedin|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.linkedin}" class="btn-social btn-linkedin" title="Linkedin" target="_blank" rel="noopener"><i class="fa fa-linkedin-square"></i></a>
+                                        {/if}
+                                    {/block}
+                                </div>
+                            </div>
+                        {/if}
+                        </div>
                         <div class="row">
                             {block name='footer-language'}
                                 {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
@@ -196,7 +199,7 @@
                             {/if}
                             <ul class="row list-unstyled">
                                 <li class="col-xs-12 col-md-3">
-                                    {if !empty($meta_copyright)}<span itemprop="copyrightHolder">&copy; {$meta_copyright}</span>{/if}
+                                    <i>{if !empty($meta_copyright)}<span itemprop="copyrightHolder">&copy; {$meta_copyright}</span>{/if}</i>
                                     {if $Einstellungen.global.global_zaehler_anzeigen === 'Y'}{lang key='counter' section='global'}: {$Besucherzaehler}{/if}
                                 </li>
                                 {if !empty($Einstellungen.global.global_fusszeilehinweis)}
@@ -204,11 +207,9 @@
                                         {$Einstellungen.global.global_fusszeilehinweis}
                                     </li>
                                 {/if}
-                                {if !$isBrandFree}
-                                    <li class="col-xs-12 col-md-3 text-right" id="system-credits">
-                                        Powered by <a href="https://jtl-url.de/jtlshop" title="JTL-Shop" target="_blank" rel="noopener nofollow">JTL-Shop</a>
-                                    </li>
-                                {/if}
+                                <li class="col-xs-12 col-md-3 text-right pull-right" id="system-credits">
+                                    <img class="footer-logo" src="{$imageBaseURL}gfx/jtl_white.png"/> Onlinehandel leicht gemacht
+                                </li>
                             </ul>
                             {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'fluid'}
                         </div>

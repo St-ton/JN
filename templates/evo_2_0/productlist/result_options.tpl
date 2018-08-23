@@ -116,37 +116,35 @@
         {/if}
         {if $NaviFilter->getFilterCount() > 0}
             <div class="clearfix top10"></div>
-            <div class="active-filters panel panel-default">
-                <div class="panel-body">
-                    {foreach $NaviFilter->getActiveFilters() as $activeFilter}
-                        {assign var=activeFilterValue value=$activeFilter->getValue()}
-                        {assign var=activeValues value=$activeFilter->getActiveValues()}
-                        {if $activeFilterValue !== null}
-                            {if $activeValues|is_array}
-                                {foreach $activeValues as $filterOption}
-                                    {strip}
-                                        <a href="{$activeFilter->getUnsetFilterURL($filterOption->getValue())}" rel="nofollow" title="Filter {lang key='delete'}" class="label label-info filter-type-{$activeFilter->getNiceName()}">
-                                            {$filterOption->getFrontendName()}&nbsp;<span class="fa fa-trash-o"></span>
-                                        </a>
-                                    {/strip}
-                                {/foreach}
-                            {else}
+            <div class="active-filters">
+                {foreach $NaviFilter->getActiveFilters() as $activeFilter}
+                    {assign var=activeFilterValue value=$activeFilter->getValue()}
+                    {assign var=activeValues value=$activeFilter->getActiveValues()}
+                    {if $activeFilterValue !== null}
+                        {if $activeValues|is_array}
+                            {foreach $activeValues as $filterOption}
                                 {strip}
-                                    <a href="{$activeFilter->getUnsetFilterURL($activeFilter->getValue())}" rel="nofollow" title="Filter {lang key='delete'}" class="label label-info filter-type-{$activeFilter->getNiceName()}">
-                                        {$activeValues->getFrontendName()}&nbsp;<span class="fa fa-trash-o"></span>
+                                    <a href="{$activeFilter->getUnsetFilterURL($filterOption->getValue())}" rel="nofollow" title="Filter {lang key='delete'}" class="label label-info filter-type-{$activeFilter->getNiceName()}">
+                                        {$filterOption->getFrontendName()}&nbsp;<span class="fa fa-trash-o"></span>
                                     </a>
                                 {/strip}
-                            {/if}
+                            {/foreach}
+                        {else}
+                            {strip}
+                                <a href="{$activeFilter->getUnsetFilterURL($activeFilter->getValue())}" rel="nofollow" title="Filter {lang key='delete'}" class="label label-info filter-type-{$activeFilter->getNiceName()}">
+                                    {$activeValues->getFrontendName()}&nbsp;<span class="fa fa-trash-o"></span>
+                                </a>
+                            {/strip}
                         {/if}
-                    {/foreach}
-                    {if $NaviFilter->getURL()->getUnsetAll() !== null}
-                        {strip}
-                            <a href="{$NaviFilter->getURL()->getUnsetAll()}" title="{lang key='removeFilters'}" class="label label-warning">
-                                {lang key='removeFilters'}
-                            </a>
-                        {/strip}
                     {/if}
-                </div>
+                {/foreach}
+                {if $NaviFilter->getURL()->getUnsetAll() !== null}
+                    {strip}
+                        <a href="{$NaviFilter->getURL()->getUnsetAll()}" title="{lang key='removeFilters'}" class="label label-warning filter-remove-all">
+                            {lang key='removeFilters'}
+                        </a>
+                    {/strip}
+                {/if}
             </div>
         {/if}
     {/if}

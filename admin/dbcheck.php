@@ -52,7 +52,9 @@ if (strlen($cFehler) === 0) {
 
 if (count($cDBError_arr) > 0) {
     $cEngineError = array_filter($cDBError_arr, function ($item) {
-        return strpos($item, 'keine InnoDB-Tabelle') !== false;
+        return strpos($item, 'keine InnoDB-Tabelle') !== false
+            || strpos($item, 'falsche Kollation') !== false
+            || strpos($item, 'Datentyp text in Spalte') !== false;
     });
     if (count($cEngineError) > 5) {
         $engineUpdate    = determineEngineUpdate($cDBStruct_arr);

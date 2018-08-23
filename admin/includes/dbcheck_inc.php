@@ -56,8 +56,9 @@ function getDBStruct(bool $extended = false)
             $cTable = $oData->TABLE_NAME;
 
             if ($extended) {
-                $cDBStruct_arr[$cTable]          = $oData;
-                $cDBStruct_arr[$cTable]->Columns = [];
+                $cDBStruct_arr[$cTable]            = $oData;
+                $cDBStruct_arr[$cTable]->Columns   = [];
+                $cDBStruct_arr[$cTable]->Migration = DBMigrationHelper::MIGRATE_NONE;
 
                 if (version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
                     $cDBStruct_arr[$cTable]->Locked = strpos($oData->TABLE_COMMENT, ':Migrating') !== false ? 1 : 0;
@@ -88,6 +89,9 @@ function getDBStruct(bool $extended = false)
                         $cDBStruct_arr[$cTable][] = $oCol->COLUMN_NAME;
                     }
                 }
+            }
+            if ($extended) {
+                $cDBStruct_arr[$cTable]->Migration = DBMigrationHelper::isTableNeedMigration($cTable);
             }
         }
     }
@@ -126,16 +130,15 @@ function compareDBStruct(array $cDBFileStruct_arr, array $cDBStruct_arr)
             $cDBError_arr[$cTable] = 'Tabelle nicht vorhanden';
             continue;
         }
-        if (isset($cDBStruct_arr[$cTable]->ENGINE) && strcasecmp($cDBStruct_arr[$cTable]->ENGINE, 'InnoDB') !== 0) {
+        if (($cDBStruct_arr[$cTable]->Migration & DBMigrationHelper::MIGRATE_INNODB) === DBMigrationHelper::MIGRATE_INNODB) {
             $cDBError_arr[$cTable] = "Tabelle $cTable ist keine InnoDB-Tabelle";
             continue;
         }
-        if (isset($cDBStruct_arr[$cTable]->TABLE_COLLATION)
-            && strpos($cDBStruct_arr[$cTable]->TABLE_COLLATION, 'utf8') !== 0
-        ) {
+        if (($cDBStruct_arr[$cTable]->Migration & DBMigrationHelper::MIGRATE_UTF8) === DBMigrationHelper::MIGRATE_UTF8) {
             $cDBError_arr[$cTable] = "Tabelle $cTable hat die falsche Kollation";
             continue;
         }
+
         foreach ($cColumn_arr as $cColumn) {
             if (!in_array($cColumn, isset($cDBStruct_arr[$cTable]->Columns)
                 ? array_keys($cDBStruct_arr[$cTable]->Columns)
@@ -144,11 +147,15 @@ function compareDBStruct(array $cDBFileStruct_arr, array $cDBStruct_arr)
                 $cDBError_arr[$cTable] = "Spalte $cColumn in $cTable nicht vorhanden";
                 break;
             }
-            if (isset($cDBStruct_arr[$cTable]->Columns)
-                && $cDBStruct_arr[$cTable]->Columns[$cColumn]->COLLATION_NAME !== null
-                && $cDBStruct_arr[$cTable]->Columns[$cColumn]->COLLATION_NAME !== $cDBStruct_arr[$cTable]->TABLE_COLLATION) {
+            if (isset($cDBStruct_arr[$cTable]->Columns)) {
+                if (($cDBStruct_arr[$cTable]->Migration & DBMigrationHelper::MIGRATE_C_UTF8) === DBMigrationHelper::MIGRATE_C_UTF8) {
                     $cDBError_arr[$cTable] = "Inkonsistente Kollation in Spalte $cColumn";
                     break;
+                }
+                if (($cDBStruct_arr[$cTable]->Migration & DBMigrationHelper::MIGRATE_TEXT) === DBMigrationHelper::MIGRATE_TEXT) {
+                    $cDBError_arr[$cTable] = "Datentyp text in Spalte $cColumn";
+                    break;
+                }
             }
         }
     }
@@ -200,7 +207,7 @@ function determineEngineUpdate(array $cDBStruct_arr)
     $result->estimated  = [];
 
     foreach ($cDBStruct_arr as $cTable => $oMeta) {
-        if (isset($cDBStruct_arr[$cTable]->ENGINE) && strcasecmp($cDBStruct_arr[$cTable]->ENGINE, 'InnoDB') !== 0) {
+        if (isset($cDBStruct_arr[$cTable]->Migration) && $cDBStruct_arr[$cTable]->Migration !== DBMigrationHelper::MIGRATE_NONE) {
             $result->tableCount++;
             $result->dataSize += $cDBStruct_arr[$cTable]->DATA_SIZE;
         }
@@ -243,6 +250,7 @@ function doEngineUpdateScript(string $fileName, array $shopTables)
     $oTable_arr = DBMigrationHelper::getTablesNeedMigration();
     foreach ($oTable_arr as $oTable) {
         $fulltextSQL = [];
+        $migration   = DBMigrationHelper::isTableNeedMigration($oTable);
 
         if (!in_array($oTable->TABLE_NAME, $shopTables, true)) {
             continue;
@@ -253,32 +261,41 @@ function doEngineUpdateScript(string $fileName, array $shopTables)
             $fulltextIndizes = DBMigrationHelper::getFulltextIndizes($oTable->TABLE_NAME);
 
             if ($fulltextIndizes) {
+                $result .= "$nl--$nl";
+                $result .= "-- remove fulltext indizes because there is no support for innoDB on MySQL < 5.6 $nl";
                 foreach ($fulltextIndizes as $fulltextIndex) {
                     $fulltextSQL[] = "ALTER TABLE `{$oTable->TABLE_NAME}` DROP KEY `{$fulltextIndex->INDEX_NAME}`";
                 }
             }
         }
 
-        $result .= "$nl--$nl";
-
-        if ($oTable->ENGINE !== 'InnoDB' && $oTable->TABLE_COLLATION !== 'utf8_unicode_ci') {
-            $result .= "-- update engine and collation for {$oTable->TABLE_NAME}$nl";
-        } elseif ($oTable->ENGINE !== 'InnoDB') {
-            $result .= "-- update engine for {$oTable->TABLE_NAME}$nl";
+        if (($migration & DBMigrationHelper::MIGRATE_TABLE) !== DBMigrationHelper::MIGRATE_NONE) {
+            $result .= "$nl--$nl";
+            if (($migration & DBMigrationHelper::MIGRATE_TABLE) === DBMigrationHelper::MIGRATE_TABLE) {
+                $result .= "-- migrate engine and collation for {$oTable->TABLE_NAME}$nl";
+            } elseif (($migration & DBMigrationHelper::MIGRATE_INNODB) === DBMigrationHelper::MIGRATE_INNODB) {
+                $result .= "-- migrate engine for {$oTable->TABLE_NAME}$nl";
+            } elseif (($migration & DBMigrationHelper::MIGRATE_UTF8) === DBMigrationHelper::MIGRATE_UTF8) {
+                $result .= "-- migrate collation for {$oTable->TABLE_NAME}$nl";
+            }
         } else {
-            $result .= "-- update collation for {$oTable->TABLE_NAME}$nl";
+            $result .= "$nl";
         }
-        $result .= "--$nl";
 
         if (count($fulltextSQL) > 0) {
             $result .= implode(";$nl", $fulltextSQL) . ";$nl";
         }
-        $result .= DBMigrationHelper::sqlMoveToInnoDB($oTable) . ";$nl";
+
+        $sql = DBMigrationHelper::sqlMoveToInnoDB($oTable);
+        if (!empty($sql)) {
+            $result .= "--$nl";
+            $result .= "$sql;$nl";
+        }
 
         $sql = DBMigrationHelper::sqlConvertUTF8($oTable, $nl);
         if (!empty($sql)) {
             $result .= "--$nl";
-            $result .= "-- update character set and collation for columns in {$oTable->TABLE_NAME}$nl";
+            $result .= "-- migrate collation and / or datatype for columns in {$oTable->TABLE_NAME}$nl";
             $result .= "--$nl";
             $result .= "$sql;$nl";
         }
@@ -333,9 +350,10 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
         case 'migrate':
             if (!empty($table) && $step === 1) {
                 // Migration Step 1...
-                $oTable = DBMigrationHelper::getTable($table);
+                $oTable    = DBMigrationHelper::getTable($table);
+                $migration = DBMigrationHelper::isTableNeedMigration($oTable);
                 if (is_object($oTable)
-                    && DBMigrationHelper::isTableNeedMigration($oTable)
+                    && $migration !== DBMigrationHelper::MIGRATE_NONE
                     && !in_array($oTable->TABLE_NAME, $exclude, true)
                 ) {
                     if (!DBMigrationHelper::isTableInUse($table)) {

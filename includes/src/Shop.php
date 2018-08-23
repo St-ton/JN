@@ -620,7 +620,11 @@ final class Shop
      */
     public static function dbg($var, bool $die = false, $beforeString = null, int $backtrace = 0)
     {
-        $nl = PHP_SAPI === 'cli' ? PHP_EOL : '<br>';
+        $nl     = PHP_SAPI === 'cli' ? PHP_EOL : '<br>';
+        $trace  = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, $backtrace);
+        $callee = \Functional\first($trace);
+        $info   = pathinfo($callee['file']);
+        echo $info['basename'] . ':' . $callee['line'] . ' ';
         if ($beforeString !== null) {
             echo $beforeString . $nl;
         }
@@ -630,7 +634,7 @@ final class Shop
         var_dump($var);
         if ($backtrace > 0) {
             echo $nl . 'Backtrace:' . $nl;
-            var_dump(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, $backtrace));
+            var_dump(\Functional\tail($trace));
         }
         if (PHP_SAPI !== 'cli') {
             echo '</pre>';

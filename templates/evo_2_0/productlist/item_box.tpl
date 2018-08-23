@@ -25,7 +25,8 @@
 
             {if $Einstellungen.template.productlist.quickview_productlist === 'Y' && !$Artikel->bHasKonfig}
                 <span class="quickview badge hidden-xs" data-src="{$Artikel->cURLFull}" data-target="buy_form_{$Artikel->kArtikel}" data-toggle="tooltip" data-placement="top" title="{lang key='downloadPreview' section='productDownloads'}">
-                <img class="svg" src="{$imageBaseURL}gfx/quickview.svg" alt="{$alt}" />
+                    <img class="svg" src="{$imageBaseURL}gfx/quickview.svg" alt="{$alt}" />
+                </span>
             </span>
             {/if}
         </a>
@@ -94,7 +95,7 @@
                     </div>
                 {/if}
                 {block name='productlist-add-basket'}
-                    {if ($Artikel->inWarenkorbLegbar === 1 || ($Artikel->nErscheinendesProdukt === 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y'))
+                    {*{if ($Artikel->inWarenkorbLegbar === 1 || ($Artikel->nErscheinendesProdukt === 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y'))
                     && (($Artikel->nIstVater === 0 && $Artikel->Variationen|@count === 0) || $hasOnlyListableVariations === 1) && !$Artikel->bHasKonfig}
                         <div class="quantity-wrapper top7">
                             {if $Artikel->nIstVater && $Artikel->kVaterArtikel == 0}
@@ -118,7 +119,7 @@
                             <a class="btn btn-default btn-md btn-block" role="button"
                                href="{$Artikel->cURLFull}">{lang key='details'}</a>
                         </div>
-                    {/if}
+                    {/if}*}
                 {/block}
 
                 {if $Artikel->kArtikelVariKombi > 0}

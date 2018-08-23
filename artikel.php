@@ -53,18 +53,6 @@ if (isset($_POST['a'])
     Shop::$kArtikel = (int)$_POST['aBundle'];
 }
 $AktuellerArtikel = (new Artikel())->fuelleArtikel(Shop::$kArtikel, Artikel::getDetailOptions());
-if ($AktuellerArtikel !== null && $AktuellerArtikel->nIstVater === 1) {
-    $_SESSION['oVarkombiAuswahl']                               = new stdClass();
-    $_SESSION['oVarkombiAuswahl']->kGesetzteEigeschaftWert_arr  = [];
-    $_SESSION['oVarkombiAuswahl']->nVariationOhneFreifeldAnzahl = $AktuellerArtikel->nVariationOhneFreifeldAnzahl;
-    $_SESSION['oVarkombiAuswahl']->oKombiVater_arr              = ArtikelHelper::getPossibleVariationCombinations(
-        $AktuellerArtikel->kArtikel,
-        0,
-        true
-    );
-    $smarty->assign('oKombiVater_arr', $_SESSION['oVarkombiAuswahl']->oKombiVater_arr);
-}
-
 // Warenkorbmatrix Anzeigen auf Artikel Attribut pruefen und falls vorhanden setzen
 if (isset($AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigen'])
     && strlen($AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigen']) > 0

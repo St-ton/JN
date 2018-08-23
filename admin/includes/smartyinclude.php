@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-$smarty             = JTLSmarty::getInstance(false, true);
+$smarty             = \Smarty\JTLSmarty::getInstance(false, true);
 $templateDir        = $smarty->getTemplateDir($smarty->context);
 $template           = AdminTemplate::getInstance();
 $config             = Shop::getSettings([CONF_GLOBAL]);

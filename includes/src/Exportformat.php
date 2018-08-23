@@ -682,7 +682,7 @@ class Exportformat
      */
     private function initSmarty(): self
     {
-        $this->smarty = (new JTLSmarty(true, false, false, 'export'))
+        $this->smarty = (new \Smarty\JTLSmarty(true, false, false, 'export'))
             ->setCaching(0)
             ->setTemplateDir(PFAD_TEMPLATES)
             ->setCompileDir(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR)

@@ -243,29 +243,28 @@ class Vergleichsliste
      */
     public static function setComparison(Vergleichsliste $compareList)
     {
-        if (isset($compareList->oArtikel_arr)
-            && is_array($compareList->oArtikel_arr)
-            && count($compareList->oArtikel_arr) > 0
-        ) {
-            $oVergleiche = Shop::Container()->getDB()->queryPrepared(
-                'SELECT count(kVergleichsliste) AS nVergleiche
-                    FROM tvergleichsliste
-                    WHERE cIP = :ip
-                        AND dDate > DATE_SUB(now(),INTERVAL 1 DAY)',
-                ['ip' => RequestHelper::getIP()],
-                \DB\ReturnType::SINGLE_OBJECT
-            );
+        if (count($compareList->oArtikel_arr) === 0) {
+            return;
+        }
+        $oVergleiche = Shop::Container()->getDB()->queryPrepared(
+            'SELECT count(kVergleichsliste) AS nVergleiche
+                FROM tvergleichsliste
+                WHERE cIP = :ip
+                    AND dDate > DATE_SUB(now(),INTERVAL 1 DAY)',
+            ['ip' => RequestHelper::getIP()],
+            \DB\ReturnType::SINGLE_OBJECT
+        );
 
-            if ($oVergleiche->nVergleiche < 3) {
-                $compareListTable        = new stdClass();
-                $compareListTable->cIP   = RequestHelper::getIP();
-                $compareListTable->dDate = date('Y-m-d H:i:s');
-                $kVergleichsliste = Shop::Container()->getDB()->insert('tvergleichsliste', $compareListTable);
-                foreach ($compareList->oArtikel_arr as $oArtikel) {
-                    $compareListPosTable                   = new stdClass();
-                    $compareListPosTable->kVergleichsliste = $kVergleichsliste;
-                    $compareListPosTable->kArtikel         = $oArtikel->kArtikel;
-                    $compareListPosTable->cArtikelName     = $oArtikel->cName;
+        if ($oVergleiche->nVergleiche < 3) {
+            $compareListTable        = new stdClass();
+            $compareListTable->cIP   = RequestHelper::getIP();
+            $compareListTable->dDate = date('Y-m-d H:i:s');
+            $kVergleichsliste = Shop::Container()->getDB()->insert('tvergleichsliste', $compareListTable);
+            foreach ($compareList->oArtikel_arr as $oArtikel) {
+                $compareListPosTable                   = new stdClass();
+                $compareListPosTable->kVergleichsliste = $kVergleichsliste;
+                $compareListPosTable->kArtikel         = $oArtikel->kArtikel;
+                $compareListPosTable->cArtikelName     = $oArtikel->cName;
 
                 Shop::Container()->getDB()->insert('tvergleichslistepos', $compareListPosTable);
             }

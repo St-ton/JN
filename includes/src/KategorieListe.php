@@ -105,8 +105,11 @@ class KategorieListe
             if (isset($conf['navigationsfilter']['unterkategorien_lvl2_anzeigen'])
                 && $conf['navigationsfilter']['unterkategorien_lvl2_anzeigen'] === 'Y'
             ) {
-                $kategorie->Unterkategorien = $this->holUnterkategorien($kategorie->kKategorie, $kKundengruppe,
-                    $kSprache);
+                $kategorie->Unterkategorien = $this->holUnterkategorien(
+                    $kategorie->kKategorie,
+                    $kKundengruppe,
+                    $kSprache
+                );
             }
             $this->elemente[] = $kategorie;
         }

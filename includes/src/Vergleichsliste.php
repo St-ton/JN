@@ -265,6 +265,7 @@ class Vergleichsliste
                     $compareListPosTable                   = new stdClass();
                     $compareListPosTable->kVergleichsliste = $kVergleichsliste;
                     $compareListPosTable->kArtikel         = $oArtikel->kArtikel;
+                    $compareListPosTable->cArtikelName     = $oArtikel->cName;
 
                 Shop::Container()->getDB()->insert('tvergleichslistepos', $compareListPosTable);
             }

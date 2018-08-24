@@ -775,46 +775,58 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
         $nPossibleVariations = $oArtikel->getVariationsBySelection($kGesetzteEigeschaftWert_arr, false);
         $checkStockInfo      = count($kGesetzteEigeschaftWert_arr) > 0 && (count($kGesetzteEigeschaftWert_arr) === count($nPossibleVariations) - 1);
         $stockInfo           = (object)[
-            'stock' => true,
-            'text'  => '',
+            'stock'  => true,
+            'status' => 2,
+            'text'   => '',
         ];
 
         foreach ($oArtikel->Variationen as $variation) {
-            foreach ($variation->Werte as $value) {
-                $stockInfo->stock = true;
-                $stockInfo->text  =  '';
+            if (in_array($variation->cTyp, ['FREITEXT', 'PFLICHTFREITEXT'])) {
+                $objResponse->jsfunc('$.evo.article().variationEnable', $variation->kEigenschaft, 0, $wrapper);
+            } else {
+                foreach ($variation->Werte as $value) {
+                    $stockInfo->stock = true;
+                    $stockInfo->text = '';
 
-                if (isset($nPossibleVariations[$value->kEigenschaft]) && in_array($value->kEigenschaftWert, $nPossibleVariations[$value->kEigenschaft])) {
-                    $objResponse->jsfunc('$.evo.article().variationEnable', $value->kEigenschaft, $value->kEigenschaftWert, $wrapper);
+                    if (isset($nPossibleVariations[$value->kEigenschaft])
+                        && in_array($value->kEigenschaftWert, $nPossibleVariations[$value->kEigenschaft])) {
+                        $objResponse->jsfunc('$.evo.article().variationEnable', $value->kEigenschaft, $value->kEigenschaftWert, $wrapper);
 
-                    if ($checkStockInfo && !array_key_exists($value->kEigenschaft, $kGesetzteEigeschaftWert_arr)) {
-                        $kGesetzteEigeschaftWert_arr[$value->kEigenschaft] = $value->kEigenschaftWert;
-                        $products = getArticleByVariations($kVaterArtikel, $kGesetzteEigeschaftWert_arr);
-                        if (count($products) === 1) {
-                            $stockInfo = getArticleStockInfo((int)$products[0]->kArtikel);
+                        if ($checkStockInfo && !array_key_exists($value->kEigenschaft, $kGesetzteEigeschaftWert_arr)) {
+                            $kGesetzteEigeschaftWert_arr[$value->kEigenschaft] = $value->kEigenschaftWert;
+
+                            $products = getArticleByVariations($kVaterArtikel, $kGesetzteEigeschaftWert_arr);
+                            if (count($products) === 1) {
+                                $stockInfo = getArticleStockInfo((int)$products[0]->kArtikel);
+                            }
+                            unset($kGesetzteEigeschaftWert_arr[$value->kEigenschaft]);
                         }
-                        unset($kGesetzteEigeschaftWert_arr[$value->kEigenschaft]);
+                    } else {
+                        $stockInfo->stock  = false;
+                        $stockInfo->status = 0;
+                        $stockInfo->text   = utf8_encode(Shop::Lang()->get('notAvailableInSelection'));
                     }
-                } else {
-                    $stockInfo->stock = false;
-                    $stockInfo->text  = utf8_encode(Shop::Lang()->get('notAvailableInSelection'));
+                    if ($value->notExists || !$value->inStock) {
+                        $stockInfo->stock  = false;
+                        $stockInfo->status = 0;
+                        $stockInfo->text   = utf8_encode($value->notExists ? Shop::Lang()->get('notAvailableInSelection')
+                            : Shop::Lang()->get('ampelRot'));
+                    }
+                    if (!$stockInfo->stock) {
+                        $objResponse->jsfunc('$.evo.article().variationInfo', $value->kEigenschaftWert, $stockInfo->status,
+                            $stockInfo->text);
+                    }
                 }
-                if ($value->notExists || !$value->inStock) {
-                    $stockInfo->stock = false;
-                    $stockInfo->text  = utf8_encode($value->notExists ? Shop::Lang()->get('notAvailableInSelection') : Shop::Lang()->get('ampelRot'));
+
+                if (isset($kGesetzteEigeschaftWert_arr[$variation->kEigenschaft])) {
+                    $objResponse->jsfunc(
+                        '$.evo.article().variationActive',
+                        $variation->kEigenschaft,
+                        addslashes($kGesetzteEigeschaftWert_arr[$variation->kEigenschaft]),
+                        null,
+                        $wrapper
+                    );
                 }
-                if (!$stockInfo->stock) {
-                    $objResponse->jsfunc('$.evo.article().variationInfo', $value->kEigenschaftWert, -1, $stockInfo->text);
-                }
-            }
-            if (isset($kGesetzteEigeschaftWert_arr[$variation->kEigenschaft])) {
-                $objResponse->jsfunc(
-                    '$.evo.article().variationActive',
-                    $variation->kEigenschaft,
-                    addslashes($kGesetzteEigeschaftWert_arr[$variation->kEigenschaft]),
-                    null,
-                    $wrapper
-                );
             }
         }
     } else {
@@ -859,6 +871,8 @@ function getArticleByVariations($parentProductID, $selectedVariationValues)
                      SELECT kEigenschaftKombi
                      FROM teigenschaftkombiwert
                      WHERE (kEigenschaft, kEigenschaftWert) IN (' . implode(', ', $combinations) . ')
+                     GROUP BY kEigenschaftKombi
+                     HAVING COUNT(kEigenschaftKombi) = ' . count($combinations) . '
                 )
                 AND '
         : '';

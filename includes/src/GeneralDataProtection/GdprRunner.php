@@ -31,31 +31,10 @@ class GdprRunner
     private $vTimersLastRun = [];
 
 
-    private $oLogger = null; // --DEBUG--
-
     public function __construct()
     {
-        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --DEBUG--
-        include_once('/var/www/html/shop4_07/includes/vendor/apache/log4php/src/main/php/Logger.php');
-        \Logger::configure('/var/www/html/shop4_07/_logging_conf.xml');
-        $this->oLogger = \Logger::getLogger('default');
-        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --DEBUG--
-
-
         // set the "now" of this object
         $this->dNow = new \DateTime();
-
-        // DateTime tests ... we go artificially into the future
-//$this->dNow = new \DateTime('2018-07-01 00:00:00'); // --DEVELOPMENT-- "fake today"
-//$this->dNow = new \DateTime('2018-08-17 00:00:00'); // --DEVELOPMENT-- "fake today"
-//$this->dNow = new \DateTime('2018-12-15 00:00:00'); // --DEVELOPMENT-- "fake today"
-//$this->oLogger->debug('plus X days: '.(new \DateTime())->add(new \DateInterval('P8D'))->format('Y-m-d H:i:s')); // --DEBUG--
-//$this->dNow = (new \DateTime())->add(new \DateInterval('P8D')); // --DEVELOPMENT-- "fake today" plus >7 days
-//$this->dNow = (new \DateTime())->add(new \DateInterval('P35D')); // --DEVELOPMENT-- "fake today" plus >30 days
-//$this->dNow = (new \DateTime())->add(new \DateInterval('P98D')); // --DEVELOPMENT-- "fake today" plus >90 days
-$this->dNow = (new \DateTime())->add(new \DateInterval('P202D')); // --DEVELOPMENT-- "fake today" plus >90 days
-//$this->dNow = (new \DateTime())->add(new \DateInterval('P370D')); // --DEVELOPMENT-- "fake today" plus >365 days
-        $this->oLogger->debug('this->dNow: '.$this->dNow->format('Y-m-d H:i:s')); // --DEBUG--
 
         $this->buildTimers();
     }
@@ -96,21 +75,16 @@ $this->dNow = (new \DateTime())->add(new \DateInterval('P202D')); // --DEVELOPME
      */
     public function execute()
     {
-        //$this->oLogger->debug('vTIMERS: '.print_r(\GeneralDataProtection\Intervals::vTIMERS,true )); // --DEBUG--
-
         // select the next lower period for execution (execute NEVER ALL!)
         $vExecutionStack = [];
         foreach (\GeneralDataProtection\Intervals::vTIMERS as $szTimerName => $szTimerLimit) {
             $oDiff = (new \DateTime($this->vTimersLastRun[$szTimerName]))->diff($this->dNow);
             if ($oDiff->days > \GeneralDataProtection\Intervals::vTIMERS[$szTimerName]) {
-                //$this->oLogger->debug($szTimerName.' ('.$szTimerLimit.')'); // --DEBUG--
                 $vExecutionStack[$szTimerLimit] = $szTimerName;
             }
         }
-        $this->oLogger->debug('vExecutionStack: '.print_r($vExecutionStack,true )); // --DEBUG--
         if (0 < sizeof($vExecutionStack)) {
             $szMethode = 'period_'.array_pop($vExecutionStack);
-            //$this->oLogger->debug('will execute: '.$szMethode.'()'); // --DEBUG--
             $this->$szMethode();
             $this->resetTimerDb($szTimerName);
         }
@@ -119,7 +93,6 @@ $this->dNow = (new \DateTime())->add(new \DateInterval('P202D')); // --DEVELOPME
         foreach (\GeneralDataProtection\Intervals::vTIMERS as $szTimerName => $szTimerLimit)
         {
             $oDiff = (new \DateTime($this->vTimersLastRun[$szTimerName]))->diff($this->dNow);
-            $this->oLogger->debug('DIFF->days: '.print_r($oDiff->days ,true )); // --DEBUG--
             if ($oDiff->days > \GeneralDataProtection\Intervals::vTIMERS[$szTimerName]) {
                 $szMethode = 'period_'.$szTimerName;
                 $this->$szMethode();
@@ -127,8 +100,6 @@ $this->dNow = (new \DateTime())->add(new \DateInterval('P202D')); // --DEVELOPME
             }
         }
         */
-
-        $this->oLogger->debug('- - - - - - - - - - - - - - - - - - - - '); // --DEBUG--
     }
 
     /**
@@ -148,19 +119,6 @@ $this->dNow = (new \DateTime())->add(new \DateInterval('P202D')); // --DEVELOPME
 
     private function period_TC_DAYS_7()
     {
-        $this->oLogger->debug('run 7 ...'); // --DEBUG--
-
-        // ----------- every 7 days
-        //
-        // anonymize IPs each 7 days (except these, which was anonymized immediately)
-
-        // --TO-CHECK--
-        // for now:
-        // anon all IPs, which has to be anonymized the end of the next year after there creation
-        // anon in multiple tables
-        //
-       //$oMethod = (new \GeneralDataProtection\AnonymizeIps())->execute();
-
         // --TO-CHECK--
         // anon `tbewertung`, `tzahlungseingang`, `tnewskommentar`
         // (no intervals, update only)
@@ -186,17 +144,14 @@ $this->dNow = (new \DateTime())->add(new \DateInterval('P202D')); // --DEVELOPME
         //
         //$iInputDateYear = (int)(new \DateTime())->format('Y');
         //$oInputDate = new \DateTime((string)(++$iInputDateYear).'-12-31 23:59:59');
-        //$this->oLogger->debug('end of next year: '.$oInputDate->format('Y-m-d H:i:s')); // --DEBUG--
 
         // --TODO-- tfsession ? truncat
     }
 
     private function period_TC_DAYS_30()
     {
-        $this->oLogger->debug('run 30 ...'); // --DEBUG--
-
         // ----------- every 30 days
-
+        // 
         // Delete newsletter-registrations with no opt-in within given interval
         // (INTERVAL! removing by interval)
         // `tnewsletterempfaenger`
@@ -208,10 +163,8 @@ $this->dNow = (new \DateTime())->add(new \DateInterval('P202D')); // --DEVELOPME
 
     private function period_TC_DAYS_90()
     {
-        $this->oLogger->debug('run 90 ...'); // --DEBUG--
-
         // ----------- every 90 days
-
+        //
         // Delete old logs containing personal data.
         // (Customer-history-logs will be deleted at the end of the following year after log-creation according to german law § 76 BDSG (neu))
         // (INTERVALS! removing by interval)
@@ -223,10 +176,8 @@ $this->dNow = (new \DateTime())->add(new \DateInterval('P202D')); // --DEVELOPME
 
     private function period_TC_DAYS_365()
     {
-        $this->oLogger->debug('run 365 ...'); // --DEBUG--
-
         // ----------- every 365 days
-
+        //
         // Remove guest accounts fetched by JTL-Wawi and older than x days
         // (INTERVALS, removing by interval)
 

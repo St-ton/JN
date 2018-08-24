@@ -866,7 +866,7 @@ function getArticleByVariations($parentProductID, $selectedVariationValues)
         $combinations = null;
     }
 
-    $combinationSQL = $combinations !== null
+    $combinationSQL = ($combinations !== null && count($combinations) > 1)
         ? 'teigenschaftkombiwert.kEigenschaftKombi IN (
                      SELECT kEigenschaftKombi
                      FROM teigenschaftkombiwert

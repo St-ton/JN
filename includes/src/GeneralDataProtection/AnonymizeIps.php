@@ -4,7 +4,7 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace GdprAnonymizing;
+namespace GeneralDataProtection;
 
 class AnonymizeIps implements MethodInterface
 {
@@ -92,7 +92,8 @@ class AnonymizeIps implements MethodInterface
 
             if (is_array($voTableData) && 0 < count($voTableData)) {
                 foreach ($voTableData as $oRow) {
-                    $oRow->cIP = (new \GdprAnonymizing\IpAnonymizer($oRow->cIP))->anonymize();
+                    $oRow->cIP = (new \GeneralDataProtection\IpAnonymizer($oRow->cIP))->anonymize();
+
                     \Shop::Container()->getDB()->update($szTableName, $vTable['ColKey'], (int)$oRow->kBestellung, $oRow);
                 }
             }

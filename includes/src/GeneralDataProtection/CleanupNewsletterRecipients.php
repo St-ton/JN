@@ -4,7 +4,7 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace GdprAnonymizing;
+namespace GeneralDataProtection;
 
 class CleanupNewsletterRecipients implements MethodInterface
 {
@@ -19,14 +19,14 @@ class CleanupNewsletterRecipients implements MethodInterface
      *
      * @param int
      */
-    public function execute(int $iIntervalDays)
+    public function execute(int $iInterval)
     {
         \Shop::Container()->getDB()->queryPrepared('DELETE e, h
             FROM `tnewsletterempfaenger` e
                 JOIN `tnewsletterempfaengerhistory` h ON h.`cOptCode` = e.`cOptCode` AND h.`cEmail` = e.`cEmail`
-            WHERE e.`nAktiv`=0 AND h.`cAktion` = 'Eingetragen'
+            WHERE e.`nAktiv`=0 AND h.`cAktion` = "Eingetragen"
                 AND h.`dOptCode` = "0000-00-00"
-                AND h.dEingetragen <= (now() - INTERVAL ' . $iIntervalDays . ' DAY)'
+                AND h.dEingetragen <= (now() - INTERVAL ' . $iInterval . ' DAY)'
             , []
             , \DB\ReturnType::SINGLE_OBJECT
         );

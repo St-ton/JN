@@ -4,10 +4,9 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace GdprAnonymizing;
+namespace GeneralDataProtection;
 
 interface MethodInterface
 {
-    public function execute();
-
+    public function execute(int $iInterval);
 }

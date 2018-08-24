@@ -54,22 +54,35 @@ class Migration_20180628131539 extends Migration implements IMigration
             true
         );
 
+        // create the GDPR-timer table
         $this->execute('
-            CREATE TABLE IF NOT EXISTS `tanonymizer`(
-                  `kAnonymizer` INT NOT NULL AUTO_INCREMENT
-                , `dLastRun` datetime
-                , PRIMARY KEY `kAnonymizer` (`kAnonymizer`)
+            CREATE TABLE IF NOT EXISTS `tgdprtimers`(
+                `cTimerName` varchar(128) DEFAULT "" NOT NULL COMMENT "a preferably uniq name of the timer",
+                `dTimerLastRun` datetime DEFAULT NULL COMMENT "no 00:00:00 time possible; use NULL instead",
+                PRIMARY KEY `TimerName` (`cTimerName`)
             )
             ENGINE=InnoDB
             DEFAULT CHARSET=utf8
         ');
+
+        // setting up the cron-job in the cron-table
+        $oCronDataProtection = $this->fetchArray('SELECT * FROM `tcron` WHERE `cJobArt` = "dataprotection"');
+        if (0 <= sizeof($oCronDataProtection)) {
+            $this->execute('
+                INSERT INTO `tcron`(`kKey`, `cKey`, `cJobArt`, `nAlleXStd`,`cTabelle`, `cName`, `dStart`, `dStartZeit`, `dLetzterStart`)
+                    VALUES(50, "", "dataprotection", 24, "", "", now(), "00:00:00", now())
+            ');
+        }
     }
 
     public function down()
     {
-        $this->execute('drop table `tanonymizer`');
+        $oCronDataProtection = $this->fetchArray('SELECT * FROM `tcron` WHERE `cJobArt` = "dataprotection"');
+        $this->execute('DELETE FROM `tcron` WHERE `kCron` = "'.$oCronDataProtection[0]['kCron'].'"');
 
-        $this->removeConfig('ip_anonymize_mask_v4');
-        $this->removeConfig('ip_anonymize_mask_v6');
+        $this->execute('drop table `tgdprtimers`');
+
+        $this->removeConfig('anonymize_ip_mask_v4');
+        $this->removeConfig('anonymize_ip_mask_v6');
     }
 }

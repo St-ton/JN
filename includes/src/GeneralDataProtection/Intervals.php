@@ -4,35 +4,40 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace GdprAnonymizing;
+namespace GeneralDataProtection;
 
+/**
+ * declares all GDPR-timer-intervals
+ * in "number of days"
+ */
 abstract class Intervals
 {
     /**
-     * this should be the lowest time-period, in which we do any anonymization-stuff
-     * ("Runner-period" in days)
-     * @const int
+     * placeholder for "executed each time"
+     * @var int
      */
-    const TIMER_RESET = 7;
-
-
+    const iNOINTERVAL = 0;
 
     /**
-     * Delete newsletter-registrations with no opt-in within given interval
-     * @const int
+     * timer-names and there intervals ("each X days")
+     * @var array
      */
-    const TC_DAYS_30  = 30; // "interval_clear_non_opt_newsletter_recipients"
+    const vTIMERS = [
+        // (this should be the shortest time-period, in which we do ANY anonymization-stuff)
+        'TC_DAYS_7'   => 7,
 
-    /**
-     * delete old logs containing personal data.
-     * @const int
-     */
-    const TC_DAYS_90  = 90; // "interval_clear_logs"
+        // delete newsletter-registrations with no opt-in within given interval
+        // (former "interval_clear_non_opt_newsletter_recipients")
+        'TC_DAYS_30'  => 30,
 
-    /**
-     * remove guest accounts fetched by JTL-Wawi and older than x days
-     * @const int
-     */
-    const TC_DAYS_365 = 365; // "interval_delete_guest_accounts"
+        // delete old logs containing personal data.
+        // customer-history-logs will be deleted at the end of the following year after log-creation according to german law § 76 BDSG (neu)
+        // (former "interval_clear_logs")
+        'TC_DAYS_90'  => 90,
+
+        // remove guest accounts fetched by JTL-Wawi and older than x days
+        // (former "interval_delete_guest_accounts")
+        'TC_DAYS_365' => 365
+    ];
 
 }

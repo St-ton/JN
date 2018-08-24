@@ -4,7 +4,7 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace GdprAnonymizing;
+namespace GeneralDataProtection;
 
 class CleanupDeletedGuestAccounts implements MethodInterface
 {

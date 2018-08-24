@@ -4,7 +4,7 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace GdprAnonymizing;
+namespace GeneralDataProtection;
 
 class CleanupOldGuestAccounts implements MethodInterface
 {
@@ -19,14 +19,14 @@ class CleanupOldGuestAccounts implements MethodInterface
      *
      * @param int
      */
-    public function execute(int $nIntervalDays)
+    public function execute(int $iInterval)
     {
         \Shop::Container()->getDB()->queryPrepared('DELETE FROM
                 `tkunde`
             WHERE
                 `nRegistriert` = 0
                 AND `cAbgeholt` = "Y"
-                AND dErstellt <= NOW() - INTERVAL ' . $nIntervalDays . ' DAY'
+                AND dErstellt <= NOW() - INTERVAL ' . $iInterval . ' DAY'
             , []
             , \DB\ReturnType::SINGLE_OBJECT
         );

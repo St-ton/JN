@@ -53,7 +53,7 @@ if (isset($_POST['kundenimport'], $_FILES['csv']['tmp_name'])
 
 $smarty->assign('sprachen', Sprache::getAllLanguages())
        ->assign('kundengruppen', Shop::Container()->getDB()->query(
-           "SELECT * FROM tkundengruppe ORDER BY cName",
+           'SELECT * FROM tkundengruppe ORDER BY cName',
            \DB\ReturnType::ARRAY_OF_OBJECTS
        ))
        ->assign('step', $step ?? null)

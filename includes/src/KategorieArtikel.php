@@ -42,7 +42,7 @@ class KategorieArtikel
      * @param int $kKategorieArtikel
      * @return $this
      */
-    public function loadFromDB(int $kKategorieArtikel)
+    public function loadFromDB(int $kKategorieArtikel): self
     {
         $obj = Shop::Container()->getDB()->select('tkategorieartikel', 'kKategorieArtikel', $kKategorieArtikel);
         foreach (get_object_vars($obj) as $k => $v) {

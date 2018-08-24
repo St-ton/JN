@@ -159,9 +159,9 @@ class Emailhistory
             $cSqlLimit = '';
         }
         $oObj_arr = Shop::Container()->getDB()->query(
-            "SELECT * 
+            'SELECT * 
                 FROM temailhistory 
-                ORDER BY dSent DESC" . $cSqlLimit,
+                ORDER BY dSent DESC' . $cSqlLimit,
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         $oEmailhistory_arr = [];
@@ -195,9 +195,9 @@ class Emailhistory
             $kEmailhistory_arr = array_map(function ($i) { return (int)$i; }, $kEmailhistory_arr);
 
             return Shop::Container()->getDB()->query(
-                "DELETE 
+                'DELETE 
                     FROM temailhistory 
-                    WHERE kEmailhistory IN (" . implode(',', $kEmailhistory_arr) . ")",
+                    WHERE kEmailhistory IN (' . implode(',', $kEmailhistory_arr) . ')',
                 \DB\ReturnType::AFFECTED_ROWS
             );
         }
@@ -208,9 +208,9 @@ class Emailhistory
     /**
      * truncate the email-history-table
      *
-     * @return bool
+     * @return int
      */
-    public function deleteAll()
+    public function deleteAll(): int
     {
         Shop::Container()->getLogService()->notice('eMail-History gelöscht');
         return !Shop::Container()->getDB()->query('TRUNCATE TABLE temailhistory', \DB\ReturnType::AFFECTED_ROWS);
@@ -255,7 +255,7 @@ class Emailhistory
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getSubject()
     {
@@ -274,7 +274,7 @@ class Emailhistory
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getFromName()
     {
@@ -293,7 +293,7 @@ class Emailhistory
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getFromEmail()
     {
@@ -312,7 +312,7 @@ class Emailhistory
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getToName()
     {
@@ -331,7 +331,7 @@ class Emailhistory
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getToEmail()
     {
@@ -350,7 +350,7 @@ class Emailhistory
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getSent()
     {

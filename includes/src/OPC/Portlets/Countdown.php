@@ -21,7 +21,7 @@ class Countdown extends \OPC\Portlet
      */
     public function getPreviewHtml(PortletInstance $instance): string
     {
-        $instance->setProperty('uid', uniqid('cntdwn-', false));
+        $instance->setProperty('uid', \uniqid('cntdwn-', false));
         $instance->addClass('countdown');
         $instance->addClass($instance->getProperty('class'));
 

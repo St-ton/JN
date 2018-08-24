@@ -202,18 +202,18 @@ class MediaImage implements IMedia
             $mediaReq = $this->create($request);
 
             $imgNames = Shop::Container()->getDB()->queryPrepared(
-                "SELECT kArtikel, cName, cSeo, cArtNr, cBarcode
+                'SELECT kArtikel, cName, cSeo, cArtNr, cBarcode
                     FROM tartikel AS a
                     WHERE kArtikel = :kArtikel
-                UNION SELECT asp.kArtikel, asp.cName, asp.cSeo, a.cArtNr, a.cBarcode
-                    FROM tartikelsprache AS asp JOIN tartikel AS a ON asp.kArtikel = a.kArtikel
-                    WHERE asp.kArtikel = :kArtikel",
+                    UNION SELECT asp.kArtikel, asp.cName, asp.cSeo, a.cArtNr, a.cBarcode
+                        FROM tartikelsprache AS asp JOIN tartikel AS a ON asp.kArtikel = a.kArtikel
+                        WHERE asp.kArtikel = :kArtikel',
                 ['kArtikel' => (int)$mediaReq->id],
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
 
             if (count($imgNames) === 0) {
-                throw new Exception("No such product id: " . (int)$mediaReq->id);
+                throw new Exception('No such product id: ' . (int)$mediaReq->id);
             }
 
             $thumbPath  = null;
@@ -518,19 +518,19 @@ class MediaImage implements IMedia
                 break;
             case Image::TYPE_MANUFACTURER:
                 $res = [
-                    'stmt' => 'SELECT cBildpfad FROM thersteller, 0 AS number WHERE kHersteller = :kHersteller',
+                    'stmt' => 'SELECT cBildpfad, 0 AS number FROM thersteller WHERE kHersteller = :kHersteller',
                     'bind' => ['kHersteller' => $id]
                 ];
                 break;
             case Image::TYPE_ATTRIBUTE:
                 $res = [
-                    'stmt' => 'SELECT cBildpfad FROM tmerkmal, 0 AS number WHERE kMerkmal = :kMerkmal ORDER BY nSort ASC',
+                    'stmt' => 'SELECT cBildpfad, 0 AS number FROM tmerkmal WHERE kMerkmal = :kMerkmal ORDER BY nSort ASC',
                     'bind' => ['kMerkmal' => $id]
                 ];
                 break;
             case Image::TYPE_ATTRIBUTE_VALUE:
                 $res = [
-                    'stmt' => 'SELECT cBildpfad FROM tmerkmalwert, 0 AS number WHERE kMerkmalWert = :kMerkmalWert ORDER BY nSort ASC',
+                    'stmt' => 'SELECT cBildpfad, 0 AS number FROM tmerkmalwert WHERE kMerkmalWert = :kMerkmalWert ORDER BY nSort ASC',
                     'bind' => ['kMerkmalWert' => $id]
                 ];
                 break;

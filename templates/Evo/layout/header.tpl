@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {block name='doctype'}<!DOCTYPE html>{/block}
 <html {block name='html-attributes'}lang="{$meta_language}" itemscope {if $nSeitenTyp == URLART_ARTIKEL}itemtype="http://schema.org/ItemPage"
       {elseif $nSeitenTyp == URLART_KATEGORIE}itemtype="http://schema.org/CollectionPage"
@@ -117,7 +121,7 @@
          </div>
     {/if}
 
-    {block name="header"}
+    {block name='header'}
         {if Shop::isAdmin()}
             {include file='layout/header_composer_menu.tpl'}
         {/if}

@@ -40,7 +40,7 @@ function uebernehmeWarenkorbAenderungen()
 function checkeSchnellkauf()
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    WarenkorbHelper::checkQuickBuy();
+    return WarenkorbHelper::checkQuickBuy();
 }
 
 /**

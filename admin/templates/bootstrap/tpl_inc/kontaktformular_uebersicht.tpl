@@ -70,10 +70,10 @@
                         <tbody>
                         {foreach name=betreffs from=$Betreffs item=Betreff}
                             <tr>
-                                <td class="TD1">
+                                <td>
                                     <a href="kontaktformular.php?kKontaktBetreff={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}">{$Betreff->cName}</a>
                                 </td>
-                                <td class="TD2">{$Betreff->cMail}</td>
+                                <td>{$Betreff->cMail}</td>
                                 <td class="tcenter">{$Betreff->Kundengruppen}</td>
                                 <td class="tcenter">
                                     <span class="btn-group">

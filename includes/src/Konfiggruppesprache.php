@@ -199,7 +199,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @return string
+         * @return string|null
          */
         public function getName()
         {
@@ -207,7 +207,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @return string
+         * @return string|null
          */
         public function getBeschreibung()
         {

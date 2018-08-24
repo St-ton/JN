@@ -1,10 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
 
 namespace Filter;
+
 
 /**
  * Interface FilterInterface
@@ -29,13 +30,13 @@ interface FilterInterface
      * @param bool $active
      * @return $this
      */
-    public function setIsActive($active): FilterInterface;
+    public function setIsActive(bool $active): FilterInterface;
 
     /**
      * @param bool $value
      * @return $this
      */
-    public function setIsInitialized($value): FilterInterface;
+    public function setIsInitialized(bool $value): FilterInterface;
 
     /**
      * @return $this
@@ -49,9 +50,10 @@ interface FilterInterface
     public function setFilterCollection(array $collection): FilterInterface;
 
     /**
+     * @param bool $onlyVisible
      * @return array
      */
-    public function getFilterCollection(): array;
+    public function getFilterCollection(bool $onlyVisible = true): array;
 
     /**
      * @return ProductFilter
@@ -164,7 +166,7 @@ interface FilterInterface
     /**
      * list of necessary joins
      *
-     * @return FilterJoinInterface|FilterJoinInterface[]
+     * @return JoinInterface|JoinInterface[]
      */
     public function getSQLJoin();
 
@@ -172,17 +174,17 @@ interface FilterInterface
      * get list of available filter options in the current view
      *
      * @param mixed|null $mixed - additional data that might be needed
-     * @return FilterOption[]
+     * @return Option[]
      */
     public function getOptions($mixed = null): array;
 
     /**
      * set the list of available options
      *
-     * @param mixed $mixed
+     * @param mixed $options
      * @return $this
      */
-    public function setOptions($mixed): FilterInterface;
+    public function setOptions($options): FilterInterface;
 
     /**
      * get a nice name
@@ -256,9 +258,9 @@ interface FilterInterface
      * get shop settings, derived from Navigationsfilter class
      *
      * @param string|null $idx
-     * @return array|string|int
+     * @return array
      */
-    public function getConfig($idx = null);
+    public function getConfig($idx = null): array;
 
     /**
      * get the filter's class name
@@ -396,7 +398,7 @@ interface FilterInterface
     public function getIcon();
 
     /**
-     * @return FilterOption|FilterOption[]
+     * @return Option|Option[]
      */
     public function getActiveValues();
 

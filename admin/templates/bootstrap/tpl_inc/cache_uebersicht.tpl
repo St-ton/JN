@@ -1,30 +1,31 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=#cache# cBeschreibung=#objectcacheDesc# cDokuURL=#cacheURL#}
-    <script type="text/javascript">
-        var disabledMethods = {$non_available_methods};
-        {literal}
-        jQuery(document).ready(function ($) {
-            var elem,
-                methods = $('#caching_method option');
-            if (methods) {
-                methods.each(function () {
-                    elem = $(this);
-                    if (disabledMethods.indexOf(elem.val()) >= 0) {
-                        elem.attr('disabled', 'disabled');
-                    }
-                });
-            }
-            $('#massaction-main-switch').click(function () {
-                var checkboxes = $('.massaction-checkbox'),
-                    checked = $(this).prop('checked');
-                checkboxes.prop('checked', checked);
-            });
+<script type="text/javascript">
+    var disabledMethods      = {$non_available_methods},
+        disFunctionalMethods = {$disfunctional_methods};
+    jQuery(document).ready(function ($) {ldelim}
+        var elem,
+            methods = $('#caching_method option');
+        if (methods) {ldelim}
+            methods.each(function () {ldelim}
+                elem = $(this);
+                if (disabledMethods.indexOf(elem.val()) >= 0) {ldelim}
+                    elem.attr('disabled', 'disabled');
+                {rdelim} else if (disFunctionalMethods.indexOf(elem.val()) >= 0) {ldelim}
+                    elem.text(elem.text() + ' {#configurationError#}');
+                {rdelim}
+            {rdelim});
+        {rdelim}
+        $('#massaction-main-switch').click(function () {ldelim}
+            var checkboxes = $('.massaction-checkbox'),
+                checked = $(this).prop('checked');
+            checkboxes.prop('checked', checked);
+        {rdelim});
 
-            $('#btn_toggle_cache').click(function () {
-                $("#row_toggle_cache").slideToggle('slow', 'linear');
-            });
-        });
-    </script>
-{/literal}
+        $('#btn_toggle_cache').click(function () {ldelim}
+            $("#row_toggle_cache").slideToggle('slow', 'linear');
+        {rdelim});
+    {rdelim});
+</script>
 <div id="content" class="container-fluid">
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if !isset($tab) || $tab === 'massaction' || $tab === 'uebersicht'} active{/if}">
@@ -57,6 +58,7 @@
                             </th>
                             <th class="tleft"><label style="margin-bottom:0;" for="massaction-main-switch">{#type#}</label></th>
                             <th class="tleft">{#description#}</th>
+                            <th class="tleft">{#entries#}</th>
                             <th class="tleft">{#status#}</th>
                         </tr>
                         </thead>
@@ -74,6 +76,7 @@
                                     {assign var=description value=$cg.description}
                                     {$smarty.config.$description}
                                 </td>
+                                <td>{$cg.key_count}</td>
                                 <td>
                                     <h4 class="label-wrap">
                                         {if $cache_enabled === false || $cg.value|in_array:$disabled_caches}

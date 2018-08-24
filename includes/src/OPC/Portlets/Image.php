@@ -22,9 +22,11 @@ class Image extends \OPC\Portlet
     public function getHtml(PortletInstance $instance, $preview = false): string
     {
         $instance->setImageAttributes();
+
         if (!empty($instance->getProperty('responsive'))) {
             $instance->addClass('img-responsive');
         }
+
         if (!empty($instance->getProperty('shape'))) {
             $instance->addClass($instance->getProperty('shape'));
         }
@@ -58,7 +60,7 @@ class Image extends \OPC\Portlet
      */
     public function getButtonHtml(): string
     {
-        return '<i class="fa fa-image"></i><br/> Bild';
+        return '<i class="fa fa-image"></i><br> Bild';
     }
 
     /**

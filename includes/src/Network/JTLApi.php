@@ -89,18 +89,18 @@ final class JTLApi
     public function getLatestVersion()
     {
         $nVersion      = $this->shop->_getVersion();
-        $nMinorVersion = (int)JTL_MINOR_VERSION;
+        $nMinorVersion = (int)\JTL_MINOR_VERSION;
         $oVersions     = $this->getAvailableVersions();
 
-        $oStableVersions = array_filter((array)$oVersions, function ($v) use ($nVersion, $nMinorVersion) {
+        $oStableVersions = \array_filter((array)$oVersions, function ($v) use ($nVersion, $nMinorVersion) {
             return $v->channel === 'Stable' && (int)$v->version >= $nVersion;
         });
 
-        if (count($oStableVersions) > 0) {
+        if (\count($oStableVersions) > 0) {
             $oVersions = $oStableVersions;
         }
 
-        return end($oVersions);
+        return \end($oVersions);
     }
 
     /**
@@ -108,12 +108,12 @@ final class JTLApi
      */
     public function hasNewerVersion(): bool
     {
-        if (JTL_MINOR_VERSION === '#JTL_MINOR_VERSION#') {
+        if (\JTL_MINOR_VERSION === '#JTL_MINOR_VERSION#') {
             return false;
         }
 
         $nVersion      = $this->shop->_getVersion();
-        $nMinorVersion = (int)JTL_MINOR_VERSION;
+        $nMinorVersion = (int)\JTL_MINOR_VERSION;
         $oVersion      = $this->getLatestVersion();
 
         return $oVersion
@@ -128,9 +128,9 @@ final class JTLApi
      */
     private function call($uri, $data = null)
     {
-        $uri     = self::URI . '/' . ltrim($uri, '/');
+        $uri     = self::URI . '/' . \ltrim($uri, '/');
         $content = \RequestHelper::http_get_contents($uri, 10, $data);
 
-        return empty($content) ? null : json_decode($content);
+        return empty($content) ? null : \json_decode($content);
     }
 }

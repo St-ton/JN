@@ -9,7 +9,7 @@ Please click on the product to rate it:
 {foreach name=pos from=$Bestellung->Positionen item=Position}
     {if $Position->nPosTyp==1}
         {$Position->cName} ({$Position->cArtNr})
-        {$ShopURL}/index.php?a={$Position->kArtikel}&bewertung_anzeigen=1
+        {$ShopURL}/index.php?a={$Position->kArtikel}&bewertung_anzeigen=1#tab-votes
 
         {foreach name=variationen from=$Position->WarenkorbPosEigenschaftArr item=WKPosEigenschaft}
 

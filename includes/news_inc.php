@@ -54,9 +54,11 @@ function baueFilterSQL($bActiveOnly = false)
     }
     // NewsKat Filter
     $oSQL->cNewsKatSQL = ' JOIN tnewskategorienews ON tnewskategorienews.kNews = tnews.kNews';
+    $cNewsCats         = implode(',', News::getNewsCatAndSubCats($_SESSION['NewsNaviFilter']->nNewsKat, Shop::getLanguageID(), false, true));
+
     if ($_SESSION['NewsNaviFilter']->nNewsKat > 0) {
         $oSQL->cNewsKatSQL = " JOIN tnewskategorienews ON tnewskategorienews.kNews = tnews.kNews
-                               AND tnewskategorienews.kNewsKategorie = " . (int)$_SESSION['NewsNaviFilter']->nNewsKat;
+                               AND tnewskategorienews.kNewsKategorie IN (" . $cNewsCats . ")";
     }
 
     if ($bActiveOnly) {
@@ -94,10 +96,10 @@ function pruefeKundenKommentar($cKommentar, $cName = '', $cEmail = '', $kNews, $
     if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0 && $kNews > 0) {
         // Kunde ist eingeloggt
         $oNewsKommentar = Shop::Container()->getDB()->query(
-            "SELECT count(*) AS nAnzahl
+            'SELECT COUNT(*) AS nAnzahl
                 FROM tnewskommentar
-                WHERE kNews = " . (int)$kNews . "
-                    AND kKunde = " . (int)$_SESSION['Kunde']->kKunde,
+                WHERE kNews = ' . (int)$kNews . '
+                    AND kKunde = ' . (int)$_SESSION['Kunde']->kKunde,
             \DB\ReturnType::SINGLE_OBJECT
         );
 
@@ -176,11 +178,11 @@ function holeNewsKategorien($cDatumSQL, $bActiveOnly = false)
     $cSQL         = '';
     $activeFilter = $bActiveOnly ? ' AND tnewskategorie.nAktiv = 1 ' : '';
     if (strlen($cDatumSQL) > 0) {
-        $cSQL = "   JOIN tnewskategorienews 
+        $cSQL = '   JOIN tnewskategorienews 
                         ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
                     JOIN tnews 
                         ON tnews.kNews = tnewskategorienews.kNews
-                    " . $cDatumSQL;
+                    ' . $cDatumSQL;
     }
 
     return Shop::Container()->getDB()->query(
@@ -517,10 +519,10 @@ function getNewsComments(int $kNews, $cLimitSQL)
 function getCommentCount(int $kNews)
 {
     return Shop::Container()->getDB()->queryPrepared(
-        "SELECT count(*) AS nAnzahl
+        'SELECT COUNT(*) AS nAnzahl
             FROM tnewskommentar
             WHERE kNews = :nid
-            AND nAktiv = 1",
+            AND nAktiv = 1',
         ['nid' => $kNews],
         \DB\ReturnType::SINGLE_OBJECT
     );
@@ -557,7 +559,7 @@ function getNewsOverview($oSQL, $cLimitSQL)
 {
     return Shop::Container()->getDB()->query(
         "SELECT tseo.cSeo, tnews.*, DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y %H:%i') AS dErstellt_de, 
-            count(*) AS nAnzahl, count(DISTINCT(tnewskommentar.kNewsKommentar)) AS nNewsKommentarAnzahl
+            COUNT(*) AS nAnzahl, COUNT(DISTINCT(tnewskommentar.kNewsKommentar)) AS nNewsKommentarAnzahl
             FROM tnews
             LEFT JOIN tseo 
                 ON tseo.cKey = 'kNews'

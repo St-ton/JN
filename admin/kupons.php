@@ -144,11 +144,11 @@ if ($action === 'bearbeiten') {
 if ($action === 'bearbeiten') {
     // Seite: Bearbeiten
     $oSteuerklasse_arr = Shop::Container()->getDB()->query(
-        "SELECT kSteuerklasse, cName FROM tsteuerklasse",
+        'SELECT kSteuerklasse, cName FROM tsteuerklasse',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     $oKundengruppe_arr = Shop::Container()->getDB()->query(
-        "SELECT kKundengruppe, cName FROM tkundengruppe",
+        'SELECT kKundengruppe, cName FROM tkundengruppe',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     $oHersteller_arr   = getManufacturers($oKupon->cHersteller);

@@ -345,13 +345,13 @@ class Image
     /**
      * @param MediaImageRequest $req
      * @param Imanee            $rawImage
-     * @return string
+     * @return Imanee
      * @throws Exception
      * @throws \Imanee\Exception\UnsupportedFormatException
      * @throws \Imanee\Exception\UnsupportedMethodException
      * @internal param string $rawPath
      */
-    public static function render(MediaImageRequest $req, Imanee $rawImage = null)
+    public static function render(MediaImageRequest $req, Imanee $rawImage = null): Imanee
     {
         $rawPath = $req->getRaw(true);
 
@@ -437,7 +437,7 @@ class Image
      * @throws \Imanee\Exception\UnsupportedMethodException
      * @return Imanee
      */
-    public static function error(MediaImageRequest $req, $error = null)
+    public static function error(MediaImageRequest $req, $error = null): Imanee
     {
         $size = $req->getSize();
 

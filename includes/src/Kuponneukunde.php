@@ -63,7 +63,7 @@ class Kuponneukunde
      * @param array $options
      * @return $this
      */
-    public function setOptions(array $options)
+    public function setOptions(array $options): self
     {
         $methods = get_class_methods($this);
         foreach ($options as $key => $value) {
@@ -102,7 +102,7 @@ class Kuponneukunde
      * @param int $kKuponNeukunde
      * @return $this
      */
-    public function setKuponNeukunde(int $kKuponNeukunde)
+    public function setKuponNeukunde(int $kKuponNeukunde): self
     {
         $this->kKuponNeukunde = $kKuponNeukunde;
 
@@ -113,7 +113,7 @@ class Kuponneukunde
      * @param int $kKupon
      * @return $this
      */
-    public function setKupon(int $kKupon)
+    public function setKupon(int $kKupon): self
     {
         $this->kKupon = $kKupon;
 
@@ -124,7 +124,7 @@ class Kuponneukunde
      * @param string $cEmail
      * @return $this
      */
-    public function setEmail($cEmail)
+    public function setEmail($cEmail): self
     {
         $this->cEmail = $cEmail;
 
@@ -135,7 +135,7 @@ class Kuponneukunde
      * @param string $cDatenHash
      * @return $this
      */
-    public function setDatenHash($cDatenHash)
+    public function setDatenHash($cDatenHash): self
     {
         $this->cDatenHash = $cDatenHash;
 
@@ -146,7 +146,7 @@ class Kuponneukunde
      * @param string $dErstellt
      * @return $this
      */
-    public function setErstellt($dErstellt)
+    public function setErstellt($dErstellt): self
     {
         $this->dErstellt = ($dErstellt === 'now()')
             ? date('Y-m-d H:i:s')
@@ -159,7 +159,7 @@ class Kuponneukunde
      * @param string $cVerwendet
      * @return $this
      */
-    public function setVerwendet($cVerwendet)
+    public function setVerwendet($cVerwendet): self
     {
         $this->cVerwendet = $cVerwendet;
 
@@ -167,7 +167,7 @@ class Kuponneukunde
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getKuponNeukunde()
     {
@@ -175,7 +175,7 @@ class Kuponneukunde
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getKupon()
     {
@@ -183,7 +183,7 @@ class Kuponneukunde
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getEmail()
     {
@@ -191,7 +191,7 @@ class Kuponneukunde
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getDatenHash()
     {
@@ -199,7 +199,7 @@ class Kuponneukunde
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getErstellt()
     {
@@ -214,16 +214,16 @@ class Kuponneukunde
     public static function Load($email, $hash)
     {
         if (strlen($email) > 0 && strlen($hash) > 0) {
-            $Obj = Shop::Container()->getDB()->executeQueryPrepared("
-                SELECT *
+            $Obj = Shop::Container()->getDB()->executeQueryPrepared(
+                'SELECT *
                     FROM tkuponneukunde
                     WHERE cEmail = :email
-                    OR cDatenHash = :hash",
+                    OR cDatenHash = :hash',
                 [
                     'email' => StringHandler::filterXSS($email),
                     'hash'  => StringHandler::filterXSS($hash)
                 ],
-                1
+                \DB\ReturnType::SINGLE_OBJECT
             );
 
             if (isset($Obj->kKuponNeukunde) && $Obj->kKuponNeukunde > 0) {
@@ -244,8 +244,15 @@ class Kuponneukunde
      * @param string|null $country
      * @return string
      */
-    public static function Hash($firstname = null, $lastname = null, $street = null, $streetnumber = null, $zipcode = null, $town = null, $country = null)
-    {
+    public static function Hash(
+        $firstname = null,
+        $lastname = null,
+        $street = null,
+        $streetnumber = null,
+        $zipcode = null,
+        $town = null,
+        $country = null
+    ): string {
         $Str = '';
         $Sep = ';';
         if ($firstname !== null) {

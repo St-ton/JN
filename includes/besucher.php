@@ -18,16 +18,16 @@ function dbLookupVisitor($szUserAgent, $szIp)
 
 /**
  * @param object $oVisitor
- * @param int    $oVisitorId
+ * @param int    $visitorId
  * @param string $szUserAgent
  * @param int    $kBesucherBot
  * @return object
  * @deprecated since 5.0.0
  */
-function updateVisitorObject($oVisitor, $oVisitorId,  $szUserAgent, $kBesucherBot)
+function updateVisitorObject($oVisitor, int $visitorId,  $szUserAgent, $kBesucherBot)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Visitor::updateVisitorObject($oVisitor, $oVisitorId, $szUserAgent, $kBesucherBot);
+    return Visitor::updateVisitorObject($oVisitor, $visitorId, $szUserAgent, $kBesucherBot);
 }
 
 /**
@@ -36,7 +36,7 @@ function updateVisitorObject($oVisitor, $oVisitorId,  $szUserAgent, $kBesucherBo
  * @return object
  * @deprecated since 5.0.0
  */
-function createVisitorObject($szUserAgent, $kBesucherBot)
+function createVisitorObject($szUserAgent, int $kBesucherBot)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Visitor::createVisitorObject($szUserAgent, $kBesucherBot);
@@ -59,7 +59,7 @@ function dbInsertVisitor($oVisitor)
  * @return int
  * @deprecated since 5.0.0
  */
-function dbUpdateVisitor($oVisitor, $kBesucher)
+function dbUpdateVisitor($oVisitor, int $kBesucher)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Visitor::dbUpdate($oVisitor, $kBesucher);
@@ -70,7 +70,7 @@ function dbUpdateVisitor($oVisitor, $kBesucher)
  * @return int [$kBestellung|0]
  * @deprecated since 5.0.0
  */
-function refreshCustomerOrderId($nCustomerId)
+function refreshCustomerOrderId(int $nCustomerId)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Visitor::refreshCustomerOrderId($nCustomerId);
@@ -111,7 +111,7 @@ function gibBot()
  * @param string $referer
  * @deprecated since 5.0.0
  */
-function werteRefererAus($kBesucher, $referer)
+function werteRefererAus(int $kBesucher, $referer)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     Visitor::analyzeReferer($kBesucher, $referer);

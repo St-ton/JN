@@ -6,7 +6,7 @@
     Deny from all
 </IfModule>
 
-<FilesMatch "\.(txt|csv|xml|html|htm|json|yaml|yml)$">
+<FilesMatch "\.(txt|csv|xml|html|htm|json|yaml|yml|gz|zip)$">
     <IfModule mod_authz_core.c>
         Require all granted
     </IfModule>

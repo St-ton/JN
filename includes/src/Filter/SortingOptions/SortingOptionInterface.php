@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -6,7 +6,8 @@
 
 namespace Filter\SortingOptions;
 
-use Filter\FilterJoin;
+
+use Filter\Join;
 
 /**
  * Interface SortingOptionInterface
@@ -15,14 +16,14 @@ use Filter\FilterJoin;
 interface SortingOptionInterface
 {
     /**
-     * @return FilterJoin
+     * @return Join
      */
-    public function getJoin(): FilterJoin;
+    public function getJoin(): Join;
 
     /**
-     * @param FilterJoin $join
+     * @param Join $join
      */
-    public function setJoin(FilterJoin $join);
+    public function setJoin(Join $join);
 
     /**
      * @return string

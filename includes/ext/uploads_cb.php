@@ -91,7 +91,7 @@ if (!empty($_REQUEST['action'])) {
             $oUpload   = new UploadDatei();
             $kKunde    = (int)$_SESSION['Kunde']->kKunde;
             $cFilePath = PFAD_ROOT . BILD_UPLOAD_ZUGRIFF_VERWEIGERT;
-            $kUpload   = (int)entschluesselXTEA(rawurldecode($_REQUEST['secret']));
+            $kUpload   = (int)Shop::Container()->getCryptoService()->decryptXTEA(rawurldecode($_REQUEST['secret']));
 
             if ($kUpload > 0 && $kKunde > 0 && $oUpload->loadFromDB($kUpload)) {
                 $cTmpFilePath = PFAD_UPLOADS . $oUpload->cPfad;

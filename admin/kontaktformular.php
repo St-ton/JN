@@ -142,7 +142,7 @@ if ($step === 'uebersicht') {
         $Conf[$i]->gesetzterWert = $setValue->cWert ?? null;
     }
     $neuerBetreffs = Shop::Container()->getDB()->query(
-        "SELECT * FROM tkontaktbetreff ORDER BY nSort",
+        'SELECT * FROM tkontaktbetreff ORDER BY nSort',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     $nCount        = count($neuerBetreffs);
@@ -185,7 +185,7 @@ if ($step === 'betreff') {
     }
 
     $kundengruppen = Shop::Container()->getDB()->query(
-        "SELECT * FROM tkundengruppe ORDER BY cName",
+        'SELECT * FROM tkundengruppe ORDER BY cName',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     $smarty->assign('Betreff', $neuerBetreff)
@@ -224,10 +224,9 @@ function getGesetzteKundengruppen($link)
  * @param int $kKontaktBetreff
  * @return array
  */
-function getNames($kKontaktBetreff)
+function getNames(int $kKontaktBetreff)
 {
-    $kKontaktBetreff = (int)$kKontaktBetreff;
-    $namen           = [];
+    $namen = [];
     if (!$kKontaktBetreff) {
         return $namen;
     }

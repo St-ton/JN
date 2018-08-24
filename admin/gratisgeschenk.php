@@ -23,10 +23,10 @@ if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
 }
 // Config holen
 $oConfig_arr = Shop::Container()->getDB()->query(
-    "SELECT *
+    'SELECT *
         FROM teinstellungenconf
-        WHERE kEinstellungenConf IN (" . implode(',', $settingsIDs) . ")
-        ORDER BY nSort",
+        WHERE kEinstellungenConf IN (' . implode(',', $settingsIDs) . ')
+        ORDER BY nSort',
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 $configCount = count($oConfig_arr);

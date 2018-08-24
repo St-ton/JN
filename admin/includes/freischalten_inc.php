@@ -8,18 +8,19 @@
  * @param string $cSQL
  * @param object $cSuchSQL
  * @param bool   $checkLanguage
- * @return mixed
+ * @return array
  */
-function gibBewertungFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = true)
+function gibBewertungFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = true): array
 {
     $cond = $checkLanguage === true
-        ? "tbewertung.kSprache = " . (int)$_SESSION['kSprache'] . " AND "
-        : "";
+        ? 'tbewertung.kSprache = ' . (int)$_SESSION['kSprache'] . ' AND '
+        : '';
 
     return Shop::Container()->getDB()->query(
         "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
             FROM tbewertung
-            LEFT JOIN tartikel ON tbewertung.kArtikel = tartikel.kArtikel
+            LEFT JOIN tartikel 
+                ON tbewertung.kArtikel = tartikel.kArtikel
             WHERE " . $cond . "tbewertung.nAktiv = 0
                 " . $cSuchSQL->cWhere . "
             ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC" . $cSQL,
@@ -31,13 +32,13 @@ function gibBewertungFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = true)
  * @param string $cSQL
  * @param object $cSuchSQL
  * @param bool   $checkLanguage
- * @return mixed
+ * @return array
  */
-function gibSuchanfrageFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = true)
+function gibSuchanfrageFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = true): array
 {
     $cond = $checkLanguage === true
-        ? "AND kSprache = " . (int)$_SESSION['kSprache'] . " "
-        : "";
+        ? 'AND kSprache = ' . (int)$_SESSION['kSprache'] . ' '
+        : '';
 
     return Shop::Container()->getDB()->query(
         "SELECT *, DATE_FORMAT(dZuletztGesucht, '%d.%m.%Y %H:%i') AS dZuletztGesucht_de
@@ -52,25 +53,25 @@ function gibSuchanfrageFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = true
  * @param string $cSQL
  * @param object $cSuchSQL
  * @param bool   $checkLanguage
- * @return mixed
+ * @return array
  */
-function gibTagFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = true)
+function gibTagFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = true): array
 {
     $cond = $checkLanguage === true
-        ? "AND ttag.kSprache = " . (int)$_SESSION['kSprache'] . " "
-        : "";
+        ? 'AND ttag.kSprache = ' . (int)$_SESSION['kSprache'] . ' '
+        : '';
 
     return Shop::Container()->getDB()->query(
-        "SELECT ttag.*, sum(ttagartikel.nAnzahlTagging) AS Anzahl, ttagartikel.kArtikel, 
+        'SELECT ttag.*, sum(ttagartikel.nAnzahlTagging) AS Anzahl, ttagartikel.kArtikel, 
             tartikel.cName AS cArtikelName, tartikel.cSeo AS cArtikelSeo
             FROM ttag
             LEFT JOIN ttagartikel 
                 ON ttagartikel.kTag = ttag.kTag
             LEFT JOIN tartikel 
                 ON tartikel.kArtikel = ttagartikel.kArtikel
-            WHERE ttag.nAktiv = 0 " . $cond . $cSuchSQL->cWhere . "
+            WHERE ttag.nAktiv = 0 ' . $cond . $cSuchSQL->cWhere . '
             GROUP BY ttag.kTag
-            ORDER BY Anzahl DESC" . $cSQL,
+            ORDER BY Anzahl DESC' . $cSQL,
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 }
@@ -79,13 +80,13 @@ function gibTagFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = true)
  * @param string $cSQL
  * @param object $cSuchSQL
  * @param bool   $checkLanguage
- * @return mixed
+ * @return array
  */
-function gibNewskommentarFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = true)
+function gibNewskommentarFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = true): array
 {
     $cond = $checkLanguage === true
-        ? " AND tnews.kSprache = " . (int)$_SESSION['kSprache'] . " "
-        : "";
+        ? ' AND tnews.kSprache = ' . (int)$_SESSION['kSprache'] . ' '
+        : '';
     $oNewsKommentar_arr = Shop::Container()->getDB()->query(
         "SELECT tnewskommentar.*, DATE_FORMAT(tnewskommentar.dErstellt, '%d.%m.%Y  %H:%i') AS dErstellt_de, 
             tkunde.kKunde, tkunde.cVorname, tkunde.cNachname, tnews.cBetreff
@@ -111,13 +112,13 @@ function gibNewskommentarFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = tr
  * @param string $cSQL
  * @param object $cSuchSQL
  * @param bool   $checkLanguage
- * @return mixed
+ * @return array
  */
-function gibNewsletterEmpfaengerFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = true)
+function gibNewsletterEmpfaengerFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = true): array
 {
     $cond = $checkLanguage === true
-        ? " AND kSprache = " . (int)$_SESSION['kSprache']
-        : "";
+        ? ' AND kSprache = ' . (int)$_SESSION['kSprache']
+        : '';
 
     return Shop::Container()->getDB()->query(
         "SELECT *, DATE_FORMAT(dEingetragen, '%d.%m.%Y  %H:%i') AS dEingetragen_de, 
@@ -136,7 +137,7 @@ function gibNewsletterEmpfaengerFreischalten($cSQL, $cSuchSQL, bool $checkLangua
  * @param array $kBewertungAll_arr
  * @return bool
  */
-function schalteBewertungFrei($kBewertung_arr, $kArtikel_arr, $kBewertungAll_arr)
+function schalteBewertungFrei($kBewertung_arr, $kArtikel_arr, $kBewertungAll_arr): bool
 {
     global $Einstellungen;
 
@@ -152,9 +153,9 @@ function schalteBewertungFrei($kBewertung_arr, $kArtikel_arr, $kBewertungAll_arr
             $kBewertung = (int)$kBewertung;
 
             Shop::Container()->getDB()->query(
-                "UPDATE tbewertung
+                'UPDATE tbewertung
                     SET nAktiv = 1
-                    WHERE kBewertung = " . $kBewertung,
+                    WHERE kBewertung = ' . $kBewertung,
                 \DB\ReturnType::AFFECTED_ROWS
             );
             // Durchschnitt neu berechnen
@@ -176,7 +177,7 @@ function schalteBewertungFrei($kBewertung_arr, $kArtikel_arr, $kBewertungAll_arr
  * @param array $kSuchanfrage_arr
  * @return bool
  */
-function schalteSuchanfragenFrei($kSuchanfrage_arr)
+function schalteSuchanfragenFrei($kSuchanfrage_arr): bool
 {
     if (!is_array($kSuchanfrage_arr) || count($kSuchanfrage_arr) === 0) {
         return false;
@@ -184,9 +185,9 @@ function schalteSuchanfragenFrei($kSuchanfrage_arr)
     foreach ($kSuchanfrage_arr as $i => $kSuchanfrage) {
         $kSuchanfrage = (int)$kSuchanfrage;
         $oSuchanfrage = Shop::Container()->getDB()->query(
-            "SELECT kSuchanfrage, kSprache, cSuche
+            'SELECT kSuchanfrage, kSprache, cSuche
                 FROM tsuchanfrage
-                WHERE kSuchanfrage = " . $kSuchanfrage,
+                WHERE kSuchanfrage = ' . $kSuchanfrage,
             \DB\ReturnType::SINGLE_OBJECT
         );
 
@@ -219,7 +220,7 @@ function schalteSuchanfragenFrei($kSuchanfrage_arr)
  * @param array $kTag_arr
  * @return bool
  */
-function schalteTagsFrei($kTag_arr)
+function schalteTagsFrei($kTag_arr): bool
 {
     if (!is_array($kTag_arr) || count($kTag_arr) === 0) {
         return false;
@@ -227,9 +228,9 @@ function schalteTagsFrei($kTag_arr)
     $kTag_arr = array_map('intval', $kTag_arr);
     $tags     = [];
     $articles = Shop::Container()->getDB()->query(
-        "SELECT DISTINCT kArtikel
+        'SELECT DISTINCT kArtikel
             FROM ttagartikel
-            WHERE kTag IN (" . implode(',', $kTag_arr) . ")",
+            WHERE kTag IN (' . implode(',', $kTag_arr) . ')',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($articles as $_article) {
@@ -268,7 +269,7 @@ function schalteTagsFrei($kTag_arr)
  * @param array $kNewsKommentar_arr
  * @return bool
  */
-function schalteNewskommentareFrei($kNewsKommentar_arr)
+function schalteNewskommentareFrei($kNewsKommentar_arr): bool
 {
     if (!is_array($kNewsKommentar_arr) || count($kNewsKommentar_arr) === 0) {
         return false;
@@ -276,9 +277,9 @@ function schalteNewskommentareFrei($kNewsKommentar_arr)
     $kNewsKommentar_arr = array_map('intval', $kNewsKommentar_arr);
 
     Shop::Container()->getDB()->query(
-        "UPDATE tnewskommentar
+        'UPDATE tnewskommentar
             SET nAktiv = 1
-            WHERE kNewsKommentar IN (" . implode(',', $kNewsKommentar_arr) . ")",
+            WHERE kNewsKommentar IN (' . implode(',', $kNewsKommentar_arr) . ')',
         \DB\ReturnType::AFFECTED_ROWS
     );
 
@@ -289,7 +290,7 @@ function schalteNewskommentareFrei($kNewsKommentar_arr)
  * @param array $kNewsletterEmpfaenger_arr
  * @return bool
  */
-function schalteNewsletterempfaengerFrei($kNewsletterEmpfaenger_arr)
+function schalteNewsletterempfaengerFrei($kNewsletterEmpfaenger_arr): bool
 {
     if (!is_array($kNewsletterEmpfaenger_arr) || count($kNewsletterEmpfaenger_arr) === 0) {
         return false;
@@ -297,9 +298,9 @@ function schalteNewsletterempfaengerFrei($kNewsletterEmpfaenger_arr)
     $kNewsletterEmpfaenger_arr = array_map('intval', $kNewsletterEmpfaenger_arr);
 
     Shop::Container()->getDB()->query(
-        "UPDATE tnewsletterempfaenger
+        'UPDATE tnewsletterempfaenger
             SET nAktiv = 1
-            WHERE kNewsletterEmpfaenger IN (" . implode(',', $kNewsletterEmpfaenger_arr) .")",
+            WHERE kNewsletterEmpfaenger IN (' . implode(',', $kNewsletterEmpfaenger_arr) .')',
         \DB\ReturnType::AFFECTED_ROWS
     );
 
@@ -310,7 +311,7 @@ function schalteNewsletterempfaengerFrei($kNewsletterEmpfaenger_arr)
  * @param array $kBewertung_arr
  * @return bool
  */
-function loescheBewertung($kBewertung_arr)
+function loescheBewertung($kBewertung_arr): bool
 {
     if (!is_array($kBewertung_arr) || count($kBewertung_arr) === 0) {
         return false;
@@ -318,8 +319,8 @@ function loescheBewertung($kBewertung_arr)
     $kBewertung_arr = array_map('intval', $kBewertung_arr);
 
     Shop::Container()->getDB()->query(
-        "DELETE FROM tbewertung
-            WHERE kBewertung IN (" . implode(',', $kBewertung_arr) . ")",
+        'DELETE FROM tbewertung
+            WHERE kBewertung IN (' . implode(',', $kBewertung_arr) . ')',
         \DB\ReturnType::AFFECTED_ROWS
     );
 
@@ -330,7 +331,7 @@ function loescheBewertung($kBewertung_arr)
  * @param array $kSuchanfrage_arr
  * @return bool
  */
-function loescheSuchanfragen($kSuchanfrage_arr)
+function loescheSuchanfragen($kSuchanfrage_arr): bool
 {
     if (!is_array($kSuchanfrage_arr) || count($kSuchanfrage_arr) === 0) {
         return false;
@@ -338,8 +339,8 @@ function loescheSuchanfragen($kSuchanfrage_arr)
     $kSuchanfrage_arr = array_map('intval', $kSuchanfrage_arr);
 
     Shop::Container()->getDB()->query(
-        "DELETE FROM tsuchanfrage
-            WHERE kSuchanfrage IN (" . implode(',', $kSuchanfrage_arr) . ")",
+        'DELETE FROM tsuchanfrage
+            WHERE kSuchanfrage IN (' . implode(',', $kSuchanfrage_arr) . ')',
         \DB\ReturnType::AFFECTED_ROWS
     );
     Shop::Container()->getDB()->query(
@@ -356,7 +357,7 @@ function loescheSuchanfragen($kSuchanfrage_arr)
  * @param array $kTag_arr
  * @return bool
  */
-function loescheTags($kTag_arr)
+function loescheTags($kTag_arr): bool
 {
     if (!is_array($kTag_arr) || count($kTag_arr) === 0) {
         return false;
@@ -364,11 +365,11 @@ function loescheTags($kTag_arr)
     $kTag_arr = array_map('intval', $kTag_arr);
 
     Shop::Container()->getDB()->query(
-        "DELETE ttag, ttagartikel 
+        'DELETE ttag, ttagartikel 
             FROM ttag
             LEFT JOIN ttagartikel 
                 ON ttagartikel.kTag = ttag.kTag
-            WHERE ttag.kTag IN (" . implode(',', $kTag_arr) . ")",
+            WHERE ttag.kTag IN (' . implode(',', $kTag_arr) . ')',
         \DB\ReturnType::AFFECTED_ROWS
     );
 
@@ -379,7 +380,7 @@ function loescheTags($kTag_arr)
  * @param array $kNewsKommentar_arr
  * @return bool
  */
-function loescheNewskommentare($kNewsKommentar_arr)
+function loescheNewskommentare($kNewsKommentar_arr): bool
 {
     if (!is_array($kNewsKommentar_arr) || count($kNewsKommentar_arr) === 0) {
         return false;
@@ -387,8 +388,8 @@ function loescheNewskommentare($kNewsKommentar_arr)
     $kNewsKommentar_arr = array_map('intval', $kNewsKommentar_arr);
 
     Shop::Container()->getDB()->query(
-        "DELETE FROM tnewskommentar
-            WHERE kNewsKommentar IN (" . implode(',', $kNewsKommentar_arr) . ")",
+        'DELETE FROM tnewskommentar
+            WHERE kNewsKommentar IN (' . implode(',', $kNewsKommentar_arr) . ')',
         \DB\ReturnType::AFFECTED_ROWS
     );
 
@@ -399,7 +400,7 @@ function loescheNewskommentare($kNewsKommentar_arr)
  * @param array $kNewsletterEmpfaenger_arr
  * @return bool
  */
-function loescheNewsletterempfaenger($kNewsletterEmpfaenger_arr)
+function loescheNewsletterempfaenger($kNewsletterEmpfaenger_arr): bool
 {
     if (!is_array($kNewsletterEmpfaenger_arr) || count($kNewsletterEmpfaenger_arr) === 0) {
         return false;
@@ -407,8 +408,8 @@ function loescheNewsletterempfaenger($kNewsletterEmpfaenger_arr)
     $kNewsletterEmpfaenger_arr = array_map('intval', $kNewsletterEmpfaenger_arr);
 
     Shop::Container()->getDB()->query(
-        "DELETE FROM tnewsletterempfaenger
-            WHERE kNewsletterEmpfaenger IN (" . implode(',', $kNewsletterEmpfaenger_arr) . ")",
+        'DELETE FROM tnewsletterempfaenger
+            WHERE kNewsletterEmpfaenger IN (' . implode(',', $kNewsletterEmpfaenger_arr) . ')',
         \DB\ReturnType::AFFECTED_ROWS
     );
 
@@ -420,7 +421,7 @@ function loescheNewsletterempfaenger($kNewsletterEmpfaenger_arr)
  * @param string $cMapping
  * @return int
  */
-function mappeLiveSuche($kSuchanfrage_arr, $cMapping)
+function mappeLiveSuche($kSuchanfrage_arr, $cMapping): int
 {
     if (!is_array($kSuchanfrage_arr) || count($kSuchanfrage_arr) === 0 || strlen($cMapping) === 0) {
         return 2; // Leere Übergabe
@@ -449,10 +450,10 @@ function mappeLiveSuche($kSuchanfrage_arr, $cMapping)
             return 4; // Mapping konnte nicht gespeichert werden
         }
         Shop::Container()->getDB()->queryPrepared(
-            "UPDATE tsuchanfrage
+            'UPDATE tsuchanfrage
                 SET nAnzahlGesuche = nAnzahlGesuche + :cnt
                 WHERE kSprache = :lid
-                    AND kSuchanfrage = :sid",
+                    AND kSuchanfrage = :sid',
             [
                 'cnt' => $oSuchanfrage->nAnzahlGesuche,
                 'lid' => (int)$_SESSION['kSprache'],
@@ -476,80 +477,71 @@ function mappeLiveSuche($kSuchanfrage_arr, $cMapping)
 /**
  * @return int
  */
-function gibMaxBewertungen()
+function gibMaxBewertungen(): int
 {
-    $oTMP = Shop::Container()->getDB()->query(
-        "SELECT count(*) AS nAnzahl
+    return (int)Shop::Container()->getDB()->query(
+        'SELECT count(*) AS nAnzahl
             FROM tbewertung
             WHERE nAktiv = 0
-                AND kSprache = " . (int)$_SESSION['kSprache'],
+                AND kSprache = ' . (int)$_SESSION['kSprache'],
         \DB\ReturnType::SINGLE_OBJECT
-    );
-
-    return (int)$oTMP->nAnzahl;
+    )->nAnzahl;
 }
 
 /**
  * @return int
  */
-function gibMaxSuchanfragen()
+function gibMaxSuchanfragen(): int
 {
-    $oTMP = Shop::Container()->getDB()->query(
-        "SELECT count(*) AS nAnzahl
+    return (int)Shop::Container()->getDB()->query(
+        'SELECT count(*) AS nAnzahl
             FROM tsuchanfrage
             WHERE nAktiv = 0
-                AND kSprache = " . (int)$_SESSION['kSprache'],
+                AND kSprache = ' . (int)$_SESSION['kSprache'],
         \DB\ReturnType::SINGLE_OBJECT
-    );
-
-    return (int)$oTMP->nAnzahl;
+    )->nAnzahl;
 }
 
 /**
  * @return int
  */
-function gibMaxTags()
+function gibMaxTags(): int
 {
-    $oTMP = Shop::Container()->getDB()->query(
-        "SELECT count(*) AS nAnzahl
+    return (int)Shop::Container()->getDB()->query(
+        'SELECT COUNT(*) AS nAnzahl
             FROM ttag
             WHERE nAktiv = 0
-                AND kSprache = " . (int)$_SESSION['kSprache'],
+                AND kSprache = ' . (int)$_SESSION['kSprache'],
         \DB\ReturnType::SINGLE_OBJECT
-    );
-
-    return (int)$oTMP->nAnzahl;
+    )->nAnzahl;
 }
 
 /**
  * @return int
  */
-function gibMaxNewskommentare()
+function gibMaxNewskommentare(): int
 {
-    $oTMP = Shop::Container()->getDB()->query(
-        "SELECT count(tnewskommentar.kNewsKommentar) AS nAnzahl
+    return (int)Shop::Container()->getDB()->query(
+        'SELECT COUNT(tnewskommentar.kNewsKommentar) AS nAnzahl
             FROM tnewskommentar
-            JOIN tnews ON tnews.kNews = tnewskommentar.kNews
+            JOIN tnews 
+                ON tnews.kNews = tnewskommentar.kNews
             WHERE tnewskommentar.nAktiv = 0
-                AND tnews.kSprache = " . (int)$_SESSION['kSprache'],
+                AND tnews.kSprache = ' . (int)$_SESSION['kSprache'],
         \DB\ReturnType::SINGLE_OBJECT
-    );
-
-    return (int)$oTMP->nAnzahl;
+    )->nAnzahl;
 }
 
 /**
  * @return int
  */
-function gibMaxNewsletterEmpfaenger()
+function gibMaxNewsletterEmpfaenger(): int
 {
-    $oTMP = Shop::Container()->getDB()->query(
-        "SELECT count(*) AS nAnzahl
+    return (int)Shop::Container()->getDB()->query(
+        'SELECT COUNT(*) AS nAnzahl
             FROM tnewsletterempfaenger
             WHERE nAktiv = 0
-                AND kSprache = " . (int)$_SESSION['kSprache'],
+                AND kSprache = ' . (int)$_SESSION['kSprache'],
         \DB\ReturnType::SINGLE_OBJECT
-    );
-
-    return (int)$oTMP->nAnzahl;
+    )->nAnzahl;
 }

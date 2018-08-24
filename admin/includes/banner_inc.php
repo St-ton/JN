@@ -19,7 +19,7 @@ function holeAlleBanner()
  * @param bool $fill
  * @return mixed
  */
-function holeBanner($kImageMap, $fill = true)
+function holeBanner(int $kImageMap, bool $fill = true)
 {
     $oBanner = new ImageMap();
 
@@ -30,19 +30,18 @@ function holeBanner($kImageMap, $fill = true)
  * @param int $kImageMap
  * @return mixed
  */
-function holeExtension($kImageMap)
+function holeExtension(int $kImageMap)
 {
-    return Shop::Container()->getDB()->select('textensionpoint', 'cClass', 'ImageMap', 'kInitial', (int)$kImageMap);
+    return Shop::Container()->getDB()->select('textensionpoint', 'cClass', 'ImageMap', 'kInitial', $kImageMap);
 }
 
 /**
  * @param int $kImageMap
  * @return mixed
  */
-function entferneBanner($kImageMap)
+function entferneBanner(int $kImageMap)
 {
-    $kImageMap = (int)$kImageMap;
-    $oBanner   = new ImageMap();
+    $oBanner = new ImageMap();
     Shop::Container()->getDB()->delete('textensionpoint', ['cClass', 'kInitial'], ['ImageMap', $kImageMap]);
 
     return $oBanner->delete($kImageMap);
@@ -67,7 +66,7 @@ function holeBannerDateien()
 }
 
 /**
- * @param $cData
+ * @param mixed $cData
  * @return IOResponse
  */
 function saveBannerAreasIO($cData)

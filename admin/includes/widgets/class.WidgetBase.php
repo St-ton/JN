@@ -29,10 +29,10 @@ class WidgetBase
      * @param NiceDB    $oDB
      * @param Plugin    $oPlugin
      */
-    public function __construct($oSmarty = null, $oDB = null, &$oPlugin)
+    public function __construct($oSmarty = null, $oDB = null, &$oPlugin = null)
     {
-        $this->oSmarty = Shop::Smarty();
-        $this->oDB     = Shop::Container()->getDB();
+        $this->oSmarty = $oSmarty ?? Shop::Smarty();
+        $this->oDB     = $oDB ?? Shop::Container()->getDB();
         $this->oPlugin = $oPlugin;
         $this->init();
     }

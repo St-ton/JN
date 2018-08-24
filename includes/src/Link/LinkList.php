@@ -49,8 +49,8 @@ final class LinkList implements LinkListInterface
      */
     public function createLinks(array $linkIDs): Collection
     {
-        $this->linkIDs = array_map('intval', $linkIDs);
-        if (count($this->linkIDs) === 0) {
+        $this->linkIDs = \array_map('\intval', $linkIDs);
+        if (\count($this->linkIDs) === 0) {
             return $this->links;
         }
         $linkLanguages = $this->db->query(
@@ -82,7 +82,7 @@ final class LinkList implements LinkListInterface
                     ON tspezialseite.nLinkart = tlink.nLinkart
                 LEFT JOIN tplugin
                     ON tplugin.kPlugin = tlink.kPlugin
-                WHERE tlink.kLink IN (" . implode(',', $this->linkIDs) . ")
+                WHERE tlink.kLink IN (" . \implode(',', $this->linkIDs) . ")
                 GROUP BY tlink.kLink, tseo.kSprache
                 ORDER BY tlink.nSort, tlink.cName",
             ReturnType::ARRAY_OF_OBJECTS
@@ -132,7 +132,7 @@ final class LinkList implements LinkListInterface
      */
     public function __debugInfo()
     {
-        $res       = get_object_vars($this);
+        $res       = \get_object_vars($this);
         $res['db'] = '*truncated*';
 
         return $res;

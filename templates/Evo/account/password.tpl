@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {block name='header'}
     {include file='layout/header.tpl'}
 {/block}
@@ -23,17 +27,12 @@
                     <form id="passwort_vergessen" action="{get_static_route id='pass.php'}{if $bExclusive === true}?exclusive_content=1{/if}" method="post" class="evo-validate">
                         {$jtl_token}
                         <fieldset>
-                            <div class="form-group float-label-control required">
-                                <label for="email" class="control-label">{lang key='emailadress' section='global'}</label>
-                                <input
-                                type="email"
-                                name="email"
-                                id="email"
-                                class="form-control"
-                                placeholder="{lang key='emailadress' section='global'}*"
-                                required
-                                />
-                            </div>
+                            {include file='snippets/form_group_simple.tpl'
+                                options=[
+                                    'email', 'email', 'email', null,
+                                    {lang key='emailadress'}, true
+                                ]
+                            }
                             <div class="form-group">
                                 {if $bExclusive === true}
                                   <input type="hidden" name="exclusive_content" value="1" />
@@ -63,28 +62,18 @@
                             <form id="passwort_vergessen" action="{get_static_route id='pass.php'}{if $bExclusive === true}?exclusive_content=1{/if}" method="post" class="evo-validate">
                                 {$jtl_token}
                                 <fieldset>
-                                    <div class="form-group required">
-                                        <label for="pw_new" class="control-label">{lang key='password' section='account data'}</label>
-                                        <input
-                                                type="password"
-                                                name="pw_new"
-                                                id="pw_new"
-                                                class="form-control"
-                                                placeholder="{lang key='password' section='account data'}*"
-                                                required
-                                                >
-                                    </div>
-                                    <div class="form-group required">
-                                        <label for="pw_new_confirm" class="control-label">{lang key='passwordRepeat' section='account data'}</label>
-                                        <input
-                                                type="password"
-                                                name="pw_new_confirm"
-                                                id="pw_new_confirm"
-                                                class="form-control"
-                                                placeholder="{lang key='passwordRepeat' section='account data'}*"
-                                                required
-                                                >
-                                    </div>
+                                    {include file='snippets/form_group_simple.tpl'
+                                        options=[
+                                            "password", "pw_new", "pw_new", null,
+                                            {lang key='password' section='account data'}, true
+                                        ]
+                                    }
+                                    {include file='snippets/form_group_simple.tpl'
+                                        options=[
+                                            "password", "pw_new_confirm", "pw_new_confirm", null,
+                                            {lang key='passwordRepeat' section='account data'}, true
+                                        ]
+                                    }
                                     <div class="form-group">
                                         {if $bExclusive === true}
                                             <input type="hidden" name="exclusive_content" value="1">

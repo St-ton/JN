@@ -16,16 +16,16 @@ defined('PLZIMPORT_REGEX') || define('PLZIMPORT_REGEX',
 function plzimportGetPLZOrt()
 {
     $plzOrt_arr = Shop::Container()->getDB()->query(
-        "SELECT tplz.cLandISO, tland.cDeutsch, tland.cKontinent, count(tplz.kPLZ) AS nPLZOrte, backup.nBackup
+        'SELECT tplz.cLandISO, tland.cDeutsch, tland.cKontinent, COUNT(tplz.kPLZ) AS nPLZOrte, backup.nBackup
             FROM tplz
             INNER JOIN tland ON tland.cISO = tplz.cLandISO
             LEFT JOIN (
-                SELECT tplz_backup.cLandISO, count(tplz_backup.kPLZ) AS nBackup
+                SELECT tplz_backup.cLandISO, COUNT(tplz_backup.kPLZ) AS nBackup
                 FROM tplz_backup
                 GROUP BY tplz_backup.cLandISO
             ) AS backup ON backup.cLandISO = tplz.cLandISO
             GROUP BY tplz.cLandISO, tland.cDeutsch, tland.cKontinent
-            ORDER BY tplz.cLandISO",
+            ORDER BY tplz.cLandISO',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 
@@ -131,7 +131,7 @@ function plzimportDoImport($target, array $sessData, $result)
 
         Shop::Container()->getDB()->delete('tplz_backup', 'cLandISO', $isoLand);
         Shop::Container()->getDB()->queryPrepared(
-            'INSERT INTO tplz_backup SELECT * FROM tplz WHERE cLandISO = :isoCode', 
+            'INSERT INTO tplz_backup SELECT * FROM tplz WHERE cLandISO = :isoCode',
             ['isoCode' => $isoLand],
             \DB\ReturnType::AFFECTED_ROWS
         );
@@ -467,10 +467,10 @@ function plzimportActionLoadAvailableDownloads()
                 $hits[2]
             );
             $oLand_arr  = Shop::Container()->getDB()->query(
-                "SELECT cISO, cDeutsch
+                'SELECT cISO, cDeutsch
                     FROM tland
-                    WHERE cISO IN (" . implode(", ", $quotedHits) . ")
-                    ORDER BY cISO",
+                    WHERE cISO IN (' . implode(', ', $quotedHits) . ')
+                    ORDER BY cISO',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
 
@@ -541,7 +541,7 @@ function plzimportActionRestoreBackup($target = '')
     if (!empty($target)) {
         Shop::Container()->getDB()->delete('tplz', 'cLandISO', $target);
         Shop::Container()->getDB()->queryPrepared(
-            'INSERT INTO tplz SELECT * FROM tplz_backup WHERE cLandISO = :target', 
+            'INSERT INTO tplz SELECT * FROM tplz_backup WHERE cLandISO = :target',
             ['target' => $target],
             \DB\ReturnType::AFFECTED_ROWS
         );

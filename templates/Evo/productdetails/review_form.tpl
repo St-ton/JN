@@ -1,8 +1,7 @@
 {**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license https://jtl-url.de/jtlshoplicense
  *}
-
 {block name='header'}
     {include file='layout/header.tpl'}
 {/block}
@@ -28,7 +27,7 @@
                     <span class="vmiddle">{$Artikel->cName}</span>
                 </div>
                 <hr>
-                <div class="form-group required">
+                <div class="form-group">
                     <select name="nSterne" id="stars" class="form-control" required>
                         <option value="" disabled>{lang key='starPlural' section='product rating'}</option>
                         <option value="5">5 {lang key='starPlural' section='product rating'}</option>
@@ -38,13 +37,13 @@
                         <option value="1">1 {lang key='starSingular' section='product rating'}</option>
                     </select>
                 </div>
-                <div class="form-group float-label-control required">
+                <div class="form-group float-label-control">
                     <label for="headline">{lang key='headline' section='product rating'}</label>
                     <input type="text" name="cTitel"
                            value="{$oBewertung->cTitel|default:""}"
                            id="headline" class="form-control" required>
                 </div>
-                <div class="form-group float-label-control required">
+                <div class="form-group float-label-control">
                     <label for="comment">{lang key='comment' section='product rating'}</label>
                     <textarea name="cText" cols="80" rows="8" id="comment" class="form-control"
                               required>{$oBewertung->cText|default:""}</textarea>

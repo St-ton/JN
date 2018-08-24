@@ -1,11 +1,7 @@
 {**
- * @copyright (c) 2006-2015 JTL-Software-GmbH, all rights reserved
- * @author JTL-Software-GmbH (www.jtl-software.de)
- *
- * use is subject to license terms
- * http://jtl-software.de/jtlshop3license.html
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
  *}
-
 {if !isset($checkout)}
     {include file='register/inc_vcard_upload.tpl' id='registrieren.php'}
 {/if}

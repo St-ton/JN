@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {if isset($boxes)}{* only available in shop versions > 3.19 *}
     {has_boxes position='left' assign='hasLeftBox'}
 {/if}

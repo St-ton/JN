@@ -73,6 +73,7 @@ if ($step === 'umfrage_uebersicht') {
 }
 
 $smarty->assign('hinweis', $cHinweis)
+       ->assign('Link', $link)
        ->assign('fehler', $controller->getErrorMsg())
        ->assign('step', $step)
        ->assign('oUmfrage_arr', $sourveys)

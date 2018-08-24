@@ -1,10 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
 
 namespace Filter;
+
 
 /**
  * Class AbstractFilter
@@ -83,7 +84,7 @@ abstract class AbstractFilter implements FilterInterface
     protected $inputType;
 
     /**
-     * @var FilterOption[]
+     * @var Option[]
      */
     protected $activeValues;
 
@@ -165,7 +166,7 @@ abstract class AbstractFilter implements FilterInterface
         $this->visibility = Visibility::SHOW_ALWAYS;
         $this->inputType  = InputType::SELECT;
         if ($productFilter !== null) {
-            $this->setBaseData($productFilter)->setClassName(get_class($this));
+            $this->setBaseData($productFilter)->setClassName(\get_class($this));
         }
     }
 
@@ -193,7 +194,7 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function setIsActive($active): FilterInterface
+    public function setIsActive(bool $active): FilterInterface
     {
         $this->isActive = $active;
 
@@ -203,7 +204,7 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function setIsInitialized($value): FilterInterface
+    public function setIsInitialized(bool $value): FilterInterface
     {
         $this->isInitialized = $value;
 
@@ -218,7 +219,7 @@ abstract class AbstractFilter implements FilterInterface
         $this->activeValues = [];
         $values             = $this->getValue();
         $split              = true;
-        if (!is_array($values)) {
+        if (!\is_array($values)) {
             $split  = false;
             $values = [$values];
         }
@@ -231,7 +232,7 @@ abstract class AbstractFilter implements FilterInterface
             } else {
                 $instance = $this;
             }
-            $this->activeValues[] = (new FilterOption())
+            $this->activeValues[] = (new Option())
                 ->setURL($this->getSeo($this->getLanguageID()))
                 ->setFrontendName($instance->getName() ?? '')
                 ->setValue($value)
@@ -256,11 +257,11 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function getFilterCollection($onlyVisible = true): array
+    public function getFilterCollection(bool $onlyVisible = true): array
     {
         return $onlyVisible === false
             ? $this->filterCollection
-            : array_filter(
+            : \array_filter(
                 $this->filterCollection,
                 function (FilterInterface $f) {
                     return $f->getVisibility() !== Visibility::SHOW_NEVER;
@@ -273,7 +274,7 @@ abstract class AbstractFilter implements FilterInterface
      */
     public function setFrontendName(string $name): FilterInterface
     {
-        $this->frontendName = htmlspecialchars($name);
+        $this->frontendName = \htmlspecialchars($name);
 
         return $this;
     }
@@ -300,7 +301,7 @@ abstract class AbstractFilter implements FilterInterface
     public function setVisibility($visibility): FilterInterface
     {
         $this->visibility = Visibility::SHOW_NEVER;
-        if (is_numeric($visibility)) {
+        if (\is_numeric($visibility)) {
             $this->visibility = (int)$visibility;
         } elseif ($visibility === 'content') {
             $this->visibility = Visibility::SHOW_CONTENT;
@@ -328,11 +329,11 @@ abstract class AbstractFilter implements FilterInterface
      */
     public function getUnsetFilterURL($idx = null)
     {
-        if ($idx !== null && is_array($idx) && count($idx) === 1) {
+        if ($idx !== null && \is_array($idx) && \count($idx) === 1) {
             $idx = $idx[0];
         }
 
-        return $idx === null || is_string($this->unsetFilterURL)
+        return $idx === null || \is_string($this->unsetFilterURL)
             ? $this->unsetFilterURL
             : $this->unsetFilterURL[$idx];
     }
@@ -420,9 +421,9 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function setOptions($data): FilterInterface
+    public function setOptions($options): FilterInterface
     {
-        $this->options = $data;
+        $this->options = $options;
 
         return $this;
     }
@@ -451,8 +452,8 @@ abstract class AbstractFilter implements FilterInterface
     public function setBaseData(ProductFilter $productFilter): FilterInterface
     {
         $this->productFilter      = $productFilter;
-        $this->customerGroupID    = $productFilter->getCustomerGroupID();
-        $this->availableLanguages = $productFilter->getAvailableLanguages();
+        $this->customerGroupID    = $productFilter->getFilterConfig()->getCustomerGroupID();
+        $this->availableLanguages = $productFilter->getFilterConfig()->getLanguages();
 
         return $this;
     }
@@ -516,7 +517,7 @@ abstract class AbstractFilter implements FilterInterface
      */
     public function getLanguageID(): int
     {
-        return $this->productFilter->getLanguageID();
+        return $this->productFilter->getFilterConfig()->getLanguageID();
     }
 
     /**
@@ -530,9 +531,9 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function getConfig($idx = null)
+    public function getConfig($idx = null): array
     {
-        return $this->productFilter->getConfig($idx);
+        return $this->productFilter->getFilterConfig()->getConfig($idx);
     }
 
     /**
@@ -549,7 +550,7 @@ abstract class AbstractFilter implements FilterInterface
     public function setClassName($className): FilterInterface
     {
         $this->className = $className;
-        $this->setNiceName(basename(str_replace('\\', '/', $className)));
+        $this->setNiceName(\basename(\str_replace('\\', '/', $className)));
 
         return $this;
     }
@@ -676,7 +677,7 @@ abstract class AbstractFilter implements FilterInterface
     public function getActiveValues($idx = null)
     {
         $activeValues = $this->activeValues ?? $this;
-        if (is_array($activeValues) && count($activeValues) === 1) {
+        if (\is_array($activeValues) && \count($activeValues) === 1) {
             $activeValues = $activeValues[0];
         }
 
@@ -722,7 +723,7 @@ abstract class AbstractFilter implements FilterInterface
      */
     public function getSQLJoin()
     {
-        return new FilterJoin();
+        return new Join();
     }
 
     /**
@@ -795,8 +796,9 @@ abstract class AbstractFilter implements FilterInterface
      * @param int $value
      * @return $this
      */
-    public function setValueCompat(int $value)
+    public function setValueCompat($value): FilterInterface
     {
+        $value = (int)$value;
         $this->value = $value;
         if ($this->value > 0) {
             $this->productFilter->enableFilter($this);
@@ -810,7 +812,7 @@ abstract class AbstractFilter implements FilterInterface
      */
     public function __debugInfo()
     {
-        $res                  = get_object_vars($this);
+        $res                  = \get_object_vars($this);
         $res['config']        = '*truncated*';
         $res['productFilter'] = '*truncated*';
 

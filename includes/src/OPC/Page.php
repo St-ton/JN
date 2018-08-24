@@ -48,9 +48,9 @@ class Page implements \JsonSerializable
     protected $url = '';
 
     /**
-     * @var string
+     * @var null|string
      */
-    protected $lastModified = '0000-00-00 00:00:00';
+    protected $lastModified;
 
     /**
      * @var string
@@ -58,9 +58,9 @@ class Page implements \JsonSerializable
     protected $lockedBy = '';
 
     /**
-     * @var string
+     * @var null|string
      */
-    protected $lockedAt = '0000-00-00 00:00:00';
+    protected $lockedAt;
 
     /**
      * @var bool
@@ -132,7 +132,7 @@ class Page implements \JsonSerializable
      */
     public function setPublishFrom($publishFrom): self
     {
-        $this->publishFrom = $publishFrom === '0000-00-00 00:00:00' ? null : $publishFrom;
+        $this->publishFrom = $publishFrom;
 
         return $this;
     }
@@ -151,7 +151,7 @@ class Page implements \JsonSerializable
      */
     public function setPublishTo($publishTo): self
     {
-        $this->publishTo = $publishTo === '0000-00-00 00:00:00' ? null : $publishTo;
+        $this->publishTo = $publishTo;
 
         return $this;
     }
@@ -214,18 +214,18 @@ class Page implements \JsonSerializable
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getLastModified(): string
+    public function getLastModified()
     {
         return $this->lastModified;
     }
 
     /**
-     * @param string $lastModified
+     * @param null|string $lastModified
      * @return $this
      */
-    public function setLastModified(string $lastModified): self
+    public function setLastModified($lastModified): self
     {
         $this->lastModified = $lastModified;
 
@@ -252,18 +252,18 @@ class Page implements \JsonSerializable
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getLockedAt(): string
+    public function getLockedAt()
     {
         return $this->lockedAt;
     }
 
     /**
-     * @param string $lockedAt
+     * @param null|string $lockedAt
      * @return $this
      */
-    public function setLockedAt(string $lockedAt): self
+    public function setLockedAt($lockedAt): self
     {
         $this->lockedAt = $lockedAt;
 
@@ -303,7 +303,7 @@ class Page implements \JsonSerializable
      */
     public function fromJson($json)
     {
-        $this->deserialize(json_decode($json, true));
+        $this->deserialize(\json_decode($json, true));
 
         return $this;
     }
@@ -322,7 +322,7 @@ class Page implements \JsonSerializable
         $this->setUrl($data['url'] ?? $this->getUrl());
         $this->setRevId($data['revId'] ?? $this->getRevId());
 
-        if (isset($data['areas']) && is_array($data['areas'])) {
+        if (isset($data['areas']) && \is_array($data['areas'])) {
             $this->getAreaList()->deserialize($data['areas']);
         }
 

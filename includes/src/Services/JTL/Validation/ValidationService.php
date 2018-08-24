@@ -190,12 +190,12 @@ class ValidationService implements ValidationServiceInterface
      */
     public function validateSet($set, $rulesConfig): SetValidationResultInterface
     {
-        $keyDiff = array_diff(array_keys($set), array_keys($rulesConfig));
+        $keyDiff = \array_diff(\array_keys($set), \array_keys($rulesConfig));
         if (!empty($keyDiff)) {
             throw new \Exception("RulesConfig/Set mismatch detected");
         }
         foreach ($set as $index => $value) {
-            if (is_array($value) || is_object($value)) {
+            if (\is_array($value) || \is_object($value)) {
                 throw new \Exception("Nested sets are not supported right now");
             }
         }

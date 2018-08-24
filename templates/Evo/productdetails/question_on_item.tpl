@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 <div class="panel-wrap">
     {if isset($position) && $position === 'popup'}
         {if count($Artikelhinweise) > 0}
@@ -14,7 +18,7 @@
     <form action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}{if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'Y'}#tab-productquestion{/if}{else}index.php{/if}" method="post" id="article_question" class="evo-validate">
         {$jtl_token}
         <fieldset>
-            <legend>{lang key='contact' section='global'}</legend>
+            <legend>{lang key='contact'}</legend>
             {if $Einstellungen.artikeldetails.produktfrage_abfragen_anrede !== 'N'}
                 <div class="row">
                     <div class="col-xs-12 col-md-6">
@@ -35,33 +39,25 @@
 
                     {if $Einstellungen.artikeldetails.produktfrage_abfragen_vorname !== 'N'}
                         <div class="col-xs-12 col-md-6">
-                            <div class="form-group float-label-control {if isset($fehlendeAngaben_fragezumprodukt.vorname) && $fehlendeAngaben_fragezumprodukt.vorname > 0}has-error{/if}{if $Einstellungen.artikeldetails.produktfrage_abfragen_vorname === 'Y'} required{/if}">
-                                <label class="control-label" for="firstName">{lang key='firstName' section='account data'}</label>
-                                <input class="form-control" type="text" name="vorname"
-                                       value="{if isset($Anfrage)}{$Anfrage->cVorname}{/if}"
-                                       id="firstName"{if $Einstellungen.artikeldetails.produktfrage_abfragen_vorname === 'Y'} required{/if}
-                                       autocomplete="given-name"
-                                >
-                                {if isset($fehlendeAngaben_fragezumprodukt.vorname) && $fehlendeAngaben_fragezumprodukt.vorname > 0}
-                                    <div class="form-error-msg text-danger"><i class="fa fa-warning"></i> {lang key='fillOut' section='global'}</div>
-                                {/if}
-                            </div>
+                            {include file='snippets/form_group_simple.tpl'
+                                options=[
+                                    'text', 'firstName', 'vorname',
+                                    {$Anfrage->cVorname|default:null}, {lang key='firstName' section='account data'},
+                                    $Einstellungen.artikeldetails.produktfrage_abfragen_vorname, null, 'given-name'
+                                ]
+                            }
                         </div>
                     {/if}
 
                     {if $Einstellungen.artikeldetails.produktfrage_abfragen_nachname !== 'N'}
                         <div class="col-xs-12 col-md-6">
-                            <div class="form-group float-label-control{if isset($fehlendeAngaben_fragezumprodukt.nachname) && $fehlendeAngaben_fragezumprodukt.nachname > 0} has-error{/if}{if $Einstellungen.artikeldetails.produktfrage_abfragen_nachname === 'Y'} required{/if}">
-                                <label class="control-label" for="lastName">{lang key='lastName' section='account data'}</label>
-                                <input class="form-control" type="text" name="nachname"
-                                       value="{if isset($Anfrage)}{$Anfrage->cNachname}{/if}"
-                                       id="lastName"{if $Einstellungen.artikeldetails.produktfrage_abfragen_nachname === 'Y'} required{/if}
-                                       autocomplete="family-name"
-                                >
-                                {if isset($fehlendeAngaben_fragezumprodukt.nachname) && $fehlendeAngaben_fragezumprodukt.nachname > 0}
-                                    <div class="form-error-msg text-danger"><i class="fa fa-warning"></i> {lang key='fillOut' section='global'}</div>
-                                {/if}
-                            </div>
+                            {include file='snippets/form_group_simple.tpl'
+                                options=[
+                                    'text', 'lastName', 'nachname',
+                                    {$Anfrage->cNachname|default:null}, {lang key='lastName' section='account data'},
+                                    $Einstellungen.artikeldetails.produktfrage_abfragen_nachname, null, 'family-name'
+                                ]
+                            }
                         </div>
                     {/if}
                 </div>
@@ -70,33 +66,26 @@
             {if $Einstellungen.artikeldetails.produktfrage_abfragen_firma !== 'N'}
                 <div class="row">
                     <div class="col-xs-12 col-md-6">
-                        <div class="form-group float-label-control {if isset($fehlendeAngaben_fragezumprodukt.firma) && $fehlendeAngaben_fragezumprodukt.firma > 0}has-error{/if}{if $Einstellungen.artikeldetails.produktfrage_abfragen_firma === 'Y'} required{/if}">
-                            <label class="control-label" for="company">{lang key='firm' section='account data'}</label>
-                            <input class="form-control" type="text" name="firma"
-                                   value="{if isset($Anfrage)}{$Anfrage->cFirma}{/if}"
-                                   id="company"{if $Einstellungen.artikeldetails.produktfrage_abfragen_firma === 'Y'} required{/if}
-                                   autocomplete="organization"
-                            >
-                            {if isset($fehlendeAngaben_fragezumprodukt.firma) && $fehlendeAngaben_fragezumprodukt.firma > 0}
-                                <div class="form-error-msg text-danger"><i class="fa fa-warning"></i> {lang key='fillOut' section='global'}</div>
-                            {/if}
-                        </div>
+                        {include file='snippets/form_group_simple.tpl'
+                            options=[
+                                'text', 'company', 'firma',
+                                {$Anfrage->cFirma|default:null}, {lang key='firm' section='account data'},
+                                $Einstellungen.artikeldetails.produktfrage_abfragen_firma, null, 'organization'
+                            ]
+                        }
                     </div>
                 </div>
             {/if}
 
             <div class="row">
                 <div class="col-xs-12 col-md-6">
-                    <div class="form-group float-label-control {if isset($fehlendeAngaben_fragezumprodukt.email) && $fehlendeAngaben_fragezumprodukt.email > 0}has-error{/if} required">
-                        <label class="control-label" for="question_email">{lang key='email' section='account data'}</label>
-                        <input class="form-control" type="email" name="email"
-                               value="{if isset($Anfrage)}{$Anfrage->cMail}{/if}" id="question_email" required
-                               autocomplete="email"
-                        >
-                        {if isset($fehlendeAngaben_fragezumprodukt.email) && $fehlendeAngaben_fragezumprodukt.email > 0}
-                            <div class="form-error-msg text-danger"><i class="fa fa-warning"></i> {if $fehlendeAngaben_fragezumprodukt.email == 1}{lang key='fillOut' section='global'}{elseif $fehlendeAngaben_fragezumprodukt.email == 2}{lang key='invalidEmail' section='global'}{elseif $fehlendeAngaben_fragezumprodukt.email==3}{lang key='blockedEmail' section='global'}{/if}</div>
-                        {/if}
-                    </div>
+                    {include file='snippets/form_group_simple.tpl'
+                        options=[
+                            'email', 'email', 'question_email',
+                            {$Anfrage->cMail|default:null}, {lang key='email' section='account data'},
+                            true, $fehlendeAngaben_fragezumprodukt.email|default:null, 'email'
+                        ]
+                    }
                 </div>
             </div>
 
@@ -104,45 +93,25 @@
                 <div class="row">
                     {if $Einstellungen.artikeldetails.produktfrage_abfragen_tel !== 'N'}
                         <div class="col-xs-12 col-md-6">
-                            <div class="form-group float-label-control {if isset($fehlendeAngaben_fragezumprodukt.tel) && $fehlendeAngaben_fragezumprodukt.tel > 0}has-error{/if}{if $Einstellungen.artikeldetails.produktfrage_abfragen_tel === 'Y'} required{/if}">
-                                <label class="control-label" for="tel">{lang key='tel' section='account data'}</label>
-                                <input class="form-control" type="text" name="tel"
-                                       value="{if isset($Anfrage)}{$Anfrage->cTel}{/if}"
-                                       id="tel"{if $Einstellungen.artikeldetails.produktfrage_abfragen_tel === 'Y'} required{/if}
-                                       autocomplete="home tel"
-                                >
-                                {if isset($fehlendeAngaben_fragezumprodukt.tel) && $fehlendeAngaben_fragezumprodukt.tel > 0}
-                                    <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
-                                        {if $fehlendeAngaben_fragezumprodukt.tel == 1}
-                                            {lang key='fillOut' section='global'}
-                                        {elseif $fehlendeAngaben_fragezumprodukt.tel == 2}
-                                            {lang key='invalidTel' section='global'}
-                                        {/if}
-                                    </div>
-                                {/if}
-                            </div>
+                            {include file='snippets/form_group_simple.tpl'
+                                options=[
+                                    'tel', 'tel', 'tel',
+                                    {$Anfrage->cTel|default:null}, {lang key='tel' section='account data'},
+                                    $Einstellungen.artikeldetails.produktfrage_abfragen_tel, $fehlendeAngaben_fragezumprodukt.tel|default:null, 'home tel'
+                                ]
+                            }
                         </div>
                     {/if}
 
                     {if $Einstellungen.artikeldetails.produktfrage_abfragen_mobil !== 'N'}
                         <div class="col-xs-12 col-md-6">
-                            <div class="form-group float-label-control{if isset($fehlendeAngaben_fragezumprodukt.mobil) && $fehlendeAngaben_fragezumprodukt.mobil > 0} has-error{/if}{if $Einstellungen.artikeldetails.produktfrage_abfragen_mobil === 'Y'} required{/if}">
-                                <label class="control-label" for="mobile">{lang key='mobile' section='account data'}</label>
-                                <input class="form-control" type="text" name="mobil"
-                                       value="{if isset($Anfrage)}{$Anfrage->cMobil}{/if}"
-                                       id="mobile"{if $Einstellungen.artikeldetails.produktfrage_abfragen_mobil === 'Y'} required{/if}
-                                       autocomplete="mobile tel"
-                                >
-                                {if isset($fehlendeAngaben_fragezumprodukt.mobil) && $fehlendeAngaben_fragezumprodukt.mobil > 0}
-                                    <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
-                                        {if $fehlendeAngaben_fragezumprodukt.mobil == 1}
-                                            {lang key='fillOut' section='global'}
-                                        {elseif $fehlendeAngaben_fragezumprodukt.mobil == 2}
-                                            {lang key='invalidTel' section='global'}
-                                        {/if}
-                                    </div>
-                                {/if}
-                            </div>
+                            {include file='snippets/form_group_simple.tpl'
+                                options=[
+                                    'tel', 'mobile', 'mobil',
+                                    {$Anfrage->cMobil|default:null}, {lang key='tel' section='account data'},
+                                    $Einstellungen.artikeldetails.produktfrage_abfragen_mobil, $fehlendeAngaben_fragezumprodukt.mobil|default:null, 'mobile tel'
+                                ]
+                            }
                         </div>
                     {/if}
                 </div>
@@ -151,23 +120,13 @@
             {if $Einstellungen.artikeldetails.produktfrage_abfragen_fax !== 'N'}
                 <div class="row">
                     <div class="col-xs-12 col-md-6">
-                        <div class="form-group float-label-control{if isset($fehlendeAngaben_fragezumprodukt.fax) && $fehlendeAngaben_fragezumprodukt.fax > 0} has-error{/if}{if $Einstellungen.artikeldetails.produktfrage_abfragen_fax === 'Y'} required{/if}">
-                            <label class="control-label" for="fax">{lang key='fax' section='account data'}</label>
-                            <input class="form-control" type="text" name="fax"
-                                   value="{if isset($Anfrage)}{$Anfrage->cFax}{/if}"
-                                   id="fax"{if $Einstellungen.artikeldetails.produktfrage_abfragen_fax === 'Y'} required{/if}
-                                   autocomplete="fax tel"
-                            >
-                            {if isset($fehlendeAngaben_fragezumprodukt.fax) && $fehlendeAngaben_fragezumprodukt.fax > 0}
-                                <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
-                                    {if $fehlendeAngaben_fragezumprodukt.fax == 1}
-                                        {lang key='fillOut' section='global'}
-                                    {elseif $fehlendeAngaben_fragezumprodukt.fax == 2}
-                                        {lang key='invalidTel' section='global'}
-                                    {/if}
-                                </div>
-                            {/if}
-                        </div>
+                        {include file='snippets/form_group_simple.tpl'
+                            options=[
+                                'tel', 'fax', 'fax',
+                                {$Anfrage->cMobil|default:null}, {lang key='fax' section='account data'},
+                                $Einstellungen.artikeldetails.produktfrage_abfragen_fax, $fehlendeAngaben_fragezumprodukt.fax|default:null, 'fax tel'
+                            ]
+                        }
                     </div>
                 </div>
             {/if}
@@ -175,11 +134,11 @@
 
         <fieldset>
             <legend>{lang key='productQuestion' section='productDetails'}</legend>
-            <div class="form-group float-label-control {if isset($fehlendeAngaben_fragezumprodukt.nachricht) && $fehlendeAngaben_fragezumprodukt.nachricht > 0}has-error{/if} required">
+            <div class="form-group float-label-control {if isset($fehlendeAngaben_fragezumprodukt.nachricht) && $fehlendeAngaben_fragezumprodukt.nachricht > 0}has-error{/if}">
                 <label class="control-label" for="question">{lang key='question' section='productDetails'}</label>
                 <textarea class="form-control" name="nachricht" id="question" cols="80" rows="8" required>{if isset($Anfrage)}{$Anfrage->cNachricht}{/if}</textarea>
                 {if isset($fehlendeAngaben_fragezumprodukt.nachricht) && $fehlendeAngaben_fragezumprodukt.nachricht > 0}
-                    <div class="form-error-msg text-danger"><i class="fa fa-warning"></i> {if $fehlendeAngaben_fragezumprodukt.nachricht > 0}{lang key='fillOut' section='global'}{/if}</div>
+                    <div class="form-error-msg text-danger"><i class="fa fa-warning"></i> {if $fehlendeAngaben_fragezumprodukt.nachricht > 0}{lang key='fillOut'}{/if}</div>
                 {/if}
             </div>
 
@@ -194,7 +153,7 @@
             isset($Einstellungen.artikeldetails.produktfrage_abfragen_captcha) && $Einstellungen.artikeldetails.produktfrage_abfragen_captcha !== 'N' && empty($smarty.session.Kunde->kKunde)}
             <hr>
             <div class="row">
-                <div class="col-xs-12 col-md-12{if !empty($fehlendeAngaben_fragezumprodukt.captcha)} has-error{/if} required">
+                <div class="col-xs-12 col-md-12{if !empty($fehlendeAngaben_fragezumprodukt.captcha)} has-error{/if}">
                     {captchaMarkup getBody=true}
                     <hr>
                 </div>

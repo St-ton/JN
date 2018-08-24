@@ -33,7 +33,6 @@ trait MagicCompatibilityTrait
      */
     public function __get($name)
     {
-        Shop::dbg($name, false, 'n', 3);
         trigger_error(__CLASS__ . ': getter should be used to get ' . $name, E_USER_DEPRECATED);
         if (property_exists($this, $name)) {
 

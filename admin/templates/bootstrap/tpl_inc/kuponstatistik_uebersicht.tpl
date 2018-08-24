@@ -15,6 +15,7 @@
                                 locale: {
                                     format: 'YYYY-MM-DD'
                                 },
+                                parentEl: 'html',
                                 {/literal}
                                 startDate: '{$startDate}',
                                 endDate: '{$endDate}',

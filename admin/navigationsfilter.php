@@ -26,7 +26,7 @@ if (isset($_POST['speichern']) && FormHelper::validateToken()) {
         && count($_POST['nBis']) > 0
     ) {
         // Tabelle leeren
-        Shop::Container()->getDB()->query("TRUNCATE TABLE tpreisspannenfilter", \DB\ReturnType::AFFECTED_ROWS);
+        Shop::Container()->getDB()->query('TRUNCATE TABLE tpreisspannenfilter', \DB\ReturnType::AFFECTED_ROWS);
 
         foreach ($_POST['nVon'] as $i => $nVon) {
             $nVon = (float)$nVon;

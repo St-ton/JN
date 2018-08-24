@@ -120,7 +120,7 @@ class AdminTemplate
                 return $this;
             }
             // fall back to admin template "default"
-            self::$cTemplate = 'default';
+            self::$cTemplate = 'bootstrap';
         }
 
         return $this;

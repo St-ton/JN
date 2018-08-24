@@ -71,7 +71,7 @@ class WunschlistePosEigenschaft
     /**
      * @return $this
      */
-    public function schreibeDB()
+    public function schreibeDB(): self
     {
         $this->kWunschlistePosEigenschaft = Shop::Container()->getDB()->insert(
             'twunschlisteposeigenschaft',

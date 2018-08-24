@@ -143,7 +143,7 @@ class Kategorie
      * @param bool $noCache
      * @return $this
      */
-    public function loadFromDB(int $kKategorie, int $kSprache = 0, int $kKundengruppe = 0, bool $recall = false, bool $noCache = false)
+    public function loadFromDB(int $kKategorie, int $kSprache = 0, int $kKundengruppe = 0, bool $recall = false, bool $noCache = false): self
     {
         $oSpracheTmp            = null;
         $oKategorieAttribut_arr = null;
@@ -232,8 +232,8 @@ class Kategorie
         }
 
         //EXPERIMENTAL_MULTILANG_SHOP
-        if ((!isset($oKategorie->cSeo) || $oKategorie->cSeo === null || $oKategorie->cSeo === '') &&
-            defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true
+        if ((!isset($oKategorie->cSeo) || $oKategorie->cSeo === null || $oKategorie->cSeo === '') 
+            && defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true
         ) {
             $kDefaultLang = $oSpracheTmp !== null ? $oSpracheTmp->kSprache : Sprache::getDefaultLanguage()->kSprache;
             $kDefaultLang = (int)$kDefaultLang;
@@ -276,15 +276,15 @@ class Kategorie
         $this->categoryAttributes         = [];
         if ($this->kKategorie > 0) {
             $oKategorieAttribut_arr = Shop::Container()->getDB()->query(
-                "SELECT COALESCE(tkategorieattributsprache.cName, tkategorieattribut.cName) cName,
+                'SELECT COALESCE(tkategorieattributsprache.cName, tkategorieattribut.cName) cName,
                         COALESCE(tkategorieattributsprache.cWert, tkategorieattribut.cWert) cWert,
                         tkategorieattribut.bIstFunktionsAttribut, tkategorieattribut.nSort
                     FROM tkategorieattribut
                     LEFT JOIN tkategorieattributsprache 
                         ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
-                        AND tkategorieattributsprache.kSprache = " . $kSprache . "
-                    WHERE kKategorie = " . (int)$this->kKategorie . "
-                    ORDER BY tkategorieattribut.bIstFunktionsAttribut DESC, tkategorieattribut.nSort",
+                        AND tkategorieattributsprache.kSprache = ' . $kSprache . '
+                    WHERE kKategorie = ' . (int)$this->kKategorie . '
+                    ORDER BY tkategorieattribut.bIstFunktionsAttribut DESC, tkategorieattribut.nSort',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         }
@@ -344,7 +344,8 @@ class Kategorie
         //interne Verlinkung $#k:X:Y#$
         $this->cBeschreibung         = StringHandler::parseNewsText($this->cBeschreibung);
         // Kurzbezeichnung
-        $this->cKurzbezeichnung      = (!empty($this->categoryAttributes[ART_ATTRIBUT_SHORTNAME]) && !empty($this->categoryAttributes[ART_ATTRIBUT_SHORTNAME]->cWert))
+        $this->cKurzbezeichnung      = (!empty($this->categoryAttributes[ART_ATTRIBUT_SHORTNAME])
+            && !empty($this->categoryAttributes[ART_ATTRIBUT_SHORTNAME]->cWert))
             ? $this->categoryAttributes[ART_ATTRIBUT_SHORTNAME]->cWert
             : $this->cName;
         $cacheTags                   = [CACHING_GROUP_CATEGORY . '_' . $kKategorie, CACHING_GROUP_CATEGORY];
@@ -404,7 +405,7 @@ class Kategorie
      * @param object $obj
      * @return $this
      */
-    public function mapData($obj)
+    public function mapData($obj): self
     {
         if (is_array(get_object_vars($obj))) {
             $members = array_keys(get_object_vars($obj));
@@ -472,10 +473,10 @@ class Kategorie
                 return (int)$this->kOberKategorie;
             }
             $oObj = Shop::Container()->getDB()->query(
-                "SELECT kOberKategorie
+                'SELECT kOberKategorie
                     FROM tkategorie
                     WHERE kOberKategorie > 0
-                        AND kKategorie = " . (int)$this->kKategorie,
+                        AND kKategorie = ' . (int)$this->kKategorie,
                 \DB\ReturnType::SINGLE_OBJECT
             );
 
@@ -527,7 +528,7 @@ class Kategorie
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getName()
     {

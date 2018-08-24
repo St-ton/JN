@@ -21,7 +21,7 @@ class Accordion extends \OPC\Portlet
      */
     public function getPreviewHtml(PortletInstance $instance): string
     {
-        $instance->setProperty('uid', uniqid('cllps_', false));
+        $instance->setProperty('uid', \uniqid('cllps_', false));
 
         return $this->getPreviewHtmlFromTpl($instance);
     }

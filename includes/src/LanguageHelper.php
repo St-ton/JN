@@ -31,7 +31,7 @@ class LanguageHelper
     /**
      * @return LanguageHelper
      */
-    public static function getInstance()
+    public static function getInstance(): self
     {
         return self::$_instance ?? new self();
     }

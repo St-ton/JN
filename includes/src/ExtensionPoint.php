@@ -164,7 +164,6 @@ class ExtensionPoint
             case PAGE_WRB:
             case PAGE_AUSWAHLASSISTENT:
             case PAGE_BESTELLABSCHLUSS:
-            case PAGE_RMA:
             case PAGE_WARENKORB:
             case PAGE_MEINKONTO:
             case PAGE_KONTAKT:

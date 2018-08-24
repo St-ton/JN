@@ -233,10 +233,10 @@ function baueArtikelExportSQL(&$oExportformat)
 
     switch ($oExportformat->nVarKombiOption) {
         case 2:
-            $cSQL_arr['Where'] = " AND kVaterArtikel = 0";
+            $cSQL_arr['Where'] = ' AND kVaterArtikel = 0';
             break;
         case 3:
-            $cSQL_arr['Where'] = " AND (tartikel.nIstVater != 1 OR tartikel.kEigenschaftKombi > 0)";
+            $cSQL_arr['Where'] = ' AND (tartikel.nIstVater != 1 OR tartikel.kEigenschaftKombi > 0)';
             break;
     }
     if (isset($cExportEinstellungAssoc_arr['exportformate_lager_ueber_null'])
@@ -253,9 +253,9 @@ function baueArtikelExportSQL(&$oExportformat)
     if (isset($cExportEinstellungAssoc_arr['exportformate_preis_ueber_null'])
         && $cExportEinstellungAssoc_arr['exportformate_preis_ueber_null'] === 'Y'
     ) {
-        $cSQL_arr['Join'] .= " JOIN tpreise ON tpreise.kArtikel = tartikel.kArtikel
-                                AND tpreise.kKundengruppe = " . (int)$oExportformat->kKundengruppe . "
-                                AND tpreise.fVKNetto > 0";
+        $cSQL_arr['Join'] .= ' JOIN tpreise ON tpreise.kArtikel = tartikel.kArtikel
+                                AND tpreise.kKundengruppe = ' . (int)$oExportformat->kKundengruppe . '
+                                AND tpreise.fVKNetto > 0';
     }
 
     if (isset($cExportEinstellungAssoc_arr['exportformate_beschreibung'])

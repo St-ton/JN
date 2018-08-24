@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -25,6 +25,6 @@ class DateOfIssue extends AbstractSortingOption
         $this->orderBy = 'tartikel.dErscheinungsdatum DESC, tartikel.cName';
         $this->setName(\Shop::Lang()->get('sortDateofissue'));
         $this->setPriority($this->getConfig('artikeluebersicht')['suche_sortierprio_erscheinungsdatum']);
-        $this->setValue(SEARCH_SORT_DATEOFISSUE);
+        $this->setValue(\SEARCH_SORT_DATEOFISSUE);
     }
 }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -6,15 +6,16 @@
 
 namespace Filter\States;
 
+
 use DB\ReturnType;
 use Filter\AbstractFilter;
-use Filter\FilterJoin;
-use Filter\FilterOption;
 use Filter\FilterInterface;
-use Filter\FilterStateSQL;
-use Filter\Type;
-use Filter\Items\ItemManufacturer;
+use Filter\Items\Manufacturer;
+use Filter\Join;
+use Filter\Option;
 use Filter\ProductFilter;
+use Filter\StateSQL;
+use Filter\Type;
 
 /**
  * Class BaseManufacturer
@@ -41,7 +42,7 @@ class BaseManufacturer extends AbstractFilter
         parent::__construct($productFilter);
         $this->setIsCustom(false)
              ->setUrlParam('h')
-             ->setUrlParamSEO(SEP_HST);
+             ->setUrlParamSEO(\SEP_HST);
     }
 
     /**
@@ -59,24 +60,24 @@ class BaseManufacturer extends AbstractFilter
     public function setSeo(array $languages): FilterInterface
     {
         $val = $this->getValue();
-        if ((is_numeric($val) && $val > 0) || (is_array($val) && count($val) > 0)) {
-            if (!is_array($val)) {
+        if ((\is_numeric($val) && $val > 0) || (\is_array($val) && \count($val) > 0)) {
+            if (!\is_array($val)) {
                 $val = [$val];
             }
-            $oSeo_arr = \Shop::Container()->getDB()->query(
+            $oSeo_arr = $this->productFilter->getDB()->query(
                 "SELECT tseo.cSeo, tseo.kSprache, thersteller.cName
                     FROM tseo
                     JOIN thersteller
                         ON thersteller.kHersteller = tseo.kKey
                     WHERE cKey = 'kHersteller' 
-                        AND kKey IN (" . implode(', ', $val) . ")",
+                        AND kKey IN (" . \implode(', ', $val) . ")",
                 ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($languages as $language) {
                 $this->cSeo[$language->kSprache] = '';
                 foreach ($oSeo_arr as $oSeo) {
                     if ($language->kSprache === (int)$oSeo->kSprache) {
-                        $sep                             = $this->cSeo[$language->kSprache] === '' ? '' : SEP_HST;
+                        $sep                             = $this->cSeo[$language->kSprache] === '' ? '' : \SEP_HST;
                         $this->cSeo[$language->kSprache] .= $sep . $oSeo->cSeo;
                     }
                 }
@@ -115,13 +116,13 @@ class BaseManufacturer extends AbstractFilter
     public function getSQLCondition(): string
     {
         $val = $this->getValue();
-        if (!is_array($val)) {
+        if (!\is_array($val)) {
             $val = [$val];
         }
 
         return $this->getType() === Type::OR
-            ? 'tartikel.' . $this->getPrimaryKeyRow() . ' IN (' . implode(', ', $val) . ')'
-            : implode(' AND ', array_map(function ($e) {
+            ? 'tartikel.' . $this->getPrimaryKeyRow() . ' IN (' . \implode(', ', $val) . ')'
+            : \implode(' AND ', \array_map(function ($e) {
                 return 'tartikel.' . $this->getPrimaryKeyRow() . ' = ' . $e;
             }, $val));
     }
@@ -136,7 +137,7 @@ class BaseManufacturer extends AbstractFilter
 
     /**
      * @param null $data
-     * @return FilterOption[]
+     * @return Option[]
      */
     public function getOptions($data = null): array
     {
@@ -151,7 +152,7 @@ class BaseManufacturer extends AbstractFilter
             ? $this->getClassName()
             : null
         );
-        $sql   = (new FilterStateSQL())->from($state);
+        $sql   = (new StateSQL())->from($state);
         $sql->setSelect([
             'thersteller.kHersteller',
             'thersteller.cName',
@@ -161,16 +162,22 @@ class BaseManufacturer extends AbstractFilter
         $sql->setOrderBy(null);
         $sql->setLimit('');
         $sql->setGroupBy(['tartikel.kArtikel']);
-        $sql->addJoin((new FilterJoin())
+        $sql->addJoin((new Join())
             ->setComment('JOIN from ' . __METHOD__)
             ->setType('JOIN')
             ->setTable('thersteller')
             ->setOn('tartikel.kHersteller = thersteller.kHersteller')
             ->setOrigin(__CLASS__));
-        $query            = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
-        $manufacturers    = \Shop::Container()->getDB()->query(
+        $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
+        $cacheID   = 'fltr_' . __CLASS__ . \md5($baseQuery);
+        if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
+            $this->options = $cached;
+
+            return $this->options;
+        }
+        $manufacturers    = $this->productFilter->getDB()->query(
             "SELECT tseo.cSeo, ssMerkmal.kHersteller, ssMerkmal.cName, ssMerkmal.nSortNr, COUNT(*) AS nAnzahl
-                FROM (" . $query . ") AS ssMerkmal
+                FROM (" . $baseQuery . ") AS ssMerkmal
                     LEFT JOIN tseo 
                         ON tseo.kKey = ssMerkmal.kHersteller
                         AND tseo.cKey = 'kHersteller'
@@ -179,7 +186,7 @@ class BaseManufacturer extends AbstractFilter
                     ORDER BY ssMerkmal.nSortNr, ssMerkmal.cName",
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $additionalFilter = new ItemManufacturer($this->productFilter);
+        $additionalFilter = new Manufacturer($this->productFilter);
         foreach ($manufacturers as $manufacturer) {
             // attributes for old filter templates
             $manufacturer->kHersteller = (int)$manufacturer->kHersteller;
@@ -189,7 +196,7 @@ class BaseManufacturer extends AbstractFilter
                 $additionalFilter->init($manufacturer->kHersteller)
             );
 
-            $options[] = (new FilterOption())
+            $options[] = (new Option())
                 ->setURL($manufacturer->cURL)
                 ->setIsActive($this->productFilter->filterOptionIsActive(
                     $this->getClassName(),
@@ -205,6 +212,7 @@ class BaseManufacturer extends AbstractFilter
                 ->setSort($manufacturer->nSortNr);
         }
         $this->options = $options;
+        $this->productFilter->getCache()->set($cacheID, $options, [CACHING_GROUP_FILTER]);
 
         return $options;
     }

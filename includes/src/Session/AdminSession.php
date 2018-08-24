@@ -50,13 +50,13 @@ class AdminSession
     public function __construct()
     {
         self::$_instance = $this;
-        session_name('eSIdAdm');
+        \session_name('eSIdAdm');
 
-        self::$handler = ES_SESSIONS === 1
+        self::$handler = \ES_SESSIONS === 1
             ? new SessionHandlerDB(\Shop::Container()->getDB(), 'tadminsession')
             : new SessionHandlerJTL();
-        $conf           = \Shop::getSettings([CONF_GLOBAL])['global'];
-        $cookieDefaults = session_get_cookie_params();
+        $conf           = \Shop::getSettings([\CONF_GLOBAL])['global'];
+        $cookieDefaults = \session_get_cookie_params();
         $set            = false;
         $lifetime       = $cookieDefaults['lifetime'] ?? 0;
         $path           = $cookieDefaults['path'] ?? '';
@@ -76,7 +76,7 @@ class AdminSession
             $domain = $conf['global_cookie_domain'];
         }
         if (isset($conf['global_cookie_lifetime']) 
-            && is_numeric($conf['global_cookie_lifetime']) 
+            && \is_numeric($conf['global_cookie_lifetime'])
             && (int)$conf['global_cookie_lifetime'] > 0
         ) {
             $set      = true;
@@ -92,13 +92,13 @@ class AdminSession
             $httpOnly = $httpOnly === true && $conf['kaufabwicklung_ssl_nutzen'] === 'N';
         }
         if ($set === true) {
-            session_set_cookie_params($lifetime, $path, $domain, $secure, $httpOnly);
+            \session_set_cookie_params($lifetime, $path, $domain, $secure, $httpOnly);
         }
-        self::$storage = new SessionStorage(self::$handler, []);
+        self::$storage = new SessionStorage(self::$handler);
 
         if ($set === true) {
-            $exp = ($lifetime === 0) ? 0 : time() + $lifetime;
-            setcookie(session_name(), session_id(), $exp, $path, $domain, $secure, $httpOnly);
+            $exp = ($lifetime === 0) ? 0 : \time() + $lifetime;
+            \setcookie(\session_name(), \session_id(), $exp, $path, $domain, $secure, $httpOnly);
         }
         if (!isset($_SESSION['jtl_token'])) {
             $_SESSION['jtl_token'] = \Shop::Container()->getCryptoService()->randomString(32);
@@ -114,10 +114,10 @@ class AdminSession
             $_SESSION['cISOSprache'] = $lang->cISO ?? 'ger';
         }
         \Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
-        if (isset($_SESSION['Kundengruppe']) && get_class($_SESSION['Kundengruppe']) === 'stdClass') {
+        if (isset($_SESSION['Kundengruppe']) && \get_class($_SESSION['Kundengruppe']) === 'stdClass') {
             $_SESSION['Kundengruppe'] = new \Kundengruppe($_SESSION['Kundengruppe']->kKundengruppe);
         }
-        if (isset($_SESSION['Waehrung']) && get_class($_SESSION['Waehrung']) === 'stdClass') {
+        if (isset($_SESSION['Waehrung']) && \get_class($_SESSION['Waehrung']) === 'stdClass') {
             $_SESSION['Waehrung'] = new \Currency($_SESSION['Waehrung']->kWaehrung);
         }
         if (empty($_SESSION['Sprachen'])) {

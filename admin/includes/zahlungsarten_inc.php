@@ -112,35 +112,35 @@ function getGesetzteKundengruppen($zahlungsart)
  */
 function getPaymentMethodsByName($cSearch)
 {
-    // Einstellungen kommagetrennt?
-    $cSearch_arr             = explode(',', $cSearch);
-    $allPaymentMethodsByName = [];
-    foreach ($cSearch_arr as $cSearchPos) {
+    $paymentMethodsByName = [];
+    foreach (explode(',', $cSearch) as $cSearchPos) {
         // Leerzeichen löschen
         trim($cSearchPos);
         // Nur Eingaben mit mehr als 2 Zeichen
         if (strlen($cSearchPos) > 2) {
-            $paymentMethodsByName_arr = Shop::Container()->getDB()->query(
-                "SELECT za.kZahlungsart, za.cName
+            $paymentMethodsByName_arr = Shop::Container()->getDB()->queryPrepared(
+                'SELECT za.kZahlungsart, za.cName
                     FROM tzahlungsart AS za
-                    LEFT JOIN tzahlungsartsprache AS zs ON zs.kZahlungsart = za.kZahlungsart
-                        AND zs.cName LIKE '%" . Shop::Container()->getDB()->escape($cSearchPos) . "%'
-                    WHERE za.cName LIKE '%" . Shop::Container()->getDB()->escape($cSearchPos) . "%' 
-                    OR zs.cName LIKE '%" . Shop::Container()->getDB()->escape($cSearchPos) . "%'",
+                    LEFT JOIN tzahlungsartsprache AS zs 
+                        ON zs.kZahlungsart = za.kZahlungsart
+                        AND zs.cName LIKE :search
+                    WHERE za.cName LIKE :search 
+                    OR zs.cName LIKE :search',
+                ['search' => '%' . $cSearchPos . '%'],
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             // Berücksichtige keine fehlerhaften Eingaben
             if (!empty($paymentMethodsByName_arr)) {
                 if (count($paymentMethodsByName_arr) > 1) {
                     foreach ($paymentMethodsByName_arr as $paymentMethodByName) {
-                        $allPaymentMethodsByName[$paymentMethodByName->kZahlungsart] = $paymentMethodByName;
+                        $paymentMethodsByName[$paymentMethodByName->kZahlungsart] = $paymentMethodByName;
                     }
                 } else {
-                    $allPaymentMethodsByName[$paymentMethodsByName_arr[0]->kZahlungsart] = $paymentMethodsByName_arr[0];
+                    $paymentMethodsByName[$paymentMethodsByName_arr[0]->kZahlungsart] = $paymentMethodsByName_arr[0];
                 }
             }
         }
     }
 
-    return $allPaymentMethodsByName;
+    return $paymentMethodsByName;
 }

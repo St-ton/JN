@@ -3,7 +3,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_WIDGETS . 'class.WidgetBase.php';
 require_once PFAD_ROOT . PFAD_FLASHCHART . 'php-ofc-library/open-flash-chart.php';
 
 /**
@@ -48,7 +47,7 @@ class WidgetBots extends WidgetBase
         $pie->add_animation(new pie_fade());
         $pie->set_tooltip('#val# of #total#<br>#percent# of 100%');
         $pie->set_colours(['#1C9E05', '#FF368D']);
-        $pie->set_values([2, 3, 4, new pie_value(6.5, "hello (6.5)")]);
+        $pie->set_values([2, 3, 4, new pie_value(6.5, 'hello (6.5)')]);
 
         // chart
         $chart = new open_flash_chart();

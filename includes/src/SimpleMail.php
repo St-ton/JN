@@ -488,13 +488,12 @@ class SimpleMail
             return false;
         }
         $blacklist = Shop::Container()->getDB()->query(
-            "SELECT cEmail
-                FROM temailblacklist",
+            'SELECT cEmail FROM temailblacklist',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($blacklist as $item) {
             if (strpos($item->cEmail, '*') !== false) {
-                preg_match('/' . str_replace("*", "[a-z0-9\-\_\.\@\+]*", $item->cEmail) . '/', $cEmail, $hits);
+                preg_match('/' . str_replace('*', "[a-z0-9\-\_\.\@\+]*", $item->cEmail) . '/', $cEmail, $hits);
                 // Blocked
                 if (isset($hits[0]) && strlen($cEmail) === strlen($hits[0])) {
                     // Email schonmal geblockt worden?

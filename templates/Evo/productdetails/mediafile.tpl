@@ -1,8 +1,7 @@
 {**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license https://jtl-url.de/jtlshoplicense
  *}
-
 {if !empty($hinweis)}
     <div class="alert alert-info">
         {$hinweis}
@@ -73,7 +72,7 @@
                                                 {assign var=audiosrc value=$PFAD_MEDIAFILES|cat:$oMedienDatei->cPfad}
                                             {/if}
                                             {if $audiosrc|strlen > 1}
-                                                <audio controls>
+                                                <audio controls controlsList="nodownload">
                                                     <source src="{$audiosrc}" type="audio/mpeg">
                                                     Your browser does not support the audio element.
                                                 </audio>
@@ -138,5 +137,5 @@
             {/if}
         {/if}
     {/foreach}
-    </div>{* /row *}
+    </div>
 {/if}

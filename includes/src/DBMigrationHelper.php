@@ -126,11 +126,11 @@ class DBMigrationHelper
         $database = Shop::Container()->getDB()->getConfig()['database'];
 
         return Shop::Container()->getDB()->queryPrepared(
-            "SELECT `TABLE_NAME`, `ENGINE`, `TABLE_COLLATION`, `TABLE_COMMENT`
+            'SELECT `TABLE_NAME`, `ENGINE`, `TABLE_COLLATION`, `TABLE_COMMENT`
                 FROM information_schema.TABLES
                 WHERE `TABLE_SCHEMA` = :schema
                     AND `TABLE_NAME` = :table
-                ORDER BY `TABLE_NAME` LIMIT 1",
+                ORDER BY `TABLE_NAME` LIMIT 1',
             ['schema' => $database, 'table'  => $cTable,],
             \DB\ReturnType::SINGLE_OBJECT
         );
@@ -147,7 +147,7 @@ class DBMigrationHelper
 
         if (!empty($cTable)) {
             $params['table'] = $cTable;
-            $filter          = "AND `TABLE_NAME` = :table";
+            $filter          = 'AND `TABLE_NAME` = :table';
         }
 
         return Shop::Container()->getDB()->queryPrepared(
@@ -190,9 +190,9 @@ class DBMigrationHelper
         }
 
         $tableStatus = Shop::Container()->getDB()->queryPrepared(
-            "SHOW OPEN TABLES
+            'SHOW OPEN TABLES
                 WHERE `Database` LIKE :schema
-                    AND `Table` LIKE :table",
+                    AND `Table` LIKE :table',
             ['schema' => $database, 'table'  => $cTable,],
             \DB\ReturnType::SINGLE_OBJECT
         );

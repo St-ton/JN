@@ -6,7 +6,7 @@
 
 namespace Services;
 
-use Boxes\BoxFactoryInterface;
+use Boxes\FactoryInterface;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\Services\GcServiceInterface;
@@ -95,9 +95,9 @@ class Container extends ContainerBase implements DefaultServicesInterface
     /**
      * @inheritdoc
      */
-    public function getBoxFactory(): BoxFactoryInterface
+    public function getBoxFactory(): FactoryInterface
     {
-        return $this->get(BoxFactoryInterface::class);
+        return $this->get(FactoryInterface::class);
     }
 
     /**

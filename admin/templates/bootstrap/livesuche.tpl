@@ -82,7 +82,7 @@
                             <h3 class="panel-title">{#searchrequest#}</h3>
                         </div>
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="table table-striped">
                                 <tr>
                                     <th class="th-1"></th>
                                     <th class="tleft">
@@ -99,12 +99,12 @@
 
                                 {foreach name=suchanfragen from=$Suchanfragen item=suchanfrage}
                                     <input name="kSuchanfrageAll[]" type="hidden" value="{$suchanfrage->kSuchanfrage}" />
-                                    <tr class="tab_bg{$smarty.foreach.suchanfragen.iteration%2}">
-                                        <td class="TD1">
+                                    <tr>
+                                        <td>
                                             <input type="checkbox" name="kSuchanfrage[]" value="{$suchanfrage->kSuchanfrage}" />
                                         </td>
-                                        <td class="TD2">{$suchanfrage->cSuche}</td>
-                                        <td class="TD3">
+                                        <td>{$suchanfrage->cSuche}</td>
+                                        <td>
                                             <input class="form-control fieldOther" name="nAnzahlGesuche_{$suchanfrage->kSuchanfrage}" type="text" value="{$suchanfrage->nAnzahlGesuche}" style="width:50px;" />
                                         </td>
                                         <td class="tcenter">
@@ -116,10 +116,10 @@
                                     </tr>
                                 {/foreach}
                                 <tr>
-                                    <td class="TD1">
+                                    <td>
                                         <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessagesExcept(this.form, 'nAktiv_');" />
                                     </td>
-                                    <td colspan="5" class="TD7"><label for="ALLMSGS">{#livesucheSelectAll#}</label></td>
+                                    <td colspan="5"><label for="ALLMSGS">{#livesucheSelectAll#}</label></td>
                                 </tr>
                             </table>
                         </div>
@@ -157,7 +157,7 @@
                             <h3 class="panel-title">{#searchmiss#}</h3>
                         </div>
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="table table-striped">
                                 <tr>
                                     <th class="th-1" style="width: 40px;">&nbsp;</th>
                                     <th class="th-1" align="left">{#search#}</th>
@@ -166,20 +166,20 @@
                                     <th class="th-4" align="left">{#mapping#}</th>
                                 </tr>
                                 {foreach name=suchanfragenerfolglos from=$Suchanfragenerfolglos item=Suchanfrageerfolglos}
-                                    <tr class="tab_bg{$smarty.foreach.suchanfragenerfolglos.iteration%2}">
-                                        <td class="TD1">
+                                    <tr>
+                                        <td>
                                             <input name="kSuchanfrageErfolglos[]" type="checkbox" value="{$Suchanfrageerfolglos->kSuchanfrageErfolglos}" />
                                         </td>
-                                        <td class="TD1">
+                                        <td>
                                             {if isset($nErfolglosEditieren) && $nErfolglosEditieren == 1}
                                                 <input class="form-control" name="cSuche_{$Suchanfrageerfolglos->kSuchanfrageErfolglos}" type="text" value="{$Suchanfrageerfolglos->cSuche}" />
                                             {else}
                                                 {$Suchanfrageerfolglos->cSuche}
                                             {/if}
                                         </td>
-                                        <td class="TD2">{$Suchanfrageerfolglos->nAnzahlGesuche}</td>
-                                        <td class="TD3">{$Suchanfrageerfolglos->dZuletztGesucht}</td>
-                                        <td class="TD4">
+                                        <td>{$Suchanfrageerfolglos->nAnzahlGesuche}</td>
+                                        <td>{$Suchanfrageerfolglos->dZuletztGesucht}</td>
+                                        <td>
                                             {if !isset($nErfolglosEditieren) || $nErfolglosEditieren != 1}
                                                 <input class="form-control fieldOther" name="mapping_{$Suchanfrageerfolglos->kSuchanfrageErfolglos}" type="text" />
                                             {/if}
@@ -187,10 +187,10 @@
                                     </tr>
                                 {/foreach}
                                 <tr>
-                                    <td class="TD1">
+                                    <td>
                                         <input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessagesExcept(this.form, 'nAktiv_');" />
                                     </td>
-                                    <td colspan="4" class="TD7"><label for="ALLMSGS2">{#livesucheSelectAll#}</label></td>
+                                    <td colspan="4"><label for="ALLMSGS2">{#livesucheSelectAll#}</label></td>
                                 </tr>
                             </table>
                         </div>
@@ -219,7 +219,7 @@
                             <h3 class="panel-title">{#mapping#}</h3>
                         </div>
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="table table-striped">
                                 <tr>
                                     <th class="th-1"></th>
                                     <th class="th-2">{#search#}</th>
@@ -227,13 +227,13 @@
                                     <th class="th-4">{#searchcount#}</th>
                                 </tr>
                                 {foreach name=suchanfragenmapping from=$Suchanfragenmapping item=sfm}
-                                    <tr class="tab_bg{$smarty.foreach.suchanfragenmapping.iteration%2}">
-                                        <td class="TD1">
+                                    <tr>
+                                        <td>
                                             <input name="kSuchanfrageMapping[]" type="checkbox" value="{$sfm->kSuchanfrageMapping}">
                                         </td>
-                                        <td class="TD2">{$sfm->cSuche}</td>
-                                        <td class="TD3">{$sfm->cSucheNeu}</td>
-                                        <td class="TD4">{$sfm->nAnzahlGesuche}</td>
+                                        <td>{$sfm->cSuche}</td>
+                                        <td>{$sfm->cSucheNeu}</td>
+                                        <td>{$sfm->nAnzahlGesuche}</td>
                                     </tr>
                                 {/foreach}
                             </table>
@@ -263,7 +263,7 @@
                                 <th class="th-1">{#blacklistDescription#}</th>
                             </tr>
                             <tr class="tab-1_bg">
-                                <td class="TD2">
+                                <td>
                                     <textarea class="form-control" name="suchanfrageblacklist" style="width:100%;min-height:400px;">{foreach name=suchanfragenblacklist from=$Suchanfragenblacklist item=Suchanfrageblacklist}{$Suchanfrageblacklist->cSuche};{/foreach}</textarea>
                                 </td>
                             </tr>

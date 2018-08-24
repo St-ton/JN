@@ -6,6 +6,7 @@
 
 namespace Cache\Methods;
 
+
 use Cache\ICachingMethod;
 use Cache\JTLCacheTrait;
 
@@ -40,7 +41,7 @@ class cache_session implements ICachingMethod
     {
         $_SESSION[$this->options['prefix'] . $cacheID] = [
             'value'     => $content,
-            'timestamp' => time(),
+            'timestamp' => \time(),
             'lifetime'  => $expiration ?? $this->options['lifetime']
         ];
 
@@ -68,7 +69,7 @@ class cache_session implements ICachingMethod
         $cacheID         = $this->options['prefix'] . $cacheID;
         if (isset($_SESSION[$cacheID])) {
             $cacheValue = $_SESSION[$cacheID];
-            if ((time() - $cacheValue['timestamp']) < $cacheValue['lifetime']) {
+            if ((\time() - $cacheValue['timestamp']) < $cacheValue['lifetime']) {
                 return $cacheValue['value'];
             }
             $this->flush($originalCacheID);
@@ -116,7 +117,7 @@ class cache_session implements ICachingMethod
     public function flushAll(): bool
     {
         foreach ($_SESSION as $_sessionKey => $_sessionValue) {
-            if (strpos($_sessionKey, $this->options['prefix']) === 0) {
+            if (\strpos($_sessionKey, $this->options['prefix']) === 0) {
                 unset($_SESSION[$_sessionKey]);
             }
         }
@@ -140,14 +141,14 @@ class cache_session implements ICachingMethod
         $num = 0;
         $tmp = [];
         foreach ($_SESSION as $_sessionKey => $_sessionValue) {
-            if (strpos($_sessionKey, $this->options['prefix']) === 0) {
+            if (\strpos($_sessionKey, $this->options['prefix']) === 0) {
                 $num++;
                 $tmp[] = $_sessionKey;
             }
         }
-        $startMemory = memory_get_usage();
-        $_tmp2       = unserialize(serialize($tmp));
-        $total       = memory_get_usage() - $startMemory;
+        $startMemory = \memory_get_usage();
+        $_tmp2       = \unserialize(\serialize($tmp));
+        $total       = \memory_get_usage() - $startMemory;
 
         return [
             'entries' => $num,

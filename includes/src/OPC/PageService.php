@@ -81,7 +81,7 @@ class PageService
         $this->adminName = $io->getAccount()->account()->cLogin;
 
         foreach ($this->getPageIOFunctionNames() as $functionName) {
-            $publicFunctionName = 'opc' . ucfirst($functionName);
+            $publicFunctionName = 'opc' . \ucfirst($functionName);
             $io->register($publicFunctionName, [$this, $functionName], null, 'CONTENT_PAGE_VIEW');
         }
     }
@@ -148,10 +148,10 @@ class PageService
             } elseif ($isEditMode && $editedPageKey > 0) {
                 $this->curPage = $this->getDraft($editedPageKey);
             } else {
-                $curPageUrl                    = '/' . ltrim(\Shop::getRequestUri(), '/');
+                $curPageUrl                    = '/' . \ltrim(\Shop::getRequestUri(), '/');
                 $curPageParameters             = \Shop::getParameters();
                 $curPageParameters['kSprache'] = \Shop::getLanguage();
-                $curPageId                     = md5(serialize($curPageParameters));
+                $curPageId                     = \md5(\serialize($curPageParameters));
                 $this->curPage                 = $this->getPublicPage($curPageId) ?? new Page();
                 $this->curPage->setId($curPageId);
                 $this->curPage->setUrl($curPageUrl);

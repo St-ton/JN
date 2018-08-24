@@ -124,7 +124,7 @@ switch ($action) {
         }
         break;
     case 'settings' :
-        $settings = Shop::Container()->getDB()->selectAll(
+        $settings      = Shop::Container()->getDB()->selectAll(
             'teinstellungenconf',
             ['kEinstellungenSektion', 'cConf'],
             [CONF_CACHING, 'Y'],
@@ -179,7 +179,7 @@ switch ($action) {
                             $value->cWert = 'xcache';
                         } elseif (in_array('advancedfile', $availableMethods, true)) {
                             $value->cWert = 'advancedfile';
-                        }  elseif (in_array('file', $availableMethods, true)) {
+                        } elseif (in_array('file', $availableMethods, true)) {
                             $value->cWert = 'file';
                         }
                     } else {
@@ -203,7 +203,7 @@ switch ($action) {
         $cache->flushAll();
         $cache->setJtlCacheConfig();
         $notice .= 'Ihre Einstellungen wurden übernommen.<br />';
-        $tab = 'settings';
+        $tab    = 'settings';
         break;
     case 'benchmark' :
         //do benchmarks
@@ -245,7 +245,7 @@ switch ($action) {
         break;
     case 'flush_template_cache' :
         // delete all template cachefiles
-        $callback = function (array $pParameters) {
+        $callback     = function (array $pParameters) {
             if (!$pParameters['isdir']) {
                 if (@unlink($pParameters['path'] . $pParameters['filename'])) {
                     $pParameters['count']++;
@@ -264,10 +264,9 @@ switch ($action) {
             'notice' => &$notice,
             'error'  => &$error
         ];
-        $template    = Template::getInstance();
-        $templateDir = $template->getDir();
-        $dirMan      = new DirManager();
-        $dirMan->getData(PFAD_ROOT . PFAD_COMPILEDIR . $templateDir, $callback, $cbParameters);
+        $template     = Template::getInstance();
+        $dirMan       = new DirManager();
+        $dirMan->getData(PFAD_ROOT . PFAD_COMPILEDIR . $template->getDir(), $callback, $cbParameters);
         $dirMan->getData(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR, $callback, $cbParameters);
         $notice .= 'Es wurden <strong>' .
             number_format($cbParameters['count']) .
@@ -282,7 +281,7 @@ if ($cache !== null) {
            ->assign('all_methods', $cache->getAllMethods())
            ->assign('stats', $cache->getStats());
 }
-$settings      = Shop::Container()->getDB()->selectAll(
+$settings = Shop::Container()->getDB()->selectAll(
     'teinstellungenconf',
     ['nStandardAnzeigen', 'kEinstellungenSektion'],
     [1, CONF_CACHING],
@@ -303,7 +302,7 @@ foreach ($settings as $i => $setting) {
             'nSort'
         );
     }
-    $oSetValue = Shop::Container()->getDB()->select(
+    $oSetValue              = Shop::Container()->getDB()->select(
         'teinstellungen',
         ['kEinstellungenSektion', 'cName'],
         [CONF_CACHING, $setting->cWertName]
@@ -311,11 +310,11 @@ foreach ($settings as $i => $setting) {
     $setting->gesetzterWert = $oSetValue->cWert ?? null;
 }
 $advancedSettings = Shop::Container()->getDB()->query(
-    "SELECT * 
+    'SELECT * 
         FROM teinstellungenconf 
         WHERE (nStandardAnzeigen = 0 OR nStandardAnzeigen = 2)
-            AND kEinstellungenSektion = " . CONF_CACHING . "
-        ORDER BY nSort",
+            AND kEinstellungenSektion = ' . CONF_CACHING . '
+        ORDER BY nSort',
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 $settingsCount    = count($advancedSettings);
@@ -329,7 +328,7 @@ for ($i = 0; $i < $settingsCount; ++$i) {
             'nSort'
         );
     }
-    $oSetValue = Shop::Container()->getDB()->select(
+    $oSetValue                           = Shop::Container()->getDB()->select(
         'teinstellungen',
         ['kEinstellungenSektion', 'cName'],
         [CONF_CACHING, $advancedSettings[$i]->cWertName]
@@ -373,33 +372,47 @@ $callback = function (array $pParameters) {
     }
 };
 
-$template    = Template::getInstance();
-$templateDir = $template->getDir();
-$dirMan      = new DirManager();
+$template = Template::getInstance();
+$dirMan   = new DirManager();
 $dirMan->getData(PFAD_ROOT . PFAD_COMPILEDIR . $template->getDir(), $callback, ['files' => &$tplcacheStats->frontend])
        ->getData(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR, $callback, ['files' => &$tplcacheStats->backend]);
 
-$allMethods          = $cache->checkAvailability();
-$availableMethods    = [];
-$nonAvailableMethods = [];
+$allMethods           = $cache->checkAvailability();
+$availableMethods     = [];
+$disFunctionalMethods = [];
+$nonAvailableMethods  = [];
 foreach ($allMethods as $_name => $_status) {
-    if (isset($_status['available'], $_status['functional'])
-        && $_status['available'] === true
-        && $_status['functional'] === true
-    ) {
+    if ($_name === 'null') {
+        continue;
+    }
+    if ($_status['functional'] === true) {
         $availableMethods[] = $_name;
-    } elseif ($_name !== 'null') {
+    } elseif ($_status['available'] === true) {
+        $disFunctionalMethods[] = $_name;
+    } else {
         $nonAvailableMethods[] = $_name;
     }
 }
+$cachingGroups = [];
+if ($cache !== null) {
+    $cachingGroups = $cache->getCachingGroups();
+    foreach ($cachingGroups as &$cachingGroup) {
+        $cachingGroup['key_count'] = count($cache->getKeysByTag([constant($cachingGroup['name'])]));
+    }
+    unset($cachingGroup);
+}
+if (!empty($cache->getError())) {
+    $error .= $cache->getError();
+}
 $smarty->assign('settings', $settings)
-       ->assign('caching_groups', (($cache !== null) ? $cache->getCachingGroups() : []))
+       ->assign('caching_groups', $cachingGroups)
        ->assign('cache_enabled', isset($options['activated']) && $options['activated'] === true)
        ->assign('show_page_cache', $settings)
        ->assign('options', $options)
        ->assign('opcache_stats', $opcacheStats)
        ->assign('tplcacheStats', $tplcacheStats)
-       ->assign('available_methods', json_encode($availableMethods))
+       ->assign('functional_methods', json_encode($availableMethods))
+       ->assign('disfunctional_methods', json_encode($disFunctionalMethods))
        ->assign('non_available_methods', json_encode($nonAvailableMethods))
        ->assign('advanced_settings', $advancedSettings)
        ->assign('disabled_caches', $currentlyDisabled)

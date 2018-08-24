@@ -20,7 +20,7 @@
                         {if $bUpdateAvailable}
                             <span class="label label-info">Version {$strLatestVersion} {if $oVersion->build > 0}(Build: {$oVersion->build}){/if} verfügbar.</span>
                         {else}
-                            <span class="label label-success">Du benutzt die aktuelle Version von JTL-Shop</span>
+                            <span class="label label-success">Sie nutzen die aktuelle Version von JTL-Shop.</span>
                         {/if}
                     </td>
                 </tr>

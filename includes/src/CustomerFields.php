@@ -126,7 +126,7 @@ class CustomerFields
      * @param int $kCustomerField
      * @return bool
      */
-    public function delete(int $kCustomerField)
+    public function delete(int $kCustomerField): bool
     {
         if ($kCustomerField !== 0) {
             $ret = Shop::Container()->getDB()->delete('tkundenattribut', 'kKundenfeld', $kCustomerField) >= 0
@@ -149,7 +149,7 @@ class CustomerFields
      * @param int $kCustomerField
      * @param array $customerFieldValues
      */
-    protected function updateCustomerFieldValues($kCustomerField, $customerFieldValues)
+    protected function updateCustomerFieldValues(int $kCustomerField, array $customerFieldValues)
     {
         Shop::Container()->getDB()->delete('tkundenfeldwert', 'kKundenfeld', $kCustomerField);
 
@@ -185,7 +185,7 @@ class CustomerFields
      * @param null|array $customerFieldValues
      * @return bool
      */
-    public function save($customerField, $customerFieldValues = null)
+    public function save($customerField, $customerFieldValues = null): bool
     {
         $this->prepare($customerField);
         $key = $customerField->kKundenfeld ?? null;
@@ -216,9 +216,9 @@ class CustomerFields
                     case 'zahl':
                         // all customer values will be changed to numbers if possible
                         Shop::Container()->getDB()->executeQueryPrepared(
-                            "UPDATE tkundenattribut SET
+                            'UPDATE tkundenattribut SET
 	                            cWert =	CAST(CAST(cWert AS DOUBLE) AS CHAR)
-                                WHERE tkundenattribut.kKundenfeld = :kKundenfeld",
+                                WHERE tkundenattribut.kKundenfeld = :kKundenfeld',
                             ['kKundenfeld' => $key],
                             \DB\ReturnType::AFFECTED_ROWS
                         );

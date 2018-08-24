@@ -31,9 +31,9 @@ function baueBewertungsErinnerung()
         foreach ($kKundengruppen_arr as $i => $kKundengruppen) {
             if (is_numeric($kKundengruppen)) {
                 if ($i > 0) {
-                    $cSQL .= " OR tkunde.kKundengruppe=" . $kKundengruppen;
+                    $cSQL .= ' OR tkunde.kKundengruppe = ' . $kKundengruppen;
                 } else {
-                    $cSQL .= " tkunde.kKundengruppe=" . $kKundengruppen;
+                    $cSQL .= ' tkunde.kKundengruppe = ' . $kKundengruppen;
                 }
             }
         }
@@ -41,7 +41,7 @@ function baueBewertungsErinnerung()
         // Hole standard Kundengruppe
         $oKundengruppe = Shop::Container()->getDB()->select('tkundengruppe', 'cStandard', 'Y');
         if ($oKundengruppe->kKundengruppe > 0) {
-            $cSQL = " tkunde.kKundengruppe = " . $oKundengruppe->kKundengruppe;
+            $cSQL = ' tkunde.kKundengruppe = ' . $oKundengruppe->kKundengruppe;
         }
     }
     if (empty($cSQL)) {
@@ -82,10 +82,10 @@ function baueBewertungsErinnerung()
         foreach ($oBestellung->Positionen as $Pos) {
             if ($Pos->kArtikel > 0) {
                 $res = Shop::Container()->getDB()->query(
-                    "SELECT kBewertung
+                    'SELECT kBewertung
                         FROM tbewertung
-                        WHERE kArtikel = " . (int)$Pos->kArtikel . "
-                            AND kKunde = " . (int)$oBestellung->kKunde,
+                        WHERE kArtikel = ' . (int)$Pos->kArtikel . '
+                            AND kKunde = ' . (int)$oBestellung->kKunde,
                     \DB\ReturnType::SINGLE_OBJECT
                 );
                 if ($res === false) {
@@ -101,9 +101,9 @@ function baueBewertungsErinnerung()
         $oBestellung->Positionen = $openReviewPos_arr;
 
         Shop::Container()->getDB()->query(
-            "UPDATE tbestellung
+            'UPDATE tbestellung
                 SET dBewertungErinnerung = now()
-                WHERE kBestellung = " . (int)$oBestellungen->kBestellung,
+                WHERE kBestellung = ' . (int)$oBestellungen->kBestellung,
             \DB\ReturnType::AFFECTED_ROWS
         );
         $logger = Shop::Container()->getLogService();

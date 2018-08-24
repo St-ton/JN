@@ -20,7 +20,7 @@ function bearbeiteEinstellungsSuche($cSuche, $bSpeichern = false)
     $oSQL->oEinstellung_arr = [];
     if (strlen($cSuche) > 0) {
         //Einstellungen die zu den Exportformaten gehören nicht holen
-        $oSQL->cWHERE = "AND kEinstellungenSektion != 101 ";
+        $oSQL->cWHERE = 'AND kEinstellungenSektion != 101 ';
         // Einstellungen Kommagetrennt?
         $kEinstellungenConf_arr = explode(',', $cSuche);
         $bKommagetrennt         = false;
@@ -34,20 +34,20 @@ function bearbeiteEinstellungsSuche($cSuche, $bSpeichern = false)
         }
         if ($bKommagetrennt) {
             $oSQL->nSuchModus = 1;
-            $oSQL->cSearch    = "Suche nach ID: ";
-            $oSQL->cWHERE .= " AND kEinstellungenConf IN (";
+            $oSQL->cSearch    = 'Suche nach ID: ';
+            $oSQL->cWHERE .= ' AND kEinstellungenConf IN (';
             foreach ($kEinstellungenConf_arr as $i => $kEinstellungenConf) {
                 if ($kEinstellungenConf > 0) {
                     if ($i > 0) {
-                        $oSQL->cSearch .= ", " . (int)$kEinstellungenConf;
-                        $oSQL->cWHERE .= ", " . (int)$kEinstellungenConf;
+                        $oSQL->cSearch .= ', ' . (int)$kEinstellungenConf;
+                        $oSQL->cWHERE .= ', ' . (int)$kEinstellungenConf;
                     } else {
                         $oSQL->cSearch .= (int)$kEinstellungenConf;
                         $oSQL->cWHERE .= (int)$kEinstellungenConf;
                     }
                 }
             }
-            $oSQL->cWHERE .= ")";
+            $oSQL->cWHERE .= ')';
         } else { // Range von Einstellungen?
             $kEinstellungenConf_arr = explode('-', $cSuche);
             $bRange                 = false;
@@ -64,12 +64,12 @@ function bearbeiteEinstellungsSuche($cSuche, $bSpeichern = false)
                 $oSQL->cSearch    = 'Suche nach ID Range: ' . 
                     (int)$kEinstellungenConf_arr[0] . ' - ' . 
                     (int)$kEinstellungenConf_arr[1];
-                $oSQL->cWHERE .= " AND ((kEinstellungenConf BETWEEN " . 
-                    (int)$kEinstellungenConf_arr[0] . " AND " . 
+                $oSQL->cWHERE .= ' AND ((kEinstellungenConf BETWEEN ' . 
+                    (int)$kEinstellungenConf_arr[0] . ' AND ' . 
                     (int)$kEinstellungenConf_arr[1] . ") AND cConf = 'Y')";
             } elseif ((int)$cSuche > 0) { // Suche in cName oder kEinstellungenConf suchen
                 $oSQL->nSuchModus = 3;
-                $oSQL->cSearch    = "Suche nach ID: " . $cSuche;
+                $oSQL->cSearch    = 'Suche nach ID: ' . $cSuche;
                 $oSQL->cWHERE .= " AND kEinstellungenConf = '" . (int)$cSuche . "'";
             } else {
                 $cSuche    = strtolower($cSuche);
@@ -171,11 +171,11 @@ function holeEinstellungAbteil($oSQL, $nSort, $kEinstellungenSektion)
 {
     if ((int)$nSort > 0 && (int)$kEinstellungenSektion > 0) {
         $oEinstellungTMP_arr = Shop::Container()->getDB()->query(
-            "SELECT *
+            'SELECT *
                 FROM teinstellungenconf
-                WHERE nSort > " . (int)$nSort . "
-                    AND kEinstellungenSektion = " . (int)$kEinstellungenSektion . "
-                ORDER BY nSort",
+                WHERE nSort > ' . (int)$nSort . '
+                    AND kEinstellungenSektion = ' . (int)$kEinstellungenSektion . '
+                ORDER BY nSort',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oEinstellungTMP_arr as $oEinstellungTMP) {
@@ -202,11 +202,11 @@ function holeEinstellungHeadline($nSort, $sectionID)
     $nSort       = (int)$nSort;
     if ($nSort > 0 && $sectionID > 0) {
         $oEinstellungTMP_arr = Shop::Container()->getDB()->query(
-            "SELECT *
+            'SELECT *
                 FROM teinstellungenconf
-                WHERE nSort < " . $nSort . "
-                    AND kEinstellungenSektion = " . $sectionID . "
-                ORDER BY nSort DESC",
+                WHERE nSort < ' . $nSort . '
+                    AND kEinstellungenSektion = ' . $sectionID . '
+                ORDER BY nSort DESC',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oEinstellungTMP_arr as $oEinstellungTMP) {

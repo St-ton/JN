@@ -1,12 +1,14 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 <div id="order-confirm">
     {if $hinweis}
        <p class="alert alert-danger">{$hinweis}</p>
     {/if}
-
     {if !empty($smarty.get.mailBlocked)}
         <p class="alert alert-danger">{lang key='kwkEmailblocked' section='errorMessages'}</p>
     {/if}
-
     {if !empty($smarty.get.fillOut)}
        <p class="alert alert-danger">{lang key='fillOutQuestion' section='messages'}</p>
     {/if}
@@ -142,11 +144,7 @@
                 {/block}
             </div>
         {/if}
-    </div>{* /row *}
-
-    {if isset($safetypay_form)}
-        <div class="alert alert-info">{$safetypay_form}</div>
-    {/if}
+    </div>
     <form method="post" name="agbform" id="complete_order" action="{get_static_route id='bestellabschluss.php'}" class="evo-validate">
         {$jtl_token}
         {if $Einstellungen.kaufabwicklung.bestellvorgang_wrb_anzeigen == 1}
@@ -227,6 +225,6 @@
                 </div>
                 {/block}
             </div>
-        </div>{* /row *}
+        </div>
     </form>
 </div>

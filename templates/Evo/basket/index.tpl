@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {block name='header'}
     {include file='layout/header.tpl'}
 {/block}
@@ -15,7 +19,7 @@
     {if $Schnellkaufhinweis}
         <div class="alert alert-info">{$Schnellkaufhinweis}</div>
     {/if}
-    {if count($Warenkorbhinweise)>0}
+    {if count($Warenkorbhinweise) > 0}
         <div class="alert alert-warning">
             {foreach $Warenkorbhinweise as $Warenkorbhinweis}
                 {$Warenkorbhinweis}
@@ -75,8 +79,8 @@
                                     </form>
                                 </div>
                             {/if}
-                            <div class="proceed col-xs-12{if $showCoupon} col-sm-6 col-lg-8{/if}">
-                                <a href="{get_static_route id='bestellvorgang.php'}?wk=1" class="submit btn btn-primary btn-lg pull-right">{lang key='nextStepCheckout' section='checkout'}</a>
+                            <div class="proceed col-xs-12 text-right{if $showCoupon} col-sm-6 col-lg-8{/if}">
+                                <a href="{get_static_route id='bestellvorgang.php'}?wk=1" class="submit btn btn-primary btn-lg pull-right bottom15">{lang key='nextStepCheckout' section='checkout'}</a>
                             </div>
                         </div>
                     {/block}

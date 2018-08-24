@@ -11,7 +11,7 @@ $cHinweis   = '';
 $cFehler    = '';
 $nPage      = isset($_REQUEST['page']) ? (int)$_REQUEST['page'] : 0;
 $boxService = Shop::Container()->getBoxService();
-$boxAdmin   = new \Boxes\Admin\BoxAdmin(Shop::Container()->getDB(), $boxService);
+$boxAdmin   = new \Boxes\Admin\BoxAdmin(Shop::Container()->getDB());
 $bOk        = false;
 if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && FormHelper::validateToken()) {
     switch ($_REQUEST['action']) {
@@ -74,7 +74,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && FormHe
             $smarty->assign('oEditBox', $oBox)
                    ->assign('revisionData', $revisionData)
                    ->assign('oLink_arr',
-                       Shop::Container()->getDB()->query("SELECT * FROM tlinkgruppe", \DB\ReturnType::ARRAY_OF_OBJECTS)
+                       Shop::Container()->getDB()->query('SELECT * FROM tlinkgruppe', \DB\ReturnType::ARRAY_OF_OBJECTS)
                    );
             break;
 
@@ -98,12 +98,12 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && FormHe
                         }
                     }
                 }
-            } elseif ($eTyp === \Boxes\BoxType::LINK) {
+            } elseif ($eTyp === \Boxes\Type::LINK) {
                 $linkID = (int)$_REQUEST['linkID'];
                 if ($linkID > 0) {
                     $bOk = $boxAdmin->update($kBox, $cTitel, $linkID);
                 }
-            } elseif ($eTyp === \Boxes\BoxType::CATBOX) {
+            } elseif ($eTyp === \Boxes\Type::CATBOX) {
                 $linkID = (int)$_REQUEST['linkID'];
                 $bOk    = $boxAdmin->update($kBox, $cTitel, $linkID);
                 if ($bOk) {

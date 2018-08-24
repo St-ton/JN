@@ -200,7 +200,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
 
         /**
          * @param bool $bConvertCurrency
-         * @return float
+         * @return float|null
          */
         public function getPreis(bool $bConvertCurrency = false)
         {
@@ -213,7 +213,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         }
 
         /**
-         * @return int
+         * @return int|null
          */
         public function getTyp()
         {

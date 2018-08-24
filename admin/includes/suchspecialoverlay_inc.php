@@ -10,7 +10,7 @@
 function gibAlleSuchspecialOverlays()
 {
     return Shop::Container()->getDB()->query(
-        "SELECT tsuchspecialoverlay.*, tsuchspecialoverlaysprache.kSprache, 
+        'SELECT tsuchspecialoverlay.*, tsuchspecialoverlaysprache.kSprache, 
             tsuchspecialoverlaysprache.cBildPfad, tsuchspecialoverlaysprache.nAktiv,
             tsuchspecialoverlaysprache.nPrio, tsuchspecialoverlaysprache.nMargin,
             tsuchspecialoverlaysprache.nTransparenz,
@@ -18,8 +18,8 @@ function gibAlleSuchspecialOverlays()
             FROM tsuchspecialoverlay
             LEFT JOIN tsuchspecialoverlaysprache 
                 ON tsuchspecialoverlaysprache.kSuchspecialOverlay = tsuchspecialoverlay.kSuchspecialOverlay
-                AND tsuchspecialoverlaysprache.kSprache = " . (int)$_SESSION['kSprache'] . "
-            ORDER BY tsuchspecialoverlay.cSuchspecial",
+                AND tsuchspecialoverlaysprache.kSprache = ' . (int)$_SESSION['kSprache'] . '
+            ORDER BY tsuchspecialoverlay.cSuchspecial',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 }
@@ -31,15 +31,15 @@ function gibAlleSuchspecialOverlays()
 function gibSuchspecialOverlay(int $kSuchspecialOverlay)
 {
     return Shop::Container()->getDB()->query(
-        "SELECT tsuchspecialoverlay.*, tsuchspecialoverlaysprache.kSprache, tsuchspecialoverlaysprache.cBildPfad, 
+        'SELECT tsuchspecialoverlay.*, tsuchspecialoverlaysprache.kSprache, tsuchspecialoverlaysprache.cBildPfad, 
             tsuchspecialoverlaysprache.nAktiv, tsuchspecialoverlaysprache.nPrio, tsuchspecialoverlaysprache.nMargin, 
             tsuchspecialoverlaysprache.nTransparenz, tsuchspecialoverlaysprache.nGroesse, 
             tsuchspecialoverlaysprache.nPosition
             FROM tsuchspecialoverlay
             LEFT JOIN tsuchspecialoverlaysprache 
                 ON tsuchspecialoverlaysprache.kSuchspecialOverlay = tsuchspecialoverlay.kSuchspecialOverlay
-                AND tsuchspecialoverlaysprache.kSprache = " . (int)$_SESSION['kSprache'] . "
-            WHERE tsuchspecialoverlay.kSuchspecialOverlay = " . $kSuchspecialOverlay,
+                AND tsuchspecialoverlaysprache.kSprache = ' . (int)$_SESSION['kSprache'] . '
+            WHERE tsuchspecialoverlay.kSuchspecialOverlay = ' . $kSuchspecialOverlay,
         \DB\ReturnType::SINGLE_OBJECT
     );
 }
@@ -50,10 +50,10 @@ function gibSuchspecialOverlay(int $kSuchspecialOverlay)
  * @param array $cFiles_arr
  * @return bool
  */
-function speicherEinstellung($kSuchspecialOverlay, $cPost_arr, $cFiles_arr)
+function speicherEinstellung(int $kSuchspecialOverlay, $cPost_arr, $cFiles_arr)
 {
     $oSuchspecialoverlaySprache                      = new stdClass();
-    $oSuchspecialoverlaySprache->kSuchspecialOverlay = (int)$kSuchspecialOverlay;
+    $oSuchspecialoverlaySprache->kSuchspecialOverlay = $kSuchspecialOverlay;
     $oSuchspecialoverlaySprache->kSprache            = $_SESSION['kSprache'];
     $oSuchspecialoverlaySprache->nAktiv              = (int)$cPost_arr['nAktiv'];
     $oSuchspecialoverlaySprache->nTransparenz        = (int)$cPost_arr['nTransparenz'];
@@ -62,7 +62,7 @@ function speicherEinstellung($kSuchspecialOverlay, $cPost_arr, $cFiles_arr)
         ? (int)$cPost_arr['nPosition']
         : 0;
 
-    if (!isset($cPost_arr['nPrio']) || $cPost_arr['nPrio'] == '-1') {
+    if (!isset($cPost_arr['nPrio']) || (int)$cPost_arr['nPrio'] === -1) {
         return false;
     }
 
@@ -71,12 +71,12 @@ function speicherEinstellung($kSuchspecialOverlay, $cPost_arr, $cFiles_arr)
 
     if (strlen($cFiles_arr['cSuchspecialOverlayBild']['name']) > 0) {
         $oSuchspecialoverlaySprache->cBildPfad = 'kSuchspecialOverlay_' . $_SESSION['kSprache'] . '_' .
-            (int)$kSuchspecialOverlay . mappeFileTyp($cFiles_arr['cSuchspecialOverlayBild']['type']);
+            $kSuchspecialOverlay . mappeFileTyp($cFiles_arr['cSuchspecialOverlayBild']['type']);
     } else {
         $oSuchspecialoverlaySpracheTMP = Shop::Container()->getDB()->select(
             'tsuchspecialoverlaysprache',
             'kSuchspecialOverlay',
-            (int)$kSuchspecialOverlay,
+            $kSuchspecialOverlay,
             'kSprache',
             (int)$_SESSION['kSprache']
         );
@@ -416,34 +416,26 @@ function loescheBild($oSuchspecialoverlaySprache)
  * @param string $cTyp
  * @return string
  */
-function mappeFileTyp($cTyp)
+function mappeFileTyp(string $cTyp): string
 {
     switch ($cTyp) {
         case 'image/jpeg':
             return '.jpg';
-            break;
         case 'image/pjpeg':
             return '.jpg';
-            break;
         case 'image/gif':
             return '.gif';
-            break;
         case 'image/png':
             return '.png';
-            break;
         case 'image/bmp':
             return '.bmp';
-            break;
         // Adding MIME types that Internet Explorer returns
         case 'image/x-png':
             return '.png';
-            break;
         case 'image/jpg':
             return '.jpg';
-            break;
         //default jpg
         default:
             return '.jpg';
-            break;
     }
 }

@@ -14,7 +14,7 @@
  * 3 = Dateityp entspricht nicht der Konvention (Nur jpg/gif/png/bmp/ Bilder) oder fehlt
  * 4 = Konnte nicht bewegen
  */
-function saveShopLogo($cFiles_arr)
+function saveShopLogo(array $cFiles_arr): int
 {
     if (!file_exists(PFAD_ROOT . PFAD_SHOPLOGO)) {
         mkdir(PFAD_ROOT . PFAD_SHOPLOGO);
@@ -57,19 +57,17 @@ function saveShopLogo($cFiles_arr)
  * @var string $logo
  * @return bool
  */
-function deleteShopLogo($logo)
+function deleteShopLogo(string $logo): bool
 {
-    if (is_file(PFAD_ROOT . $logo)) {
-        return unlink(PFAD_ROOT . $logo);
-    }
-
-    return false;
+    return is_file(PFAD_ROOT . $logo)
+        ? unlink(PFAD_ROOT . $logo)
+        : false;
 }
 
 /**
  * @return bool
  */
-function loescheAlleShopBilder()
+function loescheAlleShopBilder(): bool
 {
     if (is_dir(PFAD_ROOT . PFAD_SHOPLOGO) && $dh = opendir(PFAD_ROOT . PFAD_SHOPLOGO)) {
         while (($file = readdir($dh)) !== false) {
@@ -89,7 +87,7 @@ function loescheAlleShopBilder()
  * @param string $cTyp
  * @return string
  */
-function mappeFileTyp($cTyp)
+function mappeFileTyp(string $cTyp): string
 {
     switch ($cTyp) {
         case 'image/jpeg':

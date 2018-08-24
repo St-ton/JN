@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -71,8 +71,8 @@ class Pagination
             return $this->pages;
         }
         $naviURL = $this->productFilter->getFilterURL()->getURL();
-        $sep     = strpos($naviURL, '?') === false
-            ? SEP_SEITE
+        $sep     = \strpos($naviURL, '?') === false
+            ? \SEP_SEITE
             : '&amp;seite=';
         $active  = $pages->getCurrentPage();
         $from    = $pages->getMinPage();
@@ -167,7 +167,7 @@ class Pagination
      */
     public function __debugInfo()
     {
-        $res                  = get_object_vars($this);
+        $res                  = \get_object_vars($this);
         $res['productFilter'] = '*truncated*';
         $res['factory']       = '*truncated*';
 

@@ -348,14 +348,14 @@ class CMSHelper
     public static function getFreeGifts(array $conf): array
     {
         $gifts = [];
-        $sort  = " ORDER BY CAST(tartikelattribut.cWert AS DECIMAL) DESC";
+        $sort  = ' ORDER BY CAST(tartikelattribut.cWert AS DECIMAL) DESC';
         if ($conf['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'N') {
-            $sort = " ORDER BY tartikel.cName";
+            $sort = ' ORDER BY tartikel.cName';
         } elseif ($conf['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'L') {
-            $sort = " ORDER BY tartikel.fLagerbestand DESC";
+            $sort = ' ORDER BY tartikel.fLagerbestand DESC';
         }
         $limit    = ((int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0)
-            ? " LIMIT " . (int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl']
+            ? ' LIMIT ' . (int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl']
             : '';
         $tmpGifts = Shop::Container()->getDB()->query(
             "SELECT tartikel.kArtikel, tartikelattribut.cWert

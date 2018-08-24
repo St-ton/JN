@@ -65,7 +65,7 @@ class GrafikFont
      * @param string $strInput
      * @return $this
      */
-    public function setInputString($strInput)
+    public function setInputString($strInput): self
     {
         $this->m_strInput = $strInput;
 
@@ -75,7 +75,7 @@ class GrafikFont
     /**
      * Returns unmodified input string
      *
-     * @return string
+     * @return string|null
      */
     public function getInputString()
     {
@@ -86,7 +86,7 @@ class GrafikFont
      * @param bool $bPrice
      * @return $this
      */
-    public function setPrice($bPrice)
+    public function setPrice($bPrice): self
     {
         $this->m_bPrice = $bPrice;
 
@@ -96,7 +96,7 @@ class GrafikFont
     /**
      * @return bool
      */
-    public function getPrice()
+    public function getPrice(): bool
     {
         return $this->m_bPrice;
     }
@@ -104,7 +104,7 @@ class GrafikFont
     /**
      * Returns images with HTML
      *
-     * @return string
+     * @return string|null
      */
     public function getHTML()
     {

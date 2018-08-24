@@ -77,7 +77,7 @@ class AuswahlAssistentFrage
     private function loadFromDB(int $questionID, bool $activeOnly = true)
     {
         $oDbResult = Shop::Container()->getDB()->query(
-            "SELECT af.*, m.cBildpfad, COALESCE(ms.cName, m.cName) AS cName, m.cBildpfad
+            'SELECT af.*, m.cBildpfad, COALESCE(ms.cName, m.cName) AS cName, m.cBildpfad
                 FROM tauswahlassistentfrage AS af
                     JOIN tauswahlassistentgruppe as ag
                         ON ag.kAuswahlAssistentGruppe = af.kAuswahlAssistentGruppe 
@@ -86,8 +86,8 @@ class AuswahlAssistentFrage
                     LEFT JOIN tmerkmalsprache AS ms
                         ON ms.kMerkmal = m.kMerkmal 
                             AND ms.kSprache = ag.kSprache
-                WHERE af.kAuswahlAssistentFrage = " . $questionID .
-                    ($activeOnly ? " AND af.nAktiv = 1" : ""),
+                WHERE af.kAuswahlAssistentFrage = ' . $questionID .
+                    ($activeOnly ? ' AND af.nAktiv = 1' : ''),
             \DB\ReturnType::SINGLE_OBJECT
         );
         if ($oDbResult !== null && $oDbResult !== false) {
@@ -113,14 +113,14 @@ class AuswahlAssistentFrage
         if ($groupID > 0) {
             $cAktivSQL = '';
             if ($activeOnly) {
-                $cAktivSQL = " AND nAktiv = 1";
+                $cAktivSQL = ' AND nAktiv = 1';
             }
             $oFrage_arr = Shop::Container()->getDB()->query(
-                "SELECT *
+                'SELECT *
                     FROM tauswahlassistentfrage
-                    WHERE kAuswahlAssistentGruppe = " . (int)$groupID .
-                    $cAktivSQL . "
-                    ORDER BY nSort",
+                    WHERE kAuswahlAssistentGruppe = ' . $groupID .
+                    $cAktivSQL . '
+                    ORDER BY nSort',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($oFrage_arr as $oFrage) {

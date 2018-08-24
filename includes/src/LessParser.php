@@ -14,7 +14,7 @@ class LessParser
      * @param string $file
      * @return $this
      */
-    public function read($file)
+    public function read($file): self
     {
         $lines = file($file, FILE_SKIP_EMPTY_LINES);
         foreach ($lines as $line) {
@@ -29,7 +29,7 @@ class LessParser
 
     /**
      * @param string $file
-     * @return int
+     * @return bool|int
      */
     public function write($file)
     {
@@ -44,7 +44,7 @@ class LessParser
     /**
      * @return array
      */
-    public function getStack()
+    public function getStack(): array
     {
         return $this->_stack;
     }
@@ -52,7 +52,7 @@ class LessParser
     /**
      * @return array
      */
-    public function getColors()
+    public function getColors(): array
     {
         $colors = [];
         foreach ($this->_stack as $key => $value) {
@@ -70,7 +70,7 @@ class LessParser
      * @param mixed  $value
      * @return $this
      */
-    public function set($key, $value)
+    public function set($key, $value): self
     {
         $this->_stack[$key] = $value;
 
@@ -141,7 +141,7 @@ class LessParser
      * @param int       $b
      * @return string
      */
-    protected function rgb2html($r, $g, $b)
+    protected function rgb2html($r, $g, $b): string
     {
         if (is_array($r) && count($r) === 3) {
             list($r, $g, $b) = $r;

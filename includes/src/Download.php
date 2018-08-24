@@ -159,12 +159,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
 
                 // Artikel
                 $this->oArtikelDownload_arr = Shop::Container()->getDB()->queryPrepared(
-                    "SELECT tartikeldownload.*
+                    'SELECT tartikeldownload.*
                         FROM tartikeldownload
                         JOIN tdownload 
                             ON tdownload.kDownload = tartikeldownload.kDownload
                         WHERE tartikeldownload.kDownload = :dlid
-                        ORDER BY tdownload.nSort",
+                        ORDER BY tdownload.nSort',
                     ['dlid' => $this->kDownload],
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
@@ -217,7 +217,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         public function delete(): int
         {
             return Shop::Container()->getDB()->queryPrepared(
-                "DELETE tdownload, tdownloadhistory, tdownloadsprache, tartikeldownload
+                'DELETE tdownload, tdownloadhistory, tdownloadsprache, tartikeldownload
                     FROM tdownload
                     JOIN tdownloadsprache 
                         ON tdownloadsprache.kDownload = tdownload.kDownload
@@ -225,7 +225,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                         ON tartikeldownload.kDownload = tdownload.kDownload
                     LEFT JOIN tdownloadhistory 
                         ON tdownloadhistory.kDownload = tdownload.kDownload
-                    WHERE tdownload.kDownload = :dlid",
+                    WHERE tdownload.kDownload = :dlid',
                 ['dlid' => $this->kDownload],
                 \DB\ReturnType::AFFECTED_ROWS
             );
@@ -532,7 +532,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
          * @param string $dErstellt
          * @return $this
          */
-        public function setErstellt($dErstellt)
+        public function setErstellt($dErstellt): self
         {
             $this->dErstellt = $dErstellt;
 
@@ -540,7 +540,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         }
 
         /**
-         * @return int
+         * @return int|null
          */
         public function getDownload()
         {
@@ -548,7 +548,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         }
 
         /**
-         * @return string
+         * @return string|null
          */
         public function getID()
         {
@@ -556,7 +556,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         }
 
         /**
-         * @return string
+         * @return string|null
          */
         public function getPfad()
         {
@@ -642,7 +642,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         }
 
         /**
-         * @return int
+         * @return int|null
          */
         public function getAnzahl()
         {
@@ -650,7 +650,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         }
 
         /**
-         * @return int
+         * @return int|null
          */
         public function getTage()
         {
@@ -658,7 +658,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         }
 
         /**
-         * @return int
+         * @return int|null
          */
         public function getSort()
         {
@@ -666,7 +666,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         }
 
         /**
-         * @return string
+         * @return string|null
          */
         public function getErstellt()
         {
@@ -674,7 +674,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         }
 
         /**
-         * @return stdClass
+         * @return mixed
          */
         private function kopiereMembers()
         {

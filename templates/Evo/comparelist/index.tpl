@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {block name='header'}
     {include file='layout/header.tpl'}
 {/block}
@@ -11,7 +15,7 @@
     
     {include file='snippets/extension.tpl'}
     
-    {if $oVergleichsliste->oArtikel_arr|@count >1}
+    {if $oVergleichsliste->oArtikel_arr|@count > 1}
         <div class="comparelist table-responsive">
             <table class="table table-striped table-bordered table-condensed table">
                 <tr>
@@ -58,13 +62,11 @@
                         </td>
                     {/if}
                     {if $cPrioSpalten === 'cHersteller' && $Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_hersteller != 0}
-                        <!-- Hersteller -->
                         <td valign="top">
                             <b>{lang key='manufacturer' section='comparelist'}</b>
                         </td>
                     {/if}
                     {if $cPrioSpalten === 'cBeschreibung' && $Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_beschreibung != 0}
-                        <!-- Beschreibung -->
                         <td valign="top">
                             <div class="custom_content">
                                 <b>{lang key='description' section='comparelist'}</b>
@@ -72,19 +74,16 @@
                         </td>
                     {/if}
                     {if $cPrioSpalten === 'cKurzBeschreibung' && $Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_kurzbeschreibung != 0}
-                        <!-- Kurzbeschreibung -->
                         <td valign="top">
                             <b>{lang key='shortDescription' section='comparelist'}</b>
                         </td>
                     {/if}
                     {if $cPrioSpalten === 'fArtikelgewicht' && $Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_artikelgewicht != 0}
-                        <!-- Artikelgewicht -->
                         <td valign="top">
                             <b>{lang key='productWeight' section='comparelist'}</b>
                         </td>
                     {/if}
                     {if $cPrioSpalten === 'fGewicht' && $Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_versandgewicht != 0}
-                        <!-- Versandgewicht -->
                         <td valign="top">
                             <b>{lang key='shippingWeight' section='comparelist'}</b>
                         </td>
@@ -107,7 +106,6 @@
                     {/if}
     
                     {if $cPrioSpalten === 'Merkmale' && $Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_merkmale != 0}
-                        <!-- Merkmale -->
                         {foreach $oMerkmale_arr as $oMerkmale}
                             {if $oMerkmale@iteration % 2 === 0}
                                 <tr class="first">
@@ -137,7 +135,6 @@
                     {/if}
     
                     {if $cPrioSpalten === 'Variationen' && $Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_variationen != 0}
-                        <!-- Variationen -->
                         {foreach $oVariationen_arr as $oVariationen}
                             {if $oVariationen@iteration % 2 === 0}
                                 <tr class="first">
@@ -203,13 +200,6 @@
                         </td>
                         {foreach $oVergleichsliste->oArtikel_arr as $oArtikel}
                             <td valign="top" class="text-center" style="min-width: {$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesse}px">
-                                <!--
-                              <form action="{get_static_route id='vergleichsliste.php'}" method="get">
-                                 <input type="hidden" name="vlph" value="1" />
-                                 <input type="hidden" name="a" value="{$oArtikel->kArtikel}" />
-                                 <input type="submit" value="{lang key='addToCart' section='global'}" />
-                              </form>
-                                -->
                                 <button class="btn btn-default submit" onclick="window.location.href = '{$oArtikel->cURL}'">{lang key='details' section='global'}</button>
                             </td>
                         {/foreach}

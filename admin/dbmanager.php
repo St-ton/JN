@@ -124,7 +124,7 @@ switch (true) {
         // limit
         $queryParams['limit_count']  = $filter['limit'];
         $queryParams['limit_offset'] = $filter['offset'];
-        $queryParts['limit']         = "LIMIT :limit_offset, :limit_count";
+        $queryParts['limit']         = 'LIMIT :limit_offset, :limit_count';
 
         $query = implode(' ', $queryParts);
         $info  = null;

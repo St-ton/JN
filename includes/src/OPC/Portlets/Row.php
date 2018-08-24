@@ -96,13 +96,13 @@ class Row extends \OPC\Portlet
      */
     public function getLayouts(PortletInstance $instance): array
     {
-        $layoutXS = explode('+', $instance->getProperty('layout-xs'));
-        $layoutSM = explode('+', $instance->getProperty('layout-sm'));
-        $layoutMD = explode('+', $instance->getProperty('layout-md'));
-        $layoutLG = explode('+', $instance->getProperty('layout-lg'));
-        $colCount = max(count($layoutXS), count($layoutSM), count($layoutMD), count($layoutLG));
+        $layoutXS = \explode('+', $instance->getProperty('layout-xs'));
+        $layoutSM = \explode('+', $instance->getProperty('layout-sm'));
+        $layoutMD = \explode('+', $instance->getProperty('layout-md'));
+        $layoutLG = \explode('+', $instance->getProperty('layout-lg'));
+        $colCount = \max(\count($layoutXS), \count($layoutSM), \count($layoutMD), \count($layoutLG));
 
-        $colLayouts = array_fill(0, $colCount, '');
+        $colLayouts = \array_fill(0, $colCount, '');
 
         foreach ($colLayouts as $i => &$colLayout) {
             $sumXS = 0;
@@ -143,7 +143,7 @@ class Row extends \OPC\Portlet
     {
         $result = '';
         foreach ($colLayout as $size => $value) {
-            if (!empty($value) && is_array($value) === false) {
+            if (!empty($value) && \is_array($value) === false) {
                 $result .= "col-$size-$value ";
             }
         }

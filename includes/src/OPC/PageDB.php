@@ -35,7 +35,7 @@ class PageDB
     public function getPageCount(): int
     {
         return $this->shopDB->query(
-            'SELECT count(DISTINCT cPageId) AS count FROM topcpage',
+            'SELECT COUNT(DISTINCT cPageId) AS count FROM topcpage',
             ReturnType::SINGLE_OBJECT
         )->count;
     }
@@ -67,7 +67,7 @@ class PageDB
     public function getDraftCount($id): int
     {
         return (int)$this->shopDB->queryPrepared(
-            'SELECT count(kPage) AS count FROM topcpage WHERE cPageId = :id',
+            'SELECT COUNT(kPage) AS count FROM topcpage WHERE cPageId = :id',
             ['id' => $id],
             ReturnType::SINGLE_OBJECT
         )->count;
@@ -82,7 +82,7 @@ class PageDB
     {
         $draftRow = $this->shopDB->select('topcpage', 'kPage', $key);
 
-        if (!is_object($draftRow)) {
+        if (!\is_object($draftRow)) {
             throw new \Exception('The OPC page draft could not be found in the database.');
         }
 
@@ -99,11 +99,11 @@ class PageDB
         $revision    = new \Revision();
         $revisionRow = $revision->getRevision($revId);
 
-        if (!is_object($revisionRow)) {
+        if (!\is_object($revisionRow)) {
             throw new \Exception('The OPC page revision could not be found in the database.');
         }
 
-        return json_decode($revisionRow->content);
+        return \json_decode($revisionRow->content);
     }
 
     /**
@@ -123,7 +123,7 @@ class PageDB
             ReturnType::SINGLE_OBJECT
         );
 
-        return !is_object($publicRow) ? null : $publicRow;
+        return !\is_object($publicRow) ? null : $publicRow;
     }
 
     /**
@@ -184,7 +184,7 @@ class PageDB
     {
         $publicRow = $this->getPublicPageRow($id);
 
-        if (!is_object($publicRow)) {
+        if (!\is_object($publicRow)) {
             return null;
         }
 
@@ -201,12 +201,12 @@ class PageDB
         if ($page->getUrl() === ''
             || $page->getLastModified() === ''
             || $page->getLockedAt() === ''
-            || strlen($page->getId()) !== 32
+            || \strlen($page->getId()) !== 32
         ) {
             throw new \Exception('The OPC page data to be saved is incomplete or invalid.');
         }
 
-        $page->setLastModified(date('Y-m-d H:i:s'));
+        $page->setLastModified(\date('Y-m-d H:i:s'));
 
         $pageDB = (object)[
             'cPageId'       => $page->getId(),
@@ -214,7 +214,7 @@ class PageDB
             'dPublishTo'    => $page->getPublishTo() ?? '_DBNULL_',
             'cName'         => $page->getName(),
             'cPageUrl'      => $page->getUrl(),
-            'cAreasJson'    => json_encode($page->getAreaList()),
+            'cAreasJson'    => \json_encode($page->getAreaList()),
             'dLastModified' => $page->getLastModified() ?? '_DBNULL_',
             'cLockedBy'     => $page->getLockedBy(),
             'dLockedAt'     => $page->getLockedAt() ?? '_DBNULL_',
@@ -326,7 +326,7 @@ class PageDB
             ->setLockedAt($row->dLockedAt)
             ->setReplace($row->bReplace);
 
-        $areaData = json_decode($row->cAreasJson, true);
+        $areaData = \json_decode($row->cAreasJson, true);
 
         if ($areaData !== null) {
             $page->getAreaList()->deserialize($areaData);

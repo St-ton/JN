@@ -8,7 +8,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
 /**
  * @param object $FilterSQL
  * @param object $NaviFilter
- * @return stdClass
+ * @return \Filter\SearchResultsInterface
  * @deprecated since 5.0.0
  */
 function buildSearchResults($FilterSQL, $NaviFilter)
@@ -37,7 +37,7 @@ function buildSearchResultPage(&$oSearchResult, $nProductCount, $nLimitN, $nPage
  * @param object   $NaviFilter
  * @param bool     $bExtern
  * @param stdClass $oSuchergebnisse
- * @return \Tightenco\Collect\Support\Collection
+ * @return \Filter\SearchResultsInterface
  * @deprecated since 5.0.0
  */
 function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $oSuchergebnisse)

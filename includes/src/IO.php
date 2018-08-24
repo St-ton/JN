@@ -50,7 +50,7 @@ class IO
     public function register($name, $function = null, $include = null)
     {
         if ($this->exists($name)) {
-            throw new Exception("Function already registered");
+            throw new Exception('Function already registered');
         }
 
         if ($function === null) {
@@ -76,7 +76,7 @@ class IO
         }
 
         if (!isset($request['name'], $request['params'])) {
-            return new IOError("Missing request property");
+            return new IOError('Missing request property');
         }
 
         ob_start();
@@ -137,7 +137,7 @@ class IO
     public function execute($name, $params)
     {
         if (!$this->exists($name)) {
-            return new IOError("Function not registered");
+            return new IOError('Function not registered');
         }
 
         $function = $this->functions[$name][0];
@@ -154,7 +154,7 @@ class IO
         }
 
         if ($ref->getNumberOfRequiredParameters() > count($params)) {
-            return new IOError("Wrong required parameter count");
+            return new IOError('Wrong required parameter count');
         }
 
         try {

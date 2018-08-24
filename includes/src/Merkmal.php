@@ -112,7 +112,7 @@ class Merkmal
      * @param int  $kSprache
      * @return $this
      */
-    public function loadFromDB(int $kMerkmal, bool $bMMW = false, int $kSprache = 0)
+    public function loadFromDB(int $kMerkmal, bool $bMMW = false, int $kSprache = 0): self
     {
         $kSprache = $kSprache === 0 ? Shop::getLanguageID() : $kSprache;
         $id       = 'mm_' . $kMerkmal . '_' . $kSprache;

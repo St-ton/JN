@@ -121,17 +121,17 @@
             </form>
         {/if}
         {if isset($oKaeuferschutzProdukteDB->item) && $oKaeuferschutzProdukteDB->item|@count > 0}
-            <table class="table">
+            <table class="table table-striped">
                 <tr>
                     <th class="th-1">{#tsProduct#}</th>
                     <th class="th-2">{#tsCoverage#}</th>
                     <th class="th-3">{#tsCurrency#}</th>
                 </tr>
                 {foreach name=kaeuferschutzprodukte from=$oKaeuferschutzProdukteDB->item item=oKaeuferschutzProdukt}
-                    <tr class="tab_bg{$smarty.foreach.kaeuferschutzprodukte.iteration%2}">
-                        <td class="TD1">{$oKaeuferschutzProdukt->cProduktID}</td>
-                        <td class="TD2">{$oKaeuferschutzProdukt->nWert}</td>
-                        <td class="TD3">{$oKaeuferschutzProdukt->cWaehrung}</td>
+                    <tr>
+                        <td>{$oKaeuferschutzProdukt->cProduktID}</td>
+                        <td>{$oKaeuferschutzProdukt->nWert}</td>
+                        <td>{$oKaeuferschutzProdukt->cWaehrung}</td>
                     </tr>
                 {/foreach}
             </table>

@@ -1,19 +1,16 @@
 {**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license https://jtl-url.de/jtlshoplicense
  *}
 
 {if $Position->nPosTyp == 1}
     <p><a href="{$Position->Artikel->cURLFull}">{$Position->cName}</a></p>
-    {* Seriennummer *}
     {if !empty($Position->cSeriennummer)}
         <p>{lang key='serialnumber'}: {$Position->cSeriennummer}</p>
     {/if}
-    {* MHD *}
     {if !empty($Position->dMHD)}
         <p>{lang key='mdh'}: {$Position->dMHD_de}</p>
     {/if}
-    {* Charge *}
     {if !empty($Position->cChargeNr)}
         <p>{lang key='charge'}: {$Position->cChargeNr}</p>
     {/if}
@@ -30,7 +27,7 @@
     {/if}
 
     {if $Position->Artikel->cLocalizedVPE}
-        <small><b>{lang key='basePrice' section='global'}:</b> {$Position->Artikel->cLocalizedVPE[$NettoPreise]}</small>
+        <small><b>{lang key='basePrice'}:</b> {$Position->Artikel->cLocalizedVPE[$NettoPreise]}</small>
         <br />
     {/if}
 

@@ -126,7 +126,7 @@ if (RequestHelper::verifyGPCDataInt('nSort') > 0) {
 // Freischalten
 if (RequestHelper::verifyGPCDataInt('freischalten') === 1 && FormHelper::validateToken()) {
     // Bewertungen
-    if (RequestHelper::verifyGPCDataInt('bewertungen') === 1 && FormHelper::validateToken()) {
+    if (RequestHelper::verifyGPCDataInt('bewertungen') === 1) {
         if (isset($_POST['freischaltensubmit'])) {
             if (schalteBewertungFrei($_POST['kBewertung'], $_POST['kArtikel'], $_POST['kBewertungAll'])) {
                 $cHinweis .= 'Ihre markierten Bewertungen wurden erfolgreich freigeschaltet.<br />';
@@ -140,7 +140,7 @@ if (RequestHelper::verifyGPCDataInt('freischalten') === 1 && FormHelper::validat
                 $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine Bewertung.<br />';
             }
         }
-    } elseif (RequestHelper::verifyGPCDataInt('suchanfragen') === 1 && FormHelper::validateToken()) { // Suchanfragen
+    } elseif (RequestHelper::verifyGPCDataInt('suchanfragen') === 1) { // Suchanfragen
         // Mappen
         if (isset($_POST['submitMapping'])) {
             $cMapping = RequestHelper::verifyGPDataString('cMapping');

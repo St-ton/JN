@@ -11,7 +11,9 @@ if (!isset($_POST['wawiversion']) || (int)$_POST['wawiversion'] < JTL_MIN_WAWI_V
     syncException("Ihr JTL-Shop Version " .
         (JTL_VERSION / 100) . " benötigt für den Datenabgleich mindestens JTL-Wawi Version " .
         (JTL_MIN_WAWI_VERSION / 100000.0) .
-        ". \nEine aktuelle Version erhalten Sie unter: https://jtl-url.de/wawidownload", 8);
+        ". \nEine aktuelle Version erhalten Sie unter: https://jtl-url.de/wawidownload",
+        FREIDEFINIERBARER_FEHLER
+    );
 }
 $return = 3;
 $cName  = $_POST['uID'];
@@ -33,7 +35,7 @@ if ($login->checkLogin($cName, $cPass) === true) {
         );
         if ($oStatus->Auto_increment < (int)$_POST['kKunde']) {
             Shop::Container()->getDB()->query(
-                'ALTER TABLE tkunde AUTO_INCREMENT = ' . (int)$_POST['kKunde'], 
+                'ALTER TABLE tkunde AUTO_INCREMENT = ' . (int)$_POST['kKunde'],
                 \DB\ReturnType::DEFAULT
             );
         }
@@ -45,7 +47,7 @@ if ($login->checkLogin($cName, $cPass) === true) {
         );
         if ($oStatus->Auto_increment < (int)$_POST['kBestellung']) {
             Shop::Container()->getDB()->query(
-                'ALTER TABLE tbestellung AUTO_INCREMENT = ' . (int)$_POST['kBestellung'], 
+                'ALTER TABLE tbestellung AUTO_INCREMENT = ' . (int)$_POST['kBestellung'],
                 \DB\ReturnType::DEFAULT
             );
         }
@@ -69,7 +71,7 @@ if ($login->checkLogin($cName, $cPass) === true) {
         );
         if ($oStatus->Auto_increment < (int)$_POST['kZahlungseingang']) {
             Shop::Container()->getDB()->query(
-                'ALTER TABLE tzahlungseingang AUTO_INCREMENT  = ' . (int)$_POST['kZahlungseingang'], 
+                'ALTER TABLE tzahlungseingang AUTO_INCREMENT  = ' . (int)$_POST['kZahlungseingang'],
                 \DB\ReturnType::DEFAULT
             );
         }

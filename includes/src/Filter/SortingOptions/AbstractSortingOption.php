@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -6,18 +6,19 @@
 
 namespace Filter\SortingOptions;
 
-use Filter\FilterJoin;
-use Filter\FilterOption;
+
+use Filter\Join;
+use Filter\Option;
 use Filter\ProductFilter;
 
 /**
  * Class AbstractSortingOption
  * @package Filter\SortingOptions
  */
-abstract class AbstractSortingOption extends FilterOption implements SortingOptionInterface
+abstract class AbstractSortingOption extends Option implements SortingOptionInterface
 {
     /**
-     * @var FilterJoin
+     * @var Join
      */
     protected $join;
 
@@ -47,14 +48,14 @@ abstract class AbstractSortingOption extends FilterOption implements SortingOpti
     {
         parent::__construct($productFilter);
         $this->productFilter = $productFilter;
-        $this->join          = new FilterJoin();
+        $this->join          = new Join();
         $this->isCustom      = false;
     }
 
     /**
      * @inheritdoc
      */
-    public function getJoin(): FilterJoin
+    public function getJoin(): Join
     {
         return $this->join;
     }
@@ -62,7 +63,7 @@ abstract class AbstractSortingOption extends FilterOption implements SortingOpti
     /**
      * @inheritdoc
      */
-    public function setJoin(FilterJoin $join)
+    public function setJoin(Join $join)
     {
         $this->join = $join;
     }
@@ -104,7 +105,7 @@ abstract class AbstractSortingOption extends FilterOption implements SortingOpti
      */
     public function __debugInfo()
     {
-        $res                  = get_object_vars($this);
+        $res                  = \get_object_vars($this);
         $res['productFilter'] = '*truncated*';
 
         return $res;

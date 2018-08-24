@@ -31,12 +31,11 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $cHinweis .= saveAdminSectionSettings(CONF_SITEMAP, $_POST);
 } elseif (RequestHelper::verifyGPCDataInt('download_edit') === 1) { // Sitemap Downloads loeschen
     $kSitemapTracker_arr = sichereArrayKeys($_POST['kSitemapTracker']);
-
     if (is_array($kSitemapTracker_arr) && count($kSitemapTracker_arr) > 0) {
         Shop::Container()->getDB()->query(
-            "DELETE
+            'DELETE
                 FROM tsitemaptracker
-                WHERE kSitemapTracker IN (" . implode(',', $kSitemapTracker_arr) . ")",
+                WHERE kSitemapTracker IN (' . implode(',', $kSitemapTracker_arr) . ')',
             \DB\ReturnType::AFFECTED_ROWS
         );
     }
@@ -44,12 +43,11 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $cHinweis = 'Ihre markierten Sitemap Downloads wurden erfolgreich gelöscht.';
 } elseif (RequestHelper::verifyGPCDataInt('report_edit') === 1) { // Sitemap Reports loeschen
     $kSitemapReport_arr = sichereArrayKeys($_POST['kSitemapReport']);
-
     if (is_array($kSitemapReport_arr) && count($kSitemapReport_arr) > 0) {
         Shop::Container()->getDB()->query(
-            "DELETE
+            'DELETE
                 FROM tsitemapreport
-                WHERE kSitemapReport IN (" . implode(',', $kSitemapReport_arr) . ")",
+                WHERE kSitemapReport IN (' . implode(',', $kSitemapReport_arr) . ')',
             \DB\ReturnType::AFFECTED_ROWS
         );
     }
@@ -63,8 +61,8 @@ $nYearReports   = RequestHelper::verifyGPCDataInt('nYear_reports');
 // Sitemap Downloads - Jahr löschen
 if (isset($_POST['action']) && $_POST['action'] === 'year_downloads_delete' && FormHelper::validateToken()) {
     Shop::Container()->getDB()->query(
-        "DELETE FROM tsitemaptracker
-            WHERE YEAR(tsitemaptracker.dErstellt) = " . $nYearDownloads,
+        'DELETE FROM tsitemaptracker
+            WHERE YEAR(tsitemaptracker.dErstellt) = ' . $nYearDownloads,
         \DB\ReturnType::AFFECTED_ROWS
     );
     $cHinweis       = 'Ihre markierten Sitemap Downloads für ' . $nYearDownloads . ' wurden erfolgreich gelöscht.';
@@ -74,8 +72,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'year_downloads_delete' && F
 // Sitemap Reports - Jahr löschen
 if (isset($_POST['action']) && $_POST['action'] === 'year_reports_delete' && FormHelper::validateToken()) {
     Shop::Container()->getDB()->query(
-        "DELETE FROM tsitemapreport
-            WHERE YEAR(tsitemapreport.dErstellt) = " . $nYearReports,
+        'DELETE FROM tsitemapreport
+            WHERE YEAR(tsitemapreport.dErstellt) = ' . $nYearReports,
         \DB\ReturnType::AFFECTED_ROWS
     );
     $cHinweis     = 'Ihre Sitemap Reports für ' . $nYearReports . ' wurden erfolgreich gelöscht.';
@@ -84,10 +82,10 @@ if (isset($_POST['action']) && $_POST['action'] === 'year_reports_delete' && For
 
 // Sitemap Downloads
 $oSitemapDownloadYears_arr = Shop::Container()->getDB()->query(
-    "SELECT YEAR(dErstellt) AS year, COUNT(*) AS count
+    'SELECT YEAR(dErstellt) AS year, COUNT(*) AS count
         FROM tsitemaptracker
         GROUP BY 1
-        ORDER BY 1 DESC",
+        ORDER BY 1 DESC',
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 if (!isset($oSitemapDownloadYears_arr) || count($oSitemapDownloadYears_arr) === 0) {
@@ -119,10 +117,10 @@ $oSitemapDownload_arr = Shop::Container()->getDB()->query(
 
 // Sitemap Reports
 $oSitemapReportYears_arr = Shop::Container()->getDB()->query(
-    "SELECT YEAR(dErstellt) AS year, COUNT(*) AS count
+    'SELECT YEAR(dErstellt) AS year, COUNT(*) AS count
         FROM tsitemapreport
         GROUP BY 1
-        ORDER BY 1 DESC",
+        ORDER BY 1 DESC',
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 if (!isset($oSitemapReportYears_arr) || count($oSitemapReportYears_arr) === 0) {

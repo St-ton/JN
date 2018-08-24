@@ -161,16 +161,17 @@ class Bewertung
                 $cSprachSQL = '';
             }
             // Anzahl Bewertungen für jeden Stern
+            // unabhängig von Sprache SHOP-2313
             if ($nSterne !== -1) {
                 if ($nSterne > 0) {
                     $cSQL = ' AND nSterne = ' . $nSterne;
                 }
                 $oBewertungAnzahl_arr = Shop::Container()->getDB()->query(
-                    "SELECT count(*) AS nAnzahl, nSterne
+                    'SELECT count(*) AS nAnzahl, nSterne
                         FROM tbewertung
-                        WHERE kArtikel = " . $kArtikel . $cSprachSQL . $cSQLFreischalten . "
+                        WHERE kArtikel = ' . $kArtikel . $cSQLFreischalten . '
                         GROUP BY nSterne
-                        ORDER BY nSterne DESC",
+                        ORDER BY nSterne DESC',
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
             }
@@ -191,18 +192,19 @@ class Bewertung
                 );
             }
             $oBewertungGesamt = Shop::Container()->getDB()->query(
-                "SELECT count(*) AS nAnzahl, tartikelext.fDurchschnittsBewertung AS fDurchschnitt
+                'SELECT count(*) AS nAnzahl, tartikelext.fDurchschnittsBewertung AS fDurchschnitt
                     FROM tartikelext
-                    JOIN tbewertung ON tbewertung.kArtikel = tartikelext.kArtikel
-                    WHERE tartikelext.kArtikel = " . $kArtikel . $cSQLFreischalten . "
-                    GROUP BY tartikelext.kArtikel",
+                    JOIN tbewertung 
+                        ON tbewertung.kArtikel = tartikelext.kArtikel
+                    WHERE tartikelext.kArtikel = ' . $kArtikel . $cSQLFreischalten . '
+                    GROUP BY tartikelext.kArtikel',
                 \DB\ReturnType::SINGLE_OBJECT
             );
             // Anzahl Bewertungen für aktuelle Sprache
             $oBewertungGesamtSprache = Shop::Container()->getDB()->query(
-                "SELECT count(*) AS nAnzahlSprache
+                'SELECT count(*) AS nAnzahlSprache
                     FROM tbewertung
-                    WHERE kArtikel = " . $kArtikel . $cSprachSQL . $cSQLFreischalten,
+                    WHERE kArtikel = ' . $kArtikel . $cSprachSQL . $cSQLFreischalten,
                 \DB\ReturnType::SINGLE_OBJECT
             );
             if (isset($oBewertungGesamt->fDurchschnitt) && (int)$oBewertungGesamt->fDurchschnitt > 0) {
@@ -222,13 +224,13 @@ class Bewertung
                 foreach ($this->oBewertung_arr as $i => $oBewertung) {
                     $this->oBewertung_arr[$i]->nAnzahlHilfreich = $oBewertung->nHilfreich + $oBewertung->nNichtHilfreich;
                 }
-                $nSterne_arr = [0, 0, 0, 0, 0];
-                foreach ($oBewertungAnzahl_arr as $oBewertungAnzahl) {
-                    $nSterne_arr[5 - $oBewertungAnzahl->nSterne] = $oBewertungAnzahl->nAnzahl;
-                }
-
-                $this->nSterne_arr = $nSterne_arr;
             }
+            $nSterne_arr = [0, 0, 0, 0, 0];
+            foreach ($oBewertungAnzahl_arr as $oBewertungAnzahl) {
+                $nSterne_arr[5 - $oBewertungAnzahl->nSterne] = $oBewertungAnzahl->nAnzahl;
+            }
+            $this->nSterne_arr = $nSterne_arr;
+
             executeHook(HOOK_BEWERTUNG_CLASS_BEWERTUNG, ['oBewertung' => &$this]);
         }
 

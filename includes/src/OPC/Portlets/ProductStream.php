@@ -6,8 +6,10 @@
 
 namespace OPC\Portlets;
 
+use Filter\Config;
 use Filter\Type;
 use OPC\PortletInstance;
+use Tightenco\Collect\Support\Collection;
 
 /**
  * Class ProductStream
@@ -27,7 +29,7 @@ class ProductStream extends \OPC\Portlet
         $style         = $instance->getProperty('listStyle');
 
         return "<div $attributes $dataAttribute>"
-            . "<img src='" . PFAD_TEMPLATES . "Evo/portlets/ProductStream/preview.$style.png' "
+            . "<img src='" . \PFAD_TEMPLATES . "Evo/portlets/ProductStream/preview.$style.png' "
             . "style='width:98%;filter:grayscale(50%) opacity(60%)'>"
             . "<div style='color:#5cbcf6;font-size:40px;font-weight:bold;margin:0;margin-top:-1em;line-height:1em;'>
                 Produktliste</div>"
@@ -103,17 +105,21 @@ class ProductStream extends \OPC\Portlet
 
     /**
      * @param PortletInstance $instance
-     * @return \Tightenco\Collect\Support\Collection
+     * @return Collection
      */
-    public function getFilteredProductIds(PortletInstance $instance)
+    public function getFilteredProductIds(PortletInstance $instance): Collection
     {
         $enabledFilters = $instance->getProperty('filters');
-        $productFilter  = new \Filter\ProductFilter();
+        $productFilter  = new \Filter\ProductFilter(
+            Config::getDefault(),
+            \Shop::Container()->getDB(),
+            \Shop::Container()->getCache()
+        );
 
         foreach ($enabledFilters as $enabledFilter) {
             /** @var \Filter\AbstractFilter $newFilter * */
             $newFilter = new $enabledFilter['class']($productFilter);
-            $newFilter->setType(Type::AND());
+            $newFilter->setType(Type::AND);
             $productFilter->addActiveFilter($newFilter, $enabledFilter['value']);
         }
 

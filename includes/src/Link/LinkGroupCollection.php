@@ -80,6 +80,6 @@ final class LinkGroupCollection extends Collection
      */
     public function __isset($name)
     {
-        return property_exists($this, $name) || $this->getLinkgroupByTemplate($name) !== null;
+        return \property_exists($this, $name) || $this->getLinkgroupByTemplate($name) !== null;
     }
 }

@@ -10,9 +10,6 @@ namespace Cron\Jobs;
 use Cron\Job;
 use Cron\JobInterface;
 use Cron\QueueEntry;
-use DB\DbInterface;
-use DB\ReturnType;
-use function Functional\map;
 
 /**
  * Class TSRating
@@ -30,7 +27,7 @@ class TSRating extends Job
         foreach ($cValidSprachISO_arr as $cValidSprachISO) {
             $ts     = new \TrustedShops(-1, $cValidSprachISO);
             $rating = $ts->holeKundenbewertungsstatus($cValidSprachISO);
-            if ((int)$rating->nStatus === 1 && strlen($rating->cTSID) > 0) {
+            if ((int)$rating->nStatus === 1 && \strlen($rating->cTSID) > 0) {
                 $res = $ts->aenderKundenbewertungsstatus(
                     $rating->cTSID,
                     1,

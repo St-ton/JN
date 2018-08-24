@@ -21,11 +21,11 @@ class Gallery extends \OPC\Portlet
      */
     public function getPreviewHtml(PortletInstance $instance): string
     {
-        $instance->setProperty('uid', uniqid('gllry-', false));
+        $instance->setProperty('uid', \uniqid('gllry-', false));
         $images = $instance->getProperty('gllry_images');
         unset($images['NEU']);
         if (!empty($images)) {
-            usort(
+            \usort(
                 $images,
                 function ($a, $b) {
                     return $a['nSort'] > $b['nSort'];
@@ -49,7 +49,7 @@ class Gallery extends \OPC\Portlet
         }
         unset($slide);
         $instance->setProperty('gllry_images', $images);
-        $id = !empty($instance->getProperty('id')) ? $instance->getProperty('id') : uniqid('gllry_', false);
+        $id = !empty($instance->getProperty('id')) ? $instance->getProperty('id') : \uniqid('gllry_', false);
         $instance->setAttribute('id', $id);
 
         $instance->addClass('row')
@@ -68,7 +68,7 @@ class Gallery extends \OPC\Portlet
         $images = $instance->getProperty('gllry_images');
         unset($images['NEU']);
         if (!empty($images)) {
-            usort(
+            \usort(
                 $images,
                 function ($a, $b) {
                     return $a['nSort'] > $b['nSort'];

@@ -17,11 +17,11 @@ if ($cDatei === null) {
 }
 $cIP              = RequestHelper::getRealIP();
 $nFloodProtection = Shop::Container()->getDB()->queryPrepared(
-    "SELECT * 
+    'SELECT * 
         FROM `tsitemaptracker` 
         WHERE `cIP` = :ip 
             AND DATE_ADD(`dErstellt`, INTERVAL 2 MINUTE) >= NOW() 
-        ORDER BY `dErstellt` DESC",
+        ORDER BY `dErstellt` DESC',
     ['ip' => $cIP],
     \DB\ReturnType::AFFECTED_ROWS
 );
@@ -37,13 +37,12 @@ if ($nFloodProtection === 0) {
     Shop::Container()->getDB()->insert('tsitemaptracker', $oSitemapTracker);
 }
 
-// Redirect to real filepath
 sendRequestFile($cDatei);
 
 /**
  * @return int
  */
-function getRequestBot()
+function getRequestBot(): int
 {
     foreach (array_keys(Visitor::getSpiders()) as $agent) {
         if (stripos($_SERVER['HTTP_USER_AGENT'], $agent) !== false) {
@@ -67,11 +66,9 @@ function getRequestFile($cDatei)
     if (!isset($cDateiInfo_arr['extension']) || !in_array($cDateiInfo_arr['extension'], ['xml', 'txt', 'gz'], true)) {
         return null;
     }
-
     if ($cDatei !== $cDateiInfo_arr['basename']) {
         return null;
     }
-
     $cDatei = $cDateiInfo_arr['basename'];
 
     return file_exists(PFAD_ROOT . PFAD_EXPORT . $cDatei)

@@ -63,6 +63,20 @@
                         </td>
                     </tr>
                     <tr>
+                        <td><label for="kParent">{#newsCatParent#}</label></td>
+                        <td>
+                            <select class="form-control" id="kParent" name="kParent">
+                                <option value="0"> - Hauptkategorie - </option>
+                                {if isset($oNewsKategorie->kParent)}
+                                    {assign var='selectedCat' value=$oNewsKategorie->kParent}
+                                {else}
+                                    {assign var='selectedCat' value=0}
+                                {/if}
+                                {include file='snippets/newscategories_recursive.tpl' i=0 selectedCat=$selectedCat}
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
                         <td><label for="nSort">{#newsCatSort#}</label></td>
                         <td>
                             <input class="form-control{if !empty($cPlausiValue_arr.nSort)} error{/if}" id="nSort" name="nSort" type="text" value="{if isset($cPostVar_arr.nSort)}{$cPostVar_arr.nSort}{elseif isset($oNewsKategorie->nSort)}{$oNewsKategorie->nSort}{/if}" style="width: 60px;" />

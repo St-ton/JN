@@ -121,7 +121,7 @@ class Firma
      */
     public function loadFromDB(): self
     {
-        $obj = Shop::Container()->getDB()->query("SELECT * FROM tfirma LIMIT 1", \DB\ReturnType::SINGLE_OBJECT);
+        $obj = Shop::Container()->getDB()->query('SELECT * FROM tfirma LIMIT 1', \DB\ReturnType::SINGLE_OBJECT);
         foreach (get_object_vars($obj) as $k => $v) {
             $this->$k = $v;
         }

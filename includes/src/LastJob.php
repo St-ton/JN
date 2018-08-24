@@ -22,14 +22,15 @@ class LastJob
      * @param int $hours
      * @return stdClass[]
      */
-    public function getRepeatedJobs(int $hours)
+    public function getRepeatedJobs(int $hours): array
     {
-        return Shop::Container()->getDB()->query(
+        return Shop::Container()->getDB()->queryPrepared(
             "SELECT kJob, nJob, dErstellt
                 FROM tlastjob
                 WHERE cType = 'RPT'
                     AND (dErstellt = '0000-00-00 00:00:00'
-                        OR DATE_ADD(dErstellt, INTERVAL " . $hours . " HOUR) < NOW())",
+                        OR DATE_ADD(dErstellt, INTERVAL :hrs HOUR) < NOW())",
+            ['hrs' => $hours],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
@@ -58,11 +59,11 @@ class LastJob
     }
 
     /**
-     * @param int $nJob
+     * @param int    $nJob
      * @param string $cJobName
      * @return stdClass
      */
-    public function run(int $nJob, $cJobName = null)
+    public function run(int $nJob, $cJobName = null): stdClass
     {
         $job = $this->getJob($nJob);
         if ($job === null) {
@@ -88,23 +89,27 @@ class LastJob
 
     /**
      * @param int $nJob
-     * @return bool
+     * @return int
      */
-    public function restartJob(int $nJob)
+    public function restartJob(int $nJob): int
     {
-        $job = (object)[
-            'nCounter'  => 0,
-            'dErstellt' => date('Y-m-d H:i:s'),
-            'nFinished' => 0,
-        ];
-
-        return Shop::Container()->getDB()->update('tlastjob', 'nJob', $nJob, $job);
+        return Shop::Container()->getDB()->update(
+            'tlastjob',
+            'nJob',
+            $nJob,
+            (object)[
+                'nCounter'  => 0,
+                'dErstellt' => date('Y-m-d H:i:s'),
+                'nFinished' => 0,
+            ]
+        );
     }
 
     /**
      * @param int|null $nJob
+     * @return int
      */
-    public function finishStdJobs($nJob = null)
+    public function finishStdJobs(int $nJob = null): int
     {
         $keys    = ['cType', 'nFinished'];
         $keyVals = ['STD', 0];
@@ -118,22 +123,19 @@ class LastJob
 
         $keyVals[1] = 1;
         $jobs       = $this->getStdJobs();
+        foreach ($jobs as $job) {
+            $fileName   = PFAD_ROOT . PFAD_DBES . $job->cJobName . '.inc.php';
+            $finishProc = $job->cJobName . '_Finish';
 
-        if (is_array($jobs)) {
-            foreach ($jobs as $job) {
-                $fileName   = PFAD_ROOT . PFAD_DBES . $job->cJobName . '.inc.php';
-                $finishProc = $job->cJobName . '_Finish';
+            if (is_file($fileName)) {
+                require_once $fileName;
 
-                if (is_file($fileName)) {
-                    require_once $fileName;
-
-                    if (function_exists($finishProc)) {
-                        $finishProc();
-                    }
+                if (function_exists($finishProc)) {
+                    $finishProc();
                 }
             }
         }
 
-        Shop::Container()->getDB()->delete('tlastjob', $keys, $keyVals);
+        return Shop::Container()->getDB()->delete('tlastjob', $keys, $keyVals);
     }
 }

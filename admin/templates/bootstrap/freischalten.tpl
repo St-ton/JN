@@ -170,7 +170,7 @@
                         {/if}
 
                         <div class="table-responsive">
-                            <table class="list table">
+                            <table class="list table table-striped">
                                 <thead>
                                 <tr>
                                     <th class="check">&nbsp;</th>
@@ -182,7 +182,7 @@
                                 </thead>
                                 <tbody>
                                 {foreach name=suchanfragen from=$oSuchanfrage_arr item=oSuchanfrage}
-                                    <tr class="tab_bg{$smarty.foreach.suchanfragen.iteration%2}">
+                                    <tr>
                                         <td class="check"><input name="kSuchanfrage[]" type="checkbox" value="{$oSuchanfrage->kSuchanfrage}" /></td>
                                         <td class="tleft">{$oSuchanfrage->cSuche}</td>
                                         <td class="tcenter">{$oSuchanfrage->nAnzahlGesuche}</td>

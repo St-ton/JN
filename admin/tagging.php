@@ -16,7 +16,6 @@ $cHinweis          = '';
 $cFehler           = '';
 $step              = 'uebersicht';
 $settingsIDs       = [427, 428, 431, 433, 434, 435, 430];
-// Tabs
 if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
@@ -80,13 +79,13 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && FormHelper::vali
         }
         // Eintragen in die Mapping Tabelle
         $Tags = Shop::Container()->getDB()->query(
-            "SELECT ttag.kTag, ttag.cName, ttag.nAktiv, sum(ttagartikel.nAnzahlTagging) AS Anzahl 
+            'SELECT ttag.kTag, ttag.cName, ttag.nAktiv, sum(ttagartikel.nAnzahlTagging) AS Anzahl 
                 FROM ttag
                 JOIN ttagartikel 
                     ON ttagartikel.kTag = ttag.kTag
-                WHERE ttag.kSprache = " . (int)$_SESSION['kSprache'] . " 
+                WHERE ttag.kSprache = ' . (int)$_SESSION['kSprache'] . ' 
                 GROUP BY ttag.cName
-                ORDER BY Anzahl DESC",
+                ORDER BY Anzahl DESC',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($Tags as $tag) {
@@ -110,10 +109,10 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && FormHelper::vali
                         foreach ($tagmappings as $tagmapping) {
                             //update tab amount, delete product tagging with old tag ID
                             if (Shop::Container()->getDB()->query(
-                                    "UPDATE ttagartikel 
-                                        SET nAnzahlTagging = nAnzahlTagging+" . $tagmapping->nAnzahlTagging . "
-                                        WHERE kTag = " . (int)$Neuertag->kTag . " 
-                                            AND kArtikel = " . (int)$tagmapping->kArtikel,
+                                    'UPDATE ttagartikel 
+                                        SET nAnzahlTagging = nAnzahlTagging + ' . $tagmapping->nAnzahlTagging . '
+                                        WHERE kTag = ' . (int)$Neuertag->kTag . ' 
+                                            AND kArtikel = ' . (int)$tagmapping->kArtikel,
                                     \DB\ReturnType::AFFECTED_ROWS
                                 ) > 0
                             ) {
@@ -225,16 +224,16 @@ if (RequestHelper::verifyGPCDataInt('kTag') > 0 && RequestHelper::verifyGPCDataI
 } else {
     // Anzahl Tags fuer diese Sprache
     $nAnzahlTags = Shop::Container()->getDB()->query(
-        "SELECT count(*) AS nAnzahl
+        'SELECT count(*) AS nAnzahl
             FROM ttag
-            WHERE kSprache = " . (int)$_SESSION['kSprache'],
+            WHERE kSprache = ' . (int)$_SESSION['kSprache'],
         \DB\ReturnType::SINGLE_OBJECT
     );
     // Anzahl Tag Mappings fuer diese Sprache
     $nAnzahlTagMappings = Shop::Container()->getDB()->query(
-        "SELECT count(*) AS nAnzahl
+        'SELECT count(*) AS nAnzahl
             FROM ttagmapping
-            WHERE kSprache = " . (int)$_SESSION['kSprache'],
+            WHERE kSprache = ' . (int)$_SESSION['kSprache'],
         \DB\ReturnType::SINGLE_OBJECT
     );
 

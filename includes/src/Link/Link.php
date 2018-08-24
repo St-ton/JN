@@ -226,7 +226,7 @@ final class Link extends AbstractLink
             ['lid' => $this->id],
             ReturnType::ARRAY_OF_OBJECTS
         );
-        if (count($link) === 0) {
+        if (\count($link) === 0) {
             throw new \InvalidArgumentException('Provided link id ' . $this->id . ' not found.');
         }
 
@@ -256,7 +256,7 @@ final class Link extends AbstractLink
             $this->setParent((int)$link->kVaterLink);
             $this->setPluginID((int)$link->kPlugin);
             $this->setPluginEnabled($link->pluginState === null || (int)$link->pluginState === \Plugin::PLUGIN_ACTIVATED);
-            $this->setLinkGroups(array_unique(array_map('intval', explode(',', $link->linkGroups))));
+            $this->setLinkGroups(\array_unique(\array_map('\intval', \explode(',', $link->linkGroups))));
             $this->setLinkGroupID((int)$this->linkGroups[0]);
             $this->setLinkType((int)$link->nLinkart);
             $this->setNoFollow($link->cNoFollow === 'Y');
@@ -293,7 +293,7 @@ final class Link extends AbstractLink
     public function checkVisibility(int $customerGroupID, int $customerID = 0): bool
     {
         $cVis   = $this->visibleLoggedInOnly === false || $customerID > 0;
-        $cgVisi = count($this->customerGroups) === 0 || in_array($customerGroupID, $this->customerGroups, true);
+        $cgVisi = \count($this->customerGroups) === 0 || \in_array($customerGroupID, $this->customerGroups, true);
 
         $this->isVisible = $cVis && $cgVisi && $this->isEnabled === true;
 
@@ -733,7 +733,7 @@ final class Link extends AbstractLink
      */
     public function setLanguageIDs(array $ids)
     {
-        $this->languageIDs = array_map('intval', $ids);
+        $this->languageIDs = \array_map('\intval', $ids);
     }
 
     /**
@@ -813,8 +813,8 @@ final class Link extends AbstractLink
      */
     public function setChildLinks($links)
     {
-        if (is_array($links)) {
-            $links = collect($links);
+        if (\is_array($links)) {
+            $links = \collect($links);
         }
         $this->childLinks = $links;
     }
@@ -1036,7 +1036,7 @@ final class Link extends AbstractLink
      */
     public function __debugInfo()
     {
-        $res       = get_object_vars($this);
+        $res       = \get_object_vars($this);
         $res['db'] = '*truncated*';
 
         return $res;

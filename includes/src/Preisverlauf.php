@@ -39,7 +39,7 @@ class Preisverlauf
      *
      * @param int $kPreisverlauf - Falls angegeben, wird der Preisverlauf mit angegebenem kPreisverlauf aus der DB geholt
      */
-    public function __construct($kPreisverlauf = 0)
+    public function __construct(int $kPreisverlauf = 0)
     {
         if ($kPreisverlauf > 0) {
             $this->loadFromDB($kPreisverlauf);
@@ -57,14 +57,14 @@ class Preisverlauf
         $cacheID = 'gpv_' . $kArtikel . '_' . $kKundengruppe . '_' . $nMonat;
         if (($obj_arr = Shop::Cache()->get($cacheID)) === false) {
             $obj_arr = Shop::Container()->getDB()->query(
-                "SELECT tpreisverlauf.fVKNetto, tartikel.fMwst, UNIX_TIMESTAMP(tpreisverlauf.dDate) AS timestamp
+                'SELECT tpreisverlauf.fVKNetto, tartikel.fMwst, UNIX_TIMESTAMP(tpreisverlauf.dDate) AS timestamp
                     FROM tpreisverlauf 
                     LEFT JOIN tartikel
                         ON tartikel.kArtikel = tpreisverlauf.kArtikel
-                    WHERE tpreisverlauf.kArtikel = " . $kArtikel . "
-                        AND tpreisverlauf.kKundengruppe = " . $kKundengruppe . "
-                        AND DATE_SUB(now(), INTERVAL " . $nMonat . " MONTH) < tpreisverlauf.dDate
-                    ORDER BY tpreisverlauf.dDate DESC",
+                    WHERE tpreisverlauf.kArtikel = ' . $kArtikel . '
+                        AND tpreisverlauf.kKundengruppe = ' . $kKundengruppe . '
+                        AND DATE_SUB(now(), INTERVAL ' . $nMonat . ' MONTH) < tpreisverlauf.dDate
+                    ORDER BY tpreisverlauf.dDate DESC',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             $_currency = Session::Currency();

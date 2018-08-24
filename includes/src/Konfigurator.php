@@ -58,10 +58,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         public static function hasKonfig(int $kArtikel): bool
         {
             $oGruppen_arr = Shop::Container()->getDB()->query(
-                "SELECT kArtikel, kKonfigGruppe
+                'SELECT kArtikel, kKonfigGruppe
                      FROM tartikelkonfiggruppe
-                     WHERE tartikelkonfiggruppe.kArtikel = " . $kArtikel . "
-                     ORDER BY tartikelkonfiggruppe.nSort ASC",
+                     WHERE tartikelkonfiggruppe.kArtikel = ' . $kArtikel . '
+                     ORDER BY tartikelkonfiggruppe.nSort ASC',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
 

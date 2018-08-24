@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -29,6 +29,6 @@ class RatingDESC extends AbstractSortingOption
                    ->setOn('tbewertung.kArtikel = tartikel.kArtikel');
         $this->setName(\Shop::Lang()->get('rating'));
         $this->setPriority($this->getConfig('artikeluebersicht')['suche_sortierprio_bewertung']);
-        $this->setValue(SEARCH_SORT_RATING);
+        $this->setValue(\SEARCH_SORT_RATING);
     }
 }

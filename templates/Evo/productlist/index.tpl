@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {block name='header'}
     {if !isset($bAjaxRequest) || !$bAjaxRequest}
         {include file='layout/header.tpl'}
@@ -9,12 +13,10 @@
         {if $opcPageService->getCurPage()->isReplace()}
             {include file='snippets/opc_mount_point.tpl' id='opc_replace_all'}
         {else}
-            {block name="productlist-header"}
-            {include file='productlist/header.tpl'}
+            {block name='productlist-header'}
+                {include file='productlist/header.tpl'}
             {/block}
-
             {assign var='style' value='gallery'}
-
             {if isset($boxes.left) && !$bExclusive && !empty($boxes.left)}
                 {assign var='grid' value='col-xs-6 col-lg-4'}
             {else}
@@ -35,9 +37,8 @@
             {if !empty($Suchergebnisse->getError())}
                 <p class="alert alert-danger">{$Suchergebnisse->getError()}</p>
             {/if}
-            {* Bestseller *}
             {if isset($oBestseller_arr) && $oBestseller_arr|@count > 0}
-                {block name="productlist-bestseller"}
+                {block name='productlist-bestseller'}
                 {lang key='bestseller' section='global' assign='slidertitle'}
                 {include file='snippets/product_slider.tpl' id='slider-top-products' productlist=$oBestseller_arr title=$slidertitle}
                 {/block}
@@ -56,9 +57,7 @@
                 {/foreach}
             </div>
             {/block}
-
-
-            {block name="productlist-footer"}
+            {block name='productlist-footer'}
                 {include file='productlist/footer.tpl'}
             {/block}
         {/if}

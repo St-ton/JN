@@ -14,14 +14,14 @@ $cAction  = (isset($_POST['a']) && FormHelper::validateToken()) ? $_POST['a'] : 
 
 switch ($cAction) {
     case 'update':
-        Shop::Container()->getDB()->query("UPDATE twarenlager SET nAktiv = 0", \DB\ReturnType::AFFECTED_ROWS);
+        Shop::Container()->getDB()->query('UPDATE twarenlager SET nAktiv = 0', \DB\ReturnType::AFFECTED_ROWS);
         if (isset($_REQUEST['kWarenlager']) && is_array($_REQUEST['kWarenlager']) && count($_REQUEST['kWarenlager']) > 0) {
             $wl = [];
             foreach ($_REQUEST['kWarenlager'] as $_wl) {
                 $wl[] = (int)$_wl;
             }
             Shop::Container()->getDB()->query(
-                "UPDATE twarenlager SET nAktiv = 1 WHERE kWarenlager IN (" . implode(', ', $wl) . ")",
+                'UPDATE twarenlager SET nAktiv = 1 WHERE kWarenlager IN (' . implode(', ', $wl) . ')',
                 \DB\ReturnType::AFFECTED_ROWS
             );
         }

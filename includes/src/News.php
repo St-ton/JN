@@ -513,4 +513,114 @@ class News extends MainModel
 
         return $oNews_arr;
     }
+
+    /**
+     * @param int $kSprache
+     * @param bool $noCache
+     * @param bool $flatten
+     * @param bool $showOnlyActive
+     * @return array
+     */
+    public static function getAllNewsCategories(int $kSprache = 1, bool $noCache = false, bool $flatten = false, bool $showOnlyActive = false): array
+    {
+        $cacheID = 'newsCategories_Lang_' .$kSprache;
+        if($noCache || ($oNewsCategories_arr = Shop::Container()->getCache()->get($cacheID)) === false)
+        {
+            $oNewsCategories = Shop::Container()->getDB()->query(
+                "SELECT *, DATE_FORMAT(dLetzteAktualisierung, '%d.%m.%Y %H:%i') AS dLetzteAktualisierung_de
+            FROM tnewskategorie
+            WHERE kSprache = " . $kSprache . ($showOnlyActive ? ' AND nAktiv = 1 ' : '') . "
+            ORDER BY nSort ASC",
+                \DB\ReturnType::ARRAY_OF_OBJECTS
+            );
+            $oNewsCategories     = is_array($oNewsCategories) ? $oNewsCategories : [];
+            $oNewsCategories_arr = self::buildNewsCategoryTree($oNewsCategories);
+            Shop::Cache()->set($cacheID, $oNewsCategories_arr, [CACHING_GROUP_OBJECT], 3600);
+        }
+
+        if ($flatten) {
+            $oNewsCategories_arr = self::flattenNewsCategoryTree($oNewsCategories_arr);
+        }
+        return $oNewsCategories_arr;
+    }
+
+    /**
+     * @param array $newsCats
+     * @param int $parentId
+     * @param int $level
+     * @return array
+     */
+    public static function buildNewsCategoryTree(array $newsCats, int $parentId = 0, int $level = -1): array
+    {
+        $newsCatTree = [];
+        $level++;
+        foreach ($newsCats as $newsCat) {
+            if ((int)$newsCat->kParent === $parentId) {
+                $children = self::buildNewsCategoryTree($newsCats, $newsCat->kNewsKategorie, $level);
+                if ($children) {
+                    $newsCat->children = $children;
+                }
+                $newsCat->nLevel = $level;
+                $newsCatTree[]   = $newsCat;
+            }
+        }
+        return $newsCatTree;
+    }
+
+    /**
+     * @param array $newsCats
+     * @return array
+     */
+    public static function flattenNewsCategoryTree(array $newsCats): array
+    {
+        $flattendNewsCats = [];
+        foreach ($newsCats as $newsCat) {
+            $flattendNewsCats[] = $newsCat;
+            if (!empty($newsCat->children)) {
+                $flattendNewsCats = array_merge($flattendNewsCats, self::flattenNewsCategoryTree($newsCat->children));
+            }
+        }
+        return $flattendNewsCats;
+    }
+
+    /**
+     * @param int $newsCatID
+     * @return object|null
+     */
+    public static function getNewsCategory(int $newsCatID)
+    {
+        return Shop::Container()->getDB()->select('tnewskategorie', 'kNewsKategorie', $newsCatID);
+    }
+
+    /**
+     * @param int $newsCatID
+     * @param array $newsCats
+     * @return array
+     */
+    public static function getNewsSubCategories(int $newsCatID, array $newsCats): array
+    {
+        $subCats = [];
+        foreach ($newsCats as $newsCat) {
+            if (isset($newsCat->children) && (int)$newsCat->kNewsKategorie === $newsCatID) {
+                foreach ($newsCat->children as $child) {
+                    $subCats[] = $child->kNewsKategorie;
+                    $subCats   = array_merge($subCats, self::getNewsSubCategories($child->kNewsKategorie, $newsCat->children));
+                }
+            }
+        }
+        return $subCats;
+    }
+
+    /**
+     * @param int $newsCatID
+     * @param int $kSprache
+     * @param bool $noCache
+     * @param bool $showOnlyActive
+     * @return array
+     */
+    public static function getNewsCatAndSubCats(int $newsCatID, int $kSprache, bool $noCache = false, bool $showOnlyActive = false): array
+    {
+        $newsCats = self::getAllNewsCategories($kSprache, $noCache, true, $showOnlyActive);
+        return array_merge([$newsCatID], self::getNewsSubCategories($newsCatID, $newsCats));
+    }
 }

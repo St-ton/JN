@@ -93,7 +93,7 @@ class Button extends \OPC\Portlet
 
         $previewButton = "<a ";
 
-        if (!empty($linkFlag) && !empty($linkUrl)) {
+        if (!empty($linkFlag) && $linkFlag !== 'false' && !empty($linkUrl)) {
             $previewButton .= ' href="' . $linkUrl . '" title="' . $linkTitle . '" ';
             $previewButton .= !empty($linkNewTabFlag) ? ' target="_blank" ' : '';
         }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -6,11 +6,12 @@
 
 namespace Filter\States;
 
+
 use DB\ReturnType;
 use Filter\AbstractFilter;
-use Filter\FilterJoin;
+use Filter\Join;
 use Filter\FilterInterface;
-use Filter\Items\ItemCategory;
+use Filter\Items\Category;
 use Filter\ProductFilter;
 
 /**
@@ -44,7 +45,7 @@ class BaseCategory extends AbstractFilter
         parent::__construct($productFilter);
         $this->setIsCustom(false)
              ->setUrlParam('k')
-             ->setUrlParamSEO(SEP_KAT);
+             ->setUrlParamSEO(\SEP_KAT);
     }
 
     /**
@@ -57,7 +58,7 @@ class BaseCategory extends AbstractFilter
 
     /**
      * @param bool $includeSubCategories
-     * @return ItemCategory
+     * @return Category
      */
     public function setIncludeSubCategories($includeSubCategories): self
     {
@@ -83,7 +84,7 @@ class BaseCategory extends AbstractFilter
     public function setSeo(array $languages): FilterInterface
     {
         if ($this->getValue() > 0) {
-            $oSeo_arr = \Shop::Container()->getDB()->queryPrepared(
+            $oSeo_arr = $this->productFilter->getDB()->queryPrepared(
                 "SELECT tseo.cSeo, tseo.kSprache, tkategorie.cName AS cKatName, tkategoriesprache.cName
                     FROM tseo
                         LEFT JOIN tkategorie
@@ -155,7 +156,7 @@ class BaseCategory extends AbstractFilter
      */
     public function getSQLJoin()
     {
-        return (new FilterJoin())
+        return (new Join())
             ->setType('JOIN')
             ->setOrigin(__CLASS__)
             ->setTable('tkategorieartikel')

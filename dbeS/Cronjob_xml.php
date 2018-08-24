@@ -15,18 +15,18 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_queue_inc.ph
 class SyncCronjob extends NetSyncHandler
 {
     /**
-     *
-     */
-    protected function init()
-    {
-    }
-
-    /**
      * @param Exception $oException
      */
     public static function exception($oException)
     {
         var_dump($oException);
+    }
+
+    /**
+     *
+     */
+    protected function init()
+    {
     }
 
     /**

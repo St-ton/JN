@@ -14,9 +14,9 @@ class WarenkorbHelper
 
     /**
      * @param int $decimals
-     * @return object
+     * @return stdClass
      */
-    public function getTotal($decimals = 0)
+    public function getTotal(int $decimals = 0): stdClass
     {
         $info            = new stdClass();
         $info->type      = Session::CustomerGroup()->isMerchant() ? self::NET : self::GROSS;
@@ -534,102 +534,100 @@ class WarenkorbHelper
     }
 
     /**
-     * @param int       $kArtikel
-     * @param int|float $qty
+     * @param int $kArtikel
+     * @param int $maxItems
      * @return bool
      */
-    private static function checkCompareList($kArtikel, $qty)
+    private static function checkCompareList(int $kArtikel, int $maxItems): bool
     {
         // Prüfen ob nicht schon die maximale Anzahl an Artikeln auf der Vergleichsliste ist
-        if (!isset($_SESSION['Vergleichsliste']->oArtikel_arr)
-            || $qty > count($_SESSION['Vergleichsliste']->oArtikel_arr)
-        ) {
-            // Prüfe auf kArtikel
-            $productExists = Shop::Container()->getDB()->select(
-                'tartikel',
+        if (isset($_SESSION['Vergleichsliste']->oArtikel_arr) && $maxItems <= count($_SESSION['Vergleichsliste']->oArtikel_arr)) {
+            Shop::Smarty()->assign('fehler', Shop::Lang()->get('compareMaxlimit', 'errorMessages'));
+
+            return false;
+        }
+        // Prüfe auf kArtikel
+        $productExists = Shop::Container()->getDB()->select(
+            'tartikel',
+            'kArtikel', $kArtikel,
+            null, null,
+            null, null,
+            false,
+            'kArtikel, cName'
+        );
+        // Falls Artikel vorhanden
+        if ($productExists !== null && $productExists->kArtikel > 0) {
+            // Sichtbarkeit Prüfen
+            $vis = Shop::Container()->getDB()->select(
+                'tartikelsichtbarkeit',
                 'kArtikel', $kArtikel,
-                null, null,
+                'kKundengruppe', Session::CustomerGroup()->getID(),
                 null, null,
                 false,
-                'kArtikel, cName'
+                'kArtikel'
             );
-            // Falls Artikel vorhanden
-            if ($productExists !== null && $productExists->kArtikel > 0) {
-                // Sichtbarkeit Prüfen
-                $vis = Shop::Container()->getDB()->select(
-                    'tartikelsichtbarkeit',
-                    'kArtikel', $kArtikel,
-                    'kKundengruppe', Session::CustomerGroup()->getID(),
-                    null, null,
-                    false,
-                    'kArtikel'
-                );
-                if ($vis === null || !isset($vis->kArtikel) || !$vis->kArtikel) {
-                    // Prüfe auf Vater Artikel
-                    $oVariationen_arr = [];
-                    if (ArtikelHelper::isParent($kArtikel)) {
-                        $kArtikel         = ArtikelHelper::getArticleForParent($kArtikel);
-                        $oVariationen_arr = ArtikelHelper::getSelectedPropertiesForVarCombiArticle($kArtikel, 1);
-                    }
-                    // Prüfe auf Vater Artikel
-                    if (ArtikelHelper::isParent($kArtikel)) {
-                        $kArtikel = ArtikelHelper::getArticleForParent($kArtikel);
-                    }
-                    $oVergleichsliste = new Vergleichsliste($kArtikel, $oVariationen_arr);
-                    // Falls es eine Vergleichsliste in der Session gibt
-                    if (isset($_SESSION['Vergleichsliste'])) {
-                        // Falls Artikel vorhanden sind
-                        if (is_array($_SESSION['Vergleichsliste']->oArtikel_arr)
-                            && count($_SESSION['Vergleichsliste']->oArtikel_arr) > 0
-                        ) {
-                            $bSchonVorhanden = false;
-                            foreach ($_SESSION['Vergleichsliste']->oArtikel_arr as $oArtikel) {
-                                if ($oArtikel->kArtikel === $oVergleichsliste->oArtikel_arr[0]->kArtikel) {
-                                    $bSchonVorhanden = true;
-                                    break;
-                                }
-                            }
-                            // Wenn der Artikel der eingetragen werden soll, nicht schon in der Session ist
-                            if (!$bSchonVorhanden) {
-                                foreach ($_SESSION['Vergleichsliste']->oArtikel_arr as $oArtikel) {
-                                    $oVergleichsliste->oArtikel_arr[] = $oArtikel;
-                                }
-                                $_SESSION['Vergleichsliste'] = $oVergleichsliste;
-                                Shop::Smarty()->assign(
-                                    'hinweis',
-                                    Shop::Lang()->get('comparelistProductadded', 'messages')
-                                );
-                            } else {
-                                Shop::Smarty()->assign(
-                                    'fehler',
-                                    Shop::Lang()->get('comparelistProductexists', 'messages')
-                                );
+            if ($vis === null || !isset($vis->kArtikel) || !$vis->kArtikel) {
+                // Prüfe auf Vater Artikel
+                $oVariationen_arr = [];
+                if (ArtikelHelper::isParent($kArtikel)) {
+                    $kArtikel         = ArtikelHelper::getArticleForParent($kArtikel);
+                    $oVariationen_arr = ArtikelHelper::getSelectedPropertiesForVarCombiArticle($kArtikel, 1);
+                }
+                // Prüfe auf Vater Artikel
+                if (ArtikelHelper::isParent($kArtikel)) {
+                    $kArtikel = ArtikelHelper::getArticleForParent($kArtikel);
+                }
+                $oVergleichsliste = new Vergleichsliste($kArtikel, $oVariationen_arr);
+                // Falls es eine Vergleichsliste in der Session gibt
+                if (isset($_SESSION['Vergleichsliste'])) {
+                    // Falls Artikel vorhanden sind
+                    if (is_array($_SESSION['Vergleichsliste']->oArtikel_arr)
+                        && count($_SESSION['Vergleichsliste']->oArtikel_arr) > 0
+                    ) {
+                        $bSchonVorhanden = false;
+                        foreach ($_SESSION['Vergleichsliste']->oArtikel_arr as $oArtikel) {
+                            if ($oArtikel->kArtikel === $oVergleichsliste->oArtikel_arr[0]->kArtikel) {
+                                $bSchonVorhanden = true;
+                                break;
                             }
                         }
-                    } else {
-                        // Vergleichsliste neu in der Session anlegen
-                        $_SESSION['Vergleichsliste'] = $oVergleichsliste;
-                        Shop::Smarty()->assign('hinweis', Shop::Lang()->get('comparelistProductadded', 'messages'));
+                        // Wenn der Artikel der eingetragen werden soll, nicht schon in der Session ist
+                        if (!$bSchonVorhanden) {
+                            foreach ($_SESSION['Vergleichsliste']->oArtikel_arr as $oArtikel) {
+                                $oVergleichsliste->oArtikel_arr[] = $oArtikel;
+                            }
+                            $_SESSION['Vergleichsliste'] = $oVergleichsliste;
+                            Shop::Smarty()->assign(
+                                'hinweis',
+                                Shop::Lang()->get('comparelistProductadded', 'messages')
+                            );
+                        } else {
+                            Shop::Smarty()->assign(
+                                'fehler',
+                                Shop::Lang()->get('comparelistProductexists', 'messages')
+                            );
+                        }
                     }
+                } else {
+                    // Vergleichsliste neu in der Session anlegen
+                    $_SESSION['Vergleichsliste'] = $oVergleichsliste;
+                    Shop::Smarty()->assign('hinweis', Shop::Lang()->get('comparelistProductadded', 'messages'));
                 }
             }
-
-            return true;
         }
-        Shop::Smarty()->assign('fehler', Shop::Lang()->get('compareMaxlimit', 'errorMessages'));
 
-        return false;
+        return true;
     }
 
     /**
-     * @param int       $articleID
+     * @param int       $productID
      * @param float|int $qty
      * @param bool      $redirect
      * @return bool
      */
-    private static function checkWishlist($articleID, $qty, $redirect)
+    private static function checkWishlist(int $productID, $qty, $redirect)
     {
-        $linkHelper = LinkHelper::getInstance();
+        $linkHelper = Shop::Container()->getLinkService();
         // Prüfe ob Kunde eingeloggt
         if (!isset($_SESSION['Kunde']->kKunde) && !isset($_POST['login'])) {
             //redirekt zum artikel, um variation/en zu wählen / MBM beachten
@@ -637,17 +635,17 @@ class WarenkorbHelper
                 $qty = 1;
             }
             header('Location: ' . $linkHelper->getStaticRoute('jtl.php') .
-                '?a=' . $articleID .
+                '?a=' . $productID .
                 '&n=' . $qty .
                 '&r=' . R_LOGIN_WUNSCHLISTE, true, 302);
             exit;
         }
 
-        if ($articleID > 0 && Session::Customer()->getID() > 0) {
+        if ($productID > 0 && Session::Customer()->getID() > 0) {
             // Prüfe auf kArtikel
             $productExists = Shop::Container()->getDB()->select(
                 'tartikel',
-                'kArtikel', $articleID,
+                'kArtikel', $productID,
                 null, null,
                 null, null,
                 false,
@@ -658,7 +656,7 @@ class WarenkorbHelper
                 // Sichtbarkeit Prüfen
                 $vis = Shop::Container()->getDB()->select(
                     'tartikelsichtbarkeit',
-                    'kArtikel', $articleID,
+                    'kArtikel', $productID,
                     'kKundengruppe', Session::CustomerGroup()->getID(),
                     null, null,
                     false,
@@ -666,32 +664,32 @@ class WarenkorbHelper
                 );
                 if ($vis === null || !$vis->kArtikel) {
                     // Prüfe auf Vater Artikel
-                    if (ArtikelHelper::isParent($articleID)) {
+                    if (ArtikelHelper::isParent($productID)) {
                         // Falls die Wunschliste aus der Artikelübersicht ausgewählt wurde,
                         // muss zum Artikel weitergeleitet werden um Variationen zu wählen
                         if (RequestHelper::verifyGPCDataInt('overview') === 1) {
-                            header('Location: ' . Shop::getURL() . '/?a=' . $articleID .
+                            header('Location: ' . Shop::getURL() . '/?a=' . $productID .
                                 '&n=' . $qty .
                                 '&r=' . R_VARWAEHLEN, true, 303);
                             exit;
                         }
 
-                        $articleID  = ArtikelHelper::getArticleForParent($articleID);
-                        $attributes = $articleID > 0
-                            ? ArtikelHelper::getSelectedPropertiesForVarCombiArticle($articleID)
+                        $productID  = ArtikelHelper::getArticleForParent($productID);
+                        $attributes = $productID > 0
+                            ? ArtikelHelper::getSelectedPropertiesForVarCombiArticle($productID)
                             : [];
                     } else {
-                        $attributes = ArtikelHelper::getSelectedPropertiesForArticle($articleID);
+                        $attributes = ArtikelHelper::getSelectedPropertiesForArticle($productID);
                     }
                     // Prüfe ob die Session ein Wunschlisten Objekt hat
-                    if ($articleID > 0) {
+                    if ($productID > 0) {
                         if (empty($_SESSION['Wunschliste']->kWunschliste)) {
                             $_SESSION['Wunschliste'] = new Wunschliste();
                             $_SESSION['Wunschliste']->schreibeDB();
                         }
                         $qty             = max(1, $qty);
                         $kWunschlistePos = $_SESSION['Wunschliste']->fuegeEin(
-                            $articleID,
+                            $productID,
                             $productExists->cName,
                             $attributes,
                             $qty
@@ -702,9 +700,9 @@ class WarenkorbHelper
                         }
 
                         $obj           = new stdClass();
-                        $obj->kArtikel = $articleID;
+                        $obj->kArtikel = $productID;
                         executeHook(HOOK_TOOLS_GLOBAL_CHECKEWARENKORBEINGANG_WUNSCHLISTE, [
-                            'kArtikel'         => &$articleID,
+                            'kArtikel'         => &$productID,
                             'fAnzahl'          => &$qty,
                             'AktuellerArtikel' => &$obj
                         ]);
@@ -736,7 +734,7 @@ class WarenkorbHelper
     public static function addToCartCheck($product, $qty, $attributes, int $accuracy = 2): array
     {
         $cart          = Session::Cart();
-        $kArtikel      = $product->kArtikel; // relevant für die Berechnung von Artikelsummen im Warenkorb
+        $kArtikel      = (int)$product->kArtikel; // relevant für die Berechnung von Artikelsummen im Warenkorb
         $redirectParam = [];
         $conf          = Shop::getSettings([CONF_GLOBAL]);
         // Abnahmeintervall
@@ -1484,7 +1482,7 @@ class WarenkorbHelper
             }
         }
         self::deleteAllSpecialPositions();
-        if (!$cart->enthaltenSpezialPos(C_WARENKORBPOS_TYP_ARTIKEL)) {
+        if (!$cart->posTypEnthalten(C_WARENKORBPOS_TYP_ARTIKEL)) {
             unset($_SESSION['Kupon']);
             $_SESSION['Warenkorb'] = new Warenkorb();
         }
@@ -1501,7 +1499,7 @@ class WarenkorbHelper
      * @former loescheWarenkorbPosition()
      * @since 5.0.0
      */
-    public static function deleteCartPosition($nPos)
+    public static function deleteCartPosition(int $nPos)
     {
         self::deleteCartPositions([$nPos]);
     }
@@ -1682,7 +1680,7 @@ class WarenkorbHelper
         $kArtikelGratisgeschenk = (int)$kArtikelGratisgeschenk;
         //positionen mit nAnzahl = 0 müssen gelöscht werden
         $cart->loescheNullPositionen();
-        if (!$cart->enthaltenSpezialPos(C_WARENKORBPOS_TYP_ARTIKEL)) {
+        if (!$cart->posTypEnthalten(C_WARENKORBPOS_TYP_ARTIKEL)) {
             $_SESSION['Warenkorb'] = new Warenkorb();
             $cart                  = $_SESSION['Warenkorb'];
         }
@@ -1738,7 +1736,7 @@ class WarenkorbHelper
      * @former checkeSchnellkauf()
      * @since 5.0.0
      */
-    public static function checkQuickBuy()
+    public static function checkQuickBuy(): string
     {
         $msg = '';
         if (isset($_POST['schnellkauf']) && (int)$_POST['schnellkauf'] > 0 && !empty($_POST['ean'])) {

@@ -37,9 +37,9 @@ class Migration_20180507101900 extends Migration implements IMigration
             cName VARCHAR(255),
             cPageUrl VARCHAR(255) NOT NULL,
             cAreasJson LONGTEXT NOT NULL,
-            dLastModified DATETIME NOT NULL,
+            dLastModified DATETIME NULL,
             cLockedBy VARCHAR(255) NOT NULL,
-            dLockedAt DATETIME NOT NULL,
+            dLockedAt DATETIME NULL,
             bReplace BOOL NOT NULL,
             UNIQUE KEY (cPageId, dPublishFrom)
         ) ENGINE=InnoDB COLLATE utf8_unicode_ci");

@@ -89,7 +89,7 @@ class Area implements \JsonSerializable
     {
         $this->id = $data['id'];
 
-        if (isset($data['content']) && is_array($data['content'])) {
+        if (isset($data['content']) && \is_array($data['content'])) {
             $this->clear();
 
             foreach ($data['content'] as $portletData) {

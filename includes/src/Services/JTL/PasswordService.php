@@ -49,7 +49,7 @@ class PasswordService implements PasswordServiceInterface
         $result = '';
         for ($x = 0; $x < $length; $x++) {
             $no     = $this->cryptoService->randomInt(self::ASCII_MIN, self::ASCII_MAX);
-            $result .= chr($no);
+            $result .= \chr($no);
         }
 
         return $result;
@@ -68,13 +68,13 @@ class PasswordService implements PasswordServiceInterface
      */
     public function verify($password, $hash)
     {
-        $length = strlen($hash);
+        $length = \strlen($hash);
         if ($length === 32) {
             // very old md5 hashes
-            return md5($password) === $hash;
+            return \md5($password) === $hash;
         }
         if ($length === 40) {
-            return cryptPasswort($password, $hash) !== false;
+            return \cryptPasswort($password, $hash) !== false;
         }
 
         return password_verify($password, $hash);
@@ -85,7 +85,7 @@ class PasswordService implements PasswordServiceInterface
      */
     public function needsRehash($hash): bool
     {
-        $length = strlen($hash);
+        $length = \strlen($hash);
 
         return $length === 32 || $length === 40
             ? true

@@ -1,5 +1,7 @@
-{* template to display products in slider *}
-
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 <div class="product-cell text-center{if isset($class)} {$class}{/if} thumbnail">
     <a class="image-wrapper" href="{$Artikel->cURLFull}">
         {if isset($Artikel->Bilder[0]->cAltAttribut)}
@@ -29,4 +31,4 @@
             {include file='productdetails/price.tpl' Artikel=$Artikel tplscope=$tplscope}
         </div>
     </div>
-</div>{* /product-cell *}
+</div>

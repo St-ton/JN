@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
 {assign var=anzeige value=$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige}
 <div class="delivery-status">
 {block name='delivery-status'}
@@ -10,7 +14,7 @@
         {elseif $anzeige !== 'nichts' && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen !== 'N' && $Artikel->cLagerBeachten === 'Y' &&
         $Artikel->fLagerbestand <= 0 && $Artikel->fLieferantenlagerbestand > 0 && $Artikel->fLieferzeit > 0 &&
         ($Artikel->cLagerKleinerNull === 'N' && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'I' || $Artikel->cLagerKleinerNull === 'Y' && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U')}
-            <span class="status status-1"><i class="fa fa-truck"></i> {lang key='supplierStockNotice' section='global' printf=$Artikel->fLieferzeit}</span>
+            <span class="status status-1"><i class="fa fa-truck"></i> {lang key='supplierStockNotice' printf=$Artikel->fLieferzeit}</span>
         {elseif $anzeige === 'verfuegbarkeit' || $anzeige === 'genau'}
             <span class="status status-{$Artikel->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$Artikel->Lageranzeige->cLagerhinweis[$anzeige]}</span>
         {elseif $anzeige === 'ampel'}
@@ -37,12 +41,12 @@
     {if isset($Artikel->cLieferstatus) && ($Einstellungen.artikeldetails.artikeldetails_lieferstatus_anzeigen === 'Y' ||
     ($Einstellungen.artikeldetails.artikeldetails_lieferstatus_anzeigen === 'L' && $Artikel->fLagerbestand == 0 && $Artikel->cLagerBeachten === 'Y') ||
     ($Einstellungen.artikeldetails.artikeldetails_lieferstatus_anzeigen === 'A' && ($Artikel->fLagerbestand > 0 || $Artikel->cLagerKleinerNull === 'Y' || $Artikel->cLagerBeachten !== 'Y')))}
-        <p class="delivery-status"><strong>{lang key='deliveryStatus' section='global'}</strong>: {$Artikel->cLieferstatus}</p>
+        <p class="delivery-status"><strong>{lang key='deliveryStatus'}</strong>: {$Artikel->cLieferstatus}</p>
     {/if}
     
     {if $Artikel->cEstimatedDelivery}
         <p class="estimated-delivery">
-            <span class="a{$Artikel->Lageranzeige->nStatus}"><strong>{lang key='shippingTime' section='global'}</strong>: {$Artikel->cEstimatedDelivery}</span>
+            <span class="a{$Artikel->Lageranzeige->nStatus}"><strong>{lang key='shippingTime'}</strong>: {$Artikel->cEstimatedDelivery}</span>
         </p>
     {/if}
 {/block}

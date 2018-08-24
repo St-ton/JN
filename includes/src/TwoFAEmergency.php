@@ -40,7 +40,7 @@ class TwoFAEmergency
      * @return array - new created emergency-codes (as written into the DB)
      * @throws Exception
      */
-    public function createNewCodes($oUserTuple)
+    public function createNewCodes($oUserTuple): array
     {
         $passwordService = Shop::Container()->getPasswordService();
         $vAnalogyArray   = [];
@@ -82,8 +82,11 @@ class TwoFAEmergency
      */
     public function removeExistingCodes($oUserTuple)
     {
-        $iEffectedRows = Shop::Container()->getDB()->deleteRow('tadmin2facodes', 'kAdminlogin',
-            $oUserTuple->kAdminlogin);
+        $iEffectedRows = Shop::Container()->getDB()->deleteRow(
+            'tadmin2facodes',
+            'kAdminlogin',
+            $oUserTuple->kAdminlogin
+        );
         if ($this->iCodeCount !== $iEffectedRows) {
             Shop::Container()->getLogService()->error('2FA-Notfall-Codes für diesen Account konnten nicht entfernt werden.');
         }

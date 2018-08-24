@@ -24,8 +24,8 @@ function getDBStruct(bool $extended = false)
 
         if (version_compare($mysqlVersion->innodb->version, '5.6', '>=')) {
             $dbStatus = Shop::Container()->getDB()->queryPrepared(
-                "SHOW OPEN TABLES
-                    WHERE `Database` LIKE :schema",
+                'SHOW OPEN TABLES
+                    WHERE `Database` LIKE :schema',
                 ['schema' => $database],
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
@@ -69,11 +69,11 @@ function getDBStruct(bool $extended = false)
             }
 
             $oCol_arr = Shop::Container()->getDB()->queryPrepared(
-                "SELECT `COLUMN_NAME`, `DATA_TYPE`, `COLUMN_TYPE`, `CHARACTER_SET_NAME`, `COLLATION_NAME`
+                'SELECT `COLUMN_NAME`, `DATA_TYPE`, `COLUMN_TYPE`, `CHARACTER_SET_NAME`, `COLLATION_NAME`
                     FROM information_schema.COLUMNS
                     WHERE `TABLE_SCHEMA` = :schema
                         AND `TABLE_NAME` = :table
-                    ORDER BY `ORDINAL_POSITION`",
+                    ORDER BY `ORDINAL_POSITION`',
                 [
                     'schema' => $database,
                     'table'  => $cTable

@@ -128,11 +128,10 @@ class Revision
      * @param int         $key
      * @param bool        $secondary
      * @param null|string $author
-     * @param bool        $utf8 - @deprecated since 5.0
      * @return bool
      * @throws InvalidArgumentException
      */
-    public function addRevision($type, $key, bool $secondary = false, $author = null, $utf8 = true): bool
+    public function addRevision($type, $key, bool $secondary = false, $author = null): bool
     {
         if (MAX_REVISIONS <= 0) {
             return false;
@@ -172,7 +171,7 @@ class Revision
 
             $latestRevision = $this->getLatestRevision($type, $key);
 
-            if (!empty($latestRevision) && $latestRevision->content !== $revision->content) {
+            if (empty($latestRevision) || $latestRevision->content !== $revision->content) {
                 $this->storeRevision($revision);
                 $this->housekeeping($type, $key);
             }
@@ -229,10 +228,9 @@ class Revision
      * @param string $type
      * @param int    $id
      * @param bool   $secondary
-     * @param bool   $utf8 - @deprecated since 5.0
      * @return bool
      */
-    public function restoreRevision($type, $id, $secondary = false, $utf8 = true): bool
+    public function restoreRevision($type, $id, $secondary = false): bool
     {
         $revision = $this->getRevision($id);
         $mapping  = $this->getMapping($type); // get static mapping from build in content types

@@ -9,7 +9,6 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.ph
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admininclude.php';
 require_once PFAD_ROOT . PFAD_GRAPHCLASS . 'graph.php';
 
-//### Prüfung welcher Graph angezeigt werden soll
 if (isset($_SESSION['nDiagrammTyp'])) {
     switch ((int)$_SESSION['nDiagrammTyp']) {
         case 1: // Umsatz - Jahr
@@ -52,7 +51,21 @@ function erstelleUmsatzGraph($oY1_arr, $oY2_arr, $nYmax, $nDiagrammTyp)
         $CGraph->parameter['shadow']            = 'none';
         $CGraph->parameter['title']             = 'Umsatzstatistik';
         $CGraph->parameter['x_label']           = 'Monate';
-        $CGraph->x_data                         = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+
+        $CGraph->x_data = [
+            'Januar',
+            'Februar',
+            'März',
+            'April',
+            'Mai',
+            'Juni',
+            'Juli',
+            'August',
+            'September',
+            'Oktober',
+            'November',
+            'Dezember'
+        ];
         $CGraph->y_data['alpha']                = [];
         $CGraph->y_data['beta']                 = [];
 
@@ -212,7 +225,7 @@ function erstelleKampagneDetailGraph($oKampagneDetailGraph, $kKampagneDef)
 
     if (is_array($oKampagneDetailGraph->oKampagneDetailGraph_arr) && count($oKampagneDetailGraph->oKampagneDetailGraph_arr) > 0) {
         foreach ($oKampagneDetailGraph->oKampagneDetailGraph_arr as $oKampagneDetailGraphDef_arr) {
-            $CGraph->x_data[]          = "(" . $oKampagneDetailGraphDef_arr[$kKampagneDef] . ") " . $oKampagneDetailGraphDef_arr['cDatum'];
+            $CGraph->x_data[]          = '(' . $oKampagneDetailGraphDef_arr[$kKampagneDef] . ') ' . $oKampagneDetailGraphDef_arr['cDatum'];
             $CGraph->y_data['alpha'][] = $oKampagneDetailGraphDef_arr[$kKampagneDef];
         }
     }

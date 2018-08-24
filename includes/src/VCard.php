@@ -136,13 +136,10 @@ class VCard
     {
         // das erste BASE64 final = sign muss maskiert werden, damit es vom nachfolgenden replace nicht ersetzt wird
         $encodedStr = preg_replace('{(\n\s.+)=(\n)}', '$1-base64=-$2', $encodedStr);
-
         // verketten von Zeilen, die mit einem hard wrap getrennt sind (quoted-printable-encoded values in v2.1 vCards)
         $encodedStr = str_replace("=\n", '', $encodedStr);
-
         // verketten von Zeilen, die mit einem soft wrap getrennt sind (space oder tab am Anfang der nächsten Zeile
         $encodedStr = str_replace(["\n ", "\n\t"], '-wrap-', $encodedStr);
-
         // das erste BASE64 final = sign aus der Maskierung wiederherstellen
         $encodedStr = str_replace("-base64=-\n", "=\n", $encodedStr);
 
@@ -236,7 +233,7 @@ class VCard
      * @param string $rawValue
      * @return array
      */
-    protected static function parseStructuredValue($key, $rawValue)
+    protected static function parseStructuredValue($key, $rawValue): array
     {
         $result = [];
         $txtArr = array_map('trim', explode(';', $rawValue));
@@ -253,7 +250,7 @@ class VCard
      * @param string $rawValue
      * @return array
      */
-    protected static function parseMultipleTextValue($rawValue)
+    protected static function parseMultipleTextValue($rawValue): array
     {
         return explode(',', $rawValue);
     }

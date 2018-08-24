@@ -26,7 +26,7 @@ class Numeric implements RuleInterface
      */
     public function validate($value)
     {
-        return is_numeric($value)
+        return \is_numeric($value)
             ? new RuleResult(true, '', $value)
             : new RuleResult(false, 'not numeric', $value);
     }

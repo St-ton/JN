@@ -87,8 +87,9 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && (int)$_POST['kaeuferschutzein
             $settings->reset();
         }
 
-        if (strlen($_POST['tsId']) > 0 && (strlen($_POST['wsUser']) > 0 &&
-                strlen($_POST['wsPassword']) > 0 || $_POST['eType'] === TS_BUYERPROT_CLASSIC)) {
+        if (strlen($_POST['tsId']) > 0
+            && (strlen($_POST['wsUser']) > 0 && strlen($_POST['wsPassword']) > 0 || $_POST['eType'] === TS_BUYERPROT_CLASSIC)
+        ) {
             $oZertifikat              = new stdClass();
             $oZertifikat->cTSID       = StringHandler::htmlentities(StringHandler::filterXSS(trim($_POST['tsId'])));
             $oZertifikat->cWSUser     = StringHandler::htmlentities(StringHandler::filterXSS($_POST['wsUser']));
@@ -228,27 +229,27 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && (int)$_POST['kaeuferschutzein
 if ($step === 'uebersicht') {
     // Config holen
     $oConfig_arr = Shop::Container()->getDB()->query(
-        "SELECT *
+        'SELECT *
             FROM teinstellungenconf
-            WHERE kEinstellungenSektion = " . CONF_TRUSTEDSHOPS . "
-            ORDER BY nSort",
+            WHERE kEinstellungenSektion = ' . CONF_TRUSTEDSHOPS . '
+            ORDER BY nSort',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     $configCount = count($oConfig_arr);
     for ($i = 0; $i < $configCount; $i++) {
         if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
             $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->query(
-                "SELECT *
+                'SELECT *
                     FROM teinstellungenconfwerte
-                    WHERE kEinstellungenConf = " . (int)$oConfig_arr[$i]->kEinstellungenConf . "
-                    ORDER BY nSort",
+                    WHERE kEinstellungenConf = ' . (int)$oConfig_arr[$i]->kEinstellungenConf . '
+                    ORDER BY nSort',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         } elseif ($oConfig_arr[$i]->cInputTyp === 'listbox') {
             $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->query(
-                "SELECT kKundengruppe, cName
+                'SELECT kKundengruppe, cName
                     FROM tkundengruppe
-                    ORDER BY cStandard DESC",
+                    ORDER BY cStandard DESC',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
         }

@@ -22,7 +22,7 @@ class SimpleCSS
      * @param string $cValue
      * @return $this
      */
-    public function addCSS($cSelector, $cAttribute, $cValue)
+    public function addCSS($cSelector, $cAttribute, $cValue): self
     {
         if (isset($this->cCSS_arr[$cSelector])) {
             $this->cCSS_arr[$cSelector] = array_merge($this->cCSS_arr[$cSelector], [$cAttribute => $cValue]);
@@ -37,7 +37,7 @@ class SimpleCSS
      * @param string $cFile
      * @return bool
      */
-    public function addFile($cFile)
+    public function addFile(string $cFile): bool
     {
         if (!file_exists($cFile)) {
             return false;
@@ -82,7 +82,7 @@ class SimpleCSS
      * @param array $cData_arr
      * @return array
      */
-    public function trimCSSData($cData_arr)
+    public function trimCSSData(array $cData_arr): array
     {
         $cCSS_arr = [];
         foreach ($cData_arr as $cData) {
@@ -97,7 +97,7 @@ class SimpleCSS
 
     /**
      * @param string $cSelector
-     * @return bool
+     * @return mixed|bool
      */
     public function getSelector($cSelector)
     {
@@ -111,7 +111,7 @@ class SimpleCSS
     /**
      * @param string $cSelector
      * @param string $cKey
-     * @return bool
+     * @return mixed|bool
      */
     public function getAttribute($cSelector, $cKey)
     {
@@ -130,19 +130,17 @@ class SimpleCSS
     /**
      * @return array
      */
-    public function getCSS()
+    public function getCSS(): array
     {
-        if (is_array($this->cCSS_arr) && count($this->cCSS_arr)) {
-            return $this->cCSS_arr;
-        }
-
-        return [];
+        return is_array($this->cCSS_arr) && count($this->cCSS_arr)
+            ? $this->cCSS_arr
+            : [];
     }
 
     /**
      * @return string
      */
-    public function renderCSS()
+    public function renderCSS(): string
     {
         $cOut = '';
         if (is_array($this->cCSS_arr) && count($this->cCSS_arr)) {
@@ -164,7 +162,7 @@ class SimpleCSS
      * @param string $cOrdner
      * @return string
      */
-    public function getTemplatePath($cOrdner)
+    public function getTemplatePath(string $cOrdner): string
     {
         return realpath(PFAD_ROOT . 'templates/' . basename($cOrdner)) . '/';
     }
@@ -173,7 +171,7 @@ class SimpleCSS
      * @param string $cOrdner
      * @return string
      */
-    public function getCustomCSSFile($cOrdner)
+    public function getCustomCSSFile(string $cOrdner): string
     {
         return $this->getTemplatePath($cOrdner) . 'themes/custom.css';
     }
@@ -223,7 +221,7 @@ class SimpleCSS
      * @param int $b
      * @return string
      */
-    public function rgb2html($r, $g, $b)
+    public function rgb2html($r, $g, $b): string
     {
         if (is_array($r) && count($r) === 3) {
             list($r, $g, $b) = $r;
@@ -273,7 +271,7 @@ class SimpleCSS
     /**
      * @return array
      */
-    public function getUnits()
+    public function getUnits(): array
     {
         return ['em', 'px', '%'];
     }

@@ -12,7 +12,7 @@ class Bestseller
     /**
      * @var array
      */
-    protected $_products;
+    protected $_products = [];
 
     /**
      * @var int
@@ -59,7 +59,7 @@ class Bestseller
     /**
      * @return array
      */
-    public function getProducts()
+    public function getProducts(): array
     {
         return $this->_products;
     }

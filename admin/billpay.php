@@ -92,7 +92,12 @@ if (strlen($oBillpay->getSetting('pid')) > 0 &&
     }
     */
 
-    $oLog_arr = ZahlungsLog::getLog(['za_billpay_invoice_jtl', 'za_billpay_direct_debit_jtl', 'za_billpay_rate_payment_jtl', 'za_billpay_paylater_jtl']);
+    $oLog_arr = ZahlungsLog::getLog([
+        'za_billpay_invoice_jtl',
+        'za_billpay_direct_debit_jtl',
+        'za_billpay_rate_payment_jtl',
+        'za_billpay_paylater_jtl'
+    ]);
     $oPagiLog = (new Pagination('log'))
         ->setItemArray($oLog_arr)
         ->assemble();
@@ -108,7 +113,13 @@ if (strlen($oBillpay->getSetting('pid')) > 0 &&
 
 $smarty->assign('cFehlerBillpay', $cFehler);
 
-$Conf = Shop::Container()->getDB()->selectAll('teinstellungenconf', ['cModulId', 'cConf'], ['za_billpay_jtl', 'Y'], '*', 'nSort');
+$Conf = Shop::Container()->getDB()->selectAll(
+    'teinstellungenconf',
+    ['cModulId', 'cConf'],
+    ['za_billpay_jtl', 'Y'],
+    '*',
+    'nSort'
+);
 
 if (isset($_POST['einstellungen_bearbeiten']) && FormHelper::validateToken()) {
     foreach ($Conf as $i => $oConfig) {

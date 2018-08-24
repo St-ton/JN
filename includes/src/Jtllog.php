@@ -79,6 +79,7 @@ class Jtllog
 
     /**
      * @return int
+     * @deprecated since 5.0.0
      */
     public function update(): int
     {
@@ -127,7 +128,7 @@ class Jtllog
         $bForce = false,
         $cKey = '',
         $kKey = 0
-    ) {
+    ): bool {
         trigger_error(__METHOD__ . ' is deprecated. Use the log service instead.', E_USER_DEPRECATED);
         if (strlen($cLog) > 0 && ($bForce || self::doLog($nLevel))) {
             $logger = Shop::Container()->getLogService();
@@ -219,8 +220,8 @@ class Jtllog
             }
         }
         $oLog = Shop::Container()->getDB()->query(
-            "SELECT count(*) AS nAnzahl 
-                FROM tjtllog" .
+            'SELECT count(*) AS nAnzahl 
+                FROM tjtllog' .
                 $cSQLWhere,
             \DB\ReturnType::SINGLE_OBJECT
         );

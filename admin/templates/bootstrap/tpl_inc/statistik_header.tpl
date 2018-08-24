@@ -39,4 +39,4 @@
     </div>
 
     <div class="ocontainer">
-        {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter}
+        {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter cParam_arr=['s' => $nTyp]}

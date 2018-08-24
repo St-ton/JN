@@ -11,13 +11,11 @@ use Cron\Job;
 use Cron\JobInterface;
 use Cron\QueueEntry;
 use DB\DbInterface;
-use DB\ReturnType;
-use function Functional\map;
 use Psr\Log\LoggerInterface;
 
-require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'statusemail_inc.php';
+require_once PFAD_ROOT . \PFAD_INCLUDES . 'mailTools.php';
+require_once PFAD_ROOT . \PFAD_INCLUDES . 'smartyInclude.php';
+require_once PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'statusemail_inc.php';
 
 /**
  * Class Statusmail
@@ -31,8 +29,8 @@ class Statusmail extends Job
     public function __construct(DbInterface $db, LoggerInterface $logger)
     {
         parent::__construct($db, $logger);
-        if (JOBQUEUE_LIMIT_M_STATUSEMAIL > 0) {
-            $this->setLimit(JOBQUEUE_LIMIT_M_STATUSEMAIL);
+        if (\JOBQUEUE_LIMIT_M_STATUSEMAIL > 0) {
+            $this->setLimit(\JOBQUEUE_LIMIT_M_STATUSEMAIL);
         }
     }
 
@@ -46,7 +44,7 @@ class Statusmail extends Job
         if ($dateStart === '0000-00-00 00:00:00') {
             return true;
         }
-        $oStartTime = date_create($dateStart);
+        $oStartTime = \date_create($dateStart);
 
         if ($oStartTime === false) {
             return false;
@@ -57,7 +55,7 @@ class Statusmail extends Job
             return false;
         }
 
-        return date_create()->format('YmdHis') >= $oEndTime->format('YmdHis');
+        return \date_create()->format('YmdHis') >= $oEndTime->format('YmdHis');
     }
 
     /**

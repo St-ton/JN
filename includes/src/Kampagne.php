@@ -140,10 +140,11 @@ class Kampagne
     {
         if ($this->kKampagne > 0) {
             Shop::Container()->getDB()->query(
-                "DELETE tkampagne, tkampagnevorgang
+                'DELETE tkampagne, tkampagnevorgang
                     FROM tkampagne
-                    LEFT JOIN tkampagnevorgang ON tkampagnevorgang.kKampagne = tkampagne.kKampagne
-                    WHERE tkampagne.kKampagne = " . (int)$this->kKampagne,
+                    LEFT JOIN tkampagnevorgang 
+                        ON tkampagnevorgang.kKampagne = tkampagne.kKampagne
+                    WHERE tkampagne.kKampagne = ' . (int)$this->kKampagne,
                 \DB\ReturnType::AFFECTED_ROWS
             );
 

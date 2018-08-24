@@ -39,7 +39,7 @@ class WidgetServerSettings extends WidgetBase
      * @return bool
      * @deprecated - ImageMagick is not required anymore
      */
-    public function checkImageMagick()
+    public function checkImageMagick(): bool
     {
         return true;
     }
@@ -47,7 +47,7 @@ class WidgetServerSettings extends WidgetBase
     /**
      * @return bool
      */
-    public function SOAPcheck()
+    public function SOAPcheck(): bool
     {
         if (class_exists('Systemcheck_Environment')) {
             $oSystemCheck  = new Systemcheck_Environment();
@@ -70,7 +70,7 @@ class WidgetServerSettings extends WidgetBase
     /**
      * @return bool
      */
-    public function checkMaxExecutionTime()
+    public function checkMaxExecutionTime(): bool
     {
         return Shop()->PHPSettingsHelper()->hasMinExecutionTime(60);
     }
@@ -78,7 +78,7 @@ class WidgetServerSettings extends WidgetBase
     /**
      * @return bool
      */
-    public function checkMaxFilesize()
+    public function checkMaxFilesize(): bool
     {
         return Shop()->PHPSettingsHelper()->hasMinUploadSize(5 * 1024 * 1024);
     }
@@ -86,7 +86,7 @@ class WidgetServerSettings extends WidgetBase
     /**
      * @return bool
      */
-    public function checkMemoryLimit()
+    public function checkMemoryLimit(): bool
     {
         return Shop()->PHPSettingsHelper()->hasMinLimit(64 * 1024 * 1024);
     }
@@ -94,7 +94,7 @@ class WidgetServerSettings extends WidgetBase
     /**
      * @return bool
      */
-    public function checkPostMaxSize()
+    public function checkPostMaxSize(): bool
     {
         return Shop()->PHPSettingsHelper()->hasMinPostSize(8 * 1024 * 1024);
     }
@@ -102,7 +102,7 @@ class WidgetServerSettings extends WidgetBase
     /**
      * @return bool
      */
-    public function checkAllowUrlFopen()
+    public function checkAllowUrlFopen(): bool
     {
         return Shop()->PHPSettingsHelper()->fopenWrapper();
     }

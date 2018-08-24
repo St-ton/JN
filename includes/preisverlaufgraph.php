@@ -22,12 +22,12 @@ if ((int)$_GET['kArtikel'] > 0 && (int)$_GET['kKundengruppe'] > 0 && (int)$_GET[
             ? 0
             : $_SESSION['Steuersatz'][$kSteuerklasse];
         $oPreisverlauf          = Shop::Container()->getDB()->query(
-            "SELECT kPreisverlauf
+            'SELECT kPreisverlauf
                 FROM tpreisverlauf
-                WHERE kArtikel = " . $kArtikel . "
-                    AND kKundengruppe = " . $kKundengruppe . "
-                    AND DATE_SUB(now(), INTERVAL " . $nMonat . " MONTH) < dDate
-                LIMIT 1",
+                WHERE kArtikel = ' . $kArtikel . '
+                    AND kKundengruppe = ' . $kKundengruppe . '
+                    AND DATE_SUB(now(), INTERVAL ' . $nMonat . ' MONTH) < dDate
+                LIMIT 1',
             \DB\ReturnType::SINGLE_OBJECT
         );
 

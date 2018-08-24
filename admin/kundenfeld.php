@@ -25,24 +25,23 @@ if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
 // Einstellungen
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $cHinweis .= saveAdminSectionSettings(CONF_KUNDENFELD, $_POST);
-} elseif (isset($_POST['kundenfelder']) && (int)$_POST['kundenfelder'] === 1 && FormHelper::validateToken()) { // Kundenfelder
+} elseif (isset($_POST['kundenfelder']) && (int)$_POST['kundenfelder'] === 1 && FormHelper::validateToken()) {
     $success = true;
     if (isset($_POST['loeschen'])) {
         $kKundenfeld_arr = $_POST['kKundenfeld'];
-
         if (is_array($kKundenfeld_arr) && count($kKundenfeld_arr) > 0) {
             foreach ($kKundenfeld_arr as $kKundenfeld) {
                 $success = $success && $customerFields->delete((int)$kKundenfeld);
             }
             if ($success) {
-                $cHinweis .= "Die ausgewählten Kundenfelder wurden erfolgreich gelöscht.<br />";
+                $cHinweis .= 'Die ausgewählten Kundenfelder wurden erfolgreich gelöscht.<br />';
             } else {
                 $cFehler .= 'Die ausgewählten Kundenfelder konnten nicht gelöscht werden.<br />';
             }
         } else {
-            $cFehler .= "Fehler: Bitte wählen Sie mindestens ein Kundenfeld aus.<br />";
+            $cFehler .= 'Fehler: Bitte wählen Sie mindestens ein Kundenfeld aus.<br />';
         }
-    } elseif (isset($_POST['aktualisieren']) && FormHelper::validateToken()) { // Aktualisieren
+    } elseif (isset($_POST['aktualisieren'])) {
         // Kundenfelder auslesen und in Smarty assignen
         foreach ($customerFields->getCustomerFields() as $customerField) {
             $customerField->nSort = (int)$_POST['nSort_' . $customerField->kKundenfeld];

@@ -10,14 +10,14 @@
 class StringHandler
 {
     /**
-     * @param string $cString
-     * @param int    $cFlag
-     * @param string $cEncoding
+     * @param string $string
+     * @param int    $flag
+     * @param string $encoding
      * @return string
      */
-    public static function htmlentities($cString, $cFlag = ENT_COMPAT, $cEncoding = JTL_CHARSET)
+    public static function htmlentities(string $string, int $flag = ENT_COMPAT, string $encoding = JTL_CHARSET): string
     {
-        return htmlentities($cString, $cFlag, $cEncoding);
+        return htmlentities($string, $flag, $encoding);
     }
 
     /**
@@ -34,47 +34,46 @@ class StringHandler
             },
             $string
         );
-        $string = preg_replace_callback(
+
+        return self::htmlentitydecode(preg_replace_callback(
             '~&#([0-9]+);~',
             function ($x) {
                 return chr($x[1]);
             },
             $string
-        );
-
-        return self::htmlentitydecode($string);
+        ));
     }
 
     /**
-     * @param string $cString
-     * @param int    $cFlag
-     * @param string $cEncoding
+     * @param string $string
+     * @param int    $flag
+     * @param string $encoding
      * @return string
      */
-    public static function htmlspecialchars($cString, $cFlag = ENT_COMPAT, $cEncoding = JTL_CHARSET)
+    public static function htmlspecialchars(string $string, int $flag = ENT_COMPAT, string $encoding = JTL_CHARSET): string
     {
-        return htmlspecialchars($cString, $cFlag, $cEncoding);
+        return htmlspecialchars($string, $flag, $encoding);
     }
 
     /**
-     * @param string $cString
-     * @param int    $cFlag
-     * @param string $cEncoding
+     * @param string $string
+     * @param int    $flag
+     * @param string $encoding
      * @return string
      */
-    public static function htmlentitydecode($cString, $cFlag = ENT_COMPAT, $cEncoding = JTL_CHARSET)
+    public static function htmlentitydecode(string $string, int $flag = ENT_COMPAT, string $encoding = JTL_CHARSET): string
     {
-        return html_entity_decode($cString, $cFlag, $cEncoding);
+        return html_entity_decode($string, $flag, $encoding);
     }
 
     /**
-     * @param int    $cFlag
-     * @param string $cEncoding
+     * @param int    $flag
+     * @param string $encoding
      * @return array
      */
-    public static function gethtmltranslationtable($cFlag = ENT_QUOTES, $cEncoding = JTL_CHARSET)
+    public static function gethtmltranslationtable(int $flag = ENT_QUOTES, string $encoding = JTL_CHARSET): array
     {
-        return get_html_translation_table(HTML_ENTITIES, $cFlag, $cEncoding);
+        return get_html_translation_table(HTML_ENTITIES, $flag, $encoding);
     }
 
     /**
@@ -91,16 +90,16 @@ class StringHandler
 
             return $input;
         }
-        $cString = trim(strip_tags($input));
-        $cString = (int)$nSuche === 1
-            ? str_replace(['\\\'', '\\'], '', $cString)
-            : str_replace(['\"', '\\\'', '\\', '"', '\''], '', $cString);
+        $string = trim(strip_tags($input));
+        $string = (int)$nSuche === 1
+            ? str_replace(['\\\'', '\\'], '', $string)
+            : str_replace(['\"', '\\\'', '\\', '"', '\''], '', $string);
 
-        if ((int)$nSuche === 1 && strlen($cString) > 10) {
-            $cString = substr(str_replace(['(', ')', ';'], '', $cString), 0, 50);
+        if ((int)$nSuche === 1 && strlen($string) > 10) {
+            $string = substr(str_replace(['(', ')', ';'], '', $string), 0, 50);
         }
 
-        return $cString;
+        return $string;
     }
 
     /**
@@ -110,7 +109,7 @@ class StringHandler
      * @param string $string
      * @return int
      */
-    public static function is_utf8($string)
+    public static function is_utf8(string $string)
     {
         $res = preg_match(
             '%^(?:[\x09\x0A\x0D\x20-\x7E]  # ASCII
@@ -138,7 +137,7 @@ class StringHandler
      * @param string $data
      * @return mixed|string
      */
-    public static function xssClean($data)
+    public static function xssClean(string $data)
     {
         $convert = false;
         if (!self::is_utf8($data)) {
@@ -184,7 +183,7 @@ class StringHandler
      * @param string $cData
      * @return string
      */
-    public static function convertUTF8($cData)
+    public static function convertUTF8(string $cData): string
     {
         return mb_convert_encoding($cData, 'UTF-8', mb_detect_encoding($cData, 'UTF-8, ISO-8859-1, ISO-8859-15', true));
     }
@@ -193,7 +192,7 @@ class StringHandler
      * @param string $cData
      * @return string
      */
-    public static function convertISO($cData)
+    public static function convertISO(string $cData): string
     {
         return mb_convert_encoding($cData, 'ISO-8859-1', mb_detect_encoding($cData, 'UTF-8, ISO-8859-1, ISO-8859-15', true));
     }
@@ -202,7 +201,7 @@ class StringHandler
      * @param string $ISO
      * @return mixed
      */
-    public static function convertISO2ISO639($ISO)
+    public static function convertISO2ISO639(string $ISO)
     {
         $cISO_arr = self::getISOMappings();
 
@@ -215,8 +214,8 @@ class StringHandler
      */
     public static function convertISO6392ISO(string $ISO)
     {
-        $cISO_arr = self::getISOMappings();
-        foreach ($cISO_arr as $cISO639 => $cISO) {
+        $mappings = self::getISOMappings();
+        foreach ($mappings as $cISO639 => $cISO) {
             if (strtolower($cISO) === strtolower($ISO)) {
                 return $cISO639;
             }
@@ -420,23 +419,18 @@ class StringHandler
 
     /**
      * @param string $string
-     * @return string|mixed
+     * @return string
      */
-    public static function removeDoubleSpaces($string)
+    public static function removeDoubleSpaces(string $string)
     {
-        if (!is_string($string)) {
-            return $string;
-        }
-        $string = preg_quote($string, '|');
-
-        return preg_replace('|  +|', ' ', $string);
+        return preg_replace('|  +|', ' ', preg_quote($string, '|'));
     }
 
     /**
      * @param string $string
-     * @return mixed
+     * @return string
      */
-    public static function removeWhitespace($string)
+    public static function removeWhitespace(string $string): string
     {
         return preg_replace('/\s+/', ' ', $string);
     }
@@ -475,9 +469,9 @@ class StringHandler
      *
      * @param string $input
      * @param bool   $validate
-     * @return string|false - a filtered string or false if invalid
+     * @return string|bool - a filtered string or false if invalid
      */
-    public static function filterEmailAddress($input, $validate = true)
+    public static function filterEmailAddress($input, bool $validate = true)
     {
         if ((function_exists('mb_detect_encoding') && mb_detect_encoding($input) !== 'UTF-8') || !self::is_utf8($input)) {
             $input = self::convertUTF8($input);
@@ -498,7 +492,7 @@ class StringHandler
      * @param bool   $validate
      * @return string|false - a filtered string or false if invalid
      */
-    public static function filterURL($input, $validate = true)
+    public static function filterURL($input, bool $validate = true)
     {
         if ((function_exists('mb_detect_encoding') && mb_detect_encoding($input) !== 'UTF-8') || !self::is_utf8($input)) {
             $input = self::convertUTF8($input);
@@ -517,7 +511,7 @@ class StringHandler
      * @param array $parts
      * @return string - the resulting URL
      */
-    public static function buildUrl($parts)
+    public static function buildUrl(array $parts)
     {
         return (isset($parts['scheme']) ? $parts['scheme'] . '://' : '') .
             (isset($parts['user']) ? $parts['user'] . (isset($parts['pass']) ? ':' . $parts['pass'] : '') . '@' : '') .
@@ -629,7 +623,7 @@ class StringHandler
                     $cSpracheSQL       = '';
                     if (Shop::getLanguageID() > 0 && !Sprache::isDefaultLanguageActive()) {
                         $cTabellenname = 'tartikelsprache';
-                        $cSpracheSQL   = " AND tartikelsprache.kSprache = " . Shop::getLanguageID();
+                        $cSpracheSQL   = ' AND tartikelsprache.kSprache = ' . Shop::getLanguageID();
                     }
                     $oArtikel = Shop::Container()->getDB()->query(
                         "SELECT {$cTabellenname}.kArtikel, {$cTabellenname}.cName, tseo.cSeo
@@ -655,8 +649,8 @@ class StringHandler
                     $cTabellenname       = 'tkategorie';
                     $cSpracheSQL         = '';
                     if ($kSprache > 0 && !Sprache::isDefaultLanguageActive()) {
-                        $cTabellenname = "tkategoriesprache";
-                        $cSpracheSQL   = " AND tkategoriesprache.kSprache = " . $kSprache;
+                        $cTabellenname = 'tkategoriesprache';
+                        $cSpracheSQL   = ' AND tkategoriesprache.kSprache = ' . $kSprache;
                     }
                     $oKategorie = Shop::Container()->getDB()->query(
                         "SELECT {$cTabellenname}.kKategorie, {$cTabellenname}.cName, tseo.cSeo
@@ -834,7 +828,7 @@ class StringHandler
      * @param string $format
      * @return string
      */
-    public static function formatSize($size, $format = '%.2f'): string
+    public static function formatSize($size, string $format = '%.2f'): string
     {
         $units = ['b', 'Kb', 'Mb', 'Gb', 'Tb', 'Pb', 'Eb', 'Zb', 'Yb'];
         $res   = '';

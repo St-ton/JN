@@ -8,27 +8,26 @@
  * @param int $kBewertung
  * @return mixed
  */
-function holeBewertung($kBewertung)
+function holeBewertung(int $kBewertung)
 {
-    return Shop::Container()->getDB()->select('tbewertung', 'kBewertung', (int)$kBewertung);
+    return Shop::Container()->getDB()->select('tbewertung', 'kBewertung', $kBewertung);
 }
 
 /**
  * @param array $cPost_arr
  * @return bool
  */
-function editiereBewertung($cPost_arr)
+function editiereBewertung($cPost_arr): bool
 {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'bewertung_inc.php';
 
     $kBewertung = RequestHelper::verifyGPCDataInt('kBewertung');
     $conf       = Shop::getSettings([CONF_BEWERTUNG]);
-    if (
-        $kBewertung > 0 &&
-        !empty($cPost_arr['cName']) &&
-        !empty($cPost_arr['cTitel']) &&
-        isset($cPost_arr['nSterne']) &&
-        (int)$cPost_arr['nSterne'] > 0
+    if ($kBewertung > 0
+        && !empty($cPost_arr['cName'])
+        && !empty($cPost_arr['cTitel'])
+        && isset($cPost_arr['nSterne'])
+        && (int)$cPost_arr['nSterne'] > 0
     ) {
         $oBewertung = holeBewertung($kBewertung);
         if (isset($oBewertung->kBewertung) && $oBewertung->kBewertung > 0) {
@@ -59,7 +58,7 @@ function editiereBewertung($cPost_arr)
 /**
  * @param $kBewertung
  */
-function removeReply($kBewertung)
+function removeReply(int $kBewertung)
 {
     $update = (object)[
         'cAntwort' => null,

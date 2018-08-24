@@ -18,10 +18,20 @@ $oConfig_arr = Shop::Container()->getDB()->selectAll('teinstellungenconf', 'kEin
 $configCount = count($oConfig_arr);
 for ($i = 0; $i < $configCount; $i++) {
     if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-        $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', $oConfig_arr[$i]->kEinstellungenConf, '*', 'nSort');
+        $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
+            'teinstellungenconfwerte',
+            'kEinstellungenConf',
+            $oConfig_arr[$i]->kEinstellungenConf,
+            '*',
+            'nSort'
+        );
     }
 
-    $oSetValue = Shop::Container()->getDB()->select('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_PREISVERLAUF, $oConfig_arr[$i]->cWertName]);
+    $oSetValue = Shop::Container()->getDB()->select(
+        'teinstellungen',
+        ['kEinstellungenSektion', 'cName'],
+        [CONF_PREISVERLAUF, $oConfig_arr[$i]->cWertName]
+    );
     $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
 }
 

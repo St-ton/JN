@@ -19,14 +19,14 @@
             {if $Letzten20Vergleiche && $Letzten20Vergleiche|@count > 0}
                 {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cAnchor='letztenvergleiche'}
                 <div class="settings panel panel-default table-responsive">
-                    <table  class="table">
+                    <table  class="table table-striped">
                         <tr>
                             <th class="th-1">{#compareID#}</th>
                             <th class="tleft">{#compareProducts#}</th>
                             <th class="th-3">{#compareDate#}</th>
                         </tr>
                         {foreach name=letzten20 from=$Letzten20Vergleiche item=oVergleichsliste20}
-                            <tr class="tab_bg{$smarty.foreach.letzten20.iteration%2}">
+                            <tr>
                                 <td class="tcenter">{$oVergleichsliste20->kVergleichsliste}</td>
                                 <td class="">
                                     {foreach name=letzten20pos from=$oVergleichsliste20->oLetzten20VergleichslistePos_arr item=oVergleichslistePos20}
@@ -97,14 +97,14 @@
 
             {if isset($TopVergleiche) && $TopVergleiche|@count > 0}
                 <div class="settings panel panel-default table-responsive">
-                    <table class="bottom table">
+                    <table class="bottom table table-striped">
                         <tr>
                             <th class="tleft">{#compareProduct#}</th>
                             <th class="th-2">{#compareCount#}</th>
                         </tr>
                         {foreach name=top from=$TopVergleiche item=oVergleichslistePosTop}
-                            <tr class="tab_bg{$smarty.foreach.top.iteration%2}">
-                                <td class="TD1">
+                            <tr>
+                                <td>
                                     <a href="{$shopURL}/index.php?a={$oVergleichslistePosTop->kArtikel}" target="_blank">{$oVergleichslistePosTop->cArtikelName}</a>
                                 </td>
                                 <td class="tcenter">{$oVergleichslistePosTop->nAnzahl}</td>

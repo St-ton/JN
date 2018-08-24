@@ -138,9 +138,9 @@ class Pagination
      * Pagination constructor.
      * @param string $cId
      */
-    public function __construct($cId = null)
+    public function __construct(string $cId = null)
     {
-        if (is_string($cId)) {
+        if ($cId !== null) {
             $this->cId = $cId;
         }
     }
@@ -149,7 +149,7 @@ class Pagination
      * @param string $cId - page-unique name for this pagination
      * @return $this
      */
-    public function setId($cId)
+    public function setId($cId): self
     {
         $this->cId = $cId;
 
@@ -160,7 +160,7 @@ class Pagination
      * @param int $nRange - number of page buttons to be displayed before and after the active page button
      * @return $this
      */
-    public function setRange($nRange)
+    public function setRange(int $nRange): self
     {
         $this->nDispPagesRadius = $nRange;
 
@@ -171,7 +171,7 @@ class Pagination
      * @param array $nItemsPerPageOption_arr - array of integers to be offered as items per page count options (non-empty)
      * @return $this
      */
-    public function setItemsPerPageOptions($nItemsPerPageOption_arr)
+    public function setItemsPerPageOptions(array $nItemsPerPageOption_arr): self
     {
         $this->nItemsPerPageOption_arr = $nItemsPerPageOption_arr;
 
@@ -182,7 +182,7 @@ class Pagination
      * @param array $cSortByOption_arr - array of [$cColumnName, $cDisplayTitle] pairs to be offered as sorting options
      * @return $this
      */
-    public function setSortByOptions($cSortByOption_arr)
+    public function setSortByOptions(array $cSortByOption_arr): self
     {
         $this->cSortByOption_arr = $cSortByOption_arr;
 
@@ -193,9 +193,9 @@ class Pagination
      * @param int $nItemCount - number of items to be paginated
      * @return $this
      */
-    public function setItemCount($nItemCount)
+    public function setItemCount(int $nItemCount): self
     {
-        $this->nItemCount = (int)$nItemCount;
+        $this->nItemCount = $nItemCount;
 
         return $this;
     }
@@ -204,7 +204,7 @@ class Pagination
      * @param array $oItem_arr - item array to be paginated and sorted
      * @return $this
      */
-    public function setItemArray($oItem_arr)
+    public function setItemArray(array $oItem_arr): self
     {
         $this->oItem_arr = $oItem_arr;
         $this->setItemCount(count($oItem_arr));
@@ -216,9 +216,9 @@ class Pagination
      * @param int $n - -1 means: all items / 0 means: use first option of $nItemsPerPageOption_arr
      * @return $this
      */
-    public function setDefaultItemsPerPage($n)
+    public function setDefaultItemsPerPage(int $n): self
     {
-        $this->nDefaultItemsPerPage = (int)$n;
+        $this->nDefaultItemsPerPage = $n;
 
         return $this;
     }
@@ -229,7 +229,7 @@ class Pagination
      * @param int $nItemsPerPage
      * @return $this
      */
-    public function setItemsPerPage($nItemsPerPage)
+    public function setItemsPerPage(int $nItemsPerPage): self
     {
         $this->bItemsPerPageExplicit = true;
         $this->nItemsPerPage         = $nItemsPerPage;
@@ -241,7 +241,7 @@ class Pagination
      * Load parameters from GET, POST or SESSION store
      * @return $this
      */
-    public function loadParameters()
+    public function loadParameters(): self
     {
         $this->nItemsPerPage =
             $this->bItemsPerPageExplicit                    ? $this->nItemsPerPage : (
@@ -270,7 +270,7 @@ class Pagination
      * Assemble the pagination. Create SQL LIMIT and ORDER BY clauses. Sort and slice item array if present
      * @return $this
      */
-    public function assemble()
+    public function assemble(): self
     {
         $this->loadParameters()
              ->storeParameters();
@@ -343,7 +343,7 @@ class Pagination
      * Store the custom parameters back into the SESSION store
      * @return $this
      */
-    public function storeParameters()
+    public function storeParameters(): self
     {
         $_SESSION[$this->cId . '_nItemsPerPage'] = $this->nItemsPerPage;
         $_SESSION[$this->cId . '_nSortByDir']    = $this->nSortByDir;
@@ -355,7 +355,7 @@ class Pagination
     /**
      * @return string
      */
-    public function getId()
+    public function getId(): string
     {
         return $this->cId;
     }
@@ -363,7 +363,7 @@ class Pagination
     /**
      * @return array
      */
-    public function getItemsPerPageOptions()
+    public function getItemsPerPageOptions(): array
     {
         return $this->nItemsPerPageOption_arr;
     }
@@ -371,7 +371,7 @@ class Pagination
     /**
      * @return array
      */
-    public function getSortByOptions()
+    public function getSortByOptions(): array
     {
         return $this->cSortByOption_arr;
     }
@@ -379,7 +379,7 @@ class Pagination
     /**
      * @return string
      */
-    public function getLimitSQL()
+    public function getLimitSQL(): string
     {
         return $this->cLimitSQL;
     }
@@ -387,7 +387,7 @@ class Pagination
     /**
      * @return string
      */
-    public function getOrderSQL()
+    public function getOrderSQL(): string
     {
         return $this->cOrderSQL;
     }
@@ -395,7 +395,7 @@ class Pagination
     /**
      * @return int
      */
-    public function getItemCount()
+    public function getItemCount(): int
     {
         return $this->nItemCount;
     }
@@ -403,7 +403,7 @@ class Pagination
     /**
      * @return int
      */
-    public function getItemsPerPage()
+    public function getItemsPerPage(): int
     {
         return $this->nItemsPerPage;
     }
@@ -411,7 +411,7 @@ class Pagination
     /**
      * @return int
      */
-    public function getSortBy()
+    public function getSortBy(): int
     {
         return $this->nSortBy;
     }
@@ -419,7 +419,7 @@ class Pagination
     /**
      * @return int
      */
-    public function getSortDir()
+    public function getSortDir(): int
     {
         return $this->nSortDir;
     }
@@ -427,7 +427,7 @@ class Pagination
     /**
      * @return int
      */
-    public function getPage()
+    public function getPage(): int
     {
         return $this->nPage;
     }
@@ -435,7 +435,7 @@ class Pagination
     /**
      * @return int
      */
-    public function getPageCount()
+    public function getPageCount(): int
     {
         return $this->nPageCount;
     }
@@ -443,7 +443,7 @@ class Pagination
     /**
      * @return int
      */
-    public function getPrevPage()
+    public function getPrevPage(): int
     {
         return $this->nPrevPage;
     }
@@ -451,7 +451,7 @@ class Pagination
     /**
      * @return int
      */
-    public function getNextPage()
+    public function getNextPage(): int
     {
         return $this->nNextPage;
     }
@@ -459,7 +459,7 @@ class Pagination
     /**
      * @return int
      */
-    public function getLeftRangePage()
+    public function getLeftRangePage(): int
     {
         return $this->nLeftRangePage;
     }
@@ -467,7 +467,7 @@ class Pagination
     /**
      * @return int
      */
-    public function getRightRangePage()
+    public function getRightRangePage(): int
     {
         return $this->nRightRangePage;
     }
@@ -475,7 +475,7 @@ class Pagination
     /**
      * @return int
      */
-    public function getFirstPageItem()
+    public function getFirstPageItem(): int
     {
         return $this->nFirstPageItem;
     }
@@ -483,13 +483,13 @@ class Pagination
     /**
      * @return int
      */
-    public function getPageItemCount()
+    public function getPageItemCount(): int
     {
         return $this->nPageItemCount;
     }
 
     /**
-     * @return array
+     * @return array|null
      */
     public function getPageItems()
     {
@@ -499,7 +499,7 @@ class Pagination
     /**
      * @return string - 'ASC' or 'DESC'
      */
-    public function getSortDirSpecifier()
+    public function getSortDirSpecifier(): string
     {
         return $this->cSortDir;
     }
@@ -507,16 +507,16 @@ class Pagination
     /**
      * @return string - the column name to sort by
      */
-    public function getSortByCol()
+    public function getSortByCol(): string
     {
         return $this->cSortBy;
     }
 
     /**
      * @param int $nIndex
-     * @return mixed
+     * @return int|null
      */
-    public function getItemsPerPageOption($nIndex)
+    public function getItemsPerPageOption(int $nIndex)
     {
         return $this->nItemsPerPageOption_arr[$nIndex];
     }
@@ -524,7 +524,7 @@ class Pagination
     /**
      * @return int
      */
-    public function getSortByDir()
+    public function getSortByDir(): int
     {
         return $this->nSortByDir;
     }

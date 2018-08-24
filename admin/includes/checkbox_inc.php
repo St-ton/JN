@@ -18,11 +18,9 @@ function plausiCheckBox($cPost_arr, $oSprache_arr)
         return $cPlausi_arr;
     }
     if (is_array($cPost_arr) && count($cPost_arr) > 0) {
-        // cName
         if (!isset($cPost_arr['cName']) || strlen($cPost_arr['cName']) === 0) {
             $cPlausi_arr['cName'] = 1;
         }
-        // cText
         $bText = false;
         foreach ($oSprache_arr as $oSprache) {
             if (strlen($cPost_arr['cText_' . $oSprache->cISO]) > 0) {
@@ -33,7 +31,6 @@ function plausiCheckBox($cPost_arr, $oSprache_arr)
         if (!$bText) {
             $cPlausi_arr['cText'] = 1;
         }
-        // nLink
         $bLink = true;
         if ((int)$cPost_arr['nLink'] === 1) {
             $bLink = false;
@@ -44,7 +41,6 @@ function plausiCheckBox($cPost_arr, $oSprache_arr)
         if (!$bLink) {
             $cPlausi_arr['kLink'] = 1;
         }
-        // cAnzeigeOrt
         if (!is_array($cPost_arr['cAnzeigeOrt']) || count($cPost_arr['cAnzeigeOrt']) === 0) {
             $cPlausi_arr['cAnzeigeOrt'] = 1;
         } else {
@@ -54,23 +50,18 @@ function plausiCheckBox($cPost_arr, $oSprache_arr)
                 }
             }
         }
-        // nPflicht
         if (!isset($cPost_arr['nPflicht']) || strlen($cPost_arr['nPflicht']) === 0) {
             $cPlausi_arr['nPflicht'] = 1;
         }
-        // nAktiv
         if (!isset($cPost_arr['nAktiv']) || strlen($cPost_arr['nAktiv']) === 0) {
             $cPlausi_arr['nAktiv'] = 1;
         }
-        // nLogging
         if (!isset($cPost_arr['nLogging']) || strlen($cPost_arr['nLogging']) === 0) {
             $cPlausi_arr['nLogging'] = 1;
         }
-        // nSort
         if (!isset($cPost_arr['nSort']) || (int)$cPost_arr['nSort'] === 0) {
             $cPlausi_arr['nSort'] = 1;
         }
-        // kKundengruppe
         if (!is_array($cPost_arr['kKundengruppe']) || count($cPost_arr['kKundengruppe']) === 0) {
             $cPlausi_arr['kKundengruppe'] = 1;
         }

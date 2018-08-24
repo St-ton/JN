@@ -36,11 +36,11 @@ class GivenAnswer
     {
         $type = $this->getQuestionType();
         if ($type === QuestionType::MATRIX_SINGLE) {
-            if (!is_array($this->answer)) {
+            if (!\is_array($this->answer)) {
                 return false;
             }
             foreach ($this->answer as $item) {
-                list($answerOption, $matrixOption) = explode('_', $item);
+                list($answerOption, $matrixOption) = \explode('_', $item);
                 if ((int)$answerOption === $answerID && (int)$matrixOption === $matrixID) {
                     return true;
                 }
@@ -52,7 +52,7 @@ class GivenAnswer
             || $type === QuestionType::MULTI
             || $type === QuestionType::SELECT_SINGLE
         ) {
-            if (!is_array($this->answer)) {
+            if (!\is_array($this->answer)) {
                 return false;
             }
             foreach ($this->answer as $item) {

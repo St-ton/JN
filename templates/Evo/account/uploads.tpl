@@ -1,16 +1,14 @@
 {**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license https://jtl-url.de/jtlshoplicense
  *}
-
 {if !empty($Bestellung->oUpload_arr)}
-    {* tiny left+right container optimized *}
     {assign var=nNameLength value=50}
     {assign var=nImageMaxWidth value=480}
     {assign var=nImageMaxHeight value=320}
     {assign var=nImagePreviewWidth value=35}
     <div id="uploads">
-        <h3>{lang key='yourUploads' section='global'}</h3>
+        <h3>{lang key='yourUploads'}</h3>
         <div class="table-responsive">
             <table class="table table-striped table-bordered" id="customerupload">
                 <thead>

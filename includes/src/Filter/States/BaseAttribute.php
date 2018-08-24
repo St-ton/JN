@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -6,9 +6,10 @@
 
 namespace Filter\States;
 
+
 use DB\ReturnType;
 use Filter\AbstractFilter;
-use Filter\FilterJoin;
+use Filter\Join;
 use Filter\FilterInterface;
 use Filter\ProductFilter;
 
@@ -59,7 +60,7 @@ class BaseAttribute extends AbstractFilter
      */
     public function setSeo(array $languages): FilterInterface
     {
-        $oSeo_arr = \Shop::Container()->getDB()->selectAll(
+        $oSeo_arr = $this->productFilter->getDB()->selectAll(
             'tseo',
             ['cKey', 'kKey'],
             ['kMerkmalWert', $this->getValue()],
@@ -85,7 +86,7 @@ class BaseAttribute extends AbstractFilter
                                      AND tmerkmalsprache.kSprache = ' . \Shop::getLanguage();
         }
         $oSQL->cMMWhere   = 'tmerkmalwert.kMerkmalWert = ' . $this->getValue();
-        $oMerkmalWert_arr = \Shop::Container()->getDB()->query(
+        $oMerkmalWert_arr = $this->productFilter->getDB()->query(
             'SELECT tmerkmalwertsprache.cWert, ' . $oSQL->cMMSelect . '
                 FROM tmerkmalwert
                 JOIN tmerkmalwertsprache 
@@ -96,10 +97,10 @@ class BaseAttribute extends AbstractFilter
                 WHERE ' . $oSQL->cMMWhere,
             ReturnType::ARRAY_OF_OBJECTS
         );
-        if (count($oMerkmalWert_arr) > 0) {
+        if (\count($oMerkmalWert_arr) > 0) {
             $oMerkmalWert = $oMerkmalWert_arr[0];
             unset($oMerkmalWert_arr[0]);
-            if (strlen($oMerkmalWert->cWert) > 0) {
+            if (\strlen($oMerkmalWert->cWert) > 0) {
                 if (!empty($this->getName())) {
                     $this->setName($oMerkmalWert->cName . ': ' . $oMerkmalWert->cWert);
                 } elseif (!empty($oMerkmalWert->cMMName)) {
@@ -107,11 +108,11 @@ class BaseAttribute extends AbstractFilter
                 } elseif (!empty($oMerkmalWert->cName)) {
                     $this->setName($oMerkmalWert->cName . ': ' . $oMerkmalWert->cWert);
                 }
-                if (count($oMerkmalWert_arr) > 0) {
+                if (\count($oMerkmalWert_arr) > 0) {
                     foreach ($oMerkmalWert_arr as $oTmpMerkmal) {
-                        if (isset($oTmpMerkmal->cName) && strlen($oTmpMerkmal->cName) > 0) {
+                        if (isset($oTmpMerkmal->cName) && \strlen($oTmpMerkmal->cName) > 0) {
                             $this->setName($this->getName() . ', ' . $oTmpMerkmal->cName . ': ' . $oTmpMerkmal->cWert);
-                        } elseif (isset($oTmpMerkmal->cMMName) && strlen($oTmpMerkmal->cMMName) > 0) {
+                        } elseif (isset($oTmpMerkmal->cMMName) && \strlen($oTmpMerkmal->cMMName) > 0) {
                             $this->setName($this->getName() . ', ' . $oTmpMerkmal->cMMName . ': ' . $oTmpMerkmal->cWert);
                         }
                     }
@@ -143,7 +144,7 @@ class BaseAttribute extends AbstractFilter
      */
     public function getSQLJoin()
     {
-        return (new FilterJoin())
+        return (new Join())
             ->setType('JOIN')
             ->setComment('JOIN from ' . __METHOD__)
             ->setTable('(SELECT kArtikel

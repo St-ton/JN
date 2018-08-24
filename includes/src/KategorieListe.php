@@ -86,7 +86,7 @@ class KategorieListe
      * @param int $kSprache
      * @return array
      */
-    public function getAllCategoriesOnLevel(int $kKategorie, int $kKundengruppe = 0, int $kSprache = 0)
+    public function getAllCategoriesOnLevel(int $kKategorie, int $kKundengruppe = 0, int $kSprache = 0): array
     {
         $this->elemente = [];
         if (!Session::CustomerGroup()->mayViewCategories()) {
@@ -349,15 +349,15 @@ class KategorieListe
                 $oKategorie->categoryFunctionAttributes = [];
                 $oKategorie->categoryAttributes         = [];
                 $oKategorieAttribut_arr                 = Shop::Container()->getDB()->query(
-                    "SELECT COALESCE(tkategorieattributsprache.cName, tkategorieattribut.cName) cName,
+                    'SELECT COALESCE(tkategorieattributsprache.cName, tkategorieattribut.cName) cName,
                             COALESCE(tkategorieattributsprache.cWert, tkategorieattribut.cWert) cWert,
                             tkategorieattribut.bIstFunktionsAttribut, tkategorieattribut.nSort
                         FROM tkategorieattribut
                         LEFT JOIN tkategorieattributsprache 
                             ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
-                            AND tkategorieattributsprache.kSprache = " . Shop::getLanguageID() . "
-                        WHERE kKategorie = " . (int)$oKategorie->kKategorie . "
-                        ORDER BY tkategorieattribut.bIstFunktionsAttribut DESC, tkategorieattribut.nSort",
+                            AND tkategorieattributsprache.kSprache = ' . Shop::getLanguageID() . '
+                        WHERE kKategorie = ' . (int)$oKategorie->kKategorie . '
+                        ORDER BY tkategorieattribut.bIstFunktionsAttribut DESC, tkategorieattribut.nSort',
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 foreach ($oKategorieAttribut_arr as $oKategorieAttribut) {

@@ -62,11 +62,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             $kUmfrageFrageAntwort = (int)$_GET['kUFA'];
             if ($kUmfrageFrageAntwort > 0) {
                 Shop::Container()->getDB()->query(
-                    "DELETE tumfragefrageantwort, tumfragedurchfuehrungantwort
+                    'DELETE tumfragefrageantwort, tumfragedurchfuehrungantwort
                         FROM tumfragefrageantwort
                         LEFT JOIN tumfragedurchfuehrungantwort
                             ON tumfragedurchfuehrungantwort.kUmfrageFrageAntwort = tumfragefrageantwort.kUmfrageFrageAntwort
-                        WHERE tumfragefrageantwort.kUmfrageFrageAntwort = " . $kUmfrageFrageAntwort,
+                        WHERE tumfragefrageantwort.kUmfrageFrageAntwort = ' . $kUmfrageFrageAntwort,
                     \DB\ReturnType::AFFECTED_ROWS
                 );
             }
@@ -77,11 +77,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             $kUmfrageMatrixOption = (int)$_GET['kUFO'];
             if ($kUmfrageMatrixOption > 0) {
                 Shop::Container()->getDB()->query(
-                    "DELETE tumfragematrixoption, tumfragedurchfuehrungantwort
+                    'DELETE tumfragematrixoption, tumfragedurchfuehrungantwort
                         FROM tumfragematrixoption
                         LEFT JOIN tumfragedurchfuehrungantwort
                             ON tumfragedurchfuehrungantwort.kUmfrageMatrixOption = tumfragematrixoption.kUmfrageMatrixOption
-                        WHERE tumfragematrixoption.kUmfrageMatrixOption = " . $kUmfrageMatrixOption,
+                        WHERE tumfragematrixoption.kUmfrageMatrixOption = ' . $kUmfrageMatrixOption,
                     \DB\ReturnType::AFFECTED_ROWS
                 );
             }
@@ -283,9 +283,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                     Shop::Container()->getDB()->delete('tumfrage', 'kUmfrage', $kUmfrage);
 
                     $oUmfrageFrage_arr = Shop::Container()->getDB()->query(
-                        "SELECT kUmfrageFrage
+                        'SELECT kUmfrageFrage
                             FROM tumfragefrage
-                            WHERE kUmfrage = " . $kUmfrage,
+                            WHERE kUmfrage = ' . $kUmfrage,
                         \DB\ReturnType::ARRAY_OF_OBJECTS
                     );
                     foreach ($oUmfrageFrage_arr as $oUmfrageFrage) {
@@ -295,11 +295,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                     Shop::Container()->getDB()->delete('tseo', ['cKey', 'kKey'], ['kUmfrage', $kUmfrage]);
                     // Umfrage Durchfuehrung loeschen
                     Shop::Container()->getDB()->query(
-                        "DELETE tumfragedurchfuehrung, tumfragedurchfuehrungantwort 
+                        'DELETE tumfragedurchfuehrung, tumfragedurchfuehrungantwort 
                             FROM tumfragedurchfuehrung
                             LEFT JOIN tumfragedurchfuehrungantwort 
                               ON tumfragedurchfuehrungantwort.kUmfrageDurchfuehrung = tumfragedurchfuehrung.kUmfrageDurchfuehrung
-                            WHERE tumfragedurchfuehrung.kUmfrage = " . $kUmfrage,
+                            WHERE tumfragedurchfuehrung.kUmfrage = ' . $kUmfrage,
                         \DB\ReturnType::AFFECTED_ROWS
                     );
                 }
@@ -330,15 +330,15 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                     $kUmfrageFrageAntwort = (int)$kUmfrageFrageAntwort;
 
                     Shop::Container()->getDB()->query(
-                        "DELETE tumfragefrageantwort, tumfragedurchfuehrungantwort 
+                        'DELETE tumfragefrageantwort, tumfragedurchfuehrungantwort 
                             FROM tumfragefrageantwort
                             LEFT JOIN tumfragedurchfuehrungantwort
                                 ON tumfragedurchfuehrungantwort.kUmfrageFrageAntwort = tumfragefrageantwort.kUmfrageFrageAntwort
-                            WHERE tumfragefrageantwort.kUmfrageFrageAntwort = " . $kUmfrageFrageAntwort,
+                            WHERE tumfragefrageantwort.kUmfrageFrageAntwort = ' . $kUmfrageFrageAntwort,
                         \DB\ReturnType::AFFECTED_ROWS
                     );
                 }
-                $cHinweis .= "Ihre markierten Antworten wurden erfolgreich gelöscht.<br>";
+                $cHinweis .= 'Ihre markierten Antworten wurden erfolgreich gelöscht.<br>';
             }
             // Bestimmte Optionen loeschen
             if (isset($_POST['kUmfrageMatrixOption'])
@@ -348,11 +348,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 foreach ($_POST['kUmfrageMatrixOption'] as $kUmfrageMatrixOption) {
                     $kUmfrageMatrixOption = (int)$kUmfrageMatrixOption;
                     Shop::Container()->getDB()->query(
-                        "DELETE tumfragematrixoption, tumfragedurchfuehrungantwort 
+                        'DELETE tumfragematrixoption, tumfragedurchfuehrungantwort 
                             FROM tumfragematrixoption
                             LEFT JOIN tumfragedurchfuehrungantwort
                                 ON tumfragedurchfuehrungantwort.kUmfrageMatrixOption = tumfragematrixoption.kUmfrageMatrixOption
-                            WHERE tumfragematrixoption.kUmfrageMatrixOption = " . $kUmfrageMatrixOption,
+                            WHERE tumfragematrixoption.kUmfrageMatrixOption = ' . $kUmfrageMatrixOption,
                         \DB\ReturnType::AFFECTED_ROWS
                     );
                 }
@@ -368,9 +368,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
         } elseif (RequestHelper::verifyGPCDataInt('umfrage_statistik') === 1) {
             // Umfragestatistik anschauen
             $oUmfrageDurchfuehrung_arr = Shop::Container()->getDB()->query(
-                "SELECT kUmfrageDurchfuehrung
+                'SELECT kUmfrageDurchfuehrung
                     FROM tumfragedurchfuehrung
-                    WHERE kUmfrage = " . $kUmfrageTMP,
+                    WHERE kUmfrage = ' . $kUmfrageTMP,
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
 
@@ -531,9 +531,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                     $oUmfrage_arr[$i]->cKundengruppe_arr[] = 'Alle';
                 } else {
                     $oKundengruppe = Shop::Container()->getDB()->query(
-                        "SELECT cName
+                        'SELECT cName
                             FROM tkundengruppe
-                            WHERE kKundengruppe = " . (int)$kKundengruppe,
+                            WHERE kKundengruppe = ' . (int)$kKundengruppe,
                         \DB\ReturnType::SINGLE_OBJECT
                     );
                     if (!empty($oKundengruppe->cName)) {
@@ -576,9 +576,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
     }
     // Vorhandene Kundengruppen
     $oKundengruppe_arr = Shop::Container()->getDB()->query(
-        "SELECT kKundengruppe, cName
+        'SELECT kKundengruppe, cName
             FROM tkundengruppe
-            ORDER BY cStandard DESC",
+            ORDER BY cStandard DESC',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     // Gueltige Kupons

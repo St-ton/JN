@@ -77,7 +77,7 @@ class UstIDvies
      * @param string $szUstID
      * @return array
      */
-    public function doCheckID($szUstID = '')
+    public function doCheckID($szUstID = ''): array
     {
         if ('' === $szUstID) {
             return [

@@ -22,11 +22,11 @@ $endDate     = DateTime::createFromFormat('Y-m-j', date('Y-m-j'));
 
 if (isset($_POST['formFilter']) && $_POST['formFilter'] > 0 && FormHelper::validateToken()) {
     if ((int)$_POST['kKupon'] > -1) {
-        $cWhere = "(SELECT kKupon 
+        $cWhere = '(SELECT kKupon 
                         FROM tkuponbestellung 
                         WHERE tkuponbestellung.kBestellung = tbestellung.kBestellung 
                         LIMIT 0, 1
-                    ) = " . (int)$_POST['kKupon'] . " AND";
+                    ) = ' . (int)$_POST['kKupon'] . ' AND';
         foreach ($coupons_arr as $key => $value) {
             if ($value['kKupon'] == (int)$_POST['kKupon']) {
                 $coupons_arr[$key]['aktiv'] = 1;

@@ -52,4 +52,15 @@ class Alert extends \OPC\Portlet
             ],
         ];
     }
+
+    /**
+     * @return array
+     */
+    public function getPropertyTabs(): array
+    {
+        return [
+            'Styles'    => 'styles',
+            'Animation' => 'animations',
+        ];
+    }
 }

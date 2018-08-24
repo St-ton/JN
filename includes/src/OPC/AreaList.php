@@ -44,7 +44,7 @@ class AreaList implements \JsonSerializable
      */
     public function hasArea($id): bool
     {
-        return array_key_exists($id, $this->areas);
+        return \array_key_exists($id, $this->areas);
     }
 
     /**

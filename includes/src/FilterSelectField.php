@@ -46,7 +46,7 @@ class FilterSelectField extends FilterField
      *  9 = equals not
      * @return FilterSelectOption
      */
-    public function addSelectOption($cTitle, $cValue, $nTestOp = 0)
+    public function addSelectOption($cTitle, $cValue, $nTestOp = 0): FilterSelectOption
     {
         $oOption             = new FilterSelectOption($cTitle, $cValue, $nTestOp);
         $this->oOption_arr[] = $oOption;
@@ -57,7 +57,7 @@ class FilterSelectField extends FilterField
     /**
      * @return array
      */
-    public function getOptions()
+    public function getOptions(): array
     {
         return $this->oOption_arr;
     }
@@ -97,7 +97,7 @@ class FilterSelectField extends FilterField
     }
 
     /**
-     * @return FilterSelectOption
+     * @return FilterSelectOption|null
      */
     public function getSelectedOption()
     {

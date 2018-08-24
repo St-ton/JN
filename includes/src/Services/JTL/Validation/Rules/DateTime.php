@@ -39,7 +39,7 @@ class DateTime implements RuleInterface
         if ($value instanceof \DateTime) {
             return new RuleResult(true, '', $value);
         }
-        if (!is_string($value)) {
+        if (!\is_string($value)) {
             return new RuleResult(false, 'invalid date', $value);
         }
         $dateTime = \DateTime::createFromFormat($this->format, $value);

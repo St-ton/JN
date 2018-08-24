@@ -9,7 +9,7 @@
  * @param string $cSuchFilter
  * @return array
  */
-function gibBestellungsUebersicht($cLimitSQL, $cSuchFilter)
+function gibBestellungsUebersicht($cLimitSQL, $cSuchFilter): array
 {
     $oBestellung_arr = [];
     $cSuchFilterSQL  = '';
@@ -17,10 +17,10 @@ function gibBestellungsUebersicht($cLimitSQL, $cSuchFilter)
         $cSuchFilterSQL = " WHERE cBestellNr LIKE '%" . Shop::Container()->getDB()->escape($cSuchFilter) . "%'";
     }
     $oBestellungToday_arr = Shop::Container()->getDB()->query(
-        "SELECT kBestellung
+        'SELECT kBestellung
             FROM tbestellung
-            " . $cSuchFilterSQL . "
-            ORDER BY dErstellt DESC" . $cLimitSQL,
+            ' . $cSuchFilterSQL . '
+            ORDER BY dErstellt DESC' . $cLimitSQL,
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($oBestellungToday_arr as $oBestellungToday) {
@@ -38,7 +38,7 @@ function gibBestellungsUebersicht($cLimitSQL, $cSuchFilter)
  * @param string $cSuchFilter
  * @return int
  */
-function gibAnzahlBestellungen($cSuchFilter)
+function gibAnzahlBestellungen($cSuchFilter): int
 {
     $cSuchFilterSQL = (strlen($cSuchFilter) > 0)
         ? " WHERE cBestellNr LIKE '%" . Shop::Container()->getDB()->escape($cSuchFilter) . "%'"
@@ -59,7 +59,7 @@ function gibAnzahlBestellungen($cSuchFilter)
  * @param array $kBestellung_arr
  * @return int
  */
-function setzeAbgeholtZurueck($kBestellung_arr)
+function setzeAbgeholtZurueck(array $kBestellung_arr): int
 {
     if (is_array($kBestellung_arr) && count($kBestellung_arr) > 0) {
         $kBestellung_arr = array_map(function ($i) { return (int)$i; }, $kBestellung_arr);

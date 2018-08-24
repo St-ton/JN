@@ -39,7 +39,7 @@ class CaptchaService implements CaptchaServiceInterface
         }
 
         $result = false;
-        executeHook(HOOK_CAPTCHA_CONFIGURED, [
+        \executeHook(\HOOK_CAPTCHA_CONFIGURED, [
             'isConfigured' => &$result,
         ]);
 
@@ -66,7 +66,7 @@ class CaptchaService implements CaptchaServiceInterface
 
         if ($this->isConfigured()) {
             $result = '';
-            executeHook(HOOK_CAPTCHA_MARKUP, [
+            \executeHook(\HOOK_CAPTCHA_MARKUP, [
                 'getBody' => false,
                 'markup'  => &$result,
             ]);
@@ -89,7 +89,7 @@ class CaptchaService implements CaptchaServiceInterface
 
         if ($this->isConfigured()) {
             $result = '';
-            executeHook(HOOK_CAPTCHA_MARKUP, [
+            \executeHook(\HOOK_CAPTCHA_MARKUP, [
                 'getBody' => true,
                 'markup'  => &$result,
             ]);
@@ -112,7 +112,7 @@ class CaptchaService implements CaptchaServiceInterface
 
         if ($this->isConfigured()) {
             $result = false;
-            executeHook(HOOK_CAPTCHA_VALIDATE, [
+            \executeHook(\HOOK_CAPTCHA_VALIDATE, [
                 'requestData' => $requestData,
                 'isValid'     => &$result,
             ]);

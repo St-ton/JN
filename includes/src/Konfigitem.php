@@ -148,9 +148,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         {
             $cKurzBeschreibung = $this->getKurzBeschreibung();
             $virtual = [
-                'bAktiv' => $this->{"bAktiv"}
+                'bAktiv' => $this->bAktiv
             ];
             $override = [
+                'kKonfigitem'       => $this->getKonfigitem(),
                 'cName'             => $this->getName(),
                 'kArtikel'          => $this->getArtikelKey(),
                 'cBeschreibung'     => !empty($cKurzBeschreibung)
@@ -305,16 +306,16 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
 
         /**
          * @param int $kKonfiggruppe
-         * @return array
+         * @return Konfigitem[]
          */
         public static function fetchAll(int $kKonfiggruppe): array
         {
             $oItemEx_arr = [];
             $oItem_arr   = Shop::Container()->getDB()->queryPrepared(
-                "SELECT kKonfigitem 
+                'SELECT kKonfigitem 
                     FROM tkonfigitem 
                     WHERE kKonfiggruppe = :groupID 
-                    ORDER BY nSort ASC",
+                    ORDER BY nSort ASC',
                 ['groupID' => $kKonfiggruppe],
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );

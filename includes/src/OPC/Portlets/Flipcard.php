@@ -21,7 +21,7 @@ class Flipcard extends \OPC\Portlet
      */
     public function getPreviewHtml(PortletInstance $instance): string
     {
-        $instance->setProperty('uid', uniqid('flp-', false));
+        $instance->setProperty('uid', \uniqid('flp-', false));
         $instance->addClass('flip');
         $instance->addClass($instance->getProperty('flip-style'));
         $instance->addClass($instance->getProperty('class'));

@@ -44,17 +44,23 @@ function images_xml($tmpDir, SimpleXMLElement $xml)
     $items = get_array($xml);
     foreach ($items as $item) {
         $tmpfile = $tmpDir . $item->kBild;
-        if (file_exists($tmpfile)) {
-            if (copy($tmpfile, PFAD_ROOT . PFAD_MEDIA_IMAGE_STORAGE . $item->cPfad)) {
-                DBUpdateInsert('tbild', [$item], 'kBild');
-                Shop::Container()->getDB()->update('tartikelpict', 'kBild', (int)$item->kBild, (object)['cPfad' => $item->cPfad]);
-            } else {
-                Shop::Container()->getLogService()->error(sprintf(
-                    'Copy "%s" to "%s"',
-                    $tmpfile,
-                    PFAD_ROOT . PFAD_MEDIA_IMAGE_STORAGE . $item->cPfad
-                ));
-            }
+        if (!file_exists($tmpfile)) {
+            continue;
+        }
+        if (copy($tmpfile, PFAD_ROOT . PFAD_MEDIA_IMAGE_STORAGE . $item->cPfad)) {
+            DBUpdateInsert('tbild', [$item], 'kBild');
+            Shop::Container()->getDB()->update(
+                'tartikelpict',
+                'kBild',
+                (int)$item->kBild,
+                (object)['cPfad' => $item->cPfad]
+            );
+        } else {
+            Shop::Container()->getLogService()->error(sprintf(
+                'Copy "%s" to "%s"',
+                $tmpfile,
+                PFAD_ROOT . PFAD_MEDIA_IMAGE_STORAGE . $item->cPfad
+            ));
         }
     }
 }
@@ -63,7 +69,7 @@ function images_xml($tmpDir, SimpleXMLElement $xml)
  * @param SimpleXMLElement $xml
  * @return array
  */
-function get_array(SimpleXMLElement $xml)
+function get_array(SimpleXMLElement $xml): array
 {
     $items = [];
     /** @var SimpleXMLElement $child */

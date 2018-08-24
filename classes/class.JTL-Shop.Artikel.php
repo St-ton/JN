@@ -5005,7 +5005,26 @@ class Artikel
 
         switch ((int)$conf['global']['artikel_artikelanzeigefilter']) {
             case EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER:
+                if ((isset($oArtikel->cLagerVariation) && $oArtikel->cLagerVariation === 'Y')
+                    || $oArtikel->fLagerbestand > 0
+                    || $oArtikel->cLagerBeachten !== 'Y') {
+                    $result->inStock = true;
+                } else {
+                    $result->inStock   = false;
+                    $result->notExists = true;
+                }
+                break;
             case EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL:
+                if ((isset($oArtikel->cLagerVariation) && $oArtikel->cLagerVariation === 'Y')
+                    || $oArtikel->fLagerbestand > 0
+                    || $oArtikel->cLagerBeachten !== 'Y'
+                    || $oArtikel->cLagerKleinerNull === 'Y') {
+                    $result->inStock = true;
+                } else {
+                    $result->inStock   = false;
+                    $result->notExists = true;
+                }
+                break;
             case EINSTELLUNGEN_ARTIKELANZEIGEFILTER_ALLE:
             default:
                 if ((isset($oArtikel->cLagerVariation) && $oArtikel->cLagerVariation === 'Y')

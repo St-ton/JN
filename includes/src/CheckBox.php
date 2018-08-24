@@ -77,11 +77,6 @@ class CheckBox
     /**
      * @var array
      */
-    public $cKundengruppeAssoc_arr;
-
-    /**
-     * @var array
-     */
     public $kKundengruppe_arr;
 
     /**
@@ -164,20 +159,6 @@ class CheckBox
                 $upd = new stdClass();
                 $upd->kCheckBoxFunktion = 0;
                 Shop::Container()->getDB()->update('tcheckbox', 'kCheckBox', (int)$this->kCheckBox, $upd);
-            }
-        }
-        // Mapping Kundengruppe
-        if (is_array($this->kKundengruppe_arr) && count($this->kKundengruppe_arr) > 0) {
-            $this->cKundengruppeAssoc_arr = [];
-            foreach ($this->kKundengruppe_arr as $kKundengruppe) {
-                $oKundengruppe = Shop::Container()->getDB()->select(
-                    'tkundengruppe',
-                    'kKundengruppe',
-                    (int)$kKundengruppe
-                );
-                if (isset($oKundengruppe->cName) && strlen($oKundengruppe->cName) > 0) {
-                    $this->cKundengruppeAssoc_arr[$kKundengruppe] = $oKundengruppe->cName;
-                }
             }
         }
         // Mapping Link
@@ -491,7 +472,6 @@ class CheckBox
                 $oCheckBox->oCheckBoxFunktion,
                 $oCheckBox->dErstellt_DE,
                 $oCheckBox->oLink,
-                $oCheckBox->cKundengruppeAssoc_arr,
                 $oCheckBox->oCheckBoxSprache_arr,
                 $oCheckBox->cLink
             );

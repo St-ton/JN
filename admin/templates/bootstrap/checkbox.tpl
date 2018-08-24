@@ -75,10 +75,10 @@
                                                 <input name="kCheckBox[]" type="checkbox" value="{$oCheckBoxUebersicht->kCheckBox}" />
                                             </td>
                                             <td>{$oCheckBoxUebersicht->cName}</td>
-                                            <td>{if isset($oCheckBoxUebersicht->oLink->cName)}{$oCheckBoxUebersicht->oLink->cName}{/if}</td>
+                                            <td>{$oCheckBoxUebersicht->oLink->getName()}</td>
                                             <td>
-                                                {foreach name="anzeigeortAusgabe" from=$oCheckBoxUebersicht->kAnzeigeOrt_arr item=kAnzeigeOrt}
-                                                    {$cAnzeigeOrt_arr[$kAnzeigeOrt]}{if !$smarty.foreach.anzeigeortAusgabe.last}, {/if}
+                                                {foreach $oCheckBoxUebersicht->kAnzeigeOrt_arr as $kAnzeigeOrt}
+                                                    {$cAnzeigeOrt_arr[$kAnzeigeOrt]}{if !$kAnzeigeOrt@last}, {/if}
                                                 {/foreach}
                                             </td>
                                             <td>{if isset($oCheckBoxUebersicht->oCheckBoxFunktion->cName)}{$oCheckBoxUebersicht->oCheckBoxFunktion->cName}{/if}</td>
@@ -88,8 +88,8 @@
                                             <td>{if $oCheckBoxUebersicht->nLogging}{#yes#}{else}{#no#}{/if}</td>
                                             <td>{$oCheckBoxUebersicht->nSort}</td>
                                             <td>
-                                                {foreach name="kundengruppe" from=$oCheckBoxUebersicht->cKundengruppeAssoc_arr item=cKundengruppeAssoc}
-                                                    {$cKundengruppeAssoc}{if !$smarty.foreach.kundengruppe.last}, {/if}
+                                                {foreach $oCheckBoxUebersicht->kKundengruppe_arr as $id}
+                                                    {Kundengruppe::getNameByID($id)}{if !$id@last}, {/if}
                                                 {/foreach}
                                             </td>
                                             <td>{$oCheckBoxUebersicht->dErstellt_DE}</td>
@@ -154,7 +154,7 @@
                                 <span class="input-group-addon">{getHelpDesc cDesc="Name der Checkbox"}</span>
                             </div>
                             {if isset($oSprache_arr) && $oSprache_arr|@count > 0}
-                                {foreach name="textsprache" from=$oSprache_arr item=oSprache}
+                                {foreach $oSprache_arr as $oSprache}
                                     {assign var=cISO value=$oSprache->cISO}
                                     {assign var=kSprache value=$oSprache->kSprache}
                                     {assign var=cISOText value="cText_$cISO"}
@@ -167,7 +167,7 @@
                                     </div>
                                 {/foreach}
 
-                                {foreach name="beschreibungsprache" from=$oSprache_arr item=oSprache}
+                                {foreach $oSprache_arr as $oSprache}
                                     {assign var=cISO value=$oSprache->cISO}
                                     {assign var=kSprache value=$oSprache->kSprache}
                                     {assign var=cISOBeschreibung value="cBeschreibung_$cISO"}

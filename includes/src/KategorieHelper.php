@@ -62,7 +62,7 @@ class KategorieHelper
      * @param int $kKundengruppe
      * @return KategorieHelper
      */
-    public static function getInstance(int $kSprache = 0, int $kKundengruppe = 0)
+    public static function getInstance(int $kSprache = 0, int $kKundengruppe = 0): self
     {
         $kSprache      = $kSprache === 0
             ? Shop::getLanguageID()
@@ -89,7 +89,7 @@ class KategorieHelper
     /**
      * @return array
      */
-    public function combinedGetAll()
+    public function combinedGetAll(): array
     {
         if (self::$fullCategories !== null) {
             return self::$fullCategories;
@@ -321,7 +321,7 @@ class KategorieHelper
      * @param int $categoryID
      * @return array
      */
-    public function getFallBackFlatTree(int $categoryID)
+    public function getFallBackFlatTree(int $categoryID): array
     {
         $filterEmpty         = (int)self::$config['global']['kategorien_anzeigefilter'] === EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE;
         $stockFilter         = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
@@ -527,7 +527,7 @@ class KategorieHelper
 
     /**
      * @param int $id
-     * @return null|object
+     * @return false|object
      */
     public function getCategoryById(int $id)
     {

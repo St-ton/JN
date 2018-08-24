@@ -249,7 +249,7 @@ class Service
             /** @var AbstractFilter $newFilter **/
             $newFilter = new $enabledFilter['class']($productFilter);
             $newFilter->setType(Type::AND);
-            if ($newFilter->getClassName() === 'Filter\Items\PriceRange') {
+            if ($newFilter instanceof \Filter\Items\PriceRange) {
                 $productFilter->addActiveFilter($newFilter, (string)$enabledFilter['value']);
             } else {
                 $productFilter->addActiveFilter($newFilter, $enabledFilter['value']);

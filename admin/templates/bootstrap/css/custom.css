@@ -68,8 +68,10 @@
   display: flex;
   flex-direction: row;
 }
-.backend-wrapper .dropdown-menu {
+.backend-wrapper .dropdown-menu,
+.backend-wrapper #backend-search-dropdown {
   box-shadow: 0 0 4px #b7b9bc;
+  background-color: #fff;
 }
 .backend-wrapper .input-group .form-control {
   z-index: 0;
@@ -250,6 +252,13 @@
 .backend-wrapper > .backend-main > .backend-navbar > .backend-navbar-left .backend-search #backend-search-dropdown {
   max-height: 75vh;
   overflow: auto;
+  position: absolute;
+  top: 2.5em;
+  padding: 0.25em;
+  display: none;
+}
+.backend-wrapper > .backend-main > .backend-navbar > .backend-navbar-left .backend-search #backend-search-dropdown.open {
+  display: block;
 }
 .backend-wrapper > .backend-main > .backend-navbar > .backend-navbar-left .backend-search #backend-search-dropdown > li {
   padding: 0 1em;

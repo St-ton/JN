@@ -123,7 +123,7 @@
                             <i class="fa fa-search"></i>
                             <input id="backend-search-input" placeholder="Suchbegriff" name="cSuche" type="search"
                                    value="" autocomplete="off">
-                            <ul class="dropdown-menu" id="backend-search-dropdown"></ul>
+                            <ul id="backend-search-dropdown"></ul>
                             <script>
                                 $('#backend-search-input').on('input', function()
                                 {
@@ -133,18 +133,20 @@
                                         ioCall('adminSearch', [value], function (data) {
                                             var tpl = data.data.tpl;
                                             if (tpl) {
-                                                $('#backend-search-dropdown').html(tpl).dropdown('toggle');
+                                                $('#backend-search-dropdown').html(tpl).addClass('open');
                                             } else {
-                                                $('.backend-search').removeClass('open');
+                                                $('#backend-search-dropdown').removeClass('open');
                                             }
                                         });
                                     } else {
-                                        $('.backend-search').removeClass('open');
+                                        $('#backend-search-dropdown').removeClass('open');
                                     }
-                                }).on('blur', function ()
-                                {
-                                    $('.backend-search').removeClass('open');
-                                })
+                                });
+                                $(document).click(function(e) {
+                                    if ($(e.target).closest('.backend-search').length === 0) {
+                                        $('#backend-search-dropdown').removeClass('open');
+                                    }
+                                });
                             </script>
                         </div>
                     </li>

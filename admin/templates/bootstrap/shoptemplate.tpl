@@ -179,8 +179,13 @@
                                                             initialPreviewConfig: [
                                                                 {ldelim}
                                                                     url: '{$shopURL}/{$PFAD_ADMIN}shoptemplate.php',
-                                                                    extra: {ldelim}upload: '{$oTemplate->cOrdner}/{$oSetting->rawAttributes.target}{$oSetting->cValue}', id: 'upload-{$oSetting@iteration}', token : '{$smarty.session.jtl_token}'{rdelim}
-                                                                    {rdelim}
+                                                                    extra: {ldelim}
+                                                                            upload: '{$oTemplate->cOrdner}/{$oSetting->rawAttributes.target}{$oSetting->cValue}',
+                                                                            id: 'upload-{$oSetting@iteration}',
+                                                                            token : '{$smarty.session.jtl_token}',
+                                                                            cName : '{$oSetting->cKey}'
+                                                                           {rdelim}
+                                                                {rdelim}
                                                             ]
                                                         {rdelim}).on('fileuploaded', function(event, data) {ldelim}
                                                             if (data.response.status === 'OK') {ldelim}

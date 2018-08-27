@@ -25,11 +25,14 @@ $admin          = (isset($_GET['admin']) && $_GET['admin'] === 'true');
 if (isset($_POST['key'], $_POST['upload'])) {
     $file     = PFAD_ROOT . PFAD_TEMPLATES . $_POST['upload'];
     $response = new stdClass();
+    $response->status = 'FAILED';
     if (file_exists($file) && is_file($file)) {
-        $delete           = unlink($file);
-        $response->status = ($delete === true) ? 'OK' : 'FAILED';
-    } else {
-        $response->status = 'FAILED';
+        $delete = unlink($file);
+        if ($delete === true) {
+            $response->status = 'OK';
+            $upload = explode('/', $_POST['upload']);
+            $oTemplate->setConfig($upload[0], 'theme', $_POST['cName'], '');
+        }
     }
     die(json_encode($response));
 }

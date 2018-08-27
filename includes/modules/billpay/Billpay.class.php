@@ -1572,7 +1572,10 @@ class BPHelper
         if (strlen($_SESSION['cISOSprache']) > 0) {
             $cISOSprache = $_SESSION['cISOSprache'];
         } else {
-            $oSprache = Shop::Container()->getDB()->query("SELECT kSprache, cISO FROM tsprache WHERE cShopStandard = 'Y'", 1);
+            $oSprache = Shop::Container()->getDB()->query(
+                "SELECT kSprache, cISO FROM tsprache WHERE cShopStandard = 'Y'",
+                \DB\ReturnType::SINGLE_OBJECT
+            );
             if ($oSprache->kSprache > 0) {
                 $cISOSprache = $oSprache->cISO;
             }

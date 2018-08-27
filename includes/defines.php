@@ -231,6 +231,9 @@ ifndef('SECURE_PHP_FUNCTIONS', "
     yaml_emit, yaml_parse,
 ");
 
+// 0 => off, 1 => html comments, 2 => static badges, 3 => scrolling badges with borders
+ifndef('SHOW_TEMPLATE_HINTS', 0);
+
 /**
  * @param string     $constant
  * @param string|int $value

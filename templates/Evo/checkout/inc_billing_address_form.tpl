@@ -448,8 +448,8 @@
             <div class="col-xs-12 col-md-6">
                 {if isset($cPost_var['geburtstag'])}
                     {assign var='inputVal_birthday' value=$cPost_var['geburtstag']}
-                {elseif isset($Kunde->dGeburtstag)}
-                    {assign var='inputVal_birthday' value=$Kunde->dGeburtstag|date_format:"%d.%m.%Y"}
+                {elseif isset($Kunde->dGeburtstag_formatted)}
+                    {assign var='inputVal_birthday' value=$Kunde->dGeburtstag_formatted}
                 {/if}
                 {include file='snippets/form_group_simple.tpl'
                     options=[

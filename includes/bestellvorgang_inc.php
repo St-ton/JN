@@ -2020,6 +2020,10 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
              'kundenregistrierung_pflicht_vorname' => 'vorname',
              'kundenregistrierung_abfragen_firma' => 'firma',
              'kundenregistrierung_abfragen_firmazusatz' => 'firmazusatz',
+             'kundenregistrierung_abfragen_titel' => 'titel',
+             'kundenregistrierung_abfragen_adresszusatz' => 'adresszusatz',
+             'kundenregistrierung_abfragen_www' => 'www',
+             'kundenregistrierung_abfragen_bundesland' => 'bundesland'
              ] as $confKey => $dataKey) {
         if ($conf['kunden'][$confKey] === 'Y') {
             $data[$dataKey] = isset($data[$dataKey]) ? trim($data[$dataKey]) : null;
@@ -2063,12 +2067,6 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
         }
     } else {
         unset($_SESSION['check_plzort']);
-    }
-    if (empty($data['titel']) && $conf['kunden']['kundenregistrierung_abfragen_titel'] === 'Y') {
-        $ret['titel'] = 1;
-    }
-    if (empty($data['adresszusatz']) && $conf['kunden']['kundenregistrierung_abfragen_adresszusatz'] === 'Y') {
-        $ret['adresszusatz'] = 1;
     }
     if (isset($data['mobil']) && StringHandler::checkPhoneNumber($data['mobil'], $conf['kunden']['kundenregistrierung_abfragen_mobil'] === 'Y') > 0) {
         $ret['mobil'] = StringHandler::checkPhoneNumber($data['mobil'], $conf['kunden']['kundenregistrierung_abfragen_mobil'] === 'Y');
@@ -2157,14 +2155,8 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
     ) {
         $ret['geburtstag'] = StringHandler::checkDate($data['geburtstag'], $conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y');
     }
-    if ($conf['kunden']['kundenregistrierung_abfragen_www'] === 'Y' && empty($data['www'])) {
-        $ret['www'] = 1;
-    }
     if (isset($data['tel']) && StringHandler::checkPhoneNumber($data['tel'], $conf['kunden']['kundenregistrierung_abfragen_tel'] === 'Y') > 0) {
         $ret['tel'] = StringHandler::checkPhoneNumber($data['tel'], $conf['kunden']['kundenregistrierung_abfragen_tel'] === 'Y');
-    }
-    if ($conf['kunden']['kundenregistrierung_abfragen_bundesland'] === 'Y' && empty($data['bundesland'])) {
-        $ret['bundesland'] = 1;
     }
     if ($kundenaccount === 1) {
         if ($checkpass) {
@@ -2205,7 +2197,7 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
                     // 3 = falsches Datum
                     // 0 = o.k.
                     if ($customerField->cTyp === 'datum') {
-                        $_dat   = StringHandler::filterXSS($data['custom_' . $customerField->kKundenfeld]);
+                        $_dat   = $data['custom_' . $customerField->kKundenfeld];
                         $_datTs = strtotime($_dat);
                         $_dat   = ($_datTs !== false) ? date('d.m.Y', $_datTs) : false;
                         $check  = StringHandler::checkDate($_dat);
@@ -2228,7 +2220,7 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
                 // 3 = falsches Datum
                 // 0 = o.k.
                 if ($customerField->cTyp === 'datum') {
-                    $_dat   = StringHandler::filterXSS($data['custom_' . $customerField->kKundenfeld]);
+                    $_dat   = $data['custom_' . $customerField->kKundenfeld];
                     $_datTs = strtotime($_dat);
                     $_dat   = ($_datTs !== false) ? date('d.m.Y', $_datTs) : false;
                     $check  = StringHandler::checkDate($_dat);
@@ -2284,7 +2276,7 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
  */
 function checkKundenFormular(int $kundenaccount, $checkpass = 1)
 {
-    $data = $_POST; // create a copy
+    $data = StringHandler::filterXSS($_POST); // create a copy
 
     return checkKundenFormularArray($data, $kundenaccount, $checkpass);
 }

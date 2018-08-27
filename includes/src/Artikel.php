@@ -4283,7 +4283,7 @@ class Artikel
                 && $now < new DateTime($this->dErscheinungsdatum);
             // Top bewertet
             // No need to check with custom function.. this value is set in fuelleArtikel()?
-            $bSuchspecial_arr[SEARCHSPECIALS_TOPREVIEWS] = $this->bIsTopBewertet === '1';
+            $bSuchspecial_arr[SEARCHSPECIALS_TOPREVIEWS] = $this->bIsTopBewertet === 1;
             // Variationen Lagerbestand 0
             if ($this->cLagerBeachten === 'Y'
                 && $this->cLagerKleinerNull === 'N'

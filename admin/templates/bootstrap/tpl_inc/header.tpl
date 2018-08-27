@@ -34,6 +34,7 @@
     <script type="text/javascript">
         var bootstrapButton = $.fn.button.noConflict();
         $.fn.bootstrapBtn = bootstrapButton;
+        setJtlToken('{$smarty.session.jtl_token}');
     </script>
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -42,87 +43,12 @@
 </head>
 <body>
 {if $account !== false && isset($smarty.session.loginIsValid) && $smarty.session.loginIsValid === true}
-    {if permission('SETTINGS_SEARCH_VIEW')}
-        <div id="main-search" class="modal fade" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <input placeholder="Suchbegriff" name="cSuche" type="search" value="" autocomplete="off" />
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    </div>
-                    <div class="modal-body">
-                    </div>
-                </div>
-            </div>
-        </div>
-        <script>
-        var $grid    = null;
-        setJtlToken('{$smarty.session.jtl_token}');
-
-        $(function () {
-            var lastQuery = null,
-                $search_frame = $('#main-search'),
-                $search_input = $search_frame.find('input[type="search"]'),
-                $search_result = $search_frame.find('div.modal-body');
-
-            function searchEvent(event) {
-                var setResult = function(content) {
-                        content = content || '';
-
-                        if ($grid) {
-                            $grid.masonry('destroy');
-                        }
-
-                        $search_result.html(content);
-
-                        $grid = $search_result.masonry({
-                            itemSelector: '.grid-item',
-                            columnWidth: '.grid-item',
-                            percentPosition: true
-                        });
-                    },
-                    query = $(event.target).val() || '';
-                if (query.length < 3 || event.keyCode === 27) {
-                    setResult(null);
-                    lastQuery = null;
-                } else if(query !== lastQuery) {
-                    lastQuery = query;
-                    ioCall('adminSearch', [query], function (data) {
-                        setResult(data.data.tpl);
-                    });
-                }
-            }
-
-            $search_frame.on('shown.bs.modal', function (e) {
-                $search_input.on('keyup', searchEvent).focus();
-            });
-
-            $search_frame.on('hidden.bs.modal', function (e) {
-                $('body').focus();
-                $search_input.off('keyup', searchEvent);
-            });
-
-            $(document).on('keydown', function (event) {
-                if (event.keyCode === 71 && event.ctrlKey) {
-                    event.preventDefault();
-                    $search_frame.modal('toggle');
-                }
-                if (event.keyCode === 13) {
-                    szSearchString = $("[name$=cSuche]").val();
-                    if ('' !== szSearchString) {
-                        document.location.href = 'einstellungen.php?cSuche=' + szSearchString + '&einstellungen_suchen=1';
-                    }
-                }
-            });
-        });
-        </script>
-    {/if}
     {getCurrentPage assign="currentPage"}
     <div class="backend-wrapper container-fluid
          {if $currentPage === 'index' || $currentPage === 'status'} dashboard{/if}">
         <nav class="backend-sidebar">
             <div class="backend-brandbar">
-                <a class="backend-brand" href="index.php">
+                <a class="backend-brand" href="index.php" title="Dashboard">
                     <img src="{$currentTemplateDir}gfx/JTL-Shop-Logo-rgb.png" alt="JTL-Shop">
                 </a>
                 <button type="button" class="backend-sidebar-toggle">
@@ -151,14 +77,14 @@
                                         <span>{$oLinkOberGruppe->cName}</span>
                                     </a>
                                 </div>
-                                <ul class="backend-menu secondlevel">
+                                <ul class="backend-menu secondlevel" id="group-{$rootEntryName}">
                                     {foreach $oLinkOberGruppe->oLinkGruppe_arr as $oLinkGruppe}
                                         {if $oLinkGruppe->oLink_arr|@count > 0}
                                             {assign var='entryName'
                                                 value=$oLinkGruppe->cName|replace:' ':'-'|replace:'&':''|lower}
                                             <li id="dropdown-header-{$entryName}">
                                                 <a href="#collapse-{$entryName}" data-toggle="collapse"
-                                                   class="collapsed">
+                                                   class="collapsed" data-parent="#group-{$rootEntryName}">
                                                     <span>{$oLinkGruppe->cName}</span>
                                                     <i class="fa"></i>
                                                 </a>
@@ -182,34 +108,51 @@
                         {/if}
                     {/foreach}
                 </ul>
+                <script>
+                    $('.thirdlevel').on('show.bs.collapse', function() {
+                        $('.thirdlevel').collapse('hide');
+                    });
+                </script>
             </div>
         </nav>
-        <div class="backend-main">
+        <nav class="backend-main">
             <nav class="backend-navbar">
-                <ul class="left">
+                <ul class="backend-navbar-left">
                     <li>
-                        <div class="backend-search">
+                        <div class="backend-search dropdown">
                             <i class="fa fa-search"></i>
-                            <input placeholder="Suchbegriff" name="cSuche" type="search" value="" autocomplete="off">
+                            <input id="backend-search-input" placeholder="Suchbegriff" name="cSuche" type="search"
+                                   value="" autocomplete="off">
+                            <ul class="dropdown-menu" id="backend-search-dropdown"></ul>
+                            <script>
+                                $('#backend-search-input').on('input', function()
+                                {
+                                    var value = $(this).val();
+
+                                    if (value.length >= 3) {
+                                        ioCall('adminSearch', [value], function (data) {
+                                            var tpl = data.data.tpl;
+                                            if (tpl) {
+                                                $('#backend-search-dropdown').html(tpl).dropdown('toggle');
+                                            } else {
+                                                $('.backend-search').removeClass('open');
+                                            }
+                                        });
+                                    } else {
+                                        $('.backend-search').removeClass('open');
+                                    }
+                                }).on('blur', function ()
+                                {
+                                    $('.backend-search').removeClass('open');
+                                })
+                            </script>
                         </div>
                     </li>
                 </ul>
-                <ul>
-                    {if permission('DASHBOARD_VIEW')}
-                        <li>
-                            <a class="link-dashboard" href="index.php" title="Dashboard"><i class="fa fa-home"></i></a>
-                        </li>
-                    {/if}
-                    {if permission('SETTINGS_SEARCH_VIEW')}
-                        {*<li>*}
-                            {*<a class="link-search" data-toggle="modal" href="#main-search" title="Suche">*}
-                                {*<i class="fa fa-search"></i>*}
-                            {*</a>*}
-                        {*</li>*}
-                    {/if}
+                <ul class="backend-navbar-right">
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle parent" data-toggle="dropdown" title="Hilfe">
-                            <i class="fa fa-medkit"></i>
+                            <i class="fa fa-question-circle"></i>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-right" role="main">
                             <li>
@@ -231,23 +174,20 @@
                             </li>
                         </ul>
                     </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle parent btn-toggle" data-toggle="dropdown">
-                            <i class="fa fa-gear"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <div class="switcher-header">
-                                <h2>Widgets</h2>
-                            </div>
-                            <div class="switcher-content">
-                                <div id="settings">
+                    {if $currentPage === 'index'}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle parent btn-toggle" data-toggle="dropdown">
+                                <i class="fa fa-gear"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-right">
+                                <li class="widget-selector-menu">
                                     {include file='tpl_inc/widget_selector.tpl' oAvailableWidget_arr=$oAvailableWidget_arr}
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="dropdown" id="notify-drop">{include file="tpl_inc/notify_drop.tpl"}</li>
+                                </li>
+                            </ul>
+                        </li>
+                    {/if}
                     <li class="dropdown" id="favs-drop">{include file="tpl_inc/favs_drop.tpl"}</li>
+                    <li class="dropdown" id="notify-drop">{include file="tpl_inc/notify_drop.tpl"}</li>
                     <li class="dropdown avatar">
                         <a href="#" class="dropdown-toggle parent" data-toggle="dropdown">
                             <img src="{gravatarImage email=$account->cMail}" title="{$account->cMail}" class="img-circle" />

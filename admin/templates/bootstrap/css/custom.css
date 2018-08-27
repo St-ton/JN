@@ -68,6 +68,12 @@
   display: flex;
   flex-direction: row;
 }
+.backend-wrapper .dropdown-menu {
+  box-shadow: 0 0 4px #b7b9bc;
+}
+.backend-wrapper .input-group .form-control {
+  z-index: 0;
+}
 .backend-wrapper > .backend-sidebar {
   flex: none;
   width: 256px;
@@ -207,34 +213,72 @@
   padding: 0.75em;
   z-index: 1;
   box-shadow: 2px 4px 4px #eef0f3;
+  display: flex;
+  flex-direction: row;
 }
-.backend-wrapper > .backend-main > .backend-navbar > ul {
+.backend-wrapper > .backend-main > .backend-navbar > .backend-navbar-left {
+  flex: auto;
   margin: 0;
   padding: 0;
-  float: right;
+  padding-left: 1em;
   height: 100%;
 }
-.backend-wrapper > .backend-main > .backend-navbar > ul > li {
+.backend-wrapper > .backend-main > .backend-navbar > .backend-navbar-left > li {
+  height: 100%;
+}
+.backend-wrapper > .backend-main > .backend-navbar > .backend-navbar-left .backend-search {
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.backend-wrapper > .backend-main > .backend-navbar > .backend-navbar-left .backend-search .fa {
+  padding-right: 1em;
+  color: #bdbdbd;
+  flex: none;
+}
+.backend-wrapper > .backend-main > .backend-navbar > .backend-navbar-left .backend-search input {
+  height: 100%;
+  flex: auto;
+  border: none;
+  box-shadow: none;
+  outline: none;
+}
+.backend-wrapper > .backend-main > .backend-navbar > .backend-navbar-left .backend-search input::placeholder {
+  color: #bdbdbd;
+}
+.backend-wrapper > .backend-main > .backend-navbar > .backend-navbar-left .backend-search #backend-search-dropdown {
+  max-height: 75vh;
+  overflow: auto;
+}
+.backend-wrapper > .backend-main > .backend-navbar > .backend-navbar-left .backend-search #backend-search-dropdown > li {
+  padding: 0 1em;
+}
+.backend-wrapper > .backend-main > .backend-navbar > .backend-navbar-left .backend-search #backend-search-dropdown h4 {
+  margin: 0.5em 0;
+}
+.backend-wrapper > .backend-main > .backend-navbar > .backend-navbar-left .backend-search #backend-search-dropdown .backend-search-section {
+  padding-left: 1em;
+}
+.backend-wrapper > .backend-main > .backend-navbar > .backend-navbar-left .backend-search #backend-search-dropdown .backend-search-item {
+  padding: 0.25em 0;
+}
+.backend-wrapper > .backend-main > .backend-navbar > .backend-navbar-right {
+  margin: 0;
+  padding: 0;
+  flex: none;
+  height: 100%;
+}
+.backend-wrapper > .backend-main > .backend-navbar > .backend-navbar-right > li {
   display: inline-flex;
   margin: 0 1em;
   height: 100%;
   flex-direction: column;
   justify-content: center;
 }
-.backend-wrapper > .backend-main > .backend-navbar > ul.left {
-  float: left;
-}
-.backend-wrapper > .backend-main > .backend-navbar .backend-search .fa {
-  padding-right: 1em;
-  color: #bdbdbd;
-}
-.backend-wrapper > .backend-main > .backend-navbar .backend-search input {
-  border: none;
-  box-shadow: none;
-  outline: none;
-}
-.backend-wrapper > .backend-main > .backend-navbar .backend-search input::placeholder {
-  color: #bdbdbd;
+.backend-wrapper > .backend-main > .backend-navbar .widget-selector-menu {
+  padding: 1em;
+  min-width: 256px;
 }
 .backend-wrapper > .backend-main > .backend-content {
   padding: 32px;
@@ -1118,13 +1162,11 @@ li.filestate {
   .btn,
   .form-control,
   input[type="text"],
-  input[type="search"],
   input[type="password"],
   select {
     padding: 2px 10px;
   }
   input[type="text"],
-  input[type="search"],
   input[type="password"],
   select {
     height: auto;

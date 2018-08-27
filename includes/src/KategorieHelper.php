@@ -687,6 +687,9 @@ class KategorieHelper
      */
     public static function getSubcategoryList(int $categoryID): array
     {
+        if ($categoryID <= 0) {
+            return [];
+        }
         $children = self::getInstance()->getCategoryById($categoryID);
 
         return $children->Unterkategorien ?? [];

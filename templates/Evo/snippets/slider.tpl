@@ -2,23 +2,23 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{if isset($oSlider) && count($oSlider->oSlide_arr) > 0}
-    <div class="slider-wrapper theme-{$oSlider->cTheme}{if $oSlider->bControlNav} control-nav{/if}{if $oSlider->bDirectionNav} direction-nav{/if}{if $oSlider->bThumbnail} thumbnail-nav{/if}">
-        <div id="slider-{$oSlider->kSlider}" class="nivoSlider">
-            {foreach $oSlider->oSlide_arr as $oSlide}
-                {assign var='slideTitle' value=$oSlide->cTitel}
-                {if !empty($oSlide->cText)}
-                    {assign var='slideTitle' value="#slide_caption_{$oSlide->kSlide}"}
+{if isset($oSlider) && count($oSlider->getSlides()) > 0}
+    <div class="slider-wrapper theme-{$oSlider->getTheme()}{if $oSlider->getControlNav()} control-nav{/if}{if $oSlider->getDirectionNav()} direction-nav{/if}{if $oSlider->getThumbnail()} thumbnail-nav{/if}">
+        <div id="slider-{$oSlider->getID()}" class="nivoSlider">
+            {foreach $oSlider->getSlides() as $oSlide}
+                {assign var='slideTitle' value=$oSlide->getTitle()}
+                {if !empty($oSlide->getText())}
+                    {assign var='slideTitle' value="#slide_caption_{$oSlide->getID()}"}
                 {/if}
-                {if !empty($oSlide->cLink)}
-                    <a href="{$oSlide->cLink}"{if !empty($oSlide->cText)} title="{$oSlide->cText|strip_tags}"{/if} class="slide">
+                {if !empty($oSlide->getLink())}
+                    <a href="{$oSlide->getLink()}"{if !empty($oSlide->getText())} title="{$oSlide->getText()|strip_tags}"{/if} class="slide">
                 {else}
                     <div class="slide">
                 {/if}
 
-                <img alt="{$oSlide->cTitel}" title="{$slideTitle}" src="{$oSlide->cBildAbsolut}"{if !empty($oSlide->cThumbnailAbsolut) && $oSlider->bThumbnail == '1'} data-thumb="{$oSlide->cThumbnailAbsolut}"{/if}/>
+                <img alt="{$oSlide->getTitle()}" title="{$slideTitle}" src="{$oSlide->getAbsoluteImage()}"{if !empty($oSlide->getAbsoluteThumbnail()) && $oSlider->getThumbnail()} data-thumb="{$oSlide->AbsoluteThumbnail()}"{/if}/>
 
-                {if !empty($oSlide->cLink)}
+                {if !empty($oSlide->getLink())}
                     </a>
                 {else}
                     </div>
@@ -26,45 +26,45 @@
             {/foreach}
         </div>
         {* slide captions outside of .nivoSlider *}
-        {foreach $oSlider->oSlide_arr as $oSlide}
-            {if !empty($oSlide->cText)}
-                <div id="slide_caption_{$oSlide->kSlide}" class="htmlcaption hidden">
-                    {if isset($oSlide->cTitel)}<strong class="title">{$oSlide->cTitel}</strong>{/if}
-                    <p class="desc">{$oSlide->cText}</p>
+        {foreach $oSlider->getSlides() as $oSlide}
+            {if !empty($oSlide->getText())}
+                <div id="slide_caption_{$oSlide->getID()}" class="htmlcaption hidden">
+                    {if isset($oSlide->getTitle())}<strong class="title">{$oSlide->getTitle()}</strong>{/if}
+                    <p class="desc">{$oSlide->getText()}</p>
                 </div>
             {/if}
         {/foreach}
     </div>
     <script type="text/javascript">
-        {if empty($oSlider->bUseKB)}
+        {if $oSlider->getUseKB()}
             jtl.ready(function () {ldelim}
-                var slider = $('#slider-{$oSlider->kSlider}');
+                var slider = $('#slider-{$oSlider->getID()}');
                 $('a.slide').click(function () {ldelim}
                     if (!this.href.match(new RegExp('^' + location.protocol + '\\/\\/' + location.host))) {ldelim}
                         this.target = '_blank';
                         {rdelim}
                     {rdelim});
                 slider.nivoSlider({ldelim}
-                    effect: '{$oSlider->cEffects|replace:';':','}',
-                    animSpeed: {$oSlider->nAnimationSpeed},
-                    pauseTime: {$oSlider->nPauseTime},
-                    directionNav: {$oSlider->bDirectionNav},
-                    controlNav: {$oSlider->bControlNav},
-                    controlNavThumbs: {$oSlider->bThumbnail},
-                    pauseOnHover: {$oSlider->bPauseOnHover},
+                    effect: '{$oSlider->getEffects()|replace:';':','}',
+                    animSpeed: {$oSlider->getAnimationSpeed()},
+                    pauseTime: {$oSlider->getPauseTime()},
+                    directionNav: {if $oSlider->getDirectionNav()}true{else}false{/if},
+                    controlNav: {if $oSlider->getControlNav()}true{else}false{/if},
+                    controlNavThumbs: {if $oSlider->getThumbnail()}true{else}false{/if},
+                    pauseOnHover: {if $oSlider->getPauseOnHover()}true{else}false{/if},
                     prevText: '{lang key='sliderPrev' section='media'}',
                     nextText: '{lang key='sliderNext' section='media'}',
-                    randomStart: {$oSlider->bRandomStart},
+                    randomStart: {if $oSlider->getRandomStart()}true{else}false{/if},
                     afterLoad: function () {ldelim}
                         slider.addClass('loaded');
                     {rdelim}
                 {rdelim});
             {rdelim});
         {else}
-            var pauseTime = {$oSlider->nPauseTime};         // pauseTime must be set here
-            var animSpeed = {$oSlider->nAnimationSpeed};    // animSpeed must be set here
-            var zoomFactor = 30;                            // 30% zoom as default
-            var durationFactor = 1.25;                      // firstslide pausetime adjustment factor
+            var pauseTime = {$oSlider->getPauseTime()},
+                animSpeed = {$oSlider->getAnimationSpeed()},
+                zoomFactor = 30,
+                durationFactor = 1.25;
 
             function KBInit () {ldelim}
                 $('.nivoSlider img').css('visibility', 'hidden');
@@ -103,7 +103,7 @@
             {rdelim}
 
             jtl.ready(function () {ldelim}
-                var slider = $('#slider-{$oSlider->kSlider}');
+                var slider = $('#slider-{$oSlider->getID()}');
                 var endSlide=$('.nivoSlider img').length-1;
                 $('a.slide').click(function() {ldelim}
                     if (!this.href.match(new RegExp('^'+location.protocol+'\\/\\/'+location.host))) {ldelim}

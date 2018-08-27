@@ -681,38 +681,15 @@ class KategorieHelper
     }
 
     /**
-     * @param Kategorie $currentCategory
-     * @param bool      $assign
+     * @param int $categoryID
      * @return array
      * @former baueUnterkategorieListeHTML()
      */
-    public static function getSubcategoryList($currentCategory, $assign = true): array
+    public static function getSubcategoryList(int $categoryID): array
     {
-        $res = [];
-        if ($currentCategory !== null && !empty($currentCategory->kKategorie)) {
-            $cacheID = 'ukl_' . $currentCategory->kKategorie . '_' . Shop::getLanguage();
-            if (($UnterKatListe = Shop::Cache()->get($cacheID)) === false || !is_object($UnterKatListe)) {
-                $UnterKatListe = new KategorieListe();
-                $UnterKatListe->getAllCategoriesOnLevel($currentCategory->kKategorie);
-                foreach ($UnterKatListe->elemente as $i => $oUnterKat) {
-                    // Relativen Pfad uebergeben.
-                    if (!empty($oUnterKat->cPfad)) {
-                        $UnterKatListe->elemente[$i]->cBildPfad = 'bilder/kategorien/' . $oUnterKat->cPfad;
-                    }
-                }
-                Shop::Cache()->set(
-                    $cacheID,
-                    $UnterKatListe,
-                    [CACHING_GROUP_CATEGORY, CACHING_GROUP_CATEGORY . '_' . $currentCategory->kKategorie]
-                );
-            }
-            $res = $UnterKatListe->elemente;
-        }
-        if ($assign === true) {
-            Shop::Smarty()->assign('oUnterKategorien_arr', $res);
-        }
+        $children = self::getInstance()->getCategoryById($categoryID);
 
-        return $res;
+        return $children->Unterkategorien ?? [];
     }
 
     /**

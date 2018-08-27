@@ -280,6 +280,32 @@ aside {
     }
 }
 
+// boxes
+.box-monthlynews .value {
+    padding-left: 15px;
+}
+
+.box_login {
+    .register {
+        padding: 20px;
+        background: @sand;
+        text-decoration: underline;
+        &:hover{
+            text-decoration: none;
+            background: @sand;
+        }
+        .fa {
+            color: @brand-primary;
+        }
+    }
+    .resetpw {
+        text-decoration: underline;
+        &:hover{
+            text-decoration: none;
+        }
+    }
+}
+
 //breadcrumb
 .breadcrumb {
     padding: @breadcrumb-padding-vertical @breadcrumb-padding-horizontal;
@@ -666,4 +692,21 @@ aside {
     display: none;
     height: 0;
     background-color: transparent;
+}
+
+// slick
+.slick-prev,
+.slick-next {
+    height: 52px;
+    width: 20px;
+    background: @sand;
+    &:before {
+        color: @brand-primary;
+    }
+    &:hover, &:focus {
+        background: @brand-primary;
+        &:before {
+            color: @gray-dark;
+        }
+    }
 }

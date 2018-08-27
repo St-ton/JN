@@ -4,6 +4,7 @@
 *}
 {strip}
     <ul class="header-shop-nav nav navbar-nav force-float horizontal pull-right">
+        <span class="TabNav_Indicator2"></span>
         {block name='navbar-productsearch'}
             <li id="search">
                 <form action="index.php" method="get">
@@ -87,7 +88,6 @@
             <li class="hidden-xs cart-menu dropdown{if $WarenkorbArtikelanzahl >= 1} items{/if}{if $nSeitenTyp == 3} current{/if}" data-toggle="basket-items" data-tab="sn4">
                 {include file='basket/cart_dropdown_label.tpl'}
             </li>
-            <span class="TabNav_Indicator2"></span>
         {/block}
     </ul>
 {/strip}

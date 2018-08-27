@@ -17,6 +17,9 @@
     {if isset($options[7])}
         {assign var='autocomplete' value=$options[7]}
     {/if}
+    {if isset($options[8])}
+        {assign var='noLabel' value=$options[8]}
+    {/if}
 {/if}
 
 {if !empty($required) && ($required === 'Y' || $required === true)}
@@ -70,11 +73,13 @@
 
 
 <div class="form-group{if $hasError} has-error{/if}">
-    <label for="{$inputId}" class="control-label float-label-control">{$label}
-        {if !$isRequired}
-            <span class="optional"> - {lang key='conditionalFillOut' section='checkout'}</span>
-        {/if}
-    </label>
+    {if empty($noLabel)}
+        <label for="{$inputId}" class="control-label float-label-control">{$label}
+            {if !$isRequired}
+                <span class="optional"> - {lang key='conditionalFillOut' section='checkout'}</span>
+            {/if}
+        </label>
+    {/if}
     <input type="{if isset($inputType)}{$inputType}{else}text{/if}" name="{$inputName}"
            value="{if isset($inputValue)}{$inputValue}{/if}" id="{$inputId}" class="form-control"
            placeholder="{if isset($placeholder)}{$placeholder}{else}{$label}{/if}"

@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex,nofollow" />
     <title>JTL-Shop Administration</title>
-    {assign var=urlPostfix value='?v='|cat:$shopVersion}
+    {assign var=urlPostfix value='?v='|cat:$adminTplVersion}
     <link type="image/x-icon" href="favicon.ico" rel="icon" />
     <link type="image/x-icon" href="favicon.ico" rel="shortcut icon" />
     {$admin_css}

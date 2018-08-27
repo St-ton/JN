@@ -15,30 +15,25 @@ class WidgetShopinfo extends WidgetBase
      */
     public function init()
     {
-        $nVersionFile    = Shop::getVersion();
-        $nVersionDB      = getJTLVersionDB();
         $oTpl            = Template::getInstance();
-        $nTplVersion     = (int)$oTpl->getShopVersion();
-        $strFileVersion  = sprintf('%.2f', $nVersionFile / 100);
-        $strDBVersion    = sprintf('%.2f', $nVersionDB / 100);
-        $strTplVersion   = sprintf('%.2f', $nTplVersion / 100);
+        $strTplVersion   = $oTpl->getVersion();
+        $strFileVersion  = Shop::getVersion();
+        $strDBVersion    = Shop::getShopDatabaseVersion();
         $strUpdated      = date_format(date_create(getJTLVersionDB(true)), 'd.m.Y, H:i:m');
-        $strMinorVersion = JTL_MINOR_VERSION;
-        if ($strMinorVersion === '#JTL_MINOR_VERSION#') {
-            $strMinorVersion = 'DEV';
-        }
+        $strMinorVersion = APPLICATION_BUILD_SHA === '#DEV#' ? 'DEV' : '';
 
-        $this->oSmarty->assign('nVersionFile', $nVersionFile);
-        $this->oSmarty->assign('strFileVersion', $strFileVersion);
-        $this->oSmarty->assign('strDBVersion', $strDBVersion);
-        $this->oSmarty->assign('strTplVersion', $strTplVersion);
-        $this->oSmarty->assign('strUpdated', $strUpdated);
-        $this->oSmarty->assign('strMinorVersion', $strMinorVersion);
-        $this->oSmarty->assign('JTLURL_GET_SHOPVERSION', JTLURL_GET_SHOPVERSION);
+        $this->oSmarty->assign('strFileVersion', $strFileVersion)
+            ->assign('strDBVersion', $strDBVersion)
+            ->assign('strTplVersion', $strTplVersion)
+            ->assign('strUpdated', $strUpdated)
+            ->assign('strMinorVersion', $strMinorVersion)
+            ->assign('JTLURL_GET_SHOPVERSION', JTLURL_GET_SHOPVERSION);
     }
 
     /**
      * @return string
+     *
+     * @throws SmartyException
      */
     public function getContent()
     {

@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTLShop\SemVer\Compare;
+use JTLShop\SemVer\Parser;
+
 /**
  * @global JTLSmarty    $smarty
  * @global AdminAccount $oAccount
@@ -31,8 +34,9 @@ if (defined('ADMIN_MIGRATION') && ADMIN_MIGRATION) {
 $smarty->assign('updatesAvailable', $updatesAvailable)
        ->assign('currentFileVersion', $currentFileVersion)
        ->assign('currentDatabaseVersion', $currentDatabaseVersion)
+       ->assign('hasDifferentVersions', !Compare::equals(Parser::parse($currentFileVersion), Parser::parse($currentFileVersion)))
        ->assign('version', $version)
        ->assign('updateError', $updateError)
-       ->assign('currentTemplateFileVersion', $template->xmlData->cShopVersion)
-       ->assign('currentTemplateDatabaseVersion', $template->shopVersion)
+       ->assign('currentTemplateFileVersion', $template->xmlData->cVersion)
+       ->assign('currentTemplateDatabaseVersion', $template->version)
        ->display('dbupdater.tpl');

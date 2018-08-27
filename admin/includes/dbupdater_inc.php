@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTLShop\SemVer\Compare;
+use JTLShop\SemVer\Parser;
+
 /**
  * Stellt alle Werte die fuer das Update in der DB wichtig sind zurueck
  *
@@ -254,6 +257,7 @@ function naechsterUpdateStep(int $nTyp, int $nZeileBis = 1)
 
 /**
  * @return array|IOError
+ * @throws Exception
  */
 function dbUpdateIO()
 {
@@ -261,7 +265,10 @@ function dbUpdateIO()
     $updater  = new Updater();
 
     try {
-        if ($template->xmlData->cShopVersion != $template->shopVersion
+        if (!Compare::equals(
+                Parser::parse($template->xmlData->cVersion),
+                Parser::parse($template->version)
+            )
             && $template->setTemplate($template->xmlData->cName, $template->xmlData->eTyp)
         ) {
             unset($_SESSION['cTemplate'], $_SESSION['template']);
@@ -356,10 +363,11 @@ function dbupdaterStatusTpl()
         ->assign('updatesAvailable', $updatesAvailable)
         ->assign('currentFileVersion', $currentFileVersion)
         ->assign('currentDatabaseVersion', $currentDatabaseVersion)
+        ->assign('hasDifferentVersions', !Compare::equals(Parser::parse($currentFileVersion), Parser::parse($currentFileVersion)))
         ->assign('version', $version)
         ->assign('updateError', $updateError)
-        ->assign('currentTemplateFileVersion', $template->xmlData->cShopVersion)
-        ->assign('currentTemplateDatabaseVersion', $template->shopVersion);
+        ->assign('currentTemplateFileVersion', $template->xmlData->cVersion)
+        ->assign('currentTemplateDatabaseVersion', $template->version);
 
     return [
         'tpl'  => $smarty->fetch('tpl_inc/dbupdater_status.tpl'),

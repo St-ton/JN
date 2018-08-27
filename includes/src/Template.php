@@ -65,11 +65,6 @@ class Template
     public $version;
 
     /**
-     * @var int
-     */
-    public $shopVersion;
-
-    /**
      * @var string
      */
     public $preview;
@@ -105,7 +100,6 @@ class Template
             $this->author      = $_SESSION['template']->author;
             $this->url         = $_SESSION['template']->url;
             $this->version     = $_SESSION['template']->version;
-            $this->shopVersion = (int)$_SESSION['template']->shopversion;
             $this->preview     = $_SESSION['template']->preview;
 
             return $this;
@@ -119,7 +113,6 @@ class Template
             $this->author      = $oTemplate->author;
             $this->url         = $oTemplate->url;
             $this->version     = $oTemplate->version;
-            $this->shopVersion = (int)$oTemplate->shopversion;
             $this->preview     = $oTemplate->preview;
 
             return $this;
@@ -132,7 +125,6 @@ class Template
             $this->author      = $oTemplate->author;
             $this->url         = $oTemplate->url;
             $this->version     = $oTemplate->version;
-            $this->shopVersion = (int)$oTemplate->shopversion;
             $this->preview     = $oTemplate->preview;
 
             $tplObject              = new stdClass();
@@ -143,7 +135,6 @@ class Template
             $tplObject->version     = $this->version;
             $tplObject->author      = $this->author;
             $tplObject->url         = $this->url;
-            $tplObject->shopversion = (int)$this->shopVersion;
             $tplObject->preview     = $this->preview;
             $_SESSION['template']   = $tplObject;
             $_SESSION['cTemplate']  = self::$cTemplate;
@@ -729,9 +720,6 @@ class Template
         $tplObject->version     = empty($tplConfig->Version) && $parentConfig
             ? $parentConfig->Version
             : $tplConfig->Version;
-        $tplObject->shopversion = empty($tplConfig->ShopVersion) && $parentConfig
-            ? (int)$parentConfig->ShopVersion
-            : (int)$tplConfig->ShopVersion;
         $tplObject->preview     = (string)$tplConfig->Preview;
         $inserted               = Shop::Container()->getDB()->insert('ttemplate', $tplObject);
         if ($inserted > 0) {
@@ -871,14 +859,6 @@ class Template
     public function getPreview()
     {
         return $this->preview;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getShopVersion()
-    {
-        return $this->shopVersion;
     }
 
     /**

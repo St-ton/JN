@@ -19,7 +19,7 @@ interface RendererInterface
     /**
      * BoxRendererInterface constructor.
      *
-     * @param \JTLSmarty|\JTLSmartyTemplateClass $smarty
+     * @param \Smarty\JTLSmartyTemplateClass $smarty
      * @param BoxInterface $box
      */
     public function __construct($smarty, BoxInterface $box = null);

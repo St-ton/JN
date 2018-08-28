@@ -256,16 +256,16 @@ class PaymentMethod
             $oZahlungsID->kZahlungsart = $order->kZahlungsart;
             $oZahlungsID->cId          = $hash;
             $oZahlungsID->txn_id       = '';
-            $oZahlungsID->dDatum       = 'now()';
+            $oZahlungsID->dDatum       = 'NOW()';
             Shop::Container()->getDB()->insert('tzahlungsid', $oZahlungsID);
         } else {
             Shop::Container()->getDB()->delete('tzahlungsession', ['cSID', 'kBestellung'], [session_id(), 0]);
             $oZahlungSession               = new stdClass();
             $oZahlungSession->cSID         = session_id();
             $oZahlungSession->cNotifyID    = '';
-            $oZahlungSession->dZeitBezahlt = '0000-00-00 00:00:00';
+            $oZahlungSession->dZeitBezahlt = '_DBNULL_';
             $oZahlungSession->cZahlungsID  = uniqid('', true);
-            $oZahlungSession->dZeit        = 'now()';
+            $oZahlungSession->dZeit        = 'NOW()';
             Shop::Container()->getDB()->insert('tzahlungsession', $oZahlungSession);
             $hash = '_' . $oZahlungSession->cZahlungsID;
         }

@@ -107,8 +107,8 @@ if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
         $hist->cLoeschCode  = $recicpient->cLoeschCode;
         $hist->cAktion      = 'Geloescht';
         $hist->dEingetragen = $recicpient->dEingetragen;
-        $hist->dAusgetragen = 'now()';
-        $hist->dOptCode     = '0000-00-00';
+        $hist->dAusgetragen = 'NOW()';
+        $hist->dOptCode     = '_DBNULL_';
         $hist->cRegIp       = RequestHelper::getIP(); // IP of the current event-issuer
 
         Shop::Container()->getDB()->insert('tnewsletterempfaengerhistory', $hist);
@@ -194,8 +194,8 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
             $hist->cLoeschCode  = $recicpient->cLoeschCode;
             $hist->cAktion      = 'Geloescht';
             $hist->dEingetragen = $recicpient->dEingetragen;
-            $hist->dAusgetragen = 'now()';
-            $hist->dOptCode     = '0000-00-00';
+            $hist->dAusgetragen = 'NOW()';
+            $hist->dOptCode     = '_DBNULL_';
             $hist->cRegIp       = RequestHelper::getIP(); // IP of the current event-issuer
 
             Shop::Container()->getDB()->insert('tnewsletterempfaengerhistory', $hist);

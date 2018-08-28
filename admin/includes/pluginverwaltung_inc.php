@@ -3175,7 +3175,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
         $oExportformat->nSpecial         = 0;
         $oExportformat->nVarKombiOption  = $Format_arr['VarCombiOption'] ?? 1;
         $oExportformat->nSplitgroesse    = $Format_arr['SplitSize'] ?? 0;
-        $oExportformat->dZuletztErstellt = '0000-00-00 00:00:00';
+        $oExportformat->dZuletztErstellt = '_DBNULL_';
         if (is_array($oExportformat->cKopfzeile)) {
             //@todo: when cKopfzeile is empty, this becomes an array with indices [0] => '' and [0 attr] => ''
             $oExportformat->cKopfzeile = $oExportformat->cKopfzeile[0];

@@ -1062,8 +1062,8 @@ function loescheAbonnenten($kNewsletterEmpfaenger_arr)
         $oNewsletterEmpfaengerHistory->cLoeschCode  = $oNewsletterEmpfaenger->cLoeschCode;
         $oNewsletterEmpfaengerHistory->cAktion      = 'Geloescht';
         $oNewsletterEmpfaengerHistory->dEingetragen = $oNewsletterEmpfaenger->dEingetragen;
-        $oNewsletterEmpfaengerHistory->dAusgetragen = 'now()';
-        $oNewsletterEmpfaengerHistory->dOptCode     = '0000-00-00';
+        $oNewsletterEmpfaengerHistory->dAusgetragen = 'NOW()';
+        $oNewsletterEmpfaengerHistory->dOptCode     = '_DBNULL_';
 
         Shop::Container()->getDB()->insert('tnewsletterempfaengerhistory', $oNewsletterEmpfaengerHistory);
     }
@@ -1121,8 +1121,8 @@ function aktiviereAbonnenten($kNewsletterEmpfaenger_arr)
         $hist->cLoeschCode  = $oNewsletterEmpfaenger->cLoeschCode;
         $hist->cAktion      = 'Aktiviert';
         $hist->dEingetragen = $oNewsletterEmpfaenger->dEingetragen;
-        $hist->dAusgetragen = 'now()';
-        $hist->dOptCode     = '0000-00-00';
+        $hist->dAusgetragen = 'NOW()';
+        $hist->dOptCode     = '_DBNULL_';
 
         Shop::Container()->getDB()->insert('tnewsletterempfaengerhistory', $hist);
     }

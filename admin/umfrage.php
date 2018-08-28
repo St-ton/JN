@@ -587,8 +587,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             FROM tkupon
             LEFT JOIN tkuponsprache 
                 ON tkuponsprache.kKupon = tkupon.kKupon
-            WHERE tkupon.dGueltigAb <= now()
-                AND (tkupon.dGueltigBis >= now() || tkupon.dGueltigBis = '0000-00-00 00:00:00')
+            WHERE tkupon.dGueltigAb <= NOW()
+                AND (tkupon.dGueltigBis >= NOW() OR tkupon.dGueltigBis IS NULL)
                 AND (tkupon.nVerwendungenBisher <= tkupon.nVerwendungen OR tkupon.nVerwendungen = 0)
                 AND tkupon.cAktiv = 'Y'
                 AND tkuponsprache.cISOSprache= '" . $oSpracheTMP->cISO . "'

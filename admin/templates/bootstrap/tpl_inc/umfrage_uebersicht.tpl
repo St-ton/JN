@@ -73,7 +73,7 @@
                                                             {$cKundengruppe}{if !$smarty.foreach.kundengruppen.last},{/if}
                                                         {/foreach}
                                                     </td>
-                                                    <td>{$oUmfrage->dGueltigVon_de}-{if $oUmfrage->dGueltigBis|truncate:10:"" === '0000-00-00'}{#umfrageInfinite#}{else}{$oUmfrage->dGueltigBis_de}{/if}</td>
+                                                    <td>{$oUmfrage->dGueltigVon_de}-{if $oUmfrage->dGueltigBis === null || $oUmfrage->dGueltigBis|truncate:10:'' === '0000-00-00'}{#umfrageInfinite#}{else}{$oUmfrage->dGueltigBis_de}{/if}</td>
                                                     <td>{$oUmfrage->nAktiv}</td>
                                                     <td>{$oUmfrage->nAnzahlFragen}</td>
                                                     <td>{$oUmfrage->dErstellt_de}</td>

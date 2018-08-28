@@ -5,12 +5,12 @@
             <div class="col-md-3">
                 <strong>{#umfrageValidation#}:</strong><br/>
                 {$oUmfrageStats->dGueltigVon_de}<br/>
-                -{if $oUmfrageStats->dGueltigBis|truncate:10:"" === '0000-00-00'}{#umfrageInfinite#}{else}{$oUmfrageStats->dGueltigBis_de}{/if}
+                -{if $oUmfrageStats->dGueltigBis === null || $oUmfrageStats->dGueltigBis|truncate:10:'' === '0000-00-00'}{#umfrageInfinite#}{else}{$oUmfrageStats->dGueltigBis_de}{/if}
             </div>
             <div class="col-md-3">
                 <strong>{#umfrageCustomerGrp#}:</strong><br/>
-                {foreach name=kundengruppen from=$oUmfrageStats->cKundengruppe_arr item=cKundengruppe}
-                    {$cKundengruppe}{if !$smarty.foreach.kundengruppen.last},{/if}
+                {foreach $oUmfrageStats->cKundengruppe_arr as $cKundengruppe}
+                    {$cKundengruppe}{if !$cKundengruppe@last},{/if}
                 {/foreach}
             </div>
             <div class="col-md-3">
@@ -29,12 +29,11 @@
             </div>
         </div>
 
-        {if $oUmfrageStats->oUmfrageFrage_arr|@count > 0 && $oUmfrageStats->oUmfrageFrage_arr}
+        {if isset($oUmfrageStats->oUmfrageFrage_arr) && $oUmfrageStats->oUmfrageFrage_arr|@count > 0}
             <div>
                 <h3>{#umfrageQ#}:</h3>
-                {foreach name=umfragefrage from=$oUmfrageStats->oUmfrageFrage_arr item=oUmfrageFrage}
-
-                    {if $oUmfrageFrage->oUmfrageFrageAntwort_arr|@count > 0 && $oUmfrageFrage->oUmfrageFrageAntwort_arr}
+                {foreach $oUmfrageStats->oUmfrageFrage_arr as $oUmfrageFrage}
+                    {if isset($oUmfrageFrage->oUmfrageFrageAntwort_arr) && $oUmfrageFrage->oUmfrageFrageAntwort_arr|@count > 0}
                         {if $oUmfrageFrage->cTyp === \Survey\QuestionType::MATRIX_SINGLE
                         || $oUmfrageFrage->cTyp === \Survey\QuestionType::MATRIX_MULTI}
                             <div class="panel panel-default">
@@ -47,32 +46,33 @@
                                             <table class="table table-striped">
                                                 <tr>
                                                     <th class="th-1" style="width: 5%;">{#umfrageQASing#}</th>
-                                                    {foreach name=umfragematrixoption from=$oUmfrageFrage->oUmfrageMatrixOption_arr item=oUmfrageMatrixOption}
+                                                    {foreach $oUmfrageFrage->oUmfrageMatrixOption_arr as $oUmfrageMatrixOption}
                                                         {assign var=maxbreite value=95}
                                                         {assign var=anzahloption value=$oUmfrageFrage->oUmfrageMatrixOption_arr|@count}
                                                         {math equation="x/y" x=$maxbreite y=$anzahloption assign=breite}
                                                         <th class="th-1" style="width: {$breite}%;">{$oUmfrageMatrixOption->cName}</th>
                                                     {/foreach}
                                                 </tr>
-
-                                                {foreach name=umfragefrageantwort from=$oUmfrageFrage->oUmfrageFrageAntwort_arr item=oUmfrageFrageAntwort}
-                                                    {assign var=kUmfrageFrageAntwort value=$oUmfrageFrageAntwort->kUmfrageFrageAntwort}
-                                                    <tr>
-                                                        <td>{$oUmfrageFrageAntwort->cName}</td>
-                                                        {foreach name=umfragematrixoption from=$oUmfrageFrage->oUmfrageMatrixOption_arr item=oUmfrageMatrixOption}
-                                                            {assign var=kUmfrageMatrixOption value=$oUmfrageMatrixOption->kUmfrageMatrixOption}
-                                                            <td align="center">
-                                                                {if $oUmfrageFrage->oErgebnisMatrix_arr[$kUmfrageFrageAntwort][$kUmfrageMatrixOption]->nBold == 1}
-                                                                <strong>{/if}
-                                                                    {$oUmfrageFrage->oErgebnisMatrix_arr[$kUmfrageFrageAntwort][$kUmfrageMatrixOption]->fProzent}
-                                                                    %
-                                                                    ({$oUmfrageFrage->oErgebnisMatrix_arr[$kUmfrageFrageAntwort][$kUmfrageMatrixOption]->nAnzahl}
-                                                                    )
-                                                                    {if $oUmfrageFrage->oErgebnisMatrix_arr[$kUmfrageFrageAntwort][$kUmfrageMatrixOption]->nBold == 1}</strong>{/if}
-                                                            </td>
-                                                        {/foreach}
-                                                    </tr>
-                                                {/foreach}
+                                                {if isset($oUmfrageFrage->oUmfrageFrageAntwort_arr)}
+                                                    {foreach $oUmfrageFrage->oUmfrageFrageAntwort_arr as $oUmfrageFrageAntwort}
+                                                        {assign var=kUmfrageFrageAntwort value=$oUmfrageFrageAntwort->kUmfrageFrageAntwort}
+                                                        <tr>
+                                                            <td>{$oUmfrageFrageAntwort->cName}</td>
+                                                            {foreach $oUmfrageFrage->oUmfrageMatrixOption_arr as $oUmfrageMatrixOption}
+                                                                {assign var=kUmfrageMatrixOption value=$oUmfrageMatrixOption->kUmfrageMatrixOption}
+                                                                <td align="center">
+                                                                    {if $oUmfrageFrage->oErgebnisMatrix_arr[$kUmfrageFrageAntwort][$kUmfrageMatrixOption]->nBold == 1}
+                                                                    <strong>{/if}
+                                                                        {$oUmfrageFrage->oErgebnisMatrix_arr[$kUmfrageFrageAntwort][$kUmfrageMatrixOption]->fProzent}
+                                                                        %
+                                                                        ({$oUmfrageFrage->oErgebnisMatrix_arr[$kUmfrageFrageAntwort][$kUmfrageMatrixOption]->nAnzahl}
+                                                                        )
+                                                                        {if $oUmfrageFrage->oErgebnisMatrix_arr[$kUmfrageFrageAntwort][$kUmfrageMatrixOption]->nBold == 1}</strong>{/if}
+                                                                </td>
+                                                            {/foreach}
+                                                        </tr>
+                                                    {/foreach}
+                                                {/if}
                                             </table>
                                         </div>
                                     </div>
@@ -93,14 +93,14 @@
                                                     <th class="th-3" style="width: 10%;">{#umfrageQResPercent#}</th>
                                                     <th class="th-4" style="width: 10%;">{#umfrageQResCount#}</th>
                                                 </tr>
-                                                {foreach name=umfragefrageantwort from=$oUmfrageFrage->oUmfrageFrageAntwort_arr item=oUmfrageFrageAntwort}
+                                                {foreach $oUmfrageFrage->oUmfrageFrageAntwort_arr as $oUmfrageFrageAntwort}
                                                     <tr>
                                                         <td style="width: 20%;">{$oUmfrageFrageAntwort->cName}</td>
                                                         <td style="width: 60%;">
                                                             <div class="freqbar" style="width: {$oUmfrageFrageAntwort->fProzent}%; height: 10px;"></div>
                                                         </td>
                                                         <td style="width: 10%;">
-                                                            {if $smarty.foreach.umfragefrageantwort.first}
+                                                            {if $oUmfrageFrageAntwort@first}
                                                                 <strong>{$oUmfrageFrageAntwort->fProzent} %</strong>
                                                             {elseif $oUmfrageFrageAntwort->nAnzahlAntwort == $oUmfrageFrage->oUmfrageFrageAntwort_arr[0]->nAnzahlAntwort}
                                                                 <strong>{$oUmfrageFrageAntwort->fProzent} %</strong>
@@ -110,7 +110,7 @@
                                                         </td>
                                                         <td style="width: 10%;">{$oUmfrageFrageAntwort->nAnzahlAntwort}</td>
                                                     </tr>
-                                                    {if $smarty.foreach.umfragefrageantwort.last}
+                                                    {if $oUmfrageFrageAntwort@last}
                                                         <tr>
                                                             <td></td>
                                                             <td colspan="2" align="right">{#umfrageQMax#}</td>

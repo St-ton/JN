@@ -304,7 +304,7 @@
                                                     {$oNewsKommentar->cName}
                                                 {/if}
                                             </td>
-                                            <td>{$oNewsKommentar->cBetreff|truncate:50:"..."}</td>
+                                            <td>{$oNewsKommentar->cBetreff|truncate:50:'...'}</td>
                                             <td class="tcenter">{$oNewsKommentar->dErstellt_de}</td>
                                             <td class="tcenter">
                                                 <a class="btn btn-default btn-sm" title="{#modify#}"

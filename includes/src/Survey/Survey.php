@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -167,7 +167,7 @@ class Survey
                     AND tseo.kKey = tumfrage.kUmfrage
                 WHERE tumfrage.kUmfrage = :sid
                     AND ((dGueltigVon <= now() AND dGueltigBis >= now()) 
-                        || (dGueltigVon <= now() AND dGueltigBis = '0000-00-00 00:00:00'))
+                        || (dGueltigVon <= now() AND (dGueltigBis IS NULL OR dGueltigBis = '0000-00-00 00:00:00')))
                 GROUP BY tumfrage.kUmfrage
                 ORDER BY tumfrage.dGueltigVon DESC",
             ['sid' => $id],
@@ -219,11 +219,11 @@ class Survey
     }
 
     /**
-     * @param int $id
+     * @param int|string $id
      */
-    public function setID(int $id)
+    public function setID($id)
     {
-        $this->id = $id;
+        $this->id = (int)$id;
     }
 
     /**
@@ -235,11 +235,11 @@ class Survey
     }
 
     /**
-     * @param int $languageID
+     * @param int|string $languageID
      */
-    public function setLanguageID(int $languageID)
+    public function setLanguageID($languageID)
     {
-        $this->languageID = $languageID;
+        $this->languageID = (int)$languageID;
     }
 
     /**
@@ -251,11 +251,11 @@ class Survey
     }
 
     /**
-     * @param int $couponID
+     * @param int|string $couponID
      */
-    public function setCouponID(int $couponID)
+    public function setCouponID($couponID)
     {
-        $this->couponID = $couponID;
+        $this->couponID = (int)$couponID;
     }
 
     /**
@@ -318,11 +318,11 @@ class Survey
     }
 
     /**
-     * @param float $credits
+     * @param float|string $credits
      */
-    public function setCredits(float $credits)
+    public function setCredits($credits)
     {
-        $this->credits = $credits;
+        $this->credits = (float)$credits;
     }
 
     /**
@@ -334,11 +334,11 @@ class Survey
     }
 
     /**
-     * @param int $bonusCredits
+     * @param int|string $bonusCredits
      */
-    public function setBonusCredits(int $bonusCredits)
+    public function setBonusCredits($bonusCredits)
     {
-        $this->bonusCredits = $bonusCredits;
+        $this->bonusCredits = (int)$bonusCredits;
     }
 
     /**
@@ -350,11 +350,11 @@ class Survey
     }
 
     /**
-     * @param bool $isActive
+     * @param bool|string $isActive
      */
-    public function setIsActive(bool $isActive)
+    public function setIsActive($isActive)
     {
-        $this->isActive = $isActive;
+        $this->isActive = (bool)$isActive;
     }
 
     /**
@@ -439,11 +439,11 @@ class Survey
     }
 
     /**
-     * @param int $count
+     * @param int|string $count
      */
-    public function setQuestionCount(int $count)
+    public function setQuestionCount($count)
     {
-        $this->questionCount = $count;
+        $this->questionCount = (int)$count;
     }
 
     /**
@@ -479,7 +479,9 @@ class Survey
      */
     public function getValidFromFormatted(): string
     {
-        return $this->validFrom->format('d.m.Y');
+        return $this->validFrom !== null
+            ? $this->validFrom->format('d.m.Y')
+            : '';
     }
 
     /**

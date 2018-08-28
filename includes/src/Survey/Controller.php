@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -323,10 +323,8 @@ class Controller
                 WHERE tumfrage.nAktiv = 1
                     AND tumfrage.kSprache = :lid
                     AND (
-                        (dGueltigVon <= now() 
-                        AND dGueltigBis >= now()) 
-                        || (dGueltigVon <= now() 
-                        AND dGueltigBis = \'0000-00-00 00:00:00\')
+                        (dGueltigVon <= now() AND dGueltigBis >= now()) 
+                        OR (dGueltigVon <= now() AND (dGueltigBis IS NULL OR dGueltigBis = \'0000-00-00 00:00:00\'))
                     )
                 GROUP BY tumfrage.kUmfrage
                 HAVING COUNT(tumfragefrage.kUmfrageFrage) > 0
@@ -354,7 +352,7 @@ class Controller
     {
         if ($customerID > 0) {
             return $this->db->queryPrepared(
-                'UPDATE tkunde
+                    'UPDATE tkunde
                     SET fGuthaben = fGuthaben + :crdt
                     WHERE kKunde = :cid',
                     ['crdt' => (float)$credits, 'cid' => $customerID],

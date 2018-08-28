@@ -554,7 +554,7 @@ final class LinkService implements LinkServiceInterface
             $oAGBWRB->cURLAGB  = $oLinkAGB !== null ? $oLinkAGB->getURL() : '';
             $oAGBWRB->cURLWRB  = $oAGBWRB !== null ? $oLinkAGB->getURL() : '';
             $oAGBWRB->kLinkAGB = $oLinkAGB !== null ? $oLinkAGB->getID() : 0;
-            $oAGBWRB->kLinkWRB = $oAGBWRB !== null ? $oAGBWRB->getID() : 0;
+            $oAGBWRB->kLinkWRB = $oLinkWRB !== null ? $oLinkWRB->getID() : 0;
 
             return $oAGBWRB;
         }

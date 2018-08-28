@@ -69,6 +69,12 @@
         {elseif $fehlendeAngaben.geburtstag == 3}
             {lang assign='invalidReason' key='invalidDate' section='global'}
         {/if}
+    {elseif $inputName === 'www'}
+        {if $fehlendeAngaben.www == 1}
+            {lang assign='invalidReason' key='fillOut' section='global'}
+        {elseif $fehlendeAngaben.www == 2}
+            {lang assign='invalidReason' key='invalidURL' section='global'}
+        {/if}
     {else}
         {lang assign='invalidReason' key='fillOut' section='global'}
     {/if}

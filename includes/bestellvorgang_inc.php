@@ -2034,19 +2034,17 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
         }
     }
 
+    if (isset($data['www']) && !Stringhandler::filterURL($data['www'])) {
+        $ret['www'] = 2;
+    }
+
     if (isset($ret['email']) && $ret['email'] === 1) {
         // email is empty
     } elseif (StringHandler::filterEmailAddress($data['email']) === false) {
         $ret['email'] = 2;
     } elseif (SimpleMail::checkBlacklist($data['email'])) {
         $ret['email'] = 3;
-    }
-    if (((isset($ret['email']) && $ret['email'] !== 1) || !isset($ret['email']))
-        && !isEmailAvailable($data['email'], $_SESSION['Kunde']->kKunde ?? 0)
-    ) {
-        $ret['email'] = 5;
-    }
-    if (isset($conf['kunden']['kundenregistrierung_pruefen_email'], $data['email'])
+    } elseif (isset($conf['kunden']['kundenregistrierung_pruefen_email'], $data['email'])
         && $conf['kunden']['kundenregistrierung_pruefen_email'] === 'Y'
         && strlen($data['email']) > 0
         && !checkdnsrr(substr($data['email'], strpos($data['email'], '@') + 1))
@@ -2068,12 +2066,17 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
     } else {
         unset($_SESSION['check_plzort']);
     }
-    if (isset($data['mobil']) && StringHandler::checkPhoneNumber($data['mobil'], $conf['kunden']['kundenregistrierung_abfragen_mobil'] === 'Y') > 0) {
-        $ret['mobil'] = StringHandler::checkPhoneNumber($data['mobil'], $conf['kunden']['kundenregistrierung_abfragen_mobil'] === 'Y');
+
+    foreach ([
+             'kundenregistrierung_abfragen_tel' => 'tel',
+             'kundenregistrierung_abfragen_mobil' => 'mobil',
+             'kundenregistrierung_abfragen_fax' => 'fax'
+             ] as $confKey => $dataKey) {
+        if (isset($data[$dataKey]) && StringHandler::checkPhoneNumber($data[$dataKey], $conf['kunden'][$confKey] === 'Y') > 0) {
+            $ret[$dataKey] = StringHandler::checkPhoneNumber($data[$dataKey], $conf['kunden'][$confKey] === 'Y');
+        }
     }
-    if (isset($data['fax']) && StringHandler::checkPhoneNumber($data['fax'], $conf['kunden']['kundenregistrierung_abfragen_fax'] === 'Y') > 0) {
-        $ret['fax'] = StringHandler::checkPhoneNumber($data['fax'], $conf['kunden']['kundenregistrierung_abfragen_fax'] === 'Y');
-    }
+
     $deliveryCountry = ($conf['kunden']['kundenregistrierung_abfragen_ustid'] !== 'N')
         ? Shop::Container()->getDB()->select('tland', 'cISO', $data['land'])
         : null;
@@ -2155,9 +2158,6 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
     ) {
         $ret['geburtstag'] = StringHandler::checkDate($data['geburtstag'], $conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y');
     }
-    if (isset($data['tel']) && StringHandler::checkPhoneNumber($data['tel'], $conf['kunden']['kundenregistrierung_abfragen_tel'] === 'Y') > 0) {
-        $ret['tel'] = StringHandler::checkPhoneNumber($data['tel'], $conf['kunden']['kundenregistrierung_abfragen_tel'] === 'Y');
-    }
     if ($kundenaccount === 1) {
         if ($checkpass) {
             if ($data['pass'] !== $data['pass2']) {
@@ -2169,7 +2169,12 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
         }
         //existiert diese email bereits?
         if (!isEmailAvailable($data['email'], $_SESSION['Kunde']->kKunde ?? 0)) {
-            $ret['email_vorhanden'] = 1;
+            if (!(isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0)) {
+                $ret['email_vorhanden'] = 1;
+            }
+            if (!isset($ret['email']) || $ret['email'] !== 1) {
+                $ret['email'] = 5;
+            }
         }
     }
     // Selbstdef. Kundenfelder

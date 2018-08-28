@@ -2,67 +2,67 @@
   font-family: 'Source Code Pro';
   font-style: normal;
   font-weight: 400;
-  src: local('Source Code Pro'), local('SourceCodePro-Regular'), url(http://fonts.gstatic.com/s/sourcecodepro/v7/HI_SiYsKILxRpg3hIP6sJ7fM7PqlPevT.ttf) format('truetype');
+  src: local('Source Code Pro'), local('SourceCodePro-Regular'), url(../fonts/SourceCodePro-Regular.ttf) format('truetype');
 }
 @font-face {
   font-family: 'Source Code Pro';
   font-style: normal;
   font-weight: 600;
-  src: local('Source Code Pro Semibold'), local('SourceCodePro-Semibold'), url(http://fonts.gstatic.com/s/sourcecodepro/v7/HI_XiYsKILxRpg3hIP6sJ7fM7Pqt4s_Ds-cv.ttf) format('truetype');
+  src: local('Source Code Pro Semibold'), local('SourceCodePro-Semibold'), url(../fonts/SourceCodePro-Semibold.ttf) format('truetype');
 }
 @font-face {
   font-family: 'Source Code Pro';
   font-style: normal;
   font-weight: 700;
-  src: local('Source Code Pro Bold'), local('SourceCodePro-Bold'), url(http://fonts.gstatic.com/s/sourcecodepro/v7/HI_XiYsKILxRpg3hIP6sJ7fM7Pqths7Ds-cv.ttf) format('truetype');
+  src: local('Source Code Pro Bold'), local('SourceCodePro-Bold'), url(../fonts/SourceCodePro-Bold.ttf) format('truetype');
 }
 @font-face {
   font-family: 'Source Code Pro';
   font-style: normal;
   font-weight: 900;
-  src: local('Source Code Pro Black'), local('SourceCodePro-Black'), url(http://fonts.gstatic.com/s/sourcecodepro/v7/HI_XiYsKILxRpg3hIP6sJ7fM7PqtvszDs-cv.ttf) format('truetype');
+  src: local('Source Code Pro Black'), local('SourceCodePro-Black'), url(../fonts/SourceCodePro-Black.ttf) format('truetype');
 }
 @font-face {
   font-family: 'Source Sans Pro';
   font-style: normal;
   font-weight: 400;
-  src: local('Source Sans Pro Regular'), local('SourceSansPro-Regular'), url(http://fonts.gstatic.com/s/sourcesanspro/v11/6xK3dSBYKcSV-LCoeQqfX1RYOo3qOK7g.ttf) format('truetype');
+  src: local('Source Sans Pro Regular'), local('SourceSansPro-Regular'), url(../fonts/SourceSansPro-Regular.ttf) format('truetype');
 }
 @font-face {
   font-family: 'Source Sans Pro';
   font-style: normal;
   font-weight: 600;
-  src: local('Source Sans Pro SemiBold'), local('SourceSansPro-SemiBold'), url(http://fonts.gstatic.com/s/sourcesanspro/v11/6xKydSBYKcSV-LCoeQqfX1RYOo3i54rwlxdr.ttf) format('truetype');
+  src: local('Source Sans Pro SemiBold'), local('SourceSansPro-SemiBold'), url(../fonts/SourceSansPro-SemiBold.ttf) format('truetype');
 }
 @font-face {
   font-family: 'Source Sans Pro';
   font-style: normal;
   font-weight: 700;
-  src: local('Source Sans Pro Bold'), local('SourceSansPro-Bold'), url(http://fonts.gstatic.com/s/sourcesanspro/v11/6xKydSBYKcSV-LCoeQqfX1RYOo3ig4vwlxdr.ttf) format('truetype');
+  src: local('Source Sans Pro Bold'), local('SourceSansPro-Bold'), url(../fonts/SourceSansPro-Bold.ttf) format('truetype');
 }
 @font-face {
   font-family: 'Source Sans Pro';
   font-style: normal;
   font-weight: 900;
-  src: local('Source Sans Pro Black'), local('SourceSansPro-Black'), url(http://fonts.gstatic.com/s/sourcesanspro/v11/6xKydSBYKcSV-LCoeQqfX1RYOo3iu4nwlxdr.ttf) format('truetype');
+  src: local('Source Sans Pro Black'), local('SourceSansPro-Black'), url(../fonts/SourceSansPro-Black.ttf) format('truetype');
 }
 @font-face {
   font-family: 'Source Serif Pro';
   font-style: normal;
   font-weight: 400;
-  src: local('Source Serif Pro'), local('SourceSerifPro-Regular'), url(http://fonts.gstatic.com/s/sourceserifpro/v5/neIQzD-0qpwxpaWvjeD0X88SAOeauXQ-pQ.ttf) format('truetype');
+  src: local('Source Serif Pro'), local('SourceSerifPro-Regular'), url(../fonts/SourceSerifPro-Regular.ttf) format('truetype');
 }
 @font-face {
   font-family: 'Source Serif Pro';
   font-style: normal;
   font-weight: 600;
-  src: local('Source Serif Pro Semibold'), local('SourceSerifPro-Semibold'), url(http://fonts.gstatic.com/s/sourceserifpro/v5/neIXzD-0qpwxpaWvjeD0X88SAOeasasatSyqwQ.ttf) format('truetype');
+  src: local('Source Serif Pro Semibold'), local('SourceSerifPro-Semibold'), url(../fonts/SourceSerifPro-Semibold.ttf) format('truetype');
 }
 @font-face {
   font-family: 'Source Serif Pro';
   font-style: normal;
   font-weight: 700;
-  src: local('Source Serif Pro Bold'), local('SourceSerifPro-Bold'), url(http://fonts.gstatic.com/s/sourceserifpro/v5/neIXzD-0qpwxpaWvjeD0X88SAOeasc8btSyqwQ.ttf) format('truetype');
+  src: local('Source Serif Pro Bold'), local('SourceSerifPro-Bold'), url(../fonts/SourceSerifPro-Bold.ttf) format('truetype');
 }
 .backend-wrapper {
   display: flex;
@@ -505,7 +505,7 @@ h5.label-wrap {
 .form-control::-moz-placeholder,
 .form-control:-ms-input-placeholder,
 .form-control::-webkit-input-placeholder {
-  opacity: 0.5;
+  opacity: .5;
 }
 .input-group-wrap {
   display: table-cell;
@@ -1434,11 +1434,11 @@ ul.fluid-list .item-extension.item .item-inner {
   margin-right: 0;
 }
 .item .author-meta {
-  font-size: 0.9em;
+  font-size: .9em;
 }
 .item .short-description {
   border-top: 1px solid #eaeaea;
-  font-size: 0.9em;
+  font-size: .9em;
   text-align: left;
   padding: 10px;
   margin-bottom: 0;
@@ -1932,7 +1932,7 @@ pre#debug b {
 }
 [data-notify="container"] .close {
   font-size: 16px;
-  opacity: 0.5;
+  opacity: .5;
 }
 /******************** NEW *******************/
 .backend-wrapper .navbar-default {
@@ -2073,7 +2073,7 @@ body.modal-open nav {
   margin: 10px;
 }
 .modal-backdrop.in {
-  opacity: 0.85;
+  opacity: .85;
 }
 .nag {
   display: block;
@@ -2118,7 +2118,7 @@ body.modal-open nav {
 }
 .nag > .nag-content .nag-text {
   color: #777;
-  font-size: 0.9em;
+  font-size: .9em;
 }
 .dropdown-menu-custom {
   padding: 5px;
@@ -2142,8 +2142,8 @@ body.modal-open nav {
   top: 84px;
   right: -360px;
   width: 360px;
-  -webkit-transition: right 0.2s ease;
-  transition: right 0.2s ease;
+  -webkit-transition: right .2s ease;
+  transition: right .2s ease;
 }
 .switcher .btn-toggle {
   position: absolute;
@@ -2220,7 +2220,7 @@ body.modal-open nav {
 }
 .menu-backdrop.in {
   filter: alpha(opacity=50);
-  opacity: 0.5;
+  opacity: .5;
 }
 .media.widget {
   margin-top: 5px;
@@ -2296,7 +2296,7 @@ body.modal-open nav {
   max-width: 12px;
 }
 .systemcheck .label {
-  padding: 0.4em 0.6em;
+  padding: .4em .6em;
   border-radius: 0;
 }
 .db-sidebar.affix {
@@ -2409,7 +2409,7 @@ td.nowrap {
 .table-sql td.data-char span {
   background-color: #999;
   display: inline;
-  padding: 0.1em 0.4em;
+  padding: .1em .4em;
   color: #fff;
   text-align: center;
   white-space: nowrap;
@@ -2772,4 +2772,3 @@ div.markdown thead tr th,
 div.markdown thead tr td {
   border-bottom-width: 2px;
 }
-/*# sourceMappingURL=custom.css.map */

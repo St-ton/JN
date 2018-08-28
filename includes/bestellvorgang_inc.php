@@ -2034,7 +2034,7 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
         }
     }
 
-    if (isset($data['www']) && !Stringhandler::filterURL($data['www'])) {
+    if (!empty($data['www']) && !Stringhandler::filterURL($data['www'])) {
         $ret['www'] = 2;
     }
 

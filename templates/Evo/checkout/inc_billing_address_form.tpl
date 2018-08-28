@@ -225,7 +225,7 @@
                     >
                         <option value="" selected disabled>{lang key='pleaseChoose'}</option>
                         {foreach $oStates as $oState}
-                            <option value="{$oState->cCode}" {if $cState === $oState->cName}selected{/if}>{$oState->cName}</option>
+                            <option value="{$oState->cCode}" {if $cState === $oState->cName || $cState === $oState->cCode}selected{/if}>{$oState->cName}</option>
                         {/foreach}
                     </select>
                 {else}

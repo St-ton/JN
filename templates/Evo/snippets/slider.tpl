@@ -36,7 +36,7 @@
         {/foreach}
     </div>
     <script type="text/javascript">
-        {if $oSlider->getUseKB()}
+        {if $oSlider->getUseKB() === false}
             jtl.ready(function () {ldelim}
                 var slider = $('#slider-{$oSlider->getID()}');
                 $('a.slide').click(function () {ldelim}

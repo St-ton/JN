@@ -5,7 +5,7 @@
 {if $showAttributesTable}
     <div class="product-attributes">
         {block name='productdetails-attributes'}
-            <div class="list-group list-group-striped">
+            <div class="list-group{if $tabanzeige} list-group-striped{/if}">
                 {if $Einstellungen.artikeldetails.merkmale_anzeigen === 'Y'}
                     {block name='productdetails-attributes-characteristics'}
                         {foreach $Artikel->oMerkmale_arr as $oMerkmal}

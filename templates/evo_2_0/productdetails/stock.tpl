@@ -3,7 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {assign var=anzeige value=$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige}
-<div class="delivery-status">
+<div class="delivery-status clearfix top10">
     {block name='delivery-status'}
         {if !$Artikel->nErscheinendesProdukt}
             {if $anzeige !== 'nichts' && $Artikel->cLagerBeachten === 'Y' &&

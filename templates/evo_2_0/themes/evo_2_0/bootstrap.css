@@ -3716,7 +3716,7 @@ th {
   border-bottom-width: 2px;
 }
 .table-striped > tbody > tr:nth-of-type(odd) {
-  background-color: transparent;
+  background-color: #ebebeb;
 }
 .table-hover > tbody > tr:hover {
   background-color: transparent;
@@ -6405,11 +6405,11 @@ a.label:focus {
   top: -1px;
 }
 .label-default {
-  background-color: #525252;
+  background-color: #ebebeb;
 }
 .label-default[href]:hover,
 .label-default[href]:focus {
-  background-color: #393939;
+  background-color: #d2d2d2;
 }
 .label-primary {
   background-color: #ffc400;
@@ -9698,7 +9698,7 @@ aside .badge {
   margin-bottom: 20px;
 }
 .product-attributes .list-group-striped > .list-group-item:nth-of-type(odd) {
-  background-color: transparent;
+  background-color: #ebebeb;
 }
 .product-attributes .list-group-item {
   padding: 10px 20px;
@@ -10816,7 +10816,7 @@ div#add-to-cart {
   color: #ffffff;
 }
 .label.label-default {
-  background: #525252;
+  background: #ebebeb;
 }
 .label.label-primary {
   background: #ffc400;
@@ -12257,7 +12257,37 @@ fieldset[disabled] .btn-secondary.active {
   background-color: #ffc400;
 }
 .label {
+  color: #ffffff;
   font-size: 12px;
+}
+.label.label-default {
+  background: #ebebeb;
+  color: #707070;
+}
+.label.label-primary {
+  background: #ffc400;
+}
+.label.label-success {
+  background: #cde1d6;
+  color: #098b1b;
+}
+.label.label-info {
+  background: #f5f7fa;
+  color: #525252;
+}
+.label.label-warning {
+  background: #f9f2dc;
+  color: #d4a815;
+}
+.label.label-danger {
+  background: #e8ccd2;
+  color: #b90000;
+}
+.label a:hover {
+  color: #ffffff;
+}
+.label a.label-default:hover {
+  color: #ffc400;
 }
 #content.col-lg-push-3 {
   padding-left: 60px;
@@ -12272,6 +12302,11 @@ fieldset[disabled] .btn-secondary.active {
 }
 .attr-label {
   font-weight: 400;
+}
+hr {
+  border-top: 1px solid #ebebeb;
+  margin-top: 30px;
+  margin-bottom: 30px;
 }
 #main-wrapper.fluid #header-branding {
   padding: 6px 15px;
@@ -12404,6 +12439,12 @@ aside .nav-panel .active > a i.fa-chevron-down {
 }
 aside .nav > li > a {
   padding: 10px 0;
+}
+aside .box-monthlynews a .value {
+  text-decoration: underline;
+}
+aside .box-monthlynews a .value:hover {
+  text-decoration: none;
 }
 aside .badge {
   background-color: transparent;
@@ -12639,10 +12680,13 @@ aside .badge {
 }
 .list .product-cell .quickview.badge,
 .gallery .product-cell .quickview.badge,
+.gallery-with-action .quickview.badge,
 .list .product-cell .wishlist.badge,
 .gallery .product-cell .wishlist.badge,
+.gallery-with-action .wishlist.badge,
 .list .product-cell .compare.badge,
-.gallery .product-cell .compare.badge {
+.gallery .product-cell .compare.badge,
+.gallery-with-action .compare.badge {
   position: relative;
   margin: 0 15px;
   top: 0;
@@ -12656,20 +12700,98 @@ aside .badge {
 }
 .list .product-cell .quickview.badge:hover svg path,
 .gallery .product-cell .quickview.badge:hover svg path,
+.gallery-with-action .quickview.badge:hover svg path,
 .list .product-cell .wishlist.badge:hover svg path,
 .gallery .product-cell .wishlist.badge:hover svg path,
+.gallery-with-action .wishlist.badge:hover svg path,
 .list .product-cell .compare.badge:hover svg path,
-.gallery .product-cell .compare.badge:hover svg path {
+.gallery .product-cell .compare.badge:hover svg path,
+.gallery-with-action .compare.badge:hover svg path {
   stroke: #ffc400;
   fill: #ffc400;
 }
 .list .product-cell .quickview.badge:hover svg .cls-1,
 .gallery .product-cell .quickview.badge:hover svg .cls-1,
+.gallery-with-action .quickview.badge:hover svg .cls-1,
 .list .product-cell .wishlist.badge:hover svg .cls-1,
 .gallery .product-cell .wishlist.badge:hover svg .cls-1,
+.gallery-with-action .wishlist.badge:hover svg .cls-1,
 .list .product-cell .compare.badge:hover svg .cls-1,
-.gallery .product-cell .compare.badge:hover svg .cls-1 {
+.gallery .product-cell .compare.badge:hover svg .cls-1,
+.gallery-with-action .compare.badge:hover svg .cls-1 {
   stroke: #ffc400;
+}
+.product-primary .product-info {
+  border: 0;
+}
+.product-primary .product-info .delivery-status {
+  padding: 15px;
+  background: #ebebeb;
+}
+#article-tabs .panel-group > .panel,
+#article-tabs .panel-group > .panel-default {
+  border-color: transparent;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  margin-bottom: 30px;
+}
+#article-tabs .panel-group > .panel > .panel-heading,
+#article-tabs .panel-group > .panel-default > .panel-heading {
+  background: #ebebeb;
+  border-color: transparent;
+}
+#article-tabs .panel-group > .panel > .panel-heading + .panel-collapse > .panel-body,
+#article-tabs .panel-group > .panel-default > .panel-heading + .panel-collapse > .panel-body,
+#article-tabs .panel-group > .panel > .panel-heading + .panel-collapse > .list-group,
+#article-tabs .panel-group > .panel-default > .panel-heading + .panel-collapse > .list-group {
+  border-top: 0;
+}
+#article-tabs .panel-group > .panel > .panel-heading a[aria-expanded="true"] i,
+#article-tabs .panel-group > .panel-default > .panel-heading a[aria-expanded="true"] i {
+  transform: rotate(180deg);
+}
+#article-tabs .panel-group > .panel > div > .panel-body,
+#article-tabs .panel-group > .panel-default > div > .panel-body {
+  padding: 15px 0;
+}
+.panel-slider {
+  border-color: transparent;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  margin-bottom: 30px;
+}
+.panel-slider > .panel-heading {
+  border-bottom: 0;
+}
+#product-actions .question {
+  padding-left: 0;
+  margin-left: 0;
+}
+.nav-tabs {
+  border-bottom: 1px solid #dddddd;
+}
+.nav-tabs > li {
+  margin-bottom: -1px;
+}
+.nav-tabs > li > a {
+  font-weight: 600;
+}
+.nav-tabs > li > a:hover {
+  border-color: transparent transparent transparent;
+}
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:hover,
+.nav-tabs > li.active > a:focus {
+  font-weight: 700;
+  color: #525252;
+  border: 0;
+  border-bottom: 6px solid #ffc400;
+}
+#cfg-container .cfg-group .panel-heading {
+  background: #ebebeb;
+}
+#cfg-container .cfg-group .list-group-item {
+  border: 0;
 }
 #product-offer .price {
   font-size: 20px;

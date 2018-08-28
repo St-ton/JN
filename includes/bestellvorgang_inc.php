@@ -1589,7 +1589,9 @@ function gibZahlungsarten(int $kVersandart, int $kKundengruppe)
         if ($methods[$i]->fAufpreis == 0) {
             $methods[$i]->cPreisLocalized = '';
         }
-        $valid[] = $methods[$i];
+        if (!empty($methods[$i]->angezeigterName)) {
+            $valid[] = $methods[$i];
+        }
     }
 
     return $valid;
@@ -1667,15 +1669,12 @@ function gibAktiveVerpackung($packagings)
 }
 
 /**
- * @param stdClass $paymentMethod
+ * @param Zahlungsart|stdClass $paymentMethod
  * @return bool
  */
 function zahlungsartGueltig($paymentMethod)
 {
     if (!isset($paymentMethod->cModulId)) {
-        return false;
-    }
-    if (empty($paymentMethod->angezeigterName)) {
         return false;
     }
     $kPlugin = Plugin::getIDByModuleID($paymentMethod->cModulId);

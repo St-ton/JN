@@ -457,7 +457,7 @@ function sendeMail($ModulId, $Object, $mail = null)
 
     $mailSmarty->assign('Einstellungen', $config);
 
-    $cPluginBody = isset($Emailvorlage->kPlugin) && $Emailvorlage->kPlugin > 0 ? '' : '_' . $Emailvorlage->kPlugin;
+    $cPluginBody = isset($Emailvorlage->kPlugin) && $Emailvorlage->kPlugin > 0 ? '_' . $Emailvorlage->kPlugin : '';
 
     executeHook(HOOK_MAILTOOLS_INC_SWITCH, [
         'mailsmarty'    => &$mailSmarty,

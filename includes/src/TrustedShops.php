@@ -572,7 +572,7 @@ class TrustedShops
         //$cTSClassicID = filterXSS($cTSClassicID);
         $returnValue = null;
         $bForce      = $bSaved;
-        if ($this->dChecked !== null && $this->dChecked !== '0000-00-00 00:00:00') {
+        if ($this->dChecked !== null && $this->dChecked !== null) {
             $oDateTime = new DateTime($this->dChecked);
             $oDateTime->modify('+1 day');
             if ($oDateTime->format('U') < time()) {
@@ -580,7 +580,7 @@ class TrustedShops
             }
         }
 
-        if ($this->dChecked === null || $this->dChecked === '0000-00-00 00:00:00' || $bForce) {
+        if ($this->dChecked === null || $bForce) {
             ini_set('soap.wsdl_cache_enabled', 1);
 
             $wsdlUrl = TS_SERVER;

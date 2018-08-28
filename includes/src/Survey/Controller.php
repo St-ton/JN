@@ -260,13 +260,12 @@ class Controller
                             AND tkuponsprache.cISOSprache = :liso
                             AND tkupon.cAktiv = 'Y'
                             AND (
-                                    tkupon.dGueltigAb <= now() 
-                                    AND (tkupon.dGueltigBis >= now() 
-                                    OR tkupon.dGueltigBis = '0000-00-00 00:00:00')
+                                tkupon.dGueltigAb <= NOW() 
+                                AND (tkupon.dGueltigBis IS NULL OR tkupon.dGueltigBis >= NOW())
                                 )
                             AND (
-                                    tkupon.kKundengruppe = -1 
-                                    OR tkupon.kKundengruppe = :cgid)",
+                                tkupon.kKundengruppe = -1 
+                                OR tkupon.kKundengruppe = :cgid)",
                     [
                         'cgid' => Session::Customer()->kKundengruppe,
                         'cid'  => $this->survey->getCouponID(),
@@ -323,8 +322,8 @@ class Controller
                 WHERE tumfrage.nAktiv = 1
                     AND tumfrage.kSprache = :lid
                     AND (
-                        (dGueltigVon <= now() AND dGueltigBis >= now()) 
-                        OR (dGueltigVon <= now() AND (dGueltigBis IS NULL OR dGueltigBis = \'0000-00-00 00:00:00\'))
+                        (dGueltigVon <= NOW() AND dGueltigBis >= NOW()) 
+                        OR (dGueltigVon <= NOW() AND dGueltigBis IS NULL)
                     )
                 GROUP BY tumfrage.kUmfrage
                 HAVING COUNT(tumfragefrage.kUmfrageFrage) > 0

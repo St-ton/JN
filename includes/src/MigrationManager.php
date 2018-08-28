@@ -120,7 +120,7 @@ class MigrationManager
      * Execute a migration.
      *
      * @param IMigration $migration Migration
-     * @param string $direction Direction
+     * @param string     $direction Direction
      * @return void
      * @throws Exception
      */
@@ -129,8 +129,8 @@ class MigrationManager
         // reset cached executed migrations
         $this->executedMigrations = null;
 
-        $start   = new DateTime('now');
-        $id      = $migration->getId();
+        $start = new DateTime('now');
+        $id    = $migration->getId();
 
         try {
             Shop::Container()->getDB()->beginTransaction();
@@ -139,7 +139,10 @@ class MigrationManager
             $this->migrated($migration, $direction, $start);
         } catch (Exception $e) {
             Shop::Container()->getDB()->rollback();
-            throw new \Exception($migration->getName().' '.$migration->getDescription().' | '.$e->getMessage(),$e->getCode());
+            throw new \Exception(
+                $migration->getName() . ' ' . $migration->getDescription() . ' | ' . $e->getMessage(),
+                $e->getCode()
+            );
         }
     }
 

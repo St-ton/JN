@@ -83,8 +83,7 @@ class Statusmail
             'tstatusemail',
             'id',
             $d->format('Y-m-d H:i:s'),
-            $d->format('H:i:s'),
-            '0000-00-00 00:00:00'
+            $d->format('H:i:s')
         );
 
         return $oCron->speicherInDB() !== false;
@@ -300,7 +299,7 @@ class Statusmail
                 FROM tbestellung
                 WHERE tbestellung.dErstellt >= :from
                     AND tbestellung.dErstellt < :to
-                    AND tbestellung.dBezahltDatum != '0000-00-00'",
+                    AND tbestellung.dBezahltDatum IS NOT NULL",
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
@@ -319,11 +318,11 @@ class Statusmail
     private function getShippedOrdersCount(): int
     {
         $orderData = $this->db->queryPrepared(
-            "SELECT count(*) AS nAnzahl
+            'SELECT COUNT(*) AS nAnzahl
                 FROM tbestellung
                 WHERE tbestellung.dErstellt >= :from
                     AND tbestellung.dErstellt < :to
-                    AND tbestellung.dVersandDatum != '0000-00-00'",
+                    AND tbestellung.dVersandDatum IS NOT NULL',
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd

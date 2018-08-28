@@ -166,8 +166,8 @@ class Survey
                     ON tseo.cKey = 'kUmfrage'
                     AND tseo.kKey = tumfrage.kUmfrage
                 WHERE tumfrage.kUmfrage = :sid
-                    AND ((dGueltigVon <= now() AND dGueltigBis >= now()) 
-                        || (dGueltigVon <= now() AND (dGueltigBis IS NULL OR dGueltigBis = '0000-00-00 00:00:00')))
+                    AND ((dGueltigVon <= NOW() AND dGueltigBis >= NOW()) 
+                        || (dGueltigVon <= NOW() AND dGueltigBis IS NULL))
                 GROUP BY tumfrage.kUmfrage
                 ORDER BY tumfrage.dGueltigVon DESC",
             ['sid' => $id],

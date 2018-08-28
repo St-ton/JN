@@ -261,7 +261,7 @@ class JobQueue
      */
     public function getDStartZeit(): string
     {
-        return $this->dStartZeit ?? 'now()';
+        return $this->dStartZeit ?? 'NOW()';
     }
 
     /**
@@ -280,7 +280,7 @@ class JobQueue
      */
     public function getDZuletztGelaufen(): string
     {
-        return $this->dZuletztGelaufen ?? '0000-00-00';
+        return $this->dZuletztGelaufen ?? '_DBNULL_';
     }
 
     /**
@@ -318,7 +318,7 @@ class JobQueue
         $cTabelle = '',
         $cKey = '',
         $dStartZeit = 'now()',
-        $dZuletztGelaufen = '0000-00-00'
+        $dZuletztGelaufen = null
     ) {
         $this->kJobQueue        = $kJobQueue;
         $this->kCron            = $kCron;

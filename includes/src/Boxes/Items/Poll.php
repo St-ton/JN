@@ -50,9 +50,8 @@ final class Poll extends AbstractBox
                         AND tumfrage.kSprache = :lid
                         AND (cKundengruppe LIKE '%;-1;%' 
                             OR FIND_IN_SET(':cid', REPLACE(cKundengruppe, ';', ',')) > 0)
-                        AND ((dGueltigVon <= now() 
-                            AND dGueltigBis >= now()) || (dGueltigVon <= now() 
-                            AND dGueltigBis = '0000-00-00 00:00:00'))
+                        AND ((dGueltigVon <= NOW() 
+                            AND dGueltigBis >= NOW()) OR (dGueltigVon <= NOW() AND dGueltigBis IS NULL))
                     GROUP BY tumfrage.kUmfrage
                     ORDER BY tumfrage.dGueltigVon DESC" . $cSQL,
                 ['lid' => $langID, 'cid' => \Session::CustomerGroup()->getID()],

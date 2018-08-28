@@ -41,7 +41,7 @@ class Statusmail extends Job
      */
     public function isIntervalExceeded($dateStart, $interval): bool
     {
-        if ($dateStart === '0000-00-00 00:00:00') {
+        if (empty($dateStart) || $dateStart === '0000-00-00 00:00:00') {
             return true;
         }
         $oStartTime = \date_create($dateStart);

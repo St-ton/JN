@@ -131,8 +131,8 @@ class BaseSearchSpecial extends AbstractFilter
                 }
 
                 return $tasp . " .kArtikel = tartikel.kArtikel
-                                    AND " . $tasp . ".cAktiv = 'Y' AND " . $tasp . ".dStart <= now()
-                                    AND (" . $tasp . ".dEnde >= curdate() OR " . $tasp . ".dEnde = '0000-00-00')
+                                    AND " . $tasp . ".cAktiv = 'Y' AND " . $tasp . ".dStart <= NOW()
+                                    AND (" . $tasp . ".dEnde >= CURDATE() OR " . $tasp . ".dEnde IS NULL)
                                     AND " . $tsp . " .kKundengruppe = " . \Session::CustomerGroup()->getID();
 
             case \SEARCHSPECIALS_NEWPRODUCTS:

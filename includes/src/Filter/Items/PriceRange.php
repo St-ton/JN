@@ -189,8 +189,8 @@ class PriceRange extends AbstractFilter
             LEFT JOIN tartikelsonderpreis 
                 ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
                 AND tartikelsonderpreis.cAktiv = 'Y'
-                AND tartikelsonderpreis.dStart <= now()
-                AND (tartikelsonderpreis.dEnde >= curDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')
+                AND tartikelsonderpreis.dStart <= NOW()
+                AND (tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE())
             LEFT JOIN tsonderpreise 
                 ON tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis
                 AND tsonderpreise.kKundengruppe = " . $customerGroupID;
@@ -287,8 +287,8 @@ class PriceRange extends AbstractFilter
                 ->setTable('tartikelsonderpreis')
                 ->setOn("tartikelsonderpreis.kArtikel = tartikel.kArtikel
                          AND tartikelsonderpreis.cAktiv = 'Y'
-                         AND tartikelsonderpreis.dStart <= now()
-                         AND (tartikelsonderpreis.dEnde >= curDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')")
+                         AND tartikelsonderpreis.dStart <= NOW()
+                         AND (tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE())")
                 ->setOrigin(__CLASS__),
             (new Join())
                 ->setComment('join4 from ' . __METHOD__)
@@ -395,8 +395,7 @@ class PriceRange extends AbstractFilter
             ->setOn("tartikelsonderpreis.kArtikel = tartikel.kArtikel
                         AND tartikelsonderpreis.cAktiv = 'Y'
                         AND tartikelsonderpreis.dStart <= now()
-                        AND (tartikelsonderpreis.dEnde >= CURDATE() 
-                            OR tartikelsonderpreis.dEnde = '0000-00-00')")
+                        AND (tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE())")
             ->setOrigin(__CLASS__));
         $sql->addJoin((new Join())
             ->setType('LEFT JOIN')

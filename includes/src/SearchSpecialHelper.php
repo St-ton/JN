@@ -243,7 +243,7 @@ class SearchSpecialHelper
                     AND tsonderpreise.kKundengruppe = " . $kKundengruppe . "
                     AND tartikelsonderpreis.cAktiv = 'Y'
                     AND tartikelsonderpreis.dStart <= now()
-                    AND (tartikelsonderpreis.dEnde >= CURDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')
+                    AND (tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE())
                     AND (tartikelsonderpreis.nAnzahl < tartikel.fLagerbestand OR tartikelsonderpreis.nIstAnzahl = 0)
                     " . self::getParentSQL() . "
                     " . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(),

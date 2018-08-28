@@ -716,7 +716,6 @@ function gibStepZahlung()
                 'kVersandart' => $aktiveVersandart,
             ];
         }
-
         Shop::Smarty()->assign('Zahlungsarten', $oZahlungsart_arr)
             ->assign('Einstellungen', $Einstellungen)
             ->assign('Versandarten', $oVersandart_arr)
@@ -1668,12 +1667,15 @@ function gibAktiveVerpackung($packagings)
 }
 
 /**
- * @param Zahlungsart|object $paymentMethod
+ * @param stdClass $paymentMethod
  * @return bool
  */
 function zahlungsartGueltig($paymentMethod)
 {
     if (!isset($paymentMethod->cModulId)) {
+        return false;
+    }
+    if (empty($paymentMethod->angezeigterName)) {
         return false;
     }
     $kPlugin = Plugin::getIDByModuleID($paymentMethod->cModulId);

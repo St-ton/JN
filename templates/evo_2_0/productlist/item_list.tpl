@@ -28,7 +28,7 @@
                 </a>
                 <form action="" method="post" class="hidden-xs product-actions" data-toggle="product-actions">
                     {$jtl_token}
-                    <div class="actions btn-group btn-group-xs btn-group-justified" role="group" aria-label="...">
+                    <div class="actions btn-group btn-group-xs btn-group-justified" role="group">
                         {block name='product-actions'}
                             {if !($Artikel->nIstVater && $Artikel->kVaterArtikel === 0)}
                                 {if $Einstellungen.artikeluebersicht.artikeluebersicht_vergleichsliste_anzeigen === 'Y'}

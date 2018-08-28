@@ -47,7 +47,37 @@
 }
 
 .label {
+    color: @label-color;
     font-size: @font-size-small;
+    &.label-default {
+        background: @label-default-bg;
+        color: @text-color;
+    }
+    &.label-primary {
+        background: @label-primary-bg;
+    }
+    &.label-success {
+        background: @label-success-bg;
+        color: @btn-success-color;
+    }
+    &.label-info {
+        background: @label-info-bg;
+        color: @btn-info-color;
+    }
+    &.label-warning {
+        background: @label-warning-bg;
+        color: @btn-warning-color;
+    }
+    &.label-danger {
+        background: @label-danger-bg;
+        color: @btn-danger-color;
+    }
+    a:hover {
+        color: @label-link-hover-color;
+    }
+    a.label-default:hover {
+        color: @brand-primary;
+    }
 }
 
 #content.col-lg-push-3 {

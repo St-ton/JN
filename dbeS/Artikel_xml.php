@@ -273,21 +273,19 @@ function bearbeiteInsert($xml, array $conf)
         $artikel_arr[0]->cSeo = getSeo($artikel_arr[0]->cSeo);
         $artikel_arr[0]->cSeo = checkSeo($artikel_arr[0]->cSeo);
         //persistente werte
-        $artikel_arr[0]->dLetzteAktualisierung = 'now()';
+        $artikel_arr[0]->dLetzteAktualisierung = 'NOW()';
         //mysql strict fixes
-        if (isset($artikel_arr[0]->dMHD) && $artikel_arr[0]->dMHD === '') {
-            $artikel_arr[0]->dMHD = '0000-00-00';
+        if (empty($artikel_arr[0]->dMHD)) {
+            $artikel_arr[0]->dMHD = '_DBNULL_';
         }
         if (isset($artikel_arr[0]->dErstellt) && $artikel_arr[0]->dErstellt === '') {
-            $artikel_arr[0]->dErstellt = 'now()';
+            $artikel_arr[0]->dErstellt = 'NOW()';
         }
-        if (isset($artikel_arr[0]->dZulaufDatum) && $artikel_arr[0]->dZulaufDatum === '') {
-            $artikel_arr[0]->dZulaufDatum = '0000-00-00';
-        } elseif (!isset($artikel_arr[0]->dZulaufDatum)) {
-            $artikel_arr[0]->dZulaufDatum = '0000-00-00';
+        if (empty($artikel_arr[0]->dZulaufDatum)) {
+            $artikel_arr[0]->dZulaufDatum = '_DBNULL_';
         }
-        if (isset($artikel_arr[0]->dErscheinungsdatum) && $artikel_arr[0]->dErscheinungsdatum === '') {
-            $artikel_arr[0]->dErscheinungsdatum = '0000-00-00';
+        if (empty($artikel_arr[0]->dErscheinungsdatum)) {
+            $artikel_arr[0]->dErscheinungsdatum = '_DBNULL_';
         }
         if (isset($artikel_arr[0]->fLieferantenlagerbestand) && $artikel_arr[0]->fLieferantenlagerbestand === '') {
             $artikel_arr[0]->fLieferantenlagerbestand = 0;
@@ -560,17 +558,14 @@ function bearbeiteInsert($xml, array $conf)
 
     updateXMLinDB($xml['tartikel'], 'tpreise', $GLOBALS['mPreise'], 'kKundengruppe', 'kArtikel');
 
-    if (isset($xml['tartikel']['tpreis']) && version_compare($_POST['vers'], '099976', '>=')) {
+    if (isset($xml['tartikel']['tpreis'])) {
         handleNewPriceFormat($xml['tartikel']);
-    } else {
-        handleOldPriceFormat(mapArray($xml['tartikel'], 'tpreise', $GLOBALS['mPreise']));
     }
 
     updateXMLinDB($xml['tartikel'], 'tartikelsonderpreis', $GLOBALS['mArtikelSonderpreis'], 'kArtikelSonderpreis');
     updateXMLinDB($xml['tartikel'], 'tkategorieartikel', $GLOBALS['mKategorieArtikel'], 'kKategorieArtikel');
     updateXMLinDB($xml['tartikel'], 'tartikelattribut', $GLOBALS['mArtikelAttribut'], 'kArtikelAttribut');
-    updateXMLinDB($xml['tartikel'], 'tartikelsichtbarkeit', $GLOBALS['mArtikelSichtbarkeit'], 'kKundengruppe',
-        'kArtikel');
+    updateXMLinDB($xml['tartikel'], 'tartikelsichtbarkeit', $GLOBALS['mArtikelSichtbarkeit'], 'kKundengruppe', 'kArtikel');
     updateXMLinDB($xml['tartikel'], 'txsell', $GLOBALS['mXSell'], 'kXSell');
     updateXMLinDB($xml['tartikel'], 'tartikelmerkmal', $GLOBALS['mArtikelSichtbarkeit'], 'kMermalWert');
     if ((int)$artikel_arr[0]->nIstVater === 1) {
@@ -653,8 +648,8 @@ function bearbeiteInsert($xml, array $conf)
         $oArtikelWarenlager_arr = mapArray($xml['tartikel'], 'tartikelwarenlager', $GLOBALS['mArtikelWarenlager']);
 
         foreach ($oArtikelWarenlager_arr as $oArtikelWarenlager) {
-            if (isset($oArtikelWarenlager->dZulaufDatum) && $oArtikelWarenlager->dZulaufDatum === '') {
-                $oArtikelWarenlager->dZulaufDatum = '0000-00-00 00:00:00';
+            if (empty($oArtikelWarenlager->dZulaufDatum)) {
+                $oArtikelWarenlager->dZulaufDatum = null;
             }
             // Prevent SQL-Exception if duplicate datasets will be sent falsely
             Shop::Container()->getDB()->queryPrepared(

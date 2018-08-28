@@ -5,7 +5,7 @@
             <div class="col-md-3">
                 <strong>{#umfrageValidation#}:</strong><br/>
                 {$oUmfrageStats->dGueltigVon_de}<br/>
-                -{if $oUmfrageStats->dGueltigBis === null || $oUmfrageStats->dGueltigBis|truncate:10:'' === '0000-00-00'}{#umfrageInfinite#}{else}{$oUmfrageStats->dGueltigBis_de}{/if}
+                -{if $oUmfrageStats->dGueltigBis === null}{#umfrageInfinite#}{else}{$oUmfrageStats->dGueltigBis_de}{/if}
             </div>
             <div class="col-md-3">
                 <strong>{#umfrageCustomerGrp#}:</strong><br/>

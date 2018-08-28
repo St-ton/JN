@@ -20,6 +20,7 @@
             <File Path="../Evo/themes/base/offcanvas-menu.css"/>
             <File Path="../Evo/themes/base/pnotify.custom.css"/>
             <File Path="../Evo/themes/base/jquery-slider.css"/>
+            <File Path="../Evo/themes/base/animate.css"/>
             <File Path="css/mytheme.css"/>
         </CSS>
     </Minify>

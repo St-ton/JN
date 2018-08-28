@@ -269,7 +269,6 @@
         <script>
             $(window).load(function() {
                 $.backstretch('{$backstretchImgPath}');
-                new WOW().init();
             });
         </script>
     {/if}
@@ -341,6 +340,9 @@
         {if (!isset($Einstellungen.template.general.use_cron) || $Einstellungen.template.general.use_cron === 'Y') && $smarty.now % 10 === 0}
             $.get('includes/cron_inc.php');
         {/if}
+        $(window).load(function () {
+            new WOW().init();
+        });
     </script>
     {captchaMarkup getBody=false}
 {/block}

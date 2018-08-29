@@ -119,6 +119,7 @@ trait PortletAnimations
             'data-wow-delay'     => [
                 'label'      => 'Delay',
                 'help'       => 'Delay before the animation starts.',
+                'placeholder' => '2s',
                 'dspl_width' => 50,
             ],
             'data-wow-offset'    => [

@@ -312,9 +312,12 @@ class MigrationManager
     public function migrated(IMigration $migration, $direction, $executed)
     {
         if (strcasecmp($direction, IMigration::UP) === 0) {
+            $version      = \JTLShop\SemVer\Parser::parse(APPLICATION_VERSION);
             $sql = sprintf(
                 "INSERT INTO tmigration (kMigration, nVersion, dExecuted) VALUES ('%s', '%s', '%s');",
-                $migration->getId(), JTL_VERSION, $executed->format('Y-m-d H:i:s')
+                $migration->getId(),
+                sprintf('%d%02d', $version->getMajor(), $version->getMinor()),
+                $executed->format('Y-m-d H:i:s')
             );
             Shop::Container()->getDB()->executeQuery($sql, \DB\ReturnType::AFFECTED_ROWS);
         } else {

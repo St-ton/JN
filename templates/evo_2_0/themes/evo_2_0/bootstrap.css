@@ -12145,13 +12145,13 @@ li span.value {
   font-family: 'Open Sans';
   font-style: normal;
   font-weight: 400;
-  src: local('Open Sans'), local('OpenSans-Regular'), url('../../fonts/opensans/OpenSans-Regular.ttf') format('truetype');
+  src: local('Open Sans'), local('OpenSans-Regular'), url('../../../Evo/fonts/opensans/OpenSans-Regular.ttf') format('truetype');
 }
 @font-face {
   font-family: 'Open Sans';
   font-style: normal;
   font-weight: 700;
-  src: local('Open Sans Bold'), local('OpenSans-Bold'), url('../../fonts/opensans/OpenSans-Bold.ttf') format('truetype');
+  src: local('Open Sans Bold'), local('OpenSans-Bold'), url('../../../Evo/fonts/opensans/OpenSans-Bold.ttf') format('truetype');
 }
 .form-control {
   -webkit-box-shadow: none;
@@ -12918,5 +12918,12 @@ aside .badge {
 .slick-prev:focus:before,
 .slick-next:focus:before {
   color: #525252;
+}
+.slider-wrapper {
+  margin: 0 -15px;
+}
+.nivo-caption {
+  background: #ebebeb !important;
+  color: #525252 !important;
 }
 /*# sourceMappingURL=sourcemap.map */

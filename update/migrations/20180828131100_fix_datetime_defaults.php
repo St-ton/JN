@@ -29,22 +29,25 @@ class Migration_20180828131100 extends Migration implements IMigration
         $this->execute("ALTER TABLE `tlastjob` CHANGE COLUMN `dErstellt` `dErstellt` DATETIME DEFAULT NULL");
         $this->execute("ALTER TABLE `tnewsletterempfaenger` CHANGE COLUMN `dLetzterNewsletter` `dLetzterNewsletter` DATETIME DEFAULT NULL");
         $this->execute("ALTER TABLE `tnummern` CHANGE COLUMN `dAktualisiert` `dAktualisiert` DATETIME DEFAULT NULL");
-        $this->execute("UPDATE `tbestellung` SET `dVersandDatum` = NULL WHERE dVersandDatum = '0000-00-00'");
-        $this->execute("UPDATE `tbestellung` SET `dBewertungErinnerung` = NULL WHERE dBewertungErinnerung = '0000-00-00 00:00:00'");
-        $this->execute("UPDATE `tbestellung` SET `dBezahltDatum` = NULL WHERE dBezahltDatum = '0000-00-00'");
-        $this->execute("UPDATE `tartikelwarenlager` SET `dZulaufDatum` = NULL WHERE dZulaufDatum = '0000-00-00 00:00:00'");
-        $this->execute("UPDATE `tnewsletterempfaengerhistory` SET `dEingetragen` = NULL WHERE dEingetragen = '0000-00-00 00:00:00'");
-        $this->execute("UPDATE `tnewsletterempfaengerhistory` SET `dAusgetragen` = NULL WHERE dAusgetragen = '0000-00-00 00:00:00'");
-        $this->execute("UPDATE `tkunde` SET `dGeburtstag` = NULL WHERE dGeburtstag = '0000-00-00'");
-        $this->execute("UPDATE `tkunde` SET `dErstellt` = NULL WHERE dErstellt = '0000-00-00'");
-        $this->execute("UPDATE `tartikelsonderpreis` SET `dEnde` = NULL WHERE dEnde = '0000-00-00'");
-        $this->execute("UPDATE `tcron` SET `dLetzterStart` = NULL WHERE dLetzterStart = '0000-00-00 00:00:00'");
-        $this->execute("UPDATE `tlastjob` SET `dErstellt` = NULL WHERE dErstellt = '0000-00-00 00:00:00'");
-        $this->execute("UPDATE `tjobqueue` SET `dZuletztGelaufen` = NULL WHERE dZuletztGelaufen = '0000-00-00 00:00:00'");
-        $this->execute("UPDATE `tcron` SET `dLetzterStart` = NULL WHERE dLetzterStart = '0000-00-00'");
-        $this->execute("UPDATE `tumfrage` SET `dGueltigBis` = NULL WHERE dGueltigBis = '0000-00-00'");
-        $this->execute("UPDATE `tnewsletterempfaenger` SET `dLetzterNewsletter` = NULL WHERE dLetzterNewsletter = '0000-00-00 00:00:00'");
-        $this->execute("UPDATE `tnummern` SET `dAktualisiert` = NULL WHERE dAktualisiert = '0000-00-00 00:00:00'");
+        $this->execute("UPDATE `tbestellung` SET `dVersandDatum` = NULL WHERE `dVersandDatum` = '0000-00-00'");
+        $this->execute("UPDATE `tbestellung` SET `dBewertungErinnerung` = NULL WHERE `dBewertungErinnerung` = '0000-00-00 00:00:00'");
+        $this->execute("UPDATE `tbestellung` SET `dBezahltDatum` = NULL WHERE `dBezahltDatum` = '0000-00-00'");
+        $this->execute("UPDATE `tartikelwarenlager` SET `dZulaufDatum` = NULL WHERE `dZulaufDatum` = '0000-00-00 00:00:00'");
+        $this->execute("UPDATE `tnewsletterempfaengerhistory` SET `dEingetragen` = NULL WHERE `dEingetragen` = '0000-00-00 00:00:00'");
+        $this->execute("UPDATE `tnewsletterempfaengerhistory` SET `dAusgetragen` = NULL WHERE `dAusgetragen` = '0000-00-00 00:00:00'");
+        $this->execute("UPDATE `tkunde` SET `dGeburtstag` = NULL WHERE `dGeburtstag` = '0000-00-00'");
+        $this->execute("UPDATE `tkunde` SET `dErstellt` = NULL WHERE `dErstellt` = '0000-00-00'");
+        $this->execute("UPDATE `tartikelsonderpreis` SET `dEnde` = NULL WHERE `dEnde` = '0000-00-00'");
+        $this->execute("UPDATE `tcron` SET `dLetzterStart` = NULL WHERE `dLetzterStart` = '0000-00-00 00:00:00'");
+        $this->execute("UPDATE `tlastjob` SET `dErstellt` = NULL WHERE `dErstellt` = '0000-00-00 00:00:00'");
+        $this->execute("UPDATE `tjobqueue` SET `dZuletztGelaufen` = NULL WHERE `dZuletztGelaufen` = '0000-00-00 00:00:00'");
+        $this->execute("UPDATE `tcron` SET `dLetzterStart` = NULL WHERE `dLetzterStart` = '0000-00-00'");
+        $this->execute("UPDATE `tumfrage` SET `dGueltigBis` = NULL WHERE `dGueltigBis` = '0000-00-00'");
+        $this->execute("UPDATE `tnewsletterempfaenger` SET `dLetzterNewsletter` = NULL WHERE `dLetzterNewsletter` = '0000-00-00 00:00:00'");
+        $this->execute("UPDATE `tnummern` SET `dAktualisiert` = NULL WHERE `dAktualisiert` = '0000-00-00 00:00:00'");
+        $this->execute("UPDATE `tartikel` SET `dErscheinungsdatum` = NULL WHERE `dErscheinungsdatum` = '0000-00-00'");
+        $this->execute("UPDATE `tartikel` SET `dErstellt` = NULL WHERE `dErstellt` = '0000-00-00'");
+        $this->execute("UPDATE `tartikel` SET `dLetzteAktualisierung` = NULL WHERE `dLetzteAktualisierung` = '0000-00-00 00:00:00'");
     }
 
     public function down()

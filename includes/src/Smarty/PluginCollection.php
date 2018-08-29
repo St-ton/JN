@@ -1,0 +1,181 @@
+<?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license       http://jtl-url.de/jtlshoplicense
+ */
+
+namespace Smarty;
+
+
+/**
+ * Class PluginCollection
+ * @package Smarty
+ */
+class PluginCollection
+{
+    /**
+     * @var array
+     */
+    private $config;
+
+    /**
+     * @var \Sprache
+     */
+    private $lang;
+
+    /**
+     * PluginCollection constructor.
+     * @param array    $config
+     * @param \Sprache $lang
+     */
+    public function __construct(array $config, \Sprache $lang)
+    {
+        $this->config = $config;
+        $this->lang = $lang;
+    }
+
+    /**
+     * @param array $params
+     * @return string
+     */
+    public function compilerModifierDefault($params): string
+    {
+        $output = $params[0];
+        if (!isset($params[1])) {
+            $params[1] = "''";
+        }
+        \array_shift($params);
+        foreach ($params as $param) {
+            $output = '(($tmp = ' . $output . ' ?? null)===null||$tmp===\'\' ? ' . $param . ' : $tmp)';
+        }
+
+        return $output;
+    }
+
+    /**
+     * @param string $string
+     * @return string
+     */
+    public function replaceDelimiters(string $string): string
+    {
+        $replace = $this->config['global']['global_dezimaltrennzeichen_sonstigeangaben'];
+        if ($replace !== ',' || $replace !== '.' || $replace === '') {
+            $replace = ',';
+        }
+
+        return \str_replace('.', $replace, $string);
+    }
+
+    /**
+     * @param string $string
+     * @param int    $length
+     * @param string $etc
+     * @param bool   $break
+     * @param bool   $middle
+     * @return string
+     */
+    public function truncate(
+        string $string,
+        int $length = 80,
+        string $etc = '...',
+        bool $break = false,
+        bool $middle = false
+    ): string {
+        if ($length === 0) {
+            return '';
+        }
+        if (\strlen($string) > $length) {
+            $length -= \min($length, \strlen($etc));
+            if (!$break && !$middle) {
+                $string = \preg_replace('/\s+?(\S+)?$/', '', \substr($string, 0, $length + 1));
+            }
+
+            return !$middle
+                ? \substr($string, 0, $length) . $etc
+                : \substr($string, 0, $length / 2) . $etc . \substr($string, -$length / 2);
+        }
+
+        return $string;
+    }
+
+    /**
+     * translation
+     *
+     * @param array $params
+     * @param \Smarty_Internal_Template $template
+     * @return void|string
+     */
+    public function translate(array $params, \Smarty_Internal_Template $template)
+    {
+        $cValue = '';
+        if (!isset($params['section'])) {
+            $params['section'] = 'global';
+        }
+        if (isset($params['section'], $params['key'])) {
+            $cValue = $this->lang->get($params['key'], $params['section']);
+            // Für vsprintf ein String der :: exploded wird
+            if (isset($params['printf']) && \strlen($params['printf']) > 0) {
+                $cValue = \vsprintf($cValue, \explode(':::', $params['printf']));
+            }
+        }
+        if (\SMARTY_SHOW_LANGKEY) {
+            $cValue = '#' . $params['section'] . '.' . $params['key'] . '#';
+        }
+        if (isset($params['assign'])) {
+            $template->assign($params['assign'], $cValue);
+        } else {
+            return $cValue;
+        }
+    }
+
+    /**
+     * @param string $text
+     * @return int
+     */
+    public function countCharacters(string $text): int
+    {
+        return \strlen($text);
+    }
+
+    /**
+     * @param string $string
+     * @param string $format
+     * @return string
+     */
+    public function stringFormat(string $string, string $format): string
+    {
+        return \sprintf($format, $string);
+    }
+
+    /**
+     * @param string $string
+     * @param string $format
+     * @param string $default_date
+     * @return string
+     */
+    public function dateFormat(string $string, string $format = '%b %e, %Y', string $default_date = ''): string
+    {
+        if ($string !== '') {
+            $timestamp = \smarty_make_timestamp($string);
+        } elseif ($default_date !== '') {
+            $timestamp = \smarty_make_timestamp($default_date);
+        } else {
+            return $string;
+        }
+        if (\DIRECTORY_SEPARATOR === '\\') {
+            $_win_from = ['%D', '%h', '%n', '%r', '%R', '%t', '%T'];
+            $_win_to   = ['%m/%d/%y', '%b', "\n", '%I:%M:%S %p', '%H:%M', "\t", '%H:%M:%S'];
+            if (\strpos($format, '%e') !== false) {
+                $_win_from[] = '%e';
+                $_win_to[]   = \sprintf('%\' 2d', \date('j', $timestamp));
+            }
+            if (\strpos($format, '%l') !== false) {
+                $_win_from[] = '%l';
+                $_win_to[]   = \sprintf('%\' 2d', \date('h', $timestamp));
+            }
+            $format = \str_replace($_win_from, $_win_to, $format);
+        }
+
+        return \strftime($format, $timestamp);
+    }
+}

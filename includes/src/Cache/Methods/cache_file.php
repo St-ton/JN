@@ -57,7 +57,7 @@ class cache_file implements ICachingMethod
         }
         $fileName = $this->getFileName($cacheID);
         $info     = \pathinfo($fileName);
-        if ($fileName === false || \strpos(\realpath($info['dirname']) . '/', $dir) !== 0) {
+        if ($fileName === false || \strpos(\realpath($info['dirname']), \realpath($dir)) !== 0) {
             return false;
         }
 

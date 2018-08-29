@@ -313,8 +313,8 @@ class MigrationManager
     {
         if (strcasecmp($direction, IMigration::UP) === 0) {
             $sql = sprintf(
-                "INSERT INTO tmigration (kMigration, dExecuted) VALUES ('%s', '%s');",
-                $migration->getId(), $executed->format('Y-m-d H:i:s')
+                "INSERT INTO tmigration (kMigration, nVersion, dExecuted) VALUES ('%s', '%s', '%s');",
+                $migration->getId(), JTL_VERSION, $executed->format('Y-m-d H:i:s')
             );
             Shop::Container()->getDB()->executeQuery($sql, \DB\ReturnType::AFFECTED_ROWS);
         } else {

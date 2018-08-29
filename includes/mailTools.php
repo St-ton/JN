@@ -455,6 +455,10 @@ function sendeMail($ModulId, $Object, $mail = null)
             break;
     }
 
+    $mailSmarty->assign('Einstellungen', $config);
+
+    $cPluginBody = isset($Emailvorlage->kPlugin) && $Emailvorlage->kPlugin > 0 ? '_' . $Emailvorlage->kPlugin : '';
+
     executeHook(HOOK_MAILTOOLS_INC_SWITCH, [
         'mailsmarty'    => &$mailSmarty,
         'mail'          => &$mail,
@@ -463,13 +467,6 @@ function sendeMail($ModulId, $Object, $mail = null)
         'cPluginBody'   => $cPluginBody,
         'Emailvorlage'  => $Emailvorlage
     ]);
-
-    $mailSmarty->assign('Einstellungen', $config);
-
-    $cPluginBody = '';
-    if (isset($Emailvorlage->kPlugin) && $Emailvorlage->kPlugin > 0) {
-        $cPluginBody = '_' . $Emailvorlage->kPlugin;
-    }
     if ($Emailvorlage->cMailTyp === 'text/html' || $Emailvorlage->cMailTyp === 'html') {
         $bodyHtml = $mailSmarty->fetch('db:html_' . $Emailvorlage->kEmailvorlage . '_' . $Sprache->kSprache . $cPluginBody);
     }

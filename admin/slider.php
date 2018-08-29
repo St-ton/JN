@@ -9,62 +9,59 @@ require_once PFAD_ROOT . PFAD_ADMIN . 'toolsajax.server.php';
 $oAccount->permission('SLIDER_VIEW', true, true);
 /** @global JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'slider_inc.php';
-$cFehler      = '';
-$cHinweis     = '';
-$_kSlider     = 0;
-$cRedirectUrl = Shop::getURL() . '/' . PFAD_ADMIN . 'slider.php';
-$cAction      = (isset($_REQUEST['action']) && FormHelper::validateToken())
+$cFehler     = '';
+$cHinweis    = '';
+$_kSlider    = 0;
+$redirectUrl = Shop::getURL() . '/' . PFAD_ADMIN . 'slider.php';
+$action      = isset($_REQUEST['action']) && FormHelper::validateToken()
     ? $_REQUEST['action']
     : 'view';
-$kSlider      = isset($_REQUEST['id'])
+$kSlider     = isset($_REQUEST['id'])
     ? (int)$_REQUEST['id']
     : 0;
-
-switch ($cAction) {
+switch ($action) {
     case 'slide_set':
         $aSlideKey = array_keys((array)$_REQUEST['aSlide']);
         $count     = count($aSlideKey);
         for ($i = 0; $i < $count; $i++) {
-            $oSlide               = new Slide();
-            $aSlide               = $_REQUEST['aSlide'][$aSlideKey[$i]];
-            $oSlide->kSlide       = (strpos($aSlideKey[$i], 'neu') === false)
-                ? $aSlideKey[$i]
-                : null;
-            $oSlide->kSlider      = $kSlider;
-            $oSlide->cTitel       = htmlspecialchars($aSlide['cTitel'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-            $oSlide->cBild        = $aSlide['cBild'];
-            $oSlide->cText        = $aSlide['cText'];
-            $oSlide->cLink        = $aSlide['cLink'];
-            $oSlide->nSort        = $aSlide['nSort'];
+            $slide  = new Slide();
+            $aSlide = $_REQUEST['aSlide'][$aSlideKey[$i]];
+            if (strpos($aSlideKey[$i], 'neu') === false) {
+                $slide->setID((int)$aSlideKey[$i]);
+            }
+
+            $slide->setSliderID($kSlider);
+            $slide->setTitle(htmlspecialchars($aSlide['cTitel'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET));
+            $slide->setImage($aSlide['cBild']);
+            $slide->setText($aSlide['cText']);
+            $slide->setLink($aSlide['cLink']);
+            $slide->setSort((int)$aSlide['nSort']);
             if ((int)$aSlide['delete'] === 1) {
-                $oSlide->delete();
+                $slide->delete();
             } else {
-                $oSlide->save();
+                $slide->save();
             }
         }
         break;
     default:
         $smarty->assign('disabled', '');
-        // Daten Speichern
         if (!empty($_POST) && FormHelper::validateToken()) {
-            $oSlider  = new Slider();
-            $_kSlider = $_POST['kSlider'];
-            $oSlider->load($kSlider);
-            $oSlider->set($_REQUEST);
+            $slider   = new Slider();
+            $_kSlider = (int)$_POST['kSlider'];
+            $slider->load($kSlider, false);
+            $slider->set((object)$_REQUEST);
             // extensionpoint
             $kSprache      = (int)$_POST['kSprache'];
             $kKundengruppe = $_POST['kKundengruppe'];
             $nSeite        = (int)$_POST['nSeitenTyp'];
             $cKey          = $_POST['cKey'];
-
-            $cKeyValue = '';
-            $cValue    = '';
+            $cKeyValue     = '';
+            $cValue        = '';
             if ($nSeite === PAGE_ARTIKEL) {
                 $cKey      = 'kArtikel';
                 $cKeyValue = 'article_key';
                 $cValue    = $_POST[$cKeyValue];
             } elseif ($nSeite === PAGE_ARTIKELLISTE) {
-                // data mapping
                 $aFilter_arr = [
                     'kTag'         => 'tag_key',
                     'kMerkmalWert' => 'attribute_key',
@@ -81,12 +78,15 @@ switch ($cAction) {
                 $cValue    = $_POST[$cKeyValue];
             }
 
-            if (empty($oSlider->cEffects)) {
-                $oSlider->cEffects = 'random';
+            if (empty($slider->getEffects())) {
+                $slider->setEffects('random');
             }
-            if ($oSlider->save() === true) {
-                Shop::Container()->getDB()->delete('textensionpoint', ['cClass', 'kInitial'], ['Slider', $oSlider->kSlider]);
-                // save extensionpoint
+            if ($slider->save() === true) {
+                Shop::Container()->getDB()->delete(
+                    'textensionpoint',
+                    ['cClass', 'kInitial'],
+                    ['Slider', $slider->getID()]
+                );
                 $oExtension                = new stdClass();
                 $oExtension->kSprache      = $kSprache;
                 $oExtension->kKundengruppe = $kKundengruppe;
@@ -94,10 +94,10 @@ switch ($cAction) {
                 $oExtension->cKey          = $cKey;
                 $oExtension->cValue        = $cValue;
                 $oExtension->cClass        = 'Slider';
-                $oExtension->kInitial      = $oSlider->kSlider;
+                $oExtension->kInitial      = $slider->getID();
                 Shop::Container()->getDB()->insert('textensionpoint', $oExtension);
 
-                header('Location: ' . $cRedirectUrl);
+                header('Location: ' . $redirectUrl);
                 exit;
             }
             $cFehler .= 'Slider konnte nicht gespeichert werden.';
@@ -109,14 +109,14 @@ switch ($cAction) {
         break;
 }
 // Daten anzeigen
-switch ($cAction) {
+switch ($action) {
     case 'slides' :
-        $oSlider = new Slider();
-        $oSlider->load($kSlider);
-        $smarty->assign('oSlider', $oSlider);
-        if (!is_object($oSlider)) {
+        $slider = new Slider();
+        $slider->load($kSlider, false);
+        $smarty->assign('oSlider', $slider);
+        if (!is_object($slider)) {
             $cFehler = 'Slider wurde nicht gefunden.';
-            $cAction = 'view';
+            $action  = 'view';
         }
         break;
 
@@ -124,18 +124,15 @@ switch ($cAction) {
         if ($kSlider === 0 && $_kSlider > 0) {
             $kSlider = $_kSlider;
         }
-        $oSlider = new Slider();
-        $oSlider->load($kSlider);
-        $oExtension    = holeExtension($kSlider);
-        $oSprache      = Sprache::getInstance(false);
-        $oSprachen_arr = $oSprache->gibInstallierteSprachen();
-
-        $smarty->assign('oSprachen_arr', $oSprachen_arr)
+        $slider = new Slider();
+        $slider->load($kSlider, false);
+        $oExtension = holeExtension($kSlider);
+        $smarty->assign('oSprachen_arr', Sprache::getInstance(false)->gibInstallierteSprachen())
                ->assign('oKundengruppe_arr', Kundengruppe::getGroups())
                ->assign('oExtension', $oExtension);
 
-        if ($oSlider->cEffects !== 'random') {
-            $cEffects_arr = explode(';', $oSlider->cEffects);
+        if ($slider->getEffects() !== 'random') {
+            $cEffects_arr = explode(';', $slider->getEffects());
             $cEffects     = '';
             foreach ($cEffects_arr as $cKey => $cValue) {
                 $cEffects .= '<option value="' . $cValue . '">' . $cValue . '</option>';
@@ -146,31 +143,29 @@ switch ($cAction) {
                    ->assign('disabled', 'disabled="true"');
         }
 
-        $smarty->assign('oSlider', $oSlider);
+        $smarty->assign('oSlider', $slider);
 
-        if (!is_object($oSlider)) {
+        if (!is_object($slider)) {
             $cFehler = 'Slider wurde nicht gefunden.';
-            $cAction = 'view';
+            $action  = 'view';
             break;
         }
         break;
 
     case 'new':
-        $oSlider       = new Slider();
-        $oSprache      = Sprache::getInstance(false);
-        $oSprachen_arr = $oSprache->gibInstallierteSprachen();
-
+        $slider = new Slider();
         $smarty->assign('checked', 'checked="checked"')
-               ->assign('oSprachen_arr', $oSprachen_arr)
+               ->assign('oSprachen_arr', Sprache::getInstance(false)->gibInstallierteSprachen())
                ->assign('oKundengruppe_arr', Kundengruppe::getGroups())
-               ->assign('oSlider', $oSlider);
+               ->assign('oSlider', $slider);
         break;
 
     case 'delete':
-        $oSlider  = new Slider();
-        $bSuccess = $oSlider->delete($kSlider);
+        $slider   = new Slider();
+        $slider->load($kSlider, false);
+        $bSuccess = $slider->delete($kSlider);
         if ($bSuccess === true) {
-            header('Location: ' . $cRedirectUrl);
+            header('Location: ' . $redirectUrl);
             exit;
         }
         $cFehler = 'Slider konnte nicht entfernt werden.';
@@ -184,10 +179,10 @@ $smarty->assign('PFAD_KCFINDER', PFAD_KCFINDER)
        ->assign('PFAD_MEDIAFILES', PFAD_MEDIAFILES)
        ->assign('cFehler', $cFehler)
        ->assign('cHinweis', $cHinweis)
-       ->assign('cAction', $cAction)
+       ->assign('cAction', $action)
        ->assign('kSlider', $kSlider)
        ->assign('oSlider_arr', Shop::Container()->getDB()->query(
-           'SELECT * FROM tslider', 
+           'SELECT * FROM tslider',
            \DB\ReturnType::ARRAY_OF_OBJECTS
        ))
        ->display('slider.tpl');

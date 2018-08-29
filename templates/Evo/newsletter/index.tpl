@@ -45,7 +45,7 @@
                                 {if !empty($oPlausi->cPost_arr.cVorname)}
                                     {assign var='inputVal_firstname' value=$oPlausi->cPost_arr.cVorname}
                                 {elseif !empty($oKunde->cVorname)}
-                                    {assign var='inputVal_firstname' value=$Kunde->cVorname}
+                                    {assign var='inputVal_firstname' value=$oKunde->cVorname}
                                 {/if}
                                 {include file='snippets/form_group_simple.tpl'
                                     options=[
@@ -57,7 +57,7 @@
                                 {if !empty($oPlausi->cPost_arr.cNachname)}
                                     {assign var='inputVal_lastName' value=$oPlausi->cPost_arr.cNachname}
                                 {elseif !empty($oKunde->cNachname)}
-                                    {assign var='inputVal_lastName' value=$Kunde->cNachname}
+                                    {assign var='inputVal_lastName' value=$oKunde->cNachname}
                                 {/if}
                                 {include file='snippets/form_group_simple.tpl'
                                     options=[
@@ -69,7 +69,7 @@
                                 {if !empty($oPlausi->cPost_arr.cEmail)}
                                     {assign var='inputVal_email' value=$oPlausi->cPost_arr.cEmail}
                                 {elseif !empty($oKunde->cMail)}
-                                    {assign var='inputVal_email' value=$Kunde->cMail}
+                                    {assign var='inputVal_email' value=$oKunde->cMail}
                                 {/if}
                                 {include file='snippets/form_group_simple.tpl'
                                     options=[

@@ -309,7 +309,7 @@ class SearchSpecial extends AbstractFilter
             ? $this->getClassName()
             : null;
         $state            = (new StateSQL())->from($this->productFilter->getCurrentStateData($ignore));
-        $cacheID          = 'fltr_' . __CLASS__ . \md5($this->productFilter->getFilterSQL()->getBaseQuery($state));
+        $cacheID          = 'fltr_' . \str_replace('\\', '', __CLASS__) . \md5($this->productFilter->getFilterSQL()->getBaseQuery($state));
         if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
             $this->options = $cached;
 

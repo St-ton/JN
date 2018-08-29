@@ -81,7 +81,7 @@ if (isset($_SESSION['checkCouponResult'])) {
     $smarty->assign('cKuponfehler', $Kuponfehler['ungueltig']);
 }
 // Gratis Geschenk bearbeiten
-if (isset($_POST['gratis_geschenk'], $_POST['gratishinzufuegen']) && (int)$_POST['gratis_geschenk'] === 1) {
+if (isset($_POST['gratis_geschenk'], $_POST['gratisgeschenk']) && (int)$_POST['gratis_geschenk'] === 1) {
     $kArtikelGeschenk = (int)$_POST['gratisgeschenk'];
     // Pruefen ob der Artikel wirklich ein Gratis Geschenk ist
     $oArtikelGeschenk = Shop::Container()->getDB()->query(

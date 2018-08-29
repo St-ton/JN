@@ -49,7 +49,7 @@
     <input type="hidden" name="update" value="1" />
     {if $updatesAvailable}
         <div class="alert alert-warning">
-            <h4><i class="fa fa-warning"></i> Datenbankaktualisierung {if $currentDatabaseVersion != $currentFileVersion}von Version {formatVersion value=$currentDatabaseVersion} auf Version {formatVersion value=$currentFileVersion}{/if} erforderlich</h4>
+            <h4><i class="fa fa-warning"></i> Datenbankaktualisierung {if $hasDifferentVersions}von Version {formatVersion value=$currentDatabaseVersion} auf Version {$currentFileVersion}{/if} erforderlich</h4>
             Klicken Sie auf <a href="dbupdater.php?action=update" data-callback="update">jetzt aktualisieren</a>, um die Datenbankaktualisierung durchzuf&uuml;hren.
         </div>
 
@@ -68,7 +68,7 @@
     {else}
         <div class="alert alert-success h4">
             <p class="text-center">
-                Ihre Datenbank ist auf dem aktuellen Stand des Systems (Version {formatVersion value=$currentDatabaseVersion}).
+                Ihre Datenbank ist auf dem aktuellen Stand des Systems (Version {$currentDatabaseVersion}).
             </p>
         </div>
     {/if}

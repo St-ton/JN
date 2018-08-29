@@ -48,9 +48,9 @@ class ExtensionPoint
      */
     public function load(): self
     {
-        $oKey           = $this->getPageKey();
-        $oExtension_arr = Shop::Container()->getDB()->queryPrepared(
-            "SELECT * FROM textensionpoint
+        $key        = $this->getPageKey();
+        $extensions = Shop::Container()->getDB()->queryPrepared(
+            "SELECT cClass, kInitial FROM textensionpoint
                 WHERE (kSprache = :lid OR kSprache = 0)
                     AND (kKundengruppe = :cgid OR kKundengruppe = 0)
                     AND (nSeite = :ptype OR nSeite = 0)
@@ -59,20 +59,20 @@ class ExtensionPoint
                 'lid'   => $this->kSprache,
                 'cgid'  => $this->kKundengruppe,
                 'ptype' => $this->nSeitenTyp,
-                'cky'   => $oKey->cKey,
-                'cval'  => $oKey->cValue
+                'cky'   => $key->cKey,
+                'cval'  => $key->cValue
             ],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        foreach ($oExtension_arr as $oExtension) {
-            $oHandle = null;
-            $cClass  = ucfirst($oExtension->cClass);
-            if (class_exists($cClass)) {
-                /** @var IExtensionPoint $oHandle */
-                $oHandle = new $cClass();
-                $oHandle->init($oExtension->kInitial);
+        foreach ($extensions as $oExtension) {
+            $instance = null;
+            $class    = ucfirst($oExtension->cClass);
+            if (class_exists($class)) {
+                /** @var IExtensionPoint $instance */
+                $instance = new $class();
+                $instance->init((int)$oExtension->kInitial);
             } else {
-                Shop::Container()->getLogService()->error('Extension "' . $cClass . '" not found');
+                Shop::Container()->getLogService()->error('Extension "' . $class . '" not found');
             }
         }
 

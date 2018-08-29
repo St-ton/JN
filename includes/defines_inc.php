@@ -5,9 +5,9 @@
  */
 
 // Version
-define('JTL_VERSION', 500);
+define('APPLICATION_VERSION', '5.0.0');
+define('APPLICATION_BUILD_SHA', '#DEV#');
 define('JTL_MIN_WAWI_VERSION', 100000);
-define('JTL_MINOR_VERSION', '#JTL_MINOR_VERSION#');
 // Einstellungssektionen
 define('CONF_GLOBAL', 1);
 define('CONF_STARTSEITE', 2);

@@ -7,6 +7,8 @@
 use DB\Services as DbService;
 use Filter\ProductFilter;
 use JTL\ProcessingHandler\NiceDBHandler;
+use JTLShop\SemVer\Parser;
+use JTLShop\SemVer\Version\Versionable;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
@@ -1568,33 +1570,33 @@ final class Shop
     }
 
     /**
-     * @return int
+     * @return Versionable
      */
-    public static function getShopVersion(): int
+    public static function getShopDatabaseVersion(): Versionable
     {
-        $oVersion = self::Container()->getDB()->query('SELECT nVersion FROM tversion', \DB\ReturnType::SINGLE_OBJECT);
+        $v = self::Container()->getDB()->query('SELECT nVersion FROM tversion', \DB\ReturnType::SINGLE_OBJECT);
 
-        return (isset($oVersion->nVersion) && (int)$oVersion->nVersion > 0)
-            ? (int)$oVersion->nVersion
-            : 0;
+        return !stristr($v->nVersion, '.')
+            ? Parser::parse(substr($v->nVersion, 0, 1) . '.' . (int)substr($v->nVersion, 1) . '.0')
+            : Parser::parse($v->nVersion);
     }
 
     /**
      * Return version of files
      *
-     * @return int
+     * @return string
      */
-    public static function getVersion(): int
+    public static function getVersion(): string
     {
-        return JTL_VERSION;
+        return APPLICATION_VERSION;
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function _getVersion(): int
+    public function _getVersion(): string
     {
-        return JTL_VERSION;
+        return APPLICATION_VERSION;
     }
 
     /**

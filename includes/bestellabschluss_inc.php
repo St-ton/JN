@@ -329,7 +329,7 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
         $ts->shopCustomerID    = $_SESSION['Kunde']->kKunde;
         $ts->shopOrderID       = $order->cBestellNr;
         $ts->orderDate         = date('Y-m-d') . 'T' . date('H:i:s');
-        $ts->shopSystemVersion = 'JTL-Shop ' . JTL_VERSION;
+        $ts->shopSystemVersion = 'JTL-Shop ' . APPLICATION_VERSION;
 
         if (strlen($ts->tsProductId) > 0
             && strlen($ts->amount) > 0

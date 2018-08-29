@@ -31,5 +31,4 @@ $smarty->assign('cHinweis', $cHinweis)
        ->assign('cFehler', $cFehler)
        ->assign('oDatei_arr', $oDatei_arr)
        ->assign('nStat_arr', $nStat_arr)
-       ->assign('JTL_VERSION', JTL_VERSION)
        ->display('filecheck.tpl');

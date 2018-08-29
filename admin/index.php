@@ -16,7 +16,8 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
         $ret['captcha'] = Shop::Container()->getCaptchaService()->validate($_POST) ? 0 : 2;
     }
     // Check if shop version is new enough for csrf validation
-    if (version_compare(Shop::getShopVersion(), 400, '>=') === true) {
+    if (\JTLShop\SemVer\Compare::equals(Shop::getShopDatabaseVersion(), \JTLShop\SemVer\Parser::parse('4.0.0'))
+        || \JTLShop\SemVer\Compare::greaterThan(Shop::getShopDatabaseVersion(), \JTLShop\SemVer\Parser::parse('4.0.0'))) {
         // Check if template version is new enough for csrf validation
         $tpl = AdminTemplate::getInstance();
         if ($tpl::$cTemplate === 'bootstrap' && !FormHelper::validateToken()) {
@@ -144,7 +145,7 @@ function openDashboard()
         $smarty->assign('bDashboard', true)
                ->assign('oPermissionStat', $oFsCheck->getFolderStats())
                ->assign('bUpdateError', ((isset($_POST['shopupdate']) && $_POST['shopupdate'] === '1') ? '1' : false))
-               ->assign('bTemplateDiffers', JTL_VERSION !== Template::getInstance()->getShopVersion())
+               ->assign('bTemplateDiffers', APPLICATION_VERSION !== Template::getInstance()->getVersion())
                ->assign('oActiveWidget_arr', getWidgets(true))
                ->assign('oAvailableWidget_arr', getWidgets(false))
                ->assign('bInstallExists', is_dir(PFAD_ROOT . 'install'));

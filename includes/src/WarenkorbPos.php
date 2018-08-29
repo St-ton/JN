@@ -533,4 +533,17 @@ class WarenkorbPos
 
         return $konfigItem->ignoreMultiplier();
     }
+
+    /**
+     * @param string $cISO
+     * @param bool $excludeShippingCostAttributes
+     * @return bool
+     */
+    public function isUsedForShippingCostCalculation(string $cISO, bool $excludeShippingCostAttributes = false): bool
+    {
+       return (!$excludeShippingCostAttributes
+            || $this->nPosTyp !== C_WARENKORBPOS_TYP_ARTIKEL
+            || ($this->Artikel && $this->Artikel->isUsedForShippingCostCalculation($cISO))
+       );
+    }
 }

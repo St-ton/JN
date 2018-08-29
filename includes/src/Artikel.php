@@ -6526,19 +6526,20 @@ class Artikel
      * @param string $cISO
      * @return bool
      */
-    public function isUsedForShippingCostCalculation($cISO = null): bool
+    public function isUsedForShippingCostCalculation(string $cISO): bool
     {
         $oExcludedAttributes_arr = [FKT_ATTRIBUT_VERSANDKOSTEN, FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT];
-        $cISO                    = $cISO ?? $this->cCachedCountryCode;
 
         foreach ($oExcludedAttributes_arr as $cExcludedAttribute) {
-            if (isset($this->FunktionsAttribute[$cExcludedAttribute])
+            if ($cISO !== ''
+                && isset($this->FunktionsAttribute[$cExcludedAttribute])
                 && (strpos($this->FunktionsAttribute[$cExcludedAttribute], $cISO) !== false)
                 && array_key_exists($cExcludedAttribute, $this->FunktionsAttribute)
             ) {
                 return false;
             }
         }
+
         return true;
     }
 }

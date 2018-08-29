@@ -673,7 +673,7 @@ class Warenkorb
      * @param bool $excludeShippingCostAttributes
      * @return int|float
      */
-    public function gibAnzahlArtikelExt($posTypes, $cISO = null, $excludeShippingCostAttributes =  false)
+    public function gibAnzahlArtikelExt(array $posTypes, string $cISO = '', bool $excludeShippingCostAttributes = false)
     {
         if (!is_array($posTypes)) {
             return 0;
@@ -682,14 +682,12 @@ class Warenkorb
         foreach ($this->PositionenArr as $Position) {
             if (in_array($Position->nPosTyp, $posTypes)
                 && (empty($Position->cUnique) || (strlen($Position->cUnique) > 0 && $Position->kKonfigitem == 0))
-                && (!$excludeShippingCostAttributes
-                    || $Position->nPosTyp !== C_WARENKORBPOS_TYP_ARTIKEL
-                    || ($Position->Artikel && $Position->Artikel->isUsedForShippingCostCalculation($cISO))
-                )
+                && $Position->isUsedForShippingCostCalculation($cISO, $excludeShippingCostAttributes)
             ) {
                 $anz += ($Position->Artikel->cTeilbar === 'Y') ? 1 : $Position->nAnzahl;
             }
         }
+
         return $anz;
     }
 
@@ -996,7 +994,7 @@ class Warenkorb
      * @param bool $excludeShippingCostAttributes
      * @return float|int
      */
-    public function gibGesamtsummeWarenExt(array $posTypes, bool $Brutto = false, $cISO = null, $excludeShippingCostAttributes = false)
+    public function gibGesamtsummeWarenExt(array $posTypes, bool $Brutto = false, string $cISO = '', bool $excludeShippingCostAttributes = false)
     {
         if (!is_array($posTypes)) {
             return 0;
@@ -1004,10 +1002,7 @@ class Warenkorb
         $gesamtsumme = 0;
         foreach ($this->PositionenArr as $i => $Position) {
             if (in_array($Position->nPosTyp, $posTypes, true)
-                && (!$excludeShippingCostAttributes
-                    || $Position->nPosTyp !== C_WARENKORBPOS_TYP_ARTIKEL
-                    || ($Position->Artikel && $Position->Artikel->isUsedForShippingCostCalculation($cISO))
-                )
+                && $Position->isUsedForShippingCostCalculation($cISO, $excludeShippingCostAttributes)
             ) {
                 if ($Brutto) {
                     $gesamtsumme += $Position->fPreis * $Position->nAnzahl *
@@ -1377,14 +1372,11 @@ class Warenkorb
      * @param bool $excludeShippingCostAttributes
      * @return int|float
      */
-    public function getWeight($cISO = null, $excludeShippingCostAttributes = false)
+    public function getWeight(string $cISO = '', bool $excludeShippingCostAttributes = false)
     {
         $gewicht = 0;
         foreach ($this->PositionenArr as $pos) {
-            if (!$excludeShippingCostAttributes
-                || $pos->nPosTyp !== C_WARENKORBPOS_TYP_ARTIKEL
-                || ($pos->Artikel && $pos->Artikel->isUsedForShippingCostCalculation($cISO))
-            ) {
+            if ($pos->isUsedForShippingCostCalculation($cISO, $excludeShippingCostAttributes)) {
                 $gewicht += $pos->fGesamtgewicht;
             }
         }

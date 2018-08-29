@@ -62,6 +62,9 @@ function executeHook(int $hookID, $args_arr = [])
                 Profiler::setPluginProfile($runData);
             }
         }
+        if ($smarty !== null) {
+            $smarty->clearAssign('oPlugin_' . $oPlugin->cPluginID);
+        }
     }
 }
 

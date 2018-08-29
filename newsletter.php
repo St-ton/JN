@@ -227,7 +227,8 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
         "SELECT kNewsletterHistory, nAnzahl, cBetreff, cHTMLStatic, cKundengruppeKey, 
             DATE_FORMAT(dStart, '%d.%m.%Y %H:%i') AS Datum
             FROM tnewsletterhistory
-            WHERE kNewsletterHistory = " . $kNewsletterHistory, 1
+            WHERE kNewsletterHistory = " . $kNewsletterHistory,
+        \DB\ReturnType::SINGLE_OBJECT
     );
     $kKundengruppe      = 0;
     if (isset($_SESSION['Kunde']->kKundengruppe) && (int)$_SESSION['Kunde']->kKundengruppe > 0) {

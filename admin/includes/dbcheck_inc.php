@@ -100,7 +100,15 @@ function getDBStruct(bool $extended = false)
  */
 function getDBFileStruct()
 {
-    $cDateiListe = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_SHOPMD5 . 'dbstruct_' . JTL_VERSION . '.json';
+    $version    = \JTLShop\SemVer\Parser::parse(APPLICATION_VERSION);
+    $versionStr = $version->getMajor().'-'.$version->getMinor().'-'.$version->getPatch();
+
+    if ($version->hasPreRelease()) {
+        $preRelease = $version->getPreRelease();
+        $versionStr .= '-'.$preRelease->getGreek().'-'.$preRelease->getReleaseNumber;
+    }
+
+    $cDateiListe = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_SHOPMD5 . 'dbstruct_' . $versionStr . '.json';
     if (!file_exists($cDateiListe)) {
         return [];
     }

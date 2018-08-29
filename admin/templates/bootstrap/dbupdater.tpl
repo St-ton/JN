@@ -9,12 +9,12 @@
             <h4>Ereignisprotokoll</h4>
             <pre id="debug">
 {#currentShopVersion#}
-     System: {formatVersion value=$currentFileVersion}
-     Datenbank: {formatVersion value=$currentDatabaseVersion}
+     System: {$currentFileVersion}
+     Datenbank: {$currentDatabaseVersion}
 {if $currentTemplateFileVersion != $currentTemplateDatabaseVersion}
     {#currentTemplateVersion#}
-         System: {formatVersion value=$currentTemplateFileVersion}
-         Datenbank: {formatVersion value=$currentTemplateDatabaseVersion}
+         System: {$currentTemplateFileVersion}
+         Datenbank: {$currentTemplateDatabaseVersion}
 {/if}</pre>
             <br /><br />
         </div>

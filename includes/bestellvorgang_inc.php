@@ -547,10 +547,7 @@ function gibStepUnregistriertBestellen()
             ORDER BY nSort',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    if (isset($Kunde->dGeburtstag) && preg_match('/^\d{4}\-\d{2}\-(\d{2})$/', $Kunde->dGeburtstag)) {
-        list($jahr, $monat, $tag) = explode('-', $Kunde->dGeburtstag);
-        $Kunde->dGeburtstag       = $tag . '.' . $monat . '.' . $jahr;
-    }
+
     Shop::Smarty()->assign('untertitel', Shop::Lang()->get('fillUnregForm', 'checkout'))
         ->assign('herkunfte', $herkunfte)
         ->assign('Kunde', $Kunde ?? null)
@@ -719,7 +716,6 @@ function gibStepZahlung()
                 'kVersandart' => $aktiveVersandart,
             ];
         }
-
         Shop::Smarty()->assign('Zahlungsarten', $oZahlungsart_arr)
             ->assign('Einstellungen', $Einstellungen)
             ->assign('Versandarten', $oVersandart_arr)
@@ -1534,20 +1530,23 @@ function gibZahlungsarten(int $kVersandart, int $kKundengruppe)
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
-    $valid   = [];
-    $zaCount = count($methods);
-    for ($i = 0; $i < $zaCount; ++$i) {
-        if (!$methods[$i]->kZahlungsart) {
+    $valid = [];
+    foreach ($methods as $method) {
+        if (!$method->kZahlungsart) {
             continue;
         }
+        $method->kVersandartZahlungsart = (int)$method->kVersandartZahlungsart;
+        $method->kVersandart            = (int)$method->kVersandart;
+        $method->kZahlungsart           = (int)$method->kZahlungsart;
+        $method->nSort                  = (int)$method->nSort;
         //posname lokalisiert ablegen
-        $methods[$i]->angezeigterName = [];
-        $methods[$i]->cGebuehrname    = [];
+        $method->angezeigterName = [];
+        $method->cGebuehrname    = [];
         foreach ($_SESSION['Sprachen'] as $Sprache) {
             $name_spr = Shop::Container()->getDB()->select(
                 'tzahlungsartsprache',
                 'kZahlungsart',
-                (int)$methods[$i]->kZahlungsart,
+                (int)$method->kZahlungsart,
                 'cISOSprache',
                 $Sprache->cISO,
                 null,
@@ -1556,44 +1555,46 @@ function gibZahlungsarten(int $kVersandart, int $kKundengruppe)
                 'cName, cGebuehrname, cHinweisTextShop'
             );
             if (isset($name_spr->cName)) {
-                $methods[$i]->angezeigterName[$Sprache->cISO] = $name_spr->cName;
-                $methods[$i]->cGebuehrname[$Sprache->cISO]    = $name_spr->cGebuehrname;
-                $methods[$i]->cHinweisText[$Sprache->cISO]    = $name_spr->cHinweisTextShop;
+                $method->angezeigterName[$Sprache->cISO] = $name_spr->cName;
+                $method->cGebuehrname[$Sprache->cISO]    = $name_spr->cGebuehrname;
+                $method->cHinweisText[$Sprache->cISO]    = $name_spr->cHinweisTextShop;
             }
         }
         $confData = Shop::Container()->getDB()->selectAll(
             'teinstellungen',
             ['kEinstellungenSektion', 'cModulId'],
-            [CONF_ZAHLUNGSARTEN, $methods[$i]->cModulId]
+            [CONF_ZAHLUNGSARTEN, $method->cModulId]
         );
         foreach ($confData as $config) {
-            $methods[$i]->einstellungen[$config->cName] = $config->cWert;
+            $method->einstellungen[$config->cName] = $config->cWert;
         }
-        if (!zahlungsartGueltig($methods[$i])) {
+        if (!zahlungsartGueltig($method)) {
             continue;
         }
-        $methods[$i]->Specials = null;
+        $method->Specials = null;
         //evtl. Versandkupon anwenden / Nur Nachname fällt weg
         if (isset($_SESSION['VersandKupon']->cZusatzgebuehren)
             && $_SESSION['VersandKupon']->cZusatzgebuehren === 'Y'
-            && $methods[$i]->fAufpreis > 0
-            && $methods[$i]->cName === 'Nachnahme'
+            && $method->fAufpreis > 0
+            && $method->cName === 'Nachnahme'
         ) {
-            $methods[$i]->fAufpreis = 0;
+            $method->fAufpreis = 0;
         }
         //lokalisieren
-        if ($methods[$i]->cAufpreisTyp === 'festpreis') {
-            $methods[$i]->fAufpreis *= ((100 + $taxRate) / 100);
+        if ($method->cAufpreisTyp === 'festpreis') {
+            $method->fAufpreis *= ((100 + $taxRate) / 100);
         }
-        $methods[$i]->cPreisLocalized = Preise::getLocalizedPriceString($methods[$i]->fAufpreis);
-        if ($methods[$i]->cAufpreisTyp === 'prozent') {
-            $methods[$i]->cPreisLocalized = ($methods[$i]->fAufpreis < 0) ? ' ' : '+ ';
-            $methods[$i]->cPreisLocalized .= $methods[$i]->fAufpreis . '%';
+        $method->cPreisLocalized = Preise::getLocalizedPriceString($method->fAufpreis);
+        if ($method->cAufpreisTyp === 'prozent') {
+            $method->cPreisLocalized = ($method->fAufpreis < 0) ? ' ' : '+ ';
+            $method->cPreisLocalized .= $method->fAufpreis . '%';
         }
-        if ($methods[$i]->fAufpreis == 0) {
-            $methods[$i]->cPreisLocalized = '';
+        if ($method->fAufpreis == 0) {
+            $method->cPreisLocalized = '';
         }
-        $valid[] = $methods[$i];
+        if (!empty($method->angezeigterName)) {
+            $valid[] = $method;
+        }
     }
 
     return $valid;
@@ -1615,7 +1616,7 @@ function gibAktiveVersandart($shippingMethods)
             $_SESSION['AktiveVersandart'] = $shippingMethods[0]->kVersandart;
         }
     } else {
-        $_SESSION['AktiveVersandart'] = $shippingMethods[0]->kVersandart;
+        $_SESSION['AktiveVersandart'] = $shippingMethods[0]->kVersandart ?? 0;
     }
 
     return $_SESSION['AktiveVersandart'];
@@ -1671,7 +1672,7 @@ function gibAktiveVerpackung($packagings)
 }
 
 /**
- * @param Zahlungsart|object $paymentMethod
+ * @param Zahlungsart|stdClass $paymentMethod
  * @return bool
  */
 function zahlungsartGueltig($paymentMethod)
@@ -2538,9 +2539,7 @@ function getKundendaten($post, $kundenaccount, $htmlentities = 1)
         }
     }
 
-    if (preg_match('/^\d{2}\.\d{2}\.(\d{4})$/', $customer->dGeburtstag)) {
-        $customer->dGeburtstag = DateTime::createFromFormat('d.m.Y', $customer->dGeburtstag)->format('Y-m-d');
-    }
+    $customer->dGeburtstag     = DateHelper::convertDateToMysqlStandard($customer->dGeburtstag);
     $customer->angezeigtesLand = Sprache::getCountryCodeByCountryName($customer->cLand);
     if (!empty($customer->cBundesland)) {
         $oISO = Staat::getRegionByIso($customer->cBundesland, $customer->cLand);
@@ -3213,10 +3212,6 @@ function setzeSmartyRechnungsadresse($nUnreg, $nCheckout = 0)
         $_SESSION['Kunde']->cKundenattribut_arr = getKundenattribute($_POST);
         Shop::Smarty()->assign('cKundenattribut_arr', $_SESSION['Kunde']->cKundenattribut_arr);
     }
-    if (preg_match('/^\d{4}\-\d{2}\-(\d{2})$/', $_SESSION['Kunde'])) {
-        list($jahr, $monat, $tag)       = explode('-', $_SESSION['Kunde']);
-        $_SESSION['Kunde']->dGeburtstag = $tag . '.' . $monat . '.' . $jahr;
-    }
     Shop::Smarty()->assign('warning_passwortlaenge', lang_passwortlaenge($conf['kunden']['kundenregistrierung_passwortlaenge']));
     if ((int)$nCheckout === 1) {
         Shop::Smarty()->assign('checkout', 1);
@@ -3239,10 +3234,7 @@ function setzeFehlerSmartyRechnungsadresse($cFehlendeEingaben_arr, $nUnreg = 0, 
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     $oKunde_tmp = getKundendaten($cPost_arr, 0);
-    if (preg_match('/^\d{4}\-\d{2}\-(\d{2})$/', $oKunde_tmp->dGeburtstag)) {
-        list($jahr, $monat, $tag) = explode('-', $oKunde_tmp->dGeburtstag);
-        $oKunde_tmp->dGeburtstag  = $tag . '.' . $monat . '.' . $jahr;
-    }
+
     Shop::Smarty()->assign('untertitel', Shop::Lang()->get('fillUnregForm', 'checkout'))
         ->assign('herkunfte', $herkunfte)
         ->assign('Kunde', $oKunde_tmp)
@@ -3569,12 +3561,6 @@ function setzeSmartyBestaetigung()
         ))
         ->assign('WarensummeLocalized', Session::Cart()->gibGesamtsummeWarenLocalized())
         ->assign('Warensumme', Session::Cart()->gibGesamtsummeWaren());
-    // SafetyPay Work Around
-    if ($_SESSION['Zahlungsart']->cModulId === 'za_safetypay') {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'safetypay/safetypay.php';
-        $conf = Shop::getSettings([CONF_ZAHLUNGSARTEN]);
-        Shop::Smarty()->assign('safetypay_form', gib_safetypay_form($_SESSION['Kunde'], Session::Cart(), $conf['zahlungsarten']));
-    }
 }
 
 /**

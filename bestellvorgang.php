@@ -203,18 +203,6 @@ if ($step === 'Bestaetigung') {
     $cart->cEstimatedDelivery = $cart->getEstimatedDeliveryTime();
     Warenkorb::refreshChecksum($cart);
 }
-// SafetyPay Work Around
-if (isset($_SESSION['Zahlungsart']->cModulId)
-    && $_SESSION['Zahlungsart']->cModulId === 'za_safetypay'
-    && $step === 'Bestaetigung'
-) {
-    require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'safetypay/safetypay.php';
-    Shop::Smarty()->assign('safetypay_form', gib_safetypay_form(
-        $_SESSION['Kunde'],
-        $cart,
-        $Einstellungen['zahlungsarten']
-    ));
-}
 // Billpay
 if (isset($_SESSION['Zahlungsart'])
     && $_SESSION['Zahlungsart']->cModulId === 'za_billpay_jtl'

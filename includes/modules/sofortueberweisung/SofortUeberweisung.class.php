@@ -111,7 +111,8 @@ class SofortUeberweisung extends PaymentMethod
         $oEinstellungen = Shop::Container()->getDB()->query(
             "SELECT cWert
                 FROM teinstellungen
-                WHERE cName = 'zahlungsart_sofortueberweisung_project_password'", 1
+                WHERE cName = 'zahlungsart_sofortueberweisung_project_password'",
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         if (!empty($oEinstellungen->cWert)) {
@@ -133,7 +134,8 @@ class SofortUeberweisung extends PaymentMethod
         $oEinstellungen = Shop::Container()->getDB()->query(
             "SELECT cWert
                 FROM teinstellungen
-                WHERE cName = 'zahlungsart_sofortueberweisung_benachrichtigung_password'", 1
+                WHERE cName = 'zahlungsart_sofortueberweisung_benachrichtigung_password'",
+            \DB\ReturnType::SINGLE_OBJECT
         );
 
         if (!empty($oEinstellungen->cWert)) {
@@ -307,8 +309,10 @@ class SofortUeberweisung extends PaymentMethod
             $transaction = Shop::Container()->getDB()->query(
                 "SELECT tzahlungseingang.cZahlungsanbieter, tzahlungseingang.fBetrag, tzahlungsession.nBezahlt
                     FROM tzahlungsession
-                    INNER JOIN tzahlungseingang ON tzahlungseingang.kBestellung = " . (int)$order->kBestellung . "
-                    WHERE tzahlungsession.cZahlungsID = '" . substr($paymentHash, 1) . "'", 1
+                    INNER JOIN tzahlungseingang 
+                        ON tzahlungseingang.kBestellung = " . (int)$order->kBestellung . "
+                    WHERE tzahlungsession.cZahlungsID = '" . substr($paymentHash, 1) . "'",
+                \DB\ReturnType::SINGLE_OBJECT
             );
 
             if (!isset($transaction)

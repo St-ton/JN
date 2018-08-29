@@ -55,11 +55,6 @@ class AdminTemplate
     public $version;
 
     /**
-     * @var int
-     */
-    public $shopVersion;
-
-    /**
      * @var string
      */
     public $preview;
@@ -113,6 +108,7 @@ class AdminTemplate
             self::$cTemplate = $oTemplate->cTemplate;
         } else {
             $oTemplate = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'admin');
+            //dump('$oTemplate', $oTemplate);
             if ($oTemplate) {
                 self::$cTemplate = $oTemplate->cTemplate;
                 Shop::Cache()->set($cacheID, $oTemplate, [CACHING_GROUP_TEMPLATE]);
@@ -216,7 +212,7 @@ class AdminTemplate
         $outputCSS     = '';
         $outputJS      = '';
         $baseURL       = Shop::getURL();
-        $version       = Shop::getVersion();
+        $version       = empty($this->version) ? '1.0.0' : $this->version;
         $files         = $this->getMinifyArray($minify);
         if ($minify === false) {
             $fileSuffix = '?v=' . $version;

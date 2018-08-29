@@ -380,8 +380,11 @@ class KategorieListe
                 //hat die Kat Unterkategorien?
                 $oKategorie->bUnterKategorien = 0;
                 if (isset($oKategorie->kKategorie) && $oKategorie->kKategorie > 0) {
-                    $oUnterkategorien = Shop::Container()->getDB()->select('tkategorie', 'kOberKategorie',
-                        $oKategorie->kKategorie);
+                    $oUnterkategorien = Shop::Container()->getDB()->select(
+                        'tkategorie',
+                        'kOberKategorie',
+                        $oKategorie->kKategorie
+                    );
                     if (isset($oUnterkategorien->kKategorie)) {
                         $oKategorie->bUnterKategorien = 1;
                     }

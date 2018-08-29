@@ -1833,7 +1833,8 @@ define('HOOK_CAPTCHA_VALIDATE', 272);
 /**
  * @since 5.0.0
  * @file admin/plugin.php.php
- * @param bool hasError
+ * @param Plugin plugin
+ * @param bool   hasError
  * @param string msg
  * @param string msg
  * @param string error

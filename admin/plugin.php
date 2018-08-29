@@ -97,6 +97,7 @@ if ($step === 'plugin_uebersicht') {
         $smarty->assign('oPlugin', $oPlugin);
         if ($updated === true) {
             executeHook(HOOK_PLUGIN_SAVE_OPTIONS, [
+                'plugin'   => $oPlugin,
                 'hasError' => &$bError,
                 'msg'      => &$cHinweis,
                 'error'    => $cFehler,

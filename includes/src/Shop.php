@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTLShop\SemVer\Parser;
+use JTLShop\SemVer\Version\Versionable;
 use Services\Container;
 use DB\Services as DbService;
 
@@ -575,11 +577,11 @@ final class Shop
      *
      * @param bool $fast_init
      * @param bool $isAdmin
-     * @return JTLSmarty
+     * @return \Smarty\JTLSmarty
      */
     public function _Smarty(bool $fast_init = false, bool $isAdmin = false): JTLSmarty
     {
-        return JTLSmarty::getInstance($fast_init, $isAdmin);
+        return \Smarty\JTLSmarty::getInstance($fast_init, $isAdmin);
     }
 
     /**
@@ -1582,33 +1584,35 @@ final class Shop
     }
 
     /**
-     * @return int
+     * @return Versionable
      */
-    public static function getShopVersion(): int
+    public static function getShopDatabaseVersion(): Versionable
     {
-        $oVersion = self::Container()->getDB()->query('SELECT nVersion FROM tversion', \DB\ReturnType::SINGLE_OBJECT);
+        $v = self::Container()->getDB()->query('SELECT nVersion FROM tversion', \DB\ReturnType::SINGLE_OBJECT);
 
-        return (isset($oVersion->nVersion) && (int)$oVersion->nVersion > 0)
-            ? (int)$oVersion->nVersion
-            : 0;
+        if (!stristr($v->nVersion, '.')) {
+            return Parser::parse(substr($v->nVersion, 0, 1).'.'.(int)substr($v->nVersion, 1).'.0');
+        } else {
+            return Parser::parse($v->nVersion);
+        }
     }
 
     /**
      * Return version of files
      *
-     * @return int
+     * @return string
      */
-    public static function getVersion(): int
+    public static function getVersion(): string
     {
-        return JTL_VERSION;
+        return APPLICATION_VERSION;
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function _getVersion(): int
+    public function _getVersion(): string
     {
-        return JTL_VERSION;
+        return APPLICATION_VERSION;
     }
 
     /**
@@ -1881,5 +1885,38 @@ final class Shop
                 !(Session::get('bAnti_spam_already_checked', false) || Session::Customer()->isLoggedIn())
             ));
         });
+    }
+
+    /**
+     * @param bool $admin
+     * @return string
+     */
+    public static function getFaviconURL(bool $admin = false): string
+    {
+        if ($admin) {
+            $faviconUrl = self::getAdminURL();
+            if (file_exists(PFAD_ROOT . PFAD_ADMIN . 'favicon.ico')) {
+                $faviconUrl .= '/favicon.ico';
+            } else {
+                $faviconUrl .= '/favicon-default.ico';
+            }
+        } else {
+            $smarty           = JTLSmarty::getInstance(false, true);
+            $templateDir      = $smarty->getTemplateDir($smarty->context);
+            $shopTemplatePath = str_replace(PFAD_ROOT, '', $templateDir);
+            $faviconUrl       = self::getURL();
+
+            if (file_exists($templateDir . 'themes/base/images/favicon.ico')) {
+                $faviconUrl .= '/' . $shopTemplatePath . 'themes/base/images/favicon.ico';
+            } elseif (file_exists($templateDir . 'favicon.ico')) {
+                $faviconUrl .= '/' . $shopTemplatePath . 'favicon.ico';
+            } elseif (file_exists(PFAD_ROOT . 'favicon.ico')) {
+                $faviconUrl .= '/favicon.ico';
+            } else {
+                $faviconUrl .= '/favicon-default.ico';
+            }
+        }
+
+        return $faviconUrl;
     }
 }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "0e67da8524213f76f882132b6e1ff125",
+    "content-hash": "814a91f1f454b0bf38f76ac003a660d2",
     "packages": [
         {
             "name": "andyftw/ssllabs-php",
@@ -769,11 +769,11 @@
         },
         {
             "name": "jtlshop/semver",
-            "version": "0.0.4",
+            "version": "0.0.5",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.jtl-software.de/jtlshop/semver.git",
-                "reference": "3675874d4dc9c71debfaacdf297b7d01134cd67c"
+                "reference": "59c13d7e4dc26fadbfed3cfa1c75072801c38a66"
             },
             "require": {
                 "php": ">=5.6.0"

@@ -5,7 +5,7 @@
  */
 
 use JTLShop\SemVer\Version;
-use JTLShop\SemVer\VersionRange;
+use JTLShop\SemVer\VersionCollection;
 
 /**
  * Class Updater
@@ -192,17 +192,16 @@ class Updater
         }
 
         if (empty($targetVersion)) {
-            $api                    = Shop::Container()->get(\Network\JTLApi::class);
-            $availableUpdates       = $api->getAvailableVersions();
-            $parsedAvailableUpdates = [];
+            $api               = Shop::Container()->get(\Network\JTLApi::class);
+            $availableUpdates  = $api->getAvailableVersions();
+            $versionCollection = new VersionCollection();
 
             foreach ($availableUpdates as $availableUpdate) {
-                $parsedAvailableUpdates[] = Version::parse($availableUpdate->reference);
+                $versionCollection->append($availableUpdate->reference);
             }
-            $versionRange  = new VersionRange($parsedAvailableUpdates);
-            $versionRange->setVersionRange($version);
+
             $targetVersion = $version->smallerThan(Version::parse($this->getCurrentFileVersion()))
-                ? $versionRange->getNextVersion($version)
+                ? $versionCollection->getNextVersion($version)
                 : $version;
         }
 

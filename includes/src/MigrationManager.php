@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTLShop\SemVer\Version;
+
 /**
  * Class Migration
  */
@@ -312,8 +314,8 @@ class MigrationManager
     public function migrated(IMigration $migration, $direction, $executed)
     {
         if (strcasecmp($direction, IMigration::UP) === 0) {
-            $version      = \JTLShop\SemVer\Parser::parse(APPLICATION_VERSION);
-            $sql = sprintf(
+            $version = Version::parse(APPLICATION_VERSION);
+            $sql     = sprintf(
                 "INSERT INTO tmigration (kMigration, nVersion, dExecuted) VALUES ('%s', '%s', '%s');",
                 $migration->getId(),
                 sprintf('%d%02d', $version->getMajor(), $version->getMinor()),

@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTLShop\SemVer\Parser;
+use JTLShop\SemVer\Version;
 use JTLShop\SemVer\Version\Versionable;
 use Services\Container;
 use DB\Services as DbService;
@@ -1583,15 +1583,17 @@ final class Shop
     }
 
     /**
-     * @return Versionable
+     * @return Version
      */
-    public static function getShopDatabaseVersion(): Versionable
+    public static function getShopDatabaseVersion(): Version
     {
-        $v = self::Container()->getDB()->query('SELECT nVersion FROM tversion', \DB\ReturnType::SINGLE_OBJECT);
+        $version = self::Container()->getDB()->query('SELECT nVersion FROM tversion', \DB\ReturnType::SINGLE_OBJECT)->nVersion;
 
-        return strpos($v->nVersion, '.') === false
-            ? Parser::parse(substr($v->nVersion, 0, 1) . '.' . (int)substr($v->nVersion, 1) . '.0')
-            : Parser::parse($v->nVersion);
+        if ($version === '5' || $version === 5) {
+            $version = '5.0.0';
+        }
+
+        return Version::parse($version);
     }
 
     /**

@@ -2011,7 +2011,7 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
     foreach (['nachname', 'strasse', 'hausnummer', 'plz', 'ort', 'land', 'email'] as $dataKey) {
         $data[$dataKey] = isset($data[$dataKey]) ? trim($data[$dataKey]) : null;
 
-        if (!isset($data[$dataKey]) || !$data[$dataKey]) {
+        if (!$data[$dataKey]) {
             $ret[$dataKey] = 1;
         }
     }
@@ -2045,9 +2045,8 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
         $ret['email'] = 2;
     } elseif (SimpleMail::checkBlacklist($data['email'])) {
         $ret['email'] = 3;
-    } elseif (isset($conf['kunden']['kundenregistrierung_pruefen_email'], $data['email'])
+    } elseif (isset($conf['kunden']['kundenregistrierung_pruefen_email'])
         && $conf['kunden']['kundenregistrierung_pruefen_email'] === 'Y'
-        && strlen($data['email']) > 0
         && !checkdnsrr(substr($data['email'], strpos($data['email'], '@') + 1))
     ) {
         $ret['email'] = 4;
@@ -2073,8 +2072,10 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
              'kundenregistrierung_abfragen_mobil' => 'mobil',
              'kundenregistrierung_abfragen_fax' => 'fax'
              ] as $confKey => $dataKey) {
-        if (isset($data[$dataKey]) && StringHandler::checkPhoneNumber($data[$dataKey], $conf['kunden'][$confKey] === 'Y') > 0) {
-            $ret[$dataKey] = StringHandler::checkPhoneNumber($data[$dataKey], $conf['kunden'][$confKey] === 'Y');
+        if (isset($data[$dataKey])
+            && ($errCode = StringHandler::checkPhoneNumber($data[$dataKey], $conf['kunden'][$confKey] === 'Y')) > 0
+        ) {
+            $ret[$dataKey] = $errCode;
         }
     }
 
@@ -2155,9 +2156,9 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
 
     }
     if (isset($data['geburtstag'])
-        && StringHandler::checkDate($data['geburtstag'], $conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y') > 0
+        && ($errCode = StringHandler::checkDate($data['geburtstag'], $conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y')) > 0
     ) {
-        $ret['geburtstag'] = StringHandler::checkDate($data['geburtstag'], $conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y');
+        $ret['geburtstag'] = $errCode;
     }
     if ($kundenaccount === 1) {
         if ($checkpass) {
@@ -2169,13 +2170,11 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
             }
         }
         //existiert diese email bereits?
-        if (!isEmailAvailable($data['email'], $_SESSION['Kunde']->kKunde ?? 0)) {
+        if ((!isset($ret['email']) || $ret['email'] !== 1) && !isEmailAvailable($data['email'], $_SESSION['Kunde']->kKunde ?? 0)) {
             if (!(isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0)) {
                 $ret['email_vorhanden'] = 1;
             }
-            if (!isset($ret['email']) || $ret['email'] !== 1) {
-                $ret['email'] = 5;
-            }
+            $ret['email'] = 5;
         }
     }
     // Selbstdef. Kundenfelder

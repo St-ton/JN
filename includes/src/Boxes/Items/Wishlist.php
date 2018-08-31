@@ -27,9 +27,8 @@ final class Wishlist extends AbstractBox
         parent::__construct($config);
         parent::addMapping('nBilderAnzeigen', 'ShowImages');
         parent::addMapping('CWunschlistePos_arr', 'Items');
-        if (empty(\Session::WishList()->kWunschliste)) {
-            $this->setShow(false);
-        } else {
+        $this->setShow(true);
+        if (!empty(\Session::WishList()->kWunschliste)) {
             $this->setWishListID(\Session::WishList()->kWunschliste);
             $wishlistItems    = \Session::WishList()->CWunschlistePos_arr;
             $validPostVars    = ['a', 'k', 's', 'h', 'l', 'm', 't', 'hf', 'kf', 'show', 'suche'];
@@ -79,12 +78,10 @@ final class Wishlist extends AbstractBox
                 }
                 $wishlistItem->cPreis = \Preise::getLocalizedPriceString($fPreis, \Session::Currency());
             }
-            $this->setShow(true);
             $this->setItemCount((int)$this->config['boxen']['boxen_wunschzettel_anzahl']);
             $this->setItems(\array_reverse($wishlistItems));
-
-            \executeHook(\HOOK_BOXEN_INC_WUNSCHZETTEL, ['box' => $this]);
         }
+        \executeHook(\HOOK_BOXEN_INC_WUNSCHZETTEL, ['box' => $this]);
     }
 
     /**

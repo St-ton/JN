@@ -242,10 +242,6 @@ function gibFormularDaten(int $nCheckout = 0)
         $cKundenattribut_arr = $_SESSION['Kunde']->cKundenattribut_arr ?? [];
     }
 
-    if (isset($Kunde->dGeburtstag) && preg_match('/^\d{4}\-\d{2}\-(\d{2})$/', $Kunde->dGeburtstag)) {
-        list($jahr, $monat, $tag) = explode('-', $Kunde->dGeburtstag);
-        $Kunde->dGeburtstag = $tag . '.' . $monat . '.' . $jahr;
-    }
     $herkunfte = Shop::Container()->getDB()->query(
         'SELECT * 
             FROM tkundenherkunft 
@@ -275,11 +271,6 @@ function gibKunde()
     global $Kunde, $titel;
 
     $Kunde = $_SESSION['Kunde'];
-
-    if (preg_match('/^\d{4}\-\d{2}\-(\d{2})$/', $Kunde->dGeburtstag)) {
-        list($jahr, $monat, $tag) = explode('-', $Kunde->dGeburtstag);
-        $Kunde->dGeburtstag = $tag . '.' . $monat . '.' . $jahr;
-    }
     $titel = Shop::Lang()->get('editData', 'login');
 }
 

@@ -28,7 +28,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {foreach name="slider" from=$oSlider_arr item=oSlider}
+                        {foreach $oSlider_arr as $oSlider}
                             <tr>
                                 <td class="tleft">{$oSlider->cName}</td>
                                 <td class="tcenter">

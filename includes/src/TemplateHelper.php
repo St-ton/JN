@@ -305,7 +305,6 @@ class TemplateHelper
         $oTemplate->cAuthor      = trim($oXMLTemplate->Author);
         $oTemplate->cURL         = trim($oXMLTemplate->URL);
         $oTemplate->cVersion     = trim($oXMLTemplate->Version);
-        $oTemplate->cShopVersion = trim($oXMLTemplate->ShopVersion);
         $oTemplate->cPreview     = trim($oXMLTemplate->Preview);
         $oTemplate->cDokuURL     = trim($oXMLTemplate->DokuURL);
         $oTemplate->bChild       = !empty($oXMLTemplate->Parent);
@@ -325,9 +324,6 @@ class TemplateHelper
 
             if ($parentConfig !== false && empty($oTemplate->cVersion)) {
                 $oTemplate->cVersion = $parentConfig->cVersion;
-            }
-            if ($parentConfig !== false && empty($oTemplate->cShopVersion)) {
-                $oTemplate->cShopVersion = $parentConfig->cShopVersion;
             }
         }
 

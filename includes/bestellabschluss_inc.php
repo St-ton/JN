@@ -329,7 +329,7 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
         $ts->shopCustomerID    = $_SESSION['Kunde']->kKunde;
         $ts->shopOrderID       = $order->cBestellNr;
         $ts->orderDate         = date('Y-m-d') . 'T' . date('H:i:s');
-        $ts->shopSystemVersion = 'JTL-Shop ' . JTL_VERSION;
+        $ts->shopSystemVersion = 'JTL-Shop ' . APPLICATION_VERSION;
 
         if (strlen($ts->tsProductId) > 0
             && strlen($ts->amount) > 0
@@ -1005,72 +1005,9 @@ function setzeSmartyWeiterleitung(Bestellung $bestellung)
             $paymentMethod->preparePaymentProcess($bestellung);
             Shop::Smarty()->assign('oPlugin', $oPlugin);
         }
-    } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_paypal_jtl') {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'paypal/PayPal.class.php';
-        $paymentMethod           = new PayPal($_SESSION['Zahlungsart']->cModulId);
-        $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
-        $paymentMethod->preparePaymentProcess($bestellung);
-    } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_worldpay_jtl') {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'worldpay/WorldPay.class.php';
-        $paymentMethod           = new WorldPay($_SESSION['Zahlungsart']->cModulId);
-        $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
-        $paymentMethod->preparePaymentProcess($bestellung);
-    } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_ipayment_jtl') {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ipayment/iPayment.class.php';
-        $paymentMethod           = new iPayment($_SESSION['Zahlungsart']->cModulId);
-        $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
-        $paymentMethod->preparePaymentProcess($bestellung);
     } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_sofortueberweisung_jtl') {
         require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'sofortueberweisung/SofortUeberweisung.class.php';
         $paymentMethod           = new SofortUeberweisung($_SESSION['Zahlungsart']->cModulId);
-        $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
-        $paymentMethod->preparePaymentProcess($bestellung);
-    } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_ut_stand_jtl') {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ut/UT.class.php';
-        $paymentMethod           = new UT($_SESSION['Zahlungsart']->cModulId);
-        $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
-        $paymentMethod->preparePaymentProcess($bestellung);
-    } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_ut_dd_jtl') {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ut/UT.class.php';
-        $paymentMethod           = new UT($_SESSION['Zahlungsart']->cModulId);
-        $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
-        $paymentMethod->preparePaymentProcess($bestellung);
-    } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_ut_cc_jtl') {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ut/UT.class.php';
-        $paymentMethod           = new UT($_SESSION['Zahlungsart']->cModulId);
-        $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
-        $paymentMethod->preparePaymentProcess($bestellung);
-    } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_ut_prepaid_jtl') {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ut/UT.class.php';
-        $paymentMethod           = new UT($_SESSION['Zahlungsart']->cModulId);
-        $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
-        $paymentMethod->preparePaymentProcess($bestellung);
-    } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_ut_gi_jtl') {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ut/UT.class.php';
-        $paymentMethod           = new UT($_SESSION['Zahlungsart']->cModulId);
-        $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
-        $paymentMethod->preparePaymentProcess($bestellung);
-    } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_ut_ebank_jtl') {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'ut/UT.class.php';
-        $paymentMethod           = new UT($_SESSION['Zahlungsart']->cModulId);
-        $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
-        $paymentMethod->preparePaymentProcess($bestellung);
-    } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_safetypay') {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'safetypay/confirmation.php';
-        Shop::Smarty()->assign('safetypay_form', show_confirmation($bestellung));
-    } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_wirecard_jtl') {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'wirecard/Wirecard.class.php';
-        $paymentMethod           = new Wirecard($_SESSION['Zahlungsart']->cModulId);
-        $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
-        $paymentMethod->preparePaymentProcess($bestellung);
-    } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_postfinance_jtl') {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'postfinance/PostFinance.class.php';
-        $paymentMethod           = new PostFinance($_SESSION['Zahlungsart']->cModulId);
-        $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
-        $paymentMethod->preparePaymentProcess($bestellung);
-    } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_paymentpartner_jtl') {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'paymentpartner/PaymentPartner.class.php';
-        $paymentMethod           = new PaymentPartner($_SESSION['Zahlungsart']->cModulId);
         $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
         $paymentMethod->preparePaymentProcess($bestellung);
     } elseif (strpos($_SESSION['Zahlungsart']->cModulId, 'za_billpay') === 0) {

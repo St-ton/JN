@@ -562,7 +562,7 @@ function baueKategorieListenHTML($startKat, $AufgeklappteKategorien, $AktuelleKa
 function baueUnterkategorieListeHTML($AktuelleKategorie)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    KategorieHelper::getSubcategoryList($AktuelleKategorie);
+    Shop::Smarty()->assign('oUnterKategorien_arr', KategorieHelper::getSubcategoryList($AktuelleKategorie->kKategorie));
 }
 
 /**

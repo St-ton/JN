@@ -172,7 +172,7 @@ class Status
      */
     protected function hasDifferentTemplateVersion(): bool
     {
-        return JTL_VERSION !== Template::getInstance()->getShopVersion();
+        return APPLICATION_VERSION !== Template::getInstance()->getVersion();
     }
 
     /**

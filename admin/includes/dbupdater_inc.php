@@ -4,8 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTLShop\SemVer\Compare;
-use JTLShop\SemVer\Parser;
+use JTLShop\SemVer\Version;
 
 /**
  * Stellt alle Werte die fuer das Update in der DB wichtig sind zurueck
@@ -265,10 +264,13 @@ function dbUpdateIO()
     $updater  = new Updater();
 
     try {
-        if (!Compare::equals(
-                Parser::parse($template->xmlData->cVersion),
-                Parser::parse($template->version)
-            )
+        if ($template->version === '5' || $template->version === 5) {
+            $templateVersion = '5.0.0';
+        } else {
+            $templateVersion = $template->version;
+        }
+
+        if (!Version::parse($template->xmlData->cVersion)->equals($templateVersion)
             && $template->setTemplate($template->xmlData->cName, $template->xmlData->eTyp)
         ) {
             unset($_SESSION['cTemplate'], $_SESSION['template']);
@@ -298,6 +300,7 @@ function dbUpdateIO()
 
 /**
  * @return array|IOError
+ * @throws Exception
  */
 function dbupdaterBackup()
 {
@@ -342,6 +345,8 @@ function dbupdaterDownload($file)
 
 /**
  * @return array
+ * @throws SmartyException
+ * @throws Exception
  */
 function dbupdaterStatusTpl()
 {
@@ -363,7 +368,7 @@ function dbupdaterStatusTpl()
         ->assign('updatesAvailable', $updatesAvailable)
         ->assign('currentFileVersion', $currentFileVersion)
         ->assign('currentDatabaseVersion', $currentDatabaseVersion)
-        ->assign('hasDifferentVersions', !Compare::equals(Parser::parse($currentFileVersion), Parser::parse($currentFileVersion)))
+        ->assign('hasDifferentVersions', !Version::parse($currentDatabaseVersion)->equals(Version::parse($currentFileVersion)))
         ->assign('version', $version)
         ->assign('updateError', $updateError)
         ->assign('currentTemplateFileVersion', $template->xmlData->cVersion)

@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTLShop\SemVer\Version;
+
 /**
  * @param array $oDatei_arr
  * @param array $nStat_arr
@@ -12,7 +14,7 @@
 function getAllFiles(&$oDatei_arr, &$nStat_arr)
 {
 
-    $version    = \JTLShop\SemVer\Parser::parse(APPLICATION_VERSION);
+    $version    = Version::parse(APPLICATION_VERSION);
     $versionStr = $version->getMajor().'-'.$version->getMinor().'-'.$version->getPatch();
 
     if ($version->hasPreRelease()) {

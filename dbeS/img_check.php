@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTLShop\SemVer\Version;
+
 ob_start();
 require_once __DIR__ . '/syncinclude.php';
 
@@ -31,6 +33,9 @@ echo $return;
 
 /**
  * @param SimpleXMLElement $xml
+ *
+ * @throws \Exceptions\CircularReferenceException
+ * @throws \Exceptions\ServiceNotFoundException
  */
 function bildercheck_xml(SimpleXMLElement $xml)
 {
@@ -144,7 +149,7 @@ function cloud_download($hash)
 function download($url)
 {
     $ch           = curl_init($url);
-    $version      = \JTLShop\SemVer\Parser::parse(APPLICATION_VERSION);
+    $version      = Version::parse(APPLICATION_VERSION);
     $versionShort = sprintf('%d%02d', $version->getMajor(), $version->getMinor());
 
     curl_setopt($ch, CURLOPT_TIMEOUT, 1000);

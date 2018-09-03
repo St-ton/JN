@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTLShop\SemVer\Version;
+
 /**
  * @param bool $extended
  * @return array
@@ -100,7 +102,7 @@ function getDBStruct(bool $extended = false)
  */
 function getDBFileStruct()
 {
-    $version    = \JTLShop\SemVer\Parser::parse(APPLICATION_VERSION);
+    $version    = Version::parse(APPLICATION_VERSION);
     $versionStr = $version->getMajor().'-'.$version->getMinor().'-'.$version->getPatch();
 
     if ($version->hasPreRelease()) {

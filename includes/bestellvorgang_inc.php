@@ -2099,15 +2099,15 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
         ) {
             $bAnalizeCheck = false; // flag to signalize further analization
             $vViesResult   = null;
-            if ('Y' === $conf['kunden']['shop_ustid_bzstpruefung']) { // backend-setting: "Einstellungen -> Formulareinstellungen ->"
+            if ($conf['kunden']['shop_ustid_bzstpruefung'] === 'Y') { // backend-setting: "Einstellungen -> Formulareinstellungen ->"
                 $oVies         = new UstIDvies();
                 $vViesResult   = $oVies->doCheckID(trim($data['ustid']));
                 $bAnalizeCheck = true; // flag to signalize further analization
             }
-            if (true === $bAnalizeCheck && true === $vViesResult['success']) {
+            if ($bAnalizeCheck === true && $vViesResult['success'] === true) {
                 // "all was fine"
                 $ret['ustid'] = 0;
-            } elseif(isset($vViesResult)) {
+            } elseif (isset($vViesResult)) {
                 switch ($vViesResult['errortype']) {
                     case 'vies' :
                         // vies-error: the ID is invalid according to the VIES-system
@@ -2115,9 +2115,9 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
                         break;
                     case 'parse' :
                         // parse-error: the ID-string is misspelled in any way
-                        if (1 === $vViesResult['errorcode']) {
+                        if ($vViesResult['errorcode'] === 1) {
                             $ret['ustid'] = 1; // parse-error: no id was given
-                        } elseif (1 < $vViesResult['errorcode']) {
+                        } elseif ($vViesResult['errorcode'] > 1) {
                             $ret['ustid'] = 2; // parse-error: with the position of error in given ID-string
                             switch ($vViesResult['errorcode']) {
                                 case 120:
@@ -2142,7 +2142,7 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
                         break;
                     case 'time' :
                         // according to the backend-setting: "Einstellungen -> (Formular)einstellungen -> UstID-Nummer"-check active
-                        if ('Y' === $conf['kunden']['shop_ustid_force_remote_check']) {
+                        if ($conf['kunden']['shop_ustid_force_remote_check'] === 'Y') {
                             $ret['ustid'] = 4; // parsing ok, but the remote-service is in a "down-slot" and unreachable
                             $ret['ustid_err'] = $vViesResult['errorcode'].
                                 ','.
@@ -2150,10 +2150,8 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
                         }
                         break;
                 }
-
             }
         }
-
     }
     if (isset($data['geburtstag'])
         && ($errCode = StringHandler::checkDate($data['geburtstag'], $conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y')) > 0
@@ -2170,7 +2168,7 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
             }
         }
         //existiert diese email bereits?
-        if ((!isset($ret['email']) || $ret['email'] !== 1) && !isEmailAvailable($data['email'], $_SESSION['Kunde']->kKunde ?? 0)) {
+        if (!isset($ret['email']) && !isEmailAvailable($data['email'], $_SESSION['Kunde']->kKunde ?? 0)) {
             if (!(isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0)) {
                 $ret['email_vorhanden'] = 1;
             }
@@ -2193,9 +2191,7 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
                     && $customerField->nEditierbar == 1
                 ) {
                     $ret['custom'][$customerField->kKundenfeld] = 1;
-                } elseif (isset($data['custom_' . $customerField->kKundenfeld])
-                    && $data['custom_' . $customerField->kKundenfeld]
-                ) {
+                } elseif (!empty($data['custom_' . $customerField->kKundenfeld])) {
                     // Datum
                     // 1 = leer
                     // 2 = falsches Format
@@ -2218,7 +2214,7 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
                 }
             } elseif (empty($data['custom_' . $customerField->kKundenfeld]) && $customerField->nPflicht == 1) {
                 $ret['custom'][$customerField->kKundenfeld] = 1;
-            } elseif ($data['custom_' . $customerField->kKundenfeld]) {
+            } elseif (!empty($data['custom_' . $customerField->kKundenfeld])) {
                 // Datum
                 // 1 = leer
                 // 2 = falsches Format
@@ -2729,11 +2725,8 @@ function freeGiftStillValid()
  * @param string $land
  * @return bool
  */
-function valid_plzort($plz, $ort, $land)
+function valid_plzort(string $plz, string $ort,string $land): bool
 {
-    $plz  = StringHandler::filterXSS($plz);
-    $ort  = StringHandler::filterXSS($ort);
-    $land = StringHandler::filterXSS($land);
     // Länder die wir mit Ihren Postleitzahlen in der Datenbank haben
     $cSupportedCountry_arr = ['DE', 'AT', 'CH'];
     if (!in_array(strtoupper($land), $cSupportedCountry_arr, true)) {
@@ -2741,45 +2734,17 @@ function valid_plzort($plz, $ort, $land)
     }
     $obj = Shop::Container()->getDB()->executeQueryPrepared(
         'SELECT kPLZ
-            FROM tplz
-            WHERE cPLZ = :plz
-            AND cOrt LIKE :ort
-            AND cLandISO = :land',
+        FROM tplz
+        WHERE cPLZ = :plz
+        AND (cOrt LIKE :ort 
+          OR cOrt LIKE :ortA2AE 
+          OR cOrt LIKE :ortAE2A)
+        AND cLandISO = :land',
         [
             'plz'  => $plz,
             'ort'  => '%' . $ort . '%',
-            'land' => $land
-        ],
-        \DB\ReturnType::SINGLE_OBJECT
-    );
-    if (isset($obj->kPLZ) && $obj->kPLZ > 0) {
-        return true;
-    }
-    $obj = Shop::Container()->getDB()->executeQueryPrepared(
-        'SELECT kPLZ
-            FROM tplz
-            WHERE cPLZ = :plz
-            AND cOrt LIKE :ort
-            AND cLandISO = :land',
-        [
-            'plz'  => $plz,
-            'ort'  => umlauteUmschreibenA2AE($ort),
-            'land' => $land
-        ],
-        \DB\ReturnType::SINGLE_OBJECT
-    );
-    if (isset($obj->kPLZ) && $obj->kPLZ > 0) {
-        return true;
-    }
-    $obj = Shop::Container()->getDB()->executeQueryPrepared(
-        'SELECT kPLZ
-            FROM tplz
-            WHERE cPLZ = :plz
-            AND cOrt LIKE :ort
-            AND cLandISO = :land',
-        [
-            'plz'  => $plz,
-            'ort'  => umlauteUmschreibenAE2A($ort),
+            'ortA2AE' => umlauteUmschreibenA2AE($ort),
+            'ortAE2A' => umlauteUmschreibenAE2A($ort),
             'land' => $land
         ],
         \DB\ReturnType::SINGLE_OBJECT
@@ -2792,10 +2757,10 @@ function valid_plzort($plz, $ort, $land)
  * @param string $str
  * @return string
  */
-function umlauteUmschreibenA2AE($str)
+function umlauteUmschreibenA2AE(string $str): string
 {
     $src = ['ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü'];
-    $rpl = ['ae', 'oe', 'ue', 'ss', 'Ae', 'Oe', 'Ue', 'ae', 'oe', 'ue', 'ss', 'Ae', 'Oe', 'Ue'];
+    $rpl = ['ae', 'oe', 'ue', 'ss', 'Ae', 'Oe', 'Ue'];
 
     return str_replace($src, $rpl, $str);
 }
@@ -2804,7 +2769,7 @@ function umlauteUmschreibenA2AE($str)
  * @param string $str
  * @return string
  */
-function umlauteUmschreibenAE2A($str)
+function umlauteUmschreibenAE2A(string $str): string
 {
     $rpl = ['ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü'];
     $src = ['ae', 'oe', 'ue', 'ss', 'Ae', 'Oe', 'Ue'];

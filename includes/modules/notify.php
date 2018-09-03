@@ -106,7 +106,7 @@ if (strlen($cSh) > 0) {
                     $logger->debug('tzahlungsession aktualisiert.');
                     $_upd               = new stdClass();
                     $_upd->nBezahlt     = 1;
-                    $_upd->dZeitBezahlt = 'now()';
+                    $_upd->dZeitBezahlt = 'NOW()';
                     $_upd->kBestellung  = (int)$order->kBestellung;
                     Shop::Container()->getDB()->update('tzahlungsession', 'cZahlungsID', $sessionHash, $_upd);
                     $paymentMethod->handleNotification($order, '_' . $sessionHash, $_REQUEST);

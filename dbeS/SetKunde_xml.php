@@ -101,7 +101,7 @@ function bearbeite($xml)
             $Kunde->kKunde      = $kInetKunde;
             $Kunde->cAbgeholt   = 'Y';
             $Kunde->cAktiv      = 'Y';
-            $Kunde->dVeraendert = 'now()';
+            $Kunde->dVeraendert = 'NOW()';
 
             if ($Kunde->cMail !== $oKundeAlt->cMail) {
                 // E-Mail Adresse geändert - Verwendung prüfen!
@@ -215,7 +215,7 @@ function bearbeite($xml)
             }
             //Email noch nicht belegt, der Kunde muss neu erstellt werden -> KUNDE WIRD NEU ERSTELLT
             $passwordService          = Shop::Container()->getPasswordService();
-            $Kunde->dErstellt         = 'now()';
+            $Kunde->dErstellt         = 'NOW()';
             $Kunde->cPasswortKlartext = $passwordService->generate(12);
             $Kunde->cPasswort         = $passwordService->hash($Kunde->cPasswortKlartext);
             $Kunde->nRegistriert      = 1;

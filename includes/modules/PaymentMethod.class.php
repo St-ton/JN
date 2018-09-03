@@ -165,7 +165,7 @@ class PaymentMethod
         if ($kBestellung > 0) {
             $_upd            = new stdClass();
             $_upd->cNotifyID = Shop::Container()->getDB()->escape($cNotifyID);
-            $_upd->dNotify   = 'now()';
+            $_upd->dNotify   = 'NOW()';
             Shop::Container()->getDB()->update('tzahlungsession', 'kBestellung', $kBestellung, $_upd);
         }
 
@@ -299,7 +299,7 @@ class PaymentMethod
             'cISO'              => Session::Currency()->getCode(),
             'cEmpfaenger'       => '',
             'cZahler'           => '',
-            'dZeit'             => 'now()',
+            'dZeit'             => 'NOW()',
             'cHinweis'          => '',
             'cAbgeholt'         => 'N'
         ], (array)$payment);
@@ -316,7 +316,7 @@ class PaymentMethod
     {
         $_upd                = new stdClass();
         $_upd->cStatus       = BESTELLUNG_STATUS_BEZAHLT;
-        $_upd->dBezahltDatum = 'now()';
+        $_upd->dBezahltDatum = 'NOW()';
         Shop::Container()->getDB()->update('tbestellung', 'kBestellung', (int)$order->kBestellung, $_upd);
 
         return $this;
@@ -452,7 +452,7 @@ class PaymentMethod
         if ($this->getSetting('min_bestellungen') > 0) {
             if (isset($customer->kKunde) && $customer->kKunde > 0) {
                 $res = Shop::Container()->getDB()->query("
-                  SELECT count(*) AS cnt 
+                  SELECT COUNT(*) AS cnt 
                       FROM tbestellung 
                       WHERE kKunde = " . (int) $customer->kKunde . " 
                           AND (
@@ -611,7 +611,7 @@ class PaymentMethod
         $this->sendMail($kBestellung, MAILTEMPLATE_BESTELLUNG_RESTORNO);
         $_upd                = new stdClass();
         $_upd->cStatus       = BESTELLUNG_STATUS_IN_BEARBEITUNG;
-        $_upd->dBezahltDatum = 'now()';
+        $_upd->dBezahltDatum = 'NOW()';
         Shop::Container()->getDB()->update('tbestellung', 'kBestellung', $kBestellung, $_upd);
 
         return $this;
@@ -629,7 +629,7 @@ class PaymentMethod
             $this->sendMail($kBestellung, MAILTEMPLATE_BESTELLUNG_STORNO);
             $_upd                = new stdClass();
             $_upd->cStatus       = BESTELLUNG_STATUS_STORNO;
-            $_upd->dBezahltDatum = 'now()';
+            $_upd->dBezahltDatum = 'NOW()';
             Shop::Container()->getDB()->update('tbestellung', 'kBestellung', $kBestellung, $_upd);
         }
 

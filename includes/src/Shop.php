@@ -4,18 +4,18 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use DB\Services as DbService;
-use Filter\ProductFilter;
-use JTL\ProcessingHandler\NiceDBHandler;
 use JTLShop\SemVer\Version;
-use Monolog\Formatter\LineFormatter;
+use Services\Container;
+use DB\Services as DbService;
+use JTL\ProcessingHandler\NiceDBHandler;
 use Monolog\Handler\StreamHandler;
+use Monolog\Formatter\LineFormatter;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
-use Services\Container;
+use \Services\JTL\Validation\ValidationServiceInterface;
+use \Services\JTL\Validation\ValidationService;
 use Services\JTL\Validation\RuleSet;
-use Services\JTL\Validation\ValidationService;
-use Services\JTL\Validation\ValidationServiceInterface;
+use Filter\ProductFilter;
 
 /**
  * Class Shop

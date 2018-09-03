@@ -6,8 +6,6 @@
 
 namespace Network;
 
-use JTLShop\SemVer\Compare;
-use JTLShop\SemVer\Parser;
 use JTLShop\SemVer\Version;
 
 /**
@@ -98,18 +96,19 @@ final class JTLApi
     public function getLatestVersion(): Version
     {
         $shopVersion       = $this->shop->_getVersion();
-        $parsedShopVersion = Parser::parse($shopVersion);
+        $parsedShopVersion = Version::parse($shopVersion);
         $oVersions         = $this->getAvailableVersions();
 
         $oNewerVersions = \array_filter((array)$oVersions, function ($v) use ($parsedShopVersion) {
-            return Compare::greaterThan(Parser::parse($v->reference), $parsedShopVersion);
+            return Version::parse($v->reference)->greaterThan($parsedShopVersion);
         });
 
         if (\count($oNewerVersions) > 0) {
             return $oNewerVersions;
         } else {
             $oVersion = \end($oVersions);
-            return Parser::parse($oVersion->reference);
+
+            return Version::parse($oVersion->reference);
         }
     }
 
@@ -125,7 +124,7 @@ final class JTLApi
         $shopVersion = $this->shop->_getVersion();
         $oVersion    = $this->getLatestVersion();
 
-        return isset($oVersion) && Compare::greaterThan($oVersion, Parser::parse($shopVersion));
+        return isset($oVersion) && $oVersion->greaterThan(Version::parse($shopVersion));
     }
 
     /**

@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTLShop\SemVer\Version;
+
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 /** @global JTLSmarty $smarty */
@@ -16,8 +19,8 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
         $ret['captcha'] = Shop::Container()->getCaptchaService()->validate($_POST) ? 0 : 2;
     }
     // Check if shop version is new enough for csrf validation
-    if (\JTLShop\SemVer\Compare::equals(Shop::getShopDatabaseVersion(), \JTLShop\SemVer\Parser::parse('4.0.0'))
-        || \JTLShop\SemVer\Compare::greaterThan(Shop::getShopDatabaseVersion(), \JTLShop\SemVer\Parser::parse('4.0.0'))) {
+    if (Shop::getShopDatabaseVersion()->equals(Version::parse('4.0.0'))
+        || Shop::getShopDatabaseVersion()->greaterThan(Version::parse('4.0.0'))) {
         // Check if template version is new enough for csrf validation
         $tpl = AdminTemplate::getInstance();
         if ($tpl::$cTemplate === 'bootstrap' && !FormHelper::validateToken()) {

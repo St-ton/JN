@@ -3,7 +3,7 @@
         <tbody>
         <tr>
             <td width="50%">Shopversion</td>
-            <td width="50%" id="current_shop_version">{$strFileVersion} {if $strMinorVersion != '0'}(Build: {$strMinorVersion}){/if}</td>
+            <td width="50%" id="current_shop_version">{$strFileVersion} {if !empty($strMinorVersion)}(Build: {$strMinorVersion}){/if}</td>
         </tr>
         <tr>
             <td width="50%">Templateversion</td>

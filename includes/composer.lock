@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "d021ae74a197fa0ec27a13a90b0fd668",
+    "content-hash": "814a91f1f454b0bf38f76ac003a660d2",
     "packages": [
         {
             "name": "andyftw/ssllabs-php",
@@ -766,6 +766,52 @@
             ],
             "description": "QRCode-Generator adopted from chillerlan/php-qrcode",
             "time": "2016-09-06T11:03:19+00:00"
+        },
+        {
+            "name": "jtlshop/semver",
+            "version": "0.0.5",
+            "source": {
+                "type": "git",
+                "url": "https://gitlab.jtl-software.de/jtlshop/semver.git",
+                "reference": "59c13d7e4dc26fadbfed3cfa1c75072801c38a66"
+            },
+            "require": {
+                "php": ">=5.6.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~5.7"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "JTLShop\\SemVer\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Maurice Fonk",
+                    "email": "maurice@naneau.net",
+                    "homepage": "http://mauricefonk.com",
+                    "role": "developer"
+                },
+                {
+                    "name": "JTL-Software-GmbH",
+                    "email": "teamshop@jtl-software.com",
+                    "role": "developer"
+                }
+            ],
+            "description": "A decent, standards-compliant, Semantic Versioning (SemVer) parser and library",
+            "homepage": "https://gitlab.jtl-software.de/jtlshop/semver",
+            "keywords": [
+                "semantic",
+                "semver",
+                "versioning"
+            ],
+            "time": "2018-08-21T00:00:00+00:00"
         },
         {
             "name": "jtlshop/shop4-systemcheck",
@@ -1995,16 +2041,16 @@
         },
         {
             "name": "composer/xdebug-handler",
-            "version": "1.1.0",
+            "version": "1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/xdebug-handler.git",
-                "reference": "c919dc6c62e221fc6406f861ea13433c0aa24f08"
+                "reference": "e37cbd80da64afe314c72de8d2d2fec0e40d9373"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/xdebug-handler/zipball/c919dc6c62e221fc6406f861ea13433c0aa24f08",
-                "reference": "c919dc6c62e221fc6406f861ea13433c0aa24f08",
+                "url": "https://api.github.com/repos/composer/xdebug-handler/zipball/e37cbd80da64afe314c72de8d2d2fec0e40d9373",
+                "reference": "e37cbd80da64afe314c72de8d2d2fec0e40d9373",
                 "shasum": ""
             },
             "require": {
@@ -2035,7 +2081,7 @@
                 "Xdebug",
                 "performance"
             ],
-            "time": "2018-04-11T15:42:36+00:00"
+            "time": "2018-08-23T12:00:19+00:00"
         },
         {
             "name": "doctrine/instantiator",
@@ -3719,7 +3765,7 @@
         },
         {
             "name": "symfony/finder",
-            "version": "v2.8.44",
+            "version": "v2.8.45",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/finder.git",

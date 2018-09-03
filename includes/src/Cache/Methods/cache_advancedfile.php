@@ -61,7 +61,7 @@ class cache_advancedfile implements ICachingMethod
             return false;
         }
         $info = \pathinfo($fileName);
-        if (\strpos(\realpath($info['dirname']) . '/', $dir) !== 0) {
+        if (\strpos(\realpath($info['dirname']), \realpath($dir)) !== 0) {
             return false;
         }
 

@@ -225,7 +225,7 @@ function updateFertig(int $nVersion)
             nInArbeit = 0,
             nTyp = 1,
             cFehlerSQL = '',
-            dAktualisiert = now()",
+            dAktualisiert = NOW()",
         \DB\ReturnType::DEFAULT
     );
     Shop::Cache()->flushAll();

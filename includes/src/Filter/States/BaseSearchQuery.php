@@ -439,7 +439,7 @@ class BaseSearchQuery extends AbstractFilter
                 LEFT JOIN tsuchcachetreffer 
                     ON tsuchcachetreffer.kSuchCache = tsuchcache.kSuchCache
                 WHERE tsuchcache.dGueltigBis IS NOT NULL
-                    AND DATE_ADD(tsuchcache.dGueltigBis, INTERVAL 5 MINUTE) < now()',
+                    AND DATE_ADD(tsuchcache.dGueltigBis, INTERVAL 5 MINUTE) < NOW()',
             ReturnType::AFFECTED_ROWS
         );
 
@@ -449,7 +449,7 @@ class BaseSearchQuery extends AbstractFilter
                 FROM tsuchcache
                 WHERE kSprache = :lang
                     AND cSuche = :search
-                    AND (dGueltigBis > now() OR dGueltigBis IS NULL)',
+                    AND (dGueltigBis > NOW() OR dGueltigBis IS NULL)',
             [
                 'lang'   => $langID,
                 'search' => $cSuche
@@ -483,7 +483,7 @@ class BaseSearchQuery extends AbstractFilter
         $oSuchCache            = new \stdClass();
         $oSuchCache->kSprache  = $langID;
         $oSuchCache->cSuche    = $cSuche;
-        $oSuchCache->dErstellt = 'now()';
+        $oSuchCache->dErstellt = 'NOW()';
         $kSuchCache            = $this->productFilter->getDB()->insert('tsuchcache', $oSuchCache);
 
         if ($this->getConfig('artikeluebersicht')['suche_fulltext'] !== 'N' && $this->isFulltextIndexActive()) {

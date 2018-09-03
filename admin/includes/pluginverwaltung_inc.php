@@ -1956,7 +1956,7 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
     $oPlugin->nVersion             = (int)$versionNode[$nLastVersionKey . ' attr']['nr'];
     $oPlugin->nXMLVersion          = $nXMLVersion;
     $oPlugin->nPrio                = 0;
-    $oPlugin->dZuletztAktualisiert = 'now()';
+    $oPlugin->dZuletztAktualisiert = 'NOW()';
     $oPlugin->dErstellt            = $versionNode[$nLastVersionKey]['CreateDate'];
     $oPlugin->bBootstrap           = is_file($basePath . PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' . 'bootstrap.php')
         ? 1
@@ -1991,7 +1991,7 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
     }
     $oPlugin->dInstalliert = (isset($oPluginOld->kPlugin) && $oPluginOld->kPlugin > 0)
         ? $oPluginOld->dInstalliert
-        : 'now()';
+        : 'NOW()';
     $kPlugin               = Shop::Container()->getDB()->insert('tplugin', $oPlugin);
     $nVersion              = (int)$versionNode[$nLastVersionKey . ' attr']['nr'];
     $oPlugin->kPlugin      = $kPlugin;

@@ -620,7 +620,6 @@ $(function() {
                                             {$class = 'int'}
                                         {elseif $info->Name|in_array:['date', 'datetime', 'time', 'timestamp', 'year']}
                                             {$class = 'date'}
-                                            {*$default = ($value == '0000-00-00' || $value == '0000-00-00 00-00-00')*}
                                         {elseif $info->Name|in_array:['bit', 'char']}
                                             {$class = 'char'}
                                         {/if}

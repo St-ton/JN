@@ -1324,7 +1324,7 @@ class Exportformat
                 // There are no more articles to export
                 Shop::Container()->getDB()->query(
                     'UPDATE texportformat 
-                        SET dZuletztErstellt = now() 
+                        SET dZuletztErstellt = NOW() 
                         WHERE kExportformat = ' . $this->getExportformat(),
                     \DB\ReturnType::DEFAULT
                 );
@@ -1372,7 +1372,7 @@ class Exportformat
                     'texportformat',
                     'kExportformat',
                     (int)$queueObject->kKey,
-                    (object)['dZuletztErstellt' => 'now()']
+                    (object)['dZuletztErstellt' => 'NOW()']
                 );
                 if (file_exists(PFAD_ROOT . PFAD_EXPORT . $this->cDateiname)) {
                     $this->log('Deleting old export file ' . PFAD_ROOT . PFAD_EXPORT . $this->cDateiname);

@@ -246,7 +246,7 @@ class WarenkorbPers
         // Prüfe ob die WarenkorbPers dem eingeloggten Kunden gehört
         $oWarenkorbPers = Shop::Container()->getDB()->select('twarenkorbpers', 'kKunde', (int)$this->kKunde);
         if (!isset($oWarenkorbPers->kWarenkorbPers) || $oWarenkorbPers->kWarenkorbPers < 1) {
-            $this->dErstellt = 'now()';
+            $this->dErstellt = 'NOW()';
             $this->schreibeDB();
         }
 

@@ -498,7 +498,7 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
     $BestandskundenBoni->kKunde       = 1379;
     $BestandskundenBoni->fGuthaben    = '2,00 &euro';
     $BestandskundenBoni->nBonuspunkte = 0;
-    $BestandskundenBoni->dErhalten    = 'now()';
+    $BestandskundenBoni->dErhalten    = 'NOW()';
 
     $Neues_Passwort = 'geheim007';
 

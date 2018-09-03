@@ -381,7 +381,7 @@ class Controller
             $participation->cIP    = $_SESSION['oBesucher']->cID;
         }
         $participation->kUmfrage       = $_SESSION['Umfrage']->kUmfrage;
-        $participation->dDurchgefuehrt = 'now()';
+        $participation->dDurchgefuehrt = 'NOW()';
 
         $id = $this->db->insert('tumfragedurchfuehrung', $participation);
         foreach ($_SESSION['Umfrage']->oUmfrageFrage_arr as $j => $answer) {

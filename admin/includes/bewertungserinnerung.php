@@ -56,8 +56,8 @@ function baueBewertungsErinnerung()
             JOIN tkunde 
                 ON tkunde.kKunde = tbestellung.kKunde
             WHERE dVersandDatum IS NOT NULL
-                AND DATE_ADD(dVersandDatum, INTERVAL " . $nVersandTage . " DAY) <= now()
-                AND DATE_ADD(dVersandDatum, INTERVAL " . $nMaxTage . " DAY) > now()
+                AND DATE_ADD(dVersandDatum, INTERVAL " . $nVersandTage . " DAY) <= NOW()
+                AND DATE_ADD(dVersandDatum, INTERVAL " . $nMaxTage . " DAY) > NOW()
                 AND cStatus = 4
                 AND (" . $cSQL . ")
                 AND dBewertungErinnerung IS NULL";
@@ -98,7 +98,7 @@ function baueBewertungsErinnerung()
 
         Shop::Container()->getDB()->query(
             'UPDATE tbestellung
-                SET dBewertungErinnerung = now()
+                SET dBewertungErinnerung = NOW()
                 WHERE kBestellung = ' . (int)$oBestellungen->kBestellung,
             \DB\ReturnType::AFFECTED_ROWS
         );

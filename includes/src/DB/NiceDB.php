@@ -482,7 +482,7 @@ class NiceDB implements DbInterface
                     $columns .= $property . ', ';
                     if ($object->$property === '_DBNULL_') {
                         $values .= 'null' . ', ';
-                    } elseif ($object->$property === 'now()') {
+                    } elseif (\strtolower($object->$property) === 'now()') {
                         $values .= $object->$property . ', ';
                     } else {
                         $values .= $this->pdo->quote($object->$property) . ', ';

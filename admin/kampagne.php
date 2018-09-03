@@ -70,7 +70,7 @@ if (RequestHelper::verifyGPCDataInt('neu') === 1 && FormHelper::validateToken())
     $oKampagne->cWert      = $_POST['cWert'];
     $oKampagne->nDynamisch = $_POST['nDynamisch'];
     $oKampagne->nAktiv     = $_POST['nAktiv'];
-    $oKampagne->dErstellt  = 'now()';
+    $oKampagne->dErstellt  = 'NOW()';
 
     // Editieren
     if (RequestHelper::verifyGPCDataInt('kKampagne') > 0) {

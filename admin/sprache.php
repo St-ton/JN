@@ -73,7 +73,7 @@ if (isset($_REQUEST['action']) && FormHelper::validateToken()) {
             // Variable loeschen
             Shop::Lang()->loesche($_GET['kSprachsektion'], $_GET['cName']);
             Shop::Cache()->flushTags([CACHING_GROUP_LANGUAGE]);
-            Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = now()', \DB\ReturnType::DEFAULT);
+            Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
             $cHinweis = 'Variable ' . $_GET['cName'] . ' wurde erfolgreich gelöscht.';
             break;
         case 'savevar':
@@ -139,7 +139,7 @@ if (isset($_REQUEST['action']) && FormHelper::validateToken()) {
                     'tsprachlog', ['cSektion', 'cName'], [$oVariable->cSprachsektion, $oVariable->cName]
                 );
                 Shop::Cache()->flushTags([CACHING_GROUP_LANGUAGE]);
-                Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = now()', \DB\ReturnType::DEFAULT);
+                Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
             }
 
             break;
@@ -159,7 +159,7 @@ if (isset($_REQUEST['action']) && FormHelper::validateToken()) {
             }
 
             Shop::Cache()->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE]);
-            Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = now()', \DB\ReturnType::DEFAULT);
+            Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
 
             $cHinweis = count($cChanged_arr) > 0
                 ? 'Variablen erfolgreich geändert: ' . implode(', ', $cChanged_arr)
@@ -172,7 +172,7 @@ if (isset($_REQUEST['action']) && FormHelper::validateToken()) {
                 ->setzeSprache($cISOSprache)
                 ->clearLog();
             Shop::Cache()->flushTags([CACHING_GROUP_LANGUAGE]);
-            Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = now()', \DB\ReturnType::DEFAULT);
+            Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
             $cHinweis .= 'Liste erfolgreich zurückgesetzt.';
             break;
         default:

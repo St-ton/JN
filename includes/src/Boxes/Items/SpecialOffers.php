@@ -48,7 +48,7 @@ final class SpecialOffers extends AbstractBox
                             AND tartikelsonderpreis.kArtikel = tartikel.kArtikel
                             AND tsonderpreise.kKundengruppe = :cgid
                             AND tartikelsonderpreis.cAktiv = 'Y'
-                            AND tartikelsonderpreis.dStart <= now()
+                            AND tartikelsonderpreis.dStart <= NOW()
                             AND (tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE())
                             $stockFilterSQL
                             $parentSQL

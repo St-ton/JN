@@ -637,10 +637,10 @@ class Warenkorb
             && ($ip = RequestHelper::getIP(true))
         ) {
             $cnt = Shop::Container()->getDB()->executeQueryPrepared(
-                'SELECT count(*) AS anz 
+                'SELECT COUNT(*) AS anz 
                     FROM tbestellung 
                     WHERE cIP = :ip 
-                        AND dErstellt > now()-INTERVAL 1 DAY',
+                        AND dErstellt > NOW() - INTERVAL 1 DAY',
                 ['ip' => $ip],
                 \DB\ReturnType::SINGLE_OBJECT
             );
@@ -648,7 +648,7 @@ class Warenkorb
                 $min                = pow(2, $cnt->anz);
                 $min                = min([$min, 1440]);
                 $bestellungMoeglich = Shop::Container()->getDB()->executeQueryPrepared(
-                    'SELECT dErstellt+INTERVAL ' . $min . ' MINUTE < now() AS moeglich
+                    'SELECT dErstellt+INTERVAL ' . $min . ' MINUTE < NOW() AS moeglich
                         FROM tbestellung
                         WHERE cIP = :ip
                             AND dErstellt > NOW()-INTERVAL 1 DAY

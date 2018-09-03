@@ -339,7 +339,7 @@ class Updater
                          nFehler = :errcnt,
                          nTyp = :type, 
                          cFehlerSQL = :err, 
-                         dAktualisiert = now()',
+                         dAktualisiert = NOW()',
                     [
                         'rw'     => $currentLine,
                         'errcnt' => $errorCountForLine,
@@ -427,7 +427,7 @@ class Updater
                 nFehler = 0, 
                 nTyp = 1, 
                 cFehlerSQL = '', 
-                dAktualisiert = now()",
+                dAktualisiert = NOW()",
             ['ver' => $newVersion],
             \DB\ReturnType::AFFECTED_ROWS
         );

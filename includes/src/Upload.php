@@ -168,7 +168,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
             $oUploadDatei->cName     = $cName;
             $oUploadDatei->cPfad     = $cPfad;
             $oUploadDatei->nBytes    = $nBytes;
-            $oUploadDatei->dErstellt = 'now()';
+            $oUploadDatei->dErstellt = 'NOW()';
 
             Shop::Container()->getDB()->insert('tuploaddatei', $oUploadDatei);
         }

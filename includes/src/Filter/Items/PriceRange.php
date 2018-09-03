@@ -394,7 +394,7 @@ class PriceRange extends AbstractFilter
             ->setTable('tartikelsonderpreis')
             ->setOn("tartikelsonderpreis.kArtikel = tartikel.kArtikel
                         AND tartikelsonderpreis.cAktiv = 'Y'
-                        AND tartikelsonderpreis.dStart <= now()
+                        AND tartikelsonderpreis.dStart <= NOW()
                         AND (tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE())")
             ->setOrigin(__CLASS__));
         $sql->addJoin((new Join())

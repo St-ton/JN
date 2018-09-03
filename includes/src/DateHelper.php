@@ -63,7 +63,7 @@ class DateHelper
     {
         $date_arr = [];
         if (strlen($cDatum) > 0) {
-            if ($cDatum === 'now()') {
+            if (strtolower($cDatum) === 'now()') {
                 $cDatum = 'now';
             }
             try {

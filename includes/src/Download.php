@@ -327,7 +327,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                         ->setDownload($kDownload)
                         ->setKunde($kKunde)
                         ->setBestellung($kBestellung)
-                        ->setErstellt('now()')
+                        ->setErstellt('NOW()')
                         ->save();
 
                     self::send_file_to_browser(

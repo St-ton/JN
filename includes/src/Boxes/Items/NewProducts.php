@@ -49,8 +49,8 @@ final class NewProducts extends AbstractBox
                             $stockFilterSQL
                             $parentSQL
                             AND cNeu = 'Y' 
-                            AND DATE_SUB(now(),INTERVAL $days DAY) < dErstellt
-                        ORDER BY rand() LIMIT " . $limit,
+                            AND DATE_SUB(NOW(),INTERVAL $days DAY) < dErstellt
+                        ORDER BY RAND() LIMIT " . $limit,
                     ReturnType::ARRAY_OF_OBJECTS
                 );
                 $productIDs = \array_map(function ($e) {

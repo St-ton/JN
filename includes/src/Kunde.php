@@ -535,7 +535,7 @@ class Kunde
         $obj->dGeburtstag    = DateHelper::convertDateToMysqlStandard($this->dGeburtstag);
 
         if (empty($obj->dVeraendert)) {
-            $obj->dVeraendert = 'now()';
+            $obj->dVeraendert = 'NOW()';
         }
         $obj->cLand   = $this->pruefeLandISO($obj->cLand);
         $this->kKunde = Shop::Container()->getDB()->insert('tkunde', $obj);

@@ -366,7 +366,7 @@ class SearchSpecial extends AbstractFilter
                         ? (int)$age
                         : 30;
                     $state->addCondition("tartikel.cNeu = 'Y' 
-                        AND DATE_SUB(now(), INTERVAL $alter_tage DAY) < tartikel.dErstellt");
+                        AND DATE_SUB(NOW(), INTERVAL $alter_tage DAY) < tartikel.dErstellt");
                     break;
                 case \SEARCHSPECIALS_TOPOFFERS:
                     $name = \Shop::Lang()->get('topOffer');
@@ -374,7 +374,7 @@ class SearchSpecial extends AbstractFilter
                     break;
                 case \SEARCHSPECIALS_UPCOMINGPRODUCTS:
                     $name = \Shop::Lang()->get('upcomingProducts');
-                    $state->addCondition('now() < tartikel.dErscheinungsdatum');
+                    $state->addCondition('NOW() < tartikel.dErscheinungsdatum');
                     break;
                 case \SEARCHSPECIALS_TOPREVIEWS:
                     $name = \Shop::Lang()->get('topReviews');

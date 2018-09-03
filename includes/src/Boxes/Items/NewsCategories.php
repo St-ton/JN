@@ -50,7 +50,7 @@ final class NewsCategories extends AbstractBox
                     WHERE tnewskategorie.kSprache = :lid
                         AND tnewskategorie.nAktiv = 1
                         AND tnews.nAktiv = 1
-                        AND tnews.dGueltigVon <= now()
+                        AND tnews.dGueltigVon <= NOW()
                         AND (tnews.cKundengruppe LIKE '%;-1;%' 
                             OR FIND_IN_SET(':cid', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                         AND tnews.kSprache = :lid

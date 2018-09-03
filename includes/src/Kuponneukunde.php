@@ -148,7 +148,7 @@ class Kuponneukunde
      */
     public function setErstellt($dErstellt): self
     {
-        $this->dErstellt = ($dErstellt === 'now()')
+        $this->dErstellt = strtoupper($dErstellt) === 'NOW()'
             ? date('Y-m-d H:i:s')
             : $dErstellt;
 

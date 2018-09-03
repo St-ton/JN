@@ -317,7 +317,7 @@ class JobQueue
         $cJobArt = '',
         $cTabelle = '',
         $cKey = '',
-        $dStartZeit = 'now()',
+        $dStartZeit = 'NOW()',
         $dZuletztGelaufen = null
     ) {
         $this->kJobQueue        = $kJobQueue;

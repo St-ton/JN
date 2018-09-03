@@ -155,7 +155,7 @@ class Kundendatenhistory extends MainModel
      */
     public function setErstellt($dErstellt): self
     {
-        $this->dErstellt = ($dErstellt === 'now()')
+        $this->dErstellt = (strtoupper($dErstellt) === 'NOW()')
             ? date('Y-m-d H:i:s')
             : $dErstellt;
 
@@ -276,7 +276,7 @@ class Kundendatenhistory extends MainModel
                             ->setJsonAlt(json_encode($oKundeOld))
                             ->setJsonNeu(json_encode($oKundeNew))
                             ->setQuelle($cQuelle)
-                            ->setErstellt('now()');
+                            ->setErstellt('NOW()');
 
         return $oKundendatenhistory->save() > 0;
     }

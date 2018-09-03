@@ -141,14 +141,14 @@ class BaseSearchSpecial extends AbstractFilter
                     : 30;
 
                 return "tartikel.cNeu = 'Y' 
-                    AND DATE_SUB(now(), INTERVAL $alter_tage DAY) < tartikel.dErstellt 
+                    AND DATE_SUB(NOW(), INTERVAL $alter_tage DAY) < tartikel.dErstellt 
                     AND tartikel.cNeu = 'Y'";
 
             case \SEARCHSPECIALS_TOPOFFERS:
                 return "tartikel.cTopArtikel = 'Y'";
 
             case \SEARCHSPECIALS_UPCOMINGPRODUCTS:
-                return 'now() < tartikel.dErscheinungsdatum';
+                return 'NOW() < tartikel.dErscheinungsdatum';
 
             case \SEARCHSPECIALS_TOPREVIEWS:
                 if (!$this->productFilter->hasRatingFilter()) {

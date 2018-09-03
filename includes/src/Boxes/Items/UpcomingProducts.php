@@ -41,8 +41,8 @@ final class UpcomingProducts extends AbstractBox
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
                             $stockFilterSQL
                             $parentSQL
-                            AND now() < tartikel.dErscheinungsdatum
-                        ORDER BY rand() LIMIT :lmt",
+                            AND NOW() < tartikel.dErscheinungsdatum
+                        ORDER BY RAND() LIMIT :lmt",
                     ['cid' => $customerGroupID, 'lmt' => $limit],
                     ReturnType::ARRAY_OF_OBJECTS
                 );

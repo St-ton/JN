@@ -535,7 +535,7 @@ function saveCoupon($oKupon, $oSprache_arr)
     } else {
         // neuer Kupon
         $oKupon->nVerwendungenBisher = 0;
-        $oKupon->dErstellt           = 'now()';
+        $oKupon->dErstellt           = 'NOW()';
         if (isset($oKupon->massCreationCoupon)) {
             $massCreationCoupon = $oKupon->massCreationCoupon;
             $oKupon->kKupon     = [];
@@ -705,7 +705,7 @@ function deactivateOutdatedCoupons()
         "UPDATE tkupon
             SET cAktiv = 'N'
             WHERE dGueltigBis > 0
-            AND dGueltigBis <= now()",
+            AND dGueltigBis <= NOW()",
         \DB\ReturnType::QUERYSINGLE
     );
 }

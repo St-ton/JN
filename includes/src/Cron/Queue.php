@@ -58,7 +58,7 @@ class Queue
             'SELECT * 
                 FROM tjobqueue 
                 WHERE nInArbeit = 0 
-                    AND dStartZeit < now()',
+                    AND dStartZeit < NOW()',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($queueData as $entry) {

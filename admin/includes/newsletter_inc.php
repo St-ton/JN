@@ -935,7 +935,7 @@ function getNewsletterEmpfaenger(int $kNewsletter)
     }
 
     $oNewsletterEmpfaenger = Shop::Container()->getDB()->query(
-        'SELECT count(*) AS nAnzahl
+        'SELECT COUNT(*) AS nAnzahl
             FROM tnewsletterempfaenger
             LEFT JOIN tsprache 
                 ON tsprache.kSprache = tnewsletterempfaenger.kSprache
@@ -978,7 +978,7 @@ function baueZeitAusDB($dZeitDB)
 function holeAbonnentenAnzahl($cAktiveSucheSQL)
 {
     return (int)Shop::Container()->getDB()->query(
-        'SELECT count(*) AS nAnzahl
+        'SELECT COUNT(*) AS nAnzahl
             FROM tnewsletterempfaenger
             WHERE kSprache = ' . (int)$_SESSION['kSprache'] . $cAktiveSucheSQL->cWHERE,
         \DB\ReturnType::SINGLE_OBJECT
@@ -997,7 +997,7 @@ function holeAbonnenten($cSQL, $cAktiveSucheSQL)
             DATE_FORMAT(tnewsletterempfaenger.dEingetragen, '%d.%m.%Y %H:%i') AS dEingetragen_de,
             DATE_FORMAT(tnewsletterempfaenger.dLetzterNewsletter, '%d.%m.%Y %H:%i') AS dLetzterNewsletter_de, 
             tkunde.kKundengruppe, tkundengruppe.cName, tnewsletterempfaengerhistory.cOptIp, 
-             DATE_FORMAT(tnewsletterempfaengerhistory.dOptCode, '%d.%m.%Y %H:%i') AS optInDate
+            DATE_FORMAT(tnewsletterempfaengerhistory.dOptCode, '%d.%m.%Y %H:%i') AS optInDate
             FROM tnewsletterempfaenger
             LEFT JOIN tkunde 
                 ON tkunde.kKunde = tnewsletterempfaenger.kKunde

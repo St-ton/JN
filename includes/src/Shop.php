@@ -1599,6 +1599,8 @@ final class Shop
     /**
      * Return version of files
      *
+     * @deprecated since 5.0.0
+     *
      * @return string
      */
     public static function getVersion(): string

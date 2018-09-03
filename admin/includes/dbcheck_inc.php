@@ -6,12 +6,13 @@
 
 /**
  * @param bool $extended
+ * @param bool $clearCache
  * @return array
  */
-function getDBStruct(bool $extended = false)
+function getDBStruct(bool $extended = false, bool $clearCache = false)
 {
     static $dbStruct = [
-        'normal' => null,
+        'normal'   => null,
         'extended' => null,
     ];
 
@@ -19,7 +20,17 @@ function getDBStruct(bool $extended = false)
     $database     = Shop::Container()->getDB()->getConfig()['database'];
     $mysqlVersion = DBMigrationHelper::getMySQLVersion();
 
+    if ($clearCache) {
+        Shop::Cache()->flushTags([CACHING_GROUP_CORE . '_getDBStruct']);
+        $dbStruct['extended'] = null;
+        $dbStruct['normal']   = null;
+    }
+
     if ($extended) {
+        $cacheID = 'getDBStruct_extended';
+        if ($dbStruct['extended'] === null) {
+            $dbStruct['extended'] = Shop::Cache()->get($cacheID);
+        }
         $cDBStruct_arr =& $dbStruct['extended'];
 
         if (version_compare($mysqlVersion->innodb->version, '5.6', '>=')) {
@@ -38,20 +49,32 @@ function getDBStruct(bool $extended = false)
             }
         }
     } else {
+        $cacheID = 'getDBStruct_normal';
+        if ($dbStruct['normal'] === null) {
+            $dbStruct['normal'] = Shop::Cache()->get($cacheID);
+        }
         $cDBStruct_arr =& $dbStruct['normal'];
     }
 
-    if ($cDBStruct_arr === null) {
+    if ($cDBStruct_arr === false) {
         $oData_arr = Shop::Container()->getDB()->queryPrepared(
-            "SELECT `TABLE_NAME`, `ENGINE`, `TABLE_COLLATION`, `TABLE_ROWS`, `TABLE_COMMENT`,
-                    `DATA_LENGTH` + `INDEX_LENGTH` AS DATA_SIZE
-                FROM information_schema.TABLES
-                WHERE `TABLE_SCHEMA` = :schema
-                    AND `TABLE_NAME` NOT LIKE 'xplugin_%'
-                ORDER BY `TABLE_NAME`",
+            "SELECT t.`TABLE_NAME`, t.`ENGINE`, `TABLE_COLLATION`, t.`TABLE_ROWS`, t.`TABLE_COMMENT`,
+                    t.`DATA_LENGTH` + t.`INDEX_LENGTH` AS DATA_SIZE,
+                    COUNT(c.COLUMN_NAME) TEXT_FIELDS,
+                    COUNT(IF(c.COLLATION_NAME = 'utf8_unicode_ci', NULL, c.COLLATION_NAME)) FIELD_COLLATIONS
+                FROM information_schema.TABLES t
+                LEFT JOIN information_schema.COLUMNS c ON c.TABLE_NAME = t.TABLE_NAME
+                                                       AND c.TABLE_SCHEMA = t.TABLE_SCHEMA
+                                                       AND (c.COLUMN_TYPE = 'text' OR c.COLLATION_NAME != 'utf8_unicode_ci')
+                WHERE t.`TABLE_SCHEMA` = :schema
+                    AND t.`TABLE_NAME` NOT LIKE 'xplugin_%'
+                GROUP BY t.`TABLE_NAME`, t.`ENGINE`, `TABLE_COLLATION`, t.`TABLE_ROWS`, t.`TABLE_COMMENT`,
+                    t.`DATA_LENGTH` + t.`INDEX_LENGTH`
+                ORDER BY t.`TABLE_NAME`",
             ['schema' => $database],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
+
         foreach ($oData_arr as $oData) {
             $cTable = $oData->TABLE_NAME;
 
@@ -91,8 +114,13 @@ function getDBStruct(bool $extended = false)
                 }
             }
             if ($extended) {
-                $cDBStruct_arr[$cTable]->Migration = DBMigrationHelper::isTableNeedMigration($cTable);
+                $cDBStruct_arr[$cTable]->Migration = DBMigrationHelper::isTableNeedMigration($oData);
             }
+        }
+        Shop::Cache()->set($cacheID, $cDBStruct_arr, [CACHING_GROUP_CORE, CACHING_GROUP_CORE . '_getDBStruct']);
+    } elseif ($extended) {
+        foreach (array_keys($cDBStruct_arr) as $cTable) {
+            $cDBStruct_arr[$cTable]->Locked = $dbLocked[$cTable] ?? 0;
         }
     }
 
@@ -108,7 +136,7 @@ function getDBFileStruct()
     $versionStr = $version->getMajor().'-'.$version->getMinor().'-'.$version->getPatch();
 
     if ($version->hasPreRelease()) {
-        $preRelease = $version->getPreRelease();
+        $preRelease  = $version->getPreRelease();
         $versionStr .= '-'.$preRelease->getGreek().'-'.$preRelease->getReleaseNumber;
     }
 
@@ -383,7 +411,7 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
                                 }
                             }
                         }
-                        if (Shop::Container()->getDB()->executeQuery(
+                        if ((($migration & DBMigrationHelper::MIGRATE_TABLE) === 0) || Shop::Container()->getDB()->executeQuery(
                             DBMigrationHelper::sqlMoveToInnoDB($oTable),
                             \DB\ReturnType::QUERYSINGLE
                         )) {

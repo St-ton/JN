@@ -182,6 +182,8 @@
             }
             if (typeof table !== 'undefined' && table !== null && table !== '') {
                 updateModalWait('Migrieren von ' + table + ' - Schritt ' + step);
+            } else {
+                table = '';
             }
             if (typeof exclude === 'undefined' && exclude !== null) {
                 exclude = [];

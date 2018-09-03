@@ -32,7 +32,7 @@ if (isset($_POST['update']) && StringHandler::filterXSS($_POST['update']) === 's
     exit;
 }
 
-$cDBStruct_arr = getDBStruct(true);
+$cDBStruct_arr = getDBStruct(true, true);
 $Einstellungen = Shop::getSettings([
     CONF_GLOBAL,
     CONF_ARTIKELUEBERSICHT,

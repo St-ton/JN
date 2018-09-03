@@ -17,7 +17,6 @@ class Migration_20180828131100 extends Migration implements IMigration
     public function up()
     {
         $this->execute("ALTER TABLE `tjtllog` CHANGE COLUMN `cLog` `cLog` LONGTEXT NOT NULL");
-        $this->execute("ALTER TABLE `tnewsletterempfaenger` CHANGE COLUMN `dLetzterNewsletter` `dLetzterNewsletter` DATETIME DEFAULT NULL");
         $this->execute("ALTER TABLE `tartikelwarenlager` CHANGE COLUMN `dZulaufDatum` `dZulaufDatum` DATETIME DEFAULT NULL");
         $this->execute("ALTER TABLE `tartikel` CHANGE COLUMN `dErscheinungsdatum` `dErscheinungsdatum` DATE DEFAULT NULL");
         $this->execute("ALTER TABLE `tartikel` CHANGE COLUMN `dErstellt` `dErstellt` DATE DEFAULT NULL");
@@ -47,7 +46,12 @@ class Migration_20180828131100 extends Migration implements IMigration
         $this->execute("UPDATE `tnummern` SET `dAktualisiert` = NULL WHERE `dAktualisiert` = '0000-00-00 00:00:00'");
         $this->execute("UPDATE `tartikel` SET `dErscheinungsdatum` = NULL WHERE `dErscheinungsdatum` = '0000-00-00'");
         $this->execute("UPDATE `tartikel` SET `dErstellt` = NULL WHERE `dErstellt` = '0000-00-00'");
+        $this->execute("UPDATE `tartikel` SET `dZulaufDatum` = NULL WHERE `dZulaufDatum` = '0000-00-00'");
+        $this->execute("UPDATE `tartikel` SET `dMHD` = NULL WHERE `dMHD` = '0000-00-00'");
         $this->execute("UPDATE `tartikel` SET `dLetzteAktualisierung` = NULL WHERE `dLetzteAktualisierung` = '0000-00-00 00:00:00'");
+        $this->execute("UPDATE `texportformatqueuebearbeitet` SET `dStartZeit` = NULL WHERE `dStartZeit` = '0000-00-00 00:00:00'");
+        $this->execute("UPDATE `texportformatqueuebearbeitet` SET `dZuletztGelaufen` = NULL WHERE `dZuletztGelaufen` = '0000-00-00 00:00:00'");
+        $this->execute("UPDATE `tnewsletterempfaengerhistory` SET `dOptCode` = NULL WHERE `dOptCode` = '0000-00-00 00:00:00'");
     }
 
     public function down()

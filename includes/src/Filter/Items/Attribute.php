@@ -429,7 +429,7 @@ class Attribute extends BaseAttribute
         }
         $state   = $this->getState($data['oAktuelleKategorie'] ?? null);
         $baseQry = $this->productFilter->getFilterSQL()->getBaseQuery($state);
-        $cacheID = 'fltr_' . __CLASS__ . \md5($baseQry);
+        $cacheID = 'fltr_' . \str_replace('\\', '', __CLASS__) . \md5($baseQry);
         if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
             $this->options = $cached;
 

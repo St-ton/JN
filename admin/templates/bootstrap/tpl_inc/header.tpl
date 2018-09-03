@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex,nofollow" />
     <title>JTL-Shop Administration</title>
-    {assign var=urlPostfix value='?v='|cat:$shopVersion}
+    {assign var=urlPostfix value='?v='|cat:$adminTplVersion}
     <link type="image/x-icon" href="{$faviconAdminURL}" rel="icon" />
     {$admin_css}
     <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}lib/codemirror.css{$urlPostfix}" />

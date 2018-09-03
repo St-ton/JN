@@ -111,6 +111,7 @@ final class LinkGroupList implements LinkGroupListInterface
     {
         $unassigned = $this->db->query(
             "SELECT tlink.*,tlinksprache.cISOSprache, 
+                tlink.cName AS displayName, 
                 tlinksprache.cName AS localizedName, 
                 tlinksprache.cTitle AS localizedTitle, 
                 tsprache.kSprache, 
@@ -207,6 +208,7 @@ final class LinkGroupList implements LinkGroupListInterface
     {
         $specialPages = $this->db->query(
             "SELECT tlink.*,tlinksprache.cISOSprache, 
+                tlink.cName AS displayName, 
                 tlinksprache.cName AS localizedName, 
                 tlinksprache.cTitle AS localizedTitle, 
                 tsprache.kSprache, 
@@ -280,6 +282,7 @@ final class LinkGroupList implements LinkGroupListInterface
         $staticRoutes = $this->db->query(
             "SELECT tspezialseite.kSpezialseite, tspezialseite.cName AS baseName, tspezialseite.cDateiname, 
                 tspezialseite.nLinkart, tlink.kLink, 
+                tlink.cName AS displayName,
                 tlinksprache.cName AS localizedName,
                 tlinksprache.cTitle AS localizedTitle,
                 tlinksprache.cContent AS content,

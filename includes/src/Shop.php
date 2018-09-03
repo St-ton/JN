@@ -4,9 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTLShop\SemVer\Version;
+use JTLShop\SemVer\Version\Versionable;
 use Services\Container;
 use DB\Services as DbService;
-
 use JTL\ProcessingHandler\NiceDBHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Formatter\LineFormatter;
@@ -1582,33 +1583,35 @@ final class Shop
     }
 
     /**
-     * @return int
+     * @return Version
      */
-    public static function getShopVersion(): int
+    public static function getShopDatabaseVersion(): Version
     {
-        $oVersion = self::Container()->getDB()->query('SELECT nVersion FROM tversion', \DB\ReturnType::SINGLE_OBJECT);
+        $version = self::Container()->getDB()->query('SELECT nVersion FROM tversion', \DB\ReturnType::SINGLE_OBJECT)->nVersion;
 
-        return (isset($oVersion->nVersion) && (int)$oVersion->nVersion > 0)
-            ? (int)$oVersion->nVersion
-            : 0;
+        if ($version === '5' || $version === 5) {
+            $version = '5.0.0';
+        }
+
+        return Version::parse($version);
     }
 
     /**
      * Return version of files
      *
-     * @return int
+     * @return string
      */
-    public static function getVersion(): int
+    public static function getVersion(): string
     {
-        return JTL_VERSION;
+        return APPLICATION_VERSION;
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function _getVersion(): int
+    public function _getVersion(): string
     {
-        return JTL_VERSION;
+        return APPLICATION_VERSION;
     }
 
     /**

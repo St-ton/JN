@@ -6,6 +6,8 @@
 
 namespace Network;
 
+use JTLShop\SemVer\Version;
+
 /**
  * Class JTLApi
  * @package Network
@@ -13,6 +15,8 @@ namespace Network;
 final class JTLApi
 {
     const URI = 'https://api.jtl-software.de/shop';
+
+    const URI_VERSION = 'https://api.jtl-shop.de';
 
     /**
      * @var array
@@ -59,7 +63,9 @@ final class JTLApi
     {
         if (!isset($this->session['rs']['subscription'])) {
 
-            $subscription = $this->call('check/subscription', [
+
+            $uri          = self::URI . '/check/subscription';
+            $subscription = $this->call($uri, [
                 'key'    => $this->nice->getAPIKey(),
                 'domain' => $this->nice->getDomain(),
             ]);
@@ -77,7 +83,8 @@ final class JTLApi
     public function getAvailableVersions()
     {
         if (!isset($this->session['rs']['versions'])) {
-            $this->session['rs']['versions'] = $this->call('v2/versions');
+            $uri = self::URI_VERSION . '/versions';
+            $this->session['rs']['versions'] = $this->call($uri);
         }
 
         return $this->session['rs']['versions'];
@@ -86,21 +93,23 @@ final class JTLApi
     /**
      * @return mixed
      */
-    public function getLatestVersion()
+    public function getLatestVersion(): Version
     {
-        $nVersion      = $this->shop->_getVersion();
-        $nMinorVersion = (int)\JTL_MINOR_VERSION;
-        $oVersions     = $this->getAvailableVersions();
+        $shopVersion       = $this->shop->_getVersion();
+        $parsedShopVersion = Version::parse($shopVersion);
+        $oVersions         = $this->getAvailableVersions();
 
-        $oStableVersions = \array_filter((array)$oVersions, function ($v) use ($nVersion, $nMinorVersion) {
-            return $v->channel === 'Stable' && (int)$v->version >= $nVersion;
+        $oNewerVersions = \array_filter((array)$oVersions, function ($v) use ($parsedShopVersion) {
+            return Version::parse($v->reference)->greaterThan($parsedShopVersion);
         });
 
-        if (\count($oStableVersions) > 0) {
-            $oVersions = $oStableVersions;
-        }
+        if (\count($oNewerVersions) > 0) {
+            return $oNewerVersions;
+        } else {
+            $oVersion = \end($oVersions);
 
-        return \end($oVersions);
+            return Version::parse($oVersion->reference);
+        }
     }
 
     /**
@@ -108,17 +117,14 @@ final class JTLApi
      */
     public function hasNewerVersion(): bool
     {
-        if (\JTL_MINOR_VERSION === '#JTL_MINOR_VERSION#') {
+        if (\APPLICATION_BUILD_SHA === '#DEV#') {
             return false;
         }
 
-        $nVersion      = $this->shop->_getVersion();
-        $nMinorVersion = (int)\JTL_MINOR_VERSION;
-        $oVersion      = $this->getLatestVersion();
+        $shopVersion = $this->shop->_getVersion();
+        $oVersion    = $this->getLatestVersion();
 
-        return $oVersion
-            && ((int)$oVersion->version > $nVersion
-                || ((int)$oVersion->version == $nVersion && $oVersion->build > $nMinorVersion));
+        return isset($oVersion) && $oVersion->greaterThan(Version::parse($shopVersion));
     }
 
     /**
@@ -128,7 +134,6 @@ final class JTLApi
      */
     private function call($uri, $data = null)
     {
-        $uri     = self::URI . '/' . \ltrim($uri, '/');
         $content = \RequestHelper::http_get_contents($uri, 10, $data);
 
         return empty($content) ? null : \json_decode($content);

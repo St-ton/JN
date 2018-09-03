@@ -47,7 +47,7 @@
         fileActionSettings: {
             removeTitle: 'Datei entfernen',
             uploadTitle: 'Datei hochladen',
-            indicatorNewTitle: 'Zum endgültigen hochladen, bitte speichern.',
+            indicatorNewTitle: 'Datei ausgewählt, bitte Template-Einstellungen speichern.',
             indicatorSuccessTitle: 'Hochgeladen',
             indicatorErrorTitle: 'Upload Fehler',
             indicatorLoadingTitle: 'Hochladen ...'

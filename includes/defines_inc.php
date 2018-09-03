@@ -5,8 +5,12 @@
  */
 
 // Version
+use JTLShop\SemVer\Version;
+
 define('APPLICATION_VERSION', '5.0.0');
 define('APPLICATION_BUILD_SHA', '#DEV#');
+define('JTL_VERSION', sprintf('%d%02d', Version::parse(APPLICATION_VERSION)->getMajor(), Version::parse(APPLICATION_VERSION)->getMinor())); // DEPRECATED since 5.0.0
+define('JTL_MINOR_VERSION',Version::parse(APPLICATION_VERSION)->getPatch()); // DEPRECATED since 5.0.0
 define('JTL_MIN_WAWI_VERSION', 100000);
 // Einstellungssektionen
 define('CONF_GLOBAL', 1);

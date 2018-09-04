@@ -5,7 +5,6 @@
  */
 
 use JTLShop\SemVer\Version;
-use JTLShop\SemVer\Version\Versionable;
 use Services\Container;
 use DB\Services as DbService;
 use JTL\ProcessingHandler\NiceDBHandler;

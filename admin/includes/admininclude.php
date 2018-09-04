@@ -29,8 +29,8 @@ require PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_tools.php';
 
-define('JTL_VERSION', sprintf('%d%02d', (int)Version::parse(APPLICATION_VERSION)->getMajor(), Version::parse(APPLICATION_VERSION)->getMinor())); // DEPRECATED since 5.0.0
-define('JTL_MINOR_VERSION', (int)Version::parse(APPLICATION_VERSION)->getPatch()); // DEPRECATED since 5.0.0
+define('JTL_VERSION', (int) sprintf('%d%02d', Version::parse(APPLICATION_VERSION)->getMajor(), Version::parse(APPLICATION_VERSION)->getMinor())); // DEPRECATED since 5.0.0
+define('JTL_MINOR_VERSION', (int) Version::parse(APPLICATION_VERSION)->getPatch()); // DEPRECATED since 5.0.0
 
 if (!function_exists('Shop')) {
     /**

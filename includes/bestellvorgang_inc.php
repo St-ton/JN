@@ -2052,19 +2052,11 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
         $ret['email'] = 4;
     }
 
-    if (empty($_SESSION['check_plzort'])
-        && $data['plz']
-        && $data['ort']
-        && $data['land']
-        && $conf['kunden']['kundenregistrierung_abgleichen_plz'] === 'Y'
+    if ($conf['kunden']['kundenregistrierung_abgleichen_plz'] === 'Y'
+        && !valid_plzort($data['plz'], $data['ort'], $data['land'])
     ) {
-        if (!valid_plzort($data['plz'], $data['ort'], $data['land'])) {
-            $ret['plz']               = 2;
-            $ret['ort']               = 2;
-            $_SESSION['check_plzort'] = 1;
-        }
-    } else {
-        unset($_SESSION['check_plzort']);
+        $ret['plz'] = 2;
+        $ret['ort'] = 2;
     }
 
     foreach ([
@@ -2736,8 +2728,8 @@ function valid_plzort(string $plz, string $ort,string $land): bool
         'SELECT kPLZ
         FROM tplz
         WHERE cPLZ = :plz
-        AND INSTR(cOrt COLLATE utf8_german2_ci, :ort)
-        AND cLandISO = :land',
+            AND INSTR(cOrt COLLATE utf8_german2_ci, :ort)
+            AND cLandISO = :land',
         [
             'plz'  => $plz,
             'ort'  => $ort,

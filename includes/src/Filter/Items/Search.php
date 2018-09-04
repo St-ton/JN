@@ -525,7 +525,7 @@ class Search extends AbstractFilter
                 ->setCount((int)$searchFilter->nAnzahl);
         }
         $this->options = $options;
-        $this->productFilter->getCache()->set($cacheID, $options, [CACHING_GROUP_FILTER]);
+        $this->productFilter->getCache()->set($cacheID, $options, [\CACHING_GROUP_FILTER]);
 
         return $options;
     }

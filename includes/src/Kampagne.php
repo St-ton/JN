@@ -229,7 +229,7 @@ class Kampagne
                     if ((int)$oKampagne->nDynamisch === 0) {
                         $oKampagnenVorgang->cParamWert = $oKampagne->cWert;
                     }
-                    $oKampagnenVorgang->dErstellt = 'now()';
+                    $oKampagnenVorgang->dErstellt = 'NOW()';
 
                     Shop::Container()->getDB()->insert('tkampagnevorgang', $oKampagnenVorgang);
                     // Kampagnenbesucher in die Session
@@ -259,7 +259,7 @@ class Kampagne
                     $oKampagnenVorgang->kKey         = $_SESSION['oBesucher']->kBesucher;
                     $oKampagnenVorgang->fWert        = 1.0;
                     $oKampagnenVorgang->cParamWert   = $oKampagne->cWert;
-                    $oKampagnenVorgang->dErstellt    = 'now()';
+                    $oKampagnenVorgang->dErstellt    = 'NOW()';
 
                     if ((int)$oKampagne->nDynamisch === 1) {
                         $oKampagnenVorgang->cParamWert = RequestHelper::verifyGPDataString($oKampagne->cParameter);
@@ -291,7 +291,7 @@ class Kampagne
             $oKampagnenVorgang->kKey         = $kKey;
             $oKampagnenVorgang->fWert        = $fWert;
             $oKampagnenVorgang->cParamWert   = $_SESSION['Kampagnenbesucher']->cWert;
-            $oKampagnenVorgang->dErstellt    = 'now()';
+            $oKampagnenVorgang->dErstellt    = 'NOW()';
 
             if ($customData !== null) {
                 $oKampagnenVorgang->cCustomData = strlen($customData) > 255

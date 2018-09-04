@@ -1959,7 +1959,7 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
     $oPlugin->nVersion             = (int)$versionNode[$nLastVersionKey . ' attr']['nr'];
     $oPlugin->nXMLVersion          = $nXMLVersion;
     $oPlugin->nPrio                = 0;
-    $oPlugin->dZuletztAktualisiert = 'now()';
+    $oPlugin->dZuletztAktualisiert = 'NOW()';
     $oPlugin->dErstellt            = $versionNode[$nLastVersionKey]['CreateDate'];
     $oPlugin->bBootstrap           = is_file($basePath . PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' . 'bootstrap.php')
         ? 1
@@ -1994,7 +1994,7 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
     }
     $oPlugin->dInstalliert = (isset($oPluginOld->kPlugin) && $oPluginOld->kPlugin > 0)
         ? $oPluginOld->dInstalliert
-        : 'now()';
+        : 'NOW()';
     $kPlugin               = Shop::Container()->getDB()->insert('tplugin', $oPlugin);
     $nVersion              = (int)$versionNode[$nLastVersionKey . ' attr']['nr'];
     $oPlugin->kPlugin      = $kPlugin;
@@ -3178,7 +3178,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
         $oExportformat->nSpecial         = 0;
         $oExportformat->nVarKombiOption  = $Format_arr['VarCombiOption'] ?? 1;
         $oExportformat->nSplitgroesse    = $Format_arr['SplitSize'] ?? 0;
-        $oExportformat->dZuletztErstellt = '0000-00-00 00:00:00';
+        $oExportformat->dZuletztErstellt = '_DBNULL_';
         if (is_array($oExportformat->cKopfzeile)) {
             //@todo: when cKopfzeile is empty, this becomes an array with indices [0] => '' and [0 attr] => ''
             $oExportformat->cKopfzeile = $oExportformat->cKopfzeile[0];

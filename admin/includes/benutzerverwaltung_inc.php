@@ -613,7 +613,7 @@ function benutzerverwaltungActionGroupDelete(JTLSmarty $smarty, array &$messages
 {
     $kAdminlogingruppe = (int)$_POST['id'];
     $oResult           = Shop::Container()->getDB()->query(
-        'SELECT count(*) AS member_count
+        'SELECT COUNT(*) AS member_count
             FROM tadminlogin
             WHERE kAdminlogingruppe = ' . $kAdminlogingruppe,
         \DB\ReturnType::SINGLE_OBJECT

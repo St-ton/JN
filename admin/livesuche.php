@@ -412,39 +412,32 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
     }
     $smarty->assign('tab', 'mapping');
 }
-
-$Sprachen = Sprache::getAllLanguages();
-// Anzahl Suchanfragen
-$nAnzahlSuchanfragen = Shop::Container()->getDB()->query(
-    'SELECT count(*) AS nAnzahl
+$Sprachen                    = Sprache::getAllLanguages();
+$nAnzahlSuchanfragen         = Shop::Container()->getDB()->query(
+    'SELECT COUNT(*) AS nAnzahl
         FROM tsuchanfrage
         WHERE kSprache = ' . (int)$_SESSION['kSprache'] . $cLivesucheSQL->cWhere,
     \DB\ReturnType::SINGLE_OBJECT
 );
-// Anzahl Suchanfrageerfolglos
 $nAnzahlSuchanfrageerfolglos = Shop::Container()->getDB()->query(
-    'SELECT count(*) AS nAnzahl
+    'SELECT COUNT(*) AS nAnzahl
         FROM tsuchanfrageerfolglos
         WHERE kSprache = ' . (int)$_SESSION['kSprache'],
     \DB\ReturnType::SINGLE_OBJECT
 );
-
-// Anzahl SuchanfragenMapping
-$nAnzahlSuchanfragenMapping = Shop::Container()->getDB()->query(
-    'SELECT count(*) AS nAnzahl
+$nAnzahlSuchanfragenMapping  = Shop::Container()->getDB()->query(
+    'SELECT COUNT(*) AS nAnzahl
         FROM tsuchanfragemapping
         WHERE kSprache = ' . (int)$_SESSION['kSprache'],
     \DB\ReturnType::SINGLE_OBJECT
 );
-
-// Paginationen
-$oPagiSuchanfragen = (new Pagination('suchanfragen'))
+$oPagiSuchanfragen           = (new Pagination('suchanfragen'))
     ->setItemCount($nAnzahlSuchanfragen->nAnzahl)
     ->assemble();
-$oPagiErfolglos = (new Pagination('erfolglos'))
+$oPagiErfolglos              = (new Pagination('erfolglos'))
     ->setItemCount($nAnzahlSuchanfrageerfolglos->nAnzahl)
     ->assemble();
-$oPagiMapping = (new Pagination('mapping'))
+$oPagiMapping                = (new Pagination('mapping'))
     ->setItemCount($nAnzahlSuchanfragenMapping->nAnzahl)
     ->assemble();
 

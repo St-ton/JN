@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -89,7 +89,7 @@ class cache_redis implements ICachingMethod
             // set custom prefix
             $redis->setOption(\Redis::OPT_PREFIX, $this->options['prefix']);
             // set php serializer for objects and arrays
-            $redis->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
+            $redis->setOption(\Redis::OPT_SERIALIZER, (string)\Redis::SERIALIZER_PHP);
 
             $this->_redis = $redis;
 
@@ -239,7 +239,7 @@ class cache_redis implements ICachingMethod
             $keys[] = self::_keyFromTagName($tag);
         }
 
-        return $this->flush($keys);
+        return $this->flush($keys) ? \count($tags) : 0;
     }
 
     /**
@@ -281,7 +281,7 @@ class cache_redis implements ICachingMethod
      */
     public function keyExists($cacheID): bool
     {
-        return $this->_redis->exists($cacheID);
+        return (bool)$this->_redis->exists($cacheID);
     }
 
     /**

@@ -995,10 +995,10 @@ function plausiNeukundenKupon()
                             trim($_SESSION['Kunde']->cLand)
                         );
                         $Options = [
-                            'Kupon' => $NeukundenKupon->kKupon,
-                            'Email' => $_SESSION['Kunde']->cMail,
+                            'Kupon'     => $NeukundenKupon->kKupon,
+                            'Email'     => $_SESSION['Kunde']->cMail,
                             'DatenHash' => $hash,
-                            'Erstellt' => 'now()',
+                            'Erstellt'  => 'NOW()',
                             'Verwendet' => 'N'
                         ];
 

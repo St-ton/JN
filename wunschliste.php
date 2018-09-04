@@ -300,7 +300,7 @@ if (isset($CWunschliste->kWunschliste) && $CWunschliste->kWunschliste > 0) {
         $oKampagnenVorgang->kKey         = $_SESSION['oBesucher']->kBesucher;
         $oKampagnenVorgang->fWert        = 1.0;
         $oKampagnenVorgang->cParamWert   = $oKampagne->cWert;
-        $oKampagnenVorgang->dErstellt    = 'now()';
+        $oKampagnenVorgang->dErstellt    = 'NOW()';
 
         Shop::Container()->getDB()->insert('tkampagnevorgang', $oKampagnenVorgang);
         $_SESSION['Kampagnenbesucher'] = $oKampagne;

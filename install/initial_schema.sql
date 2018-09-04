@@ -243,8 +243,8 @@ CREATE TABLE `tartikel` (
   `cVPEEinheit` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
   `cSuchbegriffe` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `nSort` int(11) NOT NULL DEFAULT 0,
-  `dErscheinungsdatum` date NOT NULL DEFAULT '0000-00-00',
-  `dErstellt` date NOT NULL DEFAULT '0000-00-00',
+  `dErscheinungsdatum` date DEFAULT NULL,
+  `dErstellt` date DEFAULT NULL,
   `dLetzteAktualisierung` datetime DEFAULT NULL,
   `dZulaufDatum` date DEFAULT NULL,
   `dMHD` date DEFAULT NULL,
@@ -451,7 +451,7 @@ CREATE TABLE `tartikelwarenlager` (
   `kWarenlager` int(10) unsigned NOT NULL,
   `fBestand` double unsigned NOT NULL,
   `fZulauf` double unsigned NOT NULL,
-  `dZulaufDatum` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `dZulaufDatum` datetime NOT NULL DEFAULT NULL,
   PRIMARY KEY (`kArtikel`,`kWarenlager`),
   KEY `dZulaufDatum` (`dZulaufDatum`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -1031,7 +1031,7 @@ CREATE TABLE `tcron` (
   `nAlleXStd` int(10) unsigned NOT NULL DEFAULT 0,
   `dStart` datetime NOT NULL,
   `dStartZeit` time NOT NULL,
-  `dLetzterStart` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `dLetzterStart` datetime DEFAULT NULL,
   PRIMARY KEY (`kCron`),
   KEY `dStart` (`dStart`,`dLetzterStart`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -1738,7 +1738,7 @@ CREATE TABLE `tjobqueue` (
   `nLastArticleID` int(10) unsigned NOT NULL DEFAULT 0,
   `nInArbeit` int(10) unsigned NOT NULL DEFAULT 0,
   `dStartZeit` datetime NOT NULL,
-  `dZuletztGelaufen` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `dZuletztGelaufen` datetime DEFAULT NULL,
   PRIMARY KEY (`kJobQueue`),
   KEY `dStartZeit` (`dStartZeit`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -2107,10 +2107,10 @@ CREATE TABLE `tkunde` (
   `cSperre` varchar(2) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'N',
   `fGuthaben` double(10,2) NOT NULL DEFAULT 0.00,
   `cNewsletter` char(1) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `dGeburtstag` date NOT NULL DEFAULT '0000-00-00',
+  `dGeburtstag` date DEFAULT NULL,
   `fRabatt` double(5,2) NOT NULL DEFAULT 0.00,
   `cHerkunft` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `dErstellt` date NOT NULL DEFAULT '0000-00-00',
+  `dErstellt` date DEFAULT NULL,
   `dVeraendert` datetime NOT NULL,
   `cAktiv` char(1) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Y',
   `cAbgeholt` char(1) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'N',
@@ -2415,7 +2415,7 @@ CREATE TABLE `tlastjob` (
   `cType` enum('RPT','STD') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'STD',
   `nJob` int(11) NOT NULL,
   `cJobName` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `dErstellt` datetime NOT NULL,
+  `dErstellt` datetime DEFAULT NULL,
   `nCounter` int(10) NOT NULL DEFAULT 0,
   `nFinished` int(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`kJob`),
@@ -2424,7 +2424,7 @@ CREATE TABLE `tlastjob` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tlastjob` DISABLE KEYS */;
-INSERT INTO `tlastjob` VALUES (1,'RPT',1,NULL,'2010-10-15 16:02:18',0,1),(2,'RPT',2,NULL,'0000-00-00 00:00:00',0,1),(3,'RPT',3,NULL,'2010-10-15 16:02:18',0,1),(4,'RPT',4,NULL,'0000-00-00 00:00:00',0,1);
+INSERT INTO `tlastjob` VALUES (1,'RPT',1,NULL,'2010-10-15 16:02:18',0,1),(2,'RPT',2,NULL,NULL,0,1),(3,'RPT',3,NULL,'2010-10-15 16:02:18',0,1),(4,'RPT',4,NULL,NULL,0,1);
 /*!40000 ALTER TABLE `tlastjob` ENABLE KEYS */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -2899,7 +2899,7 @@ CREATE TABLE `tnewsletterempfaenger` (
   `cOptCode` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `cLoeschCode` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `dEingetragen` datetime NOT NULL,
-  `dLetzterNewsletter` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `dLetzterNewsletter` datetime DEFAULT NULL,
   PRIMARY KEY (`kNewsletterEmpfaenger`),
   KEY `kSprache` (`kSprache`),
   KEY `kKunde` (`kKunde`)
@@ -3096,13 +3096,13 @@ CREATE TABLE `tnewsmonatsuebersicht` (
 CREATE TABLE `tnummern` (
   `nNummer` int(10) unsigned DEFAULT NULL,
   `nArt` tinyint(3) unsigned NOT NULL,
-  `dAktualisiert` datetime NOT NULL,
+  `dAktualisiert` datetime DEFAULT NULL,
   PRIMARY KEY (`nArt`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tnummern` DISABLE KEYS */;
-INSERT INTO `tnummern` VALUES (10000,1,'0000-00-00 00:00:00'),(1,2,'0000-00-00 00:00:00');
+INSERT INTO `tnummern` VALUES (10000,1),(1,2);
 /*!40000 ALTER TABLE `tnummern` ENABLE KEYS */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;

@@ -42,7 +42,7 @@
             {block name='price-snippets'}
                 <meta itemprop="price" content="{if $Artikel->Preise->oPriceRange->isRange()}{$Artikel->Preise->oPriceRange->minBruttoPrice}{else}{$Artikel->Preise->fVKBrutto}{/if}">
                 <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->getName()}">
-                {if $Artikel->Preise->Sonderpreis_aktiv && $Artikel->dSonderpreisStart_en !== '0000-00-00' && $Artikel->dSonderpreisEnde_en !== '0000-00-00'}
+                {if $Artikel->Preise->Sonderpreis_aktiv && $Artikel->dSonderpreisStart_en !== null && $Artikel->dSonderpreisEnde_en !== null}
                     <meta itemprop="validFrom" content="{$Artikel->dSonderpreisStart_en}">
                     <meta itemprop="validThrough" content="{$Artikel->dSonderpreisEnde_en}">
                 {/if}

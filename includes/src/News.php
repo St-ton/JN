@@ -355,7 +355,7 @@ class News extends MainModel
      */
     public function setErstellt($dErstellt)
     {
-        $this->dErstellt = ($dErstellt === 'now()')
+        $this->dErstellt = (strtoupper($dErstellt) === 'NOW()')
             ? date('Y-m-d H:i:s')
             : $dErstellt;
 
@@ -376,7 +376,7 @@ class News extends MainModel
      */
     public function setGueltigVon($dGueltigVon)
     {
-        $this->dGueltigVon = ($dGueltigVon === 'now()')
+        $this->dGueltigVon = (strtoupper($dGueltigVon) === 'NOW()')
             ? date('Y-m-d H:i:s')
             : $dGueltigVon;
 
@@ -397,7 +397,7 @@ class News extends MainModel
      */
     public function setGueltigVonJS($dGueltigVonJS)
     {
-        $this->dGueltigVonJS = ($dGueltigVonJS === 'now()')
+        $this->dGueltigVonJS = (strtoupper($dGueltigVonJS) === 'NOW()')
             ? date('Y-m-d H:i:s')
             : $dGueltigVonJS;
 
@@ -494,7 +494,7 @@ class News extends MainModel
                 LEFT JOIN tnewskommentar ON tnewskommentar.kNews = tnews.kNews
                     AND tnewskommentar.nAktiv = 1
                 {$cSqlExcludeCategory}
-                WHERE tnews.dGueltigVon <= now()
+                WHERE tnews.dGueltigVon <= NOW()
                     AND (tnews.cKundengruppe LIKE '%;-1;%' 
                         OR FIND_IN_SET('{$kKundengruppe}', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                     AND tnews.kSprache = {$kSprache}

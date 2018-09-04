@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -301,7 +301,7 @@ class JTLSmarty extends \SmartyBC
         }
         $cFile       = \basename($filename, '.tpl');
         $cSubPath    = \dirname($filename);
-        $cCustomFile = \strpos($cSubPath, PFAD_ROOT) === false
+        $cCustomFile = \strpos($cSubPath, \PFAD_ROOT) === false
             ? $this->getTemplateDir($this->context) . (($cSubPath === '.')
                 ? ''
                 : ($cSubPath . '/')) . $cFile . '_custom.tpl'

@@ -986,7 +986,7 @@ function gibStamp($cStampOld, $nSprung, $nAnsicht)
         switch ((int)$nAnsicht) {
             case 1:    // Monat
                 $oDate = Shop::Container()->getDB()->query(
-                    "SELECT " . $cFkt . "('" . $cStampOld . "', INTERVAL 1 MONTH) AS cStampNew, if(" . $cFkt . "('" . $cStampOld . "', INTERVAL 1 MONTH) > now(), 1, 0) AS nGroesser",
+                    "SELECT " . $cFkt . "('" . $cStampOld . "', INTERVAL 1 MONTH) AS cStampNew, IF(" . $cFkt . "('" . $cStampOld . "', INTERVAL 1 MONTH) > NOW(), 1, 0) AS nGroesser",
                     \DB\ReturnType::SINGLE_OBJECT
                 );
 
@@ -1000,7 +1000,7 @@ function gibStamp($cStampOld, $nSprung, $nAnsicht)
                 break;
             case 2:    // Woche
                 $oDate = Shop::Container()->getDB()->query(
-                    "SELECT " . $cFkt . "('" . $cStampOld . "', INTERVAL 1 WEEK) AS cStampNew, if(" . $cFkt . "('" . $cStampOld . "', INTERVAL 1 WEEK) > now(), 1, 0) AS nGroesser",
+                    "SELECT " . $cFkt . "('" . $cStampOld . "', INTERVAL 1 WEEK) AS cStampNew, IF(" . $cFkt . "('" . $cStampOld . "', INTERVAL 1 WEEK) > NOW(), 1, 0) AS nGroesser",
                     \DB\ReturnType::SINGLE_OBJECT
                 );
 
@@ -1014,7 +1014,7 @@ function gibStamp($cStampOld, $nSprung, $nAnsicht)
                 break;
             case 3:    // Tag
                 $oDate = Shop::Container()->getDB()->query(
-                    "SELECT " . $cFkt . "('" . $cStampOld . "', INTERVAL 1 DAY) AS cStampNew, if(" . $cFkt . "('" . $cStampOld . "', INTERVAL 1 DAY) > now(), 1, 0) AS nGroesser",
+                    "SELECT " . $cFkt . "('" . $cStampOld . "', INTERVAL 1 DAY) AS cStampNew, IF(" . $cFkt . "('" . $cStampOld . "', INTERVAL 1 DAY) > NOW(), 1, 0) AS nGroesser",
                     \DB\ReturnType::SINGLE_OBJECT
                 );
 

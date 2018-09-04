@@ -72,7 +72,6 @@ class ImageMap implements IExtensionPoint
                 FROM timagemap
                 WHERE kImageMap = ' . $kImageMap;
         if (!$fetch_all) {
-            // vDate und bDate sollten immer '0000-00-00 00:00:00' statt NULL enthalten
             $cSQL .= ' AND (CURDATE() >= DATE(vDatum)) AND (CURDATE() <= DATE(bDatum) OR bDatum = 0)';
         }
         $oImageMap = Shop::Container()->getDB()->query($cSQL, \DB\ReturnType::SINGLE_OBJECT);
@@ -163,10 +162,10 @@ class ImageMap implements IExtensionPoint
         $cBildPfad = Shop::Container()->getDB()->escape($cBildPfad);
 
         if (empty($vDatum)) {
-            $vDatum = '0000-00-00 00:00:00';
+            $vDatum = '_DBNULL_';
         }
         if (empty($bDatum)) {
-            $bDatum = '0000-00-00 00:00:00';
+            $bDatum = '_DBNULL_';
         }
         $_upd            = new stdClass();
         $_upd->cTitel    = $cTitel;

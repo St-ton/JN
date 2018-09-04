@@ -147,7 +147,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                     );
                     if ($oBestellung !== null
                         && $oBestellung->kBestellung > 0
-                        && $oBestellung->dBezahltDatum !== '0000-00-00'
+                        && $oBestellung->dBezahltDatum !== null
                         && $this->getTage() > 0
                     ) {
                         $paymentDate = new DateTime($oBestellung->dBezahltDatum);
@@ -327,7 +327,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                         ->setDownload($kDownload)
                         ->setKunde($kKunde)
                         ->setBestellung($kBestellung)
-                        ->setErstellt('now()')
+                        ->setErstellt('NOW()')
                         ->save();
 
                     self::send_file_to_browser(
@@ -366,7 +366,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                 // Existiert die Bestellung und wurde Sie bezahlt?
                 if ($oBestellung->kBestellung <= 0
                     || empty($oBestellung->dBezahltDatum)
-                    || $oBestellung->dBezahltDatum === '0000-00-00'
+                    || $oBestellung->dBezahltDatum === null
                 ) {
                     return self::ERROR_ORDER_NOT_FOUND;
                 }

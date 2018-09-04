@@ -374,7 +374,7 @@ class BaseSearchQuery extends AbstractFilter
             $options[] = $fo;
         }
         $this->options = $options;
-        $this->productFilter->getCache()->set($cacheID, $options, [CACHING_GROUP_FILTER]);
+        $this->productFilter->getCache()->set($cacheID, $options, [\CACHING_GROUP_FILTER]);
 
         return $options;
     }
@@ -425,7 +425,7 @@ class BaseSearchQuery extends AbstractFilter
      */
     public function editSearchCache($langIDExt = 0): int
     {
-        require_once PFAD_ROOT . \PFAD_INCLUDES . 'suche_inc.php';
+        require_once \PFAD_ROOT . \PFAD_INCLUDES . 'suche_inc.php';
         // Mapping beachten
         $cSuche = $this->getQueryMapping($this->getName() ?? '', $langIDExt);
         $this->setName($cSuche);
@@ -439,7 +439,7 @@ class BaseSearchQuery extends AbstractFilter
                 LEFT JOIN tsuchcachetreffer 
                     ON tsuchcachetreffer.kSuchCache = tsuchcache.kSuchCache
                 WHERE tsuchcache.dGueltigBis IS NOT NULL
-                    AND DATE_ADD(tsuchcache.dGueltigBis, INTERVAL 5 MINUTE) < now()',
+                    AND DATE_ADD(tsuchcache.dGueltigBis, INTERVAL 5 MINUTE) < NOW()',
             ReturnType::AFFECTED_ROWS
         );
 
@@ -449,7 +449,7 @@ class BaseSearchQuery extends AbstractFilter
                 FROM tsuchcache
                 WHERE kSprache = :lang
                     AND cSuche = :search
-                    AND (dGueltigBis > now() OR dGueltigBis IS NULL)',
+                    AND (dGueltigBis > NOW() OR dGueltigBis IS NULL)',
             [
                 'lang'   => $langID,
                 'search' => $cSuche
@@ -465,7 +465,7 @@ class BaseSearchQuery extends AbstractFilter
             ? $min
             : 3;
         if (\strlen($cSuche) < $nMindestzeichen) {
-            require_once PFAD_ROOT . \PFAD_INCLUDES . 'sprachfunktionen.php';
+            require_once \PFAD_ROOT . \PFAD_INCLUDES . 'sprachfunktionen.php';
             $this->error = \lang_suche_mindestanzahl($cSuche, $nMindestzeichen);
 
             return 0;
@@ -483,7 +483,7 @@ class BaseSearchQuery extends AbstractFilter
         $oSuchCache            = new \stdClass();
         $oSuchCache->kSprache  = $langID;
         $oSuchCache->cSuche    = $cSuche;
-        $oSuchCache->dErstellt = 'now()';
+        $oSuchCache->dErstellt = 'NOW()';
         $kSuchCache            = $this->productFilter->getDB()->insert('tsuchcache', $oSuchCache);
 
         if ($this->getConfig('artikeluebersicht')['suche_fulltext'] !== 'N' && $this->isFulltextIndexActive()) {

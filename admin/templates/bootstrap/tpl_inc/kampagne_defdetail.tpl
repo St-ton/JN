@@ -24,7 +24,7 @@
                 <table class="table table-striped">
                     <tr>
                         {foreach name="kampagnendefs" from=$cMember_arr key=cMember item=cMemberAnzeige}
-                            <th class="th-2">{$cMemberAnzeige|truncate:50:"..."}</th>
+                            <th class="th-2">{$cMemberAnzeige|truncate:50:'...'}</th>
                         {/foreach}
                     </tr>
 

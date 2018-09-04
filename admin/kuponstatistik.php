@@ -64,7 +64,7 @@ $dEnd   = $endDate->format('Y-m-d 23:59:59');
 $usedCouponsOrder = KuponBestellung::getOrdersWithUsedCoupons($dStart, $dEnd, (int)RequestHelper::verifyGPDataString('kKupon'));
 
 $nCountOrders_arr = Shop::Container()->getDB()->query(
-    "SELECT count(*) AS nCount
+    "SELECT COUNT(*) AS nCount
         FROM tbestellung
         WHERE dErstellt BETWEEN '" . $dStart . "'
             AND '" . $dEnd . "'

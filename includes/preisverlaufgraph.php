@@ -26,7 +26,7 @@ if ((int)$_GET['kArtikel'] > 0 && (int)$_GET['kKundengruppe'] > 0 && (int)$_GET[
                 FROM tpreisverlauf
                 WHERE kArtikel = ' . $kArtikel . '
                     AND kKundengruppe = ' . $kKundengruppe . '
-                    AND DATE_SUB(now(), INTERVAL ' . $nMonat . ' MONTH) < dDate
+                    AND DATE_SUB(NOW(), INTERVAL ' . $nMonat . ' MONTH) < dDate
                 LIMIT 1',
             \DB\ReturnType::SINGLE_OBJECT
         );

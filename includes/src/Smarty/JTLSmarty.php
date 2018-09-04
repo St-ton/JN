@@ -422,7 +422,7 @@ class JTLSmarty extends \SmartyBC
         }
         $cFile       = \basename($filename, '.tpl');
         $cSubPath    = \dirname($filename);
-        $cCustomFile = \strpos($cSubPath, PFAD_ROOT) === false
+        $cCustomFile = \strpos($cSubPath, \PFAD_ROOT) === false
             ? $this->getTemplateDir($this->context) . (($cSubPath === '.')
                 ? ''
                 : ($cSubPath . '/')) . $cFile . '_custom.tpl'

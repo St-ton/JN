@@ -13,9 +13,9 @@ use Cron\QueueEntry;
 use DB\DbInterface;
 use Psr\Log\LoggerInterface;
 
-require_once PFAD_ROOT . \PFAD_INCLUDES . 'mailTools.php';
-require_once PFAD_ROOT . \PFAD_INCLUDES . 'smartyInclude.php';
-require_once PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'statusemail_inc.php';
+require_once \PFAD_ROOT . \PFAD_INCLUDES . 'mailTools.php';
+require_once \PFAD_ROOT . \PFAD_INCLUDES . 'smartyInclude.php';
+require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'statusemail_inc.php';
 
 /**
  * Class Statusmail

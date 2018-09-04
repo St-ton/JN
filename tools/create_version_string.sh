@@ -131,5 +131,5 @@ if [ -v SHOP_VERSION_GREEK ] && [ ! -z "${SHOP_VERSION_GREEK}" ]; then
     fi
 fi
 
-sed -i "s/#APPLICATION_VERSION#/'${NEW_VERSION}'/g" ${REPO_DIR}/includes/defines_inc.php
-sed -i "s/#APPLICATION_BUILD_SHA#/${APPLICATION_BUILD_SHA}/g" ${REPO_DIR}/includes/defines_inc.php
+sed -i "s/'APPLICATION_VERSION', '.*'/'APPLICATION_VERSION', '${NEW_VERSION}'/g" ${REPO_DIR}/includes/defines_inc.php
+sed -i "s/'APPLICATION_BUILD_SHA', '#DEV#'/'APPLICATION_BUILD_SHA', '${APPLICATION_BUILD_SHA}'/g" ${REPO_DIR}/includes/defines_inc.php

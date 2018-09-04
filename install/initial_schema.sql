@@ -451,7 +451,7 @@ CREATE TABLE `tartikelwarenlager` (
   `kWarenlager` int(10) unsigned NOT NULL,
   `fBestand` double unsigned NOT NULL,
   `fZulauf` double unsigned NOT NULL,
-  `dZulaufDatum` datetime NOT NULL DEFAULT NULL,
+  `dZulaufDatum` datetime DEFAULT NULL,
   PRIMARY KEY (`kArtikel`,`kWarenlager`),
   KEY `dZulaufDatum` (`dZulaufDatum`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

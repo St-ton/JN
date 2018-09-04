@@ -101,9 +101,9 @@ final class Wishlist extends AbstractBox
     }
 
     /**
-     * @return string
+     * @return bool
      */
-    public function getShowImages(): string
+    public function getShowImages(): bool
     {
         return $this->config['boxen']['boxen_wunschzettel_bilder'] === 'Y';
     }

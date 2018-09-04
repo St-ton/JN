@@ -2736,45 +2736,17 @@ function valid_plzort(string $plz, string $ort,string $land): bool
         'SELECT kPLZ
         FROM tplz
         WHERE cPLZ = :plz
-        AND (cOrt LIKE :ort 
-          OR cOrt LIKE :ortA2AE 
-          OR cOrt LIKE :ortAE2A)
+        AND INSTR(cOrt COLLATE utf8_german2_ci, :ort)
         AND cLandISO = :land',
         [
             'plz'  => $plz,
-            'ort'  => '%' . $ort . '%',
-            'ortA2AE' => umlauteUmschreibenA2AE($ort),
-            'ortAE2A' => umlauteUmschreibenAE2A($ort),
+            'ort'  => $ort,
             'land' => $land
         ],
         \DB\ReturnType::SINGLE_OBJECT
     );
 
     return isset($obj->kPLZ) && $obj->kPLZ > 0;
-}
-
-/**
- * @param string $str
- * @return string
- */
-function umlauteUmschreibenA2AE(string $str): string
-{
-    $src = ['ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü'];
-    $rpl = ['ae', 'oe', 'ue', 'ss', 'Ae', 'Oe', 'Ue'];
-
-    return str_replace($src, $rpl, $str);
-}
-
-/**
- * @param string $str
- * @return string
- */
-function umlauteUmschreibenAE2A(string $str): string
-{
-    $rpl = ['ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü'];
-    $src = ['ae', 'oe', 'ue', 'ss', 'Ae', 'Oe', 'Ue'];
-
-    return str_replace($src, $rpl, $str);
 }
 
 /**
@@ -3813,4 +3785,32 @@ function setzeInSession($name, $obj)
     //an die Session anhängen
     unset($_SESSION[$name]);
     $_SESSION[$name] = $obj;
+}
+
+/**
+ * @param string $str
+ * @return string
+ * @deprecated since 5.0.0
+ */
+function umlauteUmschreibenA2AE(string $str): string
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    $src = ['ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü'];
+    $rpl = ['ae', 'oe', 'ue', 'ss', 'Ae', 'Oe', 'Ue'];
+
+    return str_replace($src, $rpl, $str);
+}
+
+/**
+ * @param string $str
+ * @return string
+ * @deprecated since 5.0.0
+ */
+function umlauteUmschreibenAE2A(string $str): string
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    $rpl = ['ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü'];
+    $src = ['ae', 'oe', 'ue', 'ss', 'Ae', 'Oe', 'Ue'];
+
+    return str_replace($src, $rpl, $str);
 }

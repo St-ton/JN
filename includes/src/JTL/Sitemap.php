@@ -213,9 +213,9 @@ class Sitemap
                             AND (tnews.cKundengruppe LIKE '%;-1;%' 
                                 OR FIND_IN_SET(:cgid, REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                             AND (MONTH(tnews.dGueltigVon) = :mnth)  
-                            AND (tnews.dGueltigVon <= now())
+                            AND (tnews.dGueltigVon <= NOW())
                             AND (YEAR(tnews.dGueltigVon) = :yr) 
-                            AND (tnews.dGueltigVon <= now())
+                            AND (tnews.dGueltigVon <= NOW())
                         GROUP BY tnews.kNews
                         ORDER BY dGueltigVon DESC",
                     [

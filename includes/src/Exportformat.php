@@ -794,16 +794,16 @@ class Exportformat
             $where .= " AND tartikel.cBeschreibung != ''";
         }
 
-        $condition = 'AND (tartikel.dErscheinungsdatum IS NULL OR NOT (DATE(tartikel.dErscheinungsdatum) > DATE(NOW())))';
+        $condition = 'AND (tartikel.dErscheinungsdatum IS NULL OR NOT (DATE(tartikel.dErscheinungsdatum) > CURDATE()))';
         $conf      = Shop::getSettings([CONF_GLOBAL]);
         if (isset($conf['global']['global_erscheinende_kaeuflich'])
             && $conf['global']['global_erscheinende_kaeuflich'] === 'Y'
         ) {
             $condition = "AND (
                 tartikel.dErscheinungsdatum IS NULL 
-                OR NOT (DATE(tartikel.dErscheinungsdatum) > DATE(NOW()))
+                OR NOT (DATE(tartikel.dErscheinungsdatum) > CURDATE())
                 OR  (
-                        DATE(tartikel.dErscheinungsdatum) > DATE(NOW())
+                        DATE(tartikel.dErscheinungsdatum) > CURDATE()
                         AND (tartikel.cLagerBeachten = 'N' 
                             OR tartikel.fLagerbestand > 0 OR tartikel.cLagerKleinerNull = 'Y')
                     )

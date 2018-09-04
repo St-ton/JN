@@ -229,7 +229,7 @@ class Preise
                                 ON tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis
                                 AND tartikelsonderpreis.kArtikel = " . $kArtikel . "
                                 AND tartikelsonderpreis.cAktiv = 'Y'
-                                AND tartikelsonderpreis.dStart <= DATE(NOW())
+                                AND tartikelsonderpreis.dStart <= CURDATE()
                                 AND (tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE()) 
                                 AND (tartikelsonderpreis.nAnzahl <= tartikel.fLagerbestand 
                                     OR tartikelsonderpreis.nIstAnzahl = 0)
@@ -345,7 +345,7 @@ class Preise
                         ON tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis
                         AND tartikelsonderpreis.kArtikel = " . $kArtikel . "
                         AND tartikelsonderpreis.cAktiv = 'Y'
-                        AND tartikelsonderpreis.dStart <= date(now())
+                        AND tartikelsonderpreis.dStart <= CURDATE()
                         AND (tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE())
                         AND (tartikelsonderpreis.nAnzahl <= tartikel.fLagerbestand 
                             OR tartikelsonderpreis.nIstAnzahl = 0)

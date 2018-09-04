@@ -267,17 +267,17 @@ class Artikel
     /**
      * @var string
      */
-    public $dZulaufDatum = '0000-00-00';
+    public $dZulaufDatum;
 
     /**
      * @var string
      */
-    public $dMHD = '0000-00-00';
+    public $dMHD;
 
     /**
      * @var string
      */
-    public $dErscheinungsdatum = '0000-00-00';
+    public $dErscheinungsdatum;
 
     /**
      * string 'Y'/'N'
@@ -3578,23 +3578,17 @@ class Artikel
                 }
                 //#7595 - do not use cached result if special price is expired
                 $return = true;
-                if ($this->cAktivSonderpreis === 'Y'
-                    && $this->dSonderpreisEnde_en !== '0000-00-00'
-                    && $this->dSonderpreisEnde_en !== null
-                ) {
+                if ($this->cAktivSonderpreis === 'Y' && $this->dSonderpreisEnde_en !== null) {
                     $endDate = new DateTime($this->dSonderpreisEnde_en);
                     $endDate->modify('+1 days');
                     $return = ($endDate >= new DateTime());
-                } elseif ($this->cAktivSonderpreis === 'N'
-                    && $this->dSonderpreisStart_en !== '0000-00-00'
-                    && $this->dSonderpreisStart_en !== null
-                ) {
+                } elseif ($this->cAktivSonderpreis === 'N' && $this->dSonderpreisStart_en !== null) {
                     //do not use cached result if a special price started in the mean time
                     $startDate = new DateTime($this->dSonderpreisStart_en);
                     $today     = new DateTime();
-                    $endDate   = ($this->dSonderpreisEnde_en !== null && $this->dSonderpreisEnde_en !== '0000-00-00')
-                        ? new DateTime($this->dSonderpreisEnde_en)
-                        : $today;
+                    $endDate   = $this->dSonderpreisEnde_en === null
+                        ? $today
+                        : new DateTime($this->dSonderpreisEnde_en);
                     $return    = ($startDate > $today || $endDate < $today);
                 }
                 if ($return === true) {
@@ -4378,7 +4372,7 @@ class Artikel
             $this->dZulaufDatum_de = null;
         }
         $this->cAktivSonderpreis = ($specialPriceStartDate <= $now
-            && ($this->dSonderpreisEnde_en === '0000-00-00' || $specialPriceEndDate >= $now)) ? 'Y' : 'N';
+            && ($this->dSonderpreisEnde_en === null || $specialPriceEndDate >= $now)) ? 'Y' : 'N';
 
         return $this->baueSuchspecialBildoverlay();
     }

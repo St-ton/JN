@@ -18,7 +18,7 @@ if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
 }
 // Anzahl Wunschzettel, gewünschte Artikel, versendete Wunschzettel
 $oWunschlistePos = Shop::Container()->getDB()->query(
-    'SELECT count(tWunsch.kWunschliste) AS nAnzahl
+    'SELECT COUNT(tWunsch.kWunschliste) AS nAnzahl
         FROM
         (
             SELECT twunschliste.kWunschliste
@@ -30,12 +30,12 @@ $oWunschlistePos = Shop::Container()->getDB()->query(
     \DB\ReturnType::SINGLE_OBJECT
 );
 $oWunschlisteArtikel = Shop::Container()->getDB()->query(
-    'SELECT count(*) AS nAnzahl
+    'SELECT COUNT(*) AS nAnzahl
         FROM twunschlistepos',
     \DB\ReturnType::SINGLE_OBJECT
 );
 $oWunschlisteFreunde = Shop::Container()->getDB()->query(
-    'SELECT count(*) AS nAnzahl
+    'SELECT COUNT(*) AS nAnzahl
         FROM twunschliste
         JOIN twunschlisteversand 
             ON twunschliste.kWunschliste = twunschlisteversand.kWunschliste',
@@ -75,7 +75,7 @@ foreach ($CWunschlisteVersand_arr as $i => $CWunschlisteVersand) {
 $CWunschliste_arr = Shop::Container()->getDB()->query(
     "SELECT tkunde.kKunde, tkunde.cNachname, tkunde.cVorname, twunschliste.kWunschliste, twunschliste.cName,
         twunschliste.cURLID, DATE_FORMAT(twunschliste.dErstellt, '%d.%m.%Y %H:%i') AS Datum, 
-        twunschliste.nOeffentlich, count(twunschlistepos.kWunschliste) AS Anzahl
+        twunschliste.nOeffentlich, COUNT(twunschlistepos.kWunschliste) AS Anzahl
         FROM twunschliste
         JOIN twunschlistepos 
             ON twunschliste.kWunschliste = twunschlistepos.kWunschliste

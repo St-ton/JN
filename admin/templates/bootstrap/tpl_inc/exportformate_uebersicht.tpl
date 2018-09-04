@@ -101,7 +101,7 @@
                             <td class="tcenter">{$exportformat->Sprache->cNameDeutsch}</td>
                             <td class="tcenter">{$exportformat->Waehrung->cName}</td>
                             <td class="tcenter">{$exportformat->Kundengruppe->cName}</td>
-                            <td class="tcenter">{if !empty($exportformat->dZuletztErstellt) && $exportformat->dZuletztErstellt !== '0000-00-00 00:00:00'}{$exportformat->dZuletztErstellt}{else}-{/if}</td>
+                            <td class="tcenter">{if !empty($exportformat->dZuletztErstellt)}{$exportformat->dZuletztErstellt}{else}-{/if}</td>
                             <td class="tcenter">
                                 <form method="post" action="exportformate.php">
                                     {$jtl_token}

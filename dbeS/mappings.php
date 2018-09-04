@@ -271,7 +271,7 @@ $mArtikelSonderpreis = [
     'nAnzahl'    => 0,
     'nIstAnzahl' => 0,
     'nIstDatum'  => 0,
-    'dEnde'      => '0000-00-00'
+    'dEnde'      => null
 ];
 
 $mSonderpreise = [

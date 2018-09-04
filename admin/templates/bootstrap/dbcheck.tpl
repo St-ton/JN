@@ -70,7 +70,7 @@
                                     {if $cTable|array_key_exists:$cDBStruct_arr}{$cDBStruct_arr.$cTable->TABLE_ROWS|number_format:0:",":"."}{/if}
                                 </td>
                                 <td class="centered">
-                                    {if $cTable|array_key_exists:$cDBStruct_arr}{$cDBStruct_arr.$cTable->DATA_SIZE|formatSize:"%.0f"|upper|strip:"&nbsp;"}{/if}
+                                    {if $cTable|array_key_exists:$cDBStruct_arr}{$cDBStruct_arr.$cTable->DATA_SIZE|formatByteSize:"%.0f"|upper|strip:"&nbsp;"}{/if}
                                 </td>
                                 <td>
                                     {if $hasError}

@@ -500,13 +500,13 @@ class SimpleMail
                     $block = Shop::Container()->getDB()->select('temailblacklistblock', 'cEmail', $cEmail);
                     if (!empty($block->cEmail)) {
                         $_upd                = new stdClass();
-                        $_upd->dLetzterBlock = 'now()';
+                        $_upd->dLetzterBlock = 'NOW()';
                         Shop::Container()->getDB()->update('temailblacklistblock', 'cEmail', $cEmail, $_upd);
                     } else {
                         // temailblacklistblock Eintrag
                         $block                = new stdClass();
                         $block->cEmail        = $cEmail;
-                        $block->dLetzterBlock = 'now()';
+                        $block->dLetzterBlock = 'NOW()';
                         Shop::Container()->getDB()->insert('temailblacklistblock', $block);
                     }
 
@@ -518,13 +518,13 @@ class SimpleMail
 
                 if (!empty($block->cEmail)) {
                     $_upd                = new stdClass();
-                    $_upd->dLetzterBlock = 'now()';
+                    $_upd->dLetzterBlock = 'NOW()';
                     Shop::Container()->getDB()->update('temailblacklistblock', 'cEmail', $cEmail, $_upd);
                 } else {
                     // temailblacklistblock Eintrag
                     $block                = new stdClass();
                     $block->cEmail        = $cEmail;
-                    $block->dLetzterBlock = 'now()';
+                    $block->dLetzterBlock = 'NOW()';
                     Shop::Container()->getDB()->insert('temailblacklistblock', $block);
                 }
 

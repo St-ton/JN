@@ -426,6 +426,9 @@ function holeUmfrageStatistik(int $surveyID)
             );
             // Anzahl Antworten
             foreach ($answers as $j => $oUmfrageFrageAntwort) {
+                if (!isset($stats->oUmfrageFrage_arr[$i]->nAnzahlAntworten)) {
+                    $stats->oUmfrageFrage_arr[$i]->nAnzahlAntworten = 0;
+                }
                 $stats->oUmfrageFrage_arr[$i]->nAnzahlAntworten += $oUmfrageFrageAntwort->nAnzahlAntwort;
             }
             // Anzahl Sonstiger Antworten

@@ -551,7 +551,7 @@ class Attribute extends BaseAttribute
             $this->applyOptionLimit($af, $attributeValueLimit);
         }
         $this->options = $attributeFilters;
-        $this->productFilter->getCache()->set($cacheID, $attributeFilters, [CACHING_GROUP_FILTER]);
+        $this->productFilter->getCache()->set($cacheID, $attributeFilters, [\CACHING_GROUP_FILTER]);
 
         return $attributeFilters;
     }

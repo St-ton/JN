@@ -167,7 +167,7 @@ class Bewertung
                     $cSQL = ' AND nSterne = ' . $nSterne;
                 }
                 $oBewertungAnzahl_arr = Shop::Container()->getDB()->query(
-                    'SELECT count(*) AS nAnzahl, nSterne
+                    'SELECT COUNT(*) AS nAnzahl, nSterne
                         FROM tbewertung
                         WHERE kArtikel = ' . $kArtikel . $cSQLFreischalten . '
                         GROUP BY nSterne
@@ -192,7 +192,7 @@ class Bewertung
                 );
             }
             $oBewertungGesamt = Shop::Container()->getDB()->query(
-                'SELECT count(*) AS nAnzahl, tartikelext.fDurchschnittsBewertung AS fDurchschnitt
+                'SELECT COUNT(*) AS nAnzahl, tartikelext.fDurchschnittsBewertung AS fDurchschnitt
                     FROM tartikelext
                     JOIN tbewertung 
                         ON tbewertung.kArtikel = tartikelext.kArtikel
@@ -202,7 +202,7 @@ class Bewertung
             );
             // Anzahl Bewertungen für aktuelle Sprache
             $oBewertungGesamtSprache = Shop::Container()->getDB()->query(
-                'SELECT count(*) AS nAnzahlSprache
+                'SELECT COUNT(*) AS nAnzahlSprache
                     FROM tbewertung
                     WHERE kArtikel = ' . $kArtikel . $cSprachSQL . $cSQLFreischalten,
                 \DB\ReturnType::SINGLE_OBJECT

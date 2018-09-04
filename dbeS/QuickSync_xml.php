@@ -105,7 +105,7 @@ function bearbeiteInsert($xml)
         $upd                        = new stdClass();
         $upd->fLagerbestand         = $oArtikel->fLagerbestand;
         $upd->fStandardpreisNetto   = $oArtikel->fStandardpreisNetto;
-        $upd->dLetzteAktualisierung = 'now()';
+        $upd->dLetzteAktualisierung = 'NOW()';
         Shop::Container()->getDB()->update('tartikel', 'kArtikel', (int)$oArtikel->kArtikel, $upd);
         executeHook(HOOK_QUICKSYNC_XML_BEARBEITEINSERT, ['oArtikel' => $oArtikel]);
         handlePriceRange((int)$oArtikel->kArtikel);

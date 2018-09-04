@@ -41,13 +41,13 @@
         msgImageHeightSmall: 'Höhe der Bilddatei "{name}" muss mindestens {size} px betragen.',
         msgImageWidthLarge: 'Breite der Bilddatei "{name}" nicht überschreiten {size} px.',
         msgImageHeightLarge: 'Höhe der Bilddatei "{name}" nicht überschreiten {size} px.',
-        msgImageResizeError: 'Konnte nicht die Bildabmessungen zu ändern.',
+        msgImageResizeError: 'Konnte Bildabmessungen nicht ändern.',
         msgImageResizeException: 'Fehler beim Ändern der Größe des Bildes.<pre>{errors}</pre>',
         dropZoneTitle: 'Dateien hierher ziehen &hellip;',
         fileActionSettings: {
             removeTitle: 'Datei entfernen',
             uploadTitle: 'Datei hochladen',
-            indicatorNewTitle: 'Noch nicht hochgeladen',
+            indicatorNewTitle: 'Datei ausgewählt, bitte Template-Einstellungen speichern.',
             indicatorSuccessTitle: 'Hochgeladen',
             indicatorErrorTitle: 'Upload Fehler',
             indicatorLoadingTitle: 'Hochladen ...'

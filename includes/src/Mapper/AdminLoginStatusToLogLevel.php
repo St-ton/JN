@@ -1,10 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
 
 namespace Mapper;
+
 
 use Monolog\Logger;
 
@@ -18,7 +19,7 @@ class AdminLoginStatusToLogLevel
      * @param int $code
      * @return int
      */
-    public function map($code): int
+    public function map(int $code): int
     {
         switch ($code) {
             case \AdminLoginStatus::LOGIN_OK:
@@ -41,7 +42,7 @@ class AdminLoginStatusToLogLevel
      * @param int $code
      * @return int
      */
-    public function mapToJTLLog($code): int
+    public function mapToJTLLog(int $code): int
     {
         switch ($code) {
             case \AdminLoginStatus::LOGIN_OK:

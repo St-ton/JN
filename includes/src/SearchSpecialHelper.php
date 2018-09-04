@@ -242,8 +242,8 @@ class SearchSpecialHelper
                     AND tartikelsonderpreis.kArtikel = tartikel.kArtikel
                     AND tsonderpreise.kKundengruppe = " . $kKundengruppe . "
                     AND tartikelsonderpreis.cAktiv = 'Y'
-                    AND tartikelsonderpreis.dStart <= now()
-                    AND (tartikelsonderpreis.dEnde >= CURDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')
+                    AND tartikelsonderpreis.dStart <= NOW()
+                    AND (tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE())
                     AND (tartikelsonderpreis.nAnzahl < tartikel.fLagerbestand OR tartikelsonderpreis.nIstAnzahl = 0)
                     " . self::getParentSQL() . "
                     " . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(),
@@ -280,8 +280,8 @@ class SearchSpecialHelper
                     AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.cNeu = 'Y'
-                    AND dErscheinungsdatum <= now()
-                    AND DATE_SUB(now(), INTERVAL " . $nAlterTage . " DAY) < tartikel.dErstellt
+                    AND dErscheinungsdatum <= NOW()
+                    AND DATE_SUB(NOW(), INTERVAL " . $nAlterTage . " DAY) < tartikel.dErstellt
                     " . self::getParentSQL() . "
                     " . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(),
             \DB\ReturnType::ARRAY_OF_OBJECTS

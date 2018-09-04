@@ -107,7 +107,7 @@ function getCategories($selKats = '', $kKategorie = 0, $tiefe = 0)
 function normalizeDate($string)
 {
     if ($string === null || $string === '') {
-        return '0000-00-00 00:00:00';
+        return null;
     }
 
     $date = date_create($string);
@@ -206,7 +206,7 @@ function augmentCoupon($oKupon)
     $oKupon->cLocalizedMbw   = isset($oKupon->fMindestbestellwert)
         ? Preise::getLocalizedPriceString($oKupon->fMindestbestellwert)
         : '';
-    $oKupon->bOpenEnd        = $oKupon->dGueltigBis === '0000-00-00 00:00:00';
+    $oKupon->bOpenEnd        = $oKupon->dGueltigBis === null;
 
     if (date_create($oKupon->dGueltigAb) === false) {
         $oKupon->cGueltigAbShort = 'ungültig';
@@ -270,7 +270,7 @@ function augmentCoupon($oKupon)
     );
     $oKupon->dLastUse = date_create(is_string($oMaxErstelltDB->dLastUse)
         ? $oMaxErstelltDB->dLastUse
-        : '0000-00-00 00:00:00'
+        : null
     );
 }
 
@@ -342,7 +342,7 @@ function createCouponFromInput()
         $oKupon->cKunden = '-1';
     }
     if (isset($_POST['bOpenEnd']) && $_POST['bOpenEnd'] === 'Y') {
-        $oKupon->dGueltigBis = '0000-00-00 00:00:00';
+        $oKupon->dGueltigBis = null;
     } elseif (!empty($_POST['dDauerTage'])) {
         $oKupon->dGueltigBis     = '';
         $actualTimestamp         = date_create();
@@ -510,7 +510,7 @@ function validateCoupon($oKupon)
             'im Format (<strong>tt.mm.yyyy ss:mm</strong>) an!';
     }
 
-    $bOpenEnd = $oKupon->dGueltigBis === '0000-00-00 00:00:00';
+    $bOpenEnd = $oKupon->dGueltigBis === null;
 
     if ($dGueltigAb !== false && $dGueltigBis !== false && $dGueltigAb > $dGueltigBis && $bOpenEnd === false) {
         $cFehler_arr[] = 'Das Ende des Gültigkeitszeitraumes muss nach dem Beginn des ' .
@@ -535,7 +535,7 @@ function saveCoupon($oKupon, $oSprache_arr)
     } else {
         // neuer Kupon
         $oKupon->nVerwendungenBisher = 0;
-        $oKupon->dErstellt           = 'now()';
+        $oKupon->dErstellt           = 'NOW()';
         if (isset($oKupon->massCreationCoupon)) {
             $massCreationCoupon = $oKupon->massCreationCoupon;
             $oKupon->kKupon     = [];
@@ -705,7 +705,7 @@ function deactivateOutdatedCoupons()
         "UPDATE tkupon
             SET cAktiv = 'N'
             WHERE dGueltigBis > 0
-            AND dGueltigBis <= now()",
+            AND dGueltigBis <= NOW()",
         \DB\ReturnType::QUERYSINGLE
     );
 }

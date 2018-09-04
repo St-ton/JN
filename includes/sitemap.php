@@ -32,7 +32,7 @@ if ($nFloodProtection === 0) {
     $oSitemapTracker->kBesucherBot = getRequestBot();
     $oSitemapTracker->cIP          = $cIP;
     $oSitemapTracker->cUserAgent   = StringHandler::filterXSS($_SERVER['HTTP_USER_AGENT']);
-    $oSitemapTracker->dErstellt    = 'now()';
+    $oSitemapTracker->dErstellt    = 'NOW()';
 
     Shop::Container()->getDB()->insert('tsitemaptracker', $oSitemapTracker);
 }

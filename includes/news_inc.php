@@ -570,7 +570,7 @@ function getNewsOverview($oSQL, $cLimitSQL)
                 AND tnewskommentar.nAktiv = 1
             " . $oSQL->cNewsKatSQL . "
             WHERE tnews.nAktiv = 1
-                AND tnews.dGueltigVon <= now()
+                AND tnews.dGueltigVon <= NOW()
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
                     OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
                         . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
@@ -590,11 +590,11 @@ function getNewsOverview($oSQL, $cLimitSQL)
 function getFullNewsOverview($oSQL)
 {
     return Shop::Container()->getDB()->query(
-        "SELECT count(DISTINCT(tnews.kNews)) AS nAnzahl
+        "SELECT COUNT(DISTINCT(tnews.kNews)) AS nAnzahl
             FROM tnews
             " . $oSQL->cNewsKatSQL . "
             WHERE tnews.nAktiv = 1
-                AND tnews.dGueltigVon <= now()
+                AND tnews.dGueltigVon <= NOW()
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
                     OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
                         . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
@@ -615,7 +615,7 @@ function getNewsDateArray($oSQL)
             FROM tnews
             " . $oSQL->cNewsKatSQL . "
             WHERE tnews.nAktiv = 1
-                AND tnews.dGueltigVon <= now()
+                AND tnews.dGueltigVon <= NOW()
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
                     OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
                         . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)

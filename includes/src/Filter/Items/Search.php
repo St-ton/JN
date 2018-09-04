@@ -9,12 +9,12 @@ namespace Filter\Items;
 
 use DB\ReturnType;
 use Filter\AbstractFilter;
+use Filter\FilterInterface;
 use Filter\Join;
 use Filter\Option;
-use Filter\FilterInterface;
-use Filter\StateSQL;
 use Filter\ProductFilter;
 use Filter\States\BaseSearchQuery;
+use Filter\StateSQL;
 
 /**
  * Class Search
@@ -79,7 +79,7 @@ class Search extends AbstractFilter
      * @param int $id
      * @return $this
      */
-    public function setSearchCacheID(int $id)
+    public function setSearchCacheID(int $id): FilterInterface
     {
         $this->searchCacheID = $id;
 
@@ -90,7 +90,8 @@ class Search extends AbstractFilter
      * @param string $errorMsg
      * @return $this
      */
-    public function setError($errorMsg) {
+    public function setError($errorMsg): FilterInterface
+    {
         $this->error = $errorMsg;
 
         return $this;
@@ -108,7 +109,7 @@ class Search extends AbstractFilter
      * @param int $value
      * @return $this
      */
-    public function setValue($value) : FilterInterface
+    public function setValue($value): FilterInterface
     {
         $this->searchID = $value;
 
@@ -126,7 +127,7 @@ class Search extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function setSeo(array $languages) : FilterInterface
+    public function setSeo(array $languages): FilterInterface
     {
         $oSeo_obj = $this->productFilter->getDB()->executeQueryPrepared(
             "SELECT tseo.cSeo, tseo.kSprache, tsuchanfrage.cSuche
@@ -202,8 +203,13 @@ class Search extends AbstractFilter
      * @return bool
      * @former suchanfragenSpeichern
      */
-    public function saveQuery($hits, $query = '', $real = false, $languageIDExt = 0, $filterSpam = true): bool
-    {
+    public function saveQuery(
+        int $hits,
+        string $query = '',
+        bool $real = false,
+        int $languageIDExt = 0,
+        bool $filterSpam = true
+    ): bool {
         if ($query === '') {
             $query = $this->getName();
         }
@@ -265,7 +271,7 @@ class Search extends AbstractFilter
             );
             if ($hits > 0) {
                 require_once \PFAD_ROOT . \PFAD_DBES . 'seo.php';
-                $searchQuery = new \stdClass();
+                $searchQuery                  = new \stdClass();
                 $searchQuery->kSprache        = $languageID;
                 $searchQuery->cSuche          = $Suchausdruck;
                 $searchQuery->nAnzahlTreffer  = $hits;
@@ -281,7 +287,7 @@ class Search extends AbstractFilter
                     false,
                     'kSuchanfrage'
                 );
-                if ($real && $previuousQuery!== null && $previuousQuery->kSuchanfrage > 0) {
+                if ($real && $previuousQuery !== null && $previuousQuery->kSuchanfrage > 0) {
                     $this->productFilter->getDB()->query(
                         'UPDATE tsuchanfrage
                             SET nAnzahlTreffer = ' . (int)$searchQuery->nAnzahlTreffer . ',
@@ -322,7 +328,7 @@ class Search extends AbstractFilter
                             SET nAnzahlGesuche = nAnzahlGesuche + 1, 
                                 dZuletztGesucht = NOW()
                             WHERE kSuchanfrageErfolglos = ' .
-                            (int)$queryMiss_old->kSuchanfrageErfolglos,
+                        (int)$queryMiss_old->kSuchanfrageErfolglos,
                         ReturnType::AFFECTED_ROWS
                     );
                 } else {
@@ -493,7 +499,7 @@ class Search extends AbstractFilter
         $nPrioStep        = $nCount > 0
             ? ($searchFilters[0]->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) / 9
             : 0;
-        $activeValues     = \array_map(function($f) { // @todo: create method for this logic
+        $activeValues     = \array_map(function ($f) { // @todo: create method for this logic
             /** @var Search $f */
             return $f->getValue();
         }, $this->productFilter->getSearchFilter());

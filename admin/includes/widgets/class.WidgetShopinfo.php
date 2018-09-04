@@ -17,7 +17,7 @@ class WidgetShopinfo extends WidgetBase
     {
         $oTpl            = Template::getInstance();
         $strTplVersion   = $oTpl->getVersion();
-        $strFileVersion  = Shop::getVersion();
+        $strFileVersion  = Shop::getApplicationVersion();
         $strDBVersion    = Shop::getShopDatabaseVersion();
         $strUpdated      = date_format(date_create(getJTLVersionDB(true)), 'd.m.Y, H:i:m');
         $strMinorVersion = APPLICATION_BUILD_SHA === '#DEV#' ? 'DEV' : '';

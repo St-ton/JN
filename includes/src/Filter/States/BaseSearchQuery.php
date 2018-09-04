@@ -67,7 +67,7 @@ class BaseSearchQuery extends AbstractFilter
     /**
      * @return int
      */
-    public function getSearchCacheID()
+    public function getSearchCacheID(): int
     {
         return $this->searchCacheID;
     }
@@ -76,9 +76,9 @@ class BaseSearchQuery extends AbstractFilter
      * @param int $id
      * @return $this
      */
-    public function setSearchCacheID($id): FilterInterface
+    public function setSearchCacheID(int $id): FilterInterface
     {
-        $this->searchCacheID = (int)$id;
+        $this->searchCacheID = $id;
 
         return $this;
     }
@@ -105,7 +105,7 @@ class BaseSearchQuery extends AbstractFilter
             ? $min
             : 3;
         if (\strlen($name) > 0 || (isset($_GET['qs']) && $_GET['qs'] === '')) {
-            \preg_match("/[\w" . utf8_decode('äÄüÜöÖß') . "\.\-]{" . $minChars . ",}/",
+            \preg_match("/[\w" . \utf8_decode('äÄüÜöÖß') . "\.\-]{" . $minChars . ",}/",
                 \str_replace(' ', '', $name), $cTreffer_arr);
             if (\count($cTreffer_arr) === 0) {
                 $this->error = \Shop::Lang()->get('expressionHasTo') . ' ' .

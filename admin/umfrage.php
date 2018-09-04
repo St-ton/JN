@@ -142,26 +142,19 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                     $oUmfrage->nBonuspunkte  = $nBonuspunkte;
                     $oUmfrage->nAktiv        = $nAktiv;
                     $oUmfrage->dGueltigVon   = DateTime::createFromFormat('d.m.Y H:i', $dGueltigVon)->format('Y-m-d H:i:00');
-                    $oUmfrage->dGueltigBis   = (strlen($dGueltigBis) > 0) 
+                    $oUmfrage->dGueltigBis   = strlen($dGueltigBis) > 0
                         ? DateTime::createFromFormat('d.m.Y H:i', $dGueltigBis)->format('Y-m-d H:i:00')
-                        : null;
+                        : '_DBNULL_';
                     $oUmfrage->dErstellt     = (new DateTime())->format('Y-m-d H:i:s');
 
                     $nNewsOld = 0;
                     if (isset($_POST['umfrage_edit_speichern']) && (int)$_POST['umfrage_edit_speichern'] === 1) {
                         $nNewsOld = 1;
                         $step     = 'umfrage_uebersicht';
-
                         Shop::Container()->getDB()->delete('tumfrage', 'kUmfrage', $kUmfrage);
-                        // tseo loeschen
                         Shop::Container()->getDB()->delete('tseo', ['cKey', 'kKey'], ['kUmfrage', $kUmfrage]);
                     }
-
-                    if (strlen($cSeo) > 0) {
-                        $oUmfrage->cSeo = checkSeo(getSeo($cSeo));
-                    } else {
-                        $oUmfrage->cSeo = checkSeo(getSeo($cName));
-                    }
+                    $oUmfrage->cSeo = checkSeo(getSeo(strlen($cSeo) > 0 ? $cSeo : $cName));
                     if (isset($kUmfrage) && $kUmfrage > 0) {
                         $oUmfrage->kUmfrage = $kUmfrage;
                         Shop::Container()->getDB()->insert('tumfrage', $oUmfrage);
@@ -512,7 +505,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             "SELECT tumfrage.*, DATE_FORMAT(tumfrage.dGueltigVon, '%d.%m.%Y %H:%i') AS dGueltigVon_de, 
                 DATE_FORMAT(tumfrage.dGueltigBis, '%d.%m.%Y %H:%i') AS dGueltigBis_de,
                 DATE_FORMAT(tumfrage.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_de, 
-                count(tumfragefrage.kUmfrageFrage) AS nAnzahlFragen
+                COUNT(tumfragefrage.kUmfrageFrage) AS nAnzahlFragen
                 FROM tumfrage
                 JOIN tumfragefrage 
                     ON tumfragefrage.kUmfrage = tumfrage.kUmfrage
@@ -587,8 +580,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             FROM tkupon
             LEFT JOIN tkuponsprache 
                 ON tkuponsprache.kKupon = tkupon.kKupon
-            WHERE tkupon.dGueltigAb <= now()
-                AND (tkupon.dGueltigBis >= now() || tkupon.dGueltigBis = '0000-00-00 00:00:00')
+            WHERE tkupon.dGueltigAb <= NOW()
+                AND (tkupon.dGueltigBis >= NOW() OR tkupon.dGueltigBis IS NULL)
                 AND (tkupon.nVerwendungenBisher <= tkupon.nVerwendungen OR tkupon.nVerwendungen = 0)
                 AND tkupon.cAktiv = 'Y'
                 AND tkuponsprache.cISOSprache= '" . $oSpracheTMP->cISO . "'

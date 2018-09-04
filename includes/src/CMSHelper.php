@@ -94,7 +94,7 @@ class CMSHelper
                         AND tseo.kSprache = " . Shop::getLanguage() . "
                     WHERE t.languageID = " . Shop::getLanguage() . "
                         AND tnews.nAktiv = 1
-                        AND tnews.dGueltigVon <= now()
+                        AND tnews.dGueltigVon <= NOW()
                         AND (tnews.cKundengruppe LIKE '%;-1;%' 
                             OR FIND_IN_SET('" . Session::CustomerGroup()->getID() . "', 
                             REPLACE(tnews.cKundengruppe, ';', ',')) > 0)

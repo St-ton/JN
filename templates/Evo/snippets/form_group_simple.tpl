@@ -72,7 +72,7 @@
 <div class="form-group{if $hasError} has-error{/if}">
     <label for="{$inputId}" class="control-label float-label-control">{$label}
         {if !$isRequired}
-            <span class="optional"> - {lang key='conditionalFillOut' section='checkout'}</span>
+            <span class="optional"> - {lang key='optional' section='checkout'}</span>
         {/if}
     </label>
     <input type="{if isset($inputType)}{$inputType}{else}text{/if}" name="{$inputName}"

@@ -21,14 +21,14 @@ if (auth()) {
         if (empty($oBrocken->cBrocken)) {
             $oBrocken            = new stdClass();
             $oBrocken->cBrocken  = $cBrocken;
-            $oBrocken->dErstellt = 'now()';
+            $oBrocken->dErstellt = 'NOW()';
             Shop::Container()->getDB()->insert('tbrocken', $oBrocken);
         } elseif (isset($oBrocken->cBrocken) && $oBrocken->cBrocken !== $cBrocken && strlen($oBrocken->cBrocken) > 0) {
             Shop::Container()->getDB()->update(
                 'tbrocken',
                 'cBrocken',
                 $oBrocken->cBrocken,
-                (object)['cBrocken' => $cBrocken, 'dErstellt' => 'now()']
+                (object)['cBrocken' => $cBrocken, 'dErstellt' => 'NOW()']
             );
         }
         $return = 0;

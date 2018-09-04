@@ -110,7 +110,7 @@ class ZahlungsLog
         $oZahlungsLog->cLog     = $cLog;
         $oZahlungsLog->cLogData = $cLogData;
         $oZahlungsLog->nLevel   = $nLevel;
-        $oZahlungsLog->dDatum   = 'now()';
+        $oZahlungsLog->dDatum   = 'NOW()';
 
         return Shop::Container()->getDB()->insert('tzahlungslog', $oZahlungsLog);
     }

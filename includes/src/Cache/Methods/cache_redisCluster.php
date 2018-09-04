@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -211,7 +211,9 @@ class cache_redisCluster implements ICachingMethod
      */
     public function flushTags($tags): int
     {
-        return $this->flush(\array_unique($this->getKeysByTag($tags)));
+        $tags = \array_unique($this->getKeysByTag($tags));
+
+        return $this->flush($tags) ? \count($tags) : 0;
     }
 
     /**

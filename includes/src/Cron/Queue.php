@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -58,7 +58,7 @@ class Queue
             'SELECT * 
                 FROM tjobqueue 
                 WHERE nInArbeit = 0 
-                    AND dStartZeit < now()',
+                    AND dStartZeit < NOW()',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($queueData as $entry) {

@@ -335,7 +335,7 @@ class CheckBox
                 ? (int)$_SESSION['kBestellung']
                 : 0;
             $oCheckBoxLogging->bChecked    = $checked;
-            $oCheckBoxLogging->dErstellt   = 'now()';
+            $oCheckBoxLogging->dErstellt   = 'NOW()';
 
             Shop::Container()->getDB()->insert('tcheckboxlogging', $oCheckBoxLogging);
         }

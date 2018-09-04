@@ -36,7 +36,7 @@ if (auth()) {
             if ($i === 0) {
                 Shop::Container()->getDB()->query(
                     "UPDATE tsuchcache
-                        SET dGueltigBis = DATE_ADD(now(), INTERVAL " . SUCHCACHE_LEBENSDAUER . " MINUTE)
+                        SET dGueltigBis = DATE_ADD(NOW(), INTERVAL " . SUCHCACHE_LEBENSDAUER . " MINUTE)
                         WHERE dGueltigBis IS NULL",
                     \DB\ReturnType::AFFECTED_ROWS
                 );
@@ -160,14 +160,14 @@ function bearbeiteInsert($xml, array $conf)
             if (!in_array($newArticleCategory, $currentArticleCategories, true)) {
                 // the article was previously not associated with this category
                 $articleCount = Shop::Container()->getDB()->query(
-                    "SELECT count(tkategorieartikel.kArtikel) AS count
+                    "SELECT COUNT(tkategorieartikel.kArtikel) AS cnt
                         FROM tkategorieartikel
                         LEFT JOIN tartikel
                             ON tartikel.kArtikel = tkategorieartikel.kArtikel
                         WHERE tkategorieartikel.kKategorie = {$newArticleCategory} " . $stockFilter,
                     \DB\ReturnType::SINGLE_OBJECT
                 );
-                if (isset($articleCount->count) && (int)$articleCount->count === 0) {
+                if (isset($articleCount->cnt) && (int)$articleCount->cnt === 0) {
                     // the category was previously empty - flush cache
                     $flush = true;
                     break;
@@ -181,14 +181,14 @@ function bearbeiteInsert($xml, array $conf)
                 if (!in_array($category, $newArticleCategories, true)) {
                     // check if the article was the only one in at least one of these categories
                     $articleCount = Shop::Container()->getDB()->query(
-                        "SELECT count(tkategorieartikel.kArtikel) AS count
+                        "SELECT COUNT(tkategorieartikel.kArtikel) AS cnt
                             FROM tkategorieartikel
                             LEFT JOIN tartikel
                                 ON tartikel.kArtikel = tkategorieartikel.kArtikel
                             WHERE tkategorieartikel.kKategorie = {$category} " . $stockFilter,
                         \DB\ReturnType::SINGLE_OBJECT
                     );
-                    if (!isset($articleCount->count) || (int)$articleCount->count === 1) {
+                    if (!isset($articleCount->cnt) || (int)$articleCount->cnt === 1) {
                         // the category only had this article in it - flush cache
                         $flush = true;
                         break;
@@ -225,7 +225,7 @@ function bearbeiteInsert($xml, array $conf)
                     if (is_array($newArticleCategories) && !empty($newArticleCategories)) {
                         // get count of visible articles in the article's futre categories
                         $articleCount = Shop::Container()->getDB()->query(
-                            'SELECT tkategorieartikel.kKategorie, count(tkategorieartikel.kArtikel) AS count
+                            'SELECT tkategorieartikel.kKategorie, COUNT(tkategorieartikel.kArtikel) AS cnt
                                 FROM tkategorieartikel
                                 LEFT JOIN tartikel
                                     ON tartikel.kArtikel = tkategorieartikel.kArtikel
@@ -238,8 +238,8 @@ function bearbeiteInsert($xml, array $conf)
                             if (is_array($articleCount) && !empty($articleCount)) {
                                 foreach ($articleCount as $ac) {
                                     if ($ac->kKategorie == $nac
-                                        && (($currentStatus->cLagerBeachten !== 'Y' && $ac->count == 1)
-                                            || ($currentStatus->cLagerBeachten === 'Y' && $ac->count == 0))
+                                        && (($currentStatus->cLagerBeachten !== 'Y' && (int)$ac->cnt === 1)
+                                            || ($currentStatus->cLagerBeachten === 'Y' && (int)$ac->cnt === 0))
                                     ) {
                                         // there was just one product that is now sold out
                                         // or there were just sold out products and now it's not sold out anymore
@@ -273,21 +273,19 @@ function bearbeiteInsert($xml, array $conf)
         $artikel_arr[0]->cSeo = getSeo($artikel_arr[0]->cSeo);
         $artikel_arr[0]->cSeo = checkSeo($artikel_arr[0]->cSeo);
         //persistente werte
-        $artikel_arr[0]->dLetzteAktualisierung = 'now()';
+        $artikel_arr[0]->dLetzteAktualisierung = 'NOW()';
         //mysql strict fixes
-        if (isset($artikel_arr[0]->dMHD) && $artikel_arr[0]->dMHD === '') {
-            $artikel_arr[0]->dMHD = '0000-00-00';
+        if (empty($artikel_arr[0]->dMHD)) {
+            $artikel_arr[0]->dMHD = '_DBNULL_';
         }
         if (isset($artikel_arr[0]->dErstellt) && $artikel_arr[0]->dErstellt === '') {
-            $artikel_arr[0]->dErstellt = 'now()';
+            $artikel_arr[0]->dErstellt = 'NOW()';
         }
-        if (isset($artikel_arr[0]->dZulaufDatum) && $artikel_arr[0]->dZulaufDatum === '') {
-            $artikel_arr[0]->dZulaufDatum = '0000-00-00';
-        } elseif (!isset($artikel_arr[0]->dZulaufDatum)) {
-            $artikel_arr[0]->dZulaufDatum = '0000-00-00';
+        if (empty($artikel_arr[0]->dZulaufDatum)) {
+            $artikel_arr[0]->dZulaufDatum = '_DBNULL_';
         }
-        if (isset($artikel_arr[0]->dErscheinungsdatum) && $artikel_arr[0]->dErscheinungsdatum === '') {
-            $artikel_arr[0]->dErscheinungsdatum = '0000-00-00';
+        if (empty($artikel_arr[0]->dErscheinungsdatum)) {
+            $artikel_arr[0]->dErscheinungsdatum = '_DBNULL_';
         }
         if (isset($artikel_arr[0]->fLieferantenlagerbestand) && $artikel_arr[0]->fLieferantenlagerbestand === '') {
             $artikel_arr[0]->fLieferantenlagerbestand = 0;
@@ -560,17 +558,14 @@ function bearbeiteInsert($xml, array $conf)
 
     updateXMLinDB($xml['tartikel'], 'tpreise', $GLOBALS['mPreise'], 'kKundengruppe', 'kArtikel');
 
-    if (isset($xml['tartikel']['tpreis']) && version_compare($_POST['vers'], '099976', '>=')) {
+    if (isset($xml['tartikel']['tpreis'])) {
         handleNewPriceFormat($xml['tartikel']);
-    } else {
-        handleOldPriceFormat(mapArray($xml['tartikel'], 'tpreise', $GLOBALS['mPreise']));
     }
 
     updateXMLinDB($xml['tartikel'], 'tartikelsonderpreis', $GLOBALS['mArtikelSonderpreis'], 'kArtikelSonderpreis');
     updateXMLinDB($xml['tartikel'], 'tkategorieartikel', $GLOBALS['mKategorieArtikel'], 'kKategorieArtikel');
     updateXMLinDB($xml['tartikel'], 'tartikelattribut', $GLOBALS['mArtikelAttribut'], 'kArtikelAttribut');
-    updateXMLinDB($xml['tartikel'], 'tartikelsichtbarkeit', $GLOBALS['mArtikelSichtbarkeit'], 'kKundengruppe',
-        'kArtikel');
+    updateXMLinDB($xml['tartikel'], 'tartikelsichtbarkeit', $GLOBALS['mArtikelSichtbarkeit'], 'kKundengruppe', 'kArtikel');
     updateXMLinDB($xml['tartikel'], 'txsell', $GLOBALS['mXSell'], 'kXSell');
     updateXMLinDB($xml['tartikel'], 'tartikelmerkmal', $GLOBALS['mArtikelSichtbarkeit'], 'kMermalWert');
     if ((int)$artikel_arr[0]->nIstVater === 1) {
@@ -653,8 +648,8 @@ function bearbeiteInsert($xml, array $conf)
         $oArtikelWarenlager_arr = mapArray($xml['tartikel'], 'tartikelwarenlager', $GLOBALS['mArtikelWarenlager']);
 
         foreach ($oArtikelWarenlager_arr as $oArtikelWarenlager) {
-            if (isset($oArtikelWarenlager->dZulaufDatum) && $oArtikelWarenlager->dZulaufDatum === '') {
-                $oArtikelWarenlager->dZulaufDatum = '0000-00-00 00:00:00';
+            if (empty($oArtikelWarenlager->dZulaufDatum)) {
+                $oArtikelWarenlager->dZulaufDatum = null;
             }
             // Prevent SQL-Exception if duplicate datasets will be sent falsely
             Shop::Container()->getDB()->queryPrepared(
@@ -1001,14 +996,14 @@ function loescheArtikel(int $kArtikel, int $nIstVater = 0, bool $bForce = false,
         foreach ($articleCategories as $category) {
             // check if the article was the only one in at least one of these categories
             $categoryCount = Shop::Container()->getDB()->query(
-                'SELECT count(tkategorieartikel.kArtikel) AS count
+                'SELECT COUNT(tkategorieartikel.kArtikel) AS cnt
                     FROM tkategorieartikel
                     LEFT JOIN tartikel
                         ON tartikel.kArtikel = tkategorieartikel.kArtikel
                     WHERE tkategorieartikel.kKategorie = ' . (int)$category->kKategorie . ' ' . $stockFilter,
                 \DB\ReturnType::SINGLE_OBJECT
             );
-            if (!isset($categoryCount->count) || (int)$categoryCount->count === 1) {
+            if (!isset($categoryCount->cnt) || (int)$categoryCount->cnt === 1) {
                 // the category only had this article in it - flush cache
                 flushCategoryTreeCache();
                 break;

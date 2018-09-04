@@ -388,7 +388,7 @@ function getNewsOverview($oSQL, $cLimitSQL)
                 AND tnewskommentar.nAktiv = 1
             " . $oSQL->cNewsKatSQL . "
             WHERE tnews.nAktiv = 1
-                AND tnews.dGueltigVon <= now()
+                AND tnews.dGueltigVon <= NOW()
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
                     OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
                         . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
@@ -416,7 +416,7 @@ function getFullNewsOverview($oSQL)
                 ON t.kNews = tnews.kNews
             " . $oSQL->cNewsKatSQL . "
             WHERE tnews.nAktiv = 1
-                AND tnews.dGueltigVon <= now()
+                AND tnews.dGueltigVon <= NOW()
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
                     OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
                         . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
@@ -441,7 +441,7 @@ function getNewsDateArray($oSQL)
                 ON tnews.kNews = t.kNews
             " . $oSQL->cNewsKatSQL . "
             WHERE tnews.nAktiv = 1
-                AND tnews.dGueltigVon <= now()
+                AND tnews.dGueltigVon <= NOW()
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
                     OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
                         . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)

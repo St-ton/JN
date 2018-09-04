@@ -19,7 +19,10 @@ function getAllFiles(&$oDatei_arr, &$nStat_arr)
 
     if ($version->hasPreRelease()) {
         $preRelease = $version->getPreRelease();
-        $versionStr .= '-'.$preRelease->getGreek().'-'.$preRelease->getReleaseNumber;
+        $versionStr .= '-'.$preRelease->getGreek();
+        if ($preRelease->getReleaseNumber() > 0) {
+            $versionStr .= '-'.$preRelease->getReleaseNumber();
+        }
     }
 
     $md5file = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_SHOPMD5 . $versionStr . '.csv';

@@ -921,7 +921,7 @@ function generateSitemapXML()
                     AND tseo.kKey = tnews.kNews
                     AND tseo.kSprache = t.languageID
                 WHERE tnews.nAktiv = 1
-                    AND tnews.dGueltigVon <= now()
+                    AND tnews.dGueltigVon <= NOW()
                     AND (tnews.cKundengruppe LIKE '%;-1;%'
                     OR FIND_IN_SET('" . Session::CustomerGroup()->getID() . "', REPLACE(tnews.cKundengruppe, ';',',')) > 0) 
                     ORDER BY tnews.dErstellt",
@@ -1112,7 +1112,7 @@ function baueSitemapReport($nAnzahlURL_arr, $fTotalZeit)
         $oSitemapReport                     = new stdClass();
         $oSitemapReport->nTotalURL          = $nTotalURL;
         $oSitemapReport->fVerarbeitungszeit = number_format($fTotalZeit, 2);
-        $oSitemapReport->dErstellt          = 'now()';
+        $oSitemapReport->dErstellt          = 'NOW()';
 
         $kSitemapReport = Shop::Container()->getDB()->insert('tsitemapreport', $oSitemapReport);
         $bGZ            = function_exists('gzopen');

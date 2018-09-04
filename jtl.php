@@ -579,7 +579,7 @@ if ($customerID > 0) {
                 'cOptCode'     => '',
                 'cLoeschCode'  => '',
                 'cAktion'      => 'Geloescht',
-                'dAusgetragen' => 'now()',
+                'dAusgetragen' => 'NOW()',
                 'dEingetragen' => '',
                 'dOptCode'     => '',
             ]);

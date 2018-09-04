@@ -236,7 +236,7 @@ class Jtllog
     {
         Shop::Container()->getDB()->query(
             'DELETE FROM tjtllog 
-                WHERE DATE_ADD(dErstellt, INTERVAL 30 DAY) < now()',
+                WHERE DATE_ADD(dErstellt, INTERVAL 30 DAY) < NOW()',
             \DB\ReturnType::AFFECTED_ROWS
         );
         $oObj = Shop::Container()->getDB()->query(

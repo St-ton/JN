@@ -131,7 +131,6 @@
                 <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
             {/if}
         </div>
-        <!-- #inaktiv -->
         <div id="aktiv" class="tab-pane fade{if isset($cTab) && $cTab === 'aktiv'} active in{/if}">
             {include file='tpl_inc/pagination.tpl' oPagination=$oPagiNews cAnchor='aktiv'}
             <form name="news" method="post" action="news.php">
@@ -304,7 +303,6 @@
                 </div>
             </form>
         </div>
-        <!-- #kategorien -->
         <div id="einstellungen" class="tab-pane fade{if isset($cTab) && $cTab === 'einstellungen'} active in{/if}">
             <form name="einstellen" method="post" action="news.php">
                 {$jtl_token}

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -52,7 +52,7 @@ final class NewsCategories extends AbstractBox
                     WHERE t.languageID = :lid
                         AND tnewskategorie.nAktiv = 1
                         AND tnews.nAktiv = 1
-                        AND tnews.dGueltigVon <= now()
+                        AND tnews.dGueltigVon <= NOW()
                         AND (tnews.cKundengruppe LIKE '%;-1;%' 
                             OR FIND_IN_SET(':cid', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                         AND t.languageID = :lid

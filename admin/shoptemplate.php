@@ -140,7 +140,7 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && FormHelper::valida
     } else {
         $cFehler = 'Template bzw. Einstellungen konnten nicht geändert werden.';
     }
-    Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = now()', \DB\ReturnType::DEFAULT);
+    Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
     //re-init smarty with new template - problematic because of re-including functions.php
     header('Location: ' . Shop::getURL() . '/' .
         PFAD_ADMIN . 'shoptemplate.php?check=' .
@@ -170,7 +170,7 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && FormHelper::val
         } else {
             $cFehler = 'Template bzw. Einstellungen konnten nicht geändert werden.';
         }
-        Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = now()', \DB\ReturnType::DEFAULT);
+        Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
         //re-init smarty with new template - problematic because of re-including functions.php
         header('Location: ' . $shopURL . PFAD_ADMIN . 'shoptemplate.php', true, 301);
     } else {
@@ -246,7 +246,7 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && FormHelper::val
         $cFehler = 'Template konnte nicht geändert werden.';
     }
 
-    Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = now()', \DB\ReturnType::DEFAULT);
+    Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
 }
 $smarty->assign('admin', ($admin === true) ? 1 : 0)
        ->assign('oTemplate_arr', $templateHelper->getFrontendTemplates())

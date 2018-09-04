@@ -122,7 +122,7 @@ function bearbeiteInsert($xml)
         }
         $kategorie_arr[0]->cSeo                  = getSeo($kategorie_arr[0]->cSeo);
         $kategorie_arr[0]->cSeo                  = checkSeo($kategorie_arr[0]->cSeo);
-        $kategorie_arr[0]->dLetzteAktualisierung = 'now()';
+        $kategorie_arr[0]->dLetzteAktualisierung = 'NOW()';
         $kategorie_arr[0]->lft                   = $oDataOld->lft ?? 0;
         $kategorie_arr[0]->rght                  = $oDataOld->rght ?? 0;
         $kategorie_arr[0]->nLevel                = $oDataOld->nLevel ?? 0;

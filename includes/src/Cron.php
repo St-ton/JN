@@ -79,9 +79,9 @@ class Cron
         string $cJobArt = '',
         string $cTabelle = '',
         string $cKey = '',
-        string $dStart = '0000-00-00 00:00:00',
-        string $dStartZeit = '00:00:00',
-        string $dLetzterStart = '0000-00-00 00:00:00'
+        string $dStart = null,
+        string $dStartZeit = null,
+        string $dLetzterStart = null
     ) {
         $this->kCron         = $kCron;
         $this->kKey          = $kKey;

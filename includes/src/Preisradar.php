@@ -21,7 +21,7 @@ class Preisradar
         $productIDs = Shop::Container()->getDB()->query(
             "SELECT kArtikel AS id
                 FROM tpreisverlauf
-                WHERE DATE_SUB(now(), INTERVAL {$nTage} DAY) < dDate
+                WHERE DATE_SUB(NOW(), INTERVAL {$nTage} DAY) < dDate
                     AND kKundengruppe = {$kKundengruppe}
                 GROUP BY kArtikel
                 HAVING COUNT(*) >= 2
@@ -46,7 +46,7 @@ class Preisradar
                           *
                       FROM tpreisverlauf
                       WHERE
-                          DATE_SUB(now(), INTERVAL 30 DAY) < dDate AND kKundengruppe = 1 AND {$cArtikelSQL}
+                          DATE_SUB(NOW(), INTERVAL 30 DAY) < dDate AND kKundengruppe = 1 AND {$cArtikelSQL}
                       ORDER BY dDate DESC
                       LIMIT 0,1
                   ) UNION ( /* Artikel vorletzter Preis */
@@ -54,7 +54,7 @@ class Preisradar
                           *
                       FROM tpreisverlauf
                       WHERE
-                          DATE_SUB(now(), INTERVAL 30 DAY) < dDate AND kKundengruppe = 1 AND {$cArtikelSQL}
+                          DATE_SUB(NOW(), INTERVAL 30 DAY) < dDate AND kKundengruppe = 1 AND {$cArtikelSQL}
                       ORDER BY dDate DESC
                       LIMIT 1,1
                   )

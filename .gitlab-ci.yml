@@ -5,6 +5,7 @@ stages:
 archive:
   stage: build
   script:
+    - $CI_PROJECT_DIR/tools/create_version_string.sh "$CI_COMMIT_REF_NAME" "$CI_COMMIT_SHA" "$CI_PROJECT_DIR"
     - buildscript pipeline:shop "$CI_PROJECT_DIR" "$CI_COMMIT_REF_NAME" "$CI_PROJECT_URL" "$CI_COMMIT_SHA"
   only:
     - master

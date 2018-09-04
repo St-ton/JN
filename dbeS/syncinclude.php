@@ -599,7 +599,7 @@ function versendeVerfuegbarkeitsbenachrichtigung($product)
 
         $upd                    = new stdClass();
         $upd->nStatus           = 1;
-        $upd->dBenachrichtigtAm = 'now()';
+        $upd->dBenachrichtigtAm = 'NOW()';
         $upd->cAbgeholt         = 'N';
         Shop::Container()->getDB()->update(
             'tverfuegbarkeitsbenachrichtigung',
@@ -658,7 +658,7 @@ function setzePreisverlauf(int $kArtikel, int $kKundengruppe, float $fVKNetto)
             'kArtikel'      => $kArtikel,
             'kKundengruppe' => $kKundengruppe,
             'fVKNetto'      => $fVKNetto,
-            'dDate'         => 'now()',
+            'dDate'         => 'NOW()',
         ]);
     }
 }

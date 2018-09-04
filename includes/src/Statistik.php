@@ -127,10 +127,10 @@ class Statistik
             $oDatumSQL = $this->baueDatumSQL('dZeit');
 
             $oStatTMP_arr = Shop::Container()->getDB()->query(
-                "SELECT * , sum( t.nCount ) AS nCount
+                "SELECT * , SUM(t.nCount) AS nCount
                     FROM (
-                        SELECT if(cReferer = '', 'direkter Einstieg', cReferer) AS cReferer, 
-                        count(dZeit) AS nCount
+                        SELECT IF(cReferer = '', 'direkter Einstieg', cReferer) AS cReferer, 
+                        COUNT(dZeit) AS nCount
                         FROM tbesucher
                         " . $oDatumSQL->cWhere . "
                         AND kBesucherBot = 0
@@ -238,15 +238,15 @@ class Statistik
 
             $oDatumSQL    = $this->baueDatumSQL('dZeit');
             $oStatTMP_arr = Shop::Container()->getDB()->query(
-                "SELECT *, sum(t.nCount) AS nCount
+                "SELECT *, SUM(t.nCount) AS nCount
                     FROM
                     (
-                        SELECT cEinstiegsseite, count(dZeit) AS nCount
+                        SELECT cEinstiegsseite, COUNT(dZeit) AS nCount
                         FROM tbesucher
                         {$oDatumSQL->cWhere}
                             AND kBesucherBot = 0
                         GROUP BY cEinstiegsseite
-                        UNION SELECT cEinstiegsseite, count(dZeit) as nCount
+                        UNION SELECT cEinstiegsseite, COUNT(dZeit) AS nCount
                         FROM tbesucherarchiv
                         {$oDatumSQL->cWhere}
                             AND kBesucherBot = 0

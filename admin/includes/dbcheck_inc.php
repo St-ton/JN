@@ -107,7 +107,10 @@ function getDBFileStruct()
 
     if ($version->hasPreRelease()) {
         $preRelease = $version->getPreRelease();
-        $versionStr .= '-'.$preRelease->getGreek().'-'.$preRelease->getReleaseNumber;
+        $versionStr .= '-'.$preRelease->getGreek();
+        if ($preRelease->getReleaseNumber() > 0) {
+            $versionStr .= '-'.$preRelease->getReleaseNumber();
+        }
     }
 
     $cDateiListe = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_SHOPMD5 . 'dbstruct_' . $versionStr . '.json';

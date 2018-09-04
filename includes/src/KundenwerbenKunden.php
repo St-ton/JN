@@ -136,7 +136,7 @@ class KundenwerbenKunden
             $kwkb->kKunde                   = $kKunde;
             $kwkb->fGuthaben                = (float)$conf['kundenwerbenkunden']['kwk_bestandskundenguthaben'];
             $kwkb->nBonuspunkte             = 0;
-            $kwkb->dErhalten                = 'now()';
+            $kwkb->dErhalten                = 'NOW()';
             $kwkb->kKundenWerbenKundenBonus = Shop::Container()->getDB()->insert('tkundenwerbenkundenbonus', $kwkb);
 
             return $kwkb;
@@ -266,7 +266,7 @@ class KundenwerbenKunden
         $oKwK->cEmail       = $cEmail;
         $oKwK->nRegistriert = 0;
         $oKwK->fGuthaben    = (float)$conf['kundenwerbenkunden']['kwk_neukundenguthaben'];
-        $oKwK->dErstellt    = 'now()';
+        $oKwK->dErstellt    = 'NOW()';
         $oKwK->insertDB();
         $oKwK->sendeEmailanNeukunde();
 

@@ -11,8 +11,14 @@ class Statusmail
      */
     private $db;
 
+    /**
+     * @var string
+     */
     private $dateStart;
 
+    /**
+     * @var string
+     */
     private $dateEnd;
 
     /**
@@ -52,7 +58,7 @@ class Statusmail
                 $statusMail->nInterval = $interval;
                 $statusMail->cInhalt   = StringHandler::createSSK($_POST['cInhalt_arr']);
                 $statusMail->nAktiv    = (int)$_POST['nAktiv'];
-                $statusMail->dLastSent = 'now()';
+                $statusMail->dLastSent = 'NOW()';
 
                 $id = $this->db->insert('tstatusemail', $statusMail);
                 $this->createCronJob($id, $interval * 24);
@@ -83,8 +89,7 @@ class Statusmail
             'tstatusemail',
             'id',
             $d->format('Y-m-d H:i:s'),
-            $d->format('H:i:s'),
-            '0000-00-00 00:00:00'
+            $d->format('H:i:s')
         );
 
         return $oCron->speicherInDB() !== false;
@@ -222,7 +227,7 @@ class Statusmail
     private function getNewCustomerSalesCount(): int
     {
         $customerData = $this->db->queryPrepared(
-            'SELECT count(DISTINCT(tkunde.kKunde)) AS nAnzahl
+            'SELECT COUNT(DISTINCT(tkunde.kKunde)) AS nAnzahl
                 FROM tkunde
                 JOIN tbestellung 
                     ON tbestellung.kKunde = tkunde.kKunde
@@ -300,7 +305,7 @@ class Statusmail
                 FROM tbestellung
                 WHERE tbestellung.dErstellt >= :from
                     AND tbestellung.dErstellt < :to
-                    AND tbestellung.dBezahltDatum != '0000-00-00'",
+                    AND tbestellung.dBezahltDatum IS NOT NULL",
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
@@ -319,11 +324,11 @@ class Statusmail
     private function getShippedOrdersCount(): int
     {
         $orderData = $this->db->queryPrepared(
-            "SELECT COUNT(*) AS nAnzahl
+            'SELECT COUNT(*) AS nAnzahl
                 FROM tbestellung
                 WHERE tbestellung.dErstellt >= :from
                     AND tbestellung.dErstellt < :to
-                    AND tbestellung.dVersandDatum != '0000-00-00'",
+                    AND tbestellung.dVersandDatum IS NOT NULL',
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd

@@ -137,11 +137,11 @@ if (is_array($oLetzten20Vergleichsliste_arr) && count($oLetzten20Vergleichsliste
 // Top Vergleiche
 $oTopVergleichsliste_arr = Shop::Container()->getDB()->query(
     'SELECT tvergleichsliste.dDate, tvergleichslistepos.kArtikel, 
-        tvergleichslistepos.cArtikelName, count(tvergleichslistepos.kArtikel) AS nAnzahl
+        tvergleichslistepos.cArtikelName, COUNT(tvergleichslistepos.kArtikel) AS nAnzahl
         FROM tvergleichsliste
         JOIN tvergleichslistepos 
             ON tvergleichsliste.kVergleichsliste = tvergleichslistepos.kVergleichsliste
-        WHERE DATE_SUB(now(), INTERVAL ' . (int)$_SESSION['Vergleichsliste']->nZeitFilter . ' DAY) < tvergleichsliste.dDate
+        WHERE DATE_SUB(NOW(), INTERVAL ' . (int)$_SESSION['Vergleichsliste']->nZeitFilter . ' DAY) < tvergleichsliste.dDate
         GROUP BY tvergleichslistepos.kArtikel
         ORDER BY nAnzahl DESC
         LIMIT ' . (int)$_SESSION['Vergleichsliste']->nAnzahl,

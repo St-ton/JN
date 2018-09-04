@@ -1,10 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
 namespace Survey;
+
 
 use DB\DbInterface;
 use DB\ReturnType;
@@ -259,11 +260,12 @@ class Controller
                         WHERE tkupon.kKupon = :cid
                             AND tkuponsprache.cISOSprache = :liso
                             AND tkupon.cAktiv = 'Y'
-                            AND (tkupon.dGueltigAb <= now() 
-                                AND (tkupon.dGueltigBis >= now() 
-                                    OR tkupon.dGueltigBis = '0000-00-00 00:00:00')
-                            )
-                            AND (tkupon.kKundengruppe = -1 
+                            AND (
+                                tkupon.dGueltigAb <= NOW() 
+                                AND (tkupon.dGueltigBis IS NULL OR tkupon.dGueltigBis >= NOW())
+                                )
+                            AND (
+                                tkupon.kKundengruppe = -1 
                                 OR tkupon.kKundengruppe = :cgid)",
                     [
                         'cgid' => Session::Customer()->kKundengruppe,
@@ -319,10 +321,8 @@ class Controller
                 WHERE tumfrage.nAktiv = 1
                     AND tumfrage.kSprache = :lid
                     AND (
-                        (dGueltigVon <= now() 
-                        AND dGueltigBis >= now()) 
-                        || (dGueltigVon <= now() 
-                        AND dGueltigBis = \'0000-00-00 00:00:00\')
+                        (dGueltigVon <= NOW() AND dGueltigBis >= NOW()) 
+                        OR (dGueltigVon <= NOW() AND dGueltigBis IS NULL)
                     )
                 GROUP BY tumfrage.kUmfrage
                 HAVING COUNT(tumfragefrage.kUmfrageFrage) > 0
@@ -350,7 +350,7 @@ class Controller
     {
         if ($customerID > 0) {
             return $this->db->queryPrepared(
-                'UPDATE tkunde
+                    'UPDATE tkunde
                     SET fGuthaben = fGuthaben + :crdt
                     WHERE kKunde = :cid',
                     ['crdt' => (float)$credits, 'cid' => $customerID],
@@ -380,7 +380,7 @@ class Controller
             $participation->cIP    = $_SESSION['oBesucher']->cID;
         }
         $participation->kUmfrage       = $_SESSION['Umfrage']->kUmfrage;
-        $participation->dDurchgefuehrt = 'now()';
+        $participation->dDurchgefuehrt = 'NOW()';
 
         $id = $this->db->insert('tumfragedurchfuehrung', $participation);
         foreach ($_SESSION['Umfrage']->oUmfrageFrage_arr as $j => $answer) {

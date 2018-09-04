@@ -997,7 +997,7 @@ function holeAbonnenten($cSQL, $cAktiveSucheSQL)
             DATE_FORMAT(tnewsletterempfaenger.dEingetragen, '%d.%m.%Y %H:%i') AS dEingetragen_de,
             DATE_FORMAT(tnewsletterempfaenger.dLetzterNewsletter, '%d.%m.%Y %H:%i') AS dLetzterNewsletter_de, 
             tkunde.kKundengruppe, tkundengruppe.cName, tnewsletterempfaengerhistory.cOptIp, 
-             DATE_FORMAT(tnewsletterempfaengerhistory.dOptCode, '%d.%m.%Y %H:%i') AS optInDate
+            DATE_FORMAT(tnewsletterempfaengerhistory.dOptCode, '%d.%m.%Y %H:%i') AS optInDate
             FROM tnewsletterempfaenger
             LEFT JOIN tkunde 
                 ON tkunde.kKunde = tnewsletterempfaenger.kKunde
@@ -1062,8 +1062,8 @@ function loescheAbonnenten($kNewsletterEmpfaenger_arr)
         $oNewsletterEmpfaengerHistory->cLoeschCode  = $oNewsletterEmpfaenger->cLoeschCode;
         $oNewsletterEmpfaengerHistory->cAktion      = 'Geloescht';
         $oNewsletterEmpfaengerHistory->dEingetragen = $oNewsletterEmpfaenger->dEingetragen;
-        $oNewsletterEmpfaengerHistory->dAusgetragen = 'now()';
-        $oNewsletterEmpfaengerHistory->dOptCode     = '0000-00-00';
+        $oNewsletterEmpfaengerHistory->dAusgetragen = 'NOW()';
+        $oNewsletterEmpfaengerHistory->dOptCode     = '_DBNULL_';
 
         Shop::Container()->getDB()->insert('tnewsletterempfaengerhistory', $oNewsletterEmpfaengerHistory);
     }
@@ -1121,8 +1121,8 @@ function aktiviereAbonnenten($kNewsletterEmpfaenger_arr)
         $hist->cLoeschCode  = $oNewsletterEmpfaenger->cLoeschCode;
         $hist->cAktion      = 'Aktiviert';
         $hist->dEingetragen = $oNewsletterEmpfaenger->dEingetragen;
-        $hist->dAusgetragen = 'now()';
-        $hist->dOptCode     = '0000-00-00';
+        $hist->dAusgetragen = 'NOW()';
+        $hist->dOptCode     = '_DBNULL_';
 
         Shop::Container()->getDB()->insert('tnewsletterempfaengerhistory', $hist);
     }

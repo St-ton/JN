@@ -27,7 +27,7 @@ if (isset($_GET['i'])) {
         Shop::Container()->getDB()->delete('tbestellid', 'kBestellung', (int)$bestellid->kBestellung);
     }
     Shop::Container()->getDB()->query(
-        'DELETE FROM tbestellid WHERE dDatum < date_sub(now(),INTERVAL 30 DAY)',
+        'DELETE FROM tbestellid WHERE dDatum < DATE_SUB(NOW(),INTERVAL 30 DAY)',
         \DB\ReturnType::DEFAULT
     );
     $smarty->assign('abschlussseite', 1);

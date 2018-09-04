@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -27,7 +27,7 @@ class Newsletter extends Job
     {
         parent::__construct($db, $logger);
         if (\JOBQUEUE_LIMIT_M_NEWSLETTER > 0) {
-            $this->setLimit(\JOBQUEUE_LIMIT_M_NEWSLETTER);
+            $this->setLimit((int)\JOBQUEUE_LIMIT_M_NEWSLETTER);
         }
     }
 
@@ -41,14 +41,14 @@ class Newsletter extends Job
         if ($oNewsletter === null) {
             return $this;
         }
-        $Einstellungen     = \Shop::getSettings([\CONF_NEWSLETTER]);
-        $mailSmarty        = \bereiteNewsletterVor($Einstellungen);
-        $kArtikel_arr      = \gibAHKKeys($oNewsletter->cArtikel, true);
-        $kHersteller_arr   = \gibAHKKeys($oNewsletter->cHersteller);
-        $kKategorie_arr    = \gibAHKKeys($oNewsletter->cKategorie);
-        $kKundengruppe_arr = \gibAHKKeys($oNewsletter->cKundengruppe);
-        $oKampagne         = new \Kampagne($oNewsletter->kKampagne);
-        if (\count($kKundengruppe_arr) === 0) {
+        $conf            = \Shop::getSettings([\CONF_NEWSLETTER]);
+        $smarty          = \bereiteNewsletterVor($conf);
+        $productIDs      = \gibAHKKeys($oNewsletter->cArtikel, true);
+        $manufacturerIDs = \gibAHKKeys($oNewsletter->cHersteller);
+        $categoryIDs     = \gibAHKKeys($oNewsletter->cKategorie);
+        $customerGroups  = \gibAHKKeys($oNewsletter->cKundengruppe);
+        $campaign        = new \Kampagne($oNewsletter->kKampagne);
+        if (\count($customerGroups) === 0) {
             $this->setFinished(true);
             $this->db->delete('tnewsletterqueue', 'kNewsletter', $queueEntry->kKey);
 
@@ -57,19 +57,19 @@ class Newsletter extends Job
         $products   = [];
         $categories = [];
         $cSQL       = '';
-        if (\is_array($kKundengruppe_arr) && \count($kKundengruppe_arr) > 0) {
-            foreach ($kKundengruppe_arr as $kKundengruppe) {
+        if (\is_array($customerGroups) && \count($customerGroups) > 0) {
+            foreach ($customerGroups as $kKundengruppe) {
                 $products[$kKundengruppe]   = \gibArtikelObjekte(
-                    $kArtikel_arr,
-                    $oKampagne,
+                    $productIDs,
+                    $campaign,
                     $kKundengruppe,
                     $oNewsletter->kSprache
                 );
-                $categories[$kKundengruppe] = \gibKategorieObjekte($kKategorie_arr, $oKampagne);
+                $categories[$kKundengruppe] = \gibKategorieObjekte($categoryIDs, $campaign);
             }
 
             $cSQL = 'AND (';
-            foreach ($kKundengruppe_arr as $i => $kKundengruppe) {
+            foreach ($customerGroups as $i => $kKundengruppe) {
                 if ($i > 0) {
                     $cSQL .= ' OR tkunde.kKundengruppe = ' . (int)$kKundengruppe;
                 } else {
@@ -79,7 +79,7 @@ class Newsletter extends Job
         }
 
         if (\in_array('0', \explode(';', $oNewsletter->cKundengruppe))) {
-            if (\is_array($kKundengruppe_arr) && \count($kKundengruppe_arr) > 0) {
+            if (\is_array($customerGroups) && \count($customerGroups) > 0) {
                 $cSQL .= ' OR tkunde.kKundengruppe IS NULL';
             } else {
                 $cSQL .= 'tkunde.kKundengruppe IS NULL';
@@ -87,8 +87,8 @@ class Newsletter extends Job
         }
         $cSQL .= ')';
 
-        $oHersteller_arr           = \gibHerstellerObjekte($kHersteller_arr, $oKampagne, $oNewsletter->kSprache);
-        $oNewsletterEmpfaenger_arr = $this->db->query(
+        $manufacturers = \gibHerstellerObjekte($manufacturerIDs, $campaign, $oNewsletter->kSprache);
+        $recipients    = $this->db->query(
             'SELECT tkunde.kKundengruppe, tkunde.kKunde, tsprache.cISO, tnewsletterempfaenger.kNewsletterEmpfaenger, 
             tnewsletterempfaenger.cAnrede, tnewsletterempfaenger.cVorname, tnewsletterempfaenger.cNachname, 
             tnewsletterempfaenger.cEmail, tnewsletterempfaenger.cLoeschCode
@@ -104,9 +104,9 @@ class Newsletter extends Job
             ReturnType::ARRAY_OF_OBJECTS
         );
 
-        if (\count($oNewsletterEmpfaenger_arr) > 0) {
+        if (\count($recipients) > 0) {
             $shopURL = \Shop::getURL();
-            foreach ($oNewsletterEmpfaenger_arr as $oNewsletterEmpfaenger) {
+            foreach ($recipients as $oNewsletterEmpfaenger) {
                 unset($oKunde);
                 $oNewsletterEmpfaenger->cLoeschURL = $shopURL . '/newsletter.php?lang=' .
                     $oNewsletterEmpfaenger->cISO . '&lc=' . $oNewsletterEmpfaenger->cLoeschCode;
@@ -118,14 +118,14 @@ class Newsletter extends Job
                     : 0;
 
                 \versendeNewsletter(
-                    $mailSmarty,
+                    $smarty,
                     $oNewsletter,
-                    $Einstellungen,
+                    $conf,
                     $oNewsletterEmpfaenger,
                     $products[$kKundengruppeTMP],
-                    $oHersteller_arr,
+                    $manufacturers,
                     $categories[$kKundengruppeTMP],
-                    $oKampagne,
+                    $campaign,
                     $oKunde ?? null
                 );
                 $upd                     = new \stdClass();

@@ -1586,9 +1586,24 @@ final class Shop
     /**
      * Return version of files
      *
+     * @deprecated since 5.0.0
+     *
      * @return string
      */
     public static function getVersion(): string
+    {
+        trigger_error(__METHOD__ . ' is deprecated. Use ' . __CLASS__ . '::getApplicationVersion() instead',
+            E_USER_DEPRECATED);
+
+        return self::getApplicationVersion();
+    }
+
+    /**
+     * Return version of files
+     *
+     * @return string
+     */
+    public static function getApplicationVersion(): string
     {
         return APPLICATION_VERSION;
     }

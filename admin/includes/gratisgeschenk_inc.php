@@ -139,7 +139,7 @@ function gibAnzahlAktiverGeschenke(): int
 function gibAnzahlHaeufigGekaufteGeschenke(): int
 {
     return (int)Shop::Container()->getDB()->query(
-        'SELECT count(DISTINCT(kArtikel)) AS nAnzahl
+        'SELECT COUNT(DISTINCT(kArtikel)) AS nAnzahl
             FROM twarenkorbpos
             WHERE nPosTyp = ' . C_WARENKORBPOS_TYP_GRATISGESCHENK,
         \DB\ReturnType::SINGLE_OBJECT

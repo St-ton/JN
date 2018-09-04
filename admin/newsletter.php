@@ -64,7 +64,7 @@ if (FormHelper::validateToken()) {
         $oNewsletter->cNachname    = $_POST['cNachname'];
         $oNewsletter->cEmail       = $_POST['cEmail'];
         $oNewsletter->kSprache     = (int)$_POST['kSprache'];
-        $oNewsletter->dEingetragen = 'now()';
+        $oNewsletter->dEingetragen = 'NOW()';
         $oNewsletter->cOptCode     = create_NewsletterCode('cOptCode', $oNewsletter->cEmail);
         $oNewsletter->cLoeschCode  = create_NewsletterCode('cLoeschCode', $oNewsletter->cEmail);
         $oNewsletter->kKunde       = 0;

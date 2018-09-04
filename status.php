@@ -21,7 +21,7 @@ if (strlen($_GET['uid']) === 40) {
     $status = Shop::Container()->getDB()->queryPrepared(
         'SELECT kBestellung 
             FROM tbestellstatus 
-            WHERE dDatum >= date_sub(now(), INTERVAL 30 DAY) 
+            WHERE dDatum >= DATE_SUB(NOW(), INTERVAL 30 DAY) 
             AND cUID = :uid',
         ['uid' => $_GET['uid']],
         \DB\ReturnType::SINGLE_OBJECT

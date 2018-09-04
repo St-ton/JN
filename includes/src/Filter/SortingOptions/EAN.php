@@ -16,13 +16,13 @@ use Filter\ProductFilter;
 class EAN extends AbstractSortingOption
 {
     /**
-     * SortDefault constructor.
+     * EAN constructor.
      * @param ProductFilter $productFilter
      */
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->orderBy = 'tartikel.cBarcode, tartikel.cName';
+        $this->setOrderBy('tartikel.cBarcode, tartikel.cName');
         $this->setName(\Shop::Lang()->get('sortEan'));
         $this->setPriority($this->getConfig('artikeluebersicht')['suche_sortierprio_ean']);
         $this->setValue(\SEARCH_SORT_EAN);

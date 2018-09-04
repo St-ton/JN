@@ -2052,11 +2052,16 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
         $ret['email'] = 4;
     }
 
-    if ($conf['kunden']['kundenregistrierung_abgleichen_plz'] === 'Y'
-        && !valid_plzort($data['plz'], $data['ort'], $data['land'])
+    if (empty($_SESSION['check_plzort'])
+        && $conf['kunden']['kundenregistrierung_abgleichen_plz'] === 'Y'
     ) {
-        $ret['plz'] = 2;
-        $ret['ort'] = 2;
+        if (!valid_plzort($data['plz'], $data['ort'], $data['land'])) {
+            $ret['plz']               = 2;
+            $ret['ort']               = 2;
+            $_SESSION['check_plzort'] = 1;
+        }
+    } else {
+        unset($_SESSION['check_plzort']);
     }
 
     foreach ([

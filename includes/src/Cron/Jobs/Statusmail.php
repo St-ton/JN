@@ -30,7 +30,7 @@ class Statusmail extends Job
     {
         parent::__construct($db, $logger);
         if (\JOBQUEUE_LIMIT_M_STATUSEMAIL > 0) {
-            $this->setLimit(\JOBQUEUE_LIMIT_M_STATUSEMAIL);
+            $this->setLimit((int)\JOBQUEUE_LIMIT_M_STATUSEMAIL);
         }
     }
 

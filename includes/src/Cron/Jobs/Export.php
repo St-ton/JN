@@ -26,7 +26,7 @@ class Export extends Job
     {
         parent::__construct($db, $logger);
         if (\JOBQUEUE_LIMIT_M_EXPORTE > 0) {
-            $this->setLimit(\JOBQUEUE_LIMIT_M_EXPORTE);
+            $this->setLimit((int)\JOBQUEUE_LIMIT_M_EXPORTE);
         }
     }
 

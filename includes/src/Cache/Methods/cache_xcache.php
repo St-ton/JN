@@ -7,9 +7,6 @@
 namespace Cache\Methods;
 
 
-use Cache\ICachingMethod;
-use Cache\JTLCacheTrait;
-
 /**
  * Class cache_xcache
  * Implements the XCache Opcode Cache

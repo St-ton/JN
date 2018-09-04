@@ -6,7 +6,7 @@
                 <div class="form-group float-label-control owner {if isset($fehlendeAngaben.inhaber) && $fehlendeAngaben.inhaber > 0} has-error{/if}">
                     <label class="control-label" for="inp_owner">{lang key='owner' section='shipping payment'}
                         {if $Einstellungen.zahlungsarten.zahlungsart_lastschrift_kontoinhaber_abfrage !== 'Y'}
-                            <span class="optional"> - {lang key='conditionalFillOut' section='checkout'}</span>
+                            <span class="optional"> - {lang key='optional' section='checkout'}</span>
                         {/if}
                     </label>
                     <input required class="form-control" id="inp_owner" type="text" name="inhaber" maxlength="32" size="32" value="{if isset($ZahlungsInfo->cInhaber) && $ZahlungsInfo->cInhaber|count_characters > 0}{$ZahlungsInfo->cInhaber}{elseif isset($oKundenKontodaten->cInhaber)}{$oKundenKontodaten->cInhaber}{/if}"{if $Einstellungen.zahlungsarten.zahlungsart_lastschrift_kontoinhaber_abfrage === 'Y'} required{/if}>
@@ -30,7 +30,7 @@
                 <div class="form-group float-label-control account_no{if isset($fehlendeAngaben.kontonr) && $fehlendeAngaben.kontonr > 0} has-error{/if}">
                     <label class="control-label" for="inp_account_no">{lang key='accountNo' section='shipping payment'}
                         {if $Einstellungen.zahlungsarten.zahlungsart_lastschrift_kontonummer_abfrage !== 'Y'}
-                            <span class="optional"> - {lang key='conditionalFillOut' section='checkout'}</span>
+                            <span class="optional"> - {lang key='optional' section='checkout'}</span>
                         {/if}
                     </label>
                     <input class="form-control" id="inp_account_no" type="text" name="kontonr" maxlength="32" size="12" value="{if isset($ZahlungsInfo->cKontoNr) && $ZahlungsInfo->cKontoNr|count_characters > 0}{$ZahlungsInfo->cKontoNr}{elseif isset($oKundenKontodaten->nKonto)}{$oKundenKontodaten->nKonto}{/if}"{if $Einstellungen.zahlungsarten.zahlungsart_lastschrift_kontonummer_abfrage === 'Y'} required{/if}>
@@ -42,7 +42,7 @@
                 <div class="form-group float-label-control blz{if isset($fehlendeAngaben.blz) && $fehlendeAngaben.blz > 0} has-error{/if}">
                     <label class="control-label" for="inp_blz">{lang key='blz' section='shipping payment'}
                         {if $Einstellungen.zahlungsarten.zahlungsart_lastschrift_blz_abfrage !== 'Y'}
-                            <span class="optional"> - {lang key='conditionalFillOut' section='checkout'}</span>
+                            <span class="optional"> - {lang key='optional' section='checkout'}</span>
                         {/if}
                     </label>
                     <input class="form-control" id="inp_blz" type="text" name="blz" maxlength="12" size="10" value="{if isset($ZahlungsInfo->cBLZ) && $ZahlungsInfo->cBLZ|count_characters > 0}{$ZahlungsInfo->cBLZ}{elseif isset($oKundenKontodaten->cBLZ)}{$oKundenKontodaten->cBLZ}{/if}"{if $Einstellungen.zahlungsarten.zahlungsart_lastschrift_blz_abfrage === 'Y'} required{/if}>
@@ -58,7 +58,7 @@
             <div class="form-group float-label-control iban{if isset($fehlendeAngaben.iban) && $fehlendeAngaben.iban > 0} has-error{/if}">
                 <label class="control-label" for="inp_iban">{lang key='iban' section='shipping payment'}
                     {if $Einstellungen.zahlungsarten.zahlungsart_lastschrift_iban_abfrage !== 'Y'}
-                        <span class="optional"> - {lang key='conditionalFillOut' section='checkout'}</span>
+                        <span class="optional"> - {lang key='optional' section='checkout'}</span>
                     {/if}
                 </label>
                 <input class="form-control" id="inp_iban" type="text" name="iban" maxlength="32" value="{if isset($ZahlungsInfo->cIBAN) && $ZahlungsInfo->cIBAN|count_characters > 0}{$ZahlungsInfo->cIBAN}{elseif isset($oKundenKontodaten->cIBAN)}{$oKundenKontodaten->cIBAN}{/if}" size="20"{if $Einstellungen.zahlungsarten.zahlungsart_lastschrift_iban_abfrage === 'Y'} required{/if}>
@@ -75,7 +75,7 @@
             <div class="form-group float-label-control bic{if isset($fehlendeAngaben.bic) && $fehlendeAngaben.bic > 0} has-error{/if}">
                 <label class="control-label" for="inp_bic">{lang key='bic' section='shipping payment'}
                     {if $Einstellungen.zahlungsarten.zahlungsart_lastschrift_bic_abfrage !== 'Y'}
-                        <span class="optional"> - {lang key='conditionalFillOut' section='checkout'}</span>
+                        <span class="optional"> - {lang key='optional' section='checkout'}</span>
                     {/if}
                 </label>
                 <input class="form-control" id="inp_bic" type="text" name="bic" maxlength="32" size="20" value="{if isset($ZahlungsInfo->cBIC) && $ZahlungsInfo->cBIC|count_characters > 0}{$ZahlungsInfo->cBIC}{elseif isset($oKundenKontodaten->cBIC)}{$oKundenKontodaten->cBIC}{/if}"{if $Einstellungen.zahlungsarten.zahlungsart_lastschrift_bic_abfrage === 'Y'} required{/if}>

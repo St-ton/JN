@@ -11,7 +11,7 @@
  */
 function getItems(bool $filesize = false)
 {
-    $smarty = JTLSmarty::getInstance(false, true);
+    $smarty = \Smarty\JTLSmarty::getInstance(false, true);
     $smarty->configLoad('german.conf', 'bilderverwaltung');
 
     $item = (object) [

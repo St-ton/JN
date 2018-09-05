@@ -549,7 +549,7 @@ final class LinkAdmin
     public function clearCache(): bool
     {
         $this->cache->flushTags([\CACHING_GROUP_CORE]);
-        $this->db->query('UPDATE tglobals SET dLetzteAenderung = now()', ReturnType::DEFAULT);
+        $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
 
         return true;
     }

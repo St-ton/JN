@@ -299,6 +299,7 @@ class BoxService implements BoxServiceInterface
                 ];
             }
         }
+        $smarty->clearAssign('BoxenEinstellungen');
         // avoid modification of article object on render loop
         if ($originalArticle !== null) {
             $smarty->assign('Artikel', $originalArticle);

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -57,15 +57,17 @@ class DefaultRenderer implements RendererInterface
     public function render(int $pageType = 0, int $pageID = 0): string
     {
         $this->smarty->assign('oBox', $this->box);
-
         try {
-            return $this->box->getTemplateFile() !== '' && $this->box->isBoxVisible($pageType, $pageID)
+            $html = $this->box->getTemplateFile() !== '' && $this->box->isBoxVisible($pageType, $pageID)
                 ? $this->smarty->fetch($this->box->getTemplateFile())
                 : '';
         } catch (\SmartyException $e) {
-            return $e->getMessage();
+            $html = $e->getMessage();
         } catch (\Exception $e) {
-            return $e->getMessage();
+            $html = $e->getMessage();
         }
+        $this->smarty->clearAssign('oBox');
+
+        return $html;
     }
 }

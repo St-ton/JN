@@ -593,6 +593,7 @@ class IOMethods
         $productID       = (int)($aValues['VariKindArtikel'] ?? $aValues['a']);
         $items           = $aValues['item'] ?? [];
         $quantities      = $aValues['quantity'] ?? [];
+        $itemQuantities  = $aValues['item_quantity'] ?? [];
         $variationValues = $aValues['eigenschaftwert'] ?? [];
         $amount          = $aValues['anzahl'] ?? 1;
         $oKonfig         = ArtikelHelper::buildConfig(
@@ -600,8 +601,8 @@ class IOMethods
             $amount,
             $variationValues, 
             $items, 
-            $quantities, 
-            []
+            $quantities,
+            $itemQuantities
         );
         $net             = Session::CustomerGroup()->getIsMerchant();
         $Artikel->fuelleArtikel($productID, null);
@@ -1014,7 +1015,7 @@ class IOMethods
                 AND tartikelsichtbarkeit.kArtikel IS NULL
                 AND a.kVaterArtikel = " . $kArtikel . "
             GROUP BY a.kArtikel
-            HAVING count(*) = " . count($kVariationKombi_arr),
+            HAVING COUNT(*) = " . count($kVariationKombi_arr),
             \DB\ReturnType::SINGLE_OBJECT
         );
     }

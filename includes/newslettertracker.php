@@ -34,7 +34,7 @@ if (RequestHelper::verifyGPCDataInt('kK') > 0
         $oNewsletterTrack->kKampagne             = $kKampagne;
         $oNewsletterTrack->kNewsletter           = $kNewsletter;
         $oNewsletterTrack->kNewsletterEmpfaenger = $kNewsletterEmpfaenger;
-        $oNewsletterTrack->dErstellt             = 'now()';
+        $oNewsletterTrack->dErstellt             = 'NOW()';
 
         $kNewsletterTrack = Shop::Container()->getDB()->insert('tnewslettertrack', $oNewsletterTrack);
 

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -88,7 +88,7 @@ class QueueEntry
         $this->cJobArt          = $data->cJobArt;
         $this->cTabelle         = $data->cTabelle;
         $this->cKey             = $data->cKey;
-        $this->dStartZeit       = new \DateTime($data->dStartZeit);
-        $this->dZuletztGelaufen = new \DateTime($data->dZuletztGelaufen);
+        $this->dStartZeit       = new \DateTime($data->dStartZeit ?? '');
+        $this->dZuletztGelaufen = new \DateTime($data->dZuletztGelaufen ?? '');
     }
 }

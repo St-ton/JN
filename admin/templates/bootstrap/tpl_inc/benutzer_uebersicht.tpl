@@ -48,8 +48,8 @@
                                     {/if}
                                 </td>
                                 <td class="tcenter">{$oAdmin->nLoginVersuch}</td>
-                                <td class="tcenter">{if $oAdmin->dLetzterLogin && $oAdmin->dLetzterLogin != '0000-00-00 00:00:00'}{$oAdmin->dLetzterLogin|date_format:"%d.%m.%Y %H:%M:%S"}{else}---{/if}</td>
-                                <td class="tcenter">{if !$oAdmin->bAktiv}gesperrt{else}{if $oAdmin->dGueltigBis && $oAdmin->dGueltigBis != '0000-00-00 00:00:00'}{$oAdmin->dGueltigBis|date_format:"%d.%m.%Y %H:%M:%S"}{else}---{/if}{/if}</td>
+                                <td class="tcenter">{if $oAdmin->dLetzterLogin && $oAdmin->dLetzterLogin !== null}{$oAdmin->dLetzterLogin|date_format:'%d.%m.%Y %H:%M:%S'}{else}---{/if}</td>
+                                <td class="tcenter">{if !$oAdmin->bAktiv}gesperrt{else}{if $oAdmin->dGueltigBis && $oAdmin->dGueltigBis !== null}{$oAdmin->dGueltigBis|date_format:'%d.%m.%Y %H:%M:%S'}{else}---{/if}{/if}</td>
                                 <td class="tcenter">
                                     <form method="post" action="benutzerverwaltung.php">
                                         {$jtl_token}

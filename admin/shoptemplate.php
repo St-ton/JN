@@ -23,15 +23,16 @@ $templateHelper->disableCaching();
 $admin          = (isset($_GET['admin']) && $_GET['admin'] === 'true');
 /** @global JTLSmarty $smarty */
 if (isset($_POST['key'], $_POST['upload'])) {
-    $file   = PFAD_ROOT . PFAD_TEMPLATES . $_POST['upload'];
-    $upload = explode('/', $_POST['upload']);
-    $oTemplate->setConfig($upload[0], 'theme', 'favicon', '');
+    $file     = PFAD_ROOT . PFAD_TEMPLATES . $_POST['upload'];
     $response = new stdClass();
+    $response->status = 'FAILED';
     if (file_exists($file) && is_file($file)) {
-        $delete           = unlink($file);
-        $response->status = ($delete === true) ? 'OK' : 'FAILED';
-    } else {
-        $response->status = 'FAILED';
+        $delete = unlink($file);
+        if ($delete === true) {
+            $response->status = 'OK';
+            $upload = explode('/', $_POST['upload']);
+            $oTemplate->setConfig($upload[0], 'theme', $_POST['cName'], '');
+        }
     }
     die(json_encode($response));
 }
@@ -42,8 +43,8 @@ if (isset($_GET['check'])) {
         $cFehler = 'Template bzw. Einstellungen konnten nicht geändert werden.';
     }
 }
-if (isset($_GET['faviconError'])) {
-    $cFehler .= 'Favicon konnten nicht gespeichert werden - bitte Schreibrechte &uumlberprüfen.';
+if (isset($_GET['uploadError'])) {
+    $cFehler .= 'Datei-Upload konnte nicht ausgeführt werden - bitte Schreibrechte &uumlberprüfen.';
 }
 if (isset($_POST['type']) && $_POST['type'] === 'layout' && FormHelper::validateToken()) {
     $oCSS           = new SimpleCSS();
@@ -88,7 +89,7 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && FormHelper::valida
     }
     $tplConfXML   = $oTemplate->leseEinstellungenXML($cOrdner, $parentFolder);
     $sectionCount = count($_POST['cSektion']);
-    $faviconError = '';
+    $uploadError  = '';
     for ($i = 0; $i < $sectionCount; $i++) {
         $cSektion = Shop::Container()->getDB()->escape($_POST['cSektion'][$i]);
         $cName    = Shop::Container()->getDB()->escape($_POST['cName'][$i]);
@@ -108,14 +109,14 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && FormHelper::valida
                                 && $_setting->cKey === $cName
                             ) {
                                 //target folder
-                                $base = PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/';
+                                $base = PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/' . $_setting->rawAttributes['target'];
                                 //optional target file name + extension
                                 if (isset($_setting->rawAttributes['targetFileName'])) {
                                     $cWert = $_setting->rawAttributes['targetFileName'];
                                 }
                                 $targetFile = $base . $cWert;
                                 if (strpos($targetFile, $base) !== 0 || !move_uploaded_file($file['tmp_name'], $targetFile)) {
-                                    $faviconError = '&faviconError=true';
+                                    $uploadError = '&uploadError=true';
                                 }
                                 $break = true;
                                 break;
@@ -139,11 +140,11 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && FormHelper::valida
     } else {
         $cFehler = 'Template bzw. Einstellungen konnten nicht geändert werden.';
     }
-    Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = now()', \DB\ReturnType::DEFAULT);
+    Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
     //re-init smarty with new template - problematic because of re-including functions.php
     header('Location: ' . Shop::getURL() . '/' .
         PFAD_ADMIN . 'shoptemplate.php?check=' .
-        ($bCheck ? 'true' : 'false') . $faviconError, true, 301);
+        ($bCheck ? 'true' : 'false') . $uploadError, true, 301);
 }
 if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && FormHelper::validateToken()) {
     $cOrdner      = Shop::Container()->getDB()->escape($_GET['settings']);
@@ -169,7 +170,7 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && FormHelper::val
         } else {
             $cFehler = 'Template bzw. Einstellungen konnten nicht geändert werden.';
         }
-        Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = now()', \DB\ReturnType::DEFAULT);
+        Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
         //re-init smarty with new template - problematic because of re-including functions.php
         header('Location: ' . $shopURL . PFAD_ADMIN . 'shoptemplate.php', true, 301);
     } else {
@@ -179,7 +180,7 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && FormHelper::val
             foreach ($_conf->oSettings_arr as $_setting) {
                 if ($_setting->cType === 'upload'
                     && isset($_setting->rawAttributes['target'], $_setting->rawAttributes['targetFileName'])
-                    && !file_exists(PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/'
+                    && !file_exists(PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/' . $_setting->rawAttributes['target']
                         . $_setting->rawAttributes['targetFileName'])
                 ) {
 
@@ -245,7 +246,7 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && FormHelper::val
         $cFehler = 'Template konnte nicht geändert werden.';
     }
 
-    Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = now()', \DB\ReturnType::DEFAULT);
+    Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
 }
 $smarty->assign('admin', ($admin === true) ? 1 : 0)
        ->assign('oTemplate_arr', $templateHelper->getFrontendTemplates())

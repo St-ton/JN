@@ -7,17 +7,17 @@
 namespace Filter;
 
 
-use Filter\Items\Search;
 use Filter\Items\Attribute;
 use Filter\Items\Category;
 use Filter\Items\Manufacturer;
 use Filter\Items\PriceRange;
 use Filter\Items\Rating;
+use Filter\Items\Search;
 use Filter\Items\SearchSpecial;
 use Filter\Items\Tag;
 use Filter\States\BaseSearchQuery;
-use function Functional\first;
 use Session\Session;
+use function Functional\first;
 
 /**
  * Class ProductFilterURL
@@ -46,6 +46,7 @@ class ProductFilterURL
      */
     public function getURL($extraFilter = null, $bCanonical = false, $debug = false): string
     {
+        $isSearchQuery      = false;
         $languageID         = $this->productFilter->getFilterConfig()->getLanguageID();
         $extraFilter        = $this->convertExtraFilter($extraFilter);
         $base               = $this->productFilter->getBaseState();
@@ -72,14 +73,16 @@ class ProductFilterURL
                 $seoParam->seo     = $filterSeoUrl;
                 $seoFilterParams[] = $seoParam;
             } else {
-                $filterValue                              = \get_class($base) === 'BaseSearchQuery'
+                $isSearchQuery                            = \get_class($base) === BaseSearchQuery::class;
+                $filterValue                              = $isSearchQuery
                     ? $base->getName()
                     : $base->getValue();
                 $nonSeoFilterParams[$base->getUrlParam()] = $filterValue;
             }
         }
         if ($bCanonical === true) {
-            return $this->productFilter->getFilterConfig()->getBaseURL() . $this->buildURLString($seoFilterParams, $nonSeoFilterParams);
+            return $this->productFilter->getFilterConfig()->getBaseURL() . $this->buildURLString($seoFilterParams,
+                    $nonSeoFilterParams);
         }
         $url    = $this->productFilter->getFilterConfig()->getBaseURL();
         $active = $this->productFilter->getActiveFilters();
@@ -189,7 +192,7 @@ class ProductFilterURL
         }
         foreach ($urlParams as $filterID => $filters) {
             foreach ($filters as $f) {
-                if (!empty($f->seo) && !empty($f->sep)) {
+                if (!$isSearchQuery && !empty($f->seo) && !empty($f->sep)) {
                     $seoFilterParams[] = $f;
                 } elseif (!isset($nonSeoFilterParams[$filterID])) {
                     $nonSeoFilterParams[$filterID] = $f->value;

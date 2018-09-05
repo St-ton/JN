@@ -116,8 +116,8 @@
                                             {/if}
                                             </label>
                                         </td>
-                                        <td>{$oNewsKommentar->cBetreff|truncate:50:"..."}</td>
-                                        <td>{$oNewsKommentar->cKommentar|truncate:150:"..."}</td>
+                                        <td>{$oNewsKommentar->cBetreff|truncate:50:'...'}</td>
+                                        <td>{$oNewsKommentar->cKommentar|truncate:150:'...'}</td>
                                         <td class="tcenter">{$oNewsKommentar->dErstellt_de}</td>
                                         <td class="tcenter">
                                             <a href="news.php?news=1&kNews={$oNewsKommentar->kNews}&kNewsKommentar={$oNewsKommentar->kNewsKommentar}&nkedit=1&tab=inaktiv&token={$smarty.session.jtl_token}"

@@ -7,7 +7,7 @@
         {math equation="a * b" a=$link->getLevel()-1 b=20 assign=fac}
         <td style="width: 40%">
             <div style="margin-left:{if $fac > 0}{$fac}px{else}0{/if}; padding-top: 7px" {if $link->getLevel() > 0 && $link->getParent() > 0}class="sub"{/if}>
-                {$link->getName()}{if $missingLinkTranslations|count > 0} <i title="Fehlende Übersetzungen: {$missingLinkTranslations|count}" class="fa fa-warning"></i>{/if}
+                {$link->getDisplayName()}{if $missingLinkTranslations|count > 0} <i title="Fehlende Übersetzungen: {$missingLinkTranslations|count}" class="fa fa-warning"></i>{/if}
             </div>
         </td>
         <td class="tcenter floatforms" style="width: 50%">

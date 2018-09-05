@@ -102,7 +102,7 @@ class WarenkorbPersPos
         $this->kArtikel        = $kArtikel;
         $this->cArtikelName    = $cArtikelName;
         $this->fAnzahl         = $fAnzahl;
-        $this->dHinzugefuegt   = 'now()';
+        $this->dHinzugefuegt   = 'NOW()';
         $this->kWarenkorbPers  = $kWarenkorbPers;
         $this->cUnique         = $cUnique;
         $this->cResponsibility = !empty($cResponsibility) ? $cResponsibility : 'core';

@@ -13,7 +13,7 @@
                         {assign var=kKonfiggruppe value=$oGruppe->getKonfiggruppe()}
                         <div class="cfg-group panel panel-default" data-id="{$kKonfiggruppe}">
                             <div class="panel-heading">
-                                <h5 class="panel-title">{$oSprache->getName()}{if $oGruppe->getMin() == 0}<span class="optional"> - {lang key='conditionalFillOut' section='checkout'}</span>{/if}</h5>
+                                <h5 class="panel-title">{$oSprache->getName()}{if $oGruppe->getMin() == 0}<span class="optional"> - {lang key='optional' section='checkout'}</span>{/if}</h5>
                             </div>
                             <div class="group panel-body">
                                 <div class="group-description">
@@ -68,8 +68,8 @@
                                                                        {if empty($bSelectable)} disabled{/if}
                                                                        {if isset($nKonfigitem_arr)} data-selected="{if in_array($oItem->getKonfigitem(), $nKonfigitem_arr)}true{else}false{/if}"{else}
                                                                        {if (!empty($aKonfigerror_arr) && isset($smarty.post.item) && isset($smarty.post.item[$kKonfiggruppe]) && $oItem->getKonfigitem()|in_array:$smarty.post.item[$kKonfiggruppe]) || ($oItem->getSelektiert() && (!isset($aKonfigerror_arr) || !$aKonfigerror_arr))} checked="checked"{/if}{/if} />
-                                                                {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_CHECKBOX}{$oItem->getInitial()}x {/if}
-                                                                {$oItem->getName()}{if empty($bSelectable)} - {lang section='productDetails' key='productOutOfStock'}{/if}
+                                                                {if $oItem->getMin() == $oItem->getMax()}{$oItem->getInitial()}x {/if}
+                                                                {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
                                                                 {if $smarty.session.Kundengruppe->mayViewPrices()}
                                                                     <span class="badge pull-right">{if $oItem->hasRabatt() && $oItem->showRabatt()}
                                                                     <span class="discount">{$oItem->getRabattLocalized()} {lang key='discount'}</span>{elseif $oItem->hasZuschlag() && $oItem->showZuschlag()}
@@ -83,6 +83,31 @@
                                                                 {/if}
                                                             </label>
                                                         </div>
+                                                        {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_CHECKBOX}
+                                                            {assign var=itemQuantity value=$oItem->getInitial()}
+                                                            {if isset($nKonfigitemAnzahl_arr) && array_key_exists($oItem->getKonfigitem(), $nKonfiggruppeAnzahl_arr)}
+                                                                {assign var=itemQuantity value=$nKonfigitemAnzahl_arr[$oItem->getKonfigitem()]}
+                                                            {/if}
+                                                            {if $oItem->getMin() === $oItem->getMax()}
+                                                                <div class="item_quantity">
+                                                                    <input type="hidden" id="item_quantity{$oItem->getKonfigitem()}"
+                                                                           name="item_quantity[{$oItem->getKonfigitem()}]"
+                                                                           value="{$itemQuantity}" />
+                                                                </div>
+                                                            {else}
+                                                                <div class="item_quantity form-inline" data-id="{$oItem->getKonfigitem()}" style="display:none">
+                                                                    <label for="item_quantity{$oItem->getKonfigitem()}">{lang key="quantity" section="global"}:</label>
+
+                                                                    <div class="input-group">
+                                                                        <input class="form-control" size="2" type="number"
+                                                                               id="item_quantity{$oItem->getKonfigitem()}"
+                                                                               name="item_quantity[{$oItem->getKonfigitem()}]"
+                                                                               value="{$itemQuantity}" autocomplete="off"
+                                                                               min="{$oItem->getMin()}" max="{$oItem->getMax()}" />
+                                                                    </div>
+                                                                </div>
+                                                            {/if}
+                                                        {/if}
                                                     {elseif $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN || $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}
                                                         <option value="{$oItem->getKonfigitem()}"
                                                                 id="item{$oItem->getKonfigitem()}"

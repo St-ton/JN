@@ -54,7 +54,8 @@ final class LinkList implements LinkListInterface
             return $this->links;
         }
         $linkLanguages = $this->db->query(
-            "SELECT tlink.*, tlinksprache.cISOSprache, 
+            "SELECT tlink.*, tlinksprache.cISOSprache,
+                tlink.cName AS displayName,
                 tlinksprache.cName AS localizedName, 
                 tlinksprache.cTitle AS localizedTitle, 
                 tsprache.kSprache, 

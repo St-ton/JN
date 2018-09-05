@@ -453,8 +453,8 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
     $NewsletterEmpfaenger->cEmail             = 'test@example.com';
     $NewsletterEmpfaenger->cOptCode           = '88abd18fe51be05d775a2151fbb74bf7';
     $NewsletterEmpfaenger->cLoeschCode        = 'a14a986321ff6a4998e81b84056933d3';
-    $NewsletterEmpfaenger->dEingetragen       = 'now()';
-    $NewsletterEmpfaenger->dLetzterNewsletter = '0000-00-00';
+    $NewsletterEmpfaenger->dEingetragen       = 'NOW()';
+    $NewsletterEmpfaenger->dLetzterNewsletter = '_DBNULL_';
     $NewsletterEmpfaenger->cLoeschURL         = Shop::getURL() . '/newsletter.php?lang=ger&lc=a14a986321ff6a4998e81b84056933d3';
     $NewsletterEmpfaenger->cFreischaltURL     = Shop::getURL() . '/newsletter.php?lang=ger&fc=88abd18fe51be05d775a2151fbb74bf7';
 
@@ -498,7 +498,7 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
     $BestandskundenBoni->kKunde       = 1379;
     $BestandskundenBoni->fGuthaben    = '2,00 &euro';
     $BestandskundenBoni->nBonuspunkte = 0;
-    $BestandskundenBoni->dErhalten    = 'now()';
+    $BestandskundenBoni->dErhalten    = 'NOW()';
 
     $Neues_Passwort = 'geheim007';
 
@@ -738,7 +738,7 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
             );
             Shop::Container()->getDB()->insert($cTableSprache, $Emailvorlagesprache);
             //Smarty Objekt bauen
-            $mailSmarty = new JTLSmarty(true, false, false, 'mail');
+            $mailSmarty = new \Smarty\JTLSmarty(true, false, false, 'mail');
             $mailSmarty->registerResource('db', new SmartyResourceNiceDB('mail'))
                        ->registerPlugin('function', 'includeMailTemplate', 'includeMailTemplate')
                        ->setCaching(Smarty::CACHING_OFF)

@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTLShop\SemVer\Version;
+
 require_once PFAD_ROOT . PFAD_DBES . 'xml_tools.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
@@ -405,14 +408,14 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
     $cVersionsnummer        = '';
     $isShop4Compatible      = false;
     $requiresMissingIoncube = false;
-    $nXMLShopVersion        = 0; // Shop-Version die das Plugin braucht um zu laufen
-    $nShopVersion           = 0; // Aktuelle Shop-Version
+    $parsedXMLShopVersion   = null; // Shop-Version die das Plugin braucht um zu laufen
+    $parsedVersion          = null; // Aktuelle Shop-Version
     $baseNode               = $XML_arr['jtlshop3plugin'][0];
     // Shopversion holen
     $oVersion = Shop::Container()->getDB()->query('SELECT nVersion FROM tversion LIMIT 1', \DB\ReturnType::SINGLE_OBJECT);
 
     if ($oVersion->nVersion > 0) {
-        $nShopVersion = (int)$oVersion->nVersion;
+        $parsedVersion = Version::parse($oVersion->nVersion);
     }
     // XML-Versionsnummer
     if (!isset($baseNode['XMLVersion'])) {
@@ -439,10 +442,10 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
         return PLUGIN_CODE_INVALID_SHOP_VERSION; //Shop-Version entspricht nicht der Konvention
     }
     if (isset($baseNode['Shop4Version'])) {
-        $nXMLShopVersion   = (int)$baseNode['Shop4Version'];
-        $isShop4Compatible = true;
+        $parsedXMLShopVersion = Version::parse($baseNode['Shop4Version']);
+        $isShop4Compatible    = true;
     } else {
-        $nXMLShopVersion = (int)$baseNode['ShopVersion'];
+        $parsedXMLShopVersion = Version::parse($baseNode['ShopVersion']);
     }
     $installNode = $baseNode['Install'][0];
     //check if plugin need ioncube loader but extension is not loaded
@@ -465,7 +468,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
         }
     }
     // Shop-Version ausreichend?
-    if (!$nShopVersion || !$nXMLShopVersion || $nXMLShopVersion > $nShopVersion) {
+    if (empty($parsedVersion) || empty($parsedXMLShopVersion) || $parsedXMLShopVersion->greaterThan($parsedVersion)) {
         return PLUGIN_CODE_SHOP_VERSION_COMPATIBILITY; //Shop-Version ist zu niedrig
     }
     if (!isset($baseNode['Author'])) {
@@ -1956,7 +1959,7 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
     $oPlugin->nVersion             = (int)$versionNode[$nLastVersionKey . ' attr']['nr'];
     $oPlugin->nXMLVersion          = $nXMLVersion;
     $oPlugin->nPrio                = 0;
-    $oPlugin->dZuletztAktualisiert = 'now()';
+    $oPlugin->dZuletztAktualisiert = 'NOW()';
     $oPlugin->dErstellt            = $versionNode[$nLastVersionKey]['CreateDate'];
     $oPlugin->bBootstrap           = is_file($basePath . PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' . 'bootstrap.php')
         ? 1
@@ -1991,7 +1994,7 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
     }
     $oPlugin->dInstalliert = (isset($oPluginOld->kPlugin) && $oPluginOld->kPlugin > 0)
         ? $oPluginOld->dInstalliert
-        : 'now()';
+        : 'NOW()';
     $kPlugin               = Shop::Container()->getDB()->insert('tplugin', $oPlugin);
     $nVersion              = (int)$versionNode[$nLastVersionKey . ' attr']['nr'];
     $oPlugin->kPlugin      = $kPlugin;
@@ -3175,7 +3178,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
         $oExportformat->nSpecial         = 0;
         $oExportformat->nVarKombiOption  = $Format_arr['VarCombiOption'] ?? 1;
         $oExportformat->nSplitgroesse    = $Format_arr['SplitSize'] ?? 0;
-        $oExportformat->dZuletztErstellt = '0000-00-00 00:00:00';
+        $oExportformat->dZuletztErstellt = '_DBNULL_';
         if (is_array($oExportformat->cKopfzeile)) {
             //@todo: when cKopfzeile is empty, this becomes an array with indices [0] => '' and [0 attr] => ''
             $oExportformat->cKopfzeile = $oExportformat->cKopfzeile[0];

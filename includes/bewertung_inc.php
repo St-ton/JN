@@ -26,7 +26,7 @@ function speicherBewertung(int $productID, int $customerID, int $langID, $title,
     $article = new Artikel();
     $article->fuelleArtikel($productID, Artikel::getDefaultOptions());
     $url = !empty($article->cURLFull)
-        ? ($article->cURLFull . '?')
+        ? (strpos($article->cURLFull, '?') === false ? $article->cURLFull . '?' : $article->cURLFull . '&')
         : (Shop::getURL() . '/?a=' . $productID . '&');
 
     if ($productID <= 0 || $langID <= 0 || $title === '' || $text === '' || $stars <= 0) {
@@ -391,7 +391,7 @@ function checkeBewertungGuthabenBonus(int $ratingID, array $conf)
         $ratingBonus->kBewertung     = $ratingID;
         $ratingBonus->kKunde         = $customerID;
         $ratingBonus->fGuthabenBonus = $reward;
-        $ratingBonus->dDatum         = 'now()';
+        $ratingBonus->dDatum         = 'NOW()';
 
         if (Shop::Container()->getDB()->select(
                 'tbewertungguthabenbonus',
@@ -437,7 +437,7 @@ function checkeBewertungGuthabenBonus(int $ratingID, array $conf)
         $ratingBonus->kBewertung     = $ratingID;
         $ratingBonus->kKunde         = $customerID;
         $ratingBonus->fGuthabenBonus = $reward;
-        $ratingBonus->dDatum         = 'now()';
+        $ratingBonus->dDatum         = 'NOW()';
         if (Shop::Container()->getDB()->select(
                 'tbewertungguthabenbonus',
                 ['kBewertung', 'kKunde'],

@@ -23,6 +23,8 @@ ifndef('KEEP_SYNC_FILES', false);
 ifndef('PROFILE_PLUGINS', false);
 ifndef('PROFILE_SHOP', false);
 
+ifndef('DB_DEFAULT_SQL_MODE', false);
+
 /**
  * WARNING !!! DO NOT USE PROFILE_QUERIES IN PRODUCTION ENVIRONMENT OR PUBLIC AVAILABLE SITES. THE PROFILER CANNOT USE
  * PREPARED STATEMENTS WHEN QUERIES ARE ANALYZED. THEREFORE A LESS SECURE FALLBACK (ESCAPING) IS USED TO ANALYZE
@@ -230,6 +232,9 @@ ifndef('SECURE_PHP_FUNCTIONS', "
     
     yaml_emit, yaml_parse,
 ");
+
+// 0 => off, 1 => html comments, 2 => static badges, 3 => scrolling badges with borders
+ifndef('SHOW_TEMPLATE_HINTS', 0);
 
 /**
  * @param string     $constant

@@ -72,7 +72,7 @@ class Wunschliste
             $this->nStandard    = 1;
             $this->nOeffentlich = 0;
             $this->cName        = Shop::Lang()->get('wishlist');
-            $this->dErstellt    = 'now()';
+            $this->dErstellt    = 'NOW()';
             $this->cURLID       = '';
         }
     }
@@ -866,7 +866,7 @@ class Wunschliste
 
             $oWunschlisteVersand                    = new stdClass();
             $oWunschlisteVersand->kWunschliste      = $id;
-            $oWunschlisteVersand->dZeit             = 'now()';
+            $oWunschlisteVersand->dZeit             = 'NOW()';
             $oWunschlisteVersand->nAnzahlEmpfaenger = min(
                 count($recipients),
                 (int)$conf['global']['global_wunschliste_max_email']

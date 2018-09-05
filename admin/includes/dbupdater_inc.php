@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTLShop\SemVer\Version;
+
 /**
  * Stellt alle Werte die fuer das Update in der DB wichtig sind zurueck
  *
@@ -222,7 +224,7 @@ function updateFertig(int $nVersion)
             nInArbeit = 0,
             nTyp = 1,
             cFehlerSQL = '',
-            dAktualisiert = now()",
+            dAktualisiert = NOW()",
         \DB\ReturnType::DEFAULT
     );
     Shop::Cache()->flushAll();
@@ -254,6 +256,7 @@ function naechsterUpdateStep(int $nTyp, int $nZeileBis = 1)
 
 /**
  * @return array|IOError
+ * @throws Exception
  */
 function dbUpdateIO()
 {
@@ -261,7 +264,13 @@ function dbUpdateIO()
     $updater  = new Updater();
 
     try {
-        if ($template->xmlData->cShopVersion != $template->shopVersion
+        if ($template->version === '5' || $template->version === 5) {
+            $templateVersion = '5.0.0';
+        } else {
+            $templateVersion = $template->version;
+        }
+
+        if (!Version::parse($template->xmlData->cVersion)->equals($templateVersion)
             && $template->setTemplate($template->xmlData->cName, $template->xmlData->eTyp)
         ) {
             unset($_SESSION['cTemplate'], $_SESSION['template']);
@@ -291,6 +300,7 @@ function dbUpdateIO()
 
 /**
  * @return array|IOError
+ * @throws Exception
  */
 function dbupdaterBackup()
 {
@@ -335,6 +345,8 @@ function dbupdaterDownload($file)
 
 /**
  * @return array
+ * @throws SmartyException
+ * @throws Exception
  */
 function dbupdaterStatusTpl()
 {
@@ -356,10 +368,11 @@ function dbupdaterStatusTpl()
         ->assign('updatesAvailable', $updatesAvailable)
         ->assign('currentFileVersion', $currentFileVersion)
         ->assign('currentDatabaseVersion', $currentDatabaseVersion)
+        ->assign('hasDifferentVersions', !Version::parse($currentDatabaseVersion)->equals(Version::parse($currentFileVersion)))
         ->assign('version', $version)
         ->assign('updateError', $updateError)
-        ->assign('currentTemplateFileVersion', $template->xmlData->cShopVersion)
-        ->assign('currentTemplateDatabaseVersion', $template->shopVersion);
+        ->assign('currentTemplateFileVersion', $template->xmlData->cVersion)
+        ->assign('currentTemplateDatabaseVersion', $template->version);
 
     return [
         'tpl'  => $smarty->fetch('tpl_inc/dbupdater_status.tpl'),

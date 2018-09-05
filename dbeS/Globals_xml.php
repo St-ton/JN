@@ -29,7 +29,7 @@ if (auth()) {
 }
 
 Shop::Container()->getDB()->query(
-    'UPDATE tglobals SET dLetzteAenderung = now()',
+    'UPDATE tglobals SET dLetzteAenderung = NOW()',
     \DB\ReturnType::DEFAULT
 );
 echo $return;

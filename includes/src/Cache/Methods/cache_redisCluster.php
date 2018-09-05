@@ -1,10 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
 
 namespace Cache\Methods;
+
 
 use Cache\ICachingMethod;
 use Cache\JTLCacheTrait;
@@ -85,6 +86,7 @@ class cache_redisCluster implements ICachingMethod
 
             $this->_redis = $redis;
         } catch (\RedisClusterException $e) {
+            $this->setError($e->getMessage());
             \Shop::Container()->getLogService()->critical('\RedisClusterException: ' . $e->getMessage());
         }
 
@@ -209,7 +211,9 @@ class cache_redisCluster implements ICachingMethod
      */
     public function flushTags($tags): int
     {
-        return $this->flush(\array_unique($this->getKeysByTag($tags)));
+        $tags = \array_unique($this->getKeysByTag($tags));
+
+        return $this->flush($tags) ? \count($tags) : 0;
     }
 
     /**

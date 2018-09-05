@@ -64,7 +64,7 @@ if (FormHelper::validateToken()) {
         $oNewsletter->cNachname    = $_POST['cNachname'];
         $oNewsletter->cEmail       = $_POST['cEmail'];
         $oNewsletter->kSprache     = (int)$_POST['kSprache'];
-        $oNewsletter->dEingetragen = 'now()';
+        $oNewsletter->dEingetragen = 'NOW()';
         $oNewsletter->cOptCode     = create_NewsletterCode('cOptCode', $oNewsletter->cEmail);
         $oNewsletter->cLoeschCode  = create_NewsletterCode('cLoeschCode', $oNewsletter->cEmail);
         $oNewsletter->kKunde       = 0;
@@ -558,13 +558,13 @@ if (FormHelper::validateToken()) {
 // Steps
 if ($step === 'uebersicht') {
     $oNewsletterEmpfaengerAnzahl = Shop::Container()->getDB()->query(
-        'SELECT count(*) AS nAnzahl
+        'SELECT COUNT(*) AS nAnzahl
             FROM tnewsletterempfaenger
             WHERE tnewsletterempfaenger.nAktiv = 0' . $cInaktiveSucheSQL->cWHERE,
         \DB\ReturnType::SINGLE_OBJECT
     );
     $oNewsletterQueueAnzahl = Shop::Container()->getDB()->query(
-        'SELECT count(*) AS nAnzahl
+        'SELECT COUNT(*) AS nAnzahl
             FROM tnewsletterqueue
             JOIN tnewsletter 
                 ON tnewsletterqueue.kNewsletter = tnewsletter.kNewsletter
@@ -572,13 +572,13 @@ if ($step === 'uebersicht') {
         \DB\ReturnType::SINGLE_OBJECT
     );
     $oNewsletterVorlageAnzahl = Shop::Container()->getDB()->query(
-        'SELECT count(*) AS nAnzahl
+        'SELECT COUNT(*) AS nAnzahl
             FROM tnewslettervorlage
             WHERE kSprache = ' . (int)$_SESSION['kSprache'],
         \DB\ReturnType::SINGLE_OBJECT
     );
     $oNewsletterHistoryAnzahl = Shop::Container()->getDB()->query(
-        'SELECT count(*) AS nAnzahl
+        'SELECT COUNT(*) AS nAnzahl
             FROM tnewsletterhistory
             WHERE kSprache = ' . (int)$_SESSION['kSprache'],
         \DB\ReturnType::SINGLE_OBJECT
@@ -659,7 +659,7 @@ if ($step === 'uebersicht') {
     );
 
     $oNewslettervorlageStdAnzahl = Shop::Container()->getDB()->query(
-        'SELECT count(*) AS nAnzahl
+        'SELECT COUNT(*) AS nAnzahl
             FROM tnewslettervorlagestd
             WHERE kSprache = ' . (int)$_SESSION['kSprache'],
         \DB\ReturnType::SINGLE_OBJECT

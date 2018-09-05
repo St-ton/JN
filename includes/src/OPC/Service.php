@@ -234,6 +234,8 @@ class Service
      */
     public function getFilterOptions(array $enabledFilters = []): array
     {
+        \TaxHelper::setTaxRates();
+
         $productFilter    = new \Filter\ProductFilter(
             Config::getDefault(),
             \Shop::Container()->getDB(),
@@ -247,7 +249,11 @@ class Service
             /** @var AbstractFilter $newFilter **/
             $newFilter = new $enabledFilter['class']($productFilter);
             $newFilter->setType(Type::AND);
-            $productFilter->addActiveFilter($newFilter, $enabledFilter['value']);
+            if ($newFilter instanceof \Filter\Items\PriceRange) {
+                $productFilter->addActiveFilter($newFilter, (string)$enabledFilter['value']);
+            } else {
+                $productFilter->addActiveFilter($newFilter, $enabledFilter['value']);
+            }
             $enabledMap[$enabledFilter['class'] . ':' . $enabledFilter['value']] = true;
         }
 

@@ -106,7 +106,7 @@ if (strlen($cSh) > 0) {
                     $logger->debug('tzahlungsession aktualisiert.');
                     $_upd               = new stdClass();
                     $_upd->nBezahlt     = 1;
-                    $_upd->dZeitBezahlt = 'now()';
+                    $_upd->dZeitBezahlt = 'NOW()';
                     $_upd->kBestellung  = (int)$order->kBestellung;
                     Shop::Container()->getDB()->update('tzahlungsession', 'cZahlungsID', $sessionHash, $_upd);
                     $paymentMethod->handleNotification($order, '_' . $sessionHash, $_REQUEST);
@@ -119,10 +119,8 @@ if (strlen($cSh) > 0) {
                 $logger->debug('finalizeOrder failed -> zurueck zur Zahlungsauswahl.');
                 $linkHelper = Shop::Container()->getLinkService();
                 // UOS Work Around
-                if ($_SESSION['Zahlungsart']->cModulId === 'za_sofortueberweisung_jtl' ||
-                    $paymentMethod->redirectOnCancel() ||
-                    strpos($_SESSION['Zahlungsart']->cModulId, 'za_uos_') !== false ||
-                    strpos($_SESSION['Zahlungsart']->cModulId, 'za_ut_') !== false
+                if ($_SESSION['Zahlungsart']->cModulId === 'za_sofortueberweisung_jtl'
+                    || $paymentMethod->redirectOnCancel()
                 ) {
                     // Go to 'Edit PaymentMethod' Page
                     $header = 'Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') .
@@ -138,8 +136,7 @@ if (strlen($cSh) > 0) {
                     echo $linkHelper->getStaticRoute('bestellvorgang.php') .
                         '?editZahlungsart=1&nHinweis=' . $cEditZahlungHinweis;
                 } else {
-                    echo $linkHelper->getStaticRoute('bestellvorgang.php') .
-                        '?editZahlungsart=1';
+                    echo $linkHelper->getStaticRoute('bestellvorgang.php') . '?editZahlungsart=1';
                 }
             }
         }

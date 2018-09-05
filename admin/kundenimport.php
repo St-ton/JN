@@ -121,7 +121,7 @@ function processImport($fmt, $data)
     $kunde->cSperre       = 'N';
     $kunde->cAktiv        = 'Y';
     $kunde->nRegistriert  = 1;
-    $kunde->dErstellt     = 'now()';
+    $kunde->dErstellt     = 'NOW()';
     $cnt                  = count($data);
     for ($i = 0; $i < $cnt; $i++) {
         if (!empty($fmt[$i])) {

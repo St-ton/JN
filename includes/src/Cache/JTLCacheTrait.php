@@ -1,10 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
 
 namespace Cache;
+
 
 /**
  * Class JTLCacheTrait
@@ -35,6 +36,11 @@ trait JTLCacheTrait
      * @var bool
      */
     public $journalHasChanged = false;
+
+    /**
+     * @var string
+     */
+    private $error = '';
 
     /**
      * @param array $options
@@ -358,5 +364,21 @@ trait JTLCacheTrait
     public function isInitialized(): bool
     {
         return $this->isInitialized;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getError(): string
+    {
+        return $this->error;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setError(string $error)
+    {
+        $this->error = $error;
     }
 }

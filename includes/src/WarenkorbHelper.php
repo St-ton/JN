@@ -1054,8 +1054,8 @@ class WarenkorbHelper
             "SELECT *
                 FROM tkupon
                 WHERE cAktiv = 'Y'
-                    AND dGueltigAb <= now()
-                    AND (dGueltigBis > now() OR dGueltigBis = '0000-00-00 00:00:00')
+                    AND dGueltigAb <= NOW()
+                    AND (dGueltigBis IS NULL OR dGueltigBis > NOW())
                     AND fMindestbestellwert <= " . Session::Cart()->gibGesamtsummeWaren(true, false) . "
                     AND (kKundengruppe = -1
                         OR kKundengruppe = 0
@@ -1163,8 +1163,8 @@ class WarenkorbHelper
             "SELECT *
                 FROM tkupon
                 WHERE cAktiv = 'Y'
-                    AND dGueltigAb <= now()
-                    AND (dGueltigBis > now() OR dGueltigBis = '0000-00-00 00:00:00')
+                    AND dGueltigAb <= NOW()
+                    AND (dGueltigBis IS NULL OR dGueltigBis > NOW())
                     AND fMindestbestellwert <= " . Session::Cart()->gibGesamtsummeWaren(true, false) . "
                     AND (kKundengruppe = -1
                         OR kKundengruppe = 0

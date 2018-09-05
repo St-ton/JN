@@ -140,7 +140,7 @@ if (isset($_POST['einstellungen_bearbeiten'])
         }
     }
 
-    Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = now()', \DB\ReturnType::DEFAULT);
+    Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
     $cHinweis    = 'Die Einstellungen wurden erfolgreich gespeichert.';
     $tagsToFlush = [CACHING_GROUP_OPTION];
     if ($kSektion === 1 || $kSektion === 4 || $kSektion === 5) {
@@ -165,7 +165,7 @@ if ($step === 'uebersicht') {
     $sectionCount = count($sections);
     for ($i = 0; $i < $sectionCount; $i++) {
         $anz_einstellunen = Shop::Container()->getDB()->query(
-            "SELECT count(*) AS anz
+            "SELECT COUNT(*) AS anz
                 FROM teinstellungenconf
                 WHERE kEinstellungenSektion = " . (int)$sections[$i]->kEinstellungenSektion . "
                     AND cConf = 'Y'

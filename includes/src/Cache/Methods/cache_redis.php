@@ -1,10 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
 
 namespace Cache\Methods;
+
 
 use Cache\ICachingMethod;
 use Cache\JTLCacheTrait;
@@ -68,9 +69,14 @@ class cache_redis implements ICachingMethod
         $redis   = new \Redis();
         $connect = $persist === false ? 'connect' : 'pconnect';
         if ($host !== null) {
-            $res = ($port !== null && $host[0] !== '/')
-                ? $redis->$connect($host, (int)$port, \REDIS_CONNECT_TIMEOUT)
-                : $redis->$connect($host); //for connecting to socket
+            try {
+                $res = ($port !== null && $host[0] !== '/')
+                    ? $redis->$connect($host, (int)$port, \REDIS_CONNECT_TIMEOUT)
+                    : $redis->$connect($host); //for connecting to socket
+            } catch (\RedisException $e) {
+                $this->setError($e->getMessage());
+                $res = false;
+            }
             if ($res !== false && $pass !== null && $pass !== '') {
                 $res = $redis->auth($pass);
             }
@@ -83,7 +89,7 @@ class cache_redis implements ICachingMethod
             // set custom prefix
             $redis->setOption(\Redis::OPT_PREFIX, $this->options['prefix']);
             // set php serializer for objects and arrays
-            $redis->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
+            $redis->setOption(\Redis::OPT_SERIALIZER, (string)\Redis::SERIALIZER_PHP);
 
             $this->_redis = $redis;
 
@@ -233,7 +239,7 @@ class cache_redis implements ICachingMethod
             $keys[] = self::_keyFromTagName($tag);
         }
 
-        return $this->flush($keys);
+        return $this->flush($keys) ? \count($tags) : 0;
     }
 
     /**
@@ -275,7 +281,7 @@ class cache_redis implements ICachingMethod
      */
     public function keyExists($cacheID): bool
     {
-        return $this->_redis->exists($cacheID);
+        return (bool)$this->_redis->exists($cacheID);
     }
 
     /**

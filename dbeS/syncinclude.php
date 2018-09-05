@@ -599,7 +599,7 @@ function versendeVerfuegbarkeitsbenachrichtigung($product)
 
         $upd                    = new stdClass();
         $upd->nStatus           = 1;
-        $upd->dBenachrichtigtAm = 'now()';
+        $upd->dBenachrichtigtAm = 'NOW()';
         $upd->cAbgeholt         = 'N';
         Shop::Container()->getDB()->update(
             'tverfuegbarkeitsbenachrichtigung',
@@ -658,7 +658,7 @@ function setzePreisverlauf(int $kArtikel, int $kKundengruppe, float $fVKNetto)
             'kArtikel'      => $kArtikel,
             'kKundengruppe' => $kKundengruppe,
             'fVKNetto'      => $fVKNetto,
-            'dDate'         => 'now()',
+            'dDate'         => 'NOW()',
         ]);
     }
 }
@@ -777,7 +777,7 @@ function deleteArticleImage($oArtikelPict = null, int $kArtikel = 0, int $kArtik
         if (count($oVerknuepfteArtikel_arr) === 0) {
             // Gibt ein neue Artikel die noch auf den physikalischen Pfad zeigen?
             $oObj = Shop::Container()->getDB()->queryPrepared(
-                'SELECT count(*) AS nCount
+                'SELECT COUNT(*) AS nCount
                     FROM tartikelpict
                     WHERE cPfad = :pth',
                 ['pth' => $oArtikelPict->cPfad],

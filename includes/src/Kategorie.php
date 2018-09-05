@@ -375,7 +375,7 @@ class Kategorie
         $obj->cBeschreibung         = $this->cBeschreibung;
         $obj->kOberKategorie        = $this->kOberKategorie;
         $obj->nSort                 = $this->nSort;
-        $obj->dLetzteAktualisierung = 'now()';
+        $obj->dLetzteAktualisierung = 'NOW()';
 
         return Shop::Container()->getDB()->insert('tkategorie', $obj);
     }
@@ -394,7 +394,7 @@ class Kategorie
         $obj->cBeschreibung         = $this->cBeschreibung;
         $obj->kOberKategorie        = $this->kOberKategorie;
         $obj->nSort                 = $this->nSort;
-        $obj->dLetzteAktualisierung = 'now()';
+        $obj->dLetzteAktualisierung = 'NOW()';
 
         return Shop::Container()->getDB()->update('tkategorie', 'kKategorie', $obj->kKategorie, $obj);
     }

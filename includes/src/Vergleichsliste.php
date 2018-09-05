@@ -247,10 +247,10 @@ class Vergleichsliste
             return;
         }
         $oVergleiche = Shop::Container()->getDB()->queryPrepared(
-            'SELECT count(kVergleichsliste) AS nVergleiche
+            'SELECT COUNT(kVergleichsliste) AS nVergleiche
                 FROM tvergleichsliste
                 WHERE cIP = :ip
-                    AND dDate > DATE_SUB(now(),INTERVAL 1 DAY)',
+                    AND dDate > DATE_SUB(NOW(),INTERVAL 1 DAY)',
             ['ip' => RequestHelper::getIP()],
             \DB\ReturnType::SINGLE_OBJECT
         );

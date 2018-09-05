@@ -105,8 +105,8 @@ if ($cAction !== null && $kExportformat !== null && FormHelper::validateToken())
             $queue->nLimit_n       = 0;
             $queue->nLimit_m       = $bAsync ? EXPORTFORMAT_ASYNC_LIMIT_M : EXPORTFORMAT_LIMIT_M;
             $queue->nLastArticleID = 0;
-            $queue->dErstellt      = 'now()';
-            $queue->dZuBearbeiten  = 'now()';
+            $queue->dErstellt      = 'NOW()';
+            $queue->dZuBearbeiten  = 'NOW()';
 
             $kExportqueue = Shop::Container()->getDB()->insert('texportqueue', $queue);
 

@@ -354,7 +354,7 @@ class CheckBox
                 ? (int)$_SESSION['kBestellung']
                 : 0;
             $oCheckBoxLogging->bChecked    = $checked;
-            $oCheckBoxLogging->dErstellt   = 'now()';
+            $oCheckBoxLogging->dErstellt   = 'NOW()';
 
             Shop::Container()->getDB()->insert('tcheckboxlogging', $oCheckBoxLogging);
         }
@@ -399,7 +399,7 @@ class CheckBox
             $cSQL = ' WHERE nAktiv = 1';
         }
         $oCheckBoxCount = Shop::Container()->getDB()->query(
-            'SELECT count(*) AS nAnzahl 
+            'SELECT COUNT(*) AS nAnzahl 
                 FROM tcheckbox' . $cSQL,
             \DB\ReturnType::SINGLE_OBJECT
         );

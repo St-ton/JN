@@ -63,7 +63,7 @@ class Preisverlauf
                         ON tartikel.kArtikel = tpreisverlauf.kArtikel
                     WHERE tpreisverlauf.kArtikel = ' . $kArtikel . '
                         AND tpreisverlauf.kKundengruppe = ' . $kKundengruppe . '
-                        AND DATE_SUB(now(), INTERVAL ' . $nMonat . ' MONTH) < tpreisverlauf.dDate
+                        AND DATE_SUB(NOW(), INTERVAL ' . $nMonat . ' MONTH) < tpreisverlauf.dDate
                     ORDER BY tpreisverlauf.dDate DESC',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );

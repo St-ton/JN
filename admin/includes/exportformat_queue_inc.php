@@ -279,7 +279,7 @@ function holeExportformatQueueBearbeitet($nStunden)
                     ON tkundengruppe.kKundengruppe = texportformat.kKundengruppe
             JOIN twaehrung 
                     ON twaehrung.kWaehrung = texportformat.kWaehrung
-            WHERE DATE_SUB(now(), INTERVAL " . $nStunden . " HOUR) < texportformatqueuebearbeitet.dZuletztGelaufen
+            WHERE DATE_SUB(NOW(), INTERVAL " . $nStunden . " HOUR) < texportformatqueuebearbeitet.dZuletztGelaufen
             ORDER BY texportformatqueuebearbeitet.dZuletztGelaufen DESC",
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );

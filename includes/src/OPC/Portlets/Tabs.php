@@ -53,6 +53,10 @@ class Tabs extends \OPC\Portlet
                 'type'    => 'textlist',
                 'default' => ['Tab eins', 'Tab zwei', 'Tab drei'],
             ],
+            'uniqid' => [
+                'type'    => 'hidden',
+                'default' => uniqid('', false),
+            ]
         ];
     }
 

@@ -7,9 +7,6 @@
         <div class="panel-title">{lang key='priceRadar'}</div>
     </div>
     <div class="box-body panel-body text-center">
-        {if $BoxenEinstellungen.boxen.boxen_preisradar_scrollbar > 0}
-            <marquee behavior="scroll" direction="{if $BoxenEinstellungen.boxen.boxen_preisradar_scrollbar == 1}down{else}up{/if}" onmouseover="this.stop()" onmouseout="this.start()" scrollamount="2" scrolldelay="70">
-        {/if}
         <ul class="list-unstyled">
             {foreach $oBox->getProducts() as $oArtikel}
                 <li>
@@ -22,9 +19,5 @@
                     </div>
                 </li>
             {/foreach}
-        </ul>
-        {if $BoxenEinstellungen.boxen.boxen_preisradar_scrollbar > 0}
-            </marquee>
-        {/if}
     </div>
 </section>

@@ -44,7 +44,7 @@ function gibAnzahlBestellungen($cSuchFilter): int
         ? " WHERE cBestellNr LIKE '%" . Shop::Container()->getDB()->escape($cSuchFilter) . "%'"
         : '';
     $oBestellung = Shop::Container()->getDB()->query(
-        'SELECT count(*) AS nAnzahl
+        'SELECT COUNT(*) AS nAnzahl
             FROM tbestellung' . $cSuchFilterSQL,
         \DB\ReturnType::SINGLE_OBJECT
     );

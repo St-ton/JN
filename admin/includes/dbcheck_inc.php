@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTLShop\SemVer\Version;
+
 /**
  * @param bool $extended
  * @return array
@@ -100,7 +102,18 @@ function getDBStruct(bool $extended = false)
  */
 function getDBFileStruct()
 {
-    $cDateiListe = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_SHOPMD5 . 'dbstruct_' . JTL_VERSION . '.json';
+    $version    = Version::parse(APPLICATION_VERSION);
+    $versionStr = $version->getMajor().'-'.$version->getMinor().'-'.$version->getPatch();
+
+    if ($version->hasPreRelease()) {
+        $preRelease = $version->getPreRelease();
+        $versionStr .= '-'.$preRelease->getGreek();
+        if ($preRelease->getReleaseNumber() > 0) {
+            $versionStr .= '-'.$preRelease->getReleaseNumber();
+        }
+    }
+
+    $cDateiListe = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_SHOPMD5 . 'dbstruct_' . $versionStr . '.json';
     if (!file_exists($cDateiListe)) {
         return [];
     }

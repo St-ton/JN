@@ -70,7 +70,7 @@ if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
         );
         // Protokollieren (freigeschaltet)
         $upd           = new stdClass();
-        $upd->dOptCode = 'now()';
+        $upd->dOptCode = 'NOW()';
         $upd->cOptIp   = RequestHelper::getIP();
         Shop::Container()->getDB()->update(
             'tnewsletterempfaengerhistory',
@@ -107,8 +107,8 @@ if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
         $hist->cLoeschCode  = $recicpient->cLoeschCode;
         $hist->cAktion      = 'Geloescht';
         $hist->dEingetragen = $recicpient->dEingetragen;
-        $hist->dAusgetragen = 'now()';
-        $hist->dOptCode     = '0000-00-00';
+        $hist->dAusgetragen = 'NOW()';
+        $hist->dOptCode     = '_DBNULL_';
         $hist->cRegIp       = RequestHelper::getIP(); // IP of the current event-issuer
 
         Shop::Container()->getDB()->insert('tnewsletterempfaengerhistory', $hist);
@@ -118,7 +118,7 @@ if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
         );
         $oBlacklist            = new stdClass();
         $oBlacklist->cMail     = $recicpient->cEmail;
-        $oBlacklist->dErstellt = 'now()';
+        $oBlacklist->dErstellt = 'NOW()';
         Shop::Container()->getDB()->insert('tnewsletterempfaengerblacklist', $oBlacklist);
 
         $cHinweis = Shop::Lang()->get('newsletterDelete', 'messages');
@@ -194,8 +194,8 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
             $hist->cLoeschCode  = $recicpient->cLoeschCode;
             $hist->cAktion      = 'Geloescht';
             $hist->dEingetragen = $recicpient->dEingetragen;
-            $hist->dAusgetragen = 'now()';
-            $hist->dOptCode     = '0000-00-00';
+            $hist->dAusgetragen = 'NOW()';
+            $hist->dOptCode     = '_DBNULL_';
             $hist->cRegIp       = RequestHelper::getIP(); // IP of the current event-issuer
 
             Shop::Container()->getDB()->insert('tnewsletterempfaengerhistory', $hist);
@@ -207,7 +207,7 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
             // Blacklist
             $oBlacklist            = new stdClass();
             $oBlacklist->cMail     = $recicpient->cEmail;
-            $oBlacklist->dErstellt = 'now()';
+            $oBlacklist->dErstellt = 'NOW()';
             Shop::Container()->getDB()->insert('tnewsletterempfaengerblacklist', $oBlacklist);
 
             $cHinweis = Shop::Lang()->get('newsletterDelete', 'messages');

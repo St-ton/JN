@@ -159,13 +159,13 @@ $(document).ready(function() {
                             </span>
                             <span class="input-group-wrap">
                                 <span class="input-group-checkbox-wrap">
-                                    <input class="" type="checkbox" id="tmp_check" name="dGueltigBisAktiv" value="1"{if (isset($oAccount->dGueltigBis) && $oAccount->dGueltigBis !== '0000-00-00 00:00:00')} checked="checked"{/if} />
+                                    <input class="" type="checkbox" id="tmp_check" name="dGueltigBisAktiv" value="1"{if (isset($oAccount->dGueltigBis) && $oAccount->dGueltigBis !== null)} checked="checked"{/if} />
                                 </span>
                             </span>
                             </div>
                         </div>
 
-                        <div class="item{if !empty($cError_arr.dGueltigBis)} error{/if}"{if !$oAccount->dGueltigBis || $oAccount->dGueltigBis == '0000-00-00 00:00:00'} style="display: none;"{/if} id="tmp_date">
+                        <div class="item{if !empty($cError_arr.dGueltigBis)} error{/if}"{if !$oAccount->dGueltigBis || $oAccount->dGueltigBis == null} style="display: none;"{/if} id="tmp_date">
                             <div class="input-group">
                                 <span class="input-group-addon">
                                     <label for="dGueltigBis">... bis einschlie&szlig;lich</label>

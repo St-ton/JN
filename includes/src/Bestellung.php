@@ -112,7 +112,7 @@ class Bestellung
     /**
      * @var string - datetime [yyyy.mm.dd hh:ii:ss]
      */
-    public $dVersandDatum = '0000-00-00';
+    public $dVersandDatum;
 
     /**
      * @var string
@@ -122,7 +122,7 @@ class Bestellung
     /**
      * @var string
      */
-    public $dBezahltDatum = '0000-00-00';
+    public $dBezahltDatum;
 
     /**
      * @var string
@@ -718,7 +718,7 @@ class Bestellung
                             if (strlen($charge) > 0) {
                                 $_lieferscheinPos->oPosition->cChargeNr = $charge;
                             }
-                            if ($mhd !== '0000-00-00 00:00:00' && strlen($mhd) > 0) {
+                            if ($mhd !== null && strlen($mhd) > 0) {
                                 $_lieferscheinPos->oPosition->dMHD    = $mhd;
                                 $_lieferscheinPos->oPosition->dMHD_de = date_format(date_create($mhd), 'd.m.Y');
                             }
@@ -826,9 +826,9 @@ class Bestellung
         $obj->cVersandInfo         = $this->cVersandInfo;
         $obj->nLongestMinDelivery  = $this->oEstimatedDelivery->longestMin;
         $obj->nLongestMaxDelivery  = $this->oEstimatedDelivery->longestMax;
-        $obj->dVersandDatum        = $this->dVersandDatum;
-        $obj->dBezahltDatum        = $this->dBezahltDatum;
-        $obj->dBewertungErinnerung = $this->dBewertungErinnerung ?? '0000-00-00 00:00:00';
+        $obj->dVersandDatum        = empty($this->dVersandDatum) ? '_DBNULL_' : $this->dVersandDatum;
+        $obj->dBezahltDatum        = empty($this->dBezahltDatum) ? '_DBNULL_' : $this->dBezahltDatum;
+        $obj->dBewertungErinnerung = empty($this->dBewertungErinnerung) ? '_DBNULL_' : $this->dBewertungErinnerung;
         $obj->cTracking            = $this->cTracking;
         $obj->cKommentar           = $this->cKommentar;
         $obj->cLogistiker          = $this->cLogistiker;
@@ -871,9 +871,9 @@ class Bestellung
         $obj->cVersandInfo         = $this->cVersandInfo;
         $obj->nLongestMinDelivery  = $this->oEstimatedDelivery->longestMin;
         $obj->nLongestMaxDelivery  = $this->oEstimatedDelivery->longestMax;
-        $obj->dVersandDatum        = $this->dVersandDatum;
-        $obj->dBezahltDatum        = $this->dBezahltDatum;
-        $obj->dBewertungErinnerung = $this->dBewertungErinnerung;
+        $obj->dVersandDatum        = empty($this->dVersandDatum) ? '_DBNULL_' : $this->dVersandDatum;
+        $obj->dBezahltDatum        = empty($this->dBezahltDatum) ? '_DBNULL_' : $this->dBezahltDatum;
+        $obj->dBewertungErinnerung = empty($this->dBewertungErinnerung) ? '_DBNULL_' : $this->dBewertungErinnerung;
         $obj->cTracking            = $this->cTracking;
         $obj->cKommentar           = $this->cKommentar;
         $obj->cLogistiker          = $this->cLogistiker;

@@ -716,7 +716,6 @@ function gibStepZahlung()
                 'kVersandart' => $aktiveVersandart,
             ];
         }
-
         Shop::Smarty()->assign('Zahlungsarten', $oZahlungsart_arr)
             ->assign('Einstellungen', $Einstellungen)
             ->assign('Versandarten', $oVersandart_arr)
@@ -996,10 +995,10 @@ function plausiNeukundenKupon()
                             trim($_SESSION['Kunde']->cLand)
                         );
                         $Options = [
-                            'Kupon' => $NeukundenKupon->kKupon,
-                            'Email' => $_SESSION['Kunde']->cMail,
+                            'Kupon'     => $NeukundenKupon->kKupon,
+                            'Email'     => $_SESSION['Kunde']->cMail,
                             'DatenHash' => $hash,
-                            'Erstellt' => 'now()',
+                            'Erstellt'  => 'NOW()',
                             'Verwendet' => 'N'
                         ];
 
@@ -1531,20 +1530,23 @@ function gibZahlungsarten(int $kVersandart, int $kKundengruppe)
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
-    $valid   = [];
-    $zaCount = count($methods);
-    for ($i = 0; $i < $zaCount; ++$i) {
-        if (!$methods[$i]->kZahlungsart) {
+    $valid = [];
+    foreach ($methods as $method) {
+        if (!$method->kZahlungsart) {
             continue;
         }
+        $method->kVersandartZahlungsart = (int)$method->kVersandartZahlungsart;
+        $method->kVersandart            = (int)$method->kVersandart;
+        $method->kZahlungsart           = (int)$method->kZahlungsart;
+        $method->nSort                  = (int)$method->nSort;
         //posname lokalisiert ablegen
-        $methods[$i]->angezeigterName = [];
-        $methods[$i]->cGebuehrname    = [];
+        $method->angezeigterName = [];
+        $method->cGebuehrname    = [];
         foreach ($_SESSION['Sprachen'] as $Sprache) {
             $name_spr = Shop::Container()->getDB()->select(
                 'tzahlungsartsprache',
                 'kZahlungsart',
-                (int)$methods[$i]->kZahlungsart,
+                (int)$method->kZahlungsart,
                 'cISOSprache',
                 $Sprache->cISO,
                 null,
@@ -1553,44 +1555,46 @@ function gibZahlungsarten(int $kVersandart, int $kKundengruppe)
                 'cName, cGebuehrname, cHinweisTextShop'
             );
             if (isset($name_spr->cName)) {
-                $methods[$i]->angezeigterName[$Sprache->cISO] = $name_spr->cName;
-                $methods[$i]->cGebuehrname[$Sprache->cISO]    = $name_spr->cGebuehrname;
-                $methods[$i]->cHinweisText[$Sprache->cISO]    = $name_spr->cHinweisTextShop;
+                $method->angezeigterName[$Sprache->cISO] = $name_spr->cName;
+                $method->cGebuehrname[$Sprache->cISO]    = $name_spr->cGebuehrname;
+                $method->cHinweisText[$Sprache->cISO]    = $name_spr->cHinweisTextShop;
             }
         }
         $confData = Shop::Container()->getDB()->selectAll(
             'teinstellungen',
             ['kEinstellungenSektion', 'cModulId'],
-            [CONF_ZAHLUNGSARTEN, $methods[$i]->cModulId]
+            [CONF_ZAHLUNGSARTEN, $method->cModulId]
         );
         foreach ($confData as $config) {
-            $methods[$i]->einstellungen[$config->cName] = $config->cWert;
+            $method->einstellungen[$config->cName] = $config->cWert;
         }
-        if (!zahlungsartGueltig($methods[$i])) {
+        if (!zahlungsartGueltig($method)) {
             continue;
         }
-        $methods[$i]->Specials = null;
+        $method->Specials = null;
         //evtl. Versandkupon anwenden / Nur Nachname fällt weg
         if (isset($_SESSION['VersandKupon']->cZusatzgebuehren)
             && $_SESSION['VersandKupon']->cZusatzgebuehren === 'Y'
-            && $methods[$i]->fAufpreis > 0
-            && $methods[$i]->cName === 'Nachnahme'
+            && $method->fAufpreis > 0
+            && $method->cName === 'Nachnahme'
         ) {
-            $methods[$i]->fAufpreis = 0;
+            $method->fAufpreis = 0;
         }
         //lokalisieren
-        if ($methods[$i]->cAufpreisTyp === 'festpreis') {
-            $methods[$i]->fAufpreis *= ((100 + $taxRate) / 100);
+        if ($method->cAufpreisTyp === 'festpreis') {
+            $method->fAufpreis *= ((100 + $taxRate) / 100);
         }
-        $methods[$i]->cPreisLocalized = Preise::getLocalizedPriceString($methods[$i]->fAufpreis);
-        if ($methods[$i]->cAufpreisTyp === 'prozent') {
-            $methods[$i]->cPreisLocalized = ($methods[$i]->fAufpreis < 0) ? ' ' : '+ ';
-            $methods[$i]->cPreisLocalized .= $methods[$i]->fAufpreis . '%';
+        $method->cPreisLocalized = Preise::getLocalizedPriceString($method->fAufpreis);
+        if ($method->cAufpreisTyp === 'prozent') {
+            $method->cPreisLocalized = ($method->fAufpreis < 0) ? ' ' : '+ ';
+            $method->cPreisLocalized .= $method->fAufpreis . '%';
         }
-        if ($methods[$i]->fAufpreis == 0) {
-            $methods[$i]->cPreisLocalized = '';
+        if ($method->fAufpreis == 0) {
+            $method->cPreisLocalized = '';
         }
-        $valid[] = $methods[$i];
+        if (!empty($method->angezeigterName)) {
+            $valid[] = $method;
+        }
     }
 
     return $valid;
@@ -1612,7 +1616,7 @@ function gibAktiveVersandart($shippingMethods)
             $_SESSION['AktiveVersandart'] = $shippingMethods[0]->kVersandart;
         }
     } else {
-        $_SESSION['AktiveVersandart'] = $shippingMethods[0]->kVersandart;
+        $_SESSION['AktiveVersandart'] = $shippingMethods[0]->kVersandart ?? 0;
     }
 
     return $_SESSION['AktiveVersandart'];
@@ -1668,7 +1672,7 @@ function gibAktiveVerpackung($packagings)
 }
 
 /**
- * @param Zahlungsart|object $paymentMethod
+ * @param Zahlungsart|stdClass $paymentMethod
  * @return bool
  */
 function zahlungsartGueltig($paymentMethod)

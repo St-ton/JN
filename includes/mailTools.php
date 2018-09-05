@@ -455,6 +455,10 @@ function sendeMail($ModulId, $Object, $mail = null)
             break;
     }
 
+    $mailSmarty->assign('Einstellungen', $config);
+
+    $cPluginBody = isset($Emailvorlage->kPlugin) && $Emailvorlage->kPlugin > 0 ? '_' . $Emailvorlage->kPlugin : '';
+
     executeHook(HOOK_MAILTOOLS_INC_SWITCH, [
         'mailsmarty'    => &$mailSmarty,
         'mail'          => &$mail,
@@ -463,13 +467,6 @@ function sendeMail($ModulId, $Object, $mail = null)
         'cPluginBody'   => $cPluginBody,
         'Emailvorlage'  => $Emailvorlage
     ]);
-
-    $mailSmarty->assign('Einstellungen', $config);
-
-    $cPluginBody = '';
-    if (isset($Emailvorlage->kPlugin) && $Emailvorlage->kPlugin > 0) {
-        $cPluginBody = '_' . $Emailvorlage->kPlugin;
-    }
     if ($Emailvorlage->cMailTyp === 'text/html' || $Emailvorlage->cMailTyp === 'html') {
         $bodyHtml = $mailSmarty->fetch('db:html_' . $Emailvorlage->kEmailvorlage . '_' . $Sprache->kSprache . $cPluginBody);
     }
@@ -631,7 +628,7 @@ function pruefeGlobaleEmailBlacklist($cEmail)
     if (isset($oEmailBlacklist->cEmail) && strlen($oEmailBlacklist->cEmail) > 0) {
         $oEmailBlacklistBlock                = new stdClass();
         $oEmailBlacklistBlock->cEmail        = $oEmailBlacklist->cEmail;
-        $oEmailBlacklistBlock->dLetzterBlock = 'now()';
+        $oEmailBlacklistBlock->dLetzterBlock = 'NOW()';
 
         Shop::Container()->getDB()->insert('temailblacklistblock', $oEmailBlacklistBlock);
 
@@ -762,7 +759,7 @@ function verschickeMail($mail)
                       ->setFromEmail($mail->fromEmail)
                       ->setToName($mail->toName ?? '')
                       ->setToEmail($mail->toEmail)
-                      ->setSent('now()')
+                      ->setSent('NOW()')
                       ->save();
     } else {
         Shop::Container()->getLogService()->error('Email konnte nicht versendet werden! Fehler: ' . $mail->cFehler);

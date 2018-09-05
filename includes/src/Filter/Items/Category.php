@@ -186,7 +186,7 @@ class Category extends BaseCategory
         $sql->setGroupBy(['tkategorie.kKategorie', 'tartikel.kArtikel']);
 
         $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
-        $cacheID   = 'fltr_' . __CLASS__ . \md5($baseQuery);
+        $cacheID   = 'fltr_' . \str_replace('\\', '', __CLASS__) . \md5($baseQuery);
         if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
             $this->options = $cached;
 

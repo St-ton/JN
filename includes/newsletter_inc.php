@@ -122,8 +122,8 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
 
                 $oNewsletterEmpfaenger->cOptCode           = create_NewsletterCode('cOptCode', $oKunde->cEmail);
                 $oNewsletterEmpfaenger->cLoeschCode        = create_NewsletterCode('cLoeschCode', $oKunde->cEmail);
-                $oNewsletterEmpfaenger->dEingetragen       = 'now()';
-                $oNewsletterEmpfaenger->dLetzterNewsletter = '0000-00-00';
+                $oNewsletterEmpfaenger->dEingetragen       = 'NOW()';
+                $oNewsletterEmpfaenger->dLetzterNewsletter = '_DBNULL_';
 
                 executeHook(HOOK_NEWSLETTER_PAGE_EMPFAENGEREINTRAGEN, [
                     'oNewsletterEmpfaenger' => $oNewsletterEmpfaenger
@@ -143,9 +143,9 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
                 $oNewsletterEmpfaengerHistory->cOptCode     = $oNewsletterEmpfaenger->cOptCode;
                 $oNewsletterEmpfaengerHistory->cLoeschCode  = $oNewsletterEmpfaenger->cLoeschCode;
                 $oNewsletterEmpfaengerHistory->cAktion      = 'Eingetragen';
-                $oNewsletterEmpfaengerHistory->dEingetragen = 'now()';
-                $oNewsletterEmpfaengerHistory->dAusgetragen = '0000-00-00';
-                $oNewsletterEmpfaengerHistory->dOptCode     = '0000-00-00';
+                $oNewsletterEmpfaengerHistory->dEingetragen = 'NOW()';
+                $oNewsletterEmpfaengerHistory->dAusgetragen = '_DBNULL_';
+                $oNewsletterEmpfaengerHistory->dOptCode     = '_DBNULL_';
                 $oNewsletterEmpfaengerHistory->cRegIp       = $oKunde->cRegIp;
 
                 $kNewsletterEmpfaengerHistory = Shop::Container()->getDB()->insert(

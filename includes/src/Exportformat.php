@@ -794,23 +794,24 @@ class Exportformat
             $where .= " AND tartikel.cBeschreibung != ''";
         }
 
-        $condition = 'AND NOT (DATE(tartikel.dErscheinungsdatum) > DATE(NOW()))';
+        $condition = 'AND (tartikel.dErscheinungsdatum IS NULL OR NOT (DATE(tartikel.dErscheinungsdatum) > CURDATE()))';
         $conf      = Shop::getSettings([CONF_GLOBAL]);
         if (isset($conf['global']['global_erscheinende_kaeuflich'])
             && $conf['global']['global_erscheinende_kaeuflich'] === 'Y'
         ) {
-            $condition = 'AND (
-                NOT (DATE(tartikel.dErscheinungsdatum) > DATE(NOW()))
+            $condition = "AND (
+                tartikel.dErscheinungsdatum IS NULL 
+                OR NOT (DATE(tartikel.dErscheinungsdatum) > CURDATE())
                 OR  (
-                        DATE(tartikel.dErscheinungsdatum) > DATE(NOW())
-                        AND (tartikel.cLagerBeachten = "N" 
-                            OR tartikel.fLagerbestand > 0 OR tartikel.cLagerKleinerNull = "Y")
+                        DATE(tartikel.dErscheinungsdatum) > CURDATE()
+                        AND (tartikel.cLagerBeachten = 'N' 
+                            OR tartikel.fLagerbestand > 0 OR tartikel.cLagerKleinerNull = 'Y')
                     )
-            )';
+            )";
         }
 
         if ($countOnly === true) {
-            $select = 'count(*) AS nAnzahl';
+            $select = 'COUNT(*) AS nAnzahl';
         } else {
             $select    = 'tartikel.kArtikel';
             $limit     = ' ORDER BY tartikel.kArtikel LIMIT ' . $this->getQueue()->nLimitM;
@@ -1094,8 +1095,10 @@ class Exportformat
         }
         $datei = fopen(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName, 'a');
         if ($max === null) {
-            $maxObj = Shop::Container()->getDB()->executeQuery($this->getExportSQL(true),
-                \DB\ReturnType::SINGLE_OBJECT);
+            $maxObj = Shop::Container()->getDB()->executeQuery(
+                $this->getExportSQL(true),
+                \DB\ReturnType::SINGLE_OBJECT
+            );
             $max    = (int)$maxObj->nAnzahl;
         }
 
@@ -1321,7 +1324,7 @@ class Exportformat
                 // There are no more articles to export
                 Shop::Container()->getDB()->query(
                     'UPDATE texportformat 
-                        SET dZuletztErstellt = now() 
+                        SET dZuletztErstellt = NOW() 
                         WHERE kExportformat = ' . $this->getExportformat(),
                     \DB\ReturnType::DEFAULT
                 );
@@ -1369,7 +1372,7 @@ class Exportformat
                     'texportformat',
                     'kExportformat',
                     (int)$queueObject->kKey,
-                    (object)['dZuletztErstellt' => 'now()']
+                    (object)['dZuletztErstellt' => 'NOW()']
                 );
                 if (file_exists(PFAD_ROOT . PFAD_EXPORT . $this->cDateiname)) {
                     $this->log('Deleting old export file ' . PFAD_ROOT . PFAD_EXPORT . $this->cDateiname);

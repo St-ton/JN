@@ -465,6 +465,16 @@ interface LinkInterface
     public function setLevel(int $level);
 
     /**
+     * @return string
+     */
+    public function getDisplayName(): string;
+
+    /**
+     * @param string $displayName
+     */
+    public function setDisplayName(string $displayName);
+
+    /**
      * @return LinkInterface[]
      */
     public function buildChildLinks(): array;

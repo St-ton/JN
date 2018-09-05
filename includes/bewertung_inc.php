@@ -391,7 +391,7 @@ function checkeBewertungGuthabenBonus(int $ratingID, array $conf)
         $ratingBonus->kBewertung     = $ratingID;
         $ratingBonus->kKunde         = $customerID;
         $ratingBonus->fGuthabenBonus = $reward;
-        $ratingBonus->dDatum         = 'now()';
+        $ratingBonus->dDatum         = 'NOW()';
 
         if (Shop::Container()->getDB()->select(
                 'tbewertungguthabenbonus',
@@ -437,7 +437,7 @@ function checkeBewertungGuthabenBonus(int $ratingID, array $conf)
         $ratingBonus->kBewertung     = $ratingID;
         $ratingBonus->kKunde         = $customerID;
         $ratingBonus->fGuthabenBonus = $reward;
-        $ratingBonus->dDatum         = 'now()';
+        $ratingBonus->dDatum         = 'NOW()';
         if (Shop::Container()->getDB()->select(
                 'tbewertungguthabenbonus',
                 ['kBewertung', 'kKunde'],

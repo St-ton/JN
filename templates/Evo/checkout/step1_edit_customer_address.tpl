@@ -13,7 +13,7 @@
     <div class="alert alert-danger">{$cFehler}</div>
 {/if}
 {if !empty($fehlendeAngaben) && !$hinweis}
-    <div class="alert alert-danger">{lang key='yourDataDesc' section='account data'}</div>
+    <div class="alert alert-danger">{lang key='mandatoryFieldNotification' section='errorMessages'}</div>
 {/if}
 {if $hinweis}
     <div class="alert alert-info">{$hinweis}</div>

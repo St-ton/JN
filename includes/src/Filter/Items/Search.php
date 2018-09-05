@@ -157,11 +157,11 @@ class Search extends AbstractFilter
     }
 
     /**
-     * @param int    $languageID
      * @param string $searchTerm
+     * @param int    $languageID
      * @return $this
      */
-    public function setQueryID($languageID, $searchTerm)
+    public function setQueryID(string $searchTerm, int $languageID): FilterInterface
     {
         $searchQuery = null;
         if ($languageID > 0 && \strlen($searchTerm) > 0) {

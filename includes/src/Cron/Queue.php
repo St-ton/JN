@@ -115,7 +115,7 @@ class Queue
                 $this->db->delete('tjobqueue', 'kCron', $job->getCronID());
             } else {
                 $update                   = new \stdClass();
-                $update->dZuletztgelaufen = 'now';
+                $update->dZuletztgelaufen = 'NOW()';
                 $update->nLimitN          = $queueEntry->nLimitN;
                 $update->nlimitM          = $queueEntry->nLimitM;
                 $update->nLastArticleID   = $queueEntry->nLastArticleID;

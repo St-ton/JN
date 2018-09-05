@@ -185,12 +185,13 @@ function compareDBStruct(array $cDBFileStruct_arr, array $cDBStruct_arr)
                 $cDBError_arr[$cTable] = "Spalte $cColumn in $cTable nicht vorhanden";
                 break;
             }
-            if (isset($cDBStruct_arr[$cTable]->Columns)) {
-                if (($cDBStruct_arr[$cTable]->Migration & DBMigrationHelper::MIGRATE_C_UTF8) === DBMigrationHelper::MIGRATE_C_UTF8) {
+
+            if (isset($cDBStruct_arr[$cTable]->Columns[$cColumn])) {
+                if (!empty($cDBStruct_arr[$cTable]->Columns[$cColumn]->COLLATION_NAME) && $cDBStruct_arr[$cTable]->Columns[$cColumn]->COLLATION_NAME !== 'utf8_unicode_ci') {
                     $cDBError_arr[$cTable] = "Inkonsistente Kollation in Spalte $cColumn";
                     break;
                 }
-                if (($cDBStruct_arr[$cTable]->Migration & DBMigrationHelper::MIGRATE_TEXT) === DBMigrationHelper::MIGRATE_TEXT) {
+                if ($cDBStruct_arr[$cTable]->Columns[$cColumn]->DATA_TYPE === 'text') {
                     $cDBError_arr[$cTable] = "Datentyp text in Spalte $cColumn";
                     break;
                 }

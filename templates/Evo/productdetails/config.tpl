@@ -13,7 +13,7 @@
                         {assign var=kKonfiggruppe value=$oGruppe->getKonfiggruppe()}
                         <div class="cfg-group panel panel-default" data-id="{$kKonfiggruppe}">
                             <div class="panel-heading">
-                                <h5 class="panel-title">{$oSprache->getName()}{if $oGruppe->getMin() == 0}<span class="optional"> - {lang key='optional' section='checkout'}</span>{/if}</h5>
+                                <h5 class="panel-title">{$oSprache->getName()}{if $oGruppe->getMin() == 0}<span class="optional"> - {lang key='optional'}</span>{/if}</h5>
                             </div>
                             <div class="group panel-body">
                                 <div class="group-description">

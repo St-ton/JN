@@ -10,7 +10,7 @@
         <p class="alert alert-danger">{lang key='kwkEmailblocked' section='errorMessages'}</p>
     {/if}
     {if !empty($smarty.get.fillOut)}
-       <p class="alert alert-danger">{lang key='fillOutQuestion' section='messages'}</p>
+       <p class="alert alert-danger">{lang key='mandatoryFieldNotification' section='errorMessages'}</p>
     {/if}
 
     <div class="row row-eq-height">

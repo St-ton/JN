@@ -50,7 +50,7 @@ class Queue
     }
 
     /**
-     * @return array
+     * @return QueueEntry[]
      */
     public function loadQueueFromDB(): array
     {
@@ -70,7 +70,7 @@ class Queue
     }
 
     /**
-     * @param array $jobs
+     * @param \stdClass[] $jobs
      */
     public function enqueueCronJobs(array $jobs)
     {

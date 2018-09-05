@@ -440,6 +440,10 @@ class Status
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
 
+        if (!$hashes) {
+            $hashes = [];
+        }
+
         return some($hashes, function ($hash) use ($passwordService) {
             return $passwordService->needsRehash($hash->cEmergencyCode);
         });

@@ -1691,7 +1691,7 @@ class ProductFilter
             if (!empty($this->search->getName())) {
                 if ($this->searchQuery->getError() === null) {
                     $this->search->saveQuery($productCount, $this->search->getName(), !$this->bExtendedJTLSearch);
-                    $this->search->setQueryID($this->search->getName(), $this->getFilterConfig()->getLanguageID());
+                    $this->search->setQueryID($this->search->getName() ?? '', $this->getFilterConfig()->getLanguageID());
                     $this->searchQuery->setValue($this->search->getValue())->setSeo($this->getFilterConfig()->getLanguages());
                 } else {
                     $error = $this->searchQuery->getError();
@@ -1838,7 +1838,10 @@ class ProductFilter
                 // 'misc' and custom contain clean new filters that can be calculated by just iterating over the array
                 foreach ($active as $filter) {
                     $joins[]      = $filter->getSQLJoin();
-                    $conditions[] = "\n#condition from filter " . $type . "\n" . $filter->getSQLCondition();
+                    $condition    = $filter->getSQLCondition();
+                    if (!empty($condition)) {
+                        $conditions[] = "\n#condition from filter " . $type . "\n" . $condition;
+                    }
                 }
             }
         }

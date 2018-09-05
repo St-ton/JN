@@ -524,13 +524,17 @@ class StringHandler
 
     /**
      * @param string $number
+     * @param bool $required
      * @return int
      * @former checkeTel()
      */
-    public static function checkPhoneNumber($number): int
+    public static function checkPhoneNumber(string $number, bool $required = true): int
     {
         if (!$number) {
-            return 1;
+            if ($required) {
+                return 1;
+            }
+            return 0;
         }
         if (!preg_match('/^[0-9\-\(\)\/\+\s]{1,}$/', $number)) {
             return 2;
@@ -541,12 +545,16 @@ class StringHandler
 
     /**
      * @param string $data
+     * @param bool $required
      * @return int
      */
-    public static function checkDate($data): int
+    public static function checkDate(string $data, bool $required = true): int
     {
         if (!$data) {
-            return 1;
+            if ($required) {
+                return 1;
+            }
+            return 0;
         }
         if (!preg_match('/^\d{1,2}\.\d{1,2}\.(\d{4})$/', $data)) {
             return 2;

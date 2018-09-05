@@ -81,7 +81,7 @@ class Queue
             $queueEntry->cKey       = $job->cKey;
             $queueEntry->cTabelle   = $job->cTabelle;
             $queueEntry->cJobArt    = $job->cJobArt;
-            $queueEntry->dStartZeit = $job->dStartZeit;
+            $queueEntry->dStartZeit = $job->dStart;
             $queueEntry->nLimitN    = 0;
             $queueEntry->nLimitM    = 0;
             $queueEntry->nInArbeit  = 0;

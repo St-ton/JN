@@ -194,6 +194,11 @@ function kundeSpeichern(array $cPost_arr)
             pruefeLieferdaten($cPost_arr, $fehlendeAngaben);
         }
         if ((int)$cPost_arr['checkout'] === 1) {
+            if (!empty($fehlendeAngaben)) {
+                $_SESSION['checkout.register']                        = 1;
+                $_SESSION['checkout.shippingAddress.fehlendeAngaben'] = $fehlendeAngaben;
+                $_SESSION['checkout.cPost_arr']                       = $cPost_arr;
+            }
             //weiterleitung zum chekout
             header('Location: ' . Shop::Container()->getLinkService()
                                       ->getStaticRoute('bestellvorgang.php', true) . '?reg=1', true, 303);

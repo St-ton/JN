@@ -320,7 +320,11 @@ function pruefeRechnungsadresseStep($cGet_arr)
         if (isset($_SESSION['checkout.fehlendeAngaben'])) {
             setzeFehlendeAngaben($_SESSION['checkout.fehlendeAngaben']);
             unset($_SESSION['checkout.fehlendeAngaben']);
-            $step = 'accountwahl';
+            if (!empty($_SESSION['Kunde']->kKunde)) {
+                $step = 'edit_customer_address';
+            } else {
+                $step = 'accountwahl';
+            }
         }
         if (isset($_SESSION['checkout.cPost_arr'])) {
             $Kunde                      = getKundendaten($_SESSION['checkout.cPost_arr'], 0, 0);
@@ -351,6 +355,11 @@ function pruefeLieferadresseStep($cGet_arr)
         unset($_SESSION['Zahlungsart'], $_SESSION['TrustedShops'], $_SESSION['Versandart']);
         $Lieferadresse = $_SESSION['Lieferadresse'];
         $step          = 'Lieferadresse';
+    }
+    if (isset($_SESSION['checkout.shippingAddress.fehlendeAngaben'])) {
+        setzeFehlendeAngaben($_SESSION['checkout.shippingAddress.fehlendeAngaben'], 'shipping_address');
+        unset($_SESSION['checkout.shippingAddress.fehlendeAngaben']);
+        $step = 'Lieferadresse';
     }
     if (pruefeFehlendeAngaben('shipping_address')) {
         $Lieferadresse = $_SESSION['Lieferadresse'];
@@ -517,7 +526,7 @@ function pruefeFehlendeAngaben($context)
 {
     $fehlendeAngaben = Shop::Smarty()->getTemplateVars('fehlendeAngaben');
 
-    return (is_array($fehlendeAngaben[$context]) && count($fehlendeAngaben[$context]));
+    return (isset($fehlendeAngaben[$context]) && is_array($fehlendeAngaben[$context]) && count($fehlendeAngaben[$context]));
 }
 
 /**
@@ -587,7 +596,7 @@ function gibStepLieferadresse()
 
     $kKundengruppe = Session::CustomerGroup()->getID();
 
-    if ($_SESSION['Kunde']->kKunde > 0) {
+    if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         $Lieferadressen        = [];
         $oLieferadresseTMP_arr = Shop::Container()->getDB()->query(
             'SELECT DISTINCT(kLieferadresse)
@@ -604,7 +613,7 @@ function gibStepLieferadresse()
         $kKundengruppe = $_SESSION['Kunde']->kKundengruppe;
     }
     Shop::Smarty()->assign('laender', VersandartHelper::getPossibleShippingCountries($kKundengruppe))
-        ->assign('Kunde', $_SESSION['Kunde'])
+        ->assign('Kunde', $_SESSION['Kunde'] ?? null)
         ->assign('kLieferadresse', $_SESSION['Bestellung']->kLieferadresse ?? null);
     if (isset($_SESSION['Bestellung']->kLieferadresse) && $_SESSION['Bestellung']->kLieferadresse == -1) {
         Shop::Smarty()->assign('Lieferadresse', $Lieferadresse);
@@ -2599,7 +2608,7 @@ function getLieferdaten($post)
 {
     //erstelle neue Lieferadresse
     $shippingAddress                  = new Lieferadresse();
-    $shippingAddress->cAnrede         = StringHandler::filterXSS($post['anrede']);
+    $shippingAddress->cAnrede         = StringHandler::filterXSS($post['anrede'] ?? null);
     $shippingAddress->cVorname        = StringHandler::filterXSS($post['vorname']);
     $shippingAddress->cNachname       = StringHandler::filterXSS($post['nachname']);
     $shippingAddress->cStrasse        = StringHandler::filterXSS($post['strasse']);

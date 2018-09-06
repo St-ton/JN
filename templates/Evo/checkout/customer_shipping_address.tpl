@@ -146,8 +146,8 @@
     </div>
     {if $Einstellungen.kunden.lieferadresse_abfragen_bundesland !== 'N'}
         {getStates cIso=$cIso assign='oShippingStates'}
-        {if isset($cPost_var['bundesland'])}
-            {assign var='cState' value=$cPost_var['bundesland']}
+        {if isset($Lieferadresse->cBundesland)}
+            {assign var='cState' value=$Lieferadresse->cBundesland}
         {elseif !empty($Kunde->cBundesland)}
             {assign var='cState' value=$Kunde->cBundesland}
         {else}
@@ -171,7 +171,7 @@
                     >
                         <option value="" selected disabled>{lang key='pleaseChoose' section='global'}</option>
                         {foreach $oShippingStates as $oState}
-                            <option value="{$oState->cCode}" {if $cState === $oState->cName}selected{/if}>{$oState->cName}</option>
+                            <option value="{$oState->cCode}" {if $cState === $oState->cName || $cState === $oState->cCode}selected{/if}>{$oState->cName}</option>
                         {/foreach}
                     </select>
                 {else}

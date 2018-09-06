@@ -15,13 +15,13 @@ use Filter\ProductFilter;
 class ProductNumber extends AbstractSortingOption
 {
     /**
-     * SortDefault constructor.
+     * ProductNumber constructor.
      * @param ProductFilter $productFilter
      */
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->orderBy = 'tartikel.cArtNr, tartikel.cName';
+        $this->setOrderBy('tartikel.cArtNr, tartikel.cName');
         $this->setName(\Shop::Lang()->get('sortProductno'));
         $this->setPriority($this->getConfig('artikeluebersicht')['suche_sortierprio_artikelnummer']);
         $this->setValue(\SEARCH_SORT_PRODUCTNO);

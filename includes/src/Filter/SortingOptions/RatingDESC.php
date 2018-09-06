@@ -15,13 +15,13 @@ use Filter\ProductFilter;
 class RatingDESC extends AbstractSortingOption
 {
     /**
-     * SortDefault constructor.
+     * RatingDESC constructor.
      * @param ProductFilter $productFilter
      */
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->orderBy = 'AVG(tbewertung.nSterne) DESC, tartikel.cName';
+        $this->setOrderBy('AVG(tbewertung.nSterne) DESC, tartikel.cName');
         $this->join->setComment('join from SORT by rating')
                    ->setType('LEFT JOIN')
                    ->setTable('tbewertung')

@@ -6,7 +6,6 @@
 
 namespace Link;
 
-
 use DB\DbInterface;
 use DB\ReturnType;
 use function Functional\group;

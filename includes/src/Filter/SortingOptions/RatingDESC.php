@@ -6,7 +6,6 @@
 
 namespace Filter\SortingOptions;
 
-
 use Filter\ProductFilter;
 
 /**
@@ -22,7 +21,7 @@ class RatingDESC extends AbstractSortingOption
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->setOrderBy('tbewertung.nSterne DESC, tartikel.cName');
+        $this->setOrderBy('AVG(tbewertung.nSterne) DESC, tartikel.cName');
         $this->join->setComment('join from SORT by rating')
                    ->setType('LEFT JOIN')
                    ->setTable('tbewertung')

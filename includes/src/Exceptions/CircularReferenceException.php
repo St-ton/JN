@@ -6,7 +6,6 @@
 
 namespace Exceptions;
 
-
 use Psr\Container\ContainerExceptionInterface;
 
 /**

@@ -6,7 +6,6 @@
 
 namespace Cron;
 
-
 use DB\DbInterface;
 use Mapper\JobTypeToJob;
 use Psr\Log\LoggerInterface;

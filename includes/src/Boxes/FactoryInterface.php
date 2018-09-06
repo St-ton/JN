@@ -6,7 +6,6 @@
 
 namespace Boxes;
 
-
 use Boxes\Items\BoxInterface;
 
 /**

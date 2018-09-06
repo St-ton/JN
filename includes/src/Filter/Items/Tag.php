@@ -6,7 +6,6 @@
 
 namespace Filter\Items;
 
-
 use Filter\Join;
 use Filter\FilterInterface;
 use Filter\Type;

@@ -6,7 +6,6 @@
 
 namespace Boxes\Items;
 
-
 use Boxes\Renderer\DefaultRenderer;
 use Boxes\Type;
 use function Functional\false;

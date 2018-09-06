@@ -6,7 +6,6 @@
 
 namespace Cron;
 
-
 use DB\DbInterface;
 use Psr\Log\LoggerInterface;
 
@@ -38,19 +37,19 @@ class Checker
     }
 
     /**
-     * @return array
+     * @return \stdClass[]
      */
     public function check(): array
     {
         $jobs = $this->db->query(
-            "SELECT tcron.*
+            'SELECT tcron.*
                 FROM tcron
                 LEFT JOIN tjobqueue 
                     ON tjobqueue.kCron = tcron.kCron
-                WHERE ((tcron.dLetzterStart IS NULL OR tcron.dLetzterStart = '1970-01-01 00:00:00') 
-                    OR (UNIX_TIMESTAMP(NOW()) > (UNIX_TIMESTAMP(tcron.dLetzterStart) + (3600 * tcron.nAlleXStd))))
+                WHERE (tcron.dLetzterStart IS NULL 
+                    OR (NOW() > ADDDATE(tcron.dLetzterStart, INTERVAL tcron.nAlleXStd HOUR)))
                     AND tcron.dStart < NOW()
-                    AND tjobqueue.kJobQueue IS NULL",
+                    AND tjobqueue.kJobQueue IS NULL',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         $this->logger->debug('Found ' . \count($jobs) . ' new cron jobs.');

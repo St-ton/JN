@@ -6,7 +6,6 @@
 
 namespace Cron\Jobs;
 
-
 use Cron\Job;
 use Cron\JobInterface;
 use Cron\QueueEntry;

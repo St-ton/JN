@@ -23,7 +23,11 @@ abstract class Intervals
      * @var array
      */
     const vTIMERS = [
-        // (this should be the shortest time-period, in which we do ANY anonymization-stuff)
+        // lets the task executed at each run
+        // (can understood as a placeholder)
+        'TC_DAYS_0'   => 0,
+
+        // a 7 days interval
         'TC_DAYS_7'   => 7,
 
         // delete newsletter-registrations with no opt-in within given interval

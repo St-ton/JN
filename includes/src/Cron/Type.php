@@ -27,4 +27,6 @@ class Type extends Enum
 
     const PLUGIN = 'plugin';
 
+    const DATAPROTECTION = 'dataprotection';
+
 }

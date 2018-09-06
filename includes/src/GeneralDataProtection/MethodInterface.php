@@ -8,5 +8,5 @@ namespace GeneralDataProtection;
 
 interface MethodInterface
 {
-    public function execute(int $iInterval);
+    public function execute();
 }

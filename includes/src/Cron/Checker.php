@@ -48,7 +48,7 @@ class Checker
                 LEFT JOIN tjobqueue 
                     ON tjobqueue.kCron = tcron.kCron
                 WHERE (tcron.dLetzterStart IS NULL 
-                    OR (UNIX_TIMESTAMP(NOW()) > (UNIX_TIMESTAMP(tcron.dLetzterStart) + (3600 * tcron.nAlleXStd))))
+                    OR (NOW() > ADDDATE(tcron.dLetzterStart, INTERVAL tcron.nAlleXStd HOUR)))
                     AND tcron.dStart < NOW()
                     AND tjobqueue.kJobQueue IS NULL',
             \DB\ReturnType::ARRAY_OF_OBJECTS

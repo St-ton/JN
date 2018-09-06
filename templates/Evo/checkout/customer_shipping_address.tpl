@@ -15,7 +15,7 @@
                     <option value="m"{if isset($Lieferadresse->cAnrede) && $Lieferadresse->cAnrede === 'm'} selected="selected"{/if}>{lang key='salutationM'}</option>
                 </select>
                 {if !empty($fehlendeAngaben.anrede)}
-                    <div class="alert alert-danger">{lang key='fillOut' section='global'}</div>
+                    <div class="form-error-msg text-danger">{lang key='fillOut' section='global'}</div>
                 {/if}
             </div>
         </div>
@@ -188,7 +188,7 @@
                 {/if}
 
                 {if !empty($fehlendeAngaben.bundesland)}
-                    <div class="alert alert-danger">{lang key='fillOut' section='global'}</div>
+                    <div class="form-error-msg text-danger">{lang key='fillOut' section='global'}</div>
                 {/if}
             </div>
         </div>
@@ -211,7 +211,7 @@
                 required
                 autocomplete="shipping postal-code">
             {if !empty($fehlendeAngaben.plz)}
-                <div class="alert alert-danger">{lang key='fillOut' section='global'}</div>{/if}
+                <div class="form-error-msg text-danger">{lang key='fillOut' section='global'}</div>{/if}
         </div>
     </div>
 
@@ -224,9 +224,9 @@
                    autocomplete="shipping address-level2">
             {if !empty($fehlendeAngaben.ort)}
                 {if $fehlendeAngaben.ort == 3}
-                    <div class="alert alert-danger">{lang key='cityNotNumeric' section='account data'}</div>
+                    <div class="form-error-msg text-danger">{lang key='cityNotNumeric' section='account data'}</div>
                 {else}
-                    <div class="alert alert-danger">{lang key='fillOut' section='global'}</div>
+                    <div class="form-error-msg text-danger">{lang key='fillOut' section='global'}</div>
                 {/if}
             {/if}
         </div>

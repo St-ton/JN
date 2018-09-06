@@ -554,8 +554,8 @@ class Kunde
      */
     public function updateInDB(): int
     {
-        $this->dGeburtstag           = DateHelper::convertDateToMysqlStandard($this->dGeburtstag);
-        $this->dGeburtstag_formatted = $this->dGeburtstag === null
+        $this->dGeburtstag           = DateHelper::convertDateToMysqlStandard($this->dGeburtstag ?? '');
+        $this->dGeburtstag_formatted = $this->dGeburtstag === '_DBNULL_'
             ? '_DBNULL_'
             : DateTime::createFromFormat('Y-m-d', $this->dGeburtstag)->format('d.m.Y');
 

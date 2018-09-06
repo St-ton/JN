@@ -6,7 +6,6 @@
 
 namespace Filter;
 
-
 use DB\ReturnType;
 use Tightenco\Collect\Support\Collection;
 use function Functional\group;

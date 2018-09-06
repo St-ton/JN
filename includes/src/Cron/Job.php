@@ -6,7 +6,6 @@
 
 namespace Cron;
 
-
 use DB\DbInterface;
 use Psr\Log\LoggerInterface;
 

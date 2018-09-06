@@ -6,7 +6,6 @@
 
 namespace Boxes;
 
-
 use MyCLabs\Enum\Enum;
 
 /**

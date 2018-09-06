@@ -6,7 +6,6 @@
 
 namespace Mapper;
 
-
 use Filter\SortingOptions\Availability;
 use Filter\SortingOptions\Bestseller;
 use Filter\SortingOptions\DateCreated;

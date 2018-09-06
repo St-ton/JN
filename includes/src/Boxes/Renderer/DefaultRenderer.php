@@ -8,7 +8,6 @@ namespace Boxes\Renderer;
 
 use Boxes\Items\BoxInterface;
 
-
 /**
  * Class BoxRenderer
  *

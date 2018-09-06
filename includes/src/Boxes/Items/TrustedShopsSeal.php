@@ -6,7 +6,6 @@
 
 namespace Boxes\Items;
 
-
 /**
  * Class TrustedShopsSeal
  * @package Boxes

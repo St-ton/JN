@@ -6,7 +6,6 @@
 
 namespace Filter\Items;
 
-
 use DB\ReturnType;
 use Filter\AbstractFilter;
 use Filter\FilterInterface;

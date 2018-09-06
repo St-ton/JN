@@ -91,7 +91,7 @@ final class JTLApi
     }
 
     /**
-     * @return mixed
+     * @return Version
      */
     public function getLatestVersion(): Version
     {
@@ -105,11 +105,10 @@ final class JTLApi
 
         if (\count($oNewerVersions) > 0) {
             return $oNewerVersions;
-        } else {
-            $oVersion = \end($oVersions);
-
-            return Version::parse($oVersion->reference);
         }
+        $oVersion = \end($oVersions);
+
+        return Version::parse($oVersion->reference);
     }
 
     /**

@@ -16,15 +16,15 @@ use Filter\ProductFilter;
 class None extends AbstractSortingOption
 {
     /**
-     * SortDefault constructor.
+     * None constructor.
      * @param ProductFilter $productFilter
      */
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->orderBy = '';
+        $this->setOrderBy('');
         $this->setName('');
         $this->setPriority(-1);
-        $this->setValue(SEARCH_SORT_NONE);
+        $this->setValue(\SEARCH_SORT_NONE);
     }
 }

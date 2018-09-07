@@ -261,7 +261,7 @@ class MigrationManager
         $migrations = array_keys($this->getMigrations());
 
         return array_udiff($migrations, $executed, function ($a, $b) {
-            return strcmp($a, $b);
+            return strcmp((string)$a, (string)$b);
         });
     }
 

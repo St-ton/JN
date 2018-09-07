@@ -246,7 +246,7 @@ class CheckBox
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oCheckBoxTMP_arr as $oCheckBoxTMP) {
-            $oCheckBox_arr[] = new self($oCheckBoxTMP->kCheckBox, $bSprache);
+            $oCheckBox_arr[] = new self((int)$oCheckBoxTMP->kCheckBox, $bSprache);
         }
         executeHook(HOOK_CHECKBOX_CLASS_GETCHECKBOXFRONTEND, [
             'oCheckBox_arr' => &$oCheckBox_arr,

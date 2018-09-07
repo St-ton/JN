@@ -168,7 +168,7 @@ interface DbInterface extends \Serializable
      * @param string|array $values
      * @param string       $select
      * @param string       $orderBy
-     * @param string       $limit
+     * @param string|int   $limit
      * @return array
      * @throws \InvalidArgumentException
      */
@@ -178,7 +178,7 @@ interface DbInterface extends \Serializable
         $values,
         string $select = '*',
         string $orderBy = '',
-        string $limit = ''
+        $limit = ''
     );
 
     /**
@@ -187,7 +187,7 @@ interface DbInterface extends \Serializable
      * @param string|int|array $values
      * @param string           $select
      * @param string           $orderBy
-     * @param string           $limit
+     * @param string|int       $limit
      * @return array
      */
     public function selectAll(
@@ -196,7 +196,7 @@ interface DbInterface extends \Serializable
         $values,
         string $select = '*',
         string $orderBy = '',
-        string $limit = ''
+        $limit = ''
     );
 
     /**

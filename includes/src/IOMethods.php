@@ -637,7 +637,7 @@ class IOMethods
             $oArtikelOptionen->nKeinLagerbestandBeachten = 1;
 
             $oTestArtikel->fuelleArtikel(
-                $oTMPArtikel->kArtikel,
+                (int)$oTMPArtikel->kArtikel,
                 $oArtikelOptionen,
                 Kundengruppe::getCurrent(),
                 Shop::getLanguage()

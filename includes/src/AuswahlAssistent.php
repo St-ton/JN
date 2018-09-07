@@ -150,7 +150,7 @@ class AuswahlAssistent
             $this->oFrage_arr = [];
 
             foreach ($questionIDs as $questionID) {
-                $question                                = new AuswahlAssistentFrage($questionID->id);
+                $question                                = new AuswahlAssistentFrage((int)$questionID->id);
                 $this->oFrage_arr[]                      = $question;
                 $this->oFrage_assoc[$question->kMerkmal] = $question;
             }

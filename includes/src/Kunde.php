@@ -429,10 +429,9 @@ class Kunde
             foreach ($members as $member) {
                 $this->$member = $obj->$member;
             }
-            // Anrede mappen
+            $this->kSprache         = (int)$this->kSprache;
             $this->cAnredeLocalized = self::mapSalutation($this->cAnrede, $this->kSprache);
             $this->angezeigtesLand  = Sprache::getCountryCodeByCountryName($this->cLand);
-            //$this->cLand = landISO($this->cLand);
             $this->holeKundenattribute()->entschluesselKundendaten();
             $this->kKunde         = (int)$this->kKunde;
             $this->kKundengruppe  = (int)$this->kKundengruppe;

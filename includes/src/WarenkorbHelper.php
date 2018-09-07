@@ -740,7 +740,7 @@ class WarenkorbHelper
         // Abnahmeintervall
         if ($product->fAbnahmeintervall > 0) {
             $dVielfache = function_exists('bcdiv')
-                ? round($product->fAbnahmeintervall * ceil(bcdiv($qty, $product->fAbnahmeintervall, $accuracy + 1)), 2)
+                ? round($product->fAbnahmeintervall * ceil(bcdiv((string)$qty, $product->fAbnahmeintervall, $accuracy + 1)), 2)
                 : round($product->fAbnahmeintervall * ceil($qty / $product->fAbnahmeintervall), $accuracy);
             if ($dVielfache != $qty) {
                 $redirectParam[] = R_ARTIKELABNAHMEINTERVALL;
@@ -1847,7 +1847,7 @@ class WarenkorbHelper
                 $oXselling->Kauf->Artikel = [];
                 $defaultOptions           = Artikel::getDefaultOptions();
                 foreach ($oXsellkauf_arr as $oXsellkauf) {
-                    $oArtikel = (new Artikel())->fuelleArtikel($oXsellkauf->kXSellArtikel, $defaultOptions);
+                    $oArtikel = (new Artikel())->fuelleArtikel((int)$oXsellkauf->kXSellArtikel, $defaultOptions);
                     if ($oArtikel !== null && $oArtikel->kArtikel > 0 && $oArtikel->aufLagerSichtbarkeit()) {
                         $oXselling->Kauf->Artikel[] = $oArtikel;
                     }
@@ -1891,7 +1891,7 @@ class WarenkorbHelper
             );
 
             foreach ($giftsTmp as $gift) {
-                $oArtikel = (new Artikel())->fuelleArtikel($gift->kArtikel, Artikel::getDefaultOptions());
+                $oArtikel = (new Artikel())->fuelleArtikel((int)$gift->kArtikel, Artikel::getDefaultOptions());
                 if ($oArtikel !== null
                     && ($oArtikel->kEigenschaftKombi > 0
                         || !is_array($oArtikel->Variationen)

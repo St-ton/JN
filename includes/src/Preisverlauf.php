@@ -71,7 +71,7 @@ class Preisverlauf
             $dt        = new DateTime();
             foreach ($obj_arr as &$_pv) {
                 if (isset($_pv->timestamp)) {
-                    $dt->setTimestamp($_pv->timestamp);
+                    $dt->setTimestamp((int)$_pv->timestamp);
                     $_pv->date   = $dt->format('d.m.');
                     $_pv->fPreis = Session::CustomerGroup()->isMerchant()
                         ? round($_pv->fVKNetto * $_currency->getConversionFactor(), 2)

@@ -654,7 +654,7 @@ class PaymentMethod
     public function sendMail($kBestellung, $nType, $oAdditional = null)
     {
         $oOrder = new Bestellung($kBestellung);
-        $oOrder->fuelleBestellung(0);
+        $oOrder->fuelleBestellung(false);
         $oCustomer = new Kunde($oOrder->kKunde);
         $oMail     = new stdClass();
 

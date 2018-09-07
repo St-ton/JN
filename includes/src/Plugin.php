@@ -744,7 +744,7 @@ class Plugin
             }
             foreach ($plugins as $plugin) {
                 if ($plugin->cPluginID === $cPluginID) {
-                    return new self($plugin->kPlugin);
+                    return new self((int)$plugin->kPlugin);
                 }
             }
         }

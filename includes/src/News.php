@@ -556,7 +556,7 @@ class News extends MainModel
         $level++;
         foreach ($newsCats as $newsCat) {
             if ((int)$newsCat->kParent === $parentId) {
-                $children = self::buildNewsCategoryTree($newsCats, $newsCat->kNewsKategorie, $level);
+                $children = self::buildNewsCategoryTree($newsCats, (int)$newsCat->kNewsKategorie, $level);
                 if ($children) {
                     $newsCat->children = $children;
                 }

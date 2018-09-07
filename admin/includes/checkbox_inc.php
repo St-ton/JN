@@ -113,6 +113,7 @@ function speicherCheckBox($cPost_arr, $oSprache_arr)
     }
 
     $oCheckBox->insertDB($cTextAssoc_arr, $cBeschreibungAssoc_arr);
+    Shop::Container()->getCache()->flushTags(['checkbox']);
 
     return $oCheckBox;
 }

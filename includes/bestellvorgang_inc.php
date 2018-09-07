@@ -2533,8 +2533,9 @@ function getKundendaten($post, $kundenaccount, $htmlentities = 1)
         }
     }
 
-    $customer->dGeburtstag     = DateHelper::convertDateToMysqlStandard($customer->dGeburtstag);
-    $customer->angezeigtesLand = Sprache::getCountryCodeByCountryName($customer->cLand);
+    $customer->dGeburtstag           = DateHelper::convertDateToMysqlStandard($customer->dGeburtstag);
+    $customer->dGeburtstag_formatted = DateTime::createFromFormat('Y-m-d', $customer->dGeburtstag)->format('d.m.Y');
+    $customer->angezeigtesLand       = Sprache::getCountryCodeByCountryName($customer->cLand);
     if (!empty($customer->cBundesland)) {
         $oISO = Staat::getRegionByIso($customer->cBundesland, $customer->cLand);
         if (is_object($oISO)) {
@@ -2618,43 +2619,26 @@ function getNonEditableCustomerFields(): array
  */
 function getLieferdaten($post)
 {
+    $post = StringHandler::filterXSS($post);
     //erstelle neue Lieferadresse
     $shippingAddress                  = new Lieferadresse();
-    $shippingAddress->cAnrede         = StringHandler::filterXSS($post['anrede'] ?? null);
-    $shippingAddress->cVorname        = StringHandler::filterXSS($post['vorname']);
-    $shippingAddress->cNachname       = StringHandler::filterXSS($post['nachname']);
-    $shippingAddress->cStrasse        = StringHandler::filterXSS($post['strasse']);
-    $shippingAddress->cHausnummer     = StringHandler::filterXSS($post['hausnummer']);
-    $shippingAddress->cPLZ            = StringHandler::filterXSS($post['plz']);
-    $shippingAddress->cOrt            = StringHandler::filterXSS($post['ort']);
-    $shippingAddress->cLand           = StringHandler::filterXSS($post['land']);
-    $shippingAddress->cMail           = isset($post['email'])
-        ? StringHandler::filterXSS($post['email'])
-        : '';
-    $shippingAddress->cTel            = isset($post['tel'])
-        ? StringHandler::filterXSS($post['tel'])
-        : null;
-    $shippingAddress->cFax            = isset($post['fax'])
-        ? StringHandler::filterXSS($post['fax'])
-        : null;
-    $shippingAddress->cFirma          = isset($post['firma'])
-        ? StringHandler::filterXSS($post['firma'])
-        : null;
-    $shippingAddress->cZusatz         = isset($post['firmazusatz'])
-        ? StringHandler::filterXSS($post['firmazusatz'])
-        : null;
-    $shippingAddress->cTitel          = isset($post['titel'])
-        ? StringHandler::filterXSS($post['titel'])
-        : null;
-    $shippingAddress->cAdressZusatz   = isset($post['adresszusatz'])
-        ? StringHandler::filterXSS($post['adresszusatz'])
-        : null;
-    $shippingAddress->cMobil          = isset($post['mobil'])
-        ? StringHandler::filterXSS($post['mobil'])
-        : null;
-    $shippingAddress->cBundesland     = isset($post['bundesland'])
-        ? StringHandler::filterXSS($post['bundesland'])
-        : null;
+    $shippingAddress->cAnrede         = $post['anrede'] ?? null;
+    $shippingAddress->cVorname        = $post['vorname'];
+    $shippingAddress->cNachname       = $post['nachname'];
+    $shippingAddress->cStrasse        = $post['strasse'];
+    $shippingAddress->cHausnummer     = $post['hausnummer'];
+    $shippingAddress->cPLZ            = $post['plz'];
+    $shippingAddress->cOrt            = $post['ort'];
+    $shippingAddress->cLand           = $post['land'];
+    $shippingAddress->cMail           = $post['email'] ?? '';
+    $shippingAddress->cTel            = $post['tel'] ?? null;
+    $shippingAddress->cFax            = $post['fax'] ?? null;
+    $shippingAddress->cFirma          = $post['firma'] ?? null;
+    $shippingAddress->cZusatz         = $post['firmazusatz'] ?? null;
+    $shippingAddress->cTitel          = $post['titel'] ?? null;
+    $shippingAddress->cAdressZusatz   = $post['adresszusatz'] ?? null;
+    $shippingAddress->cMobil          = $post['mobil'] ?? null;
+    $shippingAddress->cBundesland     = $post['bundesland'] ?? null;
     $shippingAddress->angezeigtesLand = Sprache::getCountryCodeByCountryName($shippingAddress->cLand);
 
     if (!empty($shippingAddress->cBundesland)) {

@@ -9,7 +9,7 @@
  */
 class Migration_20180907143600 extends Migration implements IMigration
 {
-    protected $author      = 'ms';
+    protected $author      = 'fm';
     protected $description = 'update cUnique fields';
 
     /**

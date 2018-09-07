@@ -116,16 +116,6 @@ class Notification implements IteratorAggregate, Countable
             );
         }
 
-        if ($status->hasDifferentTemplateVersion()) {
-            $this->add(
-                NotificationEntry::TYPE_WARNING,
-                'Template',
-                'Ihre Template-Version unterscheidet sich von Ihrer Shop-Version.<br />' .
-                    'Weitere Hilfe zu Template-Updates finden Sie im <i class="fa fa-external-link"></i> Wiki',
-                'shoptemplate.php'
-            );
-        }
-
         if ($status->hasMobileTemplateIssue()) {
             $this->add(
                 NotificationEntry::TYPE_INFO,

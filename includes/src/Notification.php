@@ -222,13 +222,23 @@ class Notification implements IteratorAggregate, Countable
             );
         }
 
-        if ($status->needPasswordRehash2FA()) {
+        try {
+            if ($status->needPasswordRehash2FA()) {
+                $this->add(
+                    NotificationEntry::TYPE_DANGER,
+                    'Benutzerverwaltung',
+                    'Der Algorithmus zur Passwortspeicherung hat sich geändert.<br/>' .
+                    'Bitte erzeugen Sie neue Notfall-Codes für die Zwei-Faktor-Authentifizierung.',
+                    'benutzerverwaltung.php'
+                );
+            }
+        } catch (Exception $e) {
             $this->add(
                 NotificationEntry::TYPE_DANGER,
-                'Benutzerverwaltung',
-                'Der Algorithmus zur Passwortspeicherung hat sich geändert.<br/>' .
-                    'Bitte erzeugen Sie neue Notfall-Codes für die Zwei-Faktor-Authentifizierung.',
-                'benutzerverwaltung.php'
+                'Datenbank-Update',
+                'Die Methode needPasswordRehash2FA hat eine Exception geworfen.<br/>' .
+                'Bitte führen Sie die Migration 20170306130802_create_emergency_code_table aus.',
+                'dbupdater.php'
             );
         }
 

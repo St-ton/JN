@@ -1401,6 +1401,7 @@ class ArtikelHelper
                         AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND tartikel.kArtikel = tkategorieartikel.kArtikel
+                        AND tartikel.kVaterArtikel = 0
                         AND tkategorieartikel.kKategorie = ' . $categoryID . '
                         AND tpreise.kArtikel = tartikel.kArtikel
                         AND tartikel.kArtikel < ' . $productID . '
@@ -1417,6 +1418,7 @@ class ArtikelHelper
                         AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND tartikel.kArtikel = tkategorieartikel.kArtikel
+                        AND tartikel.kVaterArtikel = 0
                         AND tkategorieartikel.kKategorie = ' . $categoryID . '
                         AND tpreise.kArtikel = tartikel.kArtikel
                         AND tartikel.kArtikel > ' . $productID . '

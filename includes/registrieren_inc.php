@@ -220,6 +220,11 @@ function kundeSpeichern(array $cPost_arr)
             $_SESSION['checkout.fehlendeAngaben'] = $fehlendeAngaben;
             $_SESSION['checkout.cPost_arr']       = $cPost_arr;
 
+            //keep shipping address on error
+            if (isset($cPost_arr['register']['shipping_address'])) {
+                $_SESSION['Lieferadresse'] = getLieferdaten($cPost_arr['register']['shipping_address']);
+            }
+
             header('Location: ' . Shop::Container()->getLinkService()
                                       ->getStaticRoute('bestellvorgang.php', true) . '?reg=1', true, 303);
             exit;

@@ -46,7 +46,7 @@ function pruefeVersandartWahl($Versandart, $aFormValues = 0, $bMsg = true)
  */
 function pruefeUnregistriertBestellen($cPost_arr)
 {
-    global $step, $Kunde;
+    global $step, $Kunde, $Lieferadresse;
     unset($_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['Zahlungsart']);
     $cart = Session::Cart();
     $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
@@ -115,6 +115,16 @@ function pruefeUnregistriertBestellen($cPost_arr)
 
         return 1;
     }
+    //keep shipping address on error
+    if (isset($cPost_arr['register']['shipping_address'])) {
+        $_SESSION['Bestellung']                 = $_SESSION['Bestellung'] ?? new stdClass();
+        $_SESSION['Bestellung']->kLieferadresse = isset($cPost_arr['kLieferadresse'])
+            ? (int)$cPost_arr['kLieferadresse']
+            : -1;
+        $Lieferadresse                          = getLieferdaten($cPost_arr['register']['shipping_address']);
+        $_SESSION['Lieferadresse']              = $Lieferadresse;
+    }
+
     setzeFehlendeAngaben($fehlendeAngaben);
     Shop::Smarty()->assign('cKundenattribut_arr', $cKundenattribut_arr)
         ->assign('cPost_var', StringHandler::filterXSS($cPost_arr));
@@ -361,9 +371,11 @@ function pruefeLieferadresseStep($cGet_arr)
         unset($_SESSION['checkout.shippingAddress.fehlendeAngaben']);
         $step = 'Lieferadresse';
     }
-    if (pruefeFehlendeAngaben('shipping_address')) {
+    if (isset($_SESSION['Lieferadresse'])) {
         $Lieferadresse = $_SESSION['Lieferadresse'];
-        $step          = 'Lieferadresse';
+    }
+    if (pruefeFehlendeAngaben('shipping_address')) {
+        $step = 'Lieferadresse';
     }
 }
 

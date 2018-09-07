@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense

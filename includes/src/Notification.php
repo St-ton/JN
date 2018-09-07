@@ -235,10 +235,10 @@ class Notification implements IteratorAggregate, Countable
         } catch (Exception $e) {
             $this->add(
                 NotificationEntry::TYPE_DANGER,
-                'Benutzerverwaltung',
+                'Datenbank-Update',
                 'Die Methode needPasswordRehash2FA hat eine Exception geworfen.<br/>' .
                 'Bitte führen Sie die Migration 20170306130802_create_emergency_code_table aus.',
-                'benutzerverwaltung.php'
+                'dbupdater.php'
             );
         }
 

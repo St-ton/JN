@@ -5716,10 +5716,10 @@ class Artikel
             Shop::set(
                 'checkCategoryDiscount',
                 Shop::Container()->getDB()->query(
-                    'SELECT kArtikel 
+                    'SELECT COUNT(kArtikel) AS cnt 
                           FROM tartikelkategorierabatt',
-                    \DB\ReturnType::AFFECTED_ROWS
-                ) > 0
+                    \DB\ReturnType::SINGLE_OBJECT
+                )->cnt > 0
             );
         }
         // Existiert für diese Kundengruppe ein Kategorierabatt?

@@ -6,7 +6,6 @@
 
 namespace Filter;
 
-
 use Filter\Items\Attribute;
 use Filter\Items\Category;
 use Filter\Items\Manufacturer;

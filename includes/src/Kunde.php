@@ -555,8 +555,8 @@ class Kunde
     public function updateInDB(): int
     {
         $this->dGeburtstag           = DateHelper::convertDateToMysqlStandard($this->dGeburtstag);
-        $this->dGeburtstag_formatted = $this->dGeburtstag === null
-            ? '_DBNULL_'
+        $this->dGeburtstag_formatted = $this->dGeburtstag === '_DBNULL_'
+            ? ''
             : DateTime::createFromFormat('Y-m-d', $this->dGeburtstag)->format('d.m.Y');
 
         $this->verschluesselKundendaten();

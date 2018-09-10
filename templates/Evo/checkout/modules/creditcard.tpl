@@ -2,7 +2,7 @@
     {if isset($fehlendeAngaben)}
         <div class="alert alert-danger">{lang key='invadivdDataWarning' section=''}</div>
     {else}
-        <div class="alert alert-info">{lang key='yourDataDesc' section='account data'}</div>
+        <div class="alert alert-info">{lang key='mandatoryFieldNotification' section='errorMessages'}</div>
     {/if}
 </fieldset>
 <fieldset id="payment_creditcard">

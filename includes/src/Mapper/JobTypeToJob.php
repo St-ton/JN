@@ -6,7 +6,6 @@
 
 namespace Mapper;
 
-
 use Cron\JobInterface;
 use Cron\Jobs\Export;
 use Cron\Jobs\Newsletter;

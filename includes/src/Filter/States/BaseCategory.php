@@ -6,7 +6,6 @@
 
 namespace Filter\States;
 
-
 use DB\ReturnType;
 use Filter\AbstractFilter;
 use Filter\Join;

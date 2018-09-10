@@ -6,7 +6,6 @@
 
 namespace Filter;
 
-
 use Session\Session;
 
 /**

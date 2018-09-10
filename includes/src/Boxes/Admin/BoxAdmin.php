@@ -6,7 +6,6 @@
 
 namespace Boxes\Admin;
 
-
 use Boxes\Type;
 use DB\DbInterface;
 use DB\ReturnType;

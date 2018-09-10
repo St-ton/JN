@@ -6,7 +6,6 @@
 
 namespace Filter\Pagination;
 
-
 use Filter\ProductFilter;
 
 /**

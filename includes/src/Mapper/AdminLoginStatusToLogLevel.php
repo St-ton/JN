@@ -6,7 +6,6 @@
 
 namespace Mapper;
 
-
 use Monolog\Logger;
 
 /**

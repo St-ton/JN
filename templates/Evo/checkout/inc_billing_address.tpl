@@ -2,6 +2,8 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
+{if isset($billingAddress)}{assign var='Kunde' value=$billingAddress}{/if}
+
 {if $Kunde->cFirma}
     {$Kunde->cFirma}
     <br />

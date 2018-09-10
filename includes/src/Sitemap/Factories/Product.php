@@ -1,0 +1,104 @@
+<?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license       http://jtl-url.de/jtlshoplicense
+ */
+
+namespace Sitemap\Factories;
+
+use function Functional\first;
+use Tightenco\Collect\Support\Collection;
+
+/**
+ * Class Product
+ * @package Sitemap\Generators
+ */
+class Product extends AbstractGenerator
+{
+    /**
+     * @inheritdoc
+     */
+    public function getCollection(array $languages, array $customerGroups): Collection
+    {
+        $imageBaseURL            = \Shop::getImageBaseURL();
+        $collection              = new Collection();
+        $defaultCustomerGroupID  = first($customerGroups);
+        $defaultLang             = \Sprache::getDefaultLanguage(true);
+        $defaultLangID           = (int)$defaultLang->kSprache;
+        $_SESSION['kSprache']    = $defaultLangID;
+        $_SESSION['cISOSprache'] = $defaultLang->cISO;
+        $andWhere                = '';
+        // Kindartikel?
+        if ($this->config['sitemap']['sitemap_varkombi_children_export'] !== 'Y') {
+            $andWhere .= ' AND tartikel.kVaterArtikel = 0';
+        }
+        // Artikelanzeigefilter
+        if ((int)$this->config['global']['artikel_artikelanzeigefilter'] === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) {
+            // 'Nur Artikel mit Lagerbestand>0 anzeigen'
+            $andWhere .= " AND (tartikel.cLagerBeachten = 'N' OR tartikel.fLagerbestand > 0)";
+        } elseif ((int)$this->config['global']['artikel_artikelanzeigefilter'] === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) {
+            // 'Nur Artikel mit Lagerbestand>0 oder deren Lagerbestand<0 werden darf'
+            $andWhere .= " AND (tartikel.cLagerBeachten = 'N' 
+                            OR tartikel.cLagerKleinerNull = 'Y' 
+                            OR tartikel.fLagerbestand > 0)";
+        }
+        // Artikel sonstige Sprachen
+        foreach ($languages as $SpracheTMP) {
+            if ($SpracheTMP->kSprache === $defaultLangID) {
+                $res = $this->db->queryPrepared(
+                    "SELECT tartikel.kArtikel, tartikel.dLetzteAktualisierung, tseo.cSeo
+                        FROM tartikel
+                            LEFT JOIN tartikelsichtbarkeit 
+                                ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                                AND tartikelsichtbarkeit.kKundengruppe = :kGrpID 
+                            LEFT JOIN tseo 
+                                ON tseo.cKey = 'kArtikel'
+                                AND tseo.kKey = tartikel.kArtikel
+                                AND tseo.kSprache = :langID
+                        WHERE tartikelsichtbarkeit.kArtikel IS NULL" . $andWhere,
+                    [
+                        'kGrpID' => $defaultCustomerGroupID,
+                        'langID' => $defaultLangID
+                    ],
+                    \DB\ReturnType::QUERYSINGLE
+                );
+            } else {
+                $res = $this->db->queryPrepared(
+                    "SELECT tartikel.kArtikel, tartikel.dLetzteAktualisierung, tseo.cSeo
+                        FROM tartikelsprache
+                            JOIN tartikel
+                            ON tartikel.kArtikel = tartikelsprache.kArtikel
+                        JOIN tseo 
+                            ON tseo.cKey = 'kArtikel'
+                            AND tseo.kKey = tartikel.kArtikel
+                            AND tseo.kSprache = :langID
+                        LEFT JOIN tartikelsichtbarkeit 
+                            ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                            AND tartikelsichtbarkeit.kKundengruppe = :kGrpID
+                        WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                            AND tartikel.kVaterArtikel = 0 
+                            AND tartikelsprache.kSprache = :langID
+                        ORDER BY tartikel.kArtikel",
+                    [
+                        'kGrpID' => $defaultCustomerGroupID,
+                        'langID' => $SpracheTMP->kSprache
+                    ],
+                    \DB\ReturnType::QUERYSINGLE
+                );
+            }
+
+            while (($product = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
+                $item = new \Sitemap\Items\Product($this->config);
+                $item->generateData($product, $imageBaseURL);
+                $collection->push($item);
+            }
+        }
+
+        return $collection;
+    }
+
+    private function generateItem()
+    {
+
+    }
+}

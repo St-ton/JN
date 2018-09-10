@@ -791,7 +791,7 @@ class NiceDB implements DbInterface
         $values,
         string $select = '*',
         string $orderBy = '',
-        string $limit = ''
+        $limit = ''
     )
     {
         $this->validateEntityName($tableName);
@@ -837,7 +837,7 @@ class NiceDB implements DbInterface
         $values,
         string $select = '*',
         string $orderBy = '',
-        string $limit = ''
+        $limit = ''
     )
     {
         return $this->selectArray($tableName, $keys, $values, $select, $orderBy, $limit);

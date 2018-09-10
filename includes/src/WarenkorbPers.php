@@ -253,11 +253,11 @@ class WarenkorbPers
         if ($oWarenkorbPers === false || $oWarenkorbPers === null) {
             return $this;
         }
-        $this->kWarenkorbPers = $oWarenkorbPers->kWarenkorbPers ?? null;
-        $this->kKunde         = $oWarenkorbPers->kKunde ?? 0;
+        $this->kWarenkorbPers = (int)$oWarenkorbPers->kWarenkorbPers;
+        $this->kKunde         = (int)$oWarenkorbPers->kKunde;
         $this->dErstellt      = $oWarenkorbPers->dErstellt ?? null;
 
-        if ($this->kWarenkorbPers === null || $this->kWarenkorbPers <= 0) {
+        if ($this->kWarenkorbPers <= 0) {
             return $this;
         }
         // Hole alle Positionen für eine WarenkorbPers
@@ -279,6 +279,11 @@ class WarenkorbPers
         }
         // Hole alle Eigenschaften für eine Position
         foreach ($cartPositions as $posData) {
+            $posData->kWarenkorbPersPos = (int)$posData->kWarenkorbPersPos;
+            $posData->kWarenkorbPers    = (int)$posData->kWarenkorbPers;
+            $posData->kArtikel          = (int)$posData->kArtikel;
+            $posData->kKonfigitem       = (int)$posData->kKonfigitem;
+            $posData->nPosTyp           = (int)$posData->nPosTyp;
             $cartPos = new WarenkorbPersPos(
                 $posData->kArtikel,
                 $posData->cArtikelName,
@@ -295,18 +300,18 @@ class WarenkorbPers
             $cartPos->dHinzugefuegt     = $posData->dHinzugefuegt;
             $cartPos->dHinzugefuegt_de  = $posData->dHinzugefuegt_de;
 
-            $oWarenkorbPersPosEigenschaft_arr = Shop::Container()->getDB()->selectAll(
+            $attributes = Shop::Container()->getDB()->selectAll(
                 'twarenkorbpersposeigenschaft',
                 'kWarenkorbPersPos', (int)$posData->kWarenkorbPersPos
             );
-            foreach ($oWarenkorbPersPosEigenschaft_arr as $oWarenkorbPersPosEigenschaftTMP) {
+            foreach ($attributes as $attribute) {
                 $oWarenkorbPersPosEigenschaft = new WarenkorbPersPosEigenschaft(
-                    $oWarenkorbPersPosEigenschaftTMP->kEigenschaft,
-                    $oWarenkorbPersPosEigenschaftTMP->kEigenschaftWert,
-                    $oWarenkorbPersPosEigenschaftTMP->cFreifeldWert ?? null,
-                    $oWarenkorbPersPosEigenschaftTMP->cEigenschaftName,
-                    $oWarenkorbPersPosEigenschaftTMP->cEigenschaftWertName,
-                    $oWarenkorbPersPosEigenschaftTMP->kWarenkorbPersPos
+                    (int)$attribute->kEigenschaft,
+                    (int)$attribute->kEigenschaftWert,
+                    $attribute->cFreifeldWert ?? null,
+                    $attribute->cEigenschaftName,
+                    $attribute->cEigenschaftWertName,
+                    (int)$attribute->kWarenkorbPersPos
                 );
                 $cartPos->oWarenkorbPersPosEigenschaft_arr[] = $oWarenkorbPersPosEigenschaft;
             }

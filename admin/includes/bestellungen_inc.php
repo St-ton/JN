@@ -26,7 +26,7 @@ function gibBestellungsUebersicht($cLimitSQL, $cSuchFilter): array
     foreach ($oBestellungToday_arr as $oBestellungToday) {
         if (isset($oBestellungToday->kBestellung) && $oBestellungToday->kBestellung > 0) {
             $oBestellung = new Bestellung($oBestellungToday->kBestellung);
-            $oBestellung->fuelleBestellung(1, 0, false);
+            $oBestellung->fuelleBestellung(true, 0, false);
             $oBestellung_arr[] = $oBestellung;
         }
     }

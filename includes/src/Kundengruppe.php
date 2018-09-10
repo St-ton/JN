@@ -154,7 +154,7 @@ class Kundengruppe
                  ->setDiscount($oObj->fRabatt)
                  ->setDefault($oObj->cStandard)
                  ->setShopLogin($oObj->cShopLogin)
-                 ->setIsMerchant($oObj->nNettoPreise);
+                 ->setIsMerchant((int)$oObj->nNettoPreise);
         }
 
         return $this;

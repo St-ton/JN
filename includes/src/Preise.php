@@ -577,10 +577,10 @@ class Preise
      */
     public static function getLocalizedPriceString($price, $currency = 0, bool $html = true, int $decimals = 2): string
     {
-        if ($currency === 0 || is_numeric($currency)) {
+        if ($currency === 0 || is_bool($currency) || is_numeric($currency)) {
             $currency = Session::Currency();
-        } elseif (get_class($currency) === 'stdClass') {
-            $currency = new Currency($currency->kWaehrung);
+        } elseif (is_object($currency) && get_class($currency) === 'stdClass') {
+            $currency = new Currency((int)$currency->kWaehrung);
         }
         $localized    = number_format(
             $price * $currency->getConversionFactor(),

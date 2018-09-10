@@ -416,6 +416,10 @@ class Kategorie
                     $this->$member = $obj->$member;
                 }
             }
+            $this->kKategorie     = (int)$this->kKategorie;
+            $this->kOberKategorie = (int)$this->kOberKategorie;
+            $this->nSort          = (int)$this->nSort;
+            $this->kSprache       = (int)$this->kSprache;
         }
 
         return $this;

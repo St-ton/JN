@@ -581,7 +581,7 @@ class TrustedShops
         }
 
         if ($this->dChecked === null || $bForce) {
-            ini_set('soap.wsdl_cache_enabled', 1);
+            ini_set('soap.wsdl_cache_enabled', '1');
 
             $wsdlUrl = TS_SERVER;
             $cTSID   = $this->tsId;

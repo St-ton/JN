@@ -465,38 +465,59 @@ function buildConfiguration($aValues)
 }
 
 /**
- * @param int   $kArtikel
- * @param array $kEigenschaftWert_arr
- * @return null|object
+ * @param int        $productID
+ * @param array|null $selectedVariationValues
+ * @return object
  */
-function getArticleStockInfo($kArtikel, $kEigenschaftWert_arr)
+function getArticleStockInfo($productID, $selectedVariationValues = null)
 {
-    $oTMPArtikel = getArticleByVariations($kArtikel, $kEigenschaftWert_arr);
+    $result = (object)[
+        'stock'  => false,
+        'status' => 0,
+        'text'   => '',
+    ];
 
-    if (isset($oTMPArtikel->kArtikel) && $oTMPArtikel->kArtikel > 0) {
-        $oTestArtikel                                = new Artikel();
-        $oArtikelOptionen                            = new stdClass();
-        $oArtikelOptionen->nMain                     = 0;
-        $oArtikelOptionen->nWarenlager               = 0;
-        $oArtikelOptionen->nVariationKombi           = 0;
-        $oArtikelOptionen->nKeinLagerbestandBeachten = 1;
+    if ($selectedVariationValues !== null) {
+        $products = getArticleByVariations($productID, $selectedVariationValues);
 
-        $oTestArtikel->fuelleArtikel(
-            $oTMPArtikel->kArtikel,
-            $oArtikelOptionen,
+        if (count($products) === 1) {
+            $productID = $products[0]->kArtikel;
+        } else {
+            return $result;
+        }
+    }
+
+    if ($productID > 0) {
+        $product = new Artikel();
+        $options = (object)[
+            'nMain'                     => 0,
+            'nWarenlager'               => 0,
+            'nVariationKombi'           => 0,
+            'nVariationen'              => 0,
+            'nKeinLagerbestandBeachten' => 1,
+        ];
+
+        $product->fuelleArtikel(
+            $productID,
+            $options,
             Kundengruppe::getCurrent(),
             $_SESSION['kSprache']
         );
-        $oTestArtikel->Lageranzeige->AmpelText = utf8_encode($oTestArtikel->Lageranzeige->AmpelText);
 
-        return (object)[
-            'stock'  => $oTestArtikel->aufLagerSichtbarkeit(),
-            'status' => $oTestArtikel->Lageranzeige->nStatus,
-            'text'   => $oTestArtikel->Lageranzeige->AmpelText
-        ];
+        $stockInfo = $product->getStockInfo();
+
+        if ($stockInfo->notExists || !$stockInfo->inStock) {
+            $result->stock = false;
+            $result->text  = utf8_encode($stockInfo->notExists ? Shop::Lang()->get('notAvailableInSelection') : Shop::Lang()->get('ampelRot'));
+        } else {
+            $result->stock = true;
+            $result->text  = '';
+        }
+
+        $result->status = $product->Lageranzeige->nStatus;
     }
 
-    return null;
+    return $result;
 }
 
 /**
@@ -719,9 +740,10 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
 
         // Alle EigenschaftWerte vorhanden, Kind-Artikel ermitteln
         if (count($kGesetzteEigeschaftWert_arr) >= $oArtikel->nVariationOhneFreifeldAnzahl) {
-            $oArtikelTMP = getArticleByVariations($kVaterArtikel, $kGesetzteEigeschaftWert_arr);
+            $products = getArticleByVariations($kVaterArtikel, $kGesetzteEigeschaftWert_arr);
 
-            if ($oArtikelTMP !== null && $kArtikelKind !== (int)$oArtikelTMP->kArtikel) {
+            if (count($products) === 1 && $kArtikelKind !== (int)$products[0]->kArtikel) {
+                $oArtikelTMP                  = $products[0];
                 $oGesetzteEigeschaftWerte_arr = [];
                 foreach ($kFreifeldEigeschaftWert_arr as $cKey => $cValue) {
                     $oGesetzteEigeschaftWerte_arr[] = (object)[
@@ -750,24 +772,61 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
         }
 
         $objResponse->jsfunc('$.evo.article().variationDisableAll', $wrapper);
-
         $nPossibleVariations = $oArtikel->getVariationsBySelection($kGesetzteEigeschaftWert_arr, false);
+        $checkStockInfo      = count($kGesetzteEigeschaftWert_arr) > 0 && (count($kGesetzteEigeschaftWert_arr) === count($nPossibleVariations) - 1);
+        $stockInfo           = (object)[
+            'stock'  => true,
+            'status' => 2,
+            'text'   => '',
+        ];
 
-        foreach ($nPossibleVariations as $k => $values) {
-            foreach ($values as $v) {
-                $objResponse->jsfunc('$.evo.article().variationEnable', $k, $v, $wrapper);
-            }
-        }
+        foreach ($oArtikel->Variationen as $variation) {
+            if (in_array($variation->cTyp, ['FREITEXT', 'PFLICHTFREITEXT'])) {
+                $objResponse->jsfunc('$.evo.article().variationEnable', $variation->kEigenschaft, 0, $wrapper);
+            } else {
+                foreach ($variation->Werte as $value) {
+                    $stockInfo->stock = true;
+                    $stockInfo->text = '';
 
-        foreach ($kGesetzteEigeschaftWert_arr as $key => $value) {
-            $escaped = addslashes($value);
-            $objResponse->jsfunc('$.evo.article().variationActive', $key, $escaped, null, $wrapper);
-        }
+                    if (isset($nPossibleVariations[$value->kEigenschaft])
+                        && in_array($value->kEigenschaftWert, $nPossibleVariations[$value->kEigenschaft])) {
+                        $objResponse->jsfunc('$.evo.article().variationEnable', $value->kEigenschaft, $value->kEigenschaftWert, $wrapper);
 
-        foreach ($nInvalidVariations as $k => $values) {
-            foreach ($values as $v) {
-                $text = utf8_encode(Shop::Lang()->get('notAvailableInSelection'));
-                $objResponse->jsfunc('$.evo.article().variationInfo', $v, -1, $text);
+                        if ($checkStockInfo && !array_key_exists($value->kEigenschaft, $kGesetzteEigeschaftWert_arr)) {
+                            $kGesetzteEigeschaftWert_arr[$value->kEigenschaft] = $value->kEigenschaftWert;
+
+                            $products = getArticleByVariations($kVaterArtikel, $kGesetzteEigeschaftWert_arr);
+                            if (count($products) === 1) {
+                                $stockInfo = getArticleStockInfo((int)$products[0]->kArtikel);
+                            }
+                            unset($kGesetzteEigeschaftWert_arr[$value->kEigenschaft]);
+                        }
+                    } else {
+                        $stockInfo->stock  = false;
+                        $stockInfo->status = 0;
+                        $stockInfo->text   = utf8_encode(Shop::Lang()->get('notAvailableInSelection'));
+                    }
+                    if ($value->notExists || !$value->inStock) {
+                        $stockInfo->stock  = false;
+                        $stockInfo->status = 0;
+                        $stockInfo->text   = utf8_encode($value->notExists ? Shop::Lang()->get('notAvailableInSelection')
+                            : Shop::Lang()->get('ampelRot'));
+                    }
+                    if (!$stockInfo->stock) {
+                        $objResponse->jsfunc('$.evo.article().variationInfo', $value->kEigenschaftWert, $stockInfo->status,
+                            $stockInfo->text);
+                    }
+                }
+
+                if (isset($kGesetzteEigeschaftWert_arr[$variation->kEigenschaft])) {
+                    $objResponse->jsfunc(
+                        '$.evo.article().variationActive',
+                        $variation->kEigenschaft,
+                        addslashes($kGesetzteEigeschaftWert_arr[$variation->kEigenschaft]),
+                        null,
+                        $wrapper
+                    );
+                }
             }
         }
     } else {
@@ -779,52 +838,64 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
 }
 
 /**
- * @param int   $kArtikel
- * @param array $kVariationKombi_arr
- * @return mixed
+ * @param int   $parentProductID
+ * @param array $selectedVariationValues
+ * @return array
  */
-function getArticleByVariations($kArtikel, $kVariationKombi_arr)
+function getArticleByVariations($parentProductID, $selectedVariationValues)
 {
-    $kArtikel = (int)$kArtikel;
-    $cSQL1    = '';
-    $cSQL2    = '';
-    if (is_array($kVariationKombi_arr) && count($kVariationKombi_arr) > 0) {
-        $j = 0;
-        foreach ($kVariationKombi_arr as $i => $kVariationKombi) {
-            if ($j > 0) {
-                $cSQL1 .= ',' . (int)$i;
-                $cSQL2 .= ',' . (int)$kVariationKombi;
-            } else {
-                $cSQL1 .= (int)$i;
-                $cSQL2 .= (int)$kVariationKombi;
-            }
-            $j++;
-        }
+    if (!is_array($selectedVariationValues) || count($selectedVariationValues) === 0) {
+        return [];
     }
 
-    $kSprache    = Shop::getLanguage();
-    $oArtikelTMP = Shop::DB()->query("
-        SELECT a.kArtikel, tseo.kKey AS kSeoKey, IF (tseo.cSeo IS NULL, a.cSeo, tseo.cSeo) AS cSeo, 
-            a.fLagerbestand, a.cLagerBeachten, a.cLagerKleinerNull
+    $variationID    = 0;
+    $variationValue = 0;
+
+    if (count($selectedVariationValues) > 0) {
+        $combinations = [];
+        $i            = 0;
+        foreach ($selectedVariationValues as $id => $value) {
+            if (0 === $i++) {
+                $variationID    = $id;
+                $variationValue = $value;
+            } else {
+                $combinations[] = "($id, $value)";
+            }
+        }
+    } else {
+        $combinations = null;
+    }
+
+    $combinationSQL = ($combinations !== null && count($combinations) > 0)
+        ? 'teigenschaftkombiwert.kEigenschaftKombi IN (
+                     SELECT kEigenschaftKombi
+                     FROM teigenschaftkombiwert
+                     WHERE (kEigenschaft, kEigenschaftWert) IN (' . implode(', ', $combinations) . ')
+                     GROUP BY kEigenschaftKombi
+                     HAVING COUNT(kEigenschaftKombi) = ' . count($combinations) . '
+                )
+                AND '
+        : '';
+
+    $products = Shop::DB()->query(
+        'SELECT tartikel.kArtikel,
+                tseo.kKey AS kSeoKey, COALESCE(tseo.cSeo, tartikel.cSeo) AS cSeo,
+                tartikel.fLagerbestand, tartikel.cLagerBeachten, tartikel.cLagerKleinerNull
             FROM teigenschaftkombiwert
-            JOIN tartikel a 
-                ON a.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
-            LEFT JOIN tseo 
-                ON tseo.cKey = 'kArtikel' 
-                AND tseo.kKey = a.kArtikel 
-                AND tseo.kSprache = " . $kSprache .  "
-            LEFT JOIN tartikelsichtbarkeit 
-                ON a.kArtikel = tartikelsichtbarkeit.kArtikel
-                AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
-        WHERE teigenschaftkombiwert.kEigenschaft IN (" . $cSQL1 . ")
-            AND teigenschaftkombiwert.kEigenschaftWert IN (" . $cSQL2 . ")
-            AND tartikelsichtbarkeit.kArtikel IS NULL
-            AND a.kVaterArtikel = " . $kArtikel . "
-        GROUP BY a.kArtikel
-        HAVING count(*) = " . count($kVariationKombi_arr), 1
+            INNER JOIN tartikel ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
+            LEFT JOIN tseo ON tseo.cKey = \'kArtikel\'
+                            AND tseo.kKey = tartikel.kArtikel
+                            AND tseo.kSprache = 1
+            LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                                            AND tartikelsichtbarkeit.kKundengruppe = 1
+            WHERE ' . $combinationSQL . 'tartikel.kVaterArtikel = ' . (int)$parentProductID . '
+                AND teigenschaftkombiwert.kEigenschaft = ' . $variationID . '
+                AND teigenschaftkombiwert.kEigenschaftWert = ' . $variationValue . '
+                AND tartikelsichtbarkeit.kArtikel IS NULL'
+        , 2
     );
 
-    return $oArtikelTMP;
+    return $products;
 }
 
 /**

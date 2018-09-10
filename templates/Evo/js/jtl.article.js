@@ -345,13 +345,7 @@
                 $('#content a[href="#tab-votes"]').tab('show');
             });
 
-            if (this.isSingleArticle()) {
-                if ($('.switch-variations .form-group', $wrapper).length === 1) {
-                    var wrapper = '#' + $($wrapper).attr('id');
-                    this.variationSwitch($('.switch-variations', $wrapper), false, wrapper);
-                }
-            }
-            else {
+            if (!this.isSingleArticle()) {
                 var that = this;
 
                 $('.product-cell.hover-enabled')
@@ -1011,7 +1005,7 @@
                     case 'swatch':
                         if ($item.data('bs.tooltip')) {
                             $item.tooltip('destroy');
-                            $item.attr('title', $item.attr('data-original-title'));
+                            $item.attr('title', $item.attr('data-title'));
                         }
                         break;
                 }

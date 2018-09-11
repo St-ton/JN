@@ -986,7 +986,6 @@
                     label = $(wrapper).html();
                     $item.data('content', label)
                         .attr('data-content', label);
-
                     break;
                 case 'radio':
                     elem = $item.find('.label-not-available');

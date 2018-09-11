@@ -814,7 +814,7 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
                     }
                     if (!$stockInfo->stock) {
                         $objResponse->jsfunc('$.evo.article().variationInfo', $value->kEigenschaftWert, $stockInfo->status,
-                            $stockInfo->text);
+                            $stockInfo->text, $wrapper);
                     }
                 }
 

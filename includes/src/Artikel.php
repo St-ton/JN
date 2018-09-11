@@ -1928,11 +1928,12 @@ class Artikel
     }
 
     /**
-     * @param int $kSprache
-     * @param int $kKundengruppe
+     * @param int  $kSprache
+     * @param int  $kKundengruppe
+     * @param bool $exportWorkaround
      * @return array|int|object
      */
-    protected function execVariationSQL(int $kSprache, int $kKundengruppe)
+    protected function execVariationSQL(int $kSprache, int $kKundengruppe, bool $exportWorkaround = false)
     {
         $isDefaultLang = Sprache::isDefaultLanguageActive();
         // Nicht Standardsprache?
@@ -1965,7 +1966,11 @@ class Artikel
                     teigenschaftwert.cArtNr, teigenschaftwert.nSort AS teigenschaftwert_nSort, 
                     teigenschaftwert.fLagerbestand, teigenschaftwert.fPackeinheit,
                     teigenschaftwertpict.kEigenschaftWertPict, teigenschaftwertpict.cPfad, teigenschaftwertpict.cType,
-                    teigenschaftwertaufpreis.fAufpreisNetto AS fAufpreisNetto_teigenschaftwertaufpreis
+                    teigenschaftwertaufpreis.fAufpreisNetto AS fAufpreisNetto_teigenschaftwertaufpreis,
+                    IF(MIN(tartikel.cLagerBeachten) = MAX(tartikel.cLagerBeachten), MIN(tartikel.cLagerBeachten), 'N') AS cMergedLagerBeachten,
+                    IF(MIN(tartikel.cLagerKleinerNull) = MAX(tartikel.cLagerKleinerNull), MIN(tartikel.cLagerKleinerNull), 'Y') AS cMergedLagerKleinerNull,
+                    IF(MIN(tartikel.cLagerVariation) = MAX(tartikel.cLagerVariation), MIN(tartikel.cLagerVariation), 'Y') AS cMergedLagerVariation,
+                    SUM(tartikel.fLagerbestand) AS fMergedLagerbestand
                     FROM teigenschaftkombiwert
                     JOIN tartikel 
                         ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
@@ -1997,110 +2002,136 @@ class Artikel
             $oVariationVaterTMP_arr = Shop::Container()->getDB()->query(
                 "SELECT teigenschaft.kEigenschaft, teigenschaft.kArtikel, teigenschaft.cName, teigenschaft.cWaehlbar,
                     teigenschaft.cTyp, teigenschaft.nSort, " . $oSQLEigenschaft->cSELECT . "
-                    teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName AS cName_teigenschaftwert, " .
-                    $oSQLEigenschaftWert->cSELECT . " teigenschaftwert.fAufpreisNetto,
-                    teigenschaftwert.fGewichtDiff, teigenschaftwert.cArtNr, 
-                    teigenschaftwert.nSort AS teigenschaftwert_nSort, teigenschaftwert.fLagerbestand,
-                    teigenschaftwert.fPackeinheit, teigenschaftwertpict.kEigenschaftWertPict, 
-                    teigenschaftwertpict.cPfad, teigenschaftwertpict.cType,
-                    teigenschaftwertaufpreis.fAufpreisNetto AS fAufpreisNetto_teigenschaftwertaufpreis
+                    NULL AS kEigenschaftWert, NULL AS cName_teigenschaftwert,
+                    NULL AS cName_teigenschaftwertsprache, NULL AS fAufpreisNetto,
+                    NULL AS fGewichtDiff, NULL AS cArtNr,
+                    NULL AS teigenschaftwert_nSort, NULL AS fLagerbestand,
+                    NULL AS fPackeinheit, NULL AS kEigenschaftWertPict,
+                    NULL AS cPfad, NULL AS cType,
+                    NULL AS fAufpreisNetto_teigenschaftwertaufpreis
                     FROM teigenschaft
-                    LEFT JOIN teigenschaftwert ON teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
                     " . $oSQLEigenschaft->cJOIN . "
-                    " . $oSQLEigenschaftWert->cJOIN . "
                     LEFT JOIN teigenschaftsichtbarkeit 
                         ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
                         AND teigenschaftsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
-                    LEFT JOIN teigenschaftwertsichtbarkeit 
-                        ON teigenschaftwert.kEigenschaftWert = teigenschaftwertsichtbarkeit.kEigenschaftWert
-                        AND teigenschaftwertsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
-                    LEFT JOIN teigenschaftwertpict 
-                        ON teigenschaftwertpict.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                    LEFT JOIN teigenschaftwertaufpreis 
-                        ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                        AND teigenschaftwertaufpreis.kKundengruppe = " . $kKundengruppe . "
                     WHERE teigenschaft.kArtikel = " . $this->kArtikel . "
                         AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
-                        AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
-                        AND (teigenschaft.cTyp = 'FREIFELD' OR teigenschaft.cTyp = 'PFLICHT-FREIFELD')
-                    ORDER BY teigenschaft.nSort, teigenschaft.cName, teigenschaftwert.nSort, teigenschaftwert.cName",
+                        AND teigenschaft.cTyp IN ('FREIFELD', 'PFLICHT-FREIFELD')
+                        ORDER BY teigenschaft.nSort, teigenschaft.cName",
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
 
             $variations = array_merge($variations, $oVariationVaterTMP_arr);
         } elseif ($this->kVaterArtikel > 0) { //child?
-            $variations = Shop::Container()->getDB()->query(
-                "SELECT tartikel.kArtikel AS tartikel_kArtikel, tartikel.fLagerbestand AS tartikel_fLagerbestand,
-                    tartikel.cLagerBeachten, tartikel.cLagerKleinerNull, tartikel.cLagerVariation,
-                    teigenschaftkombiwert.kEigenschaft, tartikel.fVPEWert, teigenschaftkombiwert.kEigenschaftKombi,
-                    teigenschaft.kArtikel, teigenschaftkombiwert.kEigenschaftWert, teigenschaft.cName,
-                    teigenschaft.cWaehlbar, teigenschaft.cTyp, teigenschaft.nSort, " .
-                    $oSQLEigenschaft->cSELECT . " teigenschaftwert.cName AS cName_teigenschaftwert, " .
-                    $oSQLEigenschaftWert->cSELECT . " teigenschaftwert.fAufpreisNetto, teigenschaftwert.fGewichtDiff,
-                    teigenschaftwert.cArtNr, teigenschaftwert.nSort AS teigenschaftwert_nSort,
-                    teigenschaftwert.fLagerbestand, teigenschaftwert.fPackeinheit, teigenschaftwertpict.cType,
-                    teigenschaftwertpict.kEigenschaftWertPict, teigenschaftwertpict.cPfad,
-                    teigenschaftwertaufpreis.fAufpreisNetto AS fAufpreisNetto_teigenschaftwertaufpreis
-                    FROM teigenschaftkombiwert
-                    JOIN tartikel
-                        ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
-                        AND tartikel.kVaterArtikel = " . (int)$this->kVaterArtikel . "
+            $scoreJoin   = '';
+            $scoreSelect = '';
+            if (!$exportWorkaround) {
+                $scoreSelect    = ', COALESCE(ek.score, 0) nMatched';
+                $scoreJoin      = "LEFT JOIN (
+	                        SELECT kEigenschaftKombi, COUNT(teigenschaftkombiwert.kEigenschaftWert) AS score
+                            FROM teigenschaftkombiwert
+                            WHERE kEigenschaftWert IN (
+                                SELECT kEigenschaftWert FROM teigenschaftkombiwert WHERE kEigenschaftKombi = {$this->kEigenschaftKombi}
+                           )
+                            GROUP BY teigenschaftkombiwert.kEigenschaftKombi
+                        ) ek ON ek.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi";
+            }
+            $baseQuery = "SELECT tartikel.kArtikel AS tartikel_kArtikel, tartikel.fLagerbestand AS tartikel_fLagerbestand,
+                        tartikel.cLagerBeachten, tartikel.cLagerKleinerNull, tartikel.cLagerVariation,
+                        teigenschaftkombiwert.kEigenschaft, tartikel.fVPEWert, teigenschaftkombiwert.kEigenschaftKombi,
+                        teigenschaft.kArtikel, teigenschaftkombiwert.kEigenschaftWert, teigenschaft.cName,
+                        teigenschaft.cWaehlbar, teigenschaft.cTyp, teigenschaft.nSort, " .
+                        $oSQLEigenschaft->cSELECT . " teigenschaftwert.cName AS cName_teigenschaftwert, " .
+                        $oSQLEigenschaftWert->cSELECT . " teigenschaftwert.fAufpreisNetto, teigenschaftwert.fGewichtDiff,
+                        teigenschaftwert.cArtNr, teigenschaftwert.nSort AS teigenschaftwert_nSort,
+                        teigenschaftwert.fLagerbestand, teigenschaftwert.fPackeinheit, teigenschaftwertpict.cType,
+                        teigenschaftwertpict.kEigenschaftWertPict, teigenschaftwertpict.cPfad,
+                        teigenschaftwertaufpreis.fAufpreisNetto AS fAufpreisNetto_teigenschaftwertaufpreis
+                        " . $scoreSelect . "
+                    FROM tartikel
+                    JOIN teigenschaftkombiwert
+	                    ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
                     LEFT JOIN teigenschaft
                         ON teigenschaft.kEigenschaft = teigenschaftkombiwert.kEigenschaft
                     LEFT JOIN teigenschaftwert
                         ON teigenschaftwert.kEigenschaftWert = teigenschaftkombiwert.kEigenschaftWert
                     " . $oSQLEigenschaft->cJOIN . "
                     " . $oSQLEigenschaftWert->cJOIN . "
+                    " . $scoreJoin . "
                     LEFT JOIN teigenschaftsichtbarkeit
-                        ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
-                        AND teigenschaftsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
+                        ON teigenschaftsichtbarkeit.kEigenschaft = teigenschaftkombiwert.kEigenschaft
+	                    AND teigenschaftsichtbarkeit.kKundengruppe = {$kKundengruppe}
                     LEFT JOIN teigenschaftwertsichtbarkeit
-                        ON teigenschaftwert.kEigenschaftWert = teigenschaftwertsichtbarkeit.kEigenschaftWert
-                        AND teigenschaftwertsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
+                        ON teigenschaftwertsichtbarkeit.kEigenschaftWert = teigenschaftkombiwert.kEigenschaftWert
+	                    AND teigenschaftwertsichtbarkeit.kKundengruppe = {$kKundengruppe}
                     LEFT JOIN teigenschaftwertpict
-                        ON teigenschaftwertpict.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
+                        ON teigenschaftwertpict.kEigenschaftWert = teigenschaftkombiwert.kEigenschaftWert
                     LEFT JOIN teigenschaftwertaufpreis
-                        ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                        AND teigenschaftwertaufpreis.kKundengruppe = " . $kKundengruppe . "
-                    WHERE teigenschaftsichtbarkeit.kEigenschaft IS NULL
-                        AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
-                    GROUP BY teigenschaftkombiwert.kEigenschaftWert
-                    ORDER BY teigenschaft.nSort, teigenschaft.cName, teigenschaftwert.nSort, teigenschaftwert.cName",
-                \DB\ReturnType::ARRAY_OF_OBJECTS
-            );
+                        ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftkombiwert.kEigenschaftWert
+	                    AND teigenschaftwertaufpreis.kKundengruppe = {$kKundengruppe}
+                    WHERE tartikel.kVaterArtikel = " . (int)$this->kVaterArtikel . "
+	                    AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
+	                    AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL";
+            if ($exportWorkaround === false) {
+                /* Workaround for performance-issue in MySQL 5.5 with large varcombis */
+                $allCombinations = Shop::Container()->getDB()->query(
+                    "SELECT CONCAT('(', pref.kEigenschaftWert, ',', MAX(pref.score), ')') combine
+                        FROM (
+                            SELECT teigenschaftkombiwert.kEigenschaftKombi,
+                                teigenschaftkombiwert.kEigenschaftWert
+                                , COUNT(ek.kEigenschaftWert) score
+                            FROM tartikel
+                            JOIN teigenschaftkombiwert
+                                ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
+                            LEFT JOIN teigenschaftkombiwert ek ON ek.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
+                                AND ek.kEigenschaftWert IN (
+                                    SELECT kEigenschaftWert FROM teigenschaftkombiwert WHERE kEigenschaftKombi = {$this->kEigenschaftKombi}
+                                )
+                            WHERE tartikel.kVaterArtikel = " . (int)$this->kVaterArtikel . "
+                            GROUP BY teigenschaftkombiwert.kEigenschaftKombi, teigenschaftkombiwert.kEigenschaftWert
+                        ) pref
+                        GROUP BY pref.kEigenschaftWert",
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
+                );
+                $combinations    = array_reduce($allCombinations, function ($cArry, $item) {
+                    return (empty($cArry) ? '' : $cArry . ', ') . $item->combine;
+                }, '');
+                $variations      = Shop::Container()->getDB()->query($baseQuery .
+                    " AND (teigenschaftkombiwert.kEigenschaftWert, COALESCE(ek.score, 0)) IN (
+                            {$combinations}
+                        )
+                        GROUP BY teigenschaftkombiwert.kEigenschaftWert
+                        ORDER BY teigenschaft.nSort, teigenschaft.cName, teigenschaftwert.nSort",
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
+                );
+            } else {
+                $variations = Shop::DB()->query($baseQuery .
+                    " AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
+                        GROUP BY teigenschaftkombiwert.kEigenschaftWert
+                        ORDER BY teigenschaft.nSort, teigenschaft.cName, teigenschaftwert.nSort, teigenschaftwert.cName",
+                    \DB\ReturnType::ARRAY_OF_OBJECTS);
+            }
 
             $oVariationVaterTMP_arr = Shop::Container()->getDB()->query(
                 "SELECT teigenschaft.kEigenschaft, teigenschaft.kArtikel, teigenschaft.cName, teigenschaft.cWaehlbar,
                     teigenschaft.cTyp, teigenschaft.nSort, " . $oSQLEigenschaft->cSELECT . "
-                    teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName AS cName_teigenschaftwert, " .
-                $oSQLEigenschaftWert->cSELECT . " teigenschaftwert.fAufpreisNetto, teigenschaftwert.fGewichtDiff,
-                    teigenschaftwert.cArtNr, teigenschaftwert.nSort AS teigenschaftwert_nSort, 
-                    teigenschaftwert.fLagerbestand, teigenschaftwert.fPackeinheit,
-                    teigenschaftwertpict.kEigenschaftWertPict, teigenschaftwertpict.cPfad, 
-                    teigenschaftwertpict.cType,
-                    teigenschaftwertaufpreis.fAufpreisNetto AS fAufpreisNetto_teigenschaftwertaufpreis
+                    NULL AS kEigenschaftWert, NULL AS cName_teigenschaftwert,
+                    NULL AS cName_teigenschaftwertsprache, NULL AS fAufpreisNetto, NULL AS fGewichtDiff,
+                    NULL AS cArtNr, NULL AS teigenschaftwert_nSort,
+                    NULL AS fLagerbestand, NULL AS fPackeinheit,
+                    NULL AS kEigenschaftWertPict, NULL AS cPfad,
+                    NULL AS cType,
+                    NULL AS fAufpreisNetto_teigenschaftwertaufpreis
                     FROM teigenschaft
-                    LEFT JOIN teigenschaftwert 
-                        ON teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
                     " . $oSQLEigenschaft->cJOIN . "
-                    " . $oSQLEigenschaftWert->cJOIN . "
                     LEFT JOIN teigenschaftsichtbarkeit 
                         ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
                         AND teigenschaftsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
-                    LEFT JOIN teigenschaftwertsichtbarkeit 
-                        ON teigenschaftwert.kEigenschaftWert = teigenschaftwertsichtbarkeit.kEigenschaftWert
-                        AND teigenschaftwertsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
-                    LEFT JOIN teigenschaftwertpict 
-                        ON teigenschaftwertpict.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                    LEFT JOIN teigenschaftwertaufpreis 
-                        ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                        AND teigenschaftwertaufpreis.kKundengruppe = " . $kKundengruppe . "
                     WHERE (teigenschaft.kArtikel = " . $this->kVaterArtikel . " 
                             OR teigenschaft.kArtikel = " . $this->kArtikel . ")
                         AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
-                        AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
-                        AND (teigenschaft.cTyp = 'FREIFELD' OR teigenschaft.cTyp = 'PFLICHT-FREIFELD')
-                    ORDER BY teigenschaft.nSort, teigenschaft.cName, teigenschaftwert.nSort, teigenschaftwert.cName",
+                        AND teigenschaft.cTyp IN ('FREIFELD', 'PFLICHT-FREIFELD')
+                        ORDER BY teigenschaft.nSort, teigenschaft.cName",
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
 
@@ -2132,7 +2163,7 @@ class Artikel
                 "SELECT teigenschaft.kEigenschaft, teigenschaft.kArtikel, teigenschaft.cName, teigenschaft.cWaehlbar,
                     teigenschaft.cTyp, teigenschaft.nSort, " . $oSQLEigenschaft->cSELECT . "
                     teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName AS cName_teigenschaftwert, " .
-                $oSQLEigenschaftWert->cSELECT . "
+                    $oSQLEigenschaftWert->cSELECT . "
                     teigenschaftwert.fAufpreisNetto, teigenschaftwert.fGewichtDiff, teigenschaftwert.cArtNr, 
                     teigenschaftwert.nSort AS teigenschaftwert_nSort, teigenschaftwert.fLagerbestand, 
                     teigenschaftwert.fPackeinheit, teigenschaftwertpict.kEigenschaftWertPict, 
@@ -2166,12 +2197,13 @@ class Artikel
     }
 
     /**
-     * @param int $kKundengruppe
-     * @param int $kSprache
-     * @param int $nVariationKombi
+     * @param int  $kKundengruppe
+     * @param int  $kSprache
+     * @param int  $nVariationKombi
+     * @param bool $exportWorkaround
      * @return $this
      */
-    public function holVariationen(int $kKundengruppe = 0, int $kSprache = 0, int $nVariationKombi = 0): self
+    public function holVariationen(int $kKundengruppe = 0, int $kSprache = 0, int $nVariationKombi = 0, bool $exportWorkaround = false): self
     {
         if ($this->kArtikel === null || $this->kArtikel <= 0) {
             return $this;
@@ -2193,7 +2225,7 @@ class Artikel
         $isDefaultLang  = Sprache::isDefaultLanguageActive();
         $mayViewPrices  = Session::CustomerGroup()->mayViewPrices();
 
-        $variations = $this->execVariationSQL($kSprache, $kKundengruppe);
+        $variations = $this->execVariationSQL($kSprache, $kKundengruppe, $exportWorkaround);
 
         if (!is_array($variations) || count($variations) === 0) {
             return $this;
@@ -2208,6 +2240,22 @@ class Artikel
             : 2;
         $per              = ' ' . Shop::Lang()->get('vpePer') . ' ' . $this->cVPEEinheit;
         $taxRate          = $_SESSION['Steuersatz'][$this->kSteuerklasse];
+
+        if (!$exportWorkaround) {
+            $cntVariationen = Shop::Container()->getDB()->query(
+                "SELECT COUNT(teigenschaft.kEigenschaft) AS nCount
+                    FROM teigenschaft
+                    LEFT JOIN teigenschaftsichtbarkeit ON teigenschaftsichtbarkeit.kEigenschaft = teigenschaft.kEigenschaft
+                                                        AND teigenschaftsichtbarkeit.kKundengruppe = {$kKundengruppe}
+                    WHERE kArtikel = " . (int)$this->kVaterArtikel . "
+                        AND teigenschaft.cTyp NOT IN ('FREIFELD', 'PFLICHT-FREIFELD')
+                        AND teigenschaftsichtbarkeit.kEigenschaft IS NULL",
+                \DB\ReturnType::SINGLE_OBJECT
+            );
+        } else {
+            $cntVariationen = (object)['nCount' => 0];
+        }
+
         foreach ($variations as $i => $tmpVariation) {
             if ($kLetzteVariation !== $tmpVariation->kEigenschaft) {
                 ++$nZaehler;
@@ -2253,6 +2301,8 @@ class Artikel
             $value->nSort            = $tmpVariation->teigenschaftwert_nSort;
             $value->fLagerbestand    = $tmpVariation->fLagerbestand;
             $value->fPackeinheit     = $tmpVariation->fPackeinheit;
+            $value->inStock          = true;
+            $value->notExists        = isset($tmpVariation->nMatched) && (int)$tmpVariation->nMatched < (int)$cntVariationen->nCount - 1;
 
             if (isset($tmpVariation->fVPEWert) && $tmpVariation->fVPEWert > 0) {
                 $value->fVPEWert = $tmpVariation->fVPEWert;
@@ -2264,6 +2314,23 @@ class Artikel
                 $varCombi->cLagerBeachten         = $tmpVariation->cLagerBeachten ?? null;
                 $varCombi->cLagerKleinerNull      = $tmpVariation->cLagerKleinerNull ?? null;
                 $varCombi->cLagerVariation        = $tmpVariation->cLagerVariation ?? null;
+
+                if ($this->nIstVater === 1 && isset($tmpVariation->cMergedLagerBeachten)) {
+                    $varCombi->tartikel_fLagerbestand = $tmpVariation->fMergedLagerbestand ?? null;
+                    $varCombi->cLagerBeachten         = $tmpVariation->cMergedLagerBeachten ?? null;
+                    $varCombi->cLagerKleinerNull      = $tmpVariation->cMergedLagerKleinerNull ?? null;
+                    $varCombi->cLagerVariation        = $tmpVariation->cMergedLagerVariation ?? null;
+                }
+
+                $stockInfo = $this->getStockInfo((object)[
+                    'cLagerVariation'   => $varCombi->cLagerVariation,
+                    'fLagerbestand'     => $varCombi->tartikel_fLagerbestand,
+                    'cLagerBeachten'    => $varCombi->cLagerBeachten,
+                    'cLagerKleinerNull' => $varCombi->cLagerKleinerNull,
+                ]);
+
+                $value->inStock   = $this->nIstVater === 1 || $stockInfo->inStock;
+                $value->notExists = $value->notExists || $stockInfo->notExists;
 
                 $value->oVariationsKombi = $varCombi;
             }
@@ -3512,6 +3579,24 @@ class Artikel
     }
 
     /**
+     * @return stdClass
+     */
+    public static function getExportOptions()
+    {
+        $options                            = new stdClass();
+        $options->nMerkmale                 = 1;
+        $options->nAttribute                = 1;
+        $options->nArtikelAttribute         = 1;
+        $options->nKategorie                = 1;
+        $options->nKeinLagerbestandBeachten = 1;
+        $options->nMedienDatei              = 1;
+        $options->nVariationen              = 1;
+        $options->nVariationKombi           = 0;
+
+        return $options;
+    }
+
+    /**
      * @param int      $kArtikel
      * @param stdClass $oArtikelOptionen
      * @param int      $kKundengruppe
@@ -3997,11 +4082,12 @@ class Artikel
             $kArtikel             = $this->kVaterArtikel > 0 ? $this->kVaterArtikel : $this->kArtikel;
             $this->oKategorie_arr = $this->getCategories($kArtikel, $kKundengruppe);
         }
+        $workaround = $noCache === true || (array)$oArtikelOptionen === (array)self::getExportOptions();
         if (!isset($oArtikelOptionen->nVariationKombi)) {
             $oArtikelOptionen->nVariationKombi = 0;
         }
         if (!isset($oArtikelOptionen->nVariationen) || $oArtikelOptionen->nVariationen === 1) {
-            $this->holVariationen($kKundengruppe, $kSprache, $oArtikelOptionen->nVariationKombi);
+            $this->holVariationen($kKundengruppe, $kSprache, $oArtikelOptionen->nVariationKombi, $workaround);
         }
         /* Sobald ein KindArtikel teurer ist als der Vaterartikel, muss nVariationsAufpreisVorhanden auf 1
            gesetzt werden damit in der Artikelvorschau ein "Preis ab ..." erscheint
@@ -4880,6 +4966,55 @@ class Artikel
         }
 
         return true;
+    }
+
+    /**
+     * @param object|null $oArtikel
+     * @since 4.06.7
+     * @return object
+     */
+    public function getStockInfo($oArtikel = null)
+    {
+        $conf     = Shop::getSettings([CONF_GLOBAL]);
+        $oArtikel = ($oArtikel !== null) ? $oArtikel : $this;
+        $result   = (object)[
+            'inStock'   => false,
+            'notExists' => false,
+        ];
+
+        switch ((int)$conf['global']['artikel_artikelanzeigefilter']) {
+            case EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER:
+                if ((isset($oArtikel->cLagerVariation) && $oArtikel->cLagerVariation === 'Y')
+                    || $oArtikel->fLagerbestand > 0
+                    || $oArtikel->cLagerBeachten !== 'Y') {
+                    $result->inStock = true;
+                } else {
+                    $result->inStock   = false;
+                    $result->notExists = true;
+                }
+                break;
+            case EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL:
+                if ((isset($oArtikel->cLagerVariation) && $oArtikel->cLagerVariation === 'Y')
+                    || $oArtikel->fLagerbestand > 0
+                    || $oArtikel->cLagerBeachten !== 'Y'
+                    || $oArtikel->cLagerKleinerNull === 'Y') {
+                    $result->inStock = true;
+                } else {
+                    $result->inStock   = false;
+                    $result->notExists = true;
+                }
+                break;
+            case EINSTELLUNGEN_ARTIKELANZEIGEFILTER_ALLE:
+            default:
+                if ((isset($oArtikel->cLagerVariation) && $oArtikel->cLagerVariation === 'Y')
+                    || $oArtikel->fLagerbestand > 0
+                    || $oArtikel->cLagerBeachten !== 'Y'
+                    || $oArtikel->cLagerKleinerNull === 'Y') {
+                    $result->inStock = true;
+                }
+        }
+
+        return $result;
     }
 
     /**

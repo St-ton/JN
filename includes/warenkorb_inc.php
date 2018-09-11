@@ -108,6 +108,7 @@ function uebernehmeWarenkorbAenderungen()
             //prg
             $linkHelper = LinkHelper::getInstance();
             header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php', true, true), true, 303);
+            exit;
         }
 
         return;

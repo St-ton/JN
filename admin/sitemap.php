@@ -10,7 +10,14 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'sitemapexport.php';
 
 $oAccount->permission('EXPORT_SITEMAP_VIEW', true, true);
 
-generateSitemapXML();
+$exporter = new \Sitemap\Export(
+    Shop::Container()->getDB(),
+    Shop::Container()->getLogService(),
+    Shopsetting::getInstance()->getAll()
+);
+$exporter->generate();
+
+//generateSitemapXML();
 
 if (isset($_REQUEST['update']) && (int)$_REQUEST['update'] === 1) {
     header('Location: sitemapexport.php?update=1');

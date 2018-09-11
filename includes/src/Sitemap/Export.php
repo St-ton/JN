@@ -98,7 +98,7 @@ class Export
 
         $fileNumber    = 0;
         $nSitemap      = 1;
-        $generators    = [];
+        $factories     = [];
         $urlCounts     = [0 => 0];
         $nSitemapLimit = 25000;
         $res           = '';
@@ -112,19 +112,24 @@ class Export
 //        \Shop::dbg($urlGenerator->getExportURL(1, 'kKategorie', $languages, 1));
         $renderer = new DefaultRenderer($this->config, $baseURL);
 
-        $generators[] = new Base($this->db, $this->config, $baseURL, $baseImageURL);
-        $generators[] = new Product($this->db, $this->config, $baseURL, $baseImageURL);
-        $generators[] = new Page($this->db, $this->config, $baseURL, $baseImageURL);
-        $generators[] = new Category($this->db, $this->config, $baseURL, $baseImageURL);
-        $generators[] = new Tag($this->db, $this->config, $baseURL, $baseImageURL);
-        $generators[] = new Manufacturer($this->db, $this->config, $baseURL, $baseImageURL);
-        $generators[] = new LiveSearch($this->db, $this->config, $baseURL, $baseImageURL);
-        $generators[] = new Attribute($this->db, $this->config, $baseURL, $baseImageURL);
-        $generators[] = new NewsItem($this->db, $this->config, $baseURL, $baseImageURL);
-        $generators[] = new NewsCategory($this->db, $this->config, $baseURL, $baseImageURL);
+        $factories[] = new Base($this->db, $this->config, $baseURL, $baseImageURL);
+        $factories[] = new Product($this->db, $this->config, $baseURL, $baseImageURL);
+        $factories[] = new Page($this->db, $this->config, $baseURL, $baseImageURL);
+        $factories[] = new Category($this->db, $this->config, $baseURL, $baseImageURL);
+        $factories[] = new Tag($this->db, $this->config, $baseURL, $baseImageURL);
+        $factories[] = new Manufacturer($this->db, $this->config, $baseURL, $baseImageURL);
+        $factories[] = new LiveSearch($this->db, $this->config, $baseURL, $baseImageURL);
+        $factories[] = new Attribute($this->db, $this->config, $baseURL, $baseImageURL);
+        $factories[] = new NewsItem($this->db, $this->config, $baseURL, $baseImageURL);
+        $factories[] = new NewsCategory($this->db, $this->config, $baseURL, $baseImageURL);
 
-        foreach ($generators as $generator) {
-            $collection = $generator->getCollection($languages, [$defaultCustomerGroupID]);
+        \executeHook(\HOOK_SITEMAP_EXPORT_GET_FACTORIES, [
+            'factories' => &$factories,
+            'exporter'  => $this
+        ]);
+
+        foreach ($factories as $factory) {
+            $collection = $factory->getCollection($languages, [$defaultCustomerGroupID]);
             foreach ($collection as $item) {
                 /** @var ItemInterface $item */
                 if ($nSitemap > $nSitemapLimit) {

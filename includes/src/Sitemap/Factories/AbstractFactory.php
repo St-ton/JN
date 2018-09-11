@@ -9,10 +9,10 @@ namespace Sitemap\Factories;
 use DB\DbInterface;
 
 /**
- * Class AbstractGenerator
+ * Class AbstractFactory
  * @package Sitemap\Generators
  */
-abstract class AbstractGenerator implements GeneratorInterface
+abstract class AbstractFactory implements FactoryInterface
 {
     /**
      * @var DbInterface
@@ -35,7 +35,7 @@ abstract class AbstractGenerator implements GeneratorInterface
     protected $baseImageURL;
 
     /**
-     * AbstractGenerator constructor.
+     * AbstractFactory constructor.
      * @param DbInterface $db
      * @param array       $config
      * @param string      $baseURL

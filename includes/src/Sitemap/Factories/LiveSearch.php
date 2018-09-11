@@ -13,7 +13,7 @@ use function Functional\map;
  * Class LiveSearch
  * @package Sitemap\Generators
  */
-class LiveSearch extends AbstractGenerator
+class LiveSearch extends AbstractFactory
 {
     /**
      * @inheritdoc

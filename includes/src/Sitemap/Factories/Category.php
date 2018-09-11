@@ -14,7 +14,7 @@ use function Functional\map;
  * Class Category
  * @package Sitemap\Generators
  */
-class Category extends AbstractGenerator
+class Category extends AbstractFactory
 {
     /**
      * @inheritdoc

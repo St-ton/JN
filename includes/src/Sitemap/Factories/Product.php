@@ -13,7 +13,7 @@ use function Functional\first;
  * Class Product
  * @package Sitemap\Generators
  */
-class Product extends AbstractGenerator
+class Product extends AbstractFactory
 {
     /**
      * @inheritdoc

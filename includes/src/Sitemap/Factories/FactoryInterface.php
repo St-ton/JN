@@ -10,13 +10,13 @@ use DB\DbInterface;
 use Tightenco\Collect\Support\Collection;
 
 /**
- * Interface GeneratorInterface
+ * Interface FactoryInterface
  * @package Sitemap\Generators
  */
-interface GeneratorInterface
+interface FactoryInterface
 {
     /**
-     * GeneratorInterface constructor.
+     * FactoryInterface constructor.
      * @param DbInterface $db
      * @param array       $config
      * @param string      $baseURL

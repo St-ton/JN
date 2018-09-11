@@ -43,6 +43,7 @@
                             <th>{#orderStatus#}</th>
                             <th>{#orderSum#}</th>
                             <th class="tright">{#orderDate#}</th>
+                            <th>{#orderIpAddress#} <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="" data-original-title="{#orderIpAddresssNotice#} {$saveIpConfID}"></i></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -74,6 +75,7 @@
                                 </td>
                                 <td class="tcenter">{$oBestellung->WarensummeLocalized[0]}</td>
                                 <td class="tright">{$oBestellung->dErstelldatum_de}</td>
+                                <td class="tright">{$oBestellung->cIP}</td>
                             </tr>
                         {/foreach}
                         </tbody>

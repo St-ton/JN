@@ -171,13 +171,6 @@
                     });
                 });
 
-            if (isTouchCapable()) {
-                $('.variations .swatches .variation', $wrapper)
-                    .on('mouseover', function() {
-                        $(this).trigger('click');
-                    });
-            }
-
             // ie11 fallback
             if (typeof document.body.style.msTransform === 'string') {
                 $('.variations label.variation', $wrapper)
@@ -978,45 +971,44 @@
         },
 
         removeStockInfo: function($item) {
-            if (this.isSingleArticle()) {
-                var type = $item.attr('data-type'),
-                    elem,
-                    label,
-                    wrapper;
+            var type = $item.attr('data-type'),
+                elem,
+                label,
+                wrapper;
 
-                switch (type) {
-                    case 'option':
-                        label = $item.data('content');
-                        wrapper = $('<div />').append(label);
-                        $(wrapper)
-                            .find('.label-not-available')
-                            .remove();
-                        label = $(wrapper).html();
-                        $item.data('content', label)
-                            .attr('data-content', label);
+            switch (type) {
+                case 'option':
+                    label = $item.data('content');
+                    wrapper = $('<div />').append(label);
+                    $(wrapper)
+                        .find('.label-not-available')
+                        .remove();
+                    label = $(wrapper).html();
+                    $item.data('content', label)
+                        .attr('data-content', label);
 
-                        break;
-                    case 'radio':
-                        elem = $item.find('.label-not-available');
-                        if (elem.length === 1) {
-                            $(elem).remove();
-                        }
-                        break;
-                    case 'swatch':
-                        if ($item.data('bs.tooltip')) {
-                            $item.tooltip('destroy');
-                            $item.attr('title', $item.attr('data-title'));
-                        }
-                        break;
-                }
-
-                $item.removeAttr('data-stock');
+                    break;
+                case 'radio':
+                    elem = $item.find('.label-not-available');
+                    if (elem.length === 1) {
+                        $(elem).remove();
+                    }
+                    break;
+                case 'swatch':
+                    if ($item.data('bs.tooltip')) {
+                        $item.tooltip('destroy');
+                        $item.attr('title', $item.attr('data-title'));
+                    }
+                    break;
             }
+
+            $item.removeAttr('data-stock');
         },
 
-        variationInfo: function(value, status, note) {
-            var $item = $('[data-value="' + value + '"].variation'),
-                type  = $item.attr('data-type'),
+        variationInfo: function(value, status, note, wrapper) {
+            var $wrapper = this.getWrapper(wrapper),
+                $item    = $('[data-value="' + value + '"].variation', $wrapper),
+                type     = $item.attr('data-type'),
                 text,
                 content,
                 $wrapper,

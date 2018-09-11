@@ -7,9 +7,11 @@
 /**
  * @param string $nDatei
  * @param mixed  $data
+ * @deprecated since 5.0.0
  */
 function baueSitemap($nDatei, $data)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     Shop::Container()->getLogService()->debug('Baue "' . PFAD_EXPORT . 'sitemap_' .
         $nDatei . '.xml", Datenlaenge ' . strlen($data)
     );
@@ -35,22 +37,14 @@ function baueSitemap($nDatei, $data)
 }
 
 /**
- * @deprecated since 4.06
- * @param bool $ssl
- * @return string
- */
-function getSitemapBaseURL($ssl = false)
-{
-    return Shop::getURL($ssl);
-}
-
-/**
  * @param string $nDatei
  * @param bool   $bGZ
  * @return string
+ * @deprecated since 5.0.0
  */
 function baueSitemapIndex($nDatei, $bGZ)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $shopURL = Shop::getURL();
     $conf    = Shop::getSettings([CONF_SITEMAP]);
     $cIndex  = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
@@ -85,6 +79,7 @@ function baueSitemapIndex($nDatei, $bGZ)
  * @param null|string $strPriority
  * @param string      $cGoogleImageURL
  * @param bool        $ssl
+ * @deprecated since 5.0.0
  *
  * @return string
  */
@@ -96,6 +91,7 @@ function makeURL(
     $cGoogleImageURL = '',
     $ssl = false
 ) {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $strRet = "  <url>\n" .
         '     <loc>' . StringHandler::htmlentities(Shop::getURL($ssl)) . '/' .
         StringHandler::htmlentities($strLoc) . "</loc>\n";
@@ -123,9 +119,11 @@ function makeURL(
  * @param string $cISO
  * @param array  $Sprachen
  * @return bool
+ * @deprecated since 5.0.0
  */
 function spracheEnthalten($cISO, $Sprachen)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if ($_SESSION['cISOSprache'] === $cISO) {
         return true;
     }
@@ -143,9 +141,11 @@ function spracheEnthalten($cISO, $Sprachen)
 /**
  * @param string $cUrl
  * @return bool
+ * @deprecated since 5.0.0
  */
 function isSitemapBlocked($cUrl)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $cExclude_arr = [
         'navi.php',
         'suche.php',
@@ -165,10 +165,11 @@ function isSitemapBlocked($cUrl)
 }
 
 /**
- *
+ * @deprecated since 5.0.0
  */
 function generateSitemapXML()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     Shop::Container()->getLogService()->debug('Sitemap wird erstellt');
     $nStartzeit = microtime(true);
     $conf       = Shop::getSettings([
@@ -1028,9 +1029,11 @@ function generateSitemapXML()
 /**
  * @param string $cGoogleImageEinstellung
  * @return string
+ * @deprecated since 5.0.0
  */
 function getXMLHeader($cGoogleImageEinstellung)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $cHead = '<?xml version="1.0" encoding="UTF-8"?>
             <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"';
 
@@ -1048,9 +1051,11 @@ function getXMLHeader($cGoogleImageEinstellung)
 /**
  * @param stdClass $artikel
  * @return string|null
+ * @deprecated since 5.0.0
  */
 function holeGoogleImage($artikel)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $oArtikel           = new Artikel();
     $oArtikel->kArtikel = $artikel->kArtikel;
     $oArtikel->holArtikelAttribute();
@@ -1093,9 +1098,11 @@ function holeGoogleImage($artikel)
 
 /**
  * @return bool
+ * @deprecated since 5.0.0
  */
 function loescheSitemaps()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if (is_dir(PFAD_ROOT . PFAD_EXPORT) && $dh = opendir(PFAD_ROOT . PFAD_EXPORT)) {
         while (($file = readdir($dh)) !== false) {
             if ($file === 'sitemap_index.xml' || strpos($file, 'sitemap_') !== false) {
@@ -1114,9 +1121,11 @@ function loescheSitemaps()
 /**
  * @param array $nAnzahlURL_arr
  * @param float $fTotalZeit
+ * @deprecated since 5.0.0
  */
 function baueSitemapReport($nAnzahlURL_arr, $fTotalZeit)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if ($fTotalZeit > 0 && is_array($nAnzahlURL_arr) && count($nAnzahlURL_arr) > 0) {
         $nTotalURL = 0;
         foreach ($nAnzahlURL_arr as $nAnzahlURL) {
@@ -1157,9 +1166,11 @@ function baueSitemapReport($nAnzahlURL_arr, $fTotalZeit)
  * @param int        $productsPerPage
  * @param array|null $config
  * @return array
+ * @deprecated since 5.0.0
  */
 function baueExportURL(int $kKey, $cKey, $lastUpdate, $languages, $langID, $productsPerPage, $config = null)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $cURL_arr = [];
     $params   = [];
     Shop::setLanguage($langID);
@@ -1243,9 +1254,11 @@ function baueExportURL(int $kKey, $cKey, $lastUpdate, $languages, $langID, $prod
 /**
  * @param array $Sprachen
  * @return array
+ * @deprecated since 5.0.0
  */
 function gibAlleSprachenAssoc($Sprachen)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $oSpracheAssoc_arr = [];
     foreach ($Sprachen as $oSprache) {
         $oSpracheAssoc_arr[$oSprache->cISO] = (int)$oSprache->kSprache;

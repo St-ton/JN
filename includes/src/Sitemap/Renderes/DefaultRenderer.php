@@ -12,27 +12,20 @@ use Sitemap\Items\ItemInterface;
  * Class DefaultRenderer
  * @package Sitemap\Renderes
  */
-class DefaultRenderer implements RendererInterface
+final class DefaultRenderer implements RendererInterface
 {
-    /**
-     * @var string
-     */
-    protected $baseURL;
-
     /**
      * @var array
      */
-    protected $config;
+    private $config;
 
     /**
      * DefaultRenderer constructor.
      * @param array  $config
-     * @param string $baseURL
      */
-    public function __construct(array $config, string $baseURL)
+    public function __construct(array $config)
     {
         $this->config  = $config;
-        $this->baseURL = $baseURL;
     }
 
     /**

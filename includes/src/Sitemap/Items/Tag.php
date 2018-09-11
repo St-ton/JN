@@ -10,7 +10,7 @@ namespace Sitemap\Items;
  * Class Tag
  * @package Sitemap\Items
  */
-class Tag extends AbstractItem
+final class Tag extends AbstractItem
 {
 
     /**

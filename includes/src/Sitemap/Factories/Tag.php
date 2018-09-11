@@ -13,7 +13,7 @@ use function Functional\map;
  * Class Tag
  * @package Sitemap\Generators
  */
-class Tag extends AbstractFactory
+final class Tag extends AbstractFactory
 {
     /**
      * @inheritdoc

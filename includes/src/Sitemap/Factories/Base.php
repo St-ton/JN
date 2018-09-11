@@ -12,7 +12,7 @@ use Tightenco\Collect\Support\Collection;
  * Class Base
  * @package Sitemap\Generators
  */
-class Base extends AbstractFactory
+final class Base extends AbstractFactory
 {
     /**
      * @inheritdoc

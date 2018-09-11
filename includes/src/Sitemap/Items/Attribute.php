@@ -10,7 +10,7 @@ namespace Sitemap\Items;
  * Class Attribute
  * @package Sitemap\Items
  */
-class Attribute extends AbstractItem
+final class Attribute extends AbstractItem
 {
 
     /**

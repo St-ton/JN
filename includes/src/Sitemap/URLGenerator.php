@@ -13,7 +13,7 @@ use DB\DbInterface;
  * Class URLGenerator
  * @package Sitemap
  */
-class URLGenerator
+final class URLGenerator
 {
     /**
      * @var DbInterface
@@ -55,29 +55,35 @@ class URLGenerator
         $this->setProductsPerPage();
     }
 
-    private function setProductsPerPage()
+    /**
+     * @return int
+     */
+    private function setProductsPerPage(): int
     {
-        $this->productsPerPage = ((int)$this->config['artikeluebersicht']['artikeluebersicht_artikelproseite'] > 0)
-            ? (int)$this->config['artikeluebersicht']['artikeluebersicht_artikelproseite']
+        $config                = $this->config['artikeluebersicht'];
+        $this->productsPerPage = ($ppp = (int)$config['artikeluebersicht_artikelproseite']) > 0
+            ? $ppp
             : 20;
-        if ($this->config['artikeluebersicht']['artikeluebersicht_erw_darstellung'] === 'Y') {
-            $nStdDarstellung = (int)$this->config['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'] > 0
-                ? (int)$this->config['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht']
+        if ($config['artikeluebersicht_erw_darstellung'] === 'Y') {
+            $defView = ($def = (int)$config['artikeluebersicht_erw_darstellung_stdansicht']) > 0
+                ? $def
                 : \ERWDARSTELLUNG_ANSICHT_LISTE;
-            if ($nStdDarstellung > 0) {
-                switch ($nStdDarstellung) {
-                    case \ERWDARSTELLUNG_ANSICHT_LISTE:
-                        $this->productsPerPage = (int)$this->config['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'];
-                        break;
-                    case \ERWDARSTELLUNG_ANSICHT_GALERIE:
-                        $this->productsPerPage = (int)$this->config['artikeluebersicht']['artikeluebersicht_anzahl_darstellung2'];
-                        break;
-                    case \ERWDARSTELLUNG_ANSICHT_MOSAIK:
-                        $this->productsPerPage = (int)$this->config['artikeluebersicht']['artikeluebersicht_anzahl_darstellung3'];
-                        break;
-                }
+            switch ($defView) {
+                case \ERWDARSTELLUNG_ANSICHT_LISTE:
+                    $this->productsPerPage = (int)$config['artikeluebersicht_anzahl_darstellung1'];
+                    break;
+                case \ERWDARSTELLUNG_ANSICHT_GALERIE:
+                    $this->productsPerPage = (int)$config['artikeluebersicht_anzahl_darstellung2'];
+                    break;
+                case \ERWDARSTELLUNG_ANSICHT_MOSAIK:
+                    $this->productsPerPage = (int)$config['artikeluebersicht_anzahl_darstellung3'];
+                    break;
+                default:
+                    break;
             }
         }
+
+        return $this->productsPerPage;
     }
 
     /**
@@ -92,27 +98,27 @@ class URLGenerator
         $url    = '';
         $params = [];
         \Shop::setLanguage($langID);
-        $filterConfig = new \Filter\Config();
-        $filterConfig->setLanguageID($langID);
-        $filterConfig->setLanguages($languages);
-        $filterConfig->setConfig($this->config);
-        $filterConfig->setCustomerGroupID(\Session\Session::CustomerGroup()->getID());
-        $filterConfig->setBaseURL($this->baseURL);
-        $naviFilter = new \Filter\ProductFilter($filterConfig, $this->db, $this->cache);
+        $pfConfig = new \Filter\Config();
+        $pfConfig->setLanguageID($langID);
+        $pfConfig->setLanguages($languages);
+        $pfConfig->setConfig($this->config);
+        $pfConfig->setCustomerGroupID(\Session\Session::CustomerGroup()->getID());
+        $pfConfig->setBaseURL($this->baseURL);
+        $pf = new \Filter\ProductFilter($pfConfig, $this->db, $this->cache);
         switch ($cKey) {
             case 'kKategorie':
                 $params['kKategorie'] = $kKey;
-                $naviFilter->initStates($params);
+                $pf->initStates($params);
                 break;
 
             case 'kHersteller':
                 $params['kHersteller'] = $kKey;
-                $naviFilter->initStates($params);
+                $pf->initStates($params);
                 break;
 
             case 'kSuchanfrage':
                 $params['kSuchanfrage'] = $kKey;
-                $naviFilter->initStates($params);
+                $pf->initStates($params);
                 if ($kKey > 0) {
                     $oSuchanfrage = $this->db->queryPrepared(
                         'SELECT cSuche
@@ -123,32 +129,32 @@ class URLGenerator
                         \DB\ReturnType::SINGLE_OBJECT
                     );
                     if (!empty($oSuchanfrage->cSuche)) {
-                        $naviFilter->getSearchQuery()->setID($kKey)->setName($oSuchanfrage->cSuche);
+                        $pf->getSearchQuery()->setID($kKey)->setName($oSuchanfrage->cSuche);
                     }
                 }
                 break;
 
             case 'kMerkmalWert':
                 $params['kMerkmalWert'] = $kKey;
-                $naviFilter->initStates($params);
+                $pf->initStates($params);
                 break;
 
             case 'kTag':
                 $params['kTag'] = $kKey;
-                $naviFilter->initStates($params);
+                $pf->initStates($params);
                 break;
 
             case 'kSuchspecial':
                 $params['kSuchspecial'] = $kKey;
-                $naviFilter->initStates($params);
+                $pf->initStates($params);
                 break;
 
             default:
                 return $url;
         }
-        $oSuchergebnisse = $naviFilter->generateSearchResults(null, false, $this->productsPerPage);
-        if (($cKey === 'kKategorie' && $kKey > 0) || $oSuchergebnisse->getProductCount() > 0) {
-            $url = $naviFilter->getFilterURL()->getURL();
+        $searchResults = $pf->generateSearchResults(null, false, $this->productsPerPage);
+        if (($cKey === 'kKategorie' && $kKey > 0) || $searchResults->getProductCount() > 0) {
+            $url = $pf->getFilterURL()->getURL();
         }
 
         return $url;

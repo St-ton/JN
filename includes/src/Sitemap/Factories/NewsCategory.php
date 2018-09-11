@@ -13,7 +13,7 @@ use function Functional\map;
  * Class NewsCategory
  * @package Sitemap\Generators
  */
-class NewsCategory extends AbstractFactory
+final class NewsCategory extends AbstractFactory
 {
     /**
      * @inheritdoc

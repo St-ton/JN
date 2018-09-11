@@ -10,7 +10,7 @@ namespace Sitemap\Items;
  * Class Base
  * @package Sitemap\Items
  */
-class Base extends AbstractItem
+final class Base extends AbstractItem
 {
     /**
      * @inheritdoc

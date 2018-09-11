@@ -110,7 +110,7 @@ class Export
 
         $urlGenerator = new URLGenerator($this->db, $cache, $this->config, $baseURL);
 //        \Shop::dbg($urlGenerator->getExportURL(1, 'kKategorie', $languages, 1));
-        $renderer = new DefaultRenderer($this->config, $baseURL);
+        $renderer = new DefaultRenderer($this->config);
 
         $factories[] = new Base($this->db, $this->config, $baseURL, $baseImageURL);
         $factories[] = new Product($this->db, $this->config, $baseURL, $baseImageURL);

@@ -10,7 +10,7 @@ namespace Sitemap\Items;
  * Class LiveSearch
  * @package Sitemap\Items
  */
-class LiveSearch extends AbstractItem
+final class LiveSearch extends AbstractItem
 {
     /**
      * @inheritdoc

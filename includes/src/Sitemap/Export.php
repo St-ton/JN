@@ -153,13 +153,13 @@ class Export
         if ($this->config['sitemap']['sitemap_google_ping'] !== 'Y') {
             return;
         }
-        $encodedSitemapIndexURL = \urlencode($baseURL . 'sitemap_index.xml');
-        $urls                   = [
+        $indexURL = \urlencode($baseURL . 'sitemap_index.xml');
+        $urls     = [
             'http://www.google.com/webmasters/tools/ping?sitemap=',
             'http://www.bing.com/ping?sitemap='
         ];
         foreach ($urls as $url) {
-            $status = \RequestHelper::http_get_status($url . $encodedSitemapIndexURL);
+            $status = \RequestHelper::http_get_status($url . $indexURL);
             if ($status !== 200) {
                 $this->logger->notice('Sitemap ping to ' . $url . ' failed with status ' . $status);
             }

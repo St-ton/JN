@@ -28,8 +28,12 @@ if (auth()) {
                 break;
             case LASTJOBS_SITEMAP:
                 if ($conf['sitemap']['sitemap_wawiabgleich'] === 'Y') {
-                    require_once PFAD_ROOT . PFAD_ADMIN . 'includes/sitemapexport.php';
-                    generateSitemapXML();
+                    $exporter = new \Sitemap\Export(
+                        Shop::Container()->getDB(),
+                        Shop::Container()->getLogService(),
+                        $conf
+                    );
+                    $exporter->generate();
                     updateJob(LASTJOBS_SITEMAP);
                 }
                 break;

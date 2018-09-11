@@ -13,11 +13,9 @@ $oAccount->permission('EXPORT_SITEMAP_VIEW', true, true);
 $exporter = new \Sitemap\Export(
     Shop::Container()->getDB(),
     Shop::Container()->getLogService(),
-    Shopsetting::getInstance()->getAll()
+    Shop::getSettings([CONF_GLOBAL, CONF_SITEMAP])
 );
 $exporter->generate();
-
-//generateSitemapXML();
 
 if (isset($_REQUEST['update']) && (int)$_REQUEST['update'] === 1) {
     header('Location: sitemapexport.php?update=1');

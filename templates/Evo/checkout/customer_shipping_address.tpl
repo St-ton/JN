@@ -210,8 +210,15 @@
                 data-toggle="postcode" data-city="#{$prefix}-{$name}-city" data-country="#{$prefix}-{$name}-country"
                 required
                 autocomplete="shipping postal-code">
-            {if !empty($fehlendeAngaben.plz)}
-                <div class="form-error-msg text-danger">{lang key='fillOut' section='global'}</div>{/if}
+            {if isset($fehlendeAngaben.plz)}
+                <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+                    {if $fehlendeAngaben.plz >= 2}
+                        {lang key='checkPLZCity' section='checkout'}
+                    {else}
+                        {lang key='fillOut' section='global'}
+                    {/if}
+                </div>
+            {/if}
         </div>
     </div>
 
@@ -222,12 +229,14 @@
                    value="{if isset($Lieferadresse->cOrt)}{$Lieferadresse->cOrt}{/if}" id="{$prefix}-{$name}-city"
                    class="city_input form-control" placeholder="{lang key='city' section='account data'}" required
                    autocomplete="shipping address-level2">
-            {if !empty($fehlendeAngaben.ort)}
-                {if $fehlendeAngaben.ort == 3}
-                    <div class="form-error-msg text-danger">{lang key='cityNotNumeric' section='account data'}</div>
-                {else}
-                    <div class="form-error-msg text-danger">{lang key='fillOut' section='global'}</div>
-                {/if}
+            {if isset($fehlendeAngaben.ort)}
+                <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+                    {if $fehlendeAngaben.ort==3}
+                        {lang key='cityNotNumeric' section='account data'}
+                    {else}
+                        {lang key='fillOut' section='global'}
+                    {/if}
+                </div>
             {/if}
         </div>
     </div>

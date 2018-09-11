@@ -316,7 +316,7 @@ function pruefeRechnungsadresseStep($cGet_arr)
 {
     global $step, $Kunde;
     //sondersteps Rechnungsadresse ändern
-    if ($_SESSION['Kunde'] && isset($cGet_arr['editRechnungsadresse']) && (int)$cGet_arr['editRechnungsadresse'] === 1) {
+    if (!empty($_SESSION['Kunde']) && isset($cGet_arr['editRechnungsadresse']) && (int)$cGet_arr['editRechnungsadresse'] === 1) {
         Kupon::resetNewCustomerCoupon();
         if (!isset($cGet_arr['editLieferadresse'])) {
             // Shipping address and customer address are now on same site - check shipping address also
@@ -360,12 +360,7 @@ function pruefeLieferadresseStep($cGet_arr)
 {
     global $step, $Lieferadresse;
     //sondersteps Lieferadresse ändern
-    if (isset($_SESSION['checkout.fehlendeAngaben'])) {
-        setzeFehlendeAngaben($_SESSION['checkout.fehlendeAngaben']);
-        unset($_SESSION['checkout.fehlendeAngaben']);
-        $step = 'Lieferadresse';
-    }
-    if ($_SESSION['Lieferadresse'] && isset($cGet_arr['editLieferadresse']) && $cGet_arr['editLieferadresse'] == 1) {
+    if (!empty($_SESSION['Lieferadresse']) && isset($cGet_arr['editLieferadresse']) && $cGet_arr['editLieferadresse'] == 1) {
         Kupon::resetNewCustomerCoupon();
         unset($_SESSION['Zahlungsart'], $_SESSION['TrustedShops'], $_SESSION['Versandart']);
         $Lieferadresse = $_SESSION['Lieferadresse'];
@@ -2078,7 +2073,7 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
         $ret['email'] = 4;
     }
 
-    if (empty($_SESSION['check_plzort'])
+    if (empty($_SESSION['check_plzort']) && empty($_SESSION['check_liefer_plzort'])
         && $conf['kunden']['kundenregistrierung_abgleichen_plz'] === 'Y'
     ) {
         if (!valid_plzort($data['plz'], $data['ort'], $data['land'])) {
@@ -2363,8 +2358,8 @@ function checkLieferFormularArray($data)
         && $conf['kunden']['kundenregistrierung_abgleichen_plz'] === 'Y'
     ) {
         if (!valid_plzort($data['plz'], $data['ort'], $data['land'])) {
-            $ret['plz']               = 2;
-            $ret['ort']               = 2;
+            $ret['plz']                      = 2;
+            $ret['ort']                      = 2;
             $_SESSION['check_liefer_plzort'] = 1;
         }
     } else {
@@ -2551,7 +2546,9 @@ function getKundendaten($post, $kundenaccount, $htmlentities = 1)
     }
 
     $customer->dGeburtstag           = DateHelper::convertDateToMysqlStandard($customer->dGeburtstag ?? '');
-    $customer->dGeburtstag_formatted = DateTime::createFromFormat('Y-m-d', $customer->dGeburtstag)->format('d.m.Y');
+    $customer->dGeburtstag_formatted = $customer->dGeburtstag === '_DBNULL_'
+        ? ''
+        : DateTime::createFromFormat('Y-m-d', $customer->dGeburtstag)->format('d.m.Y');
     $customer->angezeigtesLand       = Sprache::getCountryCodeByCountryName($customer->cLand);
     if (!empty($customer->cBundesland)) {
         $oISO = Staat::getRegionByIso($customer->cBundesland, $customer->cLand);
@@ -3516,9 +3513,6 @@ function setzeFehlendeAngaben($fehlendeAngabe, $context = null)
             ? array_merge($fehlendeAngaben[$context], $fehlendeAngabe)
             : $fehlendeAngabe;
     }
-    $_SESSION['checkout.fehlendeAngaben'] = isset($_SESSION['checkout.fehlendeAngaben'])
-        ? array_merge($_SESSION['checkout.fehlendeAngaben'], $fehlendeAngaben)
-        : $fehlendeAngaben;
 
     Shop::Smarty()->assign('fehlendeAngaben', $fehlendeAngaben);
 }

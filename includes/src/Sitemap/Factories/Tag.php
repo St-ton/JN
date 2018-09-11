@@ -6,8 +6,8 @@
 
 namespace Sitemap\Factories;
 
-use function Functional\map;
 use Tightenco\Collect\Support\Collection;
+use function Functional\map;
 
 /**
  * Class Tag
@@ -27,9 +27,8 @@ class Tag extends AbstractGenerator
         $languageIDs = map($languages, function ($e) {
             return $e->kSprache;
         });
-        $collection   = new Collection();
-        $imageBaseURL = \Shop::getImageBaseURL();
-        $res          = $this->db->query(
+        $collection  = new Collection();
+        $res         = $this->db->query(
             "SELECT ttag.kTag, ttag.cName, tseo.cSeo
                 FROM ttag               
                 JOIN tseo 
@@ -41,8 +40,8 @@ class Tag extends AbstractGenerator
             \DB\ReturnType::QUERYSINGLE
         );
         while (($tag = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
-            $item = new \Sitemap\Items\Tag($this->config);
-            $item->generateData($tag, $imageBaseURL);
+            $item = new \Sitemap\Items\Tag($this->config, $this->baseURL, $this->baseImageURL);
+            $item->generateData($tag);
             $collection->push($item);
         }
 

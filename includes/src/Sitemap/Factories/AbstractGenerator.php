@@ -25,13 +25,27 @@ abstract class AbstractGenerator implements GeneratorInterface
     protected $config;
 
     /**
+     * @var string
+     */
+    protected $baseURL;
+
+    /**
+     * @var string
+     */
+    protected $baseImageURL;
+
+    /**
      * AbstractGenerator constructor.
      * @param DbInterface $db
      * @param array       $config
+     * @param string      $baseURL
+     * @param string      $baseImageURL
      */
-    public function __construct(DbInterface $db, array $config)
+    public function __construct(DbInterface $db, array $config, string $baseURL, string $baseImageURL)
     {
-        $this->db     = $db;
-        $this->config = $config;
+        $this->db           = $db;
+        $this->config       = $config;
+        $this->baseURL      = $baseURL;
+        $this->baseImageURL = $baseImageURL;
     }
 }

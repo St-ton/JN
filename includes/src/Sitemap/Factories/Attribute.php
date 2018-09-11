@@ -24,12 +24,11 @@ class Attribute extends AbstractGenerator
         if ($this->config['sitemap']['sitemap_tags_anzeigen'] !== 'Y') {
             return $collection;
         }
-        $languageIDs  = map($languages, function ($e) {
+        $languageIDs = map($languages, function ($e) {
             return $e->kSprache;
         });
-        $collection   = new Collection();
-        $imageBaseURL = \Shop::getImageBaseURL();
-        $res          = $this->db->query(
+        $collection  = new Collection();
+        $res         = $this->db->query(
             "SELECT tmerkmalsprache.cName, tmerkmalsprache.kMerkmal, tmerkmalwertsprache.cWert, 
                 tseo.cSeo, tmerkmalwert.kMerkmalWert
                 FROM tmerkmalsprache
@@ -53,8 +52,8 @@ class Attribute extends AbstractGenerator
             \DB\ReturnType::QUERYSINGLE
         );
         while (($tag = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
-            $item = new \Sitemap\Items\Attribute($this->config);
-            $item->generateData($tag, $imageBaseURL);
+            $item = new \Sitemap\Items\Attribute($this->config, $this->baseURL, $this->baseImageURL);
+            $item->generateData($tag);
             $collection->push($item);
         }
 

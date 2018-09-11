@@ -6,8 +6,6 @@
 
 namespace Sitemap\Factories;
 
-use Link\Link;
-use Link\LinkList;
 use Tightenco\Collect\Support\Collection;
 use function Functional\first;
 use function Functional\map;
@@ -23,17 +21,16 @@ class Category extends AbstractGenerator
      */
     public function getCollection(array $languages, array $customerGroups): Collection
     {
-        $languageIDs = map($languages, function ($e) {
+        $languageIDs   = map($languages, function ($e) {
             return $e->kSprache;
         });
         $collection    = new Collection();
         $customerGroup = first($customerGroups);
-        $imageBaseURL  = \Shop::getImageBaseURL();
         if ($this->config['sitemap']['sitemap_kategorien_anzeigen'] !== 'Y') {
             return $collection;
         }
         $categoryHelper = new \KategorieListe();
-        $res = $this->db->queryPrepared(
+        $res            = $this->db->queryPrepared(
             "SELECT tkategorie.kKategorie, tseo.cSeo, tkategorie.dLetzteAktualisierung
                 FROM tkategorie
                 JOIN tseo 
@@ -51,9 +48,9 @@ class Category extends AbstractGenerator
             \DB\ReturnType::QUERYSINGLE
         );
         while (($category = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
-            if ($categoryHelper->nichtLeer($category->kKategorie,$customerGroup) === true) {
-                $item = new \Sitemap\Items\Category($this->config);
-                $item->generateData($category, $imageBaseURL);
+            if ($categoryHelper->nichtLeer($category->kKategorie, $customerGroup) === true) {
+                $item = new \Sitemap\Items\Category($this->config, $this->baseURL, $this->baseImageURL);
+                $item->generateData($category);
                 $collection->push($item);
             }
         }

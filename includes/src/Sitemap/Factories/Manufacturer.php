@@ -20,28 +20,26 @@ class Manufacturer extends AbstractGenerator
      */
     public function getCollection(array $languages, array $customerGroups): Collection
     {
-        $collection   = new Collection();
+        $collection = new Collection();
         if ($this->config['sitemap']['sitemap_hersteller_anzeigen'] !== 'Y') {
             return $collection;
         }
-        $languageIDs  = map($languages, function ($e) {
+        $languageIDs = map($languages, function ($e) {
             return $e->kSprache;
         });
-        $imageBaseURL = \Shop::getImageBaseURL();
-        $res = $this->db->query(
-            "SELECT ttag.kTag, ttag.cName, tseo.cSeo
-                FROM ttag               
+        $res         = $this->db->query(
+            "SELECT thersteller.kHersteller, thersteller.cName, tseo.cSeo
+                FROM thersteller
                 JOIN tseo 
-                    ON tseo.cKey = 'kTag'
-                    AND tseo.kKey = ttag.kTag
-                WHERE ttag.kSprache IN (" . \implode(',', $languageIDs) . ")
-                    AND ttag.nAktiv = 1
-                ORDER BY ttag.kTag",
+                    ON tseo.cKey = 'kHersteller'
+                    AND tseo.kKey = thersteller.kHersteller
+                    AND tseo.kSprache IN (" . \implode(',', $languageIDs) . ")
+                ORDER BY thersteller.kHersteller",
             \DB\ReturnType::QUERYSINGLE
         );
-        while (($tag = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
-            $item = new \Sitemap\Items\Tag($this->config);
-            $item->generateData($tag, $imageBaseURL);
+        while (($manufacturer = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
+            $item = new \Sitemap\Items\Manufacturer($this->config, $this->baseURL, $this->baseImageURL);
+            $item->generateData($manufacturer);
             $collection->push($item);
         }
 

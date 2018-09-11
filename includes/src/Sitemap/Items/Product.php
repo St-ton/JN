@@ -40,16 +40,16 @@ class Product extends AbstractItem
      */
     public function generateLocation(): void
     {
-        $this->setLocation(\UrlHelper::buildURL($this->data, \URLART_ARTIKEL));
+        $this->setLocation(\UrlHelper::buildURL($this->data, \URLART_ARTIKEL, true));
     }
 
     /**
      * @inheritdoc
      */
-    public function generateData($data, string $imageBaseURL): void
+    public function generateData($data): void
     {
         $this->setData($data);
-        $this->generateImage($imageBaseURL);
+        $this->generateImage($this->baseImageURL);
         $this->generateLocation();
         $this->setChangeFreq(\FREQ_DAILY);
         $this->setPriority(\PRIO_HIGH);

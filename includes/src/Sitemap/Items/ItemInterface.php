@@ -78,8 +78,7 @@ interface ItemInterface
     public function setData($data): void;
 
     /**
-     * @param mixed  $data
-     * @param string $imageBaseURL
+     * @param mixed $data
      */
-    public function generateData($data, string $imageBaseURL): void;
+    public function generateData($data): void;
 }

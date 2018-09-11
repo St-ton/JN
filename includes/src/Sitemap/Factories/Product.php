@@ -6,8 +6,8 @@
 
 namespace Sitemap\Factories;
 
-use function Functional\first;
 use Tightenco\Collect\Support\Collection;
+use function Functional\first;
 
 /**
  * Class Product
@@ -20,7 +20,6 @@ class Product extends AbstractGenerator
      */
     public function getCollection(array $languages, array $customerGroups): Collection
     {
-        $imageBaseURL            = \Shop::getImageBaseURL();
         $collection              = new Collection();
         $defaultCustomerGroupID  = first($customerGroups);
         $defaultLang             = \Sprache::getDefaultLanguage(true);
@@ -28,21 +27,16 @@ class Product extends AbstractGenerator
         $_SESSION['kSprache']    = $defaultLangID;
         $_SESSION['cISOSprache'] = $defaultLang->cISO;
         $andWhere                = '';
-        // Kindartikel?
         if ($this->config['sitemap']['sitemap_varkombi_children_export'] !== 'Y') {
             $andWhere .= ' AND tartikel.kVaterArtikel = 0';
         }
-        // Artikelanzeigefilter
         if ((int)$this->config['global']['artikel_artikelanzeigefilter'] === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) {
-            // 'Nur Artikel mit Lagerbestand>0 anzeigen'
             $andWhere .= " AND (tartikel.cLagerBeachten = 'N' OR tartikel.fLagerbestand > 0)";
         } elseif ((int)$this->config['global']['artikel_artikelanzeigefilter'] === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) {
-            // 'Nur Artikel mit Lagerbestand>0 oder deren Lagerbestand<0 werden darf'
             $andWhere .= " AND (tartikel.cLagerBeachten = 'N' 
                             OR tartikel.cLagerKleinerNull = 'Y' 
                             OR tartikel.fLagerbestand > 0)";
         }
-        // Artikel sonstige Sprachen
         foreach ($languages as $SpracheTMP) {
             if ($SpracheTMP->kSprache === $defaultLangID) {
                 $res = $this->db->queryPrepared(
@@ -88,17 +82,12 @@ class Product extends AbstractGenerator
             }
 
             while (($product = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
-                $item = new \Sitemap\Items\Product($this->config);
-                $item->generateData($product, $imageBaseURL);
+                $item = new \Sitemap\Items\Product($this->config, $this->baseURL, $this->baseImageURL);
+                $item->generateData($product);
                 $collection->push($item);
             }
         }
 
         return $collection;
-    }
-
-    private function generateItem()
-    {
-
     }
 }

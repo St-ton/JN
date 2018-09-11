@@ -7,10 +7,10 @@
 namespace Sitemap\Items;
 
 /**
- * Class Page
+ * Class Base
  * @package Sitemap\Items
  */
-class Page extends AbstractItem
+class Base extends AbstractItem
 {
     /**
      * @inheritdoc
@@ -18,9 +18,9 @@ class Page extends AbstractItem
     public function generateData($data): void
     {
         $this->setData($data);
-        $this->setLocation($data->cSEO);
-        $this->setChangeFreq(\FREQ_MONTHLY);
-        $this->setPriority(\PRIO_LOW);
+        $this->setLocation($this->baseURL);
+        $this->setChangeFreq(\FREQ_ALWAYS);
+        $this->setPriority(\PRIO_VERYHIGH);
         $this->setLastModificationTime(null);
     }
 }

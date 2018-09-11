@@ -19,8 +19,10 @@ interface GeneratorInterface
      * GeneratorInterface constructor.
      * @param DbInterface $db
      * @param array       $config
+     * @param string      $baseURL
+     * @param string      $baseImageURL
      */
-    public function __construct(DbInterface $db, array $config);
+    public function __construct(DbInterface $db, array $config, string $baseURL, string $baseImageURL);
 
     /**
      * @param array $languages

@@ -12,26 +12,18 @@ namespace Sitemap\Items;
  */
 class Category extends AbstractItem
 {
-
-    /**
-     * @inheritdoc
-     */
-    public function generateImage(string $imageBaseURL): void
-    {
-    }
-
     /**
      * @inheritdoc
      */
     public function generateLocation(): void
     {
-        $this->setLocation(\UrlHelper::buildURL($this->data, \URLART_KATEGORIE));
+        $this->setLocation(\UrlHelper::buildURL($this->data, \URLART_KATEGORIE, true));
     }
 
     /**
      * @inheritdoc
      */
-    public function generateData($data, string $imageBaseURL): void
+    public function generateData($data): void
     {
         $this->setData($data);
         $this->setLocation($data->cSeo);

@@ -6,9 +6,8 @@
 
 namespace Sitemap\Factories;
 
-use function Functional\first;
-use function Functional\map;
 use Tightenco\Collect\Support\Collection;
+use function Functional\map;
 
 /**
  * Class NewsCategory
@@ -28,9 +27,8 @@ class NewsCategory extends AbstractGenerator
         $languageIDs = map($languages, function ($e) {
             return $e->kSprache;
         });
-        $collection   = new Collection();
-        $imageBaseURL = \Shop::getImageBaseURL();
-        $res = $this->db->query(
+        $collection  = new Collection();
+        $res         = $this->db->query(
             "SELECT tnewskategorie.dLetzteAktualisierung, tseo.cSeo
                  FROM tnewskategorie
                  JOIN tseo 
@@ -42,8 +40,8 @@ class NewsCategory extends AbstractGenerator
             \DB\ReturnType::QUERYSINGLE
         );
         while (($tag = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
-            $item = new \Sitemap\Items\NewsCategory($this->config);
-            $item->generateData($tag, $imageBaseURL);
+            $item = new \Sitemap\Items\NewsCategory($this->config, $this->baseURL, $this->baseImageURL);
+            $item->generateData($tag);
             $collection->push($item);
         }
 

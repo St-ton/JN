@@ -85,12 +85,12 @@ class URLGenerator
      * @param string $cKey
      * @param array  $languages
      * @param int    $langID
-     * @return array
+     * @return string
      */
-    public function getExportURL(int $kKey, $cKey, $languages, $langID)
+    public function getExportURL(int $kKey, string $cKey, array $languages, int $langID): string
     {
-        $cURL_arr = [];
-        $params   = [];
+        $url    = '';
+        $params = [];
         \Shop::setLanguage($langID);
         $filterConfig = new \Filter\Config();
         $filterConfig->setLanguageID($langID);
@@ -144,13 +144,13 @@ class URLGenerator
                 break;
 
             default:
-                return $cURL_arr;
+                return $url;
         }
         $oSuchergebnisse = $naviFilter->generateSearchResults(null, false, $this->productsPerPage);
         if (($cKey === 'kKategorie' && $kKey > 0) || $oSuchergebnisse->getProductCount() > 0) {
-            $cURL_arr[] = $naviFilter->getFilterURL()->getURL();
+            $url = $naviFilter->getFilterURL()->getURL();
         }
 
-        return $cURL_arr;
+        return $url;
     }
 }

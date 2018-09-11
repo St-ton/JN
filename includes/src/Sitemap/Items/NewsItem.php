@@ -7,34 +7,26 @@
 namespace Sitemap\Items;
 
 /**
- * Class NewsCategory
+ * Class NewsItem
  * @package Sitemap\Items
  */
-class NewsCategory extends AbstractItem
+class NewsItem extends AbstractItem
 {
-
-    /**
-     * @inheritdoc
-     */
-    public function generateImage(string $imageBaseURL): void
-    {
-    }
-
     /**
      * @inheritdoc
      */
     public function generateLocation(): void
     {
-        $this->setLocation(\UrlHelper::buildURL($this->data, \URLART_SEITE));
+        $this->setLocation(\UrlHelper::buildURL($this->data, \URLART_NEWS, true));
     }
 
     /**
      * @inheritdoc
      */
-    public function generateData($data, string $imageBaseURL): void
+    public function generateData($data): void
     {
         $this->setData($data);
-        $this->setLocation(\Shop::getURL() . '/' . $data->cSeo);
+        $this->setLocation($this->baseURL . $data->cSeo);
         $this->setChangeFreq(\FREQ_DAILY);
         $this->setPriority(\PRIO_HIGH);
         $this->setLastModificationTime(\date_format(\date_create($data->dGueltigVon), 'c'));

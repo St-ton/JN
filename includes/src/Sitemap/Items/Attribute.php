@@ -31,10 +31,10 @@ class Attribute extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function generateData($data, string $imageBaseURL): void
+    public function generateData($data): void
     {
         $this->setData($data);
-        $this->setLocation(\Shop::getURL() . '/' . $data->cSeo);
+        $this->setLocation($this->baseURL . $data->cSeo);
         $this->setChangeFreq(\FREQ_WEEKLY);
         $this->setPriority(\PRIO_NORMAL);
         $this->setLastModificationTime(null);

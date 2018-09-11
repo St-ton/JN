@@ -48,12 +48,26 @@ abstract class AbstractItem implements ItemInterface
     protected $config;
 
     /**
-     * AbstractItem constructor.
-     * @param array $config
+     * @var string
      */
-    public function __construct(array $config)
+    protected $baseURL;
+
+    /**
+     * @var string
+     */
+    protected $baseImageURL;
+
+    /**
+     * AbstractItem constructor.
+     * @param array  $config
+     * @param string $baseURL
+     * @param string $baseImageURL
+     */
+    public function __construct(array $config, string $baseURL, string $baseImageURL)
     {
-        $this->config = $config;
+        $this->config       = $config;
+        $this->baseURL      = $baseURL;
+        $this->baseImageURL = $baseImageURL;
     }
 
     /**
@@ -142,5 +156,19 @@ abstract class AbstractItem implements ItemInterface
     public function setData($data): void
     {
         $this->data = $data;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function generateImage(string $imageBaseURL): void
+    {
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function generateLocation(): void
+    {
     }
 }

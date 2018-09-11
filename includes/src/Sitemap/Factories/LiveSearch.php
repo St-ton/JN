@@ -6,8 +6,8 @@
 
 namespace Sitemap\Factories;
 
-use function Functional\map;
 use Tightenco\Collect\Support\Collection;
+use function Functional\map;
 
 /**
  * Class LiveSearch
@@ -27,9 +27,8 @@ class LiveSearch extends AbstractGenerator
         $languageIDs = map($languages, function ($e) {
             return $e->kSprache;
         });
-        $collection   = new Collection();
-        $imageBaseURL = \Shop::getImageBaseURL();
-        $res = $this->db->query(
+        $collection  = new Collection();
+        $res         = $this->db->query(
             "SELECT tsuchanfrage.kSuchanfrage, tseo.cSeo, tsuchanfrage.dZuletztGesucht
                 FROM tsuchanfrage
                 JOIN tseo 
@@ -41,8 +40,8 @@ class LiveSearch extends AbstractGenerator
             \DB\ReturnType::QUERYSINGLE
         );
         while (($liveSearch = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
-            $item = new \Sitemap\Items\LiveSearch($this->config);
-            $item->generateData($liveSearch, $imageBaseURL);
+            $item = new \Sitemap\Items\LiveSearch($this->config, $this->baseURL, $this->baseImageURL);
+            $item->generateData($liveSearch);
             $collection->push($item);
         }
 

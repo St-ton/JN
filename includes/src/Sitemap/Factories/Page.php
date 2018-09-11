@@ -28,11 +28,10 @@ class Page extends AbstractGenerator
             return $collection;
         }
         $customerGroup = first($customerGroups);
-        $imageBaseURL  = \Shop::getImageBaseURL();
         $languageCodes = map($languages, function ($e) {
             return "'" . $e->cISO . "'";
         });
-        $res      = $this->db->queryPrepared(
+        $res           = $this->db->queryPrepared(
             "SELECT DISTINCT tlink.kLink AS id
                 FROM tlink
                 JOIN tlinkgroupassociations
@@ -59,19 +58,19 @@ class Page extends AbstractGenerator
             ['cGrpID' => $customerGroup],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        $linkIDs  = map($res, function ($e) {
+        $linkIDs       = map($res, function ($e) {
             return $e->id;
         });
-        $linkList = new LinkList($this->db);
+        $linkList      = new LinkList($this->db);
         $linkList->createLinks($linkIDs);
-        $linkList->getLinks()->each(function (Link $e) use ($collection, $imageBaseURL) {
+        $linkList->getLinks()->each(function (Link $e) use ($collection) {
             $linkType = $e->getLinkType();
             foreach ($e->getURLs() as $url) {
                 $data           = new \stdClass();
                 $data->cSEO     = $url;
                 $data->nLinkart = $linkType;
-                $item           = new \Sitemap\Items\Page($this->config);
-                $item->generateData($data, $imageBaseURL);
+                $item           = new \Sitemap\Items\Page($this->config, $this->baseURL, $this->baseImageURL);
+                $item->generateData($data);
                 $collection->push($item);
             }
         });

@@ -20,11 +20,18 @@ class DefaultRenderer implements RendererInterface
     protected $baseURL;
 
     /**
+     * @var array
+     */
+    protected $config;
+
+    /**
      * DefaultRenderer constructor.
+     * @param array  $config
      * @param string $baseURL
      */
-    public function __construct(string $baseURL)
+    public function __construct(array $config, string $baseURL)
     {
+        $this->config  = $config;
         $this->baseURL = $baseURL;
     }
 
@@ -34,20 +41,20 @@ class DefaultRenderer implements RendererInterface
     public function renderItem(ItemInterface $item): string
     {
         $res = "  <url>\n" .
-            '     <loc>' . $this->baseURL . $item->getLocation() . "</loc>\n";
+            '     <loc>' . $item->getLocation() . "</loc>\n";
         if (!empty($item->getImage())) {
             $res .=
                 "     <image:image>\n" .
                 '        <image:loc>' . $item->getImage() . "</image:loc>\n" .
                 "     </image:image>\n";
         }
-        if (!empty($item->getLastModificationTime())) {
+        if ($this->config['sitemap']['sitemap_insert_lastmod'] === 'Y' && !empty($item->getLastModificationTime())) {
             $res .= '     <lastmod>' . $item->getLastModificationTime() . "</lastmod>\n";
         }
-        if (!empty($item->getChangeFreq())) {
+        if ($this->config['sitemap']['sitemap_insert_changefreq'] === 'Y' && !empty($item->getChangeFreq())) {
             $res .= '     <changefreq>' . $item->getChangeFreq() . "</changefreq>\n";
         }
-        if (!empty($item->getPriority())) {
+        if ($this->config['sitemap']['sitemap_insert_priority'] === 'Y' && !empty($item->getPriority())) {
             $res .= '     <priority>' . $item->getPriority() . "</priority>\n";
         }
         $res .= "  </url>\n";

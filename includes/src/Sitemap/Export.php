@@ -11,6 +11,7 @@ use Psr\Log\LoggerInterface;
 use Sitemap\Factories\Attribute;
 use Sitemap\Factories\Base;
 use Sitemap\Factories\Category;
+use Sitemap\Factories\FactoryInterface;
 use Sitemap\Factories\LiveSearch;
 use Sitemap\Factories\Manufacturer;
 use Sitemap\Factories\NewsCategory;
@@ -78,23 +79,6 @@ class Export
             $_SESSION['Kundengruppe'] = new \Kundengruppe();
         }
         $_SESSION['Kundengruppe']->setID($defaultCustomerGroupID);
-        $nStat_arr = [
-            'artikel'          => 0,
-            'artikelbild'      => 0,
-            'artikelsprache'   => 0,
-            'link'             => 0,
-            'kategorie'        => 0,
-            'kategoriesprache' => 0,
-            'tag'              => 0,
-            'tagsprache'       => 0,
-            'hersteller'       => 0,
-            'livesuche'        => 0,
-            'livesuchesprache' => 0,
-            'merkmal'          => 0,
-            'merkmalsprache'   => 0,
-            'news'             => 0,
-            'newskategorie'    => 0,
-        ];
 
         $fileNumber    = 0;
         $nSitemap      = 1;
@@ -102,14 +86,11 @@ class Export
         $urlCounts     = [0 => 0];
         $nSitemapLimit = 25000;
         $res           = '';
-        $cache         = \Shop::Container()->getCache();
         $baseImageURL  = \Shop::getImageBaseURL();
         $baseURL       = \Shop::getURL() . '/';
 
         $this->deleteFiles();
 
-        $urlGenerator = new URLGenerator($this->db, $cache, $this->config, $baseURL);
-//        \Shop::dbg($urlGenerator->getExportURL(1, 'kKategorie', $languages, 1));
         $renderer = new DefaultRenderer($this->config);
 
         $factories[] = new Base($this->db, $this->config, $baseURL, $baseImageURL);
@@ -129,6 +110,7 @@ class Export
         ]);
 
         foreach ($factories as $factory) {
+            /** @var FactoryInterface $factory */
             $collection = $factory->getCollection($languages, [$defaultCustomerGroupID]);
             foreach ($collection as $item) {
                 /** @var ItemInterface $item */
@@ -150,9 +132,9 @@ class Export
         $this->buildFile($fileNumber, $res);
         $indexFile = self::EXPORT_DIR . 'sitemap_index.xml';
         if (\is_writable($indexFile) || !\is_file($indexFile)) {
-            $file = \fopen($indexFile, 'w+');
-            \fwrite($file, $this->buildIndex($fileNumber, \function_exists('gzopen')));
-            \fclose($file);
+            $handle = \fopen($indexFile, 'w+');
+            \fwrite($handle, $this->buildIndex($fileNumber, \function_exists('gzopen')));
+            \fclose($handle);
             $timeTotal = \microtime(true) - $timeStart;
             \executeHook(\HOOK_SITEMAP_EXPORT_GENERATED, [
                 'nAnzahlURL_arr' => $urlCounts,
@@ -238,29 +220,42 @@ class Export
     }
 
     /**
+     * @return string
+     */
+    private function buildXMLHeader(): string
+    {
+        $head = '<?xml version="1.0" encoding="UTF-8"?>
+            <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"';
+
+        if ($this->config['sitemap']['sitemap_googleimage_anzeigen'] === 'Y') {
+            $head .= ' xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"';
+        }
+
+        $head .= ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">';
+
+        return $head;
+    }
+
+    /**
      * @param int    $fileNumber
      * @param string $data
      * @return bool
      */
     private function buildFile(int $fileNumber, string $data): bool
     {
-        $this->logger->debug('Baue "' . self::EXPORT_DIR . 'sitemap_' . $fileNumber . '.xml", Datenlaenge ' . \strlen($data));
         if (empty($data)) {
             return false;
         }
-        if (\function_exists('gzopen')) {
-            $gz = \gzopen(self::EXPORT_DIR . 'sitemap_' . $fileNumber . '.xml.gz', 'w9');
-            \fwrite($gz, \getXMLHeader($this->config['sitemap']['sitemap_googleimage_anzeigen']) . "\n");
-            \fwrite($gz, $data);
-            \fwrite($gz, '</urlset>');
-            \gzclose($gz);
-        } else {
-            $file = \fopen(self::EXPORT_DIR . 'sitemap_' . $fileNumber . '.xml', 'w+');
-            \fwrite($file, \getXMLHeader($this->config['sitemap']['sitemap_googleimage_anzeigen']) . "\n");
-            \fwrite($file, $data);
-            \fwrite($file, '</urlset>');
-            \fclose($file);
-        }
+        $fileName = self::EXPORT_DIR . 'sitemap_' . $fileNumber . '.xml';
+        $handle   = \function_exists('gzopen')
+            ? \gzopen($fileName . '.gz', 'w9')
+            : \fopen($fileName, 'w+');
+        \fwrite($handle, $this->buildXMLHeader() . "\n");
+        \fwrite($handle, $data);
+        \fwrite($handle, '</urlset>');
+        \fclose($handle);
 
         return true;
     }
@@ -317,6 +312,7 @@ class Export
                 : 0;
             $this->db->insert('tsitemapreportfile', $ins);
         }
+        $this->logger->debug('Sitemap erfolgreich mit ' . $totalCount . ' URLs erstellt');
 
         return true;
     }

@@ -502,10 +502,8 @@ if ($customerID > 0) {
             }
             $step                               = 'bestellung';
             $_SESSION['Kunde']->angezeigtesLand = Sprache::getCountryCodeByCountryName($_SESSION['Kunde']->cLand);
-            krsort($_SESSION['Kunde']->cKundenattribut_arr);
             Shop::Smarty()->assign('Bestellung', $bestellung)
-                ->assign('Kunde', $bestellung->oRechnungsadresse)// Work Around Daten von trechnungsadresse
-                ->assign('customerAttribute_arr', $_SESSION['Kunde']->cKundenattribut_arr)
+                ->assign('billingAddress', $bestellung->oRechnungsadresse)
                 ->assign('Lieferadresse', $bestellung->Lieferadresse ?? null);
             if ($Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
                 Shop::Smarty()->assign('oTrustedShopsBewertenButton', TrustedShops::getRatingButton(

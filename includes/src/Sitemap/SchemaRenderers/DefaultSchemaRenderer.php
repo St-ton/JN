@@ -36,16 +36,18 @@ final class DefaultSchemaRenderer extends AbstractSchemaRenderer
      */
     public function buildXMLHeader(): string
     {
-        $xml = '<?xml version="1.0" encoding="UTF-8"?>
-            <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"';
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"';
 
         if ($this->config['sitemap']['sitemap_googleimage_anzeigen'] === 'Y') {
             $xml .= ' xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"';
         }
 
-        return $xml . ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">';
+        $xml .= ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' . "\n";
+        $xml .= '  xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9' . "\n";
+        $xml .= '  http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">' . "\n";
+
+        return $xml;
     }
 
     /**

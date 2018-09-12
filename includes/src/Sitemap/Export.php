@@ -9,7 +9,7 @@ namespace Sitemap;
 use DB\DbInterface;
 use Psr\Log\LoggerInterface;
 use Sitemap\Factories\FactoryInterface;
-use Sitemap\ItemRenderes\RendererInterface;
+use Sitemap\ItemRenderers\RendererInterface;
 use Sitemap\Items\ItemInterface;
 use Sitemap\SchemaRenderers\SchemaRendererInterface;
 use function Functional\first;
@@ -67,6 +67,11 @@ final class Export
     private $blockedURLs = [];
 
     /**
+     * @var bool
+     */
+    private $gzip;
+
+    /**
      * Export constructor.
      * @param DbInterface             $db
      * @param LoggerInterface         $logger
@@ -88,6 +93,7 @@ final class Export
         $this->config         = $config;
         $this->baseImageURL   = \Shop::getImageBaseURL();
         $this->baseURL        = \Shop::getURL() . '/';
+        $this->gzip           = false&&\function_exists('gzopen');
         $this->schemaRenderer->setConfig($config);
         $this->renderer->setConfig($config);
     }
@@ -179,7 +185,7 @@ final class Export
         $indexFile = self::EXPORT_DIR . 'sitemap_index.xml';
         if (\is_writable($indexFile) || !\is_file($indexFile)) {
             $handle       = \fopen($indexFile, 'w+');
-            $extension    = \function_exists('gzopen') ? '.xml.gz' : '.xml';
+            $extension    = $this->gzip ? '.xml.gz' : '.xml';
             $sitemapFiles = [];
             for ($i = 0; $i <= $fileNumber; ++$i) {
                 $sitemapFiles[] = $this->baseURL . \PFAD_EXPORT . 'sitemap_' . $i . $extension;
@@ -228,7 +234,7 @@ final class Export
             return false;
         }
         $fileName = self::EXPORT_DIR . 'sitemap_' . $fileNumber . '.xml';
-        $handle   = \function_exists('gzopen')
+        $handle   = $this->gzip
             ? \gzopen($fileName . '.gz', 'w9')
             : \fopen($fileName, 'w+');
         \fwrite($handle,
@@ -279,14 +285,13 @@ final class Export
         $report->dErstellt          = 'NOW()';
 
         $reportID = $this->db->insert('tsitemapreport', $report);
-        $gzip     = \function_exists('gzopen');
         foreach ($urlCounts as $i => $count) {
             if ($count <= 0) {
                 continue;
             }
             $ins                 = new \stdClass();
             $ins->kSitemapReport = $reportID;
-            $ins->cDatei         = 'sitemap_' . $i . '.xml' . ($gzip ? '.gz' : '');
+            $ins->cDatei         = 'sitemap_' . $i . '.xml' . ($this->gzip ? '.gz' : '');
             $ins->nAnzahlURL     = $count;
             $ins->fGroesse       = \is_file(self::EXPORT_DIR . $ins->cDatei)
                 ? \number_format(\filesize(self::EXPORT_DIR . $ins->cDatei) / 1024, 2)

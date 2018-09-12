@@ -18,6 +18,8 @@ final class Page extends AbstractItem
     public function generateData($data): void
     {
         $this->setData($data);
+        $this->setLanguageID($data->langID);
+        $this->setLanguageCode($data->langCode);
         $this->setLocation($data->cSEO);
         $this->setChangeFreq(\FREQ_MONTHLY);
         $this->setPriority(\PRIO_LOW);

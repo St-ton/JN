@@ -26,6 +26,8 @@ final class Tag extends AbstractItem
     public function generateData($data): void
     {
         $this->setData($data);
+        $this->setLanguageID($data->langID);
+        $this->setLanguageCode($data->langCode);
 //        $this->setLocation($this->baseURL . $data->cSeo);
         $this->generateLocation();
         $this->setChangeFreq(\FREQ_WEEKLY);

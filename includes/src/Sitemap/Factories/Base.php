@@ -17,8 +17,11 @@ final class Base extends AbstractFactory
      */
     public function getCollection(array $languages, array $customerGroups): \Generator
     {
-        $item       = new \Sitemap\Items\Base($this->config, $this->baseURL, $this->baseImageURL);
-        $item->generateData(null);
+        $item           = new \Sitemap\Items\Base($this->config, $this->baseURL, $this->baseImageURL);
+        $data           = new \stdClass();
+        $data->langID   = $_SESSION['kSprache'];
+        $data->langCode = $_SESSION['cISOSprache'];
+        $item->generateData($data);
 
         yield $item;
     }

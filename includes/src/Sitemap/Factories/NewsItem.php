@@ -27,12 +27,15 @@ final class NewsItem extends AbstractFactory
             return $e->kSprache;
         });
         $res         = $this->db->query(
-            "SELECT tnews.dGueltigVon AS dlm, tnews.cPreviewImage AS image, tseo.cSeo
+            "SELECT tnews.dGueltigVon AS dlm, tnews.cPreviewImage AS image, tseo.cSeo, 
+            tsprache.kSprache AS langID, tsprache.cISO AS langCode
                 FROM tnews
                 JOIN tseo 
                     ON tseo.cKey = 'kNews'
                     AND tseo.kKey = tnews.kNews
                     AND tseo.kSprache = tnews.kSprache
+                JOIN tsprache
+                    ON tsprache.kSprache = tseo.kSprache
                 WHERE tnews.nAktiv = 1
                     AND tnews.dGueltigVon <= NOW()
                     AND tnews.kSprache IN (" . \implode(',', $languageIDs) . ")

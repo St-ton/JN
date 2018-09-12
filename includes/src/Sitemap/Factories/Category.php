@@ -31,8 +31,8 @@ final class Category extends AbstractFactory
         }
         $categoryHelper = new \KategorieListe();
         $res            = $this->db->queryPrepared(
-            "SELECT tkategorie.kKategorie, tseo.cSeo, 
-            tkategorie.dLetzteAktualisierung AS dlm, tkategoriepict.cPfad AS image
+            "SELECT tkategorie.kKategorie, tkategorie.dLetzteAktualisierung AS dlm, 
+                tseo.cSeo, tkategoriepict.cPfad AS image, tseo.kSprache AS langID, tsprache.cISO AS langCode
                 FROM tkategorie
                 JOIN tseo 
                     ON tseo.cKey = 'kKategorie'
@@ -43,6 +43,8 @@ final class Category extends AbstractFactory
                     AND tkategoriesichtbarkeit.kKundengruppe = :cGrpID
                 LEFT JOIN tkategoriepict
                     ON tkategoriepict.kKategorie = tkategorie.kKategorie
+                LEFT JOIN tsprache
+                    ON tsprache.kSprache = tseo.kSprache
                 WHERE tkategoriesichtbarkeit.kKategorie IS NULL
                 ORDER BY tkategorie.kKategorie",
             [

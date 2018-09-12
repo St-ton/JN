@@ -18,6 +18,8 @@ final class Base extends AbstractItem
     public function generateData($data): void
     {
         $this->setData($data);
+        $this->setLanguageID($data->langID);
+        $this->setLanguageCode($data->langCode);
         $this->setLocation($this->baseURL);
         $this->setChangeFreq(\FREQ_ALWAYS);
         $this->setPriority(\PRIO_VERYHIGH);

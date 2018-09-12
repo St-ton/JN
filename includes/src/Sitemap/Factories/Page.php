@@ -63,10 +63,12 @@ final class Page extends AbstractFactory
         $linkList->createLinks($linkIDs);
         $linkList->getLinks()->each(function (Link $e) {
             $linkType = $e->getLinkType();
-            foreach ($e->getURLs() as $url) {
+            foreach ($e->getURLs() as $i => $url) {
                 $data           = new \stdClass();
                 $data->cSEO     = $url;
                 $data->nLinkart = $linkType;
+                $data->langID   = $e->getLanguageID($i);
+                $data->langCode = $e->getLanguageCode($i);
                 $item           = new \Sitemap\Items\Page($this->config, $this->baseURL, $this->baseImageURL);
                 $item->generateData($data);
                 yield $item;

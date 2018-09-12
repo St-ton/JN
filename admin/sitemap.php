@@ -16,7 +16,7 @@ $exportConfig = new \Sitemap\Config\DefaultConfig($db, $config, Shop::getURL() .
 $exporter     = new \Sitemap\Export(
     $db,
     Shop::Container()->getLogService(),
-    new \Sitemap\ItemRenderes\DefaultRenderer(),
+    new \Sitemap\ItemRenderers\DefaultRenderer(),
     new \Sitemap\SchemaRenderers\DefaultSchemaRenderer(),
     $config
 );

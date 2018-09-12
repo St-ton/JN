@@ -73,6 +73,26 @@ interface ItemInterface
     public function setPriority(string $priority): void;
 
     /**
+     * @param int $langID
+     */
+    public function setLanguageID(int $langID): void;
+
+    /**
+     * @return int|null
+     */
+    public function getLanguageID(): ?int;
+
+    /**
+     * @param string $langCode
+     */
+    public function setLanguageCode(string $langCode): void;
+
+    /**
+     * @return string|null
+     */
+    public function getLanguageCode(): ?string;
+
+    /**
      * @param mixed $data
      */
     public function setData($data): void;

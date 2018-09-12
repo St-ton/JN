@@ -26,11 +26,14 @@ final class LiveSearch extends AbstractFactory
             return $e->kSprache;
         });
         $res         = $this->db->query(
-            "SELECT tsuchanfrage.kSuchanfrage, tseo.cSeo, tsuchanfrage.dZuletztGesucht AS dlm
+            "SELECT tsuchanfrage.kSuchanfrage, tseo.cSeo, tsuchanfrage.dZuletztGesucht AS dlm,
+            tsprache.kSprache AS langID, tsprache.cISO AS langCode
                 FROM tsuchanfrage
                 JOIN tseo 
                     ON tseo.cKey = 'kSuchanfrage'
                     AND tseo.kKey = tsuchanfrage.kSuchanfrage
+                JOIN tsprache
+                    ON tsprache.kSprache = tseo.kSprache
                 WHERE tsuchanfrage.nAktiv = 1
                     AND tsuchanfrage.kSprache IN (" . \implode(',', $languageIDs) . ")
                 ORDER BY tsuchanfrage.kSuchanfrage",

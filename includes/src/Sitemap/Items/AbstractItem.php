@@ -58,6 +58,16 @@ abstract class AbstractItem implements ItemInterface
     protected $baseImageURL;
 
     /**
+     * @var int
+     */
+    protected $languageID;
+
+    /**
+     * @var string
+     */
+    protected $languageCode;
+
+    /**
      * AbstractItem constructor.
      * @param array  $config
      * @param string $baseURL
@@ -148,6 +158,38 @@ abstract class AbstractItem implements ItemInterface
     public function setPriority(string $priority): void
     {
         $this->priority = $priority;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setLanguageID(int $langID): void
+    {
+        $this->languageID = $langID;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getLanguageID(): ?int
+    {
+        return $this->languageID;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setLanguageCode(string $langCode): void
+    {
+        $this->languageCode = $langCode;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getLanguageCode(): ?string
+    {
+        return $this->languageCode;
     }
 
     /**

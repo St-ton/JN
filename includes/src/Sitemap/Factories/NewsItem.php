@@ -30,7 +30,7 @@ final class NewsItem extends AbstractFactory
         });
         $collection  = new Collection();
         $res         = $this->db->query(
-            "SELECT tnews.dGueltigVon, tseo.cSeo
+            "SELECT tnews.dGueltigVon, tnews.cPreviewImage, tseo.cSeo
                 FROM tnews
                 JOIN tseo 
                     ON tseo.cKey = 'kNews'

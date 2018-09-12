@@ -29,7 +29,7 @@ final class NewsCategory extends AbstractFactory
         });
         $collection  = new Collection();
         $res         = $this->db->query(
-            "SELECT tnewskategorie.dLetzteAktualisierung, tseo.cSeo
+            "SELECT tnewskategorie.dLetzteAktualisierung, tnewskategorie.cPreviewImage, tseo.cSeo
                  FROM tnewskategorie
                  JOIN tseo 
                     ON tseo.cKey = 'kNewsKategorie'

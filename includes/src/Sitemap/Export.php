@@ -94,7 +94,7 @@ class Export
         $renderer = new DefaultRenderer($this->config);
 
         $factories[] = new Base($this->db, $this->config, $baseURL, $baseImageURL);
-        $factories[] = new Product($this->db, $this->config, $baseURL, $baseImageURL);
+//        $factories[] = new Product($this->db, $this->config, $baseURL, $baseImageURL);
         $factories[] = new Page($this->db, $this->config, $baseURL, $baseImageURL);
         $factories[] = new Category($this->db, $this->config, $baseURL, $baseImageURL);
         $factories[] = new Tag($this->db, $this->config, $baseURL, $baseImageURL);

@@ -161,7 +161,7 @@ abstract class AbstractItem implements ItemInterface
     /**
      * @inheritdoc
      */
-    public function generateImage(string $imageBaseURL): void
+    public function generateImage(): void
     {
     }
 

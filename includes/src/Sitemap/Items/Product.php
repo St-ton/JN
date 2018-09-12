@@ -15,7 +15,7 @@ final class Product extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function generateImage(string $imageBaseURL): void
+    public function generateImage(): void
     {
         if ($this->config['sitemap']['sitemap_googleimage_anzeigen'] !== 'Y') {
             return;
@@ -29,7 +29,7 @@ final class Product extends AbstractItem
                 $number
             );
             if (\strlen($cGoogleImage) > 0) {
-                $cGoogleImage = $imageBaseURL . $cGoogleImage;
+                $cGoogleImage = $this->baseImageURL . $cGoogleImage;
                 $this->setImage($cGoogleImage);
             }
         }

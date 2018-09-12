@@ -23,9 +23,9 @@ interface ItemInterface
     public function setLastModificationTime($time): void;
 
     /**
-     * @param string $imageBaseURL
+     * @return void
      */
-    public function generateImage(string $imageBaseURL): void;
+    public function generateImage(): void;
 
     /**
      * @return string|null
@@ -38,7 +38,7 @@ interface ItemInterface
     public function setImage(string $image): void;
 
     /**
-     *
+     * @return void
      */
     public function generateLocation(): void;
 

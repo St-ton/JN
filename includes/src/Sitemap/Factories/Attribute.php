@@ -30,7 +30,7 @@ final class Attribute extends AbstractFactory
         $collection  = new Collection();
         $res         = $this->db->query(
             "SELECT tmerkmalsprache.cName, tmerkmalsprache.kMerkmal, tmerkmalwertsprache.cWert, 
-                tseo.cSeo, tmerkmalwert.kMerkmalWert
+                tseo.cSeo, tmerkmalwert.kMerkmalWert, tmerkmalwert.cBildpfad
                 FROM tmerkmalsprache
                 JOIN tmerkmal 
                     ON tmerkmal.kMerkmal = tmerkmalsprache.kMerkmal

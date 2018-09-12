@@ -12,12 +12,18 @@ namespace Sitemap\Items;
  */
 final class Attribute extends AbstractItem
 {
-
     /**
      * @inheritdoc
      */
-    public function generateImage(string $imageBaseURL): void
+    public function generateImage(): void
     {
+        if ($this->config['sitemap']['sitemap_images_attributes'] !== 'Y') {
+            return;
+        }
+        if (empty($this->data->cBildpfad)) {
+            return;
+        }
+        $this->setImage($this->baseImageURL . \PFAD_MERKMALWERTBILDER_NORMAL . $this->data->cBildpfad);
     }
 
     /**
@@ -35,6 +41,7 @@ final class Attribute extends AbstractItem
     {
         $this->setData($data);
         $this->setLocation($this->baseURL . $data->cSeo);
+        $this->generateImage();
         $this->setChangeFreq(\FREQ_WEEKLY);
         $this->setPriority(\PRIO_NORMAL);
         $this->setLastModificationTime(null);

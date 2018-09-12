@@ -28,7 +28,7 @@ final class Manufacturer extends AbstractFactory
             return $e->kSprache;
         });
         $res         = $this->db->query(
-            "SELECT thersteller.kHersteller, thersteller.cName, tseo.cSeo
+            "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cBildpfad, tseo.cSeo
                 FROM thersteller
                 JOIN tseo 
                     ON tseo.cKey = 'kHersteller'

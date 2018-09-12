@@ -12,14 +12,6 @@ namespace Sitemap\Items;
  */
 final class Tag extends AbstractItem
 {
-
-    /**
-     * @inheritdoc
-     */
-    public function generateImage(string $imageBaseURL): void
-    {
-    }
-
     /**
      * @inheritdoc
      */

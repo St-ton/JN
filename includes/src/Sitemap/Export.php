@@ -184,7 +184,7 @@ class Export
         $indexFile = self::EXPORT_DIR . 'sitemap_index.xml';
         if (\is_writable($indexFile) || !\is_file($indexFile)) {
             $handle       = \fopen($indexFile, 'w+');
-            $extension    = false && \function_exists('gzopen') ? '.xml.gz' : '.xml';
+            $extension    = \function_exists('gzopen') ? '.xml.gz' : '.xml';
             $sitemapFiles = [];
             for ($i = 0; $i <= $fileNumber; ++$i) {
                 $sitemapFiles[] = $this->baseURL . \PFAD_EXPORT . 'sitemap_' . $i . $extension;
@@ -242,7 +242,7 @@ class Export
             return false;
         }
         $fileName = self::EXPORT_DIR . 'sitemap_' . $fileNumber . '.xml';
-        $handle   = false && \function_exists('gzopen')
+        $handle   = \function_exists('gzopen')
             ? \gzopen($fileName . '.gz', 'w9')
             : \fopen($fileName, 'w+');
         \fwrite($handle,
@@ -293,7 +293,7 @@ class Export
         $report->dErstellt          = 'NOW()';
 
         $reportID = $this->db->insert('tsitemapreport', $report);
-        $gzip     = false && \function_exists('gzopen');
+        $gzip     = \function_exists('gzopen');
         foreach ($urlCounts as $i => $count) {
             if ($count <= 0) {
                 continue;

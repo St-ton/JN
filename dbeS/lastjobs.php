@@ -32,6 +32,7 @@ if (auth()) {
                         Shop::Container()->getDB(),
                         Shop::Container()->getLogService(),
                         new \Sitemap\ItemRenderes\DefaultRenderer(),
+                        new \Sitemap\SchemaRenderers\DefaultSchemaRenderer(),
                         $conf
                     );
                     $exporter->generate();

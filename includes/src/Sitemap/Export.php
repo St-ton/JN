@@ -19,8 +19,9 @@ use Sitemap\Factories\NewsItem;
 use Sitemap\Factories\Page;
 use Sitemap\Factories\Product;
 use Sitemap\Factories\Tag;
-use Sitemap\Items\ItemInterface;
 use Sitemap\ItemRenderes\RendererInterface;
+use Sitemap\Items\ItemInterface;
+use Sitemap\SchemaRenderers\SchemaRendererInterface;
 
 /**
  * Class Export
@@ -28,6 +29,11 @@ use Sitemap\ItemRenderes\RendererInterface;
  */
 class Export
 {
+
+    public const SITEMAP_URL_GOOGLE = 'http://www.google.com/webmasters/tools/ping?sitemap=';
+
+    public const SITEMAP_URL_BING = 'http://www.bing.com/ping?sitemap=';
+
     private const EXPORT_DIR = \PFAD_ROOT . \PFAD_EXPORT;
 
     /**
@@ -46,23 +52,48 @@ class Export
     private $renderer;
 
     /**
+     * @var SchemaRendererInterface
+     */
+    private $schemaRenderer;
+
+    /**
      * @var array
      */
     private $config;
 
     /**
-     * Export constructor.
-     * @param DbInterface       $db
-     * @param LoggerInterface   $logger
-     * @param RendererInterface $renderer
-     * @param array             $config
+     * @var string
      */
-    public function __construct(DbInterface $db, LoggerInterface $logger, RendererInterface $renderer, array $config)
-    {
-        $this->db       = $db;
-        $this->logger   = $logger;
-        $this->renderer = $renderer;
-        $this->config   = $config;
+    private $baseURL;
+
+    /**
+     * @var string
+     */
+    private $baseImageURL;
+
+    /**
+     * Export constructor.
+     * @param DbInterface             $db
+     * @param LoggerInterface         $logger
+     * @param RendererInterface       $renderer
+     * @param SchemaRendererInterface $schemaRenderer
+     * @param array                   $config
+     */
+    public function __construct(
+        DbInterface $db,
+        LoggerInterface $logger,
+        RendererInterface $renderer,
+        SchemaRendererInterface $schemaRenderer,
+        array $config
+    ) {
+        $this->db             = $db;
+        $this->logger         = $logger;
+        $this->renderer       = $renderer;
+        $this->schemaRenderer = $schemaRenderer;
+        $this->config         = $config;
+        $this->baseImageURL   = \Shop::getImageBaseURL();
+        $this->baseURL        = \Shop::getURL() . '/';
+        $this->schemaRenderer->setConfig($config);
         $this->renderer->setConfig($config);
     }
 
@@ -88,26 +119,24 @@ class Export
         }
         $_SESSION['Kundengruppe']->setID($defaultCustomerGroupID);
 
-        $fileNumber   = 0;
-        $nSitemap     = 1;
-        $factories    = [];
-        $urlCounts    = [0 => 0];
-        $res          = '';
-        $baseImageURL = \Shop::getImageBaseURL();
-        $baseURL      = \Shop::getURL() . '/';
+        $fileNumber = 0;
+        $nSitemap   = 1;
+        $factories  = [];
+        $urlCounts  = [0 => 0];
+        $res        = '';
 
         $this->deleteFiles();
 
-        $factories[] = new Base($this->db, $this->config, $baseURL, $baseImageURL);
-        $factories[] = new Product($this->db, $this->config, $baseURL, $baseImageURL);
-        $factories[] = new Page($this->db, $this->config, $baseURL, $baseImageURL);
-        $factories[] = new Category($this->db, $this->config, $baseURL, $baseImageURL);
-        $factories[] = new Tag($this->db, $this->config, $baseURL, $baseImageURL);
-        $factories[] = new Manufacturer($this->db, $this->config, $baseURL, $baseImageURL);
-        $factories[] = new LiveSearch($this->db, $this->config, $baseURL, $baseImageURL);
-        $factories[] = new Attribute($this->db, $this->config, $baseURL, $baseImageURL);
-        $factories[] = new NewsItem($this->db, $this->config, $baseURL, $baseImageURL);
-        $factories[] = new NewsCategory($this->db, $this->config, $baseURL, $baseImageURL);
+        $factories[] = new Base($this->db, $this->config, $this->baseURL, $this->baseImageURL);
+        $factories[] = new Product($this->db, $this->config, $this->baseURL, $this->baseImageURL);
+        $factories[] = new Page($this->db, $this->config, $this->baseURL, $this->baseImageURL);
+        $factories[] = new Category($this->db, $this->config, $this->baseURL, $this->baseImageURL);
+        $factories[] = new Tag($this->db, $this->config, $this->baseURL, $this->baseImageURL);
+        $factories[] = new Manufacturer($this->db, $this->config, $this->baseURL, $this->baseImageURL);
+        $factories[] = new LiveSearch($this->db, $this->config, $this->baseURL, $this->baseImageURL);
+        $factories[] = new Attribute($this->db, $this->config, $this->baseURL, $this->baseImageURL);
+        $factories[] = new NewsItem($this->db, $this->config, $this->baseURL, $this->baseImageURL);
+        $factories[] = new NewsCategory($this->db, $this->config, $this->baseURL, $this->baseImageURL);
 
         \executeHook(\HOOK_SITEMAP_EXPORT_GET_FACTORIES, [
             'factories' => &$factories,
@@ -135,6 +164,7 @@ class Export
                 }
             }
         }
+
         $this->buildFile($fileNumber, $res);
         $this->writeIndexFile($fileNumber);
         $timeTotal = \microtime(true) - $timeStart;
@@ -143,7 +173,7 @@ class Export
             'totalTime'      => $timeTotal
         ]);
         $this->buildReport($urlCounts, $timeTotal);
-        $this->ping($baseURL);
+        $this->ping();
     }
 
     /**
@@ -153,26 +183,27 @@ class Export
     {
         $indexFile = self::EXPORT_DIR . 'sitemap_index.xml';
         if (\is_writable($indexFile) || !\is_file($indexFile)) {
-            $handle = \fopen($indexFile, 'w+');
-            \fwrite($handle, $this->buildIndex($fileNumber, \function_exists('gzopen')));
+            $handle       = \fopen($indexFile, 'w+');
+            $extension    = false && \function_exists('gzopen') ? '.xml.gz' : '.xml';
+            $sitemapFiles = [];
+            for ($i = 0; $i <= $fileNumber; ++$i) {
+                $sitemapFiles[] = $this->baseURL . \PFAD_EXPORT . 'sitemap_' . $i . $extension;
+            }
+            \fwrite($handle, $this->schemaRenderer->buildIndexSchema($sitemapFiles));
             \fclose($handle);
         }
     }
 
     /**
-     * @param string $baseURL
+     *
      */
-    private function ping(string $baseURL): void
+    private function ping(): void
     {
         if ($this->config['sitemap']['sitemap_google_ping'] !== 'Y') {
             return;
         }
-        $indexURL = \urlencode($baseURL . 'sitemap_index.xml');
-        $urls     = [
-            'http://www.google.com/webmasters/tools/ping?sitemap=',
-            'http://www.bing.com/ping?sitemap='
-        ];
-        foreach ($urls as $url) {
+        $indexURL = \urlencode($this->baseURL . 'sitemap_index.xml');
+        foreach ([self::SITEMAP_URL_GOOGLE, self::SITEMAP_URL_BING] as $url) {
             $status = \RequestHelper::http_get_status($url . $indexURL);
             if ($status !== 200) {
                 $this->logger->notice('Sitemap ping to ' . $url . ' failed with status ' . $status);
@@ -201,58 +232,6 @@ class Export
     }
 
     /**
-     * @param int  $fileNumber
-     * @param bool $gzip
-     * @return string
-     */
-    private function buildIndex(int $fileNumber, bool $gzip): string
-    {
-        $shopURL = \Shop::getURL();
-        $cIndex  = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
-        $cIndex  .= '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
-        for ($i = 0; $i <= $fileNumber; ++$i) {
-            if ($gzip) {
-                $cIndex .= '<sitemap><loc>' .
-                    \StringHandler::htmlentities($shopURL . '/' . \PFAD_EXPORT . 'sitemap_' . $i . '.xml.gz') .
-                    '</loc>' .
-                    ($this->config['sitemap']['sitemap_insert_lastmod'] === 'Y'
-                        ? ('<lastmod>' . \StringHandler::htmlentities(\date('Y-m-d')) . '</lastmod>') :
-                        '') .
-                    '</sitemap>' . "\n";
-            } else {
-                $cIndex .= '<sitemap><loc>' . \StringHandler::htmlentities($shopURL . '/' .
-                        \PFAD_EXPORT . 'sitemap_' . $i . '.xml') . '</loc>' .
-                    ($this->config['sitemap']['sitemap_insert_lastmod'] === 'Y'
-                        ? ('<lastmod>' . \StringHandler::htmlentities(\date('Y-m-d')) . '</lastmod>')
-                        : '') .
-                    '</sitemap>' . "\n";
-            }
-        }
-        $cIndex .= '</sitemapindex>';
-
-        return $cIndex;
-    }
-
-    /**
-     * @return string
-     */
-    private function buildXMLHeader(): string
-    {
-        $head = '<?xml version="1.0" encoding="UTF-8"?>
-            <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"';
-
-        if ($this->config['sitemap']['sitemap_googleimage_anzeigen'] === 'Y') {
-            $head .= ' xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"';
-        }
-
-        $head .= ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">';
-
-        return $head;
-    }
-
-    /**
      * @param int    $fileNumber
      * @param string $data
      * @return bool
@@ -263,12 +242,14 @@ class Export
             return false;
         }
         $fileName = self::EXPORT_DIR . 'sitemap_' . $fileNumber . '.xml';
-        $handle   = \function_exists('gzopen')
+        $handle   = false && \function_exists('gzopen')
             ? \gzopen($fileName . '.gz', 'w9')
             : \fopen($fileName, 'w+');
-        \fwrite($handle, $this->buildXMLHeader() . "\n");
-        \fwrite($handle, $data);
-        \fwrite($handle, '</urlset>');
+        \fwrite($handle,
+            $this->schemaRenderer->buildXMLHeader() .
+            $data .
+            $this->schemaRenderer->buildXMLFooter()
+        );
         \fclose($handle);
 
         return true;
@@ -312,7 +293,7 @@ class Export
         $report->dErstellt          = 'NOW()';
 
         $reportID = $this->db->insert('tsitemapreport', $report);
-        $gzip     = \function_exists('gzopen');
+        $gzip     = false && \function_exists('gzopen');
         foreach ($urlCounts as $i => $count) {
             if ($count <= 0) {
                 continue;

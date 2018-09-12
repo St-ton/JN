@@ -48,4 +48,16 @@ abstract class AbstractFactory implements FactoryInterface
         $this->baseURL      = $baseURL;
         $this->baseImageURL = $baseImageURL;
     }
+
+    /**
+     * @return array
+     */
+    public function __debugInfo(): array
+    {
+        $res           = \get_object_vars($this);
+        $res['db']     = '*truncated*';
+        $res['config'] = '*truncated*';
+
+        return $res;
+    }
 }

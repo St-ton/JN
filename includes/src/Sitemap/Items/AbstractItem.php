@@ -171,4 +171,15 @@ abstract class AbstractItem implements ItemInterface
     public function generateLocation(): void
     {
     }
+
+    /**
+     * @return array
+     */
+    public function __debugInfo(): array
+    {
+        $res           = \get_object_vars($this);
+        $res['config'] = '*truncated*';
+
+        return $res;
+    }
 }

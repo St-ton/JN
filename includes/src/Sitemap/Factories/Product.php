@@ -24,7 +24,6 @@ final class Product extends AbstractFactory
         $defaultLangID                                               = (int)$defaultLang->kSprache;
         $_SESSION['kSprache']                                        = $defaultLangID;
         $_SESSION['cISOSprache']                                     = $defaultLang->cISO;
-        $this->config['sitemap']['sitemap_varkombi_children_export'] = 'Y';
         $andWhere                                                    = '';
         if ($this->config['sitemap']['sitemap_varkombi_children_export'] !== 'Y') {
             $andWhere .= ' AND tartikel.kVaterArtikel = 0';
@@ -39,7 +38,7 @@ final class Product extends AbstractFactory
         foreach ($languages as $SpracheTMP) {
             if ($SpracheTMP->kSprache === $defaultLangID) {
                 $res = $this->db->queryPrepared(
-                    "SELECT tartikel.*, tartikel.dLetzteAktualisierung AS dlm, tseo.*
+                    "SELECT tartikel.kArtikel, tartikel.dLetzteAktualisierung AS dlm, tseo.cSeo
                         FROM tartikel
                             LEFT JOIN tartikelsichtbarkeit 
                                 ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
@@ -57,7 +56,7 @@ final class Product extends AbstractFactory
                 );
             } else {
                 $res = $this->db->queryPrepared(
-                    "SELECT tartikel.*, tartikel.dLetzteAktualisierung AS dlm, tseo.*
+                    "SELECT tartikel.kArtikel, tartikel.dLetzteAktualisierung AS dlm, tseo.cSeo
                         FROM tartikelsprache
                             JOIN tartikel
                             ON tartikel.kArtikel = tartikelsprache.kArtikel

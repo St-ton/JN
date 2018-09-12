@@ -6,7 +6,6 @@
 
 namespace Sitemap\Factories;
 
-use Tightenco\Collect\Support\Collection;
 use function Functional\first;
 
 /**
@@ -18,15 +17,15 @@ final class Product extends AbstractFactory
     /**
      * @inheritdoc
      */
-    public function getCollection(array $languages, array $customerGroups): Collection
+    public function getCollection(array $languages, array $customerGroups): \Generator
     {
-        $collection              = new Collection();
-        $defaultCustomerGroupID  = first($customerGroups);
-        $defaultLang             = \Sprache::getDefaultLanguage(true);
-        $defaultLangID           = (int)$defaultLang->kSprache;
-        $_SESSION['kSprache']    = $defaultLangID;
-        $_SESSION['cISOSprache'] = $defaultLang->cISO;
-        $andWhere                = '';
+        $defaultCustomerGroupID                                      = first($customerGroups);
+        $defaultLang                                                 = \Sprache::getDefaultLanguage(true);
+        $defaultLangID                                               = (int)$defaultLang->kSprache;
+        $_SESSION['kSprache']                                        = $defaultLangID;
+        $_SESSION['cISOSprache']                                     = $defaultLang->cISO;
+        $this->config['sitemap']['sitemap_varkombi_children_export'] = 'Y';
+        $andWhere                                                    = '';
         if ($this->config['sitemap']['sitemap_varkombi_children_export'] !== 'Y') {
             $andWhere .= ' AND tartikel.kVaterArtikel = 0';
         }
@@ -40,7 +39,7 @@ final class Product extends AbstractFactory
         foreach ($languages as $SpracheTMP) {
             if ($SpracheTMP->kSprache === $defaultLangID) {
                 $res = $this->db->queryPrepared(
-                    "SELECT tartikel.kArtikel, tartikel.dLetzteAktualisierung, tseo.cSeo
+                    "SELECT tartikel.*, tartikel.dLetzteAktualisierung AS dlm, tseo.*
                         FROM tartikel
                             LEFT JOIN tartikelsichtbarkeit 
                                 ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
@@ -58,7 +57,7 @@ final class Product extends AbstractFactory
                 );
             } else {
                 $res = $this->db->queryPrepared(
-                    "SELECT tartikel.kArtikel, tartikel.dLetzteAktualisierung, tseo.cSeo
+                    "SELECT tartikel.*, tartikel.dLetzteAktualisierung AS dlm, tseo.*
                         FROM tartikelsprache
                             JOIN tartikel
                             ON tartikel.kArtikel = tartikelsprache.kArtikel
@@ -84,10 +83,8 @@ final class Product extends AbstractFactory
             while (($product = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
                 $item = new \Sitemap\Items\Product($this->config, $this->baseURL, $this->baseImageURL);
                 $item->generateData($product);
-                $collection->push($item);
+                yield $item;
             }
         }
-
-        return $collection;
     }
 }

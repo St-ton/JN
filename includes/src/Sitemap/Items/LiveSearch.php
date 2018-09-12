@@ -29,6 +29,6 @@ final class LiveSearch extends AbstractItem
         $this->setLocation($this->baseURL . $data->cSeo);
         $this->setChangeFreq(\FREQ_WEEKLY);
         $this->setPriority(\PRIO_NORMAL);
-        $this->setLastModificationTime(\date_format(\date_create($data->dZuletztGesucht), 'c'));
+        $this->setLastModificationTime(\date_format(\date_create($data->dlm), 'c'));
     }
 }

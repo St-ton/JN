@@ -20,10 +20,10 @@ final class Category extends AbstractItem
         if ($this->config['sitemap']['sitemap_images_categories'] !== 'Y') {
             return;
         }
-        if (empty($this->data->cPfad)) {
+        if (empty($this->data->image)) {
             return;
         }
-        $this->setImage($this->baseImageURL . \PFAD_KATEGORIEBILDER . $this->data->cPfad);
+        $this->setImage($this->baseImageURL . \PFAD_KATEGORIEBILDER . $this->data->image);
     }
     /**
      * @inheritdoc
@@ -43,6 +43,6 @@ final class Category extends AbstractItem
         $this->setLocation($data->cSeo);
         $this->setChangeFreq(\FREQ_WEEKLY);
         $this->setPriority(\PRIO_NORMAL);
-        $this->setLastModificationTime(\date_format(\date_create($data->dLetzteAktualisierung), 'c'));
+        $this->setLastModificationTime(\date_format(\date_create($data->dlm), 'c'));
     }
 }

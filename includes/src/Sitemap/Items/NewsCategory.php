@@ -20,10 +20,10 @@ final class NewsCategory extends AbstractItem
         if ($this->config['sitemap']['sitemap_images_newscategory_items'] !== 'Y') {
             return;
         }
-        if (empty($this->data->cPreviewImage)) {
+        if (empty($this->data->image)) {
             return;
         }
-        $this->setImage($this->baseImageURL . $this->data->cPreviewImage);
+        $this->setImage($this->baseImageURL . $this->data->image);
     }
 
     /**
@@ -44,6 +44,6 @@ final class NewsCategory extends AbstractItem
         $this->generateLocation();
         $this->setChangeFreq(\FREQ_DAILY);
         $this->setPriority(\PRIO_HIGH);
-        $this->setLastModificationTime(\date_format(\date_create($data->dLetzteAktualisierung), 'c'));
+        $this->setLastModificationTime(\date_format(\date_create($data->dlm), 'c'));
     }
 }

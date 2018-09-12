@@ -6,7 +6,6 @@
 
 namespace Sitemap\Factories;
 
-use Tightenco\Collect\Support\Collection;
 use function Functional\map;
 
 /**
@@ -18,17 +17,16 @@ final class Manufacturer extends AbstractFactory
     /**
      * @inheritdoc
      */
-    public function getCollection(array $languages, array $customerGroups): Collection
+    public function getCollection(array $languages, array $customerGroups): \Generator
     {
-        $collection = new Collection();
         if ($this->config['sitemap']['sitemap_hersteller_anzeigen'] !== 'Y') {
-            return $collection;
+            yield null;
         }
         $languageIDs = map($languages, function ($e) {
             return $e->kSprache;
         });
         $res         = $this->db->query(
-            "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cBildpfad, tseo.cSeo
+            "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cBildpfad AS image, tseo.cSeo
                 FROM thersteller
                 JOIN tseo 
                     ON tseo.cKey = 'kHersteller'
@@ -40,9 +38,7 @@ final class Manufacturer extends AbstractFactory
         while (($manufacturer = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
             $item = new \Sitemap\Items\Manufacturer($this->config, $this->baseURL, $this->baseImageURL);
             $item->generateData($manufacturer);
-            $collection->push($item);
+            yield $item;
         }
-
-        return $collection;
     }
 }

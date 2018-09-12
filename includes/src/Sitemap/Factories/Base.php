@@ -6,8 +6,6 @@
 
 namespace Sitemap\Factories;
 
-use Tightenco\Collect\Support\Collection;
-
 /**
  * Class Base
  * @package Sitemap\Generators
@@ -17,13 +15,11 @@ final class Base extends AbstractFactory
     /**
      * @inheritdoc
      */
-    public function getCollection(array $languages, array $customerGroups): Collection
+    public function getCollection(array $languages, array $customerGroups): \Generator
     {
-        $collection = new Collection();
         $item       = new \Sitemap\Items\Base($this->config, $this->baseURL, $this->baseImageURL);
         $item->generateData(null);
-        $collection->push($item);
 
-        return $collection;
+        yield $item;
     }
 }

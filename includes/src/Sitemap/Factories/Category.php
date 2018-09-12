@@ -6,7 +6,6 @@
 
 namespace Sitemap\Factories;
 
-use Tightenco\Collect\Support\Collection;
 use function Functional\first;
 use function Functional\map;
 
@@ -17,21 +16,23 @@ use function Functional\map;
 final class Category extends AbstractFactory
 {
     /**
-     * @inheritdoc
+     * @param array $languages
+     * @param array $customerGroups
+     * @return \Generator
      */
-    public function getCollection(array $languages, array $customerGroups): Collection
+    public function getCollection(array $languages, array $customerGroups): \Generator
     {
         $languageIDs   = map($languages, function ($e) {
             return $e->kSprache;
         });
-        $collection    = new Collection();
         $customerGroup = first($customerGroups);
         if ($this->config['sitemap']['sitemap_kategorien_anzeigen'] !== 'Y') {
-            return $collection;
+            yield null;
         }
         $categoryHelper = new \KategorieListe();
         $res            = $this->db->queryPrepared(
-            "SELECT tkategorie.kKategorie, tseo.cSeo, tkategorie.dLetzteAktualisierung, tkategoriepict.cPfad
+            "SELECT tkategorie.kKategorie, tseo.cSeo, 
+            tkategorie.dLetzteAktualisierung AS dlm, tkategoriepict.cPfad AS image
                 FROM tkategorie
                 JOIN tseo 
                     ON tseo.cKey = 'kKategorie'
@@ -53,10 +54,8 @@ final class Category extends AbstractFactory
             if ($categoryHelper->nichtLeer($category->kKategorie, $customerGroup) === true) {
                 $item = new \Sitemap\Items\Category($this->config, $this->baseURL, $this->baseImageURL);
                 $item->generateData($category);
-                $collection->push($item);
+                yield $item;
             }
         }
-
-        return $collection;
     }
 }

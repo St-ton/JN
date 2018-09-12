@@ -94,7 +94,7 @@ class Export
         $renderer = new DefaultRenderer($this->config);
 
         $factories[] = new Base($this->db, $this->config, $baseURL, $baseImageURL);
-//        $factories[] = new Product($this->db, $this->config, $baseURL, $baseImageURL);
+        $factories[] = new Product($this->db, $this->config, $baseURL, $baseImageURL);
         $factories[] = new Page($this->db, $this->config, $baseURL, $baseImageURL);
         $factories[] = new Category($this->db, $this->config, $baseURL, $baseImageURL);
         $factories[] = new Tag($this->db, $this->config, $baseURL, $baseImageURL);
@@ -106,6 +106,7 @@ class Export
 
         \executeHook(\HOOK_SITEMAP_EXPORT_GET_FACTORIES, [
             'factories' => &$factories,
+            'renderer'  => $renderer,
             'exporter'  => $this
         ]);
 
@@ -129,6 +130,7 @@ class Export
                 }
             }
         }
+        \Shop::dbg(memory_get_peak_usage(true)/1024, true);
         $this->buildFile($fileNumber, $res);
         $indexFile = self::EXPORT_DIR . 'sitemap_index.xml';
         if (\is_writable($indexFile) || !\is_file($indexFile)) {

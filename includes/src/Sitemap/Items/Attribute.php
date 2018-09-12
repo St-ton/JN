@@ -20,10 +20,10 @@ final class Attribute extends AbstractItem
         if ($this->config['sitemap']['sitemap_images_attributes'] !== 'Y') {
             return;
         }
-        if (empty($this->data->cBildpfad)) {
+        if (empty($this->data->image)) {
             return;
         }
-        $this->setImage($this->baseImageURL . \PFAD_MERKMALWERTBILDER_NORMAL . $this->data->cBildpfad);
+        $this->setImage($this->baseImageURL . \PFAD_MERKMALWERTBILDER_NORMAL . $this->data->image);
     }
 
     /**

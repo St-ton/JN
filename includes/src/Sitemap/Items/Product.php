@@ -49,10 +49,10 @@ final class Product extends AbstractItem
     public function generateData($data): void
     {
         $this->setData($data);
-        $this->generateImage($this->baseImageURL);
+        $this->generateImage();
         $this->generateLocation();
         $this->setChangeFreq(\FREQ_DAILY);
         $this->setPriority(\PRIO_HIGH);
-        $this->setLastModificationTime(\date_format(\date_create($data->dLetzteAktualisierung), 'c'));
+        $this->setLastModificationTime(\date_format(\date_create($data->dlm), 'c'));
     }
 }

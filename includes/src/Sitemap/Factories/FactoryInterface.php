@@ -7,7 +7,6 @@
 namespace Sitemap\Factories;
 
 use DB\DbInterface;
-use Tightenco\Collect\Support\Collection;
 
 /**
  * Interface FactoryInterface
@@ -27,7 +26,7 @@ interface FactoryInterface
     /**
      * @param array $languages
      * @param array $customerGroups
-     * @return Collection
+     * @return \Generator
      */
-    public function getCollection(array $languages, array $customerGroups): Collection;
+    public function getCollection(array $languages, array $customerGroups): \Generator;
 }

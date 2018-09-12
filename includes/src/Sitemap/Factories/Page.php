@@ -8,7 +8,6 @@ namespace Sitemap\Factories;
 
 use Link\Link;
 use Link\LinkList;
-use Tightenco\Collect\Support\Collection;
 use function Functional\first;
 use function Functional\map;
 
@@ -21,11 +20,10 @@ final class Page extends AbstractFactory
     /**
      * @inheritdoc
      */
-    public function getCollection(array $languages, array $customerGroups): Collection
+    public function getCollection(array $languages, array $customerGroups): \Generator
     {
-        $collection = new Collection();
         if ($this->config['sitemap']['sitemap_seiten_anzeigen'] !== 'Y') {
-            return $collection;
+            yield null;
         }
         $customerGroup = first($customerGroups);
         $languageCodes = map($languages, function ($e) {
@@ -63,7 +61,7 @@ final class Page extends AbstractFactory
         });
         $linkList      = new LinkList($this->db);
         $linkList->createLinks($linkIDs);
-        $linkList->getLinks()->each(function (Link $e) use ($collection) {
+        $linkList->getLinks()->each(function (Link $e) {
             $linkType = $e->getLinkType();
             foreach ($e->getURLs() as $url) {
                 $data           = new \stdClass();
@@ -71,10 +69,8 @@ final class Page extends AbstractFactory
                 $data->nLinkart = $linkType;
                 $item           = new \Sitemap\Items\Page($this->config, $this->baseURL, $this->baseImageURL);
                 $item->generateData($data);
-                $collection->push($item);
+                yield $item;
             }
         });
-
-        return $collection;
     }
 }

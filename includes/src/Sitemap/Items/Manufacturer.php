@@ -20,10 +20,10 @@ final class Manufacturer extends AbstractItem
         if ($this->config['sitemap']['sitemap_images_manufacturers'] !== 'Y') {
             return;
         }
-        if (empty($this->data->cBildpfad)) {
+        if (empty($this->data->image)) {
             return;
         }
-        $this->setImage($this->baseImageURL . \PFAD_HERSTELLERBILDER . $this->data->cBildpfad);
+        $this->setImage($this->baseImageURL . \PFAD_HERSTELLERBILDER . $this->data->image);
     }
 
     /**

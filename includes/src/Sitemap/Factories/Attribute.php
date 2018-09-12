@@ -6,7 +6,6 @@
 
 namespace Sitemap\Factories;
 
-use Tightenco\Collect\Support\Collection;
 use function Functional\map;
 
 /**
@@ -18,19 +17,17 @@ final class Attribute extends AbstractFactory
     /**
      * @inheritdoc
      */
-    public function getCollection(array $languages, array $customerGroups): Collection
+    public function getCollection(array $languages, array $customerGroups): \Generator
     {
-        $collection = new Collection();
         if ($this->config['sitemap']['sitemap_tags_anzeigen'] !== 'Y') {
-            return $collection;
+            yield null;
         }
         $languageIDs = map($languages, function ($e) {
             return $e->kSprache;
         });
-        $collection  = new Collection();
         $res         = $this->db->query(
             "SELECT tmerkmalsprache.cName, tmerkmalsprache.kMerkmal, tmerkmalwertsprache.cWert, 
-                tseo.cSeo, tmerkmalwert.kMerkmalWert, tmerkmalwert.cBildpfad
+                tseo.cSeo, tmerkmalwert.kMerkmalWert, tmerkmalwert.cBildpfad AS image
                 FROM tmerkmalsprache
                 JOIN tmerkmal 
                     ON tmerkmal.kMerkmal = tmerkmalsprache.kMerkmal
@@ -54,9 +51,7 @@ final class Attribute extends AbstractFactory
         while (($tag = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
             $item = new \Sitemap\Items\Attribute($this->config, $this->baseURL, $this->baseImageURL);
             $item->generateData($tag);
-            $collection->push($item);
+            yield $item;
         }
-
-        return $collection;
     }
 }

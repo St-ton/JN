@@ -6,7 +6,6 @@
 
 namespace Sitemap\Factories;
 
-use Tightenco\Collect\Support\Collection;
 use function Functional\map;
 
 /**
@@ -18,18 +17,16 @@ final class LiveSearch extends AbstractFactory
     /**
      * @inheritdoc
      */
-    public function getCollection(array $languages, array $customerGroups): Collection
+    public function getCollection(array $languages, array $customerGroups): \Generator
     {
-        $collection = new Collection();
         if ($this->config['sitemap']['sitemap_livesuche_anzeigen'] !== 'Y') {
-            return $collection;
+            yield null;
         }
         $languageIDs = map($languages, function ($e) {
             return $e->kSprache;
         });
-        $collection  = new Collection();
         $res         = $this->db->query(
-            "SELECT tsuchanfrage.kSuchanfrage, tseo.cSeo, tsuchanfrage.dZuletztGesucht
+            "SELECT tsuchanfrage.kSuchanfrage, tseo.cSeo, tsuchanfrage.dZuletztGesucht AS dlm
                 FROM tsuchanfrage
                 JOIN tseo 
                     ON tseo.cKey = 'kSuchanfrage'
@@ -42,9 +39,7 @@ final class LiveSearch extends AbstractFactory
         while (($liveSearch = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
             $item = new \Sitemap\Items\LiveSearch($this->config, $this->baseURL, $this->baseImageURL);
             $item->generateData($liveSearch);
-            $collection->push($item);
+            yield $item;
         }
-
-        return $collection;
     }
 }

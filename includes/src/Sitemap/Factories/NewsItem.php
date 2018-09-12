@@ -6,7 +6,6 @@
 
 namespace Sitemap\Factories;
 
-use Tightenco\Collect\Support\Collection;
 use function Functional\first;
 use function Functional\map;
 
@@ -19,18 +18,16 @@ final class NewsItem extends AbstractFactory
     /**
      * @inheritdoc
      */
-    public function getCollection(array $languages, array $customerGroups): Collection
+    public function getCollection(array $languages, array $customerGroups): \Generator
     {
-        $collection = new Collection();
         if ($this->config['sitemap']['sitemap_news_anzeigen'] !== 'Y') {
-            return $collection;
+            yield null;
         }
         $languageIDs = map($languages, function ($e) {
             return $e->kSprache;
         });
-        $collection  = new Collection();
         $res         = $this->db->query(
-            "SELECT tnews.dGueltigVon, tnews.cPreviewImage, tseo.cSeo
+            "SELECT tnews.dGueltigVon AS dlm, tnews.cPreviewImage AS image, tseo.cSeo
                 FROM tnews
                 JOIN tseo 
                     ON tseo.cKey = 'kNews'
@@ -47,9 +44,7 @@ final class NewsItem extends AbstractFactory
         while (($tag = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
             $item = new \Sitemap\Items\NewsItem($this->config, $this->baseURL, $this->baseImageURL);
             $item->generateData($tag);
-            $collection->push($item);
+            yield $item;
         }
-
-        return $collection;
     }
 }

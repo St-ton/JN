@@ -112,8 +112,10 @@ class Export
 
         foreach ($factories as $factory) {
             /** @var FactoryInterface $factory */
-            $collection = $factory->getCollection($languages, [$defaultCustomerGroupID]);
-            foreach ($collection as $item) {
+            foreach ($factory->getCollection($languages, [$defaultCustomerGroupID]) as $item) {
+                if ($item === null) {
+                    break;
+                }
                 /** @var ItemInterface $item */
                 if ($nSitemap > $nSitemapLimit) {
                     $nSitemap = 1;
@@ -130,7 +132,7 @@ class Export
                 }
             }
         }
-        \Shop::dbg(memory_get_peak_usage(true)/1024, true);
+        \Shop::dbg(\memory_get_peak_usage(true)/1024, true);
         $this->buildFile($fileNumber, $res);
         $indexFile = self::EXPORT_DIR . 'sitemap_index.xml';
         if (\is_writable($indexFile) || !\is_file($indexFile)) {

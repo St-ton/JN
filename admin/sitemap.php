@@ -13,6 +13,7 @@ $oAccount->permission('EXPORT_SITEMAP_VIEW', true, true);
 $exporter = new \Sitemap\Export(
     Shop::Container()->getDB(),
     Shop::Container()->getLogService(),
+    new \Sitemap\ItemRenderes\DefaultRenderer(),
     Shop::getSettings([CONF_GLOBAL, CONF_SITEMAP])
 );
 $exporter->generate();

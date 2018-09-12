@@ -31,6 +31,7 @@ if (auth()) {
                     $exporter = new \Sitemap\Export(
                         Shop::Container()->getDB(),
                         Shop::Container()->getLogService(),
+                        new \Sitemap\ItemRenderes\DefaultRenderer(),
                         $conf
                     );
                     $exporter->generate();

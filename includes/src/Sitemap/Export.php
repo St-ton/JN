@@ -20,7 +20,7 @@ use Sitemap\Factories\Page;
 use Sitemap\Factories\Product;
 use Sitemap\Factories\Tag;
 use Sitemap\Items\ItemInterface;
-use Sitemap\Renderes\DefaultRenderer;
+use Sitemap\ItemRenderes\RendererInterface;
 
 /**
  * Class Export
@@ -41,21 +41,29 @@ class Export
     private $logger;
 
     /**
+     * @var RendererInterface
+     */
+    private $renderer;
+
+    /**
      * @var array
      */
     private $config;
 
     /**
      * Export constructor.
-     * @param DbInterface     $db
-     * @param LoggerInterface $logger
-     * @param array           $config
+     * @param DbInterface       $db
+     * @param LoggerInterface   $logger
+     * @param RendererInterface $renderer
+     * @param array             $config
      */
-    public function __construct(DbInterface $db, LoggerInterface $logger, array $config)
+    public function __construct(DbInterface $db, LoggerInterface $logger, RendererInterface $renderer, array $config)
     {
-        $this->db     = $db;
-        $this->logger = $logger;
-        $this->config = $config;
+        $this->db       = $db;
+        $this->logger   = $logger;
+        $this->renderer = $renderer;
+        $this->config   = $config;
+        $this->renderer->setConfig($config);
     }
 
     /**
@@ -80,17 +88,15 @@ class Export
         }
         $_SESSION['Kundengruppe']->setID($defaultCustomerGroupID);
 
-        $fileNumber    = 0;
-        $nSitemap      = 1;
-        $factories     = [];
-        $urlCounts     = [0 => 0];
-        $res           = '';
-        $baseImageURL  = \Shop::getImageBaseURL();
-        $baseURL       = \Shop::getURL() . '/';
+        $fileNumber   = 0;
+        $nSitemap     = 1;
+        $factories    = [];
+        $urlCounts    = [0 => 0];
+        $res          = '';
+        $baseImageURL = \Shop::getImageBaseURL();
+        $baseURL      = \Shop::getURL() . '/';
 
         $this->deleteFiles();
-
-        $renderer = new DefaultRenderer($this->config);
 
         $factories[] = new Base($this->db, $this->config, $baseURL, $baseImageURL);
         $factories[] = new Product($this->db, $this->config, $baseURL, $baseImageURL);
@@ -105,7 +111,6 @@ class Export
 
         \executeHook(\HOOK_SITEMAP_EXPORT_GET_FACTORIES, [
             'factories' => &$factories,
-            'renderer'  => $renderer,
             'exporter'  => $this
         ]);
 
@@ -124,25 +129,33 @@ class Export
                     $res                    = '';
                 }
                 if (!$this->isURLBlocked($item->getLocation())) {
-                    $res .= $renderer->renderItem($item);
+                    $res .= $this->renderer->renderItem($item);
                     ++$nSitemap;
                     ++$urlCounts[$fileNumber];
                 }
             }
         }
         $this->buildFile($fileNumber, $res);
+        $this->writeIndexFile($fileNumber);
+        $timeTotal = \microtime(true) - $timeStart;
+        \executeHook(\HOOK_SITEMAP_EXPORT_GENERATED, [
+            'nAnzahlURL_arr' => $urlCounts,
+            'totalTime'      => $timeTotal
+        ]);
+        $this->buildReport($urlCounts, $timeTotal);
+        $this->ping($baseURL);
+    }
+
+    /**
+     * @param int $fileNumber
+     */
+    private function writeIndexFile(int $fileNumber): void
+    {
         $indexFile = self::EXPORT_DIR . 'sitemap_index.xml';
         if (\is_writable($indexFile) || !\is_file($indexFile)) {
             $handle = \fopen($indexFile, 'w+');
             \fwrite($handle, $this->buildIndex($fileNumber, \function_exists('gzopen')));
             \fclose($handle);
-            $timeTotal = \microtime(true) - $timeStart;
-            \executeHook(\HOOK_SITEMAP_EXPORT_GENERATED, [
-                'nAnzahlURL_arr' => $urlCounts,
-                'totalTime'      => $timeTotal
-            ]);
-            $this->buildReport($urlCounts, $timeTotal);
-            $this->ping($baseURL);
         }
     }
 

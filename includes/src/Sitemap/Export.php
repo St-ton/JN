@@ -84,7 +84,6 @@ class Export
         $nSitemap      = 1;
         $factories     = [];
         $urlCounts     = [0 => 0];
-        $nSitemapLimit = 25000;
         $res           = '';
         $baseImageURL  = \Shop::getImageBaseURL();
         $baseURL       = \Shop::getURL() . '/';
@@ -117,23 +116,20 @@ class Export
                     break;
                 }
                 /** @var ItemInterface $item */
-                if ($nSitemap > $nSitemapLimit) {
+                if ($nSitemap > \SITEMAP_ITEMS_LIMIT) {
                     $nSitemap = 1;
                     $this->buildFile($fileNumber, $res);
                     ++$fileNumber;
                     $urlCounts[$fileNumber] = 0;
                     $res                    = '';
                 }
-                $cUrl = $item->getLocation();
-                if (!$this->isURLBlocked($cUrl)) {
+                if (!$this->isURLBlocked($item->getLocation())) {
                     $res .= $renderer->renderItem($item);
                     ++$nSitemap;
                     ++$urlCounts[$fileNumber];
                 }
             }
         }
-        \Shop::dbg(\microtime(true)-$timeStart, false, 'total time:');
-        \Shop::dbg(\memory_get_peak_usage(true)/1024, true);
         $this->buildFile($fileNumber, $res);
         $indexFile = self::EXPORT_DIR . 'sitemap_index.xml';
         if (\is_writable($indexFile) || !\is_file($indexFile)) {

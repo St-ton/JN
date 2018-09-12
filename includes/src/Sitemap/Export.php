@@ -132,6 +132,7 @@ class Export
                 }
             }
         }
+        \Shop::dbg(\microtime(true)-$timeStart, false, 'total time:');
         \Shop::dbg(\memory_get_peak_usage(true)/1024, true);
         $this->buildFile($fileNumber, $res);
         $indexFile = self::EXPORT_DIR . 'sitemap_index.xml';

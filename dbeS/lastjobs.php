@@ -28,14 +28,25 @@ if (auth()) {
                 break;
             case LASTJOBS_SITEMAP:
                 if ($conf['sitemap']['sitemap_wawiabgleich'] === 'Y') {
-                    $exporter = new \Sitemap\Export(
-                        Shop::Container()->getDB(),
+                    $db           = Shop::Container()->getDB();
+                    $config       = Shop::getSettings([CONF_GLOBAL, CONF_SITEMAP]);
+                    $exportConfig = new \Sitemap\Config\DefaultConfig(
+                        $db, $config,
+                        Shop::getURL() . '/',
+                        Shop::getImageBaseURL()
+                    );
+                    $exporter     = new \Sitemap\Export(
+                        $db,
                         Shop::Container()->getLogService(),
                         new \Sitemap\ItemRenderes\DefaultRenderer(),
                         new \Sitemap\SchemaRenderers\DefaultSchemaRenderer(),
-                        $conf
+                        $config
                     );
-                    $exporter->generate();
+                    $exporter->generate(
+                        [Kundengruppe::getDefaultGroupID()],
+                        Sprache::getAllLanguages(),
+                        $exportConfig->getFactories()
+                    );
                     updateJob(LASTJOBS_SITEMAP);
                 }
                 break;

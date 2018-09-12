@@ -10,7 +10,7 @@ namespace Sitemap\SchemaRenderers;
  * Class DefaultSchemaRenderer
  * @package Sitemap\SchemaRenderers
  */
-class DefaultSchemaRenderer extends AbstractSchemaRenderer
+final class DefaultSchemaRenderer extends AbstractSchemaRenderer
 {
     /**
      * @param string[] $sitemapFiles

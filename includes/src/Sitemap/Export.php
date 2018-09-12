@@ -8,28 +8,18 @@ namespace Sitemap;
 
 use DB\DbInterface;
 use Psr\Log\LoggerInterface;
-use Sitemap\Factories\Attribute;
-use Sitemap\Factories\Base;
-use Sitemap\Factories\Category;
 use Sitemap\Factories\FactoryInterface;
-use Sitemap\Factories\LiveSearch;
-use Sitemap\Factories\Manufacturer;
-use Sitemap\Factories\NewsCategory;
-use Sitemap\Factories\NewsItem;
-use Sitemap\Factories\Page;
-use Sitemap\Factories\Product;
-use Sitemap\Factories\Tag;
 use Sitemap\ItemRenderes\RendererInterface;
 use Sitemap\Items\ItemInterface;
 use Sitemap\SchemaRenderers\SchemaRendererInterface;
+use function Functional\first;
 
 /**
  * Class Export
  * @package Sitemap
  */
-class Export
+final class Export
 {
-
     public const SITEMAP_URL_GOOGLE = 'http://www.google.com/webmasters/tools/ping?sitemap=';
 
     public const SITEMAP_URL_BING = 'http://www.bing.com/ping?sitemap=';
@@ -72,6 +62,11 @@ class Export
     private $baseImageURL;
 
     /**
+     * @var array
+     */
+    private $blockedURLs = [];
+
+    /**
      * Export constructor.
      * @param DbInterface             $db
      * @param LoggerInterface         $logger
@@ -98,45 +93,29 @@ class Export
     }
 
     /**
-     *
+     * @param array              $customerGroupIDs
+     * @param array              $languages
+     * @param FactoryInterface[] $factories
      */
-    public function generate(): void
+    public function generate(array $customerGroupIDs, array $languages, array $factories): void
     {
         $this->logger->debug('Sitemap wird erstellt');
-        $timeStart = \microtime(true);
-        // W3C Datetime formats:
-        //  YYYY-MM-DD (eg 1997-07-16)
-        //  YYYY-MM-DDThh:mmTZD (eg 1997-07-16T19:20+01:00)
-        $defaultCustomerGroupID  = \Kundengruppe::getDefaultGroupID();
-        $languages               = \Sprache::getAllLanguages();
-        $defaultLang             = \Sprache::getDefaultLanguage(true);
-        $defaultLangID           = (int)$defaultLang->kSprache;
-        $_SESSION['kSprache']    = $defaultLangID;
-        $_SESSION['cISOSprache'] = $defaultLang->cISO;
-        \TaxHelper::setTaxRates();
-        if (!isset($_SESSION['Kundengruppe'])) {
-            $_SESSION['Kundengruppe'] = new \Kundengruppe();
-        }
-        $_SESSION['Kundengruppe']->setID($defaultCustomerGroupID);
-
+        $timeStart  = \microtime(true);
         $fileNumber = 0;
         $itemCount  = 1;
-        $factories  = [];
         $urlCounts  = [0 => 0];
         $res        = '';
 
+        $this->blockedURLs = [
+            'navi.php',
+            'suche.php',
+            'jtl.php',
+            'pass.php',
+            'registrieren.php',
+            'warenkorb.php',
+        ];
+        $this->setSessionData($customerGroupIDs);
         $this->deleteFiles();
-
-        $factories[] = new Base($this->db, $this->config, $this->baseURL, $this->baseImageURL);
-        $factories[] = new Product($this->db, $this->config, $this->baseURL, $this->baseImageURL);
-        $factories[] = new Page($this->db, $this->config, $this->baseURL, $this->baseImageURL);
-        $factories[] = new Category($this->db, $this->config, $this->baseURL, $this->baseImageURL);
-        $factories[] = new Tag($this->db, $this->config, $this->baseURL, $this->baseImageURL);
-        $factories[] = new Manufacturer($this->db, $this->config, $this->baseURL, $this->baseImageURL);
-        $factories[] = new LiveSearch($this->db, $this->config, $this->baseURL, $this->baseImageURL);
-        $factories[] = new Attribute($this->db, $this->config, $this->baseURL, $this->baseImageURL);
-        $factories[] = new NewsItem($this->db, $this->config, $this->baseURL, $this->baseImageURL);
-        $factories[] = new NewsCategory($this->db, $this->config, $this->baseURL, $this->baseImageURL);
 
         \executeHook(\HOOK_SITEMAP_EXPORT_GET_FACTORIES, [
             'factories' => &$factories,
@@ -145,7 +124,7 @@ class Export
 
         foreach ($factories as $factory) {
             /** @var FactoryInterface $factory */
-            foreach ($factory->getCollection($languages, [$defaultCustomerGroupID]) as $item) {
+            foreach ($factory->getCollection($languages, $customerGroupIDs) as $item) {
                 if ($item === null) {
                     break;
                 }
@@ -174,6 +153,22 @@ class Export
         ]);
         $this->buildReport($urlCounts, $timeTotal);
         $this->ping();
+    }
+
+    /**
+     * @param array $customerGroupIDs
+     */
+    private function setSessionData(array $customerGroupIDs): void
+    {
+        $defaultLang             = \Sprache::getDefaultLanguage(true);
+        $defaultLangID           = (int)$defaultLang->kSprache;
+        $_SESSION['kSprache']    = $defaultLangID;
+        $_SESSION['cISOSprache'] = $defaultLang->cISO;
+        \TaxHelper::setTaxRates();
+        if (!isset($_SESSION['Kundengruppe'])) {
+            $_SESSION['Kundengruppe'] = new \Kundengruppe();
+        }
+        $_SESSION['Kundengruppe']->setID(first($customerGroupIDs));
     }
 
     /**
@@ -217,16 +212,7 @@ class Export
      */
     private function isURLBlocked(string $url): bool
     {
-        $blocked = [
-            'navi.php',
-            'suche.php',
-            'jtl.php',
-            'pass.php',
-            'registrieren.php',
-            'warenkorb.php',
-        ];
-
-        return \Functional\some($blocked, function ($e) use ($url) {
+        return \Functional\some($this->blockedURLs, function ($e) use ($url) {
             return \strpos($url, $e) !== false;
         });
     }

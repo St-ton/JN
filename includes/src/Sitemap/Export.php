@@ -120,7 +120,7 @@ class Export
         $_SESSION['Kundengruppe']->setID($defaultCustomerGroupID);
 
         $fileNumber = 0;
-        $nSitemap   = 1;
+        $itemCount  = 1;
         $factories  = [];
         $urlCounts  = [0 => 0];
         $res        = '';
@@ -150,8 +150,8 @@ class Export
                     break;
                 }
                 /** @var ItemInterface $item */
-                if ($nSitemap > \SITEMAP_ITEMS_LIMIT) {
-                    $nSitemap = 1;
+                if ($itemCount > \SITEMAP_ITEMS_LIMIT) {
+                    $itemCount = 1;
                     $this->buildFile($fileNumber, $res);
                     ++$fileNumber;
                     $urlCounts[$fileNumber] = 0;
@@ -159,7 +159,7 @@ class Export
                 }
                 if (!$this->isURLBlocked($item->getLocation())) {
                     $res .= $this->renderer->renderItem($item);
-                    ++$nSitemap;
+                    ++$itemCount;
                     ++$urlCounts[$fileNumber];
                 }
             }
@@ -358,5 +358,69 @@ class Export
     public function setConfig(array $config): void
     {
         $this->config = $config;
+    }
+
+    /**
+     * @return RendererInterface
+     */
+    public function getRenderer(): RendererInterface
+    {
+        return $this->renderer;
+    }
+
+    /**
+     * @param RendererInterface $renderer
+     */
+    public function setRenderer(RendererInterface $renderer): void
+    {
+        $this->renderer = $renderer;
+    }
+
+    /**
+     * @return SchemaRendererInterface
+     */
+    public function getSchemaRenderer(): SchemaRendererInterface
+    {
+        return $this->schemaRenderer;
+    }
+
+    /**
+     * @param SchemaRendererInterface $schemaRenderer
+     */
+    public function setSchemaRenderer(SchemaRendererInterface $schemaRenderer): void
+    {
+        $this->schemaRenderer = $schemaRenderer;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBaseURL(): string
+    {
+        return $this->baseURL;
+    }
+
+    /**
+     * @param string $baseURL
+     */
+    public function setBaseURL(string $baseURL): void
+    {
+        $this->baseURL = $baseURL;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBaseImageURL(): string
+    {
+        return $this->baseImageURL;
+    }
+
+    /**
+     * @param string $baseImageURL
+     */
+    public function setBaseImageURL(string $baseImageURL): void
+    {
+        $this->baseImageURL = $baseImageURL;
     }
 }

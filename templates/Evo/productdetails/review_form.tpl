@@ -6,6 +6,8 @@
     {include file='layout/header.tpl'}
 {/block}
 
+{include file='snippets/extension.tpl'}
+
 {block name='content'}
     <h1>{lang key='productRating' section='product rating'}</h1>
     {block name='productdetails-review-form'}

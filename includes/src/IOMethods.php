@@ -656,7 +656,7 @@ class IOMethods
                 $productID,
                 $options,
                 Kundengruppe::getCurrent(),
-                $_SESSION['kSprache']
+                Shop::getLanguageID()
             );
 
             $stockInfo = $product->getStockInfo();

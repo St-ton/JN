@@ -8,21 +8,27 @@ namespace GeneralDataProtection;
 
 /**
  * anonymize personal data when customer accounts was deleted
+ *
+ * names of the tables, we manipulate:
+ *
+ * `tbewertung`
+ * `tzahlungseingang`
+ * `tnewskommentar`
  */
 class AnonymizeDeletedCustomer extends Method implements MethodInterface
 {
-    protected $szReason  = 'anonymize_orphaned_ratings';
-
+    protected $szReason = 'anonymize_orphaned_ratings';
 
     public function execute()
     {
-        //$this->anon_tbewertung();
-        //$this->anon_tzahlungseingang();
-        //$this->anon_tnewskommentar();
+        $this->anon_tbewertung();
+        $this->anon_tzahlungseingang();
+        $this->anon_tnewskommentar();
     }
 
     /**
-     * anonymize orphaned ratings
+     * anonymize orphaned ratings.
+     * (e.g. of canceled memberships)
      */
     private function anon_tbewertung()
     {
@@ -53,7 +59,8 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM `tbewertung` b
             WHERE
-                b.`kKunde` > 0
+                b.`cName` != "Anonym"
+                AND b.`kKunde` > 0
                 AND b.`kKunde` NOT IN (SELECT `kKunde` FROM `tkunde`)
                 AND date(`dDatum`) < date_sub(date(now()), INTERVAL :pInterval DAY)',
             ['pInterval' => $this->iInterval],
@@ -68,29 +75,21 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
         // ..and anon the orignal
         foreach ($vResult as $oResult) {
             // anonymize the original data
-            /*
-             *\Shop::Container()->getDB()->queryPrepared('UPDATE `tbewertung` b
-             *    SET
-             *        b.`cName` = "Anonym",
-             *        `kKunde`  = 0
-             *    WHERE
-             *        kBewertung = :pKeyBewertung',
-             *    ['pKeyBewertung' => $oResult->kBewertung],
-             *    \DB\ReturnType::AFFECTED_ROWS
-             *);
-             */
+            \Shop::Container()->getDB()->queryPrepared('UPDATE `tbewertung` b
+                SET
+                    b.`cName` = "Anonym",
+                    `kKunde`  = 0
+                WHERE
+                    kBewertung = :pKeyBewertung',
+                ['pKeyBewertung' => $oResult->kBewertung],
+                \DB\ReturnType::AFFECTED_ROWS
+            );
         }
-
-        // --TODO--
-        // remove journal-values, if they are older than "end of next year after their creation"
-        // DELETE FROM `tanondatajournal` WHERE `cReason` = $this->szReason AND time...
-        // ...
-        // maybe we do that in the destructor; see below
     }
 
     /**
-     * anonymize received payments
-     * (remove "Zahler e-mail" from `tzahlungseingang`)
+     * anonymize received payments.
+     * (replace `cZahler`(e-mail) in `tzahlungseingang`)
      */
     private function anon_tzahlungseingang()
     {
@@ -105,7 +104,7 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
             'fZahlungsgebuehr'  => null,
             'cISO'              => null,
             'cEmpfaenger'       => 1,
-            'cZahler'           => 1,
+            'cZahler'           => 1,     // e-mail address
             'dZeit'             => 1,
             'cHinweis'          => null,
             'cAbgeholt'         => null
@@ -118,13 +117,14 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM `tzahlungseingang`
             WHERE
-                `cAbgeholt` != "N"
+                `cZahler` != "-"
+                AND `cAbgeholt` != "N"
                 AND `kBestellung` IN (
                     SELECT `kBestellung`
                     FROM `tbestellung` b
                     WHERE b.`kKunde` NOT IN (SELECT `kKunde` FROM `tkunde`)
                 )
-                AND date(b.`dZeit`) < date(date_sub(now(), INTERVAL :pInterval DAY))',
+                AND date(`dZeit`) < date(date_sub(now(), INTERVAL :pInterval DAY))',
             ['pInterval' => $this->iInterval],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
@@ -136,21 +136,19 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
         $this->saveToJournal('tzahlungseingang', $vUseFileds, $vResult);
         // ..and anon the orignal
         foreach ((array)$vResult as $oResult) {
-            /*
-             *\Shop::Container()->getDB()->queryPrepared('UPDATE `tzahlungseingang`
-             *    SET
-             *        `cZahler` = '-'
-             *    WHERE
-             *        `kZahlungseingang` = :pKeyZahlungseingang',
-             *    ['pKeyZahlungseingang' => $vResult->kZahlungseingang],
-             *    \DB\ReturnType::AFFECTED_ROWS);
-             *);
-             */
+            \Shop::Container()->getDB()->queryPrepared('UPDATE `tzahlungseingang`
+                SET
+                    `cZahler` = "-"
+                WHERE
+                    `kZahlungseingang` = :pKeyZahlungseingang',
+                ['pKeyZahlungseingang' => $vResult->kZahlungseingang],
+                \DB\ReturnType::AFFECTED_ROWS
+            );
         }
     }
 
     /**
-     * anonymize comments for news
+     * anonymize comments of news, where no (more) registered customers are there for these.
      * (delete names an e-mails from `tnewskommentar` and remove the customer-relation)
      */
     private function anon_tnewskommentar()
@@ -173,7 +171,8 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM `tnewskommentar`
             WHERE
-                `kKunde` > 0
+                `cName` != "Anonym"
+                AND `kKunde` > 0
                 AND `kKunde` NOT IN (SELECT kKunde FROM tkunde)
                 AND b.`dDatum` < date_sub(now(), INTERVAL :pInterval DAY)',
             ['pInterval' => $this->iInterval],
@@ -188,27 +187,17 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
         // ..and anon the orignal
         foreach ($vResult as $oResult) {
             // anonymize the original data
-            /*
-             *\Shop::Container()->getDB()->queryPrepared('UPDATE `tnewskommentar`
-             *    SET
-             *        `cName`  = "Anonym",
-             *        `cEmail` = "Anonym",
-             *        `kKunde` = 0
-             *    WHERE
-             *        kNewsKommentar = :pKeyNewsKommentar',
-             *    ['pKeyNewsKommentar' => $vResult->kNewsKommentar],
-             *    \DB\ReturnType::AFFECTED_ROWS
-             *);
-             */
+            \Shop::Container()->getDB()->queryPrepared('UPDATE `tnewskommentar`
+                SET
+                    `cName`  = "Anonym",
+                    `cEmail` = "Anonym",
+                    `kKunde` = 0
+                WHERE
+                    kNewsKommentar = :pKeyNewsKommentar',
+                ['pKeyNewsKommentar' => $vResult->kNewsKommentar],
+                \DB\ReturnType::AFFECTED_ROWS
+            );
         }
-    }
-
-
-
-    public function __destruct()
-    {
-        // --TODO-- clean up the journal ...
-        // remove stuff, older than "end of the next year after his creation"
     }
 
 }

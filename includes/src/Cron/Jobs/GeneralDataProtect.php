@@ -12,7 +12,6 @@ use Cron\JobInterface;
 use Cron\QueueEntry;
 use DB\DbInterface;
 use Psr\Log\LoggerInterface;
-//use GeneralDataProtection;
 
 /**
  * Class GeneralDataProtect
@@ -37,11 +36,8 @@ class GeneralDataProtect extends Job
      */
     public function start(QueueEntry $queueEntry): JobInterface
     {
-        //parent::start($queueEntry); // needed ?
-
-        //
-        $oGdprRunner = new \GeneralDataProtection\GdprRunner();
-        $oGdprRunner->execute();
+        $oTableCleaner = new \GeneralDataProtection\TableCleaner();
+        $oTableCleaner->execute();
 
         return $this;
     }

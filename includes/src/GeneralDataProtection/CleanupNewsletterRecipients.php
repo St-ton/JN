@@ -6,30 +6,91 @@
 
 namespace GeneralDataProtection;
 
-class CleanupNewsletterRecipients implements MethodInterface
+/**
+ * Delete newsletter-registrations with no opt-in within given interval
+ * (interval former "interval_clear_logs" = 90 days)
+ *
+ * names of the tables, we manipulate:
+ *
+ * `tnewsletterempfaenger`
+ * `tnewsletterempfaengerhistory`
+ */
+class CleanupNewsletterRecipients extends Method implements MethodInterface
 {
-    public function __construct()
+    protected $szReason = 'cleanup_newsletter_recipients';
+
+    public function execute()
     {
-        //
+        //$this->clean_tnewsletter();
     }
 
-    /**
-     * Delete newsletter-registrations with no opt-in within given interval
-     * (interval former "interval_clear_logs" = 90 days)
-     *
-     * @param int
-     */
-    public function execute(int $iInterval)
+    private function clean_tnewsletter()
     {
-        \Shop::Container()->getDB()->queryPrepared('DELETE e, h
+        $vTableFields = [
+            // `tnewsletterempfaenger`
+            'kNewsletterEmpfaenger'        => null,
+            'kSprache'                     => null,
+            'kKunde'                       => 1,
+            'nAktiv'                       => null,
+            'cAnrede'                      => null,
+            'cVorname'                     => 1,
+            'cNachname'                    => 1,
+            'cEmail'                       => 1,
+            'cOptCode'                     => null,
+            'cLoeschCode'                  => null,
+            'dEingetragen'                 => 1,
+            'dLetzterNewsletter'           => null,
+            // `tnewsletterempfaengerhistory`
+            'kNewsletterEmpfaengerHistory' => null,
+            'kSprache'                     => null,
+            'kKunde'                       => null,
+            'cAnrede'                      => null,
+            'cVorname'                     => null,
+            'cNachname'                    => null,
+            'cEmail'                       => null,
+            'cOptCode'                     => null,
+            'cLoeschCode'                  => null,
+            'cAktion'                      => null,
+            'cEmailBodyHtml'               => null,
+            'cRegIp'                       => 1,
+            'cOptIp'                       => null,
+            'dAusgetragen'                 => 1,
+            'dEingetragen'                 => null,
+            'dOptCode'                     => null,
+        ];
+
+        // don't customize below this line - - - - - - - - - - - - - - - - - - - -
+
+        $vUseFileds = $this->selectFields($vTableFields);
+        // select all the data from the DB
+        $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM `tnewsletterempfaenger` e
                 JOIN `tnewsletterempfaengerhistory` h ON h.`cOptCode` = e.`cOptCode` AND h.`cEmail` = e.`cEmail`
-            WHERE e.`nAktiv`=0 AND h.`cAktion` = "Eingetragen"
-                AND h.`dOptCode` = "0000-00-00"
-                AND h.dEingetragen <= (now() - INTERVAL ' . $iInterval . ' DAY)'
-            , []
-            , \DB\ReturnType::SINGLE_OBJECT
+            WHERE
+                e.`nAktiv` = 0
+                AND h.`cAktion` = "Eingetragen"
+                AND h.`dOptCode` = "0000-00-00 00:00:00"
+                AND h.`dEingetragen` <= (NOW() - INTERVAL ' . $this->iInterval . ' DAY)',
+            [],
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
+        if (!is_array($vResult)) {
+            // "no data, no operation"
+            return;
+        }
+        // save parts of the old values in the changes-journal..
+        $this->saveToJournal('tbesucher', $vUseFileds, $vResult);
+        // anonymize the original data
+        foreach ($vResult as $oResult) {
+            \Shop::Container()->getDB()->queryPrepared('DELETE e, h
+                FROM `tnewsletterempfaenger` e
+                   INNER JOIN `tnewsletterempfaengerhistory` h ON h.`cOptCode` = e.`cOptCode` AND h.`cEmail` = e.`cEmail`
+                WHERE
+                   e.`cOptCode` = "ba655612efd7d5ddc8bc7b15b0a5888d"',
+                [],
+                \DB\ReturnType::AFFECTED_ROWS
+            );
+        }
     }
 
 }

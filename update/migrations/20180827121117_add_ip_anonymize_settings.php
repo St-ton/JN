@@ -54,19 +54,6 @@ class Migration_20180827121117 extends Migration implements IMigration
             true
         );
 
-        // create the GDPR-timer table
-        /*
-         *$this->execute('
-         *    CREATE TABLE IF NOT EXISTS `tgdprtimers`(
-         *        `cTimerName` varchar(128) DEFAULT "" NOT NULL COMMENT "a preferably uniq name of the timer",
-         *        `dTimerLastRun` datetime DEFAULT NULL COMMENT "no 00:00:00 time possible; use NULL instead",
-         *        PRIMARY KEY `TimerName` (`cTimerName`)
-         *    )
-         *    ENGINE=InnoDB
-         *    DEFAULT CHARSET=utf8
-         *');
-         */
-
         // setting up the cron-job in the cron-table
         $oCronDataProtection = $this->fetchArray('SELECT * FROM `tcron` WHERE `cJobArt` = "dataprotection"');
         if (0 <= sizeof($oCronDataProtection)) {
@@ -112,11 +99,6 @@ class Migration_20180827121117 extends Migration implements IMigration
         $oCronDataProtection = $this->fetchArray('SELECT * FROM `tcron` WHERE `cJobArt` = "dataprotection"');
         $this->execute('DELETE FROM `tcron` WHERE `kCron` = "'.$oCronDataProtection[0]['kCron'].'"');
 
-        // remove the GDPR-timer table
-        /*
-         *$this->execute('DROP TABLE `tgdprtimers`');
-         */
-
         // restore the old "IPs speichern" settings (teinstellungenconf::kEinstellungenConf=335,1133)
         // (these settings makes no more sense now)
         $this->execute('
@@ -132,18 +114,5 @@ class Migration_20180827121117 extends Migration implements IMigration
                 ("1133","Nein","N","2")
         ');
 
-        // --NOTE--
-        // settings for "save IP yes/no", the current way, makes no sens anymore
-        /*
-         *$this->execute('INSERT INTO teinstellungenconf(kEinstellungenConf,kEinstellungenSektion,cName,cBeschreibung,cWertName,cInputTyp,cModulId,nSort,nStandardAnzeigen,nModul,cConf)
-         *    VALUES("335","7","Variationsbilder Groß skalieren","Soll die IP-Adresse des Kunden in der Datenbank gespeichert werden, wenn er eine Bestellung abschliesst?","bilder_variationen_gross_skalieren","selectbox","","580","1","0","Y")');
-         *$this->execute('INSERT INTO teinstellungenconfwerte(kEinstellungenConf,cName,cWert,nSort) VALUES("335","Ja","Y","1")');
-         *$this->execute('INSERT INTO teinstellungenconfwerte(kEinstellungenConf,cName,cWert,nSort) VALUES("335","Nein","N","2")');
-         *
-         *$this->execute('INSERT INTO teinstellungenconf(kEinstellungenConf,kEinstellungenSektion,cName,cBeschreibung,cWertName,cInputTyp,cModulId,nSort,nStandardAnzeigen,nModul,cConf)
-         *    VALUES("1133","1","IPs speichern","Sollen IPs von Benutzern bei z.b. Umfragen, Tags etc. als Floodschutz oder sonstigen Trackingm&ouml;glichkeiten gespeichert werden?","global_ips_speichern","selectbox","","570","1","0","Y")');
-         *$this->execute('INSERT INTO teinstellungenconfwerte(kEinstellungenConf,cName,cWert,nSort) VALUES("1133","Ja","Y","1")');
-         *$this->execute('INSERT INTO teinstellungenconfwerte(kEinstellungenConf,cName,cWert,nSort) VALUES("1133","Nein","N","2")');
-         */
     }
 }

@@ -6,24 +6,41 @@
 
 namespace GeneralDataProtection;
 
+/**
+ * names of the tables, we manipulate:
+ *
+ * `tbesucher`
+ * `tbesucherarchiv`
+ * `tkundenattribut`
+ * `tkundenkontodaten`
+ * `tkundenwerbenkunden`
+ * `tkundenwerbenkundenbonus`
+ * `tzahlungsinfo`
+ * `tlieferadresse`
+ * `trechnungsadresse`
+ *
+ * data will be removed here!
+ */
 class CleanupCustomerRelicts extends Method implements MethodInterface
 {
     protected $szReason  = 'anonymize_orphaned_ratings';
 
-
     public function execute()
     {
-        //$this->del_tbesucher();
-        //$this->del_tbesucherarchiv();
-        //$this->del_tkundenattribut(); // ATTENTION: NO DATE! should bound to a customer.
-        //$this->del_tkundenkontodaten(); // ATTENTION: NO DATE! should bound to a customer.
-        //$this->del_tkundenwerbenkunden();
-        //$this->del_tkundenwerbenkundenbonus(); // --OBSOLETE-- doen in "del_tkundenwerbenkunden"
-        //$this->del_tzahlungsinfo();
-        //$this->del_tlieferadresse();
-        //$this->del_trechnungsadresse();
+        $this->del_tbesucher();
+        $this->del_tbesucherarchiv();
+        $this->del_tkundenattribut();
+        $this->del_tkundenkontodaten();
+        $this->del_tkundenwerbenkunden();
+        $this->del_tzahlungsinfo();
+        $this->del_tlieferadresse();
+        $this->del_trechnungsadresse();
     }
 
+    /**
+     * delete visitors without a valid customer-account,
+     * after a given count of days
+     */
     private function del_tbesucher()
     {
         // CUSTOMIZABLE:
@@ -65,21 +82,21 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
         }
         // save parts of the old values in the changes-journal..
         $this->saveToJournal('tbesucher', $vUseFileds, $vResult);
+        // anonymize the original data
         foreach ($vResult as $oResult) {
-            //$vQueries[] = "DELETE FROM `tbesucher` WHERE kKunde > 0 AND `kKunde` NOT IN (SELECT `kKunde` FROM `tkunde`)";
-
-            // anonymize the original data
-            /*
-             *\Shop::Container()->getDB()->queryPrepared('DELETE FROM `tbesucher`
-             *    WHERE
-             *        kBesucher = :pKeyBesucher',
-             *    ['pKeyBesucher' => $oResult->kBesucher],
-             *    \DB\ReturnType::AFFECTED_ROWS
-             *);
-             */
+            \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tbesucher`
+                WHERE
+                    kBesucher = :pKeyBesucher',
+                ['pKeyBesucher' => $oResult->kBesucher],
+                \DB\ReturnType::AFFECTED_ROWS
+            );
         }
     }
 
+    /**
+     * delete visitors in the visitors-archive,
+     * without a valid customer-account
+     */
     private function del_tbesucherarchiv()
     {
         // CUSTOMIZABLE:
@@ -118,22 +135,22 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
         }
         // save parts of the old values in the changes-journal..
         $this->saveToJournal('tbesucherarchiv', $vUseFileds, $vResult);
+        // anonymize the original data
         foreach ($vResult as $oResult) {
-            //$vQueries[] = "DELETE FROM `tbesucherarchiv` WHERE kKunde > 0 AND kKunde NOT IN (SELECT kKunde FROM tkunde)";
-
-            // anonymize the original data
-            /*
-             *\Shop::Container()->getDB()->queryPrepared('DELETE FROM `tbesucherarchiv`
-             *    WHERE
-             *        kBesucher = :pKeyBesucher',
-             *    ['pKeyBesucher' => $oResult->kBesucher],
-             *    \DB\ReturnType::AFFECTED_ROWS
-             *);
-             */
+            \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tbesucherarchiv`
+                WHERE
+                    kBesucher = :pKeyBesucher',
+                ['pKeyBesucher' => $oResult->kBesucher],
+                \DB\ReturnType::AFFECTED_ROWS
+            );
         }
 
     }
 
+    /**
+     * delete customer-recruitings
+     * where no valid customer-accounts exists
+     */
     private function del_tkundenwerbenkunden()
     {
         // CUSTOMIZABLE:
@@ -177,16 +194,12 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             // "no data, no operation"
             return;
         }
-
         // save parts of the old values in the changes-journal..
         $this->saveToJournal('tkundenwerbenkunden,tkundenwerbenkundenbonus', $vUseFileds, $vResult);
         // ..and anon the orignal
         foreach ($vResult as $oResult) {
-            //"DELETE FROM `tkundenwerbenkunden` WHERE kKunde > 0 AND kKunde NOT IN (SELECT kKunde FROM tkunde)";
-            //"DELETE FROM `tkundenwerbenkundenbonus` WHERE kKunde > 0 AND kKunde NOT IN (SELECT kKunde FROM tkunde)";
-
             // delete each "kKunde", in multiple tables, in one shot
-            $nEffected = \Shop::Container()->getDB()->queryPrepared('DELETE `tkundenwerbenkunden`, `tkundenwerbenkundenbonus`
+            \Shop::Container()->getDB()->queryPrepared('DELETE `tkundenwerbenkunden`, `tkundenwerbenkundenbonus`
                 FROM
                     `tkundenwerbenkunden`
                     LEFT JOIN `tkundenwerbenkundenbonus` ON `tkundenwerbenkundenbonus`.`kKunde` = `tkundenwerbenkunden`.`kKunde`
@@ -195,15 +208,14 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
                 ['pKeyKunde' => $oResult->kKunde],
                 \DB\ReturnType::AFFECTED_ROWS
             );
-            //$this->oLogger->debug('nEffected: '.print_r($nEffected,true )); // --DEBUG--
         }
 
     }
 
-
-
-
-
+    /**
+     * delete customer-attributes
+     * for which there are no valid customer-accounts
+     */
     private function del_tkundenattribut()
     {
         // CUSTOMIZABLE:
@@ -226,17 +238,27 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             WHERE
                 kKunde NOT IN (SELECT kKunde FROM tkunde)'
         );
-
-        // ATTENTION: we got NO DATE HERE!
-        // so we can not mask a bunch of data - we have to fetch all that stuff! not good!
-        //
-        // maybe it makes no sense to save this table seperately,
-        // because it depends on others and makes only sense there.
-        // --TODO-- --TO-CHECK--
-
-        //$vQueries[] = "DELETE FROM `tkundenattribut` WHERE kKunde NOT IN (SELECT kKunde FROM tkunde)";
+        if (!is_array($vResult)) {
+            // "no data, no operation"
+            return;
+        }
+        // save parts of the old values in the changes-journal..
+        $this->saveToJournal('tkundenattribut', $vUseFileds, $vResult);
+        // ..and anon the orignal
+        foreach ($vResult as $oResult) {
+            $nEffected = \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tkundenattribut`
+                WHERE
+                    kKundenAttribut = :pKeykKundenAttribut',
+                ['pKeykKundenAttribut' => $vResult->kKundenAttribut],
+                \DB\ReturnType::AFFECTED_ROWS
+            );
+        }
     }
 
+    /**
+     * delete payment-data of customers,
+     * which have no valid account
+     */
     private function del_tzahlungsinfo()
     {
         // CUSTOMIZABLE:
@@ -251,11 +273,11 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             'cKontoNr'          => null,
             'cIBAN'             => 1,
             'cBIC'              => null,
-            'cKartenNr'         => null,
-            'cGueltigkeit'      => null,
-            'cCVV'              => null,
-            'cKartenTyp'        => null,
-            'cInhaber'          => null,
+            'cKartenNr'         => 1,
+            'cGueltigkeit'      => 1,
+            'cCVV'              => 1,
+            'cKartenTyp'        => 1,
+            'cInhaber'          => 1,
             'cVerwendungszweck' => null,
             'cAbgeholt'         => null
         ];
@@ -272,19 +294,27 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             [],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-
-        // ATTENTION: we got NO DATE HERE!
-        // so we can not mask a bunch of data - we have to fetch all that stuff! not good!
-        //
-        // maybe it makes no sense to save this table seperately,
-        // because it depends on others and makes only sense there.
-        // --TODO-- --TO-CHECK--
-
-
-
-        //$vQueries[] = "DELETE FROM `tzahlungsinfo` WHERE kKunde > 0 AND kKunde NOT IN (SELECT kKunde FROM tkunde)";
+        if (!is_array($vResult)) {
+            // "no data, no operation"
+            return;
+        }
+        // save parts of the old values in the changes-journal..
+        $this->saveToJournal('tzahlungsinfo', $vUseFileds, $vResult);
+        // ..and anon the orignal
+        foreach ($vResult as $oResult) {
+            $nEffected = \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tzahlungsinfo`
+                WHERE
+                    kZahlungsInfo = :pKeyZahlungsInfo',
+                ['pKeyZahlungsInfo' => $oResult->kZahlungsInfo],
+                \DB\ReturnType::AFFECTED_ROWS
+            );
+        }
     }
 
+    /**
+     * delete bank-account-information of customers,
+     * which have no valid account
+     */
     private function del_tkundenkontodaten()
     {
         // CUSTOMIZABLE:
@@ -309,23 +339,31 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             FROM `tkundenkontodaten`
             WHERE
                 kKunde > 0
-                AND kKunde NOT IN (SELECT kKunde FROM tkunde)'
+                AND kKunde NOT IN (SELECT kKunde FROM tkunde)',
+            [],
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-
-        // ATTENTION: we got NO DATE HERE!
-        // so we can not mask a bunch of data - we have to fetch all that stuff! not good!
-        //
-        // maybe it makes no sense to save this table seperately,
-        // because it depends on others and makes only sense there.
-        // --TODO-- --TO-CHECK--
-
-        //$vQueries[] = "DELETE FROM `tkundenkontodaten` WHERE kKunde > 0 AND kKunde NOT IN (SELECT kKunde FROM tkunde)";
+        if (!is_array($vResult)) {
+            // "no data, no operation"
+            return;
+        }
+        // save parts of the old values in the changes-journal..
+        $this->saveToJournal('tkundenkontodaten', $vUseFileds, $vResult);
+        // ..and anon the orignal
+        foreach ($vResult as $oResult) {
+            $nEffected = \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tkundenkontodaten`
+                WHERE
+                    kKunde = :pKeyKundenKontodaten',
+                ['pKeyKundenKontodaten' => $oResult->kKundenKontodaten],
+                \DB\ReturnType::AFFECTED_ROWS
+            );
+        }
     }
 
-
-
-
-
+    /**
+     * delete delivery-addresses
+     * which assigned to no valid customer-account
+     */
     private function del_tlieferadresse()
     {
         // CUSTOMIZABLE:
@@ -333,35 +371,61 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
         // (null = don't save in journal, '1' = save in journal)
         $vTableFields = [
             'kLieferadresse' => null,
-            'kKunde'         => null,
+            'kKunde'         => 1,
             'cAnrede'        => null,
-            'cVorname'       => null,
-            'cNachname'      => null,
+            'cVorname'       => 1,
+            'cNachname'      => 1,
             'cTitel'         => null,
             'cFirma'         => null,
             'cZusatz'        => null,
-            'cStrasse'       => null,
-            'cHausnummer'    => null,
+            'cStrasse'       => 1,
+            'cHausnummer'    => 1,
             'cAdressZusatz'  => null,
-            'cPLZ'           => null,
-            'cOrt'           => null,
+            'cPLZ'           => 1,
+            'cOrt'           => 1,
             'cBundesland'    => null,
-            'cLand'          => null,
-            'cTel'           => null,
-            'cMobil'         => null,
+            'cLand'          => 1,
+            'cTel'           => 1,
+            'cMobil'         => 1,
             'cFax'           => null,
-            'cMail'          => null
+            'cMail'          => 1
         ];
-        /*
-         *$vQueries[] = "DELETE k
-         *    FROM tlieferadresse k
-         *        JOIN tbestellung b ON b.kKunde = k.kKunde
-         *    WHERE b.cStatus IN (4, -1)
-         *        AND b.cAbgeholt = 'Y'
-         *        AND k.kKunde NOT IN (SELECT kKunde FROM tkunde)";
-         */
+
+        // don't customize below this line - - - - - - - - - - - - - - - - - - - -
+
+        $vUseFileds = $this->selectFields($vTableFields);
+        // select all the data from the DB
+        $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
+            FROM `tlieferadresse` k
+                JOIN `tbestellung` b ON b.`kKunde` = k.`kKunde`
+            WHERE
+                b.`cStatus` IN (4, -1)
+                AND b.`cAbgeholt` = "Y"
+                AND k.`kKunde` NOT IN (SELECT `kKunde` FROM `tkunde`)',
+            [],
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
+        if (!is_array($vResult)) {
+            // "no data, no operation"
+            return;
+        }
+        // save parts of the old values in the changes-journal..
+        $this->saveToJournal('tlieferadresse', $vUseFileds, $vResult);
+        // ..and anon the orignal
+        foreach ($vResult as $oResult) {
+            \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tlieferadresse`
+                WHERE
+                    AND `kLieferadresse` = :pKeyLieferadresse',
+                ['pKeyLieferadresse' => $oResult->kLieferadresse],
+                \DB\ReturnType::AFFECTED_ROWS
+            );
+        }
     }
 
+    /**
+     * delete billing-addresses 
+     * which assigned to no valid customer-account
+     */
     private function del_trechnungsadresse()
     {
         // CUSTOMIZABLE:
@@ -369,35 +433,57 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
         // (null = don't save in journal, '1' = save in journal)
         $vTableFields = [
             'kRechnungsadresse' => null,
-            'kKunde'            => null,
+            'kKunde'            => 1,
             'cAnrede'           => null,
             'cTitel'            => null,
-            'cVorname'          => null,
-            'cNachname'         => null,
+            'cVorname'          => 1,
+            'cNachname'         => 1,
             'cFirma'            => null,
             'cZusatz'           => null,
-            'cStrasse'          => null,
-            'cHausnummer'       => null,
+            'cStrasse'          => 1,
+            'cHausnummer'       => 1,
             'cAdressZusatz'     => null,
-            'cPLZ'              => null,
-            'cOrt'              => null,
+            'cPLZ'              => 1,
+            'cOrt'              => 1,
             'cBundesland'       => null,
-            'cLand'             => null,
-            'cTel'              => null,
-            'cMobil'            => null,
+            'cLand'             => 1,
+            'cTel'              => 1,
+            'cMobil'            => 1,
             'cFax'              => null,
             'cUSTID'            => null,
             'cWWW'              => null,
-            'cMail'             => null
+            'cMail'             => 1
         ];
-        /*
-         *$vQueries[] = "DELETE k
-         *    FROM trechnungsadresse k
-         *        JOIN tbestellung b ON b.kKunde = k.kKunde
-         *    WHERE b.cStatus IN (4, -1)
-         *        AND b.cAbgeholt = 'Y'
-         *        AND k.kKunde NOT IN (SELECT kKunde FROM tkunde)";
-         */
+
+        // don't customize below this line - - - - - - - - - - - - - - - - - - - -
+
+        $vUseFileds = $this->selectFields($vTableFields);
+        // select all the data from the DB
+        $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
+            FROM `trechnungsadresse` k
+                JOIN `tbestellung` b ON b.`kKunde` = k.`kKunde`
+                WHERE
+                    b.`cStatus` IN (4, -1)
+                    AND b.`cAbgeholt` = "Y"
+                    AND k.`kKunde` NOT IN (SELECT `kKunde` FROM `tkunde`)',
+            [],
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
+        if (!is_array($vResult)) {
+            // "no data, no operation"
+            return;
+        }
+        // save parts of the old values in the changes-journal..
+        $this->saveToJournal('trechnungsadresse', $vUseFileds, $vResult);
+        // ..and anon the orignal
+        foreach ($vResult as $oResult) {
+            \Shop::Container()->getDB()->queryPrepared('DELETE FROM `trechnungsadresse`
+                WHERE
+                    AND `kRechnungsadresse` = :pKeyRechnungsadresse',
+                ['pKeyRechnungsadresse' => $oResult->kRechnungsadresse],
+                \DB\ReturnType::AFFECTED_ROWS
+            );
+        }
     }
 
 }

@@ -11,17 +11,8 @@ class Method
     protected $oNow      = null;
     protected $iInterval = 0;
 
-    protected $oLogger = null; // --DEBUG--
-
-
     public function __construct(\DateTime $oObjNow, int $iInterval)
     {
-        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --DEBUG--
-        include_once('/var/www/html/shop4_07/includes/vendor/apache/log4php/src/main/php/Logger.php');
-        \Logger::configure('/var/www/html/shop4_07/_logging_conf.xml');
-        $this->oLogger = \Logger::getLogger('default');
-        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --DEBUG--
-
         $this->oNow      = $oObjNow;
         $this->iInterval = $iInterval;
     }
@@ -35,33 +26,36 @@ class Method
      */
     protected function saveToJournal(string $szTableName, array $vUsedFields, array $vRowArray)
     {
-        $t_start = microtime(true); // --DEBUG-- time-measurement
-
-
-        $pdo  = \Shop::Container()->getDB()->getPDO();
-        $stmh = $pdo->prepare('INSERT INTO `tanondatajournal` VALUES(0, :pTableSource, :pReason, :pDataRow, :pTime)');
-
-        $szTableSource  = $szTableName;
-        $szChangeReason = $this->szReason;
-        $szChangeTime   = $this->oNow->format('Y-m-d H:i:s');
-        $szRowData      = '';
-        foreach ($vRowArray as $oResult) {
+        $szValueLine = '';
+        $nRowCount   = 0;
+        foreach ($vRowArray as $oRow) {
             // save the old values
-            $vFields   = array_intersect_key(get_object_vars($oResult), $vUsedFields);
-            //$this->oLogger->debug(''.print_r($vFields,true )); // --DEBUG--
+            $vFields   = array_intersect_key(get_object_vars($oRow), $vUsedFields);
             $szRowData = json_encode($vFields);
-            //$this->oLogger->debug('json fields: '.print_r($szRowData, true )); // --DEBUG--
+            if ('' !== $szValueLine) {
+                $szValueLine .= ',';
+            }
+            $szValueLine .= '(\'' . $szTableName . '\',\'' . $this->szReason . '\',\'' . $szRowData . '\',\'' . $this->oNow->format('Y-m-d H:i:s') . '\')';
 
-            $stmh->bindParam(':pTableSource', $szTableSource, \PDO::PARAM_STR);
-            $stmh->bindParam(':pReason', $szChangeReason, \PDO::PARAM_STR);
-            $stmh->bindParam(':pDataRow', $szRowData, \PDO::PARAM_STR);
-            $stmh->bindParam(':pTime', $szChangeTime, \PDO::PARAM_STR);
-            $stmh->execute();
+            if (1999 === $nRowCount) {
+                $vResult = \Shop::Container()->getDB()->queryPrepared(
+                    'INSERT INTO `tanondatajournal`(`cTableSource`,`cReason`,`cOldValue`,`dEventTime`) VALUES' . $szValueLine,
+                    [],
+                    \DB\ReturnType::AFFECTED_ROWS
+                );
+                // reset the row-counter and value-line
+                $nRowCount   = -1;
+                $szValueLine = '';
+            }
+            $nRowCount++;
         }
-
-
-        $t_elepsed = microtime(true) - $t_start; // --DEBUG-- time-measurement
-        $this->oLogger->debug('ELAPSED TIME: '.$t_elepsed); // --DEBUG-- time-measurement
+        if (0 <= $nRowCount) {
+            $vResult = \Shop::Container()->getDB()->queryPrepared(
+                'INSERT INTO `tanondatajournal`(`cTableSource`,`cReason`,`cOldValue`,`dEventTime`) VALUES' . $szValueLine,
+                [],
+                \DB\ReturnType::AFFECTED_ROWS
+            );
+        }
     }
 
     /**
@@ -80,6 +74,5 @@ class Method
             }
         );
     }
-
 
 }

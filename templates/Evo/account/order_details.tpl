@@ -34,7 +34,7 @@
         <div class="panel panel-default">
             <div class="panel-heading"><h3 class="panel-title">{block name='order-details-billing-address-title'}{lang key='billingAdress' section='checkout'}{/block}</h3></div>
             <div class="panel-body">
-                {include file='checkout/inc_billing_address.tpl'}
+                {include file='checkout/inc_billing_address.tpl' Kunde=$billingAddress}
             </div>
         </div>
         {/block}
@@ -50,7 +50,7 @@
             {else}
                 <div class="panel-heading"><h3 class="panel-title">{block name='order-details-shipping-address-title'}{lang key='shippingAdressEqualBillingAdress' section='account data'}{/block}</h3></div>
                 <div class="panel-body">
-                    {include file='checkout/inc_billing_address.tpl'}
+                    {include file='checkout/inc_billing_address.tpl' Kunde=$billingAddress}
                 </div>
             {/if}
         </div>

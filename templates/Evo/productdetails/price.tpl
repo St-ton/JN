@@ -8,7 +8,7 @@
     {if $Artikel->getOption('nShowOnlyOnSEORequest', 0) === 1}
         <span class="price_label price_out_of_stock">{lang key='productOutOfStock' section='productDetails'}</span>
     {elseif $Artikel->Preise->fVKNetto == 0 && $Artikel->bHasKonfig}
-        <span class="price_label price_as_configured">{lang key='priceAsConfigured' section='productDetails'}</span>
+        <span class="price_label price_as_configured">{lang key='priceAsConfigured' section='productDetails'}</span> <strong class="price"></strong>
     {elseif $Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
         <span class="price_label price_on_application">{lang key='priceOnApplication'}</span>
     {else}

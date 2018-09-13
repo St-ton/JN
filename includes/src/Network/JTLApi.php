@@ -47,23 +47,11 @@ final class JTLApi
     }
 
     /**
-     *
+     * @return \stdClass
      */
-    private function init()
-    {
-        if (!isset($this->session['rs'])) {
-            $this->session['rs'] = [];
-        }
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getSubscription()
+    public function getSubscription(): \stdClass
     {
         if (!isset($this->session['rs']['subscription'])) {
-
-
             $uri          = self::URI . '/check/subscription';
             $subscription = $this->call($uri, [
                 'key'    => $this->nice->getAPIKey(),
@@ -71,16 +59,17 @@ final class JTLApi
             ]);
 
             $this->session['rs']['subscription'] = (isset($subscription->kShop) && $subscription->kShop > 0)
-                ? $subscription : null;
+                ? $subscription
+                : null;
         }
 
         return $this->session['rs']['subscription'];
     }
 
     /**
-     * @return mixed
+     * @return \stdClass
      */
-    public function getAvailableVersions()
+    public function getAvailableVersions(): \stdClass
     {
         if (!isset($this->session['rs']['versions'])) {
             $uri = self::URI_VERSION . '/versions';
@@ -104,11 +93,14 @@ final class JTLApi
         });
 
         if (\count($oNewerVersions) > 0) {
-            return $oNewerVersions;
+            $reverseVersionsArr = \array_reverse($oNewerVersions);
+            $version            = \end($reverseVersionsArr);
+        } else {
+            $oVersion = \end($oVersions);
+            $version  = Version::parse($oVersion->reference);
         }
-        $oVersion = \end($oVersions);
 
-        return Version::parse($oVersion->reference);
+        return $version;
     }
 
     /**
@@ -123,13 +115,13 @@ final class JTLApi
         $shopVersion = $this->shop->_getVersion();
         $oVersion    = $this->getLatestVersion();
 
-        return isset($oVersion) && $oVersion->greaterThan(Version::parse($shopVersion));
+        return $oVersion->greaterThan(Version::parse($shopVersion));
     }
 
     /**
      * @param string $uri
      * @param null   $data
-     * @return mixed|null
+     * @return string|bool|null
      */
     private function call($uri, $data = null)
     {

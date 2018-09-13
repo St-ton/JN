@@ -61,7 +61,6 @@ abstract class AbstractBox implements BoxInterface
         \PAGE_REGISTRIERUNG,
         \PAGE_BESTELLVORGANG,
         \PAGE_BEWERTUNG,
-        \PAGE_DRUCKANSICHT,
         \PAGE_PASSWORTVERGESSEN,
         \PAGE_WARTUNG,
         \PAGE_WUNSCHLISTE,

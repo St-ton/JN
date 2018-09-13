@@ -2329,7 +2329,7 @@ class Artikel
                     'cLagerKleinerNull' => $varCombi->cLagerKleinerNull,
                 ]);
 
-                $value->inStock   = $this->nIstVater === 1 || $stockInfo->inStock;
+                $value->inStock   = $stockInfo->inStock;
                 $value->notExists = $value->notExists || $stockInfo->notExists;
 
                 $value->oVariationsKombi = $varCombi;

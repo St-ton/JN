@@ -527,16 +527,13 @@ class Kunde
         $obj->fRabatt        = $this->fRabatt;
         $obj->cHerkunft      = $this->cHerkunft;
         $obj->dErstellt      = $this->dErstellt ?? '_DBNULL_';
-        $obj->dVeraendert    = $this->dVeraendert ?? '_DBNULL_';
+        $obj->dVeraendert    = empty($this->dVeraendert) ? 'NOW()' : $obj->dVeraendert;
         $obj->cAktiv         = $this->cAktiv;
         $obj->cAbgeholt      = $this->cAbgeholt;
         $obj->nRegistriert   = $this->nRegistriert;
         $obj->nLoginversuche = $this->nLoginversuche;
         $obj->dGeburtstag    = DateHelper::convertDateToMysqlStandard($this->dGeburtstag);
 
-        if (empty($obj->dVeraendert)) {
-            $obj->dVeraendert = 'NOW()';
-        }
         $obj->cLand   = $this->pruefeLandISO($obj->cLand);
         $this->kKunde = Shop::Container()->getDB()->insert('tkunde', $obj);
         $this->entschluesselKundendaten();

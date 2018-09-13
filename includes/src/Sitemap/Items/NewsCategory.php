@@ -37,11 +37,11 @@ final class NewsCategory extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function generateData($data): void
+    public function generateData($data, array $languages): void
     {
         $this->setData($data);
-        $this->setLanguageID($data->langID);
-        $this->setLanguageCode($data->langCode);
+        $this->setPrimaryKeyID((int)$data->kNewsKategorie);
+        $this->setLanguageData($languages, (int)$data->langID);
         $this->generateImage();
         $this->generateLocation();
         $this->setChangeFreq(\FREQ_DAILY);

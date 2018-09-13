@@ -6,6 +6,8 @@
 
 namespace Sitemap\Items;
 
+use function Functional\first;
+
 /**
  * Class AbstractItem
  * @package Sitemap\Items
@@ -66,6 +68,16 @@ abstract class AbstractItem implements ItemInterface
      * @var string
      */
     protected $languageCode;
+
+    /**
+     * @var string
+     */
+    protected $languageCode639;
+
+    /**
+     * @var int
+     */
+    protected $primaryKeyID = 0;
 
     /**
      * AbstractItem constructor.
@@ -195,9 +207,57 @@ abstract class AbstractItem implements ItemInterface
     /**
      * @inheritdoc
      */
+    public function setLanguageCode639(string $langCode): void
+    {
+        $this->languageCode639 = $langCode;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getLanguageCode639(): ?string
+    {
+        return $this->languageCode639;
+    }
+
+    /**
+     * @param array $languages
+     * @param int   $currentLangID
+     */
+    public function setLanguageData(array $languages, int $currentLangID): void
+    {
+        $lang = first($languages, function ($e) use ($currentLangID) {
+            return $e->kSprache === $currentLangID;
+        });
+        if ($lang !== null) {
+            $this->setLanguageCode($lang->cISO);
+            $this->setLanguageID($lang->kSprache);
+            $this->setLanguageCode639($lang->cISO639);
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function setData($data): void
     {
         $this->data = $data;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getPrimaryKeyID(): int
+    {
+        return $this->primaryKeyID;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setPrimaryKeyID(int $id): void
+    {
+        $this->primaryKeyID = $id;
     }
 
     /**

@@ -93,12 +93,39 @@ interface ItemInterface
     public function getLanguageCode(): ?string;
 
     /**
+     * @param string $langCode
+     */
+    public function setLanguageCode639(string $langCode): void;
+
+    /**
+     * @return null|string
+     */
+    public function getLanguageCode639(): ?string;
+
+    /**
+     * @param array $languages
+     * @param int   $currentLangID
+     */
+    public function setLanguageData(array $languages, int $currentLangID): void;
+
+    /**
      * @param mixed $data
      */
     public function setData($data): void;
 
     /**
-     * @param mixed $data
+     * @return int
      */
-    public function generateData($data): void;
+    public function getPrimaryKeyID(): int;
+
+    /**
+     * @param int $id
+     */
+    public function setPrimaryKeyID(int $id): void;
+
+    /**
+     * @param mixed $data
+     * @param array $languages
+     */
+    public function generateData($data, array $languages): void;
 }

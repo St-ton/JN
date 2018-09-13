@@ -36,13 +36,13 @@ final class Category extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function generateData($data): void
+    public function generateData($data, array $languages): void
     {
         $this->setData($data);
-        $this->setLanguageID($data->langID);
-        $this->setLanguageCode($data->langCode);
+        $this->setPrimaryKeyID((int)$data->kKategorie);
+        $this->setLanguageData($languages, (int)$data->langID);
         $this->generateImage();
-        $this->setLocation($data->cSeo);
+        $this->generateLocation();
         $this->setChangeFreq(\FREQ_WEEKLY);
         $this->setPriority(\PRIO_NORMAL);
         $this->setLastModificationTime(\date_format(\date_create($data->dlm), 'c'));

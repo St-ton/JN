@@ -15,11 +15,11 @@ final class Base extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function generateData($data): void
+    public function generateData($data, array $languages): void
     {
         $this->setData($data);
-        $this->setLanguageID($data->langID);
-        $this->setLanguageCode($data->langCode);
+        $this->setPrimaryKeyID(0);
+        $this->setLanguageData($languages, (int)$data->langID);
         $this->setLocation($this->baseURL);
         $this->setChangeFreq(\FREQ_ALWAYS);
         $this->setPriority(\PRIO_VERYHIGH);

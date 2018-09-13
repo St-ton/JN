@@ -15,11 +15,11 @@ final class Page extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function generateData($data): void
+    public function generateData($data, array $languages): void
     {
         $this->setData($data);
-        $this->setLanguageID($data->langID);
-        $this->setLanguageCode($data->langCode);
+        $this->setPrimaryKeyID($data->kLink);
+        $this->setLanguageData($languages, (int)$data->langID);
         $this->setLocation($data->cSEO);
         $this->setChangeFreq(\FREQ_MONTHLY);
         $this->setPriority(\PRIO_LOW);

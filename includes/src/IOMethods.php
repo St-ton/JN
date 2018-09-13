@@ -1046,21 +1046,27 @@ class IOMethods
                 AND '
             : '';
 
-        return Shop::Container()->getDB()->query(
+        return Shop::Container()->getDB()->queryPrepared(
             'SELECT tartikel.kArtikel,
-                tseo.kKey AS kSeoKey, COALESCE(tseo.cSeo, tartikel.cSeo) AS cSeo,
+                tseo.kKey AS kSeoKey, COALESCE(tseo.cSeo, \'\') AS cSeo,
                 tartikel.fLagerbestand, tartikel.cLagerBeachten, tartikel.cLagerKleinerNull
                 FROM teigenschaftkombiwert
                 INNER JOIN tartikel ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
                 LEFT JOIN tseo ON tseo.cKey = \'kArtikel\'
                                 AND tseo.kKey = tartikel.kArtikel
-                                AND tseo.kSprache = 1
+                                AND tseo.kSprache = :languageID
                 LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                                                 AND tartikelsichtbarkeit.kKundengruppe = 1
-                WHERE ' . $combinationSQL . 'tartikel.kVaterArtikel = ' . (int)$parentProductID . '
-                    AND teigenschaftkombiwert.kEigenschaft = ' . $variationID . '
-                    AND teigenschaftkombiwert.kEigenschaftWert = ' . $variationValue . '
+                WHERE ' . $combinationSQL . 'tartikel.kVaterArtikel = :parentProductID
+                    AND teigenschaftkombiwert.kEigenschaft = :variationID
+                    AND teigenschaftkombiwert.kEigenschaftWert = :variationValue
                     AND tartikelsichtbarkeit.kArtikel IS NULL',
+            [
+                'languageID'      => Shop::getLanguageID(),
+                'parentProductID' => (int)$parentProductID,
+                'variationID'     => $variationID,
+                'variationValue'  => $variationValue,
+            ],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }

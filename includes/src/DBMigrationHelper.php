@@ -99,7 +99,7 @@ class DBMigrationHelper
                 LEFT JOIN information_schema.COLUMNS c ON c.TABLE_NAME = t.TABLE_NAME
                                                        AND c.TABLE_SCHEMA = t.TABLE_SCHEMA
                                                        AND (c.COLUMN_TYPE = 'text' OR c.COLLATION_NAME != 'utf8_unicode_ci')
-                WHERE t.`TABLE_SCHEMA` = 'falk'
+                WHERE t.`TABLE_SCHEMA` = :schema
                     AND t.`TABLE_NAME` NOT LIKE 'xplugin_%'
                     AND (t.`ENGINE` != 'InnoDB' OR t.`TABLE_COLLATION` != 'utf8_unicode_ci' OR c.COLLATION_NAME != 'utf8_unicode_ci' OR c.COLUMN_TYPE = 'text')
                 GROUP BY t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`, t.`TABLE_COMMENT`

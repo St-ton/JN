@@ -137,11 +137,14 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                     $oUmfrage->fGuthaben     = $fGuthaben;
                     $oUmfrage->nBonuspunkte  = $nBonuspunkte;
                     $oUmfrage->nAktiv        = $nAktiv;
-                    $oUmfrage->dGueltigVon   = DateTime::createFromFormat('d.m.Y H:i', $dGueltigVon)->format('Y-m-d H:i:00');
-                    $oUmfrage->dGueltigBis   = strlen($dGueltigBis) > 0
-                        ? (new DateTime($dGueltigBis))->format('Y-m-d H:i:00')
-                        : '_DBNULL_';
                     $oUmfrage->dErstellt     = (new DateTime())->format('Y-m-d H:i:s');
+
+                    $validFrom             = DateTime::createFromFormat('d.m.Y H:i', $dGueltigVon);
+                    $validFrom             = $validFrom === false ? 'NOW()' : $validFrom->format('Y-m-d H:i:00');
+                    $validUntil            = DateTime::createFromFormat('d.m.Y H:i', $dGueltigBis);
+                    $validUntil            = $validUntil === false ? '_DBNULL_' : $validUntil->format('Y-m-d H:i:00');
+                    $oUmfrage->dGueltigVon = $validFrom;
+                    $oUmfrage->dGueltigBis = $validUntil;
 
                     $nNewsOld = 0;
                     if (isset($_POST['umfrage_edit_speichern']) && (int)$_POST['umfrage_edit_speichern'] === 1) {

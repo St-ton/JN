@@ -879,13 +879,13 @@ function getArticleByVariations($parentProductID, $selectedVariationValues)
 
     $products = Shop::DB()->query(
         'SELECT tartikel.kArtikel,
-                tseo.kKey AS kSeoKey, COALESCE(tseo.cSeo, tartikel.cSeo) AS cSeo,
+                tseo.kKey AS kSeoKey, COALESCE(tseo.cSeo, \'\') AS cSeo,
                 tartikel.fLagerbestand, tartikel.cLagerBeachten, tartikel.cLagerKleinerNull
             FROM teigenschaftkombiwert
             INNER JOIN tartikel ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
             LEFT JOIN tseo ON tseo.cKey = \'kArtikel\'
                             AND tseo.kKey = tartikel.kArtikel
-                            AND tseo.kSprache = 1
+                            AND tseo.kSprache = ' . Shop()::getLanguage() . '
             LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                                             AND tartikelsichtbarkeit.kKundengruppe = 1
             WHERE ' . $combinationSQL . 'tartikel.kVaterArtikel = ' . (int)$parentProductID . '

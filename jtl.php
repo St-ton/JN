@@ -484,9 +484,7 @@ if ($customerID > 0) {
     }
     if (RequestHelper::verifyGPCDataInt('bestellung') > 0) {
         //bestellung von diesem Kunden?
-        $bestellung = new Bestellung(RequestHelper::verifyGPCDataInt('bestellung'));
-        $bestellung->fuelleBestellung();
-
+        $bestellung = new Bestellung(RequestHelper::verifyGPCDataInt('bestellung'), true);
         if ($bestellung->kKunde !== null
             && (int)$bestellung->kKunde > 0
             && (int)$bestellung->kKunde === Session::Customer()->getID()

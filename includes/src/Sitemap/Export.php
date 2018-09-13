@@ -9,10 +9,8 @@ namespace Sitemap;
 use DB\DbInterface;
 use Psr\Log\LoggerInterface;
 use Sitemap\Factories\FactoryInterface;
-use Sitemap\ItemRenderers\GroupedRenderer;
 use Sitemap\ItemRenderers\RendererInterface;
 use Sitemap\Items\ItemInterface;
-use Sitemap\SchemaRenderers\GroupedSchemaRenderer;
 use Sitemap\SchemaRenderers\SchemaRendererInterface;
 use function Functional\first;
 
@@ -95,7 +93,7 @@ final class Export
         $this->config         = $config;
         $this->baseImageURL   = \Shop::getImageBaseURL();
         $this->baseURL        = \Shop::getURL() . '/';
-        $this->gzip           = false && \function_exists('gzopen');
+        $this->gzip           = \function_exists('gzopen');
         $this->schemaRenderer->setConfig($config);
         $this->renderer->setConfig($config);
     }
@@ -114,6 +112,9 @@ final class Export
         $urlCounts  = [0 => 0];
         $res        = '';
 
+        foreach ($languages as $language) {
+            $language->cISO639 = \StringHandler::convertISO2ISO639($language->cISO);
+        }
         $this->blockedURLs = [
             'navi.php',
             'suche.php',
@@ -125,16 +126,10 @@ final class Export
         $this->setSessionData($customerGroupIDs);
         $this->deleteFiles();
 
-//        $this->renderer       = new GroupedRenderer();
-//        $this->schemaRenderer = new GroupedSchemaRenderer();
-
         \executeHook(\HOOK_SITEMAP_EXPORT_GET_FACTORIES, [
             'factories' => &$factories,
             'exporter'  => $this
         ]);
-        foreach ($languages as $language) {
-            $language->cISO639 = \StringHandler::convertISO2ISO639($language->cISO);
-        }
         foreach ($factories as $factory) {
             /** @var FactoryInterface $factory */
             foreach ($factory->getCollection($languages, $customerGroupIDs) as $item) {

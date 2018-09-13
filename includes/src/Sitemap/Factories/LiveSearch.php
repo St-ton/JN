@@ -23,17 +23,15 @@ final class LiveSearch extends AbstractFactory
             yield null;
         }
         $languageIDs = map($languages, function ($e) {
-            return $e->kSprache;
+            return (int)$e->kSprache;
         });
         $res         = $this->db->query(
             "SELECT tsuchanfrage.kSuchanfrage, tseo.cSeo, tsuchanfrage.dZuletztGesucht AS dlm,
-            tsprache.kSprache AS langID, tsprache.cISO AS langCode
+            tseo.kSprache AS langID
                 FROM tsuchanfrage
                 JOIN tseo 
                     ON tseo.cKey = 'kSuchanfrage'
                     AND tseo.kKey = tsuchanfrage.kSuchanfrage
-                JOIN tsprache
-                    ON tsprache.kSprache = tseo.kSprache
                 WHERE tsuchanfrage.nAktiv = 1
                     AND tsuchanfrage.kSprache IN (" . \implode(',', $languageIDs) . ")
                 ORDER BY tsuchanfrage.kSuchanfrage",
@@ -41,7 +39,7 @@ final class LiveSearch extends AbstractFactory
         );
         while (($liveSearch = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
             $item = new \Sitemap\Items\LiveSearch($this->config, $this->baseURL, $this->baseImageURL);
-            $item->generateData($liveSearch);
+            $item->generateData($liveSearch, $languages);
             yield $item;
         }
     }

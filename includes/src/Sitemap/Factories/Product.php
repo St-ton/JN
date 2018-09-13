@@ -7,6 +7,7 @@
 namespace Sitemap\Factories;
 
 use function Functional\first;
+use function Functional\map;
 
 /**
  * Class Product
@@ -25,6 +26,10 @@ final class Product extends AbstractFactory
         $_SESSION['kSprache']    = $defaultLangID;
         $_SESSION['cISOSprache'] = $defaultLang->cISO;
         $andWhere                = '';
+
+        $languageIDs = map($languages, function ($e) {
+            return (int)$e->kSprache;
+        });
         if ($this->config['sitemap']['sitemap_varkombi_children_export'] !== 'Y') {
             $andWhere .= ' AND tartikel.kVaterArtikel = 0';
         }
@@ -32,64 +37,30 @@ final class Product extends AbstractFactory
             $andWhere .= " AND (tartikel.cLagerBeachten = 'N' OR tartikel.fLagerbestand > 0)";
         } elseif ((int)$this->config['global']['artikel_artikelanzeigefilter'] === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) {
             $andWhere .= " AND (tartikel.cLagerBeachten = 'N' 
-                            OR tartikel.cLagerKleinerNull = 'Y' 
-                            OR tartikel.fLagerbestand > 0)";
+                               OR tartikel.cLagerKleinerNull = 'Y' 
+                               OR tartikel.fLagerbestand > 0)";
         }
-        foreach ($languages as $language) {
-            if ($language->kSprache === $defaultLangID) {
-                $res = $this->db->queryPrepared(
-                    "SELECT tartikel.kArtikel, tartikel.dLetzteAktualisierung AS dlm, 
-                    tseo.cSeo, tseo.kSprache AS langID, tsprache.cISO AS langCode
-                        FROM tartikel
-                            LEFT JOIN tartikelsichtbarkeit 
-                                ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                                AND tartikelsichtbarkeit.kKundengruppe = :kGrpID 
-                            LEFT JOIN tseo 
-                                ON tseo.cKey = 'kArtikel'
-                                AND tseo.kKey = tartikel.kArtikel
-                                AND tseo.kSprache = :langID
-                            LEFT JOIN tsprache
-                                ON tsprache.kSprache = tseo.kSprache
-                        WHERE tartikelsichtbarkeit.kArtikel IS NULL" . $andWhere,
-                    [
-                        'kGrpID' => $defaultCustomerGroupID,
-                        'langID' => $defaultLangID
-                    ],
-                    \DB\ReturnType::QUERYSINGLE
-                );
-            } else {
-                $res = $this->db->queryPrepared(
-                    "SELECT tartikel.kArtikel, tartikel.dLetzteAktualisierung AS dlm, 
-                    tseo.cSeo, tseo.kSprache AS langID, tsprache.cISO AS langCode
-                        FROM tartikelsprache
-                            JOIN tartikel
-                            ON tartikel.kArtikel = tartikelsprache.kArtikel
-                        JOIN tseo 
-                            ON tseo.cKey = 'kArtikel'
-                            AND tseo.kKey = tartikel.kArtikel
-                            AND tseo.kSprache = :langID
-                        LEFT JOIN tartikelsichtbarkeit 
-                            ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                            AND tartikelsichtbarkeit.kKundengruppe = :kGrpID
-                        LEFT JOIN tsprache
-                            ON tsprache.kSprache = tseo.kSprache
-                        WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                            AND tartikel.kVaterArtikel = 0 
-                            AND tartikelsprache.kSprache = :langID
-                        ORDER BY tartikel.kArtikel",
-                    [
-                        'kGrpID' => $defaultCustomerGroupID,
-                        'langID' => $language->kSprache
-                    ],
-                    \DB\ReturnType::QUERYSINGLE
-                );
-            }
+        $res = $this->db->queryPrepared(
+            "SELECT tartikel.kArtikel, tartikel.dLetzteAktualisierung AS dlm, 
+            tseo.cSeo, tseo.kSprache AS langID
+                FROM tartikel
+                JOIN tseo 
+                    ON tseo.cKey = 'kArtikel'
+                    AND tseo.kKey = tartikel.kArtikel
+                    AND tseo.kSprache IN (" . \implode(',', $languageIDs) . ")
+                LEFT JOIN tartikelsichtbarkeit 
+                    ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                    AND tartikelsichtbarkeit.kKundengruppe = :kGrpID
+                WHERE tartikelsichtbarkeit.kArtikel IS NULL" . $andWhere . "
+                ORDER BY tartikel.kArtikel",
+            ['kGrpID' => $defaultCustomerGroupID],
+            \DB\ReturnType::QUERYSINGLE
+        );
 
-            while (($product = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
-                $item = new \Sitemap\Items\Product($this->config, $this->baseURL, $this->baseImageURL);
-                $item->generateData($product);
-                yield $item;
-            }
+        while (($product = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
+            $item = new \Sitemap\Items\Product($this->config, $this->baseURL, $this->baseImageURL);
+            $item->generateData($product, $languages);
+            yield $item;
         }
     }
 }

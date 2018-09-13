@@ -24,18 +24,16 @@ final class NewsItem extends AbstractFactory
             yield null;
         }
         $languageIDs = map($languages, function ($e) {
-            return $e->kSprache;
+            return (int)$e->kSprache;
         });
         $res         = $this->db->query(
-            "SELECT tnews.dGueltigVon AS dlm, tnews.cPreviewImage AS image, tseo.cSeo, 
-            tsprache.kSprache AS langID, tsprache.cISO AS langCode
+            "SELECT tnews.dGueltigVon AS dlm, tnews.kNews, tnews.cPreviewImage AS image, tseo.cSeo, 
+            tseo.kSprache AS langID
                 FROM tnews
                 JOIN tseo 
                     ON tseo.cKey = 'kNews'
                     AND tseo.kKey = tnews.kNews
                     AND tseo.kSprache = tnews.kSprache
-                JOIN tsprache
-                    ON tsprache.kSprache = tseo.kSprache
                 WHERE tnews.nAktiv = 1
                     AND tnews.dGueltigVon <= NOW()
                     AND tnews.kSprache IN (" . \implode(',', $languageIDs) . ")
@@ -46,7 +44,7 @@ final class NewsItem extends AbstractFactory
         );
         while (($tag = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
             $item = new \Sitemap\Items\NewsItem($this->config, $this->baseURL, $this->baseImageURL);
-            $item->generateData($tag);
+            $item->generateData($tag, $languages);
             yield $item;
         }
     }

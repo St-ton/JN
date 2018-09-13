@@ -23,16 +23,14 @@ final class Tag extends AbstractFactory
             yield null;
         }
         $languageIDs = map($languages, function ($e) {
-            return $e->kSprache;
+            return (int)$e->kSprache;
         });
         $res         = $this->db->query(
-            "SELECT ttag.kTag, ttag.cName, tseo.cSeo, ttag.kSprache AS langID, tsprache.cISO AS langCode
+            "SELECT ttag.kTag, ttag.cName, tseo.cSeo, ttag.kSprache AS langID
                 FROM ttag               
                 JOIN tseo 
                     ON tseo.cKey = 'kTag'
                     AND tseo.kKey = ttag.kTag
-                JOIN tsprache
-                    ON tsprache.kSprache = ttag.kSprache
                 WHERE ttag.kSprache IN (" . \implode(',', $languageIDs) . ")
                     AND ttag.nAktiv = 1
                 ORDER BY ttag.kTag",
@@ -40,7 +38,7 @@ final class Tag extends AbstractFactory
         );
         while (($tag = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
             $item = new \Sitemap\Items\Tag($this->config, $this->baseURL, $this->baseImageURL);
-            $item->generateData($tag);
+            $item->generateData($tag, $languages);
             yield $item;
         }
     }

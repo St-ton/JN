@@ -21,7 +21,7 @@ final class Base extends AbstractFactory
         $data           = new \stdClass();
         $data->langID   = $_SESSION['kSprache'];
         $data->langCode = $_SESSION['cISOSprache'];
-        $item->generateData($data);
+        $item->generateData($data, $languages, $languages);
 
         yield $item;
     }

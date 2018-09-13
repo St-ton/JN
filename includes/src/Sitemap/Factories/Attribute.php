@@ -28,7 +28,7 @@ final class Attribute extends AbstractFactory
         $res         = $this->db->query(
             "SELECT tmerkmalsprache.cName, tmerkmalsprache.kMerkmal, tmerkmalwertsprache.cWert, 
                 tseo.cSeo, tmerkmalwert.kMerkmalWert, tmerkmalwert.cBildpfad AS image,
-                tmerkmalsprache.kSprache AS langID, tsprache.cISO AS langCode
+                tmerkmalsprache.kSprache AS langID
                 FROM tmerkmalsprache
                 JOIN tmerkmal 
                     ON tmerkmal.kMerkmal = tmerkmalsprache.kMerkmal
@@ -43,8 +43,6 @@ final class Attribute extends AbstractFactory
                     ON tseo.cKey = 'kMerkmalWert'
                     AND tseo.kKey = tmerkmalwert.kMerkmalWert
                     AND tseo.kSprache = tmerkmalsprache.kSprache
-                JOIN tsprache
-                    ON tsprache.kSprache = tseo.kSprache
                 WHERE tmerkmal.nGlobal = 1
                     AND tmerkmalsprache.kSprache IN (" . \implode(',', $languageIDs) . ")
                 GROUP BY tmerkmalwert.kMerkmalWert
@@ -53,7 +51,7 @@ final class Attribute extends AbstractFactory
         );
         while (($tag = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
             $item = new \Sitemap\Items\Attribute($this->config, $this->baseURL, $this->baseImageURL);
-            $item->generateData($tag);
+            $item->generateData($tag, $languages);
             yield $item;
         }
     }

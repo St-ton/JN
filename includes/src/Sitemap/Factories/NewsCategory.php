@@ -23,25 +23,23 @@ final class NewsCategory extends AbstractFactory
             yield null;
         }
         $languageIDs = map($languages, function ($e) {
-            return $e->kSprache;
+            return (int)$e->kSprache;
         });
         $res         = $this->db->query(
-            "SELECT tnewskategorie.dLetzteAktualisierung AS dlm, tnewskategorie.cPreviewImage AS image, tseo.cSeo,
-            tsprache.kSprache AS langID, tsprache.cISO AS langCode
+            "SELECT tnewskategorie.dLetzteAktualisierung AS dlm, tnewskategorie.kNewsKategorie, 
+            tnewskategorie.cPreviewImage AS image, tseo.cSeo, tseo.kSprache AS langID
                 FROM tnewskategorie
                 JOIN tseo 
                     ON tseo.cKey = 'kNewsKategorie'
                     AND tseo.kKey = tnewskategorie.kNewsKategorie
                     AND tseo.kSprache = tnewskategorie.kSprache
-                JOIN tsprache
-                    ON tsprache.kSprache = tseo.kSprache
                 WHERE tnewskategorie.nAktiv = 1
                     AND tseo.kSprache IN (" . \implode(',', $languageIDs) . ")",
             \DB\ReturnType::QUERYSINGLE
         );
         while (($tag = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
             $item = new \Sitemap\Items\NewsCategory($this->config, $this->baseURL, $this->baseImageURL);
-            $item->generateData($tag);
+            $item->generateData($tag, $languages);
             yield $item;
         }
     }

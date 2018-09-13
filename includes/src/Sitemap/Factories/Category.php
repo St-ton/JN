@@ -22,17 +22,17 @@ final class Category extends AbstractFactory
      */
     public function getCollection(array $languages, array $customerGroups): \Generator
     {
-        $languageIDs   = map($languages, function ($e) {
-            return $e->kSprache;
-        });
-        $customerGroup = first($customerGroups);
         if ($this->config['sitemap']['sitemap_kategorien_anzeigen'] !== 'Y') {
             yield null;
         }
+        $languageIDs    = map($languages, function ($e) {
+            return (int)$e->kSprache;
+        });
+        $customerGroup  = first($customerGroups);
         $categoryHelper = new \KategorieListe();
         $res            = $this->db->queryPrepared(
             "SELECT tkategorie.kKategorie, tkategorie.dLetzteAktualisierung AS dlm, 
-                tseo.cSeo, tkategoriepict.cPfad AS image, tseo.kSprache AS langID, tsprache.cISO AS langCode
+                tseo.cSeo, tkategoriepict.cPfad AS image, tseo.kSprache AS langID
                 FROM tkategorie
                 JOIN tseo 
                     ON tseo.cKey = 'kKategorie'
@@ -43,8 +43,6 @@ final class Category extends AbstractFactory
                     AND tkategoriesichtbarkeit.kKundengruppe = :cGrpID
                 LEFT JOIN tkategoriepict
                     ON tkategoriepict.kKategorie = tkategorie.kKategorie
-                LEFT JOIN tsprache
-                    ON tsprache.kSprache = tseo.kSprache
                 WHERE tkategoriesichtbarkeit.kKategorie IS NULL
                 ORDER BY tkategorie.kKategorie",
             [
@@ -55,7 +53,7 @@ final class Category extends AbstractFactory
         while (($category = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
             if ($categoryHelper->nichtLeer($category->kKategorie, $customerGroup) === true) {
                 $item = new \Sitemap\Items\Category($this->config, $this->baseURL, $this->baseImageURL);
-                $item->generateData($category);
+                $item->generateData($category, $languages);
                 yield $item;
             }
         }

@@ -61,18 +61,20 @@ final class Page extends AbstractFactory
         });
         $linkList      = new LinkList($this->db);
         $linkList->createLinks($linkIDs);
-        $linkList->getLinks()->each(function (Link $e) {
+        $linkList->getLinks()->each(function (Link $e) use ($languages) {
             $linkType = $e->getLinkType();
             foreach ($e->getURLs() as $i => $url) {
                 $data           = new \stdClass();
+                $data->kLink    = $e->getID();
                 $data->cSEO     = $url;
                 $data->nLinkart = $linkType;
                 $data->langID   = $e->getLanguageID($i);
                 $data->langCode = $e->getLanguageCode($i);
                 $item           = new \Sitemap\Items\Page($this->config, $this->baseURL, $this->baseImageURL);
-                $item->generateData($data);
+                $item->generateData($data, $languages);
                 yield $item;
             }
         });
     }
 }
+

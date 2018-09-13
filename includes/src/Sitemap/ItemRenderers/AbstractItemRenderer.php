@@ -32,4 +32,12 @@ abstract class AbstractItemRenderer implements RendererInterface
     {
         $this->config = $config;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function flush(): string
+    {
+        return '';
+    }
 }

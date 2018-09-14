@@ -1,7 +1,12 @@
 # JTL-Shop Changelog
 
+## [4.06.8] - 2018-09-14
 
-## [4.06.7]
+Dieses Update enthält Fehlerbehebungen. 
+
+Alle für diese Zielversion gelösten Vorgänge finden Sie unter diesem Link: https://jtl-url.de/cl4068
+
+## [4.06.7] - 2018-09-14
 
 Dieses Update enthält Fehlerbehebungen. 
 

@@ -3,6 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+//Shop::dbg($_POST, true);
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'registrieren_inc.php';
@@ -219,6 +220,17 @@ $linkHelper    = Shop::Container()->getLinkService();
 $kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_BESTELLVORGANG);
 $link          = $linkHelper->getPageLink($kLink);
 WarenkorbHelper::addVariationPictures($cart);
+
+//fix: stay on choose account site when not logged in
+if (($step === 'edit_customer_address' || $step === 'Lieferadresse') && (!isset($_SESSION['Kunde']->kKunde) || !($_SESSION['Kunde']->kKunde > 0))) {
+    $step = 'accountwahl';
+    $editRechnungsadresse = 0;
+} elseif ($step === 'edit_customer_address' || $step === 'Lieferadresse') {
+    $editRechnungsadresse = 1;
+} else {
+    $editRechnungsadresse = RequestHelper::verifyGPCDataInt('editRechnungsadresse');
+}
+
 Shop::Smarty()->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
         Shop::getLanguage(),
         Session::CustomerGroup()->getID())
@@ -228,13 +240,14 @@ Shop::Smarty()->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
     ->assign('Link', $link)
     ->assign('hinweis', $cHinweis)
     ->assign('step', $step)
-    ->assign('editRechnungsadresse', RequestHelper::verifyGPCDataInt('editRechnungsadresse'))
+    ->assign('editRechnungsadresse', $editRechnungsadresse)
     ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
     ->assign('Warensumme', $cart->gibGesamtsummeWaren())
     ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
     ->assign('bestellschritt', gibBestellschritt($step))
     ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
-    ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK);
+    ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK)
+    ->assign('unregForm', RequestHelper::verifyGPCDataInt('unreg_form'));
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_BESTELLVORGANG_PAGE);

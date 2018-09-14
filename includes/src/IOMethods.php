@@ -1056,13 +1056,14 @@ class IOMethods
                                 AND tseo.kKey = tartikel.kArtikel
                                 AND tseo.kSprache = :languageID
                 LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                                                AND tartikelsichtbarkeit.kKundengruppe = 1
+                                                AND tartikelsichtbarkeit.kKundengruppe = :customergroupID
                 WHERE ' . $combinationSQL . 'tartikel.kVaterArtikel = :parentProductID
                     AND teigenschaftkombiwert.kEigenschaft = :variationID
                     AND teigenschaftkombiwert.kEigenschaftWert = :variationValue
                     AND tartikelsichtbarkeit.kArtikel IS NULL',
             [
                 'languageID'      => Shop::getLanguageID(),
+                'customergroupID' => Session::CustomerGroup()->getID(),
                 'parentProductID' => (int)$parentProductID,
                 'variationID'     => $variationID,
                 'variationValue'  => $variationValue,

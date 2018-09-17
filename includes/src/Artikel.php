@@ -2028,11 +2028,14 @@ class Artikel
             if (!$exportWorkaround) {
                 $scoreSelect    = ', COALESCE(ek.score, 0) nMatched';
                 $scoreJoin      = "LEFT JOIN (
-	                        SELECT kEigenschaftKombi, COUNT(teigenschaftkombiwert.kEigenschaftWert) AS score
+	                        SELECT teigenschaftkombiwert.kEigenschaftKombi, COUNT(teigenschaftkombiwert.kEigenschaftWert) AS score
                             FROM teigenschaftkombiwert
+                            INNER JOIN tartikel ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
+                            LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
+                                AND tartikelsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() . "
                             WHERE kEigenschaftWert IN (
                                 SELECT kEigenschaftWert FROM teigenschaftkombiwert WHERE kEigenschaftKombi = {$this->kEigenschaftKombi}
-                           )
+                            ) AND tartikelsichtbarkeit.kArtikel IS NULL
                             GROUP BY teigenschaftkombiwert.kEigenschaftKombi
                         ) ek ON ek.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi";
             }
@@ -2087,7 +2090,11 @@ class Artikel
                                 AND ek.kEigenschaftWert IN (
                                     SELECT kEigenschaftWert FROM teigenschaftkombiwert WHERE kEigenschaftKombi = {$this->kEigenschaftKombi}
                                 )
+                            LEFT JOIN tartikel art ON art.kEigenschaftKombi = ek.kEigenschaftKombi
+                            LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = art.kArtikel
+                                AND tartikelsichtbarkeit.kKundengruppe = " . Session::CustomerGroup()->getID() . "
                             WHERE tartikel.kVaterArtikel = " . (int)$this->kVaterArtikel . "
+                                AND tartikelsichtbarkeit.kArtikel IS NULL
                             GROUP BY teigenschaftkombiwert.kEigenschaftKombi, teigenschaftkombiwert.kEigenschaftWert
                         ) pref
                         GROUP BY pref.kEigenschaftWert",
@@ -6533,7 +6540,10 @@ class Artikel
             $i            = 2;
             $cSQL         = [];
             $kEigenschaft = (int)$kEigenschaft;
-            $prepvalues   = ['where' => $kEigenschaft];
+            $prepvalues   = [
+                'customerGroupID' => Session::CustomerGroup()->getID(),
+                'where'           => $kEigenschaft
+            ];
             foreach ($kGesetzteEigeschaftWert_arr as $kGesetzteEigenschaft => $kEigenschaftWert) {
                 $kGesetzteEigenschaft = (int)$kGesetzteEigenschaft;
                 $kEigenschaftWert     = (int)$kEigenschaftWert;
@@ -6553,7 +6563,11 @@ class Artikel
                     INNER JOIN tartikel k 
                         ON e1.kEigenschaftKombi = k.kEigenschaftKombi
                     {$cSQLStr}
-                    WHERE e1.kEigenschaft = :where", $prepvalues,
+                    LEFT JOIN tartikelsichtbarkeit
+                        ON tartikelsichtbarkeit.kArtikel = k.kArtikel
+                            AND tartikelsichtbarkeit.kKundengruppe = :customerGroupID
+                    WHERE e1.kEigenschaft = :where
+                        AND tartikelsichtbarkeit.kArtikel IS NULL", $prepvalues,
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($oEigenschaft_arr as $oEigenschaft) {

@@ -20,9 +20,9 @@ use function Functional\first;
  */
 final class Export
 {
-    public const SITEMAP_URL_GOOGLE = 'http://www.google.com/webmasters/tools/ping?sitemap=';
+    public const SITEMAP_URL_GOOGLE = 'https://www.google.com/webmasters/tools/ping?sitemap=';
 
-    public const SITEMAP_URL_BING = 'http://www.bing.com/ping?sitemap=';
+    public const SITEMAP_URL_BING = 'https://www.bing.com/ping?sitemap=';
 
     private const EXPORT_DIR = \PFAD_ROOT . \PFAD_EXPORT;
 
@@ -64,7 +64,7 @@ final class Export
     /**
      * @var array
      */
-    private $blockedURLs = [];
+    private $blockedURLs;
 
     /**
      * @var bool
@@ -96,6 +96,14 @@ final class Export
         $this->gzip           = \function_exists('gzopen');
         $this->schemaRenderer->setConfig($config);
         $this->renderer->setConfig($config);
+        $this->blockedURLs = [
+            'navi.php',
+            'suche.php',
+            'jtl.php',
+            'pass.php',
+            'registrieren.php',
+            'warenkorb.php',
+        ];
     }
 
     /**
@@ -115,14 +123,6 @@ final class Export
         foreach ($languages as $language) {
             $language->cISO639 = \StringHandler::convertISO2ISO639($language->cISO);
         }
-        $this->blockedURLs = [
-            'navi.php',
-            'suche.php',
-            'jtl.php',
-            'pass.php',
-            'registrieren.php',
-            'warenkorb.php',
-        ];
         $this->setSessionData($customerGroupIDs);
         $this->deleteFiles();
 
@@ -186,13 +186,13 @@ final class Export
     {
         $indexFile = self::EXPORT_DIR . 'sitemap_index.xml';
         if (\is_writable($indexFile) || !\is_file($indexFile)) {
-            $handle       = \fopen($indexFile, 'w+');
+            $handle       = \fopen($indexFile, 'wb+');
             $extension    = $this->gzip ? '.xml.gz' : '.xml';
             $sitemapFiles = [];
             for ($i = 0; $i <= $fileNumber; ++$i) {
                 $sitemapFiles[] = $this->baseURL . \PFAD_EXPORT . 'sitemap_' . $i . $extension;
             }
-            \fwrite($handle, $this->schemaRenderer->buildIndexSchema($sitemapFiles));
+            \fwrite($handle, $this->schemaRenderer->buildIndex($sitemapFiles));
             \fclose($handle);
         }
     }
@@ -238,11 +238,11 @@ final class Export
         $fileName = self::EXPORT_DIR . 'sitemap_' . $fileNumber . '.xml';
         $handle   = $this->gzip
             ? \gzopen($fileName . '.gz', 'w9')
-            : \fopen($fileName, 'w+');
+            : \fopen($fileName, 'wb+');
         \fwrite($handle,
-            $this->schemaRenderer->buildXMLHeader() .
+            $this->schemaRenderer->buildHeader() .
             $data .
-            $this->schemaRenderer->buildXMLFooter()
+            $this->schemaRenderer->buildFooter()
         );
         \fclose($handle);
 

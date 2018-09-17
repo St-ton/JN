@@ -23,7 +23,7 @@ final class Attribute extends AbstractFactory
             yield null;
         }
         $languageIDs = map($languages, function ($e) {
-            return $e->kSprache;
+            return (int)$e->kSprache;
         });
         $res         = $this->db->query(
             "SELECT tmerkmalsprache.cName, tmerkmalsprache.kMerkmal, tmerkmalwertsprache.cWert, 

@@ -26,15 +26,15 @@ interface SchemaRendererInterface
      * @param string[] $sitemapFiles
      * @return string
      */
-    public function buildIndexSchema(array $sitemapFiles): string;
+    public function buildIndex(array $sitemapFiles): string;
 
     /**
      * @return string
      */
-    public function buildXMLHeader(): string;
+    public function buildHeader(): string;
 
     /**
      * @return string
      */
-    public function buildXMLFooter(): string;
+    public function buildFooter(): string;
 }

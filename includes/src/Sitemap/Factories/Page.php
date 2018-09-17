@@ -51,7 +51,6 @@ final class Page extends AbstractFactory
                     AND (tlink.cKundengruppen IS NULL
                         OR tlink.cKundengruppen = 'NULL'
                         OR FIND_IN_SET(:cGrpID, REPLACE(tlink.cKundengruppen, ';', ',')) > 0)
-                #GROUP BY tlinksprache.kLink, tlinksprache.cISOSprache
                 ORDER BY tlinksprache.kLink",
             ['cGrpID' => $customerGroup],
             \DB\ReturnType::ARRAY_OF_OBJECTS

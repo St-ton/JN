@@ -537,19 +537,9 @@ final class LinkService implements LinkServiceInterface
             'kKundengruppe', $customerGroupID,
             'kSprache', $langID
         );
-        if (!empty($oAGBWRB->kText)) {
-            $oAGBWRB->cURLAGB  = $oLinkAGB->getURL() ?? '';
-            $oAGBWRB->cURLWRB  = $oLinkWRB->getURL() ?? '';
-            $oAGBWRB->kLinkAGB = $oLinkAGB !== null
-                ? $oLinkAGB->getID()
-                : 0;
-            $oAGBWRB->kLinkWRB = $oLinkWRB !== null
-                ? $oLinkWRB->getID()
-                : 0;
-
-            return $oAGBWRB;
+        if(empty($oAGBWRB->kText)) {
+            $oAGBWRB = $this->db->select('ttext', 'nStandard', 1);
         }
-        $oAGBWRB = $this->db->select('ttext', 'nStandard', 1);
         if (!empty($oAGBWRB->kText)) {
             $oAGBWRB->cURLAGB  = $oLinkAGB !== null ? $oLinkAGB->getURL() : '';
             $oAGBWRB->cURLWRB  = $oLinkWRB !== null ? $oLinkWRB->getURL() : '';

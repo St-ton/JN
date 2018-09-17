@@ -423,7 +423,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
     }
 
     /**
-     * delete billing-addresses 
+     * delete billing-addresses
      * which assigned to no valid customer-account
      */
     private function del_trechnungsadresse()

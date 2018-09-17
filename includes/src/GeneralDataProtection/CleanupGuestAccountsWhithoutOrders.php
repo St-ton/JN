@@ -13,7 +13,7 @@ namespace GeneralDataProtection;
  *
  * `tkunde`
  */
-class CleanupDeletedGuestAccounts extends Method implements MethodInterface
+class CleanupGuestAccountsWhithoutOrders extends Method implements MethodInterface
 {
     protected $szReason = 'cleanup_deleted_guest_accounts';
 

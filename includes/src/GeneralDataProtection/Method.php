@@ -8,7 +8,16 @@ namespace GeneralDataProtection;
 
 class Method
 {
+    /**
+     * @var DateTime-object
+     * object-wide date at the point of instanciating
+     */
     protected $oNow      = null;
+
+    /**
+     * @var int
+     * interval in "number of days"
+     */
     protected $iInterval = 0;
 
     public function __construct(\DateTime $oObjNow, int $iInterval)

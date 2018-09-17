@@ -7,7 +7,7 @@
 namespace GeneralDataProtection;
 
 /**
- * declares all GDPR-timer-intervals
+ * declares all GDPR-intervals
  * in "number of days"
  */
 abstract class Intervals

@@ -6,94 +6,112 @@
 
 namespace GeneralDataProtection;
 
-class AnonymizeIps implements MethodInterface
+/**
+ * anonymize IPs in various tables.
+ *
+ * names of the tables, we manipulate:
+ *
+ * `tbestellung`
+ * `tbesucher`
+ * `tbesucherarchiv`
+ * `tkontakthistory`
+ * `tproduktanfragehistory`
+ * `tredirectreferer`
+ * `tsitemaptracker`
+ * `tsuchanfragencache`
+ * `ttagkunde`
+ * `tumfragedurchfuehrung`
+ * `tverfuegbarkeitsbenachrichtigung`
+ * `tvergleichsliste`
+ */
+class AnonymizeIps extends Method implements MethodInterface
 {
+    protected $szReason = 'anonymize_IPs_older_than_one_year';
+
     private $vTablesUpdate = [
           'tbestellung' => [
-              'ColKey'     => 'kBestellung'
-            , 'ColIp'      => 'cIP'
-            , 'ColCreated' => 'dErstellt'
-        ]
-        , 'tbesucher' => [
-              'ColKey'     => 'kBesucher'
-            , 'ColIp'      => 'cIP'
-            , 'ColCreated' => 'dLetzteAktivitaet'
-        ]
-        , 'tbesucherarchiv' => [
-              'ColKey'     => 'kBesucher'
-            , 'ColIp'      => 'cIP'
-            , 'ColCreated' => 'dZeit'
-        ]
-        , 'tkontakthistory' => [
-              'ColKey'     => 'kKontaktHistory'
-            , 'ColIp'      => 'cIP'
-            , 'ColCreated' => 'dErstellt'
-        ]
-        , 'tproduktanfragehistory' => [
-              'ColKey'     => 'kProduktanfrageHistory'
-            , 'ColIp'      => 'cIP'
-            , 'ColCreated' => 'dErstellt'
-        ]
-        , 'tredirectreferer' => [
-              'ColKey'     => 'kRedirectReferer'
-            , 'ColIp'      => 'cIP'
-            , 'ColCreated' => 'dDate'
-        ]
-        , 'tsitemaptracker' => [
-              'ColKey'     => 'kSitemapTracker'
-            , 'ColIp'      => 'cIP'
-            , 'ColCreated' => 'dErstellt'
-        ]
-        , 'tsuchanfragencache' => [
-              'ColKey'     => 'kSuchanfrageCache'
-            , 'ColIp'      => 'cIP'
-            , 'ColCreated' => 'dZeit'
-        ]
-        , 'ttagkunde' => [
-              'ColKey'     => 'kTagKunde'
-            , 'ColIp'      => 'cIP'
-            , 'ColCreated' => 'dZeit'
-        ]
-        , 'tumfragedurchfuehrung' => [
-              'ColKey'     => 'kUmfrageDurchfuehrung'
-            , 'ColIp'      => 'cIP'
-            , 'ColCreated' => 'dDurchgefuehrt'
-        ]
-        , 'tverfuegbarkeitsbenachrichtigung' => [
-              'ColKey'     => 'kVerfuegbarkeitsbenachrichtigung'
-            , 'ColIp'      => 'cIP'
-            , 'ColCreated' => 'dErstellt'
-        ]
-        , 'tvergleichsliste' => [
-              'ColKey'     => 'kVergleichsliste'
-            , 'ColIp'      => 'cIP'
-            , 'ColCreated' => 'dDate'
+            'ColKey'     => 'kBestellung',
+            'ColIp'      => 'cIP',
+            'ColCreated' => 'dErstellt'
+        ],
+        'tbesucher' => [
+            'ColKey'     => 'kBesucher',
+            'ColIp'      => 'cIP',
+            'ColCreated' => 'dLetzteAktivitaet'
+        ],
+        'tbesucherarchiv' => [
+            'ColKey'     => 'kBesucher',
+            'ColIp'      => 'cIP',
+            'ColCreated' => 'dZeit'
+        ],
+        'tkontakthistory' => [
+            'ColKey'     => 'kKontaktHistory',
+            'ColIp'      => 'cIP',
+            'ColCreated' => 'dErstellt'
+        ],
+        'tproduktanfragehistory' => [
+            'ColKey'     => 'kProduktanfrageHistory',
+            'ColIp'      => 'cIP',
+            'ColCreated' => 'dErstellt'
+        ],
+        'tredirectreferer' => [
+            'ColKey'     => 'kRedirectReferer',
+            'ColIp'      => 'cIP',
+            'ColCreated' => 'dDate'
+        ],
+        'tsitemaptracker' => [
+            'ColKey'     => 'kSitemapTracker',
+            'ColIp'      => 'cIP',
+            'ColCreated' => 'dErstellt'
+        ],
+        'tsuchanfragencache' => [
+            'ColKey'     => 'kSuchanfrageCache',
+            'ColIp'      => 'cIP',
+            'ColCreated' => 'dZeit'
+        ],
+        'ttagkunde' => [
+            'ColKey'     => 'kTagKunde',
+            'ColIp'      => 'cIP',
+            'ColCreated' => 'dZeit'
+        ],
+        'tumfragedurchfuehrung' => [
+            'ColKey'     => 'kUmfrageDurchfuehrung',
+            'ColIp'      => 'cIP',
+            'ColCreated' => 'dDurchgefuehrt'
+        ],
+        'tverfuegbarkeitsbenachrichtigung' => [
+            'ColKey'     => 'kVerfuegbarkeitsbenachrichtigung',
+            'ColIp'      => 'cIP',
+            'ColCreated' => 'dErstellt'
+        ],
+        'tvergleichsliste' => [
+            'ColKey'     => 'kVergleichsliste',
+            'ColIp'      => 'cIP',
+            'ColCreated' => 'dDate'
         ]
     ];
 
-    // tables to truncate
+    // tables to truncate   (not yet implemented)
     private $vTablesClear = [
         'tfsession'
     ];
 
 
-    public function __construct()
-    {
-    }
-
     /**
-     * anonymize IP in various tables
+     * anonymize IPs in various tables
      */
     public function execute()
     {
         foreach ($this->vTablesUpdate as $szTableName => $vTable) {
             // --DEVELOPMENT-- NOTE: here we can do other things beside "look one year forward"
-            $voTableData = $this->readOneYearForward($szTableName, $vTable['ColKey'], $vTable['ColIp'], $vTable['ColCreated']);
+            $voTableData = $this->readOlderThanOneYaer($szTableName, $vTable['ColKey'], $vTable['ColIp'], $vTable['ColCreated']);
 
             if (is_array($voTableData) && 0 < count($voTableData)) {
+                // saves all vars of appropriate object to the journal
+                $this->saveToJournal($szTableName, get_object_vars($voTableData[0]), $voTableData);
+                // anonymize each given table
                 foreach ($voTableData as $oRow) {
-                    $oRow->cIP = (new \GeneralDataProtection\IpAnonymizer($oRow->cIP))->anonymize();
-
+                    $oRow->cIP = (new IpAnonymizer($oRow->cIP))->anonymize();
                     \Shop::Container()->getDB()->update($szTableName, $vTable['ColKey'], (int)$oRow->kBestellung, $oRow);
                 }
             }
@@ -113,7 +131,7 @@ class AnonymizeIps implements MethodInterface
      * @param string $szColCreated
      * @return array
      */
-    private function readOneYearForward(string $szTableName, string $szColKey, string $szColIp, string $szColCreated)
+    private function readOlderThanOneYaer(string $szTableName, string $szColKey, string $szColIp, string $szColCreated)
     {
         // NOTE: queryPrepared() is not possible here!
         // (a RDBMS canot prepare a execution-plan with variable table-names)

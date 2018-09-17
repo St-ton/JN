@@ -70,18 +70,24 @@ class IpAnonymizer
     {
         $this->szIP = $szIP;
 
-        if (false !== strpos($this->szIP, '*')) {
-            // if there is an old fashioned anonymization, we do nothing (but set a flag)
+        if (false !== strpos($this->szIP, '*') || 1 > strlen($this->szIP)) {
+            // if there is an old fashioned anonymization or
+            // an empty string, we do nothing (but set a flag)
             $this->bOldFashionedAnon = true;
             return;
         }
-        $this->bRawIp    = inet_pton($this->szIP);
+        // any ':' means, we got an IPv6-address
+        // ("::127.0.0.1" or "::ffff:127.0.0.3" is valid too!)
+        if (false !== strstr($this->szIP, ':')) {
+            $this->bRawIp    = inet_pton($this->szIP);
+        } else {
+            $this->bRawIp    = inet_pton($this->rmLeadingZero($this->szIP));
+        }
         $this->vShopConf = \Shop::getSettings([CONF_GLOBAL]);
 
         switch (strlen($this->bRawIp)) {
             case 4:
                 $this->szPlaceholderIP = $this->szPlaceholderIPv4;
-                $this->szIP            = $this->rmLeadingZero($szIP); // possible leading zeros produce errors in inet_XtoY()-functions
                 $this->szIpMask        = $this->getMaskV4();
                 break;
             case 16:

@@ -42,9 +42,11 @@ final class NewsItem extends AbstractFactory
                     ORDER BY tnews.dErstellt",
             \DB\ReturnType::QUERYSINGLE
         );
-        while (($tag = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
-            $item = new \Sitemap\Items\NewsItem($this->config, $this->baseURL, $this->baseImageURL);
-            $item->generateData($tag, $languages);
+        while (($ni = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
+            $ni->langID = (int)$ni->langID;
+            $ni->kNews  = (int)$ni->kNews;
+            $item       = new \Sitemap\Items\NewsItem($this->config, $this->baseURL, $this->baseImageURL);
+            $item->generateData($ni, $languages);
             yield $item;
         }
     }

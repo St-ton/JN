@@ -19,7 +19,7 @@ final class Page extends AbstractItem
     {
         $this->setData($data);
         $this->setPrimaryKeyID($data->kLink);
-        $this->setLanguageData($languages, (int)$data->langID);
+        $this->setLanguageData($languages, $data->langID);
         $this->setLocation($data->cSEO);
         $this->setChangeFreq(\FREQ_MONTHLY);
         $this->setPriority(\PRIO_LOW);

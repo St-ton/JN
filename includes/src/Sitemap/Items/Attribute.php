@@ -40,8 +40,8 @@ final class Attribute extends AbstractItem
     public function generateData($data, array $languages): void
     {
         $this->setData($data);
-        $this->setPrimaryKeyID((int)$data->kMerkmalWert);
-        $this->setLanguageData($languages, (int)$data->langID);
+        $this->setPrimaryKeyID($data->kMerkmalWert);
+        $this->setLanguageData($languages, $data->langID);
         $this->setLocation($this->baseURL . $data->cSeo);
         $this->generateImage();
         $this->setChangeFreq(\FREQ_WEEKLY);

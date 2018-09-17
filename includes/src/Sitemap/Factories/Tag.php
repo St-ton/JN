@@ -37,7 +37,9 @@ final class Tag extends AbstractFactory
             \DB\ReturnType::QUERYSINGLE
         );
         while (($tag = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
-            $item = new \Sitemap\Items\Tag($this->config, $this->baseURL, $this->baseImageURL);
+            $tag->langID = (int)$tag->langID;
+            $tag->kTag   = (int)$tag->kTag;
+            $item        = new \Sitemap\Items\Tag($this->config, $this->baseURL, $this->baseImageURL);
             $item->generateData($tag, $languages);
             yield $item;
         }

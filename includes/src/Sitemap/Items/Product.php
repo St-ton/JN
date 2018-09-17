@@ -49,8 +49,8 @@ final class Product extends AbstractItem
     public function generateData($data, array $languages): void
     {
         $this->setData($data);
-        $this->setPrimaryKeyID((int)$data->kArtikel);
-        $this->setLanguageData($languages, (int)$data->langID);
+        $this->setPrimaryKeyID($data->kArtikel);
+        $this->setLanguageData($languages, $data->langID);
         $this->generateImage();
         $this->generateLocation();
         $this->setChangeFreq(\FREQ_DAILY);

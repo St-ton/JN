@@ -37,9 +37,11 @@ final class LiveSearch extends AbstractFactory
                 ORDER BY tsuchanfrage.kSuchanfrage",
             \DB\ReturnType::QUERYSINGLE
         );
-        while (($liveSearch = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
-            $item = new \Sitemap\Items\LiveSearch($this->config, $this->baseURL, $this->baseImageURL);
-            $item->generateData($liveSearch, $languages);
+        while (($ls = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
+            $ls->kSuchanfrage = (int)$ls->kSuchanfrage;
+            $ls->langID       = (int)$ls->langID;
+            $item             = new \Sitemap\Items\LiveSearch($this->config, $this->baseURL, $this->baseImageURL);
+            $item->generateData($ls, $languages);
             yield $item;
         }
     }

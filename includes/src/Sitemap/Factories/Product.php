@@ -58,7 +58,9 @@ final class Product extends AbstractFactory
         );
 
         while (($product = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
-            $item = new \Sitemap\Items\Product($this->config, $this->baseURL, $this->baseImageURL);
+            $product->langID   = (int)$product->langID;
+            $product->kArtikel = (int)$product->kArtikel;
+            $item              = new \Sitemap\Items\Product($this->config, $this->baseURL, $this->baseImageURL);
             $item->generateData($product, $languages);
             yield $item;
         }

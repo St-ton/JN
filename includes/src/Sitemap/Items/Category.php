@@ -40,7 +40,7 @@ final class Category extends AbstractItem
     {
         $this->setData($data);
         $this->setPrimaryKeyID($data->kKategorie);
-        $this->setLanguageData($languages, (int)$data->langID);
+        $this->setLanguageData($languages, $data->langID);
         $this->generateImage();
         $this->generateLocation();
         $this->setChangeFreq(\FREQ_WEEKLY);

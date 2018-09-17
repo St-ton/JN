@@ -52,6 +52,7 @@ final class Category extends AbstractFactory
         );
         while (($category = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
             $category->kKategorie = (int)$category->kKategorie;
+            $category->langID     = (int)$category->langID;
             if ($categoryHelper->nichtLeer($category->kKategorie, $customerGroup) === true) {
                 $item = new \Sitemap\Items\Category($this->config, $this->baseURL, $this->baseImageURL);
                 $item->generateData($category, $languages);

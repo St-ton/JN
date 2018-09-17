@@ -49,9 +49,12 @@ final class Attribute extends AbstractFactory
                 ORDER BY tmerkmal.kMerkmal, tmerkmal.cName",
             \DB\ReturnType::QUERYSINGLE
         );
-        while (($tag = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
-            $item = new \Sitemap\Items\Attribute($this->config, $this->baseURL, $this->baseImageURL);
-            $item->generateData($tag, $languages);
+        while (($attribute = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
+            $attribute->kMerkmal     = (int)$attribute->kMerkmal;
+            $attribute->kMerkmalWert = (int)$attribute->kMerkmalWert;
+            $attribute->langID       = (int)$attribute->langID;
+            $item                    = new \Sitemap\Items\Attribute($this->config, $this->baseURL, $this->baseImageURL);
+            $item->generateData($attribute, $languages);
             yield $item;
         }
     }

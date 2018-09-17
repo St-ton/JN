@@ -36,9 +36,11 @@ final class Manufacturer extends AbstractFactory
                 ORDER BY thersteller.kHersteller",
             \DB\ReturnType::QUERYSINGLE
         );
-        while (($manufacturer = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
-            $item = new \Sitemap\Items\Manufacturer($this->config, $this->baseURL, $this->baseImageURL);
-            $item->generateData($manufacturer, $languages);
+        while (($mf = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
+            $mf->kHersteller = (int)$mf->kHersteller;
+            $mf->langID      = (int)$mf->langID;
+            $item            = new \Sitemap\Items\Manufacturer($this->config, $this->baseURL, $this->baseImageURL);
+            $item->generateData($mf, $languages);
             yield $item;
         }
     }

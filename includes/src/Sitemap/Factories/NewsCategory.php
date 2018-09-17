@@ -37,9 +37,11 @@ final class NewsCategory extends AbstractFactory
                     AND tseo.kSprache IN (" . \implode(',', $languageIDs) . ")",
             \DB\ReturnType::QUERYSINGLE
         );
-        while (($tag = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
-            $item = new \Sitemap\Items\NewsCategory($this->config, $this->baseURL, $this->baseImageURL);
-            $item->generateData($tag, $languages);
+        while (($nc = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
+            $nc->kNewsKategorie = (int)$nc->kNewsKategorie;
+            $nc->langID         = (int)$nc->langID;
+            $item               = new \Sitemap\Items\NewsCategory($this->config, $this->baseURL, $this->baseImageURL);
+            $item->generateData($nc, $languages);
             yield $item;
         }
     }

@@ -94,9 +94,7 @@ final class Export
         $this->baseImageURL   = \Shop::getImageBaseURL();
         $this->baseURL        = \Shop::getURL() . '/';
         $this->gzip           = \function_exists('gzopen');
-        $this->schemaRenderer->setConfig($config);
-        $this->renderer->setConfig($config);
-        $this->blockedURLs = [
+        $this->blockedURLs    = [
             'navi.php',
             'suche.php',
             'jtl.php',
@@ -104,6 +102,8 @@ final class Export
             'registrieren.php',
             'warenkorb.php',
         ];
+        $this->schemaRenderer->setConfig($config);
+        $this->renderer->setConfig($config);
     }
 
     /**

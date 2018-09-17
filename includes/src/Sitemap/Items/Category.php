@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -39,7 +39,7 @@ final class Category extends AbstractItem
     public function generateData($data, array $languages): void
     {
         $this->setData($data);
-        $this->setPrimaryKeyID((int)$data->kKategorie);
+        $this->setPrimaryKeyID($data->kKategorie);
         $this->setLanguageData($languages, (int)$data->langID);
         $this->generateImage();
         $this->generateLocation();

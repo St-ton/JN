@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -51,6 +51,7 @@ final class Category extends AbstractFactory
             \DB\ReturnType::QUERYSINGLE
         );
         while (($category = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
+            $category->kKategorie = (int)$category->kKategorie;
             if ($categoryHelper->nichtLeer($category->kKategorie, $customerGroup) === true) {
                 $item = new \Sitemap\Items\Category($this->config, $this->baseURL, $this->baseImageURL);
                 $item->generateData($category, $languages);

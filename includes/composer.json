@@ -3,7 +3,7 @@
     "type": "library",
     "homepage": "https://www.jtl-software.de",
     "require": {
-        "php": ">=7.0",
+        "php": ">=7.1",
         "Imanee/Imanee": "dev-master",
         "ifsnop/mysqldump-php": "^2.1",
         "symfony/var-dumper": "^3.0",
@@ -32,11 +32,6 @@
         "Symfony/Finder": "^2.8",
         "friendsofphp/php-cs-fixer": "~2.1",
         "phpunit/phpunit": "~5.7"
-    },
-    "config": {
-        "platform": {
-            "php": "7.0"
-        }
     },
     "repositories": [
         {

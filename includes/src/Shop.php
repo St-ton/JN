@@ -1139,8 +1139,12 @@ final class Shop
             // manufacturer filter
             if (($seoCount = count($manufSeo)) > 0) {
                 if ($seoCount === 1) {
-                    $oSeo = self::Container()->getDB()->selectAll('tseo', ['cKey', 'cSeo'],
-                        ['kHersteller', $manufSeo[0]], 'kKey');
+                    $oSeo = self::Container()->getDB()->selectAll(
+                        'tseo',
+                        ['cKey', 'cSeo'],
+                        ['kHersteller', $manufSeo[0]],
+                        'kKey'
+                    );
                 } else {
                     $bindValues = [];
                     // PDO::bindValue() is 1-based
@@ -1153,7 +1157,8 @@ final class Shop
                             WHERE cKey = 'kHersteller' 
                             AND cSeo IN (" . implode(',', array_fill(0, $seoCount, '?')) . ")",
                         $bindValues,
-                        2);
+                        \DB\ReturnType::ARRAY_OF_OBJECTS
+                    );
                 }
                 $results = count($oSeo);
                 if ($results === 1) {

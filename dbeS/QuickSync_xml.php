@@ -46,7 +46,7 @@ function bearbeiteInsert($xml)
     if ($nCount < 2) {
         updateXMLinDB($xml['quicksync']['tartikel'], 'tpreise', $GLOBALS['mPreise'], 'kKundengruppe', 'kArtikel');
 
-        if (isset($xml['quicksync']['tartikel']['tpreis']) && version_compare($_POST['vers'], '099976', '>=')) {
+        if (isset($xml['quicksync']['tartikel']['tpreis'])) {
             handleNewPriceFormat($xml['quicksync']['tartikel']);
         } else {
             handleOldPriceFormat(mapArray($xml['quicksync']['tartikel'], 'tpreise', $GLOBALS['mPreise']));
@@ -64,11 +64,8 @@ function bearbeiteInsert($xml)
                 'kKundengruppe',
                 'kArtikel'
             );
-            if (version_compare($_POST['vers'], '099976', '>=')) {
-                handleNewPriceFormat(mapArray($xml['quicksync']['tartikel'][$i], 'tpreise', $GLOBALS['mPreise']));
-            }
 
-            if (isset($xml['quicksync']['tartikel'][$i]['tpreis']) && version_compare($_POST['vers'], '099976', '>=')) {
+            if (isset($xml['quicksync']['tartikel'][$i]['tpreis'])) {
                 handleNewPriceFormat($xml['quicksync']['tartikel'][$i]);
             } else {
                 handleOldPriceFormat(mapArray($xml['quicksync']['tartikel'][$i], 'tpreise', $GLOBALS['mPreise']));

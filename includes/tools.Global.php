@@ -472,9 +472,6 @@ function mappeSeitentyp(int $nSeitentyp)
         case PAGE_BEWERTUNG:
             return 'Bewertung';
 
-        case PAGE_DRUCKANSICHT:
-            return 'Druckansicht';
-
         case PAGE_PASSWORTVERGESSEN:
             return 'Passwort vergessen';
 

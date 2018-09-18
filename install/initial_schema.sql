@@ -3102,7 +3102,7 @@ CREATE TABLE `tnummern` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tnummern` DISABLE KEYS */;
-INSERT INTO `tnummern` VALUES (10000,1),(1,2);
+INSERT INTO `tnummern` VALUES (10000,1, NOW()),(1,2, NOW());
 /*!40000 ALTER TABLE `tnummern` ENABLE KEYS */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;

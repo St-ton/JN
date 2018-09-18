@@ -30,7 +30,6 @@ class Plugin
 
     /**
      * @var int
-     * 1: deactivated, 2: activated, 5: license missing, 6: license invalid
      */
     public $nStatus;
 
@@ -331,6 +330,11 @@ class Plugin
      * @var string  holds the path to a CHANGELOG.md
      */
     public $changelogPath = '';
+
+    /**
+     * @var bool
+     */
+    public $updateAvailable = false;
 
     /**
      * Konstruktor
@@ -677,6 +681,7 @@ class Plugin
         }
         $this->pluginCacheID    = 'plgn_' . $this->kPlugin . '_' . $this->nVersion;
         $this->pluginCacheGroup = CACHING_GROUP_PLUGIN . '_' . $this->kPlugin;
+        $this->updateAvailable  = $this->nVersion < $this->getCurrentVersion();
         // save to cache
         Shop::Cache()->set($cacheID, $this, [CACHING_GROUP_PLUGIN, $this->pluginCacheGroup]);
 
@@ -812,32 +817,14 @@ class Plugin
     /**
      * @param int $state
      * @return string
+     * @deprecated since 5.0.0
      */
     public function mapPluginStatus(int $state): string
     {
-        if ($state > 0) {
-            switch ($state) {
-                case self::PLUGIN_DISABLED:
-                    return 'Deaktiviert';
+        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+        $mapper = new \Mapper\PluginState();
 
-                case self::PLUGIN_ACTIVATED:
-                    return 'Aktiviert';
-
-                case self::PLUGIN_ERRONEOUS:
-                    return 'Fehlerhaft';
-
-                case self::PLUGIN_UPDATE_FAILED:
-                    return 'Update fehlgeschlagen';
-
-                case self::PLUGIN_LICENSE_KEY_MISSING:
-                    return 'Lizenzschl&uuml;ssel fehlt';
-
-                case self::PLUGIN_LICENSE_KEY_INVALID:
-                    return 'Lizenzschl&uuml;ssel ung&uuml;ltig';
-            }
-        }
-
-        return '';
+        return $mapper->map($state);
     }
 
     /**

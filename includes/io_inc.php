@@ -885,7 +885,7 @@ function getArticleByVariations($parentProductID, $selectedVariationValues)
             INNER JOIN tartikel ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
             LEFT JOIN tseo ON tseo.cKey = \'kArtikel\'
                             AND tseo.kKey = tartikel.kArtikel
-                            AND tseo.kSprache = ' . Shop()::getLanguage() . '
+                            AND tseo.kSprache = ' . Shop::getLanguage() . '
             LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                                             AND tartikelsichtbarkeit.kKundengruppe = ' . (int)$_SESSION['Kundengruppe']->kKundengruppe . '
             WHERE ' . $combinationSQL . 'tartikel.kVaterArtikel = ' . (int)$parentProductID . '

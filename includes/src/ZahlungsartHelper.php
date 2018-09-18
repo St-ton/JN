@@ -86,6 +86,9 @@ class ZahlungsartHelper
                     return false;
                 }
                 break;
+            case 'za_null_jtl':
+                // each shipping is valid, because the order-sum can always go to 0.0
+                break;
             case 'za_billpay_jtl':
             case 'za_billpay_invoice_jtl':
             case 'za_billpay_direct_debit_jtl':

@@ -454,7 +454,7 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && Form
 
 if ($step === 'neue Versandart') {
     $versandlaender = Shop::Container()->getDB()->query(
-        'SELECT *, cDeutsch AS cName FROM tland ORDER BY cDeutsch', 
+        'SELECT *, cDeutsch AS cName FROM tland ORDER BY cDeutsch',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     if ($versandberechnung->cModulId === 'vm_versandberechnung_gewicht_jtl') {
@@ -466,7 +466,14 @@ if ($step === 'neue Versandart') {
     if ($versandberechnung->cModulId === 'vm_versandberechnung_artikelanzahl_jtl') {
         $smarty->assign('einheit', 'Stück');
     }
-    $zahlungsarten      = Shop::Container()->getDB()->selectAll('tzahlungsart', 'nActive', 1, '*', 'cAnbieter, nSort, cName');
+    // prevent "unusable" payment-methods from display them in the config-section (mainly the null-payment)
+    $zahlungsarten = Shop::Container()->getDB()->executeQuery('
+        SELECT *
+        FROM `tzahlungsart`
+        WHERE `nActive` = 1
+            AND `nNutzbar` = 1
+        ORDER BY `cAnbieter`, `cName`, `nSort`, `kZahlungsart`
+    ',2);
     $oVersandklasse_arr = Shop::Container()->getDB()->selectAll('tversandklasse', [], [], '*', 'kVersandklasse');
     $smarty->assign('versandKlassen', $oVersandklasse_arr);
     $kVersandartTMP = 0;
@@ -511,7 +518,7 @@ if ($step === 'uebersicht') {
         $versandarten[$i]->versandartzahlungsarten = Shop::Container()->getDB()->query(
             'SELECT tversandartzahlungsart.*
                 FROM tversandartzahlungsart
-                JOIN tzahlungsart 
+                JOIN tzahlungsart
                     ON tzahlungsart.kZahlungsart = tversandartzahlungsart.kZahlungsart
                 WHERE tversandartzahlungsart.kVersandart = ' . (int)$versandarten[$i]->kVersandart . '
                 ORDER BY tzahlungsart.cAnbieter, tzahlungsart.nSort, tzahlungsart.cName',

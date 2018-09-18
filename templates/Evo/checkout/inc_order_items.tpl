@@ -328,7 +328,15 @@
                      <td class="hidden-xs"></td>
                  {/if}
                  <td class="text-right" colspan="2">{lang key='useCredit' section='account data'}</td>
-                 <td class="text-right" colspan="{if $tplscope === 'cart'}4{else}3{/if}">{$smarty.session.Bestellung->GutscheinLocalized}</td>
+                 <td class="text-right" colspan="{if $tplscope === 'cart'}4{else}3{/if}">{$smarty.session.Bestellung->GutscheinLocalized}
+                    {if $tplscope == 'cart'}
+                        &nbsp;
+                        <button type="submit" class="btn btn-xs btn-small" title="Guthaben nicht verrechnen" name="dropPos" value="assetToUse">
+                            <span class="fa fa-trash"></span>
+                        </button>
+                    {/if}
+                 </td>
+
              </tr>
         {/if}
 

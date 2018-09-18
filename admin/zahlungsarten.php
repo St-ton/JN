@@ -248,8 +248,8 @@ if ($step === 'einstellen') {
         }
 
         $kundengruppen = Shop::Container()->getDB()->query(
-            'SELECT * 
-                FROM tkundengruppe 
+            'SELECT *
+                FROM tkundengruppe
                 ORDER BY cName',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
@@ -322,7 +322,7 @@ if ($step === 'einstellen') {
                     ON ze.kBestellung = b.kBestellung
                 JOIN tkunde AS k
                     ON b.kKunde = k.kKunde
-            WHERE b.kZahlungsart = ' . $kZahlungsart . ' ' . 
+            WHERE b.kZahlungsart = ' . $kZahlungsart . ' ' .
         ($oFilter->getWhereSQL() !== '' ? 'AND ' . $oFilter->getWhereSQL() : '') . '
             ORDER BY dZeit DESC',
         \DB\ReturnType::ARRAY_OF_OBJECTS
@@ -343,20 +343,22 @@ if ($step === 'einstellen') {
 }
 
 if ($step === 'uebersicht') {
-    $oZahlungsart_arr = Shop::Container()->getDB()->selectAll(
-        'tzahlungsart',
-        'nActive',
-        1,
-        '*',
-        'cAnbieter, cName, nSort, kZahlungsart'
-    );
+    // prevent "unusable" payment-methods from display them in the config-section (mainly the null-payment)
+    $oZahlungsart_arr = Shop::Container()->getDB()->executeQuery('
+        SELECT *
+        FROM `tzahlungsart`
+        WHERE `nActive` = 1
+            AND `nNutzbar` = 1
+        ORDER BY `cAnbieter`, `cName`, `nSort`, `kZahlungsart`',
+    2);
     foreach ($oZahlungsart_arr as $oZahlungsart) {
-        $oZahlungsart->nEingangAnzahl = (int)Shop::Container()->getDB()->query(
-            'SELECT COUNT(*) AS nAnzahl
-                FROM tzahlungseingang AS ze
-                    JOIN tbestellung AS b
-                        ON ze.kBestellung = b.kBestellung
-                WHERE b.kZahlungsart = ' . $oZahlungsart->kZahlungsart,
+        $oZahlungsart->nEingangAnzahl = (int)Shop::Container()->getDB()->executeQueryPrepared(
+            'SELECT COUNT(*) AS `nAnzahl`
+                FROM `tzahlungseingang` AS ze
+                    JOIN `tbestellung` AS b
+                        ON ze.`kBestellung` = b.`kBestellung`
+                WHERE b.`kZahlungsart` = :kzahlungsart',
+            ['kzahlungsart' => $oZahlungsart->kZahlungsart],
             \DB\ReturnType::SINGLE_OBJECT
         )->nAnzahl;
         $oZahlungsart->nLogCount = ZahlungsLog::count($oZahlungsart->cModulId);

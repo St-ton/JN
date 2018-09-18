@@ -6,7 +6,6 @@
 
 namespace Boxes\Items;
 
-
 /**
  * Class FilterItem
  * @package Boxes

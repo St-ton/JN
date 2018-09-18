@@ -6,7 +6,6 @@
 
 namespace Mapper;
 
-
 /**
  * Class PageTypeToLinkType
  * @package Mapper

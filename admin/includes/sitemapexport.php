@@ -325,6 +325,7 @@ function generateSitemapXML()
         \DB\ReturnType::QUERYSINGLE
     );
     while (($oArtikel = $res->fetch(PDO::FETCH_OBJ)) !== false) {
+
         if ($nSitemap > $nSitemapLimit) {
             $nSitemap = 1;
             baueSitemap($nDatei, $sitemap_data);
@@ -402,13 +403,29 @@ function generateSitemapXML()
                 $nAnzahlURL_arr[$nDatei] = 0;
                 $sitemap_data            = '';
             }
+            $cGoogleImage = '';
+            if ($conf['sitemap']['sitemap_googleimage_anzeigen'] === 'Y'
+                && ($number = MediaImage::getPrimaryNumber(Image::TYPE_PRODUCT, $oArtikel->kArtikel)) !== null
+            ) {
+                $cGoogleImage = MediaImage::getThumb(
+                    Image::TYPE_PRODUCT,
+                    $oArtikel->kArtikel,
+                    $oArtikel,
+                    Image::SIZE_LG,
+                    $number
+                );
+                if (strlen($cGoogleImage) > 0) {
+                    $cGoogleImage = $imageBaseURL . $cGoogleImage;
+                }
+            }
             $cUrl = UrlHelper::buildURL($oArtikel, URLART_ARTIKEL);
             if (!isSitemapBlocked($cUrl)) {
                 $sitemap_data .= makeURL(
                     $cUrl,
                     date_format(date_create($oArtikel->dLetzteAktualisierung), 'c'),
                     FREQ_DAILY,
-                    PRIO_HIGH
+                    PRIO_HIGH,
+                    $cGoogleImage
                 );
                 ++$nSitemap;
                 ++$nAnzahlURL_arr[$nDatei];

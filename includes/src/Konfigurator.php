@@ -42,7 +42,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 $kSprache = Shop::getLanguageID();
             }
             foreach ($oGruppen_arr as &$oGruppe) {
-                $oGruppe = new Konfiggruppe($oGruppe->kKonfigGruppe, $kSprache);
+                $oGruppe = new Konfiggruppe((int)$oGruppe->kKonfigGruppe, $kSprache);
             }
             unset($oGruppe);
 

@@ -6,7 +6,6 @@
 
 namespace Link\Admin;
 
-
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\ReturnType;

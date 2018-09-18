@@ -6,7 +6,6 @@
 
 namespace Filter;
 
-
 /**
  * Class AbstractFilter
  * @package Filter

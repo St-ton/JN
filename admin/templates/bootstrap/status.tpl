@@ -108,7 +108,6 @@
                             {render_item title='Verzeichnisrechte' val=$status->validFolderPermissions() more='permissioncheck.php'}
                             {render_item title='Ausstehende Updates' val=!$status->hasPendingUpdates() more='dbupdater.php'}
                             {render_item title='Installationsverzeichnis' val=!$status->hasInstallDir()}
-                            {render_item title='Template-Version' val=!$status->hasDifferentTemplateVersion()}
                             {render_item title='Profiler aktiv' val=!$status->hasActiveProfiler() more='profiler.php'}
                             {render_item title='Server' val=$status->hasValidEnvironment() more='systemcheck.php'}
                             {render_item title='Verwaiste Kategorien' val=$status->getOrphanedCategories() more='categorycheck.php'}

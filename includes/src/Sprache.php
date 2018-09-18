@@ -1062,7 +1062,7 @@ class Sprache
                     $lang->cURLFull = $shopURL . $AktuellerArtikel->cSprachURL_arr[$lang->cISO];
                 } elseif ($specialPage !== null) {
                     if (Shop::getPageType() === PAGE_STARTSEITE) {
-                        $url = '?lang=' . $lang->cISO;
+                        $url = $shopURL . '?lang=' . $lang->cISO;
                     } elseif ($specialPage->getFileName() !== '') {
                         $url = $helper->getStaticRoute($specialPage->getFileName(), false, false, $lang->cISO);
                         // check if there is a SEO link for the given file

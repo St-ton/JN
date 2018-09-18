@@ -342,7 +342,6 @@ define('PAGE_LOGIN', 9); // Login
 define('PAGE_REGISTRIERUNG', 10); // Registrierung
 define('PAGE_BESTELLVORGANG', 11); // Bestellvorgang
 define('PAGE_BEWERTUNG', 12); // Bewertung [NEIN]
-define('PAGE_DRUCKANSICHT', 13); // Druckansicht
 define('PAGE_PASSWORTVERGESSEN', 14); // Passwort vergessen
 define('PAGE_WARTUNG', 15); // Wartung
 define('PAGE_WUNSCHLISTE', 16); // Wunschliste

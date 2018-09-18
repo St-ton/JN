@@ -304,6 +304,9 @@ class KategorieListe
             $imageBaseURL                                                  = Shop::getImageBaseURL();
             $oSpracheTmp                                                   = Sprache::getDefaultLanguage();
             foreach ($oKategorie_arr as $i => $oKategorie) {
+                $oKategorie->kKategorie     = (int)$oKategorie->kKategorie;
+                $oKategorie->kOberKategorie = (int)$oKategorie->kOberKategorie;
+                $oKategorie->nSort          = (int)$oKategorie->nSort;
                 // Leere Kategorien ausblenden?
                 if (!$this->nichtLeer($oKategorie->kKategorie, $kKundengruppe)) {
                     $categoryList['ks'][$oKategorie->kKategorie] = 2;

@@ -11,6 +11,7 @@ $smarty->registerPlugin('function', 'getCurrencyConversionSmarty', 'getCurrencyC
        ->registerPlugin('function', 'getHelpDesc', 'getHelpDesc')
        ->registerPlugin('function', 'getExtensionCategory', 'getExtensionCategory')
        ->registerPlugin('function', 'formatVersion', 'formatVersion')
+       ->registerPlugin('modifier', 'formatByteSize', ['StringHandler', 'formatSize'])
        ->registerPlugin('function', 'gravatarImage', 'gravatarImage')
        ->registerPlugin('function', 'getRevisions', 'getRevisions')
        ->registerPlugin('function', 'captchaMarkup', 'captchaMarkup')

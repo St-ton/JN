@@ -271,18 +271,24 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 foreach ($oDown_arr as $i => &$oDown) {
+                    $oDown->kDownload  = (int)$oDown->kDownload;
                     $oDownload_arr[$i] = new self(
                         $oDown->kDownload,
                         $kSprache,
                         true,
-                        $oDown->kBestellung ?? 0
+                        (int)($oDown->kBestellung ?? 0)
                     );
                     if (($kBestellung > 0 || $kKunde > 0) && $oDownload_arr[$i]->getAnzahl() > 0) {
-                        $oDownloadHistory_arr           = DownloadHistory::getOrderHistory($oDown->kKunde,
-                            $oDown->kBestellung);
+                        $oDown->kKunde                  = (int)$oDown->kKunde;
+                        $oDown->kBestellung             = (int)$oDown->kBestellung;
+
+                        $history                        = DownloadHistory::getOrderHistory(
+                            $oDown->kKunde,
+                            $oDown->kBestellung
+                        );
                         $kDownload                      = $oDownload_arr[$i]->getDownload();
-                        $count                          = isset($oDownloadHistory_arr[$kDownload])
-                            ? count($oDownloadHistory_arr[$kDownload])
+                        $count                          = isset($history[$kDownload])
+                            ? count($history[$kDownload])
                             : 0;
                         $oDownload_arr[$i]->cLimit      = $count . ' / ' . $oDownload_arr[$i]->getAnzahl();
                         $oDownload_arr[$i]->kBestellung = $oDown->kBestellung;
@@ -387,11 +393,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                         }
                         // Check Anzahl
                         if ($oDownload->getAnzahl() > 0) {
-                            $oDownloadHistory_arr = DownloadHistory::getOrderHistory(
-                                $kKunde,
-                                $kBestellung
-                            );
-                            if (count($oDownloadHistory_arr[$oDownload->kDownload]) >= $oDownload->getAnzahl()) {
+                            $history = DownloadHistory::getOrderHistory($kKunde, $kBestellung);
+                            if (count($history[$oDownload->kDownload]) >= $oDownload->getAnzahl()) {
                                 return self::ERROR_DOWNLOAD_LIMIT_REACHED;
                             }
                         }

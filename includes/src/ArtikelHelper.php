@@ -289,6 +289,9 @@ class ArtikelHelper
         }
 
         foreach ($oEigenschaft_arr as $oEigenschaft) {
+            $oEigenschaft->kEigenschaftWert = (int)$oEigenschaft->kEigenschaftWert;
+            $oEigenschaft->kEigenschaft     = (int)$oEigenschaft->kEigenschaft;
+            $oEigenschaft->kArtikel         = (int)$oEigenschaft->kArtikel;
             if ($oEigenschaft->cTyp !== 'FREIFELD' && $oEigenschaft->cTyp !== 'PFLICHT-FREIFELD') {
                 // Ist kEigenschaft zu eigenschaftwert vorhanden
                 if (self::hasSelectedVariationValue($oEigenschaft->kEigenschaft)) {
@@ -298,9 +301,9 @@ class ArtikelHelper
                             LEFT JOIN teigenschaftwertsichtbarkeit
                                 ON teigenschaftwertsichtbarkeit.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
                                 AND teigenschaftwertsichtbarkeit.kKundengruppe = ' . $customerGroup . '
-                            WHERE teigenschaftwert.kEigenschaftWert = ' . (int)$oEigenschaft->kEigenschaftWert . '
+                            WHERE teigenschaftwert.kEigenschaftWert = ' . $oEigenschaft->kEigenschaftWert . '
                                 AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
-                                AND teigenschaftwert.kEigenschaft = ' . (int)$oEigenschaft->kEigenschaft,
+                                AND teigenschaftwert.kEigenschaft = ' . $oEigenschaft->kEigenschaft,
                         \DB\ReturnType::SINGLE_OBJECT
                     );
 
@@ -867,7 +870,7 @@ class ArtikelHelper
                     foreach ($articles as $xs) {
                         $group->Name         = $xs->cName;
                         $group->Beschreibung = $xs->cBeschreibung;
-                        $product             = (new Artikel())->fuelleArtikel($xs->kXSellArtikel, $defaultOptions);
+                        $product             = (new Artikel())->fuelleArtikel((int)$xs->kXSellArtikel, $defaultOptions);
                         if ($product !== null && $product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
                             $group->Artikel[] = $product;
                         }
@@ -945,7 +948,7 @@ class ArtikelHelper
                 $defaultOptions          = Artikel::getDefaultOptions();
                 foreach ($xsell as $xs) {
                     $product = new Artikel();
-                    $product->fuelleArtikel($xs->kXSellArtikel, $defaultOptions);
+                    $product->fuelleArtikel((int)$xs->kXSellArtikel, $defaultOptions);
                     if ($product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
                         $xSelling->Kauf->Artikel[] = $product;
                     }
@@ -1002,7 +1005,7 @@ class ArtikelHelper
                 $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('blockedEmail');
             } else {
                 Shop::Smarty()->assign('Anfrage', self::getProductQuestionFormDefaults());
-                $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('fillOutQuestion', 'messages');
+                $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('mandatoryFieldNotification', 'errorMessages');
             }
         } else {
             $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('productquestionPleaseLogin', 'errorMessages');
@@ -1252,7 +1255,7 @@ class ArtikelHelper
             $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('blockedEmail');
         } else {
             Shop::Smarty()->assign('Benachrichtigung', self::getAvailabilityFormDefaults());
-            $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('fillOutNotification', 'messages');
+            $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('mandatoryFieldNotification', 'errorMessages');
         }
     }
 
@@ -1398,6 +1401,7 @@ class ArtikelHelper
                         AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND tartikel.kArtikel = tkategorieartikel.kArtikel
+                        AND tartikel.kVaterArtikel = 0
                         AND tkategorieartikel.kKategorie = ' . $categoryID . '
                         AND tpreise.kArtikel = tartikel.kArtikel
                         AND tartikel.kArtikel < ' . $productID . '
@@ -1414,6 +1418,7 @@ class ArtikelHelper
                         AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND tartikel.kArtikel = tkategorieartikel.kArtikel
+                        AND tartikel.kVaterArtikel = 0
                         AND tkategorieartikel.kKategorie = ' . $categoryID . '
                         AND tpreise.kArtikel = tartikel.kArtikel
                         AND tartikel.kArtikel > ' . $productID . '
@@ -1425,11 +1430,11 @@ class ArtikelHelper
 
             if (!empty($prev->kArtikel)) {
                 $nav->vorherigerArtikel = (new Artikel())
-                    ->fuelleArtikel($prev->kArtikel, Artikel::getDefaultOptions());
+                    ->fuelleArtikel((int)$prev->kArtikel, Artikel::getDefaultOptions());
             }
             if (!empty($next->kArtikel)) {
                 $nav->naechsterArtikel = (new Artikel())
-                    ->fuelleArtikel($next->kArtikel, Artikel::getDefaultOptions());
+                    ->fuelleArtikel((int)$next->kArtikel, Artikel::getDefaultOptions());
             }
         }
 
@@ -1807,7 +1812,7 @@ class ArtikelHelper
     {
         switch ($cCode) {
             case 'f01':
-                $error = Shop::Lang()->get('bewertungWrongdata', 'errorMessages');
+                $error = Shop::Lang()->get('mandatoryFieldNotification', 'errorMessages');
                 break;
             case 'f02':
                 $error = Shop::Lang()->get('bewertungBewexist', 'errorMessages');

@@ -1105,7 +1105,7 @@ function fakeBestellung()
         $order->cIP = RequestHelper::getIP();
     }
 
-    return $order->fuelleBestellung(0, true);
+    return $order->fuelleBestellung(false, true);
 }
 
 /**
@@ -1181,7 +1181,7 @@ function finalisiereBestellung($orderNo = '', bool $sendMail = true)
     bestellungInDB(0, $orderNo);
 
     $order = new Bestellung($_SESSION['kBestellung']);
-    $order->fuelleBestellung(0);
+    $order->fuelleBestellung(false);
     $order->machGoogleAnalyticsReady();
 
     if ($order->oRechnungsadresse !== null) {

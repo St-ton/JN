@@ -6,7 +6,6 @@
 
 namespace Boxes\Items;
 
-
 /**
  * Class CompareList
  * @package Boxes

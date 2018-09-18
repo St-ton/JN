@@ -22,7 +22,7 @@ if (isset($_GET['i'])) {
     $bestellid = Shop::Container()->getDB()->select('tbestellid', 'cId', $_GET['i']);
     if (isset($bestellid->kBestellung) && $bestellid->kBestellung > 0) {
         $bestellung = new Bestellung($bestellid->kBestellung);
-        $bestellung->fuelleBestellung(0);
+        $bestellung->fuelleBestellung(false);
         speicherUploads($bestellung);
         Shop::Container()->getDB()->delete('tbestellid', 'kBestellung', (int)$bestellid->kBestellung);
     }

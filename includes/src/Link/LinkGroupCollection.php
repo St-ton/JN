@@ -6,7 +6,6 @@
 
 namespace Link;
 
-
 use Tightenco\Collect\Support\Collection;
 
 /**

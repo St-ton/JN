@@ -637,7 +637,7 @@ class IOMethods
             $oArtikelOptionen->nKeinLagerbestandBeachten = 1;
 
             $oTestArtikel->fuelleArtikel(
-                $oTMPArtikel->kArtikel,
+                (int)$oTMPArtikel->kArtikel,
                 $oArtikelOptionen,
                 Kundengruppe::getCurrent(),
                 Shop::getLanguage()
@@ -857,8 +857,7 @@ class IOMethods
             if ($bHasInvalidSelection) {
                 $objResponse->jsfunc('$.evo.article().variationResetAll', $wrapper);
 
-                $kGesetzteEigeschaftWert_arr = [$kEigenschaft => $kEigenschaftWert];
-                $nInvalidVariations          = $oArtikel->getVariationsBySelection($kGesetzteEigeschaftWert_arr, true);
+                $nInvalidVariations = $oArtikel->getVariationsBySelection([$kEigenschaft => $kEigenschaftWert], true);
 
                 // Auswählter EigenschaftWert ist ebenfalls nicht vorhanden
                 if (in_array($kEigenschaftWert, $nInvalidVariations[$kEigenschaft])) {

@@ -69,13 +69,13 @@
                                         <th class="th-7">{#checkboxGroup#}</th>
                                         <th class="th-8" colspan="2">{#checkboxDate#}</th>
                                     </tr>
-                                    {foreach name=checkboxen from=$oCheckBox_arr item=oCheckBoxUebersicht}
+                                    {foreach $oCheckBox_arr as $oCheckBoxUebersicht}
                                         <tr>
                                             <td>
-                                                <input name="kCheckBox[]" type="checkbox" value="{$oCheckBoxUebersicht->kCheckBox}" />
+                                                <input name="kCheckBox[]" id="cb-check-{$oCheckBoxUebersicht@index}" type="checkbox" value="{$oCheckBoxUebersicht->kCheckBox}" />
                                             </td>
-                                            <td>{$oCheckBoxUebersicht->cName}</td>
-                                            <td>{$oCheckBoxUebersicht->oLink->getName()}</td>
+                                            <td><label for="cb-check-{$oCheckBoxUebersicht@index}">{$oCheckBoxUebersicht->cName}</label></td>
+                                            <td>{if $oCheckBoxUebersicht->oLink !== null}{$oCheckBoxUebersicht->oLink->getName()}{/if}</td>
                                             <td>
                                                 {foreach $oCheckBoxUebersicht->kAnzeigeOrt_arr as $kAnzeigeOrt}
                                                     {$cAnzeigeOrt_arr[$kAnzeigeOrt]}{if !$kAnzeigeOrt@last}, {/if}
@@ -111,9 +111,9 @@
                             </div>
                             <div class="panel-footer">
                                 <div class="btn-group submit">
-                                    <button name="erstellenShowButton" type="submit" class="btn btn-primary" value="neue Checkbox erstellen">neue Checkbox erstellen</button>
-                                    <button name="checkboxAktivierenSubmit" type="submit" class="btn btn-default" value="{#checkboxActivate#}">{#checkboxActivate#}</button>
-                                    <button name="checkboxDeaktivierenSubmit" class="btn btn-warning" type="submit" value="{#checkboxDeactivate#}">{#checkboxDeactivate#}</button>
+                                    <button name="erstellenShowButton" type="submit" class="btn btn-primary" value="neue Checkbox erstellen"><i class="fa fa-share"></i> neue Checkbox erstellen</button>
+                                    <button name="checkboxAktivierenSubmit" type="submit" class="btn btn-default" value="{#checkboxActivate#}"><i class="fa fa-check"></i> {#checkboxActivate#}</button>
+                                    <button name="checkboxDeaktivierenSubmit" class="btn btn-warning" type="submit" value="{#checkboxDeactivate#}"><i class="fa fa-close"></i> {#checkboxDeactivate#}</button>
                                     <button name="checkboxLoeschenSubmit" class="btn btn-danger" type="submit" value="{#checkboxDelete#}"><i class="fa fa-trash"></i> {#checkboxDelete#}</button>
                                 </div>
                             </div>
@@ -238,7 +238,7 @@
                                         <option value="{$key}"{if $bAOSelect} selected="selected"{/if}>{$cAnzeigeOrt}</option>
                                     {/foreach}
                                 </select>
-                                <span class="input-group-addon">{getHelpDesc cDesc="Stelle im Shopfrontend an der die Checkboxen angezeigt werden (Mehrfachauswahl mit STRG m&ouml;glich)."}</span>
+                                <span class="input-group-addon">{getHelpDesc cDesc="Stelle im Shopfrontend an der die Checkboxen angezeigt werden (Mehrfachauswahl mit STRG möglich)."}</span>
                             </div>
 
                             <div class="input-group">
@@ -255,7 +255,7 @@
                                         </option>
                                     </select>
                                 </span>
-                                <span class="input-group-addon">{getHelpDesc cDesc="Soll die Checkbox gepr&uuml;ft werden, ob diese aktiviert wurde?"}</span>
+                                <span class="input-group-addon">{getHelpDesc cDesc="Soll die Checkbox geprüft werden, ob diese aktiviert wurde?"}</span>
                             </div>
 
                             <div class="input-group">
@@ -294,7 +294,7 @@
 
                             <div class="input-group{if isset($cPlausi_arr.nSort)} error{/if}">
                                 <span class="input-group-addon">
-                                    <label for="nSort">Sortierung (h&ouml;her = weiter unten){if isset($cPlausi_arr.nSort)} <span class="fillout">{#FillOut#}</span>{/if}</label>
+                                    <label for="nSort">Sortierung (höher = weiter unten){if isset($cPlausi_arr.nSort)} <span class="fillout">{#FillOut#}</span>{/if}</label>
                                 </span>
                                 <input id="nSort" name="nSort" type="text" class="form-control{if isset($cPlausi_arr.nSort)} fieldfillout{/if}" value="{if isset($cPost_arr.nSort)}{$cPost_arr.nSort}{elseif isset($oCheckBox->nSort)}{$oCheckBox->nSort}{/if}" />
                                 <span class="input-group-addon">{getHelpDesc cDesc="Anzeigereihenfolge von Checkboxen."}</span>
@@ -313,7 +313,7 @@
                                             {/foreach}
                                         </select>
                                     </span>
-                                    <span class="input-group-addon">{getHelpDesc cDesc="Soll die Checkbox eine Funktion ausf&uuml;hren, wenn sie aktiviert wurde?"}</span>
+                                    <span class="input-group-addon">{getHelpDesc cDesc="Soll die Checkbox eine Funktion ausführen, wenn sie aktiviert wurde?"}</span>
                                 </div>
                             {/if}
 
@@ -334,7 +334,7 @@
                                                     {/if}
                                                 {/foreach}
                                             {elseif isset($cPost_arr.kKundengruppe) && $cPost_arr.kKundengruppe|@count > 0}
-                                                {foreach name=boxenkundengruppe from=$cPost_arr.kKundengruppe item=kKundengruppe}
+                                                {foreach $cPost_arr.kKundengruppe as $kKundengruppe}
                                                     {if $kKundengruppe == $oKundengruppe->kKundengruppe}
                                                         {assign var=bKGSelect value=true}
                                                     {/if}
@@ -343,7 +343,7 @@
                                             <option value="{$oKundengruppe->kKundengruppe}"{if $bKGSelect} selected{/if}>{$oKundengruppe->cName}</option>
                                         {/foreach}
                                     </select>
-                                    <span class="input-group-addon">{getHelpDesc cDesc="F&uuml;r welche Kundengruppen soll die Checkbox sichtbar sein (Mehrfachauswahl mit STRG m&ouml;glich)?"}</span>
+                                    <span class="input-group-addon">{getHelpDesc cDesc="Für welche Kundengruppen soll die Checkbox sichtbar sein (Mehrfachauswahl mit STRG möglich)?"}</span>
                                 </div>
                             {/if}
                         </div>

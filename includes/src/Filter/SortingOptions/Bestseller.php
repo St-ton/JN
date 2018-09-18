@@ -6,7 +6,6 @@
 
 namespace Filter\SortingOptions;
 
-
 use Filter\ProductFilter;
 
 /**
@@ -16,13 +15,13 @@ use Filter\ProductFilter;
 class Bestseller extends AbstractSortingOption
 {
     /**
-     * SortDefault constructor.
+     * Bestseller constructor.
      * @param ProductFilter $productFilter
      */
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->orderBy = 'tbestseller.fAnzahl DESC, tartikel.cName';
+        $this->setOrderBy('tbestseller.fAnzahl DESC, tartikel.cName');
         $this->join->setComment('join from SORT by bestseller')
                    ->setType('LEFT JOIN')
                    ->setTable('tbestseller')

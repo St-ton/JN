@@ -46,7 +46,7 @@
     
     {if $Artikel->cEstimatedDelivery}
         <p class="estimated-delivery">
-            <span class="a{$Artikel->Lageranzeige->nStatus}"><strong>{lang key='shippingTime'}</strong>: {$Artikel->cEstimatedDelivery}</span>
+            <strong>{lang key='shippingTime'}: </strong><span class="a{$Artikel->Lageranzeige->nStatus}">{$Artikel->cEstimatedDelivery}</span>
         </p>
     {/if}
 {/block}

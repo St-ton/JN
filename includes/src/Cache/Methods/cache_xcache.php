@@ -6,7 +6,6 @@
 
 namespace Cache\Methods;
 
-
 /**
  * Class cache_xcache
  * Implements the XCache Opcode Cache

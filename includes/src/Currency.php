@@ -90,7 +90,11 @@ class Currency
     public function __construct(int $id = null)
     {
         if ($id > 0) {
-            $this->extract(Shop::Container()->getDB()->select('twaehrung', 'kWaehrung', $id));
+            $data = Shop::Container()->getDB()->select('twaehrung', 'kWaehrung', $id);
+            if ($data !== null) {
+                $data->kWaehrung = (int)$data->kWaehrung;
+                $this->extract($data);
+            }
         }
     }
 
@@ -436,7 +440,7 @@ class Currency
             $_SESSION['Waehrungen'] = [];
             $allCurrencies          = Shop::Container()->getDB()->selectAll('twaehrung', [], [], 'kWaehrung');
             foreach ($allCurrencies as $currency) {
-                $_SESSION['Waehrungen'][] = new self($currency->kWaehrung);
+                $_SESSION['Waehrungen'][] = new self((int)$currency->kWaehrung);
             }
         }
     }

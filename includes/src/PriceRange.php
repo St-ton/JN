@@ -83,6 +83,8 @@ class PriceRange
             false,
             'kArtikel, kSteuerklasse, fLagerbestand, fStandardpreisNetto fNettoPreis'
         );
+        $this->articleData->kArtikel      = (int)$this->articleData->kArtikel;
+        $this->articleData->kSteuerklasse = (int)$this->articleData->kSteuerklasse;
 
         $this->loadPriceRange();
     }
@@ -172,11 +174,16 @@ class PriceRange
 
         $configGroups = [];
         foreach ($configItems as $configItem) {
-            $configItemID = (int)$configItem->kKonfiggruppe;
+            $configItem->kArtikel      = (int)$configItem->kArtikel;
+            $configItem->kKonfiggruppe = (int)$configItem->kKonfiggruppe;
+            $configItem->kSteuerklasse = (int)$configItem->kSteuerklasse;
+            $configItem->nMin          = (int)$configItem->nMin;
+            $configItem->nMax          = (int)$configItem->nMax;
+            $configItemID              = $configItem->kKonfiggruppe;
             if (!isset($configGroups[$configItemID])) {
                 $configGroups[$configItemID] = (object)[
-                    'nMin'   => (int)$configItem->nMin,
-                    'nMax'   => (int)$configItem->nMax,
+                    'nMin'   => $configItem->nMin,
+                    'nMax'   => $configItem->nMax,
                     'prices' => (object)[
                         'min' => [],
                         'max' => [],

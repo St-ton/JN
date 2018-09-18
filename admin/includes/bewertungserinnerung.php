@@ -68,7 +68,7 @@ function baueBewertungsErinnerung()
     }
     foreach ($oBestellungen_arr as $oBestellungen) {
         $oBestellung = new Bestellung($oBestellungen->kBestellung);
-        $oBestellung->fuelleBestellung(0);
+        $oBestellung->fuelleBestellung(false);
         $oKunde            = new Kunde($oBestellung->kKunde ?? 0);
         $obj               = new stdClass();
         $obj->tkunde       = $oKunde;

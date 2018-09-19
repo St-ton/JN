@@ -6,11 +6,13 @@
 
 namespace Services\JTL\Validation\Rules;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * Class PhoneNumberTest
  * @package Services\JTL\Validation\Rules
  */
-class PhoneNumberTest extends \PHPUnit_Framework_TestCase
+class PhoneNumberTest extends TestCase
 {
     public function test()
     {

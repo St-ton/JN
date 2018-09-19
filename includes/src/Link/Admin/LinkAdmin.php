@@ -21,12 +21,11 @@ use Link\LinkInterface;
  */
 final class LinkAdmin
 {
+    public const ERROR_LINK_ALREADY_EXISTS = 1;
 
-    const ERROR_LINK_ALREADY_EXISTS = 1;
+    public const ERROR_LINK_NOT_FOUND = 2;
 
-    const ERROR_LINK_NOT_FOUND = 2;
-
-    const ERROR_LINK_GROUP_NOT_FOUND = 3;
+    public const ERROR_LINK_GROUP_NOT_FOUND = 3;
 
     /**
      * @var DbInterface
@@ -73,7 +72,7 @@ final class LinkAdmin
      * @param array $post
      * @return \stdClass
      */
-    public function createOrUpdateLinkGroup(int $id = 0, $post): \stdClass
+    public function createOrUpdateLinkGroup(int $id, $post): \stdClass
     {
         $linkGroup                = new \stdClass();
         $linkGroup->kLinkgruppe   = (int)$post['kLinkgruppe'];
@@ -224,7 +223,6 @@ final class LinkAdmin
                 return $l->cName;
             })
             : $links;
-
     }
 
     /**
@@ -373,7 +371,7 @@ final class LinkAdmin
      * @param int           $old
      * @param int           $new
      */
-    private function updateChildLinkGroups(LinkInterface $link, int $old, int $new)
+    private function updateChildLinkGroups(LinkInterface $link, int $old, int $new): void
     {
         $upd              = new \stdClass();
         $upd->linkGroupID = $new;
@@ -403,7 +401,7 @@ final class LinkAdmin
      * @param LinkInterface $link
      * @param int           $linkGroupID
      */
-    public function copyChildLinksToLinkGroup(LinkInterface $link, int $linkGroupID)
+    public function copyChildLinksToLinkGroup(LinkInterface $link, int $linkGroupID): void
     {
         $link->buildChildLinks();
         $ins              = new \stdClass();

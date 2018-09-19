@@ -11,7 +11,6 @@ use DB\DbInterface;
 use Filter\ProductFilter;
 use Filter\SearchResultsInterface;
 
-
 /**
  * Class BoxService
  */

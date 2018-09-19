@@ -23,44 +23,39 @@ class IpAnonymizer
     /**
      * @var array
      */
-    private $vShopConf = [];
+    private $vShopConf;
 
     /**
      * IP-string, human readable
+     *
      * @var string
      */
-    private $szIP = '';
+    private $szIP;
 
     /**
      * binary "packed" IP
+     *
      * @var binary
      */
     private $bRawIp = null;
 
     /**
      * current IP-anonymization-mask
+     *
      * @var string
      */
-    private $szIpMask  = '';
+    private $szIpMask = '';
 
     /**
      * current placholder (if the given IP was invalid)
+     *
      * @var string
      */
     private $szPlaceholderIP = '';
 
     /**
-     * @var string
-     */
-    private $szPlaceholderIPv4 = '0.0.0.0';
-
-    /**
-     * @var string
-     */
-    private $szPlaceholderIPv6 = '0000:0000:0000:0000:0000:0000:0000:0000';
-
-    /**
      * flag for old fashioned anonymization ("do not anonymize again")
+     *
      * @var bool
      */
     private $bOldFashionedAnon = false;
@@ -70,7 +65,7 @@ class IpAnonymizer
     {
         $this->szIP = $szIP;
 
-        if (false !== strpos($this->szIP, '*') || 1 > strlen($this->szIP)) {
+        if (strpos($this->szIP, '*') !== false || \strlen($this->szIP) < 1) {
             // if there is an old fashioned anonymization or
             // an empty string, we do nothing (but set a flag)
             $this->bOldFashionedAnon = true;
@@ -78,25 +73,25 @@ class IpAnonymizer
         }
         // any ':' means, we got an IPv6-address
         // ("::127.0.0.1" or "::ffff:127.0.0.3" is valid too!)
-        if (false !== strstr($this->szIP, ':')) {
+        if (strpos($this->szIP, ':') !== false) {
             $this->bRawIp    = inet_pton($this->szIP);
         } else {
             $this->bRawIp    = inet_pton($this->rmLeadingZero($this->szIP));
         }
         $this->vShopConf = \Shop::getSettings([CONF_GLOBAL]);
 
-        switch (strlen($this->bRawIp)) {
+        switch (\strlen($this->bRawIp)) {
             case 4:
-                $this->szPlaceholderIP = $this->szPlaceholderIPv4;
+                $this->szPlaceholderIP = '0.0.0.0';
                 $this->szIpMask        = $this->getMaskV4();
                 break;
             case 16:
-                if (defined('AF_INET6')) {
-                    $this->szPlaceholderIP = $this->szPlaceholderIPv6;
+                if (\defined('AF_INET6')) {
+                    $this->szPlaceholderIP = '0000:0000:0000:0000:0000:0000:0000:0000';
                     $this->szIpMask        = $this->getMaskV6();
                 } else {
                     // this should normally never happen! (wrong compile-time setting of PHP)
-                    throw new Exception('PHP wurde mit der Option "--disable-ipv6" compiliert!');
+                    throw new \Exception('PHP wurde mit der Option "--disable-ipv6" compiliert!');
                 }
                 break;
             default:
@@ -110,9 +105,9 @@ class IpAnonymizer
      *
      * @return string
      */
-    public function anonymize()
+    public function anonymize(): string
     {
-        if (false !== $this->bOldFashionedAnon) {
+        if ($this->bOldFashionedAnon !== false) {
             return $this->szIP;
         }
         return inet_ntop(inet_pton($this->szIpMask) & $this->bRawIp);
@@ -124,14 +119,14 @@ class IpAnonymizer
      *
      * @return string
      */
-    public function anonymizeLegacy()
+    public function anonymizeLegacy(): string
     {
         $vMaskParts = preg_split('/[\.:]/', $this->szIpMask);
         $vIpParts   = preg_split('/[\.:]/', $this->szIP);
-        $nLen = count($vIpParts);
+        $nLen = \count($vIpParts);
         (4 === $nLen) ? $szGlue = '.' : $szGlue = ':';
         for ($i = 0; $i < $nLen; $i++) {
-            (0 !== hexdec($vMaskParts[$i])) ?: $vIpParts{$i} = '*';
+            (hexdec($vMaskParts[$i]) !== 0) ?: $vIpParts{$i} = '*';
         }
         return implode($szGlue, $vIpParts);
     }
@@ -143,11 +138,11 @@ class IpAnonymizer
      * @param string
      * @return string
      */
-    private function rmLeadingZero(string $szIpString)
+    private function rmLeadingZero(string $szIpString): string
     {
         $vIpParts = preg_split('/[\.:]/', $szIpString);
-        $szGlue   = (strstr($szIpString, '.')) ? '.' : ':';
-        return implode($szGlue, (array_map(function($e) {return (int)$e;}, $vIpParts)));
+        $szGlue   = strpos($szIpString, '.') !== false ? '.' : ':';
+        return implode($szGlue, array_map(function($e) {return (int)$e;}, $vIpParts));
     }
 
     /**
@@ -155,7 +150,7 @@ class IpAnonymizer
      *
      * @return string
      */
-    private function getMaskV4()
+    private function getMaskV4(): string
     {
         return $this->vShopConf['global']['anonymize_ip_mask_v4'];
     }
@@ -165,7 +160,7 @@ class IpAnonymizer
      *
      * @return string
      */
-    private function getMaskV6()
+    private function getMaskV6(): string
     {
         return $this->vShopConf['global']['anonymize_ip_mask_v6'];
     }
@@ -176,7 +171,7 @@ class IpAnonymizer
      *
      * @return string
      */
-    public function getPlaceholder()
+    public function getPlaceholder(): string
     {
         return $this->szPlaceholderIP;
     }

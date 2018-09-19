@@ -1,9 +1,9 @@
 <?php
 /**
- * add ip anonymize settings
+ * add anonymizing settings
  *
  * @author Clemens Rudolph
- * @created Mon, 27 Aug 2018 12:11:17 +0200
+ * @created Wed, 19 Sep 2018 10:38:46 +0200
  */
 
 /**
@@ -15,44 +15,49 @@
  * fetchAll           - array of fetched objects
  * fetchArray         - array of fetched assoc arrays
  * dropColumn         - drops a column if exists
- * addLocalization    - add localization
+ * setLocalization    - add localization
  * removeLocalization - remove localization
  * setConfig          - add / update config property
  * removeConfig       - remove config property
  */
-class Migration_20180827121117 extends Migration implements IMigration
+class Migration_20180919103846 extends Migration implements IMigration
 {
-    protected $author      = 'Clemens Rudolph';
-    protected $description = 'add_ip_anonymize_settings';
+    protected $author = 'Clemens Rudolph';
+    protected $description = 'add anonymizing settings';
 
     public function up()
     {
+        // add the new IP-mask settings
         $this->setConfig(
-            'anonymize_ip_mask_v4',                                                                 // setting name
-            '255.255.255.0',                                                                        // default value of setting
-            CONF_GLOBAL,                                                                            // section of setting (see: includes / defines_inc.php)
-            'IPv4-Adress-Anonymisiermaske',                                                         // caption of setting in the backend
-            'text',                                                                                 // setting-type
-            571,                                                                                    // order-position
-             (object) [
+            'anonymize_ip_mask_v4',
+            '255.255.255.0',
+            CONF_GLOBAL,
+            'IPv4-Adress-Anonymisiermaske',
+            'text',
+            571,
+             (object)[
                  'cBeschreibung' => 'IP-Maske zum Anonymisieren der IP-Adressen von Besuchern<br>'.
                                     '(z.B.: 82.54.123.42 wird zu 82.54.123.0)'
             ],
             true
         );
         $this->setConfig(
-            'anonymize_ip_mask_v6',                                                                 // setting name
-            'ffff:ffff:ffff:ffff:0000:0000:0000:0000',                                              // default value of setting
-            CONF_GLOBAL,                                                                            // section of setting (see: includes / defines_inc.php)
-            'IPv6-Adress-Anonymisiermaske',                                                         // caption of setting in the backend
-            'text',                                                                                 // setting-type
-            572,                                                                                    // order-position
-            (object) [
+            'anonymize_ip_mask_v6',
+            'ffff:ffff:ffff:ffff:0000:0000:0000:0000',
+            CONF_GLOBAL,
+            'IPv6-Adress-Anonymisiermaske',
+            'text',
+            572,
+            (object)[
                 'cBeschreibung' => 'IP-Maske zum Anonymisieren der IP-Adressen von Besuchern<br>'.
                                    '(z.B.: 2001:0db8:85a3:08d3:1319:8a2e:0370:7347 wird zu 2001:db8:85a3:8d3:0:0:0:0)'
             ],
             true
         );
+        // remove the old "IPs speichern" settings (teinstellungenconf::kEinstellungenConf=335,1133)
+        $this->removeConfig('global_ips_speichern');
+        $this->removeConfig('bestellabschluss_ip_speichern');
+
 
         // setting up the cron-job in the cron-table
         $oCronDataProtection = $this->fetchArray('SELECT * FROM `tcron` WHERE `cJobArt` = "dataprotection"');
@@ -62,45 +67,34 @@ class Migration_20180827121117 extends Migration implements IMigration
                     VALUES(50, "", "dataprotection", 24, "", "", now(), "00:00:00", now())
             ');
         }
-
-        // remove the old "IPs speichern" settings (teinstellungenconf::kEinstellungenConf=335,1133)
-        // (these settings makes no more sense now)
-        $this->removeConfig('global_ips_speichern');
-        $this->removeConfig('bestellabschluss_ip_speichern');
-
-
-        // --TODO-- create our big anon-protocol-table ...
         // create the journal-table
         $this->execute('
             CREATE TABLE IF NOT EXISTS `tanondatajournal`(
-                  `kAnonDatenHistory` int(11) NOT NULL AUTO_INCREMENT
-                , `cTableSource` varchar(255) default "" comment "names the table in which the change took place"
-                , `cReason` varchar(255) default "" comment "describes the reason for the previous change"
-                , `cOldValue` text default "" comment "content, before the chenages are occured"
-                , `dEventTime` datetime default null comment "time of the event"
-                , PRIMARY KEY `kAnonDatenHistory`(`kAnonDatenHistory`)
+                `kAnonDatenHistory` int(11) NOT NULL AUTO_INCREMENT,
+                `cTableSource` varchar(255) default "" comment "names the table in which the change took place",
+                `cReason` varchar(255) default "" comment "describes the reason for the previous change",
+                `cOldValue` text default "" comment "content, before the chenages are occured",
+                `dEventTime` datetime default null comment "time of the event",
+                PRIMARY KEY `kAnonDatenHistory`(`kAnonDatenHistory`)
             )
             ENGINE=InnoDB
             DEFAULT CHARSET=utf8
         ');
-
     }
 
     public function down()
     {
         // remove the journal-table
         $this->execute('DROP TABLE `tanondatajournal`');
-
         // remove new settings
         $this->removeConfig('anonymize_ip_mask_v4');
         $this->removeConfig('anonymize_ip_mask_v6');
-
         // remove the cron-job from the cron-table
         $oCronDataProtection = $this->fetchArray('SELECT * FROM `tcron` WHERE `cJobArt` = "dataprotection"');
         $this->execute('DELETE FROM `tcron` WHERE `kCron` = "'.$oCronDataProtection[0]['kCron'].'"');
 
+
         // restore the old "IPs speichern" settings (teinstellungenconf::kEinstellungenConf=335,1133)
-        // (these settings makes no more sense now)
         $this->execute('
             INSERT INTO `teinstellungenconf` VALUES
                 (335, 1, "IP-Adresse bei Bestellung mitspeichern", "Soll die IP-Adresse des Kunden in der Datenbank gespeichert werden, wenn er eine Bestellung abschliesst?", "bestellabschluss_ip_speichern", "selectbox", NULL, 554, 1, 0, "Y"),
@@ -113,6 +107,5 @@ class Migration_20180827121117 extends Migration implements IMigration
                 ("1133","Ja","Y","1"),
                 ("1133","Nein","N","2")
         ');
-
     }
 }

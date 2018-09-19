@@ -17,11 +17,17 @@ namespace GeneralDataProtection;
  */
 class CleanupNewsletterRecipients extends Method implements MethodInterface
 {
+    /**
+     * @var string
+     */
     protected $szReason = 'cleanup_newsletter_recipients';
 
+    /**
+     * runs all anonymize-routines
+     */
     public function execute()
     {
-        //$this->clean_tnewsletter();
+        $this->clean_tnewsletter();
     }
 
     private function clean_tnewsletter()
@@ -56,13 +62,12 @@ class CleanupNewsletterRecipients extends Method implements MethodInterface
             'cOptIp'                       => null,
             'dAusgetragen'                 => 1,
             'dEingetragen'                 => null,
-            'dOptCode'                     => null,
+            'dOptCode'                     => null
         ];
 
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
-        $vUseFileds = $this->selectFields($vTableFields);
-        // select all the data from the DB
+        $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM `tnewsletterempfaenger` e
                 JOIN `tnewsletterempfaengerhistory` h ON h.`cOptCode` = e.`cOptCode` AND h.`cEmail` = e.`cEmail`
@@ -74,20 +79,17 @@ class CleanupNewsletterRecipients extends Method implements MethodInterface
             [],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        if (!is_array($vResult)) {
-            // "no data, no operation"
+        if (!\is_array($vResult)) {
             return;
         }
-        // save parts of the old values in the changes-journal..
-        $this->saveToJournal('tbesucher', $vUseFileds, $vResult);
-        // anonymize the original data
+        $this->saveToJournal('tbesucher', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE e, h
                 FROM `tnewsletterempfaenger` e
                    INNER JOIN `tnewsletterempfaengerhistory` h ON h.`cOptCode` = e.`cOptCode` AND h.`cEmail` = e.`cEmail`
                 WHERE
-                   e.`cOptCode` = "ba655612efd7d5ddc8bc7b15b0a5888d"',
-                [],
+                   e.`cOptCode` = pOpCode',
+                ['pOpCode' => $oResult->cOptCode],
                 \DB\ReturnType::AFFECTED_ROWS
             );
         }

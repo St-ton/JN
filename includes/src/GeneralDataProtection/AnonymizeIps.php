@@ -26,8 +26,14 @@ namespace GeneralDataProtection;
  */
 class AnonymizeIps extends Method implements MethodInterface
 {
+    /**
+     * @var string
+     */
     protected $szReason = 'anonymize_IPs_older_than_one_year';
 
+    /**
+     * @var array
+     */
     private $vTablesUpdate = [
           'tbestellung' => [
             'ColKey'     => 'kBestellung',
@@ -92,6 +98,9 @@ class AnonymizeIps extends Method implements MethodInterface
     ];
 
     // tables to truncate   (not yet implemented)
+    /**
+     * @var array
+     */
     private $vTablesClear = [
         'tfsession'
     ];
@@ -103,13 +112,10 @@ class AnonymizeIps extends Method implements MethodInterface
     public function execute()
     {
         foreach ($this->vTablesUpdate as $szTableName => $vTable) {
-            // --DEVELOPMENT-- NOTE: here we can do other things beside "look one year forward"
             $voTableData = $this->readOlderThanOneYaer($szTableName, $vTable['ColKey'], $vTable['ColIp'], $vTable['ColCreated']);
 
-            if (is_array($voTableData) && 0 < count($voTableData)) {
-                // saves all vars of appropriate object to the journal
+            if (\is_array($voTableData) && 0 < \count($voTableData)) {
                 $this->saveToJournal($szTableName, get_object_vars($voTableData[0]), $voTableData);
-                // anonymize each given table
                 foreach ($voTableData as $oRow) {
                     $oRow->cIP = (new IpAnonymizer($oRow->cIP))->anonymize();
                     \Shop::Container()->getDB()->update($szTableName, $vTable['ColKey'], (int)$oRow->kBestellung, $oRow);
@@ -134,7 +140,7 @@ class AnonymizeIps extends Method implements MethodInterface
     private function readOlderThanOneYaer(string $szTableName, string $szColKey, string $szColIp, string $szColCreated)
     {
         // NOTE: queryPrepared() is not possible here!
-        // (a RDBMS canot prepare a execution-plan with variable table-names)
+        // (a RDBMS can not prepare a execution-plan with variable table-names)
         return \Shop::Container()->getDB()->query('SELECT
                       `' . $szColKey . '`
                     , `' . $szColIp . '`

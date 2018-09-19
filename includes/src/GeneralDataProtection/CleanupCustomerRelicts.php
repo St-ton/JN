@@ -23,8 +23,14 @@ namespace GeneralDataProtection;
  */
 class CleanupCustomerRelicts extends Method implements MethodInterface
 {
+    /**
+     * @var string
+     */
     protected $szReason  = 'anonymize_orphaned_ratings';
 
+    /**
+     * runs all anonymize-routines
+     */
     public function execute()
     {
         $this->del_tbesucher();
@@ -65,8 +71,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
 
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
-        $vUseFileds = $this->selectFields($vTableFields);
-        // select all the data from the DB
+        $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM `tbesucher`
             WHERE
@@ -76,13 +81,10 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             ['pInterval' => $this->iInterval],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        if (!is_array($vResult)) {
-            // "no data, no operation"
+        if (!\is_array($vResult)) {
             return;
         }
-        // save parts of the old values in the changes-journal..
-        $this->saveToJournal('tbesucher', $vUseFileds, $vResult);
-        // anonymize the original data
+        $this->saveToJournal('tbesucher', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tbesucher`
                 WHERE
@@ -99,9 +101,6 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function del_tbesucherarchiv()
     {
-        // CUSTOMIZABLE:
-        // table fields, which we want to save in the journal (before they would change)
-        // (null = don't save in journal, '1' = save in journal)
         $vTableFields = [
             'kBesucher'       => null,
             'cIP'             => null,
@@ -118,8 +117,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
 
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
-        $vUseFileds = $this->selectFields($vTableFields);
-        // select all the data from the DB
+        $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM `tbesucherarchiv`
             WHERE
@@ -129,13 +127,10 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             ['pInterval' => $this->iInterval],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        if (!is_array($vResult)) {
-            // "no data, no operation"
+        if (!\is_array($vResult)) {
             return;
         }
-        // save parts of the old values in the changes-journal..
-        $this->saveToJournal('tbesucherarchiv', $vUseFileds, $vResult);
-        // anonymize the original data
+        $this->saveToJournal('tbesucherarchiv', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tbesucherarchiv`
                 WHERE
@@ -153,9 +148,6 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function del_tkundenwerbenkunden()
     {
-        // CUSTOMIZABLE:
-        // table fields, which we want to save in the journal (before they would change)
-        // (null = don't save in journal, '1' = save in journal)
         $vTableFields = [
             'kKundenWerbenKunden' => null,
             'kKunde'              => 1,
@@ -173,8 +165,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
 
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
-        $vUseFileds = $this->selectFields($vTableFields);
-        // select all the data from the DB
+        $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT
                 k.*,
                 b.`fGuthaben` AS "_bonus_fGuthaben",
@@ -190,13 +181,10 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             ['pInterval' => $this->iInterval],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        if (!is_array($vResult)) {
-            // "no data, no operation"
+        if (!\is_array($vResult)) {
             return;
         }
-        // save parts of the old values in the changes-journal..
-        $this->saveToJournal('tkundenwerbenkunden,tkundenwerbenkundenbonus', $vUseFileds, $vResult);
-        // ..and anon the orignal
+        $this->saveToJournal('tkundenwerbenkunden,tkundenwerbenkundenbonus', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
             // delete each "kKunde", in multiple tables, in one shot
             \Shop::Container()->getDB()->queryPrepared('DELETE `tkundenwerbenkunden`, `tkundenwerbenkundenbonus`
@@ -218,9 +206,6 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function del_tkundenattribut()
     {
-        // CUSTOMIZABLE:
-        // table fields, which we want to save in the journal (before they would change)
-        // (null = don't save in journal, '1' = save in journal)
         $vTableFields = [
             'kKundenAttribut' => null,
             'kKunde'          => 1,
@@ -231,25 +216,23 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
 
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
-        $vUseFileds = $this->selectFields($vTableFields);
-        // select all the data from the DB
+        $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM `tkundenattribut`
             WHERE
-                kKunde NOT IN (SELECT kKunde FROM tkunde)'
+                kKunde NOT IN (SELECT kKunde FROM tkunde)',
+            [],
+            \DB\ReturnType::AFFECTED_ROWS
         );
-        if (!is_array($vResult)) {
-            // "no data, no operation"
+        if (!\is_array($vResult)) {
             return;
         }
-        // save parts of the old values in the changes-journal..
-        $this->saveToJournal('tkundenattribut', $vUseFileds, $vResult);
-        // ..and anon the orignal
+        $this->saveToJournal('tkundenattribut', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
             $nEffected = \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tkundenattribut`
                 WHERE
                     kKundenAttribut = :pKeykKundenAttribut',
-                ['pKeykKundenAttribut' => $vResult->kKundenAttribut],
+                ['pKeykKundenAttribut' => $oResult->kKundenAttribut],
                 \DB\ReturnType::AFFECTED_ROWS
             );
         }
@@ -261,9 +244,6 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function del_tzahlungsinfo()
     {
-        // CUSTOMIZABLE:
-        // table fields, which we want to save in the journal (before they would change)
-        // (null = don't save in journal, '1' = save in journal)
         $vTableFields = [
             'kZahlungsInfo'     => null,
             'kBestellung'       => 1,
@@ -284,8 +264,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
 
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
-        $vUseFileds = $this->selectFields($vTableFields);
-        // select all the data from the DB
+        $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM `tzahlungsinfo`
             WHERE
@@ -294,13 +273,10 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             [],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        if (!is_array($vResult)) {
-            // "no data, no operation"
+        if (!\is_array($vResult)) {
             return;
         }
-        // save parts of the old values in the changes-journal..
-        $this->saveToJournal('tzahlungsinfo', $vUseFileds, $vResult);
-        // ..and anon the orignal
+        $this->saveToJournal('tzahlungsinfo', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
             $nEffected = \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tzahlungsinfo`
                 WHERE
@@ -317,24 +293,20 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function del_tkundenkontodaten()
     {
-        // CUSTOMIZABLE:
-        // table fields, which we want to save in the journal (before they would change)
-        // (null = don't save in journal, '1' = save in journal)
         $vTableFields = [
             'kKundenKontodaten' => null,
-            'kKunde'            => null,
+            'kKunde'            => 1,
             'cBLZ'              => null,
             'nKonto'            => null,
-            'cInhaber'          => null,
-            'cBankName'         => null,
-            'cIBAN'             => null,
+            'cInhaber'          => 1,
+            'cBankName'         => 1,
+            'cIBAN'             => 1,
             'cBIC'              => null
         ];
 
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
-        $vUseFileds = $this->selectFields($vTableFields);
-        // select all the data from the DB
+        $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM `tkundenkontodaten`
             WHERE
@@ -343,13 +315,10 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             [],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        if (!is_array($vResult)) {
-            // "no data, no operation"
+        if (!\is_array($vResult)) {
             return;
         }
-        // save parts of the old values in the changes-journal..
-        $this->saveToJournal('tkundenkontodaten', $vUseFileds, $vResult);
-        // ..and anon the orignal
+        $this->saveToJournal('tkundenkontodaten', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
             $nEffected = \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tkundenkontodaten`
                 WHERE
@@ -366,9 +335,6 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function del_tlieferadresse()
     {
-        // CUSTOMIZABLE:
-        // table fields, which we want to save in the journal (before they would change)
-        // (null = don't save in journal, '1' = save in journal)
         $vTableFields = [
             'kLieferadresse' => null,
             'kKunde'         => 1,
@@ -393,8 +359,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
 
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
-        $vUseFileds = $this->selectFields($vTableFields);
-        // select all the data from the DB
+        $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM `tlieferadresse` k
                 JOIN `tbestellung` b ON b.`kKunde` = k.`kKunde`
@@ -405,13 +370,10 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             [],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        if (!is_array($vResult)) {
-            // "no data, no operation"
+        if (!\is_array($vResult)) {
             return;
         }
-        // save parts of the old values in the changes-journal..
-        $this->saveToJournal('tlieferadresse', $vUseFileds, $vResult);
-        // ..and anon the orignal
+        $this->saveToJournal('tlieferadresse', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tlieferadresse`
                 WHERE
@@ -428,9 +390,6 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function del_trechnungsadresse()
     {
-        // CUSTOMIZABLE:
-        // table fields, which we want to save in the journal (before they would change)
-        // (null = don't save in journal, '1' = save in journal)
         $vTableFields = [
             'kRechnungsadresse' => null,
             'kKunde'            => 1,
@@ -457,8 +416,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
 
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
-        $vUseFileds = $this->selectFields($vTableFields);
-        // select all the data from the DB
+        $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM `trechnungsadresse` k
                 JOIN `tbestellung` b ON b.`kKunde` = k.`kKunde`
@@ -469,13 +427,10 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             [],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        if (!is_array($vResult)) {
-            // "no data, no operation"
+        if (!\is_array($vResult)) {
             return;
         }
-        // save parts of the old values in the changes-journal..
-        $this->saveToJournal('trechnungsadresse', $vUseFileds, $vResult);
-        // ..and anon the orignal
+        $this->saveToJournal('trechnungsadresse', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE FROM `trechnungsadresse`
                 WHERE

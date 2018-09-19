@@ -9,14 +9,23 @@ namespace GeneralDataProtection;
 class Method
 {
     /**
-     * @var DateTime-object
      * object-wide date at the point of instanciating
+     *
+     * @var object DateTime
      */
-    protected $oNow      = null;
+    protected $oNow;
 
     /**
-     * @var int
+     * descriptive string for journal-purposes
+     *
+     * @var string
+     */
+    protected $szReason;
+
+    /**
      * interval in "number of days"
+     *
+     * @var int
      */
     protected $iInterval = 0;
 
@@ -41,12 +50,12 @@ class Method
             // save the old values
             $vFields   = array_intersect_key(get_object_vars($oRow), $vUsedFields);
             $szRowData = json_encode($vFields);
-            if ('' !== $szValueLine) {
+            if ($szValueLine !== '') {
                 $szValueLine .= ',';
             }
             $szValueLine .= '(\'' . $szTableName . '\',\'' . $this->szReason . '\',\'' . $szRowData . '\',\'' . $this->oNow->format('Y-m-d H:i:s') . '\')';
 
-            if (1999 === $nRowCount) {
+            if ($nRowCount === 1999) {
                 $vResult = \Shop::Container()->getDB()->queryPrepared(
                     'INSERT INTO `tanondatajournal`(`cTableSource`,`cReason`,`cOldValue`,`dEventTime`) VALUES' . $szValueLine,
                     [],
@@ -58,7 +67,7 @@ class Method
             }
             $nRowCount++;
         }
-        if (0 <= $nRowCount) {
+        if ($nRowCount >= 0) {
             $vResult = \Shop::Container()->getDB()->queryPrepared(
                 'INSERT INTO `tanondatajournal`(`cTableSource`,`cReason`,`cOldValue`,`dEventTime`) VALUES' . $szValueLine,
                 [],
@@ -79,7 +88,7 @@ class Method
         return array_filter(
             $vTableFields,
             function ($val) {
-                return $val != null;
+                return $val !== null;
             }
         );
     }

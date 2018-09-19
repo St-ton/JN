@@ -16,8 +16,14 @@ namespace GeneralDataProtection;
  */
 class CleanupOldGuestAccounts extends Method implements MethodInterface
 {
+    /**
+     * @var string
+     */
     protected $szReason = 'cleanup_old_geust_accounts';
 
+    /**
+     * runs all anonymize-routines
+     */
     public function execute()
     {
         $this->clean_tkunde();
@@ -61,13 +67,12 @@ class CleanupOldGuestAccounts extends Method implements MethodInterface
             'cAktiv'         => 1,
             'cAbgeholt'      => null,
             'nRegistriert'   => null,
-            'nLoginversuche' => null,
+            'nLoginversuche' => null
         ];
 
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
-        $vUseFileds = $this->selectFields($vTableFields);
-        // select all the data from the DB
+        $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM `tkunde` e
             WHERE
@@ -77,13 +82,10 @@ class CleanupOldGuestAccounts extends Method implements MethodInterface
             ['pInterval' => $this->iInterval],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        if (!is_array($vResult)) {
-            // "no data, no operation"
+        if (!\is_array($vResult)) {
             return;
         }
-        // save parts of the old values in the changes-journal..
-        $this->saveToJournal('tkunde', $vUseFileds, $vResult);
-        // anonymize the original data
+        $this->saveToJournal('tkunde', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tkunde`
                 WHERE kKunde = pKeyKunde',

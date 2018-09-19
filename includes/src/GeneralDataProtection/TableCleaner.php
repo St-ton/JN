@@ -17,13 +17,17 @@ namespace GeneralDataProtection;
 class TableCleaner
 {
     /**
-     * @var DateTime
      * object-wide date at the point of instanciating
+     *
+     * @var object DateTime
      */
     private $oNow = null;
 
     /**
      * anonymize-methods
+     * (NOTE: the order of this methods is not insignificant and can be configured)
+     *
+     * @var array
      */
     private $vMethodes = [
         'AnonymizeIps'                       => Intervals::vTIMERS['INTERVAL_DAYS_365']
@@ -35,6 +39,11 @@ class TableCleaner
         'CleanupOldGuestAccounts'            => Intervals::vTIMERS['INTERVAL_DAYS_365']
     ];
 
+    /**
+     * @var object Monolog\Logger
+     */
+    private $oLogger;
+
     public function __construct()
     {
         // set the "now" of this object
@@ -43,10 +52,15 @@ class TableCleaner
 
     public function execute()
     {
-        foreach ($this->vMethodes as $szMethod => $iTiming) {
-            $szMethodName = __NAMESPACE__ . '\\' . $szMethod;
-            (new $szMethodName($this->oNow, $iTiming))->execute(); 
+        $t_start = microtime(true); // runtime-measurement
+        $nMethodsCount = \count($this->vMethodes);
+        for ($i=0; $i < $nMethodsCount ; $i++) {
+            $szMethodName = __NAMESPACE__ . '\\' . $this->vMethodes[$i]['szName'];
+            $this->oLogger->log(JTLLOG_LEVEL_NOTICE, 'Anonymize Method running: ' . $this->vMethodes[$i]['szName']);
+            (new $szMethodName($this->oNow, $this->vMethodes[$i]['nIntervalDays']))->execute();
         }
+        $t_elapsed = microtime(true) - $t_start; // runtime-measurement
+        $this->oLogger->log(JTLLOG_LEVEL_NOTICE, 'Anonymizing was finished in: ' . sprintf('%01.4fs', $t_elapsed));
     }
 
     public function __destruct()

@@ -24,8 +24,14 @@ namespace GeneralDataProtection;
  */
 class CleanupLogs extends Method implements MethodInterface
 {
+    /**
+     * @var string
+     */
     protected $szReason = 'cleanup_logs';
 
+    /**
+     * runs all anonymize-routines
+     */
     public function execute()
     {
         $this->clean_temailhistory();
@@ -58,21 +64,17 @@ class CleanupLogs extends Method implements MethodInterface
 
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
-        $vUseFileds = $this->selectFields($vTableFields);
-        // select all the data from the DB
+        $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM `temailhistory` e
             WHERE `dSent` <= (NOW() - INTERVAL ' . $this->iInterval . ' DAY)',
             [],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        if (!is_array($vResult)) {
-            // "no data, no operation"
+        if (!\is_array($vResult)) {
             return;
         }
-        // save parts of the old values in the changes-journal..
-        $this->saveToJournal('temailhistory', $vUseFileds, $vResult);
-        // anonymize the original data
+        $this->saveToJournal('temailhistory', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE FROM temailhistory
                 WHERE kEmailhistory = :pKeyEmailhistory',
@@ -107,21 +109,17 @@ class CleanupLogs extends Method implements MethodInterface
 
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
-        $vUseFileds = $this->selectFields($vTableFields);
-        // select all the data from the DB
+        $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM `tkontakthistory` e
             WHERE `dErstellt` <= (NOW() - INTERVAL ' . $this->iInterval . ' DAY)',
             [],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        if (!is_array($vResult)) {
-            // "no data, no operation"
+        if (!\is_array($vResult)) {
             return;
         }
-        // save parts of the old values in the changes-journal..
-        $this->saveToJournal('tkontakthistory', $vUseFileds, $vResult);
-        // anonymize the original data
+        $this->saveToJournal('tkontakthistory', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tkontakthistory`
                 WHERE kKontaktHistory = pKeyKontaktHistory',
@@ -151,21 +149,17 @@ class CleanupLogs extends Method implements MethodInterface
 
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
-        $vUseFileds = $this->selectFields($vTableFields);
-        // select all the data from the DB
+        $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM `tkundenwerbenkunden` e
             WHERE `dErstellt` <= (NOW() - INTERVAL ' . $this->iInterval . ' DAY)',
             [],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        if (!is_array($vResult)) {
-            // "no data, no operation"
+        if (!\is_array($vResult)) {
             return;
         }
-        // save parts of the old values in the changes-journal..
-        $this->saveToJournal('tkundenwerbenkunden', $vUseFileds, $vResult);
-        // anonymize the original data
+        $this->saveToJournal('tkundenwerbenkunden', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE `tkundenwerbenkunden`
                 WHERE kKundenWerbenKunden = pKeyKundenWerbenKunden',
@@ -192,21 +186,17 @@ class CleanupLogs extends Method implements MethodInterface
 
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
-        $vUseFileds = $this->selectFields($vTableFields);
-        // select all the data from the DB
+        $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM `tzahlungslog` e
             WHERE `dDatum` <= (NOW() - INTERVAL ' . $this->iInterval . ' DAY)',
             [],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        if (!is_array($vResult)) {
-            // "no data, no operation"
+        if (!\is_array($vResult)) {
             return;
         }
-        // save parts of the old values in the changes-journal..
-        $this->saveToJournal('tzahlungslog', $vUseFileds, $vResult);
-        // anonymize the original data
+        $this->saveToJournal('tzahlungslog', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tzahlungslog`
                 WHERE kZahlunglog = pKeyZahlunglog',
@@ -241,21 +231,17 @@ class CleanupLogs extends Method implements MethodInterface
 
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
-        $vUseFileds = $this->selectFields($vTableFields);
-        // select all the data from the DB
+        $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM `tproduktanfragehistory` e
             WHERE `dErstellt` <= (NOW() - INTERVAL ' . $this->iInterval . ' DAY)',
             [],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        if (!is_array($vResult)) {
-            // "no data, no operation"
+        if (!\is_array($vResult)) {
             return;
         }
-        // save parts of the old values in the changes-journal..
-        $this->saveToJournal('tproduktanfragehistory', $vUseFileds, $vResult);
-        // anonymize the original data
+        $this->saveToJournal('tproduktanfragehistory', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tproduktanfragehistory`
                 WHERE kProduktanfrageHistory = pKeyProduktanfrageHistory',
@@ -287,21 +273,17 @@ class CleanupLogs extends Method implements MethodInterface
 
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
-        $vUseFileds = $this->selectFields($vTableFields);
-        // select all the data from the DB
+        $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM `tverfuegbarkeitsbenachrichtigung` e
             WHERE `dErstellt` <= (NOW() - INTERVAL ' . $this->iInterval . ' DAY)',
             [],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        if (!is_array($vResult)) {
-            // "no data, no operation"
+        if (!\is_array($vResult)) {
             return;
         }
-        // save parts of the old values in the changes-journal..
-        $this->saveToJournal('tverfuegbarkeitsbenachrichtigung', $vUseFileds, $vResult);
-        // anonymize the original data
+        $this->saveToJournal('tverfuegbarkeitsbenachrichtigung', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tverfuegbarkeitsbenachrichtigung`
                 WHERE kVerfuegbarkeitsbenachrichtigung = pKeyVerfuegbarkeitsbenachrichtigung',
@@ -328,16 +310,14 @@ class CleanupLogs extends Method implements MethodInterface
 
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
-        $vUseFileds = $this->selectFields($vTableFields);
-        // select all the data from the DB
+        $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM `tjtllog` e
             WHERE `dErstellt` <= (NOW() - INTERVAL ' . $this->iInterval . ' DAY)',
             [],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        if (!is_array($vResult)) {
-            // "no data, no operation"
+        if (!\is_array($vResult)) {
             return;
         }
         foreach ($vResult as $oResult) {
@@ -371,21 +351,17 @@ class CleanupLogs extends Method implements MethodInterface
 
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
-        $vUseFileds = $this->selectFields($vTableFields);
-        // select all the data from the DB
+        $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM `tzahlungseingang` e
             WHERE `cAbgeholt` <= (NOW() - INTERVAL ' . $this->iInterval . ' DAY)',
             [],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        if (!is_array($vResult)) {
-            // "no data, no operation"
+        if (!\is_array($vResult)) {
             return;
         }
-        // save parts of the old values in the changes-journal..
-        $this->saveToJournal('tzahlungseingang', $vUseFileds, $vResult);
-        // anonymize the original data
+        $this->saveToJournal('tzahlungseingang', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tzahlungseingang`
                 WHERE kZahlungseingang = pKeyZahlungseingang',
@@ -411,22 +387,20 @@ class CleanupLogs extends Method implements MethodInterface
 
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
-        $vUseFileds = $this->selectFields($vTableFields);
-        // select all the data from the DB
+        $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM `tkundendatenhistory`
             WHERE `dErstellt` <= LAST_DAY(DATE_ADD(NOW() - INTERVAL 2 YEAR, INTERVAL 12 - MONTH(NOW()) MONTH))',
             [],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        if (!is_array($vResult)) {
-            // "no data, no operation"
+        if (!\is_array($vResult)) {
             return;
         }
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tkundendatenhistory`
                 WHERE kKundendatenHistory = .pKeyKundendatenHistory',
-                ['pKeyKundendatenHistory' => $vResult->kKundendatenHistory],
+                ['pKeyKundendatenHistory' => $oResult->kKundendatenHistory],
                 \DB\ReturnType::AFFECTED_ROWS
             );
         }

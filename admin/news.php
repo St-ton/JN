@@ -59,7 +59,8 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
                 if (strlen($_POST['praefix_' . $lang->cISO]) > 0) {
                     $monthPrefix->cPraefix = htmlspecialchars(
                         $_POST['praefix_' . $lang->cISO],
-                        ENT_COMPAT | ENT_HTML401, JTL_CHARSET
+                        ENT_COMPAT | ENT_HTML401,
+                        JTL_CHARSET
                     );
                 } else {
                     $monthPrefix->cPraefix = $lang->cISO === 'ger'
@@ -153,8 +154,8 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
             if ($controller->deleteNewsImage(
                 RequestHelper::verifyGPDataString('delpic'),
                 (int)$_GET['kNewsKategorie'],
-                $uploadDirCat)
-            ) {
+                $uploadDirCat
+            )) {
                 $controller->setMsg('Ihr ausgewähltes Newsbild wurde erfolgreich gelöscht.');
             } else {
                 $controller->setErrorMsg('Fehler: Ihr ausgewähltes Newsbild konnte nicht gelöscht werden.');
@@ -166,8 +167,10 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
             if ($newsCategory->getID() > 0) {
                 $smarty->assign('oNewsKategorie', $newsCategory);
                 if (is_dir($uploadDirCat . $newsCategory->getID())) {
-                    $smarty->assign('oDatei_arr',
-                        $controller->getCategoryImages($newsCategory->getID(), $uploadDirCat));
+                    $smarty->assign(
+                        'oDatei_arr',
+                        $controller->getCategoryImages($newsCategory->getID(), $uploadDirCat)
+                    );
                 }
             } else {
                 $controller->setStep('news_uebersicht');

@@ -21,11 +21,6 @@ namespace GeneralDataProtection;
 class IpAnonymizer
 {
     /**
-     * @var array
-     */
-    private $vShopConf;
-
-    /**
      * IP-string, human readable
      *
      * @var string
@@ -44,14 +39,24 @@ class IpAnonymizer
      *
      * @var string
      */
-    private $szIpMask = '';
+    private $szIpMask;
+
+    /**
+     * @var string
+     */
+    private $szIpMaskv4;
+
+    /**
+     * @var string
+     */
+    private $szIpMaskv6;
 
     /**
      * current placholder (if the given IP was invalid)
      *
      * @var string
      */
-    private $szPlaceholderIP = '';
+    private $szPlaceholderIP;
 
     /**
      * flag for old fashioned anonymization ("do not anonymize again")
@@ -61,11 +66,23 @@ class IpAnonymizer
     private $bOldFashionedAnon = false;
 
 
-    public function __construct(string $szIP)
+    public function __construct(string $szIP = '')
     {
-        $this->szIP = $szIP;
+        $this->szIpMaskv4 = \Shop::getSettings([CONF_GLOBAL])['global']['anonymize_ip_mask_v4'];
+        $this->szIpMaskv6 = \Shop::getSettings([CONF_GLOBAL])['global']['anonymize_ip_mask_v6'];
 
-        if (strpos($this->szIP, '*') !== false || \strlen($this->szIP) < 1) {
+        if ($szIP !== '') {
+            $this->szIP = $szIP;
+            $this->init();
+        }
+    }
+
+    /**
+     * analyze the given IP and set the object-values
+     */
+    private function init()
+    {
+        if ($this->szIP === '' || strpos($this->szIP, '*') !== false) {
             // if there is an old fashioned anonymization or
             // an empty string, we do nothing (but set a flag)
             $this->bOldFashionedAnon = true;
@@ -74,12 +91,10 @@ class IpAnonymizer
         // any ':' means, we got an IPv6-address
         // ("::127.0.0.1" or "::ffff:127.0.0.3" is valid too!)
         if (strpos($this->szIP, ':') !== false) {
-            $this->bRawIp    = inet_pton($this->szIP);
+            $this->bRawIp = inet_pton($this->szIP);
         } else {
-            $this->bRawIp    = inet_pton($this->rmLeadingZero($this->szIP));
+            $this->bRawIp = inet_pton($this->rmLeadingZero($this->szIP));
         }
-        $this->vShopConf = \Shop::getSettings([CONF_GLOBAL]);
-
         switch (\strlen($this->bRawIp)) {
             case 4:
                 $this->szPlaceholderIP = '0.0.0.0';
@@ -132,6 +147,36 @@ class IpAnonymizer
     }
 
     /**
+     * @return string
+     */
+    public function getMaskV4(): string
+    {
+        return $this->szIpMaskv4;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMaskV6(): string
+    {
+        return $this->szIpMaskv6;
+    }
+
+    /**
+     * @param string
+     * @return self
+     * @throws \Exception
+     */
+    public function setIp(string $szIP = '')
+    {
+        if ($szIP !== '') {
+            $this->szIP = $szIP;
+            $this->init();
+        }
+        return $this;
+    }
+
+    /**
      * remove leading zeros from the ip-string
      * (by converting each part to integer)
      *
@@ -144,35 +189,5 @@ class IpAnonymizer
         $szGlue   = strpos($szIpString, '.') !== false ? '.' : ':';
         return implode($szGlue, array_map(function($e) {return (int)$e;}, $vIpParts));
     }
-
-    /**
-     * get the v4-mask from shop-config
-     *
-     * @return string
-     */
-    private function getMaskV4(): string
-    {
-        return $this->vShopConf['global']['anonymize_ip_mask_v4'];
-    }
-
-    /**
-     * get the v6-mask from shop-config
-     *
-     * @return string
-     */
-    private function getMaskV6(): string
-    {
-        return $this->vShopConf['global']['anonymize_ip_mask_v6'];
-    }
-
-
-    /**
-     * return a corresponding placeholder for "do not save any IP"
-     *
-     * @return string
-     */
-    public function getPlaceholder(): string
-    {
-        return $this->szPlaceholderIP;
-    }
 }
+

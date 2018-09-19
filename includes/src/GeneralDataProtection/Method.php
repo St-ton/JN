@@ -36,7 +36,7 @@ class Method
     }
 
     /**
-     * write the original data into the change-journal
+     * write the original data into the change-journal (`tanondatajournal`)
      *
      * @param string szTableName
      * @param array $vUsedFields
@@ -61,7 +61,6 @@ class Method
                     [],
                     \DB\ReturnType::AFFECTED_ROWS
                 );
-                // reset the row-counter and value-line
                 $nRowCount   = -1;
                 $szValueLine = '';
             }

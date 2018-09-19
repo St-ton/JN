@@ -7,6 +7,9 @@
 namespace GeneralDataProtection;
 
 /**
+ * clean up multiple tables at each run
+ * (normaly one times a day)
+ *
  * names of the tables, we manipulate:
  *
  * `tbesucher`
@@ -76,9 +79,8 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             FROM `tbesucher`
             WHERE
                 kKunde > 0
-                AND `kKunde` NOT IN (SELECT `kKunde` FROM `tkunde`)
-                AND date(`dZeit`) < date_sub(date(now()), INTERVAL :pInterval DAY)',
-            ['pInterval' => $this->iInterval],
+                AND `kKunde` NOT IN (SELECT `kKunde` FROM `tkunde`)',
+            [],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (!\is_array($vResult)) {
@@ -96,7 +98,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
     }
 
     /**
-     * delete visitors in the visitors-archive,
+     * delete visitors in the visitors-archive immediately (at each run of the cron),
      * without a valid customer-account
      */
     private function del_tbesucherarchiv()
@@ -122,9 +124,8 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             FROM `tbesucherarchiv`
             WHERE
                 kKunde > 0
-                AND kKunde NOT IN (SELECT kKunde FROM tkunde)
-                AND date(`dZeit`) < date_sub(date(now()), INTERVAL :pInterval DAY)',
-            ['pInterval' => $this->iInterval],
+                AND kKunde NOT IN (SELECT kKunde FROM tkunde)',
+            [],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (!\is_array($vResult)) {

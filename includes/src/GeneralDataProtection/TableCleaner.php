@@ -10,9 +10,6 @@ namespace GeneralDataProtection;
  * class TableCleaner
  * controller-class of shop-anonymization
  * ("Global Data Protection Rules", german: "DSGVO")
- *
- * New periods can be added in class "Intervals",
- * in the constants array "vTIMERS".
  */
 class TableCleaner
 {
@@ -30,13 +27,13 @@ class TableCleaner
      * @var array
      */
     private $vMethodes = [
-        'AnonymizeIps'                       => Intervals::vTIMERS['INTERVAL_DAYS_365']
-        'AnonymizeDeletedCustomer'           => Intervals::vTIMERS['INTERVAL_DAYS_7'],
-        'CleanupCustomerRelicts'             => Intervals::vTIMERS['INTERVAL_DAYS_0'],
-        'CleanupGuestAccountsWhithoutOrders' => Intervals::vTIMERS['INTERVAL_DAYS_0'],
-        'CleanupNewsletterRecipients'        => Intervals::vTIMERS['INTERVAL_DAYS_30'],
-        'CleanupLogs'                        => Intervals::vTIMERS['INTERVAL_DAYS_90'],
-        'CleanupOldGuestAccounts'            => Intervals::vTIMERS['INTERVAL_DAYS_365']
+        ['szName' => 'AnonymizeIps', 'nIntervalDays' => 365],
+        ['szName' => 'AnonymizeDeletedCustomer', 'nIntervalDays' => 7],
+        ['szName' => 'CleanupCustomerRelicts', 'nIntervalDays' => 0],
+        ['szName' => 'CleanupGuestAccountsWhithoutOrders', 'nIntervalDays' => 0],
+        ['szName' => 'CleanupNewsletterRecipients', 'nIntervalDays' => 30],
+        ['szName' => 'CleanupLogs', 'nIntervalDays' => 90],
+        ['szName' => 'CleanupOldGuestAccounts', 'nIntervalDays' => 365]
     ];
 
     /**

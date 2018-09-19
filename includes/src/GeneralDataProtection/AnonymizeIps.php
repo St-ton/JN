@@ -29,21 +29,23 @@ class AnonymizeIps extends Method implements MethodInterface
     /**
      * @var string
      */
-    protected $szReason = 'anonymize_IPs_older_than_one_year';
+    protected $szReason = 'anonymize_all_IPs';
 
     /**
      * @var array
      */
     private $vTablesUpdate = [
           'tbestellung' => [
-            'ColKey'     => 'kBestellung',
-            'ColIp'      => 'cIP',
-            'ColCreated' => 'dErstellt'
+            'ColKey'      => 'kBestellung',
+            'ColIp'       => 'cIP',
+            'ColCreated'  => 'dErstellt',
+            'saveInJournal' => 1
         ],
         'tbesucher' => [
             'ColKey'     => 'kBesucher',
             'ColIp'      => 'cIP',
-            'ColCreated' => 'dLetzteAktivitaet'
+            'ColCreated' => 'dLetzteAktivitaet',
+            'saveInJournal' => 1
         ],
         'tbesucherarchiv' => [
             'ColKey'     => 'kBesucher',
@@ -63,12 +65,14 @@ class AnonymizeIps extends Method implements MethodInterface
         'tredirectreferer' => [
             'ColKey'     => 'kRedirectReferer',
             'ColIp'      => 'cIP',
-            'ColCreated' => 'dDate'
+            'ColCreated' => 'dDate',
+            'saveInJournal' => 1
         ],
         'tsitemaptracker' => [
             'ColKey'     => 'kSitemapTracker',
             'ColIp'      => 'cIP',
-            'ColCreated' => 'dErstellt'
+            'ColCreated' => 'dErstellt',
+            'saveInJournal' => 1
         ],
         'tsuchanfragencache' => [
             'ColKey'     => 'kSuchanfrageCache',
@@ -78,22 +82,26 @@ class AnonymizeIps extends Method implements MethodInterface
         'ttagkunde' => [
             'ColKey'     => 'kTagKunde',
             'ColIp'      => 'cIP',
-            'ColCreated' => 'dZeit'
+            'ColCreated' => 'dZeit',
+            'saveInJournal' => 1
         ],
         'tumfragedurchfuehrung' => [
             'ColKey'     => 'kUmfrageDurchfuehrung',
             'ColIp'      => 'cIP',
-            'ColCreated' => 'dDurchgefuehrt'
+            'ColCreated' => 'dDurchgefuehrt',
+            'saveInJournal' => 1
         ],
         'tverfuegbarkeitsbenachrichtigung' => [
             'ColKey'     => 'kVerfuegbarkeitsbenachrichtigung',
             'ColIp'      => 'cIP',
-            'ColCreated' => 'dErstellt'
+            'ColCreated' => 'dErstellt',
+            'saveInJournal' => 1
         ],
         'tvergleichsliste' => [
             'ColKey'     => 'kVergleichsliste',
             'ColIp'      => 'cIP',
-            'ColCreated' => 'dDate'
+            'ColCreated' => 'dDate',
+            'saveInJournal' => 1
         ]
     ];
 
@@ -105,51 +113,56 @@ class AnonymizeIps extends Method implements MethodInterface
         'tfsession'
     ];
 
+    public function execute()
+    {
+        $this->anon_all_ips();
+    }
 
     /**
      * anonymize IPs in various tables
      */
-    public function execute()
+    public function anon_all_ips()
     {
-        foreach ($this->vTablesUpdate as $szTableName => $vTable) {
-            $voTableData = $this->readOlderThanOneYaer($szTableName, $vTable['ColKey'], $vTable['ColIp'], $vTable['ColCreated']);
+        $oAnonymizer = new IpAnonymizer();
+        $szIpMaskV4  = \Shop::getSettings([CONF_GLOBAL])['global']['anonymize_ip_mask_v4'];
+        $szIpMaskV6  = \Shop::getSettings([CONF_GLOBAL])['global']['anonymize_ip_mask_v6'];
+        $szIpMaskV4  = substr($szIpMaskV4, strpos($szIpMaskV4, '.0'), strlen($szIpMaskV4)-1);
+        $szIpMaskV6  = substr($szIpMaskV6, strpos($szIpMaskV6, ':0000'), strlen($szIpMaskV6)-1);
 
-            if (\is_array($voTableData) && 0 < \count($voTableData)) {
-                $this->saveToJournal($szTableName, get_object_vars($voTableData[0]), $voTableData);
-                foreach ($voTableData as $oRow) {
-                    $oRow->cIP = (new IpAnonymizer($oRow->cIP))->anonymize();
-                    \Shop::Container()->getDB()->update($szTableName, $vTable['ColKey'], (int)$oRow->kBestellung, $oRow);
+        foreach ($this->vTablesUpdate as $szTableName => $vTable) {
+            // select maximum 10,000 rows in one step!
+            // (if this script is running each day, we need some days
+            // to anonymize more than 10,000 data sets)
+            $vResult    = \Shop::Container()->getDB()->query(
+                'SELECT
+                    `' . $vTable['ColKey'] . '`,
+                    `' . $vTable['ColIp'] . '`,
+                    `' . $vTable['ColCreated'] . '`
+                FROM
+                    `' . $szTableName . '`
+                WHERE
+                    NOT INSTR(cIP, ".*") > 0
+                    AND NOT INSTR(cIP, "' . $szIpMaskV4 . '") > 0
+                    AND NOT INSTR(cIP, "' . $szIpMaskV6 . '") > 0
+                    AND `' . $vTable['ColCreated'] . '` <= NOW() - INTERVAL ' . $this->iInterval . ' DAY
+                ORDER BY
+                    ' . $vTable['ColCreated'] . ' ASC
+                LIMIT 10000',
+                \DB\ReturnType::ARRAY_OF_OBJECTS
+            );
+            if (\is_array($vResult) && 0 < \count($vResult)) {
+                if (isset($vTable['saveInJournal']) && $vTable['saveInJournal'] !== null) {
+                    $this->saveToJournal($szTableName, get_object_vars($vResult[0]), $vResult);
+                }
+                foreach ($vResult as $oRow) {
+                    $oRow->cIP = $oAnonymizer->setIp($oRow->cIP)->anonymize();
+                    $szKeyColName = $vTable['ColKey'];
+                    \Shop::Container()->getDB()->update($szTableName, $vTable['ColKey'], (int)$oRow->$szKeyColName, $oRow);
                 }
             }
         }
 
     }
 
-
-
-    /**
-     * looking for IPs in various tables,
-     * which has to be anonymized the end of the next year after there creation
-     *
-     * @param string $szTableName
-     * @param string $szColKey
-     * @param string $szColIp
-     * @param string $szColCreated
-     * @return array
-     */
-    private function readOlderThanOneYaer(string $szTableName, string $szColKey, string $szColIp, string $szColCreated)
-    {
-        // NOTE: queryPrepared() is not possible here!
-        // (a RDBMS can not prepare a execution-plan with variable table-names)
-        return \Shop::Container()->getDB()->query('SELECT
-                      `' . $szColKey . '`
-                    , `' . $szColIp . '`
-                    , `' . $szColCreated . '`
-                FROM
-                    `' . $szTableName . '`
-                WHERE
-                    `' . $szColCreated . '` <= LAST_DAY(DATE_ADD(NOW() - INTERVAL 2 YEAR, INTERVAL 12 - MONTH(NOW()) MONTH))'
-            , \DB\ReturnType::ARRAY_OF_OBJECTS);
-    }
-
 }
+

@@ -345,6 +345,11 @@ class Attribute extends BaseAttribute
                     $activeAndFilterIDs[] = $values;
                 }
             }
+            if ($this->productFilter->showChildProducts()) {
+                $articleFilter = '(innerArticle.kVaterArtikel > 0 OR innerArticle.nIstVater = 0)';
+            } else {
+                $articleFilter = 'innerArticle.kVaterArtikel = 0';
+            }
             if (\count($activeAndFilterIDs) > 0) {
                 $state->addJoin((new Join())
                     ->setComment('join active AND filters from ' . __METHOD__)
@@ -359,14 +364,17 @@ class Attribute extends BaseAttribute
                     ->setOrigin(__CLASS__));
             }
             if (\count($activeOrFilterIDs) > 0) {
-                $state->addSelect('IF(tartikel.kArtikel IN (SELECT im1.kArtikel
+                $state->addSelect('IF(EXISTS (SELECT 1
                              FROM tartikelmerkmal AS im1
-                                WHERE im1.kMerkmalWert IN (' . \implode(', ',
+                             INNER JOIN tartikel AS innerArticle ON innerArticle.kArtikel = im1.kArtikel
+                                WHERE ' . $articleFilter . ' AND im1.kMerkmalWert IN (' . \implode(', ',
                         \array_merge($activeOrFilterIDs, ['tartikelmerkmal.kMerkmalWert'])) . ')
-                             GROUP BY im1.kArtikel
+                                    AND im1.kArtikel = tartikel.kArtikel
+                             GROUP BY innerArticle.kArtikel
                              HAVING COUNT(im1.kArtikel) = (SELECT COUNT(DISTINCT im2.kMerkmal)
                                                            FROM tartikelmerkmal im2
-                                                           WHERE im2.kMerkmalWert IN
+                                                           INNER JOIN tartikel AS innerArticle ON innerArticle.kArtikel = im2.kArtikel
+                                                           WHERE ' . $articleFilter . ' AND im2.kMerkmalWert IN
                                                                  (' . \implode(', ', \array_merge($activeOrFilterIDs,
                         ['tartikelmerkmal.kMerkmalWert'])) . '))), tartikel.kArtikel, NULL) AS kArtikel');
             } else {

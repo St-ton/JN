@@ -320,7 +320,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($oItem_arr as &$oItem) {
-                $kKonfigitem = $oItem->kKonfigitem;
+                $kKonfigitem = (int)$oItem->kKonfigitem;
                 $oItem       = new self($kKonfigitem);
                 if ($oItem->isValid()) {
                     $oItemEx_arr[] = $oItem;

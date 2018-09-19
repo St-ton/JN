@@ -6,7 +6,6 @@
 
 namespace JTL;
 
-
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use Session\Session;

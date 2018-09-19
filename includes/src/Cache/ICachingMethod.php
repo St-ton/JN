@@ -6,7 +6,6 @@
 
 namespace Cache;
 
-
 /**
  * Interface ICachingMethod
  * @package Cache

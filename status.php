@@ -31,7 +31,7 @@ if (strlen($_GET['uid']) === 40) {
         header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 303);
         exit;
     }
-    $bestellung = (new Bestellung($status->kBestellung))->fuelleBestellung();
+    $bestellung = new Bestellung($status->kBestellung, true);
     $smarty->assign('Bestellung', $bestellung)
            ->assign('Kunde', new Kunde($bestellung->kKunde))
            ->assign('Lieferadresse', $bestellung->Lieferadresse);

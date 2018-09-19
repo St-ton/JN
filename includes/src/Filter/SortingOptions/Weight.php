@@ -6,7 +6,6 @@
 
 namespace Filter\SortingOptions;
 
-
 use Filter\ProductFilter;
 
 /**
@@ -16,13 +15,13 @@ use Filter\ProductFilter;
 class Weight extends AbstractSortingOption
 {
     /**
-     * SortDefault constructor.
+     * Weight constructor.
      * @param ProductFilter $productFilter
      */
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->orderBy = 'tartikel.fGewicht, tartikel.cName';
+        $this->setOrderBy('tartikel.fGewicht, tartikel.cName');
         $this->setName(\Shop::Lang()->get('sortWeight'));
         $this->setPriority($this->getConfig('artikeluebersicht')['suche_sortierprio_gewicht']);
         $this->setValue(\SEARCH_SORT_WEIGHT);

@@ -124,7 +124,7 @@ if (auth()) {
                 $xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cStrasse'] .= ' ' . trim($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cHausnummer']);
             }
             //Trim Konkatenation
-            $xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cStrasse'] = trim($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cStrasse']);
+            $xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cStrasse'] = trim($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cStrasse'] ?? '');
             unset($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cHausnummer']);
 
             $oRechnungsadresse        = new Rechnungsadresse($xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kRechnungsadresse']);

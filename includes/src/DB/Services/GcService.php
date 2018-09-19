@@ -6,7 +6,6 @@
 
 namespace DB\Services;
 
-
 use DB\DbInterface;
 
 /**

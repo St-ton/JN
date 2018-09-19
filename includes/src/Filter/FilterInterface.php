@@ -6,7 +6,6 @@
 
 namespace Filter;
 
-
 /**
  * Interface FilterInterface
  * @package Filter

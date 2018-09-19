@@ -45,6 +45,10 @@ class Visitor
                 \DB\ReturnType::AFFECTED_ROWS
             );
         } else {
+            $oVisitor->kBesucher    = (int)$oVisitor->kBesucher;
+            $oVisitor->kKunde       = (int)$oVisitor->kKunde;
+            $oVisitor->kBestellung  = (int)$oVisitor->kBestellung;
+            $oVisitor->kBesucherBot = (int)$oVisitor->kBesucherBot;
             // prevent counting internal redirects by counting only the next request above 3 seconds
             $iTimeDiff = (new DateTime())->getTimestamp() - (new DateTime($oVisitor->dLetzteAktivitaet))->getTimestamp();
             if ($iTimeDiff > 2) {

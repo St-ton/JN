@@ -6,7 +6,6 @@
 
 namespace Filter;
 
-
 use MyCLabs\Enum\Enum;
 
 /**

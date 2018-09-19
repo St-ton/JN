@@ -376,7 +376,7 @@ class Bestellung
         }
 
         if (isset($this->nLongestMinDelivery, $this->nLongestMaxDelivery)) {
-            $this->setEstimatedDelivery($this->nLongestMinDelivery, $this->nLongestMaxDelivery);
+            $this->setEstimatedDelivery((int)$this->nLongestMinDelivery, (int)$this->nLongestMaxDelivery);
             unset($this->nLongestMinDelivery, $this->nLongestMaxDelivery);
         } else {
             $this->setEstimatedDelivery();
@@ -386,13 +386,13 @@ class Bestellung
     }
 
     /**
-     * @param int $htmlWaehrung
-     * @param int $nZahlungExtern
+     * @param bool $htmlWaehrung
+     * @param int  $nZahlungExtern
      * @param bool $bArtikel
      * @param bool $disableFactor - @see #8544, hack to avoid applying currency factor twice
      * @return $this
      */
-    public function fuelleBestellung($htmlWaehrung = 1, $nZahlungExtern = 0, $bArtikel = true, $disableFactor = false): self
+    public function fuelleBestellung(bool $htmlWaehrung = true, $nZahlungExtern = 0, $bArtikel = true, $disableFactor = false): self
     {
         if (!($this->kWarenkorb > 0 || $nZahlungExtern > 0)) {
             return $this;
@@ -478,7 +478,7 @@ class Bestellung
             }
         }
         $this->cBestellwertLocalized = Preise::getLocalizedPriceString($warenwert->wert ?? 0, $htmlWaehrung);
-        $this->Status                = lang_bestellstatus($this->cStatus);
+        $this->Status                = lang_bestellstatus((int)$this->cStatus);
         if ($this->kWaehrung > 0) {
             $this->Waehrung = Shop::Container()->getDB()->select('twaehrung', 'kWaehrung', (int)$this->kWaehrung);
             if ($this->fWaehrungsFaktor !== null && $this->fWaehrungsFaktor != 1 && isset($this->Waehrung->fFaktor)) {
@@ -520,7 +520,14 @@ class Bestellung
             $_SESSION['kSprache'] = $kSprache;
         }
         foreach ($this->Positionen as $i => $position) {
-            $position->nPosTyp = (int)$position->nPosTyp;
+            $position->kArtikel            = (int)$position->kArtikel;
+            $position->nPosTyp             = (int)$position->nPosTyp;
+            $position->kWarenkorbPos       = (int)$position->kWarenkorbPos;
+            $position->kVersandklasse      = (int)$position->kVersandklasse;
+            $position->kKonfigitem         = (int)$position->kKonfigitem;
+            $position->kBestellpos         = (int)$position->kBestellpos;
+            $position->nLongestMinDelivery = (int)$position->nLongestMinDelivery;
+            $position->nLongestMaxDelivery = (int)$position->nLongestMaxDelivery;
             if ($position->nAnzahl == (int)$position->nAnzahl) {
                 $position->nAnzahl = (int)$position->nAnzahl;
             }

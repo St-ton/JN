@@ -6,7 +6,6 @@
 
 namespace Boxes\Items;
 
-
 use DB\ReturnType;
 
 /**

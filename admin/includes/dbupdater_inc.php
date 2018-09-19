@@ -264,8 +264,10 @@ function dbUpdateIO()
     $updater  = new Updater();
 
     try {
-        if ($template->version === '5' || $template->version === 5) {
+        if ((int)$template->version === 5) {
             $templateVersion = '5.0.0';
+        } elseif ((int)$template->version === 4) {
+            $templateVersion = '4.0.0';
         } else {
             $templateVersion = $template->version;
         }

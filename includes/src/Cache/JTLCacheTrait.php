@@ -6,7 +6,6 @@
 
 namespace Cache;
 
-
 /**
  * Class JTLCacheTrait
  */

@@ -225,7 +225,7 @@ class MediaImage implements IMedia
                     $mediaReq->id,
                     $imgName,
                     $mediaReq->size,
-                    $mediaReq->number
+                    (int)$mediaReq->number
                 );
                 if ('/' . $imgName->imgPath === $request) {
                     $matchFound = true;

@@ -8,7 +8,6 @@ namespace Link;
 
 use Tightenco\Collect\Support\Collection;
 
-
 /**
  * Class LinkGroup
  * @package Link

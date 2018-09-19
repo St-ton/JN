@@ -186,26 +186,25 @@ class ArtikelListe
         if (!Session::CustomerGroup()->mayViewCategories()) {
             return $this->elemente;
         }
-        $arr_kKategorie = [];
+        $categoryIDs = [];
         if (!empty($katListe->elemente)) {
             foreach ($katListe->elemente as $i => $kategorie) {
-                $arr_kKategorie[] = (int)$kategorie->kKategorie;
+                $categoryIDs[] = (int)$kategorie->kKategorie;
                 if (isset($kategorie->Unterkategorien) && is_array($kategorie->Unterkategorien)) {
                     foreach ($kategorie->Unterkategorien as $kategorie_lvl2) {
-                        $arr_kKategorie[] = (int)$kategorie_lvl2->kKategorie;
+                        $categoryIDs[] = (int)$kategorie_lvl2->kKategorie;
                     }
                 }
             }
         }
-        $cacheID = 'hTA_' . md5(json_encode($arr_kKategorie));
+        $cacheID = 'hTA_' . md5(json_encode($categoryIDs));
         $objArr  = Shop::Cache()->get($cacheID);
-        if ($objArr === false && count($arr_kKategorie) > 0) {
+        if ($objArr === false && count($categoryIDs) > 0) {
             $Einstellungen = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
             $kKundengruppe = Session::CustomerGroup()->getID();
             $cLimitSql     = isset($Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl'])
                 ? ('LIMIT ' . (int)$Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl'])
                 : 'LIMIT 6';
-            //top-Artikel
             $lagerfilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $objArr      = Shop::Container()->getDB()->query(
                 "SELECT DISTINCT (tartikel.kArtikel)
@@ -217,7 +216,7 @@ class ArtikelListe
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND tartikel.kArtikel = tkategorieartikel.kArtikel
                         AND tartikel.cTopArtikel = 'Y'
-                        AND (tkategorieartikel.kKategorie IN (" . implode(', ', $arr_kKategorie) . "))
+                        AND (tkategorieartikel.kKategorie IN (" . implode(', ', $categoryIDs) . "))
                         $lagerfilter
                     ORDER BY rand()
                     {$cLimitSql}
@@ -225,18 +224,16 @@ class ArtikelListe
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             $cacheTags   = [CACHING_GROUP_CATEGORY, CACHING_GROUP_OPTION];
-            foreach ($arr_kKategorie as $category) {
+            foreach ($categoryIDs as $category) {
                 $cacheTags[] = CACHING_GROUP_CATEGORY . '_' . $category;
             }
             Shop::Cache()->set($cacheID, $objArr, $cacheTags);
         }
-        if (is_array($objArr)) {
-            $defaultOptions = Artikel::getDefaultOptions();
-            foreach ($objArr as $obj) {
-                $artikel = new Artikel();
-                $artikel->fuelleArtikel($obj->kArtikel, $defaultOptions);
-                $this->elemente[] = $artikel;
-            }
+        $defaultOptions = Artikel::getDefaultOptions();
+        foreach ($objArr as $obj) {
+            $artikel = new Artikel();
+            $artikel->fuelleArtikel((int)$obj->kArtikel, $defaultOptions);
+            $this->elemente[] = $artikel;
         }
 
         return $this->elemente;
@@ -314,7 +311,7 @@ class ArtikelListe
         if (is_array($objArr)) {
             $defaultOptions = Artikel::getDefaultOptions();
             foreach ($objArr as $obj) {
-                $this->elemente[] = (new Artikel())->fuelleArtikel($obj->kArtikel, $defaultOptions);
+                $this->elemente[] = (new Artikel())->fuelleArtikel((int)$obj->kArtikel, $defaultOptions);
             }
         }
 

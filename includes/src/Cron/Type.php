@@ -6,7 +6,6 @@
 
 namespace Cron;
 
-
 use MyCLabs\Enum\Enum;
 
 /**

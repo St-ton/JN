@@ -483,7 +483,8 @@ $mMediendatei = [
     'cPfad',
     'cURL',
     'cTyp',
-    'nSort'
+    'nSort',
+    'cKategorie'
 ];
 
 $mStueckliste = [

@@ -234,7 +234,7 @@ final class Shop
     /**
      * @var null|Shop
      */
-    private static $_instance;
+    private static $instance;
 
     /**
      * @var ProductFilter
@@ -319,7 +319,7 @@ final class Shop
     /**
      * @var bool
      */
-    private static $_logged;
+    private static $logged;
 
     /**
      * @var array
@@ -329,7 +329,7 @@ final class Shop
     /**
      * @var Shopsetting
      */
-    private static $_settings;
+    private static $settings;
 
     /**
      * @var \Filter\FilterInterface[]
@@ -366,8 +366,8 @@ final class Shop
      */
     private function __construct()
     {
-        self::$_instance = $this;
-        self::$_settings = Shopsetting::getInstance();
+        self::$instance = $this;
+        self::$settings = Shopsetting::getInstance();
     }
 
     /**
@@ -375,7 +375,7 @@ final class Shop
      */
     public static function getInstance(): self
     {
-        return self::$_instance ?? new self();
+        return self::$instance ?? new self();
     }
 
     /**
@@ -442,7 +442,7 @@ final class Shop
      * @param string $method
      * @return string|null
      */
-    private static function map($method)
+    private static function map($method): ?string
     {
         return self::$mapping[$method] ?? null;
     }
@@ -450,7 +450,7 @@ final class Shop
     /**
      * @param string $url
      */
-    public static function setImageBaseURL(string $url)
+    public static function setImageBaseURL(string $url): void
     {
         self::$imageBaseURL = rtrim($url, '/') . '/';
     }
@@ -527,7 +527,7 @@ final class Shop
      */
     public function Config(): Shopsetting
     {
-        return self::$_settings;
+        return self::$settings;
     }
 
     /**
@@ -606,7 +606,7 @@ final class Shop
      * @param string       $eventName
      * @param array|object $arguments
      */
-    public static function fire(string $eventName, $arguments = [])
+    public static function fire(string $eventName, $arguments = []): void
     {
         self::Event()->fire($eventName, $arguments);
     }
@@ -671,9 +671,9 @@ final class Shop
      * get current language/language ISO
      *
      * @var bool $iso
-     * @return string
+     * @return string|null
      */
-    public static function getLanguageCode()
+    public static function getLanguageCode(): ?string
     {
         return self::$cISO;
     }
@@ -684,7 +684,7 @@ final class Shop
      * @param int    $languageID
      * @param string $cISO
      */
-    public static function setLanguage(int $languageID, string $cISO = null)
+    public static function setLanguage(int $languageID, string $cISO = null): void
     {
         self::$kSprache = $languageID;
         if ($cISO !== null) {
@@ -696,7 +696,7 @@ final class Shop
      * @param array $config
      * @return array
      */
-    public static function getConfig($config)
+    public static function getConfig($config): array
     {
         return self::getSettings($config);
     }
@@ -705,9 +705,9 @@ final class Shop
      * @param array|int $config
      * @return array
      */
-    public static function getSettings($config)
+    public static function getSettings($config): array
     {
-        return (self::$_settings ?? Shopsetting::getInstance())->getSettings($config);
+        return (self::$settings ?? Shopsetting::getInstance())->getSettings($config);
     }
 
     /**
@@ -727,13 +727,13 @@ final class Shop
      */
     public static function getConfigValue(int $section, $option)
     {
-        return (self::$_settings ?? Shopsetting::getInstance())->getValue($section, $option);
+        return (self::$settings ?? Shopsetting::getInstance())->getValue($section, $option);
     }
 
     /**
      * Load plugin event driven system
      */
-    public static function bootstrap()
+    public static function bootstrap(): void
     {
         $cacheID = 'plgnbtsrp';
         if (($plugins = self::Cache()->get($cacheID)) === false) {
@@ -744,7 +744,8 @@ final class Shop
                       AND bBootstrap = 1 
                     ORDER BY nPrio ASC',
                 ['state' => Plugin::PLUGIN_ACTIVATED],
-                \DB\ReturnType::ARRAY_OF_OBJECTS) ?: [];
+                \DB\ReturnType::ARRAY_OF_OBJECTS
+            ) ?: [];
             self::Cache()->set($cacheID, $plugins, [CACHING_GROUP_PLUGIN]);
         }
         foreach ($plugins as $plugin) {
@@ -863,7 +864,7 @@ final class Shop
         $conf->setLanguageID(self::$kSprache);
         $conf->setLanguages(self::Lang()->getLangArray());
         $conf->setCustomerGroupID(\Session::CustomerGroup()->getID());
-        $conf->setConfig(self::$_settings->getAll());
+        $conf->setConfig(self::$settings->getAll());
         $conf->setBaseURL(self::getURL() . '/');
         self::$productFilter = new ProductFilter($conf, self::Container()->getDB(), self::Container()->getCache());
         self::seoCheck();
@@ -942,7 +943,7 @@ final class Shop
     /**
      * check for seo url
      */
-    public static function seoCheck()
+    public static function seoCheck(): void
     {
         $uri                             = $_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'];
         self::$uri                       = $uri;
@@ -1142,8 +1143,12 @@ final class Shop
             // manufacturer filter
             if (($seoCount = count($manufSeo)) > 0) {
                 if ($seoCount === 1) {
-                    $oSeo = self::Container()->getDB()->selectAll('tseo', ['cKey', 'cSeo'],
-                        ['kHersteller', $manufSeo[0]], 'kKey');
+                    $oSeo = self::Container()->getDB()->selectAll(
+                        'tseo',
+                        ['cKey', 'cSeo'],
+                        ['kHersteller', $manufSeo[0]],
+                        'kKey'
+                    );
                 } else {
                     $bindValues = [];
                     // PDO::bindValue() is 1-based
@@ -1156,7 +1161,8 @@ final class Shop
                             WHERE cKey = 'kHersteller' 
                             AND cSeo IN (" . implode(',', array_fill(0, $seoCount, '?')) . ")",
                         $bindValues,
-                        2);
+                        \DB\ReturnType::ARRAY_OF_OBJECTS
+                    );
                 }
                 $results = count($oSeo);
                 if ($results === 1) {
@@ -1179,8 +1185,13 @@ final class Shop
                 self::$bSEOMerkmalNotFound = false;
                 foreach ($seoAttributes as $i => $cSEOMerkmal) {
                     if ($i > 0 && strlen($cSEOMerkmal) > 0) {
-                        $oSeo = self::Container()->getDB()->select('tseo', 'cKey', 'kMerkmalWert', 'cSeo',
-                            $cSEOMerkmal);
+                        $oSeo = self::Container()->getDB()->select(
+                            'tseo',
+                            'cKey',
+                            'kMerkmalWert',
+                            'cSeo',
+                            $cSEOMerkmal
+                        );
                         if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $cSEOMerkmal) === 0) {
                             //haenge an GET, damit baueMerkmalFilter die Merkmalfilter setzen kann - @todo?
                             $_GET['mf'][] = (int)$oSeo->kKey;
@@ -1276,7 +1287,7 @@ final class Shop
     /**
      * @param int $languageID
      */
-    private static function updateLanguage(int $languageID)
+    private static function updateLanguage(int $languageID): void
     {
         $spr   = self::Lang()->getIsoFromLangID($languageID);
         $cLang = $spr->cISO ?? null;
@@ -1293,7 +1304,7 @@ final class Shop
     /**
      * decide which page to load
      */
-    public static function getEntryPoint()
+    public static function getEntryPoint(): void
     {
         self::setPageType(PAGE_UNBEKANNT);
         if ((self::$kArtikel > 0 && !self::$kKategorie)
@@ -1429,31 +1440,31 @@ final class Shop
             if ($link !== null && !empty($link->getFileName())) {
                 self::$fileName = $link->getFileName();
                 switch (self::$fileName) {
-                    case 'news.php' :
+                    case 'news.php':
                         self::setPageType(PAGE_NEWS);
                         break;
-                    case 'jtl.php' :
+                    case 'jtl.php':
                         self::setPageType(PAGE_MEINKONTO);
                         break;
-                    case 'kontakt.php' :
+                    case 'kontakt.php':
                         self::setPageType(PAGE_KONTAKT);
                         break;
-                    case 'newsletter.php' :
+                    case 'newsletter.php':
                         self::setPageType(PAGE_NEWSLETTER);
                         break;
-                    case 'pass.php' :
+                    case 'pass.php':
                         self::setPageType(PAGE_PASSWORTVERGESSEN);
                         break;
-                    case 'registrieren.php' :
+                    case 'registrieren.php':
                         self::setPageType(PAGE_REGISTRIERUNG);
                         break;
-                    case 'umfrage.php' :
+                    case 'umfrage.php':
                         self::setPageType(PAGE_UMFRAGE);
                         break;
-                    case 'warenkorb.php' :
+                    case 'warenkorb.php':
                         self::setPageType(PAGE_WARENKORB);
                         break;
-                    case 'wunschliste.php' :
+                    case 'wunschliste.php':
                         self::setPageType(PAGE_WUNSCHLISTE);
                         break;
                     default :
@@ -1501,8 +1512,10 @@ final class Shop
      */
     public static function buildNaviFilter(array $cParameter_arr, $productFilter = null): ProductFilter
     {
-        trigger_error(__METHOD__ . ' is deprecated. Use ' . __CLASS__ . '::buildProductFilter() instead',
-            E_USER_DEPRECATED);
+        trigger_error(
+            __METHOD__ . ' is deprecated. Use ' . __CLASS__ . '::buildProductFilter() instead',
+            E_USER_DEPRECATED
+        );
 
         return self::buildProductFilter($cParameter_arr, $productFilter);
     }
@@ -1516,8 +1529,11 @@ final class Shop
      */
     public static function buildProductFilter(array $cParameter_arr, $productFilter = null): ProductFilter
     {
-        $pf = new ProductFilter(\Filter\Config::getDefault(), self::Container()->getDB(),
-            self::Container()->getCache());
+        $pf = new ProductFilter(
+            \Filter\Config::getDefault(),
+            self::Container()->getDB(),
+            self::Container()->getCache()
+        );
         if ($productFilter !== null) {
             foreach (get_object_vars($productFilter) as $k => $v) {
                 $pf->$k = $v;
@@ -1533,8 +1549,10 @@ final class Shop
      */
     public static function getNaviFilter(): ProductFilter
     {
-        trigger_error(__METHOD__ . 'is deprecated. Use ' . __CLASS__ . '::getProductFilter() instead',
-            E_USER_DEPRECATED);
+        trigger_error(
+            __METHOD__ . 'is deprecated. Use ' . __CLASS__ . '::getProductFilter() instead',
+            E_USER_DEPRECATED
+        );
 
         return self::getProductFilter();
     }
@@ -1554,7 +1572,7 @@ final class Shop
     /**
      * @param ProductFilter $productFilter
      */
-    public static function setProductFilter(ProductFilter $productFilter)
+    public static function setProductFilter(ProductFilter $productFilter): void
     {
         self::$productFilter = $productFilter;
     }
@@ -1563,7 +1581,7 @@ final class Shop
      * @param null|ProductFilter $productFilter
      * @deprecated since 5.0 - this is done in ProductFilter:validate()
      */
-    public static function checkNaviFilter($productFilter = null)
+    public static function checkNaviFilter($productFilter = null): void
     {
         trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
     }
@@ -1573,8 +1591,10 @@ final class Shop
      */
     public static function getShopDatabaseVersion(): Version
     {
-        $version = self::Container()->getDB()->query('SELECT nVersion FROM tversion',
-            \DB\ReturnType::SINGLE_OBJECT)->nVersion;
+        $version = self::Container()->getDB()->query(
+            'SELECT nVersion FROM tversion',
+            \DB\ReturnType::SINGLE_OBJECT
+        )->nVersion;
 
         if ($version === '5' || $version === 5) {
             $version = '5.0.0';
@@ -1592,8 +1612,10 @@ final class Shop
      */
     public static function getVersion(): string
     {
-        trigger_error(__METHOD__ . ' is deprecated. Use ' . __CLASS__ . '::getApplicationVersion() instead',
-            E_USER_DEPRECATED);
+        trigger_error(
+            __METHOD__ . ' is deprecated. Use ' . __CLASS__ . '::getApplicationVersion() instead',
+            E_USER_DEPRECATED
+        );
 
         return self::getApplicationVersion();
     }
@@ -1622,7 +1644,7 @@ final class Shop
      * @var bool $fullURL - prepend shop url if set to true
      * @return string|null - image path/null if no logo was found
      */
-    public static function getLogo(bool $fullUrl = false)
+    public static function getLogo(bool $fullUrl = false): ?string
     {
         $ret  = null;
         $conf = self::getSettings([CONF_LOGO]);
@@ -1690,7 +1712,7 @@ final class Shop
     /**
      * @param int $pageType
      */
-    public static function setPageType(int $pageType)
+    public static function setPageType(int $pageType): void
     {
         $mapper              = new \Mapper\PageTypeToPageName();
         self::$pageType      = $pageType;
@@ -1733,8 +1755,8 @@ final class Shop
      */
     public static function isAdmin(): bool
     {
-        if (is_bool(self::$_logged)) {
-            return self::$_logged;
+        if (is_bool(self::$logged)) {
+            return self::$logged;
         }
         $result   = false;
         $isLogged = function () {
@@ -1753,7 +1775,7 @@ final class Shop
                 $result = $isLogged();
             }
         }
-        self::$_logged = $result;
+        self::$logged = $result;
 
         return $result;
     }
@@ -1793,7 +1815,7 @@ final class Shop
     /**
      * Create the default container of the jtl shop
      */
-    private static function createContainer()
+    private static function createContainer(): void
     {
         $container         = new \Services\Container();
         static::$container = $container;
@@ -1883,14 +1905,17 @@ final class Shop
             return new \Boxes\Factory(Shopsetting::getInstance()->getAll());
         });
         $container->setSingleton(\Services\JTL\BoxServiceInterface::class, function (Container $container) {
-            return new \Services\JTL\BoxService(Shopsetting::getInstance()->getAll(), $container->getBoxFactory(),
-                $container->getDB());
+            return new \Services\JTL\BoxService(
+                Shopsetting::getInstance()->getAll(),
+                $container->getBoxFactory(),
+                $container->getDB()
+            );
         });
         // Captcha
         $container->setSingleton(\Services\JTL\CaptchaServiceInterface::class, function (Container $container) {
             return new \Services\JTL\CaptchaService(new \Services\JTL\SimpleCaptchaService(
-            // Captcha Prüfung ist bei eingeloggtem Kunden, bei bereits erfolgter Prüfung
-            // oder ausgeschaltetem Captcha nicht notwendig
+                // Captcha Prüfung ist bei eingeloggtem Kunden, bei bereits erfolgter Prüfung
+                // oder ausgeschaltetem Captcha nicht notwendig
                 !(Session::get('bAnti_spam_already_checked', false) || Session::Customer()->isLoggedIn())
             ));
         });

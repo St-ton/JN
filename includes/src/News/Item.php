@@ -6,7 +6,6 @@
 
 namespace News;
 
-
 use DB\DbInterface;
 use DB\ReturnType;
 use function Functional\map;
@@ -300,7 +299,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function setID(int $id)
+    public function setID(int $id): void
     {
         $this->id = $id;
     }
@@ -326,7 +325,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function setSEOs(array $seo)
+    public function setSEOs(array $seo): void
     {
         $this->seo = $seo;
     }
@@ -334,7 +333,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function setSEO(string $url, int $idx = null)
+    public function setSEO(string $url, int $idx = null): void
     {
         $this->seo[$idx ?? \Shop::getLanguageID()] = $url;
     }
@@ -360,7 +359,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function setURL(string $url, int $idx = null)
+    public function setURL(string $url, int $idx = null): void
     {
         $this->urls[$idx ?? \Shop::getLanguageID()] = $url;
     }
@@ -368,7 +367,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function setURLs(array $urls)
+    public function setURLs(array $urls): void
     {
         $this->urls = $urls;
     }
@@ -404,7 +403,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function setTitle(string $title, int $idx = null)
+    public function setTitle(string $title, int $idx = null): void
     {
         $this->titles[$idx ?? \Shop::getLanguageID()] = $title;
     }
@@ -412,7 +411,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function setTitles(array $title)
+    public function setTitles(array $title): void
     {
         $this->titles = $title;
     }
@@ -428,7 +427,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function setCustomerGroups(array $customerGroups)
+    public function setCustomerGroups(array $customerGroups): void
     {
         $this->customerGroups = $customerGroups;
     }
@@ -454,7 +453,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function setLanguageCode(string $languageCode, int $idx = null)
+    public function setLanguageCode(string $languageCode, int $idx = null): void
     {
         $this->languageCodes[$idx ?? \Shop::getLanguageID()] = $languageCode;
     }
@@ -462,7 +461,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function setLanguageCodes(array $languageCodes)
+    public function setLanguageCodes(array $languageCodes): void
     {
         $this->languageCodes = $languageCodes;
     }
@@ -478,7 +477,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function setIsActive(bool $isActive)
+    public function setIsActive(bool $isActive): void
     {
         $this->isActive = $isActive;
     }
@@ -496,7 +495,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function setLanguageID(int $languageID, int $idx = null)
+    public function setLanguageID(int $languageID, int $idx = null): void
     {
         $this->languageIDs[$idx ?? \Shop::getLanguageID()] = $languageID;
     }
@@ -512,7 +511,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function setLanguageIDs(array $ids)
+    public function setLanguageIDs(array $ids): void
     {
         $this->languageIDs = \array_map('\intval', $ids);
     }
@@ -538,7 +537,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function setContent(string $content, int $idx = null)
+    public function setContent(string $content, int $idx = null): void
     {
         $this->contents[$idx ?? \Shop::getLanguageID()] = $content;
     }
@@ -546,7 +545,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function setContents(array $contents)
+    public function setContents(array $contents): void
     {
         $this->contents = $contents;
     }
@@ -572,7 +571,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function setMetaTitle(string $metaTitle, int $idx = null)
+    public function setMetaTitle(string $metaTitle, int $idx = null): void
     {
         $this->metaTitles[$idx ?? \Shop::getLanguageID()] = $metaTitle;
     }
@@ -580,7 +579,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function setMetaTitles(array $metaTitles)
+    public function setMetaTitles(array $metaTitles): void
     {
         $this->metaTitles = $metaTitles;
     }
@@ -606,7 +605,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function setMetaKeyword(string $metaKeyword, int $idx = null)
+    public function setMetaKeyword(string $metaKeyword, int $idx = null): void
     {
         $this->metaKeywords[$idx ?? \Shop::getLanguageID()] = $metaKeyword;
     }
@@ -614,7 +613,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function setMetaKeywords(array $metaKeywords)
+    public function setMetaKeywords(array $metaKeywords): void
     {
         $this->metaKeywords = $metaKeywords;
     }
@@ -640,7 +639,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function setMetaDescription(string $metaDescription, int $idx = null)
+    public function setMetaDescription(string $metaDescription, int $idx = null): void
     {
         $this->metaDescriptions[$idx ?? \Shop::getLanguageID()] = $metaDescription;
     }
@@ -648,7 +647,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function setMetaDescriptions(array $metaDescriptions)
+    public function setMetaDescriptions(array $metaDescriptions): void
     {
         $this->metaDescriptions = $metaDescriptions;
     }
@@ -674,7 +673,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function setPreviews(array $previews)
+    public function setPreviews(array $previews): void
     {
         $this->previews = $previews;
     }
@@ -682,7 +681,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function setPreview(string $preview, int $idx = null)
+    public function setPreview(string $preview, int $idx = null): void
     {
         $this->previews[$idx ?? \Shop::getLanguageID()] = $preview;
     }
@@ -708,7 +707,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function setPreviewImages(array $previewImages)
+    public function setPreviewImages(array $previewImages): void
     {
         $this->previewImages = $previewImages;
     }
@@ -716,7 +715,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function setPreviewImage(string $previewImage, int $idx = null)
+    public function setPreviewImage(string $previewImage, int $idx = null): void
     {
         $this->previewImages[$idx ?? \Shop::getLanguageID()] = $previewImage;
     }
@@ -732,7 +731,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function setDateCreated(\DateTime $dateCreated)
+    public function setDateCreated(\DateTime $dateCreated): void
     {
         $this->dateCreated = $dateCreated;
     }
@@ -756,7 +755,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function setDateValidFrom(\DateTime $dateValidFrom)
+    public function setDateValidFrom(\DateTime $dateValidFrom): void
     {
         $this->dateValidFrom = $dateValidFrom;
     }
@@ -772,7 +771,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function setDate(\DateTime $date)
+    public function setDate(\DateTime $date): void
     {
         $this->date = $date;
     }
@@ -788,7 +787,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function setIsVisible(bool $isVisible)
+    public function setIsVisible(bool $isVisible): void
     {
         $this->isVisible = $isVisible;
     }
@@ -804,7 +803,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function setComments(CommentList $comments)
+    public function setComments(CommentList $comments): void
     {
         $this->comments     = $comments;
         $this->commentCount = $comments->getItems()->count();
@@ -821,7 +820,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function setCommentCount(int $commentCount)
+    public function setCommentCount(int $commentCount): void
     {
         $this->commentCount = $commentCount;
     }

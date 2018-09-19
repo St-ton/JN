@@ -6,7 +6,6 @@
 
 namespace News;
 
-
 /**
  * Class Item
  * @package News
@@ -39,7 +38,7 @@ interface ItemInterFace
     /**
      * @param int $id
      */
-    public function setID(int $id);
+    public function setID(int $id): void;
 
     /**
      * @return array
@@ -55,13 +54,13 @@ interface ItemInterFace
     /**
      * @param array $seo
      */
-    public function setSEOs(array $seo);
+    public function setSEOs(array $seo): void;
 
     /**
      * @param string   $url
      * @param int|null $idx
      */
-    public function setSEO(string $url, int $idx = null);
+    public function setSEO(string $url, int $idx = null): void;
 
     /**
      * @param int|null $idx
@@ -78,12 +77,12 @@ interface ItemInterFace
      * @param string   $url
      * @param int|null $idx
      */
-    public function setURL(string $url, int $idx = null);
+    public function setURL(string $url, int $idx = null): void;
 
     /**
      * @param string[] $urls
      */
-    public function setURLs(array $urls);
+    public function setURLs(array $urls): void;
 
     /**
      * @param int|null $idx
@@ -106,12 +105,12 @@ interface ItemInterFace
      * @param string   $title
      * @param int|null $idx
      */
-    public function setTitle(string $title, int $idx = null);
+    public function setTitle(string $title, int $idx = null): void;
 
     /**
      * @param string[] $title
      */
-    public function setTitles(array $title);
+    public function setTitles(array $title): void;
 
     /**
      * @return int[]
@@ -121,7 +120,7 @@ interface ItemInterFace
     /**
      * @param array $customerGroups
      */
-    public function setCustomerGroups(array $customerGroups);
+    public function setCustomerGroups(array $customerGroups): void;
 
     /**
      * @param int|null $idx
@@ -138,12 +137,12 @@ interface ItemInterFace
      * @param string   $languageCode
      * @param int|null $idx
      */
-    public function setLanguageCode(string $languageCode, int $idx = null);
+    public function setLanguageCode(string $languageCode, int $idx = null): void;
 
     /**
      * @param string[] $languageCodes
      */
-    public function setLanguageCodes(array $languageCodes);
+    public function setLanguageCodes(array $languageCodes): void;
 
     /**
      * @return bool
@@ -153,7 +152,7 @@ interface ItemInterFace
     /**
      * @param bool $isActive
      */
-    public function setIsActive(bool $isActive);
+    public function setIsActive(bool $isActive): void;
 
     /**
      * @param int|null $idx
@@ -165,7 +164,7 @@ interface ItemInterFace
      * @param int      $languageID
      * @param int|null $idx
      */
-    public function setLanguageID(int $languageID, int $idx = null);
+    public function setLanguageID(int $languageID, int $idx = null): void;
 
     /**
      * @return int[]
@@ -175,7 +174,7 @@ interface ItemInterFace
     /**
      * @param int[] $ids
      */
-    public function setLanguageIDs(array $ids);
+    public function setLanguageIDs(array $ids): void;
 
     /**
      * @return string[]
@@ -192,12 +191,12 @@ interface ItemInterFace
      * @param string   $content
      * @param int|null $idx
      */
-    public function setContent(string $content, int $idx = null);
+    public function setContent(string $content, int $idx = null): void;
 
     /**
      * @param string[] $contents
      */
-    public function setContents(array $contents);
+    public function setContents(array $contents): void;
 
     /**
      * @return string[]
@@ -214,12 +213,12 @@ interface ItemInterFace
      * @param string   $metaTitle
      * @param int|null $idx
      */
-    public function setMetaTitle(string $metaTitle, int $idx = null);
+    public function setMetaTitle(string $metaTitle, int $idx = null): void;
 
     /**#
      * @param string[] $metaTitles
      */
-    public function setMetaTitles(array $metaTitles);
+    public function setMetaTitles(array $metaTitles): void;
 
     /**
      * @param int|null $idx
@@ -236,12 +235,12 @@ interface ItemInterFace
      * @param string   $metaKeyword
      * @param int|null $idx
      */
-    public function setMetaKeyword(string $metaKeyword, int $idx = null);
+    public function setMetaKeyword(string $metaKeyword, int $idx = null): void;
 
     /**
      * @param string[] $metaKeywords
      */
-    public function setMetaKeywords(array $metaKeywords);
+    public function setMetaKeywords(array $metaKeywords): void;
 
     /**
      * @param int|null $idx
@@ -258,12 +257,12 @@ interface ItemInterFace
      * @param string   $metaDescription
      * @param int|null $idx
      */
-    public function setMetaDescription(string $metaDescription, int $idx = null);
+    public function setMetaDescription(string $metaDescription, int $idx = null): void;
 
     /**
      * @param string[] $metaDescriptions
      */
-    public function setMetaDescriptions(array $metaDescriptions);
+    public function setMetaDescriptions(array $metaDescriptions): void;
 
     /**
      * @param int|null $idx
@@ -279,13 +278,13 @@ interface ItemInterFace
     /**
      * @param string[] $previews
      */
-    public function setPreviews(array $previews);
+    public function setPreviews(array $previews): void;
 
     /**
      * @param string   $preview
      * @param int|null $idx
      */
-    public function setPreview(string $preview, int $idx = null);
+    public function setPreview(string $preview, int $idx = null): void;
 
     /**
      * @param int|null $idx
@@ -301,13 +300,13 @@ interface ItemInterFace
     /**
      * @param string[] $previewImages
      */
-    public function setPreviewImages(array $previewImages);
+    public function setPreviewImages(array $previewImages): void;
 
     /**
      * @param string   $previewImage
      * @param int|null $idx
      */
-    public function setPreviewImage(string $previewImage, int $idx = null);
+    public function setPreviewImage(string $previewImage, int $idx = null): void;
 
     /**
      * @return \DateTime
@@ -317,7 +316,7 @@ interface ItemInterFace
     /**
      * @param \DateTime $dateCreated
      */
-    public function setDateCreated(\DateTime $dateCreated);
+    public function setDateCreated(\DateTime $dateCreated): void;
 
     /**
      * @return \DateTime
@@ -332,7 +331,7 @@ interface ItemInterFace
     /**
      * @param \DateTime $dateValidFrom
      */
-    public function setDateValidFrom(\DateTime $dateValidFrom);
+    public function setDateValidFrom(\DateTime $dateValidFrom): void;
 
     /**
      * @return \DateTime
@@ -342,7 +341,7 @@ interface ItemInterFace
     /**
      * @param \DateTime $date
      */
-    public function setDate(\DateTime $date);
+    public function setDate(\DateTime $date): void;
 
     /**
      * @return bool
@@ -352,7 +351,7 @@ interface ItemInterFace
     /**
      * @param bool $isVisible
      */
-    public function setIsVisible(bool $isVisible);
+    public function setIsVisible(bool $isVisible): void;
 
     /**
      * @return CommentList
@@ -362,7 +361,7 @@ interface ItemInterFace
     /**
      * @param CommentList $comments
      */
-    public function setComments(CommentList $comments);
+    public function setComments(CommentList $comments): void;
 
     /**
      * @return int
@@ -372,5 +371,5 @@ interface ItemInterFace
     /**
      * @param int $commentCount
      */
-    public function setCommentCount(int $commentCount);
+    public function setCommentCount(int $commentCount): void;
 }

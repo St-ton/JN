@@ -6,7 +6,6 @@
 
 namespace News;
 
-
 use DB\DbInterface;
 use DB\ReturnType;
 use Tightenco\Collect\Support\Collection;
@@ -87,7 +86,7 @@ final class CategoryList implements ItemListInterface
      * @param int        $id
      * @return Category|null
      */
-    private function findParentCategory(Collection $tree, int $id)
+    private function findParentCategory(Collection $tree, int $id): ?Category
     {
         $found = $tree->first(function (Category $e) use ($id) {
             return $e->getID() === $id;
@@ -140,7 +139,7 @@ final class CategoryList implements ItemListInterface
     /**
      * @inheritdoc
      */
-    public function setItems(Collection $items)
+    public function setItems(Collection $items): void
     {
         $this->items = $items;
     }
@@ -148,7 +147,7 @@ final class CategoryList implements ItemListInterface
     /**
      * @inheritdoc
      */
-    public function addItem($item)
+    public function addItem($item): void
     {
         $this->items->push($item);
     }

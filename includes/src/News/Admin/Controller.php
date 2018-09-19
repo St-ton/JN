@@ -6,7 +6,6 @@
 
 namespace News\Admin;
 
-
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\ReturnType;
@@ -25,9 +24,9 @@ use function Functional\map;
  */
 class Controller
 {
-    const UPLOAD_DIR = \PFAD_ROOT . \PFAD_NEWSBILDER;
+    public const UPLOAD_DIR = \PFAD_ROOT . \PFAD_NEWSBILDER;
 
-    const UPLOAD_DIR_CATEGORY = \PFAD_ROOT . \PFAD_NEWSKATEGORIEBILDER;
+    public const UPLOAD_DIR_CATEGORY = \PFAD_ROOT . \PFAD_NEWSKATEGORIEBILDER;
 
     /**
      * @var DbInterface
@@ -91,7 +90,7 @@ class Controller
      * @param \ContentAuthor $contentAuthor
      * @throws \Exception
      */
-    public function createOrUpdateNewsItem(array $post, array $languages, \ContentAuthor $contentAuthor)
+    public function createOrUpdateNewsItem(array $post, array $languages, \ContentAuthor $contentAuthor): void
     {
         $newsItemID      = (int)($post['kNews'] ?? 0);
         $update          = $newsItemID > 0;
@@ -173,8 +172,11 @@ class Controller
                 );
                 // Falls dies die erste News des Monats ist, neuen Eintrag in tnewsmonatsuebersicht, ansonsten updaten
                 if (isset($monthOverview->kNewsMonatsUebersicht) && $monthOverview->kNewsMonatsUebersicht > 0) {
-                    $prefix = $this->db->select('tnewsmonatspraefix', 'kSprache',
-                            $langID)->cPraefix ?? 'Newsuebersicht';
+                    $prefix = $this->db->select(
+                            'tnewsmonatspraefix',
+                            'kSprache',
+                            $langID
+                        )->cPraefix ?? 'Newsuebersicht';
                     $this->db->delete(
                         'tseo',
                         ['cKey', 'kKey', 'kSprache'],
@@ -191,8 +193,11 @@ class Controller
                     $oSeo->kSprache = $langID;
                     $this->db->insert('tseo', $oSeo);
                 } else {
-                    $prefix                  = $this->db->select('tnewsmonatspraefix', 'kSprache',
-                            $langID)->cPraefix ?? 'Newsuebersicht';
+                    $prefix                  = $this->db->select(
+                            'tnewsmonatspraefix',
+                            'kSprache',
+                            $langID
+                        )->cPraefix ?? 'Newsuebersicht';
                     $monthOverview           = new \stdClass();
                     $monthOverview->kSprache = $langID;
                     $monthOverview->cName    = \News\Controller::mapDateName((string)$month, $year, $iso);
@@ -262,9 +267,10 @@ class Controller
             if (isset($post['kNews']) && \is_numeric($post['kNews'])) {
                 $this->continueWith = $newsItemID;
             } else {
-                echo '<br>else!';
-                $this->smarty->assign('oPossibleAuthors_arr',
-                    $contentAuthor->getPossibleAuthors(['CONTENT_NEWS_SYSTEM_VIEW']));
+                $this->smarty->assign(
+                    'oPossibleAuthors_arr',
+                    $contentAuthor->getPossibleAuthors(['CONTENT_NEWS_SYSTEM_VIEW'])
+                );
             }
         }
     }
@@ -288,7 +294,7 @@ class Controller
      * @param array          $newsItems
      * @param \ContentAuthor $author
      */
-    public function deleteNewsItems(array $newsItems, \ContentAuthor $author)
+    public function deleteNewsItems(array $newsItems, \ContentAuthor $author): void
     {
         foreach ($newsItems as $newsItemID) {
             $newsItemID = (int)$newsItemID;
@@ -715,7 +721,7 @@ class Controller
      * @param array     $items
      * @param Item|null $newsItem
      */
-    public function deleteComments(array $items, Item $newsItem = null)
+    public function deleteComments(array $items, Item $newsItem = null): void
     {
         if (\count($items) > 0) {
             foreach ($items as $id) {
@@ -779,7 +785,7 @@ class Controller
      * @param string $msg
      * @param array  $urlParams
      */
-    public function newsRedirect($tab = '', $msg = '', $urlParams = null)
+    public function newsRedirect($tab = '', $msg = '', $urlParams = null): void
     {
         $tabPageMapping = [
             'inaktiv'    => 's1',
@@ -893,7 +899,7 @@ class Controller
     /**
      * @param string $step
      */
-    public function setStep(string $step)
+    public function setStep(string $step): void
     {
         $this->step = $step;
     }
@@ -909,7 +915,7 @@ class Controller
     /**
      * @param string $msg
      */
-    public function setMsg(string $msg)
+    public function setMsg(string $msg): void
     {
         $this->msg = $msg;
     }
@@ -925,7 +931,7 @@ class Controller
     /**
      * @param string $errorMsg
      */
-    public function setErrorMsg(string $errorMsg)
+    public function setErrorMsg(string $errorMsg): void
     {
         $this->errorMsg = $errorMsg;
     }
@@ -941,7 +947,7 @@ class Controller
     /**
      * @param int $continueWith
      */
-    public function setContinueWith(int $continueWith)
+    public function setContinueWith(int $continueWith): void
     {
         $this->continueWith = $continueWith;
     }

@@ -29,10 +29,10 @@ interface ItemListInterface
     /**
      * @param Collection $items
      */
-    public function setItems(Collection $items);
+    public function setItems(Collection $items): void;
 
     /**
      * @param mixed $item
      */
-    public function addItem($item);
+    public function addItem($item): void;
 }

@@ -6,7 +6,6 @@
 
 namespace News;
 
-
 /**
  * Class AbstractItem
  * @package News
@@ -57,7 +56,7 @@ abstract class AbstractItem implements ItemInterFace
     /**
      * @return string|null
      */
-    public function getCustomerGroupsCompat()
+    public function getCustomerGroupsCompat(): ?string
     {
         $groups = $this->getCustomerGroups();
 
@@ -69,7 +68,7 @@ abstract class AbstractItem implements ItemInterFace
     /**
      * @param string|array $value
      */
-    public function setCustomerGroupsCompat($value)
+    public function setCustomerGroupsCompat($value): void
     {
         $this->setCustomerGroups(!\is_array($value) ? self::parseSSKAdvanced($value) : $value);
     }

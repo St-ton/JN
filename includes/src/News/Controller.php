@@ -6,7 +6,6 @@
 
 namespace News;
 
-
 use DB\DbInterface;
 use DB\ReturnType;
 use Session\Session;
@@ -82,8 +81,7 @@ class Controller
         if ((int)$params['cDatum'] === -1) {
             $_SESSION['NewsNaviFilter']->cDatum = -1;
         } elseif (\strlen($params['cDatum']) > 0) {
-            $_date                              = \explode('-', $params['cDatum']);
-            $_SESSION['NewsNaviFilter']->cDatum = \count($_date) > 1
+            $_SESSION['NewsNaviFilter']->cDatum = \substr_count($params['cDatum'], '-') > 1
                 ? \StringHandler::filterXSS($params['cDatum'])
                 : -1;
         } elseif (!isset($_SESSION['NewsNaviFilter']->cDatum)) {
@@ -91,7 +89,7 @@ class Controller
         }
         if ($params['nNewsKat'] > 0) {
             $_SESSION['NewsNaviFilter']->nNewsKat = $params['nNewsKat'];
-        } elseif ($params['nNewsKat'] === -1 || !isset($_SESSION['NewsNaviFilter']->nNewsKat)) {
+        } elseif (!isset($_SESSION['NewsNaviFilter']->nNewsKat) || $params['nNewsKat'] === -1) {
             $_SESSION['NewsNaviFilter']->nNewsKat = -1;
         }
         if ($this->config['news']['news_benutzen'] !== 'Y') {
@@ -108,7 +106,6 @@ class Controller
                 $_SESSION['NewsNaviFilter']->cDatum   = (int)$data->nMonat . '-' . (int)$data->nJahr;
                 $_SESSION['NewsNaviFilter']->nNewsKat = -1;
             }
-
         }
         $this->smarty->assign('oDatum_arr', $this->getNewsDates(self::getFilterSQL(true)))
                      ->assign('nPlausiValue_arr', [
@@ -126,7 +123,7 @@ class Controller
      * @param int $id
      * @return \stdClass|null
      */
-    private function getMonthOverview(int $id)
+    private function getMonthOverview(int $id): ?\stdClass
     {
         return $this->db->queryPrepared(
             "SELECT tnewsmonatsuebersicht.*, tseo.cSeo
@@ -148,7 +145,7 @@ class Controller
      * @param Item        $newsItem
      * @param \Pagination $pagination
      */
-    public function displayItem(Item $newsItem, \Pagination $pagination)
+    public function displayItem(Item $newsItem, \Pagination $pagination): void
     {
         $newsCategories = $this->getNewsCategories($newsItem->getID());
         foreach ($newsCategories as $category) {
@@ -218,15 +215,15 @@ class Controller
         $metaDescription = $category->getMetaDescription();
         $metaKeywords    = $category->getMetaKeyword();
 
-        $metaTitle       = \strlen($metaTitle) < 1
+        $metaTitle       = $metaTitle === ''
             ? \Shop::Lang()->get('news', 'news') . ' ' .
             \Shop::Lang()->get('from', 'global') . ' ' .
             $this->config['global']['global_shopname']
             : $metaTitle;
-        $metaDescription = \strlen($metaDescription) < 1
+        $metaDescription = $metaDescription === ''
             ? \Shop::Lang()->get('newsMetaDesc', 'news')
             : $metaDescription;
-        $metaKeywords    = \strlen($metaKeywords) < 1
+        $metaKeywords    = $metaKeywords === ''
             ? $category->buildMetaKeywords()
             : $metaKeywords;
         $this->smarty->assign('oNewsUebersicht_arr', $items)
@@ -482,7 +479,7 @@ class Controller
         if ($_SESSION['NewsNaviFilter']->cDatum !== -1 && \strlen($_SESSION['NewsNaviFilter']->cDatum) > 0) {
             $_date = \explode('-', $_SESSION['NewsNaviFilter']->cDatum);
             if (\count($_date) > 1) {
-                list($nMonat, $nJahr) = $_date;
+                [$nMonat, $nJahr] = $_date;
                 $oSQL->cDatumSQL = " AND MONTH(tnews.dGueltigVon) = '" . (int)$nMonat . "' 
                                       AND YEAR(tnews.dGueltigVon) = '" . (int)$nJahr . "'";
             } else { //invalid date given/xss -> reset to -1
@@ -639,7 +636,7 @@ class Controller
     /**
      * @param string $errorMsg
      */
-    public function setErrorMsg(string $errorMsg)
+    public function setErrorMsg(string $errorMsg): void
     {
         $this->errorMsg = $errorMsg;
     }
@@ -655,7 +652,7 @@ class Controller
     /**
      * @param string $noticeMsg
      */
-    public function setNoticeMsg(string $noticeMsg)
+    public function setNoticeMsg(string $noticeMsg): void
     {
         $this->noticeMsg = $noticeMsg;
     }

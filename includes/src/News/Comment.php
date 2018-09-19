@@ -6,7 +6,6 @@
 
 namespace News;
 
-
 use DB\DbInterface;
 use DB\ReturnType;
 
@@ -136,7 +135,7 @@ class Comment implements CommentInterface
     /**
      * @inheritdoc
      */
-    public function setID(int $id)
+    public function setID(int $id): void
     {
         $this->id = $id;
     }
@@ -152,7 +151,7 @@ class Comment implements CommentInterface
     /**
      * @inheritdoc
      */
-    public function setNewsID(int $newsID)
+    public function setNewsID(int $newsID): void
     {
         $this->newsID = $newsID;
     }
@@ -168,7 +167,7 @@ class Comment implements CommentInterface
     /**
      * @inheritdoc
      */
-    public function setCustomerID(int $customerID)
+    public function setCustomerID(int $customerID): void
     {
         $this->customerID = $customerID;
     }
@@ -192,7 +191,7 @@ class Comment implements CommentInterface
     /**
      * @inheritdoc
      */
-    public function setIsActive(bool $isActive)
+    public function setIsActive(bool $isActive): void
     {
         $this->isActive = $isActive;
     }
@@ -208,7 +207,7 @@ class Comment implements CommentInterface
     /**
      * @inheritdoc
      */
-    public function setName(string $name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
@@ -224,7 +223,7 @@ class Comment implements CommentInterface
     /**
      * @inheritdoc
      */
-    public function setMail(string $mail)
+    public function setMail(string $mail): void
     {
         $this->mail = $mail;
     }
@@ -248,7 +247,7 @@ class Comment implements CommentInterface
     /**
      * @inheritdoc
      */
-    public function setText(string $text)
+    public function setText(string $text): void
     {
         $this->text = $text;
     }
@@ -264,7 +263,7 @@ class Comment implements CommentInterface
     /**
      * @inheritdoc
      */
-    public function setDateCreated(string $dateCreated)
+    public function setDateCreated(string $dateCreated): void
     {
         $this->dateCreated = \date_create($dateCreated);
     }
@@ -288,7 +287,7 @@ class Comment implements CommentInterface
     /**
      * @inheritdoc
      */
-    public function setNewsTitle(string $newsTitle)
+    public function setNewsTitle(string $newsTitle): void
     {
         $this->newsTitle = $newsTitle;
     }

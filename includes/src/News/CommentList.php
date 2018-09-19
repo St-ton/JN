@@ -6,7 +6,6 @@
 
 namespace News;
 
-
 use DB\DbInterface;
 use DB\ReturnType;
 use Tightenco\Collect\Support\Collection;
@@ -139,7 +138,7 @@ final class CommentList implements ItemListInterface
     /**
      * @param Collection $items
      */
-    public function setItems(Collection $items)
+    public function setItems(Collection $items): void
     {
         $this->items = $items;
     }
@@ -147,7 +146,7 @@ final class CommentList implements ItemListInterface
     /**
      * @param Comment $item
      */
-    public function addItem($item)
+    public function addItem($item): void
     {
         $this->items->push($item);
     }

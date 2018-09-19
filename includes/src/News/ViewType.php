@@ -6,7 +6,6 @@
 
 namespace News;
 
-
 use MyCLabs\Enum\Enum;
 
 /**
@@ -15,15 +14,15 @@ use MyCLabs\Enum\Enum;
  */
 class ViewType extends Enum
 {
-    const NEWS_DISABLED = -1;
+    public const NEWS_DISABLED = -1;
 
-    const NEWS_UNKNOWN = 0;
+    public const NEWS_UNKNOWN = 0;
 
-    const NEWS_DETAIL = 1;
+    public const NEWS_DETAIL = 1;
 
-    const NEWS_CATEGORY = 2;
+    public const NEWS_CATEGORY = 2;
 
-    const NEWS_MONTH_OVERVIEW = 3;
+    public const NEWS_MONTH_OVERVIEW = 3;
 
-    const NEWS_OVERVIEW = 4;
+    public const NEWS_OVERVIEW = 4;
 }

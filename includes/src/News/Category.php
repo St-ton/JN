@@ -6,7 +6,6 @@
 
 namespace News;
 
-
 use DB\DbInterface;
 use DB\ReturnType;
 use Tightenco\Collect\Support\Collection;
@@ -351,7 +350,7 @@ class Category implements CategoryInterface
     }
 
     /**
-     * @return ItemListInterface|Collection
+     * @inheritdoc
      */
     public function getItems()
     {
@@ -359,9 +358,9 @@ class Category implements CategoryInterface
     }
 
     /**
-     * @param ItemListInterface|Collection $items
+     * @inheritdoc
      */
-    public function setItems($items)
+    public function setItems($items): void
     {
         $this->items = $items;
     }
@@ -395,7 +394,7 @@ class Category implements CategoryInterface
     /**
      * @inheritdoc
      */
-    public function setNames(array $name)
+    public function setNames(array $name): void
     {
         $this->names = $name;
     }
@@ -429,7 +428,7 @@ class Category implements CategoryInterface
     /**
      * @inheritdoc
      */
-    public function setMetaTitles(array $metaTitles)
+    public function setMetaTitles(array $metaTitles): void
     {
         $this->metaTitles = $metaTitles;
     }
@@ -455,7 +454,7 @@ class Category implements CategoryInterface
     /**
      * @inheritdoc
      */
-    public function setMetaKeyword(string $metaKeyword, int $idx = null)
+    public function setMetaKeyword(string $metaKeyword, int $idx = null): void
     {
         $this->metaKeywords[$idx ?? \Shop::getLanguageID()] = $metaKeyword;
     }
@@ -463,7 +462,7 @@ class Category implements CategoryInterface
     /**
      * @inheritdoc
      */
-    public function setMetaKeywords(array $metaKeywords)
+    public function setMetaKeywords(array $metaKeywords): void
     {
         $this->metaKeywords = $metaKeywords;
     }
@@ -497,7 +496,7 @@ class Category implements CategoryInterface
     /**
      * @inheritdoc
      */
-    public function setMetaDescriptions(array $metaDescriptions)
+    public function setMetaDescriptions(array $metaDescriptions): void
     {
         $this->metaDescriptions = $metaDescriptions;
     }
@@ -551,13 +550,13 @@ class Category implements CategoryInterface
     /**
      * @inheritdoc
      */
-    public function setID(int $id)
+    public function setID(int $id): void
     {
         $this->id = $id;
     }
 
     /**
-     * @return int
+     * @inheritdoc
      */
     public function getParentID(): int
     {
@@ -565,9 +564,9 @@ class Category implements CategoryInterface
     }
 
     /**
-     * @param int $parentID
+     * @inheritdoc
      */
-    public function setParentID(int $parentID)
+    public function setParentID(int $parentID): void
     {
         $this->parentID = $parentID;
     }
@@ -575,15 +574,15 @@ class Category implements CategoryInterface
     /**
      * @inheritdoc
      */
-    public function getLanguageID(int $idx = null): string
+    public function getLanguageID(int $idx = null): int
     {
         $idx = $idx ?? \Shop::getLanguageID();
 
-        return $this->languageIDs[$idx] ?? '';
+        return $this->languageIDs[$idx] ?? 0;
     }
 
     /**
-     * @return int[]
+     * @inheritdoc
      */
     public function getLanguageIDs(): array
     {
@@ -591,9 +590,9 @@ class Category implements CategoryInterface
     }
 
     /**
-     * @param int[] $languageIDs
+     * @inheritdoc
      */
-    public function setLanguageIDs(array $languageIDs)
+    public function setLanguageIDs(array $languageIDs): void
     {
         $this->languageIDs = $languageIDs;
     }
@@ -609,7 +608,7 @@ class Category implements CategoryInterface
     }
 
     /**
-     * @return string[]
+     * @inheritdoc
      */
     public function getLanguageCodes(): array
     {
@@ -617,9 +616,9 @@ class Category implements CategoryInterface
     }
 
     /**
-     * @param string[] $languageCodes
+     * @inheritdoc
      */
-    public function setLanguageCodes(array $languageCodes)
+    public function setLanguageCodes(array $languageCodes): void
     {
         $this->languageCodes = $languageCodes;
     }
@@ -635,7 +634,7 @@ class Category implements CategoryInterface
     }
 
     /**
-     * @return string[]
+     * @inheritdoc
      */
     public function getDescriptions(): array
     {
@@ -643,9 +642,9 @@ class Category implements CategoryInterface
     }
 
     /**
-     * @param string[] $descriptions
+     * @inheritdoc
      */
-    public function setDescriptions(array $descriptions)
+    public function setDescriptions(array $descriptions): void
     {
         $this->descriptions = $descriptions;
     }
@@ -661,7 +660,7 @@ class Category implements CategoryInterface
     }
 
     /**
-     * @return string[]
+     * @inheritdoc
      */
     public function getPreviewImages(): array
     {
@@ -669,15 +668,15 @@ class Category implements CategoryInterface
     }
 
     /**
-     * @param string[] $previewImages
+     * @inheritdoc
      */
-    public function setPreviewImages(array $previewImages)
+    public function setPreviewImages(array $previewImages): void
     {
         $this->previewImages = $previewImages;
     }
 
     /**
-     * @return int
+     * @inheritdoc
      */
     public function getSort(): int
     {
@@ -685,15 +684,15 @@ class Category implements CategoryInterface
     }
 
     /**
-     * @param int $sort
+     * @inheritdoc
      */
-    public function setSort(int $sort)
+    public function setSort(int $sort): void
     {
         $this->sort = $sort;
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
     public function getIsActive(): bool
     {
@@ -701,7 +700,7 @@ class Category implements CategoryInterface
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
     public function isActive(): bool
     {
@@ -709,15 +708,15 @@ class Category implements CategoryInterface
     }
 
     /**
-     * @param bool $isActive
+     * @inheritdoc
      */
-    public function setIsActive(bool $isActive)
+    public function setIsActive(bool $isActive): void
     {
         $this->isActive = $isActive;
     }
 
     /**
-     * @return \DateTime
+     * @inheritdoc
      */
     public function getDateLastModified(): \DateTime
     {
@@ -725,15 +724,15 @@ class Category implements CategoryInterface
     }
 
     /**
-     * @param \DateTime $dateLastModified
+     * @inheritdoc
      */
-    public function setDateLastModified(\DateTime $dateLastModified)
+    public function setDateLastModified(\DateTime $dateLastModified): void
     {
         $this->dateLastModified = $dateLastModified;
     }
 
     /**
-     * @return int
+     * @inheritdoc
      */
     public function getLevel(): int
     {
@@ -741,15 +740,15 @@ class Category implements CategoryInterface
     }
 
     /**
-     * @param int $level
+     * @inheritdoc
      */
-    public function setLevel(int $level)
+    public function setLevel(int $level): void
     {
         $this->level = $level;
     }
 
     /**
-     * @return Collection
+     * @inheritdoc
      */
     public function getChildren(): Collection
     {
@@ -757,17 +756,17 @@ class Category implements CategoryInterface
     }
 
     /**
-     * @param Category $child
+     * @inheritdoc
      */
-    public function addChild(Category $child)
+    public function addChild(Category $child): void
     {
         $this->children->push($child);
     }
 
     /**
-     * @param Collection $children
+     * @inheritdoc
      */
-    public function setChildren(Collection $children)
+    public function setChildren(Collection $children): void
     {
         $this->children = $children;
     }

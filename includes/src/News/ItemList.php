@@ -6,7 +6,6 @@
 
 namespace News;
 
-
 use DB\DbInterface;
 use DB\ReturnType;
 use Tightenco\Collect\Support\Collection;
@@ -106,7 +105,7 @@ final class ItemList implements ItemListInterface
     /**
      * @inheritdoc
      */
-    public function setItems(Collection $items)
+    public function setItems(Collection $items): void
     {
         $this->items = $items;
     }
@@ -114,7 +113,7 @@ final class ItemList implements ItemListInterface
     /**
      * @inheritdoc
      */
-    public function addItem($item)
+    public function addItem($item): void
     {
         $this->items->push($item);
     }

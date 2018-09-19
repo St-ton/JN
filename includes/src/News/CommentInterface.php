@@ -6,7 +6,6 @@
 
 namespace News;
 
-
 /**
  * Class Comment
  * @package News
@@ -33,7 +32,7 @@ interface CommentInterface
     /**
      * @param int $id
      */
-    public function setID(int $id);
+    public function setID(int $id): void;
 
     /**
      * @return int
@@ -43,7 +42,7 @@ interface CommentInterface
     /**
      * @param int $newsID
      */
-    public function setNewsID(int $newsID);
+    public function setNewsID(int $newsID): void;
 
     /**
      * @return int
@@ -53,7 +52,7 @@ interface CommentInterface
     /**
      * @param int $customerID
      */
-    public function setCustomerID(int $customerID);
+    public function setCustomerID(int $customerID): void;
 
     /**
      * @return bool
@@ -68,7 +67,7 @@ interface CommentInterface
     /**
      * @param bool $isActive
      */
-    public function setIsActive(bool $isActive);
+    public function setIsActive(bool $isActive): void;
 
     /**
      * @return string
@@ -78,7 +77,7 @@ interface CommentInterface
     /**
      * @param string $name
      */
-    public function setName(string $name);
+    public function setName(string $name): void;
 
     /**
      * @return string
@@ -88,7 +87,7 @@ interface CommentInterface
     /**
      * @param string $mail
      */
-    public function setMail(string $mail);
+    public function setMail(string $mail): void;
 
     /**
      * @return string
@@ -103,7 +102,7 @@ interface CommentInterface
     /**
      * @param string $text
      */
-    public function setText(string $text);
+    public function setText(string $text): void;
 
     /**
      * @return \DateTime
@@ -113,7 +112,7 @@ interface CommentInterface
     /**
      * @param string $dateCreated
      */
-    public function setDateCreated(string $dateCreated);
+    public function setDateCreated(string $dateCreated): void;
 
     /**
      * @return string
@@ -128,5 +127,5 @@ interface CommentInterface
     /**
      * @param string $newsTitle
      */
-    public function setNewsTitle(string $newsTitle);
+    public function setNewsTitle(string $newsTitle): void;
 }

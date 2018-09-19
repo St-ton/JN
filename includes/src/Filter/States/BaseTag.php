@@ -140,7 +140,8 @@ class BaseTag extends AbstractFilter
         if ($this->getConfig('navigationsfilter')['allgemein_tagfilter_benutzen'] === 'N') {
             return $options;
         }
-        $state = $this->productFilter->getCurrentStateData($this->getType() === Type::OR
+        $state = $this->productFilter->getCurrentStateData(
+            $this->getType() === Type::OR
             ? $this->getClassName()
             : null
         );
@@ -217,7 +218,7 @@ class BaseTag extends AbstractFilter
                 ->setCount((int)$tag->nAnzahl);
         }
         $this->options = $options;
-        $this->productFilter->getCache()->set($cacheID, $options, [CACHING_GROUP_FILTER]);
+        $this->productFilter->getCache()->set($cacheID, $options, [\CACHING_GROUP_FILTER]);
 
         return $options;
     }

@@ -195,7 +195,7 @@ class Attribute extends BaseAttribute
     /**
      * @param array $data
      */
-    private function setBatchAttributeData(array $data)
+    private function setBatchAttributeData(array $data): void
     {
         $this->batchAttributeData = $data;
     }
@@ -240,7 +240,8 @@ class Attribute extends BaseAttribute
      */
     public function attributeValueIsActive($kMerkmalWert): bool
     {
-        return \array_reduce($this->productFilter->getAttributeFilter(),
+        return \array_reduce(
+            $this->productFilter->getAttributeFilter(),
             function ($a, $b) use ($kMerkmalWert) {
                 /** @var Attribute $b */
                 return $a || $b->getValue() === $kMerkmalWert;

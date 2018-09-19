@@ -8,9 +8,9 @@ namespace Survey;
 
 use DB\DbInterface;
 use DB\ReturnType;
+use Tightenco\Collect\Support\Collection;
 use function Functional\first;
 use function Functional\map;
-use Tightenco\Collect\Support\Collection;
 
 /**
  * Class SurveyQuestion
@@ -203,7 +203,7 @@ class SurveyQuestion
     /**
      * @param int|string $id
      */
-    public function setID($id)
+    public function setID($id): void
     {
         $this->id = (int)$id;
     }
@@ -219,7 +219,7 @@ class SurveyQuestion
     /**
      * @param int|string $surveyID
      */
-    public function setSurveyID($surveyID)
+    public function setSurveyID($surveyID): void
     {
         $this->surveyID = (int)$surveyID;
     }
@@ -235,7 +235,7 @@ class SurveyQuestion
     /**
      * @param string $type
      */
-    public function setType(string $type)
+    public function setType(string $type): void
     {
         $this->type = $type;
     }
@@ -251,7 +251,7 @@ class SurveyQuestion
     /**
      * @param string $name
      */
-    public function setName(string $name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
@@ -267,7 +267,7 @@ class SurveyQuestion
     /**
      * @param string $description
      */
-    public function setDescription(string $description)
+    public function setDescription(string $description): void
     {
         $this->description = $description;
     }
@@ -283,7 +283,7 @@ class SurveyQuestion
     /**
      * @param int|string $sort
      */
-    public function setSort($sort)
+    public function setSort($sort): void
     {
         $this->sort = (int)$sort;
     }
@@ -307,7 +307,7 @@ class SurveyQuestion
     /**
      * @param bool|string $freeField
      */
-    public function setFreeField($freeField)
+    public function setFreeField($freeField): void
     {
         $this->freeField = (bool)$freeField;
     }
@@ -331,7 +331,7 @@ class SurveyQuestion
     /**
      * @param bool|string $required
      */
-    public function setRequired($required)
+    public function setRequired($required): void
     {
         $this->required = (bool)$required;
     }
@@ -347,7 +347,7 @@ class SurveyQuestion
     /**
      * @param Collection $matrixOptions
      */
-    public function setMatrixOptions(Collection $matrixOptions)
+    public function setMatrixOptions(Collection $matrixOptions): void
     {
         $this->matrixOptions = $matrixOptions;
     }
@@ -363,7 +363,7 @@ class SurveyQuestion
     /**
      * @param Collection $answerOptions
      */
-    public function setAnswerOptions(Collection $answerOptions)
+    public function setAnswerOptions(Collection $answerOptions): void
     {
         $this->answerOptions = $answerOptions;
     }
@@ -382,7 +382,7 @@ class SurveyQuestion
     /**
      * @param array $givenAnswer
      */
-    public function setGivenAnswer(array $givenAnswer)
+    public function setGivenAnswer(array $givenAnswer): void
     {
         $this->givenAnswer = $givenAnswer;
     }
@@ -398,7 +398,7 @@ class SurveyQuestion
     /**
      * @param DbInterface $db
      */
-    public function setDB(DbInterface $db)
+    public function setDB(DbInterface $db): void
     {
         $this->db = $db;
     }

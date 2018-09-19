@@ -55,7 +55,7 @@ class MatrixOption
     /**
      * @param int $id
      */
-    public function setID(int $id)
+    public function setID(int $id): void
     {
         $this->id = $id;
     }
@@ -71,7 +71,7 @@ class MatrixOption
     /**
      * @param int $questionID
      */
-    public function setQuestionID(int $questionID)
+    public function setQuestionID(int $questionID): void
     {
         $this->questionID = $questionID;
     }
@@ -87,7 +87,7 @@ class MatrixOption
     /**
      * @param int $sort
      */
-    public function setSort(int $sort)
+    public function setSort(int $sort): void
     {
         $this->sort = $sort;
     }
@@ -103,7 +103,7 @@ class MatrixOption
     /**
      * @param string $name
      */
-    public function setName(string $name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }

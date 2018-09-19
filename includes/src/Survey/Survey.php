@@ -6,7 +6,6 @@
 
 namespace Survey;
 
-
 use DB\DbInterface;
 use DB\ReturnType;
 use function Functional\group;
@@ -221,7 +220,7 @@ class Survey
     /**
      * @param int|string $id
      */
-    public function setID($id)
+    public function setID($id): void
     {
         $this->id = (int)$id;
     }
@@ -237,7 +236,7 @@ class Survey
     /**
      * @param int|string $languageID
      */
-    public function setLanguageID($languageID)
+    public function setLanguageID($languageID): void
     {
         $this->languageID = (int)$languageID;
     }
@@ -253,7 +252,7 @@ class Survey
     /**
      * @param int|string $couponID
      */
-    public function setCouponID($couponID)
+    public function setCouponID($couponID): void
     {
         $this->couponID = (int)$couponID;
     }
@@ -269,7 +268,7 @@ class Survey
     /**
      * @param array|string $customerGroups
      */
-    public function setCustomerGroups($customerGroups)
+    public function setCustomerGroups($customerGroups): void
     {
         if (!\is_array($customerGroups)) {
             $customerGroups = \StringHandler::parseSSK($customerGroups);
@@ -288,7 +287,7 @@ class Survey
     /**
      * @param string $name
      */
-    public function setName(string $name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
@@ -304,7 +303,7 @@ class Survey
     /**
      * @param string $description
      */
-    public function setDescription(string $description)
+    public function setDescription(string $description): void
     {
         $this->description = $description;
     }
@@ -320,7 +319,7 @@ class Survey
     /**
      * @param float|string $credits
      */
-    public function setCredits($credits)
+    public function setCredits($credits): void
     {
         $this->credits = (float)$credits;
     }
@@ -336,7 +335,7 @@ class Survey
     /**
      * @param int|string $bonusCredits
      */
-    public function setBonusCredits($bonusCredits)
+    public function setBonusCredits($bonusCredits): void
     {
         $this->bonusCredits = (int)$bonusCredits;
     }
@@ -352,7 +351,7 @@ class Survey
     /**
      * @param bool|string $isActive
      */
-    public function setIsActive($isActive)
+    public function setIsActive($isActive): void
     {
         $this->isActive = (bool)$isActive;
     }
@@ -368,7 +367,7 @@ class Survey
     /**
      * @param \DateTime|string $validFrom
      */
-    public function setValidFrom($validFrom)
+    public function setValidFrom($validFrom): void
     {
         if (\is_string($validFrom)) {
             $validFrom = new \DateTime($validFrom);
@@ -387,7 +386,7 @@ class Survey
     /**
      * @param \DateTime|string $validUntil
      */
-    public function setValidUntil($validUntil)
+    public function setValidUntil($validUntil): void
     {
         if (\is_string($validUntil)) {
             $validUntil = new \DateTime($validUntil);
@@ -406,7 +405,7 @@ class Survey
     /**
      * @param \DateTime|string $created
      */
-    public function setCreated($created)
+    public function setCreated($created): void
     {
         if (\is_string($created)) {
             $created = new \DateTime($created);
@@ -425,7 +424,7 @@ class Survey
     /**
      * @param string $url
      */
-    public function setURL(string $url)
+    public function setURL(string $url): void
     {
         $this->url = $url;
     }
@@ -441,7 +440,7 @@ class Survey
     /**
      * @param int|string $count
      */
-    public function setQuestionCount($count)
+    public function setQuestionCount($count): void
     {
         $this->questionCount = (int)$count;
     }
@@ -450,7 +449,7 @@ class Survey
      * @param int $id
      * @return SurveyQuestion|null
      */
-    public function getQuestionByID(int $id)
+    public function getQuestionByID(int $id): ?SurveyQuestion
     {
         return $this->questions->first(function (SurveyQuestion $q) use ($id) {
             return $q->getID() === $id;
@@ -468,7 +467,7 @@ class Survey
     /**
      * @param Collection $questions
      */
-    public function setQuestions(Collection $questions)
+    public function setQuestions(Collection $questions): void
     {
         $this->questions     = $questions;
         $this->questionCount = $questions->count();
@@ -495,7 +494,7 @@ class Survey
     /**
      * @param DbInterface $db
      */
-    public function setDb(DbInterface $db)
+    public function setDb(DbInterface $db): void
     {
         $this->db = $db;
     }

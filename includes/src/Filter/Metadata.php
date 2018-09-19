@@ -31,9 +31,9 @@ class Metadata implements MetadataInterface
     private $conf;
 
     /**
-     * @var array
+     * @var string
      */
-    private $breadCrumb = [];
+    private $breadCrumb = '';
 
     /**
      * @var string
@@ -103,7 +103,7 @@ class Metadata implements MetadataInterface
     /**
      * @inheritdoc
      */
-    public function getBreadCrumb(): array
+    public function getBreadCrumb(): string
     {
         return $this->breadCrumb;
     }
@@ -175,7 +175,7 @@ class Metadata implements MetadataInterface
     /**
      * @inheritdoc
      */
-    public function getCategory()
+    public function getCategory(): ?\Kategorie
     {
         return $this->category;
     }
@@ -193,7 +193,7 @@ class Metadata implements MetadataInterface
     /**
      * @inheritdoc
      */
-    public function getManufacturer()
+    public function getManufacturer(): ?\Hersteller
     {
         return $this->manufacturer;
     }
@@ -211,7 +211,7 @@ class Metadata implements MetadataInterface
     /**
      * @inheritdoc
      */
-    public function getAttributeValue()
+    public function getAttributeValue(): ?\MerkmalWert
     {
         return $this->attributeValue;
     }
@@ -333,7 +333,7 @@ class Metadata implements MetadataInterface
     /**
      * @inheritdoc
      */
-    public function getNavigationInfo(\Kategorie $category = null, \KategorieListe $openCategories = null): MetadataInterface
+    public function getNavigationInfo(\Kategorie $category = null, \KategorieListe $list = null): MetadataInterface
     {
         if ($category !== null && $this->productFilter->hasCategory()) {
             $this->category = $category;
@@ -800,15 +800,6 @@ class Metadata implements MetadataInterface
         }
 
         return '';
-    }
-
-    /**
-     * @inheritdoc
-     * @deprecated since 5.0.0
-     */
-    public function getBreadCrumbName()
-    {
-        return $this->breadCrumb;
     }
 
     /**

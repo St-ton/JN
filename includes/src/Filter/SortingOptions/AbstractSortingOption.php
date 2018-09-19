@@ -62,7 +62,7 @@ abstract class AbstractSortingOption extends Option implements SortingOptionInte
     /**
      * @inheritdoc
      */
-    public function setJoin(Join $join)
+    public function setJoin(Join $join): void
     {
         $this->join = $join;
     }
@@ -78,7 +78,7 @@ abstract class AbstractSortingOption extends Option implements SortingOptionInte
     /**
      * @inheritdoc
      */
-    public function setOrderBy(string $orderBy)
+    public function setOrderBy(string $orderBy): void
     {
         $this->orderBy = $orderBy;
     }
@@ -94,7 +94,7 @@ abstract class AbstractSortingOption extends Option implements SortingOptionInte
     /**
      * @inheritdoc
      */
-    public function setPriority(int $priority)
+    public function setPriority(int $priority): void
     {
         $this->priority = $priority;
     }

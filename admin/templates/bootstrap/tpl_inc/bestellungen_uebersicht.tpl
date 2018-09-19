@@ -43,7 +43,7 @@
                             <th>{#orderStatus#}</th>
                             <th>{#orderSum#}</th>
                             <th class="tright">{#orderDate#}</th>
-                            <th>{#orderIpAddress#} <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="" data-original-title="{#orderIpAddresssNotice#} {$saveIpConfID}"></i></th>
+                            <th class="tright">{#orderIpAddress#}</th>
                         </tr>
                         </thead>
                         <tbody>

@@ -50,5 +50,4 @@ $smarty->assign('cHinweis', $cHinweis)
        ->assign('cSuche', $cSuchFilter)
        ->assign('cFehler', $cFehler)
        ->assign('step', $step)
-       ->assign('saveIpConfID', Shop::Container()->getDB()->select('teinstellungenconf', 'cWertName', 'bestellabschluss_ip_speichern')->kEinstellungenConf)
        ->display('bestellungen.tpl');

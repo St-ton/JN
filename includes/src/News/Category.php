@@ -166,6 +166,7 @@ class Category implements CategoryInterface
                     ON tnewskategorie.kNewsKategorie = t.kNewsKategorie
                 JOIN tseo 
                     ON tseo.cKey = 'kNewsKategorie'
+                    AND tseo.kSprache = t.languageID
                     AND tseo.kKey = :cid
                 WHERE tnewskategorie.kNewsKategorie = :cid" . $activeFilter,
             ['cid' => $this->id],

@@ -58,7 +58,7 @@ class ValidationService implements ValidationServiceInterface
     /**
      * @inheritdoc
      */
-    public function getRuleSet(string $name)
+    public function getRuleSet(string $name): RuleSet
     {
         return $this->ruleSets[$name];
     }
@@ -74,7 +74,7 @@ class ValidationService implements ValidationServiceInterface
     /**
      * @inheritdoc
      */
-    public function validate($value, $ruleSet)
+    public function validate($value, $ruleSet): ValidationResultInterface
     {
         if ($ruleSet instanceof RuleSet) {
             return $this->_validate($value, $ruleSet);

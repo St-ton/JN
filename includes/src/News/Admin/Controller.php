@@ -134,11 +134,9 @@ class Controller
                 $loc->title           = \htmlspecialchars($post['betreff_' . $iso], $flags, \JTL_CHARSET);
                 $loc->content         = $this->parseContent($post['text_' . $iso], $newsItemID);
                 $loc->preview         = $this->parseContent($post['cVorschauText_' . $iso], $newsItemID);
-                $loc->previewImage    = $previewImage; //@todo!
                 $loc->metaTitle       = \htmlspecialchars($post['cMetaTitle_' . $iso], $flags, \JTL_CHARSET);
                 $loc->metaDescription = \htmlspecialchars($post['cMetaDescription_' . $iso], $flags, \JTL_CHARSET);
                 $loc->metaKeywords    = \htmlspecialchars($post['cMetaKeywords_' . $iso], $flags, \JTL_CHARSET);
-
                 if (empty($loc->content)) {
                     // skip language without content
                     continue;
@@ -219,7 +217,6 @@ class Controller
                     $this->db->insert('tseo', $oSeo);
                 }
             }
-
 //            if ($update === true) {
 //                $revision = new \Revision();
 //                $revision->addRevision('news', $kNews);
@@ -407,6 +404,31 @@ class Controller
     /**
      * @param array $post
      * @param array $languages
+     * @return string|null
+     */
+    private function getSeo(array $post, array $languages): ?string
+    {
+        foreach ($languages as $language) {
+            $idx = 'cSeo_' . $language->cISO;
+            \Shop::dbg($idx, false, 'idx0');
+            if (!empty($post[$idx])) {
+                return $post[$idx];
+            }
+        }
+        foreach ($languages as $language) {
+            $idx = 'cName_' . $language->cISO;
+            \Shop::dbg($idx, false, 'idx1');
+            if (!empty($post[$idx])) {
+                return $post[$idx];
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param array $post
+     * @param array $languages
      * @return CategoryInterface
      * @throws \Exception
      */
@@ -435,8 +457,11 @@ class Controller
         $newsCategory->kNewsKategorie = $categoryID;
 
         foreach ($languages as $language) {
-            $iso   = $language->cISO;
-            $cSeo  = $post['cSeo_' . $iso] ?? '';
+            $iso  = $language->cISO;
+            $cSeo = $post['cSeo_' . $iso] ?? '';
+            if (empty($cSeo)) {
+                $cSeo = $this->getSeo($post, $languages);
+            }
             $cName = \htmlspecialchars($post['cName_' . $iso] ?? '', $flag, \JTL_CHARSET);
 
             $loc                  = new \stdClass();
@@ -452,8 +477,10 @@ class Controller
             $seoData->cKey     = 'kNewsKategorie';
             $seoData->kKey     = $categoryID;
             $seoData->kSprache = $loc->languageID;
-            $seoData->cSeo     = \checkSeo(\getSeo(\strlen($cSeo) > 0 ? $cSeo : $cName));
-
+            $seoData->cSeo     = \checkSeo(\getSeo($cSeo));
+            if (empty($seoData->cSeo)) {
+                continue;
+            }
             $this->db->insert('tnewskategoriesprache', $loc);
             $this->db->insert('tseo', $seoData);
         }
@@ -595,7 +622,7 @@ class Controller
     {
         $itemList = new ItemList($this->db);
         $ids      = map($this->db->query(
-            'SELECT kNews  FROM tnews',
+            'SELECT kNews FROM tnews',
             ReturnType::ARRAY_OF_OBJECTS
         ), function ($e) {
             return (int)$e->kNews;
@@ -752,33 +779,52 @@ class Controller
      */
     public function deleteNewsImage(string $imageName, int $id, string $uploadDir): bool
     {
-        if ($id > 0
-            && \strlen($imageName) > 0
-            && \is_dir($uploadDir)
-            && \is_dir($uploadDir . $id)
-        ) {
-            $handle = \opendir($uploadDir . $id);
-            while (false !== ($file = \readdir($handle))) {
-                if ($file !== '.' && $file !== '..' && \substr($file, 0, \strpos($file, '.')) === $imageName) {
-                    \unlink($uploadDir . $id . '/' . $file);
-                    \closedir($handle);
-                    if ($imageName === 'preview') {
-                        $upd                = new \stdClass();
-                        $upd->cPreviewImage = '';
-                        if (\strpos($uploadDir, \PFAD_NEWSKATEGORIEBILDER) === false) {
-                            $this->db->update('tnews', 'kNews', $id, $upd);
-                        } else {
-                            $this->db->update('tnewskategorie', 'kNewsKategorie', $id, $upd);
-                        }
-                    }
-
-                    return true;
+        if ($this->sanitizeDir($imageName, $id, $uploadDir) === false) {
+            return false;
+        }
+        $iterator = new \DirectoryIterator($uploadDir . $id);
+        foreach ($iterator as $fileinfo) {
+            if ($fileinfo->isDot()
+                || !$fileinfo->isFile()
+                || $fileinfo->getFilename() !== $imageName . '.' . $fileinfo->getExtension()
+            ) {
+                continue;
+            }
+            \unlink($fileinfo->getPathname());
+            if ($imageName === 'preview') {
+                $upd                = new \stdClass();
+                $upd->cPreviewImage = '';
+                if (\strpos($uploadDir, \PFAD_NEWSKATEGORIEBILDER) === false) {
+                    $this->db->update('tnews', 'kNews', $id, $upd);
+                } else {
+                    $this->db->update('tnewskategorie', 'kNewsKategorie', $id, $upd);
                 }
             }
+
+            return true;
         }
 
         return false;
     }
+
+    /**
+     * @param string $imageName
+     * @param int    $id
+     * @param string $uploadDir
+     * @return bool
+     */
+    private function sanitizeDir(string $imageName, int $id, string $uploadDir): bool
+    {
+        if ($imageName === '' || $id < 1 || !\is_dir($uploadDir . $id)) {
+            return false;
+        }
+        $real     = \realpath($uploadDir);
+        $imgPath1 = \realpath(\PFAD_ROOT . \PFAD_NEWSKATEGORIEBILDER);
+        $imgPath2 = \realpath(\PFAD_ROOT . \PFAD_NEWSBILDER);
+
+        return \strpos($real, $imgPath1) !== 0 || \strpos($real, $imgPath2) !== 0;
+    }
+
 
     /**
      * @param string $tab
@@ -847,7 +893,7 @@ class Controller
                 $text
             );
         }
-        if (\strpos(\end($images), 'preview') !== false) {
+        if (\count($images) > 0 && \strpos(\end($images), 'preview') !== false) {
             $text = \str_replace(
                 '$#preview#$',
                 '<img alt="" src="' . $shopURL . \PFAD_NEWSBILDER . $id . '/' . $images[\count($images) - 1] . '" />',
@@ -877,7 +923,7 @@ class Controller
             'nSort, kNewsKategorie'
         );
         foreach ($result as $_res) {
-            $right = $this->rebuildCategoryTree($_res->kNewsKategorie, $right, $level + 1);
+            $right = $this->rebuildCategoryTree((int)$_res->kNewsKategorie, $right, $level + 1);
         }
         $this->db->update('tnewskategorie', 'kNewsKategorie', $parent_id, (object)[
             'lft'  => $left,

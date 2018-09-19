@@ -386,7 +386,7 @@ class Category implements CategoryInterface
     /**
      * @inheritdoc
      */
-    public function setName(string $name, int $idx = null)
+    public function setName(string $name, int $idx = null): void
     {
         $this->names[$idx ?? \Shop::getLanguageID()] = $name;
     }
@@ -420,7 +420,7 @@ class Category implements CategoryInterface
     /**
      * @inheritdoc
      */
-    public function setMetaTitle(string $metaTitle, int $idx = null)
+    public function setMetaTitle(string $metaTitle, int $idx = null): void
     {
         $this->metaTitles[$idx ?? \Shop::getLanguageID()] = $metaTitle;
     }
@@ -488,7 +488,7 @@ class Category implements CategoryInterface
     /**
      * @inheritdoc
      */
-    public function setMetaDescription(string $metaDescription, int $idx = null)
+    public function setMetaDescription(string $metaDescription, int $idx = null): void
     {
         $this->metaDescriptions[$idx ?? \Shop::getLanguageID()] = $metaDescription;
     }

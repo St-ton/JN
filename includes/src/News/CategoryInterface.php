@@ -39,12 +39,12 @@ interface CategoryInterface
      * @param string   $name
      * @param int|null $idx
      */
-    public function setName(string $name, int $idx = null);
+    public function setName(string $name, int $idx = null): void;
 
     /**
      * @param string[] $names
      */
-    public function setNames(array $names);
+    public function setNames(array $names): void;
 
     /**
      * @return string[]
@@ -61,7 +61,7 @@ interface CategoryInterface
      * @param string   $metaTitle
      * @param int|null $idx
      */
-    public function setMetaTitle(string $metaTitle, int $idx = null);
+    public function setMetaTitle(string $metaTitle, int $idx = null): void;
 
     /**#
      * @param string[] $metaTitles
@@ -105,7 +105,7 @@ interface CategoryInterface
      * @param string   $metaDescription
      * @param int|null $idx
      */
-    public function setMetaDescription(string $metaDescription, int $idx = null);
+    public function setMetaDescription(string $metaDescription, int $idx = null): void;
 
     /**
      * @param string[] $metaDescriptions

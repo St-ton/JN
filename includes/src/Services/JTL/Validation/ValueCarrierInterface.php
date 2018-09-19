@@ -20,9 +20,9 @@ interface ValueCarrierInterface
 
     /**
      * @param mixed $value
-     * @return mixed
+     * @return void
      */
-    public function setValue($value);
+    public function setValue($value): void;
 
     /**
      * Get the untransformed value (e.g. to redisplay the incorrect value to the user)

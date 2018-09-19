@@ -92,7 +92,7 @@ class BoxService implements BoxServiceInterface
      * @param int $productID
      * @param int $limit
      */
-    public function addRecentlyViewed(int $productID, $limit = null)
+    public function addRecentlyViewed(int $productID, int $limit = null): void
     {
         if ($productID <= 0) {
             return;

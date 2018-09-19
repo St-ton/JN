@@ -18,5 +18,5 @@ interface RuleInterface
      * @param mixed $value
      * @return RuleResult
      */
-    public function validate($value);
+    public function validate($value): RuleResult;
 }

@@ -410,14 +410,12 @@ class Controller
     {
         foreach ($languages as $language) {
             $idx = 'cSeo_' . $language->cISO;
-            \Shop::dbg($idx, false, 'idx0');
             if (!empty($post[$idx])) {
                 return $post[$idx];
             }
         }
         foreach ($languages as $language) {
             $idx = 'cName_' . $language->cISO;
-            \Shop::dbg($idx, false, 'idx1');
             if (!empty($post[$idx])) {
                 return $post[$idx];
             }
@@ -436,12 +434,13 @@ class Controller
     {
         $this->step   = 'news_uebersicht';
         $categoryID   = (int)($post['kNewsKategorie'] ?? 0);
+        $update       = $categoryID > 0;
         $sort         = (int)$post['nSort'];
         $active       = (int)$post['nAktiv'];
         $parentID     = (int)$post['kParent'];
         $previewImage = $post['previewImage'];
         $flag         = \ENT_COMPAT | \ENT_HTML401;
-        $this->db->delete('tseo', ['cKey', 'kKey'], ['kNewsKategorie', $categoryID]);
+//        $this->db->delete('tseo', ['cKey', 'kKey'], ['kNewsKategorie', $categoryID]);
         $newsCategory                        = new \stdClass();
         $newsCategory->kParent               = $parentID;
         $newsCategory->nSort                 = $sort > -1 ? $sort : 0;
@@ -449,7 +448,7 @@ class Controller
         $newsCategory->dLetzteAktualisierung = (new \DateTime())->format('Y-m-d H:i:s');
         $newsCategory->cPreviewImage         = $previewImage;
 
-        if ($categoryID > 0) {
+        if ($update === true) {
             $this->db->update('tnewskategorie', 'kNewsKategorie', $categoryID, $newsCategory);
         } else {
             $categoryID = $this->db->insert('tnewskategorie', $newsCategory);
@@ -481,8 +480,24 @@ class Controller
             if (empty($seoData->cSeo)) {
                 continue;
             }
-            $this->db->insert('tnewskategoriesprache', $loc);
-            $this->db->insert('tseo', $seoData);
+            if ($update === true) {
+                unset($loc->kNewsKategorie);
+                $this->db->update(
+                    'tnewskategoriesprache',
+                    ['kNewsKategorie', 'languageID'],
+                    [$categoryID, $language->kSprache],
+                    $loc
+                );
+                $this->db->update(
+                    'tseo',
+                    ['cKey', 'kSprache'],
+                    ['kNewsKategorie', $language->kSprache],
+                    $seoData
+                );
+            } else {
+                $this->db->insert('tnewskategoriesprache', $loc);
+                $this->db->insert('tseo', $seoData);
+            }
         }
         // set same activation status for all subcategories
         $affected    = $this->getCategoryAndChildrenByID($categoryID);

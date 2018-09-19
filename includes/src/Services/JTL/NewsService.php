@@ -6,7 +6,6 @@
 
 namespace Services\JTL;
 
-
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 

@@ -57,7 +57,7 @@ class BoxService implements BoxServiceInterface
     /**
      * @var BoxServiceInterface
      */
-    private static $_instance;
+    private static $instance;
 
     /**
      * @param array            $config
@@ -70,7 +70,7 @@ class BoxService implements BoxServiceInterface
         FactoryInterface $factory,
         DbInterface $db
     ): BoxServiceInterface {
-        return self::$_instance ?? new self($config, $factory, $db);
+        return self::$instance ?? new self($config, $factory, $db);
     }
 
     /**
@@ -82,10 +82,10 @@ class BoxService implements BoxServiceInterface
      */
     public function __construct(array $config, FactoryInterface $factory, DbInterface $db)
     {
-        $this->config    = $config;
-        $this->factory   = $factory;
-        $this->db        = $db;
-        self::$_instance = $this;
+        $this->config   = $config;
+        $this->factory  = $factory;
+        $this->db       = $db;
+        self::$instance = $this;
     }
 
     /**
@@ -402,7 +402,11 @@ class BoxService implements BoxServiceInterface
             $boxInstance->map($boxes);
             if (\get_class($boxInstance) === Plugin::class) {
                 $plugin = new \Plugin($boxInstance->getCustomID());
-                $boxInstance->setTemplateFile($plugin->cFrontendPfad . \PFAD_PLUGIN_BOXEN . $boxInstance->getTemplateFile());
+                $boxInstance->setTemplateFile(
+                    $plugin->cFrontendPfad .
+                    \PFAD_PLUGIN_BOXEN .
+                    $boxInstance->getTemplateFile()
+                );
                 $boxInstance->setPlugin($plugin);
             }
             if ($boxInstance->getType() === Type::CONTAINER) {

@@ -29,7 +29,7 @@ if (!empty($pluginID)) {
         $pp->setAuthor('Solution 360 GmbH');
 
         $pp->addButton('Jetzt registrieren', 'https://pay.amazon.com/de/?ld=SPEXDEAPA-JTL-CP-DP-2016-07', 'btn btn-primary', 'sign-in')
-           ->addButton('Dokumentation', 'https://shop.solution360.de/downloads/dokus/Plugin_Doku_AmazonLogin&Pay-Shop4.pdf', 'btn btn-default', null, true);
+           ->addButton('Dokumentation', 'https://solution360.atlassian.net/wiki/spaces/S360DOKU/pages/95116044/Amazon+Login-and-Pay+JTL-Shop+4', 'btn btn-default', null, true);
 
         $pp->addAdvantage('Neukundengewinnung und verbessertes Einkaufserlebnis - Chance auf höhere Konversion und mehr Umsatz Online-Shop durch vereinfachten Bezahlprozess. Käufer werden zu Ihren Kunden und Sie können Ihre Produkte direkt an sie vermarkten.')
            ->addAdvantage('Desktop-, Tablet- und Smartphone-optimierte Buttons und Widgets - Erzielen Sie Verkäufe, die Ihnen ohne Mobiloptimierung entgehen würden.')
@@ -40,25 +40,31 @@ if (!empty($pluginID)) {
 
         $pp->addHowTo('Registrieren Sie sich bei Amazon Pay unter <a title="Amazon Pay" href="https://pay.amazon.com/de/?ld=SPEXDEAPA-JTL-CP-DP-2016-07" target="_blank"><i class="fa fa-external-link"></i> https://pay.amazon.com/</a>')
            ->addHowTo('Aktivieren Sie das Amazon Pay Plugin in Ihrem JTL-Shop 4')
-           ->addHowTo('Konfigurieren Sie das Amazon Pay Plugin mit Hilfe der Dokumentation von Solution 360. Diese finden Sie unter diesem <a title="Dokumentation" href="https://shop.solution360.de/downloads/dokus/Plugin_Doku_AmazonLogin&Pay-Shop4.pdf" target="_blank"><i class="fa fa-external-link"></i> Link</a>.')
+           ->addHowTo('Konfigurieren Sie das Amazon Pay Plugin mit Hilfe der Dokumentation von Solution 360. Diese finden Sie unter diesem <a title="Dokumentation" href="https://solution360.atlassian.net/wiki/spaces/S360DOKU/pages/95116044/Amazon+Login-and-Pay+JTL-Shop+4" target="_blank"><i class="fa fa-external-link"></i> Link</a>.')
            ->addHowTo('Fertig!');
 
         $ss          = new stdClass();
-        $ss->preview = 'https://bilder.jtl-software.de/erweiterungen/1165396.png';
-        $ss->full    = 'https://bilder.jtl-software.de/erweiterungen/1165396.png';
+        $ss->preview = 'https://www.jtl-software.de/jtl-store/media/image/product/1320/md/erweiterungen-amazon-pay-jtl-shop4~2.jpg';
+        $ss->full    = 'https://www.jtl-software.de/jtl-store/media/image/product/1320/lg/erweiterungen-amazon-pay-jtl-shop4~2.jpg';
+        $pp->addScreenShot($ss);
+        $ss          = new stdClass();
+        $ss->preview = 'https://www.jtl-software.de/jtl-store/media/image/product/1320/md/erweiterungen-amazon-pay-jtl-shop4~3.jpg';
+        $ss->full    = 'https://www.jtl-software.de/jtl-store/media/image/product/1320/lg/erweiterungen-amazon-pay-jtl-shop4~3.jpg';
+        $pp->addScreenShot($ss);
+        $ss          = new stdClass();
+        $ss->preview = 'https://www.jtl-software.de/jtl-store/media/image/product/1320/md/erweiterungen-amazon-pay-jtl-shop4~4.jpg';
+        $ss->full    = 'https://www.jtl-software.de/jtl-store/media/image/product/1320/lg/erweiterungen-amazon-pay-jtl-shop4~4.jpg';
         $pp->addScreenShot($ss);
 
         $pp->setDownloadLink('https://shop.solution360.de/Login-und-Bezahlen-mit-Amazon-JTL-Shop4-Plugin');
 
         $sp                        = new stdClass();
         $sp->kServicePartner       = 519;
-        $sp->marketPlaceURL        = 'https://www.jtl-software.de/Servicepartner-Detailansicht?id=' . $sp->kServicePartner;
+        $sp->marketPlaceURL        = 'https://www.jtl-software.de/servicepartner/solution-360-gmbh_519';
         $sp->oZertifizierungen_arr = [
-            'https://bilder.jtl-software.de/zertifikat/jtl_premium_sp_280.png',
-            'https://bilder.jtl-software.de/zertifikat/jtl_cert_badge_1_280.png',
-            'https://bilder.jtl-software.de/zertifikat/jtl_cert_badge_6_280.png',
-            'https://bilder.jtl-software.de/zertifikat/jtl_cert_badge_7_280.png',
-            'https://bilder.jtl-software.de/zertifikat/jtl_cert_badge_8_280.png',
+            'https://bilder.jtl-software.de/zertifikat/jtl_cert_badge_6.png',
+            'https://bilder.jtl-software.de/zertifikat/jtl_cert_badge_7.png',
+            'https://bilder.jtl-software.de/zertifikat/jtl_cert_badge_8.png'
         ];
         $sp->cLogoPfad             = 'https://bilder.jtl-software.de/splogos/kServicepartner_519.png';
         $sp->cFirma                = 'Solution 360 GmbH';
@@ -84,7 +90,7 @@ if (!empty($pluginID)) {
         $pp->setAuthor('Trusted Shops GmbH');
 
         $pp->addButton('Jetzt registrieren', 'https://business.trustedshops.de/produkte/bewertungen/?utm_source=jtl&utm_medium=software-app&utm_content=marketing-page&utm_campaign=jtl-app', 'btn btn-primary', 'sign-in')
-           ->addButton('Dokumentation', 'http://www.trustedshops.de/shopbetreiber/integration/shopsoftware-integration/jtl/?shop_id=&variant=&yOffset=', 'btn btn-default', null, true);
+           ->addButton('Dokumentation', 'https://support.trustedshops.com/de/apps/jtlshop', 'btn btn-default', null, true);
 
         $pp->addAdvantage('Sammeln Sie Shop- und Produktbewertungen automatisch von echten Kunden')
            ->addAdvantage('Steigern Sie Ihre Reichweite durch ein besseres Suchmaschinenranking mit Ihrer individuellen Profilseite')
@@ -115,7 +121,7 @@ if (!empty($pluginID)) {
         $ss->full    = $baseURL . 'agws_ts_features_03.png';
         $pp->addScreenShot($ss);
 
-        $pp->setDownloadLink('http://www.trustedshops.de/shopbetreiber/integration/shopsoftware-integration/jtl/?shop_id=&variant=&yOffset=');
+        $pp->setDownloadLink('https://support.trustedshops.com/de/apps/jtlshop');
 
         $sp                        = new stdClass();
         $sp->kServicePartner       = 0;

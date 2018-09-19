@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c92b9c1476125ac94bcc22adf888c661",
+    "content-hash": "233f2dbf76567064d2fb3558c891bb70",
     "packages": [
         {
             "name": "andyftw/ssllabs-php",
@@ -766,6 +766,41 @@
             ],
             "description": "QRCode-Generator adopted from chillerlan/php-qrcode",
             "time": "2016-09-06T11:03:19+00:00"
+        },
+        {
+            "name": "jtlshop/scc",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://gitlab.jtl-software.de/jtlshop/scc.git",
+                "reference": "0f09a638185ca715db6f3640351063c32b493af0"
+            },
+            "require": {
+                "myclabs/php-enum": "^1.5",
+                "php": ">=7.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "scc\\": "src/scc"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Felix Moche",
+                    "email": "felix.moche@jtl-software.com",
+                    "homepage": "https://www.jtl-software.de/"
+                }
+            ],
+            "description": "Smarty component collection",
+            "homepage": "https://www.jtl-software.de/",
+            "keywords": [
+                "jtl-shop"
+            ],
+            "time": "2018-09-19T10:21:31+00:00"
         },
         {
             "name": "jtlshop/semver",
@@ -4535,6 +4570,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "imanee/imanee": 20,
+        "jtlshop/scc": 20,
         "phpgangsta/googleauthenticator": 20,
         "jtlshop/qrcodegenerator": 20,
         "erusev/parsedown": 20,

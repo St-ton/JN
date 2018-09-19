@@ -355,7 +355,7 @@ class Controller
     public function deleteCategories(array $ids): bool
     {
         foreach ($ids as $id) {
-            foreach ($this->getCategoryAndChildrenByID($id) as $newsSubCat) {
+            foreach ($this->getCategoryAndChildrenByID((int)$id) as $newsSubCat) {
                 $this->db->delete('tnewskategorie', 'kNewsKategorie', $newsSubCat);
                 $this->db->delete('tseo', ['cKey', 'kKey'], ['kNewsKategorie', $newsSubCat]);
                 $this->db->delete('tnewskategorienews', 'kNewsKategorie', $newsSubCat);

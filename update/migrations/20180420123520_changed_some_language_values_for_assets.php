@@ -23,7 +23,7 @@
 class Migration_20180420123520 extends Migration implements IMigration
 {
     protected $author = 'Clemens Rudolph';
-    protected $description = 'changed some language-values for assets';
+    protected $description = 'changed language-values for assets';
 
     public function up()
     {

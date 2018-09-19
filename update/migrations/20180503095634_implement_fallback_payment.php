@@ -29,11 +29,9 @@ class Migration_20180503095634 extends Migration implements IMigration
 
     public function up()
     {
-        // create the new "fallback"-payment
         $this->execute('INSERT INTO `tzahlungsart`(`kZahlungsart`, `cName`, `cModulId`, `cKundengruppen`, `cBild`, `nMailSenden`, `cAnbieter`, `cTSCode`, `nWaehrendBestellung`)
             VALUES(0, "Keine Zahlung erforderlich", "' . $this->szPaymentModuleId . '", "", "", 1, "", "", 0)'
         );
-        // depending on the new payment, create the additional stuff
         $oPaymentEntry = $this->fetchOne('SELECT * FROM `tzahlungsart` WHERE `cModulId` = "' . $this->szPaymentModuleId . '"');
 
         $this->execute('INSERT INTO `tzahlungsartsprache`(`kZahlungsart`, `cISOSprache`, `cName`, `cGebuehrname`, `cHinweisText`, `cHinweisTextShop`)
@@ -48,7 +46,6 @@ class Migration_20180503095634 extends Migration implements IMigration
 
     public function down()
     {
-        // collect what we got, before remove anything!
         $oPaymentEntry = $this->fetchOne('SELECT * FROM `tzahlungsart` WHERE `cModulId` = "' . $this->szPaymentModuleId . '"');
 
         $this->execute('DELETE FROM `tzahlungsart` WHERE `cModulID` = "' . $this->szPaymentModuleId . '"');

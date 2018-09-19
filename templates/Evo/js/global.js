@@ -612,7 +612,7 @@ $(document).ready(function () {
      * provide the possibility of removing the shop-credit in
      * the "Versandart/Zahlungsart"-step/mask
      */
-    $("#usingShopCredit").on('click', function() {
+    $("#using-shop-credit").on('click', function() {
         // remove the shop-credit from the basket
         // by loading it with POST-var "dropPos"
         $.ajax({

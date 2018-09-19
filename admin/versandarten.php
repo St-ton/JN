@@ -472,8 +472,8 @@ if ($step === 'neue Versandart') {
         FROM `tzahlungsart`
         WHERE `nActive` = 1
             AND `nNutzbar` = 1
-        ORDER BY `cAnbieter`, `cName`, `nSort`, `kZahlungsart`
-    ',2);
+        ORDER BY `cAnbieter`, `cName`, `nSort`, `kZahlungsart`',
+        \DB\ReturnType::ARRAY_OF_OBJECTS);
     $oVersandklasse_arr = Shop::Container()->getDB()->selectAll('tversandklasse', [], [], '*', 'kVersandklasse');
     $smarty->assign('versandKlassen', $oVersandklasse_arr);
     $kVersandartTMP = 0;

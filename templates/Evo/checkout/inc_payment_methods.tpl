@@ -5,8 +5,8 @@
 {if (int)$ShopCreditAmount > 0 && (int)$OrderAmount === 0}
     <div class="col-xs-12">
         <div class="checkbox">
-            <label class="btn-block" for="usingShopCredit">
-                <input type="checkbox" name="usingShopCredit" id="usingShopCredit"{if (int)$OrderAmount === 0} checked{/if}>
+            <label class="btn-block" for="using-shop-credit">
+                <input type="checkbox" name="using-shop-credit" id="using-shop-credit"{if (int)$OrderAmount === 0} checked{/if}>
                 <input type="hidden" name="Zahlungsart" value="{$AktiveZahlungsart}">
                 <span style="text-transform:none; font-size:12pt;">
                     {if (int)$OrderAmount === 0}

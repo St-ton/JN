@@ -95,7 +95,6 @@ class PaymentMethod
         if ((int)$nAgainCheckout === 1) {
             $this->duringCheckout = 0;
         }
-        // consider the fallback, if order goes to 0.0 (--TODO-- find a better way later)
         if ('za_null_jtl' === $this->cModulId || 'za_null_jtl' === $this->moduleID) {
             $this->kZahlungsart = $result->kZahlungsart;
         }

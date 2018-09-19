@@ -343,14 +343,13 @@ if ($step === 'einstellen') {
 }
 
 if ($step === 'uebersicht') {
-    // prevent "unusable" payment-methods from display them in the config-section (mainly the null-payment)
     $oZahlungsart_arr = Shop::Container()->getDB()->executeQuery('
         SELECT *
         FROM `tzahlungsart`
         WHERE `nActive` = 1
             AND `nNutzbar` = 1
         ORDER BY `cAnbieter`, `cName`, `nSort`, `kZahlungsart`',
-    2);
+        \DB\ReturnType::ARRAY_OF_OBJECTS);
     foreach ($oZahlungsart_arr as $oZahlungsart) {
         $oZahlungsart->nEingangAnzahl = (int)Shop::Container()->getDB()->executeQueryPrepared(
             'SELECT COUNT(*) AS `nAnzahl`

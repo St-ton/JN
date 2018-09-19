@@ -92,8 +92,7 @@ if (isset($_POST['unreg_form']) && (int)$_POST['unreg_form'] === 0) {
     $_POST['form']     = 1;
     include PFAD_ROOT . 'registrieren.php';
 }
-// keeps the selected payment-method selected, during changes of the shipment-method
-if (isset($_GET['kZahlungsart']) && 0 < $_GET['kZahlungsart']) {
+if (isset($_GET['kZahlungsart']) && (int)$_GET['kZahlungsart'] > 0) {
     zahlungsartKorrekt($_GET['kZahlungsart']);
 }
 if ((isset($_POST['versandartwahl']) && (int)$_POST['versandartwahl'] === 1) || isset($_GET['kVersandart'])) {
@@ -216,16 +215,13 @@ if (isset($_SESSION['Zahlungsart'])
     $paymentMethod = PaymentMethod::create('za_billpay_jtl');
     $paymentMethod->handleConfirmation();
 }
-// FallBackPayment if order-amount goes "0.0"
 if ($step === 'Bestaetigung'
-    && 0.0 === $cart->gibGesamtsummeWaren(true, true)
+    && $cart->gibGesamtsummeWaren(true, true) === 0.0
 ) {
-    $savedPayment   = $_SESSION['AktiveZahlungsart']; // save the previously selected paymentMethod
+    $savedPayment   = $_SESSION['AktiveZahlungsart'];
     $oPaymentMethod = PaymentMethod::create('za_null_jtl');
-    zahlungsartKorrekt($oPaymentMethod->kZahlungsart); // (misleading function-name) we change the paymentMethod here
+    zahlungsartKorrekt($oPaymentMethod->kZahlungsart);
 
-    // re-calculate the shop-credit (code-smell: "double code")
-    // same as pruefeGuthabenNutzen(); but ATTENTION: this executes a hook!
     if ((isset($_SESSION['Bestellung']->GuthabenNutzen) && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1)
         || (isset($cPost_arr['guthabenVerrechnen']) && (int)$cPost_arr['guthabenVerrechnen'] === 1)
     ) {
@@ -235,8 +231,8 @@ if ($step === 'Bestaetigung'
             Session::Cart()->gibGesamtsummeWaren(true, false)
         );
     }
-    Warenkorb::refreshChecksum($cart); // we've changed the basket indirectly, so we have to correct its checksum
-    $_SESSION['AktiveZahlungsart'] = $savedPayment; // restore the previously selected paymentMethod
+    Warenkorb::refreshChecksum($cart);
+    $_SESSION['AktiveZahlungsart'] = $savedPayment;
 }
 $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();

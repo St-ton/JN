@@ -31,7 +31,7 @@ interface RendererInterface
     /**
      * @param BoxInterface $box
      */
-    public function setBox(BoxInterface $box);
+    public function setBox(BoxInterface $box): void;
 
     /**
      * @param int        $pageType

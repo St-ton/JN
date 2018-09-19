@@ -36,7 +36,7 @@ final class LinkGroup extends AbstractBox
     /**
      * @inheritdoc
      */
-    public function map(array $boxData)
+    public function map(array $boxData): void
     {
         parent::map($boxData);
         $this->setShow(false);
@@ -52,7 +52,7 @@ final class LinkGroup extends AbstractBox
     /**
      * @return LinkGroup|null
      */
-    public function getLinkGroup()
+    public function getLinkGroup(): ?LinkGroup
     {
         return $this->linkGroup;
     }
@@ -60,7 +60,7 @@ final class LinkGroup extends AbstractBox
     /**
      * @param LinkGroup|null $linkGroup
      */
-    public function setLinkGroup($linkGroup)
+    public function setLinkGroup($linkGroup): void
     {
         $this->linkGroup = $linkGroup;
     }
@@ -76,7 +76,7 @@ final class LinkGroup extends AbstractBox
     /**
      * @param null|string $linkGroupTemplate
      */
-    public function setLinkGroupTemplate(string $linkGroupTemplate)
+    public function setLinkGroupTemplate(string $linkGroupTemplate): void
     {
         $this->linkGroupTemplate = $linkGroupTemplate;
     }

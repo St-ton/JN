@@ -418,9 +418,9 @@ final class LinkAdmin
 
     /**
      * @param array $post
-     * @return Link
+     * @return \stdClass
      */
-    public function createOrUpdateLink(array $post): Link
+    private function createLinkData(array $post): \stdClass
     {
         $link                     = new \stdClass();
         $link->kLink              = (int)$post['kLink'];
@@ -434,11 +434,11 @@ final class LinkAdmin
         $link->cNoFollow          = 'N';
         $link->cIdentifier        = $post['cIdentifier'];
         $link->bIsFluid           = (isset($post['bIsFluid']) && $post['bIsFluid'] === '1') ? 1 : 0;
-        if (isset($post['cKundengruppen']) && \is_array($post['cKundengruppen']) && \count($post['cKundengruppen']) > 0) {
+        if (isset($post['cKundengruppen']) && \is_array($post['cKundengruppen'])) {
             $link->cKundengruppen = \implode(';', $post['cKundengruppen']) . ';';
-        }
-        if (\is_array($post['cKundengruppen']) && \in_array('-1', $post['cKundengruppen'])) {
-            $link->cKundengruppen = 'NULL';
+            if (\in_array('-1', $post['cKundengruppen'], true)) {
+                $link->cKundengruppen = 'NULL';
+            }
         }
         if (isset($post['bIsActive']) && (int)$post['bIsActive'] !== 1) {
             $link->bIsActive = 0;
@@ -453,8 +453,17 @@ final class LinkAdmin
             $link->nLinkart = (int)$post['nSpezialseite'];
         }
 
+        return $link;
+    }
+
+    /**
+     * @param array $post
+     * @return Link
+     */
+    public function createOrUpdateLink(array $post): Link
+    {
+        $link = $this->createLinkData($post);
         if ((int)$post['kLink'] === 0) {
-            // create new
             $kLink              = $this->db->insert('tlink', $link);
             $assoc              = new \stdClass();
             $assoc->linkID      = $kLink;
@@ -462,12 +471,10 @@ final class LinkAdmin
             $this->db->insert('tlinkgroupassociations', $assoc);
 
         } else {
-            // update existing
             $kLink    = (int)$post['kLink'];
             $revision = new \Revision();
             $revision->addRevision('link', (int)$post['kLink'], true);
             $this->db->update('tlink', 'kLink', $kLink, $link);
-
         }
         $sprachen           = \Sprache::getAllLanguages();
         $linkSprache        = new \stdClass();
@@ -499,9 +506,10 @@ final class LinkAdmin
                 $linkSprache->cSeo = $post['cSeo_' . $sprache->cISO];
             }
             $linkSprache->cMetaTitle = $linkSprache->cTitle;
-            if (isset($post['cMetaTitle_' . $sprache->cISO])) {
+            $idx                     = 'cMetaTitle_' . $sprache->cISO;
+            if (isset($post[$idx])) {
                 $linkSprache->cMetaTitle = \htmlspecialchars(
-                    $post['cMetaTitle_' . $sprache->cISO],
+                    $post[$idx],
                     \ENT_COMPAT | \ENT_HTML401,
                     \JTL_CHARSET
                 );

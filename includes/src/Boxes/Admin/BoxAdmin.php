@@ -121,7 +121,7 @@ final class BoxAdmin
      * @return \stdClass|null
      * @former holeVorlage()
      */
-    private function getTemplate(int $baseType)
+    private function getTemplate(int $baseType): ?\stdClass
     {
         return $this->db->select('tboxvorlage', 'kBoxvorlage', $baseType);
     }

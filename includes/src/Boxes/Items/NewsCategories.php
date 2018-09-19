@@ -29,7 +29,7 @@ final class NewsCategories extends AbstractBox
         $cacheID   = 'bnk_' . $langID . '_' . \Session::CustomerGroup()->getID() . '_' . \md5($cSQL);
         $cached    = true;
         $cacheTags = [\CACHING_GROUP_BOX, \CACHING_GROUP_NEWS];
-        if (true||($newsCategories = \Shop::Container()->getCache()->get($cacheID)) === false) {
+        if (($newsCategories = \Shop::Container()->getCache()->get($cacheID)) === false) {
             $cached         = false;
             $newsCategories = \Shop::Container()->getDB()->queryPrepared(
                 "SELECT tnewskategorie.kNewsKategorie, t.languageID AS kSprache, t.name AS cName,

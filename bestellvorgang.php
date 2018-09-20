@@ -215,8 +215,7 @@ if (isset($_SESSION['Zahlungsart'])
     $paymentMethod = PaymentMethod::create('za_billpay_jtl');
     $paymentMethod->handleConfirmation();
 }
-if ($step === 'Bestaetigung' && $cart->gibGesamtsummeWaren(true) === 0.0
-) {
+if ($step === 'Bestaetigung' && $cart->gibGesamtsummeWaren(true) === 0.0) {
     $savedPayment   = $_SESSION['AktiveZahlungsart'];
     $oPaymentMethod = PaymentMethod::create('za_null_jtl');
     zahlungsartKorrekt($oPaymentMethod->kZahlungsart);

@@ -212,11 +212,9 @@ class IOMethods
         $oXSelling     = ArtikelHelper::getXSelling($kArtikel, $Artikel->nIstVater > 0);
 
         $smarty->assign('WarenkorbVersandkostenfreiHinweis', VersandartHelper::getShippingFreeString(
-            VersandartHelper::getFreeShippingMinimum($kKundengruppe),
-            $cart->gibGesamtsummeWarenExt(
-                [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON],
-                true
-            )))
+                    VersandartHelper::getFreeShippingMinimum($kKundengruppe),
+                    $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)
+                ))
                ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
                ->assign('fAnzahl', $amount)
                ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant())
@@ -556,13 +554,7 @@ class IOMethods
                        ->assign('FavourableShipping', $cart->getFavourableShipping())
                        ->assign('WarenkorbVersandkostenfreiHinweis', VersandartHelper::getShippingFreeString(
                            $versandkostenfreiAb,
-                           $cart->gibGesamtsummeWarenExt(
-                               [
-                                   C_WARENKORBPOS_TYP_ARTIKEL,
-                                   C_WARENKORBPOS_TYP_KUPON,
-                                   C_WARENKORBPOS_TYP_NEUKUNDENKUPON
-                               ],
-                               true)
+                           $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)
                        ))
                        ->assign('oSpezialseiten_arr', Shop::Container()->getLinkService()->getSpecialPages());
 

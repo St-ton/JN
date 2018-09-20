@@ -239,10 +239,9 @@ final class Export
         $handle   = $this->gzip
             ? \gzopen($fileName . '.gz', 'w9')
             : \fopen($fileName, 'wb+');
-        \fwrite($handle,
-            $this->schemaRenderer->buildHeader() .
-            $data .
-            $this->schemaRenderer->buildFooter()
+        \fwrite(
+            $handle,
+            $this->schemaRenderer->buildHeader() . $data . $this->schemaRenderer->buildFooter()
         );
         \fclose($handle);
 

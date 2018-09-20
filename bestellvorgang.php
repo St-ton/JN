@@ -112,8 +112,6 @@ if (isset($_GET['unreg'])
 }
 //autom. step ermitteln
 if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
-    $step = 'Lieferadresse';
-
     if (!isset($_SESSION['Lieferadresse'])) {
         pruefeLieferdaten(['kLieferadresse' => 0]);
     }
@@ -177,6 +175,7 @@ pruefeZahlungsartwahlStep($_POST);
 if ($step === 'accountwahl') {
     gibStepAccountwahl();
     gibStepUnregistriertBestellen();
+    gibStepLieferadresse();
 }
 if ($step === 'edit_customer_address' || $step === 'Lieferadresse') {
     validateCouponInCheckout();
@@ -219,17 +218,6 @@ $linkHelper    = Shop::Container()->getLinkService();
 $kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_BESTELLVORGANG);
 $link          = $linkHelper->getPageLink($kLink);
 WarenkorbHelper::addVariationPictures($cart);
-
-//fix: stay on choose account site when not logged in
-if (($step === 'edit_customer_address' || $step === 'Lieferadresse') && (!isset($_SESSION['Kunde']->kKunde) || !($_SESSION['Kunde']->kKunde > 0))) {
-    $step = 'accountwahl';
-    $editRechnungsadresse = 0;
-} elseif ($step === 'edit_customer_address' || $step === 'Lieferadresse') {
-    $editRechnungsadresse = 1;
-} else {
-    $editRechnungsadresse = RequestHelper::verifyGPCDataInt('editRechnungsadresse');
-}
-
 Shop::Smarty()->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
         Shop::getLanguage(),
         Session::CustomerGroup()->getID())
@@ -239,7 +227,7 @@ Shop::Smarty()->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
     ->assign('Link', $link)
     ->assign('hinweis', $cHinweis)
     ->assign('step', $step)
-    ->assign('editRechnungsadresse', $editRechnungsadresse)
+    ->assign('editRechnungsadresse', RequestHelper::verifyGPCDataInt('editRechnungsadresse'))
     ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
     ->assign('Warensumme', $cart->gibGesamtsummeWaren())
     ->assign('Steuerpositionen', $cart->gibSteuerpositionen())

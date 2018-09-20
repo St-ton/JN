@@ -6,11 +6,13 @@
 
 namespace Services\JTL\Validation\Rules;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * Class GreaterThanEqualsTest
  * @package Services\JTL\Validation\Rules
  */
-class GreaterThanEqualsTest extends \PHPUnit_Framework_TestCase
+class GreaterThanEqualsTest extends TestCase
 {
     public function test()
     {

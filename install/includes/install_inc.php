@@ -132,8 +132,8 @@ function parse_mysql_dump($url)
             if (preg_match('/;\s*$/', $sql_line)) {
                 $result = $GLOBALS['DB']->executeQuery($query, 10);
                 if (!$result) {
-                    $errors .= '<br>' . $GLOBALS['DB']::getErrorMessage() .
-                        ' Nr: ' . $GLOBALS['DB']::getErrorCode() . ' in Zeile ' . $i . '<br>' . $query . '<br>';
+                    $errors .= '<br>' . $GLOBALS['DB']->getErrorMessage() .
+                        ' Nr: ' . $GLOBALS['DB']->getErrorCode() . ' in Zeile ' . $i . '<br>' . $query . '<br>';
                 }
                 $query = '';
             }

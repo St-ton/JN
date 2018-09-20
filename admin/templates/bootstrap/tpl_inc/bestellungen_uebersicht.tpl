@@ -43,16 +43,26 @@
                             <th>{#orderStatus#}</th>
                             <th>{#orderSum#}</th>
                             <th class="tright">{#orderDate#}</th>
+                            <th class="tright">{#orderIpAddress#}</th>
                         </tr>
                         </thead>
                         <tbody>
-                        {foreach name=bestellungen from=$oBestellung_arr item=oBestellung}
+                        {foreach $oBestellung_arr as $oBestellung}
                             <tr>
                                 <td class="check">{if $oBestellung->cAbgeholt === 'Y' && $oBestellung->cZahlungsartName !== 'Amazon Payment' && $oBestellung->oKunde !== null}
                                     <input type="checkbox" name="kBestellung[]" value="{$oBestellung->kBestellung}" />{/if}
                                 </td>
                                 <td>{$oBestellung->cBestellNr}</td>
-                                <td>{if isset($oBestellung->oKunde->cVorname) || isset($oBestellung->oKunde->cNachname) || isset($oBestellung->oKunde->cFirma)}{$oBestellung->oKunde->cVorname} {$oBestellung->oKunde->cNachname}{if isset($oBestellung->oKunde->cFirma) && $oBestellung->oKunde->cFirma|strlen > 0} ({$oBestellung->oKunde->cFirma}){/if}{else}{#noAccount#}{/if}</td>
+                                <td>
+                                    {if isset($oBestellung->oKunde->cVorname) || isset($oBestellung->oKunde->cNachname) || isset($oBestellung->oKunde->cFirma)}
+                                        {$oBestellung->oKunde->cVorname} {$oBestellung->oKunde->cNachname}
+                                        {if isset($oBestellung->oKunde->cFirma) && $oBestellung->oKunde->cFirma|strlen > 0}
+                                            ({$oBestellung->oKunde->cFirma})
+                                        {/if}
+                                    {else}
+                                        {#noAccount#}
+                                    {/if}
+                                </td>
                                 <td>{if isset($oBestellung->oKunde) && $oBestellung->oKunde->nRegistriert === 1}{#yes#}{else}{#no#}{/if}</td>
                                 <td>{$oBestellung->cVersandartName}</td>
                                 <td>{$oBestellung->cZahlungsartName}</td>
@@ -74,6 +84,7 @@
                                 </td>
                                 <td class="tcenter">{$oBestellung->WarensummeLocalized[0]}</td>
                                 <td class="tright">{$oBestellung->dErstelldatum_de}</td>
+                                <td class="tright">{$oBestellung->cIP}</td>
                             </tr>
                         {/foreach}
                         </tbody>

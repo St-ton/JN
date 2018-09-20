@@ -1918,9 +1918,9 @@ function installierePluginVorbereitung($cVerzeichnis, $oPluginOld = 0)
 /**
  * Installiert ein Plugin
  *
- * @param array  $XML_arr
- * @param string $cVerzeichnis
- * @param Plugin $oPluginOld
+ * @param array      $XML_arr
+ * @param string     $cVerzeichnis
+ * @param Plugin|int $oPluginOld
  * @return int
  */
 function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
@@ -2048,7 +2048,7 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
     if ($bSQLFehler) {
         deinstallierePlugin($oPlugin->kPlugin, $nXMLVersion);
     }
-    if ($nReturnValue === PLUGIN_CODE_OK && ($p = Plugin::bootstrapper($oPlugin->kPlugin)) !== null) {
+    if ($nReturnValue === PLUGIN_CODE_OK && $oPluginOld === 0 && ($p = Plugin::bootstrapper($oPlugin->kPlugin)) !== null) {
         $p->installed();
     }
     // Installation von höheren XML Versionen

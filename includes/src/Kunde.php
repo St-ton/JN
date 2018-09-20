@@ -527,7 +527,7 @@ class Kunde
         $obj->fRabatt        = $this->fRabatt;
         $obj->cHerkunft      = $this->cHerkunft;
         $obj->dErstellt      = $this->dErstellt ?? '_DBNULL_';
-        $obj->dVeraendert    = empty($this->dVeraendert) ? 'NOW()' : $obj->dVeraendert;
+        $obj->dVeraendert    = $this->dVeraendert ?? 'NOW()';
         $obj->cAktiv         = $this->cAktiv;
         $obj->cAbgeholt      = $this->cAbgeholt;
         $obj->nRegistriert   = $this->nRegistriert;

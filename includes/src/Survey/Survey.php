@@ -112,7 +112,7 @@ class Survey
     /**
      * @var array
      */
-    private static $mapping = [
+    protected static $mapping = [
         'kUmfrage'          => 'ID',
         'kSprache'          => 'LanguageID',
         'kKupon'            => 'CouponID',

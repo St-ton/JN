@@ -83,7 +83,7 @@ class SurveyQuestion
     /**
      * @var array
      */
-    private static $mapping = [
+    protected static $mapping = [
         'kUmfrageFrage'            => 'ID',
         'kUmfrage'                 => 'SurveyID',
         'cTyp'                     => 'Type',

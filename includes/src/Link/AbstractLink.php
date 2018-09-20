@@ -17,7 +17,7 @@ abstract class AbstractLink implements LinkInterface
     /**
      * @var array
      */
-    private static $mapping = [
+    protected static $mapping = [
         'cNoFollow'          => 'NoFollowCompat',
         'cURL'               => 'URL',
         'cURLFull'           => 'URL',

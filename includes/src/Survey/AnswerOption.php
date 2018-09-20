@@ -37,7 +37,7 @@ class AnswerOption
     /**
      * @var array
      */
-    private static $mapping = [
+    protected static $mapping = [
         'kUmfrageFrageAntwort' => 'ID',
         'kUmfrageFrage'        => 'QuestionID',
         'nSort'                => 'Sort',

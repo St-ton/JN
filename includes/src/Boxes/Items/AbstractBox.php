@@ -318,13 +318,13 @@ abstract class AbstractBox implements BoxInterface
         if ($this->show === false) {
             return false;
         }
-        $visible = empty($this->filter) || (isset($this->filter[$pageType]) && $this->filter[$pageType] === true);
+        $vis = empty($this->filter) || (isset($this->filter[$pageType]) && $this->filter[$pageType] === true);
 
-        if ($visible === false && $pageID > 0 && isset($this->filter[$pageType]) && \is_array($this->filter[$pageType])) {
-            $visible = \in_array($pageID, $this->filter[$pageType], true);
+        if ($vis === false && $pageID > 0 && isset($this->filter[$pageType]) && \is_array($this->filter[$pageType])) {
+            $vis = \in_array($pageID, $this->filter[$pageType], true);
         }
 
-        return $visible;
+        return $vis;
     }
 
     /**

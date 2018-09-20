@@ -69,7 +69,7 @@ class Kundengruppe
     /**
      * @var array
      */
-    private static $mapping = [
+    protected static $mapping = [
         'kKundengruppe'              => 'ID',
         'kSprache'                   => 'LanguageID',
         'nNettoPreise'               => 'IsMerchant',

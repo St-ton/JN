@@ -37,7 +37,7 @@ class MatrixOption
     /**
      * @var array
      */
-    private static $mapping = [
+    protected static $mapping = [
         'kUmfrageMatrixOption' => 'ID',
         'kUmfrageFrage'        => 'QuestionID',
         'nSort'                => 'Sort',

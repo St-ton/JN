@@ -17,7 +17,7 @@ abstract class AbstractItem implements ItemInterFace
     /**
      * @var array
      */
-    private static $mapping = [
+    protected static $mapping = [
         'kNews'                => 'ID',
         'kSprache'             => 'LanguageID',
         'cKundengruppe'        => 'CustomerGroupsCompat',

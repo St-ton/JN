@@ -15,7 +15,7 @@ class Boxen
     /**
      * @var array
      */
-    private static $mapping = [
+    protected static $mapping = [
         'boxes'     => 'BoxList',
         'boxConfig' => 'Config'
     ];

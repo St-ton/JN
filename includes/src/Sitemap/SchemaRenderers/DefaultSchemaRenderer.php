@@ -27,6 +27,7 @@ final class DefaultSchemaRenderer extends AbstractSchemaRenderer
             }
             $xml .= '</sitemap>' . "\n";
         }
+        $xml .= '</sitemapindex>' . "\n";
 
         return $xml;
     }

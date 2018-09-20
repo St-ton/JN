@@ -93,7 +93,7 @@ if (isset($_POST['unreg_form']) && (int)$_POST['unreg_form'] === 0) {
     include PFAD_ROOT . 'registrieren.php';
 }
 if (isset($_GET['kZahlungsart']) && (int)$_GET['kZahlungsart'] > 0) {
-    zahlungsartKorrekt($_GET['kZahlungsart']);
+    zahlungsartKorrekt((int)$_GET['kZahlungsart']);
 }
 if ((isset($_POST['versandartwahl']) && (int)$_POST['versandartwahl'] === 1) || isset($_GET['kVersandart'])) {
     unset($_SESSION['Zahlungsart']);
@@ -215,8 +215,7 @@ if (isset($_SESSION['Zahlungsart'])
     $paymentMethod = PaymentMethod::create('za_billpay_jtl');
     $paymentMethod->handleConfirmation();
 }
-if ($step === 'Bestaetigung'
-    && $cart->gibGesamtsummeWaren(true, true) === 0.0
+if ($step === 'Bestaetigung' && $cart->gibGesamtsummeWaren(true) === 0.0
 ) {
     $savedPayment   = $_SESSION['AktiveZahlungsart'];
     $oPaymentMethod = PaymentMethod::create('za_null_jtl');

@@ -68,7 +68,6 @@ function resetteUpdateDB()
             \DB\ReturnType::DEFAULT
         );
     }
-    // Template Cache leeren
     loescheTPLCacheUpdater();
 
     if (!Shop::Container()->getDB()->getErrorCode()) {
@@ -157,7 +156,7 @@ function updateZeilenBis($cDatei)
 }
 
 /**
- * @return mixed,
+ * @return stdClass
  */
 function gibShopVersion()
 {
@@ -166,7 +165,7 @@ function gibShopVersion()
 
 /**
  * @param int $nVersion
- * @return mixed
+ * @return int
  */
 function gibZielVersion(int $nVersion)
 {
@@ -281,13 +280,13 @@ function dbUpdateIO()
         $dbVersion       = $updater->getCurrentDatabaseVersion();
         $updateResult    = $updater->update();
         $availableUpdate = $updater->hasPendingUpdates();
-
         if ($updateResult instanceof IMigration) {
             $updateResult = sprintf('Migration: %s', $updateResult->getDescription());
+        } elseif ($updateResult instanceof Version) {
+            $updateResult = sprintf('Version: %d.%02d', $updateResult->getMajor(), $updateResult->getMinor());
         } else {
             $updateResult = sprintf('Version: %.2f', $updateResult / 100);
         }
-
         return [
             'result'          => $updateResult,
             'currentVersion'  => $dbVersion,

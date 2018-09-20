@@ -95,7 +95,7 @@ class PaymentMethod
         if ((int)$nAgainCheckout === 1) {
             $this->duringCheckout = 0;
         }
-        if ('za_null_jtl' === $this->cModulId || 'za_null_jtl' === $this->moduleID) {
+        if ($this->cModulId === 'za_null_jtl' || $this->moduleID === 'za_null_jtl') {
             $this->kZahlungsart = $result->kZahlungsart;
         }
         return $this;
@@ -453,15 +453,16 @@ class PaymentMethod
     {
         if ($this->getSetting('min_bestellungen') > 0) {
             if (isset($customer->kKunde) && $customer->kKunde > 0) {
-                $res = Shop::Container()->getDB()->executeQueryPrepared("
-                  SELECT COUNT(*) AS cnt
-                      FROM tbestellung
-                      WHERE kKunde = :customer_kkunde
-                          AND (
-                                cStatus = '" . BESTELLUNG_STATUS_BEZAHLT . "'
-                                OR cStatus = '" . BESTELLUNG_STATUS_VERSANDT .
-                            "')",
-                    ['customer_kkunde' => (int)$customer->kKunde],
+                $res = Shop::Container()->getDB()->executeQueryPrepared(
+                    'SELECT COUNT(*) AS cnt
+                        FROM tbestellung
+                        WHERE kKunde = :cid
+                        AND (cStatus = :stp OR cStatus = :sts)',
+                    [
+                        'cid' => (int)$customer->kKunde,
+                        'stp' => BESTELLUNG_STATUS_BEZAHLT,
+                        'sts' => BESTELLUNG_STATUS_VERSANDT
+                    ],
                     \DB\ReturnType::SINGLE_OBJECT
                 );
                 $count = (int)$res->cnt;

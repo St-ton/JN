@@ -561,11 +561,6 @@ class Artikel
     public $cEstimatedDelivery;
 
     /**
-     * @var Preisradar
-     */
-    public $oPreisradar;
-
-    /**
      * @var int
      */
     public $kVPEEinheit;

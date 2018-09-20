@@ -26,6 +26,7 @@ final class Product extends AbstractFactory
         $_SESSION['kSprache']    = $defaultLangID;
         $_SESSION['cISOSprache'] = $defaultLang->cISO;
         $andWhere                = '';
+        $filterConf              = (int)$this->config['global']['artikel_artikelanzeigefilter'];
 
         $languageIDs = map($languages, function ($e) {
             return (int)$e->kSprache;
@@ -33,9 +34,9 @@ final class Product extends AbstractFactory
         if ($this->config['sitemap']['sitemap_varkombi_children_export'] !== 'Y') {
             $andWhere .= ' AND tartikel.kVaterArtikel = 0';
         }
-        if ((int)$this->config['global']['artikel_artikelanzeigefilter'] === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) {
+        if ($filterConf === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) {
             $andWhere .= " AND (tartikel.cLagerBeachten = 'N' OR tartikel.fLagerbestand > 0)";
-        } elseif ((int)$this->config['global']['artikel_artikelanzeigefilter'] === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) {
+        } elseif ($filterConf === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) {
             $andWhere .= " AND (tartikel.cLagerBeachten = 'N' 
                                OR tartikel.cLagerKleinerNull = 'Y' 
                                OR tartikel.fLagerbestand > 0)";

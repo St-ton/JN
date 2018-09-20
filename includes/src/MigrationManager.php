@@ -36,7 +36,7 @@ class MigrationManager
      * @return array
      * @throws Exception
      */
-    public function migrate($identifier = null)
+    public function migrate($identifier = null): array
     {
         $migrations         = $this->getMigrations();
         $executedMigrations = $this->getExecutedMigrations();
@@ -60,7 +60,7 @@ class MigrationManager
                     if ($migration->getId() <= $identifier) {
                         break;
                     }
-                    if (in_array($migration->getId(), $executedMigrations)) {
+                    if (in_array($migration->getId(), $executedMigrations, true)) {
                         $executed[] = $migration;
                         $this->executeMigration($migration, IMigration::DOWN);
                     }
@@ -71,7 +71,7 @@ class MigrationManager
                 if ($migration->getId() > $identifier) {
                     break;
                 }
-                if (!in_array($migration->getId(), $executedMigrations)) {
+                if (!in_array($migration->getId(), $executedMigrations, true)) {
                     $executed[] = $migration;
                     $this->executeMigration($migration, IMigration::UP);
                 }
@@ -98,7 +98,6 @@ class MigrationManager
     public function getMigrationById($id): IMigration
     {
         $migrations = $this->getMigrations();
-
         if (!array_key_exists($id, $migrations)) {
             throw new \InvalidArgumentException(sprintf(
                 'Migration "%s" not found', $id
@@ -130,10 +129,7 @@ class MigrationManager
     {
         // reset cached executed migrations
         $this->executedMigrations = null;
-
         $start = new DateTime('now');
-        $id    = $migration->getId();
-
         try {
             Shop::Container()->getDB()->beginTransaction();
             $migration->$direction();

@@ -590,13 +590,13 @@ class Controller
                 $extension = \substr(
                     $type,
                     \strpos($type, '/') + 1,
-                    \strlen($type - \strpos($type, '/')) + 1
+                    \strlen($type) - \strpos($type, '/') + 1
                 );
-                //not elegant, but since it's 99% jpg..
+                // not elegant, but since it's 99% jpg..
                 if ($extension === 'jpe') {
                     $extension = 'jpg';
                 }
-                //check if image exists and delete
+                // check if image exists and delete
                 foreach ($oldImages as $image) {
                     if (\strpos($image->cDatei, 'Bild' . ($i + 1) . '.') !== false
                         && $_FILES['Bilder']['name'][$i - $counter] !== ''

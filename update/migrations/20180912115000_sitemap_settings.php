@@ -72,7 +72,7 @@ class Migration_20180912115000 extends Migration implements IMigration
             'sitemap_images_news_items',
             'N',
             CONF_SITEMAP,
-            'Newskategoriebilder anzeigen',
+            'Newsbeitragsbilder anzeigen',
             'selectbox',
             124,
             (object)[

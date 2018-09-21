@@ -29,7 +29,7 @@ if (auth()) {
         if ($found) {
             images_xml($newTmpDir, simplexml_load_file($newTmpDir . 'images.xml'));
         }
-        removeTemporaryFiles($newTmpDir);
+        removeTemporaryFiles($newTmpDir, true);
     }
 }
 

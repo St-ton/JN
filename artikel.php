@@ -68,16 +68,6 @@ if (isset($AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigeformat'])
 }
 // 404
 if (empty($AktuellerArtikel->kArtikel)) {
-    // #6317 - send 301 redirect when filtered
-    if ((((int)$Einstellungen['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER)
-            || ((int)$Einstellungen['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL))
-        && (int)$Einstellungen['global']['artikel_artikelanzeigefilter_seo'] === 301
-    ) {
-        http_response_code(301);
-        header('Location: ' . $shopURL);
-        exit;
-    }
-    // 404 otherwise
     Shop::$is404    = true;
     Shop::$kLink    = 0;
     Shop::$kArtikel = 0;
@@ -88,18 +78,23 @@ $similarArticles = (int)$Einstellungen['artikeldetails']['artikeldetails_aehnlic
     ? $AktuellerArtikel->holeAehnlicheArtikel()
     : [];
 if (Shop::$kVariKindArtikel > 0) {
-    $oArtikelOptionen                                  = Artikel::getDetailOptions();
-    $oArtikelOptionen->nKeinLagerbestandBeachten       = 1;
-    $oVariKindArtikel                                  = (new Artikel())->fuelleArtikel(Shop::$kVariKindArtikel,
-        $oArtikelOptionen);
-    $oVariKindArtikel->verfuegbarkeitsBenachrichtigung = ArtikelHelper::showAvailabilityForm(
-        $oVariKindArtikel,
-        $Einstellungen['artikeldetails']['benachrichtigung_nutzen']);
-    $AktuellerArtikel                                  = ArtikelHelper::combineParentAndChild($AktuellerArtikel,
-        $oVariKindArtikel);
-    $bCanonicalURL                                     = $Einstellungen['artikeldetails']['artikeldetails_canonicalurl_varkombikind'] !== 'N';
-    $cCanonicalURL                                     = $AktuellerArtikel->baueVariKombiKindCanonicalURL(SHOP_SEO,
-        $AktuellerArtikel, $bCanonicalURL);
+    $oVariKindArtikel = (new Artikel())->fuelleArtikel(Shop::$kVariKindArtikel);
+    if ($oVariKindArtikel !== null && $oVariKindArtikel->kArtikel > 0) {
+        $oVariKindArtikel->verfuegbarkeitsBenachrichtigung = ArtikelHelper::showAvailabilityForm(
+            $oVariKindArtikel,
+            $Einstellungen['artikeldetails']['benachrichtigung_nutzen']
+        );
+
+        $AktuellerArtikel = ArtikelHelper::combineParentAndChild($AktuellerArtikel, $oVariKindArtikel);
+    } else {
+        Shop::$is404    = true;
+        Shop::$kLink    = 0;
+        Shop::$kArtikel = 0;
+
+        return;
+    }
+    $bCanonicalURL = $Einstellungen['artikeldetails']['artikeldetails_canonicalurl_varkombikind'] !== 'N';
+    $cCanonicalURL = $AktuellerArtikel->baueVariKombiKindCanonicalURL(SHOP_SEO, $AktuellerArtikel, $bCanonicalURL);
 }
 if ($Einstellungen['preisverlauf']['preisverlauf_anzeigen'] === 'Y' && Session::CustomerGroup()->mayViewPrices()) {
     Shop::$kArtikel = Shop::$kVariKindArtikel > 0
@@ -151,8 +146,7 @@ if ($AktuellerArtikel->Bewertungen === null || $bewertung_sterne > 0) {
     $AktuellerArtikel->holehilfreichsteBewertung(Shop::getLanguage());
 }
 
-if (isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich,
-        $AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung)
+if (isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich)
     && (int)$AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0
 ) {
     $oBewertung_arr = array_filter(
@@ -166,8 +160,10 @@ if (isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreic
     $oBewertung_arr = $AktuellerArtikel->Bewertungen->oBewertung_arr;
 }
 if (Session::Customer()->getID() > 0) {
-    $bereitsBewertet = ArtikelHelper::getRatedByCurrentCustomer((int)$AktuellerArtikel->kArtikel,
-        (int)$AktuellerArtikel->kVaterArtikel);
+    $bereitsBewertet = ArtikelHelper::getRatedByCurrentCustomer(
+        (int)$AktuellerArtikel->kArtikel,
+        (int)$AktuellerArtikel->kVaterArtikel
+    );
 }
 
 $pagination = (new Pagination('ratings'))
@@ -221,9 +217,13 @@ $smarty->assign('showMatrix', $AktuellerArtikel->showMatrix())
            : ArtikelHelper::getXSelling($AktuellerArtikel->kArtikel, $AktuellerArtikel->nIstVater > 0))
        ->assign('Artikelhinweise', $Artikelhinweise)
        ->assign('PositiveFeedback', $PositiveFeedback)
-       ->assign('verfuegbarkeitsBenachrichtigung', ArtikelHelper::showAvailabilityForm(
-           $AktuellerArtikel,
-           $Einstellungen['artikeldetails']['benachrichtigung_nutzen']))
+       ->assign(
+           'verfuegbarkeitsBenachrichtigung',
+           ArtikelHelper::showAvailabilityForm(
+               $AktuellerArtikel,
+               $Einstellungen['artikeldetails']['benachrichtigung_nutzen']
+           )
+       )
        ->assign('ProdukttagHinweis', ArtikelHelper::editProductTags($AktuellerArtikel))
        ->assign('ProduktTagging', $AktuellerArtikel->tags)
        ->assign('BlaetterNavi', $oBlaetterNavi)

@@ -99,10 +99,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
            'WarenkorbVersandkostenfreiHinweis',
            VersandartHelper::getShippingFreeString(
                $oVersandartKostenfrei,
-               $cart->gibGesamtsummeWarenExt(
-                   [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON],
-                   true
-               )
+               $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)
            )
        )
        ->assign('meta_title', $cMetaTitle ?? '')

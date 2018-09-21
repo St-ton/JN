@@ -440,7 +440,7 @@ class Controller
         $parentID     = (int)$post['kParent'];
         $previewImage = $post['previewImage'];
         $flag         = \ENT_COMPAT | \ENT_HTML401;
-//        $this->db->delete('tseo', ['cKey', 'kKey'], ['kNewsKategorie', $categoryID]);
+        $this->db->delete('tseo', ['cKey', 'kKey'], ['kNewsKategorie', $categoryID]);
         $newsCategory                        = new \stdClass();
         $newsCategory->kParent               = $parentID;
         $newsCategory->nSort                 = $sort > -1 ? $sort : 0;
@@ -488,16 +488,10 @@ class Controller
                     [$categoryID, $language->kSprache],
                     $loc
                 );
-                $this->db->update(
-                    'tseo',
-                    ['cKey', 'kSprache'],
-                    ['kNewsKategorie', $language->kSprache],
-                    $seoData
-                );
             } else {
                 $this->db->insert('tnewskategoriesprache', $loc);
-                $this->db->insert('tseo', $seoData);
             }
+            $this->db->insert('tseo', $seoData);
         }
         // set same activation status for all subcategories
         $affected    = $this->getCategoryAndChildrenByID($categoryID);
@@ -507,15 +501,17 @@ class Controller
             $this->db->update('tnewskategorie', 'kNewsKategorie', $id, $upd);
         }
         // Vorschaubild hochladen
+        $error = false;
         $dir = self::UPLOAD_DIR_CATEGORY . $categoryID;
         if (!\is_dir($dir) && !\mkdir($dir) && !\is_dir($dir)) {
-            throw new \Exception('Cannot create upload dir: ' . $dir);
+            $error = true;
+            $this->setErrorMsg('Verzeichnis konnte nicht erstellt werden: ' . $dir);
         }
         if (isset($_FILES['previewImage']['name']) && \strlen($_FILES['previewImage']['name']) > 0) {
             $extension = \substr(
                 $_FILES['previewImage']['type'],
                 \strpos($_FILES['previewImage']['type'], '/') + 1,
-                \strlen($_FILES['previewImage']['type'] - \strpos($_FILES['previewImage']['type'], '/')) + 1
+                \strlen($_FILES['previewImage']['type']) - \strpos($_FILES['previewImage']['type'], '/') + 1
             );
             // not elegant, but since it's 99% jpg..
             if ($extension === 'jpe') {
@@ -529,8 +525,10 @@ class Controller
             $this->db->update('tnewskategorie', 'kNewsKategorie', $categoryID, $upd);
         }
         $this->rebuildCategoryTree(0, 1);
-        $this->msg .= 'Ihre Newskategorie wurde erfolgreich eingetragen.<br />';
-        $this->newsRedirect('kategorien', $this->msg);
+        if ($error === false) {
+            $this->msg .= 'Ihre Newskategorie wurde erfolgreich eingetragen.<br />';
+            $this->newsRedirect('kategorien', $this->msg);
+        }
         $newsCategory = new Category($this->db);
         $this->flushCache();
 

@@ -27,9 +27,9 @@ class PremiumPlugin
     private $longDescription;
 
     /**
-     * @var string
+     * @var stdClass
      */
-    private $shortDescription = '';
+    private $shortDescription;
 
     /**
      * @var string
@@ -304,7 +304,7 @@ class PremiumPlugin
     /**
      * @return stdClass
      */
-    public function getLongDescription()
+    public function getLongDescription(): stdClass
     {
         return $this->longDescription;
     }
@@ -324,9 +324,9 @@ class PremiumPlugin
     }
 
     /**
-     * @return string
+     * @return stdClass
      */
-    public function getShortDescription(): string
+    public function getShortDescription(): stdClass
     {
         return $this->shortDescription;
     }

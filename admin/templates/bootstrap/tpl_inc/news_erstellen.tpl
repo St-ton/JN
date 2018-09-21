@@ -179,28 +179,20 @@
                             <span class="input-group-addon">
                                 <label for="previewImage">{#newsPreview#}</label>
                             </span>
-                            <div>
+                            <div class="input-group-wrap">
                                 {if !empty($oNews->getPreviewImage())}
-                                    <img src="{$shopURL}/{$oNews->getPreviewImage()}" alt="" height="20" width="20" class="preview-image left" style="margin-right: 10px;" />
+                                    <img src="{$shopURL}/{$oNews->getPreviewImage()}" alt="" height="20" width="20" class="preview-image left" style="margin: 0 10px;" />
                                 {/if}
                                 <input id="previewImage" name="previewImage" type="file" maxlength="2097152" accept="image/*" />
                                 <input name="previewImage" type="hidden" value="{if !empty($oNews->getPreviewImage())}{$oNews->getPreviewImage()}{/if}" />
                             </div>
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="Bilder_0">{#newsPictures#}</label>
-                            </span>
-                            <input id="Bilder_0" name="Bilder[]" type="file" maxlength="2097152" accept="image/*" />
-                        </div>
-                        <div class="input-group">
-                            <button name="hinzufuegen" type="button" value="{#newsPicAdd#}" onclick="addInputRow();" class="btn btn-primary add">{#newsPicAdd#}</button>
-                        </div>
+                        {if isset($oDatei_arr) && $oDatei_arr|@count > 0}
                         <div class="input-group">
                             <span class="input-group-addon">
                                 <label>{#newsPics#}</label>
                             </span>
-                            {if isset($oDatei_arr) && $oDatei_arr|@count > 0}
+                            <div class="input-group-wrap">
                                 {foreach name=bilder from=$oDatei_arr item=oDatei}
                                     <div class="well col-xs-3">
                                         <div class="thumbnail"><img src="{$oDatei->cURLFull}" alt=""></div>
@@ -213,9 +205,9 @@
                                         </div>
                                     </div>
                                 {/foreach}
-                            {*{else}*}
-                            {/if}
+                            </div>
                         </div>
+                        {/if}
                         <div class="input-group">
                             <span class="input-group-addon">
                                 <label for="lang">Sprache</label>

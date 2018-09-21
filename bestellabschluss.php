@@ -115,7 +115,8 @@ if ($kPlugin > 0) {
 }
 if (empty($_SESSION['Zahlungsart']->nWaehrendBestellung) || isset($_GET['i'])) {
     if ($Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
-        $smarty->assign('oTrustedShopsBewertenButton',
+        $smarty->assign(
+            'oTrustedShopsBewertenButton',
             TrustedShops::getRatingButton($bestellung->oRechnungsadresse->cMail, $bestellung->cBestellNr)
         );
     }

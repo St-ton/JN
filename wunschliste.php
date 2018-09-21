@@ -123,7 +123,7 @@ if ($action !== null && isset($_POST['kWunschliste']) && FormHelper::validateTok
                 $oWunschliste = new Wunschliste($kWunschliste);
                 if ($oWunschliste->kKunde > 0 && $oWunschliste->kKunde === Session\Session::Customer()->getID()) {
                     $oWunschliste->entferneAllePos();
-                    if ($_SESSION['Wunschliste']->kWunschliste == $oWunschliste->kWunschliste) {
+                    if ((int)$_SESSION['Wunschliste']->kWunschliste === $oWunschliste->kWunschliste) {
                         $_SESSION['Wunschliste']->CWunschlistePos_arr = [];
                     }
                     $cHinweis .= Shop::Lang()->get('wishlistDelAll', 'messages');
@@ -174,7 +174,11 @@ if ($action !== null && isset($_POST['kWunschliste']) && FormHelper::validateTok
                 $cHinweis .= Wunschliste::delete($wishlistTargetID);
                 if ($wishlistTargetID === $kWunschliste) {
                     // the currently active one was deleted, search for a new one
-                    $newWishlist = Shop::Container()->getDB()->select('twunschliste', 'kKunde', Session\Session::Customer()->getID());
+                    $newWishlist = Shop::Container()->getDB()->select(
+                        'twunschliste',
+                        'kKunde',
+                        Session\Session::Customer()->getID()
+                    );
                     if (isset($newWishlist->kWunschliste)) {
                         $kWunschliste           = (int)$newWishlist->kWunschliste;
                         $newWishlist->nStandard = 1;
@@ -236,7 +240,11 @@ if (RequestHelper::verifyGPCDataInt('error') === 1) {
     }
 } elseif (!$kWunschliste) {
     if (Session\Session::Customer()->getID() > 0) {
-        $wishLists = Shop::Container()->getDB()->selectAll('twunschliste', 'kKunde', Session\Session::Customer()->getID());
+        $wishLists = Shop::Container()->getDB()->selectAll(
+            'twunschliste',
+            'kKunde',
+            Session\Session::Customer()->getID()
+        );
         foreach ($wishLists as $wishList) {
             if ($wishList->nStandard === '1') {
                 $kWunschliste = isset($wishList->kWunschliste)
@@ -253,7 +261,8 @@ if (RequestHelper::verifyGPCDataInt('error') === 1) {
         }
     }
     if (!$kWunschliste) {
-        header('Location: ' .
+        header(
+            'Location: ' .
             $linkHelper->getStaticRoute('jtl.php') .
             '?u=' . $cParameter_arr['kUmfrage'] . '&r=' . R_LOGIN_WUNSCHLISTE
         );

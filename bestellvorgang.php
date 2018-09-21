@@ -12,19 +12,10 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
 
 Shop::setPageType(PAGE_BESTELLVORGANG);
-$Einstellungen = Shop::getSettings([
-    CONF_GLOBAL,
-    CONF_RSS,
-    CONF_KUNDEN,
-    CONF_KAUFABWICKLUNG,
-    CONF_KUNDENFELD,
-    CONF_TRUSTEDSHOPS,
-    CONF_ARTIKELDETAILS
-]);
+$Einstellungen = Shopsetting::getInstance()->getAll();
 $step          = 'accountwahl';
 $cHinweis      = '';
 $cart          = Session::Cart();
-// Kill Ajaxcheckout falls vorhanden
 unset($_SESSION['ajaxcheckout']);
 // Loginbenutzer?
 if (isset($_POST['login']) && (int)$_POST['login'] === 1) {
@@ -149,8 +140,10 @@ if (class_exists('Download') && Download::hasDownloads($cart)) {
             ->assign('cPost_var', $cPost_arr);
 
         if ((int)$cPost_arr['shipping_address'] === 1) {
-            Shop::Smarty()->assign('Lieferadresse',
-                mappeLieferadresseKontaktdaten($cPost_arr['register']['shipping_address']));
+            Shop::Smarty()->assign(
+                'Lieferadresse',
+                mappeLieferadresseKontaktdaten($cPost_arr['register']['shipping_address'])
+            );
         }
 
         unset($_SESSION['Kunde']);
@@ -219,9 +212,12 @@ $linkHelper = Shop::Container()->getLinkService();
 $kLink      = $linkHelper->getSpecialPageLinkKey(LINKTYP_BESTELLVORGANG);
 $link       = $linkHelper->getPageLink($kLink);
 WarenkorbHelper::addVariationPictures($cart);
-Shop::Smarty()->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
-    Shop::getLanguage(),
-    Session::CustomerGroup()->getID())
+Shop::Smarty()->assign(
+    'AGB',
+    Shop::Container()->getLinkService()->getAGBWRB(
+        Shop::getLanguage(),
+        Session::CustomerGroup()->getID()
+    )
 )
     ->assign('Ueberschrift', Shop::Lang()->get('orderStep0Title', 'checkout'))
     ->assign('UeberschriftKlein', Shop::Lang()->get('orderStep0Title2', 'checkout'))

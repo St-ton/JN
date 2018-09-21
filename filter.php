@@ -45,9 +45,8 @@ if ($conf['navigationsfilter']['allgemein_weiterleitung'] === 'Y' && $oSuchergeb
         ? (new \Kategorie(
             $categoryID,
             $NaviFilter->getFilterConfig()->getLanguageID(),
-            $NaviFilter->getFilterConfig()->getCustomerGroupID())
-        )
-            ->existierenUnterkategorien()
+            $NaviFilter->getFilterConfig()->getCustomerGroupID()
+        ))->existierenUnterkategorien()
         : false;
     if ($NaviFilter->getFilterCount() > 0
         || $NaviFilter->getRealSearch() !== null

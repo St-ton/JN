@@ -16,20 +16,7 @@ $Artikelhinweise  = [];
 $PositiveFeedback = [];
 $nonAllowed       = [];
 Shop::setPageType(PAGE_ARTIKEL);
-$Einstellungen                = Shop::getSettings([
-    CONF_GLOBAL,
-    CONF_ARTIKELUEBERSICHT,
-    CONF_NAVIGATIONSFILTER,
-    CONF_RSS,
-    CONF_ARTIKELDETAILS,
-    CONF_PREISVERLAUF,
-    CONF_BEWERTUNG,
-    CONF_BOXEN,
-    CONF_PREISVERLAUF,
-    CONF_METAANGABEN,
-    CONF_KONTAKTFORMULAR,
-    CONF_CACHING
-]);
+$Einstellungen                = Shopsetting::getInstance()->getAll();
 $oGlobaleMetaAngabenAssoc_arr = \Filter\Metadata::getGlobalMetaData();
 // Bewertungsguthaben
 $fBelohnung = (isset($_GET['fB']) && (float)$_GET['fB'] > 0) ? (float)$_GET['fB'] : 0.0;

@@ -1025,64 +1025,64 @@ function plausiNeukundenKupon()
 function checkAdditionalPayment($paymentMethod)
 {
     $conf   = Shop::getSettings([CONF_ZAHLUNGSARTEN]);
+    $post   = StringHandler::filterXSS($_POST);
     $errors = [];
     switch ($paymentMethod->cModulId) {
         case 'za_kreditkarte_jtl':
-            if (!isset($_POST['kreditkartennr']) || !$_POST['kreditkartennr']) {
+            if (empty($post['kreditkartennr'])) {
                 $errors['kreditkartennr'] = 1;
             }
-            if (!isset($_POST['gueltigkeit']) || !$_POST['gueltigkeit']) {
+            if (empty($post['gueltigkeit'])) {
                 $errors['gueltigkeit'] = 1;
             }
-            if (!isset($_POST['cvv']) || !$_POST['cvv']) {
+            if (empty($post['cvv'])) {
                 $errors['cvv'] = 1;
             }
-            if (!isset($_POST['kartentyp']) || !$_POST['kartentyp']) {
+            if (empty($post['kartentyp'])) {
                 $errors['kartentyp'] = 1;
             }
-            if (!isset($_POST['inhaber']) || !$_POST['inhaber']) {
+            if (empty($post['inhaber'])) {
                 $errors['inhaber'] = 1;
             }
             break;
 
         case 'za_lastschrift_jtl':
-            if (empty($_POST['bankname']) || trim($_POST['bankname']) === '') {
+            if (empty($post['bankname'])) {
                 $errors['bankname'] = 1;
             }
-            if ($conf['zahlungsarten']['zahlungsart_lastschrift_kontoinhaber_abfrage'] === 'Y' &&
-                (empty($_POST['inhaber']) ||
-                    trim($_POST['inhaber']) === '')
+            if (empty($post['inhaber'])
+                && $conf['zahlungsarten']['zahlungsart_lastschrift_kontoinhaber_abfrage'] === 'Y'
             ) {
                 $errors['inhaber'] = 1;
             }
-            if (((!empty($_POST['blz']) &&
-                        $conf['zahlungsarten']['zahlungsart_lastschrift_kontonummer_abfrage'] !== 'N') ||
-                    $conf['zahlungsarten']['zahlungsart_lastschrift_kontonummer_abfrage'] === 'Y')
-                && (empty($_POST['kontonr']) || trim($_POST['kontonr']) === '')
+            if (empty($post['kontonr'])
+                && ((!empty($post['blz'])
+                        && $conf['zahlungsarten']['zahlungsart_lastschrift_kontonummer_abfrage'] !== 'N')
+                    || $conf['zahlungsarten']['zahlungsart_lastschrift_kontonummer_abfrage'] === 'Y')
             ) {
                 $errors['kontonr'] = 1;
             }
-            if (((!empty($_POST['kontonr']) &&
-                        $conf['zahlungsarten']['zahlungsart_lastschrift_blz_abfrage'] !== 'N') ||
-                    $conf['zahlungsarten']['zahlungsart_lastschrift_blz_abfrage'] === 'Y')
-                && (empty($_POST['blz']) || trim($_POST['blz']) === '')
+            if (empty($post['blz'])
+                && ((!empty($post['kontonr'])
+                        && $conf['zahlungsarten']['zahlungsart_lastschrift_blz_abfrage'] !== 'N')
+                    || $conf['zahlungsarten']['zahlungsart_lastschrift_blz_abfrage'] === 'Y')
             ) {
                 $errors['blz'] = 1;
             }
-            if ($conf['zahlungsarten']['zahlungsart_lastschrift_bic_abfrage'] === 'Y' && empty($_POST['bic'])) {
+            if (empty($post['bic']) && $conf['zahlungsarten']['zahlungsart_lastschrift_bic_abfrage'] === 'Y') {
                 $errors['bic'] = 1;
             }
-            if (!empty($_POST['bic'])
+            if (!empty($post['bic'])
                 && ($conf['zahlungsarten']['zahlungsart_lastschrift_iban_abfrage'] !== 'N'
                     || $conf['zahlungsarten']['zahlungsart_lastschrift_iban_abfrage'] === 'Y')
             ) {
-                if (empty($_POST['iban'])) {
+                if (empty($post['iban'])) {
                     $errors['iban'] = 1;
-                } elseif (!plausiIban($_POST['iban'])) {
+                } elseif (!plausiIban($post['iban'])) {
                     $errors['iban'] = 2;
                 }
             }
-            if (!isset($_POST['kontonr']) && !isset($_POST['blz']) && !isset($_POST['iban']) && !isset($_POST['bic'])) {
+            if (!isset($post['kontonr']) && !isset($post['blz']) && !isset($post['iban']) && !isset($post['bic'])) {
                 $errors['kontonr'] = 2;
                 $errors['blz']     = 2;
                 $errors['bic']     = 2;

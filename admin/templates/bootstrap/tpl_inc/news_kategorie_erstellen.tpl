@@ -82,10 +82,10 @@
                             </span>
                             <select class="form-control" id="nAktiv" name="nAktiv">
                                 <option value="1"{if $oNewsKategorie->getIsActive() === true} selected{/if}>
-                                    Ja
+                                    {#yes#}
                                 </option>
                                 <option value="0"{if $oNewsKategorie->getIsActive() === false} selected{/if}>
-                                    Nein
+                                    {#no#}
                                 </option>
                             </select>
                         </div>
@@ -99,11 +99,11 @@
                             <input id="previewImage" name="previewImage" type="file" maxlength="2097152" accept="image/*" />
                             <input name="previewImage" type="hidden" value="{if !empty($oNewsKategorie->cPreviewImage)}{$oNewsKategorie->cPreviewImage}{/if}" />
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label>{#newsPics#}</label>
-                            </span>
-                            {if isset($oDatei_arr) && $oDatei_arr|@count > 0}
+                        {if isset($oDatei_arr) && $oDatei_arr|@count > 0}
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <label>{#newsPics#}</label>
+                                </span>
                                 <div>
                                     {foreach name=bilder from=$oDatei_arr item=oDatei}
                                         <div class="well col-xs-3">
@@ -118,10 +118,8 @@
                                         </div>
                                     {/foreach}
                                 </div>
-                            {else}
-                                <div></div>
-                            {/if}
-                        </div>
+                            </div>
+                        {/if}
                         <div class="input-group">
                             <span class="input-group-addon">
                                 <label for="lang">Sprache</label>
@@ -171,16 +169,6 @@
                                         <label for="cMetaDescription_{$cISO}">{#newsMetaDescription#}</label>
                                     </span>
                                     <input class="form-control{if !empty($cPlausiValue_arr.cMetaDescription)} error{/if}" id="cMetaDescription_{$cISO}" name="cMetaDescription_{$cISO}" type="text" value="{$oNewsKategorie->getMetaDescription($langID)}" />
-                                </div>
-                                <div class="input-group">
-                                    <span class="input-group-addon">
-                                        <label for="previewImage">{#newsPreview#}</label>
-                                    </span>
-                                    {if !empty($oNewsKategorie->cPreviewImage)}
-                                        <img src="{$shopURL}/{$oNewsKategorie->cPreviewImage}" alt="" height="20" width="20" class="preview-image left" style="margin-right: 10px;" />
-                                    {/if}
-                                    <input id="previewImage" name="previewImage" type="file" maxlength="2097152" accept="image/*" />
-                                    <input name="previewImage" type="hidden" value="{$oNewsKategorie->getPreviewImage($langID)}" />
                                 </div>
                                 <div class="input-group">
                                     <span class="input-group-addon">

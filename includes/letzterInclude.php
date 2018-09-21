@@ -40,8 +40,9 @@ $warensumme[1]   = Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt
 $gesamtsumme[0]  = Preise::getLocalizedPriceString($cart->gibGesamtsummeWaren(true, true));
 $gesamtsumme[1]  = Preise::getLocalizedPriceString($cart->gibGesamtsummeWaren(false, true));
 
-$oGlobaleMetaAngaben = $oGlobaleMetaAngabenAssoc_arr[Shop::getLanguageID()] ?? null;
-$pagetType           = Shop::getPageType();
+$oVersandartKostenfrei = VersandartHelper::getFreeShippingMinimum($kKundengruppe, $cKundenherkunft);
+$oGlobaleMetaAngaben   = $oGlobaleMetaAngabenAssoc_arr[Shop::getLanguageID()] ?? null;
+$pagetType             = Shop::getPageType();
 
 if (is_object($oGlobaleMetaAngaben)) {
     if (empty($cMetaTitle)) {
@@ -97,7 +98,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign(
            'WarenkorbVersandkostenfreiHinweis',
            VersandartHelper::getShippingFreeString(
-               VersandartHelper::getFreeShippingMinimum($kKundengruppe, $cKundenherkunft),
+               $oVersandartKostenfrei,
                $cart->gibGesamtsummeWarenExt(
                    [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON],
                    true

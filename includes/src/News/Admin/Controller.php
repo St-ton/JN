@@ -550,7 +550,7 @@ class Controller
         $extension = \substr(
             $_FILES['previewImage']['type'],
             \strpos($_FILES['previewImage']['type'], '/') + 1,
-            \strlen($_FILES['previewImage']['type'] - \strpos($_FILES['previewImage']['type'], '/')) + 1
+            \strlen($_FILES['previewImage']['type']) - \strpos($_FILES['previewImage']['type'], '/') + 1
         );
         if ($extension === 'jpe') {
             $extension = 'jpg';

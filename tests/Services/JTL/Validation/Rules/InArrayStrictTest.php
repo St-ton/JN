@@ -6,11 +6,13 @@
 
 namespace Services\JTL\Validation\Rules;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * Class InArrayStrictTest
  * @package Services\JTL\Validation\Rules
  */
-class InArrayStrictTest extends \PHPUnit_Framework_TestCase
+class InArrayStrictTest extends TestCase
 {
     public function test()
     {

@@ -35,7 +35,7 @@ class Migration implements JsonSerializable
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getId()
     {
@@ -45,7 +45,7 @@ class Migration implements JsonSerializable
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return get_class($this);
     }
@@ -56,7 +56,8 @@ class Migration implements JsonSerializable
     public function getAuthor()
     {
         return (isset($this->author) && $this->author !== null)
-            ? $this->author : null;
+            ? $this->author
+            : null;
     }
 
     /**

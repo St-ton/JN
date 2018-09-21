@@ -6,11 +6,13 @@
 
 namespace Services\JTL\Validation\Rules;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * Class EqualsStrictTest
  * @package Services\JTL\Validation\Rules
  */
-class EqualsStrictTest extends \PHPUnit_Framework_TestCase
+class EqualsStrictTest extends TestCase
 {
     public function test()
     {

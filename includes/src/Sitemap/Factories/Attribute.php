@@ -40,7 +40,8 @@ final class Attribute extends AbstractFactory
                     ON tseo.cKey = 'kMerkmalWert'
                     AND tseo.kKey = tmerkmalwert.kMerkmalWert
                     AND tseo.kSprache = tmerkmalsprache.kSprache
-                WHERE tmerkmalsprache.kSprache IN (" . \implode(',', $languageIDs) . ")
+                WHERE tmerkmal.nGlobal = 1 
+                    AND tmerkmalsprache.kSprache IN (" . \implode(',', $languageIDs) . ")
                 GROUP BY tmerkmalwert.kMerkmalWert
                 ORDER BY tmerkmal.kMerkmal, tmerkmal.cName",
             \DB\ReturnType::QUERYSINGLE

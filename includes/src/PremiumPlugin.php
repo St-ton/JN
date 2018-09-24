@@ -136,7 +136,7 @@ class PremiumPlugin
     /**
      * @return null|string
      */
-    public function getDownloadLink()
+    public function getDownloadLink(): ?string
     {
         return $this->downloadLink;
     }
@@ -163,7 +163,7 @@ class PremiumPlugin
     /**
      * @return int
      */
-    public function getKPlugin()
+    public function getKPlugin(): int
     {
         return $this->kPlugin;
     }
@@ -171,7 +171,7 @@ class PremiumPlugin
     /**
      * @return string|null
      */
-    public function getPluginID()
+    public function getPluginID(): ?string
     {
         return $this->pluginID;
     }
@@ -179,7 +179,7 @@ class PremiumPlugin
     /**
      * @return bool
      */
-    public function getExists()
+    public function getExists(): bool
     {
         return $this->exists;
     }
@@ -187,7 +187,7 @@ class PremiumPlugin
     /**
      * @return bool
      */
-    public function getIsActivated()
+    public function getIsActivated(): bool
     {
         return $this->isActivated;
     }
@@ -195,7 +195,7 @@ class PremiumPlugin
     /**
      * @return bool
      */
-    public function getIsInstalled()
+    public function getIsInstalled(): bool
     {
         return $this->isInstalled;
     }
@@ -204,7 +204,7 @@ class PremiumPlugin
      * @param stdClass $sp
      * @return $this
      */
-    public function setServicePartner($sp): self
+    public function setServicePartner(stdClass $sp): self
     {
         $this->servicePartner = $sp;
 
@@ -214,7 +214,7 @@ class PremiumPlugin
     /**
      * @return null|stdClass
      */
-    public function getservicePartner()
+    public function getservicePartner(): ?stdClass
     {
         return $this->servicePartner;
     }
@@ -250,9 +250,9 @@ class PremiumPlugin
     }
 
     /**
-     * @return null
+     * @return null|string
      */
-    public function getAuthor()
+    public function getAuthor(): ?string
     {
         return $this->author;
     }
@@ -261,7 +261,7 @@ class PremiumPlugin
      * @param string $author
      * @return $this
      */
-    public function setAuthor($author): self
+    public function setAuthor(string $author): self
     {
         $this->author = $author;
 
@@ -335,7 +335,7 @@ class PremiumPlugin
      * @param string $advantage
      * @return $this
      */
-    public function addAdvantage($advantage): self
+    public function addAdvantage(string $advantage): self
     {
         $this->advantages[] = $advantage;
 
@@ -365,7 +365,7 @@ class PremiumPlugin
      * @param string $howTo
      * @return $this
      */
-    public function addHowTo($howTo): self
+    public function addHowTo(string $howTo): self
     {
         $this->howTos[] = $howTo;
 
@@ -448,7 +448,13 @@ class PremiumPlugin
      * @param bool        $external
      * @return $this
      */
-    public function addButton($caption, $link, $class = 'btn btn-default', $fa = null, bool $external = false): self
+    public function addButton(
+        string $caption,
+        string $link,
+        string $class = 'btn btn-default',
+        string $fa = null,
+        bool $external = false
+    ): self
     {
         $btn           = new stdClass();
         $btn->link     = $link;

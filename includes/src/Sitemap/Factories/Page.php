@@ -22,9 +22,6 @@ final class Page extends AbstractFactory
      */
     public function getCollection(array $languages, array $customerGroups): \Generator
     {
-        if ($this->config['sitemap']['sitemap_seiten_anzeigen'] !== 'Y') {
-            yield null;
-        }
         $customerGroup = first($customerGroups);
         $languageCodes = map($languages, function ($e) {
             return "'" . $e->cISO . "'";

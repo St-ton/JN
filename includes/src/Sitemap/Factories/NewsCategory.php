@@ -19,9 +19,6 @@ final class NewsCategory extends AbstractFactory
      */
     public function getCollection(array $languages, array $customerGroups): \Generator
     {
-        if ($this->config['sitemap']['sitemap_newskategorien_anzeigen'] !== 'Y') {
-            yield null;
-        }
         $languageIDs = map($languages, function ($e) {
             return (int)$e->kSprache;
         });

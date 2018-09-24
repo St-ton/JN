@@ -263,10 +263,9 @@ class Service
             $options = [];
 
             if ($class === Attribute::class) {
+                $name = 'Merkmale';
 
                 foreach ($availableFilter->getOptions() as $option) {
-                    $name = $option->getFrontendName();
-                    $options  = [];
                     foreach ($option->getOptions() as $suboption) {
                         /** @var Option $suboption */
                         $value    = $suboption->kMerkmalWert;
@@ -281,20 +280,6 @@ class Service
                             ];
                         }
                     }
-                    if (\count($options) > 0) {
-                        $subresults[] = [
-                            'name'    => $name,
-                            'class'   => $class,
-                            'options' => $options,
-                        ];
-                    }
-                }
-                if (\count($options) > 0) {
-                    $results[] = [
-                        'name'    => 'Merkmale',
-                        'class'   => $class,
-                        'options' => $subresults,
-                    ];
                 }
             } else {
                 foreach ($availableFilter->getOptions() as $option) {
@@ -310,13 +295,14 @@ class Service
                         ];
                     }
                 }
-                if (\count($options) > 0) {
-                    $results[] = [
-                        'name'    => $name,
-                        'class'   => $class,
-                        'options' => $options,
-                    ];
-                }
+            }
+
+            if (\count($options) > 0) {
+                $results[] = [
+                    'name'    => $name,
+                    'class'   => $class,
+                    'options' => $options,
+                ];
             }
         }
 

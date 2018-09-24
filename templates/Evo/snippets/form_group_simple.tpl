@@ -17,9 +17,6 @@
     {if isset($options[7])}
         {assign var='autocomplete' value=$options[7]}
     {/if}
-    {if isset($options[8])}
-        {assign var='noLabel' value=$options[8]}
-    {/if}
 {/if}
 
 {if !empty($required) && ($required === 'Y' || $required === true)}

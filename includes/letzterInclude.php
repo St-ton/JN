@@ -93,11 +93,10 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('WarenkorbGesamtgewicht', $cart->getWeight())
        ->assign('Warenkorbtext', lang_warenkorb_warenkorbEnthaeltXArtikel($cart))
        ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
-       ->assign('WarenkorbVersandkostenfreiHinweis', VersandartHelper::getShippingFreeString($oVersandartKostenfrei,
-           $cart->gibGesamtsummeWarenExt(
-               [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON],
-               true
-           )))
+       ->assign('WarenkorbVersandkostenfreiHinweis', VersandartHelper::getShippingFreeString(
+           $oVersandartKostenfrei,
+           $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true )
+       ))
        ->assign('meta_title', $cMetaTitle ?? '')
        ->assign('meta_description', $cMetaDescription ?? '')
        ->assign('meta_keywords', $cMetaKeywords ?? '')

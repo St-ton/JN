@@ -7,8 +7,8 @@
     <Preview>preview.png</Preview>
     <Minify>
         <CSS Name="admin_css">
-            <File Path="css/jquery-ui-1.10.3.theme.css"/>
-            <File Path="css/jquery-ui-1.11.4.min.css"/>
+            <File Path="css/jquery-ui.theme.css"/>
+            <File Path="css/jquery-ui.min.css"/>
             <File Path="css/bootstrap.min.css"/>
             <File Path="css/font-awesome.min.css"/>
             <File Path="css/colorpicker.css"/>
@@ -21,8 +21,8 @@
             <File Path="css/typeaheadjs.css"/>
         </CSS>
         <JS Name="admin_js">
-            <File Path="js/jquery-1.12.4.min.js"/>
-            <File Path="js/jquery-ui-1.11.4.min.js"/>
+            <File Path="js/jquery-2.2.4.min.js"/>
+            <File Path="js/jquery-ui.min.js"/>
             <File Path="js/bootstrap.min.js"/>
             <File Path="js/colorpicker.js"/>
             <File Path="js/jquery.ui.datepicker-de.js"/>

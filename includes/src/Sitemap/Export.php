@@ -93,7 +93,7 @@ final class Export
         $this->config         = $config;
         $this->baseImageURL   = \Shop::getImageBaseURL();
         $this->baseURL        = \Shop::getURL() . '/';
-        $this->gzip           = false && \function_exists('gzopen');
+        $this->gzip           = \function_exists('gzopen');
         $this->blockedURLs    = [
             'navi.php',
             'suche.php',

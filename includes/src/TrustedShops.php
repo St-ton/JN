@@ -572,7 +572,7 @@ class TrustedShops
         //$cTSClassicID = filterXSS($cTSClassicID);
         $returnValue = null;
         $bForce      = $bSaved;
-        if ($this->dChecked !== null && $this->dChecked !== '0000-00-00 00:00:00') {
+        if ($this->dChecked !== null && $this->dChecked !== null) {
             $oDateTime = new DateTime($this->dChecked);
             $oDateTime->modify('+1 day');
             if ($oDateTime->format('U') < time()) {
@@ -580,8 +580,8 @@ class TrustedShops
             }
         }
 
-        if ($this->dChecked === null || $this->dChecked === '0000-00-00 00:00:00' || $bForce) {
-            ini_set('soap.wsdl_cache_enabled', 1);
+        if ($this->dChecked === null || $bForce) {
+            ini_set('soap.wsdl_cache_enabled', '1');
 
             $wsdlUrl = TS_SERVER;
             $cTSID   = $this->tsId;
@@ -854,7 +854,7 @@ class TrustedShops
 
             $oZertifikat->dChecked = $this->dChecked;
             if ($oZertifikat->dChecked === '') {
-                $oZertifikat->dChecked = 'now()';
+                $oZertifikat->dChecked = 'NOW()';
             }
             unset($oZertifikat->kTrustedShopsZertifikat);
             $kTrustedShopsZertifikat = Shop::Container()->getDB()->insert('ttrustedshopszertifikat', $oZertifikat);
@@ -980,7 +980,7 @@ class TrustedShops
                 $_upd                = new stdClass();
                 $_upd->nStatus       = (int)$nStatus;
                 $_upd->cISOSprache   = $cISOSprache;
-                $_upd->dAktualisiert = 'now()';
+                $_upd->dAktualisiert = 'NOW()';
                 Shop::Container()->getDB()->update(
                     'ttrustedshopskundenbewertung', 
                     'kTrustedshopsKundenbewertung', 
@@ -992,7 +992,7 @@ class TrustedShops
                 $rating->nStatus       = $nStatus;
                 $rating->cTSID         = '';
                 $rating->cISOSprache   = $cISOSprache;
-                $rating->dAktualisiert = 'now()';
+                $rating->dAktualisiert = 'NOW()';
 
                 Shop::Container()->getDB()->insert('ttrustedshopskundenbewertung', $rating);
             }
@@ -1026,7 +1026,7 @@ class TrustedShops
                 $rating->nStatus       = 0;
                 $rating->cTSID         = $cTSID;
                 $rating->cISOSprache   = $cISOSprache;
-                $rating->dAktualisiert = 'now()';
+                $rating->dAktualisiert = 'NOW()';
 
                 Shop::Container()->getDB()->insert('ttrustedshopskundenbewertung', $rating);
             }
@@ -1249,7 +1249,7 @@ class TrustedShops
             $oData = $this->holeKundenbewertungsStatistik();
 
             $oData->cTSID    = trim($this->tsId);
-            $oData->dUpdated = 'now()';
+            $oData->dUpdated = 'NOW()';
             Shop::Container()->getDB()->insert('ttrustedshopsstatistik', $oData);
 
             $oStatistik                = new stdClass();
@@ -1266,7 +1266,7 @@ class TrustedShops
 
                 $oStatistikDB->nAnzahl       = $oData->nAnzahl;
                 $oStatistikDB->dDurchschnitt = $oData->dDurchschnitt;
-                $oStatistikDB->dUpdated      = 'now()';
+                $oStatistikDB->dUpdated      = 'NOW()';
                 Shop::Container()->getDB()->update(
                     'ttrustedshopsstatistik',
                     'kStatistik',

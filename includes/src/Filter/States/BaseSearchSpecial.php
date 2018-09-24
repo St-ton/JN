@@ -6,7 +6,6 @@
 
 namespace Filter\States;
 
-
 use Filter\AbstractFilter;
 use Filter\Join;
 use Filter\FilterInterface;
@@ -131,8 +130,8 @@ class BaseSearchSpecial extends AbstractFilter
                 }
 
                 return $tasp . " .kArtikel = tartikel.kArtikel
-                                    AND " . $tasp . ".cAktiv = 'Y' AND " . $tasp . ".dStart <= now()
-                                    AND (" . $tasp . ".dEnde >= curdate() OR " . $tasp . ".dEnde = '0000-00-00')
+                                    AND " . $tasp . ".cAktiv = 'Y' AND " . $tasp . ".dStart <= NOW()
+                                    AND (" . $tasp . ".dEnde >= CURDATE() OR " . $tasp . ".dEnde IS NULL)
                                     AND " . $tsp . " .kKundengruppe = " . \Session::CustomerGroup()->getID();
 
             case \SEARCHSPECIALS_NEWPRODUCTS:
@@ -141,14 +140,14 @@ class BaseSearchSpecial extends AbstractFilter
                     : 30;
 
                 return "tartikel.cNeu = 'Y' 
-                    AND DATE_SUB(now(), INTERVAL $alter_tage DAY) < tartikel.dErstellt 
+                    AND DATE_SUB(NOW(), INTERVAL $alter_tage DAY) < tartikel.dErstellt 
                     AND tartikel.cNeu = 'Y'";
 
             case \SEARCHSPECIALS_TOPOFFERS:
                 return "tartikel.cTopArtikel = 'Y'";
 
             case \SEARCHSPECIALS_UPCOMINGPRODUCTS:
-                return 'now() < tartikel.dErscheinungsdatum';
+                return 'NOW() < tartikel.dErscheinungsdatum';
 
             case \SEARCHSPECIALS_TOPREVIEWS:
                 if (!$this->productFilter->hasRatingFilter()) {

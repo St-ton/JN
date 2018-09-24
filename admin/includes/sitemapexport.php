@@ -325,6 +325,7 @@ function generateSitemapXML()
         \DB\ReturnType::QUERYSINGLE
     );
     while (($oArtikel = $res->fetch(PDO::FETCH_OBJ)) !== false) {
+
         if ($nSitemap > $nSitemapLimit) {
             $nSitemap = 1;
             baueSitemap($nDatei, $sitemap_data);
@@ -402,13 +403,29 @@ function generateSitemapXML()
                 $nAnzahlURL_arr[$nDatei] = 0;
                 $sitemap_data            = '';
             }
+            $cGoogleImage = '';
+            if ($conf['sitemap']['sitemap_googleimage_anzeigen'] === 'Y'
+                && ($number = MediaImage::getPrimaryNumber(Image::TYPE_PRODUCT, $oArtikel->kArtikel)) !== null
+            ) {
+                $cGoogleImage = MediaImage::getThumb(
+                    Image::TYPE_PRODUCT,
+                    $oArtikel->kArtikel,
+                    $oArtikel,
+                    Image::SIZE_LG,
+                    $number
+                );
+                if (strlen($cGoogleImage) > 0) {
+                    $cGoogleImage = $imageBaseURL . $cGoogleImage;
+                }
+            }
             $cUrl = UrlHelper::buildURL($oArtikel, URLART_ARTIKEL);
             if (!isSitemapBlocked($cUrl)) {
                 $sitemap_data .= makeURL(
                     $cUrl,
                     date_format(date_create($oArtikel->dLetzteAktualisierung), 'c'),
                     FREQ_DAILY,
-                    PRIO_HIGH
+                    PRIO_HIGH,
+                    $cGoogleImage
                 );
                 ++$nSitemap;
                 ++$nAnzahlURL_arr[$nDatei];
@@ -919,7 +936,7 @@ function generateSitemapXML()
                     AND tseo.kKey = tnews.kNews
                     AND tseo.kSprache = tnews.kSprache
                 WHERE tnews.nAktiv = 1
-                    AND tnews.dGueltigVon <= now()
+                    AND tnews.dGueltigVon <= NOW()
                     AND (tnews.cKundengruppe LIKE '%;-1;%'
                     OR FIND_IN_SET('" . Session::CustomerGroup()->getID() . "', REPLACE(tnews.cKundengruppe, ';',',')) > 0) 
                     ORDER BY tnews.dErstellt",
@@ -1108,7 +1125,7 @@ function baueSitemapReport($nAnzahlURL_arr, $fTotalZeit)
         $oSitemapReport                     = new stdClass();
         $oSitemapReport->nTotalURL          = $nTotalURL;
         $oSitemapReport->fVerarbeitungszeit = number_format($fTotalZeit, 2);
-        $oSitemapReport->dErstellt          = 'now()';
+        $oSitemapReport->dErstellt          = 'NOW()';
 
         $kSitemapReport = Shop::Container()->getDB()->insert('tsitemapreport', $oSitemapReport);
         $bGZ            = function_exists('gzopen');

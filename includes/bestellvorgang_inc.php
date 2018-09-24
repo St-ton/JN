@@ -306,7 +306,7 @@ function pruefeRechnungsadresseStep($cGet_arr)
 {
     global $step, $Kunde;
     //sondersteps Rechnungsadresse ändern
-    if (isset($cGet_arr['editRechnungsadresse']) && (int)$cGet_arr['editRechnungsadresse'] === 1 && $_SESSION['Kunde']) {
+    if ($_SESSION['Kunde'] && isset($cGet_arr['editRechnungsadresse']) && (int)$cGet_arr['editRechnungsadresse'] === 1) {
         Kupon::resetNewCustomerCoupon();
         if (!isset($cGet_arr['editLieferadresse'])) {
             // Shipping address and customer address are now on same site - check shipping address also
@@ -346,7 +346,12 @@ function pruefeLieferadresseStep($cGet_arr)
 {
     global $step, $Lieferadresse;
     //sondersteps Lieferadresse ändern
-    if (isset($cGet_arr['editLieferadresse']) && $cGet_arr['editLieferadresse'] == 1 && $_SESSION['Lieferadresse']) {
+    if (isset($_SESSION['checkout.fehlendeAngaben'])) {
+        setzeFehlendeAngaben($_SESSION['checkout.fehlendeAngaben']);
+        unset($_SESSION['checkout.fehlendeAngaben']);
+        $step = 'Lieferadresse';
+    }
+    if ($_SESSION['Lieferadresse'] && isset($cGet_arr['editLieferadresse']) && $cGet_arr['editLieferadresse'] == 1) {
         Kupon::resetNewCustomerCoupon();
         unset($_SESSION['Zahlungsart'], $_SESSION['TrustedShops'], $_SESSION['Versandart']);
         $Lieferadresse = $_SESSION['Lieferadresse'];
@@ -716,7 +721,6 @@ function gibStepZahlung()
                 'kVersandart' => $aktiveVersandart,
             ];
         }
-
         Shop::Smarty()->assign('Zahlungsarten', $oZahlungsart_arr)
             ->assign('Einstellungen', $Einstellungen)
             ->assign('Versandarten', $oVersandart_arr)
@@ -996,10 +1000,10 @@ function plausiNeukundenKupon()
                             trim($_SESSION['Kunde']->cLand)
                         );
                         $Options = [
-                            'Kupon' => $NeukundenKupon->kKupon,
-                            'Email' => $_SESSION['Kunde']->cMail,
+                            'Kupon'     => $NeukundenKupon->kKupon,
+                            'Email'     => $_SESSION['Kunde']->cMail,
                             'DatenHash' => $hash,
-                            'Erstellt' => 'now()',
+                            'Erstellt'  => 'NOW()',
                             'Verwendet' => 'N'
                         ];
 
@@ -1531,20 +1535,23 @@ function gibZahlungsarten(int $kVersandart, int $kKundengruppe)
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
-    $valid   = [];
-    $zaCount = count($methods);
-    for ($i = 0; $i < $zaCount; ++$i) {
-        if (!$methods[$i]->kZahlungsart) {
+    $valid = [];
+    foreach ($methods as $method) {
+        if (!$method->kZahlungsart) {
             continue;
         }
+        $method->kVersandartZahlungsart = (int)$method->kVersandartZahlungsart;
+        $method->kVersandart            = (int)$method->kVersandart;
+        $method->kZahlungsart           = (int)$method->kZahlungsart;
+        $method->nSort                  = (int)$method->nSort;
         //posname lokalisiert ablegen
-        $methods[$i]->angezeigterName = [];
-        $methods[$i]->cGebuehrname    = [];
+        $method->angezeigterName = [];
+        $method->cGebuehrname    = [];
         foreach ($_SESSION['Sprachen'] as $Sprache) {
             $name_spr = Shop::Container()->getDB()->select(
                 'tzahlungsartsprache',
                 'kZahlungsart',
-                (int)$methods[$i]->kZahlungsart,
+                (int)$method->kZahlungsart,
                 'cISOSprache',
                 $Sprache->cISO,
                 null,
@@ -1553,44 +1560,46 @@ function gibZahlungsarten(int $kVersandart, int $kKundengruppe)
                 'cName, cGebuehrname, cHinweisTextShop'
             );
             if (isset($name_spr->cName)) {
-                $methods[$i]->angezeigterName[$Sprache->cISO] = $name_spr->cName;
-                $methods[$i]->cGebuehrname[$Sprache->cISO]    = $name_spr->cGebuehrname;
-                $methods[$i]->cHinweisText[$Sprache->cISO]    = $name_spr->cHinweisTextShop;
+                $method->angezeigterName[$Sprache->cISO] = $name_spr->cName;
+                $method->cGebuehrname[$Sprache->cISO]    = $name_spr->cGebuehrname;
+                $method->cHinweisText[$Sprache->cISO]    = $name_spr->cHinweisTextShop;
             }
         }
         $confData = Shop::Container()->getDB()->selectAll(
             'teinstellungen',
             ['kEinstellungenSektion', 'cModulId'],
-            [CONF_ZAHLUNGSARTEN, $methods[$i]->cModulId]
+            [CONF_ZAHLUNGSARTEN, $method->cModulId]
         );
         foreach ($confData as $config) {
-            $methods[$i]->einstellungen[$config->cName] = $config->cWert;
+            $method->einstellungen[$config->cName] = $config->cWert;
         }
-        if (!zahlungsartGueltig($methods[$i])) {
+        if (!zahlungsartGueltig($method)) {
             continue;
         }
-        $methods[$i]->Specials = null;
+        $method->Specials = null;
         //evtl. Versandkupon anwenden / Nur Nachname fällt weg
         if (isset($_SESSION['VersandKupon']->cZusatzgebuehren)
             && $_SESSION['VersandKupon']->cZusatzgebuehren === 'Y'
-            && $methods[$i]->fAufpreis > 0
-            && $methods[$i]->cName === 'Nachnahme'
+            && $method->fAufpreis > 0
+            && $method->cName === 'Nachnahme'
         ) {
-            $methods[$i]->fAufpreis = 0;
+            $method->fAufpreis = 0;
         }
         //lokalisieren
-        if ($methods[$i]->cAufpreisTyp === 'festpreis') {
-            $methods[$i]->fAufpreis *= ((100 + $taxRate) / 100);
+        if ($method->cAufpreisTyp === 'festpreis') {
+            $method->fAufpreis *= ((100 + $taxRate) / 100);
         }
-        $methods[$i]->cPreisLocalized = Preise::getLocalizedPriceString($methods[$i]->fAufpreis);
-        if ($methods[$i]->cAufpreisTyp === 'prozent') {
-            $methods[$i]->cPreisLocalized = ($methods[$i]->fAufpreis < 0) ? ' ' : '+ ';
-            $methods[$i]->cPreisLocalized .= $methods[$i]->fAufpreis . '%';
+        $method->cPreisLocalized = Preise::getLocalizedPriceString($method->fAufpreis);
+        if ($method->cAufpreisTyp === 'prozent') {
+            $method->cPreisLocalized = ($method->fAufpreis < 0) ? ' ' : '+ ';
+            $method->cPreisLocalized .= $method->fAufpreis . '%';
         }
-        if ($methods[$i]->fAufpreis == 0) {
-            $methods[$i]->cPreisLocalized = '';
+        if ($method->fAufpreis == 0) {
+            $method->cPreisLocalized = '';
         }
-        $valid[] = $methods[$i];
+        if (!empty($method->angezeigterName)) {
+            $valid[] = $method;
+        }
     }
 
     return $valid;
@@ -1612,7 +1621,7 @@ function gibAktiveVersandart($shippingMethods)
             $_SESSION['AktiveVersandart'] = $shippingMethods[0]->kVersandart;
         }
     } else {
-        $_SESSION['AktiveVersandart'] = $shippingMethods[0]->kVersandart;
+        $_SESSION['AktiveVersandart'] = $shippingMethods[0]->kVersandart ?? 0;
     }
 
     return $_SESSION['AktiveVersandart'];
@@ -1668,7 +1677,7 @@ function gibAktiveVerpackung($packagings)
 }
 
 /**
- * @param Zahlungsart|object $paymentMethod
+ * @param Zahlungsart|stdClass $paymentMethod
  * @return bool
  */
 function zahlungsartGueltig($paymentMethod)
@@ -2007,7 +2016,7 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
     foreach (['nachname', 'strasse', 'hausnummer', 'plz', 'ort', 'land', 'email'] as $dataKey) {
         $data[$dataKey] = isset($data[$dataKey]) ? trim($data[$dataKey]) : null;
 
-        if (!isset($data[$dataKey]) || !$data[$dataKey]) {
+        if (!$data[$dataKey]) {
             $ret[$dataKey] = 1;
         }
     }
@@ -2017,6 +2026,10 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
              'kundenregistrierung_pflicht_vorname' => 'vorname',
              'kundenregistrierung_abfragen_firma' => 'firma',
              'kundenregistrierung_abfragen_firmazusatz' => 'firmazusatz',
+             'kundenregistrierung_abfragen_titel' => 'titel',
+             'kundenregistrierung_abfragen_adresszusatz' => 'adresszusatz',
+             'kundenregistrierung_abfragen_www' => 'www',
+             'kundenregistrierung_abfragen_bundesland' => 'bundesland'
              ] as $confKey => $dataKey) {
         if ($conf['kunden'][$confKey] === 'Y') {
             $data[$dataKey] = isset($data[$dataKey]) ? trim($data[$dataKey]) : null;
@@ -2027,28 +2040,24 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
         }
     }
 
+    if (!empty($data['www']) && !Stringhandler::filterURL($data['www'])) {
+        $ret['www'] = 2;
+    }
+
     if (isset($ret['email']) && $ret['email'] === 1) {
         // email is empty
     } elseif (StringHandler::filterEmailAddress($data['email']) === false) {
         $ret['email'] = 2;
     } elseif (SimpleMail::checkBlacklist($data['email'])) {
         $ret['email'] = 3;
+    } elseif (isset($conf['kunden']['kundenregistrierung_pruefen_email'])
+        && $conf['kunden']['kundenregistrierung_pruefen_email'] === 'Y'
+        && !checkdnsrr(substr($data['email'], strpos($data['email'], '@') + 1))
+    ) {
+        $ret['email'] = 4;
     }
-    if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-        if (isset($ret['email'])
-            && $ret['email'] !== 1
-            && $data['email'] !== $_SESSION['Kunde']->cMail
-            && !isEmailAvailable($data['email'])
-        ) {
-            $ret['email'] = 5;
-        }
-    } elseif (isset($ret['email']) && $ret['email'] !== 1 && !isEmailAvailable($data['email'])) {
-        $ret['email'] = 5;
-    }
+
     if (empty($_SESSION['check_plzort'])
-        && $data['plz']
-        && $data['ort']
-        && $data['land']
         && $conf['kunden']['kundenregistrierung_abgleichen_plz'] === 'Y'
     ) {
         if (!valid_plzort($data['plz'], $data['ort'], $data['land'])) {
@@ -2059,18 +2068,19 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
     } else {
         unset($_SESSION['check_plzort']);
     }
-    if (empty($data['titel']) && $conf['kunden']['kundenregistrierung_abfragen_titel'] === 'Y') {
-        $ret['titel'] = 1;
+
+    foreach ([
+             'kundenregistrierung_abfragen_tel' => 'tel',
+             'kundenregistrierung_abfragen_mobil' => 'mobil',
+             'kundenregistrierung_abfragen_fax' => 'fax'
+             ] as $confKey => $dataKey) {
+        if (isset($data[$dataKey])
+            && ($errCode = StringHandler::checkPhoneNumber($data[$dataKey], $conf['kunden'][$confKey] === 'Y')) > 0
+        ) {
+            $ret[$dataKey] = $errCode;
+        }
     }
-    if (empty($data['adresszusatz']) && $conf['kunden']['kundenregistrierung_abfragen_adresszusatz'] === 'Y') {
-        $ret['adresszusatz'] = 1;
-    }
-    if ($conf['kunden']['kundenregistrierung_abfragen_mobil'] === 'Y' && StringHandler::checkPhoneNumber($data['mobil']) > 0) {
-        $ret['mobil'] = StringHandler::checkPhoneNumber($data['mobil']);
-    }
-    if ($conf['kunden']['kundenregistrierung_abfragen_fax'] === 'Y' && StringHandler::checkPhoneNumber($data['fax']) > 0) {
-        $ret['fax'] = StringHandler::checkPhoneNumber($data['fax']);
-    }
+
     $deliveryCountry = ($conf['kunden']['kundenregistrierung_abfragen_ustid'] !== 'N')
         ? Shop::Container()->getDB()->select('tland', 'cISO', $data['land'])
         : null;
@@ -2091,15 +2101,15 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
         ) {
             $bAnalizeCheck = false; // flag to signalize further analization
             $vViesResult   = null;
-            if ('Y' === $conf['kunden']['shop_ustid_bzstpruefung']) { // backend-setting: "Einstellungen -> Formulareinstellungen ->"
+            if ($conf['kunden']['shop_ustid_bzstpruefung'] === 'Y') { // backend-setting: "Einstellungen -> Formulareinstellungen ->"
                 $oVies         = new UstIDvies();
                 $vViesResult   = $oVies->doCheckID(trim($data['ustid']));
                 $bAnalizeCheck = true; // flag to signalize further analization
             }
-            if (true === $bAnalizeCheck && true === $vViesResult['success']) {
+            if ($bAnalizeCheck === true && $vViesResult['success'] === true) {
                 // "all was fine"
                 $ret['ustid'] = 0;
-            } elseif(isset($vViesResult)) {
+            } elseif (isset($vViesResult)) {
                 switch ($vViesResult['errortype']) {
                     case 'vies' :
                         // vies-error: the ID is invalid according to the VIES-system
@@ -2107,9 +2117,9 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
                         break;
                     case 'parse' :
                         // parse-error: the ID-string is misspelled in any way
-                        if (1 === $vViesResult['errorcode']) {
+                        if ($vViesResult['errorcode'] === 1) {
                             $ret['ustid'] = 1; // parse-error: no id was given
-                        } elseif (1 < $vViesResult['errorcode']) {
+                        } elseif ($vViesResult['errorcode'] > 1) {
                             $ret['ustid'] = 2; // parse-error: with the position of error in given ID-string
                             switch ($vViesResult['errorcode']) {
                                 case 120:
@@ -2134,7 +2144,7 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
                         break;
                     case 'time' :
                         // according to the backend-setting: "Einstellungen -> (Formular)einstellungen -> UstID-Nummer"-check active
-                        if ('Y' === $conf['kunden']['shop_ustid_force_remote_check']) {
+                        if ($conf['kunden']['shop_ustid_force_remote_check'] === 'Y') {
                             $ret['ustid'] = 4; // parsing ok, but the remote-service is in a "down-slot" and unreachable
                             $ret['ustid_err'] = $vViesResult['errorcode'].
                                 ','.
@@ -2142,24 +2152,13 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
                         }
                         break;
                 }
-
             }
         }
-
     }
-    if ($conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y'
-        && StringHandler::checkDate(StringHandler::filterXSS($data['geburtstag'])) > 0
+    if (isset($data['geburtstag'])
+        && ($errCode = StringHandler::checkDate($data['geburtstag'], $conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y')) > 0
     ) {
-        $ret['geburtstag'] = StringHandler::checkDate(StringHandler::filterXSS($data['geburtstag']));
-    }
-    if ($conf['kunden']['kundenregistrierung_abfragen_www'] === 'Y' && empty($data['www'])) {
-        $ret['www'] = 1;
-    }
-    if ($conf['kunden']['kundenregistrierung_abfragen_tel'] === 'Y' && StringHandler::checkPhoneNumber($data['tel']) > 0) {
-        $ret['tel'] = StringHandler::checkPhoneNumber($data['tel']);
-    }
-    if ($conf['kunden']['kundenregistrierung_abfragen_bundesland'] === 'Y' && empty($data['bundesland'])) {
-        $ret['bundesland'] = 1;
+        $ret['geburtstag'] = $errCode;
     }
     if ($kundenaccount === 1) {
         if ($checkpass) {
@@ -2171,19 +2170,11 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
             }
         }
         //existiert diese email bereits?
-        $obj = Shop::Container()->getDB()->selectAll('tkunde', 'cMail', $data['email']);
-        foreach ($obj as $customer) {
-            if (!empty($customer->cPasswort) && !empty($customer->kKunde)) {
+        if (!isset($ret['email']) && !isEmailAvailable($data['email'], $_SESSION['Kunde']->kKunde ?? 0)) {
+            if (!(isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0)) {
                 $ret['email_vorhanden'] = 1;
-                break;
             }
-        }
-        if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-            //emailadresse anders und existiert dennoch?
-            $mail = Shop::Container()->getDB()->select('tkunde', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
-            if (isset($mail->cMail) && $data['email'] === $mail->cMail) {
-                unset($ret['email_vorhanden']);
-            }
+            $ret['email'] = 5;
         }
     }
     // Selbstdef. Kundenfelder
@@ -2202,16 +2193,14 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
                     && $customerField->nEditierbar == 1
                 ) {
                     $ret['custom'][$customerField->kKundenfeld] = 1;
-                } elseif (isset($data['custom_' . $customerField->kKundenfeld])
-                    && $data['custom_' . $customerField->kKundenfeld]
-                ) {
+                } elseif (!empty($data['custom_' . $customerField->kKundenfeld])) {
                     // Datum
                     // 1 = leer
                     // 2 = falsches Format
                     // 3 = falsches Datum
                     // 0 = o.k.
                     if ($customerField->cTyp === 'datum') {
-                        $_dat   = StringHandler::filterXSS($data['custom_' . $customerField->kKundenfeld]);
+                        $_dat   = $data['custom_' . $customerField->kKundenfeld];
                         $_datTs = strtotime($_dat);
                         $_dat   = ($_datTs !== false) ? date('d.m.Y', $_datTs) : false;
                         $check  = StringHandler::checkDate($_dat);
@@ -2227,14 +2216,14 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
                 }
             } elseif (empty($data['custom_' . $customerField->kKundenfeld]) && $customerField->nPflicht == 1) {
                 $ret['custom'][$customerField->kKundenfeld] = 1;
-            } elseif ($data['custom_' . $customerField->kKundenfeld]) {
+            } elseif (!empty($data['custom_' . $customerField->kKundenfeld])) {
                 // Datum
                 // 1 = leer
                 // 2 = falsches Format
                 // 3 = falsches Datum
                 // 0 = o.k.
                 if ($customerField->cTyp === 'datum') {
-                    $_dat   = StringHandler::filterXSS($data['custom_' . $customerField->kKundenfeld]);
+                    $_dat   = $data['custom_' . $customerField->kKundenfeld];
                     $_datTs = strtotime($_dat);
                     $_dat   = ($_datTs !== false) ? date('d.m.Y', $_datTs) : false;
                     $check  = StringHandler::checkDate($_dat);
@@ -2272,13 +2261,6 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
             $ret['formular_zeit'] = 1;
         }
     }
-    if (isset($conf['kunden']['kundenregistrierung_pruefen_email'], $data['email'])
-        && $conf['kunden']['kundenregistrierung_pruefen_email'] === 'Y'
-        && strlen($data['email']) > 0
-        && !checkdnsrr(substr($data['email'], strpos($data['email'], '@') + 1))
-    ) {
-        $ret['email'] = 4;
-    }
 
     if (isset($conf['kunden']['registrieren_captcha'])
         && $conf['kunden']['registrieren_captcha'] !== 'N'
@@ -2297,7 +2279,7 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
  */
 function checkKundenFormular(int $kundenaccount, $checkpass = 1)
 {
-    $data = $_POST; // create a copy
+    $data = StringHandler::filterXSS($_POST); // create a copy
 
     return checkKundenFormularArray($data, $kundenaccount, $checkpass);
 }
@@ -2347,13 +2329,25 @@ function checkLieferFormularArray($data)
 
     foreach (['tel', 'mobil', 'fax'] as $telType) {
         if ($conf['kunden']["lieferadresse_abfragen_$telType"] !== 'N') {
-            $result = StringHandler::checkPhoneNumber(StringHandler::filterXSS($data[$telType]));
+            $result = StringHandler::checkPhoneNumber($data[$telType]);
             if ($result === 1 && $conf['kunden']["lieferadresse_abfragen_$telType"] === 'Y') {
                 $ret[$telType] = 1;
             } elseif ($result > 1) {
                 $ret[$telType] = $result;
             }
         }
+    }
+
+    if (empty($_SESSION['check_liefer_plzort'])
+        && $conf['kunden']['kundenregistrierung_abgleichen_plz'] === 'Y'
+    ) {
+        if (!valid_plzort($data['plz'], $data['ort'], $data['land'])) {
+            $ret['plz']               = 2;
+            $ret['ort']               = 2;
+            $_SESSION['check_liefer_plzort'] = 1;
+        }
+    } else {
+        unset($_SESSION['check_liefer_plzort']);
     }
 
     return $ret;
@@ -2535,7 +2529,7 @@ function getKundendaten($post, $kundenaccount, $htmlentities = 1)
         }
     }
 
-    $customer->dGeburtstag     = DateHelper::convertDateToMysqlStandard($customer->dGeburtstag);
+    $customer->dGeburtstag     = DateHelper::convertDateToMysqlStandard($customer->dGeburtstag ?? '');
     $customer->angezeigtesLand = Sprache::getCountryCodeByCountryName($customer->cLand);
     if (!empty($customer->cBundesland)) {
         $oISO = Staat::getRegionByIso($customer->cBundesland, $customer->cLand);
@@ -2745,11 +2739,8 @@ function freeGiftStillValid()
  * @param string $land
  * @return bool
  */
-function valid_plzort($plz, $ort, $land)
+function valid_plzort(string $plz, string $ort,string $land): bool
 {
-    $plz  = StringHandler::filterXSS($plz);
-    $ort  = StringHandler::filterXSS($ort);
-    $land = StringHandler::filterXSS($land);
     // Länder die wir mit Ihren Postleitzahlen in der Datenbank haben
     $cSupportedCountry_arr = ['DE', 'AT', 'CH'];
     if (!in_array(strtoupper($land), $cSupportedCountry_arr, true)) {
@@ -2757,75 +2748,19 @@ function valid_plzort($plz, $ort, $land)
     }
     $obj = Shop::Container()->getDB()->executeQueryPrepared(
         'SELECT kPLZ
-            FROM tplz
-            WHERE cPLZ = :plz
-            AND cOrt LIKE :ort
+        FROM tplz
+        WHERE cPLZ = :plz
+            AND INSTR(cOrt COLLATE utf8_german2_ci, :ort)
             AND cLandISO = :land',
         [
             'plz'  => $plz,
-            'ort'  => '%' . $ort . '%',
-            'land' => $land
-        ],
-        \DB\ReturnType::SINGLE_OBJECT
-    );
-    if (isset($obj->kPLZ) && $obj->kPLZ > 0) {
-        return true;
-    }
-    $obj = Shop::Container()->getDB()->executeQueryPrepared(
-        'SELECT kPLZ
-            FROM tplz
-            WHERE cPLZ = :plz
-            AND cOrt LIKE :ort
-            AND cLandISO = :land',
-        [
-            'plz'  => $plz,
-            'ort'  => umlauteUmschreibenA2AE($ort),
-            'land' => $land
-        ],
-        \DB\ReturnType::SINGLE_OBJECT
-    );
-    if (isset($obj->kPLZ) && $obj->kPLZ > 0) {
-        return true;
-    }
-    $obj = Shop::Container()->getDB()->executeQueryPrepared(
-        'SELECT kPLZ
-            FROM tplz
-            WHERE cPLZ = :plz
-            AND cOrt LIKE :ort
-            AND cLandISO = :land',
-        [
-            'plz'  => $plz,
-            'ort'  => umlauteUmschreibenAE2A($ort),
+            'ort'  => $ort,
             'land' => $land
         ],
         \DB\ReturnType::SINGLE_OBJECT
     );
 
     return isset($obj->kPLZ) && $obj->kPLZ > 0;
-}
-
-/**
- * @param string $str
- * @return string
- */
-function umlauteUmschreibenA2AE($str)
-{
-    $src = ['ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü'];
-    $rpl = ['ae', 'oe', 'ue', 'ss', 'Ae', 'Oe', 'Ue', 'ae', 'oe', 'ue', 'ss', 'Ae', 'Oe', 'Ue'];
-
-    return str_replace($src, $rpl, $str);
-}
-
-/**
- * @param string $str
- * @return string
- */
-function umlauteUmschreibenAE2A($str)
-{
-    $rpl = ['ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü'];
-    $src = ['ae', 'oe', 'ue', 'ss', 'Ae', 'Oe', 'Ue'];
-
-    return str_replace($src, $rpl, $str);
 }
 
 /**
@@ -3576,6 +3511,9 @@ function setzeFehlendeAngaben($fehlendeAngabe, $context = null)
             ? array_merge($fehlendeAngaben[$context], $fehlendeAngabe)
             : $fehlendeAngabe;
     }
+    $_SESSION['checkout.fehlendeAngaben'] = isset($_SESSION['checkout.fehlendeAngaben'])
+        ? array_merge($_SESSION['checkout.fehlendeAngaben'], $fehlendeAngaben)
+        : $fehlendeAngaben;
 
     Shop::Smarty()->assign('fehlendeAngaben', $fehlendeAngaben);
 }
@@ -3726,12 +3664,19 @@ function mappeBestellvorgangZahlungshinweis(int $nHinweisCode)
 
 /**
  * @param string $email
+ * @param int $customerID
  * @return bool
  */
-function isEmailAvailable($email): bool
+function isEmailAvailable(string $email, int $customerID = 0): bool
 {
-    return strlen($email) > 0
-        && (Shop::Container()->getDB()->select('tkunde', 'cMail', $email, 'nRegistriert', 1) === null);
+    return Shop::Container()->getDB()->queryPrepared('
+              SELECT * 
+                FROM tkunde 
+                WHERE cmail = :email 
+                  AND nRegistriert = 1 
+                  AND kKunde != :customerID',
+                ['email' => $email, 'customerID' => $customerID],
+                \DB\ReturnType::SINGLE_OBJECT) === false;
 }
 
 /**
@@ -3857,4 +3802,32 @@ function setzeInSession($name, $obj)
     //an die Session anhängen
     unset($_SESSION[$name]);
     $_SESSION[$name] = $obj;
+}
+
+/**
+ * @param string $str
+ * @return string
+ * @deprecated since 5.0.0
+ */
+function umlauteUmschreibenA2AE(string $str): string
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    $src = ['ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü'];
+    $rpl = ['ae', 'oe', 'ue', 'ss', 'Ae', 'Oe', 'Ue'];
+
+    return str_replace($src, $rpl, $str);
+}
+
+/**
+ * @param string $str
+ * @return string
+ * @deprecated since 5.0.0
+ */
+function umlauteUmschreibenAE2A(string $str): string
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    $rpl = ['ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü'];
+    $src = ['ae', 'oe', 'ue', 'ss', 'Ae', 'Oe', 'Ue'];
+
+    return str_replace($src, $rpl, $str);
 }

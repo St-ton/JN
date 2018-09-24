@@ -63,7 +63,7 @@ function generiereRSSXML()
                         AND tartikel.cNeu = 'Y'
                         $lagerfilter
                         AND cNeu = 'Y' 
-                        AND DATE_SUB(now(), INTERVAL " . $alter_tage . " DAY) < dErstellt
+                        AND DATE_SUB(NOW(), INTERVAL " . $alter_tage . " DAY) < dErstellt
                     ORDER BY dLetzteAktualisierung DESC",
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
@@ -85,9 +85,9 @@ function generiereRSSXML()
             $oNews_arr = Shop::Container()->getDB()->query(
                 "SELECT *, DATE_FORMAT(dGueltigVon, '%a, %d %b %Y %H:%i:%s UTC') AS dErstellt_RSS
                     FROM tnews
-                    WHERE DATE_SUB(now(), INTERVAL " . $alter_tage . " DAY) < dGueltigVon
+                    WHERE DATE_SUB(NOW(), INTERVAL " . $alter_tage . " DAY) < dGueltigVon
                         AND nAktiv = 1
-                        AND dGueltigVon <= now()
+                        AND dGueltigVon <= NOW()
                     ORDER BY dGueltigVon DESC",
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
@@ -108,7 +108,7 @@ function generiereRSSXML()
             $oBewertung_arr = Shop::Container()->getDB()->query(
                 "SELECT *, dDatum, DATE_FORMAT(dDatum, \"%a, %d %b %y %h:%i:%s +0100\") AS dErstellt_RSS
                     FROM tbewertung
-                    WHERE DATE_SUB(now(), INTERVAL " . $alter_tage . " DAY) < dDatum
+                    WHERE DATE_SUB(NOW(), INTERVAL " . $alter_tage . " DAY) < dDatum
                         AND nAktiv = 1",
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );

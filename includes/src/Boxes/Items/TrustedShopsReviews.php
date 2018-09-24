@@ -1,11 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
 namespace Boxes\Items;
-
 
 /**
  * Class TrustedShopsReviews
@@ -74,7 +73,7 @@ final class TrustedShopsReviews extends AbstractBox
      */
     private function cachecheck(string $filename_cache, int $timeout = 10800): bool
     {
-        $filename_cache = PFAD_ROOT . \PFAD_GFX_TRUSTEDSHOPS . $filename_cache;
+        $filename_cache = \PFAD_ROOT . \PFAD_GFX_TRUSTEDSHOPS . $filename_cache;
 
         return \file_exists($filename_cache)
             ? ((\time() - \filemtime($filename_cache)) < $timeout)

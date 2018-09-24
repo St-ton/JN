@@ -100,7 +100,7 @@ class ArtikelHelper
                             AND tartikelsichtbarkeit.kArtikel IS NULL
                             AND tartikel.kVaterArtikel = ' . $productID . '
                         GROUP BY tartikel.kArtikel
-                        HAVING count(*) = ' . count($combinations),
+                        HAVING COUNT(*) = ' . count($combinations),
                     \DB\ReturnType::SINGLE_OBJECT
                 );
                 if (isset($product->kArtikel) && $product->kArtikel > 0) {
@@ -289,6 +289,9 @@ class ArtikelHelper
         }
 
         foreach ($oEigenschaft_arr as $oEigenschaft) {
+            $oEigenschaft->kEigenschaftWert = (int)$oEigenschaft->kEigenschaftWert;
+            $oEigenschaft->kEigenschaft     = (int)$oEigenschaft->kEigenschaft;
+            $oEigenschaft->kArtikel         = (int)$oEigenschaft->kArtikel;
             if ($oEigenschaft->cTyp !== 'FREIFELD' && $oEigenschaft->cTyp !== 'PFLICHT-FREIFELD') {
                 // Ist kEigenschaft zu eigenschaftwert vorhanden
                 if (self::hasSelectedVariationValue($oEigenschaft->kEigenschaft)) {
@@ -298,9 +301,9 @@ class ArtikelHelper
                             LEFT JOIN teigenschaftwertsichtbarkeit
                                 ON teigenschaftwertsichtbarkeit.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
                                 AND teigenschaftwertsichtbarkeit.kKundengruppe = ' . $customerGroup . '
-                            WHERE teigenschaftwert.kEigenschaftWert = ' . (int)$oEigenschaft->kEigenschaftWert . '
+                            WHERE teigenschaftwert.kEigenschaftWert = ' . $oEigenschaft->kEigenschaftWert . '
                                 AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
-                                AND teigenschaftwert.kEigenschaft = ' . (int)$oEigenschaft->kEigenschaft,
+                                AND teigenschaftwert.kEigenschaft = ' . $oEigenschaft->kEigenschaft,
                         \DB\ReturnType::SINGLE_OBJECT
                     );
 
@@ -867,7 +870,7 @@ class ArtikelHelper
                     foreach ($articles as $xs) {
                         $group->Name         = $xs->cName;
                         $group->Beschreibung = $xs->cBeschreibung;
-                        $product             = (new Artikel())->fuelleArtikel($xs->kXSellArtikel, $defaultOptions);
+                        $product             = (new Artikel())->fuelleArtikel((int)$xs->kXSellArtikel, $defaultOptions);
                         if ($product !== null && $product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
                             $group->Artikel[] = $product;
                         }
@@ -945,7 +948,7 @@ class ArtikelHelper
                 $defaultOptions          = Artikel::getDefaultOptions();
                 foreach ($xsell as $xs) {
                     $product = new Artikel();
-                    $product->fuelleArtikel($xs->kXSellArtikel, $defaultOptions);
+                    $product->fuelleArtikel((int)$xs->kXSellArtikel, $defaultOptions);
                     if ($product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
                         $xSelling->Kauf->Artikel[] = $product;
                     }
@@ -1002,7 +1005,7 @@ class ArtikelHelper
                 $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('blockedEmail');
             } else {
                 Shop::Smarty()->assign('Anfrage', self::getProductQuestionFormDefaults());
-                $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('fillOutQuestion', 'messages');
+                $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('mandatoryFieldNotification', 'errorMessages');
             }
         } else {
             $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('productquestionPleaseLogin', 'errorMessages');
@@ -1153,7 +1156,7 @@ class ArtikelHelper
         $history->cMail      = $data->tnachricht->cMail;
         $history->cNachricht = $data->tnachricht->cNachricht;
         $history->cIP        = RequestHelper::getIP();
-        $history->dErstellt  = 'now()';
+        $history->dErstellt  = 'NOW()';
 
         $inquiryID                     = Shop::Container()->getDB()->insert('tproduktanfragehistory', $history);
         $GLOBALS['PositiveFeedback'][] = Shop::Lang()->get('thankYouForQuestion', 'messages');
@@ -1177,7 +1180,7 @@ class ArtikelHelper
             'SELECT kProduktanfrageHistory
                 FROM tproduktanfragehistory
                 WHERE cIP = :ip
-                    AND date_sub(now(), INTERVAL :min MINUTE) < dErstellt',
+                    AND DATE_SUB(NOW(), INTERVAL :min MINUTE) < dErstellt',
             ['ip' => RequestHelper::getIP(), 'min' => $min],
             \DB\ReturnType::SINGLE_OBJECT
         );
@@ -1209,7 +1212,7 @@ class ArtikelHelper
                 $inquiry->kSprache  = Shop::getLanguage();
                 $inquiry->kArtikel  = (int)$_POST['a'];
                 $inquiry->cIP       = RequestHelper::getIP();
-                $inquiry->dErstellt = 'now()';
+                $inquiry->dErstellt = 'NOW()';
                 $inquiry->nStatus   = 0;
                 $checkBox           = new CheckBox();
                 $customerGroupID    = Session::CustomerGroup()->getID();
@@ -1232,10 +1235,10 @@ class ArtikelHelper
                     'INSERT INTO tverfuegbarkeitsbenachrichtigung 
                         (cVorname, cNachname, cMail, kSprache, kArtikel, cIP, dErstellt, nStatus) 
                         VALUES 
-                        (:cVorname, :cNachname, :cMail, :kSprache, :kArtikel, :cIP, now(), :nStatus)
+                        (:cVorname, :cNachname, :cMail, :kSprache, :kArtikel, :cIP, NOW(), :nStatus)
                         ON DUPLICATE KEY UPDATE 
                             cVorname = :cVorname, cNachname = :cNachname, ksprache = :kSprache, 
-                            cIP = :cIP, dErstellt = now(), nStatus = :nStatus', get_object_vars($inquiry),
+                            cIP = :cIP, dErstellt = NOW(), nStatus = :nStatus', get_object_vars($inquiry),
                     \DB\ReturnType::LAST_INSERTED_ID
                 );
                 if (isset($_SESSION['Kampagnenbesucher'])) {
@@ -1252,7 +1255,7 @@ class ArtikelHelper
             $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('blockedEmail');
         } else {
             Shop::Smarty()->assign('Benachrichtigung', self::getAvailabilityFormDefaults());
-            $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('fillOutNotification', 'messages');
+            $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('mandatoryFieldNotification', 'errorMessages');
         }
     }
 
@@ -1330,7 +1333,7 @@ class ArtikelHelper
             'SELECT kVerfuegbarkeitsbenachrichtigung
                 FROM tverfuegbarkeitsbenachrichtigung
                 WHERE cIP = :ip
-                AND date_sub(now(), INTERVAL :min MINUTE) < dErstellt',
+                AND DATE_SUB(NOW(), INTERVAL :min MINUTE) < dErstellt',
             ['ip' => RequestHelper::getIP(), 'min' => $min],
             \DB\ReturnType::SINGLE_OBJECT
         );
@@ -1398,6 +1401,7 @@ class ArtikelHelper
                         AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND tartikel.kArtikel = tkategorieartikel.kArtikel
+                        AND tartikel.kVaterArtikel = 0
                         AND tkategorieartikel.kKategorie = ' . $categoryID . '
                         AND tpreise.kArtikel = tartikel.kArtikel
                         AND tartikel.kArtikel < ' . $productID . '
@@ -1414,6 +1418,7 @@ class ArtikelHelper
                         AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND tartikel.kArtikel = tkategorieartikel.kArtikel
+                        AND tartikel.kVaterArtikel = 0
                         AND tkategorieartikel.kKategorie = ' . $categoryID . '
                         AND tpreise.kArtikel = tartikel.kArtikel
                         AND tartikel.kArtikel > ' . $productID . '
@@ -1425,11 +1430,11 @@ class ArtikelHelper
 
             if (!empty($prev->kArtikel)) {
                 $nav->vorherigerArtikel = (new Artikel())
-                    ->fuelleArtikel($prev->kArtikel, Artikel::getDefaultOptions());
+                    ->fuelleArtikel((int)$prev->kArtikel, Artikel::getDefaultOptions());
             }
             if (!empty($next->kArtikel)) {
                 $nav->naechsterArtikel = (new Artikel())
-                    ->fuelleArtikel($next->kArtikel, Artikel::getDefaultOptions());
+                    ->fuelleArtikel((int)$next->kArtikel, Artikel::getDefaultOptions());
             }
         }
 
@@ -1571,7 +1576,7 @@ class ArtikelHelper
             }
             Shop::Container()->getDB()->query(
                 "DELETE FROM ttagkunde 
-                    WHERE dZeit < DATE_SUB(now(),INTERVAL 1 MONTH)",
+                    WHERE dZeit < DATE_SUB(NOW(),INTERVAL 1 MONTH)",
                 \DB\ReturnType::DEFAULT
             );
             if (($conf['artikeldetails']['tagging_freischaltung'] === 'Y'
@@ -1582,9 +1587,9 @@ class ArtikelHelper
                 $ip = RequestHelper::getIP();
                 if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                     $tagPostings = Shop::Container()->getDB()->queryPrepared(
-                        'SELECT count(kTagKunde) AS Anzahl
+                        'SELECT COUNT(kTagKunde) AS Anzahl
                             FROM ttagkunde
-                            WHERE dZeit > DATE_SUB(now(),INTERVAL 1 DAY)
+                            WHERE dZeit > DATE_SUB(NOW(),INTERVAL 1 DAY)
                                 AND kKunde = :kKunde',
                         ['kKunde' => (int)$_SESSION['Kunde']->kKunde],
                         \DB\ReturnType::SINGLE_OBJECT
@@ -1593,7 +1598,7 @@ class ArtikelHelper
                 } else {
                     $tagPostings = Shop::Container()->getDB()->queryPrepared(
                         'SELECT count(kTagKunde) AS Anzahl FROM ttagkunde
-                            WHERE dZeit > DATE_SUB(now(), INTERVAL 1 DAY)
+                            WHERE dZeit > DATE_SUB(NOW(), INTERVAL 1 DAY)
                                 AND cIP = :ip
                                 AND kKunde = 0',
                         ['ip' => $ip],
@@ -1676,7 +1681,7 @@ class ArtikelHelper
                     $neuerTagKunde->kTag   = $kTag;
                     $neuerTagKunde->kKunde = $kKunde;
                     $neuerTagKunde->cIP    = $ip;
-                    $neuerTagKunde->dZeit  = 'now()';
+                    $neuerTagKunde->dZeit  = 'NOW()';
                     Shop::Container()->getDB()->insert('ttagkunde', $neuerTagKunde);
 
                     if ($tag_obj->nAktiv !== null && (int)$tag_obj->nAktiv === 0) {
@@ -1807,7 +1812,7 @@ class ArtikelHelper
     {
         switch ($cCode) {
             case 'f01':
-                $error = Shop::Lang()->get('bewertungWrongdata', 'errorMessages');
+                $error = Shop::Lang()->get('mandatoryFieldNotification', 'errorMessages');
                 break;
             case 'f02':
                 $error = Shop::Lang()->get('bewertungBewexist', 'errorMessages');

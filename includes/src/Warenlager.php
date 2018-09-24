@@ -239,7 +239,7 @@ class Warenlager extends MainModel
      * @param int $kWarenlager
      * @return $this
      */
-    public function setWarenlager($kWarenlager)
+    public function setWarenlager(int $kWarenlager)
     {
         return $this->setID($kWarenlager);
     }

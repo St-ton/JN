@@ -56,7 +56,7 @@
                         <span class="input-group-addon">
                             <label for="cName">Name{if isset($xPlausiVar_arr.cName)} <span class="fillout">{#FillOut#}</span>{/if}</label>
                         </span>
-                        <input required type="text" name="cName" id="cName" class="form-control{if isset($xPlausiVar_arr.cName)} fieldfillout{/if}" value="{if isset($xPostVar_arr.cName) && $xPostVar_arr.cName}{$xPostVar_arr.cName}{elseif !empty($Link->getName())}{$Link->getName()}{/if}" tabindex="1" />
+                        <input required type="text" name="cName" id="cName" class="form-control{if isset($xPlausiVar_arr.cName)} fieldfillout{/if}" value="{if isset($xPostVar_arr.cName) && $xPostVar_arr.cName}{$xPostVar_arr.cName}{elseif !empty($Link->getDisplayName())}{$Link->getDisplayName()}{/if}" tabindex="1" />
                     </div>
                     <div class="input-group{if isset($xPlausiVar_arr.nLinkart)} error{/if}">
                         <span class="input-group-addon">
@@ -186,16 +186,6 @@
                         </div>
                     </div>
                     <div class="input-group">
-                        <span class="input-group-addon"><label for="lang">Sprache</label></span>
-                        <span class="input-group-wrap">
-                            <select class="form-control" name="cISO" id="lang">
-                                {foreach name=sprachen from=$sprachen item=sprache}
-                                    <option value="{$sprache->cISO}" {if $sprache->cShopStandard === 'Y'}selected="selected"{/if}>{$sprache->cNameDeutsch} {if $sprache->cShopStandard === 'Y'}(Standard){/if}</option>
-                                {/foreach}
-                            </select>
-                        </span>
-                    </div>
-                    <div class="input-group">
                         <span class="input-group-addon"><label for="bIsFluid">{#bIsFluidText#}</label></span>
                         <div class="input-group-wrap">
                             <input class="form-control2" type="checkbox" name="bIsFluid" id="bIsFluid" value="1" {if $Link->getIsFluid() === true || (isset($xPostVar_arr.bIsFluid) && $xPostVar_arr.bIsFluid === '1')}checked{/if} />
@@ -206,6 +196,16 @@
                         <div class="input-group-wrap">
                             <input class="form-control" type="text" name="cIdentifier" id="cIdentifier" value="{if $Link->getIdentifier()}{$Link->getIdentifier()}{elseif isset($xPostVar_arr.bIsFluid)}$xPostVar_arr.bIsFluid{/if}" />
                         </div>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon"><label for="lang">Sprache</label></span>
+                        <span class="input-group-wrap">
+                            <select class="form-control" name="cISO" id="lang">
+                                {foreach name=sprachen from=$sprachen item=sprache}
+                                    <option value="{$sprache->cISO}" {if $sprache->cShopStandard === 'Y'}selected="selected"{/if}>{$sprache->cNameDeutsch} {if $sprache->cShopStandard === 'Y'}(Standard){/if}</option>
+                                {/foreach}
+                            </select>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -275,7 +275,7 @@
             {/foreach}
             <div class="panel{if isset($Link->getID())} btn-group{/if}">
                 <button type="submit" value="{#newLinksSave#}" class="btn btn-primary"><i class="fa fa-save"></i> {#newLinksSave#}</button>
-                {if isset($Link->getID())}<button type="submit" name="continue" value="1" class="btn btn-default" id="save-and-continue">{#newLinksSave#} und weiter bearbeiten</button>{/if}
+                <button type="submit" name="continue" value="1" class="btn btn-default" id="save-and-continue">{#newLinksSave#} und weiter bearbeiten</button>
             </div>
         </form>
         {if isset($Link->getID())}

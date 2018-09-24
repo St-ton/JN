@@ -1912,6 +1912,10 @@ fieldset {
 .row.gallery .product-wrapper {
     border-bottom: 1px solid @panel-default-border;
     border-right: 1px solid @panel-default-border;
+    overflow: hidden;
+    &:hover {
+        overflow: visible;
+    }
 }
 
 @media (min-width: @screen-lg-min) {

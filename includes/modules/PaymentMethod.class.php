@@ -165,7 +165,7 @@ class PaymentMethod
         if ($kBestellung > 0) {
             $_upd            = new stdClass();
             $_upd->cNotifyID = Shop::Container()->getDB()->escape($cNotifyID);
-            $_upd->dNotify   = 'now()';
+            $_upd->dNotify   = 'NOW()';
             Shop::Container()->getDB()->update('tzahlungsession', 'kBestellung', $kBestellung, $_upd);
         }
 
@@ -256,16 +256,16 @@ class PaymentMethod
             $oZahlungsID->kZahlungsart = $order->kZahlungsart;
             $oZahlungsID->cId          = $hash;
             $oZahlungsID->txn_id       = '';
-            $oZahlungsID->dDatum       = 'now()';
+            $oZahlungsID->dDatum       = 'NOW()';
             Shop::Container()->getDB()->insert('tzahlungsid', $oZahlungsID);
         } else {
             Shop::Container()->getDB()->delete('tzahlungsession', ['cSID', 'kBestellung'], [session_id(), 0]);
             $oZahlungSession               = new stdClass();
             $oZahlungSession->cSID         = session_id();
             $oZahlungSession->cNotifyID    = '';
-            $oZahlungSession->dZeitBezahlt = '0000-00-00 00:00:00';
+            $oZahlungSession->dZeitBezahlt = '_DBNULL_';
             $oZahlungSession->cZahlungsID  = uniqid('', true);
-            $oZahlungSession->dZeit        = 'now()';
+            $oZahlungSession->dZeit        = 'NOW()';
             Shop::Container()->getDB()->insert('tzahlungsession', $oZahlungSession);
             $hash = '_' . $oZahlungSession->cZahlungsID;
         }
@@ -299,7 +299,7 @@ class PaymentMethod
             'cISO'              => Session::Currency()->getCode(),
             'cEmpfaenger'       => '',
             'cZahler'           => '',
-            'dZeit'             => 'now()',
+            'dZeit'             => 'NOW()',
             'cHinweis'          => '',
             'cAbgeholt'         => 'N'
         ], (array)$payment);
@@ -316,7 +316,7 @@ class PaymentMethod
     {
         $_upd                = new stdClass();
         $_upd->cStatus       = BESTELLUNG_STATUS_BEZAHLT;
-        $_upd->dBezahltDatum = 'now()';
+        $_upd->dBezahltDatum = 'NOW()';
         Shop::Container()->getDB()->update('tbestellung', 'kBestellung', (int)$order->kBestellung, $_upd);
 
         return $this;
@@ -452,7 +452,7 @@ class PaymentMethod
         if ($this->getSetting('min_bestellungen') > 0) {
             if (isset($customer->kKunde) && $customer->kKunde > 0) {
                 $res = Shop::Container()->getDB()->query("
-                  SELECT count(*) AS cnt 
+                  SELECT COUNT(*) AS cnt 
                       FROM tbestellung 
                       WHERE kKunde = " . (int) $customer->kKunde . " 
                           AND (
@@ -611,7 +611,7 @@ class PaymentMethod
         $this->sendMail($kBestellung, MAILTEMPLATE_BESTELLUNG_RESTORNO);
         $_upd                = new stdClass();
         $_upd->cStatus       = BESTELLUNG_STATUS_IN_BEARBEITUNG;
-        $_upd->dBezahltDatum = 'now()';
+        $_upd->dBezahltDatum = 'NOW()';
         Shop::Container()->getDB()->update('tbestellung', 'kBestellung', $kBestellung, $_upd);
 
         return $this;
@@ -629,7 +629,7 @@ class PaymentMethod
             $this->sendMail($kBestellung, MAILTEMPLATE_BESTELLUNG_STORNO);
             $_upd                = new stdClass();
             $_upd->cStatus       = BESTELLUNG_STATUS_STORNO;
-            $_upd->dBezahltDatum = 'now()';
+            $_upd->dBezahltDatum = 'NOW()';
             Shop::Container()->getDB()->update('tbestellung', 'kBestellung', $kBestellung, $_upd);
         }
 
@@ -654,7 +654,7 @@ class PaymentMethod
     public function sendMail($kBestellung, $nType, $oAdditional = null)
     {
         $oOrder = new Bestellung($kBestellung);
-        $oOrder->fuelleBestellung(0);
+        $oOrder->fuelleBestellung(false);
         $oCustomer = new Kunde($oOrder->kKunde);
         $oMail     = new stdClass();
 

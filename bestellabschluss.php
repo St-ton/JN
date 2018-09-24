@@ -23,12 +23,12 @@ if (isset($_GET['i'])) {
     $bestellid = Shop::Container()->getDB()->select('tbestellid', 'cId', $_GET['i']);
     if (isset($bestellid->kBestellung) && $bestellid->kBestellung > 0) {
         $bestellung = new Bestellung($bestellid->kBestellung);
-        $bestellung->fuelleBestellung(0);
+        $bestellung->fuelleBestellung(false);
         speicherUploads($bestellung);
         Shop::Container()->getDB()->delete('tbestellid', 'kBestellung', (int)$bestellid->kBestellung);
     }
     Shop::Container()->getDB()->query(
-        'DELETE FROM tbestellid WHERE dDatum < date_sub(now(),INTERVAL 30 DAY)',
+        'DELETE FROM tbestellid WHERE dDatum < DATE_SUB(NOW(),INTERVAL 30 DAY)',
         \DB\ReturnType::DEFAULT
     );
     $smarty->assign('abschlussseite', 1);

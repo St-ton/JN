@@ -299,23 +299,21 @@ class TemplateHelper
         if (!$oXMLTemplate) {
             return false;
         }
-
-        $oTemplate->cName        = trim($oXMLTemplate->Name);
+        $oTemplate->cName        = trim((string)$oXMLTemplate->Name);
         $oTemplate->cOrdner      = (string)$cOrdner;
-        $oTemplate->cAuthor      = trim($oXMLTemplate->Author);
-        $oTemplate->cURL         = trim($oXMLTemplate->URL);
-        $oTemplate->cVersion     = trim($oXMLTemplate->Version);
-        $oTemplate->cShopVersion = trim($oXMLTemplate->ShopVersion);
-        $oTemplate->cPreview     = trim($oXMLTemplate->Preview);
-        $oTemplate->cDokuURL     = trim($oXMLTemplate->DokuURL);
+        $oTemplate->cAuthor      = trim((string)$oXMLTemplate->Author);
+        $oTemplate->cURL         = trim((string)$oXMLTemplate->URL);
+        $oTemplate->cVersion     = trim((string)$oXMLTemplate->Version);
+        $oTemplate->cPreview     = trim((string)$oXMLTemplate->Preview);
+        $oTemplate->cDokuURL     = trim((string)$oXMLTemplate->DokuURL);
         $oTemplate->bChild       = !empty($oXMLTemplate->Parent);
-        $oTemplate->cParent      = !empty($oXMLTemplate->Parent) ? trim($oXMLTemplate->Parent) : '';
+        $oTemplate->cParent      = !empty($oXMLTemplate->Parent) ? trim((string)$oXMLTemplate->Parent) : '';
         $oTemplate->bResponsive  = empty($oXMLTemplate['isFullResponsive'])
             ? false
             : (strtolower((string)$oXMLTemplate['isFullResponsive']) === 'true');
         $oTemplate->bHasError    = false;
         $oTemplate->eTyp         = '';
-        $oTemplate->cDescription = !empty($oXMLTemplate->Description) ? trim($oXMLTemplate->Description) : '';
+        $oTemplate->cDescription = !empty($oXMLTemplate->Description) ? trim((string)$oXMLTemplate->Description) : '';
         if (!StringHandler::is_utf8($oTemplate->cDescription)) {
             $oTemplate->cDescription = StringHandler::convertUTF8($oTemplate->cDescription);
         }
@@ -325,9 +323,6 @@ class TemplateHelper
 
             if ($parentConfig !== false && empty($oTemplate->cVersion)) {
                 $oTemplate->cVersion = $parentConfig->cVersion;
-            }
-            if ($parentConfig !== false && empty($oTemplate->cShopVersion)) {
-                $oTemplate->cShopVersion = $parentConfig->cShopVersion;
             }
         }
 

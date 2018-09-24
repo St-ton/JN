@@ -63,7 +63,7 @@ class Preisverlauf
                         ON tartikel.kArtikel = tpreisverlauf.kArtikel
                     WHERE tpreisverlauf.kArtikel = ' . $kArtikel . '
                         AND tpreisverlauf.kKundengruppe = ' . $kKundengruppe . '
-                        AND DATE_SUB(now(), INTERVAL ' . $nMonat . ' MONTH) < tpreisverlauf.dDate
+                        AND DATE_SUB(NOW(), INTERVAL ' . $nMonat . ' MONTH) < tpreisverlauf.dDate
                     ORDER BY tpreisverlauf.dDate DESC',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
@@ -71,7 +71,7 @@ class Preisverlauf
             $dt        = new DateTime();
             foreach ($obj_arr as &$_pv) {
                 if (isset($_pv->timestamp)) {
-                    $dt->setTimestamp($_pv->timestamp);
+                    $dt->setTimestamp((int)$_pv->timestamp);
                     $_pv->date   = $dt->format('d.m.');
                     $_pv->fPreis = Session::CustomerGroup()->isMerchant()
                         ? round($_pv->fVKNetto * $_currency->getConversionFactor(), 2)

@@ -199,7 +199,7 @@ function processImport($fmt, $data)
     $newsletterempfaenger->cOptCode    = create_NewsletterCode('cOptCode', $newsletterempfaenger->cEmail);
     $newsletterempfaenger->cLoeschCode = create_NewsletterCode('cLoeschCode', $newsletterempfaenger->cEmail);
     // Datum  des Eintrags setzen
-    $newsletterempfaenger->dEingetragen = 'now()';
+    $newsletterempfaenger->dEingetragen = 'NOW()';
     $newsletterempfaenger->kSprache     = $_POST['kSprache'];
     // Ist der Newsletterempfaenger registrierter Kunde?
     $newsletterempfaenger->kKunde = 0;

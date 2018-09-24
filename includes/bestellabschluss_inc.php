@@ -86,7 +86,7 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
         $_SESSION['Kunde']->cAbgeholt     = 'N';
         $_SESSION['Kunde']->cAktiv        = 'Y';
         $_SESSION['Kunde']->cSperre       = 'N';
-        $_SESSION['Kunde']->dErstellt     = 'now()';
+        $_SESSION['Kunde']->dErstellt     = 'NOW()';
         $cPasswortKlartext                = '';
         $_SESSION['Kunde']->nRegistriert  = 0;
         if ($_SESSION['Kunde']->cPasswort) {
@@ -280,7 +280,7 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
     $order->cKommentar        = $_SESSION['kommentar'];
     $order->cAbgeholt         = 'N';
     $order->cStatus           = BESTELLUNG_STATUS_OFFEN;
-    $order->dErstellt         = 'now()';
+    $order->dErstellt         = 'NOW()';
     $order->berechneEstimatedDelivery();
     if (isset($_SESSION['Bestellung']->GuthabenNutzen) && $_SESSION['Bestellung']->GuthabenNutzen == 1) {
         $order->fGuthaben = -$_SESSION['Bestellung']->fGuthabenGenutzt;
@@ -299,7 +299,7 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
     // Gesamtsumme entspricht 0
     if ($order->fGesamtsumme == 0) {
         $order->cStatus          = BESTELLUNG_STATUS_BEZAHLT;
-        $order->dBezahltDatum    = 'now()';
+        $order->dBezahltDatum    = 'NOW()';
         $order->cZahlungsartName = Shop::Lang()->get('paymentNotNecessary', 'checkout');
     }
     $order->cIP = $_SESSION['IP']->cIP ?? RequestHelper::getIP(true);
@@ -329,7 +329,7 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
         $ts->shopCustomerID    = $_SESSION['Kunde']->kKunde;
         $ts->shopOrderID       = $order->cBestellNr;
         $ts->orderDate         = date('Y-m-d') . 'T' . date('H:i:s');
-        $ts->shopSystemVersion = 'JTL-Shop ' . JTL_VERSION;
+        $ts->shopSystemVersion = 'JTL-Shop ' . APPLICATION_VERSION;
 
         if (strlen($ts->tsProductId) > 0
             && strlen($ts->amount) > 0
@@ -346,12 +346,12 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
     $bestellid              = new stdClass();
     $bestellid->cId         = uniqid('', true);
     $bestellid->kBestellung = $order->kBestellung;
-    $bestellid->dDatum      = 'now()';
+    $bestellid->dDatum      = 'NOW()';
     Shop::Container()->getDB()->insert('tbestellid', $bestellid);
     //bestellstatus füllen
     $bestellstatus              = new stdClass();
     $bestellstatus->kBestellung = $order->kBestellung;
-    $bestellstatus->dDatum      = 'now()';
+    $bestellstatus->dDatum      = 'NOW()';
     $bestellstatus->cUID        = uniqid('', true);
     Shop::Container()->getDB()->insert('tbestellstatus', $bestellstatus);
     //füge ZahlungsInfo ein, falls es die Versandart erfordert
@@ -896,7 +896,7 @@ function KuponVerwendungen($oBestellung)
         $KuponKunde->kKupon        = $kKupon;
         $KuponKunde->kKunde        = $_SESSION['Warenkorb']->kKunde;
         $KuponKunde->cMail         = StringHandler::filterXSS($_SESSION['Kunde']->cMail);
-        $KuponKunde->dErstellt     = 'now()';
+        $KuponKunde->dErstellt     = 'NOW()';
         $KuponKunde->nVerwendungen = 1;
         $KuponKundeBisher          = Shop::Container()->getDB()->query(
             "SELECT SUM(nVerwendungen) AS nVerwendungen
@@ -922,7 +922,7 @@ function KuponVerwendungen($oBestellung)
         $oKuponBestellung->fGesamtsummeBrutto = $oBestellung->fGesamtsumme;
         $oKuponBestellung->fKuponwertBrutto   = $fKuponwertBrutto;
         $oKuponBestellung->cKuponTyp          = $cKuponTyp;
-        $oKuponBestellung->dErstellt          = 'now()';
+        $oKuponBestellung->dErstellt          = 'NOW()';
         $oKuponBestellung->save();
     }
 }
@@ -1050,7 +1050,7 @@ function fakeBestellung()
     $order->cKommentar       = $_SESSION['kommentar'];
     $order->cAbgeholt        = 'N';
     $order->cStatus          = BESTELLUNG_STATUS_OFFEN;
-    $order->dErstellt        = 'now()';
+    $order->dErstellt        = 'NOW()';
     $order->Zahlungsart      = $_SESSION['Zahlungsart'];
     $order->Positionen       = [];
     $order->Waehrung         = $_SESSION['Waehrung']; // @todo - check if this matches the new Currency class
@@ -1105,7 +1105,7 @@ function fakeBestellung()
         $order->cIP = RequestHelper::getIP();
     }
 
-    return $order->fuelleBestellung(0, true);
+    return $order->fuelleBestellung(false, true);
 }
 
 /**
@@ -1181,7 +1181,7 @@ function finalisiereBestellung($orderNo = '', bool $sendMail = true)
     bestellungInDB(0, $orderNo);
 
     $order = new Bestellung($_SESSION['kBestellung']);
-    $order->fuelleBestellung(0);
+    $order->fuelleBestellung(false);
     $order->machGoogleAnalyticsReady();
 
     if ($order->oRechnungsadresse !== null) {

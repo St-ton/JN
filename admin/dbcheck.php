@@ -32,7 +32,7 @@ if (isset($_POST['update']) && StringHandler::filterXSS($_POST['update']) === 's
     exit;
 }
 
-$cDBStruct_arr = getDBStruct(true);
+$cDBStruct_arr = getDBStruct(true, true);
 $Einstellungen = Shop::getSettings([
     CONF_GLOBAL,
     CONF_ARTIKELUEBERSICHT,
@@ -52,7 +52,9 @@ if (strlen($cFehler) === 0) {
 
 if (count($cDBError_arr) > 0) {
     $cEngineError = array_filter($cDBError_arr, function ($item) {
-        return strpos($item, 'keine InnoDB-Tabelle') !== false;
+        return strpos($item, 'keine InnoDB-Tabelle') !== false
+            || strpos($item, 'falsche Kollation') !== false
+            || strpos($item, 'Datentyp text in Spalte') !== false;
     });
     if (count($cEngineError) > 5) {
         $engineUpdate    = determineEngineUpdate($cDBStruct_arr);
@@ -64,7 +66,6 @@ $smarty->assign('cFehler', $cFehler)
        ->assign('cDBFileStruct_arr', $cDBFileStruct_arr)
        ->assign('cDBStruct_arr', $cDBStruct_arr)
        ->assign('cDBError_arr', $cDBError_arr)
-       ->assign('JTL_VERSION', JTL_VERSION)
        ->assign('maintenanceResult', $maintenanceResult)
        ->assign('scriptGenerationAvailable', defined('ADMIN_MIGRATION') && ADMIN_MIGRATION)
        ->assign('tab', isset($_REQUEST['tab']) ? StringHandler::filterXSS($_REQUEST['tab']) : '')

@@ -105,7 +105,7 @@ class KategorieHelper
                 return $_SESSION['oKategorie_arr_new'];
             }
             $categoryCountObj    = Shop::Container()->getDB()->query(
-                'SELECT count(*) AS cnt 
+                'SELECT COUNT(*) AS cnt 
                     FROM tkategorie',
                 \DB\ReturnType::SINGLE_OBJECT
             );

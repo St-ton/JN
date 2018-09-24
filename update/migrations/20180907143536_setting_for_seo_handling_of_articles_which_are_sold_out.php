@@ -20,7 +20,7 @@
  * setConfig          - add / update config property
  * removeConfig       - remove config property
  */
-class Migration_20180319120312 extends Migration implements IMigration
+class Migration_20180907143536 extends Migration implements IMigration
 {
     protected $author      = 'fp';
     protected $description = 'Setting for SEO handling of articles which are sold out';
@@ -33,7 +33,7 @@ class Migration_20180319120312 extends Migration implements IMigration
     {
         $this->setConfig(
             'artikel_artikelanzeigefilter_seo',
-            '301',
+            'seo',
             CONF_GLOBAL,
             'Direktaufruf ausverkaufter Artikel',
             'selectbox',
@@ -41,11 +41,11 @@ class Migration_20180319120312 extends Migration implements IMigration
             (object)[
                 'cBeschreibung' => 'Methode beim Direktaufruf (über Artikel-URL) ausverkaufter Artikel. (Ist nur wirksam, wenn "Artikelanzeigefilter" aktiv ist.)',
                 'inputOptions'  => [
-                    '301' => 'Weiterleitung zur Startseite (301 Redirect)',
                     '404' => 'Seite nicht gefunden (404 Not Found)',
                     'seo' => 'Artikel-Detailseite bleibt erreichbar',
                 ],
-            ]
+            ],
+            true
         );
     }
 

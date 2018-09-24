@@ -6,7 +6,6 @@
 
 namespace Filter;
 
-
 /**
  * Class Join
  * @package Filter

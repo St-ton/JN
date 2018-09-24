@@ -26,7 +26,7 @@
             <div>
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{$question->getName()} {if !$question->isRequired()}<span class="optional"> - {lang key='conditionalFillOut' section='checkout'}</span>{/if}</h3>
+                        <h3 class="panel-title">{$question->getName()} {if !$question->isRequired()}<span class="optional"> - {lang key='optional'}</span>{/if}</h3>
                     </div>
                     <div class="panel-body form-group">
                         {if !empty($question->getDescription())}

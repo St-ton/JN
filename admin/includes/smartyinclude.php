@@ -152,10 +152,15 @@ foreach ($mainGroups as $mainGroup) {
 if (is_array($currentTemplateDir)) {
     $currentTemplateDir = $currentTemplateDir[$smarty->context];
 }
+if (empty($template->version)) {
+    $adminTplVersion = '1.0.0';
+} else {
+    $adminTplVersion = $template->version;
+}
 $smarty->assign('URL_SHOP', $shopURL)
        ->assign('jtl_token', FormHelper::getTokenInput())
        ->assign('shopURL', $shopURL)
-       ->assign('shopVersion', Shop::getVersion())
+       ->assign('adminTplVersion', $adminTplVersion)
        ->assign('PFAD_ADMIN', PFAD_ADMIN)
        ->assign('JTL_CHARSET', JTL_CHARSET)
        ->assign('session_name', session_name())
@@ -172,4 +177,5 @@ $smarty->assign('URL_SHOP', $shopURL)
        ->assign('oLinkOberGruppe_arr', $mainGroups)
        ->assign('SektionenEinstellungen', $configSections)
        ->assign('notifications', Notification::getInstance())
-       ->assign('favorites', $oAccount->favorites());
+       ->assign('favorites', $oAccount->favorites())
+       ->assign('faviconAdminURL', Shop::getFaviconURL(true));

@@ -63,7 +63,7 @@ class DateHelper
     {
         $date_arr = [];
         if (strlen($cDatum) > 0) {
-            if ($cDatum === 'now()') {
+            if (strtolower($cDatum) === 'now()') {
                 $cDatum = 'now';
             }
             try {
@@ -94,7 +94,7 @@ class DateHelper
         } elseif (preg_match('/^\d{4}\-\d{2}\-(\d{2})$/', $date)) {
             $convertedDate = $date;
         } else {
-            $convertedDate = '0000-00-00';
+            $convertedDate = '_DBNULL_';
         }
 
         return $convertedDate;

@@ -104,7 +104,7 @@ function speicherCheckBox($cPost_arr, $oSprache_arr)
         $oCheckBox->nPflicht = 1;
     }
     $oCheckBox->nSort       = (int)$cPost_arr['nSort'];
-    $oCheckBox->dErstellt   = 'now()';
+    $oCheckBox->dErstellt   = 'NOW()';
     $cTextAssoc_arr         = [];
     $cBeschreibungAssoc_arr = [];
     foreach ($oSprache_arr as $oSprache) {
@@ -113,6 +113,7 @@ function speicherCheckBox($cPost_arr, $oSprache_arr)
     }
 
     $oCheckBox->insertDB($cTextAssoc_arr, $cBeschreibungAssoc_arr);
+    Shop::Container()->getCache()->flushTags(['checkbox']);
 
     return $oCheckBox;
 }

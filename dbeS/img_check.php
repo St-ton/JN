@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTLShop\SemVer\Version;
+
 ob_start();
 require_once __DIR__ . '/syncinclude.php';
 
@@ -24,13 +26,16 @@ if (auth()) {
             }
             removeTemporaryFiles($xmlFile);
         }
-        removeTemporaryFiles($unzipPath);
+        removeTemporaryFiles($unzipPath, true);
     }
 }
 echo $return;
 
 /**
  * @param SimpleXMLElement $xml
+ *
+ * @throws \Exceptions\CircularReferenceException
+ * @throws \Exceptions\ServiceNotFoundException
  */
 function bildercheck_xml(SimpleXMLElement $xml)
 {
@@ -143,14 +148,16 @@ function cloud_download($hash)
  */
 function download($url)
 {
-    $ch = curl_init($url);
+    $ch           = curl_init($url);
+    $version      = Version::parse(APPLICATION_VERSION);
+    $versionShort = sprintf('%d%02d', $version->getMajor(), $version->getMinor());
 
     curl_setopt($ch, CURLOPT_TIMEOUT, 1000);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, DEFAULT_CURL_OPT_VERIFYHOST);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, DEFAULT_CURL_OPT_VERIFYPEER);
-    curl_setopt($ch, CURLOPT_USERAGENT, 'JTL-Shop/' . JTL_VERSION);
+    curl_setopt($ch, CURLOPT_USERAGENT, 'JTL-Shop/' . $versionShort);
 
     $data = curl_exec($ch);
     $code = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);

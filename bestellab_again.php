@@ -19,7 +19,7 @@ $Einstellungen = Shop::getSettings([
 ]);
 $kBestellung   = (int)$_REQUEST['kBestellung'];
 $linkHelper    = Shop::Container()->getLinkService();
-$bestellung    = (new Bestellung($kBestellung))->fuelleBestellung();
+$bestellung    = new Bestellung($kBestellung, true);
 //abfragen, ob diese Bestellung dem Kunden auch gehoert
 //bei Gastbestellungen ist ggf das Kundenobjekt bereits entfernt bzw nRegistriert = 0
 if ($bestellung->oKunde !== null

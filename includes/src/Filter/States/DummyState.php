@@ -6,7 +6,6 @@
 
 namespace Filter\States;
 
-
 use Filter\AbstractFilter;
 use Filter\FilterInterface;
 use Filter\ProductFilter;

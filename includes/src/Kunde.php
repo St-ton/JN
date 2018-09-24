@@ -158,7 +158,7 @@ class Kunde
     /**
      * @var string
      */
-    public $dGeburtstag = '0000-00-00';
+    public $dGeburtstag;
 
     /**
      * @var string
@@ -183,7 +183,7 @@ class Kunde
     /**
      * @var string
      */
-    public $dErstellt = '0000-00-00';
+    public $dErstellt;
 
     /**
      * @var string
@@ -429,10 +429,9 @@ class Kunde
             foreach ($members as $member) {
                 $this->$member = $obj->$member;
             }
-            // Anrede mappen
+            $this->kSprache         = (int)$this->kSprache;
             $this->cAnredeLocalized = self::mapSalutation($this->cAnrede, $this->kSprache);
             $this->angezeigtesLand  = Sprache::getCountryCodeByCountryName($this->cLand);
-            //$this->cLand = landISO($this->cLand);
             $this->holeKundenattribute()->entschluesselKundendaten();
             $this->kKunde         = (int)$this->kKunde;
             $this->kKundengruppe  = (int)$this->kKundengruppe;
@@ -440,7 +439,9 @@ class Kunde
             $this->nLoginversuche = (int)$this->nLoginversuche;
             $this->nRegistriert   = (int)$this->nRegistriert;
 
-            $this->dGeburtstag_formatted = $this->dGeburtstag !== '0000-00-00' ? date_format(date_create($this->dGeburtstag), 'd.m.Y') : '';
+            $this->dGeburtstag_formatted = $this->dGeburtstag === null
+                ? ''
+                : date_format(date_create($this->dGeburtstag), 'd.m.Y');
 
             $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
             $cDatum_arr               = DateHelper::getDateParts($this->dErstellt);
@@ -524,8 +525,8 @@ class Kunde
         $obj->cNewsletter    = $this->cNewsletter;
         $obj->fRabatt        = $this->fRabatt;
         $obj->cHerkunft      = $this->cHerkunft;
-        $obj->dErstellt      = $this->dErstellt;
-        $obj->dVeraendert    = $this->dVeraendert;
+        $obj->dErstellt      = $this->dErstellt ?? '_DBNULL_';
+        $obj->dVeraendert    = $this->dVeraendert ?? '_DBNULL_';
         $obj->cAktiv         = $this->cAktiv;
         $obj->cAbgeholt      = $this->cAbgeholt;
         $obj->nRegistriert   = $this->nRegistriert;
@@ -533,7 +534,7 @@ class Kunde
         $obj->dGeburtstag    = DateHelper::convertDateToMysqlStandard($this->dGeburtstag);
 
         if (empty($obj->dVeraendert)) {
-            $obj->dVeraendert = 'now()';
+            $obj->dVeraendert = 'NOW()';
         }
         $obj->cLand   = $this->pruefeLandISO($obj->cLand);
         $this->kKunde = Shop::Container()->getDB()->insert('tkunde', $obj);
@@ -553,7 +554,9 @@ class Kunde
     public function updateInDB(): int
     {
         $this->dGeburtstag           = DateHelper::convertDateToMysqlStandard($this->dGeburtstag);
-        $this->dGeburtstag_formatted = ($this->dGeburtstag === '0000-00-00') ? '' : DateTime::createFromFormat('Y-m-d', $this->dGeburtstag)->format('d.m.Y');
+        $this->dGeburtstag_formatted = $this->dGeburtstag === '_DBNULL_'
+            ? ''
+            : DateTime::createFromFormat('Y-m-d', $this->dGeburtstag)->format('d.m.Y');
 
         $this->verschluesselKundendaten();
         $obj = ObjectHelper::copyMembers($this);
@@ -575,14 +578,17 @@ class Kunde
             $obj->cPasswortKlartext
         );
         if ($obj->dGeburtstag === '') {
-            $obj->dGeburtstag = '0000-00-00';
+            $obj->dGeburtstag = '_DBNULL_';
         }
 
         $obj->cLand       = $this->pruefeLandISO($obj->cLand);
-        $obj->dVeraendert = 'now()';
+        $obj->dVeraendert = 'NOW()';
         $cReturn          = Shop::Container()->getDB()->update('tkunde', 'kKunde', $obj->kKunde, $obj);
         if (is_array($cKundenattribut_arr) && count($cKundenattribut_arr) > 0) {
             $obj->cKundenattribut_arr = $cKundenattribut_arr;
+        }
+        if ($obj->dGeburtstag === '_DBNULL_') {
+            $obj->dGeburtstag = '';
         }
         $this->entschluesselKundendaten();
 

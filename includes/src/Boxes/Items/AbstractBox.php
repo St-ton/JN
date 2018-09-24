@@ -1,11 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
 namespace Boxes\Items;
-
 
 use Boxes\Renderer\DefaultRenderer;
 use Boxes\Type;
@@ -62,7 +61,6 @@ abstract class AbstractBox implements BoxInterface
         \PAGE_REGISTRIERUNG,
         \PAGE_BESTELLVORGANG,
         \PAGE_BEWERTUNG,
-        \PAGE_DRUCKANSICHT,
         \PAGE_PASSWORTVERGESSEN,
         \PAGE_WARTUNG,
         \PAGE_WUNSCHLISTE,
@@ -248,7 +246,7 @@ abstract class AbstractBox implements BoxInterface
             $data->cTemplate = 'box_container.tpl';
             $data->cName     = '';
         }
-        $this->setID($data->kBox);
+        $this->setID((int)$data->kBox);
         $this->setBaseType((int)$data->kBoxvorlage);
         $this->setCustomID((int)$data->kCustomID);
         $this->setContainerID((int)$data->kContainer);

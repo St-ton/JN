@@ -82,7 +82,7 @@ class CMSHelper
                 "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, 
                 tnews.cVorschauText, tnews.cMetaTitle, tnews.cMetaDescription, tnews.cMetaKeywords, 
                 tnews.nAktiv, tnews.dErstellt, tnews.cPreviewImage, tseo.cSeo,
-                count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl, 
+                COUNT(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl, 
                 DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dErstellt_de,
                 DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de
                     FROM tnews
@@ -100,7 +100,7 @@ class CMSHelper
                         AND tseo.kSprache = " . Shop::getLanguage() . "
                     WHERE tnews.kSprache = " . Shop::getLanguage() . "
                         AND tnews.nAktiv = 1
-                        AND tnews.dGueltigVon <= now()
+                        AND tnews.dGueltigVon <= NOW()
                         AND (tnews.cKundengruppe LIKE '%;-1;%' 
                             OR FIND_IN_SET('" . Session::CustomerGroup()->getID() . "', 
                             REPLACE(tnews.cKundengruppe, ';', ',')) > 0)

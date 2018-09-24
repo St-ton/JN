@@ -117,7 +117,7 @@ class Adresse
     {
         $cyptoService = Shop::Container()->getCryptoService();
         foreach (self::$encodedProperties as $property) {
-            $this->{$property} = $cyptoService->encryptXTEA(trim($this->{$property}));
+            $this->{$property} = $cyptoService->encryptXTEA(trim((string)($this->{$property} ?? '')));
         }
 
         return $this;

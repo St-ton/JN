@@ -224,14 +224,14 @@ if (RequestHelper::verifyGPCDataInt('kTag') > 0 && RequestHelper::verifyGPCDataI
 } else {
     // Anzahl Tags fuer diese Sprache
     $nAnzahlTags = Shop::Container()->getDB()->query(
-        'SELECT count(*) AS nAnzahl
+        'SELECT COUNT(*) AS nAnzahl
             FROM ttag
             WHERE kSprache = ' . (int)$_SESSION['kSprache'],
         \DB\ReturnType::SINGLE_OBJECT
     );
     // Anzahl Tag Mappings fuer diese Sprache
     $nAnzahlTagMappings = Shop::Container()->getDB()->query(
-        'SELECT count(*) AS nAnzahl
+        'SELECT COUNT(*) AS nAnzahl
             FROM ttagmapping
             WHERE kSprache = ' . (int)$_SESSION['kSprache'],
         \DB\ReturnType::SINGLE_OBJECT

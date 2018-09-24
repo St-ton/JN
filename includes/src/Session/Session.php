@@ -234,7 +234,7 @@ class Session
                 'SELECT kKunde
                     FROM tkunde
                     WHERE kKunde = :cid
-                        AND date_sub(now(), INTERVAL 3 HOUR) < dVeraendert',
+                        AND DATE_SUB(NOW(), INTERVAL 3 HOUR) < dVeraendert',
                 ['cid' => (int)$_SESSION['Kunde']->kKunde],
                 ReturnType::SINGLE_OBJECT
             );

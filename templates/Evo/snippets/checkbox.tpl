@@ -29,7 +29,7 @@
                     {if !empty($cb->cLinkURL)}
                         <span class="moreinfo">(<a href="{$cb->cLinkURL}" class="popup checkbox-popup">{lang key='read' section='account data'}</a>)</span>
                     {/if}
-                    {if $cb->nPflicht != 1}<span class="optional"> - {lang key='conditionalFillOut' section='checkout'}</span>{/if}
+                    {if $cb->nPflicht != 1}<span class="optional"> - {lang key='optional'}</span>{/if}
                 </label>
             </div>
             {if !empty($cb->cBeschreibung)}

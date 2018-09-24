@@ -119,7 +119,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                         $oNewsKommentar->cKommentar = StringHandler::htmlentities(
                             StringHandler::filterXSS($_POST['cKommentar'])
                         );
-                        $oNewsKommentar->dErstellt  = 'now()';
+                        $oNewsKommentar->dErstellt  = 'NOW()';
 
                         executeHook(HOOK_NEWS_PAGE_NEWSKOMMENTAR_EINTRAGEN, ['comment' => &$oNewsKommentar]);
 
@@ -162,7 +162,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                         $oNewsKommentar->cKommentar = StringHandler::htmlentities(
                             StringHandler::filterXSS($_POST['cKommentar'])
                         );
-                        $oNewsKommentar->dErstellt  = 'now()';
+                        $oNewsKommentar->dErstellt  = 'NOW()';
 
                         executeHook(HOOK_NEWS_PAGE_NEWSKOMMENTAR_EINTRAGEN, ['comment' => &$oNewsKommentar]);
 

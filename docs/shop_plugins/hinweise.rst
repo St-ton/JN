@@ -106,7 +106,7 @@ Soll ein Plugin sowohl für Shop3.x als auch 4.x genutzt werden können, bietet 
 
 .. code-block:: php
 
-    $isShopFour = version_compare(JTL_VERSION, 400, '>='):
+    $isShopFour = version_compare(APPLICATION_VERSION, 400, '>='):
 
 zu überprüfen.
 

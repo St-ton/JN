@@ -6,7 +6,6 @@
 
 namespace Filter;
 
-
 /**
  * Class Query
  * @package Filter

@@ -106,7 +106,7 @@ if (strlen($cSh) > 0) {
                     $logger->debug('tzahlungsession aktualisiert.');
                     $_upd               = new stdClass();
                     $_upd->nBezahlt     = 1;
-                    $_upd->dZeitBezahlt = 'now()';
+                    $_upd->dZeitBezahlt = 'NOW()';
                     $_upd->kBestellung  = (int)$order->kBestellung;
                     Shop::Container()->getDB()->update('tzahlungsession', 'cZahlungsID', $sessionHash, $_upd);
                     $paymentMethod->handleNotification($order, '_' . $sessionHash, $_REQUEST);
@@ -142,7 +142,7 @@ if (strlen($cSh) > 0) {
         }
     } else {
         $order = new Bestellung($paymentSession->kBestellung);
-        $order->fuelleBestellung(0);
+        $order->fuelleBestellung(false);
         include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
         $logger->debug('Session Hash ' . $cSh . ' hat kBestellung. Modul ' . $order->Zahlungsart->cModulId . ' wird aufgerufen');
 
@@ -181,7 +181,7 @@ if (strlen($cPh) > 0) {
     // Load Order
     $moduleId = $paymentId->cModulId;
     $order    = new Bestellung($paymentId->kBestellung);
-    $order->fuelleBestellung(0);
+    $order->fuelleBestellung(false);
 
     if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
         $logger->debug('Payment Hash ' . $cPh . ' ergab Order ' . print_r($order, true));

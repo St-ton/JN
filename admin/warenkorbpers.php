@@ -79,7 +79,7 @@ $oPagiKunden = (new Pagination('kunden'))
 $oKunde_arr = Shop::Container()->getDB()->query(
     "SELECT tkunde.kKunde, tkunde.cFirma, tkunde.cVorname, tkunde.cNachname, 
         DATE_FORMAT(twarenkorbpers.dErstellt, '%d.%m.%Y  %H:%i') AS Datum, 
-        count(twarenkorbperspos.kWarenkorbPersPos) AS nAnzahl
+        COUNT(twarenkorbperspos.kWarenkorbPersPos) AS nAnzahl
         FROM tkunde
         JOIN twarenkorbpers 
             ON tkunde.kKunde = twarenkorbpers.kKunde
@@ -108,7 +108,7 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
     $kKunde = (int)$_GET['a'];
 
     $oWarenkorbPers = Shop::Container()->getDB()->query(
-        'SELECT count(*) AS nAnzahl
+        'SELECT COUNT(*) AS nAnzahl
             FROM twarenkorbperspos
             JOIN twarenkorbpers 
                 ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers

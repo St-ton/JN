@@ -145,7 +145,7 @@ class NiceDB implements DbInterface
         if (\defined('NICEDB_EXCEPTION_BACKTRACE') && \NICEDB_EXCEPTION_BACKTRACE === true) {
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         }
-        if (!(\defined('DB_DEFAULT_SQL_MODE') && DB_DEFAULT_SQL_MODE === true)) {
+        if (\DB_DEFAULT_SQL_MODE !== true) {
             $this->pdo->exec("SET SQL_MODE=''");
         }
         if (\defined('PFAD_LOGFILES')) {
@@ -480,7 +480,7 @@ class NiceDB implements DbInterface
                     $columns .= $property . ', ';
                     if ($object->$property === '_DBNULL_') {
                         $values .= 'null' . ', ';
-                    } elseif ($object->$property === 'now()') {
+                    } elseif (\strtolower($object->$property) === 'now()') {
                         $values .= $object->$property . ', ';
                     } else {
                         $values .= $this->pdo->quote($object->$property) . ', ';
@@ -791,7 +791,7 @@ class NiceDB implements DbInterface
         $values,
         string $select = '*',
         string $orderBy = '',
-        string $limit = ''
+        $limit = ''
     )
     {
         $this->validateEntityName($tableName);
@@ -837,7 +837,7 @@ class NiceDB implements DbInterface
         $values,
         string $select = '*',
         string $orderBy = '',
-        string $limit = ''
+        $limit = ''
     )
     {
         return $this->selectArray($tableName, $keys, $values, $select, $orderBy, $limit);

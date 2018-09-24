@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -119,12 +119,14 @@ class JTLSmarty extends \SmartyBC
         $this->template = $template;
 
         if ($fast_init === false) {
-            $this->registerPlugin('function', 'lang', [$this, 'translate'])
-                 ->registerPlugin('modifier', 'replace_delim', [$this, 'replaceDelimiters'])
-                 ->registerPlugin('modifier', 'count_characters', [$this, 'countCharacters'])
-                 ->registerPlugin('modifier', 'string_format', [$this, 'stringFormat'])
-                 ->registerPlugin('modifier', 'string_date_format', [$this, 'dateFormat'])
-                 ->registerPlugin('modifier', 'truncate', [$this, 'truncate']);
+            $pluginCollection = new PluginCollection($this->config, \Sprache::getInstance());
+            $this->registerPlugin('function', 'lang', [$pluginCollection, 'translate'])
+                 ->registerPlugin('modifier', 'replace_delim', [$pluginCollection, 'replaceDelimiters'])
+                 ->registerPlugin('modifier', 'count_characters', [$pluginCollection, 'countCharacters'])
+                 ->registerPlugin('modifier', 'string_format', [$pluginCollection, 'stringFormat'])
+                 ->registerPlugin('modifier', 'string_date_format', [$pluginCollection, 'dateFormat'])
+                 ->registerPlugin('modifiercompiler', 'default', [$pluginCollection, 'compilerModifierDefault'])
+                 ->registerPlugin('modifier', 'truncate', [$pluginCollection, 'truncate']);
 
             if ($isAdmin === false) {
                 $this->cache_lifetime = 86400;
@@ -282,129 +284,6 @@ class JTLSmarty extends \SmartyBC
         }
 
         return $res;
-
-    }
-
-    /**
-     * translation
-     *
-     * @param array                     $params
-     * @param \Smarty_Internal_Template $template
-     * @return void|string
-     */
-    public function translate(array $params, \Smarty_Internal_Template $template)
-    {
-        $cValue = '';
-        if (!isset($params['section'])) {
-            $params['section'] = 'global';
-        }
-        if (isset($params['section'], $params['key'])) {
-            $cValue = \Shop::Lang()->get($params['key'], $params['section']);
-            // Für vsprintf ein String der :: exploded wird
-            if (isset($params['printf']) && \strlen($params['printf']) > 0) {
-                $cValue = \vsprintf($cValue, \explode(':::', $params['printf']));
-            }
-        }
-        if (\SMARTY_SHOW_LANGKEY) {
-            $cValue = '#' . $params['section'] . '.' . $params['key'] . '#';
-        }
-        if (isset($params['assign'])) {
-            $template->assign($params['assign'], $cValue);
-        } else {
-            return $cValue;
-        }
-    }
-
-    /**
-     * @param string $text
-     * @return int
-     */
-    public function countCharacters(string $text): int
-    {
-        return \strlen($text);
-    }
-
-    /**
-     * @param string $string
-     * @param string $format
-     * @return string
-     */
-    public function stringFormat(string $string, string $format): string
-    {
-        return \sprintf($format, $string);
-    }
-
-    /**
-     * @param string $string
-     * @param string $format
-     * @param string $default_date
-     * @return string
-     */
-    public function dateFormat(string $string, string $format = '%b %e, %Y', string $default_date = ''): string
-    {
-        if ($string !== '') {
-            $timestamp = \smarty_make_timestamp($string);
-        } elseif ($default_date !== '') {
-            $timestamp = \smarty_make_timestamp($default_date);
-        } else {
-            return $string;
-        }
-        if (\DIRECTORY_SEPARATOR === '\\') {
-            $_win_from = ['%D', '%h', '%n', '%r', '%R', '%t', '%T'];
-            $_win_to   = ['%m/%d/%y', '%b', "\n", '%I:%M:%S %p', '%H:%M', "\t", '%H:%M:%S'];
-            if (\strpos($format, '%e') !== false) {
-                $_win_from[] = '%e';
-                $_win_to[]   = \sprintf('%\' 2d', \date('j', $timestamp));
-            }
-            if (\strpos($format, '%l') !== false) {
-                $_win_from[] = '%l';
-                $_win_to[]   = \sprintf('%\' 2d', \date('h', $timestamp));
-            }
-            $format = \str_replace($_win_from, $_win_to, $format);
-        }
-
-        return \strftime($format, $timestamp);
-    }
-
-    /**
-     * @param string $string
-     * @param int    $length
-     * @param string $etc
-     * @param bool   $break
-     * @param bool   $middle
-     * @return string
-     */
-    public function truncate(string $string, int $length = 80, string $etc = '...', bool $break = false, bool $middle = false): string
-    {
-        if ($length === 0) {
-            return '';
-        }
-        if (\strlen($string) > $length) {
-            $length -= \min($length, \strlen($etc));
-            if (!$break && !$middle) {
-                $string = \preg_replace('/\s+?(\S+)?$/', '', \substr($string, 0, $length + 1));
-            }
-
-            return !$middle
-                ? \substr($string, 0, $length) . $etc
-                : \substr($string, 0, $length / 2) . $etc . \substr($string, -$length / 2);
-        }
-
-        return $string;
-    }
-
-    /**
-     * @param string $string
-     * @return string
-     */
-    public function replaceDelimiters(string $string): string
-    {
-        $replace = $this->config['global']['global_dezimaltrennzeichen_sonstigeangaben'];
-        if ($replace !== ',' || $replace !== '.' || $replace === '') {
-            $replace = ',';
-        }
-
-        return \str_replace('.', $replace, $string);
     }
 
     /**
@@ -422,7 +301,7 @@ class JTLSmarty extends \SmartyBC
         }
         $cFile       = \basename($filename, '.tpl');
         $cSubPath    = \dirname($filename);
-        $cCustomFile = \strpos($cSubPath, PFAD_ROOT) === false
+        $cCustomFile = \strpos($cSubPath, \PFAD_ROOT) === false
             ? $this->getTemplateDir($this->context) . (($cSubPath === '.')
                 ? ''
                 : ($cSubPath . '/')) . $cFile . '_custom.tpl'

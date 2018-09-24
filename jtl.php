@@ -484,9 +484,7 @@ if ($customerID > 0) {
     }
     if (RequestHelper::verifyGPCDataInt('bestellung') > 0) {
         //bestellung von diesem Kunden?
-        $bestellung = new Bestellung(RequestHelper::verifyGPCDataInt('bestellung'));
-        $bestellung->fuelleBestellung();
-
+        $bestellung = new Bestellung(RequestHelper::verifyGPCDataInt('bestellung'), true);
         if ($bestellung->kKunde !== null
             && (int)$bestellung->kKunde > 0
             && (int)$bestellung->kKunde === Session::Customer()->getID()
@@ -504,10 +502,8 @@ if ($customerID > 0) {
             }
             $step                               = 'bestellung';
             $_SESSION['Kunde']->angezeigtesLand = Sprache::getCountryCodeByCountryName($_SESSION['Kunde']->cLand);
-            krsort($_SESSION['Kunde']->cKundenattribut_arr);
             Shop::Smarty()->assign('Bestellung', $bestellung)
-                ->assign('Kunde', $bestellung->oRechnungsadresse)// Work Around Daten von trechnungsadresse
-                ->assign('customerAttribute_arr', $_SESSION['Kunde']->cKundenattribut_arr)
+                ->assign('billingAddress', $bestellung->oRechnungsadresse)
                 ->assign('Lieferadresse', $bestellung->Lieferadresse ?? null);
             if ($Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
                 Shop::Smarty()->assign('oTrustedShopsBewertenButton', TrustedShops::getRatingButton(
@@ -579,7 +575,7 @@ if ($customerID > 0) {
                 'cOptCode'     => '',
                 'cLoeschCode'  => '',
                 'cAktion'      => 'Geloescht',
-                'dAusgetragen' => 'now()',
+                'dAusgetragen' => 'NOW()',
                 'dEingetragen' => '',
                 'dOptCode'     => '',
             ]);

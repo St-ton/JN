@@ -72,7 +72,7 @@ class Wunschliste
             $this->nStandard    = 1;
             $this->nOeffentlich = 0;
             $this->cName        = Shop::Lang()->get('wishlist');
-            $this->dErstellt    = 'now()';
+            $this->dErstellt    = 'NOW()';
             $this->cURLID       = '';
         }
     }
@@ -397,19 +397,23 @@ class Wunschliste
         );
         $defaultOptions = Artikel::getDefaultOptions();
         // Hole alle Eigenschaften für eine Position
-        foreach ($wlPositions as $WunschlistePos) {
+        foreach ($wlPositions as $position) {
+            $position->kWunschlistePos = (int)$position->kWunschlistePos;
+            $position->kWunschliste    = (int)$position->kWunschliste;
+            $position->kArtikel        = (int)$position->kArtikel;
+
             $wlPosition = new WunschlistePos(
-                $WunschlistePos->kArtikel,
-                $WunschlistePos->cArtikelName,
-                $WunschlistePos->fAnzahl,
-                $WunschlistePos->kWunschliste
+                $position->kArtikel,
+                $position->cArtikelName,
+                $position->fAnzahl,
+                $position->kWunschliste
             );
 
             $cArtikelName                 = $wlPosition->cArtikelName;
-            $wlPosition->kWunschlistePos  = (int)$WunschlistePos->kWunschlistePos;
-            $wlPosition->cKommentar       = $WunschlistePos->cKommentar;
-            $wlPosition->dHinzugefuegt    = $WunschlistePos->dHinzugefuegt;
-            $wlPosition->dHinzugefuegt_de = $WunschlistePos->dHinzugefuegt_de;
+            $wlPosition->kWunschlistePos  = $position->kWunschlistePos;
+            $wlPosition->cKommentar       = $position->cKommentar;
+            $wlPosition->dHinzugefuegt    = $position->dHinzugefuegt;
+            $wlPosition->dHinzugefuegt_de = $position->dHinzugefuegt_de;
 
             $wlPositionAttributes = Shop::Container()->getDB()->queryPrepared(
                 'SELECT twunschlisteposeigenschaft.*, 
@@ -430,7 +434,7 @@ class Wunschliste
                     GROUP BY twunschlisteposeigenschaft.kWunschlistePosEigenschaft',
                 [
                     'langID' => $langID,
-                    'wlID'   => (int)$WunschlistePos->kWunschlistePos
+                    'wlID'   => $position->kWunschlistePos
                 ],
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
@@ -671,7 +675,7 @@ class Wunschliste
                 [(int)$_SESSION['Kunde']->kKunde, 1]
             );
             if (isset($oWunschliste->kWunschliste)) {
-                $_SESSION['Wunschliste'] = new Wunschliste($oWunschliste->kWunschliste);
+                $_SESSION['Wunschliste'] = new Wunschliste((int)$oWunschliste->kWunschliste);
                 $GLOBALS['hinweis']      = $_SESSION['Wunschliste']->ueberpruefePositionen();
             }
         }
@@ -866,7 +870,7 @@ class Wunschliste
 
             $oWunschlisteVersand                    = new stdClass();
             $oWunschlisteVersand->kWunschliste      = $id;
-            $oWunschlisteVersand->dZeit             = 'now()';
+            $oWunschlisteVersand->dZeit             = 'NOW()';
             $oWunschlisteVersand->nAnzahlEmpfaenger = min(
                 count($recipients),
                 (int)$conf['global']['global_wunschliste_max_email']

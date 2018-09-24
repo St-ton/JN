@@ -12,7 +12,7 @@ trait MigrationTableTrait
     /**
      * @return array
      */
-    public function getLocaleSections()
+    public function getLocaleSections(): array
     {
         $result = [];
         $items  = $this->fetchAll("SELECT kSprachsektion AS id, cName AS name FROM tsprachsektion");
@@ -26,7 +26,7 @@ trait MigrationTableTrait
     /**
      * @return array
      */
-    public function getLocales()
+    public function getLocales(): array
     {
         $result = [];
         $items  = $this->fetchAll("SELECT kSprachISO AS id, cISO AS name FROM tsprachiso");
@@ -95,7 +95,7 @@ trait MigrationTableTrait
     /**
      * @return array
      */
-    private function getAvailableInputTypes()
+    private function getAvailableInputTypes(): array
     {
         $result = [];
         $items  = $this->fetchAll("

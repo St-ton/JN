@@ -1,11 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
 namespace Boxes\Items;
-
 
 use DB\ReturnType;
 
@@ -41,8 +40,8 @@ final class UpcomingProducts extends AbstractBox
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
                             $stockFilterSQL
                             $parentSQL
-                            AND now() < tartikel.dErscheinungsdatum
-                        ORDER BY rand() LIMIT :lmt",
+                            AND NOW() < tartikel.dErscheinungsdatum
+                        ORDER BY RAND() LIMIT :lmt",
                     ['cid' => $customerGroupID, 'lmt' => $limit],
                     ReturnType::ARRAY_OF_OBJECTS
                 );

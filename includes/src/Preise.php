@@ -229,9 +229,8 @@ class Preise
                                 ON tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis
                                 AND tartikelsonderpreis.kArtikel = " . $kArtikel . "
                                 AND tartikelsonderpreis.cAktiv = 'Y'
-                                AND tartikelsonderpreis.dStart <= date(now())
-                                AND (tartikelsonderpreis.dEnde >= CURDATE() 
-                                    OR tartikelsonderpreis.dEnde = '0000-00-00')
+                                AND tartikelsonderpreis.dStart <= CURDATE()
+                                AND (tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE()) 
                                 AND (tartikelsonderpreis.nAnzahl <= tartikel.fLagerbestand 
                                     OR tartikelsonderpreis.nIstAnzahl = 0)
                             WHERE tsonderpreise.kKundengruppe = {$kKundengruppe}",
@@ -346,9 +345,8 @@ class Preise
                         ON tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis
                         AND tartikelsonderpreis.kArtikel = " . $kArtikel . "
                         AND tartikelsonderpreis.cAktiv = 'Y'
-                        AND tartikelsonderpreis.dStart <= date(now())
-                        AND (tartikelsonderpreis.dEnde >= CURDATE() 
-                            OR tartikelsonderpreis.dEnde = '0000-00-00')
+                        AND tartikelsonderpreis.dStart <= CURDATE()
+                        AND (tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE())
                         AND (tartikelsonderpreis.nAnzahl <= tartikel.fLagerbestand 
                             OR tartikelsonderpreis.nIstAnzahl = 0)
                     WHERE tsonderpreise.kKundengruppe = " . $kKundengruppe,
@@ -579,10 +577,10 @@ class Preise
      */
     public static function getLocalizedPriceString($price, $currency = 0, bool $html = true, int $decimals = 2): string
     {
-        if ($currency === 0 || is_numeric($currency)) {
+        if ($currency === 0 || is_bool($currency) || is_numeric($currency)) {
             $currency = Session::Currency();
-        } elseif (get_class($currency) === 'stdClass') {
-            $currency = new Currency($currency->kWaehrung);
+        } elseif (is_object($currency) && get_class($currency) === 'stdClass') {
+            $currency = new Currency((int)$currency->kWaehrung);
         }
         $localized    = number_format(
             $price * $currency->getConversionFactor(),

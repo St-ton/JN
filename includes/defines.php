@@ -10,6 +10,7 @@ ifndef('DB_CHARSET', 'utf8');
 ifndef('DB_COLLATE', 'utf8_unicode_ci');
 ini_set('default_charset', JTL_CHARSET);
 date_default_timezone_set('Europe/Berlin');
+ifndef('DS', DIRECTORY_SEPARATOR);
 // Log-Levels
 ifndef('SYNC_LOG_LEVEL', E_ERROR | E_PARSE);
 ifndef('ADMIN_LOG_LEVEL', E_ERROR | E_PARSE);
@@ -22,6 +23,8 @@ ifndef('IMAGE_COMPATIBILITY_LEVEL', 1);
 ifndef('KEEP_SYNC_FILES', false);
 ifndef('PROFILE_PLUGINS', false);
 ifndef('PROFILE_SHOP', false);
+
+ifndef('DB_DEFAULT_SQL_MODE', false);
 
 /**
  * WARNING !!! DO NOT USE PROFILE_QUERIES IN PRODUCTION ENVIRONMENT OR PUBLIC AVAILABLE SITES. THE PROFILER CANNOT USE

@@ -220,7 +220,7 @@ class Jtllog
             }
         }
         $oLog = Shop::Container()->getDB()->query(
-            'SELECT count(*) AS nAnzahl 
+            'SELECT COUNT(*) AS nAnzahl 
                 FROM tjtllog' .
                 $cSQLWhere,
             \DB\ReturnType::SINGLE_OBJECT
@@ -236,11 +236,11 @@ class Jtllog
     {
         Shop::Container()->getDB()->query(
             'DELETE FROM tjtllog 
-                WHERE DATE_ADD(dErstellt, INTERVAL 30 DAY) < now()',
+                WHERE DATE_ADD(dErstellt, INTERVAL 30 DAY) < NOW()',
             \DB\ReturnType::AFFECTED_ROWS
         );
         $oObj = Shop::Container()->getDB()->query(
-            'SELECT count(*) AS nCount 
+            'SELECT COUNT(*) AS nCount 
                 FROM tjtllog',
             \DB\ReturnType::SINGLE_OBJECT
         );

@@ -1,11 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
 namespace Boxes\Renderer;
-
 
 use \Boxes\Items\BoxInterface;
 
@@ -19,7 +18,7 @@ interface RendererInterface
     /**
      * BoxRendererInterface constructor.
      *
-     * @param \JTLSmarty|\JTLSmartyTemplateClass $smarty
+     * @param \Smarty\JTLSmartyTemplateClass $smarty
      * @param BoxInterface $box
      */
     public function __construct($smarty, BoxInterface $box = null);

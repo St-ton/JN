@@ -66,7 +66,7 @@ final class DefaultConfig implements ConfigInterface
     {
         $res = [
             new Base($this->db, $this->config, $this->baseURL, $this->baseImageURL),
-//            new Product($this->db, $this->config, $this->baseURL, $this->baseImageURL)
+            new Product($this->db, $this->config, $this->baseURL, $this->baseImageURL)
         ];
         if ($this->config['sitemap']['sitemap_kategorien_anzeigen'] === 'Y') {
             $res[] = new Category($this->db, $this->config, $this->baseURL, $this->baseImageURL);
@@ -74,7 +74,7 @@ final class DefaultConfig implements ConfigInterface
         if ($this->config['sitemap']['sitemap_hersteller_anzeigen'] === 'Y') {
             $res[] = new Manufacturer($this->db, $this->config, $this->baseURL, $this->baseImageURL);
         }
-        if ($this->config['sitemap']['sitemap_tags_anzeigen'] === 'Y') {
+        if ($this->config['sitemap']['sitemap_globalemerkmale_anzeigen'] === 'Y') {
             $res[] = new Attribute($this->db, $this->config, $this->baseURL, $this->baseImageURL);
         }
         if ($this->config['sitemap']['sitemap_tags_anzeigen'] === 'Y') {

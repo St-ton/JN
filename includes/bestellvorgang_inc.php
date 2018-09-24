@@ -762,6 +762,7 @@ function gibStepZahlungZusatzschritt($cPost_arr)
         Shop::Smarty()->assign('ZahlungsInfo', $_SESSION['Zahlungsart']->ZahlungsInfo ?? null);
     } else {
         setzeFehlendeAngaben(checkAdditionalPayment($Zahlungsart));
+        unset($_SESSION['checkout.fehlendeAngaben']);
         Shop::Smarty()->assign('ZahlungsInfo', gibPostZahlungsInfo());
     }
     Shop::Smarty()->assign('Zahlungsart', $Zahlungsart)
@@ -1024,6 +1025,13 @@ function plausiNeukundenKupon()
  */
 function checkAdditionalPayment($paymentMethod)
 {
+    if (!empty($_POST['iban'])) {
+        $_POST['iban'] = strtoupper($_POST['iban']);
+    }
+    if (!empty($_POST['bic'])) {
+        $_POST['bic'] = strtoupper($_POST['bic']);
+    }
+
     $conf   = Shop::getSettings([CONF_ZAHLUNGSARTEN]);
     $post   = StringHandler::filterXSS($_POST);
     $errors = [];
@@ -1047,7 +1055,9 @@ function checkAdditionalPayment($paymentMethod)
             break;
 
         case 'za_lastschrift_jtl':
-            if (empty($post['bankname'])) {
+            if (empty($post['bankname'])
+                && $conf['zahlungsarten']['zahlungsart_lastschrift_kreditinstitut_abfrage'] === 'Y'
+            ) {
                 $errors['bankname'] = 1;
             }
             if (empty($post['inhaber'])
@@ -1069,29 +1079,39 @@ function checkAdditionalPayment($paymentMethod)
             ) {
                 $errors['blz'] = 1;
             }
-            if (empty($post['bic']) && $conf['zahlungsarten']['zahlungsart_lastschrift_bic_abfrage'] === 'Y') {
-                $errors['bic'] = 1;
-            }
-            if (!empty($post['bic'])
-                && ($conf['zahlungsarten']['zahlungsart_lastschrift_iban_abfrage'] !== 'N'
-                    || $conf['zahlungsarten']['zahlungsart_lastschrift_iban_abfrage'] === 'Y')
-            ) {
-                if (empty($post['iban'])) {
-                    $errors['iban'] = 1;
-                } elseif (!plausiIban($post['iban'])) {
-                    $errors['iban'] = 2;
+            if (empty($post['bic'])) {
+                if ($conf['zahlungsarten']['zahlungsart_lastschrift_bic_abfrage'] === 'Y') {
+                    $errors['bic'] = 1;
                 }
+            } elseif(!checkBIC($post['bic'])) {
+                $errors['bic'] = 2;
+            }
+            if (empty($post['iban'])) {
+                if ($conf['zahlungsarten']['zahlungsart_lastschrift_iban_abfrage'] === 'Y') {
+                    $errors['iban'] = 1;
+                }
+            } elseif (!plausiIban($post['iban'])) {
+                $errors['iban'] = 2;
             }
             if (!isset($post['kontonr']) && !isset($post['blz']) && !isset($post['iban']) && !isset($post['bic'])) {
-                $errors['kontonr'] = 2;
-                $errors['blz']     = 2;
-                $errors['bic']     = 2;
-                $errors['iban']    = 2;
+                $errors['kontonr'] = 1;
+                $errors['blz']     = 1;
+                $errors['bic']     = 1;
+                $errors['iban']    = 1;
             }
             break;
     }
 
     return $errors;
+}
+
+/**
+ * @param string $bic
+ * @return bool
+ */
+function checkBIC($bic): bool
+{
+    return preg_match('/^[a-zA-Z]{6}[0-9a-zA-Z]{2}([0-9a-zA-Z]{3})?$/', $bic) === 1;
 }
 
 /**

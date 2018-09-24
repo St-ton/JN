@@ -1844,3 +1844,12 @@ define('HOOK_CAPTCHA_VALIDATE', 272);
  * @param array  options
  */
 define('HOOK_PLUGIN_SAVE_OPTIONS', 280);
+
+
+/**
+ * @since 5.0.0
+ * @file admin/plugin.php.php
+ * @param \Sitemap\Factories\FactoryInterface[] factories
+ * @param \Sitemap\Export exporter
+ */
+define('HOOK_SITEMAP_EXPORT_GET_FACTORIES', 285);

@@ -265,12 +265,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/erusev/parsedown.git",
-                "reference": "c26a2ee4bf8ba0270daab7da0353f2525ca6564a"
+                "reference": "1829106e60b38ea4f88d5ef678d2516c728e2dab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/erusev/parsedown/zipball/c26a2ee4bf8ba0270daab7da0353f2525ca6564a",
-                "reference": "c26a2ee4bf8ba0270daab7da0353f2525ca6564a",
+                "url": "https://api.github.com/repos/erusev/parsedown/zipball/1829106e60b38ea4f88d5ef678d2516c728e2dab",
+                "reference": "1829106e60b38ea4f88d5ef678d2516c728e2dab",
                 "shasum": ""
             },
             "require": {
@@ -303,7 +303,7 @@
                 "markdown",
                 "parser"
             ],
-            "time": "2018-06-11T18:15:32+00:00"
+            "time": "2018-09-19T20:28:02+00:00"
         },
         {
             "name": "icecave/isolator",
@@ -773,7 +773,7 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.jtl-software.de/jtlshop/scc.git",
-                "reference": "0f09a638185ca715db6f3640351063c32b493af0"
+                "reference": "d48a3f4c3e7182432270bb276598e9e8053cd13a"
             },
             "require": {
                 "myclabs/php-enum": "^1.5",
@@ -800,7 +800,7 @@
             "keywords": [
                 "jtl-shop"
             ],
-            "time": "2018-09-19T10:21:31+00:00"
+            "time": "2018-09-20T09:01:03+00:00"
         },
         {
             "name": "jtlshop/semver",

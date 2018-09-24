@@ -19,9 +19,6 @@ final class LiveSearch extends AbstractFactory
      */
     public function getCollection(array $languages, array $customerGroups): \Generator
     {
-        if ($this->config['sitemap']['sitemap_livesuche_anzeigen'] !== 'Y') {
-            yield null;
-        }
         $languageIDs = map($languages, function ($e) {
             return (int)$e->kSprache;
         });

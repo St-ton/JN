@@ -19,9 +19,6 @@ final class Attribute extends AbstractFactory
      */
     public function getCollection(array $languages, array $customerGroups): \Generator
     {
-        if ($this->config['sitemap']['sitemap_tags_anzeigen'] !== 'Y') {
-            yield null;
-        }
         $languageIDs = map($languages, function ($e) {
             return (int)$e->kSprache;
         });

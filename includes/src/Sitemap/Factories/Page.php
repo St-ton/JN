@@ -22,9 +22,6 @@ final class Page extends AbstractFactory
      */
     public function getCollection(array $languages, array $customerGroups): \Generator
     {
-        if ($this->config['sitemap']['sitemap_seiten_anzeigen'] !== 'Y') {
-            yield null;
-        }
         $customerGroup = first($customerGroups);
         $languageCodes = map($languages, function ($e) {
             return "'" . $e->cISO . "'";
@@ -60,19 +57,20 @@ final class Page extends AbstractFactory
         });
         $linkList      = new LinkList($this->db);
         $linkList->createLinks($linkIDs);
-        $linkList->getLinks()->each(function (Link $e) use ($languages) {
-            $linkType = $e->getLinkType();
-            foreach ($e->getURLs() as $i => $url) {
+        foreach ($linkList->getLinks()->all() as $link) {
+            /** @var Link $link */
+            $linkType = $link->getLinkType();
+            foreach ($link->getURLs() as $i => $url) {
                 $data           = new \stdClass();
-                $data->kLink    = $e->getID();
+                $data->kLink    = $link->getID();
                 $data->cSEO     = $url;
                 $data->nLinkart = $linkType;
-                $data->langID   = $e->getLanguageID($i);
-                $data->langCode = $e->getLanguageCode($i);
+                $data->langID   = $link->getLanguageID($i);
+                $data->langCode = $link->getLanguageCode($i);
                 $item           = new \Sitemap\Items\Page($this->config, $this->baseURL, $this->baseImageURL);
                 $item->generateData($data, $languages);
                 yield $item;
             }
-        });
+        }
     }
 }

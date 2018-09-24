@@ -112,10 +112,10 @@ class PremiumPlugin
     }
 
     /**
-     * @param string $id
+     * @param null|string $id
      * @return $this
      */
-    public function setPluginID($id): self
+    public function setPluginID(?string $id): self
     {
         $this->pluginID = $id;
 
@@ -126,7 +126,7 @@ class PremiumPlugin
      * @param string $link
      * @return $this
      */
-    public function setDownloadLink($link): self
+    public function setDownloadLink(string $link): self
     {
         $this->downloadLink = $link;
 

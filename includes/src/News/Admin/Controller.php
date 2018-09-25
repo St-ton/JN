@@ -701,28 +701,7 @@ class Controller
      */
     public function getNewsImages(int $itemID, string $uploadDirName): array
     {
-        $images = [];
-        if ($itemID > 0 && \is_dir($uploadDirName . $itemID)) {
-            $handle       = \opendir($uploadDirName . $itemID);
-            $imageBaseURL = \Shop::getURL() . '/';
-            while (false !== ($file = \readdir($handle))) {
-                if ($file !== '.' && $file !== '..') {
-                    $image           = new \stdClass();
-                    $image->cName    = \substr($file, 0, \strpos($file, '.'));
-                    $image->cURL     = \PFAD_NEWSBILDER . $itemID . '/' . $file;
-                    $image->cURLFull = $imageBaseURL . \PFAD_NEWSBILDER . $itemID . '/' . $file;
-                    $image->cDatei   = $file;
-
-                    $images[] = $image;
-                }
-            }
-
-            \usort($images, function ($a, $b) {
-                return \strcmp($a->cName, $b->cName);
-            });
-        }
-
-        return $images;
+        return $this->getImages(\PFAD_NEWSBILDER, $itemID, $uploadDirName);
     }
 
     /**
@@ -732,27 +711,46 @@ class Controller
      */
     public function getCategoryImages(int $itemID, string $uploadDirName): array
     {
+        return $this->getImages(\PFAD_NEWSKATEGORIEBILDER, $itemID, $uploadDirName);
+    }
+
+    /**
+     * @param string $base
+     * @param int    $itemID
+     * @param string $uploadDirName
+     * @return array
+     */
+    private function getImages(string $base, int $itemID, string $uploadDirName): array
+    {
         $images = [];
-        if ($itemID > 0 && \is_dir($uploadDirName . $itemID)) {
-            $handle       = \opendir($uploadDirName . $itemID);
-            $imageBaseURL = \Shop::getURL() . '/';
-            while (false !== ($file = \readdir($handle))) {
-                if ($file !== '.' && $file !== '..') {
-                    $image           = new \stdClass();
-                    $image->cName    = \substr($file, 0, \strpos($file, '.'));
-                    $image->cURL     = '<img src="' . $imageBaseURL .
-                        \PFAD_NEWSKATEGORIEBILDER . $itemID . '/' . $file . '" />';
-                    $image->cURLFull = $imageBaseURL . \PFAD_NEWSBILDER . $itemID . '/' . $file;
-                    $image->cDatei   = $file;
-
-                    $images[] = $image;
-                }
-            }
-
-            \usort($images, function ($a, $b) {
-                return \strcmp($a->cName, $b->cName);
-            });
+        if ($this->sanitizeDir('fake', $itemID, $uploadDirName) === false) {
+            \Shop::dbg($itemID, false, 'ID:');
+            \Shop::dbg($uploadDirName, true, 'dir:');
+            return $images;
         }
+        $imageBaseURL = \Shop::getURL() . '/';
+        $iterator     = new \DirectoryIterator($uploadDirName . $itemID);
+        foreach ($iterator as $fileinfo) {
+            $fileName        = $fileinfo->getFilename();
+            if ($fileinfo->isDot()
+                || !$fileinfo->isFile()
+                || $fileName === 'preview.png'
+                || $fileName === 'preview.jpeg'
+                || $fileName === 'preview.jpg'
+            ) {
+                continue;
+            }
+            $image           = new \stdClass();
+            $image->cName    = \substr($fileName, 0, \strpos($fileName, '.' . $fileinfo->getExtension()));
+            $image->cURL     = $base . $itemID . '/' . $fileName;
+            $image->cURLFull = $imageBaseURL . $base . $itemID . '/' . $fileName;
+            $image->cDatei   = $fileName;
+
+            $images[] = $image;
+        }
+        \usort($images, function ($a, $b) {
+            return \strcmp($a->cName, $b->cName);
+        });
 
         return $images;
     }
@@ -835,7 +833,7 @@ class Controller
         $imgPath1 = \realpath(\PFAD_ROOT . \PFAD_NEWSKATEGORIEBILDER);
         $imgPath2 = \realpath(\PFAD_ROOT . \PFAD_NEWSBILDER);
 
-        return \strpos($real, $imgPath1) !== 0 || \strpos($real, $imgPath2) !== 0;
+        return \strpos($real, $imgPath1) === 0 || \strpos($real, $imgPath2) === 0;
     }
 
 

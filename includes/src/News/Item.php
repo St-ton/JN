@@ -162,6 +162,7 @@ class Item extends AbstractItem
                 JOIN tseo 
                     ON tseo.cKey = 'kNews'
                     AND tseo.kKey = tnews.kNews
+                    AND tseo.kSprache = tnewssprache.languageID
                 WHERE tnews.kNews = :nid
                 GROUP BY tnewssprache.languageID",
             ['nid' => $this->id],

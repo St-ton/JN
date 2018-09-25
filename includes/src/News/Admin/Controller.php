@@ -171,10 +171,10 @@ class Controller
                 // Falls dies die erste News des Monats ist, neuen Eintrag in tnewsmonatsuebersicht, ansonsten updaten
                 if (isset($monthOverview->kNewsMonatsUebersicht) && $monthOverview->kNewsMonatsUebersicht > 0) {
                     $prefix = $this->db->select(
-                            'tnewsmonatspraefix',
-                            'kSprache',
-                            $langID
-                        )->cPraefix ?? 'Newsuebersicht';
+                        'tnewsmonatspraefix',
+                        'kSprache',
+                        $langID
+                    )->cPraefix ?? 'Newsuebersicht';
                     $this->db->delete(
                         'tseo',
                         ['cKey', 'kKey', 'kSprache'],
@@ -192,10 +192,10 @@ class Controller
                     $this->db->insert('tseo', $oSeo);
                 } else {
                     $prefix                  = $this->db->select(
-                            'tnewsmonatspraefix',
-                            'kSprache',
-                            $langID
-                        )->cPraefix ?? 'Newsuebersicht';
+                        'tnewsmonatspraefix',
+                        'kSprache',
+                        $langID
+                    )->cPraefix ?? 'Newsuebersicht';
                     $monthOverview           = new \stdClass();
                     $monthOverview->kSprache = $langID;
                     $monthOverview->cName    = \News\Controller::mapDateName((string)$month, $year, $iso);

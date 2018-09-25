@@ -404,12 +404,23 @@ class Controller
     }
 
     /**
-     * @param array $post
-     * @param array $languages
-     * @return string|null
+     * @param array  $post
+     * @param array  $languages
+     * @param string $iso
+     * @return null|string
      */
-    private function getSeo(array $post, array $languages): ?string
+    private function getSeo(array $post, array $languages, string $iso = null): ?string
     {
+        if ($iso !== null) {
+            $idx = 'cSeo_' . $iso;
+            if (!empty($post[$idx])) {
+                return $post[$idx];
+            }
+            $idx = 'cName_' . $iso;
+            if (!empty($post[$idx])) {
+                return $post[$idx];
+            }
+        }
         foreach ($languages as $language) {
             $idx = 'cSeo_' . $language->cISO;
             if (!empty($post[$idx])) {
@@ -456,13 +467,13 @@ class Controller
             $categoryID = $this->db->insert('tnewskategorie', $newsCategory);
         }
         $newsCategory->kNewsKategorie = $categoryID;
-
         foreach ($languages as $language) {
             $iso  = $language->cISO;
             $cSeo = $post['cSeo_' . $iso] ?? '';
             if (empty($cSeo)) {
-                $cSeo = $this->getSeo($post, $languages);
+                $cSeo = $this->getSeo($post, $languages, $iso);
             }
+
             $cName = \htmlspecialchars($post['cName_' . $iso] ?? '', $flag, \JTL_CHARSET);
 
             $loc                  = new \stdClass();

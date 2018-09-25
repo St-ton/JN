@@ -268,10 +268,9 @@ class Category implements CategoryInterface
      * @param \stdClass|null $filterSQL
      * @return $this
      */
-    public function getOverview(\stdClass $filterSQL = null): Category
+    public function getOverview(\stdClass $filterSQL): Category
     {
         $this->setID(0);
-        $filter      = $filterSQL->cDatumSQL ?? '';
         $this->items = (new ItemList($this->db))->createItems(map(flatten($this->db->queryPrepared(
             'SELECT tnews.kNews
                 FROM tnews
@@ -279,7 +278,7 @@ class Category implements CategoryInterface
                     ON tnewskategorienews.kNews = tnews.kNews 
                 JOIN tnewskategorie 
                     ON tnewskategorie.kNewsKategorie = tnewskategorienews.kNewsKategorie
-                WHERE tnewskategorie.nAktiv = 1' . $filter,
+            WHERE tnewskategorie.nAktiv = 1' . $filterSQL->cNewsKatSQL . $filterSQL->cDatumSQL,
             ['cid' => $this->id],
             ReturnType::ARRAY_OF_ASSOC_ARRAYS
         )), function ($e) {
@@ -306,7 +305,7 @@ class Category implements CategoryInterface
      * @param int $customerGroupID
      * @return Collection
      */
-    public function filterAndSortItems($customerGroupID = 0): Collection
+    public function filterAndSortItems(int $customerGroupID = 0): Collection
     {
         switch ($_SESSION['NewsNaviFilter']->nSort) {
             case -1:

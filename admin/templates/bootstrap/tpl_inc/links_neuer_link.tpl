@@ -279,7 +279,7 @@
             </div>
         </form>
         {if isset($Link->getID())}
-            {getRevisions type='link' key=$Link->getID() show=['cContent'] secondary=true data=$Link->getContent()}
+            {getRevisions type='link' key=$Link->getID() show=['cContent'] secondary=true data=$Link->getData()}
         {/if}
     </div>
 </div>

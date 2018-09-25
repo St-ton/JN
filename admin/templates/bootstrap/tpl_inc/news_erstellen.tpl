@@ -302,6 +302,6 @@
         </div>
     </form>
     {if $oNews->getID() > 0}
-        {getRevisions type='news' key=$oNews->getID() show=['cText'] secondary=false data=$oNews}
+        {getRevisions type='news' key=$oNews->getID() show=['content'] secondary=true data=$oNews->getData()}
     {/if}
 </div>

@@ -241,6 +241,31 @@ final class Link extends AbstractLink
     }
 
     /**
+     * @return array
+     */
+    public function getData(): array
+    {
+        $res = [];
+        foreach ($this->getLanguageIDs() as $languageID) {
+            $languageCode          = $this->getLanguageCode($languageID);
+            $data                  = new \stdClass();
+            $data->content         = $this->getContent($languageID);
+            $data->url             = $this->getURL($languageID);
+            $data->languageID      = $languageID;
+            $data->languageCode    = $languageCode;
+            $data->seo             = $this->getSEO($languageID);
+            $data->id              = $this->getID();
+            $data->title           = $this->getTitle($languageID);
+            $data->metaDescription = $this->getMetaDescription($languageID);
+            $data->metaTitle       = $this->getMetaTitle($languageID);
+            $data->metaKeywords    = $this->getMetaKeyword($languageID);
+            $res[$languageCode]    = $data;
+        }
+
+        return $res;
+    }
+
+    /**
      * @inheritdoc
      */
     public function map(array $localizedLinks): LinkInterface

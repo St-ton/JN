@@ -143,6 +143,18 @@
                                                 {if $category->getID() === $categoryID}selected{/if}
                                             {/foreach}
                                         {/if}>{$category->getName()}</option>
+                                    {foreach $category->getChildren() as $category}
+                                        <option value="{$category->getID()}"
+                                            {if isset($cPostVar_arr.kNewsKategorie)}
+                                                {foreach $cPostVar_arr.kNewsKategorie as $kNewsKategorieNews}
+                                                    {if $category->getID() == $kNewsKategorieNews}selected{/if}
+                                                {/foreach}
+                                            {else}
+                                                {foreach $oNews->getCategoryIDs() as $categoryID}
+                                                    {if $category->getID() === $categoryID}selected{/if}
+                                                {/foreach}
+                                            {/if}>&nbsp;&nbsp;&nbsp;{$category->getName()}</option>
+                                    {/foreach}
                                 {/foreach}
                             </select>
                         </div>

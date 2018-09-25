@@ -1,6 +1,6 @@
 {if $account}
         </div>
-    </nav>
+    </div>
 </div>{* /backend-wrapper *}
 
 <script type="text/javascript">

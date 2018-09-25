@@ -50,9 +50,10 @@
                 <a class="backend-brand" href="index.php" title="Dashboard">
                     <img src="{$currentTemplateDir}gfx/JTL-Shop-Logo-rgb.png" alt="JTL-Shop">
                 </a>
-                <button type="button" class="backend-sidebar-toggle">
-                    <i class="fa fa-angle-double-left fa-2x"></i>
-                </button>
+                {*TODO: make sidebar collapsable*}
+                {*<button type="button" class="backend-sidebar-toggle">*}
+                    {*<i class="fa fa-angle-double-left fa-2x"></i>*}
+                {*</button>*}
             </div>
             <div class="backend-navigation">
                 <ul class="backend-menu toplevel">

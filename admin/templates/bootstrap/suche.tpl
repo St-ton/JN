@@ -19,11 +19,13 @@
             </li>
         {/foreach}
     {elseif isset($shippings)}
-        <div class="_grid-item">
-            <h2><a href="versandarten.php" class="value">Versandartenübersicht</a></h2>
-            <ul>
+        <li>
+            <h4><a href="versandarten.php" class="value">Versandartenübersicht</a></h4>
+        </li>
+        <li>
+            <ul class="backend-search-section">
                 {foreach $shippings as $shipping}
-                    <li>
+                    <li class="backend-search-item">
                         <form method="post" action="versandarten.php">
                             {$jtl_token}
                             <input type="hidden" name="edit" value="{$shipping->kVersandart}">
@@ -32,19 +34,21 @@
                     </li>
                 {/foreach}
             </ul>
-        </div>
+        </li>
     {elseif isset($paymentMethods)}
-        <div class="_grid-item">
-            <h2><a href="zahlungsarten.php" class="value">Zahlungsartenübersicht</a></h2>
-            <li>
+        <li>
+            <h4><a href="zahlungsarten.php" class="value">Zahlungsartenübersicht</a></h4>
+        </li>
+        <li>
+            <ul class="backend-search-section">
                 {foreach $paymentMethods as $paymentMethod}
-                    <li>
+                    <li class="backend-search-item">
                         <a href="zahlungsarten.php?kZahlungsart={$paymentMethod->kZahlungsart}&token={$smarty.session.jtl_token}" class="value">
                             <p>{$paymentMethod->cName}</p>
                         </a>
                     </li>
                 {/foreach}
-            </li>
-        </div>
+            </ul>
+        </li>
     {/if}
 {/strip}

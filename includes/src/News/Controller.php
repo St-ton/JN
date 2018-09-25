@@ -81,7 +81,7 @@ class Controller
         if ((int)$params['cDatum'] === -1) {
             $_SESSION['NewsNaviFilter']->cDatum = -1;
         } elseif (\strlen($params['cDatum']) > 0) {
-            $_SESSION['NewsNaviFilter']->cDatum = \substr_count($params['cDatum'], '-') > 1
+            $_SESSION['NewsNaviFilter']->cDatum = \substr_count($params['cDatum'], '-') > 0
                 ? \StringHandler::filterXSS($params['cDatum'])
                 : -1;
         } elseif (!isset($_SESSION['NewsNaviFilter']->cDatum)) {
@@ -168,7 +168,6 @@ class Controller
 
         $this->smarty->assign('oNewsKommentar_arr', $comments)
                      ->assign('oPagiComments', $pagination)
-                     ->assign('R_LOGIN_NEWSCOMMENT', \R_LOGIN_NEWSCOMMENT)
                      ->assign('oNewsKategorie_arr', $newsCategories)
                      ->assign('oNewsArchiv', $newsItem)
                      ->assign('meta_title', $newsItem->getMetaTitle())
@@ -233,10 +232,10 @@ class Controller
                      ->assign('cDatum', $_SESSION['NewsNaviFilter']->cDatum)
                      ->assign('oNewsCat', $category)
                      ->assign('oPagination', $pagination)
+                     ->assign('kNewsKategorie', $_SESSION['NewsNaviFilter']->nNewsKat)
                      ->assign('meta_title', $metaTitle)
                      ->assign('meta_description', $metaDescription)
                      ->assign('meta_keywords', $metaKeywords);
-
         if ($items->count() === 0) {
             $this->smarty->assign('noarchiv', 1);
             $_SESSION['NewsNaviFilter']->nNewsKat = -1;
@@ -486,10 +485,9 @@ class Controller
                 $_SESSION['NewsNaviFilter']->cDatum = -1;
             }
         }
-        $oSQL->cNewsKatSQL = ' JOIN tnewskategorienews ON tnewskategorienews.kNews = tnews.kNews';
         if ($_SESSION['NewsNaviFilter']->nNewsKat > 0) {
-            $oSQL->cNewsKatSQL = ' JOIN tnewskategorienews ON tnewskategorienews.kNews = tnews.kNews
-                               AND tnewskategorienews.kNewsKategorie = ' . (int)$_SESSION['NewsNaviFilter']->nNewsKat;
+            $oSQL->cNewsKatSQL = ' AND tnewskategorienews.kNewsKategorie = ' .
+                (int)$_SESSION['NewsNaviFilter']->nNewsKat;
         }
 
         if ($bActiveOnly) {
@@ -509,14 +507,16 @@ class Controller
     {
         $dateData = $this->db->query(
             "SELECT MONTH(tnews.dGueltigVon) AS nMonat, YEAR(tnews.dGueltigVon) AS nJahr
-                FROM tnews " . $oSQL->cNewsKatSQL . "
+                FROM tnews 
+                JOIN tnewskategorienews 
+                    ON tnewskategorienews.kNews = tnews.kNews" . $oSQL->cNewsKatSQL . "
                 JOIN tnewssprache
                     ON tnewssprache.kNews = tnews.kNews
                 WHERE tnews.nAktiv = 1
-                    AND tnews.dGueltigVon <= now()
+                    AND tnews.dGueltigVon <= NOW()
                     AND (tnews.cKundengruppe LIKE '%;-1;%' 
-                        OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
-            . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
+                        OR FIND_IN_SET('" . Session::CustomerGroup()->getID() .
+                    "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                     AND tnewssprache.languageID = " . \Shop::getLanguageID() . "
                 GROUP BY nJahr, nMonat
                 ORDER BY dGueltigVon DESC",
@@ -542,9 +542,6 @@ class Controller
     public static function mapDateName($month, $year, $langCode): string
     {
         // @todo: i18n!
-//        $monthNum  = 3;
-//        $dateObj   = DateTime::createFromFormat('!m', $monthNum);
-//        $monthName = $dateObj->format('F'); // March
         $name = '';
         if ($langCode === 'ger') {
             switch ($month) {

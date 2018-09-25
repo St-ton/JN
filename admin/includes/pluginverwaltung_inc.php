@@ -4,8 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTLShop\SemVer\Version;
-
 require_once PFAD_ROOT . PFAD_DBES . 'xml_tools.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
@@ -103,24 +101,28 @@ function extractPlugin($zipFile)
  * @param int    $kPlugin
  * @param string $cVerzeichnis
  * @return int
+ * @deprecated since 5.0.0
  */
 function pluginPlausi(int $kPlugin, $cVerzeichnis = '')
 {
+    trigger_error(__FILE__ . ': calling ' . __FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $validator = new \Plugin\Admin\Validator(Shop::Container()->getDB());
     $validator->setDir($cVerzeichnis);
-    return $validator->pluginPlausi($kPlugin);
+    return $validator->validateByPluginID($kPlugin);
 }
 
 /**
  * @param array  $XML_arr
  * @param string $cVerzeichnis
  * @return int
+ * @deprecated since 5.0.0
  */
 function pluginPlausiIntern($XML_arr, $cVerzeichnis)
 {
+    trigger_error(__FILE__ . ': calling ' . __FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $validator = new \Plugin\Admin\Validator(Shop::Container()->getDB());
     $validator->setDir($cVerzeichnis);
-    return $validator->pluginPlausiIntern($XML_arr);
+    return $validator->pluginPlausiIntern($XML_arr, false);
 }
 
 /**
@@ -128,20 +130,13 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
  *
  * @param int $kPlugin
  * @return int
+ * @deprecated since 5.0.0
  */
 function updatePlugin(int $kPlugin)
 {
-    if ($kPlugin <= 0) {
-        return \Plugin\InstallCode::WRONG_PARAM;
-    }
-    $oPluginTMP = Shop::Container()->getDB()->select('tplugin', 'kPlugin', $kPlugin);
-    if (isset($oPluginTMP->kPlugin) && $oPluginTMP->kPlugin > 0) {
-        $oPlugin = new Plugin($oPluginTMP->kPlugin);
-
-        return installierePluginVorbereitung($oPlugin->cVerzeichnis, $oPlugin);
-    }
-
-    return \Plugin\InstallCode::NO_PLUGIN_FOUND;
+    trigger_error(__FILE__ . ': calling ' . __FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    $updater = new \Plugin\Admin\Updater(Shop::Container()->getDB());
+    return $updater->updatePlugin($kPlugin);
 }
 
 /**
@@ -150,47 +145,24 @@ function updatePlugin(int $kPlugin)
  * @param string     $cVerzeichnis
  * @param int|Plugin $oPluginOld
  * @return int
+ * @deprecated since 5.0.0
  */
 function installierePluginVorbereitung($cVerzeichnis, $oPluginOld = 0)
 {
     trigger_error(__FILE__ . ': calling ' . __FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $installer = new \Plugin\Admin\Installer(Shop::Container()->getDB(), $cVerzeichnis);
+    $db          = Shop::Container()->getDB();
+    $uninstaller = new \Plugin\Admin\Uninstaller($db);
+    $validator   = new \Plugin\Admin\Validator($db);
+    $installer   = new \Plugin\Admin\Installer($db, $uninstaller, $validator);
+    $installer->setDir($cVerzeichnis);
+    if ($oPluginOld !== 0) {
+        $installer->setPlugin($oPluginOld);
+        $installer->setDir($cVerzeichnis);
+    }
 
-    return $installer->installierePluginVorbereitung($oPluginOld);
+    return $installer->installierePluginVorbereitung();
 }
 
-/*
-// Return:
-// 1 = Alles O.K.
-// 2 = Main Plugindaten nicht korrekt
-// 3 = Ein Hook konnte nicht in die Datenbank gespeichert werden
-// 4 = Ein Adminmenü Customlink konnte nicht in die Datenbank gespeichert werden
-// 5 = Ein Adminmenü Settingslink konnte nicht in die Datenbank gespeichert werden
-// 6 = Eine Einstellung konnte nicht in die Datenbank gespeichert werden
-// 7 = Eine Sprachvariable konnte nicht in die Datenbank gespeichert werden
-// 8 = Ein Link konnte nicht in die Datenbank gespeichert werden
-// 9 = Eine Zahlungsmethode konnte nicht in die Datenbank gespeichert werden
-// 10 = Eine Sprache in den Zahlungsmethoden konnte nicht in die Datenbank gespeichert werden
-// 11 = Eine Einstellung der Zahlungsmethode konnte nicht in die Datenbank gespeichert werden
-// 12 = Es konnte keine Linkgruppe im Shop gefunden werden
-// 13 = Eine Boxvorlage konnte nicht in die Datenbank gespeichert werden
-// 14 = Eine Emailvorlage konnte nicht in die Datenbank gespeichert werden
-// 15 = Ein AdminWidget konnte nicht in die Datenbank gespeichert werden
-// 16 = Ein Exportformat konnte nicht in die Datenbank gespeichert werden
-// 17 = Ein Template konnte nicht in die Datenbank gespeichert werden
-// 18 = Eine Uninstall Datei konnte nicht in die Datenbank gespeichert werden
-// 19 = Ein OPC Portlet konnte nicht in die Datenbank gespeichert werden
-// 20 = Ein OPC Blueprint konnte nicht in die Datenbank gespeichert werden
-
-// ### logikSQLDatei
-// 22 = Plugindaten fehlen
-// 23 = SQL hat einen Fehler verursacht
-// 24 = Versuch eine nicht Plugintabelle zu löschen
-// 25 = Versuch eine nicht Plugintabelle anzulegen
-// 26 = SQL Datei ist leer oder konnte nicht geparsed werden
-// 27 = Sync Übergabeparameter nicht korrekt
-// 28 = Update konnte nicht gesynct werden
-*/
 /**
  * Installiert die tplugin* Tabellen für ein Plugin in der Datenbank
  *

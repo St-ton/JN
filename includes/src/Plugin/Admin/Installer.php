@@ -15,43 +15,95 @@ use Plugin\InstallCode;
  */
 final class Installer
 {
+    /**
+     * @var DbInterface
+     */
     private $db;
 
+    /**
+     * @var string
+     */
     private $dir;
 
+    /**
+     * @var Uninstaller
+     */
     private $uninstaller;
 
-    public function __construct(DbInterface $db, string $dir, Uninstaller $uninstaller)
+    /**
+     * @var Validator
+     */
+    private $validator;
+
+    /**
+     * @var \Plugin|null
+     */
+    private $plugin;
+
+    /**
+     * Installer constructor.
+     * @param DbInterface $db
+     * @param Uninstaller $uninstaller
+     * @param Validator   $validator
+     */
+    public function __construct(DbInterface $db, Uninstaller $uninstaller, Validator $validator)
     {
-        $this->db  = $db;
-        $this->dir = $dir;
+        $this->db          = $db;
         $this->uninstaller = $uninstaller;
+        $this->validator   = $validator;
     }
 
-    public function installierePluginVorbereitung($oPluginOld = 0)
+    /**
+     * @return string
+     */
+    public function getDir(): string
+    {
+        return $this->dir;
+    }
+
+    /**
+     * @param string $dir
+     */
+    public function setDir(string $dir): void
+    {
+        $this->dir = $dir;
+    }
+
+    /**
+     * @return \Plugin|null
+     */
+    public function getPlugin(): ?\Plugin
+    {
+        return $this->plugin;
+    }
+
+    /**
+     * @param \Plugin|null $plugin
+     */
+    public function setPlugin(\Plugin $plugin): void
+    {
+        $this->plugin = $plugin;
+    }
+
+    /**
+     * @return int
+     */
+    public function installierePluginVorbereitung(): int
     {
         if (empty($this->dir)) {
             return InstallCode::WRONG_PARAM;
         }
         // Plugin wurde schon installiert?
-        $oPluginTMP = new \stdClass();
-        if (!isset($oPluginOld->kPlugin) || !$oPluginOld->kPlugin) {
-            $oPluginTMP = $this->db->select('tplugin', 'cVerzeichnis', $this->dir);
-        }
-        if (!empty($oPluginTMP->kPlugin)) {
-            return 4;// Plugin wurde schon installiert
-        }
         $cPfad = \PFAD_ROOT . \PFAD_PLUGIN . \basename($this->dir);
         if (!\file_exists($cPfad . '/' . \PLUGIN_INFO_FILE)) {
             return 3;// info.xml existiert nicht
         }
         $xml     = \file_get_contents($cPfad . '/' . \PLUGIN_INFO_FILE);
-        $XML_arr = \XML_unserialize($xml);
-        $XML_arr = \getArrangedArray($XML_arr);
+        $XML_arr = \getArrangedArray(\XML_unserialize($xml));
         // Interne Plugin Plausi
-        $code = \pluginPlausiIntern($XML_arr, $cPfad);
-        // Work Around
-        if (isset($oPluginOld->kPlugin) && $oPluginOld->kPlugin > 0 && $code === InstallCode::DUPLICATE_PLUGIN_ID) {
+        $this->validator->setDir($cPfad);
+        $code = $this->validator->pluginPlausiIntern($XML_arr, $this->plugin !== null);
+        if ($oPluginOld !== null && $oPluginOld->kPlugin > 0 && $code === InstallCode::DUPLICATE_PLUGIN_ID) {
             $code = InstallCode::OK;
         }
         // Alles O.K. => installieren
@@ -62,7 +114,7 @@ final class Installer
             if ($code === InstallCode::OK) {
                 return InstallCode::OK;
             }
-            $nSQLFehlerCode_arr = [
+            $codes = [
                 2  => 152,
                 3  => 153,
                 4  => 154,
@@ -87,7 +139,7 @@ final class Installer
                 28 => 208
             ];
 
-            return $nSQLFehlerCode_arr[$code];
+            return $codes[$code];
         }
 
         return $code;
@@ -100,7 +152,7 @@ final class Installer
      * @param \Plugin|int $oPluginOld
      * @return int
      */
-    public function installierePlugin($XML_arr, $oPluginOld): int
+    public function installierePlugin($XML_arr, $oPluginOld = null): int
     {
         $baseNode          = $XML_arr['jtlshop3plugin'][0];
         $versionNode       = $baseNode['Install'][0]['Version'];
@@ -138,7 +190,9 @@ final class Installer
         $oPlugin->nPrio                = 0;
         $oPlugin->dZuletztAktualisiert = 'NOW()';
         $oPlugin->dErstellt            = $versionNode[$nLastVersionKey]['CreateDate'];
-        $oPlugin->bBootstrap           = \is_file($basePath . \PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' . 'bootstrap.php')
+        $oPlugin->bBootstrap           = \is_file(
+            $basePath . \PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' . 'bootstrap.php'
+        )
             ? 1
             : 0;
 
@@ -169,7 +223,7 @@ final class Installer
                 $oPlugin->nStatus = $oPluginOld->nStatus;
             }
         }
-        $oPlugin->dInstalliert = (isset($oPluginOld->kPlugin) && $oPluginOld->kPlugin > 0)
+        $oPlugin->dInstalliert = ($oPluginOld !== null && $oPluginOld->kPlugin > 0)
             ? $oPluginOld->dInstalliert
             : 'NOW()';
         $kPlugin               = $this->db->insert('tplugin', $oPlugin);
@@ -220,7 +274,10 @@ final class Installer
         if ($bSQLFehler) {
             $this->uninstaller->uninstall($oPlugin->kPlugin);
         }
-        if ($code === InstallCode::OK && $oPluginOld === 0 && ($p = \Plugin::bootstrapper($oPlugin->kPlugin)) !== null) {
+        if ($code === InstallCode::OK
+            && $oPluginOld === null
+            && ($p = \Plugin::bootstrapper($oPlugin->kPlugin)) !== null
+        ) {
             $p->installed();
         }
         // Installation von höheren XML Versionen
@@ -229,13 +286,13 @@ final class Installer
         ) {
             $code = InstallCode::OK;
             // Update
-            if (isset($oPluginOld->kPlugin) && $oPluginOld->kPlugin > 0 && $code === 1) {
+            if ($oPluginOld !== null && $oPluginOld->kPlugin > 0 && $code === 1) {
                 // Update erfolgreich => sync neue Version auf altes Plugin
                 $code               = $this->syncPluginUpdate($oPlugin->kPlugin, $oPluginOld);
                 $nSQLFehlerCode_arr = [1 => 1, 2 => 27, 3 => 28];
                 $code               = $nSQLFehlerCode_arr[$code];
             }
-        } elseif (isset($oPluginOld->kPlugin)
+        } elseif ($oPluginOld !== null
             && $oPluginOld->kPlugin
             && ($code === InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE || $code === InstallCode::OK)
         ) {
@@ -253,14 +310,14 @@ final class Installer
      * wird der alte kPlugin auf die neue Version übertragen und
      * die alte Plugin-Version deinstalliert.
      *
-     * @param int    $kPlugin
+     * @param int     $kPlugin
      * @param \Plugin $oPluginOld
      * @return int
      * 1 = Alles O.K.
      * 2 = Übergabeparameter nicht korrekt
      * 3 = Update konnte nicht installiert werden
      */
-    public function syncPluginUpdate(int $kPlugin, $oPluginOld)
+    public function syncPluginUpdate(int $kPlugin, \Plugin $oPluginOld): int
     {
         $kPluginOld = (int)$oPluginOld->kPlugin;
         // Altes Plugin deinstallieren
@@ -268,42 +325,42 @@ final class Installer
 
         if ($nReturnValue === 1) {
             // tplugin
-            $upd          = new stdClass();
+            $upd          = new \stdClass();
             $upd->kPlugin = $kPluginOld;
-            Shop::Container()->getDB()->update('tplugin', 'kPlugin', $kPlugin, $upd);
-            Shop::Container()->getDB()->update('tpluginhook', 'kPlugin', $kPlugin, $upd);
-            Shop::Container()->getDB()->update('tpluginadminmenu', 'kPlugin', $kPlugin, $upd);
-            Shop::Container()->getDB()->update('tpluginsprachvariable', 'kPlugin', $kPlugin, $upd);
-            Shop::Container()->getDB()->update('tadminwidgets', 'kPlugin', $kPlugin, $upd);
-            Shop::Container()->getDB()->update('tpluginsprachvariablecustomsprache', 'kPlugin', $kPlugin, $upd);
-            Shop::Container()->getDB()->update('tplugin_resources', 'kPlugin', $kPlugin, $upd);
-            Shop::Container()->getDB()->update('tplugincustomtabelle', 'kPlugin', $kPlugin, $upd);
-            Shop::Container()->getDB()->update('tplugintemplate', 'kPlugin', $kPlugin, $upd);
-            Shop::Container()->getDB()->update('tpluginlinkdatei', 'kPlugin', $kPlugin, $upd);
-            Shop::Container()->getDB()->update('tpluginemailvorlage', 'kPlugin', $kPlugin, $upd);
-            Shop::Container()->getDB()->update('texportformat', 'kPlugin', $kPlugin, $upd);
-            Shop::Container()->getDB()->update('topcportlet', 'kPlugin', $kPlugin, $upd);
-            Shop::Container()->getDB()->update('topcblueprint', 'kPlugin', $kPlugin, $upd);
-            $pluginConf = Shop::Container()->getDB()->query(
+            $this->db->update('tplugin', 'kPlugin', $kPlugin, $upd);
+            $this->db->update('tpluginhook', 'kPlugin', $kPlugin, $upd);
+            $this->db->update('tpluginadminmenu', 'kPlugin', $kPlugin, $upd);
+            $this->db->update('tpluginsprachvariable', 'kPlugin', $kPlugin, $upd);
+            $this->db->update('tadminwidgets', 'kPlugin', $kPlugin, $upd);
+            $this->db->update('tpluginsprachvariablecustomsprache', 'kPlugin', $kPlugin, $upd);
+            $this->db->update('tplugin_resources', 'kPlugin', $kPlugin, $upd);
+            $this->db->update('tplugincustomtabelle', 'kPlugin', $kPlugin, $upd);
+            $this->db->update('tplugintemplate', 'kPlugin', $kPlugin, $upd);
+            $this->db->update('tpluginlinkdatei', 'kPlugin', $kPlugin, $upd);
+            $this->db->update('tpluginemailvorlage', 'kPlugin', $kPlugin, $upd);
+            $this->db->update('texportformat', 'kPlugin', $kPlugin, $upd);
+            $this->db->update('topcportlet', 'kPlugin', $kPlugin, $upd);
+            $this->db->update('topcblueprint', 'kPlugin', $kPlugin, $upd);
+            $pluginConf = $this->db->query(
                 'SELECT *
                 FROM tplugineinstellungen
                 WHERE kPlugin IN (' . $kPluginOld . ', ' . $kPlugin . ')
                 ORDER BY kPlugin',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-            if (is_array($pluginConf) && count($pluginConf) > 0) {
+            if (\count($pluginConf) > 0) {
                 $oEinstellung_arr = [];
                 foreach ($pluginConf as $oPluginEinstellung) {
-                    $cName = str_replace(
+                    $cName = \str_replace(
                         ['kPlugin_' . $kPluginOld . '_', 'kPlugin_' . $kPlugin . '_'],
                         '',
                         $oPluginEinstellung->cName
                     );
                     if (!isset($oEinstellung_arr[$cName])) {
-                        $oEinstellung_arr[$cName] = new stdClass();
+                        $oEinstellung_arr[$cName] = new \stdClass();
 
                         $oEinstellung_arr[$cName]->kPlugin = $kPluginOld;
-                        $oEinstellung_arr[$cName]->cName   = str_replace(
+                        $oEinstellung_arr[$cName]->cName   = \str_replace(
                             'kPlugin_' . $kPlugin . '_',
                             'kPlugin_' . $kPluginOld . '_',
                             $oPluginEinstellung->cName
@@ -311,17 +368,17 @@ final class Installer
                         $oEinstellung_arr[$cName]->cWert   = $oPluginEinstellung->cWert;
                     }
                 }
-                Shop::Container()->getDB()->query(
+                $this->db->query(
                     'DELETE FROM tplugineinstellungen
                     WHERE kPlugin IN (' . $kPluginOld . ', ' . $kPlugin . ')',
                     \DB\ReturnType::AFFECTED_ROWS
                 );
 
                 foreach ($oEinstellung_arr as $oEinstellung) {
-                    Shop::Container()->getDB()->insert('tplugineinstellungen', $oEinstellung);
+                    $this->db->insert('tplugineinstellungen', $oEinstellung);
                 }
             }
-            Shop::Container()->getDB()->query(
+            $this->db->query(
                 "UPDATE tplugineinstellungen
                 SET kPlugin = " . $kPluginOld . ",
                     cName = REPLACE(cName, 'kPlugin_" . $kPlugin . "_', 'kPlugin_" . $kPluginOld . "_')
@@ -329,7 +386,7 @@ final class Installer
                 \DB\ReturnType::AFFECTED_ROWS
             );
             // tplugineinstellungenconf
-            Shop::Container()->getDB()->query(
+            $this->db->query(
                 "UPDATE tplugineinstellungenconf
                 SET kPlugin = " . $kPluginOld . ",
                     cWertName = REPLACE(cWertName, 'kPlugin_" . $kPlugin . "_', 'kPlugin_" . $kPluginOld . "_')
@@ -337,11 +394,11 @@ final class Installer
                 \DB\ReturnType::AFFECTED_ROWS
             );
             // tboxvorlage
-            $upd = new stdClass();
+            $upd            = new \stdClass();
             $upd->kCustomID = $kPluginOld;
-            Shop::Container()->getDB()->update('tboxvorlage', ['kCustomID', 'eTyp'], [$kPlugin, 'plugin'], $upd);
+            $this->db->update('tboxvorlage', ['kCustomID', 'eTyp'], [$kPlugin, 'plugin'], $upd);
             // tpluginzahlungsartklasse
-            Shop::Container()->getDB()->query(
+            $this->db->query(
                 "UPDATE tpluginzahlungsartklasse
                 SET kPlugin = " . $kPluginOld . ",
                     cModulId = REPLACE(cModulId, 'kPlugin_" . $kPlugin . "_', 'kPlugin_" . $kPluginOld . "_')
@@ -350,19 +407,24 @@ final class Installer
             );
             // tpluginemailvorlageeinstellungen
             //@todo: this part was really messed up - check.
-            $oPluginEmailvorlageAlt = Shop::Container()->getDB()->select('tpluginemailvorlage', 'kPlugin', $kPluginOld);
-            $oEmailvorlage          = Shop::Container()->getDB()->select('tpluginemailvorlage', 'kPlugin', $kPlugin);
+            $oPluginEmailvorlageAlt = $this->db->select('tpluginemailvorlage', 'kPlugin', $kPluginOld);
+            $oEmailvorlage          = $this->db->select('tpluginemailvorlage', 'kPlugin', $kPlugin);
             if (isset($oEmailvorlage->kEmailvorlage, $oPluginEmailvorlageAlt->kEmailvorlage)) {
-                $upd = new stdClass();
+                $upd                = new \stdClass();
                 $upd->kEmailvorlage = $oEmailvorlage->kEmailvorlage;
-                Shop::Container()->getDB()->update('tpluginemailvorlageeinstellungen', 'kEmailvorlage', $oPluginEmailvorlageAlt->kEmailvorlage, $upd);
+                $this->db->update(
+                    'tpluginemailvorlageeinstellungen',
+                    'kEmailvorlage',
+                    $oPluginEmailvorlageAlt->kEmailvorlage,
+                    $upd
+                );
             }
             // tpluginemailvorlagesprache
             $kEmailvorlageNeu = 0;
             $kEmailvorlageAlt = 0;
-            if (isset($oPluginOld->oPluginEmailvorlageAssoc_arr) && count($oPluginOld->oPluginEmailvorlageAssoc_arr) > 0) {
+            if (\count($oPluginOld->oPluginEmailvorlageAssoc_arr) > 0) {
                 foreach ($oPluginOld->oPluginEmailvorlageAssoc_arr as $cModulId => $oPluginEmailvorlageAlt) {
-                    $oPluginEmailvorlageNeu = Shop::Container()->getDB()->select(
+                    $oPluginEmailvorlageNeu = $this->db->select(
                         'tpluginemailvorlage',
                         'kPlugin',
                         $kPluginOld,
@@ -378,9 +440,9 @@ final class Installer
                             $kEmailvorlageNeu = $oPluginEmailvorlageNeu->kEmailvorlage;
                             $kEmailvorlageAlt = $oPluginEmailvorlageAlt->kEmailvorlage;
                         }
-                        $upd = new stdClass();
+                        $upd                = new \stdClass();
                         $upd->kEmailvorlage = $oPluginEmailvorlageNeu->kEmailvorlage;
-                        Shop::Container()->getDB()->update(
+                        $this->db->update(
                             'tpluginemailvorlagesprache',
                             'kEmailvorlage',
                             $oPluginEmailvorlageAlt->kEmailvorlage,
@@ -390,41 +452,45 @@ final class Installer
                 }
             }
             // tpluginemailvorlageeinstellungen
-            $upd = new stdClass();
+            $upd                = new \stdClass();
             $upd->kEmailvorlage = $kEmailvorlageNeu;
-            Shop::Container()->getDB()->update('tpluginemailvorlageeinstellungen', 'kEmailvorlage', $kEmailvorlageAlt, $upd);
+            $this->db->update('tpluginemailvorlageeinstellungen', 'kEmailvorlage', $kEmailvorlageAlt, $upd);
             // tlink
-            $upd = new stdClass();
+            $upd          = new \stdClass();
             $upd->kPlugin = $kPluginOld;
-            Shop::Container()->getDB()->update('tlink', 'kPlugin', $kPlugin, $upd);
+            $this->db->update('tlink', 'kPlugin', $kPlugin, $upd);
             // tboxen
             // Ausnahme: Gibt es noch eine Boxenvorlage in der Pluginversion?
             // Falls nein -> lösche tboxen mit dem entsprechenden kPlugin
-            $oObj = Shop::Container()->getDB()->select('tboxvorlage', 'kCustomID', $kPluginOld, 'eTyp', 'plugin');
+            $oObj = $this->db->select('tboxvorlage', 'kCustomID', $kPluginOld, 'eTyp', 'plugin');
             if (isset($oObj->kBoxvorlage) && (int)$oObj->kBoxvorlage > 0) {
                 // tboxen kCustomID
-                $upd = new stdClass();
+                $upd              = new \stdClass();
                 $upd->kBoxvorlage = $oObj->kBoxvorlage;
-                Shop::Container()->getDB()->update('tboxen', 'kCustomID', $kPluginOld, $upd);
+                $this->db->update('tboxen', 'kCustomID', $kPluginOld, $upd);
             } else {
-                Shop::Container()->getDB()->delete('tboxen', 'kCustomID', $kPluginOld);
+                $this->db->delete('tboxen', 'kCustomID', $kPluginOld);
             }
             // tcheckboxfunktion
-            $upd = new stdClass();
+            $upd          = new \stdClass();
             $upd->kPlugin = $kPluginOld;
-            Shop::Container()->getDB()->update('tcheckboxfunktion', 'kPlugin', $kPlugin, $upd);
+            $this->db->update('tcheckboxfunktion', 'kPlugin', $kPlugin, $upd);
             // tspezialseite
-            Shop::Container()->getDB()->update('tspezialseite', 'kPlugin', $kPlugin, $upd);
+            $this->db->update('tspezialseite', 'kPlugin', $kPlugin, $upd);
             // tzahlungsart
-            $oZahlungsartOld_arr = Shop::Container()->getDB()->query("
-            SELECT kZahlungsart, cModulId
+            $oZahlungsartOld_arr = $this->db->query(
+                "SELECT kZahlungsart, cModulId
                 FROM tzahlungsart
                 WHERE cModulId LIKE 'kPlugin_{$kPluginOld}_%'",
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($oZahlungsartOld_arr as $oZahlungsartOld) {
-                $cModulIdNew     = str_replace("kPlugin_{$kPluginOld}_", "kPlugin_{$kPlugin}_", $oZahlungsartOld->cModulId);
-                $oZahlungsartNew = Shop::Container()->getDB()->query(
+                $cModulIdNew     = \str_replace(
+                    "kPlugin_{$kPluginOld}_",
+                    "kPlugin_{$kPlugin}_",
+                    $oZahlungsartOld->cModulId
+                );
+                $oZahlungsartNew = $this->db->query(
                     "SELECT kZahlungsart
                       FROM tzahlungsart
                       WHERE cModulId LIKE '{$cModulIdNew}'",
@@ -432,7 +498,7 @@ final class Installer
                 );
                 $cNewSetSQL      = '';
                 if (isset($oZahlungsartOld->kZahlungsart, $oZahlungsartNew->kZahlungsart)) {
-                    Shop::Container()->getDB()->query(
+                    $this->db->query(
                         'DELETE tzahlungsart, tzahlungsartsprache
                         FROM tzahlungsart
                         JOIN tzahlungsartsprache
@@ -441,13 +507,13 @@ final class Installer
                         \DB\ReturnType::AFFECTED_ROWS
                     );
 
-                    $cNewSetSQL = ' , kZahlungsart = ' . $oZahlungsartOld->kZahlungsart;
-                    $upd = new stdClass();
+                    $cNewSetSQL        = ' , kZahlungsart = ' . $oZahlungsartOld->kZahlungsart;
+                    $upd               = new \stdClass();
                     $upd->kZahlungsart = $oZahlungsartOld->kZahlungsart;
-                    Shop::Container()->getDB()->update('tzahlungsartsprache', 'kZahlungsart', $oZahlungsartNew->kZahlungsart, $upd);
+                    $this->db->update('tzahlungsartsprache', 'kZahlungsart', $oZahlungsartNew->kZahlungsart, $upd);
                 }
 
-                Shop::Container()->getDB()->query(
+                $this->db->query(
                     "UPDATE tzahlungsart
                     SET cModulId = '{$oZahlungsartOld->cModulId}'
                     " . $cNewSetSQL . "
@@ -456,7 +522,7 @@ final class Installer
                 );
             }
 
-            return \Plugin\InstallCode::OK;
+            return InstallCode::OK;
         }
         $this->uninstaller->uninstall($kPlugin);
 

@@ -6,9 +6,7 @@
 
 namespace Plugin;
 
-
 use MyCLabs\Enum\Enum;
-
 
 /**
  * Class InstallCode
@@ -307,5 +305,4 @@ class InstallCode extends Enum
     public const SQL_WRONG_TABLE_NAME_CREATE = 5;
 
     public const SQL_INVALID_FILE_CONTENT = 6;
-
 }

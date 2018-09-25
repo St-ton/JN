@@ -10,14 +10,17 @@ $oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'pluginverwaltung_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 
-$reload    = false;
-$cHinweis  = '';
-$cFehler   = '';
-$step      = 'pluginverwaltung_uebersicht';
-$db        = Shop::Container()->getDB();
+$reload      = false;
+$cHinweis    = '';
+$cFehler     = '';
+$step        = 'pluginverwaltung_uebersicht';
+$db          = Shop::Container()->getDB();
 $uninstaller = new \Plugin\Admin\Uninstaller($db);
-$validator = new \Plugin\Admin\Validator($db);
-$listing   = new \Plugin\Admin\Listing($db, $validator);
+$validator   = new \Plugin\Admin\Validator($db);
+$listing     = new \Plugin\Admin\Listing($db, $validator);
+$installer   = new \Plugin\Admin\Installer($db, $uninstaller, $validator);
+$updater     = new \Plugin\Admin\Updater($db, $installer);
+
 if (isset($_SESSION['plugin_msg'])) {
     $cHinweis = $_SESSION['plugin_msg'];
     unset($_SESSION['plugin_msg']);
@@ -192,8 +195,8 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
         Shop::Cache()->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN, CACHING_GROUP_BOX]);
     } elseif (RequestHelper::verifyGPCDataInt('updaten') === 1) { // Updaten
         $kPlugin      = RequestHelper::verifyGPCDataInt('kPlugin');
-        $nReturnValue = updatePlugin($kPlugin);
-        if ($nReturnValue === 1) {
+        $nReturnValue = $updater->updatePlugin($kPlugin);
+        if ($nReturnValue === \Plugin\InstallCode::OK) {
             $cHinweis .= 'Ihr Plugin wurde erfolgreich geupdated.';
             $reload   = true;
             Shop::Cache()->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
@@ -207,12 +210,15 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
         $cVerzeichnis_arr = $_POST['cVerzeichnis'];
         if (is_array($cVerzeichnis_arr)) {
             foreach ($cVerzeichnis_arr as $cVerzeichnis) {
-                $installer    = new \Plugin\Admin\Installer($db, basename($cVerzeichnis), $uninstaller);
+                $installer->setDir(basename($cVerzeichnis));
                 $nReturnValue = $installer->installierePluginVorbereitung();
-                if ($nReturnValue === \Plugin\InstallCode::OK || $nReturnValue === \Plugin\InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE) {
+                if ($nReturnValue === \Plugin\InstallCode::OK
+                    || $nReturnValue === \Plugin\InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE
+                ) {
                     $cHinweis = 'Ihre ausgewählten Plugins wurden erfolgreich installiert.';
                     $reload   = true;
-                } elseif ($nReturnValue > \Plugin\InstallCode::OK && $nReturnValue !== \Plugin\InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE) {
+                } elseif ($nReturnValue > \Plugin\InstallCode::OK
+                    && $nReturnValue !== \Plugin\InstallCode::OK_BUT_NOT_SHOP4_COMPATIBL) {
                     $cFehler = 'Fehler: Bei der Installation ist ein Fehler aufgetreten. Fehlercode: ' . $nReturnValue;
                 }
             }

@@ -16,8 +16,15 @@ use Plugin\InstallCode;
  */
 class Uninstaller
 {
+    /**
+     * @var DbInterface
+     */
     private $db;
-    
+
+    /**
+     * Uninstaller constructor.
+     * @param DbInterface $db
+     */
     public function __construct(DbInterface $db)
     {
         $this->db = $db;
@@ -28,13 +35,13 @@ class Uninstaller
      *
      * @param int  $kPlugin
      * @param bool $bUpdate
-     * @param null $kPluginNew
+     * @param int|null $kPluginNew
      * @return int
      * 1 = Alles O.K.
      * 2 = $kPlugin wurde nicht übergeben
      * 3 = SQL-Fehler
      */
-    public function uninstall(int $kPlugin, bool $bUpdate = false, int $kPluginNew = null)
+    public function uninstall(int $kPlugin, bool $bUpdate = false, int $kPluginNew = null): int
     {
         if ($kPlugin <= 0) {
             return InstallCode::WRONG_PARAM; // $kPlugin wurde nicht übergeben
@@ -76,7 +83,7 @@ class Uninstaller
      * @param bool     $bUpdate
      * @param null|int $kPluginNew
      */
-    private function doSQLDelete(int $kPlugin, bool $bUpdate, int $kPluginNew = null)
+    private function doSQLDelete(int $kPlugin, bool $bUpdate, int $kPluginNew = null): void
     {
         // Kein Update => alles deinstallieren
         if (!$bUpdate) {
@@ -159,35 +166,34 @@ class Uninstaller
         $this->db->delete('tpluginadminmenu', 'kPlugin', $kPlugin);
         $this->db->query(
             'DELETE tplugineinstellungenconfwerte, tplugineinstellungenconf
-            FROM tplugineinstellungenconf
-            LEFT JOIN tplugineinstellungenconfwerte
-                ON tplugineinstellungenconfwerte.kPluginEinstellungenConf = tplugineinstellungenconf.kPluginEinstellungenConf
-            WHERE tplugineinstellungenconf.kPlugin = ' . $kPlugin,
+                FROM tplugineinstellungenconf
+                LEFT JOIN tplugineinstellungenconfwerte
+                    ON tplugineinstellungenconfwerte.kPluginEinstellungenConf = 
+                    tplugineinstellungenconf.kPluginEinstellungenConf
+                WHERE tplugineinstellungenconf.kPlugin = ' . $kPlugin,
             ReturnType::AFFECTED_ROWS
         );
 
         $this->db->delete('tpluginuninstall', 'kPlugin', $kPlugin);
-        //delete ressource entries
         $this->db->delete('tplugin_resources', 'kPlugin', $kPlugin);
-        // tlinksprache && tseo
         $oObj_arr = [];
         if ($kPluginNew !== null && $kPluginNew > 0) {
             $kPluginNew = (int)$kPluginNew;
             $oObj_arr   = $this->db->query(
                 "SELECT kLink
-                FROM tlink
-                WHERE kPlugin IN ({$kPlugin}, {$kPluginNew})
-                    ORDER BY kLink",
+                    FROM tlink
+                    WHERE kPlugin IN ({$kPlugin}, {$kPluginNew})
+                        ORDER BY kLink",
                 ReturnType::ARRAY_OF_OBJECTS
             );
         }
-        if (is_array($oObj_arr) && count($oObj_arr) === 2) {
+        if (\is_array($oObj_arr) && \count($oObj_arr) === 2) {
             $oLinkspracheOld_arr = $this->db->selectAll('tlinksprache', 'kLink', $oObj_arr[0]->kLink);
-            if (is_array($oLinkspracheOld_arr) && count($oLinkspracheOld_arr) > 0) {
-                $oSprachAssoc_arr = Sprache::getAllLanguages(2);
+            if (\is_array($oLinkspracheOld_arr) && \count($oLinkspracheOld_arr) > 0) {
+                $oSprachAssoc_arr = \Sprache::getAllLanguages(2);
 
                 foreach ($oLinkspracheOld_arr as $oLinkspracheOld) {
-                    $_upd       = new stdClass();
+                    $_upd       = new \stdClass();
                     $_upd->cSeo = $oLinkspracheOld->cSeo;
                     $this->db->update(
                         'tlinksprache',
@@ -201,7 +207,7 @@ class Uninstaller
                         ['cKey', 'kKey', 'kSprache'],
                         ['kLink', $oObj_arr[0]->kLink, $kSprache]
                     );
-                    $_upd       = new stdClass();
+                    $_upd       = new \stdClass();
                     $_upd->cSeo = $oLinkspracheOld->cSeo;
                     $this->db->update(
                         'tseo',

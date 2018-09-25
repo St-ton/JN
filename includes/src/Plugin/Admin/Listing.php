@@ -28,6 +28,8 @@ final class Listing
      */
     private $validator;
 
+    private const PLUGINS_DIR = \PFAD_ROOT . \PFAD_PLUGIN;
+
     /**
      * Listing constructor.
      * @param DbInterface $db
@@ -45,6 +47,7 @@ final class Listing
      */
     public function getInstalled(): Collection
     {
+        $mapper    = new PluginValidation();
         $plugins   = new Collection();
         $pluginIDs = map(
             $this->db->selectAll('tplugin', [], [], 'kPlugin', 'cName, cAutor, nPrio'),
@@ -57,7 +60,6 @@ final class Listing
             if ($plugin->updateAvailable === true) {
                 $code = $this->validator->validateByPluginID($pluginID, true);
                 if ($code !== InstallCode::OK) {
-                    $mapper          = new PluginValidation();
                     $plugin->cFehler = $mapper->map($code, $plugin);
                 }
             }
@@ -68,58 +70,60 @@ final class Listing
     }
 
     /**
-     * Läuft im Ordner PFAD_ROOT/includes/plugins/ alle Verzeichnisse durch und gibt korrekte Plugins zurück
-     *
      * @param Collection $installed
-     * @return object - {installiert[], verfuegbar[], fehlerhaft[]}
+     * @return \stdClass - {installiert[], verfuegbar[], fehlerhaft[]}
      * @former gibAllePlugins()
      */
-    public function getAll(Collection $installed)
+    public function getAll(Collection $installed): \stdClass
     {
-        $path    = \PFAD_ROOT . \PFAD_PLUGIN;
-        $plugins = (object)[
+        $plugins          = (object)[
             'index'       => [],
             'installiert' => [],
             'verfuegbar'  => [],
             'fehlerhaft'  => [],
         ];
-
-        if (!\is_dir($path)) {
-            return $plugins;
-        }
-        $cInstalledPlugins = $installed->map(function ($item) {
+        $installedPlugins = $installed->map(function ($item) {
             return $item->cVerzeichnis;
         });
-        $iterator          = new \DirectoryIterator($path);
-        foreach ($iterator as $fileinfo) {
+        foreach (new \DirectoryIterator(self::PLUGINS_DIR) as $fileinfo) {
             if ($fileinfo->isDot() || !$fileinfo->isDir()) {
                 continue;
             }
-            $cXML = $fileinfo->getPathname() . '/' . \PLUGIN_INFO_FILE;
-            if (\file_exists($cXML)) {
-                $dir     = $fileinfo->getBasename();
-                $xml     = \file_get_contents($cXML);
-                $xmlData = \XML_unserialize($xml);
-                $xmlData = \getArrangedArray($xmlData);
-                $code    = $this->validator->validateByPath($path . $dir);
-                if ($code === InstallCode::DUPLICATE_PLUGIN_ID && $cInstalledPlugins->contains($dir)) {
-                    $xmlData['cVerzeichnis']    = $dir;
-                    $xmlData['shop4compatible'] = isset($xmlData['jtlshop3plugin'][0]['Shop4Version']);
-                    $plugins->index[$dir]       = \makeXMLToObj($xmlData);
-                    $plugins->installiert[]     =& $plugins->index[$dir];
-                } elseif ($code === InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE || $code === InstallCode::OK) {
-                    $xmlData['cVerzeichnis']    = $dir;
-                    $xmlData['shop4compatible'] = ($code === 1);
-                    $plugins->index[$dir]       = \makeXMLToObj($xmlData);
-                    $plugins->verfuegbar[]      =& $plugins->index[$dir];
-                } elseif ($code !== InstallCode::OK && $code !== InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE) {
-                    $xmlData['cVerzeichnis'] = $dir;
-                    $xmlData['cFehlercode']  = $code;
-                    $plugins->index[$dir]    = \makeXMLToObj($xmlData);
-                    $plugins->fehlerhaft[]   = &$plugins->index[$dir];
-                }
+            $dir  = $fileinfo->getBasename();
+            $cXML = $dir . '/' . \PLUGIN_INFO_FILE;
+            if (!\file_exists($cXML)) {
+                continue;
+            }
+            $xml     = \file_get_contents($cXML);
+            $xmlData = \getArrangedArray(\XML_unserialize($xml));
+            $code    = $this->validator->validateByPath(self::PLUGINS_DIR . $dir);
+            if ($code === InstallCode::DUPLICATE_PLUGIN_ID && $installedPlugins->contains($dir)) {
+                $xmlData['cVerzeichnis']    = $dir;
+                $xmlData['shop4compatible'] = isset($xmlData['jtlshop3plugin'][0]['Shop4Version']);
+                $plugins->index[$dir]       = \makeXMLToObj($xmlData);
+                $plugins->installiert[]     = &$plugins->index[$dir];
+            } elseif ($code === InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE || $code === InstallCode::OK) {
+                $xmlData['cVerzeichnis']    = $dir;
+                $xmlData['shop4compatible'] = ($code === 1);
+                $plugins->index[$dir]       = \makeXMLToObj($xmlData);
+                $plugins->verfuegbar[]      = &$plugins->index[$dir];
+            } else {
+                $xmlData['cVerzeichnis'] = $dir;
+                $xmlData['cFehlercode']  = $code;
+                $plugins->index[$dir]    = \makeXMLToObj($xmlData);
+                $plugins->fehlerhaft[]   = &$plugins->index[$dir];
             }
         }
+
+        return $this->sort($plugins);
+    }
+
+    /**
+     * @param \stdClass $plugins
+     * @return \stdClass
+     */
+    private function sort(\stdClass $plugins): \stdClass
+    {
         \usort($plugins->installiert, function ($left, $right) {
             return \strcasecmp($left->cName, $right->cName);
         });
@@ -132,5 +136,4 @@ final class Listing
 
         return $plugins;
     }
-
 }

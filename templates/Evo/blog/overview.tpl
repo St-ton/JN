@@ -40,12 +40,12 @@
         {if $oNewsCat->getID() > 0}
             {assign var='kNewsKategorie' value=$oNewsCat->getID()}
         {else}
-            {assign var='kNewsKategorie' value=0}
+            {assign var='kNewsKategorie' value=$kNewsKategorie|default:0}
         {/if}
         <select name="nNewsKat" onchange="this.form.submit();" class="form-control form-group" aria-label="{lang key='newsCategorie' section='news'}">
             <option value="-1"{if $kNewsKategorie === -1} selected{/if}>{lang key='newsCategorie' section='news'}</option>
             {if !empty($oNewsKategorie_arr)}
-{               {assign var='selectedCat' value=$kNewsKategorie}
+                {assign var='selectedCat' value=$kNewsKategorie}
                 {include file='snippets/newscategories_recursive.tpl' i=0 selectedCat=$selectedCat}
             {/if}
         </select>

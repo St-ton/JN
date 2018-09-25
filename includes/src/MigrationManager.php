@@ -60,7 +60,7 @@ class MigrationManager
                     if ($migration->getId() <= $identifier) {
                         break;
                     }
-                    if (in_array($migration->getId(), $executedMigrations, true)) {
+                    if (in_array($migration->getId(), $executedMigrations)) {
                         $executed[] = $migration;
                         $this->executeMigration($migration, IMigration::DOWN);
                     }
@@ -71,7 +71,7 @@ class MigrationManager
                 if ($migration->getId() > $identifier) {
                     break;
                 }
-                if (!in_array($migration->getId(), $executedMigrations, true)) {
+                if (!in_array($migration->getId(), $executedMigrations)) {
                     $executed[] = $migration;
                     $this->executeMigration($migration, IMigration::UP);
                 }

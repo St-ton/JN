@@ -93,11 +93,13 @@
                             <span class="input-group-addon">
                                 <label for="previewImage">{#newsPreview#}</label>
                             </span>
-                            {if !empty($oNewsKategorie->cPreviewImage)}
-                                <img src="{$shopURL}/{$oNewsKategorie->cPreviewImage}" alt="" height="20" width="20" class="preview-image left" style="margin-right: 10px;" />
-                            {/if}
-                            <input id="previewImage" name="previewImage" type="file" maxlength="2097152" accept="image/*" />
-                            <input name="previewImage" type="hidden" value="{if !empty($oNewsKategorie->cPreviewImage)}{$oNewsKategorie->cPreviewImage}{/if}" />
+                            <div class="input-group-wrap">
+                                {if !empty($oNewsKategorie->getPreviewImage())}
+                                    <img src="{$shopURL}/{$oNewsKategorie->getPreviewImage()}" alt="" height="20" width="20" class="preview-image left" style="margin: 0 10px;" />
+                                {/if}
+                                <input id="previewImage" name="previewImage" type="file" maxlength="2097152" accept="image/*" />
+                                <input name="previewImage" type="hidden" value="{if !empty($oNewsKategorie->getPreviewImage())}{$oNewsKategorie->getPreviewImage()}{/if}" />
+                            </div>
                         </div>
                         {if isset($oDatei_arr) && $oDatei_arr|@count > 0}
                             <div class="input-group">
@@ -105,9 +107,9 @@
                                     <label>{#newsPics#}</label>
                                 </span>
                                 <div>
-                                    {foreach name=bilder from=$oDatei_arr item=oDatei}
+                                    {foreach $oDatei_arr as $oDatei}
                                         <div class="well col-xs-3">
-                                            <div class="thumbnail">{$oDatei->cURL}</div>
+                                            <div class="thumbnail"><img src="{$oDatei->cURLFull}" alt=""></div>
                                             <label>Link: </label>
                                             <div class="input-group">
                                                 <input class="form-control" type="text" disabled="disabled" value="$#{$oDatei->cName}#$">

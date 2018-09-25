@@ -205,7 +205,7 @@
                                 <label>{#newsPics#}</label>
                             </span>
                             <div class="input-group-wrap">
-                                {foreach name=bilder from=$oDatei_arr item=oDatei}
+                                {foreach $oDatei_arr as $oDatei}
                                     <div class="well col-xs-3">
                                         <div class="thumbnail"><img src="{$oDatei->cURLFull}" alt=""></div>
                                         <label>Link: </label>

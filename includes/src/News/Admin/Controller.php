@@ -171,10 +171,10 @@ class Controller
                 // Falls dies die erste News des Monats ist, neuen Eintrag in tnewsmonatsuebersicht, ansonsten updaten
                 if (isset($monthOverview->kNewsMonatsUebersicht) && $monthOverview->kNewsMonatsUebersicht > 0) {
                     $prefix = $this->db->select(
-                        'tnewsmonatspraefix',
-                        'kSprache',
-                        $langID
-                    )->cPraefix ?? 'Newsuebersicht';
+                            'tnewsmonatspraefix',
+                            'kSprache',
+                            $langID
+                        )->cPraefix ?? 'Newsuebersicht';
                     $this->db->delete(
                         'tseo',
                         ['cKey', 'kKey', 'kSprache'],
@@ -192,10 +192,10 @@ class Controller
                     $this->db->insert('tseo', $oSeo);
                 } else {
                     $prefix                  = $this->db->select(
-                        'tnewsmonatspraefix',
-                        'kSprache',
-                        $langID
-                    )->cPraefix ?? 'Newsuebersicht';
+                            'tnewsmonatspraefix',
+                            'kSprache',
+                            $langID
+                        )->cPraefix ?? 'Newsuebersicht';
                     $monthOverview           = new \stdClass();
                     $monthOverview->kSprache = $langID;
                     $monthOverview->cName    = \News\Controller::mapDateName((string)$month, $year, $iso);
@@ -466,12 +466,8 @@ class Controller
         }
         $newsCategory->kNewsKategorie = $categoryID;
         foreach ($languages as $language) {
-            $iso  = $language->cISO;
-            $cSeo = $post['cSeo_' . $iso] ?? '';
-            if (empty($cSeo)) {
-                $cSeo = $this->getSeo($post, $languages, $iso);
-            }
-
+            $iso   = $language->cISO;
+            $cSeo  = $this->getSeo($post, $languages, $iso);
             $cName = \htmlspecialchars($post['cName_' . $iso] ?? '', $flag, \JTL_CHARSET);
 
             $loc                  = new \stdClass();
@@ -504,16 +500,14 @@ class Controller
             }
             $this->db->insert('tseo', $seoData);
         }
-        // set same activation status for all subcategories
         $affected    = $this->getCategoryAndChildrenByID($categoryID);
         $upd         = new \stdClass();
         $upd->nAktiv = $newsCategory->nAktiv;
         foreach ($affected as $id) {
             $this->db->update('tnewskategorie', 'kNewsKategorie', $id, $upd);
         }
-        // Vorschaubild hochladen
         $error = false;
-        $dir = self::UPLOAD_DIR_CATEGORY . $categoryID;
+        $dir   = self::UPLOAD_DIR_CATEGORY . $categoryID;
         if (!\is_dir($dir) && !\mkdir($dir) && !\is_dir($dir)) {
             $error = true;
             $this->setErrorMsg('Verzeichnis konnte nicht erstellt werden: ' . $dir);
@@ -524,8 +518,7 @@ class Controller
                 \strpos($_FILES['previewImage']['type'], '/') + 1,
                 \strlen($_FILES['previewImage']['type']) - \strpos($_FILES['previewImage']['type'], '/') + 1
             );
-            // not elegant, but since it's 99% jpg..
-            if ($extension === 'jpe') {
+            if ($extension === 'jpe') { // not elegant, but since it's 99% jpg..
                 $extension = 'jpg';
             }
             $uploadFile = self::UPLOAD_DIR_CATEGORY . $categoryID . '/preview.' . $extension;
@@ -737,12 +730,13 @@ class Controller
         if ($this->sanitizeDir('fake', $itemID, $uploadDirName) === false) {
             \Shop::dbg($itemID, false, 'ID:');
             \Shop::dbg($uploadDirName, true, 'dir:');
+
             return $images;
         }
         $imageBaseURL = \Shop::getURL() . '/';
         $iterator     = new \DirectoryIterator($uploadDirName . $itemID);
         foreach ($iterator as $fileinfo) {
-            $fileName        = $fileinfo->getFilename();
+            $fileName = $fileinfo->getFilename();
             if ($fileinfo->isDot()
                 || !$fileinfo->isFile()
                 || $fileName === 'preview.png'

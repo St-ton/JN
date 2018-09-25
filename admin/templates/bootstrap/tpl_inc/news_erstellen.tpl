@@ -247,15 +247,15 @@
                         <div class="panel-body">
                             <div class="input-group">
                                 <span class="input-group-addon">
-                                    <label for="betreff_{$cISO}">{#newsHeadline#} *</label>
+                                    <label for="cName_{$cISO}">{#newsHeadline#} *</label>
                                 </span>
-                                <input class="form-control{if !empty($cPlausiValue_arr.cBetreff)} error{/if}" id="betreff_{$cISO}" type="text" name="betreff_{$cISO}" value="{if isset($cPostVar_arr.betreff) && $cPostVar_arr.betreff}{$cPostVar_arr.betreff}{else}{$oNews->getTitle($langID)}{/if}" />
+                                <input class="form-control{if !empty($cPlausiValue_arr.cBetreff)} error{/if}" id="cName_{$cISO}" type="text" name="cName_{$cISO}" value="{if isset($cPostVar_arr.betreff) && $cPostVar_arr.betreff}{$cPostVar_arr.betreff}{else}{$oNews->getTitle($langID)}{/if}" />
                             </div>
                             <div class="input-group">
                                 <span class="input-group-addon">
-                                    <label for="seo_{$cISO}">{#newsSeo#}</label>
+                                    <label for="cSeo_{$cISO}">{#newsSeo#}</label>
                                 </span>
-                                <input id="seo_{$cISO}" name="seo_{$cISO}" class="form-control" type="text" value="{if isset($cPostVar_arr.seo) && $cPostVar_arr.seo}{$cPostVar_arr.seo}{else}{$oNews->getSEO($langID)}{/if}" />
+                                <input id="cSeo_{$cISO}" name="cSeo_{$cISO}" class="form-control" type="text" value="{if isset($cPostVar_arr.seo) && $cPostVar_arr.seo}{$cPostVar_arr.seo}{else}{$oNews->getSEO($langID)}{/if}" />
                             </div>
                             <div class="input-group">
                                 <span class="input-group-addon">

@@ -133,7 +133,7 @@ class Controller
                 $loc->kNews           = $newsItemID;
                 $loc->languageID      = $langID;
                 $loc->languageCode    = $iso;
-                $loc->title           = \htmlspecialchars($post['betreff_' . $iso], $flags, \JTL_CHARSET);
+                $loc->title           = \htmlspecialchars($post['cName_' . $iso], $flags, \JTL_CHARSET);
                 $loc->content         = $this->parseContent($post['text_' . $iso], $newsItemID);
                 $loc->preview         = $this->parseContent($post['cVorschauText_' . $iso], $newsItemID);
                 $loc->metaTitle       = \htmlspecialchars($post['cMetaTitle_' . $iso], $flags, \JTL_CHARSET);
@@ -148,9 +148,7 @@ class Controller
                 $seoData->cKey     = 'kNews';
                 $seoData->kKey     = $newsItemID;
                 $seoData->kSprache = $langID;
-                $seoData->cSeo     = \checkSeo(\getSeo(\strlen($post['seo_' . $iso]) > 0
-                    ? $post['seo_' . $iso]
-                    : $post['betreff_' . $iso]));
+                $seoData->cSeo     = $this->getSeo($post, $languages, $iso);
                 $this->db->insert('tnewssprache', $loc);
                 $this->db->insert('tseo', $seoData);
 

@@ -1832,10 +1832,9 @@ define('HOOK_CAPTCHA_VALIDATE', 272);
 
 /**
  * @since 5.0.0
- * @file admin/plugin.php.php
+ * @file admin/plugin.php
  * @param Plugin plugin
  * @param bool   hasError
- * @param string msg
  * @param string msg
  * @param string error
  * @param array  options
@@ -1845,7 +1844,7 @@ define('HOOK_PLUGIN_SAVE_OPTIONS', 280);
 
 /**
  * @since 5.0.0
- * @file admin/plugin.php.php
+ * @file includes/src/Sitemap/Export.php
  * @param \Sitemap\Factories\FactoryInterface[] factories
  * @param \Sitemap\Export exporter
  */

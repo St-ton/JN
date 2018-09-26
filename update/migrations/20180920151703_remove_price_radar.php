@@ -27,6 +27,15 @@ class Migration_20180920151703 extends Migration implements IMigration
 
     public function up()
     {
+        $this->execute(
+            'DELETE tboxen, tboxensichtbar, tboxsprache 
+                FROM tboxen 
+                LEFT JOIN tboxensichtbar
+                  ON tboxensichtbar.kBox=tboxen.kBox
+                LEFT JOIN tboxsprache
+                  ON tboxsprache.kBox=tboxen.kBox
+                WHERE tboxen.kBoxvorlage=100;'
+        );
         $this->execute("DELETE FROM tboxvorlage WHERE cTemplate='box_priceradar.tpl';");
     }
 

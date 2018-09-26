@@ -7,7 +7,7 @@
         "Imanee/Imanee": "dev-master",
         "ifsnop/mysqldump-php": "^2.1",
         "symfony/var-dumper": "^3.0",
-        "jtlshop/shop4-systemcheck": "^1.0",
+        "jtlshop/shop4-systemcheck": "^1.1",
         "jtlshop/scc": "dev-master",
         "smarty/smarty": "~3.1",
         "jdorn/sql-formatter": "^1.2",
@@ -40,11 +40,11 @@
             "type": "package",
             "package": {
                 "name": "jtlshop/shop4-systemcheck",
-                "version": "1.1.2",
+                "version": "1.1.1",
                 "source": {
                     "url": "https://gitlab.jtl-software.de/jtlshop/shop4-systemcheck.git",
                     "type": "git",
-                    "reference": "1.1.2"
+                    "reference": "1.1.1"
                 }
             }
         },

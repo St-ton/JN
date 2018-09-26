@@ -396,8 +396,13 @@ function bearbeiteUpdate($xml)
         if (isset($currentCurrency->kWaehrung, $defaultCurrency->kWaehrung)) {
             $correctionFactor           = (float)$currentCurrency->fFaktor;
             $oBestellung->fGesamtsumme /= $correctionFactor;
+            $oBestellung->fGuthaben    /= $correctionFactor;
         }
     }
+    // Die Wawi schickt in fGesamtsumme die Rechnungssumme (Summe aller Positionen), der Shop erwartet hier aber tatsächlich
+    // eine Gesamtsumme oder auch den Zahlungsbetrag (Rechnungssumme abzgl. evtl. Guthaben)
+    $oBestellung->fGesamtsumme -= $oBestellung->fGuthaben;
+
     //aktualisiere bestellung
     Shop::DB()->query(
         "UPDATE tbestellung SET

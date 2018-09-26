@@ -24,19 +24,21 @@
             $('#submitDelete').data('name', 'inaktiv');
         });
 
-        $('#category-list td[data-name="category"]').click(function(event) {
+        $('#category-list i.nav-toggle').click(function(event) {
             event.stopPropagation();
-            var currentLevel = parseInt($(this).parent().data('level')),
-                state = $(this).hasClass('hide-toggle-on'),
-                nextEl = $(this).parent().next(),
+            var tr = $(this).closest('tr');
+            var td = $(this).parent();
+            var currentLevel = parseInt(tr.data('level')),
+                state = td.hasClass('hide-toggle-on'),
+                nextEl = tr.next(),
                 nextLevel = parseInt(nextEl.data('level'));
             while (currentLevel < nextLevel) {
                 nextEl.toggle(state);
                 nextEl = nextEl.next();
                 nextLevel = parseInt(nextEl.data('level'));
             }
-            $(this).toggleClass('hide-toggle-on');
-            $(this).find('i.fa').toggleClass('fa-caret-right fa-caret-down');
+            td.toggleClass('hide-toggle-on');
+            td.find('i.fa').toggleClass('fa-caret-right fa-caret-down');
         });
     });
 </script>
@@ -259,7 +261,7 @@
                                             <input type="checkbox" name="kNewsKategorie[]" data-name="{$oNewsKategorie->getName()}" value="{$oNewsKategorie->getID()}" id="newscat-{$oNewsKategorie->getID()}" />
                                         </th>
                                         <td class="TD2{if $oNewsKategorie->getLevel() === 1} hide-toggle-on{/if}" data-name="category">
-                                            <i class="fa fa-caret-right nav-toggle{if $oNewsKategorie->getChildren()->count() === 0} hidden{/if}"></i>
+                                            <i class="fa fa-caret-right nav-toggle{if $oNewsKategorie->getChildren()->count() === 0} hidden{/if}" style="cursor:pointer"></i>
                                             <label for="newscat-{$oNewsKategorie->getID()}">{$oNewsKategorie->getName()|default:'???'}</label>
                                         </td>
                                         <td class="tcenter">{$oNewsKategorie->getSort()}</td>

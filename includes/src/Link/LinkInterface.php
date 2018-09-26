@@ -8,7 +8,6 @@ namespace Link;
 
 use Tightenco\Collect\Support\Collection;
 
-
 /**
  * Class Link
  * @package Link
@@ -463,6 +462,16 @@ interface LinkInterface
      * @param int $level
      */
     public function setLevel(int $level);
+
+    /**
+     * @return string
+     */
+    public function getDisplayName(): string;
+
+    /**
+     * @param string $displayName
+     */
+    public function setDisplayName(string $displayName);
 
     /**
      * @return LinkInterface[]

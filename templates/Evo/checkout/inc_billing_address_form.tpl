@@ -211,7 +211,7 @@
             <div class="form-group float-label-control{if isset($fehlendeAngaben.bundesland)} has-error{/if}">
                 <label class="control-label" for="state">{lang key='state' section='account data'}
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland !== 'Y'}
-                        <span class="optional"> - {lang key='conditionalFillOut' section='checkout'}</span>
+                        <span class="optional"> - {lang key='optional'}</span>
                     {/if}
                 </label>
                 {if !empty($oStates)}
@@ -225,7 +225,7 @@
                     >
                         <option value="" selected disabled>{lang key='pleaseChoose'}</option>
                         {foreach $oStates as $oState}
-                            <option value="{$oState->cCode}" {if $cState === $oState->cName}selected{/if}>{$oState->cName}</option>
+                            <option value="{$oState->cCode}" {if $cState === $oState->cName || $cState === $oState->cCode}selected{/if}>{$oState->cName}</option>
                         {/foreach}
                     </select>
                 {else}
@@ -311,7 +311,7 @@
                 <label class="control-label"
                        for="ustid">{lang key='ustid' section='account data'}
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_ustid !== 'Y'}
-                        <span class="optional"> - {lang key='conditionalFillOut' section='checkout'}</span>
+                        <span class="optional"> - {lang key='optional'}</span>
                     {/if}
                 </label>
                 <input
@@ -448,8 +448,8 @@
             <div class="col-xs-12 col-md-6">
                 {if isset($cPost_var['geburtstag'])}
                     {assign var='inputVal_birthday' value=$cPost_var['geburtstag']}
-                {elseif isset($Kunde->dGeburtstag)}
-                    {assign var='inputVal_birthday' value=$Kunde->dGeburtstag|date_format:"%d.%m.%Y"}
+                {elseif isset($Kunde->dGeburtstag_formatted)}
+                    {assign var='inputVal_birthday' value=$Kunde->dGeburtstag_formatted}
                 {/if}
                 {include file='snippets/form_group_simple.tpl'
                     options=[
@@ -472,7 +472,7 @@
                     <div class="form-group float-label-control{if isset($fehlendeAngaben.custom[$kKundenfeld])} has-error{/if}">
                         <label class="control-label" for="custom_{$kKundenfeld}">{$oKundenfeld->cName}
                             {if $oKundenfeld->nPflicht != 1}
-                                <span class="optional"> - {lang key='conditionalFillOut' section='checkout'}</span>
+                                <span class="optional"> - {lang key='optional'}</span>
                             {/if}
                         </label>
                         {if $oKundenfeld->cTyp !== 'auswahl'}

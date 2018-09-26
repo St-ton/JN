@@ -14,7 +14,9 @@
     {elseif !empty($hinweis)}
         <div class="alert alert-info">{$hinweis}</div>
     {/if}
-    
+
+    {include file='snippets/extension.tpl'}
+
     {if isset($nWarenkorb2PersMerge) && $nWarenkorb2PersMerge === 1}
         <script type="text/javascript">
             $(function() {
@@ -37,7 +39,7 @@
     {if $step === 'login' || (isset($editRechnungsadresse) && $editRechnungsadresse)}
         {$showLoginPanel = false}
     {/if}
-    
+
     <div id="account" class="row">
         {if $showLoginPanel}
             <div class="col-xs-12 col-md-3">

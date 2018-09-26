@@ -1,11 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
 namespace Boxes;
-
 
 use Boxes\Items\{BestsellingProducts,
     BoxInterface,
@@ -31,7 +30,6 @@ use Boxes\Items\{BestsellingProducts,
     Plain,
     Plugin,
     Poll,
-    PriceRadar,
     ProductCategories,
     RecentlyViewedProducts,
     SearchCloud,
@@ -114,8 +112,6 @@ class Factory implements FactoryInterface
                 return new LinkGroup($this->config);
             case \BOX_UMFRAGE:
                 return new Poll($this->config);
-            case \BOX_PREISRADAR:
-                return new PriceRadar($this->config);
             case \BOX_HERSTELLER:
                 return new Manufacturer($this->config);
             case \BOX_FILTER_MERKMALE:

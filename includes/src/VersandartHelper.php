@@ -1108,10 +1108,7 @@ class VersandartHelper
             }
             if (isset($_SESSION['Warenkorb'])) {
                 $fGesamtsummeWaren = TaxHelper::getNet(
-                    Session::Cart()->gibGesamtsummeWarenExt(
-                        [C_WARENKORBPOS_TYP_ARTIKEL],
-                        1
-                    ),
+                    Session::Cart()->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true),
                     TaxHelper::getSalesTax(Session::Cart()->gibVersandkostenSteuerklasse())
                 );
             }
@@ -1121,10 +1118,7 @@ class VersandartHelper
                     TaxHelper::getSalesTax($Artikel->kSteuerklasse));
             }
             if (isset($_SESSION['Warenkorb'])) {
-                $fGesamtsummeWaren = Session::Cart()->gibGesamtsummeWarenExt(
-                    [C_WARENKORBPOS_TYP_ARTIKEL],
-                    1
-                );
+                $fGesamtsummeWaren = Session::Cart()->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true);
             }
         }
 

@@ -97,7 +97,7 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && (int)$_POST['kaeuferschutzein
             $oZertifikat->cISOSprache = $_SESSION['TrustedShops']->oSprache->cISOSprache;
             $oZertifikat->nAktiv      = 0;
             $oZertifikat->eType       = StringHandler::htmlentities(StringHandler::filterXSS($_POST['eType']));
-            $oZertifikat->dErstellt   = 'now()';
+            $oZertifikat->dErstellt   = 'NOW()';
 
             //$oTrustedShops = new TrustedShops($oZertifikat->cTSID, $_SESSION['TrustedShops']->oSprache->cISOSprache);
             $oTrustedShops = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);

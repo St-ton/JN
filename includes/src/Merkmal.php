@@ -179,7 +179,7 @@ class Merkmal
             );
             $this->oMerkmalWert_arr = [];
             foreach ($oMerkmalWertTMP_arr as $oMerkmalWertTMP) {
-                $this->oMerkmalWert_arr[] = new MerkmalWert($oMerkmalWertTMP->kMerkmalWert, $this->kSprache);
+                $this->oMerkmalWert_arr[] = new MerkmalWert((int)$oMerkmalWertTMP->kMerkmalWert, $this->kSprache);
             }
         }
         $imageBaseURL = Shop::getImageBaseURL();

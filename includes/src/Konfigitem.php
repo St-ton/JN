@@ -151,6 +151,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 'bAktiv' => $this->bAktiv
             ];
             $override = [
+                'kKonfigitem'       => $this->getKonfigitem(),
                 'cName'             => $this->getName(),
                 'kArtikel'          => $this->getArtikelKey(),
                 'cBeschreibung'     => !empty($cKurzBeschreibung)
@@ -319,7 +320,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($oItem_arr as &$oItem) {
-                $kKonfigitem = $oItem->kKonfigitem;
+                $kKonfigitem = (int)$oItem->kKonfigitem;
                 $oItem       = new self($kKonfigitem);
                 if ($oItem->isValid()) {
                     $oItemEx_arr[] = $oItem;

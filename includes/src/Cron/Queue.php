@@ -1,11 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
 namespace Cron;
-
 
 use DB\DbInterface;
 use Psr\Log\LoggerInterface;
@@ -50,7 +49,7 @@ class Queue
     }
 
     /**
-     * @return array
+     * @return QueueEntry[]
      */
     public function loadQueueFromDB(): array
     {
@@ -58,7 +57,7 @@ class Queue
             'SELECT * 
                 FROM tjobqueue 
                 WHERE nInArbeit = 0 
-                    AND dStartZeit < now()',
+                    AND dStartZeit < NOW()',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($queueData as $entry) {
@@ -70,7 +69,7 @@ class Queue
     }
 
     /**
-     * @param array $jobs
+     * @param \stdClass[] $jobs
      */
     public function enqueueCronJobs(array $jobs)
     {
@@ -81,7 +80,7 @@ class Queue
             $queueEntry->cKey       = $job->cKey;
             $queueEntry->cTabelle   = $job->cTabelle;
             $queueEntry->cJobArt    = $job->cJobArt;
-            $queueEntry->dStartZeit = $job->dStartZeit;
+            $queueEntry->dStartZeit = $job->dStart;
             $queueEntry->nLimitN    = 0;
             $queueEntry->nLimitM    = 0;
             $queueEntry->nInArbeit  = 0;
@@ -115,7 +114,7 @@ class Queue
                 $this->db->delete('tjobqueue', 'kCron', $job->getCronID());
             } else {
                 $update                   = new \stdClass();
-                $update->dZuletztgelaufen = 'now';
+                $update->dZuletztgelaufen = 'NOW()';
                 $update->nLimitN          = $queueEntry->nLimitN;
                 $update->nlimitM          = $queueEntry->nLimitM;
                 $update->nLastArticleID   = $queueEntry->nLastArticleID;

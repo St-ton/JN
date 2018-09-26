@@ -6,7 +6,6 @@
 
 namespace Filter;
 
-
 use Filter\Pagination\Info;
 use Tightenco\Collect\Support\Collection;
 

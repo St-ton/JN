@@ -477,7 +477,7 @@ class AdminAccount
      */
     private function _setLastLogin($cLogin): self
     {
-        Shop::Container()->getDB()->update('tadminlogin', 'cLogin', $cLogin, (object)['dLetzterLogin' => 'now()']);
+        Shop::Container()->getDB()->update('tadminlogin', 'cLogin', $cLogin, (object)['dLetzterLogin' => 'NOW()']);
 
         return $this;
     }

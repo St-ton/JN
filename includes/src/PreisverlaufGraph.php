@@ -429,7 +429,7 @@ class PreisverlaufGraph
                 FROM tpreisverlauf
                 WHERE kArtikel = :aid
                     AND kKundengruppe = :cid
-                    AND DATE_SUB(now(), INTERVAL :mnth MONTH) < dDate
+                    AND DATE_SUB(NOW(), INTERVAL :mnth MONTH) < dDate
                 ORDER BY dDate DESC',
             [
                 'aid'  => $kArtikel,

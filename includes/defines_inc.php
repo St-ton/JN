@@ -5,9 +5,9 @@
  */
 
 // Version
-define('JTL_VERSION', 500);
+define('APPLICATION_VERSION', '5.0.0');
+define('APPLICATION_BUILD_SHA', '#DEV#');
 define('JTL_MIN_WAWI_VERSION', 100000);
-define('JTL_MINOR_VERSION', '#JTL_MINOR_VERSION#');
 // Einstellungssektionen
 define('CONF_GLOBAL', 1);
 define('CONF_STARTSEITE', 2);
@@ -307,10 +307,10 @@ define('EXT_PARAMS_SEPERATORS_REGEX', '\&\?');
 // Updater
 define('U_FILE_PREFIX', 'jtl_update_');
 // JobQueue
-defined('JOBQUEUE_LIMIT_JOBS') || define('JOBQUEUE_LIMIT_JOBS', '5');
-defined('JOBQUEUE_LIMIT_M_EXPORTE') || define('JOBQUEUE_LIMIT_M_EXPORTE', '500');
-define('JOBQUEUE_LIMIT_M_NEWSLETTER', '100');
-define('JOBQUEUE_LIMIT_M_STATUSEMAIL', '1');
+defined('JOBQUEUE_LIMIT_JOBS') || define('JOBQUEUE_LIMIT_JOBS', 5);
+defined('JOBQUEUE_LIMIT_M_EXPORTE') || define('JOBQUEUE_LIMIT_M_EXPORTE', 500);
+define('JOBQUEUE_LIMIT_M_NEWSLETTER', 100);
+define('JOBQUEUE_LIMIT_M_STATUSEMAIL', 1);
 // Exportformate
 defined('EXPORTFORMAT_LIMIT_M') || define('EXPORTFORMAT_LIMIT_M', 2000);
 defined('EXPORTFORMAT_ASYNC_LIMIT_M') || define('EXPORTFORMAT_ASYNC_LIMIT_M', 15);
@@ -343,7 +343,6 @@ define('PAGE_LOGIN', 9); // Login
 define('PAGE_REGISTRIERUNG', 10); // Registrierung
 define('PAGE_BESTELLVORGANG', 11); // Bestellvorgang
 define('PAGE_BEWERTUNG', 12); // Bewertung [NEIN]
-define('PAGE_DRUCKANSICHT', 13); // Druckansicht
 define('PAGE_PASSWORTVERGESSEN', 14); // Passwort vergessen
 define('PAGE_WARTUNG', 15); // Wartung
 define('PAGE_WUNSCHLISTE', 16); // Wunschliste
@@ -409,7 +408,6 @@ define('BOX_EIGENE_BOX_OHNE_RAHMEN', 30);
 define('BOX_EIGENE_BOX_MIT_RAHMEN', 31);
 define('BOX_TAGWOLKE', 32);
 define('BOX_KONFIGURATOR', 33);
-define('BOX_PREISRADAR', 100);
 // Kampagnentypen
 define('KAMPAGNE_DEF_HIT', 1);
 define('KAMPAGNE_DEF_VERKAUF', 2);
@@ -500,3 +498,17 @@ define('BROWSER_CHROME', 3);
 define('BROWSER_SAFARI', 4);
 define('BROWSER_OPERA', 5);
 define('BROWSER_NETSCAPE', 6);
+
+define('FREQ_ALWAYS', 'always');
+define('FREQ_HOURLY', 'hourly');
+define('FREQ_DAILY', 'daily');
+define('FREQ_WEEKLY', 'weekly');
+define('FREQ_MONTHLY', 'monthly');
+define('FREQ_YEARLY', 'yearly');
+define('FREQ_NEVER', 'never');
+
+define('PRIO_VERYHIGH', '1.0');
+define('PRIO_HIGH', '0.7');
+define('PRIO_NORMAL', '0.5');
+define('PRIO_LOW', '0.3');
+define('PRIO_VERYLOW', '0.0');

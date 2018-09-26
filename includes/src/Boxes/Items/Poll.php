@@ -1,11 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
 namespace Boxes\Items;
-
 
 use DB\ReturnType;
 
@@ -50,9 +49,7 @@ final class Poll extends AbstractBox
                         AND tumfrage.kSprache = :lid
                         AND (cKundengruppe LIKE '%;-1;%' 
                             OR FIND_IN_SET(':cid', REPLACE(cKundengruppe, ';', ',')) > 0)
-                        AND ((dGueltigVon <= now() 
-                            AND dGueltigBis >= now()) || (dGueltigVon <= now() 
-                            AND dGueltigBis = '0000-00-00 00:00:00'))
+                        AND NOW() BETWEEN dGueltigVon AND COALESCE(dGueltigBis, NOW())
                     GROUP BY tumfrage.kUmfrage
                     ORDER BY tumfrage.dGueltigVon DESC" . $cSQL,
                 ['lid' => $langID, 'cid' => \Session::CustomerGroup()->getID()],

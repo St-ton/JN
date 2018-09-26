@@ -469,8 +469,7 @@ function bearbeiteUpdate($xml)
         if ($oModule) {
             $oModule->sendMail($oBestellungAlt->kBestellung, MAILTEMPLATE_BESTELLUNG_AKTUALISIERT);
         } else {
-            $bestellungTmp = new Bestellung((int)$oBestellungAlt->kBestellung);
-            $bestellungTmp->fuelleBestellung();
+            $bestellungTmp = new Bestellung((int)$oBestellungAlt->kBestellung, true);
 
             $oMail              = new stdClass();
             $oMail->tkunde      = $kunde;
@@ -527,9 +526,7 @@ function bearbeiteSet($xml)
             if (isset($order->dVersandt) && strlen($order->dVersandt) > 0) {
                 $status = BESTELLUNG_STATUS_VERSANDT;
             }
-            $oBestellungUpdated = new Bestellung((int)$shopOrder->kBestellung);
-            $oBestellungUpdated->fuelleBestellung();
-
+            $oBestellungUpdated = new Bestellung((int)$shopOrder->kBestellung, true);
             if ((is_array($oBestellungUpdated->oLieferschein_arr)
                     && count($oBestellungUpdated->oLieferschein_arr) > 0)
                 && (isset($order->nKomplettAusgeliefert)
@@ -546,7 +543,7 @@ function bearbeiteSet($xml)
         $dBezahltDatum    = Shop::Container()->getDB()->escape($order->dBezahltDatum);
         $dVersandDatum    = Shop::Container()->getDB()->escape($order->dVersandt);
         if ($dVersandDatum === null || $dVersandDatum === '') {
-            $dVersandDatum = '0000-00-00';
+            $dVersandDatum = '_DBNULL_';
         }
         $upd                = new stdClass();
         $upd->dVersandDatum = $dVersandDatum;
@@ -559,15 +556,12 @@ function bearbeiteSet($xml)
             $upd->cZahlungsartName = $cZahlungsartName;
         }
         $upd->dBezahltDatum = empty($dBezahltDatum)
-            ? '0000-00-00'
+            ? '_DBNULL_'
             : $dBezahltDatum;
         Shop::Container()->getDB()->update('tbestellung', 'kBestellung', (int)$order->kBestellung, $upd);
         $oBestellungUpdated = new Bestellung($shopOrder->kBestellung, true);
-
-        $kunde = null;
-        if (((!$shopOrder->dVersandDatum || $shopOrder->dVersandDatum === '0000-00-00') && $order->dVersandt) ||
-            ((!$shopOrder->dBezahltDatum || $shopOrder->dBezahltDatum === '0000-00-00') && $order->dBezahltDatum)
-        ) {
+        $kunde              = null;
+        if ((!$shopOrder->dVersandDatum && $order->dVersandt) || (!$shopOrder->dBezahltDatum && $order->dBezahltDatum)) {
             $tmp   = Shop::Container()->getDB()->query(
                 'SELECT kKunde FROM tbestellung WHERE kBestellung = ' . (int)$order->kBestellung,
                 \DB\ReturnType::SINGLE_OBJECT);
@@ -620,18 +614,14 @@ function bearbeiteSet($xml)
 
         checkGuestAccount((int)$shopOrder->kKunde);
 
-        if ((!$shopOrder->dBezahltDatum || $shopOrder->dBezahltDatum === '0000-00-00')
-            && $order->dBezahltDatum
-            && $kunde->kKunde > 0
-        ) {
+        if (!$shopOrder->dBezahltDatum && $order->dBezahltDatum && $kunde->kKunde > 0) {
             //sende Zahlungseingangmail
             $oModule = gibZahlungsmodul($order->kBestellung);
             if ($oModule) {
                 $oModule->sendMail((int)$order->kBestellung, MAILTEMPLATE_BESTELLUNG_BEZAHLT);
             } else {
                 $kunde              = $kunde ?? new Kunde((int)$shopOrder->kKunde);
-                $oBestellungUpdated = new Bestellung((int)$shopOrder->kBestellung);
-                $oBestellungUpdated->fuelleBestellung();
+                $oBestellungUpdated = new Bestellung((int)$shopOrder->kBestellung, true);
                 if (($oBestellungUpdated->Zahlungsart->nMailSenden & ZAHLUNGSART_MAIL_EINGANG) && strlen($kunde->cMail) > 0) {
                     $oMail              = new stdClass();
                     $oMail->tkunde      = $kunde;

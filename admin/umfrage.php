@@ -29,11 +29,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
         $cHinweis .= saveAdminSectionSettings(CONF_UMFRAGE, $_POST);
     }
     if (RequestHelper::verifyGPCDataInt('umfrage') === 1 && FormHelper::validateToken()) {
-        // Umfrage erstellen
         if (isset($_POST['umfrage_erstellen']) && (int)$_POST['umfrage_erstellen'] === 1) {
             $step = 'umfrage_erstellen';
         } elseif (isset($_GET['umfrage_editieren']) && (int)$_GET['umfrage_editieren'] === 1) {
-            // Umfrage editieren
             $step     = 'umfrage_editieren';
             $kUmfrage = (int)$_GET['kUmfrage'];
 
@@ -54,8 +52,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 $step = 'umfrage_uebersicht';
             }
         }
-
-        // Umfrage Antwort oder Option loeschen
         if (isset($_GET['a']) && $_GET['a'] === 'a_loeschen') {
             $step                 = 'umfrage_frage_bearbeiten';
             $kUmfrageFrage        = (int)$_GET['kUF'];
@@ -141,27 +137,23 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                     $oUmfrage->fGuthaben     = $fGuthaben;
                     $oUmfrage->nBonuspunkte  = $nBonuspunkte;
                     $oUmfrage->nAktiv        = $nAktiv;
-                    $oUmfrage->dGueltigVon   = DateTime::createFromFormat('d.m.Y H:i', $dGueltigVon)->format('Y-m-d H:i:00');
-                    $oUmfrage->dGueltigBis   = (strlen($dGueltigBis) > 0) 
-                        ? DateTime::createFromFormat('d.m.Y H:i', $dGueltigBis)->format('Y-m-d H:i:00')
-                        : null;
                     $oUmfrage->dErstellt     = (new DateTime())->format('Y-m-d H:i:s');
+
+                    $validFrom             = DateTime::createFromFormat('d.m.Y H:i', $dGueltigVon);
+                    $validFrom             = $validFrom === false ? 'NOW()' : $validFrom->format('Y-m-d H:i:00');
+                    $validUntil            = DateTime::createFromFormat('d.m.Y H:i', $dGueltigBis);
+                    $validUntil            = $validUntil === false ? '_DBNULL_' : $validUntil->format('Y-m-d H:i:00');
+                    $oUmfrage->dGueltigVon = $validFrom;
+                    $oUmfrage->dGueltigBis = $validUntil;
 
                     $nNewsOld = 0;
                     if (isset($_POST['umfrage_edit_speichern']) && (int)$_POST['umfrage_edit_speichern'] === 1) {
                         $nNewsOld = 1;
                         $step     = 'umfrage_uebersicht';
-
                         Shop::Container()->getDB()->delete('tumfrage', 'kUmfrage', $kUmfrage);
-                        // tseo loeschen
                         Shop::Container()->getDB()->delete('tseo', ['cKey', 'kKey'], ['kUmfrage', $kUmfrage]);
                     }
-
-                    if (strlen($cSeo) > 0) {
-                        $oUmfrage->cSeo = checkSeo(getSeo($cSeo));
-                    } else {
-                        $oUmfrage->cSeo = checkSeo(getSeo($cName));
-                    }
+                    $oUmfrage->cSeo = checkSeo(getSeo(strlen($cSeo) > 0 ? $cSeo : $cName));
                     if (isset($kUmfrage) && $kUmfrage > 0) {
                         $oUmfrage->kUmfrage = $kUmfrage;
                         Shop::Container()->getDB()->insert('tumfrage', $oUmfrage);
@@ -192,7 +184,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 $cFehler .= 'Fehler: Bitte geben Sie einen Namen, mindestens eine Kundengruppe und ein gültiges Anfangsdatum ein.<br />';
             }
         } elseif (isset($_POST['umfrage_frage_speichern']) && (int)$_POST['umfrage_frage_speichern'] === 1) {
-            // Frage speichern
             $kUmfrage                 = (int)$_POST['kUmfrage'];
             $kUmfrageFrage            = isset($_POST['kUmfrageFrage']) ? (int)$_POST['kUmfrageFrage'] : 0;
             $cName                    = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
@@ -232,10 +223,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                         $cFehler .= 'Fehler: Ihr Fragentyp ist leider nicht kompatibel mit dem voherigen. Um den Fragetyp zu ändern, resetten Sie bitte die Frage.';
                         $step = 'umfrage_frage_bearbeiten';
                     }
-                    //loescheFrage($kUmfrageFrage);
                     Shop::Container()->getDB()->delete('tumfragefrage', 'kUmfrageFrage', $kUmfrageFrage);
                 }
-                // Falls eine Frage geaendert wurde, gibt dieses Objekt die Anzahl an Antworten und Optionen an, die schon vorhanden waren.
                 $oAnzahlAUndOVorhanden                   = new stdClass();
                 $oAnzahlAUndOVorhanden->nAnzahlAntworten = 0;
                 $oAnzahlAUndOVorhanden->nAnzahlOptionen  = 0;
@@ -257,7 +246,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 } else {
                     $kUmfrageFrage = Shop::Container()->getDB()->insert('tumfragefrage', $oUmfrageFrage);
                 }
-                // Antwort bzw. Matrix speichern
                 speicherAntwortZuFrage(
                     $kUmfrageFrage,
                     $cTyp,
@@ -499,22 +487,22 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
     // Hole Umfrage aus DB
     if ($step === 'umfrage_uebersicht') {
         $oUmfrageAnzahl = Shop::Container()->getDB()->query(
-            'SELECT count(*) AS nAnzahl
+            'SELECT COUNT(*) AS nAnzahl
                 FROM tumfrage
                 WHERE kSprache = ' . (int)$_SESSION['kSprache'],
             \DB\ReturnType::SINGLE_OBJECT
         );
         // Pagination
         $oPagination = (new Pagination())
-            ->setItemCount($oUmfrageAnzahl->nAnzahl)
+            ->setItemCount((int)$oUmfrageAnzahl->nAnzahl)
             ->assemble();
         $oUmfrage_arr = Shop::Container()->getDB()->query(
             "SELECT tumfrage.*, DATE_FORMAT(tumfrage.dGueltigVon, '%d.%m.%Y %H:%i') AS dGueltigVon_de, 
                 DATE_FORMAT(tumfrage.dGueltigBis, '%d.%m.%Y %H:%i') AS dGueltigBis_de,
                 DATE_FORMAT(tumfrage.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_de, 
-                count(tumfragefrage.kUmfrageFrage) AS nAnzahlFragen
+                COUNT(tumfragefrage.kUmfrageFrage) AS nAnzahlFragen
                 FROM tumfrage
-                JOIN tumfragefrage 
+                LEFT JOIN tumfragefrage 
                     ON tumfragefrage.kUmfrage = tumfrage.kUmfrage
                 WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
                 GROUP BY tumfrage.kUmfrage
@@ -574,21 +562,19 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                ->assign('oUmfrage_arr', $oUmfrage_arr)
                ->assign('oPagination', $oPagination);
     }
-    // Vorhandene Kundengruppen
-    $oKundengruppe_arr = Shop::Container()->getDB()->query(
+    $customerGroups = Shop::Container()->getDB()->query(
         'SELECT kKundengruppe, cName
             FROM tkundengruppe
             ORDER BY cStandard DESC',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    // Gueltige Kupons
-    $oKupon_arr = Shop::Container()->getDB()->query(
+    $coupons = Shop::Container()->getDB()->query(
         "SELECT tkupon.kKupon, tkuponsprache.cName
             FROM tkupon
             LEFT JOIN tkuponsprache 
                 ON tkuponsprache.kKupon = tkupon.kKupon
-            WHERE tkupon.dGueltigAb <= now()
-                AND (tkupon.dGueltigBis >= now() || tkupon.dGueltigBis = '0000-00-00 00:00:00')
+            WHERE tkupon.dGueltigAb <= NOW()
+                AND (tkupon.dGueltigBis >= NOW() OR tkupon.dGueltigBis IS NULL)
                 AND (tkupon.nVerwendungenBisher <= tkupon.nVerwendungen OR tkupon.nVerwendungen = 0)
                 AND tkupon.cAktiv = 'Y'
                 AND tkuponsprache.cISOSprache= '" . $oSpracheTMP->cISO . "'
@@ -596,8 +582,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 
-    $smarty->assign('oKundengruppe_arr', $oKundengruppe_arr)
-           ->assign('oKupon_arr', $oKupon_arr);
+    $smarty->assign('oKundengruppe_arr', $customerGroups)
+           ->assign('oKupon_arr', $coupons);
 } else {
     $smarty->assign('noModule', true);
 }

@@ -472,9 +472,6 @@ function mappeSeitentyp(int $nSeitentyp)
         case PAGE_BEWERTUNG:
             return 'Bewertung';
 
-        case PAGE_DRUCKANSICHT:
-            return 'Druckansicht';
-
         case PAGE_PASSWORTVERGESSEN:
             return 'Passwort vergessen';
 
@@ -562,7 +559,7 @@ function baueKategorieListenHTML($startKat, $AufgeklappteKategorien, $AktuelleKa
 function baueUnterkategorieListeHTML($AktuelleKategorie)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    KategorieHelper::getSubcategoryList($AktuelleKategorie);
+    Shop::Smarty()->assign('oUnterKategorien_arr', KategorieHelper::getSubcategoryList($AktuelleKategorie->kKategorie));
 }
 
 /**

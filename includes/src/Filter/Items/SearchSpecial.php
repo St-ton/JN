@@ -6,7 +6,6 @@
 
 namespace Filter\Items;
 
-
 use DB\ReturnType;
 use Filter\AbstractFilter;
 use Filter\FilterInterface;
@@ -174,9 +173,9 @@ class SearchSpecial extends AbstractFilter
                     }
                     $conditions[] = $tasp . " .kArtikel = tartikel.kArtikel
                                         AND " . $tasp . ".cAktiv = 'Y' 
-                                        AND " . $tasp . ".dStart <= now()
-                                        AND (" . $tasp . ".dEnde >= curdate() 
-                                            OR " . $tasp . ".dEnde = '0000-00-00')
+                                        AND " . $tasp . ".dStart <= NOW()
+                                        AND (" . $tasp . ".dEnde >= CURDATE() 
+                                            OR " . $tasp . ".dEnde IS NULL)
                                         AND " . $tsp . " .kKundengruppe = " . \Session::CustomerGroup()->getID();
                     break;
 
@@ -186,7 +185,7 @@ class SearchSpecial extends AbstractFilter
                         : 30;
 
                     $conditions[] = "tartikel.cNeu = 'Y' 
-                                AND DATE_SUB(now(),INTERVAL $days DAY) < tartikel.dErstellt 
+                                AND DATE_SUB(NOW(),INTERVAL $days DAY) < tartikel.dErstellt 
                                 AND tartikel.cNeu = 'Y'";
                     break;
 
@@ -309,7 +308,7 @@ class SearchSpecial extends AbstractFilter
             ? $this->getClassName()
             : null;
         $state            = (new StateSQL())->from($this->productFilter->getCurrentStateData($ignore));
-        $cacheID          = 'fltr_' . __CLASS__ . \md5($this->productFilter->getFilterSQL()->getBaseQuery($state));
+        $cacheID          = 'fltr_' . \str_replace('\\', '', __CLASS__) . \md5($this->productFilter->getFilterSQL()->getBaseQuery($state));
         if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
             $this->options = $cached;
 
@@ -356,9 +355,8 @@ class SearchSpecial extends AbstractFilter
                         $tsonderpreise = 'tsonderpreise';
                     }
                     $state->addCondition("tartikelsonderpreis.cAktiv = 'Y' 
-                        AND tartikelsonderpreis.dStart <= now()");
-                    $state->addCondition("(tartikelsonderpreis.dEnde >= CURDATE() 
-                        OR tartikelsonderpreis.dEnde = '0000-00-00')");
+                        AND tartikelsonderpreis.dStart <= NOW()");
+                    $state->addCondition("(tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE())");
                     $state->addCondition($tsonderpreise . '.kKundengruppe = ' . $this->getCustomerGroupID());
                     break;
                 case \SEARCHSPECIALS_NEWPRODUCTS:
@@ -367,7 +365,7 @@ class SearchSpecial extends AbstractFilter
                         ? (int)$age
                         : 30;
                     $state->addCondition("tartikel.cNeu = 'Y' 
-                        AND DATE_SUB(now(), INTERVAL $alter_tage DAY) < tartikel.dErstellt");
+                        AND DATE_SUB(NOW(), INTERVAL $alter_tage DAY) < tartikel.dErstellt");
                     break;
                 case \SEARCHSPECIALS_TOPOFFERS:
                     $name = \Shop::Lang()->get('topOffer');
@@ -375,7 +373,7 @@ class SearchSpecial extends AbstractFilter
                     break;
                 case \SEARCHSPECIALS_UPCOMINGPRODUCTS:
                     $name = \Shop::Lang()->get('upcomingProducts');
-                    $state->addCondition('now() < tartikel.dErscheinungsdatum');
+                    $state->addCondition('NOW() < tartikel.dErscheinungsdatum');
                     break;
                 case \SEARCHSPECIALS_TOPREVIEWS:
                     $name = \Shop::Lang()->get('topReviews');

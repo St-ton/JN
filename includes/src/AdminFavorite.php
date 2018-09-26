@@ -92,13 +92,17 @@ class AdminFavorite
      */
     public static function fetchAll(int $kAdminlogin): array
     {
-        $favs = Shop::Container()->getDB()->selectAll(
-            'tadminfavs',
-            'kAdminlogin',
-            $kAdminlogin,
-            'kAdminfav, cTitel, cUrl',
-            'nSort ASC'
-        );
+        try {
+            $favs = Shop::Container()->getDB()->selectAll(
+                'tadminfavs',
+                'kAdminlogin',
+                $kAdminlogin,
+                'kAdminfav, cTitel, cUrl',
+                'nSort ASC'
+            );
+        } catch(Exception $e) {
+            return [];
+        }
 
         $favs = is_array($favs) ? $favs : [];
 

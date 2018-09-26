@@ -3,39 +3,37 @@
     "type": "library",
     "homepage": "https://www.jtl-software.de",
     "require": {
-        "php": ">=7.0",
+        "php": ">=7.1",
         "Imanee/Imanee": "dev-master",
         "ifsnop/mysqldump-php": "^2.1",
         "symfony/var-dumper": "^3.0",
         "jtlshop/shop4-systemcheck": "^1.0",
+        "jtlshop/scc": "dev-master",
         "smarty/smarty": "~3.1",
         "jdorn/sql-formatter": "^1.2",
         "andyftw/ssllabs-php": "^1.2",
         "phpmyadmin/sql-parser": "^3.4",
         "phpgangsta/googleauthenticator": "dev-master",
-        "phpmailer/phpmailer": "~6.0",
+        "phpmailer/phpmailer": "^6.0",
         "jtlshop/qrcodegenerator": "dev-master",
         "erusev/parsedown": "dev-master",
         "pclzip/pclzip": "^2.8",
         "psr/container": "1.0.0",
-        "lstrojny/functional-php": "~1.7",
+        "lstrojny/functional-php": "^1.8",
         "monolog/monolog": "^1.23",
-        "tightenco/collect": "~5.5.0",
+        "tightenco/collect": "^5.7.0",
         "eloquent/pathogen": "~0.6",
         "mrclay/minify": "~3.0.0",
-        "myclabs/php-enum": "^1.5"
+        "myclabs/php-enum": "^1.6",
+        "jtlshop/semver": "~0.0.5"
     },
     "require-dev": {
-        "phpunit/php-token-stream": "~1.2",
+        "phpunit/php-token-stream": "^3.0",
         "nikic/php-parser": "^2.1",
-        "Symfony/Finder": "^2.8",
-        "friendsofphp/php-cs-fixer": "~2.1",
-        "phpunit/phpunit": "~5.7"
-    },
-    "config": {
-        "platform": {
-            "php": "7.0"
-        }
+        "Symfony/Finder": "^4.0",
+        "friendsofphp/php-cs-fixer": "^2.1",
+        "phpmd/phpmd" : "@stable",
+        "phpunit/phpunit": "^7.3"
     },
     "repositories": [
         {
@@ -53,7 +51,12 @@
         {
             "type": "vcs",
             "url": "https://gitlab.jtl-software.de/jtlshop/qrcodegenerator.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://gitlab.jtl-software.de/jtlshop/scc.git"
         }
+
     ],
     "autoload": {
         "files": [ "vendor/jtlshop/shop4-systemcheck/lib/bootstrap.php" ],

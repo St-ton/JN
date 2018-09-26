@@ -10,6 +10,7 @@ ifndef('DB_CHARSET', 'utf8');
 ifndef('DB_COLLATE', 'utf8_unicode_ci');
 ini_set('default_charset', JTL_CHARSET);
 date_default_timezone_set('Europe/Berlin');
+ifndef('DS', DIRECTORY_SEPARATOR);
 // Log-Levels
 ifndef('SYNC_LOG_LEVEL', E_ERROR | E_PARSE);
 ifndef('ADMIN_LOG_LEVEL', E_ERROR | E_PARSE);
@@ -22,6 +23,8 @@ ifndef('IMAGE_COMPATIBILITY_LEVEL', 1);
 ifndef('KEEP_SYNC_FILES', false);
 ifndef('PROFILE_PLUGINS', false);
 ifndef('PROFILE_SHOP', false);
+
+ifndef('DB_DEFAULT_SQL_MODE', false);
 
 /**
  * WARNING !!! DO NOT USE PROFILE_QUERIES IN PRODUCTION ENVIRONMENT OR PUBLIC AVAILABLE SITES. THE PROFILER CANNOT USE
@@ -179,6 +182,8 @@ ifndef('CATEGORY_FILTER_ITEM_LIMIT', -1);
 ifndef('PRODUCT_LIST_SHOW_RATINGS', false);
 ifndef('IMAGE_CLEANUP_LIMIT', 50);
 ifndef('OBJECT_CACHE_DIR', PFAD_ROOT . PFAD_COMPILEDIR . 'filecache/');
+
+ifndef('SITEMAP_ITEMS_LIMIT', 25000);
 // CMS Image Widths
 ifndef('WIDTH_OPC_IMAGE_XS', '480');
 ifndef('WIDTH_OPC_IMAGE_SM', '720');
@@ -230,6 +235,9 @@ ifndef('SECURE_PHP_FUNCTIONS', "
     
     yaml_emit, yaml_parse,
 ");
+
+// 0 => off, 1 => html comments, 2 => static badges, 3 => scrolling badges with borders
+ifndef('SHOW_TEMPLATE_HINTS', 0);
 
 /**
  * @param string     $constant

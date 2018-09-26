@@ -195,13 +195,6 @@
                     });
                 });
 
-            if (isTouchCapable()) {
-                $('.variations .swatches .variation', $wrapper)
-                    .on('mouseover', function() {
-                        $(this).trigger('click');
-                    });
-            }
-
             // ie11 fallback
             if (typeof document.body.style.msTransform === 'string') {
                 $('.variations label.variation', $wrapper)
@@ -369,13 +362,7 @@
                 $('#content a[href="#tab-votes"]').tab('show');
             });
 
-            if (this.isSingleArticle()) {
-                if ($('.switch-variations .form-group', $wrapper).length === 1) {
-                    var wrapper = '#' + $($wrapper).attr('id');
-                    this.variationSwitch($('.switch-variations', $wrapper), false, wrapper);
-                }
-            }
-            else {
+            if (!this.isSingleArticle()) {
                 var that = this;
 
                 $('.product-cell.hover-enabled')
@@ -391,15 +378,6 @@
                             }
                         }
                     })
-                    .on('mouseenter', function (event) {
-                        var $this = $(this),
-                            wrapper = '#' + $this.attr('id');
-
-                        if (!$this.data('varLoaded') && $('.switch-variations .form-group', $this).length === 1) {
-                            that.variationSwitch($('.switch-variations', $this), false, wrapper);
-                        }
-                        $this.data('varLoaded', true);
-                    });
             }
 
             this.registerProductActions($('#sidepanel_left'));
@@ -816,6 +794,7 @@
                         item,
                         cBeschreibung,
                         quantityWrapper,
+                        itemQuantityWrapper,
                         grp,
                         value,
                         enableQuantity,
@@ -850,6 +829,7 @@
                             enableQuantity = grp.bAnzahl;
                             for (j = 0; j < grp.oItem_arr.length; j++) {
                                 item = grp.oItem_arr[j];
+                                itemQuantityWrapper = that.getConfigItemQuantity(item.kKonfigitem);
                                 if (item.bAktiv) {
                                     if (item.cBildPfad) {
                                         that.setConfigItemImage(grp.kKonfiggruppe, item.cBildPfad.cPfadKlein);
@@ -858,6 +838,7 @@
                                     }
                                     that.setConfigItemDescription(grp.kKonfiggruppe, item.cBeschreibung);
                                     enableQuantity = item.bAnzahl;
+                                    itemQuantityWrapper.slideDown(200);
                                     if (!enableQuantity) {
                                         quantityInput
                                             .attr('min', item.fInitial)
@@ -883,6 +864,8 @@
                                             quantityInput.val(item.fInitial);
                                         }
                                     }
+                                } else{
+                                    itemQuantityWrapper.slideUp(200);
                                 }
                             }
                         }
@@ -909,6 +892,10 @@
 
         getConfigGroupQuantityInput: function (groupId) {
             return $('.cfg-group[data-id="' + groupId + '"] .quantity input');
+        },
+
+        getConfigItemQuantity: function (itemId) {
+            return $('.item_quantity[data-id="' + itemId + '"]');
         },
 
         getConfigGroupImage: function (groupId) {
@@ -1138,42 +1125,43 @@
         },
 
         removeStockInfo: function($item) {
-            if (this.isSingleArticle()) {
-                var type = $item.attr('data-type'),
-                    elem,
-                    label,
-                    wrapper;
+            var type = $item.attr('data-type'),
+                elem,
+                label,
+                wrapper;
 
-                switch (type) {
-                    case 'option':
-                        label = $item.data('content');
-                        wrapper = $('<div />').append(label);
-                        $(wrapper)
-                            .find('.label-not-available')
-                            .remove();
-                        label = $(wrapper).html();
-                        $item.data('content', label)
-                            .attr('data-content', label);
-
-                        break;
-                    case 'radio':
-                        elem = $item.find('.label-not-available');
-                        if (elem.length === 1) {
-                            $(elem).remove();
-                        }
-                        break;
-                    case 'swatch':
+            switch (type) {
+                case 'option':
+                    label = $item.data('content');
+                    wrapper = $('<div />').append(label);
+                    $(wrapper)
+                        .find('.label-not-available')
+                        .remove();
+                    label = $(wrapper).html();
+                    $item.data('content', label)
+                        .attr('data-content', label);
+                    break;
+                case 'radio':
+                    elem = $item.find('.label-not-available');
+                    if (elem.length === 1) {
+                        $(elem).remove();
+                    }
+                    break;
+                case 'swatch':
+                    if ($item.data('bs.tooltip')) {
                         $item.tooltip('destroy');
-                        break;
-                }
-
-                $item.removeAttr('data-stock');
+                        $item.attr('title', $item.attr('data-title'));
+                    }
+                    break;
             }
+
+            $item.removeAttr('data-stock');
         },
 
-        variationInfo: function(value, status, note) {
-            var $item = $('[data-value="' + value + '"].variation'),
-                type = $item.attr('data-type'),
+        variationInfo: function(value, status, note, wrapper) {
+            var $wrapper = this.getWrapper(wrapper),
+                $item    = $('[data-value="' + value + '"].variation', $wrapper),
+                type     = $item.attr('data-type'),
                 text,
                 content,
                 $wrapper,
@@ -1215,11 +1203,14 @@
                     $item.append(label);
                     break;
                 case 'swatch':
-                    $item.tooltip({
-                        title: note,
-                        trigger: 'hover',
-                        container: 'body'
-                    });
+                    $item.attr('title', note);
+                    window.setTimeout(function () {
+                        $item.tooltip({
+                            title: note,
+                            trigger: 'hover',
+                            container: 'body'
+                        });
+                    }, 300);
                     break;
             }
         },
@@ -1340,7 +1331,6 @@
 
         variationDispose: function(wrapper) {
             var $wrapper = this.getWrapper(wrapper);
-
             $('[role="tooltip"]', $wrapper).remove();
         }
     };

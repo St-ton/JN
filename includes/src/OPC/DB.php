@@ -247,14 +247,6 @@ class DB
      */
     public function isOPCInstalled(): bool
     {
-        try {
-            $this->shopDB->selectAll('topcportlet', [], []);
-            $this->shopDB->selectAll('topcblueprint', [], []);
-            $this->shopDB->selectAll('topcpage', [], []);
-
-            return true;
-        } catch (\InvalidArgumentException $e) {
-            return false;
-        }
+        return $this->shopDB->select('tmigration', 'kMigration', 20180507101900) !== null;
     }
 }

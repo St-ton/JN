@@ -6,7 +6,6 @@
 
 namespace Filter\SortingOptions;
 
-
 use Filter\ProductFilter;
 
 /**
@@ -16,13 +15,13 @@ use Filter\ProductFilter;
 class PriceASC extends AbstractSortingOption
 {
     /**
-     * SortDefault constructor.
+     * PriceASC constructor.
      * @param ProductFilter $productFilter
      */
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->orderBy = 'tpreise.fVKNetto, tartikel.cName';
+        $this->setOrderBy('tpreise.fVKNetto, tartikel.cName');
         $this->join->setComment('join from SORT by price ASC')
                    ->setType('JOIN')
                    ->setTable('tpreise')

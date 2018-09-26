@@ -1,11 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
 
 namespace Cache\Methods;
-
 
 use Cache\ICachingMethod;
 use Cache\JTLCacheTrait;
@@ -57,7 +56,7 @@ class cache_file implements ICachingMethod
         }
         $fileName = $this->getFileName($cacheID);
         $info     = \pathinfo($fileName);
-        if ($fileName === false || \strpos(\realpath($info['dirname']) . '/', $dir) !== 0) {
+        if ($fileName === false || \strpos(\realpath($info['dirname']), \realpath($dir)) !== 0) {
             return false;
         }
 

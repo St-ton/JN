@@ -865,6 +865,7 @@ define('HOOK_EIGENSCHAFTWERT_CLASS_LOADFROMDB', 117);
  * after loading a company from the database
  *
  * @file Firma.php
+ * @param Firma instance - since 5.0.0
  */
 define('HOOK_FIRMA_CLASS_LOADFROMDB', 118);
 
@@ -1832,11 +1833,20 @@ define('HOOK_CAPTCHA_VALIDATE', 272);
 
 /**
  * @since 5.0.0
- * @file admin/plugin.php.php
- * @param bool hasError
- * @param string msg
+ * @file admin/plugin.php
+ * @param Plugin plugin
+ * @param bool   hasError
  * @param string msg
  * @param string error
  * @param array  options
  */
 define('HOOK_PLUGIN_SAVE_OPTIONS', 280);
+
+
+/**
+ * @since 5.0.0
+ * @file includes/src/Sitemap/Export.php
+ * @param \Sitemap\Factories\FactoryInterface[] factories
+ * @param \Sitemap\Export exporter
+ */
+define('HOOK_SITEMAP_EXPORT_GET_FACTORIES', 285);

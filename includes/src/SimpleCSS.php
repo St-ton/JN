@@ -164,7 +164,7 @@ class SimpleCSS
      */
     public function getTemplatePath(string $cOrdner): string
     {
-        return realpath(PFAD_ROOT . 'templates/' . basename($cOrdner)) . '/';
+        return realpath(PFAD_ROOT . PFAD_TEMPLATES . basename($cOrdner)) . '/';
     }
 
     /**

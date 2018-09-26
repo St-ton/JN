@@ -515,7 +515,7 @@ function getAllNews()
 {
     $oNews_arr = Shop::Container()->getDB()->query(
         "SELECT SQL_CALC_FOUND_ROWS tnews.*, 
-            count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl,
+            COUNT(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl,
             DATE_FORMAT(tnews.dErstellt, '%d.%m.%Y %H:%i') AS Datum, 
             DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y %H:%i') AS dGueltigVon_de
             FROM tnews
@@ -557,7 +557,7 @@ function getAllNews()
         $oNews_arr[$i]->KategorieAusgabe = implode(',<br />', $Kategoriearray);
         // Limit News comments on aktiv comments
         $oNewsKommentarAktiv = Shop::Container()->getDB()->query(
-            'SELECT count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahlAktiv
+            'SELECT COUNT(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahlAktiv
                 FROM tnews
                 LEFT JOIN tnewskommentar 
                     ON tnewskommentar.kNews = tnews.kNews

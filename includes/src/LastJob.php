@@ -28,8 +28,7 @@ class LastJob
             "SELECT kJob, nJob, dErstellt
                 FROM tlastjob
                 WHERE cType = 'RPT'
-                    AND (dErstellt = '0000-00-00 00:00:00'
-                        OR DATE_ADD(dErstellt, INTERVAL :hrs HOUR) < NOW())",
+                    AND (DATE_ADD(dErstellt, INTERVAL :hrs HOUR) < NOW())",
             ['hrs' => $hours],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );

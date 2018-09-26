@@ -66,7 +66,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('NaviFilter', $NaviFilter)
        ->assign('manufacturers', HerstellerHelper::getInstance()->getManufacturers())
        ->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
-       ->assign('oUnterKategorien_arr', KategorieHelper::getSubcategoryList($AktuelleKategorie, false))
+       ->assign('oUnterKategorien_arr', KategorieHelper::getSubcategoryList($AktuelleKategorie->kKategorie ?? -1))
        ->assign('cPluginJsHead_arr', $cMinify_arr['plugin_js_head'])
        ->assign('cPluginJsBody_arr', $cMinify_arr['plugin_js_body'])
        ->assign('cCSS_arr', $cCSS_arr)
@@ -93,11 +93,10 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('WarenkorbGesamtgewicht', $cart->getWeight())
        ->assign('Warenkorbtext', lang_warenkorb_warenkorbEnthaeltXArtikel($cart))
        ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
-       ->assign('WarenkorbVersandkostenfreiHinweis', VersandartHelper::getShippingFreeString($oVersandartKostenfrei,
-           $cart->gibGesamtsummeWarenExt(
-               [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON],
-               true
-           )))
+       ->assign('WarenkorbVersandkostenfreiHinweis', VersandartHelper::getShippingFreeString(
+           $oVersandartKostenfrei,
+           $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true )
+       ))
        ->assign('meta_title', $cMetaTitle ?? '')
        ->assign('meta_description', $cMetaDescription ?? '')
        ->assign('meta_keywords', $cMetaKeywords ?? '')
@@ -126,7 +125,8 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('PFAD_SLIDER', $shopURL . '/' . PFAD_BILDER_SLIDER)
        ->assign('Suchergebnisse', $oSuchergebnisse ?? new \Filter\SearchResults())
        ->assign('opc', Shop::Container()->getOPC())
-       ->assign('opcPageService', Shop::Container()->getOPCPageService());
+       ->assign('opcPageService', Shop::Container()->getOPCPageService())
+       ->assign('shopFaviconURL', Shop::getFaviconURL());
 
 $nav = new \JTL\Navigation(Shop::Lang(), Shop::Container()->getLinkService());
 $nav->setPageType(Shop::getPageType());

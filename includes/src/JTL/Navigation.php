@@ -6,7 +6,6 @@
 
 namespace JTL;
 
-
 use Filter\ProductFilter;
 use Link\Link;
 use Link\LinkInterface;

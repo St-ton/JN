@@ -6,7 +6,6 @@
 
 namespace Filter\SortingOptions;
 
-
 use Filter\ProductFilter;
 use Mapper\SortingType;
 use Tightenco\Collect\Support\Collection;

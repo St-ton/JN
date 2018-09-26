@@ -1,11 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
 namespace Boxes\Items;
-
 
 use DB\ReturnType;
 
@@ -48,9 +47,8 @@ final class SpecialOffers extends AbstractBox
                             AND tartikelsonderpreis.kArtikel = tartikel.kArtikel
                             AND tsonderpreise.kKundengruppe = :cgid
                             AND tartikelsonderpreis.cAktiv = 'Y'
-                            AND tartikelsonderpreis.dStart <= now()
-                            AND (tartikelsonderpreis.dEnde >= CURDATE() 
-                                OR tartikelsonderpreis.dEnde = '0000-00-00')
+                            AND tartikelsonderpreis.dStart <= NOW()
+                            AND (tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE())
                             $stockFilterSQL
                             $parentSQL
                         ORDER BY rand() LIMIT :lmt",

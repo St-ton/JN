@@ -4,13 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTLShop\SemVer\Version;
+
 /**
  * Class Migration
  */
 class MigrationManager
 {
     /**
-     * @var array
+     * @var IMigration[]
      */
     protected static $migrations;
 
@@ -20,7 +22,7 @@ class MigrationManager
     protected $executedMigrations;
 
     /**
-     * Construct
+     * MigrationManager constructor.
      */
     public function __construct()
     {
@@ -34,7 +36,7 @@ class MigrationManager
      * @return array
      * @throws Exception
      */
-    public function migrate($identifier = null)
+    public function migrate($identifier = null): array
     {
         $migrations         = $this->getMigrations();
         $executedMigrations = $this->getExecutedMigrations();
@@ -48,10 +50,8 @@ class MigrationManager
             $identifier = max(array_merge($executedMigrations, array_keys($migrations)));
         }
 
-        $direction = $identifier > $currentId ?
-            IMigration::UP : IMigration::DOWN;
-
-        $executed = [];
+        $direction = $identifier > $currentId ? IMigration::UP : IMigration::DOWN;
+        $executed  = [];
 
         try {
             if ($direction === IMigration::DOWN) {
@@ -93,11 +93,11 @@ class MigrationManager
      *
      * @param int $id MigrationId
      * @return IMigration
+     * @throws InvalidArgumentException
      */
-    public function getMigrationById($id)
+    public function getMigrationById($id): IMigration
     {
         $migrations = $this->getMigrations();
-
         if (!array_key_exists($id, $migrations)) {
             throw new \InvalidArgumentException(sprintf(
                 'Migration "%s" not found', $id
@@ -121,26 +121,26 @@ class MigrationManager
      * Execute a migration.
      *
      * @param IMigration $migration Migration
-     * @param string $direction Direction
+     * @param string     $direction Direction
      * @return void
      * @throws Exception
      */
-    public function executeMigration(IMigration $migration, $direction = IMigration::UP)
+    public function executeMigration(IMigration $migration, string $direction = IMigration::UP)
     {
         // reset cached executed migrations
         $this->executedMigrations = null;
-
-        $start   = new DateTime('now');
-        $id      = $migration->getId();
-
+        $start = new DateTime('now');
         try {
             Shop::Container()->getDB()->beginTransaction();
-            call_user_func([&$migration, $direction]);
+            $migration->$direction();
             Shop::Container()->getDB()->commit();
             $this->migrated($migration, $direction, $start);
         } catch (Exception $e) {
             Shop::Container()->getDB()->rollback();
-            throw new \Exception($migration->getName().' '.$migration->getDescription().' | '.$e->getMessage(),$e->getCode());
+            throw new \Exception(
+                $migration->getName() . ' ' . $migration->getDescription() . ' | ' . $e->getMessage(),
+                $e->getCode()
+            );
         }
     }
 
@@ -150,7 +150,7 @@ class MigrationManager
      * @param array $migrations Migrations
      * @return $this
      */
-    public function setMigrations(array $migrations)
+    public function setMigrations(array $migrations): self
     {
         static::$migrations = $migrations;
 
@@ -160,9 +160,9 @@ class MigrationManager
     /**
      * Has valid migrations.
      *
-     * @return boolean
+     * @return bool
      */
-    public function hasMigrations()
+    public function hasMigrations(): bool
     {
         return count($this->getMigrations()) > 0;
     }
@@ -173,7 +173,7 @@ class MigrationManager
      * @throws \InvalidArgumentException
      * @return IMigration[]
      */
-    public function getMigrations()
+    public function getMigrations(): array
     {
         if (!is_array(static::$migrations) || count(static::$migrations) === 0) {
             $migrations = [];
@@ -223,7 +223,7 @@ class MigrationManager
      *
      * @return int
      */
-    public function getCurrentId()
+    public function getCurrentId(): int
     {
         $oVersion = Shop::Container()->getDB()->query(
             "SELECT kMigration 
@@ -231,17 +231,14 @@ class MigrationManager
                 ORDER BY kMigration DESC",
             \DB\ReturnType::SINGLE_OBJECT
         );
-        if ($oVersion) {
-            return (int)$oVersion->kMigration;
-        }
 
-        return 0;
+        return $oVersion ? (int)$oVersion->kMigration : 0;
     }
 
     /**
      * @return array
      */
-    public function getExecutedMigrations()
+    public function getExecutedMigrations(): array
     {
         $migrations = $this->_getExecutedMigrations();
         if (!is_array($migrations)) {
@@ -254,13 +251,13 @@ class MigrationManager
     /**
      * @return array
      */
-    public function getPendingMigrations()
+    public function getPendingMigrations(): array
     {
         $executed   = $this->getExecutedMigrations();
         $migrations = array_keys($this->getMigrations());
 
         return array_udiff($migrations, $executed, function ($a, $b) {
-            return strcmp($a, $b);
+            return strcmp((string)$a, (string)$b);
         });
     }
 
@@ -309,12 +306,15 @@ class MigrationManager
      * @param DateTime   $executed
      * @return $this
      */
-    public function migrated(IMigration $migration, $direction, $executed)
+    public function migrated(IMigration $migration, $direction, $executed): self
     {
         if (strcasecmp($direction, IMigration::UP) === 0) {
-            $sql = sprintf(
-                "INSERT INTO tmigration (kMigration, dExecuted) VALUES ('%s', '%s');",
-                $migration->getId(), $executed->format('Y-m-d H:i:s')
+            $version = Version::parse(APPLICATION_VERSION);
+            $sql     = sprintf(
+                "INSERT INTO tmigration (kMigration, nVersion, dExecuted) VALUES ('%s', '%s', '%s');",
+                $migration->getId(),
+                sprintf('%d%02d', $version->getMajor(), $version->getMinor()),
+                $executed->format('Y-m-d H:i:s')
             );
             Shop::Container()->getDB()->executeQuery($sql, \DB\ReturnType::AFFECTED_ROWS);
         } else {

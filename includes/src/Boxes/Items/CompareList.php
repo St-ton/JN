@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -21,28 +21,30 @@ final class CompareList extends AbstractBox
     {
         parent::__construct($config);
         parent::addMapping('cAnzeigen', 'ShowBox');
-        $oArtikel_arr = [];
+        $this->setShow(true);
+        $productList = [];
+        $products    = [];
         if (isset($_SESSION['Vergleichsliste']->oArtikel_arr)) {
-            $oArtikel_arr = $_SESSION['Vergleichsliste']->oArtikel_arr;
+            $productList = $_SESSION['Vergleichsliste']->oArtikel_arr;
         }
-        if (\count($oArtikel_arr) > 0) {
-            $cGueltigePostVars_arr = ['a', 'k', 's', 'h', 'l', 'm', 't', 'hf', 'kf', 'show', 'suche'];
-            $extra                 = '';
-            $cPostMembers_arr      = \array_keys($_REQUEST);
-            foreach ($cPostMembers_arr as $cPostMember) {
-                if ((int)$_REQUEST[$cPostMember] > 0 && \in_array($cPostMember, $cGueltigePostVars_arr, true)) {
-                    $extra .= '&' . $cPostMember . '=' . $_REQUEST[$cPostMember];
+        if (\count($productList) > 0) {
+            $validParams = ['a', 'k', 's', 'h', 'l', 'm', 't', 'hf', 'kf', 'show', 'suche'];
+            $extra       = '';
+            $postData    = \array_keys($_REQUEST);
+            foreach ($postData as $param) {
+                if ((int)$_REQUEST[$param] > 0 && \in_array($param, $validParams, true)) {
+                    $extra .= '&' . $param . '=' . $_REQUEST[$param];
                 }
             }
-            $extra          = \StringHandler::filterXSS($extra);
-            $products       = [];
+            $extra = \StringHandler::filterXSS($extra);
+
             $requestURI     = \Shop::getRequestUri();
             $defaultOptions = \Artikel::getDefaultOptions();
             if ($requestURI === 'io.php') {
                 // Box wird von einem Ajax-Call gerendert
                 $requestURI = \LinkHelper::getInstance()->getStaticRoute('vergleichsliste.php');
             }
-            foreach ($oArtikel_arr as $oArtikel) {
+            foreach ($productList as $_prod) {
                 $nPosAnd   = \strrpos($requestURI, '&');
                 $nPosQuest = \strrpos($requestURI, '?');
                 $nPosWD    = \strpos($requestURI, 'vlplo=');
@@ -50,38 +52,30 @@ final class CompareList extends AbstractBox
                 if ($nPosWD) {
                     $requestURI = \substr($requestURI, 0, $nPosWD);
                 }
-                $cDeleteParam = '?vlplo=';
+                $del = '?vlplo=';
                 if ($nPosAnd === \strlen($requestURI) - 1) {
-                    // z.b. index.php?a=4&
-                    $cDeleteParam = 'vlplo=';
+                    $del = 'vlplo=';
                 } elseif ($nPosAnd) {
-                    // z.b. index.php?a=4&b=2
-                    $cDeleteParam = '&vlplo=';
+                    $del = '&vlplo=';
                 } elseif ($nPosQuest) {
-                    // z.b. index.php?a=4
-                    $cDeleteParam = '&vlplo=';
+                    $del = '&vlplo=';
                 } elseif ($nPosQuest === \strlen($requestURI) - 1) {
-                    // z.b. index.php?
-                    $cDeleteParam = 'vlplo=';
+                    $del = 'vlplo=';
                 }
                 $product = new \Artikel();
-                $product->fuelleArtikel($oArtikel->kArtikel, $defaultOptions);
-                $product->cURLDEL = $requestURI . $cDeleteParam . $oArtikel->kArtikel . $extra;
-                if (isset($oArtikel->oVariationen_arr) && \count($oArtikel->oVariationen_arr) > 0) {
-                    $product->Variationen = $oArtikel->oVariationen_arr;
+                $product->fuelleArtikel($_prod->kArtikel, $defaultOptions);
+                $product->cURLDEL = $requestURI . $del . $_prod->kArtikel . $extra;
+                if (isset($_prod->oVariationen_arr) && \count($_prod->oVariationen_arr) > 0) {
+                    $product->Variationen = $_prod->oVariationen_arr;
                 }
                 if ($product->kArtikel > 0) {
                     $products[] = $product;
                 }
             }
-            $this->setShow(true);
-            $this->setItemCount((int)$this->config['vergleichsliste']['vergleichsliste_anzahl']);
-            $this->setProducts($products);
-
-            \executeHook(\HOOK_BOXEN_INC_VERGLEICHSLISTE, ['box' => $this]);
-        } else {
-            $this->setShow(false);
         }
+        $this->setItemCount((int)$this->config['vergleichsliste']['vergleichsliste_anzahl']);
+        $this->setProducts($products);
+        \executeHook(\HOOK_BOXEN_INC_VERGLEICHSLISTE, ['box' => $this]);
     }
 
     /**

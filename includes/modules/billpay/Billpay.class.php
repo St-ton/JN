@@ -975,7 +975,7 @@ class Billpay extends PaymentMethod
         $oInv->cInfo = '';
 
         $oOrder = new Bestellung($kBestellung);
-        $oOrder->fuelleBestellung(0);
+        $oOrder->fuelleBestellung(false);
 
         $fAmount = $oOrder->fGesamtsumme;
         if ($oOrder->Zahlungsart->cModulId === 'za_billpay_rate_payment_jtl'
@@ -1087,7 +1087,7 @@ class Billpay extends PaymentMethod
     {
         parent::cancelOrder($kBestellung, $bDelete);
         $oOrder = new Bestellung($kBestellung);
-        $oOrder->fuelleBestellung(0);
+        $oOrder->fuelleBestellung(false);
         $fAmount = $oOrder->fGesamtsumme;
         if ($oOrder->Zahlungsart->cModulId === 'za_billpay_rate_payment_jtl' || $oOrder->Zahlungsart->cModulId === 'za_billpay_paylater_jtl') {
             $oBasket                = new Warenkorb($oOrder->kWarenkorb);
@@ -1572,7 +1572,10 @@ class BPHelper
         if (strlen($_SESSION['cISOSprache']) > 0) {
             $cISOSprache = $_SESSION['cISOSprache'];
         } else {
-            $oSprache = Shop::Container()->getDB()->query("SELECT kSprache, cISO FROM tsprache WHERE cShopStandard = 'Y'", 1);
+            $oSprache = Shop::Container()->getDB()->query(
+                "SELECT kSprache, cISO FROM tsprache WHERE cShopStandard = 'Y'",
+                \DB\ReturnType::SINGLE_OBJECT
+            );
             if ($oSprache->kSprache > 0) {
                 $cISOSprache = $oSprache->cISO;
             }

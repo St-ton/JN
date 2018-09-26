@@ -36,7 +36,22 @@ function kundeSpeichern(array $cPost_arr)
         $fehlendeAngaben,
         $oCheckBox->validateCheckBox(CHECKBOX_ORT_REGISTRIERUNG, $kKundengruppe, $cPost_arr, true)
     );
-    $nReturnValue        = angabenKorrekt($fehlendeAngaben);
+
+    if (isset($cPost_arr['shipping_address'])) {
+        if ((int)$cPost_arr['shipping_address'] === 0) {
+            $cPost_arr['kLieferadresse'] = 0;
+            $cPost_arr['lieferdaten']    = 1;
+            pruefeLieferdaten($cPost_arr);
+        } elseif (isset($cPost_arr['kLieferadresse']) && (int)$cPost_arr['kLieferadresse'] > 0) {
+            pruefeLieferdaten($cPost_arr);
+        } elseif (isset($cPost_arr['register']['shipping_address'])) {
+            pruefeLieferdaten($cPost_arr['register']['shipping_address'], $fehlendeAngaben);
+        }
+    } elseif (isset($cPost_arr['lieferdaten']) && (int)$cPost_arr['lieferdaten'] === 1) {
+        // compatibility with older template
+        pruefeLieferdaten($cPost_arr, $fehlendeAngaben);
+    }
+    $nReturnValue = angabenKorrekt($fehlendeAngaben);
 
     executeHook(HOOK_REGISTRIEREN_PAGE_REGISTRIEREN_PLAUSI, [
         'nReturnValue'    => &$nReturnValue,
@@ -112,22 +127,19 @@ function kundeSpeichern(array $cPost_arr)
                 $kKundengruppe = (int)$conf['kundenwerbenkunden']['kwk_kundengruppen'];
             }
 
-            $knd->kKundengruppe = $kKundengruppe;
-            $knd->kSprache      = Shop::getLanguage();
-            $knd->cAbgeholt     = 'N';
-            $knd->cSperre       = 'N';
-            //konto sofort aktiv?
-            $knd->cAktiv          = $conf['global']['global_kundenkonto_aktiv'] === 'A'
+            $knd->kKundengruppe     = $kKundengruppe;
+            $knd->kSprache          = Shop::getLanguage();
+            $knd->cAbgeholt         = 'N';
+            $knd->cSperre           = 'N';
+            $knd->cAktiv            = $conf['global']['global_kundenkonto_aktiv'] === 'A'
                 ? 'N'
                 : 'Y';
-            $cPasswortKlartext    = $knd->cPasswort;
-            $knd->cPasswort       = Shop::Container()->getPasswordService()->hash($cPasswortKlartext);
-            $knd->dErstellt       = 'now()';
-            $knd->nRegistriert    = 1;
-            $knd->angezeigtesLand = Sprache::getCountryCodeByCountryName($knd->cLand);
-            // Work Around Mail zerhaut cLand
-            $cLand = $knd->cLand;
-            //mail
+            $cPasswortKlartext      = $knd->cPasswort;
+            $knd->cPasswort         = Shop::Container()->getPasswordService()->hash($cPasswortKlartext);
+            $knd->dErstellt         = 'NOW()';
+            $knd->nRegistriert      = 1;
+            $knd->angezeigtesLand   = Sprache::getCountryCodeByCountryName($knd->cLand);
+            $cLand                  = $knd->cLand;
             $knd->cPasswortKlartext = $cPasswortKlartext;
             $obj                    = new stdClass();
             $obj->tkunde            = $knd;
@@ -182,20 +194,6 @@ function kundeSpeichern(array $cPost_arr)
             TaxHelper::setTaxRates();
             $cart->gibGesamtsummeWarenLocalized();
         }
-        if (isset($cPost_arr['shipping_address'])) {
-            if ((int)$cPost_arr['shipping_address'] === 0) {
-                $cPost_arr['kLieferadresse'] = 0;
-                $cPost_arr['lieferdaten']    = 1;
-                pruefeLieferdaten($cPost_arr);
-            } elseif (isset($cPost_arr['kLieferadresse']) && (int)$cPost_arr['kLieferadresse'] > 0) {
-                pruefeLieferdaten($cPost_arr);
-            } elseif (isset($cPost_arr['register']['shipping_address'])) {
-                pruefeLieferdaten($cPost_arr['register']['shipping_address'], $fehlendeAngaben);
-            }
-        } elseif (isset($cPost_arr['lieferdaten']) && (int)$cPost_arr['lieferdaten'] === 1) {
-            // compatibility with older template
-            pruefeLieferdaten($cPost_arr, $fehlendeAngaben);
-        }
         if ((int)$cPost_arr['checkout'] === 1) {
             //weiterleitung zum chekout
             header('Location: ' . Shop::Container()->getLinkService()
@@ -217,6 +215,11 @@ function kundeSpeichern(array $cPost_arr)
             $_SESSION['checkout.register']        = 1;
             $_SESSION['checkout.fehlendeAngaben'] = $fehlendeAngaben;
             $_SESSION['checkout.cPost_arr']       = $cPost_arr;
+
+            //keep shipping address on error
+            if (isset($cPost_arr['register']['shipping_address'])) {
+                $_SESSION['Lieferadresse'] = getLieferdaten($cPost_arr['register']['shipping_address']);
+            }
 
             header('Location: ' . Shop::Container()->getLinkService()
                                       ->getStaticRoute('bestellvorgang.php', true) . '?reg=1', true, 303);
@@ -242,10 +245,6 @@ function gibFormularDaten(int $nCheckout = 0)
         $cKundenattribut_arr = $_SESSION['Kunde']->cKundenattribut_arr ?? [];
     }
 
-    if (isset($Kunde->dGeburtstag) && preg_match('/^\d{4}\-\d{2}\-(\d{2})$/', $Kunde->dGeburtstag)) {
-        list($jahr, $monat, $tag) = explode('-', $Kunde->dGeburtstag);
-        $Kunde->dGeburtstag = $tag . '.' . $monat . '.' . $jahr;
-    }
     $herkunfte = Shop::Container()->getDB()->query(
         'SELECT * 
             FROM tkundenherkunft 
@@ -275,11 +274,6 @@ function gibKunde()
     global $Kunde, $titel;
 
     $Kunde = $_SESSION['Kunde'];
-
-    if (preg_match('/^\d{4}\-\d{2}\-(\d{2})$/', $Kunde->dGeburtstag)) {
-        list($jahr, $monat, $tag) = explode('-', $Kunde->dGeburtstag);
-        $Kunde->dGeburtstag = $tag . '.' . $monat . '.' . $jahr;
-    }
     $titel = Shop::Lang()->get('editData', 'login');
 }
 

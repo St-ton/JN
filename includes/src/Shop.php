@@ -4,9 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTLShop\SemVer\Version;
 use Services\Container;
 use DB\Services as DbService;
-
 use JTL\ProcessingHandler\NiceDBHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Formatter\LineFormatter;
@@ -575,11 +575,11 @@ final class Shop
      *
      * @param bool $fast_init
      * @param bool $isAdmin
-     * @return JTLSmarty
+     * @return \Smarty\JTLSmarty
      */
     public function _Smarty(bool $fast_init = false, bool $isAdmin = false): JTLSmarty
     {
-        return JTLSmarty::getInstance($fast_init, $isAdmin);
+        return \Smarty\JTLSmarty::getInstance($fast_init, $isAdmin);
     }
 
     /**
@@ -1139,8 +1139,12 @@ final class Shop
             // manufacturer filter
             if (($seoCount = count($manufSeo)) > 0) {
                 if ($seoCount === 1) {
-                    $oSeo = self::Container()->getDB()->selectAll('tseo', ['cKey', 'cSeo'],
-                        ['kHersteller', $manufSeo[0]], 'kKey');
+                    $oSeo = self::Container()->getDB()->selectAll(
+                        'tseo',
+                        ['cKey', 'cSeo'],
+                        ['kHersteller', $manufSeo[0]],
+                        'kKey'
+                    );
                 } else {
                     $bindValues = [];
                     // PDO::bindValue() is 1-based
@@ -1153,7 +1157,8 @@ final class Shop
                             WHERE cKey = 'kHersteller' 
                             AND cSeo IN (" . implode(',', array_fill(0, $seoCount, '?')) . ")",
                         $bindValues,
-                        2);
+                        \DB\ReturnType::ARRAY_OF_OBJECTS
+                    );
                 }
                 $results = count($oSeo);
                 if ($results === 1) {
@@ -1582,33 +1587,50 @@ final class Shop
     }
 
     /**
-     * @return int
+     * @return Version
      */
-    public static function getShopVersion(): int
+    public static function getShopDatabaseVersion(): Version
     {
-        $oVersion = self::Container()->getDB()->query('SELECT nVersion FROM tversion', \DB\ReturnType::SINGLE_OBJECT);
+        $version = self::Container()->getDB()->query('SELECT nVersion FROM tversion', \DB\ReturnType::SINGLE_OBJECT)->nVersion;
 
-        return (isset($oVersion->nVersion) && (int)$oVersion->nVersion > 0)
-            ? (int)$oVersion->nVersion
-            : 0;
+        if ($version === '5' || $version === 5) {
+            $version = '5.0.0';
+        }
+
+        return Version::parse($version);
     }
 
     /**
      * Return version of files
      *
-     * @return int
+     * @deprecated since 5.0.0
+     *
+     * @return string
      */
-    public static function getVersion(): int
+    public static function getVersion(): string
     {
-        return JTL_VERSION;
+        trigger_error(__METHOD__ . ' is deprecated. Use ' . __CLASS__ . '::getApplicationVersion() instead',
+            E_USER_DEPRECATED);
+
+        return self::getApplicationVersion();
     }
 
     /**
-     * @return int
+     * Return version of files
+     *
+     * @return string
      */
-    public function _getVersion(): int
+    public static function getApplicationVersion(): string
     {
-        return JTL_VERSION;
+        return APPLICATION_VERSION;
+    }
+
+    /**
+     * @return string
+     */
+    public function _getVersion(): string
+    {
+        return APPLICATION_VERSION;
     }
 
     /**
@@ -1881,5 +1903,38 @@ final class Shop
                 !(Session::get('bAnti_spam_already_checked', false) || Session::Customer()->isLoggedIn())
             ));
         });
+    }
+
+    /**
+     * @param bool $admin
+     * @return string
+     */
+    public static function getFaviconURL(bool $admin = false): string
+    {
+        if ($admin) {
+            $faviconUrl = self::getAdminURL();
+            if (file_exists(PFAD_ROOT . PFAD_ADMIN . 'favicon.ico')) {
+                $faviconUrl .= '/favicon.ico';
+            } else {
+                $faviconUrl .= '/favicon-default.ico';
+            }
+        } else {
+            $smarty           = JTLSmarty::getInstance(false, true);
+            $templateDir      = $smarty->getTemplateDir($smarty->context);
+            $shopTemplatePath = str_replace(PFAD_ROOT, '', $templateDir);
+            $faviconUrl       = self::getURL();
+
+            if (file_exists($templateDir . 'themes/base/images/favicon.ico')) {
+                $faviconUrl .= '/' . $shopTemplatePath . 'themes/base/images/favicon.ico';
+            } elseif (file_exists($templateDir . 'favicon.ico')) {
+                $faviconUrl .= '/' . $shopTemplatePath . 'favicon.ico';
+            } elseif (file_exists(PFAD_ROOT . 'favicon.ico')) {
+                $faviconUrl .= '/favicon.ico';
+            } else {
+                $faviconUrl .= '/favicon-default.ico';
+            }
+        }
+
+        return $faviconUrl;
     }
 }

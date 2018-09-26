@@ -119,8 +119,13 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 if (!$kSprache) {
                     $kSprache = Shop::getLanguageID();
                 }
-                $this->oSprache  = new Konfiggruppesprache($this->kKonfiggruppe, $kSprache);
-                $this->oItem_arr = Konfigitem::fetchAll($this->kKonfiggruppe);
+                $this->kKonfiggruppe = (int)$this->kKonfiggruppe;
+                $this->nMin          = (int)$this->nMin;
+                $this->nMax          = (int)$this->nMax;
+                $this->nTyp          = (int)$this->nTyp;
+                $this->nSort         = (int)$this->nSort;
+                $this->oSprache      = new Konfiggruppesprache($this->kKonfiggruppe, $kSprache);
+                $this->oItem_arr     = Konfigitem::fetchAll($this->kKonfiggruppe);
             }
 
             return $this;

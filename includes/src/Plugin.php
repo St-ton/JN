@@ -200,7 +200,7 @@ class Plugin
     /**
      * @var array
      */
-    public $oPluginFrontendLink_arr;
+    public $oPluginFrontendLink_arr = [];
 
     /**
      * @var array
@@ -523,16 +523,54 @@ class Plugin
         // Plugin Sprachvariable Assoc
         $this->oPluginSprachvariableAssoc_arr = self::getLanguageVariablesByID($this->kPlugin, $cISOSprache);
         // FrontendLink
-        $oPluginFrontendLink_arr = Shop::Container()->getDB()->selectAll('tlink', 'kPlugin', (int)$this->kPlugin);
-        // Link Sprache holen
-        foreach ($oPluginFrontendLink_arr as $i => $oPluginFrontendLink) {
-            $oPluginFrontendLink_arr[$i]->oPluginFrontendLinkSprache_arr = Shop::Container()->getDB()->selectAll(
-                'tlinksprache',
-                'kLink',
-                (int)$oPluginFrontendLink->kLink
-            );
+        $linkData = Shop::Container()->getDB()->queryPrepared(
+            "SELECT tlink.*, tlinksprache.*, tsprache.kSprache 
+                FROM tlink
+                JOIN tlinksprache
+                    ON tlink.kLink = tlinksprache.kLink
+                JOIN tsprache
+                    ON tsprache.cISO = tlinksprache.cISOSprache
+                WHERE tlink.kPlugin = :plgn",
+            ['plgn' => $this->kPlugin],
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
+        $linkData = \Functional\group($linkData, function ($e) {
+            return $e->kLink;
+        });
+        foreach ($linkData as $linkID => $data) {
+            $baseData                             = \Functional\first($data);
+            $link                                 = new stdClass();
+            $link->kLink                          = (int)$baseData->kLink;
+            $link->kVaterLink                     = (int)$baseData->kVaterLink;
+            $link->kPlugin                        = (int)$baseData->kPlugin;
+            $link->cName                          = $baseData->cName;
+            $link->nLinkart                       = (int)$baseData->nLinkart;
+            $link->cNoFollow                      = $baseData->cNoFollow;
+            $link->cKundengruppen                 = $baseData->cKundengruppen;
+            $link->cSichtbarNachLogin             = $baseData->cSichtbarNachLogin;
+            $link->cDruckButton                   = $baseData->cDruckButton;
+            $link->nSort                          = (int)$baseData->nSort;
+            $link->bSSL                           = (int)$baseData->bSSL;
+            $link->bIsFluid                       = (int)$baseData->bIsFluid;
+            $link->cIdentifier                    = $baseData->cIdentifier;
+            $link->bIsActive                      = (int)$baseData->bIsActive;
+            $link->oPluginFrontendLinkSprache_arr = [];
+            foreach ($data as $localizedData) {
+                $localizedLink                          = new stdClass();
+                $localizedLink->kLink                   = (int)$localizedData->kLink;
+                $localizedLink->kSprache                = (int)$localizedData->kSprache;
+                $localizedLink->cSeo                    = $localizedData->cSeo;
+                $localizedLink->cISOSprache             = $localizedData->cISOSprache;
+                $localizedLink->cName                   = $localizedData->cName;
+                $localizedLink->cTitle                  = $localizedData->cTitle;
+                $localizedLink->cContent                = $localizedData->cContent;
+                $localizedLink->cMetaTitle              = $localizedData->cMetaTitle;
+                $localizedLink->cMetaKeywords           = $localizedData->cMetaKeywords;
+                $localizedLink->cMetaDescription        = $localizedData->cMetaDescription;
+                $link->oPluginFrontendLinkSprache_arr[] = $localizedLink;
+            }
+            $this->oPluginFrontendLink_arr[] = $link;
         }
-        $this->oPluginFrontendLink_arr = $oPluginFrontendLink_arr;
         // Zahlungsmethoden holen
         $methodsAssoc = []; // Assoc an cModulId
         $methods      = Shop::Container()->getDB()->query(
@@ -744,7 +782,7 @@ class Plugin
             }
             foreach ($plugins as $plugin) {
                 if ($plugin->cPluginID === $cPluginID) {
-                    return new self($plugin->kPlugin);
+                    return new self((int)$plugin->kPlugin);
                 }
             }
         }

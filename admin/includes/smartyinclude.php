@@ -3,7 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-$smarty             = JTLSmarty::getInstance(false, true);
+$smarty             = \Smarty\JTLSmarty::getInstance(false, true);
 $templateDir        = $smarty->getTemplateDir($smarty->context);
 $template           = AdminTemplate::getInstance();
 $config             = Shop::getSettings([CONF_GLOBAL]);
@@ -152,10 +152,15 @@ foreach ($mainGroups as $mainGroup) {
 if (is_array($currentTemplateDir)) {
     $currentTemplateDir = $currentTemplateDir[$smarty->context];
 }
+if (empty($template->version)) {
+    $adminTplVersion = '1.0.0';
+} else {
+    $adminTplVersion = $template->version;
+}
 $smarty->assign('URL_SHOP', $shopURL)
        ->assign('jtl_token', FormHelper::getTokenInput())
        ->assign('shopURL', $shopURL)
-       ->assign('shopVersion', Shop::getVersion())
+       ->assign('adminTplVersion', $adminTplVersion)
        ->assign('PFAD_ADMIN', PFAD_ADMIN)
        ->assign('JTL_CHARSET', JTL_CHARSET)
        ->assign('session_name', session_name())
@@ -166,10 +171,11 @@ $smarty->assign('URL_SHOP', $shopURL)
        ->assign('admin_js', $resourcePaths['js'])
        ->assign('account', $oAccount->account())
        ->assign('PFAD_CKEDITOR', $shopURL . '/' . PFAD_CKEDITOR)
-       ->assign('PFAD_KCFINDER', $shopURL . '/' . PFAD_KCFINDER)
+       ->assign('kcfinderBaseURL', $shopURL . '/' . PFAD_KCFINDER)
        ->assign('PFAD_CODEMIRROR', $shopURL . '/' . PFAD_CODEMIRROR)
        ->assign('Einstellungen', $config)
        ->assign('oLinkOberGruppe_arr', $mainGroups)
        ->assign('SektionenEinstellungen', $configSections)
        ->assign('notifications', Notification::getInstance())
-       ->assign('favorites', $oAccount->favorites());
+       ->assign('favorites', $oAccount->favorites())
+       ->assign('faviconAdminURL', Shop::getFaviconURL(true));

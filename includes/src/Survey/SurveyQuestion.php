@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -201,11 +201,11 @@ class SurveyQuestion
     }
 
     /**
-     * @param int $id
+     * @param int|string $id
      */
-    public function setID(int $id)
+    public function setID($id)
     {
-        $this->id = $id;
+        $this->id = (int)$id;
     }
 
     /**
@@ -217,11 +217,11 @@ class SurveyQuestion
     }
 
     /**
-     * @param int $surveyID
+     * @param int|string $surveyID
      */
-    public function setSurveyID(int $surveyID)
+    public function setSurveyID($surveyID)
     {
-        $this->surveyID = $surveyID;
+        $this->surveyID = (int)$surveyID;
     }
 
     /**
@@ -281,11 +281,11 @@ class SurveyQuestion
     }
 
     /**
-     * @param int $sort
+     * @param int|string $sort
      */
-    public function setSort(int $sort)
+    public function setSort($sort)
     {
-        $this->sort = $sort;
+        $this->sort = (int)$sort;
     }
 
     /**
@@ -305,11 +305,11 @@ class SurveyQuestion
     }
 
     /**
-     * @param bool $freeField
+     * @param bool|string $freeField
      */
-    public function setFreeField(bool $freeField)
+    public function setFreeField($freeField)
     {
-        $this->freeField = $freeField;
+        $this->freeField = (bool)$freeField;
     }
 
     /**
@@ -329,11 +329,11 @@ class SurveyQuestion
     }
 
     /**
-     * @param bool $required
+     * @param bool|string $required
      */
-    public function setRequired(bool $required)
+    public function setRequired($required)
     {
-        $this->required = $required;
+        $this->required = (bool)$required;
     }
 
     /**

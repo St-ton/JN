@@ -6,7 +6,6 @@
 
 namespace Filter\Items;
 
-
 use DB\ReturnType;
 use Filter\FilterInterface;
 use Filter\Join;
@@ -429,7 +428,7 @@ class Attribute extends BaseAttribute
         }
         $state   = $this->getState($data['oAktuelleKategorie'] ?? null);
         $baseQry = $this->productFilter->getFilterSQL()->getBaseQuery($state);
-        $cacheID = 'fltr_' . __CLASS__ . \md5($baseQry);
+        $cacheID = 'fltr_' . \str_replace('\\', '', __CLASS__) . \md5($baseQry);
         if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
             $this->options = $cached;
 
@@ -551,7 +550,7 @@ class Attribute extends BaseAttribute
             $this->applyOptionLimit($af, $attributeValueLimit);
         }
         $this->options = $attributeFilters;
-        $this->productFilter->getCache()->set($cacheID, $attributeFilters, [CACHING_GROUP_FILTER]);
+        $this->productFilter->getCache()->set($cacheID, $attributeFilters, [\CACHING_GROUP_FILTER]);
 
         return $attributeFilters;
     }

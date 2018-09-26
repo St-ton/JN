@@ -35,18 +35,7 @@
     {block name='head-base'}{/block}
 
     {block name='head-icons'}
-        {if !empty($Einstellungen.template.theme.favicon)}
-            {if file_exists("{$currentTemplateDir}{$Einstellungen.template.theme.favicon}")}
-                <link type="image/x-icon" href="{$ShopURL}/{$currentTemplateDir}{$Einstellungen.template.theme.favicon}"
-                    rel="shortcut icon">
-            {else}
-                <link type="image/x-icon"
-                    href="{$ShopURL}/{$currentTemplateDir}themes/base/images/{$Einstellungen.template.theme.favicon}"
-                        rel="shortcut icon">
-            {/if}
-        {else}
-            <link type="image/x-icon" href="{$ShopURL}/favicon-default.ico" rel="shortcut icon">
-        {/if}
+            <link type="image/x-icon" href="{$shopFaviconURL}" rel="icon">
         {if $nSeitenTyp === 1 && !empty($Artikel->Bilder)}
             <link rel="image_src" href="{$Artikel->Bilder[0]->cURLGross}">
             <meta property="og:image" content="{$Artikel->Bilder[0]->cURLGross}">
@@ -75,7 +64,7 @@
         {* Languages *}
         {if !empty($smarty.session.Sprachen) && count($smarty.session.Sprachen) > 1}
             {foreach item=oSprache from=$smarty.session.Sprachen}
-                    <link rel="alternate" hreflang="{$oSprache->cISO639}" href="{$oSprache->cURLFull}">
+                    <link rel="alternate" hreflang="{$oSprache->cISO639}" href="{if $nSeitenTyp === 18 && $oSprache->cStandard === "Y"}{$cCanonicalURL}{else}{$oSprache->cURLFull}{/if}">
             {/foreach}
         {/if}
     {/block}
@@ -190,13 +179,12 @@
     {block name='content-wrapper-starttag'}
     <div id="content-wrapper">
     {/block}
-    
     {block name='header-fluid-banner'}
         {assign var="isFluidBanner" value=isset($Einstellungen.template.theme.banner_full_width) && $Einstellungen.template.theme.banner_full_width === 'Y' &&  isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid' && isset($oImageMap)}
         {if $isFluidBanner}
             {include file='snippets/banner.tpl'}
         {/if}
-        {assign var='isFluidSlider' value=isset($Einstellungen.template.theme.slider_full_width) && $Einstellungen.template.theme.slider_full_width === 'Y' &&  isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid' && isset($oSlider->oSlide_arr) && count($oSlider->oSlide_arr) > 0}
+        {assign var='isFluidSlider' value=isset($Einstellungen.template.theme.slider_full_width) && $Einstellungen.template.theme.slider_full_width === 'Y' &&  isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid' && isset($oSlider) && count($oSlider->getSlides()) > 0}
         {if $isFluidSlider}
             {include file='snippets/slider.tpl'}
         {/if}

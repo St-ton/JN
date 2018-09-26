@@ -8,7 +8,7 @@
     {if $Artikel->getOption('nShowOnlyOnSEORequest', 0) === 1}
         <span class="price_label price_out_of_stock">{lang key='productOutOfStock' section='productDetails'}</span>
     {elseif $Artikel->Preise->fVKNetto == 0 && $Artikel->bHasKonfig}
-        <span class="price_label price_as_configured">{lang key='priceAsConfigured' section='productDetails'}</span>
+        <span class="price_label price_as_configured">{lang key='priceAsConfigured' section='productDetails'}</span> <strong class="price"></strong>
     {elseif $Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
         <span class="price_label price_on_application">{lang key='priceOnApplication'}</span>
     {else}
@@ -42,7 +42,7 @@
             {block name='price-snippets'}
                 <meta itemprop="price" content="{if $Artikel->Preise->oPriceRange->isRange()}{$Artikel->Preise->oPriceRange->minBruttoPrice}{else}{$Artikel->Preise->fVKBrutto}{/if}">
                 <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->getName()}">
-                {if $Artikel->Preise->Sonderpreis_aktiv && $Artikel->dSonderpreisStart_en !== '0000-00-00' && $Artikel->dSonderpreisEnde_en !== '0000-00-00'}
+                {if $Artikel->Preise->Sonderpreis_aktiv && $Artikel->dSonderpreisStart_en !== null && $Artikel->dSonderpreisEnde_en !== null}
                     <meta itemprop="validFrom" content="{$Artikel->dSonderpreisStart_en}">
                     <meta itemprop="validThrough" content="{$Artikel->dSonderpreisEnde_en}">
                 {/if}
@@ -75,15 +75,6 @@
                     </p>
                 {/block}
 
-                {if $Artikel->oPreisradar}
-                    <div class="priceradar">
-                        {lang key='youSave' section='productDetails'}
-                        <span class="value">{$Artikel->oPreisradar->fDiffLocalized[$NettoPreise]}
-                            ({$Artikel->oPreisradar->fProzentDiff} %)
-                        </span>
-                    </div>
-                {/if}
-                
                 {if $Artikel->Preise->Sonderpreis_aktiv && $Einstellungen.artikeldetails.artikeldetails_sonderpreisanzeige == 2}
                     <div class="instead_of old_price">{lang key='oldPrice'}:
                         <del class="value">{$Artikel->Preise->alterVKLocalized[$NettoPreise]}</del>

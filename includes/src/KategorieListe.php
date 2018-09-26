@@ -301,6 +301,9 @@ class KategorieListe
             $imageBaseURL                                                  = Shop::getImageBaseURL();
             $oSpracheTmp                                                   = Sprache::getDefaultLanguage();
             foreach ($oKategorie_arr as $i => $oKategorie) {
+                $oKategorie->kKategorie     = (int)$oKategorie->kKategorie;
+                $oKategorie->kOberKategorie = (int)$oKategorie->kOberKategorie;
+                $oKategorie->nSort          = (int)$oKategorie->nSort;
                 // Leere Kategorien ausblenden?
                 if (!$this->nichtLeer($oKategorie->kKategorie, $kKundengruppe)) {
                     $categoryList['ks'][$oKategorie->kKategorie] = 2;
@@ -380,8 +383,11 @@ class KategorieListe
                 //hat die Kat Unterkategorien?
                 $oKategorie->bUnterKategorien = 0;
                 if (isset($oKategorie->kKategorie) && $oKategorie->kKategorie > 0) {
-                    $oUnterkategorien = Shop::Container()->getDB()->select('tkategorie', 'kOberKategorie',
-                        $oKategorie->kKategorie);
+                    $oUnterkategorien = Shop::Container()->getDB()->select(
+                        'tkategorie',
+                        'kOberKategorie',
+                        $oKategorie->kKategorie
+                    );
                     if (isset($oUnterkategorien->kKategorie)) {
                         $oKategorie->bUnterKategorien = 1;
                     }

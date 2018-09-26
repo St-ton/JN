@@ -408,7 +408,6 @@ define('BOX_EIGENE_BOX_OHNE_RAHMEN', 30);
 define('BOX_EIGENE_BOX_MIT_RAHMEN', 31);
 define('BOX_TAGWOLKE', 32);
 define('BOX_KONFIGURATOR', 33);
-define('BOX_PREISRADAR', 100);
 // Kampagnentypen
 define('KAMPAGNE_DEF_HIT', 1);
 define('KAMPAGNE_DEF_VERKAUF', 2);

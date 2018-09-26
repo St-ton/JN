@@ -175,9 +175,7 @@ switch ($action) {
         break;
 }
 
-$smarty->assign('PFAD_KCFINDER', PFAD_KCFINDER)
-       ->assign('PFAD_MEDIAFILES', PFAD_MEDIAFILES)
-       ->assign('cFehler', $cFehler)
+$smarty->assign('cFehler', $cFehler)
        ->assign('cHinweis', $cHinweis)
        ->assign('cAction', $action)
        ->assign('kSlider', $kSlider)

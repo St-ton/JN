@@ -112,8 +112,6 @@ if (isset($_GET['unreg'])
 }
 //autom. step ermitteln
 if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
-    $step = 'Lieferadresse';
-
     if (!isset($_SESSION['Lieferadresse'])) {
         pruefeLieferdaten(['kLieferadresse' => 0]);
     }
@@ -177,6 +175,7 @@ pruefeZahlungsartwahlStep($_POST);
 if ($step === 'accountwahl') {
     gibStepAccountwahl();
     gibStepUnregistriertBestellen();
+    gibStepLieferadresse();
 }
 if ($step === 'edit_customer_address' || $step === 'Lieferadresse') {
     validateCouponInCheckout();
@@ -234,7 +233,8 @@ Shop::Smarty()->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
     ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
     ->assign('bestellschritt', gibBestellschritt($step))
     ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
-    ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK);
+    ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK)
+    ->assign('unregForm', RequestHelper::verifyGPCDataInt('unreg_form'));
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_BESTELLVORGANG_PAGE);

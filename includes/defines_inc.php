@@ -408,7 +408,6 @@ define('BOX_EIGENE_BOX_OHNE_RAHMEN', 30);
 define('BOX_EIGENE_BOX_MIT_RAHMEN', 31);
 define('BOX_TAGWOLKE', 32);
 define('BOX_KONFIGURATOR', 33);
-define('BOX_PREISRADAR', 100);
 // Kampagnentypen
 define('KAMPAGNE_DEF_HIT', 1);
 define('KAMPAGNE_DEF_VERKAUF', 2);
@@ -499,3 +498,17 @@ define('BROWSER_CHROME', 3);
 define('BROWSER_SAFARI', 4);
 define('BROWSER_OPERA', 5);
 define('BROWSER_NETSCAPE', 6);
+
+define('FREQ_ALWAYS', 'always');
+define('FREQ_HOURLY', 'hourly');
+define('FREQ_DAILY', 'daily');
+define('FREQ_WEEKLY', 'weekly');
+define('FREQ_MONTHLY', 'monthly');
+define('FREQ_YEARLY', 'yearly');
+define('FREQ_NEVER', 'never');
+
+define('PRIO_VERYHIGH', '1.0');
+define('PRIO_HIGH', '0.7');
+define('PRIO_NORMAL', '0.5');
+define('PRIO_LOW', '0.3');
+define('PRIO_VERYLOW', '0.0');

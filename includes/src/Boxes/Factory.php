@@ -30,7 +30,6 @@ use Boxes\Items\{BestsellingProducts,
     Plain,
     Plugin,
     Poll,
-    PriceRadar,
     ProductCategories,
     RecentlyViewedProducts,
     SearchCloud,
@@ -113,8 +112,6 @@ class Factory implements FactoryInterface
                 return new LinkGroup($this->config);
             case \BOX_UMFRAGE:
                 return new Poll($this->config);
-            case \BOX_PREISRADAR:
-                return new PriceRadar($this->config);
             case \BOX_HERSTELLER:
                 return new Manufacturer($this->config);
             case \BOX_FILTER_MERKMALE:

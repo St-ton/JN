@@ -345,11 +345,10 @@ class Attribute extends BaseAttribute
                     $activeAndFilterIDs[] = $values;
                 }
             }
-            if ($this->productFilter->showChildProducts()) {
-                $articleFilter = '(innerArticle.kVaterArtikel > 0 OR innerArticle.nIstVater = 0)';
-            } else {
-                $articleFilter = 'innerArticle.kVaterArtikel = 0';
-            }
+            $productFilter = $this->productFilter->showChildProducts()
+                ? '(innerProduct.kVaterArtikel > 0 OR innerProduct.nIstVater = 0)'
+                : 'innerProduct.kVaterArtikel = 0';
+
             if (\count($activeAndFilterIDs) > 0) {
                 $state->addJoin((new Join())
                     ->setComment('join active AND filters from ' . __METHOD__)
@@ -366,15 +365,15 @@ class Attribute extends BaseAttribute
             if (\count($activeOrFilterIDs) > 0) {
                 $state->addSelect('IF(EXISTS (SELECT 1
                              FROM tartikelmerkmal AS im1
-                             INNER JOIN tartikel AS innerArticle ON innerArticle.kArtikel = im1.kArtikel
-                                WHERE ' . $articleFilter . ' AND im1.kMerkmalWert IN (' . \implode(', ',
+                             INNER JOIN tartikel AS innerProduct ON innerProduct.kArtikel = im1.kArtikel
+                                WHERE ' . $productFilter . ' AND im1.kMerkmalWert IN (' . \implode(', ',
                         \array_merge($activeOrFilterIDs, ['tartikelmerkmal.kMerkmalWert'])) . ')
                                     AND im1.kArtikel = tartikel.kArtikel
-                             GROUP BY innerArticle.kArtikel
+                             GROUP BY innerProduct.kArtikel
                              HAVING COUNT(im1.kArtikel) = (SELECT COUNT(DISTINCT im2.kMerkmal)
                                                            FROM tartikelmerkmal im2
-                                                           INNER JOIN tartikel AS innerArticle ON innerArticle.kArtikel = im2.kArtikel
-                                                           WHERE ' . $articleFilter . ' AND im2.kMerkmalWert IN
+                                                           INNER JOIN tartikel AS innerProduct ON innerProduct.kArtikel = im2.kArtikel
+                                                           WHERE ' . $productFilter . ' AND im2.kMerkmalWert IN
                                                                  (' . \implode(', ', \array_merge($activeOrFilterIDs,
                         ['tartikelmerkmal.kMerkmalWert'])) . '))), tartikel.kArtikel, NULL) AS kArtikel');
             } else {

@@ -1467,7 +1467,7 @@ final class Shop
                     case 'wunschliste.php':
                         self::setPageType(PAGE_WUNSCHLISTE);
                         break;
-                    default :
+                    default:
                         break;
                 }
             }

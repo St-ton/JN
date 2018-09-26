@@ -1025,11 +1025,10 @@ function plausiNeukundenKupon()
  */
 function checkAdditionalPayment($paymentMethod)
 {
-    if (!empty($_POST['iban'])) {
-        $_POST['iban'] = strtoupper($_POST['iban']);
-    }
-    if (!empty($_POST['bic'])) {
-        $_POST['bic'] = strtoupper($_POST['bic']);
+    foreach (['iban', 'bic'] as $dataKey) {
+        if (!empty($_POST[$dataKey])) {
+            $_POST[$dataKey] = strtoupper($_POST[$dataKey]);
+        }
     }
 
     $conf   = Shop::getSettings([CONF_ZAHLUNGSARTEN]);
@@ -1065,20 +1064,6 @@ function checkAdditionalPayment($paymentMethod)
             ) {
                 $errors['inhaber'] = 1;
             }
-            if (empty($post['kontonr'])
-                && ((!empty($post['blz'])
-                        && $conf['zahlungsarten']['zahlungsart_lastschrift_kontonummer_abfrage'] !== 'N')
-                    || $conf['zahlungsarten']['zahlungsart_lastschrift_kontonummer_abfrage'] === 'Y')
-            ) {
-                $errors['kontonr'] = 1;
-            }
-            if (empty($post['blz'])
-                && ((!empty($post['kontonr'])
-                        && $conf['zahlungsarten']['zahlungsart_lastschrift_blz_abfrage'] !== 'N')
-                    || $conf['zahlungsarten']['zahlungsart_lastschrift_blz_abfrage'] === 'Y')
-            ) {
-                $errors['blz'] = 1;
-            }
             if (empty($post['bic'])) {
                 if ($conf['zahlungsarten']['zahlungsart_lastschrift_bic_abfrage'] === 'Y') {
                     $errors['bic'] = 1;
@@ -1087,17 +1072,9 @@ function checkAdditionalPayment($paymentMethod)
                 $errors['bic'] = 2;
             }
             if (empty($post['iban'])) {
-                if ($conf['zahlungsarten']['zahlungsart_lastschrift_iban_abfrage'] === 'Y') {
-                    $errors['iban'] = 1;
-                }
+                $errors['iban'] = 1;
             } elseif (!plausiIban($post['iban'])) {
                 $errors['iban'] = 2;
-            }
-            if (!isset($post['kontonr']) && !isset($post['blz']) && !isset($post['iban']) && !isset($post['bic'])) {
-                $errors['kontonr'] = 1;
-                $errors['blz']     = 1;
-                $errors['bic']     = 1;
-                $errors['iban']    = 1;
             }
             break;
     }
@@ -1111,7 +1088,7 @@ function checkAdditionalPayment($paymentMethod)
  */
 function checkBIC($bic): bool
 {
-    return preg_match('/^[a-zA-Z]{6}[0-9a-zA-Z]{2}([0-9a-zA-Z]{3})?$/', $bic) === 1;
+    return preg_match('/^[A-Z]{6}[A-Z\d]{2}([A-Z\d]{3})?$/i', $bic) === 1;
 }
 
 /**

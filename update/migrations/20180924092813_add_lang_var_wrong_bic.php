@@ -30,41 +30,6 @@ class Migration_20180924092813 extends Migration implements IMigration
         $this->setLocalization('ger', 'checkout', 'wrongBIC', 'Die eingegebene BIC hat ein ungültiges Format');
         $this->setLocalization('eng', 'checkout', 'wrongBIC', 'The submitted BIC has an invalid format');
 
-        $this->setConfig('zahlungsart_lastschrift_iban_abfrage', 'Y', 100, 'IBAN abfragen', 'selectbox', 550, (object)[
-            'cBeschreibung' => 'Soll das Feld IBAN im Bestellvorgang abgefragt werden?',
-            'cModulId' => 'za_lastschrift_jtl',
-            'inputOptions'  => [
-                'O' => 'Optional',
-                'Y' => 'Pflichtangabe'
-            ],
-        ], true);
-        $this->setConfig('zahlungsart_lastschrift_bic_abfrage', 'Y', 100, 'BIC abfragen', 'selectbox', 540, (object)[
-            'cBeschreibung' => 'Soll das Feld BIC im Bestellvorgang abgefragt werden?',
-            'cModulId' => 'za_lastschrift_jtl',
-            'inputOptions'  => [
-                'N' => 'Nicht abfragen',
-                'O' => 'Optional',
-                'Y' => 'Pflichtangabe'
-            ],
-        ], true);
-        $this->setConfig('zahlungsart_lastschrift_kontonummer_abfrage', 'N', 100, 'Kontonummer abfragen', 'selectbox', 570, (object)[
-            'cBeschreibung' => 'Soll das Feld Kontonummer im Bestellvorgang abgefragt werden?',
-            'cModulId' => 'za_lastschrift_jtl',
-            'inputOptions'  => [
-                'N' => 'Nicht abfragen',
-                'O' => 'Optional',
-                'Y' => 'Pflichtangabe'
-            ],
-        ], true);
-        $this->setConfig('zahlungsart_lastschrift_blz_abfrage', 'N', 100, 'BLZ abfragen', 'selectbox', 580, (object)[
-            'cBeschreibung' => 'Soll das Feld BLZ im Bestellvorgang abgefragt werden?',
-            'cModulId' => 'za_lastschrift_jtl',
-            'inputOptions'  => [
-                'N' => 'Nicht abfragen',
-                'O' => 'Optional',
-                'Y' => 'Pflichtangabe'
-            ],
-        ], true);
         $this->setConfig('zahlungsart_lastschrift_kreditinstitut_abfrage', 'O', 100, 'Kreditinstitut abfragen', 'selectbox', 590, (object)[
             'cBeschreibung' => 'Soll das Feld Kreditinstitut im Bestellvorgang abgefragt werden?',
             'cModulId' => 'za_lastschrift_jtl',
@@ -74,6 +39,9 @@ class Migration_20180924092813 extends Migration implements IMigration
                 'Y' => 'Pflichtangabe'
             ],
         ], true);
+        $this->removeConfig('zahlungsart_lastschrift_iban_abfrage');
+        $this->removeConfig('zahlungsart_lastschrift_kontonummer_abfrage');
+        $this->removeConfig('zahlungsart_lastschrift_blz_abfrage');
     }
 
     public function down()
@@ -84,15 +52,6 @@ class Migration_20180924092813 extends Migration implements IMigration
             'cBeschreibung' => 'Soll das Feld IBAN im Bestellvorgang abgefragt werden?',
             'cModulId' => 'za_lastschrift_jtl',
             'inputOptions'  => [
-                'O' => 'Optional',
-                'Y' => 'Pflichtangabe'
-            ],
-        ], true);
-        $this->setConfig('zahlungsart_lastschrift_bic_abfrage', 'O', 100, 'BIC abfragen', 'selectbox', 540, (object)[
-            'cBeschreibung' => 'Soll das Feld BIC im Bestellvorgang abgefragt werden?',
-            'cModulId' => 'za_lastschrift_jtl',
-            'inputOptions'  => [
-                'N' => 'Nicht abfragen',
                 'O' => 'Optional',
                 'Y' => 'Pflichtangabe'
             ],

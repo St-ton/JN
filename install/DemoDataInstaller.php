@@ -1,4 +1,8 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
 
 use Andyftw\Faker\ImageProvider;
 use Cocur\Slugify\Slugify;
@@ -13,27 +17,27 @@ class DemoDataInstaller
     /**
      * number of categories to create.
      */
-    const NUM_CATEGORIES = 10;
+    public const NUM_CATEGORIES = 10;
 
     /**
      * number of articles to create.
      */
-    const NUM_ARTICLES = 50;
+    public const NUM_ARTICLES = 50;
 
     /**
      * number of manufacturers to create.
      */
-    const NUM_MANUFACTURERS = 10;
+    public const NUM_MANUFACTURERS = 10;
 
     /**
      * number of customers to create.
      */
-    const NUM_CUSTOMERS = 100;
+    public const NUM_CUSTOMERS = 100;
 
     /**
      * font file.
      */
-    const FONT_FILE = 'OpenSans-Regular.ttf';
+    public const FONT_FILE = 'OpenSans-Regular.ttf';
 
     /**
      * @var \ShopCli\Controller\ShopController
@@ -63,7 +67,7 @@ class DemoDataInstaller
     /**
      * @var array
      */
-    private static $_defaultConfig = [
+    private static $defaultConfig = [
         'manufacturers' => self::NUM_MANUFACTURERS,
         'categories'    => self::NUM_CATEGORIES,
         'articles'      => self::NUM_ARTICLES,
@@ -78,7 +82,7 @@ class DemoDataInstaller
     public function __construct(\NiceDB $DB, array $config = [])
     {
         $this->pdo    = $DB;
-        $this->config = array_merge(static::$_defaultConfig, $config);
+        $this->config = array_merge(static::$defaultConfig, $config);
 
         $this->faker = Fake::create('de_DE');
         $this->faker->addProvider(new Commerce($this->faker));
@@ -134,6 +138,7 @@ class DemoDataInstaller
      */
     public function run($callback = null): self
     {
+        error_log('run() called');
         $this->cleanup()
              ->addCompanyData()
              ->createManufacturers($callback)
@@ -152,91 +157,150 @@ class DemoDataInstaller
     public function setConfig(): self
     {
         $this->pdo->query(
-            "UPDATE `teinstellungen` SET `cWert`='Y' WHERE `kEinstellungenSektion`='107' AND cName = 'bewertung_anzeigen';",
+            "UPDATE `teinstellungen` 
+                SET `cWert`='Y' 
+                WHERE `kEinstellungenSektion`='107' 
+                AND cName = 'bewertung_anzeigen';",
             \DB\ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "UPDATE `teinstellungen` SET `cWert`='10' WHERE `kEinstellungenSektion`='2' AND cName = 'startseite_bestseller_anzahl';",
+            "UPDATE `teinstellungen` 
+                SET `cWert`='10' 
+                WHERE `kEinstellungenSektion`='2' 
+                AND cName = 'startseite_bestseller_anzahl';",
             \DB\ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "UPDATE `teinstellungen` SET `cWert`='10' WHERE `kEinstellungenSektion`='2' AND cName = 'startseite_neuimsortiment_anzahl';",
+            "UPDATE `teinstellungen` 
+                SET `cWert`='10' 
+                WHERE `kEinstellungenSektion`='2' 
+                AND cName = 'startseite_neuimsortiment_anzahl';",
             \DB\ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "UPDATE `teinstellungen` SET `cWert`='10' WHERE `kEinstellungenSektion`='2' AND cName = 'startseite_sonderangebote_anzahl';",
+            "UPDATE `teinstellungen` 
+                SET `cWert`='10' 
+                WHERE `kEinstellungenSektion`='2' 
+                AND cName = 'startseite_sonderangebote_anzahl';",
             \DB\ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "UPDATE `teinstellungen` SET `cWert`='10' WHERE `kEinstellungenSektion`='2' AND cName = 'startseite_topangebote_anzahl';",
+            "UPDATE `teinstellungen` 
+                SET `cWert`='10' 
+                WHERE `kEinstellungenSektion`='2' 
+                AND cName = 'startseite_topangebote_anzahl';",
             \DB\ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "UPDATE `ttemplateeinstellungen` SET `cWert`='Y' WHERE `cTemplate`='Evo' AND `cSektion`='megamenu' AND `cName`='show_pages';",
+            "UPDATE `ttemplateeinstellungen` 
+                SET `cWert`='Y' 
+                WHERE `cTemplate`='Evo' 
+                AND `cSektion`='megamenu' 
+                AND `cName`='show_pages';",
             \DB\ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "UPDATE `ttemplateeinstellungen` SET `cWert`='Y' WHERE `cTemplate`='Evo' AND `cSektion`='megamenu' AND `cName`='show_manufacturers';",
+            "UPDATE `ttemplateeinstellungen` 
+                SET `cWert`='Y' 
+                WHERE `cTemplate`='Evo' 
+                AND `cSektion`='megamenu' 
+                AND `cName`='show_manufacturers';",
             \DB\ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "UPDATE `ttemplateeinstellungen` SET `cWert`='Y' WHERE `cTemplate`='Evo' AND `cSektion`='footer' AND `cName`='newsletter_footer';",
+            "UPDATE `ttemplateeinstellungen` 
+                SET `cWert`='Y' 
+                WHERE `cTemplate`='Evo' 
+                AND `cSektion`='footer' 
+                AND `cName`='newsletter_footer';",
             \DB\ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "UPDATE `ttemplateeinstellungen` SET `cWert`='Y' WHERE `cTemplate`='Evo' AND `cSektion`='footer' AND `cName`='socialmedia_footer';",
+            "UPDATE `ttemplateeinstellungen` 
+                SET `cWert`='Y' 
+                WHERE `cTemplate`='Evo' 
+                AND `cSektion`='footer' 
+                AND `cName`='socialmedia_footer';",
             \DB\ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "UPDATE `ttemplateeinstellungen` SET `cWert`='https://www.facebook.com/JTLSoftware/' WHERE `cTemplate`='Evo' AND `cSektion`='footer' AND `cName`='facebook';",
+            "UPDATE `ttemplateeinstellungen` 
+                SET `cWert`='https://www.facebook.com/JTLSoftware/' 
+                WHERE `cTemplate`='Evo' 
+                AND `cSektion`='footer' 
+                AND `cName`='facebook';",
             \DB\ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "UPDATE `ttemplateeinstellungen` SET `cWert`='https://twitter.com/JTLSoftware' WHERE `cTemplate`='Evo' AND `cSektion`='footer' AND `cName`='twitter';",
+            "UPDATE `ttemplateeinstellungen` 
+                SET `cWert`='https://twitter.com/JTLSoftware' 
+                WHERE `cTemplate`='Evo' 
+                AND `cSektion`='footer' 
+                AND `cName`='twitter';",
             \DB\ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "UPDATE `ttemplateeinstellungen` SET `cWert`='https://www.youtube.com/user/JTLSoftwareGmbH' WHERE `cTemplate`='Evo' AND `cSektion`='footer' AND `cName`='youtube';",
+            "UPDATE `ttemplateeinstellungen` 
+                SET `cWert`='https://www.youtube.com/user/JTLSoftwareGmbH' 
+                WHERE `cTemplate`='Evo' 
+                AND `cSektion`='footer' 
+                AND `cName`='youtube';",
             \DB\ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "UPDATE `ttemplateeinstellungen` SET `cWert`='https://www.xing.com/companies/jtl-softwaregmbh' WHERE `cTemplate`='Evo' AND `cSektion`='footer' AND `cName`='xing';",
+            "UPDATE `ttemplateeinstellungen` 
+                SET `cWert`='https://www.xing.com/companies/jtl-softwaregmbh' 
+                WHERE `cTemplate`='Evo' 
+                AND `cSektion`='footer' 
+                AND `cName`='xing';",
             \DB\ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "UPDATE `tlinksprache` SET `cTitle`='Startseite!', `cContent`='" . $this->faker->text(500) . "' WHERE `kLink`='3' AND `cISOSprache`='ger';",
+            "UPDATE `tlinksprache` 
+                SET `cTitle`='Startseite!', `cContent`='" . $this->faker->text(500) . "'
+                WHERE `kLink`='3' 
+                AND `cISOSprache`='ger';",
             \DB\ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "UPDATE `tlinksprache` SET `cTitle`='Home!', `cContent`='" . $this->faker->text(500) . "' WHERE `kLink`='3' AND `cISOSprache`='eng';",
+            "UPDATE `tlinksprache` 
+                SET `cTitle`='Home!', `cContent`='" . $this->faker->text(500) . "' 
+                WHERE `kLink`=3 
+                AND `cISOSprache`='eng';",
             \DB\ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "INSERT INTO `teinheit` (`kEinheit`, `kSprache`, `cName`) VALUES (1,1,'kg'),(1,2,'kg'),(2,1,'ml'),(2,2,'ml'),(3,1,'Stk'),(3,2,'Piece');",
+            "INSERT INTO `teinheit` (`kEinheit`, `kSprache`, `cName`) 
+                VALUES (1,1,'kg'),(1,2,'kg'),(2,1,'ml'),(2,2,'ml'),(3,1,'Stk'),(3,2,'Piece');",
             \DB\ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "INSERT INTO `tlink` (`kLink`,`kVaterLink`,`kPlugin`,`cName`,`nLinkart`,`cNoFollow`,`cKundengruppen`,`cSichtbarNachLogin`,`cDruckButton`,`nSort`,`bSSL`,`bIsFluid`,`cIdentifier`) 
+            "INSERT INTO `tlink` (`kLink`,`kVaterLink`,`kPlugin`,`cName`,`nLinkart`,`cNoFollow`,`cKundengruppen`,
+            `cSichtbarNachLogin`,`cDruckButton`,`nSort`,`bSSL`,`bIsFluid`,`cIdentifier`) 
                 VALUES (100,0,0,'NurEndkunden',1,'N','1;','N','N',0,0,0,'');",
             \DB\ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "INSERT INTO `tlink` (`kLink`,`kVaterLink`,`kPlugin`,`cName`,`nLinkart`,`cNoFollow`,`cKundengruppen`,`cSichtbarNachLogin`,`cDruckButton`,`nSort`,`bSSL`,`bIsFluid`,`cIdentifier`) 
+            "INSERT INTO `tlink` (`kLink`,`kVaterLink`,`kPlugin`,`cName`,`nLinkart`,`cNoFollow`,
+          `cKundengruppen`,`cSichtbarNachLogin`,`cDruckButton`,`nSort`,`bSSL`,`bIsFluid`,`cIdentifier`) 
                 VALUES (101,0,0,'NurHaendler',1,'N','2;','N','N',0,0,0,'');",
             \DB\ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "INSERT INTO `tlink` (`kLink`,`kVaterLink`,`kPlugin`,`cName`,`nLinkart`,`cNoFollow`,`cKundengruppen`,`cSichtbarNachLogin`,`cDruckButton`,`nSort`,`bSSL`,`bIsFluid`,`cIdentifier`) 
+            "INSERT INTO `tlink` (`kLink`,`kVaterLink`,`kPlugin`,`cName`,`nLinkart`,`cNoFollow`,
+            `cKundengruppen`,`cSichtbarNachLogin`,`cDruckButton`,`nSort`,`bSSL`,`bIsFluid`,`cIdentifier`) 
                 VALUES (102,0,9,0,'Beispiel',1,'N',NULL,'N','N',0,0,0,'');",
             \DB\ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "INSERT INTO `tlink` (`kLink`,`kVaterLink`,`kPlugin`,`cName`,`nLinkart`,`cNoFollow`,`cKundengruppen`,`cSichtbarNachLogin`,`cDruckButton`,`nSort`,`bSSL`,`bIsFluid`,`cIdentifier`) 
+            "INSERT INTO `tlink` (`kLink`,`kVaterLink`,`kPlugin`,`cName`,`nLinkart`,`cNoFollow`,
+            `cKundengruppen`,`cSichtbarNachLogin`,`cDruckButton`,`nSort`,`bSSL`,`bIsFluid`,`cIdentifier`) 
                 VALUES (103,102,0,'Kindseite1',1,'N',NULL,'N','N',0,0,0,'');",
             \DB\ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "INSERT INTO `tlink` (`kLink`,`kVaterLink`,`kPlugin`,`cName`,`nLinkart`,`cNoFollow`,`cKundengruppen`,`cSichtbarNachLogin`,`cDruckButton`,`nSort`,`bSSL`,`bIsFluid`,`cIdentifier`) 
+            "INSERT INTO `tlink` (`kLink`,`kVaterLink`,`kPlugin`,`cName`,`nLinkart`,`cNoFollow`,
+            `cKundengruppen`,`cSichtbarNachLogin`,`cDruckButton`,`nSort`,`bSSL`,`bIsFluid`,`cIdentifier`) 
                 VALUES (104,102,0,'Kindseite2',1,'N',NULL,'N','N',0,0,0,'');",
             \DB\ReturnType::DEFAULT
         );
@@ -246,38 +310,52 @@ class DemoDataInstaller
             \DB\ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,`cMetaTitle`,`cMetaKeywords`,`cMetaDescription`) 
-                VALUES (100,'customers-only','eng','Customers only','Customers only','" . $this->faker->text(500) . "','','','');",
+            "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,
+            `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`) 
+                VALUES (100,'customers-only','eng','Customers only','Customers only','" .
+            $this->faker->text(500) . "','','','');",
             \DB\ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,`cMetaTitle`,`cMetaKeywords`,`cMetaDescription`) 
-                VALUES (100,'nur-kunden','ger','Nur Endkunden','Nur Endkunden','" . $this->faker->text(500) . "','','','');",
+            "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,
+            `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`) 
+                VALUES (100,'nur-kunden','ger','Nur Endkunden','Nur Endkunden','" .
+            $this->faker->text(500) . "','','','');",
             \DB\ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,`cMetaTitle`,`cMetaKeywords`,`cMetaDescription`) 
-                VALUES (101,'retailers-only','eng','Retailers only','Retailers only','" . $this->faker->text(500) . "','','','');",
+            "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,
+                `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`) 
+                VALUES (101,'retailers-only','eng','Retailers only','Retailers only','" .
+            $this->faker->text(500) . "','','','');",
             \DB\ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,`cMetaTitle`,`cMetaKeywords`,`cMetaDescription`) 
-                VALUES (101,'nur-haendler','ger','Nur Haendler','Nur Haendler','" . $this->faker->text(500) . "','','','');",
+            "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,
+            `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`) 
+                VALUES (101,'nur-haendler','ger','Nur Haendler','Nur Haendler','" .
+            $this->faker->text(500) . "','','','');",
             \DB\ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,`cMetaTitle`,`cMetaKeywords`,`cMetaDescription`) 
-                VALUES (102,'beispiel-seite','ger','Beispielseite','Beispielseite','" . $this->faker->text(500) . "','','','');",
+            "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,
+            `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`) 
+                VALUES (102,'beispiel-seite','ger','Beispielseite','Beispielseite','" .
+            $this->faker->text(500) . "','','','');",
             \DB\ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,`cMetaTitle`,`cMetaKeywords`,`cMetaDescription`) 
-                VALUES (103,'kindseite-eins','ger','Kindseite1','Kindseite1','" . $this->faker->text(500) . "','','','');",
+            "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,
+            `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`) 
+                VALUES (103,'kindseite-eins','ger','Kindseite1','Kindseite1','" .
+            $this->faker->text(500) . "','','','');",
             \DB\ReturnType::DEFAULT
         );
         $this->pdo->query(
-            "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,`cMetaTitle`,`cMetaKeywords`,`cMetaDescription`) 
-                VALUES (104,'kindseite-zwei','ger','Kindseite2','Kindseite2','" . $this->faker->text(500) . "','','','');",
+            "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,
+            `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`) 
+                VALUES (104,'kindseite-zwei','ger','Kindseite2','Kindseite2','" .
+            $this->faker->text(500) . "','','','');",
             \DB\ReturnType::DEFAULT
         );
         $this->pdo->query(
@@ -327,8 +405,10 @@ class DemoDataInstaller
         $this->pdo->query('DELETE FROM tlink WHERE kLink > 99;', \DB\ReturnType::DEFAULT);
         $this->pdo->query('DELETE FROM tlinksprache WHERE kLink > 99;', \DB\ReturnType::DEFAULT);
         $this->pdo->query("DELETE FROM tseo WHERE cKey = 'kLink' AND kKey > 99;", \DB\ReturnType::DEFAULT);
-        $this->pdo->query("DELETE FROM tseo WHERE cKey = 'kArtikel' OR cKey = 'kKategorie' OR cKey = 'kHersteller'",
-            \DB\ReturnType::DEFAULT);
+        $this->pdo->query(
+            "DELETE FROM tseo WHERE cKey = 'kArtikel' OR cKey = 'kKategorie' OR cKey = 'kHersteller'",
+            \DB\ReturnType::DEFAULT
+        );
 
         return $this;
     }
@@ -376,7 +456,8 @@ class DemoDataInstaller
     {
         $this->pdo->query('TRUNCATE TABLE tartikelext', \DB\ReturnType::DEFAULT);
         $this->pdo->query(
-            'INSERT INTO tartikelext(kArtikel, fDurchschnittsBewertung) SELECT kArtikel, AVG(nSterne) FROM tbewertung GROUP BY kArtikel',
+            'INSERT INTO tartikelext(kArtikel, fDurchschnittsBewertung) 
+                SELECT kArtikel, AVG(nSterne) FROM tbewertung GROUP BY kArtikel',
             \DB\ReturnType::DEFAULT
         );
 
@@ -389,6 +470,7 @@ class DemoDataInstaller
      */
     public function createManufacturers($callback = null): self
     {
+        error_log('createManufacturers() called');
         $maxPk      = (int)$this->pdo->query(
             'SELECT max(kHersteller) AS maxPk FROM thersteller',
             \DB\ReturnType::SINGLE_OBJECT
@@ -399,8 +481,10 @@ class DemoDataInstaller
         for ($i = 1; $i <= $limit; ++$i) {
             try {
                 $_name = $this->faker->unique()->company;
-                $res   = $this->pdo->query('SELECT kHersteller FROM thersteller WHERE cName = "' . $_name . '"',
-                    \DB\ReturnType::ARRAY_OF_OBJECTS);
+                $res   = $this->pdo->query(
+                    'SELECT kHersteller FROM thersteller WHERE cName = "' . $_name . '"',
+                    \DB\ReturnType::ARRAY_OF_OBJECTS
+                );
                 if (is_array($res) && count($res) > 0) {
                     throw new \OverflowException();
                 }
@@ -417,22 +501,25 @@ class DemoDataInstaller
             $_manufacturer->cBildpfad   = $this->createManufacturerImage($_manufacturer->kHersteller, $_name);
             $res                        = $this->pdo->insert('thersteller', $_manufacturer);
             if ($res > 0) {
-                $_seoEntry       = new \stdClass();
-                $_seoEntry->cKey = 'kHersteller';
-                $_seoEntry->cSeo = $_manufacturer->cSeo;
+                $seoItem       = new \stdClass();
+                $seoItem->cKey = 'kHersteller';
+                $seoItem->cSeo = $_manufacturer->cSeo;
 
                 $seo_index = 0;
-                while (($data = $this->pdo->select('tseo', 'cKey', $_seoEntry->cKey, 'cSeo', $_seoEntry->cSeo)) !== false && is_array($data) && count($data) > 0) {
-                    $_seoEntry->cSeo = $_manufacturer->cSeo . '_' . ++$seo_index;
+                while (($data = $this->pdo->select('tseo', 'cKey', $seoItem->cKey, 'cSeo', $seoItem->cSeo)) !== false
+                    && is_array($data)
+                    && count($data) > 0
+                ) {
+                    $seoItem->cSeo = $_manufacturer->cSeo . '_' . ++$seo_index;
                 }
 
-                $_seoEntry->kKey     = $_manufacturer->kHersteller;
-                $_seoEntry->kSprache = 1;
-                $this->pdo->insert('tseo', $_seoEntry);
+                $seoItem->kKey     = $_manufacturer->kHersteller;
+                $seoItem->kSprache = 1;
+                $this->pdo->insert('tseo', $seoItem);
 
-                $_seoEntry->cSeo     = $_seoEntry->cSeo . '-en';
-                $_seoEntry->kSprache = 2;
-                $this->pdo->insert('tseo', $_seoEntry);
+                $seoItem->cSeo     .= '-en';
+                $seoItem->kSprache = 2;
+                $this->pdo->insert('tseo', $seoItem);
             }
 
             $this->callback($callback, $i, $limit, $res > 0, $_name);
@@ -483,7 +570,10 @@ class DemoDataInstaller
                 $_seoEntry->cSeo = $_category->cSeo;
 
                 $seo_index = 0;
-                while (($data = $this->pdo->select('tseo', 'cKey', $_seoEntry->cKey, 'cSeo', $_seoEntry->cSeo)) !== false && is_array($data) && count($data) > 0) {
+                while (($data = $this->pdo->select('tseo', 'cKey', $_seoEntry->cKey, 'cSeo', $_seoEntry->cSeo)) !== false
+                    && is_array($data)
+                    && count($data) > 0
+                ) {
                     $_seoEntry->cSeo = $_category->cSeo . '_' . ++$seo_index;
                 }
 
@@ -629,8 +719,16 @@ class DemoDataInstaller
                 $_seoEntry->cSeo = $_article->cSeo;
 
                 $seo_index = 0;
-                while (($data = $this->pdo->select('tseo', 'cKey', $_seoEntry->cKey, 'cSeo',
-                        $_seoEntry->cSeo)) !== false && is_array($data) && count($data) > 0) {
+                while (($data = $this->pdo->select(
+                    'tseo',
+                    'cKey',
+                    $_seoEntry->cKey,
+                    'cSeo',
+                    $_seoEntry->cSeo
+                )) !== false
+                    && is_array($data)
+                    && count($data) > 0
+                ) {
                     $_seoEntry->cSeo = $_article->cSeo . '_' . ++$seo_index;
                 }
 
@@ -638,7 +736,7 @@ class DemoDataInstaller
                 $_seoEntry->kSprache = 1;
                 $this->pdo->insert('tseo', $_seoEntry);
 
-                $_seoEntry->cSeo     = $_seoEntry->cSeo . '-en';
+                $_seoEntry->cSeo     .= '-en';
                 $_seoEntry->kSprache = 2;
                 $this->pdo->insert('tseo', $_seoEntry);
 
@@ -701,7 +799,6 @@ class DemoDataInstaller
                 $firstName = $fake->firstNameFemale;
                 $gender    = 'w';
             }
-            $firstName     = $firstName;
             $lastName      = $fake->lastName;
             $streetName    = $fake->streetName;
             $houseNr       = rand(1, 200);
@@ -766,7 +863,7 @@ class DemoDataInstaller
      * @param int         $height
      * @return bool
      */
-    private function _createImage($path, $string = null, int $width = 500, int $height = 500): bool
+    private function createImage($path, $string = null, int $width = 500, int $height = 500): bool
     {
         $font     = $this->getFontFile();
         $filepath = $this->faker->imageFile(null, $width, $height, 'jpg', true, $string, null, null, $font);
@@ -786,8 +883,8 @@ class DemoDataInstaller
             $pathNormal = PFAD_ROOT . 'bilder/hersteller/normal/' . $file;
             $pathSmall  = PFAD_ROOT . 'bilder/hersteller/klein/' . $file;
 
-            return ($this->_createImage($pathNormal, $string) === true
-                && $this->_createImage($pathSmall, $string, 100, 100) === true)
+            return ($this->createImage($pathNormal, $string) === true
+                && $this->createImage($pathSmall, $string, 100, 100) === true)
                 ? $file
                 : '';
         }
@@ -800,7 +897,7 @@ class DemoDataInstaller
      * @param string $string
      * @param int    $imageNumber
      */
-    private function createArticleImage(int $articleID, $string, $imageNumber)
+    private function createArticleImage(int $articleID, $string, $imageNumber): void
     {
         $maxPk = (int)$this->pdo->query(
             'SELECT max(kArtikelPict) AS maxPk FROM tartikelpict',
@@ -811,7 +908,7 @@ class DemoDataInstaller
             $file = '1024_1024_' . md5($string . $articleID . $imageNumber) . '.jpg';
             $path = PFAD_ROOT . 'media/image/storage/' . $file;
 
-            if ($this->_createImage($path, $string, 1024, 1024) === true) {
+            if ($this->createImage($path, $string, 1024, 1024) === true) {
                 $_image                   = new \stdClass();
                 $_image->cPfad            = $file;
                 $_image->kBild            = $this->pdo->insert('tbild', $_image);
@@ -828,13 +925,13 @@ class DemoDataInstaller
      * @param int    $categoryID
      * @param string $string
      */
-    private function createCategoryImage(int $categoryID, $string)
+    private function createCategoryImage(int $categoryID, $string): void
     {
         if ($categoryID > 0) {
             $file = $this->slug($string) . '.jpg';
             $path = PFAD_ROOT . 'bilder/kategorien/' . $file;
 
-            if ($this->_createImage($path, $string, 200, 200) === true) {
+            if ($this->createImage($path, $string, 200, 200) === true) {
                 $_image             = new \stdClass();
                 $_image->kKategorie = $categoryID;
                 $_image->cPfad      = $file;
@@ -891,7 +988,8 @@ class DemoDataInstaller
         }
         // we've got the left value, and now that we've processed the children of this node we also know the right value
         $this->pdo->query(
-            'UPDATE tkategorie SET lft = ' . $left . ', rght = ' . $right . ', nLevel = ' . $level . ' WHERE kKategorie = ' . $parentId,
+            'UPDATE tkategorie SET lft = ' . $left . ', rght = ' . $right . ', nLevel = ' . $level . ' 
+                WHERE kKategorie = ' . $parentId,
             \DB\ReturnType::DEFAULT
         );
 
@@ -900,8 +998,8 @@ class DemoDataInstaller
     }
 
     /**
-     * @param $text
-     * @return mixed
+     * @param string $text
+     * @return string
      */
     private function slug($text)
     {
@@ -911,7 +1009,7 @@ class DemoDataInstaller
     /**
      *
      */
-    private function callback()
+    private function callback(): void
     {
         $arguments = func_get_args();
         $cb        = array_shift($arguments);

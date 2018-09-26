@@ -54,29 +54,32 @@ class VueInstaller
     /**
      *
      */
-    public function run()
+    public function run(): void
     {
         switch ($this->task) {
             case 'installedcheck':
                 $this->getIsInstalled();
                 break;
-            case 'systemcheck' :
+            case 'systemcheck':
                 $this->getSystemCheck();
                 break;
-            case 'dircheck' :
+            case 'dircheck':
                 $this->getDirectoryCheck();
                 break;
-            case 'credentialscheck' :
+            case 'credentialscheck':
                 $this->getDBCredentialsCheck();
                 break;
-            case 'doinstall' :
+            case 'doinstall':
+                error_log('doinstall task start');
                 $this->doInstall();
                 break;
-            case 'installdemodata' :
+            case 'installdemodata':
+                error_log('installdemodata task start');
                 $this->installDemoData();
                 break;
-            case 'wizard' :
+            case 'wizard':
                 $this->executeWizard();
+                break;
             default:
                 break;
         }
@@ -86,7 +89,7 @@ class VueInstaller
     /**
      * @return $this
      */
-    private function executeWizard() : VueInstaller
+    private function executeWizard(): self
     {
         if ($this->initNiceDB($this->post['db'])) {
             $step   = isset($this->post['stepId']) ? (int)$this->post['stepId'] : 0;
@@ -120,7 +123,7 @@ class VueInstaller
     /**
      *
      */
-    private function output()
+    private function output(): void
     {
         echo json_encode($this->payload);
         exit(0);
@@ -129,7 +132,7 @@ class VueInstaller
     /**
      *
      */
-    private function sendResponse()
+    private function sendResponse(): void
     {
         if ($this->responseStatus === true && empty($this->responseMessage)) {
             $this->responseMessage[] = 'Erfolgreich ausgeführt';
@@ -146,7 +149,7 @@ class VueInstaller
      * @param array $credentials
      * @return bool
      */
-    private function initNiceDB(array $credentials) : bool
+    private function initNiceDB(array $credentials): bool
     {
         if (isset($credentials['host'], $credentials['user'], $credentials['pass'], $credentials['name'])) {
             try {
@@ -177,13 +180,14 @@ class VueInstaller
     }
 
     /**
-     * @return $this
+     * @return VueInstaller
+     * @throws \Exceptions\InvalidEntityNameException
      */
-    private function doInstall() : VueInstaller
+    private function doInstall(): self
     {
         if ($this->initNiceDB($this->post['db'])) {
             $this->db->query('SET FOREIGN_KEY_CHECKS=0', \DB\ReturnType::DEFAULT);
-            $this->parse_mysql_dump(__DIR__ . '/initial_schema.sql');
+            $this->parseMysqlDump(__DIR__ . '/initial_schema.sql');
             $this->insertUsers();
             $blowfishKey = $this->getUID(30);
             $this->writeConfigFile($this->post['db'], $blowfishKey);
@@ -198,9 +202,10 @@ class VueInstaller
     /**
      * @return $this
      */
-    private function installDemoData() : VueInstaller
+    private function installDemoData(): self
     {
         if ($this->initNiceDB($this->post['db'])) {
+            error_log('installDemoData started');
             $demoData = new DemoDataInstaller($this->db);
             $demoData->run();
             $this->responseStatus = true;
@@ -216,7 +221,7 @@ class VueInstaller
      * @param string $blowfishKey
      * @return bool
      */
-    private function writeConfigFile(array $credentials, string $blowfishKey) : bool
+    private function writeConfigFile(array $credentials, string $blowfishKey): bool
     {
         if (isset($credentials['host'], $credentials['user'], $credentials['pass'], $credentials['name'])) {
             $socket = '';
@@ -263,7 +268,7 @@ ini_set('display_errors', 0);" . "\n";
      * @param string $url
      * @return string
      */
-    private function parse_mysql_dump(string $url) : string
+    private function parseMysqlDump(string $url): string
     {
         if ($this->db === null) {
             return 'NiceDB nicht initialisiert.';
@@ -298,7 +303,7 @@ ini_set('display_errors', 0);" . "\n";
      * @return VueInstaller
      * @throws \Exceptions\InvalidEntityNameException
      */
-    private function insertUsers() : VueInstaller
+    private function insertUsers(): self
     {
         $adminLogin                    = new stdClass();
         $adminLogin->cLogin            = $this->post['admin']['name'];
@@ -338,7 +343,7 @@ ini_set('display_errors', 0);" . "\n";
     /**
      * @return $this
      */
-    private function getDBCredentialsCheck() : VueInstaller
+    private function getDBCredentialsCheck(): self
     {
         $res        = new stdClass();
         $res->error = false;
@@ -375,7 +380,7 @@ ini_set('display_errors', 0);" . "\n";
     /**
      * @return $this
      */
-    private function getIsInstalled() : VueInstaller
+    private function getIsInstalled(): self
     {
         $res = false;
         if (file_exists(PFAD_ROOT . PFAD_INCLUDES . 'config.JTL-Shop.ini.php')) {
@@ -395,7 +400,7 @@ ini_set('display_errors', 0);" . "\n";
     /**
      * @return $this
      */
-    public function getSystemCheck() : VueInstaller
+    public function getSystemCheck(): self
     {
         $oSC    = new Systemcheck_Environment();
         $vTests = $oSC->executeTestGroup('Shop4');
@@ -407,7 +412,7 @@ ini_set('display_errors', 0);" . "\n";
     /**
      * @return $this
      */
-    public function getDirectoryCheck() : VueInstaller
+    public function getDirectoryCheck(): self
     {
         $oFS = new Systemcheck_Platform_Filesystem(PFAD_ROOT);
         $this->payload['testresults'] = $oFS->getFoldersChecked();
@@ -420,7 +425,7 @@ ini_set('display_errors', 0);" . "\n";
      * @param string $cString
      * @return bool|string
      */
-    private function getUID(int $length = 40, string $cString = '') : string
+    private function getUID(int $length = 40, string $cString = ''): string
     {
         $cUID            = '';
         $cSalt           = '';

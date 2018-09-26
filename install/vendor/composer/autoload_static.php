@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit067d9061e585c7644c4b866ebf1ce7c7
+class ComposerStaticInit5adb3b73cbc7939aeab1535b01b04aeb
 {
     public static $files = array (
         'd98f8828ad2737a97e6d55807bfb00f0' => __DIR__ . '/../..' . '/VueInstaller.php',
@@ -62,8 +62,8 @@ class ComposerStaticInit067d9061e585c7644c4b866ebf1ce7c7
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit067d9061e585c7644c4b866ebf1ce7c7::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit067d9061e585c7644c4b866ebf1ce7c7::$prefixDirsPsr4;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit5adb3b73cbc7939aeab1535b01b04aeb::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit5adb3b73cbc7939aeab1535b01b04aeb::$prefixDirsPsr4;
 
         }, null, ClassLoader::class);
     }

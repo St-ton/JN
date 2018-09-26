@@ -138,7 +138,6 @@ class DemoDataInstaller
      */
     public function run($callback = null): self
     {
-        error_log('run() called');
         $this->cleanup()
              ->addCompanyData()
              ->createManufacturers($callback)
@@ -470,7 +469,6 @@ class DemoDataInstaller
      */
     public function createManufacturers($callback = null): self
     {
-        error_log('createManufacturers() called');
         $maxPk      = (int)$this->pdo->query(
             'SELECT max(kHersteller) AS maxPk FROM thersteller',
             \DB\ReturnType::SINGLE_OBJECT

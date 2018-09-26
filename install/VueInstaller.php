@@ -70,11 +70,9 @@ class VueInstaller
                 $this->getDBCredentialsCheck();
                 break;
             case 'doinstall':
-                error_log('doinstall task start');
                 $this->doInstall();
                 break;
             case 'installdemodata':
-                error_log('installdemodata task start');
                 $this->installDemoData();
                 break;
             case 'wizard':
@@ -205,7 +203,6 @@ class VueInstaller
     private function installDemoData(): self
     {
         if ($this->initNiceDB($this->post['db'])) {
-            error_log('installDemoData started');
             $demoData = new DemoDataInstaller($this->db);
             $demoData->run();
             $this->responseStatus = true;

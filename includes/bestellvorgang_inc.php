@@ -46,13 +46,11 @@ function pruefeVersandartWahl($Versandart, $aFormValues = 0, $bMsg = true)
  */
 function pruefeUnregistriertBestellen($cPost_arr)
 {
-    global $step, $Kunde;
+    global $step, $Kunde, $Lieferadresse;
     unset($_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['Zahlungsart']);
     $cart = Session::Cart();
     $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
          ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART);
-    $step = 'edit_customer_address';
-    unset($_SESSION['Kunde']);
     $fehlendeAngaben     = checkKundenFormular(0);
     $Kunde               = getKundendaten($cPost_arr, 0);
     $cKundenattribut_arr = getKundenattribute($cPost_arr);
@@ -65,7 +63,22 @@ function pruefeUnregistriertBestellen($cPost_arr)
         $cPost_arr,
         true
     ));
-    $nReturnValue    = angabenKorrekt($fehlendeAngaben);
+
+    if (isset($cPost_arr['shipping_address'])) {
+        if ((int)$cPost_arr['shipping_address'] === 0) {
+            $cPost_arr['kLieferadresse'] = 0;
+            $cPost_arr['lieferdaten']    = 1;
+            pruefeLieferdaten($cPost_arr);
+        } elseif (isset($cPost_arr['kLieferadresse']) && (int)$cPost_arr['kLieferadresse'] > 0) {
+            pruefeLieferdaten($cPost_arr);
+        } elseif (isset($cPost_arr['register']['shipping_address'])) {
+            pruefeLieferdaten($cPost_arr['register']['shipping_address'], $fehlendeAngaben);
+        }
+    } elseif (isset($cPost_arr['lieferdaten']) && (int)$cPost_arr['lieferdaten'] === 1) {
+        // compatibility with older template
+        pruefeLieferdaten($cPost_arr, $fehlendeAngaben);
+    }
+    $nReturnValue = angabenKorrekt($fehlendeAngaben);
 
     executeHook(HOOK_BESTELLVORGANG_INC_UNREGISTRIERTBESTELLEN_PLAUSI, [
         'nReturnValue'    => &$nReturnValue,
@@ -96,25 +109,20 @@ function pruefeUnregistriertBestellen($cPost_arr)
             TaxHelper::setTaxRates();
             $cart->gibGesamtsummeWarenLocalized();
         }
-        if (isset($cPost_arr['shipping_address'])) {
-            if ((int)$cPost_arr['shipping_address'] === 0) {
-                $cPost_arr['kLieferadresse'] = 0;
-                $cPost_arr['lieferdaten']    = 1;
-                pruefeLieferdaten($cPost_arr);
-            } elseif (isset($cPost_arr['kLieferadresse']) && (int)$cPost_arr['kLieferadresse'] > 0) {
-                pruefeLieferdaten($cPost_arr);
-            } elseif (isset($cPost_arr['register']['shipping_address'])) {
-                pruefeLieferdaten($cPost_arr['register']['shipping_address'], $fehlendeAngaben);
-            }
-        } elseif (isset($cPost_arr['lieferdaten']) && (int)$cPost_arr['lieferdaten'] === 1) {
-            // compatibility with older template
-            pruefeLieferdaten($cPost_arr, $fehlendeAngaben);
-        }
-
         executeHook(HOOK_BESTELLVORGANG_INC_UNREGISTRIERTBESTELLEN);
 
         return 1;
     }
+    //keep shipping address on error
+    if (isset($cPost_arr['register']['shipping_address'])) {
+        $_SESSION['Bestellung']                 = $_SESSION['Bestellung'] ?? new stdClass();
+        $_SESSION['Bestellung']->kLieferadresse = isset($cPost_arr['kLieferadresse'])
+            ? (int)$cPost_arr['kLieferadresse']
+            : -1;
+        $Lieferadresse                          = getLieferdaten($cPost_arr['register']['shipping_address']);
+        $_SESSION['Lieferadresse']              = $Lieferadresse;
+    }
+
     setzeFehlendeAngaben($fehlendeAngaben);
     Shop::Smarty()->assign('cKundenattribut_arr', $cKundenattribut_arr)
         ->assign('cPost_var', StringHandler::filterXSS($cPost_arr));
@@ -125,12 +133,10 @@ function pruefeUnregistriertBestellen($cPost_arr)
 /**
  * @param array $cPost_arr
  * @param array|null $fehlendeAngaben
- * @return string
  */
 function pruefeLieferdaten($cPost_arr, &$fehlendeAngaben = null)
 {
-    global $step, $Lieferadresse;
-    $step = 'Lieferadresse';
+    global $Lieferadresse;
     unset($_SESSION['Lieferadresse']);
     if (!isset($_SESSION['Bestellung'])) {
         $_SESSION['Bestellung'] = new stdClass();
@@ -142,10 +148,10 @@ function pruefeLieferdaten($cPost_arr, &$fehlendeAngaben = null)
     unset($_SESSION['Versandart']);
     //neue lieferadresse
     if (!isset($cPost_arr['kLieferadresse']) || (int)$cPost_arr['kLieferadresse'] === -1) {
-        $fehlendeAngaben = checkLieferFormular($cPost_arr);
-        $Lieferadresse   = getLieferdaten($cPost_arr);
-        $nReturnValue    = angabenKorrekt($fehlendeAngaben);
-
+        $fehlendeAngaben           = \array_merge($fehlendeAngaben, checkLieferFormular($cPost_arr));
+        $Lieferadresse             = getLieferdaten($cPost_arr);
+        $nReturnValue              = angabenKorrekt($fehlendeAngaben);
+        $_SESSION['Lieferadresse'] = $Lieferadresse;
         executeHook(HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE_NEUELIEFERADRESSE_PLAUSI, [
             'nReturnValue'    => &$nReturnValue,
             'fehlendeAngaben' => &$fehlendeAngaben
@@ -157,12 +163,8 @@ function pruefeLieferdaten($cPost_arr, &$fehlendeAngaben = null)
             } elseif ($Lieferadresse->cAnrede === 'w') {
                 $Lieferadresse->cAnredeLocalized = Shop::Lang()->get('salutationW');
             }
-            $_SESSION['Lieferadresse'] = $Lieferadresse;
             executeHook(HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE_NEUELIEFERADRESSE);
             pruefeVersandkostenfreiKuponVorgemerkt();
-        } else {
-            $_SESSION['Lieferadresse'] = $Lieferadresse;
-            setzeFehlendeAngaben($fehlendeAngaben, 'shipping_address');
         }
     } elseif ((int)$cPost_arr['kLieferadresse'] > 0) {
         //vorhandene lieferadresse
@@ -220,8 +222,6 @@ function pruefeLieferdaten($cPost_arr, &$fehlendeAngaben = null)
         }
     }
     plausiGuthaben($cPost_arr);
-
-    return $step;
 }
 
 /**
@@ -306,12 +306,8 @@ function pruefeRechnungsadresseStep($cGet_arr)
 {
     global $step, $Kunde;
     //sondersteps Rechnungsadresse ändern
-    if ($_SESSION['Kunde'] && isset($cGet_arr['editRechnungsadresse']) && (int)$cGet_arr['editRechnungsadresse'] === 1) {
+    if (!empty($_SESSION['Kunde']) && isset($cGet_arr['editRechnungsadresse']) && (int)$cGet_arr['editRechnungsadresse'] === 1) {
         Kupon::resetNewCustomerCoupon();
-        if (!isset($cGet_arr['editLieferadresse'])) {
-            // Shipping address and customer address are now on same site - check shipping address also
-            pruefeLieferadresseStep(['editLieferadresse' => $cGet_arr['editRechnungsadresse']]);
-        }
         $Kunde = $_SESSION['Kunde'];
         $step  = 'edit_customer_address';
     }
@@ -320,7 +316,6 @@ function pruefeRechnungsadresseStep($cGet_arr)
         if (isset($_SESSION['checkout.fehlendeAngaben'])) {
             setzeFehlendeAngaben($_SESSION['checkout.fehlendeAngaben']);
             unset($_SESSION['checkout.fehlendeAngaben']);
-            $step = 'accountwahl';
         }
         if (isset($_SESSION['checkout.cPost_arr'])) {
             $Kunde                      = getKundendaten($_SESSION['checkout.cPost_arr'], 0, 0);
@@ -337,6 +332,9 @@ function pruefeRechnungsadresseStep($cGet_arr)
         }
         unset($_SESSION['checkout.register']);
     }
+    if (pruefeFehlendeAngaben()) {
+        $step = isset($_SESSION['Kunde']) ? 'edit_customer_address' : 'accountwahl';
+    }
 }
 
 /**
@@ -346,20 +344,16 @@ function pruefeLieferadresseStep($cGet_arr)
 {
     global $step, $Lieferadresse;
     //sondersteps Lieferadresse ändern
-    if (isset($_SESSION['checkout.fehlendeAngaben'])) {
-        setzeFehlendeAngaben($_SESSION['checkout.fehlendeAngaben']);
-        unset($_SESSION['checkout.fehlendeAngaben']);
-        $step = 'Lieferadresse';
-    }
-    if ($_SESSION['Lieferadresse'] && isset($cGet_arr['editLieferadresse']) && $cGet_arr['editLieferadresse'] == 1) {
-        Kupon::resetNewCustomerCoupon();
-        unset($_SESSION['Zahlungsart'], $_SESSION['TrustedShops'], $_SESSION['Versandart']);
+    if (!empty($_SESSION['Lieferadresse'])) {
         $Lieferadresse = $_SESSION['Lieferadresse'];
-        $step          = 'Lieferadresse';
+        if (isset($cGet_arr['editLieferadresse']) && (int)$cGet_arr['editLieferadresse'] === 1) {
+            Kupon::resetNewCustomerCoupon();
+            unset($_SESSION['Zahlungsart'], $_SESSION['TrustedShops'], $_SESSION['Versandart']);
+            $step = 'Lieferadresse';
+        }
     }
-    if (pruefeFehlendeAngaben('shipping_address')) {
-        $Lieferadresse = $_SESSION['Lieferadresse'];
-        $step          = 'Lieferadresse';
+    if (pruefeFehlendeAngaben('shippingAddress')) {
+        $step = isset($_SESSION['Kunde']) ? 'Lieferadresse' : 'accountwahl';
     }
 }
 
@@ -518,11 +512,14 @@ function pruefeGuthabenNutzen()
  * @param string $context
  * @return bool
  */
-function pruefeFehlendeAngaben($context)
+function pruefeFehlendeAngaben($context = null)
 {
     $fehlendeAngaben = Shop::Smarty()->getTemplateVars('fehlendeAngaben');
+    if (!$context) {
+       return !empty($fehlendeAngaben);
+    }
 
-    return (is_array($fehlendeAngaben[$context]) && count($fehlendeAngaben[$context]));
+    return (isset($fehlendeAngaben[$context]) && is_array($fehlendeAngaben[$context]) && count($fehlendeAngaben[$context]));
 }
 
 /**
@@ -592,7 +589,7 @@ function gibStepLieferadresse()
 
     $kKundengruppe = Session::CustomerGroup()->getID();
 
-    if ($_SESSION['Kunde']->kKunde > 0) {
+    if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         $Lieferadressen        = [];
         $oLieferadresseTMP_arr = Shop::Container()->getDB()->query(
             'SELECT DISTINCT(kLieferadresse)
@@ -609,7 +606,7 @@ function gibStepLieferadresse()
         $kKundengruppe = $_SESSION['Kunde']->kKundengruppe;
     }
     Shop::Smarty()->assign('laender', VersandartHelper::getPossibleShippingCountries($kKundengruppe))
-        ->assign('Kunde', $_SESSION['Kunde'])
+        ->assign('Kunde', $_SESSION['Kunde'] ?? null)
         ->assign('kLieferadresse', $_SESSION['Bestellung']->kLieferadresse ?? null);
     if (isset($_SESSION['Bestellung']->kLieferadresse) && $_SESSION['Bestellung']->kLieferadresse == -1) {
         Shop::Smarty()->assign('Lieferadresse', $Lieferadresse);
@@ -2058,6 +2055,7 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
     }
 
     if (empty($_SESSION['check_plzort'])
+        && empty($_SESSION['check_liefer_plzort'])
         && $conf['kunden']['kundenregistrierung_abgleichen_plz'] === 'Y'
     ) {
         if (!valid_plzort($data['plz'], $data['ort'], $data['land'])) {
@@ -2342,15 +2340,15 @@ function checkLieferFormularArray($data)
         && $conf['kunden']['kundenregistrierung_abgleichen_plz'] === 'Y'
     ) {
         if (!valid_plzort($data['plz'], $data['ort'], $data['land'])) {
-            $ret['plz']               = 2;
-            $ret['ort']               = 2;
+            $ret['plz']                      = 2;
+            $ret['ort']                      = 2;
             $_SESSION['check_liefer_plzort'] = 1;
         }
     } else {
         unset($_SESSION['check_liefer_plzort']);
     }
 
-    return $ret;
+    return !empty($ret) ? ['shippingAddress' => $ret] : $ret;
 }
 
 /**
@@ -2529,8 +2527,11 @@ function getKundendaten($post, $kundenaccount, $htmlentities = 1)
         }
     }
 
-    $customer->dGeburtstag     = DateHelper::convertDateToMysqlStandard($customer->dGeburtstag ?? '');
-    $customer->angezeigtesLand = Sprache::getCountryCodeByCountryName($customer->cLand);
+    $customer->dGeburtstag           = DateHelper::convertDateToMysqlStandard($customer->dGeburtstag ?? '');
+    $customer->dGeburtstag_formatted = $customer->dGeburtstag === '_DBNULL_'
+        ? ''
+        : DateTime::createFromFormat('Y-m-d', $customer->dGeburtstag)->format('d.m.Y');
+    $customer->angezeigtesLand       = Sprache::getCountryCodeByCountryName($customer->cLand);
     if (!empty($customer->cBundesland)) {
         $oISO = Staat::getRegionByIso($customer->cBundesland, $customer->cLand);
         if (is_object($oISO)) {
@@ -2614,43 +2615,26 @@ function getNonEditableCustomerFields(): array
  */
 function getLieferdaten($post)
 {
+    $post = StringHandler::filterXSS($post);
     //erstelle neue Lieferadresse
     $shippingAddress                  = new Lieferadresse();
-    $shippingAddress->cAnrede         = StringHandler::filterXSS($post['anrede']);
-    $shippingAddress->cVorname        = StringHandler::filterXSS($post['vorname']);
-    $shippingAddress->cNachname       = StringHandler::filterXSS($post['nachname']);
-    $shippingAddress->cStrasse        = StringHandler::filterXSS($post['strasse']);
-    $shippingAddress->cHausnummer     = StringHandler::filterXSS($post['hausnummer']);
-    $shippingAddress->cPLZ            = StringHandler::filterXSS($post['plz']);
-    $shippingAddress->cOrt            = StringHandler::filterXSS($post['ort']);
-    $shippingAddress->cLand           = StringHandler::filterXSS($post['land']);
-    $shippingAddress->cMail           = isset($post['email'])
-        ? StringHandler::filterXSS($post['email'])
-        : '';
-    $shippingAddress->cTel            = isset($post['tel'])
-        ? StringHandler::filterXSS($post['tel'])
-        : null;
-    $shippingAddress->cFax            = isset($post['fax'])
-        ? StringHandler::filterXSS($post['fax'])
-        : null;
-    $shippingAddress->cFirma          = isset($post['firma'])
-        ? StringHandler::filterXSS($post['firma'])
-        : null;
-    $shippingAddress->cZusatz         = isset($post['firmazusatz'])
-        ? StringHandler::filterXSS($post['firmazusatz'])
-        : null;
-    $shippingAddress->cTitel          = isset($post['titel'])
-        ? StringHandler::filterXSS($post['titel'])
-        : null;
-    $shippingAddress->cAdressZusatz   = isset($post['adresszusatz'])
-        ? StringHandler::filterXSS($post['adresszusatz'])
-        : null;
-    $shippingAddress->cMobil          = isset($post['mobil'])
-        ? StringHandler::filterXSS($post['mobil'])
-        : null;
-    $shippingAddress->cBundesland     = isset($post['bundesland'])
-        ? StringHandler::filterXSS($post['bundesland'])
-        : null;
+    $shippingAddress->cAnrede         = $post['anrede'] ?? null;
+    $shippingAddress->cVorname        = $post['vorname'];
+    $shippingAddress->cNachname       = $post['nachname'];
+    $shippingAddress->cStrasse        = $post['strasse'];
+    $shippingAddress->cHausnummer     = $post['hausnummer'];
+    $shippingAddress->cPLZ            = $post['plz'];
+    $shippingAddress->cOrt            = $post['ort'];
+    $shippingAddress->cLand           = $post['land'];
+    $shippingAddress->cMail           = $post['email'] ?? '';
+    $shippingAddress->cTel            = $post['tel'] ?? null;
+    $shippingAddress->cFax            = $post['fax'] ?? null;
+    $shippingAddress->cFirma          = $post['firma'] ?? null;
+    $shippingAddress->cZusatz         = $post['firmazusatz'] ?? null;
+    $shippingAddress->cTitel          = $post['titel'] ?? null;
+    $shippingAddress->cAdressZusatz   = $post['adresszusatz'] ?? null;
+    $shippingAddress->cMobil          = $post['mobil'] ?? null;
+    $shippingAddress->cBundesland     = $post['bundesland'] ?? null;
     $shippingAddress->angezeigtesLand = Sprache::getCountryCodeByCountryName($shippingAddress->cLand);
 
     if (!empty($shippingAddress->cBundesland)) {
@@ -3511,9 +3495,6 @@ function setzeFehlendeAngaben($fehlendeAngabe, $context = null)
             ? array_merge($fehlendeAngaben[$context], $fehlendeAngabe)
             : $fehlendeAngabe;
     }
-    $_SESSION['checkout.fehlendeAngaben'] = isset($_SESSION['checkout.fehlendeAngaben'])
-        ? array_merge($_SESSION['checkout.fehlendeAngaben'], $fehlendeAngaben)
-        : $fehlendeAngaben;
 
     Shop::Smarty()->assign('fehlendeAngaben', $fehlendeAngaben);
 }

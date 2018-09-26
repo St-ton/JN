@@ -33,6 +33,7 @@
     <script type="text/javascript">
         var bootstrapButton = $.fn.button.noConflict();
         $.fn.bootstrapBtn = bootstrapButton;
+        setJtlToken('{$smarty.session.jtl_token}');
     </script>
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -41,210 +42,171 @@
 </head>
 <body>
 {if $account !== false && isset($smarty.session.loginIsValid) && $smarty.session.loginIsValid === true}
-    {if permission('SETTINGS_SEARCH_VIEW')}
-        <div id="main-search" class="modal fade" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <input placeholder="Suchbegriff" name="cSuche" type="search" value="" autocomplete="off" />
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    </div>
-                    <div class="modal-body">
-                    </div>
-                </div>
-            </div>
-        </div>
-        <script>
-        var $grid    = null;
-        setJtlToken('{$smarty.session.jtl_token}');
-
-        $(function () {
-            var lastQuery = null,
-                $search_frame = $('#main-search'),
-                $search_input = $search_frame.find('input[type="search"]'),
-                $search_result = $search_frame.find('div.modal-body');
-
-            function searchEvent(event) {
-                var setResult = function(content) {
-                        content = content || '';
-
-                        if ($grid) {
-                            $grid.masonry('destroy');
-                        }
-
-                        $search_result.html(content);
-
-                        $grid = $search_result.masonry({
-                            itemSelector: '.grid-item',
-                            columnWidth: '.grid-item',
-                            percentPosition: true
-                        });
-                    },
-                    query = $(event.target).val() || '';
-                if (query.length < 3 || event.keyCode === 27) {
-                    setResult(null);
-                    lastQuery = null;
-                } else if(query !== lastQuery) {
-                    lastQuery = query;
-                    ioCall('adminSearch', [query], function (data) {
-                        setResult(data.data.tpl);
-                    });
-                }
-            }
-
-            $search_frame.on('shown.bs.modal', function (e) {
-                $search_input.on('keyup', searchEvent).focus();
-            });
-
-            $search_frame.on('hidden.bs.modal', function (e) {
-                $('body').focus();
-                $search_input.off('keyup', searchEvent);
-            });
-
-            $(document).on('keydown', function (event) {
-                if (event.keyCode === 71 && event.ctrlKey) {
-                    event.preventDefault();
-                    $search_frame.modal('toggle');
-                }
-                if (event.keyCode === 13) {
-                    szSearchString = $("[name$=cSuche]").val();
-                    if ('' !== szSearchString) {
-                        document.location.href = 'einstellungen.php?cSuche=' + szSearchString + '&einstellungen_suchen=1';
-                    }
-                }
-            });
-        });
-        </script>
-    {/if}
     {getCurrentPage assign="currentPage"}
-    {$fluid = ['index', 'marktplatz', 'dbmanager', 'status']}
-    <div class="backend-wrapper
-         {if $bForceFluid || $currentPage|in_array:$fluid}container-fluid{else}container{/if}
-         {if $currentPage === 'index' || $currentPage === 'status'} dashboard{/if}
-         {if $currentPage === 'marktplatz'} marktplatz{/if}">
-        <nav class="navbar navbar-inverse navbar-fixed-top yamm" role="navigation">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#nbc-1" aria-expanded="false" aria-controls="navbar">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="index.php"><img src="{$currentTemplateDir}gfx/shop-logo.png" alt="JTL-Shop" /></a>
-                </div>
-                <div class="navbar-collapse collapse" id="nbc-1">
-                    <ul class="nav navbar-nav">
-                        {foreach name=linkobergruppen from=$oLinkOberGruppe_arr item=oLinkOberGruppe}
-                            {if $oLinkOberGruppe->oLinkGruppe_arr|@count === 0 && $oLinkOberGruppe->oLink_arr|@count === 1}
-                                <li {if isset($oLinkOberGruppe->class)}class="{$oLinkOberGruppe->class}"{/if}>
+    <div class="backend-wrapper container-fluid
+         {if $currentPage === 'index' || $currentPage === 'status'} dashboard{/if}">
+        <nav class="backend-sidebar">
+            <div class="backend-brandbar">
+                <a class="backend-brand" href="index.php" title="Dashboard">
+                    <img src="{$currentTemplateDir}gfx/JTL-Shop-Logo-rgb.png" alt="JTL-Shop">
+                </a>
+                {*TODO: make sidebar collapsable*}
+                {*<button type="button" class="backend-sidebar-toggle">*}
+                    {*<i class="fa fa-angle-double-left fa-2x"></i>*}
+                {*</button>*}
+            </div>
+            <div class="backend-navigation">
+                <ul class="backend-menu toplevel">
+                    {foreach $oLinkOberGruppe_arr as $oLinkOberGruppe}
+                        {assign var='rootEntryName' value=$oLinkOberGruppe->cName|replace:' ':'-'|replace:'&':''|lower}
+                        {if $oLinkOberGruppe->oLinkGruppe_arr|@count === 0
+                                && $oLinkOberGruppe->oLink_arr|@count === 1}
+                            <li class="{if isset($oLinkOberGruppe->class)}{$oLinkOberGruppe->class}{/if} single">
+                                <div class="backend-root-label">
                                     <a href="{$oLinkOberGruppe->oLink_arr[0]->cURL}" class="parent">
-                                        {$oLinkOberGruppe->oLink_arr[0]->cLinkname}
+                                        <i class="fa fa-2x fa-fw backend-root-menu-icon-{$rootEntryName}"></i>
+                                        <span>{$oLinkOberGruppe->oLink_arr[0]->cLinkname}</span>
                                     </a>
-                                </li>
-                            {else}
-                                <li class="dropdown {if isset($oLinkOberGruppe->class)}{$oLinkOberGruppe->class}{/if}">
-                                    <a href="#" class="dropdown-toggle parent" data-toggle="dropdown">{$oLinkOberGruppe->cName}
-                                        <span class="caret"> </span>
+                                </div>
+                            </li>
+                        {else}
+                            <li {if isset($oLinkOberGruppe->class)}class="{$oLinkOberGruppe->class}"{/if}>
+                                <div class="backend-root-label">
+                                    <a href="#" class="parent">
+                                        <i class="fa fa-2x fa-fw backend-root-menu-icon-{$rootEntryName}"></i>
+                                        <span>{$oLinkOberGruppe->cName}</span>
                                     </a>
-                                    <ul class="dropdown-menu{if $oLinkOberGruppe->oLinkGruppe_arr|@count === 0} single-menu{/if}" role="main">
-                                        <li>
-                                            <div class="yamm-content">
-                                                {foreach name=linkuntergruppen from=$oLinkOberGruppe->oLinkGruppe_arr item=oLinkGruppe}
-                                                    {if $oLinkGruppe->oLink_arr|@count > 0}
-                                                    <div class="list-wrapper">
-                                                        <ul class="left list-unstyled">
-                                                            <li class="dropdown-header" id="dropdown-header-{$oLinkGruppe->cName|replace:' ':'-'|replace:'&':''|lower}">
-                                                                {$oLinkGruppe->cName}
-                                                            </li>
-                                                            {foreach name=linkgruppenlinks from=$oLinkGruppe->oLink_arr item=oLink}
-                                                                <li class="{if $smarty.foreach.linkgruppenlinks.first}subfirst{/if}{if !$oLink->cRecht|permission} noperm{/if}">
-                                                                    <a href="{$oLink->cURL}">{$oLink->cLinkname}</a>
-                                                                </li>
-                                                            {/foreach}
-                                                            {*<li class="divider"></li>*}
-                                                        </ul>
-                                                    </div>
-                                                    {/if}
-                                                {/foreach}
-                                                <ul class="left list-unstyled single">
-                                                {foreach name=linkuntergruppenlinks from=$oLinkOberGruppe->oLink_arr item=oLink}
-                                                    <li class="{if $smarty.foreach.linkuntergruppenlinks.first}subfirst{/if} {if !$oLink->cRecht|permission}noperm{/if}">
-                                                        <a href="{$oLink->cURL}">{$oLink->cLinkname}</a>
-                                                    </li>
-                                                {/foreach}
+                                </div>
+                                <ul class="backend-menu secondlevel" id="group-{$rootEntryName}">
+                                    {foreach $oLinkOberGruppe->oLinkGruppe_arr as $oLinkGruppe}
+                                        {if $oLinkGruppe->oLink_arr|@count > 0}
+                                            {assign var='entryName'
+                                                value=$oLinkGruppe->cName|replace:' ':'-'|replace:'&':''|lower}
+                                            <li id="dropdown-header-{$entryName}">
+                                                <a href="#collapse-{$entryName}" data-toggle="collapse"
+                                                   class="collapsed" data-parent="#group-{$rootEntryName}">
+                                                    <span>{$oLinkGruppe->cName}</span>
+                                                    <i class="fa"></i>
+                                                </a>
+                                                <ul class="collapse backend-menu thirdlevel" id="collapse-{$entryName}">
+                                                    {foreach $oLinkGruppe->oLink_arr as $oLink}
+                                                        <li {if !$oLink->cRecht|permission}class="noperm"{/if}>
+                                                            <a href="{$oLink->cURL}">{$oLink->cLinkname}</a>
+                                                        </li>
+                                                    {/foreach}
                                                 </ul>
-                                            </div>
+                                            </li>
+                                        {/if}
+                                    {/foreach}
+                                    {foreach $oLinkOberGruppe->oLink_arr as $oLink}
+                                        <li {if !$oLink->cRecht|permission}class="noperm"{/if}>
+                                            <a href="{$oLink->cURL}" class="collapsed">{$oLink->cLinkname}</a>
                                         </li>
-                                    </ul>
-                                </li>
-                            {/if}
-                        {/foreach}
-                    </ul>
-                    <ul class="nav navbar-nav navbar-right">
-                        <li class="dropdown" id="notify-drop">{include file="tpl_inc/notify_drop.tpl"}</li>
-                        <li class="dropdown" id="favs-drop">{include file="tpl_inc/favs_drop.tpl"}</li>
-                        {if permission('DASHBOARD_VIEW')}
-                            <li>
-                                <a class="link-dashboard" href="index.php" title="Dashboard"><i class="fa fa-home"></i></a>
+                                    {/foreach}
+                                </ul>
                             </li>
                         {/if}
-                        {if permission('SETTINGS_SEARCH_VIEW')}
-                            <li>
-                                <a class="link-search" data-toggle="modal" href="#main-search" title="Suche"><i class="fa fa-search"></i></a>
-                            </li>
-                        {/if}
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle parent" data-toggle="dropdown" title="Hilfe">
-                                <i class="fa fa-medkit" aria-hidden="true"></i>
-                            </a>
-                            <ul class="dropdown-menu" role="main">
-                                <li>
-                                    <a href="https://jtl-url.de/shopschritte" target="_blank" rel="noopener">Erste Schritte</a>
-                                    <a href="https://jtl-url.de/shopguide" target="_blank" rel="noopener">JTL Guide</a>
-                                    <a href="https://forum.jtl-software.de" target="_blank" rel="noopener">JTL Forum</a>
-                                    <a href="https://www.jtl-software.de/Training" target="_blank" rel="noopener">Training</a>
-                                    <a href="https://www.jtl-software.de/Servicepartner" target="_blank" rel="noopener">Servicepartner</a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="dropdown avatar">
-                            <a href="#" class="dropdown-toggle parent" data-toggle="dropdown">
-                                <img src="{gravatarImage email=$account->cMail}" title="{$account->cMail}" class="img-circle" />
-                            </a>
-                            <ul class="dropdown-menu" role="main">
-                                <li>
-                                    {*if permission('ACCOUNT_VIEW')}
-                                        <a class="link-profile" href="benutzerverwaltung.php" title="Profil"><i class="fa fa-user"></i> Profil</a>
-                                    {/if*}
-                                    <a class="link-shop" href="{$URL_SHOP}" title="Zum Shop"><i class="fa fa-shopping-cart"></i> Zum Shop</a>
-                                    <a class="link-logout" href="logout.php?token={$smarty.session.jtl_token}" title="{#logout#}"><i class="fa fa-sign-out"></i> {#logout#}</a>
-                                </li>
-                            </ul>
-                        </li>
-                        {*
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle parent" data-toggle="dropdown">
-                                <i class="fa fa-bars" aria-hidden="true"></i>
-                            </a>
-                            <ul class="dropdown-menu" role="main">
-                                <li>
-                                    <a class="link-shop" href="{$URL_SHOP}" title="Zum Shop"><i class="fa fa-shopping-cart"></i> Zum Shop</a>
-                                </li>
-                                {if permission('DASHBOARD_VIEW')}
-                                    <li>
-                                        <a class="link-dashboard" href="index.php" title="Dashboard"><i class="fa fa-tachometer"></i> Dashboard</a>
-                                    </li>
-                                {/if}
-                                <li>
-                                    <a class="link-logout" href="logout.php?token={$smarty.session.jtl_token}" title="{#logout#}"><i class="fa fa-sign-out"></i> {#logout#}</a>
-                                </li>
-                            </ul>
-                        </li>
-                        *}
-                    </ul>
-                </div>
+                    {/foreach}
+                </ul>
+                <script>
+                    $('.thirdlevel').on('show.bs.collapse', function() {
+                        $('.thirdlevel').collapse('hide');
+                    });
+                </script>
             </div>
         </nav>
-        <div id="content_wrapper" class="container-fluid">
+        <nav class="backend-main">
+            <nav class="backend-navbar">
+                <ul class="backend-navbar-left">
+                    <li>
+                        <div class="backend-search dropdown">
+                            <i class="fa fa-search"></i>
+                            <input id="backend-search-input" placeholder="Suchbegriff" name="cSuche" type="search"
+                                   value="" autocomplete="off">
+                            <ul id="backend-search-dropdown"></ul>
+                            <script>
+                                $('#backend-search-input').on('input', function()
+                                {
+                                    var value = $(this).val();
+
+                                    if (value.length >= 3) {
+                                        ioCall('adminSearch', [value], function (data) {
+                                            var tpl = data.data.tpl;
+                                            if (tpl) {
+                                                $('#backend-search-dropdown').html(tpl).addClass('open');
+                                            } else {
+                                                $('#backend-search-dropdown').removeClass('open');
+                                            }
+                                        });
+                                    } else {
+                                        $('#backend-search-dropdown').removeClass('open');
+                                    }
+                                });
+                                $(document).click(function(e) {
+                                    if ($(e.target).closest('.backend-search').length === 0) {
+                                        $('#backend-search-dropdown').removeClass('open');
+                                    }
+                                });
+                            </script>
+                        </div>
+                    </li>
+                </ul>
+                <ul class="backend-navbar-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle parent" data-toggle="dropdown" title="Hilfe">
+                            <i class="fa fa-question-circle"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-right" role="main">
+                            <li>
+                                <a href="https://jtl-url.de/shopschritte" target="_blank" rel="noopener">
+                                    Erste Schritte
+                                </a>
+                                <a href="https://jtl-url.de/shopguide" target="_blank" rel="noopener">
+                                    JTL Guide
+                                </a>
+                                <a href="https://forum.jtl-software.de" target="_blank" rel="noopener">
+                                    JTL Forum
+                                </a>
+                                <a href="https://www.jtl-software.de/Training" target="_blank" rel="noopener">
+                                    Training
+                                </a>
+                                <a href="https://www.jtl-software.de/Servicepartner" target="_blank" rel="noopener">
+                                    Servicepartner
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    {if $currentPage === 'index'}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle parent btn-toggle" data-toggle="dropdown">
+                                <i class="fa fa-gear"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-right">
+                                <li class="widget-selector-menu">
+                                    {include file='tpl_inc/widget_selector.tpl' oAvailableWidget_arr=$oAvailableWidget_arr}
+                                </li>
+                            </ul>
+                        </li>
+                    {/if}
+                    <li class="dropdown" id="favs-drop">{include file="tpl_inc/favs_drop.tpl"}</li>
+                    <li class="dropdown" id="notify-drop">{include file="tpl_inc/notify_drop.tpl"}</li>
+                    <li class="dropdown avatar">
+                        <a href="#" class="dropdown-toggle parent" data-toggle="dropdown">
+                            <img src="{gravatarImage email=$account->cMail}" title="{$account->cMail}" class="img-circle" />
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-right" role="main">
+                            <li>
+                                <a class="link-shop" href="{$URL_SHOP}" title="Zum Shop">
+                                    <i class="fa fa-shopping-cart"></i> Zum Shop
+                                </a>
+                                <a class="link-logout" href="logout.php?token={$smarty.session.jtl_token}"
+                                   title="{#logout#}">
+                                    <i class="fa fa-sign-out"></i> {#logout#}
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+            <div class="backend-content" id="content_wrapper">
 {/if}

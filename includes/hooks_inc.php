@@ -867,6 +867,7 @@ define('HOOK_EIGENSCHAFTWERT_CLASS_LOADFROMDB', 117);
  * after loading a company from the database
  *
  * @file Firma.php
+ * @param Firma instance - since 5.0.0
  */
 define('HOOK_FIRMA_CLASS_LOADFROMDB', 118);
 

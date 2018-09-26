@@ -1,4 +1,5 @@
 {if $account}
+        </div>
     </div>
 </div>{* /backend-wrapper *}
 

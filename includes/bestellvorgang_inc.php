@@ -1280,12 +1280,12 @@ function zahlungsartKorrekt(int $kZahlungsart)
                     $fehlendeAngaben = checkAdditionalPayment($Zahlungsart);
 
                     if (count($fehlendeAngaben) === 0) {
-                        $ZahlungsInfo->cBankName = StringHandler::htmlentities(stripslashes($_POST['bankname']), ENT_QUOTES);
-                        $ZahlungsInfo->cKontoNr  = StringHandler::htmlentities(stripslashes($_POST['kontonr']), ENT_QUOTES);
-                        $ZahlungsInfo->cBLZ      = StringHandler::htmlentities(stripslashes($_POST['blz']), ENT_QUOTES);
+                        $ZahlungsInfo->cBankName = StringHandler::htmlentities(stripslashes($_POST['bankname'] ?? ''), ENT_QUOTES);
+                        $ZahlungsInfo->cKontoNr  = StringHandler::htmlentities(stripslashes($_POST['kontonr'] ?? ''), ENT_QUOTES);
+                        $ZahlungsInfo->cBLZ      = StringHandler::htmlentities(stripslashes($_POST['blz'] ?? ''), ENT_QUOTES);
                         $ZahlungsInfo->cIBAN     = StringHandler::htmlentities(stripslashes($_POST['iban']), ENT_QUOTES);
-                        $ZahlungsInfo->cBIC      = StringHandler::htmlentities(stripslashes($_POST['bic']), ENT_QUOTES);
-                        $ZahlungsInfo->cInhaber  = StringHandler::htmlentities(stripslashes($_POST['inhaber']), ENT_QUOTES);
+                        $ZahlungsInfo->cBIC      = StringHandler::htmlentities(stripslashes($_POST['bic'] ?? ''), ENT_QUOTES);
+                        $ZahlungsInfo->cInhaber  = StringHandler::htmlentities(stripslashes($_POST['inhaber'] ?? ''), ENT_QUOTES);
                         $zusatzangabenDa         = true;
                     }
                     break;
@@ -1472,12 +1472,12 @@ function gibZahlungsart(int $kZahlungsart)
 }
 
 /**
- * @param int $kKunde
+ * @param null|int $kKunde
  * @return object|bool
  */
-function gibKundenKontodaten(int $kKunde)
+function gibKundenKontodaten(?int $kKunde)
 {
-    if ($kKunde <= 0) {
+    if (empty($kKunde)) {
         return false;
     }
     $accountData = Shop::Container()->getDB()->select('tkundenkontodaten', 'kKunde', $kKunde);

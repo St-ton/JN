@@ -41,7 +41,7 @@ final class JTLApi
      */
     public function __construct(array &$session, \Nice $nice, \Shop $shop)
     {
-        $this->session = $session;
+        $this->session = &$session;
         $this->nice    = $nice;
         $this->shop    = $shop;
     }

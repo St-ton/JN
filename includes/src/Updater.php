@@ -36,7 +36,7 @@ class Updater
     {
         if (static::$isVerified !== true) {
             MigrationHelper::verifyIntegrity();
-            $dbVersion = $this->getCurrentDatabaseVersion();
+            $dbVersion      = $this->getCurrentDatabaseVersion();
             $dbVersionShort = (int)sprintf('%d%02d', $dbVersion->getMajor(), $dbVersion->getMinor());
 
             // While updating from 3.xx to 4.xx provide a default admin-template row
@@ -82,14 +82,14 @@ class Updater
 
         if (Version::parse($fileVersion)->greaterThan($dbVersion)
             || ($dbVersion->smallerThan(Version::parse('2.19'))
-                || $dbVersion->equals(Version::parse('2.19')))) {
+                || $dbVersion->equals(Version::parse('2.19')))
+        ) {
             return true;
         }
 
         $manager = new MigrationManager();
-        $pending = $manager->getPendingMigrations();
 
-        return count($pending) > 0;
+        return count($manager->getPendingMigrations()) > 0;
     }
 
     /**
@@ -205,7 +205,7 @@ class Updater
                 : $version;
         }
 
-        return $targetVersion;
+        return $targetVersion ?? Version::parse(APPLICATION_VERSION);
     }
 
     /**
@@ -270,18 +270,18 @@ class Updater
     }
 
     /**
-     * @return int|null
+     * @return IMigration|Version
      * @throws Exception
      */
     public function update()
     {
         return $this->hasPendingUpdates()
             ? $this->updateToNextVersion()
-            : null;
+            : Version::parse(APPLICATION_VERSION);
     }
 
     /**
-     * @return int|mixed
+     * @return IMigration|Version
      * @throws Exception
      */
     protected function updateToNextVersion()
@@ -301,7 +301,7 @@ class Updater
     /**
      * @param Version $currentVersion
      * @param Version $targetVersion
-     * @return mixed
+     * @return Version
      * @throws Exception
      */
     protected function updateBySqlFile(Version $currentVersion, Version $targetVersion): Version
@@ -343,7 +343,7 @@ class Updater
                         'errcnt' => $errorCountForLine,
                         'type'   => $code,
                         'err'    => $error
-                        
+
                     ],
                     \DB\ReturnType::AFFECTED_ROWS
                 );
@@ -359,24 +359,22 @@ class Updater
 
     /**
      * @param Version $targetVersion
-     *
-     * @return mixed
+     * @return IMigration|Version
      * @throws Exception
      */
     protected function updateByMigration(Version $targetVersion)
     {
         $manager           = new MigrationManager();
         $pendingMigrations = $manager->getPendingMigrations();
+        if (count($pendingMigrations) === 0) {
+            $this->setVersion($targetVersion);
+
+            return $targetVersion;
+        }
         $id                = reset($pendingMigrations);
         $migration         = $manager->getMigrationById($id);
 
         $manager->executeMigration($migration, IMigration::UP);
-
-        $pendingMigrationsExecuted = $manager->getPendingMigrations();
-
-        if (count($pendingMigrationsExecuted) < 1) {
-            $this->setVersion($targetVersion);
-        }
 
         return $migration;
     }
@@ -395,14 +393,12 @@ class Updater
 
     /**
      * @param Version $targetVersion
-     *
      * @throws Exception
      */
-    protected function setVersion($targetVersion)
+    protected function setVersion(Version $targetVersion)
     {
         $db              = Shop::Container()->getDB();
         $tVersionColumns = $db->executeQuery("SHOW COLUMNS FROM `tversion`", \DB\ReturnType::ARRAY_OF_OBJECTS);
-
         foreach ($tVersionColumns as $column) {
             if ($column->Field === 'nVersion') {
                 if ($column->Type !== 'varchar(20)') {

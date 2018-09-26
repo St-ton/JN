@@ -6,11 +6,13 @@
 
 namespace Services\JTL\Validation\Rules;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * Class TypeTest
  * @package Services\JTL\Validation\Rules
  */
-class TypeTest extends \PHPUnit_Framework_TestCase
+class TypeTest extends TestCase
 {
     public function test()
     {

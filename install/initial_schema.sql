@@ -2493,7 +2493,7 @@ CREATE TABLE `tlieferscheinposinfo` (
   `kLieferscheinPos` int(10) unsigned NOT NULL,
   `cSeriennummer` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `cChargeNr` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `dMHD` datetime NOT NULL,
+  `dMHD` datetime DEFAULT NULL,
   PRIMARY KEY (`kLieferscheinPosInfo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;

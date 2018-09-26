@@ -3,6 +3,9 @@
  * Create news lang table
  */
 
+/**
+ * Class Migration_20180801165500
+ */
 class Migration_20180801165500 extends Migration implements IMigration
 {
     protected $author = 'fm';
@@ -12,7 +15,8 @@ class Migration_20180801165500 extends Migration implements IMigration
     {
         $db = Shop::Container()->getDB();
 
-        $this->execute("CREATE TABLE `tnewssprache` (
+        $this->execute(
+            "CREATE TABLE `tnewssprache` (
               `id` INT NOT NULL AUTO_INCREMENT,
               `kNews` INT(10) UNSIGNED NOT NULL,
               `languageID` INT NOT NULL,
@@ -31,7 +35,8 @@ class Migration_20180801165500 extends Migration implements IMigration
                   ON UPDATE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci"
         );
-        $this->execute("CREATE TABLE `tnewskategoriesprache` (
+        $this->execute(
+            "CREATE TABLE `tnewskategoriesprache` (
               `id` INT NOT NULL AUTO_INCREMENT,
               `kNewsKategorie` INT(10) UNSIGNED NOT NULL,
               `languageID` INT NOT NULL,
@@ -74,7 +79,8 @@ class Migration_20180801165500 extends Migration implements IMigration
             $new->metaDescription = $newsCategory->cMetaDescription;
             $db->insert('tnewskategoriesprache', $new);
         }
-        $this->execute('ALTER TABLE tnews 
+        $this->execute(
+            'ALTER TABLE tnews 
             DROP COLUMN kSprache, 
             DROP COLUMN cBetreff, 
             DROP COLUMN cText, 
@@ -84,7 +90,8 @@ class Migration_20180801165500 extends Migration implements IMigration
             DROP COLUMN cMetaTitle,
             DROP COLUMN cSeo'
         );
-        $this->execute('ALTER TABLE tnewskategorie
+        $this->execute(
+            'ALTER TABLE tnewskategorie
             DROP COLUMN kSprache, 
             DROP COLUMN cSeo, 
             DROP COLUMN cName, 
@@ -92,7 +99,8 @@ class Migration_20180801165500 extends Migration implements IMigration
             DROP COLUMN cMetaTitle, 
             DROP COLUMN cMetaDescription'
         );
-        $this->execute('ALTER TABLE tnewskategorie
+        $this->execute(
+            'ALTER TABLE tnewskategorie
             ADD COLUMN lft INT NOT NULL DEFAULT 0,
             ADD COLUMN rght INT NOT NULL DEFAULT 0,
             ADD COLUMN lvl INT NOT NULL DEFAULT 0,
@@ -108,6 +116,5 @@ class Migration_20180801165500 extends Migration implements IMigration
             "INSERT INTO tspezialseite (kSpezialseite, kPlugin, cName, cDateiname, nLinkart, nSort)
                 VALUES (16, 0, 'Newsarchiv', NULL, 20, 20)"
         );
-
     }
 }

@@ -41,8 +41,6 @@
     <![endif]-->
 </head>
 <body>
-    {*{$currentMenuPath|var_dump}*}
-    {*{$oLinkOberGruppe_arr|var_dump}*}
 {if $account !== false && isset($smarty.session.loginIsValid) && $smarty.session.loginIsValid === true}
     {getCurrentPage assign="currentPage"}
     <div class="backend-wrapper container-fluid
@@ -58,23 +56,32 @@
                                    value="" autocomplete="off">
                             <ul id="backend-search-dropdown"></ul>
                             <script>
-                                $('#backend-search-input').on('input', function()
-                                {
-                                    var value = $(this).val();
+                                $('#backend-search-input')
+                                    .on('input', function() {
+                                        var value = $(this).val();
 
-                                    if (value.length >= 3) {
-                                        ioCall('adminSearch', [value], function (data) {
-                                            var tpl = data.data.tpl;
-                                            if (tpl) {
-                                                $('#backend-search-dropdown').html(tpl).addClass('open');
-                                            } else {
-                                                $('#backend-search-dropdown').removeClass('open');
-                                            }
-                                        });
-                                    } else {
-                                        $('#backend-search-dropdown').removeClass('open');
-                                    }
-                                });
+                                        if (value.length >= 3) {
+                                            ioCall('adminSearch', [value], function (data) {
+                                                var tpl = data.data.tpl;
+
+                                                if (tpl) {
+                                                    $('#backend-search-dropdown').html(tpl).addClass('open');
+                                                } else {
+                                                    $('#backend-search-dropdown').removeClass('open');
+                                                }
+                                            });
+                                        } else {
+                                            $('#backend-search-dropdown').removeClass('open');
+                                        }
+                                    })
+                                    .keydown(function(e) {
+                                        if(e.key === 'Enter') {
+                                            var searchString = $('#backend-search-input').val();
+
+                                            window.location.href = 'einstellungen.php?cSuche=' + searchString
+                                                + '&einstellungen_suchen=1';
+                                        }
+                                    });
                                 $(document).click(function(e) {
                                     if ($(e.target).closest('.backend-search').length === 0) {
                                         $('#backend-search-dropdown').removeClass('open');

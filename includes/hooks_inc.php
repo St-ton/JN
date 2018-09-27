@@ -1626,7 +1626,7 @@ define('HOOK_GET_ALL_CATEGORIES', 219);
 /**
  * @since 4.04
  * @file seite_inc.php
- * @param array - oNews_arr
+ * @param \Tightenco\Collect\Support\Collection - oNews_arr
  * @param array - cacheTags
  * @param bool  - cached
  */

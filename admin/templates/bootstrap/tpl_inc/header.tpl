@@ -35,10 +35,6 @@
         $.fn.bootstrapBtn = bootstrapButton;
         setJtlToken('{$smarty.session.jtl_token}');
     </script>
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
 </head>
 <body>
 {if $account !== false && isset($smarty.session.loginIsValid) && $smarty.session.loginIsValid === true}
@@ -56,12 +52,19 @@
                                    value="" autocomplete="off">
                             <ul id="backend-search-dropdown"></ul>
                             <script>
+                                var lastIoSearchCall = null;
+
                                 $('#backend-search-input')
                                     .on('input', function() {
                                         var value = $(this).val();
 
                                         if (value.length >= 3) {
-                                            ioCall('adminSearch', [value], function (data) {
+                                            if(lastIoSearchCall) {
+                                                lastIoSearchCall.abort();
+                                                lastIoSearchCall = null;
+                                            }
+
+                                            lastIoSearchCall = ioCall('adminSearch', [value], function (data) {
                                                 var tpl = data.data.tpl;
 
                                                 if (tpl) {
@@ -96,7 +99,7 @@
                         <a href="#" class="dropdown-toggle parent" data-toggle="dropdown" title="Hilfe">
                             <i class="fa fa-question-circle"></i>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-right" role="main">
+                        <ul class="dropdown-menu dropdown-menu-right">
                             <li>
                                 <a href="https://jtl-url.de/shopschritte" target="_blank" rel="noopener">
                                     Erste Schritte
@@ -134,7 +137,7 @@
                         <a href="#" class="dropdown-toggle parent" data-toggle="dropdown">
                             <img src="{gravatarImage email=$account->cMail}" title="{$account->cMail}" class="img-circle">
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-right" role="main">
+                        <ul class="dropdown-menu dropdown-menu-right">
                             <li>
                                 <a class="link-shop" href="{$URL_SHOP}" title="Zum Shop">
                                     <i class="fa fa-shopping-cart"></i> Zum Shop

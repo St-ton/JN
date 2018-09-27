@@ -120,7 +120,7 @@ class CMSHelper
         executeHook(HOOK_GET_NEWS, [
             'cached'    => true,
             'cacheTags' => [],
-            'oNews_arr' => &$items
+            'oNews_arr' => $items
         ]);
 
         return $items;

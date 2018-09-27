@@ -196,7 +196,7 @@ class Controller
         } else {
             $category->getOverview(self::getFilterSQL());
         }
-        $items         = $category->filterAndSortItems($customerGroupID);
+        $items         = $category->filterAndSortItems($customerGroupID, \Shop::getLanguageID());
         $newsCountShow = ($conf = (int)$this->config['news']['news_anzahl_uebersicht']) > 0
             ? $conf
             : 10;

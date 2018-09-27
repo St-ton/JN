@@ -303,9 +303,10 @@ class Category implements CategoryInterface
 
     /**
      * @param int $customerGroupID
+     * @param int $languageID
      * @return Collection
      */
-    public function filterAndSortItems(int $customerGroupID = 0): Collection
+    public function filterAndSortItems(int $customerGroupID = 0, $languageID = 0): Collection
     {
         switch ($_SESSION['NewsNaviFilter']->nSort) {
             case -1:
@@ -341,6 +342,11 @@ class Category implements CategoryInterface
         if ($customerGroupID > 0) {
             $this->items = $this->items->filter(function (Item $i) use ($customerGroupID) {
                 return $i->checkVisibility($customerGroupID);
+            });
+        }
+        if ($languageID > 0) {
+            $this->items = $this->items->filter(function (Item $i) use ($languageID) {
+                return $i->getTitle($languageID) !== '';
             });
         }
 

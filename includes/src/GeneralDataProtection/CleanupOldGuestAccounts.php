@@ -73,7 +73,6 @@ class CleanupOldGuestAccounts extends Method implements MethodInterface
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
         $vUseFields = $this->selectFields($vTableFields);
-        // select all the data from the DB
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM `tkunde` e
             WHERE
@@ -84,25 +83,11 @@ class CleanupOldGuestAccounts extends Method implements MethodInterface
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (!\is_array($vResult)) {
-            // "no data, no operation"
+
             return;
         }
-        // save parts of the old values in the changes-journal..
         $this->saveToJournal('tkunde', $vUseFields, $vResult);
-        // anonymize the original data
         foreach ($vResult as $oResult) {
-            /*
-             *\Shop::Container()->getDB()->queryPrepared('DELETE FROM
-             *        `tkunde`
-             *    WHERE
-             *        `nRegistriert` = 0
-             *        AND `cAbgeholt` = "Y"
-             *        AND dErstellt <= NOW() - INTERVAL ' . $this->iInterval . ' DAY'
-             *    , []
-             *    , \DB\ReturnType::SINGLE_OBJECT
-             *);
-             */
-
             \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tkunde`
                 WHERE kKunde = pKeyKunde',
                 ['pKeyKunde' => $oResult->kKunde],

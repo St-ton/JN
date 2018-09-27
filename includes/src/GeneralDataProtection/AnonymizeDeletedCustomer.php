@@ -38,9 +38,6 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
      */
     private function anon_tbewertung()
     {
-        // CUSTOMIZABLE:
-        // table fields, which we want to save in the journal (before they would change)
-        // (null = don't save into journal, '1' = save into journal)
         $vTableFields = [
             'kBewertung'      => 1,
             'kArtikel'        => 1,
@@ -61,7 +58,6 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
         $vUseFields = $this->selectFields($vTableFields);
-        // select all the data from the DB
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM `tbewertung` b
             WHERE
@@ -73,14 +69,11 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (!\is_array($vResult)) {
-            // "no data, no operation"
+
             return;
         }
-        // save parts of the old values in the changes-journal..
         $this->saveToJournal('tbewertung', $vUseFields, $vResult);
-        // ..and anon the original
         foreach ($vResult as $oResult) {
-            // anonymize the original data
             \Shop::Container()->getDB()->queryPrepared('UPDATE `tbewertung` b
                 SET
                     b.`cName` = "Anonym",
@@ -99,9 +92,6 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
      */
     private function anon_tzahlungseingang()
     {
-        // CUSTOMIZABLE:
-        // table fields, which we want to save in the journal (before they would change)
-        // (null = don't save in journal, '1' = save in journal)
         $vTableFields = [
             'kZahlungseingang'  => null,
             'kBestellung'       => 1,
@@ -110,7 +100,7 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
             'fZahlungsgebuehr'  => null,
             'cISO'              => null,
             'cEmpfaenger'       => 1,
-            'cZahler'           => 1,     // e-mail address
+            'cZahler'           => 1,
             'dZeit'             => 1,
             'cHinweis'          => null,
             'cAbgeholt'         => null
@@ -119,7 +109,6 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
         $vUseFields = $this->selectFields($vTableFields);
-        // select all the data from the DB
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM `tzahlungseingang`
             WHERE
@@ -135,12 +124,10 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (!\is_array($vResult)) {
-            // "no data, no operation"
+
             return;
         }
-        // save parts of the old values in the changes-journal..
         $this->saveToJournal('tzahlungseingang', $vUseFields, $vResult);
-        // ..and anon the original
         foreach ((array)$vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('UPDATE `tzahlungseingang`
                 SET
@@ -173,7 +160,6 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
         $vUseFields = $this->selectFields($vTableFields);
-        // select all the data from the DB
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM `tnewskommentar`
             WHERE
@@ -185,14 +171,11 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (!\is_array($vResult)) {
-            // "no data, no operation"
+
             return;
         }
-        // save parts of the old values in the changes-journal..
         $this->saveToJournal('tnewskommentar', $vUseFields, $vResult);
-        // ..and anon the original
         foreach ($vResult as $oResult) {
-            // anonymize the original data
             \Shop::Container()->getDB()->queryPrepared('UPDATE `tnewskommentar`
                 SET
                     `cName`  = "Anonym",

@@ -68,7 +68,6 @@ class CleanupNewsletterRecipients extends Method implements MethodInterface
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
         $vUseFields = $this->selectFields($vTableFields);
-        // select all the data from the DB
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM `tnewsletterempfaenger` e
                 JOIN `tnewsletterempfaengerhistory` h ON h.`cOptCode` = e.`cOptCode` AND h.`cEmail` = e.`cEmail`
@@ -81,25 +80,11 @@ class CleanupNewsletterRecipients extends Method implements MethodInterface
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (!\is_array($vResult)) {
-            // "no data, no operation"
+
             return;
         }
-        // save parts of the old values in the changes-journal..
         $this->saveToJournal('tbesucher', $vUseFields, $vResult);
-        // anonymize the original data
         foreach ($vResult as $oResult) {
-            /*
-             *\Shop::Container()->getDB()->queryPrepared('DELETE e, h
-             *    FROM `tnewsletterempfaenger` e
-             *        JOIN `tnewsletterempfaengerhistory` h ON h.`cOptCode` = e.`cOptCode` AND h.`cEmail` = e.`cEmail`
-             *    WHERE e.`nAktiv`=0 AND h.`cAktion` = "Eingetragen"
-             *        AND h.`dOptCode` = "0000-00-00"
-             *        AND h.dEingetragen <= (now() - INTERVAL ' . $iInterval . ' DAY)',
-             *    [],
-             *    \DB\ReturnType::AFFECTED_ROWS
-             *);
-             */
-
             \Shop::Container()->getDB()->queryPrepared('DELETE e, h
                 FROM `tnewsletterempfaenger` e
                    INNER JOIN `tnewsletterempfaengerhistory` h ON h.`cOptCode` = e.`cOptCode` AND h.`cEmail` = e.`cEmail`

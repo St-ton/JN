@@ -129,9 +129,6 @@ class AnonymizeIps extends Method implements MethodInterface
         $szIpMaskV4  = substr($szIpMaskV4, strpos($szIpMaskV4, '.0'), strlen($szIpMaskV4)-1);
         $szIpMaskV6  = substr($szIpMaskV6, strpos($szIpMaskV6, ':0000'), strlen($szIpMaskV6)-1);
 
-        //$this->oLogger->debug('PLAIN: '.print_r( ((new IpAnonymizer('123.123.234.234'))->anonymize()) ,true )); // --DEBUG--
-        //$this->oLogger->debug('PLAIN: '.print_r( ((new IpAnonymizer())->setIp('123.178.234.234')->anonymize()) ,true )); // --DEBUG--
-
         foreach ($this->vTablesUpdate as $szTableName => $vTable) {
             // select maximum 10,000 rows in one step!
             // (if this script is running each day, we need some days

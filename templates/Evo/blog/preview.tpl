@@ -11,8 +11,8 @@
             <meta itemprop="mainEntityOfPage" content="{$ShopURL}/{$oNewsUebersicht->getURL()}">
             <div class="text-muted pull-right v-box">
                 {assign var='dDate' value=$oNewsUebersicht->getDateValidFrom()->format('Y-m-d H:i:s')}
-                {if (isset($oNewsUebersicht->oAuthor))}
-                    <div class="hidden-xs v-box">{include file='snippets/author.tpl' oAuthor=$oNewsUebersicht->oAuthor}</div>
+                {if $oNewsUebersicht->getAuthor() !== null}
+                    <div class="hidden-xs v-box">{include file='snippets/author.tpl' oAuthor=$oNewsUebersicht->getAuthor()}</div>
                 {else}
                     <div itemprop="author publisher" itemscope itemtype="http://schema.org/Organization" class="hidden">
                         <span itemprop="name">{$meta_publisher}</span>

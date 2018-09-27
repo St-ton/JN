@@ -356,7 +356,7 @@ class BaseSearchQuery extends AbstractFilter
                 ->setURL($this->productFilter->getFilterURL()->getURL(
                     $additionalFilter->init((int)$searchFilter->kSuchanfrage)
                 ))
-                ->setClass(\rand(1, 10))
+                ->setClass((string)\rand(1, 10))
                 ->setParam($this->getUrlParam())
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
@@ -364,7 +364,8 @@ class BaseSearchQuery extends AbstractFilter
                 ->setValue((int)$searchFilter->kSuchanfrage)
                 ->setCount((int)$searchFilter->nAnzahl);
             if (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0 && $nPrioStep > 0) {
-                $fo->setClass((string)\round(
+                $fo->setClass(
+                    (string)\round(
                         ($searchFilter->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) /
                         $nPrioStep
                     ) + 1
@@ -473,7 +474,6 @@ class BaseSearchQuery extends AbstractFilter
         $cSuch_arr    = $this->prepareSearchQuery($cSuche);
         $cSuchTMP_arr = $cSuch_arr;
         if (\count($cSuch_arr) === 0) {
-
             return 0;
         }
         // Array mit nach Prio sort. Suchspalten holen
@@ -1018,14 +1018,16 @@ class BaseSearchQuery extends AbstractFilter
 
         if ($active === null) {
             $active = $this->productFilter->getDB()->query(
-                    "SHOW INDEX FROM tartikel 
+                "SHOW INDEX FROM tartikel 
                     WHERE KEY_NAME = 'idx_tartikel_fulltext'",
-                    ReturnType::SINGLE_OBJECT)
+                ReturnType::SINGLE_OBJECT
+            )
                 && $this->productFilter->getDB()->query(
                     "SHOW INDEX 
-                    FROM tartikelsprache 
-                    WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'",
-                    ReturnType::SINGLE_OBJECT);
+                        FROM tartikelsprache 
+                        WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'",
+                    ReturnType::SINGLE_OBJECT
+                );
         }
 
         return $active;

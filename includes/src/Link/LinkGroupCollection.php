@@ -37,7 +37,7 @@ final class LinkGroupCollection extends Collection
      * @param string $name
      * @return LinkGroupInterface|null
      */
-    public function getLinkgroupByTemplate(string $name)
+    public function getLinkgroupByTemplate(string $name): ?LinkGroupInterface
     {
         return $this->filter(function (LinkGroupInterface $e) use ($name) {
             return $e->getTemplate() === $name;
@@ -48,7 +48,7 @@ final class LinkGroupCollection extends Collection
      * @param int $id
      * @return LinkGroupInterface|null
      */
-    public function getLinkgroupByID(int $id)
+    public function getLinkgroupByID(int $id): ?LinkGroupInterface
     {
         return $this->filter(function (LinkGroupInterface $e) use ($id) {
             return $e->getID() === $id;

@@ -6,7 +6,6 @@
 
 namespace Smarty;
 
-
 /**
  * Class PluginCollection
  * @package Smarty

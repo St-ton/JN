@@ -13,7 +13,7 @@ class Visitor
     /**
      * @since 5.0.0
      */
-    public static function generateData()
+    public static function generateData(): void
     {
         $userAgent    = $_SERVER['HTTP_USER_AGENT'] ?? '';
         $kBesucherBot = self::isSpider($userAgent);
@@ -25,13 +25,10 @@ class Visitor
                 \DB\ReturnType::AFFECTED_ROWS
             );
         }
-        // cleanup `tbesucher`
         self::archive();
-
         $oVisitor = self::dbLookup($userAgent, RequestHelper::getIP());
         if ($oVisitor === null) {
             if (isset($_SESSION['oBesucher'])) {
-                // update the session-object with a new kBesucher-ID(!) (re-write it in the session at the end of the script)
                 $oVisitor = self::updateVisitorObject($_SESSION['oBesucher'], 0, $userAgent, $kBesucherBot);
             } else {
                 // create a new visitor-object
@@ -50,8 +47,8 @@ class Visitor
             $oVisitor->kBestellung  = (int)$oVisitor->kBestellung;
             $oVisitor->kBesucherBot = (int)$oVisitor->kBesucherBot;
             // prevent counting internal redirects by counting only the next request above 3 seconds
-            $iTimeDiff = (new DateTime())->getTimestamp() - (new DateTime($oVisitor->dLetzteAktivitaet))->getTimestamp();
-            if ($iTimeDiff > 2) {
+            $diff = (new DateTime())->getTimestamp() - (new DateTime($oVisitor->dLetzteAktivitaet))->getTimestamp();
+            if ($diff > 2) {
                 $oVisitor = self::updateVisitorObject($oVisitor, $oVisitor->kBesucher, $userAgent, $kBesucherBot);
                 // update the db and simultaneously retrieve the ID to update the session below
                 $oVisitor->kBesucher = self::dbUpdate($oVisitor, $oVisitor->kBesucher);
@@ -68,9 +65,9 @@ class Visitor
      * @former archiviereBesucher()
      * @since 5.0.0
      */
-    public static function archive()
+    public static function archive(): void
     {
-        $iInterval = 3;
+        $interval = 3;
         Shop::Container()->getDB()->queryPrepared(
             'INSERT INTO tbesucherarchiv
             (kBesucher, cIP, kKunde, kBestellung, cReferer, cEinstiegsseite, cBrowser,
@@ -79,13 +76,13 @@ class Visitor
             (UNIX_TIMESTAMP(dLetzteAktivitaet) - UNIX_TIMESTAMP(dZeit)) AS nBesuchsdauer, kBesucherBot, dZeit
               FROM tbesucher
               WHERE dLetzteAktivitaet <= DATE_SUB(NOW(), INTERVAL :interval HOUR)',
-            ['interval' => $iInterval],
+            ['interval' => $interval],
             \DB\ReturnType::AFFECTED_ROWS
         );
         Shop::Container()->getDB()->queryPrepared(
             'DELETE FROM tbesucher
                 WHERE dLetzteAktivitaet <= DATE_SUB(NOW(), INTERVAL :interval HOUR)',
-            ['interval' => $iInterval],
+            ['interval' => $interval],
             \DB\ReturnType::AFFECTED_ROWS
         );
     }
@@ -97,7 +94,7 @@ class Visitor
      * @former dbLookupVisitor()
      * @since 5.0.0
      */
-    public static function dbLookup($userAgent, $ip)
+    public static function dbLookup($userAgent, $ip): ?stdClass
     {
         // check if we know that visitor (first by session-id)
         $oVisitor = Shop::Container()->getDB()->select('tbesucher', 'cSessID', session_id());
@@ -138,10 +135,10 @@ class Visitor
     /**
      * @param string $szUserAgent
      * @param int    $kBesucherBot
-     * @return object
+     * @return stdClass
      * @since 5.0.0
      */
-    public static function createVisitorObject($szUserAgent, int $kBesucherBot)
+    public static function createVisitorObject($szUserAgent, int $kBesucherBot): stdClass
     {
         $vis                    = new stdClass();
         $vis->kBesucher         = 0;
@@ -316,7 +313,7 @@ class Visitor
      * @former werteRefererAus()
      * @since 5.0.0
      */
-    public static function analyzeReferer(int $kBesucher, $referer)
+    public static function analyzeReferer(int $kBesucher, $referer): void
     {
         $roh                 = $_SERVER['HTTP_REFERER'] ?? '';
         $ausdruck            = new stdClass();
@@ -918,13 +915,15 @@ class Visitor
         $oBrowser->cVersion  = '0';
 
         $oBrowser->cAgent  = $userAgent;
-        $oBrowser->bMobile = preg_match('/android|avantgo|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile' .
+        $oBrowser->bMobile = preg_match(
+            '/android|avantgo|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile' .
                 '|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker' .
                 '|pocket|psp|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i',
-                $oBrowser->cAgent,
-                $cMatch_arr
-            ) ||
-            preg_match('/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)' .
+            $oBrowser->cAgent,
+            $cMatch_arr
+        )
+            || preg_match(
+                '/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)' .
                 '|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )' .
                 '|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa' .
                 '|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob' .

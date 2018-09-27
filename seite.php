@@ -9,7 +9,6 @@ if (!defined('PFAD_ROOT')) {
 }
 require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
 $smarty                 = Shop::Smarty();
-$AktuelleSeite          = 'SEITE';
 $Einstellungen          = Shopsetting::getInstance()->getAll();
 $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
@@ -35,7 +34,6 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
         header('Location: ' . $cCanonicalURL, true, $link->getRedirectCode());
         exit();
     }
-    $AktuelleSeite = 'STARTSEITE';
     $smarty->assign('StartseiteBoxen', CMSHelper::getHomeBoxes())
            ->assign('oNews_arr', ($Einstellungen['news']['news_benutzen'] === 'Y') ? CMSHelper::getHomeNews($Einstellungen) : []);
     AuswahlAssistent::startIfRequired(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::getLanguage(), $smarty);
@@ -111,8 +109,16 @@ if (empty($cMetaTitle) || empty($cMetaDescription) || empty($cMetaKeywords)) {
         }
     }
 }
-$cMetaTitle       = \Filter\Metadata::prepareMeta($cMetaTitle, null, (int)$Einstellungen['metaangaben']['global_meta_maxlaenge_title']);
-$cMetaDescription = \Filter\Metadata::prepareMeta($cMetaDescription, null, (int)$Einstellungen['metaangaben']['global_meta_maxlaenge_description']);
+$cMetaTitle       = \Filter\Metadata::prepareMeta(
+    $cMetaTitle,
+    null,
+    (int)$Einstellungen['metaangaben']['global_meta_maxlaenge_title']
+);
+$cMetaDescription = \Filter\Metadata::prepareMeta(
+    $cMetaDescription,
+    null,
+    (int)$Einstellungen['metaangaben']['global_meta_maxlaenge_description']
+);
 
 $smarty->assign('meta_title', $cMetaTitle)
        ->assign('meta_description', $cMetaDescription)

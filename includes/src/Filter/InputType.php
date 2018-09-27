@@ -21,15 +21,15 @@ class InputType extends Enum
     /**
      * filter type selectbox
      */
-    const SELECT = 1;
+    public const SELECT = 1;
 
     /**
      * filter type checkbox
      */
-    const CHECKBOX = 2;
+    public const CHECKBOX = 2;
 
     /**
      * filter type button
      */
-    const BUTTON = 3;
+    public const BUTTON = 3;
 }

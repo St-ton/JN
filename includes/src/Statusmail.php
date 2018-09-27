@@ -11,8 +11,14 @@ class Statusmail
      */
     private $db;
 
+    /**
+     * @var string
+     */
     private $dateStart;
 
+    /**
+     * @var string
+     */
     private $dateEnd;
 
     /**

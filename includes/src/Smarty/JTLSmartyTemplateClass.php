@@ -6,7 +6,6 @@
 
 namespace Smarty;
 
-
 /**
  * Class JTLSmartyTemplateClass
  */

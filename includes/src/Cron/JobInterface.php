@@ -30,7 +30,7 @@ interface JobInterface
     /**
      * @param string $type
      */
-    public function setType(string $type);
+    public function setType(string $type): void;
 
     /**
      * @return int
@@ -40,7 +40,7 @@ interface JobInterface
     /**
      * @param int $limit
      */
-    public function setLimit(int $limit);
+    public function setLimit(int $limit): void;
 
     /**
      * @return int
@@ -50,7 +50,7 @@ interface JobInterface
     /**
      * @param int $id
      */
-    public function setID(int $id);
+    public function setID(int $id): void;
 
     /**
      * @return \DateTime
@@ -60,7 +60,7 @@ interface JobInterface
     /**
      * @param \DateTime $dateLastStarted
      */
-    public function setDateLastStarted(\DateTime $dateLastStarted);
+    public function setDateLastStarted(\DateTime $dateLastStarted): void;
 
     /**
      * @return int
@@ -70,7 +70,7 @@ interface JobInterface
     /**
      * @param int $foreignKeyID
      */
-    public function setForeignKeyID(int $foreignKeyID);
+    public function setForeignKeyID(int $foreignKeyID): void;
 
     /**
      * @return string
@@ -80,7 +80,7 @@ interface JobInterface
     /**
      * @param string $foreignKey
      */
-    public function setForeignKey(string $foreignKey);
+    public function setForeignKey(string $foreignKey): void;
 
     /**
      * @return string
@@ -90,7 +90,7 @@ interface JobInterface
     /**
      * @param string $table
      */
-    public function setTable(string $table);
+    public function setTable(string $table): void;
 
     /**
      * @param QueueEntry $queueEntry
@@ -106,7 +106,7 @@ interface JobInterface
     /**
      * @param int $executed
      */
-    public function setExecuted(int $executed);
+    public function setExecuted(int $executed): void;
 
     /**
      * @return int
@@ -116,7 +116,7 @@ interface JobInterface
     /**
      * @param int $cronID
      */
-    public function setCronID(int $cronID);
+    public function setCronID(int $cronID): void;
 
     /**
      * @return bool
@@ -126,7 +126,7 @@ interface JobInterface
     /**
      * @param bool $finished
      */
-    public function setFinished(bool $finished);
+    public function setFinished(bool $finished): void;
 
     /**
      * @return int
@@ -136,5 +136,5 @@ interface JobInterface
     /**
      * @param int $queueID
      */
-    public function setQueueID(int $queueID);
+    public function setQueueID(int $queueID): void;
 }

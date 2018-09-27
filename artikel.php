@@ -9,7 +9,6 @@ if (!defined('PFAD_ROOT')) {
 }
 require_once PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 /** @global JTLSmarty $smarty */
-$AktuelleSeite    = 'ARTIKEL';
 $oPreisverlauf    = null;
 $bPreisverlauf    = false;
 $bereitsBewertet  = false;
@@ -17,20 +16,7 @@ $Artikelhinweise  = [];
 $PositiveFeedback = [];
 $nonAllowed       = [];
 Shop::setPageType(PAGE_ARTIKEL);
-$Einstellungen                = Shop::getSettings([
-    CONF_GLOBAL,
-    CONF_ARTIKELUEBERSICHT,
-    CONF_NAVIGATIONSFILTER,
-    CONF_RSS,
-    CONF_ARTIKELDETAILS,
-    CONF_PREISVERLAUF,
-    CONF_BEWERTUNG,
-    CONF_BOXEN,
-    CONF_PREISVERLAUF,
-    CONF_METAANGABEN,
-    CONF_KONTAKTFORMULAR,
-    CONF_CACHING
-]);
+$Einstellungen                = Shopsetting::getInstance()->getAll();
 $oGlobaleMetaAngabenAssoc_arr = \Filter\Metadata::getGlobalMetaData();
 // Bewertungsguthaben
 $fBelohnung = (isset($_GET['fB']) && (float)$_GET['fB'] > 0) ? (float)$_GET['fB'] : 0.0;
@@ -147,8 +133,7 @@ if ($AktuellerArtikel->Bewertungen === null || $bewertung_sterne > 0) {
     $AktuellerArtikel->holehilfreichsteBewertung(Shop::getLanguage());
 }
 
-if (isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich,
-        $AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung)
+if (isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich)
     && (int)$AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0
 ) {
     $oBewertung_arr = array_filter(
@@ -162,8 +147,10 @@ if (isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreic
     $oBewertung_arr = $AktuellerArtikel->Bewertungen->oBewertung_arr;
 }
 if (Session::Customer()->getID() > 0) {
-    $bereitsBewertet = ArtikelHelper::getRatedByCurrentCustomer((int)$AktuellerArtikel->kArtikel,
-        (int)$AktuellerArtikel->kVaterArtikel);
+    $bereitsBewertet = ArtikelHelper::getRatedByCurrentCustomer(
+        (int)$AktuellerArtikel->kArtikel,
+        (int)$AktuellerArtikel->kVaterArtikel
+    );
 }
 
 $pagination = (new Pagination('ratings'))
@@ -217,9 +204,13 @@ $smarty->assign('showMatrix', $AktuellerArtikel->showMatrix())
            : ArtikelHelper::getXSelling($AktuellerArtikel->kArtikel, $AktuellerArtikel->nIstVater > 0))
        ->assign('Artikelhinweise', $Artikelhinweise)
        ->assign('PositiveFeedback', $PositiveFeedback)
-       ->assign('verfuegbarkeitsBenachrichtigung', ArtikelHelper::showAvailabilityForm(
-           $AktuellerArtikel,
-           $Einstellungen['artikeldetails']['benachrichtigung_nutzen']))
+       ->assign(
+           'verfuegbarkeitsBenachrichtigung',
+           ArtikelHelper::showAvailabilityForm(
+               $AktuellerArtikel,
+               $Einstellungen['artikeldetails']['benachrichtigung_nutzen']
+           )
+       )
        ->assign('ProdukttagHinweis', ArtikelHelper::editProductTags($AktuellerArtikel))
        ->assign('ProduktTagging', $AktuellerArtikel->tags)
        ->assign('BlaetterNavi', $oBlaetterNavi)

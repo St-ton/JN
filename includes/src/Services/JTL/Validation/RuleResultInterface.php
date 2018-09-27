@@ -15,12 +15,12 @@ interface RuleResultInterface
     /**
      * @return bool
      */
-    public function isValid();
+    public function isValid(): bool;
 
     /**
      * @return string
      */
-    public function getMessageId();
+    public function getMessageId(): string;
 
     /**
      * @return mixed

@@ -124,7 +124,7 @@ class Pagination
     /**
      * @param array $pages
      */
-    public function setPages(array $pages)
+    public function setPages(array $pages): void
     {
         $this->pages = $pages;
     }
@@ -140,7 +140,7 @@ class Pagination
     /**
      * @param Item $prev
      */
-    public function setPrev(Item $prev)
+    public function setPrev(Item $prev): void
     {
         $this->prev = $prev;
     }
@@ -156,7 +156,7 @@ class Pagination
     /**
      * @param Item $next
      */
-    public function setNext(Item $next)
+    public function setNext(Item $next): void
     {
         $this->next = $next;
     }

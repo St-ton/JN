@@ -74,7 +74,7 @@ class CMSHelper
             return $items;
         }
         $cacheID = 'news_' . md5(json_encode($conf['news']) . '_' . Shop::getLanguage());
-        if (true||($items = Shop::Cache()->get($cacheID)) === false) {
+        if (($items = Shop::Cache()->get($cacheID)) === false) {
             if ((int)$conf['news']['news_anzahl_content'] > 0) {
                 $cSQL = ' LIMIT ' . (int)$conf['news']['news_anzahl_content'];
             }

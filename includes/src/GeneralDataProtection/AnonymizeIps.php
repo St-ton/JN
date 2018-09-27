@@ -123,11 +123,14 @@ class AnonymizeIps extends Method implements MethodInterface
      */
     public function anon_all_ips()
     {
-        $oAnonymizer = new IpAnonymizer();
+        $oAnonymizer = new IpAnonymizer('', true); // anonymize "beautified"
         $szIpMaskV4  = \Shop::getSettings([CONF_GLOBAL])['global']['anonymize_ip_mask_v4'];
         $szIpMaskV6  = \Shop::getSettings([CONF_GLOBAL])['global']['anonymize_ip_mask_v6'];
         $szIpMaskV4  = substr($szIpMaskV4, strpos($szIpMaskV4, '.0'), strlen($szIpMaskV4)-1);
         $szIpMaskV6  = substr($szIpMaskV6, strpos($szIpMaskV6, ':0000'), strlen($szIpMaskV6)-1);
+
+        //$this->oLogger->debug('PLAIN: '.print_r( ((new IpAnonymizer('123.123.234.234'))->anonymize()) ,true )); // --DEBUG--
+        //$this->oLogger->debug('PLAIN: '.print_r( ((new IpAnonymizer())->setIp('123.178.234.234')->anonymize()) ,true )); // --DEBUG--
 
         foreach ($this->vTablesUpdate as $szTableName => $vTable) {
             // select maximum 10,000 rows in one step!
@@ -135,16 +138,19 @@ class AnonymizeIps extends Method implements MethodInterface
             // to anonymize more than 10,000 data sets)
             $vResult    = \Shop::Container()->getDB()->query(
                 'SELECT
-                    `' . $vTable['ColKey'] . '`,
-                    `' . $vTable['ColIp'] . '`,
-                    `' . $vTable['ColCreated'] . '`
+                    ' . $vTable['ColKey'] . ',
+                    ' . $vTable['ColIp'] . ',
+                    ' . $vTable['ColCreated'] . '
                 FROM
-                    `' . $szTableName . '`
+                    ' . $szTableName . '
                 WHERE
                     NOT INSTR(cIP, ".*") > 0
                     AND NOT INSTR(cIP, "' . $szIpMaskV4 . '") > 0
                     AND NOT INSTR(cIP, "' . $szIpMaskV6 . '") > 0
-                    AND `' . $vTable['ColCreated'] . '` <= NOW() - INTERVAL ' . $this->iInterval . ' DAY
+                    AND (case ceil(' . $vTable['ColCreated'] . ') = ' . $vTable['ColCreated'] . '
+                        when 0 then date(' . $vTable['ColCreated'] . ') <= NOW() - INTERVAL ' . $this->iInterval . ' DAY
+                        when 1 then from_unixtime(' . $vTable['ColCreated'] . ') <= NOW() - INTERVAL ' . $this->iInterval . ' DAY
+                    end)
                 ORDER BY
                     ' . $vTable['ColCreated'] . ' ASC
                 LIMIT 10000',

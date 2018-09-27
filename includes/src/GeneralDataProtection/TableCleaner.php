@@ -28,12 +28,12 @@ class TableCleaner
      */
     private $vMethods = [
         ['szName' => 'AnonymizeIps', 'nIntervalDays' => 7],
-        ['szName' => 'AnonymizeDeletedCustomer', 'nIntervalDays' => 7],
-        ['szName' => 'CleanupCustomerRelicts', 'nIntervalDays' => 0],
-        ['szName' => 'CleanupGuestAccountsWhithoutOrders', 'nIntervalDays' => 0],
-        ['szName' => 'CleanupNewsletterRecipients', 'nIntervalDays' => 30],
-        ['szName' => 'CleanupLogs', 'nIntervalDays' => 90],
-        ['szName' => 'CleanupOldGuestAccounts', 'nIntervalDays' => 365]
+//        ['szName' => 'AnonymizeDeletedCustomer', 'nIntervalDays' => 7],
+//        ['szName' => 'CleanupCustomerRelicts', 'nIntervalDays' => 0],
+//        ['szName' => 'CleanupGuestAccountsWhithoutOrders', 'nIntervalDays' => 0],
+//        ['szName' => 'CleanupNewsletterRecipients', 'nIntervalDays' => 30],
+//        ['szName' => 'CleanupLogs', 'nIntervalDays' => 90],
+//        ['szName' => 'CleanupOldGuestAccounts', 'nIntervalDays' => 365]
     ];
 
     /**
@@ -41,16 +41,29 @@ class TableCleaner
      */
     private $oLogger;
 
+    private $_Logger = null; // --DEBUG--
+
     public function __construct()
     {
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --DEBUG--
+        include_once('/var/www/html/shop4_07/includes/vendor/apache/log4php/src/main/php/Logger.php');
+        \Logger::configure('/var/www/html/shop4_07/_logging_conf.xml');
+        $this->_Logger = \Logger::getLogger('default');
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --DEBUG--
+
         // get the main-logger
         try {
             $this->oLogger = \Shop::Container()->getLogService();
         } catch (\Exception $e) {
             $this->oLogger = null;
         }
+
         // set the DateTime which this object/package uses
         $this->oNow = new \DateTime();
+        //
+        // --DEVELOPMENT-- fake date! inbetween the boddenangler-dates
+        //$this->oNow = new \DateTime('2018-07-09 19:21:11');
+        //$this->oNow = new \DateTime('2011-02-07 18:02:21');
     }
 
     public function execute()
@@ -60,11 +73,14 @@ class TableCleaner
         $nMethodsCount = \count($this->vMethods);
         for ($i=0; $i < $nMethodsCount ; $i++) {
             $szMethodName = __NAMESPACE__ . '\\' . $this->vMethods[$i]['szName'];
+            $this->_Logger->debug('running: '.print_r($szMethodName,true ).' with: '.$this->vMethods[$i]['nIntervalDays']); // --DEBUG--
             ($this->oLogger === null) ?: $this->oLogger->log(JTLLOG_LEVEL_NOTICE, 'Anonymize Method running: ' . $this->vMethods[$i]['szName']);
             (new $szMethodName($this->oNow, $this->vMethods[$i]['nIntervalDays']))->execute();
         }
+
         $t_elapsed = microtime(true) - $t_start; // runtime-measurement
-        $this->oLogger->log(JTLLOG_LEVEL_NOTICE, 'Anonymizing was finished in: ' . sprintf('%01.4fs', $t_elapsed));
+        ($this->oLogger === null) ?: $this->oLogger->log(JTLLOG_LEVEL_NOTICE, 'Anonymizing was finished in: ' . sprintf('%01.4fs', $t_elapsed));
+        $this->_Logger->debug('ELAPSED TIME: '.sprintf('%01.4fs', $t_elapsed)); // --DEBUG-- time-measurement
     }
 
     public function __destruct()
@@ -79,3 +95,4 @@ class TableCleaner
     }
 
 }
+

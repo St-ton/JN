@@ -29,14 +29,24 @@ class Method
      */
     protected $iInterval = 0;
 
+    protected $oLogger = null; // --DEBUG--
+
     public function __construct(\DateTime $oObjNow, int $iInterval)
     {
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --DEBUG--
+        include_once('/var/www/html/shop4_07/includes/vendor/apache/log4php/src/main/php/Logger.php');
+        \Logger::configure('/var/www/html/shop4_07/_logging_conf.xml');
+        $this->oLogger = \Logger::getLogger('default');
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --DEBUG--
+
         $this->oNow      = $oObjNow;
         $this->iInterval = $iInterval;
     }
 
     /**
      * write the original data into the change-journal (`tanondatajournal`)
+     * (writes bunches of 2000 values for each insert,
+     * as long as there are data left)
      *
      * @param string szTableName
      * @param array $vUsedFields
@@ -61,6 +71,8 @@ class Method
                     [],
                     \DB\ReturnType::AFFECTED_ROWS
                 );
+                $this->oLogger->debug('written: '.print_r($vResult,true )); // --DEBUG--
+                // reset the row-counter and value-line
                 $nRowCount   = -1;
                 $szValueLine = '';
             }
@@ -72,6 +84,7 @@ class Method
                 [],
                 \DB\ReturnType::AFFECTED_ROWS
             );
+            $this->oLogger->debug('written: '.print_r($vResult,true )); // --DEBUG--
         }
     }
 

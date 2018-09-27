@@ -75,6 +75,7 @@ class CleanupGuestAccountsWhithoutOrders extends Method implements MethodInterfa
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
         $vUseFields = $this->selectFields($vTableFields);
+        // select all the data from the DB
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM `tkunde` k
                 JOIN `tbestellung` b ON b.`kKunde` = k.`kKunde`
@@ -86,10 +87,26 @@ class CleanupGuestAccountsWhithoutOrders extends Method implements MethodInterfa
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (!\is_array($vResult)) {
+            // "no data, no operation"
             return;
         }
+        // save parts of the old values in the changes-journal..
         $this->saveToJournal('tbesucher', $vUseFields, $vResult);
+        // anonymize the original data
         foreach ($vResult as $oResult) {
+            /*
+             *\Shop::Container()->getDB()->queryPrepared('DELETE k
+             *    FROM `tkunde` k
+             *        JOIN `tbestellung` b ON b.`kKunde` = k.`kKunde`
+             *    WHERE
+             *        b.`cStatus` IN (4, -1)
+             *        AND k.`nRegistriert` = 0
+             *        AND b.`cAbgeholt` = "Y"'
+             *    , []
+             *    , \DB\ReturnType::AFFECTED_ROWS
+             *);
+             */
+
             \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tkunde`
                 WHERE
                     kKunde = :pKeyKunde',

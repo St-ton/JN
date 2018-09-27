@@ -7,6 +7,14 @@ require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'newsletter_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
 
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --DEBUG--
+include_once('/var/www/html/shop4_07/includes/vendor/apache/log4php/src/main/php/Logger.php');
+Logger::configure('/var/www/html/shop4_07/_logging_conf.xml');
+$oLogger = Logger::getLogger('default');
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --DEBUG--
+
+
 Shop::setPageType(PAGE_NEWSLETTER);
 $AktuelleSeite = 'NEWSLETTER';
 $links         = Shop::Container()->getDB()->selectAll('tlink', 'nLinkart', LINKTYP_NEWSLETTER);
@@ -71,7 +79,7 @@ if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
         // Protokollieren (freigeschaltet)
         $upd           = new stdClass();
         $upd->dOptCode = 'NOW()';
-        $upd->cOptIp   = RequestHelper::getIP();
+        $upd->cOptIp   = RequestHelper::getIP(); // --TODO-- "full IP needed here?"
         Shop::Container()->getDB()->update(
             'tnewsletterempfaengerhistory',
             ['cOptCode', 'cAktion'],
@@ -111,6 +119,8 @@ if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
         $hist->dOptCode     = '_DBNULL_';
         $hist->cRegIp       = RequestHelper::getIP(); // IP of the current event-issuer
 
+        $oLogger->debug('newsletter lösch-code block ...'); // --DEBUG--
+
         Shop::Container()->getDB()->insert('tnewsletterempfaengerhistory', $hist);
 
         executeHook(HOOK_NEWSLETTER_PAGE_HISTORYEMPFAENGEREINTRAGEN,
@@ -145,6 +155,8 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
         ? StringHandler::filterXSS(Shop::Container()->getDB()->escape(strip_tags($_POST['cEmail'])))
         : null;
     $oKunde->cRegIp    = RequestHelper::getIP(); // IP of the current event-issuer
+
+    $oLogger->debug('newsletter abo-block ...'); // --DEBUG--
 
     if (!SimpleMail::checkBlacklist($oKunde->cEmail)) {
         Shop::Smarty()->assign('oPlausi', fuegeNewsletterEmpfaengerEin($oKunde, true));
@@ -198,6 +210,8 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
             $hist->dOptCode     = '_DBNULL_';
             $hist->cRegIp       = RequestHelper::getIP(); // IP of the current event-issuer
 
+            $oLogger->debug('newsletter abmelden-block...'); // --DEBUG--
+
             Shop::Container()->getDB()->insert('tnewsletterempfaengerhistory', $hist);
 
             executeHook(
@@ -224,7 +238,7 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
     $cOption            = 'anzeigen';
     $kNewsletterHistory = (int)$_GET['show'];
     $oNewsletterHistory = Shop::Container()->getDB()->query(
-        "SELECT kNewsletterHistory, nAnzahl, cBetreff, cHTMLStatic, cKundengruppeKey, 
+        "SELECT kNewsletterHistory, nAnzahl, cBetreff, cHTMLStatic, cKundengruppeKey,
             DATE_FORMAT(dStart, '%d.%m.%Y %H:%i') AS Datum
             FROM tnewsletterhistory
             WHERE kNewsletterHistory = " . $kNewsletterHistory,

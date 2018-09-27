@@ -52,9 +52,6 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function del_tbesucher()
     {
-        // CUSTOMIZABLE:
-        // table fields, which we want to save in the journal (before they would change)
-        // (null = don't save in journal, '1' = save in journal)
         $vTableFields = [
             'kBesucher'         => null,
             'cIP'               => null,
@@ -177,9 +174,8 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
                 LEFT JOIN `tkundenwerbenkundenbonus` b ON k.`kKunde` = b.`kKunde`
             WHERE
                 k.`kKunde` > 0
-                AND k.`kKunde` NOT IN (SELECT `kKunde` FROM `tkunde`)
-                AND (DATE(`dErhalten`) < DATE_SUB(NOW(), INTERVAL 7 DAY) OR `dErhalten` IS NULL)',
-            ['pInterval' => $this->iInterval],
+                AND k.`kKunde` NOT IN (SELECT `kKunde` FROM `tkunde`)',
+            [],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (!\is_array($vResult)) {

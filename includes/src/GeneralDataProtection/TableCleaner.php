@@ -18,7 +18,7 @@ class TableCleaner
      *
      * @var object DateTime
      */
-    private $oNow = null;
+    private $oNow;
 
     /**
      * anonymize-methods
@@ -26,8 +26,8 @@ class TableCleaner
      *
      * @var array
      */
-    private $vMethodes = [
-        ['szName' => 'AnonymizeIps', 'nIntervalDays' => 365],
+    private $vMethods = [
+        ['szName' => 'AnonymizeIps', 'nIntervalDays' => 7],
         ['szName' => 'AnonymizeDeletedCustomer', 'nIntervalDays' => 7],
         ['szName' => 'CleanupCustomerRelicts', 'nIntervalDays' => 0],
         ['szName' => 'CleanupGuestAccountsWhithoutOrders', 'nIntervalDays' => 0],
@@ -43,18 +43,25 @@ class TableCleaner
 
     public function __construct()
     {
-        // set the "now" of this object
+        // get the main-logger
+        try {
+            $this->oLogger = \Shop::Container()->getLogService();
+        } catch (\Exception $e) {
+            $this->oLogger = null;
+        }
+        // set the DateTime which this object/package uses
         $this->oNow = new \DateTime();
     }
 
     public function execute()
     {
         $t_start = microtime(true); // runtime-measurement
-        $nMethodsCount = \count($this->vMethodes);
+
+        $nMethodsCount = \count($this->vMethods);
         for ($i=0; $i < $nMethodsCount ; $i++) {
-            $szMethodName = __NAMESPACE__ . '\\' . $this->vMethodes[$i]['szName'];
-            $this->oLogger->log(JTLLOG_LEVEL_NOTICE, 'Anonymize Method running: ' . $this->vMethodes[$i]['szName']);
-            (new $szMethodName($this->oNow, $this->vMethodes[$i]['nIntervalDays']))->execute();
+            $szMethodName = __NAMESPACE__ . '\\' . $this->vMethods[$i]['szName'];
+            ($this->oLogger === null) ?: $this->oLogger->log(JTLLOG_LEVEL_NOTICE, 'Anonymize Method running: ' . $this->vMethods[$i]['szName']);
+            (new $szMethodName($this->oNow, $this->vMethods[$i]['nIntervalDays']))->execute();
         }
         $t_elapsed = microtime(true) - $t_start; // runtime-measurement
         $this->oLogger->log(JTLLOG_LEVEL_NOTICE, 'Anonymizing was finished in: ' . sprintf('%01.4fs', $t_elapsed));

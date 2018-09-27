@@ -35,7 +35,7 @@ class AnonymizeIps extends Method implements MethodInterface
      * @var array
      */
     private $vTablesUpdate = [
-          'tbestellung' => [
+        'tbestellung' => [
             'ColKey'      => 'kBestellung',
             'ColIp'       => 'cIP',
             'ColCreated'  => 'dErstellt',

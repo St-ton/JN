@@ -122,7 +122,7 @@ class CleanupLogs extends Method implements MethodInterface
         $this->saveToJournal('tkontakthistory', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tkontakthistory`
-                WHERE kKontaktHistory = pKeyKontaktHistory',
+                WHERE kKontaktHistory = :pKeyKontaktHistory',
                 ['pKeyKontaktHistory' => $oResult->kKontaktHistory],
                 \DB\ReturnType::AFFECTED_ROWS
             );
@@ -162,7 +162,7 @@ class CleanupLogs extends Method implements MethodInterface
         $this->saveToJournal('tkundenwerbenkunden', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE `tkundenwerbenkunden`
-                WHERE kKundenWerbenKunden = pKeyKundenWerbenKunden',
+                WHERE kKundenWerbenKunden = :pKeyKundenWerbenKunden',
                 ['pKeyKundenWerbenKunden' => $oResult->kKundenWerbenKunden],
                 \DB\ReturnType::AFFECTED_ROWS
             );
@@ -199,7 +199,7 @@ class CleanupLogs extends Method implements MethodInterface
         $this->saveToJournal('tzahlungslog', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tzahlungslog`
-                WHERE kZahlunglog = pKeyZahlunglog',
+                WHERE kZahlunglog = :pKeyZahlunglog',
                 ['pKeyZahlunglog' => $oResult->kZahlunglog],
                 \DB\ReturnType::AFFECTED_ROWS
             );
@@ -244,7 +244,7 @@ class CleanupLogs extends Method implements MethodInterface
         $this->saveToJournal('tproduktanfragehistory', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tproduktanfragehistory`
-                WHERE kProduktanfrageHistory = pKeyProduktanfrageHistory',
+                WHERE kProduktanfrageHistory = :pKeyProduktanfrageHistory',
                 ['pKeyProduktanfrageHistory' => $oResult->kProduktanfrageHistory],
                 \DB\ReturnType::AFFECTED_ROWS
             );
@@ -286,7 +286,7 @@ class CleanupLogs extends Method implements MethodInterface
         $this->saveToJournal('tverfuegbarkeitsbenachrichtigung', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tverfuegbarkeitsbenachrichtigung`
-                WHERE kVerfuegbarkeitsbenachrichtigung = pKeyVerfuegbarkeitsbenachrichtigung',
+                WHERE kVerfuegbarkeitsbenachrichtigung = :pKeyVerfuegbarkeitsbenachrichtigung',
                 ['pKeyVerfuegbarkeitsbenachrichtigung' => $oResult->kVerfuegbarkeitsbenachrichtigung],
                 \DB\ReturnType::AFFECTED_ROWS
             );
@@ -322,7 +322,7 @@ class CleanupLogs extends Method implements MethodInterface
         }
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tjtllog`
-                WHERE kLog = pKeyLog',
+                WHERE kLog = :pKeyLog',
                 ['pKeyLog' => $oResult->kLog],
                 \DB\ReturnType::AFFECTED_ROWS
             );
@@ -364,7 +364,7 @@ class CleanupLogs extends Method implements MethodInterface
         $this->saveToJournal('tzahlungseingang', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tzahlungseingang`
-                WHERE kZahlungseingang = pKeyZahlungseingang',
+                WHERE kZahlungseingang = :pKeyZahlungseingang',
                 ['pKeyZahlungseingang' => $oResult->kZahlungseingang],
                 \DB\ReturnType::AFFECTED_ROWS
             );
@@ -399,7 +399,7 @@ class CleanupLogs extends Method implements MethodInterface
         }
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tkundendatenhistory`
-                WHERE kKundendatenHistory = .pKeyKundendatenHistory',
+                WHERE kKundendatenHistory = :pKeyKundendatenHistory',
                 ['pKeyKundendatenHistory' => $oResult->kKundendatenHistory],
                 \DB\ReturnType::AFFECTED_ROWS
             );

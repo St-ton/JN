@@ -49,11 +49,11 @@ class CleanupNewsletterRecipients extends Method implements MethodInterface
             // `tnewsletterempfaengerhistory`
             'kNewsletterEmpfaengerHistory' => null,
             'kSprache'                     => null,
-            'kKunde'                       => null,
+            'kKunde'                       => 1,
             'cAnrede'                      => null,
             'cVorname'                     => null,
             'cNachname'                    => null,
-            'cEmail'                       => null,
+            'cEmail'                       => 1,
             'cOptCode'                     => null,
             'cLoeschCode'                  => null,
             'cAktion'                      => null,
@@ -88,7 +88,7 @@ class CleanupNewsletterRecipients extends Method implements MethodInterface
                 FROM `tnewsletterempfaenger` e
                    INNER JOIN `tnewsletterempfaengerhistory` h ON h.`cOptCode` = e.`cOptCode` AND h.`cEmail` = e.`cEmail`
                 WHERE
-                   e.`cOptCode` = pOpCode',
+                   e.`cOptCode` = :pOpCode',
                 ['pOpCode' => $oResult->cOptCode],
                 \DB\ReturnType::AFFECTED_ROWS
             );

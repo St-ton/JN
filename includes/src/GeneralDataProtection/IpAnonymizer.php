@@ -65,20 +65,52 @@ class IpAnonymizer
      */
     private $bOldFashionedAnon = false;
 
+    /**
+     * flag to get "0:0:0:0:0:0:0:0" instead of "::" ("::" is a valid IPv6-notation too!)
+     *
+     * @var bool
+     */
+    private $bBeautifyFlag = false;
 
-    public function __construct(string $szIP = '')
+    /**
+     * @var object Monolog\Logger
+     */
+    private $oLogger;
+
+
+    /**
+     * @param bool
+     * @param string
+     */
+    public function __construct(string $szIP = '', bool $bBeautify = false)
     {
+        try {
+            $this->oLogger = \Shop::Container()->getLogService();
+        } catch (\Exception $e) {
+            $this->oLogger = null;
+        }
         $this->szIpMaskv4 = \Shop::getSettings([CONF_GLOBAL])['global']['anonymize_ip_mask_v4'];
         $this->szIpMaskv6 = \Shop::getSettings([CONF_GLOBAL])['global']['anonymize_ip_mask_v6'];
 
         if ($szIP !== '') {
             $this->szIP = $szIP;
-            $this->init();
+            try {
+                $this->init();
+            } catch(\Exception $e) {
+                // The current PHP-version did not support IPv6 addresses!
+                ($this->oLogger !== null) ?: $this->oLogger->log(JTLLOG_LEVEL_NOTICE, $e->getMessage());
+                return;
+            }
+        }
+        if ($bBeautify !== false) {
+            $this->bBeautifyFlag = true;
         }
     }
 
     /**
      * analyze the given IP and set the object-values
+     *
+     * @throws \RuntimeException
      */
     private function init()
     {
@@ -106,7 +138,7 @@ class IpAnonymizer
                     $this->szIpMask        = $this->getMaskV6();
                 } else {
                     // this should normally never happen! (wrong compile-time setting of PHP)
-                    throw new \Exception('PHP wurde mit der Option "--disable-ipv6" compiliert!');
+                    throw new \RuntimeException('PHP wurde mit der Option "--disable-ipv6" compiliert!');
                 }
                 break;
             default:
@@ -115,8 +147,8 @@ class IpAnonymizer
 
     /**
      * delivers am valid IP-string,
-     * be modern conventions, with "zeros summerized"
-     * and ident-parts (according to the masks) with zeros replaced
+     * (by conventions, with "0 summerized", for IPv6 addresses
+     * use the "beautify-flag", during object construction, to get "0")
      *
      * @return string
      */
@@ -125,7 +157,32 @@ class IpAnonymizer
         if ($this->bOldFashionedAnon !== false) {
             return $this->szIP;
         }
-        return inet_ntop(inet_pton($this->szIpMask) & $this->bRawIp);
+        $szReadableIp = inet_ntop(inet_pton($this->szIpMask) & $this->bRawIp);
+
+        if ($this->bBeautifyFlag === true && strpos($szReadableIp, '::') !== false) {
+            $iColonPos = strpos($szReadableIp, '::');
+            $iStrEnd   = \strlen($szReadableIp) - 2;
+
+            $iBlockCount = \count(
+                preg_split('/:/', str_replace('::', ':', $szReadableIp), -1, PREG_SPLIT_NO_EMPTY)
+            );
+            $szReplacement = '';
+            $iDiff = 8 - $iBlockCount;
+            for ($i = 0; $i < $iDiff; $i++) {
+                ($szReplacement === '') ? $szReplacement .= '0' : $szReplacement .= ':0';
+            }
+            if (($iColonPos | $iStrEnd) === 0) { // for pure "::"
+                $szReadableIp = $szReplacement;
+            } elseif ($iColonPos === 0) {
+                $szReadableIp = str_replace('::', $szReplacement.':', $szReadableIp);
+            } elseif ($iColonPos === $iStrEnd) {
+                $szReadableIp = str_replace('::', ':'.$szReplacement, $szReadableIp);
+            } else {
+                $szReadableIp = str_replace('::', ':'.$szReplacement.':', $szReadableIp);
+            }
+        }
+
+        return $szReadableIp;
     }
 
     /**
@@ -167,7 +224,7 @@ class IpAnonymizer
      * @return self
      * @throws \Exception
      */
-    public function setIp(string $szIP = '')
+    public function setIp(string $szIP = ''): self
     {
         if ($szIP !== '') {
             $this->szIP = $szIP;

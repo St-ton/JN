@@ -92,7 +92,7 @@ class CleanupGuestAccountsWhithoutOrders extends Method implements MethodInterfa
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tkunde`
                 WHERE
-                    kKunde = pKeyKunde',
+                    kKunde = :pKeyKunde',
                 ['pKeyKunde' => $oResult->kKunde],
                 \DB\ReturnType::AFFECTED_ROWS
             );

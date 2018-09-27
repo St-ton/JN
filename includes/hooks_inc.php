@@ -237,6 +237,8 @@ define('HOOK_NEWS_PAGE_DETAILANSICHT', 32);
  * Kurz vor der Anzeige in der News Übersicht
  *
  * @file news.php
+ * @param News\Category category - since 5.0.0
+ * @param Tightenco\Collect\Support\Collection items - since 5.0.0
  */
 define('HOOK_NEWS_PAGE_NEWSUEBERSICHT', 33);
 

@@ -242,7 +242,10 @@ class Controller
             $_SESSION['NewsNaviFilter']->cDatum   = -1;
         }
 
-        \executeHook(\HOOK_NEWS_PAGE_NEWSUEBERSICHT);
+        \executeHook(\HOOK_NEWS_PAGE_NEWSUEBERSICHT, [
+            'category' => $category,
+            'items'    => $items
+        ]);
 
         return $category;
     }

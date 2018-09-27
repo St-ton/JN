@@ -106,6 +106,7 @@ class Migration_20180801165500 extends Migration implements IMigration
             ADD COLUMN lvl INT NOT NULL DEFAULT 0,
             ADD INDEX lft_rght (`lft`, `rght`)'
         );
+        $this->rebuildCategoryTree($db, 0, 1);
         $this->execute('DELETE FROM tspezialseite WHERE nLinkart = 20');
     }
 
@@ -116,5 +117,36 @@ class Migration_20180801165500 extends Migration implements IMigration
             "INSERT INTO tspezialseite (kSpezialseite, kPlugin, cName, cDateiname, nLinkart, nSort)
                 VALUES (16, 0, 'Newsarchiv', NULL, 20, 20)"
         );
+    }
+
+    /**
+     * update lft/rght values for categories in the nested set model
+     *
+     * @param \DB\DbInterface $db
+     * @param int $parent_id
+     * @param int $left
+     * @param int $level
+     * @return int
+     */
+    private function rebuildCategoryTree($db, int $parent_id, int $left, int $level = 0): int
+    {
+        $right  = $left + 1;
+        $result = $db->selectAll(
+            'tnewskategorie',
+            'kParent',
+            $parent_id,
+            'kNewsKategorie',
+            'nSort, kNewsKategorie'
+        );
+        foreach ($result as $_res) {
+            $right = $this->rebuildCategoryTree($db, (int)$_res->kNewsKategorie, $right, $level + 1);
+        }
+        $db->update('tnewskategorie', 'kNewsKategorie', $parent_id, (object)[
+            'lft'  => $left,
+            'rght' => $right,
+            'lvl'  => $level,
+        ]);
+
+        return $right + 1;
     }
 }

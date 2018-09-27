@@ -40,6 +40,7 @@ abstract class AbstractItem implements ItemInterFace
         'dGueltigVon'          => 'DateValidFromCompat',
         'dGueltigVon_de'       => 'DateValidFromLocalizedCompat',
         'nNewsKommentarAnzahl' => 'CommentCount',
+        'oAuthor'              => 'Author'
     ];
 
     /**

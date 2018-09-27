@@ -117,6 +117,11 @@ class Item extends AbstractItem
     protected $commentCount = 0;
 
     /**
+     * @var \stdClass|null
+     */
+    protected $author;
+
+    /**
      * @var DbInterface
      */
     protected $db;
@@ -849,6 +854,22 @@ class Item extends AbstractItem
     public function setCommentCount(int $commentCount): void
     {
         $this->commentCount = $commentCount;
+    }
+
+    /**
+     * @return null|\stdClass
+     */
+    public function getAuthor(): ?\stdClass
+    {
+        return $this->author;
+    }
+
+    /**
+     * @param null|\stdClass $author
+     */
+    public function setAuthor(?\stdClass $author): void
+    {
+        $this->author = $author;
     }
 
     /**

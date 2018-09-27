@@ -29,8 +29,8 @@
                 {assign var=dDate value=$oNewsArchiv->getDateValidFrom()->format('Y-m-d H:i:s')}
 
                 {/if}
-            {if !empty($oNewsArchiv->oAuthor)}
-                {include file='snippets/author.tpl' oAuthor=$oNewsArchiv->oAuthor dDate=$dDate cDate=$oNewsArchiv->getDateValidFrom()->format('Y-m-d H:i:s')}
+            {if $oNewsArchiv->getAuthor() !== null}
+                {include file='snippets/author.tpl' oAuthor=$oNewsArchiv->getAuthor() dDate=$dDate cDate=$oNewsArchiv->getDateValidFrom()->format('Y-m-d H:i:s')}
             {else}
                 <div itemprop="author publisher" itemscope itemtype="http://schema.org/Organization" class="hidden">
                     <span itemprop="name">{$meta_publisher}</span>

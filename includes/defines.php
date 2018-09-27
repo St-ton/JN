@@ -182,6 +182,8 @@ ifndef('CATEGORY_FILTER_ITEM_LIMIT', -1);
 ifndef('PRODUCT_LIST_SHOW_RATINGS', false);
 ifndef('IMAGE_CLEANUP_LIMIT', 50);
 ifndef('OBJECT_CACHE_DIR', PFAD_ROOT . PFAD_COMPILEDIR . 'filecache/');
+
+ifndef('SITEMAP_ITEMS_LIMIT', 25000);
 // CMS Image Widths
 ifndef('WIDTH_OPC_IMAGE_XS', '480');
 ifndef('WIDTH_OPC_IMAGE_SM', '720');

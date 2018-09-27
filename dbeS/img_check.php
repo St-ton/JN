@@ -26,7 +26,7 @@ if (auth()) {
             }
             removeTemporaryFiles($xmlFile);
         }
-        removeTemporaryFiles($unzipPath);
+        removeTemporaryFiles($unzipPath, true);
     }
 }
 echo $return;

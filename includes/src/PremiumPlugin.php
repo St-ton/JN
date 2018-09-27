@@ -9,7 +9,7 @@
  */
 class PremiumPlugin
 {
-    const CERTIFICATION_LOGO = 'https://images.jtl-software.de/servicepartner/cert/jtl_certified_128.png';
+    public const CERTIFICATION_LOGO = 'https://images.jtl-software.de/servicepartner/cert/jtl_certified_128.png';
 
     /**
      * @var array
@@ -454,8 +454,7 @@ class PremiumPlugin
         string $class = 'btn btn-default',
         string $fa = null,
         bool $external = false
-    ): self
-    {
+    ): self {
         $btn           = new stdClass();
         $btn->link     = $link;
         $btn->caption  = $caption;
@@ -475,6 +474,7 @@ class PremiumPlugin
      */
     public function hasCertifcates(): bool
     {
-        return isset($this->servicePartner->oZertifizierungen_arr) && count($this->servicePartner->oZertifizierungen_arr) > 0;
+        return isset($this->servicePartner->oZertifizierungen_arr)
+            && count($this->servicePartner->oZertifizierungen_arr) > 0;
     }
 }

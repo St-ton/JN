@@ -113,6 +113,27 @@ class Migration_20180801165500 extends Migration implements IMigration
     public function down()
     {
         $this->execute('DROP TABLE tnewssprache');
+        $this->execute('DROP TABLE tnewskategoriesprache');
+        $this->execute(
+            'ALTER TABLE tnewskategorie
+            ADD COLUMN `kSprache` int(10) unsigned NOT NULL,
+            ADD COLUMN `cSeo` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+            ADD COLUMN `cName` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+            ADD COLUMN `cBeschreibung` text COLLATE utf8_unicode_ci NOT NULL,
+            ADD COLUMN `cMetaTitle` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+            ADD COLUMN `cMetaDescription` varchar(255) COLLATE utf8_unicode_ci NOT NULL'
+        );
+        $this->execute(
+            'ALTER TABLE tnews 
+            ADD COLUMN `kSprache` int(10) unsigned NOT NULL,
+            ADD COLUMN `cSeo` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+            ADD COLUMN `cBetreff` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+            ADD COLUMN `cText` text COLLATE utf8_unicode_ci NOT NULL,
+            ADD COLUMN `cVorschauText` text COLLATE utf8_unicode_ci NOT NULL,
+            ADD COLUMN `cMetaTitle` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+            ADD COLUMN `cMetaDescription` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+            ADD COLUMN `cMetaKeywords` varchar(255) COLLATE utf8_unicode_ci NOT NULL'
+        );
         $this->execute(
             "INSERT INTO tspezialseite (kSpezialseite, kPlugin, cName, cDateiname, nLinkart, nSort)
                 VALUES (16, 0, 'Newsarchiv', NULL, 20, 20)"

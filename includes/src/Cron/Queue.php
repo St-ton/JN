@@ -71,7 +71,7 @@ class Queue
     /**
      * @param \stdClass[] $jobs
      */
-    public function enqueueCronJobs(array $jobs)
+    public function enqueueCronJobs(array $jobs): void
     {
         foreach ($jobs as $job) {
             $queueEntry             = new \stdClass();
@@ -89,7 +89,7 @@ class Queue
         }
     }
 
-    public function run()
+    public function run(): void
     {
         foreach ($this->queueEntries as $i => $queueEntry) {
             if ($i >= \JOBQUEUE_LIMIT_JOBS) {

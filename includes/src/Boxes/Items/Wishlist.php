@@ -94,7 +94,7 @@ final class Wishlist extends AbstractBox
     /**
      * @param int $id
      */
-    public function setWishListID(int $id)
+    public function setWishListID(int $id): void
     {
         $this->wishListID = $id;
     }
@@ -110,7 +110,7 @@ final class Wishlist extends AbstractBox
     /**
      * @param string $value
      */
-    public function setShowImages($value)
+    public function setShowImages($value): void
     {
 
     }

@@ -26,10 +26,12 @@ final class NewsCategory extends AbstractFactory
             "SELECT tnewskategorie.dLetzteAktualisierung AS dlm, tnewskategorie.kNewsKategorie, 
             tnewskategorie.cPreviewImage AS image, tseo.cSeo, tseo.kSprache AS langID
                 FROM tnewskategorie
+                JOIN tnewskategoriesprache t 
+                    ON tnewskategorie.kNewsKategorie = t.kNewsKategorie
                 JOIN tseo 
                     ON tseo.cKey = 'kNewsKategorie'
                     AND tseo.kKey = tnewskategorie.kNewsKategorie
-                    AND tseo.kSprache = tnewskategorie.kSprache
+                    AND tseo.kSprache = t.languageID
                 WHERE tnewskategorie.nAktiv = 1
                     AND tseo.kSprache IN (" . \implode(',', $languageIDs) . ")",
             \DB\ReturnType::QUERYSINGLE

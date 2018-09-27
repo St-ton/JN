@@ -93,7 +93,7 @@ abstract class Job implements JobInterface
     /**
      * @return \stdClass|null
      */
-    protected function getJobData()
+    protected function getJobData(): ?\stdClass
     {
         return $this->getForeignKeyID() > 0 && $this->getForeignKey() !== '' && $this->getTable() !== ''
             ? $this->db->select(
@@ -115,7 +115,7 @@ abstract class Job implements JobInterface
     /**
      * @inheritdoc
      */
-    public function setType(string $type)
+    public function setType(string $type): void
     {
         $this->type = $type;
     }
@@ -131,7 +131,7 @@ abstract class Job implements JobInterface
     /**
      * @inheritdoc
      */
-    public function setLimit(int $limit)
+    public function setLimit(int $limit): void
     {
         $this->limit = $limit;
     }
@@ -147,7 +147,7 @@ abstract class Job implements JobInterface
     /**
      * @inheritdoc
      */
-    public function setID(int $id)
+    public function setID(int $id): void
     {
         $this->id = $id;
     }
@@ -163,7 +163,7 @@ abstract class Job implements JobInterface
     /**
      * @inheritdoc
      */
-    public function setDateLastStarted(\DateTime $dateLastStarted)
+    public function setDateLastStarted(\DateTime $dateLastStarted): void
     {
         $this->dateLastStarted = $dateLastStarted;
     }
@@ -179,7 +179,7 @@ abstract class Job implements JobInterface
     /**
      * @inheritdoc
      */
-    public function setForeignKeyID(int $foreignKeyID)
+    public function setForeignKeyID(int $foreignKeyID): void
     {
         $this->foreignKeyID = $foreignKeyID;
     }
@@ -195,7 +195,7 @@ abstract class Job implements JobInterface
     /**
      * @inheritdoc
      */
-    public function setForeignKey(string $foreignKey)
+    public function setForeignKey(string $foreignKey): void
     {
         $this->foreignKey = $foreignKey;
     }
@@ -211,7 +211,7 @@ abstract class Job implements JobInterface
     /**
      * @inheritdoc
      */
-    public function setTable(string $table)
+    public function setTable(string $table): void
     {
         $this->table = $table;
     }
@@ -237,7 +237,7 @@ abstract class Job implements JobInterface
     /**
      * @inheritdoc
      */
-    public function setExecuted(int $executed)
+    public function setExecuted(int $executed): void
     {
         $this->executed = $executed;
     }
@@ -253,7 +253,7 @@ abstract class Job implements JobInterface
     /**
      * @inheritdoc
      */
-    public function setCronID(int $cronID)
+    public function setCronID(int $cronID): void
     {
         $this->cronID = $cronID;
     }
@@ -269,7 +269,7 @@ abstract class Job implements JobInterface
     /**
      * @inheritdoc
      */
-    public function setFinished(bool $finished)
+    public function setFinished(bool $finished): void
     {
         $this->finished = $finished;
     }
@@ -285,7 +285,7 @@ abstract class Job implements JobInterface
     /**
      * @inheritdoc
      */
-    public function setQueueID(int $queueID)
+    public function setQueueID(int $queueID): void
     {
         $this->queueID = $queueID;
     }

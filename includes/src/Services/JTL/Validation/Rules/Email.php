@@ -6,7 +6,6 @@
 
 namespace Services\JTL\Validation\Rules;
 
-
 use Services\JTL\Validation\RuleResult;
 use Services\JTL\Validation\RuleInterface;
 
@@ -23,7 +22,7 @@ class Email implements RuleInterface
     /**
      * @inheritdoc
      */
-    public function validate($value)
+    public function validate($value): RuleResult
     {
         return \filter_var($value, \FILTER_VALIDATE_EMAIL)
             ? new RuleResult(true, '', $value)

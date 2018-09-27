@@ -12,9 +12,9 @@ namespace Filter;
 interface MetadataInterface
 {
     /**
-     * @return array
+     * @return string
      */
-    public function getBreadCrumb(): array;
+    public function getBreadCrumb(): string;
 
     /**
      * @param string $breadCrumb
@@ -58,7 +58,7 @@ interface MetadataInterface
     /**
      * @return \Kategorie|null
      */
-    public function getCategory();
+    public function getCategory(): ?\Kategorie;
 
     /**
      * @param \Kategorie $category
@@ -69,7 +69,7 @@ interface MetadataInterface
     /**
      * @return \Hersteller|null
      */
-    public function getManufacturer();
+    public function getManufacturer(): ?\Hersteller;
 
     /**
      * @param \Hersteller $manufacturer
@@ -80,7 +80,7 @@ interface MetadataInterface
     /**
      * @return \MerkmalWert|null
      */
-    public function getAttributeValue();
+    public function getAttributeValue(): ?\MerkmalWert;
 
     /**
      * @param \MerkmalWert $attributeValue
@@ -117,10 +117,10 @@ interface MetadataInterface
 
     /**
      * @param \Kategorie|null      $category
-     * @param \KategorieListe|null $openCategories
+     * @param \KategorieListe|null $list
      * @return $this
      */
-    public function getNavigationInfo(\Kategorie $category = null, \KategorieListe $openCategories = null): MetadataInterface;
+    public function getNavigationInfo(\Kategorie $category = null, \KategorieListe $list = null): MetadataInterface;
 
     /**
      * @param array                  $products
@@ -169,12 +169,6 @@ interface MetadataInterface
      * @return string
      */
     public function getHeader(): string;
-
-    /**
-     * @return string|null
-     * @deprecated since 5.0.0
-     */
-    public function getBreadCrumbName();
 
     /**
      * @param int $viewType

@@ -65,7 +65,7 @@ class Config implements ConfigInterface
     /**
      * @inheritdoc
      */
-    public function setLanguageID(int $langID)
+    public function setLanguageID(int $langID): void
     {
         $this->langID = $langID;
     }
@@ -81,7 +81,7 @@ class Config implements ConfigInterface
     /**
      * @inheritdoc
      */
-    public function setLanguages(array $languages)
+    public function setLanguages(array $languages): void
     {
         $this->languages = $languages;
     }
@@ -97,7 +97,7 @@ class Config implements ConfigInterface
     /**
      * @inheritdoc
      */
-    public function setConfig(array $config)
+    public function setConfig(array $config): void
     {
         $this->config = $config;
     }
@@ -113,7 +113,7 @@ class Config implements ConfigInterface
     /**
      * @inheritdoc
      */
-    public function setCustomerGroupID(int $customerGroupID)
+    public function setCustomerGroupID(int $customerGroupID): void
     {
         $this->customerGroupID = $customerGroupID;
     }
@@ -129,7 +129,7 @@ class Config implements ConfigInterface
     /**
      * @inheritdoc
      */
-    public function setBaseURL(string $baseURL)
+    public function setBaseURL(string $baseURL): void
     {
         $this->baseURL = $baseURL;
     }

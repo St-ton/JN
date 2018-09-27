@@ -6,7 +6,6 @@
 
 namespace Services\JTL\Validation\Rules;
 
-
 use Services\JTL\Validation\RuleInterface;
 use Services\JTL\Validation\RuleResult;
 
@@ -20,6 +19,9 @@ use Services\JTL\Validation\RuleResult;
  */
 class EqualsStrict implements RuleInterface
 {
+    /**
+     * @var mixed
+     */
     protected $eq;
 
     /**
@@ -34,7 +36,7 @@ class EqualsStrict implements RuleInterface
     /**
      * @inheritdoc
      */
-    public function validate($value)
+    public function validate($value): RuleResult
     {
         return $value === $this->eq
             ? new RuleResult(true, '', $value)

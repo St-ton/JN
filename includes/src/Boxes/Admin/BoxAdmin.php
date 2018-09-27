@@ -60,7 +60,6 @@ final class BoxAdmin
         \PAGE_WRB,
         \PAGE_PLUGIN,
         \PAGE_NEWSLETTERARCHIV,
-        \PAGE_NEWSARCHIV,
         \PAGE_EIGENE,
         \PAGE_AUSWAHLASSISTENT,
         \PAGE_BESTELLABSCHLUSS
@@ -122,7 +121,7 @@ final class BoxAdmin
      * @return \stdClass|null
      * @former holeVorlage()
      */
-    private function getTemplate(int $baseType)
+    private function getTemplate(int $baseType): ?\stdClass
     {
         return $this->db->select('tboxvorlage', 'kBoxvorlage', $baseType);
     }

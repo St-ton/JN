@@ -6,7 +6,6 @@
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_INCLUDES . 'bewertung_inc.php';
 
-$AktuelleSeite = 'BEWERTUNG';
 Shop::run();
 Shop::setPageType(PAGE_BEWERTUNG);
 $cParameter_arr = Shop::getParameters();
@@ -22,7 +21,7 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
         RequestHelper::verifyGPDataString('cText'),
         $cParameter_arr['nSterne']
     );
-} elseif (isset($_POST['bhjn']) && (int)$_POST['bhjn'] === 1) { // Hilfreich abspeichern
+} elseif (isset($_POST['bhjn']) && (int)$_POST['bhjn'] === 1) {
     speicherHilfreich(
         $cParameter_arr['kArtikel'],
         Session::Customer()->getID(),
@@ -34,7 +33,8 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
     // Prüfe, ob Kunde eingeloggt
     if (empty($_SESSION['Kunde']->kKunde)) {
         $helper = Shop::Container()->getLinkService();
-        header('Location: ' . $helper->getStaticRoute('jtl.php') .
+        header(
+            'Location: ' . $helper->getStaticRoute('jtl.php') .
                 '?a=' . RequestHelper::verifyGPCDataInt('a') .
                 '&bfa=1&r=' . R_LOGIN_BEWERTUNG,
             true,
@@ -64,19 +64,30 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
     }
 
     if ($Einstellungen['bewertung']['bewertung_artikel_gekauft'] === 'Y') {
-        Shop::Smarty()->assign('nArtikelNichtGekauft', pruefeKundeArtikelGekauft(
-            $AktuellerArtikel->kArtikel,
-            $_SESSION['Kunde']->kKunde)
+        Shop::Smarty()->assign(
+            'nArtikelNichtGekauft',
+            pruefeKundeArtikelGekauft(
+                $AktuellerArtikel->kArtikel,
+                $_SESSION['Kunde']->kKunde
+            )
         );
     }
-    Shop::Smarty()->assign('BereitsBewertet', pruefeKundeArtikelBewertet(
-        $AktuellerArtikel->kArtikel,
-        $_SESSION['Kunde']->kKunde))
+    Shop::Smarty()->assign(
+        'BereitsBewertet',
+        pruefeKundeArtikelBewertet(
+            $AktuellerArtikel->kArtikel,
+            $_SESSION['Kunde']->kKunde
+        )
+    )
         ->assign('Artikel', $AktuellerArtikel)
-        ->assign('oBewertung', Shop::Container()->getDB()->select(
-            'tbewertung',
-            ['kArtikel', 'kKunde'],
-            [$AktuellerArtikel->kArtikel, Session::Customer()->getID()]));
+        ->assign(
+            'oBewertung',
+            Shop::Container()->getDB()->select(
+                'tbewertung',
+                ['kArtikel', 'kKunde'],
+                [$AktuellerArtikel->kArtikel, Session::Customer()->getID()]
+            )
+        );
 
     require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
     Shop::Smarty()->display('productdetails/review_form.tpl');

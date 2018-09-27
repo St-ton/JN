@@ -34,13 +34,15 @@ final class NewsCurrentMonth extends AbstractBox
                     ON tnewsmonatsuebersicht.nMonat = MONTH(tnews.dGueltigVon)
                     AND tnewsmonatsuebersicht.nJahr = YEAR(tnews.dGueltigVon)
                     AND tnewsmonatsuebersicht.kSprache = :lid
+                JOIN tnewssprache t 
+                    ON tnews.kNews = t.kNews
                 LEFT JOIN tseo 
                     ON cKey = 'kNewsMonatsUebersicht'
                     AND kKey = tnewsmonatsuebersicht.kNewsMonatsUebersicht
                     AND tseo.kSprache = :lid
                 WHERE tnews.dGueltigVon < NOW()
                     AND tnews.nAktiv = 1
-                    AND tnews.kSprache = :lid
+                    AND t.languageID = :lid
                 GROUP BY YEAR(tnews.dGueltigVon) , MONTH(tnews.dGueltigVon)
                 ORDER BY tnews.dGueltigVon DESC" . $sql,
             ['lid' => $langID],

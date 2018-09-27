@@ -51,7 +51,7 @@
         </select>
         <select class="form-control form-group" name="{$oPagination->getId()}_nItemsPerPage" id="{$oPagination->getId()}_nItemsPerPage"
                 onchange="this.form.submit();" aria-label="{lang key='newsPerSite' section='news'}">
-            <option value="0" {if $oPagination->getItemsPerPage() == 0} selected{/if}>
+            <option value="-1" {if $oPagination->getItemsPerPage() == 0} selected{/if}>
                 {lang key='newsPerSite' section='news'}
             </option>
             {foreach $oPagination->getItemsPerPageOptions() as $nItemsPerPageOption}

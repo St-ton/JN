@@ -77,15 +77,18 @@ function baueBewertungsErinnerung()
 
         foreach ($oBestellung->Positionen as $Pos) {
             if ($Pos->kArtikel > 0) {
-                $res = Shop::Container()->getDB()->query(
-                    'SELECT kBewertung
+                $productVisible = (new Artikel())->fuelleArtikel($Pos->kArtikel, null, $oKunde->kKundengruppe);
+                if ($productVisible->kArtikel > 0) {
+                    $res = Shop::Container()->getDB()->query(
+                        'SELECT kBewertung
                         FROM tbewertung
                         WHERE kArtikel = ' . (int)$Pos->kArtikel . '
                             AND kKunde = ' . (int)$oBestellung->kKunde,
-                    \DB\ReturnType::SINGLE_OBJECT
-                );
-                if ($res === false) {
-                    $openReviewPos_arr[] = $Pos;
+                        \DB\ReturnType::SINGLE_OBJECT
+                    );
+                    if ($res === false) {
+                        $openReviewPos_arr[] = $Pos;
+                    }
                 }
             }
         }

@@ -1,101 +1,10 @@
-@font-face {
-    font-family: 'Source Code Pro';
-    font-style: normal;
-    font-weight: 400;
-    src: local('Source Code Pro'),
-        local('SourceCodePro-Regular'),
-        url(../fonts/SourceCodePro-Regular.ttf) format('truetype');
-}
-@font-face {
-    font-family: 'Source Code Pro';
-    font-style: normal;
-    font-weight: 600;
-    src: local('Source Code Pro Semibold'),
-        local('SourceCodePro-Semibold'),
-        url(../fonts/SourceCodePro-Semibold.ttf) format('truetype');
-}
-@font-face {
-    font-family: 'Source Code Pro';
-    font-style: normal;
-    font-weight: 700;
-    src: local('Source Code Pro Bold'),
-        local('SourceCodePro-Bold'),
-        url(../fonts/SourceCodePro-Bold.ttf) format('truetype');
-}
-@font-face {
-    font-family: 'Source Code Pro';
-    font-style: normal;
-    font-weight: 900;
-    src: local('Source Code Pro Black'),
-        local('SourceCodePro-Black'),
-        url(../fonts/SourceCodePro-Black.ttf) format('truetype');
-}
-@font-face {
-    font-family: 'Source Sans Pro';
-    font-style: normal;
-    font-weight: 400;
-    src: local('Source Sans Pro Regular'),
-        local('SourceSansPro-Regular'),
-        url(../fonts/SourceSansPro-Regular.ttf) format('truetype');
-}
-@font-face {
-    font-family: 'Source Sans Pro';
-    font-style: normal;
-    font-weight: 600;
-    src: local('Source Sans Pro SemiBold'),
-        local('SourceSansPro-SemiBold'),
-        url(../fonts/SourceSansPro-SemiBold.ttf) format('truetype');
-}
-@font-face {
-    font-family: 'Source Sans Pro';
-    font-style: normal;
-    font-weight: 700;
-    src: local('Source Sans Pro Bold'),
-        local('SourceSansPro-Bold'),
-        url(../fonts/SourceSansPro-Bold.ttf) format('truetype');
-}
-@font-face {
-    font-family: 'Source Sans Pro';
-    font-style: normal;
-    font-weight: 900;
-    src: local('Source Sans Pro Black'),
-        local('SourceSansPro-Black'),
-        url(../fonts/SourceSansPro-Black.ttf) format('truetype');
-}
-@font-face {
-    font-family: 'Source Serif Pro';
-    font-style: normal;
-    font-weight: 400;
-    src: local('Source Serif Pro'),
-        local('SourceSerifPro-Regular'),
-        url(../fonts/SourceSerifPro-Regular.ttf) format('truetype');
-}
-@font-face {
-    font-family: 'Source Serif Pro';
-    font-style: normal;
-    font-weight: 600;
-    src: local('Source Serif Pro Semibold'),
-        local('SourceSerifPro-Semibold'),
-        url(../fonts/SourceSerifPro-Semibold.ttf) format('truetype');
-}
-@font-face {
-    font-family: 'Source Serif Pro';
-    font-style: normal;
-    font-weight: 700;
-    src: local('Source Serif Pro Bold'),
-        local('SourceSerifPro-Bold'),
-        url(../fonts/SourceSerifPro-Bold.ttf) format('truetype');
-}
-
-@brandbar-color: #fff;
-@sidebar-color: #3098d6;
-@sidebar-highlight-color: #7dcdfe;
-@brand-primary-color: #5cbcf6;
-@sidebar-accent-color: #0b6aa2;
+@import "fonts.less";
+@import "variables.less";
 
 .backend-wrapper {
     display: flex;
     flex-direction: row;
+    min-height: 100%;
 
     .dropdown-menu,
     #backend-search-dropdown {
@@ -109,7 +18,7 @@
 
     > .backend-sidebar {
         flex: none;
-        width: 256px;
+        width: @sidebar-width;
         display: flex;
         flex-direction: column;
 
@@ -119,7 +28,7 @@
             height: 64px;
             padding: 1em;
             z-index: 2;
-            box-shadow: 1px -1px 2px #eef0f3;
+            box-shadow: 1px 3px 4px rgba(46, 46, 46, 0.09);
 
             .backend-brand ,
             .backend-brand img {
@@ -132,6 +41,15 @@
                 background: none;
                 border: none;
                 color: #9b9b9b;
+                outline: none;
+
+                &:hover {
+                    color: @brand-primary-color;
+                }
+
+                > .fa:before {
+                    content: "\f100";
+                }
             }
         }
 
@@ -163,6 +81,12 @@
 
                 > li {
                     padding-bottom: 1em;
+
+                    &.current {
+                        > .backend-root-label > a {
+                            //color: red;
+                        }
+                    }
 
                     > .backend-root-label {
                         padding: 0 1em;
@@ -207,21 +131,17 @@
 
             .backend-menu.secondlevel {
                 > li {
+                    &.current {
+                        > a {
+                            font-weight: bold;
+                        }
+                    }
+
                     > a {
                         border-left: 6px solid transparent;
                         display: flex;
                         align-items: center;
                         font-size: 0.85em;
-
-                        &:not(.collapsed) {
-                            background-color: @brand-primary-color;
-                            border-left: 6px solid @sidebar-accent-color;
-
-                            > .fa {
-                                color: @sidebar-accent-color;
-                                &:before { content: "\f077"; }
-                            }
-                        }
 
                         > span {
                             flex: auto;
@@ -233,11 +153,43 @@
                             &:before { content: "\f078"; }
                         }
                     }
+
+                    > .thirdlevel {
+                        height: 0;
+                        overflow: hidden;
+                    }
+
+                    &.expanded {
+                        > a {
+                            background-color: @brand-primary-color;
+                            border-left: 6px solid @sidebar-accent-color;
+
+                            > .fa {
+                                color: @sidebar-accent-color;
+                                &:before { content: "\f077"; }
+                            }
+                        }
+
+                        > .thirdlevel {
+                            height: auto;
+                        }
+                    }
                 }
             }
 
             .backend-menu.thirdlevel {
                 > li {
+                    > a {
+                        padding-left: 1.5em;
+                    }
+
+                    &.current {
+                        > a {
+                            color: @sidebar-accent-color;
+                            font-weight: bold;
+                        }
+                    }
+
                     background-color: @brand-primary-color;
                     font-size: 0.85em;
                     list-style-type: disc;
@@ -262,6 +214,77 @@
 
             .backend-root-menu-icon-plugins:before {
                 content: "\f1e6";
+            }
+        }
+
+        &.collapsed {
+            width: 64px;
+
+            .backend-brand {
+                display: none;
+            }
+
+            .backend-sidebar-toggle {
+                > .fa:before {
+                    content: "\f101";
+                }
+            }
+
+            > .backend-navigation {
+                .secondlevel {
+                    display: none;
+
+                    > li {
+                        width: @sidebar-width;
+                    }
+                }
+
+                .toplevel {
+                    > li,
+                    > li.single {
+                        padding-bottom: 0.5em;
+                        position: relative;
+
+                        &.current ,
+                        &.compact-expanded {
+                            .backend-root-label {
+                                background-color: @brand-primary-color;
+
+                                > a {
+                                    color: #fff;
+                                }
+                            }
+                        }
+
+                        &.compact-expanded {
+                            .backend-root-label {
+                                border-left: 6px solid @sidebar-accent-color;
+                            }
+                            .secondlevel {
+                                display: block;
+                                position: absolute;
+                                overflow: hidden;
+                                top: 0;
+                                left: 64px;
+                                width: @sidebar-width;
+                                background: @sidebar-color;
+                                z-index: 4;
+                            }
+                        }
+
+                        > .backend-root-label {
+                            padding-bottom: 0;
+
+                            > a {
+                                border-bottom: none;
+
+                                > span {
+                                    display: none;
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }

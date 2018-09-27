@@ -331,9 +331,10 @@ class AdminAccount
     /**
      * @param int $nAdminLoginGroup
      * @param int $nAdminMenuGroup
+     * @param string $keyPrefix
      * @return array
      */
-    public function getVisibleMenu(int $nAdminLoginGroup, int $nAdminMenuGroup): array
+    public function getVisibleMenu(int $nAdminLoginGroup, int $nAdminMenuGroup, string $keyPrefix): array
     {
         if ($nAdminLoginGroup === ADMINGROUP) {
             $links = Shop::Container()->getDB()->selectAll(
@@ -360,8 +361,9 @@ class AdminAccount
             );
         }
 
-        return \Functional\map($links, function ($e) {
+        return \Functional\map($links, function ($e) use ($keyPrefix) {
             $e->kAdminmenu        = (int)$e->kAdminmenu;
+            $e->key               = $keyPrefix . '.' . $e->kAdminmenu;
             $e->kAdminmenueGruppe = (int)$e->kAdminmenueGruppe;
             $e->nSort             = (int)$e->nSort;
 

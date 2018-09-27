@@ -2,35 +2,35 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="robots" content="noindex,nofollow" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex,nofollow">
     <title>JTL-Shop Administration</title>
     {assign var=urlPostfix value='?v='|cat:$adminTplVersion}
-    <link type="image/x-icon" href="{$faviconAdminURL}" rel="icon" />
+    <link type="image/x-icon" href="{$faviconAdminURL}" rel="icon">
     {$admin_css}
-    <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}lib/codemirror.css{$urlPostfix}" />
-    <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}addon/hint/show-hint.css{$urlPostfix}" />
-    <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}addon/display/fullscreen.css{$urlPostfix}" />
-    <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}addon/scroll/simplescrollbars.css{$urlPostfix}" />
+    <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}lib/codemirror.css{$urlPostfix}">
+    <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}addon/hint/show-hint.css{$urlPostfix}">
+    <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}addon/display/fullscreen.css{$urlPostfix}">
+    <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}addon/scroll/simplescrollbars.css{$urlPostfix}">
     {$admin_js}
-    <script type="text/javascript" src="{$PFAD_CKEDITOR}ckeditor.js{$urlPostfix}"></script>
-    <script type="text/javascript" src="{$PFAD_CODEMIRROR}lib/codemirror.js{$urlPostfix}"></script>
-    <script type="text/javascript" src="{$PFAD_CODEMIRROR}addon/hint/show-hint.js{$urlPostfix}"></script>
-    <script type="text/javascript" src="{$PFAD_CODEMIRROR}addon/hint/sql-hint.js{$urlPostfix}"></script>
-    <script type="text/javascript" src="{$PFAD_CODEMIRROR}addon/scroll/simplescrollbars.js{$urlPostfix}"></script>
-    <script type="text/javascript" src="{$PFAD_CODEMIRROR}addon/display/fullscreen.js{$urlPostfix}"></script>
-    <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/css/css.js{$urlPostfix}"></script>
-    <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/javascript/javascript.js{$urlPostfix}"></script>
-    <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/xml/xml.js{$urlPostfix}"></script>
-    <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/php/php.js{$urlPostfix}"></script>
-    <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/htmlmixed/htmlmixed.js{$urlPostfix}"></script>
-    <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/smarty/smarty.js{$urlPostfix}"></script>
-    <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/smartymixed/smartymixed.js{$urlPostfix}"></script>
-    <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/sql/sql.js{$urlPostfix}"></script>
-    <script type="text/javascript" src="{$URL_SHOP}/{$PFAD_ADMIN}{$currentTemplateDir}js/codemirror_init.js{$urlPostfix}"></script>
-    <script type="text/javascript">
+    <script src="{$PFAD_CKEDITOR}ckeditor.js{$urlPostfix}"></script>
+    <script src="{$PFAD_CODEMIRROR}lib/codemirror.js{$urlPostfix}"></script>
+    <script src="{$PFAD_CODEMIRROR}addon/hint/show-hint.js{$urlPostfix}"></script>
+    <script src="{$PFAD_CODEMIRROR}addon/hint/sql-hint.js{$urlPostfix}"></script>
+    <script src="{$PFAD_CODEMIRROR}addon/scroll/simplescrollbars.js{$urlPostfix}"></script>
+    <script src="{$PFAD_CODEMIRROR}addon/display/fullscreen.js{$urlPostfix}"></script>
+    <script src="{$PFAD_CODEMIRROR}mode/css/css.js{$urlPostfix}"></script>
+    <script src="{$PFAD_CODEMIRROR}mode/javascript/javascript.js{$urlPostfix}"></script>
+    <script src="{$PFAD_CODEMIRROR}mode/xml/xml.js{$urlPostfix}"></script>
+    <script src="{$PFAD_CODEMIRROR}mode/php/php.js{$urlPostfix}"></script>
+    <script src="{$PFAD_CODEMIRROR}mode/htmlmixed/htmlmixed.js{$urlPostfix}"></script>
+    <script src="{$PFAD_CODEMIRROR}mode/smarty/smarty.js{$urlPostfix}"></script>
+    <script src="{$PFAD_CODEMIRROR}mode/smartymixed/smartymixed.js{$urlPostfix}"></script>
+    <script src="{$PFAD_CODEMIRROR}mode/sql/sql.js{$urlPostfix}"></script>
+    <script src="{$URL_SHOP}/{$PFAD_ADMIN}{$currentTemplateDir}js/codemirror_init.js{$urlPostfix}"></script>
+    <script>
         var bootstrapButton = $.fn.button.noConflict();
         $.fn.bootstrapBtn = bootstrapButton;
         setJtlToken('{$smarty.session.jtl_token}');
@@ -41,81 +41,14 @@
     <![endif]-->
 </head>
 <body>
+    {*{$currentMenuPath|var_dump}*}
+    {*{$oLinkOberGruppe_arr|var_dump}*}
 {if $account !== false && isset($smarty.session.loginIsValid) && $smarty.session.loginIsValid === true}
     {getCurrentPage assign="currentPage"}
     <div class="backend-wrapper container-fluid
          {if $currentPage === 'index' || $currentPage === 'status'} dashboard{/if}">
-        <nav class="backend-sidebar">
-            <div class="backend-brandbar">
-                <a class="backend-brand" href="index.php" title="Dashboard">
-                    <img src="{$currentTemplateDir}gfx/JTL-Shop-Logo-rgb.png" alt="JTL-Shop">
-                </a>
-                {*TODO: make sidebar collapsable*}
-                {*<button type="button" class="backend-sidebar-toggle">*}
-                    {*<i class="fa fa-angle-double-left fa-2x"></i>*}
-                {*</button>*}
-            </div>
-            <div class="backend-navigation">
-                <ul class="backend-menu toplevel">
-                    {foreach $oLinkOberGruppe_arr as $oLinkOberGruppe}
-                        {assign var='rootEntryName' value=$oLinkOberGruppe->cName|replace:' ':'-'|replace:'&':''|lower}
-                        {if $oLinkOberGruppe->oLinkGruppe_arr|@count === 0
-                                && $oLinkOberGruppe->oLink_arr|@count === 1}
-                            <li class="{if isset($oLinkOberGruppe->class)}{$oLinkOberGruppe->class}{/if} single">
-                                <div class="backend-root-label">
-                                    <a href="{$oLinkOberGruppe->oLink_arr[0]->cURL}" class="parent">
-                                        <i class="fa fa-2x fa-fw backend-root-menu-icon-{$rootEntryName}"></i>
-                                        <span>{$oLinkOberGruppe->oLink_arr[0]->cLinkname}</span>
-                                    </a>
-                                </div>
-                            </li>
-                        {else}
-                            <li {if isset($oLinkOberGruppe->class)}class="{$oLinkOberGruppe->class}"{/if}>
-                                <div class="backend-root-label">
-                                    <a href="#" class="parent">
-                                        <i class="fa fa-2x fa-fw backend-root-menu-icon-{$rootEntryName}"></i>
-                                        <span>{$oLinkOberGruppe->cName}</span>
-                                    </a>
-                                </div>
-                                <ul class="backend-menu secondlevel" id="group-{$rootEntryName}">
-                                    {foreach $oLinkOberGruppe->oLinkGruppe_arr as $oLinkGruppe}
-                                        {if $oLinkGruppe->oLink_arr|@count > 0}
-                                            {assign var='entryName'
-                                                value=$oLinkGruppe->cName|replace:' ':'-'|replace:'&':''|lower}
-                                            <li id="dropdown-header-{$entryName}">
-                                                <a href="#collapse-{$entryName}" data-toggle="collapse"
-                                                   class="collapsed" data-parent="#group-{$rootEntryName}">
-                                                    <span>{$oLinkGruppe->cName}</span>
-                                                    <i class="fa"></i>
-                                                </a>
-                                                <ul class="collapse backend-menu thirdlevel" id="collapse-{$entryName}">
-                                                    {foreach $oLinkGruppe->oLink_arr as $oLink}
-                                                        <li {if !$oLink->cRecht|permission}class="noperm"{/if}>
-                                                            <a href="{$oLink->cURL}">{$oLink->cLinkname}</a>
-                                                        </li>
-                                                    {/foreach}
-                                                </ul>
-                                            </li>
-                                        {/if}
-                                    {/foreach}
-                                    {foreach $oLinkOberGruppe->oLink_arr as $oLink}
-                                        <li {if !$oLink->cRecht|permission}class="noperm"{/if}>
-                                            <a href="{$oLink->cURL}" class="collapsed">{$oLink->cLinkname}</a>
-                                        </li>
-                                    {/foreach}
-                                </ul>
-                            </li>
-                        {/if}
-                    {/foreach}
-                </ul>
-                <script>
-                    $('.thirdlevel').on('show.bs.collapse', function() {
-                        $('.thirdlevel').collapse('hide');
-                    });
-                </script>
-            </div>
-        </nav>
-        <nav class="backend-main">
+        {include file='tpl_inc/backend_sidebar.tpl'}
+        <div class="backend-main">
             <nav class="backend-navbar">
                 <ul class="backend-navbar-left">
                     <li>
@@ -192,7 +125,7 @@
                     <li class="dropdown" id="notify-drop">{include file="tpl_inc/notify_drop.tpl"}</li>
                     <li class="dropdown avatar">
                         <a href="#" class="dropdown-toggle parent" data-toggle="dropdown">
-                            <img src="{gravatarImage email=$account->cMail}" title="{$account->cMail}" class="img-circle" />
+                            <img src="{gravatarImage email=$account->cMail}" title="{$account->cMail}" class="img-circle">
                         </a>
                         <ul class="dropdown-menu dropdown-menu-right" role="main">
                             <li>

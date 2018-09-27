@@ -29,7 +29,7 @@ class MigrationHelper
      *
      * @return string
      */
-    public static function getMigrationPath()
+    public static function getMigrationPath(): string
     {
         return PFAD_ROOT . PFAD_UPDATE . 'migrations' . DIRECTORY_SEPARATOR;
     }
@@ -39,12 +39,11 @@ class MigrationHelper
      *
      * @return array
      */
-    public static function getExistingMigrationClassNames()
+    public static function getExistingMigrationClassNames(): array
     {
         $classNames = [];
         $path       = static::getMigrationPath();
-
-        $phpFiles = glob($path . '*.php');
+        $phpFiles   = glob($path . '*.php');
         foreach ($phpFiles as $filePath) {
             if (preg_match(static::MIGRATION_FILE_NAME_PATTERN, basename($filePath))) {
                 $classNames[] = static::mapFileNameToClassName(basename($filePath));
@@ -58,7 +57,7 @@ class MigrationHelper
      * Get the id from a file name.
      *
      * @param string $fileName File Name
-     * @return string
+     * @return string|null
      */
     public static function getIdFromFileName($fileName)
     {
@@ -73,16 +72,18 @@ class MigrationHelper
     /**
      * Get the info from a file name.
      *
-     * @param string $fileName File Name
-     * @return string
+     * @param string $fileName
+     * @return string|null
      */
-    public static function getInfoFromFileName($fileName)
+    public static function getInfoFromFileName(string $fileName)
     {
         $matches = [];
         if (preg_match(static::MIGRATION_FILE_NAME_PATTERN, basename($fileName), $matches)) {
             return preg_replace_callback(
                 '/(^|_)([a-z])/',
-                function ($m) { return (strlen($m[1]) ? ' ' : '') . strtoupper($m[2]); },
+                function ($m) {
+                    return (strlen($m[1]) ? ' ' : '') . strtoupper($m[2]);
+                },
                 $matches[2]
             );
         }
@@ -96,7 +97,7 @@ class MigrationHelper
      * @param string $fileName File Name
      * @return string
      */
-    public static function mapFileNameToClassName($fileName)
+    public static function mapFileNameToClassName($fileName): string
     {
         return 'Migration_' . static::getIdFromFileName($fileName);
     }
@@ -105,7 +106,7 @@ class MigrationHelper
      * Returns names like '12345678901234'.
      *
      * @param string $className File Name
-     * @return string
+     * @return string|null
      */
     public static function mapClassNameToId($className)
     {
@@ -121,7 +122,7 @@ class MigrationHelper
      * Check if a migration file name is valid.
      *
      * @param string $fileName File Name
-     * @return boolean
+     * @return bool|int
      */
     public static function isValidMigrationFileName($fileName)
     {
@@ -143,7 +144,7 @@ class MigrationHelper
                 dExecuted datetime NOT NULL,
                 PRIMARY KEY (kMigration)
             ) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'",
-            \DB\ReturnType::AFFECTED_ROWS
+            \DB\ReturnType::DEFAULT
         );
         Shop::Container()->getDB()->query(
             "CREATE TABLE IF NOT EXISTS tmigrationlog 
@@ -156,7 +157,7 @@ class MigrationHelper
                 dCreated datetime NOT NULL, 
                 PRIMARY KEY (kMigrationlog)
             ) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'",
-            \DB\ReturnType::AFFECTED_ROWS
+            \DB\ReturnType::DEFAULT
         );
     }
 }

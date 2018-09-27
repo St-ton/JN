@@ -36,7 +36,22 @@ function kundeSpeichern(array $cPost_arr)
         $fehlendeAngaben,
         $oCheckBox->validateCheckBox(CHECKBOX_ORT_REGISTRIERUNG, $kKundengruppe, $cPost_arr, true)
     );
-    $nReturnValue        = angabenKorrekt($fehlendeAngaben);
+
+    if (isset($cPost_arr['shipping_address'])) {
+        if ((int)$cPost_arr['shipping_address'] === 0) {
+            $cPost_arr['kLieferadresse'] = 0;
+            $cPost_arr['lieferdaten']    = 1;
+            pruefeLieferdaten($cPost_arr);
+        } elseif (isset($cPost_arr['kLieferadresse']) && (int)$cPost_arr['kLieferadresse'] > 0) {
+            pruefeLieferdaten($cPost_arr);
+        } elseif (isset($cPost_arr['register']['shipping_address'])) {
+            pruefeLieferdaten($cPost_arr['register']['shipping_address'], $fehlendeAngaben);
+        }
+    } elseif (isset($cPost_arr['lieferdaten']) && (int)$cPost_arr['lieferdaten'] === 1) {
+        // compatibility with older template
+        pruefeLieferdaten($cPost_arr, $fehlendeAngaben);
+    }
+    $nReturnValue = angabenKorrekt($fehlendeAngaben);
 
     executeHook(HOOK_REGISTRIEREN_PAGE_REGISTRIEREN_PLAUSI, [
         'nReturnValue'    => &$nReturnValue,
@@ -179,20 +194,6 @@ function kundeSpeichern(array $cPost_arr)
             TaxHelper::setTaxRates();
             $cart->gibGesamtsummeWarenLocalized();
         }
-        if (isset($cPost_arr['shipping_address'])) {
-            if ((int)$cPost_arr['shipping_address'] === 0) {
-                $cPost_arr['kLieferadresse'] = 0;
-                $cPost_arr['lieferdaten']    = 1;
-                pruefeLieferdaten($cPost_arr);
-            } elseif (isset($cPost_arr['kLieferadresse']) && (int)$cPost_arr['kLieferadresse'] > 0) {
-                pruefeLieferdaten($cPost_arr);
-            } elseif (isset($cPost_arr['register']['shipping_address'])) {
-                pruefeLieferdaten($cPost_arr['register']['shipping_address'], $fehlendeAngaben);
-            }
-        } elseif (isset($cPost_arr['lieferdaten']) && (int)$cPost_arr['lieferdaten'] === 1) {
-            // compatibility with older template
-            pruefeLieferdaten($cPost_arr, $fehlendeAngaben);
-        }
         if ((int)$cPost_arr['checkout'] === 1) {
             //weiterleitung zum chekout
             header('Location: ' . Shop::Container()->getLinkService()
@@ -214,6 +215,11 @@ function kundeSpeichern(array $cPost_arr)
             $_SESSION['checkout.register']        = 1;
             $_SESSION['checkout.fehlendeAngaben'] = $fehlendeAngaben;
             $_SESSION['checkout.cPost_arr']       = $cPost_arr;
+
+            //keep shipping address on error
+            if (isset($cPost_arr['register']['shipping_address'])) {
+                $_SESSION['Lieferadresse'] = getLieferdaten($cPost_arr['register']['shipping_address']);
+            }
 
             header('Location: ' . Shop::Container()->getLinkService()
                                       ->getStaticRoute('bestellvorgang.php', true) . '?reg=1', true, 303);

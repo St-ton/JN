@@ -6,11 +6,13 @@
 
 namespace Services\JTL\Validation\Rules;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * Class LessThanEqualsTest
  * @package Services\JTL\Validation\Rules
  */
-class LessThanEqualsTest extends \PHPUnit_Framework_TestCase
+class LessThanEqualsTest extends TestCase
 {
     public function test()
     {

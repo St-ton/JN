@@ -1109,23 +1109,16 @@ class Exportformat
         if ((int)$this->queue->nLimitN === 0) {
             $this->writeHeader($datei);
         }
-        $content                            = $this->getContent();
-        $categoryFallback                   = (strpos($content, '->oKategorie_arr') !== false);
-        $options                            = new stdClass();
-        $options->nMerkmale                 = 1;
-        $options->nAttribute                = 1;
-        $options->nArtikelAttribute         = 1;
-        $options->nKategorie                = 1;
-        $options->nKeinLagerbestandBeachten = 1;
-        $options->nMedienDatei              = 1;
-
-        $helper       = KategorieHelper::getInstance($this->getSprache(), $this->getKundengruppe());
-        $shopURL      = Shop::getURL();
-        $imageBaseURL = Shop::getImageBaseURL();
-        $find         = ['<br />', '<br>', '</'];
-        $replace      = [' ', ' ', ' </'];
-        $findTwo      = ["\r\n", "\r", "\n", "\x0B", "\x0"];
-        $replaceTwo   = [' ', ' ', ' ', ' ', ''];
+        $content          = $this->getContent();
+        $categoryFallback = (strpos($content, '->oKategorie_arr') !== false);
+        $options          = Artikel::getExportOptions();
+        $helper           = KategorieHelper::getInstance($this->getSprache(), $this->getKundengruppe());
+        $shopURL          = Shop::getURL();
+        $imageBaseURL     = Shop::getImageBaseURL();
+        $find             = ['<br />', '<br>', '</'];
+        $replace          = [' ', ' ', ' </'];
+        $findTwo          = ["\r\n", "\r", "\n", "\x0B", "\x0"];
+        $replaceTwo       = [' ', ' ', ' ', ' ', ''];
 
         if (isset($this->config['exportformate_quot']) && $this->config['exportformate_quot'] !== 'N') {
             $findTwo[] = '"';

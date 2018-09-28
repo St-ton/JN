@@ -28,14 +28,6 @@ class GeneralDataProtect extends Job
     public function __construct(DbInterface $db, LoggerInterface $logger)
     {
         parent::__construct($db, $logger);
-
-        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --DEBUG--
-        include_once('/var/www/html/shop4_07/includes/vendor/apache/log4php/src/main/php/Logger.php');
-        \Logger::configure('/var/www/html/shop4_07/_logging_conf.xml');
-        $this->oLogger = \Logger::getLogger('default');
-        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --DEBUG--
-
-        //$this->oLogger->debug('cronjob "includes/src/Cron/Jobs/GeneralDataProtect.php": '); // --DEBUG--
     }
 
 
@@ -44,12 +36,6 @@ class GeneralDataProtect extends Job
      */
     public function start(QueueEntry $queueEntry): JobInterface
     {
-        //parent::start($queueEntry); // needed ?
-
-        //$this->oLogger->debug('job: '.print_r($this, true)); // --DEBUG--
-        $this->oLogger->debug('last started: - - - - - - - - - - - - - - - - - - - - '
-            .print_r($this->getDateLastStarted()->format('Y.m.d H:i:s'),true)); // --DEBUG--
-
         $oTableCleaner = new \GeneralDataProtection\TableCleaner();
         $oTableCleaner->execute();
 

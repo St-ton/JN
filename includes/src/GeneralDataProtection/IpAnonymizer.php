@@ -79,8 +79,8 @@ class IpAnonymizer
 
 
     /**
-     * @param bool
      * @param string
+     * @param bool
      */
     public function __construct(string $szIP = '', bool $bBeautify = false)
     {

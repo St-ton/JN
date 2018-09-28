@@ -2,8 +2,8 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{if isset($fehlendeAngaben.shipping_address)}
-    {assign var='fehlendeAngabenShipping' value=$fehlendeAngaben.shipping_address}
+{if isset($fehlendeAngaben.shippingAddress)}
+    {assign var='fehlendeAngabenShipping' value=$fehlendeAngaben.shippingAddress}
 {else}
     {assign var='fehlendeAngabenShipping' value=null}
 {/if}

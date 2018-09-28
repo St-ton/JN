@@ -53,8 +53,12 @@ function getCurrencyConversionSmarty($params, $smarty)
         $params['cClass'] = '';
     }
 
-    return Currency::getCurrencyConversion($params['fPreisNetto'], $params['fPreisBrutto'], $params['cClass'],
-        $bForceSteuer);
+    return Currency::getCurrencyConversion(
+        $params['fPreisNetto'],
+        $params['fPreisBrutto'],
+        $params['cClass'],
+        $bForceSteuer
+    );
 }
 
 /**

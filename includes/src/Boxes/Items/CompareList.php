@@ -89,7 +89,7 @@ final class CompareList extends AbstractBox
     /**
      * @param string $value
      */
-    public function setShowBox(string $value)
+    public function setShowBox(string $value): void
     {
 
     }

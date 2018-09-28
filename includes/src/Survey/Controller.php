@@ -51,7 +51,7 @@ class Controller
     /**
      * @param Survey $survey
      */
-    public function setSurvey(Survey $survey)
+    public function setSurvey(Survey $survey): void
     {
         $this->survey = $survey;
     }
@@ -67,7 +67,7 @@ class Controller
     /**
      * @param string $errorMsg
      */
-    public function setErrorMsg(string $errorMsg)
+    public function setErrorMsg(string $errorMsg): void
     {
         $this->errorMsg = $errorMsg;
     }
@@ -110,9 +110,8 @@ class Controller
             $_SESSION['Umfrage']->kUmfrage          = $survey->getID();
             $_SESSION['Umfrage']->oUmfrageFrage_arr = [];
             $_SESSION['Umfrage']->nEnde             = 0;
-
-            // Speicher alle Fragen in Session
             foreach ($questions as $question) {
+                /** @var SurveyQuestion $question */
                 $answer = new GivenAnswer();
                 $answer->setQuestionID($question->getID());
                 $answer->setQuestionType($question->getType());
@@ -273,7 +272,6 @@ class Controller
                     ],
                     ReturnType::SINGLE_OBJECT
                 );
-                // Gültig
                 if ($oKupon->kKupon > 0) {
                     $msg = \sprintf(\Shop::Lang()->get('pollCoupon', 'messages'), $oKupon->cCode);
                 } else {
@@ -289,7 +287,6 @@ class Controller
                     \Shop::Lang()->get('pollCredit', 'messages'),
                     \Preise::getLocalizedPriceString($this->survey->getCredits())
                 );
-                // Kunde Guthaben gutschreiben
                 if (!$this->updateCustomerCredits($this->survey->getCredits(), $_SESSION['Kunde']->kKunde)) {
                     \Shop::Container()->getLogService()->error(\sprintf(
                         'Umfragebelohnung: Guthaben konnte nicht verrechnet werden. Kunde: %s',
@@ -351,12 +348,12 @@ class Controller
     {
         if ($customerID > 0) {
             return $this->db->queryPrepared(
-                    'UPDATE tkunde
+                'UPDATE tkunde
                     SET fGuthaben = fGuthaben + :crdt
                     WHERE kKunde = :cid',
-                    ['crdt' => (float)$credits, 'cid' => $customerID],
-                    ReturnType::AFFECTED_ROWS
-                ) > 0;
+                ['crdt' => (float)$credits, 'cid' => $customerID],
+                ReturnType::AFFECTED_ROWS
+            ) > 0;
         }
 
         return false;
@@ -412,7 +409,7 @@ class Controller
                         ? \StringHandler::htmlentities(\StringHandler::filterXSS(\ltrim($given)))
                         : '';
                 } elseif ($type === QuestionType::MATRIX_SINGLE || $type === QuestionType::MATRIX_MULTI) {
-                    list($kUmfrageFrageAntwort, $kUmfrageMatrixOption) = \explode('_', $given);
+                    [$kUmfrageFrageAntwort, $kUmfrageMatrixOption] = \explode('_', $given);
                     $data->kUmfrageFrageAntwort = $kUmfrageFrageAntwort;
                     $data->kUmfrageMatrixOption = $kUmfrageMatrixOption;
                     $data->cText                = '';
@@ -468,7 +465,7 @@ class Controller
                             if (\is_array($cPost_arr[$questionID]) && \count($cPost_arr[$questionID]) > 0) {
                                 $exists = false;
                                 foreach ($cPost_arr[$questionID] as $givenMatrix) {
-                                    list($questionIDAntwortTMP, $kUmfrageMatrixOption) = \explode('_', $givenMatrix);
+                                    [$questionIDAntwortTMP, $kUmfrageMatrixOption] = \explode('_', $givenMatrix);
                                     if ((int)$questionIDAntwortTMP === $answerOption->getID()) {
                                         $exists = true;
                                         break;

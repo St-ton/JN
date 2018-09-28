@@ -19,11 +19,11 @@ use MyCLabs\Enum\Enum;
  */
 class Position extends Enum
 {
-    const LEFT = 'left';
+    public const LEFT = 'left';
 
-    const RIGHT = 'right';
+    public const RIGHT = 'right';
 
-    const BOTTOM = 'bottom';
+    public const BOTTOM = 'bottom';
 
-    const TOP = 'top';
+    public const TOP = 'top';
 }

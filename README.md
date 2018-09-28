@@ -40,7 +40,7 @@
 * Proprietary, see [LICENSE.md](LICENSE.md) for further details
 
 ## Changelog
-* See [CHANGELOG.md](CHANGELOG.md) for details
+* See [issues.jtl-software.de](https://issues.jtl-software.de/issues?project=JTL-Shop) or review commits in [Gitlab](https://gitlab.jtl-software.de/jtlshop/shop4/) for the latest changes
 
 ## Third party libraries
 * Smarty (http://www.smarty.net/) - LGPL

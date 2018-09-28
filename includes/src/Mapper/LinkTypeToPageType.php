@@ -53,8 +53,6 @@ class LinkTypeToPageType
                 return \PAGE_NEWSLETTERARCHIV;
             case \LINKTYP_NEWS:
                 return \PAGE_NEWS;
-            case \LINKTYP_NEWSARCHIV:
-                return \PAGE_NEWSARCHIV;
             case \LINKTYP_SITEMAP:
                 return \PAGE_SITEMAP;
             case \LINKTYP_UMFRAGE:

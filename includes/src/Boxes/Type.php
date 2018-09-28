@@ -20,17 +20,17 @@ use MyCLabs\Enum\Enum;
  */
 class Type extends Enum
 {
-    const DEFAULT = 'default';
+    public const DEFAULT = 'default';
 
-    const PLUGIN = 'plugin';
+    public const PLUGIN = 'plugin';
 
-    const TEXT = 'text';
+    public const TEXT = 'text';
 
-    const LINK = 'link';
+    public const LINK = 'link';
 
-    const CATBOX = 'catbox';
+    public const CATBOX = 'catbox';
 
-    const TPL = 'tpl';
+    public const TPL = 'tpl';
 
-    const CONTAINER = 'container';
+    public const CONTAINER = 'container';
 }

@@ -22,7 +22,7 @@ trait MagicCompatibilityTrait
      * @param string $value
      * @return string|null
      */
-    private static function getMapping($value)
+    private static function getMapping($value): ?string
     {
         return self::$mapping[$value] ?? null;
     }
@@ -35,7 +35,6 @@ trait MagicCompatibilityTrait
     {
         trigger_error(__CLASS__ . ': getter should be used to get ' . $name, E_USER_DEPRECATED);
         if (property_exists($this, $name)) {
-
             return $this->$name;
         }
         if (($mapped = self::getMapping($name)) !== null) {

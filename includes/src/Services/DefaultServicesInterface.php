@@ -17,6 +17,7 @@ use Services\JTL\BoxServiceInterface;
 use Services\JTL\CaptchaServiceInterface;
 use Services\JTL\CryptoServiceInterface;
 use Services\JTL\LinkServiceInterface;
+use Services\JTL\NewsServiceInterface;
 use Services\JTL\PasswordServiceInterface;
 use Psr\Log\LoggerInterface;
 
@@ -113,4 +114,9 @@ interface DefaultServicesInterface extends ContainerInterface
      * @return CaptchaServiceInterface
      */
     public function getCaptchaService() : CaptchaServiceInterface;
+
+    /**
+     * @return NewsServiceInterface
+     */
+    public function getNewsService() : NewsServiceInterface;
 }

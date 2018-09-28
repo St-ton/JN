@@ -69,7 +69,7 @@ class Currency
     /**
      * @var array
      */
-    private static $mapping = [
+    protected static $mapping = [
         'kWaehrung'            => 'ID',
         'cISO'                 => 'Code',
         'cName'                => 'Name',

@@ -92,7 +92,7 @@ class Option extends AbstractFilter
      * @param string $value
      * @return string|null
      */
-    private static function getMapping($value)
+    private static function getMapping($value): ?string
     {
         return self::$mapping[$value] ?? null;
     }
@@ -148,9 +148,9 @@ class Option extends AbstractFilter
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getURL()
+    public function getURL(): ?string
     {
         return $this->url;
     }

@@ -476,7 +476,7 @@ function gibBrotNaviName()
     $md = Shop::getProductFilter()->getMetaData();
     $md->getHeader();
 
-    return $md->getBreadCrumbName();
+    return $md->getBreadCrumb();
 }
 
 /**

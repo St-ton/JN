@@ -28,7 +28,7 @@
  * @method bool valid()
  * @method bool isValid()
  * @method array|mixed|null getLangArray()
- * @method static bool|string getIsoFromLangID(int $kSprache)
+ * @method bool|string getIsoFromLangID(int $kSprache)
  * @method static stdClass|null getLangIDFromIso(string $cISO)
  * @method static bool|int|string getLanguageDataByType(string $cISO = '', int $kSprache = 0)
  */
@@ -1034,7 +1034,7 @@ class Sprache
      */
     public static function generateLanguageAndCurrencyLinks()
     {
-        global $oZusatzFilter, $AktuellerArtikel, $AktuelleSeite;
+        global $oZusatzFilter, $AktuellerArtikel;
         $kLink         = Shop::$kLink;
         $kSeite        = Shop::$kSeite;
         $shopURL       = Shop::getURL() . '/';
@@ -1064,12 +1064,23 @@ class Sprache
                     if (Shop::getPageType() === PAGE_STARTSEITE) {
                         $url = $shopURL . '?lang=' . $lang->cISO;
                     } elseif ($specialPage->getFileName() !== '') {
-                        $url = $helper->getStaticRoute($specialPage->getFileName(), false, false, $lang->cISO);
-                        // check if there is a SEO link for the given file
-                        if ($url === $specialPage->getFileName()) { //no SEO link - fall back to php file with GET param
-                            $url = $shopURL . $specialPage->getFileName() . '?lang=' . $lang->cISO;
-                        } else { //there is a SEO link - make it a full URL
-                            $url = $helper->getStaticRoute($specialPage->getFileName(), true, false, $lang->cISO);
+                        if (Shop::$kNews > 0) {
+                            $newsItem = new News\Item(Shop::Container()->getDB());
+                            $newsItem->load(Shop::$kNews);
+                            $url = $newsItem->getURL($lang->kSprache);
+                        } elseif (Shop::$kNewsKategorie > 0) {
+                            $newsCategory = new \News\Category(Shop::Container()->getDB());
+                            $newsCategory->load(Shop::$kNewsKategorie);
+                            $url = $newsCategory->getURL($lang->kSprache);
+                        } else {
+                            $url = $helper->getStaticRoute($specialPage->getFileName(), false, false, $lang->cISO);
+                            // check if there is a SEO link for the given file
+                            if ($url === $specialPage->getFileName()) {
+                                // no SEO link - fall back to php file with GET param
+                                $url = $shopURL . $specialPage->getFileName() . '?lang=' . $lang->cISO;
+                            } else { //there is a SEO link - make it a full URL
+                                $url = $helper->getStaticRoute($specialPage->getFileName(), true, false, $lang->cISO);
+                            }
                         }
                     } else {
                         $url = $specialPage->getURL($lang->kSprache);
@@ -1149,7 +1160,7 @@ class Sprache
             'oAktuellerArtikel' => &$AktuellerArtikel,
             'kSeite'            => &$kSeite,
             'kLink'             => &$kLink,
-            'AktuelleSeite'     => &$AktuelleSeite
+            'AktuelleSeite'     => &Shop::$AktuelleSeite
         ]);
     }
     /**

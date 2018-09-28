@@ -28,10 +28,10 @@ interface LinkListInterface
     /**
      * @param Collection $links
      */
-    public function setLinks(Collection $links);
+    public function setLinks(Collection $links): void;
 
     /**
      * @param LinkInterface $link
      */
-    public function addLink(LinkInterface $link);
+    public function addLink(LinkInterface $link): void;
 }

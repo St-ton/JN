@@ -6,7 +6,6 @@
 
 namespace Survey;
 
-
 use DB\DbInterface;
 
 /**

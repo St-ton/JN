@@ -18,9 +18,16 @@ namespace GeneralDataProtection;
 class AnonymizeDeletedCustomer extends Method implements MethodInterface
 {
     /**
-     * @var string
+     * AnonymizeDeletedCustomer constructor
+     *
+     * @param $oNow
+     * @param $iInterval
      */
-    protected $szReason = 'anonymize_orphaned_ratings';
+    public function __construct($oNow, $iInterval)
+    {
+        parent::__construct($oNow, $iInterval);
+        $this->szReason = __CLASS__.': anonymize_deleted_customer';
+    }
 
     /**
      * runs all anonymize-routines
@@ -59,12 +66,12 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
 
         $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
-            FROM `tbewertung` b
+            FROM tbewertung b
             WHERE
-                b.`cName` != "Anonym"
-                AND b.`kKunde` > 0
-                AND b.`kKunde` NOT IN (SELECT `kKunde` FROM `tkunde`)
-                AND date(`dDatum`) < date_sub(date(now()), INTERVAL :pInterval DAY)',
+                b.cName != "Anonym"
+                AND b.kKunde > 0
+                AND b.kKunde NOT IN (SELECT kKunde FROM tkunde)
+                AND date(dDatum) < date_sub(date(now()), INTERVAL :pInterval DAY)',
             ['pInterval' => $this->iInterval],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
@@ -74,10 +81,10 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
         }
         $this->saveToJournal('tbewertung', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared('UPDATE `tbewertung` b
+            \Shop::Container()->getDB()->queryPrepared('UPDATE tbewertung b
                 SET
-                    b.`cName` = "Anonym",
-                    `kKunde`  = 0
+                    b.cName = "Anonym",
+                    kKunde  = 0
                 WHERE
                     kBewertung = :pKeyBewertung',
                 ['pKeyBewertung' => $oResult->kBewertung],
@@ -110,16 +117,16 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
 
         $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
-            FROM `tzahlungseingang`
+            FROM tzahlungseingang
             WHERE
-                `cZahler` != "-"
-                AND `cAbgeholt` != "N"
-                AND `kBestellung` IN (
-                    SELECT `kBestellung`
-                    FROM `tbestellung` b
-                    WHERE b.`kKunde` NOT IN (SELECT `kKunde` FROM `tkunde`)
+                cZahler != "-"
+                AND cAbgeholt != "N"
+                AND kBestellung IN (
+                    SELECT kBestellung
+                    FROM tbestellung b
+                    WHERE b.kKunde NOT IN (SELECT kKunde FROM tkunde)
                 )
-                AND date(`dZeit`) < date(date_sub(now(), INTERVAL :pInterval DAY))',
+                AND date(dZeit) < date(date_sub(now(), INTERVAL :pInterval DAY))',
             ['pInterval' => $this->iInterval],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
@@ -129,11 +136,11 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
         }
         $this->saveToJournal('tzahlungseingang', $vUseFields, $vResult);
         foreach ((array)$vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared('UPDATE `tzahlungseingang`
+            \Shop::Container()->getDB()->queryPrepared('UPDATE tzahlungseingang
                 SET
-                    `cZahler` = "-"
+                    cZahler = "-"
                 WHERE
-                    `kZahlungseingang` = :pKeyZahlungseingang',
+                    kZahlungseingang = :pKeyZahlungseingang',
                 ['pKeyZahlungseingang' => $oResult->kZahlungseingang],
                 \DB\ReturnType::AFFECTED_ROWS
             );
@@ -161,13 +168,12 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
 
         $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
-            FROM `tnewskommentar`
+            FROM tnewskommentar
             WHERE
-                `cName` != "Anonym"
-                AND `kKunde` > 0
-                AND `kKunde` NOT IN (SELECT kKunde FROM tkunde)
-                AND b.`dDatum` < date_sub(now(), INTERVAL :pInterval DAY)',
-            ['pInterval' => $this->iInterval],
+                cName != "Anonym"
+                AND kKunde > 0
+                AND kKunde NOT IN (SELECT kKunde FROM tkunde)',
+            [],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (!\is_array($vResult)) {
@@ -176,11 +182,11 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
         }
         $this->saveToJournal('tnewskommentar', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared('UPDATE `tnewskommentar`
+            \Shop::Container()->getDB()->queryPrepared('UPDATE tnewskommentar
                 SET
-                    `cName`  = "Anonym",
-                    `cEmail` = "Anonym",
-                    `kKunde` = 0
+                    cName  = "Anonym",
+                    cEmail = "Anonym",
+                    kKunde = 0
                 WHERE
                     kNewsKommentar = :pKeyNewsKommentar',
                 ['pKeyNewsKommentar' => $oResult->kNewsKommentar],
@@ -190,3 +196,4 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
     }
 
 }
+

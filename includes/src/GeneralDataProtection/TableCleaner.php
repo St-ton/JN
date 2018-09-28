@@ -30,7 +30,7 @@ class TableCleaner
         ['szName' => 'AnonymizeIps', 'nIntervalDays' => 7],
         ['szName' => 'AnonymizeDeletedCustomer', 'nIntervalDays' => 7],
         ['szName' => 'CleanupCustomerRelicts', 'nIntervalDays' => 0],
-        ['szName' => 'CleanupGuestAccountsWhithoutOrders', 'nIntervalDays' => 0],
+        ['szName' => 'CleanupGuestAccountsWithoutOrders', 'nIntervalDays' => 0],
         ['szName' => 'CleanupNewsletterRecipients', 'nIntervalDays' => 30],
         ['szName' => 'CleanupLogs', 'nIntervalDays' => 90],
         ['szName' => 'CleanupOldGuestAccounts', 'nIntervalDays' => 365]

@@ -70,7 +70,7 @@ class Method
             }
             $nRowCount++;
         }
-        if ($nRowCount >= 0) {
+        if ($nRowCount > 0) {
             $vResult = \Shop::Container()->getDB()->queryPrepared(
                 'INSERT INTO `tanondatajournal`(`cTableSource`,`cReason`,`cOldValue`,`dEventTime`) VALUES' . $szValueLine,
                 [],
@@ -98,3 +98,4 @@ class Method
     }
 
 }
+

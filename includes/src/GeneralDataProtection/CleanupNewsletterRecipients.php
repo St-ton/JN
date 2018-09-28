@@ -18,9 +18,16 @@ namespace GeneralDataProtection;
 class CleanupNewsletterRecipients extends Method implements MethodInterface
 {
     /**
-     * @var string
+     * AnonymizeDeletedCustomer constructor
+     *
+     * @param $oNow
+     * @param $iInterval
      */
-    protected $szReason = 'cleanup_newsletter_recipients';
+    public function __construct($oNow, $iInterval)
+    {
+        parent::__construct($oNow, $iInterval);
+        $this->szReason = __CLASS__.': cleanup_newsletter_recipients';
+    }
 
     /**
      * runs all anonymize-routines
@@ -69,13 +76,13 @@ class CleanupNewsletterRecipients extends Method implements MethodInterface
 
         $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
-            FROM `tnewsletterempfaenger` e
-                JOIN `tnewsletterempfaengerhistory` h ON h.`cOptCode` = e.`cOptCode` AND h.`cEmail` = e.`cEmail`
+            FROM tnewsletterempfaenger e
+                JOIN tnewsletterempfaengerhistory h ON h.cOptCode = e.cOptCode AND h.cEmail = e.cEmail
             WHERE
-                e.`nAktiv` = 0
-                AND h.`cAktion` = "Eingetragen"
-                AND h.`dOptCode` = "0000-00-00 00:00:00"
-                AND h.`dEingetragen` <= (NOW() - INTERVAL ' . $this->iInterval . ' DAY)',
+                e.nAktiv = 0
+                AND h.cAktion = "Eingetragen"
+                AND h.dOptCode = "0000-00-00 00:00:00"
+                AND h.dEingetragen <= (NOW() - INTERVAL ' . $this->iInterval . ' DAY)',
             [],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
@@ -86,10 +93,10 @@ class CleanupNewsletterRecipients extends Method implements MethodInterface
         $this->saveToJournal('tbesucher', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE e, h
-                FROM `tnewsletterempfaenger` e
-                   INNER JOIN `tnewsletterempfaengerhistory` h ON h.`cOptCode` = e.`cOptCode` AND h.`cEmail` = e.`cEmail`
+                FROM tnewsletterempfaenger e
+                   INNER JOIN tnewsletterempfaengerhistory h ON h.cOptCode = e.cOptCode AND h.cEmail = e.cEmail
                 WHERE
-                   e.`cOptCode` = :pOpCode',
+                   e.cOptCode = :pOpCode',
                 ['pOpCode' => $oResult->cOptCode],
                 \DB\ReturnType::AFFECTED_ROWS
             );
@@ -97,3 +104,4 @@ class CleanupNewsletterRecipients extends Method implements MethodInterface
     }
 
 }
+

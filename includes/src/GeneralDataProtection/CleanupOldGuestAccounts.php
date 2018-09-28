@@ -17,9 +17,16 @@ namespace GeneralDataProtection;
 class CleanupOldGuestAccounts extends Method implements MethodInterface
 {
     /**
-     * @var string
+     * AnonymizeDeletedCustomer constructor
+     *
+     * @param $oNow
+     * @param $iInterval
      */
-    protected $szReason = 'cleanup_old_geust_accounts';
+    public function __construct($oNow, $iInterval)
+    {
+        parent::__construct($oNow, $iInterval);
+        $this->szReason = __CLASS__.': cleanup_old_geust_accounts';
+    }
 
     /**
      * runs all anonymize-routines
@@ -74,11 +81,11 @@ class CleanupOldGuestAccounts extends Method implements MethodInterface
 
         $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
-            FROM `tkunde` e
+            FROM tkunde e
             WHERE
-                `nRegistriert` = 0
-                AND `cAbgeholt` = "Y"
-                AND `dErstellt` <= NOW() - INTERVAL :pInterval DAY',
+                nRegistriert = 0
+                AND cAbgeholt = "Y"
+                AND dErstellt <= NOW() - INTERVAL :pInterval DAY',
             ['pInterval' => $this->iInterval],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
@@ -88,7 +95,7 @@ class CleanupOldGuestAccounts extends Method implements MethodInterface
         }
         $this->saveToJournal('tkunde', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tkunde`
+            \Shop::Container()->getDB()->queryPrepared('DELETE FROM tkunde
                 WHERE kKunde = pKeyKunde',
                 ['pKeyKunde' => $oResult->kKunde],
                 \DB\ReturnType::AFFECTED_ROWS
@@ -97,3 +104,4 @@ class CleanupOldGuestAccounts extends Method implements MethodInterface
     }
 
 }
+

@@ -27,9 +27,16 @@ namespace GeneralDataProtection;
 class CleanupCustomerRelicts extends Method implements MethodInterface
 {
     /**
-     * @var string
+     * AnonymizeDeletedCustomer constructor
+     *
+     * @param $oNow
+     * @param $iInterval
      */
-    protected $szReason  = 'anonymize_orphaned_ratings';
+    public function __construct($oNow, $iInterval)
+    {
+        parent::__construct($oNow, $iInterval);
+        $this->szReason = __CLASS__.'clean_customer_relicts';
+    }
 
     /**
      * runs all anonymize-routines
@@ -73,10 +80,10 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
 
         $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
-            FROM `tbesucher`
+            FROM tbesucher
             WHERE
                 kKunde > 0
-                AND `kKunde` NOT IN (SELECT `kKunde` FROM `tkunde`)',
+                AND kKunde NOT IN (SELECT kKunde FROM tkunde)',
             [],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
@@ -86,7 +93,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
         }
         $this->saveToJournal('tbesucher', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tbesucher`
+            \Shop::Container()->getDB()->queryPrepared('DELETE FROM tbesucher
                 WHERE
                     kBesucher = :pKeyBesucher',
                 ['pKeyBesucher' => $oResult->kBesucher],
@@ -119,7 +126,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
 
         $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
-            FROM `tbesucherarchiv`
+            FROM tbesucherarchiv
             WHERE
                 kKunde > 0
                 AND kKunde NOT IN (SELECT kKunde FROM tkunde)',
@@ -132,7 +139,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
         }
         $this->saveToJournal('tbesucherarchiv', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tbesucherarchiv`
+            \Shop::Container()->getDB()->queryPrepared('DELETE FROM tbesucherarchiv
                 WHERE
                     kBesucher = :pKeyBesucher',
                 ['pKeyBesucher' => $oResult->kBesucher],
@@ -168,15 +175,15 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
         $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT
                 k.*,
-                b.`fGuthaben` AS "_bonus_fGuthaben",
-                b.`nBonuspunkte` AS "_bonus_nBonuspunkte",
-                b.`dErhalten` AS "_bonus_dErhalten"
+                b.fGuthaben AS "_bonus_fGuthaben",
+                b.nBonuspunkte AS "_bonus_nBonuspunkte",
+                b.dErhalten AS "_bonus_dErhalten"
             FROM
-                `tkundenwerbenkunden` k
-                LEFT JOIN `tkundenwerbenkundenbonus` b ON k.`kKunde` = b.`kKunde`
+                tkundenwerbenkunden k
+                    LEFT JOIN tkundenwerbenkundenbonus b ON k.kKunde = b.kKunde
             WHERE
-                k.`kKunde` > 0
-                AND k.`kKunde` NOT IN (SELECT `kKunde` FROM `tkunde`)',
+                k.kKunde > 0
+                AND k.kKunde NOT IN (SELECT kKunde FROM tkunde)',
             [],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
@@ -187,12 +194,12 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
         $this->saveToJournal('tkundenwerbenkunden,tkundenwerbenkundenbonus', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
             // delete each "kKunde", in multiple tables, in one shot
-            \Shop::Container()->getDB()->queryPrepared('DELETE `tkundenwerbenkunden`, `tkundenwerbenkundenbonus`
+            \Shop::Container()->getDB()->queryPrepared('DELETE tkundenwerbenkunden, tkundenwerbenkundenbonus
                 FROM
-                    `tkundenwerbenkunden`
-                    LEFT JOIN `tkundenwerbenkundenbonus` ON `tkundenwerbenkundenbonus`.`kKunde` = `tkundenwerbenkunden`.`kKunde`
+                    tkundenwerbenkunden
+                    LEFT JOIN tkundenwerbenkundenbonus ON tkundenwerbenkundenbonus.kKunde = tkundenwerbenkunden.kKunde
                 WHERE
-                    `tkundenwerbenkunden`.`kKunde` = :pKeyKunde',
+                    tkundenwerbenkunden.kKunde = :pKeyKunde',
                 ['pKeyKunde' => $oResult->kKunde],
                 \DB\ReturnType::AFFECTED_ROWS
             );
@@ -218,7 +225,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
 
         $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
-            FROM `tkundenattribut`
+            FROM tkundenattribut
             WHERE
                 kKunde NOT IN (SELECT kKunde FROM tkunde)',
             [],
@@ -230,7 +237,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
         }
         $this->saveToJournal('tkundenattribut', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
-            $nEffected = \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tkundenattribut`
+            \Shop::Container()->getDB()->queryPrepared('DELETE FROM tkundenattribut
                 WHERE
                     kKundenAttribut = :pKeykKundenAttribut',
                 ['pKeykKundenAttribut' => $oResult->kKundenAttribut],
@@ -259,7 +266,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             'cCVV'              => 1,
             'cKartenTyp'        => 1,
             'cInhaber'          => 1,
-           'cVerwendungszweck' => null,
+            'cVerwendungszweck' => null,
             'cAbgeholt'         => null
         ];
 
@@ -267,7 +274,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
 
         $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
-            FROM `tzahlungsinfo`
+            FROM tzahlungsinfo
             WHERE
                 kKunde > 0
                 AND kKunde NOT IN (SELECT kKunde FROM tkunde)',
@@ -280,7 +287,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
         }
         $this->saveToJournal('tzahlungsinfo', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
-            $nEffected = \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tzahlungsinfo`
+            \Shop::Container()->getDB()->queryPrepared('DELETE FROM tzahlungsinfo
                 WHERE
                     kZahlungsInfo = :pKeyZahlungsInfo',
                 ['pKeyZahlungsInfo' => $oResult->kZahlungsInfo],
@@ -310,7 +317,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
 
         $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
-            FROM `tkundenkontodaten`
+            FROM tkundenkontodaten
             WHERE
                 kKunde > 0
                 AND kKunde NOT IN (SELECT kKunde FROM tkunde)',
@@ -323,9 +330,9 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
         }
         $this->saveToJournal('tkundenkontodaten', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
-            $nEffected = \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tkundenkontodaten`
+            \Shop::Container()->getDB()->queryPrepared('DELETE FROM tkundenkontodaten
                 WHERE
-                    kKunde = :pKeyKundenKontodaten',
+                    kKundenKontodaten = :pKeyKundenKontodaten',
                 ['pKeyKundenKontodaten' => $oResult->kKundenKontodaten],
                 \DB\ReturnType::AFFECTED_ROWS
             );
@@ -364,12 +371,12 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
 
         $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
-            FROM `tlieferadresse` k
-                JOIN `tbestellung` b ON b.`kKunde` = k.`kKunde`
+            FROM tlieferadresse k
+                JOIN tbestellung b ON b.kKunde = k.kKunde
             WHERE
-                b.`cStatus` IN (4, -1)
-                AND b.`cAbgeholt` = "Y"
-                AND k.`kKunde` NOT IN (SELECT `kKunde` FROM `tkunde`)',
+                b.cStatus IN (4, -1)
+                AND b.cAbgeholt = "Y"
+                AND k.kKunde NOT IN (SELECT kKunde FROM tkunde)',
             [],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
@@ -379,9 +386,9 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
         }
         $this->saveToJournal('tlieferadresse', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
-            $nEffected = \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tlieferadresse`
+            \Shop::Container()->getDB()->queryPrepared('DELETE FROM tlieferadresse
                 WHERE
-                    AND `kLieferadresse` = :pKeyLieferadresse',
+                    kLieferadresse = :pKeyLieferadresse',
                 ['pKeyLieferadresse' => $oResult->kLieferadresse],
                 \DB\ReturnType::AFFECTED_ROWS
             );
@@ -422,12 +429,12 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
 
         $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
-            FROM `trechnungsadresse` k
-                JOIN `tbestellung` b ON b.`kKunde` = k.`kKunde`
+            FROM trechnungsadresse k
+                JOIN tbestellung b ON b.kKunde = k.kKunde
                 WHERE
-                    b.`cStatus` IN (4, -1)
-                    AND b.`cAbgeholt` = "Y"
-                    AND k.`kKunde` NOT IN (SELECT `kKunde` FROM `tkunde`)',
+                    b.cStatus IN (4, -1)
+                    AND b.cAbgeholt = "Y"
+                    AND k.kKunde NOT IN (SELECT kKunde FROM tkunde)',
             [],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
@@ -437,9 +444,9 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
         }
         $this->saveToJournal('trechnungsadresse', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
-            $nEffected = \Shop::Container()->getDB()->queryPrepared('DELETE FROM `trechnungsadresse`
+            \Shop::Container()->getDB()->queryPrepared('DELETE FROM trechnungsadresse
                 WHERE
-                    AND `kRechnungsadresse` = :pKeyRechnungsadresse',
+                    kRechnungsadresse = :pKeyRechnungsadresse',
                 ['pKeyRechnungsadresse' => $oResult->kRechnungsadresse],
                 \DB\ReturnType::AFFECTED_ROWS
             );
@@ -447,3 +454,4 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
     }
 
 }
+

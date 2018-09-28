@@ -27,9 +27,16 @@ namespace GeneralDataProtection;
 class AnonymizeIps extends Method implements MethodInterface
 {
     /**
-     * @var string
+     * AnonymizeDeletedCustomer constructor
+     *
+     * @param $oNow
+     * @param $iInterval
      */
-    protected $szReason = 'anonymize_all_IPs';
+    public function __construct($oNow, $iInterval)
+    {
+        parent::__construct($oNow, $iInterval);
+        $this->szReason = __CLASS__.': anonymize_all_IPs';
+    }
 
     /**
      * @var array

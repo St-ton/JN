@@ -25,24 +25,31 @@ namespace GeneralDataProtection;
 class CleanupLogs extends Method implements MethodInterface
 {
     /**
-     * @var string
+     * AnonymizeDeletedCustomer constructor
+     *
+     * @param $oNow
+     * @param $iInterval
      */
-    protected $szReason = 'cleanup_logs';
+    public function __construct($oNow, $iInterval)
+    {
+        parent::__construct($oNow, $iInterval);
+        $this->szReason = __CLASS__.': cleanup_logs';
+    }
 
     /**
      * runs all anonymize-routines
      */
     public function execute()
     {
-        $this->clean_temailhistory();
-        $this->clean_tkontakthistory();
+        $this->clean_temailhistory();                    // no protocolling
+        $this->clean_tkontakthistory();                  // no protocolling
         $this->clean_tkundenwerbenkunden();
         $this->clean_tzahlungslog();
-        $this->clean_tproduktanfragehistory();
+        $this->clean_tproduktanfragehistory();           // no protocolling
         $this->clean_tverfuegbarkeitsbenachrichtigung();
-        $this->clean_tjtllog();
+        $this->clean_tjtllog();                          // no protocolling
         $this->clean_tzahlungseingang();
-        $this->clean_tkundendatenhistory();
+        $this->clean_tkundendatenhistory();              // no protocolling
     }
 
     /**
@@ -51,23 +58,25 @@ class CleanupLogs extends Method implements MethodInterface
      */
     private function clean_temailhistory()
     {
-        $vTableFields = [
-            'kEmailhistory' => null,
-            'kEmailvorlage' => null,
-            'cSubject'      => 1,
-            'cFromName'     => 1,
-            'cFromEmail'    => 1,
-            'cToName'       => 1,
-            'cToEmail'      => 1,
-            'dSent'         => null
-        ];
+        /*
+         *$vTableFields = [
+         *    'kEmailhistory' => null,
+         *    'kEmailvorlage' => null,
+         *    'cSubject'      => 1,
+         *    'cFromName'     => 1,
+         *    'cFromEmail'    => 1,
+         *    'cToName'       => 1,
+         *    'cToEmail'      => 1,
+         *    'dSent'         => null
+         *];
+         */
 
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
-        $vUseFields = $this->selectFields($vTableFields);
+        //$vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
-            FROM `temailhistory` e
-            WHERE `dSent` <= (NOW() - INTERVAL ' . $this->iInterval . ' DAY)',
+            FROM temailhistory e
+            WHERE dSent <= (NOW() - INTERVAL ' . $this->iInterval . ' DAY)',
             [],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
@@ -75,7 +84,7 @@ class CleanupLogs extends Method implements MethodInterface
 
             return;
         }
-        $this->saveToJournal('temailhistory', $vUseFields, $vResult);
+        //$this->saveToJournal('temailhistory', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE FROM temailhistory
                 WHERE kEmailhistory = :pKeyEmailhistory',
@@ -91,29 +100,31 @@ class CleanupLogs extends Method implements MethodInterface
      */
     private function clean_tkontakthistory()
     {
-        $vTableFields = [
-            'kKontaktHistory' => null,
-            'kKontaktBetreff' => 1,
-            'kSprache'        => null,
-            'cAnrede'         => null,
-            'cVorname'        => 1,
-            'cNachname'       => 1,
-            'cFirma'          => 1,
-            'cTel'            => null,
-            'cMobil'          => null,
-            'cFax'            => null,
-            'cMail'           => 1,
-            'cNachricht'      => null,
-            'cIP'             => null,
-            'dErstellt'       => 1
-        ];
+        /*
+         *$vTableFields = [
+         *    'kKontaktHistory' => null,
+         *    'kKontaktBetreff' => 1,
+         *    'kSprache'        => null,
+         *    'cAnrede'         => null,
+         *    'cVorname'        => 1,
+         *    'cNachname'       => 1,
+         *    'cFirma'          => 1,
+         *    'cTel'            => null,
+         *    'cMobil'          => null,
+         *    'cFax'            => null,
+         *    'cMail'           => 1,
+         *    'cNachricht'      => null,
+         *    'cIP'             => null,
+         *    'dErstellt'       => 1
+         *];
+         */
 
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
-        $vUseFields = $this->selectFields($vTableFields);
+        //$vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
-            FROM `tkontakthistory` e
-            WHERE `dErstellt` <= (NOW() - INTERVAL ' . $this->iInterval . ' DAY)',
+            FROM tkontakthistory e
+            WHERE dErstellt <= (NOW() - INTERVAL ' . $this->iInterval . ' DAY)',
             [],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
@@ -121,9 +132,9 @@ class CleanupLogs extends Method implements MethodInterface
 
             return;
         }
-        $this->saveToJournal('tkontakthistory', $vUseFields, $vResult);
+        //$this->saveToJournal('tkontakthistory', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tkontakthistory`
+            \Shop::Container()->getDB()->queryPrepared('DELETE FROM tkontakthistory
                 WHERE kKontaktHistory = :pKeyKontaktHistory',
                 ['pKeyKontaktHistory' => $oResult->kKontaktHistory],
                 \DB\ReturnType::AFFECTED_ROWS
@@ -153,8 +164,8 @@ class CleanupLogs extends Method implements MethodInterface
 
         $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
-            FROM `tkundenwerbenkunden` e
-            WHERE `dErstellt` <= (NOW() - INTERVAL ' . $this->iInterval . ' DAY)',
+            FROM tkundenwerbenkunden e
+            WHERE dErstellt <= (NOW() - INTERVAL ' . $this->iInterval . ' DAY)',
             [],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
@@ -164,7 +175,7 @@ class CleanupLogs extends Method implements MethodInterface
         }
         $this->saveToJournal('tkundenwerbenkunden', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared('DELETE `tkundenwerbenkunden`
+            \Shop::Container()->getDB()->queryPrepared('DELETE tkundenwerbenkunden
                 WHERE kKundenWerbenKunden = :pKeyKundenWerbenKunden',
                 ['pKeyKundenWerbenKunden' => $oResult->kKundenWerbenKunden],
                 \DB\ReturnType::AFFECTED_ROWS
@@ -191,8 +202,8 @@ class CleanupLogs extends Method implements MethodInterface
 
         $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
-            FROM `tzahlungslog` e
-            WHERE `dDatum` <= (NOW() - INTERVAL ' . $this->iInterval . ' DAY)',
+            FROM tzahlungslog e
+            WHERE dDatum <= (NOW() - INTERVAL ' . $this->iInterval . ' DAY)',
             [],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
@@ -202,7 +213,7 @@ class CleanupLogs extends Method implements MethodInterface
         }
         $this->saveToJournal('tzahlungslog', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tzahlungslog`
+            \Shop::Container()->getDB()->queryPrepared('DELETE FROM tzahlungslog
                 WHERE kZahlunglog = :pKeyZahlunglog',
                 ['pKeyZahlunglog' => $oResult->kZahlunglog],
                 \DB\ReturnType::AFFECTED_ROWS
@@ -216,29 +227,31 @@ class CleanupLogs extends Method implements MethodInterface
      */
     private function clean_tproduktanfragehistory()
     {
-        $vTableFields = [
-            'kProduktanfrageHistory' => null,
-            'kArtikel'               => 1,
-            'kSprache'               => null,
-            'cAnrede'                => null,
-            'cVorname'               => 1,
-            'cNachname'              => 1,
-            'cFirma'                 => 1,
-            'cTel'                   => null,
-            'cMobil'                 => null,
-            'cFax'                   => null,
-            'cMail'                  => 1,
-            'cNachricht'             => null,
-            'cIP'                    => null,
-            'dErstellt'              => 1
-        ];
+        /*
+         *$vTableFields = [
+         *    'kProduktanfrageHistory' => null,
+         *    'kArtikel'               => 1,
+         *    'kSprache'               => null,
+         *    'cAnrede'                => null,
+         *    'cVorname'               => 1,
+         *    'cNachname'              => 1,
+         *    'cFirma'                 => 1,
+         *    'cTel'                   => null,
+         *    'cMobil'                 => null,
+         *    'cFax'                   => null,
+         *    'cMail'                  => 1,
+         *    'cNachricht'             => null,
+         *    'cIP'                    => null,
+         *    'dErstellt'              => 1
+         *];
+         */
 
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
-        $vUseFields = $this->selectFields($vTableFields);
+        //$vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
-            FROM `tproduktanfragehistory` e
-            WHERE `dErstellt` <= (NOW() - INTERVAL ' . $this->iInterval . ' DAY)',
+            FROM tproduktanfragehistory e
+            WHERE dErstellt <= (NOW() - INTERVAL ' . $this->iInterval . ' DAY)',
             [],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
@@ -246,9 +259,9 @@ class CleanupLogs extends Method implements MethodInterface
 
             return;
         }
-        $this->saveToJournal('tproduktanfragehistory', $vUseFields, $vResult);
+        //$this->saveToJournal('tproduktanfragehistory', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tproduktanfragehistory`
+            \Shop::Container()->getDB()->queryPrepared('DELETE FROM tproduktanfragehistory
                 WHERE kProduktanfrageHistory = :pKeyProduktanfrageHistory',
                 ['pKeyProduktanfrageHistory' => $oResult->kProduktanfrageHistory],
                 \DB\ReturnType::AFFECTED_ROWS
@@ -280,8 +293,8 @@ class CleanupLogs extends Method implements MethodInterface
 
         $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
-            FROM `tverfuegbarkeitsbenachrichtigung` e
-            WHERE `dErstellt` <= (NOW() - INTERVAL ' . $this->iInterval . ' DAY)',
+            FROM tverfuegbarkeitsbenachrichtigung e
+            WHERE dErstellt <= (NOW() - INTERVAL ' . $this->iInterval . ' DAY)',
             [],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
@@ -291,7 +304,7 @@ class CleanupLogs extends Method implements MethodInterface
         }
         $this->saveToJournal('tverfuegbarkeitsbenachrichtigung', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tverfuegbarkeitsbenachrichtigung`
+            \Shop::Container()->getDB()->queryPrepared('DELETE FROM tverfuegbarkeitsbenachrichtigung
                 WHERE kVerfuegbarkeitsbenachrichtigung = :pKeyVerfuegbarkeitsbenachrichtigung',
                 ['pKeyVerfuegbarkeitsbenachrichtigung' => $oResult->kVerfuegbarkeitsbenachrichtigung],
                 \DB\ReturnType::AFFECTED_ROWS
@@ -305,21 +318,23 @@ class CleanupLogs extends Method implements MethodInterface
      */
     private function clean_tjtllog()
     {
-        $vTableFields = [
-            'kLog'      => null,
-            'nLevel'    => null,
-            'cLog'      => 1,
-            'cKey'      => null,
-            'kKey'      => null,
-            'dErstellt' => 1
-        ];
+        /*
+         *$vTableFields = [
+         *    'kLog'      => null,
+         *    'nLevel'    => null,
+         *    'cLog'      => 1,
+         *    'cKey'      => null,
+         *    'kKey'      => null,
+         *    'dErstellt' => 1
+         *];
+         */
 
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
-        $vUseFields = $this->selectFields($vTableFields);
+        //$vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
-            FROM `tjtllog` e
-            WHERE `dErstellt` <= (NOW() - INTERVAL ' . $this->iInterval . ' DAY)',
+            FROM tjtllog e
+            WHERE dErstellt <= (NOW() - INTERVAL ' . $this->iInterval . ' DAY)',
             [],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
@@ -328,7 +343,7 @@ class CleanupLogs extends Method implements MethodInterface
             return;
         }
         foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tjtllog`
+            \Shop::Container()->getDB()->queryPrepared('DELETE FROM tjtllog
                 WHERE kLog = :pKeyLog',
                 ['pKeyLog' => $oResult->kLog],
                 \DB\ReturnType::AFFECTED_ROWS
@@ -360,8 +375,8 @@ class CleanupLogs extends Method implements MethodInterface
 
         $vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
-            FROM `tzahlungseingang` e
-            WHERE `cAbgeholt` <= (NOW() - INTERVAL ' . $this->iInterval . ' DAY)',
+            FROM tzahlungseingang e
+            WHERE cAbgeholt <= (NOW() - INTERVAL ' . $this->iInterval . ' DAY)',
             [],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
@@ -371,7 +386,7 @@ class CleanupLogs extends Method implements MethodInterface
         }
         $this->saveToJournal('tzahlungseingang', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tzahlungseingang`
+            \Shop::Container()->getDB()->queryPrepared('DELETE FROM tzahlungseingang
                 WHERE kZahlungseingang = :pKeyZahlungseingang',
                 ['pKeyZahlungseingang' => $oResult->kZahlungseingang],
                 \DB\ReturnType::AFFECTED_ROWS
@@ -384,21 +399,21 @@ class CleanupLogs extends Method implements MethodInterface
      */
     private function clean_tkundendatenhistory()
     {
-        $vTableFields = [
-            'kKundendatenHistory' => null,
-            'kKunde'              => null,
-            'cJsonAlt'            => null,
-            'cJsonNeu'            => null,
-            'cQuelle'             => null,
-            'dErstellt'           => null
-        ];
+        //$vTableFields = [
+            //'kKundendatenHistory' => null,
+            //'kKunde'              => null,
+            //'cJsonAlt'            => null,
+            //'cJsonNeu'            => null,
+            //'cQuelle'             => null,
+            //'dErstellt'           => null
+        //];
 
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
-        $vUseFields = $this->selectFields($vTableFields);
+        //$vUseFields = $this->selectFields($vTableFields);
         $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
-            FROM `tkundendatenhistory`
-            WHERE `dErstellt` <= LAST_DAY(DATE_ADD(NOW() - INTERVAL 2 YEAR, INTERVAL 12 - MONTH(NOW()) MONTH))',
+            FROM tkundendatenhistory
+            WHERE dErstellt <= LAST_DAY(DATE_ADD(NOW() - INTERVAL 2 YEAR, INTERVAL 12 - MONTH(NOW()) MONTH))',
             [],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
@@ -407,7 +422,8 @@ class CleanupLogs extends Method implements MethodInterface
             return;
         }
         foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tkundendatenhistory`
+            // Customer-history-logs will be deleted at the end of the following year after log-creation according to german law § 76 BDSG (neu)
+            \Shop::Container()->getDB()->queryPrepared('DELETE FROM tkundendatenhistory
                 WHERE kKundendatenHistory = :pKeyKundendatenHistory',
                 ['pKeyKundendatenHistory' => $oResult->kKundendatenHistory],
                 \DB\ReturnType::AFFECTED_ROWS
@@ -416,3 +432,4 @@ class CleanupLogs extends Method implements MethodInterface
     }
 
 }
+

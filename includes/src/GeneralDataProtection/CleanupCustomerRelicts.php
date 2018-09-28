@@ -259,7 +259,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             'cCVV'              => 1,
             'cKartenTyp'        => 1,
             'cInhaber'          => 1,
-r           'cVerwendungszweck' => null,
+           'cVerwendungszweck' => null,
             'cAbgeholt'         => null
         ];
 

@@ -20,8 +20,6 @@ use Psr\Log\LoggerInterface;
 class GeneralDataProtect extends Job
 {
 
-    private $oLogger = null;
-
     /**
      * @inheritdoc
      */

@@ -378,6 +378,9 @@
   background: #f5f7fa;
   flex: auto;
 }
+.panel.widget {
+  box-shadow: 1px 1px 4px #d5d7da;
+}
 @media (max-width: 768px) {
   #content_wrapper.container-fluid,
   #content_wrapper.container {

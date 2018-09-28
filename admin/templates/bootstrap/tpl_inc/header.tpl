@@ -53,6 +53,7 @@
                             <ul id="backend-search-dropdown"></ul>
                             <script>
                                 var lastIoSearchCall = null;
+                                var searchDropdown = $('#backend-search-dropdown');
 
                                 $('#backend-search-input')
                                     .on('input', function() {
@@ -68,13 +69,13 @@
                                                 var tpl = data.data.tpl;
 
                                                 if (tpl) {
-                                                    $('#backend-search-dropdown').html(tpl).addClass('open');
+                                                    searchDropdown.html(tpl).addClass('open');
                                                 } else {
-                                                    $('#backend-search-dropdown').removeClass('open');
+                                                    searchDropdown.removeClass('open');
                                                 }
                                             });
                                         } else {
-                                            $('#backend-search-dropdown').removeClass('open');
+                                            searchDropdown.removeClass('open');
                                         }
                                     })
                                     .keydown(function(e) {
@@ -87,7 +88,7 @@
                                     });
                                 $(document).click(function(e) {
                                     if ($(e.target).closest('.backend-search').length === 0) {
-                                        $('#backend-search-dropdown').removeClass('open');
+                                        searchDropdown.removeClass('open');
                                     }
                                 });
                             </script>

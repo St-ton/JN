@@ -376,7 +376,7 @@ class DBMigrationHelper
         $migration = self::isTableNeedMigration($oTable);
         if (($migration & self::MIGRATE_TEXT) !== self::MIGRATE_NONE) {
             $sql = self::sqlMoveToInnoDB($oTable);
-            if (!Shop::Container()->getDB()->executeQuery($sql, \DB\ReturnType::QUERYSINGLE)) {
+            if (!empty($sql) && !Shop::Container()->getDB()->executeQuery($sql, \DB\ReturnType::QUERYSINGLE)) {
                 return self::FAILURE;
             }
         }
@@ -387,6 +387,6 @@ class DBMigrationHelper
             }
         }
 
-        return self::FAILURE;
+        return self::SUCCESS;
     }
 }

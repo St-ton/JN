@@ -14,6 +14,8 @@ class Migration_20180801165500 extends Migration implements IMigration
     public function up()
     {
         $db = Shop::Container()->getDB();
+        DBMigrationHelper::migrateToInnoDButf8('tnews');
+        DBMigrationHelper::migrateToInnoDButf8('tnewskategorie');
 
         $this->execute(
             "CREATE TABLE `tnewssprache` (

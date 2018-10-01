@@ -1721,7 +1721,14 @@ class ProductFilter
             $productKeys = $this->searchResults->getProductKeys();
         }
         if ($error !== false) {
+            $pages = new Info();
+            $pages->setMinPage(0);
+            $pages->setMaxPage(0);
+            $pages->setTotalPages(0);
+            $pages->setCurrentPage(0);
+
             return $this->searchResults
+                ->setPages($pages)
                 ->setProductCount(0)
                 ->setVisibleProductCount(0)
                 ->setProducts($productList)

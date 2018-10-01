@@ -161,7 +161,7 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
     $bestellung->dErstelldatum_en       = '12th October 2010';
     $bestellung->cBestellwertLocalized  = '511,00 EUR';
     $bestellung->GuthabenNutzen         = 1;
-    $bestellung->GutscheinLocalized     = '5,00 &euro;';
+    $bestellung->GutscheinLocalized     = '5,00 EUR';
     $bestellung->fWarensumme            = 433.004004;
     $bestellung->fVersand               = 0;
     $bestellung->nZahlungsTyp           = 0;

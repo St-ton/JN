@@ -47,9 +47,9 @@ final class JTLApi
     }
 
     /**
-     * @return \stdClass
+     * @return \stdClass|null
      */
-    public function getSubscription(): \stdClass
+    public function getSubscription(): ?\stdClass
     {
         if (!isset($this->session['rs']['subscription'])) {
             $uri          = self::URI . '/check/subscription';
@@ -67,9 +67,9 @@ final class JTLApi
     }
 
     /**
-     * @return \stdClass
+     * @return bool|null|string
      */
-    public function getAvailableVersions(): \stdClass
+    public function getAvailableVersions()
     {
         if (!isset($this->session['rs']['versions'])) {
             $uri = self::URI_VERSION . '/versions';

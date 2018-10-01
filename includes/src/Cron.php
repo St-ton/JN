@@ -110,9 +110,21 @@ class Cron
      */
     public function speicherInDB()
     {
-        return $this->kKey > 0 && $this->cKey && $this->cTabelle && $this->cName && $this->nAlleXStd && $this->dStart
-            ? Shop::Container()->getDB()->insert('tcron', $this)
-            : false;
+        if ($this->kKey > 0 && $this->cKey && $this->cTabelle && $this->cName && $this->nAlleXStd && $this->dStart) {
+            $ins                = new stdClass();
+            $ins->kKey          = $this->kKey;
+            $ins->cKey          = $this->cKey;
+            $ins->cName         = $this->cName;
+            $ins->cJobArt       = $this->cJobArt;
+            $ins->nAlleXStd     = $this->nAlleXStd;
+            $ins->dStart        = $this->dStart;
+            $ins->dStartZeit    = $this->dStartZeit;
+            $ins->dLetzterStart = $this->dLetzterStart ?? '_DBNULL_';
+
+            return Shop::Container()->getDB()->insert('tcron', $ins);
+        }
+
+        return false;
     }
 
     /**
@@ -155,7 +167,7 @@ class Cron
             $_upd->cJobArt       = $this->cJobArt;
             $_upd->nAlleXStd     = (int)$this->nAlleXStd;
             $_upd->dStart        = $this->dStart;
-            $_upd->dLetzterStart = $this->dLetzterStart;
+            $_upd->dLetzterStart = $this->dLetzterStart ?? '_DBNULL';
 
             return Shop::Container()->getDB()->update('tcron', 'kCron', $this->kCron, $_upd) >= 0;
         }

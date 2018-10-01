@@ -57,6 +57,7 @@ class Method
                 $szValueLine .= ',';
             }
             $szValueLine .= '(\'' . $szTableName . '\',\'' . $this->szReason . '\',\'' . $szRowData . '\',\'' . $this->oNow->format('Y-m-d H:i:s') . '\')';
+            $szValueLine  = \Shop::Container()->getDB()->quote($szValueLine);
 
             if ($nRowCount === 1999) {
                 $vResult = \Shop::Container()->getDB()->queryPrepared(

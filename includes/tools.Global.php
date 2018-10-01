@@ -170,7 +170,7 @@ function writeLog($logfile, $entry, $level)
         }
         fwrite($logfile,
             "\n[" . date('m.d.y H:i:s') . "] " .
-            "[" . (new IpAnonymizer(RequestHelper::getIP()))->anonymize() . "]\n" .
+            "[" . (new \GeneralDataProtection\IpAnonymizer(RequestHelper::getIP()))->anonymize() . "]\n" .
             $entry
         );
         fclose($logfile);

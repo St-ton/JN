@@ -229,7 +229,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             WHERE
                 kKunde NOT IN (SELECT kKunde FROM tkunde)',
             [],
-            \DB\ReturnType::AFFECTED_ROWS
+            \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (!\is_array($vResult)) {
 
@@ -352,7 +352,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             'cVorname'       => 1,
             'cNachname'      => 1,
             'cTitel'         => null,
-            'cFirma'         => null,
+            'cFirma'         => 1,
             'cZusatz'        => null,
             'cStrasse'       => 1,
             'cHausnummer'    => 1,
@@ -408,7 +408,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             'cTitel'            => null,
             'cVorname'          => 1,
             'cNachname'         => 1,
-            'cFirma'            => null,
+            'cFirma'            => 1,
             'cZusatz'           => null,
             'cStrasse'          => 1,
             'cHausnummer'       => 1,

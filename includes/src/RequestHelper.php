@@ -97,7 +97,7 @@ class RequestHelper
 
         // if the given IP is not valid, we return placeholders (note: placeholders are the "legacy way")
         if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6)) {
-            return (new \GdprAnonymizing\IpAnonymizer($ip))->getPlaceholder();
+            return (new \GeneralDataProtection\IpAnonymizer($ip))->getPlaceholder();
         }
 
         return $ip;

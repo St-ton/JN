@@ -96,7 +96,7 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
 
             return;
         }
-        $this->saveToJournal('tbesucher', $vUseFields, $vResult);
+        $this->saveToJournal('tbestellung', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE FROM tkunde
                 WHERE

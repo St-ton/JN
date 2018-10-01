@@ -90,7 +90,7 @@ class CleanupNewsletterRecipients extends Method implements MethodInterface
 
             return;
         }
-        $this->saveToJournal('tbesucher', $vUseFields, $vResult);
+        $this->saveToJournal('tnewsletterempfaenger', $vUseFields, $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE e, h
                 FROM tnewsletterempfaenger e

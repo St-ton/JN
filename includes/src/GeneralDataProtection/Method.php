@@ -50,18 +50,16 @@ class Method
         $szValueLine = '';
         $nRowCount   = 0;
         foreach ($vRowArray as $oRow) {
-            // save the old values
             $vFields   = array_intersect_key(get_object_vars($oRow), $vUsedFields);
             $szRowData = json_encode($vFields);
             if ($szValueLine !== '') {
                 $szValueLine .= ',';
             }
             $szValueLine .= '(\'' . $szTableName . '\',\'' . $this->szReason . '\',\'' . $szRowData . '\',\'' . $this->oNow->format('Y-m-d H:i:s') . '\')';
-            $szValueLine  = \Shop::Container()->getDB()->quote($szValueLine);
 
             if ($nRowCount === 1999) {
                 $vResult = \Shop::Container()->getDB()->queryPrepared(
-                    'INSERT INTO `tanondatajournal`(`cTableSource`,`cReason`,`cOldValue`,`dEventTime`) VALUES' . $szValueLine,
+                    'INSERT INTO tanondatajournal(cTableSource,cReason,cOldValue,dEventTime) VALUES' . \Shop::Container()->getDB()->quote($szValueLine),
                     [],
                     \DB\ReturnType::AFFECTED_ROWS
                 );
@@ -73,7 +71,7 @@ class Method
         }
         if ($nRowCount > 0) {
             $vResult = \Shop::Container()->getDB()->queryPrepared(
-                'INSERT INTO `tanondatajournal`(`cTableSource`,`cReason`,`cOldValue`,`dEventTime`) VALUES' . $szValueLine,
+                'INSERT INTO tanondatajournal(cTableSource,cReason,cOldValue,dEventTime) VALUES' . \Shop::Container()->getDB()->quote($szValueLine),
                 [],
                 \DB\ReturnType::AFFECTED_ROWS
             );

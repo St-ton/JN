@@ -353,7 +353,7 @@
             <tr class="shipping-costs text-right">
                 <td colspan="{$colspan}"><small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$shippingCosts:$FavourableShipping->cCountryCode key='shippingInformationSpecific' section='basket'}</small></td>
             </tr>
-        {elseif empty($FavourableShipping)}
+        {elseif empty($FavourableShipping) && empty($smarty.session.Versandart)}
             <tr class="shipping-costs text-right">
                 <td colspan="{$colspan}"><small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() key='shippingInformation' section='basket'}</small></td>
             </tr>

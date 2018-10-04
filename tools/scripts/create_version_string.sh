@@ -1,15 +1,5 @@
 #!/bin/bash
 
-# $1 target build version
-APPLICATION_VERSION=$1;
-# $2 last commit sha
-APPLICATION_BUILD_SHA=$2;
-# $3 repository dir
-REPO_DIR=$3;
-
-VCS_REG="release\\/([0-9]{1,})\\.([0-9]{1,})";
-VCS_REG_TAG="v?([0-9]{1,})\\.([0-9]{1,})\\.([0-9]{1,})(-(alpha|beta|rc)(\\.([0-9]{1,}))?)?";
-
 get_last_tag()
 {
     GREATEST_MAJOR=0;
@@ -90,46 +80,51 @@ get_latest_patch() {
     done
 }
 
-if [[ ${APPLICATION_VERSION} =~ ${VCS_REG_TAG} ]]; then
-    SHOP_VERSION_MAJOR=${BASH_REMATCH[1]};
-    SHOP_VERSION_MINOR=${BASH_REMATCH[2]};
-    SHOP_VERSION_PATCH=${BASH_REMATCH[3]};
-    if [ ! -z "${BASH_REMATCH[5]}" ]; then
-        SHOP_VERSION_GREEK=${BASH_REMATCH[5]};
-        if [ ! -z "${BASH_REMATCH[7]}" ]; then
-            SHOP_VERSION_PRERELEASENUMBER=${BASH_REMATCH[7]};
-        fi
-    fi
-else
-    if [[ ${APPLICATION_VERSION} =~ ${VCS_REG} ]]; then
+create_version_string()
+{
+    VCS_REG="release\\/([0-9]{1,})\\.([0-9]{1,})";
+
+    if [[ ${APPLICATION_VERSION} =~ ${VERSION_REGEX} ]]; then
         SHOP_VERSION_MAJOR=${BASH_REMATCH[1]};
         SHOP_VERSION_MINOR=${BASH_REMATCH[2]};
-        get_latest_patch ${SHOP_VERSION_MAJOR} ${SHOP_VERSION_MINOR};
-        SHOP_VERSION_PATCH=$((GREATEST_LATEST_PATCH+1));
+        SHOP_VERSION_PATCH=${BASH_REMATCH[3]};
+        if [ ! -z "${BASH_REMATCH[5]}" ]; then
+            SHOP_VERSION_GREEK=${BASH_REMATCH[5]};
+            if [ ! -z "${BASH_REMATCH[7]}" ]; then
+                SHOP_VERSION_PRERELEASENUMBER=${BASH_REMATCH[7]};
+            fi
+        fi
     else
-        get_last_tag;
-        if [[ ${LAST_TAG} =~ ${VCS_REG_TAG} ]]; then
+        if [[ ${APPLICATION_VERSION} =~ ${VCS_REG} ]]; then
             SHOP_VERSION_MAJOR=${BASH_REMATCH[1]};
             SHOP_VERSION_MINOR=${BASH_REMATCH[2]};
-            SHOP_VERSION_PATCH=${BASH_REMATCH[3]};
-            if [ ! -z "${BASH_REMATCH[5]}" ]; then
-                SHOP_VERSION_GREEK=${BASH_REMATCH[5]};
-                if [ ! -z "${BASH_REMATCH[7]}" ]; then
-                    SHOP_VERSION_PRERELEASENUMBER=${BASH_REMATCH[7]};
+            get_latest_patch ${SHOP_VERSION_MAJOR} ${SHOP_VERSION_MINOR};
+            SHOP_VERSION_PATCH=$((GREATEST_LATEST_PATCH+1));
+        else
+            get_last_tag;
+            if [[ ${LAST_TAG} =~ ${VERSION_REGEX} ]]; then
+                SHOP_VERSION_MAJOR=${BASH_REMATCH[1]};
+                SHOP_VERSION_MINOR=${BASH_REMATCH[2]};
+                SHOP_VERSION_PATCH=${BASH_REMATCH[3]};
+                if [ ! -z "${BASH_REMATCH[5]}" ]; then
+                    SHOP_VERSION_GREEK=${BASH_REMATCH[5]};
+                    if [ ! -z "${BASH_REMATCH[7]}" ]; then
+                        SHOP_VERSION_PRERELEASENUMBER=${BASH_REMATCH[7]};
+                    fi
                 fi
             fi
         fi
     fi
-fi
 
-NEW_VERSION="$SHOP_VERSION_MAJOR.$SHOP_VERSION_MINOR.$SHOP_VERSION_PATCH";
+    NEW_VERSION="$SHOP_VERSION_MAJOR.$SHOP_VERSION_MINOR.$SHOP_VERSION_PATCH";
 
-if [ -v SHOP_VERSION_GREEK ] && [ ! -z "${SHOP_VERSION_GREEK}" ]; then
-    NEW_VERSION="$NEW_VERSION-$SHOP_VERSION_GREEK";
-    if [ -v SHOP_VERSION_PRERELEASENUMBER ] && [ ${SHOP_VERSION_PRERELEASENUMBER} -gt 0 ]; then
-        NEW_VERSION="$NEW_VERSION.$SHOP_VERSION_PRERELEASENUMBER";
+    if [ -v SHOP_VERSION_GREEK ] && [ ! -z "${SHOP_VERSION_GREEK}" ]; then
+        NEW_VERSION="$NEW_VERSION-$SHOP_VERSION_GREEK";
+        if [ -v SHOP_VERSION_PRERELEASENUMBER ] && [ ${SHOP_VERSION_PRERELEASENUMBER} -gt 0 ]; then
+            NEW_VERSION="$NEW_VERSION.$SHOP_VERSION_PRERELEASENUMBER";
+        fi
     fi
-fi
 
-sed -i "s/'APPLICATION_VERSION', '.*'/'APPLICATION_VERSION', '${NEW_VERSION}'/g" ${REPO_DIR}/includes/defines_inc.php
-sed -i "s/'APPLICATION_BUILD_SHA', '#DEV#'/'APPLICATION_BUILD_SHA', '${APPLICATION_BUILD_SHA}'/g" ${REPO_DIR}/includes/defines_inc.php
+    sed -i "s/'APPLICATION_VERSION', '.*'/'APPLICATION_VERSION', '${NEW_VERSION}'/g" ${REPO_DIR}/includes/defines_inc.php
+    sed -i "s/'APPLICATION_BUILD_SHA', '#DEV#'/'APPLICATION_BUILD_SHA', '${APPLICATION_BUILD_SHA}'/g" ${REPO_DIR}/includes/defines_inc.php
+}

@@ -17,6 +17,11 @@ namespace GeneralDataProtection;
 class CleanupOldGuestAccounts extends Method implements MethodInterface
 {
     /**
+     * @var string
+     */
+    protected $szReasonName;
+
+    /**
      * AnonymizeDeletedCustomer constructor
      *
      * @param $oNow
@@ -25,7 +30,7 @@ class CleanupOldGuestAccounts extends Method implements MethodInterface
     public function __construct($oNow, $iInterval)
     {
         parent::__construct($oNow, $iInterval);
-        $this->szReason = __CLASS__.': cleanup_old_geust_accounts';
+        $this->szReasonName = substr(__CLASS__, strrpos(__CLASS__, '\\')) . ': ';
     }
 
     /**
@@ -36,6 +41,9 @@ class CleanupOldGuestAccounts extends Method implements MethodInterface
         $this->clean_tkunde();
     }
 
+    /**
+     * delete old guest accounts
+     */
     private function clean_tkunde()
     {
         $vTableFields = [
@@ -76,24 +84,29 @@ class CleanupOldGuestAccounts extends Method implements MethodInterface
             'nRegistriert'   => null,
             'nLoginversuche' => null
         ];
-
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
-        $vUseFields = $this->selectFields($vTableFields);
-        $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
+        $this->szReason = $this->szReasonName . 'delete customer-data-historytory';
+        $vUseFields     = $this->selectFields($vTableFields);
+        $vResult        = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM tkunde e
             WHERE
                 nRegistriert = 0
                 AND cAbgeholt = "Y"
-                AND dErstellt <= NOW() - INTERVAL :pInterval DAY',
-            ['pInterval' => $this->iInterval],
+                AND dErstellt <= :pNow - INTERVAL :pInterval DAY
+                LIMIT :pLimit',
+            [
+                'pInterval' => $this->iInterval,
+                'pNow'      => $this->oNow->format('Y-m-d H:i:s'),
+                'pLimit'    => $this->iWorkLimit
+            ],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (!\is_array($vResult)) {
 
             return;
         }
-        $this->saveToJournal('tkunde', $vUseFields, $vResult);
+        $this->saveToJournal('tkunde', $vUseFields, 'kKunde', $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE FROM tkunde
                 WHERE kKunde = pKeyKunde',

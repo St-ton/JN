@@ -27,13 +27,13 @@ class TableCleaner
      * @var array
      */
     private $vMethods = [
-        ['szName' => 'AnonymizeIps', 'nIntervalDays' => 7],
-        ['szName' => 'AnonymizeDeletedCustomer', 'nIntervalDays' => 7],
-        ['szName' => 'CleanupCustomerRelicts', 'nIntervalDays' => 0],
-        ['szName' => 'CleanupGuestAccountsWithoutOrders', 'nIntervalDays' => 0],
-        ['szName' => 'CleanupNewsletterRecipients', 'nIntervalDays' => 30],
-        ['szName' => 'CleanupLogs', 'nIntervalDays' => 90],
-        ['szName' => 'CleanupOldGuestAccounts', 'nIntervalDays' => 365]
+        ['szName' => 'AnonymizeIps', 'iIntervalDays' => 7],
+        ['szName' => 'AnonymizeDeletedCustomer', 'iIntervalDays' => 7],
+        ['szName' => 'CleanupCustomerRelicts', 'iIntervalDays' => 0],
+        ['szName' => 'CleanupGuestAccountsWithoutOrders', 'iIntervalDays' => 0],
+        ['szName' => 'CleanupNewsletterRecipients', 'iIntervalDays' => 30],
+        ['szName' => 'CleanupLogs', 'iIntervalDays' => 90],
+        ['szName' => 'CleanupOldGuestAccounts', 'iIntervalDays' => 365]
     ];
 
     /**
@@ -62,7 +62,7 @@ class TableCleaner
         for ($i=0; $i < $nMethodsCount ; $i++) {
             $szMethodName = __NAMESPACE__ . '\\' . $this->vMethods[$i]['szName'];
             ($this->oLogger === null) ?: $this->oLogger->log(JTLLOG_LEVEL_NOTICE, 'Anonymize Method running: ' . $this->vMethods[$i]['szName']);
-            (new $szMethodName($this->oNow, $this->vMethods[$i]['nIntervalDays']))->execute();
+            (new $szMethodName($this->oNow, $this->vMethods[$i]['iIntervalDays']))->execute();
         }
 
         $t_elapsed = microtime(true) - $t_start; // runtime-measurement
@@ -73,7 +73,7 @@ class TableCleaner
     {
         // tidy up the journal (`tanondatajournal`).
         // removes entries older than one year after their creation.
-        $vResult = \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tanondatajournal`
+        \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tanondatajournal`
             WHERE `dEventTime` <= LAST_DAY(DATE_ADD(NOW() - INTERVAL 2 YEAR, INTERVAL 12 - MONTH(NOW()) MONTH))',
             [],
             \DB\ReturnType::AFFECTED_ROWS

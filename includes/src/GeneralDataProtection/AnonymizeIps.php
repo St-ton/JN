@@ -27,6 +27,11 @@ namespace GeneralDataProtection;
 class AnonymizeIps extends Method implements MethodInterface
 {
     /**
+     * @var string
+     */
+    protected $szReasonName;
+
+    /**
      * AnonymizeDeletedCustomer constructor
      *
      * @param $oNow
@@ -35,7 +40,7 @@ class AnonymizeIps extends Method implements MethodInterface
     public function __construct($oNow, $iInterval)
     {
         parent::__construct($oNow, $iInterval);
-        $this->szReason = __CLASS__.': anonymize_all_IPs';
+        $this->szReasonName = substr(__CLASS__, strrpos(__CLASS__, '\\')) . ': ';
     }
 
     /**
@@ -136,6 +141,7 @@ class AnonymizeIps extends Method implements MethodInterface
         $szIpMaskV4  = substr($szIpMaskV4, strpos($szIpMaskV4, '.0'), strlen($szIpMaskV4)-1);
         $szIpMaskV6  = substr($szIpMaskV6, strpos($szIpMaskV6, ':0000'), strlen($szIpMaskV6)-1);
 
+        $this->szReason = $this->szReasonName . 'anonymize IPs in general';
         foreach ($this->vTablesUpdate as $szTableName => $vTable) {
             // select maximum 10,000 rows in one step!
             // (if this script is running each day, we need some days
@@ -151,13 +157,13 @@ class AnonymizeIps extends Method implements MethodInterface
                     NOT INSTR(cIP, ".*") > 0
                     AND NOT INSTR(cIP, "' . $szIpMaskV4 . '") > 0
                     AND NOT INSTR(cIP, "' . $szIpMaskV6 . '") > 0
-                    AND (case ceil(' . $vTable['ColCreated'] . ') = ' . $vTable['ColCreated'] . '
-                        when 0 then date(' . $vTable['ColCreated'] . ') <= NOW() - INTERVAL ' . $this->iInterval . ' DAY
-                        when 1 then from_unixtime(' . $vTable['ColCreated'] . ') <= NOW() - INTERVAL ' . $this->iInterval . ' DAY
-                    end)
+                    AND (CASE ' . $vTable['ColCreated'] . ' * 1 = ' . $vTable['ColCreated'] . '
+                        WHEN 0 THEN DATE(' . $vTable['ColCreated'] . ') <= ' . $this->oNow->format('Y-m-d H:i:s') . ' - INTERVAL ' . $this->iInterval . ' DAY
+                        WHEN 1 THEN FROM_UNIXTIME(' . $vTable['ColCreated'] . ') <= ' . $this->oNow->format('Y-m-d H:i:s') . ' - INTERVAL ' . $this->iInterval . ' DAY
+                    END)
                 ORDER BY
                     ' . $vTable['ColCreated'] . ' ASC
-                LIMIT 10000',
+                LIMIT ' . $this->iWorkLimit,
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             if (\is_array($vResult) && 0 < \count($vResult)) {

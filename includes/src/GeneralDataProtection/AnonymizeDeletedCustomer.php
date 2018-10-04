@@ -18,6 +18,11 @@ namespace GeneralDataProtection;
 class AnonymizeDeletedCustomer extends Method implements MethodInterface
 {
     /**
+     * @var string
+     */
+    protected $szReasonName;
+
+    /**
      * AnonymizeDeletedCustomer constructor
      *
      * @param $oNow
@@ -26,7 +31,7 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
     public function __construct($oNow, $iInterval)
     {
         parent::__construct($oNow, $iInterval);
-        $this->szReason = __CLASS__.': anonymize_deleted_customer';
+        $this->szReasonName = substr(__CLASS__, strrpos(__CLASS__, '\\')) . ': ';
     }
 
     /**
@@ -61,30 +66,35 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
             'cAntwort'        => null,
             'dAntwortDatum'   => null,
         ];
-
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
-        $vUseFields = $this->selectFields($vTableFields);
-        $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
+        $this->szReason = $this->szReasonName . 'anonymize orphanded ratings';
+        $vUseFields     = $this->selectFields($vTableFields);
+        $vResult        = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM tbewertung b
             WHERE
                 b.cName != "Anonym"
                 AND b.kKunde > 0
                 AND b.kKunde NOT IN (SELECT kKunde FROM tkunde)
-                AND date(dDatum) < date_sub(date(now()), INTERVAL :pInterval DAY)',
-            ['pInterval' => $this->iInterval],
+                AND DATE(dDatum) < DATE_SUB(DATE(:pNow), INTERVAL :pInterval DAY)
+                LIMIT :pLimit',
+            [
+                'pInterval' => $this->iInterval,
+                'pNow'      => $this->oNow->format('Y-m-d H:i:s'),
+                'pLimit'    => $this->iWorkLimit
+            ],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (!\is_array($vResult)) {
 
             return;
         }
-        $this->saveToJournal('tbewertung', $vUseFields, $vResult);
+        $this->saveToJournal('tbewertung', $vUseFields, 'kKunde', $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('UPDATE tbewertung b
                 SET
                     b.cName = "Anonym",
-                    kKunde  = 0
+                    kKunde = 0
                 WHERE
                     kBewertung = :pKeyBewertung',
                 ['pKeyBewertung' => $oResult->kBewertung],
@@ -112,11 +122,11 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
             'cHinweis'          => null,
             'cAbgeholt'         => null
         ];
-
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
-        $vUseFields = $this->selectFields($vTableFields);
-        $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
+        $this->szReason = $this->szReasonName . 'anonymize outdated payments';
+        $vUseFields     = $this->selectFields($vTableFields);
+        $vResult        = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM tzahlungseingang
             WHERE
                 cZahler != "-"
@@ -126,15 +136,21 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
                     FROM tbestellung b
                     WHERE b.kKunde NOT IN (SELECT kKunde FROM tkunde)
                 )
-                AND date(dZeit) < date(date_sub(now(), INTERVAL :pInterval DAY))',
-            ['pInterval' => $this->iInterval],
+                AND DATE(dZeit) < DATE(DATE_SUB(:pNow, INTERVAL :pInterval DAY))
+                LIMIT :pLimit',
+            [
+                'pInterval' => $this->iInterval,
+                'pNow'      => $this->oNow->format('Y-m-d H:i:s'),
+                'pLimit'    => $this->iWorkLimit
+            ],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
+        $this->oLogger->debug('vResult sets: '.print_r(count($vResult) ,true )); // --DEBUG--
         if (!\is_array($vResult)) {
 
             return;
         }
-        $this->saveToJournal('tzahlungseingang', $vUseFields, $vResult);
+        $this->saveToJournal('tzahlungseingang', $vUseFields, 'kBestellung', $vResult);
         foreach ((array)$vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('UPDATE tzahlungseingang
                 SET
@@ -149,7 +165,9 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
 
     /**
      * anonymize comments of news, where no (more) registered customers are there for these.
-     * (delete names an e-mails from `tnewskommentar` and remove the customer-relation)
+     * (delete names and e-mails from `tnewskommentar` and remove the customer-relation)
+     *
+     * CONSIDERE: using no time-base or limit!
      */
     private function anon_tnewskommentar()
     {
@@ -163,24 +181,26 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
             'cKommentar'     => null,
             'dErstellt'      => 1,
         ];
-
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
-        $vUseFields = $this->selectFields($vTableFields);
-        $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
+        $this->szReason .= 'anonymize orphanded news-comments';
+        $vUseFields      = $this->selectFields($vTableFields);
+        $vResult         = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM tnewskommentar
             WHERE
                 cName != "Anonym"
+                AND cEmail != "Anonym"
                 AND kKunde > 0
-                AND kKunde NOT IN (SELECT kKunde FROM tkunde)',
-            [],
+                AND kKunde NOT IN (SELECT kKunde FROM tkunde)
+                LIMIT :pLimit',
+            ['pLimit' => $this->iWorkLimit],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (!\is_array($vResult)) {
 
             return;
         }
-        $this->saveToJournal('tnewskommentar', $vUseFields, $vResult);
+        $this->saveToJournal('tnewskommentar', $vUseFields, 'kKunde', $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('UPDATE tnewskommentar
                 SET

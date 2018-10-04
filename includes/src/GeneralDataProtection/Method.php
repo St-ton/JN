@@ -29,6 +29,13 @@ class Method
      */
     protected $iInterval = 0;
 
+    /**
+     * limits all DB-operations
+     *
+     * @var int
+     */
+    protected $iWorkLimit = 10000;
+
 
     public function __construct(\DateTime $oObjNow, int $iInterval)
     {
@@ -41,11 +48,12 @@ class Method
      * (writes bunches of 2000 values for each insert,
      * as long as there are data left)
      *
-     * @param string szTableName
-     * @param array $vUsedFields
-     * @param array $vRowArray
+     * @param string $szTableName
+     * @param array  $vUsedFields
+     * @param string $szKeyField
+     * @param array  $vRowArray
      */
-    protected function saveToJournal(string $szTableName, array $vUsedFields, array $vRowArray)
+    protected function saveToJournal(string $szTableName, array $vUsedFields, string $szKeyField, array $vRowArray)
     {
         $szValueLine = '';
         $nRowCount   = 0;
@@ -55,15 +63,20 @@ class Method
             if ($szValueLine !== '') {
                 $szValueLine .= ',';
             }
-            $szValueLine .= '(\'' . $szTableName . '\',\'' . $this->szReason . '\',\'' . $szRowData . '\',\'' . $this->oNow->format('Y-m-d H:i:s') . '\')';
-
+            $szValueLine .= '(
+                "' . $szTableName . '",
+                "' .  $this->szReason . '",
+                ' .  $oRow->$szKeyField . ',
+                "' .  \Shop::Container()->getDB()->quote($szRowData) . '",
+                "' .  $this->oNow->format('Y-m-d H:i:s') . '"
+            )';
             if ($nRowCount === 1999) {
                 $vResult = \Shop::Container()->getDB()->queryPrepared(
-                    'INSERT INTO tanondatajournal(cTableSource,cReason,cOldValue,dEventTime) VALUES' . \Shop::Container()->getDB()->quote($szValueLine),
+                    'INSERT INTO tanondatajournal(cTableSource, cReason, kId, cOldValue, dEventTime) VALUES'
+                    .$szValueLine,
                     [],
                     \DB\ReturnType::AFFECTED_ROWS
                 );
-                // reset the row-counter and value-line
                 $nRowCount   = -1;
                 $szValueLine = '';
             }
@@ -71,7 +84,8 @@ class Method
         }
         if ($nRowCount > 0) {
             $vResult = \Shop::Container()->getDB()->queryPrepared(
-                'INSERT INTO tanondatajournal(cTableSource,cReason,cOldValue,dEventTime) VALUES' . \Shop::Container()->getDB()->quote($szValueLine),
+                'INSERT INTO tanondatajournal(cTableSource,cReason,cOldValue,dEventTime) VALUES'
+                .$szValueLine,
                 [],
                 \DB\ReturnType::AFFECTED_ROWS
             );

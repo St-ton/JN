@@ -18,6 +18,11 @@ namespace GeneralDataProtection;
 class CleanupNewsletterRecipients extends Method implements MethodInterface
 {
     /**
+     * @var string
+     */
+    protected $szReasonName;
+
+    /**
      * AnonymizeDeletedCustomer constructor
      *
      * @param $oNow
@@ -26,7 +31,7 @@ class CleanupNewsletterRecipients extends Method implements MethodInterface
     public function __construct($oNow, $iInterval)
     {
         parent::__construct($oNow, $iInterval);
-        $this->szReason = __CLASS__.': cleanup_newsletter_recipients';
+        $this->szReasonName = substr(__CLASS__, strrpos(__CLASS__, '\\')) . ': ';
     }
 
     /**
@@ -37,6 +42,10 @@ class CleanupNewsletterRecipients extends Method implements MethodInterface
         $this->clean_tnewsletter();
     }
 
+    /**
+     * delete newsletter-registrations withi no "opt-in"
+     * within the given interval
+     */
     private function clean_tnewsletter()
     {
         $vTableFields = [
@@ -71,26 +80,31 @@ class CleanupNewsletterRecipients extends Method implements MethodInterface
             'dEingetragen'                 => null,
             'dOptCode'                     => null
         ];
-
         // don't customize below this line - - - - - - - - - - - - - - - - - - - -
 
-        $vUseFields = $this->selectFields($vTableFields);
-        $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
+        $this->szReason = $this->szReasonName . 'delete unconfirmed newsletter-registrations';
+        $vUseFields     = $this->selectFields($vTableFields);
+        $vResult        = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM tnewsletterempfaenger e
                 JOIN tnewsletterempfaengerhistory h ON h.cOptCode = e.cOptCode AND h.cEmail = e.cEmail
             WHERE
                 e.nAktiv = 0
                 AND h.cAktion = "Eingetragen"
-                AND h.dOptCode = "0000-00-00 00:00:00"
-                AND h.dEingetragen <= (NOW() - INTERVAL ' . $this->iInterval . ' DAY)',
-            [],
+                AND (h.dOptCode = "0000-00-00 00:00:00" OR h.dOptCode IS NULL)
+                AND h.dEingetragen <= (:pNow - INTERVAL :pInterval DAY)
+            LIMIT :pLimit',
+            [
+                'pInterval' => $this->iInterval,
+                'pNow'      => $this->oNow->format('Y-m-d H:i:s'),
+                'pLimit'    => $this->iWorkLimit
+            ],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (!\is_array($vResult)) {
 
             return;
         }
-        $this->saveToJournal('tnewsletterempfaenger', $vUseFields, $vResult);
+        $this->saveToJournal('tnewsletterempfaenger', $vUseFields, 'kKunde', $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE e, h
                 FROM tnewsletterempfaenger e

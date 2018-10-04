@@ -16,13 +16,13 @@ source ${SCRIPT_DIR}/create_template_diff.sh
 source ${SCRIPT_DIR}/create_version_string.sh
 source ${SCRIPT_DIR}/tools.sh
 
-echo "${fgYellow}Usage:${C}"
+echo "Usage:"
 echo "  build.sh <tag> <tag_sha> <repo_dir>"
 echo ""
-echo "${fgYellow}Actions:${C}"
-echo "  ${fgGreen}- Create file version${C}"
-echo "  ${fgGreen}- Create evo tpl diff${C}"
-echo "  ${fgGreen}- Create mail tpl diff${C}"
+echo "Actions:"
+echo "  - Create file version"
+echo "  - Create evo tpl diff$"
+echo "  - Create mail tpl diff$"
 
 echo ""
 

@@ -14,7 +14,6 @@ export VERSION_REGEX="v?([0-9]{1,})\\.([0-9]{1,})\\.([0-9]{1,})(-(alpha|beta|rc)
 
 source ${SCRIPT_DIR}/create_template_diff.sh
 source ${SCRIPT_DIR}/create_version_string.sh
-source ${SCRIPT_DIR}/tools.sh
 
 echo "Usage:"
 echo "  build.sh <tag> <tag_sha> <repo_dir>"

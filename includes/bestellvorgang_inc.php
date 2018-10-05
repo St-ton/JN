@@ -759,6 +759,7 @@ function gibStepZahlungZusatzschritt($cPost_arr)
         Shop::Smarty()->assign('ZahlungsInfo', $_SESSION['Zahlungsart']->ZahlungsInfo ?? null);
     } else {
         setzeFehlendeAngaben(checkAdditionalPayment($Zahlungsart));
+        unset($_SESSION['checkout.fehlendeAngaben']);
         Shop::Smarty()->assign('ZahlungsInfo', gibPostZahlungsInfo());
     }
     Shop::Smarty()->assign('Zahlungsart', $Zahlungsart)
@@ -1021,74 +1022,70 @@ function plausiNeukundenKupon()
  */
 function checkAdditionalPayment($paymentMethod)
 {
+    foreach (['iban', 'bic'] as $dataKey) {
+        if (!empty($_POST[$dataKey])) {
+            $_POST[$dataKey] = strtoupper($_POST[$dataKey]);
+        }
+    }
+
     $conf   = Shop::getSettings([CONF_ZAHLUNGSARTEN]);
+    $post   = StringHandler::filterXSS($_POST);
     $errors = [];
     switch ($paymentMethod->cModulId) {
         case 'za_kreditkarte_jtl':
-            if (!isset($_POST['kreditkartennr']) || !$_POST['kreditkartennr']) {
+            if (empty($post['kreditkartennr'])) {
                 $errors['kreditkartennr'] = 1;
             }
-            if (!isset($_POST['gueltigkeit']) || !$_POST['gueltigkeit']) {
+            if (empty($post['gueltigkeit'])) {
                 $errors['gueltigkeit'] = 1;
             }
-            if (!isset($_POST['cvv']) || !$_POST['cvv']) {
+            if (empty($post['cvv'])) {
                 $errors['cvv'] = 1;
             }
-            if (!isset($_POST['kartentyp']) || !$_POST['kartentyp']) {
+            if (empty($post['kartentyp'])) {
                 $errors['kartentyp'] = 1;
             }
-            if (!isset($_POST['inhaber']) || !$_POST['inhaber']) {
+            if (empty($post['inhaber'])) {
                 $errors['inhaber'] = 1;
             }
             break;
 
         case 'za_lastschrift_jtl':
-            if (empty($_POST['bankname']) || trim($_POST['bankname']) === '') {
+            if (empty($post['bankname'])
+                && $conf['zahlungsarten']['zahlungsart_lastschrift_kreditinstitut_abfrage'] === 'Y'
+            ) {
                 $errors['bankname'] = 1;
             }
-            if ($conf['zahlungsarten']['zahlungsart_lastschrift_kontoinhaber_abfrage'] === 'Y' &&
-                (empty($_POST['inhaber']) ||
-                    trim($_POST['inhaber']) === '')
+            if (empty($post['inhaber'])
+                && $conf['zahlungsarten']['zahlungsart_lastschrift_kontoinhaber_abfrage'] === 'Y'
             ) {
                 $errors['inhaber'] = 1;
             }
-            if (((!empty($_POST['blz']) &&
-                        $conf['zahlungsarten']['zahlungsart_lastschrift_kontonummer_abfrage'] !== 'N') ||
-                    $conf['zahlungsarten']['zahlungsart_lastschrift_kontonummer_abfrage'] === 'Y')
-                && (empty($_POST['kontonr']) || trim($_POST['kontonr']) === '')
-            ) {
-                $errors['kontonr'] = 1;
-            }
-            if (((!empty($_POST['kontonr']) &&
-                        $conf['zahlungsarten']['zahlungsart_lastschrift_blz_abfrage'] !== 'N') ||
-                    $conf['zahlungsarten']['zahlungsart_lastschrift_blz_abfrage'] === 'Y')
-                && (empty($_POST['blz']) || trim($_POST['blz']) === '')
-            ) {
-                $errors['blz'] = 1;
-            }
-            if ($conf['zahlungsarten']['zahlungsart_lastschrift_bic_abfrage'] === 'Y' && empty($_POST['bic'])) {
-                $errors['bic'] = 1;
-            }
-            if (!empty($_POST['bic'])
-                && ($conf['zahlungsarten']['zahlungsart_lastschrift_iban_abfrage'] !== 'N'
-                    || $conf['zahlungsarten']['zahlungsart_lastschrift_iban_abfrage'] === 'Y')
-            ) {
-                if (empty($_POST['iban'])) {
-                    $errors['iban'] = 1;
-                } elseif (!plausiIban($_POST['iban'])) {
-                    $errors['iban'] = 2;
+            if (empty($post['bic'])) {
+                if ($conf['zahlungsarten']['zahlungsart_lastschrift_bic_abfrage'] === 'Y') {
+                    $errors['bic'] = 1;
                 }
+            } elseif(!checkBIC($post['bic'])) {
+                $errors['bic'] = 2;
             }
-            if (!isset($_POST['kontonr']) && !isset($_POST['blz']) && !isset($_POST['iban']) && !isset($_POST['bic'])) {
-                $errors['kontonr'] = 2;
-                $errors['blz']     = 2;
-                $errors['bic']     = 2;
-                $errors['iban']    = 2;
+            if (empty($post['iban'])) {
+                $errors['iban'] = 1;
+            } elseif (!plausiIban($post['iban'])) {
+                $errors['iban'] = 2;
             }
             break;
     }
 
     return $errors;
+}
+
+/**
+ * @param string $bic
+ * @return bool
+ */
+function checkBIC($bic): bool
+{
+    return preg_match('/^[A-Z]{6}[A-Z\d]{2}([A-Z\d]{3})?$/i', $bic) === 1;
 }
 
 /**
@@ -1280,12 +1277,12 @@ function zahlungsartKorrekt(int $kZahlungsart)
                     $fehlendeAngaben = checkAdditionalPayment($Zahlungsart);
 
                     if (count($fehlendeAngaben) === 0) {
-                        $ZahlungsInfo->cBankName = StringHandler::htmlentities(stripslashes($_POST['bankname']), ENT_QUOTES);
-                        $ZahlungsInfo->cKontoNr  = StringHandler::htmlentities(stripslashes($_POST['kontonr']), ENT_QUOTES);
-                        $ZahlungsInfo->cBLZ      = StringHandler::htmlentities(stripslashes($_POST['blz']), ENT_QUOTES);
+                        $ZahlungsInfo->cBankName = StringHandler::htmlentities(stripslashes($_POST['bankname'] ?? ''), ENT_QUOTES);
+                        $ZahlungsInfo->cKontoNr  = StringHandler::htmlentities(stripslashes($_POST['kontonr'] ?? ''), ENT_QUOTES);
+                        $ZahlungsInfo->cBLZ      = StringHandler::htmlentities(stripslashes($_POST['blz'] ?? ''), ENT_QUOTES);
                         $ZahlungsInfo->cIBAN     = StringHandler::htmlentities(stripslashes($_POST['iban']), ENT_QUOTES);
-                        $ZahlungsInfo->cBIC      = StringHandler::htmlentities(stripslashes($_POST['bic']), ENT_QUOTES);
-                        $ZahlungsInfo->cInhaber  = StringHandler::htmlentities(stripslashes($_POST['inhaber']), ENT_QUOTES);
+                        $ZahlungsInfo->cBIC      = StringHandler::htmlentities(stripslashes($_POST['bic'] ?? ''), ENT_QUOTES);
+                        $ZahlungsInfo->cInhaber  = StringHandler::htmlentities(stripslashes($_POST['inhaber'] ?? ''), ENT_QUOTES);
                         $zusatzangabenDa         = true;
                     }
                     break;
@@ -1472,12 +1469,12 @@ function gibZahlungsart(int $kZahlungsart)
 }
 
 /**
- * @param int $kKunde
+ * @param null|int $kKunde
  * @return object|bool
  */
-function gibKundenKontodaten(int $kKunde)
+function gibKundenKontodaten(?int $kKunde)
 {
-    if ($kKunde <= 0) {
+    if (empty($kKunde)) {
         return false;
     }
     $accountData = Shop::Container()->getDB()->select('tkundenkontodaten', 'kKunde', $kKunde);

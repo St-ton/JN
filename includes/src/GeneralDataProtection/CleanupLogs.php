@@ -426,7 +426,7 @@ class CleanupLogs extends Method implements MethodInterface
             FROM tzahlungseingang
             WHERE
                 cAbgeholt != "N"
-                dZeit <= (:pNow - INTERVAL :pInterval DAY)
+                AND dZeit <= (:pNow - INTERVAL :pInterval DAY)
             LIMIT :pLimit',
             [
                 'pInterval' => $this->iInterval,

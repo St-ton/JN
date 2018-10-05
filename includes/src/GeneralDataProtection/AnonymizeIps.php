@@ -138,16 +138,15 @@ class AnonymizeIps extends Method implements MethodInterface
         $oAnonymizer = new IpAnonymizer('', true); // anonymize "beautified"
         $szIpMaskV4  = \Shop::getSettings([CONF_GLOBAL])['global']['anonymize_ip_mask_v4'];
         $szIpMaskV6  = \Shop::getSettings([CONF_GLOBAL])['global']['anonymize_ip_mask_v6'];
-        $szIpMaskV4  = substr($szIpMaskV4, strpos($szIpMaskV4, '.0'), strlen($szIpMaskV4)-1);
-        $szIpMaskV6  = substr($szIpMaskV6, strpos($szIpMaskV6, ':0000'), strlen($szIpMaskV6)-1);
+        $szIpMaskV4  = substr($szIpMaskV4, strpos($szIpMaskV4, '.0'), \strlen($szIpMaskV4)-1);
+        $szIpMaskV6  = substr($szIpMaskV6, strpos($szIpMaskV6, ':0000'), \strlen($szIpMaskV6)-1);
 
         $this->szReason = $this->szReasonName . 'anonymize IPs in general';
         foreach ($this->vTablesUpdate as $szTableName => $vTable) {
             // select maximum 10,000 rows in one step!
             // (if this script is running each day, we need some days
             // to anonymize more than 10,000 data sets)
-            $vResult    = \Shop::Container()->getDB()->query(
-                'SELECT
+            $vResult    = \Shop::Container()->getDB()->query('SELECT
                     ' . $vTable['ColKey'] . ',
                     ' . $vTable['ColIp'] . ',
                     ' . $vTable['ColCreated'] . '
@@ -158,8 +157,8 @@ class AnonymizeIps extends Method implements MethodInterface
                     AND NOT INSTR(cIP, "' . $szIpMaskV4 . '") > 0
                     AND NOT INSTR(cIP, "' . $szIpMaskV6 . '") > 0
                     AND (CASE ' . $vTable['ColCreated'] . ' * 1 = ' . $vTable['ColCreated'] . '
-                        WHEN 0 THEN DATE(' . $vTable['ColCreated'] . ') <= ' . $this->oNow->format('Y-m-d H:i:s') . ' - INTERVAL ' . $this->iInterval . ' DAY
-                        WHEN 1 THEN FROM_UNIXTIME(' . $vTable['ColCreated'] . ') <= ' . $this->oNow->format('Y-m-d H:i:s') . ' - INTERVAL ' . $this->iInterval . ' DAY
+                        WHEN 1 THEN ' . $vTable['ColCreated'] . ' <= "' . $this->oNow->format('Y-m-d H:i:s') . '" - INTERVAL ' . $this->iInterval . ' DAY
+                        WHEN 0 THEN FROM_UNIXTIME(' . $vTable['ColCreated'] . ') <= "' . $this->oNow->format('Y-m-d H:i:s') . '" - INTERVAL ' . $this->iInterval . ' DAY
                     END)
                 ORDER BY
                     ' . $vTable['ColCreated'] . ' ASC
@@ -168,7 +167,7 @@ class AnonymizeIps extends Method implements MethodInterface
             );
             if (\is_array($vResult) && 0 < \count($vResult)) {
                 if (isset($vTable['saveInJournal']) && $vTable['saveInJournal'] !== null) {
-                    $this->saveToJournal($szTableName, get_object_vars($vResult[0]), $vResult);
+                    $this->saveToJournal($szTableName, get_object_vars($vResult[0]), '', $vResult); // --TODO-- the key-col !!!
                 }
                 foreach ($vResult as $oRow) {
                     $oRow->cIP = $oAnonymizer->setIp($oRow->cIP)->anonymize();

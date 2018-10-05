@@ -201,7 +201,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
 
             return;
         }
-        $this->saveToJournal('tkundenwerbenkunden,tkundenwerbenkundenbonus', $vUseFields, 'kKunde' $vResult);
+        $this->saveToJournal('tkundenwerbenkunden,tkundenwerbenkundenbonus', $vUseFields, 'kKunde', $vResult);
         foreach ($vResult as $oResult) {
             // delete each "kKunde", in multiple tables, in one shot
             \Shop::Container()->getDB()->queryPrepared('DELETE tkundenwerbenkunden, tkundenwerbenkundenbonus
@@ -387,7 +387,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             FROM tlieferadresse k
                 JOIN tbestellung b ON b.kKunde = k.kKunde
             WHERE
-                b.cStatus IN (4, -1)
+                b.cStatus IN (' . BESTELLUNG_STATUS_VERSANDT . ', ' . BESTELLUNG_STATUS_STORNO . ')
                 AND b.cAbgeholt = "Y"
                 AND k.kKunde NOT IN (SELECT kKunde FROM tkunde)
             LIMIT :pLimit',
@@ -446,7 +446,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             FROM trechnungsadresse k
                 JOIN tbestellung b ON b.kKunde = k.kKunde
             WHERE
-                b.cStatus IN (4, -1)
+                b.cStatus IN (' . BESTELLUNG_STATUS_VERSANDT . ', ' . BESTELLUNG_STATUS_STORNO . ')
                 AND b.cAbgeholt = "Y"
                 AND k.kKunde NOT IN (SELECT kKunde FROM tkunde)
             LIMIT :pLimit',

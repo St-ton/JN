@@ -73,8 +73,8 @@ class Migration_20180919103846 extends Migration implements IMigration
                 kAnonDatenHistory INT(11) NOT NULL AUTO_INCREMENT,
                 cTableSource VARCHAR(255) DEFAULT "" COMMENT "names the table in which the change took place",
                 cReason VARCHAR(255) default "" COMMENT "describes the reason for the previous change",
-                kId INT(11) DEFAULT NULL COMMENT "the original key of the appropriate table"
-                cOldValue TEXT DEFAULT "" comment "content, before the chenages are occured",
+                kId INT(11) DEFAULT NULL COMMENT "the original key of the appropriate table",
+                cOldValue TEXT COMMENT "content, before the chenages are occured",
                 dEventTime DATETIME DEFAULT NULL COMMENT "time of the event",
                 PRIMARY KEY kAnonDatenHistory(kAnonDatenHistory),
                 KEY kId (kId)

@@ -66,7 +66,7 @@ class Method
             $szValueLine .= '(
                 "' . $szTableName . '",
                 "' .  $this->szReason . '",
-                ' .  $oRow->$szKeyField . ',
+                ' .  isset($oRow->$szKeyField) ?: 'NULL' . ',
                 "' .  \Shop::Container()->getDB()->quote($szRowData) . '",
                 "' .  $this->oNow->format('Y-m-d H:i:s') . '"
             )';
@@ -84,7 +84,7 @@ class Method
         }
         if ($nRowCount > 0) {
             $vResult = \Shop::Container()->getDB()->queryPrepared(
-                'INSERT INTO tanondatajournal(cTableSource,cReason,cOldValue,dEventTime) VALUES'
+                'INSERT INTO tanondatajournal(cTableSource, cReason, kId, cOldValue, dEventTime) VALUES'
                 .$szValueLine,
                 [],
                 \DB\ReturnType::AFFECTED_ROWS

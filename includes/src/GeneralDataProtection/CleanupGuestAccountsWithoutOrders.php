@@ -91,7 +91,7 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
             FROM tkunde k
                 JOIN tbestellung b ON b.kKunde = k.kKunde
             WHERE
-                b.cStatus IN (4, -1)
+                b.cStatus IN (' . BESTELLUNG_STATUS_VERSANDT . ', ' . BESTELLUNG_STATUS_STORNO . ')
                 AND k.nRegistriert = 0
                 AND b.cAbgeholt = "Y"
             LIMIT :pLimit',

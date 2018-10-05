@@ -154,6 +154,9 @@ class IpAnonymizer
      */
     public function anonymize(): string
     {
+        if ((string)$this->bRawIp === '') {
+            return '';
+        }
         if ($this->bOldFashionedAnon !== false) {
             return $this->szIP;
         }

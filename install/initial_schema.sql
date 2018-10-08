@@ -1,3 +1,4 @@
+
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
@@ -1755,7 +1756,8 @@ CREATE TABLE `tjtllog` (
   `kKey` int(10) unsigned DEFAULT NULL,
   `dErstellt` datetime NOT NULL,
   PRIMARY KEY (`kLog`),
-  KEY `cKey` (`cKey`,`kKey`)
+  KEY `cKey` (`cKey`,`kKey`),
+  FULLTEXT KEY `cLog` (`cLog`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Globaler JTL Log';
 /*!40101 SET character_set_client = @saved_cs_client */;
 

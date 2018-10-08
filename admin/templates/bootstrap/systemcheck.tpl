@@ -98,7 +98,7 @@
 
         {if !$passed}
             <div class="alert alert-warning">
-                Um einen einwandfreien Betrieb gew&auml;hrleisten zu k&ouml;nnen ist es zwingend erforderlich, alle <code>markierten</code> Eigeschaften zu &uuml;berpr&uuml;fen.
+                Um einen einwandfreien Betrieb gewährleisten zu können ist es zwingend erforderlich, alle <code>markierten</code> Eigeschaften zu überprüfen.
             </div>
         {/if}
         
@@ -121,8 +121,9 @@
                             <td>
                                 <div class="test-name">
                                     <strong>{$test->getName()}</strong><br>
-                                    {if $test->getDescription()|@count_characters > 0}
-                                        <p class="hidden-xs expandable">{$test->getDescription()}</p>
+                                    {$description=$test->getDescription()}
+                                    {if $description !== null && $description|strlen > 0}
+                                        <p class="hidden-xs expandable">{$description}</p>
                                     {/if}
                                 </div>
                             </td>
@@ -155,8 +156,9 @@
                                 <td>
                                     <div class="test-name">
                                         <strong>{$test->getName()}</strong><br>
-                                        {if $test->getDescription()|@count_characters > 0}
-                                            <p class="hidden-xs expandable">{$test->getDescription()}</p>
+                                        {$description=$test->getDescription()}
+                                        {if $description !== null && $description|strlen > 0}
+                                            <p class="hidden-xs expandable">{$description}</p>
                                         {/if}
                                     </div>
                                 </td>
@@ -172,7 +174,7 @@
 
         {if $tests.php_modules|count > 0}
             <div class="page-header">
-                <h1>Ben&ouml;tigte PHP-Erweiterungen und -Funktionen</h1>
+                <h1>Benötigte PHP-Erweiterungen und -Funktionen</h1>
             </div>
             <div class="table-responsive">
                 <table class="table table-striped table-hover">
@@ -189,8 +191,9 @@
                                     <td>
                                         <div class="test-name">
                                             <strong>{$test->getName()}</strong><br>
-                                            {if $test->getDescription()|@count_characters > 0}
-                                                <p class="hidden-xs expandable">{$test->getDescription()}</p>
+                                            {$description = $test->getDescription()}
+                                            {if $description !== null && $description|strlen > 0}
+                                                <p class="hidden-xs expandable">{$description}</p>
                                             {/if}
                                         </div>
                                     </td>
@@ -205,14 +208,14 @@
 
         {if $tests.php_config|count > 0}
             <div class="page-header">
-                <h1>Ben&ouml;tigte PHP-Einstellungen</h1>
+                <h1>Benötigte PHP-Einstellungen</h1>
             </div>
             <div class="table-responsive">
                 <table class="table table-striped table-hover">
                     <thead>
                         <tr>
                             <th class="col-xs-7">Einstellung</th>
-                            <th class="col-xs-3 text-center">Ben&ouml;tigter Wert</th>
+                            <th class="col-xs-3 text-center">Benötigter Wert</th>
                             <th class="col-xs-2 text-center">Ihr System</th>
                         </tr>
                     </thead>
@@ -223,8 +226,9 @@
                                     <td>
                                         <div class="test-name">
                                             <strong>{$test->getName()}</strong><br>
-                                            {if $test->getDescription()|@count_characters > 0}
-                                                <p class="hidden-xs expandable">{$test->getDescription()}</p>
+                                            {$description=$test->getDescription()}
+                                            {if $description !== null && $description|strlen > 0}
+                                                <p class="hidden-xs expandable">{$description}</p>
                                             {/if}
                                         </div>
                                     </td>

@@ -224,7 +224,8 @@ function bearbeite($xml, string $unzipPath)
                 $oMainArtikelBild = Shop::Container()->getDB()->select(
                     'tartikelpict',
                     'kArtikelPict',
-                    (int)$img->kMainArtikelBild)
+                    (int)$img->kMainArtikelBild
+                )
                 ;
                 if (isset($oMainArtikelBild->cPfad) && strlen($oMainArtikelBild->cPfad) > 0) {
                     $img->cPfad = neuerDateiname($oMainArtikelBild->cPfad);
@@ -529,7 +530,8 @@ function bearbeite($xml, string $unzipPath)
             $oBranding->oBrandingEinstellung->nAktiv = 0;
 
             if (erstelleThumbnail(
-                $oBranding, $unzipPath . $imgFilename,
+                $oBranding,
+                $unzipPath . $imgFilename,
                 PFAD_KONFIGURATOR_KLEIN . $oKonfig->cBildPfad,
                 $GLOBALS['Einstellungen']['bilder']['bilder_konfiggruppe_klein_breite'],
                 $GLOBALS['Einstellungen']['bilder']['bilder_konfiggruppe_klein_hoehe'],
@@ -550,15 +552,14 @@ function bearbeite($xml, string $unzipPath)
     }
 
     executeHook(HOOK_BILDER_XML_BEARBEITE_ENDE, [
-            'Artikel'          => &$img_arr,
-            'Kategorie'        => &$kategoriebild_arr,
-            'Eigenschaftswert' => &$eigenschaftwertbild_arr,
-            'Hersteller'       => &$herstellerbild_arr,
-            'Merkmalwert'      => &$merkmalwertbild_arr,
-            'Merkmal'          => &$merkmalbild_arr,
-            'Konfiggruppe'     => &$konfigartikelbild_arr
-        ]
-    );
+        'Artikel'          => &$img_arr,
+        'Kategorie'        => &$kategoriebild_arr,
+        'Eigenschaftswert' => &$eigenschaftwertbild_arr,
+        'Hersteller'       => &$herstellerbild_arr,
+        'Merkmalwert'      => &$merkmalwertbild_arr,
+        'Merkmal'          => &$merkmalbild_arr,
+        'Konfiggruppe'     => &$konfigartikelbild_arr
+    ]);
 }
 
 /**
@@ -655,7 +656,9 @@ function gibEigenschaftwertbildname($Eigenschaftwertbild, $Bildformat)
                     \DB\ReturnType::SINGLE_OBJECT
                 );
                 if (!empty($Artikel->cArtNr) && !empty($Eigenschaftwert->cArtNr)) {
-                    $Bildname = gibAusgeschriebeneUmlaute($Artikel->cArtNr) . '_' . gibAusgeschriebeneUmlaute($Eigenschaftwert->cArtNr);
+                    $Bildname = gibAusgeschriebeneUmlaute($Artikel->cArtNr) .
+                        '_' .
+                        gibAusgeschriebeneUmlaute($Eigenschaftwert->cArtNr);
                 }
                 break;
 
@@ -715,9 +718,12 @@ function gibKategoriebildname($Kategoriebild, $Bildformat)
     }
     $attr = Shop::Container()->getDB()->select(
         'tkategorieattribut',
-        'kKategorie', (int)$Kategoriebild->kKategorie,
-        'cName', KAT_ATTRIBUT_BILDNAME,
-        null, null,
+        'kKategorie',
+        (int)$Kategoriebild->kKategorie,
+        'cName',
+        KAT_ATTRIBUT_BILDNAME,
+        null,
+        null,
         false,
         'cWert'
     );
@@ -769,9 +775,12 @@ function gibArtikelbildname($img, $Bildformat)
         //Bildname Attribut als Funktionsattribut beim Artikel?
         $attr = Shop::Container()->getDB()->select(
             'tkategorieattribut',
-            'kArtikel', (int)$img->kArtikel,
-            'cName', FKT_ATTRIBUT_BILDNAME,
-            null, null,
+            'kArtikel',
+            (int)$img->kArtikel,
+            'cName',
+            FKT_ATTRIBUT_BILDNAME,
+            null,
+            null,
             false,
             'cWert'
         );
@@ -841,10 +850,10 @@ function gibArtikelbildname($img, $Bildformat)
         return $img->cPfad . '.' . $Bildformat;
     }
 
-    if ($img->nNr > 1 && $Bildname != $img->cPfad) {
+    if ($img->nNr > 1 && $Bildname !== $img->cPfad) {
         $Bildname .= '_b' . $img->nNr;
     }
-    if ($Bildname !== $img->cPfad && $GLOBALS['Einstellungen']['bilder']['bilder_artikel_namen'] != 5) {
+    if ($Bildname !== $img->cPfad && (int)$GLOBALS['Einstellungen']['bilder']['bilder_artikel_namen'] !== 5) {
         $Bildname = streicheSonderzeichen($Bildname) . '.' . $Bildformat;
     } else {
         $Bildname .= '.' . $Bildformat;
@@ -1144,8 +1153,12 @@ function bearbeiteDeletes($xml)
                 }
             }
         } elseif ((int)$xml['del_bilder']['kMerkmal'] > 0) {
-            Shop::Container()->getDB()->update('tmerkmal', 'kMerkmal', (int)$xml['del_bilder']['kMerkmal'],
-                (object)['cBildpfad' => '']);
+            Shop::Container()->getDB()->update(
+                'tmerkmal',
+                'kMerkmal',
+                (int)$xml['del_bilder']['kMerkmal'],
+                (object)['cBildpfad' => '']
+            );
         }
     }
     //Merkmalwertbilder löschen
@@ -1153,16 +1166,27 @@ function bearbeiteDeletes($xml)
         if (is_array($xml['del_bilder']['kMerkmalWert'])) {
             foreach ($xml['del_bilder']['kMerkmalWert'] as $kMerkmalWert) {
                 if ((int)$kMerkmalWert > 0) {
-                    Shop::Container()->getDB()->update('tmerkmalwert', 'kMerkmalWert', (int)$kMerkmalWert,
-                        (object)['cBildpfad' => '']);
+                    Shop::Container()->getDB()->update(
+                        'tmerkmalwert',
+                        'kMerkmalWert',
+                        (int)$kMerkmalWert,
+                        (object)['cBildpfad' => '']
+                    );
                     Shop::Container()->getDB()->delete('tmerkmalwertbild', 'kMerkmalWert', (int)$kMerkmalWert);
                 }
             }
         } elseif ((int)$xml['del_bilder']['kMerkmalWert'] > 0) {
-            Shop::Container()->getDB()->update('tmerkmalwert', 'kMerkmalWert', (int)$xml['del_bilder']['kMerkmalWert'],
-                (object)['cBildpfad' => '']);
-            Shop::Container()->getDB()->delete('tmerkmalwertbild', 'kMerkmalWert',
-                (int)$xml['del_bilder']['kMerkmalWert']);
+            Shop::Container()->getDB()->update(
+                'tmerkmalwert',
+                'kMerkmalWert',
+                (int)$xml['del_bilder']['kMerkmalWert'],
+                (object)['cBildpfad' => '']
+            );
+            Shop::Container()->getDB()->delete(
+                'tmerkmalwertbild',
+                'kMerkmalWert',
+                (int)$xml['del_bilder']['kMerkmalWert']
+            );
         }
     }
 }

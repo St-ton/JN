@@ -109,9 +109,12 @@ function bearbeiteInsert($xml)
         // clear object cache for this article and its parent if there is any
         $parentArticle = Shop::Container()->getDB()->select(
             'tartikel',
-            'kArtikel', $oArtikel->kArtikel,
-            null, null,
-            null, null,
+            'kArtikel',
+            $oArtikel->kArtikel,
+            null,
+            null,
+            null,
+            null,
             false,
             'kVaterArtikel'
         );

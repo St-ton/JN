@@ -39,7 +39,6 @@ echo $return;
  */
 function bearbeiteDeletes($xml)
 {
-    // Warengruppe
     if (is_array($xml['del_globals_wg']['kWarengruppe'])) {
         foreach ($xml['del_globals_wg']['kWarengruppe'] as $kWarengruppe) {
             if ((int)$kWarengruppe > 0) {
@@ -57,7 +56,8 @@ function bearbeiteDeletes($xml)
 function bearbeiteUpdates($xml)
 {
     if (isset($xml['globals']['tfirma'], $xml['globals']['tfirma attr']['kFirma'])
-        && is_array($xml['globals']['tfirma']) && $xml['globals']['tfirma attr']['kFirma'] > 0
+        && is_array($xml['globals']['tfirma'])
+        && $xml['globals']['tfirma attr']['kFirma'] > 0
     ) {
         mappe($Firma, $xml['globals']['tfirma'], $GLOBALS['mFirma']);
         DBDelInsert('tfirma', [$Firma], 1);
@@ -123,7 +123,8 @@ function bearbeiteUpdates($xml)
                         $GLOBALS['mKundengruppensprache'],
                         0
                     );
-                    XML2DB($xml['globals']['tkundengruppe'][$i],
+                    XML2DB(
+                        $xml['globals']['tkundengruppe'][$i],
                         'tkundengruppenattribut',
                         $GLOBALS['mKundengruppenattribut'],
                         0
@@ -168,7 +169,8 @@ function bearbeiteUpdates($xml)
                 } else {
                     XML2DB(
                         $xml['globals']['tmasseinheit'][$i],
-                        'tmasseinheitsprache', $GLOBALS['mMasseinheitsprache'],
+                        'tmasseinheitsprache',
+                        $GLOBALS['mMasseinheitsprache'],
                         0
                     );
                 }

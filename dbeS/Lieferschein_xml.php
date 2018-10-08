@@ -24,11 +24,9 @@ if (auth()) {
                 case 'lief.xml':
                     bearbeiteInsert($oXml);
                     break;
-
                 case 'del_lief.xml':
                     bearbeiteDelete($oXml);
                     break;
-
             }
             removeTemporaryFiles($xmlFile);
         }

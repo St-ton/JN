@@ -70,7 +70,8 @@ function gibRedirect(int $code)
             $oTMP->Wert                 = RequestHelper::verifyGPCDataInt('n');
             $redirect->oParameter_arr[] = $oTMP;
             $redirect->nRedirect        = R_LOGIN_NEWSCOMMENT;
-            $redirect->cURL             = '?s=' . RequestHelper::verifyGPCDataInt('s') . '&n=' . RequestHelper::verifyGPCDataInt('n');
+            $redirect->cURL             = '?s=' . RequestHelper::verifyGPCDataInt('s') .
+                '&n=' . RequestHelper::verifyGPCDataInt('n');
             $redirect->cName            = Shop::Lang()->get('news', 'redirect');
             break;
         case R_LOGIN_UMFRAGE:
@@ -127,7 +128,8 @@ function pruefeKategorieSichtbarkeit(int $customerGroupID)
                 unset($categoryList['kKategorieVonUnterkategorien_arr'][0][$i]);
                 $save = true;
             }
-            $categoryList['kKategorieVonUnterkategorien_arr'][0] = array_merge($categoryList['kKategorieVonUnterkategorien_arr'][0]);
+            $categoryList['kKategorieVonUnterkategorien_arr'][0] =
+                array_merge($categoryList['kKategorieVonUnterkategorien_arr'][0]);
         }
 
         if (isset($categoryList['kKategorieVonUnterkategorien_arr'][$vis->kKategorie])) {
@@ -262,36 +264,33 @@ function pruefeWarenkorbArtikelSichtbarkeit(int $customerGroupID)
         return;
     }
     foreach ($cart->PositionenArr as $i => $oPosition) {
-        // Wenn die Position ein Artikel ist
-        $bKonfig = !empty($oPosition->cUnique);
-        if ($oPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL && !$bKonfig) {
-            // Artikelsichtbarkeit prüfen
-            $oArtikelSichtbarkeit = Shop::Container()->getDB()->query(
-                'SELECT kArtikel
-                    FROM tartikelsichtbarkeit
-                    WHERE kArtikel = ' . (int)$oPosition->kArtikel . '
-                        AND kKundengruppe = ' . $customerGroupID,
-                \DB\ReturnType::SINGLE_OBJECT
-            );
+        if ($oPosition->nPosTyp !== C_WARENKORBPOS_TYP_ARTIKEL || !empty($oPosition->cUnique)) {
+            continue;
+        }
+        $visibility = Shop::Container()->getDB()->query(
+            'SELECT kArtikel
+                FROM tartikelsichtbarkeit
+                WHERE kArtikel = ' . (int)$oPosition->kArtikel . '
+                    AND kKundengruppe = ' . $customerGroupID,
+            \DB\ReturnType::SINGLE_OBJECT
+        );
 
-            if (isset($oArtikelSichtbarkeit->kArtikel)
-                && $oArtikelSichtbarkeit->kArtikel > 0
-                && (int)$cart->PositionenArr[$i]->kKonfigitem === 0
-            ) {
-                unset($cart->PositionenArr[$i]);
-            }
-            // Auf vorhandenen Preis prüfen
-            $oArtikelPreis = Shop::Container()->getDB()->query(
-                'SELECT fVKNetto
-                   FROM tpreise
-                   WHERE kArtikel = ' . (int)$oPosition->kArtikel . '
-                       AND kKundengruppe = ' . $customerGroupID,
-                \DB\ReturnType::SINGLE_OBJECT
-            );
+        if (isset($visibility->kArtikel)
+            && $visibility->kArtikel > 0
+            && (int)$oPosition->kKonfigitem === 0
+        ) {
+            unset($cart->PositionenArr[$i]);
+        }
+        $price = Shop::Container()->getDB()->query(
+            'SELECT fVKNetto
+               FROM tpreise
+               WHERE kArtikel = ' . (int)$oPosition->kArtikel . '
+                   AND kKundengruppe = ' . $customerGroupID,
+            \DB\ReturnType::SINGLE_OBJECT
+        );
 
-            if (!isset($oArtikelPreis->fVKNetto)) {
-                unset($cart->PositionenArr[$i]);
-            }
+        if (!isset($price->fVKNetto)) {
+            unset($cart->PositionenArr[$i]);
         }
     }
 }

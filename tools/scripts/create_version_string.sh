@@ -82,7 +82,11 @@ get_latest_patch() {
 
 create_version_string()
 {
+    REPO_DIR=$1;
+    APPLICATION_VERSION=$2;
+    APPLICATION_BUILD_SHA=$3;
     VCS_REG="release\\/([0-9]{1,})\\.([0-9]{1,})";
+    VERSION_REGEX="v?([0-9]{1,})\\.([0-9]{1,})\\.([0-9]{1,})(-(alpha|beta|rc)(\\.([0-9]{1,}))?)?";
 
     if [[ ${APPLICATION_VERSION} =~ ${VERSION_REGEX} ]]; then
         SHOP_VERSION_MAJOR=${BASH_REMATCH[1]};

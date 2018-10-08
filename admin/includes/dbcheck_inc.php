@@ -4,8 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTLShop\SemVer\Version;
-
 /**
  * @param bool $extended
  * @param bool $clearCache
@@ -148,7 +146,10 @@ function getDBFileStruct()
 
     if ($version->hasPreRelease()) {
         $preRelease  = $version->getPreRelease();
-        $versionStr .= '-'.$preRelease->getGreek().'-'.$preRelease->getReleaseNumber();
+        $versionStr .= '-'.$preRelease->getGreek();
+        if ($preRelease->getReleaseNumber() > 0) {
+            $versionStr .= '-'.$preRelease->getReleaseNumber();
+        }
     }
 
     $cDateiListe = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_SHOPMD5 . 'dbstruct_' . $versionStr . '.json';
@@ -369,6 +370,8 @@ function doEngineUpdateScript(string $fileName, array $shopTables)
  * @param int $step
  * @param array $exclude
  * @return stdClass
+ * @throws \Exceptions\CircularReferenceException
+ * @throws \Exceptions\ServiceNotFoundException
  */
 function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', int $step = 1, array $exclude = [])
 {

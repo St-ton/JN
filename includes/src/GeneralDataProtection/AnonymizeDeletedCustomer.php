@@ -50,26 +50,7 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
      */
     private function anon_tbewertung()
     {
-        $vTableFields = [
-            'kBewertung'      => 1,
-            'kArtikel'        => 1,
-            'kKunde'          => 1,
-            'kSprache'        => null,
-            'cName'           => null,
-            'cTitel'          => 1,
-            'cText'           => null,
-            'nHilfreich'      => null,
-            'nNichtHilfreich' => null,
-            'nSterne'         => 1,
-            'nAktiv'          => null,
-            'dDatum'          => 1,
-            'cAntwort'        => null,
-            'dAntwortDatum'   => null,
-        ];
-        // don't customize below this line - - - - - - - - - - - - - - - - - - - -
-
         $this->szReason = $this->szReasonName . 'anonymize orphanded ratings';
-        $vUseFields     = $this->selectFields($vTableFields);
         $vResult        = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM tbewertung b
             WHERE
@@ -89,7 +70,6 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
 
             return;
         }
-        $this->saveToJournal('tbewertung', $vUseFields, 'kKunde', $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('UPDATE tbewertung b
                 SET
@@ -109,23 +89,7 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
      */
     private function anon_tzahlungseingang()
     {
-        $vTableFields = [
-            'kZahlungseingang'  => null,
-            'kBestellung'       => 1,
-            'cZahlungsanbieter' => 1,
-            'fBetrag'           => null,
-            'fZahlungsgebuehr'  => null,
-            'cISO'              => null,
-            'cEmpfaenger'       => 1,
-            'cZahler'           => 1,
-            'dZeit'             => 1,
-            'cHinweis'          => null,
-            'cAbgeholt'         => null
-        ];
-        // don't customize below this line - - - - - - - - - - - - - - - - - - - -
-
         $this->szReason = $this->szReasonName . 'anonymize outdated payments';
-        $vUseFields     = $this->selectFields($vTableFields);
         $vResult        = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM tzahlungseingang
             WHERE
@@ -150,7 +114,6 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
 
             return;
         }
-        $this->saveToJournal('tzahlungseingang', $vUseFields, 'kBestellung', $vResult);
         foreach ((array)$vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('UPDATE tzahlungseingang
                 SET
@@ -171,20 +134,7 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
      */
     private function anon_tnewskommentar()
     {
-        $vTableFields = [
-            'kNewsKommentar' => null,
-            'kNews'          => null,
-            'kKunde'         => 1,
-            'nAktiv'         => null,
-            'cName'          => 1,
-            'cEmail'         => 1,
-            'cKommentar'     => null,
-            'dErstellt'      => 1,
-        ];
-        // don't customize below this line - - - - - - - - - - - - - - - - - - - -
-
         $this->szReason .= 'anonymize orphanded news-comments';
-        $vUseFields      = $this->selectFields($vTableFields);
         $vResult         = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM tnewskommentar
             WHERE
@@ -200,7 +150,6 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
 
             return;
         }
-        $this->saveToJournal('tnewskommentar', $vUseFields, 'kKunde', $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('UPDATE tnewskommentar
                 SET

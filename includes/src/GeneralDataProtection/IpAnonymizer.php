@@ -89,8 +89,12 @@ class IpAnonymizer
         } catch (\Exception $e) {
             $this->oLogger = null;
         }
-        $this->szIpMaskv4 = \Shop::getSettings([CONF_GLOBAL])['global']['anonymize_ip_mask_v4'];
-        $this->szIpMaskv6 = \Shop::getSettings([CONF_GLOBAL])['global']['anonymize_ip_mask_v6'];
+
+        // former
+        //$this->szIpMaskv4 = \Shop::getSettings([CONF_GLOBAL])['global']['anonymize_ip_mask_v4'];
+        //$this->szIpMaskv4 = \Shop::getSettings([CONF_GLOBAL])['global']['anonymize_ip_mask_v6'];
+        $this->setMaskV4('255.255.0.0');
+        $this->setMaskV6('ffff:ffff:ffff:ffff:0000:0000:0000:0000');
 
         if ($szIP !== '') {
             $this->szIP = $szIP;
@@ -143,6 +147,20 @@ class IpAnonymizer
                 break;
             default:
         }
+    }
+
+    /**
+     * @param string
+     * @return self
+     * @throws \Exception
+     */
+    public function setIp(string $szIP = ''): self
+    {
+        if ($szIP !== '') {
+            $this->szIP = $szIP;
+            $this->init();
+        }
+        return $this;
     }
 
     /**
@@ -224,16 +242,18 @@ class IpAnonymizer
 
     /**
      * @param string
-     * @return self
-     * @throws \Exception
      */
-    public function setIp(string $szIP = ''): self
+    public function setMaskV4(string $szMask)
     {
-        if ($szIP !== '') {
-            $this->szIP = $szIP;
-            $this->init();
-        }
-        return $this;
+        $this->szIpMaskv4 = $szMask;
+    }
+
+    /**
+     * @param string
+     */
+    public function setMaskV6(string $szMask)
+    {
+        $this->szIpMaskv6 = $szMask;
     }
 
     /**

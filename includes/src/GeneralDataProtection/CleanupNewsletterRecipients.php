@@ -48,42 +48,7 @@ class CleanupNewsletterRecipients extends Method implements MethodInterface
      */
     private function clean_tnewsletter()
     {
-        $vTableFields = [
-            // `tnewsletterempfaenger`
-            'kNewsletterEmpfaenger'        => null,
-            'kSprache'                     => null,
-            'kKunde'                       => 1,
-            'nAktiv'                       => null,
-            'cAnrede'                      => null,
-            'cVorname'                     => 1,
-            'cNachname'                    => 1,
-            'cEmail'                       => 1,
-            'cOptCode'                     => null,
-            'cLoeschCode'                  => null,
-            'dEingetragen'                 => 1,
-            'dLetzterNewsletter'           => null,
-            // `tnewsletterempfaengerhistory`
-            'kNewsletterEmpfaengerHistory' => null,
-            'kSprache'                     => null,
-            'kKunde'                       => 1,
-            'cAnrede'                      => null,
-            'cVorname'                     => null,
-            'cNachname'                    => null,
-            'cEmail'                       => 1,
-            'cOptCode'                     => null,
-            'cLoeschCode'                  => null,
-            'cAktion'                      => null,
-            'cEmailBodyHtml'               => null,
-            'cRegIp'                       => 1,
-            'cOptIp'                       => null,
-            'dAusgetragen'                 => 1,
-            'dEingetragen'                 => null,
-            'dOptCode'                     => null
-        ];
-        // don't customize below this line - - - - - - - - - - - - - - - - - - - -
-
         $this->szReason = $this->szReasonName . 'delete unconfirmed newsletter-registrations';
-        $vUseFields     = $this->selectFields($vTableFields);
         $vResult        = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM tnewsletterempfaenger e
                 JOIN tnewsletterempfaengerhistory h ON h.cOptCode = e.cOptCode AND h.cEmail = e.cEmail
@@ -104,7 +69,6 @@ class CleanupNewsletterRecipients extends Method implements MethodInterface
 
             return;
         }
-        $this->saveToJournal('tnewsletterempfaenger', $vUseFields, 'kKunde', $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE e, h
                 FROM tnewsletterempfaenger e

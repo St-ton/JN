@@ -66,26 +66,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function del_tbesucher()
     {
-        $vTableFields = [
-            'kBesucher'         => null,
-            'cIP'               => null,
-            'cSessID'           => null,
-            'cID'               => null,
-            'kKunde'            => 1,
-            'kBestellung'       => 1,
-            'cReferer'          => 1,
-            'cUserAgent'        => 1,
-            'cEinstiegsseite'   => null,
-            'cBrowser'          => 1,
-            'cAusstiegsseite'   => null,
-            'kBesucherBot'      => null,
-            'dLetzteAktivitaet' => null,
-            'dZeit'             => 1
-        ];
-        // don't customize below this line - - - - - - - - - - - - - - - - - - - -
-
         $this->szReason = $this->szReasonName . 'delete unknown visitors';
-        $vUseFields     = $this->selectFields($vTableFields);
         $vResult        = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM tbesucher
             WHERE
@@ -99,7 +80,6 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
 
             return;
         }
-        $this->saveToJournal('tbesucher', $vUseFields, 'kKunde', $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE FROM tbesucher
                 WHERE
@@ -116,23 +96,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function del_tbesucherarchiv()
     {
-        $vTableFields = [
-            'kBesucher'       => null,
-            'cIP'             => null,
-            'kKunde'          => 1,
-            'kBestellung'     => 1,
-            'cReferer'        => null,
-            'cEinstiegsseite' => null,
-            'cBrowser'        => 1,
-            'cAusstiegsseite' => null,
-            'nBesuchsdauer'   => null,
-            'kBesucherBot'    => null,
-            'dZeit'           => 1
-        ];
-        // don't customize below this line - - - - - - - - - - - - - - - - - - - -
-
         $this->szReason = $this->szReasonName . 'delete vititors from archive';
-        $vUseFields     = $this->selectFields($vTableFields);
         $vResult        = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM tbesucherarchiv
             WHERE
@@ -146,7 +110,6 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
 
             return;
         }
-        $this->saveToJournal('tbesucherarchiv', $vUseFields, 'kKunde', $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE FROM tbesucherarchiv
                 WHERE
@@ -164,24 +127,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function del_tkundenwerbenkunden()
     {
-        $vTableFields = [
-            'kKundenWerbenKunden' => null,
-            'kKunde'              => 1,
-            'cVorname'            => 1,
-            'cNachname'           => 1,
-            'cEmail'              => 1,
-            'nRegistriert'        => null,
-            'nGuthabenVergeben'   => null,
-            'fGuthaben'           => null,
-            'dErstellt'           => 1,
-            '_bonus_fGuthaben'    => 1,
-            '_bonus_nBonuspunkte' => 1,
-            '_bonus_dErhalten'    => 1
-        ];
-        // don't customize below this line - - - - - - - - - - - - - - - - - - - -
-
         $this->szReason = $this->szReasonName . 'delete customer-recruitings';
-        $vUseFields     = $this->selectFields($vTableFields);
         $vResult        = \Shop::Container()->getDB()->queryPrepared('SELECT
                 k.*,
                 b.fGuthaben AS "_bonus_fGuthaben",
@@ -201,7 +147,6 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
 
             return;
         }
-        $this->saveToJournal('tkundenwerbenkunden,tkundenwerbenkundenbonus', $vUseFields, 'kKunde', $vResult);
         foreach ($vResult as $oResult) {
             // delete each "kKunde", in multiple tables, in one shot
             \Shop::Container()->getDB()->queryPrepared('DELETE tkundenwerbenkunden, tkundenwerbenkundenbonus
@@ -223,17 +168,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function del_tkundenattribut()
     {
-        $vTableFields = [
-            'kKundenAttribut' => null,
-            'kKunde'          => 1,
-            'kKundenfeld'     => 1,
-            'cName'           => 1,
-            'cWert'           => 1
-        ];
-        // don't customize below this line - - - - - - - - - - - - - - - - - - - -
-
         $this->szReason = $this->szReasonName . 'delete customer-attributes';
-        $vUseFields     = $this->selectFields($vTableFields);
         $vResult        = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM tkundenattribut
             WHERE
@@ -246,7 +181,6 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
 
             return;
         }
-        $this->saveToJournal('tkundenattribut', $vUseFields, 'kKunde', $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE FROM tkundenattribut
                 WHERE
@@ -263,27 +197,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function del_tzahlungsinfo()
     {
-        $vTableFields = [
-            'kZahlungsInfo'     => null,
-            'kBestellung'       => 1,
-            'kKunde'            => 1,
-            'cBankName'         => null,
-            'cBLZ'              => null,
-            'cKontoNr'          => null,
-            'cIBAN'             => 1,
-            'cBIC'              => null,
-            'cKartenNr'         => 1,
-            'cGueltigkeit'      => 1,
-            'cCVV'              => 1,
-            'cKartenTyp'        => 1,
-            'cInhaber'          => 1,
-            'cVerwendungszweck' => null,
-            'cAbgeholt'         => null
-        ];
-        // don't customize below this line - - - - - - - - - - - - - - - - - - - -
-
         $this->szReason = $this->szReasonName . 'delete orphaned payment-data';
-        $vUseFields     = $this->selectFields($vTableFields);
         $vResult        = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM tzahlungsinfo
             WHERE
@@ -297,7 +211,6 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
 
             return;
         }
-        $this->saveToJournal('tzahlungsinfo', $vUseFields, 'kKunde', $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE FROM tzahlungsinfo
                 WHERE
@@ -314,20 +227,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function del_tkundenkontodaten()
     {
-        $vTableFields = [
-            'kKundenKontodaten' => null,
-            'kKunde'            => 1,
-            'cBLZ'              => null,
-            'nKonto'            => null,
-            'cInhaber'          => 1,
-            'cBankName'         => 1,
-            'cIBAN'             => 1,
-            'cBIC'              => null
-        ];
-        // don't customize below this line - - - - - - - - - - - - - - - - - - - -
-
         $this->szReason = $this->szReasonName . 'delete orphaned bank-account-information';
-        $vUseFields     = $this->selectFields($vTableFields);
         $vResult        = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM tkundenkontodaten
             WHERE
@@ -341,7 +241,6 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
 
             return;
         }
-        $this->saveToJournal('tkundenkontodaten', $vUseFields, 'kKunde', $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE FROM tkundenkontodaten
                 WHERE
@@ -358,31 +257,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function del_tlieferadresse()
     {
-        $vTableFields = [
-            'kLieferadresse' => null,
-            'kKunde'         => 1,
-            'cAnrede'        => null,
-            'cVorname'       => 1,
-            'cNachname'      => 1,
-            'cTitel'         => null,
-            'cFirma'         => 1,
-            'cZusatz'        => null,
-            'cStrasse'       => 1,
-            'cHausnummer'    => 1,
-            'cAdressZusatz'  => null,
-            'cPLZ'           => 1,
-            'cOrt'           => 1,
-            'cBundesland'    => null,
-            'cLand'          => 1,
-            'cTel'           => 1,
-            'cMobil'         => 1,
-            'cFax'           => null,
-            'cMail'          => 1
-        ];
-        // don't customize below this line - - - - - - - - - - - - - - - - - - - -
-
         $this->szReason = $this->szReasonName . 'delete delivery-addresses';
-        $vUseFields     = $this->selectFields($vTableFields);
         $vResult        = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM tlieferadresse k
                 JOIN tbestellung b ON b.kKunde = k.kKunde
@@ -398,7 +273,6 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
 
             return;
         }
-        $this->saveToJournal('tlieferadresse', $vUseFields, 'kKunde', $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE FROM tlieferadresse
                 WHERE
@@ -415,33 +289,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function del_trechnungsadresse()
     {
-        $vTableFields = [
-            'kRechnungsadresse' => null,
-            'kKunde'            => 1,
-            'cAnrede'           => null,
-            'cTitel'            => null,
-            'cVorname'          => 1,
-            'cNachname'         => 1,
-            'cFirma'            => 1,
-            'cZusatz'           => null,
-            'cStrasse'          => 1,
-            'cHausnummer'       => 1,
-            'cAdressZusatz'     => null,
-            'cPLZ'              => 1,
-            'cOrt'              => 1,
-            'cBundesland'       => null,
-            'cLand'             => 1,
-            'cTel'              => 1,
-            'cMobil'            => 1,
-            'cFax'              => null,
-            'cUSTID'            => null,
-            'cWWW'              => null,
-            'cMail'             => 1
-        ];
-        // don't customize below this line - - - - - - - - - - - - - - - - - - - -
-
         $this->szReason = $this->szReasonName . 'delete billing-addresses';
-        $vUseFields     = $this->selectFields($vTableFields);
         $vResult        = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM trechnungsadresse k
                 JOIN tbestellung b ON b.kKunde = k.kKunde
@@ -457,7 +305,6 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
 
             return;
         }
-        $this->saveToJournal('trechnungsadresse', $vUseFields, 'kKunde', $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE FROM trechnungsadresse
                 WHERE

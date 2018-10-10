@@ -32,32 +32,18 @@ class AnonymizeIps extends Method implements MethodInterface
     protected $szReasonName;
 
     /**
-     * AnonymizeDeletedCustomer constructor
-     *
-     * @param $oNow
-     * @param $iInterval
-     */
-    public function __construct($oNow, $iInterval)
-    {
-        parent::__construct($oNow, $iInterval);
-        $this->szReasonName = substr(__CLASS__, strrpos(__CLASS__, '\\')) . ': ';
-    }
-
-    /**
      * @var array
      */
     private $vTablesUpdate = [
         'tbestellung' => [
             'ColKey'      => 'kBestellung',
             'ColIp'       => 'cIP',
-            'ColCreated'  => 'dErstellt',
-            'saveInJournal' => 1
+            'ColCreated'  => 'dErstellt'
         ],
         'tbesucher' => [
             'ColKey'     => 'kBesucher',
             'ColIp'      => 'cIP',
-            'ColCreated' => 'dLetzteAktivitaet',
-            'saveInJournal' => 1
+            'ColCreated' => 'dLetzteAktivitaet'
         ],
         'tbesucherarchiv' => [
             'ColKey'     => 'kBesucher',
@@ -77,14 +63,12 @@ class AnonymizeIps extends Method implements MethodInterface
         'tredirectreferer' => [
             'ColKey'     => 'kRedirectReferer',
             'ColIp'      => 'cIP',
-            'ColCreated' => 'dDate',
-            'saveInJournal' => 1
+            'ColCreated' => 'dDate'
         ],
         'tsitemaptracker' => [
             'ColKey'     => 'kSitemapTracker',
             'ColIp'      => 'cIP',
-            'ColCreated' => 'dErstellt',
-            'saveInJournal' => 1
+            'ColCreated' => 'dErstellt'
         ],
         'tsuchanfragencache' => [
             'ColKey'     => 'kSuchanfrageCache',
@@ -94,26 +78,22 @@ class AnonymizeIps extends Method implements MethodInterface
         'ttagkunde' => [
             'ColKey'     => 'kTagKunde',
             'ColIp'      => 'cIP',
-            'ColCreated' => 'dZeit',
-            'saveInJournal' => 1
+            'ColCreated' => 'dZeit'
         ],
         'tumfragedurchfuehrung' => [
             'ColKey'     => 'kUmfrageDurchfuehrung',
             'ColIp'      => 'cIP',
-            'ColCreated' => 'dDurchgefuehrt',
-            'saveInJournal' => 1
+            'ColCreated' => 'dDurchgefuehrt'
         ],
         'tverfuegbarkeitsbenachrichtigung' => [
             'ColKey'     => 'kVerfuegbarkeitsbenachrichtigung',
             'ColIp'      => 'cIP',
-            'ColCreated' => 'dErstellt',
-            'saveInJournal' => 1
+            'ColCreated' => 'dErstellt'
         ],
         'tvergleichsliste' => [
             'ColKey'     => 'kVergleichsliste',
             'ColIp'      => 'cIP',
-            'ColCreated' => 'dDate',
-            'saveInJournal' => 1
+            'ColCreated' => 'dDate'
         ]
     ];
 
@@ -125,7 +105,22 @@ class AnonymizeIps extends Method implements MethodInterface
         'tfsession'
     ];
 
-    public function execute()
+    /**
+     * AnonymizeDeletedCustomer constructor
+     *
+     * @param $oNow
+     * @param $iInterval
+     */
+    public function __construct($oNow, $iInterval)
+    {
+        parent::__construct($oNow, $iInterval);
+        $this->szReasonName = substr(__CLASS__, strrpos(__CLASS__, '\\')) . ': ';
+    }
+
+    /**
+     * run all anonymize processes
+     */
+    public function execute(): void
     {
         $this->anon_all_ips();
     }
@@ -136,8 +131,8 @@ class AnonymizeIps extends Method implements MethodInterface
     public function anon_all_ips()
     {
         $oAnonymizer = new IpAnonymizer('', true); // anonymize "beautified"
-        $szIpMaskV4  = \Shop::getSettings([CONF_GLOBAL])['global']['anonymize_ip_mask_v4'];
-        $szIpMaskV6  = \Shop::getSettings([CONF_GLOBAL])['global']['anonymize_ip_mask_v6'];
+        $szIpMaskV4  = $oAnonymizer->getMaskV4();
+        $szIpMaskV6  = $oAnonymizer->getMaskV6();
         $szIpMaskV4  = substr($szIpMaskV4, strpos($szIpMaskV4, '.0'), \strlen($szIpMaskV4)-1);
         $szIpMaskV6  = substr($szIpMaskV6, strpos($szIpMaskV6, ':0000'), \strlen($szIpMaskV6)-1);
 
@@ -146,7 +141,7 @@ class AnonymizeIps extends Method implements MethodInterface
             // select maximum 10,000 rows in one step!
             // (if this script is running each day, we need some days
             // to anonymize more than 10,000 data sets)
-            $vResult    = \Shop::Container()->getDB()->query('SELECT
+            $vResult = \Shop::Container()->getDB()->query('SELECT
                     ' . $vTable['ColKey'] . ',
                     ' . $vTable['ColIp'] . ',
                     ' . $vTable['ColCreated'] . '
@@ -166,14 +161,12 @@ class AnonymizeIps extends Method implements MethodInterface
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             if (\is_array($vResult) && 0 < \count($vResult)) {
-                if (isset($vTable['saveInJournal']) && $vTable['saveInJournal'] !== null) {
-                    $this->saveToJournal($szTableName, get_object_vars($vResult[0]), '', $vResult); // --TODO-- the key-col !!!
-                }
                 foreach ($vResult as $oRow) {
                     $oRow->cIP = $oAnonymizer->setIp($oRow->cIP)->anonymize();
                     $szKeyColName = $vTable['ColKey'];
                     \Shop::Container()->getDB()->update($szTableName, $vTable['ColKey'], (int)$oRow->$szKeyColName, $oRow);
                 }
+                ($this->oLogger === null) ?: $this->oLogger->log(JTLLOG_LEVEL_NOTICE, 'Rows updated: ' . $iRowCount);
             }
         }
 

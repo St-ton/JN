@@ -46,48 +46,7 @@ class CleanupOldGuestAccounts extends Method implements MethodInterface
      */
     private function clean_tkunde()
     {
-        $vTableFields = [
-            'kKunde'         => 1,
-            'kKundengruppe'  => null,
-            'kSprache'       => null,
-            'cKundenNr'      => 1,
-            'cPasswort'      => null,
-            'cAnrede'        => 1,
-            'cTitel'         => null,
-            'cVorname'       => 1,
-            'cNachname'      => 1,
-            'cFirma'         => 1,
-            'cZusatz'        => null,
-            'cStrasse'       => 1,
-            'cHausnummer'    => 1,
-            'cAdressZusatz'  => null,
-            'cPLZ'           => 1,
-            'cOrt'           => 1,
-            'cBundesland'    => null,
-            'cLand'          => 1,
-            'cTel'           => null,
-            'cMobil'         => null,
-            'cFax'           => null,
-            'cMail'          => 1,
-            'cUSTID'         => 1,
-            'cWWW'           => null,
-            'cSperre'        => null,
-            'fGuthaben'      => null,
-            'cNewsletter'    => null,
-            'dGeburtstag'    => 1,
-            'fRabatt'        => null,
-            'cHerkunft'      => null,
-            'dErstellt'      => 1,
-            'dVeraendert'    => 1,
-            'cAktiv'         => 1,
-            'cAbgeholt'      => null,
-            'nRegistriert'   => null,
-            'nLoginversuche' => null
-        ];
-        // don't customize below this line - - - - - - - - - - - - - - - - - - - -
-
-        $this->szReason = $this->szReasonName . 'delete customer-data-historytory';
-        $vUseFields     = $this->selectFields($vTableFields);
+        $this->szReason = $this->szReasonName . 'delete customer-data-history';
         $vResult        = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM tkunde e
             WHERE
@@ -106,7 +65,6 @@ class CleanupOldGuestAccounts extends Method implements MethodInterface
 
             return;
         }
-        $this->saveToJournal('tkunde', $vUseFields, 'kKunde', $vResult);
         foreach ($vResult as $oResult) {
             \Shop::Container()->getDB()->queryPrepared('DELETE FROM tkunde
                 WHERE kKunde = pKeyKunde',

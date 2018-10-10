@@ -101,12 +101,7 @@ function bearbeiteDeletes($xml)
         $xml['del_kunden']['kKunde'] = [$xml['del_kunden']['kKunde']];
     }
     foreach ($xml['del_kunden']['kKunde'] as $kKunde) {
-        $kKunde = (int)$kKunde;
-        if ($kKunde > 0) {
-            Shop::Container()->getDB()->delete('tkunde', 'kKunde', $kKunde);
-            Shop::Container()->getDB()->delete('tlieferadresse', 'kKunde', $kKunde);
-            Shop::Container()->getDB()->delete('tkundenattribut', 'kKunde', $kKunde);
-        }
+        (new Kunde((int)$kKunde))->deleteCustomer('wawi');
     }
 }
 

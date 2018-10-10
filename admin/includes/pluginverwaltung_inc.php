@@ -414,8 +414,12 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
     // Shopversion holen
     $oVersion = Shop::Container()->getDB()->query('SELECT nVersion FROM tversion LIMIT 1', \DB\ReturnType::SINGLE_OBJECT);
 
-    if ($oVersion->nVersion > 0) {
-        $parsedVersion = Version::parse($oVersion->nVersion);
+    if (!empty($oVersion->nVersion)) {
+        try {
+            $parsedVersion = Version::parse($oVersion->nVersion);
+        } catch (Exception $e) {
+            $parsedVersion = null;
+        }
     }
     // XML-Versionsnummer
     if (!isset($baseNode['XMLVersion'])) {

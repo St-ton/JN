@@ -1,16 +1,15 @@
 #!/bin/bash
 
 # $1 target build version
-export APPLICATION_VERSION=$1;
+APPLICATION_VERSION=$1;
 # $2 last commit sha
-export APPLICATION_BUILD_SHA=$2;
+APPLICATION_BUILD_SHA=$2;
 # $3 repository dir
-export REPO_DIR=$3;
+REPOSITORY_DIR=$3;
 # start tag for tpl diff
-export FROM_TAG="v4.06.9";
+TPL_DIFF_START_TAG="v4.06.9";
 
-export SCRIPT_DIR="${REPO_DIR}/tools/scripts";
-export VERSION_REGEX="v?([0-9]{1,})\\.([0-9]{1,})\\.([0-9]{1,})(-(alpha|beta|rc)(\\.([0-9]{1,}))?)?";
+SCRIPT_DIR="${REPOSITORY_DIR}/tools/scripts";
 
 source ${SCRIPT_DIR}/create_template_diff.sh
 source ${SCRIPT_DIR}/create_version_string.sh
@@ -25,6 +24,6 @@ echo "  - Create mail tpl diff$"
 
 echo ""
 
-create_version_string;
-create_tpl_diff "templates/Evo";
-create_tpl_diff "admin/mailtemplates";
+create_version_string ${REPOSITORY_DIR} ${APPLICATION_VERSION} ${APPLICATION_BUILD_SHA};
+create_tpl_diff ${REPOSITORY_DIR} "templates/Evo" ${TPL_DIFF_START_TAG} ${APPLICATION_VERSION};
+create_tpl_diff ${REPOSITORY_DIR} "admin/mailtemplates" ${TPL_DIFF_START_TAG} ${APPLICATION_VERSION};

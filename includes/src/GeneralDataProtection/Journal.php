@@ -7,8 +7,6 @@
 namespace GeneralDataProtection;
 
 /**
- * --DEVELOPMENT-- 
- *
  * writes a journal of customer-data-changes,
  * e.g. deletion of a customer
  *
@@ -35,28 +33,29 @@ class Journal
         if ($oNow === null) {
             $oNow = new \DateTime();
         }
-        $this->oNow = $oNow;
+        $this->oNow     = $oNow;
     }
+
+    public static const ISSUER_CUSTOMER    = 'customer';
+    public static const ISSUER_APPLICATION = 'application';
+    public static const ISSUER_ADMIN       = 'admin';
 
     /**
      * saves the occurence of a data-modify-event to the journal
-     * @param string    $szTableName
-     * @param int       $iRowId
-     * @param \stdClass $oCustomerData
-     * @param string    $szReason
+     *
+     * @param string $szAction
+     * @param string $szIssuer
      */
-    public function save(string $szAction, string $szIssuer): void
+    public function save(string $szIssuer, int $iIssuerId, string $szAction): void
     {
-        $szValueJSON = \Shop::Container()->getDB()->quote(json_encode($oRow));
         \Shop::Container()->getDB()->queryPrepared(
-            'INSERT INTO tanondatajournal(cTableSource, cReason, kId, cOldValue, dEventTime)
-            VALUES(:pTableSource, :pReason, :pId, :pOldValue, :pEventTime)',
+            'INSERT INTO tanondatajournal(cAction, cIssuer, iIssuerId, dEventTime)
+            VALUES(pAction, pIssuer, pIssuerId, pEventTime)',
             [
-                'pTableSource' => $szTableName,
-                'pReason'      => $szReason,
-                'pId'          => $iRowId,
-                'pOldValue'    => $szValueJSON,
-                'pEventTime'   => $this->oNow->format('Y-m-d H:i:s')
+                'pAction'    => $szAction,
+                'pIssuer'    => $szIssuer,
+                'pIssuerId'  => $iIssuerId,
+                'pEventTime' => $this->oNow->format('Y-m-d H:i:s')
             ],
             \DB\ReturnType::AFFECTED_ROWS
         );

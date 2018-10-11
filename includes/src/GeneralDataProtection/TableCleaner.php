@@ -80,8 +80,8 @@ class TableCleaner
     public function __destruct()
     {
         // removes journal-entries at the end of next year after their creation
-        \Shop::Container()->getDB()->queryPrepared('DELETE FROM `tanondatajournal`
-            WHERE `dEventTime` <= LAST_DAY(DATE_ADD(:pNow - INTERVAL 2 YEAR, INTERVAL 12 - MONTH(:pNow) MONTH))',
+        \Shop::Container()->getDB()->queryPrepared('DELETE FROM tanondatajournal
+            WHERE dEventTime <= LAST_DAY(DATE_ADD(:pNow - INTERVAL 2 YEAR, INTERVAL 12 - MONTH(:pNow) MONTH))',
             [
                 'pNow' => $this->oNow->format('Y-m-d H:i:s')
             ],

@@ -46,15 +46,15 @@ class CleanupLogs extends Method implements MethodInterface
      */
     public function execute()
     {
-        $this->clean_temailhistory();                    // no protocolling
-        $this->clean_tkontakthistory();                  // no protocolling
+        $this->clean_temailhistory();
+        $this->clean_tkontakthistory();
         $this->clean_tkundenwerbenkunden();
         $this->clean_tzahlungslog();
-        $this->clean_tproduktanfragehistory();           // no protocolling
+        $this->clean_tproduktanfragehistory();
         $this->clean_tverfuegbarkeitsbenachrichtigung();
-        $this->clean_tjtllog();                          // no protocolling
+        $this->clean_tjtllog();
         $this->clean_tzahlungseingang();
-        $this->clean_tkundendatenhistory();              // no protocolling
+        $this->clean_tkundendatenhistory();
     }
 
     /**

@@ -44,13 +44,11 @@ class Migration_20180919103846 extends Migration implements IMigration
         $this->execute('
             CREATE TABLE IF NOT EXISTS tanondatajournal(
                 kAnonDatenHistory INT(11) NOT NULL AUTO_INCREMENT,
-                cTableSource VARCHAR(255) DEFAULT "" COMMENT "names the table in which the change took place",
-                cReason VARCHAR(255) default "" COMMENT "describes the reason for the previous change",
-                kId INT(11) DEFAULT NULL COMMENT "the original key of the appropriate table",
-                cOldValue TEXT COMMENT "content, before the chenages are occured",
+                cIssuer VARCHAR(255) DEFAULT "" COMMENT "application(cron), user, admin",
+                iIssuerId INT(11) DEFAULT NULL COMMENT "id of the issuer (only for user or admin)",
                 dEventTime DATETIME DEFAULT NULL COMMENT "time of the event",
                 PRIMARY KEY kAnonDatenHistory(kAnonDatenHistory),
-                KEY kId (kId)
+                KEY kIssuer(iIssuerId)
             )
             ENGINE=InnoDB
             DEFAULT CHARSET=utf8

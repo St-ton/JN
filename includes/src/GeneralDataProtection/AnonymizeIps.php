@@ -160,9 +160,14 @@ class AnonymizeIps extends Method implements MethodInterface
                 LIMIT ' . $this->iWorkLimit,
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-            if (\is_array($vResult) && 0 < \count($vResult)) {
+            ;
+            if (\is_array($vResult) && 0 < $iRowCount = \count($vResult)) {
                 foreach ($vResult as $oRow) {
-                    $oRow->cIP = $oAnonymizer->setIp($oRow->cIP)->anonymize();
+                    try {
+                        $oRow->cIP = $oAnonymizer->setIp($oRow->cIP)->anonymize();
+                    } catch (\Exception $e) {
+                        ($this->oLogger === null) ?: $this->oLogger->log(JTLLOG_LEVEL_WARNING, $e->getMessage());
+                    }
                     $szKeyColName = $vTable['ColKey'];
                     \Shop::Container()->getDB()->update($szTableName, $vTable['ColKey'], (int)$oRow->$szKeyColName, $oRow);
                 }

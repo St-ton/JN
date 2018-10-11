@@ -109,7 +109,7 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
             ],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        $this->oLogger->debug('vResult sets: '.print_r(count($vResult) ,true )); // --DEBUG--
+        $this->oLogger->debug('vResult sets: '.print_r(\count($vResult) ,true )); // --DEBUG--
         if (!\is_array($vResult)) {
 
             return;

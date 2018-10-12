@@ -54,12 +54,7 @@ class Migration_20161028111405 extends Migration implements IMigration
         );
         $this->reorderMenu(11);
 
-        $this->execute(
-            "DROP INDEX PLZ_ORT_UNIQUE ON tplz"
-        );
-        $this->execute(
-            "CREATE INDEX PLZ_ORT_UNIQUE ON tplz (cLandISO, cPLZ, cOrt)"
-        );
+        MigrationHelper::createIndex('tplz', ['cLandISO', 'cPLZ', 'cOrt'], 'PLZ_ORT_UNIQUE');
         $this->execute(
             "CREATE TABLE tplz_backup LIKE tplz"
         );
@@ -70,12 +65,8 @@ class Migration_20161028111405 extends Migration implements IMigration
         $this->execute(
             "DROP TABLE IF EXISTS tplz_backup"
         );
-        $this->execute(
-            "DROP INDEX PLZ_ORT_UNIQUE ON tplz"
-        );
-        $this->execute(
-            "CREATE INDEX PLZ_ORT_UNIQUE  ON tplz (cPLZ, cOrt)"
-        );
+
+        MigrationHelper::createIndex('tplz', ['cPLZ', 'cOrt'], 'PLZ_ORT_UNIQUE');
 
         $this->execute(
             "DELETE FROM tadminmenu WHERE cURL = 'plz_ort_import.php'"

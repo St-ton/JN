@@ -17,8 +17,8 @@ if (!isset($_POST['wawiversion']) || (int)$_POST['wawiversion'] < JTL_MIN_WAWI_V
     );
 }
 $return = 3;
-$cName  = $_POST['uID'];
-$cPass  = $_POST['uPWD'];
+$cName  = utf8_encode($_POST['uID']);
+$cPass  = utf8_encode($_POST['uPWD']);
 
 $_POST['uID']  = '*';
 $_POST['uPWD'] = '*';

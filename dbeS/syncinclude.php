@@ -159,7 +159,7 @@ function auth()
         return false;
     }
 
-    return (new Synclogin())->checkLogin($_POST['userID'], $_POST['userPWD']) === true;
+    return (new Synclogin())->checkLogin(utf8_encode($_POST['userID']), utf8_encode($_POST['userPWD'])) === true;
 }
 
 /**

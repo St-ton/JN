@@ -227,7 +227,7 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
     } else {
         $cFehler = 'Fehler: Bitte wählen Sie mindestens ein Plugin aus.';
     }
-} elseif (RequestHelper::verifyGPCDataInt('pluginverwaltung_sprachvariable') === 1 && FormHelper::validateToken()) { // Plugin Sprachvariablen
+} elseif (RequestHelper::verifyGPCDataInt('pluginverwaltung_sprachvariable') === 1 && FormHelper::validateToken()) {
     $step = 'pluginverwaltung_sprachvariablen';
     if (RequestHelper::verifyGPCDataInt('kPlugin') > 0) {
         $kPlugin = RequestHelper::verifyGPCDataInt('kPlugin');

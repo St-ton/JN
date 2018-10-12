@@ -17,27 +17,27 @@ use Session\Handler\SessionHandlerJTL;
  */
 class Session
 {
-    const DEFAULT_SESSION = 'JTLSHOP';
+    public const DEFAULT_SESSION = 'JTLSHOP';
 
     /**
      * handle bot like normal visitor
      */
-    const SAVE_BOT_SESSIONS_NORMAL = 0;
+    public const SAVE_BOT_SESSIONS_NORMAL = 0;
 
     /**
      * use single session ID for all bot visits
      */
-    const SAVE_BOT_SESSIONS_COMBINED = 1;
+    public const SAVE_BOT_SESSIONS_COMBINED = 1;
 
     /**
      * save combined bot session to cache
      */
-    const SAVE_BOT_SESSIONS_CACHE = 2;
+    public const SAVE_BOT_SESSIONS_CACHE = 2;
 
     /**
      * never save bot sessions
      */
-    const SAVE_BOT_SESSIONS_NEVER = 3;
+    public const SAVE_BOT_SESSIONS_NEVER = 3;
 
     /**
      * @var string
@@ -124,10 +124,11 @@ class Session
     public static function getIsCrawler(string $userAgent): bool
     {
         return \preg_match(
-                '/Google|ApacheBench|sqlmap|loader.io|bot|Rambler|Yahoo|AbachoBOT|accoona' .
-                '|spider|AcioRobot|ASPSeek|CocoCrawler|Dumbot|FAST-WebCrawler|GeonaBot' .
-                '|Gigabot|Lycos|alexa|AltaVista|IDBot|Scrubby/', $userAgent
-            ) > 0;
+            '/Google|ApacheBench|sqlmap|loader.io|bot|Rambler|Yahoo|AbachoBOT|accoona' .
+            '|spider|AcioRobot|ASPSeek|CocoCrawler|Dumbot|FAST-WebCrawler|GeonaBot' .
+            '|Gigabot|Lycos|alexa|AltaVista|IDBot|Scrubby/',
+            $userAgent
+        ) > 0;
     }
 
     /**
@@ -251,7 +252,7 @@ class Session
     /**
      * @throws \Exception
      */
-    private function updateGlobals()
+    private function updateGlobals(): void
     {
         //Kategorie
         unset($_SESSION['cTemplate'], $_SESSION['template'], $_SESSION['oKategorie_arr_new']);
@@ -417,7 +418,9 @@ class Session
         foreach ($cAccepted_arr as $cAccepted) {
             $res = \preg_match(
                 '/^([a-z]{1,8}(?:-[a-z]{1,8})*)' .
-                '(?:;\s*q=(0(?:\.[0-9]{1,3})?|1(?:\.0{1,3})?))?$/i', $cAccepted, $cMatch_arr
+                '(?:;\s*q=(0(?:\.[0-9]{1,3})?|1(?:\.0{1,3})?))?$/i',
+                $cAccepted,
+                $cMatch_arr
             );
             if (!$res) {
                 continue;

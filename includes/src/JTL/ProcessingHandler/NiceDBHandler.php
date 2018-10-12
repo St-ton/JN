@@ -50,6 +50,7 @@ class NiceDBHandler extends AbstractProcessingHandler
                 'cLog'      => $record['formatted'],
                 'kKey'      => $context,
                 'dErstellt' => $record['datetime']->format('Y-m-d H:i:s'),
-            ]);
+            ]
+        );
     }
 }

@@ -45,7 +45,7 @@
             jtlToken:    '{$smarty.session.jtl_token}',
             shopUrl:     '{$shopUrl}',
             templateUrl: '{$templateUrl}',
-            kcfinderUrl: '{$PFAD_KCFINDER}',
+            kcfinderUrl: '{$kcfinderBaseURL}',
             pageKey:     {$pageKey},
             error:       {$error|json_encode},
         });

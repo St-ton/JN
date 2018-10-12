@@ -15,6 +15,9 @@ use Services\JTL\Validation\RuleResult;
  */
 class EqualsLax implements RuleInterface
 {
+    /**
+     * @var mixed
+     */
     protected $expected;
 
     /**
@@ -30,7 +33,7 @@ class EqualsLax implements RuleInterface
      * @param mixed $value
      * @return RuleResult
      */
-    public function validate($value)
+    public function validate($value): RuleResult
     {
         return $this->expected == $value
             ? new RuleResult(true, '', $value)

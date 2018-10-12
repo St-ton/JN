@@ -9,7 +9,6 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 Shop::setPageType(PAGE_BESTELLABSCHLUSS);
-$AktuelleSeite = 'BESTELLVORGANG';
 $Einstellungen = Shop::getSettings([
     CONF_GLOBAL,
     CONF_RSS,

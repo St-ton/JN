@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "233f2dbf76567064d2fb3558c891bb70",
+    "content-hash": "fc9d9a783a2ef7280b85c56ba127292c",
     "packages": [
         {
             "name": "andyftw/ssllabs-php",
@@ -265,12 +265,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/erusev/parsedown.git",
-                "reference": "c26a2ee4bf8ba0270daab7da0353f2525ca6564a"
+                "reference": "1829106e60b38ea4f88d5ef678d2516c728e2dab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/erusev/parsedown/zipball/c26a2ee4bf8ba0270daab7da0353f2525ca6564a",
-                "reference": "c26a2ee4bf8ba0270daab7da0353f2525ca6564a",
+                "url": "https://api.github.com/repos/erusev/parsedown/zipball/1829106e60b38ea4f88d5ef678d2516c728e2dab",
+                "reference": "1829106e60b38ea4f88d5ef678d2516c728e2dab",
                 "shasum": ""
             },
             "require": {
@@ -303,7 +303,7 @@
                 "markdown",
                 "parser"
             ],
-            "time": "2018-06-11T18:15:32+00:00"
+            "time": "2018-09-19T20:28:02+00:00"
         },
         {
             "name": "icecave/isolator",
@@ -773,7 +773,7 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.jtl-software.de/jtlshop/scc.git",
-                "reference": "0f09a638185ca715db6f3640351063c32b493af0"
+                "reference": "d64fa2c4c0d03d1b63522d8531f3cee2d37dae8d"
             },
             "require": {
                 "myclabs/php-enum": "^1.5",
@@ -800,7 +800,7 @@
             "keywords": [
                 "jtl-shop"
             ],
-            "time": "2018-09-19T10:21:31+00:00"
+            "time": "2018-09-26T13:32:27+00:00"
         },
         {
             "name": "jtlshop/semver",
@@ -850,11 +850,11 @@
         },
         {
             "name": "jtlshop/shop4-systemcheck",
-            "version": "1.1.0",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.jtl-software.de/jtlshop/shop4-systemcheck.git",
-                "reference": "1.1.0"
+                "reference": "1.1.1"
             },
             "type": "library"
         },
@@ -1911,16 +1911,16 @@
         },
         {
             "name": "tightenco/collect",
-            "version": "v5.7.3",
+            "version": "v5.7.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tightenco/collect.git",
-                "reference": "a4d5291ee732f8accad72d02ba2a06dc20780b75"
+                "reference": "4d1fdf5d98c4fc9f905e9e3a1805a0df8cb71101"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tightenco/collect/zipball/a4d5291ee732f8accad72d02ba2a06dc20780b75",
-                "reference": "a4d5291ee732f8accad72d02ba2a06dc20780b75",
+                "url": "https://api.github.com/repos/tightenco/collect/zipball/4d1fdf5d98c4fc9f905e9e3a1805a0df8cb71101",
+                "reference": "4d1fdf5d98c4fc9f905e9e3a1805a0df8cb71101",
                 "shasum": ""
             },
             "require": {
@@ -1957,7 +1957,7 @@
                 "collection",
                 "laravel"
             ],
-            "time": "2018-09-14T01:47:28+00:00"
+            "time": "2018-09-25T21:20:45+00:00"
         },
         {
             "name": "tubalmartin/cssmin",

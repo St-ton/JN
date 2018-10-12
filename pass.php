@@ -7,9 +7,6 @@ require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 Shop::setPageType(PAGE_PASSWORTVERGESSEN);
-
-$AktuelleSeite          = 'PASSWORT VERGESSEN';
-Shop::$AktuelleSeite    = 'PASSWORT VERGESSEN';
 $Einstellungen          = Shop::getSettings([CONF_GLOBAL, CONF_RSS]);
 $linkHelper             = Shop::Container()->getLinkService();
 $kLink                  = $linkHelper->getSpecialPageLinkKey(LINKTYP_PASSWORD_VERGESSEN);
@@ -70,9 +67,9 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
     Shop::Smarty()->assign('fpwh', StringHandler::filterXSS($_POST['fpwh']));
 } elseif (isset($_GET['fpwh'])) {
     $resetItem = Shop::Container()->getDB()->select('tpasswordreset', 'cKey', $_GET['fpwh']);
-    if($resetItem) {
+    if ($resetItem) {
         $dateExpires = new DateTime($resetItem->dExpires);
-        if($dateExpires >= new DateTime()) {
+        if ($dateExpires >= new DateTime()) {
             Shop::Smarty()->assign('fpwh', StringHandler::filterXSS($_GET['fpwh']));
         } else {
             $cFehler = Shop::Lang()->get('invalidHash', 'account data');

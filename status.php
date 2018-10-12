@@ -8,7 +8,6 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 Shop::setPageType(PAGE_BESTELLSTATUS);
 $smarty        = Shop::Smarty();
-$AktuelleSeite = 'BESTELLSTATUS';
 $Einstellungen = Shop::getSettings([
     CONF_GLOBAL,
     CONF_RSS,

@@ -36,7 +36,8 @@ class ProductFilterSQL implements ProductFilterSQLInterface
     /**
      * @inheritdoc
      */
-    public function getBaseQuery(StateSQLInterface $state, string $type = 'filter'): string {
+    public function getBaseQuery(StateSQLInterface $state, string $type = 'filter'): string
+    {
         $select     = $state->getSelect();
         $joins      = $state->getJoins();
         $conditions = $state->getConditions();
@@ -56,10 +57,11 @@ class ProductFilterSQL implements ProductFilterSQLInterface
             ->setTable('tartikelsichtbarkeit')
             ->setOrigin(__CLASS__)
             ->setOn('tartikel.kArtikel = tartikelsichtbarkeit.kArtikel 
-                        AND tartikelsichtbarkeit.kKundengruppe = ' . $this->productFilter->getFilterConfig()->getCustomerGroupID());
+                        AND tartikelsichtbarkeit.kKundengruppe = ' .
+                $this->productFilter->getFilterConfig()->getCustomerGroupID());
         // remove duplicate joins
         $checked = [];
-        $joins   = reduce_left($joins, function(JoinInterface $value, $i, $c, $reduction) use (&$checked) {
+        $joins   = reduce_left($joins, function (JoinInterface $value, $i, $c, $reduction) use (&$checked) {
             $key = $value->getTable();
             if (!\in_array($key, $checked, true)) {
                 $checked[]   = $key;

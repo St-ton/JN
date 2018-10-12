@@ -22,7 +22,6 @@ $expandedCategories = new KategorieListe();
 $hasError           = false;
 $cParameter_arr     = Shop::getParameters();
 if ($NaviFilter->hasCategory()) {
-    $AktuelleSeite               = 'PRODUKTE';
     $kKategorie                  = $NaviFilter->getCategory()->getValue();
     $_SESSION['LetzteKategorie'] = $kKategorie;
     if ($AktuelleKategorie->kKategorie === null) {
@@ -46,9 +45,8 @@ if ($conf['navigationsfilter']['allgemein_weiterleitung'] === 'Y' && $oSuchergeb
         ? (new \Kategorie(
             $categoryID,
             $NaviFilter->getFilterConfig()->getLanguageID(),
-            $NaviFilter->getFilterConfig()->getCustomerGroupID())
-        )
-            ->existierenUnterkategorien()
+            $NaviFilter->getFilterConfig()->getCustomerGroupID()
+        ))->existierenUnterkategorien()
         : false;
     if ($NaviFilter->getFilterCount() > 0
         || $NaviFilter->getRealSearch() !== null

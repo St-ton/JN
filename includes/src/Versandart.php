@@ -110,6 +110,21 @@ class Versandart
     public $nMaxLiefertage;
 
     /**
+     * @var ?string
+     */
+    public $eSteuer;
+
+    /**
+     * @var ?string
+     */
+    public $cCountryCode;
+
+    /**
+     * @var ?array
+     */
+    public $cPriceLocalized;
+
+    /**
      * Konstruktor
      *
      * @param int $kVersandart
@@ -137,7 +152,11 @@ class Versandart
         }
         $this->kVersandart = (int)$this->kVersandart;
         // VersandartSprache
-        $oVersandartSprache_arr = Shop::Container()->getDB()->selectAll('tversandartsprache', 'kVersandart', $this->kVersandart);
+        $oVersandartSprache_arr = Shop::Container()->getDB()->selectAll(
+            'tversandartsprache',
+            'kVersandart',
+            $this->kVersandart
+        );
         foreach ($oVersandartSprache_arr as $oVersandartSprache) {
             $this->oVersandartSprache_arr[$oVersandartSprache->cISOSprache] = $oVersandartSprache;
         }

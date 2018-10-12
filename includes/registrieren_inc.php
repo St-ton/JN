@@ -256,8 +256,10 @@ function gibFormularDaten(int $nCheckout = 0)
         ->assign('Kunde', $Kunde)
         ->assign('cKundenattribut_arr', $cKundenattribut_arr)
         ->assign('laender', VersandartHelper::getPossibleShippingCountries(Session::CustomerGroup()->getID()))
-        ->assign('warning_passwortlaenge',
-            lang_passwortlaenge(Shop::getSettingValue(CONF_KUNDEN, 'kundenregistrierung_passwortlaenge')))
+        ->assign(
+            'warning_passwortlaenge',
+            lang_passwortlaenge(Shop::getSettingValue(CONF_KUNDEN, 'kundenregistrierung_passwortlaenge'))
+        )
         ->assign('oKundenfeld_arr', gibSelbstdefKundenfelder());
 
     if ($nCheckout === 1) {

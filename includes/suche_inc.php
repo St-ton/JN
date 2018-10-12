@@ -51,68 +51,69 @@ function pruefeSuchspaltenKlassen($searchColumns, $searchColumn, $nonAllowed)
 }
 
 /**
- * @param string $cSuche
- * @param int    $nAnzahlTreffer
- * @param bool   $bEchteSuche
- * @param int    $kSpracheExt
- * @param bool   $bSpamFilter
+ * @param string $search
+ * @param int    $hits
+ * @param bool   $realSearch
+ * @param int    $langIDExt
+ * @param bool   $filterSpam
  * @return bool
  * @deprecated since 4.06
  */
-function suchanfragenSpeichern($cSuche, $nAnzahlTreffer, $bEchteSuche = false, $kSpracheExt = 0, $bSpamFilter = true)
+function suchanfragenSpeichern($search, $hits, $realSearch = false, $langIDExt = 0, $filterSpam = true)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Shop::getProductFilter()->Suche->saveQuery($nAnzahlTreffer, $cSuche, $bEchteSuche, $kSpracheExt, $bSpamFilter);
+    return Shop::getProductFilter()->Suche->saveQuery($hits, $search, $realSearch, $langIDExt, $filterSpam);
 }
 
 /**
- * @param string $Suchausdruck
- * @param int    $kSpracheExt
+ * @param string $query
+ * @param int    $langID
  * @return mixed
  * @deprecated since 4.05
  */
-function mappingBeachten($Suchausdruck, $kSpracheExt = 0)
+function mappingBeachten($query, $langID = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $kSprache = ((int)$kSpracheExt > 0) ? (int)$kSpracheExt : Sprache::getDefaultLanguage(true)->kSprache;
-    if (strlen($Suchausdruck) > 0) {
+    $kSprache = ((int)$langID > 0) ? (int)$langID : Sprache::getDefaultLanguage(true)->kSprache;
+    if (strlen($query) === 0) {
+        return $query;
+    }
+    $SuchausdruckmappingTMP = Shop::Container()->getDB()->select(
+        'tsuchanfragemapping',
+        'kSprache',
+        $kSprache,
+        'cSuche',
+        $query,
+        null,
+        null,
+        false,
+        'cSucheNeu'
+    );
+    $Suchausdruckmapping    = $SuchausdruckmappingTMP;
+    while ($SuchausdruckmappingTMP !== null
+        && isset($SuchausdruckmappingTMP->cSucheNeu)
+        && strlen($SuchausdruckmappingTMP->cSucheNeu) > 0
+    ) {
         $SuchausdruckmappingTMP = Shop::Container()->getDB()->select(
             'tsuchanfragemapping',
             'kSprache',
             $kSprache,
             'cSuche',
-            $Suchausdruck,
+            $SuchausdruckmappingTMP->cSucheNeu,
             null,
             null,
             false,
             'cSucheNeu'
         );
-        $Suchausdruckmapping    = $SuchausdruckmappingTMP;
-        while ($SuchausdruckmappingTMP !== null &&
-            isset($SuchausdruckmappingTMP->cSucheNeu) &&
-            strlen($SuchausdruckmappingTMP->cSucheNeu) > 0
-        ) {
-            $SuchausdruckmappingTMP = Shop::Container()->getDB()->select(
-                'tsuchanfragemapping',
-                'kSprache',
-                $kSprache,
-                'cSuche',
-                $SuchausdruckmappingTMP->cSucheNeu,
-                null,
-                null,
-                false,
-                'cSucheNeu'
-            );
-            if (isset($SuchausdruckmappingTMP->cSucheNeu) && strlen($SuchausdruckmappingTMP->cSucheNeu) > 0) {
-                $Suchausdruckmapping = $SuchausdruckmappingTMP;
-            }
-        }
-        if (isset($Suchausdruckmapping->cSucheNeu) && strlen($Suchausdruckmapping->cSucheNeu) > 0) {
-            $Suchausdruck = $Suchausdruckmapping->cSucheNeu;
+        if (isset($SuchausdruckmappingTMP->cSucheNeu) && strlen($SuchausdruckmappingTMP->cSucheNeu) > 0) {
+            $Suchausdruckmapping = $SuchausdruckmappingTMP;
         }
     }
+    if (isset($Suchausdruckmapping->cSucheNeu) && strlen($Suchausdruckmapping->cSucheNeu) > 0) {
+        $query = $Suchausdruckmapping->cSucheNeu;
+    }
 
-    return $Suchausdruck;
+    return $query;
 }
 
 /**

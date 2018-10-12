@@ -255,11 +255,12 @@ class ZipValidator
     {
         return preg_replace_callback(
             "/{$szPattern}/",
-            function($hit) {
+            function ($hit) {
                 return '<span class="alert-danger">' . $hit[0] . '</span>';
             },
             $szZipCode,
-            1);
+            1
+        );
     }
 
     /**
@@ -275,5 +276,4 @@ class ZipValidator
         }
         return '';
     }
-
 }

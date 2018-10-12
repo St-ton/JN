@@ -164,7 +164,7 @@ $oExtension = (new ExtensionPoint($pagetType, Shop::getParameters(), Shop::getLa
 executeHook(HOOK_LETZTERINCLUDE_INC);
 $boxes       = Shop::Container()->getBoxService();
 $boxesToShow = $boxes->render($boxes->buildList($pagetType));
-/* @global Artikel $AktuellerArtikel */
+/* @global null|Artikel $AktuellerArtikel */
 if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0) {
     // Letzten angesehenden Artikel hinzufügen
     $boxes->addRecentlyViewed($AktuellerArtikel->kArtikel);

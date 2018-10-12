@@ -368,61 +368,62 @@ function fuehreLoginAus($userLogin, $passLogin)
                     $oWarenkorbPers->ueberpruefePositionen(true);
                     if (count($oWarenkorbPers->oWarenkorbPersPos_arr) > 0) {
                         foreach ($oWarenkorbPers->oWarenkorbPersPos_arr as $oWarenkorbPersPos) {
-                            if (empty($oWarenkorbPers->Artikel->bHasKonfig)) {
-                                // Gratisgeschenk in Warenkorb legen
-                                if ((int)$oWarenkorbPersPos->nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
-                                    $kArtikelGeschenk = (int)$oWarenkorbPersPos->kArtikel;
-                                    $oArtikelGeschenk = Shop::Container()->getDB()->query(
-                                        "SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand, 
-                                            tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
-                                            FROM tartikelattribut
-                                            JOIN tartikel 
-                                                ON tartikel.kArtikel = tartikelattribut.kArtikel
-                                            WHERE tartikelattribut.kArtikel = " . $kArtikelGeschenk . "
-                                                AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
-                                                AND CAST(tartikelattribut.cWert AS DECIMAL) <= " .
-                                        $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true),
-                                        \DB\ReturnType::SINGLE_OBJECT
-                                    );
-                                    if ((isset($oArtikelGeschenk->kArtikel) && $oArtikelGeschenk->kArtikel > 0)
-                                        && ($oArtikelGeschenk->fLagerbestand > 0
-                                            || $oArtikelGeschenk->cLagerKleinerNull === 'Y'
-                                            || $oArtikelGeschenk->cLagerBeachten === 'N')
-                                    ) {
-                                        executeHook(HOOK_WARENKORB_PAGE_GRATISGESCHENKEINFUEGEN);
-                                        $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_GRATISGESCHENK)
-                                             ->fuegeEin($kArtikelGeschenk, 1, [], C_WARENKORBPOS_TYP_GRATISGESCHENK);
-                                    }
-                                    // Konfigitems ohne Artikelbezug
-                                } elseif ($oWarenkorbPersPos->kArtikel === 0 && !empty($oWarenkorbPersPos->kKonfigitem)) {
-                                    $oKonfigitem = new Konfigitem($oWarenkorbPersPos->kKonfigitem);
-                                    $cart->erstelleSpezialPos(
-                                        $oKonfigitem->getName(),
-                                        $oWarenkorbPersPos->fAnzahl,
-                                        $oKonfigitem->getPreis(),
-                                        $oKonfigitem->getSteuerklasse(),
-                                        C_WARENKORBPOS_TYP_ARTIKEL,
-                                        false,
-                                        !Session::CustomerGroup()->isMerchant(),
-                                        '',
-                                        $oWarenkorbPersPos->cUnique,
-                                        $oWarenkorbPersPos->kKonfigitem,
-                                        $oWarenkorbPersPos->kArtikel
-                                    );
-                                    //Artikel in den Warenkorb einfügen
-                                } else {
-                                    WarenkorbHelper::addProductIDToCart(
-                                        $oWarenkorbPersPos->kArtikel,
-                                        $oWarenkorbPersPos->fAnzahl,
-                                        $oWarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr,
-                                        1,
-                                        $oWarenkorbPersPos->cUnique,
-                                        $oWarenkorbPersPos->kKonfigitem,
-                                        null,
-                                        false,
-                                        $oWarenkorbPersPos->cResponsibility
-                                    );
+                            if (!empty($oWarenkorbPers->Artikel->bHasKonfig)) {
+                                continue;
+                            }
+                            // Gratisgeschenk in Warenkorb legen
+                            if ((int)$oWarenkorbPersPos->nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
+                                $kArtikelGeschenk = (int)$oWarenkorbPersPos->kArtikel;
+                                $oArtikelGeschenk = Shop::Container()->getDB()->query(
+                                    "SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand, 
+                                        tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
+                                        FROM tartikelattribut
+                                        JOIN tartikel 
+                                            ON tartikel.kArtikel = tartikelattribut.kArtikel
+                                        WHERE tartikelattribut.kArtikel = " . $kArtikelGeschenk . "
+                                            AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
+                                            AND CAST(tartikelattribut.cWert AS DECIMAL) <= " .
+                                    $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true),
+                                    \DB\ReturnType::SINGLE_OBJECT
+                                );
+                                if ((isset($oArtikelGeschenk->kArtikel) && $oArtikelGeschenk->kArtikel > 0)
+                                    && ($oArtikelGeschenk->fLagerbestand > 0
+                                        || $oArtikelGeschenk->cLagerKleinerNull === 'Y'
+                                        || $oArtikelGeschenk->cLagerBeachten === 'N')
+                                ) {
+                                    executeHook(HOOK_WARENKORB_PAGE_GRATISGESCHENKEINFUEGEN);
+                                    $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_GRATISGESCHENK)
+                                         ->fuegeEin($kArtikelGeschenk, 1, [], C_WARENKORBPOS_TYP_GRATISGESCHENK);
                                 }
+                                // Konfigitems ohne Artikelbezug
+                            } elseif ($oWarenkorbPersPos->kArtikel === 0 && !empty($oWarenkorbPersPos->kKonfigitem)) {
+                                $oKonfigitem = new Konfigitem($oWarenkorbPersPos->kKonfigitem);
+                                $cart->erstelleSpezialPos(
+                                    $oKonfigitem->getName(),
+                                    $oWarenkorbPersPos->fAnzahl,
+                                    $oKonfigitem->getPreis(),
+                                    $oKonfigitem->getSteuerklasse(),
+                                    C_WARENKORBPOS_TYP_ARTIKEL,
+                                    false,
+                                    !Session::CustomerGroup()->isMerchant(),
+                                    '',
+                                    $oWarenkorbPersPos->cUnique,
+                                    $oWarenkorbPersPos->kKonfigitem,
+                                    $oWarenkorbPersPos->kArtikel
+                                );
+                                //Artikel in den Warenkorb einfügen
+                            } else {
+                                WarenkorbHelper::addProductIDToCart(
+                                    $oWarenkorbPersPos->kArtikel,
+                                    $oWarenkorbPersPos->fAnzahl,
+                                    $oWarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr,
+                                    1,
+                                    $oWarenkorbPersPos->cUnique,
+                                    $oWarenkorbPersPos->kKonfigitem,
+                                    null,
+                                    false,
+                                    $oWarenkorbPersPos->cResponsibility
+                                );
                             }
                         }
                         $cart->setzePositionsPreise();

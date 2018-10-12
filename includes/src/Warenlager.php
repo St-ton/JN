@@ -104,9 +104,9 @@ class Warenlager extends MainModel
 
     /**
      * @param stdClass $oLageranzeige
-     * @return Warenlager
+     * @return $this
      */
-    public function setOLageranzeige($oLageranzeige)
+    public function setOLageranzeige($oLageranzeige): self
     {
         $this->oLageranzeige = $oLageranzeige;
 
@@ -123,9 +123,9 @@ class Warenlager extends MainModel
 
     /**
      * @param array $cSpracheAssoc_arr
-     * @return Warenlager
+     * @return $this
      */
-    public function setLanguages($cSpracheAssoc_arr)
+    public function setLanguages($cSpracheAssoc_arr): self
     {
         $this->cSpracheAssoc_arr = $cSpracheAssoc_arr;
 
@@ -142,9 +142,9 @@ class Warenlager extends MainModel
 
     /**
      * @param float $fBestand
-     * @return Warenlager
+     * @return $this
      */
-    public function setStock($fBestand)
+    public function setStock($fBestand): self
     {
         $this->fBestand = $fBestand;
 
@@ -161,9 +161,9 @@ class Warenlager extends MainModel
 
     /**
      * @param float $fZulauf
-     * @return Warenlager
+     * @return $this
      */
-    public function setBackorder($fZulauf)
+    public function setBackorder($fZulauf): self
     {
         $this->fZulauf = $fZulauf;
 
@@ -180,9 +180,9 @@ class Warenlager extends MainModel
 
     /**
      * @param string $dZulaufDatum
-     * @return Warenlager
+     * @return $this
      */
-    public function setBackorderDate($dZulaufDatum)
+    public function setBackorderDate($dZulaufDatum): self
     {
         $this->dZulaufDatum = $dZulaufDatum;
 
@@ -199,9 +199,9 @@ class Warenlager extends MainModel
 
     /**
      * @param string $dZulaufDatum_de
-     * @return Warenlager
+     * @return $this
      */
-    public function setBackorderDateDE($dZulaufDatum_de)
+    public function setBackorderDateDE($dZulaufDatum_de): self
     {
         $this->dZulaufDatum_de = $dZulaufDatum_de;
 
@@ -220,7 +220,7 @@ class Warenlager extends MainModel
      * @param int $id
      * @return $this
      */
-    public function setID(int $id)
+    public function setID(int $id): self
     {
         $this->kWarenlager = $id;
 
@@ -239,7 +239,7 @@ class Warenlager extends MainModel
      * @param int $kWarenlager
      * @return $this
      */
-    public function setWarenlager(int $kWarenlager)
+    public function setWarenlager(int $kWarenlager): self
     {
         return $this->setID($kWarenlager);
     }
@@ -256,7 +256,7 @@ class Warenlager extends MainModel
      * @param string $cName
      * @return $this
      */
-    public function setName($cName)
+    public function setName($cName): self
     {
         $this->cName = $cName;
 
@@ -275,7 +275,7 @@ class Warenlager extends MainModel
      * @param string $cKuerzel
      * @return $this
      */
-    public function setKuerzel($cKuerzel)
+    public function setKuerzel($cKuerzel): self
     {
         $this->cKuerzel = $cKuerzel;
 
@@ -294,7 +294,7 @@ class Warenlager extends MainModel
      * @param string $cLagerTyp
      * @return $this
      */
-    public function setLagerTyp($cLagerTyp)
+    public function setLagerTyp($cLagerTyp): self
     {
         $this->cLagerTyp = $cLagerTyp;
 
@@ -313,7 +313,7 @@ class Warenlager extends MainModel
      * @param string $cBeschreibung
      * @return $this
      */
-    public function setBeschreibung($cBeschreibung)
+    public function setBeschreibung($cBeschreibung): self
     {
         $this->cBeschreibung = $cBeschreibung;
 
@@ -332,7 +332,7 @@ class Warenlager extends MainModel
      * @param string $cStrasse
      * @return $this
      */
-    public function setStrasse($cStrasse)
+    public function setStrasse($cStrasse): self
     {
         $this->cStrasse = $cStrasse;
 
@@ -351,7 +351,7 @@ class Warenlager extends MainModel
      * @param string $cPLZ
      * @return $this
      */
-    public function setPLZ($cPLZ)
+    public function setPLZ($cPLZ): self
     {
         $this->cPLZ = $cPLZ;
 
@@ -370,7 +370,7 @@ class Warenlager extends MainModel
      * @param string $cOrt
      * @return $this
      */
-    public function setOrt($cOrt)
+    public function setOrt($cOrt): self
     {
         $this->cOrt = $cOrt;
 
@@ -389,7 +389,7 @@ class Warenlager extends MainModel
      * @param string $cLand
      * @return $this
      */
-    public function setLand($cLand)
+    public function setLand($cLand): self
     {
         $this->cLand = $cLand;
 
@@ -408,7 +408,7 @@ class Warenlager extends MainModel
      * @param int $nFulfillment
      * @return $this
      */
-    public function setFulfillment($nFulfillment)
+    public function setFulfillment($nFulfillment): self
     {
         $this->nFulfillment = (int)$nFulfillment;
 
@@ -427,7 +427,7 @@ class Warenlager extends MainModel
      * @param int $nAktiv
      * @return $this
      */
-    public function setAktiv($nAktiv)
+    public function setAktiv($nAktiv): self
     {
         $this->nAktiv = (int)$nAktiv;
 
@@ -439,7 +439,7 @@ class Warenlager extends MainModel
      * @param null|object $oObj
      * @param int|null    $xOption
      */
-    public function load($kKey, $oObj = null, $xOption = null)
+    public function load($kKey, $oObj = null, $xOption = null): void
     {
         if ($kKey !== null) {
             $kKey = (int)$kKey;
@@ -590,10 +590,14 @@ class Warenlager extends MainModel
      * @param int|null   $kSprache
      * @param null|array $xOption_arr
      * @param bool       $bActive
-     * @return array|null
+     * @return array
      */
-    public static function getByProduct(int $kArtikel, int $kSprache = null, $xOption_arr = null, bool $bActive = true)
-    {
+    public static function getByProduct(
+        int $kArtikel,
+        int $kSprache = null,
+        $xOption_arr = null,
+        bool $bActive = true
+    ): array {
         $oWarenlager_arr = [];
         if ($kArtikel > 0) {
             $cSql     = $bActive ? ' AND twarenlager.nAktiv = 1' : '';
@@ -634,7 +638,7 @@ class Warenlager extends MainModel
      * @param array $xOption_arr
      * @return $this
      */
-    public function buildWarehouseInfo($fBestand, array $xOption_arr)
+    public function buildWarehouseInfo($fBestand, array $xOption_arr): self
     {
         $this->oLageranzeige                = new stdClass();
         $this->oLageranzeige->cLagerhinweis = [];

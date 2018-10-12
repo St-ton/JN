@@ -302,7 +302,8 @@ class WarenkorbPers
 
             $attributes = Shop::Container()->getDB()->selectAll(
                 'twarenkorbpersposeigenschaft',
-                'kWarenkorbPersPos', (int)$posData->kWarenkorbPersPos
+                'kWarenkorbPersPos',
+                (int)$posData->kWarenkorbPersPos
             );
             foreach ($attributes as $attribute) {
                 $oWarenkorbPersPosEigenschaft = new WarenkorbPersPosEigenschaft(
@@ -343,21 +344,27 @@ class WarenkorbPers
             // Hat die Position einen Artikel
             if ($cartPos->kArtikel > 0) {
                 // Prüfe auf kArtikel
-                $oArtikelVorhanden = Shop::Container()->getDB()->select('tartikel', 'kArtikel',
-                    (int)$cartPos->kArtikel);
+                $oArtikelVorhanden = Shop::Container()->getDB()->select(
+                    'tartikel',
+                    'kArtikel',
+                    (int)$cartPos->kArtikel
+                );
                 // Falls Artikel vorhanden
                 if (isset($oArtikelVorhanden->kArtikel) && $oArtikelVorhanden->kArtikel > 0) {
                     // Sichtbarkeit Prüfen
                     $oSichtbarkeit = Shop::Container()->getDB()->select(
                         'tartikelsichtbarkeit',
-                        'kArtikel', (int)$cartPos->kArtikel,
-                        'kKundengruppe', Session::CustomerGroup()->getID()
+                        'kArtikel',
+                        (int)$cartPos->kArtikel,
+                        'kKundengruppe',
+                        Session::CustomerGroup()->getID()
                     );
                     if ($oSichtbarkeit === null || !isset($oSichtbarkeit->kArtikel) || !$oSichtbarkeit->kArtikel) {
                         // Prüfe welche kEigenschaft gesetzt ist
                         $oEigenschaft_arr = Shop::Container()->getDB()->selectAll(
                             'teigenschaft',
-                            'kArtikel', (int)$cartPos->kArtikel,
+                            'kArtikel',
+                            (int)$cartPos->kArtikel,
                             'kEigenschaft, cName, cTyp'
                         );
                         foreach ($oEigenschaft_arr as $oEigenschaft) {
@@ -375,9 +382,14 @@ class WarenkorbPers
                                             (int)$oEigenschaft->kEigenschaft
                                         );
                                         // Prüfe ob die Eigenschaft vorhanden ist
-                                        if (!isset($oEigenschaftWertVorhanden->kEigenschaftWert) || !$oEigenschaftWertVorhanden->kEigenschaftWert) {
-                                            Shop::Container()->getDB()->delete('twarenkorbperspos', 'kWarenkorbPersPos',
-                                                $cartPos->kWarenkorbPersPos);
+                                        if (!isset($oEigenschaftWertVorhanden->kEigenschaftWert)
+                                            || !$oEigenschaftWertVorhanden->kEigenschaftWert
+                                        ) {
+                                            Shop::Container()->getDB()->delete(
+                                                'twarenkorbperspos',
+                                                'kWarenkorbPersPos',
+                                                $cartPos->kWarenkorbPersPos
+                                            );
                                             Shop::Container()->getDB()->delete(
                                                 'twarenkorbpersposeigenschaft',
                                                 'kWarenkorbPersPos',
@@ -426,15 +438,15 @@ class WarenkorbPers
                 continue;
             }
             $oEigenschaftwerte_arr = [];
-            foreach ($oPosition->WarenkorbPosEigenschaftArr as $oWarenkorbPosEigenschaft) {
+            foreach ($oPosition->WarenkorbPosEigenschaftArr as $wkpe) {
                 unset($oEigenschaftwerte);
                 $oEigenschaftwerte                       = new stdClass();
-                $oEigenschaftwerte->kEigenschaftWert     = $oWarenkorbPosEigenschaft->kEigenschaftWert;
-                $oEigenschaftwerte->kEigenschaft         = $oWarenkorbPosEigenschaft->kEigenschaft;
-                $oEigenschaftwerte->cEigenschaftName     = $oWarenkorbPosEigenschaft->cEigenschaftName[$_SESSION['cISOSprache']];
-                $oEigenschaftwerte->cEigenschaftWertName = $oWarenkorbPosEigenschaft->cEigenschaftWertName[$_SESSION['cISOSprache']];
-                if ($oWarenkorbPosEigenschaft->cTyp === 'FREIFELD' || $oWarenkorbPosEigenschaft->cTyp === 'PFLICHT-FREIFELD') {
-                    $oEigenschaftwerte->cFreifeldWert = $oWarenkorbPosEigenschaft->cEigenschaftWertName[$_SESSION['cISOSprache']];
+                $oEigenschaftwerte->kEigenschaftWert     = $wkpe->kEigenschaftWert;
+                $oEigenschaftwerte->kEigenschaft         = $wkpe->kEigenschaft;
+                $oEigenschaftwerte->cEigenschaftName     = $wkpe->cEigenschaftName[$_SESSION['cISOSprache']];
+                $oEigenschaftwerte->cEigenschaftWertName = $wkpe->cEigenschaftWertName[$_SESSION['cISOSprache']];
+                if ($wkpe->cTyp === 'FREIFELD' || $wkpe->cTyp === 'PFLICHT-FREIFELD') {
+                    $oEigenschaftwerte->cFreifeldWert = $wkpe->cEigenschaftWertName[$_SESSION['cISOSprache']];
                 }
 
                 $oEigenschaftwerte_arr[] = $oEigenschaftwerte;
@@ -485,9 +497,12 @@ class WarenkorbPers
             // Pruefe auf kArtikel
             $oArtikelVorhanden = Shop::Container()->getDB()->select(
                 'tartikel',
-                'kArtikel', $kArtikel,
-                null, null,
-                null, null,
+                'kArtikel',
+                $kArtikel,
+                null,
+                null,
+                null,
+                null,
                 false,
                 'kArtikel, cName'
             );
@@ -496,9 +511,12 @@ class WarenkorbPers
                 // Sichtbarkeit pruefen
                 $visibility = Shop::Container()->getDB()->select(
                     'tartikelsichtbarkeit',
-                    'kArtikel', $kArtikel,
-                    'kKundengruppe', Session::CustomerGroup()->getID(),
-                    null, null,
+                    'kArtikel',
+                    $kArtikel,
+                    'kKundengruppe',
+                    Session::CustomerGroup()->getID(),
+                    null,
+                    null,
                     false,
                     'kArtikel'
                 );

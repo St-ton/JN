@@ -9,7 +9,7 @@ namespace GeneralDataProtection;
 /**
  * class TableCleaner
  * controller-class of "shop customer data anonymization"
- * ("Global Data Protection Rules", german: "DSGVO")
+ * ("GDPR" or "Global Data Protection Rules", german: "DSGVO")
  */
 class TableCleaner
 {
@@ -32,13 +32,20 @@ class TableCleaner
      * @var array
      */
     private $vMethods = [
+        // anonymize
         ['szName' => 'AnonymizeIps',                      'iIntervalDays' => 7],
         ['szName' => 'AnonymizeDeletedCustomer',          'iIntervalDays' => 7],
+        // delete storry-based
         ['szName' => 'CleanupCustomerRelicts',            'iIntervalDays' => 0],
         ['szName' => 'CleanupGuestAccountsWithoutOrders', 'iIntervalDays' => 0],
         ['szName' => 'CleanupNewsletterRecipients',       'iIntervalDays' => 30],
         ['szName' => 'CleanupLogs',                       'iIntervalDays' => 90],
         ['szName' => 'CleanupOldGuestAccounts',           'iIntervalDays' => 365]
+        // delete time-based
+        ['szName' => 'CleanupService',                    'iIntervalDays' => 30],
+        ['szName' => 'CleanupService',                    'iIntervalDays' => 60],
+        ['szName' => 'CleanupService',                    'iIntervalDays' => 120],
+        ['szName' => 'CleanupService',                    'iIntervalDays' => 365]
     ];
 
 
@@ -63,6 +70,7 @@ class TableCleaner
         $t_start = microtime(true);
 
         $nMethodsCount = \count($this->vMethods);
+        // iterate over the indexed array (configurable order!)
         for ($i=0; $i < $nMethodsCount ; $i++) {
             $szMethodName = __NAMESPACE__ . '\\' . $this->vMethods[$i]['szName'];
             ($this->oLogger === null) ?: $this->oLogger->log(JTLLOG_LEVEL_NOTICE, 'Anonymize Method running: ' . $this->vMethods[$i]['szName']);

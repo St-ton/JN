@@ -36,9 +36,9 @@ class Journal
         $this->oNow     = $oNow;
     }
 
-    public static const ISSUER_CUSTOMER    = 'customer';
-    public static const ISSUER_APPLICATION = 'application';
-    public static const ISSUER_ADMIN       = 'admin';
+    public static const ISSUER_CUSTOMER    = 'CUSTOMER';
+    public static const ISSUER_APPLICATION = 'APPLICATION';
+    public static const ISSUER_ADMIN       = 'ADMIN';
 
     /**
      * saves the occurence of a data-modify-event to the journal

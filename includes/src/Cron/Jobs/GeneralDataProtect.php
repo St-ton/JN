@@ -19,16 +19,6 @@ use Psr\Log\LoggerInterface;
  */
 class GeneralDataProtect extends Job
 {
-
-    /**
-     * @inheritdoc
-     */
-    public function __construct(DbInterface $db, LoggerInterface $logger)
-    {
-        parent::__construct($db, $logger);
-    }
-
-
     /**
      * @inheritdoc
      */

@@ -72,7 +72,12 @@ class FormHelper
      */
     public static function eingabenKorrekt(array $fehlendeAngaben): int
     {
-        return (int)\Functional\none($fehlendeAngaben, function ($e) { return $e > 0; });
+        return (int)\Functional\none(
+            $fehlendeAngaben,
+            function ($e) {
+                return $e > 0;
+            }
+        );
     }
     
     /**

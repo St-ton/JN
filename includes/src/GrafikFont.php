@@ -77,7 +77,7 @@ class GrafikFont
      *
      * @return string|null
      */
-    public function getInputString()
+    public function getInputString(): ?string
     {
         return $this->m_strInput;
     }
@@ -106,7 +106,7 @@ class GrafikFont
      *
      * @return string|null
      */
-    public function getHTML()
+    public function getHTML(): ?string
     {
         return $this->m_strHTML;
     }
@@ -155,22 +155,28 @@ class GrafikFont
                     $strFileName = 'Dollar.' . $this->m_strFile;
                     if (!is_file($this->m_strFontDir . $strFileName)) {
                         $bMakeHTML = false;
-                        $strHTML .= '<img style="border:none; margin-right:0px;" src="' . $this->m_strFontDir . 'U.' . $this->m_strFile . '" alt="' . $c . '" />';
-                        $strHTML .= '<img style="border:none; margin-right:0px;" src="' . $this->m_strFontDir . 'S.' . $this->m_strFile . '" alt="' . $c . '" />';
-                        $strHTML .= '<img style="border:none; margin-right:0px;" src="' . $this->m_strFontDir . 'D.' . $this->m_strFile . ' alt="' . $c . '" />';
+                        $strHTML .= '<img style="border:none; margin-right:0px;" src="' .
+                            $this->m_strFontDir . 'U.' . $this->m_strFile . '" alt="' . $c . '" />';
+                        $strHTML .= '<img style="border:none; margin-right:0px;" src="' .
+                            $this->m_strFontDir . 'S.' . $this->m_strFile . '" alt="' . $c . '" />';
+                        $strHTML .= '<img style="border:none; margin-right:0px;" src="' .
+                            $this->m_strFontDir . 'D.' . $this->m_strFile . ' alt="' . $c . '" />';
                     }
                     break;
                 case '':
                     $strFileName = "Euro." . $this->m_strFile;
                     if (!is_file($this->m_strFontDir . $strFileName)) {
                         $bMakeHTML = false;
-                        $strHTML .= '<img style="border:none; margin-right:0px;" src="' . $this->m_strFontDir . 'E.' . $this->m_strFile . '" alt="' . $c . '" />';
-                        $strHTML .= '<img style="border:none; margin-right:0px;" src="' . $this->m_strFontDir . 'U.' . $this->m_strFile . '" alt="' . $c . '" />';
-                        $strHTML .= '<img style="border:none; margin-right:0px;" src="' . $this->m_strFontDir . 'R.' . $this->m_strFile . '" alt="' . $c . '" />';
+                        $strHTML .= '<img style="border:none; margin-right:0px;" src="' .
+                            $this->m_strFontDir . 'E.' . $this->m_strFile . '" alt="' . $c . '" />';
+                        $strHTML .= '<img style="border:none; margin-right:0px;" src="' .
+                            $this->m_strFontDir . 'U.' . $this->m_strFile . '" alt="' . $c . '" />';
+                        $strHTML .= '<img style="border:none; margin-right:0px;" src="' .
+                            $this->m_strFontDir . 'R.' . $this->m_strFile . '" alt="' . $c . '" />';
                     }
                     break;
                 case '´':
-                case '`';
+                case '`':
                     $strFileName = 'Hochkomma.' . $this->m_strFile;
                     break;
                 case ',':
@@ -192,16 +198,19 @@ class GrafikFont
                     $strFileName = '';
                     break;
                 default:
-                    // wenn cent, dann nächste zahl abwarten, wenn die nicht null ist eine null und die zahl ausgeben, ansonsten für beide Nullen das Minus
+                    // wenn cent, dann nächste zahl abwarten, wenn die nicht null ist eine null und die zahl ausgeben,
+                    // ansonsten für beide Nullen das Minus
                     if ($bCent && $bNull && $c == '0') {
                         $strFileName = 'Minus.' . $this->m_strFile;
                         $bNull       = false;
                     } elseif ($bCent && $bNull && $c != '0') {
                         if (is_numeric($c)) {
                             $strFileName = '0' . $strKlein . '.' . $this->m_strFile;
-                            $strHTML .= '<img style="border:none; margin-right:0px;" src="' . $this->m_strFontDir . $strFileName . '" alt="' . $c . '" />';
+                            $strHTML .= '<img style="border:none; margin-right:0px;" src="' .
+                                $this->m_strFontDir . $strFileName . '" alt="' . $c . '" />';
                             $strFileName = $c . $strKlein . '.' . $this->m_strFile;
-                            $strHTML .= '<img style="border:none; margin-right:0px;" src="' . $this->m_strFontDir . $strFileName . '" alt="' . $c . '" />';
+                            $strHTML .= '<img style="border:none; margin-right:0px;" src="' .
+                                $this->m_strFontDir . $strFileName . '" alt="' . $c . '" />';
                             $bMakeHTML = false;
                         } else {
                             $strFileName = $c . '.' . $this->m_strFile;
@@ -221,10 +230,11 @@ class GrafikFont
                     break;
             }
             if ($bMakeHTML && is_file($this->m_strFontDir . $strFileName)) {
-                $strHTML .= '<img style="border:none; margin-right:0px;" src="' . $this->m_strFontDir . $strFileName . '" alt="' . $c . '" />';
+                $strHTML .= '<img style="border:none; margin-right:0px;" src="' .
+                    $this->m_strFontDir . $strFileName . '" alt="' . $c . '" />';
             }
 
-            if ($c == $strTrennzeichenCent) {
+            if ($c === $strTrennzeichenCent) {
                 $bCent        = true;
                 $nCentCounter = 0;
             }

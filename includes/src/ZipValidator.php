@@ -223,7 +223,7 @@ class ZipValidator
      * @param string $szZipCode
      * @return string
      */
-    public function validateZip($szZipCode)
+    public function validateZip($szZipCode): string
     {
         if (array_key_exists($this->cISO, self::$vPatternHashList)) {
             if (!preg_match("/^" . self::$vPatternHashList[$this->cISO] . "$/", $szZipCode)) {
@@ -251,7 +251,7 @@ class ZipValidator
      * @param string $szPattern
      * @return string
      */
-    private function beautifyErrorString($szZipCode, $szPattern)
+    private function beautifyErrorString($szZipCode, $szPattern): string
     {
         return preg_replace_callback(
             "/{$szPattern}/",
@@ -268,7 +268,7 @@ class ZipValidator
      *
      * @return string
      */
-    public function getError()
+    public function getError(): string
     {
         if ('' !== $this->szErrorString) {
             return 'Postleitzahl stimmt nicht mit Landesvorgabe überein! '

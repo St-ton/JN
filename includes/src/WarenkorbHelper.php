@@ -1942,16 +1942,16 @@ class WarenkorbHelper
         $bVorhanden   = false;
         $cISOSprache  = Shop::getLanguageCode();
         if (is_array($cart->PositionenArr) && count($cart->PositionenArr) > 0) {
-            foreach ($cart->PositionenArr as $i => $oPosition) {
-                if ($oPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
-                    && isset($oPosition->Artikel)
-                    && $oPosition->Artikel->cLagerBeachten === 'Y'
-                    && $oPosition->Artikel->cLagerKleinerNull === 'Y'
+            foreach ($cart->PositionenArr as $pos) {
+                if ($pos->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
+                    && isset($pos->Artikel)
+                    && $pos->Artikel->cLagerBeachten === 'Y'
+                    && $pos->Artikel->cLagerKleinerNull === 'Y'
                     && $conf['global']['global_lieferverzoegerung_anzeigen'] === 'Y'
-                    && $oPosition->nAnzahl > $oPosition->Artikel->fLagerbestand
+                    && $pos->nAnzahl > $pos->Artikel->fLagerbestand
                 ) {
                     $bVorhanden   = true;
-                    $cName        = is_array($oPosition->cName) ? $oPosition->cName[$cISOSprache] : $oPosition->cName;
+                    $cName        = is_array($pos->cName) ? $pos->cName[$cISOSprache] : $pos->cName;
                     $cArtikelName .= '<li>' . $cName . '</li>';
                 }
             }

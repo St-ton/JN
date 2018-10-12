@@ -32,13 +32,20 @@ class NewsJson
         if (count($oNews_arr) > 0) {
             $shopURL = Shop::getURL() . '/';
             foreach ($oNews_arr as $oNews) {
-                $oNewsItem = new NewsItem($oNews->cBetreff, $oNews->cText, $oNews->dGueltigVonJS, $shopURL . $oNews->cUrl);
+                $oNewsItem = new NewsItem(
+                    $oNews->cBetreff,
+                    $oNews->cText,
+                    $oNews->dGueltigVonJS,
+                    $shopURL . $oNews->cUrl
+                );
 
                 if ($this->checkMedia($oNews->cVorschauText)) {
                     $oNewsItemAsset = new NewsItemAsset($oNews->cVorschauText);
                     $oNewsItem->addAsset($oNewsItemAsset);
                 } else {
-                    $oNewsItem->text = $oNews->cVorschauText . '<br /><a href="' . $oNews->cUrl . '" class="btn">Mehr...</a>';
+                    $oNewsItem->text = $oNews->cVorschauText .
+                        '<br /><a href="' . $oNews->cUrl .
+                        '" class="btn">Mehr...</a>';
                 }
 
                 $this->timeline->date[] = $oNewsItem;
@@ -87,7 +94,9 @@ class NewsJson
      */
     public static function buildThumbnail($cOptions_arr)
     {
-        if (isset($cOptions_arr['filename'], $cOptions_arr['path'], $cOptions_arr['isdir']) && !$cOptions_arr['isdir']) {
+        if (isset($cOptions_arr['filename'], $cOptions_arr['path'], $cOptions_arr['isdir'])
+            && !$cOptions_arr['isdir']
+        ) {
             $cOptions_arr['thumb'] = Shop::getImageBaseURL() .
                 PFAD_NEWSBILDER . "{$cOptions_arr['news']}/{$cOptions_arr['filename']}";
         }

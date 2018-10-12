@@ -242,12 +242,12 @@ class MerkmalWert
             "SELECT tmerkmalwert.*, {$cSelect}
                 FROM tmerkmalwert
                 {$cJoin}
-                WHERE tmerkmalwert.kMerkmal = " . (int)$kMerkmal . "
+                WHERE tmerkmalwert.kMerkmal = " . $kMerkmal . "
                 ORDER BY tmerkmalwert.nSort",
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         $imageBaseURL = Shop::getImageBaseURL();
-        foreach ($oMerkmalWert_arr as $i => $oMerkmalWert) {
+        foreach ($oMerkmalWert_arr as $oMerkmalWert) {
             $oMerkmalWert->cURL     = UrlHelper::buildURL($oMerkmalWert, URLART_MERKMAL);
             $oMerkmalWert->cURLFull = UrlHelper::buildURL($oMerkmalWert, URLART_MERKMAL, true);
 

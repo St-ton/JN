@@ -14,21 +14,21 @@ class Image
     /**
      * Image types
      */
-    const TYPE_PRODUCT = 'product';
-    const TYPE_CATEGORY = 'category';
-    const TYPE_CONFIGGROUP = 'configgroup';
-    const TYPE_VARIATION = 'variation';
-    const TYPE_MANUFACTURER = 'manufacturer';
-    const TYPE_ATTRIBUTE = 'attribute';
-    const TYPE_ATTRIBUTE_VALUE = 'attributevalue';
+    public const TYPE_PRODUCT = 'product';
+    public const TYPE_CATEGORY = 'category';
+    public const TYPE_CONFIGGROUP = 'configgroup';
+    public const TYPE_VARIATION = 'variation';
+    public const TYPE_MANUFACTURER = 'manufacturer';
+    public const TYPE_ATTRIBUTE = 'attribute';
+    public const TYPE_ATTRIBUTE_VALUE = 'attributevalue';
 
     /**
      * Image sizes
      */
-    const SIZE_XS = 'xs';
-    const SIZE_SM = 'sm';
-    const SIZE_MD = 'md';
-    const SIZE_LG = 'lg';
+    public const SIZE_XS = 'xs';
+    public const SIZE_SM = 'sm';
+    public const SIZE_MD = 'md';
+    public const SIZE_LG = 'lg';
 
     /**
      * Image type map
@@ -92,7 +92,7 @@ class Image
      * @param int    $number
      * @return stdClass|null
      */
-    public static function getByPath($path, $type, int $number = 1)
+    public static function getByPath($path, $type, int $number = 1): ?stdClass
     {
         $item = Shop::Container()->getDB()->queryPrepared(
             'SELECT kArtikel AS id, nNr AS number, cPfad AS path 
@@ -117,7 +117,7 @@ class Image
      * @param int    $number
      * @return stdClass|null
      */
-    public static function getById(int $id, $type, int $number = 1)
+    public static function getById(int $id, $type, int $number = 1): ?stdClass
     {
         $item = Shop::Container()->getDB()->queryPrepared(
             'SELECT kArtikel AS id, nNr AS number, cPfad AS path 

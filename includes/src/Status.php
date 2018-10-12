@@ -145,6 +145,7 @@ class Status
 
     /**
      * @return bool
+     * @throws Exception
      */
     protected function hasPendingUpdates(): bool
     {
@@ -334,11 +335,11 @@ class Status
         return isset($conf['suche_fulltext'])
             && $conf['suche_fulltext'] !== 'N'
             && (!Shop::Container()->getDB()->query(
-                    "SHOW INDEX 
+                "SHOW INDEX 
                     FROM tartikel 
                     WHERE KEY_NAME = 'idx_tartikel_fulltext'",
-                    \DB\ReturnType::SINGLE_OBJECT
-                )
+                \DB\ReturnType::SINGLE_OBJECT
+            )
                 || !Shop::Container()->getDB()->query(
                     "SHOW INDEX 
                         FROM tartikelsprache 

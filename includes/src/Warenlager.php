@@ -95,9 +95,9 @@ class Warenlager extends MainModel
     public $dZulaufDatum_de;
 
     /**
-     * @return stdClass
+     * @return stdClass|null
      */
-    public function getOLageranzeige()
+    public function getOLageranzeige(): ?stdClass
     {
         return $this->oLageranzeige;
     }
@@ -114,9 +114,9 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @return array
+     * @return array|null
      */
-    public function getLanguages()
+    public function getLanguages(): ?array
     {
         return $this->cSpracheAssoc_arr;
     }
@@ -171,9 +171,9 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getBackorderDate()
+    public function getBackorderDate(): ?string
     {
         return $this->dZulaufDatum;
     }
@@ -190,9 +190,9 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getBackorderDateDE()
+    public function getBackorderDateDE(): ?string
     {
         return $this->dZulaufDatum_de;
     }
@@ -209,9 +209,9 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getID()
+    public function getID(): ?int
     {
         return $this->kWarenlager;
     }
@@ -228,9 +228,9 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getWarenlager()
+    public function getWarenlager(): ?int
     {
         return $this->getID();
     }
@@ -245,9 +245,9 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->cName;
     }
@@ -264,9 +264,9 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getKuerzel()
+    public function getKuerzel(): ?string
     {
         return $this->cKuerzel;
     }
@@ -283,9 +283,9 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getLagerTyp()
+    public function getLagerTyp(): ?string
     {
         return $this->cLagerTyp;
     }
@@ -302,9 +302,9 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getBeschreibung()
+    public function getBeschreibung(): string
     {
         return $this->cBeschreibung;
     }
@@ -321,9 +321,9 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getStrasse()
+    public function getStrasse(): ?string
     {
         return $this->cStrasse;
     }
@@ -340,9 +340,9 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getPLZ()
+    public function getPLZ(): ?string
     {
         return $this->cPLZ;
     }
@@ -359,9 +359,9 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getOrt()
+    public function getOrt(): ?string
     {
         return $this->cOrt;
     }
@@ -378,9 +378,9 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getLand()
+    public function getLand(): ?string
     {
         return $this->cLand;
     }
@@ -397,9 +397,9 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getFulfillment()
+    public function getFulfillment(): ?int
     {
         return $this->nFulfillment;
     }
@@ -416,9 +416,9 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getAktiv()
+    public function getAktiv(): ?int
     {
         return $this->nAktiv;
     }

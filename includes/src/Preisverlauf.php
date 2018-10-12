@@ -35,9 +35,8 @@ class Preisverlauf
     public $dDate;
 
     /**
-     * Konstruktor
-     *
-     * @param int $kPreisverlauf - Falls angegeben, wird der Preisverlauf mit angegebenem kPreisverlauf aus der DB geholt
+     * Preisverlauf constructor.
+     * @param int $kPreisverlauf
      */
     public function __construct(int $kPreisverlauf = 0)
     {

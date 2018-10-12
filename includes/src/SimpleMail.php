@@ -218,7 +218,11 @@ class SimpleMail
                 case 'QMail':
                     break;
                 case 'smtp':
-                    if (empty($this->cSMTPAuth) || empty($this->cSMTPHost) || empty($this->cSMTPPass) || empty($this->cSMTPUser)) {
+                    if (empty($this->cSMTPAuth)
+                        || empty($this->cSMTPHost)
+                        || empty($this->cSMTPPass)
+                        || empty($this->cSMTPUser)
+                    ) {
                         $this->setErrorLog('SMTP', 'SMTP Daten nicht gesetzt!');
                     }
                     break;
@@ -323,7 +327,7 @@ class SimpleMail
     /**
      * @return string|null
      */
-    public function getVerfasserMail()
+    public function getVerfasserMail(): ?string
     {
         return $this->cVerfasserMail;
     }
@@ -332,7 +336,7 @@ class SimpleMail
      *
      * @return string|null
      */
-    public function getVerfasserName()
+    public function getVerfasserName(): ?string
     {
         return $this->cVerfasserName;
     }
@@ -341,7 +345,7 @@ class SimpleMail
      *
      * @return string|null
      */
-    public function getBetreff()
+    public function getBetreff(): ?string
     {
         return $this->cBetreff;
     }
@@ -350,7 +354,7 @@ class SimpleMail
      *
      * @return string|null
      */
-    public function getBodyHTML()
+    public function getBodyHTML(): ?string
     {
         return $this->cBodyHTML;
     }
@@ -359,7 +363,7 @@ class SimpleMail
      *
      * @return string|null
      */
-    public function getBodyText()
+    public function getBodyText(): ?string
     {
         return $this->cBodyText;
     }
@@ -443,7 +447,7 @@ class SimpleMail
      * @param string $cKey
      * @param mixed  $cValue
      */
-    public function setErrorLog($cKey, $cValue)
+    public function setErrorLog($cKey, $cValue): void
     {
         $this->cErrorLog[$cKey] = $cValue;
     }
@@ -451,7 +455,7 @@ class SimpleMail
     /**
      * @return string|null
      */
-    public function getMethod()
+    public function getMethod(): ?string
     {
         return $this->cMethod;
     }

@@ -190,8 +190,8 @@ class WarenkorbPers
             // Die Position mit ID $id löschen
             Shop::Container()->getDB()->delete('twarenkorbperspos', 'kWarenkorbPersPos', $id);
             // WarenkorbPers Position aus der Session löschen
-            if (isset($_SESSION['WarenkorbPers']->oWarenkorbPersPos_arr) 
-                && is_array($_SESSION['WarenkorbPers']->oWarenkorbPersPos_arr) 
+            if (isset($_SESSION['WarenkorbPers']->oWarenkorbPersPos_arr)
+                && is_array($_SESSION['WarenkorbPers']->oWarenkorbPersPos_arr)
                 && count($_SESSION['WarenkorbPers']->oWarenkorbPersPos_arr) > 0
             ) {
                 foreach ($_SESSION['WarenkorbPers']->oWarenkorbPersPos_arr as $i => $oWarenkorbPersPos) {
@@ -200,7 +200,8 @@ class WarenkorbPers
                     }
                 }
                 // Positionen Array in der WarenkorbPers neu nummerieren
-                $_SESSION['WarenkorbPers']->oWarenkorbPersPos_arr = array_merge($_SESSION['WarenkorbPers']->oWarenkorbPersPos_arr);
+                $_SESSION['WarenkorbPers']->oWarenkorbPersPos_arr =
+                    array_merge($_SESSION['WarenkorbPers']->oWarenkorbPersPos_arr);
             }
         }
 

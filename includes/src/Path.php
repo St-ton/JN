@@ -13,7 +13,7 @@ class Path
      * @return string
      * @throws InvalidArgumentException
      */
-    public static function combine()
+    public static function combine(): string
     {
         $paths = func_get_args();
 
@@ -49,7 +49,7 @@ class Path
      * @param string $path
      * @return string
      */
-    public static function getFileNameWithoutExtension($path)
+    public static function getFileNameWithoutExtension($path): string
     {
         return pathinfo($path, PATHINFO_FILENAME);
     }

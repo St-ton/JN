@@ -56,7 +56,9 @@ class ImageMap implements IExtensionPoint
         return Shop::Container()->getDB()->query(
             'SELECT *, IF((CURDATE() >= DATE(vDatum)) AND (CURDATE() <= DATE(bDatum) OR bDatum = 0), 1, 0) AS active 
                 FROM timagemap
-                ORDER BY bDatum DESC', \DB\ReturnType::ARRAY_OF_OBJECTS);
+                ORDER BY bDatum DESC',
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
     }
 
     /**
@@ -79,7 +81,11 @@ class ImageMap implements IExtensionPoint
             return false;
         }
 
-        $oImageMap->oArea_arr = Shop::Container()->getDB()->selectAll('timagemaparea', 'kImageMap', (int)$oImageMap->kImageMap);
+        $oImageMap->oArea_arr = Shop::Container()->getDB()->selectAll(
+            'timagemaparea',
+            'kImageMap',
+            (int)$oImageMap->kImageMap
+        );
         $cBildPfad            = PFAD_ROOT . PFAD_IMAGEMAP . $oImageMap->cBildPfad;
         $oImageMap->cBildPfad = Shop::getImageBaseURL() . PFAD_IMAGEMAP . $oImageMap->cBildPfad;
         $cParse_arr           = parse_url($oImageMap->cBildPfad);
@@ -112,7 +118,15 @@ class ImageMap implements IExtensionPoint
                 } else {
                     $oArea->oArtikel->kArtikel = $oArea->kArtikel;
                     $oArea->oArtikel->cName    = Shop::Container()->getDB()->select(
-                        'tartikel', 'kArtikel', $oArea->kArtikel, null, null, null, null, false, 'cName'
+                        'tartikel',
+                        'kArtikel',
+                        $oArea->kArtikel,
+                        null,
+                        null,
+                        null,
+                        null,
+                        false,
+                        'cName'
                     )->cName;
                 }
                 if (strlen($oArea->cTitel) === 0) {
@@ -191,15 +205,15 @@ class ImageMap implements IExtensionPoint
     public function saveAreas($oData)
     {
         Shop::Container()->getDB()->delete('timagemaparea', 'kImageMap', (int)$oData->kImageMap);
-        foreach ($oData->oArea_arr as $oArea) {
+        foreach ($oData->oArea_arr as $area) {
             $oTmp                = new stdClass();
-            $oTmp->kImageMap     = $oArea->kImageMap;
-            $oTmp->kArtikel      = $oArea->kArtikel;
-            $oTmp->cStyle        = $oArea->cStyle;
-            $oTmp->cTitel        = $oArea->cTitel;
-            $oTmp->cUrl          = $oArea->cUrl;
-            $oTmp->cBeschreibung = $oArea->cBeschreibung;
-            $oTmp->cCoords       = "{$oArea->oCoords->x},{$oArea->oCoords->y},{$oArea->oCoords->w},{$oArea->oCoords->h}";
+            $oTmp->kImageMap     = $area->kImageMap;
+            $oTmp->kArtikel      = $area->kArtikel;
+            $oTmp->cStyle        = $area->cStyle;
+            $oTmp->cTitel        = $area->cTitel;
+            $oTmp->cUrl          = $area->cUrl;
+            $oTmp->cBeschreibung = $area->cBeschreibung;
+            $oTmp->cCoords       = "{$area->oCoords->x},{$area->oCoords->y},{$area->oCoords->w},{$area->oCoords->h}";
 
             Shop::Container()->getDB()->insert('timagemaparea', $oTmp);
         }

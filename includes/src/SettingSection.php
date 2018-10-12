@@ -33,7 +33,8 @@ class SettingSection
         if (!isset(self::$instances[$kSektion])) {
             $oSektion = Shop::Container()->getDB()->select('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
             if (isset($oSektion->kEinstellungenSektion)) {
-                $className = 'SettingSection' . preg_replace(['([üäöÜÄÖ])', '/[^a-zA-Z_]/'], ['$1e', ''], $oSektion->cName);
+                $className = 'SettingSection' .
+                    preg_replace(['([üäöÜÄÖ])', '/[^a-zA-Z_]/'], ['$1e', ''], $oSektion->cName);
                 if (class_exists($className)) {
                     self::$instances[$kSektion] = new $className();
                 } else {

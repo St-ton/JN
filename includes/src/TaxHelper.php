@@ -98,7 +98,8 @@ class TaxHelper
         );
         if (count($steuerzonen) === 0) {
             // Keine Steuerzone für $deliveryCountryCode hinterlegt - das ist fatal!
-            $redirURL  = Shop::Container()->getLinkService()->getStaticRoute('bestellvorgang.php') . '?editRechnungsadresse=1';
+            $redirURL  = Shop::Container()->getLinkService()->getStaticRoute('bestellvorgang.php') .
+                '?editRechnungsadresse=1';
             $urlHelper = new UrlHelper(Shop::getURL() . $_SERVER['REQUEST_URI']);
             $country   = Sprache::getCountryCodeByCountryName($deliveryCountryCode);
 

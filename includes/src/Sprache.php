@@ -177,7 +177,7 @@ class Sprache
      * @param string $method
      * @return string|null
      */
-    private static function map($method)
+    private static function map($method): ?string
     {
         return self::$mapping[$method] ?? null;
     }
@@ -218,9 +218,12 @@ class Sprache
             ) {
                 $this->isoAssociation[$kSprache] = Shop::Container()->getDB()->select(
                     'tsprache',
-                    'kSprache', $kSprache,
-                    null, null,
-                    null, null,
+                    'kSprache',
+                    $kSprache,
+                    null,
+                    null,
+                    null,
+                    null,
                     false,
                     'cISO'
                 );
@@ -259,7 +262,7 @@ class Sprache
      * @param mixed null|string $default
      * @return string|null
      */
-    public function getSectionName(int $kSektion, $default = null)
+    public function getSectionName(int $kSektion, $default = null): ?string
     {
         $section = Shop::Container()->getDB()->select('tsprachsektion', 'kSprachsektion', $kSektion);
 
@@ -1032,7 +1035,7 @@ class Sprache
      * @former setzeSpracheUndWaehrungLink()
      * @since 5.0.0
      */
-    public static function generateLanguageAndCurrencyLinks()
+    public static function generateLanguageAndCurrencyLinks(): void
     {
         global $oZusatzFilter, $AktuellerArtikel;
         $kLink         = Shop::$kLink;
@@ -1132,9 +1135,11 @@ class Sprache
                         } elseif ($specialPage->getFileName() !== null) {
                             $url = $helper->getStaticRoute($specialPage->getFileName(), false);
                             //check if there is a SEO link for the given file
-                            if ($url === $specialPage->getFileName()) { //no SEO link - fall back to php file with GET param
+                            if ($url === $specialPage->getFileName()) {
+                                // no SEO link - fall back to php file with GET param
                                 $url = $shopURL . $specialPage->getFileName();
-                            } else { //there is a SEO link - make it a full URL
+                            } else {
+                                // there is a SEO link - make it a full URL
                                 $url = $helper->getStaticRoute($specialPage->getFileName(), true);
                             }
                         }

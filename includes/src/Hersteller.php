@@ -255,7 +255,7 @@ class Hersteller
     /**
      * @return string|null
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->cName;
     }

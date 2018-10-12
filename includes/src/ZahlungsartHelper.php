@@ -120,7 +120,7 @@ class ZahlungsartHelper
     /**
      * @former pruefeZahlungsartNutzbarkeit()
      */
-    public static function checkPaymentMethodAvailability()
+    public static function checkPaymentMethodAvailability(): void
     {
         foreach (Shop::Container()->getDB()->selectAll('tzahlungsart', 'nActive', 1) as $paymentMethod) {
             // Bei SOAP oder CURL => versuche die Zahlungsart auf nNutzbar = 1 zu stellen, falls nicht schon geschehen

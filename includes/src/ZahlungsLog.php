@@ -49,7 +49,8 @@ class ZahlungsLog
 
         return Shop::Container()->getDB()->query(
             "SELECT * FROM tzahlungslog
-                WHERE cModulId = '" . $this->cModulId . "' " . $cSQLLevel . ($whereSQL !== '' ? ' AND ' . $whereSQL : '') . "
+                WHERE cModulId = '" . $this->cModulId . "' " . $cSQLLevel .
+                ($whereSQL !== '' ? ' AND ' . $whereSQL : '') . "
                 ORDER BY dDatum DESC, kZahlunglog DESC 
                 LIMIT " . $limit,
             \DB\ReturnType::ARRAY_OF_OBJECTS

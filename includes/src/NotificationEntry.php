@@ -12,22 +12,22 @@ class NotificationEntry
     /**
      * None
      */
-    const TYPE_NONE = -1;
+    public const TYPE_NONE = -1;
 
     /**
      * Information type
      */
-    const TYPE_INFO = 0;
+    public const TYPE_INFO = 0;
 
     /**
      * Warning type
      */
-    const TYPE_WARNING = 1;
+    public const TYPE_WARNING = 1;
 
     /**
      * Error type
      */
-    const TYPE_DANGER = 2;
+    public const TYPE_DANGER = 2;
 
     /**
      * @var string
@@ -72,7 +72,7 @@ class NotificationEntry
     /**
      * @return string|null
      */
-    public function getPluginId()
+    public function getPluginId(): ?string
     {
         return $this->pluginId;
     }
@@ -91,7 +91,7 @@ class NotificationEntry
     /**
      * @return int|null
      */
-    public function getType()
+    public function getType(): ?int
     {
         return $this->type;
     }
@@ -100,7 +100,7 @@ class NotificationEntry
      * @param int $type
      * @return $this
      */
-    public function setType($type): self
+    public function setType(int $type): self
     {
         $this->type = $type;
 
@@ -110,7 +110,7 @@ class NotificationEntry
     /**
      * @return string|null
      */
-    public function getTitle()
+    public function getTitle(): ?string
     {
         return $this->title;
     }
@@ -129,7 +129,7 @@ class NotificationEntry
     /**
      * @return string|null
      */
-    public function getDescription()
+    public function getDescription(): ?string
     {
         return $this->description;
     }
@@ -156,7 +156,7 @@ class NotificationEntry
     /**
      * @return string|null
      */
-    public function getUrl()
+    public function getUrl(): ?string
     {
         return $this->url;
     }

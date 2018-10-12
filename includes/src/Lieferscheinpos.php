@@ -106,7 +106,12 @@ class Lieferscheinpos
         $_upd->kWarenlager   = $this->getWarenlager();
         $_upd->fAnzahl       = $this->getAnzahl();
 
-        return Shop::Container()->getDB()->update('tlieferscheinpos', 'kLieferscheinPos', $this->getLieferscheinPos(), $_upd);
+        return Shop::Container()->getDB()->update(
+            'tlieferscheinpos',
+            'kLieferscheinPos',
+            $this->getLieferscheinPos(),
+            $_upd
+        );
     }
 
     /**

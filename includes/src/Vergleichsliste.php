@@ -26,9 +26,12 @@ class Vergleichsliste
             $oArtikel           = new stdClass();
             $tmpName            = Shop::Container()->getDB()->select(
                 'tartikel',
-                'kArtikel', $kArtikel,
-                null, null,
-                null, null,
+                'kArtikel',
+                $kArtikel,
+                null,
+                null,
+                null,
+                null,
                 false,
                 'cName'
             );
@@ -241,7 +244,7 @@ class Vergleichsliste
      *
      * @param Vergleichsliste $compareList
      */
-    public static function setComparison(Vergleichsliste $compareList)
+    public static function setComparison(Vergleichsliste $compareList): void
     {
         if (count($compareList->oArtikel_arr) === 0) {
             return;

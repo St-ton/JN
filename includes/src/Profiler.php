@@ -12,7 +12,7 @@ class Profiler
     /**
      * @var Profiler
      */
-    private static $_instance;
+    private static $instance;
 
     /**
      * @var bool
@@ -128,13 +128,21 @@ class Profiler
      */
     public static function getInstance(int $flags = -1, array $options = [], string $dir = '/tmp'): self
     {
-        return self::$_instance ?? new self($flags, $options, $dir);
+        return self::$instance ?? new self($flags, $options, $dir);
     }
 
     /**
      * check if one of the profilers is active
      *
-     * @return int - 0: none, 1: NiceDB profiler, 2: xhprof, 3: plugin profiler, 4: plugin, xhprof, 5: DB, plugin, 6: DB, xhprof, 7: all
+     * @return int
+     * 0: none
+     * 1: NiceDB profiler
+     * 2: xhprof
+     * 3: plugin profiler
+     * 4: plugin, xhprof
+     * 5: DB, plugin
+     * 6: DB, xhprof
+     * 7: all
      */
     public static function getIsActive(): int
     {
@@ -437,7 +445,8 @@ class Profiler
                 'tprofiler_runs',
                 'runID',
                 (int)$_profile->runID,
-                '*', 'runtime DESC'
+                '*',
+                'runtime DESC'
             );
             $data[] = $_profile;
         }
@@ -546,7 +555,7 @@ class Profiler
     /**
      * output sql profiler data
      */
-    public static function output()
+    public static function output(): void
     {
         if (PROFILE_QUERIES_ECHO !== true || count(self::$sqlProfile) === 0) {
             return;
@@ -616,7 +625,9 @@ class Profiler
             '<br><strong>Statements:</strong> ' .
             '<ul class="sql-tables-list">';
         foreach (self::$sqlProfile as $_query) {
-            echo '<li class="sql-table"><span class="table-name">' . $_query->table . '</span> (' . $_query->time . 's)';
+            echo '<li class="sql-table"><span class="table-name">' .
+                $_query->table .
+                '</span> (' . $_query->time . 's)';
             if (isset($_query->statement)) {
                 echo '<pre class="sql-statement">' . $_query->statement . '</pre>';
             }
@@ -637,7 +648,9 @@ class Profiler
             echo '<br><strong>Errors:</strong> ' .
                 '<ul class="sql-tables-list">';
             foreach (self::$sqlErrors as $_error) {
-                echo '<li>' . $_error->message . ' for query <pre class="sql-statement">' . $_error->statement  . '</pre></li>';
+                echo '<li>' .
+                    $_error->message .
+                    ' for query <pre class="sql-statement">' . $_error->statement  . '</pre></li>';
             }
             echo '</ul>';
         }

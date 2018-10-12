@@ -160,4 +160,59 @@ class MigrationHelper
             \DB\ReturnType::DEFAULT
         );
     }
+
+    /**
+     * @param string $idxTable
+     * @param string $idxName
+     * @return array
+     */
+    public static function indexColumns(string $idxTable, string $idxName): array
+    {
+        return Shop::Container()->getDB()->queryPrepared(
+            "SHOW INDEXES FROM `$idxTable` WHERE Key_name = :idxName",
+            ['idxName' => $idxName],
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
+    }
+
+    /**
+     * @param string        $idxTable
+     * @param array         $idxColumns
+     * @param string|null   $idxName
+     * @param bool          $idxUnique
+     * @return bool
+     */
+    public static function createIndex(string $idxTable, array $idxColumns, $idxName = null, $idxUnique = false): bool
+    {
+        if (empty($idxName)) {
+            $idxName = implode('_', $idxColumns) . '_' . ($idxUnique ? 'UQ' : 'IDX');
+        }
+
+        if (count(self::indexColumns($idxTable, $idxName)) === 0 || self::dropIndex($idxTable, $idxName)) {
+            $ddl = 'CREATE' . ($idxUnique ? ' UNIQUE' : '')
+                . ' INDEX `' . $idxName . '` ON `' . $idxTable . '` '
+                . '(`' . implode('`, `', $idxColumns) . '`)';
+
+            return !Shop::Container()->getDB()->executeQuery($ddl, \DB\ReturnType::DEFAULT) ? false : true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param string $idxTable
+     * @param string $idxName
+     * @return bool
+     */
+    public static function dropIndex(string $idxTable, string $idxName): bool
+    {
+        if (count(self::indexColumns($idxTable, $idxName)) > 0) {
+            return !Shop::Container()->getDB()->executeQuery(
+                'DROP INDEX `' . $idxName . '` ON `' . $idxTable . '` ',
+                \DB\ReturnType::DEFAULT
+            ) ? false : true;
+        }
+
+        return true;
+    }
 }

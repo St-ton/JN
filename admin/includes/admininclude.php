@@ -4,7 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-// Defines
 use JTLShop\SemVer\Version;
 
 if (!isset($bExtern) || !$bExtern) {
@@ -12,7 +11,6 @@ if (!isset($bExtern) || !$bExtern) {
     require DEFINES_PFAD . 'config.JTL-Shop.ini.php';
     require DEFINES_PFAD . 'defines.php';
     require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admindefines.php';
-    // Existiert Konfiguration?
     defined('DB_HOST') || die('Kein MySQL-Datenbank Host angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
     defined('DB_NAME') || die('Kein MySQL Datenbanknamen angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
     defined('DB_USER') || die('Kein MySQL-Datenbank Benutzer angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
@@ -29,6 +27,8 @@ require PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_tools.php';
 
+Profiler::start();
+
 define('JTL_VERSION', (int) sprintf('%d%02d', Version::parse(APPLICATION_VERSION)->getMajor(), Version::parse(APPLICATION_VERSION)->getMinor())); // DEPRECATED since 5.0.0
 define('JTL_MINOR_VERSION', (int) Version::parse(APPLICATION_VERSION)->getPatch()); // DEPRECATED since 5.0.0
 
@@ -42,7 +42,6 @@ if (!function_exists('Shop')) {
     }
 }
 
-// Datenbankverbindung aufbauen - ohne Debug Modus
 $DB      = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME, true);
 $cache   = Shop::Container()->getCache()->setJtlCacheConfig();
 $session = \Session\AdminSession::getInstance();

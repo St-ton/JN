@@ -20,6 +20,8 @@ $validator   = new \Plugin\Admin\Validator($db);
 $listing     = new \Plugin\Admin\Listing($db, $validator);
 $installer   = new \Plugin\Admin\Installer($db, $uninstaller, $validator);
 $updater     = new \Plugin\Admin\Updater($db, $installer);
+$extractor   = new \Plugin\Admin\Extractor();
+
 
 if (isset($_SESSION['plugin_msg'])) {
     $cHinweis = $_SESSION['plugin_msg'];
@@ -28,7 +30,7 @@ if (isset($_SESSION['plugin_msg'])) {
     $cHinweis = StringHandler::filterXSS(base64_decode(RequestHelper::verifyGPDataString('h')));
 }
 if (!empty($_FILES['file_data'])) {
-    $response                = extractPlugin($_FILES['file_data']['tmp_name']);
+    $response                = $extractor->extractPlugin($_FILES['file_data']['tmp_name']);
     $pluginsInstalledByState = [
         'status_1' => [],
         'status_2' => [],
@@ -201,7 +203,7 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
             $reload   = true;
             Shop::Cache()->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
             //header('Location: pluginverwaltung.php?h=' . base64_encode($cHinweis));
-        } elseif ($nReturnValue > 1) {
+        } else {
             $cFehler = 'Fehler: Beim Update ist ein Fehler aufgetreten. Fehlercode: ' . $nReturnValue;
         }
     } elseif (RequestHelper::verifyGPCDataInt('sprachvariablen') === 1) { // Sprachvariablen editieren
@@ -218,7 +220,7 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
                     $cHinweis = 'Ihre ausgewählten Plugins wurden erfolgreich installiert.';
                     $reload   = true;
                 } elseif ($nReturnValue > \Plugin\InstallCode::OK
-                    && $nReturnValue !== \Plugin\InstallCode::OK_BUT_NOT_SHOP4_COMPATIBL) {
+                    && $nReturnValue !== \Plugin\InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE) {
                     $cFehler = 'Fehler: Bei der Installation ist ein Fehler aufgetreten. Fehlercode: ' . $nReturnValue;
                 }
             }
@@ -370,3 +372,11 @@ $smarty->assign('hinweis', $cHinweis)
        ->assign('step', $step)
        ->assign('mapper', new \Mapper\PluginState())
        ->display('pluginverwaltung.tpl');
+Profiler::savePluginProfile();
+Profiler::saveSQLProfile();
+Profiler::output();
+if (Profiler::getIsStarted() === true) {
+    Profiler::finish();
+    $data = Profiler::getData();
+    echo $data['html'];
+}

@@ -55,7 +55,6 @@ if (is_object($oGlobaleMetaAngaben)) {
         $cMetaKeywords = $oGlobaleMetaAngaben->Meta_Keywords;
     }
 }
-// Kategorielisten aufbauen
 if (!isset($AktuelleKategorie)) {
     $AktuelleKategorie = null;
 }
@@ -166,7 +165,6 @@ $boxes       = Shop::Container()->getBoxService();
 $boxesToShow = $boxes->render($boxes->buildList($pagetType));
 /* @global Artikel $AktuellerArtikel */
 if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0) {
-    // Letzten angesehenden Artikel hinzufügen
     $boxes->addRecentlyViewed($AktuellerArtikel->kArtikel);
 }
 $visitorCount = $Einstellungen['global']['global_zaehler_anzeigen'] === 'Y'

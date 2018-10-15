@@ -305,4 +305,44 @@ class InstallCode extends Enum
     public const SQL_WRONG_TABLE_NAME_CREATE = 5;
 
     public const SQL_INVALID_FILE_CONTENT = 6;
+
+    public const SQL_CANNOT_SAVE_HOOK = 300;
+
+    public const SQL_CANNOT_SAVE_UNINSTALL = 301;
+
+    public const SQL_CANNOT_SAVE_ADMIN_MENU_ITEM = 302;
+
+    public const SQL_CANNOT_SAVE_SETTINGS_ITEM = 303;
+
+    public const SQL_CANNOT_SAVE_SETTING = 304;
+
+    public const SQL_CANNOT_FIND_LINK_GROUP = 305;
+
+    public const SQL_CANNOT_SAVE_LINK = 306;
+
+    public const SQL_CANNOT_SAVE_PAYMENT_METHOD = 307;
+
+    public const SQL_CANNOT_SAVE_PAYMENT_METHOD_LOCALIZATION = 308;
+
+    public const SQL_CANNOT_SAVE_PAYMENT_METHOD_LANGUAGE = 309;
+
+    public const SQL_CANNOT_SAVE_PAYMENT_METHOD_SETTING = 310;
+
+    public const SQL_CANNOT_SAVE_BOX_TEMPLATE = 311;
+
+    public const SQL_CANNOT_SAVE_TEMPLATE = 312;
+
+    public const SQL_CANNOT_SAVE_EMAIL_TEMPLATE = 313;
+
+    public const SQL_CANNOT_SAVE_LANG_VAR = 314;
+
+    public const SQL_CANNOT_SAVE_LANG_VAR_LOCALIZATION = 315;
+
+    public const SQL_CANNOT_SAVE_WIDGET = 316;
+
+    public const SQL_CANNOT_SAVE_PORTLET = 317;
+
+    public const SQL_CANNOT_SAVE_BLUEPRINT = 318;
+
+    public const SQL_CANNOT_SAVE_EXPORT = 319;
 }

@@ -911,4 +911,19 @@ class StringHandler
 
         return $data;
     }
+
+    /**
+     * Mehrfach Leerzeichen entfernen
+     *
+     * @param string $string
+     * @return string
+     */
+    public static function removeNumerousWhitespaces($string): string
+    {
+        while (strpos($string, '  ')) {
+            $string = str_replace('  ', ' ', $string);
+        }
+
+        return $string;
+    }
 }

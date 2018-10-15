@@ -18,6 +18,8 @@ use function Functional\map;
  */
 final class Listing
 {
+    private const PLUGINS_DIR = \PFAD_ROOT . \PFAD_PLUGIN;
+
     /**
      * @var DbInterface
      */
@@ -27,8 +29,6 @@ final class Listing
      * @var Validator
      */
     private $validator;
-
-    private const PLUGINS_DIR = \PFAD_ROOT . \PFAD_PLUGIN;
 
     /**
      * Listing constructor.
@@ -100,17 +100,17 @@ final class Listing
             if ($code === InstallCode::DUPLICATE_PLUGIN_ID && $installedPlugins->contains($dir)) {
                 $xmlData['cVerzeichnis']    = $dir;
                 $xmlData['shop4compatible'] = isset($xmlData['jtlshop3plugin'][0]['Shop4Version']);
-                $plugins->index[$dir]       = \makeXMLToObj($xmlData);
+                $plugins->index[$dir]       = $this->makeXMLToObj($xmlData);
                 $plugins->installiert[]     = &$plugins->index[$dir];
             } elseif ($code === InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE || $code === InstallCode::OK) {
                 $xmlData['cVerzeichnis']    = $dir;
                 $xmlData['shop4compatible'] = ($code === 1);
-                $plugins->index[$dir]       = \makeXMLToObj($xmlData);
+                $plugins->index[$dir]       = $this->makeXMLToObj($xmlData);
                 $plugins->verfuegbar[]      = &$plugins->index[$dir];
             } else {
                 $xmlData['cVerzeichnis'] = $dir;
                 $xmlData['cFehlercode']  = $code;
-                $plugins->index[$dir]    = \makeXMLToObj($xmlData);
+                $plugins->index[$dir]    = $this->makeXMLToObj($xmlData);
                 $plugins->fehlerhaft[]   = &$plugins->index[$dir];
             }
         }
@@ -135,5 +135,54 @@ final class Listing
         });
 
         return $plugins;
+    }
+
+    /**
+     * Baut aus einer XML ein Objekt
+     *
+     * @param array $XML
+     * @return \stdClass
+     */
+    private function makeXMLToObj($XML): \stdClass
+    {
+        $res = new \stdClass();
+        if (isset($XML['jtlshop3plugin']) && \is_array($XML['jtlshop3plugin'])) {
+            if (!isset($XML['jtlshop3plugin'][0]['Install'][0]['Version'])) {
+                return $res;
+            }
+            if (!isset($XML['jtlshop3plugin'][0]['Name'])) {
+                return $res;
+            }
+            $node        = $XML['jtlshop3plugin'][0];
+            $lastVersion = \count($node['Install'][0]['Version']) / 2 - 1;
+
+            $res->cName           = $node['Name'];
+            $res->cDescription    = $node['Description'] ?? '';
+            $res->cAuthor         = $node['Author'] ?? '';
+            $res->cPluginID       = $node['PluginID'];
+            $res->cIcon           = $node['Icon'] ?? null;
+            $res->cVerzeichnis    = $XML['cVerzeichnis'];
+            $res->shop4compatible = !empty($XML['shop4compatible'])
+                ? $XML['shop4compatible']
+                : false;
+            $res->nVersion        = $lastVersion >= 0
+            && isset($node['Install'][0]['Version'][$lastVersion . ' attr']['nr'])
+                ? (int)$node['Install'][0]['Version'][$lastVersion . ' attr']['nr']
+                : 0;
+            $res->cVersion        = \number_format($res->nVersion / 100, 2);
+        }
+
+        if (empty($res->cName) && empty($res->cDescription) && !empty($XML['cVerzeichnis'])) {
+            $res->cName        = $XML['cVerzeichnis'];
+            $res->cDescription = '';
+            $res->cVerzeichnis = $XML['cVerzeichnis'];
+        }
+        if (isset($XML['cFehlercode']) && \strlen($XML['cFehlercode']) > 0) {
+            $mapper                   = new PluginValidation();
+            $res->cFehlercode         = $XML['cFehlercode'];
+            $res->cFehlerBeschreibung = $mapper->map($XML['cFehlercode'], $res);
+        }
+
+        return $res;
     }
 }

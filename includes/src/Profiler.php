@@ -460,6 +460,9 @@ class Profiler
             } elseif (function_exists('tideways_enable')) {
                 self::$method = 'tideways';
             }
+            var_dump(function_exists('tideways_enable'));
+            var_dump(self::$method);
+            die('d');
             if (self::$method !== null) {
                 self::$functional = true;
                 if ($flags === -1) {

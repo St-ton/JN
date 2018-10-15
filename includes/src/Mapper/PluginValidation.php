@@ -16,7 +16,7 @@ class PluginValidation
 {
     /**
      * @param int     $code
-     * @param \Plugin|null $plugin
+     * @param \Plugin|\stdClass|null $plugin
      * @return string
      */
     public function map($code, $plugin): string
@@ -264,7 +264,8 @@ class PluginValidation
                 $return .= 'Die Fullscreen Templatedatei für den Frontend Link existiert nicht.';
                 break;
             case InstallCode::INVALID_FRONTEND_LINK_TEMPLATE_FULLSCREEN_TEMPLATE:
-                $return .= 'Für ein Frontend Link muss ein Templatename oder Fullscreen Templatename angegeben werden.';
+                $return .= 'Für einen Frontend Link muss ein Templatename ' .
+                    'oder Fullscreen Templatename angegeben werden.';
                 break;
             case InstallCode::MISSING_BOX:
                 $return .= 'Keine Box vorhanden.';

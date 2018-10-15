@@ -16,8 +16,7 @@
         "phpmailer/phpmailer": "~5.2",
         "jtlshop/qrcodegenerator": "dev-master",
         "erusev/parsedown": "dev-master",
-        "paragonie/random_compat": "~2.0",
-        "jtlshop/semver": "^0.0.6"
+        "paragonie/random_compat": "~2.0"
     },
     "require_dev": {
         "phpunit/php-token-stream": "~1.2",

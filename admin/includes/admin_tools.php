@@ -499,6 +499,22 @@ function getJTLVersionDB($bDate = false)
 }
 
 /**
+ * Return version of files
+ *
+ * @return mixed
+ */
+function getJTLVersion()
+{
+    $majorMinor = Shop::getVersion();
+    $major      = substr($majorMinor, 0, 1);
+    $minor      = substr($majorMinor, 1);
+    $patch      = is_int(JTL_MINOR_VERSION) ? JTL_MINOR_VERSION : 0;
+    $version    = $major.'.'.$minor.'.'.$patch;
+
+    return $version;
+}
+
+/**
  * @param string $size_str
  * @return mixed
  */

@@ -594,7 +594,9 @@ class Profiler
             '<br><strong>Statements:</strong> ' .
             '<ul class="sql-tables-list">';
         foreach (self::$sqlProfile as $_query) {
-            echo '<li class="sql-table"><span class="table-name">' . $_query->table . '</span> (' . $_query->time . 's)';
+            echo '<li class="sql-table"><span class="table-name">' .
+                $_query->table .
+                '</span> (' . $_query->time . 's)';
             if (isset($_query->statement)) {
                 echo '<pre class="sql-statement">' . $_query->statement . '</pre>';
             }
@@ -615,7 +617,9 @@ class Profiler
             echo '<br><strong>Errors:</strong> ' .
                 '<ul class="sql-tables-list">';
             foreach (self::$sqlErrors as $_error) {
-                echo '<li>' . $_error->message . ' for query <pre class="sql-statement">' . $_error->statement . '</pre></li>';
+                echo '<li>' .
+                    $_error->message .
+                    ' for query <pre class="sql-statement">' . $_error->statement  . '</pre></li>';
             }
             echo '</ul>';
         }

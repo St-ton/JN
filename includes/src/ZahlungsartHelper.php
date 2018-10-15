@@ -76,13 +76,22 @@ class ZahlungsartHelper
                 }
                 break;
             case 'za_barzahlung_jtl':
-                if (!pruefeZahlungsartMinBestellungen(!empty($conf['zahlungsart_barzahlung_min_bestellungen']) ? $conf['zahlungsart_barzahlung_min_bestellungen'] : 0)) {
+                if (!pruefeZahlungsartMinBestellungen(!empty($conf['zahlungsart_barzahlung_min_bestellungen'])
+                    ? $conf['zahlungsart_barzahlung_min_bestellungen']
+                    : 0)
+                ) {
                     return false;
                 }
-                if (!pruefeZahlungsartMinBestellwert(!empty($conf['zahlungsart_barzahlung_min']) ? $conf['zahlungsart_barzahlung_min'] : 0)) {
+                if (!pruefeZahlungsartMinBestellwert(!empty($conf['zahlungsart_barzahlung_min'])
+                    ? $conf['zahlungsart_barzahlung_min']
+                    : 0)
+                ) {
                     return false;
                 }
-                if (!pruefeZahlungsartMaxBestellwert(!empty($conf['zahlungsart_barzahlung_max']) ? $conf['zahlungsart_barzahlung_max'] : 0)) {
+                if (!pruefeZahlungsartMaxBestellwert(!empty($conf['zahlungsart_barzahlung_max'])
+                    ? $conf['zahlungsart_barzahlung_max']
+                    : 0)
+                ) {
                     return false;
                 }
                 break;
@@ -111,12 +120,15 @@ class ZahlungsartHelper
     /**
      * @former pruefeZahlungsartNutzbarkeit()
      */
-    public static function checkPaymentMethodAvailability()
+    public static function checkPaymentMethodAvailability(): void
     {
-        foreach (Shop::Container()->getDB()->selectAll('tzahlungsart', 'nActive', 1) as $oZahlungsart) {
+        foreach (Shop::Container()->getDB()->selectAll('tzahlungsart', 'nActive', 1) as $paymentMethod) {
             // Bei SOAP oder CURL => versuche die Zahlungsart auf nNutzbar = 1 zu stellen, falls nicht schon geschehen
-            if ((int)$oZahlungsart->nSOAP === 1 || (int)$oZahlungsart->nCURL === 1 || (int)$oZahlungsart->nSOCKETS === 1) {
-                self::activatePaymentMethod($oZahlungsart);
+            if ((int)$paymentMethod->nSOAP === 1
+                || (int)$paymentMethod->nCURL === 1
+                || (int)$paymentMethod->nSOCKETS === 1
+            ) {
+                self::activatePaymentMethod($paymentMethod);
             }
         }
     }

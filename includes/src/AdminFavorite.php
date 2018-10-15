@@ -100,7 +100,7 @@ class AdminFavorite
                 'kAdminfav, cTitel, cUrl',
                 'nSort ASC'
             );
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             return [];
         }
 
@@ -162,7 +162,7 @@ class AdminFavorite
      * @param int $id
      * @param int $kAdminfav
      */
-    public static function remove($id, int $kAdminfav = 0)
+    public static function remove($id, int $kAdminfav = 0): void
     {
         if ($kAdminfav > 0) {
             Shop::Container()->getDB()->delete('tadminfavs', ['kAdminfav', 'kAdminlogin'], [$kAdminfav, $id]);

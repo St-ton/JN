@@ -75,7 +75,7 @@ class Revision
      * @param string $type
      * @return string|null
      */
-    private function getMapping(string $type)
+    private function getMapping(string $type): ?string
     {
         return $this->mapping[$type] ?? null;
     }
@@ -96,7 +96,7 @@ class Revision
      * @param int $id
      * @return stdClass|null
      */
-    public function getRevision(int $id)
+    public function getRevision(int $id): ?stdClass
     {
         return Shop::Container()->getDB()->select('trevisions', 'id', $id);
     }
@@ -158,8 +158,6 @@ class Revision
         $revision->author             = $author;
         $revision->custom_table       = $mapping['table'];
         $revision->custom_primary_key = $mapping['id'];
-
-
         if ($secondary !== false && !empty($mapping['reference'])) {
             $field               = $mapping['reference_key'];
             $referencedRevisions = Shop::Container()->getDB()->selectAll(

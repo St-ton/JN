@@ -150,7 +150,7 @@ class Template
      *
      * @return string|null
      */
-    public function getFrontendTemplate()
+    public function getFrontendTemplate(): ?string
     {
         $frontendTemplate = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'standard');
         self::$cTemplate  = empty($frontendTemplate->cTemplate) ? null : $frontendTemplate->cTemplate;
@@ -763,9 +763,12 @@ class Template
     {
         $config = Shop::Container()->getDB()->select(
             'ttemplateeinstellungen',
-            'cTemplate', $dir,
-            'cSektion', $cSektion,
-            'cName', $cName
+            'cTemplate',
+            $dir,
+            'cSektion',
+            $cSektion,
+            'cName',
+            $cName
         );
         if ($config !== null && isset($config->cTemplate)) {
             Shop::Container()->getDB()->update(
@@ -808,7 +811,7 @@ class Template
     /**
      * @return string|null
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -816,7 +819,7 @@ class Template
     /**
      * @return null|string
      */
-    public function getParent()
+    public function getParent(): ?string
     {
         return self::$parent;
     }
@@ -832,7 +835,7 @@ class Template
     /**
      * @return string|null
      */
-    public function getAuthor()
+    public function getAuthor(): ?string
     {
         return $this->author;
     }
@@ -840,7 +843,7 @@ class Template
     /**
      * @return string|null
      */
-    public function getURL()
+    public function getURL(): ?string
     {
         return $this->url;
     }
@@ -856,7 +859,7 @@ class Template
     /**
      * @return string|null
      */
-    public function getPreview()
+    public function getPreview(): ?string
     {
         return $this->preview;
     }

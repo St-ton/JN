@@ -201,9 +201,12 @@ class Preise
                 $tax           =
                     Shop::Container()->getDB()->select(
                         'tartikel',
-                        'kArtikel', $kArtikel,
-                        null, null,
-                        null, null,
+                        'kArtikel',
+                        $kArtikel,
+                        null,
+                        null,
+                        null,
+                        null,
                         false,
                         'kSteuerklasse'
                     );
@@ -320,8 +323,10 @@ class Preise
     {
         $obj = Shop::Container()->getDB()->select(
             'tpreise',
-            'kArtikel', $kArtikel,
-            'kKundengruppe', $kKundengruppe
+            'kArtikel',
+            $kArtikel,
+            'kKundengruppe',
+            $kKundengruppe
         );
         if (!empty($obj->kArtikel)) {
             $members = array_keys(get_object_vars($obj));
@@ -423,14 +428,19 @@ class Preise
             ];
         }
 
-        $this->cVKLocalized[0] = self::getLocalizedPriceString(TaxHelper::getGross($this->fVKNetto, $this->fUst, 4), $currency);
+        $this->cVKLocalized[0] = self::getLocalizedPriceString(
+            TaxHelper::getGross($this->fVKNetto, $this->fUst, 4),
+            $currency
+        );
         $this->cVKLocalized[1] = self::getLocalizedPriceString($this->fVKNetto, $currency);
 
         $this->fVKBrutto = TaxHelper::getGross($this->fVKNetto, $this->fUst);
 
         if ($this->alterVKNetto) {
-            $this->alterVKLocalized[0] = self::getLocalizedPriceString(TaxHelper::getGross($this->alterVKNetto, $this->fUst, 4),
-                $currency);
+            $this->alterVKLocalized[0] = self::getLocalizedPriceString(
+                TaxHelper::getGross($this->alterVKNetto, $this->fUst, 4),
+                $currency
+            );
             $this->alterVKLocalized[1] = self::getLocalizedPriceString($this->alterVKNetto, $currency);
         }
 
@@ -556,7 +566,7 @@ class Preise
     public static function getLocalizedPriceWithoutFactor($preis, $waehrung = null, bool $html = true): string
     {
         $currency = !$waehrung ? Session::Currency() : $waehrung;
-        if (get_class($currency) === 'stdClass') {
+        if ($currency !== null && get_class($currency) === 'stdClass') {
             $currency = new Currency($currency->kWaehrung);
         }
         $localized    = number_format($preis, 2, $currency->getDecimalSeparator(), $currency->getThousandsSeparator());

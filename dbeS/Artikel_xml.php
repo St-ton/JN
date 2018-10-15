@@ -130,7 +130,7 @@ function bearbeiteInsert($xml, array $conf)
     $isParent      = isset($artikel_arr[0]->nIstVater) ? 1 : 0;
 
     if (isset($xml['tartikel']['tkategorieartikel'])
-        && $conf['global']['kategorien_anzeigefilter'] == EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE
+        && (int)$conf['global']['kategorien_anzeigefilter'] === EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE
         && Shop::Cache()->isCacheGroupActive(CACHING_GROUP_CATEGORY)
     ) {
         $currentArticleCategories = [];
@@ -213,7 +213,8 @@ function bearbeiteInsert($xml, array $conf)
                     // article was not in stock before but is now - check if flush is necessary
                     || ($currentStatus->fLagerbestand > 0 && $xml['tartikel']['fLagerbestand'] <= 0)
                     // article was in stock before but is not anymore - check if flush is necessary
-                    || ($conf['global']['artikel_artikelanzeigefilter'] == EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
+                    || ((int)$conf['global']['artikel_artikelanzeigefilter']
+                        === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
                         && $currentStatus->cLagerKleinerNull !== $xml['tartikel']['cLagerKleinerNull'])
                     // overselling status changed - check if flush is necessary
                     || ($currentStatus->cLagerBeachten !== $xml['tartikel']['cLagerBeachten']
@@ -379,8 +380,10 @@ function bearbeiteInsert($xml, array $conf)
         Shop::Container()->getDB()->insert('tseo', $oSeo);
         // Insert into tredirect weil sich das SEO vom Artikel geändert hat
         if (isset($oSeoAssoc_arr[$artikelsprache_arr[$i]->kSprache])) {
-            checkDbeSXmlRedirect($oSeoAssoc_arr[$artikelsprache_arr[$i]->kSprache]->cSeo,
-                $artikelsprache_arr[$i]->cSeo);
+            checkDbeSXmlRedirect(
+                $oSeoAssoc_arr[$artikelsprache_arr[$i]->kSprache]->cSeo,
+                $artikelsprache_arr[$i]->cSeo
+            );
         }
     }
     if (isset($xml['tartikel']['tattribut']) && is_array($xml['tartikel']['tattribut'])) {
@@ -596,7 +599,8 @@ function bearbeiteInsert($xml, array $conf)
                     ) AS x
                 )
                 WHERE kArtikel = " . (int)$artikel_arr[0]->kVaterArtikel,
-            \DB\ReturnType::AFFECTED_ROWS);
+            \DB\ReturnType::AFFECTED_ROWS
+        );
         // Aktualisiere Merkmale in tartikelmerkmal vom Vaterartikel
         Artikel::beachteVarikombiMerkmalLagerbestand(
             $artikel_arr[0]->kVaterArtikel,

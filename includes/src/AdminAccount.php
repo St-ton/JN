@@ -12,7 +12,7 @@ class AdminAccount
     /**
      * @var bool
      */
-    private $_bLogged = false;
+    private $loggedIn = false;
 
     /**
      * @var bool
@@ -44,7 +44,7 @@ class AdminAccount
         $this->levelMapper   = new \Mapper\AdminLoginStatusToLogLevel();
         if ($bInitialize) {
             AdminSession::getInstance();
-            $this->_validateSession();
+            $this->validateSession();
         }
     }
 
@@ -175,7 +175,7 @@ class AdminAccount
         if (strlen($oAdmin->cPass) === 32) {
             // old md5 hash support
             if (md5($cPass) !== $oAdmin->cPass) {
-                $this->_setRetryCount($oAdmin->cLogin);
+                $this->setRetryCount($oAdmin->cLogin);
 
                 return $this->handleLoginResult(($oAdmin->nLoginVersuch + 1) >= 3
                     ? AdminLoginStatus::ERROR_INVALID_PASSWORD_LOCKED
@@ -217,7 +217,7 @@ class AdminAccount
                 }
             }
 
-            $this->_toSession($oAdmin);
+            $this->toSession($oAdmin);
             //check password hash and update if necessary
             $this->checkAndUpdateHash($cPass);
             if (!$this->getIsTwoFaAuthenticated()) {
@@ -228,7 +228,7 @@ class AdminAccount
                 ? AdminLoginStatus::LOGIN_OK
                 : AdminLoginStatus::ERROR_NOT_AUTHORIZED, $cLogin);
         }
-        $this->_setRetryCount($oAdmin->cLogin);
+        $this->setRetryCount($oAdmin->cLogin);
 
         return $this->handleLoginResult(($oAdmin->nLoginVersuch + 1) >= 3
             ? AdminLoginStatus::ERROR_INVALID_PASSWORD_LOCKED
@@ -240,7 +240,7 @@ class AdminAccount
      */
     public function logout(): self
     {
-        $this->_bLogged = false;
+        $this->loggedIn = false;
         session_destroy();
 
         return $this;
@@ -251,7 +251,7 @@ class AdminAccount
      */
     public function lock(): self
     {
-        $this->_bLogged = false;
+        $this->loggedIn = false;
 
         return $this;
     }
@@ -269,7 +269,7 @@ class AdminAccount
      */
     public function getIsAuthenticated(): bool
     {
-        return $this->_bLogged;
+        return $this->loggedIn;
     }
 
     /**
@@ -391,21 +391,23 @@ class AdminAccount
     /**
      * @return $this
      */
-    private function _validateSession(): self
+    private function validateSession(): self
     {
-        $this->_bLogged = false;
+        $this->loggedIn = false;
         if (isset($_SESSION['AdminAccount']->cLogin, $_SESSION['AdminAccount']->cPass, $_SESSION['AdminAccount']->cURL)
             && $_SESSION['AdminAccount']->cURL === Shop::getURL()
         ) {
             $oAccount                 = Shop::Container()->getDB()->select(
                 'tadminlogin',
-                'cLogin', $_SESSION['AdminAccount']->cLogin,
-                'cPass', $_SESSION['AdminAccount']->cPass
+                'cLogin',
+                $_SESSION['AdminAccount']->cLogin,
+                'cPass',
+                $_SESSION['AdminAccount']->cPass
             );
             $this->twoFaAuthenticated = (isset($oAccount->b2FAauth) && $oAccount->b2FAauth === '1')
                 ? (isset($_SESSION['AdminAccount']->TwoFA_valid) && true === $_SESSION['AdminAccount']->TwoFA_valid)
                 : true;
-            $this->_bLogged           = isset($oAccount->cLogin);
+            $this->loggedIn           = isset($oAccount->cLogin);
         }
 
         return $this;
@@ -419,10 +421,11 @@ class AdminAccount
         if (isset($_SESSION['AdminAccount']->cLogin, $_POST['TwoFA_code'])) {
             $oTwoFA = new TwoFA();
             $oTwoFA->setUserByName($_SESSION['AdminAccount']->cLogin);
-            // check the 2fa-code here really
-            $this->twoFaAuthenticated = $_SESSION['AdminAccount']->TwoFA_valid = $oTwoFA->isCodeValid($_POST['TwoFA_code']);
+            $valid                                 = $oTwoFA->isCodeValid($_POST['TwoFA_code']);
+            $this->twoFaAuthenticated              = $valid;
+            $_SESSION['AdminAccount']->TwoFA_valid = $valid;
 
-            return $this->twoFaAuthenticated;
+            return $valid;
         }
 
         return false;
@@ -442,9 +445,9 @@ class AdminAccount
      * @param stdClass $oAdmin
      * @return $this
      */
-    private function _toSession($oAdmin): self
+    private function toSession($oAdmin): self
     {
-        $oGroup = $this->_getPermissionsByGroup($oAdmin->kAdminlogingruppe);
+        $oGroup = $this->getPermissionsByGroup($oAdmin->kAdminlogingruppe);
         if (is_object($oGroup) || (int)$oAdmin->kAdminlogingruppe === ADMINGROUP) {
             $_SESSION['AdminAccount']              = new stdClass();
             $_SESSION['AdminAccount']->cURL        = Shop::getURL();
@@ -463,9 +466,9 @@ class AdminAccount
 
             $_SESSION['AdminAccount']->oGroup = $oGroup;
 
-            $this->_setLastLogin($oAdmin->cLogin)
-                 ->_setRetryCount($oAdmin->cLogin, true)
-                 ->_validateSession();
+            $this->setLastLogin($oAdmin->cLogin)
+                 ->setRetryCount($oAdmin->cLogin, true)
+                 ->validateSession();
         }
 
         return $this;
@@ -475,7 +478,7 @@ class AdminAccount
      * @param string $cLogin
      * @return $this
      */
-    private function _setLastLogin($cLogin): self
+    private function setLastLogin($cLogin): self
     {
         Shop::Container()->getDB()->update('tadminlogin', 'cLogin', $cLogin, (object)['dLetzterLogin' => 'NOW()']);
 
@@ -487,7 +490,7 @@ class AdminAccount
      * @param bool   $bReset
      * @return $this
      */
-    private function _setRetryCount(string $cLogin, bool $bReset = false): self
+    private function setRetryCount(string $cLogin, bool $bReset = false): self
     {
         if ($bReset) {
             Shop::Container()->getDB()->update('tadminlogin', 'cLogin', $cLogin, (object)['nLoginVersuch' => 0]);
@@ -508,7 +511,7 @@ class AdminAccount
      * @param int $kAdminlogingruppe
      * @return bool|object
      */
-    private function _getPermissionsByGroup(int $kAdminlogingruppe)
+    private function getPermissionsByGroup(int $kAdminlogingruppe)
     {
         $oGroup = Shop::Container()->getDB()->select(
             'tadminlogingruppe',

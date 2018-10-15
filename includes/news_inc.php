@@ -213,9 +213,10 @@ function getNewsArchive(int $kNews, bool $bActiveOnly = false)
     $activeFilter = $bActiveOnly ? ' AND tnews.nAktiv = 1 ' : '';
 
     return Shop::Container()->getDB()->query(
-        "SELECT tnews.kNews, t.languageID AS kSprache, tnews.cKundengruppe, t.title AS cBetreff, t.content AS cText, 
-            t.preview AS cVorschauText, tnews.cPreviewImage, t.metaTitle AS cMetaTitle, t.metaDescription AS cMetaDescription, 
-            t.metaKeywords AS cMetaKeywords, tnews.nAktiv, tnews.dErstellt, tnews.dGueltigVon, tseo.cSeo,
+        "SELECT tnews.kNews, t.languageID AS kSprache, tnews.cKundengruppe, t.title AS cBetreff, 
+        t.content AS cText, t.preview AS cVorschauText, tnews.cPreviewImage, t.metaTitle AS cMetaTitle, 
+        t.metaDescription AS cMetaDescription, t.metaKeywords AS cMetaKeywords, tnews.nAktiv, 
+        tnews.dErstellt, tnews.dGueltigVon, tseo.cSeo,
             DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y %H:%i') AS Datum, 
             DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y %H:%i') AS dGueltigVon_de
             FROM tnews
@@ -277,7 +278,9 @@ function getNewsCategory(int $kNews)
             $kNews,
             'kNewsKategorie'
         ), 'kNewsKategorie'),
-        function ($e) { return (int)$e; }
+        function ($e) {
+            return (int)$e;
+        }
     );
 
     return Shop::Container()->getDB()->query(

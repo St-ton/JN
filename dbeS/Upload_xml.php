@@ -41,8 +41,10 @@ class Uploader extends NetSyncHandler
                             }
 
                             $oSystemFiles_arr[] = new SystemFile(
-                                $oUpload->kUpload, $oUpload->cName,
-                                $oUpload->cName, $cPath_arr['filename'],
+                                $oUpload->kUpload,
+                                $oUpload->cName,
+                                $oUpload->cName,
+                                $cPath_arr['filename'],
                                 '/',
                                 $cExt,
                                 date_format(date_create($oUpload->dErstellt), 'U'),

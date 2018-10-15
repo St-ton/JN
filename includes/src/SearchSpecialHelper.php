@@ -115,9 +115,12 @@ class SearchSpecialHelper
         }
         $oSeo = Shop::Container()->getDB()->select(
             'tseo',
-            'kSprache', Shop::getLanguageID(),
-            'cKey', 'suchspecial',
-            'kKey', $kKey,
+            'kSprache',
+            Shop::getLanguageID(),
+            'cKey',
+            'suchspecial',
+            'kKey',
+            $kKey,
             false,
             'cSeo'
         ) ?? new stdClass();
@@ -289,5 +292,4 @@ class SearchSpecialHelper
 
         return self::randomizeAndLimit($new, min(count($new), $nLimit));
     }
-
 }

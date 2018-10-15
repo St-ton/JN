@@ -99,9 +99,9 @@ class Lieferschein
             }
 
             $kLieferscheinPos_arr = Shop::Container()->getDB()->selectAll(
-                'tlieferscheinpos', 
+                'tlieferscheinpos',
                 'kLieferschein',
-                $kLieferschein, 
+                $kLieferschein,
                 'kLieferscheinPos'
             );
             foreach ($kLieferscheinPos_arr as $oLieferscheinPos) {

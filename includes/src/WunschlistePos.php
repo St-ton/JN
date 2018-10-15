@@ -139,8 +139,11 @@ class WunschlistePos
      */
     public function istEigenschaftEnthalten(int $kEigenschaft, int $kEigenschaftWert): bool
     {
-        return \Functional\some($this->CWunschlistePosEigenschaft_arr, function ($e) use ($kEigenschaft, $kEigenschaftWert) {
-            return (int)$e->kEigenschaft === $kEigenschaft && (int)$e->kEigenschaftWert === $kEigenschaftWert;
-        });
+        return \Functional\some(
+            $this->CWunschlistePosEigenschaft_arr,
+            function ($e) use ($kEigenschaft, $kEigenschaftWert) {
+                return (int)$e->kEigenschaft === $kEigenschaft && (int)$e->kEigenschaftWert === $kEigenschaftWert;
+            }
+        );
     }
 }

@@ -127,22 +127,20 @@ class KundenwerbenKunden
      * @param int $kKunde
      * @return null|stdClass
      */
-    public function insertBoniDB(int $kKunde)
+    public function insertBoniDB(int $kKunde): ?stdClass
     {
-        if ($kKunde > 0) {
-            $conf = Shop::getSettings([CONF_GLOBAL, CONF_KUNDENWERBENKUNDEN]);
-
-            $kwkb                           = new stdClass();
-            $kwkb->kKunde                   = $kKunde;
-            $kwkb->fGuthaben                = (float)$conf['kundenwerbenkunden']['kwk_bestandskundenguthaben'];
-            $kwkb->nBonuspunkte             = 0;
-            $kwkb->dErhalten                = 'NOW()';
-            $kwkb->kKundenWerbenKundenBonus = Shop::Container()->getDB()->insert('tkundenwerbenkundenbonus', $kwkb);
-
-            return $kwkb;
+        if ($kKunde <= 0) {
+            return null;
         }
+        $conf                           = Shop::getSettings([CONF_GLOBAL, CONF_KUNDENWERBENKUNDEN]);
+        $kwkb                           = new stdClass();
+        $kwkb->kKunde                   = $kKunde;
+        $kwkb->fGuthaben                = (float)$conf['kundenwerbenkunden']['kwk_bestandskundenguthaben'];
+        $kwkb->nBonuspunkte             = 0;
+        $kwkb->dErhalten                = 'NOW()';
+        $kwkb->kKundenWerbenKundenBonus = Shop::Container()->getDB()->insert('tkundenwerbenkundenbonus', $kwkb);
 
-        return null;
+        return $kwkb;
     }
 
     /**
@@ -196,7 +194,8 @@ class KundenwerbenKunden
                 );
 
                 $oKundenWerbenKundenBoni->fGuthaben = Preise::getLocalizedPriceString(
-                    (float)$Einstellungen['kundenwerbenkunden']['kwk_bestandskundenguthaben']);
+                    (float)$Einstellungen['kundenwerbenkunden']['kwk_bestandskundenguthaben']
+                );
                 $oMail->BestandskundenBoni          = $oKundenWerbenKundenBoni;
                 // verschicke Email an Bestandskunden
                 sendeMail(MAILTEMPLATE_KUNDENWERBENKUNDENBONI, $oMail);

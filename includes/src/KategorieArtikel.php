@@ -71,7 +71,12 @@ class KategorieArtikel
     {
         $obj = ObjectHelper::copyMembers($this);
 
-        return Shop::Container()->getDB()->update('tkategorieartikel', 'kKategorieArtikel', $obj->kKategorieArtikel, $obj);
+        return Shop::Container()->getDB()->update(
+            'tkategorieartikel',
+            'kKategorieArtikel',
+            $obj->kKategorieArtikel,
+            $obj
+        );
     }
 
     /**

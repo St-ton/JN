@@ -30,7 +30,8 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_tools.php';
 $shop = Shop::getInstance();
 error_reporting(SYNC_LOG_LEVEL);
 if (!is_writable(PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP)) {
-    syncException('Fehler beim Abgleich: Das Verzeichnis ' .
+    syncException(
+        'Fehler beim Abgleich: Das Verzeichnis ' .
         PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . ' ist nicht beschreibbar!',
         FREIDEFINIERBARER_FEHLER
     );

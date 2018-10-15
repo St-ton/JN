@@ -11,13 +11,14 @@ $xml_obj = [];
 if (auth()) {
     $return = 0;
 
-    $xml_obj['queueddata']['verfuegbarkeitsbenachrichtigungen']['tverfuegbarkeitsbenachrichtigung'] = Shop::Container()->getDB()->query(
-        "SELECT *
-            FROM tverfuegbarkeitsbenachrichtigung
-            WHERE cAbgeholt = 'N'
-            LIMIT " . LIMIT_VERFUEGBARKEITSBENACHRICHTIGUNGEN,
-        \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
-    );
+    $xml_obj['queueddata']['verfuegbarkeitsbenachrichtigungen']['tverfuegbarkeitsbenachrichtigung'] =
+        Shop::Container()->getDB()->query(
+            "SELECT *
+                FROM tverfuegbarkeitsbenachrichtigung
+                WHERE cAbgeholt = 'N'
+                LIMIT " . LIMIT_VERFUEGBARKEITSBENACHRICHTIGUNGEN,
+            \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
+        );
 
     $xml_obj['tverfuegbarkeitsbenachrichtigung attr']['anzahl'] =
         count($xml_obj['queueddata']['verfuegbarkeitsbenachrichtigungen']['tverfuegbarkeitsbenachrichtigung']);

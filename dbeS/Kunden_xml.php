@@ -77,7 +77,7 @@ function generiereNeuePasswoerter($xml)
     foreach ($oKundeXML_arr as $oKundeXML) {
         if (isset($oKundeXML->kKunde) && $oKundeXML->kKunde > 0) {
             $oKunde = new Kunde((int)$oKundeXML->kKunde);
-            if ($oKunde->nRegistriert == 1 && $oKunde->cMail) {
+            if ($oKunde->nRegistriert === 1 && $oKunde->cMail) {
                 $oKunde->prepareResetPassword();
             } else {
                 syncException(
@@ -144,14 +144,14 @@ function bearbeiteGutscheine($xml)
         if (!($gutschein->kGutschein > 0 && $gutschein->kKunde > 0)) {
             continue;
         }
-        $gutschein_exists = Shop::Container()->getDB()->select('tgutschein', 'kGutschein', (int)$gutschein->kGutschein);
-        if (!isset($gutschein_exists->kGutschein) || !$gutschein_exists->kGutschein) {
-            $kGutschein = Shop::Container()->getDB()->insert('tgutschein', $gutschein);
-            Shop::Container()->getLogService()->debug('Gutschein fuer kKunde ' .
+        $exists = Shop::Container()->getDB()->select('tgutschein', 'kGutschein', (int)$gutschein->kGutschein);
+        if (!isset($exists->kGutschein) || !$exists->kGutschein) {
+            Shop::Container()->getDB()->insert('tgutschein', $gutschein);
+            Shop::Container()->getLogService()->debug(
+                'Gutschein fuer kKunde ' .
                 (int)$gutschein->kKunde . ' wurde eingeloest. ' .
                 print_r($gutschein, true)
             );
-            //kundenkto erhöhen
             Shop::Container()->getDB()->query(
                 'UPDATE tkunde 
                     SET fGuthaben = fGuthaben + ' . (float)$gutschein->fWert . ' 
@@ -165,7 +165,6 @@ function bearbeiteGutscheine($xml)
                         AND fGuthaben < 0',
                 \DB\ReturnType::AFFECTED_ROWS
             );
-            //mail
             $kunde           = new Kunde((int)$gutschein->kKunde);
             $obj             = new stdClass();
             $obj->tkunde     = $kunde;

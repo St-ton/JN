@@ -100,9 +100,12 @@ if (auth()) {
             $oLieferadresse        = new Lieferadresse((int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kLieferadresse']);
             $land                  = Shop::Container()->getDB()->select(
                 'tland',
-                'cISO', $oLieferadresse->cLand,
-                null, null,
-                null, null,
+                'cISO',
+                $oLieferadresse->cLand,
+                null,
+                null,
+                null,
+                null,
                 false,
                 'cDeutsch'
             );
@@ -130,9 +133,12 @@ if (auth()) {
             $oRechnungsadresse        = new Rechnungsadresse($xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kRechnungsadresse']);
             $land                     = Shop::Container()->getDB()->select(
                 'tland',
-                'cISO', $oRechnungsadresse->cLand,
-                null, null,
-                null, null,
+                'cISO',
+                $oRechnungsadresse->cLand,
+                null,
+                null,
+                null,
+                null,
                 false,
                 'cDeutsch'
             );

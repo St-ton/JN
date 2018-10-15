@@ -157,8 +157,10 @@ function getRemoteData($cURL, $nTimeout = 15)
  * @param string $cTpl
  * @param string $cWrapperID
  * @param string $cPost
+ * @param null $cCallback
  * @param bool $bDecodeUTF8
  * @return IOResponse
+ * @throws SmartyException
  */
 function getRemoteDataIO($cURL, $cDataName, $cTpl, $cWrapperID, $cPost = null, $cCallback = null, $bDecodeUTF8 = false)
 {
@@ -166,7 +168,7 @@ function getRemoteDataIO($cURL, $cDataName, $cTpl, $cWrapperID, $cPost = null, $
     $cData    = http_get_contents($cURL, 15, $cPost);
     $oData    = json_decode($cData);
     $oData    = $bDecodeUTF8 ? utf8_convert_recursive($oData) : $oData;
-    Shop::Smarty()->assign($cDataName, $oData);;
+    Shop::Smarty()->assign($cDataName, $oData);
     $cWrapper = Shop::Smarty()->fetch('tpl_inc/' . $cTpl);
     $response->assign($cWrapperID, 'innerHTML', $cWrapper);
 

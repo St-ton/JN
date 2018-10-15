@@ -11,17 +11,17 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
  */
 class Plugin
 {
-    const PLUGIN_DISABLED = 1;
+    public const PLUGIN_DISABLED = 1;
 
-    const PLUGIN_ACTIVATED = 2;
+    public const PLUGIN_ACTIVATED = 2;
 
-    const PLUGIN_ERRONEOUS = 3;
+    public const PLUGIN_ERRONEOUS = 3;
 
-    const PLUGIN_UPDATE_FAILED = 4;
+    public const PLUGIN_UPDATE_FAILED = 4;
 
-    const PLUGIN_LICENSE_KEY_MISSING = 5;
+    public const PLUGIN_LICENSE_KEY_MISSING = 5;
 
-    const PLUGIN_LICENSE_KEY_INVALID = 6;
+    public const PLUGIN_LICENSE_KEY_INVALID = 6;
 
     /**
      * @var int
@@ -372,6 +372,7 @@ class Plugin
             foreach (get_object_vars($plugin) as $k => $v) {
                 $this->$k = $v;
             }
+            $this->updateAvailable = $this->nVersion < $this->getCurrentVersion();
 
             return $this;
         }

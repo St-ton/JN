@@ -56,7 +56,7 @@ final class Listing
             }
         );
         foreach ($pluginIDs as $pluginID) {
-            $plugin = new \Plugin($pluginID);
+            $plugin = new \Plugin($pluginID, true);
             if ($plugin->updateAvailable === true) {
                 $code = $this->validator->validateByPluginID($pluginID, true);
                 if ($code !== InstallCode::OK) {
@@ -90,11 +90,11 @@ final class Listing
                 continue;
             }
             $dir  = $fileinfo->getBasename();
-            $cXML = $dir . '/' . \PLUGIN_INFO_FILE;
-            if (!\file_exists($cXML)) {
+            $info = $fileinfo->getPathname() . '/' . \PLUGIN_INFO_FILE;
+            if (!\file_exists($info)) {
                 continue;
             }
-            $xml     = \file_get_contents($cXML);
+            $xml     = \file_get_contents($info);
             $xmlData = \getArrangedArray(\XML_unserialize($xml));
             $code    = $this->validator->validateByPath(self::PLUGINS_DIR . $dir);
             if ($code === InstallCode::DUPLICATE_PLUGIN_ID && $installedPlugins->contains($dir)) {

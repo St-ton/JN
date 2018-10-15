@@ -38,19 +38,19 @@ class Updater
     /**
      * Versucht ein ausgewähltes Plugin zu updaten
      *
-     * @param int $kPlugin
+     * @param int $pluginID
      * @return int
      */
-    public function updatePlugin(int $kPlugin): int
+    public function updatePlugin(int $pluginID): int
     {
-        if ($kPlugin <= 0) {
+        if ($pluginID <= 0) {
             return \Plugin\InstallCode::WRONG_PARAM;
         }
-        $oPluginTMP = $this->db->select('tplugin', 'kPlugin', $kPlugin);
-        if (isset($oPluginTMP->kPlugin) && $oPluginTMP->kPlugin > 0) {
-            $oPlugin = new \Plugin($oPluginTMP->kPlugin);
-            $this->installer->setPlugin($oPlugin);
-            $this->installer->setDir($oPlugin->cVerzeichnis);
+        $tmp = $this->db->select('tplugin', 'kPlugin', $pluginID);
+        if (isset($tmp->kPlugin) && $tmp->kPlugin > 0) {
+            $plugin = new \Plugin($tmp->kPlugin);
+            $this->installer->setPlugin($plugin);
+            $this->installer->setDir($plugin->cVerzeichnis);
 
             return $this->installer->installierePluginVorbereitung();
         }

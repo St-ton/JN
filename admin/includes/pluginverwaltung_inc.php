@@ -59,22 +59,22 @@ function updatePlugin(int $kPlugin)
 /**
  * Versucht ein ausgewähltes Plugin vorzubereiten und danach zu installieren
  *
- * @param string     $cVerzeichnis
- * @param int|Plugin $oPluginOld
+ * @param string     $dir
+ * @param int|Plugin $oldPlugin
  * @return int
  * @deprecated since 5.0.0
  */
-function installierePluginVorbereitung($cVerzeichnis, $oPluginOld = 0)
+function installierePluginVorbereitung($dir, $oldPlugin = 0)
 {
     trigger_error(__FILE__ . ': calling ' . __FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $db          = Shop::Container()->getDB();
     $uninstaller = new \Plugin\Admin\Uninstaller($db);
     $validator   = new \Plugin\Admin\Validator($db);
     $installer   = new \Plugin\Admin\Installer($db, $uninstaller, $validator);
-    $installer->setDir($cVerzeichnis);
-    if ($oPluginOld !== 0) {
-        $installer->setPlugin($oPluginOld);
-        $installer->setDir($cVerzeichnis);
+    $installer->setDir($dir);
+    if ($oldPlugin !== 0) {
+        $installer->setPlugin($oldPlugin);
+        $installer->setDir($dir);
     }
 
     return $installer->installierePluginVorbereitung();

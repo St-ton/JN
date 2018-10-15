@@ -188,32 +188,32 @@ class Uninstaller
             );
         }
         if (\is_array($oObj_arr) && \count($oObj_arr) === 2) {
-            $oLinkspracheOld_arr = $this->db->selectAll('tlinksprache', 'kLink', $oObj_arr[0]->kLink);
-            if (\is_array($oLinkspracheOld_arr) && \count($oLinkspracheOld_arr) > 0) {
+            $oldLocalization = $this->db->selectAll('tlinksprache', 'kLink', $oObj_arr[0]->kLink);
+            if (\is_array($oldLocalization) && \count($oldLocalization) > 0) {
                 $oSprachAssoc_arr = \Sprache::getAllLanguages(2);
 
-                foreach ($oLinkspracheOld_arr as $oLinkspracheOld) {
-                    $_upd       = new \stdClass();
-                    $_upd->cSeo = $oLinkspracheOld->cSeo;
+                foreach ($oldLocalization as $item) {
+                    $upd       = new \stdClass();
+                    $upd->cSeo = $item->cSeo;
                     $this->db->update(
                         'tlinksprache',
                         ['kLink', 'cISOSprache'],
-                        [$oObj_arr[1]->kLink, $oLinkspracheOld->cISOSprache],
-                        $_upd
+                        [$oObj_arr[1]->kLink, $item->cISOSprache],
+                        $upd
                     );
-                    $kSprache = $oSprachAssoc_arr[$oLinkspracheOld->cISOSprache]->kSprache;
+                    $kSprache = $oSprachAssoc_arr[$item->cISOSprache]->kSprache;
                     $this->db->delete(
                         'tseo',
                         ['cKey', 'kKey', 'kSprache'],
                         ['kLink', $oObj_arr[0]->kLink, $kSprache]
                     );
-                    $_upd       = new \stdClass();
-                    $_upd->cSeo = $oLinkspracheOld->cSeo;
+                    $upd       = new \stdClass();
+                    $upd->cSeo = $item->cSeo;
                     $this->db->update(
                         'tseo',
                         ['cKey', 'kKey', 'kSprache'],
                         ['kLink', $oObj_arr[1]->kLink, $kSprache],
-                        $_upd
+                        $upd
                     );
                 }
             }

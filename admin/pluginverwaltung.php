@@ -22,7 +22,6 @@ $installer   = new \Plugin\Admin\Installer($db, $uninstaller, $validator);
 $updater     = new \Plugin\Admin\Updater($db, $installer);
 $extractor   = new \Plugin\Admin\Extractor();
 
-
 if (isset($_SESSION['plugin_msg'])) {
     $cHinweis = $_SESSION['plugin_msg'];
     unset($_SESSION['plugin_msg']);
@@ -372,11 +371,3 @@ $smarty->assign('hinweis', $cHinweis)
        ->assign('step', $step)
        ->assign('mapper', new \Mapper\PluginState())
        ->display('pluginverwaltung.tpl');
-Profiler::savePluginProfile();
-Profiler::saveSQLProfile();
-Profiler::output();
-if (Profiler::getIsStarted() === true) {
-    Profiler::finish();
-    $data = Profiler::getData();
-    echo $data['html'];
-}

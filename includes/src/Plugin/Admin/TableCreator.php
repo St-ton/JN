@@ -20,7 +20,15 @@ class TableCreator
      */
     private $db;
 
+    /**
+     * @var \Plugin|null
+     */
     private $plugin;
+
+    /**
+     * @var \Plugin|null
+     */
+    private $oldPlugin;
 
     /**
      * TableCreator constructor.
@@ -32,6 +40,38 @@ class TableCreator
     }
 
     /**
+     * @return \Plugin|null
+     */
+    public function getPlugin(): ?\Plugin
+    {
+        return $this->plugin;
+    }
+
+    /**
+     * @param \Plugin|null $plugin
+     */
+    public function setPlugin($plugin): void
+    {
+        $this->plugin = $plugin;
+    }
+
+    /**
+     * @return \Plugin|null
+     */
+    public function getOldPlugin(): ?\Plugin
+    {
+        return $this->oldPlugin;
+    }
+
+    /**
+     * @param \Plugin|null $oldPlugin
+     */
+    public function setOldPlugin($oldPlugin): void
+    {
+        $this->oldPlugin = $oldPlugin;
+    }
+
+    /**
      * Installiert die tplugin* Tabellen für ein Plugin in der Datenbank
      *
      * @param array  $XML_arr
@@ -39,7 +79,7 @@ class TableCreator
      * @param object $oPluginOld
      * @return int
      */
-    public function installPluginTables($XML_arr, $oPlugin, $oPluginOld): int
+    public function installPluginTables($XML_arr, $oPlugin): int
     {
         $this->plugin   = $oPlugin;
         $hooksNode      = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Hooks'])
@@ -1005,15 +1045,13 @@ class TableCreator
             $mailTpl->nWRB          = $template['WRB'] ?? 0;
             $mailTpl->nWRBForm      = $template['WRBForm'] ?? 0;
             $mailTpl->nDSE          = $template['DSE'] ?? 0;
-            // tpluginemailvorlage füllen
-            $kEmailvorlage = $this->db->insert('tpluginemailvorlage', $mailTpl);
-
-            if ($kEmailvorlage <= 0) {
+            $mailTplID              = $this->db->insert('tpluginemailvorlage', $mailTpl);
+            if ($mailTplID <= 0) {
                 return InstallCode::SQL_CANNOT_SAVE_EMAIL_TEMPLATE;
             }
             $localizedTpl                = new \stdClass();
             $iso                         = '';
-            $localizedTpl->kEmailvorlage = $kEmailvorlage;
+            $localizedTpl->kEmailvorlage = $mailTplID;
             // Hole alle Sprachen des Shops
             // Assoc cISO
             $allLanguages = \Sprache::getAllLanguages(2);
@@ -1028,26 +1066,22 @@ class TableCreator
                 if (isset($hits1[0]) && \strlen($hits1[0]) === \strlen($l)) {
                     $iso = \strtolower($localized['iso']);
                 } elseif (isset($hits2[0]) && \strlen($hits2[0]) === \strlen($l)) {
-                    // tpluginemailvorlagesprache füllen
-                    $localizedTpl->kEmailvorlage = $kEmailvorlage;
+                    $localizedTpl->kEmailvorlage = $mailTplID;
                     $localizedTpl->kSprache      = $allLanguages[$iso]->kSprache;
                     $localizedTpl->cBetreff      = $localized['Subject'];
                     $localizedTpl->cContentHtml  = $localized['ContentHtml'];
                     $localizedTpl->cContentText  = $localized['ContentText'];
                     $localizedTpl->cPDFS         = $localized['PDFS'] ?? null;
                     $localizedTpl->cDateiname    = $localized['Filename'] ?? null;
-
                     if (!isset($oPluginOld->kPlugin) || !$oPluginOld->kPlugin) {
                         $this->db->insert('tpluginemailvorlagesprache', $localizedTpl);
                     }
-
                     $this->db->insert('tpluginemailvorlagespracheoriginal', $localizedTpl);
                     // Erste Templatesprache vom Plugin als Standard setzen
                     if (!$isDefault) {
                         $defaultLanguage = $localizedTpl;
                         $isDefault       = true;
                     }
-
                     if (isset($allLanguages[$iso])) {
                         // Resette aktuelle Sprache
                         unset($allLanguages[$iso]);

@@ -24,15 +24,11 @@ class Migration_20160822103020 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute(
-            "CREATE INDEX idx_tpreis_kKunde ON tpreis (kKunde)"
-        );
+        MigrationHelper::createIndex('tpreis', ['kKunde'], 'idx_tpreis_kKunde');
     }
 
     public function down()
     {
-        $this->execute(
-            "DROP INDEX idx_tpreis_kKunde ON tpreis"
-        );
+        MigrationHelper::dropIndex('tpreis', 'idx_tpreis_kKunde');
     }
 }

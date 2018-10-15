@@ -625,7 +625,7 @@ class IOMethods
         ];
 
         if ($selectedVariationValues !== null) {
-            $products = getArticleByVariations($productID, $selectedVariationValues);
+            $products = $this->getArticleByVariations($productID, $selectedVariationValues);
 
             if (count($products) === 1) {
                 $productID = $products[0]->kArtikel;
@@ -1028,12 +1028,13 @@ class IOMethods
         }
 
         $combinationSQL = ($combinations !== null && count($combinations) > 0)
-            ? 'teigenschaftkombiwert.kEigenschaftKombi IN (
-                     SELECT kEigenschaftKombi
-                     FROM teigenschaftkombiwert
-                     WHERE (kEigenschaft, kEigenschaftWert) IN (' . implode(', ', $combinations) . ')
-                     GROUP BY kEigenschaftKombi
-                     HAVING COUNT(kEigenschaftKombi) = ' . count($combinations) . '
+            ? 'EXISTS (
+                     SELECT 1
+                     FROM teigenschaftkombiwert innerKombiwert
+                     WHERE (innerKombiwert.kEigenschaft, innerKombiwert.kEigenschaftWert) IN (' . implode(', ', $combinations) . ')
+                        AND innerKombiwert.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
+                     GROUP BY innerKombiwert.kEigenschaftKombi
+                     HAVING COUNT(innerKombiwert.kEigenschaftKombi) = ' . count($combinations) . '
                 )
                 AND '
             : '';

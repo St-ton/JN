@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "961ac39d9bbae15d26bb47d104e68643",
+    "content-hash": "d529d08f6084536dbc750a04e26df03c",
     "packages": [
         {
             "name": "andyftw/ssllabs-php",
@@ -50,6 +50,46 @@
                 "ssllabs"
             ],
             "time": "2016-05-24T23:25:27+00:00"
+        },
+        {
+            "name": "chamilo/pclzip",
+            "version": "v2.8.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/chamilo/pclzip.git",
+                "reference": "b94b7a190e186a31bd37f21be3a83a48c7d6b49a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/chamilo/pclzip/zipball/b94b7a190e186a31bd37f21be3a83a48c7d6b49a",
+                "reference": "b94b7a190e186a31bd37f21be3a83a48c7d6b49a",
+                "shasum": ""
+            },
+            "replace": {
+                "pclzip/pclzip": "^2.8"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "pclzip.lib.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-2.1"
+            ],
+            "authors": [
+                {
+                    "name": "Vincent Blavet"
+                }
+            ],
+            "description": "A PHP library that offers compression and extraction functions for Zip formatted archives",
+            "homepage": "https://github.com/chamilo/pclzip",
+            "keywords": [
+                "php",
+                "zip"
+            ],
+            "time": "2017-11-28T22:14:11+00:00"
         },
         {
             "name": "container-interop/container-interop",
@@ -265,12 +305,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/erusev/parsedown.git",
-                "reference": "1829106e60b38ea4f88d5ef678d2516c728e2dab"
+                "reference": "69163d6e88a8fb160b9fe5b696150bd4d91fa106"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/erusev/parsedown/zipball/1829106e60b38ea4f88d5ef678d2516c728e2dab",
-                "reference": "1829106e60b38ea4f88d5ef678d2516c728e2dab",
+                "url": "https://api.github.com/repos/erusev/parsedown/zipball/69163d6e88a8fb160b9fe5b696150bd4d91fa106",
+                "reference": "69163d6e88a8fb160b9fe5b696150bd4d91fa106",
                 "shasum": ""
             },
             "require": {
@@ -303,7 +343,7 @@
                 "markdown",
                 "parser"
             ],
-            "time": "2018-09-19T20:28:02+00:00"
+            "time": "2018-10-14T20:48:40+00:00"
         },
         {
             "name": "icecave/isolator",
@@ -773,7 +813,7 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.jtl-software.de/jtlshop/scc.git",
-                "reference": "ff303b4a30ff396b61996dd6f121038157a79a06"
+                "reference": "f1773f70cd87451c79958edf71db5d6beb24ab79"
             },
             "require": {
                 "myclabs/php-enum": "^1.5",
@@ -800,7 +840,7 @@
             "keywords": [
                 "jtl-shop"
             ],
-            "time": "2018-10-08T09:06:09+00:00"
+            "time": "2018-10-12T10:48:56+00:00"
         },
         {
             "name": "jtlshop/semver",
@@ -1284,43 +1324,6 @@
                 "enum"
             ],
             "time": "2018-08-01T21:05:54+00:00"
-        },
-        {
-            "name": "pclzip/pclzip",
-            "version": "2.8.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ivanlanin/pclzip.git",
-                "reference": "19dd1de9d3f5fc4d7d70175b4c344dee329f45fd"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ivanlanin/pclzip/zipball/19dd1de9d3f5fc4d7d70175b4c344dee329f45fd",
-                "reference": "19dd1de9d3f5fc4d7d70175b4c344dee329f45fd",
-                "shasum": ""
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "pclzip.lib.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "LGPL-2.1"
-            ],
-            "authors": [
-                {
-                    "name": "Vincent Blavet"
-                }
-            ],
-            "description": "A PHP library that offers compression and extraction functions for Zip formatted archives",
-            "homepage": "http://www.phpconcept.net/pclzip",
-            "keywords": [
-                "php",
-                "zip"
-            ],
-            "time": "2014-06-05T11:42:24+00:00"
         },
         {
             "name": "phpcollection/phpcollection",
@@ -1911,16 +1914,16 @@
         },
         {
             "name": "tightenco/collect",
-            "version": "v5.7.8",
+            "version": "v5.7.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tightenco/collect.git",
-                "reference": "6d35f5c38d3db9aec073eaba903b9301d63d2ec3"
+                "reference": "67b8d4a20ce42b32b5f50a141bb0b1ec45aedb53"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tightenco/collect/zipball/6d35f5c38d3db9aec073eaba903b9301d63d2ec3",
-                "reference": "6d35f5c38d3db9aec073eaba903b9301d63d2ec3",
+                "url": "https://api.github.com/repos/tightenco/collect/zipball/67b8d4a20ce42b32b5f50a141bb0b1ec45aedb53",
+                "reference": "67b8d4a20ce42b32b5f50a141bb0b1ec45aedb53",
                 "shasum": ""
             },
             "require": {
@@ -1957,7 +1960,7 @@
                 "collection",
                 "laravel"
             ],
-            "time": "2018-10-04T19:31:01+00:00"
+            "time": "2018-10-09T17:51:58+00:00"
         },
         {
             "name": "tubalmartin/cssmin",

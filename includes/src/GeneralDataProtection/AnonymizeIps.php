@@ -12,7 +12,6 @@ namespace GeneralDataProtection;
  * names of the tables, we manipulate:
  *
  * `tbestellung`
- * `tbesucher`
  * `tbesucherarchiv`
  * `tkontakthistory`
  * `tproduktanfragehistory`
@@ -39,11 +38,6 @@ class AnonymizeIps extends Method implements MethodInterface
             'ColKey'      => 'kBestellung',
             'ColIp'       => 'cIP',
             'ColCreated'  => 'dErstellt'
-        ],
-        'tbesucher' => [
-            'ColKey'     => 'kBesucher',
-            'ColIp'      => 'cIP',
-            'ColCreated' => 'dLetzteAktivitaet'
         ],
         'tbesucherarchiv' => [
             'ColKey'     => 'kBesucher',
@@ -95,14 +89,6 @@ class AnonymizeIps extends Method implements MethodInterface
             'ColIp'      => 'cIP',
             'ColCreated' => 'dDate'
         ]
-    ];
-
-    // tables to truncate   (not yet implemented)
-    /**
-     * @var array
-     */
-    private $vTablesClear = [
-        'tfsession'
     ];
 
     /**
@@ -171,7 +157,6 @@ class AnonymizeIps extends Method implements MethodInterface
                     $szKeyColName = $vTable['ColKey'];
                     \Shop::Container()->getDB()->update($szTableName, $vTable['ColKey'], (int)$oRow->$szKeyColName, $oRow);
                 }
-                ($this->oLogger === null) ?: $this->oLogger->log(JTLLOG_LEVEL_NOTICE, 'Rows updated: ' . $iRowCount);
             }
         }
 

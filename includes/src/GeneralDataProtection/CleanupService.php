@@ -16,74 +16,66 @@ class CleanupService extends Method implements MethodInterface
      * @var array
      */
     protected $definition = [
-        /*
-         * anonymized (AnonymizeIps) and removed (CleanupCustomerRelicts) via GDP  in 0d (!)
-         *
-         *'tbesucherarchiv'                  => [
-         *    'cDate'     => 'dZeit',
-         *    'cSubTable' => [
-         *        'tbesuchersuchausdruecke' => 'kBesucher'
-         *    ],
-         *    'cInterval' => '180'
-         *],
-         */
-        'tcheckboxlogging'                 => [
+        'tbesucherarchiv'                  => [
+            'cDate'     => 'dZeit',
+            'cSubTable' => [
+                'tbesuchersuchausdruecke' => 'kBesucher'
+            ],
+            'cInterval' => '2920' // anonymized after 7 days, removed after 8 years (former 180 days)
+        ],
+        'tcheckboxlogging' => [
             'cDate'     => 'dErstellt',
             'cSubTable' => null,
             'cInterval' => '365'
         ],
-        'texportformatqueuebearbeitet'     => [
+        'texportformatqueuebearbeitet' => [
             'cDate'     => 'dZuletztGelaufen',
             'cSubTable' => null,
-            'cInterval' => '60'
+            'cInterval' => '30'
         ],
-        'tkampagnevorgang'                 => [
+        'tkampagnevorgang' => [
             'cDate'     => 'dErstellt',
             'cSubTable' => null,
             'cInterval' => '365'
         ],
-        'tpreisverlauf'                    => [
+        'tpreisverlauf' => [
             'cDate'     => 'dDate',
             'cSubTable' => null,
-            'cInterval' => '120'
+            'cInterval' => '730' // 2 years (former 120 days)
         ],
-        /*
-         * anonymized via GDP (AnonymizeIps) in 7d (!)
-         *
-         *'tredirectreferer'                 => [
-         *    'cDate'     => 'dDate',
-         *    'cSubTable' => null,
-         *    'cInterval' => '60'
-         *],
-         */
-        'tsitemapreport'                   => [
+        'tredirectreferer' => [
+            'cDate'     => 'dDate',
+            'cSubTable' => null,
+            'cInterval' => '2920' // anonymized after 7 days, removed after 8 years (former 60 days)
+        ],
+        'tsitemapreport' => [
             'cDate'     => 'dErstellt',
             'cSubTable' => [
                 'tsitemapreportfile' => 'kSitemapReport'
             ],
-            'cInterval' => '120'
+            'cInterval' => '365' // (former 120 days)
         ],
-        /*
-         * partly in GDP
-         * (AnonymizeIps) 'tsuchanfragencache' anonymized in 7d
-         *
-         *'tsuchanfrage'                     => [
-         *    'cDate'     => 'dZuletztGesucht',
-         *    'cSubTable' => [
-         *        'tsuchanfrageerfolglos' => 'cSuche',
-         *        'tsuchanfrageblacklist' => 'cSuche',
-         *        'tsuchanfragencache'    => 'cSuche'
-         *    ],
-         *    'cInterval' => '120'
-         *],
-         */
-        'tsuchcache'                       => [
+        'tsuchanfrage' => [
+            'cDate'     => 'dZuletztGesucht',
+            'cSubTable' => [
+                'tsuchanfrageerfolglos' => 'cSuche',
+                'tsuchanfrageblacklist' => 'cSuche',
+                'tsuchanfragencache'    => 'cSuche' // (anonymized after 7 days)
+            ],
+            'cInterval' => '2920' // anonymized after 7 days, removed after 8 years (former 60 days)
+        ],
+        'tsuchcache' => [
             'cDate'     => 'dGueltigBis',
             'cSubTable' => [
                 'tsuchcachetreffer' => 'kSuchCache'
             ],
             'cInterval' => '30'
         ],
+        'tfsession' => [
+            'cDate'     => 'dErstellt',
+            'cSubTable' => null,
+            'cInterval' => '7'
+        ]
     ];
 
 
@@ -96,10 +88,6 @@ class CleanupService extends Method implements MethodInterface
             $cDateField    = $cMainTable_arr['cDate'];
             $cSubTable_arr = $cMainTable_arr['cSubTable'];
             $cInterval     = $cMainTable_arr['cInterval'];
-
-            if ((int)$cInterval !== $this->iInterval) {
-                continue;
-            }
 
             if ($cSubTable_arr !== null) {
                 $cFrom = "{$cTable}";

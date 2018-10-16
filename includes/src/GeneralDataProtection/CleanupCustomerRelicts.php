@@ -12,7 +12,6 @@ namespace GeneralDataProtection;
  *
  * names of the tables, we manipulate:
  *
- * `tbesucher`
  * `tbesucherarchiv`
  * `tkundenattribut`
  * `tkundenkontodaten`
@@ -27,28 +26,10 @@ namespace GeneralDataProtection;
 class CleanupCustomerRelicts extends Method implements MethodInterface
 {
     /**
-     * @var string
-     */
-    protected $szReasonName;
-
-    /**
-     * AnonymizeDeletedCustomer constructor
-     *
-     * @param $oNow
-     * @param $iInterval
-     */
-    public function __construct($oNow, $iInterval)
-    {
-        parent::__construct($oNow, $iInterval);
-        $this->szReasonName = substr(__CLASS__, strrpos(__CLASS__, '\\')) . ': ';
-    }
-
-    /**
      * runs all anonymize-routines
      */
     public function execute()
     {
-        $this->del_tbesucher();
         $this->del_tbesucherarchiv();
         $this->del_tkundenattribut();
         $this->del_tkundenkontodaten();
@@ -59,45 +40,12 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
     }
 
     /**
-     * delete visitors without a valid customer-account,
-     * after a given count of days
-     *
-     * CONSIDERE: using no time-base or limit!
-     */
-    private function del_tbesucher()
-    {
-        $this->szReason = $this->szReasonName . 'delete unknown visitors';
-        $vResult        = \Shop::Container()->getDB()->queryPrepared('SELECT *
-            FROM tbesucher
-            WHERE
-                kKunde > 0
-                AND kKunde NOT IN (SELECT kKunde FROM tkunde)
-                LIMIT :pLimit',
-            ['pLimit' => $this->iWorkLimit],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
-        );
-        if (!\is_array($vResult)) {
-
-            return;
-        }
-        foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared('DELETE FROM tbesucher
-                WHERE
-                    kBesucher = :pKeyBesucher',
-                ['pKeyBesucher' => $oResult->kBesucher],
-                \DB\ReturnType::AFFECTED_ROWS
-            );
-        }
-    }
-
-    /**
      * delete visitors in the visitors-archive immediately (at each run of the cron),
      * without a valid customer-account
      */
     private function del_tbesucherarchiv()
     {
-        $this->szReason = $this->szReasonName . 'delete vititors from archive';
-        $vResult        = \Shop::Container()->getDB()->queryPrepared('SELECT *
+        $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM tbesucherarchiv
             WHERE
                 kKunde > 0
@@ -127,8 +75,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function del_tkundenwerbenkunden()
     {
-        $this->szReason = $this->szReasonName . 'delete customer-recruitings';
-        $vResult        = \Shop::Container()->getDB()->queryPrepared('SELECT
+        $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT
                 k.*,
                 b.fGuthaben AS "_bonus_fGuthaben",
                 b.nBonuspunkte AS "_bonus_nBonuspunkte",
@@ -168,8 +115,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function del_tkundenattribut()
     {
-        $this->szReason = $this->szReasonName . 'delete customer-attributes';
-        $vResult        = \Shop::Container()->getDB()->queryPrepared('SELECT *
+        $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM tkundenattribut
             WHERE
                 kKunde NOT IN (SELECT kKunde FROM tkunde)
@@ -197,8 +143,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function del_tzahlungsinfo()
     {
-        $this->szReason = $this->szReasonName . 'delete orphaned payment-data';
-        $vResult        = \Shop::Container()->getDB()->queryPrepared('SELECT *
+        $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM tzahlungsinfo
             WHERE
                 kKunde > 0
@@ -227,8 +172,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function del_tkundenkontodaten()
     {
-        $this->szReason = $this->szReasonName . 'delete orphaned bank-account-information';
-        $vResult        = \Shop::Container()->getDB()->queryPrepared('SELECT *
+        $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM tkundenkontodaten
             WHERE
                 kKunde > 0
@@ -257,8 +201,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function del_tlieferadresse()
     {
-        $this->szReason = $this->szReasonName . 'delete delivery-addresses';
-        $vResult        = \Shop::Container()->getDB()->queryPrepared('SELECT *
+        $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM tlieferadresse k
                 JOIN tbestellung b ON b.kKunde = k.kKunde
             WHERE
@@ -289,8 +232,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function del_trechnungsadresse()
     {
-        $this->szReason = $this->szReasonName . 'delete billing-addresses';
-        $vResult        = \Shop::Container()->getDB()->queryPrepared('SELECT *
+        $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
             FROM trechnungsadresse k
                 JOIN tbestellung b ON b.kKunde = k.kKunde
             WHERE

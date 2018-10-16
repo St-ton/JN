@@ -27,25 +27,19 @@ class TableCleaner
 
     /**
      * anonymize-methods
-     * (NOTE: the order of this methods is not insignificant and can be configured)
+     * (NOTE: the order of this methods is not insignificant and "can be configured")
      *
      * @var array
      */
     private $vMethods = [
-        // anonymize
         ['szName' => 'AnonymizeIps',                      'iIntervalDays' => 7],
         ['szName' => 'AnonymizeDeletedCustomer',          'iIntervalDays' => 7],
-        // delete storry-based
         ['szName' => 'CleanupCustomerRelicts',            'iIntervalDays' => 0],
         ['szName' => 'CleanupGuestAccountsWithoutOrders', 'iIntervalDays' => 0],
         ['szName' => 'CleanupNewsletterRecipients',       'iIntervalDays' => 30],
         ['szName' => 'CleanupLogs',                       'iIntervalDays' => 90],
-        ['szName' => 'CleanupOldGuestAccounts',           'iIntervalDays' => 365]
-        // delete time-based
-        ['szName' => 'CleanupService',                    'iIntervalDays' => 30],
-        ['szName' => 'CleanupService',                    'iIntervalDays' => 60],
-        ['szName' => 'CleanupService',                    'iIntervalDays' => 120],
-        ['szName' => 'CleanupService',                    'iIntervalDays' => 365]
+        ['szName' => 'CleanupOldGuestAccounts',           'iIntervalDays' => 365],
+        ['szName' => 'CleanupService',                    'iIntervalDays' => 0] // multiple own intervals
     ];
 
 
@@ -57,7 +51,7 @@ class TableCleaner
         } catch (\Exception $e) {
             $this->oLogger = null;
         }
-        // sets the time which has to be used by all sub-processes too
+        // sets the time which has to be used by all sub-processes
         $this->oNow = new \DateTime();
     }
 
@@ -66,20 +60,21 @@ class TableCleaner
      */
     public function execute()
     {
-        // runtime-measurement
-        $t_start = microtime(true);
-
+        $nTimeStart    = microtime(true); // runtime-measurement
         $nMethodsCount = \count($this->vMethods);
+        $szLogSum      = '';
         // iterate over the indexed array (configurable order!)
         for ($i=0; $i < $nMethodsCount ; $i++) {
             $szMethodName = __NAMESPACE__ . '\\' . $this->vMethods[$i]['szName'];
-            ($this->oLogger === null) ?: $this->oLogger->log(JTLLOG_LEVEL_NOTICE, 'Anonymize Method running: ' . $this->vMethods[$i]['szName']);
             (new $szMethodName($this->oNow, $this->vMethods[$i]['iIntervalDays']))->execute();
+            $szLogSum .= 'Anonymize Method executed: ' . $this->vMethods[$i]['szName'] . "\n";
         }
-
-        // runtime-measurement
-        $t_elapsed = microtime(true) - $t_start;
-        ($this->oLogger === null) ?: $this->oLogger->log(JTLLOG_LEVEL_NOTICE, 'Anonymizing was finished in: ' . sprintf('%01.4fs', $t_elapsed));
+        $nTimeElapsed = microtime(true) - $nTimeStart; // runtime-measurement
+        $this->_Logger->debug('ELAPSED TIME: '.sprintf('%01.4fs', $nTimeElapsed)); // --DEBUG--
+        ($this->oLogger === null) ?: $this->oLogger->log(JTLLOG_LEVEL_NOTICE,
+            $szLogSum . "\n" .
+            'Anonymizing was finished in: ' . sprintf('%01.4fs', $nTimeElapsed)
+        );
     }
 
     /**

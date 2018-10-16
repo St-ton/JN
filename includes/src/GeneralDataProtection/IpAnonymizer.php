@@ -90,9 +90,6 @@ class IpAnonymizer
             $this->oLogger = null;
         }
 
-        // former
-        //$this->szIpMaskv4 = \Shop::getSettings([CONF_GLOBAL])['global']['anonymize_ip_mask_v4'];
-        //$this->szIpMaskv4 = \Shop::getSettings([CONF_GLOBAL])['global']['anonymize_ip_mask_v6'];
         $this->setMaskV4('255.255.0.0');
         $this->setMaskV6('ffff:ffff:ffff:ffff:0000:0000:0000:0000');
 
@@ -127,9 +124,15 @@ class IpAnonymizer
         // any ':' means, we got an IPv6-address
         // ("::127.0.0.1" or "::ffff:127.0.0.3" is valid too!)
         if (strpos($this->szIP, ':') !== false) {
-            $this->bRawIp = inet_pton($this->szIP);
+            $this->bRawIp = @inet_pton($this->szIP);
         } else {
-            $this->bRawIp = inet_pton($this->rmLeadingZero($this->szIP));
+            $this->bRawIp = @inet_pton($this->rmLeadingZero($this->szIP));
+        }
+        if ($this->bRawIp === false) {
+            ($this->oLogger !== null) ?: $this->oLogger->log(JTLLOG_LEVEL_WARNING,
+                'Wrong IP: ' . $this->szIP
+            );
+            $this->bRawIp = '';
         }
         switch (\strlen($this->bRawIp)) {
             case 4:

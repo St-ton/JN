@@ -1023,7 +1023,7 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
     // Automatisch
     if ($conf['navigationsfilter']['preisspannenfilter_anzeige_berechnung'] === 'A') {
         // Finde den höchsten und kleinsten Steuersatz
-        if (is_array($_SESSION['Steuersatz']) && $_SESSION['Kundengruppe']->nNettoPreise === '0') {
+        if (is_array($_SESSION['Steuersatz']) && (int)$_SESSION['Kundengruppe']->nNettoPreise === 0) {
             $fSteuersatz_arr = [];
             foreach ($_SESSION['Steuersatz'] as $fSteuersatz) {
                 $fSteuersatz_arr[] = $fSteuersatz;

@@ -1,17 +1,14 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
+ * @license http://jtl-url.de/jtlshoplicense
  */
 
 namespace Cron\Jobs;
 
-
 use Cron\Job;
 use Cron\JobInterface;
 use Cron\QueueEntry;
-use DB\DbInterface;
-use Psr\Log\LoggerInterface;
 
 /**
  * Class GeneralDataProtect
@@ -29,5 +26,5 @@ class GeneralDataProtect extends Job
 
         return $this;
     }
-
 }
+

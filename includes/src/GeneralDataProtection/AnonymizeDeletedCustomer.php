@@ -1,7 +1,7 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
+ * @license http://jtl-url.de/jtlshoplicense
  */
 
 namespace GeneralDataProtection;
@@ -18,23 +18,6 @@ namespace GeneralDataProtection;
 class AnonymizeDeletedCustomer extends Method implements MethodInterface
 {
     /**
-     * @var string
-     */
-    protected $szReasonName;
-
-    /**
-     * AnonymizeDeletedCustomer constructor
-     *
-     * @param $oNow
-     * @param $iInterval
-     */
-    public function __construct($oNow, $iInterval)
-    {
-        parent::__construct($oNow, $iInterval);
-        $this->szReasonName = substr(__CLASS__, strrpos(__CLASS__, '\\')) . ': ';
-    }
-
-    /**
      * runs all anonymize-routines
      */
     public function execute()
@@ -50,15 +33,15 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
      */
     private function anon_tbewertung()
     {
-        $this->szReason = $this->szReasonName . 'anonymize orphanded ratings';
-        $vResult        = \Shop::Container()->getDB()->queryPrepared('SELECT *
+        $vResult = \Shop::Container()->getDB()->queryPrepared(
+            "SELECT kBewertung
             FROM tbewertung b
             WHERE
-                b.cName != "Anonym"
+                b.cName != 'Anonym'
                 AND b.kKunde > 0
                 AND b.kKunde NOT IN (SELECT kKunde FROM tkunde)
-                AND DATE(dDatum) < DATE_SUB(DATE(:pNow), INTERVAL :pInterval DAY)
-                LIMIT :pLimit',
+                AND dDatum < DATE_SUB(:pNow, INTERVAL :pInterval DAY)
+                LIMIT :pLimit",
             [
                 'pInterval' => $this->iInterval,
                 'pNow'      => $this->oNow->format('Y-m-d H:i:s'),
@@ -67,16 +50,16 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (!\is_array($vResult)) {
-
             return;
         }
         foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared('UPDATE tbewertung b
+            \Shop::Container()->getDB()->queryPrepared(
+                "UPDATE tbewertung
                 SET
-                    b.cName = "Anonym",
+                    cName  = 'Anonym',
                     kKunde = 0
                 WHERE
-                    kBewertung = :pKeyBewertung',
+                    kBewertung = :pKeyBewertung",
                 ['pKeyBewertung' => $oResult->kBewertung],
                 \DB\ReturnType::AFFECTED_ROWS
             );
@@ -89,19 +72,19 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
      */
     private function anon_tzahlungseingang()
     {
-        $this->szReason = $this->szReasonName . 'anonymize outdated payments';
-        $vResult        = \Shop::Container()->getDB()->queryPrepared('SELECT *
+        $vResult = \Shop::Container()->getDB()->queryPrepared(
+            "SELECT kZahlungseingang
             FROM tzahlungseingang
             WHERE
-                cZahler != "-"
-                AND cAbgeholt != "N"
+                cZahler != '-'
+                AND cAbgeholt != 'N'
                 AND kBestellung IN (
                     SELECT kBestellung
                     FROM tbestellung b
                     WHERE b.kKunde NOT IN (SELECT kKunde FROM tkunde)
                 )
-                AND DATE(dZeit) < DATE(DATE_SUB(:pNow, INTERVAL :pInterval DAY))
-                LIMIT :pLimit',
+                AND dZeit < DATE_SUB(:pNow, INTERVAL :pInterval DAY)
+                LIMIT :pLimit",
             [
                 'pInterval' => $this->iInterval,
                 'pNow'      => $this->oNow->format('Y-m-d H:i:s'),
@@ -109,17 +92,16 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
             ],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        $this->oLogger->debug('vResult sets: '.print_r(\count($vResult) ,true )); // --DEBUG--
         if (!\is_array($vResult)) {
-
             return;
         }
         foreach ((array)$vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared('UPDATE tzahlungseingang
+            \Shop::Container()->getDB()->queryPrepared(
+                "UPDATE tzahlungseingang
                 SET
-                    cZahler = "-"
+                    cZahler = '-'
                 WHERE
-                    kZahlungseingang = :pKeyZahlungseingang',
+                    kZahlungseingang = :pKeyZahlungseingang",
                 ['pKeyZahlungseingang' => $oResult->kZahlungseingang],
                 \DB\ReturnType::AFFECTED_ROWS
             );
@@ -134,35 +116,34 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
      */
     private function anon_tnewskommentar()
     {
-        $this->szReason .= 'anonymize orphanded news-comments';
-        $vResult         = \Shop::Container()->getDB()->queryPrepared('SELECT *
+        $vResult = \Shop::Container()->getDB()->queryPrepared(
+            "SELECT kNewsKommentar
             FROM tnewskommentar
             WHERE
-                cName != "Anonym"
-                AND cEmail != "Anonym"
+                cName != 'Anonym'
+                AND cEmail != 'Anonym'
                 AND kKunde > 0
                 AND kKunde NOT IN (SELECT kKunde FROM tkunde)
-                LIMIT :pLimit',
+                LIMIT :pLimit",
             ['pLimit' => $this->iWorkLimit],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (!\is_array($vResult)) {
-
             return;
         }
         foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared('UPDATE tnewskommentar
+            \Shop::Container()->getDB()->queryPrepared(
+                "UPDATE tnewskommentar
                 SET
-                    cName  = "Anonym",
-                    cEmail = "Anonym",
+                    cName  = 'Anonym',
+                    cEmail = 'Anonym',
                     kKunde = 0
                 WHERE
-                    kNewsKommentar = :pKeyNewsKommentar',
+                    kNewsKommentar = :pKeyNewsKommentar",
                 ['pKeyNewsKommentar' => $oResult->kNewsKommentar],
                 \DB\ReturnType::AFFECTED_ROWS
             );
         }
     }
-
 }
 

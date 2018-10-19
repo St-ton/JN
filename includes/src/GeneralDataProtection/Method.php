@@ -1,7 +1,7 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
+ * @license http://jtl-url.de/jtlshoplicense
  */
 
 namespace GeneralDataProtection;
@@ -16,13 +16,6 @@ class Method
     protected $oNow;
 
     /**
-     * descriptive string for journal-purposes
-     *
-     * @var string
-     */
-    protected $szReason;
-
-    /**
      * interval in "number of days"
      *
      * @var int
@@ -30,7 +23,9 @@ class Method
     protected $iInterval = 0;
 
     /**
-     * maximum number of rows, which we are process
+     * select the maximum of 10,000 rows for one step!
+     * (if the scripts are running each day, we need some days
+     * to anonymize more than 10,000 data sets)
      *
      * @var
      */
@@ -39,7 +34,7 @@ class Method
     /**
      * main shop logger
      *
-     * @var \Logger
+     * @var \Monolog\Logger
      */
     protected $oLogger;
 
@@ -54,6 +49,5 @@ class Method
         $this->oNow      = $oObjNow;
         $this->iInterval = $iInterval;
     }
-
 }
 

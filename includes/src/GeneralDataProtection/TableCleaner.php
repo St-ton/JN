@@ -1,7 +1,7 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
+ * @license http://jtl-url.de/jtlshoplicense
  */
 
 namespace GeneralDataProtection;
@@ -62,18 +62,19 @@ class TableCleaner
     {
         $nTimeStart    = microtime(true); // runtime-measurement
         $nMethodsCount = \count($this->vMethods);
-        $szLogSum      = '';
         // iterate over the indexed array (configurable order!)
-        for ($i=0; $i < $nMethodsCount ; $i++) {
+        for ($i=0; $i < $nMethodsCount; $i++) {
             $szMethodName = __NAMESPACE__ . '\\' . $this->vMethods[$i]['szName'];
             (new $szMethodName($this->oNow, $this->vMethods[$i]['iIntervalDays']))->execute();
-            $szLogSum .= 'Anonymize Method executed: ' . $this->vMethods[$i]['szName'] . "\n";
+            ($this->oLogger === null) ?: $this->oLogger->log(
+                JTLLOG_LEVEL_NOTICE,
+                'Anonymize Method executed: ' . $this->vMethods[$i]['szName']
+            );
         }
         $nTimeElapsed = microtime(true) - $nTimeStart; // runtime-measurement
-        $this->_Logger->debug('ELAPSED TIME: '.sprintf('%01.4fs', $nTimeElapsed)); // --DEBUG--
-        ($this->oLogger === null) ?: $this->oLogger->log(JTLLOG_LEVEL_NOTICE,
-            $szLogSum . "\n" .
-            'Anonymizing was finished in: ' . sprintf('%01.4fs', $nTimeElapsed)
+        ($this->oLogger === null) ?: $this->oLogger->log(
+            JTLLOG_LEVEL_NOTICE,
+            'Anonymizing finished in: ' . sprintf('%01.4fs', $nTimeElapsed)
         );
     }
 
@@ -83,7 +84,8 @@ class TableCleaner
     public function __destruct()
     {
         // removes journal-entries at the end of next year after their creation
-        \Shop::Container()->getDB()->queryPrepared('DELETE FROM tanondatajournal
+        \Shop::Container()->getDB()->queryPrepared(
+            'DELETE FROM tanondatajournal
             WHERE dEventTime <= LAST_DAY(DATE_ADD(:pNow - INTERVAL 2 YEAR, INTERVAL 12 - MONTH(:pNow) MONTH))',
             [
                 'pNow' => $this->oNow->format('Y-m-d H:i:s')
@@ -91,6 +93,5 @@ class TableCleaner
             \DB\ReturnType::AFFECTED_ROWS
         );
     }
-
 }
 

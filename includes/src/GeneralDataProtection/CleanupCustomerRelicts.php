@@ -1,7 +1,7 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
+ * @license http://jtl-url.de/jtlshoplicense
  */
 
 namespace GeneralDataProtection;
@@ -45,7 +45,8 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function del_tbesucherarchiv()
     {
-        $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
+        $vResult = \Shop::Container()->getDB()->queryPrepared(
+            'SELECT kBesucher
             FROM tbesucherarchiv
             WHERE
                 kKunde > 0
@@ -55,18 +56,17 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (!\is_array($vResult)) {
-
             return;
         }
         foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared('DELETE FROM tbesucherarchiv
+            \Shop::Container()->getDB()->queryPrepared(
+                'DELETE FROM tbesucherarchiv
                 WHERE
                     kBesucher = :pKeyBesucher',
                 ['pKeyBesucher' => $oResult->kBesucher],
                 \DB\ReturnType::AFFECTED_ROWS
             );
         }
-
     }
 
     /**
@@ -75,11 +75,12 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function del_tkundenwerbenkunden()
     {
-        $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT
-                k.*,
-                b.fGuthaben AS "_bonus_fGuthaben",
-                b.nBonuspunkte AS "_bonus_nBonuspunkte",
-                b.dErhalten AS "_bonus_dErhalten"
+        $vResult = \Shop::Container()->getDB()->queryPrepared(
+            'SELECT
+                k.kKunde,
+                b.fGuthaben,
+                b.nBonuspunkte,
+                b.dErhalten
             FROM
                 tkundenwerbenkunden k
                     LEFT JOIN tkundenwerbenkundenbonus b ON k.kKunde = b.kKunde
@@ -91,12 +92,12 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (!\is_array($vResult)) {
-
             return;
         }
         foreach ($vResult as $oResult) {
             // delete each "kKunde", in multiple tables, in one shot
-            \Shop::Container()->getDB()->queryPrepared('DELETE tkundenwerbenkunden, tkundenwerbenkundenbonus
+            \Shop::Container()->getDB()->queryPrepared(
+                'DELETE tkundenwerbenkunden, tkundenwerbenkundenbonus
                 FROM
                     tkundenwerbenkunden
                     LEFT JOIN tkundenwerbenkundenbonus ON tkundenwerbenkundenbonus.kKunde = tkundenwerbenkunden.kKunde
@@ -106,7 +107,6 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
                 \DB\ReturnType::AFFECTED_ROWS
             );
         }
-
     }
 
     /**
@@ -115,7 +115,8 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function del_tkundenattribut()
     {
-        $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
+        $vResult = \Shop::Container()->getDB()->queryPrepared(
+            'SELECT kKundenAttribut
             FROM tkundenattribut
             WHERE
                 kKunde NOT IN (SELECT kKunde FROM tkunde)
@@ -124,11 +125,11 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (!\is_array($vResult)) {
-
             return;
         }
         foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared('DELETE FROM tkundenattribut
+            \Shop::Container()->getDB()->queryPrepared(
+                'DELETE FROM tkundenattribut
                 WHERE
                     kKundenAttribut = :pKeykKundenAttribut',
                 ['pKeykKundenAttribut' => $oResult->kKundenAttribut],
@@ -143,7 +144,8 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function del_tzahlungsinfo()
     {
-        $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
+        $vResult = \Shop::Container()->getDB()->queryPrepared(
+            'SELECT kZahlungsInfo
             FROM tzahlungsinfo
             WHERE
                 kKunde > 0
@@ -153,11 +155,11 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (!\is_array($vResult)) {
-
             return;
         }
         foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared('DELETE FROM tzahlungsinfo
+            \Shop::Container()->getDB()->queryPrepared(
+                'DELETE FROM tzahlungsinfo
                 WHERE
                     kZahlungsInfo = :pKeyZahlungsInfo',
                 ['pKeyZahlungsInfo' => $oResult->kZahlungsInfo],
@@ -172,7 +174,8 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function del_tkundenkontodaten()
     {
-        $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
+        $vResult = \Shop::Container()->getDB()->queryPrepared(
+            'SELECT kKundenKontodaten
             FROM tkundenkontodaten
             WHERE
                 kKunde > 0
@@ -182,11 +185,11 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (!\is_array($vResult)) {
-
             return;
         }
         foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared('DELETE FROM tkundenkontodaten
+            \Shop::Container()->getDB()->queryPrepared(
+                'DELETE FROM tkundenkontodaten
                 WHERE
                     kKundenKontodaten = :pKeyKundenKontodaten',
                 ['pKeyKundenKontodaten' => $oResult->kKundenKontodaten],
@@ -201,23 +204,24 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function del_tlieferadresse()
     {
-        $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
+        $vResult = \Shop::Container()->getDB()->queryPrepared(
+            "SELECT kLieferadresse
             FROM tlieferadresse k
                 JOIN tbestellung b ON b.kKunde = k.kKunde
             WHERE
                 b.cStatus IN (' . BESTELLUNG_STATUS_VERSANDT . ', ' . BESTELLUNG_STATUS_STORNO . ')
-                AND b.cAbgeholt = "Y"
+                AND b.cAbgeholt = 'Y'
                 AND k.kKunde NOT IN (SELECT kKunde FROM tkunde)
-            LIMIT :pLimit',
+            LIMIT :pLimit",
             ['pLimit' => $this->iWorkLimit],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (!\is_array($vResult)) {
-
             return;
         }
         foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared('DELETE FROM tlieferadresse
+            \Shop::Container()->getDB()->queryPrepared(
+                'DELETE FROM tlieferadresse
                 WHERE
                     kLieferadresse = :pKeyLieferadresse',
                 ['pKeyLieferadresse' => $oResult->kLieferadresse],
@@ -232,23 +236,24 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function del_trechnungsadresse()
     {
-        $vResult = \Shop::Container()->getDB()->queryPrepared('SELECT *
+        $vResult = \Shop::Container()->getDB()->queryPrepared(
+            "SELECT kRechnungsadresse
             FROM trechnungsadresse k
                 JOIN tbestellung b ON b.kKunde = k.kKunde
             WHERE
-                b.cStatus IN (' . BESTELLUNG_STATUS_VERSANDT . ', ' . BESTELLUNG_STATUS_STORNO . ')
-                AND b.cAbgeholt = "Y"
+                b.cStatus IN (" . BESTELLUNG_STATUS_VERSANDT . ", " . BESTELLUNG_STATUS_STORNO . ")
+                AND b.cAbgeholt = 'Y'
                 AND k.kKunde NOT IN (SELECT kKunde FROM tkunde)
-            LIMIT :pLimit',
+            LIMIT :pLimit",
             ['pLimit' => $this->iWorkLimit],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (!\is_array($vResult)) {
-
             return;
         }
         foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared('DELETE FROM trechnungsadresse
+            \Shop::Container()->getDB()->queryPrepared(
+                'DELETE FROM trechnungsadresse
                 WHERE
                     kRechnungsadresse = :pKeyRechnungsadresse',
                 ['pKeyRechnungsadresse' => $oResult->kRechnungsadresse],
@@ -256,6 +261,5 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             );
         }
     }
-
 }
 

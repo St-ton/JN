@@ -1,7 +1,7 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
+ * @license http://jtl-url.de/jtlshoplicense
  */
 
 namespace GeneralDataProtection;
@@ -17,23 +17,6 @@ namespace GeneralDataProtection;
 class CleanupOldGuestAccounts extends Method implements MethodInterface
 {
     /**
-     * @var string
-     */
-    protected $szReasonName;
-
-    /**
-     * AnonymizeDeletedCustomer constructor
-     *
-     * @param $oNow
-     * @param $iInterval
-     */
-    public function __construct($oNow, $iInterval)
-    {
-        parent::__construct($oNow, $iInterval);
-        $this->szReasonName = substr(__CLASS__, strrpos(__CLASS__, '\\')) . ': ';
-    }
-
-    /**
      * runs all anonymize-routines
      */
     public function execute()
@@ -46,14 +29,14 @@ class CleanupOldGuestAccounts extends Method implements MethodInterface
      */
     private function clean_tkunde()
     {
-        $this->szReason = $this->szReasonName . 'delete customer-data-history';
-        $vResult        = \Shop::Container()->getDB()->queryPrepared('SELECT *
+        $vResult = \Shop::Container()->getDB()->queryPrepared(
+            "SELECT kKunde
             FROM tkunde e
             WHERE
                 nRegistriert = 0
-                AND cAbgeholt = "Y"
+                AND cAbgeholt = 'Y'
                 AND dErstellt <= :pNow - INTERVAL :pInterval DAY
-                LIMIT :pLimit',
+                LIMIT :pLimit",
             [
                 'pInterval' => $this->iInterval,
                 'pNow'      => $this->oNow->format('Y-m-d H:i:s'),
@@ -62,17 +45,16 @@ class CleanupOldGuestAccounts extends Method implements MethodInterface
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (!\is_array($vResult)) {
-
             return;
         }
         foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared('DELETE FROM tkunde
-                WHERE kKunde = pKeyKunde',
+            \Shop::Container()->getDB()->queryPrepared(
+                'DELETE FROM tkunde
+                WHERE kKunde = :pKeyKunde',
                 ['pKeyKunde' => $oResult->kKunde],
                 \DB\ReturnType::AFFECTED_ROWS
             );
         }
     }
-
 }
 

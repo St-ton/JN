@@ -1,7 +1,7 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
+ * @license http://jtl-url.de/jtlshoplicense
  */
 
 namespace GeneralDataProtection;
@@ -16,23 +16,6 @@ namespace GeneralDataProtection;
 class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterface
 {
     /**
-     * @var string
-     */
-    protected $szReasonName;
-
-    /**
-     * AnonymizeDeletedCustomer constructor
-     *
-     * @param $oNow
-     * @param $iInterval
-     */
-    public function __construct($oNow, $iInterval)
-    {
-        parent::__construct($oNow, $iInterval);
-        $this->szReasonName = substr(__CLASS__, strrpos(__CLASS__, '\\')) . ': ';
-    }
-
-    /**
      * runs all anonymize-routines
      */
     public function execute()
@@ -45,24 +28,24 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
      */
     private function cleanup_tkunde()
     {
-        $this->szReason = $this->szReasonName . 'delete not registered customers';
-        $vResult        = \Shop::Container()->getDB()->queryPrepared('SELECT *
+        $vResult = \Shop::Container()->getDB()->queryPrepared(
+            'SELECT *
             FROM tkunde k
                 JOIN tbestellung b ON b.kKunde = k.kKunde
             WHERE
                 b.cStatus IN (' . BESTELLUNG_STATUS_VERSANDT . ', ' . BESTELLUNG_STATUS_STORNO . ')
                 AND k.nRegistriert = 0
-                AND b.cAbgeholt = "Y"
+                AND b.cAbgeholt = \'Y\'
             LIMIT :pLimit',
             ['pLimit' => $this->iWorkLimit],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (!\is_array($vResult)) {
-
             return;
         }
         foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared('DELETE FROM tkunde
+            \Shop::Container()->getDB()->queryPrepared(
+                'DELETE FROM tkunde
                 WHERE
                     kKunde = :pKeyKunde',
                 ['pKeyKunde' => $oResult->kKunde],
@@ -70,6 +53,4 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
             );
         }
     }
-
 }
-

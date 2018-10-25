@@ -767,7 +767,7 @@ class VersandartHelper
         if ($bHookReturn) {
             return false;
         }
-        $netPricesActive = $_SESSION['Kundengruppe']->nNettoPreise === '1';
+        $netPricesActive = (int)$_SESSION['Kundengruppe']->nNettoPreise === 1;
         // Steuersatz nur benötigt, wenn Nettokunde
         /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
         if ($netPricesActive === true) {

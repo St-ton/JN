@@ -1030,7 +1030,7 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
             }
             $fSteuersatzMax = count($fSteuersatz_arr) ? max($fSteuersatz_arr) : 0;
             $fSteuersatzMin = count($fSteuersatz_arr) ? min($fSteuersatz_arr) : 0;
-        } elseif ($_SESSION['Kundengruppe']->nNettoPreise > 0) {
+        } elseif ((int)$_SESSION['Kundengruppe']->nNettoPreise > 0) {
             $fSteuersatzMax = 0.0;
             $fSteuersatzMin = 0.0;
         }

@@ -73,6 +73,47 @@ class Warenkorb
     }
 
     /**
+     * @param bool $onlyStockRelevant
+     * @return array
+     */
+    public function getAllDependentAmount($onlyStockRelevant = false)
+    {
+        $depAmount = [];
+
+        foreach ($this->PositionenArr as $pos) {
+            if (!empty($pos->Artikel) && (!$onlyStockRelevant || ($pos->Artikel->cLagerBeachten === 'Y' && $pos->Artikel->cLagerKleinerNull !== 'Y'))) {
+                $depProducts = $pos->Artikel->getAllDependentProducts($onlyStockRelevant);
+
+                foreach ($depProducts as $productID => $item) {
+                    if (isset($depAmount[$productID])) {
+                        $depAmount[$productID] += ($pos->nAnzahl * $item->stockFactor);
+                    } else {
+                        $depAmount[$productID] = $pos->nAnzahl * $item->stockFactor;
+                    }
+                }
+            }
+        }
+
+        return $depAmount;
+    }
+
+    /**
+     * @param int $productID
+     * @param bool $onlyStockRelevant
+     * @return int
+     */
+    public function getDependentAmount($productID, $onlyStockRelevant = false)
+    {
+        static $depAmount = null;
+
+        if (!isset($depAmount, $depAmount[$productID])) {
+            $depAmount = $this->getAllDependentAmount($onlyStockRelevant);
+        }
+
+        return isset($depAmount[$productID]) ? $depAmount[$productID] : 0;
+    }
+
+    /**
      * Entfernt Positionen, die in der Wawi zwischenzeitlich deaktiviert/geloescht wurden
      * @return $this
      */
@@ -1182,6 +1223,8 @@ class Warenkorb
     {
         $bRedirect     = false;
         $positionCount = count($this->PositionenArr);
+        $depAmount     = $this->getAllDependentAmount(true);
+        $reservedStock = [];
 
         for ($i = 0; $i < $positionCount; $i++) {
             if ($this->PositionenArr[$i]->kArtikel > 0 && $this->PositionenArr[$i]->Artikel->cLagerBeachten === 'Y' &&
@@ -1217,18 +1260,33 @@ class Warenkorb
                 } else {
                     // Position ohne Variationen bzw. Variationen ohne eigenen Lagerbestand
                     // schaue in DB, ob Lagerbestand ausreichend
-                    $oArtikelLagerbestand = Shop::DB()->query(
-                        "SELECT kArtikel, fLagerbestand >= " . $this->PositionenArr[$i]->nAnzahl . " AS bAusreichend, fLagerbestand
+                    $depProducts = $this->PositionenArr[$i]->Artikel->getAllDependentProducts(true);
+                    $depStock    = Shop::DB()->query(
+                        'SELECT kArtikel, fLagerbestand
                             FROM tartikel
-                            WHERE kArtikel = " . (int)$this->PositionenArr[$i]->kArtikel, 1
+                            WHERE kArtikel IN (' . implode(', ', array_keys($depProducts)) . ')', 2
                     );
-                    if ($oArtikelLagerbestand->kArtikel > 0 && !$oArtikelLagerbestand->bAusreichend) {
-                        if ($oArtikelLagerbestand->fLagerbestand > 0) {
-                            $this->PositionenArr[$i]->nAnzahl = $oArtikelLagerbestand->fLagerbestand;
-                        } else {
-                            unset($this->PositionenArr[$i]);
+
+                    foreach ($depStock as $productStock) {
+                        $productID = (int)$productStock->kArtikel;
+
+                        if ($depProducts[$productID]->product->fPackeinheit * $depAmount[$productID] > $productStock->fLagerbestand) {
+                            $newAmount = floor(($productStock->fLagerbestand - (isset($reservedStock[$productID]) ? $reservedStock[$productID] : 0))
+                                / $depProducts[$productID]->product->fPackeinheit
+                                / $depProducts[$productID]->stockFactor);
+
+                            if ($newAmount > 0) {
+                                $this->PositionenArr[$i]->nAnzahl = $newAmount;
+                            } else {
+                                unset($this->PositionenArr[$i]);
+                            }
+
+                            $reservedStock[$productID] = (isset($reservedStock[$productID]) ? $reservedStock[$productID] : 0)
+                                + $newAmount * $depProducts[$productID]->product->fPackeinheit * $depProducts[$productID]->stockFactor;
+
+                            $depAmount = $this->getAllDependentAmount(true);
+                            $bRedirect = true;
                         }
-                        $bRedirect = true;
                     }
                 }
             }

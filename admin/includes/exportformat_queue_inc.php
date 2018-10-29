@@ -437,7 +437,7 @@ function exportformatQueueActionErstellenEintragen(JTLSmarty $smarty, array &$me
                     $step               = 'erstellen';
                 }
             } else { // Alle X Stunden ist entweder leer oder kleiner als 6
-                $messages['error'] .= 'Fehler: Bitte geben Sie einen Wert grö&ßer oder gleich 1 ein.<br />';
+                $messages['error'] .= 'Fehler: Bitte geben Sie einen Wert größer oder gleich 1 ein.<br />';
                 $step               = 'erstellen';
                 $smarty->assign('oFehler', $oValues);
             }

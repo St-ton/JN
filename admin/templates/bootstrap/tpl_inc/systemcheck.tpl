@@ -2,7 +2,7 @@
     {if $test->getResult() === Systemcheck_Tests_Test::RESULT_OK}
         <span class="hidden-xs">
             <h4 class="label-wrap"><span class="label label-success">
-                {$state=$test->getCurrentState()}
+                {$state = $test->getCurrentState()}
                 {if $state !== null && $state|strlen > 0}
                     {$state}
                 {else}
@@ -19,7 +19,7 @@
         {if $test->getIsOptional()}
             <span class="hidden-xs">
                 {if $test->getIsRecommended()}
-                    {$state=$test->getCurrentState()}
+                    {$state = $test->getCurrentState()}
                     <h4 class="label-wrap">
                         <span class="label label-warning">
                             {if $state !== null && $state|strlen > 0}
@@ -30,7 +30,7 @@
                         </span>
                     </h4>
                 {else}
-                    {$state=$test->getCurrentState()}
+                    {$state = $test->getCurrentState()}
                     <h4 class="label-wrap">
                         <span class="label label-primary">
                             {if $state !== null && $state|strlen > 0}
@@ -57,7 +57,7 @@
             </span>
         {else}
             <span class="hidden-xs">
-                {$state=$test->getCurrentState()}
+                {$state = $test->getCurrentState()}
                 <h4 class="label-wrap">
                     <span class="label label-danger">
                         {if $state !== null && $state|strlen > 0}

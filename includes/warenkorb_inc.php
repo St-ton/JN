@@ -172,15 +172,16 @@ function uebernehmeWarenkorbAenderungen()
                     );
                 }
                 //hole akt. lagerbestand vom artikel
-                if ($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerVariation !== 'Y' &&
-                    $Artikel->cLagerKleinerNull !== 'Y' &&
-                    $Artikel->fPackeinheit * ((float)$_POST['anzahl'][$i] + $_SESSION['Warenkorb']->gibAnzahlEinesArtikels(
-                        $_SESSION['Warenkorb']->PositionenArr[$i]->kArtikel,
-                        $i
-                    )
-                ) > $Artikel->fLagerbestand) {
-                    $gueltig                         = false;
-                    $_SESSION['Warenkorbhinweise'][] = Shop::Lang()->get('quantityNotAvailable', 'messages');
+                if ($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerVariation !== 'Y' && $Artikel->cLagerKleinerNull !== 'Y') {
+                    foreach ($Artikel->getAllDependentProducts(true) as $dependent) {
+                        /** @var Artikel $product */
+                        $product = $dependent->product;
+                        if ($product->fPackeinheit * ((float)$_POST['anzahl'][$i] + $_SESSION['Warenkorb']->getDependentAmount($product->kArtikel, true, [$i])) > $product->fLagerbestand) {
+                            $gueltig                         = false;
+                            $_SESSION['Warenkorbhinweise'][] = Shop::Lang()->get('quantityNotAvailable', 'messages');
+                            break;
+                        }
+                    }
                 }
                 // maximale Bestellmenge des Artikels beachten
                 if (isset($Artikel->FunktionsAttribute[FKT_ATTRIBUT_MAXBESTELLMENGE]) &&

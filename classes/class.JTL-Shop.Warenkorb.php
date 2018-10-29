@@ -73,14 +73,19 @@ class Warenkorb
     }
 
     /**
-     * @param bool $onlyStockRelevant
-     * @return array
+     * @param bool       $onlyStockRelevant
+     * @param int[]|null $excludePos
+     * @return float[]
      */
-    public function getAllDependentAmount($onlyStockRelevant = false)
+    public function getAllDependentAmount($onlyStockRelevant = false, $excludePos = null)
     {
         $depAmount = [];
 
-        foreach ($this->PositionenArr as $pos) {
+        foreach ($this->PositionenArr as $key => $pos) {
+            if (is_array($excludePos) && in_array($key, $excludePos)) {
+                continue;
+            }
+
             if (!empty($pos->Artikel) && (!$onlyStockRelevant || ($pos->Artikel->cLagerBeachten === 'Y' && $pos->Artikel->cLagerKleinerNull !== 'Y'))) {
                 $depProducts = $pos->Artikel->getAllDependentProducts($onlyStockRelevant);
 
@@ -98,16 +103,17 @@ class Warenkorb
     }
 
     /**
-     * @param int $productID
-     * @param bool $onlyStockRelevant
-     * @return int
+     * @param int        $productID
+     * @param bool       $onlyStockRelevant
+     * @param int[]|null $excludePos
+     * @return float
      */
-    public function getDependentAmount($productID, $onlyStockRelevant = false)
+    public function getDependentAmount($productID, $onlyStockRelevant = false, $excludePos = null)
     {
         static $depAmount = null;
 
-        if (!isset($depAmount, $depAmount[$productID])) {
-            $depAmount = $this->getAllDependentAmount($onlyStockRelevant);
+        if (!isset($depAmount, $depAmount[$productID]) || $excludePos !== null) {
+            $depAmount = $this->getAllDependentAmount($onlyStockRelevant, $excludePos);
         }
 
         return isset($depAmount[$productID]) ? $depAmount[$productID] : 0;

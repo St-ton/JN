@@ -769,8 +769,10 @@ class StringHandler
                     $oObjekt->kNews = (int)$cKey;
                     $oObjekt->cKey  = 'kNews';
                     $oNews          = Shop::Container()->getDB()->query(
-                        "SELECT tnews.kNews, tnews.cBetreff, tseo.cSeo
+                        "SELECT tnews.kNews, tseo.cSeo, tnewssprache.title
                             FROM tnews
+                            JOIN tnewssprache
+								ON tnewssprache.kNews = tnews.kNews
                             LEFT JOIN tseo
                                 ON tseo.cKey = 'kNews'
                                 AND tseo.kKey = tnews.kNews
@@ -782,7 +784,7 @@ class StringHandler
                     if (isset($oNews->kNews) && $oNews->kNews > 0) {
                         $exists     = true;
                         $oObjekt->cSeo  = $oNews->cSeo;
-                        $oObjekt->cName = !empty($oNews->cBetreff) ? $oNews->cBetreff : 'Link';
+                        $oObjekt->cName = empty($oNews->title) ? 'Link' : $oNews->title;
                     }
                     break;
 

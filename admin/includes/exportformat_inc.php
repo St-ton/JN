@@ -280,15 +280,15 @@ function holeMaxExportArtikelAnzahl(&$oExportformat)
     if (isset($conf['global']['global_erscheinende_kaeuflich'])
         && $conf['global']['global_erscheinende_kaeuflich'] === 'Y'
     ) {
-        $sql = 'AND (
+        $sql = "AND (
                     tartikel.dErscheinungsdatum IS NULL 
                     OR (DATE(tartikel.dErscheinungsdatum) <= CURDATE())
                     OR (
                         DATE(tartikel.dErscheinungsdatum) > CURDATE()
-                        AND (tartikel.cLagerBeachten = "N" 
-                            OR tartikel.fLagerbestand > 0 OR tartikel.cLagerKleinerNull = "Y")
+                        AND (tartikel.cLagerBeachten = 'N' 
+                            OR tartikel.fLagerbestand > 0 OR tartikel.cLagerKleinerNull = 'Y')
                     )
-                )';
+                )";
     }
     $cid = 'xp_' . md5(json_encode($cSQL_arr) . $sql);
     if (($count = Shop::Cache()->get($cid)) !== false) {

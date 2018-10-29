@@ -77,9 +77,9 @@ function pruefeExportformat()
  */
 function splitteExportDatei($oExportformat)
 {
-    if (isset($oExportformat->nSplitgroesse) &&
-        (int)$oExportformat->nSplitgroesse > 0 &&
-        file_exists(PFAD_ROOT . PFAD_EXPORT . $oExportformat->cDateiname)
+    if (isset($oExportformat->nSplitgroesse)
+        && (int)$oExportformat->nSplitgroesse > 0
+        && file_exists(PFAD_ROOT . PFAD_EXPORT . $oExportformat->cDateiname)
     ) {
         $nDateiZaehler       = 1;
         $cDateinameSplit_arr = [];
@@ -276,16 +276,18 @@ function holeMaxExportArtikelAnzahl(&$oExportformat)
 {
     $cSQL_arr = baueArtikelExportSQL($oExportformat);
     $conf     = Shop::getSettings([CONF_GLOBAL]);
-    $sql      = 'AND NOT (DATE(tartikel.dErscheinungsdatum) > CURDATE())';
-    if (isset($conf['global']['global_erscheinende_kaeuflich']) &&
-        $conf['global']['global_erscheinende_kaeuflich'] === 'Y') {
+    $sql      = 'AND tartikel.dErscheinungsdatum IS NULL OR (DATE(tartikel.dErscheinungsdatum) <= CURDATE())';
+    if (isset($conf['global']['global_erscheinende_kaeuflich'])
+        && $conf['global']['global_erscheinende_kaeuflich'] === 'Y'
+    ) {
         $sql = 'AND (
-                    NOT (DATE(tartikel.dErscheinungsdatum) > CURDATE())
-                    OR  (
-                            DATE(tartikel.dErscheinungsdatum) > CURDATE()
-                            AND (tartikel.cLagerBeachten = "N" 
-                                OR tartikel.fLagerbestand > 0 OR tartikel.cLagerKleinerNull = "Y")
-                        )
+                    tartikel.dErscheinungsdatum IS NULL 
+                    OR (DATE(tartikel.dErscheinungsdatum) <= CURDATE())
+                    OR (
+                        DATE(tartikel.dErscheinungsdatum) > CURDATE()
+                        AND (tartikel.cLagerBeachten = "N" 
+                            OR tartikel.fLagerbestand > 0 OR tartikel.cLagerKleinerNull = "Y")
+                    )
                 )';
     }
     $cid = 'xp_' . md5(json_encode($cSQL_arr) . $sql);

@@ -6735,6 +6735,7 @@ class Artikel
     }
 
     /**
+     * @since 4.06.10
      * @param bool $onlyStockRelevant
      * @return object[]
      */

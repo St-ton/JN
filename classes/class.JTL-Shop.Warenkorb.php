@@ -73,8 +73,9 @@ class Warenkorb
     }
 
     /**
+     * @since 4.06.10
      * @param bool       $onlyStockRelevant
-     * @param int[]|null $excludePos
+     * @param null|int[] $excludePos
      * @return float[]
      */
     public function getAllDependentAmount($onlyStockRelevant = false, $excludePos = null)
@@ -103,9 +104,10 @@ class Warenkorb
     }
 
     /**
+     * @since 4.06.10
      * @param int        $productID
      * @param bool       $onlyStockRelevant
-     * @param int[]|null $excludePos
+     * @param null|int[] $excludePos
      * @return float
      */
     public function getDependentAmount($productID, $onlyStockRelevant = false, $excludePos = null)

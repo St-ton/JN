@@ -185,7 +185,7 @@ function gibPluginExtendedTemplates(): array
         if (file_exists($cTemplatePfad)) {
             $cTemplate_arr[] = $cTemplatePfad;
         }
-    }
+    }#
 
     return $cTemplate_arr;
 }

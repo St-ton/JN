@@ -42,10 +42,7 @@ function XML_serialize(&$data, $level = 0, $prior_key = null)
         echo '<?xml version="1.0" ?>', "\n";
     }
     foreach ($data as $key => $value) {
-        if (!strpos($key, ' attr')) //if it's not an attribute
-            // we don't treat attributes by themselves, so for an empty element
-            // that has attributes you still need to set the element to NULL
-        {
+        if (!strpos($key, ' attr')) {
             if (is_array($value) && array_key_exists(0, $value)) {
                 XML_serialize($value, $level, $key);
             } else {
@@ -110,7 +107,7 @@ class XML
     /**
      *
      */
-    public function destruct()
+    public function destruct(): void
     {
         xml_parser_free($this->parser);
     }
@@ -133,12 +130,12 @@ class XML
      * @param mixed  $tag
      * @param mixed  $attributes
      */
-    public function open(&$parser, $tag, $attributes)
+    public function open(&$parser, $tag, $attributes): void
     {
-        $this->data            = ''; #stores temporary cdata
+        $this->data            = '';
         $this->last_opened_tag = $tag;
-        if (is_array($this->parent) and array_key_exists($tag, $this->parent)) { #if you've seen this tag before
-            if (is_array($this->parent[$tag]) and array_key_exists(0, $this->parent[$tag])) { #if the keys are numeric
+        if (is_array($this->parent) && array_key_exists($tag, $this->parent)) { #if you've seen this tag before
+            if (is_array($this->parent[$tag]) && array_key_exists(0, $this->parent[$tag])) { #if the keys are numeric
                 #this is the third or later instance of $tag we've come across
                 $key = count_numeric_items($this->parent[$tag]);
             } else {
@@ -168,10 +165,9 @@ class XML
      * @param resource $parser
      * @param string   $data
      */
-    public function data(&$parser, $data)
+    public function data(&$parser, $data): void
     {
-        if ($this->last_opened_tag != null) #you don't need to store whitespace in between tags
-        {
+        if ($this->last_opened_tag !== null) {
             $this->data .= $data;
         }
     }
@@ -180,9 +176,9 @@ class XML
      * @param resource $parser
      * @param string   $tag
      */
-    public function close(&$parser, $tag)
+    public function close(&$parser, $tag): void
     {
-        if ($this->last_opened_tag == $tag) {
+        if ($this->last_opened_tag === $tag) {
             $this->parent          = $this->data;
             $this->last_opened_tag = null;
         }
@@ -197,7 +193,7 @@ class XML
  * @param array $array
  * @return int
  */
-function count_numeric_items(&$array)
+function count_numeric_items(&$array): int
 {
-    return is_array($array) ? count(array_filter(array_keys($array), 'is_numeric')) : 0;
+    return is_array($array) ? count(array_filter(array_keys($array), '\is_numeric')) : 0;
 }

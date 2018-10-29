@@ -8,6 +8,7 @@ namespace Plugin\Admin;
 
 use DB\DbInterface;
 use Plugin\InstallCode;
+use Plugin\Plugin;
 
 /**
  * Class Installer
@@ -36,7 +37,7 @@ final class Installer
     private $validator;
 
     /**
-     * @var \Plugin|null
+     * @var Plugin|null
      */
     private $plugin;
 
@@ -70,17 +71,17 @@ final class Installer
     }
 
     /**
-     * @return \Plugin|null
+     * @return Plugin|null
      */
-    public function getPlugin(): ?\Plugin
+    public function getPlugin(): ?Plugin
     {
         return $this->plugin;
     }
 
     /**
-     * @param \Plugin|null $plugin
+     * @param Plugin|null $plugin
      */
-    public function setPlugin(\Plugin $plugin): void
+    public function setPlugin(Plugin $plugin): void
     {
         $this->plugin = $plugin;
     }
@@ -127,7 +128,7 @@ final class Installer
         $nXMLVersion       = (int)$baseNode['XMLVersion'];
         $cLizenzKlasse     = '';
         $cLizenzKlasseName = '';
-        $nStatus           = \Plugin::PLUGIN_ACTIVATED;
+        $nStatus           = Plugin::PLUGIN_ACTIVATED;
         $tagsToFlush       = [];
         $basePath          = \PFAD_ROOT . \PFAD_PLUGIN . $this->dir . '/';
         $version           = (int)$versionNode[$nLastVersionKey . ' attr']['nr'];
@@ -138,7 +139,7 @@ final class Installer
         ) {
             $cLizenzKlasse     = $baseNode['LicenceClass'];
             $cLizenzKlasseName = $baseNode['LicenceClassFile'];
-            $nStatus           = \Plugin::PLUGIN_LICENSE_KEY_MISSING;
+            $nStatus           = Plugin::PLUGIN_LICENSE_KEY_MISSING;
         }
         $plugin                       = new \stdClass();
         $plugin->cName                = $baseNode['Name'];
@@ -238,7 +239,7 @@ final class Installer
         }
         if ($code === InstallCode::OK
             && $this->plugin === null
-            && ($p = \Plugin::bootstrapper($plugin->kPlugin)) !== null
+            && ($p = Plugin::bootstrapper($plugin->kPlugin)) !== null
         ) {
             $p->installed();
         }

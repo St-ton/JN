@@ -8,6 +8,7 @@ namespace Plugin\Admin;
 
 use DB\DbInterface;
 use Plugin\InstallCode;
+use Plugin\Plugin;
 
 /**
  * Class TableCreator
@@ -21,12 +22,12 @@ class TableCreator
     private $db;
 
     /**
-     * @var \Plugin|null
+     * @var Plugin|null
      */
     private $plugin;
 
     /**
-     * @var \Plugin|null
+     * @var Plugin|null
      */
     private $oldPlugin;
 
@@ -40,15 +41,15 @@ class TableCreator
     }
 
     /**
-     * @return \Plugin|null
+     * @return Plugin|null
      */
-    public function getPlugin(): ?\Plugin
+    public function getPlugin(): ?Plugin
     {
         return $this->plugin;
     }
 
     /**
-     * @param \Plugin|null $plugin
+     * @param Plugin|null $plugin
      */
     public function setPlugin($plugin): void
     {
@@ -56,15 +57,15 @@ class TableCreator
     }
 
     /**
-     * @return \Plugin|null
+     * @return Plugin|null
      */
-    public function getOldPlugin(): ?\Plugin
+    public function getOldPlugin(): ?Plugin
     {
         return $this->oldPlugin;
     }
 
     /**
-     * @param \Plugin|null $oldPlugin
+     * @param Plugin|null $oldPlugin
      */
     public function setOldPlugin($oldPlugin): void
     {
@@ -76,7 +77,6 @@ class TableCreator
      *
      * @param array  $XML_arr
      * @param object $oPlugin
-     * @param object $oPluginOld
      * @return int
      */
     public function installPluginTables($XML_arr, $oPlugin): int
@@ -675,7 +675,7 @@ class TableCreator
             }
             $method                         = new \stdClass();
             $method->cName                  = $data['Name'];
-            $method->cModulId               = \Plugin::getModuleIDByPluginID(
+            $method->cModulId               = Plugin::getModuleIDByPluginID(
                 $this->plugin->kPlugin,
                 $data['Name']
             );
@@ -721,7 +721,7 @@ class TableCreator
                 return InstallCode::SQL_CANNOT_SAVE_PAYMENT_METHOD;
             }
             $paymentClass                         = new \stdClass();
-            $paymentClass->cModulId               = \Plugin::getModuleIDByPluginID(
+            $paymentClass->cModulId               = Plugin::getModuleIDByPluginID(
                 $this->plugin->kPlugin,
                 $data['Name']
             );

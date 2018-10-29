@@ -7,6 +7,8 @@
 namespace Plugin\Admin;
 
 use DB\DbInterface;
+use Plugin\InstallCode;
+use Plugin\Plugin;
 
 /**
  * Class Updater
@@ -36,25 +38,24 @@ class Updater
     }
 
     /**
-     * Versucht ein ausgewähltes Plugin zu updaten
-     *
      * @param int $pluginID
      * @return int
+     * @former updatePlugin()
      */
-    public function updatePlugin(int $pluginID): int
+    public function update(int $pluginID): int
     {
         if ($pluginID <= 0) {
-            return \Plugin\InstallCode::WRONG_PARAM;
+            return InstallCode::WRONG_PARAM;
         }
         $tmp = $this->db->select('tplugin', 'kPlugin', $pluginID);
         if (isset($tmp->kPlugin) && $tmp->kPlugin > 0) {
-            $plugin = new \Plugin($tmp->kPlugin);
+            $plugin = new Plugin($tmp->kPlugin);
             $this->installer->setPlugin($plugin);
             $this->installer->setDir($plugin->cVerzeichnis);
 
             return $this->installer->installierePluginVorbereitung();
         }
 
-        return \Plugin\InstallCode::NO_PLUGIN_FOUND;
+        return InstallCode::NO_PLUGIN_FOUND;
     }
 }

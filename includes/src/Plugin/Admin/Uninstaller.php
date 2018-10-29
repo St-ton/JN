@@ -9,6 +9,7 @@ namespace Plugin\Admin;
 use DB\DbInterface;
 use DB\ReturnType;
 use Plugin\InstallCode;
+use Plugin\Plugin;
 
 /**
  * Class Uninstaller
@@ -46,7 +47,7 @@ class Uninstaller
         if ($kPlugin <= 0) {
             return InstallCode::WRONG_PARAM; // $kPlugin wurde nicht übergeben
         }
-        $oPlugin = new \Plugin($kPlugin, false, true); // suppress reload = true um Endlosrekursion zu verhindern
+        $oPlugin = new Plugin($kPlugin, false, true); // suppress reload = true um Endlosrekursion zu verhindern
         if (empty($oPlugin->kPlugin)) {
             return InstallCode::NO_PLUGIN_FOUND;
         }
@@ -71,7 +72,7 @@ class Uninstaller
             $this->doSQLDelete($kPlugin, $bUpdate, $kPluginNew);
         }
         \Shop::Cache()->flushAll();
-        if (($p = \Plugin::bootstrapper($kPlugin)) !== null) {
+        if (($p = Plugin::bootstrapper($kPlugin)) !== null) {
             $p->uninstalled();
         }
 

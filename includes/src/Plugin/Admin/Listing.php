@@ -9,6 +9,7 @@ namespace Plugin\Admin;
 use DB\DbInterface;
 use Mapper\PluginValidation;
 use Plugin\InstallCode;
+use Plugin\Plugin;
 use Tightenco\Collect\Support\Collection;
 use function Functional\map;
 
@@ -56,7 +57,7 @@ final class Listing
             }
         );
         foreach ($pluginIDs as $pluginID) {
-            $plugin = new \Plugin($pluginID, true);
+            $plugin = new Plugin($pluginID, true);
             if ($plugin->updateAvailable === true) {
                 $code = $this->validator->validateByPluginID($pluginID, true);
                 if ($code !== InstallCode::OK) {

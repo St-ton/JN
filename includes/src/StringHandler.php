@@ -50,8 +50,11 @@ class StringHandler
      * @param string $encoding
      * @return string
      */
-    public static function htmlspecialchars(string $string, int $flag = ENT_COMPAT, string $encoding = JTL_CHARSET): string
-    {
+    public static function htmlspecialchars(
+        string $string,
+        int $flag = ENT_COMPAT,
+        string $encoding = JTL_CHARSET
+    ): string {
         return htmlspecialchars($string, $flag, $encoding);
     }
 
@@ -61,8 +64,11 @@ class StringHandler
      * @param string $encoding
      * @return string
      */
-    public static function htmlentitydecode(string $string, int $flag = ENT_COMPAT, string $encoding = JTL_CHARSET): string
-    {
+    public static function htmlentitydecode(
+        string $string,
+        int $flag = ENT_COMPAT,
+        string $encoding = JTL_CHARSET
+    ): string {
         return html_entity_decode($string, $flag, $encoding);
     }
 
@@ -120,7 +126,8 @@ class StringHandler
                                 |  \xF0[\x90-\xBF][\x80-\xBF]{2}     # planes 1-3
                                 | [\xF1-\xF3][\x80-\xBF]{3}          # planes 4-15
                                 |  \xF4[\x80-\x8F][\x80-\xBF]{2}     # plane 16
-                            )*$%xs', $string
+                            )*$%xs',
+            $string
         );
         if ($res === false) {
             //some kind of pcre error happend - probably PREG_JIT_STACKLIMIT_ERROR.
@@ -153,26 +160,52 @@ class StringHandler
         // Remove any attribute starting with "on" or xmlns
         $data = preg_replace('#(<[^>]+?[\x00-\x20"\'])(?:on|xmlns)[^>]*+>#iu', '$1>', $data);
         // Remove javascript: and vbscript: protocols
-        $data = preg_replace('#([a-z]*)[\x00-\x20]*=[\x00-\x20]*([`\'"]*)[\x00-\x20]*j[\x00-\x20]*a[\x00-\x20]*v[\x00-\x20]*a[\x00-\x20]*s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:#iu',
-            '$1=$2nojavascript...', $data);
-        $data = preg_replace('#([a-z]*)[\x00-\x20]*=([\'"]*)[\x00-\x20]*v[\x00-\x20]*b[\x00-\x20]*s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:#iu',
-            '$1=$2novbscript...', $data);
-        $data = preg_replace('#([a-z]*)[\x00-\x20]*=([\'"]*)[\x00-\x20]*-moz-binding[\x00-\x20]*:#u',
-            '$1=$2nomozbinding...', $data);
+        $data = preg_replace(
+            '#([a-z]*)[\x00-\x20]*=[\x00-\x20]*([`\'"]*)[\x00-\x20]' .
+            '*j[\x00-\x20]*a[\x00-\x20]*v[\x00-\x20]*a[\x00-\x20]*s[\x00-\x20]' .
+            '*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:#iu',
+            '$1=$2nojavascript...',
+            $data
+        );
+        $data = preg_replace(
+            '#([a-z]*)[\x00-\x20]*=([\'"]*)[\x00-\x20]*v[\x00-\x20]*b[\x00-\x20]' .
+            '*s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:#iu',
+            '$1=$2novbscript...',
+            $data
+        );
+        $data = preg_replace(
+            '#([a-z]*)[\x00-\x20]*=([\'"]*)[\x00-\x20]*-moz-binding[\x00-\x20]*:#u',
+            '$1=$2nomozbinding...',
+            $data
+        );
         // Only works in IE: <span style="width: expression(alert('Ping!'));"></span>
-        $data = preg_replace('#(<[^>]+?)style[\x00-\x20]*=[\x00-\x20]*[`\'"]*.*?expression[\x00-\x20]*\([^>]*+>#i',
-            '$1>', $data);
-        $data = preg_replace('#(<[^>]+?)style[\x00-\x20]*=[\x00-\x20]*[`\'"]*.*?behaviour[\x00-\x20]*\([^>]*+>#i',
-            '$1>', $data);
-        $data = preg_replace('#(<[^>]+?)style[\x00-\x20]*=[\x00-\x20]*[`\'"]*.*?s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:*[^>]*+>#iu',
-            '$1>', $data);
+        $data = preg_replace(
+            '#(<[^>]+?)style[\x00-\x20]*=[\x00-\x20]*[`\'"]*.*?expression[\x00-\x20]*\([^>]*+>#i',
+            '$1>',
+            $data
+        );
+        $data = preg_replace(
+            '#(<[^>]+?)style[\x00-\x20]*=[\x00-\x20]*[`\'"]*.*?behaviour[\x00-\x20]*\([^>]*+>#i',
+            '$1>',
+            $data
+        );
+        $data = preg_replace(
+            '#(<[^>]+?)style[\x00-\x20]*=[\x00-\x20]*[`\'"]*.*?s[\x00-\x20]' .
+            '*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:*[^>]*+>#iu',
+            '$1>',
+            $data
+        );
         // Remove namespaced elements (we do not need them)
         $data = preg_replace('#</*\w+:\w[^>]*+>#i', '', $data);
         do {
             // Remove really unwanted tags
             $old_data = $data;
-            $data     = preg_replace('#</*(?:applet|b(?:ase|gsound|link)|embed|frame(?:set)?|i(?:frame|layer)|l(?:ayer|ink)|meta|object|s(?:cript|tyle)|title|xml)[^>]*+>#i',
-                '', $data);
+            $data     = preg_replace(
+                '#</*(?:applet|b(?:ase|gsound|link)|embed|frame(?:set)' .
+                '?|i(?:frame|layer)|l(?:ayer|ink)|meta|object|s(?:cript|tyle)|title|xml)[^>]*+>#i',
+                '',
+                $data
+            );
         } while ($old_data !== $data);
 
         // we are done...
@@ -180,21 +213,25 @@ class StringHandler
     }
 
     /**
-     * @param string $cData
+     * @param string $data
      * @return string
      */
-    public static function convertUTF8(string $cData): string
+    public static function convertUTF8(string $data): string
     {
-        return mb_convert_encoding($cData, 'UTF-8', mb_detect_encoding($cData, 'UTF-8, ISO-8859-1, ISO-8859-15', true));
+        return mb_convert_encoding($data, 'UTF-8', mb_detect_encoding($data, 'UTF-8, ISO-8859-1, ISO-8859-15', true));
     }
 
     /**
-     * @param string $cData
+     * @param string $data
      * @return string
      */
-    public static function convertISO(string $cData): string
+    public static function convertISO(string $data): string
     {
-        return mb_convert_encoding($cData, 'ISO-8859-1', mb_detect_encoding($cData, 'UTF-8, ISO-8859-1, ISO-8859-15', true));
+        return mb_convert_encoding(
+            $data,
+            'ISO-8859-1',
+            mb_detect_encoding($data, 'UTF-8, ISO-8859-1, ISO-8859-15', true)
+        );
     }
 
     /**
@@ -421,7 +458,7 @@ class StringHandler
      * @param string $string
      * @return string
      */
-    public static function removeDoubleSpaces(string $string)
+    public static function removeDoubleSpaces(string $string): string
     {
         return preg_replace('|  +|', ' ', preg_quote($string, '|'));
     }
@@ -438,10 +475,10 @@ class StringHandler
     /**
      * Creating semicolon separated key string
      *
-     * @param array $keys
+     * @param array|mixed $keys
      * @return string
      */
-    public static function createSSK($keys)
+    public static function createSSK($keys): string
     {
         if (!is_array($keys) || count($keys) === 0) {
             return '';
@@ -453,13 +490,13 @@ class StringHandler
     /**
      * Parse a semicolon separated key string to an array
      *
-     * @param string $ssk
+     * @param string|mixed $ssk
      * @return array
      */
-    public static function parseSSK($ssk)
+    public static function parseSSK($ssk): array
     {
         return is_string($ssk)
-            ? array_map('trim', array_filter(explode(';', $ssk)))
+            ? array_map('\trim', array_filter(explode(';', $ssk)))
             : [];
     }
 
@@ -473,7 +510,12 @@ class StringHandler
      */
     public static function filterEmailAddress($input, bool $validate = true)
     {
-        if ((function_exists('mb_detect_encoding') && mb_detect_encoding($input) !== 'UTF-8') || !self::is_utf8($input)) {
+        if (!is_string($input)) {
+            return $validate ? false : '';
+        }
+        if ((function_exists('mb_detect_encoding') && mb_detect_encoding($input) !== 'UTF-8')
+            || !self::is_utf8($input)
+        ) {
             $input = self::convertUTF8($input);
         }
         $input     = function_exists('idn_to_ascii') ? idn_to_ascii($input) : $input;
@@ -494,7 +536,9 @@ class StringHandler
      */
     public static function filterURL($input, bool $validate = true)
     {
-        if ((function_exists('mb_detect_encoding') && mb_detect_encoding($input) !== 'UTF-8') || !self::is_utf8($input)) {
+        if ((function_exists('mb_detect_encoding') && mb_detect_encoding($input) !== 'UTF-8')
+            || !self::is_utf8($input)
+        ) {
             $input = self::convertUTF8($input);
         }
         $input     = function_exists('idn_to_ascii') ? idn_to_ascii($input) : $input;
@@ -569,26 +613,27 @@ class StringHandler
 
     /**
      * Diese Funktion erhält einen Text als String und parsed ihn. Variablen die geparsed werden lauten wie folgt:
-     * $#a:ID:NAME#$ => ID = kArtikel NAME => Wunschname ... wird in eine URL (evt. SEO) zum Artikel umgewandelt.
-     * $#k:ID:NAME#$ => ID = kKategorie NAME => Wunschname ... wird in eine URL (evt. SEO) zur Kategorie umgewandelt.
-     * $#h:ID:NAME#$ => ID = kHersteller NAME => Wunschname ... wird in eine URL (evt. SEO) zum Hersteller umgewandelt.
-     * $#m:ID:NAME#$ => ID = kMerkmalWert NAME => Wunschname ... wird in eine URL (evt. SEO) zum MerkmalWert umgewandelt.
-     * $#n:ID:NAME#$ => ID = kNews NAME => Wunschname ... wird in eine URL (evt. SEO) zur News umgewandelt.
-     * $#t:ID:NAME#$ => ID = kTag NAME => Wunschname ... wird in eine URL (evt. SEO) zum Tag umgewandelt.
-     * $#l:ID:NAME#$ => ID = kSuchanfrage NAME => Wunschname ... wird in eine URL (evt. SEO) zur Livesuche umgewandelt.
+     * $#a:ID:NAME#$ => ID = kArtikel NAME => Wunschname - wird in eine URL (evt. SEO) zum Artikel umgewandelt.
+     * $#k:ID:NAME#$ => ID = kKategorie NAME => Wunschname - wird in eine URL (evt. SEO) zur Kategorie umgewandelt.
+     * $#h:ID:NAME#$ => ID = kHersteller NAME => Wunschname - wird in eine URL (evt. SEO) zum Hersteller umgewandelt.
+     * $#m:ID:NAME#$ => ID = kMerkmalWert NAME => Wunschname - wird in eine URL (evt. SEO) zum MerkmalWert umgewandelt.
+     * $#n:ID:NAME#$ => ID = kNews NAME => Wunschname - wird in eine URL (evt. SEO) zur News umgewandelt.
+     * $#t:ID:NAME#$ => ID = kTag NAME => Wunschname - wird in eine URL (evt. SEO) zum Tag umgewandelt.
+     * $#l:ID:NAME#$ => ID = kSuchanfrage NAME => Wunschname - wird in eine URL (evt. SEO) zur Livesuche umgewandelt.
      *
-     * @param string $cText
+     * @param string $text
      * @return mixed
      */
-    public static function parseNewsText($cText)
+    public static function parseNewsText($text)
     {
         preg_match_all(
-            '/\${1}\#{1}[akhmntl]{1}:[0-9]+\:{0,1}[a-zA-Z0-9äÄöÖüÜß\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\]\ ]{0,}\#{1}\${1}/',
-            $cText,
-            $cTreffer_arr
+            '/\${1}\#{1}[akhmntl]{1}:[0-9]+\:{0,1}' .
+            '[a-zA-Z0-9äÄöÖüÜß\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\]\ ]{0,}\#{1}\${1}/',
+            $text,
+            $hits
         );
-        if (!is_array($cTreffer_arr[0]) || count($cTreffer_arr[0]) === 0) {
-            return $cText;
+        if (!is_array($hits[0]) || count($hits[0]) === 0) {
+            return $text;
         }
         if (!isset($_SESSION['kSprache'])) {
             $_lang    = Sprache::getDefaultLanguage();
@@ -596,8 +641,7 @@ class StringHandler
         } else {
             $kSprache = Shop::getLanguageID();
         }
-        // Parameter
-        $cParameter_arr = [
+        $params = [
             'a' => URLART_ARTIKEL,
             'k' => URLART_KATEGORIE,
             'h' => URLART_HERSTELLER,
@@ -606,24 +650,23 @@ class StringHandler
             't' => URLART_TAG,
             'l' => URLART_LIVESUCHE
         ];
-        foreach ($cTreffer_arr[0] as $cTreffer) {
-            $cParameter = substr($cTreffer, strpos($cTreffer, '#') + 1, 1);
-            $nBis       = strpos($cTreffer, ':', 4);
+        foreach ($hits[0] as $hit) {
+            $cParameter = substr($hit, strpos($hit, '#') + 1, 1);
+            $nBis       = strpos($hit, ':', 4);
             // Es wurde kein Name angegeben
             if ($nBis === false) {
-                $nBis  = strpos($cTreffer, ':', 3);
-                $nVon  = strpos($cTreffer, '#', $nBis);
-                $cKey  = substr($cTreffer, $nBis + 1, ($nVon - 1) - $nBis);
+                $nBis  = strpos($hit, ':', 3);
+                $nVon  = strpos($hit, '#', $nBis);
+                $cKey  = substr($hit, $nBis + 1, ($nVon - 1) - $nBis);
                 $cName = '';
             } else {
-                $cKey  = substr($cTreffer, 4, $nBis - 4);
-                $cName = substr($cTreffer, $nBis + 1, strpos($cTreffer, '#', $nBis) - ($nBis + 1));
+                $cKey  = substr($hit, 4, $nBis - 4);
+                $cName = substr($hit, $nBis + 1, strpos($hit, '#', $nBis) - ($nBis + 1));
             }
 
-            $oObjekt    = new stdClass();
-            $bVorhanden = false;
-            //switch($cURLArt_arr[$i])
-            switch ($cParameter_arr[$cParameter]) {
+            $oObjekt = new stdClass();
+            $exists  = false;
+            switch ($params[$cParameter]) {
                 case URLART_ARTIKEL:
                     $oObjekt->kArtikel = (int)$cKey;
                     $oObjekt->cKey     = 'kArtikel';
@@ -645,7 +688,7 @@ class StringHandler
                     );
 
                     if (isset($oArtikel->kArtikel) && $oArtikel->kArtikel > 0) {
-                        $bVorhanden     = true;
+                        $exists     = true;
                         $oObjekt->cSeo  = $oArtikel->cSeo;
                         $oObjekt->cName = !empty($oArtikel->cName) ? $oArtikel->cName : 'Link';
                     }
@@ -672,7 +715,7 @@ class StringHandler
                     );
 
                     if (isset($oKategorie->kKategorie) && $oKategorie->kKategorie > 0) {
-                        $bVorhanden     = true;
+                        $exists     = true;
                         $oObjekt->cSeo  = $oKategorie->cSeo;
                         $oObjekt->cName = !empty($oKategorie->cName) ? $oKategorie->cName : 'Link';
                     }
@@ -694,7 +737,7 @@ class StringHandler
                     );
 
                     if (isset($oHersteller->kHersteller) && $oHersteller->kHersteller > 0) {
-                        $bVorhanden     = true;
+                        $exists     = true;
                         $oObjekt->cSeo  = $oHersteller->cSeo;
                         $oObjekt->cName = !empty($oHersteller->cName) ? $oHersteller->cName : 'Link';
                     }
@@ -716,7 +759,7 @@ class StringHandler
                     );
 
                     if (isset($oMerkmalWert->kMerkmalWert) && $oMerkmalWert->kMerkmalWert > 0) {
-                        $bVorhanden     = true;
+                        $exists     = true;
                         $oObjekt->cSeo  = $oMerkmalWert->cSeo;
                         $oObjekt->cName = !empty($oMerkmalWert->cWert) ? $oMerkmalWert->cWert : 'Link';
                     }
@@ -737,7 +780,7 @@ class StringHandler
                     );
 
                     if (isset($oNews->kNews) && $oNews->kNews > 0) {
-                        $bVorhanden     = true;
+                        $exists     = true;
                         $oObjekt->cSeo  = $oNews->cSeo;
                         $oObjekt->cName = !empty($oNews->cBetreff) ? $oNews->cBetreff : 'Link';
                     }
@@ -758,7 +801,7 @@ class StringHandler
                     );
 
                     if (isset($oUmfrage->kUmfrage) && $oUmfrage->kUmfrage > 0) {
-                        $bVorhanden     = true;
+                        $exists     = true;
                         $oObjekt->cSeo  = $oUmfrage->cSeo;
                         $oObjekt->cName = !empty($oUmfrage->cName) ? $oUmfrage->cName : 'Link';
                     }
@@ -779,7 +822,7 @@ class StringHandler
                     );
 
                     if (isset($oTag->kTag) && $oTag->kTag > 0) {
-                        $bVorhanden     = true;
+                        $exists     = true;
                         $oObjekt->cSeo  = $oTag->cSeo;
                         $oObjekt->cName = !empty($oTag->cName) ? $oTag->cName : 'Link';
                     }
@@ -800,7 +843,7 @@ class StringHandler
                     );
 
                     if (isset($oSuchanfrage->kSuchanfrage) && $oSuchanfrage->kSuchanfrage > 0) {
-                        $bVorhanden     = true;
+                        $exists     = true;
                         $oObjekt->cSeo  = $oSuchanfrage->cSeo;
                         $oObjekt->cName = !empty($oSuchanfrage->cSuche) ? $oSuchanfrage->cSuche : 'Link';
                     }
@@ -812,23 +855,23 @@ class StringHandler
                 $oObjekt->cName = $cName;
                 $cName          = ':' . $cName;
             }
-            if ($bVorhanden) {
-                $cURL  = UrlHelper::buildURL($oObjekt, $cParameter_arr[$cParameter]);
-                $cText = str_replace(
+            if ($exists) {
+                $cURL = UrlHelper::buildURL($oObjekt, $params[$cParameter]);
+                $text = str_replace(
                     '$#' . $cParameter . ':' . $cKey . $cName . '#$',
                     '<a href="' . Shop::getURL() . '/' . $cURL . '">' . $oObjekt->cName . '</a>',
-                    $cText
+                    $text
                 );
             } else {
-                $cText = str_replace(
+                $text = str_replace(
                     '$#' . $cParameter . ':' . $cKey . $cName . '#$',
                     '<a href="' . Shop::getURL() . '/" >' . Shop::Lang()->get('parseTextNoLinkID') . '</a>',
-                    $cText
+                    $text
                 );
             }
         }
 
-        return $cText;
+        return $text;
     }
 
     /**

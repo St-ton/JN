@@ -84,12 +84,14 @@ class DateHelper
     }
 
     /**
-     * @param string $date
+     * @param string|null $date
      * @return string
      */
-    public static function convertDateToMysqlStandard(string $date): string
+    public static function convertDateToMysqlStandard(?string $date): string
     {
-        if (preg_match('/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/', $date)) {
+        if ($date === null) {
+            $convertedDate = '_DBNULL_';
+        } elseif (preg_match('/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/', $date)) {
             $convertedDate = DateTime::createFromFormat('d.m.Y', $date)->format('Y-m-d');
         } elseif (preg_match('/^\d{4}\-\d{2}\-(\d{2})$/', $date)) {
             $convertedDate = $date;

@@ -42,7 +42,9 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
             case AdminLoginStatus::ERROR_USER_NOT_FOUND:
             case AdminLoginStatus::ERROR_INVALID_PASSWORD:
                 $cFehler = 'Benutzername oder Passwort falsch';
-                if (isset($_SESSION['AdminAccount']->TwoFA_expired) && true === $_SESSION['AdminAccount']->TwoFA_expired) {
+                if (isset($_SESSION['AdminAccount']->TwoFA_expired)
+                    && $_SESSION['AdminAccount']->TwoFA_expired === true
+                ) {
                     $cFehler = '2-Faktor-Auth-Code abgelaufen';
                 }
                 break;
@@ -56,7 +58,9 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
                 break;
 
             case AdminLoginStatus::ERROR_TWO_FACTOR_AUTH_EXPIRED:
-                if (isset($_SESSION['AdminAccount']->TwoFA_expired) && true === $_SESSION['AdminAccount']->TwoFA_expired) {
+                if (isset($_SESSION['AdminAccount']->TwoFA_expired)
+                    && $_SESSION['AdminAccount']->TwoFA_expired === true
+                ) {
                     $cFehler = '2-Faktor-Authentifizierungs-Code abgelaufen';
                 }
                 break;

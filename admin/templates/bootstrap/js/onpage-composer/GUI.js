@@ -465,37 +465,32 @@ GUI.prototype = {
 
     selectImageProp: function(propName)
     {
-        this.onOpenKCFinder(function(url) {
+        this.openElFinder(function(url) {
             this.imageSelectCB(url, propName);
             this.configForm.find('[name="' + propName + '"]').val(url);
             this.configForm.find('#preview-img-' + propName).attr('src', url);
-        }.bind(this),'Bilder');
+        }.bind(this), 'image');
     },
 
     selectVideoProp: function(propName)
     {
-         this.onOpenKCFinder(function(url) {
+         this.openElFinder(function(url) {
              this.configForm.find('[name="' + propName + '"]').val(url);
              this.configForm.find('#preview-vid-' + propName).attr('src', url);
              this.configForm.find('#cont-preview-vid-' + propName).load();
-         }.bind(this),'Videos');
+         }.bind(this),'video');
     },
 
-    onOpenKCFinder: function (callback, type)
+    openElFinder: function (callback, type)
     {
-        callback = callback || noop;
-
-        KCFinder = {
-            callBack: function(url) {
-                callback(url);
-                kcFinder.close();
-            }
+        window.elfinder = {
+            getFileCallback: callback || noop
         };
 
-        var kcFinder = open(
-            this.kcfinderUrl + 'browse.php?type='+ type +'&lang=de', 'kcfinder_textbox',
-            'status=0, toolbar=0, location=0, menubar=0, directories=0, resizable=1, scrollbars=0,' +
-            'width=800, height=600'
+        window.open(
+            'elfinder.php?' + '&token=' + JTL_TOKEN + '&mediafilesType=' + type,
+            'elfinderWindow',
+            'status=0,toolbar=0,location=0,menubar=0,directories=0,resizable=1,scrollbars=0,width=800,height=600'
         );
     },
 

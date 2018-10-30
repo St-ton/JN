@@ -1,4 +1,4 @@
-function GUI(io, page, kcfinderUrl)
+function GUI(io, page)
 {
     debuglog('construct GUI');
 
@@ -6,7 +6,6 @@ function GUI(io, page, kcfinderUrl)
 
     this.io            = io;
     this.page          = page;
-    this.kcfinderUrl   = kcfinderUrl;
     this.configSaveCb  = noop;
     this.imageSelectCB = noop;
 }
@@ -483,15 +482,7 @@ GUI.prototype = {
 
     openElFinder: function (callback, type)
     {
-        window.elfinder = {
-            getFileCallback: callback || noop
-        };
-
-        window.open(
-            'elfinder.php?' + '&token=' + JTL_TOKEN + '&mediafilesType=' + type,
-            'elfinderWindow',
-            'status=0,toolbar=0,location=0,menubar=0,directories=0,resizable=1,scrollbars=0,width=800,height=600'
-        );
+        openElFinder(callback, type);
     },
 
     onRestoreUnsavedForm: function (e)

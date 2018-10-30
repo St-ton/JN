@@ -135,19 +135,12 @@ $(function() {
     });
 });
 
-function select_image( key ) {
-    var id = key,
-        shop_url = $('.shop_url').html(),
-        kcfinder_path = $('.kcfinder_path').html();
-
-    window.KCFinder = {
-        callBack: function(url) {
-            $('#img'+id).attr('src', url);
-            $('input[name="aSlide\['+id+'\]\[cBild\]"]').val(url);
-            kcFinder.close();
-        }
-    };
-    var kcFinder = window.open(kcfinder_path+'browse.php?type=Bilder&lang=de', 'kcfinder_textbox','status=0, toolbar=0, location=0, menubar=0, directories=0, resizable=1, scrollbars=0, width=800, height=600,');
+function select_image(key)
+{
+    openElFinder(function(url) {
+        $('#img' + key).attr('src', url);
+        $('input[name="aSlide\[' + key + '\]\[cBild\]"]').val(url);
+    }, 'image');
 }
 
 var count = 0;

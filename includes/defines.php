@@ -142,7 +142,6 @@ ifndef('PFAD_DOWNLOADS_PREVIEW', PFAD_ROOT . PFAD_DOWNLOADS_PREVIEW_REL);
 ifndef('PFAD_UPLOADIFY', PFAD_INCLUDES_LIBS . 'uploadify/');
 ifndef('PFAD_UPLOAD_CALLBACK', PFAD_INCLUDES_EXT . 'uploads_cb.php');
 ifndef('PFAD_IMAGEMAP', PFAD_BILDER . 'banner/');
-ifndef('PFAD_KCFINDER', PFAD_INCLUDES_LIBS . 'kcfinder-2.5.4/');
 ifndef('PFAD_EMAILTEMPLATES', 'templates_mail/');
 ifndef('PFAD_MEDIA_IMAGE', 'media/image/');
 ifndef('PFAD_MEDIA_IMAGE_STORAGE', PFAD_MEDIA_IMAGE . 'storage/');

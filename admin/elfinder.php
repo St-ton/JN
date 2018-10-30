@@ -17,6 +17,8 @@ if (FormHelper::validateToken()) {
     $mediafilesSubdir = 'Bilder';
     $mediafilesType   = RequestHelper::verifyGPDataString('mediafilesType');
     $elfinderCommand  = RequestHelper::verifyGPDataString('cmd');
+    $isCKEditor       = RequestHelper::verifyGPDataString('ckeditor') === '1';
+    $CKEditorFuncNum  = RequestHelper::verifyGPDataString('CKEditorFuncNum');
 
     switch ($mediafilesType) {
         case 'image':
@@ -24,6 +26,12 @@ if (FormHelper::validateToken()) {
             break;
         case 'video':
             $mediafilesSubdir = 'Videos';
+            break;
+        case 'music':
+            $mediafilesSubdir = 'Musik';
+            break;
+        case 'misc':
+            $mediafilesSubdir = 'Sonstiges';
             break;
         default:
             break;
@@ -81,6 +89,9 @@ if (FormHelper::validateToken()) {
         $smarty
             ->assign('mediafilesType', $mediafilesType)
             ->assign('mediafilesSubdir', $mediafilesSubdir)
+            ->assign('isCKEditor', $isCKEditor)
+            ->assign('CKEditorFuncNum', $CKEditorFuncNum)
+            ->assign('templateUrl', Shop::getURL() . '/' . PFAD_ADMIN . $currentTemplateDir)
             ->display('elfinder.tpl');
     }
 }

@@ -135,6 +135,11 @@ class Pagination
     private $nDefaultItemsPerPage = 0;
 
     /**
+     * @var int
+     */
+    private $nDefaultSortByDir = 0;
+
+    /**
      * Pagination constructor.
      * @param string $cId
      */
@@ -224,6 +229,17 @@ class Pagination
     }
 
     /**
+     * @param int
+     * @return $this
+     */
+    public function setDefaultSortByDir(int $n): self
+    {
+        $this->nDefaultSortByDir = $n;
+
+        return $this;
+    }
+
+    /**
      * Explicitly set the number of items per page. This overrides any custom selection.
      *
      * @param int $nItemsPerPage
@@ -255,7 +271,7 @@ class Pagination
             isset($_GET[$this->cId . '_nSortByDir'])     ? (int)$_GET[$this->cId . '_nSortByDir'] : (
             isset($_POST[$this->cId . '_nSortByDir'])    ? (int)$_POST[$this->cId . '_nSortByDir'] : (
             isset($_SESSION[$this->cId . '_nSortByDir']) ? (int)$_SESSION[$this->cId . '_nSortByDir'] :
-                0 ));
+                                                           $this->nDefaultSortByDir ));
 
         $this->nPage =
             isset($_GET[$this->cId . '_nPage'])     ? (int)$_GET[$this->cId . '_nPage'] : (

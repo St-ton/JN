@@ -474,13 +474,13 @@ class SimpleMail
      * Prüft ob eine die angegebende Email in temailblacklist vorhanden ist
      * Gibt true zurück, falls Email geblockt, ansonsten false
      *
-     * @param string $cEmail
+     * @param string $mail
      * @return bool
      */
-    public static function checkBlacklist(string $cEmail): bool
+    public static function checkBlacklist(?string $mail): bool
     {
-        $cEmail = strtolower(StringHandler::filterXSS($cEmail));
-        if (StringHandler::filterEmailAddress($cEmail) === false) {
+        $mail = strtolower(StringHandler::filterXSS($mail));
+        if (StringHandler::filterEmailAddress($mail) === false) {
             return true;
         }
         $conf = Shop::getSettings([CONF_EMAILBLACKLIST]);
@@ -493,37 +493,37 @@ class SimpleMail
         );
         foreach ($blacklist as $item) {
             if (strpos($item->cEmail, '*') !== false) {
-                preg_match('/' . str_replace('*', "[a-z0-9\-\_\.\@\+]*", $item->cEmail) . '/', $cEmail, $hits);
+                preg_match('/' . str_replace('*', "[a-z0-9\-\_\.\@\+]*", $item->cEmail) . '/', $mail, $hits);
                 // Blocked
-                if (isset($hits[0]) && strlen($cEmail) === strlen($hits[0])) {
+                if (isset($hits[0]) && strlen($mail) === strlen($hits[0])) {
                     // Email schonmal geblockt worden?
-                    $block = Shop::Container()->getDB()->select('temailblacklistblock', 'cEmail', $cEmail);
+                    $block = Shop::Container()->getDB()->select('temailblacklistblock', 'cEmail', $mail);
                     if (!empty($block->cEmail)) {
                         $_upd                = new stdClass();
                         $_upd->dLetzterBlock = 'NOW()';
-                        Shop::Container()->getDB()->update('temailblacklistblock', 'cEmail', $cEmail, $_upd);
+                        Shop::Container()->getDB()->update('temailblacklistblock', 'cEmail', $mail, $_upd);
                     } else {
                         // temailblacklistblock Eintrag
                         $block                = new stdClass();
-                        $block->cEmail        = $cEmail;
+                        $block->cEmail        = $mail;
                         $block->dLetzterBlock = 'NOW()';
                         Shop::Container()->getDB()->insert('temailblacklistblock', $block);
                     }
 
                     return true;
                 }
-            } elseif (strtolower($item->cEmail) === strtolower($cEmail)) {
+            } elseif (strtolower($item->cEmail) === strtolower($mail)) {
                 // Email schonmal geblockt worden?
-                $block = Shop::Container()->getDB()->select('temailblacklistblock', 'cEmail', $cEmail);
+                $block = Shop::Container()->getDB()->select('temailblacklistblock', 'cEmail', $mail);
 
                 if (!empty($block->cEmail)) {
                     $_upd                = new stdClass();
                     $_upd->dLetzterBlock = 'NOW()';
-                    Shop::Container()->getDB()->update('temailblacklistblock', 'cEmail', $cEmail, $_upd);
+                    Shop::Container()->getDB()->update('temailblacklistblock', 'cEmail', $mail, $_upd);
                 } else {
                     // temailblacklistblock Eintrag
                     $block                = new stdClass();
-                    $block->cEmail        = $cEmail;
+                    $block->cEmail        = $mail;
                     $block->dLetzterBlock = 'NOW()';
                     Shop::Container()->getDB()->insert('temailblacklistblock', $block);
                 }

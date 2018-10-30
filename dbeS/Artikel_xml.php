@@ -120,9 +120,12 @@ function bearbeiteInsert($xml, array $conf)
     // Alten SEO-Pfad merken. Eintrag in tredirect, wenn sich der Pfad geändert hat.
     $oSeoOld       = Shop::Container()->getDB()->select(
         'tartikel',
-        'kArtikel', (int)$Artikel->kArtikel,
-        null, null,
-        null, null,
+        'kArtikel',
+        (int)$Artikel->kArtikel,
+        null,
+        null,
+        null,
+        null,
         false,
         'cSeo'
     );
@@ -130,7 +133,7 @@ function bearbeiteInsert($xml, array $conf)
     $isParent      = isset($artikel_arr[0]->nIstVater) ? 1 : 0;
 
     if (isset($xml['tartikel']['tkategorieartikel'])
-        && $conf['global']['kategorien_anzeigefilter'] == EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE
+        && (int)$conf['global']['kategorien_anzeigefilter'] === EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE
         && Shop::Cache()->isCacheGroupActive(CACHING_GROUP_CATEGORY)
     ) {
         $currentArticleCategories = [];
@@ -202,9 +205,12 @@ function bearbeiteInsert($xml, array $conf)
             $check         = false;
             $currentStatus = Shop::Container()->getDB()->select(
                 'tartikel',
-                'kArtikel', $Artikel->kArtikel,
-                null, null,
-                null, null,
+                'kArtikel',
+                $Artikel->kArtikel,
+                null,
+                null,
+                null,
+                null,
                 false,
                 'cLagerBeachten, cLagerKleinerNull, fLagerbestand'
             );
@@ -213,7 +219,8 @@ function bearbeiteInsert($xml, array $conf)
                     // article was not in stock before but is now - check if flush is necessary
                     || ($currentStatus->fLagerbestand > 0 && $xml['tartikel']['fLagerbestand'] <= 0)
                     // article was in stock before but is not anymore - check if flush is necessary
-                    || ($conf['global']['artikel_artikelanzeigefilter'] == EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
+                    || ((int)$conf['global']['artikel_artikelanzeigefilter']
+                        === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
                         && $currentStatus->cLagerKleinerNull !== $xml['tartikel']['cLagerKleinerNull'])
                     // overselling status changed - check if flush is necessary
                     || ($currentStatus->cLagerBeachten !== $xml['tartikel']['cLagerBeachten']
@@ -379,8 +386,10 @@ function bearbeiteInsert($xml, array $conf)
         Shop::Container()->getDB()->insert('tseo', $oSeo);
         // Insert into tredirect weil sich das SEO vom Artikel geändert hat
         if (isset($oSeoAssoc_arr[$artikelsprache_arr[$i]->kSprache])) {
-            checkDbeSXmlRedirect($oSeoAssoc_arr[$artikelsprache_arr[$i]->kSprache]->cSeo,
-                $artikelsprache_arr[$i]->cSeo);
+            checkDbeSXmlRedirect(
+                $oSeoAssoc_arr[$artikelsprache_arr[$i]->kSprache]->cSeo,
+                $artikelsprache_arr[$i]->cSeo
+            );
         }
     }
     if (isset($xml['tartikel']['tattribut']) && is_array($xml['tartikel']['tattribut'])) {
@@ -547,6 +556,9 @@ function bearbeiteInsert($xml, array $conf)
         DBUpdateInsert('tartikelkonfiggruppe', $oArtikelKonfig_arr, 'kArtikel', 'kKonfiggruppe');
     }
     if (isset($xml['tartikel']['tartikelsonderpreis'])) {
+        if ($xml['tartikel']['tartikelsonderpreis']['dEnde'] === '') {
+            $xml['tartikel']['tartikelsonderpreis']['dEnde'] = '_DBNULL_';
+        }
         updateXMLinDB(
             $xml['tartikel']['tartikelsonderpreis'],
             'tsonderpreise',
@@ -596,7 +608,8 @@ function bearbeiteInsert($xml, array $conf)
                     ) AS x
                 )
                 WHERE kArtikel = " . (int)$artikel_arr[0]->kVaterArtikel,
-            \DB\ReturnType::AFFECTED_ROWS);
+            \DB\ReturnType::AFFECTED_ROWS
+        );
         // Aktualisiere Merkmale in tartikelmerkmal vom Vaterartikel
         Artikel::beachteVarikombiMerkmalLagerbestand(
             $artikel_arr[0]->kVaterArtikel,
@@ -666,7 +679,7 @@ function bearbeiteInsert($xml, array $conf)
                     'kWarenlager'  => $oArtikelWarenlager->kWarenlager,
                     'fBestand'     => $oArtikelWarenlager->fBestand,
                     'fZulauf'      => $oArtikelWarenlager->fZulauf,
-                    'dZulaufDatum' => $oArtikelWarenlager->dZulaufDatum,
+                    'dZulaufDatum' => $oArtikelWarenlager->dZulaufDatum ?? '_DBNULL_',
                 ],
                 \DB\ReturnType::QUERYSINGLE
             );
@@ -918,7 +931,8 @@ function bearbeiteInsert($xml, array $conf)
                             );
                             updateXMLinDB(
                                 $xml['tartikel']['teigenschaft'][$i]['teigenschaftwert'][$o],
-                                'teigenschaftwertabhaengigkeit', $GLOBALS['mEigenschaftWertAbhaengigkeit'],
+                                'teigenschaftwertabhaengigkeit',
+                                $GLOBALS['mEigenschaftWertAbhaengigkeit'],
                                 'kEigenschaftWert',
                                 'kEigenschaftWertZiel'
                             );

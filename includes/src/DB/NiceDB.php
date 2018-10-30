@@ -83,21 +83,21 @@ class NiceDB implements DbInterface
     private $transactionCount = 0;
 
     /** @deprecated  */
-    const RET_SINGLE_OBJECT = 1;
+    public const RET_SINGLE_OBJECT = 1;
     /** @deprecated  */
-    const RET_ARRAY_OF_OBJECTS = 2;
+    public const RET_ARRAY_OF_OBJECTS = 2;
     /** @deprecated  */
-    const RET_AFFECTED_ROWS = 3;
+    public const RET_AFFECTED_ROWS = 3;
     /** @deprecated  */
-    const RET_LAST_INSERTED_ID = 7;
+    public const RET_LAST_INSERTED_ID = 7;
     /** @deprecated  */
-    const RET_SINGLE_ASSOC_ARRAY = 8;
+    public const RET_SINGLE_ASSOC_ARRAY = 8;
     /** @deprecated  */
-    const RET_ARRAY_OF_ASSOC_ARRAYS = 9;
+    public const RET_ARRAY_OF_ASSOC_ARRAYS = 9;
     /** @deprecated  */
-    const RET_QUERYSINGLE = 10;
+    public const RET_QUERYSINGLE = 10;
     /** @deprecated  */
-    const RET_ARRAY_OF_BOTH_ARRAYS = 11;
+    public const RET_ARRAY_OF_BOTH_ARRAYS = 11;
 
     /**
      * create DB Connection with default parameters
@@ -217,7 +217,8 @@ class NiceDB implements DbInterface
         }
         $this->pdo = new PDO($dsn, $this->config['username'], $this->config['password']);
         if (\defined('DB_CHARSET')) {
-            $this->pdo->exec("SET NAMES '" . \DB_CHARSET . "'" . (\defined('DB_COLLATE')
+            $this->pdo->exec(
+                "SET NAMES '" . \DB_CHARSET . "'" . (\defined('DB_COLLATE')
                     ? " COLLATE '" . \DB_COLLATE . "'"
                     : '')
             );
@@ -258,7 +259,7 @@ class NiceDB implements DbInterface
                 if (!isset($_bt['function'])) {
                     $_bt['function'] = '';
                 }
-                if (isset($_bt['file']) 
+                if (isset($_bt['file'])
                     && !($_bt['class'] === __CLASS__ && $_bt['function'] === '__call')
                     && \strpos($_bt['file'], 'class.core.NiceDB.php') === false
                 ) {
@@ -399,6 +400,7 @@ class NiceDB implements DbInterface
             if ($_val === '_DBNULL_') {
                 $_val = null;
             } elseif ($_val === null) {
+                \error_log('conv@insert:' . $tableName . '. key: ' . $_key . 'obj:' . \print_r($object, true));
                 $_val = '';
             }
             if (\strtolower($_val) === 'now()') {
@@ -542,6 +544,7 @@ class NiceDB implements DbInterface
                 $_val = null;
             } elseif ($_val === null) {
                 $_val = '';
+                \error_log('conv@update:' . $tableName . '. key: ' . $_key . 'obj:' . \print_r($object, true));
             }
             if (\strtolower($_val) === 'now()') {
                 $updates[] = $_key . '=' . $_val;
@@ -792,8 +795,7 @@ class NiceDB implements DbInterface
         string $select = '*',
         string $orderBy = '',
         $limit = ''
-    )
-    {
+    ) {
         $this->validateEntityName($tableName);
         foreach ((array)$keys as $key) {
             $this->validateEntityName($key);
@@ -838,8 +840,7 @@ class NiceDB implements DbInterface
         string $select = '*',
         string $orderBy = '',
         $limit = ''
-    )
-    {
+    ) {
         return $this->selectArray($tableName, $keys, $values, $select, $orderBy, $limit);
     }
 
@@ -875,8 +876,7 @@ class NiceDB implements DbInterface
         bool $echo = false,
         bool $bExecuteHook = false,
         $fnINfo = null
-    )
-    {
+    ) {
         return $this->executeQueryPrepared($stmt, $params, $return, $echo, $bExecuteHook, $fnINfo);
     }
 
@@ -1495,6 +1495,5 @@ class NiceDB implements DbInterface
      */
     public function unserialize($serialized)
     {
-
     }
 }

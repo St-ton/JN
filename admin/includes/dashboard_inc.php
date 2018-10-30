@@ -208,9 +208,8 @@ function getShopInfoIO($cTpl, $cWrapperID)
     $oSubscription    = $api->getSubscription();
     $oLatestVersion   = $api->getLatestVersion();
     $bUpdateAvailable = $api->hasNewerVersion();
-
     $strLatestVersion = $oLatestVersion
-        ? sprintf('%.2f', $oLatestVersion->version / 100)
+        ? sprintf('%d.%02d', $oLatestVersion->getMajor(), $oLatestVersion->getMinor())
         : null;
 
     Shop::Smarty()->assign('oSubscription', $oSubscription);

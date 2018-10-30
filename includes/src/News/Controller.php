@@ -466,10 +466,10 @@ class Controller
                 $oSQL->cSortSQL = ' ORDER BY tnews.dGueltigVon';
                 break;
             case 3: // Name a ... z
-                $oSQL->cSortSQL = ' ORDER BY tnews.cBetreff';
+                $oSQL->cSortSQL = ' ORDER BY tnewssprache.title';
                 break;
             case 4: // Name z ... a
-                $oSQL->cSortSQL = ' ORDER BY tnews.cBetreff DESC';
+                $oSQL->cSortSQL = ' ORDER BY tnewssprache.title DESC';
                 break;
             case 5: // Anzahl Kommentare absteigend
                 $oSQL->cSortSQL = ' ORDER BY nNewsKommentarAnzahl DESC';

@@ -274,6 +274,8 @@ class Category implements CategoryInterface
         $this->items = (new ItemList($this->db))->createItems(map(flatten($this->db->queryPrepared(
             'SELECT tnews.kNews
                 FROM tnews
+                JOIN tnewssprache 
+                    ON tnews.kNews = tnewssprache.kNews
                 JOIN tnewskategorienews 
                     ON tnewskategorienews.kNews = tnews.kNews 
                 JOIN tnewskategorie 

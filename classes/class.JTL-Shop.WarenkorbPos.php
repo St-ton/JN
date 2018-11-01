@@ -248,6 +248,7 @@ class WarenkorbPos
 
             if ($freifeld || strlen(trim($freifeld)) > 0) {
                 $NeueWarenkorbPosEigenschaft->cEigenschaftWertName[$Sprache->cISO] = Shop::DB()->escape($freifeld);
+                $NeueWarenkorbPosEigenschaft->cFreifeldWert                        = Shop::DB()->escape($freifeld);
             }
         }
         $this->WarenkorbPosEigenschaftArr[] = $NeueWarenkorbPosEigenschaft;

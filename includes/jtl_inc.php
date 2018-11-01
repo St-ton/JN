@@ -251,18 +251,24 @@ function setzeWarenkorbPersInWarenkorb($kKunde)
                     }
                 }
             } else {
-                fuegeEinInWarenkorb(
-                    $oWarenkorbPersPos->kArtikel,
-                    $oWarenkorbPersPos->fAnzahl,
-                    $oWarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr,
-                    1,
-                    $oWarenkorbPersPos->cUnique,
-                    $oWarenkorbPersPos->kKonfigitem,
-                    null,
-                    true,
-                    $oWarenkorbPersPos->cResponsibility
+                $tmpProduct = new Artikel();
+                $tmpProduct->fuelleArtikel($oWarenkorbPersPos->kArtikel, Artikel::getDefaultOptions());
+                $failures = pruefeFuegeEinInWarenkorb($tmpProduct, $oWarenkorbPersPos->fAnzahl, $oWarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr);
 
-                );
+                if ((int)$tmpProduct->kArtikel > 0 && count($failures) === 0) {
+                    fuegeEinInWarenkorb(
+                        $oWarenkorbPersPos->kArtikel,
+                        $oWarenkorbPersPos->fAnzahl,
+                        $oWarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr,
+                        1,
+                        $oWarenkorbPersPos->cUnique,
+                        $oWarenkorbPersPos->kKonfigitem,
+                        null,
+                        true,
+                        $oWarenkorbPersPos->cResponsibility
+
+                    );
+                }
             }
         }
     }

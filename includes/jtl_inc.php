@@ -70,7 +70,8 @@ function gibRedirect(int $code)
             $oTMP->Wert                 = RequestHelper::verifyGPCDataInt('n');
             $redirect->oParameter_arr[] = $oTMP;
             $redirect->nRedirect        = R_LOGIN_NEWSCOMMENT;
-            $redirect->cURL             = '?s=' . RequestHelper::verifyGPCDataInt('s') . '&n=' . RequestHelper::verifyGPCDataInt('n');
+            $redirect->cURL             = '?s=' . RequestHelper::verifyGPCDataInt('s') .
+                '&n=' . RequestHelper::verifyGPCDataInt('n');
             $redirect->cName            = Shop::Lang()->get('news', 'redirect');
             break;
         case R_LOGIN_UMFRAGE:
@@ -127,7 +128,8 @@ function pruefeKategorieSichtbarkeit(int $customerGroupID)
                 unset($categoryList['kKategorieVonUnterkategorien_arr'][0][$i]);
                 $save = true;
             }
-            $categoryList['kKategorieVonUnterkategorien_arr'][0] = array_merge($categoryList['kKategorieVonUnterkategorien_arr'][0]);
+            $categoryList['kKategorieVonUnterkategorien_arr'][0] =
+                array_merge($categoryList['kKategorieVonUnterkategorien_arr'][0]);
         }
 
         if (isset($categoryList['kKategorieVonUnterkategorien_arr'][$vis->kKategorie])) {
@@ -158,7 +160,7 @@ function pruefeKategorieSichtbarkeit(int $customerGroupID)
  * @param int $customerID
  * @return bool
  */
-function setzeWarenkorbPersInWarenkorb(int $customerID)
+function setzeWarenkorbPersInWarenkorb(int $customerID): bool
 {
     if (!$customerID) {
         return false;
@@ -255,7 +257,7 @@ function setzeWarenkorbPersInWarenkorb(int $customerID)
  *
  * @param int $customerGroupID
  */
-function pruefeWarenkorbArtikelSichtbarkeit(int $customerGroupID)
+function pruefeWarenkorbArtikelSichtbarkeit(int $customerGroupID): void
 {
     $cart = Session::Cart();
     if ($customerGroupID <= 0 || empty($cart->PositionenArr)) {
@@ -300,7 +302,7 @@ function pruefeWarenkorbArtikelSichtbarkeit(int $customerGroupID)
  * @param string $userLogin
  * @param string $passLogin
  */
-function fuehreLoginAus($userLogin, $passLogin)
+function fuehreLoginAus($userLogin, $passLogin): void
 {
     global $cHinweis;
     $oKupons  = [];

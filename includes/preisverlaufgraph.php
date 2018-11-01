@@ -6,16 +6,18 @@
 
 if ((int)$_GET['kArtikel'] > 0 && (int)$_GET['kKundengruppe'] > 0 && (int)$_GET['kSteuerklasse'] > 0) {
     require_once __DIR__ . '/globalinclude.php';
-    //session starten
     $session       = \Session\Session::getInstance();
-    $Einstellungen = Shop::getSettings([CONF_PREISVERLAUF]);
-    $oConfig_arr   = Shop::Container()->getDB()->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_PREISVERLAUF);
+    $conf          = Shop::Container()->getDB()->selectAll(
+        'teinstellungen',
+        'kEinstellungenSektion',
+        CONF_PREISVERLAUF
+    );
     $kArtikel      = (int)$_GET['kArtikel'];
     $kKundengruppe = (int)$_GET['kKundengruppe'];
     $kSteuerklasse = (int)$_GET['kSteuerklasse'];
-    $nMonat        = (int)$Einstellungen['preisverlauf']['preisverlauf_anzahl_monate'];
+    $nMonat        = Shop::getConfigValue(CONF_PREISVERLAUF, 'preisverlauf_anzahl_monate');
 
-    if (count($oConfig_arr) > 0) {
+    if (count($conf) > 0) {
         $oPreisConfig           = new stdClass();
         $oPreisConfig->Waehrung = Session::Currency()->getName();
         $oPreisConfig->Netto    = Session::CustomerGroup()->isMerchant()
@@ -36,7 +38,7 @@ if ((int)$_GET['kArtikel'] > 0 && (int)$_GET['kKundengruppe'] > 0 && (int)$_GET[
                 $kArtikel,
                 $kKundengruppe,
                 $nMonat,
-                $oConfig_arr,
+                $conf,
                 $oPreisConfig
             );
             $oPreisverlaufGraph->cSchriftverzeichnis = PFAD_ROOT . 'includes/fonts/';

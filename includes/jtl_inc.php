@@ -266,7 +266,6 @@ function setzeWarenkorbPersInWarenkorb($kKunde)
                         null,
                         true,
                         $oWarenkorbPersPos->cResponsibility
-
                     );
                 }
             }

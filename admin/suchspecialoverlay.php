@@ -16,9 +16,13 @@ $step     = 'suchspecialoverlay_uebersicht';
 setzeSprache();
 if (RequestHelper::verifyGPCDataInt('suchspecialoverlay') === 1) {
     $step = 'suchspecialoverlay_detail';
+    $oID  = RequestHelper::verifyGPCDataInt('kSuchspecialOverlay');
 
-    if (isset($_POST['speicher_einstellung']) && (int)$_POST['speicher_einstellung'] === 1 && FormHelper::validateToken()) {
-        if (speicherEinstellung(RequestHelper::verifyGPCDataInt('kSuchspecialOverlay'), $_POST, $_FILES)) {
+    if (isset($_POST['speicher_einstellung'])
+        && (int)$_POST['speicher_einstellung'] === 1
+        && FormHelper::validateToken()
+    ) {
+        if (speicherEinstellung($oID, $_POST, $_FILES)) {
             Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
             $cHinweis .= 'Ihre Einstellung wurde erfolgreich gespeichert.<br />';
         } else {
@@ -26,8 +30,8 @@ if (RequestHelper::verifyGPCDataInt('suchspecialoverlay') === 1) {
         }
     }
     // Hole bestimmtes SuchspecialOverlay
-    if (RequestHelper::verifyGPCDataInt('kSuchspecialOverlay') > 0) {
-        $smarty->assign('oSuchspecialOverlay', gibSuchspecialOverlay(RequestHelper::verifyGPCDataInt('kSuchspecialOverlay')));
+    if ($oID > 0) {
+        $smarty->assign('oSuchspecialOverlay', gibSuchspecialOverlay($oID));
     }
 } else {
     $smarty->assign('oSuchspecialOverlay', gibSuchspecialOverlay(1));

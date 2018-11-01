@@ -101,7 +101,7 @@ if (isset($_POST['zuruecksetzen']) && (int)$_POST['zuruecksetzen'] === 1 && Form
                 // Shopinhalte
                 case 'news':
                     $_index = Shop::Container()->getDB()->query(
-                        'SELECT kNews FROM tnews', 
+                        'SELECT kNews FROM tnews',
                         \DB\ReturnType::ARRAY_OF_OBJECTS
                     );
                     foreach ($_index as $i) {
@@ -149,7 +149,10 @@ if (isset($_POST['zuruecksetzen']) && (int)$_POST['zuruecksetzen'] === 1 && Form
                     break;
 
                 case 'verfuegbarkeitsbenachrichtigungen':
-                    Shop::Container()->getDB()->query('TRUNCATE tverfuegbarkeitsbenachrichtigung', \DB\ReturnType::DEFAULT);
+                    Shop::Container()->getDB()->query(
+                        'TRUNCATE tverfuegbarkeitsbenachrichtigung',
+                        \DB\ReturnType::DEFAULT
+                    );
                     break;
 
                 // Benutzergenerierte Inhalte

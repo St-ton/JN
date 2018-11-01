@@ -10,11 +10,9 @@ $oAccount->permission('MODULE_COMPARELIST_VIEW', true, true);
 $cHinweis = '';
 $cFehler  = '';
 $cSetting = '(469, 470)';
-// Tabs
 if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
-// Zeitfilter
 if (!isset($_SESSION['Vergleichsliste'])) {
     $_SESSION['Vergleichsliste'] = new stdClass();
 }
@@ -141,7 +139,8 @@ $oTopVergleichsliste_arr = Shop::Container()->getDB()->query(
         FROM tvergleichsliste
         JOIN tvergleichslistepos 
             ON tvergleichsliste.kVergleichsliste = tvergleichslistepos.kVergleichsliste
-        WHERE DATE_SUB(NOW(), INTERVAL ' . (int)$_SESSION['Vergleichsliste']->nZeitFilter . ' DAY) < tvergleichsliste.dDate
+        WHERE DATE_SUB(NOW(), INTERVAL ' . (int)$_SESSION['Vergleichsliste']->nZeitFilter . ' DAY) 
+            < tvergleichsliste.dDate
         GROUP BY tvergleichslistepos.kArtikel
         ORDER BY nAnzahl DESC
         LIMIT ' . (int)$_SESSION['Vergleichsliste']->nAnzahl,

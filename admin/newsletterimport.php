@@ -15,10 +15,10 @@ $format  = ['cAnrede', 'cVorname', 'cNachname', 'cEmail'];
 $hinweis = '';
 $fehler  = '';
 
-if ((int)$_POST['newsletterimport'] === 1 &&
-    isset($_POST['newsletterimport'], $_FILES['csv']['tmp_name']) &&
-    FormHelper::validateToken() &&
-    strlen($_FILES['csv']['tmp_name']) > 0
+if ((int)$_POST['newsletterimport'] === 1
+    && isset($_POST['newsletterimport'], $_FILES['csv']['tmp_name'])
+    && FormHelper::validateToken()
+    && strlen($_FILES['csv']['tmp_name']) > 0
 ) {
     $file = fopen($_FILES['csv']['tmp_name'], 'r');
     if ($file !== false) {

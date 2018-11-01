@@ -11,7 +11,10 @@ $oAccount->permission('SETTINGS_ARTICLEOVERVIEW_VIEW', true, true);
 $kSektion         = CONF_ARTIKELUEBERSICHT;
 $Einstellungen    = Shop::getSettings([$kSektion]);
 $standardwaehrung = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
-$mysqlVersion     = Shop::Container()->getDB()->query("SHOW VARIABLES LIKE 'innodb_version'", \DB\ReturnType::SINGLE_OBJECT)->Value;
+$mysqlVersion     = Shop::Container()->getDB()->query(
+    "SHOW VARIABLES LIKE 'innodb_version'",
+    \DB\ReturnType::SINGLE_OBJECT
+)->Value;
 $step             = 'einstellungen bearbeiten';
 $cHinweis         = '';
 $cFehler          = '';
@@ -35,8 +38,9 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
 
     try {
         if (Shop::Container()->getDB()->query(
-            "SHOW INDEX FROM $index WHERE KEY_NAME = 'idx_{$index}_fulltext'", \DB\ReturnType::SINGLE_OBJECT)
-        ) {
+            "SHOW INDEX FROM $index WHERE KEY_NAME = 'idx_{$index}_fulltext'",
+            \DB\ReturnType::SINGLE_OBJECT
+        )) {
             Shop::Container()->getDB()->executeQuery(
                 "ALTER TABLE $index DROP KEY idx_{$index}_fulltext",
                 \DB\ReturnType::QUERYSINGLE
@@ -200,13 +204,13 @@ for ($i = 0; $i < $configCount; $i++) {
 
 if ($Einstellungen['artikeluebersicht']['suche_fulltext'] !== 'N'
     && (!Shop::Container()->getDB()->query(
-            "SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'",
-            \DB\ReturnType::SINGLE_OBJECT
-        )
-        || !Shop::Container()->getDB()->query(
-            "SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'",
-            \DB\ReturnType::SINGLE_OBJECT)
-    )) {
+        "SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'",
+        \DB\ReturnType::SINGLE_OBJECT
+    )
+    || !Shop::Container()->getDB()->query(
+        "SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'",
+        \DB\ReturnType::SINGLE_OBJECT
+    ))) {
     $cFehler = 'Der Volltextindex ist nicht vorhanden! ' .
         'Die Erstellung des Index kann jedoch einige Zeit in Anspruch nehmen. ' .
         '<a href="sucheinstellungen.php" title="Aktualisieren"><i class="alert-danger fa fa-refresh"></i></a>';

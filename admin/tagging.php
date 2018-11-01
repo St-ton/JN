@@ -109,13 +109,12 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && FormHelper::vali
                         foreach ($tagmappings as $tagmapping) {
                             //update tab amount, delete product tagging with old tag ID
                             if (Shop::Container()->getDB()->query(
-                                    'UPDATE ttagartikel 
-                                        SET nAnzahlTagging = nAnzahlTagging + ' . $tagmapping->nAnzahlTagging . '
-                                        WHERE kTag = ' . (int)$Neuertag->kTag . ' 
-                                            AND kArtikel = ' . (int)$tagmapping->kArtikel,
-                                    \DB\ReturnType::AFFECTED_ROWS
-                                ) > 0
-                            ) {
+                                'UPDATE ttagartikel 
+                                    SET nAnzahlTagging = nAnzahlTagging + ' . $tagmapping->nAnzahlTagging . '
+                                    WHERE kTag = ' . (int)$Neuertag->kTag . ' 
+                                        AND kArtikel = ' . (int)$tagmapping->kArtikel,
+                                \DB\ReturnType::AFFECTED_ROWS
+                            ) > 0) {
                                 Shop::Container()->getDB()->delete(
                                     'ttagartikel',
                                     ['kTag', 'kArtikel'],

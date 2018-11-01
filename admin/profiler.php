@@ -1,4 +1,8 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'statistik_inc.php';
@@ -107,8 +111,14 @@ function deleteProfileRun(bool $all = false, $runID = 0)
 {
     if ($all === true) {
         $count = Shop::Container()->getDB()->query('DELETE FROM tprofiler', \DB\ReturnType::AFFECTED_ROWS);
-        Shop::Container()->getDB()->query('ALTER TABLE tprofiler AUTO_INCREMENT = 1', \DB\ReturnType::AFFECTED_ROWS);
-        Shop::Container()->getDB()->query('ALTER TABLE tprofiler_runs AUTO_INCREMENT = 1', \DB\ReturnType::AFFECTED_ROWS);
+        Shop::Container()->getDB()->query(
+            'ALTER TABLE tprofiler AUTO_INCREMENT = 1',
+            \DB\ReturnType::AFFECTED_ROWS
+        );
+        Shop::Container()->getDB()->query(
+            'ALTER TABLE tprofiler_runs AUTO_INCREMENT = 1',
+            \DB\ReturnType::AFFECTED_ROWS
+        );
 
         return $count;
     }

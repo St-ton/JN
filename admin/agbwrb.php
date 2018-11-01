@@ -22,20 +22,23 @@ if (RequestHelper::verifyGPCDataInt('agbwrb') === 1 && FormHelper::validateToken
             $step    = 'agbwrb_editieren';
             $oAGBWRB = Shop::Container()->getDB()->select(
                 'ttext',
-                'kSprache', (int)$_SESSION['kSprache'],
-                'kKundengruppe', RequestHelper::verifyGPCDataInt('kKundengruppe')
+                'kSprache',
+                (int)$_SESSION['kSprache'],
+                'kKundengruppe',
+                RequestHelper::verifyGPCDataInt('kKundengruppe')
             );
             $smarty->assign('kKundengruppe', RequestHelper::verifyGPCDataInt('kKundengruppe'))
                    ->assign('oAGBWRB', $oAGBWRB);
         } else {
             $cFehler .= 'Fehler: Bitte geben Sie eine gültige Kundengruppe an.<br />';
         }
-    } elseif (RequestHelper::verifyGPCDataInt('agbwrb_editieren_speichern') === 1) { // Speichern
+    } elseif (RequestHelper::verifyGPCDataInt('agbwrb_editieren_speichern') === 1) {
         if (speicherAGBWRB(
             RequestHelper::verifyGPCDataInt('kKundengruppe'),
             $_SESSION['kSprache'],
-            $_POST, RequestHelper::verifyGPCDataInt('kText'))
-        ) {
+            $_POST,
+            RequestHelper::verifyGPCDataInt('kText')
+        )) {
             $cHinweis .= 'Ihre AGB bzw. WRB wurde erfolgreich gespeichert.<br />';
         } else {
             $cFehler .= 'Fehler: Ihre AGB/WRB konnte nicht gespeichert werden.<br />';
@@ -45,7 +48,13 @@ if (RequestHelper::verifyGPCDataInt('agbwrb') === 1 && FormHelper::validateToken
 
 if ($step === 'agbwrb_uebersicht') {
     // Kundengruppen holen
-    $oKundengruppe_arr = Shop::Container()->getDB()->selectAll('tkundengruppe', [], [], 'kKundengruppe, cName', 'cStandard DESC');
+    $oKundengruppe_arr = Shop::Container()->getDB()->selectAll(
+        'tkundengruppe',
+        [],
+        [],
+        'kKundengruppe, cName',
+        'cStandard DESC'
+    );
     // AGB fuer jeweilige Sprache holen
     $oAGBWRB_arr    = [];
     $oAGBWRBTMP_arr = Shop::Container()->getDB()->selectAll('ttext', 'kSprache', (int)$_SESSION['kSprache']);

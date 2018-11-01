@@ -99,9 +99,9 @@ class Lieferschein
             }
 
             $kLieferscheinPos_arr = Shop::Container()->getDB()->selectAll(
-                'tlieferscheinpos', 
+                'tlieferscheinpos',
                 'kLieferschein',
-                $kLieferschein, 
+                $kLieferschein,
                 'kLieferscheinPos'
             );
             foreach ($kLieferscheinPos_arr as $oLieferscheinPos) {
@@ -181,7 +181,7 @@ class Lieferschein
      */
     public function delete(): int
     {
-        return Shop::Container()->getDB()->delete('tlieferschein', 'kLieferschein', (int)$this->getLieferschein());
+        return Shop::Container()->getDB()->delete('tlieferschein', 'kLieferschein', $this->getLieferschein());
     }
 
     /**
@@ -283,7 +283,7 @@ class Lieferschein
     /**
      * @return int|null
      */
-    public function getInetBestellung()
+    public function getInetBestellung(): ?int
     {
         return $this->kInetBestellung;
     }
@@ -291,7 +291,7 @@ class Lieferschein
     /**
      * @return string|null
      */
-    public function getLieferscheinNr()
+    public function getLieferscheinNr(): ?string
     {
         return $this->cLieferscheinNr;
     }
@@ -299,7 +299,7 @@ class Lieferschein
     /**
      * @return string|null
      */
-    public function getHinweis()
+    public function getHinweis(): ?string
     {
         return $this->cHinweis;
     }
@@ -307,7 +307,7 @@ class Lieferschein
     /**
      * @return int|null
      */
-    public function getFulfillment()
+    public function getFulfillment(): ?int
     {
         return $this->nFulfillment;
     }
@@ -315,7 +315,7 @@ class Lieferschein
     /**
      * @return int|null
      */
-    public function getStatus()
+    public function getStatus(): ?int
     {
         return $this->nStatus;
     }
@@ -323,7 +323,7 @@ class Lieferschein
     /**
      * @return string|null
      */
-    public function getErstellt()
+    public function getErstellt(): ?string
     {
         return $this->dErstellt;
     }
@@ -331,7 +331,7 @@ class Lieferschein
     /**
      * @return bool|null
      */
-    public function getEmailVerschickt()
+    public function getEmailVerschickt(): ?bool
     {
         return $this->bEmailVerschickt;
     }

@@ -435,7 +435,8 @@ class Currency
      * @param bool  $update
      * @return void
      */
-    public static function setCurrencies($update = false) {
+    public static function setCurrencies($update = false): void
+    {
         if ($update || count(Session::Currencies()) === 0) {
             $_SESSION['Waehrungen'] = [];
             $allCurrencies          = Shop::Container()->getDB()->selectAll('twaehrung', [], [], 'kWaehrung');

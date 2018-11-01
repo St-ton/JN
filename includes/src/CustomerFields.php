@@ -61,7 +61,13 @@ class CustomerFields
     protected function loadFields(int $langID)
     {
         $this->customerFields = [];
-        $customerFields       = Shop::Container()->getDB()->selectAll('tkundenfeld', 'kSprache', $langID, '*', 'nSort ASC');
+        $customerFields       = Shop::Container()->getDB()->selectAll(
+            'tkundenfeld',
+            'kSprache',
+            $langID,
+            '*',
+            'nSort ASC'
+        );
 
         foreach ($customerFields as $item) {
             $this->prepare($item);
@@ -105,7 +111,7 @@ class CustomerFields
      * @param object $customerField
      * @return null|object[]
      */
-    public function getCustomerFieldValues($customerField)
+    public function getCustomerFieldValues($customerField): ?array
     {
         $this->prepare($customerField);
 
@@ -149,7 +155,7 @@ class CustomerFields
      * @param int $kCustomerField
      * @param array $customerFieldValues
      */
-    protected function updateCustomerFieldValues(int $kCustomerField, array $customerFieldValues)
+    protected function updateCustomerFieldValues(int $kCustomerField, array $customerFieldValues): void
     {
         Shop::Container()->getDB()->delete('tkundenfeldwert', 'kKundenfeld', $kCustomerField);
 
@@ -240,7 +246,6 @@ class CustomerFields
                 }
             }
         } else {
-            // insert...
             $key = Shop::Container()->getDB()->insert('tkundenfeld', $customerField);
 
             if ($key > 0) {

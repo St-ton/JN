@@ -20,14 +20,18 @@ class IO
     protected $functions = [];
 
     /**
-     * ctor
+     * IO constructor.
      */
-    private function __construct() { }
+    private function __construct()
+    {
+    }
 
     /**
      * copy-ctor
      */
-    private function __clone() { }
+    private function __clone()
+    {
+    }
 
     /**
      * @return static

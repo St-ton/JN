@@ -94,7 +94,8 @@ class KategorieHelper
         if (self::$fullCategories !== null) {
             return self::$fullCategories;
         }
-        $filterEmpty = (int)self::$config['global']['kategorien_anzeigefilter'] === EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE;
+        $filterEmpty = (int)self::$config['global']['kategorien_anzeigefilter'] ===
+            EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE;
         $stockFilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
         $stockJoin   = '';
         $extended    = !empty($stockFilter);
@@ -130,13 +131,13 @@ class KategorieHelper
                 || //always get description if there aren't that many categories
                 !(isset(self::$config['template']['megamenu']['show_maincategory_info'])
                     //otherwise check template config
-                    &&  isset(self::$config['template']['megamenu']['show_categories'])
+                    && isset(self::$config['template']['megamenu']['show_categories'])
                     && (self::$config['template']['megamenu']['show_categories'] === 'N'
                     || self::$config['template']['megamenu']['show_maincategory_info'] === 'N')));
 
             if ($getDescription === true) {
                 $descriptionSelect = $isDefaultLang === true
-                    ? ", node.cBeschreibung" //no category description needed if we don't show category info in mega menu
+                    ? ", node.cBeschreibung" // no category description needed
                     : ", node.cBeschreibung, tkategoriesprache.cBeschreibung AS cBeschreibung_spr";
             }
             $imageSelect          = ($categoryCount >= $categoryLimit
@@ -162,7 +163,8 @@ class KategorieHelper
                         ON tkategoriesprache.kKategorie = node.kKategorie
                             AND tkategoriesprache.kSprache = ' . self::$kSprache . ' ';
             $seoJoin              = $isDefaultLang === true
-                ? '' //tkategorie already has a cSeo field which we can use to avoid another join only if the default lang is active
+                ? '' // tkategorie already has a cSeo field which we can use to
+                // avoid another join only if the default lang is active
                 : " LEFT JOIN tseo
                         ON tseo.cKey = 'kKategorie'
                         AND tseo.kKey = node.kKategorie
@@ -182,8 +184,9 @@ class KategorieHelper
                     ON tkategorieartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                     AND tartikelsichtbarkeit.kKundengruppe = ' . self::$kKundengruppe;
             } else {
-                //if we want to display all categories without filtering out empty ones, we don't have to check the product count
-                //this saves a very expensive join - cnt will be always -1
+                // if we want to display all categories without
+                // filtering out empty ones, we don't have to check the product count
+                // this saves a very expensive join - cnt will be always -1
                 $countSelect = ', -1 AS cnt';
                 $hasArticlesCheckJoin = '';
                 $visibilityJoin       = '';
@@ -248,7 +251,7 @@ class KategorieHelper
                 // Attribute holen
                 $_cat->categoryFunctionAttributes = $functionAttributes[$_cat->kKategorie] ?? [];
                 $_cat->categoryAttributes         = $localizedAttributes[$_cat->kKategorie] ?? [];
-                /** @deprecated since version 4.05 - usage of KategorieAttribute is deprecated, use categoryFunctionAttributes instead */
+                /** @deprecated since version 4.05 - use categoryFunctionAttributes instead */
                 $_cat->KategorieAttribute = &$_cat->categoryFunctionAttributes;
                 //interne Verlinkung $#k:X:Y#$
                 $_cat->cBeschreibung    = StringHandler::parseNewsText($_cat->cBeschreibung);
@@ -313,7 +316,8 @@ class KategorieHelper
     }
 
     /**
-     * this must only be used in edge cases where there are very big category trees and someone is looking for a bottom-up
+     * this must only be used in edge cases where there are very big
+     * category trees and someone is looking for a bottom-up
      * tree for a category that is not already contained in the full tree
      *
      * it's a lot of code duplication but the queries differ
@@ -323,7 +327,8 @@ class KategorieHelper
      */
     public function getFallBackFlatTree(int $categoryID): array
     {
-        $filterEmpty         = (int)self::$config['global']['kategorien_anzeigefilter'] === EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE;
+        $filterEmpty         = (int)self::$config['global']['kategorien_anzeigefilter'] ===
+            EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE;
         $stockFilter         = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
         $stockJoin           = '';
         $extended            = !empty($stockFilter);
@@ -364,7 +369,8 @@ class KategorieHelper
                     ON tkategoriesprache.kKategorie = node.kKategorie
                         AND tkategoriesprache.kSprache = ' . self::$kSprache . ' ';
         $seoJoin              = $isDefaultLang === true
-            ? '' //tkategorie already has a cSeo field which we can use to avoid another join only if the default lang is active
+            ? '' //tkategorie already has a cSeo field which we
+            // can use to avoid another join only if the default lang is active
             : " LEFT JOIN tseo
                     ON tseo.cKey = 'kKategorie'
                     AND tseo.kKey = node.kKategorie
@@ -384,8 +390,9 @@ class KategorieHelper
                 ON tkategorieartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                 AND tartikelsichtbarkeit.kKundengruppe = ' . self::$kKundengruppe;
         } else {
-            //if we want to display all categories without filtering out empty ones, we don't have to check the product count
-            //this saves a very expensive join - cnt will be always -1
+            // if we want to display all categories without filtering out
+            // empty ones, we don't have to check the product count
+            // this saves a very expensive join - cnt will be always -1
             $countSelect = ', -1 AS cnt';
             $hasArticlesCheckJoin = '';
             $visibilityJoin       = '';
@@ -453,7 +460,7 @@ class KategorieHelper
             unset($_cat->cBeschreibung_spr, $_cat->cName_spr);
             $_cat->categoryFunctionAttributes = $functionAttributes[$_cat->kKategorie] ?? [];
             $_cat->categoryAttributes         = $localizedAttributes[$_cat->kKategorie] ?? [];
-            /** @deprecated since version 4.05 - usage of KategorieAttribute is deprecated, use categoryFunctionAttributes instead */
+            /** @deprecated since version 4.05 - use categoryFunctionAttributes instead */
             $_cat->KategorieAttribute = &$_cat->categoryFunctionAttributes;
             //interne Verlinkung $#k:X:Y#$
             $_cat->cBeschreibung    = StringHandler::parseNewsText($_cat->cBeschreibung);

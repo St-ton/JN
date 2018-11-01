@@ -214,7 +214,7 @@ class Kampagne
                         KAMPAGNE_DEF_HIT,
                         (int)$oKampagne->kKampagne,
                         (int)$_SESSION['oBesucher']->kBesucher,
-                        StringHandler::filterXSS(Shop::Container()->getDB()->escape($_SERVER['REQUEST_URI'])) . ';' . $referrer
+                        StringHandler::filterXSS($_SERVER['REQUEST_URI']) . ';' . $referrer
                     ]
                 );
 

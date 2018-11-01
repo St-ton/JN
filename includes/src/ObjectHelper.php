@@ -18,7 +18,7 @@ class ObjectHelper
      * @former objectSort()
      * @since 5.0.0
      */
-    public static function sortBy(&$data, $key, $bStringToLower = false)
+    public static function sortBy(&$data, $key, $bStringToLower = false): void
     {
         $dataCount = count($data);
         for ($i = $dataCount - 1; $i >= 0; $i--) {

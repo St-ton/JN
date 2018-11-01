@@ -238,7 +238,7 @@ class MerkmalWert
             $cJoin   = 'INNER JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
                             AND tmerkmalwertsprache.kSprache = ' . $kSprache;
         }
-        $oMerkmalWert_arr = Shop::Container()->getDB()->query(
+        $data = Shop::Container()->getDB()->query(
             "SELECT tmerkmalwert.*, {$cSelect}
                 FROM tmerkmalwert
                 {$cJoin}
@@ -247,21 +247,21 @@ class MerkmalWert
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         $imageBaseURL = Shop::getImageBaseURL();
-        foreach ($oMerkmalWert_arr as $i => $oMerkmalWert) {
-            $oMerkmalWert->cURL     = UrlHelper::buildURL($oMerkmalWert, URLART_MERKMAL);
-            $oMerkmalWert->cURLFull = UrlHelper::buildURL($oMerkmalWert, URLART_MERKMAL, true);
+        foreach ($data as $value) {
+            $value->cURL     = UrlHelper::buildURL($value, URLART_MERKMAL);
+            $value->cURLFull = UrlHelper::buildURL($value, URLART_MERKMAL, true);
 
-            if (isset($oMerkmalWert->cBildpfad) && strlen($oMerkmalWert->cBildpfad) > 0) {
-                $oMerkmalWert->cBildpfadKlein  = PFAD_MERKMALWERTBILDER_KLEIN . $oMerkmalWert->cBildpfad;
-                $oMerkmalWert->cBildpfadNormal = PFAD_MERKMALWERTBILDER_NORMAL . $oMerkmalWert->cBildpfad;
+            if (isset($value->cBildpfad) && strlen($value->cBildpfad) > 0) {
+                $value->cBildpfadKlein  = PFAD_MERKMALWERTBILDER_KLEIN . $value->cBildpfad;
+                $value->cBildpfadNormal = PFAD_MERKMALWERTBILDER_NORMAL . $value->cBildpfad;
             } else {
-                $oMerkmalWert->cBildpfadKlein  = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
-                $oMerkmalWert->cBildpfadNormal = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
+                $value->cBildpfadKlein  = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
+                $value->cBildpfadNormal = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
             }
-            $oMerkmalWert->cBildURLKlein   = $imageBaseURL . $oMerkmalWert->cBildpfadKlein;
-            $oMerkmalWert->cBildpURLNormal = $imageBaseURL . $oMerkmalWert->cBildpfadNormal;
+            $value->cBildURLKlein   = $imageBaseURL . $value->cBildpfadKlein;
+            $value->cBildpURLNormal = $imageBaseURL . $value->cBildpfadNormal;
         }
 
-        return $oMerkmalWert_arr;
+        return $data;
     }
 }

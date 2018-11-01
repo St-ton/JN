@@ -218,9 +218,12 @@ class Sprache
             ) {
                 $this->isoAssociation[$kSprache] = Shop::Container()->getDB()->select(
                     'tsprache',
-                    'kSprache', $kSprache,
-                    null, null,
-                    null, null,
+                    'kSprache',
+                    $kSprache,
+                    null,
+                    null,
+                    null,
+                    null,
                     false,
                     'cISO'
                 );
@@ -1131,8 +1134,9 @@ class Sprache
                             $url = '';
                         } elseif ($specialPage->getFileName() !== null) {
                             $url = $helper->getStaticRoute($specialPage->getFileName(), false);
-                            //check if there is a SEO link for the given file
-                            if ($url === $specialPage->getFileName()) { //no SEO link - fall back to php file with GET param
+                            // check if there is a SEO link for the given file
+                            if ($url === $specialPage->getFileName()) {
+                                // no SEO link - fall back to php file with GET param
                                 $url = $shopURL . $specialPage->getFileName();
                             } else { //there is a SEO link - make it a full URL
                                 $url = $helper->getStaticRoute($specialPage->getFileName(), true);

@@ -589,10 +589,10 @@ class IOMethods
         $variationValues = $aValues['eigenschaftwert'] ?? [];
         $amount          = $aValues['anzahl'] ?? 1;
         $oKonfig         = ArtikelHelper::buildConfig(
-            $productID, 
+            $productID,
             $amount,
-            $variationValues, 
-            $items, 
+            $variationValues,
+            $items,
             $quantities,
             $itemQuantities
         );
@@ -655,7 +655,9 @@ class IOMethods
 
             if ($stockInfo->notExists || !$stockInfo->inStock) {
                 $result->stock = false;
-                $result->text  = $stockInfo->notExists ? Shop::Lang()->get('notAvailableInSelection') : Shop::Lang()->get('ampelRot');
+                $result->text  = $stockInfo->notExists
+                    ? Shop::Lang()->get('notAvailableInSelection')
+                    : Shop::Lang()->get('ampelRot');
             } else {
                 $result->stock = true;
                 $result->text  = '';
@@ -761,8 +763,11 @@ class IOMethods
             $cStaffelVK = [0 => [], 1 => []];
             foreach ($oArtikel->staffelPreis_arr as $staffelPreis) {
                 $nAnzahl                 = &$staffelPreis['nAnzahl'];
-                $fStaffelVKNetto         = $oArtikel->gibPreis($nAnzahl, $valueID_arr,
-                    Session::CustomerGroup()->getID());
+                $fStaffelVKNetto         = $oArtikel->gibPreis(
+                    $nAnzahl,
+                    $valueID_arr,
+                    Session::CustomerGroup()->getID()
+                );
                 $fStaffelVK[0][$nAnzahl] = TaxHelper::getGross(
                     $fStaffelVKNetto,
                     $_SESSION['Steuersatz'][$oArtikel->kSteuerklasse]
@@ -929,7 +934,8 @@ class IOMethods
 
             $objResponse->jsfunc('$.evo.article().variationDisableAll', $wrapper);
             $nPossibleVariations = $oArtikel->getVariationsBySelection($kGesetzteEigeschaftWert_arr, false);
-            $checkStockInfo      = count($kGesetzteEigeschaftWert_arr) > 0 && (count($kGesetzteEigeschaftWert_arr) === count($nPossibleVariations) - 1);
+            $checkStockInfo      = count($kGesetzteEigeschaftWert_arr) > 0
+                && (count($kGesetzteEigeschaftWert_arr) === count($nPossibleVariations) - 1);
             $stockInfo           = (object)[
                 'stock'  => true,
                 'status' => 2,
@@ -945,8 +951,14 @@ class IOMethods
                         $stockInfo->text  = '';
 
                         if (isset($nPossibleVariations[$value->kEigenschaft])
-                            && in_array($value->kEigenschaftWert, $nPossibleVariations[$value->kEigenschaft])) {
-                            $objResponse->jsfunc('$.evo.article().variationEnable', $value->kEigenschaft, $value->kEigenschaftWert, $wrapper);
+                            && in_array($value->kEigenschaftWert, $nPossibleVariations[$value->kEigenschaft])
+                        ) {
+                            $objResponse->jsfunc(
+                                '$.evo.article().variationEnable',
+                                $value->kEigenschaft,
+                                $value->kEigenschaftWert,
+                                $wrapper
+                            );
 
                             if ($checkStockInfo && !array_key_exists($value->kEigenschaft, $kGesetzteEigeschaftWert_arr)) {
                                 $kGesetzteEigeschaftWert_arr[$value->kEigenschaft] = $value->kEigenschaftWert;
@@ -1136,8 +1148,8 @@ class IOMethods
                 || $AWA->getCurQuestion() === $AWA->getQuestionCount()
                 || $AWA->getQuestion($AWA->getCurQuestion())->nTotalResultCount === 0) {
                 $response->script("window.location.href='" . StringHandler::htmlentitydecode(
-                        $NaviFilter->getFilterURL()->getURL()
-                    ) . "';");
+                    $NaviFilter->getFilterURL()->getURL()
+                ) . "';");
             } else {
                 $response->assign('selectionwizard', 'innerHTML', $AWA->fetchForm($smarty));
             }

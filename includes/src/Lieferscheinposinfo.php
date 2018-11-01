@@ -195,7 +195,7 @@ class Lieferscheinposinfo
     /**
      * @return string|null
      */
-    public function getSeriennummer()
+    public function getSeriennummer(): ?string
     {
         return $this->cSeriennummer;
     }
@@ -203,7 +203,7 @@ class Lieferscheinposinfo
     /**
      * @return string|null
      */
-    public function getChargeNr()
+    public function getChargeNr(): ?string
     {
         return $this->cChargeNr;
     }
@@ -211,7 +211,7 @@ class Lieferscheinposinfo
     /**
      * @return string|null
      */
-    public function getMHD()
+    public function getMHD(): ?string
     {
         return $this->dMHD;
     }

@@ -40,11 +40,11 @@ class Kundendatenhistory extends MainModel
      */
     public $dErstellt;
 
-    const QUELLE_MEINKONTO = 'Mein Konto';
+    public const QUELLE_MEINKONTO = 'Mein Konto';
 
-    const QUELLE_BESTELLUNG = 'Bestellvorgang';
+    public const QUELLE_BESTELLUNG = 'Bestellvorgang';
 
-    const QUELLE_DBES = 'Wawi Abgleich';
+    public const QUELLE_DBES = 'Wawi Abgleich';
 
     /**
      * @return int
@@ -233,7 +233,11 @@ class Kundendatenhistory extends MainModel
      */
     public function delete(): int
     {
-        return Shop::Container()->getDB()->delete('tkundendatenhistory', 'kKundendatenHistory', $this->getKundendatenHistory());
+        return Shop::Container()->getDB()->delete(
+            'tkundendatenhistory',
+            'kKundendatenHistory',
+            $this->getKundendatenHistory()
+        );
     }
 
     /**

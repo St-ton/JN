@@ -241,7 +241,7 @@ class Vergleichsliste
      *
      * @param Vergleichsliste $compareList
      */
-    public static function setComparison(Vergleichsliste $compareList)
+    public static function setComparison(Vergleichsliste $compareList): void
     {
         if (count($compareList->oArtikel_arr) === 0) {
             return;

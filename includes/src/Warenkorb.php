@@ -92,11 +92,12 @@ class Warenkorb
             $Position->nPosTyp = (int)$Position->nPosTyp;
             $delete            = false;
             if (!empty($Position->Artikel)) {
-                if (isset($Position->Artikel->fLagerbestand,
-                        $Position->Artikel->cLagerBeachten,
-                        $Position->Artikel->cLagerKleinerNull,
-                        $Position->Artikel->cLagerVariation
-                    )
+                if (isset(
+                    $Position->Artikel->fLagerbestand,
+                    $Position->Artikel->cLagerBeachten,
+                    $Position->Artikel->cLagerKleinerNull,
+                    $Position->Artikel->cLagerVariation
+                )
                     && $Position->Artikel->fLagerbestand <= 0
                     && $Position->Artikel->cLagerBeachten === 'Y'
                     && $Position->Artikel->cLagerKleinerNull !== 'Y'
@@ -114,8 +115,11 @@ class Warenkorb
                 } elseif (!empty($Position->Artikel->FunktionsAttribute[FKT_ATTRIBUT_UNVERKAEUFLICH])) {
                     $delete = true;
                 } else {
-                    $delete = (Shop::Container()->getDB()->select('tartikel', 'kArtikel',
-                            $Position->kArtikel) === null);
+                    $delete = (Shop::Container()->getDB()->select(
+                        'tartikel',
+                        'kArtikel',
+                        $Position->kArtikel
+                    ) === null);
                 }
 
                 executeHook(HOOK_WARENKORB_CLASS_LOESCHEDEAKTIVIERTEPOS, [
@@ -136,7 +140,7 @@ class Warenkorb
     /**
      * @param object $position
      */
-    public static function addUpdatedPosition($position)
+    public static function addUpdatedPosition($position): void
     {
         self::$updatedPositions[] = $position;
     }
@@ -144,7 +148,7 @@ class Warenkorb
     /**
      * @param object $position
      */
-    public static function addDeletedPosition($position)
+    public static function addDeletedPosition($position): void
     {
         self::$deletedPositions[] = $position;
     }
@@ -183,7 +187,8 @@ class Warenkorb
                 continue;
             }
             $neuePos = false;
-            //hat diese Position schon einen EigenschaftWert ausgewaehlt und ist das dieselbe eigenschaft wie ausgewaehlt?
+            // hat diese Position schon einen EigenschaftWert ausgewaehlt
+            // und ist das dieselbe eigenschaft wie ausgewaehlt?
             foreach ($Position->WarenkorbPosEigenschaftArr as $WKEigenschaft) {
                 foreach ($oEigenschaftwerte_arr as $oEigenschaftwerte) {
                     //gleiche Eigenschaft suchen
@@ -194,7 +199,8 @@ class Warenkorb
                     if (($WKEigenschaft->kEigenschaftWert > 0
                             && $WKEigenschaft->kEigenschaftWert != $oEigenschaftwerte->kEigenschaftWert)
                         || (($WKEigenschaft->cTyp === 'FREIFELD' || $WKEigenschaft->cTyp === 'PFLICHT-FREIFELD')
-                            && $WKEigenschaft->cEigenschaftWertName[Shop::getLanguageCode()] != $oEigenschaftwerte->cFreifeldWert)
+                            && $WKEigenschaft->cEigenschaftWertName[Shop::getLanguageCode()] !=
+                            $oEigenschaftwerte->cFreifeldWert)
                     ) {
                         $neuePos = true;
                         break;
@@ -252,18 +258,24 @@ class Warenkorb
             if ($Sprache->cStandard === 'Y') {
                 $artikel_spr = Shop::Container()->getDB()->select(
                     'tartikel',
-                    'kArtikel', (int)$NeuePosition->kArtikel,
-                    null, null,
-                    null, null,
+                    'kArtikel',
+                    (int)$NeuePosition->kArtikel,
+                    null,
+                    null,
+                    null,
+                    null,
                     false,
                     'cName'
                 );
             } else {
                 $artikel_spr = Shop::Container()->getDB()->select(
                     'tartikelsprache',
-                    'kArtikel', (int)$NeuePosition->kArtikel,
-                    'kSprache', (int)$Sprache->kSprache,
-                    null, null,
+                    'kArtikel',
+                    (int)$NeuePosition->kArtikel,
+                    'kSprache',
+                    (int)$Sprache->kSprache,
+                    null,
+                    null,
                     false,
                     'cName'
                 );
@@ -274,7 +286,8 @@ class Warenkorb
                 : $NeuePosition->Artikel->cName;
             $lieferstatus_spr                    = Shop::Container()->getDB()->select(
                 'tlieferstatus',
-                'kLieferstatus', (isset($NeuePosition->Artikel->kLieferstatus)
+                'kLieferstatus',
+                (isset($NeuePosition->Artikel->kLieferstatus)
                 ? (int)$NeuePosition->Artikel->kLieferstatus
                 : ''),
                 'kSprache',
@@ -322,8 +335,10 @@ class Warenkorb
                         // Varkombi Kind?
                         if ($NeuePosition->Artikel->kVaterArtikel > 0) {
                             if ($Eigenschaft->kArtikel == $NeuePosition->Artikel->kVaterArtikel) {
-                                $NeuePosition->setzeVariationsWert($EigenschaftWert->kEigenschaft,
-                                    $EigenschaftWert->kEigenschaftWert);
+                                $NeuePosition->setzeVariationsWert(
+                                    $EigenschaftWert->kEigenschaft,
+                                    $EigenschaftWert->kEigenschaftWert
+                                );
                             }
                         } elseif ($Eigenschaft->kArtikel == $NeuePosition->kArtikel) {
                             // Variationswert hat eigene Artikelnummer und der Artikel hat nur eine Dimension als Variation?
@@ -335,15 +350,19 @@ class Warenkorb
                                 $NeuePosition->Artikel->cArtNr = $EigenschaftWert->cArtNr;
                             }
 
-                            $NeuePosition->setzeVariationsWert($EigenschaftWert->kEigenschaft,
-                                $EigenschaftWert->kEigenschaftWert);
+                            $NeuePosition->setzeVariationsWert(
+                                $EigenschaftWert->kEigenschaft,
+                                $EigenschaftWert->kEigenschaftWert
+                            );
 
                             // aktuellen Eigenschaftswert mit Bild ermitteln und Variationsbild an der Position speichern
                             $kEigenschaftWert = $EigenschaftWert->kEigenschaftWert;
-                            $oVariationWert   = current(array_filter($eWert->Werte,
+                            $oVariationWert   = current(array_filter(
+                                $eWert->Werte,
                                 function ($item) use ($kEigenschaftWert) {
                                     return $item->kEigenschaftWert === $kEigenschaftWert && !empty($item->cPfadNormal);
-                                }));
+                                }
+                            ));
 
                             if ($oVariationWert !== false) {
                                 WarenkorbHelper::setVariationPicture($NeuePosition, $oVariationWert);
@@ -553,8 +572,10 @@ class Warenkorb
             $currencyName = $currency->getName();
             // Standardartikel
             $NeuePosition->cGesamtpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(
-                TaxHelper::getGross($NeuePosition->fPreis * $NeuePosition->nAnzahl,
-                    TaxHelper::getSalesTax($NeuePosition->kSteuerklasse)),
+                TaxHelper::getGross(
+                    $NeuePosition->fPreis * $NeuePosition->nAnzahl,
+                    TaxHelper::getSalesTax($NeuePosition->kSteuerklasse)
+                ),
                 $currency
             );
             $NeuePosition->cGesamtpreisLocalized[1][$currencyName] = Preise::getLocalizedPriceString(
@@ -600,10 +621,14 @@ class Warenkorb
                     $oVaterPos = $this->PositionenArr[$nVaterPos];
                     if (is_object($oVaterPos)) {
                         $NeuePosition->nAnzahlEinzel                        = $NeuePosition->nAnzahl / $oVaterPos->nAnzahl;
-                        $oVaterPos->cKonfigpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString($fPreisBrutto,
-                            $currency);
-                        $oVaterPos->cKonfigpreisLocalized[1][$currencyName] = Preise::getLocalizedPriceString($fPreisNetto,
-                            $currency);
+                        $oVaterPos->cKonfigpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(
+                            $fPreisBrutto,
+                            $currency
+                        );
+                        $oVaterPos->cKonfigpreisLocalized[1][$currencyName] = Preise::getLocalizedPriceString(
+                            $fPreisNetto,
+                            $currency
+                        );
                     }
                 }
             }
@@ -700,7 +725,7 @@ class Warenkorb
             return 0;
         }
         $anz = 0;
-        foreach ($this->PositionenArr as $i => $Position) {
+        foreach ($this->PositionenArr as $Position) {
             if (in_array($Position->nPosTyp, $posTypes)
                 && (empty($Position->cUnique) || (strlen($Position->cUnique) > 0 && $Position->kKonfigitem == 0))
             ) {
@@ -849,8 +874,10 @@ class Warenkorb
             }
             if ($bName && $oKonfigitem->getUseOwnName() && class_exists('Konfigitemsprache')) {
                 foreach (Session::Languages() as $Sprache) {
-                    $oKonfigitemsprache               = new Konfigitemsprache($oKonfigitem->getKonfigitem(),
-                        $Sprache->kSprache);
+                    $oKonfigitemsprache               = new Konfigitemsprache(
+                        $oKonfigitem->getKonfigitem(),
+                        $Sprache->kSprache
+                    );
                     $oPosition->cName[$Sprache->cISO] = $oKonfigitemsprache->getName();
                 }
             }
@@ -956,7 +983,7 @@ class Warenkorb
         $currency         = $this->Waehrung ?? Session::Currency();
         $conversionFactor = $currency->getConversionFactor();
         $gesamtsumme      = 0;
-        foreach ($this->PositionenArr as $i => $Position) {
+        foreach ($this->PositionenArr as $Position) {
             // Lokalisierte Preise addieren
             if ($Brutto) {
                 $gesamtsumme += $Position->fPreis * $conversionFactor * $Position->nAnzahl *
@@ -995,7 +1022,7 @@ class Warenkorb
             return 0;
         }
         $gesamtsumme = 0;
-        foreach ($this->PositionenArr as $i => $Position) {
+        foreach ($this->PositionenArr as $Position) {
             if (in_array($Position->nPosTyp, $posTypes, true)) {
                 if ($Brutto) {
                     $gesamtsumme += $Position->fPreis * $Position->nAnzahl *
@@ -1136,8 +1163,10 @@ class Warenkorb
                 $idx = array_search($ust, $steuersatz);
                 if (!isset($steuerpos[$idx]->fBetrag)) {
                     $steuerpos[$idx]                  = new stdClass();
-                    $steuerpos[$idx]->cName           = lang_steuerposition($ust,
-                        Session::CustomerGroup()->isMerchant());
+                    $steuerpos[$idx]->cName           = lang_steuerposition(
+                        $ust,
+                        Session::CustomerGroup()->isMerchant()
+                    );
                     $steuerpos[$idx]->fUst            = $ust;
                     $steuerpos[$idx]->fBetrag         = ($position->fPreis * $position->nAnzahl * $ust) / 100.0;
                     $steuerpos[$idx]->cPreisLocalized = Preise::getLocalizedPriceString($steuerpos[$idx]->fBetrag);
@@ -1196,7 +1225,8 @@ class Warenkorb
                     if ($oWarenkorbPosEigenschaft->kEigenschaftWert > 0 && $this->PositionenArr[$i]->nAnzahl > 0) {
                         //schaue in DB, ob Lagerbestand ausreichend
                         $oEigenschaftLagerbestand = Shop::Container()->getDB()->query(
-                            'SELECT kEigenschaftWert, fLagerbestand >= ' . $this->PositionenArr[$i]->nAnzahl . ' AS bAusreichend, fLagerbestand
+                            'SELECT kEigenschaftWert, fLagerbestand >= ' .
+                            $this->PositionenArr[$i]->nAnzahl . ' AS bAusreichend, fLagerbestand
                                 FROM teigenschaftwert
                                 WHERE kEigenschaftWert = ' . (int)$oWarenkorbPosEigenschaft->kEigenschaftWert,
                             \DB\ReturnType::SINGLE_OBJECT
@@ -1216,7 +1246,8 @@ class Warenkorb
                 // Position ohne Variationen bzw. Variationen ohne eigenen Lagerbestand
                 // schaue in DB, ob Lagerbestand ausreichend
                 $oArtikelLagerbestand = Shop::Container()->getDB()->query(
-                    'SELECT kArtikel, fLagerbestand >= ' . $this->PositionenArr[$i]->nAnzahl . ' AS bAusreichend, fLagerbestand
+                    'SELECT kArtikel, fLagerbestand >= ' .
+                    $this->PositionenArr[$i]->nAnzahl . ' AS bAusreichend, fLagerbestand
                         FROM tartikel
                         WHERE kArtikel = ' . (int)$this->PositionenArr[$i]->kArtikel,
                     \DB\ReturnType::SINGLE_OBJECT
@@ -1481,9 +1512,12 @@ class Warenkorb
         foreach ($_SESSION['Sprachen'] as $Sprache) {
             $name_spr                          = Shop::Container()->getDB()->select(
                 'tkuponsprache',
-                'kKupon', (int)$Kupon->kKupon,
-                'cISOSprache', $Sprache->cISO,
-                null, null,
+                'kKupon',
+                (int)$Kupon->kKupon,
+                'cISOSprache',
+                $Sprache->cISO,
+                null,
+                null,
                 false,
                 'cName'
             );
@@ -1526,12 +1560,16 @@ class Warenkorb
 
                 if ($i !== 0 && $position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
                     if ($grossAmount != 0) {
-                        $position->cGesamtpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString($roundedGrossAmount,
-                            $currency);
+                        $position->cGesamtpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(
+                            $roundedGrossAmount,
+                            $currency
+                        );
                     }
                     if ($netAmount != 0) {
-                        $position->cGesamtpreisLocalized[1][$currencyName] = Preise::getLocalizedPriceString($roundedNetAmount,
-                            $currency);
+                        $position->cGesamtpreisLocalized[1][$currencyName] = Preise::getLocalizedPriceString(
+                            $roundedNetAmount,
+                            $currency
+                        );
                     }
                 }
                 $cumulatedDelta    += ($grossAmount - $roundedGrossAmount);
@@ -1610,7 +1648,9 @@ class Warenkorb
         }
 
         // if nothing changed, return cached shipping-object
-        if ($this->oFavourableShipping !== null && $this->oFavourableShipping->cCountryCode === $_SESSION['cLieferlandISO']) {
+        if ($this->oFavourableShipping !== null
+            && $this->oFavourableShipping->cCountryCode === $_SESSION['cLieferlandISO']
+        ) {
             return $this->oFavourableShipping;
         }
 
@@ -1650,27 +1690,27 @@ class Warenkorb
 
         $this->oFavourableShipping = null;
         if (isset($shipping->kVersandart)) {
-            $oFavourableShipping               = new Versandart($shipping->kVersandart);
-            $oFavourableShipping->cCountryCode = $countryCode;
+            $method               = new Versandart($shipping->kVersandart);
+            $method->cCountryCode = $countryCode;
 
-            if ($oFavourableShipping->eSteuer === 'brutto') {
-                $oFavourableShipping->cPriceLocalized[0] = Preise::getLocalizedPriceString($oFavourableShipping->fPreis);
-                $oFavourableShipping->cPriceLocalized[1] = Preise::getLocalizedPriceString(
+            if ($method->eSteuer === 'brutto') {
+                $method->cPriceLocalized[0] = Preise::getLocalizedPriceString($method->fPreis);
+                $method->cPriceLocalized[1] = Preise::getLocalizedPriceString(
                     TaxHelper::getNet(
-                        $oFavourableShipping->fPreis,
+                        $method->fPreis,
                         $_SESSION['Steuersatz'][(int)Session::Cart()->gibVersandkostenSteuerklasse()]
                     )
                 );
             } else {
-                $oFavourableShipping->cPriceLocalized[0] = Preise::getLocalizedPriceString(
+                $method->cPriceLocalized[0] = Preise::getLocalizedPriceString(
                     TaxHelper::getGross(
-                        $oFavourableShipping->fPreis,
+                        $method->fPreis,
                         $_SESSION['Steuersatz'][(int)Session::Cart()->gibVersandkostenSteuerklasse()]
                     )
                 );
-                $oFavourableShipping->cPriceLocalized[1] = Preise::getLocalizedPriceString($oFavourableShipping->fPreis);
+                $method->cPriceLocalized[1] = Preise::getLocalizedPriceString($method->fPreis);
             }
-            $this->oFavourableShipping = $oFavourableShipping;
+            $this->oFavourableShipping = $method;
         }
 
         return $this->oFavourableShipping;

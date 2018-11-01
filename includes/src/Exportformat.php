@@ -667,11 +667,11 @@ class Exportformat
                 $_upd        = new stdClass();
                 $_upd->cWert = $conf['cWert'];
                 $ok          = $ok && (Shop::Container()->getDB()->update(
-                            'tboxensichtbar',
-                            ['kExportformat', 'cName'],
-                            [$this->getExportformat(), $conf['cName']],
-                            $_upd
-                        ) >= 0);
+                    'tboxensichtbar',
+                    ['kExportformat', 'cName'],
+                    [$this->getExportformat(), $conf['cName']],
+                    $_upd
+                ) >= 0);
             }
         }
 
@@ -1142,8 +1142,10 @@ class Exportformat
             $findTwo[]    = ';';
             $replaceTwo[] = $this->config['exportformate_semikolon'];
         }
-        foreach (Shop::Container()->getDB()->query($this->getExportSQL(),
-            \DB\ReturnType::QUERYSINGLE) as $productData) {
+        foreach (Shop::Container()->getDB()->query(
+            $this->getExportSQL(),
+            \DB\ReturnType::QUERYSINGLE
+        ) as $productData) {
             $product = new Artikel();
             $product->fuelleArtikel(
                 $productData['kArtikel'],
@@ -1211,8 +1213,9 @@ class Exportformat
                     str_replace(
                         $findTwo,
                         $replaceTwo,
-                        StringHandler::unhtmlentities(strip_tags(str_replace($find, $replace,
-                            $product->cKurzBeschreibung)))
+                        StringHandler::unhtmlentities(
+                            strip_tags(str_replace($find, $replace, $product->cKurzBeschreibung))
+                        )
                     )
                 );
                 $product->fUst                  = TaxHelper::getSalesTax($product->kSteuerklasse);
@@ -1227,7 +1230,8 @@ class Exportformat
                     $this->kKundengruppe,
                     !$this->useCache()
                 );
-                // calling gibKategoriepfad() should not be necessary since it has already been called in Kategorie::loadFromDB()
+                // calling gibKategoriepfad() should not be necessary
+                // since it has already been called in Kategorie::loadFromDB()
                 $product->Kategoriepfad = $product->Kategorie->cKategoriePfad ?? $helper->getPath($product->Kategorie);
                 $product->Versandkosten = VersandartHelper::getLowestShippingFees(
                     $this->config['exportformate_lieferland'] ?? '',
@@ -1347,7 +1351,8 @@ class Exportformat
 
                         echo json_encode($oCallback);
                     } else {
-                        header('Location: exportformate.php?action=exported&token=' .
+                        header(
+                            'Location: exportformate.php?action=exported&token=' .
                             $_SESSION['jtl_token'] .
                             '&kExportformat=' . $this->getExportformat() .
                             '&max=' . $max .

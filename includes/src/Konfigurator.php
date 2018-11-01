@@ -110,8 +110,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                             $beDeletednPos_arr[] = $nPos;
                             //loescheWarenkorbPosition($nPos);
                         }
-                    } // Standardartikel ebenfalls auf eine mögliche Konfiguration prüfen
-                    elseif (!$oPosition->cUnique) {
+                    } elseif (!$oPosition->cUnique) {
+                        // Standardartikel ebenfalls auf eine mögliche Konfiguration prüfen
                         // Konfiguration vorhanden -> löschen
                         if (self::hasKonfig($oPosition->kArtikel)) {
                             $bDeleted = true;
@@ -196,8 +196,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
 
             if ($fFinalPrice < 0.0) {
                 $cError = sprintf(
-                    "Negative Konfigurationssumme für Artikel '%s' (Art.Nr.: %s, Netto: %s) - Vorgang wurde abgebrochen",
-                    $oArtikel->cName, $oArtikel->cArtNr, Preise::getLocalizedPriceString($fFinalPrice)
+                    "Negative Konfigurationssumme für Artikel '%s' (Art.Nr.: %s, Netto: %s) - Vorgang abgebrochen",
+                    $oArtikel->cName,
+                    $oArtikel->cArtNr,
+                    Preise::getLocalizedPriceString($fFinalPrice)
                 );
                 Shop::Container()->getLogService()->error($cError);
 

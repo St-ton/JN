@@ -97,8 +97,10 @@ class Trennzeichen
         if (($data = Shop::Cache()->get($cacheID)) === false) {
             $data = Shop::Container()->getDB()->select(
                 'ttrennzeichen',
-                'nEinheit', $nEinheit,
-                'kSprache', $kSprache
+                'nEinheit',
+                $nEinheit,
+                'kSprache',
+                $kSprache
             );
             if ($data !== null) {
                 $data->kTrennzeichen   = (int)$data->kTrennzeichen;
@@ -139,7 +141,12 @@ class Trennzeichen
             }
             if (isset($data->kTrennzeichen) && $data->kTrennzeichen > 0) {
                 return $fAmount >= 0
-                    ? number_format((float)$fAmount, $data->nDezimalstellen, $data->cDezimalZeichen, $data->cTausenderZeichen)
+                    ? number_format(
+                        (float)$fAmount,
+                        $data->nDezimalstellen,
+                        $data->cDezimalZeichen,
+                        $data->cTausenderZeichen
+                    )
                     : new self($data->kTrennzeichen);
             }
         }

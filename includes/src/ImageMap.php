@@ -56,7 +56,9 @@ class ImageMap implements IExtensionPoint
         return Shop::Container()->getDB()->query(
             'SELECT *, IF((CURDATE() >= DATE(vDatum)) AND (CURDATE() <= DATE(bDatum) OR bDatum = 0), 1, 0) AS active 
                 FROM timagemap
-                ORDER BY bDatum DESC', \DB\ReturnType::ARRAY_OF_OBJECTS);
+                ORDER BY bDatum DESC',
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
     }
 
     /**
@@ -79,7 +81,11 @@ class ImageMap implements IExtensionPoint
             return false;
         }
 
-        $oImageMap->oArea_arr = Shop::Container()->getDB()->selectAll('timagemaparea', 'kImageMap', (int)$oImageMap->kImageMap);
+        $oImageMap->oArea_arr = Shop::Container()->getDB()->selectAll(
+            'timagemaparea',
+            'kImageMap',
+            (int)$oImageMap->kImageMap
+        );
         $cBildPfad            = PFAD_ROOT . PFAD_IMAGEMAP . $oImageMap->cBildPfad;
         $oImageMap->cBildPfad = Shop::getImageBaseURL() . PFAD_IMAGEMAP . $oImageMap->cBildPfad;
         $cParse_arr           = parse_url($oImageMap->cBildPfad);
@@ -112,7 +118,15 @@ class ImageMap implements IExtensionPoint
                 } else {
                     $oArea->oArtikel->kArtikel = $oArea->kArtikel;
                     $oArea->oArtikel->cName    = Shop::Container()->getDB()->select(
-                        'tartikel', 'kArtikel', $oArea->kArtikel, null, null, null, null, false, 'cName'
+                        'tartikel',
+                        'kArtikel',
+                        $oArea->kArtikel,
+                        null,
+                        null,
+                        null,
+                        null,
+                        false,
+                        'cName'
                     )->cName;
                 }
                 if (strlen($oArea->cTitel) === 0) {

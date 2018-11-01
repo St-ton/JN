@@ -65,7 +65,7 @@ class FilterSelectField extends FilterField
     /**
      * @return string|null
      */
-    public function getWhereClause()
+    public function getWhereClause(): ?string
     {
         $cValue  = $this->oOption_arr[(int)$this->cValue]->getValue();
         $nTestOp = $this->oOption_arr[(int)$this->cValue]->getTestOp();

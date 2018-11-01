@@ -155,7 +155,10 @@ class MediaImage implements IMedia
         }
 
         try {
-            $rdi = new RecursiveDirectoryIterator($directory, FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS);
+            $rdi = new RecursiveDirectoryIterator(
+                $directory,
+                FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
+            );
 
             foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $value) {
                 $value->isFile()
@@ -393,7 +396,7 @@ class MediaImage implements IMedia
                         INNER JOIN tartikel
                           ON tartikelpict.kArtikel = tartikel.kArtikel' . $limitStmt,
                     \DB\ReturnType::QUERYSINGLE
-                    );
+                );
                 break;
 
             default:
@@ -494,7 +497,11 @@ class MediaImage implements IMedia
         switch ($type) {
             case Image::TYPE_PRODUCT:
                 $res = [
-                    'stmt' => 'SELECT kArtikel, nNr AS number FROM tartikelpict WHERE kArtikel = :kArtikel GROUP BY cPfad ORDER BY nNr ASC',
+                    'stmt' => 'SELECT kArtikel, nNr AS number
+                        FROM tartikelpict 
+                        WHERE kArtikel = :kArtikel 
+                        GROUP BY cPfad 
+                        ORDER BY nNr ASC',
                     'bind' => ['kArtikel' => $id]
                 ];
                 break;
@@ -506,13 +513,18 @@ class MediaImage implements IMedia
                 break;
             case Image::TYPE_CONFIGGROUP:
                 $res = [
-                    'stmt' => 'SELECT cBildpfad, 0 AS number FROM tkonfiggruppe WHERE kKonfiggruppe = :kKonfiggruppe ORDER BY nSort ASC',
+                    'stmt' => 'SELECT cBildpfad, 0 AS number 
+                        FROM tkonfiggruppe 
+                        WHERE kKonfiggruppe = :kKonfiggruppe 
+                        ORDER BY nSort ASC',
                     'bind' => ['kKonfiggruppe' => $id]
                 ];
                 break;
             case Image::TYPE_VARIATION:
                 $res = [
-                    'stmt' => 'SELECT kEigenschaftWert, 0 AS number FROM teigenschaftwertpict WHERE kEigenschaftWert = :kEigenschaftWert',
+                    'stmt' => 'SELECT kEigenschaftWert, 0 AS number 
+                        FROM teigenschaftwertpict 
+                        WHERE kEigenschaftWert = :kEigenschaftWert',
                     'bind' => ['kEigenschaftWert' => $id]
                 ];
                 break;
@@ -524,13 +536,19 @@ class MediaImage implements IMedia
                 break;
             case Image::TYPE_ATTRIBUTE:
                 $res = [
-                    'stmt' => 'SELECT cBildpfad, 0 AS number FROM tmerkmal WHERE kMerkmal = :kMerkmal ORDER BY nSort ASC',
+                    'stmt' => 'SELECT cBildpfad, 0 AS number 
+                        FROM tmerkmal 
+                        WHERE kMerkmal = :kMerkmal 
+                        ORDER BY nSort ASC',
                     'bind' => ['kMerkmal' => $id]
                 ];
                 break;
             case Image::TYPE_ATTRIBUTE_VALUE:
                 $res = [
-                    'stmt' => 'SELECT cBildpfad, 0 AS number FROM tmerkmalwert WHERE kMerkmalWert = :kMerkmalWert ORDER BY nSort ASC',
+                    'stmt' => 'SELECT cBildpfad, 0 AS number 
+                        FROM tmerkmalwert 
+                        WHERE kMerkmalWert = :kMerkmalWert 
+                        ORDER BY nSort ASC',
                     'bind' => ['kMerkmalWert' => $id]
                 ];
                 break;
@@ -579,7 +597,7 @@ class MediaImage implements IMedia
      * @param object $mixed
      * @param string $size
      * @param int    $number
-     * @return string|null
+     * @return string|int|null
      */
     public static function getRawOrFilesize($type, $id, $mixed, $size, int $number = 1)
     {

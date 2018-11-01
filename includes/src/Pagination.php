@@ -151,12 +151,12 @@ class Pagination
     }
 
     /**
-     * @param string $cId - page-unique name for this pagination
+     * @param string $id - page-unique name for this pagination
      * @return $this
      */
-    public function setId($cId): self
+    public function setId($id): self
     {
-        $this->cId = $cId;
+        $this->cId = $id;
 
         return $this;
     }
@@ -173,46 +173,46 @@ class Pagination
     }
 
     /**
-     * @param array $nItemsPerPageOption_arr - array of integers to be offered as items per page count options (non-empty)
+     * @param array $itemsPerPageOptions - array of integers to be offered as items per page count options
      * @return $this
      */
-    public function setItemsPerPageOptions(array $nItemsPerPageOption_arr): self
+    public function setItemsPerPageOptions(array $itemsPerPageOptions): self
     {
-        $this->nItemsPerPageOption_arr = $nItemsPerPageOption_arr;
+        $this->nItemsPerPageOption_arr = $itemsPerPageOptions;
 
         return $this;
     }
 
     /**
-     * @param array $cSortByOption_arr - array of [$cColumnName, $cDisplayTitle] pairs to be offered as sorting options
+     * @param array $sortByOptions - array of [$cColumnName, $cDisplayTitle] pairs to be offered as sorting options
      * @return $this
      */
-    public function setSortByOptions(array $cSortByOption_arr): self
+    public function setSortByOptions(array $sortByOptions): self
     {
-        $this->cSortByOption_arr = $cSortByOption_arr;
+        $this->cSortByOption_arr = $sortByOptions;
 
         return $this;
     }
 
     /**
-     * @param int $nItemCount - number of items to be paginated
+     * @param int $n - number of items to be paginated
      * @return $this
      */
-    public function setItemCount(int $nItemCount): self
+    public function setItemCount(int $n): self
     {
-        $this->nItemCount = $nItemCount;
+        $this->nItemCount = $n;
 
         return $this;
     }
 
     /**
-     * @param array|\Tightenco\Collect\Support\Collection $oItem_arr - item array to be paginated and sorted
+     * @param array|\Tightenco\Collect\Support\Collection $items - item array to be paginated and sorted
      * @return $this
      */
-    public function setItemArray($oItem_arr): self
+    public function setItemArray($items): self
     {
-        $this->oItem_arr = $oItem_arr;
-        $this->setItemCount(count($oItem_arr));
+        $this->oItem_arr = $items;
+        $this->setItemCount(count($items));
 
         return $this;
     }
@@ -303,7 +303,9 @@ class Pagination
             $this->nPageItemCount  = $this->nItemCount;
         } elseif ($this->nItemsPerPage === 0) {
             // Set $nItemsPerPage to default if greater 0 or else to the first option in $nItemsPerPageOption_arr
-            $nItemsPerPage         = $this->nDefaultItemsPerPage > 0 ? $this->nDefaultItemsPerPage : $this->nItemsPerPageOption_arr[0];
+            $nItemsPerPage         = $this->nDefaultItemsPerPage > 0
+                ? $this->nDefaultItemsPerPage
+                : $this->nItemsPerPageOption_arr[0];
             $this->nPageCount      = $nItemsPerPage > 0 ? (int)ceil($this->nItemCount / $nItemsPerPage) : 1;
             $this->nPage           = max(0, min($this->nPageCount - 1, $this->nPage));
             $this->nPrevPage       = max(0, min($this->nPageCount - 1, $this->nPage - 1));
@@ -509,7 +511,7 @@ class Pagination
     /**
      * @return array|null
      */
-    public function getPageItems()
+    public function getPageItems(): ?array
     {
         return $this->oPageItem_arr;
     }
@@ -534,7 +536,7 @@ class Pagination
      * @param int $nIndex
      * @return int|null
      */
-    public function getItemsPerPageOption(int $nIndex)
+    public function getItemsPerPageOption(int $nIndex): ?int
     {
         return $this->nItemsPerPageOption_arr[$nIndex];
     }

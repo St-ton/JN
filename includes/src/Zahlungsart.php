@@ -126,7 +126,7 @@ class Zahlungsart extends MainModel
      * @param int $kZahlungsart
      * @return $this
      */
-    public function setZahlungsart(int $kZahlungsart)
+    public function setZahlungsart(int $kZahlungsart): self
     {
         $this->kZahlungsart = $kZahlungsart;
 
@@ -145,7 +145,7 @@ class Zahlungsart extends MainModel
      * @param string $cName
      * @return $this
      */
-    public function setName($cName)
+    public function setName($cName): self
     {
         $this->cName = $cName;
 
@@ -164,7 +164,7 @@ class Zahlungsart extends MainModel
      * @param string $cModulId
      * @return $this
      */
-    public function setModulId($cModulId)
+    public function setModulId($cModulId): self
     {
         $this->cModulId = $cModulId;
 
@@ -183,7 +183,7 @@ class Zahlungsart extends MainModel
      * @param string $cKundengruppen
      * @return $this
      */
-    public function setKundengruppen($cKundengruppen)
+    public function setKundengruppen($cKundengruppen): self
     {
         $this->cKundengruppen = $cKundengruppen;
 
@@ -202,7 +202,7 @@ class Zahlungsart extends MainModel
      * @param string $cZusatzschrittTemplate
      * @return $this
      */
-    public function setZusatzschrittTemplate($cZusatzschrittTemplate)
+    public function setZusatzschrittTemplate($cZusatzschrittTemplate): self
     {
         $this->cZusatzschrittTemplate = $cZusatzschrittTemplate;
 
@@ -221,7 +221,7 @@ class Zahlungsart extends MainModel
      * @param string $cPluginTemplate
      * @return $this
      */
-    public function setPluginTemplate($cPluginTemplate)
+    public function setPluginTemplate($cPluginTemplate): self
     {
         $this->cPluginTemplate = $cPluginTemplate;
 
@@ -240,7 +240,7 @@ class Zahlungsart extends MainModel
      * @param string $cBild
      * @return $this
      */
-    public function setBild($cBild)
+    public function setBild($cBild): self
     {
         $this->cBild = $cBild;
 
@@ -259,7 +259,7 @@ class Zahlungsart extends MainModel
      * @param int $nSort
      * @return $this
      */
-    public function setSort(int $nSort)
+    public function setSort(int $nSort): self
     {
         $this->nSort = $nSort;
 
@@ -278,7 +278,7 @@ class Zahlungsart extends MainModel
      * @param int $nMailSenden
      * @return $this
      */
-    public function setMailSenden(int $nMailSenden)
+    public function setMailSenden(int $nMailSenden): self
     {
         $this->nMailSenden = $nMailSenden;
 
@@ -297,7 +297,7 @@ class Zahlungsart extends MainModel
      * @param int $nActive
      * @return $this
      */
-    public function setActive(int $nActive)
+    public function setActive(int $nActive): self
     {
         $this->nActive = $nActive;
 
@@ -316,7 +316,7 @@ class Zahlungsart extends MainModel
      * @param string $cAnbieter
      * @return $this
      */
-    public function setAnbieter($cAnbieter)
+    public function setAnbieter($cAnbieter): self
     {
         $this->cAnbieter = $cAnbieter;
 
@@ -335,7 +335,7 @@ class Zahlungsart extends MainModel
      * @param string $cTSCode
      * @return $this
      */
-    public function setTSCode($cTSCode)
+    public function setTSCode($cTSCode): self
     {
         $this->cTSCode = $cTSCode;
 
@@ -354,7 +354,7 @@ class Zahlungsart extends MainModel
      * @param int $nWaehrendBestellung
      * @return $this
      */
-    public function setWaehrendBestellung(int $nWaehrendBestellung)
+    public function setWaehrendBestellung(int $nWaehrendBestellung): self
     {
         $this->nWaehrendBestellung = $nWaehrendBestellung;
 
@@ -373,7 +373,7 @@ class Zahlungsart extends MainModel
      * @param int $nCURL
      * @return $this
      */
-    public function setCURL($nCURL)
+    public function setCURL($nCURL): self
     {
         $this->nCURL = (int)$nCURL;
 
@@ -392,7 +392,7 @@ class Zahlungsart extends MainModel
      * @param int $nSOAP
      * @return $this
      */
-    public function setSOAP($nSOAP)
+    public function setSOAP($nSOAP): self
     {
         $this->nSOAP = (int)$nSOAP;
 
@@ -411,7 +411,7 @@ class Zahlungsart extends MainModel
      * @param int $nSOCKETS
      * @return $this
      */
-    public function setSOCKETS($nSOCKETS)
+    public function setSOCKETS($nSOCKETS): self
     {
         $this->nSOCKETS = (int)$nSOCKETS;
 
@@ -430,7 +430,7 @@ class Zahlungsart extends MainModel
      * @param int $nNutzbar
      * @return $this
      */
-    public function setNutzbar($nNutzbar)
+    public function setNutzbar($nNutzbar): self
     {
         $this->nNutzbar = (int)$nNutzbar;
 
@@ -449,7 +449,7 @@ class Zahlungsart extends MainModel
      * @param string $cHinweisText
      * @return $this
      */
-    public function setHinweisText($cHinweisText)
+    public function setHinweisText($cHinweisText): self
     {
         $this->cHinweisText = $cHinweisText;
 
@@ -468,7 +468,7 @@ class Zahlungsart extends MainModel
      * @param string $cHinweisTextShop
      * @return $this
      */
-    public function setHinweisTextShop($cHinweisTextShop)
+    public function setHinweisTextShop($cHinweisTextShop): self
     {
         $this->cHinweisTextShop = $cHinweisTextShop;
 

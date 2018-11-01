@@ -66,10 +66,10 @@ class Nice
                 $cBlowfishKey   = $cPassA . $cPassE;
                 $oXTEA          = new XTEA($cBlowfishKey);
                 $this->cBrocken = $oXTEA->decrypt(str_replace(
-                        [$cPassA, $cPassE],
-                        ['', ''],
-                        base64_decode($oBrocken->cBrocken))
-                );
+                    [$cPassA, $cPassE],
+                    ['', ''],
+                    base64_decode($oBrocken->cBrocken)
+                ));
                 Shop::Cache()->set('cbrocken', $this->cBrocken, [CACHING_GROUP_CORE]);
             }
         }

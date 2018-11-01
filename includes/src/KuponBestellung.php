@@ -70,8 +70,10 @@ class KuponBestellung
     {
         $oObj = Shop::Container()->getDB()->select(
             'tkuponbestelllung',
-            'kKupon', $kKupon,
-            'kBestellung', $kBestellung
+            'kKupon',
+            $kKupon,
+            'kBestellung',
+            $kBestellung
         );
 
         if (isset($oObj->kKupon) && $oObj->kKupon > 0) {
@@ -135,7 +137,11 @@ class KuponBestellung
      */
     public function delete(): int
     {
-        return Shop::Container()->getDB()->delete('tkupon', ['kKupon','kBestellung'], [(int)$this->kKupon,(int)$this->kBestellung]);
+        return Shop::Container()->getDB()->delete(
+            'tkupon',
+            ['kKupon','kBestellung'],
+            [(int)$this->kKupon,(int)$this->kBestellung]
+        );
     }
 
     /**
@@ -229,7 +235,7 @@ class KuponBestellung
     /**
      * @return int|null
      */
-    public function getKupon()
+    public function getKupon(): ?int
     {
         return $this->kKupon;
     }
@@ -237,7 +243,7 @@ class KuponBestellung
     /**
      * @return int|null
      */
-    public function getBestellung()
+    public function getBestellung(): ?int
     {
         return $this->kBestellung;
     }
@@ -245,7 +251,7 @@ class KuponBestellung
     /**
      * @return int|null
      */
-    public function getKunde()
+    public function getKunde(): ?int
     {
         return $this->kKunde;
     }
@@ -253,7 +259,7 @@ class KuponBestellung
     /**
      * @return string|null
      */
-    public function getBestellNr()
+    public function getBestellNr(): ?string
     {
         return $this->cBestellNr;
     }
@@ -277,7 +283,7 @@ class KuponBestellung
     /**
      * @return string|null
      */
-    public function getKuponTyp()
+    public function getKuponTyp(): ?string
     {
         return $this->cKuponTyp;
     }
@@ -285,7 +291,7 @@ class KuponBestellung
     /**
      * @return string|null
      */
-    public function getErstellt()
+    public function getErstellt(): ?string
     {
         return $this->dErstellt;
     }

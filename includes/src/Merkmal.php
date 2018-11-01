@@ -216,69 +216,70 @@ class Merkmal
     }
 
     /**
-     * @param array $kMerkmal_arr
+     * @param array $attributeIDs
      * @param bool  $bMMW
      * @return array
      */
-    public function holeMerkmale(array $kMerkmal_arr, bool $bMMW = false): array
+    public function holeMerkmale(array $attributeIDs, bool $bMMW = false): array
     {
-        $oMerkmal_arr = [];
-        if (is_array($kMerkmal_arr) && count($kMerkmal_arr) > 0) {
-            $kSprache = Shop::getLanguage();
-            if (!$kSprache) {
-                $oSprache = Sprache::getDefaultLanguage();
-                if ($oSprache->kSprache > 0) {
-                    $kSprache = $oSprache->kSprache;
-                }
+        $attributes = [];
+        if (!is_array($attributeIDs) || count($attributeIDs) === 0) {
+            return $attributes;
+        }
+        $kSprache = Shop::getLanguage();
+        if (!$kSprache) {
+            $oSprache = Sprache::getDefaultLanguage();
+            if ($oSprache->kSprache > 0) {
+                $kSprache = $oSprache->kSprache;
             }
-            $kSprache         = (int)$kSprache;
-            $kStandardSprache = (int)Sprache::getDefaultLanguage()->kSprache;
-            if ($kSprache !== $kStandardSprache) {
-                $cSelect = "COALESCE(fremdSprache.cName, standardSprache.cName) AS cName";
-                $cJoin   = "INNER JOIN tmerkmalsprache AS standardSprache 
-                                ON standardSprache.kMerkmal = tmerkmal.kMerkmal
-                                AND standardSprache.kSprache = {$kStandardSprache}
-                            LEFT JOIN tmerkmalsprache AS fremdSprache 
-                                ON fremdSprache.kMerkmal = tmerkmal.kMerkmal
-                                AND fremdSprache.kSprache = {$kSprache}";
-            } else {
-                $cSelect = "tmerkmalsprache.cName";
-                $cJoin   = "INNER JOIN tmerkmalsprache 
-                                ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
-                                AND tmerkmalsprache.kSprache = {$kSprache}";
-            }
+        }
+        $kSprache         = (int)$kSprache;
+        $kStandardSprache = (int)Sprache::getDefaultLanguage()->kSprache;
+        if ($kSprache !== $kStandardSprache) {
+            $select = "COALESCE(fremdSprache.cName, standardSprache.cName) AS cName";
+            $join   = "INNER JOIN tmerkmalsprache AS standardSprache 
+                            ON standardSprache.kMerkmal = tmerkmal.kMerkmal
+                            AND standardSprache.kSprache = {$kStandardSprache}
+                        LEFT JOIN tmerkmalsprache AS fremdSprache 
+                            ON fremdSprache.kMerkmal = tmerkmal.kMerkmal
+                            AND fremdSprache.kSprache = {$kSprache}";
+        } else {
+            $select = "tmerkmalsprache.cName";
+            $join   = "INNER JOIN tmerkmalsprache 
+                            ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
+                            AND tmerkmalsprache.kSprache = {$kSprache}";
+        }
 
-            $cSQL = ' IN(' . implode(', ', array_filter($kMerkmal_arr, 'intval')) . ') ';
+        $cSQL = ' IN(' . implode(', ', array_filter($attributeIDs, '\intval')) . ') ';
 
-            $oMerkmal_arr = Shop::Container()->getDB()->query(
-                "SELECT tmerkmal.kMerkmal, tmerkmal.nSort, tmerkmal.nGlobal, tmerkmal.cBildpfad, tmerkmal.cTyp, 
-                      {$cSelect}
-                    FROM tmerkmal
-                    {$cJoin}
-                    WHERE tmerkmal.kMerkmal {$cSQL}
-                    ORDER BY tmerkmal.nSort",
-                \DB\ReturnType::ARRAY_OF_OBJECTS
-            );
+        $attributes = Shop::Container()->getDB()->query(
+            "SELECT tmerkmal.kMerkmal, tmerkmal.nSort, tmerkmal.nGlobal, tmerkmal.cBildpfad, tmerkmal.cTyp, 
+                  {$select}
+                FROM tmerkmal
+                {$join}
+                WHERE tmerkmal.kMerkmal {$cSQL}
+                ORDER BY tmerkmal.nSort",
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        );
 
-            if ($bMMW && is_array($oMerkmal_arr) && count($oMerkmal_arr) > 0) {
-                $imageBaseURL = Shop::getImageBaseURL();
-                foreach ($oMerkmal_arr as $i => $oMerkmal) {
-                    $oMerkmalWert                       = new MerkmalWert(0, $this->kSprache);
-                    $oMerkmal_arr[$i]->oMerkmalWert_arr = $oMerkmalWert->holeAlleMerkmalWerte($oMerkmal->kMerkmal);
+        if ($bMMW && is_array($attributes) && count($attributes) > 0) {
+            $imageBaseURL = Shop::getImageBaseURL();
+            foreach ($attributes as $i => $oMerkmal) {
+                $oMerkmalWert                       = new MerkmalWert(0, $this->kSprache);
+                $attributes[$i]->oMerkmalWert_arr = $oMerkmalWert->holeAlleMerkmalWerte($oMerkmal->kMerkmal);
 
-                    if (strlen($oMerkmal->cBildpfad) > 0) {
-                        $oMerkmal_arr[$i]->cBildpfadKlein  = PFAD_MERKMALBILDER_KLEIN . $oMerkmal->cBildpfad;
-                        $oMerkmal_arr[$i]->cBildpfadNormal = PFAD_MERKMALBILDER_NORMAL . $oMerkmal->cBildpfad;
-                    } else {
-                        $oMerkmal_arr[$i]->cBildpfadKlein  = BILD_KEIN_MERKMALBILD_VORHANDEN;
-                        $oMerkmal_arr[$i]->cBildpfadNormal = BILD_KEIN_MERKMALBILD_VORHANDEN;
-                    }
-                    $oMerkmal_arr[$i]->cBildURLKlein  = $imageBaseURL . $oMerkmal_arr[$i]->cBildpfadKlein;
-                    $oMerkmal_arr[$i]->cBildURLNormal = $imageBaseURL . $oMerkmal_arr[$i]->cBildpfadNormal;
+                if (strlen($oMerkmal->cBildpfad) > 0) {
+                    $attributes[$i]->cBildpfadKlein  = PFAD_MERKMALBILDER_KLEIN . $oMerkmal->cBildpfad;
+                    $attributes[$i]->cBildpfadNormal = PFAD_MERKMALBILDER_NORMAL . $oMerkmal->cBildpfad;
+                } else {
+                    $attributes[$i]->cBildpfadKlein  = BILD_KEIN_MERKMALBILD_VORHANDEN;
+                    $attributes[$i]->cBildpfadNormal = BILD_KEIN_MERKMALBILD_VORHANDEN;
                 }
+                $attributes[$i]->cBildURLKlein  = $imageBaseURL . $attributes[$i]->cBildpfadKlein;
+                $attributes[$i]->cBildURLNormal = $imageBaseURL . $attributes[$i]->cBildpfadNormal;
             }
         }
 
-        return $oMerkmal_arr;
+        return $attributes;
     }
 }

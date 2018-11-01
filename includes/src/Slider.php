@@ -10,6 +10,7 @@
 class Slider implements IExtensionPoint
 {
     use MagicCompatibilityTrait;
+
     /**
      * @var int
      */

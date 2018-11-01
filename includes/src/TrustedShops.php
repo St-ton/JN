@@ -317,7 +317,7 @@ class TrustedShops
             Shop::Container()->getLogService()->error('TS Soap error');
         } elseif ($returnValue < 0) {
             switch ($returnValue) {
-                case -10001 :
+                case -10001:
                     break;
             }
         } else {
@@ -759,8 +759,10 @@ class TrustedShops
         if (strlen($cISOSprache) > 0 && strlen($tsId) > 0) {
             $oZertifikat = Shop::Container()->getDB()->select(
                 'ttrustedshopszertifikat', 
-                'cISOSprache', $cISOSprache, 
-                'cTSID', $tsId
+                'cISOSprache',
+                $cISOSprache,
+                'cTSID',
+                $tsId
             );
             $oZertifikat = $this->entschluesselTSDaten($oZertifikat);
         } elseif (strlen($cISOSprache) > 0) {
@@ -908,8 +910,8 @@ class TrustedShops
     {
         if ((int)$kTrustedShopsZertifikat > 0) {
             $nRows = Shop::Container()->getDB()->delete(
-                'ttrustedshopszertifikat', 
-                'kTrustedShopsZertifikat', 
+                'ttrustedshopszertifikat',
+                'kTrustedShopsZertifikat',
                 (int)$kTrustedShopsZertifikat
             );
 
@@ -929,7 +931,7 @@ class TrustedShops
     {
         if (strlen($cISOSprache) > 0) {
             $rating = Shop::Container()->getDB()->select(
-                'ttrustedshopskundenbewertung', 
+                'ttrustedshopskundenbewertung',
                 'cISOSprache', 
                 $cISOSprache
             );
@@ -971,7 +973,7 @@ class TrustedShops
      * @param string $cISOSprache
      * @return $this
      */
-    public function aenderKundenbewertungsstatusDB($nStatus = 0, $cISOSprache): self
+    public function aenderKundenbewertungsstatusDB($nStatus, $cISOSprache): self
     {
         if (strlen($cISOSprache) > 0) {
             $rating = $this->holeKundenbewertungsstatus($cISOSprache);
@@ -982,9 +984,9 @@ class TrustedShops
                 $_upd->cISOSprache   = $cISOSprache;
                 $_upd->dAktualisiert = 'NOW()';
                 Shop::Container()->getDB()->update(
-                    'ttrustedshopskundenbewertung', 
-                    'kTrustedshopsKundenbewertung', 
-                    (int)$rating->kTrustedshopsKundenbewertung, 
+                    'ttrustedshopskundenbewertung',
+                    'kTrustedshopsKundenbewertung',
+                    (int)$rating->kTrustedshopsKundenbewertung,
                     $_upd
                 );
             } else {

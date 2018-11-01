@@ -118,8 +118,12 @@ class Wunschliste
             $this->CWunschlistePos_arr[$nPosition]->updateDB();
             $kWunschlistePos = $this->CWunschlistePos_arr[$nPosition]->kWunschlistePos;
         } else {
-            $wlPosition                = new WunschlistePos($kArtikel, $cArtikelName, $fAnzahl,
-                $this->kWunschliste);
+            $wlPosition                = new WunschlistePos(
+                $kArtikel,
+                $cArtikelName,
+                $fAnzahl,
+                $this->kWunschliste
+            );
             $wlPosition->dHinzugefuegt = date('Y-m-d H:i:s');
             $wlPosition->schreibeDB();
             $kWunschlistePos = $wlPosition->kWunschlistePos;
@@ -467,7 +471,8 @@ class Wunschliste
                     $wlPositionAttribute->cFreifeldWert,
                     $wlPositionAttribute->cName,
                     $wlPositionAttribute->cWert,
-                    $wlPositionAttribute->kWunschlistePos);
+                    $wlPositionAttribute->kWunschlistePos
+                );
 
                 $wlAttribute->kWunschlistePosEigenschaft      = (int)$wlPositionAttribute->kWunschlistePosEigenschaft;
                 $wlPosition->CWunschlistePosEigenschaft_arr[] = $wlAttribute;
@@ -502,8 +507,10 @@ class Wunschliste
                 // Sichtbarkeit Prüfen
                 $oSichtbarkeit = Shop::Container()->getDB()->select(
                     'tartikelsichtbarkeit',
-                    'kArtikel', (int)$wlPosition->kArtikel,
-                    'kKundengruppe', Session::CustomerGroup()->getID()
+                    'kArtikel',
+                    (int)$wlPosition->kArtikel,
+                    'kKundengruppe',
+                    Session::CustomerGroup()->getID()
                 );
                 if ($oSichtbarkeit === null || empty($oSichtbarkeit->kArtikel)) {
                     // Prüfe welche kEigenschaft gesetzt ist
@@ -513,9 +520,12 @@ class Wunschliste
                             foreach ($wlPosition->CWunschlistePosEigenschaft_arr as $wlAttribute) {
                                 $oEigenschaftWertVorhanden = Shop::Container()->getDB()->select(
                                     'teigenschaftkombiwert',
-                                    'kEigenschaftKombi', (int)$oArtikelVorhanden->kEigenschaftKombi,
-                                    'kEigenschaftWert', (int)$wlAttribute->kEigenschaftWert,
-                                    'kEigenschaft', (int)$wlAttribute->kEigenschaft,
+                                    'kEigenschaftKombi',
+                                    (int)$oArtikelVorhanden->kEigenschaftKombi,
+                                    'kEigenschaftWert',
+                                    (int)$wlAttribute->kEigenschaftWert,
+                                    'kEigenschaft',
+                                    (int)$wlAttribute->kEigenschaft,
                                     false,
                                     'kEigenschaftKombi'
                                 );
@@ -532,7 +542,8 @@ class Wunschliste
                             // Prüfe welche kEigenschaft gesetzt ist
                             $oEigenschaft_arr = Shop::Container()->getDB()->selectAll(
                                 'teigenschaft',
-                                'kArtikel', (int)$wlPosition->kArtikel,
+                                'kArtikel',
+                                (int)$wlPosition->kArtikel,
                                 'kEigenschaft, cName, cTyp'
                             );
                             if (count($oEigenschaft_arr) > 0) {
@@ -559,8 +570,8 @@ class Wunschliste
                                         && empty($oEigenschaftWertVorhanden->cFreifeldWert)
                                     ) {
                                         $cArtikel_arr[] = $wlPosition->cArtikelName;
-                                        $hinweis        .= '<br />' . Shop::Lang()->get('noProductWishlist',
-                                                'messages');
+                                        $hinweis        .= '<br />' .
+                                            Shop::Lang()->get('noProductWishlist', 'messages');
 
                                         $this->delWunschlistePosSess($wlPosition->kArtikel);
                                         break;
@@ -1063,7 +1074,7 @@ class Wunschliste
     /**
      * @param int $wishlistID
      */
-    public static function setPrivate(int $wishlistID)
+    public static function setPrivate(int $wishlistID): void
     {
         $upd               = new stdClass();
         $upd->nOeffentlich = 0;
@@ -1074,7 +1085,7 @@ class Wunschliste
     /**
      * @param int $wishlistID
      */
-    public static function setPublic(int $wishlistID)
+    public static function setPublic(int $wishlistID): void
     {
         $URLID = uniqid('', true);
 

@@ -569,7 +569,9 @@ class CheckBox
             return false;
         }
         $Einstellungen = Shop::getSettings([CONF_EMAILS]);
-        if (isset($Einstellungen['emails']['email_master_absender']) && strlen($Einstellungen['emails']['email_master_absender']) > 0) {
+        if (isset($Einstellungen['emails']['email_master_absender'])
+            && strlen($Einstellungen['emails']['email_master_absender']) > 0
+        ) {
             require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
             $oObj                = new stdClass();
             $oObj->oCheckBox     = $oCheckBox;

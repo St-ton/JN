@@ -196,7 +196,8 @@ class KundenwerbenKunden
                 );
 
                 $oKundenWerbenKundenBoni->fGuthaben = Preise::getLocalizedPriceString(
-                    (float)$Einstellungen['kundenwerbenkunden']['kwk_bestandskundenguthaben']);
+                    (float)$Einstellungen['kundenwerbenkunden']['kwk_bestandskundenguthaben']
+                );
                 $oMail->BestandskundenBoni          = $oKundenWerbenKundenBoni;
                 // verschicke Email an Bestandskunden
                 sendeMail(MAILTEMPLATE_KUNDENWERBENKUNDENBONI, $oMail);

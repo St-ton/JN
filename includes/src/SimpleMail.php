@@ -218,7 +218,11 @@ class SimpleMail
                 case 'QMail':
                     break;
                 case 'smtp':
-                    if (empty($this->cSMTPAuth) || empty($this->cSMTPHost) || empty($this->cSMTPPass) || empty($this->cSMTPUser)) {
+                    if (empty($this->cSMTPAuth)
+                        || empty($this->cSMTPHost)
+                        || empty($this->cSMTPPass)
+                        || empty($this->cSMTPUser)
+                    ) {
                         $this->setErrorLog('SMTP', 'SMTP Daten nicht gesetzt!');
                     }
                     break;

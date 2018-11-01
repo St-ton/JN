@@ -421,15 +421,6 @@ class Template
     }
 
     /**
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    private function getMobileTemplate(): bool
-    {
-        return false;
-    }
-
-    /**
      * @deprecated since 5.0.0
      * @return bool
      */
@@ -763,9 +754,12 @@ class Template
     {
         $config = Shop::Container()->getDB()->select(
             'ttemplateeinstellungen',
-            'cTemplate', $dir,
-            'cSektion', $cSektion,
-            'cName', $cName
+            'cTemplate',
+            $dir,
+            'cSektion',
+            $cSektion,
+            'cName',
+            $cName
         );
         if ($config !== null && isset($config->cTemplate)) {
             Shop::Container()->getDB()->update(

@@ -749,7 +749,7 @@ class Statusmail
                     FROM tjtllog
                     WHERE dErstellt >= :from
                         AND dErstellt < :to
-                        AND nLevel IN (' . implode(',', array_map('intval', $logLevels)) . ')
+                        AND nLevel IN (' . implode(',', array_map('\intval', $logLevels)) . ')
                     ORDER BY dErstellt DESC',
                 [
                     'from' => $this->dateStart,

@@ -12,7 +12,7 @@ class Media
     /**
      * @var Media
      */
-    private static $_instance;
+    private static $instance;
 
     /**
      * @var MediaImage[]|MediaImageCompatibility[]
@@ -24,7 +24,7 @@ class Media
      */
     public static function getInstance(): self
     {
-        return self::$_instance ?? new self();
+        return self::$instance ?? new self();
     }
 
     /**
@@ -32,7 +32,7 @@ class Media
      */
     public function __construct()
     {
-        self::$_instance = $this;
+        self::$instance = $this;
         $this->register(new MediaImage())
              ->register(new MediaImageCompatibility());
     }

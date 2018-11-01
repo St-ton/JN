@@ -65,9 +65,12 @@ class KategorieListe
                     $kategorie2->children = [];
 
                     if ($levels > 2) {
-                        //3rd level
-                        $kategorie2->children = $this->holUnterkategorien($kategorie2->kKategorie, $kKundengruppe,
-                            $kSprache);
+                        // 3rd level
+                        $kategorie2->children = $this->holUnterkategorien(
+                            $kategorie2->kKategorie,
+                            $kKundengruppe,
+                            $kSprache
+                        );
                     }
                     $kategorie1->children[] = $kategorie2;
                 }
@@ -160,7 +163,7 @@ class KategorieListe
      * @param int   $kKundengruppe
      * @param int   $kSprache
      */
-    public static function setCategoryList($categoryList, int $kKundengruppe, int $kSprache)
+    public static function setCategoryList($categoryList, int $kKundengruppe, int $kSprache): void
     {
         $cacheID                 = CACHING_GROUP_CATEGORY . '_list_' . $kKundengruppe . '_' . $kSprache;
         self::$allCats[$cacheID] = $categoryList;
@@ -331,9 +334,12 @@ class KategorieListe
                     if ($kSprache !== $kDefaultLang) {
                         $oSeo = Shop::Container()->getDB()->select(
                             'tseo',
-                            'cKey', 'kKategorie',
-                            'kSprache', $kDefaultLang,
-                            'kKey', (int)$oKategorie->kKategorie
+                            'cKey',
+                            'kKategorie',
+                            'kSprache',
+                            $kDefaultLang,
+                            'kKey',
+                            (int)$oKategorie->kKategorie
                         );
                         if (isset($oSeo->cSeo)) {
                             $oKategorie->cSeo = $oSeo->cSeo;

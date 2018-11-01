@@ -162,13 +162,14 @@ class ArtikelHelper
         }
         $cGroupBy = $group ? 'GROUP BY teigenschaftkombiwert.kEigenschaftWert ' : '';
 
-        return array_map(function ($e) {
-            $e->kEigenschaft      = (int)$e->kEigenschaft;
-            $e->kEigenschaftKombi = (int)$e->kEigenschaftKombi;
-            $e->kEigenschaftWert  = (int)$e->kEigenschaftWert;
+        return array_map(
+            function ($e) {
+                $e->kEigenschaft      = (int)$e->kEigenschaft;
+                $e->kEigenschaftKombi = (int)$e->kEigenschaftKombi;
+                $e->kEigenschaftWert  = (int)$e->kEigenschaftWert;
 
-            return $e;
-        },
+                return $e;
+            },
             Shop::Container()->getDB()->query(
                 'SELECT teigenschaftkombiwert.*
                     FROM teigenschaftkombiwert
@@ -246,8 +247,8 @@ class ArtikelHelper
 
             $attrVal->cSELECT = 'teigenschaftwertsprache.cName AS cName_teigenschaftwertsprache, ';
             $attrVal->cJOIN   = 'LEFT JOIN teigenschaftwertsprache 
-                                            ON teigenschaftwertsprache.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                                            AND teigenschaftwertsprache.kSprache = ' . $langID;
+                                    ON teigenschaftwertsprache.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
+                                    AND teigenschaftwertsprache.kSprache = ' . $langID;
         }
 
         $oEigenschaft_arr = Shop::Container()->getDB()->query(
@@ -369,9 +370,9 @@ class ArtikelHelper
                 $oEigenschaftWert->kEigenschaftWert = $propValue->kEigenschaftWert;
                 $oEigenschaftWert->kEigenschaft     = $propValue->kEigenschaft;
                 $oEigenschaftWert->cName            = $propValue->cEigenschaftWertName;
-                if ($oEigenschaftwerte->cTyp === 'PFLICHT-FREIFELD' || $oEigenschaftwerte->cTyp === 'FREIFELD') {
-                    $oEigenschaftWert->cFreifeldWert = $oEigenschaftwerte->cFreifeldWert;
-                    $oEigenschaftWert->kEigenschaftWert  = 0;
+                if ($propValue->cTyp === 'PFLICHT-FREIFELD' || $propValue->cTyp === 'FREIFELD') {
+                    $oEigenschaftWert->cFreifeldWert    = $propValue->cFreifeldWert;
+                    $oEigenschaftWert->kEigenschaftWert = 0;
                 }
                 $variations[$i]               = new stdClass();
                 $variations[$i]->kEigenschaft = $propValue->kEigenschaft;
@@ -577,7 +578,7 @@ class ArtikelHelper
      * @param Artikel  $product
      * @param object[] $variationPicturesArr
      */
-    public static function addVariationPictures(Artikel $product, $variationPicturesArr)
+    public static function addVariationPictures(Artikel $product, $variationPicturesArr): void
     {
         if (is_array($variationPicturesArr) && count($variationPicturesArr) > 0) {
             $product->Bilder = array_filter($product->Bilder, function ($item) {
@@ -1073,7 +1074,7 @@ class ArtikelHelper
      * @former baueProduktanfrageFormularVorgaben()
      * @since 5.0.0
      */
-    public static function getProductQuestionFormDefaults()
+    public static function getProductQuestionFormDefaults(): stdClass
     {
         $msg             = new stdClass();
         $msg->cNachricht = isset($_POST['nachricht']) ? StringHandler::filterXSS($_POST['nachricht']) : null;
@@ -1100,7 +1101,7 @@ class ArtikelHelper
      * @former sendeProduktanfrage()
      * @since 5.0.0
      */
-    public static function sendProductQuestion()
+    public static function sendProductQuestion(): void
     {
         require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
@@ -1192,7 +1193,7 @@ class ArtikelHelper
      * @former bearbeiteBenachrichtigung()
      * @since 5.0.0
      */
-    public static function checkAvailabilityMessage()
+    public static function checkAvailabilityMessage(): void
     {
         $conf = Shop::getSettings([CONF_ARTIKELDETAILS]);
         if (!isset($_POST['a'], $conf['artikeldetails']['benachrichtigung_nutzen'])
@@ -1238,7 +1239,8 @@ class ArtikelHelper
                         (:cVorname, :cNachname, :cMail, :kSprache, :kArtikel, :cIP, NOW(), :nStatus)
                         ON DUPLICATE KEY UPDATE 
                             cVorname = :cVorname, cNachname = :cNachname, ksprache = :kSprache, 
-                            cIP = :cIP, dErstellt = NOW(), nStatus = :nStatus', get_object_vars($inquiry),
+                            cIP = :cIP, dErstellt = NOW(), nStatus = :nStatus',
+                    get_object_vars($inquiry),
                     \DB\ReturnType::LAST_INSERTED_ID
                 );
                 if (isset($_SESSION['Kampagnenbesucher'])) {
@@ -1282,7 +1284,9 @@ class ArtikelHelper
         if (empty($_POST['nachname']) && $conf['artikeldetails']['benachrichtigung_abfragen_nachname'] === 'Y') {
             $ret['nachname'] = 1;
         }
-        if ($conf['artikeldetails']['benachrichtigung_abfragen_captcha'] !== 'N' && !FormHelper::validateCaptcha($_POST)) {
+        if ($conf['artikeldetails']['benachrichtigung_abfragen_captcha'] !== 'N'
+            && !FormHelper::validateCaptcha($_POST)
+        ) {
             $ret['captcha'] = 2;
         }
         // CheckBox Plausi
@@ -2202,7 +2206,7 @@ class ArtikelHelper
      * @former holeKonfigBearbeitenModus()
      * @since 5.0.0
      */
-    public static function getEditConfigMode($configID, $smarty)
+    public static function getEditConfigMode($configID, $smarty): void
     {
         $cart = Session::Cart();
         if (!isset($cart->PositionenArr[$configID]) || !class_exists('Konfigitem')) {
@@ -2254,27 +2258,23 @@ class ArtikelHelper
     }
 
     /**
-     * @param int $kArtikel
-     * @param int $kVaterArtikel
+     * @param int $productID
+     * @param int $parentProductID
      * @return bool
      */
-    public static function getRatedByCurrentCustomer(int $productID, int $parentProductID = 0)
+    public static function getRatedByCurrentCustomer(int $productID, int $parentProductID = 0): bool
     {
-        $rated = false;
-
         $customerID = Session::Customer()->getID();
         $productID  = !empty($parentProductID) ? $parentProductID : $productID;
-
-        if ($customerID > 0) {
-            $ratings = Shop::Container()->getDB()->select(
-                'tbewertung',
-                ['kKunde', 'kArtikel', 'kSprache'],
-                [$customerID, $productID, Shop::getLanguageID()]
-            );
-
-            $rated = !empty($ratings->kBewertung);
+        if ($customerID <= 0) {
+            return false;
         }
+        $ratings = Shop::Container()->getDB()->select(
+            'tbewertung',
+            ['kKunde', 'kArtikel', 'kSprache'],
+            [$customerID, $productID, Shop::getLanguageID()]
+        );
 
-        return $rated;
+        return !empty($ratings->kBewertung);
     }
 }

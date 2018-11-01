@@ -160,7 +160,9 @@ class Redirect
             } elseif ($this->normalize($oRedirect->cFromUrl) === $this->normalize($cSource)
                 && empty($oRedirect->cToUrl)
                 && Shop::Container()->getDB()->update(
-                    'tredirect', 'cFromUrl', $this->normalize($cSource),
+                    'tredirect',
+                    'cFromUrl',
+                    $this->normalize($cSource),
                     (object)['cToUrl' => StringHandler::convertUTF8($cDestination)]
                 ) > 0
             ) {
@@ -516,11 +518,10 @@ class Redirect
      * @param string $sortBy
      * @param string $dir
      * @param string $search
-     * @param bool   $dep
      * @return mixed
      * @deprecated since 4.05 - use Redirect::getRedirects()
      */
-    public function getList($start, $limit, $redirURLs, $sortBy, $dir, $search, $dep = true)
+    public function getList($start, $limit, $redirURLs, $sortBy, $dir, $search)
     {
         $cWhereSQL_arr = [];
         $cOrderSQL     = $sortBy . ' ' . $dir;
@@ -679,7 +680,7 @@ class Redirect
     /**
      * @param int $kRedirect
      */
-    public static function deleteRedirect(int $kRedirect)
+    public static function deleteRedirect(int $kRedirect): void
     {
         Shop::Container()->getDB()->delete('tredirect', 'kRedirect', $kRedirect);
         Shop::Container()->getDB()->delete('tredirectreferer', 'kRedirect', $kRedirect);
@@ -741,7 +742,7 @@ class Redirect
      * @param int    $count
      * @param bool   $bSeo
      */
-    public static function doMainwordRedirect($productFilter, int $count, bool $bSeo = false)
+    public static function doMainwordRedirect($productFilter, int $count, bool $bSeo = false): void
     {
         $cMainword_arr = [
             'getCategory'       => [

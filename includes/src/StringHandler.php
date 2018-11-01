@@ -85,7 +85,7 @@ class StringHandler
     /**
      * @param string|array $input
      * @param int          $nSuche
-     * @return mixed|string
+     * @return array|string|mixed
      */
     public static function filterXSS($input, $nSuche = 0)
     {

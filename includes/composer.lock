@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a51eb24d7c4caebe706e7e9b846b57dc",
+    "content-hash": "97e7419af21a9d3c3318d328d3d0663e",
     "packages": [
         {
             "name": "andyftw/ssllabs-php",
@@ -894,11 +894,11 @@
         },
         {
             "name": "jtlshop/shop4-systemcheck",
-            "version": "1.1.1",
+            "version": "1.1.2",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.jtl-software.de/jtlshop/shop4-systemcheck.git",
-                "reference": "1.1.1"
+                "reference": "1.1.2"
             },
             "type": "library"
         },

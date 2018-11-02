@@ -201,7 +201,7 @@ class PageDB
         if ($page->getUrl() === ''
             || $page->getLastModified() === ''
             || $page->getLockedAt() === ''
-            || \strlen($page->getId()) !== 32
+            || $page->getId() === ''
         ) {
             throw new \Exception('The OPC page data to be saved is incomplete or invalid.');
         }

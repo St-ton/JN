@@ -16,7 +16,6 @@ $pageKey = RequestHelper::verifyGPCDataInt('pageKey');
 $pageId  = RequestHelper::verifyGPDataString('pageId');
 $pageUrl = RequestHelper::verifyGPDataString('pageUrl');
 $action  = RequestHelper::verifyGPDataString('action');
-$async   = RequestHelper::verifyGPDataString('async');
 $shopUrl = Shop::getURL();
 $error   = null;
 
@@ -27,56 +26,52 @@ $opcPageDB = Shop::Container()->getOPCPageDB();
 $templateUrl = $shopUrl . '/' . PFAD_ADMIN . $currentTemplateDir;
 $fullPageUrl = $shopUrl . $pageUrl;
 
-if ($opc->isOPCInstalled() === false) {
-    $error = 'The OPC update is not installed properly. Please update your migrations.';
-} else {
-    try {
-        if ($action === 'edit') {
-            $page = $opcPage->getDraft($pageKey);
-        } elseif ($action === 'replace' || $action === 'extend') {
-            $page = $opcPage->createDraft($pageId)
-                            ->setUrl($pageUrl)
-                            ->setReplace($action === 'replace')
-                            ->setName(
-                                'Entwurf ' . ($opcPageDB->getDraftCount($pageId) + 1)
-                                . ($action === 'extend' ? ' (erweitert)' : ' (ersetzt)')
-                            );
-            $opcPageDB->saveDraft($page);
-            $pageKey = $page->getKey();
-
-            header(
-                'Location: ' . $shopUrl . '/' . PFAD_ADMIN. 'onpage-composer.php?token='
-                . RequestHelper::verifyGPDataString('token') . '&pageKey=' . $pageKey . '&action=edit'
-            );
-            exit();
-        } elseif ($action === 'discard') {
-            $opcPage->deleteDraft($pageKey);
-
-            if ($async === 'yes') {
-                exit('ok');
-            }
-
-            header('Location: ' . $fullPageUrl);
-            exit();
-        }
-        if ($action === 'restore') {
-            $opcPage->deletePage($pageId);
-
-            if ($async === 'yes') {
-                exit('ok');
-            }
-
-            header('Location: ' . $fullPageUrl);
-            exit();
-        }
-    } catch (Exception $e) {
-        $error = $e->getMessage();
-    }
-}
-
 $smarty->assign('shopUrl', $shopUrl)
        ->assign('templateUrl', $templateUrl)
        ->assign('pageKey', $pageKey)
-       ->assign('opc', $opc)
-       ->assign('error', $error)
-       ->display('onpage-composer.tpl');
+       ->assign('opc', $opc);
+
+if ($opc->isOPCInstalled() === false) {
+    // OPC not installed correctly
+    $smarty->assign('error', 'The OPC update is not installed properly. Please update your migrations.')
+           ->display('onpage-composer.tpl');
+} elseif ($action === 'edit') {
+    // Enter OPC to edit a page
+    try {
+        $page = $opcPage->getDraft($pageKey);
+    } catch (Exception $e) {
+        $error = $e->getMessage();
+    }
+
+    $smarty->assign('error', $error)
+           ->display('onpage-composer.tpl');
+} elseif ($action !== '' && FormHelper::validateToken() === false) {
+    // OPC action while XSRF validation failed
+    $error = 'Wrong XSRF token.';
+} elseif ($action === 'replace' || $action === 'extend') {
+    // Create a new OPC page draft
+    try {
+        $newName = 'Entwurf ' . ($opcPageDB->getDraftCount($pageId) + 1)
+            . ($action === 'extend' ? ' (erweitert)' : ' (ersetzt)');
+        $page    = $opcPage
+            ->createDraft($pageId)
+            ->setUrl($pageUrl)
+            ->setReplace($action === 'replace')
+            ->setName($newName);
+        $opcPageDB->saveDraft($page);
+        $pageKey = $page->getKey();
+    } catch (Exception $e) {
+        $error = $e->getMessage();
+    }
+
+    header('Location: ' . $shopUrl . '/' . PFAD_ADMIN . 'onpage-composer.php?pageKey=' . $pageKey . '&action=edit');
+    exit();
+} elseif ($action === 'discard') {
+    // Discard a OPC page draft
+    $opcPage->deleteDraft($pageKey);
+    exit('ok');
+} elseif ($action === 'restore') {
+    // Discard a OPC page draft
+    $opcPage->deletePage($pageId);
+    exit('ok');
+}

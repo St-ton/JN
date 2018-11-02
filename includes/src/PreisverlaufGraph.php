@@ -449,10 +449,10 @@ class PreisverlaufGraph
 
         if ($this->oPreisConfig->Netto > 0) {
             foreach ($oPreisverlauf_arr as $i => $oPreisverlauf) {
-                $oPreisverlauf_arr[$i]->fVKNetto += ($oPreisverlauf->fVKNetto * ($this->oPreisConfig->Netto / 100.0));
+                $oPreisverlauf_arr[$i]->fVKNetto +=
+                    ($oPreisverlauf->fVKNetto * ($this->oPreisConfig->Netto / 100.0));
             }
         }
-
         if ($this->nAnzahlTage > 1) {
             $this->nMaxTimestamp = $oPreisverlauf_arr[0]->timestamp;
             $this->nMinTimestamp = $oPreisverlauf_arr[count($oPreisverlauf_arr) - 1]->timestamp;
@@ -824,7 +824,7 @@ class PreisverlaufGraph
      */
     public function berechneFarbHexNachDec(): void
     {
-        if (!is_array($this->oConfig_arr)) {
+        if (count($this->oConfig_arr) <= 0) {
             return;
         }
         foreach ($this->oConfig_arr as $i => $oConfig) {
@@ -862,7 +862,7 @@ class PreisverlaufGraph
      */
     public function setzeBreiteHoehe(): void
     {
-        if (!is_array($this->oConfig_arr)) {
+        if (count($this->oConfig_arr) <= 0) {
             return;
         }
         foreach ($this->oConfig_arr as $oConfig) {

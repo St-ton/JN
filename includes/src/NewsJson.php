@@ -44,8 +44,7 @@ class NewsJson
                     $oNewsItem->addAsset($oNewsItemAsset);
                 } else {
                     $oNewsItem->text = $oNews->cVorschauText .
-                        '<br /><a href="' . $oNews->cUrl .
-                        '" class="btn">Mehr...</a>';
+                        '<br /><a href="' . $oNews->cUrl . '" class="btn">Mehr...</a>';
                 }
 
                 $this->timeline->date[] = $oNewsItem;
@@ -90,15 +89,13 @@ class NewsJson
     }
 
     /**
-     * @param array $cOptions_arr
+     * @param array $options
      */
-    public static function buildThumbnail($cOptions_arr)
+    public static function buildThumbnail($options): void
     {
-        if (isset($cOptions_arr['filename'], $cOptions_arr['path'], $cOptions_arr['isdir'])
-            && !$cOptions_arr['isdir']
-        ) {
-            $cOptions_arr['thumb'] = Shop::getImageBaseURL() .
-                PFAD_NEWSBILDER . "{$cOptions_arr['news']}/{$cOptions_arr['filename']}";
+        if (isset($options['filename'], $options['path'], $options['isdir']) && !$options['isdir']) {
+            $options['thumb'] = Shop::getImageBaseURL() .
+                PFAD_NEWSBILDER . "{$options['news']}/{$options['filename']}";
         }
     }
 }

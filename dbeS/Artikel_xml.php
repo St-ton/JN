@@ -120,9 +120,12 @@ function bearbeiteInsert($xml, array $conf)
     // Alten SEO-Pfad merken. Eintrag in tredirect, wenn sich der Pfad geändert hat.
     $oSeoOld       = Shop::Container()->getDB()->select(
         'tartikel',
-        'kArtikel', (int)$Artikel->kArtikel,
-        null, null,
-        null, null,
+        'kArtikel',
+        (int)$Artikel->kArtikel,
+        null,
+        null,
+        null,
+        null,
         false,
         'cSeo'
     );
@@ -202,9 +205,12 @@ function bearbeiteInsert($xml, array $conf)
             $check         = false;
             $currentStatus = Shop::Container()->getDB()->select(
                 'tartikel',
-                'kArtikel', $Artikel->kArtikel,
-                null, null,
-                null, null,
+                'kArtikel',
+                $Artikel->kArtikel,
+                null,
+                null,
+                null,
+                null,
                 false,
                 'cLagerBeachten, cLagerKleinerNull, fLagerbestand'
             );
@@ -550,6 +556,9 @@ function bearbeiteInsert($xml, array $conf)
         DBUpdateInsert('tartikelkonfiggruppe', $oArtikelKonfig_arr, 'kArtikel', 'kKonfiggruppe');
     }
     if (isset($xml['tartikel']['tartikelsonderpreis'])) {
+        if ($xml['tartikel']['tartikelsonderpreis']['dEnde'] === '') {
+            $xml['tartikel']['tartikelsonderpreis']['dEnde'] = '_DBNULL_';
+        }
         updateXMLinDB(
             $xml['tartikel']['tartikelsonderpreis'],
             'tsonderpreise',
@@ -670,7 +679,7 @@ function bearbeiteInsert($xml, array $conf)
                     'kWarenlager'  => $oArtikelWarenlager->kWarenlager,
                     'fBestand'     => $oArtikelWarenlager->fBestand,
                     'fZulauf'      => $oArtikelWarenlager->fZulauf,
-                    'dZulaufDatum' => $oArtikelWarenlager->dZulaufDatum,
+                    'dZulaufDatum' => $oArtikelWarenlager->dZulaufDatum ?? '_DBNULL_',
                 ],
                 \DB\ReturnType::QUERYSINGLE
             );
@@ -922,7 +931,8 @@ function bearbeiteInsert($xml, array $conf)
                             );
                             updateXMLinDB(
                                 $xml['tartikel']['teigenschaft'][$i]['teigenschaftwert'][$o],
-                                'teigenschaftwertabhaengigkeit', $GLOBALS['mEigenschaftWertAbhaengigkeit'],
+                                'teigenschaftwertabhaengigkeit',
+                                $GLOBALS['mEigenschaftWertAbhaengigkeit'],
                                 'kEigenschaftWert',
                                 'kEigenschaftWertZiel'
                             );

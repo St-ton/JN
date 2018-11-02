@@ -205,7 +205,7 @@ if ($step === 'einstellungen bearbeiten') {
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }
-    foreach($Conf as $config) {
+    foreach ($Conf as $config) {
         $config->kEinstellungenConf    = (int)$config->kEinstellungenConf;
         $config->kEinstellungenSektion = (int)$config->kEinstellungenSektion;
         $config->nStandardAnzeigen     = (int)$config->nStandardAnzeigen;

@@ -487,7 +487,7 @@ class Link extends MainModel
     }
 
     /**
-     * @return string
+     * @return int
      */
     public function getSort(): int
     {

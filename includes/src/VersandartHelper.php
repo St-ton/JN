@@ -485,8 +485,16 @@ class VersandartHelper
                     list($kEigenschaft0, $kEigenschaftWert0) = explode(':', $cVariation0);
                     list($kEigenschaft1, $kEigenschaftWert1) = explode(':', $cVariation1);
 
-                    $oVariation0 = ArtikelHelper::findVariation($oArtikelTMP->Variationen, $kEigenschaft0, $kEigenschaftWert0);
-                    $oVariation1 = ArtikelHelper::findVariation($oArtikelTMP->Variationen, $kEigenschaft1, $kEigenschaftWert1);
+                    $oVariation0 = ArtikelHelper::findVariation(
+                        $oArtikelTMP->Variationen,
+                        $kEigenschaft0,
+                        $kEigenschaftWert0
+                    );
+                    $oVariation1 = ArtikelHelper::findVariation(
+                        $oArtikelTMP->Variationen,
+                        $kEigenschaft1,
+                        $kEigenschaftWert1
+                    );
 
                     $oZusatzArtikel->fAnzahl         += $oArtikel['fAnzahl'];
                     $oZusatzArtikel->fWarenwertNetto += $oArtikel['fAnzahl'] *
@@ -551,10 +559,14 @@ class VersandartHelper
                         $fWarensummeProSteuerklasse_arr[$oArtikelKind->kSteuerklasse] = 0;
                     }
 
-                    $fWarensummeProSteuerklasse_arr[$oArtikelKind->kSteuerklasse] += $oArtikelKind->Preise->fVKNetto * $oArtikel['fAnzahl'];
+                    $fWarensummeProSteuerklasse_arr[$oArtikelKind->kSteuerklasse] +=
+                        $oArtikelKind->Preise->fVKNetto * $oArtikel['fAnzahl'];
 
-                    $fSumme = self::gibHinzukommendeArtikelAbhaengigeVersandkosten($oArtikelKind, $cLandISO,
-                        $oArtikel['fAnzahl']);
+                    $fSumme = self::gibHinzukommendeArtikelAbhaengigeVersandkosten(
+                        $oArtikelKind,
+                        $cLandISO,
+                        $oArtikel['fAnzahl']
+                    );
                     if ($fSumme !== false) {
                         $fSummeHinzukommendeArtikelabhaengigeVersandkosten += $fSumme;
                         continue;
@@ -813,11 +825,12 @@ class VersandartHelper
         }
         // gestaffelte
         if (!empty($Artikel->FunktionsAttribute[FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT])) {
-            $arrVersand = array_filter(
-                explode(';', $Artikel->FunktionsAttribute[FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT])
-            );
+            $arrVersand = array_filter(explode(
+                ';',
+                $Artikel->FunktionsAttribute[FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT]
+            ));
             foreach ($arrVersand as $cVersand) {
-                //DE 1-45,00:2-60,00:3-80;AT 1-90,00:2-120,00:3-150,00
+                // DE 1-45,00:2-60,00:3-80;AT 1-90,00:2-120,00:3-150,00
                 list($cLandAttr, $KostenTeil) = explode(' ', $cVersand);
                 if ($cLandAttr && ($cLand === $cLandAttr || $bCheckLieferadresse === false)) {
                     $arrKosten = explode(':', $KostenTeil);
@@ -863,10 +876,11 @@ class VersandartHelper
                     }
                     $oVersandPos->fKosten = (float)str_replace(',', '.', $fKosten) * $nAnzahl;
                     if ($netPricesActive === true) {
-                        $oVersandPos->cPreisLocalized = Preise::getLocalizedPriceString(
-                            TaxHelper::getNet((float)$oVersandPos->fKosten, $steuerSatz)
-                        ) . ' ' . Shop::Lang()->get('plus', 'productDetails') . ' ' .
-                            Shop::Lang()->get('vat', 'productDetails');
+                        $oVersandPos->cPreisLocalized = Preise::getLocalizedPriceString(TaxHelper::getNet(
+                            (float)$oVersandPos->fKosten,
+                            $steuerSatz
+                        )) . ' ' . Shop::Lang()->get('plus', 'productDetails') . ' ' .
+                        Shop::Lang()->get('vat', 'productDetails');
                     } else {
                         $oVersandPos->cPreisLocalized = Preise::getLocalizedPriceString($oVersandPos->fKosten);
                     }
@@ -1306,7 +1320,7 @@ class VersandartHelper
                     : 'cEnglisch';
                 // generate IN sql statement with stringified country isos
                 $sql       = " cISO IN (" . implode(', ', array_map(function ($iso) {
-                        return "'" . $iso . "'";
+                    return "'" . $iso . "'";
                 }, $cLaender_arr)) . ')';
                 $countries = Shop::Container()->getDB()->query(
                     "SELECT " . $select . " AS name

@@ -299,7 +299,7 @@ class WarenkorbPos
     /**
      * gibt Gewicht dieser Position zurück. Variationen und PosAnzahl berücksichtigt
      *
-     * @return float Gewicht
+     * @return float
      */
     public function gibGesamtgewicht()
     {
@@ -353,7 +353,6 @@ class WarenkorbPos
                 $currency
             );
             $this->cEinzelpreisLocalized[1][$currencyName] = Preise::getLocalizedPriceString($this->fPreis, $currency);
-
             if (!empty($this->Artikel->cVPEEinheit)
                 && isset($this->Artikel->cVPE)
                 && $this->Artikel->cVPE === 'Y'
@@ -361,7 +360,6 @@ class WarenkorbPos
             ) {
                 $this->Artikel->baueVPE($this->fPreis);
             }
-
             if ($this->istKonfigVater()) {
                 $this->cKonfigpreisLocalized[0][$currencyName]       = Preise::getLocalizedPriceString(
                     TaxHelper::getGross($this->fPreis * $this->nAnzahl, TaxHelper::getSalesTax($this->kSteuerklasse), 4),
@@ -402,11 +400,10 @@ class WarenkorbPos
                 if ($nVaterPos !== null) {
                     $oVaterPos = Session::Cart()->PositionenArr[$nVaterPos];
                     if (is_object($oVaterPos)) {
-                        if (!$this->isIgnoreMultiplier()) {
-                            $this->nAnzahlEinzel = $this->nAnzahl / $oVaterPos->nAnzahl;
-                        } else {
-                            $this->nAnzahlEinzel = $this->nAnzahl;
-                        }
+                        $this->nAnzahlEinzel = $this->isIgnoreMultiplier()
+                            ? $this->nAnzahl
+                            : $this->nAnzahl / $oVaterPos->nAnzahl;
+
                         $oVaterPos->cKonfigpreisLocalized[0][$currencyName]       = Preise::getLocalizedPriceString(
                             $fPreisBrutto,
                             $currency

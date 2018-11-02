@@ -65,7 +65,7 @@ class KategorieListe
                     $kategorie2->children = [];
 
                     if ($levels > 2) {
-                        //3rd level
+                        // 3rd level
                         $kategorie2->children = $this->holUnterkategorien(
                             $kategorie2->kKategorie,
                             $kKundengruppe,

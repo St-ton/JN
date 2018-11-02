@@ -13,7 +13,8 @@ function getWidgets(bool $bActive = true)
     $oWidget_arr = Shop::Container()->getDB()->selectAll(
         'tadminwidgets',
         'bActive',
-        (int)$bActive, '*',
+        (int)$bActive,
+        '*',
         'eContainer ASC, nPos ASC'
     );
     if ($bActive) {
@@ -208,9 +209,8 @@ function getShopInfoIO($cTpl, $cWrapperID)
     $oSubscription    = $api->getSubscription();
     $oLatestVersion   = $api->getLatestVersion();
     $bUpdateAvailable = $api->hasNewerVersion();
-
     $strLatestVersion = $oLatestVersion
-        ? sprintf('%.2f', $oLatestVersion->version / 100)
+        ? sprintf('%d.%02d', $oLatestVersion->getMajor(), $oLatestVersion->getMinor())
         : null;
 
     Shop::Smarty()->assign('oSubscription', $oSubscription);

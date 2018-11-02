@@ -297,11 +297,11 @@ class Statistik
     {
         if ($this->nTage == 1) {
             $this->nAnzeigeIntervall = 1;
-        } elseif ($this->nTage <= 31) {
+        } elseif ($this->nTage <= 31) { // Tage
             $this->nAnzeigeIntervall = 2;
-        } elseif ($this->nTage <= 365) {
+        } elseif ($this->nTage <= 365) { // Monate
             $this->nAnzeigeIntervall = 3;
-        } elseif ($this->nTage > 365) {
+        } elseif ($this->nTage > 365) { // Jahre
             $this->nAnzeigeIntervall = 4;
         }
 
@@ -446,10 +446,10 @@ class Statistik
     }
 
     /**
-     * @param array $oStatTMP_arr
+     * @param array $tmpData
      * @return array
      */
-    private function mergeDaten($oStatTMP_arr): array
+    private function mergeDaten($tmpData): array
     {
         $oStat_arr = $this->vordefStats();
         if ($this->nStampVon !== null) {
@@ -459,7 +459,8 @@ class Statistik
                         0,
                         0,
                         0,
-                        date('m', $this->nStampVon), date('d', $this->nStampVon),
+                        date('m', $this->nStampVon),
+                        date('d', $this->nStampVon),
                         date('Y', $this->nStampVon)
                     );
                     $end = mktime(
@@ -515,12 +516,10 @@ class Statistik
             }
             $oStat_arr = array_values($oStat_arr);
         }
-        if (count($oStat_arr) > 0 && count($oStatTMP_arr) > 0) {
-            $nMonat = $oStatTMP_arr[0]->nMonth;
-            $nJahr  = $oStatTMP_arr[0]->nYear;
+        if (count($oStat_arr) > 0 && count($tmpData) > 0) {
             foreach ($oStat_arr as $i => $oStat) {
                 $bFound = false;
-                foreach ($oStatTMP_arr as $oStatTMP) {
+                foreach ($tmpData as $oStatTMP) {
                     $bBreak = false;
                     switch ($this->nAnzeigeIntervall) {
                         case 1: // Stunden

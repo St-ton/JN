@@ -1134,7 +1134,7 @@ class Sprache
                             $url = '';
                         } elseif ($specialPage->getFileName() !== null) {
                             $url = $helper->getStaticRoute($specialPage->getFileName(), false);
-                            //check if there is a SEO link for the given file
+                            // check if there is a SEO link for the given file
                             if ($url === $specialPage->getFileName()) {
                                 // no SEO link - fall back to php file with GET param
                                 $url = $shopURL . $specialPage->getFileName();

@@ -495,11 +495,11 @@ class MediaImage implements IMedia
         switch ($type) {
             case Image::TYPE_PRODUCT:
                 $res = [
-                    'stmt' => 'SELECT kArtikel, nNr AS number 
-                                  FROM tartikelpict 
-                                  WHERE kArtikel = :kArtikel 
-                                  GROUP BY cPfad 
-                                  ORDER BY nNr ASC',
+                    'stmt' => 'SELECT kArtikel, nNr AS number
+                        FROM tartikelpict 
+                        WHERE kArtikel = :kArtikel 
+                        GROUP BY cPfad 
+                        ORDER BY nNr ASC',
                     'bind' => ['kArtikel' => $id]
                 ];
                 break;
@@ -514,17 +514,17 @@ class MediaImage implements IMedia
             case Image::TYPE_CONFIGGROUP:
                 $res = [
                     'stmt' => 'SELECT cBildpfad, 0 AS number 
-                                  FROM tkonfiggruppe 
-                                  WHERE kKonfiggruppe = :kKonfiggruppe 
-                                  ORDER BY nSort ASC',
+                        FROM tkonfiggruppe 
+                        WHERE kKonfiggruppe = :kKonfiggruppe 
+                        ORDER BY nSort ASC',
                     'bind' => ['kKonfiggruppe' => $id]
                 ];
                 break;
             case Image::TYPE_VARIATION:
                 $res = [
                     'stmt' => 'SELECT kEigenschaftWert, 0 AS number 
-                                  FROM teigenschaftwertpict 
-                                  WHERE kEigenschaftWert = :kEigenschaftWert',
+                        FROM teigenschaftwertpict 
+                        WHERE kEigenschaftWert = :kEigenschaftWert',
                     'bind' => ['kEigenschaftWert' => $id]
                 ];
                 break;
@@ -539,18 +539,18 @@ class MediaImage implements IMedia
             case Image::TYPE_ATTRIBUTE:
                 $res = [
                     'stmt' => 'SELECT cBildpfad, 0 AS number 
-                                  FROM tmerkmal 
-                                  WHERE kMerkmal = :kMerkmal 
-                                  ORDER BY nSort ASC',
+                        FROM tmerkmal 
+                        WHERE kMerkmal = :kMerkmal 
+                        ORDER BY nSort ASC',
                     'bind' => ['kMerkmal' => $id]
                 ];
                 break;
             case Image::TYPE_ATTRIBUTE_VALUE:
                 $res = [
                     'stmt' => 'SELECT cBildpfad, 0 AS number 
-                                  FROM tmerkmalwert 
-                                  WHERE kMerkmalWert = :kMerkmalWert 
-                                  ORDER BY nSort ASC',
+                        FROM tmerkmalwert 
+                        WHERE kMerkmalWert = :kMerkmalWert 
+                        ORDER BY nSort ASC',
                     'bind' => ['kMerkmalWert' => $id]
                 ];
                 break;

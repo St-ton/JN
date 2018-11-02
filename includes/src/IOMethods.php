@@ -950,7 +950,8 @@ class IOMethods
                         $stockInfo->text  = '';
 
                         if (isset($nPossibleVariations[$value->kEigenschaft])
-                            && in_array($value->kEigenschaftWert, $nPossibleVariations[$value->kEigenschaft])) {
+                            && in_array($value->kEigenschaftWert, $nPossibleVariations[$value->kEigenschaft])
+                        ) {
                             $objResponse->jsfunc(
                                 '$.evo.article().variationEnable',
                                 $value->kEigenschaft,
@@ -977,7 +978,8 @@ class IOMethods
                         if ($value->notExists || !$value->inStock) {
                             $stockInfo->stock  = false;
                             $stockInfo->status = 0;
-                            $stockInfo->text   = $value->notExists ? Shop::Lang()->get('notAvailableInSelection')
+                            $stockInfo->text   = $value->notExists
+                                ? Shop::Lang()->get('notAvailableInSelection')
                                 : Shop::Lang()->get('ampelRot');
                         }
                         if (!$stockInfo->stock) {

@@ -135,6 +135,11 @@ class Pagination
     private $nDefaultItemsPerPage = 0;
 
     /**
+     * @var int
+     */
+    private $nDefaultSortByDir = 0;
+
+    /**
      * Pagination constructor.
      * @param string $cId
      */
@@ -146,12 +151,12 @@ class Pagination
     }
 
     /**
-     * @param string $cId - page-unique name for this pagination
+     * @param string $id - page-unique name for this pagination
      * @return $this
      */
-    public function setId($cId): self
+    public function setId($id): self
     {
-        $this->cId = $cId;
+        $this->cId = $id;
 
         return $this;
     }
@@ -168,46 +173,46 @@ class Pagination
     }
 
     /**
-     * @param int[] $nItemsPerPageOption_arr - to be offered as items per page count options (non-empty)
+     * @param int[] $itemsPerPageOptions - to be offered as items per page count options (non-empty)
      * @return $this
      */
-    public function setItemsPerPageOptions(array $nItemsPerPageOption_arr): self
+    public function setItemsPerPageOptions(array $itemsPerPageOptions): self
     {
-        $this->nItemsPerPageOption_arr = $nItemsPerPageOption_arr;
+        $this->nItemsPerPageOption_arr = $itemsPerPageOptions;
 
         return $this;
     }
 
     /**
-     * @param array $cSortByOption_arr - array of [$cColumnName, $cDisplayTitle] pairs to be offered as sorting options
+     * @param array $sortByOptions - array of [$cColumnName, $cDisplayTitle] pairs to be offered as sorting options
      * @return $this
      */
-    public function setSortByOptions(array $cSortByOption_arr): self
+    public function setSortByOptions(array $sortByOptions): self
     {
-        $this->cSortByOption_arr = $cSortByOption_arr;
+        $this->cSortByOption_arr = $sortByOptions;
 
         return $this;
     }
 
     /**
-     * @param int $nItemCount - number of items to be paginated
+     * @param int $n - number of items to be paginated
      * @return $this
      */
-    public function setItemCount(int $nItemCount): self
+    public function setItemCount(int $n): self
     {
-        $this->nItemCount = $nItemCount;
+        $this->nItemCount = $n;
 
         return $this;
     }
 
     /**
-     * @param array|\Tightenco\Collect\Support\Collection $oItem_arr - item array to be paginated and sorted
+     * @param array|\Tightenco\Collect\Support\Collection $items - item array to be paginated and sorted
      * @return $this
      */
-    public function setItemArray($oItem_arr): self
+    public function setItemArray($items): self
     {
-        $this->oItem_arr = $oItem_arr;
-        $this->setItemCount(count($oItem_arr));
+        $this->oItem_arr = $items;
+        $this->setItemCount(count($items));
 
         return $this;
     }
@@ -219,6 +224,17 @@ class Pagination
     public function setDefaultItemsPerPage(int $n): self
     {
         $this->nDefaultItemsPerPage = $n;
+
+        return $this;
+    }
+
+    /**
+     * @param int
+     * @return $this
+     */
+    public function setDefaultSortByDir(int $n): self
+    {
+        $this->nDefaultSortByDir = $n;
 
         return $this;
     }
@@ -245,18 +261,17 @@ class Pagination
     {
         $idx                 = $this->cId . '_nItemsPerPage';
         $this->nItemsPerPage =
-            $this->bItemsPerPageExplicit ? $this->nItemsPerPage : (
-            isset($_GET[$idx]) ? (int)$_GET[$idx] : (
-            isset($_POST[$idx]) ? (int)$_POST[$idx] : (
-            isset($_SESSION[$idx]) ? (int)$_SESSION[$idx] : (
-            $this->nDefaultItemsPerPage >= -1 ? $this->nDefaultItemsPerPage : $this->nItemsPerPageOption_arr[0]))));
-        $idx                 = $this->cId . '_nSortByDir';
-        $this->nSortByDir    =
-            isset($_GET[$idx]) ? (int)$_GET[$idx] : (
-            isset($_POST[$idx]) ? (int)$_POST[$idx] : (
-            isset($_SESSION[$idx]) ? (int)$_SESSION[$idx] : 0));
-        $idx                 = $this->cId . '_nPage';
-
+            $this->bItemsPerPageExplicit                    ? $this->nItemsPerPage : (
+            isset($_GET[$this->cId . '_nItemsPerPage'])     ? (int)$_GET[$this->cId . '_nItemsPerPage'] : (
+            isset($_POST[$this->cId . '_nItemsPerPage'])    ? (int)$_POST[$this->cId . '_nItemsPerPage'] : (
+            isset($_SESSION[$this->cId . '_nItemsPerPage']) ? (int)$_SESSION[$this->cId . '_nItemsPerPage'] : (
+            $this->nDefaultItemsPerPage >= -1               ? $this->nDefaultItemsPerPage :
+                                                              $this->nItemsPerPageOption_arr[0] ))));
+        $this->nSortByDir =
+            isset($_GET[$this->cId . '_nSortByDir'])     ? (int)$_GET[$this->cId . '_nSortByDir'] : (
+            isset($_POST[$this->cId . '_nSortByDir'])    ? (int)$_POST[$this->cId . '_nSortByDir'] : (
+            isset($_SESSION[$this->cId . '_nSortByDir']) ? (int)$_SESSION[$this->cId . '_nSortByDir'] :
+                                                           $this->nDefaultSortByDir ));
         $this->nPage =
             isset($_GET[$idx]) ? (int)$_GET[$idx] : (
             isset($_POST[$idx]) ? (int)$_POST[$idx] : (

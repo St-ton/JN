@@ -198,8 +198,8 @@ class GrafikFont
                     $strFileName = '';
                     break;
                 default:
-                    // wenn cent, dann nächste zahl abwarten, wenn die nicht null ist eine null und die zahl ausgeben,
-                    // ansonsten für beide Nullen das Minus
+                    // wenn cent, dann nächste zahl abwarten, wenn die nicht null
+                    // ist eine null und die zahl ausgeben, ansonsten für beide Nullen das Minus
                     if ($bCent && $bNull && $c == '0') {
                         $strFileName = 'Minus.' . $this->m_strFile;
                         $bNull       = false;

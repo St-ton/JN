@@ -421,15 +421,6 @@ class Template
     }
 
     /**
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    private function getMobileTemplate(): bool
-    {
-        return false;
-    }
-
-    /**
      * @deprecated since 5.0.0
      * @return bool
      */

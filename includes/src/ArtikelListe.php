@@ -111,7 +111,8 @@ class ArtikelListe
         } else {
             $hstSQL = '';
             if (Shop::getProductFilter() !== null && Shop::getProductFilter()->hasManufacturer()) {
-                $hstSQL = ' AND tartikel.kHersteller = ' . Shop::getProductFilter()->getManufacturer()->getValue() . ' ';
+                $hstSQL = ' AND tartikel.kHersteller = ' .
+                    Shop::getProductFilter()->getManufacturer()->getValue() . ' ';
             }
             $lagerfilter    = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $objArr         = Shop::Container()->getDB()->query(

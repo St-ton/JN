@@ -27,8 +27,15 @@ require PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_tools.php';
 
-define('JTL_VERSION', (int) sprintf('%d%02d', Version::parse(APPLICATION_VERSION)->getMajor(), Version::parse(APPLICATION_VERSION)->getMinor())); // DEPRECATED since 5.0.0
-define('JTL_MINOR_VERSION', (int) Version::parse(APPLICATION_VERSION)->getPatch()); // DEPRECATED since 5.0.0
+define(
+    'JTL_VERSION',
+    (int)sprintf(
+        '%d%02d',
+        Version::parse(APPLICATION_VERSION)->getMajor(),
+        Version::parse(APPLICATION_VERSION)->getMinor()
+    )
+); // DEPRECATED since 5.0.0
+define('JTL_MINOR_VERSION', (int)Version::parse(APPLICATION_VERSION)->getPatch()); // DEPRECATED since 5.0.0
 
 if (!function_exists('Shop')) {
     /**
@@ -39,7 +46,6 @@ if (!function_exists('Shop')) {
         return Shop::getInstance();
     }
 }
-
 $DB      = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME, true);
 $cache   = Shop::Container()->getCache()->setJtlCacheConfig();
 $session = \Session\AdminSession::getInstance();
@@ -53,14 +59,15 @@ Shop::bootstrap();
 
 if ($oAccount->logged()) {
     Shop::fire('backend.notification', Notification::getInstance()->buildDefault());
-    if (isset($_POST['revision-action'], $_POST['revision-type'], $_POST['revision-id']) && FormHelper::validateToken()) {
+    if (isset($_POST['revision-action'], $_POST['revision-type'], $_POST['revision-id'])
+        && FormHelper::validateToken()
+    ) {
         $revision = new Revision();
         if ($_POST['revision-action'] === 'restore') {
             $revision->restoreRevision(
                 $_POST['revision-type'],
                 $_POST['revision-id'],
-                isset($_POST['revision-secondary']) && $_POST['revision-secondary'] === '1',
-                empty($_POST['restore-utf8']) || ($_POST['restore-utf8'] === '1')
+                isset($_POST['revision-secondary']) && $_POST['revision-secondary'] === '1'
             );
         } elseif ($_POST['revision-action'] === 'delete') {
             $revision->deleteRevision($_POST['revision-id']);

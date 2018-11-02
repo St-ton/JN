@@ -17,8 +17,8 @@ if (isset($_POST['speichern']) && FormHelper::validateToken()) {
     $cHinweis .= saveAdminSectionSettings(CONF_SITEMAP, $_POST);
     if (isset($_POST['nVon'])
         && is_array($_POST['nVon'])
-        && count($_POST['nVon']) > 0
         && is_array($_POST['nBis'])
+        && count($_POST['nVon']) > 0
         && count($_POST['nBis']) > 0
     ) {
         Shop::Container()->getDB()->query('TRUNCATE TABLE tpreisspannenfilter', \DB\ReturnType::AFFECTED_ROWS);

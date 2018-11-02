@@ -433,8 +433,8 @@ function mappe(&$obj, $xml, $map)
 function mapArray($xml, $name, $map)
 {
     $obj_arr = [];
-    if ((isset($xml[$name]) && is_array($xml[$name])) ||
-        (isset($xml[$name . ' attr']) && is_array($xml[$name . ' attr']))
+    if ((isset($xml[$name]) && is_array($xml[$name]))
+        || (isset($xml[$name . ' attr']) && is_array($xml[$name . ' attr']))
     ) {
         if (isset($xml[$name . ' attr']) && is_array($xml[$name . ' attr'])) {
             $obj = new stdClass();

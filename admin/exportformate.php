@@ -17,8 +17,11 @@ $link                = null;
 if (isset($_GET['neuerExport']) && (int)$_GET['neuerExport'] === 1 && FormHelper::validateToken()) {
     $step = 'neuer Export';
 }
-// hacky
-if (isset($_GET['kExportformat']) && (int)$_GET['kExportformat'] > 0 && !isset($_GET['action']) && FormHelper::validateToken()) {
+if (isset($_GET['kExportformat'])
+    && (int)$_GET['kExportformat'] > 0
+    && !isset($_GET['action'])
+    && FormHelper::validateToken()
+) {
     $step                   = 'neuer Export';
     $_POST['kExportformat'] = (int)$_GET['kExportformat'];
 
@@ -50,7 +53,13 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && FormHelper
         }
 
         Shop::Container()->getDB()->delete('texportformateinstellungen', 'kExportformat', $kExportformat);
-        $Conf        = Shop::Container()->getDB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_EXPORTFORMATE, '*', 'nSort');
+        $Conf        = Shop::Container()->getDB()->selectAll(
+            'teinstellungenconf',
+            'kEinstellungenSektion',
+            CONF_EXPORTFORMATE,
+            '*',
+            'nSort'
+        );
         $configCount = count($Conf);
         for ($i = 0; $i < $configCount; $i++) {
             $aktWert                = new stdClass();

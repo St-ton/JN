@@ -559,10 +559,8 @@ class Wunschliste
                                         && empty($oEigenschaftWertVorhanden->cFreifeldWert)
                                     ) {
                                         $cArtikel_arr[] = $wlPosition->cArtikelName;
-                                        $hinweis        .= '<br />' . Shop::Lang()->get(
-                                            'noProductWishlist',
-                                            'messages'
-                                        );
+                                        $hinweis        .= '<br />' .
+                                            Shop::Lang()->get('noProductWishlist', 'messages');
 
                                         $this->delWunschlistePosSess($wlPosition->kArtikel);
                                         break;

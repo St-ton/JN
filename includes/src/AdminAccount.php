@@ -35,17 +35,38 @@ class AdminAccount
     private $messageMapper;
 
     /**
-     * @param bool $bInitialize
+     * @var int
      */
-    public function __construct(bool $bInitialize = true)
+    private $lockedMinutes = 0;
+
+    /**
+     * @param bool $init
+     */
+    public function __construct(bool $init = true)
     {
         $this->authLogger    = Shop::Container()->getBackendLogService();
         $this->messageMapper = new \Mapper\AdminLoginStatusMessageMapper();
         $this->levelMapper   = new \Mapper\AdminLoginStatusToLogLevel();
-        if ($bInitialize) {
+        if ($init) {
             AdminSession::getInstance();
             $this->validateSession();
         }
+    }
+
+    /**
+     * @return int
+     */
+    public function getLockedMinutes(): int
+    {
+        return $this->lockedMinutes;
+    }
+
+    /**
+     * @param int $lockedMinutes
+     */
+    public function setLockedMinutes(int $lockedMinutes): void
+    {
+        $this->lockedMinutes = $lockedMinutes;
     }
 
     /**
@@ -170,6 +191,16 @@ class AdminAccount
         if ($oAdmin->dGueltigTS && $oAdmin->kAdminlogingruppe !== ADMINGROUP && $oAdmin->dGueltigTS < time()) {
             return $this->handleLoginResult(AdminLoginStatus::ERROR_LOGIN_EXPIRED, $cLogin);
         }
+        if ($oAdmin->nLoginVersuch >= MAX_LOGIN_ATTEMPTS && !empty($oAdmin->locked_at)) {
+            $time        = new DateTime($oAdmin->locked_at);
+            $now         = new DateTime('NOW');
+            $diffMinutes = ($now->getTimestamp() - $time->getTimestamp()) / 60;
+            if ($diffMinutes < LOCK_TIME) {
+                $this->setLockedMinutes((int)ceil(LOCK_TIME - $diffMinutes));
+
+                return AdminLoginStatus::ERROR_LOCKED;
+            }
+        }
         $verified     = false;
         $cPassCrypted = null;
         if (strlen($oAdmin->cPass) === 32) {
@@ -177,9 +208,7 @@ class AdminAccount
             if (md5($cPass) !== $oAdmin->cPass) {
                 $this->setRetryCount($oAdmin->cLogin);
 
-                return $this->handleLoginResult(($oAdmin->nLoginVersuch + 1) >= 3
-                    ? AdminLoginStatus::ERROR_INVALID_PASSWORD_LOCKED
-                    : AdminLoginStatus::ERROR_INVALID_PASSWORD, $cLogin);
+                return $this->handleLoginResult(AdminLoginStatus::ERROR_INVALID_PASSWORD, $cLogin);
             }
             if (!isset($_SESSION['AdminAccount'])) {
                 $_SESSION['AdminAccount'] = new stdClass();
@@ -230,9 +259,7 @@ class AdminAccount
         }
         $this->setRetryCount($oAdmin->cLogin);
 
-        return $this->handleLoginResult(($oAdmin->nLoginVersuch + 1) >= 3
-            ? AdminLoginStatus::ERROR_INVALID_PASSWORD_LOCKED
-            : AdminLoginStatus::ERROR_INVALID_PASSWORD, $cLogin);
+        return $this->handleLoginResult(AdminLoginStatus::ERROR_INVALID_PASSWORD, $cLogin);
     }
 
     /**
@@ -283,7 +310,7 @@ class AdminAccount
     /**
      *
      */
-    public function redirectOnFailure()
+    public function redirectOnFailure(): void
     {
         if (!$this->logged()) {
             $url = strpos(basename($_SERVER['REQUEST_URI']), 'logout.php') === false
@@ -372,7 +399,7 @@ class AdminAccount
     /**
      *
      */
-    public function redirectOnUrl()
+    public function redirectOnUrl(): void
     {
         $cUrl       = Shop::getURL() . '/' . PFAD_ADMIN . 'index.php';
         $xParse_arr = parse_url($cUrl);
@@ -456,9 +483,6 @@ class AdminAccount
             $_SESSION['AdminAccount']->cMail       = $oAdmin->cMail;
             $_SESSION['AdminAccount']->cPass       = $oAdmin->cPass;
 
-            $_SESSION['KCFINDER']             = [];
-            $_SESSION['KCFINDER']['disabled'] = false;
-
             if (!is_object($oGroup)) {
                 $oGroup                    = new stdClass();
                 $oGroup->kAdminlogingruppe = ADMINGROUP;
@@ -492,46 +516,58 @@ class AdminAccount
      */
     private function setRetryCount(string $cLogin, bool $bReset = false): self
     {
+        $db = Shop::Container()->getDB();
         if ($bReset) {
-            Shop::Container()->getDB()->update('tadminlogin', 'cLogin', $cLogin, (object)['nLoginVersuch' => 0]);
-        } else {
-            Shop::Container()->getDB()->queryPrepared(
-                'UPDATE tadminlogin
-                    SET nLoginVersuch = nLoginVersuch+1
-                    WHERE cLogin = :login',
-                ['login' => $cLogin],
-                \DB\ReturnType::AFFECTED_ROWS
+            $db->update(
+                'tadminlogin',
+                'cLogin',
+                $cLogin,
+                (object)['nLoginVersuch' => 0, 'locked_at' => '_DBNULL_']
             );
+
+            return $this;
+        }
+        $db->queryPrepared(
+            'UPDATE tadminlogin
+                SET nLoginVersuch = nLoginVersuch+1
+                WHERE cLogin = :login',
+            ['login' => $cLogin],
+            \DB\ReturnType::AFFECTED_ROWS
+        );
+        $data   = $db->select('tadminlogin', 'cLogin', $cLogin);
+        $locked = (int)$data->nLoginVersuch >= MAX_LOGIN_ATTEMPTS;
+        if ($locked === true && array_key_exists('locked_at', (array)$data)) {
+            $db->update('tadminlogin', 'cLogin', $cLogin, (object)['locked_at' => 'NOW()']);
         }
 
         return $this;
     }
 
     /**
-     * @param int $kAdminlogingruppe
+     * @param int $groupID
      * @return bool|object
      */
-    private function getPermissionsByGroup(int $kAdminlogingruppe)
+    private function getPermissionsByGroup(int $groupID)
     {
-        $oGroup = Shop::Container()->getDB()->select(
+        $group = Shop::Container()->getDB()->select(
             'tadminlogingruppe',
             'kAdminlogingruppe',
-            $kAdminlogingruppe
+            $groupID
         );
-        if ($oGroup !== null && isset($oGroup->kAdminlogingruppe)) {
-            $oGroup->kAdminlogingruppe = (int)$oGroup->kAdminlogingruppe;
-            $oPermission_arr           = Shop::Container()->getDB()->selectAll(
+        if ($group !== null && isset($group->kAdminlogingruppe)) {
+            $group->kAdminlogingruppe = (int)$group->kAdminlogingruppe;
+            $oPermission_arr          = Shop::Container()->getDB()->selectAll(
                 'tadminrechtegruppe',
                 'kAdminlogingruppe',
-                $kAdminlogingruppe,
+                $groupID,
                 'cRecht'
             );
-            $oGroup->oPermission_arr   = [];
+            $group->oPermission_arr   = [];
             foreach ($oPermission_arr as $oPermission) {
-                $oGroup->oPermission_arr[] = $oPermission->cRecht;
+                $group->oPermission_arr[] = $oPermission->cRecht;
             }
 
-            return $oGroup;
+            return $group;
         }
 
         return false;

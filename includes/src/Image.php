@@ -135,47 +135,48 @@ class Image
     /**
      *  Global image settings
      *
-     * @return array|mixed
+     * @return array
      */
-    public static function getSettings()
+    public static function getSettings(): array
     {
-        if (self::$settings === null) {
-            $settings = Shop::getSettings([CONF_BILDER]);
-            $settings = array_shift($settings);
-            $branding = self::getBranding();
-
-            self::$settings = [
-                'background' => $settings['bilder_hintergrundfarbe'],
-                'container'  => $settings['container_verwenden'] === 'Y',
-                'format'     => strtolower($settings['bilder_dateiformat']),
-                'scale'      => $settings['bilder_skalieren'] === 'Y',
-                'quality'    => (int)$settings['bilder_jpg_quali'],
-                'branding'   => $branding[self::TYPE_PRODUCT] ?? null,
-                'size'       => [
-                    self::SIZE_XS => [
-                        'width'  => (int)$settings['bilder_artikel_mini_breite'],
-                        'height' => (int)$settings['bilder_artikel_mini_hoehe']
-                    ],
-                    self::SIZE_SM => [
-                        'width'  => (int)$settings['bilder_artikel_klein_breite'],
-                        'height' => (int)$settings['bilder_artikel_klein_hoehe']
-                    ],
-                    self::SIZE_MD => [
-                        'width'  => (int)$settings['bilder_artikel_normal_breite'],
-                        'height' => (int)$settings['bilder_artikel_normal_hoehe']
-                    ],
-                    self::SIZE_LG => [
-                        'width'  => (int)$settings['bilder_artikel_gross_breite'],
-                        'height' => (int)$settings['bilder_artikel_gross_hoehe']
-                    ]
-                ],
-                'naming'     => [
-                    self::TYPE_PRODUCT   => (int)$settings['bilder_artikel_namen'],
-                    self::TYPE_CATEGORY  => (int)$settings['bilder_kategorie_namen'],
-                    self::TYPE_VARIATION => (int)$settings['bilder_variation_namen']
-                ]
-            ];
+        if (self::$settings !== null) {
+            return self::$settings;
         }
+        $settings = Shop::getSettings([CONF_BILDER]);
+        $settings = array_shift($settings);
+        $branding = self::getBranding();
+
+        self::$settings = [
+            'background' => $settings['bilder_hintergrundfarbe'],
+            'container'  => $settings['container_verwenden'] === 'Y',
+            'format'     => strtolower($settings['bilder_dateiformat']),
+            'scale'      => $settings['bilder_skalieren'] === 'Y',
+            'quality'    => (int)$settings['bilder_jpg_quali'],
+            'branding'   => $branding[self::TYPE_PRODUCT] ?? null,
+            'size'       => [
+                self::SIZE_XS => [
+                    'width'  => (int)$settings['bilder_artikel_mini_breite'],
+                    'height' => (int)$settings['bilder_artikel_mini_hoehe']
+                ],
+                self::SIZE_SM => [
+                    'width'  => (int)$settings['bilder_artikel_klein_breite'],
+                    'height' => (int)$settings['bilder_artikel_klein_hoehe']
+                ],
+                self::SIZE_MD => [
+                    'width'  => (int)$settings['bilder_artikel_normal_breite'],
+                    'height' => (int)$settings['bilder_artikel_normal_hoehe']
+                ],
+                self::SIZE_LG => [
+                    'width'  => (int)$settings['bilder_artikel_gross_breite'],
+                    'height' => (int)$settings['bilder_artikel_gross_hoehe']
+                ]
+            ],
+            'naming'     => [
+                self::TYPE_PRODUCT   => (int)$settings['bilder_artikel_namen'],
+                self::TYPE_CATEGORY  => (int)$settings['bilder_kategorie_namen'],
+                self::TYPE_VARIATION => (int)$settings['bilder_variation_namen']
+            ]
+        ];
 
         return self::$settings;
     }

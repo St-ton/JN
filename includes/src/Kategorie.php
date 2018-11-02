@@ -291,20 +291,20 @@ class Kategorie
             );
         }
         if ($catAttributes !== null && is_array($catAttributes) && count($catAttributes) > 0) {
-            foreach ($catAttributes as $catAttribute) {
+            foreach ($catAttributes as $attribute) {
                 // Aus Kompatibilitätsgründen findet hier KEINE Trennung
                 // zwischen Funktions- und lokalisierten Attributen statt
-                if ($catAttribute->cName === 'meta_title') {
-                    $this->cTitleTag = $catAttribute->cWert;
-                } elseif ($catAttribute->cName === 'meta_description') {
-                    $this->cMetaDescription = $catAttribute->cWert;
-                } elseif ($catAttribute->cName === 'meta_keywords') {
-                    $this->cMetaKeywords = $catAttribute->cWert;
+                if ($attribute->cName === 'meta_title') {
+                    $this->cTitleTag = $attribute->cWert;
+                } elseif ($attribute->cName === 'meta_description') {
+                    $this->cMetaDescription = $attribute->cWert;
+                } elseif ($attribute->cName === 'meta_keywords') {
+                    $this->cMetaKeywords = $attribute->cWert;
                 }
-                if ($catAttribute->bIstFunktionsAttribut) {
-                    $this->categoryFunctionAttributes[strtolower($catAttribute->cName)] = $catAttribute->cWert;
+                if ($attribute->bIstFunktionsAttribut) {
+                    $this->categoryFunctionAttributes[strtolower($attribute->cName)] = $attribute->cWert;
                 } else {
-                    $this->categoryAttributes[strtolower($catAttribute->cName)] = $catAttribute;
+                    $this->categoryAttributes[strtolower($attribute->cName)] = $attribute;
                 }
             }
         }

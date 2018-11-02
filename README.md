@@ -47,7 +47,7 @@
 * Guzzle - MIT
 * imanee - MIT
 * CKEditor - LGPL
-* KCFinder
+* elFinder - BSD
 * CodeMirror - MIT
 * Minify
 * NuSoap - LGPLv2

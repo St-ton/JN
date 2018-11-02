@@ -160,7 +160,7 @@ function pruefeKategorieSichtbarkeit(int $customerGroupID)
  * @param int $customerID
  * @return bool
  */
-function setzeWarenkorbPersInWarenkorb(int $customerID)
+function setzeWarenkorbPersInWarenkorb(int $customerID): bool
 {
     if (!$customerID) {
         return false;
@@ -257,7 +257,7 @@ function setzeWarenkorbPersInWarenkorb(int $customerID)
  *
  * @param int $customerGroupID
  */
-function pruefeWarenkorbArtikelSichtbarkeit(int $customerGroupID)
+function pruefeWarenkorbArtikelSichtbarkeit(int $customerGroupID): void
 {
     $cart = Session::Cart();
     if ($customerGroupID <= 0 || empty($cart->PositionenArr)) {
@@ -299,7 +299,7 @@ function pruefeWarenkorbArtikelSichtbarkeit(int $customerGroupID)
  * @param string $userLogin
  * @param string $passLogin
  */
-function fuehreLoginAus($userLogin, $passLogin)
+function fuehreLoginAus($userLogin, $passLogin): void
 {
     global $cHinweis;
     $oKupons  = [];

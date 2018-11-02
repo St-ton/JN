@@ -100,17 +100,17 @@ class Lieferscheinpos
      */
     public function update(): int
     {
-        $_upd                = new stdClass();
-        $_upd->kLieferschein = $this->getLieferschein();
-        $_upd->kBestellPos   = $this->getBestellPos();
-        $_upd->kWarenlager   = $this->getWarenlager();
-        $_upd->fAnzahl       = $this->getAnzahl();
+        $upd                = new stdClass();
+        $upd->kLieferschein = $this->getLieferschein();
+        $upd->kBestellPos   = $this->getBestellPos();
+        $upd->kWarenlager   = $this->getWarenlager();
+        $upd->fAnzahl       = $this->getAnzahl();
 
         return Shop::Container()->getDB()->update(
             'tlieferscheinpos',
             'kLieferscheinPos',
             $this->getLieferscheinPos(),
-            $_upd
+            $upd
         );
     }
 

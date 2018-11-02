@@ -193,7 +193,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
 
             if ($fFinalPrice < 0.0) {
                 $cError = sprintf(
-                    "Negative Konfigurationssumme für Artikel '%s' (Art.Nr.: %s, Netto: %s) - Vorgang wurde abgebrochen",
+                    "Negative Konfigurationssumme für Artikel '%s' (Art.Nr.: %s, Netto: %s) - Vorgang abgebrochen",
                     $oArtikel->cName,
                     $oArtikel->cArtNr,
                     Preise::getLocalizedPriceString($fFinalPrice)

@@ -434,7 +434,11 @@ class Bestellung
             }
         }
 
-        $bestellstatus          = Shop::Container()->getDB()->select('tbestellstatus', 'kBestellung', (int)$this->kBestellung);
+        $bestellstatus          = Shop::Container()->getDB()->select(
+            'tbestellstatus',
+            'kBestellung',
+            (int)$this->kBestellung
+        );
         $this->BestellstatusURL = Shop::getURL() . '/status.php?uid=' . $bestellstatus->cUID;
         $warenwert              = Shop::Container()->getDB()->query(
             'SELECT sum(((fPreis*fMwSt)/100+fPreis)*nAnzahl) AS wert
@@ -487,10 +491,19 @@ class Bestellung
             if ($disableFactor === true) {
                 $this->Waehrung->fFaktor = 1;
             }
-            $this->Steuerpositionen = TaxHelper::getOldTaxPositions($this->Positionen, $nNettoPreis, (bool)$htmlWaehrung, $this->Waehrung);
+            $this->Steuerpositionen = TaxHelper::getOldTaxPositions(
+                $this->Positionen,
+                $nNettoPreis,
+                (bool)$htmlWaehrung,
+                $this->Waehrung
+            );
             if ($this->kZahlungsart > 0) {
                 require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
-                $this->Zahlungsart = Shop::Container()->getDB()->select('tzahlungsart', 'kZahlungsart', (int)$this->kZahlungsart);
+                $this->Zahlungsart = Shop::Container()->getDB()->select(
+                    'tzahlungsart',
+                    'kZahlungsart',
+                    (int)$this->kZahlungsart
+                );
                 if ($this->Zahlungsart !== null) {
                     $oPaymentMethod = new PaymentMethod($this->Zahlungsart->cModulId, 1);
                     $oZahlungsart   = $oPaymentMethod::create($this->Zahlungsart->cModulId);
@@ -600,15 +613,18 @@ class Bestellung
                         $position->fPreis * $position->nAnzahl,
                         $position->fMwSt
                     ),
-                    $this->Waehrung, $htmlWaehrung
+                    $this->Waehrung,
+                    $htmlWaehrung
                 );
                 $position->cGesamtpreisLocalized[1] = Preise::getLocalizedPriceString(
                     $position->fPreis * $position->nAnzahl,
-                    $this->Waehrung, $htmlWaehrung
+                    $this->Waehrung,
+                    $htmlWaehrung
                 );
                 $position->cEinzelpreisLocalized[0] = Preise::getLocalizedPriceString(
                     TaxHelper::getGross($position->fPreis, $position->fMwSt),
-                    $this->Waehrung, $htmlWaehrung
+                    $this->Waehrung,
+                    $htmlWaehrung
                 );
                 $position->cEinzelpreisLocalized[1] = Preise::getLocalizedPriceString(
                     $position->fPreis,
@@ -669,13 +685,23 @@ class Bestellung
             $position->nOffenGesamt        = $position->nAnzahl;
         }
 
-        $this->WarensummeLocalized[0]     = Preise::getLocalizedPriceString($this->fGesamtsumme, $this->Waehrung, $htmlWaehrung);
-        $this->WarensummeLocalized[1]     = Preise::getLocalizedPriceString($summe + $this->fGuthaben, $this->Waehrung, $htmlWaehrung);
+        $this->WarensummeLocalized[0]     = Preise::getLocalizedPriceString(
+            $this->fGesamtsumme,
+            $this->Waehrung,
+            $htmlWaehrung
+        );
+        $this->WarensummeLocalized[1]     = Preise::getLocalizedPriceString(
+            $summe + $this->fGuthaben,
+            $this->Waehrung,
+            $htmlWaehrung
+        );
         $this->fGesamtsummeNetto          = $summe + $this->fGuthaben;
         $this->fWarensummeKundenwaehrung  = ($this->fWarensumme + $this->fGuthaben) * $this->fWaehrungsFaktor;
         $this->fVersandKundenwaehrung     = $this->fVersand * $this->fWaehrungsFaktor;
         $this->fSteuern                   = $this->fGesamtsumme - $this->fGesamtsummeNetto;
-        $this->fGesamtsummeKundenwaehrung = WarenkorbHelper::roundOptional($this->fWarensummeKundenwaehrung + $this->fVersandKundenwaehrung);
+        $this->fGesamtsummeKundenwaehrung = WarenkorbHelper::roundOptional(
+            $this->fWarensummeKundenwaehrung + $this->fVersandKundenwaehrung
+        );
 
         $oData       = new stdClass();
         $oData->cPLZ = $this->oRechnungsadresse->cPLZ ?? ($this->Lieferadresse->cPLZ ?? '');
@@ -696,9 +722,10 @@ class Bestellung
                         $oPosition->nPosTyp     = (int)$oPosition->nPosTyp;
                         $oPosition->kBestellpos = (int)$oPosition->kBestellpos;
                         if (in_array(
-                                $oPosition->nPosTyp,
-                                [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_GRATISGESCHENK], true
-                            )
+                            $oPosition->nPosTyp,
+                            [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_GRATISGESCHENK],
+                            true
+                        )
                             && $_lieferscheinPos->getBestellPos() === $oPosition->kBestellpos
                         ) {
                             $oPosition->kLieferschein_arr[] = $_lieferschein->getLieferschein();
@@ -982,7 +1009,7 @@ class Bestellung
      * @param int|null $nMinDelivery
      * @param int|null $nMaxDelivery
      */
-    public function setEstimatedDelivery(int $nMinDelivery = null, int $nMaxDelivery = null)
+    public function setEstimatedDelivery(int $nMinDelivery = null, int $nMaxDelivery = null): void
     {
         $this->oEstimatedDelivery = (object)[
             'localized'  => '',
@@ -1014,7 +1041,7 @@ class Bestellung
             $longestMaxDeliveryDays = 0;
             //Lookup language iso
             $lang = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$this->kSprache);
-            foreach ($this->Positionen as $i => $oPosition) {
+            foreach ($this->Positionen as $oPosition) {
                 $oPosition->nPosTyp = (int)$oPosition->nPosTyp;
                 if ($oPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
                     && isset($oPosition->Artikel)
@@ -1077,10 +1104,12 @@ class Bestellung
                 FROM tkampagnevorgang
                   LEFT JOIN tkampagne ON tkampagne.kKampagne = tkampagnevorgang.kKampagne
                 WHERE tkampagnevorgang.kKampagneDef = :kampagneDef
-                    AND tkampagnevorgang.kKey = :orderID', [
+                    AND tkampagnevorgang.kKey = :orderID',
+            [
                 'orderID' => $this->kBestellung,
                 'kampagneDef' => KAMPAGNE_DEF_VERKAUF
-            ], \DB\ReturnType::SINGLE_OBJECT
+            ],
+            \DB\ReturnType::SINGLE_OBJECT
         );
     }
 }

@@ -50,11 +50,14 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                 $cFehler = 'Fehler: Bitte füllen Sie alle Felder korrekt aus.';
                 $smarty->assign('cPost_arr', StringHandler::filterXSS($_POST))
                        ->assign('cPlausi_arr', $cPlausi_arr)
-                       ->assign('kAuswahlAssistentFrage',
-                           (isset($_POST['kAuswahlAssistentFrage']) ? (int)$_POST['kAuswahlAssistentFrage'] : 0));
+                       ->assign('kAuswahlAssistentFrage', (int)($_POST['kAuswahlAssistentFrage'] ?? 0));
             }
         }
-    } elseif (isset($_GET['a'], $_GET['q']) && $_GET['a'] === 'delQuest' && (int)$_GET['q'] > 0 && FormHelper::validateToken()) {
+    } elseif (isset($_GET['a'], $_GET['q'])
+        && $_GET['a'] === 'delQuest'
+        && (int)$_GET['q'] > 0
+        && FormHelper::validateToken()
+    ) {
         if (AuswahlAssistentFrage::deleteQuestion(['kAuswahlAssistentFrage_arr' => [$_GET['q']]])) {
             $cHinweis = 'Ihre ausgewählte Frage wurden erfolgreich gelöscht.';
         } else {
@@ -69,8 +72,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         if ($_POST['a'] === 'addGrp') {
             $oAuswahlAssistentGruppe                = new AuswahlAssistentGruppe();
             $oAuswahlAssistentGruppe->kSprache      = (int)$_SESSION['kSprache'];
-            $oAuswahlAssistentGruppe->cName         = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401,
-                JTL_CHARSET);
+            $oAuswahlAssistentGruppe->cName         = htmlspecialchars(
+                $_POST['cName'],
+                ENT_COMPAT | ENT_HTML401,
+                JTL_CHARSET
+            );
             $oAuswahlAssistentGruppe->cBeschreibung = $_POST['cBeschreibung'];
             $oAuswahlAssistentGruppe->nAktiv        = (int)$_POST['nAktiv'];
 
@@ -104,13 +110,19 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             $step = 'uebersicht';
             $cHinweis .= saveAdminSectionSettings(CONF_AUSWAHLASSISTENT, $_POST);
         }
-    } elseif (isset($_GET['a'], $_GET['g']) && $_GET['a'] === 'editGrp' && (int)$_GET['g'] > 0 && FormHelper::validateToken()) {
+    } elseif (isset($_GET['a'], $_GET['g'])
+        && $_GET['a'] === 'editGrp'
+        && (int)$_GET['g'] > 0
+        && FormHelper::validateToken()
+    ) {
         $step = 'edit-group';
         $smarty->assign('oGruppe', new AuswahlAssistentGruppe($_GET['g'], false, false, true));
     }
     if ($step === 'uebersicht') {
-        $smarty->assign('oAuswahlAssistentGruppe_arr',
-            AuswahlAssistentGruppe::getGroups($_SESSION['kSprache'], false, false, true));
+        $smarty->assign(
+            'oAuswahlAssistentGruppe_arr',
+            AuswahlAssistentGruppe::getGroups($_SESSION['kSprache'], false, false, true)
+        );
     } elseif ($step === 'edit-group') {
         $smarty->assign('oLink_arr', AuswahlAssistent::getLinks());
     } elseif ($step === 'edit-question') {
@@ -130,8 +142,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         $smarty->assign('oMerkmal_arr', $oMerkmal_arr)
-               ->assign('oAuswahlAssistentGruppe_arr',
-                   AuswahlAssistentGruppe::getGroups($_SESSION['kSprache'], false, false, true));
+               ->assign(
+                   'oAuswahlAssistentGruppe_arr',
+                   AuswahlAssistentGruppe::getGroups($_SESSION['kSprache'], false, false, true)
+               );
     }
 } else {
     $smarty->assign('noModule', true);

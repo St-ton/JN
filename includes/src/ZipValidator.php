@@ -203,7 +203,6 @@ class ZipValidator
      */
     private $szErrorString;
 
-
     /**
      * @param string $cISO
      */

@@ -297,7 +297,6 @@ function generateSitemapXML()
         \DB\ReturnType::QUERYSINGLE
     );
     while (($oArtikel = $res->fetch(PDO::FETCH_OBJ)) !== false) {
-
         if ($nSitemap > $nSitemapLimit) {
             $nSitemap = 1;
             baueSitemap($nDatei, $sitemap_data);
@@ -511,11 +510,7 @@ function generateSitemapXML()
                 $conf
             );
             foreach ($cURL_arr as $cURL) {
-                if ($categoryHelper->nichtLeer(
-                        $tkategorie->kKategorie,
-                        $defaultCustomerGroupID
-                    ) === true
-                ) {
+                if ($categoryHelper->nichtLeer($tkategorie->kKategorie, $defaultCustomerGroupID) === true) {
                     if ($nSitemap > $nSitemapLimit) {
                         $nSitemap = 1;
                         baueSitemap($nDatei, $sitemap_data);
@@ -565,11 +560,7 @@ function generateSitemapXML()
                     $conf
                 );
                 foreach ($cURL_arr as $cURL) { // X viele Seiten durchlaufen
-                    if ($categoryHelper->nichtLeer(
-                            $tkategorie->kKategorie,
-                            $defaultCustomerGroupID
-                        ) === true
-                    ) {
+                    if ($categoryHelper->nichtLeer($tkategorie->kKategorie, $defaultCustomerGroupID) === true) {
                         if ($nSitemap > $nSitemapLimit) {
                             $nSitemap = 1;
                             baueSitemap($nDatei, $sitemap_data);
@@ -1208,7 +1199,7 @@ function baueExportURL(int $kKey, $cKey, $lastUpdate, $languages, $langID, $prod
             $naviFilter->initStates($params);
             break;
 
-        default :
+        default:
             return $cURL_arr;
     }
     $oSuchergebnisse = $naviFilter->generateSearchResults(null, false, (int)$productsPerPage);

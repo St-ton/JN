@@ -387,7 +387,7 @@ class KategorieHelper
                 ON tkategorieartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                 AND tartikelsichtbarkeit.kKundengruppe = ' . self::$kKundengruppe;
         } else {
-            $countSelect = ', -1 AS cnt';
+            $countSelect          = ', -1 AS cnt';
             $hasArticlesCheckJoin = '';
             $visibilityJoin       = '';
             $visibilityWhere      = '';

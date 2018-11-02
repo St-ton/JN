@@ -518,11 +518,10 @@ class Redirect
      * @param string $sortBy
      * @param string $dir
      * @param string $search
-     * @param bool   $dep
      * @return mixed
      * @deprecated since 4.05 - use Redirect::getRedirects()
      */
-    public function getList($start, $limit, $redirURLs, $sortBy, $dir, $search, $dep = true)
+    public function getList($start, $limit, $redirURLs, $sortBy, $dir, $search)
     {
         $cWhereSQL_arr = [];
         $cOrderSQL     = $sortBy . ' ' . $dir;

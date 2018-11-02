@@ -26,4 +26,6 @@ abstract class AdminLoginStatus
     public const ERROR_TWO_FACTOR_AUTH_EXPIRED = -6;
 
     public const ERROR_UNKNOWN = -7;
+
+    public const ERROR_LOCKED = -8;
 }

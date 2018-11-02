@@ -11,7 +11,7 @@
  */
 function baueFilterSQL($bActiveOnly = false)
 {
-    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return \News\Controller::getFilterSQL($bActiveOnly);
 }
 
@@ -30,7 +30,7 @@ function baueFilterSQL($bActiveOnly = false)
  */
 function pruefeKundenKommentar($cKommentar, $cName, $cEmail, $kNews, $Einstellungen)
 {
-    trigger_error(__METHOD__ . ' is deprecated. Use \News\Controller::checkComment() instead.', E_USER_DEPRECATED);
+    trigger_error(__FUNCTION__ . ' is deprecated. Use \News\Controller::checkComment() instead.', E_USER_DEPRECATED);
     if (!isset($_POST['cEmail'])) {
         $_POST['cEmail'] = $cEmail;
     }
@@ -49,7 +49,7 @@ function pruefeKundenKommentar($cKommentar, $cName, $cEmail, $kNews, $Einstellun
  */
 function gibNewskommentarFehler($nPlausiValue_arr)
 {
-    trigger_error(__METHOD__ . ' is deprecated. Use \News\Controller::getCommentErrors() instead.', E_USER_DEPRECATED);
+    trigger_error(__FUNCTION__ . ' is deprecated. Use \News\Controller::getCommentErrors() instead.', E_USER_DEPRECATED);
     return \News\Controller::getCommentErrors($nPlausiValue_arr);
 }
 
@@ -61,7 +61,7 @@ function gibNewskommentarFehler($nPlausiValue_arr)
  */
 function holeNewsKategorien($cDatumSQL, $bActiveOnly = false)
 {
-    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $kSprache     = Shop::getLanguageID();
     $cSQL         = '';
     $activeFilter = $bActiveOnly ? ' AND tnewskategorie.nAktiv = 1 ' : '';
@@ -103,7 +103,7 @@ function holeNewsKategorien($cDatumSQL, $bActiveOnly = false)
  */
 function baueDatum($dates)
 {
-    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $res = [];
     foreach ($dates as $oDatum) {
         $oTMP            = new stdClass();
@@ -124,7 +124,7 @@ function baueDatum($dates)
  */
 function mappeDatumName($cMonat, $nJahr, $cISOSprache)
 {
-    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return \News\Controller::mapDateName($cMonat, $nJahr, $cISOSprache);
 }
 
@@ -160,7 +160,7 @@ function baueNewsMetaDescription($oNewsNaviFilter, $oNewsUebersicht_arr)
  */
 function baueNewsMetaKeywords($oNewsNaviFilter, $oNewsUebersicht_arr)
 {
-    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $cMetaKeywords = '';
     if (is_array($oNewsUebersicht_arr) && count($oNewsUebersicht_arr) > 0) {
         $nCount = 6;
@@ -198,7 +198,7 @@ function baueNewsMetaStart($oNewsNaviFilter)
  */
 function baueNewsKruemel($smarty, $AktuelleSeite, &$cCanonicalURL)
 {
-    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
 }
 
 /**
@@ -209,7 +209,7 @@ function baueNewsKruemel($smarty, $AktuelleSeite, &$cCanonicalURL)
  */
 function getNewsArchive(int $kNews, bool $bActiveOnly = false)
 {
-    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $activeFilter = $bActiveOnly ? ' AND tnews.nAktiv = 1 ' : '';
 
     return Shop::Container()->getDB()->query(
@@ -244,7 +244,7 @@ function getNewsArchive(int $kNews, bool $bActiveOnly = false)
  */
 function getCurrentNewsCategory(int $kNewsKategorie, bool $bActiveOnly = false)
 {
-    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $activeFilter = $bActiveOnly ? ' AND tnewskategorie.nAktiv = 1 ' : '';
 
     return Shop::Container()->getDB()->queryPrepared(
@@ -270,7 +270,7 @@ function getCurrentNewsCategory(int $kNewsKategorie, bool $bActiveOnly = false)
  */
 function getNewsCategory(int $kNews)
 {
-    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $newsCategories = \Functional\map(
         \Functional\pluck(Shop::Container()->getDB()->selectAll(
             'tnewskategorienews',
@@ -313,7 +313,7 @@ function getNewsCategory(int $kNews)
  */
 function getNewsComments(int $kNews, $cLimitSQL)
 {
-    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Shop::Container()->getDB()->query(
         "SELECT *, DATE_FORMAT(tnewskommentar.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_de
             FROM tnewskommentar
@@ -332,7 +332,7 @@ function getNewsComments(int $kNews, $cLimitSQL)
  */
 function getCommentCount(int $kNews)
 {
-    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Shop::Container()->getDB()->queryPrepared(
         'SELECT COUNT(*) AS nAnzahl
             FROM tnewskommentar
@@ -350,7 +350,7 @@ function getCommentCount(int $kNews)
  */
 function getMonthOverview(int $kNewsMonatsUebersicht)
 {
-    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Shop::Container()->getDB()->queryPrepared(
         "SELECT tnewsmonatsuebersicht.*, tseo.cSeo
             FROM tnewsmonatsuebersicht
@@ -375,7 +375,7 @@ function getMonthOverview(int $kNewsMonatsUebersicht)
  */
 function getNewsOverview($oSQL, $cLimitSQL)
 {
-    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Shop::Container()->getDB()->query(
         "SELECT tseo.cSeo, tnews.*, DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y %H:%i') AS dErstellt_de, 
             COUNT(*) AS nAnzahl, COUNT(DISTINCT(tnewskommentar.kNewsKommentar)) AS nNewsKommentarAnzahl
@@ -411,7 +411,7 @@ function getNewsOverview($oSQL, $cLimitSQL)
  */
 function getFullNewsOverview($oSQL)
 {
-    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Shop::Container()->getDB()->query(
         "SELECT COUNT(DISTINCT(tnews.kNews)) AS nAnzahl
             FROM tnews
@@ -436,7 +436,7 @@ function getFullNewsOverview($oSQL)
  */
 function getNewsDateArray($oSQL)
 {
-    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Shop::Container()->getDB()->query(
         "SELECT MONTH(tnews.dGueltigVon) AS nMonat, YEAR(tnews.dGueltigVon) AS nJahr
             FROM tnews
@@ -463,7 +463,7 @@ function getNewsDateArray($oSQL)
  */
 function cmp_obj($a, $b)
 {
-    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return strcmp($a->cName, $b->cName);
 }
 
@@ -475,7 +475,7 @@ function cmp_obj($a, $b)
  */
 function holeNewsBilder(int $kNews, $cUploadVerzeichnis)
 {
-    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $oDatei_arr = [];
     if ($kNews > 0 && is_dir($cUploadVerzeichnis . $kNews)) {
         $DirHandle    = opendir($cUploadVerzeichnis . $kNews);

@@ -62,7 +62,7 @@ if (FormHelper::validateToken()) {
                     $cacheTags[] = $kArtikel_arr[$i];
                 }
                 // Clear Cache
-                array_walk($cacheTags, function(&$i) { $i = CACHING_GROUP_ARTICLE . '_' . $i; });
+                array_walk($cacheTags, function (&$i) { $i = CACHING_GROUP_ARTICLE . '_' . $i; });
                 Shop::Cache()->flushTags($cacheTags);
                 $cHinweis .= count($_POST['kBewertung']) . ' Bewertung(en) wurde(n) erfolgreich aktiviert.';
             }
@@ -106,7 +106,7 @@ if (FormHelper::validateToken()) {
                 aktualisiereDurchschnitt($kArtikel_arr[$i], $Einstellungen['bewertung']['bewertung_freischalten']);
                 $cacheTags[] = $kArtikel_arr[$i];
             }
-            array_walk($cacheTags, function(&$i) { $i = CACHING_GROUP_ARTICLE . '_' . $i; });
+            array_walk($cacheTags, function (&$i) { $i = CACHING_GROUP_ARTICLE . '_' . $i; });
             Shop::Cache()->flushTags($cacheTags);
     
             $cHinweis .= count($_POST['kBewertung']) . ' Bewertung(en) wurde(n) erfolgreich gelöscht.';
@@ -141,7 +141,8 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
                 'teinstellungenconfwerte',
                 'kEinstellungenConf',
                 (int)$oConfig_arr[$i]->kEinstellungenConf,
-                '*', 'nSort'
+                '*',
+                'nSort'
             );
         } elseif ($oConfig_arr[$i]->cInputTyp === 'listbox') {
             $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(

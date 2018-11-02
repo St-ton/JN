@@ -766,9 +766,9 @@ class Kupon
                 ? empty($cCode)
                 : Shop::Container()->getDB()->select('tkupon', 'cCode', $cCode))) {
             $cCode = $prefix . substr(str_shuffle(str_repeat(
-                    $lowerString . $upperString . $numbersString,
-                    $len
-                )), 0, $len) . $suffix;
+                $lowerString . $upperString . $numbersString,
+                $len
+            )), 0, $len) . $suffix;
         }
 
         return $cCode;

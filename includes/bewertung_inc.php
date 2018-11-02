@@ -273,7 +273,7 @@ function aktualisiereDurchschnitt(int $productID, string $activate): bool
  * @param int $customerID
  * @return int
  */
-function pruefeKundeArtikelBewertet(int $productID, int $customerID)
+function pruefeKundeArtikelBewertet(int $productID, int $customerID): int
 {
     if ($customerID > 0) {
         $oBewertung = Shop::Container()->getDB()->select(
@@ -294,7 +294,7 @@ function pruefeKundeArtikelBewertet(int $productID, int $customerID)
  * @param int $customerID
  * @return int
  */
-function pruefeKundeArtikelGekauft(int $productID, int $customerID)
+function pruefeKundeArtikelGekauft(int $productID, int $customerID): int
 {
     // Prüfen ob der Bewerter diesen Artikel bereits gekauft hat
     if ($customerID > 0 && $productID > 0 && Shop::getSettingValue(CONF_BEWERTUNG, 'bewertung_artikel_gekauft')) {
@@ -400,8 +400,7 @@ function checkeBewertungGuthabenBonus(int $ratingID, array $conf)
             'tbewertungguthabenbonus',
             ['kBewertung', 'kKunde'],
             [$ratingID, $customerID]
-        ) !== null
-        ) {
+        ) !== null) {
             Shop::Container()->getDB()->queryPrepared(
                 'UPDATE tbewertungguthabenbonus 
                     SET fGuthabenBonus = :reward 
@@ -446,8 +445,7 @@ function checkeBewertungGuthabenBonus(int $ratingID, array $conf)
             'tbewertungguthabenbonus',
             ['kBewertung', 'kKunde'],
             [$ratingID, $customerID]
-        ) !== null
-        ) {
+        ) !== null) {
             Shop::Container()->getDB()->queryPrepared(
                 'UPDATE tbewertungguthabenbonus 
                     SET fGuthabenBonus = :reward 
@@ -475,7 +473,7 @@ function checkeBewertungGuthabenBonus(int $ratingID, array $conf)
  * @param int $ratingID
  * @return bool
  */
-function BewertungsGuthabenBonusLoeschen(int $ratingID)
+function BewertungsGuthabenBonusLoeschen(int $ratingID): bool
 {
     $rating = Shop::Container()->getDB()->select('tbewertung', 'kBewertung', $ratingID);
     if ($rating === null || $rating->kBewertung <= 0) {

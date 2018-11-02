@@ -31,10 +31,10 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
     public function execute()
     {
         $this->del_tbesucherarchiv();
-        $this->del_tkundenattribut();
-        $this->del_tkundenkontodaten();
         $this->del_tkundenwerbenkunden();
+        $this->del_tkundenattribut();
         $this->del_tzahlungsinfo();
+        $this->del_tkundenkontodaten();
         $this->del_tlieferadresse();
         $this->del_trechnungsadresse();
     }
@@ -45,28 +45,17 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function del_tbesucherarchiv()
     {
-        $vResult = \Shop::Container()->getDB()->queryPrepared(
-            'SELECT kBesucher
-            FROM tbesucherarchiv
+        \Shop::Container()->getDB()->queryPrepared(
+            'DELETE FROM tbesucherarchiv
             WHERE
                 kKunde > 0
-                AND kKunde NOT IN (SELECT kKunde FROM tkunde)
+                AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = tbesucherarchiv.kKunde)
                 LIMIT :pLimit',
-            ['pLimit' => $this->iWorkLimit],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            [
+                'pLimit' => $this->iWorkLimit
+            ],
+            \DB\ReturnType::AFFECTED_ROWS
         );
-        if (!\is_array($vResult)) {
-            return;
-        }
-        foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared(
-                'DELETE FROM tbesucherarchiv
-                WHERE
-                    kBesucher = :pKeyBesucher',
-                ['pKeyBesucher' => $oResult->kBesucher],
-                \DB\ReturnType::AFFECTED_ROWS
-            );
-        }
     }
 
     /**
@@ -75,38 +64,17 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function del_tkundenwerbenkunden()
     {
-        $vResult = \Shop::Container()->getDB()->queryPrepared(
-            'SELECT
-                k.kKunde,
-                b.fGuthaben,
-                b.nBonuspunkte,
-                b.dErhalten
+        \Shop::Container()->getDB()->queryPrepared(
+            'DELETE k, b
             FROM
                 tkundenwerbenkunden k
                     LEFT JOIN tkundenwerbenkundenbonus b ON k.kKunde = b.kKunde
             WHERE
                 k.kKunde > 0
-                AND k.kKunde NOT IN (SELECT kKunde FROM tkunde)
-            LIMIT :pLimit',
-            ['pLimit' => $this->iWorkLimit],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+                AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = k.kKunde)',
+            [],
+            \DB\ReturnType::AFFECTED_ROWS
         );
-        if (!\is_array($vResult)) {
-            return;
-        }
-        foreach ($vResult as $oResult) {
-            // delete each "kKunde", in multiple tables, in one shot
-            \Shop::Container()->getDB()->queryPrepared(
-                'DELETE tkundenwerbenkunden, tkundenwerbenkundenbonus
-                FROM
-                    tkundenwerbenkunden
-                    LEFT JOIN tkundenwerbenkundenbonus ON tkundenwerbenkundenbonus.kKunde = tkundenwerbenkunden.kKunde
-                WHERE
-                    tkundenwerbenkunden.kKunde = :pKeyKunde',
-                ['pKeyKunde' => $oResult->kKunde],
-                \DB\ReturnType::AFFECTED_ROWS
-            );
-        }
     }
 
     /**
@@ -115,27 +83,16 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function del_tkundenattribut()
     {
-        $vResult = \Shop::Container()->getDB()->queryPrepared(
-            'SELECT kKundenAttribut
-            FROM tkundenattribut
+        \Shop::Container()->getDB()->queryPrepared(
+            'DELETE FROM tkundenattribut
             WHERE
-                kKunde NOT IN (SELECT kKunde FROM tkunde)
+                NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = tkundenattribut.kKunde)
             LIMIT :pLimit',
-            ['pLimit' => $this->iWorkLimit],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            [
+                'pLimit' => $this->iWorkLimit
+            ],
+            \DB\ReturnType::AFFECTED_ROWS
         );
-        if (!\is_array($vResult)) {
-            return;
-        }
-        foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared(
-                'DELETE FROM tkundenattribut
-                WHERE
-                    kKundenAttribut = :pKeykKundenAttribut',
-                ['pKeykKundenAttribut' => $oResult->kKundenAttribut],
-                \DB\ReturnType::AFFECTED_ROWS
-            );
-        }
     }
 
     /**
@@ -144,28 +101,17 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function del_tzahlungsinfo()
     {
-        $vResult = \Shop::Container()->getDB()->queryPrepared(
-            'SELECT kZahlungsInfo
-            FROM tzahlungsinfo
+        \Shop::Container()->getDB()->queryPrepared(
+            'DELETE FROM tzahlungsinfo
             WHERE
                 kKunde > 0
-                AND kKunde NOT IN (SELECT kKunde FROM tkunde)
+                AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = tzahlungsinfo.kKunde)
             LIMIT :pLimit',
-            ['pLimit' => $this->iWorkLimit],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            [
+                'pLimit' => $this->iWorkLimit
+            ],
+            \DB\ReturnType::AFFECTED_ROWS
         );
-        if (!\is_array($vResult)) {
-            return;
-        }
-        foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared(
-                'DELETE FROM tzahlungsinfo
-                WHERE
-                    kZahlungsInfo = :pKeyZahlungsInfo',
-                ['pKeyZahlungsInfo' => $oResult->kZahlungsInfo],
-                \DB\ReturnType::AFFECTED_ROWS
-            );
-        }
     }
 
     /**
@@ -174,92 +120,59 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function del_tkundenkontodaten()
     {
-        $vResult = \Shop::Container()->getDB()->queryPrepared(
-            'SELECT kKundenKontodaten
-            FROM tkundenkontodaten
+        \Shop::Container()->getDB()->queryPrepared(
+            'DELETE FROM tkundenkontodaten
             WHERE
                 kKunde > 0
-                AND kKunde NOT IN (SELECT kKunde FROM tkunde)
+                AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = tkundenkontodaten.kKunde)
             LIMIT :pLimit',
-            ['pLimit' => $this->iWorkLimit],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            [
+                'pLimit' => $this->iWorkLimit
+            ],
+            \DB\ReturnType::AFFECTED_ROWS
         );
-        if (!\is_array($vResult)) {
-            return;
-        }
-        foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared(
-                'DELETE FROM tkundenkontodaten
-                WHERE
-                    kKundenKontodaten = :pKeyKundenKontodaten',
-                ['pKeyKundenKontodaten' => $oResult->kKundenKontodaten],
-                \DB\ReturnType::AFFECTED_ROWS
-            );
-        }
     }
 
     /**
      * delete delivery-addresses
      * which assigned to no valid customer-account
+     *
+     * (ATTENTION: no work-limit possible here)
      */
     private function del_tlieferadresse()
     {
-        $vResult = \Shop::Container()->getDB()->queryPrepared(
-            "SELECT kLieferadresse
+        \Shop::Container()->getDB()->queryPrepared(
+            "DELETE k
             FROM tlieferadresse k
                 JOIN tbestellung b ON b.kKunde = k.kKunde
             WHERE
-                b.cStatus IN (' . BESTELLUNG_STATUS_VERSANDT . ', ' . BESTELLUNG_STATUS_STORNO . ')
-                AND b.cAbgeholt = 'Y'
-                AND k.kKunde NOT IN (SELECT kKunde FROM tkunde)
-            LIMIT :pLimit",
-            ['pLimit' => $this->iWorkLimit],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+                b.cAbgeholt = 'Y'
+                AND b.cStatus IN (" . BESTELLUNG_STATUS_VERSANDT . ", " . BESTELLUNG_STATUS_STORNO . ")
+                AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = k.kKunde)",
+            [],
+            \DB\ReturnType::AFFECTED_ROWS
         );
-        if (!\is_array($vResult)) {
-            return;
-        }
-        foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared(
-                'DELETE FROM tlieferadresse
-                WHERE
-                    kLieferadresse = :pKeyLieferadresse',
-                ['pKeyLieferadresse' => $oResult->kLieferadresse],
-                \DB\ReturnType::AFFECTED_ROWS
-            );
-        }
     }
 
     /**
      * delete billing-addresses
      * which assigned to no valid customer-account
+     *
+     * (ATTENTION: no work-limit possible here)
      */
     private function del_trechnungsadresse()
     {
-        $vResult = \Shop::Container()->getDB()->queryPrepared(
-            "SELECT kRechnungsadresse
+        \Shop::Container()->getDB()->queryPrepared(
+            "DELETE k
             FROM trechnungsadresse k
                 JOIN tbestellung b ON b.kKunde = k.kKunde
             WHERE
-                b.cStatus IN (" . BESTELLUNG_STATUS_VERSANDT . ", " . BESTELLUNG_STATUS_STORNO . ")
-                AND b.cAbgeholt = 'Y'
-                AND k.kKunde NOT IN (SELECT kKunde FROM tkunde)
-            LIMIT :pLimit",
-            ['pLimit' => $this->iWorkLimit],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+                b.cAbgeholt = 'Y'
+                AND b.cStatus IN (" . BESTELLUNG_STATUS_VERSANDT . ", " . BESTELLUNG_STATUS_STORNO . ")
+                AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = k.kKunde)",
+            [],
+            \DB\ReturnType::AFFECTED_ROWS
         );
-        if (!\is_array($vResult)) {
-            return;
-        }
-        foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared(
-                'DELETE FROM trechnungsadresse
-                WHERE
-                    kRechnungsadresse = :pKeyRechnungsadresse',
-                ['pKeyRechnungsadresse' => $oResult->kRechnungsadresse],
-                \DB\ReturnType::AFFECTED_ROWS
-            );
-        }
     }
 }
 

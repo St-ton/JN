@@ -39,13 +39,12 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
             WHERE
                 b.cName != 'Anonym'
                 AND b.kKunde > 0
-                AND b.kKunde NOT IN (SELECT kKunde FROM tkunde)
-                AND dDatum < DATE_SUB(:pNow, INTERVAL :pInterval DAY)
+                AND dDatum <= :pDateLimit
+                AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = b.kKunde)
                 LIMIT :pLimit",
             [
-                'pInterval' => $this->iInterval,
-                'pNow'      => $this->oNow->format('Y-m-d H:i:s'),
-                'pLimit'    => $this->iWorkLimit
+                'pDateLimit' => $this->szDateLimit,
+                'pLimit'     => $this->iWorkLimit
             ],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
@@ -60,7 +59,9 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
                     kKunde = 0
                 WHERE
                     kBewertung = :pKeyBewertung",
-                ['pKeyBewertung' => $oResult->kBewertung],
+                [
+                    'pKeyBewertung' => $oResult->kBewertung
+                ],
                 \DB\ReturnType::AFFECTED_ROWS
             );
         }
@@ -73,22 +74,20 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
     private function anon_tzahlungseingang()
     {
         $vResult = \Shop::Container()->getDB()->queryPrepared(
-            "SELECT kZahlungseingang
-            FROM tzahlungseingang
+            "SELECT z.kZahlungseingang
+            FROM
+                tzahlungseingang z
+                    INNER JOIN tbestellung b ON z.kBestellung = b.kBestellung
             WHERE
-                cZahler != '-'
-                AND cAbgeholt != 'N'
-                AND kBestellung IN (
-                    SELECT kBestellung
-                    FROM tbestellung b
-                    WHERE b.kKunde NOT IN (SELECT kKunde FROM tkunde)
-                )
-                AND dZeit < DATE_SUB(:pNow, INTERVAL :pInterval DAY)
-                LIMIT :pLimit",
+                z.cZahler != '-'
+                AND z.cAbgeholt != 'N'
+                AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = b.kKunde)
+                AND z.dZeit <= :pDateLimit
+            ORDER BY dZeit ASC
+            LIMIT :pLimit",
             [
-                'pInterval' => $this->iInterval,
-                'pNow'      => $this->oNow->format('Y-m-d H:i:s'),
-                'pLimit'    => $this->iWorkLimit
+                'pDateLimit' => $this->szDateLimit,
+                'pLimit'     => $this->iWorkLimit
             ],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
@@ -102,7 +101,9 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
                     cZahler = '-'
                 WHERE
                     kZahlungseingang = :pKeyZahlungseingang",
-                ['pKeyZahlungseingang' => $oResult->kZahlungseingang],
+                [
+                    'pKeyZahlungseingang' => $oResult->kZahlungseingang
+                ],
                 \DB\ReturnType::AFFECTED_ROWS
             );
         }
@@ -118,14 +119,16 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
     {
         $vResult = \Shop::Container()->getDB()->queryPrepared(
             "SELECT kNewsKommentar
-            FROM tnewskommentar
+            FROM tnewskommentar n
             WHERE
                 cName != 'Anonym'
                 AND cEmail != 'Anonym'
                 AND kKunde > 0
-                AND kKunde NOT IN (SELECT kKunde FROM tkunde)
-                LIMIT :pLimit",
-            ['pLimit' => $this->iWorkLimit],
+                AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = n.kKunde)
+            LIMIT :pLimit",
+            [
+                'pLimit' => $this->iWorkLimit
+            ],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (!\is_array($vResult)) {

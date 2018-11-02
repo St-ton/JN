@@ -34,11 +34,11 @@ class TableCleaner
     private $vMethods = [
         ['szName' => 'AnonymizeIps',                      'iIntervalDays' => 7],
         ['szName' => 'AnonymizeDeletedCustomer',          'iIntervalDays' => 7],
+        ['szName' => 'CleanupOldGuestAccounts',           'iIntervalDays' => 365],
         ['szName' => 'CleanupCustomerRelicts',            'iIntervalDays' => 0],
         ['szName' => 'CleanupGuestAccountsWithoutOrders', 'iIntervalDays' => 0],
         ['szName' => 'CleanupNewsletterRecipients',       'iIntervalDays' => 30],
         ['szName' => 'CleanupLogs',                       'iIntervalDays' => 90],
-        ['szName' => 'CleanupOldGuestAccounts',           'iIntervalDays' => 365],
         ['szName' => 'CleanupService',                    'iIntervalDays' => 0] // multiple own intervals
     ];
 

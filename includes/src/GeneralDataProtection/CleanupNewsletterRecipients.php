@@ -26,25 +26,25 @@ class CleanupNewsletterRecipients extends Method implements MethodInterface
     }
 
     /**
-     * delete newsletter-registrations withi no "opt-in"
+     * delete newsletter-registrations with no "opt-in"
      * within the given interval
      */
     private function clean_tnewsletter()
     {
         $vResult = \Shop::Container()->getDB()->queryPrepared(
-            "SELECT cOptCode
+            "SELECT e.cOptCode
             FROM tnewsletterempfaenger e
                 JOIN tnewsletterempfaengerhistory h ON h.cOptCode = e.cOptCode AND h.cEmail = e.cEmail
             WHERE
                 e.nAktiv = 0
                 AND h.cAktion = 'Eingetragen'
                 AND (h.dOptCode = '0000-00-00 00:00:00' OR h.dOptCode IS NULL)
-                AND h.dEingetragen <= (:pNow - INTERVAL :pInterval DAY)
+                AND h.dEingetragen <= :pDateLimit
+            ORDER BY h.dEingetragen ASC
             LIMIT :pLimit",
             [
-                'pInterval' => $this->iInterval,
-                'pNow'      => $this->oNow->format('Y-m-d H:i:s'),
-                'pLimit'    => $this->iWorkLimit
+                'pDateLimit' => $this->szDateLimit,
+                'pLimit'     => $this->iWorkLimit
             ],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );

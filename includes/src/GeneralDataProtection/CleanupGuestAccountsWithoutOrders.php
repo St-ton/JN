@@ -37,7 +37,9 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
                 AND k.nRegistriert = 0
                 AND b.cAbgeholt = \'Y\'
             LIMIT :pLimit',
-            ['pLimit' => $this->iWorkLimit],
+            [
+                'pLimit' => $this->iWorkLimit
+            ],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         if (!\is_array($vResult)) {
@@ -48,9 +50,12 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
                 'DELETE FROM tkunde
                 WHERE
                     kKunde = :pKeyKunde',
-                ['pKeyKunde' => $oResult->kKunde],
+                [
+                    'pKeyKunde' => $oResult->kKunde
+                ],
                 \DB\ReturnType::AFFECTED_ROWS
             );
         }
     }
 }
+

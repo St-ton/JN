@@ -32,6 +32,14 @@ class Method
     protected $iWorkLimit = 10000;
 
     /**
+     * the last date we keep
+     * (depending from interval)
+     *
+     * @var string
+     */
+    protected $szDateLimit;
+
+    /**
      * main shop logger
      *
      * @var \Monolog\Logger
@@ -48,6 +56,11 @@ class Method
         }
         $this->oNow      = $oObjNow;
         $this->iInterval = $iInterval;
+        try {
+            $this->szDateLimit = $this->oNow->sub(new \DateInterval('P' . $this->iInterval . 'D'))->format('Y-m-d H:i:s');
+        } catch (\Exception $e) {
+            ($this->oLogger === null) ?: $this->oLogger->log(JTLLOG_LEVEL_WARNING, 'Wrong Interval given: ' . $this->iInterval);
+        }
     }
 }
 

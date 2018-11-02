@@ -1,7 +1,7 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
+ * @license http://jtl-url.de/jtlshoplicense
  */
 
 namespace GeneralDataProtection;
@@ -114,8 +114,8 @@ class AnonymizeIps extends Method implements MethodInterface
         $oAnonymizer = new IpAnonymizer('', true); // anonymize "beautified"
         $szIpMaskV4  = $oAnonymizer->getMaskV4();
         $szIpMaskV6  = $oAnonymizer->getMaskV6();
-        $szIpMaskV4  = substr($szIpMaskV4, strpos($szIpMaskV4, '.0'), \strlen($szIpMaskV4)-1);
-        $szIpMaskV6  = substr($szIpMaskV6, strpos($szIpMaskV6, ':0000'), \strlen($szIpMaskV6)-1);
+        $szIpMaskV4  = substr($szIpMaskV4, strpos($szIpMaskV4, '.0'), \strlen($szIpMaskV4) - 1);
+        $szIpMaskV6  = substr($szIpMaskV6, strpos($szIpMaskV6, ':0000'), \strlen($szIpMaskV6) - 1);
         $szObjectNow = $this->oNow->format('Y-m-d H:i:s');
 
         foreach ($this->vTablesUpdate as $szTableName => $vTable) {
@@ -139,7 +139,8 @@ class AnonymizeIps extends Method implements MethodInterface
             $szSql .= " ORDER BY {$vTable['ColCreated']} ASC
                 LIMIT {$this->iWorkLimit}";
 
-            $vResult = \Shop::Container()->getDB()->query($szSql,
+            $vResult = \Shop::Container()->getDB()->query(
+                $szSql,
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             if (\is_array($vResult) && 0 < $iRowCount = \count($vResult)) {

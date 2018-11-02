@@ -29,32 +29,20 @@ class CleanupOldGuestAccounts extends Method implements MethodInterface
      */
     private function clean_tkunde()
     {
-        $vResult = \Shop::Container()->getDB()->queryPrepared(
-            "SELECT kKunde
-            FROM tkunde e
+        \Shop::Container()->getDB()->queryPrepared(
+            "DELETE FROM tkunde
             WHERE
                 nRegistriert = 0
                 AND cAbgeholt = 'Y'
-                AND dErstellt <= :pNow - INTERVAL :pInterval DAY
-                LIMIT :pLimit",
+                AND dErstellt <= :pDateLimit
+            ORDER BY dErstellt ASC
+            LIMIT :pLimit",
             [
-                'pInterval' => $this->iInterval,
-                'pNow'      => $this->oNow->format('Y-m-d H:i:s'),
-                'pLimit'    => $this->iWorkLimit
+                'pDateLimit' => $this->szDateLimit,
+                'pLimit'     => $this->iWorkLimit
             ],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            \DB\ReturnType::AFFECTED_ROWS
         );
-        if (!\is_array($vResult)) {
-            return;
-        }
-        foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared(
-                'DELETE FROM tkunde
-                WHERE kKunde = :pKeyKunde',
-                ['pKeyKunde' => $oResult->kKunde],
-                \DB\ReturnType::AFFECTED_ROWS
-            );
-        }
     }
 }
 

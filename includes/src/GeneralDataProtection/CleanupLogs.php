@@ -46,29 +46,17 @@ class CleanupLogs extends Method implements MethodInterface
      */
     private function clean_temailhistory()
     {
-        $vResult = \Shop::Container()->getDB()->queryPrepared(
-            'SELECT kEmailhistory
-            FROM temailhistory e
-            WHERE dSent <= (:pNow - INTERVAL :pInterval DAY)
+        \Shop::Container()->getDB()->queryPrepared(
+            'DELETE FROM temailhistory
+            WHERE dSent <= :pDateLimit
+            ORDER BY dSent ASC
             LIMIT :pLimit',
             [
-                'pInterval' => $this->iInterval,
-                'pLimit'    => $this->iWorkLimit,
-                'pNow'      => $this->oNow->format('Y-m-d H:i:s')
+                'pDateLimit' => $this->szDateLimit,
+                'pLimit'     => $this->iWorkLimit
             ],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            \DB\ReturnType::AFFECTED_ROWS
         );
-        if (!\is_array($vResult)) {
-            return;
-        }
-        foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared(
-                'DELETE FROM temailhistory
-                WHERE kEmailhistory = :pKeyEmailhistory',
-                ['pKeyEmailhistory' => $oResult->kEmailhistory],
-                \DB\ReturnType::AFFECTED_ROWS
-            );
-        }
     }
 
     /**
@@ -77,29 +65,17 @@ class CleanupLogs extends Method implements MethodInterface
      */
     private function clean_tkontakthistory()
     {
-        $vResult = \Shop::Container()->getDB()->queryPrepared(
-            'SELECT kKontaktHistory
-            FROM tkontakthistory e
-            WHERE dErstellt <= (:pNow - INTERVAL :pInterval DAY)
+        \Shop::Container()->getDB()->queryPrepared(
+            'DELETE FROM tkontakthistory
+            WHERE dErstellt <= :pDateLimit
+            ORDER BY dErstellt ASC
             LIMIT :pLimit',
             [
-                'pInterval' => $this->iInterval,
-                'pNow'      => $this->oNow->format('Y-m-d H:i:s'),
-                'pLimit'    => $this->iWorkLimit
+                'pDateLimit' => $this->szDateLimit,
+                'pLimit'     => $this->iWorkLimit
             ],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            \DB\ReturnType::AFFECTED_ROWS
         );
-        if (!\is_array($vResult)) {
-            return;
-        }
-        foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared(
-                'DELETE FROM tkontakthistory
-                WHERE kKontaktHistory = :pKeyKontaktHistory',
-                ['pKeyKontaktHistory' => $oResult->kKontaktHistory],
-                \DB\ReturnType::AFFECTED_ROWS
-            );
-        }
     }
 
     /**
@@ -108,29 +84,17 @@ class CleanupLogs extends Method implements MethodInterface
      */
     private function clean_tkundenwerbenkunden()
     {
-        $vResult = \Shop::Container()->getDB()->queryPrepared(
-            'SELECT kKundenWerbenKunden
-            FROM tkundenwerbenkunden e
-            WHERE dErstellt <= (:pNow - INTERVAL :pInterval DAY)
+        \Shop::Container()->getDB()->queryPrepared(
+            'DELETE FROM tkundenwerbenkunden
+            WHERE dErstellt <= :pDateLimit
+            ORDER BY dErstellt ASC
             LIMIT :pLimit',
             [
-                'pInterval' => $this->iInterval,
-                'pNow'      => $this->oNow->format('Y-m-d H:i:s'),
-                'pLimit'    => $this->iWorkLimit
+                'pDateLimit' => $this->szDateLimit,
+                'pLimit'     => $this->iWorkLimit
             ],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            \DB\ReturnType::AFFECTED_ROWS
         );
-        if (!\is_array($vResult)) {
-            return;
-        }
-        foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared(
-                'DELETE tkundenwerbenkunden
-                WHERE kKundenWerbenKunden = :pKeyKundenWerbenKunden',
-                ['pKeyKundenWerbenKunden' => $oResult->kKundenWerbenKunden],
-                \DB\ReturnType::AFFECTED_ROWS
-            );
-        }
     }
 
     /**
@@ -139,29 +103,17 @@ class CleanupLogs extends Method implements MethodInterface
      */
     private function clean_tzahlungslog()
     {
-        $vResult = \Shop::Container()->getDB()->queryPrepared(
-            'SELECT kZahlunglog
-            FROM tzahlungslog e
-            WHERE dDatum <= (:pNow - INTERVAL :pInterval DAY)
+        \Shop::Container()->getDB()->queryPrepared(
+            'DELETE FROM tzahlungslog
+            WHERE dDatum <= :pDateLimit
+            ORDER BY dDatum ASC
             LIMIT :pLimit',
             [
-                'pInterval' => $this->iInterval,
-                'pNow'      => $this->oNow->format('Y-m-d H:i:s'),
-                'pLimit'    => $this->iWorkLimit
+                'pDateLimit' => $this->szDateLimit,
+                'pLimit'     => $this->iWorkLimit
             ],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            \DB\ReturnType::AFFECTED_ROWS
         );
-        if (!\is_array($vResult)) {
-            return;
-        }
-        foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared(
-                'DELETE FROM tzahlungslog
-                WHERE kZahlunglog = :pKeyZahlunglog',
-                ['pKeyZahlunglog' => $oResult->kZahlunglog],
-                \DB\ReturnType::AFFECTED_ROWS
-            );
-        }
     }
 
     /**
@@ -170,29 +122,18 @@ class CleanupLogs extends Method implements MethodInterface
      */
     private function clean_tproduktanfragehistory()
     {
-        $vResult = \Shop::Container()->getDB()->queryPrepared(
-            'SELECT kProduktanfrageHistory
-            FROM tproduktanfragehistory e
-            WHERE dErstellt <= (:pNow - INTERVAL :pInterval DAY)
+        \Shop::Container()->getDB()->queryPrepared(
+            //'SELECT kProduktanfrageHistory
+            'DELETE FROM tproduktanfragehistory
+            WHERE dErstellt <= :pDateLimit
+            ORDER BY dErstellt ASC
             LIMIT :pLimit',
             [
-                'pInterval' => $this->iInterval,
-                'pNow'      => $this->oNow->format('Y-m-d H:i:s'),
-                'pLimit'    => $this->iWorkLimit
+                'pDateLimit' => $this->szDateLimit,
+                'pLimit'     => $this->iWorkLimit
             ],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            \DB\ReturnType::AFFECTED_ROWS
         );
-        if (!\is_array($vResult)) {
-            return;
-        }
-        foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared(
-                'DELETE FROM tproduktanfragehistory
-                WHERE kProduktanfrageHistory = :pKeyProduktanfrageHistory',
-                ['pKeyProduktanfrageHistory' => $oResult->kProduktanfrageHistory],
-                \DB\ReturnType::AFFECTED_ROWS
-            );
-        }
     }
 
     /**
@@ -201,29 +142,17 @@ class CleanupLogs extends Method implements MethodInterface
      */
     private function clean_tverfuegbarkeitsbenachrichtigung()
     {
-        $vResult = \Shop::Container()->getDB()->queryPrepared(
-            'SELECT kVerfuegbarkeitsbenachrichtigung
-            FROM tverfuegbarkeitsbenachrichtigung e
-            WHERE dErstellt <= (:pNow - INTERVAL :pInterval DAY)
+        \Shop::Container()->getDB()->queryPrepared(
+            'DELETE FROM tverfuegbarkeitsbenachrichtigung
+            WHERE dErstellt <= :pDateLimit
+            ORDER BY dErstellt ASC
             LIMIT :pLimit',
             [
-                'pInterval' => $this->iInterval,
-                'pNow'      => $this->oNow->format('Y-m-d H:i:s'),
-                'pLimit'    => $this->iWorkLimit
+                'pDateLimit' => $this->szDateLimit,
+                'pLimit'     => $this->iWorkLimit
             ],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            \DB\ReturnType::AFFECTED_ROWS
         );
-        if (!\is_array($vResult)) {
-            return;
-        }
-        foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared(
-                'DELETE FROM tverfuegbarkeitsbenachrichtigung
-                WHERE kVerfuegbarkeitsbenachrichtigung = :pKeyVerfuegbarkeitsbenachrichtigung',
-                ['pKeyVerfuegbarkeitsbenachrichtigung' => $oResult->kVerfuegbarkeitsbenachrichtigung],
-                \DB\ReturnType::AFFECTED_ROWS
-            );
-        }
     }
 
     /**
@@ -232,64 +161,41 @@ class CleanupLogs extends Method implements MethodInterface
      */
     private function clean_tjtllog()
     {
-        $vResult = \Shop::Container()->getDB()->queryPrepared(
-            "SELECT kLog
-            FROM tjtllog
+        \Shop::Container()->getDB()->queryPrepared(
+            "DELETE FROM tjtllog
             WHERE
                 (cLog LIKE '%@%' OR cLog LIKE '%kKunde%')
-                AND dErstellt <= (:pNow - INTERVAL :pInterval DAY)
+                AND dErstellt <= :pDateLimit
+            ORDER BY dErstellt ASC
             LIMIT :pLimit",
             [
-                'pInterval' => $this->iInterval,
-                'pNow'      => $this->oNow->format('Y-m-d H:i:s'),
-                'pLimit'    => $this->iWorkLimit
+                'pDateLimit' => $this->szDateLimit,
+                'pLimit'     => $this->iWorkLimit
             ],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            \DB\ReturnType::AFFECTED_ROWS
         );
-        if (!\is_array($vResult)) {
-            return;
-        }
-        foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared(
-                'DELETE FROM tjtllog
-                WHERE kLog = :pKeyLog',
-                ['pKeyLog' => $oResult->kLog],
-                \DB\ReturnType::AFFECTED_ROWS
-            );
-        }
     }
 
     /**
      * delete payment-confirmations of customers,
+     * not collected by 'wawi' and
      * older than the given interval
      */
     private function clean_tzahlungseingang()
     {
-        $vResult = \Shop::Container()->getDB()->queryPrepared(
-            "SELECT kZahlungseingang
-            FROM tzahlungseingang
+        \Shop::Container()->getDB()->queryPrepared(
+            "DELETE FROM tzahlungseingang
             WHERE
                 cAbgeholt != 'Y'
-                AND dZeit <= (:pNow - INTERVAL :pInterval DAY)
+                AND dZeit <= :pDateLimit
+            ORDER BY dZeit ASC
             LIMIT :pLimit",
             [
-                'pInterval' => $this->iInterval,
-                'pNow'      => $this->oNow->format('Y-m-d H:i:s'),
-                'pLimit'    => $this->iWorkLimit
+                'pDateLimit' => $this->szDateLimit,
+                'pLimit'     => $this->iWorkLimit
             ],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            \DB\ReturnType::AFFECTED_ROWS
         );
-        if (!\is_array($vResult)) {
-            return;
-        }
-        foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared(
-                'DELETE FROM tzahlungseingang
-                WHERE kZahlungseingang = :pKeyZahlungseingang',
-                ['pKeyZahlungseingang' => $oResult->kZahlungseingang],
-                \DB\ReturnType::AFFECTED_ROWS
-            );
-        }
     }
 
     /**
@@ -299,27 +205,18 @@ class CleanupLogs extends Method implements MethodInterface
      */
     private function clean_tkundendatenhistory()
     {
-        $vResult = \Shop::Container()->getDB()->queryPrepared(
-            'SELECT kKundendatenHistory
-            FROM tkundendatenhistory
-            WHERE dErstellt <= LAST_DAY(DATE_ADD(:pNow - INTERVAL 2 YEAR, INTERVAL 12 - MONTH(:pNow) MONTH))',
+        \Shop::Container()->getDB()->queryPrepared(
+            'DELETE FROM tkundendatenhistory
+            WHERE
+                dErstellt <= LAST_DAY(DATE_ADD(:pNow - INTERVAL 2 YEAR, INTERVAL 12 - MONTH(:pNow) MONTH))
+            ORDER BY dErstellt ASC
+            LIMIT :pLimit',
             [
-                'pNow' => $this->oNow->format('Y-m-d H:i:s'),
+                'pNow'   => $this->oNow->format('Y-m-d H:i:s'),
+                'pLimit' => $this->iWorkLimit
             ],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            \DB\ReturnType::AFFECTED_ROWS
         );
-        if (!\is_array($vResult)) {
-            return;
-        }
-        foreach ($vResult as $oResult) {
-            // Customer-history-logs will be deleted at the end of the following year after log-creation according to german law § 76 BDSG (neu)
-            \Shop::Container()->getDB()->queryPrepared(
-                'DELETE FROM tkundendatenhistory
-                WHERE kKundendatenHistory = :pKeyKundendatenHistory',
-                ['pKeyKundendatenHistory' => $oResult->kKundendatenHistory],
-                \DB\ReturnType::AFFECTED_ROWS
-            );
-        }
     }
 }
 

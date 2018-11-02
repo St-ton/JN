@@ -37,7 +37,13 @@
                 {/block}
             {/if}
         {/if}
-        {if $Artikel->inWarenkorbLegbar == 1 && ($Artikel->fMindestbestellmenge > 1 || ($Artikel->fMindestbestellmenge > 0 && $Artikel->cTeilbar === 'Y') || $Artikel->fAbnahmeintervall > 0 || $Artikel->cTeilbar === 'Y' || (isset($Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]) && $Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE] > 0))}
+        {if $Artikel->inWarenkorbLegbar == 1
+            && ($Artikel->fMindestbestellmenge > 1
+                || ($Artikel->fMindestbestellmenge > 0 && $Artikel->cTeilbar === 'Y')
+                || $Artikel->fAbnahmeintervall > 0
+                || $Artikel->cTeilbar === 'Y'
+                || (!empty($Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE])
+                    && $Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE] > 0))}
             <div class="clearfix"></div>
             <div class="purchase-info alert alert-info top10" role="alert">
                 {assign var='units' value=$Artikel->cEinheit}
@@ -59,7 +65,7 @@
                     <p>{lang key='integralQuantities' section='productDetails'}</p>
                 {/if}
 
-                {if isset($Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]) && $Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE] > 0}
+                {if !empty($Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]) && $Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE] > 0}
                     {lang key='maximalPurchase' section='productDetails' assign='maximalPurchase'}
                     <p>{$maximalPurchase|replace:"%d":$Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]|replace:"%s":$units}</p>
                 {/if}

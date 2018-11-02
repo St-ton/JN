@@ -266,9 +266,10 @@ class cache_advancedfile implements ICachingMethod
                 foreach (new \RecursiveIteratorIterator($rdi, \RecursiveIteratorIterator::CHILD_FIRST) as $value) {
                     $res = false;
                     if ($value->isLink()) {
-                        //cache entries may have multiple tags - so check if the real entry still exists
+                        $value = $value->getPathname();
+                        // cache entries may have multiple tags - so check if the real entry still exists
                         if (($target = \readlink($value)) !== false && \is_file($target)) {
-                            //delete real cache entry
+                            // delete real cache entry
                             $res = \unlink($target);
                         }
                         // delete symlink to the entry

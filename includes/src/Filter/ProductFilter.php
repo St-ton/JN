@@ -727,9 +727,12 @@ class ProductFilter
             $this->searchQuery->setName($params['cSuche']);
             $oSuchanfrage = $this->db->select(
                 'tsuchanfrage',
-                'cSuche', $params['cSuche'],
-                'kSprache', $this->getFilterConfig()->getLanguageID(),
-                'nAktiv', 1,
+                'cSuche',
+                $params['cSuche'],
+                'kSprache',
+                $this->getFilterConfig()->getLanguageID(),
+                'nAktiv',
+                1,
                 false,
                 'kSuchanfrage'
             );

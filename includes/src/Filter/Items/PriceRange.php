@@ -523,8 +523,10 @@ class PriceRange extends AbstractFilter
                     $fo->cBisLocalized = $cBisLocalized;
 
                     $options[] = $fo->setParam($this->getUrlParam())
-                                    ->setURL($this->productFilter->getFilterURL()->getURL(
-                                        $additionalFilter->init($nVon . '_' . $nBis))
+                                    ->setURL(
+                                        $this->productFilter->getFilterURL()->getURL(
+                                            $additionalFilter->init($nVon . '_' . $nBis)
+                                        )
                                     )
                                     ->setType($this->getType())
                                     ->setClassName($this->getClassName())
@@ -618,7 +620,7 @@ class PriceRange extends AbstractFilter
         }
         $this->options = $options;
         if ($cacheID !== null) {
-            $this->productFilter->getCache()->set($cacheID, $options, [CACHING_GROUP_FILTER]);
+            $this->productFilter->getCache()->set($cacheID, $options, [\CACHING_GROUP_FILTER]);
         }
 
         return $options;

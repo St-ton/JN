@@ -63,7 +63,7 @@ class BaseManufacturer extends AbstractFilter
             if (!\is_array($val)) {
                 $val = [$val];
             }
-            $oSeo_arr = $this->productFilter->getDB()->query(
+            $seoData = $this->productFilter->getDB()->query(
                 "SELECT tseo.cSeo, tseo.kSprache, thersteller.cName
                     FROM tseo
                     JOIN thersteller
@@ -74,15 +74,15 @@ class BaseManufacturer extends AbstractFilter
             );
             foreach ($languages as $language) {
                 $this->cSeo[$language->kSprache] = '';
-                foreach ($oSeo_arr as $oSeo) {
+                foreach ($seoData as $oSeo) {
                     if ($language->kSprache === (int)$oSeo->kSprache) {
                         $sep                             = $this->cSeo[$language->kSprache] === '' ? '' : \SEP_HST;
                         $this->cSeo[$language->kSprache] .= $sep . $oSeo->cSeo;
                     }
                 }
             }
-            if (isset($oSeo_arr[0]->cName)) {
-                $this->setName($oSeo_arr[0]->cName);
+            if (isset($seoData[0]->cName)) {
+                $this->setName($seoData[0]->cName);
             } else {
                 // invalid manufacturer ID
                 \Shop::$kHersteller = 0;

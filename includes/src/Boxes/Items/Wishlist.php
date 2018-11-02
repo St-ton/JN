@@ -112,6 +112,5 @@ final class Wishlist extends AbstractBox
      */
     public function setShowImages($value): void
     {
-
     }
 }

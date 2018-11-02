@@ -34,8 +34,8 @@ interface RendererInterface
     public function setBox(BoxInterface $box): void;
 
     /**
-     * @param int        $pageType
-     * @param int        $pageID
+     * @param int $pageType
+     * @param int $pageID
      * @return string
      */
     public function render(int $pageType = 0, int $pageID = 0): string;

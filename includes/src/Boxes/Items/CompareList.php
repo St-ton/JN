@@ -91,6 +91,5 @@ final class CompareList extends AbstractBox
      */
     public function setShowBox(string $value): void
     {
-
     }
 }

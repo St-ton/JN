@@ -164,9 +164,9 @@ class cache_advancedfile implements ICachingMethod
         );
         foreach (new \RecursiveIteratorIterator($rdi, \RecursiveIteratorIterator::CHILD_FIRST) as $value) {
             if ($value->isLink() || $value->isFile()) {
-                \unlink($value);
+                \unlink($value->getPathname());
             } elseif ($value->isDir()) {
-                \rmdir($value);
+                \rmdir($value->getPathname());
             }
         }
 

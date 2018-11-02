@@ -65,12 +65,12 @@ class cache_advancedfile implements ICachingMethod
         }
 
         return \file_put_contents(
-                $fileName,
-                \serialize([
-                    'value'    => $content,
-                    'lifetime' => $expiration ?? $this->options['lifetime']
-                ])
-            ) !== false;
+            $fileName,
+            \serialize([
+                'value'    => $content,
+                'lifetime' => $expiration ?? $this->options['lifetime']
+            ])
+        ) !== false;
     }
 
     /**
@@ -233,7 +233,10 @@ class cache_advancedfile implements ICachingMethod
                         continue;
                     }
                 }
-                if (\file_exists($path . $cacheID) || !\file_exists($fileName) || !\symlink($fileName, $path . $cacheID)) {
+                if (\file_exists($path . $cacheID)
+                    || !\file_exists($fileName)
+                    || !\symlink($fileName, $path . $cacheID)
+                ) {
                     $res = false;
                     continue;
                 }

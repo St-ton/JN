@@ -225,12 +225,12 @@ class VueInstaller
             if (!empty($credentials['socket'])) {
                 $socket = "\ndefine('DB_SOCKET', '" . $credentials['host'] . "');";
             }
-            $rootPath = PFAD_ROOT;
+            $cPfadRoot = PFAD_ROOT;
             if (strpos(PFAD_ROOT, '\\') !== false) {
-                $rootPath = str_replace('\\', '\\\\', $rootPath);
+                $cPfadRoot = str_replace('\\', '\\\\', $cPfadRoot);
             }
             $cConfigFile = "<?php
-define('PFAD_ROOT', '" . $rootPath . "');
+define('PFAD_ROOT', '" . $cPfadRoot . "');
 define('URL_SHOP', '" . substr(URL_SHOP, 0, strlen(URL_SHOP) - 1) . "');" .
                 $socket . "
 define('DB_HOST','" . $credentials['host'] . "');
@@ -250,6 +250,7 @@ define('ADMIN_LOG_LEVEL', 0);
 define('SMARTY_LOG_LEVEL', 0);
 //excplicitly show/hide errors
 ini_set('display_errors', 0);" . "\n";
+            //file speichern
             $file = fopen(PFAD_ROOT . PFAD_INCLUDES . 'config.JTL-Shop.ini.php', 'w');
             fwrite($file, $cConfigFile);
             fclose($file);

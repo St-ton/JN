@@ -254,7 +254,11 @@ class Preise
                     );
 
                     if (isset($specialPrice->fNettoPreis) && (double)$specialPrice->fNettoPreis < $this->fVKNetto) {
-                        $specialPriceValue       = $this->getRecalculatedNetPrice($specialPrice->fNettoPreis, $defaultTax, $currentTax);
+                        $specialPriceValue       = $this->getRecalculatedNetPrice(
+                            $specialPrice->fNettoPreis,
+                            $defaultTax,
+                            $currentTax
+                        );
                         $this->alterVKNetto      = $this->fVKNetto;
                         $this->fVKNetto          = $specialPriceValue;
                         $this->Sonderpreis_aktiv = 1;
@@ -268,7 +272,11 @@ class Preise
                         $priceGetter = "fPreis{$i}";
 
                         $this->{$scaleGetter} = (int)$price->nAnzahlAb;
-                        $this->{$priceGetter} = $specialPriceValue ?? $this->getRecalculatedNetPrice($price->fVKNetto, $defaultTax, $currentTax);
+                        $this->{$priceGetter} = $specialPriceValue ?? $this->getRecalculatedNetPrice(
+                            $price->fVKNetto,
+                            $defaultTax,
+                            $currentTax
+                        );
                     }
 
                     $this->nAnzahl_arr[] = (int)$price->nAnzahlAb;
@@ -293,7 +301,8 @@ class Preise
 
     /**
      * Return recalculated new net price based on the rounded default gross price.
-     * This is necessary for having consistent gross prices in case of threshold delivery (Tax rate != default tax rate).
+     * This is necessary for having consistent gross prices in case of
+     * threshold delivery (Tax rate != default tax rate).
      *
      * @param double $netPrice the product net price
      * @param double $defaultTax the default tax factor of the product e.g. 19 for 19% vat
@@ -303,7 +312,11 @@ class Preise
     private function getRecalculatedNetPrice($netPrice, $defaultTax, $conversionTax)
     {
         $newNetPrice = $netPrice;
-        if (CONSISTENT_GROSS_PRICES === true && $defaultTax > 0 && $conversionTax > 0 && $defaultTax != $conversionTax) {
+        if (CONSISTENT_GROSS_PRICES === true
+            && $defaultTax > 0
+            && $conversionTax > 0 &&
+            $defaultTax != $conversionTax
+        ) {
             $newNetPrice = round($netPrice * ($defaultTax + 100) / 100, 2) / ($conversionTax + 100) * 100;
         }
         

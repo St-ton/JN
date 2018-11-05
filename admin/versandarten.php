@@ -466,14 +466,13 @@ if ($step === 'neue Versandart') {
     if ($versandberechnung->cModulId === 'vm_versandberechnung_artikelanzahl_jtl') {
         $smarty->assign('einheit', 'Stück');
     }
-    // prevent "unusable" payment methods from displing them in the config section (mainly the null-payment)
-    $zahlungsarten = Shop::Container()->getDB()->executeQuery(
-        'SELECT *
-            FROM `tzahlungsart`
-            WHERE `nActive` = 1
-                AND `nNutzbar` = 1
-            ORDER BY `cAnbieter`, `cName`, `nSort`, `kZahlungsart`',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+    // prevent "unusable" payment methods from displaying them in the config section (mainly the null-payment)
+    $zahlungsarten = Shop::Container()->getDB()->selectAll(
+        'tzahlungsart',
+        ['nActive', 'nNutzbar'],
+        [1, 1],
+        '*',
+        'cAnbieter, nSort, cName'
     );
     $oVersandklasse_arr = Shop::Container()->getDB()->selectAll('tversandklasse', [], [], '*', 'kVersandklasse');
     $smarty->assign('versandKlassen', $oVersandklasse_arr);

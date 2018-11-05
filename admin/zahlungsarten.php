@@ -343,22 +343,22 @@ if ($step === 'einstellen') {
 }
 
 if ($step === 'uebersicht') {
-    $oZahlungsart_arr = Shop::Container()->getDB()->executeQuery(
-        'SELECT *
-            FROM `tzahlungsart`
-            WHERE `nActive` = 1
-                AND `nNutzbar` = 1
-            ORDER BY `cAnbieter`, `cName`, `nSort`, `kZahlungsart`',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+    $oZahlungsart_arr = Shop::Container()->getDB()->selectAll(
+        'tzahlungsart',
+        ['nActive', 'nNutzbar'],
+        [1, 1],
+        '*',
+        'cAnbieter, cName, nSort, kZahlungsart'
     );
     foreach ($oZahlungsart_arr as $oZahlungsart) {
         $oZahlungsart->nEingangAnzahl = (int)Shop::Container()->getDB()->executeQueryPrepared(
             'SELECT COUNT(*) AS `nAnzahl`
-                FROM `tzahlungseingang` AS ze
-                    JOIN `tbestellung` AS b
-                        ON ze.`kBestellung` = b.`kBestellung`
-                WHERE b.`kZahlungsart` = :kzahlungsart',
-            ['kzahlungsart' => $oZahlungsart->kZahlungsart],
+            FROM `tzahlungseingang` AS ze
+                JOIN `tbestellung` AS b ON ze.`kBestellung` = b.`kBestellung`
+            WHERE b.`kZahlungsart` = :kzahlungsart',
+            [
+                'kzahlungsart' => $oZahlungsart->kZahlungsart
+            ],
             \DB\ReturnType::SINGLE_OBJECT
         )->nAnzahl;
         $oZahlungsart->nLogCount = ZahlungsLog::count($oZahlungsart->cModulId);

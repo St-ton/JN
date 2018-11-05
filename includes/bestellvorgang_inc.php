@@ -189,8 +189,8 @@ function pruefeLieferdaten($cPost_arr, &$fehlendeAngaben = null)
     }
     TaxHelper::setTaxRates();
     //lieferland hat sich geändert und versandart schon gewählt?
-    if (isset($_SESSION['Lieferadresse'], $_SESSION['Versandart']) 
-        && $_SESSION['Lieferadresse'] 
+    if (isset($_SESSION['Lieferadresse'], $_SESSION['Versandart'])
+        && $_SESSION['Lieferadresse']
         && $_SESSION['Versandart']
     ) {
         $delVersand = stripos($_SESSION['Versandart']->cLaender, $_SESSION['Lieferadresse']->cLand) === false;
@@ -544,8 +544,8 @@ function gibStepUnregistriertBestellen()
 {
     global $Kunde;
     $herkunfte = Shop::Container()->getDB()->query(
-        'SELECT * 
-            FROM tkundenherkunft 
+        'SELECT *
+            FROM tkundenherkunft
             ORDER BY nSort',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
@@ -726,7 +726,9 @@ function gibStepZahlung()
             ->assign('AktiveZahlungsart', $aktiveZahlungsart)
             ->assign('AktiveVerpackung', $aktiveVerpackung)
             ->assign('Kunde', $_SESSION['Kunde'])
-            ->assign('Lieferadresse', $_SESSION['Lieferadresse']);
+            ->assign('Lieferadresse', $_SESSION['Lieferadresse'])
+            ->assign('OrderAmount', Session::Cart()->gibGesamtsummeWaren(true))
+            ->assign('ShopCreditAmount', $_SESSION['Kunde']->fGuthaben);
 
         executeHook(HOOK_BESTELLVORGANG_PAGE_STEPZAHLUNG);
 
@@ -1181,14 +1183,26 @@ function zahlungsartKorrekt(int $kZahlungsart)
         && isset($_SESSION['Versandart']->kVersandart)
         && (int)$_SESSION['Versandart']->kVersandart > 0
     ) {
-        $Zahlungsart = Shop::Container()->getDB()->query(
+        $Zahlungsart = Shop::Container()->getDB()->executeQueryPrepared(
             'SELECT tversandartzahlungsart.*, tzahlungsart.*
                 FROM tversandartzahlungsart, tzahlungsart
-                WHERE tversandartzahlungsart.kVersandart = ' . (int)$_SESSION['Versandart']->kVersandart . '
+                WHERE tversandartzahlungsart.kVersandart = :session_kversandart
                     AND tversandartzahlungsart.kZahlungsart = tzahlungsart.kZahlungsart
-                    AND tversandartzahlungsart.kZahlungsart = ' . $kZahlungsart,
+                    AND tversandartzahlungsart.kZahlungsart = :kzahlungsart',
+            [
+                'session_kversandart' => (int)$_SESSION['Versandart']->kVersandart,
+                'kzahlungsart'        => $kZahlungsart
+            ],
             \DB\ReturnType::SINGLE_OBJECT
         );
+        if (!$Zahlungsart) {
+			$Zahlungsart = Shop::Container()->getDB()->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
+			// only the null-payment-method is allowed to go ahead in this case
+			if ('za_null_jtl' !== $Zahlungsart->cModulId) {
+
+				return 0;
+			}
+		}
         if (isset($Zahlungsart->cModulId) && strlen($Zahlungsart->cModulId) > 0) {
             $einstellungen = Shop::Container()->getDB()->selectAll(
                 'teinstellungen',
@@ -1257,6 +1271,9 @@ function zahlungsartKorrekt(int $kZahlungsart)
             $ZahlungsInfo    = new stdClass();
             $zusatzangabenDa = false;
             switch ($Zahlungsart->cModulId) {
+                case 'za_null_jtl' :
+                    // the null-paymentMethod did not has any additional-steps
+                    break;
                 case 'za_kreditkarte_jtl':
                     if (isset($_POST['kreditkartennr'])
                         && $_POST['kreditkartennr']
@@ -3100,8 +3117,8 @@ function setzeSmartyRechnungsadresse($nUnreg, $nCheckout = 0)
     global $step;
     $conf      = Shop::getSettings([CONF_KUNDEN]);
     $herkunfte = Shop::Container()->getDB()->query(
-        'SELECT * 
-            FROM tkundenherkunft 
+        'SELECT *
+            FROM tkundenherkunft
             ORDER BY nSort',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
@@ -3648,10 +3665,10 @@ function mappeBestellvorgangZahlungshinweis(int $nHinweisCode)
 function isEmailAvailable(string $email, int $customerID = 0): bool
 {
     return Shop::Container()->getDB()->queryPrepared('
-              SELECT * 
-                FROM tkunde 
-                WHERE cmail = :email 
-                  AND nRegistriert = 1 
+              SELECT *
+                FROM tkunde
+                WHERE cmail = :email
+                  AND nRegistriert = 1
                   AND kKunde != :customerID',
                 ['email' => $email, 'customerID' => $customerID],
                 \DB\ReturnType::SINGLE_OBJECT) === false;

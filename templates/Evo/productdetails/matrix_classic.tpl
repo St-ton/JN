@@ -69,7 +69,7 @@
                                         {/if}
                                     {elseif (isset($child->bHasKonfig) && $child->bHasKonfig == true) || (isset($child->nVariationAnzahl) && isset($child->nVariationOhneFreifeldAnzahl) && $child->nVariationAnzahl > $child->nVariationOhneFreifeldAnzahl)}
                                         <div class="center-sm">
-                                            <a class="btn btn-default configurepos" href="{$child->cSeo}"><i class="fa fa-cogs"></i><span class="hidden-xs"> {lang key='configure'}</span></a>
+                                            <a class="btn btn-default configurepos" href="{$ShopURL}/?a={$child->kArtikel}"><i class="fa fa-cogs"></i><span class="hidden-xs"> {lang key='configure'}</span></a>
                                         </div>
                                         {if isset($child->nErscheinendesProdukt) && $child->nErscheinendesProdukt == 1}
                                             <div>
@@ -254,7 +254,7 @@
                                     {/if}
                                 {elseif (isset($child->bHasKonfig) && $child->bHasKonfig == true) || (isset($child->nVariationAnzahl) && isset($child->nVariationOhneFreifeldAnzahl) && $child->nVariationAnzahl > $child->nVariationOhneFreifeldAnzahl)}
                                     <div class="center-sm">
-                                        <a class="btn btn-default configurepos" href="{$child->cSeo}"><i class="fa fa-cogs"></i><span class="hidden-xs"> {lang key='configure'}</span></a>
+                                        <a class="btn btn-default configurepos" href="{$ShopURL}/?a={$child->kArtikel}"><i class="fa fa-cogs"></i><span class="hidden-xs"> {lang key='configure'}</span></a>
                                     </div>
                                     {if isset($child->nErscheinendesProdukt) && $child->nErscheinendesProdukt == 1}
                                         <div>
@@ -381,7 +381,7 @@
                                         {$outofstockInfo}
                                     {/if}
                                 {elseif (isset($child->bHasKonfig) && $child->bHasKonfig == true) || (isset($child->nVariationAnzahl) && isset($child->nVariationOhneFreifeldAnzahl) && $child->nVariationAnzahl > $child->nVariationOhneFreifeldAnzahl)}
-                                    <a class="btn btn-default configurepos" href="{$child->cSeo}"><i class="fa fa-cogs"></i><span class="hidden-xs"> {lang key='configure'}</span></a>
+                                    <a class="btn btn-default configurepos" href="{$ShopURL}/?a={$child->kArtikel}"><i class="fa fa-cogs"></i><span class="hidden-xs"> {lang key='configure'}</span></a>
                                     {if isset($child->nErscheinendesProdukt) && $child->nErscheinendesProdukt == 1}
                                         <div>
                                             <small>

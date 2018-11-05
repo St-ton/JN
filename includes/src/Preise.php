@@ -213,6 +213,19 @@ class Preise
                 $kSteuerklasse = (int)$tax->kSteuerklasse;
             }
             $this->fUst        = TaxHelper::getSalesTax($kSteuerklasse);
+            $tmp = Shop::Container()->getDB()->select(
+                'tartikel',
+                'kArtikel',
+                $kArtikel,
+                null,
+                null,
+                null,
+                null,
+                false,
+                'fMwSt'
+            );
+            $defaultTax        = $tmp->fMwSt;
+            $currentTax        = $this->fUst;
             $specialPriceValue = null;
             foreach ($prices as $i => $price) {
                 // Kundenpreis?
@@ -221,7 +234,7 @@ class Preise
                 }
                 // Standardpreis
                 if ($price->nAnzahlAb < 1) {
-                    $this->fVKNetto = (float)$price->fVKNetto;
+                    $this->fVKNetto = $this->getRecalculatedNetPrice($price->fVKNetto, $defaultTax, $currentTax);
                     $specialPrice   = Shop::Container()->getDB()->query(
                         "SELECT tsonderpreise.fNettoPreis, tartikelsonderpreis.dEnde AS dEnde_en,
                             DATE_FORMAT(tartikelsonderpreis.dEnde, '%d.%m.%Y') AS dEnde_de
@@ -241,7 +254,7 @@ class Preise
                     );
 
                     if (isset($specialPrice->fNettoPreis) && (double)$specialPrice->fNettoPreis < $this->fVKNetto) {
-                        $specialPriceValue       = (double)$specialPrice->fNettoPreis;
+                        $specialPriceValue       = $this->getRecalculatedNetPrice($specialPrice->fNettoPreis, $defaultTax, $currentTax);
                         $this->alterVKNetto      = $this->fVKNetto;
                         $this->fVKNetto          = $specialPriceValue;
                         $this->Sonderpreis_aktiv = 1;
@@ -255,17 +268,18 @@ class Preise
                         $priceGetter = "fPreis{$i}";
 
                         $this->{$scaleGetter} = (int)$price->nAnzahlAb;
-                        $this->{$priceGetter} = $specialPriceValue ?? (double)$price->fVKNetto;
+                        $this->{$priceGetter} = $specialPriceValue ?? $this->getRecalculatedNetPrice($price->fVKNetto, $defaultTax, $currentTax);
                     }
 
                     $this->nAnzahl_arr[] = (int)$price->nAnzahlAb;
                     $this->fPreis_arr[]  =
                         ($specialPriceValue !== null && $specialPriceValue < (double)$price->fVKNetto)
                             ? $specialPriceValue
-                            : (double)$price->fVKNetto;
+                            : $this->getRecalculatedNetPrice($price->fVKNetto, $defaultTax, $currentTax);
                 }
             }
         }
+        
         $this->berechneVKs();
         $this->oPriceRange = new PriceRange($kArtikel, $kKundengruppe, $kKunde);
         executeHook(HOOK_PRICES_CONSTRUCT, [
@@ -275,6 +289,25 @@ class Preise
             'taxClassID'      => $kSteuerklasse,
             'prices'          => $this
         ]);
+    }
+
+    /**
+     * Return recalculated new net price based on the rounded default gross price.
+     * This is necessary for having consistent gross prices in case of threshold delivery (Tax rate != default tax rate).
+     *
+     * @param double $netPrice the product net price
+     * @param double $defaultTax the default tax factor of the product e.g. 19 for 19% vat
+     * @param double $conversionTax the taxFactor of the delivery country / delivery threshold
+     * @return double calculated net price based on a rounded(!!!) DEFAULT gross price.
+     */
+    private function getRecalculatedNetPrice($netPrice, $defaultTax, $conversionTax)
+    {
+        $newNetPrice = $netPrice;
+        if (CONSISTENT_GROSS_PRICES === true && $defaultTax > 0 && $conversionTax > 0 && $defaultTax != $conversionTax) {
+            $newNetPrice = round($netPrice * ($defaultTax + 100) / 100, 2) / ($conversionTax + 100) * 100;
+        }
+        
+        return (double)$newNetPrice;
     }
 
     /**
@@ -578,16 +611,16 @@ class Preise
     }
 
     /**
-     * @param float      $price
-     * @param object|int $currency
-     * @param bool       $html
-     * @param int        $decimals
+     * @param float       $price
+     * @param object|null $currency
+     * @param bool        $html
+     * @param int         $decimals
      * @return string
      * @former self::getLocalizedPriceString()
      */
-    public static function getLocalizedPriceString($price, $currency = 0, bool $html = true, int $decimals = 2): string
+    public static function getLocalizedPriceString($price, $currency = null, bool $html = true, int $decimals = 2): string
     {
-        if ($currency === 0 || is_bool($currency) || is_numeric($currency)) {
+        if ($currency === null || is_numeric($currency) || is_bool($currency)) {
             $currency = Session::Currency();
         } elseif (is_object($currency) && get_class($currency) === 'stdClass') {
             $currency = new Currency((int)$currency->kWaehrung);

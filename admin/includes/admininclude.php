@@ -58,6 +58,11 @@ Shop::Container()->setSingleton(\Services\JTL\CaptchaServiceInterface::class, fu
 Shop::bootstrap();
 
 if ($oAccount->logged()) {
+    if (!$session->isValid()) {
+        $oAccount->logout();
+        $oAccount->redirectOnFailure(AdminLoginStatus::ERROR_SESSION_INVALID);
+    }
+
     Shop::fire('backend.notification', Notification::getInstance()->buildDefault());
     if (isset($_POST['revision-action'], $_POST['revision-type'], $_POST['revision-id'])
         && FormHelper::validateToken()

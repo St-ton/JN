@@ -601,7 +601,7 @@ class IOMethods
         $net             = Session::CustomerGroup()->getIsMerchant();
         $Artikel->fuelleArtikel($productID, null);
         $Artikel->Preise->cVKLocalized[$net] =
-            Preise::getLocalizedPriceString($Artikel->Preise->fVK[$net] * $amount, 0, true);
+            Preise::getLocalizedPriceString($Artikel->Preise->fVK[$net] * $amount, null, true);
 
         $smarty->assign('oKonfig', $oKonfig)
                ->assign('NettoPreise', $net)

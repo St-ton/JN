@@ -812,7 +812,7 @@ function injectSubject($Object, $subject)
 function lokalisiereInhalt($Object)
 {
     if (isset($Object->tgutschein->fWert) && $Object->tgutschein->fWert != 0) {
-        $Object->tgutschein->cLocalizedWert = Preise::getLocalizedPriceString($Object->tgutschein->fWert, 0, false);
+        $Object->tgutschein->cLocalizedWert = Preise::getLocalizedPriceString($Object->tgutschein->fWert, null, false);
     }
 
     return $Object;

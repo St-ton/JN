@@ -494,7 +494,7 @@ class Bestellung
             $this->Steuerpositionen = TaxHelper::getOldTaxPositions(
                 $this->Positionen,
                 $nNettoPreis,
-                (bool)$htmlWaehrung,
+                $htmlWaehrung,
                 $this->Waehrung
             );
             if ($this->kZahlungsart > 0) {

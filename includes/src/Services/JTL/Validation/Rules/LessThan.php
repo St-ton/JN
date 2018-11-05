@@ -29,7 +29,7 @@ class LessThan implements RuleInterface
     /**
      * @inheritdoc
      */
-    public function validate($value)
+    public function validate($value): RuleResult
     {
         return $value < $this->value
             ? new RuleResult(true, '', $value)

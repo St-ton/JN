@@ -91,7 +91,7 @@ final class TrustedShopsReviews extends AbstractBox
     /**
      * @param string $path
      */
-    public function setImagePath(string $path)
+    public function setImagePath(string $path): void
     {
         $this->imagePath = $path;
     }
@@ -99,7 +99,7 @@ final class TrustedShopsReviews extends AbstractBox
     /**
      * @return null|\stdClass
      */
-    public function getStats()
+    public function getStats(): ?\stdClass
     {
         return $this->stats;
     }
@@ -107,7 +107,7 @@ final class TrustedShopsReviews extends AbstractBox
     /**
      * @param null|\stdClass $stats
      */
-    public function setStats($stats)
+    public function setStats($stats): void
     {
         $this->stats = $stats;
     }
@@ -123,7 +123,7 @@ final class TrustedShopsReviews extends AbstractBox
     /**
      * @param string $imageURL
      */
-    public function setImageURL(string $imageURL)
+    public function setImageURL(string $imageURL): void
     {
         $this->imageURL = $imageURL;
     }

@@ -6,7 +6,6 @@
 
 namespace Smarty;
 
-
 /**
  * Class PluginCollection
  * @package Smarty
@@ -132,9 +131,9 @@ class PluginCollection
      * @param string $text
      * @return int
      */
-    public function countCharacters(string $text): int
+    public function countCharacters(?string $text): int
     {
-        return \strlen($text);
+        return $text === null ? 0 : \strlen($text);
     }
 
     /**

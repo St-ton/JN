@@ -37,7 +37,7 @@ class DefaultRenderer implements RendererInterface
     /**
      * @inheritdoc
      */
-    public function setBox(BoxInterface $box)
+    public function setBox(BoxInterface $box): void
     {
         $this->box = $box;
     }

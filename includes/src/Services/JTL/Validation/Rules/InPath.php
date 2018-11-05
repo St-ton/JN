@@ -6,7 +6,6 @@
 
 namespace Services\JTL\Validation\Rules;
 
-
 use Eloquent\Pathogen\Exception\InvalidPathStateException;
 use Eloquent\Pathogen\Path;
 use Eloquent\Pathogen\RelativePath;
@@ -23,6 +22,9 @@ use Services\JTL\Validation\RuleResult;
  */
 class InPath implements RuleInterface
 {
+    /**
+     * @var \Eloquent\Pathogen\AbsolutePathInterface
+     */
     protected $parentPath;
 
     /**
@@ -38,12 +40,10 @@ class InPath implements RuleInterface
     }
 
     /**
-     * @param mixed $value
-     * @return RuleResult
+     * @inheritdoc
      */
-    public function validate($value)
+    public function validate($value): RuleResult
     {
-        // prepare path
         $path = $value instanceof Path ? $value : Path::fromString($value);
         $path = $path->normalize();
         if ($path instanceof RelativePath) {
@@ -55,7 +55,6 @@ class InPath implements RuleInterface
             return new RuleResult(false, 'invalid path state', $value);
         }
 
-        // compare
         return $this->parentPath->isAncestorOf($path)
             ? new RuleResult(true, '', $value)
             : new RuleResult(false, 'path traversal detected', $value);

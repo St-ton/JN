@@ -34,10 +34,12 @@ $kKundengruppe = (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']
 $cKundenherkunft = (isset($_SESSION['Kunde']->cLand) && strlen($_SESSION['Kunde']->cLand) > 0)
     ? $_SESSION['Kunde']->cLand
     : '';
-$warensumme[0]         = Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true));
-$warensumme[1]         = Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], false));
-$gesamtsumme[0]        = Preise::getLocalizedPriceString($cart->gibGesamtsummeWaren(true, true));
-$gesamtsumme[1]        = Preise::getLocalizedPriceString($cart->gibGesamtsummeWaren(false, true));
+
+$warensumme[0]   = Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true));
+$warensumme[1]   = Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], false));
+$gesamtsumme[0]  = Preise::getLocalizedPriceString($cart->gibGesamtsummeWaren(true, true));
+$gesamtsumme[1]  = Preise::getLocalizedPriceString($cart->gibGesamtsummeWaren(false, true));
+
 $oVersandartKostenfrei = VersandartHelper::getFreeShippingMinimum($kKundengruppe, $cKundenherkunft);
 $oGlobaleMetaAngaben   = $oGlobaleMetaAngabenAssoc_arr[Shop::getLanguageID()] ?? null;
 $pagetType             = Shop::getPageType();
@@ -93,11 +95,13 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('WarenkorbGesamtgewicht', $cart->getWeight())
        ->assign('Warenkorbtext', lang_warenkorb_warenkorbEnthaeltXArtikel($cart))
        ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
-       ->assign('WarenkorbVersandkostenfreiHinweis', VersandartHelper::getShippingFreeString($oVersandartKostenfrei,
-           $cart->gibGesamtsummeWarenExt(
-               [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON],
-               true
-           )))
+       ->assign(
+           'WarenkorbVersandkostenfreiHinweis',
+           VersandartHelper::getShippingFreeString(
+               $oVersandartKostenfrei,
+               $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)
+           )
+       )
        ->assign('meta_title', $cMetaTitle ?? '')
        ->assign('meta_description', $cMetaDescription ?? '')
        ->assign('meta_keywords', $cMetaKeywords ?? '')

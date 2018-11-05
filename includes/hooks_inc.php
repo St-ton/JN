@@ -228,6 +228,8 @@ define('HOOK_NAVI_PAGE', 31);
  * Kurz vor der Anzeige in der News Detailansicht
  *
  * @file news.php
+ * @param \News\Item newsItem - since 5.0.0
+ * @param Pagination pagination - since 5.0.0
  */
 define('HOOK_NEWS_PAGE_DETAILANSICHT', 32);
 
@@ -235,6 +237,8 @@ define('HOOK_NEWS_PAGE_DETAILANSICHT', 32);
  * Kurz vor der Anzeige in der News Übersicht
  *
  * @file news.php
+ * @param News\Category category - since 5.0.0
+ * @param Tightenco\Collect\Support\Collection items - since 5.0.0
  */
 define('HOOK_NEWS_PAGE_NEWSUEBERSICHT', 33);
 
@@ -865,6 +869,7 @@ define('HOOK_EIGENSCHAFTWERT_CLASS_LOADFROMDB', 117);
  * after loading a company from the database
  *
  * @file Firma.php
+ * @param Firma instance - since 5.0.0
  */
 define('HOOK_FIRMA_CLASS_LOADFROMDB', 118);
 
@@ -1571,7 +1576,8 @@ define('HOOK_IO_HANDLE_REQUEST', 213);
  *
  * @since 4.0
  * @file class.core.Shop.php
- * @param int - pageType
+ * @param int    pageType
+ * @param string pageName
  */
 define('HOOK_SHOP_SET_PAGE_TYPE', 214);
 
@@ -1620,7 +1626,7 @@ define('HOOK_GET_ALL_CATEGORIES', 219);
 /**
  * @since 4.04
  * @file seite_inc.php
- * @param array - oNews_arr
+ * @param \Tightenco\Collect\Support\Collection - oNews_arr
  * @param array - cacheTags
  * @param bool  - cached
  */
@@ -1832,12 +1838,20 @@ define('HOOK_CAPTCHA_VALIDATE', 272);
 
 /**
  * @since 5.0.0
- * @file admin/plugin.php.php
+ * @file admin/plugin.php
  * @param Plugin plugin
  * @param bool   hasError
- * @param string msg
  * @param string msg
  * @param string error
  * @param array  options
  */
 define('HOOK_PLUGIN_SAVE_OPTIONS', 280);
+
+
+/**
+ * @since 5.0.0
+ * @file includes/src/Sitemap/Export.php
+ * @param \Sitemap\Factories\FactoryInterface[] factories
+ * @param \Sitemap\Export exporter
+ */
+define('HOOK_SITEMAP_EXPORT_GET_FACTORIES', 285);

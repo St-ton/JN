@@ -77,7 +77,6 @@ abstract class AbstractBox implements BoxInterface
         \PAGE_WRB,
         \PAGE_PLUGIN,
         \PAGE_NEWSLETTERARCHIV,
-        \PAGE_NEWSARCHIV,
         \PAGE_EIGENE,
         \PAGE_AUSWAHLASSISTENT,
         \PAGE_BESTELLABSCHLUSS
@@ -228,7 +227,7 @@ abstract class AbstractBox implements BoxInterface
      * @param string $attrbute
      * @param string $method
      */
-    public function addMapping(string $attrbute, string $method)
+    public function addMapping(string $attrbute, string $method): void
     {
         self::$mapping[$attrbute] = $method;
     }
@@ -236,7 +235,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @inheritdoc
      */
-    public function map(array $boxData)
+    public function map(array $boxData): void
     {
         $data = first($boxData);
         if ($data->eTyp === null) {
@@ -319,13 +318,13 @@ abstract class AbstractBox implements BoxInterface
         if ($this->show === false) {
             return false;
         }
-        $visible = empty($this->filter) || (isset($this->filter[$pageType]) && $this->filter[$pageType] === true);
+        $vis = empty($this->filter) || (isset($this->filter[$pageType]) && $this->filter[$pageType] === true);
 
-        if ($visible === false && $pageID > 0 && isset($this->filter[$pageType]) && \is_array($this->filter[$pageType])) {
-            $visible = \in_array($pageID, $this->filter[$pageType], true);
+        if ($vis === false && $pageID > 0 && isset($this->filter[$pageType]) && \is_array($this->filter[$pageType])) {
+            $vis = \in_array($pageID, $this->filter[$pageType], true);
         }
 
-        return $visible;
+        return $vis;
     }
 
     /**
@@ -347,7 +346,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @param bool $show
      */
-    public function setShow(bool $show)
+    public function setShow(bool $show): void
     {
         $this->show = $show;
     }
@@ -363,7 +362,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @param string $name
      */
-    public function setName(string $name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
@@ -379,7 +378,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @param string $url
      */
-    public function setURL(string $url)
+    public function setURL(string $url): void
     {
         $this->url = $url;
     }
@@ -395,7 +394,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @param string $type
      */
-    public function setType(string $type)
+    public function setType(string $type): void
     {
         $this->type = $type;
     }
@@ -411,7 +410,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @param string $templateFile
      */
-    public function setTemplateFile(string $templateFile)
+    public function setTemplateFile(string $templateFile): void
     {
         $this->templateFile = $templateFile;
     }
@@ -427,7 +426,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @param null|\Plugin $plugin
      */
-    public function setPlugin(\Plugin $plugin)
+    public function setPlugin(\Plugin $plugin): void
     {
         $this->plugin = $plugin;
     }
@@ -443,7 +442,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @param int $containerID
      */
-    public function setContainerID(int $containerID)
+    public function setContainerID(int $containerID): void
     {
         $this->containerID = $containerID;
     }
@@ -459,7 +458,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @param string $position
      */
-    public function setPosition(string $position)
+    public function setPosition(string $position): void
     {
         $this->position = $position;
     }
@@ -480,7 +479,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @param string|array $title
      */
-    public function setTitle($title)
+    public function setTitle($title): void
     {
         $this->title = $title;
     }
@@ -501,7 +500,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @param string|array $content
      */
-    public function setContent($content)
+    public function setContent($content): void
     {
         $this->content = $content;
     }
@@ -517,7 +516,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @param int $id
      */
-    public function setID(int $id)
+    public function setID(int $id): void
     {
         $this->id = $id;
     }
@@ -533,7 +532,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @param int $type
      */
-    public function setBaseType(int $type)
+    public function setBaseType(int $type): void
     {
         $this->baseType = $type;
     }
@@ -549,7 +548,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @inheritdoc
      */
-    public function setCustomID(int $id)
+    public function setCustomID(int $id): void
     {
         $this->customID = $id;
     }
@@ -565,7 +564,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @param int $sort
      */
-    public function setSort(int $sort)
+    public function setSort(int $sort): void
     {
         $this->sort = $sort;
     }
@@ -581,7 +580,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @param int $count
      */
-    public function setItemCount(int $count)
+    public function setItemCount(int $count): void
     {
         $this->itemCount = $count;
     }
@@ -597,7 +596,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @param bool $supportsRevisions
      */
-    public function setSupportsRevisions(bool $supportsRevisions)
+    public function setSupportsRevisions(bool $supportsRevisions): void
     {
         $this->supportsRevisions = $supportsRevisions;
     }
@@ -621,7 +620,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @inheritdoc
      */
-    public function setIsActive(bool $isActive)
+    public function setIsActive(bool $isActive): void
     {
         $this->isActive = $isActive;
     }
@@ -637,7 +636,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @param string $show
      */
-    public function setShowCompat(string $show)
+    public function setShowCompat(string $show): void
     {
         $this->show = $show === 'Y';
     }
@@ -653,7 +652,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @inheritdoc
      */
-    public function setProducts($products)
+    public function setProducts($products): void
     {
         $this->products = $products;
     }
@@ -669,7 +668,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @inheritdoc
      */
-    public function setItems($items)
+    public function setItems($items): void
     {
         $this->items = $items;
     }
@@ -685,7 +684,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @inheritdoc
      */
-    public function setFilter(array $filter)
+    public function setFilter(array $filter): void
     {
         $this->filter = $filter;
     }
@@ -701,7 +700,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @inheritdoc
      */
-    public function setConfig(array $config)
+    public function setConfig(array $config): void
     {
         $this->config = $config;
     }
@@ -717,7 +716,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @inheritdoc
      */
-    public function setJSON(string $json)
+    public function setJSON(string $json): void
     {
         $this->json = $json;
     }
@@ -733,7 +732,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @inheritdoc
      */
-    public function setChildren(array $chilren)
+    public function setChildren(array $chilren): void
     {
         $this->children = $chilren[$this->getID()] ?? [];
     }
@@ -749,7 +748,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @param string $html
      */
-    public function setHTML(string $html)
+    public function setHTML(string $html): void
     {
         $this->html = $html;
     }
@@ -765,7 +764,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @inheritdoc
      */
-    public function setRenderedContent(string $renderedContent)
+    public function setRenderedContent(string $renderedContent): void
     {
         $this->renderedContent = $renderedContent;
     }

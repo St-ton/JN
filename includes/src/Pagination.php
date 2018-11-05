@@ -135,6 +135,11 @@ class Pagination
     private $nDefaultItemsPerPage = 0;
 
     /**
+     * @var int
+     */
+    private $nDefaultSortByDir = 0;
+
+    /**
      * Pagination constructor.
      * @param string $cId
      */
@@ -201,10 +206,10 @@ class Pagination
     }
 
     /**
-     * @param array $oItem_arr - item array to be paginated and sorted
+     * @param array|\Tightenco\Collect\Support\Collection $oItem_arr - item array to be paginated and sorted
      * @return $this
      */
-    public function setItemArray(array $oItem_arr): self
+    public function setItemArray($oItem_arr): self
     {
         $this->oItem_arr = $oItem_arr;
         $this->setItemCount(count($oItem_arr));
@@ -219,6 +224,17 @@ class Pagination
     public function setDefaultItemsPerPage(int $n): self
     {
         $this->nDefaultItemsPerPage = $n;
+
+        return $this;
+    }
+
+    /**
+     * @param int
+     * @return $this
+     */
+    public function setDefaultSortByDir(int $n): self
+    {
+        $this->nDefaultSortByDir = $n;
 
         return $this;
     }
@@ -255,7 +271,7 @@ class Pagination
             isset($_GET[$this->cId . '_nSortByDir'])     ? (int)$_GET[$this->cId . '_nSortByDir'] : (
             isset($_POST[$this->cId . '_nSortByDir'])    ? (int)$_POST[$this->cId . '_nSortByDir'] : (
             isset($_SESSION[$this->cId . '_nSortByDir']) ? (int)$_SESSION[$this->cId . '_nSortByDir'] :
-                0 ));
+                                                           $this->nDefaultSortByDir ));
 
         $this->nPage =
             isset($_GET[$this->cId . '_nPage'])     ? (int)$_GET[$this->cId . '_nPage'] : (
@@ -334,6 +350,8 @@ class Pagination
         // Slice array if exists
         if (is_array($this->oItem_arr)) {
             $this->oPageItem_arr = array_slice($this->oItem_arr, $this->nFirstPageItem, $this->nPageItemCount);
+        } elseif ($this->oItem_arr instanceof \Tightenco\Collect\Support\Collection) {
+            $this->oPageItem_arr = $this->oItem_arr->slice($this->nFirstPageItem, $this->nPageItemCount);
         }
 
         return $this;

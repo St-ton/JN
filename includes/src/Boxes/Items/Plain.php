@@ -25,7 +25,7 @@ final class Plain extends AbstractBox
     /**
      * @inheritdoc
      */
-    public function map(array $boxData)
+    public function map(array $boxData): void
     {
         parent::map($boxData);
         $this->setShow(!empty($this->getContent(\Shop::getLanguageID())));

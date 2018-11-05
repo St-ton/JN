@@ -15,7 +15,7 @@ class Boxen
     /**
      * @var array
      */
-    private static $mapping = [
+    protected static $mapping = [
         'boxes'     => 'BoxList',
         'boxConfig' => 'Config'
     ];
@@ -551,7 +551,6 @@ class Boxen
             PAGE_WRB,
             PAGE_PLUGIN,
             PAGE_NEWSLETTERARCHIV,
-            PAGE_NEWSARCHIV,
             PAGE_EIGENE,
             PAGE_AUSWAHLASSISTENT,
             PAGE_BESTELLABSCHLUSS

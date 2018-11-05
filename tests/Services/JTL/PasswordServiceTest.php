@@ -6,11 +6,13 @@
 
 namespace Services\JTL;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * Class PasswordServiceTest
  * @package Services\JTL
  */
-class PasswordServiceTest extends \PHPUnit_Framework_TestCase
+class PasswordServiceTest extends TestCase
 {
     public function test_generate()
     {

@@ -5,7 +5,7 @@ stages:
 archive:
   stage: build
   script:
-    - $CI_PROJECT_DIR/tools/create_version_string.sh "$CI_COMMIT_REF_NAME" "$CI_COMMIT_SHA" "$CI_PROJECT_DIR"
+    - bash $CI_PROJECT_DIR/tools/build.sh "$CI_COMMIT_REF_NAME" "$CI_COMMIT_SHA" "$CI_PROJECT_DIR"
     - buildscript pipeline:shop "$CI_PROJECT_DIR" "$CI_COMMIT_REF_NAME" "$CI_PROJECT_URL" "$CI_COMMIT_SHA"
   only:
     - master
@@ -13,17 +13,6 @@ archive:
     - tags
   tags:
     - build
-
-testphp70:
-  image: gitlab.jtl-software.de:4567/jtlshop/shop4/php70
-  stage: test
-  script:
-    - cd includes
-    - php /root/composer.phar install
-    - cd ../
-    - includes/vendor/bin/phpunit tests
-  tags:
-      - docker
 
 testphp71:
   image: gitlab.jtl-software.de:4567/jtlshop/shop4/php71

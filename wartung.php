@@ -5,7 +5,6 @@
  */
 require_once __DIR__ . '/includes/globalinclude.php';
 
-$AktuelleSeite = 'WARTUNG';
 $Einstellungen = Shop::getSettings([CONF_GLOBAL]);
 if ($Einstellungen['global']['wartungsmodus_aktiviert'] === 'N') {
     header('Location: ' . Shop::getURL(), true, 307);

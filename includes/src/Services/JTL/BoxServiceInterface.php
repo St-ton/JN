@@ -11,7 +11,6 @@ use DB\DbInterface;
 use Filter\ProductFilter;
 use Filter\SearchResultsInterface;
 
-
 /**
  * Class BoxService
  */
@@ -39,10 +38,10 @@ interface BoxServiceInterface
     public function __construct(array $config, FactoryInterface $factory, DbInterface $db);
 
     /**
-     * @param int $kArtikel
-     * @param int $nMaxAnzahl
+     * @param int $productID
+     * @param int $limit
      */
-    public function addRecentlyViewed(int $kArtikel, $nMaxAnzahl = null);
+    public function addRecentlyViewed(int $productID, int $limit = null): void;
 
     /**
      * @param int  $pageType

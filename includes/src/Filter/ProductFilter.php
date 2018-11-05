@@ -45,11 +45,6 @@ class ProductFilter
     use \MagicCompatibilityTrait;
 
     /**
-     * @var array
-     */
-    private $languages;
-
-    /**
      * @var BaseCategory
      */
     private $category;
@@ -707,8 +702,11 @@ class ProductFilter
         }
         // @todo: how to handle \strlen($params['cSuche']) === 0?
         if ($params['kSuchanfrage'] > 0) {
-            $oSuchanfrage = $this->db->select('tsuchanfrage', 'kSuchanfrage',
-                $params['kSuchanfrage']);
+            $oSuchanfrage = $this->db->select(
+                'tsuchanfrage',
+                'kSuchanfrage',
+                $params['kSuchanfrage']
+            );
             if (isset($oSuchanfrage->cSuche) && \strlen($oSuchanfrage->cSuche) > 0) {
                 $this->search->setName($oSuchanfrage->cSuche);
             }
@@ -784,7 +782,8 @@ class ProductFilter
                 // escape all input values
                 if (($filter->getType() === Type::OR && \is_array($_GET[$filterParam]))
                     || ($filter->getType() === Type::AND
-                        && (\RequestHelper::verifyGPCDataInt($filterParam) > 0 || \RequestHelper::verifyGPDataString($filterParam) !== ''))
+                        && (\RequestHelper::verifyGPCDataInt($filterParam) > 0
+                            || \RequestHelper::verifyGPDataString($filterParam) !== ''))
                 ) {
                     $filterValue = \is_array($_GET[$filterParam])
                         ? \array_map([$this->db, 'realEscape'], $_GET[$filterParam])
@@ -899,7 +898,7 @@ class ProductFilter
      * @param string $filterClassName
      * @return int|null
      */
-    public function getFilterValue(string $filterClassName)
+    public function getFilterValue(string $filterClassName): ?int
     {
         return \array_reduce(
             $this->activeFilters,
@@ -925,7 +924,7 @@ class ProductFilter
      * @param string $filterClassName
      * @return FilterInterface|null
      */
-    public function getFilterByClassName(string $filterClassName)
+    public function getFilterByClassName(string $filterClassName): ?FilterInterface
     {
         $filter = \array_filter(
             $this->filters,
@@ -942,7 +941,7 @@ class ProductFilter
      * @param string $filterClassName
      * @return FilterInterface|null
      */
-    public function getActiveFilterByClassName(string $filterClassName)
+    public function getActiveFilterByClassName(string $filterClassName): ?FilterInterface
     {
         $filter = \array_filter(
             $this->activeFilters,
@@ -1722,7 +1721,14 @@ class ProductFilter
             $productKeys = $this->searchResults->getProductKeys();
         }
         if ($error !== false) {
+            $pages = new Info();
+            $pages->setMinPage(0);
+            $pages->setMaxPage(0);
+            $pages->setTotalPages(0);
+            $pages->setCurrentPage(0);
+
             return $this->searchResults
+                ->setPages($pages)
                 ->setProductCount(0)
                 ->setVisibleProductCount(0)
                 ->setProducts($productList)

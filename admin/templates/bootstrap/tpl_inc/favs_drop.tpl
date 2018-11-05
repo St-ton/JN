@@ -1,8 +1,7 @@
 <a href="#" class="dropdown-toggle parent" data-toggle="dropdown" title="Favoriten">
     <i class="fa fa-star" aria-hidden="true"></i>
-    <span class="caret"></span>
 </a>
-<ul class="dropdown-menu" role="main">
+<ul class="dropdown-menu dropdown-menu-right" role="main">
     {if isset($favorites) && is_array($favorites) && count($favorites) > 0}
 
         {foreach $favorites as $favorite}

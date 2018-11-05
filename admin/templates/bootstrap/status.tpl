@@ -103,8 +103,8 @@
                 <div class="panel-body">
                     <table class="table table-hover table-striped table-blank text-x1 last-child">
                         <tbody>
-                            {render_item title='Datenbank-Struktur' val=$status->validDatabaseStruct() more='dbcheck.php'}
-                            {render_item title='Datei-Struktur' val=$status->validFileStruct() more='filecheck.php'}
+                            {render_item title='Datenbankstruktur' val=$status->validDatabaseStruct() more='dbcheck.php'}
+                            {render_item title='Dateistruktur' val=($status->validModifiedFileStruct()&&$status->validOrphanedFilesStruct()) more='filecheck.php'}
                             {render_item title='Verzeichnisrechte' val=$status->validFolderPermissions() more='permissioncheck.php'}
                             {render_item title='Ausstehende Updates' val=!$status->hasPendingUpdates() more='dbupdater.php'}
                             {render_item title='Installationsverzeichnis' val=!$status->hasInstallDir()}

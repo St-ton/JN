@@ -16,15 +16,15 @@ interface ValidationResultInterface extends ValueCarrierInterface
      * @param RuleResultInterface $ruleResult
      * @return void
      */
-    public function addRuleResult(RuleResultInterface $ruleResult);
+    public function addRuleResult(RuleResultInterface $ruleResult): void;
 
     /**
      * @return array|RuleResultInterface[]
      */
-    public function getRuleResults();
+    public function getRuleResults(): array;
 
     /**
      * @return bool
      */
-    public function isValid();
+    public function isValid(): bool;
 }

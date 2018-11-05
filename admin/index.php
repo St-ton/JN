@@ -65,6 +65,7 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
                 break;
 
             case AdminLoginStatus::LOGIN_OK:
+                \Session\AdminSession::getInstance()->reHash();
                 $_SESSION['loginIsValid'] = true; // "enable" the "header.tpl"-navigation again
                 if ($oAccount->permission('SHOP_UPDATE_VIEW') && $oUpdater->hasPendingUpdates()) {
                     header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . 'dbupdater.php');
@@ -191,8 +192,16 @@ if ($oAccount->getIsAuthenticated()) {
     openDashboard();
 } else {
     $oAccount->redirectOnUrl();
+    if (isset($_GET['errCode'])) {
+        switch ((int)$_GET['errCode']) {
+            case AdminLoginStatus::ERROR_SESSION_INVALID:
+                $cFehler = 'Ihre Sitzung wurde zurückgesetzt! Bitte melden Sie sich neu an.';
+                break;
+        }
+    }
     $smarty->assign('uri', isset($_REQUEST['uri']) && strlen(trim($_REQUEST['uri'])) > 0
         ? trim($_REQUEST['uri'])
         : '')
+           ->assign('cFehler', $cFehler)
            ->display('login.tpl');
 }

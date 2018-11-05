@@ -65,7 +65,6 @@ class Status
 
     /**
      * checks the db-structure against 'admin/includes/shopmd5files/dbstruct_[shop-version].json'
-     * (the 'shop-Version' is here needed without points)
      *
      * @return bool  true='no errors', false='something is wrong'
      */
@@ -81,18 +80,35 @@ class Status
 
     /**
      * checks the shop-filesystem-structure against 'admin/includes/shopmd5files/[shop-version].csv'
-     * (the 'shop-Version' is here needed without points)
      *
      * @return bool  true='no errors', false='something is wrong'
      */
-    protected function validFileStruct(): bool
+    protected function validModifiedFileStruct(): bool
     {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'filecheck_inc.php';
 
-        $files = $stats = [];
+        $files = [];
+        $stats = 0;
 
-        return getAllFiles($files, $stats) === 1
-            ? end($stats) === 0
+        return getAllModifiedFiles($files, $stats) === 1
+            ? $stats === 0
+            : false;
+    }
+
+    /**
+     * checks the shop-filesystem-structure against 'admin/includes/shopmd5files/deleted_files_[shop-version].csv'
+     *
+     * @return bool  true='no errors', false='something is wrong'
+     */
+    protected function validOrphanedFilesStruct(): bool
+    {
+        require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'filecheck_inc.php';
+
+        $files = [];
+        $stats = 0;
+
+        return getAllOrphanedFiles($files, $stats) === 1
+            ? $stats === 0
             : false;
     }
 

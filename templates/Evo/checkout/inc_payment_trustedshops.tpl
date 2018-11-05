@@ -51,7 +51,7 @@
                 </p>
             </div>
             <div class="col-xs-2">
-                <a href="{$oTrustedShops->cLogoURL}" target="_blank"><img src="{$URL_SHOP}/{$PFAD_GFX_TRUSTEDSHOPS}ts_logo.jpg" alt="" class="img-responsive"></a>
+                <a href="{$oTrustedShops->cLogoURL}" target="_blank"><img src="{$ShopURL}/{$smarty.const.PFAD_GFX_TRUSTEDSHOPS}ts_logo.jpg" alt="" class="img-responsive"></a>
             </div>
         </div>
     </div>

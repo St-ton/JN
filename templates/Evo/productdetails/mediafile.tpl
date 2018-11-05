@@ -12,7 +12,6 @@
         {$fehler}
     </div>
 {/if}
-
 {if !empty($Artikel->oMedienDatei_arr)}
     {assign var=mp3List value=false}
     {assign var=titles value=false}
@@ -48,7 +47,7 @@
                                         {/foreach}
                                     {/if}
                                     {if !empty($oMedienDatei->cPfad)}
-                                        <img alt="{if isset($cMediaAltAttr)}{$cMediaAltAttr}{/if}" src="{$PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" class="img-responsive" />
+                                        <img alt="{if isset($cMediaAltAttr)}{$cMediaAltAttr}{/if}" src="{$ShopURL}/{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" class="img-responsive" />
                                     {elseif !empty($oMedienDatei->cURL)}
                                         <img alt="{if isset($cMediaAltAttr)}{$cMediaAltAttr}{/if}" src="{$oMedienDatei->cURL}" class="img-responsive" />
                                     {/if}
@@ -69,7 +68,7 @@
                                         {if $oMedienDatei->cPfad|strlen > 1 || $oMedienDatei->cURL|strlen > 1}
                                             {assign var=audiosrc value=$oMedienDatei->cURL}
                                             {if $oMedienDatei->cPfad|strlen > 1}
-                                                {assign var=audiosrc value=$PFAD_MEDIAFILES|cat:$oMedienDatei->cPfad}
+                                                {assign var=audiosrc value=$smarty.const.PFAD_MEDIAFILES|cat:$oMedienDatei->cPfad}
                                             {/if}
                                             {if $audiosrc|strlen > 1}
                                                 <audio controls controlsList="nodownload">
@@ -101,7 +100,7 @@
                                     {/if}
                                     {if !empty($oMedienDatei->cPfad)}
                                         <p>
-                                            <a href="{$PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" target="_blank">{$oMedienDatei->cName}</a>
+                                            <a href="{$ShopURL}/{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" target="_blank">{$oMedienDatei->cName}</a>
                                         </p>
                                     {elseif !empty($oMedienDatei->cURL)}
                                         <p>
@@ -121,11 +120,15 @@
                                 <div class="panel-body">
                                     <p>{$oMedienDatei->cBeschreibung}</p>
                                     {if !empty($oMedienDatei->cPfad)}
-                                        <a href="{$PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" target="_blank"><img alt="PDF" src="{$PFAD_BILDER}intern/file-pdf.png" /></a>
+                                        <a href="{$ShopURL}/{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" target="_blank">
+                                            <img alt="PDF" src="{$ShopURL}/{$smarty.const.PFAD_BILDER}intern/file-pdf.png" />
+                                        </a>
                                         <br />
-                                        <a href="{$PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" target="_blank">{$oMedienDatei->cName}</a>
+                                        <a href="{$ShopURL}/{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" target="_blank">
+                                            {$oMedienDatei->cName}
+                                        </a>
                                     {elseif !empty($oMedienDatei->cURL)}
-                                        <a href="{$oMedienDatei->cURL}" target="_blank"><img alt="PDF" src="{$PFAD_BILDER}intern/file-pdf.png" /></a>
+                                        <a href="{$oMedienDatei->cURL}" target="_blank"><img alt="PDF" src="{$ShopURL}/{$smarty.const.PFAD_BILDER}intern/file-pdf.png" /></a>
                                         <br />
                                         <a href="{$oMedienDatei->cURL}" target="_blank">{$oMedienDatei->cName}</a>
                                     {/if}

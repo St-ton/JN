@@ -71,7 +71,7 @@ if ($opc->isOPCInstalled() === false) {
     $opcPage->deleteDraft($pageKey);
     exit('ok');
 } elseif ($action === 'restore') {
-    // Discard a OPC page draft
+    // Discard all OPC page drafts for one page
     $opcPage->deletePage($pageId);
     exit('ok');
 }

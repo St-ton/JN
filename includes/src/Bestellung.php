@@ -487,7 +487,7 @@ class Bestellung
             if ($disableFactor === true) {
                 $this->Waehrung->fFaktor = 1;
             }
-            $this->Steuerpositionen = TaxHelper::getOldTaxPositions($this->Positionen, $nNettoPreis, (bool)$htmlWaehrung, $this->Waehrung);
+            $this->Steuerpositionen = TaxHelper::getOldTaxPositions($this->Positionen, $nNettoPreis, $htmlWaehrung, $this->Waehrung);
             if ($this->kZahlungsart > 0) {
                 require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
                 $this->Zahlungsart = Shop::Container()->getDB()->select('tzahlungsart', 'kZahlungsart', (int)$this->kZahlungsart);
@@ -600,15 +600,18 @@ class Bestellung
                         $position->fPreis * $position->nAnzahl,
                         $position->fMwSt
                     ),
-                    $this->Waehrung, $htmlWaehrung
+                    $this->Waehrung,
+                    $htmlWaehrung
                 );
                 $position->cGesamtpreisLocalized[1] = Preise::getLocalizedPriceString(
                     $position->fPreis * $position->nAnzahl,
-                    $this->Waehrung, $htmlWaehrung
+                    $this->Waehrung,
+                    $htmlWaehrung
                 );
                 $position->cEinzelpreisLocalized[0] = Preise::getLocalizedPriceString(
                     TaxHelper::getGross($position->fPreis, $position->fMwSt),
-                    $this->Waehrung, $htmlWaehrung
+                    $this->Waehrung,
+                    $htmlWaehrung
                 );
                 $position->cEinzelpreisLocalized[1] = Preise::getLocalizedPriceString(
                     $position->fPreis,

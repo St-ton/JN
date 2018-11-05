@@ -1219,7 +1219,7 @@ function gibPreisLocalizedOhneFaktor($preis, $waehrung = 0, $html = true)
 function gibPreisStringLocalized($price, $currency = 0, $html = 1, $decimals = 2)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Preise::getLocalizedPriceString() instead.', E_USER_DEPRECATED);
-    return Preise::getLocalizedPriceString($price, $currency, $html, $decimals);
+    return Preise::getLocalizedPriceString($price, $currency, (bool)$html, $decimals);
 }
 
 /**

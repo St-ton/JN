@@ -531,16 +531,16 @@ class Preise
     }
 
     /**
-     * @param float      $price
-     * @param object|int $currency
-     * @param bool       $html
-     * @param int        $decimals
+     * @param float       $price
+     * @param object|null $currency
+     * @param bool        $html
+     * @param int         $decimals
      * @return string
      * @former self::getLocalizedPriceString()
      */
-    public static function getLocalizedPriceString($price, $currency = 0, bool $html = true, int $decimals = 2): string
+    public static function getLocalizedPriceString($price, $currency = null, bool $html = true, int $decimals = 2): string
     {
-        if ($currency === 0 || is_bool($currency) || is_numeric($currency)) {
+        if ($currency === null || is_numeric($currency) || is_bool($currency)) {
             $currency = Session::Currency();
         } elseif (is_object($currency) && get_class($currency) === 'stdClass') {
             $currency = new Currency((int)$currency->kWaehrung);

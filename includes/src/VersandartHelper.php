@@ -470,9 +470,13 @@ class VersandartHelper
                 if ($oArtikel['cInputData']{0} === '_') {
                     // 1D
                     $cVariation0 = substr($oArtikel['cInputData'], 1);
-                    list($kEigenschaft0, $kEigenschaftWert0) = explode(':', $cVariation0);
+                    [$kEigenschaft0, $kEigenschaftWert0] = explode(':', $cVariation0);
 
-                    $oVariation = ArtikelHelper::findVariation($oArtikelTMP->Variationen, $kEigenschaft0, $kEigenschaftWert0);
+                    $oVariation = ArtikelHelper::findVariation(
+                        $oArtikelTMP->Variationen,
+                        $kEigenschaft0,
+                        $kEigenschaftWert0
+                    );
 
                     $oZusatzArtikel->fAnzahl         += $oArtikel['fAnzahl'];
                     $oZusatzArtikel->fWarenwertNetto += $oArtikel['fAnzahl'] *
@@ -481,9 +485,9 @@ class VersandartHelper
                         ($oArtikelTMP->fGewicht + $oVariation->fGewichtDiff);
                 } else {
                     // 2D
-                    list($cVariation0, $cVariation1) = explode('_', $oArtikel['cInputData']);
-                    list($kEigenschaft0, $kEigenschaftWert0) = explode(':', $cVariation0);
-                    list($kEigenschaft1, $kEigenschaftWert1) = explode(':', $cVariation1);
+                    [$cVariation0, $cVariation1]         = explode('_', $oArtikel['cInputData']);
+                    [$kEigenschaft0, $kEigenschaftWert0] = explode(':', $cVariation0);
+                    [$kEigenschaft1, $kEigenschaftWert1] = explode(':', $cVariation1);
 
                     $oVariation0 = ArtikelHelper::findVariation(
                         $oArtikelTMP->Variationen,
@@ -512,7 +516,7 @@ class VersandartHelper
                 if ($oArtikel['cInputData']{0} === '_') {
                     // 1D
                     $cVariation0 = substr($oArtikel['cInputData'], 1);
-                    list($kEigenschaft0, $kEigenschaftWert0) = explode(':', $cVariation0);
+                    [$kEigenschaft0, $kEigenschaftWert0] = explode(':', $cVariation0);
                     $kKindArtikel = ArtikelHelper::getChildProdctIDByAttribute(
                         $oArtikelTMP->kArtikel,
                         $kEigenschaft0,
@@ -542,9 +546,9 @@ class VersandartHelper
                     $oZusatzArtikel->fGewicht        += $oArtikel['fAnzahl'] * $oArtikelKind->fGewicht;
                 } else {
                     // 2D
-                    list($cVariation0, $cVariation1) = explode('_', $oArtikel['cInputData']);
-                    list($kEigenschaft0, $kEigenschaftWert0) = explode(':', $cVariation0);
-                    list($kEigenschaft1, $kEigenschaftWert1) = explode(':', $cVariation1);
+                    [$cVariation0, $cVariation1]         = explode('_', $oArtikel['cInputData']);
+                    [$kEigenschaft0, $kEigenschaftWert0] = explode(':', $cVariation0);
+                    [$kEigenschaft1, $kEigenschaftWert1] = explode(':', $cVariation1);
 
                     $kKindArtikel = ArtikelHelper::getChildProdctIDByAttribute(
                         $oArtikelTMP->kArtikel,
@@ -800,8 +804,12 @@ class VersandartHelper
      * @param bool    $bCheckLieferadresse
      * @return bool|stdClass
      */
-    public static function gibArtikelabhaengigeVersandkosten($cLand, Artikel $Artikel, $nAnzahl, bool $bCheckLieferadresse = true)
-    {
+    public static function gibArtikelabhaengigeVersandkosten(
+        $cLand,
+        Artikel $Artikel,
+        $nAnzahl,
+        bool $bCheckLieferadresse = true
+    ) {
         $steuerSatz  = null;
         $bHookReturn = false;
         executeHook(HOOK_TOOLS_GLOBAL_GIBARTIKELABHAENGIGEVERSANDKOSTEN, [
@@ -831,11 +839,11 @@ class VersandartHelper
             ));
             foreach ($arrVersand as $cVersand) {
                 // DE 1-45,00:2-60,00:3-80;AT 1-90,00:2-120,00:3-150,00
-                list($cLandAttr, $KostenTeil) = explode(' ', $cVersand);
+                [$cLandAttr, $KostenTeil] = explode(' ', $cVersand);
                 if ($cLandAttr && ($cLand === $cLandAttr || $bCheckLieferadresse === false)) {
                     $arrKosten = explode(':', $KostenTeil);
                     foreach ($arrKosten as $staffel) {
-                        list($bisAnzahl, $fPreis) = explode('-', $staffel);
+                        [$bisAnzahl, $fPreis] = explode('-', $staffel);
                         $fPreis = (float)str_replace(',', '.', $fPreis);
                         if ($fPreis >= 0 && $bisAnzahl > 0 && $nAnzahl <= $bisAnzahl) {
                             $oVersandPos = new stdClass();
@@ -865,7 +873,7 @@ class VersandartHelper
         if (!empty($Artikel->FunktionsAttribute[FKT_ATTRIBUT_VERSANDKOSTEN])) {
             $arrVersand = array_filter(explode(';', $Artikel->FunktionsAttribute[FKT_ATTRIBUT_VERSANDKOSTEN]));
             foreach ($arrVersand as $cVersand) {
-                list($cLandAttr, $fKosten) = explode(' ', $cVersand);
+                [$cLandAttr, $fKosten] = explode(' ', $cVersand);
                 if ($cLandAttr && ($cLand === $cLandAttr || $bCheckLieferadresse === false)) {
                     $oVersandPos = new stdClass();
                     //posname lokalisiert ablegen
@@ -1007,7 +1015,7 @@ class VersandartHelper
     public static function calculateShippingFees($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
     {
         if (!isset($oZusatzArtikel->fAnzahl)) {
-            if (!isset($oZusatzArtikel)) {
+            if ($oZusatzArtikel === null) {
                 $oZusatzArtikel = new stdClass();
             }
             $oZusatzArtikel->fAnzahl         = 0;
@@ -1174,7 +1182,6 @@ class VersandartHelper
                     OR cVersandklassen RLIKE '^([0-9 -]* )?" . $Artikel->kVersandklasse . " ')
                 AND (cKundengruppen = '-1'
                     OR FIND_IN_SET('{$kKundengruppe}', REPLACE(cKundengruppen, ';', ',')) > 0)";
-        // artikelabhaengige Versandarten nur laden und prüfen wenn der Artikel das entsprechende Funktionasattribut hat
         if (empty($Artikel->FunktionsAttribute['versandkosten'])
             && empty($Artikel->FunktionsAttribute['versandkosten gestaffelt'])
         ) {
@@ -1352,9 +1359,9 @@ class VersandartHelper
     public static function getFreeShippingMinimum(int $kKundengruppe, $cLand = '')
     {
         // Ticket #1018
-        $versandklassen            = self::getShippingClasses(Session::Cart());
-        $isStandardProductShipping = self::normalerArtikelversand($cLand);
-        $cacheID                   = 'vkfrei_' . $kKundengruppe . '_' .
+        $versandklassen  = self::getShippingClasses(Session::Cart());
+        $defaultShipping = self::normalerArtikelversand($cLand);
+        $cacheID         = 'vkfrei_' . $kKundengruppe . '_' .
             $cLand . '_' . $versandklassen . '_' . Shop::getLanguageCode();
         if (($oVersandart = Shop::Cache()->get($cacheID)) === false) {
             if (strlen($cLand) > 0) {
@@ -1373,7 +1380,7 @@ class VersandartHelper
                     $cKundeSQLWhere = " AND cLaender LIKE '%{$landIso->cISO}%'";
                 }
             }
-            $cProductSpecificSQLWhere = !empty($isStandardProductShipping) ? " AND cNurAbhaengigeVersandart = 'N' " : "";
+            $cProductSpecificSQLWhere = empty($defaultShipping) ? '' : " AND cNurAbhaengigeVersandart = 'N' ";
             $oVersandart              = Shop::Container()->getDB()->queryPrepared(
                 "SELECT tversandart.*, tversandartsprache.cName AS cNameLocalized
                     FROM tversandart

@@ -7,6 +7,7 @@
 namespace Plugin\Admin;
 
 use DB\DbInterface;
+use JTL\XMLParser;
 use Mapper\PluginValidation;
 use Plugin\InstallCode;
 use Plugin\Plugin;
@@ -95,23 +96,23 @@ final class Listing
             if (!\file_exists($info)) {
                 continue;
             }
-            $xml     = \file_get_contents($info);
-            $xmlData = \getArrangedArray(\XML_unserialize($xml));
-            $code    = $this->validator->validateByPath(self::PLUGINS_DIR . $dir);
+            $parser = new XMLParser();
+            $xml    = $parser->parse($info);
+            $code   = $this->validator->validateByPath(self::PLUGINS_DIR . $dir);
             if ($code === InstallCode::DUPLICATE_PLUGIN_ID && $installedPlugins->contains($dir)) {
-                $xmlData['cVerzeichnis']    = $dir;
-                $xmlData['shop4compatible'] = isset($xmlData['jtlshop3plugin'][0]['Shop4Version']);
-                $plugins->index[$dir]       = $this->makeXMLToObj($xmlData);
+                $xml['cVerzeichnis']    = $dir;
+                $xml['shop4compatible'] = isset($xml['jtlshop3plugin'][0]['Shop4Version']);
+                $plugins->index[$dir]       = $this->makeXMLToObj($xml);
                 $plugins->installiert[]     = &$plugins->index[$dir];
             } elseif ($code === InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE || $code === InstallCode::OK) {
-                $xmlData['cVerzeichnis']    = $dir;
-                $xmlData['shop4compatible'] = ($code === 1);
-                $plugins->index[$dir]       = $this->makeXMLToObj($xmlData);
+                $xml['cVerzeichnis']    = $dir;
+                $xml['shop4compatible'] = ($code === 1);
+                $plugins->index[$dir]       = $this->makeXMLToObj($xml);
                 $plugins->verfuegbar[]      = &$plugins->index[$dir];
             } else {
-                $xmlData['cVerzeichnis'] = $dir;
-                $xmlData['cFehlercode']  = $code;
-                $plugins->index[$dir]    = $this->makeXMLToObj($xmlData);
+                $xml['cVerzeichnis'] = $dir;
+                $xml['cFehlercode']  = $code;
+                $plugins->index[$dir]    = $this->makeXMLToObj($xml);
                 $plugins->fehlerhaft[]   = &$plugins->index[$dir];
             }
         }

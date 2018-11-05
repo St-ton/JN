@@ -6,6 +6,8 @@
 
 namespace Plugin;
 
+use JTL\XMLParser;
+
 /**
  * Class Plugin
  */
@@ -361,7 +363,7 @@ class Plugin
      * @param bool $invalidateCache - set to true to invalidate plugin cache
      * @return null|$this
      */
-    public function loadFromDB(int $kPlugin, bool $invalidateCache = false)
+    public function loadFromDB(int $kPlugin, bool $invalidateCache = false): ?self
     {
         $cacheID = \CACHING_GROUP_PLUGIN . '_' . $kPlugin .
             '_' . \RequestHelper::checkSSL() .
@@ -544,7 +546,7 @@ class Plugin
         $linkData = \Functional\group($linkData, function ($e) {
             return $e->kLink;
         });
-        foreach ($linkData as $linkID => $data) {
+        foreach ($linkData as $data) {
             $baseData                             = \Functional\first($data);
             $link                                 = new \stdClass();
             $link->kLink                          = (int)$baseData->kLink;
@@ -616,13 +618,12 @@ class Plugin
         }
         $this->oPluginZahlungsmethode_arr      = $methods;
         $this->oPluginZahlungsmethodeAssoc_arr = $methodsAssoc;
-        // Zahlungsart Klassen holen
-        $oZahlungsartKlasse_arr = \Shop::Container()->getDB()->selectAll(
+        $paymentMethodClasses                  = \Shop::Container()->getDB()->selectAll(
             'tpluginzahlungsartklasse',
             'kPlugin',
             (int)$this->kPlugin
         );
-        foreach ($oZahlungsartKlasse_arr as $oZahlungsartKlasse) {
+        foreach ($paymentMethodClasses as $oZahlungsartKlasse) {
             if (isset($oZahlungsartKlasse->cModulId) && \strlen($oZahlungsartKlasse->cModulId) > 0) {
                 $this->oPluginZahlungsKlasseAssoc_arr[$oZahlungsartKlasse->cModulId] = $oZahlungsartKlasse;
             }
@@ -691,7 +692,6 @@ class Plugin
         $this->pluginCacheID    = 'plgn_' . $this->kPlugin . '_' . $this->nVersion;
         $this->pluginCacheGroup = \CACHING_GROUP_PLUGIN . '_' . $this->kPlugin;
         $this->updateAvailable  = $this->nVersion < $this->getCurrentVersion();
-        // save to cache
         \Shop::Cache()->set($cacheID, $this, [\CACHING_GROUP_PLUGIN, $this->pluginCacheGroup]);
 
         return $this;
@@ -706,13 +706,12 @@ class Plugin
      */
     public function gibDateTimeLokalisiert($cDateTime, bool $bDateOnly = false): string
     {
-        if (\strlen($cDateTime) > 0) {
-            $date = new \DateTime($cDateTime);
-
-            return $date->format($bDateOnly ? 'd.m.Y' : 'd.m.Y H:i');
+        if (\strlen($cDateTime) === 0) {
+            return '';
         }
+        $date = new \DateTime($cDateTime);
 
-        return '';
+        return $date->format($bDateOnly ? 'd.m.Y' : 'd.m.Y H:i');
     }
 
     /**
@@ -784,20 +783,18 @@ class Plugin
      */
     public static function getPluginById(string $cPluginID): ?self
     {
-        if (\strlen($cPluginID) > 0) {
-            $cacheID = 'plugin_id_list';
-            if (($plugins = \Shop::Cache()->get($cacheID)) === false) {
-                $plugins = \Shop::Container()->getDB()->query(
-                    'SELECT kPlugin, cPluginID 
-                        FROM tplugin',
-                    \DB\ReturnType::ARRAY_OF_OBJECTS
-                );
-                \Shop::Cache()->set($cacheID, $plugins, [\CACHING_GROUP_PLUGIN]);
-            }
-            foreach ($plugins as $plugin) {
-                if ($plugin->cPluginID === $cPluginID) {
-                    return new self((int)$plugin->kPlugin);
-                }
+        $cacheID = 'plugin_id_list';
+        if (($plugins = \Shop::Cache()->get($cacheID)) === false) {
+            $plugins = \Shop::Container()->getDB()->query(
+                'SELECT kPlugin, cPluginID 
+                    FROM tplugin',
+                \DB\ReturnType::ARRAY_OF_OBJECTS
+            );
+            \Shop::Cache()->set($cacheID, $plugins, [\CACHING_GROUP_PLUGIN]);
+        }
+        foreach ($plugins as $plugin) {
+            if ($plugin->cPluginID === $cPluginID) {
+                return new self((int)$plugin->kPlugin);
             }
         }
 
@@ -809,16 +806,13 @@ class Plugin
      */
     public function getCurrentVersion(): int
     {
-        require_once \PFAD_ROOT . \PFAD_DBES . 'xml_tools.php';
-        require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'admin_tools.php';
-        $cPfad = \PFAD_ROOT . \PFAD_PLUGIN . $this->cVerzeichnis;
-        if (\is_dir($cPfad) && \file_exists($cPfad . '/' . \PLUGIN_INFO_FILE)) {
-            $xml     = \file_get_contents($cPfad . '/' . \PLUGIN_INFO_FILE);
-            $XML_arr = \getArrangedArray(\XML_unserialize($xml, 'UTF-8'));
+        $path = \PFAD_ROOT . \PFAD_PLUGIN . $this->cVerzeichnis;
+        if (\is_dir($path) && \file_exists($path . '/' . \PLUGIN_INFO_FILE)) {
+            $parser  = new XMLParser();
+            $xml     = $parser->parse($path . '/' . \PLUGIN_INFO_FILE);
+            $version = \count($xml['jtlshop3plugin'][0]['Install'][0]['Version']) / 2 - 1;
 
-            $nLastVersionKey = \count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Version']) / 2 - 1;
-
-            return (int)$XML_arr['jtlshop3plugin'][0]['Install'][0]['Version'][$nLastVersionKey . ' attr']['nr'];
+            return (int)$xml['jtlshop3plugin'][0]['Install'][0]['Version'][$version . ' attr']['nr'];
         }
 
         return 0;
@@ -1020,33 +1014,33 @@ class Plugin
     }
 
     /**
-     * @param Plugin $oPlugin
-     * @param array  $xParam_arr
+     * @param Plugin $plugin
+     * @param array  $params
      * @return bool
      * @former pluginLizenzpruefung()
      * @since 5.0.0
      */
-    public static function licenseCheck(Plugin $oPlugin, array $xParam_arr = []): bool
+    public static function licenseCheck(Plugin $plugin, array $params = []): bool
     {
-        if (isset($oPlugin->cLizenzKlasse, $oPlugin->cLizenzKlasseName)
-            && \strlen($oPlugin->cLizenzKlasse) > 0
-            && \strlen($oPlugin->cLizenzKlasseName) > 0
+        if (isset($plugin->cLizenzKlasse, $plugin->cLizenzKlasseName)
+            && \strlen($plugin->cLizenzKlasse) > 0
+            && \strlen($plugin->cLizenzKlasseName) > 0
         ) {
-            require_once $oPlugin->cLicencePfad . $oPlugin->cLizenzKlasseName;
-            $oPluginLicence = new $oPlugin->cLizenzKlasse();
-            $cLicenceMethod = \PLUGIN_LICENCE_METHODE;
+            require_once $plugin->cLicencePfad . $plugin->cLizenzKlasseName;
+            $licence       = new $plugin->cLizenzKlasse();
+            $licenceMethod = \PLUGIN_LICENCE_METHODE;
 
-            if (!$oPluginLicence->$cLicenceMethod($oPlugin->cLizenz)) {
-                $oPlugin->nStatus = self::PLUGIN_LICENSE_KEY_INVALID;
-                $oPlugin->cFehler = 'Lizenzschl&uuml;ssel ist ung&uuml;ltig';
-                $oPlugin->updateInDB();
+            if (!$licence->$licenceMethod($plugin->cLizenz)) {
+                $plugin->nStatus = self::PLUGIN_LICENSE_KEY_INVALID;
+                $plugin->cFehler = 'Lizenzschl&uuml;ssel ist ung&uuml;ltig';
+                $plugin->updateInDB();
                 \Shop::Container()->getLogService()->withName('kPlugin')->error(
-                    'Plugin Lizenzprüfung: Das Plugin "' . $oPlugin->cName .
+                    'Plugin Lizenzprüfung: Das Plugin "' . $plugin->cName .
                     '" hat keinen gültigen Lizenzschlüssel und wurde daher deaktiviert!',
-                    [$oPlugin->kPlugin]
+                    [$plugin->kPlugin]
                 );
-                if (isset($xParam_arr['cModulId']) && \strlen($xParam_arr['cModulId']) > 0) {
-                    self::updatePaymentMethodState($oPlugin, 0);
+                if (isset($params['cModulId']) && \strlen($params['cModulId']) > 0) {
+                    self::updatePaymentMethodState($plugin, 0);
                 }
 
                 return false;
@@ -1062,7 +1056,7 @@ class Plugin
      * @former aenderPluginZahlungsartStatus()
      * @since 5.0.0
      */
-    public static function updatePaymentMethodState($oPlugin, int $state)
+    public static function updatePaymentMethodState($oPlugin, int $state): void
     {
         if (isset($oPlugin->kPlugin, $oPlugin->oPluginZahlungsmethodeAssoc_arr)
             && $oPlugin->kPlugin > 0
@@ -1230,28 +1224,28 @@ class Plugin
     }
 
     /**
-     * @param string $cModulId
+     * @param string $moduleID
      * @return int
      * @former gibkPluginAuscModulId()
      * @since 5.0.0
      */
-    public static function getIDByModuleID(string $cModulId): int
+    public static function getIDByModuleID(string $moduleID): int
     {
-        return \preg_match('/^kPlugin_(\d+)_/', $cModulId, $cMatch_arr)
-            ? (int)$cMatch_arr[1]
+        return \preg_match('/^kPlugin_(\d+)_/', $moduleID, $matches)
+            ? (int)$matches[1]
             : 0;
     }
 
     /**
-     * @param string $cPluginID
+     * @param string $pluginID
      * @return int
      * @former gibkPluginAuscPluginID()
      * @since 5.0.0
      */
-    public static function getIDByPluginID(string $cPluginID): int
+    public static function getIDByPluginID(string $pluginID): int
     {
-        $oPlugin = \Shop::Container()->getDB()->select('tplugin', 'cPluginID', $cPluginID);
+        $plugin = \Shop::Container()->getDB()->select('tplugin', 'cPluginID', $pluginID);
 
-        return isset($oPlugin->kPlugin) ? (int)$oPlugin->kPlugin : 0;
+        return isset($plugin->kPlugin) ? (int)$plugin->kPlugin : 0;
     }
 }

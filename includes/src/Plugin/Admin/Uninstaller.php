@@ -34,45 +34,44 @@ class Uninstaller
     /**
      * Versucht, ein ausgewähltes Plugin zu deinstallieren
      *
-     * @param int  $kPlugin
-     * @param bool $bUpdate
-     * @param int|null $kPluginNew
+     * @param int      $pluginID
+     * @param bool     $update
+     * @param int|null $newPluginID
      * @return int
      * 1 = Alles O.K.
      * 2 = $kPlugin wurde nicht übergeben
      * 3 = SQL-Fehler
      */
-    public function uninstall(int $kPlugin, bool $bUpdate = false, int $kPluginNew = null): int
+    public function uninstall(int $pluginID, bool $update = false, int $newPluginID = null): int
     {
-        if ($kPlugin <= 0) {
-            return InstallCode::WRONG_PARAM; // $kPlugin wurde nicht übergeben
+        if ($pluginID <= 0) {
+            return InstallCode::WRONG_PARAM;
         }
-        $oPlugin = new Plugin($kPlugin, false, true); // suppress reload = true um Endlosrekursion zu verhindern
-        if (empty($oPlugin->kPlugin)) {
+        $plugin = new Plugin($pluginID, false, true); // suppress reload = true um Endlosrekursion zu verhindern
+        if (empty($plugin->kPlugin)) {
             return InstallCode::NO_PLUGIN_FOUND;
         }
-        if (!$bUpdate) {
+        if (!$update) {
             // Plugin wird vollständig deinstalliert
-            if (isset($oPlugin->oPluginUninstall->kPluginUninstall)
-                && (int)$oPlugin->oPluginUninstall->kPluginUninstall > 0
+            if (isset($plugin->oPluginUninstall->kPluginUninstall)
+                && (int)$plugin->oPluginUninstall->kPluginUninstall > 0
             ) {
                 try {
-                    include $oPlugin->cPluginUninstallPfad;
+                    include $plugin->cPluginUninstallPfad;
                 } catch (\Exception $exc) {
                 }
             }
-            // Custom Tables löschen
-            $customTables = $this->db->selectAll('tplugincustomtabelle', 'kPlugin', $kPlugin);
+            $customTables = $this->db->selectAll('tplugincustomtabelle', 'kPlugin', $pluginID);
             foreach ($customTables as $table) {
                 $this->db->query('DROP TABLE IF EXISTS ' . $table->cTabelle, ReturnType::DEFAULT);
             }
-            $this->doSQLDelete($kPlugin, $bUpdate, $kPluginNew);
+            $this->doSQLDelete($pluginID, $update, $newPluginID);
         } else {
             // Plugin wird nur teilweise deinstalliert, weil es danach ein Update gibt
-            $this->doSQLDelete($kPlugin, $bUpdate, $kPluginNew);
+            $this->doSQLDelete($pluginID, $update, $newPluginID);
         }
         \Shop::Cache()->flushAll();
-        if (($p = Plugin::bootstrapper($kPlugin)) !== null) {
+        if (($p = Plugin::bootstrapper($pluginID)) !== null) {
             $p->uninstalled();
         }
 
@@ -80,50 +79,43 @@ class Uninstaller
     }
 
     /**
-     * @param int      $kPlugin
-     * @param bool     $bUpdate
-     * @param null|int $kPluginNew
+     * @param int $pluginID
      */
-    private function doSQLDelete(int $kPlugin, bool $bUpdate, int $kPluginNew = null): void
+    private function fullDelete(int $pluginID): void
     {
-        // Kein Update => alles deinstallieren
-        if (!$bUpdate) {
-            $this->db->query(
-                'DELETE tpluginsprachvariablesprache, tpluginsprachvariablecustomsprache, tpluginsprachvariable
+        $this->db->query(
+            'DELETE tpluginsprachvariablesprache, tpluginsprachvariablecustomsprache, tpluginsprachvariable
                 FROM tpluginsprachvariable
                 LEFT JOIN tpluginsprachvariablesprache
                     ON tpluginsprachvariablesprache.kPluginSprachvariable = tpluginsprachvariable.kPluginSprachvariable
                 LEFT JOIN tpluginsprachvariablecustomsprache
                     ON tpluginsprachvariablecustomsprache.cSprachvariable = tpluginsprachvariable.cName
                     AND tpluginsprachvariablecustomsprache.kPlugin = tpluginsprachvariable.kPlugin
-                WHERE tpluginsprachvariable.kPlugin = ' . $kPlugin,
-                ReturnType::AFFECTED_ROWS
-            );
-
-            $this->db->delete('tplugineinstellungen', 'kPlugin', $kPlugin);
-            $this->db->delete('tplugincustomtabelle', 'kPlugin', $kPlugin);
-            $this->db->delete('tpluginlinkdatei', 'kPlugin', $kPlugin);
-            $this->db->query(
-                "DELETE tzahlungsartsprache, tzahlungsart
+                WHERE tpluginsprachvariable.kPlugin = ' . $pluginID,
+            ReturnType::AFFECTED_ROWS
+        );
+        $this->db->delete('tplugineinstellungen', 'kPlugin', $pluginID);
+        $this->db->delete('tplugincustomtabelle', 'kPlugin', $pluginID);
+        $this->db->delete('tpluginlinkdatei', 'kPlugin', $pluginID);
+        $this->db->query(
+            "DELETE tzahlungsartsprache, tzahlungsart
                 FROM tzahlungsart
                 LEFT JOIN tzahlungsartsprache
                     ON tzahlungsartsprache.kZahlungsart = tzahlungsart.kZahlungsart
-                WHERE tzahlungsart.cModulId LIKE 'kPlugin_" . $kPlugin . "_%'",
-                ReturnType::AFFECTED_ROWS
-            );
-
-            $this->db->query(
-                "DELETE tboxen, tboxvorlage
+                WHERE tzahlungsart.cModulId LIKE 'kPlugin_" . $pluginID . "_%'",
+            ReturnType::AFFECTED_ROWS
+        );
+        $this->db->query(
+            "DELETE tboxen, tboxvorlage
                 FROM tboxvorlage
                 LEFT JOIN tboxen 
                     ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
-                WHERE tboxvorlage.kCustomID = " . $kPlugin . "
+                WHERE tboxvorlage.kCustomID = " . $pluginID . "
                     AND tboxvorlage.eTyp = 'plugin'",
-                ReturnType::AFFECTED_ROWS
-            );
-
-            $this->db->query(
-                'DELETE tpluginemailvorlageeinstellungen, tpluginemailvorlagespracheoriginal,
+            ReturnType::AFFECTED_ROWS
+        );
+        $this->db->query(
+            'DELETE tpluginemailvorlageeinstellungen, tpluginemailvorlagespracheoriginal,
                 tpluginemailvorlage, tpluginemailvorlagesprache
                 FROM tpluginemailvorlage
                 LEFT JOIN tpluginemailvorlagespracheoriginal
@@ -132,91 +124,102 @@ class Uninstaller
                     ON tpluginemailvorlageeinstellungen.kEmailvorlage = tpluginemailvorlage.kEmailvorlage
                 LEFT JOIN tpluginemailvorlagesprache
                     ON tpluginemailvorlagesprache.kEmailvorlage = tpluginemailvorlage.kEmailvorlage
-                WHERE tpluginemailvorlage.kPlugin = ' . $kPlugin,
-                ReturnType::AFFECTED_ROWS
-            );
-        } else { // Update => nur teilweise deinstallieren
-            $this->db->query(
-                'DELETE tpluginsprachvariablesprache, tpluginsprachvariable
+                WHERE tpluginemailvorlage.kPlugin = ' . $pluginID,
+            ReturnType::AFFECTED_ROWS
+        );
+    }
+
+    /**
+     * @param int $pluginID
+     */
+    private function partialDelete(int $pluginID): void
+    {
+        $this->db->query(
+            'DELETE tpluginsprachvariablesprache, tpluginsprachvariable
                 FROM tpluginsprachvariable
                 LEFT JOIN tpluginsprachvariablesprache
                     ON tpluginsprachvariablesprache.kPluginSprachvariable = tpluginsprachvariable.kPluginSprachvariable
-                WHERE tpluginsprachvariable.kPlugin = ' . $kPlugin,
-                ReturnType::AFFECTED_ROWS
-            );
+                WHERE tpluginsprachvariable.kPlugin = ' . $pluginID,
+            ReturnType::AFFECTED_ROWS
+        );
 
-            $this->db->delete('tboxvorlage', ['kCustomID', 'eTyp'], [$kPlugin, 'plugin']);
-            $this->db->delete('tpluginlinkdatei', 'kPlugin', $kPlugin);
-            $this->db->query(
-                'DELETE tpluginemailvorlage, tpluginemailvorlagespracheoriginal
+        $this->db->delete('tboxvorlage', ['kCustomID', 'eTyp'], [$pluginID, 'plugin']);
+        $this->db->delete('tpluginlinkdatei', 'kPlugin', $pluginID);
+        $this->db->query(
+            'DELETE tpluginemailvorlage, tpluginemailvorlagespracheoriginal
                 FROM tpluginemailvorlage
                 LEFT JOIN tpluginemailvorlagespracheoriginal
                     ON tpluginemailvorlagespracheoriginal.kEmailvorlage = tpluginemailvorlage.kEmailvorlage
-                WHERE tpluginemailvorlage.kPlugin = ' . $kPlugin,
-                ReturnType::AFFECTED_ROWS
-            );
+                WHERE tpluginemailvorlage.kPlugin = ' . $pluginID,
+            ReturnType::AFFECTED_ROWS
+        );
+    }
+    /**
+     * @param int      $pluginID
+     * @param bool     $update
+     * @param null|int $newPluginID
+     */
+    private function doSQLDelete(int $pluginID, bool $update, int $newPluginID = null): void
+    {
+        if (!$update) {
+            $this->fullDelete($pluginID);
+        } else {
+            $this->partialDelete($pluginID);
         }
         $this->db->query(
             'DELETE tpluginsqlfehler, tpluginhook
-            FROM tpluginhook
-            LEFT JOIN tpluginsqlfehler
-                ON tpluginsqlfehler.kPluginHook = tpluginhook.kPluginHook
-            WHERE tpluginhook.kPlugin = ' . $kPlugin,
+                FROM tpluginhook
+                LEFT JOIN tpluginsqlfehler
+                    ON tpluginsqlfehler.kPluginHook = tpluginhook.kPluginHook
+                WHERE tpluginhook.kPlugin = ' . $pluginID,
             ReturnType::AFFECTED_ROWS
         );
-        $this->db->delete('tpluginadminmenu', 'kPlugin', $kPlugin);
+        $this->db->delete('tpluginadminmenu', 'kPlugin', $pluginID);
         $this->db->query(
             'DELETE tplugineinstellungenconfwerte, tplugineinstellungenconf
                 FROM tplugineinstellungenconf
                 LEFT JOIN tplugineinstellungenconfwerte
                     ON tplugineinstellungenconfwerte.kPluginEinstellungenConf = 
                     tplugineinstellungenconf.kPluginEinstellungenConf
-                WHERE tplugineinstellungenconf.kPlugin = ' . $kPlugin,
+                WHERE tplugineinstellungenconf.kPlugin = ' . $pluginID,
             ReturnType::AFFECTED_ROWS
         );
 
-        $this->db->delete('tpluginuninstall', 'kPlugin', $kPlugin);
-        $this->db->delete('tplugin_resources', 'kPlugin', $kPlugin);
-        $oObj_arr = [];
-        if ($kPluginNew !== null && $kPluginNew > 0) {
-            $kPluginNew = (int)$kPluginNew;
-            $oObj_arr   = $this->db->query(
+        $this->db->delete('tpluginuninstall', 'kPlugin', $pluginID);
+        $this->db->delete('tplugin_resources', 'kPlugin', $pluginID);
+        $links = [];
+        if ($newPluginID !== null && $newPluginID > 0) {
+            $newPluginID = (int)$newPluginID;
+            $links       = $this->db->query(
                 "SELECT kLink
                     FROM tlink
-                    WHERE kPlugin IN ({$kPlugin}, {$kPluginNew})
+                    WHERE kPlugin IN ({$pluginID}, {$newPluginID})
                         ORDER BY kLink",
                 ReturnType::ARRAY_OF_OBJECTS
             );
         }
-        if (\is_array($oObj_arr) && \count($oObj_arr) === 2) {
-            $oldLocalization = $this->db->selectAll('tlinksprache', 'kLink', $oObj_arr[0]->kLink);
-            if (\is_array($oldLocalization) && \count($oldLocalization) > 0) {
-                $oSprachAssoc_arr = \Sprache::getAllLanguages(2);
-
-                foreach ($oldLocalization as $item) {
-                    $upd       = new \stdClass();
-                    $upd->cSeo = $item->cSeo;
-                    $this->db->update(
-                        'tlinksprache',
-                        ['kLink', 'cISOSprache'],
-                        [$oObj_arr[1]->kLink, $item->cISOSprache],
-                        $upd
-                    );
-                    $kSprache = $oSprachAssoc_arr[$item->cISOSprache]->kSprache;
-                    $this->db->delete(
-                        'tseo',
-                        ['cKey', 'kKey', 'kSprache'],
-                        ['kLink', $oObj_arr[0]->kLink, $kSprache]
-                    );
-                    $upd       = new \stdClass();
-                    $upd->cSeo = $item->cSeo;
-                    $this->db->update(
-                        'tseo',
-                        ['cKey', 'kKey', 'kSprache'],
-                        ['kLink', $oObj_arr[1]->kLink, $kSprache],
-                        $upd
-                    );
-                }
+        if (\count($links) === 2) {
+            $oldLocalization = $this->db->selectAll('tlinksprache', 'kLink', $links[0]->kLink);
+            $languages       = \Sprache::getAllLanguages(2);
+            foreach ($oldLocalization as $item) {
+                $this->db->update(
+                    'tlinksprache',
+                    ['kLink', 'cISOSprache'],
+                    [$links[1]->kLink, $item->cISOSprache],
+                    (object)['cSeo' => $item->cSeo]
+                );
+                $kSprache = $languages[$item->cISOSprache]->kSprache;
+                $this->db->delete(
+                    'tseo',
+                    ['cKey', 'kKey', 'kSprache'],
+                    ['kLink', $links[0]->kLink, $kSprache]
+                );
+                $this->db->update(
+                    'tseo',
+                    ['cKey', 'kKey', 'kSprache'],
+                    ['kLink', $links[1]->kLink, $kSprache],
+                    (object)['cSeo' => $item->cSeo]
+                );
             }
         }
         $this->db->query(
@@ -227,15 +230,15 @@ class Uninstaller
                 LEFT JOIN tseo
                     ON tseo.cKey = 'kLink'
                     AND tseo.kKey = tlink.kLink
-                WHERE tlink.kPlugin = " . $kPlugin,
+                WHERE tlink.kPlugin = " . $pluginID,
             ReturnType::AFFECTED_ROWS
         );
-        $this->db->delete('tpluginzahlungsartklasse', 'kPlugin', $kPlugin);
-        $this->db->delete('tplugintemplate', 'kPlugin', $kPlugin);
-        $this->db->delete('tcheckboxfunktion', 'kPlugin', $kPlugin);
-        $this->db->delete('tadminwidgets', 'kPlugin', $kPlugin);
-        $this->db->delete('topcportlet', 'kPlugin', $kPlugin);
-        $this->db->delete('topcblueprint', 'kPlugin', $kPlugin);
+        $this->db->delete('tpluginzahlungsartklasse', 'kPlugin', $pluginID);
+        $this->db->delete('tplugintemplate', 'kPlugin', $pluginID);
+        $this->db->delete('tcheckboxfunktion', 'kPlugin', $pluginID);
+        $this->db->delete('tadminwidgets', 'kPlugin', $pluginID);
+        $this->db->delete('topcportlet', 'kPlugin', $pluginID);
+        $this->db->delete('topcblueprint', 'kPlugin', $pluginID);
         $this->db->query(
             'DELETE texportformateinstellungen, texportformatqueuebearbeitet, texportformat
                 FROM texportformat
@@ -243,9 +246,9 @@ class Uninstaller
                     ON texportformateinstellungen.kExportformat = texportformat.kExportformat
                 LEFT JOIN texportformatqueuebearbeitet
                     ON texportformatqueuebearbeitet.kExportformat = texportformat.kExportformat
-                WHERE texportformat.kPlugin = ' . $kPlugin,
+                WHERE texportformat.kPlugin = ' . $pluginID,
             ReturnType::AFFECTED_ROWS
         );
-        $this->db->delete('tplugin', 'kPlugin', $kPlugin);
+        $this->db->delete('tplugin', 'kPlugin', $pluginID);
     }
 }

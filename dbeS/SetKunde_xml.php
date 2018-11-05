@@ -162,9 +162,12 @@ function bearbeite($xml)
             //Kunde existiert nicht im Shop - check, ob email schon belegt
             $oKundeAlt = Shop::Container()->getDB()->select(
                 'tkunde',
-                'nRegistriert', 1,
-                'cMail', Shop::Container()->getDB()->escape($Kunde->cMail),
-                null, null,
+                'nRegistriert',
+                1,
+                'cMail',
+                $Kunde->cMail,
+                null,
+                null,
                 false,
                 'kKunde'
             );

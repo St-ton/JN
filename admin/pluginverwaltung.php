@@ -119,9 +119,9 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
             $kPlugin = (int)$kPlugin;
             // Aktivieren
             if (isset($_POST['aktivieren'])) {
-                $nReturnValue = $stateChanger->activate($kPlugin);
+                $res = $stateChanger->activate($kPlugin);
 
-                switch ($nReturnValue) {
+                switch ($res) {
                     case \Plugin\InstallCode::OK:
                         if ($cHinweis !== 'Ihre ausgewählten Plugins wurden erfolgreich aktiviert.') {
                             $cHinweis .= 'Ihre ausgewählten Plugins wurden erfolgreich aktiviert.';
@@ -137,14 +137,14 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
                         break;
                 }
 
-                if ($nReturnValue > 3) {
+                if ($res > 3) {
                     $mapper  = new \Mapper\PluginValidation();
-                    $cFehler = $mapper->map($nReturnValue, null);
+                    $cFehler = $mapper->map($res, null);
                 }
             } elseif (isset($_POST['deaktivieren'])) { // Deaktivieren
-                $nReturnValue = $stateChanger->deactivate($kPlugin);
+                $res = $stateChanger->deactivate($kPlugin);
 
-                switch ($nReturnValue) {
+                switch ($res) {
                     case \Plugin\InstallCode::OK: // Alles O.K. Plugin wurde deaktiviert
                         if ($cHinweis !== 'Ihre ausgewählten Plugins wurden erfolgreich deaktiviert.') {
                             $cHinweis .= 'Ihre ausgewählten Plugins wurden erfolgreich deaktiviert.';
@@ -185,10 +185,10 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
                 $oPlugin = $db->select('tplugin', 'kPlugin', $kPlugin);
 
                 if (isset($oPlugin->kPlugin) && $oPlugin->kPlugin > 0) {
-                    $nReturnValue = $stateChanger->reload($oPlugin, true);
+                    $res = $stateChanger->reload($oPlugin, true);
 
-                    if ($nReturnValue === \Plugin\InstallCode::OK
-                        || $nReturnValue === \Plugin\InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE
+                    if ($res === \Plugin\InstallCode::OK
+                        || $res === \Plugin\InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE
                     ) {
                         $cHinweis = 'Ihre ausgewählten Plugins wurden erfolgreich neu geladen.';
                         $reload   = true;
@@ -202,31 +202,29 @@ if (RequestHelper::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form
         }
         $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN, CACHING_GROUP_BOX]);
     } elseif (RequestHelper::verifyGPCDataInt('updaten') === 1) { // Updaten
-        $kPlugin      = RequestHelper::verifyGPCDataInt('kPlugin');
-        $nReturnValue = $updater->update($kPlugin);
-        if ($nReturnValue === \Plugin\InstallCode::OK) {
+        $kPlugin = RequestHelper::verifyGPCDataInt('kPlugin');
+        $res     = $updater->update($kPlugin);
+        if ($res === \Plugin\InstallCode::OK) {
             $cHinweis .= 'Ihr Plugin wurde erfolgreich geupdated.';
             $reload   = true;
             $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
         } else {
-            $cFehler = 'Fehler: Beim Update ist ein Fehler aufgetreten. Fehlercode: ' . $nReturnValue;
+            $cFehler = 'Fehler: Beim Update ist ein Fehler aufgetreten. Fehlercode: ' . $res;
         }
     } elseif (RequestHelper::verifyGPCDataInt('sprachvariablen') === 1) { // Sprachvariablen editieren
         $step = 'pluginverwaltung_sprachvariablen';
     } elseif (isset($_POST['installieren'])) {
-        $cVerzeichnis_arr = $_POST['cVerzeichnis'];
-        if (is_array($cVerzeichnis_arr)) {
-            foreach ($cVerzeichnis_arr as $cVerzeichnis) {
-                $installer->setDir(basename($cVerzeichnis));
-                $nReturnValue = $installer->installierePluginVorbereitung();
-                if ($nReturnValue === \Plugin\InstallCode::OK
-                    || $nReturnValue === \Plugin\InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE
-                ) {
+        $dirs = $_POST['cVerzeichnis'];
+        if (is_array($dirs)) {
+            foreach ($dirs as $dir) {
+                $installer->setDir(basename($dir));
+                $res = $installer->installierePluginVorbereitung();
+                if ($res === \Plugin\InstallCode::OK || $res === \Plugin\InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE) {
                     $cHinweis = 'Ihre ausgewählten Plugins wurden erfolgreich installiert.';
                     $reload   = true;
-                } elseif ($nReturnValue > \Plugin\InstallCode::OK
-                    && $nReturnValue !== \Plugin\InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE) {
-                    $cFehler = 'Fehler: Bei der Installation ist ein Fehler aufgetreten. Fehlercode: ' . $nReturnValue;
+                } elseif ($res > \Plugin\InstallCode::OK
+                    && $res !== \Plugin\InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE) {
+                    $cFehler = 'Fehler: Bei der Installation ist ein Fehler aufgetreten. Fehlercode: ' . $res;
                 }
             }
         }

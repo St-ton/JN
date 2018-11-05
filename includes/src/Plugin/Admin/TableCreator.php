@@ -75,75 +75,75 @@ class TableCreator
     /**
      * Installiert die tplugin* Tabellen für ein Plugin in der Datenbank
      *
-     * @param array  $XML_arr
-     * @param object $oPlugin
+     * @param array  $xml
+     * @param object $plugin
      * @return int
      */
-    public function installPluginTables($XML_arr, $oPlugin): int
+    public function installPluginTables($xml, $plugin): int
     {
-        $this->plugin   = $oPlugin;
-        $hooksNode      = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Hooks'])
-        && \is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Hooks'])
-            ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['Hooks']
+        $this->plugin   = $plugin;
+        $hooksNode      = isset($xml['jtlshop3plugin'][0]['Install'][0]['Hooks'])
+        && \is_array($xml['jtlshop3plugin'][0]['Install'][0]['Hooks'])
+            ? $xml['jtlshop3plugin'][0]['Install'][0]['Hooks']
             : null;
-        $uninstallNode  = !empty($XML_arr['jtlshop3plugin'][0]['Uninstall'])
-            ? $XML_arr['jtlshop3plugin'][0]['Uninstall']
+        $uninstallNode  = !empty($xml['jtlshop3plugin'][0]['Uninstall'])
+            ? $xml['jtlshop3plugin'][0]['Uninstall']
             : null;
-        $adminNode      = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Adminmenu'])
-        && \is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Adminmenu'])
-            ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['Adminmenu']
+        $adminNode      = isset($xml['jtlshop3plugin'][0]['Install'][0]['Adminmenu'])
+        && \is_array($xml['jtlshop3plugin'][0]['Install'][0]['Adminmenu'])
+            ? $xml['jtlshop3plugin'][0]['Install'][0]['Adminmenu']
             : null;
-        $frontendNode   = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['FrontendLink'][0]['Link'])
-        && \is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['FrontendLink'][0]['Link'])
-            ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['FrontendLink'][0]['Link']
+        $frontendNode   = isset($xml['jtlshop3plugin'][0]['Install'][0]['FrontendLink'][0]['Link'])
+        && \is_array($xml['jtlshop3plugin'][0]['Install'][0]['FrontendLink'][0]['Link'])
+            ? $xml['jtlshop3plugin'][0]['Install'][0]['FrontendLink'][0]['Link']
             : [];
-        $paymentNode    = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'][0]['Method'])
-        && \is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'][0]['Method'])
-        && \count($XML_arr['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'][0]['Method']) > 0
-            ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'][0]['Method']
+        $paymentNode    = isset($xml['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'][0]['Method'])
+        && \is_array($xml['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'][0]['Method'])
+        && \count($xml['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'][0]['Method']) > 0
+            ? $xml['jtlshop3plugin'][0]['Install'][0]['PaymentMethod'][0]['Method']
             : [];
-        $boxesNode      = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Boxes'])
-        && \is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Boxes'])
-            ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['Boxes'][0]['Box']
+        $boxesNode      = isset($xml['jtlshop3plugin'][0]['Install'][0]['Boxes'])
+        && \is_array($xml['jtlshop3plugin'][0]['Install'][0]['Boxes'])
+            ? $xml['jtlshop3plugin'][0]['Install'][0]['Boxes'][0]['Box']
             : [];
-        $checkboxesNode = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'][0]['Function'])
-        && \is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'])
-        && \is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'][0]['Function'])
-        && \count($XML_arr['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'][0]['Function']) > 0
-            ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'][0]['Function']
+        $checkboxesNode = isset($xml['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'][0]['Function'])
+        && \is_array($xml['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'])
+        && \is_array($xml['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'][0]['Function'])
+        && \count($xml['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'][0]['Function']) > 0
+            ? $xml['jtlshop3plugin'][0]['Install'][0]['CheckBoxFunction'][0]['Function']
             : [];
-        $cTemplate_arr  = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExtendedTemplates'])
-        && \is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExtendedTemplates'])
-            ? (array)$XML_arr['jtlshop3plugin'][0]['Install'][0]['ExtendedTemplates'][0]['Template']
+        $templatesNode  = isset($xml['jtlshop3plugin'][0]['Install'][0]['ExtendedTemplates'])
+        && \is_array($xml['jtlshop3plugin'][0]['Install'][0]['ExtendedTemplates'])
+            ? (array)$xml['jtlshop3plugin'][0]['Install'][0]['ExtendedTemplates'][0]['Template']
             : [];
-        $mailNode       = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Emailtemplate'][0]['Template'])
-        && \is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Emailtemplate'][0]['Template'])
-            ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['Emailtemplate'][0]['Template']
+        $mailNode       = isset($xml['jtlshop3plugin'][0]['Install'][0]['Emailtemplate'][0]['Template'])
+        && \is_array($xml['jtlshop3plugin'][0]['Install'][0]['Emailtemplate'][0]['Template'])
+            ? $xml['jtlshop3plugin'][0]['Install'][0]['Emailtemplate'][0]['Template']
             : [];
-        $localeNode     = $XML_arr['jtlshop3plugin'][0]['Install'][0]['Locales'][0]['Variable'] ?? [];
-        $widgetsNode    = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['AdminWidget'][0]['Widget'])
-        && \is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['AdminWidget'][0]['Widget'])
-            ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['AdminWidget'][0]['Widget']
+        $localeNode     = $xml['jtlshop3plugin'][0]['Install'][0]['Locales'][0]['Variable'] ?? [];
+        $widgetsNode    = isset($xml['jtlshop3plugin'][0]['Install'][0]['AdminWidget'][0]['Widget'])
+        && \is_array($xml['jtlshop3plugin'][0]['Install'][0]['AdminWidget'][0]['Widget'])
+            ? $xml['jtlshop3plugin'][0]['Install'][0]['AdminWidget'][0]['Widget']
             : [];
-        $portletsNode   = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet'])
-        && \is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet'])
-            ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet']
+        $portletsNode   = isset($xml['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet'])
+        && \is_array($xml['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet'])
+            ? $xml['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet']
             : [];
-        $blueprintsNode = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint'])
-        && \is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint'])
-            ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint']
+        $blueprintsNode = isset($xml['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint'])
+        && \is_array($xml['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint'])
+            ? $xml['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint']
             : [];
-        $exportNode     = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExportFormat'][0]['Format'])
-        && \is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExportFormat'][0]['Format'])
-            ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['ExportFormat'][0]['Format']
+        $exportNode     = isset($xml['jtlshop3plugin'][0]['Install'][0]['ExportFormat'][0]['Format'])
+        && \is_array($xml['jtlshop3plugin'][0]['Install'][0]['ExportFormat'][0]['Format'])
+            ? $xml['jtlshop3plugin'][0]['Install'][0]['ExportFormat'][0]['Format']
             : [];
-        $cssNode        = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['CSS'][0]['file'])
-        && \is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['CSS'][0]['file'])
-            ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['CSS'][0]['file']
+        $cssNode        = isset($xml['jtlshop3plugin'][0]['Install'][0]['CSS'][0]['file'])
+        && \is_array($xml['jtlshop3plugin'][0]['Install'][0]['CSS'][0]['file'])
+            ? $xml['jtlshop3plugin'][0]['Install'][0]['CSS'][0]['file']
             : [];
-        $jsNode         = isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['JS'][0]['file'])
-        && \is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['JS'][0]['file'])
-            ? $XML_arr['jtlshop3plugin'][0]['Install'][0]['JS'][0]['file']
+        $jsNode         = isset($xml['jtlshop3plugin'][0]['Install'][0]['JS'][0]['file'])
+        && \is_array($xml['jtlshop3plugin'][0]['Install'][0]['JS'][0]['file'])
+            ? $xml['jtlshop3plugin'][0]['Install'][0]['JS'][0]['file']
             : [];
         if ($hooksNode !== null && ($res = $this->installHooks($hooksNode)) !== InstallCode::OK) {
             return $res;
@@ -151,7 +151,7 @@ class TableCreator
         if ($uninstallNode !== null && ($res = $this->installUninstall($uninstallNode)) !== InstallCode::OK) {
             return $res;
         }
-        if ($adminNode !== null && ($res = $this->installAdminMenu($uninstallNode)) !== InstallCode::OK) {
+        if ($adminNode !== null && ($res = $this->installAdminMenu($adminNode)) !== InstallCode::OK) {
             return $res;
         }
         if (($res = $this->installFrontendLinks($frontendNode)) !== InstallCode::OK) {
@@ -163,7 +163,7 @@ class TableCreator
         if (($res = $this->installBoxes($boxesNode)) !== InstallCode::OK) {
             return $res;
         }
-        if (($res = $this->installTemplates($cTemplate_arr)) !== InstallCode::OK) {
+        if (($res = $this->installTemplates($templatesNode)) !== InstallCode::OK) {
             return $res;
         }
         if (($res = $this->installMailTemplates($mailNode)) !== InstallCode::OK) {
@@ -225,8 +225,7 @@ class TableCreator
                 }
             }
         } elseif ($count > 1) {
-            $hook = $node[0];
-
+            $hook               = $node[0];
             $plugin             = new \stdClass();
             $plugin->kPlugin    = $this->plugin->kPlugin;
             $plugin->nHook      = (int)$hook['Hook attr']['id'];
@@ -277,7 +276,6 @@ class TableCreator
             foreach ($node[0]['Customlink'] as $i => $customLink) {
                 \preg_match("/[0-9]+\sattr/", $i, $hits1);
                 \preg_match('/[0-9]+/', $i, $hits2);
-
                 if (isset($hits1[0]) && \strlen($hits1[0]) === \strlen($i)) {
                     $sort = (int)$customLink['sort'];
                 } elseif (\strlen($hits2[0]) === \strlen($i)) {
@@ -516,29 +514,27 @@ class TableCreator
         foreach ($node as $u => $links) {
             \preg_match("/[0-9]+\sattr/", $u, $hits1);
             \preg_match('/[0-9]+/', $u, $hits2);
-            $link = new \stdClass();
             if (empty($links['LinkGroup'])) {
                 // linkgroup not set? default to 'hidden'
                 $links['LinkGroup'] = 'hidden';
             }
-            $oLinkgruppe = $this->db->select('tlinkgruppe', 'cName', $links['LinkGroup']);
-            if ($oLinkgruppe === null) {
-                // linkgroup not in database? create it anew
-                $oLinkgruppe                = new \stdClass();
-                $oLinkgruppe->cName         = $links['LinkGroup'];
-                $oLinkgruppe->cTemplatename = $links['LinkGroup'];
-                $oLinkgruppe->kLinkgruppe   = $this->db->insert('tlinkgruppe', $oLinkgruppe);
+            $linkGroup = $this->db->select('tlinkgruppe', 'cName', $links['LinkGroup']);
+            if ($linkGroup === null) {
+                $linkGroup                = new \stdClass();
+                $linkGroup->cName         = $links['LinkGroup'];
+                $linkGroup->cTemplatename = $links['LinkGroup'];
+                $linkGroup->kLinkgruppe   = $this->db->insert('tlinkgruppe', $linkGroup);
             }
-            if (!isset($oLinkgruppe->kLinkgruppe) || $oLinkgruppe->kLinkgruppe <= 0) {
+            if (!isset($linkGroup->kLinkgruppe) || $linkGroup->kLinkgruppe <= 0) {
                 return InstallCode::SQL_CANNOT_FIND_LINK_GROUP;
             }
-            $kLinkgruppe = $oLinkgruppe->kLinkgruppe;
             if (\strlen($hits2[0]) !== \strlen($u)) {
                 continue;
             }
-            $kLinkOld                 = empty($oPluginOld->kPlugin)
+            $link                     = new \stdClass();
+            $kLinkOld                 = empty($this->oldPlugin->kPlugin)
                 ? null
-                : $this->db->select('tlink', 'kPlugin', $oPluginOld->kPlugin, 'cName', $links['Name']);
+                : $this->db->select('tlink', 'kPlugin', $this->oldPlugin->kPlugin, 'cName', $links['Name']);
             $link->kPlugin            = $this->plugin->kPlugin;
             $link->cName              = $links['Name'];
             $link->nLinkart           = \LINKTYP_PLUGIN;
@@ -555,7 +551,7 @@ class TableCreator
                 return InstallCode::SQL_CANNOT_SAVE_LINK;
             }
             $linkGroupAssociation              = new \stdClass();
-            $linkGroupAssociation->linkGroupID = $kLinkgruppe;
+            $linkGroupAssociation->linkGroupID = $linkGroup->kLinkgruppe;
             $linkGroupAssociation->linkID      = $kLink;
             $this->db->insert('tlinkgroupassociations', $linkGroupAssociation);
 
@@ -569,7 +565,6 @@ class TableCreator
             // nachgetragen. Dafür wird die erste Sprache vom Plugin als Standard genutzt.
             $bLinkStandard = false;
             $defaultLang   = new \stdClass();
-
             foreach ($links['LinkLanguage'] as $l => $LinkLanguage_arr) {
                 \preg_match("/[0-9]+\sattr/", $l, $hits1);
                 \preg_match('/[0-9]+/', $l, $hits2);
@@ -618,33 +613,31 @@ class TableCreator
             }
             // Sind noch Sprachen im Shop die das Plugin nicht berücksichtigt?
             foreach ($allLanguages as $oSprachAssoc) {
-                if ($oSprachAssoc->kSprache > 0) {
-                    $this->db->delete(
-                        'tseo',
-                        ['cKey', 'kKey', 'kSprache'],
-                        ['kLink', (int)$kLink, (int)$oSprachAssoc->kSprache]
-                    );
-                    $oSeo           = new \stdClass();
-                    $oSeo->cSeo     = \checkSeo(\getSeo($defaultLang->cSeo));
-                    $oSeo->cKey     = 'kLink';
-                    $oSeo->kKey     = $kLink;
-                    $oSeo->kSprache = $oSprachAssoc->kSprache;
-
-                    $this->db->insert('tseo', $oSeo);
-                    $defaultLang->cSeo        = $oSeo->cSeo;
-                    $defaultLang->cISOSprache = $oSprachAssoc->cISO;
-                    $this->db->insert('tlinksprache', $defaultLang);
+                if ($oSprachAssoc->kSprache <= 0) {
+                    continue;
                 }
+                $this->db->delete(
+                    'tseo',
+                    ['cKey', 'kKey', 'kSprache'],
+                    ['kLink', $kLink, (int)$oSprachAssoc->kSprache]
+                );
+                $oSeo           = new \stdClass();
+                $oSeo->cSeo     = \checkSeo(\getSeo($defaultLang->cSeo));
+                $oSeo->cKey     = 'kLink';
+                $oSeo->kKey     = $kLink;
+                $oSeo->kSprache = $oSprachAssoc->kSprache;
+
+                $this->db->insert('tseo', $oSeo);
+                $defaultLang->cSeo        = $oSeo->cSeo;
+                $defaultLang->cISOSprache = $oSprachAssoc->cISO;
+                $this->db->insert('tlinksprache', $defaultLang);
             }
-            // tpluginhook füllen (spezieller Ausnahmefall für Frontend Links)
             $oPluginHook             = new \stdClass();
             $oPluginHook->kPlugin    = $this->plugin->kPlugin;
             $oPluginHook->nHook      = \HOOK_SEITE_PAGE_IF_LINKART;
             $oPluginHook->cDateiname = \PLUGIN_SEITENHANDLER;
 
-            $kPluginHook = $this->db->insert('tpluginhook', $oPluginHook);
-
-            if (!$kPluginHook) {
+            if (!$this->db->insert('tpluginhook', $oPluginHook)) {
                 return InstallCode::SQL_CANNOT_SAVE_HOOK;
             }
             $linkFile                      = new \stdClass();
@@ -980,16 +973,17 @@ class TableCreator
     {
         foreach ($node as $h => $box) {
             \preg_match('/[0-9]+/', $h, $hits3);
-            if (\strlen($hits3[0]) === \strlen($h)) {
-                $boxTpl              = new \stdClass();
-                $boxTpl->kCustomID   = $this->plugin->kPlugin;
-                $boxTpl->eTyp        = 'plugin';
-                $boxTpl->cName       = $box['Name'];
-                $boxTpl->cVerfuegbar = $box['Available'];
-                $boxTpl->cTemplate   = $box['TemplateFile'];
-                if (!$this->db->insert('tboxvorlage', $boxTpl)) {
-                    return InstallCode::SQL_CANNOT_SAVE_BOX_TEMPLATE;
-                }
+            if (\strlen($hits3[0]) !== \strlen($h)) {
+                continue;
+            }
+            $boxTpl              = new \stdClass();
+            $boxTpl->kCustomID   = $this->plugin->kPlugin;
+            $boxTpl->eTyp        = 'plugin';
+            $boxTpl->cName       = $box['Name'];
+            $boxTpl->cVerfuegbar = $box['Available'];
+            $boxTpl->cTemplate   = $box['TemplateFile'];
+            if (!$this->db->insert('tboxvorlage', $boxTpl)) {
+                return InstallCode::SQL_CANNOT_SAVE_BOX_TEMPLATE;
             }
         }
 
@@ -1004,13 +998,14 @@ class TableCreator
     {
         foreach ($node as $template) {
             \preg_match("/[a-zA-Z0-9\/_\-]+\.tpl/", $template, $hits3);
-            if (\strlen($hits3[0]) === \strlen($template)) {
-                $plgnTpl            = new \stdClass();
-                $plgnTpl->kPlugin   = $this->plugin->kPlugin;
-                $plgnTpl->cTemplate = $template;
-                if (!$this->db->insert('tplugintemplate', $plgnTpl)) {
-                    return InstallCode::SQL_CANNOT_SAVE_TEMPLATE;
-                }
+            if (\strlen($hits3[0]) !== \strlen($template)) {
+                continue;
+            }
+            $plgnTpl            = new \stdClass();
+            $plgnTpl->kPlugin   = $this->plugin->kPlugin;
+            $plgnTpl->cTemplate = $template;
+            if (!$this->db->insert('tplugintemplate', $plgnTpl)) {
+                return InstallCode::SQL_CANNOT_SAVE_TEMPLATE;
             }
         }
 
@@ -1026,11 +1021,10 @@ class TableCreator
         foreach ($node as $u => $template) {
             \preg_match("/[0-9]+\sattr/", $u, $hits1);
             \preg_match('/[0-9]+/', $u, $hits2);
-
-            $mailTpl = new \stdClass();
             if (\strlen($hits2[0]) !== \strlen($u)) {
                 continue;
             }
+            $mailTpl                = new \stdClass();
             $mailTpl->kPlugin       = $this->plugin->kPlugin;
             $mailTpl->cName         = $template['Name'];
             $mailTpl->cBeschreibung = \is_array($template['Description'])
@@ -1073,7 +1067,7 @@ class TableCreator
                     $localizedTpl->cContentText  = $localized['ContentText'];
                     $localizedTpl->cPDFS         = $localized['PDFS'] ?? null;
                     $localizedTpl->cDateiname    = $localized['Filename'] ?? null;
-                    if (!isset($oPluginOld->kPlugin) || !$oPluginOld->kPlugin) {
+                    if (!isset($this->oldPlugin->kPlugin) || !$this->oldPlugin->kPlugin) {
                         $this->db->insert('tpluginemailvorlagesprache', $localizedTpl);
                     }
                     $this->db->insert('tpluginemailvorlagespracheoriginal', $localizedTpl);
@@ -1089,10 +1083,10 @@ class TableCreator
                     }
                 }
             }
-            foreach ($allLanguages as $oSprachAssoc) {
-                if ($oSprachAssoc->kSprache > 0) {
-                    $defaultLanguage->kSprache = $oSprachAssoc->kSprache;
-                    if (!isset($oPluginOld->kPlugin) || !$oPluginOld->kPlugin) {
+            foreach ($allLanguages as $language) {
+                if ($language->kSprache > 0) {
+                    $defaultLanguage->kSprache = $language->kSprache;
+                    if (!isset($this->oldPlugin->kPlugin) || !$this->oldPlugin->kPlugin) {
                         $this->db->insert('tpluginemailvorlagesprache', $defaultLanguage);
                     }
                     $this->db->insert('tpluginemailvorlagespracheoriginal', $defaultLanguage);
@@ -1205,13 +1199,14 @@ class TableCreator
     {
         foreach ($node as $t => $function) {
             \preg_match('/[0-9]+/', $t, $hits2);
-            if (\strlen($hits2[0]) === \strlen($t)) {
-                $checkBoxFunktion          = new \stdClass();
-                $checkBoxFunktion->kPlugin = $this->plugin->kPlugin;
-                $checkBoxFunktion->cName   = $function['Name'];
-                $checkBoxFunktion->cID     = $this->plugin->cPluginID . '_' . $function['ID'];
-                $this->db->insert('tcheckboxfunktion', $checkBoxFunktion);
+            if (\strlen($hits2[0]) !== \strlen($t)) {
+                continue;
             }
+            $cbFunction          = new \stdClass();
+            $cbFunction->kPlugin = $this->plugin->kPlugin;
+            $cbFunction->cName   = $function['Name'];
+            $cbFunction->cID     = $this->plugin->cPluginID . '_' . $function['ID'];
+            $this->db->insert('tcheckboxfunktion', $cbFunction);
         }
 
         return InstallCode::OK;
@@ -1228,20 +1223,20 @@ class TableCreator
             if (\strlen($hits2[0]) !== \strlen($u)) {
                 continue;
             }
-            $adminWidget               = new \stdClass();
-            $adminWidget->kPlugin      = $this->plugin->kPlugin;
-            $adminWidget->cTitle       = $widget['Title'];
-            $adminWidget->cClass       = $widget['Class'] . '_' . $this->plugin->cPluginID;
-            $adminWidget->eContainer   = $widget['Container'];
-            $adminWidget->cDescription = $widget['Description'];
-            if (\is_array($adminWidget->cDescription)) {
+            $widget               = new \stdClass();
+            $widget->kPlugin      = $this->plugin->kPlugin;
+            $widget->cTitle       = $widget['Title'];
+            $widget->cClass       = $widget['Class'] . '_' . $this->plugin->cPluginID;
+            $widget->eContainer   = $widget['Container'];
+            $widget->cDescription = $widget['Description'];
+            if (\is_array($widget->cDescription)) {
                 //@todo: when description is empty, this becomes an array with indices [0] => '' and [0 attr] => ''
-                $adminWidget->cDescription = $adminWidget->cDescription[0];
+                $widget->cDescription = $widget->cDescription[0];
             }
-            $adminWidget->nPos      = $widget['Pos'];
-            $adminWidget->bExpanded = $widget['Expanded'];
-            $adminWidget->bActive   = $widget['Active'];
-            if (!$this->db->insert('tadminwidgets', $adminWidget)) {
+            $widget->nPos      = $widget['Pos'];
+            $widget->bExpanded = $widget['Expanded'];
+            $widget->bActive   = $widget['Active'];
+            if (!$this->db->insert('tadminwidgets', $widget)) {
                 return InstallCode::SQL_CANNOT_SAVE_WIDGET;
             }
         }
@@ -1257,17 +1252,18 @@ class TableCreator
     {
         foreach ($node as $u => $portlet) {
             \preg_match('/[0-9]+/', $u, $hits2);
-            if (\strlen($hits2[0]) === \strlen($u)) {
-                $oPortlet = (object)[
-                    'kPlugin' => $this->plugin->kPlugin,
-                    'cTitle'  => $portlet['Title'],
-                    'cClass'  => $portlet['Class'],
-                    'cGroup'  => $portlet['Group'],
-                    'bActive' => (int)$portlet['Active'],
-                ];
-                if (!$this->db->insert('topcportlet', $oPortlet)) {
-                    return InstallCode::SQL_CANNOT_SAVE_PORTLET;
-                }
+            if (\strlen($hits2[0]) !== \strlen($u)) {
+                continue;
+            }
+            $oPortlet = (object)[
+                'kPlugin' => $this->plugin->kPlugin,
+                'cTitle'  => $portlet['Title'],
+                'cClass'  => $portlet['Class'],
+                'cGroup'  => $portlet['Group'],
+                'bActive' => (int)$portlet['Active'],
+            ];
+            if (!$this->db->insert('topcportlet', $oPortlet)) {
+                return InstallCode::SQL_CANNOT_SAVE_PORTLET;
             }
         }
 
@@ -1282,25 +1278,26 @@ class TableCreator
     {
         foreach ($node as $u => $blueprint) {
             \preg_match('/[0-9]+/', $u, $hits2);
-            if (\strlen($hits2[0]) === \strlen($u)) {
-                $blueprintJson = \file_get_contents(
-                    \PFAD_ROOT . \PFAD_PLUGIN .
-                    $this->plugin->cVerzeichnis . '/' . \PFAD_PLUGIN_VERSION .
-                    $this->plugin->nVersion . '/' .
-                    \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_BLUEPRINTS .
-                    $blueprint['JSONFile']
-                );
+            if (\strlen($hits2[0]) !== \strlen($u)) {
+                continue;
+            }
+            $blueprintJson = \file_get_contents(
+                \PFAD_ROOT . \PFAD_PLUGIN .
+                $this->plugin->cVerzeichnis . '/' . \PFAD_PLUGIN_VERSION .
+                $this->plugin->nVersion . '/' .
+                \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_BLUEPRINTS .
+                $blueprint['JSONFile']
+            );
 
-                $blueprintData = \json_decode($blueprintJson, true);
-                $instanceJson  = \json_encode($blueprintData['instance']);
-                $blueprintObj  = (object)[
-                    'kPlugin' => $this->plugin->kPlugin,
-                    'cName'   => $blueprint['Name'],
-                    'cJson'   => $instanceJson,
-                ];
-                if (!$this->db->insert('topcblueprint', $blueprintObj)) {
-                    return InstallCode::SQL_CANNOT_SAVE_BLUEPRINT;
-                }
+            $blueprintData = \json_decode($blueprintJson, true);
+            $instanceJson  = \json_encode($blueprintData['instance']);
+            $blueprintObj  = (object)[
+                'kPlugin' => $this->plugin->kPlugin,
+                'cName'   => $blueprint['Name'],
+                'cJson'   => $instanceJson,
+            ];
+            if (!$this->db->insert('topcblueprint', $blueprintObj)) {
+                return InstallCode::SQL_CANNOT_SAVE_BLUEPRINT;
             }
         }
 
@@ -1358,59 +1355,59 @@ class TableCreator
             }
             // Einstellungen
             // <OnlyStockGreaterZero>N</OnlyStockGreaterZero> => exportformate_lager_ueber_null
-            $oExportformatEinstellungen                = new \stdClass();
-            $oExportformatEinstellungen->kExportformat = $kExportformat;
-            $oExportformatEinstellungen->cName         = 'exportformate_lager_ueber_null';
-            $oExportformatEinstellungen->cWert         = \strlen($data['OnlyStockGreaterZero']) !== 0
+            $exportConf                = new \stdClass();
+            $exportConf->kExportformat = $kExportformat;
+            $exportConf->cName         = 'exportformate_lager_ueber_null';
+            $exportConf->cWert         = \strlen($data['OnlyStockGreaterZero']) !== 0
                 ? $data['OnlyStockGreaterZero']
                 : 'N';
-            $this->db->insert('texportformateinstellungen', $oExportformatEinstellungen);
+            $this->db->insert('texportformateinstellungen', $exportConf);
             // <OnlyPriceGreaterZero>N</OnlyPriceGreaterZero> => exportformate_preis_ueber_null
-            $oExportformatEinstellungen                = new \stdClass();
-            $oExportformatEinstellungen->kExportformat = $kExportformat;
-            $oExportformatEinstellungen->cName         = 'exportformate_preis_ueber_null';
-            $oExportformatEinstellungen->cWert         = $data['OnlyPriceGreaterZero'] === 'Y'
+            $exportConf                = new \stdClass();
+            $exportConf->kExportformat = $kExportformat;
+            $exportConf->cName         = 'exportformate_preis_ueber_null';
+            $exportConf->cWert         = $data['OnlyPriceGreaterZero'] === 'Y'
                 ? 'Y'
                 : 'N';
-            $this->db->insert('texportformateinstellungen', $oExportformatEinstellungen);
+            $this->db->insert('texportformateinstellungen', $exportConf);
             // <OnlyProductsWithDescription>N</OnlyProductsWithDescription> => exportformate_beschreibung
-            $oExportformatEinstellungen                = new \stdClass();
-            $oExportformatEinstellungen->kExportformat = $kExportformat;
-            $oExportformatEinstellungen->cName         = 'exportformate_beschreibung';
-            $oExportformatEinstellungen->cWert         = $data['OnlyProductsWithDescription'] === 'Y'
+            $exportConf                = new \stdClass();
+            $exportConf->kExportformat = $kExportformat;
+            $exportConf->cName         = 'exportformate_beschreibung';
+            $exportConf->cWert         = $data['OnlyProductsWithDescription'] === 'Y'
                 ? 'Y'
                 : 'N';
-            $this->db->insert('texportformateinstellungen', $oExportformatEinstellungen);
+            $this->db->insert('texportformateinstellungen', $exportConf);
             // <ShippingCostsDeliveryCountry>DE</ShippingCostsDeliveryCountry> => exportformate_lieferland
-            $oExportformatEinstellungen                = new \stdClass();
-            $oExportformatEinstellungen->kExportformat = $kExportformat;
-            $oExportformatEinstellungen->cName         = 'exportformate_lieferland';
-            $oExportformatEinstellungen->cWert         = $data['ShippingCostsDeliveryCountry'];
-            $this->db->insert('texportformateinstellungen', $oExportformatEinstellungen);
+            $exportConf                = new \stdClass();
+            $exportConf->kExportformat = $kExportformat;
+            $exportConf->cName         = 'exportformate_lieferland';
+            $exportConf->cWert         = $data['ShippingCostsDeliveryCountry'];
+            $this->db->insert('texportformateinstellungen', $exportConf);
             // <EncodingQuote>N</EncodingQuote> => exportformate_quot
-            $oExportformatEinstellungen                = new \stdClass();
-            $oExportformatEinstellungen->kExportformat = $kExportformat;
-            $oExportformatEinstellungen->cName         = 'exportformate_quot';
-            $oExportformatEinstellungen->cWert         = $data['EncodingQuote'] === 'Y'
+            $exportConf                = new \stdClass();
+            $exportConf->kExportformat = $kExportformat;
+            $exportConf->cName         = 'exportformate_quot';
+            $exportConf->cWert         = $data['EncodingQuote'] === 'Y'
                 ? 'Y'
                 : 'N';
-            $this->db->insert('texportformateinstellungen', $oExportformatEinstellungen);
+            $this->db->insert('texportformateinstellungen', $exportConf);
             // <EncodingDoubleQuote>N</EncodingDoubleQuote> => exportformate_equot
-            $oExportformatEinstellungen                = new \stdClass();
-            $oExportformatEinstellungen->kExportformat = $kExportformat;
-            $oExportformatEinstellungen->cName         = 'exportformate_equot';
-            $oExportformatEinstellungen->cWert         = $data['EncodingDoubleQuote'] === 'Y'
+            $exportConf                = new \stdClass();
+            $exportConf->kExportformat = $kExportformat;
+            $exportConf->cName         = 'exportformate_equot';
+            $exportConf->cWert         = $data['EncodingDoubleQuote'] === 'Y'
                 ? 'Y'
                 : 'N';
-            $this->db->insert('texportformateinstellungen', $oExportformatEinstellungen);
+            $this->db->insert('texportformateinstellungen', $exportConf);
             // <EncodingSemicolon>N</EncodingSemicolon> => exportformate_semikolon
-            $oExportformatEinstellungen                = new \stdClass();
-            $oExportformatEinstellungen->kExportformat = $kExportformat;
-            $oExportformatEinstellungen->cName         = 'exportformate_semikolon';
-            $oExportformatEinstellungen->cWert         = $data['EncodingSemicolon'] === 'Y'
+            $exportConf                = new \stdClass();
+            $exportConf->kExportformat = $kExportformat;
+            $exportConf->cName         = 'exportformate_semikolon';
+            $exportConf->cWert         = $data['EncodingSemicolon'] === 'Y'
                 ? 'Y'
                 : 'N';
-            $this->db->insert('texportformateinstellungen', $oExportformatEinstellungen);
+            $this->db->insert('texportformateinstellungen', $exportConf);
         }
 
         return InstallCode::OK;
@@ -1423,14 +1420,15 @@ class TableCreator
     private function installCSS(array $node): int
     {
         foreach ($node as $file) {
-            if (isset($file['name'])) {
-                $oFile           = new \stdClass();
-                $oFile->kPlugin  = $this->plugin->kPlugin;
-                $oFile->type     = 'css';
-                $oFile->path     = $file['name'];
-                $oFile->priority = $file['priority'] ?? 5;
-                $this->db->insert('tplugin_resources', $oFile);
+            if (!isset($file['name'])) {
+                continue;
             }
+            $res           = new \stdClass();
+            $res->kPlugin  = $this->plugin->kPlugin;
+            $res->type     = 'css';
+            $res->path     = $file['name'];
+            $res->priority = $file['priority'] ?? 5;
+            $this->db->insert('tplugin_resources', $res);
         }
 
         return InstallCode::OK;
@@ -1443,15 +1441,16 @@ class TableCreator
     private function installJS(array $node): int
     {
         foreach ($node as $file) {
-            if (isset($file['name'])) {
-                $oFile           = new \stdClass();
-                $oFile->kPlugin  = $this->plugin->kPlugin;
-                $oFile->type     = 'js';
-                $oFile->path     = $file['name'];
-                $oFile->priority = $file['priority'] ?? 5;
-                $oFile->position = $file['position'] ?? 'head';
-                $this->db->insert('tplugin_resources', $oFile);
+            if (!isset($file['name'])) {
+                continue;
             }
+            $res           = new \stdClass();
+            $res->kPlugin  = $this->plugin->kPlugin;
+            $res->type     = 'js';
+            $res->path     = $file['name'];
+            $res->priority = $file['priority'] ?? 5;
+            $res->position = $file['position'] ?? 'head';
+            $this->db->insert('tplugin_resources', $res);
         }
 
         return InstallCode::OK;

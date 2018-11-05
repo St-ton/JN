@@ -8,6 +8,7 @@ namespace Plugin\Admin;
 
 use DB\DbInterface;
 use DB\ReturnType;
+use JTL\XMLParser;
 use JTLShop\SemVer\Version;
 use Plugin\InstallCode;
 
@@ -76,9 +77,9 @@ final class Validator
         if (!\file_exists($info)) {
             return InstallCode::INFO_XML_MISSING;
         }
-        $xml = \file_get_contents($info);
+        $parser = new XMLParser();
 
-        return $this->pluginPlausiIntern(\getArrangedArray(\XML_unserialize($xml)), $forUpdate);
+        return $this->pluginPlausiIntern($parser->parse($info), $forUpdate);
     }
 
     /**
@@ -96,31 +97,30 @@ final class Validator
         if (!\is_dir($this->dir)) {
             return InstallCode::DIR_DOES_NOT_EXIST;
         }
-        $cInfofile = "{$this->dir}/" . \PLUGIN_INFO_FILE;
-        if (!\file_exists($cInfofile)) {
+        $infoXML = "{$this->dir}/" . \PLUGIN_INFO_FILE;
+        if (!\file_exists($infoXML)) {
             return InstallCode::INFO_XML_MISSING;
         }
-        $xml     = \file_get_contents($cInfofile);
-        $xmlData = \XML_unserialize($xml);
-        $xmlData = \getArrangedArray($xmlData);
+        $parser = new XMLParser();
+        $xml    = $parser->parse($infoXML);
 
-        return $this->pluginPlausiIntern($xmlData, $forUpdate);
+        return $this->pluginPlausiIntern($xml, $forUpdate);
     }
 
     /**
-     * @param      $XML_arr
+     * @param      $xml
      * @param bool $forUpdate
      * @return int
      * @former pluginPlausiIntern()
      */
-    public function pluginPlausiIntern($XML_arr, bool $forUpdate): int
+    public function pluginPlausiIntern($xml, bool $forUpdate): int
     {
         $cVersionsnummer        = '';
         $isShop4Compatible      = false;
         $requiresMissingIoncube = false;
         $parsedXMLShopVersion   = null;
         $parsedVersion          = null;
-        $baseNode               = $XML_arr['jtlshop3plugin'][0];
+        $baseNode               = $xml['jtlshop3plugin'][0];
         $oVersion               = $this->db->query('SELECT nVersion FROM tversion LIMIT 1', ReturnType::SINGLE_OBJECT);
 
         if ($oVersion->nVersion > 0) {
@@ -135,7 +135,7 @@ final class Validator
         ) {
             return InstallCode::INVALID_XML_VERSION;
         }
-        $nXMLVersion = (int)$XML_arr['jtlshop3plugin'][0]['XMLVersion'];
+        $nXMLVersion = (int)$xml['jtlshop3plugin'][0]['XMLVersion'];
         if (empty($baseNode['ShopVersion']) && empty($baseNode['Shop4Version'])) {
             return InstallCode::INVALID_SHOP_VERSION;
         }
@@ -1021,13 +1021,13 @@ final class Validator
         }
         // OPC Portlets (falls vorhanden)
         if (isset($installNode['Portlets']) && \is_array($installNode['Portlets'])) {
-            if (!isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet'])
-                || !\is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet'])
-                || \count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet']) === 0
+            if (!isset($xml['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet'])
+                || !\is_array($xml['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet'])
+                || \count($xml['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet']) === 0
             ) {
                 return InstallCode::MISSING_PORTLETS;// Keine Portlets vorhanden
             }
-            foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet'] as $u => $Portlet_arr) {
+            foreach ($xml['jtlshop3plugin'][0]['Install'][0]['Portlets'][0]['Portlet'] as $u => $Portlet_arr) {
                 \preg_match('/[0-9]+\sattr/', $u, $hits1);
                 \preg_match('/[0-9]+/', $u, $hits2);
                 if (\strlen($hits2[0]) === \strlen($u)) {
@@ -1076,13 +1076,13 @@ final class Validator
         }
         // OPC Blueprints (falls vorhanden)
         if (isset($installNode['Blueprints']) && \is_array($installNode['Blueprints'])) {
-            if (!isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint'])
-                || !\is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint'])
-                || \count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint']) === 0
+            if (!isset($xml['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint'])
+                || !\is_array($xml['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint'])
+                || \count($xml['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint']) === 0
             ) {
                 return InstallCode::MISSING_BLUEPRINTS;
             }
-            foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint'] as $u => $blueprint) {
+            foreach ($xml['jtlshop3plugin'][0]['Install'][0]['Blueprints'][0]['Blueprint'] as $u => $blueprint) {
                 \preg_match('/[0-9]+\sattr/', $u, $hits1);
                 \preg_match('/[0-9]+/', $u, $hits2);
                 if (\strlen($hits2[0]) === \strlen($u)) {

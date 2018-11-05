@@ -7,6 +7,7 @@
 namespace Plugin\Admin;
 
 use DB\DbInterface;
+use JTL\XMLParser;
 use Plugin\InstallCode;
 use Plugin\Plugin;
 
@@ -99,15 +100,15 @@ final class Installer
         if (!\file_exists($baseDir . '/' . \PLUGIN_INFO_FILE)) {
             return InstallCode::INFO_XML_MISSING;
         }
-        $xml     = \file_get_contents($baseDir . '/' . \PLUGIN_INFO_FILE);
-        $XML_arr = \getArrangedArray(\XML_unserialize($xml));
+        $parser = new XMLParser();
+        $xml    = $parser->parse($baseDir . '/' . \PLUGIN_INFO_FILE);
         $this->validator->setDir($baseDir);
-        $code = $this->validator->pluginPlausiIntern($XML_arr, $this->plugin !== null);
+        $code = $this->validator->pluginPlausiIntern($xml, $this->plugin !== null);
         if ($this->plugin !== null && $this->plugin->kPlugin > 0 && $code === InstallCode::DUPLICATE_PLUGIN_ID) {
             $code = InstallCode::OK;
         }
         if ($code === InstallCode::OK || $code === InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE) {
-            $code = $this->installierePlugin($XML_arr);
+            $code = $this->installierePlugin($xml);
         }
 
         return $code;
@@ -116,30 +117,33 @@ final class Installer
     /**
      * Installiert ein Plugin
      *
-     * @param array $XML_arr
+     * @param array $xml
      * @return int
      * @former installierePlugin()
      */
-    public function installierePlugin($XML_arr): int
+    public function installierePlugin($xml): int
     {
-        $baseNode          = $XML_arr['jtlshop3plugin'][0];
-        $versionNode       = $baseNode['Install'][0]['Version'];
-        $nLastVersionKey   = \count($versionNode) / 2 - 1;
-        $nXMLVersion       = (int)$baseNode['XMLVersion'];
-        $cLizenzKlasse     = '';
-        $cLizenzKlasseName = '';
-        $nStatus           = Plugin::PLUGIN_ACTIVATED;
-        $tagsToFlush       = [];
-        $basePath          = \PFAD_ROOT . \PFAD_PLUGIN . $this->dir . '/';
-        $version           = (int)$versionNode[$nLastVersionKey . ' attr']['nr'];
-        $versionedDir      = $basePath . \PFAD_PLUGIN_VERSION . $version . '/';
+        $baseNode         = $xml['jtlshop3plugin'][0];
+        $versionNode      = $baseNode['Install'][0]['Version'];
+        $lastVersionKey   = \count($versionNode) / 2 - 1;
+        $xmlVersion       = (int)$baseNode['XMLVersion'];
+        $licenceClass     = '';
+        $licenceClassName = '';
+        $state            = Plugin::PLUGIN_ACTIVATED;
+        $tagsToFlush      = [];
+        $basePath         = \PFAD_ROOT . \PFAD_PLUGIN . $this->dir . '/';
+        $version          = (int)$versionNode[$lastVersionKey . ' attr']['nr'];
+        $versionedDir     = $basePath . \PFAD_PLUGIN_VERSION . $version . '/';
+        $tags             = empty($baseNode['Install'][0]['FlushTags'])
+            ? []
+            : \explode(',', $baseNode['Install'][0]['FlushTags']);
         if (isset($baseNode['LicenceClass'], $baseNode['LicenceClassFile'])
             && \strlen($baseNode['LicenceClass']) > 0
             && \strlen($baseNode['LicenceClassFile']) > 0
         ) {
-            $cLizenzKlasse     = $baseNode['LicenceClass'];
-            $cLizenzKlasseName = $baseNode['LicenceClassFile'];
-            $nStatus           = Plugin::PLUGIN_LICENSE_KEY_MISSING;
+            $licenceClass     = $baseNode['LicenceClass'];
+            $licenceClassName = $baseNode['LicenceClassFile'];
+            $state           = Plugin::PLUGIN_LICENSE_KEY_MISSING;
         }
         $plugin                       = new \stdClass();
         $plugin->cName                = $baseNode['Name'];
@@ -151,20 +155,17 @@ final class Installer
         $plugin->cPluginID            = $baseNode['PluginID'];
         $plugin->cFehler              = '';
         $plugin->cLizenz              = '';
-        $plugin->cLizenzKlasse        = $cLizenzKlasse;
-        $plugin->cLizenzKlasseName    = $cLizenzKlasseName;
-        $plugin->nStatus              = $nStatus;
+        $plugin->cLizenzKlasse        = $licenceClass;
+        $plugin->cLizenzKlasseName    = $licenceClassName;
+        $plugin->nStatus              = $state;
         $plugin->nVersion             = $version;
-        $plugin->nXMLVersion          = $nXMLVersion;
+        $plugin->nXMLVersion          = $xmlVersion;
         $plugin->nPrio                = 0;
         $plugin->dZuletztAktualisiert = 'NOW()';
-        $plugin->dErstellt            = $versionNode[$nLastVersionKey]['CreateDate'];
+        $plugin->dErstellt            = $versionNode[$lastVersionKey]['CreateDate'];
         $plugin->bBootstrap           = \is_file($versionedDir . '/' . 'bootstrap.php') ? 1 : 0;
 
-        $_tags = empty($baseNode['Install'][0]['FlushTags'])
-            ? []
-            : \explode(',', $baseNode['Install'][0]['FlushTags']);
-        foreach ($_tags as $_tag) {
+        foreach ($tags as $_tag) {
             if (\defined(\trim($_tag))) {
                 $tagsToFlush[] = \constant(\trim($_tag));
             }
@@ -179,9 +180,9 @@ final class Installer
             && \is_file($licenceClassFile)
         ) {
             require_once $licenceClassFile;
-            $oPluginLicence = new $plugin->cLizenzKlasse();
-            $cLicenceMethod = \PLUGIN_LICENCE_METHODE;
-            if ($oPluginLicence->$cLicenceMethod($this->plugin->cLizenz)) {
+            $pluginLicence = new $plugin->cLizenzKlasse();
+            $licenceMethod = \PLUGIN_LICENCE_METHODE;
+            if ($pluginLicence->$licenceMethod($this->plugin->cLizenz)) {
                 $plugin->cLizenz = $this->plugin->cLizenz;
                 $plugin->nStatus = $this->plugin->nStatus;
             }
@@ -190,7 +191,7 @@ final class Installer
             ? $this->plugin->dInstalliert
             : 'NOW()';
         $kPlugin              = $this->db->insert('tplugin', $plugin);
-        $nVersion             = (int)$versionNode[$nLastVersionKey . ' attr']['nr'];
+        $nVersion             = (int)$versionNode[$lastVersionKey . ' attr']['nr'];
         $plugin->kPlugin      = $kPlugin;
 
         if ($kPlugin <= 0) {
@@ -198,7 +199,7 @@ final class Installer
         }
         $tableCreator = new TableCreator($this->db);
         $tableCreator->setOldPlugin($this->plugin);
-        $res = $tableCreator->installPluginTables($XML_arr, $plugin);
+        $res = $tableCreator->installPluginTables($xml, $plugin);
         if ($res !== InstallCode::OK) {
             $this->uninstaller->uninstall($kPlugin);
 
@@ -206,10 +207,10 @@ final class Installer
         }
         $hasSQLError = false;
         $code        = 1;
-        foreach ($versionNode as $i => $Version_arr) {
+        foreach ($versionNode as $i => $versionData) {
             if ($nVersion > 0
-                && isset($this->plugin->kPlugin, $Version_arr['nr'])
-                && $this->plugin->nVersion >= (int)$Version_arr['nr']
+                && isset($this->plugin->kPlugin, $versionData['nr'])
+                && $this->plugin->nVersion >= (int)$versionData['nr']
             ) {
                 continue;
             }
@@ -218,16 +219,13 @@ final class Installer
             if (!isset($hits1[0]) || \strlen($hits1[0]) !== \strlen($i)) {
                 continue;
             }
-            $nVersionTMP = (int)$Version_arr['nr'];
+            $nVersionTMP = (int)$versionData['nr'];
             $xy          = \trim(\str_replace('attr', '', $i));
-            $cSQLDatei   = $versionNode[$xy]['SQL'] ?? '';
-            if ($cSQLDatei === '') {
+            $sqlFile     = $versionNode[$xy]['SQL'] ?? '';
+            if ($sqlFile === '') {
                 continue;
             }
-            $code               = $this->logikSQLDatei($cSQLDatei, $nVersionTMP);
-            $nSQLFehlerCode_arr = [1 => 1, 2 => 22, 3 => 23, 4 => 24, 5 => 25, 6 => 26];
-            $code               = $nSQLFehlerCode_arr[$code];
-
+            $code = $this->validateSQL($sqlFile, $nVersionTMP, $plugin);
             if ($code !== InstallCode::OK) {
                 $hasSQLError = true;
                 break;
@@ -244,25 +242,17 @@ final class Installer
             $p->installed();
         }
         // Installation von höheren XML Versionen
-        if ($nXMLVersion > 100
-            && ($code === InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE || $code === InstallCode::OK)
-        ) {
+        if ($xmlVersion > 100 && ($code === InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE || $code === InstallCode::OK)) {
             $code = InstallCode::OK;
             // Update
             if ($this->plugin !== null && $this->plugin->kPlugin > 0 && $code === 1) {
-                // Update erfolgreich => sync neue Version auf altes Plugin
-                $code               = $this->syncPluginUpdate($plugin->kPlugin);
-                $nSQLFehlerCode_arr = [1 => 1, 2 => 27, 3 => 28];
-                $code               = $nSQLFehlerCode_arr[$code];
+                $code = $this->syncPluginUpdate($plugin->kPlugin);
             }
         } elseif ($this->plugin !== null
             && $this->plugin->kPlugin
             && ($code === InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE || $code === InstallCode::OK)
         ) {
-            // Update erfolgreich => sync neue Version auf altes Plugin
-            $code               = $this->syncPluginUpdate($plugin->kPlugin);
-            $nSQLFehlerCode_arr = [1 => 1, 2 => 27, 3 => 28];
-            $code               = $nSQLFehlerCode_arr[$code];
+            $code = $this->syncPluginUpdate($plugin->kPlugin);
         }
 
         return $code;
@@ -316,21 +306,22 @@ final class Installer
      * @return int
      * @throws \Exceptions\CircularReferenceException
      * @throws \Exceptions\ServiceNotFoundException
+     * @former logikSQLDatei()
      */
-    private function logikSQLDatei(string $sqlFile, $version): int
+    private function validateSQL(string $sqlFile, $version, \stdClass $plugin): int
     {
         if (empty($sqlFile)
             || (int)$version < 100
-            || (int)$this->plugin->kPlugin <= 0
-            || empty($this->plugin->cPluginID)
+            || (int)$plugin->kPlugin <= 0
+            || empty($plugin->cPluginID)
         ) {
             return InstallCode::SQL_MISSING_DATA;
         }
-        $lines = $this->parseSQLFile($sqlFile, $this->plugin->cVerzeichnis, $version);
+        $lines = $this->parseSQLFile($sqlFile, $plugin->cVerzeichnis, $version);
         if (\count($lines) === 0) {
             return InstallCode::SQL_INVALID_FILE_CONTENT;
         }
-        $sqlRegEx = '/xplugin[_]{1}' . $this->plugin->cPluginID . '[_]{1}[a-zA-Z0-9_]+/';
+        $sqlRegEx = '/xplugin[_]{1}' . $plugin->cPluginID . '[_]{1}[a-zA-Z0-9_]+/';
         foreach ($lines as $sql) {
             $sql = \StringHandler::removeNumerousWhitespaces($sql);
             if (\stripos($sql, 'create table') !== false) {
@@ -340,12 +331,12 @@ final class Installer
                 $table = \str_replace(["'", "`"], '', $tmp[$index]);
                 \preg_match($sqlRegEx, $table, $hits);
                 if (!isset($hits[0]) || \strlen($hits[0]) !== \strlen($table)) {
-                    return 5;// Versuch eine nicht Plugintabelle anzulegen
+                    return InstallCode::SQL_WRONG_TABLE_NAME_CREATE;
                 }
                 $exists = $this->db->select('tplugincustomtabelle', 'cTabelle', $table);
                 if (!isset($exists->kPluginCustomTabelle) || !$exists->kPluginCustomTabelle) {
                     $customTable           = new \stdClass();
-                    $customTable->kPlugin  = $this->plugin->kPlugin;
+                    $customTable->kPlugin  = $plugin->kPlugin;
                     $customTable->cTabelle = $table;
 
                     $this->db->insert('tplugincustomtabelle', $customTable);
@@ -366,9 +357,9 @@ final class Installer
             $errNo = $this->db->getErrorCode();
             if ($errNo) {
                 \Shop::Container()->getLogService()->withName('kPlugin')->error(
-                    'SQL Fehler beim Installieren des Plugins (' . $this->plugin->cName . '): ' .
+                    'SQL Fehler beim Installieren des Plugins (' . $plugin->cName . '): ' .
                     \str_replace("'", '', $this->db->getErrorMessage()),
-                    [$this->plugin->kPlugin]
+                    [$plugin->kPlugin]
                 );
 
                 return InstallCode::SQL_ERROR;
@@ -413,34 +404,33 @@ final class Installer
             $this->db->update('topcblueprint', 'kPlugin', $pluginID, $upd);
             $pluginConf = $this->db->query(
                 'SELECT *
-                FROM tplugineinstellungen
-                WHERE kPlugin IN (' . $oldPluginID . ', ' . $pluginID . ')
-                ORDER BY kPlugin',
+                    FROM tplugineinstellungen
+                    WHERE kPlugin IN (' . $oldPluginID . ', ' . $pluginID . ')
+                    ORDER BY kPlugin',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             if (\count($pluginConf) > 0) {
                 $confData = [];
-                foreach ($pluginConf as $oPluginEinstellung) {
-                    $cName = \str_replace(
+                foreach ($pluginConf as $conf) {
+                    $name = \str_replace(
                         ['kPlugin_' . $oldPluginID . '_', 'kPlugin_' . $pluginID . '_'],
                         '',
-                        $oPluginEinstellung->cName
+                        $conf->cName
                     );
-                    if (!isset($confData[$cName])) {
-                        $confData[$cName] = new \stdClass();
-
-                        $confData[$cName]->kPlugin = $oldPluginID;
-                        $confData[$cName]->cName   = \str_replace(
+                    if (!isset($confData[$name])) {
+                        $confData[$name] = new \stdClass();
+                        $confData[$name]->kPlugin = $oldPluginID;
+                        $confData[$name]->cName   = \str_replace(
                             'kPlugin_' . $pluginID . '_',
                             'kPlugin_' . $oldPluginID . '_',
-                            $oPluginEinstellung->cName
+                            $conf->cName
                         );
-                        $confData[$cName]->cWert   = $oPluginEinstellung->cWert;
+                        $confData[$name]->cWert   = $conf->cWert;
                     }
                 }
                 $this->db->query(
                     'DELETE FROM tplugineinstellungen
-                    WHERE kPlugin IN (' . $oldPluginID . ', ' . $pluginID . ')',
+                        WHERE kPlugin IN (' . $oldPluginID . ', ' . $pluginID . ')',
                     \DB\ReturnType::AFFECTED_ROWS
                 );
 
@@ -450,44 +440,45 @@ final class Installer
             }
             $this->db->query(
                 "UPDATE tplugineinstellungen
-                SET kPlugin = " . $oldPluginID . ",
-                    cName = REPLACE(cName, 'kPlugin_" . $pluginID . "_', 'kPlugin_" . $oldPluginID . "_')
-                WHERE kPlugin = " . $pluginID,
+                    SET kPlugin = " . $oldPluginID . ",
+                        cName = REPLACE(cName, 'kPlugin_" . $pluginID . "_', 'kPlugin_" . $oldPluginID . "_')
+                    WHERE kPlugin = " . $pluginID,
                 \DB\ReturnType::AFFECTED_ROWS
             );
             $this->db->query(
                 "UPDATE tplugineinstellungenconf
-                SET kPlugin = " . $oldPluginID . ",
-                    cWertName = REPLACE(cWertName, 'kPlugin_" . $pluginID . "_', 'kPlugin_" . $oldPluginID . "_')
-                WHERE kPlugin = " . $pluginID,
+                    SET kPlugin = " . $oldPluginID . ",
+                        cWertName = REPLACE(cWertName, 'kPlugin_" . $pluginID . "_', 'kPlugin_" . $oldPluginID . "_')
+                    WHERE kPlugin = " . $pluginID,
                 \DB\ReturnType::AFFECTED_ROWS
             );
-            $upd            = new \stdClass();
-            $upd->kCustomID = $oldPluginID;
-            $this->db->update('tboxvorlage', ['kCustomID', 'eTyp'], [$pluginID, 'plugin'], $upd);
+            $this->db->update(
+                'tboxvorlage',
+                ['kCustomID', 'eTyp'],
+                [$pluginID, 'plugin'],
+                (object)['kCustomID' => $oldPluginID]
+            );
             $this->db->query(
                 "UPDATE tpluginzahlungsartklasse
-                SET kPlugin = " . $oldPluginID . ",
-                    cModulId = REPLACE(cModulId, 'kPlugin_" . $pluginID . "_', 'kPlugin_" . $oldPluginID . "_')
-                WHERE kPlugin = " . $pluginID,
+                    SET kPlugin = " . $oldPluginID . ",
+                        cModulId = REPLACE(cModulId, 'kPlugin_" . $pluginID . "_', 'kPlugin_" . $oldPluginID . "_')
+                    WHERE kPlugin = " . $pluginID,
                 \DB\ReturnType::AFFECTED_ROWS
             );
-            $oldMailTpl    = $this->db->select('tpluginemailvorlage', 'kPlugin', $oldPluginID);
-            $oEmailvorlage = $this->db->select('tpluginemailvorlage', 'kPlugin', $pluginID);
-            if (isset($oEmailvorlage->kEmailvorlage, $oldMailTpl->kEmailvorlage)) {
-                $upd                = new \stdClass();
-                $upd->kEmailvorlage = $oEmailvorlage->kEmailvorlage;
+            $oldMailTpl = $this->db->select('tpluginemailvorlage', 'kPlugin', $oldPluginID);
+            $newMailTpl = $this->db->select('tpluginemailvorlage', 'kPlugin', $pluginID);
+            if (isset($newMailTpl->kEmailvorlage, $oldMailTpl->kEmailvorlage)) {
                 $this->db->update(
                     'tpluginemailvorlageeinstellungen',
                     'kEmailvorlage',
                     $oldMailTpl->kEmailvorlage,
-                    $upd
+                    (object)['kEmailvorlage' => $newMailTpl->kEmailvorlage]
                 );
             }
             $kEmailvorlageNeu = 0;
             $kEmailvorlageAlt = 0;
             foreach ($this->plugin->oPluginEmailvorlageAssoc_arr as $cModulId => $oldMailTpl) {
-                $oPluginEmailvorlageNeu = $this->db->select(
+                $newMailTpl = $this->db->select(
                     'tpluginemailvorlage',
                     'kPlugin',
                     $oldPluginID,
@@ -498,27 +489,23 @@ final class Installer
                     false,
                     'kEmailvorlage'
                 );
-                if (isset($oPluginEmailvorlageNeu->kEmailvorlage) && $oPluginEmailvorlageNeu->kEmailvorlage > 0) {
+                if (isset($newMailTpl->kEmailvorlage) && $newMailTpl->kEmailvorlage > 0) {
                     if ($kEmailvorlageNeu === 0 || $kEmailvorlageAlt === 0) {
-                        $kEmailvorlageNeu = (int)$oPluginEmailvorlageNeu->kEmailvorlage;
+                        $kEmailvorlageNeu = (int)$newMailTpl->kEmailvorlage;
                         $kEmailvorlageAlt = (int)$oldMailTpl->kEmailvorlage;
                     }
-                    $upd                = new \stdClass();
-                    $upd->kEmailvorlage = $oPluginEmailvorlageNeu->kEmailvorlage;
                     $this->db->update(
                         'tpluginemailvorlagesprache',
                         'kEmailvorlage',
                         $oldMailTpl->kEmailvorlage,
-                        $upd
+                        (object)['kEmailvorlage' => $newMailTpl->kEmailvorlage]
                     );
                 }
             }
             $upd                = new \stdClass();
             $upd->kEmailvorlage = $kEmailvorlageNeu;
             $this->db->update('tpluginemailvorlageeinstellungen', 'kEmailvorlage', $kEmailvorlageAlt, $upd);
-            $upd          = new \stdClass();
-            $upd->kPlugin = $oldPluginID;
-            $this->db->update('tlink', 'kPlugin', $pluginID, $upd);
+            $this->db->update('tlink', 'kPlugin', $pluginID, (object)['kPlugin' => $oldPluginID]);
             // tboxen
             // Ausnahme: Gibt es noch eine Boxenvorlage in der Pluginversion?
             // Falls nein -> lösche tboxen mit dem entsprechenden kPlugin
@@ -536,34 +523,34 @@ final class Installer
             $this->db->update('tspezialseite', 'kPlugin', $pluginID, $upd);
             $oldPaymentMethods = $this->db->query(
                 "SELECT kZahlungsart, cModulId
-                FROM tzahlungsart
-                WHERE cModulId LIKE 'kPlugin_{$oldPluginID}_%'",
+                    FROM tzahlungsart
+                    WHERE cModulId LIKE 'kPlugin_{$oldPluginID}_%'",
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($oldPaymentMethods as $method) {
-                $cModulIdNew     = \str_replace(
+                $cModulIdNew      = \str_replace(
                     "kPlugin_{$oldPluginID}_",
                     "kPlugin_{$pluginID}_",
                     $method->cModulId
                 );
                 $newPaymentMethod = $this->db->query(
                     "SELECT kZahlungsart
-                      FROM tzahlungsart
-                      WHERE cModulId LIKE '{$cModulIdNew}'",
+                        FROM tzahlungsart
+                        WHERE cModulId LIKE '{$cModulIdNew}'",
                     \DB\ReturnType::SINGLE_OBJECT
                 );
-                $cNewSetSQL      = '';
+                $setSQL           = '';
                 if (isset($method->kZahlungsart, $newPaymentMethod->kZahlungsart)) {
                     $this->db->query(
                         'DELETE tzahlungsart, tzahlungsartsprache
-                        FROM tzahlungsart
-                        JOIN tzahlungsartsprache
-                            ON tzahlungsartsprache.kZahlungsart = tzahlungsart.kZahlungsart
-                        WHERE tzahlungsart.kZahlungsart = ' . $method->kZahlungsart,
+                            FROM tzahlungsart
+                            JOIN tzahlungsartsprache
+                                ON tzahlungsartsprache.kZahlungsart = tzahlungsart.kZahlungsart
+                            WHERE tzahlungsart.kZahlungsart = ' . $method->kZahlungsart,
                         \DB\ReturnType::AFFECTED_ROWS
                     );
 
-                    $cNewSetSQL        = ' , kZahlungsart = ' . $method->kZahlungsart;
+                    $setSQL            = ' , kZahlungsart = ' . $method->kZahlungsart;
                     $upd               = new \stdClass();
                     $upd->kZahlungsart = $method->kZahlungsart;
                     $this->db->update('tzahlungsartsprache', 'kZahlungsart', $newPaymentMethod->kZahlungsart, $upd);
@@ -571,9 +558,9 @@ final class Installer
 
                 $this->db->query(
                     "UPDATE tzahlungsart
-                    SET cModulId = '{$method->cModulId}'
-                    " . $cNewSetSQL . "
-                    WHERE cModulId LIKE '{$cModulIdNew}'",
+                        SET cModulId = '{$method->cModulId}'
+                        " . $setSQL . "
+                        WHERE cModulId LIKE '{$cModulIdNew}'",
                     \DB\ReturnType::AFFECTED_ROWS
                 );
             }

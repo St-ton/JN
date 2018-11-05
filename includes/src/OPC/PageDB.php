@@ -141,6 +141,23 @@ class PageDB
         return $drafts;
     }
 
+    public function getOtherLanguageDrafts(string $id)
+    {
+        $pageIdFields       = explode(';', $id);
+        $langField          = array_pop($pageIdFields);
+        $languageKey        = explode(':', $langField);
+        $languageKey        = (int)$languageKey[1];
+        $pageIdSearchPrefix = implode(';', $pageIdFields) . ';lang:';
+
+        return $this->shopDB->query(
+            "SELECT o.*, s.kSprache, s.cNameEnglisch
+                FROM topcpage AS o
+                    JOIN tsprache AS s ON CONCAT('$pageIdSearchPrefix', s.kSprache) = o.cPageId
+                WHERE kSprache != $languageKey",
+            2
+        );
+    }
+
     /**
      * @param int $key
      * @return Page

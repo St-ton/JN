@@ -12,12 +12,13 @@
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 
-$pageKey = RequestHelper::verifyGPCDataInt('pageKey');
-$pageId  = RequestHelper::verifyGPDataString('pageId');
-$pageUrl = RequestHelper::verifyGPDataString('pageUrl');
-$action  = RequestHelper::verifyGPDataString('action');
-$shopUrl = Shop::getURL();
-$error   = null;
+$pageKey      = RequestHelper::verifyGPCDataInt('pageKey');
+$pageId       = RequestHelper::verifyGPDataString('pageId');
+$pageUrl      = RequestHelper::verifyGPDataString('pageUrl');
+$adoptFromKey = RequestHelper::verifyGPCDataInt('adoptFromKey');
+$action       = RequestHelper::verifyGPDataString('action');
+$shopUrl      = Shop::getURL();
+$error        = null;
 
 $opc       = Shop::Container()->getOPC();
 $opcPage   = Shop::Container()->getOPCPageService();
@@ -58,6 +59,27 @@ if ($opc->isOPCInstalled() === false) {
             ->setUrl($pageUrl)
             ->setReplace($action === 'replace')
             ->setName($newName);
+        $opcPageDB->saveDraft($page);
+        $pageKey = $page->getKey();
+    } catch (Exception $e) {
+        $error = $e->getMessage();
+    }
+
+    header('Location: ' . $shopUrl . '/' . PFAD_ADMIN . 'onpage-composer.php?pageKey=' . $pageKey . '&action=edit');
+    exit();
+} elseif ($action === 'adopt') {
+    // Adopt new draft from another draft
+    try {
+        $adoptFromDraft = $opcPage->getDraft($adoptFromKey);
+        $isReplace      = $adoptFromDraft->isReplace();
+        $newName        = 'Entwurf ' . ($opcPageDB->getDraftCount($pageId) + 1)
+            . ($isReplace ? ' (erweitert)' : ' (ersetzt)');
+        $page           = $opcPage
+            ->createDraft($pageId)
+            ->setUrl($pageUrl)
+            ->setReplace($isReplace)
+            ->setName($newName)
+            ->setAreaList($adoptFromDraft->getAreaList());
         $opcPageDB->saveDraft($page);
         $pageKey = $page->getKey();
     } catch (Exception $e) {

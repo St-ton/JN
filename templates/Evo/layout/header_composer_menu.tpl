@@ -60,6 +60,7 @@
 {assign var="pageDrafts" value=$opcPageService->getDrafts($curPageId)}
 {assign var="curDraftKey" value=$curPage->getKey()}
 {assign var="adminSessionToken" value=$opc->getAdminSessionToken()}
+{assign var="otherLangDrafts" value=$opcPageService->getOtherLanguageDrafts($curPageId)}
 
 <div id="opc-switcher">
     <div class="switcher">
@@ -132,19 +133,45 @@
                     <p><label>Neuer Entwurf:</label></p>
                 {/if}
 
-                <form class="btn-group" method="post" action="admin/onpage-composer.php">
+                <form method="post" action="admin/onpage-composer.php">
                     <input type="hidden" name="jtl_token" value="{$adminSessionToken}">
                     <input type="hidden" name="pageId" value="{$curPage->getId()}">
                     <input type="hidden" name="pageUrl" value="{$curPage->getUrl()}">
-                    <button type="submit" name="action" value="extend" class="btn btn-sm btn-primary">
-                        <i class="fa fa-plus-circle"></i>
-                        Seite erweitern
-                    </button>
-                    <button type="submit" name="action" value="replace" class="btn btn-sm btn-primary">
-                        <i class="fa fa-file-o"></i>
-                        Seite ersetzen
-                    </button>
+                    <div class="btn-group">
+                        <button type="submit" name="action" value="extend" class="btn btn-sm btn-primary">
+                            <i class="fa fa-plus-circle"></i>
+                            Seite erweitern
+                        </button>
+                        <button type="submit" name="action" value="replace" class="btn btn-sm btn-primary">
+                            <i class="fa fa-file-o"></i>
+                            Seite ersetzen
+                        </button>
+                    </div>
                 </form>
+                {if $otherLangDrafts|count > 0}
+                    <form method="post" action="admin/onpage-composer.php">
+                        <input type="hidden" name="jtl_token" value="{$adminSessionToken}">
+                        <input type="hidden" name="pageId" value="{$curPage->getId()}">
+                        <input type="hidden" name="pageUrl" value="{$curPage->getUrl()}">
+                        <input type="hidden" name="action" value="adopt">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
+                                    aria-haspopup="true" aria-expanded="false">
+                                Aus anderer Sprache übernehmen <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                {foreach $otherLangDrafts as $draft}
+                                    <li>
+                                        <button type="submit" name="adoptFromKey" value="{$draft->kPage}"
+                                                class="btn btn-link">
+                                            <b>{$draft->cNameEnglisch}</b> : {$draft->cName}
+                                        </button>
+                                    </li>
+                                {/foreach}
+                            </ul>
+                        </div>
+                    </form>
+                {/if}
             </div>
         </div>
     </div>

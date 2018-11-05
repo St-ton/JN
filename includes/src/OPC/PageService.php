@@ -165,6 +165,11 @@ class PageService
         return $this->curPage;
     }
 
+    public function getOtherLanguageDrafts(string $id)
+    {
+        return $this->pageDB->getOtherLanguageDrafts($id);
+    }
+
     /**
      * @return string
      */

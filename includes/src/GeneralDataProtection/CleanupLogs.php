@@ -200,15 +200,16 @@ class CleanupLogs extends Method implements MethodInterface
 
     /**
      * delete customer-data-historytory
-     *
      * CONSIDER: using no time-base or limit here!
+     *
+     * (§76 BDSG Abs(4) : "Die Protokolldaten sind am Ende des auf deren Generierung folgenden Jahres zu löschen.")
      */
     private function clean_tkundendatenhistory()
     {
         \Shop::Container()->getDB()->queryPrepared(
             'DELETE FROM tkundendatenhistory
             WHERE
-                dErstellt <= LAST_DAY(DATE_ADD(:pNow - INTERVAL 2 YEAR, INTERVAL 12 - MONTH(:pNow) MONTH))
+                dErstellt < SELECT MAKEDATE(YEAR(:pNow) - 1, 1)
             ORDER BY dErstellt ASC
             LIMIT :pLimit',
             [

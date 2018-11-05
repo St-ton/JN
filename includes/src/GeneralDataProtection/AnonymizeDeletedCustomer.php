@@ -118,13 +118,15 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
     private function anon_tnewskommentar()
     {
         $vResult = \Shop::Container()->getDB()->queryPrepared(
-            "SELECT kNewsKommentar
-            FROM tnewskommentar n
+            "SELECT n.kNewsKommentar
+            FROM
+                tnewskommentar n
+                    LEFT JOIN tkunde k ON n.kKunde = k.kKunde
             WHERE
-                cName != 'Anonym'
-                AND cEmail != 'Anonym'
-                AND kKunde > 0
-                AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = n.kKunde)
+                n.cName != 'Anonym'
+                AND n.cEmail != 'Anonym'
+                AND n.kKunde > 0
+                AND k.kKunde IS NULL
             LIMIT :pLimit",
             [
                 'pLimit' => $this->iWorkLimit

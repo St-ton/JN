@@ -394,13 +394,13 @@ function gibPreisStringLocalizedSmarty($params, $smarty)
             if ($fVPEWert > 0) {
                 $oAufpreis->cPreisVPEWertAufpreis     = Preise::getLocalizedPriceString(
                     $fAufpreisNetto / $fVPEWert,
-                    Session::Currency()->getCode(),
+                    \Session\Session::getCurrency()->getCode(),
                     true,
                     $nGenauigkeit
                 ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
                 $oAufpreis->cPreisVPEWertInklAufpreis = Preise::getLocalizedPriceString(
                     ($fAufpreisNetto + $fVKNetto) / $fVPEWert,
-                    Session::Currency()->getCode(),
+                    \Session\Session::getCurrency()->getCode(),
                     true,
                     $nGenauigkeit
                 ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
@@ -424,7 +424,7 @@ function gibPreisStringLocalizedSmarty($params, $smarty)
             if ($fVPEWert > 0) {
                 $oAufpreis->cPreisVPEWertAufpreis     = Preise::getLocalizedPriceString(
                         TaxHelper::getGross($fAufpreisNetto / $fVPEWert, $_SESSION['Steuersatz'][$kSteuerklasse]),
-                        Session::Currency()->getCode(),
+                        \Session\Session::getCurrency()->getCode(),
                         true,
                         $nGenauigkeit
                     ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
@@ -433,7 +433,7 @@ function gibPreisStringLocalizedSmarty($params, $smarty)
                             ($fAufpreisNetto + $fVKNetto) / $fVPEWert,
                             $_SESSION['Steuersatz'][$kSteuerklasse]
                         ),
-                        Session::Currency()->getCode(),
+                        \Session\Session::getCurrency()->getCode(),
                         true,
                         $nGenauigkeit
                     ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;

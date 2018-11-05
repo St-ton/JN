@@ -48,7 +48,7 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false): stdClass
 
     if (!$bPruefeDaten || StringHandler::filterEmailAddress($oKunde->cEmail) !== false) {
         $oPlausi->nPlausi_arr = newsletterAnmeldungPlausi();
-        $kKundengruppe        = Session::CustomerGroup()->getID();
+        $kKundengruppe        = \Session\Session::getCustomerGroup()->getID();
         $oCheckBox            = new CheckBox();
         $oPlausi->nPlausi_arr = array_merge(
             $oPlausi->nPlausi_arr,

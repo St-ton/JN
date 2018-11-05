@@ -14,7 +14,7 @@ $oLink->kLink = 0;
 foreach ($links as $l) {
     $customerGroupIDs = StringHandler::parseSSK($l->cKundengruppen);
     $ok               = array_reduce($customerGroupIDs, function ($c, $p) {
-        return $c === true || $p === 'NULL' || (int)$p === Session::CustomerGroup()->getID();
+        return $c === true || $p === 'NULL' || (int)$p === \Session\Session::getCustomerGroup()->getID();
     }, false);
     if ($ok === true) {
         $oLink = $l;

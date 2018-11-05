@@ -427,7 +427,7 @@ function berechnePreisspannenSQL($oPreis, $oPreisspannenfilter_arr = null)
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Shop::getProductFilter()
                ->getPriceRangeFilter()
-               ->getPriceRangeSQL($oPreis, Session::Currency(), $oPreisspannenfilter_arr);
+               ->getPriceRangeSQL($oPreis, \Session\Session::getCurrency(), $oPreisspannenfilter_arr);
 }
 
 /**
@@ -987,7 +987,7 @@ function baueArtikelAnzahl($FilterSQL, &$oSuchergebnisse, $nArtikelProSeite = 20
                 ($FilterSQL->oPreisspannenFilterSQL->cJoin ?? '') .
             ' LEFT JOIN tartikelsichtbarkeit 
                 ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
-                AND tartikelsichtbarkeit.kKundengruppe = ' . Session::CustomerGroup()->getID() . '
+                AND tartikelsichtbarkeit.kKundengruppe = ' . \Session\Session::getCustomerGroup()->getID() . '
             WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 AND tartikel.kVaterArtikel = 0 ' .
                 gibLagerfilter() . ' ' .

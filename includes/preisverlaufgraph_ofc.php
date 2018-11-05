@@ -44,8 +44,8 @@ if (isset($_GET['kArtikel'])) {
 
     if (count($Einstellungen) > 0) {
         $oPreisConfig           = new stdClass();
-        $oPreisConfig->Waehrung = Session::Currency()->getName();
-        $oPreisConfig->Netto    = Session::CustomerGroup()->isMerchant()
+        $oPreisConfig->Waehrung = \Session\Session::getCurrency()->getName();
+        $oPreisConfig->Netto    = \Session\Session::getCustomerGroup()->isMerchant()
             ? 0
             : $_GET['fMwSt'];
         $oVerlauf_arr = (new Preisverlauf())->gibPreisverlauf($kArtikel, $kKundengruppe, $nMonat);

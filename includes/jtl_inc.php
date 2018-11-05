@@ -165,7 +165,7 @@ function setzeWarenkorbPersInWarenkorb(int $customerID): bool
     if (!$customerID) {
         return false;
     }
-    $cart = Session::Cart();
+    $cart = \Session\Session::getCart();
     foreach ($cart->PositionenArr as $oWarenkorbPos) {
         if ($oWarenkorbPos->nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
             $kArtikelGeschenk = (int)$oWarenkorbPos->kArtikel;
@@ -259,7 +259,7 @@ function setzeWarenkorbPersInWarenkorb(int $customerID): bool
  */
 function pruefeWarenkorbArtikelSichtbarkeit(int $customerGroupID): void
 {
-    $cart = Session::Cart();
+    $cart = \Session\Session::getCart();
     if ($customerGroupID <= 0 || empty($cart->PositionenArr)) {
         return;
     }
@@ -309,7 +309,7 @@ function fuehreLoginAus($userLogin, $passLogin): void
         $cHinweis .= Shop::Lang()->get('csrfValidationFailed');
         Shop::Container()->getLogService()->warning('CSRF-Warnung für Login: ' . $_POST['login']);
     } else {
-        $cart           = Session::Cart();
+        $cart           = \Session\Session::getCart();
         $config         = Shop::getSettings([CONF_GLOBAL, CONF_KAUFABWICKLUNG, CONF_KUNDEN]);
         $loginCaptchaOK = $Kunde->verifyLoginCaptcha($_POST);
         if ($loginCaptchaOK === true) {
@@ -405,7 +405,7 @@ function fuehreLoginAus($userLogin, $passLogin): void
                                     $oKonfigitem->getSteuerklasse(),
                                     C_WARENKORBPOS_TYP_ARTIKEL,
                                     false,
-                                    !Session::CustomerGroup()->isMerchant(),
+                                    !\Session\Session::getCustomerGroup()->isMerchant(),
                                     '',
                                     $oWarenkorbPersPos->cUnique,
                                     $oWarenkorbPersPos->kKonfigitem,

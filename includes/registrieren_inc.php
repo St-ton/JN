@@ -18,7 +18,7 @@ function kundeSpeichern(array $cPost_arr)
 
     unset($_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['Zahlungsart']);
     $conf = Shop::getSettings([CONF_GLOBAL, CONF_KUNDENWERBENKUNDEN]);
-    $cart = Session::Cart();
+    $cart = \Session\Session::getCart();
     $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
          ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART);
 
@@ -30,7 +30,7 @@ function kundeSpeichern(array $cPost_arr)
         : checkKundenFormular(1, 0);
     $knd                 = getKundendaten($cPost_arr, 1, 0);
     $cKundenattribut_arr = getKundenattribute($cPost_arr);
-    $kKundengruppe       = Session::CustomerGroup()->getID();
+    $kKundengruppe       = \Session\Session::getCustomerGroup()->getID();
     $oCheckBox           = new CheckBox();
     $fehlendeAngaben     = array_merge(
         $fehlendeAngaben,
@@ -119,7 +119,7 @@ function kundeSpeichern(array $cPost_arr)
                 'nRegistriert',
                 0
             );
-            $kKundengruppe = Session::CustomerGroup()->getID();
+            $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
             if (isset($oNeukunde->kKundenWerbenKunden, $conf['kundenwerbenkunden']['kwk_kundengruppen'])
                 && $oNeukunde->kKundenWerbenKunden > 0
                 && (int)$conf['kundenwerbenkunden']['kwk_kundengruppen'] > 0
@@ -255,7 +255,7 @@ function gibFormularDaten(int $nCheckout = 0)
     Shop::Smarty()->assign('herkunfte', $herkunfte)
         ->assign('Kunde', $Kunde)
         ->assign('cKundenattribut_arr', $cKundenattribut_arr)
-        ->assign('laender', VersandartHelper::getPossibleShippingCountries(Session::CustomerGroup()->getID()))
+        ->assign('laender', VersandartHelper::getPossibleShippingCountries(\Session\Session::getCustomerGroup()->getID()))
         ->assign(
             'warning_passwortlaenge',
             lang_passwortlaenge(Shop::getSettingValue(CONF_KUNDEN, 'kundenregistrierung_passwortlaenge'))

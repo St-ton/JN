@@ -15,8 +15,8 @@ if ((int)$_GET['kArtikel'] > 0 && (int)$_GET['kKundengruppe'] > 0 && (int)$_GET[
         $kSteuerklasse          = (int)$_GET['kSteuerklasse'];
         $nMonat                 = (int)$Einstellungen['preisverlauf']['preisverlauf_anzahl_monate'];
         $oPreisConfig           = new stdClass();
-        $oPreisConfig->Waehrung = Session::Currency()->getName();
-        $oPreisConfig->Netto    = Session::CustomerGroup()->isMerchant()
+        $oPreisConfig->Waehrung = \Session\Session::getCurrency()->getName();
+        $oPreisConfig->Netto    = \Session\Session::getCustomerGroup()->isMerchant()
             ? 0
             : $_SESSION['Steuersatz'][$kSteuerklasse];
         $oPreisverlauf          = Shop::Container()->getDB()->query(

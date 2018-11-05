@@ -13,36 +13,33 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 $oUpdater = new Updater();
 $cFehler  = '';
 if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
-    $ret['captcha'] = 0;
-    $ret['csrf']    = 0;
-    if (file_exists(CAPTCHA_LOCKFILE)) {
-        $ret['captcha'] = Shop::Container()->getCaptchaService()->validate($_POST) ? 0 : 2;
-    }
+    $csrfOK = true;
     // Check if shop version is new enough for csrf validation
     if (Shop::getShopDatabaseVersion()->equals(Version::parse('4.0.0'))
-        || Shop::getShopDatabaseVersion()->greaterThan(Version::parse('4.0.0'))) {
-        // Check if template version is new enough for csrf validation
-        $tpl = AdminTemplate::getInstance();
-        if ($tpl::$cTemplate === 'bootstrap' && !FormHelper::validateToken()) {
-            $ret['csrf'] = 1;
-        }
+        || Shop::getShopDatabaseVersion()->greaterThan(Version::parse('4.0.0'))
+    ) {
+        $csrfOK = FormHelper::validateToken();
     }
     $loginName = isset($_POST['benutzer'])
         ? StringHandler::filterXSS(Shop::Container()->getDB()->escape($_POST['benutzer']))
         : '---';
-    if ($ret['captcha'] === 0 && $ret['csrf'] === 0) {
+    if ($csrfOK === true) {
         $cLogin  = $_POST['benutzer'];
         $cPass   = $_POST['passwort'];
         $nReturn = $oAccount->login($cLogin, $cPass);
         switch ($nReturn) {
+            case AdminLoginStatus::ERROR_LOCKED:
             case AdminLoginStatus::ERROR_INVALID_PASSWORD_LOCKED:
-                @touch(CAPTCHA_LOCKFILE);
+                $lockTime = $oAccount->getLockedMinutes();
+                $cFehler = 'Gesperrt für ' . $lockTime . ' Minute' . ($lockTime !== 1 ? 'n' : '');
                 break;
 
             case AdminLoginStatus::ERROR_USER_NOT_FOUND:
             case AdminLoginStatus::ERROR_INVALID_PASSWORD:
                 $cFehler = 'Benutzername oder Passwort falsch';
-                if (isset($_SESSION['AdminAccount']->TwoFA_expired) && true === $_SESSION['AdminAccount']->TwoFA_expired) {
+                if (isset($_SESSION['AdminAccount']->TwoFA_expired)
+                    && $_SESSION['AdminAccount']->TwoFA_expired === true
+                ) {
                     $cFehler = '2-Faktor-Auth-Code abgelaufen';
                 }
                 break;
@@ -56,7 +53,9 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
                 break;
 
             case AdminLoginStatus::ERROR_TWO_FACTOR_AUTH_EXPIRED:
-                if (isset($_SESSION['AdminAccount']->TwoFA_expired) && true === $_SESSION['AdminAccount']->TwoFA_expired) {
+                if (isset($_SESSION['AdminAccount']->TwoFA_expired)
+                    && $_SESSION['AdminAccount']->TwoFA_expired === true
+                ) {
                     $cFehler = '2-Faktor-Authentifizierungs-Code abgelaufen';
                 }
                 break;
@@ -66,10 +65,8 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
                 break;
 
             case AdminLoginStatus::LOGIN_OK:
+                \Session\AdminSession::getInstance()->reHash();
                 $_SESSION['loginIsValid'] = true; // "enable" the "header.tpl"-navigation again
-                if (file_exists(CAPTCHA_LOCKFILE)) {
-                    unlink(CAPTCHA_LOCKFILE);
-                }
                 if ($oAccount->permission('SHOP_UPDATE_VIEW') && $oUpdater->hasPendingUpdates()) {
                     header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . 'dbupdater.php');
                     exit;
@@ -82,9 +79,7 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
 
                 break;
         }
-    } elseif ($ret['captcha'] !== 0) {
-        $cFehler = 'Captcha-Code falsch';
-    } elseif ($ret['csrf'] !== 0) {
+    } elseif ($csrfOK !== true) {
         $cFehler = 'Cross site request forgery! Sind Cookies aktiviert?';
     }
 }
@@ -116,9 +111,6 @@ switch ($profilerState) {
     case 7:
         $type = 'Datenbank-, XHProf und Plugin';
         break;
-}
-if (file_exists(CAPTCHA_LOCKFILE)) {
-    $smarty->assign('code_adminlogin', Shop::Container()->getCaptchaService()->isEnabled());
 }
 $smarty->assign('bProfilerActive', $profilerState !== 0)
        ->assign('profilerType', $type)
@@ -200,8 +192,16 @@ if ($oAccount->getIsAuthenticated()) {
     openDashboard();
 } else {
     $oAccount->redirectOnUrl();
+    if (isset($_GET['errCode'])) {
+        switch ((int)$_GET['errCode']) {
+            case AdminLoginStatus::ERROR_SESSION_INVALID:
+                $cFehler = 'Ihre Sitzung wurde zurückgesetzt! Bitte melden Sie sich neu an.';
+                break;
+        }
+    }
     $smarty->assign('uri', isset($_REQUEST['uri']) && strlen(trim($_REQUEST['uri'])) > 0
         ? trim($_REQUEST['uri'])
         : '')
+           ->assign('cFehler', $cFehler)
            ->display('login.tpl');
 }

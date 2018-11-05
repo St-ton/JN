@@ -6,6 +6,7 @@
 
 namespace Session;
 
+use phpDocumentor\Reflection\Types\Self_;
 use Session\Handler\SessionHandlerDB;
 use Session\Handler\SessionHandlerJTL;
 
@@ -14,7 +15,8 @@ use Session\Handler\SessionHandlerJTL;
  */
 class AdminSession
 {
-    const DEFAULT_SESSION = 'JTLSHOP';
+    const DEFAULT_SESSION  = 'JTLSHOP';
+    const SESSION_HASH_KEY = 'session.hash';
 
     /**
      * @var int
@@ -144,5 +146,31 @@ class AdminSession
     public static function set($key, $value)
     {
         return self::$handler->set($key, $value);
+    }
+
+    /**
+     * @return string
+     */
+    public static function createHash()
+    {
+        return mhash(MHASH_SHA1, \Shop::getApplicationVersion());
+    }
+
+    /**
+     * @return static
+     */
+    public function reHash()
+    {
+        self::set(self::SESSION_HASH_KEY, self::createHash());
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isValid()
+    {
+        return self::get(self::SESSION_HASH_KEY, '') === self::createHash();
     }
 }

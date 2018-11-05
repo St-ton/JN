@@ -23,6 +23,11 @@ ifndef('IMAGE_COMPATIBILITY_LEVEL', 1);
 ifndef('KEEP_SYNC_FILES', false);
 ifndef('PROFILE_PLUGINS', false);
 ifndef('PROFILE_SHOP', false);
+/**
+ * Lieferschwellen-Option: Gleichbleibende Bruttopreise (SHOP-2633)
+ * @since 5.0.0
+ */ 
+ifndef('CONSISTENT_GROSS_PRICES', true);
 
 ifndef('DB_DEFAULT_SQL_MODE', false);
 
@@ -142,7 +147,6 @@ ifndef('PFAD_DOWNLOADS_PREVIEW', PFAD_ROOT . PFAD_DOWNLOADS_PREVIEW_REL);
 ifndef('PFAD_UPLOADIFY', PFAD_INCLUDES_LIBS . 'uploadify/');
 ifndef('PFAD_UPLOAD_CALLBACK', PFAD_INCLUDES_EXT . 'uploads_cb.php');
 ifndef('PFAD_IMAGEMAP', PFAD_BILDER . 'banner/');
-ifndef('PFAD_KCFINDER', PFAD_INCLUDES_LIBS . 'kcfinder-2.5.4/');
 ifndef('PFAD_EMAILTEMPLATES', 'templates_mail/');
 ifndef('PFAD_MEDIA_IMAGE', 'media/image/');
 ifndef('PFAD_MEDIA_IMAGE_STORAGE', PFAD_MEDIA_IMAGE . 'storage/');

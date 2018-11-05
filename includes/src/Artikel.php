@@ -5392,19 +5392,22 @@ class Artikel
                 $isPartsList = false;
             } else {
                 // all parts of this list are accessible
+                /** @var Artikel $piece */
                 foreach ($this->oStueckliste_arr as $piece) {
-                    $piece->getDeliveryTime(
-                        $countryCode,
-                        $purchaseQuantity * (float)$piece->fAnzahl_stueckliste,
-                        null,
-                        null,
-                        $shippingID
-                    );
-                    if (isset($piece->nMaxDeliveryDays) && $piece->nMaxDeliveryDays > $maxDeliveryDays) {
-                        $maxDeliveryDays = $piece->nMaxDeliveryDays;
-                    }
-                    if (isset($piece->nMinDeliveryDays) && $piece->nMinDeliveryDays > $minDeliveryDays) {
-                        $minDeliveryDays = $piece->nMinDeliveryDays;
+                    if (!empty($piece->kArtikel)) {
+                        $piece->getDeliveryTime(
+                            $countryCode,
+                            $purchaseQuantity * (float)$piece->fAnzahl_stueckliste,
+                            null,
+                            null,
+                            $shippingID
+                        );
+                        if (isset($piece->nMaxDeliveryDays) && $piece->nMaxDeliveryDays > $maxDeliveryDays) {
+                            $maxDeliveryDays = $piece->nMaxDeliveryDays;
+                        }
+                        if (isset($piece->nMinDeliveryDays) && $piece->nMinDeliveryDays > $minDeliveryDays) {
+                            $minDeliveryDays = $piece->nMinDeliveryDays;
+                        }
                     }
                 }
             }

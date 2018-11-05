@@ -23,6 +23,11 @@ ifndef('IMAGE_COMPATIBILITY_LEVEL', 1);
 ifndef('KEEP_SYNC_FILES', false);
 ifndef('PROFILE_PLUGINS', false);
 ifndef('PROFILE_SHOP', false);
+/**
+ * Lieferschwellen-Option: Gleichbleibende Bruttopreise (SHOP-2633)
+ * @since 5.0.0
+ */ 
+ifndef('CONSISTENT_GROSS_PRICES', true);
 
 ifndef('DB_DEFAULT_SQL_MODE', false);
 

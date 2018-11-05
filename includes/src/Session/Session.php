@@ -712,7 +712,7 @@ class Session
                 unset($_SESSION['Suche']);
                 self::setSpecialLinks();
                 if (isset($_SESSION['Wunschliste'])) {
-                    self::getCompareList()->umgebungsWechsel();
+                    self::getWishList()->umgebungsWechsel();
                 }
                 if (isset($_SESSION['Vergleichsliste'])) {
                     self::getCompareList()->umgebungsWechsel();

@@ -933,7 +933,7 @@ class BaseSearchQuery extends AbstractFilter
                         FROM ($cSQL) AS i
                         LEFT JOIN tartikelsichtbarkeit 
                             ON tartikelsichtbarkeit.kArtikel = i.kArtikelTMP
-                            AND tartikelsichtbarkeit.kKundengruppe = " . \Session::CustomerGroup()->getID() . "
+                            AND tartikelsichtbarkeit.kKundengruppe = " . \Session::getCustomerGroup()->getID() . "
                         WHERE tartikelsichtbarkeit.kKundengruppe IS NULL
                         GROUP BY kSuchCache, kArtikelTMP" . ($nLimit > 0 ? " LIMIT $nLimit" : '');
 

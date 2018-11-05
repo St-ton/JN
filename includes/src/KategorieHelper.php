@@ -68,7 +68,7 @@ class KategorieHelper
             ? Shop::getLanguageID()
             : $kSprache;
         $kKundengruppe = $kKundengruppe === 0
-            ? Session::CustomerGroup()->getID()
+            ? \Session\Session::getCustomerGroup()->getID()
             : $kKundengruppe;
         $config        = Shop::getSettings([CONF_GLOBAL, CONF_TEMPLATE]);
         if (self::$instance !== null && self::$kSprache !== $kSprache) {

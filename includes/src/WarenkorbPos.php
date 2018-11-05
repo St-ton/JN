@@ -208,7 +208,7 @@ class WarenkorbPos
             'kEigenschaftWert',
             (int)$newAttributes->kEigenschaftWert,
             'kKundengruppe',
-            Session::CustomerGroup()->getID()
+            \Session\Session::getCustomerGroup()->getID()
         );
         if (!empty($Aufpreis_obj->fAufpreisNetto)) {
             if ($this->Artikel->Preise->rabatt > 0) {
@@ -337,7 +337,7 @@ class WarenkorbPos
         if (!is_array($_SESSION['Waehrungen'])) {
             return $this;
         }
-        foreach (Session::Currencies() as $currency) {
+        foreach (Session::getCurrencies() as $currency) {
             $currencyName = $currency->getName();
             // Standardartikel
             $this->cGesamtpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(
@@ -383,7 +383,7 @@ class WarenkorbPos
                 $fPreisBrutto = 0;
                 $nVaterPos    = null;
                 /** @var WarenkorbPos $oPosition */
-                foreach (Session::Cart()->PositionenArr as $nPos => $oPosition) {
+                foreach (\Session\Session::getCart()->PositionenArr as $nPos => $oPosition) {
                     if ($this->cUnique === $oPosition->cUnique) {
                         $fPreisNetto  += $oPosition->fPreis * $oPosition->nAnzahl;
                         $fPreisBrutto += TaxHelper::getGross(
@@ -398,7 +398,7 @@ class WarenkorbPos
                     }
                 }
                 if ($nVaterPos !== null) {
-                    $oVaterPos = Session::Cart()->PositionenArr[$nVaterPos];
+                    $oVaterPos = \Session\Session::getCart()->PositionenArr[$nVaterPos];
                     if (is_object($oVaterPos)) {
                         $this->nAnzahlEinzel = $this->isIgnoreMultiplier()
                             ? $this->nAnzahl

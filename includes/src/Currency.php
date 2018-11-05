@@ -349,7 +349,7 @@ class Currency
         self::setCurrencies();
 
         $res        = '';
-        $currencies = \Session\Session::Currencies();
+        $currencies = \Session\Session::getCurrencies();
         if (count($currencies) > 0) {
             $priceNet = (float)str_replace(',', '.', $priceNet ?? 0);
             $priceGross = (float)str_replace(',', '.', $priceGross ?? 0);
@@ -420,7 +420,7 @@ class Currency
     {
         self::setCurrencies();
 
-        foreach (Session::Currencies() as $currency) {
+        foreach (Session::getCurrencies() as $currency) {
             if (($iso !== null && $currency->getCode() === $iso) || ($id !== null && $currency->getID() === (int)$id)) {
                 $newprice = $price * $currency->getConversionFactor();
 
@@ -437,7 +437,7 @@ class Currency
      */
     public static function setCurrencies($update = false): void
     {
-        if ($update || count(Session::Currencies()) === 0) {
+        if ($update || count(Session::getCurrencies()) === 0) {
             $_SESSION['Waehrungen'] = [];
             $allCurrencies          = Shop::Container()->getDB()->selectAll('twaehrung', [], [], 'kWaehrung');
             foreach ($allCurrencies as $currency) {

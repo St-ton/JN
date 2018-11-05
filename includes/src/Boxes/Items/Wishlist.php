@@ -27,9 +27,9 @@ final class Wishlist extends AbstractBox
         parent::addMapping('nBilderAnzeigen', 'ShowImages');
         parent::addMapping('CWunschlistePos_arr', 'Items');
         $this->setShow(true);
-        if (!empty(\Session::WishList()->kWunschliste)) {
-            $this->setWishListID(\Session::WishList()->kWunschliste);
-            $wishlistItems    = \Session::WishList()->CWunschlistePos_arr;
+        if (!empty(\Session::getWishList()->kWunschliste)) {
+            $this->setWishListID(\Session::getWishList()->kWunschliste);
+            $wishlistItems    = \Session::getWishList()->CWunschlistePos_arr;
             $validPostVars    = ['a', 'k', 's', 'h', 'l', 'm', 't', 'hf', 'kf', 'show', 'suche'];
             $additionalParams = '';
             $postMembers      = \array_keys($_REQUEST);
@@ -65,7 +65,7 @@ final class Wishlist extends AbstractBox
                     $cDeleteParam .
                     $wishlistItem->kWunschlistePos .
                     $additionalParams;
-                if (\Session::CustomerGroup()->isMerchant()) {
+                if (\Session::getCustomerGroup()->isMerchant()) {
                     $fPreis = isset($wishlistItem->Artikel->Preise->fVKNetto)
                         ? (int)$wishlistItem->fAnzahl * $wishlistItem->Artikel->Preise->fVKNetto
                         : 0;
@@ -75,7 +75,7 @@ final class Wishlist extends AbstractBox
                             (100 + $_SESSION['Steuersatz'][$wishlistItem->Artikel->kSteuerklasse]) / 100)
                         : 0;
                 }
-                $wishlistItem->cPreis = \Preise::getLocalizedPriceString($fPreis, \Session::Currency());
+                $wishlistItem->cPreis = \Preise::getLocalizedPriceString($fPreis, \Session::getCurrency());
             }
             $this->setItemCount((int)$this->config['boxen']['boxen_wunschzettel_anzahl']);
             $this->setItems(\array_reverse($wishlistItems));

@@ -358,7 +358,7 @@ class WarenkorbPers
                         'kArtikel',
                         (int)$cartPos->kArtikel,
                         'kKundengruppe',
-                        Session::CustomerGroup()->getID()
+                        \Session\Session::getCustomerGroup()->getID()
                     );
                     if ($oSichtbarkeit === null || !isset($oSichtbarkeit->kArtikel) || !$oSichtbarkeit->kArtikel) {
                         // Prüfe welche kEigenschaft gesetzt ist
@@ -434,7 +434,7 @@ class WarenkorbPers
         if (!is_array($_SESSION['Warenkorb']->PositionenArr) || count($_SESSION['Warenkorb']->PositionenArr) === 0) {
             return $this;
         }
-        foreach (Session::Cart()->PositionenArr as $oPosition) {
+        foreach (\Session\Session::getCart()->PositionenArr as $oPosition) {
             if ($oPosition->nPosTyp !== C_WARENKORBPOS_TYP_ARTIKEL) {
                 continue;
             }
@@ -486,7 +486,7 @@ class WarenkorbPers
         int $nPosTyp = C_WARENKORBPOS_TYP_ARTIKEL,
         string $cResponsibility = 'core'
     ) {
-        if (!Session::Customer()->isLoggedIn()) {
+        if (!\Session\Session::getCustomer()->isLoggedIn()) {
             return;
         }
         $conf = Shop::getSettings([CONF_GLOBAL]);
@@ -515,14 +515,14 @@ class WarenkorbPers
                     'kArtikel',
                     $kArtikel,
                     'kKundengruppe',
-                    Session::CustomerGroup()->getID(),
+                    \Session\Session::getCustomerGroup()->getID(),
                     null,
                     null,
                     false,
                     'kArtikel'
                 );
                 if ($visibility === null || !isset($visibility->kArtikel) || !$visibility->kArtikel) {
-                    $oWarenkorbPers = new WarenkorbPers(Session::Customer()->getID());
+                    $oWarenkorbPers = new WarenkorbPers(\Session\Session::getCustomer()->getID());
                     if ($nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                         $oWarenkorbPers->loescheGratisGeschenkAusWarenkorbPers();
                     }
@@ -540,7 +540,7 @@ class WarenkorbPers
             }
         } elseif ($kArtikel === 0 && !empty($kKonfigitem)) {
             // Konfigitems ohne Artikelbezug
-            (new WarenkorbPers(Session::Customer()->getID()))->fuegeEin(
+            (new WarenkorbPers(\Session\Session::getCustomer()->getID()))->fuegeEin(
                 $kArtikel,
                 (new Konfigitemsprache($kKonfigitem, Shop::getLanguageID()))->getName(),
                 $attributeValues,

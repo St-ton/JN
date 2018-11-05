@@ -1115,7 +1115,9 @@ function standardspracheAktiv($bShop = false, $kSprache = null)
 function gibStandardWaehrung($bISO = false)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Session directly instead.', E_USER_DEPRECATED);
-    return $bISO === true ? Session::Currency()->getCode() : Session::Currency()->getID();
+    return $bISO === true
+        ? \Session\Session::getCurrency()->getCode()
+        : \Session\Session::getCurrency()->getID();
 }
 
 /**

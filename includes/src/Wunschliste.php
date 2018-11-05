@@ -330,7 +330,7 @@ class Wunschliste
             $wlPosition->Artikel->fuelleArtikel($oSuchergebnis->kArtikel, Artikel::getDefaultOptions());
             $wlPosition->cArtikelName = $wlPosition->Artikel->cName;
 
-            if (Session::CustomerGroup()->isMerchant()) {
+            if (\Session\Session::getCustomerGroup()->isMerchant()) {
                 $fPreis = (int)$wlPosition->fAnzahl *
                     $wlPosition->Artikel->Preise->fVKNetto;
             } else {
@@ -340,7 +340,7 @@ class Wunschliste
                         100);
             }
 
-            $wlPosition->cPreis = Preise::getLocalizedPriceString($fPreis, Session::Currency());
+            $wlPosition->cPreis = Preise::getLocalizedPriceString($fPreis, \Session\Session::getCurrency());
             $searchResults[$i]  = $wlPosition;
         }
 
@@ -505,7 +505,7 @@ class Wunschliste
                     'kArtikel',
                     (int)$wlPosition->kArtikel,
                     'kKundengruppe',
-                    Session::CustomerGroup()->getID()
+                    \Session\Session::getCustomerGroup()->getID()
                 );
                 if ($oSichtbarkeit === null || empty($oSichtbarkeit->kArtikel)) {
                     if (count($wlPosition->CWunschlistePosEigenschaft_arr) > 0) {
@@ -693,7 +693,7 @@ class Wunschliste
         }
         // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
         $oWunschliste = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $id);
-        $customer     = Session::Customer();
+        $customer     = \Session\Session::getCustomer();
         if (isset($oWunschliste->kKunde) && (int)$oWunschliste->kKunde === $customer->getID()) {
             // Hole alle Positionen der Wunschliste
             $oWunschlistePos_arr = Shop::Container()->getDB()->selectAll(
@@ -802,7 +802,7 @@ class Wunschliste
         }
         // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
         $oWunschliste = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $id);
-        if ($oWunschliste !== null && (int)$oWunschliste->kKunde === Session::Customer()->getID()) {
+        if ($oWunschliste !== null && (int)$oWunschliste->kKunde === \Session\Session::getCustomer()->getID()) {
             // Wunschliste auf Standard setzen
             Shop::Container()->getDB()->update(
                 'twunschliste',
@@ -1015,7 +1015,7 @@ class Wunschliste
         // Wunschliste durchlaufen und cPreis setzen (Artikelanzahl mit eingerechnet)
         if (is_array($wishList->CWunschlistePos_arr) && count($wishList->CWunschlistePos_arr) > 0) {
             foreach ($wishList->CWunschlistePos_arr as $wishListPos) {
-                if (Session::CustomerGroup()->isMerchant()) {
+                if (\Session\Session::getCustomerGroup()->isMerchant()) {
                     $fPreis = isset($wishListPos->Artikel->Preise->fVKNetto)
                         ? (int)$wishListPos->fAnzahl * $wishListPos->Artikel->Preise->fVKNetto
                         : 0;
@@ -1028,7 +1028,7 @@ class Wunschliste
                         )
                         : 0;
                 }
-                $wishListPos->cPreis = Preise::getLocalizedPriceString($fPreis, Session::Currency());
+                $wishListPos->cPreis = Preise::getLocalizedPriceString($fPreis, \Session\Session::getCurrency());
             }
         }
 

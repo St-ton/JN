@@ -57,9 +57,9 @@ class TaxHelper
         if ($steuerland) {
             $deliveryCountryCode = $steuerland;
         }
-        if (!empty(Session\Session::Customer()->cLand)) {
-            $deliveryCountryCode = Session\Session::Customer()->cLand;
-            $billingCountryCode  = Session\Session::Customer()->cLand;
+        if (!empty(Session\Session::getCustomer()->cLand)) {
+            $deliveryCountryCode = Session\Session::getCustomer()->cLand;
+            $billingCountryCode  = Session\Session::getCustomer()->cLand;
         }
         if (!empty($_SESSION['Lieferadresse']->cLand)) {
             $deliveryCountryCode = $_SESSION['Lieferadresse']->cLand;
@@ -77,10 +77,10 @@ class TaxHelper
         $UstBefreiungIGL = false;
         if ($merchantCountryCode !== $deliveryCountryCode
             && $merchantCountryCode !== $billingCountryCode
-            && !empty(Session\Session::Customer()->cUSTID)
-            && (strcasecmp($billingCountryCode, substr(Session\Session::Customer()->cUSTID, 0, 2)) === 0
+            && !empty(Session\Session::getCustomer()->cUSTID)
+            && (strcasecmp($billingCountryCode, substr(Session\Session::getCustomer()->cUSTID, 0, 2)) === 0
                 || (strcasecmp($billingCountryCode, 'GR') === 0
-                    && strcasecmp(substr(Session\Session::Customer()->cUSTID, 0, 2), 'EL') === 0))
+                    && strcasecmp(substr(Session\Session::getCustomer()->cUSTID, 0, 2), 'EL') === 0))
         ) {
             $deliveryCountry = Shop::Container()->getDB()->select('tland', 'cISO', $deliveryCountryCode);
             $shopCountry     = Shop::Container()->getDB()->select('tland', 'cISO', $merchantCountryCode);
@@ -162,7 +162,7 @@ class TaxHelper
             }
         }
         if (isset($_SESSION['Warenkorb']) && $_SESSION['Warenkorb'] instanceof Warenkorb) {
-            Session\Session::Cart()->setzePositionsPreise();
+            Session\Session::getCart()->setzePositionsPreise();
         }
     }
 
@@ -178,7 +178,7 @@ class TaxHelper
     public static function getOldTaxPositions(array $positions, $net = -1, $html = true, $currency = 0): array
     {
         if ($net === -1) {
-            $net = Session\Session::CustomerGroup()->isMerchant();
+            $net = Session\Session::getCustomerGroup()->isMerchant();
         }
         $taxRates = [];
         $taxPos   = [];

@@ -68,7 +68,7 @@ class ArtikelHelper
      */
     public static function getArticleForParent(int $productID): int
     {
-        $customerGroupID = Session::CustomerGroup()->getID();
+        $customerGroupID = \Session\Session::getCustomerGroup()->getID();
         $properties      = self::getChildPropertiesForParent($productID, $customerGroupID);
         $combinations    = [];
         $valid           = true;
@@ -197,7 +197,7 @@ class ArtikelHelper
         if ($productID <= 0) {
             return [];
         }
-        $customerGroup  = Session::CustomerGroup()->getID();
+        $customerGroup  = \Session\Session::getCustomerGroup()->getID();
         $properties     = [];
         $propertyValues = [];
         $exists         = true;
@@ -399,7 +399,7 @@ class ArtikelHelper
      */
     public static function getSelectedPropertiesForArticle(int $productID, bool $redirect = true): array
     {
-        $customerGroupID = Session::CustomerGroup()->getID();
+        $customerGroupID = \Session\Session::getCustomerGroup()->getID();
         $propData        = Shop::Container()->getDB()->queryPrepared(
             'SELECT teigenschaft.kEigenschaft,teigenschaft.cName,teigenschaft.cTyp
                 FROM teigenschaft
@@ -836,7 +836,7 @@ class ArtikelHelper
      * @former gibArtikelXSelling()
      * @since 5.0.0
      */
-    public static function getXSelling(int $productID, $isParent = null)
+    public static function getXSelling(int $productID, $isParent = null): ?stdClass
     {
         if ($productID <= 0) {
             return null;
@@ -968,7 +968,7 @@ class ArtikelHelper
      * @former bearbeiteFrageZumProdukt()
      * @since 5.0.0
      */
-    public static function checkProductQuestion()
+    public static function checkProductQuestion(): void
     {
         $conf = Shop::getSettings([CONF_ARTIKELDETAILS]);
         if ($conf['artikeldetails']['artikeldetails_fragezumprodukt_anzeigen'] !== 'N') {
@@ -981,7 +981,7 @@ class ArtikelHelper
             if ($resultCode) {
                 if (!self::checkProductQuestionFloodProtection((int)$conf['artikeldetails']['produktfrage_sperre_minuten'])) {
                     $checkBox      = new CheckBox();
-                    $kKundengruppe = Session\Session::CustomerGroup()->getID();
+                    $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
                     $oAnfrage      = self::getProductQuestionFormDefaults();
 
                     executeHook(HOOK_ARTIKEL_INC_FRAGEZUMPRODUKT);
@@ -1060,7 +1060,7 @@ class ArtikelHelper
             $ret,
             $checkBox->validateCheckBox(
                 CHECKBOX_ORT_FRAGE_ZUM_PRODUKT,
-                Session::CustomerGroup()->getID(),
+                \Session\Session::getCustomerGroup()->getID(),
                 $_POST,
                 true
             )
@@ -1216,7 +1216,7 @@ class ArtikelHelper
                 $inquiry->dErstellt = 'NOW()';
                 $inquiry->nStatus   = 0;
                 $checkBox           = new CheckBox();
-                $customerGroupID    = Session::CustomerGroup()->getID();
+                $customerGroupID    = \Session\Session::getCustomerGroup()->getID();
                 if (empty($inquiry->cNachname)) {
                     $inquiry->cNachname = '';
                 }
@@ -1291,7 +1291,7 @@ class ArtikelHelper
         }
         // CheckBox Plausi
         $oCheckBox     = new CheckBox();
-        $kKundengruppe = Session::CustomerGroup()->getID();
+        $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
         $ret           = array_merge(
             $ret,
             $oCheckBox->validateCheckBox(CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT, $kKundengruppe, $_POST, true)
@@ -1355,7 +1355,7 @@ class ArtikelHelper
     public static function getProductNavigation(int $productID, int $categoryID): stdClass
     {
         $nav             = new stdClass();
-        $customerGroupID = Session::CustomerGroup()->getID();
+        $customerGroupID = \Session\Session::getCustomerGroup()->getID();
         // Wurde der Artikel von der Artikelübersicht aus angeklickt?
         if ($productID > 0
             && isset($_SESSION['oArtikelUebersichtKey_arr'])
@@ -1932,7 +1932,7 @@ class ArtikelHelper
                 $cLimit = " LIMIT " . (int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'];
             }
             $stockFilterSQL    = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-            $customerGroupID   = Session::CustomerGroup()->getID();
+            $customerGroupID   = \Session\Session::getCustomerGroup()->getID();
             $productAttributes = Shop::Container()->getDB()->queryPrepared(
                 'SELECT tartikelmerkmal.kArtikel, tartikel.kVaterArtikel
                     FROM tartikelmerkmal
@@ -2090,7 +2090,7 @@ class ArtikelHelper
         $configGroups,
         $configGroupAmounts,
         $configItemAmounts
-    ) {
+    ): ?stdClass {
         $config                  = new stdClass;
         $config->fAnzahl         = $amount;
         $config->fGesamtpreis    = [0.0, 0.0];
@@ -2187,7 +2187,7 @@ class ArtikelHelper
             $configGroup->oItem_arr = array_values($configGroup->oItem_arr);
         }
         unset($configGroup);
-        if (Session::CustomerGroup()->mayViewPrices()) {
+        if (\Session\Session::getCustomerGroup()->mayViewPrices()) {
             $config->cPreisLocalized = [
                 Preise::getLocalizedPriceString($config->fGesamtpreis[0]),
                 Preise::getLocalizedPriceString($config->fGesamtpreis[1])
@@ -2195,7 +2195,7 @@ class ArtikelHelper
         } else {
             $config->cPreisLocalized = [Shop::Lang()->get('priceHidden')];
         }
-        $config->nNettoPreise = Session::CustomerGroup()->getIsMerchant();
+        $config->nNettoPreise = \Session\Session::getCustomerGroup()->getIsMerchant();
 
         return $config;
     }
@@ -2208,7 +2208,7 @@ class ArtikelHelper
      */
     public static function getEditConfigMode($configID, $smarty): void
     {
-        $cart = Session::Cart();
+        $cart = \Session\Session::getCart();
         if (!isset($cart->PositionenArr[$configID]) || !class_exists('Konfigitem')) {
             return;
         }
@@ -2264,7 +2264,7 @@ class ArtikelHelper
      */
     public static function getRatedByCurrentCustomer(int $productID, int $parentProductID = 0): bool
     {
-        $customerID = Session::Customer()->getID();
+        $customerID = \Session\Session::getCustomer()->getID();
         $productID  = !empty($parentProductID) ? $parentProductID : $productID;
         if ($customerID <= 0) {
             return false;

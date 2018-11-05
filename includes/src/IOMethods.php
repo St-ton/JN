@@ -167,7 +167,7 @@ class IOMethods
 
             return $objResponse;
         }
-        $cart = Session::Cart();
+        $cart = \Session\Session::getCart();
         WarenkorbHelper::addVariationPictures($cart);
         /** @var Warenkorb $cart */
         $cart->fuegeEin($kArtikel, $amount, $properties)
@@ -208,7 +208,7 @@ class IOMethods
 
         $kKundengruppe = (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0)
             ? $_SESSION['Kunde']->kKundengruppe
-            : Session::CustomerGroup()->getID();
+            : \Session\Session::getCustomerGroup()->getID();
         $oXSelling     = ArtikelHelper::getXSelling($kArtikel, $Artikel->nIstVater > 0);
 
         $smarty->assign(
@@ -220,7 +220,7 @@ class IOMethods
         )
                ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
                ->assign('fAnzahl', $amount)
-               ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant())
+               ->assign('NettoPreise', \Session\Session::getCustomerGroup()->getIsMerchant())
                ->assign('Einstellungen', $config)
                ->assign('Xselling', $oXSelling)
                ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
@@ -385,7 +385,7 @@ class IOMethods
         $objResponse = new IOResponse();
         $qty         = (int)$qty === 0 ? 1 : (int)$qty;
         $smarty      = Shop::Smarty();
-        if (Session::Customer()->getID() === 0) {
+        if (\Session\Session::getCustomer()->getID() === 0) {
             $oResponse->nType     = 1;
             $oResponse->cLocation = Shop::Container()->getLinkService()->getStaticRoute('jtl.php') .
                 '?a=' . $kArtikel .
@@ -522,7 +522,7 @@ class IOMethods
     public function getBasketItems($nTyp = 0): IOResponse
     {
         require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
-        $cart        = Session::Cart();
+        $cart        = \Session\Session::getCart();
         $oResponse   = new stdClass();
         $objResponse = new IOResponse();
 
@@ -531,7 +531,7 @@ class IOMethods
             default:
             case 0:
                 $smarty        = Shop::Smarty();
-                $kKundengruppe = Session::CustomerGroup()->getID();
+                $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
                 $nAnzahl       = $cart->gibAnzahlPositionenExt([C_WARENKORBPOS_TYP_ARTIKEL]);
                 $cLand         = $_SESSION['cLieferlandISO'] ?? '';
                 $cPLZ          = '*';
@@ -552,7 +552,7 @@ class IOMethods
                        ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
                        ->assign('WarenkorbGesamtgewicht', $cart->getWeight())
                        ->assign('Warenkorbtext', lang_warenkorb_warenkorbEnthaeltXArtikel($cart))
-                       ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant())
+                       ->assign('NettoPreise', \Session\Session::getCustomerGroup()->getIsMerchant())
                        ->assign('FavourableShipping', $cart->getFavourableShipping())
                        ->assign('WarenkorbVersandkostenfreiHinweis', VersandartHelper::getShippingFreeString(
                            $versandkostenfreiAb,
@@ -598,7 +598,7 @@ class IOMethods
             $quantities,
             $itemQuantities
         );
-        $net             = Session::CustomerGroup()->getIsMerchant();
+        $net             = \Session\Session::getCustomerGroup()->getIsMerchant();
         $Artikel->fuelleArtikel($productID, null);
         $Artikel->Preise->cVKLocalized[$net] =
             Preise::getLocalizedPriceString($Artikel->Preise->fVK[$net] * $amount, null, true);
@@ -698,7 +698,7 @@ class IOMethods
         $oArtikelOptionen->nMain                     = 1;
         $oArtikelOptionen->nWarenlager               = 1;
         $oArtikel                                    = new Artikel();
-        $oArtikel->fuelleArtikel($kVaterArtikel, $oArtikelOptionen, Session::CustomerGroup()->getID());
+        $oArtikel->fuelleArtikel($kVaterArtikel, $oArtikelOptionen, \Session\Session::getCustomerGroup()->getID());
         $weightDiff   = 0;
         $newProductNr = '';
         foreach ($valueID_arr as $valueID) {
@@ -728,8 +728,8 @@ class IOMethods
             }
         }
 
-        $nNettoPreise = Session::CustomerGroup()->getIsMerchant();
-        $fVKNetto     = $oArtikel->gibPreis($fAnzahl, $valueID_arr, Session::CustomerGroup()->getID());
+        $nNettoPreise = \Session\Session::getCustomerGroup()->getIsMerchant();
+        $fVKNetto     = $oArtikel->gibPreis($fAnzahl, $valueID_arr, \Session\Session::getCustomerGroup()->getID());
         $fVK          = [
             TaxHelper::getGross($fVKNetto, $_SESSION['Steuersatz'][$oArtikel->kSteuerklasse]),
             $fVKNetto
@@ -765,7 +765,7 @@ class IOMethods
                 $fStaffelVKNetto         = $oArtikel->gibPreis(
                     $nAnzahl,
                     $valueID_arr,
-                    Session::CustomerGroup()->getID()
+                    \Session\Session::getCustomerGroup()->getID()
                 );
                 $fStaffelVK[0][$nAnzahl] = TaxHelper::getGross(
                     $fStaffelVKNetto,
@@ -1071,7 +1071,7 @@ class IOMethods
                     AND tartikelsichtbarkeit.kArtikel IS NULL',
             [
                 'languageID'      => Shop::getLanguageID(),
-                'customergroupID' => Session::CustomerGroup()->getID(),
+                'customergroupID' => \Session\Session::getCustomerGroup()->getID(),
                 'parentProductID' => $parentProductID,
                 'variationID'     => $variationID,
                 'variationValue'  => $variationValue,

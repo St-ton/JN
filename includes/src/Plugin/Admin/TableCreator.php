@@ -1316,7 +1316,7 @@ class TableCreator
         $kKundengruppeStd = \Kundengruppe::getDefaultGroupID();
         $oSprache         = \Sprache::getDefaultLanguage(true);
         $kSpracheStd      = $oSprache->kSprache;
-        $kWaehrungStd     = \Session::Currency()->getID();
+        $kWaehrungStd     = \Session\Session::getCurrency()->getID();
 
         foreach ($node as $u => $data) {
             \preg_match('/[0-9]+/', $u, $hits2);

@@ -784,7 +784,7 @@ class Kupon
         if (isset($_SESSION['Kupon']) && $_SESSION['Kupon']->cWertTyp === 'prozent') {
             $oKupon = $_SESSION['Kupon'];
             unset($_SESSION['Kupon']);
-            Session::Cart()->setzePositionsPreise();
+            \Session\Session::getCart()->setzePositionsPreise();
             require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
             self::acceptCoupon($oKupon);
         }
@@ -797,7 +797,7 @@ class Kupon
      */
     public static function couponsAvailable(): int
     {
-        $cart        = Session::Cart();
+        $cart        = \Session\Session::getCart();
         $productQry  = '';
         $manufQry    = '';
         $categories  = [];
@@ -861,7 +861,7 @@ class Kupon
                         OR cKuponTyp = 'standard')
                     AND (kKundengruppe = -1
                         OR kKundengruppe = 0
-                        OR kKundengruppe = " . Session::CustomerGroup()->getID() . ")
+                        OR kKundengruppe = " . \Session\Session::getCustomerGroup()->getID() . ")
                     AND (nVerwendungen = 0
                         OR nVerwendungen > nVerwendungenBisher)
                     AND (cArtikel = '' $productQry)
@@ -894,30 +894,30 @@ class Kupon
         if (date_create($Kupon->dGueltigAb) > date_create()) {
             $ret['ungueltig'] = 3;
         }
-        if ($Kupon->fMindestbestellwert > Session::Cart()->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)) {
+        if ($Kupon->fMindestbestellwert > \Session\Session::getCart()->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)) {
             $ret['ungueltig'] = 4;
         }
         if ($Kupon->cWertTyp === 'festpreis'
             && $Kupon->nGanzenWKRabattieren === '0'
             && $Kupon->fMindestbestellwert > gibGesamtsummeKuponartikelImWarenkorb(
                 $Kupon,
-                Session::Cart()->PositionenArr
+                \Session\Session::getCart()->PositionenArr
             )
         ) {
             $ret['ungueltig'] = 4;
         }
-        if ($Kupon->kKundengruppe > 0 && $Kupon->kKundengruppe != Session::CustomerGroup()->getID()) {
+        if ($Kupon->kKundengruppe > 0 && $Kupon->kKundengruppe != \Session\Session::getCustomerGroup()->getID()) {
             $ret['ungueltig'] = 5;
         }
         if ($Kupon->nVerwendungen > 0 && $Kupon->nVerwendungen <= $Kupon->nVerwendungenBisher) {
             $ret['ungueltig'] = 6;
         }
-        if ($Kupon->cArtikel && !warenkorbKuponFaehigArtikel($Kupon, Session::Cart()->PositionenArr)) {
+        if ($Kupon->cArtikel && !warenkorbKuponFaehigArtikel($Kupon, \Session\Session::getCart()->PositionenArr)) {
             $ret['ungueltig'] = 7;
         }
         if ($Kupon->cKategorien
             && $Kupon->cKategorien != -1
-            && !warenkorbKuponFaehigKategorien($Kupon, Session::Cart()->PositionenArr)
+            && !warenkorbKuponFaehigKategorien($Kupon, \Session\Session::getCart()->PositionenArr)
         ) {
             $ret['ungueltig'] = 8;
         }
@@ -954,7 +954,7 @@ class Kupon
         //Hersteller
         if ((int)$Kupon->cHersteller !== -1
             && !empty($Kupon->cHersteller)
-            && !warenkorbKuponFaehigHersteller($Kupon, Session::Cart()->PositionenArr)
+            && !warenkorbKuponFaehigHersteller($Kupon, \Session\Session::getCart()->PositionenArr)
         ) {
             $ret['ungueltig'] = 12;
         }
@@ -1014,7 +1014,7 @@ class Kupon
      */
     public static function acceptCoupon($Kupon): void
     {
-        $cart                        = Session::Cart();
+        $cart                        = \Session\Session::getCart();
         $logger                      = Shop::Container()->getLogService();
         $Kupon->nGanzenWKRabattieren = (int)$Kupon->nGanzenWKRabattieren;
         if ((!empty($_SESSION['oVersandfreiKupon']) || !empty($_SESSION['VersandKupon']) || !empty($_SESSION['Kupon']))
@@ -1133,7 +1133,7 @@ class Kupon
      */
     public static function resetNewCustomerCoupon(): void
     {
-        if (Session::Customer()->isLoggedIn()) {
+        if (\Session\Session::getCustomer()->isLoggedIn()) {
             $hash = Kuponneukunde::Hash(
                 null,
                 trim($_SESSION['Kunde']->cNachname),
@@ -1147,7 +1147,7 @@ class Kupon
         }
 
         unset($_SESSION['NeukundenKupon'], $_SESSION['NeukundenKuponAngenommen']);
-        Session::Cart()
+        \Session\Session::getCart()
                ->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
                ->setzePositionsPreise();
     }

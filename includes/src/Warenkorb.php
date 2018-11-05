@@ -248,7 +248,7 @@ class Warenkorb
         $pos->cName               = [];
         $pos->cLieferstatus       = [];
 
-        foreach (Session::Languages() as $lang) {
+        foreach (\Session\Session::getLanguages() as $lang) {
             $pos->cName[$lang->cISO]         = $pos->Artikel->cName;
             $pos->cLieferstatus[$lang->cISO] = $cLieferstatus_StdSprache;
             if ($lang->cStandard === 'Y') {
@@ -531,7 +531,7 @@ class Warenkorb
         $pos->kKonfigitem   = $kKonfigitem;
         $pos->kArtikel      = $kArtikel;
         //fixes #4967
-        if (is_object($_SESSION['Kundengruppe']) && Session::CustomerGroup()->isMerchant()) {
+        if (is_object($_SESSION['Kundengruppe']) && \Session\Session::getCustomerGroup()->isMerchant()) {
             if ($brutto) {
                 $pos->fPreis = $preis / (100 + TaxHelper::getSalesTax($kSteuerklasse)) * 100.0;
             }
@@ -564,7 +564,7 @@ class Warenkorb
         $pos->cHinweis = $hinweis;
         $nOffset                = array_push($this->PositionenArr, $pos);
         $pos           = $this->PositionenArr[$nOffset - 1];
-        foreach (Session::Currencies() as $currency) {
+        foreach (Session::getCurrencies() as $currency) {
             $currencyName = $currency->getName();
             // Standardartikel
             $pos->cGesamtpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(
@@ -648,7 +648,7 @@ class Warenkorb
         if (count($this->PositionenArr) < 1) {
             return 3;
         }
-        $mbw = Session::CustomerGroup()->getAttribute(KNDGRP_ATTRIBUT_MINDESTBESTELLWERT);
+        $mbw = \Session\Session::getCustomerGroup()->getAttribute(KNDGRP_ATTRIBUT_MINDESTBESTELLWERT);
         if ($mbw > 0 && $this->gibGesamtsummeWaren(true, false) < $mbw) {
             return 9;
         }
@@ -869,7 +869,7 @@ class Warenkorb
                 $oPosition->setzeGesamtpreisLocalized();
             }
             if ($bName && $oKonfigitem->getUseOwnName() && class_exists('Konfigitemsprache')) {
-                foreach (Session::Languages() as $Sprache) {
+                foreach (\Session\Session::getLanguages() as $Sprache) {
                     $oKonfigitemsprache               = new Konfigitemsprache(
                         $oKonfigitem->getKonfigitem(),
                         $Sprache->kSprache
@@ -974,7 +974,7 @@ class Warenkorb
      */
     public function gibGesamtsummeWaren(bool $Brutto = false, bool $gutscheinBeruecksichtigen = true)
     {
-        $currency         = $this->Waehrung ?? Session::Currency();
+        $currency         = $this->Waehrung ?? \Session\Session::getCurrency();
         $conversionFactor = $currency->getConversionFactor();
         $gesamtsumme      = 0;
         foreach ($this->PositionenArr as $pos) {
@@ -1000,7 +1000,7 @@ class Warenkorb
         $gesamtsumme /= $conversionFactor;
         $this->useSummationRounding();
 
-        return WarenkorbHelper::roundOptionalCurrency($gesamtsumme, $this->Waehrung ?? Session::Currency());
+        return WarenkorbHelper::roundOptionalCurrency($gesamtsumme, $this->Waehrung ?? \Session\Session::getCurrency());
     }
 
     /**
@@ -1031,7 +1031,7 @@ class Warenkorb
         }
         $this->useSummationRounding();
 
-        return WarenkorbHelper::roundOptionalCurrency($gesamtsumme, $this->Waehrung ?? Session::Currency());
+        return WarenkorbHelper::roundOptionalCurrency($gesamtsumme, $this->Waehrung ?? \Session\Session::getCurrency());
     }
 
     /**
@@ -1047,7 +1047,7 @@ class Warenkorb
             return 0;
         }
         $gesamtsumme = 0;
-        $currency    = $this->Waehrung ?? Session::Currency();
+        $currency    = $this->Waehrung ?? \Session\Session::getCurrency();
         $factor      = $currency->getConversionFactor();
         foreach ($this->PositionenArr as $pos) {
             if (!in_array($pos->nPosTyp, $posTypes)) {
@@ -1073,7 +1073,7 @@ class Warenkorb
      */
     public function optionaleRundung($gesamtsumme)
     {
-        return WarenkorbHelper::roundOptionalCurrency($gesamtsumme, $this->Waehrung ?? Session::Currency());
+        return WarenkorbHelper::roundOptionalCurrency($gesamtsumme, $this->Waehrung ?? \Session\Session::getCurrency());
     }
 
     /**
@@ -1159,7 +1159,7 @@ class Warenkorb
                     $steuerpos[$idx]                  = new stdClass();
                     $steuerpos[$idx]->cName           = lang_steuerposition(
                         $ust,
-                        Session::CustomerGroup()->isMerchant()
+                        \Session\Session::getCustomerGroup()->isMerchant()
                     );
                     $steuerpos[$idx]->fUst            = $ust;
                     $steuerpos[$idx]->fBetrag         = ($position->fPreis * $position->nAnzahl * $ust) / 100.0;
@@ -1531,7 +1531,7 @@ class Warenkorb
     {
         $cumulatedDelta    = 0;
         $cumulatedDeltaNet = 0;
-        foreach (Session::Currencies() as $currency) {
+        foreach (Session::getCurrencies() as $currency) {
             $currencyName = $currency->getName();
             foreach ($this->PositionenArr as $i => $position) {
                 $grossAmount        = TaxHelper::getGross(

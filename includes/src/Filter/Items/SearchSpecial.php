@@ -176,7 +176,7 @@ class SearchSpecial extends AbstractFilter
                                         AND " . $tasp . ".dStart <= NOW()
                                         AND (" . $tasp . ".dEnde >= CURDATE() 
                                             OR " . $tasp . ".dEnde IS NULL)
-                                        AND " . $tsp . " .kKundengruppe = " . \Session::CustomerGroup()->getID();
+                                        AND " . $tsp . " .kKundengruppe = " . \Session::getCustomerGroup()->getID();
                     break;
 
                 case \SEARCHSPECIALS_NEWPRODUCTS:

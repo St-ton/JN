@@ -26,7 +26,7 @@ class ImageMap implements IExtensionPoint
     {
         $this->kSprache      = Shop::getLanguage();
         $this->kKundengruppe = isset($_SESSION['Kundengruppe']->kKundengruppe)
-            ? Session::CustomerGroup()->getID()
+            ? \Session\Session::getCustomerGroup()->getID()
             : null;
         if (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0) {
             $this->kKundengruppe = (int)$_SESSION['Kunde']->kKundengruppe;

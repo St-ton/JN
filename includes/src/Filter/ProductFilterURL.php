@@ -197,7 +197,7 @@ class ProductFilterURL
             }
         }
         if (empty($seoFilterParams) && $languageID !== \Shop::getLanguageID()) {
-            $language = first(Session::Languages(), function ($l) use ($languageID) {
+            $language = first(\Session\Session::getLanguages(), function ($l) use ($languageID) {
                 return $l->kSprache === $languageID;
             });
             if ($language !== null) {

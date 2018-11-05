@@ -62,11 +62,11 @@ class PriceRange
     public function __construct(int $articleID, int $customerGroupID = 0, int $customerID = 0)
     {
         if ($customerGroupID === 0) {
-            $customerGroupID = Session::CustomerGroup()->getID();
+            $customerGroupID = \Session\Session::getCustomerGroup()->getID();
         }
 
         if ($customerID === 0) {
-            $customerID = Session::Customer()->kKunde ?? 0;
+            $customerID = \Session\Session::getCustomer()->kKunde ?? 0;
         }
 
         $this->customerGroupID = $customerGroupID;
@@ -327,7 +327,7 @@ class PriceRange
      */
     public function getMinLocalized(int $netto = null)
     {
-        $currency = Session::Currency();
+        $currency = \Session\Session::getCurrency();
 
         if ($netto !== null) {
             return $netto === 0
@@ -348,7 +348,7 @@ class PriceRange
      */
     public function getMaxLocalized(int $netto = null)
     {
-        $currency = Session::Currency();
+        $currency = \Session\Session::getCurrency();
 
         if ($netto !== null) {
             return $netto === 0

@@ -22,8 +22,8 @@ final class SpecialOffers extends AbstractBox
     {
         parent::__construct($config);
         $this->setShow(false);
-        $customerGroupID = \Session::CustomerGroup()->getID();
-        if ($customerGroupID && \Session::CustomerGroup()->mayViewCategories()) {
+        $customerGroupID = \Session\Session::getCustomerGroup()->getID();
+        if ($customerGroupID && \Session\Session::getCustomerGroup()->mayViewCategories()) {
             $cached         = true;
             $stockFilterSQL = \Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $parentSQL      = ' AND tartikel.kVaterArtikel = 0';

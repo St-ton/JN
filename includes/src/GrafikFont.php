@@ -129,7 +129,7 @@ class GrafikFont
             return false;
         }
         $strHTML  = '<div class="grafikpreis">';
-        $Waehrung = Session::Currency();
+        $Waehrung = \Session\Session::getCurrency();
         if (!($Waehrung->getID() > 0)) {
             $Waehrung = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
         }

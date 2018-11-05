@@ -103,13 +103,13 @@ class ZahlungsartHelper
                 require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
                 $paymentMethod = PaymentMethod::create($paymentMethod->cModulId);
 
-                return $paymentMethod->isValid($_SESSION['Kunde'] ?? null, Session::Cart());
+                return $paymentMethod->isValid($_SESSION['Kunde'] ?? null, \Session\Session::getCart());
                 break;
             default:
                 require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
                 $paymentMethod = PaymentMethod::create($paymentMethod->cModulId);
                 if ($paymentMethod !== null) {
-                    return $paymentMethod->isValid($_SESSION['Kunde'] ?? null, Session::Cart());
+                    return $paymentMethod->isValid($_SESSION['Kunde'] ?? null, \Session\Session::getCart());
                 }
                 break;
         }

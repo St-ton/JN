@@ -653,7 +653,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         public function getRabattLocalized(bool $bHTML = true): string
         {
             if ($this->oPreis->getTyp() == 0) {
-                return Preise::getLocalizedPriceString($this->getRabatt(), 0, $bHTML);
+                return Preise::getLocalizedPriceString($this->getRabatt(), null, $bHTML);
             }
 
             return $this->getRabatt() . '%';
@@ -666,7 +666,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         public function getZuschlagLocalized(bool $bHTML = true): string
         {
             if ($this->oPreis->getTyp() == 0) {
-                return Preise::getLocalizedPriceString($this->getZuschlag(), 0, $bHTML);
+                return Preise::getLocalizedPriceString($this->getZuschlag(), null, $bHTML);
             }
 
             return $this->getZuschlag() . '%';
@@ -695,7 +695,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function getPreisLocalized(bool $bHTML = true, bool $bSigned = true, bool $bForceNetto = false): string
         {
-            $cLocalized = Preise::getLocalizedPriceString($this->getPreis($bForceNetto), 0, $bHTML);
+            $cLocalized = Preise::getLocalizedPriceString($this->getPreis($bForceNetto), false, $bHTML);
             if ($bSigned && $this->getPreis() > 0) {
                 $cLocalized = '+' . $cLocalized;
             }

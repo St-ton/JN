@@ -392,8 +392,12 @@ class Bestellung
      * @param bool $disableFactor - @see #8544, hack to avoid applying currency factor twice
      * @return $this
      */
-    public function fuelleBestellung(bool $htmlWaehrung = true, $nZahlungExtern = 0, $bArtikel = true, $disableFactor = false): self
-    {
+    public function fuelleBestellung(
+        bool $htmlWaehrung = true,
+        $nZahlungExtern = 0,
+        $bArtikel = true,
+        $disableFactor = false
+    ): self {
         if (!($this->kWarenkorb > 0 || $nZahlungExtern > 0)) {
             return $this;
         }
@@ -554,7 +558,8 @@ class Bestellung
                 $this->fVersand += $position->fPreis + ($position->fPreis * $position->fMwSt) / 100;
             } else {
                 $this->fWarensummeNetto += $position->fPreis * $position->nAnzahl;
-                $this->fWarensumme += ($position->fPreis + ($position->fPreis * $position->fMwSt) / 100) * $position->nAnzahl;
+                $this->fWarensumme += ($position->fPreis + ($position->fPreis * $position->fMwSt) / 100)
+                    * $position->nAnzahl;
             }
 
             if ($position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
@@ -575,7 +580,7 @@ class Bestellung
                         'kWarenkorbPos',
                         (int)$position->kWarenkorbPos
                     );
-                    foreach ($position->WarenkorbPosEigenschaftArr as $o => $attribute) {
+                    foreach ($position->WarenkorbPosEigenschaftArr as $attribute) {
                         if ($attribute->fAufpreis) {
                             $attribute->cAufpreisLocalized[0] = Preise::getLocalizedPriceString(
                                 TaxHelper::getGross(
@@ -927,8 +932,11 @@ class Bestellung
      * @param int  $nPosTyp
      * @return array
      */
-    public static function getOrderPositions(int $kBestellung, bool $bAssoc = true, int $nPosTyp = C_WARENKORBPOS_TYP_ARTIKEL): array
-    {
+    public static function getOrderPositions(
+        int $kBestellung,
+        bool $bAssoc = true,
+        int $nPosTyp = C_WARENKORBPOS_TYP_ARTIKEL
+    ): array {
         $oPosition_arr = [];
         if ($kBestellung > 0) {
             $oObj_arr = Shop::Container()->getDB()->query(
@@ -960,24 +968,19 @@ class Bestellung
      */
     public static function getOrderNumber(int $kBestellung)
     {
-        if ($kBestellung > 0) {
-            $oObj = Shop::Container()->getDB()->select(
-                'tbestellung',
-                'kBestellung',
-                $kBestellung,
-                null,
-                null,
-                null,
-                null,
-                false,
-                'cBestellNr'
-            );
-            if (isset($oObj->cBestellNr) && strlen($oObj->cBestellNr) > 0) {
-                return $oObj->cBestellNr;
-            }
-        }
+        $data = Shop::Container()->getDB()->select(
+            'tbestellung',
+            'kBestellung',
+            $kBestellung,
+            null,
+            null,
+            null,
+            null,
+            false,
+            'cBestellNr'
+        );
 
-        return false;
+        return isset($data->cBestellNr) && strlen($data->cBestellNr) > 0 ? $data->cBestellNr : false;
     }
 
     /**
@@ -987,22 +990,18 @@ class Bestellung
      */
     public static function getProductAmount(int $kBestellung, int $kArtikel): int
     {
-        if ($kBestellung > 0 && $kArtikel > 0) {
-            $oObj = Shop::Container()->getDB()->query(
-                'SELECT twarenkorbpos.nAnzahl
-                    FROM tbestellung
-                    JOIN twarenkorbpos
-                        ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
-                    WHERE tbestellung.kBestellung = ' . $kBestellung . '
-                        AND twarenkorbpos.kArtikel = ' . $kArtikel,
-                \DB\ReturnType::SINGLE_OBJECT
-            );
-            if (isset($oObj->nAnzahl) && $oObj->nAnzahl > 0) {
-                return (int)$oObj->nAnzahl;
-            }
-        }
+        $data = Shop::Container()->getDB()->queryPrepared(
+            'SELECT twarenkorbpos.nAnzahl
+                FROM tbestellung
+                JOIN twarenkorbpos
+                    ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
+                WHERE tbestellung.kBestellung = :oid
+                    AND twarenkorbpos.kArtikel = :pid',
+            ['oid' => $kBestellung, 'pid' => $kArtikel],
+            \DB\ReturnType::SINGLE_OBJECT
+        );
 
-        return 0;
+        return (int)($data->nAnzahl ?? 0);
     }
 
     /**
@@ -1036,11 +1035,12 @@ class Bestellung
      */
     public function berechneEstimatedDelivery(): self
     {
+        $longestMinDeliveryDays = null;
+        $longestMaxDeliveryDays = null;
         if (is_array($this->Positionen) && count($this->Positionen) > 0) {
             $longestMinDeliveryDays = 0;
             $longestMaxDeliveryDays = 0;
-            //Lookup language iso
-            $lang = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$this->kSprache);
+            $lang                   = Sprache::getIsoFromLangID((int)$this->kSprache);
             foreach ($this->Positionen as $oPosition) {
                 $oPosition->nPosTyp = (int)$oPosition->nPosTyp;
                 if ($oPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
@@ -1051,7 +1051,7 @@ class Bestellung
                         $this->Lieferadresse->cLand ?? null,
                         $oPosition->nAnzahl,
                         $oPosition->fLagerbestandVorAbschluss,
-                        $lang->cISOSprache ?? null,
+                        $lang->cISO ?? null,
                         $this->kVersandart
                     );
                     WarenkorbPos::setEstimatedDelivery(
@@ -1071,20 +1071,17 @@ class Bestellung
                     }
                 }
             }
-
-            $this->setEstimatedDelivery($longestMinDeliveryDays, $longestMaxDeliveryDays);
-        } else {
-            $this->setEstimatedDelivery();
         }
+        $this->setEstimatedDelivery($longestMinDeliveryDays, $longestMaxDeliveryDays);
 
         return $this;
     }
 
     /**
-     * @deprecated since 4.6
+     * @deprecated since 4.06
      * @return string
      */
-    public function getEstimatedDeliveryTime()
+    public function getEstimatedDeliveryTime(): string
     {
         if (empty($this->oEstimatedDelivery->localized)) {
             $this->berechneEstimatedDelivery();
@@ -1096,13 +1093,14 @@ class Bestellung
     /**
      * set Kampagne
      */
-    public function setKampagne()
+    public function setKampagne(): void
     {
         $this->oKampagne = Shop::Container()->getDB()->queryPrepared(
             'SELECT tkampagne.kKampagne, tkampagne.cName, tkampagne.cParameter, tkampagnevorgang.dErstellt,
                     tkampagnevorgang.kKey AS kBestellung, tkampagnevorgang.cParamWert AS cWert
                 FROM tkampagnevorgang
-                  LEFT JOIN tkampagne ON tkampagne.kKampagne = tkampagnevorgang.kKampagne
+                    LEFT JOIN tkampagne 
+                    ON tkampagne.kKampagne = tkampagnevorgang.kKampagne
                 WHERE tkampagnevorgang.kKampagneDef = :kampagneDef
                     AND tkampagnevorgang.kKey = :orderID',
             [

@@ -92,7 +92,7 @@ if (!JTL_INCLUDE_ONLY_DB) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'parameterhandler.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikelsuchspecial_inc.php';
-    $oPluginHookListe_arr         = Plugin::getHookList();
+    $oPluginHookListe_arr         = \Plugin\Plugin::getHookList();
     $nSystemlogFlag               = Jtllog::getSytemlogFlag();
     $template                     = Template::getInstance();
     $oGlobaleMetaAngabenAssoc_arr = \Filter\Metadata::getGlobalMetaData();

@@ -165,9 +165,13 @@ class PageService
         return $this->curPage;
     }
 
-    public function getOtherLanguageDrafts(string $id)
+    /**
+     * @param string $id
+     * @return array
+     */
+    public function getOtherLanguageDrafts(string $id): array
     {
-        return $this->pageDB->getOtherLanguageDrafts($id);
+        return $this->pageDB->getOtherLanguageDraftRows($id);
     }
 
     /**
@@ -201,16 +205,16 @@ class PageService
             $res .= 'newscat:' . $params->kNewsKategorie;
         } elseif ($params->kUmfrage > 0) {
             $res .= 'poll:' . $params->kUmfrage;
-        } elseif (strlen($params->cSuche) > 0) {
+        } elseif (\strlen($params->cSuche) > 0) {
             $res .= 'search:' . base64_encode($params->cSuche);
         } else {
             $res .= 'other:' . \md5(\serialize($params));
         }
 
-        if (is_array($params->MerkmalFilter) && count($params->MerkmalFilter) > 0) {
+        if (\is_array($params->MerkmalFilter) && \count($params->MerkmalFilter) > 0) {
             $res .= ';attribs:' . implode(',', $params->MerkmalFilter);
         }
-        if (strlen($params->cPreisspannenFilter) > 0) {
+        if (\strlen($params->cPreisspannenFilter) > 0) {
             $res .= ';range:' . $params->cPreisspannenFilter;
         }
 

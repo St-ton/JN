@@ -141,7 +141,11 @@ class PageDB
         return $drafts;
     }
 
-    public function getOtherLanguageDrafts(string $id)
+    /**
+     * @param string $id
+     * @return array
+     */
+    public function getOtherLanguageDraftRows(string $id): array
     {
         $pageIdFields       = explode(';', $id);
         $langField          = array_pop($pageIdFields);

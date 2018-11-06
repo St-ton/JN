@@ -1784,7 +1784,7 @@ final class Shop
      * @return string|null
      * @throws Exception
      */
-    public static function getAdminSessionToken()
+    public static function getAdminSessionToken(): ? string
     {
         if (!self::isAdmin()) {
             return null;

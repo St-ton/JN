@@ -46,7 +46,7 @@ if (!function_exists('Shop')) {
         return Shop::getInstance();
     }
 }
-$DB      = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME, true);
+$DB      = new \DB\NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME, true);
 $cache   = Shop::Container()->getCache()->setJtlCacheConfig();
 $session = \Session\AdminSession::getInstance();
 

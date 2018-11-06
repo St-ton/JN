@@ -80,7 +80,7 @@ function installierePluginVorbereitung($dir, $oldPlugin = 0)
 /**
  * Laedt das Plugin neu, d.h. liest die XML Struktur neu ein, fuehrt neue SQLs aus.
  *
- * @param Plugin $oPlugin
+ * @param \Plugin\Plugin $oPlugin
  * @param bool   $forceReload
  * @return int
  * @throws Exception

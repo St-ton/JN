@@ -239,7 +239,8 @@ class DB
             ->setTitle($portletDB->cTitle)
             ->setClass($portletDB->cClass)
             ->setGroup($portletDB->cGroup)
-            ->setActive((int)$portletDB->bActive === 1);
+            ->setActive((int)$portletDB->bActive === 1)
+            ->assemble();
     }
 
     /**

@@ -206,6 +206,21 @@ abstract class Portlet implements \JsonSerializable
     }
 
     /**
+     * Make the portlet ready to be used.
+     */
+    public function assemble()
+    {
+        if ($this->plugin === null) {
+            \GetText::getInstance()->addAdminLocale('portlets/' . $this->class);
+        } else {
+            $path = $this->plugin->cAdminmenuPfad . 'portlets/' . $this->class . '/locale';
+            \GetText::getInstance()->addLocale($path);
+        }
+
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function jsonSerialize(): array

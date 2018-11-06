@@ -47,7 +47,7 @@ class Heading extends \OPC\Portlet
     {
         return [
             'level' => [
-                'label'      => 'Level',
+                'label'      => __('Level'),
                 'type'       => 'select',
                 'options'    => [
                     '1' => '1',
@@ -62,9 +62,9 @@ class Heading extends \OPC\Portlet
                 'dspl_width' => 50,
             ],
             'text'  => [
-                'label'      => 'Text',
+                'label'      => __('Text'),
                 'type'       => 'text',
-                'default'    => 'Heading',
+                'default'    => __('Heading'),
                 'dspl_width' => 50,
             ],
         ];

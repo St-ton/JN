@@ -1,0 +1,5 @@
+msgid "Level"
+msgstr "Ebene"
+
+msgid "Heading"
+msgstr "Überschrift"

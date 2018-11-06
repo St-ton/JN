@@ -598,3 +598,12 @@ function getCsvDelimiter(string $filename)
 
     return ';';
 }
+
+/**
+ * @param string $msg
+ * @return string
+ */
+function __(string $msg): string
+{
+    return \GetText::getInstance()->translate($msg);
+}

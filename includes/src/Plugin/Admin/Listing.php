@@ -58,7 +58,8 @@ final class Listing
             }
         );
         foreach ($pluginIDs as $pluginID) {
-            $plugin = new Plugin($pluginID, true);
+            $plugin                  = new Plugin($pluginID, true);
+            $plugin->updateAvailable = $plugin->nVersion < $plugin->getCurrentVersion();
             if ($plugin->updateAvailable === true) {
                 $code = $this->validator->validateByPluginID($pluginID, true);
                 if ($code !== InstallCode::OK) {
@@ -102,18 +103,18 @@ final class Listing
             if ($code === InstallCode::DUPLICATE_PLUGIN_ID && $installedPlugins->contains($dir)) {
                 $xml['cVerzeichnis']    = $dir;
                 $xml['shop4compatible'] = isset($xml['jtlshop3plugin'][0]['Shop4Version']);
-                $plugins->index[$dir]       = $this->makeXMLToObj($xml);
-                $plugins->installiert[]     = &$plugins->index[$dir];
+                $plugins->index[$dir]   = $this->makeXMLToObj($xml);
+                $plugins->installiert[] = &$plugins->index[$dir];
             } elseif ($code === InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE || $code === InstallCode::OK) {
                 $xml['cVerzeichnis']    = $dir;
                 $xml['shop4compatible'] = ($code === 1);
-                $plugins->index[$dir]       = $this->makeXMLToObj($xml);
-                $plugins->verfuegbar[]      = &$plugins->index[$dir];
+                $plugins->index[$dir]   = $this->makeXMLToObj($xml);
+                $plugins->verfuegbar[]  = &$plugins->index[$dir];
             } else {
-                $xml['cVerzeichnis'] = $dir;
-                $xml['cFehlercode']  = $code;
-                $plugins->index[$dir]    = $this->makeXMLToObj($xml);
-                $plugins->fehlerhaft[]   = &$plugins->index[$dir];
+                $xml['cVerzeichnis']   = $dir;
+                $xml['cFehlercode']    = $code;
+                $plugins->index[$dir]  = $this->makeXMLToObj($xml);
+                $plugins->fehlerhaft[] = &$plugins->index[$dir];
             }
         }
 

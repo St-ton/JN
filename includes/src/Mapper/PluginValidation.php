@@ -16,7 +16,7 @@ class PluginValidation
 {
     /**
      * @param int     $code
-     * @param \Plugin|\stdClass|null $plugin
+     * @param \Plugin\Plugin|\stdClass|null $plugin
      * @return string
      */
     public function map($code, $plugin): string

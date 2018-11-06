@@ -131,15 +131,13 @@ class StateChanger
      */
     public function reload($plugin, $forceReload = false): int
     {
-        $cXMLPath = \PFAD_ROOT . \PFAD_PLUGIN . $plugin->cVerzeichnis . '/' . \PLUGIN_INFO_FILE;
-        if (!\file_exists($cXMLPath)) {
+        $info = \PFAD_ROOT . \PFAD_PLUGIN . $plugin->cVerzeichnis . '/' . \PLUGIN_INFO_FILE;
+        if (!\file_exists($info)) {
             return -1;
         }
-        $oLastUpdate    = new \DateTimeImmutable($plugin->dZuletztAktualisiert);
-        $nLastUpdate    = $oLastUpdate->getTimestamp();
-        $nLastXMLChange = \filemtime($cXMLPath);
-
-        if ($nLastXMLChange > $nLastUpdate || $forceReload === true) {
+        $lastUpdate    = new \DateTimeImmutable($plugin->dZuletztAktualisiert);
+        $lastXMLChange = \filemtime($info);
+        if ($forceReload === true || $lastXMLChange > $lastUpdate->getTimestamp()) {
             $uninstaller = new Uninstaller($this->db);
             $installer   = new Installer($this->db, $uninstaller, $this->validator);
             $installer->setDir($plugin->cVerzeichnis);

@@ -88,6 +88,7 @@ final class Listing
         $installedPlugins = $installed->map(function ($item) {
             return $item->cVerzeichnis;
         });
+        $parser = new XMLParser();
         foreach (new \DirectoryIterator(self::PLUGINS_DIR) as $fileinfo) {
             if ($fileinfo->isDot() || !$fileinfo->isDir()) {
                 continue;
@@ -97,9 +98,8 @@ final class Listing
             if (!\file_exists($info)) {
                 continue;
             }
-            $parser = new XMLParser();
-            $xml    = $parser->parse($info);
-            $code   = $this->validator->validateByPath(self::PLUGINS_DIR . $dir);
+            $xml  = $parser->parse($info);
+            $code = $this->validator->validateByPath(self::PLUGINS_DIR . $dir);
             if ($code === InstallCode::DUPLICATE_PLUGIN_ID && $installedPlugins->contains($dir)) {
                 $xml['cVerzeichnis']    = $dir;
                 $xml['shop4compatible'] = isset($xml['jtlshop3plugin'][0]['Shop4Version']);

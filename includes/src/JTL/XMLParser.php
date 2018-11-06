@@ -18,7 +18,9 @@ class XMLParser
      */
     public function parse($fileName): array
     {
-        return $this->getArrangedArray($this->unserializeXML(\file_get_contents($fileName)));
+        $xml = \file_get_contents($fileName);
+
+        return $this->getArrangedArray($this->unserializeXML($xml));
     }
 
     /**
@@ -29,7 +31,7 @@ class XMLParser
      * @param string $encoding
      * @return array|null
      */
-    public function unserializeXML($xml, $encoding = 'UTF-8'): ?array
+    public function unserializeXML(&$xml, $encoding = 'UTF-8'): ?array
     {
         $parser = new XML($encoding);
         $data   = $parser->parse($xml);
@@ -47,7 +49,7 @@ class XMLParser
      * @param null  $prevKey
      * @return string
      */
-    public function serializeXML($data, int $level = 0, $prevKey = null)
+    public function serializeXML(&$data, int $level = 0, $prevKey = null)
     {
         if ($level === 0) {
             \ob_start();

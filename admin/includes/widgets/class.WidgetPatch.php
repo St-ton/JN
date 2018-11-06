@@ -15,7 +15,7 @@ class WidgetPatch extends WidgetBase
      */
     public function init()
     {
-        $this->oSmarty->assign('nVersionDB', getJTLVersionDB());
+        $this->oSmarty->assign('version', getJTLVersionDB());
         $this->oSmarty->assign('JTLURL_GET_SHOPPATCH', JTLURL_GET_SHOPPATCH);
     }
 

@@ -400,7 +400,6 @@ class NiceDB implements DbInterface
             if ($_val === '_DBNULL_') {
                 $_val = null;
             } elseif ($_val === null) {
-                \error_log('conv@insert:' . $tableName . '. key: ' . $_key . 'obj:' . \print_r($object, true));
                 $_val = '';
             }
             if (\strtolower($_val) === 'now()') {
@@ -544,7 +543,6 @@ class NiceDB implements DbInterface
                 $_val = null;
             } elseif ($_val === null) {
                 $_val = '';
-                \error_log('conv@update:' . $tableName . '. key: ' . $_key . 'obj:' . \print_r($object, true));
             }
             if (\strtolower($_val) === 'now()') {
                 $updates[] = $_key . '=' . $_val;

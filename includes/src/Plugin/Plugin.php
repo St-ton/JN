@@ -402,23 +402,8 @@ class Plugin
         $this->dErstellt_DE            = $this->gibDateTimeLokalisiert($this->dErstellt, true);
 
         $this->loadPaths();
-
-        $this->oPluginHook_arr         = \array_map(function ($hook) {
-            $hook->kPluginHook = (int)$hook->kPluginHook;
-            $hook->kPlugin     = (int)$hook->kPlugin;
-            $hook->nHook       = (int)$hook->nHook;
-            $hook->nPriority   = (int)$hook->nPriority;
-
-            return $hook;
-        }, $db->selectAll('tpluginhook', 'kPlugin', $kPlugin));
-        $this->oPluginAdminMenu_arr    = \array_map(function ($menu) {
-            $menu->kPluginAdminMenu = (int)$menu->kPluginAdminMenu;
-            $menu->kPlugin          = (int)$menu->kPlugin;
-            $menu->nSort            = (int)$menu->nSort;
-            $menu->nConf            = (int)$menu->nConf;
-
-            return $menu;
-        }, $db->selectAll('tpluginadminmenu', 'kPlugin', $kPlugin, '*', 'nSort'));
+        $this->loadHooks($db);
+        $this->loadAdminMenu($db);
         $this->loadMarkdownFiles();
         $this->loadConfig($db);
         $this->loadLocalization();
@@ -426,29 +411,43 @@ class Plugin
         $this->loadPaymentMethods($db);
         $this->loadMailTemplates($db);
         $this->loadWidgets($db);
-        try {
-            $this->oPluginEditorPortlet_arr = $db->selectAll(
-                'topcportlet',
-                'kPlugin',
-                (int)$this->kPlugin
-            );
-        } catch (\InvalidArgumentException $e) {
-            $this->oPluginEditorPortlet_arr = [];
-        }
-        foreach ($this->oPluginEditorPortlet_arr as $i => $oPluginEditorPortlet) {
-            $this->oPluginEditorPortlet_arr[$i]->cClassAbs =
-                $this->cAdminmenuPfad . \PFAD_PLUGIN_PORTLETS . $oPluginEditorPortlet->cClass . '/' .
-                $oPluginEditorPortlet->cClass . '.php';
-
-            $this->oPluginEditorPortletAssoc_arr[$oPluginEditorPortlet->kPortlet] =
-                $this->oPluginEditorPortlet_arr[$i];
-        }
+        $this->loadPortlets($db);
         $this->loadUninstall($db);
         $this->pluginCacheID    = 'plgn_' . $this->kPlugin . '_' . $this->nVersion;
         $this->pluginCacheGroup = \CACHING_GROUP_PLUGIN . '_' . $this->kPlugin;
         \Shop::Cache()->set($cacheID, $this, [\CACHING_GROUP_PLUGIN, $this->pluginCacheGroup]);
 
         return $this;
+    }
+
+    /**
+     * @param DbInterface $db
+     */
+    private function loadHooks(DbInterface $db): void
+    {
+        $this->oPluginHook_arr = \array_map(function ($hook) {
+            $hook->kPluginHook = (int)$hook->kPluginHook;
+            $hook->kPlugin     = (int)$hook->kPlugin;
+            $hook->nHook       = (int)$hook->nHook;
+            $hook->nPriority   = (int)$hook->nPriority;
+
+            return $hook;
+        }, $db->selectAll('tpluginhook', 'kPlugin', $this->kPlugin));
+    }
+
+    /**
+     * @param DbInterface $db
+     */
+    private function loadAdminMenu(DbInterface $db): void
+    {
+        $this->oPluginAdminMenu_arr = \array_map(function ($menu) {
+            $menu->kPluginAdminMenu = (int)$menu->kPluginAdminMenu;
+            $menu->kPlugin          = (int)$menu->kPlugin;
+            $menu->nSort            = (int)$menu->nSort;
+            $menu->nConf            = (int)$menu->nConf;
+
+            return $menu;
+        }, $db->selectAll('tpluginadminmenu', 'kPlugin', $this->kPlugin, '*', 'nSort'));
     }
 
     /**
@@ -732,6 +731,30 @@ class Plugin
                 $this->cAdminmenuPfad . \PFAD_PLUGIN_WIDGET . 'class.Widget' . $oPluginAdminWidget->cClass . '.php';
             $this->oPluginAdminWidgetAssoc_arr[$oPluginAdminWidget->kWidget] =
                 $this->oPluginAdminWidget_arr[$i];
+        }
+    }
+
+    /**
+     * @param DbInterface $db
+     */
+    private function loadPortlets(DbInterface $db): void
+    {
+        try {
+            $this->oPluginEditorPortlet_arr = $db->selectAll(
+                'topcportlet',
+                'kPlugin',
+                $this->kPlugin
+            );
+        } catch (\InvalidArgumentException $e) {
+            $this->oPluginEditorPortlet_arr = [];
+        }
+        foreach ($this->oPluginEditorPortlet_arr as $i => $oPluginEditorPortlet) {
+            $this->oPluginEditorPortlet_arr[$i]->cClassAbs =
+                $this->cAdminmenuPfad . \PFAD_PLUGIN_PORTLETS . $oPluginEditorPortlet->cClass . '/' .
+                $oPluginEditorPortlet->cClass . '.php';
+
+            $this->oPluginEditorPortletAssoc_arr[$oPluginEditorPortlet->kPortlet] =
+                $this->oPluginEditorPortlet_arr[$i];
         }
     }
 

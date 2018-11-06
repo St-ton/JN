@@ -28,49 +28,50 @@ $versionStr = null;
 
 if ($login->checkLogin($cName, $cPass) === true) {
     $return = 0;
+    $db     = Shop::Container()->getDB();
     if (isset($_POST['kKunde']) && (int)$_POST['kKunde'] > 0) {
-        $oStatus = Shop::Container()->getDB()->query(
+        $oStatus = $db->query(
             "SHOW TABLE STATUS LIKE 'tkunde'",
             \DB\ReturnType::SINGLE_OBJECT
         );
         if ($oStatus->Auto_increment < (int)$_POST['kKunde']) {
-            Shop::Container()->getDB()->query(
+            $db->query(
                 'ALTER TABLE tkunde AUTO_INCREMENT = ' . (int)$_POST['kKunde'],
                 \DB\ReturnType::DEFAULT
             );
         }
     }
     if (isset($_POST['kBestellung']) && (int)$_POST['kBestellung'] > 0) {
-        $oStatus = Shop::Container()->getDB()->query(
+        $oStatus = $db->query(
             "SHOW TABLE STATUS LIKE 'tbestellung'",
             \DB\ReturnType::SINGLE_OBJECT
         );
         if ($oStatus->Auto_increment < (int)$_POST['kBestellung']) {
-            Shop::Container()->getDB()->query(
+            $db->query(
                 'ALTER TABLE tbestellung AUTO_INCREMENT = ' . (int)$_POST['kBestellung'],
                 \DB\ReturnType::DEFAULT
             );
         }
     }
     if (isset($_POST['kLieferadresse']) && (int)$_POST['kLieferadresse'] > 0) {
-        $oStatus = Shop::Container()->getDB()->query(
+        $oStatus = $db->query(
             "SHOW TABLE STATUS LIKE 'tlieferadresse'",
             \DB\ReturnType::SINGLE_OBJECT
         );
         if ($oStatus->Auto_increment < (int)$_POST['kLieferadresse']) {
-            Shop::Container()->getDB()->query(
+            $db->query(
                 'ALTER TABLE tlieferadresse AUTO_INCREMENT = ' . (int)$_POST['kLieferadresse'],
                 \DB\ReturnType::DEFAULT
             );
         }
     }
     if (isset($_POST['kZahlungseingang']) && (int)$_POST['kZahlungseingang'] > 0) {
-        $oStatus = Shop::Container()->getDB()->query(
+        $oStatus = $db->query(
             "SHOW TABLE STATUS LIKE 'tzahlungseingang'",
             \DB\ReturnType::SINGLE_OBJECT
         );
         if ($oStatus->Auto_increment < (int)$_POST['kZahlungseingang']) {
-            Shop::Container()->getDB()->query(
+            $db->query(
                 'ALTER TABLE tzahlungseingang AUTO_INCREMENT  = ' . (int)$_POST['kZahlungseingang'],
                 \DB\ReturnType::DEFAULT
             );

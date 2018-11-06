@@ -44,6 +44,7 @@ echo $return;
 function aktiviereKunden($xml)
 {
     $kunden = mapArray($xml['aktiviere_kunden'], 'tkunde', []);
+    $db     = Shop::Container()->getDB();
     foreach ($kunden as $kunde) {
         if (!($kunde->kKunde > 0 && $kunde->kKundenGruppe > 0)) {
             continue;
@@ -51,7 +52,7 @@ function aktiviereKunden($xml)
         $kunde_db = new Kunde($kunde->kKunde);
 
         if ($kunde_db->kKunde > 0 && $kunde_db->kKundengruppe != $kunde->kKundenGruppe) {
-            Shop::Container()->getDB()->update(
+            $db->update(
                 'tkunde',
                 'kKunde',
                 (int)$kunde->kKunde,
@@ -64,7 +65,7 @@ function aktiviereKunden($xml)
                 sendeMail(MAILTEMPLATE_KUNDENGRUPPE_ZUWEISEN, $obj);
             }
         }
-        Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$kunde->kKunde, (object)['cAktiv' => 'Y']);
+        $db->update('tkunde', 'kKunde', (int)$kunde->kKunde, (object)['cAktiv' => 'Y']);
     }
 }
 
@@ -100,12 +101,13 @@ function bearbeiteDeletes($xml)
     if (!is_array($xml['del_kunden']['kKunde'])) {
         $xml['del_kunden']['kKunde'] = [$xml['del_kunden']['kKunde']];
     }
+    $db = Shop::Container()->getDB();
     foreach ($xml['del_kunden']['kKunde'] as $kKunde) {
         $kKunde = (int)$kKunde;
         if ($kKunde > 0) {
-            Shop::Container()->getDB()->delete('tkunde', 'kKunde', $kKunde);
-            Shop::Container()->getDB()->delete('tlieferadresse', 'kKunde', $kKunde);
-            Shop::Container()->getDB()->delete('tkundenattribut', 'kKunde', $kKunde);
+            $db->delete('tkunde', 'kKunde', $kKunde);
+            $db->delete('tlieferadresse', 'kKunde', $kKunde);
+            $db->delete('tkundenattribut', 'kKunde', $kKunde);
         }
     }
 }
@@ -122,10 +124,11 @@ function bearbeiteAck($xml)
         $xml['ack_kunden']['kKunde'] = [$xml['ack_kunden']['kKunde']];
     }
     if (is_array($xml['ack_kunden']['kKunde'])) {
+        $db = Shop::Container()->getDB();
         foreach ($xml['ack_kunden']['kKunde'] as $kKunde) {
             $kKunde = (int)$kKunde;
             if ($kKunde > 0) {
-                Shop::Container()->getDB()->update('tkunde', 'kKunde', $kKunde, (object)['cAbgeholt' => 'Y']);
+                $db->update('tkunde', 'kKunde', $kKunde, (object)['cAbgeholt' => 'Y']);
             }
         }
     }

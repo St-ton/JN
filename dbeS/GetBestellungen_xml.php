@@ -45,11 +45,13 @@ if (auth()) {
 
     if (is_array($xml_obj['bestellungen']['tbestellung'])) {
         $cryptoService                          = Shop::Container()->getCryptoService();
+        $db                                     = Shop::Container()->getDB();
         $xml_obj['bestellungen attr']['anzahl'] = count($xml_obj['bestellungen']['tbestellung']);
         for ($i = 0; $i < $xml_obj['bestellungen attr']['anzahl']; $i++) {
-            $xml_obj['bestellungen']['tbestellung'][$i . ' attr'] = buildAttributes($xml_obj['bestellungen']['tbestellung'][$i]);
+            $xml_obj['bestellungen']['tbestellung'][$i . ' attr'] =
+                buildAttributes($xml_obj['bestellungen']['tbestellung'][$i]);
 
-            $xml_obj['bestellungen']['tbestellung'][$i]['tkampagne'] = Shop::Container()->getDB()->query(
+            $xml_obj['bestellungen']['tbestellung'][$i]['tkampagne'] = $db->query(
                 "SELECT tkampagne.cName,
                         tkampagne.cParameter cIdentifier,
                         COALESCE(tkampagnevorgang.cParamWert, '') cWert
@@ -57,38 +59,45 @@ if (auth()) {
                     INNER JOIN tkampagne ON tkampagne.kKampagne = tkampagnevorgang.kKampagne
                     INNER JOIN tkampagnedef ON tkampagnedef.kKampagneDef = tkampagnevorgang.kKampagneDef
                     WHERE tkampagnedef.cKey = 'kBestellung'
-                        AND tkampagnevorgang.kKey = " . (int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kBestellung'] . "
+                        AND tkampagnevorgang.kKey = " .
+                        (int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kBestellung'] . "
                     ORDER BY tkampagnevorgang.kKampagneDef DESC LIMIT 1",
                 \DB\ReturnType::SINGLE_ASSOC_ARRAY
             );
 
-            $xml_obj['bestellungen']['tbestellung'][$i]['ttrackinginfo'] = Shop::Container()->getDB()->query(
+            $xml_obj['bestellungen']['tbestellung'][$i]['ttrackinginfo'] = $db->query(
                 "SELECT cUserAgent, cReferer
                     FROM tbesucher
-                    WHERE kBestellung = " . (int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kBestellung'] . "
+                    WHERE kBestellung = " .
+                    (int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kBestellung'] . "
                     LIMIT 1",
                 \DB\ReturnType::SINGLE_ASSOC_ARRAY
             );
 
-            $xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos'] = Shop::Container()->getDB()->query(
+            $xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos'] = $db->query(
                 "SELECT *
                     FROM twarenkorbpos
                     WHERE kWarenkorb = " . (int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kWarenkorb'],
                 \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
             );
-            $warenkorbpos_anz                                            = count($xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos']);
+
+            $warenkorbpos_anz = count($xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos']);
             for ($o = 0; $o < $warenkorbpos_anz; $o++) {
-                $xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos'][$o . ' attr']                   = buildAttributes(
-                    $xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos'][$o],
-                    ['cUnique', 'kKonfigitem', 'kBestellpos']
-                );
-                $xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos'][$o . ' attr']['kBestellung']    = $xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kBestellung'];
-                $xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos'][$o]['twarenkorbposeigenschaft'] = Shop::Container()->getDB()->query(
-                    "SELECT *
-                        FROM twarenkorbposeigenschaft
-                        WHERE kWarenkorbPos = " . (int)$xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos'][$o . ' attr']['kWarenkorbPos'],
-                    \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
-                );
+                $xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos'][$o . ' attr']                   =
+                    buildAttributes(
+                        $xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos'][$o],
+                        ['cUnique', 'kKonfigitem', 'kBestellpos']
+                    );
+                $xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos'][$o . ' attr']['kBestellung']    =
+                    $xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kBestellung'];
+                $xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos'][$o]['twarenkorbposeigenschaft'] =
+                    $db->query(
+                        "SELECT *
+                            FROM twarenkorbposeigenschaft
+                            WHERE kWarenkorbPos = " .
+                        (int)$xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos'][$o . ' attr']['kWarenkorbPos'],
+                        \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
+                    );
                 unset($xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos'][$o . ' attr']['kWarenkorb']);
                 $warenkorbposeigenschaft_anz = count($xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos'][$o]['twarenkorbposeigenschaft']);
                 for ($j = 0; $j < $warenkorbposeigenschaft_anz; $j++) {
@@ -98,7 +107,7 @@ if (auth()) {
                 }
             }
             $oLieferadresse        = new Lieferadresse((int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kLieferadresse']);
-            $land                  = Shop::Container()->getDB()->select(
+            $land                  = $db->select(
                 'tland',
                 'cISO',
                 $oLieferadresse->cLand,
@@ -121,17 +130,20 @@ if (auth()) {
                 // Am Ende zusätzlich Ländercode cISO mitgeben
                 $xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cISO'] = $cISO;
             }
-            $xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse attr'] = buildAttributes($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']);
+            $xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse attr'] =
+                buildAttributes($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']);
             //Strasse und Hausnummer zusammenführen
             if (isset($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cHausnummer'])) {
-                $xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cStrasse'] .= ' ' . trim($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cHausnummer']);
+                $xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cStrasse'] .= ' ' .
+                    trim($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cHausnummer']);
             }
             //Trim Konkatenation
-            $xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cStrasse'] = trim($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cStrasse'] ?? '');
+            $xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cStrasse'] =
+                trim($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cStrasse'] ?? '');
             unset($xml_obj['bestellungen']['tbestellung'][$i]['tlieferadresse']['cHausnummer']);
 
             $oRechnungsadresse        = new Rechnungsadresse($xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kRechnungsadresse']);
-            $land                     = Shop::Container()->getDB()->select(
+            $land                     = $db->select(
                 'tland',
                 'cISO',
                 $oRechnungsadresse->cLand,
@@ -145,7 +157,8 @@ if (auth()) {
             $cISO                     = $oRechnungsadresse->cLand;
             $oRechnungsadresse->cLand = isset($land) ? $land->cDeutsch : $oRechnungsadresse->angezeigtesLand;
             unset($oRechnungsadresse->angezeigtesLand);
-            $xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse'] = $oRechnungsadresse->gibRechnungsadresseAssoc();
+            $xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse'] =
+                $oRechnungsadresse->gibRechnungsadresseAssoc();
 
             if (count($xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']) > 0) {
                 // Work Around um der Wawi die ausgeschriebene Anrede mitzugeben
@@ -154,44 +167,56 @@ if (auth()) {
                 // Am Ende zusätzlich Ländercode cISO mitgeben
                 $xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cISO'] = $cISO;
             }
-            $xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse attr'] = buildAttributes($xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']);
+            $xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse attr'] =
+                buildAttributes($xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']);
             //Strasse und Hausnummer zusammenführen
-            $xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cStrasse'] .= ' ' . trim($xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cHausnummer']);
+            $xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cStrasse'] .= ' ' .
+                trim($xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cHausnummer']);
             //Trim Konkatenation
-            $xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cStrasse'] = trim($xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cStrasse']);
+            $xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cStrasse'] =
+                trim($xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cStrasse']);
             unset($xml_obj['bestellungen']['tbestellung'][$i]['trechnungsadresse']['cHausnummer']);
 
-            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo'] = Shop::Container()->getDB()->query(
+            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo'] = $db->query(
                 "SELECT *
                     FROM tzahlungsinfo
-                    WHERE kBestellung = " . (int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kBestellung'] . "
+                    WHERE kBestellung = " .
+                        (int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kBestellung'] . "
                         AND cAbgeholt = 'N'
                     ORDER BY kZahlungsInfo DESC LIMIT 1",
                 \DB\ReturnType::SINGLE_ASSOC_ARRAY
             );
             // Entschlüsseln
-            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBankName'] = isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBankName'])
+            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBankName'] =
+                isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBankName'])
                 ? $cryptoService->decryptXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBankName'])
                 : null;
-            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBLZ']      = isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBLZ'])
+            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBLZ']      =
+                isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBLZ'])
                 ? $cryptoService->decryptXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBLZ'])
                 : null;
-            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cInhaber']  = isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cInhaber'])
+            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cInhaber']  =
+                isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cInhaber'])
                 ? $cryptoService->decryptXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cInhaber'])
                 : null;
-            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cKontoNr']  = isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cKontoNr'])
+            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cKontoNr']  =
+                isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cKontoNr'])
                 ? $cryptoService->decryptXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cKontoNr'])
                 : null;
-            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cIBAN']     = isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cIBAN'])
+            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cIBAN']     =
+                isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cIBAN'])
                 ? $cryptoService->decryptXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cIBAN'])
                 : null;
-            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBIC']      = isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBIC'])
+            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBIC']      =
+                isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBIC'])
                 ? $cryptoService->decryptXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cBIC'])
                 : null;
-            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cKartenNr'] = isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cKartenNr'])
+            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cKartenNr'] =
+                isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cKartenNr'])
                 ? $cryptoService->decryptXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cKartenNr'])
                 : null;
-            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cCVV']      = isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cCVV'])
+            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cCVV']      =
+                isset($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cCVV'])
                 ? trim($cryptoService->decryptXTEA($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cCVV']))
                 : null;
             if (strlen($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cCVV']) > 4) {
@@ -199,10 +224,14 @@ if (auth()) {
                     substr($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']['cCVV'], 0, 4);
             }
 
-            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo attr'] = buildAttributes($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']);
-            unset($xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kVersandArt'], $xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kWarenkorb']);
+            $xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo attr'] =
+                buildAttributes($xml_obj['bestellungen']['tbestellung'][$i]['tzahlungsinfo']);
+            unset(
+                $xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kVersandArt'],
+                $xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kWarenkorb']
+            );
 
-            $xml_obj['bestellungen']['tbestellung'][$i]['tbestellattribut'] = Shop::Container()->getDB()->query(
+            $xml_obj['bestellungen']['tbestellung'][$i]['tbestellattribut'] = $db->query(
                 "SELECT cName AS 'key', cValue AS 'value'
                     FROM tbestellattribut
                     WHERE kBestellung = " . (int)$xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kBestellung'],

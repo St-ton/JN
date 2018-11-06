@@ -62,6 +62,7 @@ function bearbeiteUpdates($xml)
         mappe($Firma, $xml['globals']['tfirma'], $GLOBALS['mFirma']);
         DBDelInsert('tfirma', [$Firma], 1);
     }
+    $db = Shop::Container()->getDB();
     if (isset($xml['globals'])) {
         //Sprache inserten
         $oSprache_arr = mapArray($xml['globals'], 'tsprache', $GLOBALS['mSprache']);
@@ -86,7 +87,7 @@ function bearbeiteUpdates($xml)
         if (isset($xml['globals']['tsteuerzone']) && is_array($xml['globals']['tsteuerzone'])) {
             $steuerzonen_arr = mapArray($xml['globals'], 'tsteuerzone', $GLOBALS['mSteuerzone']);
             DBDelInsert('tsteuerzone', $steuerzonen_arr, 1);
-            Shop::Container()->getDB()->query('DELETE FROM tsteuerzoneland', \DB\ReturnType::DEFAULT);
+            $db->query('DELETE FROM tsteuerzoneland', \DB\ReturnType::DEFAULT);
             $taxCount = count($steuerzonen_arr);
             for ($i = 0; $i < $taxCount; $i++) {
                 if (count($steuerzonen_arr) < 2) {
@@ -99,8 +100,8 @@ function bearbeiteUpdates($xml)
         if (isset($xml['globals']['tkundengruppe']) && is_array($xml['globals']['tkundengruppe'])) {
             $kundengruppen_arr = mapArray($xml['globals'], 'tkundengruppe', $GLOBALS['mKundengruppe']);
             DBDelInsert('tkundengruppe', $kundengruppen_arr, 1);
-            Shop::Container()->getDB()->query('TRUNCATE TABLE tkundengruppensprache', \DB\ReturnType::DEFAULT);
-            Shop::Container()->getDB()->query('TRUNCATE TABLE tkundengruppenattribut', \DB\ReturnType::DEFAULT);
+            $db->query('TRUNCATE TABLE tkundengruppensprache', \DB\ReturnType::DEFAULT);
+            $db->query('TRUNCATE TABLE tkundengruppenattribut', \DB\ReturnType::DEFAULT);
             $cgCount = count($kundengruppen_arr);
             for ($i = 0; $i < $cgCount; $i++) {
                 if (count($kundengruppen_arr) < 2) {
@@ -137,18 +138,18 @@ function bearbeiteUpdates($xml)
         if (isset($xml['globals']['twarenlager']) && is_array($xml['globals']['twarenlager'])) {
             $oWarenlager_arr = mapArray($xml['globals'], 'twarenlager', $GLOBALS['mWarenlager']);
             //Lagersichtbarkeit für Shop zwischenspeichern
-            $lagersichtbarkeit_arr = Shop::Container()->getDB()->query(
+            $lagersichtbarkeit_arr = $db->query(
                 'SELECT kWarenlager, nAktiv FROM twarenlager WHERE nAktiv = 1',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             //Alle Einträge in twarenlager löschen - Wawi 1.0.1 sendet immer alle Warenlager.
-            Shop::Container()->getDB()->query('DELETE FROM twarenlager WHERE 1', \DB\ReturnType::DEFAULT);
+            $db->query('DELETE FROM twarenlager WHERE 1', \DB\ReturnType::DEFAULT);
 
             DBUpdateInsert('twarenlager', $oWarenlager_arr, 'kWarenlager');
             //Lagersichtbarkeit übertragen
             if (!empty($lagersichtbarkeit_arr)) {
                 foreach ($lagersichtbarkeit_arr as $lager) {
-                    Shop::Container()->getDB()->update('twarenlager', 'kWarenlager', $lager->kWarenlager, $lager);
+                    $db->update('twarenlager', 'kWarenlager', $lager->kWarenlager, $lager);
                 }
             }
         }
@@ -161,7 +162,7 @@ function bearbeiteUpdates($xml)
             }
             unset($_me);
             DBDelInsert('tmasseinheit', $oMasseinheit_arr, 1);
-            Shop::Container()->getDB()->query('TRUNCATE TABLE tmasseinheitsprache', \DB\ReturnType::DEFAULT);
+            $db->query('TRUNCATE TABLE tmasseinheitsprache', \DB\ReturnType::DEFAULT);
             $meCount = count($oMasseinheit_arr);
             for ($i = 0; $i < $meCount; $i++) {
                 if (count($oMasseinheit_arr) < 2) {

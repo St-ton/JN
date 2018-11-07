@@ -8,6 +8,8 @@
 
 namespace Services\JTL;
 
+use Smarty\JTLSmarty;
+
 /**
  * Class CaptchaService
  * @package Services\JTL
@@ -55,7 +57,7 @@ class CaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @param \JTLSmarty $smarty
+     * @param JTLSmarty $smarty
      * @return string
      */
     public function getHeadMarkup($smarty): string
@@ -78,7 +80,7 @@ class CaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @param \JTLSmarty $smarty
+     * @param JTLSmarty $smarty
      * @return string
      */
     public function getBodyMarkup($smarty): string

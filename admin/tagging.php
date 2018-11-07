@@ -9,7 +9,7 @@ $oAccount->permission('MODULE_PRODUCTTAGS_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'tagging_inc.php';
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 setzeSprache();
 
 $cHinweis          = '';

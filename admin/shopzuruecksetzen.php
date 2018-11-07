@@ -7,7 +7,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'news_inc.php';
 
 $oAccount->permission('RESET_SHOP_VIEW', true, true);
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $cHinweis = '';
 $cFehler  = '';
 if (isset($_POST['zuruecksetzen']) && (int)$_POST['zuruecksetzen'] === 1 && FormHelper::validateToken()) {
@@ -239,7 +239,7 @@ if (isset($_POST['zuruecksetzen']) && (int)$_POST['zuruecksetzen'] === 1 && Form
                     break;
             }
         }
-        Shop::Cache()->flushAll();
+        Shop::Container()->getCache()->flushAll();
         Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
         $cHinweis = 'Der Shop wurde mit Ihren gewählten Optionen zurückgesetzt.';
     } else {

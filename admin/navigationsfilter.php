@@ -5,7 +5,7 @@
  */
 
 /**
- * @global JTLSmarty $smarty
+ * @global Smarty\JTLSmarty $smarty
  * @global AdminAccount $oAccount
  */
 require_once __DIR__ . '/includes/admininclude.php';
@@ -19,7 +19,7 @@ setzeSprache();
 
 if (isset($_POST['speichern']) && FormHelper::validateToken()) {
     $cHinweis .= saveAdminSectionSettings(CONF_NAVIGATIONSFILTER, $_POST);
-    Shop::Cache()->flushTags([CACHING_GROUP_CATEGORY]);
+    Shop::Container()->getCache()->flushTags([CACHING_GROUP_CATEGORY]);
     if (is_array($_POST['nVon'])
         && is_array($_POST['nBis'])
         && count($_POST['nVon']) > 0

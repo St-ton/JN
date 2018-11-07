@@ -2,15 +2,13 @@
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
- *
- * @global JTLSmarty $smarty
  */
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('CONTENT_EMAIL_TEMPLATE_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $Emailvorlage          = null;
 $hinweis               = '';
 $cHinweis              = '';
@@ -750,7 +748,7 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
             );
             Shop::Container()->getDB()->insert($cTableSprache, $Emailvorlagesprache);
             //Smarty Objekt bauen
-            $mailSmarty = new \Smarty\JTLSmarty(true, false, false, 'mail');
+            $mailSmarty = new Smarty\JTLSmarty(true, false, false, 'mail');
             $mailSmarty->registerResource('db', new SmartyResourceNiceDB('mail'))
                        ->registerPlugin('function', 'includeMailTemplate', 'includeMailTemplate')
                        ->setCaching(Smarty::CACHING_OFF)

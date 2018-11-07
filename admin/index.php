@@ -8,7 +8,7 @@ use JTLShop\SemVer\Version;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 /** @global AdminAccount $oAccount */
 $oUpdater = new Updater();
 $cFehler  = '';

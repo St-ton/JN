@@ -6,7 +6,7 @@
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_WISHLIST_VIEW', true, true);
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $cHinweis          = '';
 $settingsIDs       = [442, 443, 440, 439, 445, 446, 1460];
 if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {

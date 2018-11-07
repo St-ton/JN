@@ -8,7 +8,7 @@ require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'umfrage_inc.php';
 
 $oAccount->permission('EXTENSION_VOTE_VIEW', true, true);
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $Einstellungen = Shop::getSettings([CONF_UMFRAGE]);
 $cHinweis      = '';
 $cFehler       = '';
@@ -67,7 +67,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                     \DB\ReturnType::AFFECTED_ROWS
                 );
             }
-            Shop::Cache()->flushTags([CACHING_GROUP_CORE]);
+            Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
         } elseif (isset($_GET['a']) && $_GET['a'] === 'o_loeschen') {
             $step                 = 'umfrage_frage_bearbeiten';
             $kUmfrageFrage        = (int)$_GET['kUF'];
@@ -83,7 +83,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                     \DB\ReturnType::AFFECTED_ROWS
                 );
             }
-            Shop::Cache()->flushTags([CACHING_GROUP_CORE]);
+            Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
         }
 
         // Umfrage speichern
@@ -179,7 +179,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
 
                     $cHinweis .= 'Ihre Umfrage wurde erfolgreich gespeichert. ' .
                         'Bitte folgen Sie nun den weiteren Schritten.<br />';
-                    Shop::Cache()->flushTags([CACHING_GROUP_CORE]);
+                    Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
                 } else {
                     $cFehler .= 'Fehler: Bitte geben Sie nur eine Belohnungsart an.<br />';
                 }
@@ -264,7 +264,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 );
 
                 $cHinweis .= 'Ihr Frage wurde erfolgreich gespeichert.<br />';
-                Shop::Cache()->flushTags([CACHING_GROUP_CORE]);
+                Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
             } else {
                 $step = 'umfrage_frage_erstellen';
                 $cFehler .= 'Fehler: Bitte tragen Sie mindestens einen Namen und einen Typ ein.<br />';
@@ -300,7 +300,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                     );
                 }
                 $cHinweis .= 'Ihre markierten Umfragen wurden erfolgreich gelöscht.<br />';
-                Shop::Cache()->flushTags([CACHING_GROUP_CORE]);
+                Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
             } else {
                 $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine Umfrage.<br />';
             }
@@ -357,7 +357,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
 
                 $cHinweis .= 'Ihre markierten Optionen wurden erfolgreich gelöscht.<br />';
             }
-            Shop::Cache()->flushTags([CACHING_GROUP_CORE]);
+            Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
         } elseif (isset($_POST['umfrage_frage_hinzufuegen'])
             && (int)$_POST['umfrage_frage_hinzufuegen'] === 1
         ) { // Frage hinzufuegen

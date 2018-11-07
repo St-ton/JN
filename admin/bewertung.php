@@ -10,7 +10,7 @@ $oAccount->permission('MODULE_VOTESYSTEM_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bewertung_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'bewertung_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
-/** @global JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $Einstellungen = Shop::getSettings([CONF_BEWERTUNG]);
 $cHinweis      = '';
 $cFehler       = '';
@@ -43,7 +43,7 @@ if (FormHelper::validateToken()) {
         ) {
             $cFehler = 'Guthabenbonus kann nur mit "Bewertung freischalten" verwendet werden.';
         } else {
-            Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE]);
+            Shop::Container()->getCache()->flushTags([CACHING_GROUP_ARTICLE]);
             $cHinweis .= saveAdminSectionSettings(CONF_BEWERTUNG, $_POST);
         }
     } elseif (isset($_POST['bewertung_nicht_aktiv']) && (int)$_POST['bewertung_nicht_aktiv'] === 1) {
@@ -61,9 +61,13 @@ if (FormHelper::validateToken()) {
                     checkeBewertungGuthabenBonus($kBewertung, $Einstellungen);
                     $cacheTags[] = $kArtikel_arr[$i];
                 }
-                // Clear Cache
-                array_walk($cacheTags, function (&$i) { $i = CACHING_GROUP_ARTICLE . '_' . $i; });
-                Shop::Cache()->flushTags($cacheTags);
+                array_walk(
+                    $cacheTags,
+                    function (&$i) {
+                        $i = CACHING_GROUP_ARTICLE . '_' . $i;
+                    }
+                );
+                Shop::Container()->getCache()->flushTags($cacheTags);
                 $cHinweis .= count($_POST['kBewertung']) . ' Bewertung(en) wurde(n) erfolgreich aktiviert.';
             }
         } elseif (isset($_POST['loeschen'])) { // Bewertungen loeschen
@@ -106,8 +110,13 @@ if (FormHelper::validateToken()) {
                 aktualisiereDurchschnitt($kArtikel_arr[$i], $Einstellungen['bewertung']['bewertung_freischalten']);
                 $cacheTags[] = $kArtikel_arr[$i];
             }
-            array_walk($cacheTags, function (&$i) { $i = CACHING_GROUP_ARTICLE . '_' . $i; });
-            Shop::Cache()->flushTags($cacheTags);
+            array_walk(
+                $cacheTags,
+                function (&$i) {
+                    $i = CACHING_GROUP_ARTICLE . '_' . $i;
+                }
+            );
+            Shop::Container()->getCache()->flushTags($cacheTags);
     
             $cHinweis .= count($_POST['kBewertung']) . ' Bewertung(en) wurde(n) erfolgreich gelöscht.';
         }

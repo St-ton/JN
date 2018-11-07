@@ -35,7 +35,8 @@ class HerstellerHelper
     public function __construct()
     {
         $lagerfilter   = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-        $this->cacheID = 'manuf_' . Shop::Cache()->getBaseID() . ($lagerfilter !== '' ? md5($lagerfilter) : '');
+        $this->cacheID = 'manuf_' . Shop::Container()->getCache()->getBaseID() .
+            ($lagerfilter !== '' ? md5($lagerfilter) : '');
         self::$langID  = Shop::getLanguage();
         if (self::$langID <= 0) {
             if (Shop::getLanguage() > 0) {
@@ -67,7 +68,7 @@ class HerstellerHelper
         if ($this->manufacturers !== null) {
             return $this->manufacturers;
         }
-        if (($manufacturers = Shop::Cache()->get($this->cacheID)) === false) {
+        if (($manufacturers = Shop::Container()->getCache()->get($this->cacheID)) === false) {
             $lagerfilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             // fixes for admin backend
             $manufacturers = Shop::Container()->getDB()->query(
@@ -119,7 +120,7 @@ class HerstellerHelper
                 'cacheTags'     => &$cacheTags,
                 'manufacturers' => &$manufacturers
             ]);
-            Shop::Cache()->set($this->cacheID, $manufacturers, $cacheTags);
+            Shop::Container()->getCache()->set($this->cacheID, $manufacturers, $cacheTags);
         } else {
             executeHook(HOOK_GET_MANUFACTURERS, [
                 'cached'        => true,

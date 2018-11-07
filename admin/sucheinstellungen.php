@@ -7,7 +7,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
 
 $oAccount->permission('SETTINGS_ARTICLEOVERVIEW_VIEW', true, true);
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $kSektion         = CONF_ARTIKELUEBERSICHT;
 $Einstellungen    = Shop::getSettings([$kSektion]);
 $standardwaehrung = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
@@ -96,7 +96,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
                 $settings['suche_fulltext'] = 'N';
                 saveAdminSectionSettings($kSektion, $settings);
 
-                Shop::Cache()->flushTags([
+                Shop::Container()->getCache()->flushTags([
                     CACHING_GROUP_OPTION,
                     CACHING_GROUP_CORE,
                     CACHING_GROUP_ARTICLE,
@@ -141,7 +141,9 @@ if (isset($_POST['einstellungen_bearbeiten'])
     $shopSettings = Shopsetting::getInstance();
     $cHinweis    .= saveAdminSectionSettings($kSektion, $_POST);
 
-    Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_CORE, CACHING_GROUP_ARTICLE, CACHING_GROUP_CATEGORY]);
+    Shop::Container()->getCache()->flushTags(
+        [CACHING_GROUP_OPTION, CACHING_GROUP_CORE, CACHING_GROUP_ARTICLE, CACHING_GROUP_CATEGORY]
+    );
     $shopSettings->reset();
 
     $fulltextChanged = false;

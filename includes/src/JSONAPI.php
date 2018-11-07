@@ -253,7 +253,7 @@ class JSONAPI
             $cacheTags[] = $addCacheTag;
         }
 
-        if (($data = Shop::Cache()->get($cacheId)) !== false) {
+        if (($data = Shop::Container()->getCache()->get($cacheId)) !== false) {
             return $data;
         }
 
@@ -309,7 +309,7 @@ class JSONAPI
             $result = [];
         }
 
-        Shop::Cache()->set($cacheId, $result, $cacheTags);
+        Shop::Container()->getCache()->set($cacheId, $result, $cacheTags);
 
         return $result;
     }

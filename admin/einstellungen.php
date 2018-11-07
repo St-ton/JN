@@ -5,7 +5,7 @@
  */
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 /** @global AdminAccount $oAccount */
 $kSektion = isset($_REQUEST['kSektion']) ? (int)$_REQUEST['kSektion'] : 0;
 $bSuche   = isset($_REQUEST['einstellungen_suchen']) && (int)$_REQUEST['einstellungen_suchen'] === 1;
@@ -150,8 +150,7 @@ if (isset($_POST['einstellungen_bearbeiten'])
     } elseif ($kSektion === 8) {
         $tagsToFlush[] = CACHING_GROUP_BOX;
     }
-    Shop::Cache()->flushTags($tagsToFlush);
-    // Einstellungen zurücksetzen und Notifications neu laden
+    Shop::Container()->getCache()->flushTags($tagsToFlush);
     Shopsetting::getInstance()->reset();
 }
 

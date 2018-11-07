@@ -88,7 +88,7 @@ function saveAdminSettings(array $settingsIDs, array &$cPost_arr, $tags = [CACHI
             Shop::Container()->getDB()->insert('teinstellungen', $val);
         }
     }
-    Shop::Cache()->flushTags($tags);
+    Shop::Container()->getCache()->flushTags($tags);
 
     return 'Ihre Einstellungen wurden erfolgreich übernommen.';
 }
@@ -185,7 +185,7 @@ function saveAdminSectionSettings(int $configSectionID, array &$cPost_arr, $tags
             Shop::Container()->getDB()->insert('teinstellungen', $val);
         }
     }
-    Shop::Cache()->flushTags($tags);
+    Shop::Container()->getCache()->flushTags($tags);
 
     return 'Ihre Einstellungen wurden erfolgreich übernommen.';
 }

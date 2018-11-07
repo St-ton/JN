@@ -10,7 +10,7 @@ $oAccount->permission('ORDER_PAYMENT_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'zahlungsarten_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $standardwaehrung = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
 $hinweis          = '';
 $step             = 'uebersicht';
@@ -83,8 +83,8 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart'])
     Shop::Container()->getDB()->update('tzahlungsart', 'kZahlungsart', (int)$zahlungsart->kZahlungsart, $upd);
     // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
     if (strpos($zahlungsart->cModulId, 'kPlugin_') !== false) {
-        $kPlugin     = Plugin::getIDByModuleID($zahlungsart->cModulId);
-        $cModulId    = Plugin::getModuleIDByPluginID($kPlugin, $zahlungsart->cName);
+        $kPlugin     = \Plugin\Plugin::getIDByModuleID($zahlungsart->cModulId);
+        $cModulId    = \Plugin\Plugin::getModuleIDByPluginID($kPlugin, $zahlungsart->cName);
         $Conf        = Shop::Container()->getDB()->query(
             "SELECT *
                 FROM tplugineinstellungenconf
@@ -178,7 +178,7 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart'])
         Shop::Container()->getDB()->insert('tzahlungsartsprache', $zahlungsartSprache);
     }
 
-    Shop::Cache()->flushAll();
+    Shop::Container()->getCache()->flushAll();
     $hinweis = 'Zahlungsart gespeichert.';
     $step    = 'uebersicht';
 }
@@ -199,8 +199,8 @@ if ($step === 'einstellen') {
         }
         // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
         if (strpos($zahlungsart->cModulId, 'kPlugin_') !== false) {
-            $kPlugin     = Plugin::getIDByModuleID($zahlungsart->cModulId);
-            $cModulId    = Plugin::getModuleIDByPluginID($kPlugin, $zahlungsart->cName);
+            $kPlugin     = \Plugin\Plugin::getIDByModuleID($zahlungsart->cModulId);
+            $cModulId    = \Plugin\Plugin::getModuleIDByPluginID($kPlugin, $zahlungsart->cName);
             $Conf        = Shop::Container()->getDB()->query(
                 "SELECT *
                     FROM tplugineinstellungenconf

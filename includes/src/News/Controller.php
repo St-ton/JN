@@ -9,6 +9,7 @@ namespace News;
 use DB\DbInterface;
 use DB\ReturnType;
 use Session\Session;
+use Smarty\JTLSmarty;
 use Tightenco\Collect\Support\Collection;
 use function Functional\every;
 use function Functional\map;
@@ -25,7 +26,7 @@ class Controller
     private $db;
 
     /**
-     * @var \JTLSmarty
+     * @var JTLSmarty
      */
     private $smarty;
 
@@ -53,9 +54,9 @@ class Controller
      * Controller constructor.
      * @param DbInterface $db
      * @param array       $config
-     * @param \JTLSmarty  $smarty
+     * @param JTLSmarty   $smarty
      */
-    public function __construct(DbInterface $db, array $config, \JTLSmarty $smarty)
+    public function __construct(DbInterface $db, array $config, JTLSmarty $smarty)
     {
         $this->config = $config;
         $this->db     = $db;

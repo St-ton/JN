@@ -6,7 +6,7 @@
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('WAREHOUSE_VIEW', true, true);
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $cStep    = 'uebersicht';
 $cHinweis = '';
 $cFehler  = '';
@@ -44,7 +44,7 @@ switch ($cAction) {
                 }
             }
         }
-        Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE]);
+        Shop::Container()->getCache()->flushTags([CACHING_GROUP_ARTICLE]);
         $cHinweis = 'Ihre Warenlager wurden erfolgreich aktualisiert';
         break;
     default:

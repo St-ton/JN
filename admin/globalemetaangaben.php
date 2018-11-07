@@ -6,7 +6,7 @@
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('SETTINGS_GLOBAL_META_VIEW', true, true);
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 $Einstellungen = Shop::getSettings([CONF_METAANGABEN]);
 $chinweis      = '';
 $cfehler       = '';
@@ -61,7 +61,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && Form
     $keywords->cKeywords   = $_POST['keywords'];
     Shop::Container()->getDB()->delete('texcludekeywords', 'cISOSprache', $keywords->cISOSprache);
     Shop::Container()->getDB()->insert('texcludekeywords', $keywords);
-    Shop::Cache()->flushAll();
+    Shop::Container()->getCache()->flushAll();
     $chinweis .= 'Ihre Einstellungen wurden übernommen.<br />';
     unset($oConfig_arr);
 }

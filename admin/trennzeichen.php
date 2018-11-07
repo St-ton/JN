@@ -8,7 +8,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('SETTINGS_SEPARATOR_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'trennzeichen_inc.php';
-/** @global JTLSmarty $smarty */
+/** @global Smarty\JTLSmarty $smarty */
 setzeSprache();
 
 $cHinweis = '';
@@ -23,7 +23,7 @@ if (RequestHelper::verifyGPCDataInt('save') === 1 && FormHelper::validateToken()
     if (count($xPlausiVar_arr) === 0) {
         if (speicherTrennzeichen($_POST)) {
             $cHinweis = 'Ihre Einstellungen wurden erfolgreich gespeichert.';
-            Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_CORE]);
+            Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_CORE]);
         } else {
             $cFehler = 'Fehler: Ihr Einstellungen konnten nicht gespeichert werden!';
             $smarty->assign('xPostVar_arr', $oPlausiTrennzeichen->getPostVar());

@@ -108,7 +108,7 @@ interface LinkServiceInterface
      * @param bool   $filtered
      * @return LinkGroupInterface|null
      */
-    public function getLinkGroupByName(string $name, bool $filtered): ?LinkGroupInterface;
+    public function getLinkGroupByName(string $name, bool $filtered = true): ?LinkGroupInterface;
 
     /**
      * @param int $id

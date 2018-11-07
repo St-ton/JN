@@ -122,11 +122,20 @@
                                 <li class="shortdescription">{$oPosition->Artikel->cKurzBeschreibung}</li>
                             {/if}
 
-                            {if isset($oPosition->Artikel->cGewicht) && $Einstellungen.artikeldetails.artikeldetails_gewicht_anzeigen === 'Y' && $oPosition->Artikel->fGewicht > 0}
-                                <li class="weight">
-                                    <strong>{lang key='shippingWeight' section='global'}: </strong>
-                                    <span class="value">{$oPosition->Artikel->cGewicht} {lang key='weightUnit' section='global'}</span>
-                                </li>
+                            {if $oPosition->istKonfigVater()}
+                                {if isset($oPosition->getTotalConfigWeight()) && $Einstellungen.artikeldetails.artikeldetails_gewicht_anzeigen === 'Y' && $oPosition->getTotalConfigWeight() > 0}
+                                    <li class="weight">
+                                        <strong>{lang key='shippingWeight' section='global'}: </strong>
+                                        <span class="value">{$oPosition->getTotalConfigWeight()} {lang key='weightUnit' section='global'}</span>
+                                    </li>
+                                {/if}
+                            {else}
+                                {if isset($oPosition->Artikel->cGewicht) && $Einstellungen.artikeldetails.artikeldetails_gewicht_anzeigen === 'Y' && $oPosition->Artikel->fGewicht > 0}
+                                    <li class="weight">
+                                        <strong>{lang key='shippingWeight' section='global'}: </strong>
+                                        <span class="value">{$oPosition->Artikel->cGewicht} {lang key='weightUnit' section='global'}</span>
+                                    </li>
+                                {/if}
                             {/if}
                         </ul>
                     {else}

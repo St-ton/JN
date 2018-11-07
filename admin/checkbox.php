@@ -79,10 +79,10 @@ $smarty->assign('oCheckBox_arr', $oCheckBox_arr)
            \DB\ReturnType::ARRAY_OF_OBJECTS
        ))
        ->assign('oLink_arr', Shop::Container()->getDB()->query(
-            "SELECT * 
+           "SELECT * 
               FROM tlink 
               ORDER BY cName",
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+           \DB\ReturnType::ARRAY_OF_OBJECTS
        ))
        ->assign('oCheckBoxFunktion_arr', $oCheckBox->getCheckBoxFunctions())
        ->assign('cHinweis', $cHinweis)

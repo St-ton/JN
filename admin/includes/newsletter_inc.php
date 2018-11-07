@@ -50,8 +50,8 @@ function versendeNewsletter(
     $oHersteller_arr = [],
     $oKategorie_arr = [],
     $oKampagne = '',
-    $oKunde = '')
-{
+    $oKunde = ''
+) {
     $mailSmarty->assign('oNewsletter', $oNewsletter)
                ->assign('Emailempfaenger', $oEmailempfaenger)
                ->assign('Kunde', $oKunde)
@@ -381,7 +381,12 @@ function speicherVorlageStd($oNewslettervorlageStd, $kNewslettervorlageStd, $cPo
             $upd->cInhaltHTML   = $oNewsletterVorlage->cInhaltHTML;
             $upd->cInhaltText   = $oNewsletterVorlage->cInhaltText;
             $upd->dStartZeit    = $oNewsletterVorlage->dStartZeit;
-            Shop::Container()->getDB()->update('tnewslettervorlage', 'kNewsletterVorlage', (int)$kNewslettervorlage, $upd);
+            Shop::Container()->getDB()->update(
+                'tnewslettervorlage',
+                'kNewsletterVorlage',
+                (int)$kNewslettervorlage,
+                $upd
+            );
         } else {
             $kNewslettervorlage = Shop::Container()->getDB()->insert('tnewslettervorlage', $oNewsletterVorlage);
         }
@@ -391,7 +396,11 @@ function speicherVorlageStd($oNewslettervorlageStd, $kNewslettervorlageStd, $cPo
             && is_array($oNewslettervorlageStd->oNewslettervorlageStdVar_arr)
             && count($oNewslettervorlageStd->oNewslettervorlageStdVar_arr) > 0
         ) {
-            Shop::Container()->getDB()->delete('tnewslettervorlagestdvarinhalt', 'kNewslettervorlage', $kNewslettervorlage);
+            Shop::Container()->getDB()->delete(
+                'tnewslettervorlagestdvarinhalt',
+                'kNewslettervorlage',
+                $kNewslettervorlage
+            );
             foreach ($oNewslettervorlageStd->oNewslettervorlageStdVar_arr as $i => $nlTplStdVar) {
                 $bBildVorhanden = false;
                 if ($nlTplStdVar->cTyp === 'BILD') {
@@ -401,10 +410,8 @@ function speicherVorlageStd($oNewslettervorlageStd, $kNewslettervorlageStd, $cPo
                     if (!is_dir($cUploadVerzeichnis . $kNewslettervorlage)) {
                         mkdir($cUploadVerzeichnis . $kNewslettervorlage);
                     }
-
-                    if (isset($_FILES['kNewslettervorlageStdVar_' . $nlTplStdVar->kNewslettervorlageStdVar]['name']) 
-                        && strlen($_FILES['kNewslettervorlageStdVar_' . $nlTplStdVar->kNewslettervorlageStdVar]['name']) > 0
-                    ) {
+                    $idx = 'kNewslettervorlageStdVar_' . $nlTplStdVar->kNewslettervorlageStdVar;
+                    if (isset($_FILES[$idx]['name']) && strlen($_FILES[$idx]['name']) > 0) {
                         $cUploadDatei = $cUploadVerzeichnis . $kNewslettervorlage .
                             '/kNewslettervorlageStdVar_' . $nlTplStdVar->kNewslettervorlageStdVar .
                             mappeFileTyp($_FILES['kNewslettervorlageStdVar_' .
@@ -431,7 +438,8 @@ function speicherVorlageStd($oNewslettervorlageStd, $kNewslettervorlageStd, $cPo
                         $oNewslettervorlageStd->oNewslettervorlageStdVar_arr[$i]->cInhalt =
                             Shop::getURL() . '/' . PFAD_BILDER . PFAD_NEWSLETTERBILDER . $kNewslettervorlage .
                             '/kNewslettervorlageStdVar_' . $nlTplStdVar->kNewslettervorlageStdVar .
-                            mappeFileTyp($_FILES['kNewslettervorlageStdVar_' .
+                            mappeFileTyp(
+                                $_FILES['kNewslettervorlageStdVar_' .
                                 $nlTplStdVar->kNewslettervorlageStdVar]['type']
                             );
                         $bBildVorhanden = true;
@@ -545,8 +553,7 @@ function mappeVorlageStdVar($cText, $oNewsletterStdVar_arr, $bNoHTML = false)
                     '$#' . $oNewsletterStdVar->cName . '#$',
                     $oNewsletterStdVar->cInhalt,
                     $cText
-                    )
-                ));
+                )));
             } else {
                 $cText = str_replace('$#' . $oNewsletterStdVar->cName . '#$', $oNewsletterStdVar->cInhalt, $cText);
             }
@@ -573,19 +580,23 @@ function mappeVorlageStdVar($cText, $oNewsletterStdVar_arr, $bNoHTML = false)
 
                 if (isset($oNewsletterStdVar->cLinkURL) && strlen($oNewsletterStdVar->cLinkURL) > 0) {
                     $cText = str_replace(
-                        '$#' . $oNewsletterStdVar->cName . '#$', '<a href="' .
+                        '$#' . $oNewsletterStdVar->cName . '#$',
+                        '<a href="' .
                         $oNewsletterStdVar->cLinkURL .
                         '"><img src="' .
                         $oNewsletterStdVar->cInhalt . '" alt="' . $cAltTag . '" title="' .
                         $cAltTag .
-                        '" /></a>', $cText
+                        '" /></a>',
+                        $cText
                     );
                 } else {
                     $cText = str_replace(
-                        '$#' . $oNewsletterStdVar->cName . '#$', '<img src="' .
+                        '$#' . $oNewsletterStdVar->cName . '#$',
+                        '<img src="' .
                         $oNewsletterStdVar->cInhalt .
                         '" alt="' .
-                        $cAltTag . '" title="' . $cAltTag . '" />', $cText
+                        $cAltTag . '" title="' . $cAltTag . '" />',
+                        $cText
                     );
                 }
             }
@@ -706,17 +717,17 @@ function holeNewslettervorlageStd(int $kNewsletterVorlageStd, int $kNewsletterVo
             $oNewslettervorlageStd->cArtikel           = substr(
                 substr($oNewslettervorlage->cArtikel, 1),
                 0,
-                strlen(substr($oNewslettervorlage->cArtikel, 1)) - 1
+                -1
             );
             $oNewslettervorlageStd->cHersteller        = substr(
                 substr($oNewslettervorlage->cHersteller, 1),
                 0,
-                strlen(substr($oNewslettervorlage->cHersteller, 1)) - 1
+                -1
             );
             $oNewslettervorlageStd->cKategorie         = substr(
                 substr($oNewslettervorlage->cKategorie, 1),
                 0,
-                strlen(substr($oNewslettervorlage->cKategorie, 1)) - 1
+                -1
             );
             $oNewslettervorlageStd->cKundengruppe      = $oNewslettervorlage->cKundengruppe;
             $oNewslettervorlageStd->dStartZeit         = $oNewslettervorlage->dStartZeit;
@@ -732,7 +743,7 @@ function holeNewslettervorlageStd(int $kNewsletterVorlageStd, int $kNewsletterVo
             $nlTplContent = new stdClass();
             if (isset($nlTplStdVar->kNewslettervorlageStdVar) && $nlTplStdVar->kNewslettervorlageStdVar > 0) {
                 $cSQL = ' AND kNewslettervorlage IS NULL';
-                if (isset($kNewsletterVorlage) && (int)$kNewsletterVorlage > 0) {
+                if ($kNewsletterVorlage > 0) {
                     $cSQL = ' AND kNewslettervorlage = ' . $kNewsletterVorlage;
                 }
 
@@ -772,7 +783,6 @@ function holeNewslettervorlageStd(int $kNewsletterVorlageStd, int $kNewsletterVo
  */
 function explodecArtikel($cArtikel)
 {
-    // cArtikel exploden
     $cArtikelTMP_arr                = explode(';', $cArtikel);
     $oExplodedArtikel               = new stdClass();
     $oExplodedArtikel->kArtikel_arr = [];
@@ -880,7 +890,7 @@ function holeArtikelnummer(int $kArtikel)
     $cArtNr   = '';
     $oArtikel = null;
 
-    if ((int)$kArtikel > 0) {
+    if ($kArtikel > 0) {
         $oArtikel = Shop::Container()->getDB()->select('tartikel', 'kArtikel', $kArtikel);
     }
 
@@ -1146,17 +1156,22 @@ function gibAbonnent($cPost_arr)
     // SQL bauen
     $cSQL = '';
     if (strlen($cVorname) > 0) {
-        $cSQL .= "tnewsletterempfaenger.cVorname LIKE '%" . strip_tags(Shop::Container()->getDB()->realEscape($cVorname)) . "%'";
+        $cSQL .= "tnewsletterempfaenger.cVorname LIKE '%" .
+            strip_tags(Shop::Container()->getDB()->realEscape($cVorname)) . "%'";
     }
     if (strlen($cNachname) > 0 && strlen($cVorname) > 0) {
-        $cSQL .= " AND tnewsletterempfaenger.cNachname LIKE '%" . strip_tags(Shop::Container()->getDB()->realEscape($cNachname)) . "%'";
+        $cSQL .= " AND tnewsletterempfaenger.cNachname LIKE '%" .
+            strip_tags(Shop::Container()->getDB()->realEscape($cNachname)) . "%'";
     } elseif (strlen($cNachname) > 0) {
-        $cSQL .= "tnewsletterempfaenger.cNachname LIKE '%" . strip_tags(Shop::Container()->getDB()->realEscape($cNachname)) . "%'";
+        $cSQL .= "tnewsletterempfaenger.cNachname LIKE '%" .
+            strip_tags(Shop::Container()->getDB()->realEscape($cNachname)) . "%'";
     }
     if (strlen($cEmail) > 0 && (strlen($cVorname) > 0 || strlen($cNachname) > 0)) {
-        $cSQL .= " AND tnewsletterempfaenger.cEmail LIKE '%" . strip_tags(Shop::Container()->getDB()->realEscape($cEmail)) . "%'";
+        $cSQL .= " AND tnewsletterempfaenger.cEmail LIKE '%" .
+            strip_tags(Shop::Container()->getDB()->realEscape($cEmail)) . "%'";
     } elseif (strlen($cEmail) > 0) {
-        $cSQL .= "tnewsletterempfaenger.cEmail LIKE '%" . strip_tags(Shop::Container()->getDB()->realEscape($cEmail)) . "%'";
+        $cSQL .= "tnewsletterempfaenger.cEmail LIKE '%" .
+            strip_tags(Shop::Container()->getDB()->realEscape($cEmail)) . "%'";
     }
     $oAbonnent = Shop::Container()->getDB()->query(
         "SELECT tnewsletterempfaenger.kNewsletterEmpfaenger, tnewsletterempfaenger.cVorname AS newsVorname, 

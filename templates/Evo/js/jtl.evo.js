@@ -152,7 +152,7 @@
                 $(e).height($('div', $(e)).outerHeight()).addClass('setHeight');
             });
         },
-        
+
         tooltips: function() {
             $('[data-toggle="tooltip"]').tooltip();
         },
@@ -208,12 +208,12 @@
                 document.body.appendChild(s);
             })();
         },
-        
+
         showNotify: function(options) {
             eModal.alert({
                 size: 'lg',
                 buttons: false,
-                title: options.title, 
+                title: options.title,
                 message: options.text,
                 keyboard: true,
                 tabindex: -1,
@@ -222,11 +222,11 @@
                 }
             });
         },
-        
+
         renderCaptcha: function(parameters) {
             this.trigger('captcha.render', parameters);
         },
-        
+
         popupDep: function() {
             var that  = this;
             $('#main-wrapper').on('click', '.popup-dep', function(e) {
@@ -250,7 +250,7 @@
         popover: function() {
             /*
              * <a data-toggle="popover" data-ref="#popover-content123">Click me</a>
-             * <div id="popover-content123" class="popover">content here</div> 
+             * <div id="popover-content123" class="popover">content here</div>
              */
             $('[data-toggle="popover"]').popover({
                 trigger: 'hover',
@@ -326,17 +326,18 @@
             $submits.first().removeClass('hidden');
 
             $('input[name="Versandart"]', '#checkout-shipping-payment').change(function() {
-                var id    = parseInt($(this).val());
+                var shipmentid = parseInt($(this).val());
+                var paymentid  = $("input[id^='payment']:checked ").val();
                 var $form = $(this).closest('form');
 
-                if (isNaN(id)) {
+                if (isNaN(shipmentid)) {
                     return;
                 }
 
                 $form.find('fieldset, input[type="submit"]')
                     .attr('disabled', true);
 
-                var url = 'bestellvorgang.php?kVersandart=' + id;
+                var url = 'bestellvorgang.php?kVersandart=' + shipmentid + '&kZahlungsart=' + paymentid;
                 $.evo.loadContent(url, function() {
                     $.evo.checkout();
                 }, null, true);
@@ -375,7 +376,7 @@
                 that.trigger('loaded.evo.content', { url: url });
             });
         },
-        
+
         spinner: function(target) {
             var opts = {
               lines: 12             // The number of lines to draw

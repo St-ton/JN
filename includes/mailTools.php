@@ -115,8 +115,11 @@ function sendeMail($ModulId, $Object, $mail = null)
             $Sprache = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$Object->tkunde->kSprache);
         }
         if (isset($Object->NewsletterEmpfaenger->kSprache) && $Object->NewsletterEmpfaenger->kSprache > 0) {
-            $Sprache = Shop::Container()->getDB()->select('tsprache', 'kSprache',
-                $Object->NewsletterEmpfaenger->kSprache);
+            $Sprache = Shop::Container()->getDB()->select(
+                'tsprache',
+                'kSprache',
+                $Object->NewsletterEmpfaenger->kSprache
+            );
         }
         if (empty($Sprache)) {
             $Sprache = isset($_SESSION['kSprache'])
@@ -725,7 +728,8 @@ function verschickeMail($mail)
 
             foreach ($mail->cPDFS_arr as $i => $cPDFS) {
                 $phpmailer->addAttachment(
-                    $cUploadVerzeichnis . $cPDFS->fileName, $cPDFS->publicName . '.pdf',
+                    $cUploadVerzeichnis . $cPDFS->fileName,
+                    $cPDFS->publicName . '.pdf',
                     'base64',
                     'application/pdf'
                 );
@@ -808,7 +812,7 @@ function injectSubject($Object, $subject)
 function lokalisiereInhalt($Object)
 {
     if (isset($Object->tgutschein->fWert) && $Object->tgutschein->fWert != 0) {
-        $Object->tgutschein->cLocalizedWert = Preise::getLocalizedPriceString($Object->tgutschein->fWert, 0, false);
+        $Object->tgutschein->cLocalizedWert = Preise::getLocalizedPriceString($Object->tgutschein->fWert, null, false);
     }
 
     return $Object;
@@ -873,9 +877,12 @@ function lokalisiereLieferadresse($oSprache, $oLieferadresse)
     $langRow = (strtolower($oSprache->cISO) === 'ger') ? 'cDeutsch' : 'cEnglisch';
     $land    = Shop::Container()->getDB()->select(
         'tland',
-        'cISO', $oLieferadresse->cLand,
-        null, null,
-        null, null,
+        'cISO',
+        $oLieferadresse->cLand,
+        null,
+        null,
+        null,
+        null,
         false,
         $langRow . ' AS cName, cISO'
     );

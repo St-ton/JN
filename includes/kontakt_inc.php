@@ -10,7 +10,7 @@
  */
 function gibFehlendeEingabenKontaktformular()
 {
-    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return FormHelper::getMissingContactFormData();
 }
 
@@ -20,7 +20,7 @@ function gibFehlendeEingabenKontaktformular()
  */
 function baueKontaktFormularVorgaben()
 {
-    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return FormHelper::baueKontaktFormularVorgaben();
 }
 
@@ -30,7 +30,7 @@ function baueKontaktFormularVorgaben()
  */
 function pruefeBetreffVorhanden()
 {
-    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return FormHelper::checkSubject();
 }
 
@@ -40,7 +40,7 @@ function pruefeBetreffVorhanden()
  */
 function bearbeiteNachricht()
 {
-    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return FormHelper::editMessage();
 }
 
@@ -51,7 +51,7 @@ function bearbeiteNachricht()
  */
 function floodSchutz($min)
 {
-    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return FormHelper::checkFloodProtection($min);
 }
 
@@ -62,7 +62,7 @@ if (!function_exists('baueFormularVorgaben')) {
      */
     function baueFormularVorgaben()
     {
-        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+        trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
         return FormHelper::baueKontaktFormularVorgaben();
     }
 }

@@ -185,7 +185,7 @@ if (FormHelper::validateToken()) {
         }
         $smarty->assign('oNewsletterVorlage', $oNewsletterVorlage)
                ->assign('cFehler', is_string($preview) ? $preview : null)
-               ->assign('NettoPreise', Session::CustomerGroup()->getIsMerchant());
+               ->assign('NettoPreise', \Session\Session::getCustomerGroup()->getIsMerchant());
     } elseif (RequestHelper::verifyGPCDataInt('newslettervorlagenstd') === 1) { // Vorlagen Std
         $oKundengruppe_arr = Shop::Container()->getDB()->query(
             'SELECT kKundengruppe, cName
@@ -255,7 +255,9 @@ if (FormHelper::validateToken()) {
                    ->assign('kKundengruppe_arr', $kKundengruppe_arr);
         }
         // Vorlage Std erstellen
-        if (RequestHelper::verifyGPCDataInt('vorlage_std_erstellen') === 1 && RequestHelper::verifyGPCDataInt('kNewsletterVorlageStd') > 0) {
+        if (RequestHelper::verifyGPCDataInt('vorlage_std_erstellen') === 1
+            && RequestHelper::verifyGPCDataInt('kNewsletterVorlageStd') > 0
+        ) {
             $step                  = 'vorlage_std_erstellen';
             $kNewsletterVorlageStd = RequestHelper::verifyGPCDataInt('kNewsletterVorlageStd');
             // Hole Std Vorlage
@@ -533,17 +535,24 @@ if (FormHelper::validateToken()) {
                     );
 
                     if (isset($oNewslettervorlage->kNewsletterVorlage) && $oNewslettervorlage->kNewsletterVorlage > 0) {
-                        if (isset($oNewslettervorlage->kNewslettervorlageStd) && $oNewslettervorlage->kNewslettervorlageStd > 0) {
+                        if (isset($oNewslettervorlage->kNewslettervorlageStd)
+                            && $oNewslettervorlage->kNewslettervorlageStd > 0
+                        ) {
                             Shop::Container()->getDB()->query(
                                 'DELETE tnewslettervorlage, tnewslettervorlagestdvarinhalt 
                                     FROM tnewslettervorlage
                                     LEFT JOIN tnewslettervorlagestdvarinhalt 
-                                        ON tnewslettervorlagestdvarinhalt.kNewslettervorlage = tnewslettervorlage.kNewsletterVorlage
+                                        ON tnewslettervorlagestdvarinhalt.kNewslettervorlage = 
+                                           tnewslettervorlage.kNewsletterVorlage
                                     WHERE tnewslettervorlage.kNewsletterVorlage = ' . (int)$kNewsletterVorlage,
                                 \DB\ReturnType::AFFECTED_ROWS
                             );
                         } else {
-                            Shop::Container()->getDB()->delete('tnewslettervorlage', 'kNewsletterVorlage', (int)$kNewsletterVorlage);
+                            Shop::Container()->getDB()->delete(
+                                'tnewslettervorlage',
+                                'kNewsletterVorlage',
+                                (int)$kNewsletterVorlage
+                            );
                         }
                     }
                 }
@@ -711,8 +720,13 @@ if ($step === 'uebersicht') {
     if (is_array($oNewsletterHistory_arr) && count($oNewsletterHistory_arr) > 0) {
         $smarty->assign('oNewsletterHistory_arr', $oNewsletterHistory_arr);
     }
-    // Einstellungen
-    $oConfig_arr = Shop::Container()->getDB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_NEWSLETTER, '*', 'nSort');
+    $oConfig_arr = Shop::Container()->getDB()->selectAll(
+        'teinstellungenconf',
+        'kEinstellungenSektion',
+        CONF_NEWSLETTER,
+        '*',
+        'nSort'
+    );
     $configCount = count($oConfig_arr);
     for ($i = 0; $i < $configCount; $i++) {
         if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {

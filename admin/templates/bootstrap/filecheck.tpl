@@ -1,76 +1,87 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section="filecheck"}
 {include file='tpl_inc/seite_header.tpl' cTitel=#filecheck# cBeschreibung=#filecheckDesc# cDokuURL=#filecheckURL#}
+{$modifiedFilesCheck = !empty($modifiedFilesError) || isset($modifiedFiles) && $modifiedFiles|@count > 0}
+{$orphanedFilesCheck = !empty($orphanedFilesError) || isset($orphanedFiles) && $orphanedFiles|@count > 0}
 
-<div id="content" class="container-fluid">
-    <div id="pageCheck">
-        {if isset($oDatei_arr) && $oDatei_arr|@count > 0}
-            <div id="contentCheck">
-                <div class="alert alert-info"><strong>Anzahl Dateien:</strong> {$nStat_arr.nAnzahl}<br /><strong>Anzahl modifizierter Dateien:</strong> {$nStat_arr.nFehler}</div>
-                {if $nStat_arr.nFehler > 0}
-                    <p>
-                        <button id="viewAll" name="viewAll" type="button" class="btn btn-primary hide" value="Alle anzeigen"><i class="fa fa-share"></i> Alle anzeigen</button>
-                        <button id="viewModified" name="viewModified" type="button" class="btn btn-danger viewModified" value="Modifizierte anzeigen"><i class="fa fa-warning"></i> Modifizierte anzeigen</button>
-                    </p>
-                    <br />
-                {/if}
-                <table class="table req">
-                    <thead>
-                        <tr>
-                            <th>Datei</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    {foreach name=datei from=$oDatei_arr item=oDatei}
-                    <tr class="filestate mod{$smarty.foreach.datei.iteration%2} {if !$oDatei->bFehler}unmodified{else}modified{/if}">
-                        <td>{$oDatei->cName}</td>
-                        <td><span class="badge {if !$oDatei->bFehler}green{else}red{/if}">{if !$oDatei->bFehler}Ok{else}modifiziert{/if}</span></td>
-                    </tr>
-                    {/foreach}
-                </table>
+{if !$modifiedFilesCheck && !$orphanedFilesCheck}
+    <div class="alert alert-info">{#fileCheckNoneModifiedOrphanedFiles#}</div>
+{/if}
+{if $modifiedFilesCheck}
+    <div class="panel panel-collapse">
+        <div class="panel-heading">
+            {#fileCheckModifiedFilesHeadline#}
+            <p class="small text-muted">{#fileCheckModifiedFilesNote#}</p>
+        </div>
+        <div class="panel-body">
+            <div id="content" class="container-fluid">
+                <div id="pageCheckModifiedFiles">
+                    {if !empty($modifiedFilesError)}
+                        <div class="alert alert-danger"><i class="fa fa-warning"></i> {$modifiedFilesError}</div>
+                    {else}
+                        {if isset($modifiedFiles) && $modifiedFiles|@count > 0}
+                            <div id="contentModifiedFilesCheck">
+                                <div class="alert alert-info">
+                                    <strong>{#fileCheckNumberModifiedFiles#}:</strong> {$errorsCounModifiedFiles}
+                                </div>
+                                <table class="table req">
+                                    <thead>
+                                    <tr>
+                                        <th>{#fileCheckFile#}</th>
+                                    </tr>
+                                    </thead>
+                                    {foreach name=datei from=$modifiedFiles item=file}
+                                        <tr class="filestate mod{$smarty.foreach.datei.iteration%2} modified">
+                                            <td>{$file}</td>
+                                        </tr>
+                                    {/foreach}
+                                </table>
+                            </div>
+                        {else}
+                        {/if}
+                    {/if}
+                </div>
             </div>
-        {else}
-        {/if}
+        </div>
     </div>
-</div>
+{/if}
+{if $orphanedFilesCheck}
+    <div class="panel panel-collapse">
+        <div class="panel-heading">
+            {#fileCheckOrphanedFilesHeadline#}
+            <p class="small text-muted">{#fileCheckOrphanedFilesNote#}</p>
+        </div>
+        <div class="panel-body">
+            <div id="content" class="container-fluid">
+                <div id="pageCheckOrphanedFiles">
+                    {if !empty($orphanedFilesError)}
+                        <div class="alert alert-danger"><i class="fa fa-warning"></i> {$orphanedFilesError}</div>
+                    {else}
+                        {if isset($orphanedFiles) && $orphanedFiles|@count > 0}
+                            <div id="contentOrphanedFilesCheck">
+                                <div class="alert alert-info">
+                                    <strong>{#fileCheckNumberOrphanedFiles#}:</strong> {$errorsCountOrphanedFiles}
+                                </div>
+                                <table class="table req">
+                                    <thead>
+                                        <tr>
+                                            <th>{#fileCheckFile#}</th>
+                                        </tr>
+                                    </thead>
+                                    {foreach name=datei from=$orphanedFiles item=file}
+                                        <tr class="filestate mod{$smarty.foreach.datei.iteration%2} orphaned">
+                                            <td>{$file}</td>
+                                        </tr>
+                                    {/foreach}
+                                </table>
+                            </div>
+                        {else}
+                        {/if}
+                    {/if}
+                </div>
+            </div>
+        </div>
+    </div>
+{/if}
 
-<script>
-    {literal}
-    $(document).ready(function () {
-
-        $('#viewAll').click(function () {
-            $('#viewAll').hide();
-            $('#viewModified').show().removeClass('hide');
-            $('.unmodified').show();
-            $('.modified').show();
-            colorLines();
-        });
-
-        $('#viewModified').click(function () {
-            $('#viewAll').show().removeClass('hide');
-            $('#viewModified').hide();
-            $('.unmodified').hide();
-            $('.modified').show();
-            colorLines();
-        });
-
-        function colorLines() {
-            var mod = 1;
-            $('.req li:not(:hidden)').each(function () {
-                if (mod === 1) {
-                    $(this).removeClass('mod0');
-                    $(this).removeClass('mod1');
-                    $(this).addClass('mod1');
-                    mod = 0;
-                } else {
-                    $(this).removeClass('mod1');
-                    $(this).removeClass('mod0');
-                    $(this).addClass('mod0');
-                    mod = 1;
-                }
-            });
-        }
-    });
-
-    {/literal}
-</script>{include file='tpl_inc/footer.tpl'}
+{include file='tpl_inc/footer.tpl'}

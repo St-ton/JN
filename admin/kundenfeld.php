@@ -16,13 +16,11 @@ $step           = 'uebersicht';
 
 setzeSprache();
 
-// Tabs
 $smarty->assign('cTab', $cStep ?? null);
 if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
 
-// Einstellungen
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $cHinweis .= saveAdminSectionSettings(CONF_KUNDENFELD, $_POST);
 } elseif (isset($_POST['kundenfelder']) && (int)$_POST['kundenfelder'] === 1 && FormHelper::validateToken()) {
@@ -103,7 +101,13 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     }
 }
 
-$oConfig_arr = Shop::Container()->getDB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_KUNDENFELD, '*', 'nSort');
+$oConfig_arr = Shop::Container()->getDB()->selectAll(
+    'teinstellungenconf',
+    'kEinstellungenSektion',
+    CONF_KUNDENFELD,
+    '*',
+    'nSort'
+);
 $configCount = count($oConfig_arr);
 for ($i = 0; $i < $configCount; $i++) {
     if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
@@ -156,4 +160,3 @@ $smarty->assign('oKundenfeld_arr', $oKundenfeld_arr)
        ->assign('fehler', $cFehler)
        ->assign('step', $step)
        ->display('kundenfeld.tpl');
-

@@ -124,9 +124,10 @@ class Filter
     /**
      * Assemble filter object to be ready for use. Build WHERE clause.
      */
-    public function assemble()
+    public function assemble(): void
     {
-        $this->cWhereSQL = implode(' AND ',
+        $this->cWhereSQL = implode(
+            ' AND ',
             array_filter(
                 array_map(function (FilterField $oField) {
                     return $oField->getWhereClause();
@@ -172,7 +173,7 @@ class Filter
     /**
      *
      */
-    public function loadSessionStore()
+    public function loadSessionStore(): void
     {
         $this->cSession_arr = $_SESSION['filter_' . $this->cId] ?? [];
     }
@@ -180,7 +181,7 @@ class Filter
     /**
      *
      */
-    public function saveSessionStore()
+    public function saveSessionStore(): void
     {
         $_SESSION['filter_' . $this->cId] = $this->cSession_arr;
     }

@@ -88,7 +88,7 @@ class Slide
      * @param string $type
      * @return string|null
      */
-    private function getMapping(string $type)
+    private function getMapping(string $type): ?string
     {
         return self::$mapping[$type] ?? null;
     }
@@ -274,7 +274,7 @@ class Slide
     /**
      * @param int|string $id
      */
-    public function setID($id)
+    public function setID($id): void
     {
         $this->id = (int)$id;
     }
@@ -290,7 +290,7 @@ class Slide
     /**
      * @param int|string $sliderID
      */
-    public function setSliderID($sliderID)
+    public function setSliderID($sliderID): void
     {
         $this->sliderID = (int)$sliderID;
     }
@@ -306,7 +306,7 @@ class Slide
     /**
      * @param string $title
      */
-    public function setTitle(string $title)
+    public function setTitle(string $title): void
     {
         $this->title = $title;
     }
@@ -322,7 +322,7 @@ class Slide
     /**
      * @param string $image
      */
-    public function setImage(string $image)
+    public function setImage(string $image): void
     {
         $this->image = $image;
     }
@@ -338,7 +338,7 @@ class Slide
     /**
      * @param string $text
      */
-    public function setText(string $text)
+    public function setText(string $text): void
     {
         $this->text = $text;
     }
@@ -354,7 +354,7 @@ class Slide
     /**
      * @param string $thumbnail
      */
-    public function setThumbnail(string $thumbnail)
+    public function setThumbnail(string $thumbnail): void
     {
         $this->thumbnail = $thumbnail;
     }
@@ -370,7 +370,7 @@ class Slide
     /**
      * @param string $link
      */
-    public function setLink(string $link)
+    public function setLink(string $link): void
     {
         $this->link = $link;
     }
@@ -386,7 +386,7 @@ class Slide
     /**
      * @param int|string $sort
      */
-    public function setSort($sort)
+    public function setSort($sort): void
     {
         $this->sort = (int)$sort;
     }
@@ -402,7 +402,7 @@ class Slide
     /**
      * @param string $absoluteImage
      */
-    public function setAbsoluteImage(string $absoluteImage)
+    public function setAbsoluteImage(string $absoluteImage): void
     {
         $this->absoluteImage = $absoluteImage;
     }
@@ -418,7 +418,7 @@ class Slide
     /**
      * @param string $absoluteThumbnail
      */
-    public function setAbsoluteThumbnail(string $absoluteThumbnail)
+    public function setAbsoluteThumbnail(string $absoluteThumbnail): void
     {
         $this->absoluteThumbnail = $absoluteThumbnail;
     }

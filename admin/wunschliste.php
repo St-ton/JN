@@ -9,7 +9,6 @@ $oAccount->permission('MODULE_WISHLIST_VIEW', true, true);
 /** @global JTLSmarty $smarty */
 $cHinweis          = '';
 $settingsIDs       = [442, 443, 440, 439, 445, 446, 1460];
-// Tabs
 if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
@@ -63,7 +62,8 @@ $CWunschlisteVersand_arr = Shop::Container()->getDB()->query(
             ON twunschliste.kKunde = tkunde.kKunde
         ORDER BY twunschlisteversand.dZeit DESC
         LIMIT " . $oPagiFreunde->getLimitSQL(),
-    \DB\ReturnType::ARRAY_OF_OBJECTS);
+    \DB\ReturnType::ARRAY_OF_OBJECTS
+);
 // cNachname entschluesseln
 foreach ($CWunschlisteVersand_arr as $i => $CWunschlisteVersand) {
     if ($CWunschlisteVersand->kKunde !== null) {
@@ -84,7 +84,8 @@ $CWunschliste_arr = Shop::Container()->getDB()->query(
         GROUP BY twunschliste.kWunschliste
         ORDER BY twunschliste.dErstellt DESC
         LIMIT " . $oPagiPos->getLimitSQL(),
-    \DB\ReturnType::ARRAY_OF_OBJECTS);
+    \DB\ReturnType::ARRAY_OF_OBJECTS
+);
 foreach ($CWunschliste_arr as $i => $CWunschliste) {
     if ($CWunschliste->kKunde !== null) {
         $oKunde = new Kunde($CWunschliste->kKunde);
@@ -99,7 +100,8 @@ $CWunschlistePos_arr = Shop::Container()->getDB()->query(
         GROUP BY kArtikel
         ORDER BY Anzahl DESC
         LIMIT " . $oPagiArtikel->getLimitSQL(),
-    \DB\ReturnType::ARRAY_OF_OBJECTS);
+    \DB\ReturnType::ARRAY_OF_OBJECTS
+);
 // Config holen
 $oConfig_arr = Shop::Container()->getDB()->query(
     'SELECT *

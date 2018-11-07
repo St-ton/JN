@@ -238,7 +238,7 @@ trait JTLCacheTrait
     /**
      * removes cache IDs associated with given tags from cache
      *
-     * @param array $tags
+     * @param array|string $tags
      * @return int
      */
     public function flushTags($tags): int

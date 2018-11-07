@@ -110,7 +110,7 @@ switch ($action) {
 }
 // Daten anzeigen
 switch ($action) {
-    case 'slides' :
+    case 'slides':
         $slider = new Slider();
         $slider->load($kSlider, false);
         $smarty->assign('oSlider', $slider);

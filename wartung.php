@@ -11,7 +11,6 @@ if ($Einstellungen['global']['wartungsmodus_aktiviert'] === 'N') {
     exit;
 }
 Shop::setPageType(PAGE_WARTUNG);
-//hole aktuelle Kategorie, falls eine gesetzt
 $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategorie'));
 $AufgeklappteKategorien = new KategorieListe();
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);

@@ -18,12 +18,12 @@ $statusMail = new Statusmail(Shop::Container()->getDB());
 if (FormHelper::validateToken()) {
     if (isset($_POST['action']) && $_POST['action'] === 'sendnow') {
         $statusMail->sendAllActiveStatusMails();
-    }
-    elseif (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
+    } elseif (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
         if ($statusMail->updateConfig()) {
             $cHinweis .= 'Ihre Einstellungen wurden übernommen.<br>';
         } else {
-            $cFehler .= 'Fehler: Ihre Einstellungen konnte nicht gespeichert werden. Bitte prüfen Sie Ihre Eingaben.<br>';
+            $cFehler .= 'Fehler: Ihre Einstellungen konnte nicht gespeichert werden. ' .
+                'Bitte prüfen Sie Ihre Eingaben.<br>';
         }
         $step = 'statusemail_uebersicht';
     }

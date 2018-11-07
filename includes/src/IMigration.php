@@ -12,12 +12,12 @@ interface IMigration
     /**
      * @var string
      */
-    const UP = 'up';
+    public const UP = 'up';
 
     /**
      * @var string
      */
-    const DOWN = 'down';
+    public const DOWN = 'down';
 
     /**
      * @return bool

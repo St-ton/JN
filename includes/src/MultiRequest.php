@@ -15,7 +15,7 @@ class MultiRequest
     public $handle;
 
     /**
-     * 
+     * MultiRequest constructor.
      */
     public function __construct()
     {

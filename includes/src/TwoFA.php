@@ -33,7 +33,6 @@ class TwoFA
      */
     private $szShopName;
 
-
     /**
      * constructor
      */
@@ -96,7 +95,6 @@ class TwoFA
         return $this->oUserTuple->c2FAauthSecret;
     }
 
-
     /**
      * instantiate a authenticator-object and try to verify the given code
      * by load the users secret
@@ -118,7 +116,6 @@ class TwoFA
         }
         return $this->oGA->verifyCode($this->oUserTuple->c2FAauthSecret, $szCode);
     }
-
 
     /**
      * deliver a QR-code for the given user and his secret
@@ -145,10 +142,10 @@ class TwoFA
             }
             // create the QR-code
             $szQRString = new QRCode(
-                  'otpauth://totp/'.$szTotpUrl
-                . '?secret=' . $this->oUserTuple->c2FAauthSecret
-                . '&issuer=JTL-Software'
-                , new QRString()
+                'otpauth://totp/' . $szTotpUrl .
+                '?secret=' . $this->oUserTuple->c2FAauthSecret .
+                '&issuer=JTL-Software',
+                new QRString()
             );
 
             return $szQRString->output();

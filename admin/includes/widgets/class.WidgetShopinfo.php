@@ -32,7 +32,6 @@ class WidgetShopinfo extends WidgetBase
 
     /**
      * @return string
-     *
      * @throws SmartyException
      */
     public function getContent()

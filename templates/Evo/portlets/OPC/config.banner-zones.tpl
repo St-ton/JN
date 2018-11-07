@@ -111,14 +111,13 @@
 
     </style>
     <script type="text/javascript">
-        function kcfinderCallback(url) {
+
+        opc.setImageSelectCallback(function(url) {
             $('#area_wrapper img').attr('src', url);
             if (url.length !== 0 && url.indexOf("preview.banner") == -1){
                 $('#banner-zones-container').show();
             }
-        }
-
-        opc.setImageSelectCallback(kcfinderCallback);
+        });
 
         $(function () {
             $.clickareas({

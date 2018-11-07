@@ -12,7 +12,7 @@ class LanguageHelper
     /**
      * @var LanguageHelper
      */
-    private static $_instance;
+    private static $instance;
 
     /**
      * @var string
@@ -24,8 +24,8 @@ class LanguageHelper
      */
     public function __construct()
     {
-        $this->cacheID   = 'langdata_' . Shop::Cache()->getBaseID(false, false, true, true, true, false);
-        self::$_instance = $this;
+        $this->cacheID  = 'langdata_' . Shop::Cache()->getBaseID(false, false, true, true, true, false);
+        self::$instance = $this;
     }
 
     /**
@@ -33,6 +33,6 @@ class LanguageHelper
      */
     public static function getInstance(): self
     {
-        return self::$_instance ?? new self();
+        return self::$instance ?? new self();
     }
 }

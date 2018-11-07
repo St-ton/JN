@@ -72,7 +72,8 @@ trait MigrationTableTrait
             throw new Exception("section name '{$section}' not found");
         }
 
-        $this->execute("INSERT INTO tsprachwerte SET
+        $this->execute(
+            "INSERT INTO tsprachwerte SET
             kSprachISO = '{$locales[$locale]}', 
             kSprachsektion = '{$sections[$section]}', 
             cName = '{$key}', 
@@ -98,8 +99,8 @@ trait MigrationTableTrait
     private function getAvailableInputTypes(): array
     {
         $result = [];
-        $items  = $this->fetchAll("
-            SELECT DISTINCT cInputTyp 
+        $items  = $this->fetchAll(
+            "SELECT DISTINCT cInputTyp 
                 FROM `teinstellungenconf` 
                 WHERE cInputTyp IS NOT NULL 
                     AND cInputTyp != ''"
@@ -173,25 +174,26 @@ trait MigrationTableTrait
         ) {
             throw new Exception('inputType has to be provided if additionalProperties->cConf is not set to "N"');
         }
-        if (in_array($inputType, $inputTypeNeedsOptions)
+        if (in_array($inputType, $inputTypeNeedsOptions, true)
             && (!is_object($additionalProperties)
                 || !isset($additionalProperties->inputOptions)
                 || !is_array($additionalProperties->inputOptions)
                 || count($additionalProperties->inputOptions) === 0)
         ) {
-            throw new Exception('additionalProperties->inputOptions has to be provided if inputType is "' . $inputType . '"');
+            throw new Exception('additionalProperties->inputOptions has to be provided if inputType is "' .
+                $inputType . '"');
         }
         if ($overwrite !== true) {
-            $count = $this->fetchOne("
-                SELECT COUNT(*) AS count 
+            $count = $this->fetchOne(
+                "SELECT COUNT(*) AS count 
                     FROM teinstellungen 
                     WHERE cName='{$configName}'"
             );
             if ((int)$count->count !== 0) {
                 throw new Exception('another entry already present in teinstellungen and overwrite is disabled');
             }
-            $count = $this->fetchOne("
-                SELECT COUNT(*) AS count 
+            $count = $this->fetchOne(
+                "SELECT COUNT(*) AS count 
                     FROM teinstellungenconf 
                     WHERE cWertName='{$configName}' 
                         OR kEinstellungenConf={$kEinstellungenConf}"
@@ -199,8 +201,8 @@ trait MigrationTableTrait
             if ((int)$count->count !== 0) {
                 throw new Exception('another entry already present in teinstellungenconf and overwrite is disabled');
             }
-            $count = $this->fetchOne("
-                SELECT COUNT(*) AS count 
+            $count = $this->fetchOne(
+                "SELECT COUNT(*) AS count 
                     FROM teinstellungenconfwerte 
                     WHERE kEinstellungenConf={$kEinstellungenConf}"
             );
@@ -211,7 +213,7 @@ trait MigrationTableTrait
             unset($count);
 
             // $overwrite has to be set to true in order to create a new inputType
-            if (!in_array($inputType, $availableInputTypes)
+            if (!in_array($inputType, $availableInputTypes, true)
                 && (!is_object($additionalProperties)
                     || !isset($additionalProperties->cConf)
                     || $additionalProperties->cConf !== 'N')
@@ -290,8 +292,8 @@ trait MigrationTableTrait
     public function removeConfig($key)
     {
         $this->execute("DELETE FROM teinstellungen WHERE cName = '{$key}'");
-        $this->execute("
-            DELETE FROM teinstellungenconfwerte 
+        $this->execute(
+            "DELETE FROM teinstellungenconfwerte 
                 WHERE kEinstellungenConf = (
                     SELECT kEinstellungenConf 
                         FROM teinstellungenconf 

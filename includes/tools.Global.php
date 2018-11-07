@@ -1293,12 +1293,15 @@ function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $n
         $redirectParam[] = R_MINDESTMENGE;
     }
     //lager beachten
-    if ($Artikel->cLagerBeachten === 'Y' &&
-        $Artikel->cLagerVariation !== 'Y' &&
-        $Artikel->cLagerKleinerNull !== 'Y' &&
-        $Artikel->fPackeinheit * ($anzahl + $_SESSION['Warenkorb']->gibAnzahlEinesArtikels($kArtikel)) > $Artikel->fLagerbestand
-    ) {
-        $redirectParam[] = R_LAGER;
+    if ($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerVariation !== 'Y' && $Artikel->cLagerKleinerNull !== 'Y') {
+        foreach ($Artikel->getAllDependentProducts(true) as $dependent) {
+            /** @var Artikel $product */
+            $product = $dependent->product;
+            if ($product->fPackeinheit * ($anzahl + $_SESSION['Warenkorb']->getDependentAmount($product->kArtikel, true)) > $product->fLagerbestand) {
+                $redirectParam[] = R_LAGER;
+                break;
+            }
+        }
     }
     //darf preise sehen und somit einkaufen?
     if ($_SESSION['Kundengruppe']->darfPreiseSehen !== 1 || $_SESSION['Kundengruppe']->darfArtikelKategorienSehen !== 1) {

@@ -21,7 +21,13 @@ if (isset($_GET['f']) && (int)$_GET['f'] === 1 && FormHelper::validateToken()) {
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $cHinweis .= saveAdminSectionSettings(CONF_RSS, $_POST);
 }
-$oConfig_arr = Shop::Container()->getDB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_RSS, '*', 'nSort');
+$oConfig_arr = Shop::Container()->getDB()->selectAll(
+    'teinstellungenconf',
+    'kEinstellungenSektion',
+    CONF_RSS,
+    '*',
+    'nSort'
+);
 $count = count($oConfig_arr);
 for ($i = 0; $i < $count; $i++) {
     if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
@@ -45,7 +51,8 @@ for ($i = 0; $i < $count; $i++) {
 
 if (!is_writable(PFAD_ROOT . FILE_RSS_FEED)) {
     $rssNotice = "'" . PFAD_ROOT . FILE_RSS_FEED . "' kann nicht geschrieben werden.
-        Bitte achten Sie darauf, dass diese Datei ausreichende Schreibrechte besitzt. Ansonsten kann keine RSS XML Datei erstellt werden.";
+        Bitte achten Sie darauf, dass diese Datei ausreichende Schreibrechte besitzt. " .
+        "Ansonsten kann keine RSS XML Datei erstellt werden.";
 } else {
     $rssNotice = '<a href="rss.php?f=1">RSS-Feed XML Datei erstellen</a>';
 }

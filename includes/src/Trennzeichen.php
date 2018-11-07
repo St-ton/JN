@@ -97,8 +97,10 @@ class Trennzeichen
         if (($data = Shop::Cache()->get($cacheID)) === false) {
             $data = Shop::Container()->getDB()->select(
                 'ttrennzeichen',
-                'nEinheit', $nEinheit,
-                'kSprache', $kSprache
+                'nEinheit',
+                $nEinheit,
+                'kSprache',
+                $kSprache
             );
             if ($data !== null) {
                 $data->kTrennzeichen   = (int)$data->kTrennzeichen;
@@ -139,7 +141,12 @@ class Trennzeichen
             }
             if (isset($data->kTrennzeichen) && $data->kTrennzeichen > 0) {
                 return $fAmount >= 0
-                    ? number_format((float)$fAmount, $data->nDezimalstellen, $data->cDezimalZeichen, $data->cTausenderZeichen)
+                    ? number_format(
+                        (float)$fAmount,
+                        $data->nDezimalstellen,
+                        $data->cDezimalZeichen,
+                        $data->cTausenderZeichen
+                    )
                     : new self($data->kTrennzeichen);
             }
         }
@@ -344,7 +351,7 @@ class Trennzeichen
     /**
      * @return int|null
      */
-    public function getTrennzeichen()
+    public function getTrennzeichen(): ?int
     {
         return $this->kTrennzeichen;
     }
@@ -352,7 +359,7 @@ class Trennzeichen
     /**
      * @return int|null
      */
-    public function getSprache()
+    public function getSprache(): ?int
     {
         return $this->kSprache;
     }
@@ -360,7 +367,7 @@ class Trennzeichen
     /**
      * @return int|null
      */
-    public function getEinheit()
+    public function getEinheit(): ?int
     {
         return $this->nEinheit;
     }
@@ -368,7 +375,7 @@ class Trennzeichen
     /**
      * @return int|null
      */
-    public function getDezimalstellen()
+    public function getDezimalstellen(): ?int
     {
         return $this->nDezimalstellen;
     }

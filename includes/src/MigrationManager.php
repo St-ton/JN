@@ -100,7 +100,8 @@ class MigrationManager
         $migrations = $this->getMigrations();
         if (!array_key_exists($id, $migrations)) {
             throw new \InvalidArgumentException(sprintf(
-                'Migration "%s" not found', $id
+                'Migration "%s" not found',
+                $id
             ));
         }
 

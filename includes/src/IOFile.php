@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+/**
+ * Class IOFile
+ */
 class IOFile implements JsonSerializable
 {
     /**

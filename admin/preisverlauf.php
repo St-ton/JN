@@ -14,7 +14,13 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
     $cHinweis .= saveAdminSectionSettings(CONF_PREISVERLAUF, $_POST);
 }
 
-$oConfig_arr = Shop::Container()->getDB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_PREISVERLAUF, '*', 'nSort');
+$oConfig_arr = Shop::Container()->getDB()->selectAll(
+    'teinstellungenconf',
+    'kEinstellungenSektion',
+    CONF_PREISVERLAUF,
+    '*',
+    'nSort'
+);
 $configCount = count($oConfig_arr);
 for ($i = 0; $i < $configCount; $i++) {
     if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {

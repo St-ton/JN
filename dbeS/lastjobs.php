@@ -31,7 +31,8 @@ if (auth()) {
                     $db           = Shop::Container()->getDB();
                     $config       = Shop::getSettings([CONF_GLOBAL, CONF_SITEMAP]);
                     $exportConfig = new \Sitemap\Config\DefaultConfig(
-                        $db, $config,
+                        $db,
+                        $config,
                         Shop::getURL() . '/',
                         Shop::getImageBaseURL()
                     );

@@ -50,7 +50,7 @@ class Boxen
     /**
      * @var Boxen
      */
-    private static $_instance;
+    private static $instance;
 
     /**
      * @var \Services\JTL\BoxService
@@ -64,7 +64,7 @@ class Boxen
     public static function getInstance(): self
     {
         trigger_error(__CLASS__ . ' is deprecated.', E_USER_DEPRECATED);
-        return self::$_instance ?? new self();
+        return self::$instance ?? new self();
     }
 
     /**
@@ -73,7 +73,7 @@ class Boxen
     public function __construct()
     {
         $this->boxService = Shop::Container()->getBoxService();
-        self::$_instance  = $this;
+        self::$instance   = $this;
     }
 
     /**

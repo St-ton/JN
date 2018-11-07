@@ -66,7 +66,13 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && Form
     unset($oConfig_arr);
 }
 
-$oConfig_arr = Shop::Container()->getDB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_METAANGABEN, '*', 'nSort');
+$oConfig_arr = Shop::Container()->getDB()->selectAll(
+    'teinstellungenconf',
+    'kEinstellungenSektion',
+    CONF_METAANGABEN,
+    '*',
+    'nSort'
+);
 $configCount = count($oConfig_arr);
 for ($i = 0; $i < $configCount; $i++) {
     if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {

@@ -201,9 +201,12 @@ class Preise
                 $tax           =
                     Shop::Container()->getDB()->select(
                         'tartikel',
-                        'kArtikel', $kArtikel,
-                        null, null,
-                        null, null,
+                        'kArtikel',
+                        $kArtikel,
+                        null,
+                        null,
+                        null,
+                        null,
                         false,
                         'kSteuerklasse'
                     );
@@ -251,7 +254,11 @@ class Preise
                     );
 
                     if (isset($specialPrice->fNettoPreis) && (double)$specialPrice->fNettoPreis < $this->fVKNetto) {
-                        $specialPriceValue       = $this->getRecalculatedNetPrice($specialPrice->fNettoPreis, $defaultTax, $currentTax);
+                        $specialPriceValue       = $this->getRecalculatedNetPrice(
+                            $specialPrice->fNettoPreis,
+                            $defaultTax,
+                            $currentTax
+                        );
                         $this->alterVKNetto      = $this->fVKNetto;
                         $this->fVKNetto          = $specialPriceValue;
                         $this->Sonderpreis_aktiv = 1;
@@ -265,7 +272,11 @@ class Preise
                         $priceGetter = "fPreis{$i}";
 
                         $this->{$scaleGetter} = (int)$price->nAnzahlAb;
-                        $this->{$priceGetter} = $specialPriceValue ?? $this->getRecalculatedNetPrice($price->fVKNetto, $defaultTax, $currentTax);
+                        $this->{$priceGetter} = $specialPriceValue ?? $this->getRecalculatedNetPrice(
+                            $price->fVKNetto,
+                            $defaultTax,
+                            $currentTax
+                        );
                     }
 
                     $this->nAnzahl_arr[] = (int)$price->nAnzahlAb;
@@ -290,7 +301,8 @@ class Preise
 
     /**
      * Return recalculated new net price based on the rounded default gross price.
-     * This is necessary for having consistent gross prices in case of threshold delivery (Tax rate != default tax rate).
+     * This is necessary for having consistent gross prices in case of
+     * threshold delivery (Tax rate != default tax rate).
      *
      * @param double $netPrice the product net price
      * @param double $defaultTax the default tax factor of the product e.g. 19 for 19% vat
@@ -300,7 +312,11 @@ class Preise
     private function getRecalculatedNetPrice($netPrice, $defaultTax, $conversionTax)
     {
         $newNetPrice = $netPrice;
-        if (CONSISTENT_GROSS_PRICES === true && $defaultTax > 0 && $conversionTax > 0 && $defaultTax != $conversionTax) {
+        if (CONSISTENT_GROSS_PRICES === true
+            && $defaultTax > 0
+            && $conversionTax > 0 &&
+            $defaultTax != $conversionTax
+        ) {
             $newNetPrice = round($netPrice * ($defaultTax + 100) / 100, 2) / ($conversionTax + 100) * 100;
         }
         
@@ -342,6 +358,78 @@ class Preise
         return !($this->Kundenpreis_aktiv || $this->Sonderpreis_aktiv);
     }
 
+    /**
+     * Setzt Preise mit Daten aus der DB mit spezifizierten Primary Keys
+     *
+     * @param int $kKundengruppe
+     * @param int $kArtikel
+     * @return $this
+     */
+    public function loadFromDB(int $kKundengruppe, int $kArtikel): self
+    {
+        $obj = Shop::Container()->getDB()->select(
+            'tpreise',
+            'kArtikel',
+            $kArtikel,
+            'kKundengruppe',
+            $kKundengruppe
+        );
+        if (!empty($obj->kArtikel)) {
+            $members = array_keys(get_object_vars($obj));
+            foreach ($members as $member) {
+                $this->$member = $obj->$member;
+            }
+            $ust_obj    = Shop::Container()->getDB()->query(
+                'SELECT kSteuerklasse 
+                    FROM tartikel 
+                    WHERE kArtikel = ' . $kArtikel,
+                \DB\ReturnType::SINGLE_OBJECT
+            );
+            $this->fUst = TaxHelper::getSalesTax($ust_obj->kSteuerklasse);
+            //hat dieser Artikel fuer diese Kundengruppe einen Sonderpreis?
+            $sonderpreis = Shop::Container()->getDB()->query(
+                "SELECT tsonderpreise.fNettoPreis
+                    FROM tsonderpreise
+                    JOIN tartikel 
+                        ON tartikel.kArtikel = " . $kArtikel . "
+                    JOIN tartikelsonderpreis 
+                        ON tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis
+                        AND tartikelsonderpreis.kArtikel = " . $kArtikel . "
+                        AND tartikelsonderpreis.cAktiv = 'Y'
+                        AND tartikelsonderpreis.dStart <= CURDATE()
+                        AND (tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE())
+                        AND (tartikelsonderpreis.nAnzahl <= tartikel.fLagerbestand 
+                            OR tartikelsonderpreis.nIstAnzahl = 0)
+                    WHERE tsonderpreise.kKundengruppe = " . $kKundengruppe,
+                \DB\ReturnType::SINGLE_OBJECT
+            );
+            if (isset($sonderpreis->fNettoPreis)) {
+                if ($sonderpreis->fNettoPreis && $sonderpreis->fNettoPreis < $this->fVKNetto) {
+                    $this->alterVKNetto      = $this->fVKNetto;
+                    $this->fVKNetto          = $sonderpreis->fNettoPreis;
+                    $this->Sonderpreis_aktiv = 1;
+                }
+                if ($sonderpreis->fNettoPreis && $sonderpreis->fNettoPreis < $this->fPreis1) {
+                    $this->fPreis1 = $sonderpreis->fNettoPreis;
+                }
+                if ($sonderpreis->fNettoPreis && $sonderpreis->fNettoPreis < $this->fPreis2) {
+                    $this->fPreis2 = $sonderpreis->fNettoPreis;
+                }
+                if ($sonderpreis->fNettoPreis && $sonderpreis->fNettoPreis < $this->fPreis3) {
+                    $this->fPreis3 = $sonderpreis->fNettoPreis;
+                }
+                if ($sonderpreis->fNettoPreis && $sonderpreis->fNettoPreis < $this->fPreis4) {
+                    $this->fPreis4 = $sonderpreis->fNettoPreis;
+                }
+                if ($sonderpreis->fNettoPreis && $sonderpreis->fNettoPreis < $this->fPreis5) {
+                    $this->fPreis5 = $sonderpreis->fNettoPreis;
+                }
+            }
+            $this->berechneVKs();
+        }
+
+        return $this;
+    }
 
     /**
      * @param float $Rabatt
@@ -376,7 +464,7 @@ class Preise
      */
     public function localizePreise(): self
     {
-        $currency = Session::Currency();
+        $currency = \Session\Session::getCurrency();
 
         $this->cPreisLocalized_arr = [];
         foreach ($this->fPreis_arr as $fPreis) {
@@ -386,14 +474,19 @@ class Preise
             ];
         }
 
-        $this->cVKLocalized[0] = self::getLocalizedPriceString(TaxHelper::getGross($this->fVKNetto, $this->fUst, 4), $currency);
+        $this->cVKLocalized[0] = self::getLocalizedPriceString(
+            TaxHelper::getGross($this->fVKNetto, $this->fUst, 4),
+            $currency
+        );
         $this->cVKLocalized[1] = self::getLocalizedPriceString($this->fVKNetto, $currency);
 
         $this->fVKBrutto = TaxHelper::getGross($this->fVKNetto, $this->fUst);
 
         if ($this->alterVKNetto) {
-            $this->alterVKLocalized[0] = self::getLocalizedPriceString(TaxHelper::getGross($this->alterVKNetto, $this->fUst, 4),
-                $currency);
+            $this->alterVKLocalized[0] = self::getLocalizedPriceString(
+                TaxHelper::getGross($this->alterVKNetto, $this->fUst, 4),
+                $currency
+            );
             $this->alterVKLocalized[1] = self::getLocalizedPriceString($this->alterVKNetto, $currency);
         }
 
@@ -405,7 +498,7 @@ class Preise
      */
     public function berechneVKs(): self
     {
-        $factor = Session::Currency()->getConversionFactor();
+        $factor = \Session\Session::getCurrency()->getConversionFactor();
 
         $this->fVKBrutto = TaxHelper::getGross($this->fVKNetto, $this->fUst);
 
@@ -518,8 +611,8 @@ class Preise
      */
     public static function getLocalizedPriceWithoutFactor($preis, $waehrung = null, bool $html = true): string
     {
-        $currency = !$waehrung ? Session::Currency() : $waehrung;
-        if (get_class($currency) === 'stdClass') {
+        $currency = !$waehrung ? \Session\Session::getCurrency() : $waehrung;
+        if ($currency !== null && get_class($currency) === 'stdClass') {
             $currency = new Currency($currency->kWaehrung);
         }
         $localized    = number_format($preis, 2, $currency->getDecimalSeparator(), $currency->getThousandsSeparator());
@@ -531,17 +624,17 @@ class Preise
     }
 
     /**
-     * @param float      $price
-     * @param object|int $currency
-     * @param bool       $html
-     * @param int        $decimals
+     * @param float       $price
+     * @param object|null $currency
+     * @param bool        $html
+     * @param int         $decimals
      * @return string
      * @former self::getLocalizedPriceString()
      */
-    public static function getLocalizedPriceString($price, $currency = 0, bool $html = true, int $decimals = 2): string
+    public static function getLocalizedPriceString($price, $currency = null, bool $html = true, int $decimals = 2): string
     {
-        if ($currency === 0 || is_bool($currency) || is_numeric($currency)) {
-            $currency = Session::Currency();
+        if ($currency === null || is_numeric($currency) || is_bool($currency)) {
+            $currency = \Session\Session::getCurrency();
         } elseif (is_object($currency) && get_class($currency) === 'stdClass') {
             $currency = new Currency((int)$currency->kWaehrung);
         }

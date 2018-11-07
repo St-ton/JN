@@ -129,7 +129,7 @@ if ($action === 'bearbeiten') {
 } elseif ($action === 'loeschen') {
     // Kupons loeschen
     if (isset($_POST['kKupon_arr']) && is_array($_POST['kKupon_arr']) && count($_POST['kKupon_arr']) > 0) {
-        $kKupon_arr = array_map('intval', $_POST['kKupon_arr']);
+        $kKupon_arr = array_map('\intval', $_POST['kKupon_arr']);
         if (loescheKupons($kKupon_arr)) {
             $cHinweis = 'Ihre markierten Kupons wurden erfolgreich gelöscht.';
         } else {
@@ -231,25 +231,31 @@ if ($action === 'bearbeiten') {
     $nKuponNeukundenTotal = getCouponCount('neukundenkupon');
 
     handleCsvExportAction(
-        'standard', 'standard.csv',
+        'standard',
+        'standard.csv',
         function () use ($oFilterStandard) {
             return getExportableCoupons('standard', $oFilterStandard->getWhereSQL());
         },
-        [], ['kKupon']
+        [],
+        ['kKupon']
     );
     handleCsvExportAction(
-        'versandkupon', 'versandkupon.csv',
+        'versandkupon',
+        'versandkupon.csv',
         function () use ($oFilterVersand) {
             return getExportableCoupons('versandkupon', $oFilterVersand->getWhereSQL());
         },
-        [], ['kKupon']
+        [],
+        ['kKupon']
     );
     handleCsvExportAction(
-        'neukundenkupon', 'neukundenkupon.csv',
+        'neukundenkupon',
+        'neukundenkupon.csv',
         function () use ($oFilterNeukunden) {
             return getExportableCoupons('neukundenkupon', $oFilterNeukunden->getWhereSQL());
         },
-        [], ['kKupon']
+        [],
+        ['kKupon']
     );
 
     $oPaginationStandard  = (new Pagination('standard'))
@@ -266,15 +272,21 @@ if ($action === 'bearbeiten') {
         ->assemble();
 
     $oKuponStandard_arr  = getCoupons(
-        'standard', $oFilterStandard->getWhereSQL(), $oPaginationStandard->getOrderSQL(),
+        'standard',
+        $oFilterStandard->getWhereSQL(),
+        $oPaginationStandard->getOrderSQL(),
         $oPaginationStandard->getLimitSQL()
     );
     $oKuponVersand_arr   = getCoupons(
-        'versandkupon', $oFilterVersand->getWhereSQL(), $oPaginationVersand->getOrderSQL(),
+        'versandkupon',
+        $oFilterVersand->getWhereSQL(),
+        $oPaginationVersand->getOrderSQL(),
         $oPaginationVersand->getLimitSQL()
     );
     $oKuponNeukunden_arr = getCoupons(
-        'neukundenkupon', $oFilterNeukunden->getWhereSQL(), $oPaginationNeukunden->getOrderSQL(),
+        'neukundenkupon',
+        $oFilterNeukunden->getWhereSQL(),
+        $oPaginationNeukunden->getOrderSQL(),
         $oPaginationNeukunden->getLimitSQL()
     );
 

@@ -23,7 +23,7 @@ final class RecentlyViewedProducts extends AbstractBox
         if (isset($_SESSION['ZuletztBesuchteArtikel'])
             && \is_array($_SESSION['ZuletztBesuchteArtikel'])
             && \count($_SESSION['ZuletztBesuchteArtikel']) > 0
-            && \Session::CustomerGroup()->mayViewCategories()
+            && \Session\Session::getCustomerGroup()->mayViewCategories()
         ) {
             $products       = [];
             $defaultOptions = \Artikel::getDefaultOptions();

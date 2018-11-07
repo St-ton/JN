@@ -35,9 +35,8 @@ class Preisverlauf
     public $dDate;
 
     /**
-     * Konstruktor
-     *
-     * @param int $kPreisverlauf - Falls angegeben, wird der Preisverlauf mit angegebenem kPreisverlauf aus der DB geholt
+     * Preisverlauf constructor.
+     * @param int $kPreisverlauf
      */
     public function __construct(int $kPreisverlauf = 0)
     {
@@ -67,13 +66,13 @@ class Preisverlauf
                     ORDER BY tpreisverlauf.dDate DESC',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-            $_currency = Session::Currency();
+            $_currency = \Session\Session::getCurrency();
             $dt        = new DateTime();
             foreach ($obj_arr as &$_pv) {
                 if (isset($_pv->timestamp)) {
                     $dt->setTimestamp((int)$_pv->timestamp);
                     $_pv->date   = $dt->format('d.m.');
-                    $_pv->fPreis = Session::CustomerGroup()->isMerchant()
+                    $_pv->fPreis = \Session\Session::getCustomerGroup()->isMerchant()
                         ? round($_pv->fVKNetto * $_currency->getConversionFactor(), 2)
                         : TaxHelper::getGross($_pv->fVKNetto * $_currency->getConversionFactor(), $_pv->fMwst);
                     $_pv->currency = $_currency->getCode();

@@ -390,9 +390,12 @@ class Emailvorlage
         $table   = $isPlugin ? 'tpluginemailvorlage' : 'temailvorlage';
         $obj     = Shop::Container()->getDB()->select(
             $table,
-            'cModulId', $modulId,
-            null, null,
-            null, null,
+            'cModulId',
+            $modulId,
+            null,
+            null,
+            null,
+            null,
             false,
             'kEmailvorlage'
         );

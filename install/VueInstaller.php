@@ -158,7 +158,7 @@ class VueInstaller
                 ifndef('DB_USER', $credentials['user']);
                 ifndef('DB_PASS', $credentials['pass']);
                 ifndef('DB_NAME', $credentials['name']);
-                $this->db = new NiceDB(
+                $this->db = new \DB\NiceDB(
                     $credentials['host'],
                     $credentials['user'],
                     $credentials['pass'],
@@ -349,7 +349,7 @@ ini_set('display_errors', 0);" . "\n";
                 define('DB_SOCKET', $this->post['socket']);
             }
             try {
-                $db = new NiceDB($this->post['host'], $this->post['user'], $this->post['pass'], $this->post['name']);
+                $db = new \DB\NiceDB($this->post['host'], $this->post['user'], $this->post['pass'], $this->post['name']);
                 if (!$db->isConnected()) {
                     $res->error = true;
                     $res->msg   = 'Keine Verbindung möglich';

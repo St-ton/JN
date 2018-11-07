@@ -278,7 +278,6 @@ function getCombinations(array $shipClasses, int $length)
 {
     $baselen = count($shipClasses);
     if ($baselen === 0) {
-
         return [];
     }
     if ($length === 1) {
@@ -346,13 +345,11 @@ function getMissingShippingClassCombi()
 
     // if a shipping method is valid for all classes return
     if (in_array('-1', $combinationInUse, false)) {
-
         return [];
     }
 
     $len = count($shipClasses);
     if ($len > SHIPPING_CLASS_MAX_VALIDATION_COUNT) {
-
         return -1;
     }
 

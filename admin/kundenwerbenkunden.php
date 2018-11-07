@@ -15,21 +15,16 @@ $cFehler       = '';
 $step          = 'kwk_uebersicht';
 
 setzeSprache();
-
-// Tabs
 if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
-// KwK
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $cHinweis .= saveAdminSectionSettings(CONF_KUNDENWERBENKUNDEN, $_POST);
 }
-// KwK
 if (RequestHelper::verifyGPCDataInt('KwK') === 1
     && RequestHelper::verifyGPCDataInt('nichtreggt_loeschen') === 1
     && FormHelper::validateToken()
 ) {
-// Einladung vom Neukunden loeschen
     $kKundenWerbenKunden_arr = $_POST['kKundenWerbenKunden'];
     if (is_array($kKundenWerbenKunden_arr) && count($kKundenWerbenKunden_arr) > 0) {
         foreach ($kKundenWerbenKunden_arr as $kKundenWerbenKunden) {
@@ -40,10 +35,7 @@ if (RequestHelper::verifyGPCDataInt('KwK') === 1
         $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Neukunden<br />';
     }
 }
-
-//
 if ($step === 'kwk_uebersicht') {
-    // Einstellungen
     $oConfig_arr = Shop::Container()->getDB()->selectAll(
         'teinstellungenconf',
         'kEinstellungenSektion',

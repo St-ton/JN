@@ -19,7 +19,6 @@ class SyncCronjob extends NetSyncHandler
      */
     public static function exception($oException)
     {
-        var_dump($oException);
     }
 
     /**
@@ -50,6 +49,7 @@ class SyncCronjob extends NetSyncHandler
                             $oExport->dNaechsterStart_de
                         );
                     }
+                    unset($oExport);
                 }
 
                 self::throwResponse(NetSyncResponse::Ok, $oExport_arr);
@@ -66,6 +66,7 @@ class SyncCronjob extends NetSyncHandler
                             $oExport->dZuletztGelaufen_DE
                         );
                     }
+                    unset($oExport);
                 }
 
                 self::throwResponse(NetSyncResponse::Ok, $oExport_arr);

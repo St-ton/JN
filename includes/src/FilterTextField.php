@@ -26,11 +26,11 @@ class FilterTextField extends FilterField
 
     /**
      * FilterTextField constructor.
-     * 
+     *
      * @param Filter $oFilter
      * @param string|array $cTitle - either title-string for this field or a pair of short title and long title
      * @param string|array $cColumn - column/field or array of them to be searched disjunctively (OR)
-     * @param int    $nTestOp
+     * @param int          $nTestOp
      *  0 = custom
      *  1 = contains
      *  2 = begins with
@@ -41,7 +41,7 @@ class FilterTextField extends FilterField
      *  7 = lower than or equal
      *  8 = greater than or equal
      *  9 = equals not
-     * @param int    $nDataType
+     * @param int          $nDataType
      *  0 = text
      *  1 = number
      */
@@ -54,11 +54,14 @@ class FilterTextField extends FilterField
         $this->bCustomTestOp = $this->nTestOp === 0;
 
         if ($this->bCustomTestOp) {
-            $this->nTestOp =
-                $oFilter->getAction() === $oFilter->getId() . '_filter'      ? (int)$_GET[$oFilter->getId() . '_' . $this->cId . '_op'] : (
-                $oFilter->getAction() === $oFilter->getId() . '_resetfilter' ? 1 : (
-                $oFilter->hasSessionField($this->cId . '_op')                ? (int)$oFilter->getSessionField($this->cId . '_op') :
-                                                                               1
+            $this->nTestOp = $oFilter->getAction() === $oFilter->getId() . '_filter'
+                ? (int)$_GET[$oFilter->getId() . '_' . $this->cId . '_op']
+                : (
+                $oFilter->getAction() === $oFilter->getId() . '_resetfilter'
+                    ? 1
+                    : ($oFilter->hasSessionField($this->cId . '_op')
+                    ? (int)$oFilter->getSessionField($this->cId . '_op')
+                    : 1
                 ));
         }
     }
@@ -66,28 +69,47 @@ class FilterTextField extends FilterField
     /**
      * @return string|null
      */
-    public function getWhereClause()
+    public function getWhereClause(): ?string
     {
         if ($this->cValue !== '' || ($this->nDataType === 0 && ($this->nTestOp === 4 || $this->nTestOp === 9))) {
-            $cColumn_arr = is_array($this->cColumn)
+            $value   = Shop::Container()->getDB()->escape($this->cValue);
+            $columns = is_array($this->cColumn)
                 ? $this->cColumn
                 : [$this->cColumn];
-            $cClausePart_arr = [];
-            foreach ($cColumn_arr as $cColumn) {
+            $or      = [];
+            foreach ($columns as $column) {
                 switch ($this->nTestOp) {
-                    case 1: $cClausePart_arr[] = $cColumn . " LIKE '%" . Shop::Container()->getDB()->escape($this->cValue) . "%'"; break;
-                    case 2: $cClausePart_arr[] = $cColumn . " LIKE '" . Shop::Container()->getDB()->escape($this->cValue) . "%'"; break;
-                    case 3: $cClausePart_arr[] = $cColumn . " LIKE '%" . Shop::Container()->getDB()->escape($this->cValue) . "'"; break;
-                    case 4: $cClausePart_arr[] = $cColumn . " = '" . Shop::Container()->getDB()->escape($this->cValue) . "'"; break;
-                    case 5: $cClausePart_arr[] = $cColumn . " < '" . Shop::Container()->getDB()->escape($this->cValue) . "'"; break;
-                    case 6: $cClausePart_arr[] = $cColumn . " > '" . Shop::Container()->getDB()->escape($this->cValue) . "'"; break;
-                    case 7: $cClausePart_arr[] = $cColumn . " <= '" . Shop::Container()->getDB()->escape($this->cValue) . "'"; break;
-                    case 8: $cClausePart_arr[] = $cColumn . " >= '" . Shop::Container()->getDB()->escape($this->cValue) . "'"; break;
-                    case 9: $cClausePart_arr[] = $cColumn . " != '" . Shop::Container()->getDB()->escape($this->cValue) . "'"; break;
+                    case 1:
+                        $or[] = $column . " LIKE '%" . $value . "%'";
+                        break;
+                    case 2:
+                        $or[] = $column . " LIKE '" . $value . "%'";
+                        break;
+                    case 3:
+                        $or[] = $column . " LIKE '%" . $value . "'";
+                        break;
+                    case 4:
+                        $or[] = $column . " = '" . $value . "'";
+                        break;
+                    case 5:
+                        $or[] = $column . " < '" . $value . "'";
+                        break;
+                    case 6:
+                        $or[] = $column . " > '" . $value . "'";
+                        break;
+                    case 7:
+                        $or[] = $column . " <= '" . $value . "'";
+                        break;
+                    case 8:
+                        $or[] = $column . " >= '" . $value . "'";
+                        break;
+                    case 9:
+                        $or[] = $column . " != '" . $value . "'";
+                        break;
                 }
             }
 
-            return '(' . implode(' OR ', $cClausePart_arr) . ')';
+            return '(' . implode(' OR ', $or) . ')';
         }
 
         return null;

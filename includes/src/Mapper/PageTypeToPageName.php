@@ -71,7 +71,7 @@ class PageTypeToPageName
                 return 'ARTIKEL';
             case \PAGE_ARTIKELLISTE:
                 return 'ARTIKEL';
-            default;
+            default:
                 return '';
         }
     }

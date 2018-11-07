@@ -44,14 +44,14 @@ if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
 
     // Pruefe BestSeller
     if (strlen($cBestSellerSeo) > 0 && !pruefeSuchspecialSeo(
-            $oSuchSpecials_arr,
-            $cBestSellerSeo,
-            SEARCHSPECIALS_BESTSELLER)
-    ) {
+        $oSuchSpecials_arr,
+        $cBestSellerSeo,
+        SEARCHSPECIALS_BESTSELLER
+    )) {
         $cBestSellerSeo = checkSeo(getSeo($cBestSellerSeo));
 
         if ($cBestSellerSeo !== $_POST['bestseller']) {
-            $cHinweis .= 'Das BestSeller Seo "' . strip_tags(Shop::Container()->getDB()->escape($_POST['bestseller'])) .
+            $cHinweis .= 'Das BestSeller Seo "' . StringHandler::filterXSS($_POST['bestseller']) .
                 '" war bereits vorhanden und wurde in "' . $cBestSellerSeo . '" umbenannt.<br />';
         }
 
@@ -67,15 +67,14 @@ if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
     }
     // Pruefe Sonderangebote
     if (strlen($cSonderangeboteSeo) > 0 && !pruefeSuchspecialSeo(
-            $oSuchSpecials_arr,
-            $cSonderangeboteSeo,
-            SEARCHSPECIALS_SPECIALOFFERS
-        )
-    ) {
+        $oSuchSpecials_arr,
+        $cSonderangeboteSeo,
+        SEARCHSPECIALS_SPECIALOFFERS
+    )) {
         $cSonderangeboteSeo = checkSeo(getSeo($cSonderangeboteSeo));
 
         if ($cSonderangeboteSeo !== $_POST['sonderangebote']) {
-            $cHinweis .= 'Das Sonderangebot Seo "' . strip_tags(Shop::Container()->getDB()->escape($_POST['sonderangebote'])) .
+            $cHinweis .= 'Das Sonderangebot Seo "' . StringHandler::filterXSS($_POST['sonderangebote']) .
                 '" war bereits vorhanden und wurde auf "' . $cSonderangeboteSeo . '" umbenannt.<br />';
         }
 
@@ -91,14 +90,14 @@ if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
     }
     // Pruefe Neu im Sortiment
     if (strlen($cNeuImSortimentSeo) > 0 && !pruefeSuchspecialSeo(
-            $oSuchSpecials_arr,
-            $cNeuImSortimentSeo,
-            SEARCHSPECIALS_NEWPRODUCTS)
-    ) {
+        $oSuchSpecials_arr,
+        $cNeuImSortimentSeo,
+        SEARCHSPECIALS_NEWPRODUCTS
+    )) {
         $cNeuImSortimentSeo = checkSeo(getSeo($cNeuImSortimentSeo));
 
         if ($cNeuImSortimentSeo !== $_POST['neu_im_sortiment']) {
-            $cHinweis .= 'Das Neu im Sortiment Seo "' . strip_tags(Shop::Container()->getDB()->escape($_POST['neu_im_sortiment'])) .
+            $cHinweis .= 'Das Neu im Sortiment Seo "' . StringHandler::filterXSS($_POST['neu_im_sortiment']) .
                 '" war bereits vorhanden und wurde auf "' . $cNeuImSortimentSeo . '" umbenannt.<br />';
         }
 
@@ -114,14 +113,14 @@ if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
     }
     // Pruefe Top Angebote
     if (strlen($cTopAngeboteSeo) > 0 && !pruefeSuchspecialSeo(
-            $oSuchSpecials_arr,
-            $cTopAngeboteSeo,
-            SEARCHSPECIALS_TOPOFFERS)
-    ) {
+        $oSuchSpecials_arr,
+        $cTopAngeboteSeo,
+        SEARCHSPECIALS_TOPOFFERS
+    )) {
         $cTopAngeboteSeo = checkSeo(getSeo($cTopAngeboteSeo));
 
         if ($cTopAngeboteSeo !== $_POST['top_angebote']) {
-            $cHinweis .= 'Das Top Angebote Seo "' . strip_tags(Shop::Container()->getDB()->escape($_POST['top_angebote'])) .
+            $cHinweis .= 'Das Top Angebote Seo "' . StringHandler::filterXSS($_POST['top_angebote']) .
                 '" war bereits vorhanden und wurde auf "' . $cTopAngeboteSeo . '" umbenannt.<br />';
         }
 
@@ -137,14 +136,14 @@ if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
     }
     // Pruefe In kuerze Verfuegbar
     if (strlen($cInKuerzeVerfuegbarSeo) > 0 && !pruefeSuchspecialSeo(
-            $oSuchSpecials_arr,
-            $cInKuerzeVerfuegbarSeo,
-            SEARCHSPECIALS_UPCOMINGPRODUCTS)
-    ) {
+        $oSuchSpecials_arr,
+        $cInKuerzeVerfuegbarSeo,
+        SEARCHSPECIALS_UPCOMINGPRODUCTS
+    )) {
         $cInKuerzeVerfuegbarSeo = checkSeo(getSeo($cInKuerzeVerfuegbarSeo));
         if ($cInKuerzeVerfuegbarSeo !== $_POST['in_kuerze_verfuegbar']) {
             $cHinweis .= 'Das In kürze Verfügbar Seo "' .
-                strip_tags(Shop::Container()->getDB()->escape($_POST['in_kuerze_verfuegbar'])) .
+                StringHandler::filterXSS($_POST['in_kuerze_verfuegbar']) .
                 '" war bereits vorhanden und wurde auf "' . $cInKuerzeVerfuegbarSeo . '" umbenannt.<br />';
         }
         $oInKuerzeVerfuegbar       = new stdClass();
@@ -158,15 +157,15 @@ if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
     }
     // Pruefe Top bewertet
     if (strlen($cTopBewertetSeo) > 0 && !pruefeSuchspecialSeo(
-            $oSuchSpecials_arr,
-            $cTopBewertetSeo,
-            SEARCHSPECIALS_TOPREVIEWS)
-    ) {
+        $oSuchSpecials_arr,
+        $cTopBewertetSeo,
+        SEARCHSPECIALS_TOPREVIEWS
+    )) {
         $cTopBewertetSeo = checkSeo(getSeo($cTopBewertetSeo));
 
         if ($cTopBewertetSeo !== $_POST['top_bewertet']) {
             $cHinweis .= 'Das In kürze Verfügbar Seo "' .
-                strip_tags(Shop::Container()->getDB()->escape($_POST['top_bewertet'])) .
+                StringHandler::filterXSS($_POST['top_bewertet']) .
                 '" war bereits vorhanden und wurde auf "' . $cTopBewertetSeo . '" umbenannt.<br />';
         }
         $oTopBewertet       = new stdClass();
@@ -188,7 +187,6 @@ if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
                 $cSQL .= (int)$oSuchSpecialsTMP->kKey;
             }
         }
-        // Loeschen
         Shop::Container()->getDB()->query(
             "DELETE FROM tseo
                 WHERE cKey = 'suchspecial'
@@ -196,8 +194,6 @@ if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
                     AND kKey IN (" . $cSQL . ")",
             \DB\ReturnType::AFFECTED_ROWS
         );
-
-        // Neu Setzen
         foreach ($oSuchSpecialsTMP_arr as $oSuchSpecialsTMP) {
             $oSeo = new stdClass();
             $oSeo->cSeo     = $oSuchSpecialsTMP->cSeo;
@@ -218,8 +214,6 @@ if (RequestHelper::verifyGPCDataInt('einstellungen') === 1) {
                 $cSQL .= (int)$nSuchSpecialsLoesch;
             }
         }
-
-        // Loeschen
         Shop::Container()->getDB()->query(
             "DELETE FROM tseo
                 WHERE cKey = 'suchspecial'
@@ -244,8 +238,6 @@ $oSuchSpecials_arr    = [];
 foreach ($oSuchSpecials_arrTMP as $oSuchSpecials) {
     $oSuchSpecials_arr[$oSuchSpecials->kKey] = $oSuchSpecials->cSeo;
 }
-
-// Config holen
 $oConfig_arr = Shop::Container()->getDB()->selectAll(
     'teinstellungenconf',
     'kEinstellungenSektion',

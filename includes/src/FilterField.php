@@ -120,5 +120,5 @@ abstract class FilterField
     /**
      * @return string|null
      */
-    abstract public function getWhereClause();
+    abstract public function getWhereClause(): ?string;
 }

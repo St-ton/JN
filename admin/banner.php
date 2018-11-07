@@ -128,7 +128,7 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
 switch ($cAction) {
     case 'area':
         $id      = (int)$_POST['id'];
-        $oBanner = holeBanner($id, false); //do not fill with complete article object to avoid utf8 errors on json_encode
+        $oBanner = holeBanner($id, false);
         if (!is_object($oBanner)) {
             $cFehler = 'Banner wurde nicht gefunden';
             $cAction = 'view';

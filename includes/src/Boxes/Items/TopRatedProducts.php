@@ -60,7 +60,8 @@ final class TopRatedProducts extends AbstractBox
                 foreach ($topRated as $product) {
                     foreach ($this->products as $j => $oArtikel) {
                         if ($product->kArtikel === $oArtikel->kArtikel) {
-                            $this->products[$j]->fDurchschnittsBewertung = \round($product->fDurchschnittsBewertung * 2) / 2;
+                            $this->products[$j]->fDurchschnittsBewertung =
+                                \round($product->fDurchschnittsBewertung * 2) / 2;
                         }
                     }
                 }

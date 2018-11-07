@@ -9,22 +9,24 @@ require_once __DIR__ . '/syncinclude.php';
 $return  = 3;
 $xml_obj = [];
 if (auth()) {
+    $db     = Shop::Container()->getDB();
     $return = 0;
 
-    $xml_obj['queueddata']['verfuegbarkeitsbenachrichtigungen']['tverfuegbarkeitsbenachrichtigung'] = Shop::Container()->getDB()->query(
-        "SELECT *
-            FROM tverfuegbarkeitsbenachrichtigung
-            WHERE cAbgeholt = 'N'
-            LIMIT " . LIMIT_VERFUEGBARKEITSBENACHRICHTIGUNGEN,
-        \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
-    );
+    $xml_obj['queueddata']['verfuegbarkeitsbenachrichtigungen']['tverfuegbarkeitsbenachrichtigung'] =
+        $db->query(
+            "SELECT *
+                FROM tverfuegbarkeitsbenachrichtigung
+                WHERE cAbgeholt = 'N'
+                LIMIT " . LIMIT_VERFUEGBARKEITSBENACHRICHTIGUNGEN,
+            \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
+        );
 
     $xml_obj['tverfuegbarkeitsbenachrichtigung attr']['anzahl'] =
         count($xml_obj['queueddata']['verfuegbarkeitsbenachrichtigungen']['tverfuegbarkeitsbenachrichtigung']);
     for ($i = 0; $i < $xml_obj['tverfuegbarkeitsbenachrichtigung attr']['anzahl']; $i++) {
         $xml_obj['queueddata']['verfuegbarkeitsbenachrichtigungen']['tverfuegbarkeitsbenachrichtigung'][$i . ' attr'] =
             buildAttributes($xml_obj['queueddata']['verfuegbarkeitsbenachrichtigungen']['tverfuegbarkeitsbenachrichtigung'][$i]);
-        Shop::Container()->getDB()->query(
+        $db->query(
             "UPDATE tverfuegbarkeitsbenachrichtigung
                 SET cAbgeholt = 'Y'
                 WHERE kVerfuegbarkeitsbenachrichtigung = " .
@@ -32,7 +34,7 @@ if (auth()) {
             \DB\ReturnType::DEFAULT
         );
     }
-    $xml_obj['queueddata']['uploadqueue']['tuploadqueue'] = Shop::Container()->getDB()->query(
+    $xml_obj['queueddata']['uploadqueue']['tuploadqueue'] = $db->query(
         'SELECT *
             FROM tuploadqueue
             LIMIT ' . LIMIT_UPLOADQUEUE,

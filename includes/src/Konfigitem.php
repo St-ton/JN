@@ -198,7 +198,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                     $kSprache = Shop::getLanguageID() ?? Sprache::getDefaultLanguage(true)->kSprache;
                 }
                 if (!$kKundengruppe) {
-                    $kKundengruppe = Session::CustomerGroup()->getID();
+                    $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
                 }
                 $this->kKonfiggruppe     = (int)$this->kKonfiggruppe;
                 $this->kKonfigitem       = (int)$this->kKonfigitem;
@@ -533,9 +533,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 $isConverted = true;
             }
             if ($bConvertCurrency && !$isConverted) {
-                $fVKPreis *= Session::Currency()->getConversionFactor();
+                $fVKPreis *= \Session\Session::getCurrency()->getConversionFactor();
             }
-            if (!$bForceNetto && !Session::CustomerGroup()->isMerchant()) {
+            if (!$bForceNetto && !\Session\Session::getCustomerGroup()->isMerchant()) {
                 $fVKPreis = TaxHelper::getGross($fVKPreis, TaxHelper::getSalesTax($this->getSteuerklasse()), 4);
             }
 
@@ -577,7 +577,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 }
                 $fVKPreis *= (float)$waehrung->fFaktor;
             }
-            if (!$bForceNetto && !Session::CustomerGroup()->getIsMerchant()) {
+            if (!$bForceNetto && !\Session\Session::getCustomerGroup()->getIsMerchant()) {
                 $fVKPreis = TaxHelper::getGross($fVKPreis, TaxHelper::getSalesTax($this->getSteuerklasse()), 4);
             }
 
@@ -610,7 +610,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 $fTmp = $this->oPreis->getPreis();
                 if ($fTmp < 0) {
                     $fRabatt = $fTmp * -1;
-                    if ($this->oPreis->getTyp() == 0 && !Session::CustomerGroup()->isMerchant()) {
+                    if ($this->oPreis->getTyp() == 0 && !\Session\Session::getCustomerGroup()->isMerchant()) {
                         $fRabatt = TaxHelper::getGross($fRabatt, TaxHelper::getSalesTax($this->getSteuerklasse()));
                     }
                 }
@@ -637,7 +637,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 $fTmp = $this->oPreis->getPreis();
                 if ($fTmp > 0) {
                     $fZuschlag = $fTmp;
-                    if ($this->oPreis->getTyp() == 0 && !Session::CustomerGroup()->isMerchant()) {
+                    if ($this->oPreis->getTyp() == 0 && !\Session\Session::getCustomerGroup()->isMerchant()) {
                         $fZuschlag = TaxHelper::getGross($fZuschlag, TaxHelper::getSalesTax($this->getSteuerklasse()));
                     }
                 }
@@ -653,7 +653,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         public function getRabattLocalized(bool $bHTML = true): string
         {
             if ($this->oPreis->getTyp() == 0) {
-                return Preise::getLocalizedPriceString($this->getRabatt(), 0, $bHTML);
+                return Preise::getLocalizedPriceString($this->getRabatt(), null, $bHTML);
             }
 
             return $this->getRabatt() . '%';
@@ -666,7 +666,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         public function getZuschlagLocalized(bool $bHTML = true): string
         {
             if ($this->oPreis->getTyp() == 0) {
-                return Preise::getLocalizedPriceString($this->getZuschlag(), 0, $bHTML);
+                return Preise::getLocalizedPriceString($this->getZuschlag(), null, $bHTML);
             }
 
             return $this->getZuschlag() . '%';
@@ -695,7 +695,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function getPreisLocalized(bool $bHTML = true, bool $bSigned = true, bool $bForceNetto = false): string
         {
-            $cLocalized = Preise::getLocalizedPriceString($this->getPreis($bForceNetto), 0, $bHTML);
+            $cLocalized = Preise::getLocalizedPriceString($this->getPreis($bForceNetto), false, $bHTML);
             if ($bSigned && $this->getPreis() > 0) {
                 $cLocalized = '+' . $cLocalized;
             }

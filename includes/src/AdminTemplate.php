@@ -163,10 +163,13 @@ class AdminTemplate
                                 PFAD_TEMPLATES . $cOrdner . '/' . (string)$oFile->attributes()->Path;
                             $cCustomFilePath = str_replace('.css', '_custom.css', $cFilePath);
                             if (file_exists($cCustomFilePath)) {
-                                $tplGroups_arr[$name][] = str_replace('.css', '_custom.css',
+                                $tplGroups_arr[$name][] = str_replace(
+                                    '.css',
+                                    '_custom.css',
                                     ($absolute === true ? PFAD_ROOT : '') .
                                     (self::$isAdmin === true ? PFAD_ADMIN : '') .
-                                    PFAD_TEMPLATES . $cOrdner . '/' . (string)$oFile->attributes()->Path);
+                                    PFAD_TEMPLATES . $cOrdner . '/' . (string)$oFile->attributes()->Path
+                                );
                             }
                         }
                     }

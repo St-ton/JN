@@ -32,7 +32,7 @@ class Updater
      *
      * @throws Exception
      */
-    public function verify()
+    public function verify(): void
     {
         if (static::$isVerified !== true) {
             MigrationHelper::verifyIntegrity();
@@ -99,7 +99,7 @@ class Updater
      * @param bool   $compress
      * @throws Exception
      */
-    public function createSqlDump(string $file, bool $compress = true)
+    public function createSqlDump(string $file, bool $compress = true): void
     {
         if ($compress) {
             $info = pathinfo($file);
@@ -382,7 +382,7 @@ class Updater
     /**
      * @throws Exception
      */
-    protected function executeMigrations()
+    protected function executeMigrations(): void
     {
         foreach ((new MigrationManager())->migrate() as $migration) {
             if ($migration->error !== null) {
@@ -395,7 +395,7 @@ class Updater
      * @param Version $targetVersion
      * @throws Exception
      */
-    protected function setVersion(Version $targetVersion)
+    protected function setVersion(Version $targetVersion): void
     {
         $db              = Shop::Container()->getDB();
         $tVersionColumns = $db->executeQuery("SHOW COLUMNS FROM `tversion`", \DB\ReturnType::ARRAY_OF_OBJECTS);

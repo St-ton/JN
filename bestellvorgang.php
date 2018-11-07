@@ -15,7 +15,7 @@ Shop::setPageType(PAGE_BESTELLVORGANG);
 $Einstellungen = Shopsetting::getInstance()->getAll();
 $step          = 'accountwahl';
 $cHinweis      = '';
-$cart          = Session::Cart();
+$cart          = \Session\Session::getCart();
 unset($_SESSION['ajaxcheckout']);
 // Loginbenutzer?
 if (isset($_POST['login']) && (int)$_POST['login'] === 1) {
@@ -112,7 +112,7 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
     if (!isset($_SESSION['Versandart']) || !is_object($_SESSION['Versandart'])) {
         $land          = $_SESSION['Lieferadresse']->cLand ?? $_SESSION['Kunde']->cLand;
         $plz           = $_SESSION['Lieferadresse']->cPLZ ?? $_SESSION['Kunde']->cPLZ;
-        $kKundengruppe = Session::CustomerGroup()->getID();
+        $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
 
         $oVersandart_arr  = VersandartHelper::getPossibleShippingMethods(
             $land,
@@ -237,7 +237,7 @@ Shop::Smarty()->assign(
     'AGB',
     Shop::Container()->getLinkService()->getAGBWRB(
         Shop::getLanguage(),
-        Session::CustomerGroup()->getID()
+        \Session\Session::getCustomerGroup()->getID()
     )
 )
     ->assign('Ueberschrift', Shop::Lang()->get('orderStep0Title', 'checkout'))

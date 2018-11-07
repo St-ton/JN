@@ -1541,6 +1541,11 @@ class WarenkorbHelper
         $drop = null;
         $post = false;
         $cart = \Session\Session::getCart();
+        if (isset($_POST['dropPos']) && $_POST['dropPos'] === 'assetToUse') {
+            $_SESSION['Bestellung']->GuthabenNutzen   = false;
+            $_SESSION['Bestellung']->fGuthabenGenutzt = 0;
+            unset($_POST['dropPos']);
+        }
         if (isset($_POST['dropPos'])) {
             $drop = (int)$_POST['dropPos'];
             $post = true;
@@ -1900,10 +1905,10 @@ class WarenkorbHelper
             $giftsTmp = Shop::Container()->getDB()->query(
                 "SELECT tartikel.kArtikel, tartikelattribut.cWert
                     FROM tartikel
-                    JOIN tartikelattribut 
+                    JOIN tartikelattribut
                         ON tartikelattribut.kArtikel = tartikel.kArtikel
-                    WHERE (tartikel.fLagerbestand > 0 || 
-                          (tartikel.fLagerbestand <= 0 && 
+                    WHERE (tartikel.fLagerbestand > 0 ||
+                          (tartikel.fLagerbestand <= 0 &&
                           (tartikel.cLagerBeachten = 'N' || tartikel.cLagerKleinerNull = 'Y')))
                         AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
                         AND CAST(tartikelattribut.cWert AS DECIMAL) <= " .

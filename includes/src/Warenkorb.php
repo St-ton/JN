@@ -658,9 +658,9 @@ class Warenkorb
             && ($ip = RequestHelper::getIP(true))
         ) {
             $cnt = Shop::Container()->getDB()->executeQueryPrepared(
-                'SELECT COUNT(*) AS anz 
-                    FROM tbestellung 
-                    WHERE cIP = :ip 
+                'SELECT COUNT(*) AS anz
+                    FROM tbestellung
+                    WHERE cIP = :ip
                         AND dErstellt > NOW() - INTERVAL 1 DAY',
                 ['ip' => $ip],
                 \DB\ReturnType::SINGLE_OBJECT
@@ -990,10 +990,21 @@ class Warenkorb
             $gesamtsumme = round($gesamtsumme, 2);
         }
         if (!empty($gutscheinBeruecksichtigen)
-            && isset($_SESSION['Bestellung']->GuthabenNutzen, $_SESSION['Bestellung']->fGuthabenGenutzt)
+            && isset(
+                $_SESSION['Bestellung']->GuthabenNutzen,
+                $_SESSION['Bestellung']->fGuthabenGenutzt,
+                $_SESSION['Kunde']->fGuthaben
+            )
             && $_SESSION['Bestellung']->GuthabenNutzen == 1
             && $_SESSION['Bestellung']->fGuthabenGenutzt > 0
+            && $_SESSION['Kunde']->fGuthaben > 0
         ) {
+            // check and correct the SESSION-values for "Guthaben"
+            $_SESSION['Bestellung']->GuthabenNutzen   = 1;
+            $_SESSION['Bestellung']->fGuthabenGenutzt = min(
+                $_SESSION['Kunde']->fGuthaben,
+                Session::Cart()->gibGesamtsummeWaren(true, false)
+            );
             $gesamtsumme -= $_SESSION['Bestellung']->fGuthabenGenutzt * $conversionFactor;
         }
         // Lokalisierung aufheben

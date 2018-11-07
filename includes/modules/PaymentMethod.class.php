@@ -95,7 +95,9 @@ class PaymentMethod
         if ((int)$nAgainCheckout === 1) {
             $this->duringCheckout = 0;
         }
-
+        if ($this->cModulId === 'za_null_jtl' || $this->moduleID === 'za_null_jtl') {
+            $this->kZahlungsart = $result->kZahlungsart;
+        }
         return $this;
     }
 
@@ -130,8 +132,8 @@ class PaymentMethod
         if ($Einstellungen['kaufabwicklung']['bestellabschluss_abschlussseite'] === 'A') {
             // Abschlussseite
             $oZahlungsID = Shop::Container()->getDB()->query(
-                'SELECT cId 
-                    FROM tbestellid 
+                'SELECT cId
+                    FROM tbestellid
                     WHERE kBestellung = ' . (int)$order->kBestellung,
                 \DB\ReturnType::SINGLE_OBJECT
             );
@@ -451,20 +453,22 @@ class PaymentMethod
     {
         if ($this->getSetting('min_bestellungen') > 0) {
             if (isset($customer->kKunde) && $customer->kKunde > 0) {
-                $res = Shop::Container()->getDB()->query("
-                  SELECT COUNT(*) AS cnt 
-                      FROM tbestellung 
-                      WHERE kKunde = " . (int) $customer->kKunde . " 
-                          AND (
-                                cStatus = '" . BESTELLUNG_STATUS_BEZAHLT . "' 
-                                OR cStatus = '" . BESTELLUNG_STATUS_VERSANDT .
-                            "')",
+                $res = Shop::Container()->getDB()->executeQueryPrepared(
+                    'SELECT COUNT(*) AS cnt
+                        FROM tbestellung
+                        WHERE kKunde = :cid
+                        AND (cStatus = :stp OR cStatus = :sts)',
+                    [
+                        'cid' => (int)$customer->kKunde,
+                        'stp' => BESTELLUNG_STATUS_BEZAHLT,
+                        'sts' => BESTELLUNG_STATUS_VERSANDT
+                    ],
                     \DB\ReturnType::SINGLE_OBJECT
                 );
                 $count = (int)$res->cnt;
                 if ($count < $this->getSetting('min_bestellungen')) {
                     ZahlungsLog::add($this->moduleID,
-                        'Bestellanzahl ' . $count . ' ist kleiner als der Mindestanzahl von ' .
+                        'Bestellanzahl ' . $count . ' ist kleiner als die Mindestanzahl von ' .
                             $this->getSetting('min_bestellungen'),
                         null,
                         LOGLEVEL_NOTICE
@@ -748,6 +752,9 @@ class PaymentMethod
                     $paymentMethod->cModulId = $moduleId;
                 }
             }
+        } elseif ($moduleId === 'za_null_jtl') {
+            require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'fallback/FallBackPayment.php';
+            $paymentMethod = new FallBackPayment('za_null_jtl');
         } elseif ($moduleId === 'za_sofortueberweisung_jtl') {
             require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'sofortueberweisung/SofortUeberweisung.class.php';
             $paymentMethod = new SofortUeberweisung($moduleId);

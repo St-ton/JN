@@ -16,6 +16,7 @@ use DB\ReturnType;
 use Filter\ProductFilter;
 use Filter\SearchResultsInterface;
 use Filter\Visibility;
+use Session\Session;
 
 /**
  * Class BoxService
@@ -274,7 +275,7 @@ class BoxService implements BoxServiceInterface
         ];
         $smarty->assign('BoxenEinstellungen', $this->config)
                ->assign('bBoxenFilterNach', $showBoxes)
-               ->assign('NettoPreise', \Session::CustomerGroup()->getIsMerchant());
+               ->assign('NettoPreise', Session::getCustomerGroup()->getIsMerchant());
 
         $boxRenderer = new DefaultRenderer($smarty);
         foreach ($positionedBoxes as $_position => $boxes) {

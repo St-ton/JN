@@ -52,16 +52,21 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         {
             $oObj = Shop::Container()->getDB()->select(
                 'tkonfigitemsprache',
-                'kKonfigitem', $kKonfigitem,
-                'kSprache', $kSprache
+                'kKonfigitem',
+                $kKonfigitem,
+                'kSprache',
+                $kSprache
             );
             if ($oObj !== null && empty($oObj->cName)) {
                 $def              = Sprache::getDefaultLanguage();
                 $StandardLanguage = Shop::Container()->getDB()->select(
                     'tkonfigitemsprache',
-                    'kKonfigitem', $kKonfigitem,
-                    'kSprache', (int)$def->kSprache,
-                    null, null,
+                    'kKonfigitem',
+                    $kKonfigitem,
+                    'kSprache',
+                    (int)$def->kSprache,
+                    null,
+                    null,
                     false,
                     'cName'
                 );
@@ -71,9 +76,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 $def                 = Sprache::getDefaultLanguage();
                 $StandardLanguage    = Shop::Container()->getDB()->select(
                     'tkonfigitemsprache',
-                    'kKonfigitem', $kKonfigitem,
-                    'kSprache', (int)$def->kSprache,
-                    null, null,
+                    'kKonfigitem',
+                    $kKonfigitem,
+                    'kSprache',
+                    (int)$def->kSprache,
+                    null,
+                    null,
                     false,
                     'cBeschreibung'
                 );

@@ -52,7 +52,7 @@ function gibDirInhaltXML(string $dir, $nNurFiles)
     if (($handle = opendir($dir)) !== false) {
         while (($file = readdir($handle)) !== false) {
             if ($file !== '.' && $file !== '..') {
-                if (is_dir($dir . '/' . $file) && !$nNurFiles) {
+                if (!$nNurFiles && is_dir($dir . '/' . $file)) {
                     $cXML .= '<dir cName="' . $file . '">' . "\n";
                     $cXML .= gibDirInhaltXML($dir . '/' . $file, 0);
                     $cXML .= gibDirInhaltXML($dir . '/' . $file, 1);

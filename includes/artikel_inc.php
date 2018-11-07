@@ -55,14 +55,6 @@ function sendeProduktanfrage()
 }
 
 /**
- * @deprecated since 4.03
- */
-function sendeArtikelWeiterempfehlen()
-{
-    trigger_error(__FUNCTION__ . ' is deprecated and does not return correct values anymore.', E_USER_DEPRECATED);
-}
-
-/**
  * @param int $min
  * @return bool
  * @deprecated since 5.0.0
@@ -71,17 +63,6 @@ function floodSchutzProduktanfrage(int $min = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return ArtikelHelper::checkProductQuestionFloodProtection($min);
-}
-
-/**
- * @deprecated since 4.03
- * @param int $min
- * @return bool
- */
-function floodSchutzArtikelWeiterempfehlen($min = 0)
-{
-    trigger_error(__FUNCTION__ . ' is deprecated and does not return correct values anymore.', E_USER_DEPRECATED);
-    return false;
 }
 
 /**
@@ -272,23 +253,6 @@ function holeKonfigBearbeitenModus($kKonfig, $smarty)
     ArtikelHelper::getEditConfigMode($kKonfig, $smarty);
 }
 
-/**
- * @deprecated since 4.03
- */
-function bearbeiteArtikelWeiterempfehlen()
-{
-    trigger_error(__FUNCTION__ . ' is deprecated and does not return correct values anymore.', E_USER_DEPRECATED);
-}
-
-/**
- * @deprecated since 4.03
- * @return array
- */
-function gibFehlendeEingabenArtikelWeiterempfehlenFormular()
-{
-    trigger_error(__FUNCTION__ . ' is deprecated and does not return correct values anymore.', E_USER_DEPRECATED);
-    return [];
-}
 
 if (!function_exists('baueFormularVorgaben')) {
     /**

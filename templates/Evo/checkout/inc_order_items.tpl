@@ -122,11 +122,20 @@
                                 <li class="shortdescription">{$oPosition->Artikel->cKurzBeschreibung}</li>
                             {/if}
 
-                            {if isset($oPosition->Artikel->cGewicht) && $Einstellungen.artikeldetails.artikeldetails_gewicht_anzeigen === 'Y' && $oPosition->Artikel->fGewicht > 0}
-                                <li class="weight">
-                                    <strong>{lang key='shippingWeight' section='global'}: </strong>
-                                    <span class="value">{$oPosition->Artikel->cGewicht} {lang key='weightUnit' section='global'}</span>
-                                </li>
+                            {if $oPosition->istKonfigVater()}
+                                {if isset($oPosition->getTotalConfigWeight()) && $Einstellungen.artikeldetails.artikeldetails_gewicht_anzeigen === 'Y' && $oPosition->getTotalConfigWeight() > 0}
+                                    <li class="weight">
+                                        <strong>{lang key='shippingWeight' section='global'}: </strong>
+                                        <span class="value">{$oPosition->getTotalConfigWeight()} {lang key='weightUnit' section='global'}</span>
+                                    </li>
+                                {/if}
+                            {else}
+                                {if isset($oPosition->Artikel->cGewicht) && $Einstellungen.artikeldetails.artikeldetails_gewicht_anzeigen === 'Y' && $oPosition->Artikel->fGewicht > 0}
+                                    <li class="weight">
+                                        <strong>{lang key='shippingWeight' section='global'}: </strong>
+                                        <span class="value">{$oPosition->Artikel->cGewicht} {lang key='weightUnit' section='global'}</span>
+                                    </li>
+                                {/if}
                             {/if}
                         </ul>
                     {else}
@@ -328,7 +337,15 @@
                      <td class="hidden-xs"></td>
                  {/if}
                  <td class="text-right" colspan="2">{lang key='useCredit' section='account data'}</td>
-                 <td class="text-right" colspan="{if $tplscope === 'cart'}4{else}3{/if}">{$smarty.session.Bestellung->GutscheinLocalized}</td>
+                 <td class="text-right" colspan="{if $tplscope === 'cart'}4{else}3{/if}">{$smarty.session.Bestellung->GutscheinLocalized}
+                    {if $tplscope == 'cart'}
+                        &nbsp;
+                        <button type="submit" class="btn btn-xs btn-small" title="Guthaben nicht verrechnen" name="dropPos" value="assetToUse">
+                            <span class="fa fa-trash"></span>
+                        </button>
+                    {/if}
+                 </td>
+
              </tr>
         {/if}
 

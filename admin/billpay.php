@@ -26,8 +26,8 @@ if (strlen($oBillpay->getSetting('pid')) > 0 &&
 ) {
     $oItem_arr = [];
     $oConfig   = $oBillpay->getApi('module_config');
-    foreach (['AUT' => ['EUR'], 'DEU' => ['EUR'], 'NLD' => ['EUR'], 'CHE' => ['EUR', 'CHF']] as $cLand => $cWaehrung_arr) {
-        foreach ($cWaehrung_arr as $cWaehrung) {
+    foreach (['AUT' => ['EUR'], 'DEU' => ['EUR'], 'NLD' => ['EUR'], 'CHE' => ['EUR', 'CHF']] as $cLand => $currencies) {
+        foreach ($currencies as $cWaehrung) {
             $oItem            = new stdClass;
             $oItem->cLand     = $cLand;
             $oItem->cWaehrung = $cWaehrung;
@@ -171,8 +171,10 @@ for ($i = 0; $i < $configCount; $i++) {
     }
     $setValue                = Shop::Container()->getDB()->select(
         'teinstellungen',
-        'kEinstellungenSektion', (int)$Conf[$i]->kEinstellungenSektion,
-        'cName', $Conf[$i]->cWertName
+        'kEinstellungenSektion',
+        (int)$Conf[$i]->kEinstellungenSektion,
+        'cName',
+        $Conf[$i]->cWertName
     );
     $Conf[$i]->gesetzterWert = isset($setValue->cWert) ? StringHandler::htmlentities($setValue->cWert) : null;
 }

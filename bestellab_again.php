@@ -139,7 +139,7 @@ $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategor
 $AufgeklappteKategorien = new KategorieListe();
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 
-Shop::Smarty()->assign('WarensummeLocalized', Session::Cart()->gibGesamtsummeWarenLocalized())
+Shop::Smarty()->assign('WarensummeLocalized', Session::getCart()->gibGesamtsummeWarenLocalized())
     ->assign('Bestellung', $bestellung);
 
 unset(

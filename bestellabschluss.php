@@ -15,7 +15,7 @@ $Einstellungen = Shopsetting::getInstance()->getAll();
 $linkHelper    = Shop::Container()->getLinkService();
 $kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_BESTELLABSCHLUSS);
 $link          = $linkHelper->getPageLink($kLink);
-$cart          = Session::Cart();
+$cart          = \Session\Session::getCart();
 $smarty        = Shop::Smarty();
 $bestellung    = null;
 if (isset($_GET['i'])) {

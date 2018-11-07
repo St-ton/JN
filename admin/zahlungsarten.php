@@ -14,7 +14,6 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 $standardwaehrung = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
 $hinweis          = '';
 $step             = 'uebersicht';
-// Check Nutzbar
 if (RequestHelper::verifyGPCDataInt('checkNutzbar') === 1) {
     ZahlungsartHelper::checkPaymentMethodAvailability();
     $hinweis = 'Ihre Zahlungsarten wurden auf Nutzbarkeit geprüft.';
@@ -47,7 +46,11 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart'])
     && (int)$_POST['einstellungen_bearbeiten'] === 1 && (int)$_POST['kZahlungsart'] > 0 && FormHelper::validateToken()
 ) {
     $step              = 'uebersicht';
-    $zahlungsart       = Shop::Container()->getDB()->select('tzahlungsart', 'kZahlungsart', (int)$_POST['kZahlungsart']);
+    $zahlungsart       = Shop::Container()->getDB()->select(
+        'tzahlungsart',
+        'kZahlungsart',
+        (int)$_POST['kZahlungsart']
+    );
     $nMailSenden       = (int)$_POST['nMailSenden'];
     $nMailSendenStorno = (int)$_POST['nMailSendenStorno'];
     $nMailBits         = 0;
@@ -108,7 +111,11 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart'])
                     $aktWert->cWert = substr($aktWert->cWert, 0, 255);
                     break;
             }
-            Shop::Container()->getDB()->delete('tplugineinstellungen', ['kPlugin', 'cName'], [$kPlugin, $Conf[$i]->cWertName]);
+            Shop::Container()->getDB()->delete(
+                'tplugineinstellungen',
+                ['kPlugin', 'cName'],
+                [$kPlugin, $Conf[$i]->cWertName]
+            );
             Shop::Container()->getDB()->insert('tplugineinstellungen', $aktWert);
         }
     } else {
@@ -177,7 +184,11 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart'])
 }
 
 if ($step === 'einstellen') {
-    $zahlungsart = Shop::Container()->getDB()->select('tzahlungsart', 'kZahlungsart', RequestHelper::verifyGPCDataInt('kZahlungsart'));
+    $zahlungsart = Shop::Container()->getDB()->select(
+        'tzahlungsart',
+        'kZahlungsart',
+        RequestHelper::verifyGPCDataInt('kZahlungsart')
+    );
     if ($zahlungsart === null) {
         $step    = 'uebersicht';
         $hinweis = 'Zahlungsart nicht gefunden.';
@@ -248,8 +259,8 @@ if ($step === 'einstellen') {
         }
 
         $kundengruppen = Shop::Container()->getDB()->query(
-            'SELECT * 
-                FROM tkundengruppe 
+            'SELECT *
+                FROM tkundengruppe
                 ORDER BY cName',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
@@ -280,7 +291,8 @@ if ($step === 'einstellen') {
         $paymentLogs = (new ZahlungsLog($oZahlungsart->cModulId))->holeLog(
             $paginationPaymentLog->getLimitSQL(),
             -1,
-            $filterStandard->getWhereSQL());
+            $filterStandard->getWhereSQL()
+        );
 
         $smarty->assign('paymentLogs', $paymentLogs)
                ->assign('paymentData', $oZahlungsart)
@@ -322,7 +334,7 @@ if ($step === 'einstellen') {
                     ON ze.kBestellung = b.kBestellung
                 JOIN tkunde AS k
                     ON b.kKunde = k.kKunde
-            WHERE b.kZahlungsart = ' . $kZahlungsart . ' ' . 
+            WHERE b.kZahlungsart = ' . $kZahlungsart . ' ' .
         ($oFilter->getWhereSQL() !== '' ? 'AND ' . $oFilter->getWhereSQL() : '') . '
             ORDER BY dZeit DESC',
         \DB\ReturnType::ARRAY_OF_OBJECTS
@@ -345,18 +357,20 @@ if ($step === 'einstellen') {
 if ($step === 'uebersicht') {
     $oZahlungsart_arr = Shop::Container()->getDB()->selectAll(
         'tzahlungsart',
-        'nActive',
-        1,
+        ['nActive', 'nNutzbar'],
+        [1, 1],
         '*',
         'cAnbieter, cName, nSort, kZahlungsart'
     );
     foreach ($oZahlungsart_arr as $oZahlungsart) {
-        $oZahlungsart->nEingangAnzahl = (int)Shop::Container()->getDB()->query(
-            'SELECT COUNT(*) AS nAnzahl
-                FROM tzahlungseingang AS ze
-                    JOIN tbestellung AS b
-                        ON ze.kBestellung = b.kBestellung
-                WHERE b.kZahlungsart = ' . $oZahlungsart->kZahlungsart,
+        $oZahlungsart->nEingangAnzahl = (int)Shop::Container()->getDB()->executeQueryPrepared(
+            'SELECT COUNT(*) AS `nAnzahl`
+            FROM `tzahlungseingang` AS ze
+                JOIN `tbestellung` AS b ON ze.`kBestellung` = b.`kBestellung`
+            WHERE b.`kZahlungsart` = :kzahlungsart',
+            [
+                'kzahlungsart' => $oZahlungsart->kZahlungsart
+            ],
             \DB\ReturnType::SINGLE_OBJECT
         )->nAnzahl;
         $oZahlungsart->nLogCount = ZahlungsLog::count($oZahlungsart->cModulId);

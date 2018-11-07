@@ -9,7 +9,7 @@
  */
 abstract class AdminLoginConfig
 {
-    const CONFIG_DB = 'db';
+    public const CONFIG_DB = 'db';
 
-    const CONFIG_FILE = 'file';
+    public const CONFIG_FILE = 'file';
 }

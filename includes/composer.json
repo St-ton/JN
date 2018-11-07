@@ -33,8 +33,7 @@
         "phpunit/php-token-stream": "^3.0",
         "nikic/php-parser": "^2.1",
         "Symfony/Finder": "^4.0",
-        "friendsofphp/php-cs-fixer": "^2.1",
-        "phpmd/phpmd" : "@stable",
+        "phpmd/phpmd": "@stable",
         "phpunit/phpunit": "^7.3"
     },
     "repositories": [

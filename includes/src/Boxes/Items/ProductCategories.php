@@ -20,7 +20,7 @@ final class ProductCategories extends AbstractBox
     {
         parent::__construct($config);
         $show = isset($config['global']['global_sichtbarkeit'])
-            && ((int)$config['global']['global_sichtbarkeit'] !== 3 || \Session::Customer()->getID() > 0);
+            && ((int)$config['global']['global_sichtbarkeit'] !== 3 || \Session\Session::getCustomer()->getID() > 0);
         $this->setShow($show);
         if ($show === true) {
             $categories = $this->getCategories();

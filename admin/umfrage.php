@@ -61,7 +61,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                     'DELETE tumfragefrageantwort, tumfragedurchfuehrungantwort
                         FROM tumfragefrageantwort
                         LEFT JOIN tumfragedurchfuehrungantwort
-                            ON tumfragedurchfuehrungantwort.kUmfrageFrageAntwort = tumfragefrageantwort.kUmfrageFrageAntwort
+                            ON tumfragedurchfuehrungantwort.kUmfrageFrageAntwort = 
+                               tumfragefrageantwort.kUmfrageFrageAntwort
                         WHERE tumfragefrageantwort.kUmfrageFrageAntwort = ' . $kUmfrageFrageAntwort,
                     \DB\ReturnType::AFFECTED_ROWS
                 );
@@ -76,7 +77,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                     'DELETE tumfragematrixoption, tumfragedurchfuehrungantwort
                         FROM tumfragematrixoption
                         LEFT JOIN tumfragedurchfuehrungantwort
-                            ON tumfragedurchfuehrungantwort.kUmfrageMatrixOption = tumfragematrixoption.kUmfrageMatrixOption
+                            ON tumfragedurchfuehrungantwort.kUmfrageMatrixOption = 
+                               tumfragematrixoption.kUmfrageMatrixOption
                         WHERE tumfragematrixoption.kUmfrageMatrixOption = ' . $kUmfrageMatrixOption,
                     \DB\ReturnType::AFFECTED_ROWS
                 );
@@ -108,7 +110,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 $fGuthaben = 0;
             }
             $nBonuspunkte = isset($_POST['nBonuspunkte'])
-                ? (int)$_POST['nBonuspunkte'] 
+                ? (int)$_POST['nBonuspunkte']
                 : 0;
             if ($nBonuspunkte <= 0 || !isset($kKupon)) {
                 $nBonuspunkte = 0;
@@ -161,8 +163,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                         $kUmfrage = Shop::Container()->getDB()->insert('tumfrage', $oUmfrage);
                     }
                     Shop::Container()->getDB()->delete(
-                        'tseo', 
-                        ['cKey', 'kKey', 'kSprache'], 
+                        'tseo',
+                        ['cKey', 'kKey', 'kSprache'],
                         ['kUmfrage', $kUmfrage, (int)$_SESSION['kSprache']]
                     );
                     // SEO tseo eintragen
@@ -175,13 +177,15 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
 
                     $kUmfrageTMP = $kUmfrage;
 
-                    $cHinweis .= 'Ihre Umfrage wurde erfolgreich gespeichert. Bitte folgen Sie nun den weiteren Schritten.<br />';
+                    $cHinweis .= 'Ihre Umfrage wurde erfolgreich gespeichert. ' .
+                        'Bitte folgen Sie nun den weiteren Schritten.<br />';
                     Shop::Cache()->flushTags([CACHING_GROUP_CORE]);
                 } else {
                     $cFehler .= 'Fehler: Bitte geben Sie nur eine Belohnungsart an.<br />';
                 }
             } else {
-                $cFehler .= 'Fehler: Bitte geben Sie einen Namen, mindestens eine Kundengruppe und ein gültiges Anfangsdatum ein.<br />';
+                $cFehler .= 'Fehler: Bitte geben Sie einen Namen, mindestens eine Kundengruppe ' .
+                    'und ein gültiges Anfangsdatum ein.<br />';
             }
         } elseif (isset($_POST['umfrage_frage_speichern']) && (int)$_POST['umfrage_frage_speichern'] === 1) {
             $kUmfrage                 = (int)$_POST['kUmfrage'];
@@ -215,12 +219,15 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 $oUmfrageFrage->nNotwendig    = $nNotwendig;
 
                 $nNewsOld = 0;
-                if (isset($_POST['umfrage_frage_edit_speichern']) && (int)$_POST['umfrage_frage_edit_speichern'] === 1) {
+                if (isset($_POST['umfrage_frage_edit_speichern'])
+                    && (int)$_POST['umfrage_frage_edit_speichern'] === 1
+                ) {
                     $nNewsOld      = 1;
                     $step          = 'umfrage_vorschau';
                     $kUmfrageFrage = (int)$_POST['kUmfrageFrage'];
                     if (!pruefeTyp($cTyp, $kUmfrageFrage)) {
-                        $cFehler .= 'Fehler: Ihr Fragentyp ist leider nicht kompatibel mit dem voherigen. Um den Fragetyp zu ändern, resetten Sie bitte die Frage.';
+                        $cFehler .= 'Fehler: Ihr Fragentyp ist leider nicht kompatibel mit dem voherigen. ' .
+                            'Um den Fragetyp zu ändern, resetten Sie bitte die Frage.';
                         $step = 'umfrage_frage_bearbeiten';
                     }
                     Shop::Container()->getDB()->delete('tumfragefrage', 'kUmfrageFrage', $kUmfrageFrage);
@@ -286,7 +293,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                         'DELETE tumfragedurchfuehrung, tumfragedurchfuehrungantwort 
                             FROM tumfragedurchfuehrung
                             LEFT JOIN tumfragedurchfuehrungantwort 
-                              ON tumfragedurchfuehrungantwort.kUmfrageDurchfuehrung = tumfragedurchfuehrung.kUmfrageDurchfuehrung
+                              ON tumfragedurchfuehrungantwort.kUmfrageDurchfuehrung = 
+                                 tumfragedurchfuehrung.kUmfrageDurchfuehrung
                             WHERE tumfragedurchfuehrung.kUmfrage = ' . $kUmfrage,
                         \DB\ReturnType::AFFECTED_ROWS
                     );
@@ -321,7 +329,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                         'DELETE tumfragefrageantwort, tumfragedurchfuehrungantwort 
                             FROM tumfragefrageantwort
                             LEFT JOIN tumfragedurchfuehrungantwort
-                                ON tumfragedurchfuehrungantwort.kUmfrageFrageAntwort = tumfragefrageantwort.kUmfrageFrageAntwort
+                                ON tumfragedurchfuehrungantwort.kUmfrageFrageAntwort = 
+                                   tumfragefrageantwort.kUmfrageFrageAntwort
                             WHERE tumfragefrageantwort.kUmfrageFrageAntwort = ' . $kUmfrageFrageAntwort,
                         \DB\ReturnType::AFFECTED_ROWS
                     );
@@ -339,7 +348,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                         'DELETE tumfragematrixoption, tumfragedurchfuehrungantwort 
                             FROM tumfragematrixoption
                             LEFT JOIN tumfragedurchfuehrungantwort
-                                ON tumfragedurchfuehrungantwort.kUmfrageMatrixOption = tumfragematrixoption.kUmfrageMatrixOption
+                                ON tumfragedurchfuehrungantwort.kUmfrageMatrixOption = 
+                                   tumfragematrixoption.kUmfrageMatrixOption
                             WHERE tumfragematrixoption.kUmfrageMatrixOption = ' . $kUmfrageMatrixOption,
                         \DB\ReturnType::AFFECTED_ROWS
                     );
@@ -378,7 +388,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
 
             if ($kUmfrageFrage > 0 && $nMaxAntworten > 0) {
                 $step = 'umfrage_statistik_sonstige_texte';
-                $smarty->assign('oUmfrageFrage', holeSonstigeTextAntworten($kUmfrageFrage, $nAnzahlAnwort, $nMaxAntworten));
+                $smarty->assign('oUmfrageFrage', holeSonstigeTextAntworten(
+                    $kUmfrageFrage,
+                    $nAnzahlAnwort,
+                    $nMaxAntworten
+                ));
             }
         } elseif ((isset($_GET['fe']) && (int)$_GET['fe'] === 1) ||
             ($step === 'umfrage_frage_bearbeiten' && FormHelper::validateToken())
@@ -393,15 +407,15 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             $oUmfrageFrage = Shop::Container()->getDB()->select('tumfragefrage', 'kUmfrageFrage', $kUmfrageFrage);
             if (isset($oUmfrageFrage->kUmfrageFrage) && $oUmfrageFrage->kUmfrageFrage > 0) {
                 $oUmfrageFrage->oUmfrageFrageAntwort_arr = Shop::Container()->getDB()->selectAll(
-                    'tumfragefrageantwort', 
-                    'kUmfrageFrage', 
-                    (int)$oUmfrageFrage->kUmfrageFrage, 
+                    'tumfragefrageantwort',
+                    'kUmfrageFrage',
+                    (int)$oUmfrageFrage->kUmfrageFrage,
                     '*', 
                     'nSort'
                 );
                 $oUmfrageFrage->oUmfrageMatrixOption_arr = Shop::Container()->getDB()->selectAll(
-                    'tumfragematrixoption', 
-                    'kUmfrageFrage', 
+                    'tumfragematrixoption',
+                    'kUmfrageFrage',
                     (int)$oUmfrageFrage->kUmfrageFrage,
                     '*',
                     'nSort'
@@ -433,7 +447,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                         if ($kKundengruppe == -1) {
                             $oUmfrage->cKundengruppe_arr[] = 'Alle';
                         } else {
-                            $oKundengruppe = Shop::Container()->getDB()->select('tkundengruppe', 'kKundengruppe', (int)$kKundengruppe);
+                            $oKundengruppe = Shop::Container()->getDB()->select(
+                                'tkundengruppe',
+                                'kKundengruppe',
+                                (int)$kKundengruppe
+                            );
                             if (!empty($oKundengruppe->cName)) {
                                 $oUmfrage->cKundengruppe_arr[] = $oKundengruppe->cName;
                             }
@@ -475,12 +493,15 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             && (!isset($_POST['umfrage_frage_edit_speichern']) || (int)$_POST['umfrage_frage_edit_speichern'] !== 1)
             && (!isset($_GET['fe']) || (int)$_GET['fe']) !== 1
         ) {
-            $smarty->assign('oUmfrageFrage_arr', Shop::Container()->getDB()->selectAll(
-                'tumfragefrage',
-                'kUmfrage',
-                $kUmfrageTMP,
-                '*',
-                'nSort')
+            $smarty->assign(
+                'oUmfrageFrage_arr',
+                Shop::Container()->getDB()->selectAll(
+                    'tumfragefrage',
+                    'kUmfrage',
+                    $kUmfrageTMP,
+                    '*',
+                    'nSort'
+                )
             )->assign('kUmfrageTMP', $kUmfrageTMP);
         }
     }

@@ -176,7 +176,7 @@ class SearchSpecial extends AbstractFilter
                                         AND " . $tasp . ".dStart <= NOW()
                                         AND (" . $tasp . ".dEnde >= CURDATE() 
                                             OR " . $tasp . ".dEnde IS NULL)
-                                        AND " . $tsp . " .kKundengruppe = " . \Session::CustomerGroup()->getID();
+                                        AND " . $tsp . " .kKundengruppe = " . \Session::getCustomerGroup()->getID();
                     break;
 
                 case \SEARCHSPECIALS_NEWPRODUCTS:
@@ -308,7 +308,8 @@ class SearchSpecial extends AbstractFilter
             ? $this->getClassName()
             : null;
         $state            = (new StateSQL())->from($this->productFilter->getCurrentStateData($ignore));
-        $cacheID          = 'fltr_' . \str_replace('\\', '', __CLASS__) . \md5($this->productFilter->getFilterSQL()->getBaseQuery($state));
+        $cacheID          = 'fltr_' . \str_replace('\\', '', __CLASS__) .
+            \md5($this->productFilter->getFilterSQL()->getBaseQuery($state));
         if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
             $this->options = $cached;
 
@@ -356,7 +357,8 @@ class SearchSpecial extends AbstractFilter
                     }
                     $state->addCondition("tartikelsonderpreis.cAktiv = 'Y' 
                         AND tartikelsonderpreis.dStart <= NOW()");
-                    $state->addCondition("(tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE())");
+                    $state->addCondition("(tartikelsonderpreis.dEnde IS NULL
+                        OR tartikelsonderpreis.dEnde >= CURDATE())");
                     $state->addCondition($tsonderpreise . '.kKundengruppe = ' . $this->getCustomerGroupID());
                     break;
                 case \SEARCHSPECIALS_NEWPRODUCTS:
@@ -410,7 +412,7 @@ class SearchSpecial extends AbstractFilter
             }
         }
         $this->options = $options;
-        $this->productFilter->getCache()->set($cacheID, $options, [CACHING_GROUP_FILTER]);
+        $this->productFilter->getCache()->set($cacheID, $options, [\CACHING_GROUP_FILTER]);
 
         return $options;
     }

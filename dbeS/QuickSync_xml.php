@@ -78,10 +78,11 @@ function bearbeiteInsert($xml)
             }
         }
     }
+    $db        = Shop::Container()->getDB();
     $clearTags = [];
     foreach ($oArtikel_arr as $oArtikel) {
         if (isset($oArtikel->fLagerbestand) && $oArtikel->fLagerbestand > 0) {
-            $delta = Shop::Container()->getDB()->query(
+            $delta = $db->query(
                 "SELECT SUM(pos.nAnzahl) AS totalquantity
                     FROM tbestellung b
                     JOIN twarenkorbpos pos
@@ -103,15 +104,18 @@ function bearbeiteInsert($xml)
         $upd->fLagerbestand         = $oArtikel->fLagerbestand;
         $upd->fStandardpreisNetto   = $oArtikel->fStandardpreisNetto;
         $upd->dLetzteAktualisierung = 'NOW()';
-        Shop::Container()->getDB()->update('tartikel', 'kArtikel', (int)$oArtikel->kArtikel, $upd);
+        $db->update('tartikel', 'kArtikel', (int)$oArtikel->kArtikel, $upd);
         executeHook(HOOK_QUICKSYNC_XML_BEARBEITEINSERT, ['oArtikel' => $oArtikel]);
         handlePriceRange((int)$oArtikel->kArtikel);
         // clear object cache for this article and its parent if there is any
-        $parentArticle = Shop::Container()->getDB()->select(
+        $parentArticle = $db->select(
             'tartikel',
-            'kArtikel', $oArtikel->kArtikel,
-            null, null,
-            null, null,
+            'kArtikel',
+            $oArtikel->kArtikel,
+            null,
+            null,
+            null,
+            null,
             false,
             'kVaterArtikel'
         );

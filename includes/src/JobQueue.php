@@ -72,7 +72,7 @@ class JobQueue
     /**
      * @return int|null
      */
-    public function getKJobQueue()
+    public function getKJobQueue(): ?int
     {
         return $this->kJobQueue;
     }
@@ -251,7 +251,7 @@ class JobQueue
     /**
      * @param string $cKey
      */
-    public function setCKey($cKey)
+    public function setCKey($cKey): void
     {
         $this->cKey = $cKey;
     }
@@ -337,12 +337,12 @@ class JobQueue
     /**
      * @return stdClass|null
      */
-    public function holeJobArt()
+    public function holeJobArt(): ?stdClass
     {
         if ($this->kKey > 0 && strlen($this->cTabelle) > 0) {
             return Shop::Container()->getDB()->select(
-                Shop::Container()->getDB()->escape($this->cTabelle),
-                Shop::Container()->getDB()->escape($this->cKey),
+                $this->cTabelle,
+                $this->cKey,
                 (int)$this->kKey
             );
         }

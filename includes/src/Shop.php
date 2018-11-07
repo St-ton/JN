@@ -855,7 +855,7 @@ final class Shop
             );
             exit();
         }
-        if ((self::$kArtikel > 0 || self::$kKategorie > 0) && !Session::CustomerGroup()->mayViewCategories()) {
+        if ((self::$kArtikel > 0 || self::$kKategorie > 0) && !\Session\Session::getCustomerGroup()->mayViewCategories()) {
             // falls Artikel/Kategorien nicht gesehen werden duerfen -> login
             header('Location: ' . LinkHelper::getInstance()->getStaticRoute('jtl.php') . '?li=1', true, 303);
             exit;
@@ -863,7 +863,7 @@ final class Shop
         $conf = new \Filter\Config();
         $conf->setLanguageID(self::$kSprache);
         $conf->setLanguages(self::Lang()->getLangArray());
-        $conf->setCustomerGroupID(\Session::CustomerGroup()->getID());
+        $conf->setCustomerGroupID(\Session\Session::getCustomerGroup()->getID());
         $conf->setConfig(self::$settings->getAll());
         $conf->setBaseURL(self::getURL() . '/');
         self::$productFilter = new ProductFilter($conf, self::Container()->getDB(), self::Container()->getCache());
@@ -883,7 +883,9 @@ final class Shop
      */
     public static function getParameters(): array
     {
-        if (self::$kKategorie > 0 && !Kategorie::isVisible(self::$kKategorie, Session::CustomerGroup()->getID())) {
+        if (self::$kKategorie > 0
+            && !Kategorie::isVisible(self::$kKategorie, \Session\Session::getCustomerGroup()->getID())
+        ) {
             self::$kKategorie = 0;
         }
         // check variation combination
@@ -1377,8 +1379,8 @@ final class Shop
                 $link = null;
                 self::setPageType(PAGE_STARTSEITE);
                 self::$fileName = 'seite.php';
-                if (Session::CustomerGroup()->getID() > 0) {
-                    $cKundengruppenSQL = " AND (FIND_IN_SET('" . Session::CustomerGroup()->getID()
+                if (\Session\Session::getCustomerGroup()->getID() > 0) {
+                    $cKundengruppenSQL = " AND (FIND_IN_SET('" . \Session\Session::getCustomerGroup()->getID()
                         . "', REPLACE(cKundengruppen, ';', ',')) > 0
                         OR cKundengruppen IS NULL 
                         OR cKundengruppen = 'NULL' 
@@ -1938,7 +1940,7 @@ final class Shop
             return new \Services\JTL\CaptchaService(new \Services\JTL\SimpleCaptchaService(
                 // Captcha Prüfung ist bei eingeloggtem Kunden, bei bereits erfolgter Prüfung
                 // oder ausgeschaltetem Captcha nicht notwendig
-                !(Session::get('bAnti_spam_already_checked', false) || Session::Customer()->isLoggedIn())
+                !(Session::get('bAnti_spam_already_checked', false) || \Session\Session::getCustomer()->isLoggedIn())
             ));
         });
     }

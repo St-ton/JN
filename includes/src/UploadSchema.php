@@ -58,7 +58,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         /**
          * @param int $kUploadSchema
          */
-        private function loadFromDB(int $kUploadSchema)
+        private function loadFromDB(int $kUploadSchema): void
         {
             $oUpload = Shop::Container()->getDB()->queryPrepared(
                 'SELECT tuploadschema.kUploadSchema, tuploadschema.kCustomID, tuploadschema.nTyp, 

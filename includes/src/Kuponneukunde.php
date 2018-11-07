@@ -185,7 +185,7 @@ class Kuponneukunde
     /**
      * @return string|null
      */
-    public function getEmail()
+    public function getEmail(): ?string
     {
         return $this->cEmail;
     }
@@ -193,7 +193,7 @@ class Kuponneukunde
     /**
      * @return string|null
      */
-    public function getDatenHash()
+    public function getDatenHash(): ?string
     {
         return $this->cDatenHash;
     }
@@ -201,7 +201,7 @@ class Kuponneukunde
     /**
      * @return string|null
      */
-    public function getErstellt()
+    public function getErstellt(): ?string
     {
         return $this->dErstellt;
     }

@@ -11,10 +11,11 @@
 function speicherTrennzeichen(array $cPostAssoc_arr): bool
 {
     foreach ([JTL_SEPARATOR_WEIGHT, JTL_SEPARATOR_AMOUNT, JTL_SEPARATOR_LENGTH] as $nEinheit) {
-        if (isset($cPostAssoc_arr['nDezimal_' . $nEinheit],
+        if (isset(
+            $cPostAssoc_arr['nDezimal_' . $nEinheit],
             $cPostAssoc_arr['cDezZeichen_' . $nEinheit],
-            $cPostAssoc_arr['cTausenderZeichen_' . $nEinheit])
-        ) {
+            $cPostAssoc_arr['cTausenderZeichen_' . $nEinheit]
+        )) {
             $oTrennzeichen = new Trennzeichen();
             $oTrennzeichen->setSprache($_SESSION['kSprache'])
                           ->setEinheit($nEinheit)

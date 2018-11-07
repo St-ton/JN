@@ -1541,7 +1541,6 @@ class WarenkorbHelper
         $drop = null;
         $post = false;
         $cart = \Session\Session::getCart();
-        $cart = Session::Cart();
         if (isset($_POST['dropPos']) && $_POST['dropPos'] === 'assetToUse') {
             $_SESSION['Bestellung']->GuthabenNutzen   = false;
             $_SESSION['Bestellung']->fGuthabenGenutzt = 0;

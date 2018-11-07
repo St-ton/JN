@@ -134,7 +134,7 @@ function bearbeiteInsert($xml, array $conf)
 
     if (isset($xml['tartikel']['tkategorieartikel'])
         && (int)$conf['global']['kategorien_anzeigefilter'] === EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE
-        && Shop::Cache()->isCacheGroupActive(CACHING_GROUP_CATEGORY)
+        && Shop::Container()->getCache()->isCacheGroupActive(CACHING_GROUP_CATEGORY)
     ) {
         $currentArticleCategories = [];
         $newArticleCategories     = [];
@@ -502,7 +502,7 @@ function bearbeiteInsert($xml, array $conf)
             }
         }
         if (count($cacheIDs) > 0) {
-            Shop::Cache()->flushTags($cacheIDs);
+            Shop::Container()->getCache()->flushTags($cacheIDs);
         }
     }
     if (isset($xml['tartikel']['tartikelupload']) && is_array($xml['tartikel']['tartikelupload'])) {
@@ -1268,7 +1268,7 @@ function checkArtikelBildLoeschung(int $kArtikel)
     foreach ($oArtikelPict_arr as $oArtikelPict) {
         deleteArticleImage($oArtikelPict, $kArtikel);
     }
-    Shop::Cache()->flush('arr_article_images_' . $kArtikel);
+    Shop::Container()->getCache()->flush('arr_article_images_' . $kArtikel);
 }
 
 /**
@@ -1393,7 +1393,7 @@ function clearProductCaches($products)
     $cacheTags[] = 'jtl_mmf';
     $cacheTags   = array_unique($cacheTags);
     // flush article cache, category cache and cache for gibMerkmalFilterOptionen() and mega menu/category boxes
-    $totalCount = Shop::Cache()->flushTags($cacheTags);
+    $totalCount = Shop::Container()->getCache()->flushTags($cacheTags);
     $end        = microtime(true);
     Shop::Container()->getLogService()->debug(
         'Flushed a total of ' . $totalCount .

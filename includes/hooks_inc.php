@@ -726,7 +726,7 @@ define('HOOK_LETZTERINCLUDE_INC', 99);
  * after template switch in sendeMail()
  *
  * @file mailTools.php
- * @param JTLSmarty  - mailsmarty
+ * @param Smarty\JTLSmarty  - mailsmarty
  * @param mail
  * @param kEmailvorlage
  * @param kSprache
@@ -1033,7 +1033,7 @@ define('HOOK_CRON_EXPORTFORMATE_OUTPUT_FETCHED', 139);
  * at the end of smarty outputfilter
  *
  * @file JTLSmarty.php
- * @param JTLSmarty smarty
+ * @param Smarty\JTLSmarty smarty
  */
 define('HOOK_SMARTY_OUTPUTFILTER', 140);
 
@@ -1133,7 +1133,7 @@ define('HOOK_ARTIKEL_XML_BEARBEITEDELETES', 152);
  * in sendeMail() before actually sending an email
  *
  * @file mailTools.php
- * @param JTLSmarty  - mailsmarty
+ * @param Smarty\JTLSmarty  - mailsmarty
  * @param mail
  * @param kEmailvorlage
  * @param kSprache
@@ -1449,7 +1449,7 @@ define('HOOK_CACHE_FLUSH_AFTER', 200);
  *
  * @since 4.0
  * @file JTLSmarty.php
- * @param smarty - JTLSmarty
+ * @param smarty - Smarty\JTLSmarty
  */
 define('HOOK_SMARTY_OUTPUTFILTER_CACHE', 202);
 
@@ -1655,7 +1655,7 @@ define('HOOK_BACKEND_ACCOUNT_EDIT', 222);
  * @since 4.05
  * @file admin/includes/benutzerverwaltung_inc.php
  * @param Account   - oAccount
- * @param JTLSmarty - smarty
+ * @param Smarty\JTLSmarty - smarty
  * @param array     - attribs - extended attributes
  * @param string    - &content
  */
@@ -1664,7 +1664,7 @@ define('HOOK_BACKEND_ACCOUNT_PREPARE_EDIT', 223);
 /**
  * @since 4.05
  * @file seite_inc.php
- * @param boxes - list of boxes for the home page
+ * @param array boxes - list of boxes for the home page
  */
 define('HOOK_BOXEN_HOME', 224);
 

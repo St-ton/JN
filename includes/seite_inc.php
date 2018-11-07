@@ -175,8 +175,8 @@ function gibNewsKategorie()
 }
 
 /**
- * @param array $conf
- * @param JTLSmarty $smarty
+ * @param array            $conf
+ * @param Smarty\JTLSmarty $smarty
  * @deprecated since 5.0.0
  */
 function gibSeiteSitemap($conf, $smarty)

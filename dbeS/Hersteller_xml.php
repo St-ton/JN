@@ -63,11 +63,11 @@ function bearbeiteHerstellerDeletes($xml)
                     foreach ($affectedArticles as $article) {
                         $articleCacheTags[] = CACHING_GROUP_ARTICLE . '_' . $article->kArtikel;
                     }
-                    Shop::Cache()->flushTags($articleCacheTags);
+                    Shop::Container()->getCache()->flushTags($articleCacheTags);
                 }
             }
         }
-        Shop::Cache()->flushTags($cacheTags);
+        Shop::Container()->getCache()->flushTags($cacheTags);
     }
 }
 
@@ -136,8 +136,8 @@ function bearbeiteHersteller($xml)
             foreach ($affectedArticles as $article) {
                 $articleCacheTags[] = CACHING_GROUP_ARTICLE . '_' . $article->kArtikel;
             }
-            Shop::Cache()->flushTags($articleCacheTags);
+            Shop::Container()->getCache()->flushTags($articleCacheTags);
         }
     }
-    Shop::Cache()->flushTags($cacheTags);
+    Shop::Container()->getCache()->flushTags($cacheTags);
 }

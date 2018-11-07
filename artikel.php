@@ -8,7 +8,7 @@ if (!defined('PFAD_ROOT')) {
     exit();
 }
 require_once PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
-/** @global JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 Shop::setPageType(PAGE_ARTIKEL);
 $oPreisverlauf                = null;
 $bPreisverlauf                = false;

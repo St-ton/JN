@@ -1,3 +1,67 @@
+# OPC GUI
+
+msgid "Import"
+msgstr "Import"
+
+msgid "Export"
+msgstr "Export"
+
+msgid "Help"
+msgstr "Hilfe"
+
+msgid "Publicate"
+msgstr "Veröffentlichen"
+
+msgid "Save page"
+msgstr "Seite speichern"
+
+msgid "Close OnPage-Composer"
+msgstr "OnPage-Composer schließen"
+
+msgid "Portlets"
+msgstr "Portlets"
+
+msgid "Blueprints"
+msgstr "Vorlagen"
+
+msgid "Revisions"
+msgstr "Versionen"
+
+msgid "Page structure"
+msgstr "Seitenstruktur"
+
+msgid "Import blueprint"
+msgstr "Vorlage importieren"
+
+msgid "Unsaved revision"
+msgstr "Ungespeicherte Version"
+
+msgid "Current revision"
+msgstr "Aktuelle Version"
+
+msgid "Please wait..."
+msgstr "Bitte warten..."
+
+msgid "Error"
+msgstr "Fehler"
+
+msgid "Edit Portlet"
+msgstr "Portlet bearbeiten"
+
+msgid "Save this Portlet as a blueprint"
+msgstr "Portlet als Vorlage speichern"
+
+msgid "Blueprint name"
+msgstr "Vorlagen-Name"
+
+msgid "Delete Blueprint?"
+msgstr "Vorlage löschen?"
+
+msgid "Delete"
+msgstr "Löschen"
+
+# Config Tabs
+
 msgid "General"
 msgstr "Allgemein"
 

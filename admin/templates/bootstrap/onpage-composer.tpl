@@ -71,42 +71,39 @@
                             </a>
                             <ul class="dropdown-menu">
                                 <li>
-                                    <a href="#" id="btnImport" data-toggle="tooltip" data-placement="right"
-                                       title="Import">
-                                        <i class="fa fa-upload"></i> Import
+                                    <a href="#" id="btnImport" data-toggle="tooltip" data-placement="right">
+                                        <i class="fa fa-upload"></i> {t}Import{/t}
                                     </a>
                                 </li>
                                 <li role="separator" class="divider"></li>
                                 <li>
-                                    <a href="#" id="btnExport" data-toggle="tooltip" data-placement="right"
-                                       title="Export">
-                                        <i class="fa fa-download"></i> Export
+                                    <a href="#" id="btnExport" data-toggle="tooltip" data-placement="right">
+                                        <i class="fa fa-download"></i> {t}Export{/t}
                                     </a>
                                 </li>
                                 <li role="separator" class="divider"></li>
                                 <li>
-                                    <a href="#" id="btnHelp" data-toggle="tooltip" data-placement="right"
-                                       title="Help">
-                                        <i class="fa fa-question-circle"></i> Hilfe
+                                    <a href="#" id="btnHelp" data-toggle="tooltip" data-placement="right">
+                                        <i class="fa fa-question-circle"></i> {t}Help{/t}
                                     </a>
                                 </li>
                             </ul>
                         </li>
                         <li>
                             <a href="#" id="btnPublish" data-toggle="tooltip" data-placement="bottom"
-                               title="Veröffentlichen">
+                               title="{t}Publicate{/t}">
                                 <i class="fa fa-newspaper-o fa-fw"></i>
                             </a>
                         </li>
                         <li>
                             <a href="#" id="btnSave" data-toggle="tooltip" data-placement="bottom"
-                               title="Seite speichern">
+                               title="{t}Save page{/t}">
                                 <i class="fa fa-save"></i>
                             </a>
                         </li>
                         <li>
                             <a href="#" id="btnClose" data-toggle="tooltip" data-placement="bottom"
-                               title="Editor schließen">
+                               title="{t}Close OnPage-Composer{/t}">
                                 <i class="fa fa-close"></i>
                             </a>
                         </li>
@@ -116,10 +113,14 @@
         </nav>
 
         <ul id="composer-tabs" class="nav nav-tabs">
-            <li class="active"><a href="#portlets" data-toggle="tab">Portlets</a></li>
-            <li><a href="#blueprints" data-toggle="tab">Vorlagen</a></li>
-            <li><a href="#revisions" data-toggle="tab">Versionen</a></li>
-            <li><a href="#pagetree" data-toggle="tab" title="Seitenstruktur"><i class="fa fa-sitemap"></i></a></li>
+            <li class="active"><a href="#portlets" data-toggle="tab">{t}Portlets{/t}</a></li>
+            <li><a href="#blueprints" data-toggle="tab">{t}Blueprints{/t}</a></li>
+            <li><a href="#revisions" data-toggle="tab">{t}Revisions{/t}</a></li>
+            <li>
+                <a href="#pagetree" data-toggle="tab" title="{t}Page structure{/t}">
+                    <i class="fa fa-sitemap"></i>
+                </a>
+            </li>
         </ul>
 
         <div id="sidebarInnerPanel" class="container-fluid">
@@ -151,7 +152,7 @@
                         <div id="blueprintList"></div>
                         <div class="list-group-item">
                             <a href="#" class="blueprintButton btn" id="btnImportBlueprint">
-                                <i class="fa fa-upload"></i> <span>Importiere Vorlage</span>
+                                <i class="fa fa-upload"></i> <span>{t}Import blueprint{/t}</span>
                             </a>
                         </div>
                     </div>
@@ -160,10 +161,10 @@
                 <div class="tab-pane" id="revisions">
                     <div class="list-group">
                         <a class="list-group-item revisionBtn" href="#" data-revision-id="-1" id="unsavedRevision">
-                            <i>Ungespeicherte Version</i>
+                            <i>{t}Unsaved revision{/t}</i>
                         </a>
                         <a class="list-group-item revisionBtn" href="#" data-revision-id="0">
-                            Aktuelle Version
+                            {t}Current revision{/t}
                         </a>
                         <div id="revisionList"></div>
                     </div>
@@ -209,7 +210,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Bitte warten...</h4>
+                    <h4 class="modal-title">{t}Please wait...{/t}</h4>
                 </div>
                 <div class="modal-body">
                     <div class="progress">
@@ -225,7 +226,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Fehler</h4>
+                    <h4 class="modal-title">{t}Error{/t}</h4>
                 </div>
                 <div class="modal-body">
                     <div class="alert alert-danger" id="errorAlert">
@@ -243,14 +244,14 @@
                     <button type="button" class="close" data-dismiss="modal">
                         <i class="fa fa-lg fa-times"></i>
                     </button>
-                    <h4 class="modal-title" id="configModalTitle">Portlet bearbeiten</h4>
+                    <h4 class="modal-title" id="configModalTitle">{t}Edit Portlet{/t}</h4>
                 </div>
                 <form id="configForm">
                     <div class="modal-body" id="configModalBody"></div>
                     <div class="modal-footer">
                         <div class="btn-group">
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
-                            <button class="btn btn-primary">Speichern</button>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">{t}Cancel{/t}</button>
+                            <button class="btn btn-primary">{t}Save{/t}</button>
                         </div>
                     </div>
                 </form>
@@ -262,20 +263,20 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Portlet als Vorlage speichern</h4>
+                    <h4 class="modal-title">{t}Save this Portlet as a blueprint{/t}</h4>
                 </div>
                 <form id="blueprintForm">
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="blueprintName">Vorlagen-Name</label>
+                            <label for="blueprintName">{t}Blueprint name{/t}</label>
                             <input type="text" class="form-control" id="blueprintName" name="blueprintName"
                                    value="Neue Vorlage">
                         </div>
                     </div>
                     <div class="modal-footer">
                         <div class="btn-group">
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
-                            <button class="btn btn-primary">Speichern</button>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">{t}Cancel{/t}</button>
+                            <button class="btn btn-primary">{t}Save{/t}</button>
                         </div>
                     </div>
                 </form>
@@ -287,14 +288,14 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Vorlage löschen?</h4>
+                    <h4 class="modal-title">{t}Delete Blueprint?{/t}</h4>
                 </div>
                 <form id="blueprintDeleteForm">
                     <div class="modal-footer">
                         <div class="btn-group">
                             <input type="hidden" id="blueprintDeleteId" name="id" value="">
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
-                            <button class="btn btn-primary">Löschen</button>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">{t}Cancel{/t}</button>
+                            <button class="btn btn-primary">{t}Delete{/t}</button>
                         </div>
                     </div>
                 </form>
@@ -306,7 +307,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Hilfe</h4>
+                    <h4 class="modal-title">{t}Help{/t}</h4>
                 </div>
                 <div class="modal-body">
                     <div class="row">

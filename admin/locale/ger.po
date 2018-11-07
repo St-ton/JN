@@ -1,2 +1,8 @@
 msgid "Image"
 msgstr "Bild"
+
+msgid "Cancel"
+msgstr "Abbrechen"
+
+msgid "Save"
+msgstr "Speichern"

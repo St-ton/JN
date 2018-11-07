@@ -125,7 +125,7 @@ class Pagination
     private $oItem_arr;
 
     /**
-     * @var array
+     * @var array|\Tightenco\Collect\Support\Collection
      */
     private $oPageItem_arr;
 
@@ -507,9 +507,9 @@ class Pagination
     }
 
     /**
-     * @return array|null
+     * @return array|\Tightenco\Collect\Support\Collection|null
      */
-    public function getPageItems(): ?array
+    public function getPageItems()
     {
         return $this->oPageItem_arr;
     }

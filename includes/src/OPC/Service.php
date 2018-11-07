@@ -41,6 +41,8 @@ class Service
     public function __construct(DB $db)
     {
         $this->db = $db;
+
+        \GetText::getInstance()->addAdminLocale('opc');
     }
 
     /**

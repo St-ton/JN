@@ -37,7 +37,7 @@ class Heading extends \OPC\Portlet
      */
     public function getButtonHtml(): string
     {
-        return '<i class="fa fa-header"></i><br>Überschrift';
+        return $this->getFontAwesomeButtonHtml('header');
     }
 
     /**
@@ -76,8 +76,8 @@ class Heading extends \OPC\Portlet
     public function getPropertyTabs(): array
     {
         return [
-            'Styles'    => 'styles',
-            'Animation' => 'animations',
+            __('Styles')    => 'styles',
+            __('Animation') => 'animations',
         ];
     }
 }

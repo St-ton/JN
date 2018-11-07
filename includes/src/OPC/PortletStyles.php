@@ -19,41 +19,41 @@ trait PortletStyles
     {
         return [
             'hidden-xs'        => [
-                'label'      => '<i class="fa fa-mobile"></i> Sichtbarkeit XS',
-                'option'     => 'ausblenden',
+                'label'      => '<i class="fa fa-mobile"></i> ' . __('Visibility') . ' XS',
+                'option'     => __('hide'),
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
             'hidden-sm'        => [
-                'label'      => '<i class="fa fa-tablet"></i> Sichtbarkeit S',
-                'option'     => 'ausblenden',
+                'label'      => '<i class="fa fa-tablet"></i> ' . __('Visibility') . ' S',
+                'option'     => __('hide'),
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
             'hidden-md'        => [
-                'label'      => '<i class="fa fa-laptop"></i> Sichtbarkeit M',
-                'option'     => 'ausblenden',
+                'label'      => '<i class="fa fa-laptop"></i> ' . __('Visibility') . ' M',
+                'option'     => __('hide'),
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
             'hidden-lg'        => [
-                'label'      => '<i class="fa fa-desktop"></i> Sichtbarkeit L',
-                'option'     => 'ausblenden',
+                'label'      => '<i class="fa fa-desktop"></i> ' . __('Visibility') . ' L',
+                'option'     => __('hide'),
                 'type'       => 'checkbox',
                 'dspl_width' => 25,
             ],
             'color'            => [
-                'label'   => 'Schriftfarbe',
+                'label'   => __('Font color'),
                 'type'    => 'color',
                 'default' => '',
             ],
             'background-color' => [
-                'label'   => 'Hintergrundfarbe',
+                'label'   => __('Background color'),
                 'type'    => 'color',
                 'default' => '',
             ],
             'font-size'        => [
-                'label'   => 'Schriftgröße',
+                'label'   => __('Font size'),
                 'default' => '',
             ],
             'margin-top'       => [

@@ -1,0 +1,54 @@
+msgid "General"
+msgstr "Allgemein"
+
+msgid "Styles"
+msgstr "Stile"
+
+msgid "Animation"
+msgstr "Animation"
+
+# Styles tab
+
+msgid "Font color"
+msgstr "Schriftfarbe"
+
+msgid "Visibility"
+msgstr "Sichtbarkeit"
+
+msgid "hide"
+msgstr "ausblenden"
+
+msgid "Background color"
+msgstr "Hintergrundfarbe"
+
+msgid "Font size"
+msgstr "Schriftgröße"
+
+# Animations tab
+
+msgid "Animation style"
+msgstr "Animations-Typ"
+
+msgid "Duration"
+msgstr "Dauer"
+
+msgid "Delay"
+msgstr "Verzögerung"
+
+msgid "Offset (px)"
+msgstr "Abstand (Pixel)"
+
+msgid "Iteration"
+msgstr "Wiederholung"
+
+msgid "Change the animation duration (e.g. 2s)"
+msgstr "Dauer der Animation (z.B. 2s)"
+
+msgid "Delay before the animation starts"
+msgstr "Wartezeit bis die Animation beginnt"
+
+msgid "Distance to start the animation (related to the browser bottom)"
+msgstr "Animation beginnt sobald der Scroll-Abstand erreicht ist (von der Unterkante des Fensters)"
+
+msgid "Number of times the animation is repeated"
+msgstr "Wie oft wird die Animation wiederholt"

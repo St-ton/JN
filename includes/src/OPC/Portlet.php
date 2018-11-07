@@ -104,7 +104,7 @@ abstract class Portlet implements \JsonSerializable
      */
     public function getTitle(): string
     {
-        return $this->title;
+        return __($this->title);
     }
 
     /**
@@ -206,7 +206,7 @@ abstract class Portlet implements \JsonSerializable
     }
 
     /**
-     * Make the portlet ready to be used.
+     * Make the portlet ready to use, e.g. load language files
      */
     public function assemble()
     {

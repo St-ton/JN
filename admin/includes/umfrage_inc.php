@@ -448,11 +448,14 @@ function holeUmfrageStatistik(int $surveyID)
             if (isset($oUmfrageFrageAntwortTMP->nAnzahlAntwort) && (int)$oUmfrageFrageAntwortTMP->nAnzahlAntwort > 0) {
                 $stats->oUmfrageFrage_arr[$i]->nAnzahlAntworten += (int)$oUmfrageFrageAntwortTMP->nAnzahlAntwort;
                 $oTMP                                           = new stdClass();
-                $oTMP->cName                                    = '<a href="umfrage.php?umfrage=1&uf=' . $question->kUmfrageFrage . '&aa=' . $stats->oUmfrageFrage_arr[$i]->nAnzahlAntworten .
+                $oTMP->cName                                    = '<a href="umfrage.php?umfrage=1&uf=' .
+                    $question->kUmfrageFrage . '&aa=' . $stats->oUmfrageFrage_arr[$i]->nAnzahlAntworten .
                     '&ma=' . count($answers) . '&a=zeige_sonstige">Sonstige</a>';
                 $oTMP->nAnzahlAntwort                           = $oUmfrageFrageAntwortTMP->nAnzahlAntwort;
-                $oTMP->fProzent                                 = round(($oUmfrageFrageAntwortTMP->nAnzahlAntwort / $stats->oUmfrageFrage_arr[$i]->nAnzahlAntworten) * 100,
-                    1);
+                $oTMP->fProzent                                 = round(
+                    ($oUmfrageFrageAntwortTMP->nAnzahlAntwort / $stats->oUmfrageFrage_arr[$i]->nAnzahlAntworten) * 100,
+                    1
+                );
             }
             $stats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr = [];
             //$oUmfrageStats->oUmfrageFrage_arr[$i]->nAnzahlAntworten = count($oUmfrageFrageAntwort_arr);
@@ -461,8 +464,10 @@ function holeUmfrageStatistik(int $surveyID)
 
                 foreach ($answers as $j => $oUmfrageFrageAntwort) {
                     $stats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr[$j]->fProzent =
-                        round(($oUmfrageFrageAntwort->nAnzahlAntwort / $stats->oUmfrageFrage_arr[$i]->nAnzahlAntworten) * 100,
-                            1);
+                        round(
+                            ($oUmfrageFrageAntwort->nAnzahlAntwort / $stats->oUmfrageFrage_arr[$i]->nAnzahlAntworten) * 100,
+                            1
+                        );
                 }
             }
             // Sontiges Element (falls vorhanden) dem Antworten Array hinzufügen
@@ -512,8 +517,10 @@ function holeUmfrageStatistik(int $surveyID)
                     $stats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr[$j]->fProzent = 0.0;
                     if ($stats->oUmfrageFrage_arr[$i]->nAnzahlAntworten > 0) {
                         $stats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr[$j]->fProzent =
-                            round(($oUmfrageFrageAntwort->nAnzahlAntwort / $stats->oUmfrageFrage_arr[$i]->nAnzahlAntworten) * 100,
-                                1);
+                            round(
+                                ($oUmfrageFrageAntwort->nAnzahlAntwort / $stats->oUmfrageFrage_arr[$i]->nAnzahlAntworten) * 100,
+                                1
+                            );
                     }
                 }
             }

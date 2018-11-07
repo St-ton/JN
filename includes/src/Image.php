@@ -14,21 +14,21 @@ class Image
     /**
      * Image types
      */
-    const TYPE_PRODUCT = 'product';
-    const TYPE_CATEGORY = 'category';
-    const TYPE_CONFIGGROUP = 'configgroup';
-    const TYPE_VARIATION = 'variation';
-    const TYPE_MANUFACTURER = 'manufacturer';
-    const TYPE_ATTRIBUTE = 'attribute';
-    const TYPE_ATTRIBUTE_VALUE = 'attributevalue';
+    public const TYPE_PRODUCT = 'product';
+    public const TYPE_CATEGORY = 'category';
+    public const TYPE_CONFIGGROUP = 'configgroup';
+    public const TYPE_VARIATION = 'variation';
+    public const TYPE_MANUFACTURER = 'manufacturer';
+    public const TYPE_ATTRIBUTE = 'attribute';
+    public const TYPE_ATTRIBUTE_VALUE = 'attributevalue';
 
     /**
      * Image sizes
      */
-    const SIZE_XS = 'xs';
-    const SIZE_SM = 'sm';
-    const SIZE_MD = 'md';
-    const SIZE_LG = 'lg';
+    public const SIZE_XS = 'xs';
+    public const SIZE_SM = 'sm';
+    public const SIZE_MD = 'md';
+    public const SIZE_LG = 'lg';
 
     /**
      * Image type map
@@ -92,7 +92,7 @@ class Image
      * @param int    $number
      * @return stdClass|null
      */
-    public static function getByPath($path, $type, int $number = 1)
+    public static function getByPath($path, $type, int $number = 1): ?stdClass
     {
         $item = Shop::Container()->getDB()->queryPrepared(
             'SELECT kArtikel AS id, nNr AS number, cPfad AS path 
@@ -117,7 +117,7 @@ class Image
      * @param int    $number
      * @return stdClass|null
      */
-    public static function getById(int $id, $type, int $number = 1)
+    public static function getById(int $id, $type, int $number = 1): ?stdClass
     {
         $item = Shop::Container()->getDB()->queryPrepared(
             'SELECT kArtikel AS id, nNr AS number, cPfad AS path 
@@ -135,47 +135,48 @@ class Image
     /**
      *  Global image settings
      *
-     * @return array|mixed
+     * @return array
      */
-    public static function getSettings()
+    public static function getSettings(): array
     {
-        if (self::$settings === null) {
-            $settings = Shop::getSettings([CONF_BILDER]);
-            $settings = array_shift($settings);
-            $branding = self::getBranding();
-
-            self::$settings = [
-                'background' => $settings['bilder_hintergrundfarbe'],
-                'container'  => $settings['container_verwenden'] === 'Y',
-                'format'     => strtolower($settings['bilder_dateiformat']),
-                'scale'      => $settings['bilder_skalieren'] === 'Y',
-                'quality'    => (int)$settings['bilder_jpg_quali'],
-                'branding'   => $branding[self::TYPE_PRODUCT] ?? null,
-                'size'       => [
-                    self::SIZE_XS => [
-                        'width'  => (int)$settings['bilder_artikel_mini_breite'],
-                        'height' => (int)$settings['bilder_artikel_mini_hoehe']
-                    ],
-                    self::SIZE_SM => [
-                        'width'  => (int)$settings['bilder_artikel_klein_breite'],
-                        'height' => (int)$settings['bilder_artikel_klein_hoehe']
-                    ],
-                    self::SIZE_MD => [
-                        'width'  => (int)$settings['bilder_artikel_normal_breite'],
-                        'height' => (int)$settings['bilder_artikel_normal_hoehe']
-                    ],
-                    self::SIZE_LG => [
-                        'width'  => (int)$settings['bilder_artikel_gross_breite'],
-                        'height' => (int)$settings['bilder_artikel_gross_hoehe']
-                    ]
-                ],
-                'naming'     => [
-                    self::TYPE_PRODUCT   => (int)$settings['bilder_artikel_namen'],
-                    self::TYPE_CATEGORY  => (int)$settings['bilder_kategorie_namen'],
-                    self::TYPE_VARIATION => (int)$settings['bilder_variation_namen']
-                ]
-            ];
+        if (self::$settings !== null) {
+            return self::$settings;
         }
+        $settings = Shop::getSettings([CONF_BILDER]);
+        $settings = array_shift($settings);
+        $branding = self::getBranding();
+
+        self::$settings = [
+            'background' => $settings['bilder_hintergrundfarbe'],
+            'container'  => $settings['container_verwenden'] === 'Y',
+            'format'     => strtolower($settings['bilder_dateiformat']),
+            'scale'      => $settings['bilder_skalieren'] === 'Y',
+            'quality'    => (int)$settings['bilder_jpg_quali'],
+            'branding'   => $branding[self::TYPE_PRODUCT] ?? null,
+            'size'       => [
+                self::SIZE_XS => [
+                    'width'  => (int)$settings['bilder_artikel_mini_breite'],
+                    'height' => (int)$settings['bilder_artikel_mini_hoehe']
+                ],
+                self::SIZE_SM => [
+                    'width'  => (int)$settings['bilder_artikel_klein_breite'],
+                    'height' => (int)$settings['bilder_artikel_klein_hoehe']
+                ],
+                self::SIZE_MD => [
+                    'width'  => (int)$settings['bilder_artikel_normal_breite'],
+                    'height' => (int)$settings['bilder_artikel_normal_hoehe']
+                ],
+                self::SIZE_LG => [
+                    'width'  => (int)$settings['bilder_artikel_gross_breite'],
+                    'height' => (int)$settings['bilder_artikel_gross_hoehe']
+                ]
+            ],
+            'naming'     => [
+                self::TYPE_PRODUCT   => (int)$settings['bilder_artikel_namen'],
+                self::TYPE_CATEGORY  => (int)$settings['bilder_kategorie_namen'],
+                self::TYPE_VARIATION => (int)$settings['bilder_variation_namen']
+            ]
+        ];
 
         return self::$settings;
     }

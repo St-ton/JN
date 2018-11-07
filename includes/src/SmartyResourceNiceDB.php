@@ -59,7 +59,11 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
                 if (isset($pcs[3]) && (int)$pcs[3] > 0) {
                     $cTableSprache = 'tpluginemailvorlagesprache';
                 }
-                $vl = Shop::Container()->getDB()->select($cTableSprache, ['kEmailvorlage', 'kSprache'], [(int)$pcs[1], (int)$pcs[2]]);
+                $vl = Shop::Container()->getDB()->select(
+                    $cTableSprache,
+                    ['kEmailvorlage', 'kSprache'],
+                    [(int)$pcs[1], (int)$pcs[2]]
+                );
             }
             if ($vl !== null && $vl !== false) {
                 if ($pcs[0] === 'html') {

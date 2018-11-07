@@ -451,10 +451,11 @@ class AdminAccount
         if (isset($_SESSION['AdminAccount']->cLogin, $_POST['TwoFA_code'])) {
             $oTwoFA = new TwoFA();
             $oTwoFA->setUserByName($_SESSION['AdminAccount']->cLogin);
-            // check the 2fa-code here really
-            $this->twoFaAuthenticated = $_SESSION['AdminAccount']->TwoFA_valid = $oTwoFA->isCodeValid($_POST['TwoFA_code']);
+            $valid                                 = $oTwoFA->isCodeValid($_POST['TwoFA_code']);
+            $this->twoFaAuthenticated              = $valid;
+            $_SESSION['AdminAccount']->TwoFA_valid = $valid;
 
-            return $this->twoFaAuthenticated;
+            return $valid;
         }
 
         return false;

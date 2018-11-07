@@ -25,15 +25,15 @@
  */
 class VCard
 {
-    const NL             = "\n";
-    const OPT_ERR_IGNORE = 0x01;
-    const OPT_ERR_RAISE  = 0x02;
+    public const NL             = "\n";
+    public const OPT_ERR_IGNORE = 0x01;
+    public const OPT_ERR_RAISE  = 0x02;
 
-    const MODE_UNKNOWN   = 0x00;
-    const MODE_SINGLE    = 0x01;
-    const MODE_MULTIPLE  = 0x02;
+    public const MODE_UNKNOWN   = 0x00;
+    public const MODE_SINGLE    = 0x01;
+    public const MODE_MULTIPLE  = 0x02;
 
-    const ERR_INVALID    = 0x01;
+    public const ERR_INVALID    = 0x01;
 
     /**
      * @var string
@@ -436,7 +436,9 @@ class VCard
                 return $propData[$property];
             }
             if ($property === 'bday') {
-                $bDay = is_array($propData[$property]) && count($propData[$property]) > 0 ? $propData[$property][0] : $propData[$property];
+                $bDay = is_array($propData[$property]) && count($propData[$property]) > 0
+                    ? $propData[$property][0]
+                    : $propData[$property];
                 if (is_numeric($bDay)) {
                     return DateTime::createFromFormat('YmdHis', (string)$bDay . '000000');
                 }

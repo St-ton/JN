@@ -786,7 +786,7 @@ final class JTLCache implements JTLCacheInterface
         }
         // add customer group
         if ($customerGroup === true) {
-            $baseID .= '_cgid' . \Session::CustomerGroup()->getID();
+            $baseID .= '_cgid' . \Session\Session::getCustomerGroup()->getID();
         } elseif (\is_numeric($customerGroup)) {
             $baseID .= '_cgid' . (int)$customerGroup;
         }
@@ -806,7 +806,7 @@ final class JTLCache implements JTLCacheInterface
         }
         // add currency ID
         if ($currencyID === true) {
-            $baseID .= '_curid' . \Session::Currency()->getID();
+            $baseID .= '_curid' . \Session\Session::getCurrency()->getID();
         } elseif (\is_numeric($currencyID)) {
             $baseID .= '_curid' . (int)$currencyID;
         }

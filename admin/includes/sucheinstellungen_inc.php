@@ -24,8 +24,8 @@ function createSearchIndex($index, $create)
     try {
         if (Shop::Container()->getDB()->query(
             "SHOW INDEX FROM $index WHERE KEY_NAME = 'idx_{$index}_fulltext'",
-            \DB\ReturnType::SINGLE_OBJECT)
-        ) {
+            \DB\ReturnType::SINGLE_OBJECT
+        )) {
             Shop::Container()->getDB()->executeQuery(
                 "ALTER TABLE $index DROP KEY idx_{$index}_fulltext",
                 \DB\ReturnType::QUERYSINGLE

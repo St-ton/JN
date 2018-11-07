@@ -14,7 +14,7 @@ $coupons_arr = Shop::Container()->getDB()->query(
     \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
 );
 $oDateShop   = Shop::Container()->getDB()->query(
-    'SELECT MIN(DATE(dZeit)) AS startDate FROM tbesucherarchiv', 
+    'SELECT MIN(DATE(dZeit)) AS startDate FROM tbesucherarchiv',
     \DB\ReturnType::SINGLE_OBJECT
 );
 $startDate   = DateTime::createFromFormat('Y-m-j', $oDateShop->startDate);
@@ -61,7 +61,11 @@ if (isset($_POST['formFilter']) && $_POST['formFilter'] > 0 && FormHelper::valid
 $dStart = $startDate->format('Y-m-d 00:00:00');
 $dEnd   = $endDate->format('Y-m-d 23:59:59');
 
-$usedCouponsOrder = KuponBestellung::getOrdersWithUsedCoupons($dStart, $dEnd, (int)RequestHelper::verifyGPDataString('kKupon'));
+$usedCouponsOrder = KuponBestellung::getOrdersWithUsedCoupons(
+    $dStart,
+    $dEnd,
+    (int)RequestHelper::verifyGPDataString('kKupon')
+);
 
 $nCountOrders_arr = Shop::Container()->getDB()->query(
     "SELECT COUNT(*) AS nCount

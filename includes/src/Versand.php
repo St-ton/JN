@@ -66,7 +66,7 @@ class Versand
      * @param int         $kVersand
      * @param null|object $oData
      */
-    private function loadFromDB(int $kVersand = 0, $oData = null)
+    private function loadFromDB(int $kVersand = 0, $oData = null): void
     {
         $oObj = Shop::Container()->getDB()->select('tversand', 'kVersand', $kVersand);
 
@@ -209,7 +209,7 @@ class Versand
     /**
      * @return int|null
      */
-    public function getVersand()
+    public function getVersand(): ?int
     {
         return $this->kVersand;
     }
@@ -217,7 +217,7 @@ class Versand
     /**
      * @return int|null
      */
-    public function getLieferschein()
+    public function getLieferschein(): ?int
     {
         return $this->kLieferschein;
     }
@@ -225,7 +225,7 @@ class Versand
     /**
      * @return string|null
      */
-    public function getLogistik()
+    public function getLogistik(): ?string
     {
         return $this->cLogistik;
     }
@@ -233,7 +233,7 @@ class Versand
     /**
      * @return string|null
      */
-    public function getLogistikURL()
+    public function getLogistikURL(): ?string
     {
         return $this->cLogistikURL;
     }
@@ -241,7 +241,7 @@ class Versand
     /**
      * @return string|null
      */
-    public function getIdentCode()
+    public function getIdentCode(): ?string
     {
         return $this->cIdentCode;
     }
@@ -249,7 +249,7 @@ class Versand
     /**
      * @return string|null
      */
-    public function getHinweis()
+    public function getHinweis(): ?string
     {
         return $this->cHinweis;
     }
@@ -257,7 +257,7 @@ class Versand
     /**
      * @return string|null
      */
-    public function getErstellt()
+    public function getErstellt(): ?string
     {
         return $this->dErstellt;
     }
@@ -265,7 +265,7 @@ class Versand
     /**
      * @return string|null
      */
-    public function getLogistikVarUrl()
+    public function getLogistikVarUrl(): ?string
     {
         $cVarUrl = $this->cLogistikURL;
 

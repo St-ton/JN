@@ -42,6 +42,7 @@ echo $return;
 function images_xml($tmpDir, SimpleXMLElement $xml)
 {
     $items = get_array($xml);
+    $db    = Shop::Container()->getDB();
     foreach ($items as $item) {
         $tmpfile = $tmpDir . $item->kBild;
         if (!file_exists($tmpfile)) {
@@ -49,7 +50,7 @@ function images_xml($tmpDir, SimpleXMLElement $xml)
         }
         if (copy($tmpfile, PFAD_ROOT . PFAD_MEDIA_IMAGE_STORAGE . $item->cPfad)) {
             DBUpdateInsert('tbild', [$item], 'kBild');
-            Shop::Container()->getDB()->update(
+            $db->update(
                 'tartikelpict',
                 'kBild',
                 (int)$item->kBild,

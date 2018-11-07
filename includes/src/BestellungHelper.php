@@ -68,7 +68,8 @@ class BestellungHelper extends WarenkorbHelper
                         $item->amount[self::NET] *= $oPosition->nAnzahl;
                         $item->amount[self::GROSS] *= $oPosition->nAnzahl;
 
-                        $item->name = sprintf('%g %s %s',
+                        $item->name = sprintf(
+                            '%g %s %s',
                             (float)$oPosition->nAnzahl,
                             $oPosition->Artikel->cEinheit ?: 'x',
                             $item->name
@@ -86,26 +87,23 @@ class BestellungHelper extends WarenkorbHelper
                 case C_WARENKORBPOS_TYP_VERSANDPOS:
                 case C_WARENKORBPOS_TYP_VERSANDZUSCHLAG:
                 case C_WARENKORBPOS_TYP_VERPACKUNG:
-                case C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG: {
+                case C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG:
                     $info->shipping[self::NET] += $amount * $oPosition->nAnzahl;
                     $info->shipping[self::GROSS] += $amountGross * $oPosition->nAnzahl;
                     break;
-                }
 
                 case C_WARENKORBPOS_TYP_KUPON:
                 case C_WARENKORBPOS_TYP_GUTSCHEIN:
-                case C_WARENKORBPOS_TYP_NEUKUNDENKUPON: {
+                case C_WARENKORBPOS_TYP_NEUKUNDENKUPON:
                     $info->discount[self::NET] += $amount * $oPosition->nAnzahl;
                     $info->discount[self::GROSS] += $amountGross * $oPosition->nAnzahl;
                     break;
-                }
 
                 case C_WARENKORBPOS_TYP_ZAHLUNGSART:
-                case C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR: {
+                case C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR:
                     $info->surcharge[self::NET] += $amount * $oPosition->nAnzahl;
                     $info->surcharge[self::GROSS] += $amountGross * $oPosition->nAnzahl;
                     break;
-                }
             }
         }
 

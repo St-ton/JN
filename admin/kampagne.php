@@ -9,12 +9,12 @@ $oAccount->permission('STATS_CAMPAIGN_VIEW', true, true);
 /** @global JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'kampagne_inc.php';
 
-$cHinweis          = '';
-$cFehler           = '';
-$kKampagne         = 0;
-$kKampagneDef      = 0;
-$cStamp            = '';
-$step              = 'kampagne_uebersicht';
+$cHinweis     = '';
+$cFehler      = '';
+$kKampagne    = 0;
+$kKampagneDef = 0;
+$cStamp       = '';
+$step         = 'kampagne_uebersicht';
 
 // Zeitraum
 // 1 = Monat
@@ -43,11 +43,17 @@ if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
 }
 if (RequestHelper::verifyGPCDataInt('neu') === 1 && FormHelper::validateToken()) {
     $step = 'kampagne_erstellen';
-} elseif (RequestHelper::verifyGPCDataInt('editieren') === 1 && RequestHelper::verifyGPCDataInt('kKampagne') > 0 && FormHelper::validateToken()) {
+} elseif (RequestHelper::verifyGPCDataInt('editieren') === 1
+    && RequestHelper::verifyGPCDataInt('kKampagne') > 0
+    && FormHelper::validateToken()
+) {
     // Editieren
     $step      = 'kampagne_erstellen';
     $kKampagne = RequestHelper::verifyGPCDataInt('kKampagne');
-} elseif (RequestHelper::verifyGPCDataInt('detail') === 1 && RequestHelper::verifyGPCDataInt('kKampagne') > 0 && FormHelper::validateToken()) {
+} elseif (RequestHelper::verifyGPCDataInt('detail') === 1
+    && RequestHelper::verifyGPCDataInt('kKampagne') > 0
+    && FormHelper::validateToken()
+) {
     // Detail
     $step      = 'kampagne_detail';
     $kKampagne = RequestHelper::verifyGPCDataInt('kKampagne');
@@ -99,7 +105,7 @@ if (RequestHelper::verifyGPCDataInt('neu') === 1 && FormHelper::validateToken())
     }
 } elseif (RequestHelper::verifyGPCDataInt('nAnsicht') > 0) { // Ansicht
     $_SESSION['Kampagne']->nAnsicht = RequestHelper::verifyGPCDataInt('nAnsicht');
-} elseif (RequestHelper::verifyGPCDataInt('nStamp') === -1 || RequestHelper::verifyGPCDataInt('nStamp') === 1) { // Zeitraum
+} elseif (RequestHelper::verifyGPCDataInt('nStamp') === -1 || RequestHelper::verifyGPCDataInt('nStamp') === 1) {
     // Vergangenheit
     if (RequestHelper::verifyGPCDataInt('nStamp') === -1) {
         $_SESSION['Kampagne']->cStamp = gibStamp($_SESSION['Kampagne']->cStamp, -1, $_SESSION['Kampagne']->nAnsicht);
@@ -184,51 +190,57 @@ if ($step === 'kampagne_uebersicht') {
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
 
-        $oPagiDefDetail = (new Pagination('defdetail'))
+        $oPagiDefDetail    = (new Pagination('defdetail'))
             ->setItemCount(count($oStats_arr))
             ->assemble();
-        $oKampagneStat_arr = holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, $cStampText, $cMember_arr,
-            ' LIMIT ' . $oPagiDefDetail->getLimitSQL());
+        $oKampagneStat_arr = holeKampagneDefDetailStats(
+            $kKampagne,
+            $oKampagneDef,
+            $cStamp,
+            $cStampText,
+            $cMember_arr,
+            ' LIMIT ' . $oPagiDefDetail->getLimitSQL()
+        );
 
         $smarty->assign('oPagiDefDetail', $oPagiDefDetail)
-            ->assign('oKampagne', holeKampagne($kKampagne))
-            ->assign('oKampagneStat_arr', $oKampagneStat_arr)
-            ->assign('oKampagneDef', $oKampagneDef)
-            ->assign('cMember_arr', $cMember_arr)
-            ->assign('cStampText', $cStampText)
-            ->assign('cStamp', $cStamp)
-            ->assign('nGesamtAnzahlDefDetail', count($oStats_arr));
+               ->assign('oKampagne', holeKampagne($kKampagne))
+               ->assign('oKampagneStat_arr', $oKampagneStat_arr)
+               ->assign('oKampagneDef', $oKampagneDef)
+               ->assign('cMember_arr', $cMember_arr)
+               ->assign('cStampText', $cStampText)
+               ->assign('cStamp', $cStamp)
+               ->assign('nGesamtAnzahlDefDetail', count($oStats_arr));
     }
 }
 
-$cDatum_arr = DateHelper::getDateParts($_SESSION['Kampagne']->cStamp);
+$dates = DateHelper::getDateParts($_SESSION['Kampagne']->cStamp);
 switch ((int)$_SESSION['Kampagne']->nAnsicht) {
     case 1:    // Monat
-        $cZeitraum = '01.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'] . ' - ' .
-            date('t', mktime(0, 0, 0, (int)$cDatum_arr['cMonat'], 1, (int)$cDatum_arr['cJahr'])) .
-            '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'];
-        $bGreaterNow = (int)$cDatumNow_arr['cMonat'] === (int)$cDatum_arr['cMonat']
-            && (int)$cDatumNow_arr['cJahr'] === (int)$cDatum_arr['cJahr'];
+        $cZeitraum   = '01.' . $dates['cMonat'] . '.' . $dates['cJahr'] . ' - ' .
+            date('t', mktime(0, 0, 0, (int)$dates['cMonat'], 1, (int)$dates['cJahr'])) .
+            '.' . $dates['cMonat'] . '.' . $dates['cJahr'];
+        $bGreaterNow = (int)$cDatumNow_arr['cMonat'] === (int)$dates['cMonat']
+            && (int)$cDatumNow_arr['cJahr'] === (int)$dates['cJahr'];
         $smarty->assign('cZeitraum', $cZeitraum)
-            ->assign('cZeitraumParam', base64_encode($cZeitraum))
-            ->assign('bGreaterNow', $bGreaterNow);
+               ->assign('cZeitraumParam', base64_encode($cZeitraum))
+               ->assign('bGreaterNow', $bGreaterNow);
         break;
     case 2:    // Woche
-        $cDate_arr   = ermittleDatumWoche($cDatum_arr['cJahr'] . '-' . $cDatum_arr['cMonat'] . '-' . $cDatum_arr['cTag']);
+        $cDate_arr   = ermittleDatumWoche($dates['cJahr'] . '-' . $dates['cMonat'] . '-' . $dates['cTag']);
         $cZeitraum   = date('d.m.Y', $cDate_arr[0]) . ' - ' . date('d.m.Y', $cDate_arr[1]);
         $bGreaterNow = date('Y-m-d', $cDate_arr[1]) >= $cDatumNow_arr['cDatum'];
         $smarty->assign('cZeitraum', $cZeitraum)
-            ->assign('cZeitraumParam', base64_encode($cZeitraum))
-            ->assign('bGreaterNow', $bGreaterNow);
+               ->assign('cZeitraumParam', base64_encode($cZeitraum))
+               ->assign('bGreaterNow', $bGreaterNow);
         break;
     case 3:    // Tag
-        $cZeitraum   = $cDatum_arr['cTag'] . '.' . $cDatum_arr['cMonat'] . '.' . $cDatum_arr['cJahr'];
-        $bGreaterNow = (int)$cDatumNow_arr['cTag'] === (int)$cDatum_arr['cTag']
-            && (int)$cDatumNow_arr['cMonat'] === (int)$cDatum_arr['cMonat']
-            && (int)$cDatumNow_arr['cJahr'] === (int)$cDatum_arr['cJahr'];
+        $cZeitraum   = $dates['cTag'] . '.' . $dates['cMonat'] . '.' . $dates['cJahr'];
+        $bGreaterNow = (int)$cDatumNow_arr['cTag'] === (int)$dates['cTag']
+            && (int)$cDatumNow_arr['cMonat'] === (int)$dates['cMonat']
+            && (int)$cDatumNow_arr['cJahr'] === (int)$dates['cJahr'];
         $smarty->assign('cZeitraum', $cZeitraum)
-            ->assign('cZeitraumParam', base64_encode($cZeitraum))
-            ->assign('bGreaterNow', $bGreaterNow);
+               ->assign('cZeitraumParam', base64_encode($cZeitraum))
+               ->assign('bGreaterNow', $bGreaterNow);
         break;
 }
 

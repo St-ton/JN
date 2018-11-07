@@ -79,7 +79,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public function update(): int
         {
-            return Shop::Container()->getDB()->update('tuploaddatei', 'kUpload', (int)$this->kUpload, self::copyMembers($this));
+            return Shop::Container()->getDB()->update(
+                'tuploaddatei',
+                'kUpload',
+                (int)$this->kUpload,
+                self::copyMembers($this)
+            );
         }
 
         /**

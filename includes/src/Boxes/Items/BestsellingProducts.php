@@ -22,8 +22,8 @@ final class BestsellingProducts extends AbstractBox
     {
         parent::__construct($config);
         $this->setShow(false);
-        $customerGroupID = \Session::CustomerGroup()->getID();
-        if ($customerGroupID && \Session::CustomerGroup()->mayViewCategories()) {
+        $customerGroupID = \Session\Session::getCustomerGroup()->getID();
+        if ($customerGroupID && \Session\Session::getCustomerGroup()->mayViewCategories()) {
             $res            = [];
             $cached         = true;
             $cacheTags      = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];

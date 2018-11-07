@@ -231,42 +231,13 @@ function holeAlleKampagnen(bool $bInterneKampagne = false, bool $bAktivAbfragen 
  * @param array $oXML_arr
  * @param int   $nLevel
  * @return array
+ * @deprecated since 5.0.0
  */
 function getArrangedArray($oXML_arr, int $nLevel = 1)
 {
-    if (!is_array($oXML_arr)) {
-        return $oXML_arr;
-    }
-    $cArrayKeys = array_keys($oXML_arr);
-    $nCount     = count($oXML_arr);
-    for ($i = 0; $i < $nCount; $i++) {
-        if (strpos($cArrayKeys[$i], ' attr') !== false) {
-            //attribut array -> nicht beachten -> weiter
-            continue;
-        }
-        if ($nLevel === 0 || (int)$cArrayKeys[$i] > 0 || $cArrayKeys[$i] == '0') {
-            //int Arrayelement -> in die Tiefe gehen
-            $oXML_arr[$cArrayKeys[$i]] = getArrangedArray($oXML_arr[$cArrayKeys[$i]]);
-        } elseif (isset($oXML_arr[$cArrayKeys[$i]][0])) {
-            $oXML_arr[$cArrayKeys[$i]] = getArrangedArray($oXML_arr[$cArrayKeys[$i]]);
-        } else {
-            if ($oXML_arr[$cArrayKeys[$i]] === '') {
-                //empty node
-                continue;
-            }
-            //kein Attributzweig, kein numerischer Anfang
-            $tmp_arr           = [];
-            $tmp_arr['0 attr'] = $oXML_arr[$cArrayKeys[$i] . ' attr'] ?? null;
-            $tmp_arr['0']      = $oXML_arr[$cArrayKeys[$i]];
-            unset($oXML_arr[$cArrayKeys[$i]], $oXML_arr[$cArrayKeys[$i] . ' attr']);
-            $oXML_arr[$cArrayKeys[$i]] = $tmp_arr;
-            if (is_array($oXML_arr[$cArrayKeys[$i]]['0'])) {
-                $oXML_arr[$cArrayKeys[$i]]['0'] = getArrangedArray($oXML_arr[$cArrayKeys[$i]]['0']);
-            }
-        }
-    }
-
-    return $oXML_arr;
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    $parser = new \JTL\XMLParser();
+    return $parser->getArrangedArray($oXML_arr, $nLevel);
 }
 
 /**

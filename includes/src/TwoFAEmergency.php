@@ -104,7 +104,6 @@ class TwoFAEmergency
     {
         $voHashes = Shop::Container()->getDB()->selectArray('tadmin2facodes', 'kAdminlogin', $iAdminID);
         if (1 > count($voHashes)) {
-
             return false; // no emergency-codes are there
         }
 

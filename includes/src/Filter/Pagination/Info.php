@@ -107,5 +107,4 @@ class Info
     {
         $this->maxPage = $maxPage;
     }
-
 }

@@ -120,7 +120,13 @@ if (((isset($_GET['kKontaktBetreff']) && (int)$_GET['kKontaktBetreff'] > 0) ||
 }
 
 if ($step === 'uebersicht') {
-    $Conf = Shop::Container()->getDB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_KONTAKTFORMULAR, '*', 'nSort');
+    $Conf = Shop::Container()->getDB()->selectAll(
+        'teinstellungenconf',
+        'kEinstellungenSektion',
+        CONF_KONTAKTFORMULAR,
+        '*',
+        'nSort'
+    );
     $configCount = count($Conf);
     for ($i = 0; $i < $configCount; $i++) {
         if ($Conf[$i]->cInputTyp === 'selectbox') {
@@ -181,7 +187,11 @@ if ($step === 'uebersicht') {
 if ($step === 'betreff') {
     $neuerBetreff = null;
     if (isset($_GET['kKontaktBetreff']) && (int)$_GET['kKontaktBetreff'] > 0) {
-        $neuerBetreff = Shop::Container()->getDB()->select('tkontaktbetreff', 'kKontaktBetreff', (int)$_GET['kKontaktBetreff']);
+        $neuerBetreff = Shop::Container()->getDB()->select(
+            'tkontaktbetreff',
+            'kKontaktBetreff',
+            (int)$_GET['kKontaktBetreff']
+        );
     }
 
     $kundengruppen = Shop::Container()->getDB()->query(

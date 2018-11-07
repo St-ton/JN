@@ -74,7 +74,7 @@ class AuswahlAssistentFrage
      * @param int  $questionID
      * @param bool $activeOnly
      */
-    private function loadFromDB(int $questionID, bool $activeOnly = true)
+    private function loadFromDB(int $questionID, bool $activeOnly = true): void
     {
         $oDbResult = Shop::Container()->getDB()->query(
             'SELECT af.*, m.cBildpfad, COALESCE(ms.cName, m.cName) AS cName, m.cBildpfad
@@ -221,9 +221,9 @@ class AuswahlAssistentFrage
             $cPlausi_arr['cFrage'] = 1;
         }
         // Gruppe
-        if ($this->kAuswahlAssistentGruppe === null ||
-            $this->kAuswahlAssistentGruppe === 0 ||
-            $this->kAuswahlAssistentGruppe === -1
+        if ($this->kAuswahlAssistentGruppe === null
+            || $this->kAuswahlAssistentGruppe === 0
+            || $this->kAuswahlAssistentGruppe === -1
         ) {
             $cPlausi_arr['kAuswahlAssistentGruppe'] = 1;
         }

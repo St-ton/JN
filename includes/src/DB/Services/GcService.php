@@ -105,7 +105,7 @@ class GcService implements GcServiceInterface
             $cInterval     = $cMainTable_arr['cInterval'];
 
             if ($cSubTable_arr !== null) {
-                $cFrom = "{$cTable}";
+                $cFrom = $cTable;
                 $cJoin = '';
                 foreach ($cSubTable_arr as $cSubTable => $cKey) {
                     $cFrom .= ", {$cSubTable}";
@@ -128,5 +128,4 @@ class GcService implements GcServiceInterface
 
         return $this;
     }
-
 }

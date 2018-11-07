@@ -317,6 +317,26 @@ class WarenkorbPos
     }
 
     /**
+     * Calculate the total weight of a config item and his components.
+     *
+     * @return float|int
+     */
+    public function getTotalConfigWeight()
+    {
+        $weight = $this->Artikel->fGewicht * $this->nAnzahl;
+
+        if ($this->kKonfigitem === 0 && !empty($this->cUnique)) {
+            foreach (Session::Cart()->PositionenArr as $pos) {
+                if ($pos->istKonfigKind() && $pos->cUnique === $this->cUnique) {
+                    $weight += $pos->fGesamtgewicht;
+                }
+            }
+        }
+
+        return $weight;
+    }
+
+    /**
      * typo in function name - for compatibility reasons only
      * @deprecated since 4.05
      * @return $this

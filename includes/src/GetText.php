@@ -20,11 +20,6 @@ class GetText
     private $langIso;
 
     /**
-     * @var \Gettext\Translations
-     */
-    private $translations;
-
-    /**
      * @var null|\Gettext\Translator
      */
     private $translator;
@@ -34,7 +29,8 @@ class GetText
      */
     private function __construct()
     {
-        $this->translations = new Gettext\Translations();
+        $this->translator = new Gettext\Translator();
+        $this->translator->register();
 
         $this->setLangIso(Shop::getLanguage(true))
              ->loadAdminLocale();
@@ -46,17 +42,6 @@ class GetText
     public static function getInstance(): self
     {
         return self::$instance ?? (self::$instance = new self());
-    }
-
-    /**
-     * @return $this
-     */
-    private function updateTranslator()
-    {
-        $this->translator = new Gettext\Translator();
-        $this->translator->loadTranslations($this->translations);
-
-        return $this;
     }
 
     /**
@@ -96,8 +81,8 @@ class GetText
         $path = "$dir/{$this->langIso}.mo";
 
         if (file_exists($path)) {
-            $this->translations->addFromMoFile("$dir/{$this->langIso}.mo");
-            $this->translator = null;
+            $translations = Gettext\Translations::fromMoFile("$dir/{$this->langIso}.mo");
+            $this->translator->loadTranslations($translations);
         }
 
         return $this;
@@ -109,10 +94,6 @@ class GetText
      */
     public function translate(string $string): string
     {
-        if ($this->translator === null) {
-            $this->updateTranslator();
-        }
-
         return $this->translator->gettext($string);
     }
 }

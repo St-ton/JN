@@ -3,7 +3,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
 
 /**
  * Class Kundendatenhistory
@@ -40,11 +39,11 @@ class Kundendatenhistory extends MainModel
      */
     public $dErstellt;
 
-    const QUELLE_MEINKONTO = 'Mein Konto';
+    public const QUELLE_MEINKONTO = 'Mein Konto';
 
-    const QUELLE_BESTELLUNG = 'Bestellvorgang';
+    public const QUELLE_BESTELLUNG = 'Bestellvorgang';
 
-    const QUELLE_DBES = 'Wawi Abgleich';
+    public const QUELLE_DBES = 'Wawi Abgleich';
 
     /**
      * @return int
@@ -87,7 +86,7 @@ class Kundendatenhistory extends MainModel
     /**
      * @return string|null
      */
-    public function getJsonAlt()
+    public function getJsonAlt(): ?string
     {
         return $this->cJsonAlt;
     }
@@ -106,7 +105,7 @@ class Kundendatenhistory extends MainModel
     /**
      * @return string|null
      */
-    public function getJsonNeu()
+    public function getJsonNeu(): ?string
     {
         return $this->cJsonNeu;
     }
@@ -125,7 +124,7 @@ class Kundendatenhistory extends MainModel
     /**
      * @return string|null
      */
-    public function getQuelle()
+    public function getQuelle(): ?string
     {
         return $this->cQuelle;
     }
@@ -144,7 +143,7 @@ class Kundendatenhistory extends MainModel
     /**
      * @return string|null
      */
-    public function getErstellt()
+    public function getErstellt(): ?string
     {
         return $this->dErstellt;
     }
@@ -233,7 +232,11 @@ class Kundendatenhistory extends MainModel
      */
     public function delete(): int
     {
-        return Shop::Container()->getDB()->delete('tkundendatenhistory', 'kKundendatenHistory', $this->getKundendatenHistory());
+        return Shop::Container()->getDB()->delete(
+            'tkundendatenhistory',
+            'kKundendatenHistory',
+            $this->getKundendatenHistory()
+        );
     }
 
     /**

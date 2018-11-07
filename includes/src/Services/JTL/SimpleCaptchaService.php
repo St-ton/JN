@@ -125,7 +125,7 @@ class SimpleCaptchaService implements CaptchaServiceInterface
             return '0';
         }
         $cryptoService = Shop::Container()->getCryptoService();
-        $key           = BLOWFISH_KEY;
+        $key           = \BLOWFISH_KEY;
         $mod1          = (\ord($key[0]) + \ord($key[1]) + \ord($key[2])) % 9 + 1;
         $mod2          = \strlen($_SERVER['DOCUMENT_ROOT']) % 9 + 1;
 

@@ -151,14 +151,7 @@ class SofortUeberweisung extends PaymentMethod
     public function preparePaymentProcess($order)
     {
         $smarty = Shop::Smarty();
-        if (D_MODE === 1) {
-            Jtllog::writeLog(': preparePaymentProcess enter.', JTLLOG_LEVEL_DEBUG);
-        }
-
         if ($order->fGesamtsummeKundenwaehrung > 0) {
-            if (D_MODE === 1) {
-                Jtllog::writeLog(': preparePaymentProcess fGesamtsummeKundenwaehrung > 0', JTLLOG_LEVEL_DEBUG);
-            }
             $this->sofortueberweisung_id         = $this->paymentConfig['zahlungsart_sofortueberweisung_id'];
             $this->sofortueberweisung_project_id = $this->paymentConfig['zahlungsart_sofortueberweisung_project_id'];
             if ($this->paymentConfig['zahlungsart_sofortueberweisung_debugmode'] === 'Y') {
@@ -220,11 +213,6 @@ class SofortUeberweisung extends PaymentMethod
                 '<input name="interface_version" type="hidden" value="JTL-Shop-3"/>' .
                 '<input type="submit" class="btn btn-primary" name="Sofort-Ueberweisung" value="' . Shop::Lang()->get('payWithSofortueberweisung', 'global') . '"/>' .
                 '</form>';
-
-            if (D_MODE === 1) {
-                Jtllog::writeLog(': preparePaymentProcess strReturn: ' . $strReturn, JTLLOG_LEVEL_DEBUG);
-            }
-
             $smarty->assign('sofortueberweisungform', $strReturn);
         }
     }
@@ -280,12 +268,6 @@ class SofortUeberweisung extends PaymentMethod
 
         $data_implode = implode('|', $data);
         $this->hash   = sha1($data_implode);
-
-        if (D_MODE === 1) {
-            Jtllog::writeLog(': baueSicherheitsHash data: ' . print_r($data, true), JTLLOG_LEVEL_DEBUG);
-            Jtllog::writeLog(': baueSicherheitsHash data_implode: ' . $data_implode, JTLLOG_LEVEL_DEBUG);
-            Jtllog::writeLog(': baueSicherheitsHash hash: ' . $this->hash, JTLLOG_LEVEL_DEBUG);
-        }
     }
 
     /**
@@ -296,16 +278,7 @@ class SofortUeberweisung extends PaymentMethod
     public function handleNotification($order, $paymentHash, $args)
     {
         $this->doLog(print_r($args, true));
-
-        if (D_MODE === 1) {
-            Jtllog::writeLog(': handleNotification args: ' . print_r($args, true), JTLLOG_LEVEL_DEBUG);
-        }
-
         if ($this->verifyNotification($order, $paymentHash, $args)) {
-            if (D_MODE === 1) {
-                Jtllog::writeLog(': verifyNotification pass. addIncomingPayment', JTLLOG_LEVEL_DEBUG);
-            }
-
             $transaction = Shop::Container()->getDB()->query(
                 "SELECT tzahlungseingang.cZahlungsanbieter, tzahlungseingang.fBetrag, tzahlungsession.nBezahlt
                     FROM tzahlungsession
@@ -344,10 +317,6 @@ class SofortUeberweisung extends PaymentMethod
      */
     public function verifyNotification($order, $paymentHash, $args)
     {
-        if (D_MODE === 1) {
-            Jtllog::writeLog(': verifyNotification args: ' . print_r($args, true), JTLLOG_LEVEL_DEBUG);
-            Jtllog::writeLog(': verifyNotification args als REQUEST: ' . print_r($_REQUEST, true), JTLLOG_LEVEL_DEBUG);
-        }
         extract($args);
         $data                  = [
             'transaction'               => $args['transaction'] ?? null,
@@ -388,11 +357,6 @@ class SofortUeberweisung extends PaymentMethod
         }
         $data_implode = implode('|', $data);
         $hashTMP      = sha1($data_implode);
-
-        if (D_MODE === 1) {
-            Jtllog::writeLog(': verifyNotification data: ' . print_r($data, true), JTLLOG_LEVEL_DEBUG);
-            Jtllog::writeLog(': verifyNotification hashTMP: ' . $hashTMP . ' - hash: ' . $hash, JTLLOG_LEVEL_DEBUG);
-        }
 
         return ($hashTMP === $hash);
     }

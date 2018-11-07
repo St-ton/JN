@@ -15,7 +15,7 @@ $Einstellungen  = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_BEWERTUNG]);
 if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
     speicherBewertung(
         $cParameter_arr['kArtikel'],
-        Session::Customer()->getID(),
+        \Session\Session::getCustomer()->getID(),
         Shop::getLanguage(),
         RequestHelper::verifyGPDataString('cTitel'),
         RequestHelper::verifyGPDataString('cText'),
@@ -24,7 +24,7 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
 } elseif (isset($_POST['bhjn']) && (int)$_POST['bhjn'] === 1) {
     speicherHilfreich(
         $cParameter_arr['kArtikel'],
-        Session::Customer()->getID(),
+        \Session\Session::getCustomer()->getID(),
         Shop::getLanguage(),
         RequestHelper::verifyGPCDataInt('btgseite'),
         RequestHelper::verifyGPCDataInt('btgsterne')
@@ -85,7 +85,7 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
             Shop::Container()->getDB()->select(
                 'tbewertung',
                 ['kArtikel', 'kKunde'],
-                [$AktuellerArtikel->kArtikel, Session::Customer()->getID()]
+                [$AktuellerArtikel->kArtikel, \Session\Session::getCustomer()->getID()]
             )
         );
 

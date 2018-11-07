@@ -41,7 +41,7 @@ class FilterDateRangeField extends FilterField
     /**
      * @return string|null
      */
-    public function getWhereClause()
+    public function getWhereClause(): ?string
     {
         $dRange = explode(' - ', $this->cValue);
 

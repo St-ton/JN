@@ -26,7 +26,7 @@ final class NewsCategories extends AbstractBox
             ? ' LIMIT ' . (int)$config['news']['news_anzahl_box']
             : '';
         $langID    = \Shop::getLanguageID();
-        $cacheID   = 'bnk_' . $langID . '_' . \Session::CustomerGroup()->getID() . '_' . \md5($cSQL);
+        $cacheID   = 'bnk_' . $langID . '_' . \Session\Session::getCustomerGroup()->getID() . '_' . \md5($cSQL);
         $cached    = true;
         $cacheTags = [\CACHING_GROUP_BOX, \CACHING_GROUP_NEWS];
         if (($newsCategories = \Shop::Container()->getCache()->get($cacheID)) === false) {
@@ -57,12 +57,12 @@ final class NewsCategories extends AbstractBox
                         AND t.languageID = :lid
                     GROUP BY tnewskategorienews.kNewsKategorie
                     ORDER BY tnewskategorie.nSort DESC" . $cSQL,
-                ['lid' => $langID, 'cid' => \Session::CustomerGroup()->getID()],
+                ['lid' => $langID, 'cid' => \Session\Session::getCustomerGroup()->getID()],
                 ReturnType::ARRAY_OF_OBJECTS
             );
             \Shop::Container()->getCache()->set($cacheID, $newsCategories, $cacheTags);
         }
-        foreach ($newsCategories as $i => $newsCategory) {
+        foreach ($newsCategories as $newsCategory) {
             $newsCategory->cURL     = \UrlHelper::buildURL($newsCategory, \URLART_NEWSKATEGORIE);
             $newsCategory->cURLFull = \UrlHelper::buildURL($newsCategory, \URLART_NEWSKATEGORIE, true);
         }

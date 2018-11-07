@@ -19,6 +19,7 @@ class SettingSectionWarenkorbKaufabwicklung extends SettingSection
 
     /**
      * @return string
+     * @throws SmartyException
      */
     public function getSectionMarkup(): string
     {

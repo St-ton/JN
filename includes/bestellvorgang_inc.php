@@ -10,7 +10,7 @@
 function pruefeBestellungMoeglich()
 {
     header('Location: ' . Shop::Container()->getLinkService()->getStaticRoute('warenkorb.php', true) .
-        '?fillOut=' . Session::Cart()->istBestellungMoeglich(), true, 303);
+        '?fillOut=' . \Session\Session::getCart()->istBestellungMoeglich(), true, 303);
     exit;
 }
 
@@ -20,7 +20,7 @@ function pruefeBestellungMoeglich()
  * @param bool $bMsg
  * @return bool
  */
-function pruefeVersandartWahl($Versandart, $aFormValues = 0, $bMsg = true)
+function pruefeVersandartWahl($Versandart, $aFormValues = 0, $bMsg = true): bool
 {
     global $hinweis, $step;
 
@@ -44,17 +44,17 @@ function pruefeVersandartWahl($Versandart, $aFormValues = 0, $bMsg = true)
  * @param array $cPost_arr
  * @return int
  */
-function pruefeUnregistriertBestellen($cPost_arr)
+function pruefeUnregistriertBestellen($cPost_arr): int
 {
     global $step, $Kunde, $Lieferadresse;
     unset($_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['Zahlungsart']);
-    $cart = Session::Cart();
+    $cart = \Session\Session::getCart();
     $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
          ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART);
     $fehlendeAngaben     = checkKundenFormular(0);
     $Kunde               = getKundendaten($cPost_arr, 0);
     $cKundenattribut_arr = getKundenattribute($cPost_arr);
-    $kKundengruppe       = Session::CustomerGroup()->getID();
+    $kKundengruppe       = \Session\Session::getCustomerGroup()->getID();
     // CheckBox Plausi
     $oCheckBox       = new CheckBox();
     $fehlendeAngaben = array_merge($fehlendeAngaben, $oCheckBox->validateCheckBox(
@@ -134,7 +134,7 @@ function pruefeUnregistriertBestellen($cPost_arr)
  * @param array $cPost_arr
  * @param array|null $fehlendeAngaben
  */
-function pruefeLieferdaten($cPost_arr, &$fehlendeAngaben = null)
+function pruefeLieferdaten($cPost_arr, &$fehlendeAngaben = null): void
 {
     global $Lieferadresse;
     unset($_SESSION['Lieferadresse']);
@@ -144,7 +144,7 @@ function pruefeLieferdaten($cPost_arr, &$fehlendeAngaben = null)
     $_SESSION['Bestellung']->kLieferadresse = isset($cPost_arr['kLieferadresse'])
         ? (int)$cPost_arr['kLieferadresse']
         : -1;
-    Session::Cart()->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS);
+    \Session\Session::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS);
     unset($_SESSION['Versandart']);
     //neue lieferadresse
     if (!isset($cPost_arr['kLieferadresse']) || (int)$cPost_arr['kLieferadresse'] === -1) {
@@ -171,7 +171,7 @@ function pruefeLieferdaten($cPost_arr, &$fehlendeAngaben = null)
         $LA = Shop::Container()->getDB()->query(
             'SELECT kLieferadresse
                 FROM tlieferadresse
-                WHERE kKunde = ' . Session::Customer()->getID() . '
+                WHERE kKunde = ' . \Session\Session::getCustomer()->getID() . '
                     AND kLieferadresse = ' . (int)$cPost_arr['kLieferadresse'],
             \DB\ReturnType::SINGLE_OBJECT
         );
@@ -189,8 +189,8 @@ function pruefeLieferdaten($cPost_arr, &$fehlendeAngaben = null)
     }
     TaxHelper::setTaxRates();
     //lieferland hat sich geändert und versandart schon gewählt?
-    if (isset($_SESSION['Lieferadresse'], $_SESSION['Versandart']) 
-        && $_SESSION['Lieferadresse'] 
+    if (isset($_SESSION['Lieferadresse'], $_SESSION['Versandart'])
+        && $_SESSION['Lieferadresse']
         && $_SESSION['Versandart']
     ) {
         $delVersand = stripos($_SESSION['Versandart']->cLaender, $_SESSION['Lieferadresse']->cLand) === false;
@@ -210,7 +210,7 @@ function pruefeLieferdaten($cPost_arr, &$fehlendeAngaben = null)
             $delVersand = true;
         }
         if ($delVersand) {
-            Session::Cart()->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
+            \Session\Session::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
                    ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
                    ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
                    ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
@@ -218,7 +218,7 @@ function pruefeLieferdaten($cPost_arr, &$fehlendeAngaben = null)
                    ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR);
             unset($_SESSION['Versandart'], $_SESSION['Zahlungsart']);
         } else {
-            Session::Cart()->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG);
+            \Session\Session::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG);
         }
     }
     plausiGuthaben($cPost_arr);
@@ -227,7 +227,7 @@ function pruefeLieferdaten($cPost_arr, &$fehlendeAngaben = null)
 /**
  * @param array $cPost_arr
  */
-function plausiGuthaben($cPost_arr)
+function plausiGuthaben($cPost_arr): void
 {
     if ((isset($_SESSION['Bestellung']->GuthabenNutzen) && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1)
         || (isset($cPost_arr['guthabenVerrechnen']) && (int)$cPost_arr['guthabenVerrechnen'] === 1)
@@ -235,7 +235,7 @@ function plausiGuthaben($cPost_arr)
         $_SESSION['Bestellung']->GuthabenNutzen   = 1;
         $_SESSION['Bestellung']->fGuthabenGenutzt = min(
             $_SESSION['Kunde']->fGuthaben,
-            Session::Cart()->gibGesamtsummeWaren(true, false)
+            \Session\Session::getCart()->gibGesamtsummeWaren(true, false)
         );
         executeHook(HOOK_BESTELLVORGANG_PAGE_STEPBESTAETIGUNG_GUTHABENVERRECHNEN);
     }
@@ -244,12 +244,11 @@ function plausiGuthaben($cPost_arr)
 /**
  *
  */
-function pruefeVersandkostenStep()
+function pruefeVersandkostenStep(): void
 {
     global $step;
     if (isset($_SESSION['Kunde'], $_SESSION['Lieferadresse'])) {
-        $cart = Session::Cart();
-        //artikelabhängige versandkosten
+        $cart = \Session\Session::getCart();
         $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG);
         $arrArtikelabhaengigeVersandkosten = VersandartHelper::gibArtikelabhaengigeVersandkostenImWK(
             $_SESSION['Lieferadresse']->cLand,
@@ -272,7 +271,7 @@ function pruefeVersandkostenStep()
 /**
  *
  */
-function pruefeZahlungStep()
+function pruefeZahlungStep(): void
 {
     global $step;
     if (isset($_SESSION['Kunde'], $_SESSION['Lieferadresse'], $_SESSION['Versandart'])) {
@@ -283,7 +282,7 @@ function pruefeZahlungStep()
 /**
  *
  */
-function pruefeBestaetigungStep()
+function pruefeBestaetigungStep(): void
 {
     global $step;
     if (isset($_SESSION['Kunde'], $_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['Zahlungsart'])) {
@@ -302,11 +301,14 @@ function pruefeBestaetigungStep()
 /**
  * @param array $cGet_arr
  */
-function pruefeRechnungsadresseStep($cGet_arr)
+function pruefeRechnungsadresseStep($cGet_arr): void
 {
     global $step, $Kunde;
     //sondersteps Rechnungsadresse ändern
-    if (!empty($_SESSION['Kunde']) && isset($cGet_arr['editRechnungsadresse']) && (int)$cGet_arr['editRechnungsadresse'] === 1) {
+    if (!empty($_SESSION['Kunde'])
+        && isset($cGet_arr['editRechnungsadresse'])
+        && (int)$cGet_arr['editRechnungsadresse'] === 1
+    ) {
         Kupon::resetNewCustomerCoupon();
         $Kunde = $_SESSION['Kunde'];
         $step  = 'edit_customer_address';
@@ -340,7 +342,7 @@ function pruefeRechnungsadresseStep($cGet_arr)
 /**
  * @param array $cGet_arr
  */
-function pruefeLieferadresseStep($cGet_arr)
+function pruefeLieferadresseStep($cGet_arr): void
 {
     global $step, $Lieferadresse;
     //sondersteps Lieferadresse ändern
@@ -363,12 +365,12 @@ function pruefeLieferadresseStep($cGet_arr)
  *
  * @return array
  */
-function pruefeVersandkostenfreiKuponVorgemerkt()
+function pruefeVersandkostenfreiKuponVorgemerkt(): array
 {
     if ((isset($_SESSION['Kupon']) && $_SESSION['Kupon']->cKuponTyp === 'versandkupon')
         || (isset($_SESSION['oVersandfreiKupon']) && $_SESSION['oVersandfreiKupon']->cKuponTyp === 'versandkupon')
     ) {
-        Session::Cart()->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
+        \Session\Session::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
         unset($_SESSION['Kupon']);
     }
     $Kuponfehler = [];
@@ -387,13 +389,13 @@ function pruefeVersandkostenfreiKuponVorgemerkt()
 /**
  * @param array $cGet_arr
  */
-function pruefeVersandartStep($cGet_arr)
+function pruefeVersandartStep($cGet_arr): void
 {
     global $step;
     //sondersteps Versandart ändern
     if (isset($cGet_arr['editVersandart'], $_SESSION['Versandart']) && (int)$cGet_arr['editVersandart'] === 1) {
         Kupon::resetNewCustomerCoupon();
-        Session::Cart()->loescheSpezialPos(C_WARENKORBPOS_TYP_VERPACKUNG)
+        \Session\Session::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_VERPACKUNG)
                ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
                ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
                ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
@@ -410,13 +412,13 @@ function pruefeVersandartStep($cGet_arr)
 /**
  * @param array $cGet_arr
  */
-function pruefeZahlungsartStep($cGet_arr)
+function pruefeZahlungsartStep($cGet_arr): void
 {
     global $step, $hinweis;
     //sondersteps Zahlungsart ändern
     if (isset($_SESSION['Zahlungsart'], $cGet_arr['editZahlungsart']) && (int)$cGet_arr['editZahlungsart'] === 1) {
         Kupon::resetNewCustomerCoupon();
-        Session::Cart()->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
+        \Session\Session::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
                ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
                ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
                ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR);
@@ -432,7 +434,7 @@ function pruefeZahlungsartStep($cGet_arr)
 
 /**
  * @param array $cPost_arr
- * @return int
+ * @return int|null
  */
 function pruefeZahlungsartwahlStep($cPost_arr)
 {
@@ -455,20 +457,20 @@ function pruefeZahlungsartwahlStep($cPost_arr)
                 StringHandler::filterXSS($cPost_arr['cKaeuferschutzProdukt'])
             )];
             $cLandISO      = $_SESSION['Lieferadresse']->cLand ?? '';
-            $kSteuerklasse = Session::Cart()->gibVersandkostenSteuerklasse($cLandISO);
-            $fPreis        = Session::CustomerGroup()->isMerchant()
+            $kSteuerklasse = \Session\Session::getCart()->gibVersandkostenSteuerklasse($cLandISO);
+            $fPreis        = \Session\Session::getCustomerGroup()->isMerchant()
                 ? $fNetto
                 : ($fNetto * ((100 + (float)$_SESSION['Steuersatz'][$kSteuerklasse]) / 100));
             $cName['ger']  = Shop::Lang()->get('trustedshopsName');
             $cName['eng']  = Shop::Lang()->get('trustedshopsName');
-            Session::Cart()->erstelleSpezialPos(
+            \Session\Session::getCart()->erstelleSpezialPos(
                 $cName,
                 1,
                 $fPreis,
                 $kSteuerklasse,
                 C_WARENKORBPOS_TYP_TRUSTEDSHOPS,
                 true,
-                !Session::CustomerGroup()->isMerchant()
+                !\Session\Session::getCustomerGroup()->isMerchant()
             );
         }
 
@@ -495,14 +497,16 @@ function pruefeZahlungsartwahlStep($cPost_arr)
 /**
  *
  */
-function pruefeGuthabenNutzen()
+function pruefeGuthabenNutzen(): void
 {
     if (isset($_SESSION['Bestellung']->GuthabenNutzen) && $_SESSION['Bestellung']->GuthabenNutzen) {
         $_SESSION['Bestellung']->fGuthabenGenutzt   = min(
             $_SESSION['Kunde']->fGuthaben,
-            Session::Cart()->gibGesamtsummeWaren(true, false)
+            \Session\Session::getCart()->gibGesamtsummeWaren(true, false)
         );
-        $_SESSION['Bestellung']->GutscheinLocalized = Preise::getLocalizedPriceString($_SESSION['Bestellung']->fGuthabenGenutzt);
+        $_SESSION['Bestellung']->GutscheinLocalized = Preise::getLocalizedPriceString(
+            $_SESSION['Bestellung']->fGuthabenGenutzt
+        );
     }
 
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPBESTAETIGUNG_GUTHABEN_PLAUSI);
@@ -512,27 +516,30 @@ function pruefeGuthabenNutzen()
  * @param string $context
  * @return bool
  */
-function pruefeFehlendeAngaben($context = null)
+function pruefeFehlendeAngaben($context = null): bool
 {
     $fehlendeAngaben = Shop::Smarty()->getTemplateVars('fehlendeAngaben');
     if (!$context) {
-       return !empty($fehlendeAngaben);
+        return !empty($fehlendeAngaben);
     }
 
-    return (isset($fehlendeAngaben[$context]) && is_array($fehlendeAngaben[$context]) && count($fehlendeAngaben[$context]));
+    return (isset($fehlendeAngaben[$context])
+        && is_array($fehlendeAngaben[$context])
+        && count($fehlendeAngaben[$context]));
 }
 
 /**
  *
  */
-function gibStepAccountwahl()
+function gibStepAccountwahl(): void
 {
     global $hinweis;
-    // Einstellung global_kundenkonto_aktiv ist auf 'A' und Kunde wurde nach der Registrierung zurück zur Accountwahl geleitet
+    // Einstellung global_kundenkonto_aktiv ist auf 'A'
+    // und Kunde wurde nach der Registrierung zurück zur Accountwahl geleitet
     if (isset($_REQUEST['reg']) && (int)$_REQUEST['reg'] === 1) {
         $hinweis = Shop::Lang()->get('accountCreated') . '<br />' . Shop::Lang()->get('loginNotActivated');
     }
-    Shop::Smarty()->assign('untertitel', lang_warenkorb_bestellungEnthaeltXArtikel(Session::Cart()));
+    Shop::Smarty()->assign('untertitel', lang_warenkorb_bestellungEnthaeltXArtikel(\Session\Session::getCart()));
 
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPACCOUNTWAHL);
 }
@@ -540,7 +547,7 @@ function gibStepAccountwahl()
 /**
  *
  */
-function gibStepUnregistriertBestellen()
+function gibStepUnregistriertBestellen(): void
 {
     global $Kunde;
     $herkunfte = Shop::Container()->getDB()->query(
@@ -553,7 +560,7 @@ function gibStepUnregistriertBestellen()
     Shop::Smarty()->assign('untertitel', Shop::Lang()->get('fillUnregForm', 'checkout'))
         ->assign('herkunfte', $herkunfte)
         ->assign('Kunde', $Kunde ?? null)
-        ->assign('laender', VersandartHelper::getPossibleShippingCountries(Session::CustomerGroup()->getID()))
+        ->assign('laender', VersandartHelper::getPossibleShippingCountries(\Session\Session::getCustomerGroup()->getID()))
         ->assign('oKundenfeld_arr', gibSelbstdefKundenfelder())
         ->assign('nAnzeigeOrt', CHECKBOX_ORT_REGISTRIERUNG)
         ->assign('code_registrieren', false);
@@ -572,7 +579,7 @@ function validateCouponInCheckout()
     if (isset($_SESSION['Kupon'])) {
         $checkCouponResult = Kupon::checkCoupon($_SESSION['Kupon']);
         if (count($checkCouponResult) !== 0) {
-            Session::Cart()->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
+            \Session\Session::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
             $_SESSION['checkCouponResult'] = $checkCouponResult;
             unset($_SESSION['Kupon']);
             header('Location: ' . Shop::Container()->getLinkService()->getStaticRoute('warenkorb.php', true));
@@ -587,14 +594,14 @@ function gibStepLieferadresse()
 {
     global $Lieferadresse;
 
-    $kKundengruppe = Session::CustomerGroup()->getID();
+    $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
 
     if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         $Lieferadressen        = [];
         $oLieferadresseTMP_arr = Shop::Container()->getDB()->query(
             'SELECT DISTINCT(kLieferadresse)
                 FROM tlieferadresse
-                WHERE kKunde = ' . Session::Customer()->getID(),
+                WHERE kKunde = ' . \Session\Session::getCustomer()->getID(),
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oLieferadresseTMP_arr as $oLieferadresseTMP) {
@@ -622,7 +629,7 @@ function gibStepLieferadresse()
 function gibStepZahlung()
 {
     global $step, $Einstellungen;
-    $cart          = Session::Cart();
+    $cart          = \Session\Session::getCart();
     $conf          = Shop::getSettings([CONF_TRUSTEDSHOPS]);
     $oTrustedShops = new stdClass();
     if ($conf['trustedshops']['trustedshops_nutzen'] === 'Y'
@@ -656,15 +663,15 @@ function gibStepZahlung()
     }
     $kKundengruppe = $_SESSION['Kunde']->kKundengruppe ?? null;
     if (!$kKundengruppe) {
-        $kKundengruppe = Session::CustomerGroup()->getID();
+        $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
     }
     $oVersandart_arr = VersandartHelper::getPossibleShippingMethods(
         $lieferland,
         $plz,
-        VersandartHelper::getShippingClasses(Session::Cart()),
+        VersandartHelper::getShippingClasses(\Session\Session::getCart()),
         $kKundengruppe
     );
-    $packagings = VersandartHelper::getPossiblePackagings(Session::CustomerGroup()->getID());
+    $packagings = VersandartHelper::getPossiblePackagings(\Session\Session::getCustomerGroup()->getID());
 
     if (!empty($packagings) && $cart->posTypEnthalten(C_WARENKORBPOS_TYP_VERPACKUNG)) {
         foreach ($cart->PositionenArr as $oPos) {
@@ -680,7 +687,7 @@ function gibStepZahlung()
 
     if (is_array($oVersandart_arr) && count($oVersandart_arr) > 0) {
         $aktiveVersandart = gibAktiveVersandart($oVersandart_arr);
-        $oZahlungsart_arr = gibZahlungsarten($aktiveVersandart, Session::CustomerGroup()->getID());
+        $oZahlungsart_arr = gibZahlungsarten($aktiveVersandart, \Session\Session::getCustomerGroup()->getID());
         if (is_array($oZahlungsart_arr)
             && count($oZahlungsart_arr) === 1
             && !isset($_GET['editZahlungsart'])
@@ -706,7 +713,7 @@ function gibStepZahlung()
         } elseif (!is_array($oZahlungsart_arr) || count($oZahlungsart_arr) === 0) {
             Shop::Container()->getLogService()->error(
                 'Es konnte keine Zahlungsart für folgende Daten gefunden werden: Versandart: ' .
-                $_SESSION['Versandart']->kVersandart . ', Kundengruppe: ' . Session::CustomerGroup()->getID()
+                $_SESSION['Versandart']->kVersandart . ', Kundengruppe: ' . \Session\Session::getCustomerGroup()->getID()
             );
         }
 
@@ -747,7 +754,7 @@ function gibStepZahlung()
 /**
  * @param array $cPost_arr
  */
-function gibStepZahlungZusatzschritt($cPost_arr)
+function gibStepZahlungZusatzschritt($cPost_arr): void
 {
     $Zahlungsart = gibZahlungsart((int)$cPost_arr['Zahlungsart']);
     // Wenn Zahlungsart = Lastschrift ist => versuche Kundenkontodaten zu holen
@@ -814,9 +821,9 @@ function gibStepBestaetigung($cGet_arr)
         ->assign('nAnzeigeOrt', CHECKBOX_ORT_BESTELLABSCHLUSS)
         ->assign('cPost_arr', (isset($_SESSION['cPost_arr']) ? StringHandler::filterXSS($_SESSION['cPost_arr']) : []));
     if ($_SESSION['Kunde']->kKunde > 0) {
-        Shop::Smarty()->assign('GuthabenLocalized', Session::Customer()->gibGuthabenLocalized());
+        Shop::Smarty()->assign('GuthabenLocalized', \Session\Session::getCustomer()->gibGuthabenLocalized());
     }
-    $cart = Session::Cart();
+    $cart = \Session\Session::getCart();
     if (isset($cart->PositionenArr)
         && !empty($_SESSION['Versandart']->angezeigterHinweistext[$_SESSION['cISOSprache']])
         && count($cart->PositionenArr) > 0
@@ -836,12 +843,12 @@ function gibStepBestaetigung($cGet_arr)
 /**
  *
  */
-function gibStepVersand()
+function gibStepVersand(): void
 {
     global $step;
     unset($_SESSION['TrustedShopsZahlung']);
     pruefeVersandkostenfreiKuponVorgemerkt();
-    $cart       = Session::Cart();
+    $cart       = \Session\Session::getCart();
     $lieferland = $_SESSION['Lieferadresse']->cLand ?? null;
     if (!$lieferland) {
         $lieferland = $_SESSION['Kunde']->cLand;
@@ -852,7 +859,7 @@ function gibStepVersand()
     }
     $kKundengruppe = $_SESSION['Kunde']->kKundengruppe ?? null;
     if (!$kKundengruppe) {
-        $kKundengruppe = Session::CustomerGroup()->getID();
+        $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
     }
     $oVersandart_arr  = VersandartHelper::getPossibleShippingMethods(
         $lieferland,
@@ -862,12 +869,12 @@ function gibStepVersand()
     );
     $oZahlungsart_arr = [];
     foreach ($oVersandart_arr as $oVersandart) {
-        $oTmp_arr = gibZahlungsarten($oVersandart->kVersandart, Session::CustomerGroup()->getID());
+        $oTmp_arr = gibZahlungsarten($oVersandart->kVersandart, \Session\Session::getCustomerGroup()->getID());
         foreach ($oTmp_arr as $oTmp) {
             $oZahlungsart_arr[$oTmp->kZahlungsart] = $oTmp;
         }
     }
-    $packagings = VersandartHelper::getPossiblePackagings(Session::CustomerGroup()->getID());
+    $packagings = VersandartHelper::getPossiblePackagings(\Session\Session::getCustomerGroup()->getID());
     if ($cart->posTypEnthalten(C_WARENKORBPOS_TYP_VERPACKUNG) && !empty($packagings)) {
         foreach ($cart->PositionenArr as $oPos) {
             if ($oPos->nPosTyp === C_WARENKORBPOS_TYP_VERPACKUNG) {
@@ -892,7 +899,7 @@ function gibStepVersand()
     } elseif (!is_array($oVersandart_arr) || count($oVersandart_arr) === 0) {
         Shop::Container()->getLogService()->error(
             'Es konnte keine Versandart für folgende Daten gefunden werden: Lieferland: ' . $lieferland .
-            ', PLZ: ' . $plz . ', Versandklasse: ' . VersandartHelper::getShippingClasses(Session::Cart()) .
+            ', PLZ: ' . $plz . ', Versandklasse: ' . VersandartHelper::getShippingClasses(\Session\Session::getCart()) .
             ', Kundengruppe: ' . $kKundengruppe
         );
     }
@@ -1020,7 +1027,7 @@ function plausiNeukundenKupon()
  * @param Zahlungsart|object $paymentMethod
  * @return array
  */
-function checkAdditionalPayment($paymentMethod)
+function checkAdditionalPayment($paymentMethod): array
 {
     foreach (['iban', 'bic'] as $dataKey) {
         if (!empty($_POST[$dataKey])) {
@@ -1065,7 +1072,7 @@ function checkAdditionalPayment($paymentMethod)
                 if ($conf['zahlungsarten']['zahlungsart_lastschrift_bic_abfrage'] === 'Y') {
                     $errors['bic'] = 1;
                 }
-            } elseif(!checkBIC($post['bic'])) {
+            } elseif (!checkBIC($post['bic'])) {
                 $errors['bic'] = 2;
             }
             if (empty($post['iban'])) {
@@ -1128,7 +1135,7 @@ function plausiIban($iban)
 /**
  * @return stdClass
  */
-function gibPostZahlungsInfo()
+function gibPostZahlungsInfo(): stdClass
 {
     $oZahlungsInfo = new stdClass();
 
@@ -1169,9 +1176,9 @@ function gibPostZahlungsInfo()
  * @param int $kZahlungsart
  * @return int
  */
-function zahlungsartKorrekt(int $kZahlungsart)
+function zahlungsartKorrekt(int $kZahlungsart): int
 {
-    $cart = Session::Cart();
+    $cart = \Session\Session::getCart();
     unset($_SESSION['Zahlungsart']);
     $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
          ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
@@ -1334,7 +1341,7 @@ function getPaymentSurchageDiscount($Zahlungsart)
     if ($Zahlungsart->fAufpreis == 0) {
         return;
     }
-    $cart = Session\Session::Cart();
+    $cart = \Session\Session::getCart();
     $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
          ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR);
     //lokalisieren
@@ -1343,19 +1350,19 @@ function getPaymentSurchageDiscount($Zahlungsart)
     if ($Zahlungsart->cAufpreisTyp === 'prozent') {
         $fGuthaben = $_SESSION['Bestellung']->fGuthabenGenutzt ?? 0;
         $Aufpreis  = (($cart->gibGesamtsummeWarenExt(
-                        [
-                            C_WARENKORBPOS_TYP_ARTIKEL,
-                            C_WARENKORBPOS_TYP_VERSANDPOS,
-                            C_WARENKORBPOS_TYP_KUPON,
-                            C_WARENKORBPOS_TYP_GUTSCHEIN,
-                            C_WARENKORBPOS_TYP_VERSANDZUSCHLAG,
-                            C_WARENKORBPOS_TYP_NEUKUNDENKUPON,
-                            C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG,
-                            C_WARENKORBPOS_TYP_VERPACKUNG,
-                            C_WARENKORBPOS_TYP_TRUSTEDSHOPS
-                        ],
-                        true
-                    ) - $fGuthaben) * $Zahlungsart->fAufpreis) / 100.0;
+            [
+                C_WARENKORBPOS_TYP_ARTIKEL,
+                C_WARENKORBPOS_TYP_VERSANDPOS,
+                C_WARENKORBPOS_TYP_KUPON,
+                C_WARENKORBPOS_TYP_GUTSCHEIN,
+                C_WARENKORBPOS_TYP_VERSANDZUSCHLAG,
+                C_WARENKORBPOS_TYP_NEUKUNDENKUPON,
+                C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG,
+                C_WARENKORBPOS_TYP_VERPACKUNG,
+                C_WARENKORBPOS_TYP_TRUSTEDSHOPS
+            ],
+            true
+        ) - $fGuthaben) * $Zahlungsart->fAufpreis) / 100.0;
 
         $Zahlungsart->cPreisLocalized = Preise::getLocalizedPriceString($Aufpreis);
     }
@@ -1368,7 +1375,8 @@ function getPaymentSurchageDiscount($Zahlungsart)
                 'tzahlungsartsprache',
                 'kZahlungsart',
                 (int)$Zahlungsart->kZahlungsart,
-                'cISOSprache', $Sprache->cISO,
+                'cISOSprache',
+                $Sprache->cISO,
                 null,
                 null,
                 false,
@@ -1647,7 +1655,7 @@ function gibAktiveZahlungsart($shippingMethods)
  * @param object[] $packagings
  * @return array
  */
-function gibAktiveVerpackung($packagings)
+function gibAktiveVerpackung($packagings): array
 {
     if (isset($_SESSION['Verpackung']) && count($_SESSION['Verpackung']) > 0) {
         $_SESSION['AktiveVerpackung'] = [];
@@ -1674,7 +1682,7 @@ function gibAktiveVerpackung($packagings)
  * @param Zahlungsart|stdClass $paymentMethod
  * @return bool
  */
-function zahlungsartGueltig($paymentMethod)
+function zahlungsartGueltig($paymentMethod): bool
 {
     if (!isset($paymentMethod->cModulId)) {
         return false;
@@ -1687,8 +1695,10 @@ function zahlungsartGueltig($paymentMethod)
             if ($oPlugin->nStatus !== Plugin::PLUGIN_ACTIVATED) {
                 return false;
             }
-            require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' .
-                PFAD_PLUGIN_PAYMENTMETHOD . $oPlugin->oPluginZahlungsKlasseAssoc_arr[$paymentMethod->cModulId]->cClassPfad;
+            require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' .
+                PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' .
+                PFAD_PLUGIN_PAYMENTMETHOD .
+                $oPlugin->oPluginZahlungsKlasseAssoc_arr[$paymentMethod->cModulId]->cClassPfad;
             $className              = $oPlugin->oPluginZahlungsKlasseAssoc_arr[$paymentMethod->cModulId]->cClassName;
             $oZahlungsart           = new $className($paymentMethod->cModulId);
             $oZahlungsart->cModulId = $paymentMethod->cModulId;
@@ -1705,12 +1715,11 @@ function zahlungsartGueltig($paymentMethod)
 
                 return false;
             }
-            // Lizenzprüfung
             if (!Plugin::licenseCheck($oPlugin, ['cModulId' => $paymentMethod->cModulId])) {
                 return false;
             }
 
-            return $oZahlungsart->isValid($_SESSION['Kunde'], Session::Cart());
+            return $oZahlungsart->isValid($_SESSION['Kunde'], \Session\Session::getCart());
         }
     } else {
         $oPaymentMethod = new PaymentMethod($paymentMethod->cModulId);
@@ -1739,7 +1748,7 @@ function zahlungsartGueltig($paymentMethod)
  * @param int $nMinBestellungen
  * @return bool
  */
-function pruefeZahlungsartMinBestellungen($nMinBestellungen)
+function pruefeZahlungsartMinBestellungen($nMinBestellungen): bool
 {
     if ($nMinBestellungen <= 0) {
         return true;
@@ -1774,14 +1783,15 @@ function pruefeZahlungsartMinBestellungen($nMinBestellungen)
  * @param float $fMinBestellwert
  * @return bool
  */
-function pruefeZahlungsartMinBestellwert($fMinBestellwert)
+function pruefeZahlungsartMinBestellwert($fMinBestellwert): bool
 {
     if ($fMinBestellwert > 0
-        && Session::Cart()->gibGesamtsummeWarenOhne([C_WARENKORBPOS_TYP_VERSANDPOS], true) < $fMinBestellwert
+        && \Session\Session::getCart()->gibGesamtsummeWarenOhne([C_WARENKORBPOS_TYP_VERSANDPOS], true) <
+        $fMinBestellwert
     ) {
         Shop::Container()->getLogService()->debug(
             'pruefeZahlungsartMinBestellwert Bestellwert zu niedrig: Wert ' .
-            Session::Cart()->gibGesamtsummeWaren(true) . ' < ' . $fMinBestellwert
+            \Session\Session::getCart()->gibGesamtsummeWaren(true) . ' < ' . $fMinBestellwert
         );
 
         return false;
@@ -1794,14 +1804,15 @@ function pruefeZahlungsartMinBestellwert($fMinBestellwert)
  * @param float $fMaxBestellwert
  * @return bool
  */
-function pruefeZahlungsartMaxBestellwert($fMaxBestellwert)
+function pruefeZahlungsartMaxBestellwert($fMaxBestellwert): bool
 {
     if ($fMaxBestellwert > 0
-        && Session::Cart()->gibGesamtsummeWarenOhne([C_WARENKORBPOS_TYP_VERSANDPOS], true) >= $fMaxBestellwert
+        && \Session\Session::getCart()->gibGesamtsummeWarenOhne([C_WARENKORBPOS_TYP_VERSANDPOS], true)
+        >= $fMaxBestellwert
     ) {
         Shop::Container()->getLogService()->debug(
             'pruefeZahlungsartMaxBestellwert Bestellwert zu hoch: Wert ' .
-            Session::Cart()->gibGesamtsummeWaren(true) . ' > ' . $fMaxBestellwert
+            \Session\Session::getCart()->gibGesamtsummeWaren(true) . ' > ' . $fMaxBestellwert
         );
 
         return false;
@@ -1817,8 +1828,10 @@ function pruefeZahlungsartMaxBestellwert($fMaxBestellwert)
  */
 function versandartKorrekt(int $kVersandart, $aFormValues = 0)
 {
-    $cart                   = Session::Cart();
-    $kVerpackung_arr        = (isset($_POST['kVerpackung']) && is_array($_POST['kVerpackung']) && count($_POST['kVerpackung']) > 0)
+    $cart                   = \Session\Session::getCart();
+    $kVerpackung_arr        = (isset($_POST['kVerpackung'])
+        && is_array($_POST['kVerpackung'])
+        && count($_POST['kVerpackung']) > 0)
         ? $_POST['kVerpackung']
         : $aFormValues['kVerpackung'];
     $fSummeWarenkorb        = $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true);
@@ -1832,7 +1845,7 @@ function versandartKorrekt(int $kVersandart, $aFormValues = 0)
                     FROM tverpackung
                     WHERE kVerpackung = " . $kVerpackung . "
                         AND (tverpackung.cKundengruppe = '-1'
-                            OR FIND_IN_SET('" . Session::CustomerGroup()->getID()
+                            OR FIND_IN_SET('" . \Session\Session::getCustomerGroup()->getID()
                                 . "', REPLACE(tverpackung.cKundengruppe, ';', ',')) > 0)
                         AND " . $fSummeWarenkorb . " >= tverpackung.fMindestbestellwert
                         AND nAktiv = 1",
@@ -1854,7 +1867,10 @@ function versandartKorrekt(int $kVersandart, $aFormValues = 0)
                 }
             }
             $fBrutto = $oVerpackung->fBrutto;
-            if ($fSummeWarenkorb >= $oVerpackung->fKostenfrei && $oVerpackung->fBrutto > 0 && $oVerpackung->fKostenfrei != 0) {
+            if ($fSummeWarenkorb >= $oVerpackung->fKostenfrei
+                && $oVerpackung->fBrutto > 0
+                && $oVerpackung->fKostenfrei != 0
+            ) {
                 $fBrutto = 0;
             }
             if ($oVerpackung->kSteuerklasse == -1) {
@@ -1863,7 +1879,14 @@ function versandartKorrekt(int $kVersandart, $aFormValues = 0)
             $_SESSION['Verpackung'][] = $oVerpackung;
 
             $_SESSION['AktiveVerpackung'][$oVerpackung->kVerpackung] = 1;
-            $cart->erstelleSpezialPos($cName_arr, 1, $fBrutto, $oVerpackung->kSteuerklasse, C_WARENKORBPOS_TYP_VERPACKUNG, false);
+            $cart->erstelleSpezialPos(
+                $cName_arr,
+                1,
+                $fBrutto,
+                $oVerpackung->kSteuerklasse,
+                C_WARENKORBPOS_TYP_VERPACKUNG,
+                false
+            );
             unset($oVerpackung);
         }
     }
@@ -1879,7 +1902,7 @@ function versandartKorrekt(int $kVersandart, $aFormValues = 0)
     if (!$plz) {
         $plz = $_SESSION['Kunde']->cPLZ;
     }
-    $versandklassen           = VersandartHelper::getShippingClasses(Session::Cart());
+    $versandklassen           = VersandartHelper::getShippingClasses(\Session\Session::getCart());
     $cNurAbhaengigeVersandart = 'N';
     if (VersandartHelper::normalerArtikelversand($lieferland) === false) {
         $cNurAbhaengigeVersandart = 'Y';
@@ -1958,7 +1981,8 @@ function versandartKorrekt(int $kVersandart, $aFormValues = 0)
                 'tversandzuschlagsprache',
                 'kVersandzuschlag',
                 (int)$versandart->Zuschlag->kVersandzuschlag,
-                'cISOSprache', $Sprache->cISO,
+                'cISOSprache',
+                $Sprache->cISO,
                 null,
                 null,
                 false,
@@ -1970,7 +1994,8 @@ function versandartKorrekt(int $kVersandart, $aFormValues = 0)
             $Spezialpos->cName,
             1,
             $versandart->Zuschlag->fZuschlag,
-            $cart->gibVersandkostenSteuerklasse($cISO), C_WARENKORBPOS_TYP_VERSANDZUSCHLAG,
+            $cart->gibVersandkostenSteuerklasse($cISO),
+            C_WARENKORBPOS_TYP_VERSANDZUSCHLAG,
             true,
             $bSteuerPos
         );
@@ -1985,7 +2010,7 @@ function versandartKorrekt(int $kVersandart, $aFormValues = 0)
  * @param array $fehlendeAngaben
  * @return int
  */
-function angabenKorrekt(array $fehlendeAngaben)
+function angabenKorrekt(array $fehlendeAngaben): int
 {
     foreach ($fehlendeAngaben as $angabe) {
         if ($angabe > 0) {
@@ -2034,7 +2059,7 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
         }
     }
 
-    if (!empty($data['www']) && !Stringhandler::filterURL($data['www'])) {
+    if (!empty($data['www']) && !StringHandler::filterURL($data['www'])) {
         $ret['www'] = 2;
     }
 
@@ -2096,7 +2121,8 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
         ) {
             $bAnalizeCheck = false; // flag to signalize further analization
             $vViesResult   = null;
-            if ($conf['kunden']['shop_ustid_bzstpruefung'] === 'Y') { // backend-setting: "Einstellungen -> Formulareinstellungen ->"
+            if ($conf['kunden']['shop_ustid_bzstpruefung'] === 'Y') {
+                // backend-setting: "Einstellungen -> Formulareinstellungen ->"
                 $oVies         = new UstIDvies();
                 $vViesResult   = $oVies->doCheckID(trim($data['ustid']));
                 $bAnalizeCheck = true; // flag to signalize further analization
@@ -2106,11 +2132,11 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
                 $ret['ustid'] = 0;
             } elseif (isset($vViesResult)) {
                 switch ($vViesResult['errortype']) {
-                    case 'vies' :
+                    case 'vies':
                         // vies-error: the ID is invalid according to the VIES-system
                         $ret['ustid'] = $vViesResult['errorcode']; // (old value 5)
                         break;
-                    case 'parse' :
+                    case 'parse':
                         // parse-error: the ID-string is misspelled in any way
                         if ($vViesResult['errorcode'] === 1) {
                             $ret['ustid'] = 1; // parse-error: no id was given
@@ -2126,7 +2152,7 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
                                         substr($data['ustid'], $vViesResult['errorinfo']).
                                         '</span>';
                                     break;
-                                case 130 :
+                                case 130:
                                     $ret['ustid_err'] = $vViesResult['errorcode'].
                                         ','.
                                         $vViesResult['errorinfo'];
@@ -2137,8 +2163,9 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
                             }
                         }
                         break;
-                    case 'time' :
-                        // according to the backend-setting: "Einstellungen -> (Formular)einstellungen -> UstID-Nummer"-check active
+                    case 'time':
+                        // according to the backend-setting:
+                        // "Einstellungen -> (Formular)einstellungen -> UstID-Nummer"-check active
                         if ($conf['kunden']['shop_ustid_force_remote_check'] === 'Y') {
                             $ret['ustid'] = 4; // parsing ok, but the remote-service is in a "down-slot" and unreachable
                             $ret['ustid_err'] = $vViesResult['errorcode'].
@@ -2151,7 +2178,10 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
         }
     }
     if (isset($data['geburtstag'])
-        && ($errCode = StringHandler::checkDate($data['geburtstag'], $conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y')) > 0
+        && ($errCode = StringHandler::checkDate(
+            $data['geburtstag'],
+            $conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y'
+        )) > 0
     ) {
         $ret['geburtstag'] = $errCode;
     }
@@ -2204,7 +2234,9 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
                         }
                     } elseif ($customerField->cTyp === 'zahl') {
                         // Zahl, 4 = keine Zahl
-                        if ($data['custom_' . $customerField->kKundenfeld] != (float)$data['custom_' . $customerField->kKundenfeld]) {
+                        if ($data['custom_' . $customerField->kKundenfeld] !=
+                            (float)$data['custom_' . $customerField->kKundenfeld]
+                        ) {
                             $ret['custom'][$customerField->kKundenfeld] = 4;
                         }
                     }
@@ -2227,7 +2259,9 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
                     }
                 } elseif ($customerField->cTyp === 'zahl') {
                     // Zahl, 4 = keine Zahl
-                    if ($data['custom_' . $customerField->kKundenfeld] != (float)$data['custom_' . $customerField->kKundenfeld]) {
+                    if ($data['custom_' . $customerField->kKundenfeld] !=
+                        (float)$data['custom_' . $customerField->kKundenfeld]
+                    ) {
                         $ret['custom'][$customerField->kKundenfeld] = 4;
                     }
                 }
@@ -2272,7 +2306,7 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
  * @param int $checkpass
  * @return array
  */
-function checkKundenFormular(int $kundenaccount, $checkpass = 1)
+function checkKundenFormular(int $kundenaccount, $checkpass = 1): array
 {
     $data = StringHandler::filterXSS($_POST); // create a copy
 
@@ -2283,7 +2317,7 @@ function checkKundenFormular(int $kundenaccount, $checkpass = 1)
  * @param array $data
  * @return array
  */
-function checkLieferFormularArray($data)
+function checkLieferFormularArray($data): array
 {
     $ret  = [];
     $conf = Shop::getSettings([CONF_KUNDEN]);
@@ -2352,7 +2386,7 @@ function checkLieferFormularArray($data)
  * @param array $cPost_arr
  * @return array
  */
-function checkLieferFormular($cPost_arr = null)
+function checkLieferFormular($cPost_arr = null): array
 {
     return checkLieferFormularArray($cPost_arr ?? $_POST);
 }
@@ -2362,7 +2396,7 @@ function checkLieferFormular($cPost_arr = null)
  * @return array
  * @deprecated since 5.0.0
  */
-function checkeKupon($Kupon)
+function checkeKupon($Kupon): array
 {
     return Kupon::checkCoupon($Kupon);
 }
@@ -2381,7 +2415,7 @@ function kuponAnnehmen($Kupon)
  *
  * @param Kupon|object $Kupon
  * @param array $cartPositions
- * @return bool
+ * @return float
  */
 function gibGesamtsummeKuponartikelImWarenkorb($Kupon, array $cartPositions)
 {
@@ -2409,7 +2443,7 @@ function gibGesamtsummeKuponartikelImWarenkorb($Kupon, array $cartPositions)
  * @param array $cartPositions
  * @return bool
  */
-function warenkorbKuponFaehigArtikel($Kupon, array $cartPositions)
+function warenkorbKuponFaehigArtikel($Kupon, array $cartPositions): bool
 {
     foreach ($cartPositions as $Pos) {
         if ($Pos->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
@@ -2427,7 +2461,7 @@ function warenkorbKuponFaehigArtikel($Kupon, array $cartPositions)
  * @param array $cartPositions
  * @return bool
  */
-function warenkorbKuponFaehigHersteller($Kupon, array $cartPositions)
+function warenkorbKuponFaehigHersteller($Kupon, array $cartPositions): bool
 {
     foreach ($cartPositions as $Pos) {
         if ($Pos->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
@@ -2445,7 +2479,7 @@ function warenkorbKuponFaehigHersteller($Kupon, array $cartPositions)
  * @param array $cartPositions
  * @return bool
  */
-function warenkorbKuponFaehigKategorien($Kupon, array $cartPositions)
+function warenkorbKuponFaehigKategorien($Kupon, array $cartPositions): bool
 {
     $categories = [];
     foreach ($cartPositions as $Pos) {
@@ -2511,7 +2545,9 @@ function getKundendaten($post, $kundenaccount, $htmlentities = 1)
     }
 
     //erstelle neuen Kunden
-    $kKunde   = isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0 ? (int)$_SESSION['Kunde']->kKunde : 0;
+    $kKunde   = isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0
+        ? (int)$_SESSION['Kunde']->kKunde
+        : 0;
     $customer = new Kunde($kKunde);
 
     foreach ($mapping as $external => $internal) {
@@ -2540,33 +2576,31 @@ function getKundendaten($post, $kundenaccount, $htmlentities = 1)
 }
 
 /**
- * @param array $cPost_arr
+ * @param array $post
  * @return array
  */
-function getKundenattribute($cPost_arr)
+function getKundenattribute($post): array
 {
-    $cKundenattribut_arr = [];
-    $oKundenfeld_arr     = Shop::Container()->getDB()->selectAll(
+    $customerAttributes = [];
+    $fieldData          = Shop::Container()->getDB()->selectAll(
         'tkundenfeld',
         'kSprache',
         Shop::getLanguage(),
         'kKundenfeld, cName, cWawi'
     );
-    if (is_array($oKundenfeld_arr) && count($oKundenfeld_arr) > 0) {
-        foreach ($oKundenfeld_arr as $oKundenfeldTMP) {
-            $oKundenfeld              = new stdClass();
-            $oKundenfeld->kKundenfeld = $oKundenfeldTMP->kKundenfeld;
-            $oKundenfeld->cName       = $oKundenfeldTMP->cName;
-            $oKundenfeld->cWawi       = $oKundenfeldTMP->cWawi;
-            $oKundenfeld->cWert       = isset($cPost_arr['custom_' . $oKundenfeldTMP->kKundenfeld])
-                ? StringHandler::filterXSS($cPost_arr['custom_' . $oKundenfeldTMP->kKundenfeld])
-                : null;
+    foreach ($fieldData as $field) {
+        $oKundenfeld              = new stdClass();
+        $oKundenfeld->kKundenfeld = $field->kKundenfeld;
+        $oKundenfeld->cName       = $field->cName;
+        $oKundenfeld->cWawi       = $field->cWawi;
+        $oKundenfeld->cWert       = isset($post['custom_' . $field->kKundenfeld])
+            ? StringHandler::filterXSS($post['custom_' . $field->kKundenfeld])
+            : null;
 
-            $cKundenattribut_arr[$oKundenfeldTMP->kKundenfeld] = $oKundenfeld;
-        }
+        $customerAttributes[$field->kKundenfeld] = $oKundenfeld;
     }
 
-    return $cKundenattribut_arr;
+    return $customerAttributes;
 }
 
 /**
@@ -2593,7 +2627,7 @@ function getNonEditableCustomerFields(): array
              FROM tkundenattribut AS ka
              LEFT JOIN tkundenfeld AS kf
                 ON ka.kKundenfeld = kf.kKundenfeld
-             WHERE kKunde = ' . Session::Customer()->getID() . '
+             WHERE kKunde = ' . \Session\Session::getCustomer()->getID() . '
              AND kf.nEditierbar = 0',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
@@ -2685,9 +2719,9 @@ function kuponMoeglich()
 /**
  * @return bool
  */
-function freeGiftStillValid()
+function freeGiftStillValid(): bool
 {
-    $cart  = Session::Cart();
+    $cart  = \Session\Session::getCart();
     $valid = true;
     foreach ($cart->PositionenArr as $oPosition) {
         if ($oPosition->nPosTyp !== C_WARENKORBPOS_TYP_GRATISGESCHENK) {
@@ -2720,7 +2754,7 @@ function freeGiftStillValid()
  * @param string $land
  * @return bool
  */
-function valid_plzort(string $plz, string $ort,string $land): bool
+function valid_plzort(string $plz, string $ort, string $land): bool
 {
     // Länder die wir mit Ihren Postleitzahlen in der Datenbank haben
     $cSupportedCountry_arr = ['DE', 'AT', 'CH'];
@@ -2746,7 +2780,7 @@ function valid_plzort(string $plz, string $ort,string $land): bool
 
 /**
  * @param string $step
- * @return mixed
+ * @return array
  */
 function gibBestellschritt(string $step)
 {
@@ -2816,7 +2850,7 @@ function gibBestellschritt(string $step)
 /**
  * @return Lieferadresse
  */
-function setzeLieferadresseAusRechnungsadresse()
+function setzeLieferadresseAusRechnungsadresse(): Lieferadresse
 {
     $shippingAddress                  = new Lieferadresse();
     $shippingAddress->kKunde          = $_SESSION['Kunde']->kKunde;
@@ -2874,13 +2908,13 @@ function gibSelbstdefKundenfelder(): array
 /**
  * @return int
  */
-function pruefeAjaxEinKlick()
+function pruefeAjaxEinKlick(): int
 {
     // Ist der Kunde eingeloggt?
-    if (($customerID = Session::Customer()->getID()) <= 0) {
+    if (($customerID = \Session\Session::getCustomer()->getID()) <= 0) {
         return 0;
     }
-    $customerGroupID = Session::CustomerGroup()->getID();
+    $customerGroupID = \Session\Session::getCustomerGroup()->getID();
     // Prüfe ob Kunde schon bestellt hat, falls ja --> Lieferdaten laden
     $oLetzteBestellung = Shop::Container()->getDB()->query(
         "SELECT tbestellung.kBestellung, tbestellung.kLieferadresse, tbestellung.kZahlungsart, tbestellung.kVersandart
@@ -2971,7 +3005,7 @@ function pruefeAjaxEinKlick()
 /**
  *
  */
-function ladeAjaxEinKlick()
+function ladeAjaxEinKlick(): void
 {
     global $aFormValues;
     gibKunde();
@@ -2984,10 +3018,10 @@ function ladeAjaxEinKlick()
     Shop::Smarty()->assign('L_CHECKOUT_ACCEPT_AGB', Shop::Lang()->get('acceptAgb', 'checkout'))
         ->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
             Shop::getLanguage(),
-            Session::CustomerGroup()->getID()
+            \Session\Session::getCustomerGroup()->getID()
         ))
-        ->assign('WarensummeLocalized', Session::Cart()->gibGesamtsummeWarenLocalized())
-        ->assign('Warensumme', Session::Cart()->gibGesamtsummeWaren());
+        ->assign('WarensummeLocalized', \Session\Session::getCart()->gibGesamtsummeWarenLocalized())
+        ->assign('Warensumme', \Session\Session::getCart()->gibGesamtsummeWaren());
 }
 
 /**
@@ -2995,7 +3029,7 @@ function ladeAjaxEinKlick()
  * @param string $cUserPass
  * @return int
  */
-function plausiAccountwahlLogin($cUserLogin, $cUserPass)
+function plausiAccountwahlLogin($cUserLogin, $cUserPass): int
 {
     global $Kunde;
     if (strlen($cUserLogin) > 0 && strlen($cUserPass) > 0) {
@@ -3026,10 +3060,10 @@ function setzeSesssionAccountwahlLogin($oKunde): bool
         $_upd->kKunde = (int)$oKunde->kKunde;
         Shop::Container()->getDB()->update('tbesucher', 'kBesucher', (int)$_SESSION['oBesucher']->kBesucher, $_upd);
     }
-    Session::Cart()->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON)
-                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR);
+    \Session\Session::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
+           ->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
+           ->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON)
+           ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR);
     unset(
         $_SESSION['Zahlungsart'],
         $_SESSION['Versandart'],
@@ -3052,7 +3086,7 @@ function setzeSesssionAccountwahlLogin($oKunde): bool
  */
 function setzeSmartyAccountwahl()
 {
-    Shop::Smarty()->assign('untertitel', lang_warenkorb_bestellungEnthaeltXArtikel(Session::Cart()));
+    Shop::Smarty()->assign('untertitel', lang_warenkorb_bestellungEnthaeltXArtikel(\Session\Session::getCart()));
 }
 
 /**
@@ -3079,13 +3113,13 @@ function setzeSessionRechnungsadresse(array $cPost_arr, $cFehlendeEingaben_arr)
     $oKunde->nRegistriert        = 0;
     $_SESSION['Kunde']           = $oKunde;
     if (isset($_SESSION['Warenkorb']->kWarenkorb)
-        && Session::Cart()->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
+        && \Session\Session::getCart()->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
     ) {
         if ($_SESSION['Bestellung']->kLieferadresse == 0 && $_SESSION['Lieferadresse']) {
             setzeLieferadresseAusRechnungsadresse();
         }
         TaxHelper::setTaxRates();
-        Session::Cart()->gibGesamtsummeWarenLocalized();
+        \Session\Session::getCart()->gibGesamtsummeWarenLocalized();
     }
 
     return true;
@@ -3095,7 +3129,7 @@ function setzeSessionRechnungsadresse(array $cPost_arr, $cFehlendeEingaben_arr)
  * @param int $nUnreg
  * @param int $nCheckout
  */
-function setzeSmartyRechnungsadresse($nUnreg, $nCheckout = 0)
+function setzeSmartyRechnungsadresse($nUnreg, $nCheckout = 0): void
 {
     global $step;
     $conf      = Shop::getSettings([CONF_KUNDEN]);
@@ -3116,7 +3150,7 @@ function setzeSmartyRechnungsadresse($nUnreg, $nCheckout = 0)
     Shop::Smarty()->assign('untertitel', Shop::Lang()->get('fillUnregForm', 'checkout'))
         ->assign('herkunfte', $herkunfte)
         ->assign('Kunde', $_SESSION['Kunde'])
-        ->assign('laender', VersandartHelper::getPossibleShippingCountries(Session::CustomerGroup()->getID()))
+        ->assign('laender', VersandartHelper::getPossibleShippingCountries(\Session\Session::getCustomerGroup()->getID()))
         ->assign('oKundenfeld_arr', gibSelbstdefKundenfelder());
     if (is_array($_SESSION['Kunde']->cKundenattribut_arr)) {
         Shop::Smarty()->assign('cKundenattribut_arr', $_SESSION['Kunde']->cKundenattribut_arr);
@@ -3124,7 +3158,10 @@ function setzeSmartyRechnungsadresse($nUnreg, $nCheckout = 0)
         $_SESSION['Kunde']->cKundenattribut_arr = getKundenattribute($_POST);
         Shop::Smarty()->assign('cKundenattribut_arr', $_SESSION['Kunde']->cKundenattribut_arr);
     }
-    Shop::Smarty()->assign('warning_passwortlaenge', lang_passwortlaenge($conf['kunden']['kundenregistrierung_passwortlaenge']));
+    Shop::Smarty()->assign(
+        'warning_passwortlaenge',
+        lang_passwortlaenge($conf['kunden']['kundenregistrierung_passwortlaenge'])
+    );
     if ((int)$nCheckout === 1) {
         Shop::Smarty()->assign('checkout', 1);
     }
@@ -3135,7 +3172,7 @@ function setzeSmartyRechnungsadresse($nUnreg, $nCheckout = 0)
  * @param int   $nUnreg
  * @param array $cPost_arr
  */
-function setzeFehlerSmartyRechnungsadresse($cFehlendeEingaben_arr, $nUnreg = 0, $cPost_arr = null)
+function setzeFehlerSmartyRechnungsadresse($cFehlendeEingaben_arr, $nUnreg = 0, $cPost_arr = null): void
 {
     $conf = Shop::getSettings([CONF_KUNDEN]);
     setzeFehlendeAngaben($cFehlendeEingaben_arr);
@@ -3150,7 +3187,7 @@ function setzeFehlerSmartyRechnungsadresse($cFehlendeEingaben_arr, $nUnreg = 0, 
     Shop::Smarty()->assign('untertitel', Shop::Lang()->get('fillUnregForm', 'checkout'))
         ->assign('herkunfte', $herkunfte)
         ->assign('Kunde', $oKunde_tmp)
-        ->assign('laender', VersandartHelper::getPossibleShippingCountries(Session::CustomerGroup()->getID()))
+        ->assign('laender', VersandartHelper::getPossibleShippingCountries(\Session\Session::getCustomerGroup()->getID()))
         ->assign('oKundenfeld_arr', gibSelbstdefKundenfelder())
         ->assign('warning_passwortlaenge', lang_passwortlaenge($conf['kunden']['kundenregistrierung_passwortlaenge']));
     if (is_array($_SESSION['Kunde']->cKundenattribut_arr)) {
@@ -3167,7 +3204,7 @@ function setzeFehlerSmartyRechnungsadresse($cFehlendeEingaben_arr, $nUnreg = 0, 
  * @param array $cPost_arr
  * @return array
  */
-function plausiLieferadresse(array $cPost_arr)
+function plausiLieferadresse(array $cPost_arr): array
 {
     $missingData = [];
 
@@ -3221,16 +3258,16 @@ function plausiLieferadresse(array $cPost_arr)
             $delVersand = true;
         }
         if ($delVersand) {
-            Session::Cart()->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR);
+            \Session\Session::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR);
             unset($_SESSION['Versandart'], $_SESSION['Zahlungsart']);
         }
         if (!$delVersand) {
-            Session::Cart()->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG);
+            \Session\Session::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG);
         }
     }
 
@@ -3240,7 +3277,7 @@ function plausiLieferadresse(array $cPost_arr)
 /**
  * @param array $cPost_arr
  */
-function setzeSessionLieferadresse(array $cPost_arr)
+function setzeSessionLieferadresse(array $cPost_arr): void
 {
     $kLieferadresse = isset($cPost_arr['kLieferadresse']) ? (int)$cPost_arr['kLieferadresse'] : -1;
 
@@ -3253,7 +3290,7 @@ function setzeSessionLieferadresse(array $cPost_arr)
         $LA = Shop::Container()->getDB()->query(
             'SELECT kLieferadresse
                 FROM tlieferadresse
-                WHERE kKunde = ' . Session::Customer()->getID() . '
+                WHERE kKunde = ' . \Session\Session::getCustomer()->getID() . '
                 AND kLieferadresse = ' . (int)$cPost_arr['kLieferadresse'],
             \DB\ReturnType::SINGLE_OBJECT
         );
@@ -3268,7 +3305,7 @@ function setzeSessionLieferadresse(array $cPost_arr)
         $_SESSION['Bestellung']->GuthabenNutzen   = 1;
         $_SESSION['Bestellung']->fGuthabenGenutzt = min(
             $_SESSION['Kunde']->fGuthaben,
-            Session::Cart()->gibGesamtsummeWaren(true, false)
+            \Session\Session::getCart()->gibGesamtsummeWaren(true, false)
         );
     } else {
         unset($_SESSION['Bestellung']->GuthabenNutzen, $_SESSION['Bestellung']->fGuthabenGenutzt);
@@ -3278,15 +3315,15 @@ function setzeSessionLieferadresse(array $cPost_arr)
 /**
  *
  */
-function setzeSmartyLieferadresse()
+function setzeSmartyLieferadresse(): void
 {
-    $kKundengruppe = Session::CustomerGroup()->getID();
-    if (Session::Customer()->getID() > 0) {
+    $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
+    if (\Session\Session::getCustomer()->getID() > 0) {
         $Lieferadressen      = [];
         $oLieferdatenTMP_arr = Shop::Container()->getDB()->selectAll(
             'tlieferadresse',
             'kKunde',
-            Session::Customer()->getID(),
+            \Session\Session::getCustomer()->getID(),
             'kLieferadresse'
         );
         foreach ($oLieferdatenTMP_arr as $oLieferdatenTMP) {
@@ -3294,9 +3331,9 @@ function setzeSmartyLieferadresse()
                 $Lieferadressen[] = new Lieferadresse($oLieferdatenTMP->kLieferadresse);
             }
         }
-        $kKundengruppe = Session::Customer()->kKundengruppe;
+        $kKundengruppe = \Session\Session::getCustomer()->kKundengruppe;
         Shop::Smarty()->assign('Lieferadressen', $Lieferadressen)
-            ->assign('GuthabenLocalized', Session::Customer()->gibGuthabenLocalized());
+            ->assign('GuthabenLocalized', \Session\Session::getCustomer()->gibGuthabenLocalized());
     }
     Shop::Smarty()->assign('laender', VersandartHelper::getPossibleShippingCountries($kKundengruppe))
         ->assign('Kunde', $_SESSION['Kunde'])
@@ -3311,11 +3348,11 @@ function setzeSmartyLieferadresse()
  * @param array $missingData
  * @param array $cPost_arr
  */
-function setzeFehlerSmartyLieferadresse($missingData, array $cPost_arr)
+function setzeFehlerSmartyLieferadresse($missingData, array $cPost_arr): void
 {
     /** @var array('Kunde' => Kunde) $_SESSION */
-    $kKundengruppe = Session::CustomerGroup()->getID();
-    if (Session::Customer()->getID() > 0) {
+    $kKundengruppe = \Session\Session::getCustomerGroup()->getID();
+    if (\Session\Session::getCustomer()->getID() > 0) {
         $Lieferadressen      = [];
         $oLieferdatenTMP_arr = Shop::Container()->getDB()->selectAll(
             'tlieferadresse',
@@ -3330,7 +3367,7 @@ function setzeFehlerSmartyLieferadresse($missingData, array $cPost_arr)
         }
         $kKundengruppe = $_SESSION['Kunde']->kKundengruppe;
         Shop::Smarty()->assign('Lieferadressen', $Lieferadressen)
-            ->assign('GuthabenLocalized', Session::Customer()->gibGuthabenLocalized());
+            ->assign('GuthabenLocalized', \Session\Session::getCustomer()->gibGuthabenLocalized());
     }
     setzeFehlendeAngaben($missingData, 'shipping_address');
     Shop::Smarty()->assign('laender', VersandartHelper::getPossibleShippingCountries($kKundengruppe))
@@ -3374,7 +3411,7 @@ function mappeLieferadresseKontaktdaten(array $shippingAddress): stdClass
 /**
  *
  */
-function setzeSmartyVersandart()
+function setzeSmartyVersandart(): void
 {
     gibStepVersand();
 }
@@ -3382,7 +3419,7 @@ function setzeSmartyVersandart()
 /**
  *
  */
-function setzeFehlerSmartyVersandart()
+function setzeFehlerSmartyVersandart(): void
 {
     Shop::Smarty()->assign('hinweis', Shop::Lang()->get('fillShipping', 'checkout'));
 }
@@ -3405,9 +3442,9 @@ function plausiZahlungsartZusatz($oZahlungsart, array $cPost_arr)
         $fNetto        = $_SESSION['TrustedShops']->oKaeuferschutzProduktIDAssoc_arr[StringHandler::htmlentities(
             StringHandler::filterXSS($cPost_arr['cKaeuferschutzProdukt'])
         )];
-        $kSteuerklasse = Session::Cart()->gibVersandkostenSteuerklasse();
+        $kSteuerklasse = \Session\Session::getCart()->gibVersandkostenSteuerklasse();
         $fPreis        = $fNetto;
-        if (!Session::CustomerGroup()->isMerchant()) {
+        if (!\Session\Session::getCustomerGroup()->isMerchant()) {
             $fPreis = $fNetto * ((100 + (float)$_SESSION['Steuersatz'][$kSteuerklasse]) / 100);
         }
         $cName['ger']                                    = Shop::Lang()->get('trustedshopsName');
@@ -3415,7 +3452,7 @@ function plausiZahlungsartZusatz($oZahlungsart, array $cPost_arr)
         $_SESSION['TrustedShops']->cKaeuferschutzProdukt = StringHandler::htmlentities(
             StringHandler::filterXSS($cPost_arr['cKaeuferschutzProdukt'])
         );
-        Session::Cart()->erstelleSpezialPos(
+        \Session\Session::getCart()->erstelleSpezialPos(
             $cName,
             1,
             $fPreis,
@@ -3431,7 +3468,7 @@ function plausiZahlungsartZusatz($oZahlungsart, array $cPost_arr)
  * @param array     $cPost_arr
  * @param int|array $cFehlendeEingaben_arr
  */
-function setzeSmartyZahlungsartZusatz($cPost_arr, $cFehlendeEingaben_arr = 0)
+function setzeSmartyZahlungsartZusatz($cPost_arr, $cFehlendeEingaben_arr = 0): void
 {
     $Zahlungsart = gibZahlungsart($cPost_arr['Zahlungsart']);
     // Wenn Zahlungsart = Lastschrift ist => versuche Kundenkontodaten zu holen
@@ -3469,10 +3506,10 @@ function setzeSmartyBestaetigung()
         ->assign('L_CHECKOUT_ACCEPT_AGB', Shop::Lang()->get('acceptAgb', 'checkout'))
         ->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
             Shop::getLanguage(),
-            Session::CustomerGroup()->getID()
+            \Session\Session::getCustomerGroup()->getID()
         ))
-        ->assign('WarensummeLocalized', Session::Cart()->gibGesamtsummeWarenLocalized())
-        ->assign('Warensumme', Session::Cart()->gibGesamtsummeWaren());
+        ->assign('WarensummeLocalized', \Session\Session::getCart()->gibGesamtsummeWarenLocalized())
+        ->assign('Warensumme', \Session\Session::getCart()->gibGesamtsummeWaren());
 }
 
 /**
@@ -3504,16 +3541,16 @@ function globaleAssigns()
     global $step, $hinweis, $Einstellungen;
     Shop::Smarty()->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
             Shop::getLanguage(),
-            Session::CustomerGroup()->getID()
+            \Session\Session::getCustomerGroup()->getID()
         ))
         ->assign('Ueberschrift', Shop::Lang()->get('orderStep0Title', 'checkout'))
         ->assign('UeberschriftKlein', Shop::Lang()->get('orderStep0Title2', 'checkout'))
         ->assign('Einstellungen', $Einstellungen)
         ->assign('hinweis', $hinweis)
         ->assign('step', $step)
-        ->assign('WarensummeLocalized', Session::Cart()->gibGesamtsummeWarenLocalized())
-        ->assign('Warensumme', Session::Cart()->gibGesamtsummeWaren())
-        ->assign('Steuerpositionen', Session::Cart()->gibSteuerpositionen())
+        ->assign('WarensummeLocalized', \Session\Session::getCart()->gibGesamtsummeWarenLocalized())
+        ->assign('Warensumme', \Session\Session::getCart()->gibGesamtsummeWaren())
+        ->assign('Steuerpositionen', \Session\Session::getCart()->gibSteuerpositionen())
         ->assign('bestellschritt', gibBestellschritt($step))
         ->assign('sess', $_SESSION);
 }
@@ -3533,14 +3570,14 @@ function loescheSession(int $nStep)
                 $_SESSION['Zahlungsart'],
                 $_SESSION['TrustedShops']
             );
-            Session::Cart()->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
+            \Session\Session::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
             break;
 
         case 1:
@@ -3551,26 +3588,26 @@ function loescheSession(int $nStep)
                 $_SESSION['Zahlungsart'],
                 $_SESSION['TrustedShops']
             );
-            Session::Cart()->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
+            \Session\Session::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
             break;
 
         case 2:
             unset($_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['oVersandfreiKupon']);
-            Session::Cart()->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
+            \Session\Session::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
             unset($_SESSION['TrustedShops'], $_SESSION['Zahlungsart']);
             break;
 
@@ -3581,23 +3618,23 @@ function loescheSession(int $nStep)
                 $_SESSION['Zahlungsart'],
                 $_SESSION['TrustedShops']
             );
-            Session::Cart()->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
+            \Session\Session::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
             break;
 
         case 4:
             unset($_SESSION['Zahlungsart'], $_SESSION['TrustedShops']);
-            Session::Cart()->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
+            \Session\Session::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
+                   ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
             break;
 
         default:
@@ -3647,14 +3684,15 @@ function mappeBestellvorgangZahlungshinweis(int $nHinweisCode)
  */
 function isEmailAvailable(string $email, int $customerID = 0): bool
 {
-    return Shop::Container()->getDB()->queryPrepared('
-              SELECT * 
-                FROM tkunde 
-                WHERE cmail = :email 
-                  AND nRegistriert = 1 
-                  AND kKunde != :customerID',
-                ['email' => $email, 'customerID' => $customerID],
-                \DB\ReturnType::SINGLE_OBJECT) === false;
+    return Shop::Container()->getDB()->queryPrepared(
+        'SELECT * 
+            FROM tkunde 
+            WHERE cmail = :email 
+              AND nRegistriert = 1 
+            AND kKunde != :customerID',
+        ['email' => $email, 'customerID' => $customerID],
+        \DB\ReturnType::SINGLE_OBJECT
+    ) === false;
 }
 
 /**
@@ -3671,102 +3709,6 @@ function convertDate2German($datum)
     }
 
     return $datum;
-}
-
-/**
- * @param Zahlungsart $Zahlungsart
- * @return int|mixed
- * @deprecated since 4.0
- */
-function gibIloxxAufpreis($Zahlungsart)
-{
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $fWarenwert = Session::Cart()->gibGesamtsummeWaren(true);
-    $fKosten    = 0;
-    for ($i = 8; $i >= 1; $i--) {
-        list($fSumme, $fTmpKosten) = explode(';', $Zahlungsart->einstellungen['zahlungsart_iloxx_staffel' . $i]);
-        $fTmpKosten                = str_replace(',', '.', $fTmpKosten);
-        if ($fSumme >= $fWarenwert) {
-            $fKosten = $fTmpKosten;
-        }
-    }
-
-    return $fKosten;
-}
-
-/**
- * @param array $cPost_arr
- * @return int
- * @deprecated since 4.0
- */
-function plausiZahlungsart(array $cPost_arr)
-{
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return pruefeZahlungsartwahlStep($cPost_arr);
-}
-
-/**
- * @param int   $kVersandart
- * @param array $cPost_arr
- * @return bool
- * @deprecated since 4.0
- */
-function plausiVersandart(int $kVersandart, array $cPost_arr)
-{
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return versandartKorrekt($kVersandart, $cPost_arr);
-}
-
-/**
- * @deprecated since 4.0
- */
-function setzeSmartyZahlungsart()
-{
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    gibStepZahlung();
-}
-
-/**
- * @param Zahlungsart $Zahlungsart
- * @return array
- * @deprecated since 4.0
- */
-function gibFehlendeAngabenZahlungsart($Zahlungsart)
-{
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return checkAdditionalPayment($Zahlungsart);
-}
-
-/**
- * @param Zahlungsart $Zahlungsart
- * @deprecated since 4.0
- */
-function setzeSessionZahlungsart($Zahlungsart)
-{
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-}
-
-/**
- * @param Zahlungsart $Zahlungsart
- * @return null
- * @deprecated since 4.05
- */
-function gibSpecials($Zahlungsart)
-{
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return null;
-}
-
-/**
- * @param array $cPost_arr
- * @param int   $nUnreg
- * @return array
- * @deprecated since 4.05
- */
-function plausiRechnungsadresse($cPost_arr, $nUnreg = 0)
-{
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return $nUnreg ? checkKundenFormular(0) : checkKundenFormular(0, 1);
 }
 
 /**

@@ -6,7 +6,7 @@
 
 /**
  * @param int $kBewertung
- * @return mixed
+ * @return stdClass|null
  */
 function holeBewertung(int $kBewertung)
 {
@@ -23,8 +23,7 @@ function editiereBewertung($cPost_arr): bool
 
     $kBewertung = RequestHelper::verifyGPCDataInt('kBewertung');
     $conf       = Shop::getSettings([CONF_BEWERTUNG]);
-    if ($kBewertung > 0
-        && !empty($cPost_arr['cName'])
+    if (!empty($cPost_arr['cName'])
         && !empty($cPost_arr['cTitel'])
         && isset($cPost_arr['nSterne'])
         && (int)$cPost_arr['nSterne'] > 0
@@ -43,7 +42,6 @@ function editiereBewertung($cPost_arr): bool
             }
 
             Shop::Container()->getDB()->update('tbewertung', 'kBewertung', $kBewertung, $upd);
-            // Durchschnitt neu berechnen
             aktualisiereDurchschnitt($oBewertung->kArtikel, $conf['bewertung']['bewertung_freischalten']);
 
             Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE . '_' . $oBewertung->kArtikel]);
@@ -56,7 +54,7 @@ function editiereBewertung($cPost_arr): bool
 }
 
 /**
- * @param $kBewertung
+ * @param int $kBewertung
  */
 function removeReply(int $kBewertung)
 {

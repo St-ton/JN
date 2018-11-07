@@ -393,17 +393,17 @@ function gibPreisStringLocalizedSmarty($params, $smarty)
 
             if ($fVPEWert > 0) {
                 $oAufpreis->cPreisVPEWertAufpreis     = Preise::getLocalizedPriceString(
-                        $fAufpreisNetto / $fVPEWert,
-                        Session::Currency()->getCode(),
-                        true,
-                        $nGenauigkeit
-                    ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
+                    $fAufpreisNetto / $fVPEWert,
+                    \Session\Session::getCurrency()->getCode(),
+                    true,
+                    $nGenauigkeit
+                ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
                 $oAufpreis->cPreisVPEWertInklAufpreis = Preise::getLocalizedPriceString(
-                        ($fAufpreisNetto + $fVKNetto) / $fVPEWert,
-                        Session::Currency()->getCode(),
-                        true,
-                        $nGenauigkeit
-                    ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
+                    ($fAufpreisNetto + $fVKNetto) / $fVPEWert,
+                    \Session\Session::getCurrency()->getCode(),
+                    true,
+                    $nGenauigkeit
+                ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
 
                 $oAufpreis->cAufpreisLocalized = $oAufpreis->cAufpreisLocalized . ', ' .
                     $oAufpreis->cPreisVPEWertAufpreis;
@@ -424,7 +424,7 @@ function gibPreisStringLocalizedSmarty($params, $smarty)
             if ($fVPEWert > 0) {
                 $oAufpreis->cPreisVPEWertAufpreis     = Preise::getLocalizedPriceString(
                         TaxHelper::getGross($fAufpreisNetto / $fVPEWert, $_SESSION['Steuersatz'][$kSteuerklasse]),
-                        Session::Currency()->getCode(),
+                        \Session\Session::getCurrency()->getCode(),
                         true,
                         $nGenauigkeit
                     ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
@@ -433,7 +433,7 @@ function gibPreisStringLocalizedSmarty($params, $smarty)
                             ($fAufpreisNetto + $fVKNetto) / $fVPEWert,
                             $_SESSION['Steuersatz'][$kSteuerklasse]
                         ),
-                        Session::Currency()->getCode(),
+                        \Session\Session::getCurrency()->getCode(),
                         true,
                         $nGenauigkeit
                     ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
@@ -713,8 +713,8 @@ function hasOnlyListableVariations($params, $smarty)
         return 0;
     }
 
-    $maxVariationCount = isset($params['maxVariationCount']) ? (int)$params['maxVariationCount'] : 1;
-    $maxWerteCount     = isset($params['maxWerteCount']) ? (int)$params['maxWerteCount'] : 3;
+    $maxVariationCount = (int)($params['maxVariationCount'] ?? 1);
+    $maxWerteCount     = (int)($params['maxWerteCount'] ?? 3);
     $variationCheck    = function ($Variationen, $maxVariationCount, $maxWerteCount) {
         $result   = true;
         $varCount = is_array($Variationen) ? count($Variationen) : 0;
@@ -738,8 +738,11 @@ function hasOnlyListableVariations($params, $smarty)
     $result = $variationCheck($params['artikel']->Variationen, $maxVariationCount, $maxWerteCount) ? 1 : 0;
     if ($result === 0 && $params['artikel']->kVaterArtikel > 0) {
         // Hat das Kind evtl. mehr Variationen als der Vater?
-        $result = $variationCheck($params['artikel']->oVariationenNurKind_arr, $maxVariationCount,
-            $maxWerteCount) ? 2 : 0;
+        $result = $variationCheck(
+            $params['artikel']->oVariationenNurKind_arr,
+            $maxVariationCount,
+            $maxWerteCount
+        ) ? 2 : 0;
     }
 
     if (isset($params['assign'])) {
@@ -778,7 +781,7 @@ function get_translation($mixed, $to = null)
  */
 function has_translation($mixed, $to = null)
 {
-    $to = $to ?: Shop::getLanguage(true);
+    $to = $to ?: Shop::getLanguageCode();
 
     return is_string($mixed) ?: isset($mixed[$to]);
 }
@@ -809,5 +812,6 @@ function getStates($params, $smarty)
         $smarty->assign($params['assign'], $oStates);
         return;
     }
+
     return $oStates;
 }

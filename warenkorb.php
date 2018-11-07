@@ -22,7 +22,7 @@ $Schnellkaufhinweis       = WarenkorbHelper::checkQuickBuy();
 $linkHelper               = Shop::Container()->getLinkService();
 $KuponcodeUngueltig       = false;
 $nVersandfreiKuponGueltig = false;
-$cart                     = Session::Cart();
+$cart                     = \Session\Session::getCart();
 $kLink                    = $linkHelper->getSpecialPageLinkKey(LINKTYP_WARENKORB);
 $link                     = $linkHelper->getPageLink($kLink);
 // Warenkorbaktualisierung?
@@ -115,7 +115,7 @@ $AktuelleKategorie      = new Kategorie(RequestHelper::verifyGPCDataInt('kategor
 $AufgeklappteKategorien = new KategorieListe();
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 if (isset($_GET['fillOut'])) {
-    $mbw = Session::CustomerGroup()->getAttribute(KNDGRP_ATTRIBUT_MINDESTBESTELLWERT);
+    $mbw = \Session\Session::getCustomerGroup()->getAttribute(KNDGRP_ATTRIBUT_MINDESTBESTELLWERT);
     if ((int)$_GET['fillOut'] === 9 && $mbw > 0 && $cart->gibGesamtsummeWaren(true, false) < $mbw) {
         $MsgWarning = Shop::Lang()->get('minordernotreached', 'checkout') . ' ' .
             Preise::getLocalizedPriceString($mbw);
@@ -130,7 +130,7 @@ if (isset($_GET['fillOut'])) {
         $MsgWarning = Shop::Lang()->get('missingFilesUpload', 'checkout');
     }
 }
-$kKundengruppe = Session::CustomerGroup()->getID();
+$kKundengruppe = \Session\Session::getCustomerGroup()->getID();
 if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']->kKundengruppe > 0) {
     $kKundengruppe = $_SESSION['Kunde']->kKundengruppe;
 }

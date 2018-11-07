@@ -15,11 +15,9 @@ $settingsIDs       = [540];
 $cSucheSQL         = new stdClass();
 $cSucheSQL->cJOIN  = '';
 $cSucheSQL->cWHERE = '';
-// Tabs
 if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
-// Suche
 if (strlen(RequestHelper::verifyGPDataString('cSuche')) > 0) {
     $cSuche = Shop::Container()->getDB()->escape(StringHandler::filterXSS(RequestHelper::verifyGPDataString('cSuche')));
 
@@ -31,7 +29,6 @@ if (strlen(RequestHelper::verifyGPDataString('cSuche')) > 0) {
 
     $smarty->assign('cSuche', $cSuche);
 }
-// Einstellungen
 if (isset($_POST['einstellungen'])
     && (int)$_POST['einstellungen'] === 1
     && (isset($_POST['speichern']) || (isset($_POST['a']) && $_POST['a'] === 'speichern'))
@@ -70,7 +67,6 @@ $oKundeAnzahl = Shop::Container()->getDB()->query(
     \DB\ReturnType::SINGLE_OBJECT
 );
 
-// Pagination
 $oPagiKunden = (new Pagination('kunden'))
     ->setItemCount($oKundeAnzahl->nAnzahl)
     ->assemble();
@@ -102,7 +98,6 @@ foreach ($oKunde_arr as $i => $oKunde) {
 $smarty->assign('oKunde_arr', $oKunde_arr)
        ->assign('oPagiKunden', $oPagiKunden);
 
-// Anzeigen
 if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
     $step   = 'anzeigen';
     $kKunde = (int)$_GET['a'];

@@ -120,9 +120,12 @@ function bearbeiteInsert($xml, array $conf)
     // Alten SEO-Pfad merken. Eintrag in tredirect, wenn sich der Pfad geändert hat.
     $oSeoOld       = Shop::Container()->getDB()->select(
         'tartikel',
-        'kArtikel', (int)$Artikel->kArtikel,
-        null, null,
-        null, null,
+        'kArtikel',
+        (int)$Artikel->kArtikel,
+        null,
+        null,
+        null,
+        null,
         false,
         'cSeo'
     );
@@ -130,7 +133,7 @@ function bearbeiteInsert($xml, array $conf)
     $isParent      = isset($artikel_arr[0]->nIstVater) ? 1 : 0;
 
     if (isset($xml['tartikel']['tkategorieartikel'])
-        && $conf['global']['kategorien_anzeigefilter'] == EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE
+        && (int)$conf['global']['kategorien_anzeigefilter'] === EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE
         && Shop::Cache()->isCacheGroupActive(CACHING_GROUP_CATEGORY)
     ) {
         $currentArticleCategories = [];
@@ -202,9 +205,12 @@ function bearbeiteInsert($xml, array $conf)
             $check         = false;
             $currentStatus = Shop::Container()->getDB()->select(
                 'tartikel',
-                'kArtikel', $Artikel->kArtikel,
-                null, null,
-                null, null,
+                'kArtikel',
+                $Artikel->kArtikel,
+                null,
+                null,
+                null,
+                null,
                 false,
                 'cLagerBeachten, cLagerKleinerNull, fLagerbestand'
             );
@@ -213,7 +219,8 @@ function bearbeiteInsert($xml, array $conf)
                     // article was not in stock before but is now - check if flush is necessary
                     || ($currentStatus->fLagerbestand > 0 && $xml['tartikel']['fLagerbestand'] <= 0)
                     // article was in stock before but is not anymore - check if flush is necessary
-                    || ($conf['global']['artikel_artikelanzeigefilter'] == EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
+                    || ((int)$conf['global']['artikel_artikelanzeigefilter']
+                        === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
                         && $currentStatus->cLagerKleinerNull !== $xml['tartikel']['cLagerKleinerNull'])
                     // overselling status changed - check if flush is necessary
                     || ($currentStatus->cLagerBeachten !== $xml['tartikel']['cLagerBeachten']
@@ -379,8 +386,10 @@ function bearbeiteInsert($xml, array $conf)
         Shop::Container()->getDB()->insert('tseo', $oSeo);
         // Insert into tredirect weil sich das SEO vom Artikel geändert hat
         if (isset($oSeoAssoc_arr[$artikelsprache_arr[$i]->kSprache])) {
-            checkDbeSXmlRedirect($oSeoAssoc_arr[$artikelsprache_arr[$i]->kSprache]->cSeo,
-                $artikelsprache_arr[$i]->cSeo);
+            checkDbeSXmlRedirect(
+                $oSeoAssoc_arr[$artikelsprache_arr[$i]->kSprache]->cSeo,
+                $artikelsprache_arr[$i]->cSeo
+            );
         }
     }
     if (isset($xml['tartikel']['tattribut']) && is_array($xml['tartikel']['tattribut'])) {
@@ -547,6 +556,9 @@ function bearbeiteInsert($xml, array $conf)
         DBUpdateInsert('tartikelkonfiggruppe', $oArtikelKonfig_arr, 'kArtikel', 'kKonfiggruppe');
     }
     if (isset($xml['tartikel']['tartikelsonderpreis'])) {
+        if ($xml['tartikel']['tartikelsonderpreis']['dEnde'] === '') {
+            $xml['tartikel']['tartikelsonderpreis']['dEnde'] = '_DBNULL_';
+        }
         updateXMLinDB(
             $xml['tartikel']['tartikelsonderpreis'],
             'tsonderpreise',
@@ -596,7 +608,8 @@ function bearbeiteInsert($xml, array $conf)
                     ) AS x
                 )
                 WHERE kArtikel = " . (int)$artikel_arr[0]->kVaterArtikel,
-            \DB\ReturnType::AFFECTED_ROWS);
+            \DB\ReturnType::AFFECTED_ROWS
+        );
         // Aktualisiere Merkmale in tartikelmerkmal vom Vaterartikel
         Artikel::beachteVarikombiMerkmalLagerbestand(
             $artikel_arr[0]->kVaterArtikel,
@@ -666,7 +679,7 @@ function bearbeiteInsert($xml, array $conf)
                     'kWarenlager'  => $oArtikelWarenlager->kWarenlager,
                     'fBestand'     => $oArtikelWarenlager->fBestand,
                     'fZulauf'      => $oArtikelWarenlager->fZulauf,
-                    'dZulaufDatum' => $oArtikelWarenlager->dZulaufDatum,
+                    'dZulaufDatum' => $oArtikelWarenlager->dZulaufDatum ?? '_DBNULL_',
                 ],
                 \DB\ReturnType::QUERYSINGLE
             );
@@ -918,7 +931,8 @@ function bearbeiteInsert($xml, array $conf)
                             );
                             updateXMLinDB(
                                 $xml['tartikel']['teigenschaft'][$i]['teigenschaftwert'][$o],
-                                'teigenschaftwertabhaengigkeit', $GLOBALS['mEigenschaftWertAbhaengigkeit'],
+                                'teigenschaftwertabhaengigkeit',
+                                $GLOBALS['mEigenschaftWertAbhaengigkeit'],
                                 'kEigenschaftWert',
                                 'kEigenschaftWertZiel'
                             );
@@ -983,8 +997,9 @@ function removeProductIdfromCoupons(int $kArtikel)
  */
 function loescheArtikel(int $kArtikel, int $nIstVater = 0, bool $bForce = false, array $conf = null)
 {
+    $db = Shop::Container()->getDB();
     // get list of all categories the article was associated with
-    $articleCategories = Shop::Container()->getDB()->selectAll(
+    $articleCategories = $db->selectAll(
         'tkategorieartikel',
         'kArtikel',
         $kArtikel,
@@ -997,7 +1012,7 @@ function loescheArtikel(int $kArtikel, int $nIstVater = 0, bool $bForce = false,
         $stockFilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
         foreach ($articleCategories as $category) {
             // check if the article was the only one in at least one of these categories
-            $categoryCount = Shop::Container()->getDB()->query(
+            $categoryCount = $db->query(
                 'SELECT COUNT(tkategorieartikel.kArtikel) AS cnt
                     FROM tkategorieartikel
                     LEFT JOIN tartikel
@@ -1013,28 +1028,28 @@ function loescheArtikel(int $kArtikel, int $nIstVater = 0, bool $bForce = false,
         }
     }
     if ($kArtikel > 0) {
-        $manufacturerID = Shop::Container()->getDB()->queryPrepared(
+        $manufacturerID = $db->queryPrepared(
             'SELECT kHersteller 
                 FROM tartikel 
                 WHERE kArtikel = :pid',
             ['pid' => $kArtikel],
             \DB\ReturnType::SINGLE_OBJECT
         );
-        Shop::Container()->getDB()->delete('tseo', ['cKey', 'kKey'], ['kArtikel', (int)$kArtikel]);
-        Shop::Container()->getDB()->delete('tartikel', 'kArtikel', $kArtikel);
-        Shop::Container()->getDB()->delete('tpreise', 'kArtikel', $kArtikel);
-        Shop::Container()->getDB()->delete('tpricerange', 'kArtikel', $kArtikel);
-        Shop::Container()->getDB()->delete('tkategorieartikel', 'kArtikel', $kArtikel);
-        Shop::Container()->getDB()->delete('tartikelsprache', 'kArtikel', $kArtikel);
-        Shop::Container()->getDB()->delete('tartikelattribut', 'kArtikel', $kArtikel);
-        Shop::Container()->getDB()->delete('tartikelwarenlager', 'kArtikel', $kArtikel);
+        $db->delete('tseo', ['cKey', 'kKey'], ['kArtikel', $kArtikel]);
+        $db->delete('tartikel', 'kArtikel', $kArtikel);
+        $db->delete('tpreise', 'kArtikel', $kArtikel);
+        $db->delete('tpricerange', 'kArtikel', $kArtikel);
+        $db->delete('tkategorieartikel', 'kArtikel', $kArtikel);
+        $db->delete('tartikelsprache', 'kArtikel', $kArtikel);
+        $db->delete('tartikelattribut', 'kArtikel', $kArtikel);
+        $db->delete('tartikelwarenlager', 'kArtikel', $kArtikel);
         loescheArtikelAttribute($kArtikel);
         loescheArtikelEigenschaftWert($kArtikel);
         loescheArtikelEigenschaft($kArtikel);
         loescheSonderpreise($kArtikel);
-        Shop::Container()->getDB()->delete('txsell', 'kArtikel', $kArtikel);
-        Shop::Container()->getDB()->delete('tartikelmerkmal', 'kArtikel', $kArtikel);
-        Shop::Container()->getDB()->delete('tartikelsichtbarkeit', 'kArtikel', $kArtikel);
+        $db->delete('txsell', 'kArtikel', $kArtikel);
+        $db->delete('tartikelmerkmal', 'kArtikel', $kArtikel);
+        $db->delete('tartikelsichtbarkeit', 'kArtikel', $kArtikel);
         loescheArtikelMediendateien($kArtikel);
         if ($bForce === false) {
             loescheArtikelDownload($kArtikel);
@@ -1061,10 +1076,11 @@ function loescheArtikel(int $kArtikel, int $nIstVater = 0, bool $bForce = false,
  */
 function loescheEigenschaft(int $attributeID)
 {
-    Shop::Container()->getDB()->delete('teigenschaft', 'kEigenschaft', $attributeID);
-    Shop::Container()->getDB()->delete('teigenschaftsprache', 'kEigenschaft', $attributeID);
-    Shop::Container()->getDB()->delete('teigenschaftsichtbarkeit', 'kEigenschaft', $attributeID);
-    Shop::Container()->getDB()->delete('teigenschaftwert', 'kEigenschaft', $attributeID);
+    $db = Shop::Container()->getDB();
+    $db->delete('teigenschaft', 'kEigenschaft', $attributeID);
+    $db->delete('teigenschaftsprache', 'kEigenschaft', $attributeID);
+    $db->delete('teigenschaftsichtbarkeit', 'kEigenschaft', $attributeID);
+    $db->delete('teigenschaftwert', 'kEigenschaft', $attributeID);
 }
 
 /**
@@ -1083,11 +1099,12 @@ function loescheArtikelEigenschaft(int $kArtikel)
  */
 function loescheEigenschaftWert(int $attributeIDWert)
 {
-    Shop::Container()->getDB()->delete('teigenschaftwert', 'kEigenschaftWert', $attributeIDWert);
-    Shop::Container()->getDB()->delete('teigenschaftwertaufpreis', 'kEigenschaftWert', $attributeIDWert);
-    Shop::Container()->getDB()->delete('teigenschaftwertsichtbarkeit', 'kEigenschaftWert', $attributeIDWert);
-    Shop::Container()->getDB()->delete('teigenschaftwertsprache', 'kEigenschaftWert', $attributeIDWert);
-    Shop::Container()->getDB()->delete('teigenschaftwertabhaengigkeit', 'kEigenschaftWert', $attributeIDWert);
+    $db = Shop::Container()->getDB();
+    $db->delete('teigenschaftwert', 'kEigenschaftWert', $attributeIDWert);
+    $db->delete('teigenschaftwertaufpreis', 'kEigenschaftWert', $attributeIDWert);
+    $db->delete('teigenschaftwertsichtbarkeit', 'kEigenschaftWert', $attributeIDWert);
+    $db->delete('teigenschaftwertsprache', 'kEigenschaftWert', $attributeIDWert);
+    $db->delete('teigenschaftwertabhaengigkeit', 'kEigenschaftWert', $attributeIDWert);
 }
 
 /**
@@ -1248,8 +1265,6 @@ function checkArtikelBildLoeschung(int $kArtikel)
         $kArtikel,
         'kArtikelPict, kMainArtikelBild, cPfad'
     );
-    // Hat der Artikel Bilder die auf eine Verknüpfung verlinken wobei der Eigentümer Artikel des Bilder gelöscht wurde
-    // und nun der zu löschende Artikel die letzte Refenz darauf ist?
     foreach ($oArtikelPict_arr as $oArtikelPict) {
         deleteArticleImage($oArtikelPict, $kArtikel);
     }

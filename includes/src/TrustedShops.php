@@ -317,7 +317,7 @@ class TrustedShops
             Shop::Container()->getLogService()->error('TS Soap error');
         } elseif ($returnValue < 0) {
             switch ($returnValue) {
-                case -10001 :
+                case -10001:
                     break;
             }
         } else {
@@ -408,10 +408,10 @@ class TrustedShops
                     Preise::getLocalizedPriceString($oItem->protectedAmountDecimal);
 
                 if (isset($_SESSION['Warenkorb'], $_SESSION['Steuersatz'])
-                    && (!Session::CustomerGroup()->isMerchant())
+                    && (!\Session\Session::getCustomerGroup()->isMerchant())
                 ) {
                     $this->oKaeuferschutzProdukte->item[$i]->grossFeeLocalized = Preise::getLocalizedPriceString($oItem->netFee *
-                        ((100 + (float)$_SESSION['Steuersatz'][Session::Cart()->gibVersandkostenSteuerklasse($cLandISO)]) / 100));
+                        ((100 + (float)$_SESSION['Steuersatz'][\Session\Session::getCart()->gibVersandkostenSteuerklasse($cLandISO)]) / 100));
                     $this->oKaeuferschutzProdukte->item[$i]->cFeeTxt           = Shop::Lang()->get('incl', 'productDetails') .
                         ' ' . Shop::Lang()->get('vat', 'productDetails');
                 } else {
@@ -487,9 +487,9 @@ class TrustedShops
                     // Std Währung
                     $oWaehrung = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
                     // Nicht Standard im Shop?
-                    if (Session::Currency()->getID() !== (int)$oWaehrung->kWaehrung) {
-                        $fPreis = $oItem->fNetto / Session::Currency()->getConversionFactor();
-                        $nWert  = $oItem->nWert / Session::Currency()->getConversionFactor();
+                    if (\Session\Session::getCurrency()->getID() !== (int)$oWaehrung->kWaehrung) {
+                        $fPreis = $oItem->fNetto / \Session\Session::getCurrency()->getConversionFactor();
+                        $nWert  = $oItem->nWert / \Session\Session::getCurrency()->getConversionFactor();
                     }
                     if ($this->oKaeuferschutzProdukte === null) {
                         $this->oKaeuferschutzProdukte = new stdClass();
@@ -508,10 +508,10 @@ class TrustedShops
                     $this->oKaeuferschutzProdukte->item[$i]->protectedAmountDecimal          = $oItem->nWert;
                     $this->oKaeuferschutzProdukte->item[$i]->tsProductID                     = $oItem->cProduktID;
 
-                    if (!Session::CustomerGroup()->isMerchant() && isset($_SESSION['Warenkorb'], $_SESSION['Steuersatz'])) {
+                    if (!\Session\Session::getCustomerGroup()->isMerchant() && isset($_SESSION['Warenkorb'], $_SESSION['Steuersatz'])) {
                         $this->oKaeuferschutzProdukte->item[$i]->grossFeeLocalized = Preise::getLocalizedPriceString(
                             $fPreis *
-                            ((100 + (float)$_SESSION['Steuersatz'][Session::Cart()->gibVersandkostenSteuerklasse($cLandISO)]) / 100)
+                            ((100 + (float)$_SESSION['Steuersatz'][\Session\Session::getCart()->gibVersandkostenSteuerklasse($cLandISO)]) / 100)
                         );
                         $this->oKaeuferschutzProdukte->item[$i]->cFeeTxt           = Shop::Lang()->get('incl', 'productDetails') .
                             ' ' .
@@ -759,8 +759,10 @@ class TrustedShops
         if (strlen($cISOSprache) > 0 && strlen($tsId) > 0) {
             $oZertifikat = Shop::Container()->getDB()->select(
                 'ttrustedshopszertifikat', 
-                'cISOSprache', $cISOSprache, 
-                'cTSID', $tsId
+                'cISOSprache',
+                $cISOSprache,
+                'cTSID',
+                $tsId
             );
             $oZertifikat = $this->entschluesselTSDaten($oZertifikat);
         } elseif (strlen($cISOSprache) > 0) {
@@ -908,8 +910,8 @@ class TrustedShops
     {
         if ((int)$kTrustedShopsZertifikat > 0) {
             $nRows = Shop::Container()->getDB()->delete(
-                'ttrustedshopszertifikat', 
-                'kTrustedShopsZertifikat', 
+                'ttrustedshopszertifikat',
+                'kTrustedShopsZertifikat',
                 (int)$kTrustedShopsZertifikat
             );
 
@@ -929,7 +931,7 @@ class TrustedShops
     {
         if (strlen($cISOSprache) > 0) {
             $rating = Shop::Container()->getDB()->select(
-                'ttrustedshopskundenbewertung', 
+                'ttrustedshopskundenbewertung',
                 'cISOSprache', 
                 $cISOSprache
             );
@@ -971,7 +973,7 @@ class TrustedShops
      * @param string $cISOSprache
      * @return $this
      */
-    public function aenderKundenbewertungsstatusDB($nStatus = 0, $cISOSprache): self
+    public function aenderKundenbewertungsstatusDB($nStatus, $cISOSprache): self
     {
         if (strlen($cISOSprache) > 0) {
             $rating = $this->holeKundenbewertungsstatus($cISOSprache);
@@ -982,9 +984,9 @@ class TrustedShops
                 $_upd->cISOSprache   = $cISOSprache;
                 $_upd->dAktualisiert = 'NOW()';
                 Shop::Container()->getDB()->update(
-                    'ttrustedshopskundenbewertung', 
-                    'kTrustedshopsKundenbewertung', 
-                    (int)$rating->kTrustedshopsKundenbewertung, 
+                    'ttrustedshopskundenbewertung',
+                    'kTrustedshopsKundenbewertung',
+                    (int)$rating->kTrustedshopsKundenbewertung,
                     $_upd
                 );
             } else {
@@ -1358,8 +1360,8 @@ class TrustedShops
             if (isset($ts->oKaeuferschutzProdukte->item)) {
                 $ts->oKaeuferschutzProdukte->item = self::filterNichtGebrauchteKaeuferschutzProdukte(
                     $oTrustedShops->oKaeuferschutzProdukte->item,
-                    Session::Cart()->gibGesamtsummeWaren(false) *
-                    ((100 + (float)$_SESSION['Steuersatz'][Session::Cart()->gibVersandkostenSteuerklasse($cLandISO)]) / 100)
+                    \Session\Session::getCart()->gibGesamtsummeWaren(false) *
+                    ((100 + (float)$_SESSION['Steuersatz'][\Session\Session::getCart()->gibVersandkostenSteuerklasse($cLandISO)]) / 100)
                 );
             }
             $ts->cLogoURL                 = $oTrustedShops->cLogoURL;
@@ -1369,8 +1371,8 @@ class TrustedShops
             $ts->cVorausgewaehltesProdukt = isset($oTrustedShops->oKaeuferschutzProdukte->item)
                 ? self::getPreSelectedProduct(
                     $oTrustedShops->oKaeuferschutzProdukte->item,
-                    Session::Cart()->gibGesamtsummeWaren(false) *
-                    ((100 + (float)$_SESSION['Steuersatz'][Session::Cart()->gibVersandkostenSteuerklasse($cLandISO)]) / 100)
+                    \Session\Session::getCart()->gibGesamtsummeWaren(false) *
+                    ((100 + (float)$_SESSION['Steuersatz'][\Session\Session::getCart()->gibVersandkostenSteuerklasse($cLandISO)]) / 100)
                 )
                 : '';
         }

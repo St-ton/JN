@@ -10,7 +10,8 @@ $xml_obj = [];
 
 if (auth()) {
     $return                      = 0;
-    $xml_obj['kunden']['tkunde'] = Shop::Container()->getDB()->query(
+    $db                          = Shop::Container()->getDB();
+    $xml_obj['kunden']['tkunde'] = $db->query(
         "SELECT kKunde, kKundengruppe, kSprache, cKundenNr, cPasswort, cAnrede, cTitel, cVorname,
             cNachname, cFirma, cStrasse, cHausnummer, cAdressZusatz, cPLZ, cOrt, cBundesland, cLand, cTel,
             cMobil, cFax, cMail, cUSTID, cWWW, fGuthaben, cNewsletter, dGeburtstag, fRabatt,
@@ -39,7 +40,7 @@ if (auth()) {
             $cZusatz                                   = $xml_obj['kunden']['tkunde'][$i]['cZusatz'];
             unset($xml_obj['kunden']['tkunde'][$i]['cZusatz']);
             $xml_obj['kunden']['tkunde'][$i]['cZusatz']         = trim($cryptoService->decryptXTEA($cZusatz));
-            $xml_obj['kunden']['tkunde'][$i]['tkundenattribut'] = Shop::Container()->getDB()->query(
+            $xml_obj['kunden']['tkunde'][$i]['tkundenattribut'] = $db->query(
                 "SELECT * 
                     FROM tkundenattribut 
                     WHERE kKunde = " . (int)$xml_obj['kunden']['tkunde'][$i . ' attr']['kKunde'],

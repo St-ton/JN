@@ -12,7 +12,7 @@ class HerstellerHelper
     /**
      * @var HerstellerHelper
      */
-    private static $_instance;
+    private static $instance;
 
     /**
      * @var string
@@ -46,7 +46,7 @@ class HerstellerHelper
             }
         }
         $this->manufacturers = $this->getManufacturers();
-        self::$_instance     = $this;
+        self::$instance      = $this;
     }
 
     /**
@@ -54,9 +54,9 @@ class HerstellerHelper
      */
     public static function getInstance(): self
     {
-        return (self::$_instance === null || Shop::getLanguage() !== self::$langID)
+        return (self::$instance === null || Shop::getLanguage() !== self::$langID)
             ? new self()
-            : self::$_instance;
+            : self::$instance;
     }
 
     /**

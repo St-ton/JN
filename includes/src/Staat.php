@@ -59,7 +59,7 @@ class Staat
     /**
      * @return int|null
      */
-    public function getStaat()
+    public function getStaat(): ?int
     {
         return $this->kStaat;
     }
@@ -67,7 +67,7 @@ class Staat
     /**
      * @return string|null
      */
-    public function getLandIso()
+    public function getLandIso(): ?string
     {
         return $this->cLandIso;
     }
@@ -75,7 +75,7 @@ class Staat
     /**
      * @return string|null
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->cName;
     }
@@ -83,7 +83,7 @@ class Staat
     /**
      * @return string|null
      */
-    public function getCode()
+    public function getCode(): ?string
     {
         return $this->cCode;
     }
@@ -92,7 +92,7 @@ class Staat
      * @param int $kStaat
      * @return $this
      */
-    public function setStaat(int $kStaat)
+    public function setStaat(int $kStaat): self
     {
         $this->kStaat = $kStaat;
 
@@ -136,7 +136,7 @@ class Staat
      * @param string $cLandIso
      * @return array|null
      */
-    public static function getRegions(string $cLandIso)
+    public static function getRegions(string $cLandIso): ?array
     {
         if (strlen($cLandIso) === 2) {
             $oObj_arr = Shop::Container()->getDB()->selectAll('tstaat', 'cLandIso', $cLandIso, '*', 'cName');
@@ -165,7 +165,7 @@ class Staat
      * @param string $cLandISO
      * @return null|Staat
      */
-    public static function getRegionByIso($cCode, $cLandISO = '')
+    public static function getRegionByIso($cCode, $cLandISO = ''): ?Staat
     {
         if (strlen($cCode) > 0) {
             $key2 = null;
@@ -194,7 +194,7 @@ class Staat
      * @param string $cName
      * @return null|Staat
      */
-    public static function getRegionByName(string $cName)
+    public static function getRegionByName(string $cName): ?Staat
     {
         if (strlen($cName) > 0) {
             $oObj = Shop::Container()->getDB()->select('tstaat', 'cName', $cName);

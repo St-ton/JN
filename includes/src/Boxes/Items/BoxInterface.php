@@ -210,7 +210,7 @@ interface BoxInterface
     public function getItems();
 
     /**
-     * @param array $items|FilterInterface
+     * @param array|FilterInterface $items
      */
     public function setItems($items): void;
 

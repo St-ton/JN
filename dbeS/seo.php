@@ -22,7 +22,6 @@ function checkSeo($cSeo)
     if (!$cSeo) {
         return '';
     }
-
     Shop::Container()->getDB()->query("SET @IKEY := 0", \DB\ReturnType::QUERYSINGLE);
     $obj = Shop::Container()->getDB()->query(
         "SELECT oseo.newSeo
@@ -143,7 +142,6 @@ function iso2ascii($str)
         chr(180) => ''
     ];
     $str = preg_replace('~[^\w-/]~', '', strtr($str, $arr));
-
     while (strpos($str, '--') !== false) {
         $str = str_replace('--', '-', $str);
     }
@@ -159,7 +157,5 @@ function iso2ascii($str)
  */
 function getFlatSeoPath($cSeoPath)
 {
-    $trimChars = ' -_';
-
-    return trim(str_replace('/', '-', $cSeoPath), $trimChars);
+    return trim(str_replace('/', '-', $cSeoPath), ' -_');
 }

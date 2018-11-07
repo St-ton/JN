@@ -108,7 +108,12 @@ class Rechnungsadresse extends Adresse
 
         unset($obj->angezeigtesLand, $obj->cAnredeLocalized);
 
-        $res = Shop::Container()->getDB()->update('trechnungsadresse', 'kRechnungsadresse', $obj->kRechnungsadresse, $obj);
+        $res = Shop::Container()->getDB()->update(
+            'trechnungsadresse',
+            'kRechnungsadresse',
+            $obj->kRechnungsadresse,
+            $obj
+        );
         $this->decrypt();
         // Anrede mappen
         $this->cAnredeLocalized = $this->mappeAnrede($this->cAnrede);

@@ -14,7 +14,7 @@ function loescheKupons($kKupon_arr)
     if (!is_array($kKupon_arr) || count($kKupon_arr) === 0) {
         return false;
     }
-    $kKupon_arr = array_map('intval', $kKupon_arr);
+    $kKupon_arr = array_map('\intval', $kKupon_arr);
     $nRows      = Shop::Container()->getDB()->query(
         'DELETE
             FROM tkupon
@@ -81,7 +81,12 @@ function getCategories($selKats = '', $kKategorie = 0, $tiefe = 0)
 {
     $selected = StringHandler::parseSSK($selKats);
     $arr      = [];
-    $kats     = Shop::Container()->getDB()->selectAll('tkategorie', 'kOberKategorie', (int)$kKategorie, 'kKategorie, cName');
+    $kats     = Shop::Container()->getDB()->selectAll(
+        'tkategorie',
+        'kOberKategorie',
+        (int)$kKategorie,
+        'kKategorie, cName'
+    );
     $kCount   = count($kats);
     for ($o = 0; $o < $kCount; $o++) {
         for ($i = 0; $i < $tiefe; $i++) {
@@ -350,8 +355,9 @@ function createCouponFromInput()
         $setDays                 = new DateInterval('P' . $_POST['dDauerTage'] . 'D');
         $oKupon->dGueltigBis     = date_add($actualTimestampEndofDay, $setDays)->format('Y-m-d H:i:s');
     }
-    if (!empty($_POST['kHersteller']) 
-        && is_array($_POST['kHersteller']) && count($_POST['kHersteller']) > 0 
+    if (!empty($_POST['kHersteller'])
+        && is_array($_POST['kHersteller'])
+        && count($_POST['kHersteller']) > 0
         && !in_array('-1', $_POST['kHersteller'])
     ) {
         $oKupon->cHersteller = StringHandler::createSSK($_POST['kHersteller']);
@@ -394,7 +400,7 @@ function createCouponFromInput()
 
 /**
  * Get the number of existing coupons of type $cKuponTyp
- * 
+ *
  * @param string $cKuponTyp
  * @param string $cWhereSQL
  * @return int
@@ -414,7 +420,7 @@ function getCouponCount($cKuponTyp = 'standard', $cWhereSQL = '')
 
 /**
  * Validates the fields of a given Kupon instance
- * 
+ *
  * @param Kupon $oKupon
  * @return array - list of error messages
  */
@@ -456,8 +462,8 @@ function validateCoupon($oKupon)
     } elseif (strlen($oKupon->cCode) > 32) {
         $cFehler_arr[] = 'Bitte geben Sie einen kürzeren Code ein. Es sind maximal 32 Zeichen erlaubt.';
     }
-    if ($oKupon->cCode !== '' 
-        && !isset($oKupon->massCreationCoupon) 
+    if ($oKupon->cCode !== ''
+        && !isset($oKupon->massCreationCoupon)
         && ($oKupon->cKuponTyp === 'standard' || $oKupon->cKuponTyp === 'versandkupon')
     ) {
         $queryRes = Shop::Container()->getDB()->executeQueryPrepared(
@@ -543,9 +549,12 @@ function saveCoupon($oKupon, $oSprache_arr)
             for ($i = 1; $i <= $massCreationCoupon->numberOfCoupons; $i++) {
                 if ($oKupon->cKuponTyp !== 'neukundenkupon') {
                     $oKupon->cCode = $oKupon->generateCode(
-                        $massCreationCoupon->hashLength, $massCreationCoupon->lowerCase,
-                        $massCreationCoupon->upperCase, $massCreationCoupon->numbersHash,
-                        $massCreationCoupon->prefixHash, $massCreationCoupon->suffixHash
+                        $massCreationCoupon->hashLength,
+                        $massCreationCoupon->lowerCase,
+                        $massCreationCoupon->upperCase,
+                        $massCreationCoupon->numbersHash,
+                        $massCreationCoupon->prefixHash,
+                        $massCreationCoupon->suffixHash
                     );
                 }
                 unset($oKupon->translationList);
@@ -618,9 +627,9 @@ function informCouponCustomers($oKupon)
     $defaultOptions = Artikel::getDefaultOptions();
     // lokalisierter Kuponwert und MBW
     $oKupon->cLocalizedWert = $oKupon->cWertTyp === 'festpreis'
-        ? Preise::getLocalizedPriceString($oKupon->fWert, $oStdWaehrung, 0)
+        ? Preise::getLocalizedPriceString($oKupon->fWert, $oStdWaehrung, false)
         : $oKupon->fWert . ' %';
-    $oKupon->cLocalizedMBW  = Preise::getLocalizedPriceString($oKupon->fMindestbestellwert, $oStdWaehrung, 0);
+    $oKupon->cLocalizedMBW  = Preise::getLocalizedPriceString($oKupon->fMindestbestellwert, $oStdWaehrung, false);
     // kKunde-Array aller auserwaehlten Kunden
     $kKunde_arr   = StringHandler::parseSSK($oKupon->cKunden);
     $oKundeDB_arr = Shop::Container()->getDB()->query(

@@ -193,8 +193,11 @@ if ($continue
                 $oDatei->cNameFull = $Datei;
                 $oDatei->cURL      = '<img class="link_image" src="' .
                     $shopURL . PFAD_BILDER . PFAD_LINKBILDER . $link->getID() . '/' . $Datei . '" />';
-                $oDatei->nBild     = (int)substr(str_replace('Bild', '', $Datei), 0,
-                    strpos(str_replace('Bild', '', $Datei), '.'));
+                $oDatei->nBild     = (int)substr(
+                    str_replace('Bild', '', $Datei),
+                    0,
+                    strpos(str_replace('Bild', '', $Datei), '.')
+                );
                 $cDatei_arr[]      = $oDatei;
             }
         }

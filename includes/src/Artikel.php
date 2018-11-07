@@ -6737,4 +6737,33 @@ class Artikel
     {
         return $this->options->$option ?? $default;
     }
+
+    /**
+     * @since 4.06.10
+     * @param bool $onlyStockRelevant
+     * @return object[]
+     */
+    public function getAllDependentProducts(bool $onlyStockRelevant = false): array
+    {
+        $depProducts[$this->kArtikel] = (object)[
+            'product'     => $this,
+            'stockFactor' => 1,
+        ];
+
+        if ($this->kStueckliste > 0 && count($this->oStueckliste_arr) === 0) {
+            $this->holeStueckliste(Kundengruppe::getCurrent());
+        }
+
+        /** @var static $item */
+        foreach ($this->oStueckliste_arr as $item) {
+            if (!$onlyStockRelevant || ($item->cLagerBeachten === 'Y' && $item->cLagerKleinerNull !== 'Y')) {
+                $depProducts[$item->kArtikel] = (object)[
+                    'product'     => $item,
+                    'stockFactor' => $item->fAnzahl_stueckliste,
+                ];
+            }
+        }
+
+        return $depProducts;
+    }
 }

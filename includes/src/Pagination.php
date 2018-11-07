@@ -141,12 +141,12 @@ class Pagination
 
     /**
      * Pagination constructor.
-     * @param string $cId
+     * @param string $id
      */
-    public function __construct(string $cId = null)
+    public function __construct(string $id = null)
     {
-        if ($cId !== null) {
-            $this->id = $cId;
+        if ($id !== null) {
+            $this->id = $id;
         }
     }
 

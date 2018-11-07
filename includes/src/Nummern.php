@@ -135,7 +135,7 @@ class Nummern
     /**
      * @return int|null
      */
-    public function getNummer()
+    public function getNummer(): ?int
     {
         return $this->nNummer;
     }
@@ -143,7 +143,7 @@ class Nummern
     /**
      * @return int|null
      */
-    public function getArt()
+    public function getArt(): ?int
     {
         return $this->nArt;
     }
@@ -151,7 +151,7 @@ class Nummern
     /**
      * @return string|null
      */
-    public function getAktualisiert()
+    public function getAktualisiert(): ?string
     {
         return $this->dAktualisiert;
     }

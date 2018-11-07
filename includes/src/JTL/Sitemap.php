@@ -53,7 +53,7 @@ class Sitemap
         $this->cache           = $cache;
         $this->conf            = $conf;
         $this->langID          = \Shop::getLanguageID();
-        $this->customerGroupID = Session::CustomerGroup()->getID();
+        $this->customerGroupID = Session::getCustomerGroup()->getID();
     }
 
     /**

@@ -40,18 +40,18 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
 } elseif ($link->getLinkType() === LINKTYP_AGB) {
     $smarty->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
         Shop::getLanguage(),
-        Session::CustomerGroup()->getID()
+        \Session\Session::getCustomerGroup()->getID()
     ));
 } elseif ($link->getLinkType() === LINKTYP_WRB) {
     $smarty->assign('WRB', Shop::Container()->getLinkService()->getAGBWRB(
         Shop::getLanguage(),
-        Session::CustomerGroup()->getID()
+        \Session\Session::getCustomerGroup()->getID()
     ));
 } elseif ($link->getLinkType() === LINKTYP_VERSAND) {
     if (isset($_POST['land'], $_POST['plz']) && !VersandartHelper::getShippingCosts($_POST['land'], $_POST['plz'])) {
         $smarty->assign('fehler', Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages'));
     }
-    $smarty->assign('laender', VersandartHelper::getPossibleShippingCountries(Session\Session::CustomerGroup()->getID()));
+    $smarty->assign('laender', VersandartHelper::getPossibleShippingCountries(\Session\Session::getCustomerGroup()->getID()));
 } elseif ($link->getLinkType() === LINKTYP_LIVESUCHE) {
     $smarty->assign('LivesucheTop', CMSHelper::getLiveSearchTop($Einstellungen))
            ->assign('LivesucheLast', CMSHelper::getLiveSearchLast($Einstellungen));

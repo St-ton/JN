@@ -14,7 +14,6 @@ setzeSprache();
 $cHinweis = '';
 $cFehler  = '';
 $step     = 'trennzeichen_uebersicht';
-// Speichern
 if (RequestHelper::verifyGPCDataInt('save') === 1 && FormHelper::validateToken()) {
     $oPlausiTrennzeichen = new PlausiTrennzeichen();
     $oPlausiTrennzeichen->setPostVar($_POST);
@@ -31,10 +30,14 @@ if (RequestHelper::verifyGPCDataInt('save') === 1 && FormHelper::validateToken()
         }
     } else {
         $cFehler = 'Fehler: Bitte füllen Sie alle Pflichtangaben aus!';
-        if (isset($xPlausiVar_arr['nDezimal_' . JTL_SEPARATOR_WEIGHT]) && $xPlausiVar_arr['nDezimal_' . JTL_SEPARATOR_WEIGHT] == 2) {
+        if (isset($xPlausiVar_arr['nDezimal_' . JTL_SEPARATOR_WEIGHT])
+            && $xPlausiVar_arr['nDezimal_' . JTL_SEPARATOR_WEIGHT] === 2
+        ) {
             $cFehler = 'Fehler: Die Anzahl der Dezimalstellen beim Gewicht dürfen nicht größer 4 sein!';
         }
-        if (isset($xPlausiVar_arr['nDezimal_' . JTL_SEPARATOR_AMOUNT]) && $xPlausiVar_arr['nDezimal_' . JTL_SEPARATOR_AMOUNT] == 2) {
+        if (isset($xPlausiVar_arr['nDezimal_' . JTL_SEPARATOR_AMOUNT])
+            && $xPlausiVar_arr['nDezimal_' . JTL_SEPARATOR_AMOUNT] === 2
+        ) {
             $cFehler = 'Fehler: Die Anzahl der Dezimalstellen bei der Menge dürfen nicht größer 2 sein!';
         }
         $smarty->assign('xPlausiVar_arr', $oPlausiTrennzeichen->getPlausiVar())

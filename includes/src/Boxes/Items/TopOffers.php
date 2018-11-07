@@ -22,8 +22,8 @@ final class TopOffers extends AbstractBox
     {
         parent::__construct($config);
         $this->setShow(false);
-        $customerGroupID = \Session::CustomerGroup()->getID();
-        if ($customerGroupID > 0 && \Session::CustomerGroup()->mayViewCategories()) {
+        $customerGroupID = \Session\Session::getCustomerGroup()->getID();
+        if ($customerGroupID > 0 && \Session\Session::getCustomerGroup()->mayViewCategories()) {
             $cacheTags      = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
             $cached         = true;
             $limit          = $config['boxen']['box_topangebot_anzahl_anzeige'];

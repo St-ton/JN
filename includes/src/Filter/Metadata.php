@@ -696,7 +696,8 @@ class Metadata implements MetadataInterface
             $parts->push($name);
         }
         // Suchbegrifffilter
-        $parts = $parts->merge(\collect($this->productFilter->getSearchFilter())
+        $parts = $parts->merge(
+            \collect($this->productFilter->getSearchFilter())
             ->map(function (FilterInterface $filter) {
                 return $filter->getName();
             })
@@ -736,7 +737,8 @@ class Metadata implements MetadataInterface
             }
         }
         // MerkmalWertfilter
-        $parts = $parts->merge(\collect($this->productFilter->getAttributeFilter())
+        $parts = $parts->merge(
+            \collect($this->productFilter->getAttributeFilter())
             ->map(function (FilterInterface $filter) {
                 return $filter->getName();
             })

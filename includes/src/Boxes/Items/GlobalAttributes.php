@@ -21,7 +21,7 @@ final class GlobalAttributes extends AbstractBox
         parent::__construct($config);
         parent::addMapping('globaleMerkmale', 'Items');
         $this->setShow(true);
-        $attributes = \Session::CustomerGroup()->mayViewCategories()
+        $attributes = \Session\Session::getCustomerGroup()->mayViewCategories()
             ? $this->getGlobalAttributes()
             : [];
         $this->setItems($attributes);

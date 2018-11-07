@@ -402,7 +402,7 @@ class Kundengruppe
     /**
      * @return string|null
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -421,7 +421,7 @@ class Kundengruppe
     /**
      * @return string|null
      */
-    public function getStandard()
+    public function getStandard(): ?string
     {
         trigger_error('Kundengruppe::getStandard() is deprecated - use getDefault() instead', E_USER_DEPRECATED);
 
@@ -431,7 +431,7 @@ class Kundengruppe
     /**
      * @return string|null
      */
-    public function getIsDefault()
+    public function getIsDefault(): ?string
     {
         return $this->default;
     }
@@ -447,7 +447,7 @@ class Kundengruppe
     /**
      * @return string|null
      */
-    public function getShopLogin()
+    public function getShopLogin(): ?string
     {
         return $this->cShopLogin;
     }
@@ -602,7 +602,11 @@ class Kundengruppe
     {
         if ($this->id > 0) {
             $this->Attribute = [];
-            $attributes      = Shop::Container()->getDB()->selectAll('tkundengruppenattribut', 'kKundengruppe', (int)$this->id);
+            $attributes      = Shop::Container()->getDB()->selectAll(
+                'tkundengruppenattribut',
+                'kKundengruppe',
+                (int)$this->id
+            );
             foreach ($attributes as $attribute) {
                 $this->Attribute[strtolower($attribute->cName)] = $attribute->cWert;
             }
@@ -637,8 +641,12 @@ class Kundengruppe
     {
         $attributes = [];
         if ($kKundengruppe > 0) {
-            $attr_arr = Shop::Container()->getDB()->selectAll('tkundengruppenattribut', 'kKundengruppe', $kKundengruppe);
-            foreach ($attr_arr as $Att) {
+            $attributes = Shop::Container()->getDB()->selectAll(
+                'tkundengruppenattribut',
+                'kKundengruppe',
+                $kKundengruppe
+            );
+            foreach ($attributes as $Att) {
                 $attributes[strtolower($Att->cName)] = $Att->cWert;
             }
         }
@@ -650,7 +658,7 @@ class Kundengruppe
      * @param int $id
      * @return null|string
      */
-    public static function getNameByID(int $id)
+    public static function getNameByID(int $id): ?string
     {
         $cgroup = new self();
         $cgroup->loadFromDB($id);

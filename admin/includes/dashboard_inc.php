@@ -13,7 +13,8 @@ function getWidgets(bool $bActive = true)
     $oWidget_arr = Shop::Container()->getDB()->selectAll(
         'tadminwidgets',
         'bActive',
-        (int)$bActive, '*',
+        (int)$bActive,
+        '*',
         'eContainer ASC, nPos ASC'
     );
     if ($bActive) {

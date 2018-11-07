@@ -52,7 +52,7 @@ class LastJob
      * @param int $nJob
      * @return null|stdClass
      */
-    public function getJob(int $nJob)
+    public function getJob(int $nJob): ?stdClass
     {
         return Shop::Container()->getDB()->select('tlastjob', 'nJob', $nJob);
     }

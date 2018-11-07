@@ -14,9 +14,9 @@ use JTLShop\SemVer\Version;
  */
 final class JTLApi
 {
-    const URI = 'https://api.jtl-software.de/shop';
+    public const URI = 'https://api.jtl-software.de/shop';
 
-    const URI_VERSION = 'https://api.jtl-shop.de';
+    public const URI_VERSION = 'https://api.jtl-shop.de';
 
     /**
      * @var array

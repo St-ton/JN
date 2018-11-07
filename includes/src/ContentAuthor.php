@@ -42,9 +42,9 @@ class ContentAuthor
      * @param string $realm
      * @param int    $contentID
      */
-    public function clearAuthor($realm, $contentID)
+    public function clearAuthor($realm, int $contentID): void
     {
-        Shop::Container()->getDB()->delete('tcontentauthor', ['cRealm', 'kContentId'], [$realm, (int)$contentID]);
+        Shop::Container()->getDB()->delete('tcontentauthor', ['cRealm', 'kContentId'], [$realm, $contentID]);
     }
 
     /**

@@ -26,9 +26,12 @@ class Vergleichsliste
             $oArtikel           = new stdClass();
             $tmpName            = Shop::Container()->getDB()->select(
                 'tartikel',
-                'kArtikel', $kArtikel,
-                null, null,
-                null, null,
+                'kArtikel',
+                $kArtikel,
+                null,
+                null,
+                null,
+                null,
                 false,
                 'cName'
             );
@@ -123,35 +126,30 @@ class Vergleichsliste
         $res        = [];
         $attributes = [];
         $variations = [];
-        // Falls es min. einen Artikel in der Vergleichsliste gibt ...
-        if (count($compareList->oArtikel_arr) > 0) {
-            // Alle Artikel in der Vergleichsliste durchgehen
-            foreach ($compareList->oArtikel_arr as $oArtikel) {
-                /** @var Artikel|stdClass $oArtikel */
-                // Falls ein Artikel min. ein Merkmal besitzt
-                if (isset($oArtikel->oMerkmale_arr) && count($oArtikel->oMerkmale_arr) > 0) {
-                    // Falls das Merkmal Array nicht leer ist
-                    if (count($attributes) > 0) {
-                        foreach ($oArtikel->oMerkmale_arr as $oMerkmale) {
-                            if (!self::containsAttribute($attributes, $oMerkmale->kMerkmal)) {
-                                $attributes[] = $oMerkmale;
-                            }
+        foreach ($compareList->oArtikel_arr as $oArtikel) {
+            /** @var Artikel|stdClass $oArtikel */
+            if (isset($oArtikel->oMerkmale_arr) && count($oArtikel->oMerkmale_arr) > 0) {
+                // Falls das Merkmal Array nicht leer ist
+                if (count($attributes) > 0) {
+                    foreach ($oArtikel->oMerkmale_arr as $oMerkmale) {
+                        if (!self::containsAttribute($attributes, $oMerkmale->kMerkmal)) {
+                            $attributes[] = $oMerkmale;
                         }
-                    } else {
-                        $attributes = $oArtikel->oMerkmale_arr;
                     }
+                } else {
+                    $attributes = $oArtikel->oMerkmale_arr;
                 }
-                // Falls ein Artikel min. eine Variation enthält
-                if (isset($oArtikel->Variationen) && count($oArtikel->Variationen) > 0) {
-                    if (count($variations) > 0) {
-                        foreach ($oArtikel->Variationen as $oVariationen) {
-                            if (!self::containsVariation($variations, $oVariationen->cName)) {
-                                $variations[] = $oVariationen;
-                            }
+            }
+            // Falls ein Artikel min. eine Variation enthält
+            if (isset($oArtikel->Variationen) && count($oArtikel->Variationen) > 0) {
+                if (count($variations) > 0) {
+                    foreach ($oArtikel->Variationen as $oVariationen) {
+                        if (!self::containsVariation($variations, $oVariationen->cName)) {
+                            $variations[] = $oVariationen;
                         }
-                    } else {
-                        $variations = $oArtikel->Variationen;
                     }
+                } else {
+                    $variations = $oArtikel->Variationen;
                 }
             }
         }
@@ -241,7 +239,7 @@ class Vergleichsliste
      *
      * @param Vergleichsliste $compareList
      */
-    public static function setComparison(Vergleichsliste $compareList)
+    public static function setComparison(Vergleichsliste $compareList): void
     {
         if (count($compareList->oArtikel_arr) === 0) {
             return;

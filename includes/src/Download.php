@@ -10,19 +10,19 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
      */
     class Download
     {
-        const ERROR_NONE = 1;
+        public const ERROR_NONE = 1;
 
-        const ERROR_ORDER_NOT_FOUND = 2;
-        
-        const ERROR_INVALID_CUSTOMER = 3;
-        
-        const ERROR_PRODUCT_NOT_FOUND = 4;
+        public const ERROR_ORDER_NOT_FOUND = 2;
 
-        const ERROR_DOWNLOAD_LIMIT_REACHED = 5;
+        public const ERROR_INVALID_CUSTOMER = 3;
 
-        const ERROR_DOWNLOAD_EXPIRED = 6;
+        public const ERROR_PRODUCT_NOT_FOUND = 4;
 
-        const ERROR_MISSING_PARAMS = 7;
+        public const ERROR_DOWNLOAD_LIMIT_REACHED = 5;
+
+        public const ERROR_DOWNLOAD_EXPIRED = 6;
+
+        public const ERROR_MISSING_PARAMS = 7;
 
         /**
          * @var int

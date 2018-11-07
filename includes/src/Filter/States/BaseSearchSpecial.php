@@ -132,7 +132,7 @@ class BaseSearchSpecial extends AbstractFilter
                 return $tasp . " .kArtikel = tartikel.kArtikel
                                     AND " . $tasp . ".cAktiv = 'Y' AND " . $tasp . ".dStart <= NOW()
                                     AND (" . $tasp . ".dEnde >= CURDATE() OR " . $tasp . ".dEnde IS NULL)
-                                    AND " . $tsp . " .kKundengruppe = " . \Session::CustomerGroup()->getID();
+                                    AND " . $tsp . " .kKundengruppe = " . \Session::getCustomerGroup()->getID();
 
             case \SEARCHSPECIALS_NEWPRODUCTS:
                 $alter_tage = (($age = $this->getConfig('boxen')['box_neuimsortiment_alter_tage']) > 0)

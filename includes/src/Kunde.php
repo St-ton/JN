@@ -241,14 +241,17 @@ class Kunde
      * @param string $cEmail
      * @return Kunde|null
      */
-    public function holRegKundeViaEmail($cEmail)
+    public function holRegKundeViaEmail($cEmail): ?Kunde
     {
         if (strlen($cEmail) > 0) {
             $oKundeTMP = Shop::Container()->getDB()->select(
                 'tkunde',
-                'cMail', StringHandler::filterXSS($cEmail),
-                null, null,
-                null, null,
+                'cMail',
+                StringHandler::filterXSS($cEmail),
+                null,
+                null,
+                null,
+                null,
                 false,
                 'kKunde'
             );
@@ -276,9 +279,12 @@ class Kunde
         ) {
             $attempts = Shop::Container()->getDB()->select(
                 'tkunde',
-                'cMail', StringHandler::filterXSS($cBenutzername),
-                'nRegistriert', 1,
-                null, null,
+                'cMail',
+                StringHandler::filterXSS($cBenutzername),
+                'nRegistriert',
+                1,
+                null,
+                null,
                 false,
                 'nLoginversuche'
             );
@@ -350,19 +356,19 @@ class Kunde
     }
 
     /**
-     * @param string $cBenutzername
-     * @param string $cPasswort
+     * @param string $user
+     * @param string $pass
      * @return bool|stdClass
      * @throws Exception
      */
-    public function checkCredentials($cBenutzername, $cPasswort)
+    public function checkCredentials($user, $pass)
     {
         $passwordService = Shop::Container()->getPasswordService();
         $db              = Shop::Container()->getDB();
-        $oUser           = $db->select(
+        $customer        = $db->select(
             'tkunde',
             'cMail',
-            $cBenutzername,
+            $user,
             'nRegistriert',
             1,
             null,
@@ -370,40 +376,40 @@ class Kunde
             false,
             '*, date_format(dGeburtstag, \'%d.%m.%Y\') AS dGeburtstag_formatted'
         );
-        if (!$oUser) {
+        if (!$customer) {
             return false;
         }
-        $oUser->kKunde                = (int)$oUser->kKunde;
-        $oUser->kKundengruppe         = (int)$oUser->kKundengruppe;
-        $oUser->kSprache              = (int)$oUser->kSprache;
-        $oUser->nLoginversuche        = (int)$oUser->nLoginversuche;
-        $oUser->nRegistriert          = (int)$oUser->nRegistriert;
-        $oUser->dGeburtstag_formatted = $oUser->dGeburtstag_formatted !== '00.00.0000' ? $oUser->dGeburtstag_formatted : '';
+        $customer->kKunde                = (int)$customer->kKunde;
+        $customer->kKundengruppe         = (int)$customer->kKundengruppe;
+        $customer->kSprache              = (int)$customer->kSprache;
+        $customer->nLoginversuche        = (int)$customer->nLoginversuche;
+        $customer->nRegistriert          = (int)$customer->nRegistriert;
+        $customer->dGeburtstag_formatted = $customer->dGeburtstag_formatted !== '00.00.0000'
+            ? $customer->dGeburtstag_formatted
+            : '';
 
-        if (!$passwordService->verify($cPasswort, $oUser->cPasswort)) {
-            $tries = ++$oUser->nLoginversuche;
-            Shop::Container()->getDB()->update('tkunde', 'cMail', $cBenutzername, (object)['nLoginversuche' => $tries]);
+        if (!$passwordService->verify($pass, $customer->cPasswort)) {
+            $tries = ++$customer->nLoginversuche;
+            Shop::Container()->getDB()->update('tkunde', 'cMail', $user, (object)['nLoginversuche' => $tries]);
             return false;
         }
-
         $update = false;
-        if ($passwordService->needsRehash($oUser->cPasswort)) {
-            $oUser->cPasswort = $passwordService->hash($cPasswort);
+        if ($passwordService->needsRehash($customer->cPasswort)) {
+            $customer->cPasswort = $passwordService->hash($pass);
             $update = true;
         }
 
-        if($oUser->nLoginversuche > 0) {
-            $oUser->nLoginversuche = 0;
+        if ($customer->nLoginversuche > 0) {
+            $customer->nLoginversuche = 0;
             $update = true;
         }
-
-        if($update) {
-            $update = (array)$oUser;
+        if ($update) {
+            $update = (array)$customer;
             unset($update['dGeburtstag_formatted']);
-            Shop::Container()->getDB()->update('tkunde', 'kKunde', $oUser->kKunde, (object)$update);
+            Shop::Container()->getDB()->update('tkunde', 'kKunde', $customer->kKunde, (object)$update);
         }
 
-        return $oUser;
+        return $customer;
     }
 
     /**
@@ -609,7 +615,8 @@ class Kunde
             'tkundenattribut',
             'kKunde',
             (int)$this->kKunde,
-            '*', 'kKundenAttribut'
+            '*',
+            'kKundenAttribut'
         );
         foreach ($oKundenattribut_arr as $oKundenattribut) {
             $this->cKundenattribut_arr[$oKundenattribut->kKundenfeld] = $oKundenattribut;
@@ -657,7 +664,10 @@ class Kunde
      */
     public function verschluesselAlleKunden(): self
     {
-        foreach (Shop::Container()->getDB()->query('SELECT * FROM tkunde', \DB\ReturnType::ARRAY_OF_OBJECTS) as $oKunden) {
+        foreach (Shop::Container()->getDB()->query(
+            'SELECT * FROM tkunde',
+            \DB\ReturnType::ARRAY_OF_OBJECTS
+        ) as $oKunden) {
             if ($oKunden->kKunde > 0) {
                 unset($oKundeTMP);
                 $oKundeTMP = new self($oKunden->kKunde);

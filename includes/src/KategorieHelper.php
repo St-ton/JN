@@ -68,7 +68,7 @@ class KategorieHelper
             ? Shop::getLanguageID()
             : $kSprache;
         $kKundengruppe = $kKundengruppe === 0
-            ? Session::CustomerGroup()->getID()
+            ? \Session\Session::getCustomerGroup()->getID()
             : $kKundengruppe;
         $config        = Shop::getSettings([CONF_GLOBAL, CONF_TEMPLATE]);
         if (self::$instance !== null && self::$kSprache !== $kSprache) {
@@ -94,7 +94,8 @@ class KategorieHelper
         if (self::$fullCategories !== null) {
             return self::$fullCategories;
         }
-        $filterEmpty = (int)self::$config['global']['kategorien_anzeigefilter'] === EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE;
+        $filterEmpty = (int)self::$config['global']['kategorien_anzeigefilter'] ===
+            EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE;
         $stockFilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
         $stockJoin   = '';
         $extended    = !empty($stockFilter);
@@ -127,16 +128,16 @@ class KategorieHelper
                 ? ' AND node.nLevel <= ' . CATEGORY_FULL_LOAD_MAX_LEVEL
                 : '';
             $getDescription      = ($categoryCount < $categoryLimit
-                || //always get description if there aren't that many categories
+                || // always get description if there aren't that many categories
                 !(isset(self::$config['template']['megamenu']['show_maincategory_info'])
-                    //otherwise check template config
-                    &&  isset(self::$config['template']['megamenu']['show_categories'])
+                    // otherwise check template config
+                    && isset(self::$config['template']['megamenu']['show_categories'])
                     && (self::$config['template']['megamenu']['show_categories'] === 'N'
                     || self::$config['template']['megamenu']['show_maincategory_info'] === 'N')));
 
             if ($getDescription === true) {
                 $descriptionSelect = $isDefaultLang === true
-                    ? ", node.cBeschreibung" //no category description needed if we don't show category info in mega menu
+                    ? ", node.cBeschreibung" // no description needed if we don't show category info in mega menu
                     : ", node.cBeschreibung, tkategoriesprache.cBeschreibung AS cBeschreibung_spr";
             }
             $imageSelect          = ($categoryCount >= $categoryLimit
@@ -162,7 +163,7 @@ class KategorieHelper
                         ON tkategoriesprache.kKategorie = node.kKategorie
                             AND tkategoriesprache.kSprache = ' . self::$kSprache . ' ';
             $seoJoin              = $isDefaultLang === true
-                ? '' //tkategorie already has a cSeo field which we can use to avoid another join only if the default lang is active
+                ? ''
                 : " LEFT JOIN tseo
                         ON tseo.cKey = 'kKategorie'
                         AND tseo.kKey = node.kKategorie
@@ -182,8 +183,9 @@ class KategorieHelper
                     ON tkategorieartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                     AND tartikelsichtbarkeit.kKundengruppe = ' . self::$kKundengruppe;
             } else {
-                //if we want to display all categories without filtering out empty ones, we don't have to check the product count
-                //this saves a very expensive join - cnt will be always -1
+                // if we want to display all categories without filtering out empty ones,
+                // we don't have to check the product count
+                // this saves a very expensive join - cnt will be always -1
                 $countSelect = ', -1 AS cnt';
                 $hasArticlesCheckJoin = '';
                 $visibilityJoin       = '';
@@ -248,7 +250,7 @@ class KategorieHelper
                 // Attribute holen
                 $_cat->categoryFunctionAttributes = $functionAttributes[$_cat->kKategorie] ?? [];
                 $_cat->categoryAttributes         = $localizedAttributes[$_cat->kKategorie] ?? [];
-                /** @deprecated since version 4.05 - usage of KategorieAttribute is deprecated, use categoryFunctionAttributes instead */
+                /** @deprecated since version 4.05 - use categoryFunctionAttributes instead */
                 $_cat->KategorieAttribute = &$_cat->categoryFunctionAttributes;
                 //interne Verlinkung $#k:X:Y#$
                 $_cat->cBeschreibung    = StringHandler::parseNewsText($_cat->cBeschreibung);
@@ -313,8 +315,8 @@ class KategorieHelper
     }
 
     /**
-     * this must only be used in edge cases where there are very big category trees and someone is looking for a bottom-up
-     * tree for a category that is not already contained in the full tree
+     * this must only be used in edge cases where there are very big category trees
+     * and someone is looking for a bottom-up * tree for a category that is not already contained in the full tree
      *
      * it's a lot of code duplication but the queries differ
      *
@@ -323,7 +325,8 @@ class KategorieHelper
      */
     public function getFallBackFlatTree(int $categoryID): array
     {
-        $filterEmpty         = (int)self::$config['global']['kategorien_anzeigefilter'] === EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE;
+        $filterEmpty         = (int)self::$config['global']['kategorien_anzeigefilter'] ===
+            EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE;
         $stockFilter         = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
         $stockJoin           = '';
         $extended            = !empty($stockFilter);
@@ -364,7 +367,7 @@ class KategorieHelper
                     ON tkategoriesprache.kKategorie = node.kKategorie
                         AND tkategoriesprache.kSprache = ' . self::$kSprache . ' ';
         $seoJoin              = $isDefaultLang === true
-            ? '' //tkategorie already has a cSeo field which we can use to avoid another join only if the default lang is active
+            ? ''
             : " LEFT JOIN tseo
                     ON tseo.cKey = 'kKategorie'
                     AND tseo.kKey = node.kKategorie
@@ -384,9 +387,7 @@ class KategorieHelper
                 ON tkategorieartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                 AND tartikelsichtbarkeit.kKundengruppe = ' . self::$kKundengruppe;
         } else {
-            //if we want to display all categories without filtering out empty ones, we don't have to check the product count
-            //this saves a very expensive join - cnt will be always -1
-            $countSelect = ', -1 AS cnt';
+            $countSelect          = ', -1 AS cnt';
             $hasArticlesCheckJoin = '';
             $visibilityJoin       = '';
             $visibilityWhere      = '';
@@ -453,7 +454,7 @@ class KategorieHelper
             unset($_cat->cBeschreibung_spr, $_cat->cName_spr);
             $_cat->categoryFunctionAttributes = $functionAttributes[$_cat->kKategorie] ?? [];
             $_cat->categoryAttributes         = $localizedAttributes[$_cat->kKategorie] ?? [];
-            /** @deprecated since version 4.05 - usage of KategorieAttribute is deprecated, use categoryFunctionAttributes instead */
+            /** @deprecated since version 4.05 - use categoryFunctionAttributes instead */
             $_cat->KategorieAttribute = &$_cat->categoryFunctionAttributes;
             //interne Verlinkung $#k:X:Y#$
             $_cat->cBeschreibung    = StringHandler::parseNewsText($_cat->cBeschreibung);
@@ -522,7 +523,7 @@ class KategorieHelper
      */
     public static function categoryExists(int $id): bool
     {
-        return Shop::Container()->getDB()->select('tkategorie', 'kKategorie', (int)$id) !== null;
+        return Shop::Container()->getDB()->select('tkategorie', 'kKategorie', $id) !== null;
     }
 
     /**
@@ -702,9 +703,9 @@ class KategorieHelper
      * @former baueKategorieListenHTML()
      * @since 5.0.0
      */
-    public static function buildCategoryListHTML($startCat, $expanded, $currentCategory)
+    public static function buildCategoryListHTML($startCat, $expanded, $currentCategory): void
     {
-        $cKategorielistenHTML_arr = [];
+        $categories = [];
         if (function_exists('gibKategorienHTML')) {
             $cacheID = 'jtl_clh_' .
                 $startCat->kKategorie . '_' .
@@ -722,12 +723,12 @@ class KategorieHelper
             $conf = Shop::getSettings([CONF_TEMPLATE]);
             if ((!isset($conf['template']['categories']['sidebox_categories_full_category_tree'])
                     || $conf['template']['categories']['sidebox_categories_full_category_tree'] !== 'Y')
-                && (($cKategorielistenHTML_arr = Shop::Cache()->get($cacheID)) === false
-                    || !isset($cKategorielistenHTML_arr[0]))
+                && (($categories = Shop::Cache()->get($cacheID)) === false
+                    || !isset($categories[0]))
             ) {
-                $cKategorielistenHTML_arr = [];
+                $categories = [];
                 //globale Liste
-                $cKategorielistenHTML_arr[0] = function_exists('gibKategorienHTML')
+                $categories[0] = function_exists('gibKategorienHTML')
                     ? gibKategorienHTML(
                         $startCat,
                         $expanded->elemente ?? null,
@@ -747,7 +748,7 @@ class KategorieHelper
                 foreach ($dist_kategorieboxen as $katboxNr) {
                     $nr = (int)$katboxNr->cWert;
                     if ($nr > 0) {
-                        $cKategorielistenHTML_arr[$nr] = function_exists('gibKategorienHTML')
+                        $categories[$nr] = function_exists('gibKategorienHTML')
                             ? gibKategorienHTML(
                                 $startCat,
                                 $expanded->elemente,
@@ -758,10 +759,10 @@ class KategorieHelper
                             : '';
                     }
                 }
-                Shop::Cache()->set($cacheID, $cKategorielistenHTML_arr, [CACHING_GROUP_CATEGORY]);
+                Shop::Cache()->set($cacheID, $categories, [CACHING_GROUP_CATEGORY]);
             }
         }
 
-        Shop::Smarty()->assign('cKategorielistenHTML_arr', $cKategorielistenHTML_arr);
+        Shop::Smarty()->assign('cKategorielistenHTML_arr', $categories);
     }
 }

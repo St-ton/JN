@@ -83,7 +83,7 @@ class Sort extends AbstractFilter
     /**
      * @param Factory $factory
      */
-    public function setFactory(Factory $factory)
+    public function setFactory(Factory $factory): void
     {
         $this->factory = $factory;
     }
@@ -99,7 +99,7 @@ class Sort extends AbstractFilter
     /**
      * @param Collection $sortingOptions
      */
-    public function setSortingOptions(Collection $sortingOptions)
+    public function setSortingOptions(Collection $sortingOptions): void
     {
         $this->sortingOptions = $sortingOptions;
     }
@@ -115,7 +115,7 @@ class Sort extends AbstractFilter
     /**
      * @param int $activeSortingType
      */
-    public function setActiveSortingType(int $activeSortingType)
+    public function setActiveSortingType(int $activeSortingType): void
     {
         $this->activeSortingType = $activeSortingType;
     }
@@ -123,7 +123,7 @@ class Sort extends AbstractFilter
     /**
      * @throws \LogicException
      */
-    public function registerSortingOptions()
+    public function registerSortingOptions(): void
     {
         if ($this->factory === null) {
             throw new \LogicException('Factory has to be set first.');

@@ -136,10 +136,15 @@ if (isset($_REQUEST['action']) && FormHelper::validateToken()) {
                 }
 
                 Shop::Container()->getDB()->delete(
-                    'tsprachlog', ['cSektion', 'cName'], [$oVariable->cSprachsektion, $oVariable->cName]
+                    'tsprachlog',
+                    ['cSektion', 'cName'],
+                    [$oVariable->cSprachsektion, $oVariable->cName]
                 );
                 Shop::Cache()->flushTags([CACHING_GROUP_LANGUAGE]);
-                Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
+                Shop::Container()->getDB()->query(
+                    'UPDATE tglobals SET dLetzteAenderung = NOW()',
+                    \DB\ReturnType::DEFAULT
+                );
             }
 
             break;
@@ -213,8 +218,15 @@ if ($step === 'newvar') {
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 
-    handleCsvExportAction('langvars', $cISOSprache . '_' . date('YmdHis') . '.slf', $oWert_arr,
-        ['cSektionName', 'cName', 'cWert', 'bSystem'], [], ';', false);
+    handleCsvExportAction(
+        'langvars',
+        $cISOSprache . '_' . date('YmdHis') . '.slf',
+        $oWert_arr,
+        ['cSektionName', 'cName', 'cWert', 'bSystem'],
+        [],
+        ';',
+        false
+    );
 
     $oPagination = (new Pagination('langvars'))
         ->setRange(4)

@@ -164,9 +164,9 @@ class cache_advancedfile implements ICachingMethod
         );
         foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $value) {
             if ($value->isLink() || $value->isFile()) {
-                unlink($value);
+                unlink($value->getPathname());
             } elseif ($value->isDir()) {
-                rmdir($value);
+                rmdir($value->getPathname());
             }
         }
 
@@ -284,12 +284,11 @@ class cache_advancedfile implements ICachingMethod
                     foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $value) {
                         $res = false;
                         if ($value->isLink()) {
+                            $value = $value->getPathname();
                             //cache entries may have multiple tags - so check if the real entry still exists
-                            if (($target = readlink($value)) !== false) {
-                                if (is_file($target)) {
-                                    //delete real cache entry
-                                    $res = unlink($target);
-                                }
+                            if (($target = readlink($value)) !== false && is_file($target)) {
+                                //delete real cache entry
+                                $res = unlink($value);
                             }
                             //delete symlink to the entry
                             unlink($value);

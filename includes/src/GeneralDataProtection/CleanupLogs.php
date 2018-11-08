@@ -123,7 +123,6 @@ class CleanupLogs extends Method implements MethodInterface
     private function clean_tproduktanfragehistory()
     {
         \Shop::Container()->getDB()->queryPrepared(
-            //'SELECT kProduktanfrageHistory
             'DELETE FROM tproduktanfragehistory
             WHERE dErstellt <= :pDateLimit
             ORDER BY dErstellt ASC

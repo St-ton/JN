@@ -54,7 +54,7 @@ class Method
         } catch (\Exception $e) {
             $this->oLogger = null;
         }
-        $this->oNow      = $oObjNow;
+        $this->oNow      = clone $oObjNow;
         $this->iInterval = $iInterval;
         try {
             $this->szDateLimit = $this->oNow->sub(new \DateInterval('P' . $this->iInterval . 'D'))->format('Y-m-d H:i:s');

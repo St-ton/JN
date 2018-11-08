@@ -552,35 +552,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 }
             }
         }
-        $oConfig_arr = $db->selectAll(
-            'teinstellungenconf',
-            'kEinstellungenSektion',
-            CONF_UMFRAGE,
-            '*',
-            'nSort'
-        );
-        $configCount = count($oConfig_arr);
-        for ($i = 0; $i < $configCount; $i++) {
-            if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-                $oConfig_arr[$i]->ConfWerte = $db->selectAll(
-                    'teinstellungenconfwerte',
-                    'kEinstellungenConf',
-                    (int)$oConfig_arr[$i]->kEinstellungenConf,
-                    '*',
-                    'nSort'
-                );
-            }
-            $oSetValue = $db->select(
-                'teinstellungen',
-                'kEinstellungenSektion',
-                CONF_UMFRAGE,
-                'cName',
-                $oConfig_arr[$i]->cWertName
-            );
-            $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
-        }
 
-        $smarty->assign('oConfig_arr', $oConfig_arr)
+        $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_UMFRAGE))
                ->assign('oUmfrage_arr', $oUmfrage_arr)
                ->assign('oPagination', $oPagination);
     }

@@ -234,33 +234,8 @@ $oSuchSpecials_arr    = [];
 foreach ($oSuchSpecials_arrTMP as $oSuchSpecials) {
     $oSuchSpecials_arr[$oSuchSpecials->kKey] = $oSuchSpecials->cSeo;
 }
-$oConfig_arr = Shop::Container()->getDB()->selectAll(
-    'teinstellungenconf',
-    'kEinstellungenSektion',
-    CONF_SUCHSPECIAL,
-    '*',
-    'nSort'
-);
-$configCount = count($oConfig_arr);
-for ($i = 0; $i < $configCount; $i++) {
-    $oConfig_arr[$i]->ConfWerte     = Shop::Container()->getDB()->selectAll(
-        'teinstellungenconfwerte',
-        'kEinstellungenConf',
-        (int)$oConfig_arr[$i]->kEinstellungenConf,
-        '*',
-        'nSort'
-    );
-    $oSetValue                      = Shop::Container()->getDB()->select(
-        'teinstellungen',
-        'kEinstellungenSektion',
-        (int)$oConfig_arr[$i]->kEinstellungenSektion,
-        'cName',
-        $oConfig_arr[$i]->cWertName
-    );
-    $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
-}
 
-$smarty->assign('oConfig_arr', $oConfig_arr)
+$smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_SUCHSPECIAL))
        ->assign('oSuchSpecials_arr', $oSuchSpecials_arr)
        ->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('hinweis', $cHinweis)

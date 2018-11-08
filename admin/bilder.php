@@ -18,35 +18,8 @@ if (isset($_POST['speichern'])) {
     $shopSettings->reset();
 }
 
-$oConfig_arr = Shop::Container()->getDB()->selectAll(
-    'teinstellungenconf',
-    'kEinstellungenSektion',
-    CONF_BILDER,
-    '*',
-    'nSort'
-);
-$configCount = count($oConfig_arr);
-for ($i = 0; $i < $configCount; $i++) {
-    if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-        $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
-            'teinstellungenconfwerte',
-            'kEinstellungenConf',
-            (int)$oConfig_arr[$i]->kEinstellungenConf,
-            '*',
-            'nSort'
-        );
-    }
-    $oSetValue = Shop::Container()->getDB()->select(
-        'teinstellungen',
-        ['kEinstellungenSektion', 'cName'],
-        [CONF_BILDER, $oConfig_arr[$i]->cWertName]
-    );
-    $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
-}
-$Einstellungen = Shop::getSettings([CONF_BILDER]);
-
-$smarty->assign('oConfig_arr', $oConfig_arr)
-       ->assign('oConfig', $Einstellungen['bilder'])
+$smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_BILDER))
+       ->assign('oConfig', Shop::getSettings([CONF_BILDER])['bilder'])
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->display('bilder.tpl');

@@ -116,6 +116,11 @@ interface MetadataInterface
     public function hasData(): bool;
 
     /**
+     * @return array
+     */
+    public static function getGlobalMetaData(): array;
+
+    /**
      * @param \Kategorie|null      $category
      * @param \KategorieListe|null $list
      * @return $this

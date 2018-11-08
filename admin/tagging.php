@@ -21,7 +21,6 @@ if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
 }
 if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && FormHelper::validateToken()) {
-    //Formular wurde abgeschickt
     if (!isset($_POST['delete'])) {
         if (is_array($_POST['kTagAll']) && count($_POST['kTagAll']) > 0) {
             $cSQLDel = ' IN (';
@@ -197,7 +196,7 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && FormHelper::vali
 // Tagdetail
 if (RequestHelper::verifyGPCDataInt('kTag') > 0 && RequestHelper::verifyGPCDataInt('tagdetail') === 1) {
     $step = 'detail';
-    // Pagination
+
     $nTagDetailAnzahl = holeTagDetailAnzahl(RequestHelper::verifyGPCDataInt('kTag'), $_SESSION['kSprache']);
     $oPagiTagDetail   = (new Pagination('detail'))
         ->setItemCount($nTagDetailAnzahl)
@@ -222,14 +221,12 @@ if (RequestHelper::verifyGPCDataInt('kTag') > 0 && RequestHelper::verifyGPCDataI
         ->assign('kTag', RequestHelper::verifyGPCDataInt('kTag'))
         ->assign('cTagName', $oTagArtikel_arr[0]->cName ?? '');
 } else {
-    // Anzahl Tags fuer diese Sprache
-    $nAnzahlTags = $db->query(
+    $nAnzahlTags        = $db->query(
         'SELECT COUNT(*) AS nAnzahl
             FROM ttag
             WHERE kSprache = ' . (int)$_SESSION['kSprache'],
         \DB\ReturnType::SINGLE_OBJECT
     );
-    // Anzahl Tag Mappings fuer diese Sprache
     $nAnzahlTagMappings = $db->query(
         'SELECT COUNT(*) AS nAnzahl
             FROM ttagmapping
@@ -237,7 +234,6 @@ if (RequestHelper::verifyGPCDataInt('kTag') > 0 && RequestHelper::verifyGPCDataI
         \DB\ReturnType::SINGLE_OBJECT
     );
 
-    // Paginationen
     $oPagiTags = (new Pagination('tags'))
         ->setItemCount($nAnzahlTags->nAnzahl)
         ->assemble();
@@ -264,33 +260,8 @@ if (RequestHelper::verifyGPCDataInt('kTag') > 0 && RequestHelper::verifyGPCDataI
             LIMIT ' . $oPagiTagMappings->getLimitSQL(),
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    $oConfig_arr = $db->query(
-        'SELECT *
-            FROM teinstellungenconf
-            WHERE kEinstellungenConf IN (' . implode(',', $settingsIDs) . ')
-            ORDER BY nSort',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
-    );
-    $configCount = count($oConfig_arr);
-    for ($i = 0; $i < $configCount; $i++) {
-        $oConfig_arr[$i]->ConfWerte = $db->selectAll(
-            'teinstellungenconfwerte',
-            'kEinstellungenConf',
-            (int)$oConfig_arr[$i]->kEinstellungenConf,
-            '*',
-            'nSort'
-        );
-        $oSetValue = $db->select(
-            'teinstellungen',
-            'kEinstellungenSektion',
-            (int)$oConfig_arr[$i]->kEinstellungenSektion,
-            'cName',
-            $oConfig_arr[$i]->cWertName
-        );
-        $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
-    }
 
-    $smarty->assign('oConfig_arr', $oConfig_arr)
+    $smarty->assign('oConfig_arr', getAdminSectionSettings($settingsIDs))
            ->assign('oPagiTags', $oPagiTags)
            ->assign('oPagiTagMappings', $oPagiTagMappings)
            ->assign('Sprachen', $Sprachen)

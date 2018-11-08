@@ -84,7 +84,6 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_SEITE_PAGE_IF_LINKART);
-// MetaTitle bei bFileNotFound redirect
 $smarty->assign('Link', $link)
        ->assign('bSeiteNichtGefunden', Shop::getPageType() === PAGE_404)
        ->assign('cFehler', !empty($cFehler) ? $cFehler : null)
@@ -93,20 +92,17 @@ $smarty->assign('Link', $link)
 $cMetaTitle       = $link->getMetaTitle();
 $cMetaDescription = $link->getMetaDescription() ?? null;
 $cMetaKeywords    = $link->getMetaKeyword() ?? null;
-if (empty($cMetaTitle) || empty($cMetaDescription) || empty($cMetaKeywords)) {
-    $kSprache            = Shop::getLanguage();
-    $oGlobaleMetaAngaben = $oGlobaleMetaAngabenAssoc_arr[$kSprache] ?? null;
-
-    if (is_object($oGlobaleMetaAngaben)) {
-        if (empty($cMetaTitle)) {
-            $cMetaTitle = $oGlobaleMetaAngaben->Title;
-        }
-        if (empty($cMetaDescription)) {
-            $cMetaDescription = $oGlobaleMetaAngaben->Meta_Description;
-        }
-        if (empty($cMetaKeywords)) {
-            $cMetaKeywords = $oGlobaleMetaAngaben->Meta_Keywords;
-        }
+$kSprache         = Shop::getLanguage();
+$globalMeta       = $oGlobaleMetaAngabenAssoc_arr[$kSprache] ?? null;
+if ($globalMeta !== null) {
+    if (empty($cMetaTitle)) {
+        $cMetaTitle = $globalMeta->Title;
+    }
+    if (empty($cMetaDescription)) {
+        $cMetaDescription = $globalMeta->Meta_Description;
+    }
+    if (empty($cMetaKeywords)) {
+        $cMetaKeywords = $globalMeta->Meta_Keywords;
     }
 }
 $cMetaTitle       = \Filter\Metadata::prepareMeta(

@@ -33,38 +33,24 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
      */
     private function anon_tbewertung()
     {
-        $vResult = \Shop::Container()->getDB()->queryPrepared(
-            "SELECT kBewertung
-            FROM tbewertung b
+        \Shop::Container()->getDB()->queryPrepared(
+
+            "UPDATE tbewertung b
+            SET
+                b.cName  = 'Anonym',
+                b.kKunde = 0
             WHERE
                 b.cName != 'Anonym'
                 AND b.kKunde > 0
                 AND dDatum <= :pDateLimit
                 AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = b.kKunde)
-                LIMIT :pLimit",
+            LIMIT :pLimit",
             [
                 'pDateLimit' => $this->szDateLimit,
                 'pLimit'     => $this->iWorkLimit
             ],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            \DB\ReturnType::AFFECTED_ROWS
         );
-        if (!\is_array($vResult)) {
-            return;
-        }
-        foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared(
-                "UPDATE tbewertung
-                SET
-                    cName  = 'Anonym',
-                    kKunde = 0
-                WHERE
-                    kBewertung = :pKeyBewertung",
-                [
-                    'pKeyBewertung' => $oResult->kBewertung
-                ],
-                \DB\ReturnType::AFFECTED_ROWS
-            );
-        }
     }
 
     /**
@@ -73,40 +59,28 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
      */
     private function anon_tzahlungseingang()
     {
-        $vResult = \Shop::Container()->getDB()->queryPrepared(
-            "SELECT z.kZahlungseingang
-            FROM
-                tzahlungseingang z
-                    INNER JOIN tbestellung b ON z.kBestellung = b.kBestellung
+        \Shop::Container()->getDB()->queryPrepared(
+
+            "UPDATE tzahlungseingang z
+            SET
+                z.cZahler = '-'
             WHERE
                 z.cZahler != '-'
                 AND z.cAbgeholt != 'N'
-                AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = b.kKunde)
+                AND NOT EXISTS (
+                    SELECT k.kKunde
+                    FROM tkunde k INNER JOIN tbestellung b ON k.kKunde = b.kKunde
+                    WHERE b.kBestellung = z.kBestellung
+                )
                 AND z.dZeit <= :pDateLimit
-            ORDER BY dZeit ASC
+            ORDER BY z.dZeit ASC
             LIMIT :pLimit",
             [
                 'pDateLimit' => $this->szDateLimit,
                 'pLimit'     => $this->iWorkLimit
             ],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            \DB\ReturnType::AFFECTED_ROWS
         );
-        if (!\is_array($vResult)) {
-            return;
-        }
-        foreach ((array)$vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared(
-                "UPDATE tzahlungseingang
-                SET
-                    cZahler = '-'
-                WHERE
-                    kZahlungseingang = :pKeyZahlungseingang",
-                [
-                    'pKeyZahlungseingang' => $oResult->kZahlungseingang
-                ],
-                \DB\ReturnType::AFFECTED_ROWS
-            );
-        }
     }
 
     /**
@@ -118,37 +92,21 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
     private function anon_tnewskommentar()
     {
         $vResult = \Shop::Container()->getDB()->queryPrepared(
-            "SELECT n.kNewsKommentar
-            FROM
-                tnewskommentar n
-                    LEFT JOIN tkunde k ON n.kKunde = k.kKunde
+            "UPDATE tnewskommentar n
+            SET
+                n.cName = 'Anonym',
+                n.cEmail = 'Anonym',
+                n.kKunde = 0
             WHERE
                 n.cName != 'Anonym'
                 AND n.cEmail != 'Anonym'
                 AND n.kKunde > 0
-                AND k.kKunde IS NULL
+                AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = n.kKunde)
             LIMIT :pLimit",
             [
                 'pLimit' => $this->iWorkLimit
             ],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            \DB\ReturnType::AFFECTED_ROWS
         );
-        if (!\is_array($vResult)) {
-            return;
-        }
-        foreach ($vResult as $oResult) {
-            \Shop::Container()->getDB()->queryPrepared(
-                "UPDATE tnewskommentar
-                SET
-                    cName  = 'Anonym',
-                    cEmail = 'Anonym',
-                    kKunde = 0
-                WHERE
-                    kNewsKommentar = :pKeyNewsKommentar",
-                ['pKeyNewsKommentar' => $oResult->kNewsKommentar],
-                \DB\ReturnType::AFFECTED_ROWS
-            );
-        }
     }
 }
-

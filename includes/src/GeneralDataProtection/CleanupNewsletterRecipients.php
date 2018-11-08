@@ -64,4 +64,3 @@ class CleanupNewsletterRecipients extends Method implements MethodInterface
         }
     }
 }
-

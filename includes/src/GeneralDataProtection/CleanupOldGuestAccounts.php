@@ -45,4 +45,3 @@ class CleanupOldGuestAccounts extends Method implements MethodInterface
         );
     }
 }
-

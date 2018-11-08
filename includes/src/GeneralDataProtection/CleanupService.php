@@ -130,4 +130,3 @@ class CleanupService extends Method implements MethodInterface
         }
     }
 }
-

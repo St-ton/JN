@@ -157,4 +157,3 @@ class AnonymizeIps extends Method implements MethodInterface
         }
     }
 }
-

@@ -10,4 +10,3 @@ interface MethodInterface
 {
     public function execute();
 }
-

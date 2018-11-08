@@ -175,4 +175,3 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
         );
     }
 }
-

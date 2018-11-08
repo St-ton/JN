@@ -58,4 +58,3 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
         }
     }
 }
-

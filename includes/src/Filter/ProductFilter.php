@@ -1928,13 +1928,13 @@ class ProductFilter
                     $filter[] = $value;
                 }
             }
-        } elseif (\count($_GET) > 0) {
+        } elseif (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'GET' && \count($_GET) > 0) {
             foreach ($_GET as $key => $value) {
                 if (\preg_match('/mf\d+/i', $key)) {
                     $filter[] = (int)$value;
                 }
             }
-        } elseif (\count($_POST) > 0) {
+        } elseif (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST' && \count($_POST) > 0) {
             foreach ($_POST as $key => $value) {
                 if (\preg_match('/mf\d+/i', $key)) {
                     $filter[] = (int)$value;

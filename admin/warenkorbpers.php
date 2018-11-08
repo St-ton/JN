@@ -138,38 +138,10 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
     $smarty->assign('oWarenkorbPersPos_arr', $oWarenkorbPersPos_arr)
            ->assign('kKunde', $kKunde)
            ->assign('oPagiWarenkorb', $oPagiWarenkorb);
-} else {
-    $oConfig_arr = Shop::Container()->getDB()->query(
-        'SELECT *
-            FROM teinstellungenconf
-            WHERE kEinstellungenConf IN (' . implode(',', $settingsIDs) . ')
-            ORDER BY nSort',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
-    );
-    $configCount = count($oConfig_arr);
-    for ($i = 0; $i < $configCount; $i++) {
-        $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
-            'teinstellungenconfwerte',
-            'kEinstellungenConf',
-            (int)$oConfig_arr[$i]->kEinstellungenConf,
-            '*',
-            'nSort'
-        );
-
-        $oSetValue = Shop::Container()->getDB()->select(
-            'teinstellungen',
-            'kEinstellungenSektion',
-            (int)$oConfig_arr[$i]->kEinstellungenSektion,
-            'cName',
-            $oConfig_arr[$i]->cWertName
-        );
-        $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
-    }
-
-    $smarty->assign('oConfig_arr', $oConfig_arr);
 }
 
 $smarty->assign('step', $step)
        ->assign('cHinweis', $cHinweis)
        ->assign('cFehler', $cFehler)
+       ->assign('oConfig_arr', getAdminSectionSettings($settingsIDs))
        ->display('warenkorbpers.tpl');

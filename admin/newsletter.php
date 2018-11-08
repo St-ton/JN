@@ -721,32 +721,6 @@ if ($step === 'uebersicht') {
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     $smarty->assign('oNewsletterHistory_arr', $oNewsletterHistory_arr);
-    $oConfig_arr = $db->selectAll(
-        'teinstellungenconf',
-        'kEinstellungenSektion',
-        CONF_NEWSLETTER,
-        '*',
-        'nSort'
-    );
-    $configCount = count($oConfig_arr);
-    for ($i = 0; $i < $configCount; $i++) {
-        if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-            $oConfig_arr[$i]->ConfWerte = $db->selectAll(
-                'teinstellungenconfwerte',
-                'kEinstellungenConf',
-                $oConfig_arr[$i]->kEinstellungenConf,
-                '*',
-                'nSort'
-            );
-        }
-
-        $oSetValue = $db->select(
-            'teinstellungen',
-            ['kEinstellungenSektion', 'cName'],
-            [CONF_NEWSLETTER,  $oConfig_arr[$i]->cWertName]
-        );
-        $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
-    }
 
     $kundengruppen = $db->query(
         'SELECT * 
@@ -755,7 +729,7 @@ if ($step === 'uebersicht') {
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     $smarty->assign('kundengruppen', $kundengruppen)
-           ->assign('oConfig_arr', $oConfig_arr)
+           ->assign('oConfig_arr', getAdminSectionSettings(CONF_NEWSLETTER))
            ->assign('oAbonnenten_arr', holeAbonnenten(' LIMIT ' . $oPagiAlleAbos->getLimitSQL(), $cAktiveSucheSQL))
            ->assign('nMaxAnzahlAbonnenten', holeAbonnentenAnzahl($cAktiveSucheSQL))
            ->assign('oPagiInaktiveAbos', $oPagiInaktiveAbos)

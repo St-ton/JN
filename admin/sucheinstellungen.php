@@ -186,32 +186,6 @@ if (isset($_POST['einstellungen_bearbeiten'])
 }
 
 $section = Shop::Container()->getDB()->select('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
-$Conf    = Shop::Container()->getDB()->query(
-    "SELECT *
-        FROM teinstellungenconf
-        WHERE nModul = 0 
-            AND kEinstellungenSektion = $kSektion
-        ORDER BY nSort",
-    \DB\ReturnType::ARRAY_OF_OBJECTS
-);
-
-$configCount = count($Conf);
-for ($i = 0; $i < $configCount; $i++) {
-    if (in_array($Conf[$i]->cInputTyp, ['selectbox', 'listbox'], true)) {
-        $Conf[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
-            'teinstellungenconfwerte',
-            'kEinstellungenConf',
-            (int)$Conf[$i]->kEinstellungenConf,
-            '*',
-            'nSort'
-        );
-    }
-
-    if (isset($Conf[$i]->cWertName)) {
-        $Conf[$i]->gesetzterWert = $Einstellungen['artikeluebersicht'][$Conf[$i]->cWertName];
-    }
-}
-
 if ($Einstellungen['artikeluebersicht']['suche_fulltext'] !== 'N'
     && (!Shop::Container()->getDB()->query(
         "SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'",
@@ -235,7 +209,7 @@ $smarty->configLoad('german.conf', 'einstellungen')
     ->assign('action', 'sucheinstellungen.php')
     ->assign('kEinstellungenSektion', $kSektion)
     ->assign('Sektion', $section)
-    ->assign('Conf', $Conf)
+    ->assign('Conf', getAdminSectionSettings(CONF_ARTIKELUEBERSICHT))
     ->assign('cPrefDesc', $smarty->getConfigVars('prefDesc' . $kSektion))
     ->assign('cPrefURL', $smarty->getConfigVars('prefURL' . $kSektion))
     ->assign('step', $step)

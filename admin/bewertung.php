@@ -134,54 +134,6 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
         removeReply(RequestHelper::verifyGPCDataInt('kBewertung'));
         $cHinweis = 'Antwort zu einer Bewertung wurde entfernt.';
     }
-
-    // Config holen
-    $oConfig_arr = Shop::Container()->getDB()->selectAll(
-        'teinstellungenconf',
-        'kEinstellungenSektion',
-        CONF_BEWERTUNG,
-        '*',
-        'nSort'
-    );
-    $configCount = count($oConfig_arr);
-    for ($i = 0; $i < $configCount; $i++) {
-        if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-            $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
-                'teinstellungenconfwerte',
-                'kEinstellungenConf',
-                (int)$oConfig_arr[$i]->kEinstellungenConf,
-                '*',
-                'nSort'
-            );
-        } elseif ($oConfig_arr[$i]->cInputTyp === 'listbox') {
-            $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
-                'tkundengruppe',
-                [],
-                [],
-                'kKundengruppe, cName',
-                'cStandard DESC'
-            );
-        }
-
-        if ($oConfig_arr[$i]->cInputTyp === 'listbox') {
-            $oSetValue = Shop::Container()->getDB()->selectAll(
-                'teinstellungen',
-                ['kEinstellungenSektion', 'cName'],
-                [CONF_BEWERTUNG, $oConfig_arr[$i]->cWertName],
-                'cWert'
-            );
-            $oConfig_arr[$i]->gesetzterWert = $oSetValue;
-        } else {
-            $oSetValue = Shop::Container()->getDB()->select(
-                'teinstellungen',
-                ['kEinstellungenSektion', 'cName'],
-                [CONF_BEWERTUNG, $oConfig_arr[$i]->cWertName]
-            );
-            $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
-        }
-    }
-
-    // Bewertungen Anzahl holen
     $nBewertungen = (int)Shop::Container()->getDB()->query(
         'SELECT COUNT(*) AS nAnzahl
             FROM tbewertung
@@ -189,7 +141,6 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
                 AND nAktiv = 0',
         \DB\ReturnType::SINGLE_OBJECT
     )->nAnzahl;
-    // Aktive Bewertungen Anzahl holen
     $nBewertungenAktiv = (int)Shop::Container()->getDB()->query(
         'SELECT COUNT(*) AS nAnzahl
             FROM tbewertung
@@ -198,7 +149,6 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
         \DB\ReturnType::SINGLE_OBJECT
     )->nAnzahl;
 
-    // Paginationen
     $oPagiInaktiv = (new Pagination('inactive'))
         ->setItemCount($nBewertungen)
         ->assemble();
@@ -206,7 +156,6 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
         ->setItemCount($nBewertungenAktiv)
         ->assemble();
 
-    // Bewertungen holen
     $oBewertung_arr = Shop::Container()->getDB()->query(
         "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
             FROM tbewertung
@@ -218,7 +167,6 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
             LIMIT " . $oPagiInaktiv->getLimitSQL(),
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
-    // Aktive Bewertungen
     $oBewertungLetzten50_arr = Shop::Container()->getDB()->query(
         "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
             FROM tbewertung
@@ -236,7 +184,7 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
         ->assign('oBewertung_arr', $oBewertung_arr)
         ->assign('oBewertungLetzten50_arr', $oBewertungLetzten50_arr)
         ->assign('oBewertungAktiv_arr', $oBewertungAktiv_arr ?? null)
-        ->assign('oConfig_arr', $oConfig_arr)
+        ->assign('oConfig_arr', getAdminSectionSettings(CONF_BEWERTUNG))
         ->assign('Sprachen', Sprache::getAllLanguages());
 }
 

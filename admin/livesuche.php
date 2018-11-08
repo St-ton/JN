@@ -514,34 +514,7 @@ $Suchanfragenmapping   = $db->query(
         LIMIT ' . $oPagiMapping->getLimitSQL(),
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
-
-$oConfig_arr = $db->query(
-    'SELECT *
-        FROM teinstellungenconf
-        WHERE kEinstellungenConf IN (' . implode(',', $settingsIDs) . ')
-        ORDER BY nSort',
-    \DB\ReturnType::ARRAY_OF_OBJECTS
-);
-$configCount = count($oConfig_arr);
-for ($i = 0; $i < $configCount; $i++) {
-    $oConfig_arr[$i]->ConfWerte = $db->query(
-        'SELECT *
-            FROM teinstellungenconfwerte
-            WHERE kEinstellungenConf = ' . (int)$oConfig_arr[$i]->kEinstellungenConf . '
-            ORDER BY nSort',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
-    );
-    $oSetValue                  = $db->query(
-        "SELECT cWert
-            FROM teinstellungen
-            WHERE kEinstellungenSektion = " . (int)$oConfig_arr[$i]->kEinstellungenSektion . "
-                AND cName = '" . $oConfig_arr[$i]->cWertName . "'",
-        \DB\ReturnType::SINGLE_OBJECT
-    );
-
-    $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
-}
-$smarty->assign('oConfig_arr', $oConfig_arr)
+$smarty->assign('oConfig_arr', getAdminSectionSettings($settingsIDs))
        ->assign('Sprachen', $Sprachen)
        ->assign('Suchanfragen', $Suchanfragen)
        ->assign('Suchanfragenerfolglos', $Suchanfragenerfolglos)

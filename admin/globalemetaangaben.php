@@ -66,34 +66,6 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && Form
     unset($oConfig_arr);
 }
 
-$oConfig_arr = Shop::Container()->getDB()->selectAll(
-    'teinstellungenconf',
-    'kEinstellungenSektion',
-    CONF_METAANGABEN,
-    '*',
-    'nSort'
-);
-$configCount = count($oConfig_arr);
-for ($i = 0; $i < $configCount; $i++) {
-    if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-        $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
-            'teinstellungenconfwerte',
-            'kEinstellungenConf',
-            (int)$oConfig_arr[$i]->kEinstellungenConf,
-            '*',
-            'nSort'
-        );
-    }
-    $oSetValue = Shop::Container()->getDB()->select(
-        'teinstellungen',
-        'kEinstellungenSektion',
-        CONF_METAANGABEN,
-        'cName',
-        $oConfig_arr[$i]->cWertName
-    );
-    $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
-}
-
 $oMetaangaben_arr = Shop::Container()->getDB()->selectAll(
     'tglobalemetaangaben',
     ['kSprache', 'kEinstellungenSektion'],
@@ -106,7 +78,7 @@ foreach ($oMetaangaben_arr as $oMetaangaben) {
 
 $excludeKeywords = Shop::Container()->getDB()->select('texcludekeywords', 'cISOSprache', $_SESSION['cISOSprache']);
 
-$smarty->assign('oConfig_arr', $oConfig_arr)
+$smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_METAANGABEN))
        ->assign('oMetaangaben_arr', $cTMP_arr)
        ->assign('keywords', $excludeKeywords)
        ->assign('Sprachen', Sprache::getAllLanguages())

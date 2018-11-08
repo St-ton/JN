@@ -247,36 +247,9 @@ if (RequestHelper::verifyGPCDataInt('news') === 1 && FormHelper::validateToken()
     }
 }
 if ($controller->getStep() === 'news_uebersicht') {
-    $newsItems   = $controller->getAllNews();
-    $comments    = $controller->getNonActivatedComments();
-    $config      = $db->selectAll(
-        'teinstellungenconf',
-        'kEinstellungenSektion',
-        CONF_NEWS,
-        '*',
-        'nSort'
-    );
-    $configCount = count($config);
-    for ($i = 0; $i < $configCount; $i++) {
-        if ($config[$i]->cInputTyp === 'selectbox') {
-            $config[$i]->ConfWerte = $db->selectAll(
-                'teinstellungenconfwerte',
-                'kEinstellungenConf',
-                (int)$config[$i]->kEinstellungenConf,
-                '*',
-                'nSort'
-            );
-        }
-        $oSetValue                 = $db->select(
-            'teinstellungen',
-            'kEinstellungenSektion',
-            CONF_NEWS,
-            'cName',
-            $config[$i]->cWertName
-        );
-        $config[$i]->gesetzterWert = $oSetValue->cWert ?? null;
-    }
-    $prefixes = [];
+    $newsItems = $controller->getAllNews();
+    $comments  = $controller->getNonActivatedComments();
+    $prefixes  = [];
     foreach ($languages as $i => $lang) {
         $prefixes[$i]                = new stdClass();
         $prefixes[$i]->kSprache      = $lang->kSprache;
@@ -300,7 +273,7 @@ if ($controller->getStep() === 'news_uebersicht') {
     $categoryPagination = (new Pagination('kats'))
         ->setItemArray($newsCategories)
         ->assemble();
-    $smarty->assign('oConfig_arr', $config)
+    $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_NEWS))
            ->assign('oNewsKommentar_arr', $commentPagination->getPageItems())
            ->assign('oNews_arr', $itemPagination->getPageItems())
            ->assign('oNewsKategorie_arr', $categoryPagination->getPageItems())

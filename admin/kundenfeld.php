@@ -100,45 +100,12 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
         }
     }
 }
-
-$oConfig_arr = Shop::Container()->getDB()->selectAll(
-    'teinstellungenconf',
-    'kEinstellungenSektion',
-    CONF_KUNDENFELD,
-    '*',
-    'nSort'
-);
-$configCount = count($oConfig_arr);
-for ($i = 0; $i < $configCount; $i++) {
-    if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-        $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
-            'teinstellungenconfwerte',
-            'kEinstellungenConf',
-            (int)$oConfig_arr[$i]->kEinstellungenConf,
-            '*',
-            'nSort'
-        );
-    }
-
-    $oSetValue = Shop::Container()->getDB()->select(
-        'teinstellungen',
-        'kEinstellungenSektion',
-        CONF_KUNDENFELD,
-        'cName',
-        $oConfig_arr[$i]->cWertName
-    );
-
-    $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
-}
-// Kundenfelder auslesen und in Smarty assignen
 $oKundenfeld_arr = $customerFields->getCustomerFields();
-// tkundenfeldwert nachschauen ob dort Werte fuer tkundenfeld enthalten sind
 foreach ($oKundenfeld_arr as $i => $oKundenfeld) {
     if ($oKundenfeld->cTyp === 'auswahl') {
         $oKundenfeld_arr[$i]->oKundenfeldWert_arr = $customerFields->getCustomerFieldValues($oKundenfeld);
     }
 }
-
 // calculate the highest sort-order number (based on the 'ORDER BY' above)
 // to recommend the user the next sort-order-value, instead of a placeholder
 $oLastElement      = end($oKundenfeld_arr);
@@ -154,7 +121,7 @@ reset($oKundenfeld_arr); // we leave the array in a safe state
 $smarty->assign('oKundenfeld_arr', $oKundenfeld_arr)
        ->assign('nHighestSortValue', $nHighestSortValue)
        ->assign('nHighestSortDiff', $nHighestSortDiff)
-       ->assign('oConfig_arr', $oConfig_arr)
+       ->assign('oConfig_arr', getAdminSectionSettings(CONF_KUNDENFELD))
        ->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)

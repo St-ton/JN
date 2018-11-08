@@ -163,7 +163,7 @@ switch ($action) {
     case 'delete':
         $slider   = new Slider();
         $slider->load($kSlider, false);
-        $bSuccess = $slider->delete($kSlider);
+        $bSuccess = $slider->delete();
         if ($bSuccess === true) {
             header('Location: ' . $redirectUrl);
             exit;

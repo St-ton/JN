@@ -61,11 +61,18 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
             case 'tartikel':
                 $cSpalten_arr = array_intersect(
                     $cSuchspalten_arr,
-                    ['cName', 'cSeo', 'cSuchbegriffe', 'cArtNr', 'cKurzBeschreibung', 'cBeschreibung', 'cBarcode', 'cISBN', 'cHAN', 'cAnmerkung']
+                    ['cName', 'cSeo', 'cSuchbegriffe',
+                     'cArtNr', 'cKurzBeschreibung',
+                     'cBeschreibung', 'cBarcode',
+                     'cISBN', 'cHAN', 'cAnmerkung'
+                    ]
                 );
                 break;
             case 'tartikelsprache':
-                $cSpalten_arr = array_intersect($cSuchspalten_arr, ['cName', 'cSeo', 'cKurzBeschreibung', 'cBeschreibung']);
+                $cSpalten_arr = array_intersect(
+                    $cSuchspalten_arr,
+                    ['cName', 'cSeo', 'cKurzBeschreibung', 'cBeschreibung']
+                );
                 break;
             default:
                 header(RequestHelper::makeHTTPHeader(403), true);
@@ -88,7 +95,8 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
         }
 
         if ($res === 0) {
-            $cFehler      = 'Der Index für die Volltextsuche konnte nicht angelegt werden! Die Volltextsuche wird deaktiviert.';
+            $cFehler      = 'Der Index für die Volltextsuche konnte nicht angelegt werden! ' .
+                'Die Volltextsuche wird deaktiviert.';
             $shopSettings = Shopsetting::getInstance();
             $settings     = $shopSettings[Shopsetting::mapSettingName(CONF_ARTIKELUEBERSICHT)];
 

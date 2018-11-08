@@ -83,7 +83,7 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
         $smarty->assign('defaultTabbertab', RequestHelper::verifyGPDataString('cPluginTab'));
     }
 
-    $oPlugin = new Plugin($kPlugin, $invalidateCache);
+    $oPlugin = new \Plugin\Plugin($kPlugin, $invalidateCache);
     if (!$invalidateCache) { //make sure dynamic options are reloaded
         foreach ($oPlugin->oPluginEinstellungConf_arr as $option) {
             if (!empty($option->cSourceFile)) {
@@ -125,9 +125,9 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
         $fAddAsDocTab = true;
     }
     if ($oPlugin->cTextLicensePath !== '') {
-        $szLicenseContent = $oParseDown->text(StringHandler::convertUTF8(file_get_contents($oPlugin->cTextLicensePath)));
+        $licenseContent = $oParseDown->text(StringHandler::convertUTF8(file_get_contents($oPlugin->cTextLicensePath)));
 
-        $smarty->assign('szLicenseContent', $szLicenseContent);
+        $smarty->assign('szLicenseContent', $licenseContent);
 
         $oUnnamedTab                     = new stdClass();
         $oUnnamedTab->kPluginAdminMenu   = count($oPlugin->oPluginAdminMenu_arr) + 1;
@@ -141,9 +141,9 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
         $fAddAsLicenseTab = true;
     }
     if ($oPlugin->changelogPath !== '') {
-        $szChangelogContent = $oParseDown->text(StringHandler::convertUTF8(file_get_contents($oPlugin->changelogPath)));
+        $changelogContent = $oParseDown->text(StringHandler::convertUTF8(file_get_contents($oPlugin->changelogPath)));
 
-        $smarty->assign('szChangelogContent', $szChangelogContent);
+        $smarty->assign('szChangelogContent', $changelogContent);
 
         $oUnnamedTab                     = new stdClass();
         $oUnnamedTab->kPluginAdminMenu   = count($oPlugin->oPluginAdminMenu_arr) + 1;

@@ -203,7 +203,8 @@ function processImport($fmt, $data)
     $newsletterempfaenger->kSprache     = $_POST['kSprache'];
     // Ist der Newsletterempfaenger registrierter Kunde?
     $newsletterempfaenger->kKunde = 0;
-    $KundenDaten                  = Shop::Container()->getDB()->select('tkunde', 'cMail', $newsletterempfaenger->cEmail);
+
+    $KundenDaten = Shop::Container()->getDB()->select('tkunde', 'cMail', $newsletterempfaenger->cEmail);
     if ($KundenDaten->kKunde > 0) {
         $newsletterempfaenger->kKunde   = $KundenDaten->kKunde;
         $newsletterempfaenger->kSprache = $KundenDaten->kSprache;
@@ -221,7 +222,6 @@ function processImport($fmt, $data)
     $oTMP->nAktiv       = $newsletterempfaenger->nAktiv;
     // In DB schreiben
     if (Shop::Container()->getDB()->insert('tnewsletterempfaenger', $oTMP)) {
-        // NewsletterEmpfaengerHistory fuettern
         $oTMP               = new stdClass();
         $oTMP->cAnrede      = $newsletterempfaenger->cAnrede;
         $oTMP->cVorname     = $newsletterempfaenger->cVorname;

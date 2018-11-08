@@ -149,7 +149,7 @@ class Controller
                 $seoData->cKey     = 'kNews';
                 $seoData->kKey     = $newsItemID;
                 $seoData->kSprache = $langID;
-                $seoData->cSeo     = $this->getSeo($post, $languages, $iso);
+                $seoData->cSeo     = \checkSeo(\getSeo($this->getSeo($post, $languages, $iso)));
                 $this->db->insert('tnewssprache', $loc);
                 $this->db->insert('tseo', $seoData);
 
@@ -729,9 +729,6 @@ class Controller
     {
         $images = [];
         if ($this->sanitizeDir('fake', $itemID, $uploadDirName) === false) {
-            \Shop::dbg($itemID, false, 'ID:');
-            \Shop::dbg($uploadDirName, true, 'dir:');
-
             return $images;
         }
         $imageBaseURL = \Shop::getURL() . '/';
